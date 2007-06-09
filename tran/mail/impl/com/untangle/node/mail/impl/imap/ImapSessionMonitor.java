@@ -9,13 +9,13 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.impl.imap;
+package com.untangle.node.mail.impl.imap;
 
 import java.nio.ByteBuffer;
 
-import com.untangle.tran.mail.papi.imap.IMAPTokenizer;
-import com.untangle.tran.sasl.SASLObserver;
-import com.untangle.tran.sasl.SASLObserverFactory;
+import com.untangle.node.mail.papi.imap.IMAPTokenizer;
+import com.untangle.node.sasl.SASLObserver;
+import com.untangle.node.sasl.SASLObserverFactory;
 import org.apache.log4j.Logger;
 
 /**
@@ -31,7 +31,7 @@ import org.apache.log4j.Logger;
  * to be pushed-back and re-seen.
  * <br><br>
  * An ImapSessionMonitor works by passing tokens and literals
- * to an internal collection of {@link com.untangle.tran.mail.impl.ima.TokMon TokMon}s.
+ * to an internal collection of {@link com.untangle.node.mail.impl.ima.TokMon TokMon}s.
  * The design of the TokMon API was to prevent having to duplicate and have
  * each "independent area of interest" re-tokenize the buffers.  Instead,
  * the ImapSessionMonitor performs tokenizing, and passes each token to
@@ -96,8 +96,8 @@ class ImapSessionMonitor {
 
     /**
      * Call to set the UserName.  This is intended for use
-     * by the various {@link com.untangle.tran.mail.impl.imap.SASLTransactionTokMon SASL monitors}
-     * or the vanilla {@link com.untangle.tran.mail.impl.imap.LOGINTokMon LOGIN command TokMon}
+     * by the various {@link com.untangle.node.mail.impl.imap.SASLTransactionTokMon SASL monitors}
+     * or the vanilla {@link com.untangle.node.mail.impl.imap.LOGINTokMon LOGIN command TokMon}
      *
      * @param userName the userName
      */

@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.nat.gui;
+package com.untangle.node.nat.gui;
 
 
 import java.util.*;
@@ -17,13 +17,13 @@ import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.table.*;
 
-import com.untangle.gui.transform.*;
+import com.untangle.gui.node.*;
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.editTable.*;
-import com.untangle.mvvm.networking.DnsStaticHostRule;
-import com.untangle.mvvm.tran.*;
-import com.untangle.mvvm.tran.firewall.*;
-import com.untangle.tran.nat.*;
+import com.untangle.uvm.networking.DnsStaticHostRule;
+import com.untangle.uvm.node.*;
+import com.untangle.uvm.node.firewall.*;
+import com.untangle.node.nat.*;
 
 public class DnsAddressJPanel extends MEditTableJPanel{
 

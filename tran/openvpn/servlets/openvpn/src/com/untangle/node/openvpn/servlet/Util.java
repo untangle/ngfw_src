@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.openvpn.servlet;
+package com.untangle.node.openvpn.servlet;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -27,13 +27,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.mvvm.MvvmLocalContext;
-import com.untangle.mvvm.security.Tid;
-import com.untangle.mvvm.tran.IPaddr;
-import com.untangle.mvvm.tran.TransformContext;
-import com.untangle.tran.openvpn.Constants;
-import com.untangle.tran.openvpn.VpnTransform;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.UvmLocalContext;
+import com.untangle.uvm.security.Tid;
+import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.NodeContext;
+import com.untangle.node.openvpn.Constants;
+import com.untangle.node.openvpn.VpnNode;
 import org.apache.log4j.Logger;
 
 class Util
@@ -44,7 +44,7 @@ class Util
 
     public static final  String DISTRIBUTION_KEY_PARAM = "key";
 
-    static final String ATTR_BASE = "com.untangle.tran.openvpn.servlet.";
+    static final String ATTR_BASE = "com.untangle.node.openvpn.servlet.";
 
     private static final String EXPIRATION_SESSION_ATTR  = ATTR_BASE + "expiration";
     private static final String COMMON_NAME_SESSION_ATTR = ATTR_BASE + "common-name";
@@ -92,13 +92,13 @@ class Util
                 /* XXX Should this be cached?? */
                 IPaddr address = IPaddr.parse( request.getRemoteAddr());
 
-                MvvmLocalContext ctx = MvvmContextFactory.context();
-                Tid tid = ctx.transformManager().transformInstances( "openvpn-transform" ).get( 0 );
-                TransformContext tc = ctx.transformManager().transformContext( tid );
-                commonName = ((VpnTransform)tc.transform()).lookupClientDistributionKey( key, address );
+                UvmLocalContext ctx = UvmContextFactory.context();
+                Tid tid = ctx.nodeManager().nodeInstances( "openvpn-node" ).get( 0 );
+                NodeContext tc = ctx.nodeManager().nodeContext( tid );
+                commonName = ((VpnNode)tc.node()).lookupClientDistributionKey( key, address );
             } catch ( Exception e ) {
-                logger.error( "Error connecting to the openvpn transform", e );
-                request.setAttribute( REASON_ATTR, "Error connnecting to the openvpn transform " + e );
+                logger.error( "Error connecting to the openvpn node", e );
+                request.setAttribute( REASON_ATTR, "Error connnecting to the openvpn node " + e );
                 return null;
             }
 

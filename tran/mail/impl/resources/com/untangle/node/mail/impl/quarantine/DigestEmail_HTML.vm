@@ -189,7 +189,7 @@ table.inbox th, table.inbox td {
 
 table.inbox th {
   text-align: left;
-  text-transform: uppercase;
+  text-node: uppercase;
 }
 
 /* XXX Differs from quarantine style.css */

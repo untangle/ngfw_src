@@ -9,40 +9,40 @@
  * $Id$
  */
 
-package com.untangle.tran.httpblocker;
+package com.untangle.node.httpblocker;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.untangle.mvvm.LocalAppServerManager;
-import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.mvvm.MvvmLocalContext;
-import com.untangle.mvvm.logging.EventLogger;
-import com.untangle.mvvm.logging.EventLoggerFactory;
-import com.untangle.mvvm.logging.EventManager;
-import com.untangle.mvvm.logging.ListEventFilter;
-import com.untangle.mvvm.logging.SimpleEventFilter;
-import com.untangle.mvvm.tapi.AbstractTransform;
-import com.untangle.mvvm.tapi.Affinity;
-import com.untangle.mvvm.tapi.Fitting;
-import com.untangle.mvvm.tapi.PipeSpec;
-import com.untangle.mvvm.tapi.SoloPipeSpec;
-import com.untangle.mvvm.tapi.TCPSession;
-import com.untangle.mvvm.tran.MimeType;
-import com.untangle.mvvm.tran.MimeTypeRule;
-import com.untangle.mvvm.tran.StringRule;
-import com.untangle.mvvm.tran.TransformContext;
-import com.untangle.mvvm.util.OutsideValve;
-import com.untangle.mvvm.util.TransactionWork;
-import com.untangle.tran.token.Header;
-import com.untangle.tran.token.Token;
-import com.untangle.tran.token.TokenAdaptor;
+import com.untangle.uvm.LocalAppServerManager;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.UvmLocalContext;
+import com.untangle.uvm.logging.EventLogger;
+import com.untangle.uvm.logging.EventLoggerFactory;
+import com.untangle.uvm.logging.EventManager;
+import com.untangle.uvm.logging.ListEventFilter;
+import com.untangle.uvm.logging.SimpleEventFilter;
+import com.untangle.uvm.tapi.AbstractNode;
+import com.untangle.uvm.tapi.Affinity;
+import com.untangle.uvm.tapi.Fitting;
+import com.untangle.uvm.tapi.PipeSpec;
+import com.untangle.uvm.tapi.SoloPipeSpec;
+import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.uvm.node.MimeType;
+import com.untangle.uvm.node.MimeTypeRule;
+import com.untangle.uvm.node.StringRule;
+import com.untangle.uvm.node.NodeContext;
+import com.untangle.uvm.util.OutsideValve;
+import com.untangle.uvm.util.TransactionWork;
+import com.untangle.node.token.Header;
+import com.untangle.node.token.Token;
+import com.untangle.node.token.TokenAdaptor;
 import org.apache.catalina.Valve;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
-public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
+public class HttpBlockerImpl extends AbstractNode implements HttpBlocker
 {
     private static int deployCount = 0;
 
@@ -67,7 +67,7 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
     public HttpBlockerImpl()
     {
         replacementGenerator = new HttpBlockerReplacementGenerator(getTid());
-        TransformContext tctx = getTransformContext();
+        NodeContext tctx = getNodeContext();
         eventLogger = EventLoggerFactory.factory().getEventLogger(tctx);
         SimpleEventFilter sef = new HttpBlockerBlockedFilter();
         eventLogger.addSimpleEventFilter(sef);
@@ -84,7 +84,7 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
     public HttpBlockerSettings getHttpBlockerSettings()
     {
         if( settings == null )
-            logger.error("Settings not yet initialized. State: " + getTransformContext().getRunState() );
+            logger.error("Settings not yet initialized. State: " + getNodeContext().getRunState() );
         return settings;
     }
 
@@ -101,7 +101,7 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
 
                 public Object getResult() { return null; }
             };
-        getTransformContext().runTransaction(tw);
+        getNodeContext().runTransaction(tw);
 
         blacklist.configure(settings);
         reconfigure();
@@ -117,7 +117,7 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
         return replacementGenerator.getNonceData(nonce);
     }
 
-    // Transform methods ------------------------------------------------------
+    // Node methods ------------------------------------------------------
 
     @Override
     protected PipeSpec[] getPipeSpecs()
@@ -326,7 +326,7 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
 
                 public Object getResult() { return null; }
             };
-        getTransformContext().runTransaction(tw);
+        getNodeContext().runTransaction(tw);
 
         if (logger.isDebugEnabled()) {
             logger.debug("IN POSTINIT SET BLACKLIST " + settings);
@@ -383,7 +383,7 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
      */
     private void reconfigure()
     {
-        MvvmContextFactory.context().newThread(new Runnable() {
+        UvmContextFactory.context().newThread(new Runnable() {
                 public void run() {
                     blacklist.reconfigure();
                 }
@@ -458,7 +458,7 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
             return;
         }
 
-        MvvmLocalContext mctx = MvvmContextFactory.context();
+        UvmLocalContext mctx = UvmContextFactory.context();
         LocalAppServerManager asm = mctx.appServerManager();
 
         Valve v = new OutsideValve()
@@ -499,7 +499,7 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
             return;
         }
 
-        MvvmLocalContext mctx = MvvmContextFactory.context();
+        UvmLocalContext mctx = UvmContextFactory.context();
         LocalAppServerManager asm = mctx.appServerManager();
 
         if (asm.unloadWebApp("/httpblocker")) {

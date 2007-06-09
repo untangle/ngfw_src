@@ -26,7 +26,7 @@
   -->
   <tag>
     <name>forEachMessage</name>
-    <tagclass>com.untangle.tran.mail.web.euv.tags.MessagesSetTag</tagclass>
+    <tagclass>com.untangle.node.mail.web.euv.tags.MessagesSetTag</tagclass>
     <bodycontent>JSP</bodycontent>
     <attribute>
         <name>type</name>
@@ -41,7 +41,7 @@
   -->
   <tag>
     <name>hasMessages</name>
-    <tagclass>com.untangle.tran.mail.web.euv.tags.HasMessagesTag</tagclass>
+    <tagclass>com.untangle.node.mail.web.euv.tags.HasMessagesTag</tagclass>
     <bodycontent>JSP</bodycontent>
     <attribute>
         <name>type</name>
@@ -57,7 +57,7 @@
   -->
   <tag>
     <name>message</name>
-    <tagclass>com.untangle.tran.mail.web.euv.tags.MessageTag</tagclass>
+    <tagclass>com.untangle.node.mail.web.euv.tags.MessageTag</tagclass>
     <bodycontent>empty</bodycontent>
   </tag>
 
@@ -70,7 +70,7 @@
   -->
   <tag>
     <name>oddEven</name>
-    <tagclass>com.untangle.tran.mail.web.euv.tags.OddEvenTag</tagclass>
+    <tagclass>com.untangle.node.mail.web.euv.tags.OddEvenTag</tagclass>
     <bodycontent>empty</bodycontent>
     <attribute>
       <name>even</name>
@@ -90,7 +90,7 @@
   -->
   <tag>
     <name>hasInboxRecords</name>
-    <tagclass>com.untangle.tran.mail.web.euv.tags.HasInboxIndexTag</tagclass>
+    <tagclass>com.untangle.node.mail.web.euv.tags.HasInboxIndexTag</tagclass>
     <bodycontent>JSP</bodycontent>
     <attribute>
       <name>includeIfTrue</name>
@@ -107,7 +107,7 @@
   -->
   <tag>
     <name>forEachInboxRecord</name>
-    <tagclass>com.untangle.tran.mail.web.euv.tags.InboxIndexTag</tagclass>
+    <tagclass>com.untangle.node.mail.web.euv.tags.InboxIndexTag</tagclass>
     <bodycontent>JSP</bodycontent>
   </tag>
   
@@ -125,7 +125,7 @@
   -->
   <tag>
     <name>inboxRecord</name>
-    <tagclass>com.untangle.tran.mail.web.euv.tags.InboxRecordTag</tagclass>
+    <tagclass>com.untangle.node.mail.web.euv.tags.InboxRecordTag</tagclass>
     <bodycontent>empty</bodycontent>
     <attribute>
       <name>prop</name>
@@ -146,7 +146,7 @@
   -->
   <tag>
     <name>hasAttachments</name>
-    <tagclass>com.untangle.tran.mail.web.euv.tags.InboxRecordHasAttachmentTag</tagclass>
+    <tagclass>com.untangle.node.mail.web.euv.tags.InboxRecordHasAttachmentTag</tagclass>
     <bodycontent>JSP</bodycontent>
     <attribute>
       <name>includeIfTrue</name>
@@ -161,7 +161,7 @@
   -->
   <tag>
     <name>indexNumRecords</name>
-    <tagclass>com.untangle.tran.mail.web.euv.tags.InboxNumRecordsTag</tagclass>
+    <tagclass>com.untangle.node.mail.web.euv.tags.InboxNumRecordsTag</tagclass>
     <bodycontent>empty</bodycontent>
   </tag>
 
@@ -171,7 +171,7 @@
   -->
   <tag>
     <name>indexSizeRecords</name>
-    <tagclass>com.untangle.tran.mail.web.euv.tags.InboxSizeRecordsTag</tagclass>
+    <tagclass>com.untangle.node.mail.web.euv.tags.InboxSizeRecordsTag</tagclass>
     <bodycontent>empty</bodycontent>
   </tag>
 
@@ -184,7 +184,7 @@
   -->
   <tag>
     <name>pagnationLink</name>
-    <tagclass>com.untangle.tran.mail.web.euv.tags.PagnationLinksTag</tagclass>
+    <tagclass>com.untangle.node.mail.web.euv.tags.PagnationLinksTag</tagclass>
     <bodycontent>empty</bodycontent>
     <attribute>
       <name>linkType</name>
@@ -208,7 +208,7 @@
   -->
   <tag>
     <name>pagnationProperties</name>
-    <tagclass>com.untangle.tran.mail.web.euv.tags.PagnationPropertiesTag</tagclass>
+    <tagclass>com.untangle.node.mail.web.euv.tags.PagnationPropertiesTag</tagclass>
     <bodycontent>empty</bodycontent>
     <attribute>
       <name>propName</name>
@@ -225,7 +225,7 @@
   -->
   <tag>
     <name>hasPagnation</name>
-    <tagclass>com.untangle.tran.mail.web.euv.tags.HasPagnationTag</tagclass>
+    <tagclass>com.untangle.node.mail.web.euv.tags.HasPagnationTag</tagclass>
     <bodycontent>JSP</bodycontent>
     <attribute>
       <name>linkType</name>
@@ -244,7 +244,7 @@
   -->
   <tag>
     <name>currentAddress</name>
-    <tagclass>com.untangle.tran.mail.web.euv.tags.CurrentEmailAddressTag</tagclass>
+    <tagclass>com.untangle.node.mail.web.euv.tags.CurrentEmailAddressTag</tagclass>
     <bodycontent>empty</bodycontent>
   </tag>
 
@@ -253,7 +253,7 @@
   -->
   <tag>
     <name>maxDaysToIntern</name>
-    <tagclass>com.untangle.tran.mail.web.euv.tags.MaxDaysToInternTag</tagclass>
+    <tagclass>com.untangle.node.mail.web.euv.tags.MaxDaysToInternTag</tagclass>
     <bodycontent>empty</bodycontent>
   </tag>
 
@@ -262,7 +262,7 @@
   -->
   <tag>
     <name>maxDaysIdleInbox</name>
-    <tagclass>com.untangle.tran.mail.web.euv.tags.MaxDaysIdleInboxTag</tagclass>
+    <tagclass>com.untangle.node.mail.web.euv.tags.MaxDaysIdleInboxTag</tagclass>
     <bodycontent>empty</bodycontent>
   </tag>
 
@@ -272,7 +272,7 @@
   -->
   <tag>
     <name>currentAuthToken</name>
-    <tagclass>com.untangle.tran.mail.web.euv.tags.CurrentAuthTokenTag</tagclass>
+    <tagclass>com.untangle.node.mail.web.euv.tags.CurrentAuthTokenTag</tagclass>
     <bodycontent>empty</bodycontent>
     <attribute>
       <name>encoded</name>
@@ -290,7 +290,7 @@
   -->
   <tag>
     <name>forEachSafelistEntry</name>
-    <tagclass>com.untangle.tran.mail.web.euv.tags.SafelistListTag</tagclass>
+    <tagclass>com.untangle.node.mail.web.euv.tags.SafelistListTag</tagclass>
     <bodycontent>JSP</bodycontent>
   </tag>
 
@@ -300,7 +300,7 @@
   -->
   <tag>
     <name>safelistEntry</name>
-    <tagclass>com.untangle.tran.mail.web.euv.tags.SafelistEntryTag</tagclass>
+    <tagclass>com.untangle.node.mail.web.euv.tags.SafelistEntryTag</tagclass>
     <bodycontent>empty</bodycontent>
     <attribute>
       <name>encoded</name>
@@ -311,7 +311,7 @@
 
   <tag>
     <name>hasSafelist</name>
-    <tagclass>com.untangle.tran.mail.web.euv.tags.HasSafelistTag</tagclass>
+    <tagclass>com.untangle.node.mail.web.euv.tags.HasSafelistTag</tagclass>
     <bodycontent>JSP</bodycontent>
     <attribute>
       <name>includeIfTrue</name>
@@ -349,7 +349,7 @@
   -->
   <tag>
     <name>constants</name>
-    <tagclass>com.untangle.tran.mail.web.euv.tags.ConstantsTag</tagclass>
+    <tagclass>com.untangle.node.mail.web.euv.tags.ConstantsTag</tagclass>
     <bodycontent>empty</bodycontent>
     <attribute>
       <name>valueName</name>
@@ -367,13 +367,13 @@
 
   <tag>
     <name>forEachReceivingRemapsEntry</name>
-    <tagclass>com.untangle.tran.mail.web.euv.tags.ReceivingRemapsListTag</tagclass>
+    <tagclass>com.untangle.node.mail.web.euv.tags.ReceivingRemapsListTag</tagclass>
     <bodycontent>JSP</bodycontent>
   </tag>
 
   <tag>
     <name>receivingRemapsEntry</name>
-    <tagclass>com.untangle.tran.mail.web.euv.tags.ReceivingRemapsEntryTag</tagclass>
+    <tagclass>com.untangle.node.mail.web.euv.tags.ReceivingRemapsEntryTag</tagclass>
     <bodycontent>empty</bodycontent>
     <attribute>
       <name>encoded</name>
@@ -384,7 +384,7 @@
 
   <tag>
     <name>isReceivesRemaps</name>
-    <tagclass>com.untangle.tran.mail.web.euv.tags.IsReceivesRemapsTag</tagclass>
+    <tagclass>com.untangle.node.mail.web.euv.tags.IsReceivesRemapsTag</tagclass>
     <bodycontent>JSP</bodycontent>
     <attribute>
       <name>includeIfTrue</name>
@@ -395,7 +395,7 @@
 
   <tag>
     <name>isRemapped</name>
-    <tagclass>com.untangle.tran.mail.web.euv.tags.IsRemappedTag</tagclass>
+    <tagclass>com.untangle.node.mail.web.euv.tags.IsRemappedTag</tagclass>
     <bodycontent>JSP</bodycontent>
     <attribute>
       <name>includeIfTrue</name>
@@ -406,7 +406,7 @@
 
   <tag>
     <name>remappedTo</name>
-    <tagclass>com.untangle.tran.mail.web.euv.tags.RemappedToTag</tagclass>
+    <tagclass>com.untangle.node.mail.web.euv.tags.RemappedToTag</tagclass>
     <bodycontent>empty</bodycontent>
     <attribute>
       <name>encoded</name>
@@ -423,7 +423,7 @@
   -->
   <tag>
     <name>forEachRPPOption</name>
-    <tagclass>com.untangle.tran.mail.web.euv.tags.RPPIteratorTag</tagclass>
+    <tagclass>com.untangle.node.mail.web.euv.tags.RPPIteratorTag</tagclass>
     <bodycontent>JSP</bodycontent>
   </tag>
 
@@ -432,7 +432,7 @@
   -->
   <tag>
     <name>rPPOption</name>
-    <tagclass>com.untangle.tran.mail.web.euv.tags.RPPCurrentOptionTag</tagclass>
+    <tagclass>com.untangle.node.mail.web.euv.tags.RPPCurrentOptionTag</tagclass>
     <bodycontent>empty</bodycontent>
   </tag>
 
@@ -442,7 +442,7 @@
   -->
   <tag>
     <name>isRPPOptionSelected</name>
-    <tagclass>com.untangle.tran.mail.web.euv.tags.RPPIsCurrentOptionSelectedTag</tagclass>
+    <tagclass>com.untangle.node.mail.web.euv.tags.RPPIsCurrentOptionSelectedTag</tagclass>
     <bodycontent>JSP</bodycontent>
     <attribute>
       <name>includeIfTrue</name>

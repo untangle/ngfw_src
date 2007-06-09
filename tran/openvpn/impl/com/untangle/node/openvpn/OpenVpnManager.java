@@ -8,7 +8,7 @@
  *
  * $Id$
  */
-package com.untangle.tran.openvpn;
+package com.untangle.node.openvpn;
 
 import java.io.File;
 import java.net.Inet4Address;
@@ -16,22 +16,22 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.List;
 
-import com.untangle.mvvm.ArgonException;
-import com.untangle.mvvm.BrandingSettings;
-import com.untangle.mvvm.IntfConstants;
-import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.mvvm.MvvmLocalContext;
-import com.untangle.mvvm.NetworkManager;
-import com.untangle.mvvm.networking.internal.ServicesInternalSettings;
-import com.untangle.mvvm.tran.HostName;
-import com.untangle.mvvm.tran.IPaddr;
-import com.untangle.mvvm.tran.TransformException;
-import com.untangle.mvvm.tran.script.ScriptException;
-import com.untangle.mvvm.tran.script.ScriptRunner;
-import com.untangle.mvvm.tran.script.ScriptWriter;
+import com.untangle.uvm.ArgonException;
+import com.untangle.uvm.BrandingSettings;
+import com.untangle.uvm.IntfConstants;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.UvmLocalContext;
+import com.untangle.uvm.NetworkManager;
+import com.untangle.uvm.networking.internal.ServicesInternalSettings;
+import com.untangle.uvm.node.HostName;
+import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.NodeException;
+import com.untangle.uvm.node.script.ScriptException;
+import com.untangle.uvm.node.script.ScriptRunner;
+import com.untangle.uvm.node.script.ScriptWriter;
 import org.apache.log4j.Logger;
 
-// import static com.untangle.tran.openvpn.Constants.*;
+// import static com.untangle.node.openvpn.Constants.*;
 
 class OpenVpnManager
 {
@@ -165,7 +165,7 @@ class OpenVpnManager
     {
     }
 
-    void start( VpnSettings settings ) throws TransformException
+    void start( VpnSettings settings ) throws NodeException
     {
         logger.info( "Starting openvpn server" );
 
@@ -175,43 +175,43 @@ class OpenVpnManager
             boolean isBridgeMode = settings.isBridgeMode();
 
             /* ** XXXXXXX Bridge mode is unsupported */
-            MvvmContextFactory.context().localIntfManager().
+            UvmContextFactory.context().localIntfManager().
                 registerIntf( DEVICE_ROUTING, IntfConstants.VPN_INTF );
 
             /* ** XXXXXXX Bridge mode is unsupported */
 
             // if ( isBridgeMode ) {
-            // am.enableInternalBridgeIntf( MvvmContextFactory.context().networkingManager().get(), intf );
+            // am.enableInternalBridgeIntf( UvmContextFactory.context().networkingManager().get(), intf );
             // }
-            MvvmContextFactory.context().networkManager().updateAddress();
+            UvmContextFactory.context().networkManager().updateAddress();
         } catch ( ArgonException e ) {
-            throw new TransformException( e );
+            throw new NodeException( e );
         } catch ( Exception e ) {
-            throw new TransformException( e );
+            throw new NodeException( e );
         }
     }
 
-    void restart( VpnSettings settings ) throws TransformException
+    void restart( VpnSettings settings ) throws NodeException
     {
         /* The start script handles the case where it has to be stopped */
         start( settings );
     }
 
-    void stop() throws TransformException
+    void stop() throws NodeException
     {
         logger.info( "Stopping openvpn server" );
         ScriptRunner.getInstance().exec( VPN_STOP_SCRIPT );
 
         try {
             //
-            // am.disableInternalBridgeIntf( MvvmContextFactory.context().networkingManager().get());
-            MvvmContextFactory.context().networkManager().updateAddress();
+            // am.disableInternalBridgeIntf( UvmContextFactory.context().networkingManager().get());
+            UvmContextFactory.context().networkManager().updateAddress();
         } catch ( Exception e ) {
-            throw new TransformException( e );
+            throw new NodeException( e );
         }
     }
 
-    void configure( VpnSettings settings ) throws TransformException
+    void configure( VpnSettings settings ) throws NodeException
     {
         /* Nothing to start */
         if ( settings.isUntanglePlatformClient()) return;
@@ -220,7 +220,7 @@ class OpenVpnManager
         writeClientFiles( settings );
     }
 
-    private void writeSettings( VpnSettings settings ) throws TransformException
+    private void writeSettings( VpnSettings settings ) throws NodeException
     {
         ScriptWriter sw = new VpnScriptWriter();
 
@@ -301,12 +301,12 @@ class OpenVpnManager
      * Create all of the client configuration files
      */
     void writeClientConfigurationFiles( VpnSettings settings, VpnClientBase client )
-        throws TransformException
+        throws NodeException
     {
-        MvvmLocalContext mvvm = MvvmContextFactory.context();
-        NetworkManager nm = mvvm.networkManager();
+        UvmLocalContext uvm = UvmContextFactory.context();
+        NetworkManager nm = uvm.networkManager();
 
-        BrandingSettings bs = mvvm.brandingManager().getBrandingSettings();
+        BrandingSettings bs = uvm.brandingManager().getBrandingSettings();
 
         String publicAddress = nm.getPublicAddress();
         writeClientConfigurationFile( settings, client, UNIX_CLIENT_DEFAULTS, UNIX_EXTENSION );
@@ -361,7 +361,7 @@ class OpenVpnManager
         sw.appendVariable( FLAG_CA,   CLI_KEY_DIR + "/" + siteName + "-ca.crt" );
 
         /* VPN configuratoins needs information from the networking settings. */
-        NetworkManager networkManager = MvvmContextFactory.context().networkManager();
+        NetworkManager networkManager = UvmContextFactory.context().networkManager();
 
         /* This is kind of janky */
         String publicAddress = networkManager.getPublicAddress();
@@ -395,7 +395,7 @@ class OpenVpnManager
         } catch ( Exception e ) {
             logger.error( "Unable to delete the previous client configuration files." );
         }
-        ServicesInternalSettings sis = MvvmContextFactory.context().
+        ServicesInternalSettings sis = UvmContextFactory.context().
             networkManager().getServicesInternalSettings();
 
         for ( VpnClient client : settings.getClientList()) {

@@ -8,7 +8,7 @@
  *
  * $Id$
  */
-package com.untangle.tran.nat;
+package com.untangle.node.nat;
 
 import java.net.InetAddress;
 

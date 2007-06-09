@@ -9,15 +9,15 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.papi.imap;
+package com.untangle.node.mail.papi.imap;
 
-import com.untangle.mvvm.tapi.TCPSession;
-import com.untangle.tran.mail.papi.ContinuedMIMEToken;
-import com.untangle.tran.token.AbstractTokenHandler;
-import com.untangle.tran.token.Chunk;
-import com.untangle.tran.token.PassThruToken;
-import com.untangle.tran.token.Token;
-import com.untangle.tran.token.TokenResult;
+import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.node.mail.papi.ContinuedMIMEToken;
+import com.untangle.node.token.AbstractTokenHandler;
+import com.untangle.node.token.Chunk;
+import com.untangle.node.token.PassThruToken;
+import com.untangle.node.token.Token;
+import com.untangle.node.token.TokenResult;
 import org.apache.log4j.Logger;
 
 
@@ -72,7 +72,7 @@ public final class ImapTokenStream
 
     /**
      * Set the ImapTokenStreamHandler for this Stream.  After calling this
-     * method the {@link com.untangle.tran.mail.papi.imap.ImapTokenStreamHandler#getStream getStream}
+     * method the {@link com.untangle.node.mail.papi.imap.ImapTokenStreamHandler#getStream getStream}
      * of the handler will return this object.  Any previous handler will have its
      * stream set to null.
      * <br><br>

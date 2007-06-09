@@ -9,15 +9,15 @@
  * $Id$
  */
 
-package com.untangle.tran.mail;
+package com.untangle.node.mail;
 
-import com.untangle.mvvm.tapi.TCPSession;
-import com.untangle.tran.mail.impl.pop.PopClientParser;
-import com.untangle.tran.mail.impl.pop.PopServerParser;
-import com.untangle.tran.mail.impl.pop.PopUnparser;
-import com.untangle.tran.token.AbstractCasing;
-import com.untangle.tran.token.Parser;
-import com.untangle.tran.token.Unparser;
+import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.node.mail.impl.pop.PopClientParser;
+import com.untangle.node.mail.impl.pop.PopServerParser;
+import com.untangle.node.mail.impl.pop.PopUnparser;
+import com.untangle.node.token.AbstractCasing;
+import com.untangle.node.token.Parser;
+import com.untangle.node.token.Unparser;
 
 public class PopCasing extends AbstractCasing
 {

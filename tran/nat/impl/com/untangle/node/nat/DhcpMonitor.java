@@ -8,7 +8,7 @@
  *
  * $Id$
  */
-package com.untangle.tran.nat;
+package com.untangle.node.nat;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -23,14 +23,14 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.untangle.mvvm.MvvmLocalContext;
-import com.untangle.mvvm.tran.HostName;
-import com.untangle.mvvm.tran.IPaddr;
-import com.untangle.mvvm.tran.ParseException;
-import com.untangle.mvvm.tran.firewall.MACAddress;
+import com.untangle.uvm.UvmLocalContext;
+import com.untangle.uvm.node.HostName;
+import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.ParseException;
+import com.untangle.uvm.node.firewall.MACAddress;
 import org.apache.log4j.Logger;
 
-/** !!! Time permitting, this should also move into the MVVM */
+/** !!! Time permitting, this should also move into the UVM */
 class DhcpMonitor implements Runnable
 {
     private static final int    DHCP_LEASE_ENTRY_LENGTH = 5;
@@ -75,13 +75,13 @@ class DhcpMonitor implements Runnable
     private final Map<InetAddress,DhcpLease> currentLeaseMap = new ConcurrentHashMap<InetAddress,DhcpLease>();
 
     private final Logger logger = Logger.getLogger( this.getClass());
-    private final NatImpl transform;
-    private final MvvmLocalContext localContext;
+    private final NatImpl node;
+    private final UvmLocalContext localContext;
 
 
-    DhcpMonitor( NatImpl transform, MvvmLocalContext localContext )
+    DhcpMonitor( NatImpl node, UvmLocalContext localContext )
     {
-        this.transform = transform;
+        this.node = node;
         this.localContext = localContext;
     }
 
@@ -107,7 +107,7 @@ class DhcpMonitor implements Runnable
                 logger.info( "Interrupted: " );
             }
 
-            /* Check if the transform is still running */
+            /* Check if the node is still running */
             if ( !isAlive ) {
                 break;
             }
@@ -127,7 +127,7 @@ class DhcpMonitor implements Runnable
         logger.debug( "Finished" );
 
         /* Write an absolute lease map that is empty */
-        transform.log( new DhcpAbsoluteEvent());
+        node.log( new DhcpAbsoluteEvent());
     }
     
     /* ----------------- Package ----------------- */
@@ -208,7 +208,7 @@ class DhcpMonitor implements Runnable
             }
 
             /* Log the absolute event */
-            if ( isAbsolute ) transform.log( absoluteEvent );
+            if ( isAbsolute ) node.log( absoluteEvent );
         } catch ( FileNotFoundException ex ) {
             logger.info( "The file: " + DHCP_LEASES_FILE + " does not exist yet" );
         } catch ( Exception ex ) {
@@ -229,7 +229,7 @@ class DhcpMonitor implements Runnable
             }
 
             /* Log that an entry was deleted */
-            transform.log( new DhcpLeaseEvent( lease, DhcpLeaseEvent.RELEASE ));
+            node.log( new DhcpLeaseEvent( lease, DhcpLeaseEvent.RELEASE ));
         }
 
         /* Update the last time the file was modified */
@@ -321,7 +321,7 @@ class DhcpMonitor implements Runnable
                 logger.debug( "Logging new lease: " + ip.toString());
             }
 
-            transform.log( new DhcpLeaseEvent( lease, eventType ));
+            node.log( new DhcpLeaseEvent( lease, eventType ));
         } else {
             if ( lease.hasChanged( eol, mac, ip, host, now )) {
                 int eventType;
@@ -339,7 +339,7 @@ class DhcpMonitor implements Runnable
                 lease.set( eol, mac, ip, host, now );
 
                 logger.debug( "Logging updated lease: " + ip.toString());
-                transform.log( new DhcpLeaseEvent( lease, eventType ));
+                node.log( new DhcpLeaseEvent( lease, eventType ));
             } else {
                 logger.debug( "Lease hasn't changed: " + ip.toString());
             }

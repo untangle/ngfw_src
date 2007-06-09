@@ -6,16 +6,16 @@
  * Untangle, Inc. ("Confidential Information"). You shall
  * not disclose such Confidential Information.
  *
- * $Id: ClamPhishTransform.java 8965 2007-02-23 20:54:04Z cng $
+ * $Id: ClamPhishNode.java 8965 2007-02-23 20:54:04Z cng $
  */
 
-package com.untangle.tran.clamphish;
+package com.untangle.node.clamphish;
 
-import com.untangle.mvvm.logging.EventManager;
-import com.untangle.tran.http.UserWhitelistMode;
-import com.untangle.tran.spam.SpamTransform;
+import com.untangle.uvm.logging.EventManager;
+import com.untangle.node.http.UserWhitelistMode;
+import com.untangle.node.spam.SpamNode;
 
-public interface ClamPhish extends SpamTransform
+public interface ClamPhish extends SpamNode
 {
     EventManager<PhishHttpEvent> getPhishHttpEventManager();
 

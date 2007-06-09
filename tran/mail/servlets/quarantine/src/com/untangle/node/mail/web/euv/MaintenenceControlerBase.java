@@ -8,7 +8,7 @@
  *
  * $Id$
  */
-package com.untangle.tran.mail.web.euv;
+package com.untangle.node.mail.web.euv;
 
 import java.io.IOException;
 import java.util.HashSet;
@@ -17,31 +17,31 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.mvvm.MvvmLocalContext;
-import com.untangle.mvvm.addrbook.AddressBook;
-import com.untangle.mvvm.addrbook.UserEntry;
-import com.untangle.mvvm.portal.PortalLogin;
-import com.untangle.mvvm.portal.PortalUser;
-import com.untangle.tran.mail.papi.quarantine.BadTokenException;
-import com.untangle.tran.mail.papi.quarantine.InboxIndex;
-import com.untangle.tran.mail.papi.quarantine.InboxRecord;
-import com.untangle.tran.mail.papi.quarantine.NoSuchInboxException;
-import com.untangle.tran.mail.papi.quarantine.QuarantineUserActionFailedException;
-import com.untangle.tran.mail.papi.quarantine.QuarantineUserView;
-import com.untangle.tran.mail.papi.safelist.NoSuchSafelistException;
-import com.untangle.tran.mail.papi.safelist.SafelistActionFailedException;
-import com.untangle.tran.mail.papi.safelist.SafelistEndUserView;
-import com.untangle.tran.mail.web.euv.tags.CurrentAuthTokenTag;
-import com.untangle.tran.mail.web.euv.tags.CurrentEmailAddressTag;
-import com.untangle.tran.mail.web.euv.tags.IsReceivesRemapsTag;
-import com.untangle.tran.mail.web.euv.tags.IsRemappedTag;
-import com.untangle.tran.mail.web.euv.tags.MaxDaysIdleInboxTag;
-import com.untangle.tran.mail.web.euv.tags.MaxDaysToInternTag;
-import com.untangle.tran.mail.web.euv.tags.MessagesSetTag;
-import com.untangle.tran.mail.web.euv.tags.ReceivingRemapsListTag;
-import com.untangle.tran.mail.web.euv.tags.RemappedToTag;
-import com.untangle.tran.util.Pair;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.UvmLocalContext;
+import com.untangle.uvm.addrbook.AddressBook;
+import com.untangle.uvm.addrbook.UserEntry;
+import com.untangle.uvm.portal.PortalLogin;
+import com.untangle.uvm.portal.PortalUser;
+import com.untangle.node.mail.papi.quarantine.BadTokenException;
+import com.untangle.node.mail.papi.quarantine.InboxIndex;
+import com.untangle.node.mail.papi.quarantine.InboxRecord;
+import com.untangle.node.mail.papi.quarantine.NoSuchInboxException;
+import com.untangle.node.mail.papi.quarantine.QuarantineUserActionFailedException;
+import com.untangle.node.mail.papi.quarantine.QuarantineUserView;
+import com.untangle.node.mail.papi.safelist.NoSuchSafelistException;
+import com.untangle.node.mail.papi.safelist.SafelistActionFailedException;
+import com.untangle.node.mail.papi.safelist.SafelistEndUserView;
+import com.untangle.node.mail.web.euv.tags.CurrentAuthTokenTag;
+import com.untangle.node.mail.web.euv.tags.CurrentEmailAddressTag;
+import com.untangle.node.mail.web.euv.tags.IsReceivesRemapsTag;
+import com.untangle.node.mail.web.euv.tags.IsRemappedTag;
+import com.untangle.node.mail.web.euv.tags.MaxDaysIdleInboxTag;
+import com.untangle.node.mail.web.euv.tags.MaxDaysToInternTag;
+import com.untangle.node.mail.web.euv.tags.MessagesSetTag;
+import com.untangle.node.mail.web.euv.tags.ReceivingRemapsListTag;
+import com.untangle.node.mail.web.euv.tags.RemappedToTag;
+import com.untangle.node.util.Pair;
 
 /**
  * Base class for common controler functionality
@@ -95,7 +95,7 @@ public abstract class MaintenenceControlerBase extends HttpServlet {
             if (authTkn.equals("PU")) {
                 PortalLogin pl = (PortalLogin)req.getUserPrincipal();
                 if (null != pl) {
-                    MvvmLocalContext mctx = MvvmContextFactory.context();
+                    UvmLocalContext mctx = UvmContextFactory.context();
                     AddressBook ab = mctx.appAddressBook();
                     UserEntry ue = ab.getEntry(pl.getUser());
                     if (null != ue) {

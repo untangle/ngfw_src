@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.virus;
+package com.untangle.node.virus;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -18,34 +18,34 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 
-import com.untangle.mvvm.tapi.Pipeline;
-import com.untangle.mvvm.tapi.TCPSession;
-import com.untangle.mvvm.tapi.event.TCPStreamer;
-import com.untangle.mvvm.tran.Transform;
-import com.untangle.tran.ftp.FtpCommand;
-import com.untangle.tran.ftp.FtpFunction;
-import com.untangle.tran.ftp.FtpReply;
-import com.untangle.tran.ftp.FtpStateMachine;
-import com.untangle.tran.token.Chunk;
-import com.untangle.tran.token.EndMarker;
-import com.untangle.tran.token.FileChunkStreamer;
-import com.untangle.tran.token.Token;
-import com.untangle.tran.token.TokenException;
-import com.untangle.tran.token.TokenResult;
-import com.untangle.tran.token.TokenStreamer;
-import com.untangle.tran.token.TokenStreamerAdaptor;
-import com.untangle.tran.util.TempFileFactory;
+import com.untangle.uvm.tapi.Pipeline;
+import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.uvm.tapi.event.TCPStreamer;
+import com.untangle.uvm.node.Node;
+import com.untangle.node.ftp.FtpCommand;
+import com.untangle.node.ftp.FtpFunction;
+import com.untangle.node.ftp.FtpReply;
+import com.untangle.node.ftp.FtpStateMachine;
+import com.untangle.node.token.Chunk;
+import com.untangle.node.token.EndMarker;
+import com.untangle.node.token.FileChunkStreamer;
+import com.untangle.node.token.Token;
+import com.untangle.node.token.TokenException;
+import com.untangle.node.token.TokenResult;
+import com.untangle.node.token.TokenStreamer;
+import com.untangle.node.token.TokenStreamerAdaptor;
+import com.untangle.node.util.TempFileFactory;
 import org.apache.log4j.Logger;
 
 class VirusFtpHandler extends FtpStateMachine
 {
     /* XXX Should be from the same place as the HTTP constants */
-    private static final int SCAN_COUNTER  = Transform.GENERIC_0_COUNTER;
-    private static final int BLOCK_COUNTER = Transform.GENERIC_1_COUNTER;
-    private static final int PASS_COUNTER  = Transform.GENERIC_2_COUNTER;
+    private static final int SCAN_COUNTER  = Node.GENERIC_0_COUNTER;
+    private static final int BLOCK_COUNTER = Node.GENERIC_1_COUNTER;
+    private static final int PASS_COUNTER  = Node.GENERIC_2_COUNTER;
 
 
-    private final VirusTransformImpl transform;
+    private final VirusNodeImpl node;
     private final boolean scanClient;
     private final boolean scanServer;
 
@@ -59,13 +59,13 @@ class VirusFtpHandler extends FtpStateMachine
 
     // constructors -----------------------------------------------------------
 
-    VirusFtpHandler(TCPSession session, VirusTransformImpl transform)
+    VirusFtpHandler(TCPSession session, VirusNodeImpl node)
     {
         super(session);
 
-        this.transform = transform;
+        this.node = node;
 
-        VirusSettings vs = transform.getVirusSettings();
+        VirusSettings vs = node.getVirusSettings();
 
         if (!session.isInbound()) { // outgoing
             scanClient = vs.getFtpOutbound().getScan();
@@ -174,7 +174,7 @@ class VirusFtpHandler extends FtpStateMachine
     protected TokenResult doCommand(FtpCommand command) throws TokenException
     {
         if (FtpFunction.REST == command.getFunction()
-            && transform.getFtpDisableResume()) {
+            && node.getFtpDisableResume()) {
             FtpReply reply = FtpReply.makeReply(502, "Command not implemented.");
             return new TokenResult(new Token[] { reply }, null);
         } else {
@@ -186,7 +186,7 @@ class VirusFtpHandler extends FtpStateMachine
 
     private Chunk trickle(ByteBuffer b) throws TokenException
     {
-        int l = b.remaining() * transform.getTricklePercent() / 100;
+        int l = b.remaining() * node.getTricklePercent() / 100;
 
         try {
             while (b.hasRemaining()) {
@@ -212,8 +212,8 @@ class VirusFtpHandler extends FtpStateMachine
         VirusScannerResult result;
 
         try {
-            transform.incrementCount(SCAN_COUNTER);
-            result = transform.getScanner().scanFile(file);
+            node.incrementCount(SCAN_COUNTER);
+            result = node.getScanner().scanFile(file);
         } catch (Exception exn) {
             // Should never happen
             throw new TokenException("could not scan TokenException", exn);
@@ -221,16 +221,16 @@ class VirusFtpHandler extends FtpStateMachine
 
         /* XXX handle the case where result is null */
 
-        transform.log(new VirusLogEvent(getSession().pipelineEndpoints(), result, transform.getScanner().getVendorName()));
+        node.log(new VirusLogEvent(getSession().pipelineEndpoints(), result, node.getScanner().getVendorName()));
 
         if (result.isClean()) {
-            transform.incrementCount(PASS_COUNTER);
+            node.incrementCount(PASS_COUNTER);
             Pipeline p = getPipeline();
             TokenStreamer tokSt = new FileChunkStreamer
                 (file, inChannel, null, EndMarker.MARKER, true);
             return new TokenStreamerAdaptor(p, tokSt);
         } else {
-            transform.incrementCount(BLOCK_COUNTER);
+            node.incrementCount(BLOCK_COUNTER);
             // Todo: Quarantine (for now, don't delete the file) XXX
             TCPSession s = getSession();
             s.shutdownClient();

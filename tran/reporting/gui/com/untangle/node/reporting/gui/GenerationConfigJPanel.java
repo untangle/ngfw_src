@@ -9,14 +9,14 @@
  * $Id$
  */
 
-package com.untangle.tran.reporting.gui;
+package com.untangle.node.reporting.gui;
 
 import java.awt.*;
 import java.util.List;
 
-import com.untangle.gui.transform.*;
+import com.untangle.gui.node.*;
 import com.untangle.gui.util.Util;
-import com.untangle.tran.reporting.*;
+import com.untangle.node.reporting.*;
 
 public class GenerationConfigJPanel extends javax.swing.JPanel implements Savable<Object>, Refreshable<Object> {
 

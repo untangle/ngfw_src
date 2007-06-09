@@ -4,9 +4,9 @@ implDeps = []
 guiDeps = []
 
 %w(mail-casing ftp-casing http-casing).each do |c|
-  implDeps << BuildEnv::ALPINE[c]['localapi']
-  guiDeps << BuildEnv::ALPINE[c]['gui']
+  implDeps << BuildEnv::SRC[c]['localapi']
+  guiDeps << BuildEnv::SRC[c]['gui']
 end
 
-TransformBuilder.makeTransform(BuildEnv::ALPINE, 'kav', implDeps, guiDeps, [],
+NodeBuilder.makeNode(BuildEnv::SRC, 'kav', implDeps, guiDeps, [],
                                'virus')

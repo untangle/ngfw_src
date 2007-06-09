@@ -8,7 +8,7 @@
  * not disclose such Confidential Information.
  *
  */
-package com.untangle.tran.protofilter;
+package com.untangle.node.protofilter;
 
 import java.util.TreeMap;
 

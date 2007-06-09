@@ -1,6 +1,6 @@
 reports/VpnMaster.jasper:OpenVpn--Summary:Summary
 reports/VpnClientsLoggedInDetail.jasper:OpenVpn--User_Login_Events:User Login Events
 reports/VpnClientsDistributedDetail.jasper:OpenVpn--Client_Distribution_Events:Client Distribution Events
-com.untangle.tran.openvpn.reports.VpnSummarizer:summarizer:Summarizer
-com.untangle.tran.openvpn.reports.SummaryGraph:summaryGraph:OpenVpn--Summary_Graph
+com.untangle.node.openvpn.reports.VpnSummarizer:summarizer:Summarizer
+com.untangle.node.openvpn.reports.SummaryGraph:summaryGraph:OpenVpn--Summary_Graph
 reportTitlePrefix:parameter:none

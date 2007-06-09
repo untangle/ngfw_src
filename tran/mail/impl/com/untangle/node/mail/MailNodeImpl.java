@@ -9,57 +9,57 @@
  * $Id$
  */
 
-package com.untangle.tran.mail;
+package com.untangle.node.mail;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.mvvm.MvvmLocalContext;
-import com.untangle.mvvm.portal.Application;
-import com.untangle.mvvm.portal.LocalApplicationManager;
-import com.untangle.mvvm.portal.LocalPortalManager;
-import com.untangle.mvvm.tapi.AbstractTransform;
-import com.untangle.mvvm.tapi.CasingPipeSpec;
-import com.untangle.mvvm.tapi.Fitting;
-import com.untangle.mvvm.tapi.PipeSpec;
-import com.untangle.mvvm.tran.TransformException;
-import com.untangle.mvvm.util.TransactionWork;
-import com.untangle.tran.mail.impl.imap.ImapCasingFactory;
-import com.untangle.tran.mail.impl.quarantine.Quarantine;
-import com.untangle.tran.mail.impl.safelist.SafelistManager;
-import com.untangle.tran.mail.impl.smtp.SmtpCasingFactory;
-import com.untangle.tran.mail.papi.*;
-import com.untangle.tran.mail.papi.quarantine.BadTokenException;
-import com.untangle.tran.mail.papi.quarantine.Inbox;
-import com.untangle.tran.mail.papi.quarantine.InboxAlreadyRemappedException;
-import com.untangle.tran.mail.papi.quarantine.InboxIndex;
-import com.untangle.tran.mail.papi.quarantine.MailSummary;
-import com.untangle.tran.mail.papi.quarantine.NoSuchInboxException;
-import com.untangle.tran.mail.papi.quarantine.QuarantineMaintenenceView;
-import com.untangle.tran.mail.papi.quarantine.QuarantineSettings;
-import com.untangle.tran.mail.papi.quarantine.QuarantineTransformView;
-import com.untangle.tran.mail.papi.quarantine.QuarantineUserActionFailedException;
-import com.untangle.tran.mail.papi.quarantine.QuarantineUserView;
-import com.untangle.tran.mail.papi.safelist.NoSuchSafelistException;
-import com.untangle.tran.mail.papi.safelist.SafelistActionFailedException;
-import com.untangle.tran.mail.papi.safelist.SafelistAdminView;
-import com.untangle.tran.mail.papi.safelist.SafelistEndUserView;
-import com.untangle.tran.mail.papi.safelist.SafelistManipulation;
-import com.untangle.tran.mail.papi.safelist.SafelistSettings;
-import com.untangle.tran.mail.papi.safelist.SafelistTransformView;
-import com.untangle.tran.mime.EmailAddress;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.UvmLocalContext;
+import com.untangle.uvm.portal.Application;
+import com.untangle.uvm.portal.LocalApplicationManager;
+import com.untangle.uvm.portal.LocalPortalManager;
+import com.untangle.uvm.tapi.AbstractNode;
+import com.untangle.uvm.tapi.CasingPipeSpec;
+import com.untangle.uvm.tapi.Fitting;
+import com.untangle.uvm.tapi.PipeSpec;
+import com.untangle.uvm.node.NodeException;
+import com.untangle.uvm.util.TransactionWork;
+import com.untangle.node.mail.impl.imap.ImapCasingFactory;
+import com.untangle.node.mail.impl.quarantine.Quarantine;
+import com.untangle.node.mail.impl.safelist.SafelistManager;
+import com.untangle.node.mail.impl.smtp.SmtpCasingFactory;
+import com.untangle.node.mail.papi.*;
+import com.untangle.node.mail.papi.quarantine.BadTokenException;
+import com.untangle.node.mail.papi.quarantine.Inbox;
+import com.untangle.node.mail.papi.quarantine.InboxAlreadyRemappedException;
+import com.untangle.node.mail.papi.quarantine.InboxIndex;
+import com.untangle.node.mail.papi.quarantine.MailSummary;
+import com.untangle.node.mail.papi.quarantine.NoSuchInboxException;
+import com.untangle.node.mail.papi.quarantine.QuarantineMaintenenceView;
+import com.untangle.node.mail.papi.quarantine.QuarantineSettings;
+import com.untangle.node.mail.papi.quarantine.QuarantineNodeView;
+import com.untangle.node.mail.papi.quarantine.QuarantineUserActionFailedException;
+import com.untangle.node.mail.papi.quarantine.QuarantineUserView;
+import com.untangle.node.mail.papi.safelist.NoSuchSafelistException;
+import com.untangle.node.mail.papi.safelist.SafelistActionFailedException;
+import com.untangle.node.mail.papi.safelist.SafelistAdminView;
+import com.untangle.node.mail.papi.safelist.SafelistEndUserView;
+import com.untangle.node.mail.papi.safelist.SafelistManipulation;
+import com.untangle.node.mail.papi.safelist.SafelistSettings;
+import com.untangle.node.mail.papi.safelist.SafelistNodeView;
+import com.untangle.node.mime.EmailAddress;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
-public class MailTransformImpl extends AbstractTransform
-    implements MailTransform, MailExport
+public class MailNodeImpl extends AbstractNode
+    implements MailNode, MailExport
 {
     private static final String QUARANTINE_JS_URL = "/quarantine/app.js";
 
-    private final Logger logger = Logger.getLogger(MailTransformImpl.class);
+    private final Logger logger = Logger.getLogger(MailNodeImpl.class);
 
     private final CasingPipeSpec SMTP_PIPE_SPEC = new CasingPipeSpec
         ("smtp", this, SmtpCasingFactory.factory(),
@@ -76,17 +76,17 @@ public class MailTransformImpl extends AbstractTransform
 
     private Application quarantineApp;
 
-    private MailTransformSettings settings;
+    private MailNodeSettings settings;
     private static Quarantine s_quarantine;//This will never be null for *instances* of
-                                           //MailTransformImpl
+                                           //MailNodeImpl
     private static final long ONE_GB = (1024L * 1024L * 1024L);
 
     //HAck instances for RMI issues
     private QuarantineUserViewWrapper m_quv = new QuarantineUserViewWrapper();
     private QuarantineMaintenenceViewWrapper m_qmv = new QuarantineMaintenenceViewWrapper();
-    private QuarantineTransformViewWrapper m_qtv = new QuarantineTransformViewWrapper();
+    private QuarantineNodeViewWrapper m_qtv = new QuarantineNodeViewWrapper();
     private static SafelistManager s_safelistMngr;
-    private SafelistTransformViewWrapper m_stv = new SafelistTransformViewWrapper();
+    private SafelistNodeViewWrapper m_stv = new SafelistNodeViewWrapper();
     private SafelistEndUserViewWrapper m_suv = new SafelistEndUserViewWrapper();
     private SafelistAdminViewWrapper m_sav = new SafelistAdminViewWrapper();
     private static boolean s_deployedWebApp = false;
@@ -94,7 +94,7 @@ public class MailTransformImpl extends AbstractTransform
 
     // constructors -----------------------------------------------------------
 
-    public MailTransformImpl()
+    public MailNodeImpl()
     {
         logger.debug("<init>");
 
@@ -116,7 +116,7 @@ public class MailTransformImpl extends AbstractTransform
 
     private static synchronized void deployWebAppIfRequired(Logger logger) {
         if(!s_deployedWebApp) {
-            if(MvvmContextFactory.context().appServerManager().loadQuarantineApp("/quarantine", "quarantine")) {
+            if(UvmContextFactory.context().appServerManager().loadQuarantineApp("/quarantine", "quarantine")) {
                 logger.debug("Deployed Quarantine web app");
             }
             else {
@@ -128,7 +128,7 @@ public class MailTransformImpl extends AbstractTransform
 
     private static synchronized void unDeployWebAppIfRequired(Logger logger) {
         if(!s_unDeployedWebApp) {
-            if(MvvmContextFactory.context().appServerManager().unloadWebApp("/quarantine")) {
+            if(UvmContextFactory.context().appServerManager().unloadWebApp("/quarantine")) {
                 logger.debug("Unloaded Quarantine web app");
             }
             else {
@@ -139,7 +139,7 @@ public class MailTransformImpl extends AbstractTransform
     }
 
     private void registerApps() {
-        MvvmLocalContext mctx = MvvmContextFactory.context();
+        UvmLocalContext mctx = UvmContextFactory.context();
         LocalPortalManager lpm = mctx.portalManager();
         LocalApplicationManager lam = lpm.applicationManager();
         quarantineApp = lam.registerApplication("Quarantine",
@@ -150,33 +150,33 @@ public class MailTransformImpl extends AbstractTransform
     }
 
     private void deregisterApps() {
-        MvvmLocalContext mctx = MvvmContextFactory.context();
+        UvmLocalContext mctx = UvmContextFactory.context();
         LocalPortalManager lpm = mctx.portalManager();
         LocalApplicationManager lam = lpm.applicationManager();
         lam.deregisterApplication(quarantineApp);
     }
 
 
-    // MailTransform methods --------------------------------------------------
+    // MailNode methods --------------------------------------------------
 
-    public MailTransformSettings getMailTransformSettings()
+    public MailNodeSettings getMailNodeSettings()
     {
         return settings;
     }
 
-    public void setMailTransformSettings(final MailTransformSettings settings)
+    public void setMailNodeSettings(final MailNodeSettings settings)
     {
         TransactionWork tw = new TransactionWork()
             {
                 public boolean doWork(Session s)
                 {
-                    MailTransformImpl.this.settings = (MailTransformSettings)s.merge(settings);
+                    MailNodeImpl.this.settings = (MailNodeSettings)s.merge(settings);
                     return true;
                 }
 
                 public Object getResult() { return null; }
             };
-        getTransformContext().runTransaction(tw);
+        getNodeContext().runTransaction(tw);
 
         reconfigure();
 
@@ -219,16 +219,16 @@ public class MailTransformImpl extends AbstractTransform
 
     // MailExport methods -----------------------------------------------------
 
-    public MailTransformSettings getExportSettings()
+    public MailNodeSettings getExportSettings()
     {
-        return getMailTransformSettings();
+        return getMailNodeSettings();
     }
 
-    public QuarantineTransformView getQuarantineTransformView() {
+    public QuarantineNodeView getQuarantineNodeView() {
         return m_qtv;
     }
 
-    public SafelistTransformView getSafelistTransformView() {
+    public SafelistNodeView getSafelistNodeView() {
         return m_stv;
     }
 
@@ -245,10 +245,10 @@ public class MailTransformImpl extends AbstractTransform
         POP_PIPE_SPEC.setReleaseParseExceptions(true);
     }
 
-    // Transform methods ------------------------------------------------------
+    // Node methods ------------------------------------------------------
 
     @Override
-    protected void preDestroy() throws TransformException {
+    protected void preDestroy() throws NodeException {
         super.preDestroy();
         deregisterApps();
         logger.debug("preDestroy()");
@@ -264,13 +264,13 @@ public class MailTransformImpl extends AbstractTransform
                 public boolean doWork(Session s)
                 {
                     Query q = s.createQuery
-                        ("from MailTransformSettings ms");
-                    settings = (MailTransformSettings)q.uniqueResult();
+                        ("from MailNodeSettings ms");
+                    settings = (MailNodeSettings)q.uniqueResult();
 
                     boolean shouldSave = false;
 
                     if (null == settings) {
-                        settings = new MailTransformSettings();
+                        settings = new MailNodeSettings();
                         //Set the defaults
                         settings.setSmtpEnabled(true);
                         settings.setPopEnabled(true);
@@ -319,7 +319,7 @@ public class MailTransformImpl extends AbstractTransform
 
                 public Object getResult() { return null; }
             };
-        getTransformContext().runTransaction(tw);
+        getNodeContext().runTransaction(tw);
 
         logger.debug("Initialize SafeList/Quarantine...");
         s_quarantine.setSettings(this, settings.getQuarantineSettings());
@@ -336,7 +336,7 @@ public class MailTransformImpl extends AbstractTransform
         registerApps();
     }
 
-    // AbstractTransform methods ----------------------------------------------
+    // AbstractNode methods ----------------------------------------------
 
     @Override
     protected PipeSpec[] getPipeSpecs()
@@ -348,12 +348,12 @@ public class MailTransformImpl extends AbstractTransform
 
     public Object getSettings()
     {
-        return getMailTransformSettings();
+        return getMailNodeSettings();
     }
 
     public void setSettings(Object settings)
     {
-        setMailTransformSettings((MailTransformSettings)settings);
+        setMailNodeSettings((MailNodeSettings)settings);
     }
 
 
@@ -448,8 +448,8 @@ public class MailTransformImpl extends AbstractTransform
         }
     }
 
-    class QuarantineTransformViewWrapper
-        implements QuarantineTransformView {
+    class QuarantineNodeViewWrapper
+        implements QuarantineNodeView {
         public boolean quarantineMail(File file,
                                       MailSummary summary,
                                       EmailAddress...recipients) {
@@ -457,8 +457,8 @@ public class MailTransformImpl extends AbstractTransform
         }
     }
 
-    class SafelistTransformViewWrapper
-        implements SafelistTransformView {
+    class SafelistNodeViewWrapper
+        implements SafelistNodeView {
         public boolean isSafelisted(EmailAddress envelopeSender,
                                     EmailAddress mimeFrom,
                                     List<EmailAddress> recipients) {

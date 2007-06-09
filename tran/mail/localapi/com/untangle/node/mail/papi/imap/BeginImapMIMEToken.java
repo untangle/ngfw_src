@@ -9,12 +9,12 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.papi.imap;
+package com.untangle.node.mail.papi.imap;
 
-import com.untangle.mvvm.tapi.event.TCPStreamer;
-import com.untangle.tran.mail.papi.BeginMIMEToken;
-import com.untangle.tran.mail.papi.MIMEAccumulator;
-import com.untangle.tran.mail.papi.MessageInfo;
+import com.untangle.uvm.tapi.event.TCPStreamer;
+import com.untangle.node.mail.papi.BeginMIMEToken;
+import com.untangle.node.mail.papi.MIMEAccumulator;
+import com.untangle.node.mail.papi.MessageInfo;
 
 
 /**

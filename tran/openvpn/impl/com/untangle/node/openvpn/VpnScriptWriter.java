@@ -8,13 +8,13 @@
  *
  * $Id$
  */
-package com.untangle.tran.openvpn;
+package com.untangle.node.openvpn;
 
-import com.untangle.mvvm.tran.script.ScriptWriter;
+import com.untangle.uvm.node.script.ScriptWriter;
 import org.apache.log4j.Logger;
 
-import static com.untangle.mvvm.tran.script.ScriptWriter.COMMENT;
-import static com.untangle.mvvm.tran.script.ScriptWriter.METAVIZE_HEADER;
+import static com.untangle.uvm.node.script.ScriptWriter.COMMENT;
+import static com.untangle.uvm.node.script.ScriptWriter.METAVIZE_HEADER;
 
 
 class VpnScriptWriter extends ScriptWriter

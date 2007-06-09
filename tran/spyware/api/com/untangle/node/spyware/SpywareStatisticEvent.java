@@ -9,16 +9,16 @@
  * $Id$
  */
 
-package com.untangle.tran.spyware;
+package com.untangle.node.spyware;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import com.untangle.mvvm.logging.StatisticEvent;
-import com.untangle.mvvm.logging.SyslogBuilder;
-import com.untangle.mvvm.logging.SyslogPriority;
+import com.untangle.uvm.logging.StatisticEvent;
+import com.untangle.uvm.logging.SyslogBuilder;
+import com.untangle.uvm.logging.SyslogPriority;
 
 /**
  * Log event for a Spyware statistics.

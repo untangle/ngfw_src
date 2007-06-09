@@ -9,13 +9,13 @@
  * $Id$
  */
 
-package com.untangle.tran.httpblocker.gui;
+package com.untangle.node.httpblocker.gui;
 
 import javax.swing.JTabbedPane;
 
-import com.untangle.gui.transform.*;
+import com.untangle.gui.node.*;
 
-public class MTransformControlsJPanel extends com.untangle.gui.transform.MTransformControlsJPanel{
+public class MNodeControlsJPanel extends com.untangle.gui.node.MNodeControlsJPanel{
 
     private static final String NAME_PASS = "Pass Lists";
     private static final String NAME_PASS_CLIENTS = "Clients";
@@ -28,8 +28,8 @@ public class MTransformControlsJPanel extends com.untangle.gui.transform.MTransf
     private static final String NAME_LOG = "Event Log";
 
 
-    public MTransformControlsJPanel(MTransformJPanel mTransformJPanel){
-        super(mTransformJPanel);
+    public MNodeControlsJPanel(MNodeJPanel mNodeJPanel){
+        super(mNodeJPanel);
     }
 
     public void generateGui(){
@@ -82,7 +82,7 @@ public class MTransformControlsJPanel extends com.untangle.gui.transform.MTransf
         passedClientsConfigJPanel.setSettingsChangedListener(this);
 
         // EVENT LOG ///////
-        LogJPanel logJPanel = new LogJPanel(mTransformJPanel.getTransform(), this);
+        LogJPanel logJPanel = new LogJPanel(mNodeJPanel.getNode(), this);
         addTab(NAME_LOG, null, logJPanel);
         addShutdownable(NAME_LOG, logJPanel);
     }

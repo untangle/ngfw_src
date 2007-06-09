@@ -10,22 +10,22 @@
  */
 
 
-package com.untangle.tran.spamassassin.gui;
+package com.untangle.node.spamassassin.gui;
 
-import com.untangle.gui.transform.*;
+import com.untangle.gui.node.*;
 import com.untangle.gui.pipeline.MPipelineJPanel;
 
-import com.untangle.mvvm.*;
-import com.untangle.mvvm.tran.*;
+import com.untangle.uvm.*;
+import com.untangle.uvm.node.*;
 
 
 import javax.swing.JTabbedPane;
 import javax.swing.border.EmptyBorder;
 
-public class MTransformControlsJPanel extends com.untangle.tran.spam.gui.MTransformControlsJPanel{
+public class MNodeControlsJPanel extends com.untangle.node.spam.gui.MNodeControlsJPanel{
         
-    public MTransformControlsJPanel(MTransformJPanel mTransformJPanel) {
-        super(mTransformJPanel);
+    public MNodeControlsJPanel(MNodeJPanel mNodeJPanel) {
+        super(mNodeJPanel);
     }
 
 }

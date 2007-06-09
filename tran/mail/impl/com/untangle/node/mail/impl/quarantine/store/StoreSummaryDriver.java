@@ -9,13 +9,13 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.impl.quarantine.store;
+package com.untangle.node.mail.impl.quarantine.store;
 
 import java.io.*;
 import java.util.*;
 
-import com.untangle.tran.util.IOUtil;
-import com.untangle.tran.util.Pair;
+import com.untangle.node.util.IOUtil;
+import com.untangle.node.util.Pair;
 import org.apache.log4j.Logger;
 
 

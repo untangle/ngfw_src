@@ -11,22 +11,22 @@
 
 
 
-package com.untangle.tran.reporting.gui;
+package com.untangle.node.reporting.gui;
 
 
-import com.untangle.gui.transform.*;
+import com.untangle.gui.node.*;
 
 
 
-public class MTransformControlsJPanel extends com.untangle.gui.transform.MTransformControlsJPanel{
+public class MNodeControlsJPanel extends com.untangle.gui.node.MNodeControlsJPanel{
 
     private static final String NAME_DIRECTORY = "IP Address to User Map";
     private static final String NAME_EMAIL_RECIPIENTS = "Recipients";
     private static final String NAME_VIEW = "View Reports";
     private static final String NAME_GENERATION_OPTIONS = "Generation Settings";
 
-    public MTransformControlsJPanel(MTransformJPanel mTransformJPanel) {
-        super(mTransformJPanel);
+    public MNodeControlsJPanel(MNodeJPanel mNodeJPanel) {
+        super(mNodeJPanel);
     }
 
     public void generateGui(){

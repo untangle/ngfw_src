@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.papi.quarantine;
+package com.untangle.node.mail.papi.quarantine;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -25,8 +25,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import com.untangle.tran.mail.papi.EmailAddressPairRule;
-import com.untangle.tran.mail.papi.EmailAddressRule;
+import com.untangle.node.mail.papi.EmailAddressPairRule;
+import com.untangle.node.mail.papi.EmailAddressRule;
 import org.apache.log4j.Logger;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.IndexColumn;

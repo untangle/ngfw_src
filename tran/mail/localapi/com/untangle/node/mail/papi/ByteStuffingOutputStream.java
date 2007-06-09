@@ -9,14 +9,14 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.papi;
+package com.untangle.node.mail.papi;
 import java.io.*;
-import static com.untangle.tran.util.Ascii.*;
+import static com.untangle.node.util.Ascii.*;
 
 /**
  * Output stream which performs "byte stuffing", the
  * process whereby RFC822 messages with body lines
- * starting with "." are transformed to ".."
+ * starting with "." are nodeed to ".."
  */
 public class ByteStuffingOutputStream
     extends FilterOutputStream {

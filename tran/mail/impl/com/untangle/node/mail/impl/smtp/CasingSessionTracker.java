@@ -9,11 +9,11 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.impl.smtp;
+package com.untangle.node.mail.impl.smtp;
 import java.util.*;
 
-import com.untangle.tran.mail.papi.smtp.*;
-import com.untangle.tran.mime.*;
+import com.untangle.node.mail.papi.smtp.*;
+import com.untangle.node.mime.*;
 import org.apache.log4j.Logger;
 
 

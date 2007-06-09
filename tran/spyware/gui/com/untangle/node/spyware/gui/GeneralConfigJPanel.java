@@ -11,7 +11,7 @@
 
 
 
-package com.untangle.tran.spyware.gui;
+package com.untangle.node.spyware.gui;
 
 import java.awt.*;
 import java.util.Vector;
@@ -19,11 +19,11 @@ import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.table.*;
 
-import com.untangle.gui.transform.*;
+import com.untangle.gui.node.*;
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.editTable.*;
-import com.untangle.tran.http.UserWhitelistMode;
-import com.untangle.tran.spyware.*;
+import com.untangle.node.http.UserWhitelistMode;
+import com.untangle.node.spyware.*;
 
 
 public class GeneralConfigJPanel extends MEditTableJPanel {

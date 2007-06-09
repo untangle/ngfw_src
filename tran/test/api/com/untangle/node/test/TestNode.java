@@ -9,11 +9,11 @@
  * $Id$
  */
 
-package com.untangle.tran.test;
+package com.untangle.node.test;
 
-import com.untangle.mvvm.tran.Transform;
+import com.untangle.uvm.node.Node;
 
-public interface TestTransform extends Transform
+public interface TestNode extends Node
 {
     public void setTestSettings(TestSettings settings);
     public TestSettings getTestSettings();

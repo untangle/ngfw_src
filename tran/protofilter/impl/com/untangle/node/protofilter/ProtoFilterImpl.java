@@ -8,7 +8,7 @@
  *
  * $Id$
  */
-package com.untangle.tran.protofilter;
+package com.untangle.node.protofilter;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -16,24 +16,24 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.TreeMap;
 
-import com.untangle.mvvm.logging.EventLogger;
-import com.untangle.mvvm.logging.EventLoggerFactory;
-import com.untangle.mvvm.logging.EventManager;
-import com.untangle.mvvm.logging.SimpleEventFilter;
-import com.untangle.mvvm.tapi.AbstractTransform;
-import com.untangle.mvvm.tapi.Affinity;
-import com.untangle.mvvm.tapi.Fitting;
-import com.untangle.mvvm.tapi.PipeSpec;
-import com.untangle.mvvm.tapi.SoloPipeSpec;
-import com.untangle.mvvm.tran.TransformContext;
-import com.untangle.mvvm.tran.TransformException;
-import com.untangle.mvvm.tran.TransformStartException;
-import com.untangle.mvvm.util.TransactionWork;
+import com.untangle.uvm.logging.EventLogger;
+import com.untangle.uvm.logging.EventLoggerFactory;
+import com.untangle.uvm.logging.EventManager;
+import com.untangle.uvm.logging.SimpleEventFilter;
+import com.untangle.uvm.tapi.AbstractNode;
+import com.untangle.uvm.tapi.Affinity;
+import com.untangle.uvm.tapi.Fitting;
+import com.untangle.uvm.tapi.PipeSpec;
+import com.untangle.uvm.tapi.SoloPipeSpec;
+import com.untangle.uvm.node.NodeContext;
+import com.untangle.uvm.node.NodeException;
+import com.untangle.uvm.node.NodeStartException;
+import com.untangle.uvm.util.TransactionWork;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
-public class ProtoFilterImpl extends AbstractTransform implements ProtoFilter
+public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
 {
     private final EventHandler handler = new EventHandler( this );
 
@@ -52,7 +52,7 @@ public class ProtoFilterImpl extends AbstractTransform implements ProtoFilter
 
     public ProtoFilterImpl()
     {
-        TransformContext tctx = getTransformContext();
+        NodeContext tctx = getNodeContext();
         eventLogger = EventLoggerFactory.factory().getEventLogger(tctx);
 
         SimpleEventFilter ef = new ProtoFilterAllFilter();
@@ -66,7 +66,7 @@ public class ProtoFilterImpl extends AbstractTransform implements ProtoFilter
     public ProtoFilterSettings getProtoFilterSettings()
     {
         if( this.cachedSettings == null )
-            logger.error("Settings not yet initialized. State: " + getTransformContext().getRunState() );
+            logger.error("Settings not yet initialized. State: " + getNodeContext().getRunState() );
         return this.cachedSettings;
     }
 
@@ -83,12 +83,12 @@ public class ProtoFilterImpl extends AbstractTransform implements ProtoFilter
 
                 public Object getResult() { return null; }
             };
-        getTransformContext().runTransaction(tw);
+        getNodeContext().runTransaction(tw);
 
         try {
             reconfigure();
         }
-        catch (TransformException exn) {
+        catch (NodeException exn) {
             logger.error("Could not save ProtoFilter settings", exn);
         }
     }
@@ -98,7 +98,7 @@ public class ProtoFilterImpl extends AbstractTransform implements ProtoFilter
         return eventLogger;
     }
 
-    // AbstractTransform methods ----------------------------------------------
+    // AbstractNode methods ----------------------------------------------
 
     @Override
     protected PipeSpec[] getPipeSpecs()
@@ -106,7 +106,7 @@ public class ProtoFilterImpl extends AbstractTransform implements ProtoFilter
         return pipeSpecs;
     }
 
-    // Transform methods ------------------------------------------------------
+    // Node methods ------------------------------------------------------
 
     /*
      * First time initialization
@@ -142,28 +142,28 @@ public class ProtoFilterImpl extends AbstractTransform implements ProtoFilter
 
                 public Object getResult() { return null; }
             };
-        getTransformContext().runTransaction(tw);
+        getNodeContext().runTransaction(tw);
 
         updateToCurrent();
     }
 
-    protected void preStart() throws TransformStartException
+    protected void preStart() throws NodeStartException
     {
         try {
             reconfigure();
         } catch (Exception e) {
-            throw new TransformStartException(e);
+            throw new NodeStartException(e);
         }
     }
 
-    private void reconfigure() throws TransformException
+    private void reconfigure() throws NodeException
     {
         ArrayList enabledPatternsList = new ArrayList();
 
         logger.info("Reconfigure()");
 
         if (cachedSettings == null) {
-            throw new TransformException("Failed to get ProtoFilter settings: " + cachedSettings);
+            throw new NodeException("Failed to get ProtoFilter settings: " + cachedSettings);
         }
 
         List curPatterns = cachedSettings.getPatterns();

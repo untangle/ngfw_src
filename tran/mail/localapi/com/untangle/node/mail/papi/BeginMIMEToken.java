@@ -9,12 +9,12 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.papi;
+package com.untangle.node.mail.papi;
 
 import java.nio.ByteBuffer;
 
-import com.untangle.mvvm.tapi.event.TCPStreamer;
-import com.untangle.tran.token.MetadataToken;
+import com.untangle.uvm.tapi.event.TCPStreamer;
+import com.untangle.node.token.MetadataToken;
 import org.apache.log4j.Logger;
 
 
@@ -23,8 +23,8 @@ import org.apache.log4j.Logger;
  * of a MIME message.  The {@link #getMIMEAccumulator MIMEAccumulator}
  * member may have only header bytes, or the entire message.  Note, however,
  * that receivers of a BeginMIMEToken should <b>not</b> consider the message
- * complete until receiving a {@link com.untangle.tran.mail.papi.ContinuedMIMEToken ContinuedMIMEToken}
- * with its {@link com.untangle.tran.mail.papi.ContinuedMIMEToken#isLast last}
+ * complete until receiving a {@link com.untangle.node.mail.papi.ContinuedMIMEToken ContinuedMIMEToken}
+ * with its {@link com.untangle.node.mail.papi.ContinuedMIMEToken#isLast last}
  * property set to true.
  *
  */

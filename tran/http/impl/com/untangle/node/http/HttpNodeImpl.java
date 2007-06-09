@@ -9,24 +9,24 @@
  * $Id$
  */
 
-package com.untangle.tran.http;
+package com.untangle.node.http;
 
-import com.untangle.mvvm.logging.EventLogger;
-import com.untangle.mvvm.logging.EventLoggerFactory;
-import com.untangle.mvvm.logging.LogEvent;
-import com.untangle.mvvm.tapi.AbstractTransform;
-import com.untangle.mvvm.tapi.CasingPipeSpec;
-import com.untangle.mvvm.tapi.Fitting;
-import com.untangle.mvvm.tapi.PipeSpec;
-import com.untangle.mvvm.util.TransactionWork;
+import com.untangle.uvm.logging.EventLogger;
+import com.untangle.uvm.logging.EventLoggerFactory;
+import com.untangle.uvm.logging.LogEvent;
+import com.untangle.uvm.tapi.AbstractNode;
+import com.untangle.uvm.tapi.CasingPipeSpec;
+import com.untangle.uvm.tapi.Fitting;
+import com.untangle.uvm.tapi.PipeSpec;
+import com.untangle.uvm.util.TransactionWork;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
-public class HttpTransformImpl extends AbstractTransform
-    implements HttpTransform
+public class HttpNodeImpl extends AbstractNode
+    implements HttpNode
 {
-    private final Logger logger = Logger.getLogger(HttpTransformImpl.class);
+    private final Logger logger = Logger.getLogger(HttpNodeImpl.class);
 
     private final CasingPipeSpec pipeSpec = new CasingPipeSpec
         ("http", this, new HttpCasingFactory(this),
@@ -39,12 +39,12 @@ public class HttpTransformImpl extends AbstractTransform
 
     // constructors -----------------------------------------------------------
 
-    public HttpTransformImpl()
+    public HttpNodeImpl()
     {
-        this.eventLogger = EventLoggerFactory.factory().getEventLogger(getTransformContext());
+        this.eventLogger = EventLoggerFactory.factory().getEventLogger(getNodeContext());
     }
 
-    // HttpTransform methods --------------------------------------------------
+    // HttpNode methods --------------------------------------------------
 
     public HttpSettings getHttpSettings()
     {
@@ -58,13 +58,13 @@ public class HttpTransformImpl extends AbstractTransform
                 public boolean doWork(Session s)
                 {
                     s.merge(settings);
-                    HttpTransformImpl.this.settings = settings;
+                    HttpNodeImpl.this.settings = settings;
                     return true;
                 }
 
                 public Object getResult() { return null; }
             };
-        getTransformContext().runTransaction(tw);
+        getNodeContext().runTransaction(tw);
 
         reconfigure();
     }
@@ -77,7 +77,7 @@ public class HttpTransformImpl extends AbstractTransform
         }
     }
 
-    // Transform methods ------------------------------------------------------
+    // Node methods ------------------------------------------------------
 
     protected void postInit(String[] args)
     {
@@ -99,10 +99,10 @@ public class HttpTransformImpl extends AbstractTransform
 
                 public Object getResult() { return null; }
             };
-        getTransformContext().runTransaction(tw);
+        getNodeContext().runTransaction(tw);
     }
 
-    // AbstractTransform methods ----------------------------------------------
+    // AbstractNode methods ----------------------------------------------
 
     @Override
     protected PipeSpec[] getPipeSpecs()

@@ -11,10 +11,10 @@ not disclose such Confidential Information.
 $Id$
 -->
 
-<mvvm-transform>
-  <transform-desc name="firewall-transform"
+<uvm-node>
+  <node-desc name="firewall-node"
                   display-name="Firewall"
-                  classname="com.untangle.tran.firewall.FirewallImpl"
-                  gui-classname="com.untangle.tran.firewall.gui.MTransformJPanel"
+                  classname="com.untangle.node.firewall.FirewallImpl"
+                  gui-classname="com.untangle.node.firewall.gui.MNodeJPanel"
 	          single-instance="true"/>
-</mvvm-transform>
+</uvm-node>

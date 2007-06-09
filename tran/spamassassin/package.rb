@@ -1,5 +1,5 @@
 # -*-ruby-*-
 
-mail = BuildEnv::ALPINE['mail-casing']
+mail = BuildEnv::SRC['mail-casing']
 
-TransformBuilder.makeTransform(BuildEnv::ALPINE, 'spamassassin', [mail['localapi']], [ mail['gui']], [], 'spam')
+NodeBuilder.makeNode(BuildEnv::SRC, 'spamassassin', [mail['localapi']], [ mail['gui']], [], 'spam')

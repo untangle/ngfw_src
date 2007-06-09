@@ -9,10 +9,10 @@
  * $Id$
  */
 
-package com.untangle.tran.protofilter;
+package com.untangle.node.protofilter;
 
-import com.untangle.mvvm.logging.RepositoryDesc;
-import com.untangle.mvvm.logging.SimpleEventFilter;
+import com.untangle.uvm.logging.RepositoryDesc;
+import com.untangle.uvm.logging.SimpleEventFilter;
 
 public class ProtoFilterAllFilter implements SimpleEventFilter<ProtoFilterLogEvent>
 {

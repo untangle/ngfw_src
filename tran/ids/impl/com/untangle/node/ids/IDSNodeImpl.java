@@ -9,31 +9,31 @@
  * $Id$
  */
 
-package com.untangle.tran.ids;
+package com.untangle.node.ids;
 
 import java.io.*;
 import java.nio.*;
 import java.nio.channels.*;
 import java.util.List;
 
-import com.untangle.mvvm.logging.EventLogger;
-import com.untangle.mvvm.logging.EventLoggerFactory;
-import com.untangle.mvvm.logging.EventManager;
-import com.untangle.mvvm.logging.SimpleEventFilter;
-import com.untangle.mvvm.tapi.AbstractTransform;
-import com.untangle.mvvm.tapi.Affinity;
-import com.untangle.mvvm.tapi.Fitting;
-import com.untangle.mvvm.tapi.PipeSpec;
-import com.untangle.mvvm.tapi.SoloPipeSpec;
-import com.untangle.mvvm.tran.TransformException;
-import com.untangle.mvvm.tran.TransformStartException;
-import com.untangle.mvvm.util.TransactionWork;
-import com.untangle.tran.token.TokenAdaptor;
+import com.untangle.uvm.logging.EventLogger;
+import com.untangle.uvm.logging.EventLoggerFactory;
+import com.untangle.uvm.logging.EventManager;
+import com.untangle.uvm.logging.SimpleEventFilter;
+import com.untangle.uvm.tapi.AbstractNode;
+import com.untangle.uvm.tapi.Affinity;
+import com.untangle.uvm.tapi.Fitting;
+import com.untangle.uvm.tapi.PipeSpec;
+import com.untangle.uvm.tapi.SoloPipeSpec;
+import com.untangle.uvm.node.NodeException;
+import com.untangle.uvm.node.NodeStartException;
+import com.untangle.uvm.util.TransactionWork;
+import com.untangle.node.token.TokenAdaptor;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
-public class IDSTransformImpl extends AbstractTransform implements IDSTransform {
+public class IDSNodeImpl extends AbstractNode implements IDSNode {
     private final Logger logger = Logger.getLogger(getClass());
 
     private static final boolean DO_TEST = false;
@@ -49,16 +49,16 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
 
     private IDSDetectionEngine engine;
 
-    public IDSTransformImpl() {
+    public IDSNodeImpl() {
         engine = new IDSDetectionEngine(this);
         handler = new EventHandler(this);
-        statisticManager = new IDSStatisticManager(getTransformContext());
+        statisticManager = new IDSStatisticManager(getNodeContext());
         // Put the octet stream close to the server so that it is after the http processing.
         octetPipeSpec = new SoloPipeSpec("ids-octet", this, handler,Fitting.OCTET_STREAM, Affinity.SERVER,10);
         httpPipeSpec = new SoloPipeSpec("ids-http", this, new TokenAdaptor(this, new IDSHttpFactory(this)), Fitting.HTTP_TOKENS, Affinity.SERVER,0);
         pipeSpecs = new PipeSpec[] { httpPipeSpec, octetPipeSpec };
 
-        eventLogger = EventLoggerFactory.factory().getEventLogger(getTransformContext());
+        eventLogger = EventLoggerFactory.factory().getEventLogger(getNodeContext());
 
         SimpleEventFilter<IDSLogEvent> ef = new IDSLogFilter();
         eventLogger.addSimpleEventFilter(ef);
@@ -77,7 +77,7 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
 
     public IDSSettings getIDSSettings() {
         if( this.settings == null )
-            logger.error("Settings not yet initialized. State: " + getTransformContext().getRunState() );
+            logger.error("Settings not yet initialized. State: " + getNodeContext().getRunState() );
         return this.settings;
     }
 
@@ -87,18 +87,18 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
                 public boolean doWork(Session s)
                 {
                     s.merge(settings);
-                    IDSTransformImpl.this.settings = settings;
+                    IDSNodeImpl.this.settings = settings;
                     return true;
                 }
 
                 public Object getResult() { return null; }
             };
-        getTransformContext().runTransaction(tw);
+        getNodeContext().runTransaction(tw);
 
         try {
             reconfigure();
         }
-        catch (TransformException exn) {
+        catch (NodeException exn) {
             logger.error("Could not save IDS settings", exn);
         }
     }
@@ -135,21 +135,21 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
                 {
                     Query q = s.createQuery("from IDSSettings ids where ids.tid = :tid");
                     q.setParameter("tid", getTid());
-                    IDSTransformImpl.this.settings = (IDSSettings)q.uniqueResult();
+                    IDSNodeImpl.this.settings = (IDSSettings)q.uniqueResult();
                     return true;
                 }
 
                 public Object getResult() { return null; }
             };
-        getTransformContext().runTransaction(tw);
+        getNodeContext().runTransaction(tw);
     }
 
-    protected void postInit(String args[]) throws TransformException {
+    protected void postInit(String args[]) throws NodeException {
         logger.info("Post init");
         queryDBForSettings();
 
         // Upgrade to 3.2 will have nuked the settings.  Recreate them
-        if (IDSTransformImpl.this.settings == null) {
+        if (IDSNodeImpl.this.settings == null) {
             logger.warn("No settings found.  Creating anew.");
             initializeSettings();
         }
@@ -158,13 +158,13 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
 
     }
 
-    protected void preStart() throws TransformStartException {
+    protected void preStart() throws NodeStartException {
         logger.info("Pre Start");
         if (DO_TEST) {
             logger.error("Running test...");
             IDSTest test = new IDSTest();
             if(!test.runTest())
-                throw new TransformStartException("IDS Test failed"); // */
+                throw new NodeStartException("IDS Test failed"); // */
         }
 
         statisticManager.start();
@@ -179,7 +179,7 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
         engine.stop();
     }
 
-    private void reconfigure() throws TransformException {
+    private void reconfigure() throws NodeException {
         engine.setSettings(settings);
         engine.onReconfigure();
         engine.setMaxChunks(settings.getMaxChunks());

@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.papi;
+package com.untangle.node.mail.papi;
 
 import java.io.Serializable;
 import java.util.List;
@@ -25,8 +25,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import com.untangle.tran.mail.papi.quarantine.QuarantineSettings;
-import com.untangle.tran.mail.papi.safelist.SafelistSettings;
+import com.untangle.node.mail.papi.quarantine.QuarantineSettings;
+import com.untangle.node.mail.papi.safelist.SafelistSettings;
 import org.hibernate.annotations.IndexColumn;
 
 /**
@@ -37,7 +37,7 @@ import org.hibernate.annotations.IndexColumn;
  */
 @Entity
 @Table(name="tr_mail_settings", schema="settings")
-public class MailTransformSettings implements Serializable
+public class MailNodeSettings implements Serializable
 {
     private static final long serialVersionUID = -6466793822226799781L;
 
@@ -61,7 +61,7 @@ public class MailTransformSettings implements Serializable
 
     // constructors -----------------------------------------------------------
 
-    public MailTransformSettings() { }
+    public MailNodeSettings() { }
 
     // accessors --------------------------------------------------------------
 

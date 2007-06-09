@@ -9,10 +9,10 @@
  * $Id$
  */
 
-package com.untangle.tran.spamassassin;
+package com.untangle.node.spamassassin;
 
-import com.untangle.tran.spam.SpamScanner;
-import com.untangle.tran.spam.SpamReport;
+import com.untangle.node.spam.SpamScanner;
+import com.untangle.node.spam.SpamReport;
 
 import java.io.File;
 

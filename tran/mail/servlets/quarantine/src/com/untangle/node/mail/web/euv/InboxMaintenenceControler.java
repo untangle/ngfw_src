@@ -8,25 +8,25 @@
  *
  * $Id$
  */
-package com.untangle.tran.mail.web.euv;
+package com.untangle.node.mail.web.euv;
 
 import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.untangle.tran.mail.papi.quarantine.InboxIndex;
-import com.untangle.tran.mail.papi.quarantine.InboxRecordComparator;
-import com.untangle.tran.mail.papi.quarantine.InboxRecordCursor;
-import com.untangle.tran.mail.papi.quarantine.NoSuchInboxException;
-import com.untangle.tran.mail.papi.quarantine.QuarantineUserActionFailedException;
-import com.untangle.tran.mail.papi.quarantine.QuarantineUserView;
-import com.untangle.tran.mail.papi.safelist.SafelistEndUserView;
-import com.untangle.tran.mail.web.euv.tags.HasSafelistTag;
-import com.untangle.tran.mail.web.euv.tags.InboxIndexTag;
-import com.untangle.tran.mail.web.euv.tags.MessagesSetTag;
-import com.untangle.tran.mail.web.euv.tags.PagnationPropertiesTag;
-import com.untangle.tran.util.Pair;
+import com.untangle.node.mail.papi.quarantine.InboxIndex;
+import com.untangle.node.mail.papi.quarantine.InboxRecordComparator;
+import com.untangle.node.mail.papi.quarantine.InboxRecordCursor;
+import com.untangle.node.mail.papi.quarantine.NoSuchInboxException;
+import com.untangle.node.mail.papi.quarantine.QuarantineUserActionFailedException;
+import com.untangle.node.mail.papi.quarantine.QuarantineUserView;
+import com.untangle.node.mail.papi.safelist.SafelistEndUserView;
+import com.untangle.node.mail.web.euv.tags.HasSafelistTag;
+import com.untangle.node.mail.web.euv.tags.InboxIndexTag;
+import com.untangle.node.mail.web.euv.tags.MessagesSetTag;
+import com.untangle.node.mail.web.euv.tags.PagnationPropertiesTag;
+import com.untangle.node.util.Pair;
 
 /**
  * Controler used for inbox maintenence (purge/rescue/refresh/view).

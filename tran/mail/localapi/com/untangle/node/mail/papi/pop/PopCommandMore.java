@@ -9,13 +9,13 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.papi.pop;
+package com.untangle.node.mail.papi.pop;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-import com.untangle.tran.token.Token;
-import com.untangle.tran.util.AsciiCharBuffer;
+import com.untangle.node.token.Token;
+import com.untangle.node.util.AsciiCharBuffer;
 import org.apache.log4j.Logger;
 import sun.misc.BASE64Decoder;
 

@@ -9,17 +9,17 @@
  * $Id$
  */
 
-package com.untangle.tran.spyware;
+package com.untangle.node.spyware;
 
-import com.untangle.mvvm.logging.EventManager;
-import com.untangle.mvvm.tran.Transform;
-import com.untangle.tran.http.UserWhitelistMode;
+import com.untangle.uvm.logging.EventManager;
+import com.untangle.uvm.node.Node;
+import com.untangle.node.http.UserWhitelistMode;
 
-public interface Spyware extends Transform
+public interface Spyware extends Node
 {
-    static final int SCAN = Transform.GENERIC_0_COUNTER;
-    static final int BLOCK = Transform.GENERIC_1_COUNTER;
-    static final int PASS = Transform.GENERIC_2_COUNTER;
+    static final int SCAN = Node.GENERIC_0_COUNTER;
+    static final int BLOCK = Node.GENERIC_1_COUNTER;
+    static final int PASS = Node.GENERIC_2_COUNTER;
 
     SpywareSettings getSpywareSettings();
     void setSpywareSettings(SpywareSettings settings);

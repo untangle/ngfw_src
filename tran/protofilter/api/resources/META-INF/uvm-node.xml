@@ -11,9 +11,9 @@ not disclose such Confidential Information.
 $Id$
 -->
 
-<mvvm-transform>
-  <transform-desc name="protofilter-transform"
+<uvm-node>
+  <node-desc name="protofilter-node"
                   display-name="Protocol Control"
-                  classname="com.untangle.tran.protofilter.ProtoFilterImpl"
-                  gui-classname="com.untangle.tran.protofilter.gui.MTransformJPanel"/>
-</mvvm-transform>
+                  classname="com.untangle.node.protofilter.ProtoFilterImpl"
+                  gui-classname="com.untangle.node.protofilter.gui.MNodeJPanel"/>
+</uvm-node>

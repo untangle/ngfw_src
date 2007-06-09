@@ -9,20 +9,20 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.papi;
+package com.untangle.node.mail.papi;
 
 import java.nio.ByteBuffer;
 
-import com.untangle.mvvm.tapi.Pipeline;
-import com.untangle.mvvm.tapi.event.TCPStreamer;
-import com.untangle.tran.mime.MIMEMessage;
-import com.untangle.tran.token.MetadataToken;
+import com.untangle.uvm.tapi.Pipeline;
+import com.untangle.uvm.tapi.event.TCPStreamer;
+import com.untangle.node.mime.MIMEMessage;
+import com.untangle.node.token.MetadataToken;
 import org.apache.log4j.Logger;
 
 
 /**
  * Class representing a Complete MIME message.
- * This will be issued if an upstream Transform
+ * This will be issued if an upstream Node
  * has buffered a complete message.
  */
 public class CompleteMIMEToken

@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.httpblocker;
+package com.untangle.node.httpblocker;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -33,7 +33,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import com.untangle.mvvm.security.Tid;
+import com.untangle.uvm.security.Tid;
 
 /**
  * Message to be displayed when a message is blocked.

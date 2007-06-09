@@ -8,17 +8,17 @@
  *
  */
 
-package com.untangle.tran.ids;
+package com.untangle.node.ids;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import com.untangle.mvvm.logging.PipelineEvent;
-import com.untangle.mvvm.logging.SyslogBuilder;
-import com.untangle.mvvm.logging.SyslogPriority;
-import com.untangle.mvvm.tran.PipelineEndpoints;
+import com.untangle.uvm.logging.PipelineEvent;
+import com.untangle.uvm.logging.SyslogBuilder;
+import com.untangle.uvm.logging.SyslogPriority;
+import com.untangle.uvm.node.PipelineEndpoints;
 
 /**
  * Log event for a blocked request.

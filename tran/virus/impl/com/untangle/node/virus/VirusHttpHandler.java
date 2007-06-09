@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.virus;
+package com.untangle.node.virus;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -19,22 +19,22 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.Iterator;
 
-import com.untangle.mvvm.tapi.TCPSession;
-import com.untangle.mvvm.tran.MimeTypeRule;
-import com.untangle.mvvm.tran.StringRule;
-import com.untangle.mvvm.tran.Transform;
-import com.untangle.tran.http.HttpMethod;
-import com.untangle.tran.http.HttpStateMachine;
-import com.untangle.tran.http.RequestLine;
-import com.untangle.tran.http.RequestLineToken;
-import com.untangle.tran.http.StatusLine;
-import com.untangle.tran.token.Chunk;
-import com.untangle.tran.token.EndMarker;
-import com.untangle.tran.token.FileChunkStreamer;
-import com.untangle.tran.token.Header;
-import com.untangle.tran.token.Token;
-import com.untangle.tran.token.TokenException;
-import com.untangle.tran.util.TempFileFactory;
+import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.uvm.node.MimeTypeRule;
+import com.untangle.uvm.node.StringRule;
+import com.untangle.uvm.node.Node;
+import com.untangle.node.http.HttpMethod;
+import com.untangle.node.http.HttpStateMachine;
+import com.untangle.node.http.RequestLine;
+import com.untangle.node.http.RequestLineToken;
+import com.untangle.node.http.StatusLine;
+import com.untangle.node.token.Chunk;
+import com.untangle.node.token.EndMarker;
+import com.untangle.node.token.FileChunkStreamer;
+import com.untangle.node.token.Header;
+import com.untangle.node.token.Token;
+import com.untangle.node.token.TokenException;
+import com.untangle.node.util.TempFileFactory;
 import org.apache.log4j.Logger;
 
 class VirusHttpHandler extends HttpStateMachine
@@ -57,14 +57,14 @@ class VirusHttpHandler extends HttpStateMachine
         + "<ADDRESS>Untangle Virus Blocker</ADDRESS>"
         + "</BODY></HTML>";
 
-    private static final int SCAN_COUNTER  = Transform.GENERIC_0_COUNTER;
-    private static final int BLOCK_COUNTER = Transform.GENERIC_1_COUNTER;
-    private static final int PASS_COUNTER  = Transform.GENERIC_2_COUNTER;
+    private static final int SCAN_COUNTER  = Node.GENERIC_0_COUNTER;
+    private static final int BLOCK_COUNTER = Node.GENERIC_1_COUNTER;
+    private static final int PASS_COUNTER  = Node.GENERIC_2_COUNTER;
 
     private final Logger logger = Logger.getLogger(getClass());
 
     private final String vendor;
-    private final VirusTransformImpl transform;
+    private final VirusNodeImpl node;
 
     private boolean scan;
     private long bufferingStart;
@@ -78,12 +78,12 @@ class VirusHttpHandler extends HttpStateMachine
 
     // constructors -----------------------------------------------------------
 
-    VirusHttpHandler(TCPSession session, VirusTransformImpl transform)
+    VirusHttpHandler(TCPSession session, VirusNodeImpl node)
     {
         super(session);
 
-        this.transform = transform;
-        this.vendor = transform.getScanner().getVendorName();
+        this.node = node;
+        this.vendor = node.getScanner().getVendorName();
     }
 
     // HttpStateMachine methods -----------------------------------------------
@@ -214,8 +214,8 @@ class VirusHttpHandler extends HttpStateMachine
             if (logger.isDebugEnabled()) {
                 logger.debug("Scanning the file: " + scanfile);
             }
-            transform.incrementCount(SCAN_COUNTER);
-            result = transform.getScanner().scanFile(scanfile);
+            node.incrementCount(SCAN_COUNTER);
+            result = node.getScanner().scanFile(scanfile);
         } catch (Exception e) {
             // Should never happen
             logger.error("Virus scan failed: ", e);
@@ -229,10 +229,10 @@ class VirusHttpHandler extends HttpStateMachine
         }
 
         RequestLine requestLine = getResponseRequest().getRequestLine();
-        transform.log(new VirusHttpEvent(requestLine, result,  vendor));
+        node.log(new VirusHttpEvent(requestLine, result,  vendor));
 
         if (result.isClean()) {
-            transform.incrementCount(PASS_COUNTER, 1);
+            node.incrementCount(PASS_COUNTER, 1);
 
             if (result.isVirusCleaned()) {
                 logger.info("Cleaned infected file");
@@ -249,7 +249,7 @@ class VirusHttpHandler extends HttpStateMachine
         } else {
             logger.info("Virus found, killing session");
             // Todo: Quarantine (for now, don't delete the file) XXX
-            transform.incrementCount(BLOCK_COUNTER, 1);
+            node.incrementCount(BLOCK_COUNTER, 1);
 
             if (Mode.QUEUEING == getResponseMode()) {
                 blockResponse(blockMessage());
@@ -289,7 +289,7 @@ class VirusHttpHandler extends HttpStateMachine
     {
         if (null == extension) { return false; }
 
-        for (Iterator i = transform.getExtensions().iterator();
+        for (Iterator i = node.getExtensions().iterator();
              i.hasNext();) {
             StringRule sr = (StringRule)i.next();
             if (sr.isLive() && sr.getString().equalsIgnoreCase(extension)) {
@@ -314,7 +314,7 @@ class VirusHttpHandler extends HttpStateMachine
          * XXX This is inefficient, but typically there are only a few
          * rules in this list.
          */
-        for (Iterator i = transform.getHttpMimeTypes().iterator(); i.hasNext();) {
+        for (Iterator i = node.getHttpMimeTypes().iterator(); i.hasNext();) {
 
             MimeTypeRule mtr = (MimeTypeRule)i.next();
             String currentMt = mtr.getMimeType().getType();
@@ -427,7 +427,7 @@ class VirusHttpHandler extends HttpStateMachine
     {
         logger.debug("handleTokenTrickle()");
 
-        int tricklePercent = transform.getTricklePercent();
+        int tricklePercent = node.getTricklePercent();
         int trickleLen = (outstanding * tricklePercent) / 100;
         ByteBuffer inbuf = ByteBuffer.allocate(trickleLen);
 

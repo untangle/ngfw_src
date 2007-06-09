@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.spam;
+package com.untangle.node.spam;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -17,7 +17,7 @@ import java.sql.SQLException;
 
 import org.hibernate.HibernateException;
 
-import com.untangle.tran.mail.papi.smtp.SMTPNotifyActionUserType;
+import com.untangle.node.mail.papi.smtp.SMTPNotifyActionUserType;
 
 public class SpamSMTPNotifyActionUserType extends SMTPNotifyActionUserType
 {

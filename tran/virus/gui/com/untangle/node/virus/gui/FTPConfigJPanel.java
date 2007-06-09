@@ -10,16 +10,16 @@
  */
 
 
-package com.untangle.tran.virus.gui;
+package com.untangle.node.virus.gui;
 
-import com.untangle.gui.transform.*;
+import com.untangle.gui.node.*;
 import com.untangle.gui.pipeline.MPipelineJPanel;
 import com.untangle.gui.widgets.editTable.*;
 import com.untangle.gui.util.*;
 
-import com.untangle.mvvm.*;
-import com.untangle.mvvm.tran.*;
-import com.untangle.tran.virus.*;
+import com.untangle.uvm.*;
+import com.untangle.uvm.node.*;
+import com.untangle.node.virus.*;
 
 import java.awt.*;
 import javax.swing.*;

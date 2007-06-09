@@ -9,12 +9,12 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.impl.quarantine.store;
+package com.untangle.node.mail.impl.quarantine.store;
 
 import java.io.Serializable;
 
-import com.untangle.tran.mail.papi.quarantine.InboxRecord;
-import com.untangle.tran.mail.papi.quarantine.MailSummary;
+import com.untangle.node.mail.papi.quarantine.InboxRecord;
+import com.untangle.node.mail.papi.quarantine.MailSummary;
 
 /**
  * Private implementation of an Inbox record

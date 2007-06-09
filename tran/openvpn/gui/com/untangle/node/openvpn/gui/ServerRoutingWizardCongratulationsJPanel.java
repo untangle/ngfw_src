@@ -9,17 +9,17 @@
  * $Id$
  */
 
-package com.untangle.tran.openvpn.gui;
+package com.untangle.node.openvpn.gui;
 
 import com.untangle.gui.widgets.wizard.*;
-import com.untangle.tran.openvpn.*;
+import com.untangle.node.openvpn.*;
 
 public class ServerRoutingWizardCongratulationsJPanel extends MWizardPageJPanel {
 
-    private VpnTransform vpnTransform;
+    private VpnNode vpnNode;
 
-    public ServerRoutingWizardCongratulationsJPanel(VpnTransform vpnTransform) {
-        this.vpnTransform = vpnTransform;
+    public ServerRoutingWizardCongratulationsJPanel(VpnNode vpnNode) {
+        this.vpnNode = vpnNode;
 
         initComponents();
     }

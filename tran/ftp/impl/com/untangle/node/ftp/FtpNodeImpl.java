@@ -8,19 +8,19 @@
  *
  * $Id$
  */
-package com.untangle.tran.ftp;
+package com.untangle.node.ftp;
 
-import com.untangle.mvvm.tapi.AbstractTransform;
-import com.untangle.mvvm.tapi.CasingPipeSpec;
-import com.untangle.mvvm.tapi.Fitting;
-import com.untangle.mvvm.tapi.PipeSpec;
-import com.untangle.mvvm.util.TransactionWork;
+import com.untangle.uvm.tapi.AbstractNode;
+import com.untangle.uvm.tapi.CasingPipeSpec;
+import com.untangle.uvm.tapi.Fitting;
+import com.untangle.uvm.tapi.PipeSpec;
+import com.untangle.uvm.util.TransactionWork;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
-public class FtpTransformImpl extends AbstractTransform
-    implements FtpTransform
+public class FtpNodeImpl extends AbstractNode
+    implements FtpNode
 {
     private final PipeSpec ctlPipeSpec = new CasingPipeSpec
         ("ftp", this, FtpCasingFactory.factory(),
@@ -38,9 +38,9 @@ public class FtpTransformImpl extends AbstractTransform
 
     // constructors -----------------------------------------------------------
 
-    public FtpTransformImpl() { }
+    public FtpNodeImpl() { }
 
-    // FtpTransform methods ---------------------------------------------------
+    // FtpNode methods ---------------------------------------------------
 
     public FtpSettings getFtpSettings()
     {
@@ -54,18 +54,18 @@ public class FtpTransformImpl extends AbstractTransform
                 public boolean doWork(Session s)
                 {
                     s.merge(settings);
-                    FtpTransformImpl.this.settings = settings;
+                    FtpNodeImpl.this.settings = settings;
                     return true;
                 }
 
                 public Object getResult() { return null; }
             };
-        getTransformContext().runTransaction(tw);
+        getNodeContext().runTransaction(tw);
 
         reconfigure();
     }
 
-    // Transform methods ------------------------------------------------------
+    // Node methods ------------------------------------------------------
 
     public void reconfigure()
     {
@@ -97,10 +97,10 @@ public class FtpTransformImpl extends AbstractTransform
 
                 public Object getResult() { return null; }
             };
-        getTransformContext().runTransaction(tw);
+        getNodeContext().runTransaction(tw);
     }
 
-    // AbstractTransform methods ----------------------------------------------
+    // AbstractNode methods ----------------------------------------------
 
     @Override
     protected PipeSpec[] getPipeSpecs()

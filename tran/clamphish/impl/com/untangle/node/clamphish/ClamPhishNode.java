@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.clamphish;
+package com.untangle.node.clamphish;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,37 +23,37 @@ import java.util.Map;
 import java.util.Set;
 
 import com.sleepycat.je.DatabaseException;
-import com.untangle.mvvm.LocalAppServerManager;
-import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.mvvm.MvvmLocalContext;
-import com.untangle.mvvm.logging.EventLogger;
-import com.untangle.mvvm.logging.EventLoggerFactory;
-import com.untangle.mvvm.logging.EventManager;
-import com.untangle.mvvm.logging.ListEventFilter;
-import com.untangle.mvvm.logging.SimpleEventFilter;
-import com.untangle.mvvm.tapi.Affinity;
-import com.untangle.mvvm.tapi.Fitting;
-import com.untangle.mvvm.tapi.PipeSpec;
-import com.untangle.mvvm.tapi.SoloPipeSpec;
-import com.untangle.mvvm.tapi.TCPSession;
-import com.untangle.mvvm.util.OutsideValve;
-import com.untangle.tran.http.UserWhitelistMode;
-import com.untangle.tran.spam.SpamImpl;
-import com.untangle.tran.spam.SpamSettings;
-import com.untangle.tran.token.Token;
-import com.untangle.tran.token.TokenAdaptor;
-import com.untangle.tran.util.EncryptedUrlList;
-import com.untangle.tran.util.PrefixUrlList;
-import com.untangle.tran.util.UrlDatabase;
-import com.untangle.tran.util.UrlList;
+import com.untangle.uvm.LocalAppServerManager;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.UvmLocalContext;
+import com.untangle.uvm.logging.EventLogger;
+import com.untangle.uvm.logging.EventLoggerFactory;
+import com.untangle.uvm.logging.EventManager;
+import com.untangle.uvm.logging.ListEventFilter;
+import com.untangle.uvm.logging.SimpleEventFilter;
+import com.untangle.uvm.tapi.Affinity;
+import com.untangle.uvm.tapi.Fitting;
+import com.untangle.uvm.tapi.PipeSpec;
+import com.untangle.uvm.tapi.SoloPipeSpec;
+import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.uvm.util.OutsideValve;
+import com.untangle.node.http.UserWhitelistMode;
+import com.untangle.node.spam.SpamImpl;
+import com.untangle.node.spam.SpamSettings;
+import com.untangle.node.token.Token;
+import com.untangle.node.token.TokenAdaptor;
+import com.untangle.node.util.EncryptedUrlList;
+import com.untangle.node.util.PrefixUrlList;
+import com.untangle.node.util.UrlDatabase;
+import com.untangle.node.util.UrlList;
 import org.apache.catalina.Valve;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
-import static com.untangle.tran.util.Ascii.CRLF;
+import static com.untangle.node.util.Ascii.CRLF;
 
-public class ClamPhishTransform extends SpamImpl
+public class ClamPhishNode extends SpamImpl
     implements ClamPhish
 {
     private final Logger logger = Logger.getLogger(getClass());
@@ -124,19 +124,19 @@ public class ClamPhishTransform extends SpamImpl
 
     // constructors -----------------------------------------------------------
 
-    public ClamPhishTransform()
+    public ClamPhishNode()
     {
         super(new ClamPhishScanner());
 
         replacementGenerator = new PhishReplacementGenerator(getTid());
 
-        synchronized (ClamPhishTransform.class) {
+        synchronized (ClamPhishNode.class) {
             if (null == urlDatabase) {
                 urlDatabase = makeUrlDatabase();
             }
         }
 
-        phishHttpEventLogger = EventLoggerFactory.factory().getEventLogger(getTransformContext());
+        phishHttpEventLogger = EventLoggerFactory.factory().getEventLogger(getNodeContext());
 
         SimpleEventFilter sef = new PhishHttpBlockedFilter();
         phishHttpEventLogger.addSimpleEventFilter(sef);
@@ -221,7 +221,7 @@ public class ClamPhishTransform extends SpamImpl
     @Override
     protected void postInit(String args[])
     {
-        synchronized (ClamPhishTransform.class) {
+        synchronized (ClamPhishNode.class) {
             if (0 == urlDatabaseCount) {
                 urlDatabase.startUpdateTimer();
             }
@@ -233,7 +233,7 @@ public class ClamPhishTransform extends SpamImpl
     @Override
     protected void postDestroy()
     {
-        synchronized (ClamPhishTransform.class) {
+        synchronized (ClamPhishNode.class) {
             urlDatabaseCount--;
             if (0 == urlDatabaseCount) {
                 urlDatabase.stopUpdateTimer();
@@ -375,7 +375,7 @@ public class ClamPhishTransform extends SpamImpl
             return;
         }
 
-        MvvmLocalContext mctx = MvvmContextFactory.context();
+        UvmLocalContext mctx = UvmContextFactory.context();
         LocalAppServerManager asm = mctx.appServerManager();
 
         Valve v = new OutsideValve()
@@ -416,7 +416,7 @@ public class ClamPhishTransform extends SpamImpl
             return;
         }
 
-        MvvmLocalContext mctx = MvvmContextFactory.context();
+        UvmLocalContext mctx = UvmContextFactory.context();
         LocalAppServerManager asm = mctx.appServerManager();
 
         if (asm.unloadWebApp("/idblocker")) {

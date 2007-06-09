@@ -9,16 +9,16 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.impl.quarantine.store;
+package com.untangle.node.mail.impl.quarantine.store;
 
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import com.untangle.tran.mail.papi.quarantine.InboxIndex;
-import com.untangle.tran.mail.papi.quarantine.InboxRecord;
-import com.untangle.tran.mail.papi.quarantine.InboxRecordComparator;
+import com.untangle.node.mail.papi.quarantine.InboxIndex;
+import com.untangle.node.mail.papi.quarantine.InboxRecord;
+import com.untangle.node.mail.papi.quarantine.InboxRecordComparator;
 
 /**
  * Private implementation of InboxIndex

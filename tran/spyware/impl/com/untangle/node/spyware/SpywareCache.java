@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.spyware;
+package com.untangle.node.spyware;
 
 import java.io.BufferedReader;
 import java.io.IOException;

@@ -9,12 +9,12 @@
  * $Id$
  */
 
-package com.untangle.tran.ftp;
+package com.untangle.node.ftp;
 
-import com.untangle.mvvm.tapi.TCPSession;
-import com.untangle.tran.token.AbstractCasing;
-import com.untangle.tran.token.Parser;
-import com.untangle.tran.token.Unparser;
+import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.node.token.AbstractCasing;
+import com.untangle.node.token.Parser;
+import com.untangle.node.token.Unparser;
 
 class FtpCasing extends AbstractCasing
 {

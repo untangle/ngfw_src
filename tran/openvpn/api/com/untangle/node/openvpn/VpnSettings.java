@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.openvpn;
+package com.untangle.node.openvpn;
 
 import java.io.Serializable;
 import java.util.LinkedList;
@@ -28,17 +28,17 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import com.untangle.mvvm.security.Tid;
-import com.untangle.mvvm.tran.HostAddress;
-import com.untangle.mvvm.tran.IPaddr;
-import com.untangle.mvvm.tran.Validatable;
-import com.untangle.mvvm.tran.ValidateException;
+import com.untangle.uvm.security.Tid;
+import com.untangle.uvm.node.HostAddress;
+import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.Validatable;
+import com.untangle.uvm.node.ValidateException;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.IndexColumn;
 import org.hibernate.annotations.Type;
 
 /**
- * Settings for the open vpn transform.
+ * Settings for the open vpn node.
  *
  * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
  * @version 1.0
@@ -164,7 +164,7 @@ public class VpnSettings implements Serializable, Validatable
     }
 
     /**
-     * Transform id for these settings.
+     * Node id for these settings.
      *
      * @return tid for these settings
      */
@@ -282,7 +282,7 @@ public class VpnSettings implements Serializable, Validatable
     /**
      * True if DNS override is enabled.
      * This determines if the user specified DNS servers should be used as opposed to the
-     * default ones from the MVVM.
+     * default ones from the UVM.
      * @return whether or not to override DNS
      */
     @Column(name="is_dns_override", nullable=false)
@@ -297,7 +297,7 @@ public class VpnSettings implements Serializable, Validatable
     }
 
     @Column(name="dns_1")
-    @Type(type="com.untangle.mvvm.type.IPaddrUserType")
+    @Type(type="com.untangle.uvm.type.IPaddrUserType")
     public IPaddr getDns1()
     {
         return this.dns1;
@@ -309,7 +309,7 @@ public class VpnSettings implements Serializable, Validatable
     }
 
     @Column(name="dns_2")
-    @Type(type="com.untangle.mvvm.type.IPaddrUserType")
+    @Type(type="com.untangle.uvm.type.IPaddrUserType")
     public IPaddr getDns2()
     {
         return this.dns2;
@@ -351,7 +351,7 @@ public class VpnSettings implements Serializable, Validatable
      * @return virtual address of the open vpn server.
      */
     @Column(name="server_address")
-    @Type(type="com.untangle.mvvm.type.HostAddressUserType")
+    @Type(type="com.untangle.uvm.type.HostAddressUserType")
     public HostAddress getServerAddress()
     {
         return this.serverAddress;

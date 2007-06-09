@@ -8,7 +8,7 @@
  *
  * $Id$
  */
-package com.untangle.tran.mail.web.euv;
+package com.untangle.node.mail.web.euv;
 
 import java.io.IOException;
 import javax.servlet.ServletException;
@@ -16,14 +16,14 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.untangle.mvvm.client.MvvmRemoteContext;
-import com.untangle.mvvm.client.MvvmRemoteContextFactory;
-import com.untangle.mvvm.security.Tid;
-import com.untangle.mvvm.tran.TransformContext;
-import com.untangle.tran.mail.papi.MailTransform;
-import com.untangle.tran.mail.papi.quarantine.QuarantineSettings;
-import com.untangle.tran.mail.papi.quarantine.QuarantineUserView;
-import com.untangle.tran.mail.papi.safelist.SafelistEndUserView;
+import com.untangle.uvm.client.UvmRemoteContext;
+import com.untangle.uvm.client.UvmRemoteContextFactory;
+import com.untangle.uvm.security.Tid;
+import com.untangle.uvm.node.NodeContext;
+import com.untangle.node.mail.papi.MailNode;
+import com.untangle.node.mail.papi.quarantine.QuarantineSettings;
+import com.untangle.node.mail.papi.quarantine.QuarantineUserView;
+import com.untangle.node.mail.papi.safelist.SafelistEndUserView;
 import org.apache.log4j.Logger;
 
 /**
@@ -38,7 +38,7 @@ public class QuarantineEnduserServlet
     private final Logger m_logger = Logger.getLogger(QuarantineEnduserServlet.class);
 
     private static QuarantineEnduserServlet s_instance;
-    private MailTransform m_mailTransform;
+    private MailNode m_mailNode;
     private QuarantineUserView m_quarantine;
     private SafelistEndUserView m_safelist;
     private Exception m_ex;
@@ -113,20 +113,20 @@ public class QuarantineEnduserServlet
     }
 
     public String getMaxDaysToIntern() {
-        if (null == m_mailTransform) {
+        if (null == m_mailNode) {
             initRemoteRefs();
         }
-        QuarantineSettings qSettings = m_mailTransform.getMailTransformSettings().getQuarantineSettings();
+        QuarantineSettings qSettings = m_mailNode.getMailNodeSettings().getQuarantineSettings();
         String maxDaysToIntern = new Long(qSettings.getMaxMailIntern() / QuarantineSettings.DAY).toString();
         //m_logger.info("maxDaysToIntern: " + maxDaysToIntern);
         return maxDaysToIntern;
     }
 
     public String getMaxDaysIdleInbox() {
-        if (null == m_mailTransform) {
+        if (null == m_mailNode) {
             initRemoteRefs();
         }
-        QuarantineSettings qSettings = m_mailTransform.getMailTransformSettings().getQuarantineSettings();
+        QuarantineSettings qSettings = m_mailNode.getMailNodeSettings().getQuarantineSettings();
         String maxDaysIdleInbox = new Long(qSettings.getMaxIdleInbox() / QuarantineSettings.DAY).toString();
         //m_logger.info("maxDaysIdleInbox: " + maxDaysIdleInbox);
         return maxDaysIdleInbox;
@@ -137,12 +137,12 @@ public class QuarantineEnduserServlet
      */
     private void initRemoteRefs() {
         try {
-            MvvmRemoteContext ctx = MvvmRemoteContextFactory.factory().systemLogin(0, Thread.currentThread().getContextClassLoader());
-            Tid tid = ctx.transformManager().transformInstances("mail-casing").get(0);
-            TransformContext tc = ctx.transformManager().transformContext(tid);
-            MailTransform mt = (MailTransform) tc.transform();
-            m_mailTransform = mt;
-            QuarantineSettings m_qSettings = mt.getMailTransformSettings().getQuarantineSettings();
+            UvmRemoteContext ctx = UvmRemoteContextFactory.factory().systemLogin(0, Thread.currentThread().getContextClassLoader());
+            Tid tid = ctx.nodeManager().nodeInstances("mail-casing").get(0);
+            NodeContext tc = ctx.nodeManager().nodeContext(tid);
+            MailNode mt = (MailNode) tc.node();
+            m_mailNode = mt;
+            QuarantineSettings m_qSettings = mt.getMailNodeSettings().getQuarantineSettings();
 
             m_quarantine = mt.getQuarantineUserView();
             m_safelist = mt.getSafelistEndUserView();

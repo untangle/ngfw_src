@@ -10,7 +10,7 @@
  */
 
 
-package com.untangle.tran.test.gui;
+package com.untangle.node.test.gui;
 
 import java.util.HashMap;
 import java.util.List;
@@ -18,12 +18,12 @@ import java.util.List;
 import com.untangle.gui.test.MVUITest;
 import com.untangle.gui.test.TestPanel;
 import com.untangle.gui.util.Util;
-import com.untangle.mvvm.addrbook.AddressBook;
-import com.untangle.mvvm.addrbook.AddressBookConfiguration;
-import com.untangle.mvvm.addrbook.AddressBookSettings;
-import com.untangle.mvvm.addrbook.RepositorySettings;
-import com.untangle.mvvm.addrbook.UserEntry;
-import com.untangle.mvvm.client.MvvmRemoteContext;
+import com.untangle.uvm.addrbook.AddressBook;
+import com.untangle.uvm.addrbook.AddressBookConfiguration;
+import com.untangle.uvm.addrbook.AddressBookSettings;
+import com.untangle.uvm.addrbook.RepositorySettings;
+import com.untangle.uvm.addrbook.UserEntry;
+import com.untangle.uvm.client.UvmRemoteContext;
 
 /**
  * Panel with tests of the AddressBook (created before there
@@ -51,7 +51,7 @@ class ToggleStateAction extends MVUITest {
     public void actionSelected(TestPanel panel)
         throws Exception {
         panel.println("Get the Remote Context");
-        MvvmRemoteContext ctx = Util.getMvvmContext();
+        UvmRemoteContext ctx = Util.getUvmContext();
         panel.println("Get the Address Book");
         AddressBook ab = ctx.appAddressBook();
         panel.println("Get the Address Book Settings");
@@ -125,7 +125,7 @@ class AddEntryAction extends MVUITest {
 
         if(map != null) {
             panel.println("Get the RemoteContext");
-            MvvmRemoteContext ctx = Util.getMvvmContext();
+            UvmRemoteContext ctx = Util.getUvmContext();
             panel.println("Get the Address Book");
             AddressBook ab = ctx.appAddressBook();
 
@@ -160,7 +160,7 @@ class ListEntriesAction extends MVUITest {
 
 
         panel.println("Get the RemoteContext");
-        MvvmRemoteContext ctx = Util.getMvvmContext();
+        UvmRemoteContext ctx = Util.getUvmContext();
         panel.println("Get the Address Book");
         AddressBook ab = ctx.appAddressBook();
 
@@ -187,7 +187,7 @@ class AuthenticateUIDAction extends MVUITest {
         throws Exception {
 
         panel.println("Get the RemoteContext");
-        MvvmRemoteContext ctx = Util.getMvvmContext();
+        UvmRemoteContext ctx = Util.getUvmContext();
         panel.println("Get the Address Book");
         AddressBook ab = ctx.appAddressBook();
 
@@ -219,7 +219,7 @@ class AuthenticateEmailAction extends MVUITest {
         throws Exception {
 
         panel.println("Get the RemoteContext");
-        MvvmRemoteContext ctx = Util.getMvvmContext();
+        UvmRemoteContext ctx = Util.getUvmContext();
         panel.println("Get the Address Book");
         AddressBook ab = ctx.appAddressBook();
 

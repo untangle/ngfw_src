@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.virus;
+package com.untangle.node.virus;
 
 import java.io.Serializable;
 import javax.persistence.Column;
@@ -18,7 +18,7 @@ import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Transient;
 
-import com.untangle.tran.mail.papi.WrappedMessageGenerator;
+import com.untangle.node.mail.papi.WrappedMessageGenerator;
 
 /**
  * Base class for Virus config information for the differernt email

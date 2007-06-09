@@ -9,12 +9,12 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.impl.quarantine.store;
+package com.untangle.node.mail.impl.quarantine.store;
 
 /**
  * Callback interface for Objects
  * which wish to visit the contents of
- * a {com.untangle.tran.mail.impl.quarantine.store.InboxDirectoryTree InboxDirectoryTree}.
+ * a {com.untangle.node.mail.impl.quarantine.store.InboxDirectoryTree InboxDirectoryTree}.
  *
  */
 interface InboxDirectoryTreeVisitor {

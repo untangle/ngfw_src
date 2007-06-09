@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.openvpn.gui;
+package com.untangle.node.openvpn.gui;
 
 import java.util.*;
 import javax.swing.SwingUtilities;
@@ -17,18 +17,18 @@ import javax.swing.SwingUtilities;
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.editTable.*;
 import com.untangle.gui.widgets.wizard.*;
-import com.untangle.mvvm.security.*;
-import com.untangle.mvvm.tran.*;
-import com.untangle.tran.openvpn.*;
+import com.untangle.uvm.security.*;
+import com.untangle.uvm.node.*;
+import com.untangle.node.openvpn.*;
 
 public class ServerRoutingWizardGroupsJPanel extends MWizardPageJPanel {
 
     private static final String EXCEPTION_MINIMUM_COUNT = "You must create at least one group.";
 
-    private VpnTransform vpnTransform;
+    private VpnNode vpnNode;
 
-    public ServerRoutingWizardGroupsJPanel(VpnTransform vpnTransform) {
-        this.vpnTransform = vpnTransform;
+    public ServerRoutingWizardGroupsJPanel(VpnNode vpnNode) {
+        this.vpnNode = vpnNode;
         initComponents();
         ((MEditTableJPanel)configAddressGroupsJPanel).setShowDetailJPanelEnabled(false);
         ((MEditTableJPanel)configAddressGroupsJPanel).setInstantRemove(true);
@@ -80,7 +80,7 @@ public class ServerRoutingWizardGroupsJPanel extends MWizardPageJPanel {
             try{
                 ServerRoutingWizard.getInfiniteProgressJComponent().startLater("Adding Address Pools...");
                 GroupList groupList = new GroupList(elemList);
-                vpnTransform.setAddressGroups(groupList);
+                vpnNode.setAddressGroups(groupList);
                 ServerRoutingWizard.getInfiniteProgressJComponent().stopLater(1500l);
             }
             catch(Exception e){

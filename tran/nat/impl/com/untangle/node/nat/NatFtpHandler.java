@@ -8,28 +8,28 @@
  *
  * $Id$
  */
-package com.untangle.tran.nat;
+package com.untangle.node.nat;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 
-import com.untangle.mvvm.tapi.Protocol;
-import com.untangle.mvvm.tapi.TCPSession;
-import com.untangle.tran.ftp.FtpCommand;
-import com.untangle.tran.ftp.FtpEpsvReply;
-import com.untangle.tran.ftp.FtpFunction;
-import com.untangle.tran.ftp.FtpReply;
-import com.untangle.tran.ftp.FtpStateMachine;
-import com.untangle.tran.token.ParseException;
-import com.untangle.tran.token.Token;
-import com.untangle.tran.token.TokenException;
-import com.untangle.tran.token.TokenResult;
+import com.untangle.uvm.tapi.Protocol;
+import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.node.ftp.FtpCommand;
+import com.untangle.node.ftp.FtpEpsvReply;
+import com.untangle.node.ftp.FtpFunction;
+import com.untangle.node.ftp.FtpReply;
+import com.untangle.node.ftp.FtpStateMachine;
+import com.untangle.node.token.ParseException;
+import com.untangle.node.token.Token;
+import com.untangle.node.token.TokenException;
+import com.untangle.node.token.TokenResult;
 import org.apache.log4j.Logger;
 
 class NatFtpHandler extends FtpStateMachine
 {
     private final Logger logger = Logger.getLogger( this.getClass());
-    private final NatImpl transform;
+    private final NatImpl node;
     private final NatSessionManager sessionManager;
     private NatSessionData sessionData;
 
@@ -42,12 +42,12 @@ class NatFtpHandler extends FtpStateMachine
     private static final TokenResult ERROR_REPLY = new TokenResult( new Token[] { FtpReply.makeReply( 500, "Syntax error, command unrecognized") }, null );
     private static final TokenResult SYNTAX_REPLY = new TokenResult( new Token[] { FtpReply.makeReply( 501, "Syntax error in parameters or arguments") }, null );
 
-    NatFtpHandler( TCPSession session, NatImpl transform )
+    NatFtpHandler( TCPSession session, NatImpl node )
     {
         super(session);
 
-        this.transform = transform;
-        this.sessionManager = transform.getSessionManager();
+        this.node = node;
+        this.sessionManager = node.getSessionManager();
 
         /* Lazily set session data since the other event handler can
          * run before or after this event handler */
@@ -200,7 +200,7 @@ class NatFtpHandler extends FtpStateMachine
         portCommandKey             = null;
 
         if ( sessionData.isClientRedirect()) {
-            int port = transform.getHandler().getNextPort( Protocol.TCP );
+            int port = node.getHandler().getNextPort( Protocol.TCP );
             /* 1. Tell the event handler to redirect the session from the server. *
              * 2. Mangle the command.                                             */
             portCommandKey = new SessionRedirectKey( Protocol.TCP,
@@ -339,7 +339,7 @@ class NatFtpHandler extends FtpStateMachine
     private boolean updateSessionData()
     {
         if ( sessionData == null ) {
-            /* Get the information the nat transform is tracking about the session */
+            /* Get the information the nat node is tracking about the session */
             sessionData = sessionManager.getSessionData( getSession());
         }
 

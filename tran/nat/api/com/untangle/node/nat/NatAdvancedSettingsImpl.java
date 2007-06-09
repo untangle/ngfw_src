@@ -9,29 +9,29 @@
  * $Id$
  */
 
-package com.untangle.tran.nat;
+package com.untangle.node.nat;
 
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 
-import com.untangle.mvvm.networking.BasicNetworkSettings;
-import com.untangle.mvvm.networking.DhcpLeaseRule;
-import com.untangle.mvvm.networking.DnsStaticHostRule;
-import com.untangle.mvvm.networking.Interface;
-import com.untangle.mvvm.networking.NetworkSpace;
-import com.untangle.mvvm.networking.NetworkSpacesSettings;
-import com.untangle.mvvm.networking.NetworkSpacesSettingsImpl;
-import com.untangle.mvvm.networking.NetworkUtil;
-import com.untangle.mvvm.networking.RedirectRule;
-import com.untangle.mvvm.networking.Route;
-import com.untangle.mvvm.networking.ServicesSettings;
-import com.untangle.mvvm.networking.ServicesSettingsImpl;
-import com.untangle.mvvm.networking.SetupState;
-import com.untangle.mvvm.tran.HostName;
-import com.untangle.mvvm.tran.IPaddr;
-import com.untangle.mvvm.tran.ValidateException;
-import com.untangle.mvvm.tran.firewall.ip.IPDBMatcher;
+import com.untangle.uvm.networking.BasicNetworkSettings;
+import com.untangle.uvm.networking.DhcpLeaseRule;
+import com.untangle.uvm.networking.DnsStaticHostRule;
+import com.untangle.uvm.networking.Interface;
+import com.untangle.uvm.networking.NetworkSpace;
+import com.untangle.uvm.networking.NetworkSpacesSettings;
+import com.untangle.uvm.networking.NetworkSpacesSettingsImpl;
+import com.untangle.uvm.networking.NetworkUtil;
+import com.untangle.uvm.networking.RedirectRule;
+import com.untangle.uvm.networking.Route;
+import com.untangle.uvm.networking.ServicesSettings;
+import com.untangle.uvm.networking.ServicesSettingsImpl;
+import com.untangle.uvm.networking.SetupState;
+import com.untangle.uvm.node.HostName;
+import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.ValidateException;
+import com.untangle.uvm.node.firewall.ip.IPDBMatcher;
 
 public class NatAdvancedSettingsImpl implements NatAdvancedSettings, Serializable
 {

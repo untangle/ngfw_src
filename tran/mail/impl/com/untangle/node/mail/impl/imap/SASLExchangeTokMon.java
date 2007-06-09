@@ -9,14 +9,14 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.impl.imap;
+package com.untangle.node.mail.impl.imap;
 
-import static com.untangle.tran.util.Ascii.*;
+import static com.untangle.node.util.Ascii.*;
 
 import java.nio.ByteBuffer;
 
-import com.untangle.tran.mail.papi.imap.IMAPTokenizer;
-import com.untangle.tran.sasl.SASLObserver;
+import com.untangle.node.mail.papi.imap.IMAPTokenizer;
+import com.untangle.node.sasl.SASLObserver;
 import org.apache.log4j.Logger;
 import sun.misc.BASE64Decoder;
 
@@ -28,7 +28,7 @@ import sun.misc.BASE64Decoder;
  * back and forth.  Passes only the data
  * in pure SASL format (i.e. removing the encoding/semantics
  * of the IMAP profile RFC 3501 sec 6.2.2) to the
- * passed-in {@link com.untangle.tran.sasl.SASLObserver SASLObserver}.
+ * passed-in {@link com.untangle.node.sasl.SASLObserver SASLObserver}.
  * <br><br>
  * This class is intended to be swapped-in
  * after AUTHENTICATE XXXXX has been issued.  As-such
@@ -190,7 +190,7 @@ class SASLExchangeTokMon
 
     /**
      * Convienence method for subclasses to cause them to be
-     * {@link com.untangle.tran.mail.impl.imap.ImapSessionMonitor#replaceMonitor removed}
+     * {@link com.untangle.node.mail.impl.imap.ImapSessionMonitor#replaceMonitor removed}
      * from the ImapSessionMonitor and replaced with an AUTHENTICATETokMon.
      *
      */

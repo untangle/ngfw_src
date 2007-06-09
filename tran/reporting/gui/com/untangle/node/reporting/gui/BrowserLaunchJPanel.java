@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.reporting.gui;
+package com.untangle.node.reporting.gui;
 
 import java.awt.*;
 import java.awt.event.*;

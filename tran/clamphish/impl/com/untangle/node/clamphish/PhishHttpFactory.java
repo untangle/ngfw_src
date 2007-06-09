@@ -9,32 +9,32 @@
  * $Id: PhishHttpFactory.java 8515 2007-01-03 00:13:24Z amread $
  */
 
-package com.untangle.tran.clamphish;
+package com.untangle.node.clamphish;
 
-import com.untangle.mvvm.tapi.TCPNewSessionRequest;
-import com.untangle.mvvm.tapi.TCPSession;
-import com.untangle.tran.token.TokenHandler;
-import com.untangle.tran.token.TokenHandlerFactory;
+import com.untangle.uvm.tapi.TCPNewSessionRequest;
+import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.node.token.TokenHandler;
+import com.untangle.node.token.TokenHandlerFactory;
 import org.apache.log4j.Logger;
 
 class PhishHttpFactory implements TokenHandlerFactory
 {
     private final Logger logger = Logger.getLogger(getClass());
 
-    private final ClamPhishTransform transform;
+    private final ClamPhishNode node;
 
     // constructors -----------------------------------------------------------
 
-    PhishHttpFactory(ClamPhishTransform transform)
+    PhishHttpFactory(ClamPhishNode node)
     {
-        this.transform = transform;
+        this.node = node;
     }
 
     // TokenHandlerFactory methods --------------------------------------------
 
     public TokenHandler tokenHandler(TCPSession session)
     {
-        return new PhishHttpHandler(session, transform);
+        return new PhishHttpHandler(session, node);
     }
 
     public void handleNewSessionRequest(TCPNewSessionRequest tsr)

@@ -9,22 +9,22 @@
  * $Id$
  */
 
-package com.untangle.tran.ids;
+package com.untangle.node.ids;
 
-import com.untangle.mvvm.tapi.TCPNewSessionRequest;
-import com.untangle.mvvm.tapi.TCPSession;
-import com.untangle.tran.token.TokenHandler;
-import com.untangle.tran.token.TokenHandlerFactory;
+import com.untangle.uvm.tapi.TCPNewSessionRequest;
+import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.node.token.TokenHandler;
+import com.untangle.node.token.TokenHandlerFactory;
 
 public class IDSHttpFactory implements TokenHandlerFactory {
-    private final IDSTransformImpl transform;
+    private final IDSNodeImpl node;
 
-    IDSHttpFactory(IDSTransformImpl transform) {
-        this.transform = transform;
+    IDSHttpFactory(IDSNodeImpl node) {
+        this.node = node;
     }
 
     public TokenHandler tokenHandler(TCPSession session) {
-        return new IDSHttpHandler(session, transform);
+        return new IDSHttpHandler(session, node);
     }
 
     public void handleNewSessionRequest(TCPNewSessionRequest tsr)

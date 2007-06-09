@@ -9,12 +9,12 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.papi.smtp.sapi;
+package com.untangle.node.mail.papi.smtp.sapi;
 
-import com.untangle.tran.mail.papi.BeginMIMEToken;
-import com.untangle.tran.mail.papi.CompleteMIMEToken;
-import com.untangle.tran.mail.papi.ContinuedMIMEToken;
-import com.untangle.tran.mail.papi.smtp.*;
+import com.untangle.node.mail.papi.BeginMIMEToken;
+import com.untangle.node.mail.papi.CompleteMIMEToken;
+import com.untangle.node.mail.papi.ContinuedMIMEToken;
+import com.untangle.node.mail.papi.smtp.*;
 import org.apache.log4j.Logger;
 
 /**

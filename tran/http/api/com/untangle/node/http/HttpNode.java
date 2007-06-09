@@ -9,6 +9,6 @@
  * $Id$
  */
 
-package com.untangle.tran.http;
+package com.untangle.node.http;
 
-public interface HttpTransform { }
+public interface HttpNode { }

@@ -9,14 +9,14 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.impl;
+package com.untangle.node.mail.impl;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 
-import com.untangle.mvvm.tapi.event.TCPStreamer;
+import com.untangle.uvm.tapi.event.TCPStreamer;
 import org.apache.log4j.Logger;
 
 

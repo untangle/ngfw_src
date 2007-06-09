@@ -1,2 +1,2 @@
-com.untangle.tran.nat.NatSettingsImpl
-com.untangle.tran.nat.RedirectEvent
+com.untangle.node.nat.NatSettingsImpl
+com.untangle.node.nat.RedirectEvent

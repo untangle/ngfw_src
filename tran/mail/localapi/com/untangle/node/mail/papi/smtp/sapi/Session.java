@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.papi.smtp.sapi;
+package com.untangle.node.mail.papi.smtp.sapi;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -17,21 +17,21 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import com.untangle.mvvm.tapi.TCPSession;
-import com.untangle.tran.mail.papi.BeginMIMEToken;
-import com.untangle.tran.mail.papi.CompleteMIMEToken;
-import com.untangle.tran.mail.papi.ContinuedMIMEToken;
-import com.untangle.tran.mail.papi.smtp.*;
-import com.untangle.tran.token.Chunk;
-import com.untangle.tran.token.TokenResultBuilder;
-import com.untangle.tran.util.*;
+import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.node.mail.papi.BeginMIMEToken;
+import com.untangle.node.mail.papi.CompleteMIMEToken;
+import com.untangle.node.mail.papi.ContinuedMIMEToken;
+import com.untangle.node.mail.papi.smtp.*;
+import com.untangle.node.token.Chunk;
+import com.untangle.node.token.TokenResultBuilder;
+import com.untangle.node.util.*;
 import org.apache.log4j.Logger;
 
 
 /**
  * Class which acts to listen on an SMTP Token Stream
  * and convert to a more managable
- * {@link com.untangle.tran.mail.papi.smtp.sapi.Session Session-oriented}
+ * {@link com.untangle.node.mail.papi.smtp.sapi.Session Session-oriented}
  * API.
  * <br><br>
  * The primary benifit of this class is that it programatically
@@ -39,7 +39,7 @@ import org.apache.log4j.Logger;
  * requests/responses while permitting (a) protocol manipulation
  * and (b) pipelining.
  *
- * @see com.untangle.tran.mail.papi.smtp.sapi.Session
+ * @see com.untangle.node.mail.papi.smtp.sapi.Session
  */
 public final class Session
     extends SmtpTokenStream {
@@ -53,13 +53,13 @@ public final class Session
      * Base class of available Actions to take
      * during various SMTP events.  Instances
      * of SmtpActions are passed to callbacks
-     * on {@link com.untangle.tran.mail.papi.smtp.sapi.SyntheticAction SyntheticAction}s
+     * on {@link com.untangle.node.mail.papi.smtp.sapi.SyntheticAction SyntheticAction}s
      */
     public interface SmtpActions {
 
         /**
          * Cause client tokens to be queued before this
-         * transform (and ultimatly perhaps to the client).
+         * node (and ultimatly perhaps to the client).
          */
         public void disableClientTokens();
 
@@ -153,8 +153,8 @@ public final class Session
 
     /**
      * Callback interface for
-     * {@link com.untangle.tran.mail.papi.smtp.sapi.SessionHandler Sessions}
-     * or {@link com.untangle.tran.mail.papi.smtp.sapi.TransactionHandler Transactions}
+     * {@link com.untangle.node.mail.papi.smtp.sapi.SessionHandler Sessions}
+     * or {@link com.untangle.node.mail.papi.smtp.sapi.TransactionHandler Transactions}
      * to take action when an SMTP command arrives.
      */
     public interface SmtpCommandActions
@@ -191,7 +191,7 @@ public final class Session
 
     /**
      * Set of actions available to
-     * {@link com.untangle.tran.mail.papi.smtp.sapi.ResponseCompletion ResponseCompletion}
+     * {@link com.untangle.node.mail.papi.smtp.sapi.ResponseCompletion ResponseCompletion}
      * instances while they are called-back.
      */
     public interface SmtpResponseActions

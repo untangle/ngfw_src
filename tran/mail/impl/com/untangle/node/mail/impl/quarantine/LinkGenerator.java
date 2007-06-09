@@ -9,10 +9,10 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.impl.quarantine;
+package com.untangle.node.mail.impl.quarantine;
 import java.net.URLEncoder;
 
-import com.untangle.tran.mail.papi.quarantine.WebConstants;
+import com.untangle.node.mail.papi.quarantine.WebConstants;
 
 /**
  * Little class used to generate links in digest emails.

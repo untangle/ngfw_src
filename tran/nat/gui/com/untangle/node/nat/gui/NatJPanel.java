@@ -9,14 +9,14 @@
  * $Id$
  */
 
-package com.untangle.tran.nat.gui;
+package com.untangle.node.nat.gui;
 
 import java.awt.*;
 
-import com.untangle.gui.transform.*;
+import com.untangle.gui.node.*;
 import com.untangle.gui.util.Util;
-import com.untangle.mvvm.tran.IPaddr;
-import com.untangle.tran.nat.*;
+import com.untangle.uvm.node.IPaddr;
+import com.untangle.node.nat.*;
 
 
 public class NatJPanel extends javax.swing.JPanel implements Savable<Object>, Refreshable<Object> {
@@ -24,10 +24,10 @@ public class NatJPanel extends javax.swing.JPanel implements Savable<Object>, Re
     private static final String EXCEPTION_INTERNAL_ADDRESS = "The Internal IP address must be a valid IP address.";
     private static final String EXCEPTION_INTERNAL_SUBNET = "The Internal Subnet must be a valid IP address.";
 
-    private MTransformControlsJPanel mTransformControlsJPanel;
+    private MNodeControlsJPanel mNodeControlsJPanel;
 
-    public NatJPanel(MTransformControlsJPanel mTransformControlsJPanel) {
-        this.mTransformControlsJPanel = mTransformControlsJPanel;
+    public NatJPanel(MNodeControlsJPanel mNodeControlsJPanel) {
+        this.mNodeControlsJPanel = mNodeControlsJPanel;
         initComponents();
         Util.addPanelFocus(this, natEnabledJRadioButton);
         Util.addFocusHighlight(internalAddressIPaddrJTextField);
@@ -117,11 +117,11 @@ public class NatJPanel extends javax.swing.JPanel implements Savable<Object>, Re
         internalNetworkJLabel.setText( natInternalNetworkCurrent );
 
         // EXTERNAL ADDRESS ///////
-        natExternalAddressCurrent = mTransformControlsJPanel.getHost().toString();
+        natExternalAddressCurrent = mNodeControlsJPanel.getHost().toString();
         externalAddressJLabel.setText( natExternalAddressCurrent );
 
         // DHCP ///////
-        isDhcpEnabledCurrent = mTransformControlsJPanel.getDhcpEnabled();
+        isDhcpEnabledCurrent = mNodeControlsJPanel.getDhcpEnabled();
         if( isDhcpEnabledCurrent )
             externalMethodJLabel.setText("Dynamic via DHCP");
         else

@@ -9,14 +9,14 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.impl.quarantine.store;
+package com.untangle.node.mail.impl.quarantine.store;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * POJO representing the state of the Store.  Used
- * by the {@link com.untangle.tran.mail.impl.quarantine.store.MasterTable MasterTable}
+ * by the {@link com.untangle.node.mail.impl.quarantine.store.MasterTable MasterTable}
  * to keep track of the contents of the system.
  * <br><br>
  * No synchronization, although since the InboxSummary

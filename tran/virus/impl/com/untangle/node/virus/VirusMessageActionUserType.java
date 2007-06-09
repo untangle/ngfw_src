@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.virus;
+package com.untangle.node.virus;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

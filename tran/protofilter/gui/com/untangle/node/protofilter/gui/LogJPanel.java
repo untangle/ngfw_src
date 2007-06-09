@@ -9,29 +9,29 @@
  * $Id$
  */
 
-package com.untangle.tran.protofilter.gui;
+package com.untangle.node.protofilter.gui;
 
 import java.util.*;
 import javax.swing.table.*;
 
-import com.untangle.gui.transform.*;
+import com.untangle.gui.node.*;
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.editTable.*;
-import com.untangle.mvvm.logging.EventManager;
-import com.untangle.mvvm.logging.EventRepository;
-import com.untangle.mvvm.logging.RepositoryDesc;
-import com.untangle.mvvm.tran.PipelineEndpoints;
-import com.untangle.mvvm.tran.Transform;
-import com.untangle.tran.protofilter.*;
+import com.untangle.uvm.logging.EventManager;
+import com.untangle.uvm.logging.EventRepository;
+import com.untangle.uvm.logging.RepositoryDesc;
+import com.untangle.uvm.node.PipelineEndpoints;
+import com.untangle.uvm.node.Node;
+import com.untangle.node.protofilter.*;
 
 public class LogJPanel extends MLogTableJPanel {
 
     private static final String BLOCKED_EVENTS_STRING = "Protocol blocked events";
 
-    public LogJPanel(Transform transform, MTransformControlsJPanel mTransformControlsJPanel){
-        super(transform, mTransformControlsJPanel);
+    public LogJPanel(Node node, MNodeControlsJPanel mNodeControlsJPanel){
+        super(node, mNodeControlsJPanel);
 
-        final ProtoFilter protoFilter = (ProtoFilter)logTransform;
+        final ProtoFilter protoFilter = (ProtoFilter)logNode;
 
         setTableModel(new LogTableModel());
 
@@ -42,7 +42,7 @@ public class LogJPanel extends MLogTableJPanel {
     }
 
     protected void refreshSettings(){
-        ProtoFilter protoFilter = (ProtoFilter)logTransform;
+        ProtoFilter protoFilter = (ProtoFilter)logNode;
         EventManager<ProtoFilterLogEvent> em = protoFilter.getEventManager();
         EventRepository<ProtoFilterLogEvent> ef = em.getRepository((String)queryJComboBox.getSelectedItem());
         settings = ef.getEvents();

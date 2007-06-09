@@ -9,12 +9,12 @@
  * $Id$
  */
 
-package com.untangle.tran.httpblocker.reports;
+package com.untangle.node.httpblocker.reports;
 
 import java.sql.*;
 
-import com.untangle.mvvm.reporting.BaseSummarizer;
-import com.untangle.mvvm.reporting.Util;
+import com.untangle.uvm.reporting.BaseSummarizer;
+import com.untangle.uvm.reporting.Util;
 import org.apache.log4j.Logger;
 
 public class HttpBlockerSummarizer extends BaseSummarizer {
@@ -27,7 +27,7 @@ public class HttpBlockerSummarizer extends BaseSummarizer {
     {
         long hitCount = 0l;
         long logCount = 0l; // logged (passed and blocked) visits
-        long webTraffic = 0l; // filtered web traffic (to other transforms)
+        long webTraffic = 0l; // filtered web traffic (to other nodes)
 
         try {
             String sql;

@@ -9,36 +9,36 @@
  * $Id$
  */
 
-package com.untangle.tran.clamphish;
+package com.untangle.node.clamphish;
 
-import com.untangle.mvvm.tapi.TCPNewSessionRequest;
-import com.untangle.mvvm.tapi.TCPSession;
-import com.untangle.tran.mail.papi.MailExport;
-import com.untangle.tran.mail.papi.MailExportFactory;
-import com.untangle.tran.mail.papi.MailTransformSettings;
-import com.untangle.tran.mail.papi.quarantine.QuarantineTransformView;
-import com.untangle.tran.mail.papi.safelist.SafelistTransformView;
-import com.untangle.tran.mail.papi.smtp.ScanLoadChecker;
-import com.untangle.tran.mail.papi.smtp.sapi.Session;
-import com.untangle.tran.spam.SpamSMTPConfig;
-import com.untangle.tran.token.TokenHandler;
-import com.untangle.tran.token.TokenHandlerFactory;
+import com.untangle.uvm.tapi.TCPNewSessionRequest;
+import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.node.mail.papi.MailExport;
+import com.untangle.node.mail.papi.MailExportFactory;
+import com.untangle.node.mail.papi.MailNodeSettings;
+import com.untangle.node.mail.papi.quarantine.QuarantineNodeView;
+import com.untangle.node.mail.papi.safelist.SafelistNodeView;
+import com.untangle.node.mail.papi.smtp.ScanLoadChecker;
+import com.untangle.node.mail.papi.smtp.sapi.Session;
+import com.untangle.node.spam.SpamSMTPConfig;
+import com.untangle.node.token.TokenHandler;
+import com.untangle.node.token.TokenHandlerFactory;
 import org.apache.log4j.Logger;
 
 public class PhishSmtpFactory
     implements TokenHandlerFactory {
 
     private MailExport m_mailExport;
-    private ClamPhishTransform m_phishImpl;
-    private QuarantineTransformView m_quarantine;
-    private SafelistTransformView m_safelist;
+    private ClamPhishNode m_phishImpl;
+    private QuarantineNodeView m_quarantine;
+    private SafelistNodeView m_safelist;
     private final Logger m_logger = Logger.getLogger(getClass());
 
-    public PhishSmtpFactory(ClamPhishTransform impl) {
+    public PhishSmtpFactory(ClamPhishNode impl) {
         m_mailExport = MailExportFactory.factory().getExport();
         m_phishImpl = impl;
-        m_quarantine = m_mailExport.getQuarantineTransformView();
-        m_safelist = m_mailExport.getSafelistTransformView();
+        m_quarantine = m_mailExport.getQuarantineNodeView();
+        m_safelist = m_mailExport.getSafelistNodeView();
     }
 
 
@@ -56,7 +56,7 @@ public class PhishSmtpFactory
             return Session.createPassthruSession(session);
         }
 
-        MailTransformSettings casingSettings = m_mailExport.getExportSettings();
+        MailNodeSettings casingSettings = m_mailExport.getExportSettings();
         return new Session(session,
                            new PhishSmtpHandler(session,
                                                 inbound?casingSettings.getSmtpInboundTimeout():casingSettings.getSmtpOutboundTimeout(),
@@ -76,8 +76,8 @@ public class PhishSmtpFactory
             m_phishImpl.getSpamSettings().getSMTPOutbound();
 
         // Note that we may *****NOT***** release the session here.  This is because
-        // the mail casings currently assume that there will be at least one transform
-        // inline at all times.  The contained transform's state machine handles some
+        // the mail casings currently assume that there will be at least one node
+        // inline at all times.  The contained node's state machine handles some
         // of the casing's job currently. 10/06 jdi
         if(!spamConfig.getScan()) {
             return;

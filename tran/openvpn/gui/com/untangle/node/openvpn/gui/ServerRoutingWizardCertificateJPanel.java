@@ -9,15 +9,15 @@
  * $Id$
  */
 
-package com.untangle.tran.openvpn.gui;
+package com.untangle.node.openvpn.gui;
 
 import java.awt.Color;
 import javax.swing.SwingUtilities;
 
 import com.untangle.gui.util.Util;
 import com.untangle.gui.widgets.wizard.*;
-import com.untangle.mvvm.security.*;
-import com.untangle.tran.openvpn.*;
+import com.untangle.uvm.security.*;
+import com.untangle.node.openvpn.*;
 
 public class ServerRoutingWizardCertificateJPanel extends MWizardPageJPanel {
 
@@ -27,10 +27,10 @@ public class ServerRoutingWizardCertificateJPanel extends MWizardPageJPanel {
     private static final String EXCEPTION_STATE_MISSING = "You must fill out the name of your state.";
     private static final String EXCEPTION_LOCALITY_MISSING = "You must fill out the name of your locality.";
 
-    private VpnTransform vpnTransform;
+    private VpnNode vpnNode;
 
-    public ServerRoutingWizardCertificateJPanel(VpnTransform vpnTransform) {
-        this.vpnTransform = vpnTransform;
+    public ServerRoutingWizardCertificateJPanel(VpnNode vpnNode) {
+        this.vpnNode = vpnNode;
         initComponents();
         Util.addFocusHighlight(organizationJTextField);
         Util.addFocusHighlight(countryJTextField);
@@ -102,7 +102,7 @@ public class ServerRoutingWizardCertificateJPanel extends MWizardPageJPanel {
             ServerRoutingWizard.getInfiniteProgressJComponent().startLater("Generating Certificate...");
             try{
                 CertificateParameters certificateParameters = new CertificateParameters( organization, "", country, state, locality, false );
-                vpnTransform.generateCertificate( certificateParameters );
+                vpnNode.generateCertificate( certificateParameters );
                 ServerRoutingWizard.getInfiniteProgressJComponent().stopLater(1500l);
             }
             catch(Exception e){

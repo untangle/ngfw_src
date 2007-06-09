@@ -10,36 +10,36 @@
  */
 
 
-package com.untangle.tran.test.gui;
+package com.untangle.node.test.gui;
 
 import com.untangle.gui.util.Util;
-import com.untangle.mvvm.tran.TransformContext;
-import com.untangle.tran.test.TestSettings;
-import com.untangle.tran.test.TestTransform;
+import com.untangle.uvm.node.NodeContext;
+import com.untangle.node.test.TestSettings;
+import com.untangle.node.test.TestNode;
 
 public class AdvancedControlsJPanel extends javax.swing.JPanel {
 
-    private TransformContext transformContext;
-    private TestSettings transformSettings;
+    private NodeContext nodeContext;
+    private TestSettings nodeSettings;
 
 
-    public AdvancedControlsJPanel(TransformContext transformContext) {
-        this.transformContext = transformContext;
+    public AdvancedControlsJPanel(NodeContext nodeContext) {
+        this.nodeContext = nodeContext;
 
         initComponents();
 
 
-        if(transformContext != null){
-            transformSettings =  ((TestTransform)transformContext.transform()).getTestSettings();
+        if(nodeContext != null){
+            nodeSettings =  ((TestNode)nodeContext.node()).getTestSettings();
             // FIXME: DEPRECATED
-            // doubleEndpointJCheckBox.setSelected(transformSettings.modeDEM());
-            bufferedJCheckBox.setSelected(transformSettings.isBuffered());
-            normalJCheckBox.setSelected(transformSettings.isNormal());
-            releaseJCheckBox.setSelected(transformSettings.getRelease());
-            quietJCheckBox.setSelected(transformSettings.isQuiet());
-            randomBufferSizeJCheckBox.setSelected(transformSettings.getRandomBufferSizes());
-            minJSpinner.setValue( new Integer(transformSettings.getMinRandomBufferSize()) );
-            maxJSpinner.setValue( new Integer(transformSettings.getMaxRandomBufferSize()) );
+            // doubleEndpointJCheckBox.setSelected(nodeSettings.modeDEM());
+            bufferedJCheckBox.setSelected(nodeSettings.isBuffered());
+            normalJCheckBox.setSelected(nodeSettings.isNormal());
+            releaseJCheckBox.setSelected(nodeSettings.getRelease());
+            quietJCheckBox.setSelected(nodeSettings.isQuiet());
+            randomBufferSizeJCheckBox.setSelected(nodeSettings.getRandomBufferSizes());
+            minJSpinner.setValue( new Integer(nodeSettings.getMinRandomBufferSize()) );
+            maxJSpinner.setValue( new Integer(nodeSettings.getMaxRandomBufferSize()) );
         }
 
     }
@@ -115,20 +115,20 @@ public class AdvancedControlsJPanel extends javax.swing.JPanel {
     }//GEN-END:initComponents
 
     private void commitJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_commitJButtonActionPerformed
-        if( transformContext == null)
+        if( nodeContext == null)
             return;
 
         // FIXME
-        // transformSettings.modeDEM(doubleEndpointJCheckBox.isSelected());
-        transformSettings.setBuffered(bufferedJCheckBox.isSelected());
-        transformSettings.setNormal(normalJCheckBox.isSelected());
-        transformSettings.setRelease(releaseJCheckBox.isSelected());
-        transformSettings.setQuiet(quietJCheckBox.isSelected());
-        transformSettings.setRandomBufferSizes(randomBufferSizeJCheckBox.isSelected());
-        transformSettings.setMinRandomBufferSize( ((Integer)minJSpinner.getValue()).intValue() );
-        transformSettings.setMaxRandomBufferSize( ((Integer)maxJSpinner.getValue()).intValue() );
+        // nodeSettings.modeDEM(doubleEndpointJCheckBox.isSelected());
+        nodeSettings.setBuffered(bufferedJCheckBox.isSelected());
+        nodeSettings.setNormal(normalJCheckBox.isSelected());
+        nodeSettings.setRelease(releaseJCheckBox.isSelected());
+        nodeSettings.setQuiet(quietJCheckBox.isSelected());
+        nodeSettings.setRandomBufferSizes(randomBufferSizeJCheckBox.isSelected());
+        nodeSettings.setMinRandomBufferSize( ((Integer)minJSpinner.getValue()).intValue() );
+        nodeSettings.setMaxRandomBufferSize( ((Integer)maxJSpinner.getValue()).intValue() );
         try {
-            ((TestTransform)transformContext.transform()).setTestSettings(transformSettings);
+            ((TestNode)nodeContext.node()).setTestSettings(nodeSettings);
         } catch (Exception e) {
             Util.handleExceptionNoRestart("Error comitting", e);
         }

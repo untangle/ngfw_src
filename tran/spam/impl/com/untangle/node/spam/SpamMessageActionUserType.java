@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.spam;
+package com.untangle.node.spam;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

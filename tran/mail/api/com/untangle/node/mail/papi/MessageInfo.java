@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.papi;
+package com.untangle.node.mail.papi;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -30,7 +30,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import com.untangle.mvvm.tran.PipelineEndpoints;
+import com.untangle.uvm.node.PipelineEndpoints;
 
 /**
  * Log e-mail message info.

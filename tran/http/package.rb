@@ -1,3 +1,3 @@
 # -*-ruby-*-
 
-TransformBuilder.makeCasing(BuildEnv::ALPINE, 'http')
+NodeBuilder.makeCasing(BuildEnv::SRC, 'http')

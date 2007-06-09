@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.ftp;
+package com.untangle.node.ftp;
 
 import java.io.Serializable;
 import javax.persistence.CascadeType;

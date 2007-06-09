@@ -1,6 +1,6 @@
-com.untangle.tran.virus.VirusConfig
-com.untangle.tran.virus.VirusIMAPConfig
-com.untangle.tran.virus.VirusMailEvent
-com.untangle.tran.virus.VirusPOPConfig
-com.untangle.tran.virus.VirusSMTPConfig
-com.untangle.tran.virus.VirusSettings
+com.untangle.node.virus.VirusConfig
+com.untangle.node.virus.VirusIMAPConfig
+com.untangle.node.virus.VirusMailEvent
+com.untangle.node.virus.VirusPOPConfig
+com.untangle.node.virus.VirusSMTPConfig
+com.untangle.node.virus.VirusSettings

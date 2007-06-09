@@ -11,7 +11,7 @@
 
 
 
-package com.untangle.tran.spyware.gui;
+package com.untangle.node.spyware.gui;
 
 
 import java.awt.Insets;
@@ -19,11 +19,11 @@ import java.net.URL;
 import java.util.*;
 import javax.swing.table.*;
 
-import com.untangle.gui.transform.*;
+import com.untangle.gui.node.*;
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.editTable.*;
-import com.untangle.mvvm.tran.StringRule;
-import com.untangle.tran.spyware.*;
+import com.untangle.uvm.node.StringRule;
+import com.untangle.node.spyware.*;
 //import javax.swing.event.*;
 
 public class PassDomainConfigJPanel extends MEditTableJPanel{

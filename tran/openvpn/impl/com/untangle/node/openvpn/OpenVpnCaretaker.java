@@ -9,17 +9,17 @@
  * $Id$
  */
 
-package com.untangle.tran.openvpn;
+package com.untangle.node.openvpn;
 
 import java.util.Date;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.mvvm.MvvmLocalContext;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.UvmLocalContext;
 
-import com.untangle.mvvm.tran.TransformException;
-import com.untangle.mvvm.tran.script.ScriptRunner;
+import com.untangle.uvm.node.NodeException;
+import com.untangle.uvm.node.script.ScriptRunner;
 
 class OpenVpnCaretaker implements Runnable
 {
@@ -34,7 +34,7 @@ class OpenVpnCaretaker implements Runnable
     private final Logger logger = Logger.getLogger( this.getClass());
 
     /* Local context */
-    private final MvvmLocalContext localContext;
+    private final UvmLocalContext localContext;
 
     /* Status of the monitor */
     private volatile boolean isAlive = false;
@@ -44,7 +44,7 @@ class OpenVpnCaretaker implements Runnable
 
     OpenVpnCaretaker()
     {
-        this.localContext = MvvmContextFactory.context();
+        this.localContext = UvmContextFactory.context();
     }
 
     public void run()
@@ -59,7 +59,7 @@ class OpenVpnCaretaker implements Runnable
         Date nextEvent = new Date( System.currentTimeMillis() + SLEEP_TIME_MSEC );
 
         while ( true ) {
-            /* Check if the transform is still running */
+            /* Check if the node is still running */
             if ( !this.isAlive ) break;
 
             try {
@@ -70,7 +70,7 @@ class OpenVpnCaretaker implements Runnable
                 logger.info( "OpenVPN caretaker was interrupted" );
             }
 
-            /* Check if the transform is still running */
+            /* Check if the node is still running */
             if ( !this.isAlive ) break;
 
             /* Loop if the next iteration hasn't occured yet */
@@ -78,7 +78,7 @@ class OpenVpnCaretaker implements Runnable
             
             try {
                 ScriptRunner.getInstance().exec( KEEP_ALIVE );
-            } catch ( TransformException e ) {
+            } catch ( NodeException e ) {
                 logger.warn( "Error executing script: " + KEEP_ALIVE, e );
             }
             

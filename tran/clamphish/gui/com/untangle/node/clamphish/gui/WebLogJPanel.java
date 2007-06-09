@@ -9,35 +9,35 @@
  * $Id$
  */
 
-package com.untangle.tran.clamphish.gui;
+package com.untangle.node.clamphish.gui;
 
 import java.util.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.table.*;
 
-import com.untangle.gui.transform.*;
+import com.untangle.gui.node.*;
 import com.untangle.gui.widgets.editTable.*;
 import com.untangle.gui.util.*;
-import com.untangle.mvvm.logging.EventRepository;
-import com.untangle.mvvm.logging.EventManager;
-import com.untangle.mvvm.logging.RepositoryDesc;
-import com.untangle.mvvm.tran.Transform;
-import com.untangle.tran.spam.*;
-import com.untangle.tran.clamphish.*;
+import com.untangle.uvm.logging.EventRepository;
+import com.untangle.uvm.logging.EventManager;
+import com.untangle.uvm.logging.RepositoryDesc;
+import com.untangle.uvm.node.Node;
+import com.untangle.node.spam.*;
+import com.untangle.node.clamphish.*;
 
-import com.untangle.mvvm.tran.PipelineEndpoints;
-import com.untangle.tran.http.HttpRequestEvent;
-import com.untangle.tran.http.RequestLine;
+import com.untangle.uvm.node.PipelineEndpoints;
+import com.untangle.node.http.HttpRequestEvent;
+import com.untangle.node.http.RequestLine;
 
 public class WebLogJPanel extends MLogTableJPanel {
 
     private static final String BLOCKED_EVENTS_STRING = "Phish detected events";
 
-    public WebLogJPanel(Transform transform, MTransformControlsJPanel mTransformControlsJPanel){
-        super(transform, mTransformControlsJPanel);
+    public WebLogJPanel(Node node, MNodeControlsJPanel mNodeControlsJPanel){
+        super(node, mNodeControlsJPanel);
 
-        final ClamPhish spam = (ClamPhish)logTransform;
+        final ClamPhish spam = (ClamPhish)logNode;
 
         setTableModel(new LogTableModel());
 
@@ -48,7 +48,7 @@ public class WebLogJPanel extends MLogTableJPanel {
     }
 
     protected void refreshSettings(){
-        ClamPhish spam = (ClamPhish)logTransform;
+        ClamPhish spam = (ClamPhish)logNode;
         EventManager<PhishHttpEvent> em = spam.getPhishHttpEventManager();
         EventRepository<PhishHttpEvent> ef = em.getRepository((String)queryJComboBox.getSelectedItem());
         settings = ef.getEvents();

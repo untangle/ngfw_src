@@ -9,51 +9,51 @@
  * $Id$
  */
 
-package com.untangle.tran.openvpn.gui;
+package com.untangle.node.openvpn.gui;
 
 import java.awt.Dialog;
 import java.awt.Frame;
 import java.awt.Window;
 
-import com.untangle.gui.transform.*;
+import com.untangle.gui.node.*;
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.dialogs.*;
 import com.untangle.gui.widgets.wizard.*;
-import com.untangle.tran.openvpn.*;
+import com.untangle.node.openvpn.*;
 
 public class ClientWizard extends MWizardJDialog {
 
     private static final String MESSAGE_DIALOG_TITLE = "Setup Wizard Warning";
     private static final String MESSAGE_CLIENT_NOT_CONFIGURED = "You have not finished configuring OpenVPN.  Please run the Setup Wizard again.";
 
-    private MTransformControlsJPanel mTransformControlsJPanel;
+    private MNodeControlsJPanel mNodeControlsJPanel;
 
-    public static ClientWizard factory(Window topLevelWindow, VpnTransform vpnTransform,
-                                       MTransformControlsJPanel mTransformControlsJPanel) {
+    public static ClientWizard factory(Window topLevelWindow, VpnNode vpnNode,
+                                       MNodeControlsJPanel mNodeControlsJPanel) {
         if( topLevelWindow instanceof Frame )
-            return new ClientWizard((Frame)topLevelWindow, vpnTransform, mTransformControlsJPanel);
+            return new ClientWizard((Frame)topLevelWindow, vpnNode, mNodeControlsJPanel);
         else if( topLevelWindow instanceof Dialog )
-            return new ClientWizard((Dialog)topLevelWindow, vpnTransform, mTransformControlsJPanel);
+            return new ClientWizard((Dialog)topLevelWindow, vpnNode, mNodeControlsJPanel);
         else
             return null;
     }
 
-    public ClientWizard(Frame topLevelFrame, VpnTransform vpnTransform, MTransformControlsJPanel mTransformControlsJPanel) {
+    public ClientWizard(Frame topLevelFrame, VpnNode vpnNode, MNodeControlsJPanel mNodeControlsJPanel) {
         super(topLevelFrame, true);
-        init(mTransformControlsJPanel, vpnTransform);
+        init(mNodeControlsJPanel, vpnNode);
     }
 
-    public ClientWizard(Dialog topLevelDialog, VpnTransform vpnTransform, MTransformControlsJPanel mTransformControlsJPanel) {
+    public ClientWizard(Dialog topLevelDialog, VpnNode vpnNode, MNodeControlsJPanel mNodeControlsJPanel) {
         super(topLevelDialog, true);
-        init(mTransformControlsJPanel, vpnTransform);
+        init(mNodeControlsJPanel, vpnNode);
     }
 
-    private void init(MTransformControlsJPanel mTransformControlsJPanel, VpnTransform vpnTransform){
-        this.mTransformControlsJPanel = mTransformControlsJPanel;
+    private void init(MNodeControlsJPanel mNodeControlsJPanel, VpnNode vpnNode){
+        this.mNodeControlsJPanel = mNodeControlsJPanel;
         setTitle("Untangle OpenVPN Client Setup Wizard");
-        addWizardPageJPanel(new ClientWizardWelcomeJPanel(vpnTransform), "1. Welcome", false, true);
-        addWizardPageJPanel(new ClientWizardServerJPanel(vpnTransform), "2. Download Configuration", false, true);
-        addWizardPageJPanel(new ClientWizardCongratulationsJPanel(vpnTransform), "3. Congratulations", false, true);
+        addWizardPageJPanel(new ClientWizardWelcomeJPanel(vpnNode), "1. Welcome", false, true);
+        addWizardPageJPanel(new ClientWizardServerJPanel(vpnNode), "2. Download Configuration", false, true);
+        addWizardPageJPanel(new ClientWizardCongratulationsJPanel(vpnNode), "3. Congratulations", false, true);
     }
 
     protected void wizardFinishedAbnormal(int currentPage){
@@ -67,9 +67,9 @@ public class ClientWizard extends MWizardJDialog {
 
     protected void wizardFinishedNormal(){
         super.wizardFinishedNormal();
-        mTransformControlsJPanel.getInfiniteProgressJComponent().startLater("Reconfiguring...");
-        mTransformControlsJPanel.getInfiniteProgressJComponent().stopLater(3000l);
-        mTransformControlsJPanel.refreshGui();
+        mNodeControlsJPanel.getInfiniteProgressJComponent().startLater("Reconfiguring...");
+        mNodeControlsJPanel.getInfiniteProgressJComponent().stopLater(3000l);
+        mNodeControlsJPanel.refreshGui();
     }
 
 }

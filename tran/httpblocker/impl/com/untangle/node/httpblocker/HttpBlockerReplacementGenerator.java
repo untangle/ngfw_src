@@ -9,10 +9,10 @@
  * $Id: HttpBlockerImpl.java 8987 2007-02-27 19:35:47Z amread $
  */
 
-package com.untangle.tran.httpblocker;
+package com.untangle.node.httpblocker;
 
-import com.untangle.mvvm.security.Tid;
-import com.untangle.tran.http.ReplacementGenerator;
+import com.untangle.uvm.security.Tid;
+import com.untangle.node.http.ReplacementGenerator;
 
 class HttpBlockerReplacementGenerator
     extends ReplacementGenerator<HttpBlockerBlockDetails>

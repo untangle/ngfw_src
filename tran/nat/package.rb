@@ -1,4 +1,4 @@
 # -*-ruby-*-
 
-TransformBuilder.makeTransform(BuildEnv::ALPINE, 'nat',
-                               [BuildEnv::ALPINE['ftp-casing']['localapi']])
+NodeBuilder.makeNode(BuildEnv::SRC, 'nat',
+                               [BuildEnv::SRC['ftp-casing']['localapi']])

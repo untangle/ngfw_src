@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.ids;
+package com.untangle.node.ids;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -26,7 +26,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import com.untangle.mvvm.security.Tid;
+import com.untangle.uvm.security.Tid;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.IndexColumn;
 
@@ -64,7 +64,7 @@ public class IDSSettings implements Serializable {
     protected void setMaxChunks(int maxChunks) { this.maxChunks = maxChunks; }
 
     /**
-     * Transform id for these settings.
+     * Node id for these settings.
      *
      * @return tid for these settings.
      */

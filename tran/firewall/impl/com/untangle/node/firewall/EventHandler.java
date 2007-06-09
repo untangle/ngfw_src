@@ -9,29 +9,29 @@
  * $Id$
  */
 
-package com.untangle.tran.firewall;
+package com.untangle.node.firewall;
 
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.untangle.mvvm.tapi.AbstractEventHandler;
-import com.untangle.mvvm.tapi.IPNewSessionRequest;
-import com.untangle.mvvm.tapi.MPipeException;
-import com.untangle.mvvm.tapi.Protocol;
-import com.untangle.mvvm.tapi.Session;
-import com.untangle.mvvm.tapi.TCPNewSessionRequest;
-import com.untangle.mvvm.tapi.event.TCPNewSessionRequestEvent;
-import com.untangle.mvvm.tapi.event.TCPSessionEvent;
-import com.untangle.mvvm.tapi.event.UDPNewSessionRequestEvent;
-import com.untangle.mvvm.tapi.event.UDPSessionEvent;
-import com.untangle.mvvm.tran.Transform;
+import com.untangle.uvm.tapi.AbstractEventHandler;
+import com.untangle.uvm.tapi.IPNewSessionRequest;
+import com.untangle.uvm.tapi.MPipeException;
+import com.untangle.uvm.tapi.Protocol;
+import com.untangle.uvm.tapi.Session;
+import com.untangle.uvm.tapi.TCPNewSessionRequest;
+import com.untangle.uvm.tapi.event.TCPNewSessionRequestEvent;
+import com.untangle.uvm.tapi.event.TCPSessionEvent;
+import com.untangle.uvm.tapi.event.UDPNewSessionRequestEvent;
+import com.untangle.uvm.tapi.event.UDPSessionEvent;
+import com.untangle.uvm.node.Node;
 import org.apache.log4j.Logger;
 
 class EventHandler extends AbstractEventHandler
 {
-    private static final int BLOCK_COUNTER = Transform.GENERIC_0_COUNTER;
-    private static final int PASS_COUNTER  = Transform.GENERIC_1_COUNTER;
+    private static final int BLOCK_COUNTER = Node.GENERIC_0_COUNTER;
+    private static final int PASS_COUNTER  = Node.GENERIC_1_COUNTER;
 
     private final Logger logger = Logger.getLogger( EventHandler.class );
 
@@ -43,14 +43,14 @@ class EventHandler extends AbstractEventHandler
     /* True to accept by default, false to block by default */
     private boolean isDefaultAccept = true;
 
-    /* Firewall Transform */
-    private final FirewallImpl transform;
+    /* Firewall Node */
+    private final FirewallImpl node;
 
-    EventHandler( FirewallImpl transform )
+    EventHandler( FirewallImpl node )
     {
-        super(transform);
+        super(node);
 
-        this.transform = transform;
+        this.node = node;
     }
 
     public void handleTCPNewSessionRequest( TCPNewSessionRequestEvent event )
@@ -105,7 +105,7 @@ class EventHandler extends AbstractEventHandler
             }
             
             /* Increment the block counter */
-            transform.incrementCount( BLOCK_COUNTER ); // BLOCK COUNTER
+            node.incrementCount( BLOCK_COUNTER ); // BLOCK COUNTER
             
             /* If necessary log the event */
             if ( log ) {
@@ -121,7 +121,7 @@ class EventHandler extends AbstractEventHandler
             request.release( log );
             
             /* Increment the pass counter */
-            transform.incrementCount( PASS_COUNTER ); // PASS COUNTER
+            node.incrementCount( PASS_COUNTER ); // PASS COUNTER
             
             /* If necessary log the event */
             if ( log ) {
@@ -130,7 +130,7 @@ class EventHandler extends AbstractEventHandler
         }
 
         /* Track the statistics */
-        transform.statisticManager.incrRequest( protocol, request, reject, rule == null );
+        node.statisticManager.incrRequest( protocol, request, reject, rule == null );
     }
 
     @Override
@@ -140,7 +140,7 @@ class EventHandler extends AbstractEventHandler
         Session s = event.session();
         FirewallEvent fe = (FirewallEvent)s.attachment();
         if (null != fe) {
-            transform.log(fe);
+            node.log(fe);
         }
     }
 
@@ -151,7 +151,7 @@ class EventHandler extends AbstractEventHandler
         Session s = event.session();
         FirewallEvent fe = (FirewallEvent)s.attachment();
         if (null != fe) {
-            transform.log(fe);
+            node.log(fe);
         }
     }
 

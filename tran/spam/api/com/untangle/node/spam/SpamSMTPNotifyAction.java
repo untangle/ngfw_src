@@ -9,13 +9,13 @@
  * $Id$
  */
 
-package com.untangle.tran.spam;
+package com.untangle.node.spam;
 
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import com.untangle.tran.mail.papi.smtp.SMTPNotifyAction;
+import com.untangle.node.mail.papi.smtp.SMTPNotifyAction;
 
 // XXX convert to enum when we dump XDoclet
 

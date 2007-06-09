@@ -1,3 +1,3 @@
-com.untangle.tran.http.HttpSettings
-com.untangle.tran.http.HttpRequestEvent
-com.untangle.tran.http.RequestLine
+com.untangle.node.http.HttpSettings
+com.untangle.node.http.HttpRequestEvent
+com.untangle.node.http.RequestLine

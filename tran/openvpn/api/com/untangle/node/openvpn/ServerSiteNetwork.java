@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.openvpn;
+package com.untangle.node.openvpn;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;

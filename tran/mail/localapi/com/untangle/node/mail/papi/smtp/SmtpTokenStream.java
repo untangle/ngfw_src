@@ -9,19 +9,19 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.papi.smtp;
+package com.untangle.node.mail.papi.smtp;
 
 
 import java.net.InetAddress;
 import java.util.*;
 
-import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.mvvm.tapi.Pipeline;
-import com.untangle.mvvm.tapi.TCPSession;
-import com.untangle.tran.mail.papi.BeginMIMEToken;
-import com.untangle.tran.mail.papi.CompleteMIMEToken;
-import com.untangle.tran.mail.papi.ContinuedMIMEToken;
-import com.untangle.tran.token.*;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.tapi.Pipeline;
+import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.node.mail.papi.BeginMIMEToken;
+import com.untangle.node.mail.papi.CompleteMIMEToken;
+import com.untangle.node.mail.papi.ContinuedMIMEToken;
+import com.untangle.node.token.*;
 import org.apache.log4j.Logger;
 
 
@@ -33,9 +33,9 @@ import org.apache.log4j.Logger;
  * the "StateMachine".
  * <br>
  * Unlike the StateMachine pattern, users do not subclass this
- * Object.  Instead, Transforms can monitor/manipulate
+ * Object.  Instead, Nodes can monitor/manipulate
  * the Smtp stream by subclassing
- * {@link com.untangle.tran.mail.papi.smtp.SmtpTokenStreamHandler SmtpTokenStreamHandler}
+ * {@link com.untangle.node.mail.papi.smtp.SmtpTokenStreamHandler SmtpTokenStreamHandler}
  * and passing such an instance to the constructor or
  * {@link #setHandler setHandler}.
  */
@@ -62,7 +62,7 @@ public class SmtpTokenStream
     public SmtpTokenStream(TCPSession session, SmtpTokenStreamHandler handler) {
         super(session);
         setHandler(handler);
-        m_pipeline = MvvmContextFactory.context().pipelineFoundry().getPipeline(session.id());
+        m_pipeline = UvmContextFactory.context().pipelineFoundry().getPipeline(session.id());
         updateTimestamps(true, true);
     }
 

@@ -10,7 +10,7 @@
  */
 
 
-package com.untangle.tran.nat.gui;
+package com.untangle.node.nat.gui;
 
 import java.awt.Component;
 import java.awt.Dimension;
@@ -22,17 +22,17 @@ import javax.swing.border.*;
 import javax.swing.event.*;
 import javax.swing.table.*;
 
-import com.untangle.gui.transform.*;
+import com.untangle.gui.node.*;
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.dialogs.*;
 import com.untangle.gui.widgets.editTable.*;
-import com.untangle.mvvm.client.MvvmRemoteContextFactory;
-import com.untangle.mvvm.networking.*;
-import com.untangle.mvvm.tran.IPaddr;
-import com.untangle.mvvm.tran.firewall.ip.IPDBMatcher;
-import com.untangle.tran.nat.*;
+import com.untangle.uvm.client.UvmRemoteContextFactory;
+import com.untangle.uvm.networking.*;
+import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.firewall.ip.IPDBMatcher;
+import com.untangle.node.nat.*;
 
-public class MTransformControlsJPanel extends com.untangle.gui.transform.MTransformControlsJPanel {
+public class MNodeControlsJPanel extends com.untangle.gui.node.MNodeControlsJPanel {
 
     private static final String NAME_NET_SPACES       = "Net Spaces";
     private static final String NAME_INTERFACE_MAP    = "Interface-To-Space Map";
@@ -58,8 +58,8 @@ public class MTransformControlsJPanel extends com.untangle.gui.transform.MTransf
 
     private boolean baseGuiBuilt = false;
 
-    private static Nat natTransform;
-    public static Nat getNatTransform(){ return natTransform; }
+    private static Nat natNode;
+    public static Nat getNatNode(){ return natNode; }
     private SetupState currentSetupState;
     private SetupState previousSetupState;
 
@@ -74,8 +74,8 @@ public class MTransformControlsJPanel extends com.untangle.gui.transform.MTransf
     public IPaddr getHost(){ return host; }
     public boolean getDhcpEnabled(){ return dhcpEnabled; }
 
-    public MTransformControlsJPanel(MTransformJPanel mTransformJPanel) {
-        super(mTransformJPanel);
+    public MNodeControlsJPanel(MNodeJPanel mNodeJPanel) {
+        super(mNodeJPanel);
     }
 
     private void generateSpecificGui(){
@@ -223,7 +223,7 @@ public class MTransformControlsJPanel extends com.untangle.gui.transform.MTransf
 
         // DHCP ADDRESSES /////
         DhcpAddressJPanel dhcpAddressJPanel = new DhcpAddressJPanel();
-        dhcpAddressJPanel.setMTransformJPanel(mTransformJPanel);
+        dhcpAddressJPanel.setMNodeJPanel(mNodeJPanel);
         dhcpJTabbedPane.addTab(NAME_DHCP + " " + NAME_DHCP_ADDRESS_MAP, null, dhcpAddressJPanel );
         addSavable(NAME_DHCP + " " + NAME_DHCP_ADDRESS_MAP, dhcpAddressJPanel);
         addRefreshable(NAME_DHCP + " " + NAME_DHCP_ADDRESS_MAP, dhcpAddressJPanel);
@@ -252,7 +252,7 @@ public class MTransformControlsJPanel extends com.untangle.gui.transform.MTransf
         addRefreshable(NAME_ADVANCED, advancedJPanel);
 
         // EVENT LOG //
-        LogJPanel logJPanel = new LogJPanel(mTransformJPanel.getTransform(), this);
+        LogJPanel logJPanel = new LogJPanel(mNodeJPanel.getNode(), this);
         addTab(NAME_LOG, null, logJPanel);
         addShutdownable(NAME_LOG, logJPanel);
 
@@ -260,7 +260,7 @@ public class MTransformControlsJPanel extends com.untangle.gui.transform.MTransf
     }
 
     public boolean shouldSave(){
-        return new SaveProceedDialog( mTransformJPanel.getTransformDesc().getDisplayName() ).isProceeding();
+        return new SaveProceedDialog( mNodeJPanel.getNodeDesc().getDisplayName() ).isProceeding();
     }
 
     public List<IPDBMatcher> getLocalMatcherList(){
@@ -268,16 +268,16 @@ public class MTransformControlsJPanel extends com.untangle.gui.transform.MTransf
     }
 
     public void saveAll() throws Exception {
-        int previousTimeout = MvvmRemoteContextFactory.factory().getTimeout();
+        int previousTimeout = UvmRemoteContextFactory.factory().getTimeout();
 
         /* Load the current networking configuration, this is used in validation, this is here
          * because it is a remote call. [RBS, per recommendation of inieves] */
         BasicNetworkSettings basicNetworkSettings = Util.getNetworkManager().getBasicSettings();
         ((NatCommonSettings)settings).setNetworkSettings(basicNetworkSettings);
 
-        MvvmRemoteContextFactory.factory().setTimeout(Util.RECONFIGURE_NETWORK_TIMEOUT_MILLIS);
+        UvmRemoteContextFactory.factory().setTimeout(Util.RECONFIGURE_NETWORK_TIMEOUT_MILLIS);
         super.saveAll();
-        MvvmRemoteContextFactory.factory().setTimeout(previousTimeout);
+        UvmRemoteContextFactory.factory().setTimeout(previousTimeout);
     }
 
     public void refreshAll() throws Exception {
@@ -288,15 +288,15 @@ public class MTransformControlsJPanel extends com.untangle.gui.transform.MTransf
         ipDBMatcherList = ((NatCommonSettings)settings).getLocalMatcherList();
         previousSetupState = currentSetupState;
         currentSetupState = ((NatCommonSettings)settings).getSetupState();
-        natTransform = (Nat) mTransformJPanel.getTransform();
+        natNode = (Nat) mNodeJPanel.getNode();
         if(SetupState.ADVANCED.equals( currentSetupState )){
             networkSpaceList = ((NetworkSpacesSettings)settings).getNetworkSpaceList();
         }
         if( baseGuiBuilt ){
             SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
-                int selectedIndex = MTransformControlsJPanel.this.getMTabbedPane().getSelectedIndex();
-                String selectedTitle = MTransformControlsJPanel.this.getMTabbedPane().getTitleAt(selectedIndex);
-                Component selectedComponent = MTransformControlsJPanel.this.getMTabbedPane().getSelectedComponent();
+                int selectedIndex = MNodeControlsJPanel.this.getMTabbedPane().getSelectedIndex();
+                String selectedTitle = MNodeControlsJPanel.this.getMTabbedPane().getTitleAt(selectedIndex);
+                Component selectedComponent = MNodeControlsJPanel.this.getMTabbedPane().getSelectedComponent();
                 JTabbedPane selectedJTabbedPane = null;
                 int subSelectedIndex = -1;
                 String subSelectedTitle = null;
@@ -306,8 +306,8 @@ public class MTransformControlsJPanel extends com.untangle.gui.transform.MTransf
                     subSelectedTitle = selectedJTabbedPane.getTitleAt(subSelectedIndex);
                 }
                 generateSpecificGui();
-                int newIndex = MTransformControlsJPanel.this.getMTabbedPane().indexOfTab(selectedTitle);
-                MTransformControlsJPanel.this.getMTabbedPane().setSelectedIndex(newIndex);
+                int newIndex = MNodeControlsJPanel.this.getMTabbedPane().indexOfTab(selectedTitle);
+                MNodeControlsJPanel.this.getMTabbedPane().setSelectedIndex(newIndex);
                 if( subSelectedIndex != -1 ){
                     int newSubIndex = selectedJTabbedPane.indexOfTab(subSelectedTitle);
                     if( newSubIndex >= 0 )

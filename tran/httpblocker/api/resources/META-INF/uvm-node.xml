@@ -11,10 +11,10 @@ not disclose such Confidential Information.
 $Id$
 -->
 
-<mvvm-transform>
-  <transform-desc name="httpblocker-transform"
+<uvm-node>
+  <node-desc name="httpblocker-node"
                   display-name="Web Filter"
-                  classname="com.untangle.tran.httpblocker.HttpBlockerImpl"
-                  gui-classname="com.untangle.tran.httpblocker.gui.MTransformJPanel"/>
+                  classname="com.untangle.node.httpblocker.HttpBlockerImpl"
+                  gui-classname="com.untangle.node.httpblocker.gui.MNodeJPanel"/>
   <parent>http-casing</parent>
-</mvvm-transform>
+</uvm-node>

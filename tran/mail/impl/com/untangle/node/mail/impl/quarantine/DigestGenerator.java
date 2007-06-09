@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.impl.quarantine;
+package com.untangle.node.mail.impl.quarantine;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -19,22 +19,22 @@ import java.io.OutputStreamWriter;
 import java.util.Arrays;
 import java.util.Properties;
 
-import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.tran.mail.papi.quarantine.InboxIndex;
-import com.untangle.tran.mail.papi.quarantine.InboxRecord;
-import com.untangle.tran.mail.papi.quarantine.InboxRecordComparator;
-import com.untangle.tran.mime.ByteArrayMIMESource;
-import com.untangle.tran.mime.ContentTypeHeaderField;
-import com.untangle.tran.mime.ContentXFerEncodingHeaderField;
-import com.untangle.tran.mime.EmailAddress;
-import com.untangle.tran.mime.HeaderNames;
-import com.untangle.tran.mime.MIMEMessage;
-import com.untangle.tran.mime.MIMEMessageHeaders;
-import com.untangle.tran.mime.MIMEPart;
-import com.untangle.tran.mime.MIMESourceRecord;
-import com.untangle.tran.mime.MIMEUtil;
-import com.untangle.tran.mime.RcptType;
-import com.untangle.tran.util.IOUtil;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.node.mail.papi.quarantine.InboxIndex;
+import com.untangle.node.mail.papi.quarantine.InboxRecord;
+import com.untangle.node.mail.papi.quarantine.InboxRecordComparator;
+import com.untangle.node.mime.ByteArrayMIMESource;
+import com.untangle.node.mime.ContentTypeHeaderField;
+import com.untangle.node.mime.ContentXFerEncodingHeaderField;
+import com.untangle.node.mime.EmailAddress;
+import com.untangle.node.mime.HeaderNames;
+import com.untangle.node.mime.MIMEMessage;
+import com.untangle.node.mime.MIMEMessageHeaders;
+import com.untangle.node.mime.MIMEPart;
+import com.untangle.node.mime.MIMESourceRecord;
+import com.untangle.node.mime.MIMEUtil;
+import com.untangle.node.mime.RcptType;
+import com.untangle.node.util.IOUtil;
 import org.apache.log4j.Logger;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
@@ -282,7 +282,7 @@ class DigestGenerator {
             context.put(MAX_DAYS_IDLE_INBOX_VV, maxIdleInboxInDays);
 
 
-            String companyName = MvvmContextFactory.context().brandingManager()
+            String companyName = UvmContextFactory.context().brandingManager()
                 .getBrandingSettings().getCompanyName();
             context.put(COMPANY_NAME_VV, companyName);
 

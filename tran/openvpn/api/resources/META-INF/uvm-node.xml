@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mvvm-transform>
-  <transform-desc name="openvpn-transform"
+<uvm-node>
+  <node-desc name="openvpn-node"
                   display-name="OpenVPN"
-                  classname="com.untangle.tran.openvpn.VpnTransformImpl"
-                  gui-classname="com.untangle.tran.openvpn.gui.MTransformJPanel"
+                  classname="com.untangle.node.openvpn.VpnNodeImpl"
+                  gui-classname="com.untangle.node.openvpn.gui.MNodeJPanel"
                   single-instance="true"/>
-</mvvm-transform>
+</uvm-node>

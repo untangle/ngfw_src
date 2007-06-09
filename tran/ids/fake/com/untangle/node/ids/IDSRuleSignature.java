@@ -11,7 +11,7 @@
 
 // Fake
 
-package com.untangle.tran.ids;
+package com.untangle.node.ids;
 
 public class IDSRuleSignature {
     public IDSRuleSignature() { }

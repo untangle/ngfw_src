@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.spyware;
+package com.untangle.node.spyware;
 
 import java.net.InetAddress;
 import java.net.URI;
@@ -22,15 +22,15 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.untangle.mvvm.tapi.TCPSession;
-import com.untangle.mvvm.tran.StringRule;
-import com.untangle.tran.http.HttpStateMachine;
-import com.untangle.tran.http.RequestLineToken;
-import com.untangle.tran.http.StatusLine;
-import com.untangle.tran.token.Chunk;
-import com.untangle.tran.token.Header;
-import com.untangle.tran.token.Token;
-import com.untangle.tran.util.AsciiCharBuffer;
+import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.uvm.node.StringRule;
+import com.untangle.node.http.HttpStateMachine;
+import com.untangle.node.http.RequestLineToken;
+import com.untangle.node.http.StatusLine;
+import com.untangle.node.token.Chunk;
+import com.untangle.node.token.Header;
+import com.untangle.node.token.Token;
+import com.untangle.node.util.AsciiCharBuffer;
 import org.apache.log4j.Logger;
 
 
@@ -48,18 +48,18 @@ public class SpywareHttpHandler extends HttpStateMachine
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    private final SpywareImpl transform;
+    private final SpywareImpl node;
 
     private String extension = "";
     private String mimeType = "";
 
     // constructors -----------------------------------------------------------
 
-    SpywareHttpHandler(TCPSession session, SpywareImpl transform)
+    SpywareHttpHandler(TCPSession session, SpywareImpl node)
     {
         super(session);
 
-        this.transform = transform;
+        this.node = node;
         this.session = session;
     }
 
@@ -102,30 +102,30 @@ public class SpywareHttpHandler extends HttpStateMachine
         }
         host = host.toLowerCase();
 
-        transform.incrementCount(Spyware.SCAN);
-        if (transform.isWhitelistedDomain(host, session.clientAddr())) {
-            transform.incrementCount(Spyware.PASS);
-            transform.statisticManager.incrPass(); // pass URL
+        node.incrementCount(Spyware.SCAN);
+        if (node.isWhitelistedDomain(host, session.clientAddr())) {
+            node.incrementCount(Spyware.PASS);
+            node.statisticManager.incrPass(); // pass URL
             getSession().release();
             releaseRequest();
             return requestHeader;
-        } else if (transform.isBlacklistDomain(host, uri)) {
-            transform.incrementCount(Spyware.BLOCK);
-            transform.statisticManager.incrURL();
-            transform.log(new SpywareBlacklistEvent(requestLine.getRequestLine()));
+        } else if (node.isBlacklistDomain(host, uri)) {
+            node.incrementCount(Spyware.BLOCK);
+            node.statisticManager.incrURL();
+            node.log(new SpywareBlacklistEvent(requestLine.getRequestLine()));
             // XXX we could send a page back instead, this isn't really right
             logger.debug("detected spyware, shutting down");
 
             InetAddress addr = getSession().clientAddr();
             String uriStr = uri.toString();
             SpywareBlockDetails bd = new SpywareBlockDetails(host, uriStr, addr);
-            Token[] resp = transform.generateResponse(bd, getSession(),
+            Token[] resp = node.generateResponse(bd, getSession(),
                                                       uriStr, requestHeader,
                                                       isRequestPersistent());
             blockRequest(resp);
             return requestHeader;
         } else {
-            transform.incrementCount(Spyware.PASS);
+            node.incrementCount(Spyware.PASS);
             releaseRequest();
             return clientCookie(requestLine, requestHeader);
         }
@@ -194,7 +194,7 @@ public class SpywareHttpHandler extends HttpStateMachine
         }
 
         for (Iterator i = cookies.iterator(); i.hasNext(); ) {
-            transform.incrementCount(Spyware.SCAN);
+            node.incrementCount(Spyware.SCAN);
             String cookie = (String)i.next();
             Map m = CookieParser.parseCookie(cookie);
             String domain = (String)m.get("domain");
@@ -202,23 +202,23 @@ public class SpywareHttpHandler extends HttpStateMachine
                 domain = host;
             }
 
-            boolean badDomain = transform.isBlockedCookie(domain);
+            boolean badDomain = node.isBlockedCookie(domain);
 
             if (badDomain) {
                 if (logger.isDebugEnabled()) {
                     logger.debug("blocking cookie: " + domain);
                 }
-                transform.incrementCount(Spyware.BLOCK);
-                transform.statisticManager.incrCookie();
-                transform.log(new SpywareCookieEvent(requestLine.getRequestLine(), domain, true));
+                node.incrementCount(Spyware.BLOCK);
+                node.statisticManager.incrCookie();
+                node.log(new SpywareCookieEvent(requestLine.getRequestLine(), domain, true));
                 i.remove();
                 if (logger.isDebugEnabled()) {
                     logger.debug("making cookieKiller: " + domain);
                 }
                 cookieKillers.addAll(makeCookieKillers(cookie, host));
             } else {
-                transform.incrementCount(Spyware.PASS);
-                transform.statisticManager.incrPass(); // pass cookie
+                node.incrementCount(Spyware.PASS);
+                node.statisticManager.incrPass(); // pass cookie
             }
         }
 
@@ -241,7 +241,7 @@ public class SpywareHttpHandler extends HttpStateMachine
         if (null == setCookies) { return h; }
 
         for (Iterator i = setCookies.iterator(); i.hasNext(); ) {
-            transform.incrementCount(Spyware.SCAN);
+            node.incrementCount(Spyware.SCAN);
             String v = (String)i.next();
 
             if (logger.isDebugEnabled()) {
@@ -269,22 +269,22 @@ public class SpywareHttpHandler extends HttpStateMachine
                 }
             }
 
-            boolean badDomain = transform.isBlockedCookie(domain);
+            boolean badDomain = node.isBlockedCookie(domain);
 
             if (badDomain) {
                 if (logger.isDebugEnabled()) {
                     logger.debug("cookie deleted: " + domain);
                 }
-                transform.incrementCount(Spyware.BLOCK);
-                transform.statisticManager.incrCookie();
-                transform.log(new SpywareCookieEvent(rl.getRequestLine(), domain, false));
+                node.incrementCount(Spyware.BLOCK);
+                node.statisticManager.incrCookie();
+                node.log(new SpywareCookieEvent(rl.getRequestLine(), domain, false));
                 i.remove();
             } else {
                 if (logger.isDebugEnabled()) {
                     logger.debug("cookie not deleted: " + domain);
                 }
-                transform.incrementCount(Spyware.PASS);
-                transform.statisticManager.incrPass(); // pass cookie
+                node.incrementCount(Spyware.PASS);
+                node.statisticManager.incrPass(); // pass cookie
             }
         }
 
@@ -383,19 +383,19 @@ public class SpywareHttpHandler extends HttpStateMachine
             int cs = m.start();
             int ce = m.end();
 
-            boolean block = transform.getSpywareSettings().getBlockAllActiveX();
+            boolean block = node.getSpywareSettings().getBlockAllActiveX();
             String ident = null;
             if (!block) {
                 String clsid = m.group(1);
                 long t0 = System.currentTimeMillis();
-                StringRule rule = transform.getBlockedActiveX(clsid);
+                StringRule rule = node.getBlockedActiveX(clsid);
                 long t1 = System.currentTimeMillis();
                 if (logger.isDebugEnabled()) {
                     logger.debug("looked up activeX in: " + (t1 - t0) + " ms");
                 }
 
                 if (null != rule) {
-                    transform.incrementCount(Spyware.SCAN);
+                    node.incrementCount(Spyware.SCAN);
                     block = rule.isLive();
                     ident = rule.getString();
                 }
@@ -413,9 +413,9 @@ public class SpywareHttpHandler extends HttpStateMachine
 
             if (block) {
                 logger.debug("blocking activeX");
-                transform.incrementCount(Spyware.BLOCK);
-                transform.statisticManager.incrActiveX();
-                transform.log(new SpywareActiveXEvent(rl.getRequestLine(), ident));
+                node.incrementCount(Spyware.BLOCK);
+                node.statisticManager.incrActiveX();
+                node.log(new SpywareActiveXEvent(rl.getRequestLine(), ident));
                 int len = findEnd(cb, os);
                 if (-1 == len) {
                     logger.warn("chunk does not contain entire tag");
@@ -426,8 +426,8 @@ public class SpywareHttpHandler extends HttpStateMachine
                     }
                 }
             } else {
-                transform.incrementCount(Spyware.PASS);
-                transform.statisticManager.incrPass(); // pass activeX
+                node.incrementCount(Spyware.PASS);
+                node.statisticManager.incrPass(); // pass activeX
             }
 
             return c;

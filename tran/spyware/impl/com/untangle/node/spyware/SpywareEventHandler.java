@@ -8,40 +8,40 @@
  *
  * $Id$
  */
-package com.untangle.tran.spyware;
+package com.untangle.node.spyware;
 
 import java.util.Iterator;
 import java.util.List;
 
-import com.untangle.mvvm.tapi.AbstractEventHandler;
-import com.untangle.mvvm.tapi.IPNewSessionRequest;
-import com.untangle.mvvm.tapi.MPipeException;
-import com.untangle.mvvm.tapi.Session;
-import com.untangle.mvvm.tapi.TCPNewSessionRequest;
-import com.untangle.mvvm.tapi.UDPNewSessionRequest;
-import com.untangle.mvvm.tapi.event.TCPNewSessionRequestEvent;
-import com.untangle.mvvm.tapi.event.TCPSessionEvent;
-import com.untangle.mvvm.tapi.event.UDPNewSessionRequestEvent;
-import com.untangle.mvvm.tapi.event.UDPSessionEvent;
-import com.untangle.mvvm.tran.IPMaddr;
-import com.untangle.mvvm.tran.IPMaddrRule;
-import com.untangle.tran.util.IPSet;
-import com.untangle.tran.util.IPSetTrie;
+import com.untangle.uvm.tapi.AbstractEventHandler;
+import com.untangle.uvm.tapi.IPNewSessionRequest;
+import com.untangle.uvm.tapi.MPipeException;
+import com.untangle.uvm.tapi.Session;
+import com.untangle.uvm.tapi.TCPNewSessionRequest;
+import com.untangle.uvm.tapi.UDPNewSessionRequest;
+import com.untangle.uvm.tapi.event.TCPNewSessionRequestEvent;
+import com.untangle.uvm.tapi.event.TCPSessionEvent;
+import com.untangle.uvm.tapi.event.UDPNewSessionRequestEvent;
+import com.untangle.uvm.tapi.event.UDPSessionEvent;
+import com.untangle.uvm.node.IPMaddr;
+import com.untangle.uvm.node.IPMaddrRule;
+import com.untangle.node.util.IPSet;
+import com.untangle.node.util.IPSetTrie;
 import org.apache.log4j.Logger;
 
 public class SpywareEventHandler extends AbstractEventHandler
 {
     private final Logger logger = Logger.getLogger(getClass());
 
-    private final SpywareImpl transform;
+    private final SpywareImpl node;
 
     private IPSet subnetSet  = null;
 
-    public SpywareEventHandler(SpywareImpl transform)
+    public SpywareEventHandler(SpywareImpl node)
     {
-        super(transform);
+        super(node);
 
-        this.transform = transform;
+        this.node = node;
     }
 
     public void subnetList(List list)
@@ -86,10 +86,10 @@ public class SpywareEventHandler extends AbstractEventHandler
         Session s = event.session();
         SpywareAccessEvent spe = (SpywareAccessEvent)s.attachment();
         if (null != spe) {
-            transform.statisticManager.incrSubnetAccess(); // logged subnet access
-            transform.log(spe);
+            node.statisticManager.incrSubnetAccess(); // logged subnet access
+            node.log(spe);
         } else {
-            transform.statisticManager.incrPass(); // pass subnet access
+            node.statisticManager.incrPass(); // pass subnet access
         }
     }
 
@@ -100,10 +100,10 @@ public class SpywareEventHandler extends AbstractEventHandler
         Session s = event.session();
         SpywareAccessEvent spe = (SpywareAccessEvent)s.attachment();
         if (null != spe) {
-            transform.statisticManager.incrSubnetAccess(); // logged subnet access
-            transform.log(spe);
+            node.statisticManager.incrSubnetAccess(); // logged subnet access
+            node.log(spe);
         } else {
-            transform.statisticManager.incrPass(); // pass subnet access
+            node.statisticManager.incrPass(); // pass subnet access
         }
     }
 
@@ -114,7 +114,7 @@ public class SpywareEventHandler extends AbstractEventHandler
         IPMaddrRule ir = (IPMaddrRule)this.subnetSet.getMostSpecific(ipm);
 
         if (ir == null) {
-            transform.statisticManager.incrPass(); // pass subnet access
+            node.statisticManager.incrPass(); // pass subnet access
             if (logger.isDebugEnabled()) {
                 logger.debug("Subnet scan: " + ipm.toString() + " -> clean.");
             }
@@ -126,7 +126,7 @@ public class SpywareEventHandler extends AbstractEventHandler
             logger.debug("Subnet scan: " + ipm.toString() + " -> DETECTED.");
         }
 
-        transform.incrementCount(Spyware.SCAN);
+        node.incrementCount(Spyware.SCAN);
 
         if (logger.isInfoEnabled()) {
             logger.info("-------------------- Detected Spyware --------------------");
@@ -144,7 +144,7 @@ public class SpywareEventHandler extends AbstractEventHandler
         ipr.attach(new SpywareAccessEvent(ipr.pipelineEndpoints(), ir.getName(), ir.getIpMaddr(), ir.isLive()));
 
         if (ir.isLive()) {
-            transform.incrementCount(Spyware.BLOCK); //XXX logged but not blocked (count as blocked anyway)???
+            node.incrementCount(Spyware.BLOCK); //XXX logged but not blocked (count as blocked anyway)???
             if (ipr instanceof TCPNewSessionRequest)
                 ((TCPNewSessionRequest)ipr).rejectReturnRst(true);
             if (ipr instanceof UDPNewSessionRequest)

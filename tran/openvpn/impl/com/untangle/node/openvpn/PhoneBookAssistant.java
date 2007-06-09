@@ -8,18 +8,18 @@
  *
  * $Id$
  */
-package com.untangle.tran.openvpn;
+package com.untangle.node.openvpn;
 
 import java.net.InetAddress;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.untangle.mvvm.tran.HostName;
-import com.untangle.mvvm.tran.ParseException;
-import com.untangle.mvvm.user.Assistant;
-import com.untangle.mvvm.user.UserInfo;
-import com.untangle.mvvm.user.Username;
+import com.untangle.uvm.node.HostName;
+import com.untangle.uvm.node.ParseException;
+import com.untangle.uvm.user.Assistant;
+import com.untangle.uvm.user.UserInfo;
+import com.untangle.uvm.user.Username;
 import org.apache.log4j.Logger;
 
 class PhoneBookAssistant implements Assistant

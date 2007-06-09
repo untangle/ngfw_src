@@ -9,9 +9,9 @@
  * $Id$
  */
 
-package com.untangle.tran.openvpn;
+package com.untangle.node.openvpn;
 
-import com.untangle.mvvm.security.Tid;
+import com.untangle.uvm.security.Tid;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -26,13 +26,13 @@ import java.io.FileNotFoundException;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.mvvm.tran.HostAddress;
-import com.untangle.mvvm.tran.IPaddr;
-import com.untangle.mvvm.tran.TransformException;
-import com.untangle.mvvm.tran.ValidateException;
+import com.untangle.uvm.node.HostAddress;
+import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.NodeException;
+import com.untangle.uvm.node.ValidateException;
 
-import com.untangle.mvvm.tran.script.ScriptRunner;
-import com.untangle.mvvm.tran.script.ScriptException;
+import com.untangle.uvm.node.script.ScriptRunner;
+import com.untangle.uvm.node.script.ScriptException;
 
 
 /* XXX Probably want to make this an abstract class and make this a little more generic */
@@ -57,16 +57,16 @@ class Sandbox
     private ExportList exportList;
     private ClientList clientList;
     private SiteList   siteList;
-    private final VpnTransform.ConfigState configState;
+    private final VpnNode.ConfigState configState;
 
     private final Map<String,VpnGroup> resolveGroupMap = new HashMap<String,VpnGroup>();
     
-    Sandbox( VpnTransform.ConfigState configState )
+    Sandbox( VpnNode.ConfigState configState )
     {
         this.configState = configState;
     }
 
-    List<String> getAvailableUsbList() throws TransformException
+    List<String> getAvailableUsbList() throws NodeException
     {
         BufferedReader in = null;
         
@@ -90,14 +90,14 @@ class Sandbox
 
             default:
                 logger.warn( "Unable to read USB files", e );
-                throw new TransformException( "Unable to read the USB device." );
+                throw new NodeException( "Unable to read the USB device." );
             }
         } catch ( FileNotFoundException e ) {
             /* It is a problem, but no need to let the client know this */
             logger.warn( "File " + CLIENT_LIST_FILE + " does not exist" );
         } catch ( Exception e ) {
             logger.warn( "Unable to read USB files", e );
-            throw new TransformException( "Unable to read USB files." );
+            throw new NodeException( "Unable to read USB files." );
         } finally {
             try {
                 if ( in != null ) in.close();
@@ -152,11 +152,11 @@ class Sandbox
 
             default:
                 logger.warn( "Unable to install client configuration", e );
-                throw new TransformException( "Unable to install client configuration" );
+                throw new NodeException( "Unable to install client configuration" );
             }
         } catch ( Exception e ) {
             logger.warn( "Unable to install client configuration", e );
-            throw new TransformException( "Unable to install client configuration." );
+            throw new NodeException( "Unable to install client configuration." );
         }
 
         /* Parse out the client configuration address */

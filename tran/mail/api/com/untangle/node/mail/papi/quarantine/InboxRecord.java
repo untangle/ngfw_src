@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.papi.quarantine;
+package com.untangle.node.mail.papi.quarantine;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
@@ -17,7 +17,7 @@ import java.util.Date;
 
 /**
  * Representation of a mail quarantined within
- * a given {@link com.untangle.tran.mail.papi.quarantine.InboxIndex inbox}.
+ * a given {@link com.untangle.node.mail.papi.quarantine.InboxIndex inbox}.
  * <br><br>
  * Users are not supposed to subclass this.  Subclassing
  * is for the internals of the quarantine system (but may

@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.test;
+package com.untangle.node.test;
 
 import java.io.Serializable;
 import java.util.HashMap;

@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.gui;
+package com.untangle.node.mail.gui;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -21,21 +21,21 @@ import javax.swing.table.*;
 
 import com.untangle.gui.configuration.EmailCompoundSettings;
 import com.untangle.gui.configuration.EmailJDialog;
-import com.untangle.gui.transform.*;
+import com.untangle.gui.node.*;
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.coloredTable.*;
 import com.untangle.gui.widgets.dialogs.*;
 import com.untangle.gui.widgets.editTable.*;
-import com.untangle.mvvm.tran.*;
-import com.untangle.tran.mail.papi.*;
-import com.untangle.tran.mail.papi.quarantine.*;
+import com.untangle.uvm.node.*;
+import com.untangle.node.mail.papi.*;
+import com.untangle.node.mail.papi.quarantine.*;
 
 public class QuarantineAllUsersJPanel extends javax.swing.JPanel
     implements Refreshable<EmailCompoundSettings>, ComponentListener {
 
     private static final Color TABLE_BACKGROUND_COLOR = new Color(213, 213, 226);
     private QuarantineAllTableModel quarantineAllTableModel;
-    private MailTransformCompoundSettings mailTransformCompoundSettings;
+    private MailNodeCompoundSettings mailNodeCompoundSettings;
 
     public QuarantineAllUsersJPanel() {
         // INIT GUI & CUSTOM INIT
@@ -53,9 +53,9 @@ public class QuarantineAllUsersJPanel extends javax.swing.JPanel
     }
 
     public void doRefresh(EmailCompoundSettings emailCompoundSettings){
-        mailTransformCompoundSettings = (MailTransformCompoundSettings) emailCompoundSettings.getMailTransformCompoundSettings();
-        quarantineAllTableModel.doRefresh(mailTransformCompoundSettings);
-        String usedSpace = mailTransformCompoundSettings.getQuarantineMaintenanceView().getFormattedInboxesTotalSize(true);
+        mailNodeCompoundSettings = (MailNodeCompoundSettings) emailCompoundSettings.getMailNodeCompoundSettings();
+        quarantineAllTableModel.doRefresh(mailNodeCompoundSettings);
+        String usedSpace = mailNodeCompoundSettings.getQuarantineMaintenanceView().getFormattedInboxesTotalSize(true);
         totalJLabel.setText("Total Disk Space Used: " + usedSpace + " MB");
     }
 
@@ -211,12 +211,12 @@ public class QuarantineAllUsersJPanel extends javax.swing.JPanel
         // show detail dialog
         Vector<Vector> dataVector = quarantineAllTableModel.getDataVector();
         String account = (String) dataVector.elementAt(selectedModelRows[0]).elementAt(2);
-        (new QuarantineSingleUserJDialog((Dialog)getTopLevelAncestor(), mailTransformCompoundSettings, account)).setVisible(true);
+        (new QuarantineSingleUserJDialog((Dialog)getTopLevelAncestor(), mailNodeCompoundSettings, account)).setVisible(true);
 
         // refresh
         //EmailJDialog.instance().reassignInfiniteProgressJComponent(); // XXX hackorama
         EmailJDialog.instance().refreshGui();
-        //quarantineAllTableModel.doRefresh(mailTransformCompoundSettings);
+        //quarantineAllTableModel.doRefresh(mailNodeCompoundSettings);
     }//GEN-LAST:event_detailJButtonActionPerformed
 
     private void releaseJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_releaseJButtonActionPerformed
@@ -273,10 +273,10 @@ public class QuarantineAllUsersJPanel extends javax.swing.JPanel
             try{
                 for( String account : accounts )
                     if( doRelease ){
-                        mailTransformCompoundSettings.getQuarantineMaintenanceView().rescueInbox(account);
+                        mailNodeCompoundSettings.getQuarantineMaintenanceView().rescueInbox(account);
                     }
                     else{
-                        mailTransformCompoundSettings.getQuarantineMaintenanceView().deleteInbox(account);
+                        mailNodeCompoundSettings.getQuarantineMaintenanceView().deleteInbox(account);
                     }
             }
             catch(Exception e){
@@ -297,7 +297,7 @@ public class QuarantineAllUsersJPanel extends javax.swing.JPanel
             /*
               ((MConfigJDialog)QuarantineAllUsersJPanel.this.getTopLevelAncestor()).getInfiniteProgressJComponent().setTextLater("Refreshing...");
               try{
-              mailTransformCompoundSettings.refresh();
+              mailNodeCompoundSettings.refresh();
               }
               catch(Exception e){
               Util.handleExceptionNoRestart("Error refreshing inbox", e);
@@ -306,7 +306,7 @@ public class QuarantineAllUsersJPanel extends javax.swing.JPanel
               "Quarantine Warning", "");
               }
               SwingUtilities.invokeLater( new Runnable(){ public void run(){
-              quarantineAllTableModel.doRefresh(mailTransformCompoundSettings);
+              quarantineAllTableModel.doRefresh(mailNodeCompoundSettings);
               }});
               ((MConfigJDialog)QuarantineAllUsersJPanel.this.getTopLevelAncestor()).getInfiniteProgressJComponent().stopLater(1500l);
             */
@@ -342,7 +342,7 @@ public class QuarantineAllUsersJPanel extends javax.swing.JPanel
 }
 
 
-class QuarantineAllTableModel extends MSortedTableModel<MailTransformCompoundSettings> {
+class QuarantineAllTableModel extends MSortedTableModel<MailNodeCompoundSettings> {
 
     private static final StringConstants sc = StringConstants.getInstance();
 
@@ -362,12 +362,12 @@ class QuarantineAllTableModel extends MSortedTableModel<MailTransformCompoundSet
     }
 
 
-    public void generateSettings(MailTransformCompoundSettings mailTransformCompoundSettings,
+    public void generateSettings(MailNodeCompoundSettings mailNodeCompoundSettings,
                                  Vector<Vector> tableVector, boolean validateOnly) throws Exception { }
 
-    public Vector<Vector> generateRows(MailTransformCompoundSettings mailTransformCompoundSettings) {
+    public Vector<Vector> generateRows(MailNodeCompoundSettings mailNodeCompoundSettings) {
 
-        java.util.List<Inbox> inboxes = mailTransformCompoundSettings.getInboxList();
+        java.util.List<Inbox> inboxes = mailNodeCompoundSettings.getInboxList();
         Vector<Vector> allRows = new Vector<Vector>(inboxes.size());
         Vector tempRow = null;
         int rowIndex = 0;

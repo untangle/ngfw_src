@@ -8,12 +8,12 @@
  *
  * $Id$
  */
-package com.untangle.tran.mail.papi;
+package com.untangle.node.mail.papi;
 
 import java.util.List;
 
-import com.untangle.mvvm.tran.PipelineEndpoints;
-import com.untangle.tran.mime.*;
+import com.untangle.uvm.node.PipelineEndpoints;
+import com.untangle.node.mime.*;
 
 public class MessageInfoFactory
 {

@@ -9,24 +9,24 @@
  * $Id$
  */
 
-package com.untangle.tran.openvpn.gui;
+package com.untangle.node.openvpn.gui;
 
 import com.untangle.gui.widgets.wizard.*;
-import com.untangle.tran.openvpn.*;
+import com.untangle.node.openvpn.*;
 
 public class ClientWizardWelcomeJPanel extends MWizardPageJPanel {
 
-    private VpnTransform vpnTransform;
+    private VpnNode vpnNode;
 
-    public ClientWizardWelcomeJPanel(VpnTransform vpnTransform) {
-        this.vpnTransform = vpnTransform;
+    public ClientWizardWelcomeJPanel(VpnNode vpnNode) {
+        this.vpnNode = vpnNode;
 
         initComponents();
     }
 
     public void doSave(Object settings, boolean validateOnly) throws Exception {
         if( !validateOnly){
-            vpnTransform.startConfig(VpnTransform.ConfigState.CLIENT);
+            vpnNode.startConfig(VpnNode.ConfigState.CLIENT);
         }
     }
 

@@ -9,8 +9,8 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.impl.quarantine;
-import com.untangle.tran.util.JSEscape;
+package com.untangle.node.mail.impl.quarantine;
+import com.untangle.node.util.JSEscape;
 
 /**
  * Silly little class which acts as a wrapper around

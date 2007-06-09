@@ -9,25 +9,25 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.impl.smtp;
+package com.untangle.node.mail.impl.smtp;
 
-import static com.untangle.tran.util.ASCIIUtil.bbToString;
+import static com.untangle.node.util.ASCIIUtil.bbToString;
 import java.nio.ByteBuffer;
 
-import com.untangle.mvvm.tapi.TCPSession;
-import com.untangle.tran.mail.papi.BeginMIMEToken;
-import com.untangle.tran.mail.papi.ByteBufferByteStuffer;
-import com.untangle.tran.mail.papi.CompleteMIMEToken;
-import com.untangle.tran.mail.papi.ContinuedMIMEToken;
-import com.untangle.tran.mail.papi.MIMEAccumulator;
-import com.untangle.tran.mail.papi.smtp.AUTHCommand;
-import com.untangle.tran.mail.papi.smtp.Command;
-import com.untangle.tran.mail.papi.smtp.SASLExchangeToken;
-import com.untangle.tran.mail.papi.smtp.UnparsableCommand;
-import com.untangle.tran.token.Chunk;
-import com.untangle.tran.token.MetadataToken;
-import com.untangle.tran.token.Token;
-import com.untangle.tran.token.UnparseResult;
+import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.node.mail.papi.BeginMIMEToken;
+import com.untangle.node.mail.papi.ByteBufferByteStuffer;
+import com.untangle.node.mail.papi.CompleteMIMEToken;
+import com.untangle.node.mail.papi.ContinuedMIMEToken;
+import com.untangle.node.mail.papi.MIMEAccumulator;
+import com.untangle.node.mail.papi.smtp.AUTHCommand;
+import com.untangle.node.mail.papi.smtp.Command;
+import com.untangle.node.mail.papi.smtp.SASLExchangeToken;
+import com.untangle.node.mail.papi.smtp.UnparsableCommand;
+import com.untangle.node.token.Chunk;
+import com.untangle.node.token.MetadataToken;
+import com.untangle.node.token.Token;
+import com.untangle.node.token.UnparseResult;
 import org.apache.log4j.Logger;
 
 

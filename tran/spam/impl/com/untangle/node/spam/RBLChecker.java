@@ -9,12 +9,12 @@
  * $Id$
  */
 
-package com.untangle.tran.spam;
+package com.untangle.node.spam;
 
 import java.util.*;
 
-import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.mvvm.tapi.TCPNewSessionRequest;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.tapi.TCPNewSessionRequest;
 import org.apache.log4j.Logger;
 
 /**
@@ -173,7 +173,7 @@ public class RBLChecker {
 
     private RBLClient createClient(RBLClientContext cContext) {
         RBLClient client = new RBLClient(cContext);
-        Thread thread = MvvmContextFactory.context().newThread(client);
+        Thread thread = UvmContextFactory.context().newThread(client);
         client.setThread(thread);
         clientMap.put(client, cContext);
         return client;

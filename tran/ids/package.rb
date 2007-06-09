@@ -1,4 +1,4 @@
 # -*-ruby-*-
 
-TransformBuilder.makeTransform(BuildEnv::ALPINE, 'ids',
-                               [BuildEnv::ALPINE['http-casing']['localapi']])
+NodeBuilder.makeNode(BuildEnv::SRC, 'ids',
+                               [BuildEnv::SRC['http-casing']['localapi']])

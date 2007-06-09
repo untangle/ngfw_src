@@ -8,13 +8,13 @@
  *
  * $Id$
  */
-package com.untangle.tran.mail.web.euv.tags;
+package com.untangle.node.mail.web.euv.tags;
 
 import java.net.URLEncoder;
 
-import com.untangle.tran.mail.papi.quarantine.InboxRecordCursor;
-import com.untangle.tran.mail.web.euv.Constants;
-import com.untangle.tran.mail.web.euv.Util;
+import com.untangle.node.mail.papi.quarantine.InboxRecordCursor;
+import com.untangle.node.mail.web.euv.Constants;
+import com.untangle.node.mail.web.euv.Util;
 
 /**
  * Constructs the "next/prev" query string.  Does <b>not</b>

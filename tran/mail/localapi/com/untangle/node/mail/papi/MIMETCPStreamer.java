@@ -9,17 +9,17 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.papi;
+package com.untangle.node.mail.papi;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 
-import com.untangle.mvvm.tapi.Pipeline;
-import com.untangle.mvvm.tapi.event.TCPStreamer;
-import com.untangle.tran.mime.MIMEMessage;
-import com.untangle.tran.util.TempFileFactory;
+import com.untangle.uvm.tapi.Pipeline;
+import com.untangle.uvm.tapi.event.TCPStreamer;
+import com.untangle.node.mime.MIMEMessage;
+import com.untangle.node.util.TempFileFactory;
 import org.apache.log4j.Logger;
 
 
@@ -55,7 +55,7 @@ public class MIMETCPStreamer
      * @param pipeline the pipeline (for creating temp files)
      * @param readChunkSz the size of the read buffer for the file
      * @param disposeWhenComplete if true, the MIMEMessage's
-     *        {@link com.untangle.tran.mime.MIMEPart#dispose dispose} method will be called
+     *        {@link com.untangle.node.mime.MIMEPart#dispose dispose} method will be called
      *        when streaming is complete or an error is encountered.
      */
     public MIMETCPStreamer(MIMEMessage msg,

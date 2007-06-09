@@ -1,3 +1,3 @@
 # -*-ruby-*-
 
-TransformBuilder.makeTransform(BuildEnv::ALPINE, 'firewall')
+NodeBuilder.makeNode(BuildEnv::SRC, 'firewall')

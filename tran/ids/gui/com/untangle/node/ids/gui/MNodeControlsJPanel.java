@@ -11,9 +11,9 @@
 
 
 
-package com.untangle.tran.ids.gui;
+package com.untangle.node.ids.gui;
 
-import com.untangle.gui.transform.*;
+import com.untangle.gui.node.*;
 import com.untangle.gui.pipeline.MPipelineJPanel;
 import com.untangle.gui.widgets.editTable.*;
 import com.untangle.gui.util.*;
@@ -25,7 +25,7 @@ import javax.swing.table.*;
 import java.util.Vector;
 import javax.swing.event.*;
 
-public class MTransformControlsJPanel extends com.untangle.gui.transform.MTransformControlsJPanel{
+public class MNodeControlsJPanel extends com.untangle.gui.node.MNodeControlsJPanel{
     
     private static final String NAME_STATUS = "Status";
     private static final String NAME_ADVANCED = "Advanced Settings";
@@ -33,8 +33,8 @@ public class MTransformControlsJPanel extends com.untangle.gui.transform.MTransf
     private static final String NAME_VARIABLE_LIST = "Variable List";
     private static final String NAME_LOG = "Event Log";
     
-    public MTransformControlsJPanel(MTransformJPanel mTransformJPanel) {
-        super(mTransformJPanel);
+    public MNodeControlsJPanel(MNodeJPanel mNodeJPanel) {
+        super(mNodeJPanel);
     }
 
     public void generateGui(){
@@ -62,7 +62,7 @@ public class MTransformControlsJPanel extends com.untangle.gui.transform.MTransf
         idsVariableJPanel.setSettingsChangedListener(this);
         
         // EVENT LOG ///////
-        LogJPanel logJPanel = new LogJPanel(mTransformJPanel.getTransform(), this);
+        LogJPanel logJPanel = new LogJPanel(mNodeJPanel.getNode(), this);
         addTab(NAME_LOG, null, logJPanel);
         addShutdownable(NAME_LOG, logJPanel);
     }

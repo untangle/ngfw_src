@@ -9,25 +9,25 @@
  * $Id$
  */
 
-package com.untangle.tran.httpblocker;
+package com.untangle.node.httpblocker;
 
-import com.untangle.mvvm.tapi.TCPNewSessionRequest;
-import com.untangle.mvvm.tapi.TCPSession;
-import com.untangle.tran.token.TokenHandler;
-import com.untangle.tran.token.TokenHandlerFactory;
+import com.untangle.uvm.tapi.TCPNewSessionRequest;
+import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.node.token.TokenHandler;
+import com.untangle.node.token.TokenHandlerFactory;
 import org.apache.log4j.Logger;
 
 public class HttpBlockerFactory implements TokenHandlerFactory
 {
     private final Logger logger = Logger.getLogger(getClass());
 
-    private final HttpBlockerImpl transform;
+    private final HttpBlockerImpl node;
 
     // constructors -----------------------------------------------------------
 
-    HttpBlockerFactory(HttpBlockerImpl transform)
+    HttpBlockerFactory(HttpBlockerImpl node)
     {
-        this.transform = transform;
+        this.node = node;
     }
 
     // TokenHandlerFactory methods --------------------------------------------
@@ -43,6 +43,6 @@ public class HttpBlockerFactory implements TokenHandlerFactory
 
     public TokenHandler tokenHandler(TCPSession session)
     {
-        return new HttpBlockerHandler(session, transform);
+        return new HttpBlockerHandler(session, node);
     }
 }

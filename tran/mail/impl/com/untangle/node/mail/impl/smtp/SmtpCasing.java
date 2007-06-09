@@ -9,14 +9,14 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.impl.smtp;
+package com.untangle.node.mail.impl.smtp;
 
-import com.untangle.mvvm.tapi.TCPSession;
-import com.untangle.tran.mail.impl.AbstractMailCasing;
-import com.untangle.tran.sasl.SASLObserver;
-import com.untangle.tran.sasl.SASLObserverFactory;
-import com.untangle.tran.token.Parser;
-import com.untangle.tran.token.Unparser;
+import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.node.mail.impl.AbstractMailCasing;
+import com.untangle.node.sasl.SASLObserver;
+import com.untangle.node.sasl.SASLObserverFactory;
+import com.untangle.node.token.Parser;
+import com.untangle.node.token.Unparser;
 import org.apache.log4j.Logger;
 
 

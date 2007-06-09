@@ -9,11 +9,11 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.papi.imap;
+package com.untangle.node.mail.papi.imap;
 
-import com.untangle.tran.mail.papi.ContinuedMIMEToken;
-import com.untangle.tran.token.Token;
-import com.untangle.tran.token.TokenResult;
+import com.untangle.node.mail.papi.ContinuedMIMEToken;
+import com.untangle.node.token.Token;
+import com.untangle.node.token.TokenResult;
 import org.apache.log4j.Logger;
 
 

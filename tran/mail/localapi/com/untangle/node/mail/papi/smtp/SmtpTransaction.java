@@ -9,15 +9,15 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.papi.smtp;
+package com.untangle.node.mail.papi.smtp;
 
-import static com.untangle.tran.util.Ascii.CRLF;
+import static com.untangle.node.util.Ascii.CRLF;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.untangle.mvvm.tran.TemplateValues;
-import com.untangle.tran.mime.EmailAddress;
+import com.untangle.uvm.node.TemplateValues;
+import com.untangle.node.mime.EmailAddress;
 
 
 /**
@@ -35,7 +35,7 @@ import com.untangle.tran.mime.EmailAddress;
  * disposition is unknown.
  * <br>
  * <br>
- * This class also implements {@link com.untangle.tran.util.TemplateValues TemplateValues}.
+ * This class also implements {@link com.untangle.node.util.TemplateValues TemplateValues}.
  * Valid key names which can be derefferenced from an SmtpTransaction begin with
  * the literal <code>$SMTPTransaction:</code> followed by any of the following tokens:
  * <ul>

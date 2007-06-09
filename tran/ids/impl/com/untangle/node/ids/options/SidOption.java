@@ -9,12 +9,12 @@
  * $Id$
  */
 
-package com.untangle.tran.ids.options;
+package com.untangle.node.ids.options;
 
-import com.untangle.tran.ids.IDSRule;
-import com.untangle.tran.ids.IDSRuleSignature;
-import com.untangle.mvvm.tapi.event.*;
-import com.untangle.mvvm.tapi.event.*;
+import com.untangle.node.ids.IDSRule;
+import com.untangle.node.ids.IDSRuleSignature;
+import com.untangle.uvm.tapi.event.*;
+import com.untangle.uvm.tapi.event.*;
 import org.apache.log4j.Logger;
 
 

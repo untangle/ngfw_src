@@ -9,19 +9,19 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.impl.imap;
+package com.untangle.node.mail.impl.imap;
 
 import java.nio.ByteBuffer;
 
-import com.untangle.mvvm.tapi.TCPSession;
-import com.untangle.tran.mail.papi.ContinuedMIMEToken;
-import com.untangle.tran.mail.papi.imap.BeginImapMIMEToken;
-import com.untangle.tran.mail.papi.imap.CompleteImapMIMEToken;
-import com.untangle.tran.mail.papi.imap.ImapChunk;
-import com.untangle.tran.mail.papi.imap.UnparsableMIMEChunk;
-import com.untangle.tran.token.Chunk;
-import com.untangle.tran.token.Token;
-import com.untangle.tran.token.UnparseResult;
+import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.node.mail.papi.ContinuedMIMEToken;
+import com.untangle.node.mail.papi.imap.BeginImapMIMEToken;
+import com.untangle.node.mail.papi.imap.CompleteImapMIMEToken;
+import com.untangle.node.mail.papi.imap.ImapChunk;
+import com.untangle.node.mail.papi.imap.UnparsableMIMEChunk;
+import com.untangle.node.token.Chunk;
+import com.untangle.node.token.Token;
+import com.untangle.node.token.UnparseResult;
 import org.apache.log4j.Logger;
 
 /**

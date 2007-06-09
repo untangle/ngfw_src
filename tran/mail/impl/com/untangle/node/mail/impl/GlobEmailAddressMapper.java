@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.impl;
+package com.untangle.node.mail.impl;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,7 +20,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.untangle.tran.util.Pair;
+import com.untangle.node.util.Pair;
 
 
 

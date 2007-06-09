@@ -9,9 +9,9 @@
  * $Id$
  */
 
-package com.untangle.tran.nat;
+package com.untangle.node.nat;
 
-import com.untangle.mvvm.tran.IPaddr;
+import com.untangle.uvm.node.IPaddr;
 
 public interface NatBasicSettings extends NatCommonSettings
 {

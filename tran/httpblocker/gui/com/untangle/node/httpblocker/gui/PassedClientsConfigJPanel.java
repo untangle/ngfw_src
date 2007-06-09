@@ -9,18 +9,18 @@
  * $Id$
  */
 
-package com.untangle.tran.httpblocker.gui;
+package com.untangle.node.httpblocker.gui;
 
 import java.util.*;
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.table.*;
 
-import com.untangle.gui.transform.*;
+import com.untangle.gui.node.*;
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.editTable.*;
-import com.untangle.mvvm.tran.*;
-import com.untangle.tran.httpblocker.*;
+import com.untangle.uvm.node.*;
+import com.untangle.node.httpblocker.*;
 
 public class PassedClientsConfigJPanel extends MEditTableJPanel {
 

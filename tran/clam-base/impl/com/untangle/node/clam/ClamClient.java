@@ -8,7 +8,7 @@
  *
  * $Id: $
  */
-package com.untangle.tran.clam;
+package com.untangle.node.clam;
 
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -21,9 +21,9 @@ import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.untangle.tran.virus.VirusClient;
-import com.untangle.tran.virus.VirusClientContext;
-import com.untangle.tran.virus.VirusClientSocket;
+import com.untangle.node.virus.VirusClient;
+import com.untangle.node.virus.VirusClientContext;
+import com.untangle.node.virus.VirusClientSocket;
 import org.apache.log4j.Logger;
 
 public class ClamClient extends VirusClient {

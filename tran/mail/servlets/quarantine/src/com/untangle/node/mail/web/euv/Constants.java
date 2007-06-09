@@ -8,9 +8,9 @@
  *
  * $Id$
  */
-package com.untangle.tran.mail.web.euv;
+package com.untangle.node.mail.web.euv;
 
-import com.untangle.tran.mail.papi.quarantine.WebConstants;
+import com.untangle.node.mail.papi.quarantine.WebConstants;
 
 /**
  * Constants used in this web app

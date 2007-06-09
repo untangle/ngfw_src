@@ -9,9 +9,9 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.papi.smtp.sapi;
+package com.untangle.node.mail.papi.smtp.sapi;
 
-import com.untangle.tran.mail.papi.smtp.*;
+import com.untangle.node.mail.papi.smtp.*;
 import org.apache.log4j.Logger;
 
 /**

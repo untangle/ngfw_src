@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.papi.imap;
+package com.untangle.node.mail.papi.imap;
 
 import java.nio.ByteBuffer;
 

@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.papi.quarantine;
+package com.untangle.node.mail.papi.quarantine;
 
 import java.io.Serializable;
 

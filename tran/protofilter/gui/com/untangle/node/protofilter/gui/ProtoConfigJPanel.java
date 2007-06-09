@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.protofilter.gui;
+package com.untangle.node.protofilter.gui;
 
 import java.awt.Insets;
 import java.util.*;
@@ -17,10 +17,10 @@ import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.table.*;
 
-import com.untangle.gui.transform.*;
+import com.untangle.gui.node.*;
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.editTable.*;
-import com.untangle.tran.protofilter.*;
+import com.untangle.node.protofilter.*;
 
 public class ProtoConfigJPanel extends MEditTableJPanel{
 
@@ -92,8 +92,8 @@ class ProtoTableModel extends MSortedTableModel<Object>{
 
         // SAVE SETTINGS ////////
         if( !validateOnly ){
-            ProtoFilterSettings transformSettings = (ProtoFilterSettings) settings;
-            transformSettings.setPatterns( elemList );
+            ProtoFilterSettings nodeSettings = (ProtoFilterSettings) settings;
+            nodeSettings.setPatterns( elemList );
         }
 
     }

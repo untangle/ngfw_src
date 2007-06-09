@@ -9,21 +9,21 @@
  * $Id$
  */
 
-package com.untangle.tran.clamphish;
+package com.untangle.node.clamphish;
 
-import com.untangle.mvvm.tapi.TCPSession;
-import com.untangle.tran.mail.papi.safelist.SafelistTransformView;
-import com.untangle.tran.spam.SpamImapHandler;
-import com.untangle.tran.spam.SpamIMAPConfig;
+import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.node.mail.papi.safelist.SafelistNodeView;
+import com.untangle.node.spam.SpamImapHandler;
+import com.untangle.node.spam.SpamIMAPConfig;
 
 class PhishImapHandler extends SpamImapHandler
 {
     PhishImapHandler(TCPSession session,
                      long maxClientWait,
                      long maxSvrWait,
-                     ClamPhishTransform impl,
+                     ClamPhishNode impl,
                      SpamIMAPConfig config,
-                     SafelistTransformView safelist) {
+                     SafelistNodeView safelist) {
         super(session, maxClientWait, maxSvrWait, impl, config, safelist);
     }
 }

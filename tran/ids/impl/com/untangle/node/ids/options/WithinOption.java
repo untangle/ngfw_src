@@ -9,9 +9,9 @@
  * $Id$
  */
 
-package com.untangle.tran.ids.options;
+package com.untangle.node.ids.options;
 
-import com.untangle.tran.ids.IDSRuleSignature;
+import com.untangle.node.ids.IDSRuleSignature;
 import org.apache.log4j.Logger;
 
 public class WithinOption extends IDSOption {

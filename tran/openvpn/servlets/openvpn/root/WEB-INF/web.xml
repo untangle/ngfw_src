@@ -17,14 +17,14 @@
   <!-- Page to select which application to download -->
   <servlet>
     <servlet-name>Start</servlet-name>
-    <servlet-class>com.untangle.tran.openvpn.servlet.Start</servlet-class>
+    <servlet-class>com.untangle.node.openvpn.servlet.Start</servlet-class>
     <load-on-startup>1</load-on-startup>
   </servlet>
 
   <!-- Download the windows setup or configuration file -->
   <servlet>
     <servlet-name>Downloader</servlet-name>
-    <servlet-class>com.untangle.tran.openvpn.servlet.Downloader</servlet-class>
+    <servlet-class>com.untangle.node.openvpn.servlet.Downloader</servlet-class>
     <load-on-startup>1</load-on-startup>
   </servlet>
 

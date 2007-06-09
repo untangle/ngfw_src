@@ -18,7 +18,7 @@ PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
 
   <servlet>
     <servlet-name>UnblockerServlet</servlet-name>
-    <servlet-class>com.untangle.tran.spyware.UnblockerServlet</servlet-class>
+    <servlet-class>com.untangle.node.spyware.UnblockerServlet</servlet-class>
     <load-on-startup>1</load-on-startup>
  </servlet>
 

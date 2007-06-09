@@ -9,14 +9,14 @@
  * $Id$
  */
 
-package com.untangle.tran.ids;
+package com.untangle.node.ids;
 
-import com.untangle.mvvm.tapi.TCPSession;
-import com.untangle.tran.http.HttpStateMachine;
-import com.untangle.tran.http.RequestLineToken;
-import com.untangle.tran.http.StatusLine;
-import com.untangle.tran.token.Chunk;
-import com.untangle.tran.token.Header;
+import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.node.http.HttpStateMachine;
+import com.untangle.node.http.RequestLineToken;
+import com.untangle.node.http.StatusLine;
+import com.untangle.node.token.Chunk;
+import com.untangle.node.token.Header;
 import org.apache.log4j.Logger;
 
 class IDSHttpHandler extends HttpStateMachine {
@@ -25,9 +25,9 @@ class IDSHttpHandler extends HttpStateMachine {
 
     private IDSDetectionEngine engine;
 
-    IDSHttpHandler(TCPSession session, IDSTransformImpl transform) {
+    IDSHttpHandler(TCPSession session, IDSNodeImpl node) {
         super(session);
-        engine = transform.getEngine();
+        engine = node.getEngine();
     }
 
     protected RequestLineToken doRequestLine(RequestLineToken requestLine) {

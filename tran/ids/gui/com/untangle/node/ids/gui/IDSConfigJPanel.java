@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.ids.gui;
+package com.untangle.node.ids.gui;
 
 import java.awt.Insets;
 import java.util.*;
@@ -17,11 +17,11 @@ import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.table.*;
 
-import com.untangle.gui.transform.*;
+import com.untangle.gui.node.*;
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.editTable.*;
-import com.untangle.mvvm.tran.*;
-import com.untangle.tran.ids.*;
+import com.untangle.uvm.node.*;
+import com.untangle.node.ids.*;
 
 public class IDSConfigJPanel extends MEditTableJPanel{
 
@@ -84,7 +84,7 @@ class IDSTableModel extends MSortedTableModel<Object>{
             newElem.setLog( (Boolean) rowVector.elementAt(4) );
             newElem.setText( (String) rowVector.elementAt(8) );
 
-            // an optimization so that the transform knows which rows are changed
+            // an optimization so that the node knows which rows are changed
             String ruleState = (String) rowVector.elementAt(0);
             boolean ruleChanged;
             if( ROW_ADD.equals(ruleState) || ROW_CHANGED.equals(ruleState) )
@@ -98,8 +98,8 @@ class IDSTableModel extends MSortedTableModel<Object>{
 
         // SAVE SETTINGS ////////
         if( !validateOnly ){
-            IDSSettings transformSettings = (IDSSettings) settings;
-            transformSettings.setRules(elemList);
+            IDSSettings nodeSettings = (IDSSettings) settings;
+            nodeSettings.setRules(elemList);
         }
 
     }

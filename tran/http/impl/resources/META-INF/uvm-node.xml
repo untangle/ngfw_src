@@ -11,11 +11,11 @@ not disclose such Confidential Information.
 $Id$
 -->
 
-<mvvm-transform>
-  <transform-desc name="http-casing"
+<uvm-node>
+  <node-desc name="http-casing"
                   display-name="Web"
-                  classname="com.untangle.tran.http.HttpTransformImpl"
-                  gui-classname="com.untangle.tran.http.gui.MCasingJPanel"
+                  classname="com.untangle.node.http.HttpNodeImpl"
+                  gui-classname="com.untangle.node.http.gui.MCasingJPanel"
                   single-instance="true"/>
   <export>http-casing-localapi.jar</export>
-</mvvm-transform>
+</uvm-node>

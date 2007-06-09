@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.nat;
+package com.untangle.node.nat;
 
 import java.net.InetAddress;
 
@@ -18,20 +18,20 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import com.untangle.mvvm.tran.AddressValidator;
-import com.untangle.mvvm.tran.ValidateException;
+import com.untangle.uvm.node.AddressValidator;
+import com.untangle.uvm.node.ValidateException;
 
-import com.untangle.mvvm.tran.firewall.MACAddress;
+import com.untangle.uvm.node.firewall.MACAddress;
 
-import com.untangle.mvvm.networking.BasicNetworkSettings;
-import com.untangle.mvvm.networking.DhcpLeaseRule;
-import com.untangle.mvvm.networking.InterfaceAlias;
-import com.untangle.mvvm.networking.IPNetworkRule;
-import com.untangle.mvvm.networking.NetworkSpace;
-import com.untangle.mvvm.networking.RedirectRule;
+import com.untangle.uvm.networking.BasicNetworkSettings;
+import com.untangle.uvm.networking.DhcpLeaseRule;
+import com.untangle.uvm.networking.InterfaceAlias;
+import com.untangle.uvm.networking.IPNetworkRule;
+import com.untangle.uvm.networking.NetworkSpace;
+import com.untangle.uvm.networking.RedirectRule;
 
 
-import com.untangle.mvvm.tran.IPaddr;
+import com.untangle.uvm.node.IPaddr;
 
 class SettingsValidator
 {

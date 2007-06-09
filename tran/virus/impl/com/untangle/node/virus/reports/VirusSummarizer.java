@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.virus.reports;
+package com.untangle.node.virus.reports;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -17,9 +17,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 
-import com.untangle.mvvm.reporting.BaseSummarizer;
-import com.untangle.mvvm.reporting.Util;
-import com.untangle.tran.virus.VirusScanner;
+import com.untangle.uvm.reporting.BaseSummarizer;
+import com.untangle.uvm.reporting.Util;
+import com.untangle.node.virus.VirusScanner;
 import org.apache.log4j.Logger;
 
 public class VirusSummarizer extends BaseSummarizer {

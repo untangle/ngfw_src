@@ -9,15 +9,15 @@
  * $Id$
  */
 
-package com.untangle.tran.spam;
+package com.untangle.node.spam;
 
-import com.untangle.mvvm.tapi.AbstractEventHandler;
-import com.untangle.mvvm.tapi.MPipeException;
-import com.untangle.mvvm.tapi.Session;
-import com.untangle.mvvm.tapi.TCPNewSessionRequest;
+import com.untangle.uvm.tapi.AbstractEventHandler;
+import com.untangle.uvm.tapi.MPipeException;
+import com.untangle.uvm.tapi.Session;
+import com.untangle.uvm.tapi.TCPNewSessionRequest;
 
-import com.untangle.mvvm.tapi.event.TCPNewSessionRequestEvent;
-import com.untangle.mvvm.tapi.event.TCPSessionEvent;
+import com.untangle.uvm.tapi.event.TCPNewSessionRequestEvent;
+import com.untangle.uvm.tapi.event.TCPSessionEvent;
 
 import org.apache.log4j.Logger;
 

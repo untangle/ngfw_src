@@ -11,21 +11,21 @@
 
 
 
-package com.untangle.tran.http.gui;
+package com.untangle.node.http.gui;
 
 import java.awt.*;
 import javax.swing.*;
 
 import com.untangle.gui.configuration.*;
-import com.untangle.gui.transform.*;
+import com.untangle.gui.node.*;
 import com.untangle.gui.util.*;
-import com.untangle.mvvm.*;
-import com.untangle.mvvm.security.*;
-import com.untangle.mvvm.tran.*;
-import com.untangle.tran.http.HttpSettings;
+import com.untangle.uvm.*;
+import com.untangle.uvm.security.*;
+import com.untangle.uvm.node.*;
+import com.untangle.node.http.HttpSettings;
 
 
-public class MCasingJPanel extends com.untangle.gui.transform.MCasingJPanel<MaintenanceCompoundSettings> {
+public class MCasingJPanel extends com.untangle.gui.node.MCasingJPanel<MaintenanceCompoundSettings> {
 
     private static final String EXCEPTION_URI_LENGTH = "The Max URI length must be between "
         + HttpSettings.MIN_URI_LENGTH
@@ -82,7 +82,7 @@ public class MCasingJPanel extends com.untangle.gui.transform.MCasingJPanel<Main
 
         // SAVE SETTINGS ////////////
         if( !validateOnly ){
-            HttpSettings httpSettings = ((HttpTransformCompoundSettings)maintenanceCompoundSettings.getHttpTransformCompoundSettings()).getHttpTransformSettings();
+            HttpSettings httpSettings = ((HttpNodeCompoundSettings)maintenanceCompoundSettings.getHttpNodeCompoundSettings()).getHttpNodeSettings();
             httpSettings.setEnabled(isHttpEnabled);
             httpSettings.setBlockLongUris(blockLongUris);
             httpSettings.setMaxUriLength(maxUriLength);
@@ -94,7 +94,7 @@ public class MCasingJPanel extends com.untangle.gui.transform.MCasingJPanel<Main
     }
 
     public void doRefresh(MaintenanceCompoundSettings maintenanceCompoundSettings){
-        HttpSettings httpSettings = ((HttpTransformCompoundSettings)maintenanceCompoundSettings.getHttpTransformCompoundSettings()).getHttpTransformSettings();
+        HttpSettings httpSettings = ((HttpNodeCompoundSettings)maintenanceCompoundSettings.getHttpNodeCompoundSettings()).getHttpNodeSettings();
 
         // HTTP ENABLED /////////
         boolean isHttpEnabled = httpSettings.isEnabled();

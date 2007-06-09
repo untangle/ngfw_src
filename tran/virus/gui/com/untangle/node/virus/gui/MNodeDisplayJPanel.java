@@ -11,20 +11,20 @@
 
 
 
-package com.untangle.tran.virus.gui;
+package com.untangle.node.virus.gui;
 
-import com.untangle.gui.transform.*;
+import com.untangle.gui.node.*;
 import com.untangle.gui.pipeline.MPipelineJPanel;
 
-import com.untangle.mvvm.*;
-import com.untangle.mvvm.tran.*;
+import com.untangle.uvm.*;
+import com.untangle.uvm.node.*;
 
 
-public class MTransformDisplayJPanel extends com.untangle.gui.transform.MTransformDisplayJPanel{
+public class MNodeDisplayJPanel extends com.untangle.gui.node.MNodeDisplayJPanel{
     
     
-    public MTransformDisplayJPanel(MTransformJPanel mTransformJPanel) {
-        super(mTransformJPanel);
+    public MNodeDisplayJPanel(MNodeJPanel mNodeJPanel) {
+        super(mNodeJPanel);
         
         super.activity0JLabel.setText("SCAN");
         super.activity1JLabel.setText("BLOCK");

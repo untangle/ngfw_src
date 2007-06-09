@@ -9,18 +9,18 @@
  * $Id$
  */
 
-package com.untangle.tran.ids;
+package com.untangle.node.ids;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import com.untangle.mvvm.tran.SessionEndpoints;
-import com.untangle.mvvm.tapi.Protocol;
-import com.untangle.mvvm.tran.PortRange;
-import com.untangle.mvvm.tran.firewall.ip.IPMatcher;
-import com.untangle.mvvm.tran.firewall.ip.IPMatcherFactory;
+import com.untangle.uvm.node.SessionEndpoints;
+import com.untangle.uvm.tapi.Protocol;
+import com.untangle.uvm.node.PortRange;
+import com.untangle.uvm.node.firewall.ip.IPMatcher;
+import com.untangle.uvm.node.firewall.ip.IPMatcherFactory;
 import org.apache.log4j.Logger;
 
 public class IDSRuleHeader {

@@ -11,22 +11,22 @@
 
 
 
-package com.untangle.tran.openvpn.gui;
+package com.untangle.node.openvpn.gui;
 
-import com.untangle.gui.transform.*;
+import com.untangle.gui.node.*;
 import com.untangle.gui.pipeline.MPipelineJPanel;
-import com.untangle.mvvm.tran.TransformContext;
-import com.untangle.mvvm.tran.TransformDesc;
+import com.untangle.uvm.node.NodeContext;
+import com.untangle.uvm.node.NodeDesc;
 import javax.swing.*;
 import com.untangle.gui.util.*;
 
 
-public class MTransformJPanel extends com.untangle.gui.transform.MTransformJPanel{
+public class MNodeJPanel extends com.untangle.gui.node.MNodeJPanel{
     
 
     
-    public MTransformJPanel(TransformContext transformContext, TransformDesc transformDesc) throws Exception {
-        super(transformContext, transformDesc);
+    public MNodeJPanel(NodeContext nodeContext, NodeDesc nodeDesc) throws Exception {
+        super(nodeContext, nodeDesc);
         
     }
     

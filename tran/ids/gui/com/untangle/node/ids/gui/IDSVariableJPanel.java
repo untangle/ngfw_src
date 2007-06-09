@@ -11,16 +11,16 @@
 
 
 
-package com.untangle.tran.ids.gui;
+package com.untangle.node.ids.gui;
 
 import java.awt.Insets;
 import java.util.*;
 import javax.swing.table.*;
 
-import com.untangle.gui.transform.*;
+import com.untangle.gui.node.*;
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.editTable.*;
-import com.untangle.tran.ids.*;
+import com.untangle.node.ids.*;
 //import javax.swing.event.*;
 
 public class IDSVariableJPanel extends MEditTableJPanel {

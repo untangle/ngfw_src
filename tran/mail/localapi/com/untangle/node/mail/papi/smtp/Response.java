@@ -8,16 +8,16 @@
  *
  * $Id$
  */
-package com.untangle.tran.mail.papi.smtp;
+package com.untangle.node.mail.papi.smtp;
 
-import static com.untangle.tran.util.BufferUtil.*;
-import static com.untangle.tran.util.ASCIIUtil.*;
-import static com.untangle.tran.util.Ascii.*;
+import static com.untangle.node.util.BufferUtil.*;
+import static com.untangle.node.util.ASCIIUtil.*;
+import static com.untangle.node.util.Ascii.*;
 
 import java.nio.ByteBuffer;
 import java.util.*;
 
-import com.untangle.tran.token.Token;
+import com.untangle.node.token.Token;
 
 
 /**

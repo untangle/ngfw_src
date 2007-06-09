@@ -9,10 +9,10 @@
  * $Id: SpywareImpl.java 8986 2007-02-27 18:48:09Z amread $
  */
 
-package com.untangle.tran.spyware;
+package com.untangle.node.spyware;
 
-import com.untangle.mvvm.security.Tid;
-import com.untangle.tran.http.ReplacementGenerator;
+import com.untangle.uvm.security.Tid;
+import com.untangle.node.http.ReplacementGenerator;
 
 public class SpywareReplacementGenerator
     extends ReplacementGenerator<SpywareBlockDetails>

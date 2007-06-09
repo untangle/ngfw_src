@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.firewall;
+package com.untangle.node.firewall;
 
 import java.io.Serializable;
 import java.util.Iterator;
@@ -22,14 +22,14 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import com.untangle.mvvm.security.Tid;
-import com.untangle.mvvm.tran.ParseException;
-import com.untangle.mvvm.tran.Validatable;
+import com.untangle.uvm.security.Tid;
+import com.untangle.uvm.node.ParseException;
+import com.untangle.uvm.node.Validatable;
 
-import com.untangle.mvvm.tran.firewall.TrafficDirectionRule;
-import com.untangle.mvvm.tran.firewall.ip.IPDBMatcher;
-import com.untangle.mvvm.tran.firewall.port.PortDBMatcher;
-import com.untangle.mvvm.tran.firewall.protocol.ProtocolDBMatcher;
+import com.untangle.uvm.node.firewall.TrafficDirectionRule;
+import com.untangle.uvm.node.firewall.ip.IPDBMatcher;
+import com.untangle.uvm.node.firewall.port.PortDBMatcher;
+import com.untangle.uvm.node.firewall.protocol.ProtocolDBMatcher;
 
 /**
  * Rule for matching based on IP addresses and subnets.

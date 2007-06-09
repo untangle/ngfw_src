@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.openvpn.gui;
+package com.untangle.node.openvpn.gui;
 
 import java.util.*;
 import javax.swing.SwingUtilities;
@@ -17,16 +17,16 @@ import javax.swing.SwingUtilities;
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.editTable.*;
 import com.untangle.gui.widgets.wizard.*;
-import com.untangle.mvvm.security.*;
-import com.untangle.mvvm.tran.*;
-import com.untangle.tran.openvpn.*;
+import com.untangle.uvm.security.*;
+import com.untangle.uvm.node.*;
+import com.untangle.node.openvpn.*;
 
 public class ServerRoutingWizardExportsJPanel extends MWizardPageJPanel {
 
-    private VpnTransform vpnTransform;
+    private VpnNode vpnNode;
 
-    public ServerRoutingWizardExportsJPanel(VpnTransform vpnTransform) {
-        this.vpnTransform = vpnTransform;
+    public ServerRoutingWizardExportsJPanel(VpnNode vpnNode) {
+        this.vpnNode = vpnNode;
         initComponents();
         ((MEditTableJPanel)configExportsJPanel).setShowDetailJPanelEnabled(false);
         ((MEditTableJPanel)configExportsJPanel).setInstantRemove(true);
@@ -72,7 +72,7 @@ public class ServerRoutingWizardExportsJPanel extends MWizardPageJPanel {
             try{
                 ServerRoutingWizard.getInfiniteProgressJComponent().startLater("Adding Exports...");
                 ExportList exportList = new ExportList(elemList);
-                vpnTransform.setExportedAddressList(exportList);
+                vpnNode.setExportedAddressList(exportList);
                 ServerRoutingWizard.getInfiniteProgressJComponent().stopLater(1500l);
             }
             catch(Exception e){

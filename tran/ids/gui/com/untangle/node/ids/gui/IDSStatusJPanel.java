@@ -9,12 +9,12 @@
  * $Id$
  */
 
-package com.untangle.tran.ids.gui;
+package com.untangle.node.ids.gui;
 
 import java.util.List;
 
-import com.untangle.gui.transform.Refreshable;
-import com.untangle.tran.ids.*;
+import com.untangle.gui.node.Refreshable;
+import com.untangle.node.ids.*;
 
 public class IDSStatusJPanel extends javax.swing.JPanel implements Refreshable<Object>{
 

@@ -8,7 +8,7 @@
  *
  * $Id$
  */
-package com.untangle.tran.nat;
+package com.untangle.node.nat;
 
 import java.net.InetAddress;
 
@@ -18,14 +18,14 @@ import java.util.HashMap;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.mvvm.tran.HostNameList;
-import com.untangle.mvvm.tran.HostName;
+import com.untangle.uvm.node.HostNameList;
+import com.untangle.uvm.node.HostName;
 
-import com.untangle.mvvm.networking.internal.DnsStaticHostInternal;
-import com.untangle.mvvm.networking.internal.ServicesInternalSettings;
+import com.untangle.uvm.networking.internal.DnsStaticHostInternal;
+import com.untangle.uvm.networking.internal.ServicesInternalSettings;
 
-import com.untangle.mvvm.user.Assistant;
-import com.untangle.mvvm.user.UserInfo;
+import com.untangle.uvm.user.Assistant;
+import com.untangle.uvm.user.UserInfo;
 
 
 class PhoneBookAssistant implements Assistant

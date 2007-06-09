@@ -11,18 +11,18 @@
 
 
 
-package com.untangle.tran.reporting.gui;
+package com.untangle.node.reporting.gui;
 
 import java.util.*;
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.table.*;
 
-import com.untangle.gui.transform.*;
+import com.untangle.gui.node.*;
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.editTable.*;
-import com.untangle.mvvm.tran.*;
-import com.untangle.tran.reporting.*;
+import com.untangle.uvm.node.*;
+import com.untangle.node.reporting.*;
 
 public class DirectoryConfigJPanel extends MEditTableJPanel {
 

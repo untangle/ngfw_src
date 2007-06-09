@@ -10,7 +10,7 @@
  */
 
 
-package com.untangle.tran.test.gui;
+package com.untangle.node.test.gui;
 
 
 import java.awt.*;
@@ -20,17 +20,17 @@ import javax.swing.*;
 import javax.swing.border.*;
 
 import com.untangle.gui.test.*;
-import com.untangle.gui.transform.*;
-import com.untangle.mvvm.client.*;
+import com.untangle.gui.node.*;
+import com.untangle.uvm.client.*;
 
 
-public class MTransformControlsJPanel extends com.untangle.gui.transform.MTransformControlsJPanel{
+public class MNodeControlsJPanel extends com.untangle.gui.node.MNodeControlsJPanel{
 
     private static final String NAME_SOME_LIST = "Some List";
     private static final String NAME_LOG = "Event Log";
 
-    public MTransformControlsJPanel(MTransformJPanel mTransformJPanel) {
-        super(mTransformJPanel);
+    public MNodeControlsJPanel(MNodeJPanel mNodeJPanel) {
+        super(mNodeJPanel);
     }
 
     public void generateGui(){
@@ -44,7 +44,7 @@ public class MTransformControlsJPanel extends com.untangle.gui.transform.MTransf
         //super.refreshableMap.put(NAME_SOME_LIST, someJPanel);
 
         // EVENT LOG /////
-        //LogJPanel logJPanel = new LogJPanel(mTransformJPanel.getTransformContext().transform(), this);
+        //LogJPanel logJPanel = new LogJPanel(mNodeJPanel.getNodeContext().node(), this);
         //addTab(NAME_LOG, null, logJPanel);
         //addShutdownable(NAME_LOG, logJPanel);
     }

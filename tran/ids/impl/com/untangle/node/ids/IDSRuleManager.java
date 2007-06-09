@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.ids;
+package com.untangle.node.ids;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,8 +17,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.*;
 
-import com.untangle.mvvm.tran.SessionEndpoints;
-import com.untangle.mvvm.tran.ParseException;
+import com.untangle.uvm.node.SessionEndpoints;
+import com.untangle.uvm.node.ParseException;
 import org.apache.log4j.Logger;
 
 public class IDSRuleManager {
@@ -31,24 +31,24 @@ public class IDSRuleManager {
     private final List<IDSRuleHeader> knownHeaders = new ArrayList<IDSRuleHeader>();
     private final Map<Integer,IDSRule> knownRules = new HashMap<Integer,IDSRule>();
 
-    private final IDSTransformImpl ids;
+    private final IDSNodeImpl ids;
 
     private final Logger logger = Logger.getLogger(getClass());
 
     // constructors -----------------------------------------------------------
 
-    public IDSRuleManager(IDSTransformImpl ids)
+    public IDSRuleManager(IDSNodeImpl ids)
     {
         this.ids = ids;
         // note the sequence of constructor calls:
-        //   IDSTransformImpl -> IDSDetectionEngine -> IDSRuleManager
+        //   IDSNodeImpl -> IDSDetectionEngine -> IDSRuleManager
         // - IDSRuleManager cannot retrieve the IDSDetectionEngine object
-        //   from IDSTransformImpl here
-        //   (IDSTransformImpl is creating an IDSDetectionEngine object and
+        //   from IDSNodeImpl here
+        //   (IDSNodeImpl is creating an IDSDetectionEngine object and
         //    thus, in the process of creating this IDSRuleManager object too
-        //    so IDSTransformImpl does not have an IDSDetectionEngine object
+        //    so IDSNodeImpl does not have an IDSDetectionEngine object
         //    to return to this IDSRuleManager object right now)
-        // - IDSRuleManager must wait for IDSTransformImpl to create and save
+        // - IDSRuleManager must wait for IDSNodeImpl to create and save
         //   an IDSDetectionEngine object
     }
 

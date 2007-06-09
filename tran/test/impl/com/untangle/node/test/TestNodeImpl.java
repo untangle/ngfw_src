@@ -8,26 +8,26 @@
  *
  * $Id$
  */
-package com.untangle.tran.test;
+package com.untangle.node.test;
 
-import com.untangle.mvvm.tapi.AbstractTransform;
-import com.untangle.mvvm.tapi.Affinity;
-import com.untangle.mvvm.tapi.Fitting;
-import com.untangle.mvvm.tapi.PipeSpec;
-import com.untangle.mvvm.tapi.Protocol;
-import com.untangle.mvvm.tapi.SoloPipeSpec;
-import com.untangle.mvvm.tapi.Subscription;
-import com.untangle.mvvm.tran.IPMaddr;
-import com.untangle.mvvm.tran.PortRange;
-import com.untangle.mvvm.util.TransactionWork;
+import com.untangle.uvm.tapi.AbstractNode;
+import com.untangle.uvm.tapi.Affinity;
+import com.untangle.uvm.tapi.Fitting;
+import com.untangle.uvm.tapi.PipeSpec;
+import com.untangle.uvm.tapi.Protocol;
+import com.untangle.uvm.tapi.SoloPipeSpec;
+import com.untangle.uvm.tapi.Subscription;
+import com.untangle.uvm.node.IPMaddr;
+import com.untangle.uvm.node.PortRange;
+import com.untangle.uvm.util.TransactionWork;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
-public class TestTransformImpl extends AbstractTransform
-    implements TestTransform
+public class TestNodeImpl extends AbstractNode
+    implements TestNode
 {
-    private final Logger logger = Logger.getLogger(TestTransformImpl.class);
+    private final Logger logger = Logger.getLogger(TestNodeImpl.class);
 
     private final EventHandler handler;
     private final SoloPipeSpec pipeSpec;
@@ -46,7 +46,7 @@ public class TestTransformImpl extends AbstractTransform
 
     // constructor ------------------------------------------------------------
 
-    public TestTransformImpl()
+    public TestNodeImpl()
     {
         this.handler = new EventHandler(this, new TestSettings());
         pipeSpec = new SoloPipeSpec
@@ -63,7 +63,7 @@ public class TestTransformImpl extends AbstractTransform
         setTestSettings(settings);
     }
 
-    // TestTransform methods --------------------------------------------------
+    // TestNode methods --------------------------------------------------
 
     public void setTestSettings(final TestSettings settings)
     {
@@ -72,13 +72,13 @@ public class TestTransformImpl extends AbstractTransform
                 public boolean doWork(Session s)
                 {
                     s.merge(settings);
-                    TestTransformImpl.this.settings = settings;
+                    TestNodeImpl.this.settings = settings;
                     return true;
                 }
 
                 public Object getResult() { return null; }
             };
-        getTransformContext().runTransaction(tw);
+        getNodeContext().runTransaction(tw);
 
         reconfigure();
     }
@@ -88,7 +88,7 @@ public class TestTransformImpl extends AbstractTransform
         return settings;
     }
 
-    // AbstractTransform methods ----------------------------------------------
+    // AbstractNode methods ----------------------------------------------
 
     @Override
     protected PipeSpec[] getPipeSpecs()
@@ -115,7 +115,7 @@ public class TestTransformImpl extends AbstractTransform
 
                 public Object getResult() { return null; }
             };
-        getTransformContext().runTransaction(tw);
+        getNodeContext().runTransaction(tw);
 
         reconfigure();
     }

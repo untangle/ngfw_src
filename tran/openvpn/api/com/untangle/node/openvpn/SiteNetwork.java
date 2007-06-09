@@ -9,14 +9,14 @@
  * $Id$
  */
 
-package com.untangle.tran.openvpn;
+package com.untangle.node.openvpn;
 
 import javax.persistence.MappedSuperclass;
 
-import com.untangle.mvvm.tran.IPaddr;
-import com.untangle.mvvm.tran.Rule;
-import com.untangle.mvvm.tran.Validatable;
-import com.untangle.mvvm.tran.ValidateException;
+import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.Rule;
+import com.untangle.uvm.node.Validatable;
+import com.untangle.uvm.node.ValidateException;
 import org.hibernate.annotations.Type;
 
 /**
@@ -42,7 +42,7 @@ public abstract class SiteNetwork extends Rule implements Validatable
     /**
      * @return network exported by this client or server.
      */
-    @Type(type="com.untangle.mvvm.type.IPaddrUserType")
+    @Type(type="com.untangle.uvm.type.IPaddrUserType")
     public IPaddr getNetwork()
     {
         return this.network;
@@ -58,7 +58,7 @@ public abstract class SiteNetwork extends Rule implements Validatable
      *
      * @return This is the network that is reachable when this client connects.
      */
-    @Type(type="com.untangle.mvvm.type.IPaddrUserType")
+    @Type(type="com.untangle.uvm.type.IPaddrUserType")
     public IPaddr getNetmask()
     {
         return this.netmask;

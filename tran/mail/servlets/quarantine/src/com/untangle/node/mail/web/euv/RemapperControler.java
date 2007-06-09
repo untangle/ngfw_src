@@ -8,20 +8,20 @@
  *
  * $Id$
  */
-package com.untangle.tran.mail.web.euv;
+package com.untangle.node.mail.web.euv;
 
 import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.untangle.tran.mail.papi.quarantine.QuarantineUserView;
-import com.untangle.tran.mail.papi.safelist.SafelistEndUserView;
-import com.untangle.tran.mail.web.euv.tags.IsReceivesRemapsTag;
-import com.untangle.tran.mail.web.euv.tags.IsRemappedTag;
-import com.untangle.tran.mail.web.euv.tags.MessagesSetTag;
-import com.untangle.tran.mail.web.euv.tags.ReceivingRemapsListTag;
-import com.untangle.tran.mail.web.euv.tags.RemappedToTag;
+import com.untangle.node.mail.papi.quarantine.QuarantineUserView;
+import com.untangle.node.mail.papi.safelist.SafelistEndUserView;
+import com.untangle.node.mail.web.euv.tags.IsReceivesRemapsTag;
+import com.untangle.node.mail.web.euv.tags.IsRemappedTag;
+import com.untangle.node.mail.web.euv.tags.MessagesSetTag;
+import com.untangle.node.mail.web.euv.tags.ReceivingRemapsListTag;
+import com.untangle.node.mail.web.euv.tags.RemappedToTag;
 
 
 

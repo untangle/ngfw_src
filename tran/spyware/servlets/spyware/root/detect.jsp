@@ -1,4 +1,4 @@
-<%@ page language="java" import="com.untangle.mvvm.*, com.untangle.mvvm.tran.*, com.untangle.mvvm.security.*, com.untangle.tran.spyware.*"%>
+<%@ page language="java" import="com.untangle.uvm.*, com.untangle.uvm.node.*, com.untangle.uvm.security.*, com.untangle.node.spyware.*"%>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">

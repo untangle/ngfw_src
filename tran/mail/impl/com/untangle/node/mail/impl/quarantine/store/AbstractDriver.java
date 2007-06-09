@@ -9,14 +9,14 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.impl.quarantine.store;
+package com.untangle.node.mail.impl.quarantine.store;
 
 import java.io.BufferedReader;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import com.untangle.tran.util.CharSequenceUtil;
+import com.untangle.node.util.CharSequenceUtil;
 import org.apache.log4j.Logger;
 
 

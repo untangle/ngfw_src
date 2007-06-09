@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.clamphish;
+package com.untangle.node.clamphish;
 
 import java.io.Serializable;
 import java.util.HashMap;

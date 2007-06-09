@@ -9,7 +9,7 @@
  * $Id: SpamAssassinDefFile.java 8868 2007-02-12 23:02:00Z cng $
  */
 
-package com.untangle.tran.spam;
+package com.untangle.node.spam;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;

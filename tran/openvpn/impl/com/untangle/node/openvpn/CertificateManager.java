@@ -8,7 +8,7 @@
  *
  * $Id$
  */
-package com.untangle.tran.openvpn;
+package com.untangle.node.openvpn;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -25,10 +25,10 @@ import java.util.Random;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.mvvm.tran.TransformException;
+import com.untangle.uvm.node.NodeException;
 
-import com.untangle.mvvm.tran.script.ScriptWriter;
-import com.untangle.mvvm.tran.script.ScriptRunner;
+import com.untangle.uvm.node.script.ScriptWriter;
+import com.untangle.uvm.node.script.ScriptRunner;
 
 class CertificateManager
 {
@@ -88,7 +88,7 @@ class CertificateManager
     {
     }
 
-    void createBase( VpnSettings settings ) throws TransformException
+    void createBase( VpnSettings settings ) throws NodeException
     {
         ScriptWriter sw = new ScriptWriter( HEADER );
 
@@ -120,7 +120,7 @@ class CertificateManager
             directory = new File( Constants.MISC_DIR );
             directory.mkdir();
         } catch ( Exception e ) {
-            throw new TransformException( "Unable to create misc directory", e );
+            throw new NodeException( "Unable to create misc directory", e );
         }
 
         sw.writeFile( CONFIG_FILE );
@@ -151,7 +151,7 @@ class CertificateManager
                     logger.info( "Revoking the certificate for [" + name + "]" );
                     callRevokeClientScript( name );
                 }
-            } catch ( TransformException e ) {
+            } catch ( NodeException e ) {
                 logger.error( "Unable to revoke the certificate for [" + name + "]", e );
             }
         }
@@ -177,7 +177,7 @@ class CertificateManager
                 logger.info( "Creating a certificate for [" + name + "]" );
                 /* Indicate that the client has a valid certificate */
                 client.setCertificateStatusValid();
-            } catch ( TransformException e ) {
+            } catch ( NodeException e ) {
                 logger.error( "Unable to create a certificate for '" + name + "'", e );
                 client.setCertificateStatusRevoked();
             }
@@ -239,17 +239,17 @@ class CertificateManager
         }
     }
 
-    void createAllClientCertificates( VpnSettings settings ) throws TransformException
+    void createAllClientCertificates( VpnSettings settings ) throws NodeException
     {
         for ( VpnClientBase client : (List<VpnClientBase>)settings.getCompleteClientList()) createClient( client );
     }
 
-    void createClient( VpnClientBase client ) throws TransformException
+    void createClient( VpnClientBase client ) throws NodeException
     {
         callCreateClientScript( client.getInternalName());
     }
 
-    void revokeClient( VpnClientBase client ) throws TransformException
+    void revokeClient( VpnClientBase client ) throws NodeException
     {
         callRevokeClientScript( client.getInternalName());
     }
@@ -278,18 +278,18 @@ class CertificateManager
     /* These function have been less useful since the functionality in
      * callScript was moved into the script runner
      */
-    private void callCreateClientScript( String commonName ) throws TransformException
+    private void callCreateClientScript( String commonName ) throws NodeException
     {
         /* Always set the recreate flag */
         ScriptRunner.getInstance().exec( GENERATE_CLIENT_SCRIPT, commonName, "recreate" );
     }
 
-    private void callRevokeClientScript( String commonName ) throws TransformException
+    private void callRevokeClientScript( String commonName ) throws NodeException
     {
         ScriptRunner.getInstance().exec( REVOKE_CLIENT_SCRIPT, commonName );
     }
 
-    private void callScript( String scriptName ) throws TransformException
+    private void callScript( String scriptName ) throws NodeException
     {
         ScriptRunner.getInstance().exec( scriptName );
     }

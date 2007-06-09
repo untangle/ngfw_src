@@ -8,7 +8,7 @@
  *
  * $Id$
  */
-package com.untangle.tran.spamassassin;
+package com.untangle.node.spamassassin;
 
 import java.io.File;
 import java.lang.Thread;
@@ -18,9 +18,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.tran.spam.ReportItem;
-import com.untangle.tran.spam.SpamReport;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.node.spam.ReportItem;
+import com.untangle.node.spam.SpamReport;
 import org.apache.log4j.Logger;
 
 public class SpamAssassinScannerClientLauncher {
@@ -82,7 +82,7 @@ public class SpamAssassinScannerClientLauncher {
 
     private SpamAssassinClient createClient(SpamAssassinClientContext cContext) {
         SpamAssassinClient client = new SpamAssassinClient(cContext, "spamc");
-        Thread thread = MvvmContextFactory.context().newThread(client);
+        Thread thread = UvmContextFactory.context().newThread(client);
         client.setThread(thread);
         clientMap.put(client, cContext);
         return client;

@@ -9,29 +9,29 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.papi;
+package com.untangle.node.mail.papi;
 
-import com.untangle.tran.mail.papi.quarantine.QuarantineTransformView;
-import com.untangle.tran.mail.papi.safelist.SafelistTransformView;
+import com.untangle.node.mail.papi.quarantine.QuarantineNodeView;
+import com.untangle.node.mail.papi.safelist.SafelistNodeView;
 
 
 public interface MailExport
 {
-    MailTransformSettings getExportSettings();
+    MailNodeSettings getExportSettings();
 
     /**
      * Access the Object which is used to submit Mails
      * to the quarantine.
      *
-     * @return the QuarantineTransformView
+     * @return the QuarantineNodeView
      */
-    QuarantineTransformView getQuarantineTransformView();
+    QuarantineNodeView getQuarantineNodeView();
 
     /**
      * Access the object used to consult the Safelist manager
      * while processing mails
      *
-     * @return the SafelistTransformView
+     * @return the SafelistNodeView
      */
-    SafelistTransformView getSafelistTransformView();
+    SafelistNodeView getSafelistNodeView();
 }

@@ -11,7 +11,7 @@
 
 
 
-package com.untangle.tran.spyware.gui;
+package com.untangle.node.spyware.gui;
 
 
 import java.awt.*;
@@ -19,12 +19,12 @@ import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.table.*;
 
-import com.untangle.gui.transform.*;
+import com.untangle.gui.node.*;
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.editTable.*;
-import com.untangle.tran.spyware.*;
+import com.untangle.node.spyware.*;
 
-public class MTransformControlsJPanel extends com.untangle.gui.transform.MTransformControlsJPanel{
+public class MNodeControlsJPanel extends com.untangle.gui.node.MNodeControlsJPanel{
 
     private static final String NAME_BLOCK = "Block Lists";
     private static final String NAME_BLOCK_ACTIVEX = "ActiveX List";
@@ -35,8 +35,8 @@ public class MTransformControlsJPanel extends com.untangle.gui.transform.MTransf
     private static final String NAME_SETTINGS = "General Settings";
     private static final String NAME_LOG = "Event Log";
 
-    public MTransformControlsJPanel(MTransformJPanel mTransformJPanel) {
-        super(mTransformJPanel);
+    public MNodeControlsJPanel(MNodeJPanel mNodeJPanel) {
+        super(mNodeJPanel);
     }
 
     public void generateGui(){
@@ -86,7 +86,7 @@ public class MTransformControlsJPanel extends com.untangle.gui.transform.MTransf
         generalConfigJPanel.setSettingsChangedListener(this);
 
         // EVENT LOG ///////
-        LogJPanel logJPanel = new LogJPanel(mTransformJPanel.getTransform(), this);
+        LogJPanel logJPanel = new LogJPanel(mNodeJPanel.getNode(), this);
         addTab(NAME_LOG, null, logJPanel);
         addShutdownable(NAME_LOG, logJPanel);
     }

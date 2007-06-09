@@ -9,17 +9,17 @@
  * $Id$
  */
 
-package com.untangle.tran.clamphish;
+package com.untangle.node.clamphish;
 
-import com.untangle.mvvm.tapi.TCPSession;
-import com.untangle.tran.mail.papi.MailExport;
-import com.untangle.tran.spam.SpamPopHandler;
+import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.node.mail.papi.MailExport;
+import com.untangle.node.spam.SpamPopHandler;
 
 public class PhishPopHandler extends SpamPopHandler
 {
     // constructors -----------------------------------------------------------
-    PhishPopHandler(TCPSession session, ClamPhishTransform transform, MailExport zMExport)
+    PhishPopHandler(TCPSession session, ClamPhishNode node, MailExport zMExport)
     {
-        super(session, transform, zMExport);
+        super(session, node, zMExport);
     }
 }

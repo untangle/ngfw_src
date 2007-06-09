@@ -8,11 +8,11 @@
  *
  * $Id$
  */
-package com.untangle.tran.virus;
+package com.untangle.node.virus;
 
 import java.io.File;
 
-import com.untangle.mvvm.tran.Scanner;
+import com.untangle.uvm.node.Scanner;
 
 public interface VirusScanner extends Scanner
 {

@@ -9,31 +9,31 @@
  * $Id$
  */
 
-package com.untangle.tran.spam;
+package com.untangle.node.spam;
 
 import java.util.LinkedList;
 import java.util.List;
 
-import com.untangle.mvvm.logging.EventLogger;
-import com.untangle.mvvm.logging.EventLoggerFactory;
-import com.untangle.mvvm.logging.EventManager;
-import com.untangle.mvvm.logging.SimpleEventFilter;
-import com.untangle.mvvm.tapi.AbstractTransform;
-import com.untangle.mvvm.tapi.Affinity;
-import com.untangle.mvvm.tapi.Fitting;
-import com.untangle.mvvm.tapi.PipeSpec;
-import com.untangle.mvvm.tapi.SoloPipeSpec;
-import com.untangle.mvvm.tran.Transform;
-import com.untangle.mvvm.tran.TransformContext;
-import com.untangle.mvvm.util.TransactionWork;
-import com.untangle.tran.token.TokenAdaptor;
+import com.untangle.uvm.logging.EventLogger;
+import com.untangle.uvm.logging.EventLoggerFactory;
+import com.untangle.uvm.logging.EventManager;
+import com.untangle.uvm.logging.SimpleEventFilter;
+import com.untangle.uvm.tapi.AbstractNode;
+import com.untangle.uvm.tapi.Affinity;
+import com.untangle.uvm.tapi.Fitting;
+import com.untangle.uvm.tapi.PipeSpec;
+import com.untangle.uvm.tapi.SoloPipeSpec;
+import com.untangle.uvm.node.Node;
+import com.untangle.uvm.node.NodeContext;
+import com.untangle.uvm.util.TransactionWork;
+import com.untangle.node.token.TokenAdaptor;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
-import static com.untangle.tran.util.Ascii.CRLF;
+import static com.untangle.node.util.Ascii.CRLF;
 
-public class SpamImpl extends AbstractTransform implements SpamTransform
+public class SpamImpl extends AbstractNode implements SpamNode
 {
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -106,7 +106,7 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
         this.scanner = scanner;
         saDaemon = new SpamAssassinDaemon();
 
-        TransformContext tctx = getTransformContext();
+        NodeContext tctx = getNodeContext();
 
         eventLogger = EventLoggerFactory.factory().getEventLogger(tctx);
         rblEventLogger = EventLoggerFactory.factory().getEventLogger(tctx);
@@ -145,38 +145,38 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
         return rblEventLogger;
     }
 
-    // Transform methods ------------------------------------------------------
+    // Node methods ------------------------------------------------------
 
     /**
      * Increment the counter for messages scanned
      */
     public void incrementScanCounter() {
         //The scanning blingy-bringer has been disabled
-        //      incrementCount(Transform.GENERIC_0_COUNTER);
+        //      incrementCount(Node.GENERIC_0_COUNTER);
     }
     /**
      * Increment the counter for blocked (SMTP only).
      */
     public void incrementBlockCounter() {
-        incrementCount(Transform.GENERIC_1_COUNTER);
+        incrementCount(Node.GENERIC_1_COUNTER);
     }
     /**
      * Increment the counter for messages passed
      */
     public void incrementPassCounter() {
-        incrementCount(Transform.GENERIC_0_COUNTER);
+        incrementCount(Node.GENERIC_0_COUNTER);
     }
     /**
      * Increment the counter for messages marked
      */
     public void incrementMarkCounter() {
-        incrementCount(Transform.GENERIC_2_COUNTER);
+        incrementCount(Node.GENERIC_2_COUNTER);
     }
     /**
      * Increment the count for messages quarantined.
      */
     public void incrementQuarantineCount() {
-        incrementCount(Transform.GENERIC_3_COUNTER);
+        incrementCount(Node.GENERIC_3_COUNTER);
     }
 
     /**
@@ -528,7 +528,7 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
     public SpamSettings getSpamSettings()
     {
         if( this.spamSettings == null )
-            logger.error("Settings not yet initialized. State: " + getTransformContext().getRunState() );
+            logger.error("Settings not yet initialized. State: " + getNodeContext().getRunState() );
 
         return this.spamSettings;
     }
@@ -554,7 +554,7 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
 
                 public Object getResult() { return null; }
             };
-        getTransformContext().runTransaction(tw);
+        getNodeContext().runTransaction(tw);
 
         return;
     }
@@ -645,7 +645,7 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
         return saLclList;
     }
 
-    // AbstractTransform methods ----------------------------------------------
+    // AbstractNode methods ----------------------------------------------
 
     @Override
     protected PipeSpec[] getPipeSpecs()
@@ -675,7 +675,7 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
 
                 public Object getResult() { return null; }
             };
-        getTransformContext().runTransaction(tw);
+        getNodeContext().runTransaction(tw);
 
         return;
     }

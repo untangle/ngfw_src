@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.openvpn;
+package com.untangle.node.openvpn;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
@@ -21,10 +21,10 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
-import com.untangle.mvvm.logging.LogEvent;
-import com.untangle.mvvm.logging.SyslogBuilder;
-import com.untangle.mvvm.logging.SyslogPriority;
-import com.untangle.mvvm.tran.IPaddr;
+import com.untangle.uvm.logging.LogEvent;
+import com.untangle.uvm.logging.SyslogBuilder;
+import com.untangle.uvm.logging.SyslogPriority;
+import com.untangle.uvm.node.IPaddr;
 import org.hibernate.annotations.Type;
 
 /**
@@ -65,7 +65,7 @@ import org.hibernate.annotations.Type;
          * @return Address of where the client connected from.
          */
         @Column(name="remote_address")
-        @Type(type="com.untangle.mvvm.type.IPaddrUserType")
+        @Type(type="com.untangle.uvm.type.IPaddrUserType")
         public IPaddr getAddress()
         {
             return this.address;

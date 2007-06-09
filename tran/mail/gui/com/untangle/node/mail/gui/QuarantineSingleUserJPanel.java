@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.gui;
+package com.untangle.node.mail.gui;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -19,21 +19,21 @@ import javax.swing.border.*;
 import javax.swing.event.*;
 import javax.swing.table.*;
 
-import com.untangle.gui.transform.*;
+import com.untangle.gui.node.*;
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.coloredTable.*;
 import com.untangle.gui.widgets.dialogs.*;
 import com.untangle.gui.widgets.editTable.*;
-import com.untangle.mvvm.tran.*;
-import com.untangle.tran.mail.papi.*;
-import com.untangle.tran.mail.papi.quarantine.*;
+import com.untangle.uvm.node.*;
+import com.untangle.node.mail.papi.*;
+import com.untangle.node.mail.papi.quarantine.*;
 
 public class QuarantineSingleUserJPanel extends javax.swing.JPanel
-    implements Refreshable<MailTransformCompoundSettings>, ComponentListener {
+    implements Refreshable<MailNodeCompoundSettings>, ComponentListener {
 
     private static final Color TABLE_BACKGROUND_COLOR = new Color(213, 213, 226);
     private QuarantineUserTableModel quarantineUserTableModel;
-    private MailTransformCompoundSettings mailTransformCompoundSettings;
+    private MailNodeCompoundSettings mailNodeCompoundSettings;
     private String account;
 
     public QuarantineSingleUserJPanel(String account) {
@@ -53,9 +53,9 @@ public class QuarantineSingleUserJPanel extends javax.swing.JPanel
         quarantineUserTableModel.setSortingStatus(3, quarantineUserTableModel.DESCENDING);
     }
 
-    public void doRefresh(MailTransformCompoundSettings mailTransformCompoundSettings){
-        this.mailTransformCompoundSettings = mailTransformCompoundSettings;
-        quarantineUserTableModel.doRefresh(mailTransformCompoundSettings);
+    public void doRefresh(MailNodeCompoundSettings mailNodeCompoundSettings){
+        this.mailNodeCompoundSettings = mailNodeCompoundSettings;
+        quarantineUserTableModel.doRefresh(mailNodeCompoundSettings);
     }
 
     public void setTableModel(MSortedTableModel mSortedTableModel){
@@ -227,10 +227,10 @@ public class QuarantineSingleUserJPanel extends javax.swing.JPanel
             // DO RESCUE
             try{
                 if( doRelease ){
-                    mailTransformCompoundSettings.getQuarantineMaintenanceView().rescue(account,emails);
+                    mailNodeCompoundSettings.getQuarantineMaintenanceView().rescue(account,emails);
                 }
                 else{
-                    mailTransformCompoundSettings.getQuarantineMaintenanceView().purge(account,emails);
+                    mailNodeCompoundSettings.getQuarantineMaintenanceView().purge(account,emails);
                 }
                 QuarantineSingleUserJDialog.instance().refreshAll();
             }
@@ -251,7 +251,7 @@ public class QuarantineSingleUserJPanel extends javax.swing.JPanel
             // DO REFRESH
             ((MConfigJDialog)QuarantineSingleUserJPanel.this.getTopLevelAncestor()).getInfiniteProgressJComponent().setTextLater("Refreshing...");
             SwingUtilities.invokeLater( new Runnable(){ public void run(){
-                quarantineUserTableModel.doRefresh(mailTransformCompoundSettings);
+                quarantineUserTableModel.doRefresh(mailNodeCompoundSettings);
             }});
             ((MConfigJDialog)QuarantineSingleUserJPanel.this.getTopLevelAncestor()).getInfiniteProgressJComponent().stopLater(1500l);
         }
@@ -281,7 +281,7 @@ public class QuarantineSingleUserJPanel extends javax.swing.JPanel
 }
 
 
-class QuarantineUserTableModel extends MSortedTableModel<MailTransformCompoundSettings> {
+class QuarantineUserTableModel extends MSortedTableModel<MailNodeCompoundSettings> {
 
     private String account;
     private static final StringConstants sc = StringConstants.getInstance();
@@ -307,12 +307,12 @@ class QuarantineUserTableModel extends MSortedTableModel<MailTransformCompoundSe
     }
 
 
-    public void generateSettings(MailTransformCompoundSettings mailTransformCompoundSettings,
+    public void generateSettings(MailNodeCompoundSettings mailNodeCompoundSettings,
                                  Vector<Vector> tableVector, boolean validateOnly) throws Exception { }
 
-    public Vector<Vector> generateRows(MailTransformCompoundSettings mailTransformCompoundSettings) {
+    public Vector<Vector> generateRows(MailNodeCompoundSettings mailNodeCompoundSettings) {
 
-        InboxIndex inboxIndex = mailTransformCompoundSettings.getInboxIndex();
+        InboxIndex inboxIndex = mailNodeCompoundSettings.getInboxIndex();
         Vector<Vector> allRows = new Vector<Vector>(inboxIndex.size());
         Vector tempRow = null;
         MailSummary mailSummary = null;

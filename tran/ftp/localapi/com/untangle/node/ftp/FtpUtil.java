@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.ftp;
+package com.untangle.node.ftp;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -18,8 +18,8 @@ import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 import java.util.regex.PatternSyntaxException;
 
-import com.untangle.tran.token.ParseException;
-import com.untangle.mvvm.tran.IPaddr;
+import com.untangle.node.token.ParseException;
+import com.untangle.uvm.node.IPaddr;
 
 class FtpUtil
 {

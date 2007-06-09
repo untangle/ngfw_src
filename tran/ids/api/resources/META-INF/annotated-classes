@@ -1,3 +1,3 @@
-com.untangle.tran.ids.IDSRule
-com.untangle.tran.ids.IDSSettings
-com.untangle.tran.ids.IDSVariable
+com.untangle.node.ids.IDSRule
+com.untangle.node.ids.IDSSettings
+com.untangle.node.ids.IDSVariable

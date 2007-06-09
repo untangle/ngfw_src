@@ -9,12 +9,12 @@
  * $Id$
  */
 
-package com.untangle.tran.virus;
+package com.untangle.node.virus;
 
-import com.untangle.mvvm.logging.EventManager;
-import com.untangle.mvvm.tran.Transform;
+import com.untangle.uvm.logging.EventManager;
+import com.untangle.uvm.node.Node;
 
-public interface VirusTransform extends Transform
+public interface VirusNode extends Node
 {
     void setVirusSettings(VirusSettings virusSettings);
     VirusSettings getVirusSettings();

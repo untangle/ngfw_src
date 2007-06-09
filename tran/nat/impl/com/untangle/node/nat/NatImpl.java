@@ -8,52 +8,52 @@
  *
  * $Id$
  */
-package com.untangle.tran.nat;
+package com.untangle.node.nat;
 
 import java.net.InetAddress;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.mvvm.MvvmLocalContext;
-import com.untangle.mvvm.MvvmState;
-import com.untangle.mvvm.localapi.SessionMatcher;
-import com.untangle.mvvm.localapi.SessionMatcherFactory;
-import com.untangle.mvvm.logging.EventLogger;
-import com.untangle.mvvm.logging.EventLoggerFactory;
-import com.untangle.mvvm.logging.EventManager;
-import com.untangle.mvvm.logging.LogEvent;
-import com.untangle.mvvm.logging.SimpleEventFilter;
-import com.untangle.mvvm.networking.IPNetwork;
-import com.untangle.mvvm.networking.IPNetworkRule;
-import com.untangle.mvvm.networking.LocalNetworkManager;
-import com.untangle.mvvm.networking.NetworkException;
-import com.untangle.mvvm.networking.NetworkSettingsListener;
-import com.untangle.mvvm.networking.NetworkSpace;
-import com.untangle.mvvm.networking.NetworkSpacesSettings;
-import com.untangle.mvvm.networking.SetupState;
-import com.untangle.mvvm.networking.internal.NetworkSpaceInternal;
-import com.untangle.mvvm.networking.internal.NetworkSpacesInternalSettings;
-import com.untangle.mvvm.networking.internal.ServicesInternalSettings;
-import com.untangle.mvvm.tapi.AbstractTransform;
-import com.untangle.mvvm.tapi.Affinity;
-import com.untangle.mvvm.tapi.Fitting;
-import com.untangle.mvvm.tapi.MPipe;
-import com.untangle.mvvm.tapi.PipeSpec;
-import com.untangle.mvvm.tapi.SoloPipeSpec;
-import com.untangle.mvvm.tran.AddressValidator;
-import com.untangle.mvvm.tran.TransformContext;
-import com.untangle.mvvm.tran.TransformContextSwitcher;
-import com.untangle.mvvm.tran.TransformException;
-import com.untangle.mvvm.tran.TransformStartException;
-import com.untangle.mvvm.tran.TransformState;
-import com.untangle.mvvm.tran.TransformStopException;
-import com.untangle.mvvm.util.DataLoader;
-import com.untangle.mvvm.util.DataSaver;
-import com.untangle.tran.token.TokenAdaptor;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.UvmLocalContext;
+import com.untangle.uvm.UvmState;
+import com.untangle.uvm.localapi.SessionMatcher;
+import com.untangle.uvm.localapi.SessionMatcherFactory;
+import com.untangle.uvm.logging.EventLogger;
+import com.untangle.uvm.logging.EventLoggerFactory;
+import com.untangle.uvm.logging.EventManager;
+import com.untangle.uvm.logging.LogEvent;
+import com.untangle.uvm.logging.SimpleEventFilter;
+import com.untangle.uvm.networking.IPNetwork;
+import com.untangle.uvm.networking.IPNetworkRule;
+import com.untangle.uvm.networking.LocalNetworkManager;
+import com.untangle.uvm.networking.NetworkException;
+import com.untangle.uvm.networking.NetworkSettingsListener;
+import com.untangle.uvm.networking.NetworkSpace;
+import com.untangle.uvm.networking.NetworkSpacesSettings;
+import com.untangle.uvm.networking.SetupState;
+import com.untangle.uvm.networking.internal.NetworkSpaceInternal;
+import com.untangle.uvm.networking.internal.NetworkSpacesInternalSettings;
+import com.untangle.uvm.networking.internal.ServicesInternalSettings;
+import com.untangle.uvm.tapi.AbstractNode;
+import com.untangle.uvm.tapi.Affinity;
+import com.untangle.uvm.tapi.Fitting;
+import com.untangle.uvm.tapi.MPipe;
+import com.untangle.uvm.tapi.PipeSpec;
+import com.untangle.uvm.tapi.SoloPipeSpec;
+import com.untangle.uvm.node.AddressValidator;
+import com.untangle.uvm.node.NodeContext;
+import com.untangle.uvm.node.NodeContextSwitcher;
+import com.untangle.uvm.node.NodeException;
+import com.untangle.uvm.node.NodeStartException;
+import com.untangle.uvm.node.NodeState;
+import com.untangle.uvm.node.NodeStopException;
+import com.untangle.uvm.util.DataLoader;
+import com.untangle.uvm.util.DataSaver;
+import com.untangle.node.token.TokenAdaptor;
 import org.apache.log4j.Logger;
 
-public class NatImpl extends AbstractTransform implements Nat
+public class NatImpl extends AbstractNode implements Nat
 {
     private final NatEventHandler handler;
     private final NatSessionManager sessionManager;
@@ -65,7 +65,7 @@ public class NatImpl extends AbstractTransform implements Nat
     private final SettingsListener listener;
     private final PhoneBookAssistant assistant;
 
-    /* Indicate whether or not the transform is starting */
+    /* Indicate whether or not the node is starting */
 
     private final SoloPipeSpec natPipeSpec;
     private final SoloPipeSpec natFtpPipeSpec;
@@ -84,9 +84,9 @@ public class NatImpl extends AbstractTransform implements Nat
     {
         this.handler          = new NatEventHandler(this);
         this.sessionManager   = new NatSessionManager(this);
-        this.statisticManager = new NatStatisticManager(getTransformContext());
+        this.statisticManager = new NatStatisticManager(getNodeContext());
         this.settingsManager  = new SettingsManager();
-        this.dhcpMonitor      = new DhcpMonitor( this, MvvmContextFactory.context());
+        this.dhcpMonitor      = new DhcpMonitor( this, UvmContextFactory.context());
         this.listener         = new SettingsListener();
         this.assistant        = new PhoneBookAssistant( this.dhcpMonitor );
 
@@ -103,7 +103,7 @@ public class NatImpl extends AbstractTransform implements Nat
 
         pipeSpecs = new SoloPipeSpec[] { natPipeSpec, natFtpPipeSpec };
 
-        TransformContext tctx = getTransformContext();
+        NodeContext tctx = getNodeContext();
         eventLogger = EventLoggerFactory.factory().getEventLogger(tctx);
 
         SimpleEventFilter ef = new NatRedirectFilter();
@@ -112,7 +112,7 @@ public class NatImpl extends AbstractTransform implements Nat
 
     public NatCommonSettings getNatSettings()
     {
-        /* Get the settings from Network Spaces (The only state in the transform is the setup state) */
+        /* Get the settings from Network Spaces (The only state in the node is the setup state) */
         LocalNetworkManager nm = getNetworkManager();
 
         SetupState state = getSetupState();
@@ -177,7 +177,7 @@ public class NatImpl extends AbstractTransform implements Nat
             throw e;
         }
 
-        boolean isEnabled = ( getRunState() == TransformState.RUNNING );
+        boolean isEnabled = ( getRunState() == NodeState.RUNNING );
         /* This isn't necessary, (the state should carry over), but
          * just in case. */
         newNetworkSettings.setIsEnabled( isEnabled );
@@ -204,26 +204,26 @@ public class NatImpl extends AbstractTransform implements Nat
     {
         /* This shouldn't fail */
 
-        /* Get the settings from Network Spaces (The only state in the transform is the setup state) */
+        /* Get the settings from Network Spaces (The only state in the node is the setup state) */
         LocalNetworkManager nm = getNetworkManager();
 
         NetworkSpacesSettings newSettings =
             this.settingsManager.resetToBasic( getTid(), nm.getNetworkSettings());
 
-        /* Only reconfigure if the transform is enabled */
-        nm.setNetworkSettings( newSettings, getRunState() == TransformState.RUNNING );
+        /* Only reconfigure if the node is enabled */
+        nm.setNetworkSettings( newSettings, getRunState() == NodeState.RUNNING );
     }
 
     /* Convert the basic settings to advanced Network Spaces */
     public void switchToAdvanced() throws Exception
     {
-        /* Get the settings from Network Spaces (The only state in the transform is the setup state) */
+        /* Get the settings from Network Spaces (The only state in the node is the setup state) */
         LocalNetworkManager nm = getNetworkManager();
 
         NetworkSpacesSettings newSettings = this.settingsManager.basicToAdvanced( nm.getNetworkSettings());
 
-        /* Only reconfigure if the transform is enabled */
-        nm.setNetworkSettings( newSettings, getRunState() == TransformState.RUNNING );
+        /* Only reconfigure if the node is enabled */
+        nm.setNetworkSettings( newSettings, getRunState() == NodeState.RUNNING );
     }
 
     public SetupState getSetupState()
@@ -259,7 +259,7 @@ public class NatImpl extends AbstractTransform implements Nat
         return natFtpPipeSpec.getMPipe();
     }
 
-    // AbstractTransform methods ----------------------------------------------
+    // AbstractNode methods ----------------------------------------------
 
     @Override
     protected PipeSpec[] getPipeSpecs()
@@ -291,18 +291,18 @@ public class NatImpl extends AbstractTransform implements Nat
     }
 
     @Override
-    protected void postInit(String[] args) throws TransformException
+    protected void postInit(String[] args) throws NodeException
     {
         super.postInit( args );
 
-        /* Register a listener, this should hang out until the transform is removed dies. */
+        /* Register a listener, this should hang out until the node is removed dies. */
         getNetworkManager().registerListener( this.listener );
 
-        MvvmContextFactory.context().localPhoneBook().registerAssistant( this.assistant );
+        UvmContextFactory.context().localPhoneBook().registerAssistant( this.assistant );
 
         /* Check if the settings have been upgraded yet */
         DataLoader<NatSettingsImpl> natLoader = new DataLoader<NatSettingsImpl>( "NatSettingsImpl",
-                                                                                 getTransformContext());
+                                                                                 getNodeContext());
 
         NatSettingsImpl settings = natLoader.loadData();
 
@@ -338,26 +338,26 @@ public class NatImpl extends AbstractTransform implements Nat
             if ( this.isUpgrade ) {
                 /* Change to basic mode */
                 settings.setSetupState( SetupState.BASIC );
-                DataSaver<NatSettingsImpl> dataSaver = new DataSaver<NatSettingsImpl>( getTransformContext());
+                DataSaver<NatSettingsImpl> dataSaver = new DataSaver<NatSettingsImpl>( getNodeContext());
                 dataSaver.saveData( settings );
             }
         }
     }
 
-    protected void preStart() throws TransformStartException
+    protected void preStart() throws NodeStartException
     {
-        MvvmLocalContext context = MvvmContextFactory.context();
-        MvvmState state = context.state();
+        UvmLocalContext context = UvmContextFactory.context();
+        UvmState state = context.state();
         LocalNetworkManager networkManager = getNetworkManager();
 
         /* Enable the network settings */
-        if ( state.equals( MvvmState.RUNNING ) || this.isUpgrade ) {
+        if ( state.equals( UvmState.RUNNING ) || this.isUpgrade ) {
             logger.debug( "enabling network spaces settings because user powered on nat or upgrade." );
 
             try {
                 networkManager.enableNetworkSpaces();
             } catch ( Exception e ) {
-                throw new TransformStartException( "Unable to enable network spaces", e );
+                throw new NodeStartException( "Unable to enable network spaces", e );
             }
 
             this.isUpgrade = false;
@@ -373,12 +373,12 @@ public class NatImpl extends AbstractTransform implements Nat
             this.assistant.configure( servicesSettings );
             this.handler.configure( networkSettings );
             networkManager.startServices();
-        } catch( TransformException e ) {
+        } catch( NodeException e ) {
             logger.error( "Could not configure the handler.", e );
-            throw new TransformStartException( "Unable to configure the handler" );
+            throw new NodeStartException( "Unable to configure the handler" );
         } catch( NetworkException e ) {
             logger.error( "Could not start services.", e );
-            throw new TransformStartException( "Unable to configure the handler" );
+            throw new NodeStartException( "Unable to configure the handler" );
         }
 
         statisticManager.start();
@@ -390,19 +390,19 @@ public class NatImpl extends AbstractTransform implements Nat
         shutdownMatchingSessions();
     }
 
-    protected void postStop() throws TransformStopException
+    protected void postStop() throws NodeStopException
     {
         /* Kill all active sessions */
         shutdownMatchingSessions();
 
-        MvvmLocalContext context = MvvmContextFactory.context();
+        UvmLocalContext context = UvmContextFactory.context();
 
-        MvvmState state = context.state();
+        UvmState state = context.state();
 
         LocalNetworkManager networkManager = context.networkManager();
 
         /* Only stop the services if the box isn't going down (the user turned off the appliance) */
-        if ( state.equals( MvvmState.RUNNING ))  {
+        if ( state.equals( UvmState.RUNNING ))  {
             logger.debug( "Disabling services since user turned off network spaces." );
             networkManager.stopServices();
         }
@@ -416,7 +416,7 @@ public class NatImpl extends AbstractTransform implements Nat
 
         /* Deconfigure the network spaces */
         /* Only stop the services if the box isn't going down (the user turned off the appliance) */
-        if ( state.equals( MvvmState.RUNNING )) {
+        if ( state.equals( UvmState.RUNNING )) {
             logger.debug( "Disabling network spaces since user turned off network spaces." );
             try {
                 networkManager.disableNetworkSpaces();
@@ -426,15 +426,15 @@ public class NatImpl extends AbstractTransform implements Nat
         }
     }
 
-    @Override protected void postDestroy() throws TransformException
+    @Override protected void postDestroy() throws NodeException
     {
         /* Deregister the network settings listener */
         getNetworkManager().unregisterListener( this.listener );
 
-        MvvmContextFactory.context().localPhoneBook().unregisterAssistant( this.assistant );
+        UvmContextFactory.context().localPhoneBook().unregisterAssistant( this.assistant );
     }
 
-    public void networkSettingsEvent( ) throws TransformException
+    public void networkSettingsEvent( ) throws NodeException
     {
         logger.info("networkSettingsEvent");
 
@@ -445,7 +445,7 @@ public class NatImpl extends AbstractTransform implements Nat
         NetworkSpacesInternalSettings networkSettings = nm.getNetworkInternalSettings();
         ServicesInternalSettings servicesSettings = nm.getServicesInternalSettings();
 
-        if ( getRunState() == TransformState.RUNNING ) {
+        if ( getRunState() == NodeState.RUNNING ) {
             /* Have to configure DHCP before the handler, this automatically starts the dns server */
             configureDhcpMonitor( servicesSettings.getIsDhcpEnabled());
             this.handler.configure( networkSettings );
@@ -467,7 +467,7 @@ public class NatImpl extends AbstractTransform implements Nat
         }
     }
 
-    /* Kill all sessions when starting or stopping this transform */
+    /* Kill all sessions when starting or stopping this node */
     protected SessionMatcher sessionMatcher()
     {
         return SessionMatcherFactory.getAllInstance();
@@ -589,7 +589,7 @@ public class NatImpl extends AbstractTransform implements Nat
 
     private LocalNetworkManager getNetworkManager()
     {
-        return MvvmContextFactory.context().networkManager();
+        return UvmContextFactory.context().networkManager();
     }
     private NetworkSpacesInternalSettings getNetworkSettings()
     {
@@ -607,17 +607,17 @@ public class NatImpl extends AbstractTransform implements Nat
     }
 
     class SettingsListener
-        implements NetworkSettingsListener, TransformContextSwitcher.Event<NetworkSpacesInternalSettings>
+        implements NetworkSettingsListener, NodeContextSwitcher.Event<NetworkSpacesInternalSettings>
     {
         /* Use this to automatically switch context */
-        private final TransformContextSwitcher<NetworkSpacesInternalSettings> tcs;
+        private final NodeContextSwitcher<NetworkSpacesInternalSettings> tcs;
 
         /* This are the settings passed in by the network settings */
         private NetworkSpacesInternalSettings settings;
 
         SettingsListener()
         {
-            tcs = new TransformContextSwitcher<NetworkSpacesInternalSettings>( getTransformContext());
+            tcs = new NodeContextSwitcher<NetworkSpacesInternalSettings>( getNodeContext());
         }
 
         public void event( NetworkSpacesInternalSettings settings )
@@ -625,14 +625,14 @@ public class NatImpl extends AbstractTransform implements Nat
             tcs.run( this, settings );
         }
 
-        /* TransformContextSwitcher.Event */
+        /* NodeContextSwitcher.Event */
         public void handle( NetworkSpacesInternalSettings settings )
         {
             if ( logger.isDebugEnabled()) logger.debug( "network settings changed:" + settings );
             try {
                 networkSettingsEvent();
-            } catch( TransformException e ) {
-                logger.error( "Unable to reconfigure the NAT transform" );
+            } catch( NodeException e ) {
+                logger.error( "Unable to reconfigure the NAT node" );
             }
         }
     }

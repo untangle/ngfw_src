@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.protofilter;
+package com.untangle.node.protofilter;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -25,12 +25,12 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import com.untangle.mvvm.security.Tid;
+import com.untangle.uvm.security.Tid;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.IndexColumn;
 
 /**
- * Settings for the ProtoFilter transform.
+ * Settings for the ProtoFilter node.
  *
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0

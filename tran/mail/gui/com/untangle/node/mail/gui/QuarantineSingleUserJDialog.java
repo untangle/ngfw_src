@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.gui;
+package com.untangle.node.mail.gui;
 
 import java.awt.Dialog;
 import java.awt.Dimension;
@@ -20,9 +20,9 @@ import javax.swing.table.*;
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.dialogs.*;
 import com.untangle.gui.widgets.editTable.*;
-import com.untangle.mvvm.tran.*;
-import com.untangle.tran.mail.papi.*;
-import com.untangle.tran.mail.papi.quarantine.*;
+import com.untangle.uvm.node.*;
+import com.untangle.node.mail.papi.*;
+import com.untangle.node.mail.papi.quarantine.*;
 
 
 
@@ -32,10 +32,10 @@ public class QuarantineSingleUserJDialog extends MConfigJDialog {
 
     private String account;
 
-    public QuarantineSingleUserJDialog(Dialog topLevelDialog, MailTransformCompoundSettings mailTransformCompoundSettings, String account) {
+    public QuarantineSingleUserJDialog(Dialog topLevelDialog, MailNodeCompoundSettings mailNodeCompoundSettings, String account) {
         super(topLevelDialog);
         setHelpSource("email_config");
-        compoundSettings = mailTransformCompoundSettings;
+        compoundSettings = mailNodeCompoundSettings;
         this.account = account;
         INSTANCE = this;
     }
@@ -59,6 +59,6 @@ public class QuarantineSingleUserJDialog extends MConfigJDialog {
 
     protected void refreshAll() throws Exception {
         super.refreshAll();
-        ((MailTransformCompoundSettings)compoundSettings).loadInboxIndex(account);
+        ((MailNodeCompoundSettings)compoundSettings).loadInboxIndex(account);
     }
 }

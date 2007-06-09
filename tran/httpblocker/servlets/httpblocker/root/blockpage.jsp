@@ -1,19 +1,19 @@
-<%@ page language="java" import="com.untangle.mvvm.*, com.untangle.mvvm.tran.*, com.untangle.mvvm.security.*, com.untangle.tran.httpblocker.*"%>
+<%@ page language="java" import="com.untangle.uvm.*, com.untangle.uvm.node.*, com.untangle.uvm.security.*, com.untangle.node.httpblocker.*"%>
 
 <%
-MvvmLocalContext mvvm = MvvmContextFactory.context();
-BrandingSettings bs = mvvm.brandingManager().getBrandingSettings();
+UvmLocalContext uvm = UvmContextFactory.context();
+BrandingSettings bs = uvm.brandingManager().getBrandingSettings();
 String company = bs.getCompanyName();
 String companyUrl = bs.getCompanyUrl();
 
-LocalTransformManager tman = mvvm.transformManager();
+LocalNodeManager tman = uvm.nodeManager();
 
 String nonce = request.getParameter("nonce");
 String tidStr = request.getParameter("tid");
 Tid tid = new Tid(Long.parseLong(tidStr));
 
-TransformContext tctx = tman.transformContext(tid);
-HttpBlocker tran = (HttpBlocker)tctx.transform();
+NodeContext tctx = tman.nodeContext(tid);
+HttpBlocker tran = (HttpBlocker)tctx.node();
 HttpBlockerBlockDetails bd = tran.getDetails(nonce);
 
 String header = null == bd ? "" : bd.getHeader();

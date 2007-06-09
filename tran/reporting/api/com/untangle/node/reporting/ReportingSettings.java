@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.reporting;
+package com.untangle.node.reporting;
 
 import java.io.Serializable;
 import java.util.Calendar;
@@ -27,11 +27,11 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import com.untangle.mvvm.security.Tid;
-import com.untangle.mvvm.tran.IPMaddrDirectory;
+import com.untangle.uvm.security.Tid;
+import com.untangle.uvm.node.IPMaddrDirectory;
 
 /**
- * Settings for the Reporting Transform.
+ * Settings for the Reporting Node.
  *
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
@@ -65,7 +65,7 @@ public class ReportingSettings implements Serializable
     }
 
     /**
-     * Transform id for these settings.
+     * Node id for these settings.
      *
      * @return tid for these settings
      */

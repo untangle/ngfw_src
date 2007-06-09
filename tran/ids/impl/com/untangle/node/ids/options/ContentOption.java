@@ -9,18 +9,18 @@
  * $Id$
  */
 
-package com.untangle.tran.ids.options;
+package com.untangle.node.ids.options;
 
 import java.nio.ByteBuffer;
 import java.text.CharacterIterator;
 import java.util.regex.*;
 
 import com.sun.org.apache.xerces.internal.impl.xpath.regex.BMPattern;
-import com.untangle.mvvm.tapi.event.*;
-import com.untangle.tran.ids.IDSRuleSignature;
-import com.untangle.tran.ids.IDSSessionInfo;
-import com.untangle.tran.util.AsciiCharBuffer;
-import com.untangle.tran.util.AsciiCharBufferCharacterIterator;
+import com.untangle.uvm.tapi.event.*;
+import com.untangle.node.ids.IDSRuleSignature;
+import com.untangle.node.ids.IDSSessionInfo;
+import com.untangle.node.util.AsciiCharBuffer;
+import com.untangle.node.util.AsciiCharBufferCharacterIterator;
 import org.apache.log4j.Logger;
 
 /**

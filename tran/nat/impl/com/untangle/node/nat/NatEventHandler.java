@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.nat;
+package com.untangle.node.nat;
 
 import java.net.InetAddress;
 import java.net.Inet4Address;
@@ -19,59 +19,59 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Collections;
 
-import com.untangle.mvvm.ArgonManager;
-import com.untangle.mvvm.NetworkManager;
-import com.untangle.mvvm.IntfConstants;
-import com.untangle.mvvm.MvvmContextFactory;
+import com.untangle.uvm.ArgonManager;
+import com.untangle.uvm.NetworkManager;
+import com.untangle.uvm.IntfConstants;
+import com.untangle.uvm.UvmContextFactory;
 
-import com.untangle.mvvm.logging.LogEvent;
-import com.untangle.mvvm.localapi.ArgonInterface;
+import com.untangle.uvm.logging.LogEvent;
+import com.untangle.uvm.localapi.ArgonInterface;
 
-import com.untangle.mvvm.networking.NetworkException;
-import com.untangle.mvvm.networking.IPNetwork;
-import com.untangle.mvvm.networking.RedirectRule;
-import com.untangle.mvvm.networking.internal.NetworkSpaceInternal;
-import com.untangle.mvvm.networking.internal.NetworkSpacesInternalSettings;
-import com.untangle.mvvm.networking.internal.InterfaceInternal;
-import com.untangle.mvvm.networking.internal.RedirectInternal;
+import com.untangle.uvm.networking.NetworkException;
+import com.untangle.uvm.networking.IPNetwork;
+import com.untangle.uvm.networking.RedirectRule;
+import com.untangle.uvm.networking.internal.NetworkSpaceInternal;
+import com.untangle.uvm.networking.internal.NetworkSpacesInternalSettings;
+import com.untangle.uvm.networking.internal.InterfaceInternal;
+import com.untangle.uvm.networking.internal.RedirectInternal;
 
-import com.untangle.mvvm.tapi.AbstractEventHandler;
-import com.untangle.mvvm.tapi.IPNewSessionRequest;
-import com.untangle.mvvm.tapi.IPSession;
-import com.untangle.mvvm.tapi.MPipeException;
-import com.untangle.mvvm.tapi.Protocol;
-import com.untangle.mvvm.tapi.UDPNewSessionRequest;
-import com.untangle.mvvm.tapi.UDPSession;
-import com.untangle.mvvm.tapi.event.TCPNewSessionRequestEvent;
-import com.untangle.mvvm.tapi.event.TCPSessionEvent;
-import com.untangle.mvvm.tapi.event.UDPNewSessionRequestEvent;
-import com.untangle.mvvm.tapi.event.UDPSessionEvent;
-import com.untangle.mvvm.tran.IPaddr;
-import com.untangle.mvvm.tran.Transform;
-import com.untangle.mvvm.tran.TransformException;
-import com.untangle.mvvm.tran.ParseException;
+import com.untangle.uvm.tapi.AbstractEventHandler;
+import com.untangle.uvm.tapi.IPNewSessionRequest;
+import com.untangle.uvm.tapi.IPSession;
+import com.untangle.uvm.tapi.MPipeException;
+import com.untangle.uvm.tapi.Protocol;
+import com.untangle.uvm.tapi.UDPNewSessionRequest;
+import com.untangle.uvm.tapi.UDPSession;
+import com.untangle.uvm.tapi.event.TCPNewSessionRequestEvent;
+import com.untangle.uvm.tapi.event.TCPSessionEvent;
+import com.untangle.uvm.tapi.event.UDPNewSessionRequestEvent;
+import com.untangle.uvm.tapi.event.UDPSessionEvent;
+import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.Node;
+import com.untangle.uvm.node.NodeException;
+import com.untangle.uvm.node.ParseException;
 
-import com.untangle.mvvm.tran.firewall.ip.IPMatcher;
-import com.untangle.mvvm.tran.firewall.ip.IPMatcherFactory;
-import com.untangle.mvvm.tran.firewall.intf.IntfMatcher;
-import com.untangle.mvvm.tran.firewall.intf.IntfMatcherFactory;
-import com.untangle.mvvm.tran.firewall.port.PortMatcher;
-import com.untangle.mvvm.tran.firewall.port.PortMatcherFactory;
-import com.untangle.mvvm.tran.firewall.InterfaceAddressRedirect;
-import com.untangle.mvvm.tran.firewall.InterfaceRedirect;
-import com.untangle.mvvm.tran.firewall.InterfaceStaticRedirect;
-import com.untangle.mvvm.tran.firewall.protocol.ProtocolMatcher;
-import com.untangle.mvvm.tran.firewall.protocol.ProtocolMatcherFactory;
+import com.untangle.uvm.node.firewall.ip.IPMatcher;
+import com.untangle.uvm.node.firewall.ip.IPMatcherFactory;
+import com.untangle.uvm.node.firewall.intf.IntfMatcher;
+import com.untangle.uvm.node.firewall.intf.IntfMatcherFactory;
+import com.untangle.uvm.node.firewall.port.PortMatcher;
+import com.untangle.uvm.node.firewall.port.PortMatcherFactory;
+import com.untangle.uvm.node.firewall.InterfaceAddressRedirect;
+import com.untangle.uvm.node.firewall.InterfaceRedirect;
+import com.untangle.uvm.node.firewall.InterfaceStaticRedirect;
+import com.untangle.uvm.node.firewall.protocol.ProtocolMatcher;
+import com.untangle.uvm.node.firewall.protocol.ProtocolMatcherFactory;
 
 import org.apache.log4j.Logger;
 
-import static com.untangle.tran.nat.NatConstants.*;
+import static com.untangle.node.nat.NatConstants.*;
 
 class NatEventHandler extends AbstractEventHandler
 {
     private final Logger logger = Logger.getLogger(NatEventHandler.class);
     
-    private static final String PROPERTY_BASE = "com.untangle.tran.nat.";
+    private static final String PROPERTY_BASE = "com.untangle.node.nat.";
     private static final String PROPERTY_TCP_PORT_START = PROPERTY_BASE + "tcp-port-start";
     private static final String PROPERTY_TCP_PORT_END   = PROPERTY_BASE + "tcp-port-end";
     private static final String PROPERTY_UDP_PORT_START = PROPERTY_BASE + "udp-port-start";
@@ -111,14 +111,14 @@ class NatEventHandler extends AbstractEventHandler
     /* Tracks the open ICMP identifiers, Not exactly a port, but same kind of thing */
     private final PortList icmpPidList;
 
-    /* Nat Transform */
-    private final NatImpl transform;
+    /* Nat Node */
+    private final NatImpl node;
 
 
     /* Setup  */
-    NatEventHandler( NatImpl transform )
+    NatEventHandler( NatImpl node )
     {
-        super(transform);
+        super(node);
 
         int start = Integer.getInteger( PROPERTY_TCP_PORT_START, TCP_NAT_PORT_START );
         int end = Integer.getInteger( PROPERTY_TCP_PORT_END, TCP_NAT_PORT_END );
@@ -131,7 +131,7 @@ class NatEventHandler extends AbstractEventHandler
         start = Integer.getInteger( PROPERTY_ICMP_PID_START, ICMP_PID_START );
         end = Integer.getInteger( PROPERTY_ICMP_PID_END, ICMP_PID_END );
         icmpPidList = PortList.makePortList( start, end );
-        this.transform = transform;
+        this.node = node;
     }
 
     public void handleTCPNewSessionRequest( TCPNewSessionRequestEvent event )
@@ -159,7 +159,7 @@ class NatEventHandler extends AbstractEventHandler
         request.attach( attachment );
         
         if ( matchesTrafficBlocker( request )) {
-            transform.incrementCount( BLOCK_COUNTER ); // BLOCK COUNTER
+            node.incrementCount( BLOCK_COUNTER ); // BLOCK COUNTER
             
             /* XXX How should the session be rejected */
             request.rejectSilently();
@@ -182,7 +182,7 @@ class NatEventHandler extends AbstractEventHandler
                 request.release( true );
 
                 if ( isFtp( request, protocol )) {
-                    transform.getSessionManager().registerSession( request, protocol,
+                    node.getSessionManager().registerSession( request, protocol,
                                                                    clientAddr, clientPort,
                                                                    serverAddr, serverPort );
 
@@ -195,7 +195,7 @@ class NatEventHandler extends AbstractEventHandler
             /* If nat is on, and this session wasn't natted,
              * redirected or dmzed, it must be rejected */
             if ( isUnmodifiedSessionBlocked( request )) {
-                transform.incrementCount( BLOCK_COUNTER ); // BLOCK COUNTER
+                node.incrementCount( BLOCK_COUNTER ); // BLOCK COUNTER
                 
                 /* XXX How should the session be rejected */
                 request.rejectSilently();
@@ -220,7 +220,7 @@ class NatEventHandler extends AbstractEventHandler
         if (na != null) {
             LogEvent eventToLog = na.eventToLog();
             if (eventToLog != null) {
-                transform.log(eventToLog);
+                node.log(eventToLog);
                 na.eventToLog(null);
             }
         }
@@ -235,7 +235,7 @@ class NatEventHandler extends AbstractEventHandler
         if (na != null) {
             LogEvent eventToLog = na.eventToLog();
             if (eventToLog != null) {
-                transform.log(eventToLog);
+                node.log(eventToLog);
                 na.eventToLog(null);
             }
         }
@@ -283,10 +283,10 @@ class NatEventHandler extends AbstractEventHandler
     }
 
     void configure( NetworkSpacesInternalSettings settings )
-        throws TransformException
+        throws NodeException
     {        
-        ArgonManager argonManager = MvvmContextFactory.context().argonManager();
-        NetworkManager networkManager = MvvmContextFactory.context().networkManager();
+        ArgonManager argonManager = UvmContextFactory.context().argonManager();
+        NetworkManager networkManager = UvmContextFactory.context().networkManager();
 
         /* Create a new override */
         List<InterfaceRedirect> overrideList = new LinkedList<InterfaceRedirect>();
@@ -364,7 +364,7 @@ class NatEventHandler extends AbstractEventHandler
     /* Not sure if this should ever throw an exception */
     void deconfigure()
     {
-        MvvmContextFactory.context().networkManager().subscribeLocalOutside( false );
+        UvmContextFactory.context().networkManager().subscribeLocalOutside( false );
     }
 
     /**
@@ -429,10 +429,10 @@ class NatEventHandler extends AbstractEventHandler
             ((NatAttachment)request.attachment()).releasePort( port );
 
             /* Increment the NAT counter */
-            transform.incrementCount( NAT_COUNTER ); // NAT COUNTER
+            node.incrementCount( NAT_COUNTER ); // NAT COUNTER
 
             /* Log the stat */
-            transform.statisticManager.incrNatSessions();
+            node.statisticManager.incrNatSessions();
 
             return true;
         }
@@ -446,9 +446,9 @@ class NatEventHandler extends AbstractEventHandler
     private boolean handleRedirect( IPNewSessionRequest request, Protocol protocol ) throws MPipeException
     {
         /* Check if this is a session redirect (A redirect related to a session) */
-        if ( transform.getSessionManager().isSessionRedirect( request, protocol )) {
+        if ( node.getSessionManager().isSessionRedirect( request, protocol )) {
             /* Increment the NAT counter */
-            transform.incrementCount( REDIR_COUNTER );
+            node.incrementCount( REDIR_COUNTER );
 
             return true;
         }
@@ -461,7 +461,7 @@ class NatEventHandler extends AbstractEventHandler
                 matcher.redirect( request );
 
                 /* Increment the NAT counter */
-                transform.incrementCount( REDIR_COUNTER );
+                node.incrementCount( REDIR_COUNTER );
 
                 /* log the event if necessary */
                 if ( matcher.getIsLoggingEnabled()) {
@@ -475,7 +475,7 @@ class NatEventHandler extends AbstractEventHandler
                 }
 
                 /* Log the stat */
-                transform.statisticManager.incrRedirect( protocol, request );
+                node.statisticManager.incrRedirect( protocol, request );
 
                 return true;
             }
@@ -495,7 +495,7 @@ class NatEventHandler extends AbstractEventHandler
                 if ( logger.isDebugEnabled()) logger.debug( "dmz match" ); //  DELME
 
                 /* Increment the DMZ counter */
-                transform.incrementCount( DMZ_COUNTER ); // DMZ COUNTER
+                node.incrementCount( DMZ_COUNTER ); // DMZ COUNTER
 
                 matcher.redirect( request );
 
@@ -508,7 +508,7 @@ class NatEventHandler extends AbstractEventHandler
                         attachment.eventToLog(new RedirectEvent( request.pipelineEndpoints()));
                     }
                 }
-                transform.statisticManager.incrDmzSessions();
+                node.statisticManager.incrDmzSessions();
                 return true;
             }
         }
@@ -545,7 +545,7 @@ class NatEventHandler extends AbstractEventHandler
         if ( !space.getIsTrafficForwarded()) {
             try {
                 blockers.add( RequestIntfMatcher.makeInstance( space ));
-            } catch ( TransformException e ) {
+            } catch ( NodeException e ) {
                 logger.error( "unable to create a traffic blocker for [" + space + "]", e );
             }
         }
@@ -554,7 +554,7 @@ class NatEventHandler extends AbstractEventHandler
             /* Block traffic from entering this network space unfiltered */
             try {
                 unmodified.add( RequestIntfMatcher.makeNatInstance( space ));
-            } catch ( TransformException e ) { 
+            } catch ( NodeException e ) { 
                 logger.error( "Unable to create a traffic passer for [" + space + "]", e );
             }
         }
@@ -622,7 +622,7 @@ class NatEventHandler extends AbstractEventHandler
         if ( attachment.isManagedSession()) {
             logger.debug( "Removing session from the managed list" );
 
-            transform.getSessionManager().releaseSession( session, protocol );
+            node.getSessionManager().releaseSession( session, protocol );
         }
     }
 
@@ -690,7 +690,7 @@ class RequestIntfMatcher
         return this.client.toString() + connector + this.server;
     }
     
-    static RequestIntfMatcher makeInstance( NetworkSpaceInternal space ) throws TransformException
+    static RequestIntfMatcher makeInstance( NetworkSpaceInternal space ) throws NodeException
     {
         List<InterfaceInternal> interfaceList = space.getInterfaceList();
         IntfMatcherFactory imf = IntfMatcherFactory.getInstance();
@@ -706,13 +706,13 @@ class RequestIntfMatcher
             clientIntfMatcher = imf.makeSetMatcher( intfArray );
             serverIntfMatcher = imf.makeInverseMatcher( intfArray );
         } catch ( ParseException e ) {
-            throw new TransformException( "Unable to create the interface matchers", e );
+            throw new NodeException( "Unable to create the interface matchers", e );
         }
         
         return new RequestIntfMatcher( clientIntfMatcher, serverIntfMatcher );
     }
 
-    static RequestIntfMatcher makeNatInstance( NetworkSpaceInternal space ) throws TransformException
+    static RequestIntfMatcher makeNatInstance( NetworkSpaceInternal space ) throws NodeException
     {
         List<InterfaceInternal> interfaceList = space.getInterfaceList();
         IntfMatcherFactory imf = IntfMatcherFactory.getInstance();
@@ -733,7 +733,7 @@ class RequestIntfMatcher
             clientIntfMatcher = imf.makeInverseMatcher( clientIntfArray );
             serverIntfMatcher = imf.makeSetMatcher( serverIntfArray );
         } catch ( ParseException e ) {
-            throw new TransformException( "Unable to create the interface matchers", e );
+            throw new NodeException( "Unable to create the interface matchers", e );
         }
         
         return new RequestIntfMatcher( clientIntfMatcher, serverIntfMatcher );
@@ -799,7 +799,7 @@ class NatMatcher
     
     /* Create a matcher for handling traffic to be NATd */
     static NatMatcher makeNatMatcher( IPNetwork network, NetworkSpaceInternal space )
-        throws TransformException
+        throws NodeException
     {
         IntfMatcherFactory intfMatcherFactory = IntfMatcherFactory.getInstance();
         IPMatcherFactory imf = IPMatcherFactory.getInstance();
@@ -837,7 +837,7 @@ class NatMatcher
             clientIntfMatcher = intfMatcherFactory.makeSetMatcher( intfArray );            
             serverIntfMatcher = intfMatcherFactory.makeInverseMatcher( dstIntfArray );
         } catch ( ParseException e ) {
-            throw new TransformException( "Unable to create the client or server interface matcher " +
+            throw new NodeException( "Unable to create the client or server interface matcher " +
                                           "for a NAT matcher", e );
         }
 
@@ -913,7 +913,7 @@ class DmzMatcher
 
     /* Create a matcher for handling DMZ traffic */
     static DmzMatcher makeDmzMatcher( NetworkSpaceInternal space, NetworkSpacesInternalSettings settings ) 
-        throws TransformException
+        throws NodeException
     {
         IntfMatcherFactory intfMatcherFactory = IntfMatcherFactory.getInstance();
         IPMatcherFactory imf = IPMatcherFactory.getInstance();
@@ -950,7 +950,7 @@ class DmzMatcher
             clientIntfMatcher = intfMatcherFactory.makeSetMatcher( intfArray );
             serverIntfMatcher = intfMatcherFactory.makeInverseMatcher( intfArray );
         } catch ( ParseException e ) {
-            throw new TransformException( "Unable to create the interface matchers", e );
+            throw new NodeException( "Unable to create the interface matchers", e );
         }
 
         InetAddress dmzHost = null;

@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.papi;
+package com.untangle.node.mail.papi;
 
 import java.io.Serializable;
 import javax.persistence.CascadeType;
@@ -23,7 +23,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import com.untangle.mvvm.tran.Rule;
+import com.untangle.uvm.node.Rule;
 
 /**
  * Class used to hold an email address (needed for

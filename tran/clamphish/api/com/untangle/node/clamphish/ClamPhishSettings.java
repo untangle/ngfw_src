@@ -9,7 +9,7 @@
  * $Id: SpamSettings.java 8965 2007-02-23 20:54:04Z cng $
  */
 
-package com.untangle.tran.clamphish;
+package com.untangle.node.clamphish;
 
 import java.io.Serializable;
 import javax.persistence.Column;
@@ -17,11 +17,11 @@ import javax.persistence.Entity;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 
-import com.untangle.mvvm.security.Tid;
-import com.untangle.tran.spam.SpamSettings;
+import com.untangle.uvm.security.Tid;
+import com.untangle.node.spam.SpamSettings;
 
 /**
- * Settings for the ClamPhish transform.
+ * Settings for the ClamPhish node.
  *
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0

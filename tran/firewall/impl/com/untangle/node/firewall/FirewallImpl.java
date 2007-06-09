@@ -8,36 +8,36 @@
  *
  * $Id$
  */
-package com.untangle.tran.firewall;
+package com.untangle.node.firewall;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.untangle.mvvm.localapi.SessionMatcher;
-import com.untangle.mvvm.localapi.SessionMatcherFactory;
-import com.untangle.mvvm.logging.EventLogger;
-import com.untangle.mvvm.logging.EventLoggerFactory;
-import com.untangle.mvvm.logging.EventManager;
-import com.untangle.mvvm.logging.SimpleEventFilter;
-import com.untangle.mvvm.tapi.AbstractTransform;
-import com.untangle.mvvm.tapi.Affinity;
-import com.untangle.mvvm.tapi.Fitting;
-import com.untangle.mvvm.tapi.PipeSpec;
-import com.untangle.mvvm.tapi.SoloPipeSpec;
-import com.untangle.mvvm.tran.TransformContext;
-import com.untangle.mvvm.tran.TransformException;
-import com.untangle.mvvm.tran.TransformStartException;
-import com.untangle.mvvm.tran.firewall.ip.IPMatcherFactory;
-import com.untangle.mvvm.tran.firewall.port.PortMatcherFactory;
-import com.untangle.mvvm.tran.firewall.protocol.ProtocolMatcherFactory;
-import com.untangle.mvvm.util.TransactionWork;
+import com.untangle.uvm.localapi.SessionMatcher;
+import com.untangle.uvm.localapi.SessionMatcherFactory;
+import com.untangle.uvm.logging.EventLogger;
+import com.untangle.uvm.logging.EventLoggerFactory;
+import com.untangle.uvm.logging.EventManager;
+import com.untangle.uvm.logging.SimpleEventFilter;
+import com.untangle.uvm.tapi.AbstractNode;
+import com.untangle.uvm.tapi.Affinity;
+import com.untangle.uvm.tapi.Fitting;
+import com.untangle.uvm.tapi.PipeSpec;
+import com.untangle.uvm.tapi.SoloPipeSpec;
+import com.untangle.uvm.node.NodeContext;
+import com.untangle.uvm.node.NodeException;
+import com.untangle.uvm.node.NodeStartException;
+import com.untangle.uvm.node.firewall.ip.IPMatcherFactory;
+import com.untangle.uvm.node.firewall.port.PortMatcherFactory;
+import com.untangle.uvm.node.firewall.protocol.ProtocolMatcherFactory;
+import com.untangle.uvm.util.TransactionWork;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
-public class FirewallImpl extends AbstractTransform implements Firewall
+public class FirewallImpl extends AbstractNode implements Firewall
 {
     private final EventHandler handler;
     private final SoloPipeSpec pipeSpec;
@@ -53,7 +53,7 @@ public class FirewallImpl extends AbstractTransform implements Firewall
     public FirewallImpl()
     {
         this.handler = new EventHandler( this );
-        this.statisticManager = new FirewallStatisticManager(getTransformContext());
+        this.statisticManager = new FirewallStatisticManager(getNodeContext());
 
         /* Have to figure out pipeline ordering, this should always
          * next to towards the outside, then there is OpenVpn and then Nat */
@@ -62,8 +62,8 @@ public class FirewallImpl extends AbstractTransform implements Firewall
              SoloPipeSpec.MAX_STRENGTH - 3);
         this.pipeSpecs = new SoloPipeSpec[] { pipeSpec };
 
-        TransformContext tctx = getTransformContext();
-        eventLogger = EventLoggerFactory.factory().getEventLogger(getTransformContext());
+        NodeContext tctx = getNodeContext();
+        eventLogger = EventLoggerFactory.factory().getEventLogger(getNodeContext());
 
         SimpleEventFilter ef = new FirewallAllFilter();
         eventLogger.addSimpleEventFilter(ef);
@@ -77,7 +77,7 @@ public class FirewallImpl extends AbstractTransform implements Firewall
     {
         if(settings == null) {
             logger.error("Settings not yet initialized. State: "
-                         + getTransformContext().getRunState());
+                         + getNodeContext().getRunState());
         } else {
             List<FirewallRule> l = settings.getFirewallRuleList();
             for (Iterator<FirewallRule> i = l.iterator(); i.hasNext(); ) {
@@ -104,12 +104,12 @@ public class FirewallImpl extends AbstractTransform implements Firewall
 
                 public Object getResult() { return null; }
             };
-        getTransformContext().runTransaction(tw);
+        getNodeContext().runTransaction(tw);
 
         try {
             reconfigure();
         }
-        catch (TransformException exn) {
+        catch (NodeException exn) {
             logger.error("Could not save Firewall settings", exn);
         }
     }
@@ -119,7 +119,7 @@ public class FirewallImpl extends AbstractTransform implements Firewall
         return eventLogger;
     }
 
-    // AbstractTransform methods ----------------------------------------------
+    // AbstractNode methods ----------------------------------------------
 
     @Override
     protected PipeSpec[] getPipeSpecs()
@@ -155,15 +155,15 @@ public class FirewallImpl extends AbstractTransform implements Firewall
 
                 public Object getResult() { return null; }
             };
-        getTransformContext().runTransaction(tw);
+        getNodeContext().runTransaction(tw);
     }
 
-    protected void preStart() throws TransformStartException
+    protected void preStart() throws NodeStartException
     {
         try {
             reconfigure();
         } catch (Exception e) {
-            throw new TransformStartException(e);
+            throw new NodeStartException(e);
         }
 
         statisticManager.start();
@@ -183,7 +183,7 @@ public class FirewallImpl extends AbstractTransform implements Firewall
         statisticManager.stop();
     }
 
-    private void reconfigure() throws TransformException
+    private void reconfigure() throws NodeException
     {
         FirewallSettings settings = getFirewallSettings();
         ArrayList enabledPatternsList = new ArrayList();
@@ -191,7 +191,7 @@ public class FirewallImpl extends AbstractTransform implements Firewall
         logger.info("Reconfigure()");
 
         if (settings == null) {
-            throw new TransformException("Failed to get Firewall settings: " + settings);
+            throw new NodeException("Failed to get Firewall settings: " + settings);
         }
 
         handler.configure( settings );
@@ -279,7 +279,7 @@ public class FirewallImpl extends AbstractTransform implements Firewall
         return settings;
     }
 
-    /* Kill all sessions when starting or stopping this transform */
+    /* Kill all sessions when starting or stopping this node */
     protected SessionMatcher sessionMatcher()
     {
         return SessionMatcherFactory.makePolicyInstance( getPolicy());

@@ -8,10 +8,10 @@
  *
  * $Id$
  */
-package com.untangle.tran.sigma;
+package com.untangle.node.sigma;
 
-import com.untangle.mvvm.tran.Transform;
+import com.untangle.uvm.node.Node;
 
-public interface Sigma extends Transform
+public interface Sigma extends Node
 {
 }

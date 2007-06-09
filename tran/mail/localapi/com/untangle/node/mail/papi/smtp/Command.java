@@ -9,16 +9,16 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.papi.smtp;
+package com.untangle.node.mail.papi.smtp;
 
-//import static com.untangle.tran.util.Rfc822Util.*;
-import static com.untangle.tran.util.Ascii.*;
-import static com.untangle.tran.util.ASCIIUtil.bbToString;
+//import static com.untangle.node.util.Rfc822Util.*;
+import static com.untangle.node.util.Ascii.*;
+import static com.untangle.node.util.ASCIIUtil.bbToString;
 
 import java.nio.ByteBuffer;
 
-import com.untangle.tran.token.ParseException;
-import com.untangle.tran.token.Token;
+import com.untangle.node.token.ParseException;
+import com.untangle.node.token.Token;
 
 
 /**

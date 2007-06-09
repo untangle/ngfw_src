@@ -9,9 +9,9 @@
  * $Id$
  */
 
-package com.untangle.tran.nat;
+package com.untangle.node.nat;
 
-import com.untangle.mvvm.networking.NetworkSpacesSettings;
+import com.untangle.uvm.networking.NetworkSpacesSettings;
 
 public interface NatAdvancedSettings extends NatCommonSettings, NetworkSpacesSettings
 {

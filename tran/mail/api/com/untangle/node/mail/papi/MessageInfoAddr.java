@@ -8,7 +8,7 @@
  *
  * $Id$
  */
-package com.untangle.tran.mail.papi;
+package com.untangle.node.mail.papi;
 
 import java.io.Serializable;
 import javax.persistence.CascadeType;
@@ -156,7 +156,7 @@ import org.hibernate.annotations.Type;
          *
          * @return addressKind.
          */
-        @Type(type="com.untangle.tran.mail.papi.AddressKindUserType")
+        @Type(type="com.untangle.node.mail.papi.AddressKindUserType")
         public AddressKind getKind()
         {
             return kind;

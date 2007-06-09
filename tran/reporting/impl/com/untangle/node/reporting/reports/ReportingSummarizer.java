@@ -9,11 +9,11 @@
  * $Id$
  */
 
-package com.untangle.tran.reporting.reports;
+package com.untangle.node.reporting.reports;
 
 import java.sql.*;
 
-import com.untangle.mvvm.reporting.*;
+import com.untangle.uvm.reporting.*;
 import org.apache.log4j.Logger;
 
 public class ReportingSummarizer extends BaseSummarizer {

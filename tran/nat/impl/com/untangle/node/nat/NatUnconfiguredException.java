@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.nat;
+package com.untangle.node.nat;
 
 
 /* Just used to indicate that the outside interface is not configured, it happens in one very well defined

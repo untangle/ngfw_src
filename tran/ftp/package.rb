@@ -1,3 +1,3 @@
 # -*-ruby-*-
 
-TransformBuilder.makeCasing(BuildEnv::ALPINE, 'ftp')
+NodeBuilder.makeCasing(BuildEnv::SRC, 'ftp')

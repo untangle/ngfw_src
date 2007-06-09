@@ -9,12 +9,12 @@
  * $Id$
  */
 
-package com.untangle.tran.ids;
+package com.untangle.node.ids;
 
 import java.util.List;
 
-import com.untangle.mvvm.tapi.*;
-import com.untangle.mvvm.tapi.event.*;
+import com.untangle.uvm.tapi.*;
+import com.untangle.uvm.tapi.event.*;
 
 public class IDSSessionInfo {
 

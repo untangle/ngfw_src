@@ -9,20 +9,20 @@
  * $Id$
  */
 
-package com.untangle.tran.http;
+package com.untangle.node.http;
 
 import java.util.LinkedList;
 import java.util.List;
 
-import com.untangle.mvvm.tapi.TCPSession;
-import com.untangle.tran.token.AbstractCasing;
-import com.untangle.tran.token.Parser;
-import com.untangle.tran.token.Unparser;
+import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.node.token.AbstractCasing;
+import com.untangle.node.token.Parser;
+import com.untangle.node.token.Unparser;
 import org.apache.log4j.Logger;
 
 class HttpCasing extends AbstractCasing
 {
-    private final HttpTransformImpl transform;
+    private final HttpNodeImpl node;
     private final HttpParser parser;
     private final HttpUnparser unparser;
     private final List<RequestLineToken> requests = new LinkedList<RequestLineToken>();
@@ -32,9 +32,9 @@ class HttpCasing extends AbstractCasing
     // constructors -----------------------------------------------------------
 
     HttpCasing(TCPSession session, boolean clientSide,
-               HttpTransformImpl transform)
+               HttpNodeImpl node)
     {
-        this.transform = transform;
+        this.node = node;
         parser = new HttpParser(session, clientSide, this);
         unparser = new HttpUnparser(session, clientSide, this);
     }
@@ -53,9 +53,9 @@ class HttpCasing extends AbstractCasing
 
     // package private methods ------------------------------------------------
 
-    HttpTransformImpl getTransform()
+    HttpNodeImpl getNode()
     {
-        return transform;
+        return node;
     }
 
     void queueRequest(RequestLineToken request)

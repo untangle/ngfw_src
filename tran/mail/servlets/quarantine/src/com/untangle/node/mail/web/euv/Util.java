@@ -8,12 +8,12 @@
  *
  * $Id$
  */
-package com.untangle.tran.mail.web.euv;
+package com.untangle.node.mail.web.euv;
 
 import java.util.HashMap;
 import javax.servlet.ServletRequest;
 
-import com.untangle.tran.mail.papi.quarantine.InboxRecordComparator;
+import com.untangle.node.mail.papi.quarantine.InboxRecordComparator;
 
 /**
  * Utility methods

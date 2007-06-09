@@ -9,20 +9,20 @@
  * $Id$
  */
 
-package com.untangle.tran.spam.gui;
+package com.untangle.node.spam.gui;
 
-import com.untangle.gui.transform.*;
-import com.untangle.mvvm.tran.TransformContext;
-import com.untangle.mvvm.tran.TransformDesc;
+import com.untangle.gui.node.*;
+import com.untangle.uvm.node.NodeContext;
+import com.untangle.uvm.node.NodeDesc;
 
 
 
-public class MTransformJPanel extends com.untangle.gui.transform.MTransformJPanel{
+public class MNodeJPanel extends com.untangle.gui.node.MNodeJPanel{
     
     
     
-    public MTransformJPanel(TransformContext transformContext, TransformDesc transformDesc) {
-        super(transformContext, transformDesc);
+    public MNodeJPanel(NodeContext nodeContext, NodeDesc nodeDesc) {
+        super(nodeContext, nodeDesc);
         
     } 
     

@@ -8,7 +8,7 @@
  *
  * $Id$
  */
-package com.untangle.tran.mail.impl.safelist;
+package com.untangle.node.mail.impl.safelist;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,20 +18,20 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.untangle.mvvm.util.TransactionWork;
-import com.untangle.tran.mail.MailTransformImpl;
-import com.untangle.tran.mail.impl.GlobEmailAddressMapper;
-import com.untangle.tran.mail.papi.MailTransformSettings;
-import com.untangle.tran.mail.papi.safelist.NoSuchSafelistException;
-import com.untangle.tran.mail.papi.safelist.SafelistActionFailedException;
-import com.untangle.tran.mail.papi.safelist.SafelistAdminView;
-import com.untangle.tran.mail.papi.safelist.SafelistEndUserView;
-import com.untangle.tran.mail.papi.safelist.SafelistManipulation;
-import com.untangle.tran.mail.papi.safelist.SafelistRecipient;
-import com.untangle.tran.mail.papi.safelist.SafelistSender;
-import com.untangle.tran.mail.papi.safelist.SafelistSettings;
-import com.untangle.tran.mail.papi.safelist.SafelistTransformView;
-import com.untangle.tran.mime.EmailAddress;
+import com.untangle.uvm.util.TransactionWork;
+import com.untangle.node.mail.MailNodeImpl;
+import com.untangle.node.mail.impl.GlobEmailAddressMapper;
+import com.untangle.node.mail.papi.MailNodeSettings;
+import com.untangle.node.mail.papi.safelist.NoSuchSafelistException;
+import com.untangle.node.mail.papi.safelist.SafelistActionFailedException;
+import com.untangle.node.mail.papi.safelist.SafelistAdminView;
+import com.untangle.node.mail.papi.safelist.SafelistEndUserView;
+import com.untangle.node.mail.papi.safelist.SafelistManipulation;
+import com.untangle.node.mail.papi.safelist.SafelistRecipient;
+import com.untangle.node.mail.papi.safelist.SafelistSender;
+import com.untangle.node.mail.papi.safelist.SafelistSettings;
+import com.untangle.node.mail.papi.safelist.SafelistNodeView;
+import com.untangle.node.mime.EmailAddress;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -40,12 +40,12 @@ import org.hibernate.Session;
  * Implementation of the safelist stuff
  */
 public class SafelistManager
-    implements SafelistAdminView, SafelistEndUserView, SafelistTransformView
+    implements SafelistAdminView, SafelistEndUserView, SafelistNodeView
 {
     private final Logger m_logger = Logger.getLogger(SafelistManager.class);
 
-    private MailTransformImpl mlImpl;
-    private MailTransformSettings mlSettings;
+    private MailNodeImpl mlImpl;
+    private MailNodeSettings mlSettings;
 
     // caches of values held by persistent hibernate mapping objects
     private HashMap<String, ArrayList<String>> m_sndrsByRcpnt = new HashMap<String, ArrayList<String>>();
@@ -58,7 +58,7 @@ public class SafelistManager
      * The Safelist manager "cheats" and lets the MailTranformImpl
      * maintain the persistence for settings
      */
-    public void setSettings(MailTransformImpl mlImpl, MailTransformSettings mlSettings)
+    public void setSettings(MailNodeImpl mlImpl, MailNodeSettings mlSettings)
     {
         this.mlImpl = mlImpl;
         this.mlSettings = mlSettings;
@@ -67,9 +67,9 @@ public class SafelistManager
         return;
     }
 
-    //-------------------- SafelistTransformView ------------------------
+    //-------------------- SafelistNodeView ------------------------
 
-    //See doc on SafelistTransformView.java
+    //See doc on SafelistNodeView.java
     public boolean isSafelisted(EmailAddress envelopeSender,
                                 EmailAddress mimeFrom, List<EmailAddress> recipients)
     {
@@ -464,7 +464,7 @@ public class SafelistManager
 
                 public Object getResult() { return null; }
             };
-        mlImpl.getTransformContext().runTransaction(tw);
+        mlImpl.getNodeContext().runTransaction(tw);
 
         return;
     }
@@ -487,15 +487,15 @@ public class SafelistManager
                 public boolean doWork(Session s)
                 {
                     Query q = s.createQuery
-                        ("from MailTransformSettings");
-                    mlSettings = (MailTransformSettings)q.uniqueResult();
+                        ("from MailNodeSettings");
+                    mlSettings = (MailNodeSettings)q.uniqueResult();
 
                     return true;
                 }
 
                 public Object getResult() { return null; }
             };
-        mlImpl.getTransformContext().runTransaction(tw);
+        mlImpl.getNodeContext().runTransaction(tw);
 
         // cast list because xdoclet does not support java 1.5
         return (List<SafelistSettings>) mlSettings.getSafelistSettings();

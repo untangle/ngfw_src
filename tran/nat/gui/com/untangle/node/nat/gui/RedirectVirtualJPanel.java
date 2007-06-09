@@ -8,7 +8,7 @@
  *
  * $Id$
  */
-package com.untangle.tran.nat.gui;
+package com.untangle.node.nat.gui;
 
 import java.awt.Insets;
 import java.util.*;
@@ -16,19 +16,19 @@ import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.table.*;
 
-import com.untangle.gui.transform.*;
+import com.untangle.gui.node.*;
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.editTable.*;
-import com.untangle.mvvm.networking.RedirectRule;
-import com.untangle.mvvm.tran.*;
-import com.untangle.mvvm.tran.firewall.ip.IPDBMatcher;
-import com.untangle.mvvm.tran.firewall.port.PortMatcherFactory;
-import com.untangle.mvvm.tran.firewall.protocol.ProtocolMatcherFactory;
-import com.untangle.tran.nat.*;
+import com.untangle.uvm.networking.RedirectRule;
+import com.untangle.uvm.node.*;
+import com.untangle.uvm.node.firewall.ip.IPDBMatcher;
+import com.untangle.uvm.node.firewall.port.PortMatcherFactory;
+import com.untangle.uvm.node.firewall.protocol.ProtocolMatcherFactory;
+import com.untangle.node.nat.*;
 
 public class RedirectVirtualJPanel extends MEditTableJPanel {
 
-    public RedirectVirtualJPanel(com.untangle.tran.nat.gui.MTransformControlsJPanel mTransformControlsJPanel) {
+    public RedirectVirtualJPanel(com.untangle.node.nat.gui.MNodeControlsJPanel mNodeControlsJPanel) {
         super(true, true);
         super.setFillJButtonEnabled( true );
         super.setInsets(new Insets(4, 4, 2, 2));
@@ -37,7 +37,7 @@ public class RedirectVirtualJPanel extends MEditTableJPanel {
         super.setAddRemoveEnabled(true);
 
         // create actual table model
-        RedirectVirtualTableModel redirectVirtualTableModel = new RedirectVirtualTableModel(mTransformControlsJPanel);
+        RedirectVirtualTableModel redirectVirtualTableModel = new RedirectVirtualTableModel(mNodeControlsJPanel);
         //redirectVirtualTableModel.setOrderModelIndex(0);
         this.setTableModel( redirectVirtualTableModel );
     }
@@ -60,16 +60,16 @@ public class RedirectVirtualJPanel extends MEditTableJPanel {
         private final int C10_MW = Util.chooseMax(T_TW - (C0_MW + C1_MW + C2_MW + C3_MW + C4_MW + C5_MW + C6_MW + C7_MW + C8_MW + C9_MW), 120); /* description */
 
         private ComboBoxModel protocolModel = super.generateComboBoxModel( ProtocolMatcherFactory.getProtocolEnumeration(), ProtocolMatcherFactory.getProtocolDefault() );
-        private com.untangle.tran.nat.gui.MTransformControlsJPanel mTransformControlsJPanel;
+        private com.untangle.node.nat.gui.MNodeControlsJPanel mNodeControlsJPanel;
 
-        public RedirectVirtualTableModel(com.untangle.tran.nat.gui.MTransformControlsJPanel mTransformControlsJPanel){
-            this.mTransformControlsJPanel = mTransformControlsJPanel;
+        public RedirectVirtualTableModel(com.untangle.node.nat.gui.MNodeControlsJPanel mNodeControlsJPanel){
+            this.mNodeControlsJPanel = mNodeControlsJPanel;
         }
 
         private DefaultComboBoxModel interfaceModel = new DefaultComboBoxModel();
         private void updateInterfaceModel(){
             interfaceModel.removeAllElements();
-            for( IPDBMatcher ipDBMatcher : mTransformControlsJPanel.getLocalMatcherList() )
+            for( IPDBMatcher ipDBMatcher : mNodeControlsJPanel.getLocalMatcherList() )
                 interfaceModel.addElement( ipDBMatcher );
         }
 
@@ -145,7 +145,7 @@ public class RedirectVirtualJPanel extends MEditTableJPanel {
                 tempRow.add( redirectRule.isLive() );
                 tempRow.add( redirectRule.getLog() );
                 tempRow.add( super.generateComboBoxModel( ProtocolMatcherFactory.getProtocolEnumeration(), redirectRule.getProtocol().toString() ) );
-                tempRow.add( super.generateComboBoxModel( mTransformControlsJPanel.getLocalMatcherList(), redirectRule.getDstAddress())  );
+                tempRow.add( super.generateComboBoxModel( mNodeControlsJPanel.getLocalMatcherList(), redirectRule.getDstAddress())  );
                 tempRow.add( redirectRule.getDstPort().toString() );
                 tempRow.add( redirectRule.getRedirectAddressString().toString() );
                 tempRow.add( redirectRule.getRedirectPortString() );

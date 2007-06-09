@@ -1,3 +1,3 @@
-com.untangle.tran.virus.VirusHttpEvent
-com.untangle.tran.virus.VirusLogEvent
-com.untangle.tran.virus.VirusSmtpEvent
+com.untangle.node.virus.VirusHttpEvent
+com.untangle.node.virus.VirusLogEvent
+com.untangle.node.virus.VirusSmtpEvent

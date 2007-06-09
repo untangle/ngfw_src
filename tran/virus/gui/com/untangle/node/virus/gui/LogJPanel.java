@@ -9,29 +9,29 @@
  * $Id$
  */
 
-package com.untangle.tran.virus.gui;
+package com.untangle.node.virus.gui;
 
 import java.util.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.table.*;
 
-import com.untangle.gui.transform.*;
+import com.untangle.gui.node.*;
 import com.untangle.gui.widgets.editTable.*;
 import com.untangle.gui.util.*;
-import com.untangle.mvvm.logging.EventRepository;
-import com.untangle.mvvm.logging.EventManager;
-import com.untangle.mvvm.logging.RepositoryDesc;
-import com.untangle.mvvm.tran.PipelineEndpoints;
-import com.untangle.mvvm.tran.Transform;
-import com.untangle.tran.virus.*;
+import com.untangle.uvm.logging.EventRepository;
+import com.untangle.uvm.logging.EventManager;
+import com.untangle.uvm.logging.RepositoryDesc;
+import com.untangle.uvm.node.PipelineEndpoints;
+import com.untangle.uvm.node.Node;
+import com.untangle.node.virus.*;
 
 public class LogJPanel extends MLogTableJPanel {
 
-    public LogJPanel(Transform transform, MTransformControlsJPanel mTransformControlsJPanel){
-        super(transform, mTransformControlsJPanel);
+    public LogJPanel(Node node, MNodeControlsJPanel mNodeControlsJPanel){
+        super(node, mNodeControlsJPanel);
 
-        final VirusTransform virus = (VirusTransform)logTransform;
+        final VirusNode virus = (VirusNode)logNode;
 
         setTableModel(new LogTableModel());
 
@@ -42,7 +42,7 @@ public class LogJPanel extends MLogTableJPanel {
     }
 
     protected void refreshSettings(){
-        VirusTransform virus = (VirusTransform)logTransform;
+        VirusNode virus = (VirusNode)logNode;
         EventManager<VirusEvent> em = virus.getEventManager();
         EventRepository<VirusEvent> ef = em.getRepository((String)queryJComboBox.getSelectedItem());
         settings = ef.getEvents();

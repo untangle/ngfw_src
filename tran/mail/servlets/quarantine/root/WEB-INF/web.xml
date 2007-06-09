@@ -19,37 +19,37 @@ PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
 
   <servlet>
     <servlet-name>QuarantineMain</servlet-name>
-    <servlet-class>com.untangle.tran.mail.web.euv.QuarantineEnduserServlet</servlet-class>
+    <servlet-class>com.untangle.node.mail.web.euv.QuarantineEnduserServlet</servlet-class>
     <load-on-startup>1</load-on-startup>
  </servlet>
 
   <servlet>
     <servlet-name>InboxMaintenenceControler</servlet-name>
-    <servlet-class>com.untangle.tran.mail.web.euv.InboxMaintenenceControler</servlet-class>
+    <servlet-class>com.untangle.node.mail.web.euv.InboxMaintenenceControler</servlet-class>
     <load-on-startup>2</load-on-startup>
   </servlet>
 
   <servlet>
     <servlet-name>RequestDigestControler</servlet-name>
-    <servlet-class>com.untangle.tran.mail.web.euv.RequestDigestControler</servlet-class>
+    <servlet-class>com.untangle.node.mail.web.euv.RequestDigestControler</servlet-class>
     <load-on-startup>2</load-on-startup>
   </servlet>
 
   <servlet>
     <servlet-name>SafelistMaintenenceControler</servlet-name>
-    <servlet-class>com.untangle.tran.mail.web.euv.SafelistMaintenenceControler</servlet-class>
+    <servlet-class>com.untangle.node.mail.web.euv.SafelistMaintenenceControler</servlet-class>
     <load-on-startup>2</load-on-startup>
   </servlet>
 
   <servlet>
     <servlet-name>UnremapperControler</servlet-name>
-    <servlet-class>com.untangle.tran.mail.web.euv.UnremapperControler</servlet-class>
+    <servlet-class>com.untangle.node.mail.web.euv.UnremapperControler</servlet-class>
     <load-on-startup>2</load-on-startup>
   </servlet>
 
   <servlet>
     <servlet-name>RemapperControler</servlet-name>
-    <servlet-class>com.untangle.tran.mail.web.euv.RemapperControler</servlet-class>
+    <servlet-class>com.untangle.node.mail.web.euv.RemapperControler</servlet-class>
     <load-on-startup>2</load-on-startup>
   </servlet>
 

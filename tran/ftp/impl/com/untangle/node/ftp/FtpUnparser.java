@@ -9,21 +9,21 @@
  * $Id$
  */
 
-package com.untangle.tran.ftp;
+package com.untangle.node.ftp;
 
 import java.net.InetSocketAddress;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
 
-import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.mvvm.tapi.Fitting;
-import com.untangle.mvvm.tapi.TCPSession;
-import com.untangle.mvvm.tapi.event.TCPStreamer;
-import com.untangle.tran.token.AbstractUnparser;
-import com.untangle.tran.token.ParseException;
-import com.untangle.tran.token.Token;
-import com.untangle.tran.token.UnparseException;
-import com.untangle.tran.token.UnparseResult;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.tapi.Fitting;
+import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.uvm.tapi.event.TCPStreamer;
+import com.untangle.node.token.AbstractUnparser;
+import com.untangle.node.token.ParseException;
+import com.untangle.node.token.Token;
+import com.untangle.node.token.UnparseException;
+import com.untangle.node.token.UnparseResult;
 
 class FtpUnparser extends AbstractUnparser
 {
@@ -86,7 +86,7 @@ class FtpUnparser extends AbstractUnparser
         }
 
         if (null != socketAddress) {
-            MvvmContextFactory.context().pipelineFoundry()
+            UvmContextFactory.context().pipelineFoundry()
                 .registerConnection(socketAddress, Fitting.FTP_DATA_STREAM);
         }
 

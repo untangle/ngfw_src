@@ -1,4 +1,4 @@
-<%@page language="java" import="com.untangle.mvvm.*"%>
+<%@page language="java" import="com.untangle.uvm.*"%>
 
 <%
 /*
@@ -12,8 +12,8 @@
  * $Id$
  */
 
-MvvmLocalContext mvvm = MvvmContextFactory.context();
-BrandingSettings bs = mvvm.brandingManager().getBrandingSettings();
+UvmLocalContext uvm = UvmContextFactory.context();
+BrandingSettings bs = uvm.brandingManager().getBrandingSettings();
 String company = bs.getCompanyName();
 String companyUrl = bs.getCompanyUrl();
 %>

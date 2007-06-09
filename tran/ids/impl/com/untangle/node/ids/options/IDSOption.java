@@ -9,15 +9,15 @@
  * $Id$
  */
 
-package com.untangle.tran.ids.options;
+package com.untangle.node.ids.options;
 
 import java.lang.reflect.*;
 import java.util.regex.PatternSyntaxException;
 
-import com.untangle.mvvm.tapi.event.*;
-import com.untangle.tran.ids.IDSDetectionEngine;
-import com.untangle.tran.ids.IDSRuleSignature;
-import com.untangle.tran.ids.IDSSessionInfo;
+import com.untangle.uvm.tapi.event.*;
+import com.untangle.node.ids.IDSDetectionEngine;
+import com.untangle.node.ids.IDSRuleSignature;
+import com.untangle.node.ids.IDSSessionInfo;
 import org.apache.log4j.Logger;
 
 public abstract class IDSOption {
@@ -76,7 +76,7 @@ public abstract class IDSOption {
         try {
             // First look for a three arg one, then the two arg one (since most don't care about
             // initializeSettingsTime).
-            optionDefinition = Class.forName("com.untangle.tran.ids.options."+optionName+"Option");
+            optionDefinition = Class.forName("com.untangle.node.ids.options."+optionName+"Option");
 
             // XXX remove reflection
             try {

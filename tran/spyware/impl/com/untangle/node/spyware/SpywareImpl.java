@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.spyware;
+package com.untangle.node.spyware;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -28,35 +28,35 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-import com.untangle.mvvm.LocalAppServerManager;
-import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.mvvm.MvvmLocalContext;
-import com.untangle.mvvm.logging.EventLogger;
-import com.untangle.mvvm.logging.EventLoggerFactory;
-import com.untangle.mvvm.logging.EventManager;
-import com.untangle.mvvm.logging.SimpleEventFilter;
-import com.untangle.mvvm.tapi.AbstractTransform;
-import com.untangle.mvvm.tapi.Affinity;
-import com.untangle.mvvm.tapi.Fitting;
-import com.untangle.mvvm.tapi.PipeSpec;
-import com.untangle.mvvm.tapi.SoloPipeSpec;
-import com.untangle.mvvm.tapi.TCPSession;
-import com.untangle.mvvm.tran.IPMaddr;
-import com.untangle.mvvm.tran.IPMaddrRule;
-import com.untangle.mvvm.tran.StringRule;
-import com.untangle.mvvm.tran.TransformContext;
-import com.untangle.mvvm.util.OutsideValve;
-import com.untangle.mvvm.util.TransactionWork;
-import com.untangle.tran.http.UserWhitelistMode;
-import com.untangle.tran.token.Header;
-import com.untangle.tran.token.Token;
-import com.untangle.tran.token.TokenAdaptor;
+import com.untangle.uvm.LocalAppServerManager;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.UvmLocalContext;
+import com.untangle.uvm.logging.EventLogger;
+import com.untangle.uvm.logging.EventLoggerFactory;
+import com.untangle.uvm.logging.EventManager;
+import com.untangle.uvm.logging.SimpleEventFilter;
+import com.untangle.uvm.tapi.AbstractNode;
+import com.untangle.uvm.tapi.Affinity;
+import com.untangle.uvm.tapi.Fitting;
+import com.untangle.uvm.tapi.PipeSpec;
+import com.untangle.uvm.tapi.SoloPipeSpec;
+import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.uvm.node.IPMaddr;
+import com.untangle.uvm.node.IPMaddrRule;
+import com.untangle.uvm.node.StringRule;
+import com.untangle.uvm.node.NodeContext;
+import com.untangle.uvm.util.OutsideValve;
+import com.untangle.uvm.util.TransactionWork;
+import com.untangle.node.http.UserWhitelistMode;
+import com.untangle.node.token.Header;
+import com.untangle.node.token.Token;
+import com.untangle.node.token.TokenAdaptor;
 import org.apache.catalina.Valve;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
-public class SpywareImpl extends AbstractTransform implements Spyware
+public class SpywareImpl extends AbstractNode implements Spyware
 {
     private static final String ACTIVEX_LIST
         = "com/untangle/tran/spyware/activex.txt";
@@ -112,7 +112,7 @@ public class SpywareImpl extends AbstractTransform implements Spyware
 
         urlBlacklist = SpywareCache.cache().getUrls();
 
-        TransformContext tctx = getTransformContext();
+        NodeContext tctx = getNodeContext();
         eventLogger = EventLoggerFactory.factory().getEventLogger(tctx);
         statisticManager = new SpywareStatisticManager(tctx);
 
@@ -130,12 +130,12 @@ public class SpywareImpl extends AbstractTransform implements Spyware
         eventLogger.addSimpleEventFilter(ef);
     }
 
-    // SpywareTransform methods -----------------------------------------------
+    // SpywareNode methods -----------------------------------------------
 
     public SpywareSettings getSpywareSettings()
     {
         if( settings == null )
-            logger.error("Settings not yet initialized. State: " + getTransformContext().getRunState() );
+            logger.error("Settings not yet initialized. State: " + getNodeContext().getRunState() );
         return settings;
     }
 
@@ -152,7 +152,7 @@ public class SpywareImpl extends AbstractTransform implements Spyware
 
                 public Object getResult() { return null; }
             };
-        getTransformContext().runTransaction(tw);
+        getNodeContext().runTransaction(tw);
 
         reconfigure();
     }
@@ -233,9 +233,9 @@ public class SpywareImpl extends AbstractTransform implements Spyware
         return eventLogger;
     }
 
-    // Transform methods ------------------------------------------------------
+    // Node methods ------------------------------------------------------
 
-    // AbstractTransform methods ----------------------------------------------
+    // AbstractNode methods ----------------------------------------------
 
     @Override
     protected PipeSpec[] getPipeSpecs()
@@ -274,7 +274,7 @@ public class SpywareImpl extends AbstractTransform implements Spyware
                     return true;
                 }
             };
-        getTransformContext().runTransaction(tw);
+        getNodeContext().runTransaction(tw);
 
         reconfigure();
 
@@ -674,7 +674,7 @@ public class SpywareImpl extends AbstractTransform implements Spyware
             return;
         }
 
-        MvvmLocalContext mctx = MvvmContextFactory.context();
+        UvmLocalContext mctx = UvmContextFactory.context();
         LocalAppServerManager asm = mctx.appServerManager();
 
         Valve v = new OutsideValve()
@@ -715,7 +715,7 @@ public class SpywareImpl extends AbstractTransform implements Spyware
             return;
         }
 
-        MvvmLocalContext mctx = MvvmContextFactory.context();
+        UvmLocalContext mctx = UvmContextFactory.context();
         LocalAppServerManager asm = mctx.appServerManager();
 
         if (asm.unloadWebApp("/spyware")) {

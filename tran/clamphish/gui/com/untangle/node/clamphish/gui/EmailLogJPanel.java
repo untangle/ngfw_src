@@ -9,30 +9,30 @@
  * $Id$
  */
 
-package com.untangle.tran.clamphish.gui;
+package com.untangle.node.clamphish.gui;
 
 import java.util.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.table.*;
 
-import com.untangle.gui.transform.*;
+import com.untangle.gui.node.*;
 import com.untangle.gui.widgets.editTable.*;
 import com.untangle.gui.util.*;
-import com.untangle.mvvm.logging.EventRepository;
-import com.untangle.mvvm.logging.EventManager;
-import com.untangle.mvvm.logging.RepositoryDesc;
-import com.untangle.mvvm.tran.Transform;
-import com.untangle.tran.spam.*;
+import com.untangle.uvm.logging.EventRepository;
+import com.untangle.uvm.logging.EventManager;
+import com.untangle.uvm.logging.RepositoryDesc;
+import com.untangle.uvm.node.Node;
+import com.untangle.node.spam.*;
 
 public class EmailLogJPanel extends MLogTableJPanel {
 
     private static final String BLOCKED_EVENTS_STRING = "Phish detected events";
 
-    public EmailLogJPanel(Transform transform, MTransformControlsJPanel mTransformControlsJPanel){
-        super(transform, mTransformControlsJPanel);
+    public EmailLogJPanel(Node node, MNodeControlsJPanel mNodeControlsJPanel){
+        super(node, mNodeControlsJPanel);
 
-        final SpamTransform spam = (SpamTransform)logTransform;
+        final SpamNode spam = (SpamNode)logNode;
 
         setTableModel(new LogTableModel());
 
@@ -43,7 +43,7 @@ public class EmailLogJPanel extends MLogTableJPanel {
     }
 
     protected void refreshSettings(){
-        SpamTransform spam = (SpamTransform)logTransform;
+        SpamNode spam = (SpamNode)logNode;
         EventManager<SpamEvent> em = spam.getEventManager();
         EventRepository<SpamEvent> ef = em.getRepository((String)queryJComboBox.getSelectedItem());
         settings = ef.getEvents();

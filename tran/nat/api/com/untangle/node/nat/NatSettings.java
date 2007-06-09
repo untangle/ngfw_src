@@ -9,10 +9,10 @@
  * $Id$
  */
 
-package com.untangle.tran.nat;
+package com.untangle.node.nat;
 
 /**
- * Settings for the Nat transform in simple mode.
+ * Settings for the Nat node in simple mode.
  */
 public interface NatSettings extends NatBasicSettings
 {

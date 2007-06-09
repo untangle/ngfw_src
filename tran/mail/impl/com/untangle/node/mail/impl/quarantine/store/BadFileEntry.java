@@ -9,10 +9,10 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.impl.quarantine.store;
+package com.untangle.node.mail.impl.quarantine.store;
 
 /**
- * Exception used by {@link com.untangle.tran.mail.impl.quarantine.store.AbstractDriver}
+ * Exception used by {@link com.untangle.node.mail.impl.quarantine.store.AbstractDriver}
  * to convey that something read from a file was in a bad format.
  */
 class BadFileEntry

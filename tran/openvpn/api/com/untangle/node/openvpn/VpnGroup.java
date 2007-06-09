@@ -9,17 +9,17 @@
  * $Id$
  */
 
-package com.untangle.tran.openvpn;
+package com.untangle.node.openvpn;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import com.untangle.mvvm.tran.IPaddr;
-import com.untangle.mvvm.tran.Rule;
-import com.untangle.mvvm.tran.Validatable;
-import com.untangle.mvvm.tran.ValidateException;
+import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.Rule;
+import com.untangle.uvm.node.Validatable;
+import com.untangle.uvm.node.ValidateException;
 import org.hibernate.annotations.Type;
 
 /**
@@ -63,7 +63,7 @@ public class VpnGroup extends Rule implements Validatable
      * @return the pool address to send to the client, don't use in
      * bridging mode.
      */
-    @Type(type="com.untangle.mvvm.type.IPaddrUserType")
+    @Type(type="com.untangle.uvm.type.IPaddrUserType")
     public IPaddr getAddress()
     {
         return this.address;
@@ -81,7 +81,7 @@ public class VpnGroup extends Rule implements Validatable
      *
      * @return the pool netmask to send to the client
      */
-    @Type(type="com.untangle.mvvm.type.IPaddrUserType")
+    @Type(type="com.untangle.uvm.type.IPaddrUserType")
     public IPaddr getNetmask()
     {
         return this.netmask;

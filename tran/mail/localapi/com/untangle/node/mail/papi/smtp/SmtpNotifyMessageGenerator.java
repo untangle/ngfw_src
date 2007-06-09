@@ -9,18 +9,18 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.papi.smtp;
+package com.untangle.node.mail.papi.smtp;
 
 import java.io.*;
 import java.nio.*;
 import java.util.*;
 
-import com.untangle.mvvm.MailSender;
-import com.untangle.mvvm.tran.TemplateValues;
-import com.untangle.mvvm.tran.TemplateValuesChain;
-import com.untangle.tran.mail.papi.*;
-import com.untangle.tran.mime.*;
-import com.untangle.tran.util.*;
+import com.untangle.uvm.MailSender;
+import com.untangle.uvm.node.TemplateValues;
+import com.untangle.uvm.node.TemplateValuesChain;
+import com.untangle.node.mail.papi.*;
+import com.untangle.node.mime.*;
+import com.untangle.node.util.*;
 import org.apache.log4j.Logger;
 
 /**

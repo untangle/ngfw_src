@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.gui;
+package com.untangle.node.mail.gui;
 
 import java.awt.Dialog;
 

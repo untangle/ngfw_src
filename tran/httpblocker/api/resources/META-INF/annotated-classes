@@ -1,4 +1,4 @@
-com.untangle.tran.httpblocker.BlacklistCategory
-com.untangle.tran.httpblocker.BlockTemplate
-com.untangle.tran.httpblocker.HttpBlockerEvent
-com.untangle.tran.httpblocker.HttpBlockerSettings
+com.untangle.node.httpblocker.BlacklistCategory
+com.untangle.node.httpblocker.BlockTemplate
+com.untangle.node.httpblocker.HttpBlockerEvent
+com.untangle.node.httpblocker.HttpBlockerSettings

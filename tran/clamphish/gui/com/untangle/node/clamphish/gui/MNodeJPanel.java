@@ -9,14 +9,14 @@
  * $Id$
  */
 
-package com.untangle.tran.clamphish.gui;
+package com.untangle.node.clamphish.gui;
 
-import com.untangle.gui.transform.*;
-import com.untangle.mvvm.tran.TransformContext;
-import com.untangle.mvvm.tran.TransformDesc;
+import com.untangle.gui.node.*;
+import com.untangle.uvm.node.NodeContext;
+import com.untangle.uvm.node.NodeDesc;
 
-public class MTransformJPanel extends com.untangle.gui.transform.MTransformJPanel{
-    public MTransformJPanel(TransformContext transformContext, TransformDesc transformDesc) {
-        super(transformContext, transformDesc);
+public class MNodeJPanel extends com.untangle.gui.node.MNodeJPanel{
+    public MNodeJPanel(NodeContext nodeContext, NodeDesc nodeDesc) {
+        super(nodeContext, nodeDesc);
     } 
 }

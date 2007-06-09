@@ -9,36 +9,36 @@
  * $Id$
  */
 
-package com.untangle.tran.httpblocker;
+package com.untangle.node.httpblocker;
 
 
-import com.untangle.mvvm.tapi.TCPSession;
-import com.untangle.mvvm.tran.Transform;
-import com.untangle.tran.http.HttpStateMachine;
-import com.untangle.tran.http.RequestLineToken;
-import com.untangle.tran.http.StatusLine;
-import com.untangle.tran.token.Chunk;
-import com.untangle.tran.token.Header;
-import com.untangle.tran.token.Token;
+import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.uvm.node.Node;
+import com.untangle.node.http.HttpStateMachine;
+import com.untangle.node.http.RequestLineToken;
+import com.untangle.node.http.StatusLine;
+import com.untangle.node.token.Chunk;
+import com.untangle.node.token.Header;
+import com.untangle.node.token.Token;
 import org.apache.log4j.Logger;
 
 public class HttpBlockerHandler extends HttpStateMachine
 {
-    private static final int SCAN = Transform.GENERIC_0_COUNTER;
-    private static final int BLOCK = Transform.GENERIC_1_COUNTER;
-    private static final int PASS = Transform.GENERIC_2_COUNTER;
+    private static final int SCAN = Node.GENERIC_0_COUNTER;
+    private static final int BLOCK = Node.GENERIC_1_COUNTER;
+    private static final int PASS = Node.GENERIC_2_COUNTER;
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    private final HttpBlockerImpl transform;
+    private final HttpBlockerImpl node;
 
     // constructors -----------------------------------------------------------
 
-    HttpBlockerHandler(TCPSession session, HttpBlockerImpl transform)
+    HttpBlockerHandler(TCPSession session, HttpBlockerImpl node)
     {
         super(session);
 
-        this.transform = transform;
+        this.node = node;
     }
 
     // HttpStateMachine methods -----------------------------------------------
@@ -52,11 +52,11 @@ public class HttpBlockerHandler extends HttpStateMachine
     @Override
     protected Header doRequestHeader(Header requestHeader)
     {
-        transform.incrementCount(SCAN, 1);
+        node.incrementCount(SCAN, 1);
 
         TCPSession sess = getSession();
 
-        String nonce = transform.getBlacklist()
+        String nonce = node.getBlacklist()
             .checkRequest(sess.clientAddr(), getRequestLine(), requestHeader);
         if (logger.isDebugEnabled()) {
             logger.debug("in doRequestHeader(): " + requestHeader
@@ -66,10 +66,10 @@ public class HttpBlockerHandler extends HttpStateMachine
         if (null == nonce) {
             releaseRequest();
         } else {
-            transform.incrementCount(BLOCK, 1);
+            node.incrementCount(BLOCK, 1);
             boolean p = isRequestPersistent();
             String uri = getRequestLine().getRequestUri().toString();
-            Token[] response = transform.generateResponse(nonce, sess, uri,
+            Token[] response = node.generateResponse(nonce, sess, uri,
                                                           requestHeader, p);
             blockRequest(response);
         }
@@ -100,7 +100,7 @@ public class HttpBlockerHandler extends HttpStateMachine
         } else {
             TCPSession sess = getSession();
 
-            String nonce = transform.getBlacklist()
+            String nonce = node.getBlacklist()
                 .checkResponse(sess.clientAddr(), getResponseRequest(),
                                responseHeader);
             if (logger.isDebugEnabled()) {
@@ -109,13 +109,13 @@ public class HttpBlockerHandler extends HttpStateMachine
             }
 
             if (null == nonce) {
-                transform.incrementCount(PASS, 1);
+                node.incrementCount(PASS, 1);
 
                 releaseResponse();
             } else {
-                transform.incrementCount(BLOCK, 1);
+                node.incrementCount(BLOCK, 1);
                 boolean p = isResponsePersistent();
-                Token[] response = transform.generateResponse(nonce, sess, p);
+                Token[] response = node.generateResponse(nonce, sess, p);
                 blockResponse(response);
             }
         }

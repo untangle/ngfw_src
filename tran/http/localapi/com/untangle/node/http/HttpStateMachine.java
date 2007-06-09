@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.http;
+package com.untangle.node.http;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,17 +17,17 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import com.untangle.mvvm.tapi.TCPSession;
-import com.untangle.tran.token.AbstractTokenHandler;
-import com.untangle.tran.token.ArrayTokenStreamer;
-import com.untangle.tran.token.Chunk;
-import com.untangle.tran.token.EndMarker;
-import com.untangle.tran.token.Header;
-import com.untangle.tran.token.SeriesTokenStreamer;
-import com.untangle.tran.token.Token;
-import com.untangle.tran.token.TokenException;
-import com.untangle.tran.token.TokenResult;
-import com.untangle.tran.token.TokenStreamer;
+import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.node.token.AbstractTokenHandler;
+import com.untangle.node.token.ArrayTokenStreamer;
+import com.untangle.node.token.Chunk;
+import com.untangle.node.token.EndMarker;
+import com.untangle.node.token.Header;
+import com.untangle.node.token.SeriesTokenStreamer;
+import com.untangle.node.token.Token;
+import com.untangle.node.token.TokenException;
+import com.untangle.node.token.TokenResult;
+import com.untangle.node.token.TokenStreamer;
 import org.apache.log4j.Logger;
 
 public abstract class HttpStateMachine extends AbstractTokenHandler

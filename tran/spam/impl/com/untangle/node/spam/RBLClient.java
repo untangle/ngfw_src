@@ -9,7 +9,7 @@
  * $Id: RBLClient.java 8515 2007-01-03 00:13:24Z amread $
  */
 
-package com.untangle.tran.spam;
+package com.untangle.node.spam;
 
 import java.io.IOException;
 import java.lang.SecurityException;
@@ -17,8 +17,8 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.*;
 
-import com.untangle.mvvm.tapi.TCPNewSessionRequest;
-import com.untangle.mvvm.tran.PipelineEndpoints;
+import com.untangle.uvm.tapi.TCPNewSessionRequest;
+import com.untangle.uvm.node.PipelineEndpoints;
 import org.apache.log4j.Logger;
 
 public final class RBLClient implements Runnable {

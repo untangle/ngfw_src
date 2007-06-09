@@ -9,9 +9,9 @@
  * $Id$
  */
 
-package com.untangle.tran.nat;
+package com.untangle.node.nat;
 
-import com.untangle.mvvm.logging.LogEvent;
+import com.untangle.uvm.logging.LogEvent;
 
 class NatAttachment
 {    

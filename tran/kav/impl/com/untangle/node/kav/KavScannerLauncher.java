@@ -8,7 +8,7 @@
  *
  * $Id$
  */
-package com.untangle.tran.kav;
+package com.untangle.node.kav;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -18,9 +18,9 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.StringTokenizer;
 
-import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.tran.virus.VirusScannerLauncher;
-import com.untangle.tran.virus.VirusScannerResult;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.node.virus.VirusScannerLauncher;
+import com.untangle.node.virus.VirusScannerResult;
 
 public class KavScannerLauncher extends VirusScannerLauncher
 {
@@ -41,7 +41,7 @@ public class KavScannerLauncher extends VirusScannerLauncher
     {
         try {
             String command = "kavclient " + scanfilePath;
-            this.scanProcess = MvvmContextFactory.context().exec(command);
+            this.scanProcess = UvmContextFactory.context().exec(command);
             InputStream is  = scanProcess.getInputStream();
             OutputStream os = scanProcess.getOutputStream();
             BufferedReader in = new BufferedReader(new InputStreamReader(is));

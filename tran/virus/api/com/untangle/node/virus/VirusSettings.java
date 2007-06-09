@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.virus;
+package com.untangle.node.virus;
 
 import java.io.Serializable;
 import java.util.List;
@@ -25,14 +25,14 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import com.untangle.mvvm.security.Tid;
-import com.untangle.mvvm.tran.MimeTypeRule;
-import com.untangle.mvvm.tran.StringRule;
+import com.untangle.uvm.security.Tid;
+import com.untangle.uvm.node.MimeTypeRule;
+import com.untangle.uvm.node.StringRule;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.IndexColumn;
 
 /**
- * Settings for the VirusTransform.
+ * Settings for the VirusNode.
  *
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
@@ -91,7 +91,7 @@ public class VirusSettings implements Serializable
     }
 
     /**
-     * Transform id for these settings.
+     * Node id for these settings.
      *
      * @return tid for these settings
      */

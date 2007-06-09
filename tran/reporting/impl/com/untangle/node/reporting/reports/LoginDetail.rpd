@@ -41,7 +41,7 @@ BOTRIGHT.label=
 TOPRMID.expr=$F{login}
 TOPLMID.expr=""
 TOPLEFT.expr=$F{time_stamp}
-# XXXXXXXXXXXXXXXXXXXXX Puke barf this doesn't work!!! com.untangle.mvvm.security.LoginFailureReason.getInstance($F{reason}).toString()
+# XXXXXXXXXXXXXXXXXXXXX Puke barf this doesn't work!!! com.untangle.uvm.security.LoginFailureReason.getInstance($F{reason}).toString()
 BOTRMID.expr=$F{succeeded}.booleanValue() ? "successful" : "failed: " + ($F{reason}.charAt(0) == 'U' ? "unknown user" : "incorrect password")
 BOTLMID.expr=""
 BOTRIGHT.expr=$F{name} == null ? "" : $F{name}

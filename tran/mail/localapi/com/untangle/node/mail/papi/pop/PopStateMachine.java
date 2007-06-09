@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.papi.pop;
+package com.untangle.node.mail.papi.pop;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -17,25 +17,25 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 
-import com.untangle.mvvm.tapi.TCPSession;
-import com.untangle.tran.mail.papi.DoNotCareChunkT;
-import com.untangle.tran.mail.papi.DoNotCareT;
-import com.untangle.tran.mail.papi.MIMEMessageT;
-import com.untangle.tran.mail.papi.MIMEMessageTrickleT;
-import com.untangle.tran.mail.papi.MessageInfo;
-import com.untangle.tran.mail.papi.MessageTransmissionTimeoutStrategy;
-import com.untangle.tran.mime.HeaderParseException;
-import com.untangle.tran.mime.InvalidHeaderDataException;
-import com.untangle.tran.mime.MIMEMessage;
-import com.untangle.tran.mime.MIMEMessageHeaders;
-import com.untangle.tran.mime.MIMEPartParseException;
-import com.untangle.tran.mime.MIMEPolicy;
-import com.untangle.tran.token.AbstractTokenHandler;
-import com.untangle.tran.token.Chunk;
-import com.untangle.tran.token.EndMarker;
-import com.untangle.tran.token.Token;
-import com.untangle.tran.token.TokenException;
-import com.untangle.tran.token.TokenResult;
+import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.node.mail.papi.DoNotCareChunkT;
+import com.untangle.node.mail.papi.DoNotCareT;
+import com.untangle.node.mail.papi.MIMEMessageT;
+import com.untangle.node.mail.papi.MIMEMessageTrickleT;
+import com.untangle.node.mail.papi.MessageInfo;
+import com.untangle.node.mail.papi.MessageTransmissionTimeoutStrategy;
+import com.untangle.node.mime.HeaderParseException;
+import com.untangle.node.mime.InvalidHeaderDataException;
+import com.untangle.node.mime.MIMEMessage;
+import com.untangle.node.mime.MIMEMessageHeaders;
+import com.untangle.node.mime.MIMEPartParseException;
+import com.untangle.node.mime.MIMEPolicy;
+import com.untangle.node.token.AbstractTokenHandler;
+import com.untangle.node.token.Chunk;
+import com.untangle.node.token.EndMarker;
+import com.untangle.node.token.Token;
+import com.untangle.node.token.TokenException;
+import com.untangle.node.token.TokenResult;
 import org.apache.log4j.Logger;
 
 public abstract class PopStateMachine extends AbstractTokenHandler
@@ -54,9 +54,9 @@ public abstract class PopStateMachine extends AbstractTokenHandler
         DATA_START,
         DATA,
         MARKER,
-        TRICKLE_START, /* state machine/transform only state */
-        TRICKLE_DATA, /* state machine/transform only state */
-        TRICKLE_MARKER, /* state machine/transform only state */
+        TRICKLE_START, /* state machine/node only state */
+        TRICKLE_DATA, /* state machine/node only state */
+        TRICKLE_MARKER, /* state machine/node only state */
         DONOTCARE_START, /* casing only state */
         DONOTCARE_DATA /* casing only state */
     };

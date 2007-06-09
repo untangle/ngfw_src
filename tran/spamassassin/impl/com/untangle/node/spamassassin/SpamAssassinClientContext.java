@@ -9,13 +9,13 @@
  * $Id: $
  */
 
-package com.untangle.tran.spamassassin;
+package com.untangle.node.spamassassin;
 
 import java.io.File;
 import java.util.List;
 
-import com.untangle.tran.spam.ReportItem;
-import com.untangle.tran.spam.SpamReport;
+import com.untangle.node.spam.ReportItem;
+import com.untangle.node.spam.SpamReport;
 
 public final class SpamAssassinClientContext {
     private InputSettings iSettings;

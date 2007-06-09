@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.ids;
+package com.untangle.node.ids;
 
 import java.io.*;
 import java.net.InetAddress;
@@ -17,10 +17,10 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.*;
 
-import com.untangle.mvvm.tran.SessionEndpoints;
-import com.untangle.mvvm.tapi.*;
-import com.untangle.mvvm.tapi.event.*;
-import com.untangle.mvvm.tran.ParseException;
+import com.untangle.uvm.node.SessionEndpoints;
+import com.untangle.uvm.tapi.*;
+import com.untangle.uvm.tapi.event.*;
+import com.untangle.uvm.node.ParseException;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 

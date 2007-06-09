@@ -9,16 +9,16 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.impl.smtp;
+package com.untangle.node.mail.impl.smtp;
 
 import java.nio.ByteBuffer;
 
-import com.untangle.mvvm.tapi.TCPSession;
-import com.untangle.tran.mail.papi.smtp.Response;
-import com.untangle.tran.mail.papi.smtp.SASLExchangeToken;
-import com.untangle.tran.token.MetadataToken;
-import com.untangle.tran.token.Token;
-import com.untangle.tran.token.UnparseResult;
+import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.node.mail.papi.smtp.Response;
+import com.untangle.node.mail.papi.smtp.SASLExchangeToken;
+import com.untangle.node.token.MetadataToken;
+import com.untangle.node.token.Token;
+import com.untangle.node.token.UnparseResult;
 import org.apache.log4j.Logger;
 
 /**

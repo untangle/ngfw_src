@@ -1,7 +1,7 @@
-com.untangle.tran.spam.SpamIMAPConfig
-com.untangle.tran.spam.SpamPOPConfig
-com.untangle.tran.spam.SpamSMTPConfig
-com.untangle.tran.spam.SpamSettings
-com.untangle.tran.spam.SpamRBL
-com.untangle.tran.spam.SpamAssassinDef
-com.untangle.tran.spam.SpamAssassinLcl
+com.untangle.node.spam.SpamIMAPConfig
+com.untangle.node.spam.SpamPOPConfig
+com.untangle.node.spam.SpamSMTPConfig
+com.untangle.node.spam.SpamSettings
+com.untangle.node.spam.SpamRBL
+com.untangle.node.spam.SpamAssassinDef
+com.untangle.node.spam.SpamAssassinLcl

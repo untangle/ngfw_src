@@ -1,4 +1,4 @@
-com.untangle.tran.spyware.SpywareActiveXEvent
-com.untangle.tran.spyware.SpywareStatisticEvent
-com.untangle.tran.spyware.SpywareBlacklistEvent
-com.untangle.tran.spyware.SpywareCookieEvent
+com.untangle.node.spyware.SpywareActiveXEvent
+com.untangle.node.spyware.SpywareStatisticEvent
+com.untangle.node.spyware.SpywareBlacklistEvent
+com.untangle.node.spyware.SpywareCookieEvent

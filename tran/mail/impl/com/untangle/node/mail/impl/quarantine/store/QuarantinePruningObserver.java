@@ -9,15 +9,15 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.impl.quarantine.store;
+package com.untangle.node.mail.impl.quarantine.store;
 
 import java.io.File;
 
-import com.untangle.tran.mail.papi.quarantine.InboxRecord;
+import com.untangle.node.mail.papi.quarantine.InboxRecord;
 
 /**
  * Callback interface, used while the
- * {@link com.untangle.tran.mail.impl.quarantine.store.QuatantineStore#prune store is pruning}.
+ * {@link com.untangle.node.mail.impl.quarantine.store.QuatantineStore#prune store is pruning}.
  * <br><br>
  * Some day, this may make for interesting GUI stuff.
  */

@@ -9,15 +9,15 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.papi.smtp;
+package com.untangle.node.mail.papi.smtp;
 
 import java.nio.ByteBuffer;
 
-import com.untangle.tran.token.Token;
+import com.untangle.node.token.Token;
 
 /**
  * Opaque chunk of data, used to pass SASL information
- * between casings, being ignored by Transforms.
+ * between casings, being ignored by Nodes.
  */
 public class SASLExchangeToken
     implements Token {

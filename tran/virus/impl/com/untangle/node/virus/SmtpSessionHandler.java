@@ -9,18 +9,18 @@
  * $Id$
  */
 
-package com.untangle.tran.virus;
+package com.untangle.node.virus;
 
 import java.io.*;
 import java.util.*;
 
-import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.mvvm.tapi.*;
-import com.untangle.tran.mail.papi.*;
-import com.untangle.tran.mail.papi.smtp.*;
-import com.untangle.tran.mail.papi.smtp.sapi.*;
-import com.untangle.tran.mime.*;
-import com.untangle.tran.util.*;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.tapi.*;
+import com.untangle.node.mail.papi.*;
+import com.untangle.node.mail.papi.smtp.*;
+import com.untangle.node.mail.papi.smtp.sapi.*;
+import com.untangle.node.mime.*;
+import com.untangle.node.util.*;
 import org.apache.log4j.Logger;
 
 
@@ -35,21 +35,21 @@ public class SmtpSessionHandler
     private final Pipeline m_pipeline;
     private final TempFileFactory m_fileFactory;
 
-    private final VirusTransformImpl m_virusImpl;
+    private final VirusNodeImpl m_virusImpl;
     private final VirusSMTPConfig m_config;
 
 
     public SmtpSessionHandler(TCPSession session,
                               long maxClientWait,
                               long maxSvrWait,
-                              VirusTransformImpl impl,
+                              VirusNodeImpl impl,
                               VirusSMTPConfig config) {
 
         super(Integer.MAX_VALUE, maxClientWait, maxSvrWait, true);
 
         m_virusImpl = impl;
         m_config = config;
-        m_pipeline = MvvmContextFactory.context().
+        m_pipeline = UvmContextFactory.context().
             pipelineFoundry().getPipeline(session.id());
         m_fileFactory = new TempFileFactory(m_pipeline);
     }
@@ -142,7 +142,7 @@ public class SmtpSessionHandler
         if(foundVirus) {
             //Perform notification (if we should)
             if(m_config.getNotificationMessageGenerator().sendNotification(
-                                                                           MvvmContextFactory.context().mailSender(),
+                                                                           UvmContextFactory.context().mailSender(),
                                                                            m_config.getNotifyAction(),
                                                                            msg,
                                                                            tx,
@@ -246,7 +246,7 @@ public class SmtpSessionHandler
         if(foundVirus) {
             //Make notification
             if(m_config.getNotificationMessageGenerator().sendNotification(
-                                                                           MvvmContextFactory.context().mailSender(),
+                                                                           UvmContextFactory.context().mailSender(),
                                                                            m_config.getNotifyAction(),
                                                                            msg,
                                                                            tx,

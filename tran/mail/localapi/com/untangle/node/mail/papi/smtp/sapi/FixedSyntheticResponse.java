@@ -9,9 +9,9 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.papi.smtp.sapi;
+package com.untangle.node.mail.papi.smtp.sapi;
 
-import com.untangle.tran.mail.papi.smtp.Response;
+import com.untangle.node.mail.papi.smtp.Response;
 
 
 /**
@@ -19,7 +19,7 @@ import com.untangle.tran.mail.papi.smtp.Response;
  * this is a single-line response.
  * <br><br>
  * For details on what the heck this is good for, check out the docs on
- * {@link com.untangle.tran.mail.papi.smtp.sapi.SessionHandler SessionHandler}
+ * {@link com.untangle.node.mail.papi.smtp.sapi.SessionHandler SessionHandler}
  */
 public class FixedSyntheticResponse
     implements SyntheticResponse {

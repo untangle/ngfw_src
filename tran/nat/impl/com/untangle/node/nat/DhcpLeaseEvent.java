@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.nat;
+package com.untangle.node.nat;
 
 import java.util.Date;
 import javax.persistence.Column;
@@ -19,12 +19,12 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
-import com.untangle.mvvm.logging.LogEvent;
-import com.untangle.mvvm.logging.SyslogBuilder;
-import com.untangle.mvvm.logging.SyslogPriority;
-import com.untangle.mvvm.tran.HostName;
-import com.untangle.mvvm.tran.IPaddr;
-import com.untangle.mvvm.tran.firewall.MACAddress;
+import com.untangle.uvm.logging.LogEvent;
+import com.untangle.uvm.logging.SyslogBuilder;
+import com.untangle.uvm.logging.SyslogPriority;
+import com.untangle.uvm.node.HostName;
+import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.firewall.MACAddress;
 import org.hibernate.annotations.Type;
 
 /**
@@ -70,7 +70,7 @@ import org.hibernate.annotations.Type;
          *
          * @return the mac address.
          */
-        @Type(type="com.untangle.mvvm.type.firewall.MACAddressUserType")
+        @Type(type="com.untangle.uvm.type.firewall.MACAddressUserType")
         public MACAddress getMac()
         {
             return mac;
@@ -86,7 +86,7 @@ import org.hibernate.annotations.Type;
          *
          * @return the host name.
          */
-        @Type(type="com.untangle.mvvm.type.HostNameUserType")
+        @Type(type="com.untangle.uvm.type.HostNameUserType")
         public HostName getHostname()
         {
             return hostname;
@@ -102,7 +102,7 @@ import org.hibernate.annotations.Type;
          *
          * @return desired static address.
          */
-        @Type(type="com.untangle.mvvm.type.IPaddrUserType")
+        @Type(type="com.untangle.uvm.type.IPaddrUserType")
         public IPaddr getIP()
         {
             return this.ip;

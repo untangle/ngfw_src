@@ -8,9 +8,9 @@
  *
  * $Id$
  */
-package com.untangle.tran.mail.web.euv.tags;
+package com.untangle.node.mail.web.euv.tags;
 
-import com.untangle.tran.mail.papi.quarantine.InboxRecordCursor;
+import com.untangle.node.mail.papi.quarantine.InboxRecordCursor;
 
 /**
  * Outputs the total size of records in the current index, or

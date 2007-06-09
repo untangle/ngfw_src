@@ -8,13 +8,13 @@
  *
  * $Id$
  */
-package com.untangle.tran.hauri;
+package com.untangle.node.hauri;
 
-import com.untangle.tran.virus.VirusTransformImpl;
+import com.untangle.node.virus.VirusNodeImpl;
 
-public class HauriTransform extends VirusTransformImpl
+public class HauriNode extends VirusNodeImpl
 {
-    public HauriTransform()
+    public HauriNode()
     {
         super(new HauriScanner());
     }

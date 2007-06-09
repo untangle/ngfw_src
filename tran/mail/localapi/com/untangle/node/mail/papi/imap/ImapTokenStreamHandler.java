@@ -9,15 +9,15 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.papi.imap;
+package com.untangle.node.mail.papi.imap;
 
-import com.untangle.tran.mail.papi.ContinuedMIMEToken;
-import com.untangle.tran.token.TokenResult;
+import com.untangle.node.mail.papi.ContinuedMIMEToken;
+import com.untangle.node.token.TokenResult;
 
 
 /**
  * Abstract base class for Objects wishing to listen
- * for callbacks on a {@link com.untangle.tran.mail.papi.imap.ImapTokenStream ImapTokenStream}.
+ * for callbacks on a {@link com.untangle.node.mail.papi.imap.ImapTokenStream ImapTokenStream}.
  * Hopefully, the method names should make sense vis-a-vis their use.  The
  * only "trick" is that mails will either arrive as:
  * <ul>
@@ -35,7 +35,7 @@ import com.untangle.tran.token.TokenResult;
  * with a passthru implementation).  This is to prevent goofups
  * if new methods are added (and not implemented).  If someone
  * wants a passthru implementation, one has
- * {@link com.untangle.tran.mail.papi.imap.PassthruImapTokenStreamHandler already been created}.
+ * {@link com.untangle.node.mail.papi.imap.PassthruImapTokenStreamHandler already been created}.
  */
 public abstract class ImapTokenStreamHandler {
 
@@ -60,7 +60,7 @@ public abstract class ImapTokenStreamHandler {
      * Returning true means "go ahead and close the server".
      *
      * @return true if this should be propigated to the next
-     *         transform/unparser
+     *         node/unparser
      */
     public abstract boolean handleClientFin();
 
@@ -70,7 +70,7 @@ public abstract class ImapTokenStreamHandler {
      * Returning true means "go ahead and close the client".
      *
      * @return true if this should be propigated to the next
-     *         transform/unparser
+     *         node/unparser
      */
     public abstract boolean handleServerFin();
 

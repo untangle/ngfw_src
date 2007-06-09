@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.httpblocker;
+package com.untangle.node.httpblocker;
 
 import java.io.Serializable;
 import java.util.HashMap;

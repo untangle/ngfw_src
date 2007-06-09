@@ -9,10 +9,10 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.impl.imap;
+package com.untangle.node.mail.impl.imap;
 import java.nio.ByteBuffer;
 
-import com.untangle.tran.mail.papi.imap.IMAPTokenizer;
+import com.untangle.node.mail.papi.imap.IMAPTokenizer;
 import org.apache.log4j.Logger;
 
 /**

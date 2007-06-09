@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.http;
+package com.untangle.node.http;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -20,9 +20,9 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import com.untangle.mvvm.logging.LogEvent;
-import com.untangle.mvvm.logging.SyslogBuilder;
-import com.untangle.mvvm.logging.SyslogPriority;
+import com.untangle.uvm.logging.LogEvent;
+import com.untangle.uvm.logging.SyslogBuilder;
+import com.untangle.uvm.logging.SyslogPriority;
 
 /**
  * Log event for a request.

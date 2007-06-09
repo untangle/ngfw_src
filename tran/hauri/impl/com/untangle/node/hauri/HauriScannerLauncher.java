@@ -8,7 +8,7 @@
  *
  * $Id$
  */
-package com.untangle.tran.hauri;
+package com.untangle.node.hauri;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -18,9 +18,9 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.StringTokenizer;
 
-import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.tran.virus.VirusScannerLauncher;
-import com.untangle.tran.virus.VirusScannerResult;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.node.virus.VirusScannerLauncher;
+import com.untangle.node.virus.VirusScannerResult;
 
 public class HauriScannerLauncher extends VirusScannerLauncher
 {
@@ -40,7 +40,7 @@ public class HauriScannerLauncher extends VirusScannerLauncher
     public void run()
     {
         try {
-            this.scanProcess = MvvmContextFactory.context().exec("virobot " + scanfilePath);
+            this.scanProcess = UvmContextFactory.context().exec("virobot " + scanfilePath);
             InputStream is  = this.scanProcess.getInputStream();
             OutputStream os = this.scanProcess.getOutputStream();
             BufferedReader in = new BufferedReader(new InputStreamReader(is));

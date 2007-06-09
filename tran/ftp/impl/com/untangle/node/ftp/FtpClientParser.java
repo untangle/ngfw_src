@@ -9,23 +9,23 @@
  * $Id$
  */
 
-package com.untangle.tran.ftp;
+package com.untangle.node.ftp;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.List;
 
-import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.mvvm.tapi.Fitting;
-import com.untangle.mvvm.tapi.Pipeline;
-import com.untangle.mvvm.tapi.TCPSession;
-import com.untangle.tran.token.AbstractParser;
-import com.untangle.tran.token.Chunk;
-import com.untangle.tran.token.EndMarker;
-import com.untangle.tran.token.ParseException;
-import com.untangle.tran.token.ParseResult;
-import com.untangle.tran.token.Token;
-import com.untangle.tran.token.TokenStreamer;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.tapi.Fitting;
+import com.untangle.uvm.tapi.Pipeline;
+import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.node.token.AbstractParser;
+import com.untangle.node.token.Chunk;
+import com.untangle.node.token.EndMarker;
+import com.untangle.node.token.ParseException;
+import com.untangle.node.token.ParseResult;
+import com.untangle.node.token.Token;
+import com.untangle.node.token.TokenStreamer;
 import org.apache.log4j.Logger;
 
 public class FtpClientParser extends AbstractParser
@@ -45,7 +45,7 @@ public class FtpClientParser extends AbstractParser
         super(session, true);
         lineBuffering(true);
 
-        Pipeline p = MvvmContextFactory.context().pipelineFoundry()
+        Pipeline p = UvmContextFactory.context().pipelineFoundry()
             .getPipeline(session.id());
         fitting = p.getClientFitting(session.mPipe());
     }

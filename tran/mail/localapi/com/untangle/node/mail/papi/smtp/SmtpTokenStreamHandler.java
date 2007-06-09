@@ -9,14 +9,14 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.papi.smtp;
+package com.untangle.node.mail.papi.smtp;
 
 
-import com.untangle.tran.mail.papi.BeginMIMEToken;
-import com.untangle.tran.mail.papi.CompleteMIMEToken;
-import com.untangle.tran.mail.papi.ContinuedMIMEToken;
-import com.untangle.tran.token.Chunk;
-import com.untangle.tran.token.TokenResultBuilder;
+import com.untangle.node.mail.papi.BeginMIMEToken;
+import com.untangle.node.mail.papi.CompleteMIMEToken;
+import com.untangle.node.mail.papi.ContinuedMIMEToken;
+import com.untangle.node.token.Chunk;
+import com.untangle.node.token.TokenResultBuilder;
 
 
 
@@ -26,11 +26,11 @@ import com.untangle.tran.token.TokenResultBuilder;
  * registered on a Stream by associating
  * itself either in the constructor
  * or the "setHandler" method
- * of a {@link com.untangle.tran.mail.papi.smtp.SmtpTokenStream SmtpTokenStream}.
+ * of a {@link com.untangle.node.mail.papi.smtp.SmtpTokenStream SmtpTokenStream}.
  * <br>
  * Note if the handler pukes in a horrible
  * way that you want all other
- * transforms to ignore this session, make sure to
+ * nodes to ignore this session, make sure to
  * pass-along Passthru tokens in each direction.
  *
  */

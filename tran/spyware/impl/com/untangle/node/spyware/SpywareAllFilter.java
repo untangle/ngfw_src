@@ -9,10 +9,10 @@
  * $Id$
  */
 
-package com.untangle.tran.spyware;
+package com.untangle.node.spyware;
 
-import com.untangle.mvvm.logging.RepositoryDesc;
-import com.untangle.mvvm.logging.SimpleEventFilter;
+import com.untangle.uvm.logging.RepositoryDesc;
+import com.untangle.uvm.logging.SimpleEventFilter;
 
 public class SpywareAllFilter implements SimpleEventFilter<SpywareEvent>
 {

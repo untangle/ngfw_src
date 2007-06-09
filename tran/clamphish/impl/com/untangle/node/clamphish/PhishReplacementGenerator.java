@@ -6,13 +6,13 @@
  * Untangle, Inc. ("Confidential Information"). You shall
  * not disclose such Confidential Information.
  *
- * $Id: ClamPhishTransform.java 8965 2007-02-23 20:54:04Z cng $
+ * $Id: ClamPhishNode.java 8965 2007-02-23 20:54:04Z cng $
  */
 
-package com.untangle.tran.clamphish;
+package com.untangle.node.clamphish;
 
-import com.untangle.mvvm.security.Tid;
-import com.untangle.tran.http.ReplacementGenerator;
+import com.untangle.uvm.security.Tid;
+import com.untangle.node.http.ReplacementGenerator;
 
 class PhishReplacementGenerator
     extends ReplacementGenerator<ClamPhishBlockDetails>

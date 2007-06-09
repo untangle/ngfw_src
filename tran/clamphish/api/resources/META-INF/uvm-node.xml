@@ -11,12 +11,12 @@ not disclose such Confidential Information.
 $Id$
 -->
 
-<mvvm-transform>
-  <transform-desc name="clamphish-transform"
+<uvm-node>
+  <node-desc name="clamphish-node"
                   display-name="Phish Blocker"
-                  classname="com.untangle.tran.clamphish.ClamPhishTransform"
-                  gui-classname="com.untangle.tran.clamphish.gui.MTransformJPanel"
-                  transform-base="spam-base"/>
+                  classname="com.untangle.node.clamphish.ClamPhishNode"
+                  gui-classname="com.untangle.node.clamphish.gui.MNodeJPanel"
+                  node-base="spam-base"/>
   <parent>http-casing</parent>
   <parent>mail-casing</parent>
-</mvvm-transform>
+</uvm-node>

@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.httpblocker;
+package com.untangle.node.httpblocker;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -27,10 +27,10 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import com.untangle.mvvm.security.Tid;
-import com.untangle.mvvm.tran.IPMaddrRule;
-import com.untangle.mvvm.tran.MimeTypeRule;
-import com.untangle.mvvm.tran.StringRule;
+import com.untangle.uvm.security.Tid;
+import com.untangle.uvm.node.IPMaddrRule;
+import com.untangle.uvm.node.MimeTypeRule;
+import com.untangle.uvm.node.StringRule;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.IndexColumn;
 
@@ -107,7 +107,7 @@ public class HttpBlockerSettings implements Serializable
     }
 
     /**
-     * Transform id for these settings.
+     * Node id for these settings.
      *
      * @return tid for these settings.
      */

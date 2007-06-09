@@ -8,7 +8,7 @@
  *
  * $Id$
  */
-package com.untangle.tran.mail.papi.safelist;
+package com.untangle.node.mail.papi.safelist;
 
 import java.io.Serializable;
 import javax.persistence.Column;
@@ -17,7 +17,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import com.untangle.tran.mail.papi.MessageInfo;
+import com.untangle.node.mail.papi.MessageInfo;
 
 /**
  * Log e-mail message info.

@@ -8,7 +8,7 @@
  *
  * $Id: MaxDaysIdleInboxTag.java 7988 2006-11-09 03:45:12Z amread $
  */
-package com.untangle.tran.mail.web.euv.tags;
+package com.untangle.node.mail.web.euv.tags;
 
 import javax.servlet.ServletRequest;
 

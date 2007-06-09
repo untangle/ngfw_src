@@ -9,16 +9,16 @@
  * $Id$
  */
 
-package com.untangle.tran.virus;
+package com.untangle.node.virus;
 
 
-import com.untangle.mvvm.tapi.TCPNewSessionRequest;
-import com.untangle.mvvm.tapi.TCPSession;
-import com.untangle.tran.mail.papi.MailExport;
-import com.untangle.tran.mail.papi.MailExportFactory;
-import com.untangle.tran.mail.papi.imap.ImapTokenStream;
-import com.untangle.tran.token.TokenHandler;
-import com.untangle.tran.token.TokenHandlerFactory;
+import com.untangle.uvm.tapi.TCPNewSessionRequest;
+import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.node.mail.papi.MailExport;
+import com.untangle.node.mail.papi.MailExportFactory;
+import com.untangle.node.mail.papi.imap.ImapTokenStream;
+import com.untangle.node.token.TokenHandler;
+import com.untangle.node.token.TokenHandlerFactory;
 import org.apache.log4j.Logger;
 
 /**
@@ -31,12 +31,12 @@ public final class VirusImapFactory
 
     private final Logger m_logger = Logger.getLogger(getClass());
 
-    private final VirusTransformImpl m_virusImpl;
+    private final VirusNodeImpl m_virusImpl;
     private final MailExport m_mailExport;
 
 
-    VirusImapFactory(VirusTransformImpl transform) {
-        m_virusImpl = transform;
+    VirusImapFactory(VirusNodeImpl node) {
+        m_virusImpl = node;
         /* XXX RBS I don't know if this will work */
         m_mailExport = MailExportFactory.factory().getExport();
     }

@@ -9,20 +9,20 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.papi;
+package com.untangle.node.mail.papi;
 
-import static com.untangle.tran.util.Ascii.*;
-import static com.untangle.tran.util.Rfc822Util.*;
+import static com.untangle.node.util.Ascii.*;
+import static com.untangle.node.util.Rfc822Util.*;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-import com.untangle.tran.mime.FileMIMESource;
-import com.untangle.tran.mime.MIMEMessage;
-import com.untangle.tran.mime.MIMEMessageHeaders;
-import com.untangle.tran.mime.MIMEParsingInputStream;
-import com.untangle.tran.token.Token;
+import com.untangle.node.mime.FileMIMESource;
+import com.untangle.node.mime.MIMEMessage;
+import com.untangle.node.mime.MIMEMessageHeaders;
+import com.untangle.node.mime.MIMEParsingInputStream;
+import com.untangle.node.token.Token;
 
 public class MIMEMessageT implements Token
 {

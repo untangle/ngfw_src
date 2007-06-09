@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.impl.quarantine.store;
+package com.untangle.node.mail.impl.quarantine.store;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -17,13 +17,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.untangle.tran.mail.papi.quarantine.Inbox;
-import com.untangle.tran.mail.papi.quarantine.InboxRecord;
-import com.untangle.tran.mail.papi.quarantine.MailSummary;
-import com.untangle.tran.mail.papi.quarantine.QuarantineEjectionHandler;
-import com.untangle.tran.util.IOUtil;
-import com.untangle.tran.util.MVLogger;
-import com.untangle.tran.util.Pair;
+import com.untangle.node.mail.papi.quarantine.Inbox;
+import com.untangle.node.mail.papi.quarantine.InboxRecord;
+import com.untangle.node.mail.papi.quarantine.MailSummary;
+import com.untangle.node.mail.papi.quarantine.QuarantineEjectionHandler;
+import com.untangle.node.util.IOUtil;
+import com.untangle.node.util.MVLogger;
+import com.untangle.node.util.Pair;
 
 
 /**

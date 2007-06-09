@@ -9,14 +9,14 @@
  * $Id$
  */
 
-package com.untangle.tran.ids.options;
+package com.untangle.node.ids.options;
 
 import java.nio.ByteBuffer;
 import java.util.regex.*;
 
-import com.untangle.tran.ids.IDSRuleSignature;
-import com.untangle.tran.ids.IDSSessionInfo;
-import com.untangle.tran.util.AsciiCharBuffer;
+import com.untangle.node.ids.IDSRuleSignature;
+import com.untangle.node.ids.IDSSessionInfo;
+import com.untangle.node.util.AsciiCharBuffer;
 import org.apache.log4j.Logger;
 
 public class PcreOption extends IDSOption {

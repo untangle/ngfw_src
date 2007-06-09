@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.spyware;
+package com.untangle.node.spyware;
 
 import java.util.HashMap;
 import java.util.Map;

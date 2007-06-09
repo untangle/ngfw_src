@@ -8,26 +8,26 @@
  *
  * $Id$
  */
-package com.untangle.tran.virus;
+package com.untangle.node.virus;
 
 
-import com.untangle.mvvm.tapi.TCPNewSessionRequest;
-import com.untangle.mvvm.tapi.TCPSession;
-import com.untangle.tran.token.TokenHandler;
-import com.untangle.tran.token.TokenHandlerFactory;
+import com.untangle.uvm.tapi.TCPNewSessionRequest;
+import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.node.token.TokenHandler;
+import com.untangle.node.token.TokenHandlerFactory;
 
 public class VirusHttpFactory implements TokenHandlerFactory
 {
-    private final VirusTransformImpl transform;
+    private final VirusNodeImpl node;
 
-    VirusHttpFactory(VirusTransformImpl transform)
+    VirusHttpFactory(VirusNodeImpl node)
     {
-        this.transform = transform;
+        this.node = node;
     }
 
     public TokenHandler tokenHandler(TCPSession session)
     {
-        return new VirusHttpHandler(session, transform);
+        return new VirusHttpHandler(session, node);
     }
 
     public void handleNewSessionRequest(TCPNewSessionRequest tsr)

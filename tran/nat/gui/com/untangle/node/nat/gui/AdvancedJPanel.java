@@ -9,24 +9,24 @@
  * $Id$
  */
 
-package com.untangle.tran.nat.gui;
+package com.untangle.node.nat.gui;
 
 import java.awt.Window;
 import javax.swing.*;
 
-import com.untangle.gui.transform.*;
+import com.untangle.gui.node.*;
 import com.untangle.gui.util.Util;
 import com.untangle.gui.widgets.dialogs.*;
-import com.untangle.mvvm.client.MvvmRemoteContextFactory;
-import com.untangle.mvvm.networking.*;
-import com.untangle.tran.nat.*;
+import com.untangle.uvm.client.UvmRemoteContextFactory;
+import com.untangle.uvm.networking.*;
+import com.untangle.node.nat.*;
 
 public class AdvancedJPanel extends javax.swing.JPanel implements Refreshable<Object> {
 
-    private MTransformControlsJPanel mTransformControlsJPanel;
+    private MNodeControlsJPanel mNodeControlsJPanel;
 
-    public AdvancedJPanel(MTransformControlsJPanel mTransformControlsJPanel) {
-        this.mTransformControlsJPanel = mTransformControlsJPanel;
+    public AdvancedJPanel(MNodeControlsJPanel mNodeControlsJPanel) {
+        this.mNodeControlsJPanel = mNodeControlsJPanel;
         initComponents();
     }
 
@@ -234,7 +234,7 @@ public class AdvancedJPanel extends javax.swing.JPanel implements Refreshable<Ob
         public NatModeResetThread(boolean isAdvanced){
             setDaemon(true);
             this.isAdvanced = isAdvanced;
-            mTransformControlsJPanel.getInfiniteProgressJComponent().start("Reconfiguring...");
+            mNodeControlsJPanel.getInfiniteProgressJComponent().start("Reconfiguring...");
             start();
         }
         public void run(){
@@ -250,14 +250,14 @@ public class AdvancedJPanel extends javax.swing.JPanel implements Refreshable<Ob
             */
 
             try{
-                Nat natTransform = com.untangle.tran.nat.gui.MTransformControlsJPanel.getNatTransform();
-                int previousTimeout = MvvmRemoteContextFactory.factory().getTimeout();
-                MvvmRemoteContextFactory.factory().setTimeout(Util.RECONFIGURE_NETWORK_TIMEOUT_MILLIS);
+                Nat natNode = com.untangle.node.nat.gui.MNodeControlsJPanel.getNatNode();
+                int previousTimeout = UvmRemoteContextFactory.factory().getTimeout();
+                UvmRemoteContextFactory.factory().setTimeout(Util.RECONFIGURE_NETWORK_TIMEOUT_MILLIS);
                 if( isAdvanced )
-                    natTransform.switchToAdvanced();
+                    natNode.switchToAdvanced();
                 else
-                    natTransform.resetBasic();
-                MvvmRemoteContextFactory.factory().setTimeout(previousTimeout);
+                    natNode.resetBasic();
+                UvmRemoteContextFactory.factory().setTimeout(previousTimeout);
             }
             catch(Exception e){
                 try{ Util.handleExceptionWithRestart("Error reconfiguring", e); }
@@ -268,9 +268,9 @@ public class AdvancedJPanel extends javax.swing.JPanel implements Refreshable<Ob
                                               "Router Warning", "Warning");
                 }
             }
-            mTransformControlsJPanel.getInfiniteProgressJComponent().stopLater(3000l);
+            mNodeControlsJPanel.getInfiniteProgressJComponent().stopLater(3000l);
             SwingUtilities.invokeLater( new Runnable(){ public void run(){
-                mTransformControlsJPanel.refreshGui();
+                mNodeControlsJPanel.refreshGui();
             }});
             /*
               SwingUtilities.invokeLater( new Runnable(){ public void run(){

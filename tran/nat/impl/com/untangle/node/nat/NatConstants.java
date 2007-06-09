@@ -9,16 +9,16 @@
  * $Id$
  */
 
-package com.untangle.tran.nat;
+package com.untangle.node.nat;
 
-import com.untangle.mvvm.tran.Transform;
+import com.untangle.uvm.node.Node;
 
 class NatConstants
 {
-    static final int BLOCK_COUNTER = Transform.GENERIC_0_COUNTER;
-    static final int NAT_COUNTER   = Transform.GENERIC_1_COUNTER;
-    static final int REDIR_COUNTER = Transform.GENERIC_2_COUNTER;
-    static final int DMZ_COUNTER   = Transform.GENERIC_3_COUNTER;
+    static final int BLOCK_COUNTER = Node.GENERIC_0_COUNTER;
+    static final int NAT_COUNTER   = Node.GENERIC_1_COUNTER;
+    static final int REDIR_COUNTER = Node.GENERIC_2_COUNTER;
+    static final int DMZ_COUNTER   = Node.GENERIC_3_COUNTER;
     
     /* TCP Port range for nat */
     static final int TCP_NAT_PORT_START = 10000;

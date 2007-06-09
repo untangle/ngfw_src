@@ -9,27 +9,27 @@
  * $Id$
  */
 
-package com.untangle.tran.clamphish;
+package com.untangle.node.clamphish;
 
-import com.untangle.mvvm.tapi.TCPSession;
-import com.untangle.tran.mail.papi.quarantine.QuarantineTransformView;
-import com.untangle.tran.mail.papi.safelist.SafelistTransformView;
-import com.untangle.tran.spam.SpamReport;
-import com.untangle.tran.spam.SpamSMTPConfig;
+import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.node.mail.papi.quarantine.QuarantineNodeView;
+import com.untangle.node.mail.papi.safelist.SafelistNodeView;
+import com.untangle.node.spam.SpamReport;
+import com.untangle.node.spam.SpamSMTPConfig;
 
 /**
  * Protocol Handler which is called-back as scanable messages
  * are encountered.
  */
-public class PhishSmtpHandler extends com.untangle.tran.spam.SmtpSessionHandler {
+public class PhishSmtpHandler extends com.untangle.node.spam.SmtpSessionHandler {
 
     PhishSmtpHandler(TCPSession session,
                      long maxClientWait,
                      long maxSvrWait,
-                     ClamPhishTransform impl,
+                     ClamPhishNode impl,
                      SpamSMTPConfig config,
-                     QuarantineTransformView quarantine,
-                     SafelistTransformView safelist) {
+                     QuarantineNodeView quarantine,
+                     SafelistNodeView safelist) {
         super(session, maxClientWait, maxSvrWait, impl, config, quarantine, safelist);
     }
 

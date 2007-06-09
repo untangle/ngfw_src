@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.openvpn.gui;
+package com.untangle.node.openvpn.gui;
 
 import java.awt.*;
 import java.util.*;
@@ -18,9 +18,9 @@ import javax.swing.*;
 import com.untangle.gui.util.Util;
 import com.untangle.gui.widgets.dialogs.*;
 import com.untangle.gui.widgets.wizard.*;
-import com.untangle.mvvm.client.*;
-import com.untangle.mvvm.tran.HostAddress;
-import com.untangle.tran.openvpn.*;
+import com.untangle.uvm.client.*;
+import com.untangle.uvm.node.HostAddress;
+import com.untangle.node.openvpn.*;
 
 public class ClientWizardServerJPanel extends MWizardPageJPanel {
 
@@ -31,12 +31,12 @@ public class ClientWizardServerJPanel extends MWizardPageJPanel {
         "from the drop-down-list before proceeding.";
 
 
-    private VpnTransform vpnTransform;
+    private VpnNode vpnNode;
 
     private static final String NO_CONFIGURATIONS = "[No Configurations]";
 
-    public ClientWizardServerJPanel(VpnTransform vpnTransform) {
-        this.vpnTransform = vpnTransform;
+    public ClientWizardServerJPanel(VpnNode vpnNode) {
+        this.vpnNode = vpnNode;
         initComponents();
         Util.addFocusHighlight(serverJTextField);
         Util.addFocusHighlight(passwordJPasswordField);
@@ -132,9 +132,9 @@ public class ClientWizardServerJPanel extends MWizardPageJPanel {
             try{
                 // DOWNLOAD THE STUFFS
                 if( useServer )
-                    vpnTransform.downloadConfig( addressIPaddr, serverPort, password );
+                    vpnNode.downloadConfig( addressIPaddr, serverPort, password );
                 else
-                    vpnTransform.downloadConfigUsb( selection );
+                    vpnNode.downloadConfigUsb( selection );
 
                 // SHOW RESULTS AND REMOVE DOWNLOADING DIALOG
                 ClientWizard.getInfiniteProgressJComponent().stopLater(2000l);
@@ -153,7 +153,7 @@ public class ClientWizardServerJPanel extends MWizardPageJPanel {
                 }
             }
 
-            vpnTransform.completeConfig();
+            vpnNode.completeConfig();
         }
     }
 
@@ -244,7 +244,7 @@ public class ClientWizardServerJPanel extends MWizardPageJPanel {
     private void refreshKeyJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_refreshKeyJButtonActionPerformed
         try{
             keyJComboBox.removeAllItems();
-            java.util.List<String> usbList = vpnTransform.getAvailableUsbList();
+            java.util.List<String> usbList = vpnNode.getAvailableUsbList();
             if( usbList.size() == 0 ){
                 keyJComboBox.addItem(NO_CONFIGURATIONS);
                 keyJComboBox.setSelectedItem(NO_CONFIGURATIONS);

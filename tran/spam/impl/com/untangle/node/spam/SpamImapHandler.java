@@ -9,20 +9,20 @@
  * $Id$
  */
 
-package com.untangle.tran.spam;
+package com.untangle.node.spam;
 
 import java.io.File;
 import java.util.LinkedList;
 
-import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.mvvm.tapi.TCPSession;
-import com.untangle.tran.mail.papi.MessageInfo;
-import com.untangle.tran.mail.papi.imap.BufferingImapTokenStreamHandler;
-import com.untangle.tran.mail.papi.safelist.SafelistTransformView;
-import com.untangle.tran.mime.HeaderParseException;
-import com.untangle.tran.mime.LCString;
-import com.untangle.tran.mime.MIMEMessage;
-import com.untangle.tran.util.TempFileFactory;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.node.mail.papi.MessageInfo;
+import com.untangle.node.mail.papi.imap.BufferingImapTokenStreamHandler;
+import com.untangle.node.mail.papi.safelist.SafelistNodeView;
+import com.untangle.node.mime.HeaderParseException;
+import com.untangle.node.mime.LCString;
+import com.untangle.node.mime.MIMEMessage;
+import com.untangle.node.util.TempFileFactory;
 import org.apache.log4j.Logger;
 
 public class SpamImapHandler
@@ -34,21 +34,21 @@ public class SpamImapHandler
     private final SpamImpl m_spamImpl;
     private final SpamIMAPConfig m_config;
     private final TempFileFactory m_fileFactory;
-    private final SafelistTransformView m_safelist;
+    private final SafelistNodeView m_safelist;
 
     public SpamImapHandler(TCPSession session,
                            long maxClientWait,
                            long maxSvrWait,
                            SpamImpl impl,
                            SpamIMAPConfig config,
-                           SafelistTransformView safelist) {
+                           SafelistNodeView safelist) {
 
         super(maxClientWait, maxSvrWait, config.getMsgSizeLimit());
 
         m_spamImpl = impl;
         m_safelist = safelist;
         m_config = config;
-        m_fileFactory = new TempFileFactory(MvvmContextFactory.context().
+        m_fileFactory = new TempFileFactory(UvmContextFactory.context().
                                             pipelineFoundry().getPipeline(session.id()));
     }
 

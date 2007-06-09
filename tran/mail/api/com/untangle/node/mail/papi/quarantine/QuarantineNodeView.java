@@ -9,18 +9,18 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.papi.quarantine;
+package com.untangle.node.mail.papi.quarantine;
 
 import java.io.File;
 
-import com.untangle.tran.mime.EmailAddress;
+import com.untangle.node.mime.EmailAddress;
 
 /**
- * Interface for the transforms to insert
+ * Interface for the nodes to insert
  * messages into the quarantine.  This is
  * not intended to be "remoted".
  */
-public interface QuarantineTransformView {
+public interface QuarantineNodeView {
 
     /**
      * Quarantine the given message, destined for

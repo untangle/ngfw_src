@@ -10,15 +10,15 @@
  */
 
 
-package com.untangle.tran.openvpn.gui;
+package com.untangle.node.openvpn.gui;
 
 import javax.swing.*;
 
-import com.untangle.gui.transform.*;
-import com.untangle.mvvm.tran.HostAddress;
-import com.untangle.tran.openvpn.*;
+import com.untangle.gui.node.*;
+import com.untangle.uvm.node.HostAddress;
+import com.untangle.node.openvpn.*;
 
-public class MTransformControlsJPanel extends com.untangle.gui.transform.MTransformControlsJPanel{
+public class MNodeControlsJPanel extends com.untangle.gui.node.MNodeControlsJPanel{
 
     private static final String SETUP_NAME = "Setup";
     private static final String WIZARD_NAME = "Wizard";
@@ -30,14 +30,14 @@ public class MTransformControlsJPanel extends com.untangle.gui.transform.MTransf
     private static final String SITE_TO_SITE_NAME = "VPN Sites";
     private static final String NAME_LOG = "Event Log";
 
-    private static VpnTransform.ConfigState configState, lastConfigState;;
-    public static VpnTransform.ConfigState getConfigState(){ return configState; }
-    private VpnTransform vpnTransform;
+    private static VpnNode.ConfigState configState, lastConfigState;;
+    public static VpnNode.ConfigState getConfigState(){ return configState; }
+    private VpnNode vpnNode;
     private static HostAddress vpnServerAddress;
     public static HostAddress getVpnServerAddress(){ return vpnServerAddress; }
 
-    public MTransformControlsJPanel(MTransformJPanel mTransformJPanel) {
-        super(mTransformJPanel);
+    public MNodeControlsJPanel(MNodeJPanel mNodeJPanel) {
+        super(mNodeJPanel);
     }
 
     public void generateGui(){
@@ -46,11 +46,11 @@ public class MTransformControlsJPanel extends com.untangle.gui.transform.MTransf
         super.saveJButton.setVisible(true);
         super.reloadJButton.setVisible(true);
 
-        if( VpnTransform.ConfigState.UNCONFIGURED.equals(configState) ){
+        if( VpnNode.ConfigState.UNCONFIGURED.equals(configState) ){
             // SHOW WIZARD/STATUS
 
             // WIZARD/STATUS
-            WizardJPanel wizardJPanel = new WizardJPanel( vpnTransform, this );
+            WizardJPanel wizardJPanel = new WizardJPanel( vpnNode, this );
             addTab( WIZARD_NAME, null, wizardJPanel );
             addRefreshable( WIZARD_NAME, wizardJPanel );
 
@@ -58,24 +58,24 @@ public class MTransformControlsJPanel extends com.untangle.gui.transform.MTransf
             super.saveJButton.setVisible(false);
             super.reloadJButton.setVisible(false);
         }
-        else if( VpnTransform.ConfigState.CLIENT.equals(configState)){
+        else if( VpnNode.ConfigState.CLIENT.equals(configState)){
             // SHOW WIZARD/STATUS, AND EVENT LOG
 
             // WIZARD/STATUS
-            WizardJPanel wizardJPanel = new WizardJPanel( vpnTransform, this );
+            WizardJPanel wizardJPanel = new WizardJPanel( vpnNode, this );
             addTab( WIZARD_NAME, null, wizardJPanel );
             addRefreshable( WIZARD_NAME, wizardJPanel );
 
             // EVENT LOG ///////
-            LogJPanel logJPanel = new LogJPanel(mTransformJPanel.getTransform(), this);
+            LogJPanel logJPanel = new LogJPanel(mNodeJPanel.getNode(), this);
             addTab(NAME_LOG, null, logJPanel);
             addShutdownable(NAME_LOG, logJPanel);
         }
-        else if( VpnTransform.ConfigState.SERVER_ROUTE.equals(configState) ){
+        else if( VpnNode.ConfigState.SERVER_ROUTE.equals(configState) ){
             // SHOW WIZARD/STATUS, CLIENTS, EXPORTS, CLIENT-TO-SITE, SITE-TO-SITE, AND EVENT LOG
 
             // WIZARD
-            WizardJPanel wizardJPanel = new WizardJPanel( vpnTransform, this );
+            WizardJPanel wizardJPanel = new WizardJPanel( vpnNode, this );
             addRefreshable( WIZARD_NAME, wizardJPanel );
             ServerAdvancedJPanel serverAdvancedJPanel = new ServerAdvancedJPanel();
             serverAdvancedJPanel.setSettingsChangedListener(this);
@@ -117,11 +117,11 @@ public class MTransformControlsJPanel extends com.untangle.gui.transform.MTransf
             clientsAndSitesJTabbedPane.addTab( SITE_TO_SITE_NAME, null, configSiteToSiteJPanel );
 
             // EVENT LOG ///////
-            LogJPanel logJPanel = new LogJPanel(mTransformJPanel.getTransform(), this);
+            LogJPanel logJPanel = new LogJPanel(mNodeJPanel.getNode(), this);
             addTab(NAME_LOG, null, logJPanel);
             addShutdownable(NAME_LOG, logJPanel);
         }
-        else if( VpnTransform.ConfigState.SERVER_BRIDGE.equals(configState) ){
+        else if( VpnNode.ConfigState.SERVER_BRIDGE.equals(configState) ){
             // WE DONT SUPPORT THIS
         }
         else{
@@ -153,12 +153,12 @@ public class MTransformControlsJPanel extends com.untangle.gui.transform.MTransf
     }
 
     public void refreshAll() throws Exception {
-        vpnTransform = (VpnTransform) mTransformJPanel.getTransform();
-        configState = vpnTransform.getConfigState();
+        vpnNode = (VpnNode) mNodeJPanel.getNode();
+        configState = vpnNode.getConfigState();
         if( lastConfigState == null )
             lastConfigState = configState;
-        vpnServerAddress = vpnTransform.getVpnServerAddress();
-        KeyButtonRunnable.setVpnTransform( vpnTransform );
+        vpnServerAddress = vpnNode.getVpnServerAddress();
+        KeyButtonRunnable.setVpnNode( vpnNode );
         if( !lastConfigState.equals(configState) ){
             SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
                 generateGui();

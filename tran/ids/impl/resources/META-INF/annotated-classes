@@ -1,2 +1,2 @@
-com.untangle.tran.ids.IDSStatisticEvent
-com.untangle.tran.ids.IDSLogEvent
+com.untangle.node.ids.IDSStatisticEvent
+com.untangle.node.ids.IDSLogEvent

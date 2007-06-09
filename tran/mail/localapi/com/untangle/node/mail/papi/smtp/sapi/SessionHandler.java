@@ -9,18 +9,18 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.papi.smtp.sapi;
+package com.untangle.node.mail.papi.smtp.sapi;
 
-import com.untangle.tran.mail.papi.smtp.Command;
-import com.untangle.tran.mail.papi.smtp.Response;
-import com.untangle.tran.mail.papi.smtp.SmtpTransaction;
+import com.untangle.node.mail.papi.smtp.Command;
+import com.untangle.node.mail.papi.smtp.Response;
+import com.untangle.node.mail.papi.smtp.SmtpTransaction;
 
 
 /**
  * Root callback abstract class for Object wishing to
  * participate in an Smtp Session.  A SessionHandler
  * is passed to the constructor of a
- * {@link com.untangle.tran.mail.papi.smtp.sapi.Session Session}.
+ * {@link com.untangle.node.mail.papi.smtp.sapi.Session Session}.
  * <br>
  * Once registered with a Session, the SessionHandler will be
  * called back to handle various transitions within an Smtp
@@ -31,9 +31,9 @@ import com.untangle.tran.mail.papi.smtp.SmtpTransaction;
  * model.
  * <br>
  * Client Commands (as well as various forms of MIME Messages}
- * are received by the {@link com.untangle.tran.mail.papi.smtp.sapi.Session parent Session}.
+ * are received by the {@link com.untangle.node.mail.papi.smtp.sapi.Session parent Session}.
  * These are then passed to either instances of this interface, or
- * to {@link com.untangle.tran.mail.papi.smtp.sapi.TransactionHandler TransactionHandlers}.
+ * to {@link com.untangle.node.mail.papi.smtp.sapi.TransactionHandler TransactionHandlers}.
  * The Session maintains Transaction boundaries, calling the
  * {@link #createTxHandler factory method} to create TransactionHandlers are
  * Transactions are entered.
@@ -43,7 +43,7 @@ import com.untangle.tran.mail.papi.smtp.SmtpTransaction;
  * then can either pass-along the Command/MIME Bit or perform some protocol manipulation.
  * When a Command is passed-along to the server, the Handler must also provide an Object
  * to be notified when the response arrives from the server.  This is a
- * {@link com.untangle.tran.mail.papi.smtp.sapi.ResponseCompletion ResponseCompletion}.
+ * {@link com.untangle.node.mail.papi.smtp.sapi.ResponseCompletion ResponseCompletion}.
  * For every command issued to the server there should be one outstanding
  * ResponseCompletion.  The Session maintains ordering, such that any pipelining
  * performed by the client is "hidden" from implementers of this interface.
@@ -132,7 +132,7 @@ public abstract class SessionHandler {
     /**
      * The calling {@link #getSession Session} handles
      * the EHLO command and its response, to ensure
-     * {@link com.untangle.tran.mail.papi.smtp.sapi.Session#setAllowedExtensions only allowed extensions}
+     * {@link com.untangle.node.mail.papi.smtp.sapi.Session#setAllowedExtensions only allowed extensions}
      * are seen by the client.  As-such, subclasses do
      * <b>not</b> have a chance to explicitly manipulate this
      * portion of the protocol.  However, for logging purposes
@@ -149,7 +149,7 @@ public abstract class SessionHandler {
     /**
      * Chance for subclasses to manipulate the EHLO response.  Note
      * that the EHLO response has already been altered to ensure
-     * {@link com.untangle.tran.mail.papi.smtp.sapi.Session#setAllowedExtensions only allowed extensions}
+     * {@link com.untangle.node.mail.papi.smtp.sapi.Session#setAllowedExtensions only allowed extensions}
      * are advertized.  Subclasses may wish to further reduce available
      * extensions, or simply to log what transpired.
      * <br><br>

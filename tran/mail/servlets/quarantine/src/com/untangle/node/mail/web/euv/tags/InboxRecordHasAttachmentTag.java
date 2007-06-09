@@ -8,9 +8,9 @@
  *
  * $Id$
  */
-package com.untangle.tran.mail.web.euv.tags;
+package com.untangle.node.mail.web.euv.tags;
 
-import com.untangle.tran.mail.papi.quarantine.InboxRecord;
+import com.untangle.node.mail.papi.quarantine.InboxRecord;
 
 
 /**

@@ -9,12 +9,12 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.papi.smtp.sapi;
+package com.untangle.node.mail.papi.smtp.sapi;
 
-import com.untangle.tran.mail.papi.BeginMIMEToken;
-import com.untangle.tran.mail.papi.CompleteMIMEToken;
-import com.untangle.tran.mail.papi.ContinuedMIMEToken;
-import com.untangle.tran.mail.papi.smtp.*;
+import com.untangle.node.mail.papi.BeginMIMEToken;
+import com.untangle.node.mail.papi.CompleteMIMEToken;
+import com.untangle.node.mail.papi.ContinuedMIMEToken;
+import com.untangle.node.mail.papi.smtp.*;
 
 
 /**
@@ -22,7 +22,7 @@ import com.untangle.tran.mail.papi.smtp.*;
  * within the scope of an Smtp Transaction.
  * Most of the interesting documentation
  * is on
- * {@link com.untangle.tran.mail.papi.smtp.sapi.SessionHandler SessionHandler}.
+ * {@link com.untangle.node.mail.papi.smtp.sapi.SessionHandler SessionHandler}.
  * <br>
  * Note that the TransactionHandler is responsible
  * for manipulating the state/members of the

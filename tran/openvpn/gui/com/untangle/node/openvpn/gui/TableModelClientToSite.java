@@ -10,19 +10,19 @@
  */
 
 
-package com.untangle.tran.openvpn.gui;
+package com.untangle.node.openvpn.gui;
 
 import java.util.*;
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.table.*;
 
-import com.untangle.gui.transform.*;
+import com.untangle.gui.node.*;
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.editTable.*;
-import com.untangle.mvvm.tran.*;
-import com.untangle.mvvm.tran.firewall.*;
-import com.untangle.tran.openvpn.*;
+import com.untangle.uvm.node.*;
+import com.untangle.uvm.node.firewall.*;
+import com.untangle.node.openvpn.*;
 
 
 public class TableModelClientToSite extends MSortedTableModel<Object>{

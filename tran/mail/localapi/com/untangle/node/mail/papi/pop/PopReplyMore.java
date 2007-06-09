@@ -9,11 +9,11 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.papi.pop;
+package com.untangle.node.mail.papi.pop;
 
 import java.nio.ByteBuffer;
 
-import com.untangle.tran.token.Token;
+import com.untangle.node.token.Token;
 
 public class PopReplyMore implements Token
 {

@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.papi;
+package com.untangle.node.mail.papi;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -18,11 +18,11 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 
-import com.untangle.mvvm.tapi.Pipeline;
-import com.untangle.mvvm.tapi.event.TCPStreamer;
-import com.untangle.tran.mime.*;
+import com.untangle.uvm.tapi.Pipeline;
+import com.untangle.uvm.tapi.event.TCPStreamer;
+import com.untangle.node.mime.*;
 import org.apache.log4j.Logger;
-import static com.untangle.tran.util.Ascii.CRLF_BA;
+import static com.untangle.node.util.Ascii.CRLF_BA;
 
 /**
  * Class used to accumulate MIME bytes.  Usage is tricky
@@ -38,7 +38,7 @@ import static com.untangle.tran.util.Ascii.CRLF_BA;
  *     which will only close open streams.
  *   </li>
  *   <li>
- *     If multiple transforms are in "buffer-and-trickle" where they
+ *     If multiple nodes are in "buffer-and-trickle" where they
  *     are accumulating MIME yet also passing it along, there is confusion
  *     as-to if a given MIMEChunk should (a) be written to disk and
  *     (b) should be unparsed.  To avoid this confusion, all MIMEChunks
@@ -183,7 +183,7 @@ public class MIMEAccumulator {
          */
         public void superDebugMe(Logger logger,
                                  String prefix) {
-            String body = getData() == null?"<null>":com.untangle.tran.util.ASCIIUtil.bbToString(getData());
+            String body = getData() == null?"<null>":com.untangle.node.util.ASCIIUtil.bbToString(getData());
             logger.debug(prefix + " " + toString() + " \"" + body + "\"");
         }
         private boolean isSameAccumulator(MIMEAccumulator ref) {
@@ -243,7 +243,7 @@ public class MIMEAccumulator {
      * The boolean is used to convey outcome (success/failure).  Failures
      * have already been logged.  If error, chunk was not written.  If
      * the chunk has already been written (for example, two
-     * Transforms in "buffer-and-passthru" mode), then the
+     * Nodes in "buffer-and-passthru" mode), then the
      * second write is silently ignored.
      * <br><br>
      * If an error does occur, no streams are closed.
@@ -345,13 +345,13 @@ public class MIMEAccumulator {
             in.close();
             return m_headers;
         }
-        catch(com.untangle.tran.mime.HeaderParseException hpe) {
+        catch(com.untangle.node.mime.HeaderParseException hpe) {
             m_logger.warn("Error parsing headers of MIME subsection", hpe);
             try {in.close();}catch(Exception ignore){}
             m_fileMIMESource = null;
             return null;
         }
-        catch(com.untangle.tran.mime.InvalidHeaderDataException ihde) {
+        catch(com.untangle.node.mime.InvalidHeaderDataException ihde) {
             m_logger.warn("Invalid headers found in MIME subsection", ihde);
             try {in.close();}catch(Exception ignore){}
             m_fileMIMESource = null;
@@ -462,12 +462,12 @@ public class MIMEAccumulator {
             closeInput();
             return m_mimeMessage;
         }
-        catch(com.untangle.tran.mime.HeaderParseException hpe) {
+        catch(com.untangle.node.mime.HeaderParseException hpe) {
             m_logger.warn("Error parsing headers of MIME subsection", hpe);
             try{mimeIn.close();}catch(Exception ignore){}
             return null;
         }
-        catch(com.untangle.tran.mime.InvalidHeaderDataException ihde) {
+        catch(com.untangle.node.mime.InvalidHeaderDataException ihde) {
             m_logger.warn("Invalid headers found in MIME subsection", ihde);
             try{mimeIn.close();}catch(Exception ignore){}
             return null;

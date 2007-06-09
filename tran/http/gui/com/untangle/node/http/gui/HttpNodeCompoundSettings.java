@@ -9,38 +9,38 @@
  * $Id$
  */
 
-package com.untangle.tran.http.gui;
+package com.untangle.node.http.gui;
 
 import java.awt.Component;
 
-import com.untangle.gui.transform.CompoundSettings;
+import com.untangle.gui.node.CompoundSettings;
 import com.untangle.gui.util.Util;
-import com.untangle.mvvm.tran.Transform;
-import com.untangle.tran.http.HttpSettings;
-import com.untangle.tran.http.HttpTransform;
+import com.untangle.uvm.node.Node;
+import com.untangle.node.http.HttpSettings;
+import com.untangle.node.http.HttpNode;
 
-public class HttpTransformCompoundSettings implements CompoundSettings {
+public class HttpNodeCompoundSettings implements CompoundSettings {
 
-    // HTTP TRANSFORM SETTINGS //
-    private HttpSettings httpTransformSettings;
-    public HttpSettings getHttpTransformSettings(){ return httpTransformSettings; }
-    private HttpTransform httpTransform;
+    // HTTP NODE SETTINGS //
+    private HttpSettings httpNodeSettings;
+    public HttpSettings getHttpNodeSettings(){ return httpNodeSettings; }
+    private HttpNode httpNode;
 
     // GENERAL SETTINGS //
     private Component generalSettingsComponent;
     public Component getGeneralSettingsComponent(){ return generalSettingsComponent; }
 
     public void save() throws Exception {
-        ((Transform)httpTransform).setSettings(httpTransformSettings);
+        ((Node)httpNode).setSettings(httpNodeSettings);
     }
 
     public void refresh() throws Exception {
-        if(httpTransform == null)
-            httpTransform = (HttpTransform) Util.getTransform("http-casing");
-        httpTransformSettings = (HttpSettings) ((Transform)httpTransform).getSettings();
+        if(httpNode == null)
+            httpNode = (HttpNode) Util.getNode("http-casing");
+        httpNodeSettings = (HttpSettings) ((Node)httpNode).getSettings();
 
         if(generalSettingsComponent == null)
-            generalSettingsComponent = Util.getSettingsComponent("com.untangle.tran.http.gui.MCasingJPanel", "http-casing");
+            generalSettingsComponent = Util.getSettingsComponent("com.untangle.node.http.gui.MCasingJPanel", "http-casing");
     }
 
     public void validate() throws Exception {

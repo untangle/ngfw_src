@@ -8,12 +8,12 @@
  *
  * $Id$
  */
-package com.untangle.tran.ids;
+package com.untangle.node.ids;
 
-import com.untangle.mvvm.logging.EventLoggerFactory;
-import com.untangle.mvvm.logging.StatisticEvent;
-import com.untangle.mvvm.tran.StatisticManager;
-import com.untangle.mvvm.tran.TransformContext;
+import com.untangle.uvm.logging.EventLoggerFactory;
+import com.untangle.uvm.logging.StatisticEvent;
+import com.untangle.uvm.node.StatisticManager;
+import com.untangle.uvm.node.NodeContext;
 
 class IDSStatisticManager extends StatisticManager {
 
@@ -23,7 +23,7 @@ class IDSStatisticManager extends StatisticManager {
 
     private IDSStatisticEvent statisticEvent = new IDSStatisticEvent();
 
-    public IDSStatisticManager(TransformContext tctx) {
+    public IDSStatisticManager(NodeContext tctx) {
         super(EventLoggerFactory.factory().getEventLogger(tctx));
     }
 

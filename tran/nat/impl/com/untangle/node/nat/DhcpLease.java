@@ -9,13 +9,13 @@
  * $Id$
  */
 
-package com.untangle.tran.nat;
+package com.untangle.node.nat;
 
 import java.util.Date;
 
-import com.untangle.mvvm.tran.HostName;
-import com.untangle.mvvm.tran.IPaddr;
-import com.untangle.mvvm.tran.firewall.MACAddress;
+import com.untangle.uvm.node.HostName;
+import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.firewall.MACAddress;
 import org.apache.log4j.Logger;
 
 /* XXX Probably should be an inner class for DhcpMonitor */

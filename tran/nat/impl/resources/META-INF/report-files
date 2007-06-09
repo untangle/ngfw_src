@@ -2,6 +2,6 @@ reports/NatMaster.jasper:Router--Summary:Summary
 reports/NatRedirectDetail.jasper:Router--Redirect_Events:Redirect Events
 reports/NatDmzDetail.jasper:Router--DMZ_Events:DMZ Host Events
 reports/NatDhcpDetail.jasper:Router--DHCP_Events:DHCP Events
-com.untangle.tran.nat.reports.NatSummarizer:summarizer:Summarizer
-com.untangle.tran.nat.reports.SummaryGraph:summaryGraph:Router--Summary_Graph
+com.untangle.node.nat.reports.NatSummarizer:summarizer:Summarizer
+com.untangle.node.nat.reports.SummaryGraph:summaryGraph:Router--Summary_Graph
 reportTitlePrefix:parameter:none

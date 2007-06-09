@@ -10,19 +10,19 @@
  */
 
 
-package com.untangle.tran.openvpn.gui;
+package com.untangle.node.openvpn.gui;
 import java.awt.Window;
 import java.awt.event.*;
 import javax.swing.CellEditor;
 
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.dialogs.*;
-import com.untangle.tran.openvpn.*;
+import com.untangle.node.openvpn.*;
 
 public class KeyButtonRunnable implements ButtonRunnable {
     private boolean isEnabled;
     private VpnClientBase vpnClient;
-    private static VpnTransform vpnTransform;
+    private static VpnNode vpnNode;
     private Window topLevelWindow;
     public KeyButtonRunnable(String isEnabled){
         if( "true".equals(isEnabled) ) {
@@ -37,24 +37,24 @@ public class KeyButtonRunnable implements ButtonRunnable {
     public void setEnabled(boolean isEnabled){ this.isEnabled = isEnabled; }
     public boolean valueChanged(){ return false; }
     public void setVpnClient(VpnClientBase vpnClient){ this.vpnClient = vpnClient; }
-    public static void setVpnTransform(VpnTransform vpnTransformX){ vpnTransform = vpnTransformX; }
+    public static void setVpnNode(VpnNode vpnNodeX){ vpnNode = vpnNodeX; }
     public void setCellEditor(CellEditor cellEditor){}
     public void setTopLevelWindow(Window topLevelWindow){ this.topLevelWindow = topLevelWindow; }
     public void actionPerformed(ActionEvent evt){ run(); }
     public void run(){
         if(!Util.getIsDemo())
-            new DistributeKeyThread(vpnClient, vpnTransform);
+            new DistributeKeyThread(vpnClient, vpnNode);
     }
 
     class DistributeKeyThread extends Thread {
         private KeyJDialog keyJDialog;
         private VpnClientBase vpnClient;
-        private VpnTransform vpnTransform;
-        public DistributeKeyThread(VpnClientBase vpnClient, VpnTransform vpnTransform){
+        private VpnNode vpnNode;
+        public DistributeKeyThread(VpnClientBase vpnClient, VpnNode vpnNode){
             setDaemon(true);
             setName("MV-CLIENT: DistributeKeyThread");
             this.vpnClient = vpnClient;
-            this.vpnTransform = vpnTransform;
+            this.vpnNode = vpnNode;
             keyJDialog = KeyJDialog.factory(topLevelWindow, vpnClient);
             keyJDialog.setVisible(true);
             if( keyJDialog.isProceeding() )
@@ -69,7 +69,7 @@ public class KeyButtonRunnable implements ButtonRunnable {
                 vpnClient.setDistributionEmail( keyJDialog.getEmailAddress() );
             }
             try{
-                vpnTransform.distributeClientConfig( vpnClient );
+                vpnNode.distributeClientConfig( vpnClient );
                 String successString;
                 if( vpnClient.getDistributeUsb() )
                     successString = "<html>OpenVPN successfully saved your digital key to your USB key.</html>";

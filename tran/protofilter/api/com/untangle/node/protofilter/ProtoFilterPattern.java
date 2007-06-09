@@ -8,7 +8,7 @@
  *
  * $Id$
  */
-package com.untangle.tran.protofilter;
+package com.untangle.node.protofilter;
 
 import java.io.Serializable;
 import javax.persistence.CascadeType;

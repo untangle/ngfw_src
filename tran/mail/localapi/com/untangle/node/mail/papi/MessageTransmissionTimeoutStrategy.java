@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.papi;
+package com.untangle.node.mail.papi;
 
 /**
  * Class to encapsulate the strategy
@@ -19,8 +19,8 @@ package com.untangle.tran.mail.papi;
  * Currently, based on the assumption that
  * transmission times between endpoints on each
  * interface are the same.  If it takes "n" seconds
- * to transfer from client->MVVM, it will take "n"
- * seconds to transfer from MVVM -> server.  The total
+ * to transfer from client->UVM, it will take "n"
+ * seconds to transfer from UVM -> server.  The total
  * time that the client must wait is assumed to be 2*n.
  * <br><br>
  * Since checking for timeouts is performed while

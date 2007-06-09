@@ -9,12 +9,12 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.impl.imap;
+package com.untangle.node.mail.impl.imap;
 
-import com.untangle.mvvm.tapi.TCPSession;
-import com.untangle.tran.mail.impl.AbstractMailCasing;
-import com.untangle.tran.token.Parser;
-import com.untangle.tran.token.Unparser;
+import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.node.mail.impl.AbstractMailCasing;
+import com.untangle.node.token.Parser;
+import com.untangle.node.token.Unparser;
 import org.apache.log4j.Logger;
 
 
@@ -43,7 +43,7 @@ class ImapCasing
         //This sillyness is to work around some issues
         //with classloaders and logging
         try {
-            new com.untangle.tran.mail.papi.imap.CompleteImapMIMEToken(null, null);
+            new com.untangle.node.mail.papi.imap.CompleteImapMIMEToken(null, null);
         }
         catch(Exception ignore){}
 

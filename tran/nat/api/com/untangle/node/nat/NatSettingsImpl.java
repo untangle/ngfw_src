@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.nat;
+package com.untangle.node.nat;
 
 import java.io.Serializable;
 import java.util.Collections;
@@ -28,23 +28,23 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import com.untangle.mvvm.networking.BasicNetworkSettings;
-import com.untangle.mvvm.networking.DhcpLeaseRule;
-import com.untangle.mvvm.networking.DnsStaticHostRule;
-import com.untangle.mvvm.networking.NetworkUtil;
-import com.untangle.mvvm.networking.RedirectRule;
-import com.untangle.mvvm.networking.SetupState;
-import com.untangle.mvvm.security.Tid;
-import com.untangle.mvvm.tran.HostName;
-import com.untangle.mvvm.tran.IPaddr;
-import com.untangle.mvvm.tran.Validatable;
-import com.untangle.mvvm.tran.ValidateException;
+import com.untangle.uvm.networking.BasicNetworkSettings;
+import com.untangle.uvm.networking.DhcpLeaseRule;
+import com.untangle.uvm.networking.DnsStaticHostRule;
+import com.untangle.uvm.networking.NetworkUtil;
+import com.untangle.uvm.networking.RedirectRule;
+import com.untangle.uvm.networking.SetupState;
+import com.untangle.uvm.security.Tid;
+import com.untangle.uvm.node.HostName;
+import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.Validatable;
+import com.untangle.uvm.node.ValidateException;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.IndexColumn;
 import org.hibernate.annotations.Type;
 
 /**
- * Settings for the Nat transform.
+ * Settings for the Nat node.
  *
  * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
  * @version 1.0
@@ -132,7 +132,7 @@ public class NatSettingsImpl implements Validatable, NatSettings, Serializable
     }
 
     /**
-     * Transform id for these settings.
+     * Node id for these settings.
      *
      * @return tid for these settings
      */
@@ -151,10 +151,10 @@ public class NatSettingsImpl implements Validatable, NatSettings, Serializable
     /**
      * The current setup state for this tranform.  (deprecated,
      * unconfigured, basic, advanced).
-     * @return The current setup state for this transform.
+     * @return The current setup state for this node.
      */
     @Column(name="setup_state")
-    @Type(type="com.untangle.mvvm.networking.SetupStateUserType")
+    @Type(type="com.untangle.uvm.networking.SetupStateUserType")
     public SetupState getSetupState()
     {
         return this.setupState;
@@ -187,7 +187,7 @@ public class NatSettingsImpl implements Validatable, NatSettings, Serializable
      * @return internal Address.
      */
     @Column(name="nat_internal_addr")
-    @Type(type="com.untangle.mvvm.type.IPaddrUserType")
+    @Type(type="com.untangle.uvm.type.IPaddrUserType")
     public IPaddr getNatInternalAddress()
     {
         if (this.natInternalAddress == null) {
@@ -208,7 +208,7 @@ public class NatSettingsImpl implements Validatable, NatSettings, Serializable
      * @return internal subnet.
      */
     @Column(name="nat_internal_subnet")
-    @Type(type="com.untangle.mvvm.type.IPaddrUserType")
+    @Type(type="com.untangle.uvm.type.IPaddrUserType")
     public IPaddr getNatInternalSubnet()
     {
         if (this.natInternalSubnet == null) {
@@ -261,7 +261,7 @@ public class NatSettingsImpl implements Validatable, NatSettings, Serializable
      * @return dmz address.
      */
     @Column(name="dmz_address")
-    @Type(type="com.untangle.mvvm.type.IPaddrUserType")
+    @Type(type="com.untangle.uvm.type.IPaddrUserType")
     public IPaddr getDmzAddress()
     {
         return dmzAddress;
@@ -346,7 +346,7 @@ public class NatSettingsImpl implements Validatable, NatSettings, Serializable
      * @return DHCP start address.
      */
     @Column(name="dhcp_s_address")
-    @Type(type="com.untangle.mvvm.type.IPaddrUserType")
+    @Type(type="com.untangle.uvm.type.IPaddrUserType")
     public IPaddr getDhcpStartAddress()
     {
         if (this.dhcpStartAddress == null) {
@@ -367,7 +367,7 @@ public class NatSettingsImpl implements Validatable, NatSettings, Serializable
      * @return DHCP end address.
      */
     @Column(name="dhcp_e_address")
-    @Type(type="com.untangle.mvvm.type.IPaddrUserType")
+    @Type(type="com.untangle.uvm.type.IPaddrUserType")
     public IPaddr getDhcpEndAddress()
     {
         if (this.dhcpEndAddress == null) {
@@ -460,7 +460,7 @@ public class NatSettingsImpl implements Validatable, NatSettings, Serializable
      * @return the local domain
      */
     @Column(name="dns_local_domain")
-    @Type(type="com.untangle.mvvm.type.HostNameUserType")
+    @Type(type="com.untangle.uvm.type.HostNameUserType")
     public HostName getDnsLocalDomain()
     {
         if (this.dnsLocalDomain == null) {

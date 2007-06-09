@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.ids;
+package com.untangle.node.ids;
 
 import java.io.Serializable;
 import javax.persistence.Column;
@@ -19,7 +19,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import com.untangle.mvvm.tran.Rule;
+import com.untangle.uvm.node.Rule;
 
 /**
  * Hibernate object to store IDS rules.

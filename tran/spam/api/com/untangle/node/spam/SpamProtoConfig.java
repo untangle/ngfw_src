@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.spam;
+package com.untangle.node.spam;
 
 import java.io.Serializable;
 import java.util.*;
@@ -19,10 +19,10 @@ import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Transient;
 
-import com.untangle.tran.mail.papi.WrappedMessageGenerator;
+import com.untangle.node.mail.papi.WrappedMessageGenerator;
 
 /**
- * Hibernate mappings for this class are in the MVVM resource
+ * Hibernate mappings for this class are in the UVM resource
  * directory.
  */
 @MappedSuperclass

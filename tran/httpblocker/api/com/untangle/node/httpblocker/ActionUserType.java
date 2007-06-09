@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.httpblocker;
+package com.untangle.node.httpblocker;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

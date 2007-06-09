@@ -9,12 +9,12 @@
  * $Id$
  */
 
-package com.untangle.tran.spam;
+package com.untangle.node.spam;
 
-import com.untangle.mvvm.logging.EventManager;
-import com.untangle.mvvm.tran.Transform;
+import com.untangle.uvm.logging.EventManager;
+import com.untangle.uvm.node.Node;
 
-public interface SpamTransform extends Transform
+public interface SpamNode extends Node
 {
     void setSpamSettings(SpamSettings spamSettings);
     SpamSettings getSpamSettings();

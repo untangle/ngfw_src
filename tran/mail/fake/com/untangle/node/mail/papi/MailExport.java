@@ -11,7 +11,7 @@
 
 // Fake
 
-package com.untangle.tran.mail.papi;
+package com.untangle.node.mail.papi;
 
 public interface MailExport
 {

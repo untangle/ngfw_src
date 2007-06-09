@@ -8,7 +8,7 @@
  *
  * $Id$
  */
-package com.untangle.tran.mail.impl.pop;
+package com.untangle.node.mail.impl.pop;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -18,8 +18,8 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 
-import com.untangle.mvvm.tapi.event.TCPStreamer;
-import com.untangle.tran.mail.papi.ByteBufferByteStuffer;
+import com.untangle.uvm.tapi.event.TCPStreamer;
+import com.untangle.node.mail.papi.ByteBufferByteStuffer;
 import org.apache.log4j.Logger;
 
 public class PopStreamer implements TCPStreamer

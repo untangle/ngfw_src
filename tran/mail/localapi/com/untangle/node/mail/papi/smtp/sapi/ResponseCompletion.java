@@ -9,9 +9,9 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.papi.smtp.sapi;
+package com.untangle.node.mail.papi.smtp.sapi;
 
-import com.untangle.tran.mail.papi.smtp.Response;
+import com.untangle.node.mail.papi.smtp.Response;
 
 
 /**
@@ -20,9 +20,9 @@ import com.untangle.tran.mail.papi.smtp.Response;
  * ResponseCompletion instances are associated
  * with a Response via the handleXXXXXXX methods
  * on
- * {@link com.untangle.tran.mail.papi.smtp.sapi.SessionHandler SessionHandler}
+ * {@link com.untangle.node.mail.papi.smtp.sapi.SessionHandler SessionHandler}
  * and
- * {@link com.untangle.tran.mail.papi.smtp.sapi.TransactionHandler TransactionHandler}
+ * {@link com.untangle.node.mail.papi.smtp.sapi.TransactionHandler TransactionHandler}
  * <br>
  * The original Command is <b>not</b> passed into the callback method
  * on this interface.  Instances of ResponseCompletion which need to

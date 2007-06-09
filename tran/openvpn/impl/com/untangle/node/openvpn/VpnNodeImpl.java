@@ -8,7 +8,7 @@
  *
  * $Id$
  */
-package com.untangle.tran.openvpn;
+package com.untangle.node.openvpn;
 
 import java.io.File;
 import java.io.FileReader;
@@ -17,35 +17,35 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
-import com.untangle.mvvm.ArgonException;
-import com.untangle.mvvm.IntfConstants;
-import com.untangle.mvvm.MailSender;
-import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.mvvm.MvvmLocalContext;
-import com.untangle.mvvm.logging.EventManager;
-import com.untangle.mvvm.tapi.AbstractTransform;
-import com.untangle.mvvm.tapi.Affinity;
-import com.untangle.mvvm.tapi.Fitting;
-import com.untangle.mvvm.tapi.PipeSpec;
-import com.untangle.mvvm.tapi.SoloPipeSpec;
-import com.untangle.mvvm.tran.HostAddress;
-import com.untangle.mvvm.tran.HostName;
-import com.untangle.mvvm.tran.IPaddr;
-import com.untangle.mvvm.tran.TransformException;
-import com.untangle.mvvm.tran.TransformStartException;
-import com.untangle.mvvm.tran.TransformState;
-import com.untangle.mvvm.tran.TransformStats;
-import com.untangle.mvvm.tran.TransformStopException;
-import com.untangle.mvvm.tran.UnconfiguredException;
-import com.untangle.mvvm.tran.ValidateException;
-import com.untangle.mvvm.tran.script.ScriptRunner;
-import com.untangle.mvvm.util.TransactionWork;
+import com.untangle.uvm.ArgonException;
+import com.untangle.uvm.IntfConstants;
+import com.untangle.uvm.MailSender;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.UvmLocalContext;
+import com.untangle.uvm.logging.EventManager;
+import com.untangle.uvm.tapi.AbstractNode;
+import com.untangle.uvm.tapi.Affinity;
+import com.untangle.uvm.tapi.Fitting;
+import com.untangle.uvm.tapi.PipeSpec;
+import com.untangle.uvm.tapi.SoloPipeSpec;
+import com.untangle.uvm.node.HostAddress;
+import com.untangle.uvm.node.HostName;
+import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.NodeException;
+import com.untangle.uvm.node.NodeStartException;
+import com.untangle.uvm.node.NodeState;
+import com.untangle.uvm.node.NodeStats;
+import com.untangle.uvm.node.NodeStopException;
+import com.untangle.uvm.node.UnconfiguredException;
+import com.untangle.uvm.node.ValidateException;
+import com.untangle.uvm.node.script.ScriptRunner;
+import com.untangle.uvm.util.TransactionWork;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
-public class VpnTransformImpl extends AbstractTransform
-    implements VpnTransform
+public class VpnNodeImpl extends AbstractNode
+    implements VpnNode
 {
     private static final String TRAN_NAME    = "openvpn";
     private static final String WEB_APP      = TRAN_NAME;
@@ -59,7 +59,7 @@ public class VpnTransformImpl extends AbstractTransform
 
     private static final String SERVICE_NAME = "openvpn";
 
-    private final Logger logger = Logger.getLogger( VpnTransformImpl.class );
+    private final Logger logger = Logger.getLogger( VpnNodeImpl.class );
 
     private boolean isWebAppDeployed = false;
 
@@ -83,7 +83,7 @@ public class VpnTransformImpl extends AbstractTransform
 
     // constructor ------------------------------------------------------------
 
-    public VpnTransformImpl()
+    public VpnNodeImpl()
     {
         this.handler          = new EventHandler( this );
         this.openVpnMonitor   = new OpenVpnMonitor( this );
@@ -109,7 +109,7 @@ public class VpnTransformImpl extends AbstractTransform
         this.openVpnCaretaker.stop();
     }
 
-    // VpnTransform methods --------------------------------------------------
+    // VpnNode methods --------------------------------------------------
     public void setVpnSettings( final VpnSettings newSettings )
     {
         final VpnSettings oldSettings = this.settings;
@@ -119,7 +119,7 @@ public class VpnTransformImpl extends AbstractTransform
             if ( !newSettings.isUntanglePlatformClient() && newSettings.isConfigured()) {
                 addressMapper.assignAddresses( newSettings );
             }
-        } catch ( TransformException exn ) {
+        } catch ( NodeException exn ) {
             logger.warn( "Could not assign client addresses, continuing", exn );
         }
 
@@ -152,15 +152,15 @@ public class VpnTransformImpl extends AbstractTransform
 
                     /* Save the new settings */
                     s.saveOrUpdate( newSettings );
-                    VpnTransformImpl.this.settings = newSettings;
+                    VpnNodeImpl.this.settings = newSettings;
                     return true;
                 }
             };
 
-        getTransformContext().runTransaction( tw );
+        getNodeContext().runTransaction( tw );
 
         try {
-            if ( getRunState() == TransformState.RUNNING ) {
+            if ( getRunState() == NodeState.RUNNING ) {
                 /* This stops then starts openvpn */
                 this.openVpnManager.configure( this.settings );
                 this.openVpnManager.restart( this.settings );
@@ -174,8 +174,8 @@ public class VpnTransformImpl extends AbstractTransform
                 }
             }
 
-            this.assistant.configure( this.settings, getRunState() == TransformState.RUNNING );
-        } catch ( TransformException exn ) {
+            this.assistant.configure( this.settings, getRunState() == NodeState.RUNNING );
+        } catch ( NodeException exn ) {
             logger.error( "Could not save VPN settings", exn );
         }
     }
@@ -193,7 +193,7 @@ public class VpnTransformImpl extends AbstractTransform
     {
         try {
             certificateManager.createClient( client );
-        } catch ( TransformException e ) {
+        } catch ( NodeException e ) {
             logger.error( "Unable to create a client certificate", e );
         }
 
@@ -204,14 +204,14 @@ public class VpnTransformImpl extends AbstractTransform
     {
         try {
             certificateManager.revokeClient( client );
-        } catch ( TransformException e ) {
+        } catch ( NodeException e ) {
             logger.error( "Unable to revoke a client certificate", e );
         }
 
         return client;
     }
 
-    private void distributeAllClientFiles( VpnSettings settings ) throws TransformException
+    private void distributeAllClientFiles( VpnSettings settings ) throws NodeException
     {
         for ( VpnClientBase client : (List<VpnClientBase>)settings.getCompleteClientList()) {
             if ( !client.getDistributeClient()) continue;
@@ -220,7 +220,7 @@ public class VpnTransformImpl extends AbstractTransform
     }
 
     public void distributeClientConfig( VpnClientBase client )
-        throws TransformException
+        throws NodeException
     {
         /* Retrieve the client configuration object from the settings */
         boolean foundRealClient = false;
@@ -235,12 +235,12 @@ public class VpnTransformImpl extends AbstractTransform
         }
 
         if ( foundRealClient ) distributeRealClientConfig( client );
-        else throw new TransformException( "Attempt to distribute an unsaved client" );
+        else throw new NodeException( "Attempt to distribute an unsaved client" );
     }
 
     /** The client config is the same client configuration object that is in settings */
     private void distributeRealClientConfig( final VpnClientBase client )
-        throws TransformException
+        throws NodeException
     {
         /* this client may already have a key, the key may have
          * already been created. */
@@ -279,7 +279,7 @@ public class VpnTransformImpl extends AbstractTransform
                 }
             };
 
-        getTransformContext().runTransaction( tw );
+        getNodeContext().runTransaction( tw );
 
         this.openVpnManager.writeClientConfigurationFiles( settings, client );
 
@@ -288,13 +288,13 @@ public class VpnTransformImpl extends AbstractTransform
     }
 
     private void distributeClientConfigUsb( VpnClientBase client )
-        throws TransformException
+        throws NodeException
     {
         /* XXX Nothing to do here, it is copied in writeConfigurationFiles */
     }
 
     private void distributeClientConfigEmail( VpnClientBase client, String email )
-        throws TransformException
+        throws NodeException
     {
         try {
             String subject = "OpenVPN Client";
@@ -310,9 +310,9 @@ public class VpnTransformImpl extends AbstractTransform
             }
 
             /* Add the file for the logo */
-            MvvmLocalContext mvvm = MvvmContextFactory.context();
+            UvmLocalContext uvm = UvmContextFactory.context();
 
-            File logo = mvvm.localBrandingManager().getLogoFile();
+            File logo = uvm.localBrandingManager().getLogoFile();
 
             if ( logo.exists()) {
                 extraList.add( logo );
@@ -321,7 +321,7 @@ public class VpnTransformImpl extends AbstractTransform
                 logger.warn( "The logo: " + logo + " doesn't exist." );
             }
 
-            MailSender mailSender = mvvm.mailSender();
+            MailSender mailSender = uvm.mailSender();
 
             /* Read in the contents of the file */
             FileReader fileReader = new FileReader( Constants.PACKAGES_DIR + "/mail-" +
@@ -343,7 +343,7 @@ public class VpnTransformImpl extends AbstractTransform
                                                    locationList, extraList );
         } catch ( Exception e ) {
             logger.warn( "Error distributing client key", e );
-            throw new TransformException( e );
+            throw new NodeException( e );
         }
     }
 
@@ -387,7 +387,7 @@ public class VpnTransformImpl extends AbstractTransform
                 }
             };
 
-        getTransformContext().runTransaction( tw );
+        getNodeContext().runTransaction( tw );
 
         /* Log the client distribution event.  Must be done with
          * the openvpn monitor because the thread is not currently
@@ -401,32 +401,32 @@ public class VpnTransformImpl extends AbstractTransform
     private synchronized void deployWebApp()
     {
         if ( !isWebAppDeployed ) {
-            if ( MvvmContextFactory.context().appServerManager().loadInsecureApp( WEB_APP_PATH, WEB_APP )) {
+            if ( UvmContextFactory.context().appServerManager().loadInsecureApp( WEB_APP_PATH, WEB_APP )) {
                 logger.debug( "Deployed openvpn web app" );
             }
             else logger.warn( "Unable to deploy openvpn web app" );
         }
         isWebAppDeployed = true;
 
-        /* unregister the service with the MVVM */
-        MvvmContextFactory.context().networkManager().registerService( SERVICE_NAME );
+        /* unregister the service with the UVM */
+        UvmContextFactory.context().networkManager().registerService( SERVICE_NAME );
     }
 
     private synchronized void unDeployWebApp()
     {
         if ( isWebAppDeployed ) {
-            if( MvvmContextFactory.context().appServerManager().unloadWebApp(WEB_APP_PATH )) {
+            if( UvmContextFactory.context().appServerManager().unloadWebApp(WEB_APP_PATH )) {
                 logger.debug( "Unloaded openvpn web app" );
             } else logger.warn( "Unable to unload openvpn web app" );
         }
         isWebAppDeployed = false;
 
 
-        /* unregister the service with the MVVM */
-        MvvmContextFactory.context().networkManager().unregisterService( SERVICE_NAME );
+        /* unregister the service with the UVM */
+        UvmContextFactory.context().networkManager().unregisterService( SERVICE_NAME );
     }
 
-    // AbstractTransform methods ----------------------------------------------
+    // AbstractNode methods ----------------------------------------------
 
     @Override protected PipeSpec[] getPipeSpecs()
     {
@@ -434,7 +434,7 @@ public class VpnTransformImpl extends AbstractTransform
     }
 
     // lifecycle --------------------------------------------------------------
-    @Override protected void preInit( final String[] args ) throws TransformException
+    @Override protected void preInit( final String[] args ) throws NodeException
     {
         super.preInit( args );
 
@@ -446,18 +446,18 @@ public class VpnTransformImpl extends AbstractTransform
 
         /* Initially use tun0, even though it could eventually be configured to the tap interface  */
         try {
-            MvvmContextFactory.context().localIntfManager().registerIntf( "tun0", IntfConstants.VPN_INTF );
+            UvmContextFactory.context().localIntfManager().registerIntf( "tun0", IntfConstants.VPN_INTF );
         } catch ( ArgonException e ) {
-            throw new TransformException( "Unable to register VPN interface", e );
+            throw new NodeException( "Unable to register VPN interface", e );
         }
     }
 
-    @Override protected void postInit(final String[] args) throws TransformException
+    @Override protected void postInit(final String[] args) throws NodeException
     {
         super.postInit( args );
 
         /* register the assistant with the phonebook */
-        MvvmContextFactory.context().localPhoneBook().registerAssistant( this.assistant );
+        UvmContextFactory.context().localPhoneBook().registerAssistant( this.assistant );
 
         TransactionWork tw = new TransactionWork()
             {
@@ -471,12 +471,12 @@ public class VpnTransformImpl extends AbstractTransform
                     return true;
                 }
             };
-        getTransformContext().runTransaction( tw );
+        getNodeContext().runTransaction( tw );
 
         deployWebApp();
     }
 
-    @Override protected void preStart() throws TransformStartException
+    @Override protected void preStart() throws NodeStartException
     {
         super.preStart();
 
@@ -484,8 +484,8 @@ public class VpnTransformImpl extends AbstractTransform
             String[] args = {""};
             try {
                 postInit( args );
-            } catch ( TransformException e ) {
-                throw new TransformStartException( "post init", e );
+            } catch ( NodeException e ) {
+                throw new NodeStartException( "post init", e );
             }
 
             if ( this.settings == null ) initializeSettings();
@@ -521,12 +521,12 @@ public class VpnTransformImpl extends AbstractTransform
         }
     }
 
-    @Override protected void postStop() throws TransformStopException
+    @Override protected void postStop() throws NodeStopException
     {
         super.postStop();
     }
 
-    @Override protected void preStop() throws TransformStopException {
+    @Override protected void preStop() throws NodeStopException {
         super.preStop();
 
         try {
@@ -538,17 +538,17 @@ public class VpnTransformImpl extends AbstractTransform
 
         try {
             this.openVpnManager.stop();
-        } catch ( TransformException e ) {
+        } catch ( NodeException e ) {
             logger.warn( "Error stopping openvpn manager", e );
         }
 
         this.assistant.configure( settings, false );
 
-        /* unregister the service with the MVVM */
-        MvvmContextFactory.context().networkManager().unregisterService( SERVICE_NAME );
+        /* unregister the service with the UVM */
+        UvmContextFactory.context().networkManager().unregisterService( SERVICE_NAME );
     }
 
-    @Override protected void postDestroy() throws TransformException
+    @Override protected void postDestroy() throws NodeException
     {
         super.postDestroy();
 
@@ -559,7 +559,7 @@ public class VpnTransformImpl extends AbstractTransform
             logger.warn( "Error stopping openvpn monitor", e );
         }
 
-        MvvmContextFactory.context().localPhoneBook().unregisterAssistant( this.assistant );
+        UvmContextFactory.context().localPhoneBook().unregisterAssistant( this.assistant );
 
         unDeployWebApp();
     }
@@ -571,7 +571,7 @@ public class VpnTransformImpl extends AbstractTransform
         unDeployWebApp();
 
         try {
-            MvvmContextFactory.context().localIntfManager().unregisterIntf( IntfConstants.VPN_INTF );
+            UvmContextFactory.context().localIntfManager().unregisterIntf( IntfConstants.VPN_INTF );
         } catch ( Exception e ) {
             /* There is nothing else to do but print out the message */
             logger.error( "Unable to deregister vpn interface", e );
@@ -584,10 +584,10 @@ public class VpnTransformImpl extends AbstractTransform
         }
     }
 
-    @Override public TransformStats getStats()
+    @Override public NodeStats getStats()
     {
         /* Track the session info separately */
-        TransformStats stats = super.getStats();
+        NodeStats stats = super.getStats();
         return this.openVpnMonitor.updateStats( stats );
     }
 
@@ -671,7 +671,7 @@ public class VpnTransformImpl extends AbstractTransform
     }
 
     //// the stages of the setup wizard ///
-    public List<String> getAvailableUsbList() throws TransformException
+    public List<String> getAvailableUsbList() throws NodeException
     {
         return this.sandbox.getAvailableUsbList();
     }

@@ -9,10 +9,10 @@
  * $Id$
  */
 
-package com.untangle.tran.ids;
+package com.untangle.node.ids;
 
-import com.untangle.mvvm.logging.RepositoryDesc;
-import com.untangle.mvvm.logging.SimpleEventFilter;
+import com.untangle.uvm.logging.RepositoryDesc;
+import com.untangle.uvm.logging.SimpleEventFilter;
 
 public class IDSBlockedFilter implements SimpleEventFilter<IDSLogEvent>
 {

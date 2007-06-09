@@ -9,37 +9,37 @@
  * $Id$
  */
 
-package com.untangle.tran.ftp.gui;
+package com.untangle.node.ftp.gui;
 
 import java.awt.Component;
 
-import com.untangle.gui.transform.CompoundSettings;
+import com.untangle.gui.node.CompoundSettings;
 import com.untangle.gui.util.Util;
-import com.untangle.tran.ftp.FtpSettings;
-import com.untangle.tran.ftp.FtpTransform;
+import com.untangle.node.ftp.FtpSettings;
+import com.untangle.node.ftp.FtpNode;
 
-public class FtpTransformCompoundSettings implements CompoundSettings {
+public class FtpNodeCompoundSettings implements CompoundSettings {
 
-    // FTP TRANSFORM SETTINGS //
-    private FtpSettings ftpTransformSettings;
-    public FtpSettings getFtpTransformSettings(){ return ftpTransformSettings; }
-    private FtpTransform ftpTransform;
+    // FTP NODE SETTINGS //
+    private FtpSettings ftpNodeSettings;
+    public FtpSettings getFtpNodeSettings(){ return ftpNodeSettings; }
+    private FtpNode ftpNode;
 
     // GENERAL SETTINGS //
     private Component generalSettingsComponent;
     public Component getGeneralSettingsComponent(){ return generalSettingsComponent; }
 
     public void save() throws Exception {
-        ftpTransform.setFtpSettings(ftpTransformSettings);
+        ftpNode.setFtpSettings(ftpNodeSettings);
     }
 
     public void refresh() throws Exception {
-        if(ftpTransform == null)
-            ftpTransform = (FtpTransform) Util.getTransform("ftp-casing");
-        ftpTransformSettings = (FtpSettings) ftpTransform.getFtpSettings();
+        if(ftpNode == null)
+            ftpNode = (FtpNode) Util.getNode("ftp-casing");
+        ftpNodeSettings = (FtpSettings) ftpNode.getFtpSettings();
 
         if(generalSettingsComponent == null)
-            generalSettingsComponent = Util.getSettingsComponent("com.untangle.tran.ftp.gui.MCasingJPanel", "ftp-casing");
+            generalSettingsComponent = Util.getSettingsComponent("com.untangle.node.ftp.gui.MCasingJPanel", "ftp-casing");
     }
 
     public void validate() throws Exception {

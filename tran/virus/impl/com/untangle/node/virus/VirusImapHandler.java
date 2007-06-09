@@ -9,18 +9,18 @@
  * $Id$
  */
 
-package com.untangle.tran.virus;
+package com.untangle.node.virus;
 
 import java.io.File;
 
-import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.mvvm.tapi.TCPSession;
-import com.untangle.tran.mail.papi.MessageInfo;
-import com.untangle.tran.mail.papi.imap.BufferingImapTokenStreamHandler;
-import com.untangle.tran.mime.MIMEMessage;
-import com.untangle.tran.mime.MIMEPart;
-import com.untangle.tran.mime.MIMEUtil;
-import com.untangle.tran.util.TempFileFactory;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.node.mail.papi.MessageInfo;
+import com.untangle.node.mail.papi.imap.BufferingImapTokenStreamHandler;
+import com.untangle.node.mime.MIMEMessage;
+import com.untangle.node.mime.MIMEPart;
+import com.untangle.node.mime.MIMEUtil;
+import com.untangle.node.util.TempFileFactory;
 import org.apache.log4j.Logger;
 
 
@@ -33,21 +33,21 @@ public class VirusImapHandler
     private final Logger m_logger =
         Logger.getLogger(VirusImapHandler.class);
 
-    private final VirusTransformImpl m_virusImpl;
+    private final VirusNodeImpl m_virusImpl;
     private final VirusIMAPConfig m_config;
     private TempFileFactory m_fileFactory;
 
     protected VirusImapHandler(TCPSession session,
                                long maxClientWait,
                                long maxServerWait,
-                               VirusTransformImpl transform,
+                               VirusNodeImpl node,
                                VirusIMAPConfig config) {
 
         super(maxClientWait, maxServerWait, Integer.MAX_VALUE);
-        m_virusImpl = transform;
+        m_virusImpl = node;
         m_config = config;
         m_fileFactory = new TempFileFactory(
-                                            MvvmContextFactory.context().
+                                            UvmContextFactory.context().
                                             pipelineFoundry().getPipeline(session.id())
                                             );
     }

@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.gui;
+package com.untangle.node.mail.gui;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -19,22 +19,22 @@ import javax.swing.border.*;
 import javax.swing.event.*;
 import javax.swing.table.*;
 
-import com.untangle.gui.transform.*;
+import com.untangle.gui.node.*;
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.coloredTable.*;
 import com.untangle.gui.widgets.dialogs.MConfigJDialog;
 import com.untangle.gui.widgets.dialogs.MOneButtonJDialog;
 import com.untangle.gui.widgets.editTable.*;
-import com.untangle.mvvm.tran.*;
-import com.untangle.tran.mail.papi.*;
-import com.untangle.tran.mail.papi.safelist.*;
+import com.untangle.uvm.node.*;
+import com.untangle.node.mail.papi.*;
+import com.untangle.node.mail.papi.safelist.*;
 
 public class WhitelistUserJPanel extends javax.swing.JPanel
-    implements Refreshable<MailTransformCompoundSettings>, ComponentListener {
+    implements Refreshable<MailNodeCompoundSettings>, ComponentListener {
 
     private static final Color TABLE_BACKGROUND_COLOR = new Color(213, 213, 226);
     private WhitelistUserTableModel whitelistUserTableModel;
-    private MailTransformCompoundSettings mailTransformCompoundSettings;
+    private MailNodeCompoundSettings mailNodeCompoundSettings;
     private String account;
 
     public WhitelistUserJPanel(String account) {
@@ -53,9 +53,9 @@ public class WhitelistUserJPanel extends javax.swing.JPanel
         whitelistUserTableModel.setSortingStatus(2, whitelistUserTableModel.ASCENDING);
     }
 
-    public void doRefresh(MailTransformCompoundSettings mailTransformCompoundSettings){
-        this.mailTransformCompoundSettings = mailTransformCompoundSettings;
-        whitelistUserTableModel.doRefresh(mailTransformCompoundSettings);
+    public void doRefresh(MailNodeCompoundSettings mailNodeCompoundSettings){
+        this.mailNodeCompoundSettings = mailNodeCompoundSettings;
+        whitelistUserTableModel.doRefresh(mailNodeCompoundSettings);
     }
 
     public void setTableModel(MSortedTableModel mSortedTableModel){
@@ -181,7 +181,7 @@ public class WhitelistUserJPanel extends javax.swing.JPanel
             // DO RESCUE
             try{
                 for( String email : emails )
-                    mailTransformCompoundSettings.getSafelistAdminView().removeFromSafelist(account, email);
+                    mailNodeCompoundSettings.getSafelistAdminView().removeFromSafelist(account, email);
                 WhitelistUserJDialog.instance().refreshAll();
             }
             catch(Exception e){
@@ -193,7 +193,7 @@ public class WhitelistUserJPanel extends javax.swing.JPanel
             // DO REFRESH
             ((MConfigJDialog)WhitelistUserJPanel.this.getTopLevelAncestor()).getInfiniteProgressJComponent().setTextLater("Refreshing...");
             SwingUtilities.invokeLater( new Runnable(){ public void run(){
-                whitelistUserTableModel.doRefresh(mailTransformCompoundSettings);
+                whitelistUserTableModel.doRefresh(mailNodeCompoundSettings);
             }});
             ((MConfigJDialog)WhitelistUserJPanel.this.getTopLevelAncestor()).getInfiniteProgressJComponent().stopLater(1500l);
         }
@@ -224,7 +224,7 @@ public class WhitelistUserJPanel extends javax.swing.JPanel
 
 
 
-class WhitelistUserTableModel extends MSortedTableModel<MailTransformCompoundSettings> {
+class WhitelistUserTableModel extends MSortedTableModel<MailNodeCompoundSettings> {
 
     private static final StringConstants sc = StringConstants.getInstance();
 
@@ -244,12 +244,12 @@ class WhitelistUserTableModel extends MSortedTableModel<MailTransformCompoundSet
 
 
 
-    public void generateSettings(MailTransformCompoundSettings mailTransformCompoundSettings,
+    public void generateSettings(MailNodeCompoundSettings mailNodeCompoundSettings,
                                  Vector<Vector> tableVector, boolean validateOnly) throws Exception { }
 
-    public Vector<Vector> generateRows(MailTransformCompoundSettings mailTransformCompoundSettings) {
+    public Vector<Vector> generateRows(MailNodeCompoundSettings mailNodeCompoundSettings) {
 
-        String[] addresses = mailTransformCompoundSettings.getSafelistContents();
+        String[] addresses = mailNodeCompoundSettings.getSafelistContents();
         Vector<Vector> allRows = new Vector<Vector>(addresses.length);
         Vector tempRow = null;
         int rowIndex = 0;

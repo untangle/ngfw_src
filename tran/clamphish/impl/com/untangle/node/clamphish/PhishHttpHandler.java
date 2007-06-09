@@ -9,34 +9,34 @@
  * $Id: SpywareHttpHandler.java 8668 2007-01-29 19:17:09Z amread $
  */
 
-package com.untangle.tran.clamphish;
+package com.untangle.node.clamphish;
 
 import java.net.InetAddress;
 import java.net.URI;
 
-import com.untangle.mvvm.tapi.TCPSession;
-import com.untangle.tran.http.HttpStateMachine;
-import com.untangle.tran.http.RequestLineToken;
-import com.untangle.tran.http.StatusLine;
-import com.untangle.tran.token.Chunk;
-import com.untangle.tran.token.Header;
-import com.untangle.tran.token.Token;
-import com.untangle.tran.util.UrlDatabaseResult;
+import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.node.http.HttpStateMachine;
+import com.untangle.node.http.RequestLineToken;
+import com.untangle.node.http.StatusLine;
+import com.untangle.node.token.Chunk;
+import com.untangle.node.token.Header;
+import com.untangle.node.token.Token;
+import com.untangle.node.util.UrlDatabaseResult;
 import org.apache.log4j.Logger;
 
 public class PhishHttpHandler extends HttpStateMachine
 {
     private final Logger logger = Logger.getLogger(getClass());
 
-    private final ClamPhishTransform transform;
+    private final ClamPhishNode node;
 
     // constructors -----------------------------------------------------------
 
-    PhishHttpHandler(TCPSession session, ClamPhishTransform transform)
+    PhishHttpHandler(TCPSession session, ClamPhishNode node)
     {
         super(session);
 
-        this.transform = transform;
+        this.node = node;
     }
 
     // HttpStateMachine methods -----------------------------------------------
@@ -68,10 +68,10 @@ public class PhishHttpHandler extends HttpStateMachine
 
         // XXX yuck
         UrlDatabaseResult result;
-        if (transform.isWhitelistedDomain(host, getSession().clientAddr())) {
+        if (node.isWhitelistedDomain(host, getSession().clientAddr())) {
             result = null;
         } else {
-            result = transform.getUrlDatabase()
+            result = node.getUrlDatabase()
                 .search(getSession(), uri, requestHeader);
         }
 
@@ -79,14 +79,14 @@ public class PhishHttpHandler extends HttpStateMachine
             // XXX fire off event
             if (result.blacklisted()) {
                 // XXX change this category value
-                transform.logHttp(new PhishHttpEvent(rlToken.getRequestLine(), Action.BLOCK, "Google Safe Browsing"));
+                node.logHttp(new PhishHttpEvent(rlToken.getRequestLine(), Action.BLOCK, "Google Safe Browsing"));
 
                 InetAddress clientIp = getSession().clientAddr();
 
                 ClamPhishBlockDetails bd = new ClamPhishBlockDetails
                     (host, uri.toString(), clientIp);
 
-                Token[] r = transform.generateResponse(bd, getSession(),
+                Token[] r = node.generateResponse(bd, getSession(),
                                                        isRequestPersistent());
 
                 blockRequest(r);

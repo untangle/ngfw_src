@@ -9,26 +9,26 @@
  * $Id$
  */
 
-package com.untangle.tran.protofilter;
+package com.untangle.node.protofilter;
 
 import java.nio.*;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
 
-import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.mvvm.tapi.*;
-import com.untangle.mvvm.tapi.event.*;
-import com.untangle.mvvm.tran.Transform;
-import com.untangle.tran.util.AsciiCharBuffer;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.tapi.*;
+import com.untangle.uvm.tapi.event.*;
+import com.untangle.uvm.node.Node;
+import com.untangle.node.util.AsciiCharBuffer;
 import org.apache.log4j.Logger;
 
 public class EventHandler extends AbstractEventHandler
 {
     private final Logger logger = Logger.getLogger(EventHandler.class);
 
-    static final int SCAN_COUNTER   = Transform.GENERIC_0_COUNTER;
-    static final int DETECT_COUNTER = Transform.GENERIC_1_COUNTER;
-    static final int BLOCK_COUNTER  = Transform.GENERIC_2_COUNTER;
+    static final int SCAN_COUNTER   = Node.GENERIC_0_COUNTER;
+    static final int DETECT_COUNTER = Node.GENERIC_1_COUNTER;
+    static final int BLOCK_COUNTER  = Node.GENERIC_2_COUNTER;
 
     // These are all set at preStart() time by reconfigure()
     private ArrayList  _patternList;
@@ -36,7 +36,7 @@ public class EventHandler extends AbstractEventHandler
     private int        _chunkLimit;
     private String     _unknownString;
     private boolean    _stripZeros;
-    private ProtoFilterImpl transform;
+    private ProtoFilterImpl node;
 
     private class SessionInfo {
 
@@ -55,11 +55,11 @@ public class EventHandler extends AbstractEventHandler
         private Pipeline pipeline;
     }
 
-    EventHandler( ProtoFilterImpl transform )
+    EventHandler( ProtoFilterImpl node )
     {
-        super(transform);
+        super(node);
 
-        this.transform = transform;
+        this.node = node;
     }
 
     public void handleTCPNewSession (TCPSessionEvent event)
@@ -70,7 +70,7 @@ public class EventHandler extends AbstractEventHandler
         // We now don't allocate memory until we need it.
         sessInfo.clientBuffer = null;
         sessInfo.serverBuffer = null;
-        sessInfo.pipeline = MvvmContextFactory.context().pipelineFoundry().getPipeline(sess.id());
+        sessInfo.pipeline = UvmContextFactory.context().pipelineFoundry().getPipeline(sess.id());
         sess.attach(sessInfo);
     }
 
@@ -82,7 +82,7 @@ public class EventHandler extends AbstractEventHandler
         // We now don't allocate memory until we need it.
         sessInfo.clientBuffer = null;
         sessInfo.serverBuffer = null;
-        sessInfo.pipeline = MvvmContextFactory.context().pipelineFoundry().getPipeline(sess.id());
+        sessInfo.pipeline = UvmContextFactory.context().pipelineFoundry().getPipeline(sess.id());
         sess.attach(sessInfo);
     }
 
@@ -217,7 +217,7 @@ public class EventHandler extends AbstractEventHandler
         }
 
         ProtoFilterPattern elem = _findMatch(sessInfo, sess, server);
-        transform.incrementCount( SCAN_COUNTER );
+        node.incrementCount( SCAN_COUNTER );
         if (elem != null) {
             sessInfo.protocol = elem.getProtocol();
             sessInfo.identified = true;
@@ -237,14 +237,14 @@ public class EventHandler extends AbstractEventHandler
                 }
             }
 
-            transform.incrementCount( DETECT_COUNTER );
+            node.incrementCount( DETECT_COUNTER );
 
             if(elem.getAlert()) {
                 /* XXX Do alert here */
             }
 
             if (elem.isBlocked()) {
-                transform.incrementCount( BLOCK_COUNTER );
+                node.incrementCount( BLOCK_COUNTER );
 
                 if (logger.isInfoEnabled()) {
                     logger.info(" ----------------BLOCKED: " + sessInfo.protocol + " traffic----------------");
@@ -266,7 +266,7 @@ public class EventHandler extends AbstractEventHandler
 
             ProtoFilterLogEvent evt = new ProtoFilterLogEvent
                 (sess.pipelineEndpoints(), sessInfo.protocol, elem.isBlocked());
-            transform.log(evt);
+            node.log(evt);
 
             // We release session immediately upon first match.
             sess.attach(null);

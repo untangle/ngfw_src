@@ -9,18 +9,18 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.impl;
+package com.untangle.node.mail.impl;
 
 import java.nio.ByteBuffer;
 
-import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.mvvm.tapi.Pipeline;
-import com.untangle.mvvm.tapi.TCPSession;
-import com.untangle.mvvm.tapi.event.TCPStreamer;
-import com.untangle.tran.token.AbstractUnparser;
-import com.untangle.tran.token.PassThruToken;
-import com.untangle.tran.token.Token;
-import com.untangle.tran.token.UnparseResult;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.tapi.Pipeline;
+import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.uvm.tapi.event.TCPStreamer;
+import com.untangle.node.token.AbstractUnparser;
+import com.untangle.node.token.PassThruToken;
+import com.untangle.node.token.Token;
+import com.untangle.node.token.UnparseResult;
 import org.apache.log4j.Logger;
 
 /**
@@ -46,7 +46,7 @@ public abstract class AbstractMailUnparser
         m_protocol = protocolName;
         m_trace = parent.isTrace();
         m_parentCasing = parent;
-        m_pipeline = MvvmContextFactory.context().
+        m_pipeline = UvmContextFactory.context().
             pipelineFoundry().getPipeline(session.id());
     }
 

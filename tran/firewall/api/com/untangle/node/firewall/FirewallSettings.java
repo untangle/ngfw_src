@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.firewall;
+package com.untangle.node.firewall;
 
 import java.io.Serializable;
 import java.util.Iterator;
@@ -26,14 +26,14 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import com.untangle.mvvm.security.Tid;
-import com.untangle.mvvm.tran.ParseException;
-import com.untangle.mvvm.tran.Validatable;
+import com.untangle.uvm.security.Tid;
+import com.untangle.uvm.node.ParseException;
+import com.untangle.uvm.node.Validatable;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.IndexColumn;
 
 /**
- * Settings for the Firewall transform.
+ * Settings for the Firewall node.
  *
  * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
  * @version 1.0
@@ -84,7 +84,7 @@ public class FirewallSettings implements Serializable, Validatable
     }
 
     /**
-     * Transform id for these settings.
+     * Node id for these settings.
      *
      * @return tid for these settings
      */

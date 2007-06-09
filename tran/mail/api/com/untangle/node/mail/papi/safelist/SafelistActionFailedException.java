@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.papi.safelist;
+package com.untangle.node.mail.papi.safelist;
 import java.io.Serializable;
 
 /**

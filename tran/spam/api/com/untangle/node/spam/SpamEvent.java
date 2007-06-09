@@ -9,18 +9,18 @@
  * $Id$
  */
 
-package com.untangle.tran.spam;
+package com.untangle.node.spam;
 
 import java.net.InetAddress;
 import java.util.Iterator;
 
-import com.untangle.mvvm.logging.LogEvent;
-import com.untangle.mvvm.logging.SyslogBuilder;
-import com.untangle.mvvm.logging.SyslogPriority;
-import com.untangle.mvvm.tran.PipelineEndpoints;
-import com.untangle.tran.mail.papi.AddressKind;
-import com.untangle.tran.mail.papi.MessageInfo;
-import com.untangle.tran.mail.papi.MessageInfoAddr;
+import com.untangle.uvm.logging.LogEvent;
+import com.untangle.uvm.logging.SyslogBuilder;
+import com.untangle.uvm.logging.SyslogPriority;
+import com.untangle.uvm.node.PipelineEndpoints;
+import com.untangle.node.mail.papi.AddressKind;
+import com.untangle.node.mail.papi.MessageInfo;
+import com.untangle.node.mail.papi.MessageInfoAddr;
 
 public abstract class SpamEvent extends LogEvent
 {

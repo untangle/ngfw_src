@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.http;
+package com.untangle.node.http;
 
 public enum UserWhitelistMode
 {

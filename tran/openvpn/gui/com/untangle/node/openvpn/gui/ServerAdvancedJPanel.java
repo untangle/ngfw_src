@@ -9,18 +9,18 @@
  * $Id$
  */
 
-package com.untangle.tran.openvpn.gui;
+package com.untangle.node.openvpn.gui;
 
 import java.awt.*;
 import javax.swing.JSpinner;
 
-import com.untangle.gui.transform.*;
+import com.untangle.gui.node.*;
 import com.untangle.gui.util.*;
-import com.untangle.mvvm.*;
-import com.untangle.mvvm.networking.*;
-import com.untangle.mvvm.security.*;
-import com.untangle.mvvm.tran.*;
-import com.untangle.tran.openvpn.*;
+import com.untangle.uvm.*;
+import com.untangle.uvm.networking.*;
+import com.untangle.uvm.security.*;
+import com.untangle.uvm.node.*;
+import com.untangle.node.openvpn.*;
 
 public class ServerAdvancedJPanel extends javax.swing.JPanel
     implements Savable<Object>, Refreshable<Object> {

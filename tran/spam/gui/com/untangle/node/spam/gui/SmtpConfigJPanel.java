@@ -10,13 +10,13 @@
  */
 
 
-package com.untangle.tran.spam.gui;
+package com.untangle.node.spam.gui;
 
-import com.untangle.gui.transform.*;
+import com.untangle.gui.node.*;
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.editTable.*;
-import com.untangle.tran.spam.*;
-import com.untangle.mvvm.tran.TransformContext;
+import com.untangle.node.spam.*;
+import com.untangle.uvm.node.NodeContext;
 
 
 import java.awt.*;

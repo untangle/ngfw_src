@@ -9,12 +9,12 @@
  * $Id$
  */
 
-package com.untangle.tran.reporting.reports;
+package com.untangle.node.reporting.reports;
 
 import java.sql.*;
 
-import com.untangle.mvvm.reporting.BaseSummarizer;
-import com.untangle.mvvm.reporting.Util;
+import com.untangle.uvm.reporting.BaseSummarizer;
+import com.untangle.uvm.reporting.Util;
 import org.apache.log4j.Logger;
 
 public class LoginSummarizer extends BaseSummarizer {

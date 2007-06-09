@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.openvpn.servlet;
+package com.untangle.node.openvpn.servlet;
 
 import java.io.IOException;
 import javax.servlet.ServletException;

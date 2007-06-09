@@ -9,7 +9,7 @@
  * $Id: UnblockerServlet.java 8515 2007-01-03 00:13:24Z amread $
  */
 
-package com.untangle.tran.clamphish;
+package com.untangle.node.clamphish;
 
 import java.io.IOException;
 import javax.servlet.ServletException;
@@ -17,10 +17,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.mvvm.security.Tid;
-import com.untangle.mvvm.tran.LocalTransformManager;
-import com.untangle.mvvm.tran.TransformContext;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.security.Tid;
+import com.untangle.uvm.node.LocalNodeManager;
+import com.untangle.uvm.node.NodeContext;
 
 public class UnblockerServlet extends HttpServlet
 {
@@ -38,10 +38,10 @@ public class UnblockerServlet extends HttpServlet
         boolean global = Boolean.parseBoolean(req.getParameter("global"));
 
         try {
-            LocalTransformManager tman = MvvmContextFactory.context().transformManager();
+            LocalNodeManager tman = UvmContextFactory.context().nodeManager();
             Tid tid = new Tid(Long.parseLong(tidStr));
-            TransformContext tctx = tman.transformContext(tid);
-            ClamPhish tran = (ClamPhish)tctx.transform();
+            NodeContext tctx = tman.nodeContext(tid);
+            ClamPhish tran = (ClamPhish)tctx.node();
 
             if (tran.unblockSite(nonce, global)) {
                 resp.getOutputStream().println("<success/>");

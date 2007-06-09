@@ -1,13 +1,13 @@
 # -*-ruby-*-
 
-http = BuildEnv::ALPINE['http-casing']
-httpblocker = BuildEnv::ALPINE['httpblocker-transform']
+http = BuildEnv::SRC['http-casing']
+httpblocker = BuildEnv::SRC['httpblocker-node']
 
-TransformBuilder.makeTransform(BuildEnv::ALPINE, 'httpblocker',
+NodeBuilder.makeNode(BuildEnv::SRC, 'httpblocker',
                                [http['localapi']], [http['gui']])
 
 deps = [httpblocker['gui'], http['gui']]
 
-ServletBuilder.new(httpblocker, 'com.untangle.tran.httpblocker.jsp',
-                   "#{ALPINE_HOME}/tran/httpblocker/servlets/httpblocker", [],
+ServletBuilder.new(httpblocker, 'com.untangle.node.httpblocker.jsp',
+                   "#{SRC_HOME}/tran/httpblocker/servlets/httpblocker", [],
                    deps, [], [BuildEnv::SERVLET_COMMON])

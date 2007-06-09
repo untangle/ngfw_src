@@ -9,14 +9,14 @@
  * $Id$
  */
 
-package com.untangle.tran.openvpn;
+package com.untangle.node.openvpn;
 
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.Table;
 
-import com.untangle.mvvm.tran.Validatable;
+import com.untangle.uvm.node.Validatable;
 
 /**
  * the configuration for a vpn client.

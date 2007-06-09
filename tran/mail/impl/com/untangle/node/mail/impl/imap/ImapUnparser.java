@@ -9,10 +9,10 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.impl.imap;
+package com.untangle.node.mail.impl.imap;
 
-import com.untangle.mvvm.tapi.TCPSession;
-import com.untangle.tran.mail.impl.AbstractMailUnparser;
+import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.node.mail.impl.AbstractMailUnparser;
 import org.apache.log4j.Logger;
 
 /**

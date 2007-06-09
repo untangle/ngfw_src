@@ -9,21 +9,21 @@
  * $Id$
  */
 
-package com.untangle.tran.openvpn;
+package com.untangle.node.openvpn;
 
-import com.untangle.mvvm.tran.HostAddress;
-import com.untangle.mvvm.tran.IPaddr;
-import com.untangle.mvvm.tran.Transform;
+import com.untangle.uvm.node.HostAddress;
+import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.Node;
 
-import com.untangle.mvvm.tran.TransformException;
-import com.untangle.mvvm.tran.ValidateException;
+import com.untangle.uvm.node.NodeException;
+import com.untangle.uvm.node.ValidateException;
 
-import com.untangle.mvvm.logging.EventManager;
+import com.untangle.uvm.logging.EventManager;
 
 
 import java.util.List;
 
-public interface VpnTransform extends Transform
+public interface VpnNode extends Node
 {
     public void setVpnSettings( VpnSettings settings );
     public VpnSettings getVpnSettings();
@@ -39,7 +39,7 @@ public interface VpnTransform extends Transform
     public String lookupClientDistributionKey( String key, IPaddr address );
 
     /* Send out the client distribution */
-    public void distributeClientConfig( VpnClientBase client ) throws TransformException;
+    public void distributeClientConfig( VpnClientBase client ) throws NodeException;
 
     public enum ConfigState { UNCONFIGURED, CLIENT, SERVER_BRIDGE, SERVER_ROUTE }
     public ConfigState getConfigState();
@@ -49,7 +49,7 @@ public interface VpnTransform extends Transform
     public void completeConfig() throws Exception;
 
     //// the stages of the setup wizard ///
-    List<String> getAvailableUsbList() throws TransformException;
+    List<String> getAvailableUsbList() throws NodeException;
     public void downloadConfig( HostAddress address, int port, String key ) throws Exception;
     public void downloadConfigUsb( String name ) throws Exception;
     public void generateCertificate( CertificateParameters parameters ) throws Exception;

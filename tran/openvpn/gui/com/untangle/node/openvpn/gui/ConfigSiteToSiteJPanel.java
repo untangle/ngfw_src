@@ -10,14 +10,14 @@
  */
 
 
-package com.untangle.tran.openvpn.gui;
+package com.untangle.node.openvpn.gui;
 
-import com.untangle.gui.transform.*;
+import com.untangle.gui.node.*;
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.editTable.*;
-import com.untangle.mvvm.tran.*;
-import com.untangle.mvvm.tran.firewall.*;
-import com.untangle.tran.openvpn.*;
+import com.untangle.uvm.node.*;
+import com.untangle.uvm.node.firewall.*;
+import com.untangle.node.openvpn.*;
 
 import java.awt.Insets;
 import java.awt.Font;

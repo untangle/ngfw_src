@@ -9,13 +9,13 @@
  * $Id$
  */
 
-package com.untangle.tran.ids.options;
+package com.untangle.node.ids.options;
 
-import com.untangle.mvvm.tapi.event.*;
-import com.untangle.tran.ids.IDSDetectionEngine;
-import com.untangle.tran.ids.IDSRule;
-import com.untangle.tran.ids.IDSRuleSignature;
-import com.untangle.tran.ids.RuleClassification;
+import com.untangle.uvm.tapi.event.*;
+import com.untangle.node.ids.IDSDetectionEngine;
+import com.untangle.node.ids.IDSRule;
+import com.untangle.node.ids.IDSRuleSignature;
+import com.untangle.node.ids.RuleClassification;
 import org.apache.log4j.Logger;
 
 public class ClasstypeOption extends IDSOption {

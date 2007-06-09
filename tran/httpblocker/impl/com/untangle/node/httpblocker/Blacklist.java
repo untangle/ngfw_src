@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.httpblocker;
+package com.untangle.node.httpblocker;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,16 +24,16 @@ import java.util.List;
 import java.util.Map;
 
 import com.sleepycat.je.DatabaseException;
-import com.untangle.mvvm.tran.IPMaddrRule;
-import com.untangle.mvvm.tran.MimeType;
-import com.untangle.mvvm.tran.MimeTypeRule;
-import com.untangle.mvvm.tran.StringRule;
-import com.untangle.tran.http.RequestLineToken;
-import com.untangle.tran.token.Header;
-import com.untangle.tran.util.CharSequenceUtil;
-import com.untangle.tran.util.PrefixUrlList;
-import com.untangle.tran.util.UrlDatabase;
-import com.untangle.tran.util.UrlList;
+import com.untangle.uvm.node.IPMaddrRule;
+import com.untangle.uvm.node.MimeType;
+import com.untangle.uvm.node.MimeTypeRule;
+import com.untangle.uvm.node.StringRule;
+import com.untangle.node.http.RequestLineToken;
+import com.untangle.node.token.Header;
+import com.untangle.node.util.CharSequenceUtil;
+import com.untangle.node.util.PrefixUrlList;
+import com.untangle.node.util.UrlDatabase;
+import com.untangle.node.util.UrlList;
 import org.apache.log4j.Logger;
 
 /**
@@ -57,7 +57,7 @@ class Blacklist
 
     private final Logger logger = Logger.getLogger(Blacklist.class);
 
-    private final HttpBlockerImpl transform;
+    private final HttpBlockerImpl node;
 
     private final UrlDatabase<String> urlDatabase = new UrlDatabase<String>();
 
@@ -69,9 +69,9 @@ class Blacklist
 
     // constructors -----------------------------------------------------------
 
-    Blacklist(HttpBlockerImpl transform)
+    Blacklist(HttpBlockerImpl node)
     {
-        this.transform = transform;
+        this.node = node;
     }
 
     // blacklist methods ------------------------------------------------------
@@ -178,7 +178,7 @@ class Blacklist
                     HttpBlockerEvent hbe = new HttpBlockerEvent
                         (requestLine.getRequestLine(), Action.PASS,
                          Reason.PASS_URL, category);
-                    transform.log(hbe);
+                    node.log(hbe);
 
                     return null;
                 }
@@ -203,12 +203,12 @@ class Blacklist
                 HttpBlockerEvent hbe = new HttpBlockerEvent
                     (requestLine.getRequestLine(), Action.BLOCK,
                      Reason.BLOCK_EXTENSION, exn);
-                transform.log(hbe);
+                node.log(hbe);
 
                 HttpBlockerBlockDetails bd = new HttpBlockerBlockDetails
                     (settings, host, uri.toString(),
                      "extension (" + exn + ")");
-                return transform.generateNonce(bd);
+                return node.generateNonce(bd);
             }
         }
 
@@ -232,20 +232,20 @@ class Blacklist
                 HttpBlockerEvent hbe = new HttpBlockerEvent
                     (requestLine.getRequestLine(), Action.BLOCK,
                      Reason.BLOCK_MIME, contentType);
-                transform.log(hbe);
+                node.log(hbe);
                 String host = header.getValue("host");
                 URI uri = requestLine.getRequestUri().normalize();
 
                 HttpBlockerBlockDetails bd = new HttpBlockerBlockDetails
                     (settings, host, uri.toString(),
                      "Mime-Type (" + contentType + ")");
-                return transform.generateNonce(bd);
+                return node.generateNonce(bd);
             }
         }
 
         HttpBlockerEvent e = new HttpBlockerEvent(requestLine.getRequestLine(),
                                                   null, null, null, true);
-        transform.log(e);
+        node.log(e);
 
         return null;
     }
@@ -282,11 +282,11 @@ class Blacklist
             Reason r = Reason.BLOCK_ALL;
             HttpBlockerEvent hbe = new HttpBlockerEvent
                 (requestLine.getRequestLine(), Action.BLOCK, r, c);
-            transform.log(hbe);
+            node.log(hbe);
 
             HttpBlockerBlockDetails bd = new HttpBlockerBlockDetails
                 (settings, host, uri, "not allowed");
-            return transform.generateNonce(bd);
+            return node.generateNonce(bd);
         }
 
         String dom = host;
@@ -319,11 +319,11 @@ class Blacklist
                 Action a = bc.getLogOnly() ? Action.PASS : Action.BLOCK;
                 HttpBlockerEvent hbe = new HttpBlockerEvent
                     (requestLine.getRequestLine(), a, reason, category);
-                transform.log(hbe);
+                node.log(hbe);
             } else if (null == stringRule || stringRule.getLog()) {
                 HttpBlockerEvent hbe = new HttpBlockerEvent
                     (requestLine.getRequestLine(), Action.BLOCK, reason, category);
-                transform.log(hbe);
+                node.log(hbe);
             }
 
             if (null == bc && null != stringRule && !stringRule.isLive()) {
@@ -333,7 +333,7 @@ class Blacklist
             } else {
                 HttpBlockerBlockDetails bd = new HttpBlockerBlockDetails
                     (settings, host, uri, category);
-                return transform.generateNonce(bd);
+                return node.generateNonce(bd);
             }
         }
 

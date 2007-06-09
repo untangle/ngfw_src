@@ -8,7 +8,7 @@
  *
  * $Id$
  */
-package com.untangle.tran.mail.web.euv.tags;
+package com.untangle.node.mail.web.euv.tags;
 
 import java.net.URLEncoder;
 import javax.servlet.ServletRequest;

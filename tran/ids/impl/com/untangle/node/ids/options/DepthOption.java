@@ -9,13 +9,13 @@
  * $Id$
  */
 
-package com.untangle.tran.ids.options;
+package com.untangle.node.ids.options;
 
 import java.util.regex.*;
 
-import com.untangle.mvvm.tapi.event.*;
-import com.untangle.mvvm.tran.ParseException;
-import com.untangle.tran.ids.IDSRuleSignature;
+import com.untangle.uvm.tapi.event.*;
+import com.untangle.uvm.node.ParseException;
+import com.untangle.node.ids.IDSRuleSignature;
 import org.apache.log4j.Logger;
 
 public class DepthOption extends IDSOption {

@@ -11,13 +11,13 @@ not disclose such Confidential Information.
 $Id$
 -->
 
-<mvvm-transform>
-  <transform-desc name="hauri-transform"
+<uvm-node>
+  <node-desc name="hauri-node"
                   display-name="Dual Virus Blocker"
-                  classname="com.untangle.tran.hauri.HauriTransform"
-                  gui-classname="com.untangle.tran.hauri.gui.MTransformJPanel"
-                  transform-base="virus-base"/>
+                  classname="com.untangle.node.hauri.HauriNode"
+                  gui-classname="com.untangle.node.hauri.gui.MNodeJPanel"
+                  node-base="virus-base"/>
   <parent>http-casing</parent>
   <parent>mail-casing</parent>
   <parent>ftp-casing</parent>
-</mvvm-transform>
+</uvm-node>

@@ -9,24 +9,24 @@
  * $Id$
  */
 
-package com.untangle.tran.http;
+package com.untangle.node.http;
 
-import com.untangle.mvvm.tapi.TCPSession;
-import com.untangle.tran.token.Casing;
-import com.untangle.tran.token.CasingFactory;
+import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.node.token.Casing;
+import com.untangle.node.token.CasingFactory;
 
 class HttpCasingFactory implements CasingFactory
 {
-    private final HttpTransformImpl transform;
+    private final HttpNodeImpl node;
 
 
-    public HttpCasingFactory(HttpTransformImpl transform)
+    public HttpCasingFactory(HttpNodeImpl node)
     {
-        this.transform = transform;
+        this.node = node;
     }
 
     public Casing casing(TCPSession session, boolean clientSide)
     {
-        return new HttpCasing(session, clientSide, transform);
+        return new HttpCasing(session, clientSide, node);
     }
 }

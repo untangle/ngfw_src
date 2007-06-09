@@ -9,14 +9,14 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.papi.smtp;
+package com.untangle.node.mail.papi.smtp;
 
-import static com.untangle.tran.util.Rfc822Util.*;
-import static com.untangle.tran.util.Ascii.*;
+import static com.untangle.node.util.Rfc822Util.*;
+import static com.untangle.node.util.Ascii.*;
 
 
-import com.untangle.tran.mime.*;
-import com.untangle.tran.token.ParseException;
+import com.untangle.node.mime.*;
+import com.untangle.node.token.ParseException;
 
 /**
  * Class representing the "RCPT TO:&lt;X>" Command.

@@ -9,27 +9,27 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.papi.smtp;
+package com.untangle.node.mail.papi.smtp;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.mvvm.util.LoadAvg;
-import com.untangle.mvvm.util.MetaEnv;
+import com.untangle.uvm.util.LoadAvg;
+import com.untangle.uvm.util.MetaEnv;
 
 public final class ScanLoadChecker {
 
     // For every concurrent scan that is running, wait this many milliseconds before
     // accepting a new one.
-    public static final String SMTP_SCAN_CONCURRENT_DELAY_PROPERTY = "mvvm.smtp.scan.concurrent.delay";
+    public static final String SMTP_SCAN_CONCURRENT_DELAY_PROPERTY = "uvm.smtp.scan.concurrent.delay";
     public static final long SMTP_SCAN_CONCURRENT_DELAY_DEFAULT = 200;
 
-    public static final String SMTP_SCAN_REJECT_SCANS_PROPERTY = "mvvm.smtp.scan.reject.scans";
+    public static final String SMTP_SCAN_REJECT_SCANS_PROPERTY = "uvm.smtp.scan.reject.scans";
     public static final int SMTP_SCAN_REJECT_SCANS_DEFAULT = 15;
 
-    public static final String SMTP_SCAN_REJECT_LOAD_PROPERTY = "mvvm.smtp.scan.reject.load";
+    public static final String SMTP_SCAN_REJECT_LOAD_PROPERTY = "uvm.smtp.scan.reject.load";
     public static final float SMTP_SCAN_REJECT_LOAD_DEFAULT = 7.0f;
 
-    public static final String SMTP_SCAN_REJECT_RUNNING_PROPERTY = "mvvm.smtp.scan.reject.running";
+    public static final String SMTP_SCAN_REJECT_RUNNING_PROPERTY = "uvm.smtp.scan.reject.running";
     public static final int SMTP_SCAN_REJECT_RUNNING_DEFAULT = 30;
 
     public static final float ALLOW_ANYWAY_CHANCE = 0.05f;

@@ -9,9 +9,9 @@
  * $Id$
  */
 
-package com.untangle.tran.spam;
+package com.untangle.node.spam;
 
-import static com.untangle.tran.util.Ascii.CRLF;
+import static com.untangle.node.util.Ascii.CRLF;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -20,21 +20,21 @@ import java.net.InetAddress;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.mvvm.tapi.TCPSession;
-import com.untangle.tran.mail.papi.MessageInfo;
-import com.untangle.tran.mail.papi.quarantine.MailSummary;
-import com.untangle.tran.mail.papi.quarantine.QuarantineTransformView;
-import com.untangle.tran.mail.papi.safelist.SafelistTransformView;
-import com.untangle.tran.mail.papi.smtp.SmtpTransaction;
-import com.untangle.tran.mail.papi.smtp.sapi.BufferingSessionHandler;
-import com.untangle.tran.mime.EmailAddress;
-import com.untangle.tran.mime.HeaderParseException;
-import com.untangle.tran.mime.LCString;
-import com.untangle.tran.mime.MIMEMessage;
-import com.untangle.tran.mime.MIMEOutputStream;
-import com.untangle.tran.mime.MIMEUtil;
-import com.untangle.tran.util.TempFileFactory;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.node.mail.papi.MessageInfo;
+import com.untangle.node.mail.papi.quarantine.MailSummary;
+import com.untangle.node.mail.papi.quarantine.QuarantineNodeView;
+import com.untangle.node.mail.papi.safelist.SafelistNodeView;
+import com.untangle.node.mail.papi.smtp.SmtpTransaction;
+import com.untangle.node.mail.papi.smtp.sapi.BufferingSessionHandler;
+import com.untangle.node.mime.EmailAddress;
+import com.untangle.node.mime.HeaderParseException;
+import com.untangle.node.mime.LCString;
+import com.untangle.node.mime.MIMEMessage;
+import com.untangle.node.mime.MIMEOutputStream;
+import com.untangle.node.mime.MIMEUtil;
+import com.untangle.node.util.TempFileFactory;
 import org.apache.log4j.Logger;
 
 
@@ -50,16 +50,16 @@ public class SmtpSessionHandler
 
     private final SpamImpl m_spamImpl;
     private final SpamSMTPConfig m_config;
-    private final QuarantineTransformView m_quarantine;
-    private final SafelistTransformView m_safelist;
+    private final QuarantineNodeView m_quarantine;
+    private final SafelistNodeView m_safelist;
 
     public SmtpSessionHandler(TCPSession session,
                               long maxClientWait,
                               long maxSvrWait,
                               SpamImpl impl,
                               SpamSMTPConfig config,
-                              QuarantineTransformView quarantine,
-                              SafelistTransformView safelist) {
+                              QuarantineNodeView quarantine,
+                              SafelistNodeView safelist) {
 
         super(config.getMsgSizeLimit(), maxClientWait, maxSvrWait, false);
 
@@ -67,7 +67,7 @@ public class SmtpSessionHandler
         m_quarantine = quarantine;
         m_safelist = safelist;
         m_config = config;
-        m_fileFactory = new TempFileFactory(MvvmContextFactory.context().
+        m_fileFactory = new TempFileFactory(UvmContextFactory.context().
                                             pipelineFoundry().getPipeline(session.id()));
     }
 
@@ -75,7 +75,7 @@ public class SmtpSessionHandler
     /**
      * Method for subclasses (i.e. clamphish) to
      * set the
-     * {@link com.untangle.tran.mail.papi.quarantine.MailSummary#getQuarantineCategory category}
+     * {@link com.untangle.node.mail.papi.quarantine.MailSummary#getQuarantineCategory category}
      * for a Quarantine submission.
      */
     protected String getQuarantineCategory() {
@@ -85,7 +85,7 @@ public class SmtpSessionHandler
     /**
      * Method for subclasses (i.e. clamphish) to
      * set the
-     * {@link com.untangle.tran.mail.papi.quarantine.MailSummary#getQuarantineDetail detail}
+     * {@link com.untangle.node.mail.papi.quarantine.MailSummary#getQuarantineDetail detail}
      * for a Quarantine submission.
      */
     protected String getQuarantineDetail(SpamReport report) {
@@ -142,7 +142,7 @@ public class SmtpSessionHandler
 
             //Perform notification (if we should)
             if(m_config.getNotifyMessageGenerator().sendNotification(
-                                                                     MvvmContextFactory.context().mailSender(),
+                                                                     UvmContextFactory.context().mailSender(),
                                                                      SpamSMTPNotifyAction.toSMTPNotifyAction(m_config.getNotifyAction()),
                                                                      msg,
                                                                      tx,

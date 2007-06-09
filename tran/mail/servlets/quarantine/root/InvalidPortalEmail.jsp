@@ -1,4 +1,4 @@
-<%@page language="java" import="com.untangle.mvvm.*"%>
+<%@page language="java" import="com.untangle.uvm.*"%>
 
 <!--
  * Copyright (c) 2003-2007 Untangle, Inc.
@@ -13,8 +13,8 @@
 <%@ taglib uri="/WEB-INF/taglibs/quarantine_euv.tld" prefix="quarantine" %>
 
 <%
-MvvmLocalContext mvvm = MvvmContextFactory.context();
-BrandingSettings bs = mvvm.brandingManager().getBrandingSettings();
+UvmLocalContext uvm = UvmContextFactory.context();
+BrandingSettings bs = uvm.brandingManager().getBrandingSettings();
 String company = bs.getCompanyName();
 String companyUrl = bs.getCompanyUrl();
 %>

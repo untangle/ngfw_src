@@ -9,11 +9,11 @@
  * $Id$
  */
 
-package com.untangle.tran.httpblocker;
+package com.untangle.node.httpblocker;
 
 
-import com.untangle.mvvm.logging.RepositoryDesc;
-import com.untangle.mvvm.logging.SimpleEventFilter;
+import com.untangle.uvm.logging.RepositoryDesc;
+import com.untangle.uvm.logging.SimpleEventFilter;
 
 public class HttpBlockerWhitelistFilter
     implements SimpleEventFilter<HttpBlockerEvent>

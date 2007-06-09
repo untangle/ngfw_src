@@ -8,7 +8,7 @@
  *
  * $Id$
  */
-package com.untangle.tran.clam;
+package com.untangle.node.clam;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -17,8 +17,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.StringTokenizer;
 
-import com.untangle.tran.virus.VirusScanner;
-import com.untangle.tran.virus.VirusScannerResult;
+import com.untangle.node.virus.VirusScanner;
+import com.untangle.node.virus.VirusScannerResult;
 import org.apache.log4j.Logger;
 
 public class ClamScanner implements VirusScanner
@@ -43,8 +43,8 @@ public class ClamScanner implements VirusScanner
 
         try {
             String command = "clamdscan " + VERSION_ARG;
-            // Note that we do NOT use MvvmContext.exec here because we run at
-            // reports time where there is no MvvmContext.
+            // Note that we do NOT use UvmContext.exec here because we run at
+            // reports time where there is no UvmContext.
             Process scanProcess = Runtime.getRuntime().exec(command);
             InputStream is  = scanProcess.getInputStream();
             BufferedReader in = new BufferedReader(new InputStreamReader(is));

@@ -9,10 +9,10 @@
  * $Id$
  */
 
-package com.untangle.tran.httpblocker;
+package com.untangle.node.httpblocker;
 
 
-import com.untangle.tran.http.BlockDetails;
+import com.untangle.node.http.BlockDetails;
 
 public class HttpBlockerBlockDetails extends BlockDetails
 {

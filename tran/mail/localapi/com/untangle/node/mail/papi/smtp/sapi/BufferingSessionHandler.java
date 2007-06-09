@@ -9,23 +9,23 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.papi.smtp.sapi;
+package com.untangle.node.mail.papi.smtp.sapi;
 
 import java.io.*;
 import java.nio.*;
 import java.nio.channels.*;
 import java.util.*;
 
-import com.untangle.tran.mail.papi.*;
-import com.untangle.tran.mail.papi.smtp.*;
-import com.untangle.tran.mime.*;
-import com.untangle.tran.token.Token;
+import com.untangle.node.mail.papi.*;
+import com.untangle.node.mail.papi.smtp.*;
+import com.untangle.node.mime.*;
+import com.untangle.node.token.Token;
 import org.apache.log4j.Logger;
 
 /**
  * Subclass of SessionHandler which yet-again simplifies
  * consumption of an SMTP stream.  This class was created
- * for Transforms wishing only to see "a whole mail".
+ * for Nodes wishing only to see "a whole mail".
  * <br><br>
  * This class <i>buffers</i> mails, meaning it does not
  * pass each MIME chunk to the server.  Instead, it attempts
@@ -407,7 +407,7 @@ public abstract class BufferingSessionHandler
         private boolean m_isMessageMaster;//Flag indicating if this handler
         //is the "master" of the message (accumulator
         //or MIMEMessage).  The master is defined
-        //as the last transform to receive the object
+        //as the last node to receive the object
         //in question.  The master designation is set
         //once a Begin/complete token is received, and
         //relinquished once any BEGIN/Complete

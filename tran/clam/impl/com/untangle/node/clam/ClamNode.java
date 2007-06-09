@@ -8,18 +8,18 @@
  *
  * $Id$
  */
-package com.untangle.tran.clam;
+package com.untangle.node.clam;
 
-import com.untangle.tran.virus.VirusTransformImpl;
+import com.untangle.node.virus.VirusNodeImpl;
 
-public class ClamTransform extends VirusTransformImpl
+public class ClamNode extends VirusNodeImpl
 {
     protected int getStrength()
     {
         return 15;
     }
 
-    public ClamTransform()
+    public ClamNode()
     {
         super(new ClamScanner());
     }

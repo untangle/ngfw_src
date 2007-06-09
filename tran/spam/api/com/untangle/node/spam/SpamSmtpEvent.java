@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.spam;
+package com.untangle.node.spam;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -20,8 +20,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import com.untangle.tran.mail.papi.AddressKind;
-import com.untangle.tran.mail.papi.MessageInfo;
+import com.untangle.node.mail.papi.AddressKind;
+import com.untangle.node.mail.papi.MessageInfo;
 import org.hibernate.annotations.Type;
 
 /**
@@ -170,7 +170,7 @@ import org.hibernate.annotations.Type;
          *
          * @return action.
          */
-        @Type(type="com.untangle.tran.spam.SMTPSpamMessageActionUserType")
+        @Type(type="com.untangle.node.spam.SMTPSpamMessageActionUserType")
         public SMTPSpamMessageAction getAction()
         {
             return action;

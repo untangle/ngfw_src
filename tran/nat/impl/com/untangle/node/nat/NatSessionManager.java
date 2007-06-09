@@ -8,18 +8,18 @@
  *
  * $Id$
  */
-package com.untangle.tran.nat;
+package com.untangle.node.nat;
 
 import java.net.InetAddress;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.untangle.mvvm.tapi.IPNewSessionRequest;
-import com.untangle.mvvm.tapi.IPSession;
-import com.untangle.mvvm.tapi.MPipeException;
-import com.untangle.mvvm.tapi.Protocol;
-import com.untangle.mvvm.tapi.TCPSession;
+import com.untangle.uvm.tapi.IPNewSessionRequest;
+import com.untangle.uvm.tapi.IPSession;
+import com.untangle.uvm.tapi.MPipeException;
+import com.untangle.uvm.tapi.Protocol;
+import com.untangle.uvm.tapi.TCPSession;
 import org.apache.log4j.Logger;
 
 class NatSessionManager
@@ -30,11 +30,11 @@ class NatSessionManager
         new ConcurrentHashMap<SessionRedirectKey,SessionRedirect>();
 
     private final Logger logger = Logger.getLogger( this.getClass());
-    NatImpl transform;
+    NatImpl node;
 
-    NatSessionManager( NatImpl transform )
+    NatSessionManager( NatImpl node )
     {
-        this.transform = transform;
+        this.node = node;
     }
 
     void registerSession( IPNewSessionRequest request, Protocol protocol,
@@ -84,7 +84,7 @@ class NatSessionManager
             }
 
             /* Cleanup the redirect */
-            sessionRedirect.cleanup( transform );
+            sessionRedirect.cleanup( node );
         }
     }
 
@@ -127,7 +127,7 @@ class NatSessionManager
         // logger.debug( "Session redirect match: " + redirect );
 
         /* Apply the redirect to the request */
-        redirect.redirect( request, transform );
+        redirect.redirect( request, node );
 
         return true;
     }
@@ -235,17 +235,17 @@ class SessionRedirect
     }
 
     /* XXX I think this function is no longer used */
-    synchronized void redirect( IPNewSessionRequest request, NatImpl transform ) throws MPipeException
+    synchronized void redirect( IPNewSessionRequest request, NatImpl node ) throws MPipeException
     {
         NatAttachment attachment = (NatAttachment)request.attachment();
 
-        if ( isExpired ) throw new MPipeException( transform.getNatMPipe(), "Expired redirect" );
+        if ( isExpired ) throw new MPipeException( node.getNatMPipe(), "Expired redirect" );
 
         /* Have to take this off the list, if it is reserved */
         if ( reservedPort > 0 ) {
             if ( attachment.releasePort() != 0 ) {
                 /* This will be cleaned up when the session is cleaned up */
-                throw new MPipeException( transform.getNatMPipe(), "Session is already using a NAT port" );
+                throw new MPipeException( node.getNatMPipe(), "Session is already using a NAT port" );
             }
         }
 
@@ -281,10 +281,10 @@ class SessionRedirect
         return "SessionRedirect| " + clientAddr + ":" + clientPort + "/" + serverAddr + ":" + serverPort;
     }
 
-    synchronized void cleanup( NatImpl transform )
+    synchronized void cleanup( NatImpl node )
     {
         if ( reservedPort > 0 ) {
-            transform.getHandler().releasePort( key.protocol, reservedPort );
+            node.getHandler().releasePort( key.protocol, reservedPort );
         }
 
         reservedPort = 0;

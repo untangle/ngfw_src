@@ -9,10 +9,10 @@
  * $Id$
  */
 
-package com.untangle.tran.openvpn;
+package com.untangle.node.openvpn;
 
-import com.untangle.mvvm.logging.RepositoryDesc;
-import com.untangle.mvvm.logging.SimpleEventFilter;
+import com.untangle.uvm.logging.RepositoryDesc;
+import com.untangle.uvm.logging.SimpleEventFilter;
 
 public class ClientConnectEventAllFilter
     implements SimpleEventFilter<ClientConnectEvent> {

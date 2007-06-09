@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.openvpn;
+package com.untangle.node.openvpn;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -31,14 +31,14 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.mvvm.MvvmLocalContext;
-import com.untangle.mvvm.logging.EventLogger;
-import com.untangle.mvvm.logging.EventLoggerFactory;
-import com.untangle.mvvm.logging.EventRepository;
-import com.untangle.mvvm.logging.RepositoryDesc;
-import com.untangle.mvvm.tran.IPaddr;
-import com.untangle.mvvm.tran.TransformStats;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.UvmLocalContext;
+import com.untangle.uvm.logging.EventLogger;
+import com.untangle.uvm.logging.EventLoggerFactory;
+import com.untangle.uvm.logging.EventRepository;
+import com.untangle.uvm.logging.RepositoryDesc;
+import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.NodeStats;
 import org.apache.log4j.Logger;
 
 
@@ -103,7 +103,7 @@ class OpenVpnMonitor implements Runnable
 
     private List<ClientDistributionEvent> clientDistributionList = new LinkedList<ClientDistributionEvent>();
 
-    private final VpnTransformImpl transform;
+    private final VpnNodeImpl node;
 
     /* The thread the monitor is running on */
     private Thread thread = null;
@@ -114,20 +114,20 @@ class OpenVpnMonitor implements Runnable
     /* Whether or not openvpn is started */
     private volatile boolean isEnabled = false;
 
-    private final MvvmLocalContext localContext;
+    private final UvmLocalContext localContext;
 
-    OpenVpnMonitor( VpnTransformImpl transform )
+    OpenVpnMonitor( VpnNodeImpl node )
     {
-        this.vpnStatsDistLogger = EventLoggerFactory.factory().getEventLogger(transform.getTransformContext());
-        this.clientConnectLogger = EventLoggerFactory.factory().getEventLogger(transform.getTransformContext());
-        this.clientDistLogger = EventLoggerFactory.factory().getEventLogger(transform.getTransformContext());
+        this.vpnStatsDistLogger = EventLoggerFactory.factory().getEventLogger(node.getNodeContext());
+        this.clientConnectLogger = EventLoggerFactory.factory().getEventLogger(node.getNodeContext());
+        this.clientDistLogger = EventLoggerFactory.factory().getEventLogger(node.getNodeContext());
         //Add the magical thingies to make UI log reading from cache happen
         clientConnectLogger.addEventRepository(new AllEventsCache(clientConnectLogger));//For "all" events
         clientConnectLogger.addEventRepository(new ActiveEventCache(clientConnectLogger));//For "open" events
         clientConnectLogger.addSimpleEventFilter(new ClientConnectEventAllFilter());//For "closed" events
 
-        this.localContext = MvvmContextFactory.context();
-        this.transform = transform;
+        this.localContext = UvmContextFactory.context();
+        this.node = node;
     }
 
     /**
@@ -185,7 +185,7 @@ class OpenVpnMonitor implements Runnable
                 logger.info( "openvpn monitor was interrupted" );
             }
 
-            /* Check if the transform is still running */
+            /* Check if the node is still running */
             if ( !isAlive ) break;
 
             logClientDistributionEvents();
@@ -216,7 +216,7 @@ class OpenVpnMonitor implements Runnable
                 }
             }
 
-            /* Check if the transform is still running */
+            /* Check if the node is still running */
             if ( !isAlive ) break;
         }
 
@@ -292,7 +292,7 @@ class OpenVpnMonitor implements Runnable
         }
     }
 
-    TransformStats updateStats( TransformStats stats )
+    NodeStats updateStats( NodeStats stats )
     {
         BufferedReader in = null;
         long rxBytes  = stats.t2sBytes();
@@ -464,7 +464,7 @@ class OpenVpnMonitor implements Runnable
 
         for ( Stats stats : statusMap.values()) {
             if ( stats.isNew ) {
-                transform.incrementCount( Constants.CONNECT_COUNTER );
+                node.incrementCount( Constants.CONNECT_COUNTER );
 
                 stats.isNew = false;
             }

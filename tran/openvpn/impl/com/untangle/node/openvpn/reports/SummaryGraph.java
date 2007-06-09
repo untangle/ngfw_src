@@ -9,14 +9,14 @@
  * $Id$
  */
 
-package com.untangle.tran.openvpn.reports;
+package com.untangle.node.openvpn.reports;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.sql.*;
 import java.util.*;
 
-import com.untangle.mvvm.reporting.*;
+import com.untangle.uvm.reporting.*;
 import net.sf.jasperreports.engine.JRScriptletException;
 import org.jfree.chart.*;
 import org.jfree.chart.plot.*;

@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.papi.quarantine;
+package com.untangle.node.mail.papi.quarantine;
 
 /**
  * Base-interface for Admin and User views
@@ -24,7 +24,7 @@ public interface QuarantineManipulation {
      *
      * @param account the email address in question
      * @param doomedMails the
-     *        {@link com.untangle.tran.mail.papi.quarantine.InboxRecord#getMailID IDs}
+     *        {@link com.untangle.node.mail.papi.quarantine.InboxRecord#getMailID IDs}
      *        of the message(s) to be deleted.
      *
      * @return the contents of the inbox <i>after</i> the purge operation
@@ -47,7 +47,7 @@ public interface QuarantineManipulation {
      *
      * @param account the email address in question
      * @param rescuedMails the
-     *        {@link com.untangle.tran.mail.papi.quarantine.InboxRecord#getMailID IDs}
+     *        {@link com.untangle.node.mail.papi.quarantine.InboxRecord#getMailID IDs}
      *        of the message(s) to be rescued.
      *
      * @return the contents of the inbox <i>after</i> the rescue operation

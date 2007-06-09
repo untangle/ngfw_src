@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.impl.pop;
+package com.untangle.node.mail.impl.pop;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,28 +22,28 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.mvvm.tapi.TCPSession;
-import com.untangle.mvvm.tapi.event.TCPStreamer;
-import com.untangle.tran.mail.PopCasing;
-import com.untangle.tran.mail.papi.ByteBufferByteStuffer;
-import com.untangle.tran.mail.papi.DoNotCareChunkT;
-import com.untangle.tran.mail.papi.DoNotCareT;
-import com.untangle.tran.mail.papi.MIMEMessageT;
-import com.untangle.tran.mail.papi.MIMEMessageTrickleT;
-import com.untangle.tran.mail.papi.pop.PopCommand;
-import com.untangle.tran.mail.papi.pop.PopCommandMore;
-import com.untangle.tran.mail.papi.pop.PopReply;
-import com.untangle.tran.mail.papi.pop.PopReplyMore;
-import com.untangle.tran.mime.MIMEMessage;
-import com.untangle.tran.token.AbstractUnparser;
-import com.untangle.tran.token.Chunk;
-import com.untangle.tran.token.EndMarker;
-import com.untangle.tran.token.Token;
-import com.untangle.tran.token.UnparseException;
-import com.untangle.tran.token.UnparseResult;
-import com.untangle.tran.util.AsciiCharBuffer;
-import com.untangle.tran.util.TempFileFactory;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.uvm.tapi.event.TCPStreamer;
+import com.untangle.node.mail.PopCasing;
+import com.untangle.node.mail.papi.ByteBufferByteStuffer;
+import com.untangle.node.mail.papi.DoNotCareChunkT;
+import com.untangle.node.mail.papi.DoNotCareT;
+import com.untangle.node.mail.papi.MIMEMessageT;
+import com.untangle.node.mail.papi.MIMEMessageTrickleT;
+import com.untangle.node.mail.papi.pop.PopCommand;
+import com.untangle.node.mail.papi.pop.PopCommandMore;
+import com.untangle.node.mail.papi.pop.PopReply;
+import com.untangle.node.mail.papi.pop.PopReplyMore;
+import com.untangle.node.mime.MIMEMessage;
+import com.untangle.node.token.AbstractUnparser;
+import com.untangle.node.token.Chunk;
+import com.untangle.node.token.EndMarker;
+import com.untangle.node.token.Token;
+import com.untangle.node.token.UnparseException;
+import com.untangle.node.token.UnparseResult;
+import com.untangle.node.util.AsciiCharBuffer;
+import com.untangle.node.util.TempFileFactory;
 import org.apache.log4j.Logger;
 
 public class PopUnparser extends AbstractUnparser
@@ -67,7 +67,7 @@ public class PopUnparser extends AbstractUnparser
 
         zMsgDataReply = null;
         zByteStuffer = null;
-        zTempFactory = new TempFileFactory(MvvmContextFactory.context().pipelineFoundry()
+        zTempFactory = new TempFileFactory(UvmContextFactory.context().pipelineFoundry()
                                            .getPipeline(session.id()));
     }
 

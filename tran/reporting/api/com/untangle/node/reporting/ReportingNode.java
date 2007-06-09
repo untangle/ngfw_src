@@ -9,11 +9,11 @@
  * $Id$
  */
 
-package com.untangle.tran.reporting;
+package com.untangle.node.reporting;
 
-import com.untangle.mvvm.tran.Transform;
+import com.untangle.uvm.node.Node;
 
-public interface ReportingTransform extends Transform
+public interface ReportingNode extends Node
 {
     public void setReportingSettings(ReportingSettings settings);
     public ReportingSettings getReportingSettings();

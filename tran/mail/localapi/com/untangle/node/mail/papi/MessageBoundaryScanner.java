@@ -9,13 +9,13 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.papi;
-import static com.untangle.tran.util.Ascii.*;
-import static com.untangle.tran.util.BufferUtil.*;
-import static com.untangle.tran.util.ASCIIUtil.*;
+package com.untangle.node.mail.papi;
+import static com.untangle.node.util.Ascii.*;
+import static com.untangle.node.util.BufferUtil.*;
+import static com.untangle.node.util.ASCIIUtil.*;
 import java.nio.*;
 
-import com.untangle.tran.mime.*;
+import com.untangle.node.mime.*;
 import org.apache.log4j.Logger;
 
 

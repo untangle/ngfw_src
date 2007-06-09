@@ -8,12 +8,12 @@
  *
  * $Id$
  */
-package com.untangle.tran.mail.papi.imap;
-import static com.untangle.tran.util.Ascii.*;
-import static com.untangle.tran.util.ASCIIUtil.*;
+package com.untangle.node.mail.papi.imap;
+import static com.untangle.node.util.Ascii.*;
+import static com.untangle.node.util.ASCIIUtil.*;
 import java.nio.ByteBuffer;
 
-import com.untangle.tran.util.BBTokenizer;
+import com.untangle.node.util.BBTokenizer;
 
 /**
  * Class to tokenize a chain of ByteBuffers.  Does

@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.clamphish;
+package com.untangle.node.clamphish;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -19,10 +19,10 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import com.untangle.mvvm.logging.LogEvent;
-import com.untangle.mvvm.logging.SyslogBuilder;
-import com.untangle.mvvm.logging.SyslogPriority;
-import com.untangle.tran.http.RequestLine;
+import com.untangle.uvm.logging.LogEvent;
+import com.untangle.uvm.logging.SyslogBuilder;
+import com.untangle.uvm.logging.SyslogPriority;
+import com.untangle.node.http.RequestLine;
 import org.hibernate.annotations.Type;
 
 /**
@@ -107,7 +107,7 @@ import org.hibernate.annotations.Type;
          *
          * @return the action.
          */
-        @Type(type="com.untangle.tran.clamphish.ActionUserType")
+        @Type(type="com.untangle.node.clamphish.ActionUserType")
         public Action getAction()
         {
             return action;

@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.test;
+package com.untangle.node.test;
 
 import java.io.Serializable;
 import javax.persistence.CascadeType;
@@ -23,11 +23,11 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import com.untangle.mvvm.security.Tid;
+import com.untangle.uvm.security.Tid;
 import org.hibernate.annotations.Type;
 
 /**
- * Settings for the Test Transform.
+ * Settings for the Test Node.
  *
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
@@ -79,7 +79,7 @@ public class TestSettings implements Serializable
     }
 
     /**
-     * Transform id for these settings.
+     * Node id for these settings.
      *
      * @return tid for these settings
      */
@@ -100,7 +100,7 @@ public class TestSettings implements Serializable
      *
      * @return mode.
      */
-    @Type(type="com.untangle.tran.test.ModeUserType")
+    @Type(type="com.untangle.node.test.ModeUserType")
     public Mode getMode()
     {
         return mode;

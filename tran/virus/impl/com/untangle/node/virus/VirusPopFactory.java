@@ -8,29 +8,29 @@
  *
  * $Id$
  */
-package com.untangle.tran.virus;
+package com.untangle.node.virus;
 
-import com.untangle.mvvm.tapi.TCPNewSessionRequest;
-import com.untangle.mvvm.tapi.TCPSession;
-import com.untangle.tran.mail.papi.MailExport;
-import com.untangle.tran.mail.papi.MailExportFactory;
-import com.untangle.tran.token.TokenHandler;
-import com.untangle.tran.token.TokenHandlerFactory;
+import com.untangle.uvm.tapi.TCPNewSessionRequest;
+import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.node.mail.papi.MailExport;
+import com.untangle.node.mail.papi.MailExportFactory;
+import com.untangle.node.token.TokenHandler;
+import com.untangle.node.token.TokenHandlerFactory;
 
 public class VirusPopFactory implements TokenHandlerFactory
 {
-    private final VirusTransformImpl transform;
+    private final VirusNodeImpl node;
     private final MailExport zMExport;
 
-    VirusPopFactory(VirusTransformImpl transform)
+    VirusPopFactory(VirusNodeImpl node)
     {
-        this.transform = transform;
+        this.node = node;
         zMExport = MailExportFactory.factory().getExport();
     }
 
     public TokenHandler tokenHandler(TCPSession session)
     {
-        return new VirusPopHandler(session, transform, zMExport);
+        return new VirusPopHandler(session, node, zMExport);
     }
 
     public void handleNewSessionRequest(TCPNewSessionRequest tsr)

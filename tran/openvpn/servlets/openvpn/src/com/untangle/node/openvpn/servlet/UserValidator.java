@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.openvpn.servlet;
+package com.untangle.node.openvpn.servlet;
 
 class UserValidator
 {

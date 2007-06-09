@@ -8,12 +8,12 @@
  *
  * $Id$
  */
-package com.untangle.tran.protofilter;
+package com.untangle.node.protofilter;
 
-import com.untangle.mvvm.logging.EventManager;
-import com.untangle.mvvm.tran.Transform;
+import com.untangle.uvm.logging.EventManager;
+import com.untangle.uvm.node.Node;
 
-public interface ProtoFilter extends Transform
+public interface ProtoFilter extends Node
 {
     ProtoFilterSettings getProtoFilterSettings();
     void setProtoFilterSettings(ProtoFilterSettings settings);

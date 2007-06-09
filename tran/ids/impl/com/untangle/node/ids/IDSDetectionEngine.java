@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.ids;
+package com.untangle.node.ids;
 
 import java.net.InetAddress;
 import java.nio.*;
@@ -20,10 +20,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.untangle.mvvm.tapi.*;
-import com.untangle.mvvm.tapi.event.*;
-import com.untangle.mvvm.tran.ParseException;
-import com.untangle.mvvm.tran.Transform;
+import com.untangle.uvm.tapi.*;
+import com.untangle.uvm.tapi.event.*;
+import com.untangle.uvm.node.ParseException;
+import com.untangle.uvm.node.Node;
 import org.apache.log4j.Logger;
 
 public class IDSDetectionEngine {
@@ -35,14 +35,14 @@ public class IDSDetectionEngine {
     // Any chunk that takes this long gets a warning
     public static final long WARN_ELAPSED = 20;
 
-    private static final int SCAN_COUNTER  = Transform.GENERIC_0_COUNTER;
+    private static final int SCAN_COUNTER  = Node.GENERIC_0_COUNTER;
 
     private int             maxChunks   = 8;
     private IDSSettings     settings    = null;
     private Map<String,RuleClassification> classifications = null;
 
     private IDSRuleManager   manager;
-    private IDSTransformImpl transform;
+    private IDSNodeImpl node;
 
     // We can't just attach the session info to a session, we have to attach it to the 'pipeline', since
     // we have to access it from multiple pipes (octet & http).  So we keep the registry here.
@@ -62,9 +62,9 @@ public class IDSDetectionEngine {
       return instance;
       }*/
 
-    public IDSDetectionEngine(IDSTransformImpl transform) {
-        this.transform = transform;
-        manager = new IDSRuleManager(transform);
+    public IDSDetectionEngine(IDSNodeImpl node) {
+        this.node = node;
+        manager = new IDSRuleManager(node);
         //The Goggles! They do nothing!
         /*String test = "alert tcp 10.0.0.40-10.0.0.101 any -> 66.35.250.0/24 80 (content:\"slashdot\"; msg:\"OMG teH SLASHd0t\";)";
           String tesT = "alert tcp 10.0.0.1/24 any -> any any (content: \"spOOns|FF FF FF FF|spoons\"; msg:\"Matched binary FF FF FF and spoons\"; nocase;)";
@@ -106,7 +106,7 @@ public class IDSDetectionEngine {
     }
 
     public void updateUICount(int counter) {
-        transform.incrementCount(counter);
+        node.incrementCount(counter);
     }
 
     public void onReconfigure() {
@@ -279,7 +279,7 @@ public class IDSDetectionEngine {
                 result = info.processC2SSignatures();
 
             if (!result) {
-                transform.statisticManager.incrDNC();
+                node.statisticManager.incrDNC();
                 if (stats.s2tChunks() > maxChunks || stats.c2tChunks() > maxChunks) {
                     session.release();
                     // Free up storage immediately in case session stays around a long time.

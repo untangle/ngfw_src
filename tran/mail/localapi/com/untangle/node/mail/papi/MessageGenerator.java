@@ -9,18 +9,18 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.papi;
+package com.untangle.node.mail.papi;
 
-import static com.untangle.tran.mime.HeaderNames.*;
-import static com.untangle.tran.util.Ascii.*;
+import static com.untangle.node.mime.HeaderNames.*;
+import static com.untangle.node.util.Ascii.*;
 
 import java.util.*;
 
-import com.untangle.mvvm.tran.Template;
-import com.untangle.mvvm.tran.TemplateValues;
-import com.untangle.mvvm.tran.TemplateValuesChain;
-import com.untangle.tran.mime.*;
-import com.untangle.tran.util.*;
+import com.untangle.uvm.node.Template;
+import com.untangle.uvm.node.TemplateValues;
+import com.untangle.uvm.node.TemplateValuesChain;
+import com.untangle.node.mime.*;
+import com.untangle.node.util.*;
 import org.apache.log4j.Logger;
 
 /**
@@ -29,7 +29,7 @@ import org.apache.log4j.Logger;
  * attaching a "cause" message to the net-new message.  Takes
  * care of details like "Date" and "MIME" headers.
  * <br><br>
- * This class uses the {@link #com.untangle.tran.util.Template Template}
+ * This class uses the {@link #com.untangle.node.util.Template Template}
  * class internally.  You can create templates which derefference
  * keys found in any number of TemplateValues, passed-into the
  * {@link #wrap wrap method}

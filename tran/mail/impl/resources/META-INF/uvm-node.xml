@@ -11,11 +11,11 @@ not disclose such Confidential Information.
 $Id$
 -->
 
-<mvvm-transform>
-  <transform-desc name="mail-casing"
+<uvm-node>
+  <node-desc name="mail-casing"
                   display-name="Email"
-                  classname="com.untangle.tran.mail.MailTransformImpl"
-                  gui-classname="com.untangle.tran.mail.gui.MCasingJPanel"
+                  classname="com.untangle.node.mail.MailNodeImpl"
+                  gui-classname="com.untangle.node.mail.gui.MCasingJPanel"
                   single-instance="true"/>
   <export>mail-casing-localapi.jar</export>
-</mvvm-transform>
+</uvm-node>

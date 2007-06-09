@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.virus;
+package com.untangle.node.virus;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -20,8 +20,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import com.untangle.mvvm.tran.PipelineEndpoints;
-import com.untangle.tran.mail.papi.MessageInfo;
+import com.untangle.uvm.node.PipelineEndpoints;
+import com.untangle.node.mail.papi.MessageInfo;
 import org.hibernate.annotations.Columns;
 import org.hibernate.annotations.Type;
 
@@ -133,7 +133,7 @@ import org.hibernate.annotations.Type;
             @Column(name="virus_name"),
             @Column(name="virus_cleaned")
         })
-        @Type(type="com.untangle.tran.virus.VirusScannerResultUserType")
+        @Type(type="com.untangle.node.virus.VirusScannerResultUserType")
         public VirusScannerResult getResult()
         {
             return result;
@@ -149,7 +149,7 @@ import org.hibernate.annotations.Type;
          *
          * @return action.
          */
-        @Type(type="com.untangle.tran.virus.VirusMessageActionUserType")
+        @Type(type="com.untangle.node.virus.VirusMessageActionUserType")
         public VirusMessageAction getAction()
         {
             return action;

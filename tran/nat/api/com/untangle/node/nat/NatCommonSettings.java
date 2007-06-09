@@ -9,22 +9,22 @@
  * $Id$
  */
 
-package com.untangle.tran.nat;
+package com.untangle.node.nat;
 
 import java.io.Serializable;
 
 import java.util.List;
 
-import com.untangle.mvvm.tran.Validatable;
+import com.untangle.uvm.node.Validatable;
 
-import com.untangle.mvvm.networking.BasicNetworkSettings;
-import com.untangle.mvvm.networking.ServicesSettings;
-import com.untangle.mvvm.networking.RedirectRule;
-import com.untangle.mvvm.networking.SetupState;
+import com.untangle.uvm.networking.BasicNetworkSettings;
+import com.untangle.uvm.networking.ServicesSettings;
+import com.untangle.uvm.networking.RedirectRule;
+import com.untangle.uvm.networking.SetupState;
 
-import com.untangle.mvvm.tran.HostName;
-import com.untangle.mvvm.tran.IPaddr;
-import com.untangle.mvvm.tran.firewall.ip.IPDBMatcher;
+import com.untangle.uvm.node.HostName;
+import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.firewall.ip.IPDBMatcher;
 
 public interface NatCommonSettings extends ServicesSettings, Validatable
 {

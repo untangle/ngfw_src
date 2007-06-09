@@ -8,16 +8,16 @@
  *
  * $Id$
  */
-package com.untangle.tran.test;
+package com.untangle.node.test;
 
 import java.io.*;
 import java.nio.*;
 
-import com.untangle.mvvm.tapi.*;
-import com.untangle.mvvm.tapi.event.*;
-import com.untangle.mvvm.tran.Transform;
-import com.untangle.mvvm.util.MetaEnv;
-import com.untangle.mvvm.util.SessionUtil;
+import com.untangle.uvm.tapi.*;
+import com.untangle.uvm.tapi.event.*;
+import com.untangle.uvm.node.Node;
+import com.untangle.uvm.util.MetaEnv;
+import com.untangle.uvm.util.SessionUtil;
 import org.apache.log4j.Logger;
 
 public class EventHandler extends AbstractEventHandler
@@ -28,9 +28,9 @@ public class EventHandler extends AbstractEventHandler
 
     private TestSettings settings;
 
-    public EventHandler(Transform transform, TestSettings settings)
+    public EventHandler(Node node, TestSettings settings)
     {
-        super(transform);
+        super(node);
 
         if (settings == null) {
             throw new IllegalArgumentException("No settings");

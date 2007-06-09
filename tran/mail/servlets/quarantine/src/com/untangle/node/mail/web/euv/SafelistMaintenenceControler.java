@@ -8,21 +8,21 @@
  *
  * $Id$
  */
-package com.untangle.tran.mail.web.euv;
+package com.untangle.node.mail.web.euv;
 
 import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.untangle.tran.mail.papi.quarantine.InboxIndex;
-import com.untangle.tran.mail.papi.quarantine.QuarantineUserView;
-import com.untangle.tran.mail.papi.safelist.NoSuchSafelistException;
-import com.untangle.tran.mail.papi.safelist.SafelistEndUserView;
-import com.untangle.tran.mail.web.euv.tags.HasSafelistTag;
-import com.untangle.tran.mail.web.euv.tags.MessagesSetTag;
-import com.untangle.tran.mail.web.euv.tags.SafelistListTag;
-import com.untangle.tran.util.Pair;
+import com.untangle.node.mail.papi.quarantine.InboxIndex;
+import com.untangle.node.mail.papi.quarantine.QuarantineUserView;
+import com.untangle.node.mail.papi.safelist.NoSuchSafelistException;
+import com.untangle.node.mail.papi.safelist.SafelistEndUserView;
+import com.untangle.node.mail.web.euv.tags.HasSafelistTag;
+import com.untangle.node.mail.web.euv.tags.MessagesSetTag;
+import com.untangle.node.mail.web.euv.tags.SafelistListTag;
+import com.untangle.node.util.Pair;
 
 /**
  * Controler used for Safelist self-service maintenence

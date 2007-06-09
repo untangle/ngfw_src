@@ -8,7 +8,7 @@
  *
  * $Id$
  */
-package com.untangle.tran.nat;
+package com.untangle.node.nat;
 
 import java.util.Collections;
 import java.util.List;
@@ -17,17 +17,17 @@ import java.util.Iterator;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.mvvm.tran.IPaddr;
+import com.untangle.uvm.node.IPaddr;
 
-import com.untangle.mvvm.networking.IPNetwork;
-import com.untangle.mvvm.networking.NetworkUtil;
-import com.untangle.mvvm.networking.RedirectRule;
+import com.untangle.uvm.networking.IPNetwork;
+import com.untangle.uvm.networking.NetworkUtil;
+import com.untangle.uvm.networking.RedirectRule;
 
-import com.untangle.mvvm.tran.firewall.intf.IntfDBMatcher;
-import com.untangle.mvvm.tran.firewall.intf.IntfMatcherFactory;
-import com.untangle.mvvm.tran.firewall.ip.IPMatcherFactory;
-import com.untangle.mvvm.tran.firewall.ip.IPDBMatcher;
-import com.untangle.mvvm.tran.firewall.port.PortMatcherFactory;
+import com.untangle.uvm.node.firewall.intf.IntfDBMatcher;
+import com.untangle.uvm.node.firewall.intf.IntfMatcherFactory;
+import com.untangle.uvm.node.firewall.ip.IPMatcherFactory;
+import com.untangle.uvm.node.firewall.ip.IPDBMatcher;
+import com.untangle.uvm.node.firewall.port.PortMatcherFactory;
 
 class NatUtil
 {

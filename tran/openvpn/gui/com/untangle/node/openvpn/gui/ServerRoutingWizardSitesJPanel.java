@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.openvpn.gui;
+package com.untangle.node.openvpn.gui;
 
 import java.awt.Dialog;
 import java.util.*;
@@ -19,17 +19,17 @@ import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.dialogs.*;
 import com.untangle.gui.widgets.editTable.*;
 import com.untangle.gui.widgets.wizard.*;
-import com.untangle.mvvm.security.*;
-import com.untangle.mvvm.tran.*;
-import com.untangle.tran.openvpn.*;
+import com.untangle.uvm.security.*;
+import com.untangle.uvm.node.*;
+import com.untangle.node.openvpn.*;
 
 public class ServerRoutingWizardSitesJPanel extends MWizardPageJPanel {
 
 
-    private VpnTransform vpnTransform;
+    private VpnNode vpnNode;
 
-    public ServerRoutingWizardSitesJPanel(VpnTransform vpnTransform) {
-        this.vpnTransform = vpnTransform;
+    public ServerRoutingWizardSitesJPanel(VpnNode vpnNode) {
+        this.vpnNode = vpnNode;
         initComponents();
         ((MEditTableJPanel)configSiteToSiteJPanel).setShowDetailJPanelEnabled(false);
         ((MEditTableJPanel)configSiteToSiteJPanel).setInstantRemove(true);
@@ -40,7 +40,7 @@ public class ServerRoutingWizardSitesJPanel extends MWizardPageJPanel {
         try{
             SwingUtilities.invokeAndWait( new Runnable(){ public void run() {
                 try{
-                    GroupList groupList = vpnTransform.getAddressGroups();
+                    GroupList groupList = vpnNode.getAddressGroups();
                     ((TableModelSiteToSite)((MEditTableJPanel)configSiteToSiteJPanel).getTableModel()).updateGroupModel( (List<VpnGroup>) groupList.getGroupList() );
                     ((MEditTableJPanel)configSiteToSiteJPanel).getTableModel().clearAllRows();
                 }
@@ -97,8 +97,8 @@ public class ServerRoutingWizardSitesJPanel extends MWizardPageJPanel {
             ServerRoutingWizard.getInfiniteProgressJComponent().startLater("Adding VPN Sites...");
             try{
                 SiteList siteList = new SiteList(elemList);
-                vpnTransform.setSites(siteList);
-                vpnTransform.completeConfig();
+                vpnNode.setSites(siteList);
+                vpnNode.completeConfig();
 
                 ServerRoutingWizard.getInfiniteProgressJComponent().stopLater(1500l);
                 ServerRoutingWizard.getInfiniteProgressJComponent().startLater("Finished Adding");

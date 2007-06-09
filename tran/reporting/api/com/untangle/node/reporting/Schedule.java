@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.reporting;
+package com.untangle.node.reporting;
 
 import java.io.Serializable;
 import java.util.Calendar;
@@ -30,7 +30,7 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.IndexColumn;
 
 /**
- * Schedule for the Reporting Transform.
+ * Schedule for the Reporting Node.
  *
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0

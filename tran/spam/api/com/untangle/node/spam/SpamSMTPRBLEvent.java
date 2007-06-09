@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.spam;
+package com.untangle.node.spam;
 
 import java.net.InetAddress;
 import javax.persistence.Column;
@@ -17,13 +17,13 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import com.untangle.mvvm.logging.PipelineEvent;
-import com.untangle.mvvm.logging.SyslogBuilder;
-import com.untangle.mvvm.logging.SyslogPriority;
-import com.untangle.mvvm.tran.HostName;
-import com.untangle.mvvm.tran.IPaddr;
-import com.untangle.mvvm.tran.ParseException;
-import com.untangle.mvvm.tran.PipelineEndpoints;
+import com.untangle.uvm.logging.PipelineEvent;
+import com.untangle.uvm.logging.SyslogBuilder;
+import com.untangle.uvm.logging.SyslogPriority;
+import com.untangle.uvm.node.HostName;
+import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.ParseException;
+import com.untangle.uvm.node.PipelineEndpoints;
 import org.hibernate.annotations.Type;
 
 /**
@@ -71,7 +71,7 @@ import org.hibernate.annotations.Type;
          * @return hostname of RBL service.
          */
         @Column(nullable=false)
-        @Type(type="com.untangle.mvvm.type.HostNameUserType")
+        @Type(type="com.untangle.uvm.type.HostNameUserType")
         public HostName getHostname() {
             return hostname;
         }
@@ -87,7 +87,7 @@ import org.hibernate.annotations.Type;
          * @return IP address of mail server listed on RBL service.
          */
         @Column(nullable=false)
-        @Type(type="com.untangle.mvvm.type.IPaddrUserType")
+        @Type(type="com.untangle.uvm.type.IPaddrUserType")
         public IPaddr getIPAddr() {
             return ipAddr;
         }

@@ -9,12 +9,12 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.impl.quarantine;
+package com.untangle.node.mail.impl.quarantine;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 
-import com.untangle.tran.util.Pair;
+import com.untangle.node.util.Pair;
 import org.apache.log4j.Logger;
 import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;

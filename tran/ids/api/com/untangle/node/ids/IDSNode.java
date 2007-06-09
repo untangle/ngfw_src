@@ -9,12 +9,12 @@
  * $Id$
  */
 
-package com.untangle.tran.ids;
+package com.untangle.node.ids;
 
-import com.untangle.mvvm.logging.EventManager;
-import com.untangle.mvvm.tran.Transform;
+import com.untangle.uvm.logging.EventManager;
+import com.untangle.uvm.node.Node;
 
-public interface IDSTransform extends Transform {
+public interface IDSNode extends Node {
     IDSSettings getIDSSettings();
     void setIDSSettings(IDSSettings settings);
     EventManager<IDSLogEvent> getEventManager();

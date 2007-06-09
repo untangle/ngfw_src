@@ -9,11 +9,11 @@
  * $Id$
  */
 
-package com.untangle.tran.ftp;
+package com.untangle.node.ftp;
 
-import com.untangle.tran.token.Casing;
-import com.untangle.tran.token.CasingFactory;
-import com.untangle.mvvm.tapi.TCPSession;
+import com.untangle.node.token.Casing;
+import com.untangle.node.token.CasingFactory;
+import com.untangle.uvm.tapi.TCPSession;
 
 
 class FtpCasingFactory implements CasingFactory

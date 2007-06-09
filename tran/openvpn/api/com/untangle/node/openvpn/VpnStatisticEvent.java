@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.openvpn;
+package com.untangle.node.openvpn;
 
 import java.util.Date;
 import javax.persistence.Column;
@@ -19,9 +19,9 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
-import com.untangle.mvvm.logging.StatisticEvent;
-import com.untangle.mvvm.logging.SyslogBuilder;
-import com.untangle.mvvm.logging.SyslogPriority;
+import com.untangle.uvm.logging.StatisticEvent;
+import com.untangle.uvm.logging.SyslogBuilder;
+import com.untangle.uvm.logging.SyslogPriority;
 
 /**
  * Log event for a Nat statistics.

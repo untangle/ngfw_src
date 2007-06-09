@@ -9,9 +9,9 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.papi;
+package com.untangle.node.mail.papi;
 
-import static com.untangle.tran.util.Ascii.*;
+import static com.untangle.node.util.Ascii.*;
 
 import java.nio.*;
 import java.util.*;

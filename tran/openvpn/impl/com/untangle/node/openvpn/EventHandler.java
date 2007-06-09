@@ -9,21 +9,21 @@
  * $Id$
  */
 
-package com.untangle.tran.openvpn;
+package com.untangle.node.openvpn;
 
 import java.net.InetAddress;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.untangle.mvvm.IntfConstants;
-import com.untangle.mvvm.tapi.AbstractEventHandler;
-import com.untangle.mvvm.tapi.IPNewSessionRequest;
-import com.untangle.mvvm.tapi.MPipeException;
-import com.untangle.mvvm.tapi.event.TCPNewSessionRequestEvent;
-import com.untangle.mvvm.tapi.event.UDPNewSessionRequestEvent;
-import com.untangle.mvvm.tran.Transform;
-import com.untangle.mvvm.tran.firewall.ip.IPMatcher;
-import com.untangle.mvvm.tran.firewall.ip.IPMatcherFactory;
+import com.untangle.uvm.IntfConstants;
+import com.untangle.uvm.tapi.AbstractEventHandler;
+import com.untangle.uvm.tapi.IPNewSessionRequest;
+import com.untangle.uvm.tapi.MPipeException;
+import com.untangle.uvm.tapi.event.TCPNewSessionRequestEvent;
+import com.untangle.uvm.tapi.event.UDPNewSessionRequestEvent;
+import com.untangle.uvm.node.Node;
+import com.untangle.uvm.node.firewall.ip.IPMatcher;
+import com.untangle.uvm.node.firewall.ip.IPMatcherFactory;
 import org.apache.log4j.Logger;
 
 class EventHandler extends AbstractEventHandler
@@ -40,14 +40,14 @@ class EventHandler extends AbstractEventHandler
     private List <IPMatcher> clientAddressList = new LinkedList<IPMatcher>();
     private List <IPMatcher> exportedAddressList = new LinkedList<IPMatcher>();
 
-    /* Firewall Transform */
-    private final VpnTransformImpl transform;
+    /* Firewall Node */
+    private final VpnNodeImpl node;
 
-    EventHandler( VpnTransformImpl transform )
+    EventHandler( VpnNodeImpl node )
     {
-        super(transform);
+        super(node);
 
-        this.transform = transform;
+        this.node = node;
     }
 
     public void handleTCPNewSessionRequest( TCPNewSessionRequestEvent event )
@@ -98,7 +98,7 @@ class EventHandler extends AbstractEventHandler
 
         /* Clients pass all traffic */
         if ( this.isUntanglePlatformClient ) {
-            transform.incrementCount( Constants.PASS_COUNTER );
+            node.incrementCount( Constants.PASS_COUNTER );
             request.release();
 
             return;
@@ -141,11 +141,11 @@ class EventHandler extends AbstractEventHandler
         if ( logger.isDebugEnabled()) {
             logger.debug( "Accepted VPN session: [" + request.id() + "]" );
         }
-        transform.incrementCount( Constants.PASS_COUNTER );
+        node.incrementCount( Constants.PASS_COUNTER );
         request.release();
 
         /* XXX Probably want to create an event */
-        // transform.statisticManager.incrRequest( protocol, request, reject );
+        // node.statisticManager.incrRequest( protocol, request, reject );
     }
 
     private void reject( IPNewSessionRequest request )
@@ -153,14 +153,14 @@ class EventHandler extends AbstractEventHandler
         /* XXX Should this always reject silently */
         request.rejectSilently();
 
-        transform.incrementCount( Constants.BLOCK_COUNTER );
+        node.incrementCount( Constants.BLOCK_COUNTER );
 
         /* XXX Probably want to create an event */
         if ( logger.isDebugEnabled()) {
             logger.debug( "Blocked VPN session: [" + request.id() + "]" );
         }
 
-        // transform.statisticManager.incrRequest( protocol, request, reject );
+        // node.statisticManager.incrRequest( protocol, request, reject );
     }
 
     void configure( VpnSettings settings )

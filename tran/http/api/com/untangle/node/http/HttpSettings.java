@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.http;
+package com.untangle.node.http;
 
 import java.io.Serializable;
 import javax.persistence.CascadeType;

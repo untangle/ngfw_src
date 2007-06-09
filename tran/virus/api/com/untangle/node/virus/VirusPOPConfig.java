@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.virus;
+package com.untangle.node.virus;
 
 import java.io.Serializable;
 import java.io.Serializable;
@@ -26,8 +26,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import com.untangle.tran.mail.papi.smtp.SMTPNotifyAction;
-import com.untangle.tran.mail.papi.smtp.SmtpNotifyMessageGenerator;
+import com.untangle.node.mail.papi.smtp.SMTPNotifyAction;
+import com.untangle.node.mail.papi.smtp.SmtpNotifyMessageGenerator;
 import org.hibernate.annotations.Type;
 
 /**
@@ -67,7 +67,7 @@ public class VirusPOPConfig extends VirusMailConfig implements Serializable
      * @return the action to take if a message is judged to be virus.
      */
     @Column(name="action", nullable=false)
-    @Type(type="com.untangle.tran.virus.VirusMessageActionUserType")
+    @Type(type="com.untangle.node.virus.VirusMessageActionUserType")
     public VirusMessageAction getMsgAction()
     {
         return zMsgAction;

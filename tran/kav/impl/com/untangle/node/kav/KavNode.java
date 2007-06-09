@@ -8,13 +8,13 @@
  *
  * $Id$
  */
-package com.untangle.tran.kav;
+package com.untangle.node.kav;
 
-import com.untangle.tran.virus.VirusTransformImpl;
+import com.untangle.node.virus.VirusNodeImpl;
 
-public class KavTransform extends VirusTransformImpl
+public class KavNode extends VirusNodeImpl
 {
-    public KavTransform()
+    public KavNode()
     {
         super(new KavScanner());
     }

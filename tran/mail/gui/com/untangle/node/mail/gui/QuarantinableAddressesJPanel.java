@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.gui;
+package com.untangle.node.mail.gui;
 
 import java.awt.Insets;
 import java.util.*;
@@ -18,11 +18,11 @@ import javax.swing.event.*;
 import javax.swing.table.*;
 
 import com.untangle.gui.configuration.EmailCompoundSettings;
-import com.untangle.gui.transform.*;
+import com.untangle.gui.node.*;
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.editTable.*;
-import com.untangle.tran.mail.papi.*;
-import com.untangle.tran.mail.papi.quarantine.*;
+import com.untangle.node.mail.papi.*;
+import com.untangle.node.mail.papi.quarantine.*;
 
 public class QuarantinableAddressesJPanel extends MEditTableJPanel{
 
@@ -87,13 +87,13 @@ public class QuarantinableAddressesJPanel extends MEditTableJPanel{
 
             // SAVE SETTINGS //////////
             if( !validateOnly ){
-                QuarantineSettings quarantineSettings = ((MailTransformCompoundSettings)emailCompoundSettings.getMailTransformCompoundSettings()).getQuarantineSettings();
+                QuarantineSettings quarantineSettings = ((MailNodeCompoundSettings)emailCompoundSettings.getMailNodeCompoundSettings()).getQuarantineSettings();
                 quarantineSettings.setAllowedAddressPatterns(elemList);
             }
         }
 
         public Vector<Vector> generateRows(EmailCompoundSettings emailCompoundSettings) {
-            QuarantineSettings quarantineSettings = ((MailTransformCompoundSettings)emailCompoundSettings.getMailTransformCompoundSettings()).getQuarantineSettings();
+            QuarantineSettings quarantineSettings = ((MailNodeCompoundSettings)emailCompoundSettings.getMailNodeCompoundSettings()).getQuarantineSettings();
             List<EmailAddressRule> addressList = (List<EmailAddressRule>) quarantineSettings.getAllowedAddressPatterns();
             Vector<Vector> allRows = new Vector<Vector>(addressList.size());
             Vector tempRow = null;

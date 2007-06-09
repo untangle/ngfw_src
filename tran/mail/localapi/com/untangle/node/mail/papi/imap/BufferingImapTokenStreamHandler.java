@@ -9,15 +9,15 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.papi.imap;
+package com.untangle.node.mail.papi.imap;
 
-import com.untangle.tran.mail.papi.ContinuedMIMEToken;
-import com.untangle.tran.mail.papi.MIMEAccumulator;
-import com.untangle.tran.mail.papi.MessageInfo;
-import com.untangle.tran.mail.papi.MessageTransmissionTimeoutStrategy;
-import com.untangle.tran.mime.MIMEMessage;
-import com.untangle.tran.token.Token;
-import com.untangle.tran.token.TokenResult;
+import com.untangle.node.mail.papi.ContinuedMIMEToken;
+import com.untangle.node.mail.papi.MIMEAccumulator;
+import com.untangle.node.mail.papi.MessageInfo;
+import com.untangle.node.mail.papi.MessageTransmissionTimeoutStrategy;
+import com.untangle.node.mime.MIMEMessage;
+import com.untangle.node.token.Token;
+import com.untangle.node.token.TokenResult;
 import org.apache.log4j.Logger;
 
 /**
@@ -175,7 +175,7 @@ public abstract class BufferingImapTokenStreamHandler
         //Check if it is already too big
         if(m_accumulator.fileSize() > m_maxSize) {
             m_logger.debug("BeginMIMEToken already contains more bytes than " +
-                           "this transform wishes to scan.  Pass it along");
+                           "this node wishes to scan.  Pass it along");
             clearBufferedMessage();
             return new TokenResult(new Token[] { token }, null);
         }
@@ -254,7 +254,7 @@ public abstract class BufferingImapTokenStreamHandler
         m_logger.debug("[handleCompleteMIMEFromServer]");
         clearBufferedMessage();//REdundant, and perhaps an error if it did anything...?!?...
 
-        //We cannot check if it is too big, but the transform subclass should do this anyway.
+        //We cannot check if it is too big, but the node subclass should do this anyway.
         return callHandleMessage(token.getMessage(),
                                  token.getMessageInfo());
     }

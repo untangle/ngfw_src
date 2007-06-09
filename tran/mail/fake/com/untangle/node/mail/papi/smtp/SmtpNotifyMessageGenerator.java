@@ -11,9 +11,9 @@
 
 // Fake
 
-package com.untangle.tran.mail.papi.smtp;
+package com.untangle.node.mail.papi.smtp;
 
-import com.untangle.tran.mail.papi.MessageGenerator;
+import com.untangle.node.mail.papi.MessageGenerator;
 
 public class SmtpNotifyMessageGenerator extends MessageGenerator {
     public SmtpNotifyMessageGenerator() { }

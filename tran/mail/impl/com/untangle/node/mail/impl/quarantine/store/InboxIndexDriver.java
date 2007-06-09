@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.impl.quarantine.store;
+package com.untangle.node.mail.impl.quarantine.store;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -22,11 +22,11 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 
-import com.untangle.tran.mail.papi.quarantine.InboxIndex;
-import com.untangle.tran.mail.papi.quarantine.InboxRecord;
-import com.untangle.tran.mail.papi.quarantine.MailSummary;
-import com.untangle.tran.util.IOUtil;
-import com.untangle.tran.util.Pair;
+import com.untangle.node.mail.papi.quarantine.InboxIndex;
+import com.untangle.node.mail.papi.quarantine.InboxRecord;
+import com.untangle.node.mail.papi.quarantine.MailSummary;
+import com.untangle.node.util.IOUtil;
+import com.untangle.node.util.Pair;
 import org.apache.log4j.Logger;
 
 /**

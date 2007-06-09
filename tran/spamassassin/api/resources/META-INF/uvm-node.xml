@@ -11,11 +11,11 @@ not disclose such Confidential Information.
 $Id$
 -->
 
-<mvvm-transform>
-  <transform-desc name="spamassassin-transform"
+<uvm-node>
+  <node-desc name="spamassassin-node"
                   display-name="Spam Blocker"
-                  classname="com.untangle.tran.spamassassin.SpamAssassinTransform"
-                  gui-classname="com.untangle.tran.spamassassin.gui.MTransformJPanel"
-                  transform-base="spam-base"/>
+                  classname="com.untangle.node.spamassassin.SpamAssassinNode"
+                  gui-classname="com.untangle.node.spamassassin.gui.MNodeJPanel"
+                  node-base="spam-base"/>
   <parent>mail-casing</parent>
-</mvvm-transform>
+</uvm-node>

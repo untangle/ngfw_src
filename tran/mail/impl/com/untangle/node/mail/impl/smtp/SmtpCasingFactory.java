@@ -9,11 +9,11 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.impl.smtp;
+package com.untangle.node.mail.impl.smtp;
 
-import com.untangle.mvvm.tapi.TCPSession;
-import com.untangle.tran.token.Casing;
-import com.untangle.tran.token.CasingFactory;
+import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.node.token.Casing;
+import com.untangle.node.token.CasingFactory;
 
 public class SmtpCasingFactory implements CasingFactory
 {

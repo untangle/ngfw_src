@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.http;
+package com.untangle.node.http;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -17,20 +17,20 @@ import java.nio.ByteBuffer;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.mvvm.tapi.Pipeline;
-import com.untangle.mvvm.tapi.TCPSession;
-import com.untangle.mvvm.tapi.TCPSessionDesc;
-import com.untangle.mvvm.tran.MimeType;
-import com.untangle.tran.token.AbstractParser;
-import com.untangle.tran.token.Chunk;
-import com.untangle.tran.token.EndMarker;
-import com.untangle.tran.token.Header;
-import com.untangle.tran.token.ParseException;
-import com.untangle.tran.token.ParseResult;
-import com.untangle.tran.token.Token;
-import com.untangle.tran.token.TokenStreamer;
-import com.untangle.tran.util.AsciiCharBuffer;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.tapi.Pipeline;
+import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.uvm.tapi.TCPSessionDesc;
+import com.untangle.uvm.node.MimeType;
+import com.untangle.node.token.AbstractParser;
+import com.untangle.node.token.Chunk;
+import com.untangle.node.token.EndMarker;
+import com.untangle.node.token.Header;
+import com.untangle.node.token.ParseException;
+import com.untangle.node.token.ParseResult;
+import com.untangle.node.token.Token;
+import com.untangle.node.token.TokenStreamer;
+import com.untangle.node.util.AsciiCharBuffer;
 import org.apache.log4j.Logger;
 
 public class HttpParser extends AbstractParser
@@ -85,8 +85,8 @@ public class HttpParser extends AbstractParser
     HttpParser(TCPSession session, boolean clientSide, HttpCasing casing)
     {
         super(session, clientSide);
-        HttpTransformImpl transform = casing.getTransform();
-        HttpSettings settings = transform.getHttpSettings();
+        HttpNodeImpl node = casing.getNode();
+        HttpSettings settings = node.getHttpSettings();
         this.maxHeader = settings.getMaxHeaderLength();
         this.blockLongHeaders = settings.getBlockLongHeaders();
         this.maxUri = settings.getMaxUriLength();
@@ -404,7 +404,7 @@ public class HttpParser extends AbstractParser
                             HttpResponseEvent evt = new HttpResponseEvent
                                 (rl, mimeType, lengthCounter);
 
-                            casing.getTransform().log(evt);
+                            casing.getNode().log(evt);
                         }
                     } else {
                         HttpRequestEvent evt = requestLineToken
@@ -417,7 +417,7 @@ public class HttpParser extends AbstractParser
                                         + getSession().pipelineEndpoints());
                         }
 
-                        casing.getTransform().log(evt);
+                        casing.getNode().log(evt);
                     }
 
                     // Free up header storage
@@ -1094,7 +1094,7 @@ public class HttpParser extends AbstractParser
 
     private TokenStreamer endMarkerStreamer()
     {
-        Pipeline pipeline = MvvmContextFactory.context().pipelineFoundry()
+        Pipeline pipeline = UvmContextFactory.context().pipelineFoundry()
             .getPipeline(session.id());
 
         return new TokenStreamer()

@@ -16,15 +16,15 @@ require "#{SRC_HOME}/tran/sigma/package.rb"
 require "#{SRC_HOME}/tran/httpblocker/package.rb"
 require "#{SRC_HOME}/tran/ids/package.rb"
 
-## Base Transforms
+## Base Nodes
 require "#{SRC_HOME}/tran/spam/package.rb"
 require "#{SRC_HOME}/tran/virus/package.rb"
 
-## SPAM based transforms
+## SPAM based nodes
 require "#{SRC_HOME}/tran/clamphish/package.rb"
 require "#{SRC_HOME}/tran/spamassassin/package.rb"
 
-## Virus based transforms
+## Virus based nodes
 require "#{SRC_HOME}/tran/clam/package.rb"
 require "#{SRC_HOME}/tran/hauri/package.rb"
 require "#{SRC_HOME}/tran/kav/package.rb"

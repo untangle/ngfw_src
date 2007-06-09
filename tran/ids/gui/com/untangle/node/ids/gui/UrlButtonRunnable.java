@@ -10,7 +10,7 @@
  */
 
 
-package com.untangle.tran.ids.gui;
+package com.untangle.node.ids.gui;
 import java.awt.Window;
 import java.awt.event.*;
 import java.net.URL;
@@ -20,7 +20,7 @@ import javax.swing.CellEditor;
 
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.dialogs.*;
-import com.untangle.tran.ids.*;
+import com.untangle.node.ids.*;
 
 public class UrlButtonRunnable implements ButtonRunnable, Comparable<UrlButtonRunnable> {
     private String url;

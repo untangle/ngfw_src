@@ -9,14 +9,14 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.papi;
+package com.untangle.node.mail.papi;
 
 
-import com.untangle.mvvm.tapi.ProxyGenerator;
+import com.untangle.uvm.tapi.ProxyGenerator;
 import org.apache.log4j.Logger;
 
 /**
- * Factory for the exported MailTransform interface.
+ * Factory for the exported MailNode interface.
  *
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0

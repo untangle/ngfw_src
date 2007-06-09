@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mvvm-transform>
-  <transform-desc name="reporting-transform"
+<uvm-node>
+  <node-desc name="reporting-node"
                   display-name="Untangle Reports"
-                  classname="com.untangle.tran.reporting.ReportingTransformImpl"
-                  gui-classname="com.untangle.tran.reporting.gui.MTransformJPanel"/>
-</mvvm-transform>
+                  classname="com.untangle.node.reporting.ReportingNodeImpl"
+                  gui-classname="com.untangle.node.reporting.gui.MNodeJPanel"/>
+</uvm-node>

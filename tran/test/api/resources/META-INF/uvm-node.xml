@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mvvm-transform>
-  <transform-desc name="test-transform"
+<uvm-node>
+  <node-desc name="test-node"
                   display-name="Test Device"
-                  classname="com.untangle.tran.test.TestTransformImpl"
-                  gui-classname="com.untangle.tran.test.gui.MTransformJPanel"/>
-</mvvm-transform>
+                  classname="com.untangle.node.test.TestNodeImpl"
+                  gui-classname="com.untangle.node.test.gui.MNodeJPanel"/>
+</uvm-node>

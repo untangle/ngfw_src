@@ -9,7 +9,7 @@
  * $Id: $
  */
 
-package com.untangle.tran.spam;
+package com.untangle.node.spam;
 
 public class RBLClientContext {
     private String hostname;

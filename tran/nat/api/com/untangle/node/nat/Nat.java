@@ -8,16 +8,16 @@
  *
  * $Id$
  */
-package com.untangle.tran.nat;
+package com.untangle.node.nat;
 
 
-import com.untangle.mvvm.logging.EventManager;
-import com.untangle.mvvm.logging.LogEvent;
-import com.untangle.mvvm.tran.Transform;
+import com.untangle.uvm.logging.EventManager;
+import com.untangle.uvm.logging.LogEvent;
+import com.untangle.uvm.node.Node;
 
-import com.untangle.mvvm.networking.SetupState;
+import com.untangle.uvm.networking.SetupState;
 
-public interface Nat extends Transform
+public interface Nat extends Node
 {
     public NatCommonSettings getNatSettings();
     public void setNatSettings( NatCommonSettings settings ) throws Exception;

@@ -8,18 +8,18 @@
  *
  * $Id$
  */
-package com.untangle.tran.mail.papi.safelist;
+package com.untangle.node.mail.papi.safelist;
 
 import java.util.List;
 
-import com.untangle.tran.mime.EmailAddress;
+import com.untangle.node.mime.EmailAddress;
 
 /**
- * Interface for the transforms to query the
+ * Interface for the nodes to query the
  * safelist.  This is not intended to be
  * "remoted" to any UI.
  */
-public interface SafelistTransformView {
+public interface SafelistNodeView {
 
     /**
      * Test if the given sender is safelisted

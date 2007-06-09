@@ -9,12 +9,12 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.impl;
+package com.untangle.node.mail.impl;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.untangle.tran.util.Pair;
+import com.untangle.node.util.Pair;
 
 
 

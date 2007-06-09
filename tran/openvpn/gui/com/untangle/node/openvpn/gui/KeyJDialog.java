@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.openvpn.gui;
+package com.untangle.node.openvpn.gui;
 
 import java.awt.Container;
 import java.awt.Dialog;
@@ -18,7 +18,7 @@ import java.awt.Window;
 
 import com.untangle.gui.util.Util;
 import com.untangle.gui.widgets.dialogs.*;
-import com.untangle.tran.openvpn.*;
+import com.untangle.node.openvpn.*;
 
 public class KeyJDialog extends javax.swing.JDialog implements java.awt.event.WindowListener {
 

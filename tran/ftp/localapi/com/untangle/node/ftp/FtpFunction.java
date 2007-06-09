@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.ftp;
+package com.untangle.node.ftp;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

@@ -10,7 +10,7 @@
  */
 
 
-package com.untangle.tran.spam.gui;
+package com.untangle.node.spam.gui;
 
 import java.awt.*;
 import java.util.Vector;
@@ -18,10 +18,10 @@ import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.table.*;
 
-import com.untangle.gui.transform.*;
+import com.untangle.gui.node.*;
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.editTable.*;
-import com.untangle.tran.spam.*;
+import com.untangle.node.spam.*;
 
 
 public class ImapConfigJPanel extends MEditTableJPanel {

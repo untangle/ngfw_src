@@ -9,14 +9,14 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.impl.imap;
+package com.untangle.node.mail.impl.imap;
 
 import java.nio.ByteBuffer;
 
-import com.untangle.tran.mail.papi.imap.IMAPTokenizer;
-import com.untangle.tran.token.Token;
-import com.untangle.tran.util.MVLogger;
-import static com.untangle.tran.util.Ascii.*;
+import com.untangle.node.mail.papi.imap.IMAPTokenizer;
+import com.untangle.node.token.Token;
+import com.untangle.node.util.MVLogger;
+import static com.untangle.node.util.Ascii.*;
 
 /**
  * Logicaly part of the "ImapServerParser", but broken out so we

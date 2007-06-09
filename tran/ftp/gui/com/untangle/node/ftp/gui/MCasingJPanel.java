@@ -10,20 +10,20 @@
  */
 
 
-package com.untangle.tran.ftp.gui;
+package com.untangle.node.ftp.gui;
 
 import java.awt.*;
 
 import com.untangle.gui.configuration.*;
-import com.untangle.gui.transform.*;
+import com.untangle.gui.node.*;
 import com.untangle.gui.util.*;
-import com.untangle.mvvm.*;
-import com.untangle.mvvm.security.*;
-import com.untangle.mvvm.tran.*;
-import com.untangle.tran.ftp.FtpSettings;
+import com.untangle.uvm.*;
+import com.untangle.uvm.security.*;
+import com.untangle.uvm.node.*;
+import com.untangle.node.ftp.FtpSettings;
 
 
-public class MCasingJPanel extends com.untangle.gui.transform.MCasingJPanel<MaintenanceCompoundSettings> {
+public class MCasingJPanel extends com.untangle.gui.node.MCasingJPanel<MaintenanceCompoundSettings> {
 
 
     public MCasingJPanel() {
@@ -47,7 +47,7 @@ public class MCasingJPanel extends com.untangle.gui.transform.MCasingJPanel<Main
 
         // SAVE SETTINGS ////////////
         if( !validateOnly ){
-            FtpSettings ftpSettings = ((FtpTransformCompoundSettings)maintenanceCompoundSettings.getFtpTransformCompoundSettings()).getFtpTransformSettings();
+            FtpSettings ftpSettings = ((FtpNodeCompoundSettings)maintenanceCompoundSettings.getFtpNodeCompoundSettings()).getFtpNodeSettings();
             ftpSettings.setEnabled(isFtpEnabled);
         }
 
@@ -56,7 +56,7 @@ public class MCasingJPanel extends com.untangle.gui.transform.MCasingJPanel<Main
     public void doRefresh(MaintenanceCompoundSettings maintenanceCompoundSettings){
 
         // FTP ENABLED /////////
-        FtpSettings ftpSettings = ((FtpTransformCompoundSettings)maintenanceCompoundSettings.getFtpTransformCompoundSettings()).getFtpTransformSettings();
+        FtpSettings ftpSettings = ((FtpNodeCompoundSettings)maintenanceCompoundSettings.getFtpNodeCompoundSettings()).getFtpNodeSettings();
         boolean isFtpEnabled = ftpSettings.isEnabled();
         if( isFtpEnabled )
             ftpEnabledRadioButton.setSelected(true);

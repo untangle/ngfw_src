@@ -9,27 +9,27 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.impl.pop;
+package com.untangle.node.mail.impl.pop;
 
-import static com.untangle.tran.util.Ascii.*;
-import static com.untangle.tran.util.BufferUtil.*;
+import static com.untangle.node.util.Ascii.*;
+import static com.untangle.node.util.BufferUtil.*;
 
 import java.nio.ByteBuffer;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.mvvm.tapi.Pipeline;
-import com.untangle.mvvm.tapi.TCPSession;
-import com.untangle.tran.mail.PopCasing;
-import com.untangle.tran.mail.papi.pop.PopCommand;
-import com.untangle.tran.mail.papi.pop.PopCommandMore;
-import com.untangle.tran.token.AbstractParser;
-import com.untangle.tran.token.ParseException;
-import com.untangle.tran.token.ParseResult;
-import com.untangle.tran.token.Release;
-import com.untangle.tran.token.Token;
-import com.untangle.tran.util.AsciiCharBuffer;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.tapi.Pipeline;
+import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.node.mail.PopCasing;
+import com.untangle.node.mail.papi.pop.PopCommand;
+import com.untangle.node.mail.papi.pop.PopCommandMore;
+import com.untangle.node.token.AbstractParser;
+import com.untangle.node.token.ParseException;
+import com.untangle.node.token.ParseResult;
+import com.untangle.node.token.Release;
+import com.untangle.node.token.Token;
+import com.untangle.node.util.AsciiCharBuffer;
 import org.apache.log4j.Logger;
 
 public class PopClientParser extends AbstractParser
@@ -53,7 +53,7 @@ public class PopClientParser extends AbstractParser
         super(session, true);
         lineBuffering(false);
 
-        pipeline = MvvmContextFactory.context().pipelineFoundry().getPipeline(session.id());
+        pipeline = UvmContextFactory.context().pipelineFoundry().getPipeline(session.id());
         this.zCasing = zCasing;
 
         state = State.COMMAND;

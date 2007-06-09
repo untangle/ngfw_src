@@ -1,3 +1,3 @@
 # -*-ruby-*-
 
-TransformBuilder.makeTransform(BuildEnv::ALPINE, 'protofilter')
+NodeBuilder.makeNode(BuildEnv::SRC, 'protofilter')

@@ -9,12 +9,12 @@
  * $Id$
  */
 
-package com.untangle.tran.httpblocker;
+package com.untangle.node.httpblocker;
 
-import com.untangle.mvvm.logging.EventManager;
-import com.untangle.mvvm.tran.Transform;
+import com.untangle.uvm.logging.EventManager;
+import com.untangle.uvm.node.Node;
 
-public interface HttpBlocker extends Transform
+public interface HttpBlocker extends Node
 {
     HttpBlockerSettings getHttpBlockerSettings();
     void setHttpBlockerSettings(HttpBlockerSettings settings);

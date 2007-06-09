@@ -11,25 +11,25 @@
 
 
 
-package com.untangle.tran.virus.gui;
+package com.untangle.node.virus.gui;
 
-import com.untangle.gui.transform.*;
+import com.untangle.gui.node.*;
 import com.untangle.gui.pipeline.MPipelineJPanel;
 import com.untangle.gui.util.*;
 
-import com.untangle.mvvm.*;
-import com.untangle.mvvm.tran.*;
+import com.untangle.uvm.*;
+import com.untangle.uvm.node.*;
 
 import java.util.*;
 
 
-public class MTransformJPanel extends com.untangle.gui.transform.MTransformJPanel{
+public class MNodeJPanel extends com.untangle.gui.node.MNodeJPanel{
 
 
 
 
-    public MTransformJPanel(TransformContext transformContext, TransformDesc transformDesc) {
-        super(transformContext, transformDesc);
+    public MNodeJPanel(NodeContext nodeContext, NodeDesc nodeDesc) {
+        super(nodeContext, nodeDesc);
     }
 
 

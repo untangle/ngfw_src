@@ -9,10 +9,10 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.impl.pop;
+package com.untangle.node.mail.impl.pop;
 
-import static com.untangle.tran.util.Ascii.*;
-import static com.untangle.tran.util.BufferUtil.*;
+import static com.untangle.node.util.Ascii.*;
+import static com.untangle.node.util.BufferUtil.*;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -22,31 +22,31 @@ import java.nio.channels.FileChannel;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.mvvm.tapi.Pipeline;
-import com.untangle.mvvm.tapi.TCPSession;
-import com.untangle.tran.mail.PopCasing;
-import com.untangle.tran.mail.papi.AddressKind;
-import com.untangle.tran.mail.papi.DoNotCareChunkT;
-import com.untangle.tran.mail.papi.DoNotCareT;
-import com.untangle.tran.mail.papi.MIMEMessageT;
-import com.untangle.tran.mail.papi.MIMEMessageTrickleT;
-import com.untangle.tran.mail.papi.MessageBoundaryScanner;
-import com.untangle.tran.mail.papi.MessageInfo;
-import com.untangle.tran.mail.papi.MessageInfoFactory;
-import com.untangle.tran.mail.papi.pop.PopReply;
-import com.untangle.tran.mail.papi.pop.PopReplyMore;
-import com.untangle.tran.mime.HeaderParseException;
-import com.untangle.tran.mime.InvalidHeaderDataException;
-import com.untangle.tran.mime.LineTooLongException;
-import com.untangle.tran.mime.MIMEMessageHeaders;
-import com.untangle.tran.token.AbstractParser;
-import com.untangle.tran.token.Chunk;
-import com.untangle.tran.token.EndMarker;
-import com.untangle.tran.token.ParseException;
-import com.untangle.tran.token.ParseResult;
-import com.untangle.tran.token.Token;
-import com.untangle.tran.util.AsciiCharBuffer;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.tapi.Pipeline;
+import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.node.mail.PopCasing;
+import com.untangle.node.mail.papi.AddressKind;
+import com.untangle.node.mail.papi.DoNotCareChunkT;
+import com.untangle.node.mail.papi.DoNotCareT;
+import com.untangle.node.mail.papi.MIMEMessageT;
+import com.untangle.node.mail.papi.MIMEMessageTrickleT;
+import com.untangle.node.mail.papi.MessageBoundaryScanner;
+import com.untangle.node.mail.papi.MessageInfo;
+import com.untangle.node.mail.papi.MessageInfoFactory;
+import com.untangle.node.mail.papi.pop.PopReply;
+import com.untangle.node.mail.papi.pop.PopReplyMore;
+import com.untangle.node.mime.HeaderParseException;
+import com.untangle.node.mime.InvalidHeaderDataException;
+import com.untangle.node.mime.LineTooLongException;
+import com.untangle.node.mime.MIMEMessageHeaders;
+import com.untangle.node.token.AbstractParser;
+import com.untangle.node.token.Chunk;
+import com.untangle.node.token.EndMarker;
+import com.untangle.node.token.ParseException;
+import com.untangle.node.token.ParseResult;
+import com.untangle.node.token.Token;
+import com.untangle.node.util.AsciiCharBuffer;
 import org.apache.log4j.Logger;
 
 public class PopServerParser extends AbstractParser
@@ -84,7 +84,7 @@ public class PopServerParser extends AbstractParser
         super(session, true);
         lineBuffering(false);
 
-        pipeline = MvvmContextFactory.context().pipelineFoundry().getPipeline(session.id());
+        pipeline = UvmContextFactory.context().pipelineFoundry().getPipeline(session.id());
         this.zCasing = zCasing;
         zMBScanner = new MessageBoundaryScanner();
 
@@ -325,7 +325,7 @@ public class PopServerParser extends AbstractParser
                             bDone = true;
                         }
                     } else {
-                        /* transform writes body */
+                        /* node writes body */
                         logger.debug("message body: " + buf);
 
                         /* scan and "copy" msg frag */
@@ -391,7 +391,7 @@ public class PopServerParser extends AbstractParser
 
                 /* we are initiating trickle
                  * so we must dump data that we've processed so far to file
-                 * - none of transforms will write data to file
+                 * - none of nodes will write data to file
                  * - hdrDataDup contains data that we've processed
                  *
                  * we keep dumping until we find "body is done" indicator

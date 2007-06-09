@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.gui;
+package com.untangle.node.mail.gui;
 
 import java.awt.Insets;
 import java.util.*;
@@ -18,10 +18,10 @@ import javax.swing.event.*;
 import javax.swing.table.*;
 
 import com.untangle.gui.configuration.EmailCompoundSettings;
-import com.untangle.gui.transform.*;
+import com.untangle.gui.node.*;
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.editTable.*;
-import com.untangle.mvvm.networking.*;
+import com.untangle.uvm.networking.*;
 
 public class WhitelistGlobalJPanel extends MEditTableJPanel{
 
@@ -70,12 +70,12 @@ public class WhitelistGlobalJPanel extends MEditTableJPanel{
 
             // SAVE SETTINGS //////////
             if( !validateOnly ){
-                ((MailTransformCompoundSettings)emailCompoundSettings.getMailTransformCompoundSettings()).setGlobalSafelist( elemList );
+                ((MailNodeCompoundSettings)emailCompoundSettings.getMailNodeCompoundSettings()).setGlobalSafelist( elemList );
             }
         }
 
         public Vector<Vector> generateRows(EmailCompoundSettings emailCompoundSettings) {
-            List<String> safeList = ((MailTransformCompoundSettings)emailCompoundSettings.getMailTransformCompoundSettings()).getGlobalSafelist();
+            List<String> safeList = ((MailNodeCompoundSettings)emailCompoundSettings.getMailNodeCompoundSettings()).getGlobalSafelist();
             Vector allRows = new Vector(safeList.size());
             int rowIndex = 0;
             Vector tempRow = null;

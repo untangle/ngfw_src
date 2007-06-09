@@ -9,10 +9,10 @@
  * $Id$
  */
 
-package com.untangle.tran.virus.reports;
+package com.untangle.node.virus.reports;
 
-import com.untangle.mvvm.reporting.*;
-import com.untangle.tran.virus.VirusScanner;
+import com.untangle.uvm.reporting.*;
+import com.untangle.node.virus.VirusScanner;
 
 import java.awt.BasicStroke;
 import java.awt.Color;

@@ -9,11 +9,11 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.papi.imap;
+package com.untangle.node.mail.papi.imap;
 
 import java.nio.ByteBuffer;
 
-import com.untangle.mvvm.tapi.event.TCPStreamer;
+import com.untangle.uvm.tapi.event.TCPStreamer;
 
 /**
  * Wraps a TCPStreamer, leading with an IMAP literal "{nnn}CRLF"

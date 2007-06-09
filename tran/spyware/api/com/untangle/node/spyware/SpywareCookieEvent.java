@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.spyware;
+package com.untangle.node.spyware;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -20,9 +20,9 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import com.untangle.mvvm.logging.SyslogBuilder;
-import com.untangle.mvvm.tran.PipelineEndpoints;
-import com.untangle.tran.http.RequestLine;
+import com.untangle.uvm.logging.SyslogBuilder;
+import com.untangle.uvm.node.PipelineEndpoints;
+import com.untangle.node.http.RequestLine;
 
 /**
  * Log event for a spyware hit.

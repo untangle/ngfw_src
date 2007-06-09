@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.spyware;
+package com.untangle.node.spyware;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -20,8 +20,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import com.untangle.mvvm.tran.IPMaddr;
-import com.untangle.mvvm.tran.PipelineEndpoints;
+import com.untangle.uvm.node.IPMaddr;
+import com.untangle.uvm.node.PipelineEndpoints;
 import org.hibernate.annotations.Type;
 
 /**
@@ -99,7 +99,7 @@ import org.hibernate.annotations.Type;
          *
          * @return the IPMaddr.
          */
-        @Type(type="com.untangle.mvvm.type.IPMaddrUserType")
+        @Type(type="com.untangle.uvm.type.IPMaddrUserType")
         public IPMaddr getIpMaddr()
         {
             return ipMaddr;

@@ -11,16 +11,16 @@
 
 
 
-package com.untangle.tran.spyware.gui;
+package com.untangle.node.spyware.gui;
 
 import java.awt.*;
 
-import com.untangle.gui.transform.*;
+import com.untangle.gui.node.*;
 import com.untangle.gui.util.*;
-import com.untangle.mvvm.*;
-import com.untangle.mvvm.security.*;
-import com.untangle.mvvm.tran.*;
-import com.untangle.tran.spyware.*;
+import com.untangle.uvm.*;
+import com.untangle.uvm.security.*;
+import com.untangle.uvm.node.*;
+import com.untangle.node.spyware.*;
 
 
 public class UrlConfigJPanel extends javax.swing.JPanel implements Savable<Object>, Refreshable<Object> {

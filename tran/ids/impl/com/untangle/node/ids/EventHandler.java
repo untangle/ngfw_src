@@ -9,18 +9,18 @@
  * $Id$
  */
 
-package com.untangle.tran.ids;
+package com.untangle.node.ids;
 
-import com.untangle.mvvm.tapi.*;
-import com.untangle.mvvm.tapi.event.*;
+import com.untangle.uvm.tapi.*;
+import com.untangle.uvm.tapi.event.*;
 
 public class EventHandler extends AbstractEventHandler {
 
     private IDSDetectionEngine idsEngine;
 
-    public EventHandler(IDSTransformImpl transform) {
-        super(transform);
-        idsEngine = transform.getEngine();
+    public EventHandler(IDSNodeImpl node) {
+        super(node);
+        idsEngine = node.getEngine();
     }
 
     public void handleTCPNewSessionRequest(TCPNewSessionRequestEvent event) throws MPipeException {

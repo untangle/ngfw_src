@@ -9,45 +9,45 @@
  * $Id$
  */
 
-package com.untangle.tran.virus;
+package com.untangle.node.virus;
 
-import static com.untangle.tran.util.Ascii.CRLF;
+import static com.untangle.node.util.Ascii.CRLF;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.mvvm.localapi.SessionMatcher;
-import com.untangle.mvvm.logging.EventLogger;
-import com.untangle.mvvm.logging.EventLoggerFactory;
-import com.untangle.mvvm.logging.EventManager;
-import com.untangle.mvvm.logging.SimpleEventFilter;
-import com.untangle.mvvm.policy.Policy;
-import com.untangle.mvvm.tapi.AbstractTransform;
-import com.untangle.mvvm.tapi.Affinity;
-import com.untangle.mvvm.tapi.Fitting;
-import com.untangle.mvvm.tapi.IPSessionDesc;
-import com.untangle.mvvm.tapi.PipeSpec;
-import com.untangle.mvvm.tapi.PipelineFoundry;
-import com.untangle.mvvm.tapi.Protocol;
-import com.untangle.mvvm.tapi.SoloPipeSpec;
-import com.untangle.mvvm.tapi.Subscription;
-import com.untangle.mvvm.tran.MimeType;
-import com.untangle.mvvm.tran.MimeTypeRule;
-import com.untangle.mvvm.tran.StringRule;
-import com.untangle.mvvm.tran.Transform;
-import com.untangle.mvvm.tran.TransformContext;
-import com.untangle.mvvm.util.TransactionWork;
-import com.untangle.tran.mail.papi.smtp.SMTPNotifyAction;
-import com.untangle.tran.token.TokenAdaptor;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.localapi.SessionMatcher;
+import com.untangle.uvm.logging.EventLogger;
+import com.untangle.uvm.logging.EventLoggerFactory;
+import com.untangle.uvm.logging.EventManager;
+import com.untangle.uvm.logging.SimpleEventFilter;
+import com.untangle.uvm.policy.Policy;
+import com.untangle.uvm.tapi.AbstractNode;
+import com.untangle.uvm.tapi.Affinity;
+import com.untangle.uvm.tapi.Fitting;
+import com.untangle.uvm.tapi.IPSessionDesc;
+import com.untangle.uvm.tapi.PipeSpec;
+import com.untangle.uvm.tapi.PipelineFoundry;
+import com.untangle.uvm.tapi.Protocol;
+import com.untangle.uvm.tapi.SoloPipeSpec;
+import com.untangle.uvm.tapi.Subscription;
+import com.untangle.uvm.node.MimeType;
+import com.untangle.uvm.node.MimeTypeRule;
+import com.untangle.uvm.node.StringRule;
+import com.untangle.uvm.node.Node;
+import com.untangle.uvm.node.NodeContext;
+import com.untangle.uvm.util.TransactionWork;
+import com.untangle.node.mail.papi.smtp.SMTPNotifyAction;
+import com.untangle.node.token.TokenAdaptor;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
-public abstract class VirusTransformImpl extends AbstractTransform
-    implements VirusTransform
+public abstract class VirusNodeImpl extends AbstractNode
+    implements VirusNode
 {
 
     //Programatic defaults for the contents
@@ -88,7 +88,7 @@ public abstract class VirusTransformImpl extends AbstractTransform
     private static final String IN_NOTIFY_SUB_TEMPLATE = OUT_NOTIFY_SUB_TEMPLATE;
     private static final String IN_NOTIFY_BODY_TEMPLATE = OUT_NOTIFY_BODY_TEMPLATE;
 
-    private static final PipelineFoundry FOUNDRY = MvvmContextFactory.context()
+    private static final PipelineFoundry FOUNDRY = UvmContextFactory.context()
         .pipelineFoundry();
 
     private static final int FTP = 0;
@@ -100,19 +100,19 @@ public abstract class VirusTransformImpl extends AbstractTransform
     private final EventLogger<VirusEvent> eventLogger;
     private final PipeSpec[] pipeSpecs;
 
-    private final Logger logger = Logger.getLogger(VirusTransformImpl.class);
+    private final Logger logger = Logger.getLogger(VirusNodeImpl.class);
 
     private VirusSettings settings;
 
-    /* This can't be static because it uses policy which is per transform */
+    /* This can't be static because it uses policy which is per node */
     private final SessionMatcher VIRUS_SESSION_MATCHER = new SessionMatcher() {
             /* Kill all sessions on ports 20, 21 and 80 */
             public boolean isMatch(Policy sessionPolicy,
-                                   com.untangle.mvvm.tran.IPSessionDesc client,
-                                   com.untangle.mvvm.tran.IPSessionDesc server)
+                                   com.untangle.uvm.node.IPSessionDesc client,
+                                   com.untangle.uvm.node.IPSessionDesc server)
             {
                 /* Don't kill any UDP Sessions */
-                if (client.protocol() == com.untangle.mvvm.tran.IPSessionDesc.PROTO_UDP) {
+                if (client.protocol() == com.untangle.uvm.node.IPSessionDesc.PROTO_UDP) {
                     return false;
                 }
 
@@ -158,13 +158,13 @@ public abstract class VirusTransformImpl extends AbstractTransform
 
     // constructors -----------------------------------------------------------
 
-    public VirusTransformImpl(VirusScanner scanner)
+    public VirusNodeImpl(VirusScanner scanner)
     {
         this.scanner = scanner;
         this.pipeSpecs = initialPipeSpecs();
 
-        TransformContext tctx = getTransformContext();
-        eventLogger = EventLoggerFactory.factory().getEventLogger(getTransformContext());
+        NodeContext tctx = getNodeContext();
+        eventLogger = EventLoggerFactory.factory().getEventLogger(getNodeContext());
 
         String vendor = scanner.getVendorName();
 
@@ -187,7 +187,7 @@ public abstract class VirusTransformImpl extends AbstractTransform
         eventLogger.addSimpleEventFilter(ef);
     }
 
-    // VirusTransform methods -------------------------------------------------
+    // VirusNode methods -------------------------------------------------
 
     public void setVirusSettings(final VirusSettings settings)
     {
@@ -199,7 +199,7 @@ public abstract class VirusTransformImpl extends AbstractTransform
                 public boolean doWork(Session s)
                 {
                     s.merge(settings);
-                    VirusTransformImpl.this.settings = settings;
+                    VirusNodeImpl.this.settings = settings;
 
                     virusReconfigure();
 
@@ -208,14 +208,14 @@ public abstract class VirusTransformImpl extends AbstractTransform
 
                 public Object getResult() { return null; }
             };
-        getTransformContext().runTransaction(tw);
+        getNodeContext().runTransaction(tw);
         shutdownMatchingSessions();
     }
 
     public VirusSettings getVirusSettings()
     {
         if( settings == null )
-            logger.error("Settings not yet initialized. State: " + getTransformContext().getRunState() );
+            logger.error("Settings not yet initialized. State: " + getNodeContext().getRunState() );
         return settings;
     }
 
@@ -226,7 +226,7 @@ public abstract class VirusTransformImpl extends AbstractTransform
 
     abstract protected int getStrength();
 
-    // Transform methods ------------------------------------------------------
+    // Node methods ------------------------------------------------------
 
     private PipeSpec[] initialPipeSpecs()
     {
@@ -299,7 +299,7 @@ public abstract class VirusTransformImpl extends AbstractTransform
         pipeSpecs[POP].setSubscriptions(subscriptions);
     }
 
-    // AbstractTransform methods ----------------------------------------------
+    // AbstractNode methods ----------------------------------------------
 
     @Override
     protected PipeSpec[] getPipeSpecs()
@@ -496,7 +496,7 @@ public abstract class VirusTransformImpl extends AbstractTransform
 
                 public Object getResult() { return null; }
             };
-        getTransformContext().runTransaction(tw);
+        getNodeContext().runTransaction(tw);
 
     }
 
@@ -563,25 +563,25 @@ public abstract class VirusTransformImpl extends AbstractTransform
      * Increment the counter for messages scanned
      */
     public void incrementScanCounter() {
-        incrementCount(Transform.GENERIC_0_COUNTER);
+        incrementCount(Node.GENERIC_0_COUNTER);
     }
     /**
      * Increment the counter for blocked (SMTP only).
      */
     public void incrementBlockCounter() {
-        incrementCount(Transform.GENERIC_1_COUNTER);
+        incrementCount(Node.GENERIC_1_COUNTER);
     }
     /**
      * Increment the counter for messages passed
      */
     public void incrementPassCounter() {
-        incrementCount(Transform.GENERIC_2_COUNTER);
+        incrementCount(Node.GENERIC_2_COUNTER);
     }
     /**
      * Increment the counter for messages where we
      * removed a virus
      */
     public void incrementRemoveCounter() {
-        incrementCount(Transform.GENERIC_3_COUNTER);
+        incrementCount(Node.GENERIC_3_COUNTER);
     }
 }

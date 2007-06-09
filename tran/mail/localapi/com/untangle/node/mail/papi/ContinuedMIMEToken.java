@@ -9,15 +9,15 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.papi;
+package com.untangle.node.mail.papi;
 
 import java.nio.ByteBuffer;
 
-import com.untangle.tran.token.Token;
+import com.untangle.node.token.Token;
 
 
 /**
- * Token which follows a {@link com.untangle.tran.mail.papi.BeginMIMEToken BeginMIMEToken}.
+ * Token which follows a {@link com.untangle.node.mail.papi.BeginMIMEToken BeginMIMEToken}.
  * There may be one or more ContinuedMIMETokens after the begin token.  Remaining
  * interesting properties about this token are found in the internal
  * {@link #getMIMEChunk MIMEChunk}.
@@ -35,7 +35,7 @@ public final class ContinuedMIMEToken
 
     /**
      * Get the internal
-     * {@link com.untangle.tran.mail.papi.MIMEAccumulator#MIMEChunk MIMEChunk}.
+     * {@link com.untangle.node.mail.papi.MIMEAccumulator#MIMEChunk MIMEChunk}.
      *
      * @return the chunk
      */

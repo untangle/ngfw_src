@@ -8,16 +8,16 @@
  *
  * $Id$
  */
-package com.untangle.tran.openvpn;
+package com.untangle.node.openvpn;
 
 import java.io.Serializable;
 import java.util.List;
 import java.util.LinkedList;
 
-import com.untangle.mvvm.tran.AddressValidator;
-import com.untangle.mvvm.tran.AddressRange;
-import com.untangle.mvvm.tran.Validatable;
-import com.untangle.mvvm.tran.ValidateException;
+import com.untangle.uvm.node.AddressValidator;
+import com.untangle.uvm.node.AddressRange;
+import com.untangle.uvm.node.Validatable;
+import com.untangle.uvm.node.ValidateException;
 
 public class ExportList implements Serializable, Validatable
 { 

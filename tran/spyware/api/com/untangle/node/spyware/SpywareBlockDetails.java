@@ -9,11 +9,11 @@
  * $Id: Spyware.java 8515 2007-01-03 00:13:24Z amread $
  */
 
-package com.untangle.tran.spyware;
+package com.untangle.node.spyware;
 
 import java.net.InetAddress;
 
-import com.untangle.tran.http.BlockDetails;
+import com.untangle.node.http.BlockDetails;
 
 public class SpywareBlockDetails extends BlockDetails
 {

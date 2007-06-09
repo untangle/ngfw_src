@@ -9,20 +9,20 @@
  * $Id: HttpStateMachine.java 8515 2007-01-03 00:13:24Z amread $
  */
 
-package com.untangle.tran.http;
+package com.untangle.node.http;
 
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.util.regex.Pattern;
 
-import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.mvvm.security.Tid;
-import com.untangle.mvvm.tapi.TCPSession;
-import com.untangle.tran.token.Chunk;
-import com.untangle.tran.token.EndMarker;
-import com.untangle.tran.token.Header;
-import com.untangle.tran.token.Token;
-import com.untangle.tran.util.NonceFactory;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.security.Tid;
+import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.node.token.Chunk;
+import com.untangle.node.token.EndMarker;
+import com.untangle.node.token.Header;
+import com.untangle.node.token.Token;
+import com.untangle.node.util.NonceFactory;
 
 public abstract class ReplacementGenerator<T extends BlockDetails>
 {
@@ -97,7 +97,7 @@ public abstract class ReplacementGenerator<T extends BlockDetails>
         if (imagePreferred(uri, requestHeader)) {
             return generateSimplePage(nonce, persistent, true);
         } else {
-            InetAddress addr = MvvmContextFactory.context().networkManager()
+            InetAddress addr = UvmContextFactory.context().networkManager()
                 .getInternalHttpAddress(session);
             if (null == addr) {
                 return generateSimplePage(nonce, persistent, false);

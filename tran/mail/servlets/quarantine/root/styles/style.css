@@ -88,7 +88,7 @@ table.slist {
 table.slist th {
   border-bottom: 1px solid #666;
   text-align: left;
-  text-transform: uppercase;
+  text-node: uppercase;
   padding: 0.6em;
   vertical-align: 4px;
 }
@@ -129,7 +129,7 @@ table.inbox th, table.inbox td {
 
 table.inbox th {
   text-align: left;
-  text-transform: uppercase;
+  text-node: uppercase;
 }
 
 table.inbox thead th.first {

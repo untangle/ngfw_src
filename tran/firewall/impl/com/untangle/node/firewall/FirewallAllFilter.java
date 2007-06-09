@@ -9,10 +9,10 @@
  * $Id$
  */
 
-package com.untangle.tran.firewall;
+package com.untangle.node.firewall;
 
-import com.untangle.mvvm.logging.RepositoryDesc;
-import com.untangle.mvvm.logging.SimpleEventFilter;
+import com.untangle.uvm.logging.RepositoryDesc;
+import com.untangle.uvm.logging.SimpleEventFilter;
 
 public class FirewallAllFilter implements SimpleEventFilter<FirewallEvent>
 {

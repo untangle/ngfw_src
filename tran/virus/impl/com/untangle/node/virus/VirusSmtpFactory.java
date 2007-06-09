@@ -8,15 +8,15 @@
  *
  * $Id$
  */
-package com.untangle.tran.virus;
+package com.untangle.node.virus;
 
-import com.untangle.mvvm.tapi.*;
-import com.untangle.tran.mail.*;
-import com.untangle.tran.mail.papi.*;
-import com.untangle.tran.mail.papi.smtp.*;
-import com.untangle.tran.mail.papi.smtp.sapi.Session;
-import com.untangle.tran.token.TokenHandler;
-import com.untangle.tran.token.TokenHandlerFactory;
+import com.untangle.uvm.tapi.*;
+import com.untangle.node.mail.*;
+import com.untangle.node.mail.papi.*;
+import com.untangle.node.mail.papi.smtp.*;
+import com.untangle.node.mail.papi.smtp.sapi.Session;
+import com.untangle.node.token.TokenHandler;
+import com.untangle.node.token.TokenHandlerFactory;
 import org.apache.log4j.Logger;
 
 public class VirusSmtpFactory
@@ -25,11 +25,11 @@ public class VirusSmtpFactory
     private final Logger m_logger =
         Logger.getLogger(VirusSmtpFactory.class);
 
-    private final VirusTransformImpl m_virusImpl;
+    private final VirusNodeImpl m_virusImpl;
     private final MailExport m_mailExport;
 
-    VirusSmtpFactory(VirusTransformImpl transform) {
-        m_virusImpl = transform;
+    VirusSmtpFactory(VirusNodeImpl node) {
+        m_virusImpl = node;
         m_mailExport = MailExportFactory.factory().getExport();
     }
 
@@ -46,7 +46,7 @@ public class VirusSmtpFactory
             return Session.createPassthruSession(session);
         }
 
-        MailTransformSettings casingSettings = m_mailExport.getExportSettings();
+        MailNodeSettings casingSettings = m_mailExport.getExportSettings();
         return new Session(session,
                            new SmtpSessionHandler(
                                                   session,

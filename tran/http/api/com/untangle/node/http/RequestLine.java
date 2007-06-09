@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.http;
+package com.untangle.node.http;
 
 import java.io.Serializable;
 import java.net.MalformedURLException;
@@ -27,7 +27,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import com.untangle.mvvm.tran.PipelineEndpoints;
+import com.untangle.uvm.node.PipelineEndpoints;
 import org.hibernate.annotations.Type;
 
 /**
@@ -116,7 +116,7 @@ import org.hibernate.annotations.Type;
          *
          * @return the request method.
          */
-        @Type(type="com.untangle.tran.http.HttpMethodUserType")
+        @Type(type="com.untangle.node.http.HttpMethodUserType")
         public HttpMethod getMethod()
         {
             return method;
@@ -133,7 +133,7 @@ import org.hibernate.annotations.Type;
          * @return the request URI.
          */
         @Column(name="uri")
-        @Type(type="com.untangle.mvvm.type.UriUserType")
+        @Type(type="com.untangle.uvm.type.UriUserType")
         public URI getRequestUri()
         {
             return requestUri;

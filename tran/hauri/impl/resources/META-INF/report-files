@@ -2,7 +2,7 @@ reports/VirusMaster.jasper:Dual_Virus_Blocker--Summary:Summary
 reports/WebVirusDetail.jasper:Dual_Virus_Blocker--Web_Incidents:Web Incidents
 reports/FtpVirusDetail.jasper:Dual_Virus_Blocker--FTP_Incidents:FTP Incidents
 reports/EmailVirusDetail.jasper:Dual_Virus_Blocker--Email_Incidents:Email Incidents
-com.untangle.tran.virus.reports.VirusSummarizer:summarizer:Summarizer
-com.untangle.tran.virus.reports.SummaryGraph:summaryGraph:Dual_Virus_Blocker--Summary_Graph
-com.untangle.tran.hauri.HauriScanner:scanner:Scanner
+com.untangle.node.virus.reports.VirusSummarizer:summarizer:Summarizer
+com.untangle.node.virus.reports.SummaryGraph:summaryGraph:Dual_Virus_Blocker--Summary_Graph
+com.untangle.node.hauri.HauriScanner:scanner:Scanner
 reportTitlePrefix:parameter:Hauri

@@ -1,3 +1,3 @@
-com.untangle.tran.firewall.FirewallRule
-com.untangle.tran.firewall.FirewallSettings
-com.untangle.tran.firewall.FirewallEvent
+com.untangle.node.firewall.FirewallRule
+com.untangle.node.firewall.FirewallSettings
+com.untangle.node.firewall.FirewallEvent

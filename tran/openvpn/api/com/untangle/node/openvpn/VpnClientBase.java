@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.openvpn;
+package com.untangle.node.openvpn;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -31,10 +31,10 @@ import javax.persistence.MappedSuperclass;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import com.untangle.mvvm.tran.IPaddr;
-import com.untangle.mvvm.tran.Rule;
-import com.untangle.mvvm.tran.Validatable;
-import com.untangle.mvvm.tran.ValidateException;
+import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.Rule;
+import com.untangle.uvm.node.Validatable;
+import com.untangle.uvm.node.ValidateException;
 import org.hibernate.annotations.Type;
 
 /**
@@ -70,7 +70,7 @@ public class VpnClientBase extends Rule implements Validatable
 
     /* Not stored to the database hibernate */
 
-    /* Set to true to tell the transform to distribute the configuration files
+    /* Set to true to tell the node to distribute the configuration files
      * for this client */
     private boolean distributeClient = false;
 
@@ -103,7 +103,7 @@ public class VpnClientBase extends Rule implements Validatable
      *
      * @return static address of the machine.
      */
-    @Type(type="com.untangle.mvvm.type.IPaddrUserType")
+    @Type(type="com.untangle.uvm.type.IPaddrUserType")
     public IPaddr getAddress()
     {
         return this.address;

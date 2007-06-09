@@ -9,18 +9,18 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.papi.pop;
+package com.untangle.node.mail.papi.pop;
 
-import static com.untangle.tran.util.Ascii.*;
-import static com.untangle.tran.util.Rfc822Util.*;
+import static com.untangle.node.util.Ascii.*;
+import static com.untangle.node.util.Rfc822Util.*;
 
 import java.nio.ByteBuffer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.untangle.tran.token.ParseException;
-import com.untangle.tran.token.Token;
-import com.untangle.tran.util.AsciiCharBuffer;
+import com.untangle.node.token.ParseException;
+import com.untangle.node.token.Token;
+import com.untangle.node.util.AsciiCharBuffer;
 import org.apache.log4j.Logger;
 
 /* We handle USER, APOP, and AUTH LOGIN but no other AUTH types.

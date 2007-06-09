@@ -8,7 +8,7 @@
  *
  * $Id$
  */
-package com.untangle.tran.nat;
+package com.untangle.node.nat;
 
 import java.util.Arrays;
 import java.util.List;
@@ -19,47 +19,47 @@ import java.util.HashMap;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.mvvm.IntfConstants;
-import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.mvvm.ArgonManager;
+import com.untangle.uvm.IntfConstants;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.ArgonManager;
 
-import com.untangle.mvvm.networking.SetupState;
-import com.untangle.mvvm.networking.Interface;
-import com.untangle.mvvm.networking.NetworkSpace;
-import com.untangle.mvvm.networking.DhcpLeaseRule;
-import com.untangle.mvvm.networking.DnsStaticHostRule;
-import com.untangle.mvvm.networking.RedirectRule;
-import com.untangle.mvvm.networking.IPNetwork;
-import com.untangle.mvvm.networking.IPNetworkRule;
-import com.untangle.mvvm.networking.NetworkSpacesSettings;
-import com.untangle.mvvm.networking.NetworkSpace;
-import com.untangle.mvvm.networking.NetworkSpacesSettingsImpl;
-import com.untangle.mvvm.networking.ServicesSettings;
-import com.untangle.mvvm.networking.ServicesSettingsImpl;
-import com.untangle.mvvm.networking.EthernetMedia;
-import com.untangle.mvvm.networking.NetworkUtil;
+import com.untangle.uvm.networking.SetupState;
+import com.untangle.uvm.networking.Interface;
+import com.untangle.uvm.networking.NetworkSpace;
+import com.untangle.uvm.networking.DhcpLeaseRule;
+import com.untangle.uvm.networking.DnsStaticHostRule;
+import com.untangle.uvm.networking.RedirectRule;
+import com.untangle.uvm.networking.IPNetwork;
+import com.untangle.uvm.networking.IPNetworkRule;
+import com.untangle.uvm.networking.NetworkSpacesSettings;
+import com.untangle.uvm.networking.NetworkSpace;
+import com.untangle.uvm.networking.NetworkSpacesSettingsImpl;
+import com.untangle.uvm.networking.ServicesSettings;
+import com.untangle.uvm.networking.ServicesSettingsImpl;
+import com.untangle.uvm.networking.EthernetMedia;
+import com.untangle.uvm.networking.NetworkUtil;
 
-import com.untangle.mvvm.networking.internal.DhcpLeaseInternal;
-import com.untangle.mvvm.networking.internal.DnsStaticHostInternal;
-import com.untangle.mvvm.networking.internal.NetworkSpacesInternalSettings;
-import com.untangle.mvvm.networking.internal.NetworkSpaceInternal;
-import com.untangle.mvvm.networking.internal.RedirectInternal;
-import com.untangle.mvvm.networking.internal.ServicesInternalSettings;
+import com.untangle.uvm.networking.internal.DhcpLeaseInternal;
+import com.untangle.uvm.networking.internal.DnsStaticHostInternal;
+import com.untangle.uvm.networking.internal.NetworkSpacesInternalSettings;
+import com.untangle.uvm.networking.internal.NetworkSpaceInternal;
+import com.untangle.uvm.networking.internal.RedirectInternal;
+import com.untangle.uvm.networking.internal.ServicesInternalSettings;
 
-import com.untangle.mvvm.security.Tid;
+import com.untangle.uvm.security.Tid;
 
-import com.untangle.mvvm.tran.IPaddr;
-import com.untangle.mvvm.tran.ValidateException;
+import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.ValidateException;
 
-import com.untangle.mvvm.tran.firewall.ip.IPMatcher;
-import com.untangle.mvvm.tran.firewall.ip.IPDBMatcher;
-import com.untangle.mvvm.tran.firewall.ip.IPMatcherFactory;
-import com.untangle.mvvm.tran.firewall.intf.IntfMatcher;
-import com.untangle.mvvm.tran.firewall.intf.IntfMatcherFactory;
-import com.untangle.mvvm.tran.firewall.port.PortMatcher;
-import com.untangle.mvvm.tran.firewall.port.PortMatcherFactory;
-import com.untangle.mvvm.tran.firewall.protocol.ProtocolMatcher;
-import com.untangle.mvvm.tran.firewall.protocol.ProtocolMatcherFactory;
+import com.untangle.uvm.node.firewall.ip.IPMatcher;
+import com.untangle.uvm.node.firewall.ip.IPDBMatcher;
+import com.untangle.uvm.node.firewall.ip.IPMatcherFactory;
+import com.untangle.uvm.node.firewall.intf.IntfMatcher;
+import com.untangle.uvm.node.firewall.intf.IntfMatcherFactory;
+import com.untangle.uvm.node.firewall.port.PortMatcher;
+import com.untangle.uvm.node.firewall.port.PortMatcherFactory;
+import com.untangle.uvm.node.firewall.protocol.ProtocolMatcher;
+import com.untangle.uvm.node.firewall.protocol.ProtocolMatcherFactory;
 
 class SettingsManager
 {
@@ -142,7 +142,7 @@ class SettingsManager
             
             interfaceList = new LinkedList<Interface>();
 
-            byte argonIntfArray[] = MvvmContextFactory.context().localIntfManager().getArgonIntfArray();
+            byte argonIntfArray[] = UvmContextFactory.context().localIntfManager().getArgonIntfArray();
                 
             Arrays.sort( argonIntfArray );
             for ( byte argonIntf : argonIntfArray ) {
@@ -375,7 +375,7 @@ class SettingsManager
         /* XXX The network settings are already known, there isn't really a need to craete
          * a new object, but this is more convenient */
         natSettings.
-            setNetworkSettings( MvvmContextFactory.context().networkManager().getBasicSettings());
+            setNetworkSettings( UvmContextFactory.context().networkManager().getBasicSettings());
                 
         return natSettings;
     }

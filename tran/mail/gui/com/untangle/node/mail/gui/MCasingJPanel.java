@@ -10,53 +10,53 @@
  */
 
 
-package com.untangle.tran.mail.gui;
+package com.untangle.node.mail.gui;
 
 import java.awt.*;
 import javax.swing.*;
 
 import com.untangle.gui.configuration.*;
-import com.untangle.gui.transform.*;
+import com.untangle.gui.node.*;
 import com.untangle.gui.util.*;
-import com.untangle.mvvm.*;
-import com.untangle.mvvm.security.*;
-import com.untangle.mvvm.tran.*;
-import com.untangle.tran.mail.papi.MailTransformSettings;
+import com.untangle.uvm.*;
+import com.untangle.uvm.security.*;
+import com.untangle.uvm.node.*;
+import com.untangle.node.mail.papi.MailNodeSettings;
 
-public class MCasingJPanel extends com.untangle.gui.transform.MCasingJPanel<MaintenanceCompoundSettings> {
+public class MCasingJPanel extends com.untangle.gui.node.MCasingJPanel<MaintenanceCompoundSettings> {
 
     private static final String EXCEPTION_TIMEOUT_RANGE = "The timeout must be between "
-        + MailTransformSettings.TIMEOUT_MIN/1000l
-        + " and " + MailTransformSettings.TIMEOUT_MAX/1000l + ".";
+        + MailNodeSettings.TIMEOUT_MIN/1000l
+        + " and " + MailNodeSettings.TIMEOUT_MAX/1000l + ".";
 
     public MCasingJPanel() {
         initComponents();
 
-        smtpInboundJSpinner.setModel( new SpinnerNumberModel((Long)(MailTransformSettings.TIMEOUT_MIN/1000l),
-                                                             (Long)(MailTransformSettings.TIMEOUT_MIN/1000l),
-                                                             (Long)(MailTransformSettings.TIMEOUT_MAX/1000l),
+        smtpInboundJSpinner.setModel( new SpinnerNumberModel((Long)(MailNodeSettings.TIMEOUT_MIN/1000l),
+                                                             (Long)(MailNodeSettings.TIMEOUT_MIN/1000l),
+                                                             (Long)(MailNodeSettings.TIMEOUT_MAX/1000l),
                                                              (Long)1l) );
-        smtpOutboundJSpinner.setModel( new SpinnerNumberModel((Long)(MailTransformSettings.TIMEOUT_MIN/1000l),
-                                                              (Long)(MailTransformSettings.TIMEOUT_MIN/1000l),
-                                                              (Long)(MailTransformSettings.TIMEOUT_MAX/1000l),
+        smtpOutboundJSpinner.setModel( new SpinnerNumberModel((Long)(MailNodeSettings.TIMEOUT_MIN/1000l),
+                                                              (Long)(MailNodeSettings.TIMEOUT_MIN/1000l),
+                                                              (Long)(MailNodeSettings.TIMEOUT_MAX/1000l),
                                                               (Long)1l) );
-        popInboundJSpinner.setModel( new SpinnerNumberModel((Long)(MailTransformSettings.TIMEOUT_MIN/1000l),
-                                                            (Long)(MailTransformSettings.TIMEOUT_MIN/1000l),
-                                                            (Long)(MailTransformSettings.TIMEOUT_MAX/1000l),
+        popInboundJSpinner.setModel( new SpinnerNumberModel((Long)(MailNodeSettings.TIMEOUT_MIN/1000l),
+                                                            (Long)(MailNodeSettings.TIMEOUT_MIN/1000l),
+                                                            (Long)(MailNodeSettings.TIMEOUT_MAX/1000l),
                                                             (Long)1l) );
-        popOutboundJSpinner.setModel( new SpinnerNumberModel((Long)(MailTransformSettings.TIMEOUT_MIN/1000l),
-                                                             (Long)(MailTransformSettings.TIMEOUT_MIN/1000l),
-                                                             (Long)(MailTransformSettings.TIMEOUT_MAX/1000l),
+        popOutboundJSpinner.setModel( new SpinnerNumberModel((Long)(MailNodeSettings.TIMEOUT_MIN/1000l),
+                                                             (Long)(MailNodeSettings.TIMEOUT_MIN/1000l),
+                                                             (Long)(MailNodeSettings.TIMEOUT_MAX/1000l),
                                                              (Long)1l) );
-        imapInboundJSpinner.setModel( new SpinnerNumberModel((Long)(MailTransformSettings.TIMEOUT_MIN/1000l),
-                                                             (Long)(MailTransformSettings.TIMEOUT_MIN/1000l),
-                                                             (Long)(MailTransformSettings.TIMEOUT_MAX/1000l),
+        imapInboundJSpinner.setModel( new SpinnerNumberModel((Long)(MailNodeSettings.TIMEOUT_MIN/1000l),
+                                                             (Long)(MailNodeSettings.TIMEOUT_MIN/1000l),
+                                                             (Long)(MailNodeSettings.TIMEOUT_MAX/1000l),
                                                              (Long)1l) );
-        imapOutboundJSpinner.setModel( new SpinnerNumberModel((Long)(MailTransformSettings.TIMEOUT_MIN/1000l),
-                                                              (Long)(MailTransformSettings.TIMEOUT_MIN/1000l),
-                                                              (Long)(MailTransformSettings.TIMEOUT_MAX/1000l),
+        imapOutboundJSpinner.setModel( new SpinnerNumberModel((Long)(MailNodeSettings.TIMEOUT_MIN/1000l),
+                                                              (Long)(MailNodeSettings.TIMEOUT_MIN/1000l),
+                                                              (Long)(MailNodeSettings.TIMEOUT_MAX/1000l),
                                                               (Long)1l) );
-        timeoutLimitsJLabel.setText("(max=" + (MailTransformSettings.TIMEOUT_MAX/1000l) + " min=" +  (MailTransformSettings.TIMEOUT_MIN/1000l) + ")");
+        timeoutLimitsJLabel.setText("(max=" + (MailNodeSettings.TIMEOUT_MAX/1000l) + " min=" +  (MailNodeSettings.TIMEOUT_MIN/1000l) + ")");
 
         Util.addPanelFocus(this, smtpEnabledRadioButton);
         Util.addFocusHighlight(smtpInboundJSpinner);
@@ -148,30 +148,30 @@ public class MCasingJPanel extends com.untangle.gui.transform.MCasingJPanel<Main
 
         // SAVE SETTINGS ////////////
         if( !validateOnly ){
-            MailTransformSettings mailTransformSettings =
-                ((MailTransformCompoundSettings)maintenanceCompoundSettings.getMailTransformCompoundSettings()).getMailTransformSettings();
-            mailTransformSettings.setSmtpEnabled(isSmtpEnabled);
-            mailTransformSettings.setPopEnabled(isPopEnabled);
-            mailTransformSettings.setImapEnabled(isImapEnabled);
-            mailTransformSettings.setSmtpInboundTimeout(smtpInboundTimeout);
-            mailTransformSettings.setSmtpOutboundTimeout(smtpOutboundTimeout);
-            mailTransformSettings.setPopInboundTimeout(popInboundTimeout);
-            mailTransformSettings.setPopOutboundTimeout(popOutboundTimeout);
-            mailTransformSettings.setImapInboundTimeout(imapInboundTimeout);
-            mailTransformSettings.setImapOutboundTimeout(imapOutboundTimeout);
+            MailNodeSettings mailNodeSettings =
+                ((MailNodeCompoundSettings)maintenanceCompoundSettings.getMailNodeCompoundSettings()).getMailNodeSettings();
+            mailNodeSettings.setSmtpEnabled(isSmtpEnabled);
+            mailNodeSettings.setPopEnabled(isPopEnabled);
+            mailNodeSettings.setImapEnabled(isImapEnabled);
+            mailNodeSettings.setSmtpInboundTimeout(smtpInboundTimeout);
+            mailNodeSettings.setSmtpOutboundTimeout(smtpOutboundTimeout);
+            mailNodeSettings.setPopInboundTimeout(popInboundTimeout);
+            mailNodeSettings.setPopOutboundTimeout(popOutboundTimeout);
+            mailNodeSettings.setImapInboundTimeout(imapInboundTimeout);
+            mailNodeSettings.setImapOutboundTimeout(imapOutboundTimeout);
         }
 
     }
 
     public void doRefresh(MaintenanceCompoundSettings maintenanceCompoundSettings){
 
-        MailTransformSettings mailTransformSettings =
-            ((MailTransformCompoundSettings)maintenanceCompoundSettings.getMailTransformCompoundSettings()).getMailTransformSettings();
+        MailNodeSettings mailNodeSettings =
+            ((MailNodeCompoundSettings)maintenanceCompoundSettings.getMailNodeCompoundSettings()).getMailNodeSettings();
 
         // EMAIL ENABLED /////////
-        boolean isSmtpEnabled = mailTransformSettings.isSmtpEnabled();
-        boolean isPopEnabled = mailTransformSettings.isPopEnabled();
-        boolean isImapEnabled = mailTransformSettings.isImapEnabled();
+        boolean isSmtpEnabled = mailNodeSettings.isSmtpEnabled();
+        boolean isPopEnabled = mailNodeSettings.isPopEnabled();
+        boolean isImapEnabled = mailNodeSettings.isImapEnabled();
 
         if( isSmtpEnabled )
             smtpEnabledRadioButton.setSelected(true);
@@ -195,27 +195,27 @@ public class MCasingJPanel extends com.untangle.gui.transform.MCasingJPanel<Main
         Util.addSettingChangeListener(settingsChangedListener, this, imapDisabledRadioButton);
 
         // EMAIL TIMEOUT /////////////
-        smtpInboundJSpinner.setValue( (Long) (mailTransformSettings.getSmtpInboundTimeout()/1000l) );
+        smtpInboundJSpinner.setValue( (Long) (mailNodeSettings.getSmtpInboundTimeout()/1000l) );
         ((JSpinner.DefaultEditor)smtpInboundJSpinner.getEditor()).getTextField().setBackground(Color.WHITE);
         Util.addSettingChangeListener(settingsChangedListener, this, smtpInboundJSpinner);
 
-        smtpOutboundJSpinner.setValue( (Long) (mailTransformSettings.getSmtpOutboundTimeout()/1000l) );
+        smtpOutboundJSpinner.setValue( (Long) (mailNodeSettings.getSmtpOutboundTimeout()/1000l) );
         ((JSpinner.DefaultEditor)smtpOutboundJSpinner.getEditor()).getTextField().setBackground(Color.WHITE);
         Util.addSettingChangeListener(settingsChangedListener, this, smtpOutboundJSpinner);
 
-        popInboundJSpinner.setValue( (Long) (mailTransformSettings.getPopInboundTimeout()/1000l) );
+        popInboundJSpinner.setValue( (Long) (mailNodeSettings.getPopInboundTimeout()/1000l) );
         ((JSpinner.DefaultEditor)popInboundJSpinner.getEditor()).getTextField().setBackground(Color.WHITE);
         Util.addSettingChangeListener(settingsChangedListener, this, popInboundJSpinner);
 
-        popOutboundJSpinner.setValue( (Long) (mailTransformSettings.getPopOutboundTimeout()/1000l) );
+        popOutboundJSpinner.setValue( (Long) (mailNodeSettings.getPopOutboundTimeout()/1000l) );
         ((JSpinner.DefaultEditor)popOutboundJSpinner.getEditor()).getTextField().setBackground(Color.WHITE);
         Util.addSettingChangeListener(settingsChangedListener, this, popOutboundJSpinner);
 
-        imapInboundJSpinner.setValue( (Long) (mailTransformSettings.getImapInboundTimeout()/1000l) );
+        imapInboundJSpinner.setValue( (Long) (mailNodeSettings.getImapInboundTimeout()/1000l) );
         ((JSpinner.DefaultEditor)imapInboundJSpinner.getEditor()).getTextField().setBackground(Color.WHITE);
         Util.addSettingChangeListener(settingsChangedListener, this, imapInboundJSpinner);
 
-        imapOutboundJSpinner.setValue( (Long) (mailTransformSettings.getImapOutboundTimeout()/1000l) );
+        imapOutboundJSpinner.setValue( (Long) (mailNodeSettings.getImapOutboundTimeout()/1000l) );
         ((JSpinner.DefaultEditor)imapOutboundJSpinner.getEditor()).getTextField().setBackground(Color.WHITE);
         Util.addSettingChangeListener(settingsChangedListener, this, imapOutboundJSpinner);
     }

@@ -9,22 +9,22 @@
  * $Id$
  */
 
-package com.untangle.tran.spam;
+package com.untangle.node.spam;
 
-import static com.untangle.tran.util.Ascii.*;
+import static com.untangle.node.util.Ascii.*;
 
 import java.util.LinkedList;
 import java.util.List;
 
-import com.untangle.mvvm.tran.TemplateValues;
-import com.untangle.tran.token.header.IllegalFieldException;
+import com.untangle.uvm.node.TemplateValues;
+import com.untangle.node.token.header.IllegalFieldException;
 import org.apache.log4j.Logger;
 
 /**
  * Class to encapsulate a SPAM report.
  * <br>
  * <br>
- * This class also implements {@link com.untangle.tran.util.TemplateValues TemplateValues}.
+ * This class also implements {@link com.untangle.node.util.TemplateValues TemplateValues}.
  * Valid key names which can be derefferenced from a SpamReport begin with
  * the literal <code>SPAMReport:</code> followed by any of the following tokens:
  * <ul>

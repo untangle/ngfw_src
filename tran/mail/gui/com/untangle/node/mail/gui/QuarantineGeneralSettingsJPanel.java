@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.gui;
+package com.untangle.node.mail.gui;
 
 import java.awt.*;
 import java.util.*;
@@ -18,16 +18,16 @@ import javax.swing.event.*;
 import javax.swing.table.*;
 
 import com.untangle.gui.configuration.EmailCompoundSettings;
-import com.untangle.gui.transform.*;
+import com.untangle.gui.node.*;
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.dialogs.*;
 import com.untangle.gui.widgets.editTable.*;
-import com.untangle.mvvm.*;
-import com.untangle.mvvm.security.*;
-import com.untangle.mvvm.tran.*;
-import com.untangle.tran.mail.*;
-import com.untangle.tran.mail.papi.*;
-import com.untangle.tran.mail.papi.quarantine.*;
+import com.untangle.uvm.*;
+import com.untangle.uvm.security.*;
+import com.untangle.uvm.node.*;
+import com.untangle.node.mail.*;
+import com.untangle.node.mail.papi.*;
+import com.untangle.node.mail.papi.quarantine.*;
 
 public class QuarantineGeneralSettingsJPanel extends MEditTableJPanel {
 
@@ -93,7 +93,7 @@ class QuarantineGeneralSettingsTableModel extends MSortedTableModel<EmailCompoun
 
         // SAVE SETTINGS //////////
         if( !validateOnly ){
-            QuarantineSettings quarantineSettings = ((MailTransformCompoundSettings)emailCompoundSettings.getMailTransformCompoundSettings()).getQuarantineSettings();
+            QuarantineSettings quarantineSettings = ((MailNodeCompoundSettings)emailCompoundSettings.getMailNodeCompoundSettings()).getQuarantineSettings();
 
             quarantineSettings.setMaxMailIntern( ((long)maxHoldingDays) * 1440l * 60 * 1000l );
             quarantineSettings.setDigestHourOfDay( sendingHour );
@@ -103,8 +103,8 @@ class QuarantineGeneralSettingsTableModel extends MSortedTableModel<EmailCompoun
     }
 
     public Vector<Vector> generateRows(EmailCompoundSettings emailCompoundSettings){
-        MailTransformCompoundSettings mailTransformCompoundSettings = ((MailTransformCompoundSettings)emailCompoundSettings.getMailTransformCompoundSettings());
-        QuarantineSettings quarantineSettings = mailTransformCompoundSettings.getQuarantineSettings();
+        MailNodeCompoundSettings mailNodeCompoundSettings = ((MailNodeCompoundSettings)emailCompoundSettings.getMailNodeCompoundSettings());
+        QuarantineSettings quarantineSettings = mailNodeCompoundSettings.getQuarantineSettings();
         Vector<Vector> allRows = new Vector<Vector>(3);
         int rowIndex = 0;
         Vector tempRow;
@@ -140,8 +140,8 @@ class QuarantineGeneralSettingsTableModel extends MSortedTableModel<EmailCompoun
           tempRow.add( super.ROW_SAVED );
           tempRow.add( rowIndex );
           tempRow.add( "Maximum Quarantine Space (MB)" );
-          int min = (int) mailTransformCompoundSettings.getMinStorageGigs();
-          int max = (int) mailTransformCompoundSettings.getMaxStorageGigs();
+          int min = (int) mailNodeCompoundSettings.getMinStorageGigs();
+          int max = (int) mailNodeCompoundSettings.getMaxStorageGigs();
           tempRow.add( new SpinnerNumberModel( (int)(quarantineSettings.getMaxQuarantineTotalSz()/1024l/1024l/1024l), min, max, 1) );
           tempRow.add( "This is the maximum amount of disk space (in MB) that will be used to quarantine emails." );
           allRows.add( tempRow );

@@ -9,37 +9,37 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.impl.smtp;
+package com.untangle.node.mail.impl.smtp;
 
-import static com.untangle.tran.util.BufferUtil.*;
+import static com.untangle.node.util.BufferUtil.*;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.untangle.mvvm.tapi.TCPSession;
-import com.untangle.tran.mail.papi.AddressKind;
-import com.untangle.tran.mail.papi.BeginMIMEToken;
-import com.untangle.tran.mail.papi.ContinuedMIMEToken;
-import com.untangle.tran.mail.papi.MIMEAccumulator;
-import com.untangle.tran.mail.papi.MessageBoundaryScanner;
-import com.untangle.tran.mail.papi.MessageInfo;
-import com.untangle.tran.mail.papi.MessageInfoFactory;
-import com.untangle.tran.mail.papi.smtp.AUTHCommand;
-import com.untangle.tran.mail.papi.smtp.Command;
-import com.untangle.tran.mail.papi.smtp.CommandParser;
-import com.untangle.tran.mail.papi.smtp.SASLExchangeToken;
-import com.untangle.tran.mail.papi.smtp.SmtpTransaction;
-import com.untangle.tran.mail.papi.smtp.UnparsableCommand;
-import com.untangle.tran.mime.EmailAddress;
-import com.untangle.tran.mime.MIMEMessageHeaders;
-import com.untangle.tran.token.Chunk;
-import com.untangle.tran.token.ParseException;
-import com.untangle.tran.token.ParseResult;
-import com.untangle.tran.token.PassThruToken;
-import com.untangle.tran.token.Token;
-import com.untangle.tran.util.ASCIIUtil;
+import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.node.mail.papi.AddressKind;
+import com.untangle.node.mail.papi.BeginMIMEToken;
+import com.untangle.node.mail.papi.ContinuedMIMEToken;
+import com.untangle.node.mail.papi.MIMEAccumulator;
+import com.untangle.node.mail.papi.MessageBoundaryScanner;
+import com.untangle.node.mail.papi.MessageInfo;
+import com.untangle.node.mail.papi.MessageInfoFactory;
+import com.untangle.node.mail.papi.smtp.AUTHCommand;
+import com.untangle.node.mail.papi.smtp.Command;
+import com.untangle.node.mail.papi.smtp.CommandParser;
+import com.untangle.node.mail.papi.smtp.SASLExchangeToken;
+import com.untangle.node.mail.papi.smtp.SmtpTransaction;
+import com.untangle.node.mail.papi.smtp.UnparsableCommand;
+import com.untangle.node.mime.EmailAddress;
+import com.untangle.node.mime.MIMEMessageHeaders;
+import com.untangle.node.token.Chunk;
+import com.untangle.node.token.ParseException;
+import com.untangle.node.token.ParseResult;
+import com.untangle.node.token.PassThruToken;
+import com.untangle.node.token.Token;
+import com.untangle.node.util.ASCIIUtil;
 import org.apache.log4j.Logger;
 
 
@@ -285,7 +285,7 @@ class SmtpClientParser
                 if(!m_sac.accumulator.addHeaderBytes(dup2, endOfHeaders)) {
                     m_logger.error("Unable to write header bytes to disk.  Enter passthru");
                     //TODO bscott THis still needs to be more gracefully unwound
-                    //     in the stateful transforms
+                    //     in the stateful nodes
                     puntDuringHeaders(toks, dup);
                     return new ParseResult(toks, null);
                 }

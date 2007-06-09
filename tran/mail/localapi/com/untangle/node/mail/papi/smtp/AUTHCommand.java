@@ -9,9 +9,9 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.papi.smtp;
+package com.untangle.node.mail.papi.smtp;
 
-import com.untangle.tran.token.ParseException;
+import com.untangle.node.token.ParseException;
 
 
 /**

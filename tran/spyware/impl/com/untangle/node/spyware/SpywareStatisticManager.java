@@ -8,18 +8,18 @@
  *
  * $Id$
  */
-package com.untangle.tran.spyware;
+package com.untangle.node.spyware;
 
-import com.untangle.mvvm.logging.EventLoggerFactory;
-import com.untangle.mvvm.logging.StatisticEvent;
-import com.untangle.mvvm.tran.StatisticManager;
-import com.untangle.mvvm.tran.TransformContext;
+import com.untangle.uvm.logging.EventLoggerFactory;
+import com.untangle.uvm.logging.StatisticEvent;
+import com.untangle.uvm.node.StatisticManager;
+import com.untangle.uvm.node.NodeContext;
 
 class SpywareStatisticManager extends StatisticManager {
 
     private SpywareStatisticEvent statisticEvent = new SpywareStatisticEvent();
 
-    public SpywareStatisticManager(TransformContext tctx) {
+    public SpywareStatisticManager(NodeContext tctx) {
         super(EventLoggerFactory.factory().getEventLogger(tctx));
     }
 

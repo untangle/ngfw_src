@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.gui;
+package com.untangle.node.mail.gui;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -20,13 +20,13 @@ import javax.swing.event.*;
 import javax.swing.table.*;
 
 import com.untangle.gui.configuration.EmailCompoundSettings;
-import com.untangle.gui.transform.*;
+import com.untangle.gui.node.*;
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.coloredTable.*;
 import com.untangle.gui.widgets.editTable.*;
-import com.untangle.mvvm.tran.*;
-import com.untangle.tran.mail.papi.*;
-import com.untangle.tran.mail.papi.safelist.*;
+import com.untangle.uvm.node.*;
+import com.untangle.node.mail.papi.*;
+import com.untangle.node.mail.papi.safelist.*;
 
 public class WhitelistAllUsersJPanel extends javax.swing.JPanel
     implements Refreshable<EmailCompoundSettings>, ComponentListener {
@@ -34,7 +34,7 @@ public class WhitelistAllUsersJPanel extends javax.swing.JPanel
     private static final Color TABLE_BACKGROUND_COLOR = new Color(213, 213, 226);
 
     private WhitelistAllUsersTableModel whitelistAllUsersTableModel;
-    private MailTransformCompoundSettings mailTransformCompoundSettings;
+    private MailNodeCompoundSettings mailNodeCompoundSettings;
 
     public WhitelistAllUsersJPanel() {
         // INIT GUI & CUSTOM INIT
@@ -51,8 +51,8 @@ public class WhitelistAllUsersJPanel extends javax.swing.JPanel
     }
 
     public void doRefresh(EmailCompoundSettings emailCompoundSettings){
-        mailTransformCompoundSettings = (MailTransformCompoundSettings) emailCompoundSettings.getMailTransformCompoundSettings();
-        whitelistAllUsersTableModel.doRefresh(mailTransformCompoundSettings);
+        mailNodeCompoundSettings = (MailNodeCompoundSettings) emailCompoundSettings.getMailNodeCompoundSettings();
+        whitelistAllUsersTableModel.doRefresh(mailNodeCompoundSettings);
     }
 
     public void setTableModel(MSortedTableModel mSortedTableModel){
@@ -176,10 +176,10 @@ public class WhitelistAllUsersJPanel extends javax.swing.JPanel
         // show detail dialog
         Vector<Vector> dataVector = whitelistAllUsersTableModel.getDataVector();
         String account = (String) dataVector.elementAt(selectedModelRows[0]).elementAt(2);
-        (new WhitelistUserJDialog((Dialog)getTopLevelAncestor(), mailTransformCompoundSettings, account)).setVisible(true);
+        (new WhitelistUserJDialog((Dialog)getTopLevelAncestor(), mailNodeCompoundSettings, account)).setVisible(true);
 
         // refresh
-        whitelistAllUsersTableModel.doRefresh(mailTransformCompoundSettings);
+        whitelistAllUsersTableModel.doRefresh(mailNodeCompoundSettings);
     }//GEN-LAST:event_detailJButtonActionPerformed
 
     private void removeJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeJButtonActionPerformed
@@ -199,13 +199,13 @@ public class WhitelistAllUsersJPanel extends javax.swing.JPanel
         for( int i : selectedModelRows ){
             account = (String) dataVector.elementAt(i).elementAt(2);
             try{
-                mailTransformCompoundSettings.getSafelistAdminView().deleteSafelist(account);
+                mailNodeCompoundSettings.getSafelistAdminView().deleteSafelist(account);
             }
             catch(Exception e){Util.handleExceptionNoRestart("Error deleting whitelist: " + account, e);}
         }
 
         // refresh
-        whitelistAllUsersTableModel.doRefresh(mailTransformCompoundSettings);
+        whitelistAllUsersTableModel.doRefresh(mailNodeCompoundSettings);
     }//GEN-LAST:event_removeJButtonActionPerformed
 
     private int[] getSelectedModelRows(){
@@ -234,7 +234,7 @@ public class WhitelistAllUsersJPanel extends javax.swing.JPanel
 
 
 
-class WhitelistAllUsersTableModel extends MSortedTableModel<MailTransformCompoundSettings> {
+class WhitelistAllUsersTableModel extends MSortedTableModel<MailNodeCompoundSettings> {
 
     private SafelistAdminView safelistAdminView;
     private static final StringConstants sc = StringConstants.getInstance();
@@ -255,14 +255,14 @@ class WhitelistAllUsersTableModel extends MSortedTableModel<MailTransformCompoun
 
 
 
-    public void generateSettings(MailTransformCompoundSettings mailTransformCompoundSettings,
+    public void generateSettings(MailNodeCompoundSettings mailNodeCompoundSettings,
                                  Vector<Vector> tableVector, boolean validateOnly) throws Exception { }
 
 
-    public Vector<Vector> generateRows(MailTransformCompoundSettings mailTransformCompoundSettings) {
+    public Vector<Vector> generateRows(MailNodeCompoundSettings mailNodeCompoundSettings) {
 
-        java.util.List<String> safelists = mailTransformCompoundSettings.getSafelists();
-        int[] counts = mailTransformCompoundSettings.getSafelistCounts();
+        java.util.List<String> safelists = mailNodeCompoundSettings.getSafelists();
+        int[] counts = mailNodeCompoundSettings.getSafelistCounts();
 
         Vector<Vector> allRows = new Vector<Vector>(safelists.size());
         Vector tempRow = null;

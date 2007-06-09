@@ -9,18 +9,18 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.impl.smtp;
+package com.untangle.node.mail.impl.smtp;
 
-import static com.untangle.tran.util.BufferUtil.*;
-import static com.untangle.tran.util.ASCIIUtil.*;
+import static com.untangle.node.util.BufferUtil.*;
+import static com.untangle.node.util.ASCIIUtil.*;
 
 import java.nio.ByteBuffer;
 
-import com.untangle.tran.mail.papi.smtp.NotAnSMTPResponseLineException;
-import com.untangle.tran.mail.papi.smtp.Response;
-import com.untangle.tran.mail.papi.smtp.ResponseParser;
-import com.untangle.tran.sasl.SASLObserver;
-import com.untangle.tran.util.ByteBufferBuilder;
+import com.untangle.node.mail.papi.smtp.NotAnSMTPResponseLineException;
+import com.untangle.node.mail.papi.smtp.Response;
+import com.untangle.node.mail.papi.smtp.ResponseParser;
+import com.untangle.node.sasl.SASLObserver;
+import com.untangle.node.util.ByteBufferBuilder;
 import org.apache.log4j.Logger;
 import sun.misc.BASE64Decoder;
 

@@ -9,18 +9,18 @@
  * $Id$
  */
 
-package com.untangle.tran.ids;
+package com.untangle.node.ids;
 
 import java.util.List;
 import java.util.Vector;
 import java.util.regex.*;
 
-import com.untangle.mvvm.tapi.Protocol;
-import com.untangle.mvvm.tran.ParseException;
-import com.untangle.mvvm.tran.PortRange;
-import com.untangle.mvvm.tran.firewall.ip.IPMatcher;
-import com.untangle.mvvm.tran.firewall.ip.IPMatcherFactory;
-import com.untangle.tran.ids.options.*;
+import com.untangle.uvm.tapi.Protocol;
+import com.untangle.uvm.node.ParseException;
+import com.untangle.uvm.node.PortRange;
+import com.untangle.uvm.node.firewall.ip.IPMatcher;
+import com.untangle.uvm.node.firewall.ip.IPMatcherFactory;
+import com.untangle.node.ids.options.*;
 
 public class IDSStringParser {
 
@@ -44,7 +44,7 @@ public class IDSStringParser {
         return parts;
     }
 
-    public static IDSRuleSignature parseSignature(IDSTransformImpl ids, String signatureString, int action, IDSRule rule, boolean initializeSettingsTime) throws ParseException {
+    public static IDSRuleSignature parseSignature(IDSNodeImpl ids, String signatureString, int action, IDSRule rule, boolean initializeSettingsTime) throws ParseException {
         IDSRuleSignature returnSignature = new IDSRuleSignature(ids, action, rule);
 
         String replaceChar = ""+0xff42;

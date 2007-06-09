@@ -8,7 +8,7 @@
  *
  * $Id$
  */
-package com.untangle.tran.openvpn;
+package com.untangle.node.openvpn;
 
 import java.io.Serializable;
 import java.util.HashSet;
@@ -16,10 +16,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import com.untangle.mvvm.tran.AddressRange;
-import com.untangle.mvvm.tran.AddressValidator;
-import com.untangle.mvvm.tran.Validatable;
-import com.untangle.mvvm.tran.ValidateException;
+import com.untangle.uvm.node.AddressRange;
+import com.untangle.uvm.node.AddressValidator;
+import com.untangle.uvm.node.Validatable;
+import com.untangle.uvm.node.ValidateException;
 
 public class SiteList implements Serializable, Validatable
 {

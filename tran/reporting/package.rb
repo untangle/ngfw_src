@@ -1,3 +1,3 @@
 # -*-ruby-*-
 
-TransformBuilder.makeTransform(BuildEnv::ALPINE, 'reporting')
+NodeBuilder.makeNode(BuildEnv::SRC, 'reporting')

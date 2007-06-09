@@ -9,8 +9,8 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.papi.smtp;
-import static com.untangle.tran.util.ASCIIUtil.bbToString;
+package com.untangle.node.mail.papi.smtp;
+import static com.untangle.node.util.ASCIIUtil.bbToString;
 import java.nio.ByteBuffer;
 
 /**

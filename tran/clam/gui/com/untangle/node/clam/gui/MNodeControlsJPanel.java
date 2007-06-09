@@ -10,22 +10,22 @@
  */
 
 
-package com.untangle.tran.clam.gui;
+package com.untangle.node.clam.gui;
 
-import com.untangle.gui.transform.*;
+import com.untangle.gui.node.*;
 import com.untangle.gui.pipeline.MPipelineJPanel;
 
-import com.untangle.mvvm.*;
-import com.untangle.mvvm.tran.*;
+import com.untangle.uvm.*;
+import com.untangle.uvm.node.*;
 
 
 import javax.swing.JTabbedPane;
 import javax.swing.border.EmptyBorder;
 
-public class MTransformControlsJPanel extends com.untangle.tran.virus.gui.MTransformControlsJPanel{
+public class MNodeControlsJPanel extends com.untangle.node.virus.gui.MNodeControlsJPanel{
         
-    public MTransformControlsJPanel(MTransformJPanel mTransformJPanel) {
-        super(mTransformJPanel);
+    public MNodeControlsJPanel(MNodeJPanel mNodeJPanel) {
+        super(mNodeJPanel);
     }
     
 }

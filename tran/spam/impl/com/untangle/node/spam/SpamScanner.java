@@ -8,7 +8,7 @@
  *
  * $Id$
  */
-package com.untangle.tran.spam;
+package com.untangle.node.spam;
 
 import java.io.File;
 
@@ -16,7 +16,7 @@ public interface SpamScanner
 {
 
     /**
-     * Gets the name of the vendor of this transform's spam scanner, used for logging.
+     * Gets the name of the vendor of this node's spam scanner, used for logging.
      *
      * @return a <code>String</code> giving the name of the vendor of this scanner
      */

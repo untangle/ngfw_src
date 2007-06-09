@@ -9,15 +9,15 @@
  * $Id$
  */
 
-package com.untangle.tran.ftp;
+package com.untangle.node.ftp;
 
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.util.regex.Pattern;
 
-import com.untangle.tran.token.ParseException;
-import com.untangle.tran.token.Token;
-import com.untangle.tran.util.AsciiCharBuffer;
+import com.untangle.node.token.ParseException;
+import com.untangle.node.token.Token;
+import com.untangle.node.util.AsciiCharBuffer;
 
 /**
  * FTP server reply to a command.

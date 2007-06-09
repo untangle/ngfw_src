@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.openvpn.gui;
+package com.untangle.node.openvpn.gui;
 
 import java.util.*;
 import javax.swing.ComboBoxModel;
@@ -18,16 +18,16 @@ import javax.swing.SwingUtilities;
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.editTable.*;
 import com.untangle.gui.widgets.wizard.*;
-import com.untangle.mvvm.security.*;
-import com.untangle.mvvm.tran.*;
-import com.untangle.tran.openvpn.*;
+import com.untangle.uvm.security.*;
+import com.untangle.uvm.node.*;
+import com.untangle.node.openvpn.*;
 
 public class ServerRoutingWizardClientsJPanel extends MWizardPageJPanel {
 
-    private VpnTransform vpnTransform;
+    private VpnNode vpnNode;
 
-    public ServerRoutingWizardClientsJPanel(VpnTransform vpnTransform) {
-        this.vpnTransform = vpnTransform;
+    public ServerRoutingWizardClientsJPanel(VpnNode vpnNode) {
+        this.vpnNode = vpnNode;
         initComponents();
         ((MEditTableJPanel)configClientToSiteJPanel).setShowDetailJPanelEnabled(false);
         ((MEditTableJPanel)configClientToSiteJPanel).setInstantRemove(true);
@@ -38,7 +38,7 @@ public class ServerRoutingWizardClientsJPanel extends MWizardPageJPanel {
         try{
             SwingUtilities.invokeAndWait( new Runnable(){ public void run() {
                 try{
-                    GroupList groupList = vpnTransform.getAddressGroups();
+                    GroupList groupList = vpnNode.getAddressGroups();
                     ((TableModelClientToSite)((MEditTableJPanel)configClientToSiteJPanel).getTableModel()).updateGroupModel( (List<VpnGroup>) groupList.getGroupList() );
                     ((MEditTableJPanel)configClientToSiteJPanel).getTableModel().clearAllRows();
 
@@ -86,7 +86,7 @@ public class ServerRoutingWizardClientsJPanel extends MWizardPageJPanel {
             try{
                 ServerRoutingWizard.getInfiniteProgressJComponent().startLater("Adding VPN Clients...");
                 ClientList clientList = new ClientList(elemList);
-                vpnTransform.setClients(clientList);
+                vpnNode.setClients(clientList);
                 ServerRoutingWizard.getInfiniteProgressJComponent().stopLater(1500l);
             }
             catch(Exception e){

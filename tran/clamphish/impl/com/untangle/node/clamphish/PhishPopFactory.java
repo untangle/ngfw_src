@@ -9,25 +9,25 @@
  * $Id$
  */
 
-package com.untangle.tran.clamphish;
+package com.untangle.node.clamphish;
 
-import com.untangle.mvvm.tapi.TCPNewSessionRequest;
-import com.untangle.mvvm.tapi.TCPSession;
-import com.untangle.tran.mail.papi.MailExport;
-import com.untangle.tran.mail.papi.MailExportFactory;
-import com.untangle.tran.token.TokenHandler;
-import com.untangle.tran.token.TokenHandlerFactory;
+import com.untangle.uvm.tapi.TCPNewSessionRequest;
+import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.node.mail.papi.MailExport;
+import com.untangle.node.mail.papi.MailExportFactory;
+import com.untangle.node.token.TokenHandler;
+import com.untangle.node.token.TokenHandlerFactory;
 
 public class PhishPopFactory implements TokenHandlerFactory
 {
-    private final ClamPhishTransform transform;
+    private final ClamPhishNode node;
     private final MailExport zMExport;
 
     // constructors -----------------------------------------------------------
 
-    PhishPopFactory(ClamPhishTransform transform)
+    PhishPopFactory(ClamPhishNode node)
     {
-        this.transform = transform;
+        this.node = node;
         zMExport = MailExportFactory.factory().getExport();
     }
 
@@ -35,7 +35,7 @@ public class PhishPopFactory implements TokenHandlerFactory
 
     public TokenHandler tokenHandler(TCPSession session)
     {
-        return new PhishPopHandler(session, transform, zMExport);
+        return new PhishPopHandler(session, node, zMExport);
     }
 
     public void handleNewSessionRequest(TCPNewSessionRequest tsr)

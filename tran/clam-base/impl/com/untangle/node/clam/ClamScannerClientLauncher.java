@@ -8,7 +8,7 @@
  *
  * $Id$
  */
-package com.untangle.tran.clam;
+package com.untangle.node.clam;
 
 import java.io.File;
 import java.lang.Thread;
@@ -18,11 +18,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.tran.virus.VirusClientContext;
-import com.untangle.tran.virus.VirusClientSocket;
-import com.untangle.tran.virus.VirusScannerClientLauncher;
-import com.untangle.tran.virus.VirusScannerResult;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.node.virus.VirusClientContext;
+import com.untangle.node.virus.VirusClientSocket;
+import com.untangle.node.virus.VirusScannerClientLauncher;
+import com.untangle.node.virus.VirusScannerResult;
 import org.apache.log4j.Logger;
 
 public class ClamScannerClientLauncher extends VirusScannerClientLauncher {
@@ -86,7 +86,7 @@ public class ClamScannerClientLauncher extends VirusScannerClientLauncher {
     private ClamClient createClient() {
         cContext = new VirusClientContext(msgFile, VirusClientSocket.CLAMD_DEFHOST, VirusClientSocket.CLAMD_DEFPORT);
         client = new ClamClient(cContext);
-        Thread thread = MvvmContextFactory.context().newThread(client);
+        Thread thread = UvmContextFactory.context().newThread(client);
         client.setThread(thread);
         return client;
     }

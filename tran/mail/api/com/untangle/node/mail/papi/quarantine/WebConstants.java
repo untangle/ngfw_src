@@ -8,7 +8,7 @@
  *
  * $Id$
  */
-package com.untangle.tran.mail.papi.quarantine;
+package com.untangle.node.mail.papi.quarantine;
 
 public class WebConstants {
 

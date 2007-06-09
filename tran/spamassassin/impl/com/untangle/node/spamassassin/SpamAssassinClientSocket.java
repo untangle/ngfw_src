@@ -9,7 +9,7 @@
  * $Id: $
  */
 
-package com.untangle.tran.spamassassin;
+package com.untangle.node.spamassassin;
 
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;

@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.openvpn;
+package com.untangle.node.openvpn;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -22,8 +22,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import com.untangle.mvvm.tran.IPaddr;
-import com.untangle.mvvm.tran.ValidateException;
+import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.ValidateException;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.IndexColumn;
 

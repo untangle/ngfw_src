@@ -9,11 +9,11 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.papi;
+package com.untangle.node.mail.papi;
 
 import java.nio.ByteBuffer;
 
-import com.untangle.tran.token.Token;
+import com.untangle.node.token.Token;
 
 public class DoNotCareChunkT implements Token
 {

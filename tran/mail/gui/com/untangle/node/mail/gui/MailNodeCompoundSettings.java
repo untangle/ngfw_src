@@ -9,30 +9,30 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.gui;
+package com.untangle.node.mail.gui;
 
 import java.awt.Component;
 import java.util.Arrays;
 import java.util.List;
 
-import com.untangle.gui.transform.CompoundSettings;
+import com.untangle.gui.node.CompoundSettings;
 import com.untangle.gui.util.Util;
-import com.untangle.tran.mail.papi.MailTransform;
-import com.untangle.tran.mail.papi.MailTransformSettings;
-import com.untangle.tran.mail.papi.quarantine.Inbox;
-import com.untangle.tran.mail.papi.quarantine.InboxIndex;
-import com.untangle.tran.mail.papi.quarantine.QuarantineMaintenenceView;
-import com.untangle.tran.mail.papi.quarantine.QuarantineSettings;
-import com.untangle.tran.mail.papi.safelist.SafelistAdminView;
+import com.untangle.node.mail.papi.MailNode;
+import com.untangle.node.mail.papi.MailNodeSettings;
+import com.untangle.node.mail.papi.quarantine.Inbox;
+import com.untangle.node.mail.papi.quarantine.InboxIndex;
+import com.untangle.node.mail.papi.quarantine.QuarantineMaintenenceView;
+import com.untangle.node.mail.papi.quarantine.QuarantineSettings;
+import com.untangle.node.mail.papi.safelist.SafelistAdminView;
 
-public class MailTransformCompoundSettings implements CompoundSettings {
+public class MailNodeCompoundSettings implements CompoundSettings {
 
     public static final String GLOBAL_BUSINESS_PAPERS = "GLOBAL";
 
-    // MAIL TRANSFORM SETTINGS //
-    private MailTransformSettings mailTransformSettings;
-    public MailTransformSettings getMailTransformSettings(){ return mailTransformSettings; }
-    private MailTransform mailTransform;
+    // MAIL NODE SETTINGS //
+    private MailNodeSettings mailNodeSettings;
+    public MailNodeSettings getMailNodeSettings(){ return mailNodeSettings; }
+    private MailNode mailNode;
 
     // GENERAL SETTINGS //
     private Component generalSettingsComponent;
@@ -113,43 +113,43 @@ public class MailTransformCompoundSettings implements CompoundSettings {
 
 
     public void save() throws Exception {
-        mailTransformSettings.setQuarantineSettings(quarantineSettings);
-        mailTransform.setMailTransformSettings(mailTransformSettings);
+        mailNodeSettings.setQuarantineSettings(quarantineSettings);
+        mailNode.setMailNodeSettings(mailNodeSettings);
 
         // GLOBAL STUFF //
         safelistAdminView.replaceSafelist(GLOBAL_BUSINESS_PAPERS, globalSafelist.toArray(new String[0]));
     }
 
     public void refresh() throws Exception {
-        if(mailTransform == null)
-            mailTransform = (MailTransform) Util.getTransform("mail-casing");
-        mailTransformSettings = mailTransform.getMailTransformSettings();
-        quarantineSettings = mailTransformSettings.getQuarantineSettings();
+        if(mailNode == null)
+            mailNode = (MailNode) Util.getNode("mail-casing");
+        mailNodeSettings = mailNode.getMailNodeSettings();
+        quarantineSettings = mailNodeSettings.getQuarantineSettings();
 
         // GENERAL SETTINGS //
-        minStorageGigs = mailTransform.getMinAllocatedStoreSize(true);
-        maxStorageGigs = mailTransform.getMaxAllocatedStoreSize(true);
+        minStorageGigs = mailNode.getMinAllocatedStoreSize(true);
+        maxStorageGigs = mailNode.getMaxAllocatedStoreSize(true);
 
         if(quarantineMaintenanceView == null)
-            quarantineMaintenanceView = mailTransform.getQuarantineMaintenenceView();
+            quarantineMaintenanceView = mailNode.getQuarantineMaintenenceView();
         if(safelistAdminView == null)
-            safelistAdminView = mailTransform.getSafelistAdminView();
+            safelistAdminView = mailNode.getSafelistAdminView();
 
         // GLOBAL STUFF //
         globalSafelist = Arrays.asList( safelistAdminView.getSafelistContents(GLOBAL_BUSINESS_PAPERS) );
 
         if(generalSettingsComponent == null)
-            generalSettingsComponent = Util.getSettingsComponent("com.untangle.tran.mail.gui.MCasingJPanel", "mail-casing");
+            generalSettingsComponent = Util.getSettingsComponent("com.untangle.node.mail.gui.MCasingJPanel", "mail-casing");
         if(safelistComponent == null)
-            safelistComponent = Util.getSettingsComponent("com.untangle.tran.mail.gui.WhitelistAllUsersJPanel", "mail-casing");
+            safelistComponent = Util.getSettingsComponent("com.untangle.node.mail.gui.WhitelistAllUsersJPanel", "mail-casing");
         if(quarantineReleaseAndPurgeComponent == null)
-            quarantineReleaseAndPurgeComponent = Util.getSettingsComponent("com.untangle.tran.mail.gui.QuarantineAllUsersJPanel", "mail-casing");
+            quarantineReleaseAndPurgeComponent = Util.getSettingsComponent("com.untangle.node.mail.gui.QuarantineAllUsersJPanel", "mail-casing");
         if(quarantinableAddressesComponent == null)
-            quarantinableAddressesComponent = Util.getSettingsComponent("com.untangle.tran.mail.gui.QuarantinableAddressesJPanel", "mail-casing");
+            quarantinableAddressesComponent = Util.getSettingsComponent("com.untangle.node.mail.gui.QuarantinableAddressesJPanel", "mail-casing");
         if(quarantinableForwardsComponent == null)
-            quarantinableForwardsComponent = Util.getSettingsComponent("com.untangle.tran.mail.gui.QuarantinableForwardsJPanel", "mail-casing");
+            quarantinableForwardsComponent = Util.getSettingsComponent("com.untangle.node.mail.gui.QuarantinableForwardsJPanel", "mail-casing");
         if(quarantineGeneralSettingsComponent == null)
-            quarantineGeneralSettingsComponent = Util.getSettingsComponent("com.untangle.tran.mail.gui.QuarantineGeneralSettingsJPanel", "mail-casing");
+            quarantineGeneralSettingsComponent = Util.getSettingsComponent("com.untangle.node.mail.gui.QuarantineGeneralSettingsJPanel", "mail-casing");
     }
 
     public void validate() throws Exception {

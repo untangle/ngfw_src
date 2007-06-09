@@ -8,12 +8,12 @@
  *
  * $Id$
  */
-package com.untangle.tran.kav;
+package com.untangle.node.kav;
 
 import java.io.File;
 
-import com.untangle.tran.virus.VirusScanner;
-import com.untangle.tran.virus.VirusScannerResult;
+import com.untangle.node.virus.VirusScanner;
+import com.untangle.node.virus.VirusScannerResult;
 
 public class KavTest
 {

@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.spam;
+package com.untangle.node.spam;
 
 import java.io.Serializable;
 import javax.persistence.CascadeType;
@@ -25,7 +25,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import com.untangle.tran.mail.papi.smtp.SmtpNotifyMessageGenerator;
+import com.untangle.node.mail.papi.smtp.SmtpNotifyMessageGenerator;
 import org.hibernate.annotations.Type;
 
 /**
@@ -146,7 +146,7 @@ public class SpamSMTPConfig extends SpamProtoConfig
      * @return the action to take if a message is judged to be spam.
      */
     @Column(name="msg_action", nullable=false)
-    @Type(type="com.untangle.tran.spam.SMTPSpamMessageActionUserType")
+    @Type(type="com.untangle.node.spam.SMTPSpamMessageActionUserType")
     public SMTPSpamMessageAction getMsgAction()
     {
         return zMsgAction;
@@ -180,7 +180,7 @@ public class SpamSMTPConfig extends SpamProtoConfig
      * @return the action to take if a message is judged to be spam.
      */
     @Column(name="notify_action", nullable=false)
-    @Type(type="com.untangle.tran.spam.SpamSMTPNotifyActionUserType")
+    @Type(type="com.untangle.node.spam.SpamSMTPNotifyActionUserType")
     public SpamSMTPNotifyAction getNotifyAction()
     {
         return zNotifyAction;

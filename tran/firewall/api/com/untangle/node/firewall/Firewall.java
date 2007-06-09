@@ -8,12 +8,12 @@
  *
  * $Id$
  */
-package com.untangle.tran.firewall;
+package com.untangle.node.firewall;
 
-import com.untangle.mvvm.logging.EventManager;
-import com.untangle.mvvm.tran.Transform;
+import com.untangle.uvm.logging.EventManager;
+import com.untangle.uvm.node.Node;
 
-public interface Firewall extends Transform
+public interface Firewall extends Node
 {
     FirewallSettings getFirewallSettings();
     void setFirewallSettings( FirewallSettings settings );

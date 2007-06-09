@@ -9,11 +9,11 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.papi.imap;
+package com.untangle.node.mail.papi.imap;
 
 import java.nio.ByteBuffer;
 
-import com.untangle.tran.token.Chunk;
+import com.untangle.node.token.Chunk;
 
 
 /**

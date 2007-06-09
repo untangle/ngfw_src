@@ -9,18 +9,18 @@
  * $Id$
  */
 
-package com.untangle.tran.clamphish;
+package com.untangle.node.clamphish;
 
 import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.tran.clam.ClamScannerClientLauncher;
-import com.untangle.tran.spam.ReportItem;
-import com.untangle.tran.spam.SpamReport;
-import com.untangle.tran.spam.SpamScanner;
-import com.untangle.tran.virus.VirusScannerResult;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.node.clam.ClamScannerClientLauncher;
+import com.untangle.node.spam.ReportItem;
+import com.untangle.node.spam.SpamReport;
+import com.untangle.node.spam.SpamScanner;
+import com.untangle.node.virus.VirusScannerResult;
 import org.apache.log4j.Logger;
 
 public class ClamPhishScanner implements SpamScanner

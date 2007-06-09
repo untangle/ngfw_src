@@ -8,9 +8,9 @@
  *
  * $Id$
  */
-package com.untangle.tran.ftp;
+package com.untangle.node.ftp;
 
-public interface FtpTransform
+public interface FtpNode
 {
     FtpSettings getFtpSettings();
     void setFtpSettings(FtpSettings settings);

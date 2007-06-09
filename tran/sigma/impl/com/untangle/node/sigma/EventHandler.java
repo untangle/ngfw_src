@@ -9,11 +9,11 @@
  * $Id$
  */
 
-package com.untangle.tran.sigma;
+package com.untangle.node.sigma;
 
-import com.untangle.mvvm.tapi.*;
-import com.untangle.mvvm.tapi.event.*;
-import com.untangle.mvvm.tran.Transform;
+import com.untangle.uvm.tapi.*;
+import com.untangle.uvm.tapi.event.*;
+import com.untangle.uvm.node.Node;
 import org.apache.log4j.Logger;
 
 public class EventHandler extends AbstractEventHandler
@@ -24,9 +24,9 @@ public class EventHandler extends AbstractEventHandler
         public int myState;
     }
 
-    public EventHandler(Transform transform)
+    public EventHandler(Node node)
     {
-        super(transform);
+        super(node);
     }
 
     public void handleTCPNewSession (TCPSessionEvent event)

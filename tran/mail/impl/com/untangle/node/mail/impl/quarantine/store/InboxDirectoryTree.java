@@ -9,11 +9,11 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.impl.quarantine.store;
+package com.untangle.node.mail.impl.quarantine.store;
 
 import java.io.*;
 
-import com.untangle.tran.util.IOUtil;
+import com.untangle.node.util.IOUtil;
 
 
 

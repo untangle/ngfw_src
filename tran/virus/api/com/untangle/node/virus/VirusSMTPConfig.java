@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.virus;
+package com.untangle.node.virus;
 
 import java.io.Serializable;
 import javax.persistence.CascadeType;
@@ -25,8 +25,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import com.untangle.tran.mail.papi.smtp.SMTPNotifyAction;
-import com.untangle.tran.mail.papi.smtp.SmtpNotifyMessageGenerator;
+import com.untangle.node.mail.papi.smtp.SMTPNotifyAction;
+import com.untangle.node.mail.papi.smtp.SmtpNotifyMessageGenerator;
 import org.hibernate.annotations.Type;
 
 /**
@@ -121,7 +121,7 @@ public class VirusSMTPConfig extends VirusMailConfig implements Serializable
      * @return the action to take if a message is judged to be virus.
      */
     @Column(name="action", nullable=false)
-    @Type(type="com.untangle.tran.virus.SMTPVirusMessageActionUserType")
+    @Type(type="com.untangle.node.virus.SMTPVirusMessageActionUserType")
     public SMTPVirusMessageAction getMsgAction()
     {
         return zMsgAction;
@@ -155,7 +155,7 @@ public class VirusSMTPConfig extends VirusMailConfig implements Serializable
      * @return the action to take if a message is judged to be virus.
      */
     @Column(name="notify_action", nullable=false)
-    @Type(type="com.untangle.tran.mail.papi.smtp.SMTPNotifyActionUserType")
+    @Type(type="com.untangle.node.mail.papi.smtp.SMTPNotifyActionUserType")
     public SMTPNotifyAction getNotifyAction()
     {
         return zNotifyAction;

@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.test;
+package com.untangle.node.test;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

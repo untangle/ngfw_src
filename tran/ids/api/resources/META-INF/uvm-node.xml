@@ -11,11 +11,11 @@ not disclose such Confidential Information.
 $Id$
 -->
 
-<mvvm-transform>
-  <transform-desc name="ids-transform"
+<uvm-node>
+  <node-desc name="ids-node"
                   display-name="Intrusion Prevention"
-                  classname="com.untangle.tran.ids.IDSTransformImpl"
-                  gui-classname="com.untangle.tran.ids.gui.MTransformJPanel"
+                  classname="com.untangle.node.ids.IDSNodeImpl"
+                  gui-classname="com.untangle.node.ids.gui.MNodeJPanel"
   />
   <parent>http-casing</parent>		  
-</mvvm-transform>
+</uvm-node>

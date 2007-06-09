@@ -9,20 +9,20 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.papi.imap;
+package com.untangle.node.mail.papi.imap;
 
-import com.untangle.mvvm.tapi.Pipeline;
-import com.untangle.mvvm.tapi.event.TCPStreamer;
-import com.untangle.tran.mail.papi.CompleteMIMEToken;
-import com.untangle.tran.mail.papi.MIMETCPStreamer;
-import com.untangle.tran.mail.papi.MessageInfo;
-import com.untangle.tran.mime.MIMEMessage;
+import com.untangle.uvm.tapi.Pipeline;
+import com.untangle.uvm.tapi.event.TCPStreamer;
+import com.untangle.node.mail.papi.CompleteMIMEToken;
+import com.untangle.node.mail.papi.MIMETCPStreamer;
+import com.untangle.node.mail.papi.MessageInfo;
+import com.untangle.node.mime.MIMEMessage;
 import org.apache.log4j.Logger;
 
 
 /**
  * Class representing a Complete MIME message.
- * This will be issued if an upstream Transform
+ * This will be issued if an upstream Node
  * has buffered a complete message.
  * <br><br>
  * Adds a different {@link #toImapTCPStreamer streaming}

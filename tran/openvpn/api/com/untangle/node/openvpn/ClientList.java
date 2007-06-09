@@ -8,7 +8,7 @@
  *
  * $Id$
  */
-package com.untangle.tran.openvpn;
+package com.untangle.node.openvpn;
 
 import java.io.Serializable;
 import java.util.Set;
@@ -16,8 +16,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.LinkedList;
 
-import com.untangle.mvvm.tran.Validatable;
-import com.untangle.mvvm.tran.ValidateException;
+import com.untangle.uvm.node.Validatable;
+import com.untangle.uvm.node.ValidateException;
 
 public class ClientList implements Serializable, Validatable
 { 

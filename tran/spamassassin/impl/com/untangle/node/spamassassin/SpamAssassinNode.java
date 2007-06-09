@@ -8,13 +8,13 @@
  *
  * $Id$
  */
-package com.untangle.tran.spamassassin;
+package com.untangle.node.spamassassin;
 
-import com.untangle.tran.spam.SpamImpl;
+import com.untangle.node.spam.SpamImpl;
 
-public class SpamAssassinTransform extends SpamImpl
+public class SpamAssassinNode extends SpamImpl
 {
-    public SpamAssassinTransform()
+    public SpamAssassinNode()
     {
         super(new SpamAssassinScanner());
     }

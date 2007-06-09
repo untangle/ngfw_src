@@ -9,9 +9,9 @@
  * $Id$
  */
 
-package com.untangle.tran.firewall.reports;
+package com.untangle.node.firewall.reports;
 
-import com.untangle.mvvm.reporting.*;
+import com.untangle.uvm.reporting.*;
 
 import java.awt.BasicStroke;
 import java.awt.Color;

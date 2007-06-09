@@ -9,17 +9,17 @@
  * $Id$
  */
 
-package com.untangle.tran.ids;
+package com.untangle.node.ids;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Vector;
 
-import com.untangle.mvvm.tapi.IPSession;
-import com.untangle.mvvm.tapi.event.*;
-import com.untangle.mvvm.tran.Transform;
-import com.untangle.tran.ids.options.*;
+import com.untangle.uvm.tapi.IPSession;
+import com.untangle.uvm.tapi.event.*;
+import com.untangle.uvm.node.Node;
+import com.untangle.node.ids.options.*;
 import org.apache.log4j.Logger;
 
 public class IDSRuleSignature {
@@ -33,12 +33,12 @@ public class IDSRuleSignature {
     private String[] ignoreSafeOptions = { "rev","priority" };
     /** **************************************/
 
-    private static final int DETECT_COUNTER   = Transform.GENERIC_1_COUNTER;
-    private static final int BLOCK_COUNTER    = Transform.GENERIC_2_COUNTER;
+    private static final int DETECT_COUNTER   = Node.GENERIC_1_COUNTER;
+    private static final int BLOCK_COUNTER    = Node.GENERIC_2_COUNTER;
 
     private static HashMap<IDSRule,long[]> ruleTimes = new HashMap<IDSRule,long[]>();
 
-    private final IDSTransformImpl ids;
+    private final IDSNodeImpl ids;
     private final int action;
     private final IDSRule rule;
 
@@ -53,7 +53,7 @@ public class IDSRuleSignature {
 
     private static final Logger log = Logger.getLogger(IDSRuleSignature.class);
 
-    public IDSRuleSignature(IDSTransformImpl ids, int action, IDSRule rule) {
+    public IDSRuleSignature(IDSNodeImpl ids, int action, IDSRule rule) {
         this.ids = ids;
         this.action = action;
         this.rule = rule;
@@ -97,7 +97,7 @@ public class IDSRuleSignature {
         Class[] optionDefinitions = new Class[names.length];
         for (int i = 0; i < names.length; i++) {
             try {
-                optionDefinitions[i] = Class.forName("com.untangle.tran.ids.options."+names[i]);
+                optionDefinitions[i] = Class.forName("com.untangle.node.ids.options."+names[i]);
             } catch (ClassNotFoundException e) {
                 log.error("Could not load option: " + e.getMessage());
                 optionDefinitions[i] = null;
@@ -193,7 +193,7 @@ public class IDSRuleSignature {
             return;
         }
 
-        // XXX this is not a good way to get a reference to the transform
+        // XXX this is not a good way to get a reference to the node
         IDSDetectionEngine engine = ids.getEngine();
 
         boolean blocked = false;

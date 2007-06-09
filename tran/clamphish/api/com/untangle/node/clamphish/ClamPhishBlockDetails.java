@@ -6,14 +6,14 @@
  * Untangle, Inc. ("Confidential Information"). You shall
  * not disclose such Confidential Information.
  *
- * $Id: ClamPhishTransform.java 8965 2007-02-23 20:54:04Z cng $
+ * $Id: ClamPhishNode.java 8965 2007-02-23 20:54:04Z cng $
  */
 
-package com.untangle.tran.clamphish;
+package com.untangle.node.clamphish;
 
 import java.net.InetAddress;
 
-import com.untangle.tran.http.BlockDetails;
+import com.untangle.node.http.BlockDetails;
 
 public class ClamPhishBlockDetails extends BlockDetails
 {

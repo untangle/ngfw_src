@@ -11,20 +11,20 @@
 
 
 
-package com.untangle.tran.spamassassin.gui;
+package com.untangle.node.spamassassin.gui;
 
-import com.untangle.gui.transform.*;
+import com.untangle.gui.node.*;
 import com.untangle.gui.pipeline.MPipelineJPanel;
 
-import com.untangle.mvvm.*;
-import com.untangle.mvvm.tran.*;
+import com.untangle.uvm.*;
+import com.untangle.uvm.node.*;
 
 
-public class MTransformDisplayJPanel extends com.untangle.tran.spam.gui.MTransformDisplayJPanel{
+public class MNodeDisplayJPanel extends com.untangle.node.spam.gui.MNodeDisplayJPanel{
     
     
-    public MTransformDisplayJPanel(MTransformJPanel mTransformJPanel) {
-        super(mTransformJPanel);
+    public MNodeDisplayJPanel(MNodeJPanel mNodeJPanel) {
+        super(mNodeJPanel);
         
     }
     

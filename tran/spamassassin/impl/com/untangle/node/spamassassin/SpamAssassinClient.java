@@ -9,7 +9,7 @@
  * $Id: $
  */
 
-package com.untangle.tran.spamassassin;
+package com.untangle.node.spamassassin;
 
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -24,8 +24,8 @@ import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.untangle.tran.spam.ReportItem;
-import com.untangle.tran.spam.SpamReport;
+import com.untangle.node.spam.ReportItem;
+import com.untangle.node.spam.SpamReport;
 import org.apache.log4j.Logger;
 
 public final class SpamAssassinClient implements Runnable {

@@ -9,14 +9,14 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.papi.imap.test;
+package com.untangle.node.mail.papi.imap.test;
 
-import static com.untangle.tran.util.Ascii.*;
+import static com.untangle.node.util.Ascii.*;
 
 import java.nio.ByteBuffer;
 
-import com.untangle.tran.mail.papi.imap.*;
-import com.untangle.tran.util.*;
+import com.untangle.node.mail.papi.imap.*;
+import com.untangle.node.util.*;
 
 public class IMAPTokenizerTest {
 

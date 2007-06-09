@@ -9,20 +9,20 @@
  * $Id$
  */
 
-package com.untangle.tran.firewall;
+package com.untangle.node.firewall;
 
 
 
 
 import org.apache.log4j.Logger;
-import com.untangle.mvvm.tran.firewall.port.PortMatcher;
-import com.untangle.mvvm.tran.firewall.port.PortMatcherFactory;
-import com.untangle.mvvm.tran.firewall.ip.IPMatcher;
-import com.untangle.mvvm.tran.firewall.ip.IPMatcherFactory;
-import com.untangle.mvvm.tran.firewall.DirectionMatcher;
-import com.untangle.mvvm.tran.firewall.TrafficDirectionMatcher;
-import com.untangle.mvvm.tran.firewall.protocol.ProtocolMatcher;
-import com.untangle.mvvm.tran.firewall.protocol.ProtocolMatcherFactory;
+import com.untangle.uvm.node.firewall.port.PortMatcher;
+import com.untangle.uvm.node.firewall.port.PortMatcherFactory;
+import com.untangle.uvm.node.firewall.ip.IPMatcher;
+import com.untangle.uvm.node.firewall.ip.IPMatcherFactory;
+import com.untangle.uvm.node.firewall.DirectionMatcher;
+import com.untangle.uvm.node.firewall.TrafficDirectionMatcher;
+import com.untangle.uvm.node.firewall.protocol.ProtocolMatcher;
+import com.untangle.uvm.node.firewall.protocol.ProtocolMatcherFactory;
 
 
 /**

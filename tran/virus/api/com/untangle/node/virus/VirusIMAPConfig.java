@@ -10,7 +10,7 @@
 * $Id$
 */
 
-package com.untangle.tran.virus;
+package com.untangle.node.virus;
 
 import java.io.Serializable;
 import javax.persistence.Column;
@@ -58,7 +58,7 @@ public class VirusIMAPConfig extends VirusMailConfig implements Serializable
      * @return the action to take if a message is judged to be virus.
      */
     @Column(name="action", nullable=false)
-    @Type(type="com.untangle.tran.virus.VirusMessageActionUserType")
+    @Type(type="com.untangle.node.virus.VirusMessageActionUserType")
     public VirusMessageAction getMsgAction()
     {
         return zMsgAction;

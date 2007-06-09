@@ -8,16 +8,16 @@
  *
  * $Id$
  */
-package com.untangle.tran.virus.gui;
+package com.untangle.node.virus.gui;
 
 import javax.swing.JTabbedPane;
 
-import com.untangle.gui.transform.*;
+import com.untangle.gui.node.*;
 import com.untangle.gui.util.*;
-import com.untangle.mvvm.*;
-import com.untangle.mvvm.tran.*;
+import com.untangle.uvm.*;
+import com.untangle.uvm.node.*;
 
-public class MTransformControlsJPanel extends com.untangle.gui.transform.MTransformControlsJPanel{
+public class MNodeControlsJPanel extends com.untangle.gui.node.MNodeControlsJPanel{
 
     private static final String NAME_GENERAL_SETTINGS = "General Settings";
     private static final String NAME_FTP = "File Transfer";
@@ -32,8 +32,8 @@ public class MTransformControlsJPanel extends com.untangle.gui.transform.MTransf
     private static final String NAME_EMAIL_IMAP = "IMAP";
     private static final String NAME_LOG = "Event Log";
 
-    public MTransformControlsJPanel(MTransformJPanel mTransformJPanel) {
-        super(mTransformJPanel);
+    public MNodeControlsJPanel(MNodeJPanel mNodeJPanel) {
+        super(mNodeJPanel);
     }
 
     public void generateGui(){
@@ -104,7 +104,7 @@ public class MTransformControlsJPanel extends com.untangle.gui.transform.MTransf
         generalConfigJPanel.setSettingsChangedListener(this);
 
         // EVENT LOG ///////////////
-        LogJPanel logJPanel = new LogJPanel(mTransformJPanel.getTransform(), this);
+        LogJPanel logJPanel = new LogJPanel(mNodeJPanel.getNode(), this);
         addTab(NAME_LOG, null, logJPanel);
         addShutdownable(NAME_LOG, logJPanel);
     }

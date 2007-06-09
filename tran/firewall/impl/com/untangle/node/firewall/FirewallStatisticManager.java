@@ -8,20 +8,20 @@
  *
  * $Id$
  */
-package com.untangle.tran.firewall;
+package com.untangle.node.firewall;
 
-import com.untangle.mvvm.logging.EventLoggerFactory;
-import com.untangle.mvvm.logging.StatisticEvent;
-import com.untangle.mvvm.tapi.IPNewSessionRequest;
-import com.untangle.mvvm.tapi.Protocol;
-import com.untangle.mvvm.tran.StatisticManager;
-import com.untangle.mvvm.tran.TransformContext;
+import com.untangle.uvm.logging.EventLoggerFactory;
+import com.untangle.uvm.logging.StatisticEvent;
+import com.untangle.uvm.tapi.IPNewSessionRequest;
+import com.untangle.uvm.tapi.Protocol;
+import com.untangle.uvm.node.StatisticManager;
+import com.untangle.uvm.node.NodeContext;
 
 class FirewallStatisticManager extends StatisticManager
 {
     private FirewallStatisticEvent statisticEvent = new FirewallStatisticEvent();
 
-    FirewallStatisticManager(TransformContext tctx)
+    FirewallStatisticManager(NodeContext tctx)
     {
         super(EventLoggerFactory.factory().getEventLogger(tctx));
     }

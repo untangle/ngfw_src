@@ -9,7 +9,7 @@
  * $Id: SpamAssassinDaemon.java 8868 2007-02-12 23:02:00Z cng $
  */
 
-package com.untangle.tran.spam;
+package com.untangle.node.spam;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -17,7 +17,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.InterruptedException;
 
-import com.untangle.mvvm.MvvmContextFactory;
+import com.untangle.uvm.UvmContextFactory;
 import org.apache.log4j.Logger;
 
 public class SpamAssassinDaemon
@@ -53,7 +53,7 @@ public class SpamAssassinDaemon
     private boolean executeCmd(String cmdStr, String replyStr) {
         Process cmdProcess = null;
         try {
-            cmdProcess = MvvmContextFactory.context().exec(cmdStr);
+            cmdProcess = UvmContextFactory.context().exec(cmdStr);
         } catch (Exception e) {
             logger.error(BASE_CMD + " could not be exec'ed: ", e);
             return false;

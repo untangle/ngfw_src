@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.spam;
+package com.untangle.node.spam;
 
 import java.util.*;
 import javax.persistence.Column;
@@ -83,7 +83,7 @@ public class SpamIMAPConfig extends SpamProtoConfig
      * @return the action to take if a message is judged to be spam.
      */
     @Column(name="msg_action", nullable=false)
-    @Type(type="com.untangle.tran.spam.SpamMessageActionUserType")
+    @Type(type="com.untangle.node.spam.SpamMessageActionUserType")
     public SpamMessageAction getMsgAction()
     {
         return zMsgAction;

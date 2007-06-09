@@ -9,11 +9,11 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.impl.imap;
+package com.untangle.node.mail.impl.imap;
 import java.nio.ByteBuffer;
 
-import com.untangle.tran.mail.papi.imap.IMAPTokenizer;
-import static com.untangle.tran.util.Ascii.*;
+import com.untangle.node.mail.papi.imap.IMAPTokenizer;
+import static com.untangle.node.util.Ascii.*;
 
 /**
  * Abstract class for a <b>Tok</b>en <b>Mon</b>itor.  A TokMon

@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.spyware;
+package com.untangle.node.spyware;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -28,15 +28,15 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import com.untangle.mvvm.security.Tid;
-import com.untangle.mvvm.tran.IPMaddrRule;
-import com.untangle.mvvm.tran.StringRule;
-import com.untangle.tran.http.UserWhitelistMode;
+import com.untangle.uvm.security.Tid;
+import com.untangle.uvm.node.IPMaddrRule;
+import com.untangle.uvm.node.StringRule;
+import com.untangle.node.http.UserWhitelistMode;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.IndexColumn;
 
 /**
- * Settings for the Spyware transform.
+ * Settings for the Spyware node.
  *
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
@@ -95,7 +95,7 @@ public class SpywareSettings implements Serializable
     }
 
     /**
-     * Transform id for these settings.
+     * Node id for these settings.
      *
      * @return tid for these settings
      */

@@ -11,10 +11,10 @@ not disclose such Confidential Information.
 $Id$
 -->
 
-<mvvm-transform>
-  <transform-desc name="spyware-transform"
+<uvm-node>
+  <node-desc name="spyware-node"
                   display-name="Spyware Blocker"
-                  classname="com.untangle.tran.spyware.SpywareImpl"
-                  gui-classname="com.untangle.tran.spyware.gui.MTransformJPanel"/>
+                  classname="com.untangle.node.spyware.SpywareImpl"
+                  gui-classname="com.untangle.node.spyware.gui.MNodeJPanel"/>
   <parent>http-casing</parent>
-</mvvm-transform>
+</uvm-node>

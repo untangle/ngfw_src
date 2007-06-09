@@ -9,13 +9,13 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.papi;
+package com.untangle.node.mail.papi;
 
-import com.untangle.mvvm.tran.Template;
-import com.untangle.mvvm.tran.TemplateValues;
-import com.untangle.mvvm.tran.TemplateValuesChain;
-import com.untangle.tran.mime.*;
-import com.untangle.tran.util.*;
+import com.untangle.uvm.node.Template;
+import com.untangle.uvm.node.TemplateValues;
+import com.untangle.uvm.node.TemplateValuesChain;
+import com.untangle.node.mime.*;
+import com.untangle.node.util.*;
 import org.apache.log4j.Logger;
 
 /**
@@ -23,7 +23,7 @@ import org.apache.log4j.Logger;
  * providing templates for the resulting
  * subject and body.
  * <br><br>
- * This class uses the {@link #com.untangle.tran.util.Template Template}
+ * This class uses the {@link #com.untangle.node.util.Template Template}
  * class internally.  You can create templates which derefference
  * keys found in any number of TemplateValues, passed-into the
  * {@link #wrap wrap method}

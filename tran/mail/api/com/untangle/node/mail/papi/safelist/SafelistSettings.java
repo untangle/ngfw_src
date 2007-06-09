@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.papi.safelist;
+package com.untangle.node.mail.papi.safelist;
 
 import java.io.Serializable;
 import javax.persistence.CascadeType;
@@ -85,7 +85,7 @@ public class SafelistSettings implements Serializable
     // (other safelists continue to reference the recipient or sender):
     //
     // 11 11:10:17.405 ERROR [TransactionRunner] something bad happened, not retrying
-    // org.hibernate.ObjectDeletedException: deleted object would be re-saved by cascade (remove deleted object from associations): [com.untangle.tran.mail.papi.safelist.SafelistRecipient#26762]
+    // org.hibernate.ObjectDeletedException: deleted object would be re-saved by cascade (remove deleted object from associations): [com.untangle.node.mail.papi.safelist.SafelistRecipient#26762]
     // at org.hibernate.impl.SessionImpl.forceFlush(SessionImpl.java:742)
     // at org.hibernate.event.def.DefaultSaveOrUpdateEventListener.entityIsTransient(DefaultSaveOrUpdateEventListener.java:166)
     // at org.hibernate.event.def.DefaultSaveOrUpdateEventListener.performSaveOrUpdate(DefaultSaveOrUpdateEventListener.java:96)

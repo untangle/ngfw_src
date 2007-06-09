@@ -1,13 +1,13 @@
 # -*-ruby-*-
 
-TransformBuilder.makeTransform(BuildEnv::ALPINE, 'openvpn')
+NodeBuilder.makeNode(BuildEnv::SRC, 'openvpn')
 
-openvpn = BuildEnv::ALPINE['openvpn-transform']
+openvpn = BuildEnv::SRC['openvpn-node']
 
 
-deps = Jars::Base + [BuildEnv::ALPINE['mvvm']['api']]
+deps = Jars::Base + [BuildEnv::SRC['uvm']['api']]
 
 jt = [JarTarget.buildTarget(openvpn, deps, 'api', 'tran/openvpn/api')]
 
-ServletBuilder.new(openvpn, 'com.untangle.tran.openvpn.servlet','tran/openvpn/servlets/openvpn', [], jt)
+ServletBuilder.new(openvpn, 'com.untangle.node.openvpn.servlet','tran/openvpn/servlets/openvpn', [], jt)
 

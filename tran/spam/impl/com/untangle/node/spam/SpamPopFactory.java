@@ -9,27 +9,27 @@
  * $Id$
  */
 
-package com.untangle.tran.spam;
+package com.untangle.node.spam;
 
-import com.untangle.mvvm.policy.Policy;
-import com.untangle.mvvm.tapi.TCPNewSessionRequest;
-import com.untangle.mvvm.tapi.TCPSession;
-import com.untangle.tran.mail.papi.MailExport;
-import com.untangle.tran.mail.papi.MailExportFactory;
-import com.untangle.tran.token.TokenHandler;
-import com.untangle.tran.token.TokenHandlerFactory;
+import com.untangle.uvm.policy.Policy;
+import com.untangle.uvm.tapi.TCPNewSessionRequest;
+import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.node.mail.papi.MailExport;
+import com.untangle.node.mail.papi.MailExportFactory;
+import com.untangle.node.token.TokenHandler;
+import com.untangle.node.token.TokenHandlerFactory;
 
 public class SpamPopFactory implements TokenHandlerFactory
 {
-    private final SpamImpl transform;
+    private final SpamImpl node;
     private final MailExport zMExport;
 
     // constructors -----------------------------------------------------------
 
-    SpamPopFactory(SpamImpl transform)
+    SpamPopFactory(SpamImpl node)
     {
-        this.transform = transform;
-        Policy p = transform.getTid().getPolicy();
+        this.node = node;
+        Policy p = node.getTid().getPolicy();
         zMExport = MailExportFactory.factory().getExport();
     }
 
@@ -37,7 +37,7 @@ public class SpamPopFactory implements TokenHandlerFactory
 
     public TokenHandler tokenHandler(TCPSession session)
     {
-        return new SpamPopHandler(session, transform, zMExport);
+        return new SpamPopHandler(session, node, zMExport);
     }
 
     public void handleNewSessionRequest(TCPNewSessionRequest tsr)

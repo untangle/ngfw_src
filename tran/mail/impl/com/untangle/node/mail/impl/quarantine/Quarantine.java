@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.impl.quarantine;
+package com.untangle.node.mail.impl.quarantine;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -21,44 +21,44 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.untangle.mvvm.CronJob;
-import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.mvvm.Period;
-import com.untangle.tran.mail.MailTransformImpl;
-import com.untangle.tran.mail.impl.GlobEmailAddressList;
-import com.untangle.tran.mail.impl.GlobEmailAddressMapper;
-import com.untangle.tran.mail.impl.quarantine.store.InboxIndexImpl;
-import com.untangle.tran.mail.impl.quarantine.store.QuarantinePruningObserver;
-import com.untangle.tran.mail.impl.quarantine.store.QuarantineStore;
-import com.untangle.tran.mail.papi.EmailAddressPairRule;
-import com.untangle.tran.mail.papi.EmailAddressRule;
-import com.untangle.tran.mail.papi.MailTransformSettings;
-import com.untangle.tran.mail.papi.quarantine.BadTokenException;
-import com.untangle.tran.mail.papi.quarantine.Inbox;
-import com.untangle.tran.mail.papi.quarantine.InboxAlreadyRemappedException;
-import com.untangle.tran.mail.papi.quarantine.InboxIndex;
-import com.untangle.tran.mail.papi.quarantine.InboxRecord;
-import com.untangle.tran.mail.papi.quarantine.MailSummary;
-import com.untangle.tran.mail.papi.quarantine.NoSuchInboxException;
-import com.untangle.tran.mail.papi.quarantine.QuarantineEjectionHandler;
-import com.untangle.tran.mail.papi.quarantine.QuarantineMaintenenceView;
-import com.untangle.tran.mail.papi.quarantine.QuarantineManipulation;
-import com.untangle.tran.mail.papi.quarantine.QuarantineSettings;
-import com.untangle.tran.mail.papi.quarantine.QuarantineTransformView;
-import com.untangle.tran.mail.papi.quarantine.QuarantineUserActionFailedException;
-import com.untangle.tran.mail.papi.quarantine.QuarantineUserView;
-import com.untangle.tran.mime.EmailAddress;
-import com.untangle.tran.mime.MIMEMessage;
-import com.untangle.tran.util.ByteBufferInputStream;
-import com.untangle.tran.util.IOUtil;
-import com.untangle.tran.util.Pair;
+import com.untangle.uvm.CronJob;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.Period;
+import com.untangle.node.mail.MailNodeImpl;
+import com.untangle.node.mail.impl.GlobEmailAddressList;
+import com.untangle.node.mail.impl.GlobEmailAddressMapper;
+import com.untangle.node.mail.impl.quarantine.store.InboxIndexImpl;
+import com.untangle.node.mail.impl.quarantine.store.QuarantinePruningObserver;
+import com.untangle.node.mail.impl.quarantine.store.QuarantineStore;
+import com.untangle.node.mail.papi.EmailAddressPairRule;
+import com.untangle.node.mail.papi.EmailAddressRule;
+import com.untangle.node.mail.papi.MailNodeSettings;
+import com.untangle.node.mail.papi.quarantine.BadTokenException;
+import com.untangle.node.mail.papi.quarantine.Inbox;
+import com.untangle.node.mail.papi.quarantine.InboxAlreadyRemappedException;
+import com.untangle.node.mail.papi.quarantine.InboxIndex;
+import com.untangle.node.mail.papi.quarantine.InboxRecord;
+import com.untangle.node.mail.papi.quarantine.MailSummary;
+import com.untangle.node.mail.papi.quarantine.NoSuchInboxException;
+import com.untangle.node.mail.papi.quarantine.QuarantineEjectionHandler;
+import com.untangle.node.mail.papi.quarantine.QuarantineMaintenenceView;
+import com.untangle.node.mail.papi.quarantine.QuarantineManipulation;
+import com.untangle.node.mail.papi.quarantine.QuarantineSettings;
+import com.untangle.node.mail.papi.quarantine.QuarantineNodeView;
+import com.untangle.node.mail.papi.quarantine.QuarantineUserActionFailedException;
+import com.untangle.node.mail.papi.quarantine.QuarantineUserView;
+import com.untangle.node.mime.EmailAddress;
+import com.untangle.node.mime.MIMEMessage;
+import com.untangle.node.util.ByteBufferInputStream;
+import com.untangle.node.util.IOUtil;
+import com.untangle.node.util.Pair;
 import org.apache.log4j.Logger;
 
 /**
  *
  */
 public class Quarantine
-    implements QuarantineTransformView,
+    implements QuarantineNodeView,
                QuarantineMaintenenceView, QuarantineUserView {
 
     private static final long ONE_DAY = (1000L * 60L * 60L * 24L);
@@ -72,7 +72,7 @@ public class Quarantine
     private CronJob m_cronJob;
     private GlobEmailAddressList m_quarantineForList;
     private GlobEmailAddressMapper m_addressAliases;
-    private MailTransformImpl m_impl;
+    private MailNodeImpl m_impl;
 
     public Quarantine() {
         m_store = new QuarantineStore(
@@ -93,7 +93,7 @@ public class Quarantine
      * by the Quarantine (i.e. the UI does not
      * talk to the Quarantine).
      */
-    public void setSettings(MailTransformImpl impl,
+    public void setSettings(MailNodeImpl impl,
                             QuarantineSettings settings) {
         m_impl = impl;
         m_settings = settings;
@@ -155,7 +155,7 @@ public class Quarantine
                                 cronCallback();
                             }
                         };
-                    m_cronJob = MvvmContextFactory.context().makeCronJob(p, r);
+                    m_cronJob = UvmContextFactory.context().makeCronJob(p, r);
                 }
             }
         }
@@ -223,10 +223,10 @@ public class Quarantine
     }
 
     private String getInternalIPAsString() {
-        return MvvmContextFactory.context().networkManager().getPublicAddress();
+        return UvmContextFactory.context().networkManager().getPublicAddress();
     }
 
-    //--QuarantineTransformView--
+    //--QuarantineNodeView--
 
     public boolean quarantineMail(File file,
                                   MailSummary summary,
@@ -525,10 +525,10 @@ public class Quarantine
         //Convert list to form which makes settings happy
         List newMappingsList = toEmailAddressPairRuleList(mappings);
 
-        MailTransformSettings settings = m_impl.getMailTransformSettings();
+        MailNodeSettings settings = m_impl.getMailNodeSettings();
         settings.getQuarantineSettings().setAddressRemaps(newMappingsList);
 
-        m_impl.setMailTransformSettings(settings);
+        m_impl.setMailNodeSettings(settings);
     }
 
     public boolean unmapSelfService(String inboxName, String aliasToRemove)
@@ -550,10 +550,10 @@ public class Quarantine
         //Convert list to form which makes settings happy
         List newMappingsList = toEmailAddressPairRuleList(mappings);
 
-        MailTransformSettings settings = m_impl.getMailTransformSettings();
+        MailNodeSettings settings = m_impl.getMailNodeSettings();
         settings.getQuarantineSettings().setAddressRemaps(newMappingsList);
 
-        m_impl.setMailTransformSettings(settings);
+        m_impl.setMailNodeSettings(settings);
         //    m_addressAliases = newMapper; // use updated mapping
 
         //    System.out.println("***DEBUG*** Returning True");
@@ -587,7 +587,7 @@ public class Quarantine
             return false;
         }
 
-        String fromAddr = MvvmContextFactory.context().mailSender().getMailSettings().getFromAddress();
+        String fromAddr = UvmContextFactory.context().mailSender().getMailSettings().getFromAddress();
         MIMEMessage msg = m_digestGenerator.generateMsg(index,
                                                         internalHost,
                                                         account,
@@ -611,7 +611,7 @@ public class Quarantine
         }
 
         //Attempt the send
-        boolean ret = MvvmContextFactory.context().mailSender().sendMessage(in, account);
+        boolean ret = UvmContextFactory.context().mailSender().sendMessage(in, account);
 
         IOUtil.close(in);
 
@@ -684,7 +684,7 @@ public class Quarantine
             try {
                 fIn = new FileInputStream(data);
                 BufferedInputStream bufIn = new BufferedInputStream(fIn);
-                boolean success = MvvmContextFactory.context().mailSender().sendMessage(bufIn, recipients);
+                boolean success = UvmContextFactory.context().mailSender().sendMessage(bufIn, recipients);
                 if(success) {
                     m_logger.debug("Released mail \"" + record.getMailID() + "\" for " + recipients.length +
                                    " recipients from inbox \"" + inboxAddress + "\"");
@@ -710,36 +710,36 @@ public class Quarantine
   System.out.println("********* Sleep for 2 minutes");
   Thread.currentThread().sleep(1000*60*2);
   System.out.println("********* Woke up");
-  com.untangle.tran.mail.papi.EmailAddressRule wrapper1 =
-  new com.untangle.tran.mail.papi.EmailAddressRule("*1@shoop.com");
-  com.untangle.tran.mail.papi.EmailAddressRule wrapper2 =
-  new com.untangle.tran.mail.papi.EmailAddressRule("billtest3@shoop.com");
-  MailTransformSettings settings = getMailTransformSettings();
-  com.untangle.tran.mail.papi.quarantine.QuarantineSettings qs =
+  com.untangle.node.mail.papi.EmailAddressRule wrapper1 =
+  new com.untangle.node.mail.papi.EmailAddressRule("*1@shoop.com");
+  com.untangle.node.mail.papi.EmailAddressRule wrapper2 =
+  new com.untangle.node.mail.papi.EmailAddressRule("billtest3@shoop.com");
+  MailNodeSettings settings = getMailNodeSettings();
+  com.untangle.node.mail.papi.quarantine.QuarantineSettings qs =
   settings.getQuarantineSettings();
   java.util.ArrayList list = new java.util.ArrayList();
   list.add(wrapper1);
   list.add(wrapper2);
 
   qs.setAllowedAddressPatterns(list);
-  setMailTransformSettings(settings);
+  setMailNodeSettings(settings);
 
 
-  //              MailTransformSettings settings = getMailTransformSettings();
-  //              com.untangle.tran.mail.papi.quarantine.QuarantineSettings qs =
+  //              MailNodeSettings settings = getMailNodeSettings();
+  //              com.untangle.node.mail.papi.quarantine.QuarantineSettings qs =
   //                settings.getQuarantineSettings();
-  //              com.untangle.tran.mail.papi.EmailAddressPair p1 =
-  //                new com.untangle.tran.mail.papi.EmailAddressPair("billtest1@shoop.com",
+  //              com.untangle.node.mail.papi.EmailAddressPair p1 =
+  //                new com.untangle.node.mail.papi.EmailAddressPair("billtest1@shoop.com",
   //                  "billtest2@shoop.com");
-  //              com.untangle.tran.mail.papi.EmailAddressPair p2 =
-  //                new com.untangle.tran.mail.papi.EmailAddressPair("billtest3@shoop.com",
+  //              com.untangle.node.mail.papi.EmailAddressPair p2 =
+  //                new com.untangle.node.mail.papi.EmailAddressPair("billtest3@shoop.com",
   //                  "foo@billsco.com");
   //              java.util.ArrayList list = new java.util.ArrayList();
   //              list.add(p1);
   //              list.add(p2);
 
   //              qs.setAddressRemaps(list);
-  //              setMailTransformSettings(settings);
+  //              setMailNodeSettings(settings);
   System.out.println("********* Done.");
 
   }

@@ -5,6 +5,6 @@ reports/SpywareCookieDetail.jasper:Spyware_Blocker--Cookie_Incidents:Cookie Inci
 reports/SpywareActiveXDetail.jasper:Spyware_Blocker--ActiveX_Incidents:ActiveX Incidents
 reports/SpywareBlacklistDetail.jasper:Spyware_Blocker--Blocklist_Incidents:URL Blocklist Incidents
 reports/SpywareAccessDetail.jasper:Spyware_Blocker--Subnet_Incidents:Subnet Access Incidents
-com.untangle.tran.spyware.reports.SpywareSummarizer:summarizer:Summarizer
-com.untangle.tran.spyware.reports.SummaryGraph:summaryGraph:Spyware_Blocker--Summary_Graph
+com.untangle.node.spyware.reports.SpywareSummarizer:summarizer:Summarizer
+com.untangle.node.spyware.reports.SummaryGraph:summaryGraph:Spyware_Blocker--Summary_Graph
 reportTitlePrefix:parameter:none

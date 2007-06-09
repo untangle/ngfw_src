@@ -1,11 +1,11 @@
 # -*-ruby-*-
 
-TransformBuilder.makeCasing(BuildEnv::ALPINE, 'mail')
+NodeBuilder.makeCasing(BuildEnv::SRC, 'mail')
 
-mail = BuildEnv::ALPINE['mail-casing']
+mail = BuildEnv::SRC['mail-casing']
 
 jt = [mail['localapi']]
 
-ServletBuilder.new(mail, 'com.untangle.tran.mail.quarantine.jsp',
-                   "#{ALPINE_HOME}/tran/mail/servlets/quarantine", [], jt)
+ServletBuilder.new(mail, 'com.untangle.node.mail.quarantine.jsp',
+                   "#{SRC_HOME}/tran/mail/servlets/quarantine", [], jt)
 

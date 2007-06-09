@@ -8,11 +8,11 @@
  *
  * $Id$
  */
-package com.untangle.tran.openvpn;
+package com.untangle.node.openvpn;
 
-import com.untangle.mvvm.tran.TransformException;
+import com.untangle.uvm.node.NodeException;
 
-public class DownloadException extends TransformException
+public class DownloadException extends NodeException
 {
     DownloadException( String message )
     {

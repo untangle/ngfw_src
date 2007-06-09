@@ -11,13 +11,13 @@
 
 
 
-package com.untangle.tran.clamphish.gui;
+package com.untangle.node.clamphish.gui;
 
-import com.untangle.gui.transform.*;
+import com.untangle.gui.node.*;
 import com.untangle.gui.util.*;
 
 
-public class MTransformControlsJPanel extends com.untangle.gui.transform.MTransformControlsJPanel{
+public class MNodeControlsJPanel extends com.untangle.gui.node.MNodeControlsJPanel{
 
     private static final String NAME_SPAM_GOOGLE = "Web";
     private static final String NAME_WEB_LOG = "Web Event Log";
@@ -27,8 +27,8 @@ public class MTransformControlsJPanel extends com.untangle.gui.transform.MTransf
     private static final String NAME_SPAM_IMAP = "IMAP";
     private static final String NAME_EMAIL_LOG = "Email Event Log";
 
-    public MTransformControlsJPanel(MTransformJPanel mTransformJPanel)  {
-        super(mTransformJPanel);
+    public MNodeControlsJPanel(MNodeJPanel mNodeJPanel)  {
+        super(mNodeJPanel);
     }
 
     public void generateGui(){
@@ -61,12 +61,12 @@ public class MTransformControlsJPanel extends com.untangle.gui.transform.MTransf
         imapConfigJPanel.setSettingsChangedListener(this);
 
         // WEB EVENT LOG /////
-        WebLogJPanel webLogJPanel = new WebLogJPanel(mTransformJPanel.getTransform(), this);
+        WebLogJPanel webLogJPanel = new WebLogJPanel(mNodeJPanel.getNode(), this);
         addTab(NAME_WEB_LOG, null, webLogJPanel);
         addShutdownable(NAME_WEB_LOG, webLogJPanel);
 
         // EMAIL EVENT LOG /////
-        EmailLogJPanel emailLogJPanel = new EmailLogJPanel(mTransformJPanel.getTransform(), this);
+        EmailLogJPanel emailLogJPanel = new EmailLogJPanel(mNodeJPanel.getNode(), this);
         addTab(NAME_EMAIL_LOG, null, emailLogJPanel);
         addShutdownable(NAME_EMAIL_LOG, emailLogJPanel);
     }

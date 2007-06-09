@@ -11,13 +11,13 @@ not disclose such Confidential Information.
 $Id$
 -->
 
-<mvvm-transform>
-  <transform-desc name="clam-transform"
+<uvm-node>
+  <node-desc name="clam-node"
                   display-name="Virus Blocker"
-                  classname="com.untangle.tran.clam.ClamTransform"
-                  gui-classname="com.untangle.tran.clam.gui.MTransformJPanel"
-                  transform-base="virus-base"/>
+                  classname="com.untangle.node.clam.ClamNode"
+                  gui-classname="com.untangle.node.clam.gui.MNodeJPanel"
+                  node-base="virus-base"/>
   <parent>http-casing</parent>
   <parent>mail-casing</parent>
   <parent>ftp-casing</parent>
-</mvvm-transform>
+</uvm-node>

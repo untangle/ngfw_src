@@ -9,15 +9,15 @@
  * $Id$
  */
 
-package com.untangle.tran.clamphish;
+package com.untangle.node.clamphish;
 
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import com.untangle.mvvm.logging.ListEventFilter;
-import com.untangle.mvvm.logging.RepositoryDesc;
-import com.untangle.tran.http.RequestLine;
+import com.untangle.uvm.logging.ListEventFilter;
+import com.untangle.uvm.logging.RepositoryDesc;
+import com.untangle.node.http.RequestLine;
 import org.hibernate.Hibernate;
 import org.hibernate.Query;
 import org.hibernate.Session;

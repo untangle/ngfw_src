@@ -9,15 +9,15 @@
  * $Id$
  */
 
-package com.untangle.tran.nat.gui;
+package com.untangle.node.nat.gui;
 
 
 import java.awt.*;
 
-import com.untangle.gui.transform.*;
+import com.untangle.gui.node.*;
 import com.untangle.gui.util.Util;
-import com.untangle.mvvm.tran.*;
-import com.untangle.tran.nat.*;
+import com.untangle.uvm.node.*;
+import com.untangle.node.nat.*;
 
 
 public class DnsJPanel extends javax.swing.JPanel implements Savable<Object>, Refreshable<Object> {

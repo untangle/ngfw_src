@@ -9,17 +9,17 @@
  * $Id$
  */
 
-package com.untangle.tran.clamphish;
+package com.untangle.node.clamphish;
 
-import com.untangle.mvvm.tapi.TCPNewSessionRequest;
-import com.untangle.mvvm.tapi.TCPSession;
-import com.untangle.tran.mail.papi.MailExport;
-import com.untangle.tran.mail.papi.MailExportFactory;
-import com.untangle.tran.mail.papi.imap.ImapTokenStream;
-import com.untangle.tran.mail.papi.safelist.SafelistTransformView;
-import com.untangle.tran.spam.SpamIMAPConfig;
-import com.untangle.tran.token.TokenHandler;
-import com.untangle.tran.token.TokenHandlerFactory;
+import com.untangle.uvm.tapi.TCPNewSessionRequest;
+import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.node.mail.papi.MailExport;
+import com.untangle.node.mail.papi.MailExportFactory;
+import com.untangle.node.mail.papi.imap.ImapTokenStream;
+import com.untangle.node.mail.papi.safelist.SafelistNodeView;
+import com.untangle.node.spam.SpamIMAPConfig;
+import com.untangle.node.token.TokenHandler;
+import com.untangle.node.token.TokenHandlerFactory;
 import org.apache.log4j.Logger;
 
 public class PhishImapFactory implements TokenHandlerFactory
@@ -27,14 +27,14 @@ public class PhishImapFactory implements TokenHandlerFactory
     private final Logger m_logger = Logger.getLogger(getClass());
 
     private final MailExport m_mailExport;
-    private final ClamPhishTransform m_transform;
-    private SafelistTransformView m_safelist;
+    private final ClamPhishNode m_node;
+    private SafelistNodeView m_safelist;
 
-    PhishImapFactory(ClamPhishTransform transform) {
-        m_transform = transform;
+    PhishImapFactory(ClamPhishNode node) {
+        m_node = node;
         /* XXX RBS I don't know if this will work */
         m_mailExport = MailExportFactory.factory().getExport();
-        m_safelist = m_mailExport.getSafelistTransformView();
+        m_safelist = m_mailExport.getSafelistNodeView();
     }
 
     // TokenHandlerFactory methods --------------------------------------------
@@ -44,8 +44,8 @@ public class PhishImapFactory implements TokenHandlerFactory
         boolean inbound = session.isInbound();
 
         SpamIMAPConfig config = (!inbound)?
-            m_transform.getSpamSettings().getIMAPInbound():
-            m_transform.getSpamSettings().getIMAPOutbound();
+            m_node.getSpamSettings().getIMAPInbound():
+            m_node.getSpamSettings().getIMAPOutbound();
 
         if(!config.getScan()) {
             m_logger.debug("Scanning disabled.  Return passthrough token handler");
@@ -60,7 +60,7 @@ public class PhishImapFactory implements TokenHandlerFactory
                                                         session,
                                                         timeout,
                                                         timeout,
-                                                        m_transform,
+                                                        m_node,
                                                         config,
                                                         m_safelist));
     }

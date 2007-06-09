@@ -9,56 +9,56 @@
  * $Id$
  */
 
-package com.untangle.tran.openvpn.gui;
+package com.untangle.node.openvpn.gui;
 
 import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Window;
 
-import com.untangle.gui.transform.*;
+import com.untangle.gui.node.*;
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.dialogs.*;
 import com.untangle.gui.widgets.wizard.*;
-import com.untangle.tran.openvpn.*;
+import com.untangle.node.openvpn.*;
 
 public class ServerRoutingWizard extends MWizardJDialog {
 
     private static final String MESSAGE_DIALOG_TITLE = "Setup Wizard Warning";
     private static final String MESSAGE_CLIENT_NOT_CONFIGURED = "You have not finished configuring OpenVPN.  Please run the Setup Wizard again.";
 
-    private MTransformControlsJPanel mTransformControlsJPanel;
+    private MNodeControlsJPanel mNodeControlsJPanel;
 
-    public static ServerRoutingWizard factory(Window topLevelWindow, VpnTransform vpnTransform,
-                                              MTransformControlsJPanel mTransformControlsJPanel) {
+    public static ServerRoutingWizard factory(Window topLevelWindow, VpnNode vpnNode,
+                                              MNodeControlsJPanel mNodeControlsJPanel) {
         if( topLevelWindow instanceof Frame )
-            return new ServerRoutingWizard((Frame)topLevelWindow, vpnTransform, mTransformControlsJPanel);
+            return new ServerRoutingWizard((Frame)topLevelWindow, vpnNode, mNodeControlsJPanel);
         else if( topLevelWindow instanceof Dialog )
-            return new ServerRoutingWizard((Dialog)topLevelWindow, vpnTransform, mTransformControlsJPanel);
+            return new ServerRoutingWizard((Dialog)topLevelWindow, vpnNode, mNodeControlsJPanel);
         else
             return null;
     }
 
-    public ServerRoutingWizard(Frame topLevelFrame, VpnTransform vpnTransform, MTransformControlsJPanel mTransformControlsJPanel) {
+    public ServerRoutingWizard(Frame topLevelFrame, VpnNode vpnNode, MNodeControlsJPanel mNodeControlsJPanel) {
         super(topLevelFrame, true);
-        init(mTransformControlsJPanel, vpnTransform);
+        init(mNodeControlsJPanel, vpnNode);
     }
 
-    public ServerRoutingWizard(Dialog topLevelDialog, VpnTransform vpnTransform, MTransformControlsJPanel mTransformControlsJPanel) {
+    public ServerRoutingWizard(Dialog topLevelDialog, VpnNode vpnNode, MNodeControlsJPanel mNodeControlsJPanel) {
         super(topLevelDialog, true);
-        init(mTransformControlsJPanel, vpnTransform);
+        init(mNodeControlsJPanel, vpnNode);
     }
 
-    private void init(MTransformControlsJPanel mTransformControlsJPanel, VpnTransform vpnTransform){
-        this.mTransformControlsJPanel = mTransformControlsJPanel;
+    private void init(MNodeControlsJPanel mNodeControlsJPanel, VpnNode vpnNode){
+        this.mNodeControlsJPanel = mNodeControlsJPanel;
         setTitle("Untangle OpenVPN Server Routing Setup Wizard");
-        addWizardPageJPanel(new ServerRoutingWizardWelcomeJPanel(vpnTransform),         "1. Welcome", false, true);
-        addWizardPageJPanel(new ServerRoutingWizardCertificateJPanel(vpnTransform),     "2. Generate Certificate", false, true);
-        addWizardPageJPanel(new ServerRoutingWizardGroupsJPanel(vpnTransform),          "3. Add Address Pools", false, true);
-        addWizardPageJPanel(new ServerRoutingWizardExportsJPanel(vpnTransform),         "4. Add Exports", false, true);
-        addWizardPageJPanel(new ServerRoutingWizardClientsJPanel(vpnTransform),         "5. Add VPN Clients", false, true);
-        addWizardPageJPanel(new ServerRoutingWizardSitesJPanel(vpnTransform),           "6. Add VPN Sites", false, true);
-        addWizardPageJPanel(new ServerRoutingWizardCongratulationsJPanel(vpnTransform), "7. Congratulations", true, true);
+        addWizardPageJPanel(new ServerRoutingWizardWelcomeJPanel(vpnNode),         "1. Welcome", false, true);
+        addWizardPageJPanel(new ServerRoutingWizardCertificateJPanel(vpnNode),     "2. Generate Certificate", false, true);
+        addWizardPageJPanel(new ServerRoutingWizardGroupsJPanel(vpnNode),          "3. Add Address Pools", false, true);
+        addWizardPageJPanel(new ServerRoutingWizardExportsJPanel(vpnNode),         "4. Add Exports", false, true);
+        addWizardPageJPanel(new ServerRoutingWizardClientsJPanel(vpnNode),         "5. Add VPN Clients", false, true);
+        addWizardPageJPanel(new ServerRoutingWizardSitesJPanel(vpnNode),           "6. Add VPN Sites", false, true);
+        addWizardPageJPanel(new ServerRoutingWizardCongratulationsJPanel(vpnNode), "7. Congratulations", true, true);
     }
 
     protected Dimension getTitleJPanelPreferredSize(){ return new Dimension(250,360); }
@@ -75,9 +75,9 @@ public class ServerRoutingWizard extends MWizardJDialog {
 
     protected void wizardFinishedNormal(){
         super.wizardFinishedNormal();
-        mTransformControlsJPanel.getInfiniteProgressJComponent().startLater("Reconfiguring...");
-        mTransformControlsJPanel.refreshGui();
-        mTransformControlsJPanel.getInfiniteProgressJComponent().stopLater(0l);
+        mNodeControlsJPanel.getInfiniteProgressJComponent().startLater("Reconfiguring...");
+        mNodeControlsJPanel.refreshGui();
+        mNodeControlsJPanel.getInfiniteProgressJComponent().stopLater(0l);
     }
 }
 

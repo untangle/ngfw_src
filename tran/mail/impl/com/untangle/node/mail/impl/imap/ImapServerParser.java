@@ -9,31 +9,31 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.impl.imap;
+package com.untangle.node.mail.impl.imap;
 
-import static com.untangle.tran.util.Ascii.*;
+import static com.untangle.node.util.Ascii.*;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.untangle.mvvm.tapi.TCPSession;
-import com.untangle.tran.mail.papi.AddressKind;
-import com.untangle.tran.mail.papi.ContinuedMIMEToken;
-import com.untangle.tran.mail.papi.MIMEAccumulator;
-import com.untangle.tran.mail.papi.MessageBoundaryScanner;
-import com.untangle.tran.mail.papi.MessageInfo;
-import com.untangle.tran.mail.papi.MessageInfoFactory;
-import com.untangle.tran.mail.papi.imap.BeginImapMIMEToken;
-import com.untangle.tran.mail.papi.imap.ImapChunk;
-import com.untangle.tran.mail.papi.imap.UnparsableMIMEChunk;
-import com.untangle.tran.mime.MIMEMessageHeaders;
-import com.untangle.tran.token.Chunk;
-import com.untangle.tran.token.ParseResult;
-import com.untangle.tran.token.PassThruToken;
-import com.untangle.tran.token.Token;
-import com.untangle.tran.util.MVLogger;
+import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.node.mail.papi.AddressKind;
+import com.untangle.node.mail.papi.ContinuedMIMEToken;
+import com.untangle.node.mail.papi.MIMEAccumulator;
+import com.untangle.node.mail.papi.MessageBoundaryScanner;
+import com.untangle.node.mail.papi.MessageInfo;
+import com.untangle.node.mail.papi.MessageInfoFactory;
+import com.untangle.node.mail.papi.imap.BeginImapMIMEToken;
+import com.untangle.node.mail.papi.imap.ImapChunk;
+import com.untangle.node.mail.papi.imap.UnparsableMIMEChunk;
+import com.untangle.node.mime.MIMEMessageHeaders;
+import com.untangle.node.token.Chunk;
+import com.untangle.node.token.ParseResult;
+import com.untangle.node.token.PassThruToken;
+import com.untangle.node.token.Token;
+import com.untangle.node.util.MVLogger;
 
 /**
  * 'name says it all...

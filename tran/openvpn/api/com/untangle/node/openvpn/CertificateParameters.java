@@ -9,12 +9,12 @@
  * $Id$
  */
 
-package com.untangle.tran.openvpn;
+package com.untangle.node.openvpn;
 
 import java.io.Serializable;
 
-import com.untangle.mvvm.tran.Validatable;
-import com.untangle.mvvm.tran.ValidateException;
+import com.untangle.uvm.node.Validatable;
+import com.untangle.uvm.node.ValidateException;
 
 public class CertificateParameters implements Serializable, Validatable
 {

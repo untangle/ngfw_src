@@ -8,7 +8,7 @@
  *
  * $Id$
  */
-package com.untangle.tran.nat.gui;
+package com.untangle.node.nat.gui;
 
 import java.awt.Insets;
 import java.util.*;
@@ -16,18 +16,18 @@ import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.table.*;
 
-import com.untangle.gui.transform.*;
+import com.untangle.gui.node.*;
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.editTable.*;
-import com.untangle.mvvm.IntfEnum;
-import com.untangle.mvvm.networking.RedirectRule;
-import com.untangle.mvvm.tran.*;
-import com.untangle.mvvm.tran.firewall.intf.IntfDBMatcher;
-import com.untangle.mvvm.tran.firewall.intf.IntfMatcherFactory;
-import com.untangle.mvvm.tran.firewall.ip.IPMatcherFactory;
-import com.untangle.mvvm.tran.firewall.port.PortMatcherFactory;
-import com.untangle.mvvm.tran.firewall.protocol.ProtocolMatcherFactory;
-import com.untangle.tran.nat.*;
+import com.untangle.uvm.IntfEnum;
+import com.untangle.uvm.networking.RedirectRule;
+import com.untangle.uvm.node.*;
+import com.untangle.uvm.node.firewall.intf.IntfDBMatcher;
+import com.untangle.uvm.node.firewall.intf.IntfMatcherFactory;
+import com.untangle.uvm.node.firewall.ip.IPMatcherFactory;
+import com.untangle.uvm.node.firewall.port.PortMatcherFactory;
+import com.untangle.uvm.node.firewall.protocol.ProtocolMatcherFactory;
+import com.untangle.node.nat.*;
 
 public class RedirectJPanel extends MEditTableJPanel {
 

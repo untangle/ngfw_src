@@ -9,17 +9,17 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.papi;
+package com.untangle.node.mail.papi;
 
-import com.untangle.tran.mail.papi.quarantine.QuarantineUserView;
-import com.untangle.tran.mail.papi.quarantine.QuarantineMaintenenceView;
-import com.untangle.tran.mail.papi.safelist.SafelistEndUserView;
-import com.untangle.tran.mail.papi.safelist.SafelistAdminView;
+import com.untangle.node.mail.papi.quarantine.QuarantineUserView;
+import com.untangle.node.mail.papi.quarantine.QuarantineMaintenenceView;
+import com.untangle.node.mail.papi.safelist.SafelistEndUserView;
+import com.untangle.node.mail.papi.safelist.SafelistAdminView;
 
-public interface MailTransform
+public interface MailNode
 {
-    MailTransformSettings getMailTransformSettings();
-    void setMailTransformSettings(MailTransformSettings settings);
+    MailNodeSettings getMailNodeSettings();
+    void setMailNodeSettings(MailNodeSettings settings);
 
     /**
      * Get the interface to the Quarantine used for end-user
@@ -32,7 +32,7 @@ public interface MailTransform
 
     /**
      * Get the interface to the Quarantine for Administrative
-     * interaction (other than {@link #setMailTransformSettings property}
+     * interaction (other than {@link #setMailNodeSettings property}
      * manipulation.
      *
      * @return the QuarantineMaintenenceView
@@ -50,7 +50,7 @@ public interface MailTransform
 
     /**
      * Get the interface to the Safelist subsystem for Administrative
-     * interaction (other than {@link #setMailTransformSettings property}
+     * interaction (other than {@link #setMailNodeSettings property}
      * manipulation.
      *
      * @return the SafelistAdminView

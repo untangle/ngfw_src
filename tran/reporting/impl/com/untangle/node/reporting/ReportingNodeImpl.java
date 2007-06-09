@@ -8,26 +8,26 @@
  *
  * $Id$
  */
-package com.untangle.tran.reporting;
+package com.untangle.node.reporting;
 
-import com.untangle.mvvm.tapi.AbstractTransform;
-import com.untangle.mvvm.tapi.PipeSpec;
-import com.untangle.mvvm.util.TransactionWork;
+import com.untangle.uvm.tapi.AbstractNode;
+import com.untangle.uvm.tapi.PipeSpec;
+import com.untangle.uvm.util.TransactionWork;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
-public class ReportingTransformImpl extends AbstractTransform implements ReportingTransform
+public class ReportingNodeImpl extends AbstractNode implements ReportingNode
 {
     private final Logger logger = Logger.getLogger(getClass());
 
     private ReportingSettings settings;
 
-    public ReportingTransformImpl() {}
+    public ReportingNodeImpl() {}
 
     public void setReportingSettings(final ReportingSettings settings)
     {
-        ReportingTransformImpl.this.settings = settings;
+        ReportingNodeImpl.this.settings = settings;
 
         TransactionWork tw = new TransactionWork()
             {
@@ -40,7 +40,7 @@ public class ReportingTransformImpl extends AbstractTransform implements Reporti
 
                 public Object getResult() { return null; }
             };
-        getTransformContext().runTransaction(tw);
+        getNodeContext().runTransaction(tw);
     }
 
     public ReportingSettings getReportingSettings()
@@ -89,7 +89,7 @@ public class ReportingTransformImpl extends AbstractTransform implements Reporti
 
                 public Object getResult() { return null; }
             };
-        getTransformContext().runTransaction(tw);
+        getNodeContext().runTransaction(tw);
     }
 
     protected void preStart()

@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.mail.papi.safelist;
+package com.untangle.node.mail.papi.safelist;
 
 /**
  * Base-interface for Admin and User views
@@ -117,7 +117,7 @@ public interface SafelistManipulation {
      * address has a safelist, or if one can implicitly be created
      * for the given address.  If this method returns true, the methods
      * which manupulate the contents of the safelist should not throw
-     * the {@link com.untangle.tran.mail.papi.safelist.NoSuchSafelistException NoSuchSafelistException}
+     * the {@link com.untangle.node.mail.papi.safelist.NoSuchSafelistException NoSuchSafelistException}
      * they all declare.
      */
     public boolean hasOrCanHaveSafelist(String address);

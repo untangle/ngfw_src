@@ -8,9 +8,9 @@
  *
  * $Id$
  */
-package com.untangle.tran.openvpn;
+package com.untangle.node.openvpn;
 
-import com.untangle.mvvm.tran.Transform;
+import com.untangle.uvm.node.Node;
 
 public class Constants
 {
@@ -38,13 +38,13 @@ public class Constants
     
     /* Triggered when there is a VPN session that is blocked */
     /* XXXXXXX Probably want to log block events */
-    static final int BLOCK_COUNTER   = Transform.GENERIC_0_COUNTER;
+    static final int BLOCK_COUNTER   = Node.GENERIC_0_COUNTER;
     
     /* Triggered when there is a VPN session that is passed */
-    static final int PASS_COUNTER    = Transform.GENERIC_1_COUNTER;
+    static final int PASS_COUNTER    = Node.GENERIC_1_COUNTER;
 
     /* Triggered whenever a client connects to the VPN */
-    static final int CONNECT_COUNTER = Transform.GENERIC_2_COUNTER;
+    static final int CONNECT_COUNTER = Node.GENERIC_2_COUNTER;
 
     /* Error codes from scripts */
 

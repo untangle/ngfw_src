@@ -9,24 +9,24 @@
  * $Id$
  */
 
-package com.untangle.tran.nat;
+package com.untangle.node.nat;
 
 import java.net.InetAddress;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.mvvm.networking.RedirectRule;
-import com.untangle.mvvm.networking.internal.RedirectInternal;
-import com.untangle.mvvm.tapi.IPNewSessionRequest;
-import com.untangle.mvvm.tran.firewall.TrafficIntfMatcher;
-import com.untangle.mvvm.tran.firewall.intf.IntfMatcher;
-import com.untangle.mvvm.tran.firewall.intf.IntfMatcherFactory;
-import com.untangle.mvvm.tran.firewall.ip.IPMatcher;
-import com.untangle.mvvm.tran.firewall.ip.IPMatcherFactory;
-import com.untangle.mvvm.tran.firewall.port.PortMatcher;
-import com.untangle.mvvm.tran.firewall.port.PortMatcherFactory;
-import com.untangle.mvvm.tran.firewall.protocol.ProtocolMatcher;
-import com.untangle.mvvm.tran.firewall.protocol.ProtocolMatcherFactory;
+import com.untangle.uvm.networking.RedirectRule;
+import com.untangle.uvm.networking.internal.RedirectInternal;
+import com.untangle.uvm.tapi.IPNewSessionRequest;
+import com.untangle.uvm.node.firewall.TrafficIntfMatcher;
+import com.untangle.uvm.node.firewall.intf.IntfMatcher;
+import com.untangle.uvm.node.firewall.intf.IntfMatcherFactory;
+import com.untangle.uvm.node.firewall.ip.IPMatcher;
+import com.untangle.uvm.node.firewall.ip.IPMatcherFactory;
+import com.untangle.uvm.node.firewall.port.PortMatcher;
+import com.untangle.uvm.node.firewall.port.PortMatcherFactory;
+import com.untangle.uvm.node.firewall.protocol.ProtocolMatcher;
+import com.untangle.uvm.node.firewall.protocol.ProtocolMatcherFactory;
 
 /**
  * A class for matching redirects

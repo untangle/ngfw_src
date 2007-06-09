@@ -9,28 +9,28 @@
  * $Id$
  */
 
-package com.untangle.tran.spam;
+package com.untangle.node.spam;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.LinkedList;
 
-import com.untangle.mvvm.tapi.TCPSession;
-import com.untangle.mvvm.tran.Transform;
-import com.untangle.tran.mail.papi.MIMEMessageT;
-import com.untangle.tran.mail.papi.MailExport;
-import com.untangle.tran.mail.papi.MailTransformSettings;
-import com.untangle.tran.mail.papi.MessageInfo;
-import com.untangle.tran.mail.papi.WrappedMessageGenerator;
-import com.untangle.tran.mail.papi.pop.PopStateMachine;
-import com.untangle.tran.mail.papi.safelist.SafelistTransformView;
-import com.untangle.tran.mime.HeaderParseException;
-import com.untangle.tran.mime.LCString;
-import com.untangle.tran.mime.MIMEMessage;
-import com.untangle.tran.token.Token;
-import com.untangle.tran.token.TokenException;
-import com.untangle.tran.token.TokenResult;
-import com.untangle.tran.util.TempFileFactory;
+import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.uvm.node.Node;
+import com.untangle.node.mail.papi.MIMEMessageT;
+import com.untangle.node.mail.papi.MailExport;
+import com.untangle.node.mail.papi.MailNodeSettings;
+import com.untangle.node.mail.papi.MessageInfo;
+import com.untangle.node.mail.papi.WrappedMessageGenerator;
+import com.untangle.node.mail.papi.pop.PopStateMachine;
+import com.untangle.node.mail.papi.safelist.SafelistNodeView;
+import com.untangle.node.mime.HeaderParseException;
+import com.untangle.node.mime.LCString;
+import com.untangle.node.mime.MIMEMessage;
+import com.untangle.node.token.Token;
+import com.untangle.node.token.TokenException;
+import com.untangle.node.token.TokenResult;
+import com.untangle.node.util.TempFileFactory;
 import org.apache.log4j.Logger;
 
 public class SpamPopHandler extends PopStateMachine
@@ -38,14 +38,14 @@ public class SpamPopHandler extends PopStateMachine
     private final Logger logger = Logger.getLogger(getClass());
 
     /* no block counter */
-    private final static int PASS_COUNTER = Transform.GENERIC_0_COUNTER;
-    private final static int MARK_COUNTER = Transform.GENERIC_2_COUNTER;
+    private final static int PASS_COUNTER = Node.GENERIC_0_COUNTER;
+    private final static int MARK_COUNTER = Node.GENERIC_2_COUNTER;
 
-    private final SpamImpl zTransform;
+    private final SpamImpl zNode;
     private final SpamScanner zScanner;
     private final String zVendorName;
 
-    private final SafelistTransformView zSLTransformView;
+    private final SafelistNodeView zSLNodeView;
     private final SpamPOPConfig zConfig;
     private final SpamMessageAction zMsgAction;
     private final boolean bScan;
@@ -56,23 +56,23 @@ public class SpamPopHandler extends PopStateMachine
 
     // constructors -----------------------------------------------------------
 
-    protected SpamPopHandler(TCPSession session, SpamImpl transform, MailExport zMExport)
+    protected SpamPopHandler(TCPSession session, SpamImpl node, MailExport zMExport)
     {
         super(session);
 
-        zTransform = transform;
-        zScanner = transform.getScanner();
+        zNode = node;
+        zScanner = node.getScanner();
         zVendorName = zScanner.getVendorName();
 
-        zSLTransformView = zMExport.getSafelistTransformView();
+        zSLNodeView = zMExport.getSafelistNodeView();
 
-        MailTransformSettings zMTSettings = zMExport.getExportSettings();
+        MailNodeSettings zMTSettings = zMExport.getExportSettings();
 
         if (!session.isInbound()) {
-            zConfig = transform.getSpamSettings().getPOPInbound();
+            zConfig = node.getSpamSettings().getPOPInbound();
             lTimeout = zMTSettings.getPopInboundTimeout();
         } else {
-            zConfig = transform.getSpamSettings().getPOPOutbound();
+            zConfig = node.getSpamSettings().getPOPOutbound();
             lTimeout = zMTSettings.getPopOutboundTimeout();
         }
         bScan = zConfig.getScan();
@@ -89,16 +89,16 @@ public class SpamPopHandler extends PopStateMachine
     {
         if (giveUpSize < zMsgFile.length()) {
             postSpamEvent(zMsgInfo, cleanReport(), SpamMessageAction.OVERSIZE);
-            zTransform.incrementCount(PASS_COUNTER);
-        } else if (true == zSLTransformView.isSafelisted(null, zMMessage.getMMHeaders().getFrom(), null)) {
+            zNode.incrementCount(PASS_COUNTER);
+        } else if (true == zSLNodeView.isSafelisted(null, zMMessage.getMMHeaders().getFrom(), null)) {
             postSpamEvent(zMsgInfo, cleanReport(), SpamMessageAction.SAFELIST);
-            zTransform.incrementCount(PASS_COUNTER);
+            zNode.incrementCount(PASS_COUNTER);
         } else if (true == bScan) {
             SpamReport zReport;
 
             if (null != (zReport = scanFile(zMsgFile)) &&
                 SpamMessageAction.MARK == zMsgAction) {
-                zTransform.incrementCount(MARK_COUNTER);
+                zNode.incrementCount(MARK_COUNTER);
 
                 /* wrap spam message and rebuild message token */
                 MIMEMessage zWMMessage = zWMsgGenerator.wrap(zMMessage, zReport);
@@ -117,7 +117,7 @@ public class SpamPopHandler extends PopStateMachine
                     throw new TokenException("cannot create wrapped message file after marking message as spam: " + exn);
                 }
             } else {
-                zTransform.incrementCount(PASS_COUNTER);
+                zNode.incrementCount(PASS_COUNTER);
             }
         } //else {
         //logger.debug("scan is not enabled");
@@ -164,6 +164,6 @@ public class SpamPopHandler extends PopStateMachine
                                               report.isSpam(),
                                               report.isSpam() ? action : SpamMessageAction.PASS,
                                               zVendorName);
-        zTransform.log(event);
+        zNode.log(event);
     }
 }

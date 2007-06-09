@@ -9,16 +9,16 @@
  * $Id$
  */
 
-package com.untangle.tran.spam;
+package com.untangle.node.spam;
 
-import com.untangle.mvvm.tapi.TCPNewSessionRequest;
-import com.untangle.mvvm.tapi.TCPSession;
-import com.untangle.tran.mail.papi.MailExport;
-import com.untangle.tran.mail.papi.MailExportFactory;
-import com.untangle.tran.mail.papi.imap.ImapTokenStream;
-import com.untangle.tran.mail.papi.safelist.SafelistTransformView;
-import com.untangle.tran.token.TokenHandler;
-import com.untangle.tran.token.TokenHandlerFactory;
+import com.untangle.uvm.tapi.TCPNewSessionRequest;
+import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.node.mail.papi.MailExport;
+import com.untangle.node.mail.papi.MailExportFactory;
+import com.untangle.node.mail.papi.imap.ImapTokenStream;
+import com.untangle.node.mail.papi.safelist.SafelistNodeView;
+import com.untangle.node.token.TokenHandler;
+import com.untangle.node.token.TokenHandlerFactory;
 import org.apache.log4j.Logger;
 
 public class SpamImapFactory
@@ -28,13 +28,13 @@ public class SpamImapFactory
 
     private final SpamImpl m_impl;
     private final MailExport m_mailExport;
-    private SafelistTransformView m_safelist;
+    private SafelistNodeView m_safelist;
 
     SpamImapFactory(SpamImpl impl) {
         m_impl = impl;
         /* XXX RBS I don't know if this will work */
         m_mailExport = MailExportFactory.factory().getExport();
-        m_safelist = m_mailExport.getSafelistTransformView();
+        m_safelist = m_mailExport.getSafelistNodeView();
     }
 
 

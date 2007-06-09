@@ -11,22 +11,22 @@
 
 
 
-package com.untangle.tran.reporting.gui;
+package com.untangle.node.reporting.gui;
 
 import javax.swing.*;
 
-import com.untangle.gui.transform.*;
+import com.untangle.gui.node.*;
 import com.untangle.gui.util.*;
-import com.untangle.mvvm.tran.TransformContext;
-import com.untangle.mvvm.tran.TransformDesc;
+import com.untangle.uvm.node.NodeContext;
+import com.untangle.uvm.node.NodeDesc;
 
 
-public class MTransformJPanel extends com.untangle.gui.transform.MTransformJPanel{
+public class MNodeJPanel extends com.untangle.gui.node.MNodeJPanel{
 
 
 
-    public MTransformJPanel(TransformContext transformContext, TransformDesc transformDesc) {
-        super(transformContext, transformDesc);
+    public MNodeJPanel(NodeContext nodeContext, NodeDesc nodeDesc) {
+        super(nodeContext, nodeDesc);
 
     }
 }

@@ -9,33 +9,33 @@
  * $Id$
  */
 
-package com.untangle.tran.spyware;
+package com.untangle.node.spyware;
 
 
-import com.untangle.mvvm.tapi.TCPNewSessionRequest;
-import com.untangle.mvvm.tapi.TCPSession;
-import com.untangle.tran.token.TokenHandler;
-import com.untangle.tran.token.TokenHandlerFactory;
+import com.untangle.uvm.tapi.TCPNewSessionRequest;
+import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.node.token.TokenHandler;
+import com.untangle.node.token.TokenHandlerFactory;
 import org.apache.log4j.Logger;
 
 class SpywareHttpFactory implements TokenHandlerFactory
 {
     private final Logger logger = Logger.getLogger(getClass());
 
-    private final SpywareImpl transform;
+    private final SpywareImpl node;
 
     // constructors -----------------------------------------------------------
 
-    SpywareHttpFactory(SpywareImpl transform)
+    SpywareHttpFactory(SpywareImpl node)
     {
-        this.transform = transform;
+        this.node = node;
     }
 
     // TokenHandlerFactory methods --------------------------------------------
 
     public TokenHandler tokenHandler(TCPSession session)
     {
-        return new SpywareHttpHandler(session, transform);
+        return new SpywareHttpHandler(session, node);
     }
 
     public void handleNewSessionRequest(TCPNewSessionRequest tsr)

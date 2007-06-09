@@ -9,11 +9,11 @@
  * $Id$
  */
 
-package com.untangle.tran.ids.options;
+package com.untangle.node.ids.options;
 
 import java.util.regex.*;
 
-import com.untangle.tran.ids.IDSRuleSignature;
+import com.untangle.node.ids.IDSRuleSignature;
 
 /**
  * This class matches the reference option found in snort based rule
