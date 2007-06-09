@@ -9,12 +9,11 @@
  * $Id$
  */
 
-package com.untangle.gui.transform;
+package com.untangle.gui.node;
 
-import com.untangle.gui.util.*;
 
-public interface Savable<T> {
+public interface Refreshable<T> {
 
-    public void doSave(T compoundSettings, boolean validateOnly) throws Exception;
+    public void doRefresh(T compoundSettings);
 
 }

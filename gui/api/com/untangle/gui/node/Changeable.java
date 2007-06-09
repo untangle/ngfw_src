@@ -6,11 +6,14 @@
  * Untangle, Inc. ("Confidential Information"). You shall
  * not disclose such Confidential Information.
  *
- * $Id$
+ * $Id: Changeable.java 8515 2007-01-03 00:13:24Z amread $
  */
 
-package com.untangle.gui.transform;
+package com.untangle.gui.node;
 
-public interface SettingsChangedListener {
-    public void settingsChanged(Object source);
+
+public interface Changeable {
+
+    public void setSettingsChangedListener(SettingsChangedListener settingsChangedListener);
+        
 }

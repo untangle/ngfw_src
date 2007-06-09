@@ -11,10 +11,10 @@
 
 package com.untangle.gui.pipeline;
 
-import com.untangle.gui.transform.CompoundSettings;
+import com.untangle.gui.node.CompoundSettings;
 import com.untangle.gui.util.Util;
-import com.untangle.mvvm.IntfEnum;
-import com.untangle.mvvm.policy.PolicyConfiguration;
+import com.untangle.uvm.IntfEnum;
+import com.untangle.uvm.policy.PolicyConfiguration;
 
 public class PolicyCompoundSettings implements CompoundSettings {
 

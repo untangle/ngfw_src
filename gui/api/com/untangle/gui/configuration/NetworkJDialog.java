@@ -19,7 +19,7 @@ import javax.swing.table.*;
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.dialogs.*;
 import com.untangle.gui.widgets.editTable.*;
-import com.untangle.mvvm.client.MvvmRemoteContextFactory;
+import com.untangle.uvm.client.UvmRemoteContextFactory;
 
 
 
@@ -79,10 +79,10 @@ public class NetworkJDialog extends MConfigJDialog {
     }
 
     protected void saveAll() throws Exception {
-        int previousTimeout = MvvmRemoteContextFactory.factory().getTimeout();
-        MvvmRemoteContextFactory.factory().setTimeout(Util.RECONFIGURE_NETWORK_TIMEOUT_MILLIS);
+        int previousTimeout = UvmRemoteContextFactory.factory().getTimeout();
+        UvmRemoteContextFactory.factory().setTimeout(Util.RECONFIGURE_NETWORK_TIMEOUT_MILLIS);
         super.saveAll();
-        MvvmRemoteContextFactory.factory().setTimeout(previousTimeout);
+        UvmRemoteContextFactory.factory().setTimeout(previousTimeout);
         // UPDATE STORE
         Util.getPolicyStateMachine().updateStoreModel();
     }

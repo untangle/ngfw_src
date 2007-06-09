@@ -26,7 +26,7 @@ import com.untangle.gui.util.Util;
 import com.untangle.gui.widgets.editTable.MEditTableJPanel;
 import com.untangle.gui.widgets.editTable.MSortedTableModel;
 import com.untangle.gui.widgets.wizard.*;
-import com.untangle.mvvm.networking.Interface;
+import com.untangle.uvm.networking.Interface;
 
 public class InitialSetupInterfaceJPanel extends MWizardPageJPanel {
 

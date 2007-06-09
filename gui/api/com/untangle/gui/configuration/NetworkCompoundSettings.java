@@ -11,11 +11,11 @@
 
 package com.untangle.gui.configuration;
 
-import com.untangle.gui.transform.CompoundSettings;
+import com.untangle.gui.node.CompoundSettings;
 import com.untangle.gui.util.Util;
-import com.untangle.mvvm.networking.AddressSettings;
-import com.untangle.mvvm.networking.BasicNetworkSettings;
-import com.untangle.mvvm.networking.DynamicDNSSettings;
+import com.untangle.uvm.networking.AddressSettings;
+import com.untangle.uvm.networking.BasicNetworkSettings;
+import com.untangle.uvm.networking.DynamicDNSSettings;
 
 
 public class NetworkCompoundSettings implements CompoundSettings {

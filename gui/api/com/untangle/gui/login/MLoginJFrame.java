@@ -22,9 +22,9 @@ import org.apache.log4j.Logger;
 
 import com.untangle.gui.main.MMainJFrame;
 import com.untangle.gui.util.*;
-import com.untangle.mvvm.*;
-import com.untangle.mvvm.client.*;
-import com.untangle.mvvm.security.*;
+import com.untangle.uvm.*;
+import com.untangle.uvm.client.*;
+import com.untangle.uvm.security.*;
 
 public class MLoginJFrame extends javax.swing.JFrame {
 
@@ -471,16 +471,16 @@ public class MLoginJFrame extends javax.swing.JFrame {
                     // LOGIN ///////////
                     Util.setShutdownInitiated(false);
                     URL url = Util.getServerCodeBase();
-                    MvvmRemoteContext mvvmContext = MvvmRemoteContextFactory.factory().interactiveLogin( url.getHost(), url.getPort(),
+                    UvmRemoteContext uvmContext = UvmRemoteContextFactory.factory().interactiveLogin( url.getHost(), url.getPort(),
                                                                                                          loginJTextField.getText(),
                                                                                                          new String(passJPasswordField.getPassword()),
                                                                                                          0, Util.getClassLoader(),
                                                                                                          Util.isSecureViaHttps(), useForce );
 
-                    Util.setMvvmContext(mvvmContext);
+                    Util.setUvmContext(uvmContext);
 
                     // VERSION MISMATCH ///////
-                    String version = Util.getMvvmContext().version();
+                    String version = Util.getUvmContext().version();
                     if( !version.equals("-1") ){
                         if( !version.equals( Version.getVersion() ) ){
                             resetLogin("Version mismatch.  Try Restarting.");
@@ -489,7 +489,7 @@ public class MLoginJFrame extends javax.swing.JFrame {
                     }
 
                     Util.getStatsCache().start();
-                    KeepAliveThread keepAliveThread = new KeepAliveThread(mvvmContext);
+                    KeepAliveThread keepAliveThread = new KeepAliveThread(uvmContext);
                     Util.addShutdownable("KeepAliveThread", keepAliveThread);
 
                     // EGDEMO ////////////////
@@ -499,7 +499,7 @@ public class MLoginJFrame extends javax.swing.JFrame {
                         Util.setIsDemo(false);
 
                     // READ-ONLY //
-                    if( Util.getAdminManager().whoAmI().getMvvmPrincipal().isReadOnly() )
+                    if( Util.getAdminManager().whoAmI().getUvmPrincipal().isReadOnly() )
                         Util.setIsDemo(true);
 
                     // READOUT SUCCESS /////////////////
@@ -519,7 +519,7 @@ public class MLoginJFrame extends javax.swing.JFrame {
                     break;
                 }
                 catch(MultipleLoginsException e){
-                    String loginName = e.getOtherLogin().getMvvmPrincipal().getName();
+                    String loginName = e.getOtherLogin().getUvmPrincipal().getName();
                     String loginAddress = e.getOtherLogin().getClientAddr().getHostAddress();
                     StealLoginJDialog stealLoginJDialog = new StealLoginJDialog(loginName, loginAddress);
                     if( stealLoginJDialog.isProceeding() ){
@@ -543,13 +543,13 @@ public class MLoginJFrame extends javax.swing.JFrame {
                     retryLogin = -1;
                     return;
                 }
-                catch(com.untangle.mvvm.client.InvocationTargetExpiredException e){
+                catch(com.untangle.uvm.client.InvocationTargetExpiredException e){
                     logger.debug("login exception", e);
                 }
-                catch(com.untangle.mvvm.client.InvocationConnectionException e){
+                catch(com.untangle.uvm.client.InvocationConnectionException e){
                     logger.debug("login exception", e);
                 }
-                catch(MvvmConnectException e){
+                catch(UvmConnectException e){
                     logger.debug("login exception", e);
                 }
                 catch(Exception e){
@@ -615,11 +615,11 @@ public class MLoginJFrame extends javax.swing.JFrame {
                     retryClient = -1;
                     break;
                 }
-                catch(com.untangle.mvvm.client.InvocationTargetExpiredException e){
+                catch(com.untangle.uvm.client.InvocationTargetExpiredException e){
                     e.printStackTrace();
                     //Util.handleExceptionNoRestart("Error:", e);
                 }
-                catch(com.untangle.mvvm.client.InvocationConnectionException e){
+                catch(com.untangle.uvm.client.InvocationConnectionException e){
                     e.printStackTrace();
                     //Util.handleExceptionNoRestart("Error:", e);
                 }

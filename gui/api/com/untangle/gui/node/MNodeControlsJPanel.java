@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.gui.transform;
+package com.untangle.gui.node;
 
 
 import java.awt.*;
@@ -26,11 +26,11 @@ import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.*;
 import com.untangle.gui.widgets.dialogs.*;
 import com.untangle.gui.widgets.editTable.*;
-import com.untangle.mvvm.*;
-import com.untangle.mvvm.tran.*;
+import com.untangle.uvm.*;
+import com.untangle.uvm.node.*;
 import org.netbeans.lib.awtextra.AbsoluteConstraints;
 
-public abstract class MTransformControlsJPanel extends javax.swing.JPanel implements SettingsChangedListener{
+public abstract class MNodeControlsJPanel extends javax.swing.JPanel implements SettingsChangedListener{
 
     // SAVING/REFRESHING/SHUTDOWN //////////
     private Map<String, Refreshable> refreshableMap = new LinkedHashMap(5);
@@ -43,8 +43,8 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
     private InfiniteProgressJComponent infiniteProgressJComponent = new InfiniteProgressJComponent();
     public  InfiniteProgressJComponent getInfiniteProgressJComponent(){ return infiniteProgressJComponent; }
     public static final long MIN_PROGRESS_MILLIS = 1500;
-    public void addShutdownable(String name, Shutdownable shutdownable){ mTransformJPanel.addShutdownable(name, shutdownable); }
-    public void removeShutdownable(String shutdownableKey){ mTransformJPanel.removeShutdownable(shutdownableKey); }
+    public void addShutdownable(String name, Shutdownable shutdownable){ mNodeJPanel.addShutdownable(name, shutdownable); }
+    public void removeShutdownable(String shutdownableKey){ mNodeJPanel.removeShutdownable(shutdownableKey); }
     ///////////////////////////////
 
     // EXPANDING/CONTACTING //////
@@ -66,23 +66,23 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
     private static ImageIcon[] saveSettingsImageIcons;
     CycleJLabel saveSettingsHintJLabel;
 
-    protected MTransformJPanel mTransformJPanel;
+    protected MNodeJPanel mNodeJPanel;
 
-    public MTransformControlsJPanel(MTransformJPanel mTransformJPanel) {
+    public MNodeControlsJPanel(MNodeJPanel mNodeJPanel) {
         //setDoubleBuffered(true);
-        this.mTransformJPanel = mTransformJPanel;
+        this.mNodeJPanel = mNodeJPanel;
 
         // HELPER //
         synchronized( this ){
             if( saveSettingsImageIcons == null ){
-                String[] saveSettingsImagePaths = { "com/untangle/gui/transform/IconSaveSettingsHint30.png",
-                                                    "com/untangle/gui/transform/IconSaveSettingsHint40.png",
-                                                    "com/untangle/gui/transform/IconSaveSettingsHint50.png",
-                                                    "com/untangle/gui/transform/IconSaveSettingsHint60.png",
-                                                    "com/untangle/gui/transform/IconSaveSettingsHint70.png",
-                                                    "com/untangle/gui/transform/IconSaveSettingsHint80.png",
-                                                    "com/untangle/gui/transform/IconSaveSettingsHint90.png",
-                                                    "com/untangle/gui/transform/IconSaveSettingsHint100.png" };
+                String[] saveSettingsImagePaths = { "com/untangle/gui/node/IconSaveSettingsHint30.png",
+                                                    "com/untangle/gui/node/IconSaveSettingsHint40.png",
+                                                    "com/untangle/gui/node/IconSaveSettingsHint50.png",
+                                                    "com/untangle/gui/node/IconSaveSettingsHint60.png",
+                                                    "com/untangle/gui/node/IconSaveSettingsHint70.png",
+                                                    "com/untangle/gui/node/IconSaveSettingsHint80.png",
+                                                    "com/untangle/gui/node/IconSaveSettingsHint90.png",
+                                                    "com/untangle/gui/node/IconSaveSettingsHint100.png" };
                 saveSettingsImageIcons = Util.getImageIcons(saveSettingsImagePaths);
             }
         }
@@ -133,7 +133,7 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
     }
 
     public boolean getControlsShowing(){
-        return mTransformJPanel.getControlsShowing();
+        return mNodeJPanel.getControlsShowing();
     }
 
     public void setSaveSettingsHintVisible(boolean isVisible){
@@ -189,7 +189,7 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
     }
     /////////////////////////
 
-    public JToggleButton getControlsJToggleButton(){ return mTransformJPanel.getControlsJToggleButton(); }
+    public JToggleButton getControlsJToggleButton(){ return mNodeJPanel.getControlsJToggleButton(); }
 
 
     public void setAllEnabled(boolean enabled){
@@ -222,7 +222,7 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
     private Exception saveException;
     public void saveAll() throws Exception {
         // GENERATE AND VALIDATE ALL SETTINGS
-        final String transformName = mTransformJPanel.getMackageDesc().getDisplayName();
+        final String nodeName = mNodeJPanel.getMackageDesc().getDisplayName();
         for( Map.Entry<String, Savable> savableMapEntry : savableMap.entrySet() ){
             final String componentName = savableMapEntry.getKey();
             final Savable savableComponent = savableMapEntry.getValue();
@@ -234,21 +234,21 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
                 }
             }});
             if( saveException != null ){
-                ValidateFailureDialog.factory( (Window) MTransformControlsJPanel.this.contentJPanel.getTopLevelAncestor(),
-                                               transformName, componentName, saveException.getMessage() );
+                ValidateFailureDialog.factory( (Window) MNodeControlsJPanel.this.contentJPanel.getTopLevelAncestor(),
+                                               nodeName, componentName, saveException.getMessage() );
                 throw new ValidationException();
             }
         }
         if( settings instanceof Validatable ){
             try{ ((Validatable)settings).validate(); }
             catch(Exception e){
-                ValidateFailureDialog.factory( (Window) MTransformControlsJPanel.this.contentJPanel.getTopLevelAncestor(),
-                                               transformName, "multiple settings panels", e.getMessage() );
+                ValidateFailureDialog.factory( (Window) MNodeControlsJPanel.this.contentJPanel.getTopLevelAncestor(),
+                                               nodeName, "multiple settings panels", e.getMessage() );
                 throw new ValidationException();
             }
         }
         // SEND SETTINGS TO SERVER
-        mTransformJPanel.getTransform().setSettings( settings );
+        mNodeJPanel.getNode().setSettings( settings );
         SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
             saveJButton.setEnabled(false);
             reloadJButton.setEnabled(false);
@@ -277,11 +277,11 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
     }
 
     public void refreshAll() throws Exception {
-        settings = mTransformJPanel.getTransform().getSettings();
+        settings = mNodeJPanel.getNode().getSettings();
     }
 
     void populateAll() throws Exception {
-        final String transformName = mTransformJPanel.getMackageDesc().getDisplayName();
+        final String nodeName = mNodeJPanel.getMackageDesc().getDisplayName();
         // SEND SETTINGS TO EACH PANEL, SERIALLY, INDEPENDANTLY
         for( Map.Entry<String, Refreshable> refreshableMapEntry : refreshableMap.entrySet() ){
             final Refreshable refreshableComponent = refreshableMapEntry.getValue();
@@ -289,8 +289,8 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
                 try{ refreshableComponent.doRefresh(settings); }
                 catch(Exception e){
                     Util.handleExceptionNoRestart("Error distributing settings",e);
-                    RefreshFailureDialog.factory( (Window) MTransformControlsJPanel.this.contentJPanel.getTopLevelAncestor(),
-                                                  transformName );
+                    RefreshFailureDialog.factory( (Window) MNodeControlsJPanel.this.contentJPanel.getTopLevelAncestor(),
+                                                  nodeName );
                 }
             }});
         }
@@ -497,7 +497,7 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
     private void helpJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_helpJButtonActionPerformed
         try{
             String focus = Util.getSelectedTabTitle(mTabbedPane).toLowerCase().replace(" ", "_");
-            String source = mTransformJPanel.getTransformDesc().getDisplayName().toLowerCase().replace(" ", "_");
+            String source = mNodeJPanel.getNodeDesc().getDisplayName().toLowerCase().replace(" ", "_");
             URL newURL = new URL( "http://www.untangle.com/docs/get.php?"
                                   + "version=" + Version.getVersion()
                                   + "&source=" + source
@@ -505,7 +505,7 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
             ((BasicService) ServiceManager.lookup("javax.jnlp.BasicService")).showDocument(newURL);
         }
         catch(Exception f){
-            Util.handleExceptionNoRestart("Error showing help for " + mTransformJPanel.getTransformDesc().getDisplayName(), f);
+            Util.handleExceptionNoRestart("Error showing help for " + mNodeJPanel.getNodeDesc().getDisplayName(), f);
         }
     }//GEN-LAST:event_helpJButtonActionPerformed
 
@@ -518,7 +518,7 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
     }//GEN-LAST:event_reloadJButtonActionPerformed
 
     private void expandJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_expandJButtonActionPerformed
-        if( !MTransformControlsJPanel.this.expandJDialog.isVisible() ){
+        if( !MNodeControlsJPanel.this.expandJDialog.isVisible() ){
             // change layout
             helpJButton.setVisible(true);
             removeJButton.setVisible(false);
@@ -535,7 +535,7 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
                                                                  Util.getMMainJFrame().getHeight()-EXPAND_INSET) );
             expandJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconShrink_43x16.png")));
             expandJButton.setText("Shrink");
-            expandJDialog.setTitle( mTransformJPanel.getTransformDesc().getDisplayName() + " (expanded settings window)");
+            expandJDialog.setTitle( mNodeJPanel.getNodeDesc().getDisplayName() + " (expanded settings window)");
             expandJDialog.setVisible(true);
 
             // cleanup after new window is closed

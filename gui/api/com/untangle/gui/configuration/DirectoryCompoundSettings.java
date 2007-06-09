@@ -17,10 +17,10 @@ import java.lang.reflect.Constructor;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.gui.transform.CompoundSettings;
+import com.untangle.gui.node.CompoundSettings;
 import com.untangle.gui.util.Util;
-import com.untangle.mvvm.addrbook.*;
-import com.untangle.mvvm.user.WMISettings;
+import com.untangle.uvm.addrbook.*;
+import com.untangle.uvm.user.WMISettings;
 
 
 public class DirectoryCompoundSettings implements CompoundSettings {

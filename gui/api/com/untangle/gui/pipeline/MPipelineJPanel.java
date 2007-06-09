@@ -15,11 +15,11 @@ import java.util.*;
 import javax.swing.*;
 
 import com.untangle.gui.main.*;
-import com.untangle.gui.transform.*;
+import com.untangle.gui.node.*;
 import com.untangle.gui.util.*;
-import com.untangle.mvvm.*;
-import com.untangle.mvvm.security.*;
-import com.untangle.mvvm.tran.*;
+import com.untangle.uvm.*;
+import com.untangle.uvm.security.*;
+import com.untangle.uvm.node.*;
 
 
 public class MPipelineJPanel extends javax.swing.JPanel {
@@ -44,7 +44,7 @@ public class MPipelineJPanel extends javax.swing.JPanel {
         java.awt.GridBagConstraints gridBagConstraints;
 
         mPipelineJScrollPane = new javax.swing.JScrollPane();
-        transformJPanel = new MRackJPanel();
+        nodeJPanel = new MRackJPanel();
         scrollbarBackground = new com.untangle.gui.widgets.MTiledIconLabel();
 
         setLayout(new java.awt.GridBagLayout());
@@ -60,10 +60,10 @@ public class MPipelineJPanel extends javax.swing.JPanel {
         mPipelineJScrollPane.setMinimumSize(new java.awt.Dimension(720, 21));
         mPipelineJScrollPane.setOpaque(false);
         mPipelineJScrollPane.getViewport().setOpaque(false);
-        transformJPanel.setBackground(new java.awt.Color(51, 255, 51));
-        transformJPanel.setMaximumSize(null);
-        transformJPanel.setOpaque(false);
-        mPipelineJScrollPane.setViewportView(transformJPanel);
+        nodeJPanel.setBackground(new java.awt.Color(51, 255, 51));
+        nodeJPanel.setMaximumSize(null);
+        nodeJPanel.setOpaque(false);
+        mPipelineJScrollPane.setViewportView(nodeJPanel);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -94,7 +94,7 @@ public class MPipelineJPanel extends javax.swing.JPanel {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JScrollPane mPipelineJScrollPane;
     private javax.swing.JLabel scrollbarBackground;
-    private javax.swing.JPanel transformJPanel;
+    private javax.swing.JPanel nodeJPanel;
     // End of variables declaration//GEN-END:variables
 
 

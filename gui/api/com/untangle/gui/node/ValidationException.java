@@ -9,11 +9,9 @@
  * $Id$
  */
 
-package com.untangle.gui.transform;
 
+package com.untangle.gui.node;
 
-public interface Refreshable<T> {
-
-    public void doRefresh(T compoundSettings);
-
+public class ValidationException extends Exception {
+    
 }

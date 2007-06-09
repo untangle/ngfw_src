@@ -28,15 +28,15 @@ import javax.swing.event.*;
 import com.untangle.gui.configuration.*;
 import com.untangle.gui.pipeline.*;
 import com.untangle.gui.store.*;
-import com.untangle.gui.transform.*;
+import com.untangle.gui.node.*;
 import com.untangle.gui.upgrade.*;
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.dialogs.*;
-import com.untangle.mvvm.*;
-import com.untangle.mvvm.policy.*;
-import com.untangle.mvvm.security.*;
-import com.untangle.mvvm.toolbox.MackageDesc;
-import com.untangle.mvvm.tran.*;
+import com.untangle.uvm.*;
+import com.untangle.uvm.policy.*;
+import com.untangle.uvm.security.*;
+import com.untangle.uvm.toolbox.MackageDesc;
+import com.untangle.uvm.node.*;
 
 public class MMainJFrame extends javax.swing.JFrame {
     // CONSTANTS

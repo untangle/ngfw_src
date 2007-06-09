@@ -20,10 +20,10 @@ import java.lang.reflect.Method;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.gui.transform.CompoundSettings;
-import com.untangle.gui.transform.Changeable;
-import com.untangle.gui.transform.Savable;
-import com.untangle.gui.transform.Refreshable;
+import com.untangle.gui.node.CompoundSettings;
+import com.untangle.gui.node.Changeable;
+import com.untangle.gui.node.Savable;
+import com.untangle.gui.node.Refreshable;
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.dialogs.*;
 import com.untangle.gui.widgets.editTable.*;

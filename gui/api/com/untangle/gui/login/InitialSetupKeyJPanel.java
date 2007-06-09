@@ -17,7 +17,7 @@ import javax.swing.SwingUtilities;
 
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.wizard.*;
-import com.untangle.mvvm.client.*;
+import com.untangle.uvm.client.*;
 
 public class InitialSetupKeyJPanel extends MWizardPageJPanel {
 
@@ -60,16 +60,16 @@ public class InitialSetupKeyJPanel extends MWizardPageJPanel {
             try{
                 InitialSetupWizard.getInfiniteProgressJComponent().startLater("Saving Key...");
                 URL url = Util.getServerCodeBase();
-                boolean isActivated = com.untangle.mvvm.client.MvvmRemoteContextFactory.factory().isActivated( url.getHost(), url.getPort(), 0, Util.isSecureViaHttps() );
+                boolean isActivated = com.untangle.uvm.client.UvmRemoteContextFactory.factory().isActivated( url.getHost(), url.getPort(), 0, Util.isSecureViaHttps() );
                 if( !isActivated ){
-                    MvvmRemoteContext mvvmContext = MvvmRemoteContextFactory.factory().activationLogin( url.getHost(), url.getPort(),
+                    UvmRemoteContext uvmContext = UvmRemoteContextFactory.factory().activationLogin( url.getHost(), url.getPort(),
                                                                                                         key,
                                                                                                         0,
                                                                                                         Util.getClassLoader(),
                                                                                                         Util.isSecureViaHttps() );
 
-                    Util.setMvvmContext(mvvmContext);
-                    KeepAliveThread keepAliveThread = new KeepAliveThread(mvvmContext);
+                    Util.setUvmContext(uvmContext);
+                    KeepAliveThread keepAliveThread = new KeepAliveThread(uvmContext);
                     InitialSetupWizard.setKeepAliveThread(keepAliveThread);
                     InitialSetupWizard.getInfiniteProgressJComponent().stopLater(1500l);
                 }

@@ -11,8 +11,8 @@
 
 package com.untangle.gui.configuration;
 
-import com.untangle.gui.transform.*;
-import com.untangle.mvvm.security.*;
+import com.untangle.gui.node.*;
+import com.untangle.uvm.security.*;
 
 
 

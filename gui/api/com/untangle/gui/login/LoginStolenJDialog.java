@@ -12,7 +12,7 @@
 package com.untangle.gui.login;
 
 import com.untangle.gui.util.Util;
-import com.untangle.mvvm.security.*;
+import com.untangle.uvm.security.*;
 
 final public class LoginStolenJDialog extends javax.swing.JDialog implements java.awt.event.WindowListener {
 

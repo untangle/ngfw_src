@@ -20,9 +20,9 @@ import com.untangle.gui.util.StringConstants;
 import com.untangle.gui.util.Util;
 import com.untangle.gui.widgets.*;
 import com.untangle.gui.widgets.editTable.*;
-import com.untangle.mvvm.*;
-import com.untangle.mvvm.addrbook.*;
-import com.untangle.mvvm.security.*;
+import com.untangle.uvm.*;
+import com.untangle.uvm.addrbook.*;
+import com.untangle.uvm.security.*;
 
 
 public class DirectoryLocalJPanel extends MEditTableJPanel{

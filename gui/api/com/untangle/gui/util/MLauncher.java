@@ -22,7 +22,7 @@ import javax.swing.*;
 import org.apache.log4j.PropertyConfigurator;
 
 import com.untangle.gui.login.*;
-import com.untangle.mvvm.client.*;
+import com.untangle.uvm.client.*;
 
 import org.apache.log4j.Logger;
 
@@ -117,7 +117,7 @@ public class MLauncher {
         // HANDLE FIRST TIME LOGINS
         try{
             URL url = Util.getServerCodeBase();
-            isActivated = MvvmRemoteContextFactory.factory().isActivated( url.getHost(), url.getPort(), 0, Util.isSecureViaHttps() );
+            isActivated = UvmRemoteContextFactory.factory().isActivated( url.getHost(), url.getPort(), 0, Util.isSecureViaHttps() );
         }
         catch(Exception e){
             Util.handleExceptionNoRestart("unable to connect to server for activation check", e);
@@ -193,7 +193,7 @@ public class MLauncher {
             setDaemon(true);
         }
         public void run(){
-            try{ MvvmRemoteContextFactory.factory().logout(); }
+            try{ UvmRemoteContextFactory.factory().logout(); }
             catch(Exception e){ Util.handleExceptionNoRestart("Error logging out", e); }
         }
     }

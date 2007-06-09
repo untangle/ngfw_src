@@ -22,13 +22,13 @@ import javax.swing.event.*;
 import javax.swing.table.*;
 import javax.swing.text.*;
 
-import com.untangle.gui.transform.*;
+import com.untangle.gui.node.*;
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.coloredTable.*;
 import com.untangle.gui.widgets.dialogs.*;
 import com.untangle.gui.widgets.editTable.*;
-import com.untangle.mvvm.*;
-import com.untangle.mvvm.tran.*;
+import com.untangle.uvm.*;
+import com.untangle.uvm.node.*;
 
 public class MWizardJDialog extends javax.swing.JDialog implements java.awt.event.WindowListener {
 

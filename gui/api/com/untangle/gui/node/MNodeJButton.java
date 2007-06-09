@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.gui.transform;
+package com.untangle.gui.node;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -23,10 +23,10 @@ import com.untangle.gui.main.*;
 import com.untangle.gui.pipeline.*;
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.dialogs.*;
-import com.untangle.mvvm.*;
-import com.untangle.mvvm.toolbox.MackageDesc;
+import com.untangle.uvm.*;
+import com.untangle.uvm.toolbox.MackageDesc;
 
-public class MTransformJButton extends JButton {
+public class MNodeJButton extends JButton {
 
     private MackageDesc mackageDesc;
     private GridBagConstraints gridBagConstraints;
@@ -40,7 +40,7 @@ public class MTransformJButton extends JButton {
 
     private static Color COLOR_NAME_DISABLED = new Color(140,140,140);
 
-    public MTransformJButton(MackageDesc mackageDesc) {
+    public MNodeJButton(MackageDesc mackageDesc) {
         this.mackageDesc = mackageDesc;
 
         // INITIAL LAYOUT
@@ -56,7 +56,7 @@ public class MTransformJButton extends JButton {
           if( mackageDesc.getOrgIcon() != null )
           organizationIconJLabel.setIcon( new javax.swing.ImageIcon(mackageDesc.getOrgIcon()) );
           else
-          organizationIconJLabel.setIcon( new ImageIcon(getClass().getResource("/com/untangle/gui/transform/IconOrgUnknown42x42.png")) );
+          organizationIconJLabel.setIcon( new ImageIcon(getClass().getResource("/com/untangle/gui/node/IconOrgUnknown42x42.png")) );
         */
         //organizationIconJLabel.setDisabledIcon(this.orgIcon);
         /*
@@ -78,7 +78,7 @@ public class MTransformJButton extends JButton {
         if( mackageDesc.getDescIcon() != null )
             descriptionIconJLabel.setIcon( new javax.swing.ImageIcon(mackageDesc.getDescIcon()) );
         else
-            descriptionIconJLabel.setIcon( new ImageIcon(getClass().getResource("/com/untangle/gui/transform/IconDescUnknown42x42.png")) );
+            descriptionIconJLabel.setIcon( new ImageIcon(getClass().getResource("/com/untangle/gui/node/IconDescUnknown42x42.png")) );
         //descriptionIconJLabel.setDisabledIcon(this.descIcon);
         descriptionIconJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         descriptionIconJLabel.setFocusable(false);
@@ -156,13 +156,13 @@ public class MTransformJButton extends JButton {
         return d;
     }
 
-    public MTransformJButton duplicate(){
-        MTransformJButton newMTransformJButton = new MTransformJButton( mackageDesc );
+    public MNodeJButton duplicate(){
+        MNodeJButton newMNodeJButton = new MNodeJButton( mackageDesc );
         Dimension currentDimension = getSize();
-        newMTransformJButton.setMinimumSize(currentDimension);
-        newMTransformJButton.setMaximumSize(currentDimension);
-        newMTransformJButton.setPreferredSize(currentDimension);
-        return newMTransformJButton;
+        newMNodeJButton.setMinimumSize(currentDimension);
+        newMNodeJButton.setMaximumSize(currentDimension);
+        newMNodeJButton.setPreferredSize(currentDimension);
+        return newMNodeJButton;
     }
 
     public boolean getIsTrial(){ return isTrial; }
@@ -207,15 +207,15 @@ public class MTransformJButton extends JButton {
     // VIEW UPDATING ///////////
     private void updateView(final String message, final int progress, final String toolTip, final boolean isEnabled, boolean doNow){
         if(doNow){
-            MTransformJButton.this.setProgress(message, progress);
-            MTransformJButton.this.setTT(toolTip);
-            MTransformJButton.this.setEnabled(isEnabled);
+            MNodeJButton.this.setProgress(message, progress);
+            MNodeJButton.this.setTT(toolTip);
+            MNodeJButton.this.setEnabled(isEnabled);
         }
         else{
             SwingUtilities.invokeLater( new Runnable() { public void run() {
-                MTransformJButton.this.setProgress(message, progress);
-                MTransformJButton.this.setTT(toolTip);
-                MTransformJButton.this.setEnabled(isEnabled);
+                MNodeJButton.this.setProgress(message, progress);
+                MNodeJButton.this.setTT(toolTip);
+                MNodeJButton.this.setEnabled(isEnabled);
             } } );
         }
     }

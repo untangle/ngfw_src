@@ -13,7 +13,7 @@ package com.untangle.gui.util;
 
 import java.net.InetAddress;
 
-import com.untangle.mvvm.tran.IPaddr;
+import com.untangle.uvm.node.IPaddr;
 
 public class IPPortString implements Comparable<IPPortString> {
 

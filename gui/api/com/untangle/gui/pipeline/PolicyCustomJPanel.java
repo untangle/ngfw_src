@@ -22,20 +22,20 @@ import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.table.*;
 
-import com.untangle.gui.transform.*;
+import com.untangle.gui.node.*;
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.dialogs.*;
 import com.untangle.gui.widgets.editTable.*;
-import com.untangle.mvvm.*;
-import com.untangle.mvvm.policy.*;
-import com.untangle.mvvm.tran.*;
-import com.untangle.mvvm.tran.firewall.*;
-import com.untangle.mvvm.tran.firewall.intf.*;
-import com.untangle.mvvm.tran.firewall.ip.IPMatcherFactory;
-import com.untangle.mvvm.tran.firewall.port.PortMatcherFactory;
-import com.untangle.mvvm.tran.firewall.protocol.ProtocolMatcherFactory;
-import com.untangle.mvvm.tran.firewall.time.*;
-import com.untangle.mvvm.tran.firewall.user.UserMatcherFactory;
+import com.untangle.uvm.*;
+import com.untangle.uvm.policy.*;
+import com.untangle.uvm.node.*;
+import com.untangle.uvm.node.firewall.*;
+import com.untangle.uvm.node.firewall.intf.*;
+import com.untangle.uvm.node.firewall.ip.IPMatcherFactory;
+import com.untangle.uvm.node.firewall.port.PortMatcherFactory;
+import com.untangle.uvm.node.firewall.protocol.ProtocolMatcherFactory;
+import com.untangle.uvm.node.firewall.time.*;
+import com.untangle.uvm.node.firewall.user.UserMatcherFactory;
 
 public class PolicyCustomJPanel extends MEditTableJPanel {
 

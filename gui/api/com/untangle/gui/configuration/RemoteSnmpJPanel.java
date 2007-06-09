@@ -14,12 +14,12 @@ package com.untangle.gui.configuration;
 import java.awt.*;
 import javax.swing.*;
 
-import com.untangle.gui.transform.*;
+import com.untangle.gui.node.*;
 import com.untangle.gui.util.*;
-import com.untangle.mvvm.*;
-import com.untangle.mvvm.security.*;
-import com.untangle.mvvm.snmp.*;
-import com.untangle.mvvm.tran.*;
+import com.untangle.uvm.*;
+import com.untangle.uvm.security.*;
+import com.untangle.uvm.snmp.*;
+import com.untangle.uvm.node.*;
 
 public class RemoteSnmpJPanel extends javax.swing.JPanel
     implements Savable<RemoteCompoundSettings>, Refreshable<RemoteCompoundSettings> {

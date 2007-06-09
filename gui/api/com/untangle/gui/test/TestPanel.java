@@ -32,9 +32,9 @@ import com.untangle.gui.util.Util;
  * in the tests, but again these do not require UI knowledge
  * to build.
  * <br>
- * Example usage is in the "test" transform:
+ * Example usage is in the "test" node:
  * <code>
- * com.untangle.tran.test.gui.MTransformControlsJPanel
+ * com.untangle.node.test.gui.MNodeControlsJPanel
  * </code>
  */
 public class TestPanel extends JPanel {

@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.gui.transform;
+package com.untangle.gui.node;
 
 import java.awt.*;
 import java.text.DecimalFormat;
@@ -17,7 +17,7 @@ import java.util.*;
 import javax.swing.*;
 
 import com.untangle.gui.util.*;
-import com.untangle.mvvm.tran.*;
+import com.untangle.uvm.node.*;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.AxisLocation;
@@ -45,10 +45,10 @@ import org.jfree.data.xy.XYDataset;
 import org.jfree.ui.RectangleInsets;
 import org.jfree.ui.TextAnchor;
 
-public class MTransformDisplayJPanel extends javax.swing.JPanel implements Shutdownable {
+public class MNodeDisplayJPanel extends javax.swing.JPanel implements Shutdownable {
 
-    // GENERAL TRANSFORM
-    protected MTransformJPanel mTransformJPanel;
+    // GENERAL NODE
+    protected MNodeJPanel mNodeJPanel;
 
     // GENERAL DISPLAY
     protected boolean getUpdateActivity(){ return true; }
@@ -92,9 +92,9 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel implements Shutd
     // End of variables declaration//GEN-END:variables
 
 
-    public MTransformDisplayJPanel(MTransformJPanel mTransformJPanel) {
+    public MNodeDisplayJPanel(MNodeJPanel mNodeJPanel) {
         setDoubleBuffered(true);
-        this.mTransformJPanel = mTransformJPanel;
+        this.mNodeJPanel = mNodeJPanel;
 
         throughputDynamicTimeSeriesCollection = new TimeSeriesCollection();
         TimeSeries tsRate = new TimeSeries("Rate", Second.class);
@@ -128,11 +128,11 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel implements Shutd
             this.remove(throughputJLabel);
         }
         updateGraphThread = new UpdateGraphThread();
-        mTransformJPanel.addShutdownable("UpdateGraphThread", updateGraphThread);
+        mNodeJPanel.addShutdownable("UpdateGraphThread", updateGraphThread);
     }
 
     public void doShutdown(){
-        mTransformJPanel.mTransformControlsJPanel().doShutdown();
+        mNodeJPanel.mNodeControlsJPanel().doShutdown();
     }
 
     public void setDoVizUpdates(boolean doVizUpdates){
@@ -401,7 +401,7 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel implements Shutd
 
     private class UpdateGraphThread extends Thread implements Shutdownable {
 
-        private TransformStats currentStats = null;
+        private NodeStats currentStats = null;
         private long sessionCountCurrent = 0;
         private long sessionCountTotal = 0;
         private long sessionRequestTotal = 0;
@@ -422,7 +422,7 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel implements Shutd
         private volatile boolean firstRun = true;
 
         public UpdateGraphThread(){
-            super("MVCLIENT-UpdateGraphThread: " + MTransformDisplayJPanel.this.mTransformJPanel.getTransformDesc().getDisplayName());
+            super("MVCLIENT-UpdateGraphThread: " + MNodeDisplayJPanel.this.mNodeJPanel.getNodeDesc().getDisplayName());
             setDaemon(true);
             start();
         }
@@ -460,9 +460,9 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel implements Shutd
                         if( !doVizUpdates )
                             wait();
                     }
-                    Transform fakeTransform = Util.getStatsCache().getFakeTransform(mTransformJPanel.getTid());
-                    if( fakeTransform != null ) // only dereference stats if they exist, otherwise sleep/wait
-                        currentStats = fakeTransform.getStats();
+                    Node fakeNode = Util.getStatsCache().getFakeNode(mNodeJPanel.getTid());
+                    if( fakeNode != null ) // only dereference stats if they exist, otherwise sleep/wait
+                        currentStats = fakeNode.getStats();
                     Thread.sleep(SLEEP_MILLIS);
                 }
                 catch(InterruptedException e){
@@ -488,10 +488,10 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel implements Shutd
             if( (sessionRequestLast == 0) || (sessionRequestLast > sessionRequestTotal) )
                 sessionRequestLast = sessionRequestTotal;
             // ADD TO BARS
-            activity0Count.add( (double) currentStats.getCount(Transform.GENERIC_0_COUNTER) );
-            activity1Count.add( (double) currentStats.getCount(Transform.GENERIC_1_COUNTER) );
-            activity2Count.add( (double) currentStats.getCount(Transform.GENERIC_2_COUNTER) );
-            activity3Count.add( (double) currentStats.getCount(Transform.GENERIC_3_COUNTER) );
+            activity0Count.add( (double) currentStats.getCount(Node.GENERIC_0_COUNTER) );
+            activity1Count.add( (double) currentStats.getCount(Node.GENERIC_1_COUNTER) );
+            activity2Count.add( (double) currentStats.getCount(Node.GENERIC_2_COUNTER) );
+            activity3Count.add( (double) currentStats.getCount(Node.GENERIC_3_COUNTER) );
         }
 
 
@@ -507,14 +507,14 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel implements Shutd
                     activity3Count.reset();
                     // RESET GRAPHS
                     long now = System.currentTimeMillis();
-                    if( MTransformDisplayJPanel.this.getUpdateSessions() ){
+                    if( MNodeDisplayJPanel.this.getUpdateSessions() ){
                         for(int i=60; i>0; i--){
                             Second second = new Second(new Date(now - i * 1000));
                             sessionDynamicTimeSeriesCollection.getSeries(0).addOrUpdate(second, 0f);
                             sessionDynamicTimeSeriesCollection.getSeries(1).addOrUpdate(second, 0f);
                         }
                     }
-                    if( MTransformDisplayJPanel.this.getUpdateThroughput() ){
+                    if( MNodeDisplayJPanel.this.getUpdateThroughput() ){
                         for(int i=60; i>0; i--){
                             Second second = new Second(new Date(now - i * 1000));
                             throughputDynamicTimeSeriesCollection.getSeries(0).addOrUpdate(second, 0f);
@@ -527,7 +527,7 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel implements Shutd
                 }
                 Second second = new Second();
                 // UPDATE SESSION GRAPH & COUNTERS
-                if( MTransformDisplayJPanel.this.getUpdateSessions() ){
+                if( MNodeDisplayJPanel.this.getUpdateSessions() ){
                     sessionDynamicTimeSeriesCollection.getSeries(0).addOrUpdate(second, (float) sessionCountCurrent);
                     sessionDynamicTimeSeriesCollection.getSeries(1).addOrUpdate(second, (float) sessionRequestTotal - sessionRequestLast);
                     sessionRequestLast = sessionRequestTotal;
@@ -535,13 +535,13 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel implements Shutd
                     generateCountLabel(sessionRequestTotal, " REQ", sessionRequestTotalJLabel);
                 }
                 // UPDATE THROUGHPUT GRAPH & COUNTER
-                if( MTransformDisplayJPanel.this.getUpdateThroughput() ){
+                if( MNodeDisplayJPanel.this.getUpdateThroughput() ){
                     throughputDynamicTimeSeriesCollection.getSeries(0).addOrUpdate(second, ((float)(byteCountCurrent - byteCountLast))/1000f);
                     byteCountLast = byteCountCurrent;
                     generateCountLabel(byteCountCurrent, "B", throughputTotalJLabel);
                 }
                 // UPDATE BARS
-                if( MTransformDisplayJPanel.this.getUpdateActivity() ){
+                if( MNodeDisplayJPanel.this.getUpdateActivity() ){
                     dataset.setValue( activity0Count.decayValue(), activitySeriesString, activityString0);
                     dataset.setValue( activity1Count.decayValue(), activitySeriesString, activityString1);
                     dataset.setValue( activity2Count.decayValue(), activitySeriesString, activityString2);

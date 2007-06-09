@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.gui.transform;
+package com.untangle.gui.node;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -23,23 +23,23 @@ import javax.swing.*;
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.*;
 import com.untangle.gui.widgets.dialogs.*;
-import com.untangle.mvvm.*;
-import com.untangle.mvvm.policy.*;
-import com.untangle.mvvm.security.*;
-import com.untangle.mvvm.toolbox.MackageDesc;
-import com.untangle.mvvm.tran.*;
+import com.untangle.uvm.*;
+import com.untangle.uvm.policy.*;
+import com.untangle.uvm.security.*;
+import com.untangle.uvm.toolbox.MackageDesc;
+import com.untangle.uvm.node.*;
 
-public class MTransformJPanel extends javax.swing.JPanel {
+public class MNodeJPanel extends javax.swing.JPanel {
 
-    // MVVM MODEL
-    protected TransformContext transformContext;
-    protected Transform transform;
-    public Transform getTransform(){ return transform; }
-    protected TransformDesc transformDesc;
-    public TransformDesc getTransformDesc(){ return transformDesc; }
+    // UVM MODEL
+    protected NodeContext nodeContext;
+    protected Node node;
+    public Node getNode(){ return node; }
+    protected NodeDesc nodeDesc;
+    public NodeDesc getNodeDesc(){ return nodeDesc; }
     protected MackageDesc mackageDesc;
     public MackageDesc getMackageDesc(){ return mackageDesc; }
-    public MackageDesc getNewMackageDesc() throws Exception{ return transformContext.getMackageDesc(); }
+    public MackageDesc getNewMackageDesc() throws Exception{ return nodeContext.getMackageDesc(); }
     protected Tid tid;
     public Tid getTid(){ return tid; }
     protected Policy policy;
@@ -47,10 +47,10 @@ public class MTransformJPanel extends javax.swing.JPanel {
     private void setPolicy(Policy policy){ this.policy = policy; }
 
     // GUI VIEW MODEL
-    private MTransformControlsJPanel mTransformControlsJPanel;
-    public MTransformControlsJPanel mTransformControlsJPanel(){ return mTransformControlsJPanel; }
-    private MTransformDisplayJPanel mTransformDisplayJPanel;
-    public MTransformDisplayJPanel mTransformDisplayJPanel() { return mTransformDisplayJPanel; }
+    private MNodeControlsJPanel mNodeControlsJPanel;
+    public MNodeControlsJPanel mNodeControlsJPanel(){ return mNodeControlsJPanel; }
+    private MNodeDisplayJPanel mNodeDisplayJPanel;
+    public MNodeDisplayJPanel mNodeDisplayJPanel() { return mNodeDisplayJPanel; }
 
     // GUI DATA MODEL
     protected MStateMachine mStateMachine;
@@ -70,35 +70,35 @@ public class MTransformJPanel extends javax.swing.JPanel {
     protected void addShutdownable(String name, Shutdownable shutdownable){ shutdownableMap.put(name, shutdownable); }
     protected void removeShutdownable(String shutdownableKey){ shutdownableMap.remove(shutdownableKey); }
 
-    public static MTransformJPanel instantiate(TransformContext transformContext, TransformDesc transformDesc, Policy policy) throws Exception {
-        Class guiClass = Util.getClassLoader().loadClass( transformDesc.getGuiClassName(), transformDesc );
-        Constructor guiConstructor = guiClass.getConstructor( new Class[]{TransformContext.class, TransformDesc.class} );
-        MTransformJPanel mTransformJPanel = (MTransformJPanel) guiConstructor.newInstance(new Object[]{transformContext, transformDesc});
-        mTransformJPanel.setPolicy(policy);
-        return mTransformJPanel;
+    public static MNodeJPanel instantiate(NodeContext nodeContext, NodeDesc nodeDesc, Policy policy) throws Exception {
+        Class guiClass = Util.getClassLoader().loadClass( nodeDesc.getGuiClassName(), nodeDesc );
+        Constructor guiConstructor = guiClass.getConstructor( new Class[]{NodeContext.class, NodeDesc.class} );
+        MNodeJPanel mNodeJPanel = (MNodeJPanel) guiConstructor.newInstance(new Object[]{nodeContext, nodeDesc});
+        mNodeJPanel.setPolicy(policy);
+        return mNodeJPanel;
     }
 
-    public MTransformJPanel(TransformContext transformContext, TransformDesc transformDesc) { // this should not be instantiated
+    public MNodeJPanel(NodeContext nodeContext, NodeDesc nodeDesc) { // this should not be instantiated
         setDoubleBuffered(true);
-        this.transformContext = transformContext;
-        this.transformDesc = transformDesc;
-        transform = transformContext.transform();
-        mackageDesc = transformContext.getMackageDesc();
-        tid = transformDesc.getTid();
+        this.nodeContext = nodeContext;
+        this.nodeDesc = nodeDesc;
+        node = nodeContext.node();
+        mackageDesc = nodeContext.getMackageDesc();
+        tid = nodeDesc.getTid();
         controlsLoaded = false;
         showControlsThread = new ShowControlsThread();
 
         // VISUAL HELPER
         synchronized( this ){
             if( powerOnImageIcons == null ){
-                String[] powerOnImagePaths = { "com/untangle/gui/transform/IconPowerOnHint30.png",
-                                               "com/untangle/gui/transform/IconPowerOnHint40.png",
-                                               "com/untangle/gui/transform/IconPowerOnHint50.png",
-                                               "com/untangle/gui/transform/IconPowerOnHint60.png",
-                                               "com/untangle/gui/transform/IconPowerOnHint70.png",
-                                               "com/untangle/gui/transform/IconPowerOnHint80.png",
-                                               "com/untangle/gui/transform/IconPowerOnHint90.png",
-                                               "com/untangle/gui/transform/IconPowerOnHint100.png" };
+                String[] powerOnImagePaths = { "com/untangle/gui/node/IconPowerOnHint30.png",
+                                               "com/untangle/gui/node/IconPowerOnHint40.png",
+                                               "com/untangle/gui/node/IconPowerOnHint50.png",
+                                               "com/untangle/gui/node/IconPowerOnHint60.png",
+                                               "com/untangle/gui/node/IconPowerOnHint70.png",
+                                               "com/untangle/gui/node/IconPowerOnHint80.png",
+                                               "com/untangle/gui/node/IconPowerOnHint90.png",
+                                               "com/untangle/gui/node/IconPowerOnHint100.png" };
                 powerOnImageIcons = Util.getImageIcons( powerOnImagePaths );
             }
         }
@@ -110,41 +110,41 @@ public class MTransformJPanel extends javax.swing.JPanel {
 
         // DYNAMICALLY LOAD DISPLAY
         try{
-            Class mTransformDisplayJPanelClass = Class.forName(this.getClass().getPackage().getName()  +  ".MTransformDisplayJPanel",
+            Class mNodeDisplayJPanelClass = Class.forName(this.getClass().getPackage().getName()  +  ".MNodeDisplayJPanel",
                                                                true, Util.getClassLoader() );
-            Constructor mTransformDisplayJPanelConstructor = mTransformDisplayJPanelClass.getConstructor(new Class[]{this.getClass()});
-            mTransformDisplayJPanel = (MTransformDisplayJPanel) mTransformDisplayJPanelConstructor.newInstance(new Object[]{this});
+            Constructor mNodeDisplayJPanelConstructor = mNodeDisplayJPanelClass.getConstructor(new Class[]{this.getClass()});
+            mNodeDisplayJPanel = (MNodeDisplayJPanel) mNodeDisplayJPanelConstructor.newInstance(new Object[]{this});
         }
         catch(Exception e){
-            mTransformDisplayJPanel = new MTransformDisplayJPanel(this);
+            mNodeDisplayJPanel = new MNodeDisplayJPanel(this);
             Util.handleExceptionNoRestart("Error adding display panel", e);
         }
-        this.add(mTransformDisplayJPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(104, 5, 498, 90), 0);
+        this.add(mNodeDisplayJPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(104, 5, 498, 90), 0);
 
         // DYNAMICALLY LOAD CONFIG
         try{
-            Class mTransformControlsJPanelClass = Class.forName(this.getClass().getPackage().getName()  +  ".MTransformControlsJPanel",
+            Class mNodeControlsJPanelClass = Class.forName(this.getClass().getPackage().getName()  +  ".MNodeControlsJPanel",
                                                                 true, Util.getClassLoader() );
-            Constructor mTransformControlsJPanelConstructor = mTransformControlsJPanelClass.getConstructor(new Class[]{this.getClass()});
-            mTransformControlsJPanel = (MTransformControlsJPanel) mTransformControlsJPanelConstructor.newInstance(new Object[]{this});
+            Constructor mNodeControlsJPanelConstructor = mNodeControlsJPanelClass.getConstructor(new Class[]{this.getClass()});
+            mNodeControlsJPanel = (MNodeControlsJPanel) mNodeControlsJPanelConstructor.newInstance(new Object[]{this});
         }
         catch(Exception e){
             // SHOW A LITTLE MESSAGE TELLING THEM TO RESTART
-            mTransformControlsJPanel = new MTransformControlsJPanel(this){public void generateGui(){}};
+            mNodeControlsJPanel = new MNodeControlsJPanel(this){public void generateGui(){}};
             JPanel warningJPanel = new JPanel(new BorderLayout());
             JLabel warningJLabel = new JLabel("<html><center><b>Warning:</b> Settings could not be loaded properly." +
                                               "<br>Please restart the Untangle Client to load settings properly.</center></html>");
             warningJLabel.setFont(new java.awt.Font("Arial", 0, 14));
             warningJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
             warningJPanel.add(warningJLabel);
-            mTransformControlsJPanel.getMTabbedPane().add("Warning", warningJPanel);
+            mNodeControlsJPanel.getMTabbedPane().add("Warning", warningJPanel);
             Util.handleExceptionNoRestart("Error adding control panel", e);
         }
 
         // DYNAMICALLY LOAD ICONS
         String name = null;
         try{
-            name = transformDesc.getName();
+            name = nodeDesc.getName();
             name = name.substring(0, name.indexOf('-'));
             descriptionIconJLabel.setIcon(new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/untangle/tran/"
                                                                                                        + name
@@ -155,7 +155,7 @@ public class MTransformJPanel extends javax.swing.JPanel {
         organizationIconJLabel.setIcon(null);
         /*
           try{
-          name = transformDesc.getName();
+          name = nodeDesc.getName();
           name = name.substring(0, name.indexOf('-'));
           organizationIconJLabel.setIcon(new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/untangle/tran/"
           + name
@@ -167,7 +167,7 @@ public class MTransformJPanel extends javax.swing.JPanel {
         // SIZES
         if(maxDimension == null)
             maxDimension = new Dimension((int)this.getPreferredSize().getWidth(), (int)(this.getPreferredSize().getHeight()
-                                                                                        + mTransformControlsJPanel.getPreferredSize().getHeight()));
+                                                                                        + mNodeControlsJPanel.getPreferredSize().getHeight()));
         if(minDimension == null)
             minDimension = new Dimension((int)this.getPreferredSize().getWidth(), (int)(this.getPreferredSize().getHeight()));
         setPreferredSize(minDimension);
@@ -175,14 +175,14 @@ public class MTransformJPanel extends javax.swing.JPanel {
         setMaximumSize(minDimension);
 
         // ADD CONFIG PANEL
-        add(mTransformControlsJPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(46, 100, 596, 380));
+        add(mNodeControlsJPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(46, 100, 596, 380));
         setMinimumSize(minDimension);
         setMaximumSize(maxDimension);
-        //mTransformControlsJPanel.setVisible(false);
+        //mNodeControlsJPanel.setVisible(false);
         setPreferredSize(minDimension);
 
         // CONFIG PANEL DROPDOWN TASK /////////
-        controlsDropdownTask = new DropdownTask(this, mTransformControlsJPanel, controlsJToggleButton,
+        controlsDropdownTask = new DropdownTask(this, mNodeControlsJPanel, controlsJToggleButton,
                                                 minDimension, maxDimension,
                                                 596, 380, 46, -280, 100);
 
@@ -192,7 +192,7 @@ public class MTransformJPanel extends javax.swing.JPanel {
         // SETUP NAME AND MESSAGE
         try{ ((JComponent)descriptionTextJLabel).putClientProperty(com.sun.java.swing.SwingUtilities2.AA_TEXT_PROPERTY_KEY, new Boolean(true)); }
         catch(Throwable t){}
-        descriptionTextJLabel.setText( transformDesc.getDisplayName() );
+        descriptionTextJLabel.setText( nodeDesc.getDisplayName() );
         try{ ((JComponent)messageTextJLabel).putClientProperty(com.sun.java.swing.SwingUtilities2.AA_TEXT_PROPERTY_KEY, new Boolean(true)); }
         catch(Throwable t){}
         String extraName = mackageDesc.getExtraName();
@@ -204,9 +204,9 @@ public class MTransformJPanel extends javax.swing.JPanel {
         // SETUP STATE
         mStateMachine = new MStateMachine(this);
         powerJToggleButton.addActionListener(mStateMachine);
-        mTransformControlsJPanel.saveJButton().addActionListener(mStateMachine);
-        mTransformControlsJPanel.reloadJButton().addActionListener(mStateMachine);
-        mTransformControlsJPanel.removeJButton().addActionListener(mStateMachine);
+        mNodeControlsJPanel.saveJButton().addActionListener(mStateMachine);
+        mNodeControlsJPanel.reloadJButton().addActionListener(mStateMachine);
+        mNodeControlsJPanel.removeJButton().addActionListener(mStateMachine);
     }
 
     public boolean getDoneRefreshing(){ return mStateMachine.getDoneRefreshing(); }
@@ -229,8 +229,8 @@ public class MTransformJPanel extends javax.swing.JPanel {
             shutdownableEntry.getValue().doShutdown();
         }
         SwingUtilities.invokeLater( new Runnable(){ public void run(){
-            mTransformControlsJPanel.doShutdown();
-            mTransformDisplayJPanel.doShutdown();
+            mNodeControlsJPanel.doShutdown();
+            mNodeDisplayJPanel.doShutdown();
             setControlsShowing(false);
         }});
     }
@@ -247,7 +247,7 @@ public class MTransformJPanel extends javax.swing.JPanel {
         onOffbuttonGroup = new javax.swing.ButtonGroup();
         descriptionTextJLabel = new javax.swing.JLabel();
         nbPowerOnHintJLabel = powerOnHintJLabel;
-        stateJLabel = (JLabel) new com.untangle.gui.transform.BlinkJLabel();
+        stateJLabel = (JLabel) new com.untangle.gui.node.BlinkJLabel();
         controlsJToggleButton = new javax.swing.JToggleButton();
         helpJButton = new javax.swing.JButton();
         descriptionIconJLabel = new javax.swing.JLabel();
@@ -267,7 +267,7 @@ public class MTransformJPanel extends javax.swing.JPanel {
         descriptionTextJLabel.setFont(new java.awt.Font("Arial", 0, 18));
         descriptionTextJLabel.setForeground(new java.awt.Color(124, 123, 123));
         descriptionTextJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        descriptionTextJLabel.setText("SuperTransform");
+        descriptionTextJLabel.setText("SuperNode");
         descriptionTextJLabel.setFocusable(false);
         descriptionTextJLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         descriptionTextJLabel.setIconTextGap(0);
@@ -285,14 +285,14 @@ public class MTransformJPanel extends javax.swing.JPanel {
         add(stateJLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(606, 20, 28, 28));
 
         controlsJToggleButton.setFont(new java.awt.Font("Default", 0, 12));
-        controlsJToggleButton.setIcon(new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/untangle/gui/transform/IconControlsClosed28x28.png")));
+        controlsJToggleButton.setIcon(new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/untangle/gui/node/IconControlsClosed28x28.png")));
         controlsJToggleButton.setText("Show Settings");
         controlsJToggleButton.setAlignmentX(0.5F);
         controlsJToggleButton.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
         controlsJToggleButton.setIconTextGap(0);
         controlsJToggleButton.setMargin(new java.awt.Insets(0, 0, 1, 3));
         controlsJToggleButton.setOpaque(false);
-        controlsJToggleButton.setSelectedIcon(new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/untangle/gui/transform/IconControlsOpen28x28.png")));
+        controlsJToggleButton.setSelectedIcon(new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/untangle/gui/node/IconControlsOpen28x28.png")));
         controlsJToggleButton.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(java.awt.event.ActionEvent evt) {
                     controlsJToggleButtonActionPerformed(evt);
@@ -302,7 +302,7 @@ public class MTransformJPanel extends javax.swing.JPanel {
         add(controlsJToggleButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(52, 60, 120, 25));
 
         helpJButton.setFont(new java.awt.Font("Dialog", 0, 12));
-        helpJButton.setIcon(new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/untangle/gui/transform/IconHelp28x28.png")));
+        helpJButton.setIcon(new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/untangle/gui/node/IconHelp28x28.png")));
         helpJButton.setText("Help");
         helpJButton.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
         helpJButton.setIconTextGap(0);
@@ -319,12 +319,12 @@ public class MTransformJPanel extends javax.swing.JPanel {
         add(helpJButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(178, 60, 68, 25));
 
         descriptionIconJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        descriptionIconJLabel.setIcon(new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/untangle/gui/transform/IconDesc42x42.png")));
+        descriptionIconJLabel.setIcon(new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/untangle/gui/node/IconDesc42x42.png")));
         descriptionIconJLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         add(descriptionIconJLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(52, 6, 42, 42));
 
         organizationIconJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        organizationIconJLabel.setIcon(new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/untangle/gui/transform/IconOrg42x42.png")));
+        organizationIconJLabel.setIcon(new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/untangle/gui/node/IconOrg42x42.png")));
         organizationIconJLabel.setAlignmentX(0.5F);
         organizationIconJLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         organizationIconJLabel.setIconTextGap(0);
@@ -342,14 +342,14 @@ public class MTransformJPanel extends javax.swing.JPanel {
         messageTextJLabel.setFont(new java.awt.Font("Arial", 1, 12));
         messageTextJLabel.setForeground(new java.awt.Color(68, 91, 255));
         messageTextJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        messageTextJLabel.setText("SuperTransform");
+        messageTextJLabel.setText("SuperNode");
         messageTextJLabel.setFocusable(false);
         messageTextJLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         messageTextJLabel.setIconTextGap(0);
         add(messageTextJLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(106, 37, -1, 20));
 
         powerJToggleButton.setFont(new java.awt.Font("Default", 0, 12));
-        powerJToggleButton.setIcon(new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/untangle/gui/transform/IconPowerOffState28x28.png")));
+        powerJToggleButton.setIcon(new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/untangle/gui/node/IconPowerOffState28x28.png")));
         powerJToggleButton.setToolTipText("<HTML>\nThe <B>Power Button</B> allows you to turn a product \"on\" and \"off\".<br>\n\n</HTML>");
         powerJToggleButton.setAlignmentX(0.5F);
         powerJToggleButton.setBorderPainted(false);
@@ -362,13 +362,13 @@ public class MTransformJPanel extends javax.swing.JPanel {
         powerJToggleButton.setMaximumSize(new java.awt.Dimension(28, 28));
         powerJToggleButton.setMinimumSize(new java.awt.Dimension(28, 28));
         powerJToggleButton.setPreferredSize(new java.awt.Dimension(28, 28));
-        powerJToggleButton.setSelectedIcon(new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/untangle/gui/transform/IconPowerOnState28x28.png")));
+        powerJToggleButton.setSelectedIcon(new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/untangle/gui/node/IconPowerOnState28x28.png")));
         add(powerJToggleButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(606, 54, 28, 28));
 
         effectsJPanel.setBackground(new Color(255,255,255,0));
         add(effectsJPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 688, 100));
 
-        backgroundJLabel.setIcon(new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/untangle/gui/transform/TransformBackground688x100.png")));
+        backgroundJLabel.setIcon(new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/untangle/gui/node/NodeBackground688x100.png")));
         backgroundJLabel.setDisabledIcon(new javax.swing.ImageIcon(""));
         backgroundJLabel.setOpaque(true);
         add(backgroundJLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 688, 100));
@@ -377,8 +377,8 @@ public class MTransformJPanel extends javax.swing.JPanel {
 
     private void helpJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_helpJButtonActionPerformed
         try{
-            String focus = Util.getSelectedTabTitle(mTransformControlsJPanel.getMTabbedPane()).toLowerCase().replace(" ", "_");
-            String source = getTransformDesc().getDisplayName().toLowerCase().replace(" ", "_");
+            String focus = Util.getSelectedTabTitle(mNodeControlsJPanel.getMTabbedPane()).toLowerCase().replace(" ", "_");
+            String source = getNodeDesc().getDisplayName().toLowerCase().replace(" ", "_");
             URL newURL = new URL( "http://www.untangle.com/docs/get.php?"
                                   + "version=" + Version.getVersion()
                                   + "&source=" + source
@@ -386,7 +386,7 @@ public class MTransformJPanel extends javax.swing.JPanel {
             ((BasicService) ServiceManager.lookup("javax.jnlp.BasicService")).showDocument(newURL);
         }
         catch(Exception f){
-            Util.handleExceptionNoRestart("Error showing help for " + transformDesc.getDisplayName(), f);
+            Util.handleExceptionNoRestart("Error showing help for " + nodeDesc.getDisplayName(), f);
         }
     }//GEN-LAST:event_helpJButtonActionPerformed
 
@@ -415,7 +415,7 @@ public class MTransformJPanel extends javax.swing.JPanel {
     private class ShowControlsThread extends Thread implements Shutdownable {
         private volatile boolean stop = false;
         public ShowControlsThread(){
-            super("MVCLIENT-ShowControlsThread: " + MTransformJPanel.this.transformDesc.getDisplayName());
+            super("MVCLIENT-ShowControlsThread: " + MNodeJPanel.this.nodeDesc.getDisplayName());
             setDaemon(true);
             start();
         }
@@ -432,7 +432,7 @@ public class MTransformJPanel extends javax.swing.JPanel {
                         wait();
                         if(stop)
                             break;
-                        if(MTransformJPanel.this.showingSettings && !MTransformJPanel.this.controlsLoaded){
+                        if(MNodeJPanel.this.showingSettings && !MNodeJPanel.this.controlsLoaded){
                             SwingUtilities.invokeLater( new Runnable(){ public void run(){
                                 jProgressBar.setVisible(true);
                                 jProgressBar.setIndeterminate(true);
@@ -440,27 +440,27 @@ public class MTransformJPanel extends javax.swing.JPanel {
                             }});
                             try{
                                 // LOAD SETTINGS //
-                                mTransformControlsJPanel.refreshAll();
+                                mNodeControlsJPanel.refreshAll();
                                 // GENERATE GUI //
                                 generateGuiException = null;
                                 SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
-                                    try{ mTransformControlsJPanel.generateGui(); }
+                                    try{ mNodeControlsJPanel.generateGui(); }
                                     catch(Exception f){ generateGuiException = f; }
                                 }});
                                 if( generateGuiException != null )
                                     throw generateGuiException;
                                 // POPULATE GUI //
-                                mTransformControlsJPanel.populateAll();
+                                mNodeControlsJPanel.populateAll();
                             }
                             catch(Exception e){
                                 try{ Util.handleExceptionWithRestart("Error showing settings", e); }
                                 catch(Exception f){
                                     Util.handleExceptionNoRestart("Error showing settings", f);
-                                    RefreshFailureDialog.factory( (Window) mTransformControlsJPanel.getContentJPanel().getTopLevelAncestor(),
-                                                                  transformDesc.getDisplayName());
+                                    RefreshFailureDialog.factory( (Window) mNodeControlsJPanel.getContentJPanel().getTopLevelAncestor(),
+                                                                  nodeDesc.getDisplayName());
                                 }
                             }
-                            MTransformJPanel.this.controlsLoaded = true;
+                            MNodeJPanel.this.controlsLoaded = true;
                             SwingUtilities.invokeLater( new Runnable(){ public void run(){
                                 jProgressBar.setIndeterminate(false);
                                 jProgressBar.setString("Settings Loaded");
@@ -468,7 +468,7 @@ public class MTransformJPanel extends javax.swing.JPanel {
                             }});
                         }
                         SwingUtilities.invokeLater( new Runnable(){ public void run(){
-                            MTransformJPanel.this.controlsDropdownTask.start(MTransformJPanel.this.showingSettings, jProgressBar);
+                            MNodeJPanel.this.controlsDropdownTask.start(MNodeJPanel.this.showingSettings, jProgressBar);
                         }});
                     }
                 }
@@ -483,7 +483,7 @@ public class MTransformJPanel extends javax.swing.JPanel {
         Rectangle newBounds = this.getBounds();
         newBounds.width = this.getPreferredSize().width;
         newBounds.height = this.getPreferredSize().height;
-        //Util.getMPipelineJPanel().focusMTransformJPanel(newBounds);
+        //Util.getMPipelineJPanel().focusMNodeJPanel(newBounds);
     }
     //////////////////////////////
 

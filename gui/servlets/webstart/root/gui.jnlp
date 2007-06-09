@@ -1,4 +1,4 @@
-<%@ page language="java" import="com.untangle.mvvm.*, com.untangle.mvvm.toolbox.*" %>
+<%@ page language="java" import="com.untangle.uvm.*, com.untangle.uvm.toolbox.*" %>
 
 <%
 response.addHeader("content-type", "application/x-java-jnlp-file");
@@ -17,8 +17,8 @@ int colonIndex = host.indexOf(':');
 if( colonIndex >= 0 )
     host = host.substring(0, colonIndex);
 
-MvvmLocalContext mvvm = MvvmContextFactory.context();
-MackageDesc[] mds = mvvm.toolboxManager().installed();
+UvmLocalContext uvm = UvmContextFactory.context();
+MackageDesc[] mds = uvm.toolboxManager().installed();
 %>
 
 <?xml version="1.0" encoding="utf-8"?>
@@ -43,7 +43,7 @@ MackageDesc[] mds = mvvm.toolboxManager().installed();
 
     <jar href="./untangle-client-api.jar" main="true"/>
     <jar href="./untangle-client-impl.jar"/>
-    <jar href="./mvvm-api.jar"/>
+    <jar href="./uvm-api.jar"/>
 
     <jar href="./asm.jar"/>
     <jar href="./cglib-2.1.3.jar"/>
@@ -66,7 +66,7 @@ MackageDesc[] mds = mvvm.toolboxManager().installed();
     }
     %>
 
-  <property name="com.untangle.isDevel" value="<%=mvvm.isDevel()%>"/>
+  <property name="com.untangle.isDevel" value="<%=uvm.isDevel()%>"/>
 
   </resources>
   <application-desc main-class="com.untangle.gui.util.MLauncher">

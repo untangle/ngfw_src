@@ -34,7 +34,7 @@
           <Color blue="7b" green="7b" red="7c" type="rgb"/>
         </Property>
         <Property name="horizontalAlignment" type="int" value="0"/>
-        <Property name="text" type="java.lang.String" value="SuperTransform"/>
+        <Property name="text" type="java.lang.String" value="SuperNode"/>
         <Property name="focusable" type="boolean" value="false"/>
         <Property name="horizontalTextPosition" type="int" value="0"/>
         <Property name="iconTextGap" type="int" value="0"/>
@@ -76,7 +76,7 @@
         <Property name="toolTipText" type="java.lang.String" value="&lt;HTML&gt; The &lt;B&gt;Status Indicator&lt;/B&gt; shows the current operating condition of a particular software product.&lt;BR&gt;&#xa;&lt;font color=&quot;00FF00&quot;&gt;&lt;b&gt;Green&lt;/b&gt;&lt;/font&gt; indicates that the product is &quot;on&quot; and operating normally.&lt;BR&gt;&#xa;&lt;font color=&quot;FF0000&quot;&gt;&lt;b&gt;Red&lt;/b&gt;&lt;/font&gt; indicates that the product is &quot;on&quot;, but that an abnormal condition has occurred.&lt;BR&gt;&#xa;&lt;font color=&quot;FFFF00&quot;&gt;&lt;b&gt;Yellow&lt;/b&gt;&lt;/font&gt; indicates that the product is saving or refreshing settings.&lt;BR&gt;&#xa;&lt;b&gt;Clear&lt;/b&gt; indicates that the product is &quot;off&quot;, and may be turned &quot;on&quot; by the user.&#xa;&lt;/HTML&gt;"/>
       </Properties>
       <AuxValues>
-        <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="(JLabel) new com.untangle.gui.transform.BlinkJLabel();"/>
+        <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="(JLabel) new com.untangle.gui.node.BlinkJLabel();"/>
       </AuxValues>
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
@@ -90,7 +90,7 @@
           <Font name="Default" size="12" style="0"/>
         </Property>
         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-          <Connection code="new javax.swing.ImageIcon( Util.getClassLoader().getResource(&quot;com/untangle/gui/transform/IconControlsClosed28x28.png&quot;))" type="code"/>
+          <Connection code="new javax.swing.ImageIcon( Util.getClassLoader().getResource(&quot;com/untangle/gui/node/IconControlsClosed28x28.png&quot;))" type="code"/>
         </Property>
         <Property name="text" type="java.lang.String" value="Show Settings"/>
         <Property name="alignmentX" type="float" value="0.5"/>
@@ -101,7 +101,7 @@
         </Property>
         <Property name="opaque" type="boolean" value="false"/>
         <Property name="selectedIcon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-          <Connection code="new javax.swing.ImageIcon( Util.getClassLoader().getResource(&quot;com/untangle/gui/transform/IconControlsOpen28x28.png&quot;))" type="code"/>
+          <Connection code="new javax.swing.ImageIcon( Util.getClassLoader().getResource(&quot;com/untangle/gui/node/IconControlsOpen28x28.png&quot;))" type="code"/>
         </Property>
       </Properties>
       <Events>
@@ -122,7 +122,7 @@
           <Font name="Dialog" size="12" style="0"/>
         </Property>
         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-          <Connection code="new javax.swing.ImageIcon( Util.getClassLoader().getResource(&quot;com/untangle/gui/transform/IconHelp28x28.png&quot;))" type="code"/>
+          <Connection code="new javax.swing.ImageIcon( Util.getClassLoader().getResource(&quot;com/untangle/gui/node/IconHelp28x28.png&quot;))" type="code"/>
         </Property>
         <Property name="text" type="java.lang.String" value="Help"/>
         <Property name="horizontalTextPosition" type="int" value="4"/>
@@ -153,7 +153,7 @@
       <Properties>
         <Property name="horizontalAlignment" type="int" value="0"/>
         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-          <Connection code="new javax.swing.ImageIcon( Util.getClassLoader().getResource(&quot;com/untangle/gui/transform/IconDesc42x42.png&quot;))" type="code"/>
+          <Connection code="new javax.swing.ImageIcon( Util.getClassLoader().getResource(&quot;com/untangle/gui/node/IconDesc42x42.png&quot;))" type="code"/>
         </Property>
         <Property name="horizontalTextPosition" type="int" value="0"/>
       </Properties>
@@ -170,7 +170,7 @@
       <Properties>
         <Property name="horizontalAlignment" type="int" value="0"/>
         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-          <Connection code="new javax.swing.ImageIcon( Util.getClassLoader().getResource(&quot;com/untangle/gui/transform/IconOrg42x42.png&quot;))" type="code"/>
+          <Connection code="new javax.swing.ImageIcon( Util.getClassLoader().getResource(&quot;com/untangle/gui/node/IconOrg42x42.png&quot;))" type="code"/>
         </Property>
         <Property name="alignmentX" type="float" value="0.5"/>
         <Property name="horizontalTextPosition" type="int" value="0"/>
@@ -218,7 +218,7 @@
           <Color blue="ff" green="5b" red="44" type="rgb"/>
         </Property>
         <Property name="horizontalAlignment" type="int" value="0"/>
-        <Property name="text" type="java.lang.String" value="SuperTransform"/>
+        <Property name="text" type="java.lang.String" value="SuperNode"/>
         <Property name="focusable" type="boolean" value="false"/>
         <Property name="horizontalTextPosition" type="int" value="0"/>
         <Property name="iconTextGap" type="int" value="0"/>
@@ -238,7 +238,7 @@
           <Font name="Default" size="12" style="0"/>
         </Property>
         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-          <Connection code="new javax.swing.ImageIcon( Util.getClassLoader().getResource(&quot;com/untangle/gui/transform/IconPowerOffState28x28.png&quot;))" type="code"/>
+          <Connection code="new javax.swing.ImageIcon( Util.getClassLoader().getResource(&quot;com/untangle/gui/node/IconPowerOffState28x28.png&quot;))" type="code"/>
         </Property>
         <Property name="toolTipText" type="java.lang.String" value="&lt;HTML&gt;&#xa;The &lt;B&gt;Power Button&lt;/B&gt; allows you to turn a product &quot;on&quot; and &quot;off&quot;.&lt;br&gt;&#xa;&#xa;&lt;/HTML&gt;"/>
         <Property name="alignmentX" type="float" value="0.5"/>
@@ -261,7 +261,7 @@
           <Dimension value="[28, 28]"/>
         </Property>
         <Property name="selectedIcon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-          <Connection code="new javax.swing.ImageIcon( Util.getClassLoader().getResource(&quot;com/untangle/gui/transform/IconPowerOnState28x28.png&quot;))" type="code"/>
+          <Connection code="new javax.swing.ImageIcon( Util.getClassLoader().getResource(&quot;com/untangle/gui/node/IconPowerOnState28x28.png&quot;))" type="code"/>
         </Property>
       </Properties>
       <AuxValues>
@@ -290,7 +290,7 @@
     <Component class="javax.swing.JLabel" name="backgroundJLabel">
       <Properties>
         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-          <Connection code="new javax.swing.ImageIcon( Util.getClassLoader().getResource(&quot;com/untangle/gui/transform/TransformBackground688x100.png&quot;))" type="code"/>
+          <Connection code="new javax.swing.ImageIcon( Util.getClassLoader().getResource(&quot;com/untangle/gui/node/NodeBackground688x100.png&quot;))" type="code"/>
         </Property>
         <Property name="disabledIcon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
           <Image iconType="2" name=""/>

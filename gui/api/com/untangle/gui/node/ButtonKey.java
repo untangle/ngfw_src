@@ -9,10 +9,10 @@
  * $Id$
  */
 
-package com.untangle.gui.transform;
+package com.untangle.gui.node;
 
-import com.untangle.mvvm.*;
-import com.untangle.mvvm.toolbox.MackageDesc;
+import com.untangle.uvm.*;
+import com.untangle.uvm.toolbox.MackageDesc;
 
 public class ButtonKey implements Comparable<ButtonKey> {
 
@@ -20,12 +20,12 @@ public class ButtonKey implements Comparable<ButtonKey> {
     private int viewPosition;
     private int rackType;
 
-    public ButtonKey(MTransformJButton mTransformJButton){
-        init(mTransformJButton.getName(), mTransformJButton.getViewPosition(), mTransformJButton.getMackageDesc().getRackType());
+    public ButtonKey(MNodeJButton mNodeJButton){
+        init(mNodeJButton.getName(), mNodeJButton.getViewPosition(), mNodeJButton.getMackageDesc().getRackType());
     }
 
-    public ButtonKey(MTransformJPanel mTransformJPanel){
-        this(mTransformJPanel.getMackageDesc());
+    public ButtonKey(MNodeJPanel mNodeJPanel){
+        this(mNodeJPanel.getMackageDesc());
     }
 
     public ButtonKey(MackageDesc mackageDesc){

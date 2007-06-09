@@ -11,12 +11,12 @@
 
 package com.untangle.gui.configuration;
 
-import com.untangle.gui.transform.CompoundSettings;
-import com.untangle.gui.transform.MCasingJPanel;
+import com.untangle.gui.node.CompoundSettings;
+import com.untangle.gui.node.MCasingJPanel;
 import com.untangle.gui.util.Util;
-import com.untangle.mvvm.networking.AccessSettings;
-import com.untangle.mvvm.networking.MiscSettings;
-import com.untangle.mvvm.networking.NetworkSpacesSettings;
+import com.untangle.uvm.networking.AccessSettings;
+import com.untangle.uvm.networking.MiscSettings;
+import com.untangle.uvm.networking.NetworkSpacesSettings;
 
 
 public class MaintenanceCompoundSettings implements CompoundSettings {
@@ -33,17 +33,17 @@ public class MaintenanceCompoundSettings implements CompoundSettings {
     private NetworkSpacesSettings networkSettings;
     public NetworkSpacesSettings getNetworkSettings(){ return networkSettings; }
 
-    // MAIL TRANSFORM SETTINGS //
-    private CompoundSettings mailTransformCompoundSettings;
-    public CompoundSettings getMailTransformCompoundSettings(){ return mailTransformCompoundSettings; }
+    // MAIL NODE SETTINGS //
+    private CompoundSettings mailNodeCompoundSettings;
+    public CompoundSettings getMailNodeCompoundSettings(){ return mailNodeCompoundSettings; }
 
-    // HTTP TRANSFORM SETTINGS //
-    private CompoundSettings httpTransformCompoundSettings;
-    public CompoundSettings getHttpTransformCompoundSettings(){ return httpTransformCompoundSettings; }
+    // HTTP NODE SETTINGS //
+    private CompoundSettings httpNodeCompoundSettings;
+    public CompoundSettings getHttpNodeCompoundSettings(){ return httpNodeCompoundSettings; }
 
-    // FTP TRANSFORM SETTINGS //
-    private CompoundSettings ftpTransformCompoundSettings;
-    public CompoundSettings getFtpTransformCompoundSettings(){ return ftpTransformCompoundSettings; }
+    // FTP NODE SETTINGS //
+    private CompoundSettings ftpNodeCompoundSettings;
+    public CompoundSettings getFtpNodeCompoundSettings(){ return ftpNodeCompoundSettings; }
 
     private MCasingJPanel[] casingJPanels;
     public MCasingJPanel[] getCasingJPanels(){ return casingJPanels; }
@@ -51,14 +51,14 @@ public class MaintenanceCompoundSettings implements CompoundSettings {
     public void save() throws Exception {
         Util.getNetworkManager().setSettings(accessSettings,miscSettings,networkSettings);
 
-        if(mailTransformCompoundSettings != null){
-            mailTransformCompoundSettings.save();
+        if(mailNodeCompoundSettings != null){
+            mailNodeCompoundSettings.save();
         }
-        if(httpTransformCompoundSettings != null){
-            httpTransformCompoundSettings.save();
+        if(httpNodeCompoundSettings != null){
+            httpNodeCompoundSettings.save();
         }
-        if(ftpTransformCompoundSettings != null){
-            ftpTransformCompoundSettings.save();
+        if(ftpNodeCompoundSettings != null){
+            ftpNodeCompoundSettings.save();
         }
     }
 
@@ -70,23 +70,23 @@ public class MaintenanceCompoundSettings implements CompoundSettings {
 
         casingJPanels = Util.getPolicyStateMachine().loadAllCasings(true);
 
-        if(mailTransformCompoundSettings == null){
-            mailTransformCompoundSettings = Util.getCompoundSettings("com.untangle.tran.mail.gui.MailTransformCompoundSettings", "mail-casing");
+        if(mailNodeCompoundSettings == null){
+            mailNodeCompoundSettings = Util.getCompoundSettings("com.untangle.node.mail.gui.MailNodeCompoundSettings", "mail-casing");
         }
-        if(mailTransformCompoundSettings != null)
-            mailTransformCompoundSettings.refresh();
+        if(mailNodeCompoundSettings != null)
+            mailNodeCompoundSettings.refresh();
 
-        if(httpTransformCompoundSettings == null){
-            httpTransformCompoundSettings = Util.getCompoundSettings("com.untangle.tran.http.gui.HttpTransformCompoundSettings", "http-casing");
+        if(httpNodeCompoundSettings == null){
+            httpNodeCompoundSettings = Util.getCompoundSettings("com.untangle.node.http.gui.HttpNodeCompoundSettings", "http-casing");
         }
-        if(httpTransformCompoundSettings != null)
-            httpTransformCompoundSettings.refresh();
+        if(httpNodeCompoundSettings != null)
+            httpNodeCompoundSettings.refresh();
 
-        if(ftpTransformCompoundSettings == null){
-            ftpTransformCompoundSettings = Util.getCompoundSettings("com.untangle.tran.ftp.gui.FtpTransformCompoundSettings", "ftp-casing");
+        if(ftpNodeCompoundSettings == null){
+            ftpNodeCompoundSettings = Util.getCompoundSettings("com.untangle.node.ftp.gui.FtpNodeCompoundSettings", "ftp-casing");
         }
-        if(ftpTransformCompoundSettings != null)
-            ftpTransformCompoundSettings.refresh();
+        if(ftpNodeCompoundSettings != null)
+            ftpNodeCompoundSettings.refresh();
     }
 
     public void validate() throws Exception {

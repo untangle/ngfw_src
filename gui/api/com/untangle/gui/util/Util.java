@@ -53,21 +53,21 @@ import com.untangle.gui.main.MMainJFrame;
 import com.untangle.gui.main.PolicyStateMachine;
 import com.untangle.gui.pipeline.MPipelineJPanel;
 import com.untangle.gui.pipeline.MRackJPanel;
-import com.untangle.gui.transform.CompoundSettings;
-import com.untangle.gui.transform.SettingsChangedListener;
+import com.untangle.gui.node.CompoundSettings;
+import com.untangle.gui.node.SettingsChangedListener;
 import com.untangle.gui.widgets.editTable.*;
-import com.untangle.mvvm.*;
-import com.untangle.mvvm.addrbook.*;
-import com.untangle.mvvm.tran.RemoteIntfManager;
-import com.untangle.mvvm.client.*;
-import com.untangle.mvvm.logging.*;
-import com.untangle.mvvm.networking.ping.PingManager;
-import com.untangle.mvvm.policy.*;
-import com.untangle.mvvm.portal.RemotePortalManager;
-import com.untangle.mvvm.security.*;
-import com.untangle.mvvm.toolbox.ToolboxManager;
-import com.untangle.mvvm.tran.*;
-import com.untangle.mvvm.user.RemotePhoneBook;
+import com.untangle.uvm.*;
+import com.untangle.uvm.addrbook.*;
+import com.untangle.uvm.node.RemoteIntfManager;
+import com.untangle.uvm.client.*;
+import com.untangle.uvm.logging.*;
+import com.untangle.uvm.networking.ping.PingManager;
+import com.untangle.uvm.policy.*;
+import com.untangle.uvm.portal.RemotePortalManager;
+import com.untangle.uvm.security.*;
+import com.untangle.uvm.toolbox.ToolboxManager;
+import com.untangle.uvm.node.*;
+import com.untangle.uvm.user.RemotePhoneBook;
 
 
 public class Util {
@@ -83,10 +83,10 @@ public class Util {
         statsCache = new StatsCache();
         logDateFormat = new SimpleDateFormat("EEE, MMM d HH:mm:ss");
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        iconOnState = new ImageIcon( classLoader.getResource("com/untangle/gui/transform/IconOnState28x28.png") );
-        iconOffState = new ImageIcon( classLoader.getResource("com/untangle/gui/transform/IconOffState28x28.png") );
-        iconStoppedState = new ImageIcon( classLoader.getResource("com/untangle/gui/transform/IconStoppedState28x28.png") );
-        iconPausedState = new ImageIcon( classLoader.getResource("com/untangle/gui/transform/IconAttentionState28x28.png") );
+        iconOnState = new ImageIcon( classLoader.getResource("com/untangle/gui/node/IconOnState28x28.png") );
+        iconOffState = new ImageIcon( classLoader.getResource("com/untangle/gui/node/IconOffState28x28.png") );
+        iconStoppedState = new ImageIcon( classLoader.getResource("com/untangle/gui/node/IconStoppedState28x28.png") );
+        iconPausedState = new ImageIcon( classLoader.getResource("com/untangle/gui/node/IconAttentionState28x28.png") );
         buttonReloading = new ImageIcon( classLoader.getResource("com/untangle/gui/images/Button_Reloading_106x17.png") );
         buttonReloadSettings = new ImageIcon( classLoader.getResource("com/untangle/gui/images/Button_Reload_Settings_106x17.png") );
         buttonSaving = new ImageIcon( classLoader.getResource("com/untangle/gui/images/Button_Saving_106x17.png") );
@@ -138,9 +138,9 @@ public class Util {
     //////////////////////////////
 
     // SERVER PROXIES ///////////////
-    private static MvvmRemoteContext mvvmContext;
+    private static UvmRemoteContext uvmContext;
     private static ToolboxManager toolboxManager;
-    private static TransformManager transformManager;
+    private static NodeManager nodeManager;
     private static AdminManager adminManager;
     private static StatsCache statsCache;
     private static NetworkManager networkManager;
@@ -154,26 +154,26 @@ public class Util {
     private static PingManager pingManager;
     private static BrandingManager brandingManager;
 
-    public static void setMvvmContext(MvvmRemoteContext mvvmContextX){
-        mvvmContext = mvvmContextX;
-        if( mvvmContext != null ){
-            toolboxManager = mvvmContext.toolboxManager();
-            transformManager = mvvmContext.transformManager();
-            adminManager = mvvmContext.adminManager();
-            networkManager = mvvmContext.networkManager();
-            policyManager = mvvmContext.policyManager();
-            loggingManager = mvvmContext.loggingManager();
-            appServerManager = mvvmContext.appServerManager();
-            addressBook = mvvmContext.appAddressBook();
-            phoneBook = mvvmContext.phoneBook();
-            remotePortalManager = mvvmContext.portalManager();
-            remoteIntfManager = mvvmContext.intfManager();
-            pingManager = mvvmContext.pingManager();
-            brandingManager = mvvmContext.brandingManager();
+    public static void setUvmContext(UvmRemoteContext uvmContextX){
+        uvmContext = uvmContextX;
+        if( uvmContext != null ){
+            toolboxManager = uvmContext.toolboxManager();
+            nodeManager = uvmContext.nodeManager();
+            adminManager = uvmContext.adminManager();
+            networkManager = uvmContext.networkManager();
+            policyManager = uvmContext.policyManager();
+            loggingManager = uvmContext.loggingManager();
+            appServerManager = uvmContext.appServerManager();
+            addressBook = uvmContext.appAddressBook();
+            phoneBook = uvmContext.phoneBook();
+            remotePortalManager = uvmContext.portalManager();
+            remoteIntfManager = uvmContext.intfManager();
+            pingManager = uvmContext.pingManager();
+            brandingManager = uvmContext.brandingManager();
         }
         else{
             toolboxManager = null;
-            transformManager = null;
+            nodeManager = null;
             adminManager = null;
             networkManager = null;
             policyManager = null;
@@ -188,9 +188,9 @@ public class Util {
         }
     }
 
-    public static MvvmRemoteContext getMvvmContext(){ return mvvmContext; }
+    public static UvmRemoteContext getUvmContext(){ return uvmContext; }
     public static ToolboxManager getToolboxManager(){ return toolboxManager; }
-    public static TransformManager getTransformManager(){ return transformManager; }
+    public static NodeManager getNodeManager(){ return nodeManager; }
     public static AdminManager getAdminManager(){ return adminManager; }
     public static StatsCache getStatsCache(){ return statsCache; }
     public static RemoteIntfManager getIntfManager(){ return remoteIntfManager; }
@@ -685,7 +685,7 @@ public class Util {
                     doShutdown();
                     mLoginJFrame.resetLogin("Server communication failure.  Re-login.");
                     mLoginJFrame.reshowLogin();
-                    MvvmRemoteContextFactory.factory().logout();
+                    UvmRemoteContextFactory.factory().logout();
                 }
                 return;
             }
@@ -696,18 +696,18 @@ public class Util {
                     doShutdown();
                     mLoginJFrame.resetLogin("Server synchronization failure.  Re-login.");
                     mLoginJFrame.reshowLogin();
-                    MvvmRemoteContextFactory.factory().logout();
+                    UvmRemoteContextFactory.factory().logout();
                 }
                 return;
             }
-            else if( throwableRef instanceof com.untangle.mvvm.client.LoginExpiredException ){
+            else if( throwableRef instanceof com.untangle.uvm.client.LoginExpiredException ){
                 logger.info(output,e);
                 if( !Util.getShutdownInitiated() ){
                     Util.setShutdownInitiated(true);
                     doShutdown();
                     mLoginJFrame.resetLogin("Login expired.  Re-login.");
                     mLoginJFrame.reshowLogin();
-                    MvvmRemoteContextFactory.factory().logout();
+                    UvmRemoteContextFactory.factory().logout();
                 }
                 return;
             }
@@ -720,20 +720,20 @@ public class Util {
                     doShutdown();
                     mLoginJFrame.resetLogin("Server connection failure.  Re-login.");
                     mLoginJFrame.reshowLogin();
-                    MvvmRemoteContextFactory.factory().logout();
+                    UvmRemoteContextFactory.factory().logout();
                 }
                 return;
             }
             else if( throwableRef instanceof LoginStolenException ){
                 if( !Util.getShutdownInitiated() ){
-                    String loginName = ((LoginStolenException)throwableRef).getThief().getMvvmPrincipal().getName();
+                    String loginName = ((LoginStolenException)throwableRef).getThief().getUvmPrincipal().getName();
                     String loginAddress = ((LoginStolenException)throwableRef).getThief().getClientAddr().getHostAddress();
                     new LoginStolenJDialog(loginName, loginAddress);
                     Util.setShutdownInitiated(true);
                     doShutdown();
                     mLoginJFrame.resetLogin("Login ended by: " + loginName + " at " + loginAddress);
                     mLoginJFrame.reshowLogin();
-                    MvvmRemoteContextFactory.factory().logout();
+                    UvmRemoteContextFactory.factory().logout();
                 }
                 return;
             }
@@ -835,35 +835,35 @@ public class Util {
     }
     ///////////////////////////////////////////
 
-    // TRANSFORM LOADING //////////////////////
-    public static Transform getTransform(String transformName) throws Exception {
-        Transform transform = null;
-        List<Tid> transformInstances = Util.getTransformManager().transformInstances(transformName);
-        if(transformInstances.size()>0){
-            TransformContext transformContext = Util.getTransformManager().transformContext(transformInstances.get(0));
-            transform = transformContext.transform();
+    // NODE LOADING //////////////////////
+    public static Node getNode(String nodeName) throws Exception {
+        Node node = null;
+        List<Tid> nodeInstances = Util.getNodeManager().nodeInstances(nodeName);
+        if(nodeInstances.size()>0){
+            NodeContext nodeContext = Util.getNodeManager().nodeContext(nodeInstances.get(0));
+            node = nodeContext.node();
         }
-        return transform;
+        return node;
     }
 
-    public static Object getRemoteObject(String className, String transformName) throws Exception {
-        Transform transform = getTransform(transformName);
-        if( transform != null){
-            TransformDesc transformDesc = transform.getTransformDesc();
-            Class transformClass = Util.getClassLoader().loadClass(className, transformDesc);
-            Constructor transformConstructor = transformClass.getConstructor(new Class[]{});
-            return transformConstructor.newInstance();
+    public static Object getRemoteObject(String className, String nodeName) throws Exception {
+        Node node = getNode(nodeName);
+        if( node != null){
+            NodeDesc nodeDesc = node.getNodeDesc();
+            Class nodeClass = Util.getClassLoader().loadClass(className, nodeDesc);
+            Constructor nodeConstructor = nodeClass.getConstructor(new Class[]{});
+            return nodeConstructor.newInstance();
         }
         else
             return null;
     }
 
-    public static CompoundSettings getCompoundSettings(String className, String transformName) throws Exception {
-        return (CompoundSettings) getRemoteObject(className, transformName);
+    public static CompoundSettings getCompoundSettings(String className, String nodeName) throws Exception {
+        return (CompoundSettings) getRemoteObject(className, nodeName);
     }
 
-    public static Component getSettingsComponent(String className, String transformName) throws Exception {
-        return (Component) getRemoteObject(className, transformName);
+    public static Component getSettingsComponent(String className, String nodeName) throws Exception {
+        return (Component) getRemoteObject(className, nodeName);
     }
     //////////////////////////////////////////
 }

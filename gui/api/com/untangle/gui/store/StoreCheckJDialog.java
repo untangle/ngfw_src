@@ -18,8 +18,8 @@ import javax.swing.*;
 
 import com.untangle.gui.upgrade.UpgradeJDialog;
 import com.untangle.gui.util.Util;
-import com.untangle.mvvm.*;
-import com.untangle.mvvm.toolbox.MackageDesc;
+import com.untangle.uvm.*;
+import com.untangle.uvm.toolbox.MackageDesc;
 
 public class StoreCheckJDialog extends javax.swing.JDialog implements java.awt.event.WindowListener {
 

@@ -14,10 +14,10 @@ package com.untangle.gui.configuration;
 import java.awt.Color;
 import javax.swing.*;
 
-import com.untangle.gui.transform.*;
+import com.untangle.gui.node.*;
 import com.untangle.gui.util.Util;
 import com.untangle.gui.widgets.wizard.*;
-import com.untangle.mvvm.security.*;
+import com.untangle.uvm.security.*;
 
 public class AboutRegistrationJPanel extends JPanel
     implements Savable<AboutCompoundSettings>, Refreshable<AboutCompoundSettings> {

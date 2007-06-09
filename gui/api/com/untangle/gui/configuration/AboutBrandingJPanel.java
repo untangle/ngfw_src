@@ -17,14 +17,14 @@ import javax.swing.*;
 import javax.swing.filechooser.*;
 
 
-import com.untangle.gui.transform.*;
+import com.untangle.gui.node.*;
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.dialogs.*;
-import com.untangle.mvvm.*;
-import com.untangle.mvvm.networking.BasicNetworkSettings;
-import com.untangle.mvvm.security.*;
-import com.untangle.mvvm.tran.*;
-import com.untangle.tran.util.IOUtil;
+import com.untangle.uvm.*;
+import com.untangle.uvm.networking.BasicNetworkSettings;
+import com.untangle.uvm.security.*;
+import com.untangle.uvm.node.*;
+import com.untangle.node.util.IOUtil;
 
 
 public class AboutBrandingJPanel extends javax.swing.JPanel

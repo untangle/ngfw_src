@@ -18,11 +18,11 @@ import java.util.*;
 import javax.swing.*;
 import javax.swing.table.*;
 
-import com.untangle.gui.transform.*;
+import com.untangle.gui.node.*;
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.dialogs.*;
 import com.untangle.gui.widgets.editTable.*;
-import com.untangle.mvvm.tran.*;
+import com.untangle.uvm.node.*;
 
 
 public class EmailJDialog extends MConfigJDialog {
@@ -65,8 +65,8 @@ public class EmailJDialog extends MConfigJDialog {
         addRefreshable(NAME_OUTGOING_SETTINGS, emailOutgoingJPanel );
         emailOutgoingJPanel.setSettingsChangedListener(this);
 
-        // EMAIL TRANSFORM SETTINGS //
-        if( emailCompoundSettings.getMailTransformCompoundSettings() != null ){
+        // EMAIL NODE SETTINGS //
+        if( emailCompoundSettings.getMailNodeCompoundSettings() != null ){
 
             // SAFELIST GLOBAL & USER //////
             JTabbedPane safelistJTabbedPane = addTabbedPane(NAME_SAFE_LIST, null);
@@ -114,7 +114,7 @@ public class EmailJDialog extends MConfigJDialog {
 
     protected void refreshAll() throws Exception{
         super.refreshAll();
-        if( emailCompoundSettings.getMailTransformCompoundSettings() != null ){
+        if( emailCompoundSettings.getMailNodeCompoundSettings() != null ){
             emailCompoundSettings.loadSafelists();
             emailCompoundSettings.loadSafelistCounts();
             emailCompoundSettings.loadInboxList();

@@ -16,9 +16,9 @@ import javax.swing.SwingUtilities;
 
 import com.untangle.gui.util.Util;
 import com.untangle.gui.widgets.wizard.*;
-import com.untangle.mvvm.networking.BasicNetworkSettings;
-import com.untangle.mvvm.networking.NetworkUtil;
-import com.untangle.mvvm.tran.IPaddr;
+import com.untangle.uvm.networking.BasicNetworkSettings;
+import com.untangle.uvm.networking.NetworkUtil;
+import com.untangle.uvm.node.IPaddr;
 
 public class InitialSetupRoutingJPanel extends MWizardPageJPanel {
 

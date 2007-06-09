@@ -28,8 +28,8 @@ import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.coloredTable.*;
 import com.untangle.gui.widgets.dialogs.*;
 import com.untangle.gui.widgets.editTable.*;
-import com.untangle.mvvm.*;
-import com.untangle.tran.util.IOUtil;
+import com.untangle.uvm.*;
+import com.untangle.node.util.IOUtil;
 
 public class BackupJDialog extends javax.swing.JDialog implements java.awt.event.WindowListener {
 
@@ -519,9 +519,9 @@ public class BackupJDialog extends javax.swing.JDialog implements java.awt.event
             try{
                 // PERFORM THE BACKUP
                 if(type==0)
-                    Util.getMvvmContext().localBackup();
+                    Util.getUvmContext().localBackup();
                 else if(type==1)
-                    Util.getMvvmContext().usbBackup();
+                    Util.getUvmContext().usbBackup();
                 else{
                     // XXX DO SOMETHING HERE
                     JFileChooser chooser = new JFileChooser();
@@ -550,7 +550,7 @@ public class BackupJDialog extends javax.swing.JDialog implements java.awt.event
                         }
 
                         // GENERATE THE BACKUP DATA
-                        byte[] backup = Util.getMvvmContext().createBackup();
+                        byte[] backup = Util.getUvmContext().createBackup();
 
                         if(!file.createNewFile()){
                             // TELL HIM HE CANT WRITE HERE
@@ -619,7 +619,7 @@ public class BackupJDialog extends javax.swing.JDialog implements java.awt.event
                     byte[] backup = IOUtil.fileToBytes(file);
 
                     // RESTORE THE BACKUP DATA
-                    Util.getMvvmContext().restoreBackup(backup);
+                    Util.getUvmContext().restoreBackup(backup);
                 }
                 else{
                     return; // user cancelled operation

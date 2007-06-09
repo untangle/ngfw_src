@@ -23,10 +23,10 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.*;
 
-import com.untangle.gui.transform.*;
+import com.untangle.gui.node.*;
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.MPasswordField;
-import com.untangle.mvvm.tran.*;
+import com.untangle.uvm.node.*;
 
 /**
  * TableSorter is a decorator for TableModels; adding sorting

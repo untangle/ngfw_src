@@ -19,12 +19,12 @@ import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.table.*;
 
-import com.untangle.gui.transform.*;
+import com.untangle.gui.node.*;
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.editTable.*;
-import com.untangle.mvvm.networking.InterfaceAlias;
-import com.untangle.mvvm.networking.BasicNetworkSettings;
-import com.untangle.mvvm.tran.IPaddr;
+import com.untangle.uvm.networking.InterfaceAlias;
+import com.untangle.uvm.networking.BasicNetworkSettings;
+import com.untangle.uvm.node.IPaddr;
 
 public class NetworkAliasJPanel extends MEditTableJPanel{
 

@@ -15,12 +15,12 @@ import java.net.URL;
 import java.util.Date;
 import java.util.TimeZone;
 
-import com.untangle.gui.transform.CompoundSettings;
+import com.untangle.gui.node.CompoundSettings;
 import com.untangle.gui.util.Util;
-import com.untangle.mvvm.security.RegistrationInfo;
-import com.untangle.mvvm.toolbox.MackageDesc;
-import com.untangle.mvvm.BrandingManager;
-import com.untangle.mvvm.BrandingSettings;
+import com.untangle.uvm.security.RegistrationInfo;
+import com.untangle.uvm.toolbox.MackageDesc;
+import com.untangle.uvm.BrandingManager;
+import com.untangle.uvm.BrandingSettings;
 
 public class AboutCompoundSettings implements CompoundSettings {
 
@@ -64,12 +64,12 @@ public class AboutCompoundSettings implements CompoundSettings {
         if( registrationInfo == null ){ // for upgrading pre 3.2 boxes
             registrationInfo = new RegistrationInfo();
         }
-        MackageDesc mackageDesc = Util.getToolboxManager().mackageDesc("mvvm");
+        MackageDesc mackageDesc = Util.getToolboxManager().mackageDesc("uvm");
         if( mackageDesc == null )
             installedVersion = "unknown";
         else
             installedVersion = mackageDesc.getInstalledVersion();
-        activationKey = Util.getMvvmContext().getActivationKey();
+        activationKey = Util.getUvmContext().getActivationKey();
         licenseURL = Util.getClassLoader().getResource("License.txt");
         timeZone = Util.getAdminManager().getTimeZone();
         date = Util.getAdminManager().getDate();

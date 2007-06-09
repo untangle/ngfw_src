@@ -19,13 +19,13 @@ import javax.swing.event.*;
 import javax.swing.table.*;
 import javax.swing.text.*;
 
-import com.untangle.gui.transform.*;
+import com.untangle.gui.node.*;
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.coloredTable.*;
 import com.untangle.gui.widgets.dialogs.*;
 import com.untangle.gui.widgets.editTable.*;
-import com.untangle.mvvm.*;
-import com.untangle.mvvm.policy.*;
+import com.untangle.uvm.*;
+import com.untangle.uvm.policy.*;
 
 public class UpgradeJDialog extends MConfigJDialog {
 

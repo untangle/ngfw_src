@@ -17,15 +17,15 @@ import javax.jnlp.BasicService;
 import javax.jnlp.ServiceManager;
 import javax.swing.*;
 
-import com.untangle.gui.transform.*;
+import com.untangle.gui.node.*;
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.dialogs.*;
-import com.untangle.mvvm.*;
-import com.untangle.mvvm.addrbook.*;
-import com.untangle.mvvm.security.*;
-import com.untangle.mvvm.snmp.*;
-import com.untangle.mvvm.tran.*;
-import com.untangle.mvvm.user.WMISettings;
+import com.untangle.uvm.*;
+import com.untangle.uvm.addrbook.*;
+import com.untangle.uvm.security.*;
+import com.untangle.uvm.snmp.*;
+import com.untangle.uvm.node.*;
+import com.untangle.uvm.user.WMISettings;
 
 public class DirectoryRemoteADJPanel extends javax.swing.JPanel
     implements Savable<DirectoryCompoundSettings>, Refreshable<DirectoryCompoundSettings>, Changeable {

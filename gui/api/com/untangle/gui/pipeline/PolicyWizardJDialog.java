@@ -17,11 +17,11 @@ import javax.swing.*;
 import javax.swing.table.*;
 
 import com.untangle.gui.configuration.*;
-import com.untangle.gui.transform.CompoundSettings;
+import com.untangle.gui.node.CompoundSettings;
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.dialogs.*;
 import com.untangle.gui.widgets.editTable.*;
-import com.untangle.mvvm.policy.*;
+import com.untangle.uvm.policy.*;
 
 
 

@@ -13,7 +13,7 @@ package com.untangle.gui.configuration;
 
 import java.awt.Window;
 
-import com.untangle.gui.transform.*;
+import com.untangle.gui.node.*;
 import com.untangle.gui.util.Util;
 import com.untangle.gui.widgets.dialogs.*;
 
@@ -95,7 +95,7 @@ public class RemoteRestartJPanel extends javax.swing.JPanel {
         warningJDialog.setVisible(true);
         if( warningJDialog.isProceeding() ){
             try{
-                Util.getMvvmContext().rebootBox();
+                Util.getUvmContext().rebootBox();
             }
             catch(Exception e){
                 Util.handleExceptionNoRestart("Error: Unable to reboot Untangle Server", e);

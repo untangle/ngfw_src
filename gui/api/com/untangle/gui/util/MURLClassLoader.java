@@ -15,7 +15,7 @@ import java.io.InputStream;
 import java.net.*;
 import java.util.List;
 
-import com.untangle.mvvm.tran.TransformDesc;
+import com.untangle.uvm.node.NodeDesc;
 
 import org.apache.log4j.Logger;
 
@@ -43,10 +43,10 @@ public class MURLClassLoader extends URLClassLoader {
         }
     }
 
-    // This now adds all mars for the transform, including the base and parents (if any)
-    private void addMarsFor(TransformDesc desc) {
+    // This now adds all mars for the node, including the base and parents (if any)
+    private void addMarsFor(NodeDesc desc) {
         String main = desc.getName();
-        String base = desc.getTransformBase();
+        String base = desc.getNodeBase();
         List<String> parents = desc.getParents();
         if (parents != null)
             for (String parent : parents)
@@ -106,7 +106,7 @@ public class MURLClassLoader extends URLClassLoader {
       }
     */
 
-    public synchronized Class loadClass(String className, TransformDesc transformDesc){
+    public synchronized Class loadClass(String className, NodeDesc nodeDesc){
 
         Class returnClass = null;
         //logger.debug("--> Trying to load class: " + className + " with mar: " + marName);
@@ -124,7 +124,7 @@ public class MURLClassLoader extends URLClassLoader {
 
         // try to dynamically load the class
         try{
-            this.addMarsFor(transformDesc);
+            this.addMarsFor(nodeDesc);
 
             //URL[] availableURLs = Util.getClassLoader().getURLs();
             //for(int i=0; i<availableURLs.length; i++)

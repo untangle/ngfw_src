@@ -19,10 +19,10 @@ import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.table.*;
 
-import com.untangle.gui.transform.*;
+import com.untangle.gui.node.*;
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.editTable.*;
-import com.untangle.mvvm.networking.*;
+import com.untangle.uvm.networking.*;
 
 public class MaintenanceInterfaceJPanel extends MEditTableJPanel{
 

@@ -19,11 +19,11 @@ import javax.swing.border.*;
 import javax.swing.event.*;
 import javax.swing.table.*;
 
-import com.untangle.gui.transform.*;
+import com.untangle.gui.node.*;
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.coloredTable.*;
 import com.untangle.gui.widgets.dialogs.RefreshLogFailureDialog;
-import com.untangle.mvvm.tran.Transform;
+import com.untangle.uvm.node.Node;
 
 public abstract class MLogTableJPanel extends javax.swing.JPanel implements Shutdownable, ComponentListener {
 
@@ -35,13 +35,13 @@ public abstract class MLogTableJPanel extends javax.swing.JPanel implements Shut
     private static final long STREAM_SLEEP_MILLIS = 15000l;
     private static final Color TABLE_BACKGROUND_COLOR = new Color(213, 213, 226);
 
-    protected Transform logTransform;
-    protected MTransformControlsJPanel mTransformControlsJPanel;
+    protected Node logNode;
+    protected MNodeControlsJPanel mNodeControlsJPanel;
 
 
-    public MLogTableJPanel(Transform logTransform, MTransformControlsJPanel mTransformControlsJPanel) {
-        this.logTransform = logTransform;
-        this.mTransformControlsJPanel = mTransformControlsJPanel;
+    public MLogTableJPanel(Node logNode, MNodeControlsJPanel mNodeControlsJPanel) {
+        this.logNode = logNode;
+        this.mNodeControlsJPanel = mNodeControlsJPanel;
 
         // INIT GUI & CUSTOM INIT
         initComponents();
@@ -227,7 +227,7 @@ public abstract class MLogTableJPanel extends javax.swing.JPanel implements Shut
     class RefreshThread extends Thread implements ActionListener {
         private boolean isAutoRefresh;
         public RefreshThread(boolean isAutoRefresh){
-            super("MVCLIENT-LogRefreshThread: " + logTransform.getTransformDesc().getDisplayName());
+            super("MVCLIENT-LogRefreshThread: " + logNode.getNodeDesc().getDisplayName());
             setDaemon(true);
             setContextClassLoader(Util.getClassLoader());
             this.isAutoRefresh = isAutoRefresh;
@@ -252,7 +252,7 @@ public abstract class MLogTableJPanel extends javax.swing.JPanel implements Shut
         public void run(){
             try{
                 if(isAutoRefresh){
-                    MLogTableJPanel.this.mTransformControlsJPanel.getControlsJToggleButton().addActionListener(this);
+                    MLogTableJPanel.this.mNodeControlsJPanel.getControlsJToggleButton().addActionListener(this);
                 }
                 do{
                     refreshSettings();
@@ -282,8 +282,8 @@ public abstract class MLogTableJPanel extends javax.swing.JPanel implements Shut
                 }
                 catch(Exception h){
                     Util.handleExceptionNoRestart("Error refreshing event log", h);
-                    RefreshLogFailureDialog.factory( (Window) MLogTableJPanel.this.mTransformControlsJPanel.getContentJPanel().getTopLevelAncestor(),
-                                                     logTransform.getTransformDesc().getDisplayName() );
+                    RefreshLogFailureDialog.factory( (Window) MLogTableJPanel.this.mNodeControlsJPanel.getContentJPanel().getTopLevelAncestor(),
+                                                     logNode.getNodeDesc().getDisplayName() );
                 }
             }
             finally{
@@ -294,7 +294,7 @@ public abstract class MLogTableJPanel extends javax.swing.JPanel implements Shut
                     }});
                 }
                 else{
-                    MLogTableJPanel.this.mTransformControlsJPanel.getControlsJToggleButton().removeActionListener(this);
+                    MLogTableJPanel.this.mNodeControlsJPanel.getControlsJToggleButton().removeActionListener(this);
                 }
             }
         }

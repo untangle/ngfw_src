@@ -20,8 +20,8 @@ import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.MPasswordField;
 import com.untangle.gui.widgets.dialogs.*;
 import com.untangle.gui.widgets.editTable.*;
-import com.untangle.mvvm.*;
-import com.untangle.mvvm.security.*;
+import com.untangle.uvm.*;
+import com.untangle.uvm.security.*;
 
 
 

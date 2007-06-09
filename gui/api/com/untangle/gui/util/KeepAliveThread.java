@@ -11,23 +11,23 @@
 
 package com.untangle.gui.util;
 
-import com.untangle.mvvm.client.MvvmRemoteContext;
+import com.untangle.uvm.client.UvmRemoteContext;
 
 public class KeepAliveThread extends Thread implements Shutdownable {
 
     private static final long PING_DELAY = 60000l; // 1 minute
-    private MvvmRemoteContext mvvmRemoteContext;
+    private UvmRemoteContext uvmRemoteContext;
     private volatile boolean stop = false;
 
-    public KeepAliveThread(MvvmRemoteContext mvvmRemoteContext){
+    public KeepAliveThread(UvmRemoteContext uvmRemoteContext){
         setName("MV-CLIENT: KeepAliveThread");
-        this.mvvmRemoteContext = mvvmRemoteContext;
+        this.uvmRemoteContext = uvmRemoteContext;
         start();
     }
     public void run(){
         while(!stop){
             try{
-                mvvmRemoteContext.version();
+                uvmRemoteContext.version();
                 sleep(PING_DELAY);
             }
             catch(Exception e){

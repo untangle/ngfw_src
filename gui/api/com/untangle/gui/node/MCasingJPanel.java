@@ -9,11 +9,11 @@
  * $Id$
  */
 
-package com.untangle.gui.transform;
+package com.untangle.gui.node;
 
-import com.untangle.mvvm.*;
-import com.untangle.mvvm.toolbox.MackageDesc;
-import com.untangle.mvvm.tran.*;
+import com.untangle.uvm.*;
+import com.untangle.uvm.toolbox.MackageDesc;
+import com.untangle.uvm.node.*;
 
 public abstract class MCasingJPanel<T extends CompoundSettings> extends javax.swing.JPanel
     implements Savable<T>, Refreshable<T> {

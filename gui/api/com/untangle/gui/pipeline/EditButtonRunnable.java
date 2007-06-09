@@ -21,7 +21,7 @@ import javax.swing.SwingUtilities;
 
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.dialogs.*;
-import com.untangle.mvvm.portal.*;
+import com.untangle.uvm.portal.*;
 
 public class EditButtonRunnable implements ButtonRunnable {
 

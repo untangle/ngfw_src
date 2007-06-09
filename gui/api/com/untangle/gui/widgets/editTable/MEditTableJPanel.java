@@ -18,7 +18,7 @@ import javax.swing.border.*;
 import javax.swing.event.*;
 import javax.swing.table.*;
 
-import com.untangle.gui.transform.*;
+import com.untangle.gui.node.*;
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.coloredTable.*;
 import com.untangle.gui.widgets.dialogs.*;
@@ -29,7 +29,7 @@ public class MEditTableJPanel extends javax.swing.JPanel
                Savable<Object>, Refreshable<Object>, Changeable {
 
     private JLabel messageJLabel;
-    private MTransformJPanel mTransformJPanel;
+    private MNodeJPanel mNodeJPanel;
     private MConfigJDialog mConfigJDialog;
 
     // the table model and table
@@ -71,8 +71,8 @@ public class MEditTableJPanel extends javax.swing.JPanel
         getTableModel().doSave(compoundSettings, validateOnly);
     }
 
-    public void setMTransformJPanel(MTransformJPanel mTransformJPanel){
-        this.mTransformJPanel = mTransformJPanel;
+    public void setMNodeJPanel(MNodeJPanel mNodeJPanel){
+        this.mNodeJPanel = mNodeJPanel;
     }
 
 
@@ -347,8 +347,8 @@ public class MEditTableJPanel extends javax.swing.JPanel
     }//GEN-END:initComponents
 
     private void refreshJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_refreshJButtonActionPerformed
-        if(mTransformJPanel != null)
-            mTransformJPanel.mTransformControlsJPanel().refreshGui();
+        if(mNodeJPanel != null)
+            mNodeJPanel.mNodeControlsJPanel().refreshGui();
         else if(mConfigJDialog != null)
             mConfigJDialog.refreshGui();
     }//GEN-LAST:event_refreshJButtonActionPerformed

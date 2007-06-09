@@ -11,11 +11,11 @@
 
 package com.untangle.gui.upgrade;
 
-import com.untangle.gui.transform.CompoundSettings;
+import com.untangle.gui.node.CompoundSettings;
 import com.untangle.gui.util.Util;
 import com.untangle.gui.widgets.dialogs.MOneButtonJDialog;
-import com.untangle.mvvm.toolbox.MackageDesc;
-import com.untangle.mvvm.toolbox.UpgradeSettings;
+import com.untangle.uvm.toolbox.MackageDesc;
+import com.untangle.uvm.toolbox.UpgradeSettings;
 
 public class UpgradeCompoundSettings implements CompoundSettings {
 

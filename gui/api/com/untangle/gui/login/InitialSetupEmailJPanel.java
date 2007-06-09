@@ -18,8 +18,8 @@ import javax.swing.SwingUtilities;
 import com.untangle.gui.configuration.EmailConnectivityTestJDialog;
 import com.untangle.gui.util.Util;
 import com.untangle.gui.widgets.wizard.*;
-import com.untangle.mvvm.*;
-import com.untangle.mvvm.client.MvvmRemoteContextFactory;
+import com.untangle.uvm.*;
+import com.untangle.uvm.client.UvmRemoteContextFactory;
 
 public class InitialSetupEmailJPanel extends MWizardPageJPanel {
 
@@ -132,12 +132,12 @@ public class InitialSetupEmailJPanel extends MWizardPageJPanel {
                     try{
                         if( InitialSetupRoutingJPanel.getNatEnabled() ){
                             if( InitialSetupRoutingJPanel.getNatChanged() )
-                                MvvmRemoteContextFactory.factory().setTimeout(Util.DISCONNECT_NETWORK_TIMEOUT_MILLIS);
+                                UvmRemoteContextFactory.factory().setTimeout(Util.DISCONNECT_NETWORK_TIMEOUT_MILLIS);
                             Util.getNetworkManager().setWizardNatEnabled(InitialSetupRoutingJPanel.getAddress(),
                                                                          InitialSetupRoutingJPanel.getNetmask());
                         }
                         else{
-                            MvvmRemoteContextFactory.factory().setTimeout(Util.DISCONNECT_NETWORK_TIMEOUT_MILLIS);
+                            UvmRemoteContextFactory.factory().setTimeout(Util.DISCONNECT_NETWORK_TIMEOUT_MILLIS);
                             Util.getNetworkManager().setWizardNatDisabled();
                         }
                     }

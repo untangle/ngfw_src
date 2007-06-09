@@ -20,8 +20,8 @@ import javax.swing.SwingUtilities;
 
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.dialogs.*;
-import com.untangle.mvvm.portal.*;
-import com.untangle.mvvm.tran.firewall.user.UserMatcherConstants;
+import com.untangle.uvm.portal.*;
+import com.untangle.uvm.node.firewall.user.UserMatcherConstants;
 
 public class UidButtonRunnable implements ButtonRunnable, Comparable<UidButtonRunnable> {
 

@@ -12,15 +12,15 @@
 package com.untangle.gui.widgets.wizard;
 
 
-import com.untangle.gui.transform.*;
+import com.untangle.gui.node.*;
 import com.untangle.gui.widgets.dialogs.*;
 import com.untangle.gui.widgets.coloredTable.*;
 import com.untangle.gui.widgets.editTable.*;
 import com.untangle.gui.util.*;
 
-import com.untangle.mvvm.security.PasswordUtil;
-import com.untangle.mvvm.*;
-import com.untangle.mvvm.tran.*;
+import com.untangle.uvm.security.PasswordUtil;
+import com.untangle.uvm.*;
+import com.untangle.uvm.node.*;
 
 import javax.swing.border.*;
 import javax.swing.*;

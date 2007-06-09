@@ -14,12 +14,12 @@ package com.untangle.gui.configuration;
 import java.awt.*;
 import javax.swing.JSpinner;
 
-import com.untangle.gui.transform.*;
+import com.untangle.gui.node.*;
 import com.untangle.gui.util.*;
-import com.untangle.mvvm.*;
-import com.untangle.mvvm.networking.AddressSettings;
-import com.untangle.mvvm.security.*;
-import com.untangle.mvvm.tran.*;
+import com.untangle.uvm.*;
+import com.untangle.uvm.networking.AddressSettings;
+import com.untangle.uvm.security.*;
+import com.untangle.uvm.node.*;
 
 public class RemotePublicAddressJPanel extends javax.swing.JPanel
     implements Savable<RemoteCompoundSettings>, Refreshable<RemoteCompoundSettings> {

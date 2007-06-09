@@ -20,7 +20,7 @@ import com.untangle.gui.configuration.*;
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.dialogs.*;
 import com.untangle.gui.widgets.editTable.*;
-import com.untangle.mvvm.policy.*;
+import com.untangle.uvm.policy.*;
 
 import com.untangle.gui.widgets.premium.*;
 

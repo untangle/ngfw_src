@@ -15,8 +15,8 @@ import java.awt.*;
 import javax.swing.*;
 
 import com.untangle.gui.util.Util;
-import com.untangle.mvvm.*;
-import com.untangle.mvvm.addrbook.*;
+import com.untangle.uvm.*;
+import com.untangle.uvm.addrbook.*;
 
 public class DirectoryADConnectivityTestJDialog extends javax.swing.JDialog implements java.awt.event.WindowListener {
 

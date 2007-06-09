@@ -9,12 +9,12 @@
  * $Id$
  */
 
-package com.untangle.gui.transform;
+package com.untangle.gui.node;
 
-public interface CompoundSettings {
+import com.untangle.gui.util.*;
 
-    public void save() throws Exception;
-    public void refresh() throws Exception;
-    public void validate() throws Exception;
+public interface Savable<T> {
+
+    public void doSave(T compoundSettings, boolean validateOnly) throws Exception;
 
 }

@@ -24,13 +24,13 @@ import javax.swing.event.*;
 import javax.swing.table.*;
 import javax.swing.text.*;
 
-import com.untangle.gui.transform.*;
+import com.untangle.gui.node.*;
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.*;
 import com.untangle.gui.widgets.coloredTable.*;
 import com.untangle.gui.widgets.editTable.*;
-import com.untangle.mvvm.*;
-import com.untangle.mvvm.tran.*;
+import com.untangle.uvm.*;
+import com.untangle.uvm.node.*;
 
 public abstract class MConfigJDialog extends javax.swing.JDialog implements java.awt.event.WindowListener, SettingsChangedListener {
 
@@ -69,14 +69,14 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
 
         synchronized( this ){
             if( saveSettingsImageIcons == null ){
-                String[] saveSettingsImagePaths = { "com/untangle/gui/transform/IconSaveSettingsHint30.png",
-                                                    "com/untangle/gui/transform/IconSaveSettingsHint40.png",
-                                                    "com/untangle/gui/transform/IconSaveSettingsHint50.png",
-                                                    "com/untangle/gui/transform/IconSaveSettingsHint60.png",
-                                                    "com/untangle/gui/transform/IconSaveSettingsHint70.png",
-                                                    "com/untangle/gui/transform/IconSaveSettingsHint80.png",
-                                                    "com/untangle/gui/transform/IconSaveSettingsHint90.png",
-                                                    "com/untangle/gui/transform/IconSaveSettingsHint100.png" };
+                String[] saveSettingsImagePaths = { "com/untangle/gui/node/IconSaveSettingsHint30.png",
+                                                    "com/untangle/gui/node/IconSaveSettingsHint40.png",
+                                                    "com/untangle/gui/node/IconSaveSettingsHint50.png",
+                                                    "com/untangle/gui/node/IconSaveSettingsHint60.png",
+                                                    "com/untangle/gui/node/IconSaveSettingsHint70.png",
+                                                    "com/untangle/gui/node/IconSaveSettingsHint80.png",
+                                                    "com/untangle/gui/node/IconSaveSettingsHint90.png",
+                                                    "com/untangle/gui/node/IconSaveSettingsHint100.png" };
                 saveSettingsImageIcons = Util.getImageIcons(saveSettingsImagePaths);
             }
         }

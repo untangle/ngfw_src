@@ -23,24 +23,24 @@ import javax.swing.event.*;
 import javax.swing.table.*;
 import javax.swing.text.*;
 
-import com.untangle.gui.transform.*;
+import com.untangle.gui.node.*;
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.coloredTable.*;
 import com.untangle.gui.widgets.dialogs.*;
 import com.untangle.gui.widgets.editTable.*;
-import com.untangle.mvvm.*;
+import com.untangle.uvm.*;
 
 public class StoreJDialog extends javax.swing.JDialog implements java.awt.event.WindowListener {
 
 
-    private boolean purchasedTransform = false;
-    private MTransformJButton mTransformJButton;
+    private boolean purchasedNode = false;
+    private MNodeJButton mNodeJButton;
     private GridBagConstraints gridBagConstraints = new GridBagConstraints(0, 0, 1, 1, 0d, 0d, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0,0,0,0), 0, 0);
 
 
-    public StoreJDialog(MTransformJButton mTransformJButton) {
+    public StoreJDialog(MNodeJButton mNodeJButton) {
         super(Util.getMMainJFrame(), true);
-        this.mTransformJButton = mTransformJButton;
+        this.mNodeJButton = mNodeJButton;
         this.generateButtonText();
         this.initComponents();
         this.setBounds( Util.generateCenteredBounds( Util.getMMainJFrame().getBounds(), this.getWidth(), this.getHeight()) );
@@ -49,14 +49,14 @@ public class StoreJDialog extends javax.swing.JDialog implements java.awt.event.
         localJLabel.setVisible(false);
 
         // APPLIANCE INFO //////
-        mTransformJPanel.add(mTransformJButton.duplicate(), gridBagConstraints);
-        descriptionJTextArea.setText(mTransformJButton.getFullDescription());
-        priceJLabel.setText("$" + mTransformJButton.getPrice());
+        mNodeJPanel.add(mNodeJButton.duplicate(), gridBagConstraints);
+        descriptionJTextArea.setText(mNodeJButton.getFullDescription());
+        priceJLabel.setText("$" + mNodeJButton.getPrice());
     }
 
-    public MTransformJButton getPurchasedMTransformJButton(){
-        if(purchasedTransform)
-            return mTransformJButton;
+    public MNodeJButton getPurchasedMNodeJButton(){
+        if(purchasedNode)
+            return mNodeJButton;
         else
             return null;
     }
@@ -68,7 +68,7 @@ public class StoreJDialog extends javax.swing.JDialog implements java.awt.event.
     protected String SAVE_ACTION_STRING;
 
     protected void generateButtonText(){
-        String price = mTransformJButton.getPrice();
+        String price = mNodeJButton.getPrice();
         if( price.equals("0") ){
             SAVE_INIT_STRING = "<html><b>Download</b></html>";
             SAVE_ACTION_STRING = "<html>(downloading)</html>";
@@ -103,10 +103,10 @@ public class StoreJDialog extends javax.swing.JDialog implements java.awt.event.
         contentJTabbedPane = new javax.swing.JTabbedPane();
         jPanel1 = new javax.swing.JPanel();
         purchaseJPanel = new javax.swing.JPanel();
-        mTransformJPanel = new javax.swing.JPanel();
+        mNodeJPanel = new javax.swing.JPanel();
         storeJScrollPane = new javax.swing.JScrollPane();
         descriptionJTextArea = new javax.swing.JTextArea();
-        mTransformJPanel1 = new javax.swing.JPanel();
+        mNodeJPanel1 = new javax.swing.JPanel();
         priceNameJLabel = new javax.swing.JLabel();
         priceJLabel = new javax.swing.JLabel();
         moreJButton = new javax.swing.JButton();
@@ -129,11 +129,11 @@ public class StoreJDialog extends javax.swing.JDialog implements java.awt.event.
 
         purchaseJPanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        mTransformJPanel.setLayout(new java.awt.GridBagLayout());
+        mNodeJPanel.setLayout(new java.awt.GridBagLayout());
 
-        mTransformJPanel.setBorder(new javax.swing.border.TitledBorder(null, "Product to Purchase", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Arial", 0, 11)));
-        mTransformJPanel.setOpaque(false);
-        purchaseJPanel.add(mTransformJPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 30, 210, 150));
+        mNodeJPanel.setBorder(new javax.swing.border.TitledBorder(null, "Product to Purchase", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Arial", 0, 11)));
+        mNodeJPanel.setOpaque(false);
+        purchaseJPanel.add(mNodeJPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 30, 210, 150));
 
         storeJScrollPane.setBorder(new javax.swing.border.TitledBorder(null, "Full Description", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Arial", 0, 11)));
         storeJScrollPane.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
@@ -151,22 +151,22 @@ public class StoreJDialog extends javax.swing.JDialog implements java.awt.event.
 
         purchaseJPanel.add(storeJScrollPane, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 30, 300, 150));
 
-        mTransformJPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        mNodeJPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        mTransformJPanel1.setBorder(new javax.swing.border.TitledBorder(null, "Purchase Information", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Arial", 0, 11)));
-        mTransformJPanel1.setOpaque(false);
+        mNodeJPanel1.setBorder(new javax.swing.border.TitledBorder(null, "Purchase Information", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Arial", 0, 11)));
+        mNodeJPanel1.setOpaque(false);
         priceNameJLabel.setFont(new java.awt.Font("Arial", 1, 12));
         priceNameJLabel.setText("Price:");
         priceNameJLabel.setDoubleBuffered(true);
-        mTransformJPanel1.add(priceNameJLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 30, -1, -1));
+        mNodeJPanel1.add(priceNameJLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 30, -1, -1));
 
         priceJLabel.setFont(new java.awt.Font("Arial", 0, 12));
         priceJLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         priceJLabel.setText(" ");
         priceJLabel.setDoubleBuffered(true);
-        mTransformJPanel1.add(priceJLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 30, 140, -1));
+        mNodeJPanel1.add(priceJLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 30, 140, -1));
 
-        purchaseJPanel.add(mTransformJPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 200, 210, 90));
+        purchaseJPanel.add(mNodeJPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 200, 210, 90));
 
         moreJButton.setFont(new java.awt.Font("Dialog", 0, 12));
         moreJButton.setText("Read more online...");
@@ -285,7 +285,7 @@ public class StoreJDialog extends javax.swing.JDialog implements java.awt.event.
 
     private void moreJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_moreJButtonActionPerformed
         try{
-            URL newURL = new URL( mTransformJButton.getWebpage() );
+            URL newURL = new URL( mNodeJButton.getWebpage() );
             ((BasicService) ServiceManager.lookup("javax.jnlp.BasicService")).showDocument(newURL);
         }
         catch(Exception f){
@@ -300,7 +300,7 @@ public class StoreJDialog extends javax.swing.JDialog implements java.awt.event.
             return;
         }
 
-        purchasedTransform = true;
+        purchasedNode = true;
 
         saveJButton.setEnabled(false);
         reloadJButton.setEnabled(false);
@@ -318,7 +318,7 @@ public class StoreJDialog extends javax.swing.JDialog implements java.awt.event.
         }
 
         // PURCHASE /////// launch a thread, close dialog when done
-        // disabled for compilation reasons Util.getPolicyStateMachine().moveFromStoreToToolbox(mTransformJButton);
+        // disabled for compilation reasons Util.getPolicyStateMachine().moveFromStoreToToolbox(mNodeJButton);
         windowClosing(null);
     }//GEN-LAST:event_saveJButtonActionPerformed
 
@@ -351,8 +351,8 @@ public class StoreJDialog extends javax.swing.JDialog implements java.awt.event.
     protected javax.swing.JTextArea descriptionJTextArea;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JLabel localJLabel;
-    protected javax.swing.JPanel mTransformJPanel;
-    private javax.swing.JPanel mTransformJPanel1;
+    protected javax.swing.JPanel mNodeJPanel;
+    private javax.swing.JPanel mNodeJPanel1;
     private javax.swing.JButton moreJButton;
     protected javax.swing.JLabel priceJLabel;
     private javax.swing.JLabel priceNameJLabel;

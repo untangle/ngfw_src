@@ -16,12 +16,12 @@ import java.util.*;
 import javax.swing.*;
 import javax.swing.table.*;
 
-import com.untangle.gui.transform.Refreshable;
+import com.untangle.gui.node.Refreshable;
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.dialogs.*;
 import com.untangle.gui.widgets.editTable.*;
-import com.untangle.mvvm.*;
-import com.untangle.mvvm.security.*;
+import com.untangle.uvm.*;
+import com.untangle.uvm.security.*;
 
 public class AboutJDialog extends MConfigJDialog {
 

@@ -17,10 +17,10 @@ echo $JAVA_OPTS
 #
 # CLASSPATH
 #
-for f in /home/inieves/work/alpine/output/usr/share/metavize/web/webstart/*jar ; do
+for f in /home/inieves/work/alpine/output/usr/share/untangle/web/webstart/*jar ; do
     CLASSPATH="$CLASSPATH:$f"
 done
-for f in /home/inieves/work/alpine/output/usr/share/metavize/web/webstart/*mar ; do
+for f in /home/inieves/work/alpine/output/usr/share/untangle/web/webstart/*mar ; do
     CLASSPATH="$CLASSPATH:$f"
 done
 export CLASSPATH

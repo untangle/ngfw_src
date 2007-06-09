@@ -25,9 +25,9 @@ import com.untangle.gui.configuration.DirectoryCompoundSettings;
 import com.untangle.gui.configuration.DirectoryJDialog;
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.dialogs.*;
-import com.untangle.mvvm.addrbook.RepositoryType;
-import com.untangle.mvvm.addrbook.UserEntry;
-import com.untangle.mvvm.tran.firewall.user.UserMatcherConstants;
+import com.untangle.uvm.addrbook.RepositoryType;
+import com.untangle.uvm.addrbook.UserEntry;
+import com.untangle.uvm.node.firewall.user.UserMatcherConstants;
 
 
 public class UidSelectJDialog extends javax.swing.JDialog implements java.awt.event.WindowListener {

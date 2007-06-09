@@ -20,10 +20,10 @@ import java.util.TreeMap;
 import javax.swing.JPanel;
 
 import com.untangle.gui.main.*;
-import com.untangle.gui.transform.*;
+import com.untangle.gui.node.*;
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.separator.*;
-import com.untangle.mvvm.security.Tid;
+import com.untangle.uvm.security.Tid;
 
 
 public class RackSection<T> {
@@ -33,8 +33,8 @@ public class RackSection<T> {
     private Map<T,Map<String,Object>> nameMap = new TreeMap<T,Map<String,Object>>();
 
     // GUI DATA MODEL //
-    private Map<T,Map<ButtonKey,MTransformJButton>> toolboxDataMap = new TreeMap<T,Map<ButtonKey,MTransformJButton>>();
-    private Map<T,Map<ButtonKey,MTransformJPanel>>  rackDataMap    = new TreeMap<T,Map<ButtonKey,MTransformJPanel>>();
+    private Map<T,Map<ButtonKey,MNodeJButton>> toolboxDataMap = new TreeMap<T,Map<ButtonKey,MNodeJButton>>();
+    private Map<T,Map<ButtonKey,MNodeJPanel>>  rackDataMap    = new TreeMap<T,Map<ButtonKey,MNodeJPanel>>();
 
     // GUI VIEW MODEL //
     private JPanel        toolboxViewJPanel = new JPanel();
@@ -64,14 +64,14 @@ public class RackSection<T> {
 
     }
 
-    public void addToRack(T selector, MTransformJPanel appliance, boolean doRevalidate){
+    public void addToRack(T selector, MNodeJPanel appliance, boolean doRevalidate){
         if( rackDataMap.isEmpty() ){
             // ADD SEPARATOR
             rackViewJPanel.add(separator, separatorViewConstraints);
         }
-        Map<ButtonKey,MTransformJPanel> applianceMap;
+        Map<ButtonKey,MNodeJPanel> applianceMap;
         if( !rackDataMap.containsKey(selector) ){
-            applianceMap = new TreeMap<ButtonKey,MTransformJPanel>();
+            applianceMap = new TreeMap<ButtonKey,MNodeJPanel>();
             rackDataMap.put(selector, applianceMap);
         }
 

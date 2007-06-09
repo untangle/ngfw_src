@@ -18,13 +18,13 @@ import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.table.*;
 
-import com.untangle.gui.transform.*;
+import com.untangle.gui.node.*;
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.editTable.*;
-import com.untangle.mvvm.*;
-import com.untangle.mvvm.policy.*;
-import com.untangle.mvvm.security.*;
-import com.untangle.mvvm.tran.*;
+import com.untangle.uvm.*;
+import com.untangle.uvm.policy.*;
+import com.untangle.uvm.security.*;
+import com.untangle.uvm.node.*;
 
 public class PolicyAvailableJPanel extends MEditTableJPanel {
 
@@ -102,14 +102,14 @@ class AvailablePolicyTableModel extends MSortedTableModel<PolicyCompoundSettings
                     throw new Exception("The rack in row: " + rowIndex + " cannot be removed because it is currently being used in \"Custom Policies\".");
                 }
                 // if the rack is being removed, it cannot be non-empty
-                List<Tid> transformInstances;
+                List<Tid> nodeInstances;
                 try{
-                    transformInstances = Util.getTransformManager().transformInstances(policy);
+                    nodeInstances = Util.getNodeManager().nodeInstances(policy);
                 }
                 catch(Exception e){
                     throw new Exception("Network communication failure.  Please try again.");
                 }
-                if( transformInstances.size() > 0 )
+                if( nodeInstances.size() > 0 )
                     throw new Exception("The rack in row: " + rowIndex + " cannot be removed because it is not empty.  Please remove all products first.");
             }
             else{

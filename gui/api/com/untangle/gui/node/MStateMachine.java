@@ -9,15 +9,15 @@
  * $Id$
  */
 
-package com.untangle.gui.transform;
+package com.untangle.gui.node;
 
 import java.awt.Window;
 import javax.swing.*;
 
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.dialogs.*;
-import com.untangle.mvvm.*;
-import com.untangle.mvvm.tran.*;
+import com.untangle.uvm.*;
+import com.untangle.uvm.node.*;
 
 public class MStateMachine implements java.awt.event.ActionListener {
 
@@ -28,29 +28,29 @@ public class MStateMachine implements java.awt.event.ActionListener {
     private JToggleButton powerJToggleButton;
     private BlinkJLabel stateJLabel;
     private JLabel messageJLabel;
-    private MTransformJPanel mTransformJPanel;
-    private MTransformControlsJPanel mTransformControlsJPanel;
-    private MTransformDisplayJPanel mTransformDisplayJPanel;
-    private Transform transform;
+    private MNodeJPanel mNodeJPanel;
+    private MNodeControlsJPanel mNodeControlsJPanel;
+    private MNodeDisplayJPanel mNodeDisplayJPanel;
+    private Node node;
 
     // helpers
-    String transformName;
+    String nodeName;
     String displayName;
 
-    public MStateMachine( MTransformJPanel mTransformJPanel ) {
-        this.mTransformJPanel = mTransformJPanel;
-        this.mTransformControlsJPanel = mTransformJPanel.mTransformControlsJPanel();
-        this.mTransformDisplayJPanel = mTransformJPanel.mTransformDisplayJPanel();
-        this.powerJToggleButton = mTransformJPanel.powerJToggleButton();
-        this.transform = mTransformJPanel.getTransform();
-        this.stateJLabel = mTransformJPanel.stateJLabel();
-        this.messageJLabel = mTransformJPanel.messageTextJLabel();
-        this.saveJButton = mTransformControlsJPanel.saveJButton();
-        this.reloadJButton = mTransformControlsJPanel.reloadJButton();
-        this.removeJButton = mTransformControlsJPanel.removeJButton();
+    public MStateMachine( MNodeJPanel mNodeJPanel ) {
+        this.mNodeJPanel = mNodeJPanel;
+        this.mNodeControlsJPanel = mNodeJPanel.mNodeControlsJPanel();
+        this.mNodeDisplayJPanel = mNodeJPanel.mNodeDisplayJPanel();
+        this.powerJToggleButton = mNodeJPanel.powerJToggleButton();
+        this.node = mNodeJPanel.getNode();
+        this.stateJLabel = mNodeJPanel.stateJLabel();
+        this.messageJLabel = mNodeJPanel.messageTextJLabel();
+        this.saveJButton = mNodeControlsJPanel.saveJButton();
+        this.reloadJButton = mNodeControlsJPanel.reloadJButton();
+        this.removeJButton = mNodeControlsJPanel.removeJButton();
 
-        transformName = mTransformJPanel.getTransformDesc().getName();
-        displayName = mTransformJPanel.getTransformDesc().getDisplayName();
+        nodeName = mNodeJPanel.getNodeDesc().getName();
+        displayName = mNodeJPanel.getNodeDesc().getDisplayName();
 
         doRefreshState();
     }
@@ -73,7 +73,7 @@ public class MStateMachine implements java.awt.event.ActionListener {
         }
         try{
             if( source.equals(saveJButton) ){
-                if( !mTransformControlsJPanel.shouldSave() )
+                if( !mNodeControlsJPanel.shouldSave() )
                     return;
                 new SaveThread();
             }
@@ -82,10 +82,10 @@ public class MStateMachine implements java.awt.event.ActionListener {
             }
             else if( source.equals(removeJButton) ){
                 /* removeJButton.setEnabled(false); */
-                RemoveProceedDialog dialog = RemoveProceedDialog.factory((Window)mTransformControlsJPanel.getContentJPanel().getTopLevelAncestor(),
+                RemoveProceedDialog dialog = RemoveProceedDialog.factory((Window)mNodeControlsJPanel.getContentJPanel().getTopLevelAncestor(),
                                                                          displayName);
                 if( dialog.isProceeding() ){
-                    Util.getPolicyStateMachine().moveFromRackToToolbox(mTransformJPanel.getPolicy(),mTransformJPanel);
+                    Util.getPolicyStateMachine().moveFromRackToToolbox(mNodeJPanel.getPolicy(),mNodeJPanel);
                 }
                 /* removeJButton.setEnabled(true); */
             }
@@ -95,10 +95,10 @@ public class MStateMachine implements java.awt.event.ActionListener {
                 // REMOVE
                 if( (modifiers & java.awt.event.ActionEvent.SHIFT_MASK) > 0 ){
                     if( (modifiers & java.awt.event.ActionEvent.CTRL_MASK) == 0 ){
-                        RemoveProceedDialog dialog = RemoveProceedDialog.factory((Window)mTransformControlsJPanel.getContentJPanel().getTopLevelAncestor(),
+                        RemoveProceedDialog dialog = RemoveProceedDialog.factory((Window)mNodeControlsJPanel.getContentJPanel().getTopLevelAncestor(),
                                                                                  displayName);
                         if( dialog.isProceeding() ){
-                            Util.getPolicyStateMachine().moveFromRackToToolbox(mTransformJPanel.getPolicy(),mTransformJPanel);
+                            Util.getPolicyStateMachine().moveFromRackToToolbox(mNodeJPanel.getPolicy(),mNodeJPanel);
                         }
                         else{
                             powerJToggleButton.setSelected( !powerJToggleButton.isSelected() );
@@ -110,7 +110,7 @@ public class MStateMachine implements java.awt.event.ActionListener {
                     }
                 }
                 else{
-                    if( transformName.equals("nat-transform") ){
+                    if( nodeName.equals("nat-node") ){
                         if( (new PowerProceedDialog(displayName, powerJToggleButton.isSelected())).isProceeding() ){
                             new PowerThread();
                         }
@@ -145,14 +145,14 @@ public class MStateMachine implements java.awt.event.ActionListener {
             super("MVCLIENT-StateMachineSaveThread: " + displayName);
             setDaemon(true);
             setProcessingView(false);
-            mTransformControlsJPanel.getInfiniteProgressJComponent().start("Saving...");
+            mNodeControlsJPanel.getInfiniteProgressJComponent().start("Saving...");
             start();
         }
         public void run(){
             try{
-                mTransformControlsJPanel.saveAll();
-                mTransformControlsJPanel.refreshAll();
-                mTransformControlsJPanel.populateAll();
+                mNodeControlsJPanel.saveAll();
+                mNodeControlsJPanel.refreshAll();
+                mNodeControlsJPanel.populateAll();
             }
             catch(ValidationException v){
                 // this was handled with a dialog at a lower level
@@ -162,11 +162,11 @@ public class MStateMachine implements java.awt.event.ActionListener {
                 catch(Exception f){
                     Util.handleExceptionNoRestart("Error doing save", f);
                     setProblemView(true);
-                    SaveFailureDialog.factory( (Window) mTransformControlsJPanel.getContentJPanel().getTopLevelAncestor(), displayName );
+                    SaveFailureDialog.factory( (Window) mNodeControlsJPanel.getContentJPanel().getTopLevelAncestor(), displayName );
                 }
             }
 
-            mTransformControlsJPanel.getInfiniteProgressJComponent().stopLater(MTransformControlsJPanel.MIN_PROGRESS_MILLIS);
+            mNodeControlsJPanel.getInfiniteProgressJComponent().stopLater(MNodeControlsJPanel.MIN_PROGRESS_MILLIS);
 
             try{ refreshState(true); }
             catch(Exception e){
@@ -174,7 +174,7 @@ public class MStateMachine implements java.awt.event.ActionListener {
                 catch(Exception f){
                     Util.handleExceptionNoRestart("Error doing save", f);
                     setProblemView(true);
-                    SaveFailureDialog.factory( (Window) mTransformControlsJPanel.getContentJPanel().getTopLevelAncestor(), displayName );
+                    SaveFailureDialog.factory( (Window) mNodeControlsJPanel.getContentJPanel().getTopLevelAncestor(), displayName );
                 }
             }
         }
@@ -187,24 +187,24 @@ public class MStateMachine implements java.awt.event.ActionListener {
             super("MVCLIENT-StateMachineRefreshThread: " + displayName );
             setDaemon(true);
             setProcessingView(false);
-            mTransformControlsJPanel.getInfiniteProgressJComponent().start("Refreshing...");
+            mNodeControlsJPanel.getInfiniteProgressJComponent().start("Refreshing...");
             start();
         }
         public void run(){
             try{
-                mTransformControlsJPanel.refreshAll();
-                mTransformControlsJPanel.populateAll();
+                mNodeControlsJPanel.refreshAll();
+                mNodeControlsJPanel.populateAll();
             }
             catch(Exception e){
                 try{ Util.handleExceptionWithRestart("Error doing refresh", e); }
                 catch(Exception f){
                     Util.handleExceptionNoRestart("Error doing refresh", f);
                     setProblemView(true);
-                    RefreshFailureDialog.factory( (Window) mTransformControlsJPanel.getContentJPanel().getTopLevelAncestor(), displayName );
+                    RefreshFailureDialog.factory( (Window) mNodeControlsJPanel.getContentJPanel().getTopLevelAncestor(), displayName );
                 }
             }
 
-            mTransformControlsJPanel.getInfiniteProgressJComponent().stopLater(MTransformControlsJPanel.MIN_PROGRESS_MILLIS);
+            mNodeControlsJPanel.getInfiniteProgressJComponent().stopLater(MNodeControlsJPanel.MIN_PROGRESS_MILLIS);
 
             try{ refreshState(true); }
             catch(Exception e){
@@ -212,7 +212,7 @@ public class MStateMachine implements java.awt.event.ActionListener {
                 catch(Exception f){
                     Util.handleExceptionNoRestart("Error doing refresh", f);
                     setProblemView(true);
-                    RefreshFailureDialog.factory( (Window) mTransformControlsJPanel.getContentJPanel().getTopLevelAncestor(), displayName );
+                    RefreshFailureDialog.factory( (Window) mNodeControlsJPanel.getContentJPanel().getTopLevelAncestor(), displayName );
                 }
             }
 
@@ -235,10 +235,10 @@ public class MStateMachine implements java.awt.event.ActionListener {
         public void run(){
             try{
                 if(powerOn){
-                    transform.start();
+                    node.start();
                 }
                 else
-                    transform.stop();
+                    node.stop();
 
                 if( powerOn )
                     setOnView(true);
@@ -246,8 +246,8 @@ public class MStateMachine implements java.awt.event.ActionListener {
                     setOffView(true);
             }
             catch(UnconfiguredException e){
-                if( transformName.equals("openvpn-transform") ){
-                    MOneButtonJDialog.factory((Window)mTransformJPanel.getTopLevelAncestor(), displayName,
+                if( nodeName.equals("openvpn-node") ){
+                    MOneButtonJDialog.factory((Window)mNodeJPanel.getTopLevelAncestor(), displayName,
                                               "You must configure OpenVPN as either a VPN Routing Server" +
                                               " or a VPN Client before you can turn it on.<br>You may do this" +
                                               " through its Setup Wizard (in its settings).", displayName + " Warning", "Warning");
@@ -266,7 +266,7 @@ public class MStateMachine implements java.awt.event.ActionListener {
                         action = "turned on";
                     else
                         action = "turned off";
-                    MOneButtonJDialog.factory((Window)mTransformJPanel.getTopLevelAncestor(), displayName,
+                    MOneButtonJDialog.factory((Window)mNodeJPanel.getTopLevelAncestor(), displayName,
                                               displayName + " could not be " + action + "." +
                                               "  Please contact Untangle Support.", displayName + " Warning", "Warning");
                 }
@@ -284,11 +284,11 @@ public class MStateMachine implements java.awt.event.ActionListener {
     void setRemovingView(boolean doLater){ setStoppingView(doLater); }
     private void setOnView(boolean doLater){
         setView( doLater, true, true, true, true, true, true, true,  BlinkJLabel.ON_STATE );
-        mTransformJPanel.setPowerOnHintVisible(false);
+        mNodeJPanel.setPowerOnHintVisible(false);
     }
     private void setOffView(boolean doLater){
         setView( doLater, true, true, true, true, true, false, false, BlinkJLabel.OFF_STATE );
-        mTransformJPanel.setPowerOnHintVisible(true);
+        mNodeJPanel.setPowerOnHintVisible(true);
     }
     void setDisabledView(boolean doLater){    setView( doLater, false, false, false, true,  false, null, false, BlinkJLabel.DISABLED_STATE ); }
 
@@ -310,7 +310,7 @@ public class MStateMachine implements java.awt.event.ActionListener {
             SwingUtilities.invokeLater( runnable );
         else
             runnable.run();
-        mTransformDisplayJPanel.setDoVizUpdates( doVizUpdates );
+        mNodeDisplayJPanel.setDoVizUpdates( doVizUpdates );
     }
     ///////////////////////////////////////////////
 
@@ -324,16 +324,16 @@ public class MStateMachine implements java.awt.event.ActionListener {
     }
 
     private void refreshState(boolean doLater) throws Exception {
-        TransformState transformState = transform.getRunState();
-        if( TransformState.RUNNING.equals( transformState ) )
+        NodeState nodeState = node.getRunState();
+        if( NodeState.RUNNING.equals( nodeState ) )
             setOnView(doLater);
-        else if( TransformState.INITIALIZED.equals( transformState ) )
+        else if( NodeState.INITIALIZED.equals( nodeState ) )
             setOffView(doLater);
-        else if( TransformState.DISABLED.equals( transformState ) )
+        else if( NodeState.DISABLED.equals( nodeState ) )
             setDisabledView(doLater);
         else
             setProblemView(doLater);
-        final String extraText = mTransformJPanel.getNewMackageDesc().getExtraName();
+        final String extraText = mNodeJPanel.getNewMackageDesc().getExtraName();
         SwingUtilities.invokeLater( new Runnable(){ public void run(){
             if( (extraText!=null) && (extraText.length()>0) )
                 messageJLabel.setText(extraText);

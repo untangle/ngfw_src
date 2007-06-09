@@ -1,7 +1,7 @@
-<%@ page language="java" import="com.untangle.mvvm.*" %>
+<%@ page language="java" import="com.untangle.uvm.*" %>
 <%
-MvvmLocalContext mvvm = MvvmContextFactory.context();
-boolean reportingEnabled = mvvm.reportingManager().isReportingEnabled();
+UvmLocalContext uvm = UvmContextFactory.context();
+boolean reportingEnabled = uvm.reportingManager().isReportingEnabled();
 String host=request.getHeader("host");
 String scheme=request.getScheme();
 String ctxPath=request.getContextPath();

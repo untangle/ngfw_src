@@ -27,7 +27,7 @@ public class StringConstants
     /** 
      * --RBS--
      * The EMPTY constants should match whatever is in Rule.java, they are not
-     * imported here so the GUI is not dependent on the MVVM.
+     * imported here so the GUI is not dependent on the UVM.
      */
 
     /**

@@ -17,12 +17,12 @@ import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.table.*;
 
-import com.untangle.gui.transform.*;
+import com.untangle.gui.node.*;
 import com.untangle.gui.util.Util;
 import com.untangle.gui.widgets.dialogs.*;
 import com.untangle.gui.widgets.editTable.MEditTableJPanel;
 import com.untangle.gui.widgets.editTable.MSortedTableModel;
-import com.untangle.mvvm.toolbox.*;
+import com.untangle.uvm.toolbox.*;
 
 public class UpgradeProcessJPanel extends JPanel
     implements Refreshable<UpgradeCompoundSettings> {
@@ -93,7 +93,7 @@ public class UpgradeProcessJPanel extends JPanel
 
             for( MackageDesc mackageDesc : mackageDescs ){
                 if( mackageDesc.getType() == MackageDesc.CASING_TYPE ||
-                    mackageDesc.getType() == MackageDesc.TRANSFORM_BASE_TYPE)
+                    mackageDesc.getType() == MackageDesc.NODE_BASE_TYPE)
                     continue;
                 try{
                     rowIndex++;
@@ -106,13 +106,13 @@ public class UpgradeProcessJPanel extends JPanel
                     if( descIcon != null)
                         tempRow.add( new ImageIcon(descIcon) );
                     else
-                        tempRow.add( new ImageIcon(getClass().getResource("/com/untangle/gui/transform/IconDescUnknown42x42.png"))) ;
+                        tempRow.add( new ImageIcon(getClass().getResource("/com/untangle/gui/node/IconDescUnknown42x42.png"))) ;
 
                     tempRow.add( mackageDesc.getDisplayName() );
                     tempRow.add( mackageDesc.getAvailableVersion() );
                     if( mackageDesc.getType() == MackageDesc.SYSTEM_TYPE )
                         tempRow.add( "System Component" );
-                    else if( mackageDesc.getType() == MackageDesc.TRANSFORM_TYPE )
+                    else if( mackageDesc.getType() == MackageDesc.NODE_TYPE )
                         tempRow.add( "Product" );
                     else
                         tempRow.add( "Unknown" );

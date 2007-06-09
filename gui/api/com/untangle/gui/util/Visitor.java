@@ -13,14 +13,14 @@ package com.untangle.gui.util;
 
 import javax.swing.*;
 
-import com.untangle.gui.transform.MTransformJButton;
-import com.untangle.mvvm.*;
-import com.untangle.mvvm.toolbox.DownloadComplete;
-import com.untangle.mvvm.toolbox.DownloadProgress;
-import com.untangle.mvvm.toolbox.DownloadSummary;
-import com.untangle.mvvm.toolbox.InstallComplete;
-import com.untangle.mvvm.toolbox.InstallTimeout;
-import com.untangle.mvvm.toolbox.ProgressVisitor;
+import com.untangle.gui.node.MNodeJButton;
+import com.untangle.uvm.*;
+import com.untangle.uvm.toolbox.DownloadComplete;
+import com.untangle.uvm.toolbox.DownloadProgress;
+import com.untangle.uvm.toolbox.DownloadSummary;
+import com.untangle.uvm.toolbox.InstallComplete;
+import com.untangle.uvm.toolbox.InstallTimeout;
+import com.untangle.uvm.toolbox.ProgressVisitor;
 
 public class Visitor implements ProgressVisitor{
     private boolean isDone = false;
@@ -32,7 +32,7 @@ public class Visitor implements ProgressVisitor{
     private int currentByteIncrement = 0;
     private Object visualizer;
     private JProgressBar progressBar;
-    private MTransformJButton mTransformJButton;
+    private MNodeJButton mNodeJButton;
     private boolean isProgressBar;
     // public methods ----------------------------------------------------
 
@@ -41,8 +41,8 @@ public class Visitor implements ProgressVisitor{
         isProgressBar = true;
     }
 
-    public Visitor(MTransformJButton mTransformJButton){
-        visualizer = mTransformJButton;
+    public Visitor(MNodeJButton mNodeJButton){
+        visualizer = mNodeJButton;
         isProgressBar = false;
     }
 
@@ -75,7 +75,7 @@ public class Visitor implements ProgressVisitor{
             }
             else{
                 progressString = "Get @ "  + dp.getSpeed();
-                ((MTransformJButton)visualizer).setProgress(progressString, progressIndex );
+                ((MNodeJButton)visualizer).setProgress(progressString, progressIndex );
             }
         }});
     }
@@ -94,7 +94,7 @@ public class Visitor implements ProgressVisitor{
                     ((JProgressBar)visualizer).setValue(100);
                 }
                 else{
-                    ((MTransformJButton)visualizer).setProgress("Failed", 100);
+                    ((MNodeJButton)visualizer).setProgress("Failed", 100);
                 }
             }
         }});
@@ -110,8 +110,8 @@ public class Visitor implements ProgressVisitor{
                     ((JProgressBar)visualizer).setValue(100);
                 }
                 else{
-                    ((MTransformJButton)visualizer).setProgress("Download complete", 100);
-                    ((MTransformJButton)visualizer).setEnabled(false);
+                    ((MNodeJButton)visualizer).setProgress("Download complete", 100);
+                    ((MNodeJButton)visualizer).setEnabled(false);
                 }
             }
             else{
@@ -120,8 +120,8 @@ public class Visitor implements ProgressVisitor{
                     ((JProgressBar)visualizer).setValue(100);
                 }
                 else{
-                    ((MTransformJButton)visualizer).setProgress("Failed", 100);
-                    ((MTransformJButton)visualizer).setEnabled(true);
+                    ((MNodeJButton)visualizer).setProgress("Failed", 100);
+                    ((MNodeJButton)visualizer).setEnabled(true);
                 }
             }
         }});
@@ -136,7 +136,7 @@ public class Visitor implements ProgressVisitor{
                 ((JProgressBar)visualizer).setValue(100);
             }
             else{
-                ((MTransformJButton)visualizer).setProgress("Failed", 100);
+                ((MNodeJButton)visualizer).setProgress("Failed", 100);
             }
         }});
     }

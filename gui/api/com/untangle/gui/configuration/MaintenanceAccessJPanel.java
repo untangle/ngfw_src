@@ -13,14 +13,14 @@ package com.untangle.gui.configuration;
 
 import java.awt.*;
 
-import com.untangle.gui.transform.*;
+import com.untangle.gui.node.*;
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.dialogs.MConfigJDialog;
-import com.untangle.mvvm.*;
-import com.untangle.mvvm.networking.AccessSettings;
-import com.untangle.mvvm.networking.MiscSettings;
-import com.untangle.mvvm.security.*;
-import com.untangle.mvvm.tran.*;
+import com.untangle.uvm.*;
+import com.untangle.uvm.networking.AccessSettings;
+import com.untangle.uvm.networking.MiscSettings;
+import com.untangle.uvm.security.*;
+import com.untangle.uvm.node.*;
 
 public class MaintenanceAccessJPanel extends javax.swing.JPanel
     implements Savable<MaintenanceCompoundSettings>, Refreshable<MaintenanceCompoundSettings> {

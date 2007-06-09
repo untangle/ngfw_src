@@ -21,7 +21,7 @@ import javax.swing.*;
 
 import com.untangle.gui.util.Util;
 import com.untangle.gui.widgets.dialogs.*;
-import com.untangle.mvvm.security.RFC2253Name;
+import com.untangle.uvm.security.RFC2253Name;
 
 
 public class RemoteCertGenSelfSignedJDialog extends javax.swing.JDialog implements java.awt.event.WindowListener {

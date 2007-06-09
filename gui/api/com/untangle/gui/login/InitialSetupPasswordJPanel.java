@@ -18,7 +18,7 @@ import javax.swing.SwingUtilities;
 import com.untangle.gui.util.TimeZone;
 import com.untangle.gui.util.Util;
 import com.untangle.gui.widgets.wizard.*;
-import com.untangle.mvvm.security.*;
+import com.untangle.uvm.security.*;
 
 
 public class InitialSetupPasswordJPanel extends MWizardPageJPanel {

@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.gui.transform;
+package com.untangle.gui.node;
 
 import java.awt.event.*;
 import javax.swing.*;

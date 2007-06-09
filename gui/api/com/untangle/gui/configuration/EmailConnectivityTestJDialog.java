@@ -15,7 +15,7 @@ import java.awt.*;
 import javax.swing.*;
 
 import com.untangle.gui.util.Util;
-import com.untangle.mvvm.*;
+import com.untangle.uvm.*;
 
 public class EmailConnectivityTestJDialog extends javax.swing.JDialog implements java.awt.event.WindowListener {
 

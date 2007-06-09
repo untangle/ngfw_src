@@ -13,9 +13,9 @@ package com.untangle.gui.util;
 
 import java.util.*;
 
-import com.untangle.mvvm.security.Tid;
-import com.untangle.mvvm.tapi.IPSessionDesc;
-import com.untangle.mvvm.tran.*;
+import com.untangle.uvm.security.Tid;
+import com.untangle.uvm.tapi.IPSessionDesc;
+import com.untangle.uvm.node.*;
 
 public class StatsCache implements Shutdownable
 {
@@ -24,10 +24,10 @@ public class StatsCache implements Shutdownable
 
     private final StatsCacheUpdateThread statsCacheUpdateThread;
 
-    private final HashMap<Tid, FakeTransform> fakies;
+    private final HashMap<Tid, FakeNode> fakies;
 
     public StatsCache(){
-        fakies = new HashMap<Tid, FakeTransform>();
+        fakies = new HashMap<Tid, FakeNode>();
         statsCacheUpdateThread = new StatsCacheUpdateThread();
         Util.addShutdownable("StatsCacheUpdateThread", statsCacheUpdateThread);
     }
@@ -40,7 +40,7 @@ public class StatsCache implements Shutdownable
         statsCacheUpdateThread.doShutdown();
     }
 
-    public Transform getFakeTransform(Tid tid)
+    public Node getFakeNode(Tid tid)
     {
         return fakies.get(tid);
     }
@@ -64,13 +64,13 @@ public class StatsCache implements Shutdownable
 
         public void run() {
 
-            Map<Tid, TransformStats> allStats;
+            Map<Tid, NodeStats> allStats;
             boolean mustClear = false;
 
             while (!stop) {
                 try {
-                    // GET ALL TRANSFORM STATS, AND KILL IF NECESSSARY
-                    allStats = Util.getTransformManager().allTransformStats();
+                    // GET ALL NODE STATS, AND KILL IF NECESSSARY
+                    allStats = Util.getNodeManager().allNodeStats();
                     if (fakies.size() != allStats.size()) {
                         fakies.clear();
                     }
@@ -80,7 +80,7 @@ public class StatsCache implements Shutdownable
                         if( fakies.containsKey(tid) ) {
                             fakies.get(tid).setStats(allStats.get(tid));
                         } else {
-                            fakies.put(tid, new FakeTransform(allStats.get(tid)));
+                            fakies.put(tid, new FakeNode(allStats.get(tid)));
                         }
                     }
 
@@ -103,31 +103,31 @@ public class StatsCache implements Shutdownable
         }
     }
 
-    public class FakeTransform implements Transform {
-        private TransformStats stats;
+    public class FakeNode implements Node {
+        private NodeStats stats;
 
-        FakeTransform(TransformStats stats) {
+        FakeNode(NodeStats stats) {
             setStats(stats);
         }
 
         public Tid getTid() { throw new Error("Unsupported"); }
-        public TransformState getRunState() { throw new Error("Unsupported"); }
+        public NodeState getRunState() { throw new Error("Unsupported"); }
         public boolean neverStarted() { return false; }
         public void start() { throw new Error("Unsupported"); }
         public void disable() { throw new Error("Unsupported"); }
         public void stop() { throw new Error("Unsupported"); }
         public void reconfigure() { throw new Error("Unsupported"); }
-        public TransformContext getTransformContext() { throw new Error("Unsupported"); }
-        public TransformDesc getTransformDesc() { throw new Error("Unsupported"); }
+        public NodeContext getNodeContext() { throw new Error("Unsupported"); }
+        public NodeDesc getNodeDesc() { throw new Error("Unsupported"); }
         public IPSessionDesc[] liveSessionDescs() { throw new Error("Unsupported"); }
         public void dumpSessions() { throw new Error("Unsupported"); }
         public Object getSettings() { throw new Error("Unsupported"); }
         public void setSettings(Object settings) { throw new Error("Unsupported"); }
 
-        public TransformStats getStats() {
+        public NodeStats getStats() {
             return stats;
         }
-        public void setStats(TransformStats stats){
+        public void setStats(NodeStats stats){
             this.stats = stats;
         }
     }

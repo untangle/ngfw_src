@@ -17,13 +17,13 @@ import javax.swing.*;
 import com.untangle.gui.util.Util;
 import com.untangle.gui.widgets.dialogs.*;
 import com.untangle.gui.widgets.wizard.*;
-import com.untangle.mvvm.MailSender;
-import com.untangle.mvvm.networking.AddressSettings;
-import com.untangle.mvvm.networking.BasicNetworkSettings;
-import com.untangle.mvvm.networking.NetworkUtil;
-import com.untangle.mvvm.networking.PPPoEConnectionRule;
-import com.untangle.mvvm.tran.HostName;
-import com.untangle.mvvm.tran.IPaddr;
+import com.untangle.uvm.MailSender;
+import com.untangle.uvm.networking.AddressSettings;
+import com.untangle.uvm.networking.BasicNetworkSettings;
+import com.untangle.uvm.networking.NetworkUtil;
+import com.untangle.uvm.networking.PPPoEConnectionRule;
+import com.untangle.uvm.node.HostName;
+import com.untangle.uvm.node.IPaddr;
 
 public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
 

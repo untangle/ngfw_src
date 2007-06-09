@@ -16,7 +16,7 @@ import javax.swing.*;
 
 import com.untangle.gui.util.Util;
 import com.untangle.gui.widgets.dialogs.*;
-import com.untangle.mvvm.networking.BasicNetworkSettings;
+import com.untangle.uvm.networking.BasicNetworkSettings;
 
 final public class NetworkDhcpRenewDialog extends MOneButtonProgressJDialog {
 

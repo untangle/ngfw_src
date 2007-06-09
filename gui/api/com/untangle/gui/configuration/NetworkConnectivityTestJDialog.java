@@ -15,8 +15,8 @@ import java.awt.*;
 import javax.swing.*;
 
 import com.untangle.gui.util.Util;
-import com.untangle.mvvm.*;
-import com.untangle.mvvm.client.MvvmRemoteContextFactory;
+import com.untangle.uvm.*;
+import com.untangle.uvm.client.UvmRemoteContextFactory;
 
 public class NetworkConnectivityTestJDialog extends javax.swing.JDialog implements java.awt.event.WindowListener {
 
@@ -231,10 +231,10 @@ public class NetworkConnectivityTestJDialog extends javax.swing.JDialog implemen
 
             ConnectivityTester.Status status = null;
             try{
-                int initialTimeout = MvvmRemoteContextFactory.factory().getTimeout();
-                MvvmRemoteContextFactory.factory().setTimeout(Util.RECONFIGURE_NETWORK_TIMEOUT_MILLIS);
-                status = Util.getMvvmContext().getConnectivityTester().getStatus();
-                MvvmRemoteContextFactory.factory().setTimeout(initialTimeout);
+                int initialTimeout = UvmRemoteContextFactory.factory().getTimeout();
+                UvmRemoteContextFactory.factory().setTimeout(Util.RECONFIGURE_NETWORK_TIMEOUT_MILLIS);
+                status = Util.getUvmContext().getConnectivityTester().getStatus();
+                UvmRemoteContextFactory.factory().setTimeout(initialTimeout);
             }
             catch(Exception e){
                 Util.handleExceptionNoRestart("Error running connectivity tester", e);

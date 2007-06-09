@@ -19,10 +19,10 @@ import javax.swing.JSpinner;
 import javax.swing.SpinnerDateModel;
 import javax.swing.text.*;
 
-import com.untangle.gui.transform.*;
+import com.untangle.gui.node.*;
 import com.untangle.gui.util.Util;
-import com.untangle.mvvm.Period;
-import com.untangle.mvvm.toolbox.UpgradeSettings;
+import com.untangle.uvm.Period;
+import com.untangle.uvm.toolbox.UpgradeSettings;
 
 public class UpgradeSettingsJPanel extends javax.swing.JPanel
     implements Savable<UpgradeCompoundSettings>, Refreshable<UpgradeCompoundSettings> {

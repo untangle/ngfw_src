@@ -11,22 +11,22 @@
 
 package com.untangle.gui.util;
 
-import com.untangle.mvvm.MessageQueue;
-import com.untangle.mvvm.client.*;
-import com.untangle.mvvm.toolbox.ToolboxMessage;
-import com.untangle.mvvm.toolbox.ToolboxMessageVisitor;
+import com.untangle.uvm.MessageQueue;
+import com.untangle.uvm.client.*;
+import com.untangle.uvm.toolbox.ToolboxMessage;
+import com.untangle.uvm.toolbox.ToolboxMessageVisitor;
 
 
 public class MessageClientThread extends Thread implements Shutdownable {
 
     private volatile ToolboxMessageVisitor toolboxMessageVisitor;
-    private final MvvmRemoteContext mvvmContext;
+    private final UvmRemoteContext uvmContext;
     private volatile boolean stop = false;
 
-    public MessageClientThread(MvvmRemoteContext mvvmContext, ToolboxMessageVisitor v){
+    public MessageClientThread(UvmRemoteContext uvmContext, ToolboxMessageVisitor v){
         setDaemon(true);
         setName("MV-MessageClientThread");
-        this.mvvmContext = mvvmContext;
+        this.uvmContext = uvmContext;
         this.toolboxMessageVisitor = v;
         start();
     }
@@ -47,7 +47,7 @@ public class MessageClientThread extends Thread implements Shutdownable {
                 break;
             try{
                 if( toolQ == null )
-                    toolQ = mvvmContext.toolboxManager().subscribe();
+                    toolQ = uvmContext.toolboxManager().subscribe();
 
                 for (ToolboxMessage msg : toolQ.getMessages()) {
                     msg.accept(toolboxMessageVisitor);

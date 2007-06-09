@@ -13,14 +13,14 @@ package com.untangle.gui.configuration;
 
 import java.awt.*;
 
-import com.untangle.gui.transform.*;
+import com.untangle.gui.node.*;
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.dialogs.*;
-import com.untangle.mvvm.*;
-import com.untangle.mvvm.networking.BasicNetworkSettings;
-import com.untangle.mvvm.networking.PPPoEConnectionRule;
-import com.untangle.mvvm.security.*;
-import com.untangle.mvvm.tran.*;
+import com.untangle.uvm.*;
+import com.untangle.uvm.networking.BasicNetworkSettings;
+import com.untangle.uvm.networking.PPPoEConnectionRule;
+import com.untangle.uvm.security.*;
+import com.untangle.uvm.node.*;
 
 public class NetworkPPPOEJPanel extends javax.swing.JPanel
     implements Savable<NetworkCompoundSettings>, Refreshable<NetworkCompoundSettings> {

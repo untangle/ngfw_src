@@ -11,14 +11,14 @@
 
 package com.untangle.gui.configuration;
 
-import com.untangle.gui.transform.CompoundSettings;
+import com.untangle.gui.node.CompoundSettings;
 import com.untangle.gui.util.Util;
-import com.untangle.mvvm.logging.LoggingSettings;
-import com.untangle.mvvm.networking.AccessSettings;
-import com.untangle.mvvm.networking.AddressSettings;
-import com.untangle.mvvm.security.AdminSettings;
-import com.untangle.mvvm.security.CertInfo;
-import com.untangle.mvvm.snmp.SnmpSettings;
+import com.untangle.uvm.logging.LoggingSettings;
+import com.untangle.uvm.networking.AccessSettings;
+import com.untangle.uvm.networking.AddressSettings;
+import com.untangle.uvm.security.AdminSettings;
+import com.untangle.uvm.security.CertInfo;
+import com.untangle.uvm.snmp.SnmpSettings;
 
 public class RemoteCompoundSettings implements CompoundSettings {
 

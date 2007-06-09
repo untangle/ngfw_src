@@ -9,7 +9,7 @@
 #
 # $Id: untangle-client,v 1.11 2005/02/24 04:38:35 inieves Exp $
 
-. @PREFIX@/etc/default/mvvm
+. @PREFIX@/etc/default/uvm
 
 JAVA_HOME=${JAVA_HOME:-/usr/lib/jvm/java-1.5.0-sun}
 

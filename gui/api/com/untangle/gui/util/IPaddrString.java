@@ -11,7 +11,7 @@
 
 package com.untangle.gui.util;
 
-import com.untangle.mvvm.tran.IPaddr;
+import com.untangle.uvm.node.IPaddr;
 
 public class IPaddrString implements Comparable<IPaddrString> {
 

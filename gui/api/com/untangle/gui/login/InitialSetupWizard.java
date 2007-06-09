@@ -13,11 +13,11 @@ package com.untangle.gui.login;
 
 import java.awt.Dimension;
 
-import com.untangle.gui.transform.*;
+import com.untangle.gui.node.*;
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.dialogs.*;
 import com.untangle.gui.widgets.wizard.*;
-import com.untangle.mvvm.client.MvvmRemoteContextFactory;
+import com.untangle.uvm.client.UvmRemoteContextFactory;
 
 public class InitialSetupWizard extends MWizardJDialog {
 
@@ -121,11 +121,11 @@ public class InitialSetupWizard extends MWizardJDialog {
     }
 
     private void cleanupConnection(){
-        if( Util.getMvvmContext() != null ){
+        if( Util.getUvmContext() != null ){
             keepAliveThread.doShutdown();
-            Util.setMvvmContext(null);
+            Util.setUvmContext(null);
             try{
-                MvvmRemoteContextFactory.factory().logout();
+                UvmRemoteContextFactory.factory().logout();
             }
             catch(Exception e){ Util.handleExceptionNoRestart("Error logging off", e); };
         }

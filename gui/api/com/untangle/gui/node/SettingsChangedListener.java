@@ -9,9 +9,8 @@
  * $Id$
  */
 
+package com.untangle.gui.node;
 
-package com.untangle.gui.transform;
-
-public class ValidationException extends Exception {
-    
+public interface SettingsChangedListener {
+    public void settingsChanged(Object source);
 }
