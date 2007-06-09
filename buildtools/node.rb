@@ -33,15 +33,20 @@ class NodeBuilder
 
     uvm = BuildEnv::SRC['uvm']
     gui  = BuildEnv::SRC['untangle-client']
+    if (suffix == 'node')
+        dirName = name;
+    else
+        dirName = "#{name}-#{suffix}"
+    end
     node = buildEnv["#{name}-#{suffix}"]
-    buildEnv['tran'].registerTarget(name, node)
+    buildEnv['tran'].registerTarget("#{name}-#{suffix}", node)
 
     localApiJar = nil
 
     baseNodes = [baseNodes].flatten
 
     ## If there is a local API, build it first
-    localApi = FileList["#{home}/tran/#{name}/localapi/**/*.java"]
+    localApi = FileList["#{home}/tran/#{dirName}/localapi/**/*.java"]
     baseNodes.each do |bt|
       localApi += FileList["#{home}/tran/#{bt}/localapi/**/*.java"]
     end
@@ -53,7 +58,7 @@ class NodeBuilder
           "#{home}/tran/#{bt}/localapi"] }.flatten
 
       localApiJar = JarTarget.buildTarget(node, deps, 'localapi',
-                                          ["#{home}/tran/#{name}/api", "#{home}/tran/#{name}/localapi"] + paths)
+                                          ["#{home}/tran/#{dirName}/api", "#{home}/tran/#{dirName}/localapi"] + paths)
       buildEnv.installTarget.installJars(localApiJar, "#{node.distDirectory}/usr/share/untangle/toolbox")
     end
 
@@ -61,10 +66,10 @@ class NodeBuilder
     deps = baseJarsImpl + depsImpl
 
     ## Make the IMPL dependent on the localapi if a jar exists.
-    directories= ["#{home}/tran/#{name}/impl"]
+    directories= ["#{home}/tran/#{dirName}/impl"]
     if (localApiJar.nil?)
       ## Only include the API if the localJarApi doesn't exist
-      directories << "#{home}/tran/#{name}/api"
+      directories << "#{home}/tran/#{dirName}/api"
       baseNodes.each { |bt| directories << "#{home}/tran/#{bt}/api" }
     else
       deps << localApiJar
@@ -82,7 +87,7 @@ class NodeBuilder
     buildEnv.installTarget.installJars(jt, "#{node.distDirectory}/usr/share/untangle/toolbox", nil, false, true)
 
     ## Only create the GUI api if there are files for the GUI
-    if (FileList["#{home}/tran/#{name}/gui/**/*.java"].length > 0)
+    if (FileList["#{home}/tran/#{dirName}/gui/**/*.java"].length > 0)
       deps  = baseJarsGui + depsGui
       baseNodes.each do |bt|
         pkg = buildEnv["#{bt}-base"]
@@ -92,15 +97,15 @@ class NodeBuilder
       end
 
       jt = JarTarget.buildTarget(node, deps, 'gui',
-                                 ["#{home}/tran/#{name}/api", "#{home}/tran/#{name}/gui",
-                                   "#{home}/tran/#{name}/fake"])
+                                 ["#{home}/tran/#{dirName}/api", "#{home}/tran/#{dirName}/gui",
+                                   "#{home}/tran/#{dirName}/fake"])
       buildEnv.installTarget.installJars(jt, "#{node.distDirectory}/usr/share/untangle/web/webstart",
                                  nil, true)
     end
 
-    hierFiles = FileList["#{home}/tran/#{name}/hier/**/*"]
+    hierFiles = FileList["#{home}/tran/#{dirName}/hier/**/*"]
     if (0 < hierFiles.length)
-      ms = MoveSpec.new("#{home}/tran/#{name}/hier", hierFiles, node.distDirectory)
+      ms = MoveSpec.new("#{home}/tran/#{dirName}/hier", hierFiles, node.distDirectory)
       cf = CopyFiles.new(node, ms, 'hier', buildEnv.filterset)
       node.registerTarget('hier', cf)
     end
