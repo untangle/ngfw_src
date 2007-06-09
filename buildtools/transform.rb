@@ -1,60 +1,60 @@
 # -*-ruby-*-
 
-class TransformBuilder
-  TransformSuffix = 'transform'
+class NodeBuilder
+  NodeSuffix = 'node'
   CasingSuffix = 'casing'
   BaseSuffix = 'base'
 
-  def TransformBuilder.makeTransform(buildEnv, name, depsImpl = [],
+  def NodeBuilder.makeNode(buildEnv, name, depsImpl = [],
                                      depsGui = [], depsLocalApi = [],
-                                     baseTransforms = [])
-    makePackage(buildEnv, name, TransformSuffix, depsImpl, depsGui,
-                depsLocalApi, baseTransforms)
+                                     baseNodes = [])
+    makePackage(buildEnv, name, NodeSuffix, depsImpl, depsGui,
+                depsLocalApi, baseNodes)
   end
 
-  def TransformBuilder.makeCasing(buildEnv, name, depsImpl = [], depsGui = [],
-                                  depsLocalApi = [], baseTransforms = [])
+  def NodeBuilder.makeCasing(buildEnv, name, depsImpl = [], depsGui = [],
+                                  depsLocalApi = [], baseNodes = [])
     makePackage(buildEnv, name, CasingSuffix, depsImpl, depsGui, depsLocalApi,
-                baseTransforms)
+                baseNodes)
   end
 
-  def TransformBuilder.makeBase(buildEnv, name, depsImpl = [], depsGui = [],
-                                depsLocalApi = [], baseTransforms = [])
+  def NodeBuilder.makeBase(buildEnv, name, depsImpl = [], depsGui = [],
+                                depsLocalApi = [], baseNodes = [])
     makePackage(buildEnv, name, BaseSuffix, depsImpl, depsGui, depsLocalApi,
-                baseTransforms)
+                baseNodes)
   end
 
   private
-  ## Create the necessary packages and targets to build a transform
-  def TransformBuilder.makePackage(buildEnv, name, suffix, depsImpl = [],
+  ## Create the necessary packages and targets to build a node
+  def NodeBuilder.makePackage(buildEnv, name, suffix, depsImpl = [],
                                    depsGui = [], depsLocalApi = [],
-                                   baseTransforms = [])
+                                   baseNodes = [])
     home = buildEnv.home
 
-    mvvm = BuildEnv::ALPINE['mvvm']
-    gui  = BuildEnv::ALPINE['untangle-client']
-    transform = buildEnv["#{name}-#{suffix}"]
-    buildEnv['tran'].registerTarget(name, transform)
+    uvm = BuildEnv::SRC['uvm']
+    gui  = BuildEnv::SRC['untangle-client']
+    node = buildEnv["#{name}-#{suffix}"]
+    buildEnv['tran'].registerTarget(name, node)
 
     localApiJar = nil
 
-    baseTransforms = [baseTransforms].flatten
+    baseNodes = [baseNodes].flatten
 
     ## If there is a local API, build it first
     localApi = FileList["#{home}/tran/#{name}/localapi/**/*.java"]
-    baseTransforms.each do |bt|
+    baseNodes.each do |bt|
       localApi += FileList["#{home}/tran/#{bt}/localapi/**/*.java"]
     end
 
     if (localApi.length > 0)
       deps  = baseJarsLocalApi + depsLocalApi
 
-      paths = baseTransforms.map { |bt| ["#{home}/tran/#{bt}/api",
+      paths = baseNodes.map { |bt| ["#{home}/tran/#{bt}/api",
           "#{home}/tran/#{bt}/localapi"] }.flatten
 
-      localApiJar = JarTarget.buildTarget(transform, deps, 'localapi',
+      localApiJar = JarTarget.buildTarget(node, deps, 'localapi',
                                           ["#{home}/tran/#{name}/api", "#{home}/tran/#{name}/localapi"] + paths)
-      buildEnv.installTarget.installJars(localApiJar, "#{transform.distDirectory}/usr/share/metavize/toolbox")
+      buildEnv.installTarget.installJars(localApiJar, "#{node.distDirectory}/usr/share/untangle/toolbox")
     end
 
     ## Build the IMPL jar.
@@ -65,63 +65,63 @@ class TransformBuilder
     if (localApiJar.nil?)
       ## Only include the API if the localJarApi doesn't exist
       directories << "#{home}/tran/#{name}/api"
-      baseTransforms.each { |bt| directories << "#{home}/tran/#{bt}/api" }
+      baseNodes.each { |bt| directories << "#{home}/tran/#{bt}/api" }
     else
       deps << localApiJar
     end
 
-    baseTransforms.each { |bt| directories << "#{home}/tran/#{bt}/impl" }
+    baseNodes.each { |bt| directories << "#{home}/tran/#{bt}/impl" }
 
     ## The IMPL jar depends on the reports
-    deps << JasperTarget.buildTarget( transform,
-                                      "#{buildEnv.staging}/#{transform.name}-impl/reports",
+    deps << JasperTarget.buildTarget( node,
+                                      "#{buildEnv.staging}/#{node.name}-impl/reports",
                                       directories )
 
-    jt = JarTarget.buildTarget(transform, deps, "impl", directories)
+    jt = JarTarget.buildTarget(node, deps, "impl", directories)
 
-    buildEnv.installTarget.installJars(jt, "#{transform.distDirectory}/usr/share/metavize/toolbox", nil, false, true)
+    buildEnv.installTarget.installJars(jt, "#{node.distDirectory}/usr/share/untangle/toolbox", nil, false, true)
 
     ## Only create the GUI api if there are files for the GUI
     if (FileList["#{home}/tran/#{name}/gui/**/*.java"].length > 0)
       deps  = baseJarsGui + depsGui
-      baseTransforms.each do |bt|
+      baseNodes.each do |bt|
         pkg = buildEnv["#{bt}-base"]
         if pkg.hasTarget?('gui')
           deps << pkg['gui']
         end
       end
 
-      jt = JarTarget.buildTarget(transform, deps, 'gui',
+      jt = JarTarget.buildTarget(node, deps, 'gui',
                                  ["#{home}/tran/#{name}/api", "#{home}/tran/#{name}/gui",
                                    "#{home}/tran/#{name}/fake"])
-      buildEnv.installTarget.installJars(jt, "#{transform.distDirectory}/usr/share/metavize/web/webstart",
+      buildEnv.installTarget.installJars(jt, "#{node.distDirectory}/usr/share/untangle/web/webstart",
                                  nil, true)
     end
 
     hierFiles = FileList["#{home}/tran/#{name}/hier/**/*"]
     if (0 < hierFiles.length)
-      ms = MoveSpec.new("#{home}/tran/#{name}/hier", hierFiles, transform.distDirectory)
-      cf = CopyFiles.new(transform, ms, 'hier', buildEnv.filterset)
-      transform.registerTarget('hier', cf)
+      ms = MoveSpec.new("#{home}/tran/#{name}/hier", hierFiles, node.distDirectory)
+      cf = CopyFiles.new(node, ms, 'hier', buildEnv.filterset)
+      node.registerTarget('hier', cf)
     end
   end
 
   ## Helper to retrieve the standard dependencies for an impl
-  def TransformBuilder.baseJarsImpl
-    mvvm = BuildEnv::ALPINE['mvvm']
-    Jars::Base + [Jars::JFreeChart, Jars::Jasper, mvvm['api'], mvvm['localapi'],
-      mvvm['reporting']]
+  def NodeBuilder.baseJarsImpl
+    uvm = BuildEnv::SRC['uvm']
+    Jars::Base + [Jars::JFreeChart, Jars::Jasper, uvm['api'], uvm['localapi'],
+      uvm['reporting']]
   end
 
   ## Helper to retrieve the standard dependencies for local API
-  def TransformBuilder.baseJarsLocalApi
+  def NodeBuilder.baseJarsLocalApi
     ## See no reason to use a different set of jars
     baseJarsImpl
   end
 
   ## Helper to retrieve the standard dependencies for a GUI jar
-  def TransformBuilder.baseJarsGui
+  def NodeBuilder.baseJarsGui
     Jars::Base + Jars::Gui + Jars::TomcatEmb +
-      [BuildEnv::ALPINE['mvvm']['api'], BuildEnv::ALPINE['untangle-client']['api']]
+      [BuildEnv::SRC['uvm']['api'], BuildEnv::SRC['untangle-client']['api']]
   end
 end

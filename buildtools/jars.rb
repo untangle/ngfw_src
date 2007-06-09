@@ -10,7 +10,7 @@ class Jars
      [ jars ].flatten.uniq
   end
 
-  Kernel.system("make -C #{ALPINE_HOME}/downloads") unless $CleanBuild
+  Kernel.system("make -C #{SRC_HOME}/downloads") unless $CleanBuild
 
   ## Named groups of jars
   Log4j      = [ Jars.downloadTarget('logging-log4j-1.2.14/dist/lib/log4j-1.2.14.jar') ]
@@ -70,7 +70,7 @@ class Jars
                               Activation, Jcifs, C3p0, Ant, JavaMailApi,
                               JavaMail, TomcatEmb, Velocity, WBEM, Bdb)
 
-  # Jars for compiling the GUI, and GUI transform components
+  # Jars for compiling the GUI, and GUI node components
   Gui        = Jars.makeGroup(Alloy, JFreeChartGui, Netbeans, Jnlp)
 
   # Jars for that are required to run reporting

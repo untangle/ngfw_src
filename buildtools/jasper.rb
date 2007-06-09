@@ -6,7 +6,7 @@ class JasperCompiler
   ReportGenerator = "#{BuildUtilPkg}.ReportGenerator"
   JRCompiler = "#{BuildUtilPkg}.JRCompiler"
 
-  TemplateDirectory = "#{ALPINE_HOME}/mvvm/resources/reports"
+  TemplateDirectory = "#{SRC_HOME}/uvm/resources/reports"
 
   include Singleton
 
@@ -28,7 +28,7 @@ class JasperCompiler
 
   private
   def JasperCompiler.classpath
-    [Jars::Reporting + Jars::JDKTools + [BuildEnv::ALPINE['buildutil']['impl'].filename ]].flatten.join(":")
+    [Jars::Reporting + Jars::JDKTools + [BuildEnv::SRC['buildutil']['impl'].filename ]].flatten.join(":")
   end
 end
 
@@ -50,7 +50,7 @@ class JRXMLTarget < Target
 
   def makeDependencies
     ## ReportGenerator is built inside of the build utils
-    buildutil = BuildEnv::ALPINE['buildutil']
+    buildutil = BuildEnv::SRC['buildutil']
 
     @rpdFiles.each do |f|
       jrxmlFile =  "#{@buildDirectory}/#{File.basename( f ).gsub(/.rpd$/,".jrxml")}"

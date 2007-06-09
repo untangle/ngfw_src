@@ -17,52 +17,52 @@ end
 
 ## This is how you define where the stamp file will go
 module Rake
-  StampFile = "#{ALPINE_HOME}/taskstamps.txt"
+  StampFile = "#{SRC_HOME}/taskstamps.txt"
 end
 
-require "#{ALPINE_HOME}/buildtools/stamp-task.rb"
-require "#{ALPINE_HOME}/buildtools/rake-util.rb"
-require "#{ALPINE_HOME}/buildtools/c-compiler.rb"
-require "#{ALPINE_HOME}/buildtools/jars.rb"
-require "#{ALPINE_HOME}/buildtools/jasper.rb"
-require "#{ALPINE_HOME}/buildtools/transform.rb"
+require "#{SRC_HOME}/buildtools/stamp-task.rb"
+require "#{SRC_HOME}/buildtools/rake-util.rb"
+require "#{SRC_HOME}/buildtools/c-compiler.rb"
+require "#{SRC_HOME}/buildtools/jars.rb"
+require "#{SRC_HOME}/buildtools/jasper.rb"
+require "#{SRC_HOME}/buildtools/node.rb"
 
 ## Require all of the sub packages.
 ## Done manually because order matters.
 ## XXX Could create a new helper method that sets a prefix directory before
 ## calling require and then unsets it afterwards.
-require "#{ALPINE_HOME}/util/package.rb"
-require "#{ALPINE_HOME}/libmvutil/package.rb"
-require "#{ALPINE_HOME}/libnetcap/package.rb"
-require "#{ALPINE_HOME}/libvector/package.rb"
-require "#{ALPINE_HOME}/jmvutil/package.rb"
-require "#{ALPINE_HOME}/jnetcap/package.rb"
-require "#{ALPINE_HOME}/jvector/package.rb"
-require "#{ALPINE_HOME}/nfutil/package.rb"
-require "#{ALPINE_HOME}/mvvm/package.rb"
-require "#{ALPINE_HOME}/gui/package.rb"
-require "#{ALPINE_HOME}/tran/package.rb"
+require "#{SRC_HOME}/util/package.rb"
+require "#{SRC_HOME}/libmvutil/package.rb"
+require "#{SRC_HOME}/libnetcap/package.rb"
+require "#{SRC_HOME}/libvector/package.rb"
+require "#{SRC_HOME}/jmvutil/package.rb"
+require "#{SRC_HOME}/jnetcap/package.rb"
+require "#{SRC_HOME}/jvector/package.rb"
+require "#{SRC_HOME}/nfutil/package.rb"
+require "#{SRC_HOME}/uvm/package.rb"
+require "#{SRC_HOME}/gui/package.rb"
+require "#{SRC_HOME}/tran/package.rb"
 
-libalpine_so = "#{BuildEnv::ALPINE.staging}/libalpine.so"
+libalpine_so = "#{BuildEnv::SRC.staging}/libalpine.so"
 
 archives = ['libmvutil', 'libnetcap', 'libvector', 'jmvutil', 'jnetcap', 'jvector']
 
 ## Make the so dependent on each archive
 archives.each do |n|
-  file libalpine_so => BuildEnv::ALPINE[n]['archive']
+  file libalpine_so => BuildEnv::SRC[n]['archive']
 end
 
 file libalpine_so do
   compilerEnv = CCompilerEnv.new( { "flags" => "-pthread #{CCompilerEnv.defaultDebugFlags}" } )
-  archivesFiles = archives.map { |n| BuildEnv::ALPINE[n]['archive'].filename }
+  archivesFiles = archives.map { |n| BuildEnv::SRC[n]['archive'].filename }
 
-  CBuilder.new(BuildEnv::ALPINE, compilerEnv).makeSharedLibrary(archivesFiles, libalpine_so, [],
+  CBuilder.new(BuildEnv::SRC, compilerEnv).makeSharedLibrary(archivesFiles, libalpine_so, [],
                                               ['xml2', 'sysfs', 'netfilter_queue'], ['ipq'])
 end
 
-BuildEnv::ALPINE['mvvm']['impl'].registerDependency(libalpine_so)
+BuildEnv::SRC['uvm']['impl'].registerDependency(libalpine_so)
 
-BuildEnv::ALPINE.installTarget.installFiles(libalpine_so, "#{BuildEnv::ALPINE['libalpine'].distDirectory}/usr/lib/mvvm")
+BuildEnv::SRC.installTarget.installFiles(libalpine_so, "#{BuildEnv::SRC['libalpine'].distDirectory}/usr/lib/uvm")
 
 # DO IT!
 #graphViz('foo.dot')

@@ -76,11 +76,11 @@ include Debug
 # XXX make this class immutable
 class BuildEnv
   JAVA_HOME = '/usr/lib/jvm/java-1.5.0-sun'
-  THIRD_PARTY_JAR = 'usr/share/java/mvvm'
+  THIRD_PARTY_JAR = 'usr/share/java/uvm'
 
   # XXX XXX should these live here???
-  DOWNLOADS = "#{ALPINE_HOME}/downloads/output"
-  SERVLET_COMMON = "#{ALPINE_HOME}/servlet/common"
+  DOWNLOADS = "#{SRC_HOME}/downloads/output"
+  SERVLET_COMMON = "#{SRC_HOME}/servlet/common"
 
   attr_reader :home, :prefix, :staging, :devel, :deb, :isDevel, :grabbag, :downloads, :servletcommon, :include, :installTarget
   attr_writer :prefix, :target, :isDevel
@@ -96,7 +96,7 @@ class BuildEnv
     @isDevel = $DevelBuild
 
     ## Devel is the development environment
-    @devel   =  File.expand_path("#{ALPINE_HOME}/dist")
+    @devel   =  File.expand_path("#{SRC_HOME}/dist")
 
     ## This is the staging ground for debian packages
     @deb    = "#{home}/debian"
@@ -134,21 +134,21 @@ class BuildEnv
       /@PREFIX@/ => @prefix,
       /@DEFAULT_JAVA_HOME@/ => '/usr/lib/jvm/java-1.5.0-sun',
       /@USR_BIN@/ => "#{@prefix}/usr/bin",
-      /@MVVM_HOME@/ => "#{@prefix}/usr/share/metavize",
-      /@MVVM_DUMP@/ => "#{@prefix}/usr/share/metavize/dump",
-      /@MVVM_CONF@/ => "#{@prefix}/usr/share/metavize/conf",
-      /@MVVM_LIB@/ => "#{@prefix}/usr/share/metavize/lib",
-      /@MVVM_LOG@/ => "#{@prefix}/usr/share/metavize/log",
-      /@MVVM_TOOLBOX@/ => "#{@prefix}/usr/share/metavize/toolbox",
-      /@MVVM_SCHEMA@/ => "#{@prefix}/usr/share/metavize/schema",
-      /@MVVM_WEB@/ => "#{@prefix}/usr/share/metavize/web",
-      /@MVVM_REPORTS@/ => "#{@prefix}/usr/share/metavize/web/reports",
-      /@THIRDPARTY_MVVM_LIB@/ => "#{@prefix}/usr/share/java/mvvm",
+      /@UVM_HOME@/ => "#{@prefix}/usr/share/untangle",
+      /@UVM_DUMP@/ => "#{@prefix}/usr/share/untangle/dump",
+      /@UVM_CONF@/ => "#{@prefix}/usr/share/untangle/conf",
+      /@UVM_LIB@/ => "#{@prefix}/usr/share/untangle/lib",
+      /@UVM_LOG@/ => "#{@prefix}/usr/share/untangle/log",
+      /@UVM_TOOLBOX@/ => "#{@prefix}/usr/share/untangle/toolbox",
+      /@UVM_SCHEMA@/ => "#{@prefix}/usr/share/untangle/schema",
+      /@UVM_WEB@/ => "#{@prefix}/usr/share/untangle/web",
+      /@UVM_REPORTS@/ => "#{@prefix}/usr/share/untangle/web/reports",
+      /@THIRDPARTY_UVM_LIB@/ => "#{@prefix}/usr/share/java/uvm",
       /@THIRDPARTY_TOMCAT_LIB@/ => "#{@prefix}/usr/share/java/tomcat",
       /@THIRDPARTY_REPORTS_LIB@/ => "#{@prefix}/usr/share/java/reports",
       /@ENDORSED_LIB@/ => "#{@prefix}/usr/share/java/endorsed",
       /@FAKE_PKG_LIST@/ => "#{@prefix}/tmp/pkg-list",
-      /@ALPINE_LIB@/ => "#{@prefix}/usr/lib/mvvm",
+      /@SRC_LIB@/ => "#{@prefix}/usr/lib/uvm",
       /@IS_DEVEL@/ => "#{@isDevel}"
     }
   end
@@ -209,7 +209,7 @@ class JavaCompiler
   def JavaCompiler.jarSigner(jar)
     ks = ENV['HADES_KEYSTORE']
     if ks.nil?
-      ks = "#{BuildEnv::ALPINE.staging}/keystore"
+      ks = "#{BuildEnv::SRC.staging}/keystore"
       a = 'hermes'
       pw = 'hermes'
 
@@ -302,7 +302,7 @@ class Package
   end
 
   def getWebappDir(servletName)
-    "#{distDirectory()}/usr/share/metavize/web/#{servletName}"
+    "#{distDirectory()}/usr/share/untangle/web/#{servletName}"
   end
 
   def registerTarget(name, target)
@@ -348,7 +348,7 @@ class Package
     "package.#{name}"
   end
 
-  def installThirdpartyJars(jars, type = "mvvm")
+  def installThirdpartyJars(jars, type = "uvm")
     targetDir = @buildEnv.getTargetDirectory(self)
 
     jars.each do |f|
@@ -480,15 +480,15 @@ class InstallTarget < Target
   end
 end
 
-BuildEnv::ALPINE = BuildEnv.new(ALPINE_HOME, 'alpine')
-%w(mvvm untangle-client tran).each do |d|
-  BuildEnv::ALPINE.installTarget.registerDependency(BuildEnv::ALPINE[d]);
+BuildEnv::SRC = BuildEnv.new(SRC_HOME, 'src')
+%w(uvm untangle-client tran).each do |d|
+  BuildEnv::SRC.installTarget.registerDependency(BuildEnv::SRC[d]);
 end
 
 class EmptyTarget < Target
   include Singleton
   def initialize
-    super(BuildEnv::ALPINE['none'])
+    super(BuildEnv::SRC['none'])
   end
 
   def to_s
@@ -601,10 +601,10 @@ class ServletBuilder < Target
     unless 0 == commonMoveSpecs.length
       deps << CopyFiles.new(package, commonMoveSpecs, "#{suffix}-common")
     end
-    mvvm = BuildEnv::ALPINE['mvvm']
+    uvm = BuildEnv::SRC['uvm']
 
     jardeps = libdeps + @trandeps + Jars::Base + FileList["#{@destRoot}/WEB-INF/lib/*.jar"]
-    jardeps << mvvm["api"] << mvvm["localapi"]
+    jardeps << uvm["api"] << uvm["localapi"]
 
     # XXX make name nil?
     @srcJar = JarTarget.buildTarget(package, jardeps, name, "#{path}/src",
@@ -627,10 +627,10 @@ class ServletBuilder < Target
     webfrag = Tempfile.new("file-list")
     webfrag.close
 
-    mvvm = BuildEnv::ALPINE['mvvm']
+    uvm = BuildEnv::SRC['uvm']
     cp = @trandeps.map { |j| j.filename } +
       JspcClassPath + Jars::Base.map { |j| j.filename } +
-      [mvvm["api"], mvvm["localapi"]].map { |t| t.filename } +
+      [uvm["api"], uvm["localapi"]].map { |t| t.filename } +
       Jars::Base.map {|f| f.filename }
 
     args = ["-s", "-die", "-l", "-v", "-compile", "-d", classroot,
@@ -745,7 +745,7 @@ end
 
 ## This is a precompiled third-party JAR
 class ThirdpartyJar < Target
-  @@package = BuildEnv::ALPINE['thirdpartyjars']
+  @@package = BuildEnv::SRC['thirdpartyjars']
 
   def initialize(path)
     @fullpath = "#{path}"

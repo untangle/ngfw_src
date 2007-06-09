@@ -1,7 +1,7 @@
-mvvm            optional    m
-metavize-client     optional    m
+uvm            optional    m
+untangle-client     optional    m
 untangle-client     optional    u
-libmvvm-thirdparty      optional        libm
+libuvm-thirdparty      optional        libm
 
 #
 # Untangle Casings
@@ -13,25 +13,25 @@ virus-base      optional    v
 spam-base       optional    s
 
 #
-# Untangle Transforms
+# Untangle Nodes
 #
-test-transform      optional    t
-httpblocker-transform   optional    h
-nat-transform       optional    n
-firewall-transform  optional    f
-airgap-transform    optional    a
-sophos-transform    optional    s
-fprot-transform     optional    f
-hauri-transform     optional    h
-kav-transform       optional    k
-clam-transform      optional    c
-email-transform     optional    e
-protofilter-transform   optional    p
-spyware-transform   optional    s
-reporting-transform optional    r
-spamassassin-transform  optional    s
-ids-transform       optional    i
-clamphish-transform optional    c
+test-node      optional    t
+httpblocker-node   optional    h
+nat-node       optional    n
+firewall-node  optional    f
+airgap-node    optional    a
+sophos-node    optional    s
+fprot-node     optional    f
+hauri-node     optional    h
+kav-node       optional    k
+clam-node      optional    c
+email-node     optional    e
+protofilter-node   optional    p
+spyware-node   optional    s
+reporting-node optional    r
+spamassassin-node  optional    s
+ids-node       optional    i
+clamphish-node optional    c
 
 #
 # Untangle util packages

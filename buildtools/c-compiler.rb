@@ -217,7 +217,7 @@ class ArchiveTarget < Target
   ## env: Build environment for this archive
   ## includes: Any additional include directories required to build this archive.
   def ArchiveTarget.buildTarget(package, deps, env, includes = [] )
-    directory = "#{ALPINE_HOME}/#{package.name}"
+    directory = "#{SRC_HOME}/#{package.name}"
 
     ## Create a builder
     sourceDirectory = "#{directory}/src"
@@ -283,6 +283,6 @@ end
 
 def getVersion(package)
   version = ""
-  File.open( "#{ALPINE_HOME}/#{package.name}/VERSION" ) { |f| version=f.gets.strip }
+  File.open( "#{SRC_HOME}/#{package.name}/VERSION" ) { |f| version=f.gets.strip }
   version
 end

@@ -8,7 +8,7 @@ sudo rsync -rlpvz -e ssh /var/www/stable/ \
     --exclude 'test-*' \
     --exclude 'fprot-*' \
     --exclude 'sophos-*' \
-    --exclude 'virus-transform*' \
+    --exclude 'virus-node*' \
     --exclude 'kernel-dev*' \
     --exclude 'kernel-fake*' \
     --exclude 'dev-mv*' \
