@@ -2,7 +2,7 @@
 # $Id$
 
 # get a bunch of default values
-source @PREFIX@/etc/default/uvm
+source @PREFIX@/etc/default/untangle-vm
 
 UVM_CONSOLE_LOG=${UVM_CONSOLE_LOG:-"@PREFIX@/var/log/uvm/console.log"}
 UVM_UVM_LOG=${UVM_UVM_LOG:-"@PREFIX@/var/log/uvm/uvm.log"}
@@ -116,10 +116,10 @@ getLicenseKey() {
 
   KEY=`cat $ACTIVATION_KEY_FILE_TMP`
 
-  # for CD downloads, the temp key is only 0s, so we need to ask the 
+  # for CD downloads, the temp key is only 0s, so we need to ask the
   # server for a brand new one; that's done by not supplying any value
   # to the CGI variable
-  [[ $KEY = $FAKE_KEY ]] && KEY="" 
+  [[ $KEY = $FAKE_KEY ]] && KEY=""
 
   if curl --insecure --fail -o $TMP_ARCHIVE `printf ${ACTIVATION_URL_TEMPLATE} "$KEY" $(/usr/bin/mvip)`; then
     rm -f $ACTIVATION_KEY_FILE_TMP
