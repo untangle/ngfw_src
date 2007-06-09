@@ -9,13 +9,13 @@
  * $Id$
  */
 
-package com.untangle.node.ids.options;
+package com.untangle.node.ips.options;
 
-import com.untangle.node.ids.IDSRuleSignature;
+import com.untangle.node.ips.IPSRuleSignature;
 
-public class TestOption extends IDSOption {
+public class TestOption extends IPSOption {
 
-    public TestOption(IDSRuleSignature signature, String params) {
+    public TestOption(IPSRuleSignature signature, String params) {
         super(signature, params);
     }
 }

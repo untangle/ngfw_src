@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.node.ids;
+package com.untangle.node.ips;
 
 import java.io.Serializable;
 import javax.persistence.Column;
@@ -22,14 +22,14 @@ import javax.persistence.Transient;
 import com.untangle.uvm.node.Rule;
 
 /**
- * Hibernate object to store IDS rules.
+ * Hibernate object to store IPS rules.
  *
  * @author <a href="mailto:nchilders@untangle.com">Nick Childers</a>
  * @version 1.0
  */
 @Entity
 @Table(name="tr_ids_rule", schema="settings")
-public class IDSRule extends Rule implements Serializable
+public class IPSRule extends Rule implements Serializable
 {
     private static final long serialVersionUID = -7009708957041660234L;
 
@@ -52,13 +52,13 @@ public class IDSRule extends Rule implements Serializable
     private String url;
 
     //Variables set at run time
-    private transient IDSRuleHeader header;
-    private transient IDSRuleSignature signature;
+    private transient IPSRuleHeader header;
+    private transient IPSRuleSignature signature;
     private transient boolean remove; //Should no longer be in the list
 
-    public IDSRule() {}
+    public IPSRule() {}
 
-    public IDSRule(String rule, String  category, String description) {
+    public IPSRule(String rule, String  category, String description) {
 
         super("Name", category,description,false);
 
@@ -85,20 +85,20 @@ public class IDSRule extends Rule implements Serializable
 
     //Non Hibernate functions
     @Transient
-    public IDSRuleHeader getHeader() {
+    public IPSRuleHeader getHeader() {
         return header;
     }
 
-    public void setHeader(IDSRuleHeader header) {
+    public void setHeader(IPSRuleHeader header) {
         this.header = header;
     }
 
     @Transient
-    public IDSRuleSignature getSignature() {
+    public IPSRuleSignature getSignature() {
         return signature;
     }
 
-    public void setSignature(IDSRuleSignature signature) {
+    public void setSignature(IPSRuleSignature signature) {
         this.signature = signature;
         //super.setDescription(getMessage());
     }
@@ -149,8 +149,8 @@ public class IDSRule extends Rule implements Serializable
     }
 
     public boolean equals(Object o) {
-        if (o instanceof IDSRule) {
-            IDSRule other = (IDSRule) o;
+        if (o instanceof IPSRule) {
+            IPSRule other = (IPSRule) o;
             // Following isn't totally complete, but is good enough
             // for what we use from Rule. XX
             return (rule == null ? other.rule == null : rule.equals(other.rule)) &&

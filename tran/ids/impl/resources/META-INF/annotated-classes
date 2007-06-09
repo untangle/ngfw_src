@@ -1,2 +1,2 @@
-com.untangle.node.ids.IDSStatisticEvent
-com.untangle.node.ids.IDSLogEvent
+com.untangle.node.ips.IPSStatisticEvent
+com.untangle.node.ips.IPSLogEvent

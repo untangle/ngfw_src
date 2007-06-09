@@ -9,11 +9,11 @@
  * $Id$
  */
 
-package com.untangle.node.ids.options;
+package com.untangle.node.ips.options;
 
 import java.util.regex.*;
 
-import com.untangle.node.ids.IDSRuleSignature;
+import com.untangle.node.ips.IPSRuleSignature;
 
 /**
  * This class matches the reference option found in snort based rule
@@ -21,10 +21,10 @@ import com.untangle.node.ids.IDSRuleSignature;
  *
  * @Author Nick Childers
  */
-public class ReferenceOption extends IDSOption {
+public class ReferenceOption extends IPSOption {
     private static final Pattern URLP = Pattern.compile("url,", Pattern.CASE_INSENSITIVE);
 
-    public ReferenceOption(IDSRuleSignature signature, String params) {
+    public ReferenceOption(IPSRuleSignature signature, String params) {
         super(signature, params);
 
         Matcher urlm = URLP.matcher(params);

@@ -9,13 +9,13 @@
  * $Id$
  */
 
-package com.untangle.node.ids;
+package com.untangle.node.ips;
 
 import com.untangle.uvm.logging.EventManager;
 import com.untangle.uvm.node.Node;
 
-public interface IDSNode extends Node {
-    IDSSettings getIDSSettings();
-    void setIDSSettings(IDSSettings settings);
-    EventManager<IDSLogEvent> getEventManager();
+public interface IPSNode extends Node {
+    IPSSettings getIPSSettings();
+    void setIPSSettings(IPSSettings settings);
+    EventManager<IPSLogEvent> getEventManager();
 }

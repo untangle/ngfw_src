@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.node.ids.reports;
+package com.untangle.node.ips.reports;
 
 import java.awt.BasicStroke;
 import java.awt.Color;

@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.node.ids;
+package com.untangle.node.ips;
 
 import java.io.Serializable;
 import javax.persistence.Column;
@@ -20,26 +20,26 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 /**
- * Hibernate object to store IDS Variable.
+ * Hibernate object to store IPS Variable.
  *
  * @author <a href="mailto:nchilders@untangle.com">Nick Childers</a>
  * @version 1.0
  */
 @Entity
 @Table(name="tr_ids_variable", schema="settings")
-public class IDSVariable implements Serializable {
+public class IPSVariable implements Serializable {
     private Long id;
     private static final long serialVersionUID = -7777708957041660234L;
     private String variable;
     private String definition;
     private String description;
 
-    public IDSVariable() {}
+    public IPSVariable() {}
 
-    public IDSVariable(String var, String def, String desc) {
+    public IPSVariable(String var, String def, String desc) {
 
         if(512 < var.length() || 512 < def.length())
-            throw new IllegalArgumentException("IDS Variable argument too long");
+            throw new IllegalArgumentException("IPS Variable argument too long");
 
         this.variable = var;
         this.definition = def;

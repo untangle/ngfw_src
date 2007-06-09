@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.node.ids.options;
+package com.untangle.node.ips.options;
 
 import java.nio.ByteBuffer;
 import java.text.CharacterIterator;
@@ -17,8 +17,8 @@ import java.util.regex.*;
 
 import com.sun.org.apache.xerces.internal.impl.xpath.regex.BMPattern;
 import com.untangle.uvm.tapi.event.*;
-import com.untangle.node.ids.IDSRuleSignature;
-import com.untangle.node.ids.IDSSessionInfo;
+import com.untangle.node.ips.IPSRuleSignature;
+import com.untangle.node.ips.IPSSessionInfo;
 import com.untangle.node.util.AsciiCharBuffer;
 import com.untangle.node.util.AsciiCharBufferCharacterIterator;
 import org.apache.log4j.Logger;
@@ -31,7 +31,7 @@ import org.apache.log4j.Logger;
 
 ///XXX - ADD ERROR HANDELING OMG!
 
-public class ContentOption extends IDSOption {
+public class ContentOption extends IPSOption {
 
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -53,7 +53,7 @@ public class ContentOption extends IDSOption {
     private boolean withinFlag = false;
     private boolean distanceFlag = false;
 
-    public ContentOption(IDSRuleSignature signature, String params) {
+    public ContentOption(IPSRuleSignature signature, String params) {
         super(signature, params);
         int index = params.indexOf('|');
         if(index < 0) {
@@ -113,14 +113,14 @@ public class ContentOption extends IDSOption {
     }
 
     private ContentOption getPreviousContentOption() {
-        IDSOption option = signature.getOption("ContentOption",this);
+        IPSOption option = signature.getOption("ContentOption",this);
         if(option != null)
             return (ContentOption) option;
         return null; //error checking OMGWTFBBQ
     }
 
 
-    private void setStartAndEndPoints(int offset, int depth, IDSSessionInfo sessionInfo) {
+    private void setStartAndEndPoints(int offset, int depth, IPSSessionInfo sessionInfo) {
         sessionInfo.start = offset;
         sessionInfo.end = offset+depth;
         if(sessionInfo.start == sessionInfo.end)
@@ -131,7 +131,7 @@ public class ContentOption extends IDSOption {
         return true;
     }
 
-    public boolean run(IDSSessionInfo sessionInfo) {
+    public boolean run(IPSSessionInfo sessionInfo) {
         ByteBuffer eventData = sessionInfo.getEvent().data();
         AsciiCharBuffer data = AsciiCharBuffer.wrap(eventData);
         CharacterIterator iter = new AsciiCharBufferCharacterIterator(data);

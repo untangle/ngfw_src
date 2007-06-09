@@ -1,5 +1,5 @@
 TEMPLATE=Detail
-REPORT_NAME=IDSDetail
+REPORT_NAME=IPSDetail
 REPORT_TITLE=Intrusion Prevention Events
 
 EXTRA_PARAM_1.name=reportTitlePrefix

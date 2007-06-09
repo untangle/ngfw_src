@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.node.ids;
+package com.untangle.node.ips;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -95,15 +95,15 @@ class FileLoader {
         return result;
     }
 
-    static List<IDSRule> loadAllRuleFiles(IDSRuleManager manager)
+    static List<IPSRule> loadAllRuleFiles(IPSRuleManager manager)
     {
-        List<IDSRule> ruleList = new ArrayList<IDSRule>();
+        List<IPSRule> ruleList = new ArrayList<IPSRule>();
         File file = new File(SNORT_RULES_HOME + "/rules");
         loadRuleFiles(manager, file, ruleList);
         return ruleList;
     }
 
-    private static void loadRuleFiles(IDSRuleManager manager, File file, List<IDSRule> result) {
+    private static void loadRuleFiles(IPSRuleManager manager, File file, List<IPSRule> result) {
         if (file.isDirectory()) {
             String[] children = file.list();
             Arrays.sort(children);
@@ -122,7 +122,7 @@ class FileLoader {
 
     /** Temp subroutines for loading local snort rules.
      */
-    private static void processRuleFile(IDSRuleManager manager, File file, List<IDSRule> result) {
+    private static void processRuleFile(IPSRuleManager manager, File file, List<IPSRule> result) {
         try {
             String category = file.getName().replaceAll(".rules",""); //Should move this to script land
             category = category.replace("bleeding-",""); //Should move this to script land
@@ -139,7 +139,7 @@ class FileLoader {
                         continue lineloop;
                     }
                 }
-                IDSRule rule = manager.createRule(str.trim(), category);
+                IPSRule rule = manager.createRule(str.trim(), category);
                 if (rule != null) {
                     int sid = rule.getSid();
                     for (int slowRule : VERY_SLOW_RULES) {

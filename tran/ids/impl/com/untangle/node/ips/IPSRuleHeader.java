@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.node.ids;
+package com.untangle.node.ips;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
@@ -23,7 +23,7 @@ import com.untangle.uvm.node.firewall.ip.IPMatcher;
 import com.untangle.uvm.node.firewall.ip.IPMatcherFactory;
 import org.apache.log4j.Logger;
 
-public class IDSRuleHeader {
+public class IPSRuleHeader {
 
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -41,7 +41,7 @@ public class IDSRuleHeader {
     private List<IPMatcher> serverIPList;
     private PortRange       serverPortRange;
 
-    private List<IDSRuleSignature> signatures = new ArrayList<IDSRuleSignature>();
+    private List<IPSRuleSignature> signatures = new ArrayList<IPSRuleSignature>();
 
     /**
      * Negation Flags: flag XOR input = answer
@@ -51,7 +51,7 @@ public class IDSRuleHeader {
     private boolean     serverIPFlag = false;
     private boolean     serverPortFlag = false;
 
-    public IDSRuleHeader(int action, boolean bidirectional, Protocol protocol,
+    public IPSRuleHeader(int action, boolean bidirectional, Protocol protocol,
                          List<IPMatcher> clientIPList,  PortRange clientPortRange,
                          List<IPMatcher> serverIPList,  PortRange serverPortRange) {
 
@@ -164,11 +164,11 @@ public class IDSRuleHeader {
         serverPortFlag = serverPort;
     }
 
-    public void addSignature(IDSRuleSignature sig) {
+    public void addSignature(IPSRuleSignature sig) {
         signatures.add(sig);
     }
 
-    public boolean removeSignature(IDSRuleSignature sig) {
+    public boolean removeSignature(IPSRuleSignature sig) {
         return signatures.remove(sig);
     }
 
@@ -176,7 +176,7 @@ public class IDSRuleHeader {
         return action;
     }
 
-    public List<IDSRuleSignature> getSignatures() {
+    public List<IPSRuleSignature> getSignatures() {
         return signatures;
     }
 
@@ -186,7 +186,7 @@ public class IDSRuleHeader {
 
     // Rule manager uses this to decide if the rule is already known.  We ignore the signatures
     // attached.
-    public boolean matches(IDSRuleHeader other) {
+    public boolean matches(IPSRuleHeader other) {
         boolean action = (this.action == other.action);
         boolean protocol = (this.protocol == other.protocol); // ?
         boolean clientPorts = (this.clientPortRange.equals(other.clientPortRange));

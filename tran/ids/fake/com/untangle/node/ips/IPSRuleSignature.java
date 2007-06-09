@@ -11,8 +11,8 @@
 
 // Fake
 
-package com.untangle.node.ids;
+package com.untangle.node.ips;
 
-public class IDSRuleSignature {
-    public IDSRuleSignature() { }
+public class IPSRuleSignature {
+    public IPSRuleSignature() { }
 }

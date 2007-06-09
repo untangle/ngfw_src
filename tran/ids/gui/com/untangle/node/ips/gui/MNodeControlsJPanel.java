@@ -11,7 +11,7 @@
 
 
 
-package com.untangle.node.ids.gui;
+package com.untangle.node.ips.gui;
 
 import com.untangle.gui.node.*;
 import com.untangle.gui.pipeline.MPipelineJPanel;
@@ -40,26 +40,26 @@ public class MNodeControlsJPanel extends com.untangle.gui.node.MNodeControlsJPan
     public void generateGui(){
 
         // STATUS
-        IDSStatusJPanel idsStatusJPanel = new IDSStatusJPanel();
-        addTab(NAME_STATUS, null, idsStatusJPanel);
-        addRefreshable(NAME_STATUS, idsStatusJPanel);
+        IPSStatusJPanel ipsStatusJPanel = new IPSStatusJPanel();
+        addTab(NAME_STATUS, null, ipsStatusJPanel);
+        addRefreshable(NAME_STATUS, ipsStatusJPanel);
 
         // ADVACED
         JTabbedPane advancedJTabbedPane = addTabbedPane(NAME_ADVANCED, null);
         
         // RULE LIST /////
-        IDSConfigJPanel idsConfigJPanel = new IDSConfigJPanel();
-        advancedJTabbedPane.addTab(NAME_RULE_LIST, null, idsConfigJPanel);
-        addSavable(NAME_RULE_LIST, idsConfigJPanel);
-        addRefreshable(NAME_RULE_LIST, idsConfigJPanel);
-        idsConfigJPanel.setSettingsChangedListener(this);
+        IPSConfigJPanel ipsConfigJPanel = new IPSConfigJPanel();
+        advancedJTabbedPane.addTab(NAME_RULE_LIST, null, ipsConfigJPanel);
+        addSavable(NAME_RULE_LIST, ipsConfigJPanel);
+        addRefreshable(NAME_RULE_LIST, ipsConfigJPanel);
+        ipsConfigJPanel.setSettingsChangedListener(this);
         
         // VARIABLE LIST /////
-        IDSVariableJPanel idsVariableJPanel = new IDSVariableJPanel();
-        advancedJTabbedPane.addTab(NAME_VARIABLE_LIST, null, idsVariableJPanel);
-        addSavable(NAME_VARIABLE_LIST, idsVariableJPanel);
-        addRefreshable(NAME_VARIABLE_LIST, idsVariableJPanel);
-        idsVariableJPanel.setSettingsChangedListener(this);
+        IPSVariableJPanel ipsVariableJPanel = new IPSVariableJPanel();
+        advancedJTabbedPane.addTab(NAME_VARIABLE_LIST, null, ipsVariableJPanel);
+        addSavable(NAME_VARIABLE_LIST, ipsVariableJPanel);
+        addRefreshable(NAME_VARIABLE_LIST, ipsVariableJPanel);
+        ipsVariableJPanel.setSettingsChangedListener(this);
         
         // EVENT LOG ///////
         LogJPanel logJPanel = new LogJPanel(mNodeJPanel.getNode(), this);

@@ -9,22 +9,22 @@
  * $Id$
  */
 
-package com.untangle.node.ids;
+package com.untangle.node.ips;
 
 import com.untangle.uvm.tapi.TCPNewSessionRequest;
 import com.untangle.uvm.tapi.TCPSession;
 import com.untangle.node.token.TokenHandler;
 import com.untangle.node.token.TokenHandlerFactory;
 
-public class IDSHttpFactory implements TokenHandlerFactory {
-    private final IDSNodeImpl node;
+public class IPSHttpFactory implements TokenHandlerFactory {
+    private final IPSNodeImpl node;
 
-    IDSHttpFactory(IDSNodeImpl node) {
+    IPSHttpFactory(IPSNodeImpl node) {
         this.node = node;
     }
 
     public TokenHandler tokenHandler(TCPSession session) {
-        return new IDSHttpHandler(session, node);
+        return new IPSHttpHandler(session, node);
     }
 
     public void handleNewSessionRequest(TCPNewSessionRequest tsr)

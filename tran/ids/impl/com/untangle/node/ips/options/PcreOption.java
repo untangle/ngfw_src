@@ -9,23 +9,23 @@
  * $Id$
  */
 
-package com.untangle.node.ids.options;
+package com.untangle.node.ips.options;
 
 import java.nio.ByteBuffer;
 import java.util.regex.*;
 
-import com.untangle.node.ids.IDSRuleSignature;
-import com.untangle.node.ids.IDSSessionInfo;
+import com.untangle.node.ips.IPSRuleSignature;
+import com.untangle.node.ips.IPSSessionInfo;
 import com.untangle.node.util.AsciiCharBuffer;
 import org.apache.log4j.Logger;
 
-public class PcreOption extends IDSOption {
+public class PcreOption extends IPSOption {
 
     private final Logger logger = Logger.getLogger(getClass());
 
     private Pattern pcrePattern;
 
-    public PcreOption(IDSRuleSignature signature, String params) {
+    public PcreOption(IPSRuleSignature signature, String params) {
         super(signature, params);
 
         int beginIndex = params.indexOf("/");
@@ -75,7 +75,7 @@ public class PcreOption extends IDSOption {
         return true;
     }
 
-    public boolean run(IDSSessionInfo sessionInfo) {
+    public boolean run(IPSSessionInfo sessionInfo) {
         ByteBuffer eventData = sessionInfo.getEvent().data();
 
         //  if(pcrePattern == null) {

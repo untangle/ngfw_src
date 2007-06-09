@@ -1,4 +1,4 @@
 # -*-ruby-*-
 
-NodeBuilder.makeNode(BuildEnv::SRC, 'ids',
+NodeBuilder.makeNode(BuildEnv::SRC, 'ips',
                                [BuildEnv::SRC['http-casing']['localapi']])

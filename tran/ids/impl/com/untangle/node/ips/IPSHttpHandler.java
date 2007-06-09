@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.node.ids;
+package com.untangle.node.ips;
 
 import com.untangle.uvm.tapi.TCPSession;
 import com.untangle.node.http.HttpStateMachine;
@@ -19,19 +19,19 @@ import com.untangle.node.token.Chunk;
 import com.untangle.node.token.Header;
 import org.apache.log4j.Logger;
 
-class IDSHttpHandler extends HttpStateMachine {
+class IPSHttpHandler extends HttpStateMachine {
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    private IDSDetectionEngine engine;
+    private IPSDetectionEngine engine;
 
-    IDSHttpHandler(TCPSession session, IDSNodeImpl node) {
+    IPSHttpHandler(TCPSession session, IPSNodeImpl node) {
         super(session);
         engine = node.getEngine();
     }
 
     protected RequestLineToken doRequestLine(RequestLineToken requestLine) {
-        IDSSessionInfo info = engine.getSessionInfo(getSession());
+        IPSSessionInfo info = engine.getSessionInfo(getSession());
         if (info != null) {
             // Null is no longer unusual, it happens whenever we've released the
             // session from the byte pipe.

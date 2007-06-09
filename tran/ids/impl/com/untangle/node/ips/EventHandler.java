@@ -9,18 +9,18 @@
  * $Id$
  */
 
-package com.untangle.node.ids;
+package com.untangle.node.ips;
 
 import com.untangle.uvm.tapi.*;
 import com.untangle.uvm.tapi.event.*;
 
 public class EventHandler extends AbstractEventHandler {
 
-    private IDSDetectionEngine idsEngine;
+    private IPSDetectionEngine ipsEngine;
 
-    public EventHandler(IDSNodeImpl node) {
+    public EventHandler(IPSNodeImpl node) {
         super(node);
-        idsEngine = node.getEngine();
+        ipsEngine = node.getEngine();
     }
 
     public void handleTCPNewSessionRequest(TCPNewSessionRequestEvent event) throws MPipeException {
@@ -32,7 +32,7 @@ public class EventHandler extends AbstractEventHandler {
     }
 
     private void handleNewSessionRequest(IPNewSessionRequest request, Protocol protocol) {
-        idsEngine.processNewSessionRequest(request, protocol);
+        ipsEngine.processNewSessionRequest(request, protocol);
     }
 
     public void handleTCPNewSession(TCPSessionEvent event) throws MPipeException {
@@ -44,7 +44,7 @@ public class EventHandler extends AbstractEventHandler {
     }
 
     private void handleNewSession(IPSession session, Protocol protocol) {
-        idsEngine.processNewSession(session, protocol);
+        ipsEngine.processNewSession(session, protocol);
     }
 
     public void handleTCPFinalized(TCPSessionEvent event) throws MPipeException {
@@ -56,7 +56,7 @@ public class EventHandler extends AbstractEventHandler {
     }
 
     private void handleFinalized(IPSession session, Protocol protocol) {
-        idsEngine.processFinalized(session, protocol);
+        ipsEngine.processFinalized(session, protocol);
     }
 
     /*  public void handleTCPNewSession(TCPSessionEvent event) {
@@ -68,22 +68,22 @@ public class EventHandler extends AbstractEventHandler {
     }*/
 
     public IPDataResult handleTCPClientChunk(TCPChunkEvent event) {
-        idsEngine.handleChunk(event, event.session(), false);
+        ipsEngine.handleChunk(event, event.session(), false);
         return IPDataResult.PASS_THROUGH;
     }
 
     public IPDataResult handleTCPServerChunk(TCPChunkEvent event) {
-        idsEngine.handleChunk(event, event.session(), true);
+        ipsEngine.handleChunk(event, event.session(), true);
         return IPDataResult.PASS_THROUGH;
     }
 
     public void handleUDPClientPacket(UDPPacketEvent event) throws MPipeException {
-        idsEngine.handleChunk(event, event.session(),false);
+        ipsEngine.handleChunk(event, event.session(),false);
         super.handleUDPClientPacket(event);
     }
 
     public void handleUDPServerPacket(UDPPacketEvent event) throws MPipeException {
-        idsEngine.handleChunk(event, event.session(),true);
+        ipsEngine.handleChunk(event, event.session(),true);
         super.handleUDPServerPacket(event);
     }
     /*

@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.node.ids;
+package com.untangle.node.ips;
 
 import java.util.HashMap;
 import java.util.List;
@@ -19,10 +19,10 @@ import java.util.Vector;
 import com.untangle.uvm.tapi.IPSession;
 import com.untangle.uvm.tapi.event.*;
 import com.untangle.uvm.node.Node;
-import com.untangle.node.ids.options.*;
+import com.untangle.node.ips.options.*;
 import org.apache.log4j.Logger;
 
-public class IDSRuleSignature {
+public class IPSRuleSignature {
 
     /***************************************
      * These are options that are safe to ignore
@@ -36,14 +36,14 @@ public class IDSRuleSignature {
     private static final int DETECT_COUNTER   = Node.GENERIC_1_COUNTER;
     private static final int BLOCK_COUNTER    = Node.GENERIC_2_COUNTER;
 
-    private static HashMap<IDSRule,long[]> ruleTimes = new HashMap<IDSRule,long[]>();
+    private static HashMap<IPSRule,long[]> ruleTimes = new HashMap<IPSRule,long[]>();
 
-    private final IDSNodeImpl ids;
+    private final IPSNodeImpl ips;
     private final int action;
-    private final IDSRule rule;
+    private final IPSRule rule;
 
     // XXX Vector
-    private final List<IDSOption> options = new Vector<IDSOption>();
+    private final List<IPSOption> options = new Vector<IPSOption>();
 
     private String toString = "Starting..";
     private String message = "No message set";
@@ -51,10 +51,10 @@ public class IDSRuleSignature {
     private String url = "Rule is not documented";
     private boolean removeFlag = false;
 
-    private static final Logger log = Logger.getLogger(IDSRuleSignature.class);
+    private static final Logger log = Logger.getLogger(IPSRuleSignature.class);
 
-    public IDSRuleSignature(IDSNodeImpl ids, int action, IDSRule rule) {
-        this.ids = ids;
+    public IPSRuleSignature(IPSNodeImpl ips, int action, IPSRule rule) {
+        this.ips = ips;
         this.action = action;
         this.rule = rule;
     }
@@ -67,7 +67,7 @@ public class IDSRuleSignature {
         return removeFlag;
     }
 
-    public IDSRule rule() {
+    public IPSRule rule() {
         return rule;
     }
 
@@ -76,10 +76,10 @@ public class IDSRuleSignature {
             if(optionName.equalsIgnoreCase(ignoreSafeOptions[i]))
                 return;
         }
-        IDSDetectionEngine engine = null;
-        if (ids != null)
-            engine = ids.getEngine();
-        IDSOption option = IDSOption.buildOption(engine,this,optionName,params, initializeSettingsTime);
+        IPSDetectionEngine engine = null;
+        if (ips != null)
+            engine = ips.getEngine();
+        IPSOption option = IPSOption.buildOption(engine,this,optionName,params, initializeSettingsTime);
         if(option != null && option.runnable())
             options.add(option);
         else if(option == null) {
@@ -88,16 +88,16 @@ public class IDSRuleSignature {
         }
     }
 
-    public IDSOption getOption(String name, IDSOption callingOption) {
+    public IPSOption getOption(String name, IPSOption callingOption) {
         String[] parents = new String[] { name };
         return getOption(parents, callingOption);
     }
 
-    public IDSOption getOption(String[] names, IDSOption callingOption) {
+    public IPSOption getOption(String[] names, IPSOption callingOption) {
         Class[] optionDefinitions = new Class[names.length];
         for (int i = 0; i < names.length; i++) {
             try {
-                optionDefinitions[i] = Class.forName("com.untangle.node.ids.options."+names[i]);
+                optionDefinitions[i] = Class.forName("com.untangle.node.ips.options."+names[i]);
             } catch (ClassNotFoundException e) {
                 log.error("Could not load option: " + e.getMessage());
                 optionDefinitions[i] = null;
@@ -110,10 +110,10 @@ public class IDSRuleSignature {
          */
         int index = options.indexOf(callingOption);
         index = (index < 0) ? options.size():index;
-        ListIterator<IDSOption> it = options.listIterator(index);
+        ListIterator<IPSOption> it = options.listIterator(index);
 
         while(it.hasPrevious()) {
-            IDSOption option = it.previous();
+            IPSOption option = it.previous();
             for (int i = 0; i < optionDefinitions.length; i++) {
                 if (optionDefinitions[i] != null && optionDefinitions[i].isInstance(option))
                     return option;
@@ -148,12 +148,12 @@ public class IDSRuleSignature {
         return url;
     }
 
-    public boolean execute(IDSSessionInfo info) {
+    public boolean execute(IPSSessionInfo info) {
         boolean result = true;
         long startTime = 0;
-        if (IDSDetectionEngine.DO_PROFILING)
+        if (IPSDetectionEngine.DO_PROFILING)
             startTime = System.nanoTime();
-        for(IDSOption option : options) {
+        for(IPSOption option : options) {
             boolean opres = option.run(info);
             // if (log.isDebugEnabled())
             // log.debug("res: " + opres + ", rule " + rule.getSid() + " option " + option.getClass().getName());
@@ -164,7 +164,7 @@ public class IDSRuleSignature {
             }
         }
 
-        if (IDSDetectionEngine.DO_PROFILING) {
+        if (IPSDetectionEngine.DO_PROFILING) {
             // Throw away last three digits as they are always zero on linux.
             long elapsed = (System.nanoTime() - startTime) / 1000l;
             synchronized(ruleTimes) {
@@ -186,7 +186,7 @@ public class IDSRuleSignature {
         return result;
     }
 
-    private void doAction(IDSSessionInfo info) {
+    private void doAction(IPSSessionInfo info) {
         IPSession session = info.getSession();
         if (null == session) {
             log.error("Session is null; cannot act on event: " + classification + ", " + message);
@@ -194,33 +194,33 @@ public class IDSRuleSignature {
         }
 
         // XXX this is not a good way to get a reference to the node
-        IDSDetectionEngine engine = ids.getEngine();
+        IPSDetectionEngine engine = ips.getEngine();
 
         boolean blocked = false;
         switch(action) {
-        case IDSRule.ALERT:
+        case IPSRule.ALERT:
             // Can't happen right now.
             log.warn("Alert: "+classification + ", " + message);
-            ids.statisticManager.incrLogged();
+            ips.statisticManager.incrLogged();
             engine.updateUICount(DETECT_COUNTER);
             break;
 
-        case IDSRule.LOG:
+        case IPSRule.LOG:
             log.debug("Log: "+classification + ", " + message);
-            ids.statisticManager.incrLogged();
+            ips.statisticManager.incrLogged();
             engine.updateUICount(DETECT_COUNTER);
             break;
 
-        case IDSRule.BLOCK:
+        case IPSRule.BLOCK:
             log.info("Block: "+classification + ", " + message);
             blocked = true;
-            ids.statisticManager.incrBlocked();
+            ips.statisticManager.incrBlocked();
             engine.updateUICount(BLOCK_COUNTER);
             info.blockSession();
             break;
         }
 
-        ids.log(new IDSLogEvent(session.pipelineEndpoints(), rule.getSid(), classification, message, blocked)); //Add list number that this rule came from
+        ips.log(new IPSLogEvent(session.pipelineEndpoints(), rule.getSid(), classification, message, blocked)); //Add list number that this rule came from
     }
 
     public void setToString(String string) {
@@ -232,11 +232,11 @@ public class IDSRuleSignature {
     }
 
     static void dumpRuleTimes() {
-        if (IDSDetectionEngine.DO_PROFILING) {
+        if (IPSDetectionEngine.DO_PROFILING) {
             StringBuilder sb = new StringBuilder(String.format("\n%10s %12s %10s\n",
                                                                "Count", "Micros", "Rule"));
             synchronized(ruleTimes) {
-                for (IDSRule rule : ruleTimes.keySet()) {
+                for (IPSRule rule : ruleTimes.keySet()) {
                     long[] countAndTime = ruleTimes.get(rule);
                     sb.append(String.format("%10d %12d %10d\n",
                                             countAndTime[0], countAndTime[1], rule.getSid()));

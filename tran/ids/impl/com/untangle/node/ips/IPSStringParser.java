@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.node.ids;
+package com.untangle.node.ips;
 
 import java.util.List;
 import java.util.Vector;
@@ -20,9 +20,9 @@ import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.PortRange;
 import com.untangle.uvm.node.firewall.ip.IPMatcher;
 import com.untangle.uvm.node.firewall.ip.IPMatcherFactory;
-import com.untangle.node.ids.options.*;
+import com.untangle.node.ips.options.*;
 
-public class IDSStringParser {
+public class IPSStringParser {
 
     public static final String HOME_IP = "Home"+0xBEEF;
     public static final String EXTERNAL_IP = "External"+0xBEEF;
@@ -44,8 +44,8 @@ public class IDSStringParser {
         return parts;
     }
 
-    public static IDSRuleSignature parseSignature(IDSNodeImpl ids, String signatureString, int action, IDSRule rule, boolean initializeSettingsTime) throws ParseException {
-        IDSRuleSignature returnSignature = new IDSRuleSignature(ids, action, rule);
+    public static IPSRuleSignature parseSignature(IPSNodeImpl ips, String signatureString, int action, IPSRule rule, boolean initializeSettingsTime) throws ParseException {
+        IPSRuleSignature returnSignature = new IPSRuleSignature(ips, action, rule);
 
         String replaceChar = ""+0xff42;
         signatureString = signatureString.replaceAll("\\\\;",replaceChar);
@@ -68,7 +68,7 @@ public class IDSStringParser {
     }
 
     // Returns null if the rule is to be removed (like an 'ip' rule for instance)
-    public static IDSRuleHeader parseHeader(String header, int action) throws ParseException {
+    public static IPSRuleHeader parseHeader(String header, int action) throws ParseException {
 
         List<IPMatcher> ipMatcher, portMatcher;
         clientIPFlag = clientPortFlag = serverIPFlag = serverPortFlag = false;
@@ -79,7 +79,7 @@ public class IDSStringParser {
             throw new ParseException("Not a valid String Header:\n" + header);
         }
 
-        /*Objects needed for a IDSRuleHeader constructor*/
+        /*Objects needed for a IPSRuleHeader constructor*/
         Protocol protocol;
         List<IPMatcher> clientIPList, serverIPList;
         PortRange clientPortRange, serverPortRange;
@@ -116,14 +116,14 @@ public class IDSStringParser {
         }
 
         /*Build and return the rule header*/
-        IDSRuleHeader ruleHeader = new IDSRuleHeader(action, direction, protocol, clientIPList, clientPortRange, serverIPList, serverPortRange);
+        IPSRuleHeader ruleHeader = new IPSRuleHeader(action, direction, protocol, clientIPList, clientPortRange, serverIPList, serverPortRange);
         ruleHeader.setNegationFlags(clientIPFlag, clientPortFlag, serverIPFlag, serverPortFlag);
         return ruleHeader;
     }
 
     /*
       private static int parseAction(String action) throws ParseException {
-      String validActions[] = IDSRuleManager.ACTIONS;
+      String validActions[] = IPSRuleManager.ACTIONS;
       for(int i=0; i < validActions.length;i++) {
       if(validActions[i].equalsIgnoreCase(action))
       return i;
@@ -147,9 +147,9 @@ public class IDSStringParser {
 
     private static boolean parseDirection(String direction) throws ParseException  {
         if(direction.equals("<>"))
-            return IDSRuleHeader.IS_BIDIRECTIONAL;
+            return IPSRuleHeader.IS_BIDIRECTIONAL;
         else if(direction.equals("->"))
-            return !IDSRuleHeader.IS_BIDIRECTIONAL;
+            return !IPSRuleHeader.IS_BIDIRECTIONAL;
         else
             throw new ParseException("Invalid direction opperator: " + direction);
     }

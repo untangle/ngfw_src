@@ -9,22 +9,22 @@
  * $Id$
  */
 
-package com.untangle.node.ids;
+package com.untangle.node.ips;
 
 import com.untangle.uvm.logging.RepositoryDesc;
 import com.untangle.uvm.logging.SimpleEventFilter;
 
-public class IDSBlockedFilter implements SimpleEventFilter<IDSLogEvent>
+public class IPSBlockedFilter implements SimpleEventFilter<IPSLogEvent>
 {
     private static final RepositoryDesc REPO_DESC = new RepositoryDesc("Blocked Events");
 
-    private static final String WARM_QUERY = "FROM IDSLogEvent evt "
+    private static final String WARM_QUERY = "FROM IPSLogEvent evt "
         + "WHERE evt.blocked = true AND evt.pipelineEndpoints.policy = :policy "
         + "ORDER BY evt.timeStamp DESC";
 
     // constructors -----------------------------------------------------------
 
-    IDSBlockedFilter () { }
+    IPSBlockedFilter () { }
 
     // SimpleEventFilter methods ----------------------------------------------
 
@@ -38,7 +38,7 @@ public class IDSBlockedFilter implements SimpleEventFilter<IDSLogEvent>
         return new String[] { WARM_QUERY };
     }
 
-    public boolean accept(IDSLogEvent e)
+    public boolean accept(IPSLogEvent e)
     {
         return e.isBlocked();
     }

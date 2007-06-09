@@ -11,8 +11,8 @@
 
 // Fake
 
-package com.untangle.node.ids;
+package com.untangle.node.ips;
 
-public class IDSRuleHeader {
-    public IDSRuleHeader() { }
+public class IPSRuleHeader {
+    public IPSRuleHeader() { }
 }

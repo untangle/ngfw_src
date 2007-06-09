@@ -9,20 +9,20 @@
  * $Id$
  */
 
-package com.untangle.node.ids.options;
+package com.untangle.node.ips.options;
 
 import java.util.regex.*;
 
 import com.untangle.uvm.tapi.event.*;
 import com.untangle.uvm.node.ParseException;
-import com.untangle.node.ids.IDSRuleSignature;
+import com.untangle.node.ips.IPSRuleSignature;
 import org.apache.log4j.Logger;
 
-public class DepthOption extends IDSOption {
+public class DepthOption extends IPSOption {
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    public DepthOption(IDSRuleSignature signature, String params) throws ParseException {
+    public DepthOption(IPSRuleSignature signature, String params) throws ParseException {
         super(signature, params);
         ContentOption option = (ContentOption) signature.getOption("ContentOption",this);
         if(option == null) {

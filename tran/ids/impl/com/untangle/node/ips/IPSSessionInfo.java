@@ -9,17 +9,17 @@
  * $Id$
  */
 
-package com.untangle.node.ids;
+package com.untangle.node.ips;
 
 import java.util.List;
 
 import com.untangle.uvm.tapi.*;
 import com.untangle.uvm.tapi.event.*;
 
-public class IDSSessionInfo {
+public class IPSSessionInfo {
 
-    private     List<IDSRuleSignature>  c2sSignatures;
-    private     List<IDSRuleSignature>  s2cSignatures;
+    private     List<IPSRuleSignature>  c2sSignatures;
+    private     List<IPSRuleSignature>  s2cSignatures;
     private     IPSession               session;
     private     IPDataEvent             event;
     private     String                  uriPath;
@@ -30,7 +30,7 @@ public class IDSSessionInfo {
     public int end;
     public int indexOfLastMatch;
 
-    public IDSSessionInfo(IPSession session) {
+    public IPSSessionInfo(IPSession session) {
         this.session = session;
     }
 
@@ -53,11 +53,11 @@ public class IDSSessionInfo {
         return session;
     }
 
-    public void setC2SSignatures(List<IDSRuleSignature> signatures) {
+    public void setC2SSignatures(List<IPSRuleSignature> signatures) {
         this.c2sSignatures = signatures;
     }
 
-    public void setS2CSignatures(List<IDSRuleSignature> signatures) {
+    public void setS2CSignatures(List<IPSRuleSignature> signatures) {
         this.s2cSignatures = signatures;
     }
     public void setEvent(IPDataEvent event) {
@@ -78,7 +78,7 @@ public class IDSSessionInfo {
 
     // First match wins. XX
     public boolean processC2SSignatures() {
-        for(IDSRuleSignature sig : c2sSignatures)
+        for(IPSRuleSignature sig : c2sSignatures)
             if (sig.execute(this))
                 return true;
         return false;
@@ -86,7 +86,7 @@ public class IDSSessionInfo {
 
     // First match wins. XX
     public boolean processS2CSignatures() {
-        for(IDSRuleSignature sig : s2cSignatures)
+        for(IPSRuleSignature sig : s2cSignatures)
             if (sig.execute(this))
                 return true;
         return false;
@@ -115,7 +115,7 @@ public class IDSSessionInfo {
         return c2sSignatures.get(num).execute(this);
     }
 
-    public IDSRuleSignature getSignature(int num) {
+    public IPSRuleSignature getSignature(int num) {
         return c2sSignatures.get(num);
     }
     // */

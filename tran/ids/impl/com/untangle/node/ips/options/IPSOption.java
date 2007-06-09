@@ -9,24 +9,24 @@
  * $Id$
  */
 
-package com.untangle.node.ids.options;
+package com.untangle.node.ips.options;
 
 import java.lang.reflect.*;
 import java.util.regex.PatternSyntaxException;
 
 import com.untangle.uvm.tapi.event.*;
-import com.untangle.node.ids.IDSDetectionEngine;
-import com.untangle.node.ids.IDSRuleSignature;
-import com.untangle.node.ids.IDSSessionInfo;
+import com.untangle.node.ips.IPSDetectionEngine;
+import com.untangle.node.ips.IPSRuleSignature;
+import com.untangle.node.ips.IPSSessionInfo;
 import org.apache.log4j.Logger;
 
-public abstract class IDSOption {
-    protected IDSRuleSignature signature;
+public abstract class IPSOption {
+    protected IPSRuleSignature signature;
     protected boolean negationFlag = false;
 
-    private static final Logger log = Logger.getLogger(IDSOption.class);
+    private static final Logger log = Logger.getLogger(IPSOption.class);
 
-    protected IDSOption(IDSRuleSignature signature, String params) {
+    protected IPSOption(IPSRuleSignature signature, String params) {
 
         this.signature = signature;
     }
@@ -37,11 +37,11 @@ public abstract class IDSOption {
     }
 
     // Overriden in concrete children that are runnable
-    public boolean run(IDSSessionInfo sessionInfo) {
+    public boolean run(IPSSessionInfo sessionInfo) {
         return true;
     }
 
-    public static IDSOption buildOption(IDSDetectionEngine engine, IDSRuleSignature signature, String optionName,
+    public static IPSOption buildOption(IPSDetectionEngine engine, IPSRuleSignature signature, String optionName,
                                         String params, boolean initializeSettingsTime) {
 
         boolean flag = false;
@@ -55,13 +55,13 @@ public abstract class IDSOption {
 
         // XXX get rid of this reflection
 
-        IDSOption option = null;
+        IPSOption option = null;
         Class optionDefinition;
-        Class[] fourArgsClass = new Class[] { IDSDetectionEngine.class, IDSRuleSignature.class, String.class, Boolean.TYPE };
+        Class[] fourArgsClass = new Class[] { IPSDetectionEngine.class, IPSRuleSignature.class, String.class, Boolean.TYPE };
         Object[] fourOptionArgs = new Object[] { engine, signature, params, initializeSettingsTime };
-        Class[] threeArgsClass = new Class[] { IDSRuleSignature.class, String.class, Boolean.TYPE };
+        Class[] threeArgsClass = new Class[] { IPSRuleSignature.class, String.class, Boolean.TYPE };
         Object[] threeOptionArgs = new Object[] { signature, params, initializeSettingsTime };
-        Class[] twoArgsClass = new Class[] { IDSRuleSignature.class, String.class };
+        Class[] twoArgsClass = new Class[] { IPSRuleSignature.class, String.class };
         Object[] twoOptionArgs = new Object[] { signature, params };
         Constructor optionConstructor;
 
@@ -76,19 +76,19 @@ public abstract class IDSOption {
         try {
             // First look for a three arg one, then the two arg one (since most don't care about
             // initializeSettingsTime).
-            optionDefinition = Class.forName("com.untangle.node.ids.options."+optionName+"Option");
+            optionDefinition = Class.forName("com.untangle.node.ips.options."+optionName+"Option");
 
             // XXX remove reflection
             try {
                 optionConstructor = optionDefinition.getConstructor(fourArgsClass);
-                option = (IDSOption) createObject(optionConstructor, fourOptionArgs);
+                option = (IPSOption) createObject(optionConstructor, fourOptionArgs);
             } catch (NoSuchMethodException exn) {
                 try {
                     optionConstructor = optionDefinition.getConstructor(threeArgsClass);
-                    option = (IDSOption) createObject(optionConstructor, threeOptionArgs);
+                    option = (IPSOption) createObject(optionConstructor, threeOptionArgs);
                 } catch (NoSuchMethodException e) {
                     optionConstructor = optionDefinition.getConstructor(twoArgsClass);
-                    option = (IDSOption) createObject(optionConstructor, twoOptionArgs);
+                    option = (IPSOption) createObject(optionConstructor, twoOptionArgs);
                 }
             }
             if (option != null)

@@ -9,15 +9,15 @@
  * $Id$
  */
 
-package com.untangle.node.ids.options;
+package com.untangle.node.ips.options;
 
 import java.util.regex.*;
 
 import com.untangle.uvm.tapi.event.*;
-import com.untangle.node.ids.IDSRuleSignature;
-import com.untangle.node.ids.IDSSessionInfo;
+import com.untangle.node.ips.IPSRuleSignature;
+import com.untangle.node.ips.IPSSessionInfo;
 
-public class FlowOption extends IDSOption {
+public class FlowOption extends IPSOption {
 
     /**
      * The options "only_stream" and "established" would  have *no* effect.
@@ -34,7 +34,7 @@ public class FlowOption extends IDSOption {
 
     private boolean matchFromServer = false;
 
-    public FlowOption(IDSRuleSignature signature, String params) {
+    public FlowOption(IPSRuleSignature signature, String params) {
         super(signature, params);
         if(noStream.matcher(params).find()) {
             signature.remove(true);
@@ -50,7 +50,7 @@ public class FlowOption extends IDSOption {
         return true;
     }
 
-    public boolean run(IDSSessionInfo sessionInfo) {
+    public boolean run(IPSSessionInfo sessionInfo) {
         boolean fromServer = sessionInfo.isServer();
         boolean returnValue = !(fromServer ^ matchFromServer);
         return (negationFlag ^ returnValue);

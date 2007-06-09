@@ -9,20 +9,20 @@
  * $Id$
  */
 
-package com.untangle.node.ids.options;
+package com.untangle.node.ips.options;
 
 import com.untangle.uvm.tapi.event.*;
-import com.untangle.node.ids.IDSRuleSignature;
-import com.untangle.node.ids.IDSSessionInfo;
+import com.untangle.node.ips.IPSRuleSignature;
+import com.untangle.node.ips.IPSSessionInfo;
 import org.apache.log4j.Logger;
 
-public class DsizeOption extends IDSOption {
+public class DsizeOption extends IPSOption {
 
     private final Logger log = Logger.getLogger(getClass());
 
     int min;
     int max;
-    public DsizeOption(IDSRuleSignature signature, String params) {
+    public DsizeOption(IPSRuleSignature signature, String params) {
         super(signature, params);
         char ch = params.charAt(0);
         String range[] = params.split("<>");
@@ -54,7 +54,7 @@ public class DsizeOption extends IDSOption {
     }
 
     //XXX - check negation flag?
-    public boolean run(IDSSessionInfo sessionInfo) {
+    public boolean run(IPSSessionInfo sessionInfo) {
         IPDataEvent event = sessionInfo.getEvent();
         int size = event.data().remaining();
         if(min <= size && max >= size)

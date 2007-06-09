@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.node.ids;
+package com.untangle.node.ips;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,59 +21,59 @@ import com.untangle.uvm.node.SessionEndpoints;
 import com.untangle.uvm.node.ParseException;
 import org.apache.log4j.Logger;
 
-public class IDSRuleManager {
+public class IPSRuleManager {
 
     public static final boolean TO_SERVER = true;
     public static final boolean TO_CLIENT = false;
 
     private static final Pattern variablePattern = Pattern.compile("\\$[^ \n\r\t]+");
 
-    private final List<IDSRuleHeader> knownHeaders = new ArrayList<IDSRuleHeader>();
-    private final Map<Integer,IDSRule> knownRules = new HashMap<Integer,IDSRule>();
+    private final List<IPSRuleHeader> knownHeaders = new ArrayList<IPSRuleHeader>();
+    private final Map<Integer,IPSRule> knownRules = new HashMap<Integer,IPSRule>();
 
-    private final IDSNodeImpl ids;
+    private final IPSNodeImpl ips;
 
     private final Logger logger = Logger.getLogger(getClass());
 
     // constructors -----------------------------------------------------------
 
-    public IDSRuleManager(IDSNodeImpl ids)
+    public IPSRuleManager(IPSNodeImpl ips)
     {
-        this.ids = ids;
+        this.ips = ips;
         // note the sequence of constructor calls:
-        //   IDSNodeImpl -> IDSDetectionEngine -> IDSRuleManager
-        // - IDSRuleManager cannot retrieve the IDSDetectionEngine object
-        //   from IDSNodeImpl here
-        //   (IDSNodeImpl is creating an IDSDetectionEngine object and
-        //    thus, in the process of creating this IDSRuleManager object too
-        //    so IDSNodeImpl does not have an IDSDetectionEngine object
-        //    to return to this IDSRuleManager object right now)
-        // - IDSRuleManager must wait for IDSNodeImpl to create and save
-        //   an IDSDetectionEngine object
+        //   IPSNodeImpl -> IPSDetectionEngine -> IPSRuleManager
+        // - IPSRuleManager cannot retrieve the IPSDetectionEngine object
+        //   from IPSNodeImpl here
+        //   (IPSNodeImpl is creating an IPSDetectionEngine object and
+        //    thus, in the process of creating this IPSRuleManager object too
+        //    so IPSNodeImpl does not have an IPSDetectionEngine object
+        //    to return to this IPSRuleManager object right now)
+        // - IPSRuleManager must wait for IPSNodeImpl to create and save
+        //   an IPSDetectionEngine object
     }
 
     // static methods ---------------------------------------------------------
 
-    public static List<IDSVariable> getImmutableVariables()
+    public static List<IPSVariable> getImmutableVariables()
     {
-        List<IDSVariable> l = new ArrayList<IDSVariable>();
-        l.add(new IDSVariable("$EXTERNAL_NET",IDSStringParser.EXTERNAL_IP,"Magic EXTERNAL_NET token"));
-        l.add(new IDSVariable("$HOME_NET",IDSStringParser.HOME_IP,"Magic HOME_NET token"));
+        List<IPSVariable> l = new ArrayList<IPSVariable>();
+        l.add(new IPSVariable("$EXTERNAL_NET",IPSStringParser.EXTERNAL_IP,"Magic EXTERNAL_NET token"));
+        l.add(new IPSVariable("$HOME_NET",IPSStringParser.HOME_IP,"Magic HOME_NET token"));
 
         return l;
     }
 
-    public static List<IDSVariable> getDefaultVariables()
+    public static List<IPSVariable> getDefaultVariables()
     {
-        List<IDSVariable> l = new ArrayList<IDSVariable>();
-        l.add(new IDSVariable("$HTTP_SERVERS", "$HOME_NET","Addresses of possible local HTTP servers"));
-        l.add(new IDSVariable("$HTTP_PORTS", "80","Port that HTTP servers run on"));
-        l.add(new IDSVariable("$SSH_PORTS", "22","Port that SSH servers run on"));
-        l.add(new IDSVariable("$SMTP_SERVERS", "$HOME_NET","Addresses of possible local SMTP servers"));
-        l.add(new IDSVariable("$TELNET_SERVERS", "$HOME_NET","Addresses of possible local telnet servers"));
-        l.add(new IDSVariable("$SQL_SERVERS", "!any","Addresses of local SQL servers"));
-        l.add(new IDSVariable("$ORACLE_PORTS", "1521","Port that Oracle servers run on"));
-        l.add(new IDSVariable("$AIM_SERVERS", "[64.12.24.0/24,64.12.25.0/24,64.12.26.14/24,64.12.28.0/24,64.12.29.0/24,64.12.161.0/24,64.12.163.0/24,205.188.5.0/24,205.188.9.0/24]","Addresses of possible AOL Instant Messaging servers"));
+        List<IPSVariable> l = new ArrayList<IPSVariable>();
+        l.add(new IPSVariable("$HTTP_SERVERS", "$HOME_NET","Addresses of possible local HTTP servers"));
+        l.add(new IPSVariable("$HTTP_PORTS", "80","Port that HTTP servers run on"));
+        l.add(new IPSVariable("$SSH_PORTS", "22","Port that SSH servers run on"));
+        l.add(new IPSVariable("$SMTP_SERVERS", "$HOME_NET","Addresses of possible local SMTP servers"));
+        l.add(new IPSVariable("$TELNET_SERVERS", "$HOME_NET","Addresses of possible local telnet servers"));
+        l.add(new IPSVariable("$SQL_SERVERS", "!any","Addresses of local SQL servers"));
+        l.add(new IPSVariable("$ORACLE_PORTS", "1521","Port that Oracle servers run on"));
+        l.add(new IPSVariable("$AIM_SERVERS", "[64.12.24.0/24,64.12.25.0/24,64.12.26.14/24,64.12.28.0/24,64.12.29.0/24,64.12.161.0/24,64.12.163.0/24,205.188.5.0/24,205.188.9.0/24]","Addresses of possible AOL Instant Messaging servers"));
 
         return l;
     }
@@ -81,19 +81,19 @@ public class IDSRuleManager {
     // public methods ---------------------------------------------------------
 
     public void onReconfigure() {
-        for(IDSRule rule : knownRules.values()) {
+        for(IPSRule rule : knownRules.values()) {
             rule.remove(true);
         }
     }
 
-    public void updateRule(IDSRule rule) throws ParseException {
+    public void updateRule(IPSRule rule) throws ParseException {
         int sid = rule.getSid();
-        IDSRule inMap = knownRules.get(sid);
+        IPSRule inMap = knownRules.get(sid);
         if(inMap != null) {
             rule.remove(false);
             if(rule.getModified()) {
                 //Delete previous rule
-                IDSRuleHeader header = inMap.getHeader();
+                IPSRuleHeader header = inMap.getHeader();
                 header.removeSignature(inMap.getSignature());
 
                 if(header.signatureListIsEmpty()) {
@@ -115,27 +115,27 @@ public class IDSRuleManager {
     }
 
     //    public boolean addRule(String rule, Long key) throws ParseException {
-    //      IDSRule test = new IDSRule(rule,"Not set", "Not set");
+    //      IPSRule test = new IPSRule(rule,"Not set", "Not set");
     //    test.setLog(true);
     //  test.setKeyValue(key);
     //return addRule(test);
     //}
 
-    public boolean addRule(IDSRule rule) throws ParseException {
+    public boolean addRule(IPSRule rule) throws ParseException {
         String ruleText = rule.getText();
 
         String noVarText = substituteVariables(ruleText);
-        String ruleParts[] = IDSStringParser.parseRuleSplit(noVarText);
+        String ruleParts[] = IPSStringParser.parseRuleSplit(noVarText);
 
-        IDSRuleHeader header = IDSStringParser.parseHeader(ruleParts[0], rule.getAction());
+        IPSRuleHeader header = IPSStringParser.parseHeader(ruleParts[0], rule.getAction());
         if (header == null)
             throw new ParseException("Unable to parse header of rule " + ruleParts[0]);
 
-        IDSRuleSignature signature = IDSStringParser.parseSignature(ids, ruleParts[1], rule.getAction(), rule, false);
+        IPSRuleSignature signature = IPSStringParser.parseSignature(ips, ruleParts[1], rule.getAction(), rule, false);
         signature.setToString(ruleParts[1]);
 
         if(!signature.remove() && !rule.disabled()) {
-            for(IDSRuleHeader headerTmp : knownHeaders) {
+            for(IPSRuleHeader headerTmp : knownHeaders) {
                 if(headerTmp.matches(header)) {
                     headerTmp.addSignature(signature);
 
@@ -172,7 +172,7 @@ public class IDSRuleManager {
     }
 
     // This is how a rule gets created
-    public IDSRule createRule(String text, String category) {
+    public IPSRule createRule(String text, String category) {
         if(text == null || text.length() <= 0 || text.charAt(0) == '#') {
             logger.warn("Ignoring empty rule: " + text);
             return null;
@@ -186,17 +186,17 @@ public class IDSRuleManager {
             text = text.substring(firstSpace + 1);
         }
 
-        IDSRule rule = new IDSRule(text, category, "The signature failed to load");
+        IPSRule rule = new IPSRule(text, category, "The signature failed to load");
 
         text = substituteVariables(text);
         try {
-            String ruleParts[]   = IDSStringParser.parseRuleSplit(text);
-            IDSRuleHeader header = IDSStringParser.parseHeader(ruleParts[0], rule.getAction());
+            String ruleParts[]   = IPSStringParser.parseRuleSplit(text);
+            IPSRuleHeader header = IPSStringParser.parseHeader(ruleParts[0], rule.getAction());
             if (header == null) {
                 logger.warn("Ignoring rule with bad header: " + text);
                 return null;
             }
-            IDSRuleSignature signature  = IDSStringParser.parseSignature(ids, ruleParts[1], rule.getAction(), rule, true);
+            IPSRuleSignature signature  = IPSStringParser.parseSignature(ips, ruleParts[1], rule.getAction(), rule, true);
 
             if(signature.remove()) {
                 logger.warn("Ignoring rule with bad sig: " + text);
@@ -223,9 +223,9 @@ public class IDSRuleManager {
         return rule;
     }
 
-    public List<IDSRuleHeader> matchingPortsList(int port, boolean toServer) {
-        List<IDSRuleHeader> returnList = new ArrayList();
-        for(IDSRuleHeader header : knownHeaders) {
+    public List<IPSRuleHeader> matchingPortsList(int port, boolean toServer) {
+        List<IPSRuleHeader> returnList = new ArrayList();
+        for(IPSRuleHeader header : knownHeaders) {
             if(header.portMatches(port, toServer)) {
                 returnList.add(header);
             }
@@ -233,15 +233,15 @@ public class IDSRuleManager {
         return returnList;
     }
 
-    public List<IDSRuleSignature> matchesHeader(SessionEndpoints sess, boolean sessInbound, boolean forward) {
+    public List<IPSRuleSignature> matchesHeader(SessionEndpoints sess, boolean sessInbound, boolean forward) {
         return matchesHeader(sess, sessInbound, forward, knownHeaders);
     }
 
-    public List<IDSRuleSignature> matchesHeader(SessionEndpoints sess, boolean sessInbound, boolean forward, List<IDSRuleHeader> matchList) {
-        List<IDSRuleSignature> returnList = new ArrayList();
+    public List<IPSRuleSignature> matchesHeader(SessionEndpoints sess, boolean sessInbound, boolean forward, List<IPSRuleHeader> matchList) {
+        List<IPSRuleSignature> returnList = new ArrayList();
         //logger.debug("Total List size: "+matchList.size()); /** *****************************************/
 
-        for(IDSRuleHeader header : matchList) {
+        for(IPSRuleHeader header : matchList) {
             if(header.matches(sess, sessInbound, forward)) {
                 // logger.debug("Header matches: " + header);
                 returnList.addAll(header.getSignatures());
@@ -254,7 +254,7 @@ public class IDSRuleManager {
     }
 
     /*For debug yo*/
-    public List<IDSRuleHeader> getHeaders() {
+    public List<IPSRuleHeader> getHeaders() {
         return knownHeaders;
     }
 
@@ -268,10 +268,10 @@ public class IDSRuleManager {
 
         Matcher match = variablePattern.matcher(string);
         if(match.find()) {
-            IDSDetectionEngine engine = null;
-            if (ids != null)
-                engine = ids.getEngine();
-            List<IDSVariable> varList, imVarList;
+            IPSDetectionEngine engine = null;
+            if (ips != null)
+                engine = ips.getEngine();
+            List<IPSVariable> varList, imVarList;
             /* This is null when initializing settings, but the
              * settings are initialized with these values so using the
              * defaults is harmless */
@@ -280,18 +280,18 @@ public class IDSRuleManager {
                 imVarList = getImmutableVariables();
                 varList = getDefaultVariables();
             } else {
-                imVarList = (List<IDSVariable>) engine.getSettings().getImmutableVariables();
-                varList = (List<IDSVariable>) engine.getSettings().getVariables();
+                imVarList = (List<IPSVariable>) engine.getSettings().getImmutableVariables();
+                varList = (List<IPSVariable>) engine.getSettings().getVariables();
             }
-            for(IDSVariable var : imVarList) {
+            for(IPSVariable var : imVarList) {
                 string = string.replaceAll("\\"+var.getVariable(),var.getDefinition());
             }
-            for(IDSVariable var : varList) {
+            for(IPSVariable var : varList) {
                 // Special case == allow regular variables to refer to immutable variables
                 String def = var.getDefinition();
                 Matcher submatch = variablePattern.matcher(def);
                 if (submatch.find()) {
-                    for(IDSVariable subvar : imVarList) {
+                    for(IPSVariable subvar : imVarList) {
                         def = def.replaceAll("\\"+subvar.getVariable(),subvar.getDefinition());
                     }
                 }
@@ -303,7 +303,7 @@ public class IDSRuleManager {
 
     public void dumpRules()
     {
-        for(IDSRule rule : knownRules.values()) {
+        for(IPSRule rule : knownRules.values()) {
             logger.debug(rule.getHeader() + " /// " + rule.getSignature().toString());
         }
     }

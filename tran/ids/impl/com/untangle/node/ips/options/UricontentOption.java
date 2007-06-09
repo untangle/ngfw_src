@@ -9,20 +9,20 @@
  * $Id$
  */
 
-package com.untangle.node.ids.options;
+package com.untangle.node.ips.options;
 
 import java.util.regex.*;
 
-import com.untangle.node.ids.IDSRuleSignature;
-import com.untangle.node.ids.IDSSessionInfo;
+import com.untangle.node.ips.IPSRuleSignature;
+import com.untangle.node.ips.IPSSessionInfo;
 import com.sun.org.apache.xerces.internal.impl.xpath.regex.BMPattern;
 
-public class UricontentOption extends IDSOption {
+public class UricontentOption extends IPSOption {
 
     private BMPattern uriPattern;
     private String stringPattern;
 
-    public UricontentOption(IDSRuleSignature signature, String params) {
+    public UricontentOption(IPSRuleSignature signature, String params) {
         super(signature, params);
         stringPattern = params;
         uriPattern = new BMPattern(stringPattern, false);
@@ -36,7 +36,7 @@ public class UricontentOption extends IDSOption {
         return true;
     }
 
-    public boolean run(IDSSessionInfo sessionInfo) {
+    public boolean run(IPSSessionInfo sessionInfo) {
         String path = sessionInfo.getUriPath();
         if(path != null) {
             int result = uriPattern.matches(path, 0, path.length());

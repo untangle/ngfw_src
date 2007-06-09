@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.node.ids.gui;
+package com.untangle.node.ips.gui;
 
 import java.awt.Insets;
 import java.util.*;
@@ -21,11 +21,11 @@ import com.untangle.gui.node.*;
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.editTable.*;
 import com.untangle.uvm.node.*;
-import com.untangle.node.ids.*;
+import com.untangle.node.ips.*;
 
-public class IDSConfigJPanel extends MEditTableJPanel{
+public class IPSConfigJPanel extends MEditTableJPanel{
 
-    public IDSConfigJPanel() {
+    public IPSConfigJPanel() {
         super(true, true);
         super.setFillJButtonEnabled( false );
         super.setInsets(new Insets(4, 4, 2, 2));
@@ -34,14 +34,14 @@ public class IDSConfigJPanel extends MEditTableJPanel{
         super.setAddRemoveEnabled(true);
 
         // create actual table model
-        IDSTableModel idsTableModel = new IDSTableModel();
-        this.setTableModel( idsTableModel );
-        idsTableModel.setSortingStatus(2, IDSTableModel.ASCENDING);
+        IPSTableModel ipsTableModel = new IPSTableModel();
+        this.setTableModel( ipsTableModel );
+        ipsTableModel.setSortingStatus(2, IPSTableModel.ASCENDING);
     }
 }
 
 
-class IDSTableModel extends MSortedTableModel<Object>{
+class IPSTableModel extends MSortedTableModel<Object>{
 
     private static final int T_TW = Util.TABLE_TOTAL_WIDTH_LARGE;
     private static final int C0_MW = Util.STATUS_MIN_WIDTH; /* status */
@@ -68,17 +68,17 @@ class IDSTableModel extends MSortedTableModel<Object>{
         addTableColumn( tableColumnModel,  6,  C6_MW,  false,  true,  false, false, UrlButtonRunnable.class,  "false", "info URL");
         addTableColumn( tableColumnModel,  7,  C7_MW,  false, false, false, false, Integer.class, "0", "SID" );
         addTableColumn( tableColumnModel,  8,  C8_MW, true,  true,  false, false, String.class,  sc.empty("no signature"), "signature");
-        addTableColumn( tableColumnModel,  9,  10,     false, false, true,  false, IDSRule.class, null, "");
+        addTableColumn( tableColumnModel,  9,  10,     false, false, true,  false, IPSRule.class, null, "");
         return tableColumnModel;
     }
 
     public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception{
         List elemList = new ArrayList(tableVector.size());
 
-        IDSRule newElem = null;
+        IPSRule newElem = null;
 
         for( Vector rowVector : tableVector ){
-            newElem = (IDSRule) rowVector.elementAt(9);
+            newElem = (IPSRule) rowVector.elementAt(9);
             newElem.setCategory( (String) rowVector.elementAt(2) );
             newElem.setLive( (Boolean) rowVector.elementAt(3) );
             newElem.setLog( (Boolean) rowVector.elementAt(4) );
@@ -98,20 +98,20 @@ class IDSTableModel extends MSortedTableModel<Object>{
 
         // SAVE SETTINGS ////////
         if( !validateOnly ){
-            IDSSettings nodeSettings = (IDSSettings) settings;
+            IPSSettings nodeSettings = (IPSSettings) settings;
             nodeSettings.setRules(elemList);
         }
 
     }
 
     public Vector<Vector> generateRows(Object settings){
-        IDSSettings idsSettings = (IDSSettings) settings;
-        List<IDSRule> rules = (List<IDSRule>) idsSettings.getRules();
+        IPSSettings ipsSettings = (IPSSettings) settings;
+        List<IPSRule> rules = (List<IPSRule>) ipsSettings.getRules();
         Vector<Vector> allRows = new Vector<Vector>(rules.size());
         Vector tempRow = null;
         int rowIndex = 0;
 
-        for( IDSRule newElem : rules ){
+        for( IPSRule newElem : rules ){
             rowIndex++;
             tempRow = new Vector(10);
             tempRow.add( super.ROW_SAVED );

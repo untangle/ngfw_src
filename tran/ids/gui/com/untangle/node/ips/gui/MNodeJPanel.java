@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.node.ids.gui;
+package com.untangle.node.ips.gui;
 
 import com.untangle.gui.node.*;
 import com.untangle.gui.pipeline.MPipelineJPanel;

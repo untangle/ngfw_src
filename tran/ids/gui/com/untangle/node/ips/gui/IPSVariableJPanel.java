@@ -11,7 +11,7 @@
 
 
 
-package com.untangle.node.ids.gui;
+package com.untangle.node.ips.gui;
 
 import java.awt.Insets;
 import java.util.*;
@@ -20,12 +20,12 @@ import javax.swing.table.*;
 import com.untangle.gui.node.*;
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.editTable.*;
-import com.untangle.node.ids.*;
+import com.untangle.node.ips.*;
 //import javax.swing.event.*;
 
-public class IDSVariableJPanel extends MEditTableJPanel {
+public class IPSVariableJPanel extends MEditTableJPanel {
 
-    public IDSVariableJPanel() {
+    public IPSVariableJPanel() {
         super(true, true);
         super.setInsets(new Insets(4, 4, 2, 2));
         super.setTableTitle("General Settings");
@@ -33,15 +33,15 @@ public class IDSVariableJPanel extends MEditTableJPanel {
         super.setAddRemoveEnabled(true);
 
         // create actual table model
-        IDSVariableTableModel tableModel = new IDSVariableTableModel();
-        tableModel.setSortingStatus(2, IDSVariableTableModel.ASCENDING);
+        IPSVariableTableModel tableModel = new IPSVariableTableModel();
+        tableModel.setSortingStatus(2, IPSVariableTableModel.ASCENDING);
         this.setTableModel( tableModel );
     }
 }
 
 
 
-class IDSVariableTableModel extends MSortedTableModel<Object>{
+class IPSVariableTableModel extends MSortedTableModel<Object>{
 
     private static final int T_TW = Util.TABLE_TOTAL_WIDTH;
     private static final int C0_MW = Util.STATUS_MIN_WIDTH; /* status */
@@ -62,17 +62,17 @@ class IDSVariableTableModel extends MSortedTableModel<Object>{
         addTableColumn( tableColumnModel,  2, C2_MW, true,  true,  false, false, String.class,  "$SOME_VARIABLE", "variable name");
         addTableColumn( tableColumnModel,  3, C3_MW, true,  true,  false, false, String.class,  "some_value", sc.bold("variable value"));
         addTableColumn( tableColumnModel,  4, C4_MW, true,  true,  false, true,  String.class,  sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION);
-        addTableColumn( tableColumnModel,  5, 10,    false, false, true,  false, IDSVariable.class,  null, "");
+        addTableColumn( tableColumnModel,  5, 10,    false, false, true,  false, IPSVariable.class,  null, "");
         return tableColumnModel;
     }
 
 
     public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception{
         List elemList = new ArrayList(tableVector.size());
-        IDSVariable newElem = null;
+        IPSVariable newElem = null;
 
         for( Vector rowVector : tableVector ){
-            newElem = (IDSVariable) rowVector.elementAt(5);
+            newElem = (IPSVariable) rowVector.elementAt(5);
             newElem.setVariable( (String) rowVector.elementAt(2) );
             newElem.setDefinition( (String) rowVector.elementAt(3) );
             newElem.setDescription( (String) rowVector.elementAt(4) );
@@ -81,28 +81,28 @@ class IDSVariableTableModel extends MSortedTableModel<Object>{
 
         // SAVE SETTINGS ////////////
         if( !validateOnly ){
-            IDSSettings idsSettings = (IDSSettings) settings;
-            idsSettings.setVariables( elemList );
+            IPSSettings ipsSettings = (IPSSettings) settings;
+            ipsSettings.setVariables( elemList );
         }
 
     }
 
     public Vector<Vector> generateRows(Object settings){
-        IDSSettings idsSettings = (IDSSettings) settings;
-        List<IDSVariable> variables = (List<IDSVariable>) idsSettings.getVariables();
+        IPSSettings ipsSettings = (IPSSettings) settings;
+        List<IPSVariable> variables = (List<IPSVariable>) ipsSettings.getVariables();
         Vector<Vector> allRows = new Vector<Vector>(variables.size());
         Vector tempRow = null;
         int rowIndex = 0;
 
-        for( IDSVariable idsVariable : variables ){
+        for( IPSVariable ipsVariable : variables ){
             rowIndex++;
             tempRow = new Vector(6);
             tempRow.add( super.ROW_SAVED );
             tempRow.add( rowIndex );
-            tempRow.add( idsVariable.getVariable() );
-            tempRow.add( idsVariable.getDefinition() );
-            tempRow.add( idsVariable.getDescription() );
-            tempRow.add( idsVariable );
+            tempRow.add( ipsVariable.getVariable() );
+            tempRow.add( ipsVariable.getDefinition() );
+            tempRow.add( ipsVariable.getDescription() );
+            tempRow.add( ipsVariable );
             allRows.add( tempRow );
         }
 

@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.node.ids.gui;
+package com.untangle.node.ips.gui;
 
 import java.util.*;
 import javax.swing.event.ChangeEvent;
@@ -24,7 +24,7 @@ import com.untangle.uvm.logging.EventManager;
 import com.untangle.uvm.logging.RepositoryDesc;
 import com.untangle.uvm.node.PipelineEndpoints;
 import com.untangle.uvm.node.Node;
-import com.untangle.node.ids.*;
+import com.untangle.node.ips.*;
 
 public class LogJPanel extends MLogTableJPanel {
 
@@ -33,20 +33,20 @@ public class LogJPanel extends MLogTableJPanel {
     public LogJPanel(Node node, MNodeControlsJPanel mNodeControlsJPanel){
         super(node, mNodeControlsJPanel);
 
-        final IDSNode ids = (IDSNode)node;
+        final IPSNode ips = (IPSNode)node;
 
         setTableModel(new LogTableModel());
 
-        EventManager<IDSLogEvent> eventManager = ids.getEventManager();
+        EventManager<IPSLogEvent> eventManager = ips.getEventManager();
         for (RepositoryDesc fd : eventManager.getRepositoryDescs()) {
             queryJComboBox.addItem(fd.getName());
         }
     }
 
     protected void refreshSettings(){
-        IDSNode ids = (IDSNode)logNode;
-        EventManager<IDSLogEvent> em = ids.getEventManager();
-        EventRepository<IDSLogEvent> ef = em.getRepository((String)queryJComboBox.getSelectedItem());
+        IPSNode ips = (IPSNode)logNode;
+        EventManager<IPSLogEvent> em = ips.getEventManager();
+        EventRepository<IPSLogEvent> ef = em.getRepository((String)queryJComboBox.getSelectedItem());
         settings = ef.getEvents();
     }
 
@@ -68,11 +68,11 @@ public class LogJPanel extends MLogTableJPanel {
 
 
         public Vector<Vector> generateRows(Object settings){
-            List<IDSLogEvent> logList = (List<IDSLogEvent>) settings;
+            List<IPSLogEvent> logList = (List<IPSLogEvent>) settings;
             Vector<Vector> allEvents = new Vector<Vector>(logList.size());
             Vector event;
 
-            for( IDSLogEvent log : logList ){
+            for( IPSLogEvent log : logList ){
                 PipelineEndpoints pe = log.getPipelineEndpoints();
 
                 event = new Vector(6);

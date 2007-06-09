@@ -9,16 +9,16 @@
  * $Id$
  */
 
-package com.untangle.node.ids.options;
+package com.untangle.node.ips.options;
 
 import com.untangle.uvm.tapi.event.*;
-import com.untangle.node.ids.IDSDetectionEngine;
-import com.untangle.node.ids.IDSRule;
-import com.untangle.node.ids.IDSRuleSignature;
-import com.untangle.node.ids.RuleClassification;
+import com.untangle.node.ips.IPSDetectionEngine;
+import com.untangle.node.ips.IPSRule;
+import com.untangle.node.ips.IPSRuleSignature;
+import com.untangle.node.ips.RuleClassification;
 import org.apache.log4j.Logger;
 
-public class ClasstypeOption extends IDSOption {
+public class ClasstypeOption extends IPSOption {
     private static final int HIGH_PRIORITY = 1;
     private static final int MEDIUM_PRIORITY = 2;
     private static final int LOW_PRIORITY = 3;
@@ -26,7 +26,7 @@ public class ClasstypeOption extends IDSOption {
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    public ClasstypeOption(IDSDetectionEngine engine, IDSRuleSignature signature, String params, boolean initializeSettingsTime) {
+    public ClasstypeOption(IPSDetectionEngine engine, IPSRuleSignature signature, String params, boolean initializeSettingsTime) {
         super(signature, params);
 
         RuleClassification rc = null;
@@ -40,7 +40,7 @@ public class ClasstypeOption extends IDSOption {
             signature.setClassification(rc.getDescription());
 
             if (true == initializeSettingsTime) {
-                IDSRule rule = signature.rule();
+                IPSRule rule = signature.rule();
                 int priority = rc.getPriority();
                 // logger.debug("Rule Priority for " + rule.getDescription() + " is " + priority);
                 switch (priority) {

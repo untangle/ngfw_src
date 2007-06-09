@@ -9,20 +9,20 @@
  * $Id$
  */
 
-package com.untangle.node.ids.options;
+package com.untangle.node.ips.options;
 
-import com.untangle.node.ids.IDSRule;
-import com.untangle.node.ids.IDSRuleSignature;
+import com.untangle.node.ips.IPSRule;
+import com.untangle.node.ips.IPSRuleSignature;
 import com.untangle.uvm.tapi.event.*;
 import com.untangle.uvm.tapi.event.*;
 import org.apache.log4j.Logger;
 
 
-public class SidOption extends IDSOption {
+public class SidOption extends IPSOption {
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    public SidOption(IDSRuleSignature signature, String params, boolean initializeSettingsTime) {
+    public SidOption(IPSRuleSignature signature, String params, boolean initializeSettingsTime) {
         super(signature, params);
         if (initializeSettingsTime) {
             int sid = -1;
@@ -31,7 +31,7 @@ public class SidOption extends IDSOption {
             } catch (NumberFormatException x) {
                 logger.warn("Unable to parse sid: " + params);
             }
-            IDSRule rule = signature.rule();
+            IPSRule rule = signature.rule();
             rule.setSid(sid);
         }
     }

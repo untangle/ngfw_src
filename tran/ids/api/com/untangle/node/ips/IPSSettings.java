@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.node.ids;
+package com.untangle.node.ips;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -31,25 +31,25 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.IndexColumn;
 
 /**
- * Hibernate object to store IDS settings.
+ * Hibernate object to store IPS settings.
  *
  * @author <a href="mailto:nchilders@untangle.com">Nick Childers</a>
  * @version 1.0
  */
 @Entity
 @Table(name="tr_ids_settings", schema="settings")
-public class IDSSettings implements Serializable {
+public class IPSSettings implements Serializable {
     private static final long serialVersionUID = -7056565971726289302L;
     private int maxChunks;
     private Long id;
     private Tid tid;
-    private List<IDSRule> rules = new ArrayList<IDSRule>();
-    private List<IDSVariable> variables = new ArrayList<IDSVariable>();
-    private List<IDSVariable> immutableVariables = new ArrayList<IDSVariable>();
+    private List<IPSRule> rules = new ArrayList<IPSRule>();
+    private List<IPSVariable> variables = new ArrayList<IPSVariable>();
+    private List<IPSVariable> immutableVariables = new ArrayList<IPSVariable>();
 
-    public IDSSettings() {}
+    public IPSSettings() {}
 
-    public IDSSettings(Tid tid) {
+    public IPSSettings(Tid tid) {
         this.tid = tid;
     }
 
@@ -83,8 +83,8 @@ public class IDSSettings implements Serializable {
                    org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     @JoinColumn(name="settings_id")
     @IndexColumn(name="position")
-    public List<IDSRule> getRules() { return this.rules; }
-    public void setRules(List<IDSRule> rules) { this.rules = rules; }
+    public List<IPSRule> getRules() { return this.rules; }
+    public void setRules(List<IPSRule> rules) { this.rules = rules; }
 
     @OneToMany(fetch=FetchType.EAGER)
     @Cascade({ org.hibernate.annotations.CascadeType.ALL,
@@ -93,8 +93,8 @@ public class IDSSettings implements Serializable {
                joinColumns=@JoinColumn(name="setting_id"),
                inverseJoinColumns=@JoinColumn(name="variable_id"))
     @IndexColumn(name="position")
-    public List<IDSVariable> getVariables() { return this.variables; }
-    public void setVariables(List<IDSVariable> variables) { this.variables = variables; }
+    public List<IPSVariable> getVariables() { return this.variables; }
+    public void setVariables(List<IPSVariable> variables) { this.variables = variables; }
 
     @OneToMany(fetch=FetchType.EAGER)
     @Cascade({ org.hibernate.annotations.CascadeType.ALL,
@@ -103,6 +103,6 @@ public class IDSSettings implements Serializable {
                joinColumns=@JoinColumn(name="setting_id"),
                inverseJoinColumns=@JoinColumn(name="variable_id"))
     @IndexColumn(name="position")
-    public List<IDSVariable> getImmutableVariables() { return this.immutableVariables; }
-    public void setImmutableVariables(List<IDSVariable> variables) { this.immutableVariables = variables; }
+    public List<IPSVariable> getImmutableVariables() { return this.immutableVariables; }
+    public void setImmutableVariables(List<IPSVariable> variables) { this.immutableVariables = variables; }
 }

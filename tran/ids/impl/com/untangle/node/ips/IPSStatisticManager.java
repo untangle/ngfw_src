@@ -8,22 +8,22 @@
  *
  * $Id$
  */
-package com.untangle.node.ids;
+package com.untangle.node.ips;
 
 import com.untangle.uvm.logging.EventLoggerFactory;
 import com.untangle.uvm.logging.StatisticEvent;
 import com.untangle.uvm.node.StatisticManager;
 import com.untangle.uvm.node.NodeContext;
 
-class IDSStatisticManager extends StatisticManager {
+class IPSStatisticManager extends StatisticManager {
 
     /* Interface matcher to determine if the sessions is incoming or outgoing */
     //final IntfMatcher matcherIncoming = IntfMatcher.MATCHER_IN;
     //final IntfMatcher matcherOutgoing = IntfMatcher.MATCHER_OUT;
 
-    private IDSStatisticEvent statisticEvent = new IDSStatisticEvent();
+    private IPSStatisticEvent statisticEvent = new IPSStatisticEvent();
 
-    public IDSStatisticManager(NodeContext tctx) {
+    public IPSStatisticManager(NodeContext tctx) {
         super(EventLoggerFactory.factory().getEventLogger(tctx));
     }
 
@@ -32,7 +32,7 @@ class IDSStatisticManager extends StatisticManager {
     }
 
     protected StatisticEvent getNewStatisticEvent() {
-        return ( this.statisticEvent = new IDSStatisticEvent());
+        return ( this.statisticEvent = new IPSStatisticEvent());
     }
 
     void incrDNC() {

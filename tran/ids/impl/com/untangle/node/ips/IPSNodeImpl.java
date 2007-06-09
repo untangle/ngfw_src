@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.node.ids;
+package com.untangle.node.ips;
 
 import java.io.*;
 import java.nio.*;
@@ -33,36 +33,36 @@ import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
-public class IDSNodeImpl extends AbstractNode implements IDSNode {
+public class IPSNodeImpl extends AbstractNode implements IPSNode {
     private final Logger logger = Logger.getLogger(getClass());
 
     private static final boolean DO_TEST = false;
 
-    private final EventLogger<IDSLogEvent> eventLogger;
+    private final EventLogger<IPSLogEvent> eventLogger;
 
-    private IDSSettings settings = null;
-    final IDSStatisticManager statisticManager;
+    private IPSSettings settings = null;
+    final IPSStatisticManager statisticManager;
 
     private final EventHandler handler;
     private final SoloPipeSpec octetPipeSpec, httpPipeSpec;
     private final PipeSpec[] pipeSpecs;
 
-    private IDSDetectionEngine engine;
+    private IPSDetectionEngine engine;
 
-    public IDSNodeImpl() {
-        engine = new IDSDetectionEngine(this);
+    public IPSNodeImpl() {
+        engine = new IPSDetectionEngine(this);
         handler = new EventHandler(this);
-        statisticManager = new IDSStatisticManager(getNodeContext());
+        statisticManager = new IPSStatisticManager(getNodeContext());
         // Put the octet stream close to the server so that it is after the http processing.
-        octetPipeSpec = new SoloPipeSpec("ids-octet", this, handler,Fitting.OCTET_STREAM, Affinity.SERVER,10);
-        httpPipeSpec = new SoloPipeSpec("ids-http", this, new TokenAdaptor(this, new IDSHttpFactory(this)), Fitting.HTTP_TOKENS, Affinity.SERVER,0);
+        octetPipeSpec = new SoloPipeSpec("ips-octet", this, handler,Fitting.OCTET_STREAM, Affinity.SERVER,10);
+        httpPipeSpec = new SoloPipeSpec("ips-http", this, new TokenAdaptor(this, new IPSHttpFactory(this)), Fitting.HTTP_TOKENS, Affinity.SERVER,0);
         pipeSpecs = new PipeSpec[] { httpPipeSpec, octetPipeSpec };
 
         eventLogger = EventLoggerFactory.factory().getEventLogger(getNodeContext());
 
-        SimpleEventFilter<IDSLogEvent> ef = new IDSLogFilter();
+        SimpleEventFilter<IPSLogEvent> ef = new IPSLogFilter();
         eventLogger.addSimpleEventFilter(ef);
-        ef = new IDSBlockedFilter();
+        ef = new IPSBlockedFilter();
         eventLogger.addSimpleEventFilter(ef);
 
         List<RuleClassification> classifications = FileLoader.loadClassifications();
@@ -75,19 +75,19 @@ public class IDSNodeImpl extends AbstractNode implements IDSNode {
         return pipeSpecs;
     }
 
-    public IDSSettings getIDSSettings() {
+    public IPSSettings getIPSSettings() {
         if( this.settings == null )
             logger.error("Settings not yet initialized. State: " + getNodeContext().getRunState() );
         return this.settings;
     }
 
-    public void setIDSSettings(final IDSSettings settings) {
+    public void setIPSSettings(final IPSSettings settings) {
         TransactionWork tw = new TransactionWork()
             {
                 public boolean doWork(Session s)
                 {
                     s.merge(settings);
-                    IDSNodeImpl.this.settings = settings;
+                    IPSNodeImpl.this.settings = settings;
                     return true;
                 }
 
@@ -99,11 +99,11 @@ public class IDSNodeImpl extends AbstractNode implements IDSNode {
             reconfigure();
         }
         catch (NodeException exn) {
-            logger.error("Could not save IDS settings", exn);
+            logger.error("Could not save IPS settings", exn);
         }
     }
 
-    public EventManager<IDSLogEvent> getEventManager()
+    public EventManager<IPSLogEvent> getEventManager()
     {
         return eventLogger;
     }
@@ -111,18 +111,18 @@ public class IDSNodeImpl extends AbstractNode implements IDSNode {
     public void initializeSettings() {
 
         logger.info("Loading Variables...");
-        IDSSettings settings = new IDSSettings(getTid());
-        settings.setVariables(IDSRuleManager.getDefaultVariables());
-        settings.setImmutableVariables(IDSRuleManager.getImmutableVariables());
+        IPSSettings settings = new IPSSettings(getTid());
+        settings.setVariables(IPSRuleManager.getDefaultVariables());
+        settings.setImmutableVariables(IPSRuleManager.getImmutableVariables());
 
         logger.info("Loading Rules...");
-        IDSRuleManager manager = new IDSRuleManager(this); // A fake one for now.  XXX
-        List<IDSRule> ruleList = FileLoader.loadAllRuleFiles(manager);
+        IPSRuleManager manager = new IPSRuleManager(this); // A fake one for now.  XXX
+        List<IPSRule> ruleList = FileLoader.loadAllRuleFiles(manager);
 
         settings.setMaxChunks(engine.getMaxChunks());
         settings.setRules(ruleList);
 
-        setIDSSettings(settings);
+        setIPSSettings(settings);
         logger.info(ruleList.size() + " rules loaded");
 
         statisticManager.stop();
@@ -133,9 +133,9 @@ public class IDSNodeImpl extends AbstractNode implements IDSNode {
             {
                 public boolean doWork(Session s)
                 {
-                    Query q = s.createQuery("from IDSSettings ids where ids.tid = :tid");
+                    Query q = s.createQuery("from IPSSettings ips where ips.tid = :tid");
                     q.setParameter("tid", getTid());
-                    IDSNodeImpl.this.settings = (IDSSettings)q.uniqueResult();
+                    IPSNodeImpl.this.settings = (IPSSettings)q.uniqueResult();
                     return true;
                 }
 
@@ -149,7 +149,7 @@ public class IDSNodeImpl extends AbstractNode implements IDSNode {
         queryDBForSettings();
 
         // Upgrade to 3.2 will have nuked the settings.  Recreate them
-        if (IDSNodeImpl.this.settings == null) {
+        if (IPSNodeImpl.this.settings == null) {
             logger.warn("No settings found.  Creating anew.");
             initializeSettings();
         }
@@ -162,15 +162,15 @@ public class IDSNodeImpl extends AbstractNode implements IDSNode {
         logger.info("Pre Start");
         if (DO_TEST) {
             logger.error("Running test...");
-            IDSTest test = new IDSTest();
+            IPSTest test = new IPSTest();
             if(!test.runTest())
-                throw new NodeStartException("IDS Test failed"); // */
+                throw new NodeStartException("IPS Test failed"); // */
         }
 
         statisticManager.start();
     }
 
-    public IDSDetectionEngine getEngine() {
+    public IPSDetectionEngine getEngine() {
         return engine;
     }
 
@@ -183,8 +183,8 @@ public class IDSNodeImpl extends AbstractNode implements IDSNode {
         engine.setSettings(settings);
         engine.onReconfigure();
         engine.setMaxChunks(settings.getMaxChunks());
-        List<IDSRule> rules = (List<IDSRule>) settings.getRules();
-        for(IDSRule rule : rules) {
+        List<IPSRule> rules = (List<IPSRule>) settings.getRules();
+        for(IPSRule rule : rules) {
             engine.updateRule(rule);
         }
         if (logger.isDebugEnabled())
@@ -192,14 +192,14 @@ public class IDSNodeImpl extends AbstractNode implements IDSNode {
         //remove all deleted rules XXXX
     }
 
-    void log(IDSLogEvent ile)
+    void log(IPSLogEvent ile)
     {
         eventLogger.log(ile);
     }
 
     //XXX soon to be deprecated ------------------------------------------
 
-    public Object getSettings() { return getIDSSettings(); }
+    public Object getSettings() { return getIPSSettings(); }
 
-    public void setSettings(Object obj) { setIDSSettings((IDSSettings)obj); }
+    public void setSettings(Object obj) { setIPSSettings((IPSSettings)obj); }
 }

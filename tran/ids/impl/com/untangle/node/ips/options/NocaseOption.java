@@ -9,19 +9,19 @@
  * $Id$
  */
 
-package com.untangle.node.ids.options;
+package com.untangle.node.ips.options;
 
-import com.untangle.node.ids.IDSRuleSignature;
+import com.untangle.node.ips.IPSRuleSignature;
 import org.apache.log4j.Logger;
 
-public class NocaseOption extends IDSOption {
+public class NocaseOption extends IPSOption {
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    public NocaseOption(IDSRuleSignature signature, String params) {
+    public NocaseOption(IPSRuleSignature signature, String params) {
         super(signature, params);
         String[] parents = new String [] { "ContentOption", "UricontentOption" };
-        IDSOption option = signature.getOption(parents, this);
+        IPSOption option = signature.getOption(parents, this);
         if(option == null) {
             logger.warn("Unable to find content option to set nocase for sig: " + signature.rule().getText());
             return;

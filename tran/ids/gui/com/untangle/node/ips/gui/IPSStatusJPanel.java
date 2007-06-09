@@ -9,26 +9,26 @@
  * $Id$
  */
 
-package com.untangle.node.ids.gui;
+package com.untangle.node.ips.gui;
 
 import java.util.List;
 
 import com.untangle.gui.node.Refreshable;
-import com.untangle.node.ids.*;
+import com.untangle.node.ips.*;
 
-public class IDSStatusJPanel extends javax.swing.JPanel implements Refreshable<Object>{
+public class IPSStatusJPanel extends javax.swing.JPanel implements Refreshable<Object>{
 
-    public IDSStatusJPanel() {
+    public IPSStatusJPanel() {
         initComponents();
     }
 
     public void doRefresh(Object settings){
-        IDSSettings idsSettings = (IDSSettings) settings;
-        List<IDSRule> rules = (List<IDSRule>) idsSettings.getRules();
+        IPSSettings ipsSettings = (IPSSettings) settings;
+        List<IPSRule> rules = (List<IPSRule>) ipsSettings.getRules();
         int enabled = 0;
         int logging = 0;
         int blocking = 0;
-        for( IDSRule rule : rules){
+        for( IPSRule rule : rules){
             enabled++;
             if(rule.isLive())
                 blocking++;

@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.node.ids;
+package com.untangle.node.ips;
 
 import java.net.InetAddress;
 import java.nio.*;
@@ -26,7 +26,7 @@ import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.Node;
 import org.apache.log4j.Logger;
 
-public class IDSDetectionEngine {
+public class IPSDetectionEngine {
 
     public static boolean DO_PROFILING = true;
 
@@ -38,33 +38,33 @@ public class IDSDetectionEngine {
     private static final int SCAN_COUNTER  = Node.GENERIC_0_COUNTER;
 
     private int             maxChunks   = 8;
-    private IDSSettings     settings    = null;
+    private IPSSettings     settings    = null;
     private Map<String,RuleClassification> classifications = null;
 
-    private IDSRuleManager   manager;
-    private IDSNodeImpl node;
+    private IPSRuleManager   manager;
+    private IPSNodeImpl node;
 
     // We can't just attach the session info to a session, we have to attach it to the 'pipeline', since
     // we have to access it from multiple pipes (octet & http).  So we keep the registry here.
-    private Map<Integer, IDSSessionInfo> sessionInfoMap = new ConcurrentHashMap<Integer, IDSSessionInfo>();
+    private Map<Integer, IPSSessionInfo> sessionInfoMap = new ConcurrentHashMap<Integer, IPSSessionInfo>();
 
-    Map<Integer,List<IDSRuleHeader>>    portS2CMap      = new ConcurrentHashMap<Integer,List<IDSRuleHeader>>();
-    Map<Integer,List<IDSRuleHeader>>    portC2SMap  = new ConcurrentHashMap<Integer,List<IDSRuleHeader>>();
+    Map<Integer,List<IPSRuleHeader>>    portS2CMap      = new ConcurrentHashMap<Integer,List<IPSRuleHeader>>();
+    Map<Integer,List<IPSRuleHeader>>    portC2SMap  = new ConcurrentHashMap<Integer,List<IPSRuleHeader>>();
     // bug1443 -- save memory by memoizing
-    List<List<IDSRuleHeader>> allPortMapLists = new ArrayList<List<IDSRuleHeader>>();
+    List<List<IPSRuleHeader>> allPortMapLists = new ArrayList<List<IPSRuleHeader>>();
 
     private final Logger log = Logger.getLogger(getClass());
 
-    /*private static IDSDetectionEngine instance = new IDSDetectionEngine();
-      public  static IDSDetectionEngine instance() {
+    /*private static IPSDetectionEngine instance = new IPSDetectionEngine();
+      public  static IPSDetectionEngine instance() {
       if(instance == null)
-      instance = new IDSDetectionEngine();
+      instance = new IPSDetectionEngine();
       return instance;
       }*/
 
-    public IDSDetectionEngine(IDSNodeImpl node) {
+    public IPSDetectionEngine(IPSNodeImpl node) {
         this.node = node;
-        manager = new IDSRuleManager(node);
+        manager = new IPSRuleManager(node);
         //The Goggles! They do nothing!
         /*String test = "alert tcp 10.0.0.40-10.0.0.101 any -> 66.35.250.0/24 80 (content:\"slashdot\"; msg:\"OMG teH SLASHd0t\";)";
           String tesT = "alert tcp 10.0.0.1/24 any -> any any (content: \"spOOns|FF FF FF FF|spoons\"; msg:\"Matched binary FF FF FF and spoons\"; nocase;)";
@@ -88,11 +88,11 @@ public class IDSDetectionEngine {
             classifications.put(rc.getName(), rc);
     }
 
-    public IDSSettings getSettings() {
+    public IPSSettings getSettings() {
         return settings;
     }
 
-    public void setSettings(IDSSettings settings) {
+    public void setSettings(IPSSettings settings) {
         this.settings = settings;
     }
 
@@ -110,22 +110,22 @@ public class IDSDetectionEngine {
     }
 
     public void onReconfigure() {
-        portC2SMap = new ConcurrentHashMap<Integer,List<IDSRuleHeader>>();
-        portS2CMap = new ConcurrentHashMap<Integer,List<IDSRuleHeader>>();
-        allPortMapLists = new ArrayList<List<IDSRuleHeader>>();
+        portC2SMap = new ConcurrentHashMap<Integer,List<IPSRuleHeader>>();
+        portS2CMap = new ConcurrentHashMap<Integer,List<IPSRuleHeader>>();
+        allPortMapLists = new ArrayList<List<IPSRuleHeader>>();
 
         manager.onReconfigure();
         log.debug("Done with reconfigure");
     }
 
     public void stop() {
-        portC2SMap = new ConcurrentHashMap<Integer,List<IDSRuleHeader>>();
-        portS2CMap = new ConcurrentHashMap<Integer,List<IDSRuleHeader>>();
-        allPortMapLists = new ArrayList<List<IDSRuleHeader>>();
-        sessionInfoMap = new ConcurrentHashMap<Integer, IDSSessionInfo>();
+        portC2SMap = new ConcurrentHashMap<Integer,List<IPSRuleHeader>>();
+        portS2CMap = new ConcurrentHashMap<Integer,List<IPSRuleHeader>>();
+        allPortMapLists = new ArrayList<List<IPSRuleHeader>>();
+        sessionInfoMap = new ConcurrentHashMap<Integer, IPSSessionInfo>();
     }
 
-    public void updateRule(IDSRule rule) {
+    public void updateRule(IPSRule rule) {
         try {
             manager.updateRule(rule);
         } catch (ParseException e) {
@@ -136,7 +136,7 @@ public class IDSDetectionEngine {
     }
 
     //Deprecating?
-    public boolean addRule(IDSRule rule) {
+    public boolean addRule(IPSRule rule) {
         try {
             return (manager.addRule(rule));
         } catch (ParseException e) {
@@ -157,7 +157,7 @@ public class IDSDetectionEngine {
                 if (release_metavize_com.equals(request.serverAddr())) {
                     dumpProfile();
                     // Ensure it gets malied to us:
-                    log.error("IDS Rule Profile dumped at user request");
+                    log.error("IPS Rule Profile dumped at user request");
                 }
             } catch (Exception x) {
                 log.warn("Unable to dump profile", x);
@@ -166,16 +166,16 @@ public class IDSDetectionEngine {
 
 
         //Get Mapped list
-        List<IDSRuleHeader> c2sList = portC2SMap.get(request.serverPort());
-        List<IDSRuleHeader> s2cList = portS2CMap.get(request.serverPort());
+        List<IPSRuleHeader> c2sList = portC2SMap.get(request.serverPort());
+        List<IPSRuleHeader> s2cList = portS2CMap.get(request.serverPort());
 
         if(c2sList == null) {
-            c2sList = manager.matchingPortsList(request.serverPort(), IDSRuleManager.TO_SERVER);
+            c2sList = manager.matchingPortsList(request.serverPort(), IPSRuleManager.TO_SERVER);
             // bug1443 -- save memory by reusing value.
             synchronized(allPortMapLists) {
                 boolean found = false;
-                for (Iterator<List<IDSRuleHeader>> iter = allPortMapLists.iterator(); iter.hasNext();) {
-                    List<IDSRuleHeader> savedList = iter.next();
+                for (Iterator<List<IPSRuleHeader>> iter = allPortMapLists.iterator(); iter.hasNext();) {
+                    List<IPSRuleHeader> savedList = iter.next();
                     if (savedList.equals(c2sList)) {
                         c2sList = savedList;
                         found = true;
@@ -192,11 +192,11 @@ public class IDSDetectionEngine {
         }
 
         if(s2cList == null) {
-            s2cList = manager.matchingPortsList(request.serverPort(), IDSRuleManager.TO_CLIENT);
+            s2cList = manager.matchingPortsList(request.serverPort(), IPSRuleManager.TO_CLIENT);
             synchronized(allPortMapLists) {
                 boolean found = false;
-                for (Iterator<List<IDSRuleHeader>> iter = allPortMapLists.iterator(); iter.hasNext();) {
-                    List<IDSRuleHeader> savedList = iter.next();
+                for (Iterator<List<IPSRuleHeader>> iter = allPortMapLists.iterator(); iter.hasNext();) {
+                    List<IPSRuleHeader> savedList = iter.next();
                     if (savedList.equals(s2cList)) {
                         s2cList = savedList;
                         found = true;
@@ -213,9 +213,9 @@ public class IDSDetectionEngine {
         }
 
         //Check matches
-        List<IDSRuleSignature> c2sSignatures = manager.matchesHeader(request, request.isInbound(), IDSRuleManager.TO_SERVER, c2sList);
+        List<IPSRuleSignature> c2sSignatures = manager.matchesHeader(request, request.isInbound(), IPSRuleManager.TO_SERVER, c2sList);
 
-        List<IDSRuleSignature> s2cSignatures = manager.matchesHeader(request, request.isInbound(), IDSRuleManager.TO_CLIENT, s2cList);
+        List<IPSRuleSignature> s2cSignatures = manager.matchesHeader(request, request.isInbound(), IPSRuleManager.TO_CLIENT, s2cList);
 
         if (log.isDebugEnabled())
             log.debug("s2cSignature list size: " + s2cSignatures.size() + ", c2sSignature list size: " +
@@ -227,17 +227,17 @@ public class IDSDetectionEngine {
         }
     }
 
-    public IDSSessionInfo getSessionInfo(IPSession session) {
+    public IPSSessionInfo getSessionInfo(IPSession session) {
         return sessionInfoMap.get(session.id());
     }
 
     public void processNewSession(IPSession session, Protocol protocol) {
         Object[] sigs = (Object[]) session.attachment();
-        List<IDSRuleSignature> c2sSignatures = (List<IDSRuleSignature>) sigs[0];
-        List<IDSRuleSignature> s2cSignatures = (List<IDSRuleSignature>) sigs[1];
+        List<IPSRuleSignature> c2sSignatures = (List<IPSRuleSignature>) sigs[0];
+        List<IPSRuleSignature> s2cSignatures = (List<IPSRuleSignature>) sigs[1];
 
-        log.debug("registering IDSSessionInfo");
-        IDSSessionInfo info = new IDSSessionInfo(session);
+        log.debug("registering IPSSessionInfo");
+        IPSSessionInfo info = new IPSSessionInfo(session);
         info.setC2SSignatures(c2sSignatures);
         info.setS2CSignatures(s2cSignatures);
         sessionInfoMap.put(session.id(), info);
@@ -245,11 +245,11 @@ public class IDSDetectionEngine {
     }
 
     public void processFinalized(IPSession session, Protocol protocol) {
-        log.debug("unregistering IDSSessionInfo");
+        log.debug("unregistering IPSSessionInfo");
         sessionInfoMap.remove(session.id());
     }
 
-    public IDSRuleManager getRulesForTesting() {
+    public IPSRuleManager getRulesForTesting() {
         return manager;
     }
 
@@ -265,7 +265,7 @@ public class IDSDetectionEngine {
 
             SessionStats stats = session.stats();
 
-            IDSSessionInfo info = sessionInfoMap.get(session.id());
+            IPSSessionInfo info = sessionInfoMap.get(session.id());
 
             info.setEvent(event);
             info.setFlow(isFromServer);
@@ -316,6 +316,6 @@ public class IDSDetectionEngine {
     }
 
     private synchronized void dumpProfile() {
-        IDSRuleSignature.dumpRuleTimes();
+        IPSRuleSignature.dumpRuleTimes();
     }
 }

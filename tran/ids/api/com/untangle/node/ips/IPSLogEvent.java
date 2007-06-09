@@ -8,7 +8,7 @@
  *
  */
 
-package com.untangle.node.ids;
+package com.untangle.node.ips;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -29,7 +29,7 @@ import com.untangle.uvm.node.PipelineEndpoints;
 @Entity
 @org.hibernate.annotations.Entity(mutable=false)
     @Table(name="tr_ids_evt", schema="events")
-    public class IDSLogEvent extends PipelineEvent {
+    public class IPSLogEvent extends PipelineEvent {
 
         private String classification;
         private String message;
@@ -38,9 +38,9 @@ import com.untangle.uvm.node.PipelineEndpoints;
 
         // constructors -----------------------------------------------------------
 
-        public IDSLogEvent() { }
+        public IPSLogEvent() { }
 
-        public IDSLogEvent(PipelineEndpoints pe, int ruleSid, String classification,
+        public IPSLogEvent(PipelineEndpoints pe, int ruleSid, String classification,
                            String message, boolean blocked) {
             super(pe);
 
@@ -133,6 +133,6 @@ import com.untangle.uvm.node.PipelineEndpoints;
         // Object methods ---------------------------------------------------------
 
         public String toString() {
-            return "IDSLogEvent id: " + getId() + " Message: " + message;
+            return "IPSLogEvent id: " + getId() + " Message: " + message;
         }
     }

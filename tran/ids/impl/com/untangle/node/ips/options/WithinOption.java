@@ -9,19 +9,19 @@
  * $Id$
  */
 
-package com.untangle.node.ids.options;
+package com.untangle.node.ips.options;
 
-import com.untangle.node.ids.IDSRuleSignature;
+import com.untangle.node.ips.IPSRuleSignature;
 import org.apache.log4j.Logger;
 
-public class WithinOption extends IDSOption {
+public class WithinOption extends IPSOption {
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    public WithinOption(IDSRuleSignature signature, String params) {
+    public WithinOption(IPSRuleSignature signature, String params) {
         super(signature, params);
         int within = Integer.parseInt(params);
-        IDSOption option = signature.getOption("ContentOption",this);
+        IPSOption option = signature.getOption("ContentOption",this);
         if(option == null) {
             logger.warn("Unable to find content option to set within for sig: " + signature);
             return;

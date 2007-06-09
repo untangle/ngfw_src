@@ -9,18 +9,18 @@
  * $Id$
  */
 
-package com.untangle.node.ids.options;
+package com.untangle.node.ips.options;
 
 import java.util.regex.*;
 
 import com.untangle.uvm.tapi.event.*;
-import com.untangle.node.ids.IDSRuleSignature;
+import com.untangle.node.ips.IPSRuleSignature;
 
-public class MsgOption extends IDSOption {
+public class MsgOption extends IPSOption {
 
     private static final String BLEEDING_PREFIX = "BLEEDING-EDGE";
 
-    public MsgOption(IDSRuleSignature signature, String params) {
+    public MsgOption(IPSRuleSignature signature, String params) {
         super(signature, params);
         // reomve useless 'BLEEDING-EDGE' prefix
         if (params.length() > BLEEDING_PREFIX.length()) {

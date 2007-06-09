@@ -12,10 +12,10 @@ $Id$
 -->
 
 <uvm-node>
-  <node-desc name="ids-node"
+  <node-desc name="ips-node"
                   display-name="Intrusion Prevention"
-                  classname="com.untangle.node.ids.IDSNodeImpl"
-                  gui-classname="com.untangle.node.ids.gui.MNodeJPanel"
+                  classname="com.untangle.node.ips.IPSNodeImpl"
+                  gui-classname="com.untangle.node.ips.gui.MNodeJPanel"
   />
   <parent>http-casing</parent>		  
 </uvm-node>

@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.node.ids;
+package com.untangle.node.ips;
 
 import java.io.*;
 import java.net.InetAddress;
@@ -24,7 +24,7 @@ import com.untangle.uvm.node.ParseException;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
-public class IDSTest {
+public class IPSTest {
 
     private class TestDataEvent implements IPDataEvent {
         ByteBuffer buffer;
@@ -61,9 +61,9 @@ public class IDSTest {
     }
 
     private final Logger log = Logger.getLogger(getClass());
-    private IDSRuleManager manager = new IDSRuleManager(null);
+    private IPSRuleManager manager = new IPSRuleManager(null);
 
-    public IDSTest()
+    public IPSTest()
     {
         log.setLevel(Level.ALL);
     }
@@ -78,7 +78,7 @@ public class IDSTest {
     }
 
     public static void main(String[] args) {
-        IDSTest test = new IDSTest();
+        IPSTest test = new IPSTest();
         if (test.runTest()) {
             System.out.println("All tests pass");
         } else {
@@ -130,7 +130,7 @@ public class IDSTest {
 
         for(int i=0; i < testValidStrings.length; i++) {
             try {
-                IDSRule rule = manager.createRule(testValidStrings[i], "Testing");
+                IPSRule rule = manager.createRule(testValidStrings[i], "Testing");
                 rule.setLog(true);
                 rule.setKeyValue((long)i+1337l);
                 manager.addRule(rule);
@@ -145,12 +145,12 @@ public class IDSTest {
          * all the test signatures*/
 
         /**Setup*/
-        List<IDSRuleSignature> signatures = new LinkedList<IDSRuleSignature>();
-        for(IDSRuleHeader header : manager.getHeaders())
-            for(IDSRuleSignature sig : header.getSignatures())
+        List<IPSRuleSignature> signatures = new LinkedList<IPSRuleSignature>();
+        for(IPSRuleHeader header : manager.getHeaders())
+            for(IPSRuleSignature sig : header.getSignatures())
                 signatures.add(sig);
 
-        IDSSessionInfo info = new IDSSessionInfo(null);
+        IPSSessionInfo info = new IPSSessionInfo(null);
         info.setC2SSignatures(signatures);
         info.setS2CSignatures(signatures);
         info.setUriPath("/this/is/just/a/test");
@@ -236,7 +236,7 @@ public class IDSTest {
         checkSessionData(info, test, true, 17, true);
     }
 
-    private void checkSessionData(IDSSessionInfo info, IPDataEvent event, boolean isServer,int ruleNum,  boolean answer) {
+    private void checkSessionData(IPSSessionInfo info, IPDataEvent event, boolean isServer,int ruleNum,  boolean answer) {
         info.setEvent(event);
         info.setFlow(isServer);
         if(!checkAnswer(info.testSignature(ruleNum), answer)) {
@@ -249,7 +249,7 @@ public class IDSTest {
 
     private void runHeaderTest() {
 
-        List<IDSRuleHeader> ruleList = manager.getHeaders();
+        List<IPSRuleHeader> ruleList = manager.getHeaders();
 
         matchTest(ruleList.get(1), Protocol.TCP, "10.0.0.101", 33242, "66.35.250.8", 80, false);
         matchTest(ruleList.get(3), Protocol.TCP, "192.168.1.1", 33065, "66.33.22.111", 80, true);
@@ -269,7 +269,7 @@ public class IDSTest {
 
     }
 
-    private void matchTest(IDSRuleHeader header, Protocol protocol, String clientAddr, int clientPort, String serverAddr, int serverPort, boolean answer) {
+    private void matchTest(IPSRuleHeader header, Protocol protocol, String clientAddr, int clientPort, String serverAddr, int serverPort, boolean answer) {
         InetAddress clientAddress = null;
         InetAddress serverAddress = null;
         try {
@@ -294,7 +294,7 @@ public class IDSTest {
       private void runTimeTest(int seconds) {
       long stopTime = System.currentTimeMillis() + seconds*1000;
       int counter = 0;
-      manager = IDSDetectionEngine.instance().getRulesForTesting();
+      manager = IPSDetectionEngine.instance().getRulesForTesting();
       Random rand = new Random();
       while(stopTime > System.currentTimeMillis()) {
       try {

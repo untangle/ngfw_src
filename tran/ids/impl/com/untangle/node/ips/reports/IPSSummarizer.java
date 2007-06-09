@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.node.ids.reports;
+package com.untangle.node.ips.reports;
 
 import java.sql.*;
 
@@ -17,10 +17,10 @@ import com.untangle.uvm.reporting.BaseSummarizer;
 import com.untangle.uvm.reporting.Util;
 import org.apache.log4j.Logger;
 
-public class IDSSummarizer extends BaseSummarizer {
+public class IPSSummarizer extends BaseSummarizer {
     private final Logger log = Logger.getLogger(getClass());
 
-    public IDSSummarizer() { }
+    public IPSSummarizer() { }
 
     public String getSummaryHtml(Connection conn, Timestamp startDate, Timestamp endDate)
     {
