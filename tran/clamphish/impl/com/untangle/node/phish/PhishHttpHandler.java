@@ -9,7 +9,7 @@
  * $Id: SpywareHttpHandler.java 8668 2007-01-29 19:17:09Z amread $
  */
 
-package com.untangle.node.clamphish;
+package com.untangle.node.phish;
 
 import java.net.InetAddress;
 import java.net.URI;
@@ -28,11 +28,11 @@ public class PhishHttpHandler extends HttpStateMachine
 {
     private final Logger logger = Logger.getLogger(getClass());
 
-    private final ClamPhishNode node;
+    private final PhishNode node;
 
     // constructors -----------------------------------------------------------
 
-    PhishHttpHandler(TCPSession session, ClamPhishNode node)
+    PhishHttpHandler(TCPSession session, PhishNode node)
     {
         super(session);
 
@@ -83,7 +83,7 @@ public class PhishHttpHandler extends HttpStateMachine
 
                 InetAddress clientIp = getSession().clientAddr();
 
-                ClamPhishBlockDetails bd = new ClamPhishBlockDetails
+                PhishBlockDetails bd = new ClamPhishBlockDetails
                     (host, uri.toString(), clientIp);
 
                 Token[] r = node.generateResponse(bd, getSession(),

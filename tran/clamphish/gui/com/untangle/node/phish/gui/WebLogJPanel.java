@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.node.clamphish.gui;
+package com.untangle.node.phish.gui;
 
 import java.util.*;
 import javax.swing.event.ChangeEvent;
@@ -24,7 +24,7 @@ import com.untangle.uvm.logging.EventManager;
 import com.untangle.uvm.logging.RepositoryDesc;
 import com.untangle.uvm.node.Node;
 import com.untangle.node.spam.*;
-import com.untangle.node.clamphish.*;
+import com.untangle.node.phish.*;
 
 import com.untangle.uvm.node.PipelineEndpoints;
 import com.untangle.node.http.HttpRequestEvent;
@@ -37,7 +37,7 @@ public class WebLogJPanel extends MLogTableJPanel {
     public WebLogJPanel(Node node, MNodeControlsJPanel mNodeControlsJPanel){
         super(node, mNodeControlsJPanel);
 
-        final ClamPhish spam = (ClamPhish)logNode;
+        final Phish spam = (ClamPhish)logNode;
 
         setTableModel(new LogTableModel());
 
@@ -48,7 +48,7 @@ public class WebLogJPanel extends MLogTableJPanel {
     }
 
     protected void refreshSettings(){
-        ClamPhish spam = (ClamPhish)logNode;
+        Phish spam = (ClamPhish)logNode;
         EventManager<PhishHttpEvent> em = spam.getPhishHttpEventManager();
         EventRepository<PhishHttpEvent> ef = em.getRepository((String)queryJComboBox.getSelectedItem());
         settings = ef.getEvents();

@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.node.clamphish;
+package com.untangle.node.phish;
 
 import com.untangle.uvm.tapi.TCPNewSessionRequest;
 import com.untangle.uvm.tapi.TCPSession;
@@ -27,10 +27,10 @@ public class PhishImapFactory implements TokenHandlerFactory
     private final Logger m_logger = Logger.getLogger(getClass());
 
     private final MailExport m_mailExport;
-    private final ClamPhishNode m_node;
+    private final PhishNode m_node;
     private SafelistNodeView m_safelist;
 
-    PhishImapFactory(ClamPhishNode node) {
+    PhishImapFactory(PhishNode node) {
         m_node = node;
         /* XXX RBS I don't know if this will work */
         m_mailExport = MailExportFactory.factory().getExport();

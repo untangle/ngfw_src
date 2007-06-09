@@ -9,7 +9,7 @@
  * $Id: SpamSettings.java 8965 2007-02-23 20:54:04Z cng $
  */
 
-package com.untangle.node.clamphish;
+package com.untangle.node.phish;
 
 import java.io.Serializable;
 import javax.persistence.Column;
@@ -21,7 +21,7 @@ import com.untangle.uvm.security.Tid;
 import com.untangle.node.spam.SpamSettings;
 
 /**
- * Settings for the ClamPhish node.
+ * Settings for the Phish node.
  *
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
@@ -29,7 +29,7 @@ import com.untangle.node.spam.SpamSettings;
 @Entity
 @PrimaryKeyJoinColumn(name="spam_settings_id")
 @Table(name="tr_clamphish_settings", schema="settings")
-public class ClamPhishSettings extends SpamSettings implements Serializable
+public class PhishSettings extends SpamSettings implements Serializable
 {
     // XXX
     //private static final long serialVersionUID = -7246008133224040004L;
@@ -38,9 +38,9 @@ public class ClamPhishSettings extends SpamSettings implements Serializable
 
     // constructors -----------------------------------------------------------
 
-    public ClamPhishSettings() {}
+    public PhishSettings() {}
 
-    public ClamPhishSettings(Tid tid)
+    public PhishSettings(Tid tid)
     {
         super(tid);
     }

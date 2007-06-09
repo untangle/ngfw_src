@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.node.clamphish;
+package com.untangle.node.phish;
 
 import com.untangle.uvm.tapi.TCPSession;
 import com.untangle.node.mail.papi.MailExport;
@@ -18,7 +18,7 @@ import com.untangle.node.spam.SpamPopHandler;
 public class PhishPopHandler extends SpamPopHandler
 {
     // constructors -----------------------------------------------------------
-    PhishPopHandler(TCPSession session, ClamPhishNode node, MailExport zMExport)
+    PhishPopHandler(TCPSession session, PhishNode node, MailExport zMExport)
     {
         super(session, node, zMExport);
     }

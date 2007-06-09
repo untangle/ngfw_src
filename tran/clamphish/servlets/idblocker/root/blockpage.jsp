@@ -1,4 +1,4 @@
-<%@ page language="java" import="com.untangle.uvm.*,com.untangle.uvm.node.*, com.untangle.uvm.security.*, com.untangle.node.http.*, com.untangle.node.clamphish.*"%>
+<%@ page language="java" import="com.untangle.uvm.*,com.untangle.uvm.node.*, com.untangle.uvm.security.*, com.untangle.node.http.*, com.untangle.node.phish.*"%>
 
 <%
 UvmLocalContext uvm = UvmContextFactory.context();
@@ -13,9 +13,9 @@ String tidStr = request.getParameter("tid");
 Tid tid = new Tid(Long.parseLong(tidStr));
 
 NodeContext tctx = tman.nodeContext(tid);
-ClamPhish tran = (ClamPhish)tctx.node();
+Phish tran = (ClamPhish)tctx.node();
 UserWhitelistMode mode = tran.getUserWhitelistMode();
-ClamPhishBlockDetails bd = tran.getBlockDetails(nonce);
+PhishBlockDetails bd = tran.getBlockDetails(nonce);
 
 String header = "Phish Blocker";
 String host = null == bd ? "" : bd.getFormattedHost();

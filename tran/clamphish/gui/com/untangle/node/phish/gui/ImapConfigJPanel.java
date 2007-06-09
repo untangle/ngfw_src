@@ -10,7 +10,7 @@
  */
 
 
-package com.untangle.node.clamphish.gui;
+package com.untangle.node.phish.gui;
 
 import java.awt.*;
 import java.util.Vector;

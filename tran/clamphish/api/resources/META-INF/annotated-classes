@@ -1,2 +1,2 @@
-com.untangle.node.clamphish.ClamPhishSettings
-com.untangle.node.clamphish.PhishHttpEvent
+com.untangle.node.phish.PhishSettings
+com.untangle.node.phish.PhishHttpEvent

@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.node.clamphish;
+package com.untangle.node.phish;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -107,7 +107,7 @@ import org.hibernate.annotations.Type;
          *
          * @return the action.
          */
-        @Type(type="com.untangle.node.clamphish.ActionUserType")
+        @Type(type="com.untangle.node.phish.ActionUserType")
         public Action getAction()
         {
             return action;

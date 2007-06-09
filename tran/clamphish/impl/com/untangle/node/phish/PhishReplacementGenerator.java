@@ -6,16 +6,16 @@
  * Untangle, Inc. ("Confidential Information"). You shall
  * not disclose such Confidential Information.
  *
- * $Id: ClamPhishNode.java 8965 2007-02-23 20:54:04Z cng $
+ * $Id: PhishNode.java 8965 2007-02-23 20:54:04Z cng $
  */
 
-package com.untangle.node.clamphish;
+package com.untangle.node.phish;
 
 import com.untangle.uvm.security.Tid;
 import com.untangle.node.http.ReplacementGenerator;
 
 class PhishReplacementGenerator
-    extends ReplacementGenerator<ClamPhishBlockDetails>
+    extends ReplacementGenerator<PhishBlockDetails>
 {
     private static final String BLOCK_TEMPLATE
         = "<HTML><HEAD>"
@@ -40,7 +40,7 @@ class PhishReplacementGenerator
     // ReplacementGenerator methods -------------------------------------------
 
     @Override
-    protected String getReplacement(ClamPhishBlockDetails details)
+    protected String getReplacement(PhishBlockDetails details)
     {
         return String.format(BLOCK_TEMPLATE, details.getHost(),
                              details.getUri());

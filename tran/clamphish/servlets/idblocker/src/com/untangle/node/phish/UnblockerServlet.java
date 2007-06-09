@@ -9,7 +9,7 @@
  * $Id: UnblockerServlet.java 8515 2007-01-03 00:13:24Z amread $
  */
 
-package com.untangle.node.clamphish;
+package com.untangle.node.phish;
 
 import java.io.IOException;
 import javax.servlet.ServletException;
@@ -41,7 +41,7 @@ public class UnblockerServlet extends HttpServlet
             LocalNodeManager tman = UvmContextFactory.context().nodeManager();
             Tid tid = new Tid(Long.parseLong(tidStr));
             NodeContext tctx = tman.nodeContext(tid);
-            ClamPhish tran = (ClamPhish)tctx.node();
+            Phish tran = (ClamPhish)tctx.node();
 
             if (tran.unblockSite(nonce, global)) {
                 resp.getOutputStream().println("<success/>");

@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.node.clamphish;
+package com.untangle.node.phish;
 
 import java.io.File;
 import java.io.IOException;
@@ -53,8 +53,8 @@ import org.hibernate.Session;
 
 import static com.untangle.node.util.Ascii.CRLF;
 
-public class ClamPhishNode extends SpamImpl
-    implements ClamPhish
+public class PhishNode extends SpamImpl
+    implements Phish
 {
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -124,13 +124,13 @@ public class ClamPhishNode extends SpamImpl
 
     // constructors -----------------------------------------------------------
 
-    public ClamPhishNode()
+    public PhishNode()
     {
-        super(new ClamPhishScanner());
+        super(new PhishScanner());
 
         replacementGenerator = new PhishReplacementGenerator(getTid());
 
-        synchronized (ClamPhishNode.class) {
+        synchronized (PhishNode.class) {
             if (null == urlDatabase) {
                 urlDatabase = makeUrlDatabase();
             }
@@ -153,18 +153,18 @@ public class ClamPhishNode extends SpamImpl
         return phishHttpEventLogger;
     }
 
-    public void setClamPhishSettings(ClamPhishSettings spamSettings)
+    public void setPhishSettings(ClamPhishSettings spamSettings)
     {
         setSpamSettings(spamSettings);
     }
 
-    public ClamPhishSettings getClamPhishSettings()
+    public PhishSettings getClamPhishSettings()
     {
-        return (ClamPhishSettings)getSpamSettings();
+        return (PhishSettings)getSpamSettings();
     }
 
 
-    public ClamPhishBlockDetails getBlockDetails(String nonce)
+    public PhishBlockDetails getBlockDetails(String nonce)
     {
         return replacementGenerator.getNonceData(nonce);
     }
@@ -176,7 +176,7 @@ public class ClamPhishNode extends SpamImpl
 
     public boolean unblockSite(String nonce, boolean global)
     {
-        ClamPhishBlockDetails bd = replacementGenerator.getNonceData(nonce);
+        PhishBlockDetails bd = replacementGenerator.getNonceData(nonce);
 
         // XXX we do not do global right now
         String site = bd.getWhitelistHost();
@@ -204,7 +204,7 @@ public class ClamPhishNode extends SpamImpl
     {
         logger.debug("Initializing Settings");
 
-        ClamPhishSettings tmpSpamSettings = new ClamPhishSettings(getTid());
+        PhishSettings tmpSpamSettings = new ClamPhishSettings(getTid());
         tmpSpamSettings.setEnableGooglePhishList(true);
         configureSpamSettings(tmpSpamSettings);
         setSpamSettings(tmpSpamSettings);
@@ -221,7 +221,7 @@ public class ClamPhishNode extends SpamImpl
     @Override
     protected void postInit(String args[])
     {
-        synchronized (ClamPhishNode.class) {
+        synchronized (PhishNode.class) {
             if (0 == urlDatabaseCount) {
                 urlDatabase.startUpdateTimer();
             }
@@ -233,7 +233,7 @@ public class ClamPhishNode extends SpamImpl
     @Override
     protected void postDestroy()
     {
-        synchronized (ClamPhishNode.class) {
+        synchronized (PhishNode.class) {
             urlDatabaseCount--;
             if (0 == urlDatabaseCount) {
                 urlDatabase.stopUpdateTimer();
@@ -245,7 +245,7 @@ public class ClamPhishNode extends SpamImpl
     @Override
     protected Query getSettingsQuery(Session s)
     {
-        Query q = s.createQuery("from ClamPhishSettings ss where ss.tid = :tid");
+        Query q = s.createQuery("from PhishSettings ss where ss.tid = :tid");
         q.setParameter("tid", getTid());
         return q;
     }
@@ -342,7 +342,7 @@ public class ClamPhishNode extends SpamImpl
         phishHttpEventLogger.log(phishHttpEvent);
     }
 
-    Token[] generateResponse(ClamPhishBlockDetails bd, TCPSession session,
+    Token[] generateResponse(PhishBlockDetails bd, TCPSession session,
                              boolean persistent)
     {
         return replacementGenerator.generateResponse(bd, session, persistent);
@@ -441,7 +441,7 @@ public class ClamPhishNode extends SpamImpl
     {
         urlDatabase = new UrlDatabase();
 
-        File dbHome = new File(System.getProperty("bunnicula.db.dir"), "clamphish");
+        File dbHome = new File(System.getProperty("bunnicula.db.dir"), "phish");
         try {
             UrlList ul = new PrefixUrlList(dbHome, URL_BASE, "goog-black-url");
             urlDatabase.addBlacklist("goog-black-url", ul);

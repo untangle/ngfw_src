@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.node.clamphish.gui;
+package com.untangle.node.phish.gui;
 
 import com.untangle.gui.node.*;
 import com.untangle.uvm.node.NodeContext;

@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.node.clamphish.reports;
+package com.untangle.node.phish.reports;
 
 import java.sql.*;
 

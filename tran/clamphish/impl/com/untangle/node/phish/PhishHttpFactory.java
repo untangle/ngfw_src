@@ -9,7 +9,7 @@
  * $Id: PhishHttpFactory.java 8515 2007-01-03 00:13:24Z amread $
  */
 
-package com.untangle.node.clamphish;
+package com.untangle.node.phish;
 
 import com.untangle.uvm.tapi.TCPNewSessionRequest;
 import com.untangle.uvm.tapi.TCPSession;
@@ -21,11 +21,11 @@ class PhishHttpFactory implements TokenHandlerFactory
 {
     private final Logger logger = Logger.getLogger(getClass());
 
-    private final ClamPhishNode node;
+    private final PhishNode node;
 
     // constructors -----------------------------------------------------------
 
-    PhishHttpFactory(ClamPhishNode node)
+    PhishHttpFactory(PhishNode node)
     {
         this.node = node;
     }

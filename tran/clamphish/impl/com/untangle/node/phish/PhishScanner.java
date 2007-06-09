@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.node.clamphish;
+package com.untangle.node.phish;
 
 import java.io.File;
 import java.util.LinkedList;
@@ -23,7 +23,7 @@ import com.untangle.node.spam.SpamScanner;
 import com.untangle.node.virus.VirusScannerResult;
 import org.apache.log4j.Logger;
 
-public class ClamPhishScanner implements SpamScanner
+public class PhishScanner implements SpamScanner
 {
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -35,7 +35,7 @@ public class ClamPhishScanner implements SpamScanner
     private static int activeScanCount = 0;
     private static Object activeScanMonitor = new Object();
 
-    public ClamPhishScanner() { }
+    public PhishScanner() { }
 
     public String getVendorName()
     {
@@ -67,7 +67,7 @@ public class ClamPhishScanner implements SpamScanner
                 items.add(ourItem);
                 result = new SpamReport(items, threshold);
             }
-            logger.debug("clamphishc: " + result);
+            logger.debug("phishc: " + result);
             return result;
         } finally {
             synchronized(activeScanMonitor) {

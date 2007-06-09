@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.node.clamphish;
+package com.untangle.node.phish;
 
 import com.untangle.uvm.tapi.TCPNewSessionRequest;
 import com.untangle.uvm.tapi.TCPSession;
@@ -20,12 +20,12 @@ import com.untangle.node.token.TokenHandlerFactory;
 
 public class PhishPopFactory implements TokenHandlerFactory
 {
-    private final ClamPhishNode node;
+    private final PhishNode node;
     private final MailExport zMExport;
 
     // constructors -----------------------------------------------------------
 
-    PhishPopFactory(ClamPhishNode node)
+    PhishPopFactory(PhishNode node)
     {
         this.node = node;
         zMExport = MailExportFactory.factory().getExport();

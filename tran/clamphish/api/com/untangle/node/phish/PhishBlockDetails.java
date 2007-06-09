@@ -6,22 +6,22 @@
  * Untangle, Inc. ("Confidential Information"). You shall
  * not disclose such Confidential Information.
  *
- * $Id: ClamPhishNode.java 8965 2007-02-23 20:54:04Z cng $
+ * $Id: PhishNode.java 8965 2007-02-23 20:54:04Z cng $
  */
 
-package com.untangle.node.clamphish;
+package com.untangle.node.phish;
 
 import java.net.InetAddress;
 
 import com.untangle.node.http.BlockDetails;
 
-public class ClamPhishBlockDetails extends BlockDetails
+public class PhishBlockDetails extends BlockDetails
 {
     private final InetAddress clientAddr;
 
     // constructor ------------------------------------------------------------
 
-    public ClamPhishBlockDetails(String host, String uri,
+    public PhishBlockDetails(String host, String uri,
                                  InetAddress clientAddr)
     {
         super(host, uri);

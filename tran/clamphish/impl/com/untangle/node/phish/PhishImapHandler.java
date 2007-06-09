@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.node.clamphish;
+package com.untangle.node.phish;
 
 import com.untangle.uvm.tapi.TCPSession;
 import com.untangle.node.mail.papi.safelist.SafelistNodeView;
@@ -21,7 +21,7 @@ class PhishImapHandler extends SpamImapHandler
     PhishImapHandler(TCPSession session,
                      long maxClientWait,
                      long maxSvrWait,
-                     ClamPhishNode impl,
+                     PhishNode impl,
                      SpamIMAPConfig config,
                      SafelistNodeView safelist) {
         super(session, maxClientWait, maxSvrWait, impl, config, safelist);

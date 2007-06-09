@@ -12,10 +12,10 @@ $Id$
 -->
 
 <uvm-node>
-  <node-desc name="clamphish-node"
+  <node-desc name="phish-node"
                   display-name="Phish Blocker"
-                  classname="com.untangle.node.clamphish.ClamPhishNode"
-                  gui-classname="com.untangle.node.clamphish.gui.MNodeJPanel"
+                  classname="com.untangle.node.phish.PhishNode"
+                  gui-classname="com.untangle.node.phish.gui.MNodeJPanel"
                   node-base="spam-base"/>
   <parent>http-casing</parent>
   <parent>mail-casing</parent>

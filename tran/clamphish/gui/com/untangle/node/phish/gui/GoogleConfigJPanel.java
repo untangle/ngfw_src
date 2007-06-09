@@ -11,7 +11,7 @@
 
 
 
-package com.untangle.node.clamphish.gui;
+package com.untangle.node.phish.gui;
 
 import java.awt.*;
 
@@ -20,7 +20,7 @@ import com.untangle.gui.util.*;
 import com.untangle.uvm.*;
 import com.untangle.uvm.security.*;
 import com.untangle.uvm.node.*;
-import com.untangle.node.clamphish.*;
+import com.untangle.node.phish.*;
 
 
 public class GoogleConfigJPanel extends javax.swing.JPanel implements Savable<Object>, Refreshable<Object> {
@@ -45,7 +45,7 @@ public class GoogleConfigJPanel extends javax.swing.JPanel implements Savable<Ob
 
         // SAVE SETTINGS ////////////
         if( !validateOnly ){
-            ClamPhishSettings clamPhishSettings = (ClamPhishSettings) settings;
+            PhishSettings clamPhishSettings = (ClamPhishSettings) settings;
             clamPhishSettings.setEnableGooglePhishList(isUrlEnabled);
         }
 
@@ -56,7 +56,7 @@ public class GoogleConfigJPanel extends javax.swing.JPanel implements Savable<Ob
     public void doRefresh(Object settings){
 
         // URL ENABLED /////////
-        ClamPhishSettings clamPhishSettings = (ClamPhishSettings) settings;
+        PhishSettings clamPhishSettings = (ClamPhishSettings) settings;
         isUrlEnabledCurrent = clamPhishSettings.getEnableGooglePhishList();
         if( isUrlEnabledCurrent )
             urlEnabledRadioButton.setSelected(true);
