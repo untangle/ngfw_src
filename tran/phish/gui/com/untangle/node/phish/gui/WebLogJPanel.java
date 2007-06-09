@@ -37,7 +37,7 @@ public class WebLogJPanel extends MLogTableJPanel {
     public WebLogJPanel(Node node, MNodeControlsJPanel mNodeControlsJPanel){
         super(node, mNodeControlsJPanel);
 
-        final Phish spam = (ClamPhish)logNode;
+        final Phish spam = (Phish)logNode;
 
         setTableModel(new LogTableModel());
 
@@ -48,7 +48,7 @@ public class WebLogJPanel extends MLogTableJPanel {
     }
 
     protected void refreshSettings(){
-        Phish spam = (ClamPhish)logNode;
+        Phish spam = (Phish)logNode;
         EventManager<PhishHttpEvent> em = spam.getPhishHttpEventManager();
         EventRepository<PhishHttpEvent> ef = em.getRepository((String)queryJComboBox.getSelectedItem());
         settings = ef.getEvents();

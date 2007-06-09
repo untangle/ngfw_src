@@ -13,7 +13,7 @@ String tidStr = request.getParameter("tid");
 Tid tid = new Tid(Long.parseLong(tidStr));
 
 NodeContext tctx = tman.nodeContext(tid);
-Phish tran = (ClamPhish)tctx.node();
+Phish tran = (Phish)tctx.node();
 UserWhitelistMode mode = tran.getUserWhitelistMode();
 PhishBlockDetails bd = tran.getBlockDetails(nonce);
 

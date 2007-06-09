@@ -45,7 +45,7 @@ public class GoogleConfigJPanel extends javax.swing.JPanel implements Savable<Ob
 
         // SAVE SETTINGS ////////////
         if( !validateOnly ){
-            PhishSettings clamPhishSettings = (ClamPhishSettings) settings;
+            PhishSettings clamPhishSettings = (PhishSettings) settings;
             clamPhishSettings.setEnableGooglePhishList(isUrlEnabled);
         }
 
@@ -56,7 +56,7 @@ public class GoogleConfigJPanel extends javax.swing.JPanel implements Savable<Ob
     public void doRefresh(Object settings){
 
         // URL ENABLED /////////
-        PhishSettings clamPhishSettings = (ClamPhishSettings) settings;
+        PhishSettings clamPhishSettings = (PhishSettings) settings;
         isUrlEnabledCurrent = clamPhishSettings.getEnableGooglePhishList();
         if( isUrlEnabledCurrent )
             urlEnabledRadioButton.setSelected(true);

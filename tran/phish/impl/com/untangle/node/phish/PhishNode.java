@@ -153,12 +153,12 @@ public class PhishNode extends SpamImpl
         return phishHttpEventLogger;
     }
 
-    public void setPhishSettings(ClamPhishSettings spamSettings)
+    public void setPhishSettings(PhishSettings spamSettings)
     {
         setSpamSettings(spamSettings);
     }
 
-    public PhishSettings getClamPhishSettings()
+    public PhishSettings getPhishSettings()
     {
         return (PhishSettings)getSpamSettings();
     }
@@ -204,7 +204,7 @@ public class PhishNode extends SpamImpl
     {
         logger.debug("Initializing Settings");
 
-        PhishSettings tmpSpamSettings = new ClamPhishSettings(getTid());
+        PhishSettings tmpSpamSettings = new PhishSettings(getTid());
         tmpSpamSettings.setEnableGooglePhishList(true);
         configureSpamSettings(tmpSpamSettings);
         setSpamSettings(tmpSpamSettings);

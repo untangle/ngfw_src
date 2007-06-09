@@ -83,7 +83,7 @@ public class PhishHttpHandler extends HttpStateMachine
 
                 InetAddress clientIp = getSession().clientAddr();
 
-                PhishBlockDetails bd = new ClamPhishBlockDetails
+                PhishBlockDetails bd = new PhishBlockDetails
                     (host, uri.toString(), clientIp);
 
                 Token[] r = node.generateResponse(bd, getSession(),

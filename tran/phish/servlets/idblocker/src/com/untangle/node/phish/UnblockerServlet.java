@@ -41,7 +41,7 @@ public class UnblockerServlet extends HttpServlet
             LocalNodeManager tman = UvmContextFactory.context().nodeManager();
             Tid tid = new Tid(Long.parseLong(tidStr));
             NodeContext tctx = tman.nodeContext(tid);
-            Phish tran = (ClamPhish)tctx.node();
+            Phish tran = (Phish)tctx.node();
 
             if (tran.unblockSite(nonce, global)) {
                 resp.getOutputStream().println("<success/>");
