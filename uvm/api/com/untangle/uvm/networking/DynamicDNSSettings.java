@@ -32,7 +32,7 @@ import com.untangle.uvm.node.IPaddr;
  * @version 1.0
  */
 @Entity
-@Table(name="mvvm_ddns_settings", schema="settings")
+@Table(name="u_ddns_settings", schema="settings")
 public class DynamicDNSSettings implements Serializable
 {
     // XXXXXXXX put serializable stuff in here

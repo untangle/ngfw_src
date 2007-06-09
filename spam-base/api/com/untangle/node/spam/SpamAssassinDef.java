@@ -25,7 +25,7 @@ import javax.persistence.Table;
  * @version 1.0
  */
 @Entity
-@Table(name="tr_spam_spamassassin_def", schema="settings")
+@Table(name="n_spamassassin_def", schema="settings")
 public class SpamAssassinDef implements Serializable
 {
     private static final long serialVersionUID = -7246008133224043456L;

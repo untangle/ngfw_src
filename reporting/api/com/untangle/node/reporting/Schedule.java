@@ -36,7 +36,7 @@ import org.hibernate.annotations.IndexColumn;
  * @version 1.0
  */
 @Entity
-@Table(name="tr_reporting_sched", schema="settings")
+@Table(name="n_reporting_sched", schema="settings")
 public class Schedule implements Serializable
 {
     private static final long serialVersionUID = 2064742840204258979L;

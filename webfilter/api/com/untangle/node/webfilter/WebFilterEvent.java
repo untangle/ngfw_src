@@ -33,7 +33,7 @@ import org.hibernate.annotations.Type;
  */
 @Entity
 @org.hibernate.annotations.Entity(mutable=false)
-    @Table(name="tr_httpblk_evt_blk", schema="events")
+    @Table(name="n_webfilter_evt_blk", schema="events")
     public class WebFilterEvent extends LogEvent
     {
         // action types

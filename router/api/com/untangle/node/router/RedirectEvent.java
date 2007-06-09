@@ -30,7 +30,7 @@ import com.untangle.uvm.node.PipelineEndpoints;
  */
 @Entity
 @org.hibernate.annotations.Entity(mutable=false)
-    @Table(name="tr_nat_redirect_evt", schema="events")
+    @Table(name="n_router_redirect_evt", schema="events")
     public class RedirectEvent extends PipelineEvent implements Serializable
     {
         private int          ruleIndex;

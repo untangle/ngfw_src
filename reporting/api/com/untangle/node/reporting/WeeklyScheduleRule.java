@@ -34,7 +34,7 @@ import javax.persistence.Transient;
  * @version 1.0
  */
 @Entity
-@Table(name="tr_reporting_wk_sched_rule", schema="settings")
+@Table(name="n_reporting_wk_sched_rule", schema="settings")
 public class WeeklyScheduleRule implements Serializable
 {
     private static final long serialVersionUID = 2064742840204258978L;

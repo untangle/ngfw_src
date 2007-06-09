@@ -29,7 +29,7 @@ import org.hibernate.annotations.Type;
  * @version 1.0
  */
 @Entity
-@Table(name="tr_openvpn_group", schema="settings")
+@Table(name="n_openvpn_group", schema="settings")
 public class VpnGroup extends Rule implements Validatable
 {
     private static final long serialVersionUID = 1979887183265796668L;

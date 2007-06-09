@@ -28,7 +28,7 @@ import com.untangle.uvm.logging.SyslogPriority;
  */
 @Entity
 @org.hibernate.annotations.Entity(mutable=false)
-    @Table(name="tr_firewall_statistic_evt", schema="events")
+    @Table(name="n_firewall_statistic_evt", schema="events")
     public class FirewallStatisticEvent extends StatisticEvent
     {
         /* Number of outbound firewall sessions */

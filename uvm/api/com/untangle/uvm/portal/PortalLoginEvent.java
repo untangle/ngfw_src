@@ -32,7 +32,7 @@ import org.hibernate.annotations.Type;
  */
 @Entity
 @org.hibernate.annotations.Entity(mutable=false)
-    @Table(name="portal_login_evt", schema="events")
+    @Table(name="n_portal_login_evt", schema="events")
     public class PortalLoginEvent extends PortalEvent implements Serializable
     {
         private static final long serialVersionUID = 5003003603098874917L;

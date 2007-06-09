@@ -32,7 +32,7 @@ import org.hibernate.annotations.Type;
  */
 @Entity
 @org.hibernate.annotations.Entity(mutable=false)
-    @Table(name="tr_spam_evt_smtp", schema="events")
+    @Table(name="n_spam_evt_smtp", schema="events")
     public class SpamSmtpEvent extends SpamEvent
     {
         private MessageInfo messageInfo;

@@ -56,7 +56,7 @@ import javax.persistence.Table;
  * set.
  */
 @Entity
-@Table(name="snmp_settings", schema="settings")
+@Table(name="u_snmp_settings", schema="settings")
 public class SnmpSettings implements Serializable {
 
     private static final long serialVersionUID =

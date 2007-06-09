@@ -30,7 +30,7 @@ import javax.persistence.Transient;
  * @version 1.0
  */
 @Entity
-@Table(name="tr_http_settings", schema="settings")
+@Table(name="n_http_settings", schema="settings")
 public class HttpSettings implements Serializable
 {
     public static final int MIN_HEADER_LENGTH = 1024;

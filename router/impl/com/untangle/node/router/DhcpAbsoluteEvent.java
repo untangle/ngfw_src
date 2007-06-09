@@ -37,7 +37,7 @@ import org.hibernate.annotations.IndexColumn;
  */
 @Entity
 @org.hibernate.annotations.Entity(mutable=false)
-    @Table(name="tr_nat_evt_dhcp_abs", schema="events")
+    @Table(name="n_router_evt_dhcp_abs", schema="events")
     public class DhcpAbsoluteEvent extends LogEvent implements Serializable
     {
         private List<DhcpAbsoluteLease> absoluteLeaseList = null;

@@ -28,7 +28,7 @@ import com.untangle.uvm.node.PipelineEndpoints;
  */
 @Entity
 @org.hibernate.annotations.Entity(mutable=false)
-    @Table(name="tr_ids_evt", schema="events")
+    @Table(name="n_ips_evt", schema="events")
     public class IPSLogEvent extends PipelineEvent {
 
         private String classification;

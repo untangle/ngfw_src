@@ -29,7 +29,7 @@ import com.untangle.uvm.node.PipelineEndpoints;
  */
 @Entity
 @org.hibernate.annotations.Entity(mutable=false)
-    @Table(name="tr_protofilter_evt", schema="events")
+    @Table(name="n_protofilter_evt", schema="events")
     public class ProtoFilterLogEvent extends PipelineEvent
     {
         private String protocol;

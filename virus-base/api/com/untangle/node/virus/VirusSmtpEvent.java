@@ -34,7 +34,7 @@ import org.hibernate.annotations.Type;
  */
 @Entity
 @org.hibernate.annotations.Entity(mutable=false)
-    @Table(name="tr_virus_evt_smtp", schema="events")
+    @Table(name="n_virus_evt_smtp", schema="events")
     public class VirusSmtpEvent extends VirusEvent
     {
         private MessageInfo messageInfo;

@@ -31,7 +31,7 @@ import com.untangle.uvm.logging.SyslogPriority;
  */
 @Entity
 @org.hibernate.annotations.Entity(mutable=false)
-    @Table(name="tr_openvpn_statistic_evt", schema="events")
+    @Table(name="n_openvpn_statistic_evt", schema="events")
     public class VpnStatisticEvent extends StatisticEvent
     {
         private Date start;

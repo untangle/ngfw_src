@@ -35,7 +35,7 @@ import com.untangle.uvm.node.firewall.port.PortDBMatcher;
  * @version 1.0
  */
 @Entity
-@Table(name="mvvm_redirect_rule", schema="settings")
+@Table(name="u_redirect_rule", schema="settings")
 public class RedirectRule extends TrafficIntfRule
 {
     private static final long serialVersionUID = 8272790575650650832L;

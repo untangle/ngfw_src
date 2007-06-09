@@ -36,7 +36,7 @@ import org.hibernate.annotations.IndexColumn;
  * @version 1.0
  */
 @Entity
-@Table(name="tr_mail_settings", schema="settings")
+@Table(name="n_mail_settings", schema="settings")
 public class MailNodeSettings implements Serializable
 {
     private static final long serialVersionUID = -6466793822226799781L;

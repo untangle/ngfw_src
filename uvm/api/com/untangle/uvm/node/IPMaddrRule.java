@@ -24,7 +24,7 @@ import org.hibernate.annotations.Type;
  * @version 1.0
  */
 @Entity
-@Table(name="ipmaddr_rule", schema="settings")
+@Table(name="u_ipmaddr_rule", schema="settings")
 public class IPMaddrRule extends Rule
 {
     private IPMaddr ipMaddr;

@@ -31,7 +31,7 @@ import com.untangle.node.http.RequestLine;
  */
 @Entity
 @org.hibernate.annotations.Entity(mutable=false)
-    @Table(name="tr_spyware_evt_activex", schema="events")
+    @Table(name="n_spyware_evt_activex", schema="events")
     public class SpywareActiveXEvent extends SpywareEvent
     {
         private String identification;

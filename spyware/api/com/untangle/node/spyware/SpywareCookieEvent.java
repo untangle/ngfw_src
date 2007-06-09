@@ -32,7 +32,7 @@ import com.untangle.node.http.RequestLine;
  */
 @Entity
 @org.hibernate.annotations.Entity(mutable=false)
-    @Table(name="tr_spyware_evt_cookie", schema="events")
+    @Table(name="n_spyware_evt_cookie", schema="events")
     public class SpywareCookieEvent extends SpywareEvent
     {
         private String identification;

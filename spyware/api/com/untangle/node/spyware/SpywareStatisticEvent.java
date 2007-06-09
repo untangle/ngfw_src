@@ -28,7 +28,7 @@ import com.untangle.uvm.logging.SyslogPriority;
  */
 @Entity
 @org.hibernate.annotations.Entity(mutable=false)
-    @Table(name="tr_spyware_statistic_evt", schema="events")
+    @Table(name="n_spyware_statistic_evt", schema="events")
     public class SpywareStatisticEvent extends StatisticEvent {
         private int pass = 0; // pass cookie, activeX, URL, or subnet access
         private int cookie = 0; // block cookie

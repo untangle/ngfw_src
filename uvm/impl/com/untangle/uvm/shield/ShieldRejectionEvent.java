@@ -31,7 +31,7 @@ import org.hibernate.annotations.Type;
  */
 @Entity
 @org.hibernate.annotations.Entity(mutable=false)
-    @Table(name="shield_rejection_evt", schema="events")
+    @Table(name="n_shield_rejection_evt", schema="events")
     public class ShieldRejectionEvent extends LogEvent implements Serializable
     {
         private InetAddress clientAddr;

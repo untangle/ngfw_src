@@ -36,7 +36,7 @@ import org.hibernate.annotations.Type;
  * @version 1.0
  */
 @Entity
-@Table(name="tr_virus_smtp_config", schema="settings")
+@Table(name="n_virus_smtp_config", schema="settings")
 public class VirusSMTPConfig extends VirusMailConfig implements Serializable
 {
 

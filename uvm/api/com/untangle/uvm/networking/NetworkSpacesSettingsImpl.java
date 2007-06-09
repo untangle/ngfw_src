@@ -40,7 +40,7 @@ import org.hibernate.annotations.Type;
  * @version 1.0
  */
 @Entity
-@Table(name="mvvm_network_settings", schema="settings")
+@Table(name="u_network_settings", schema="settings")
 public class NetworkSpacesSettingsImpl implements NetworkSpacesSettings, Serializable, Validatable
 {
     private Long id;

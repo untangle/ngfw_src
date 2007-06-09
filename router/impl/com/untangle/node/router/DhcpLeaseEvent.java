@@ -35,7 +35,7 @@ import org.hibernate.annotations.Type;
  */
 @Entity
 @org.hibernate.annotations.Entity(mutable=false)
-    @Table(name="tr_nat_evt_dhcp", schema="events")
+    @Table(name="n_router_evt_dhcp", schema="events")
     public class DhcpLeaseEvent extends LogEvent
     {
         private static final long serialVersionUID = -6582660598334287365L;

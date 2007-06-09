@@ -24,7 +24,7 @@ import org.hibernate.annotations.Index;
  * @version 1.0
  */
 @Entity
-@Table(name="string_rule", schema="settings")
+@Table(name="u_string_rule", schema="settings")
 public class StringRule extends Rule
 {
     private String string;

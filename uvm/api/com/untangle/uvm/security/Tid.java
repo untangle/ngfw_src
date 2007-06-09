@@ -31,7 +31,7 @@ import com.untangle.uvm.policy.Policy;
  * @version 1.0
  */
 @Entity
-@Table(name="tid", schema="settings")
+@Table(name="u_tid", schema="settings")
 public class Tid implements Principal, Serializable, Comparable
 {
     private static final long serialVersionUID = -3752177143597737103L;

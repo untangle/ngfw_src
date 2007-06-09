@@ -37,7 +37,7 @@ import org.hibernate.annotations.Type;
  * @version 1.0
  */
 @Entity
-@Table(name="mvvm_network_space", schema="settings")
+@Table(name="u_network_space", schema="settings")
 public class NetworkSpace extends Rule
 {
     /* There should be at least one */

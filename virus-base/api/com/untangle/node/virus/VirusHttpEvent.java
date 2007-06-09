@@ -33,7 +33,7 @@ import org.hibernate.annotations.Type;
  */
 @Entity
 @org.hibernate.annotations.Entity(mutable=false)
-    @Table(name="tr_virus_evt_http", schema="events")
+    @Table(name="n_virus_evt_http", schema="events")
     public class VirusHttpEvent extends VirusEvent
     {
         private RequestLine requestLine;

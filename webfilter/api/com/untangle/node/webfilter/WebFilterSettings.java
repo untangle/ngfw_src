@@ -41,7 +41,7 @@ import org.hibernate.annotations.IndexColumn;
  * @version 1.0
  */
 @Entity
-@Table(name="tr_httpblk_settings", schema="settings")
+@Table(name="n_webfilter_settings", schema="settings")
 public class WebFilterSettings implements Serializable
 {
     private static final long serialVersionUID = 1806394002255164868L;

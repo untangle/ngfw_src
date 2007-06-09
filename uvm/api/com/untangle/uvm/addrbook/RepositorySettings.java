@@ -23,7 +23,7 @@ import javax.persistence.Table;
  * a bunch of LDAP settings).
  */
 @Entity
-@Table(name="ab_repository_settings")
+@Table(name="u_ab_repository_settings")
 public class RepositorySettings implements Serializable
 {
     private static final long serialVersionUID = 1856246303246961114L;

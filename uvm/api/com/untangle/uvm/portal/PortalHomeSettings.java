@@ -25,7 +25,7 @@ import javax.persistence.Table;
  * @version 1.0
  */
 @Entity
-@Table(name="portal_home_settings", schema="settings")
+@Table(name="n_portal_home_settings", schema="settings")
 public class PortalHomeSettings implements Serializable
 {
     private static final long serialVersionUID = -4618114760496839437L;

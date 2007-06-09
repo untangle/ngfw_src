@@ -37,7 +37,7 @@ import org.hibernate.annotations.IndexColumn;
  * @version 1.0
  */
 @Entity
-@Table(name="tr_ids_settings", schema="settings")
+@Table(name="n_ips_settings", schema="settings")
 public class IPSSettings implements Serializable {
     private static final long serialVersionUID = -7056565971726289302L;
     private int maxChunks;

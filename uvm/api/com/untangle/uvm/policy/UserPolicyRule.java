@@ -43,7 +43,7 @@ import org.hibernate.annotations.Type;
  * @version 1.0
  */
 @Entity
-@Table(name="user_policy_rule", schema="settings")
+@Table(name="u_user_policy_rule", schema="settings")
 public class UserPolicyRule extends PolicyRule
 {
     /* settings */

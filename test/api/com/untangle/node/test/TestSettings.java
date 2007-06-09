@@ -33,7 +33,7 @@ import org.hibernate.annotations.Type;
  * @version 1.0
  */
 @Entity
-@Table(name="tr_test_settings", schema="settings")
+@Table(name="n_test_settings", schema="settings")
 public class TestSettings implements Serializable
 {
     private static final long serialVersionUID = 4143567998376955882L;

@@ -28,7 +28,7 @@ import org.hibernate.annotations.Type;
  * @version 1.0
  */
 @Entity
-@Table(name="tr_virus_imap_config", schema="settings")
+@Table(name="n_virus_imap_config", schema="settings")
 public class VirusIMAPConfig extends VirusMailConfig implements Serializable
 {
     private static final long serialVersionUID = 7520156745253589027L;

@@ -30,7 +30,7 @@ import javax.persistence.Transient;
  * @version 1.0
  */
 @Entity
-@Table(name="tr_ftp_settings", schema="settings")
+@Table(name="n_ftp_settings", schema="settings")
 public class FtpSettings implements Serializable
 {
     private static final long serialVersionUID = -828243820153242416L;

@@ -26,7 +26,7 @@ import javax.persistence.Table;
  * @version 1.0
  */
 @Entity
-@Table(name="mail_settings", schema="settings")
+@Table(name="u_mail_settings", schema="settings")
 public class MailSettings implements Serializable
 {
     private static final long serialVersionUID = 6722526215093951941L;

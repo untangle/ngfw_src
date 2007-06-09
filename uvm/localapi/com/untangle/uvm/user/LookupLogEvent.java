@@ -29,7 +29,7 @@ import org.hibernate.annotations.Type;
 
 @Entity
 @org.hibernate.annotations.Entity(mutable=false)
-    @Table(name="mvvm_lookup_evt", schema="events")
+    @Table(name="u_lookup_evt", schema="events")
     public class LookupLogEvent extends LogEvent
     {
         private long lookupKey;

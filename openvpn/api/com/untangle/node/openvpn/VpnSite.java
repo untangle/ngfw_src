@@ -35,7 +35,7 @@ import org.hibernate.annotations.IndexColumn;
  * @version 1.0
  */
 @Entity
-@Table(name="tr_openvpn_site", schema="settings")
+@Table(name="n_openvpn_site", schema="settings")
 public class VpnSite extends VpnClientBase
 {
     // XXX Fixme

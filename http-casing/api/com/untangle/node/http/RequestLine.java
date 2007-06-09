@@ -38,7 +38,7 @@ import org.hibernate.annotations.Type;
  */
 @Entity
 @org.hibernate.annotations.Entity(mutable=false)
-    @Table(name="tr_http_req_line", schema="events")
+    @Table(name="n_http_req_line", schema="events")
     public class RequestLine implements Serializable
     {
         private static final long serialVersionUID = -2183950932382112727L;

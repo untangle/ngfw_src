@@ -32,7 +32,7 @@ import javax.persistence.Transient;
  * @version 1.0
  */
 @Entity
-@Table(name="tr_virus_config", schema="settings")
+@Table(name="n_virus_config", schema="settings")
 public class VirusConfig implements Serializable
 {
     private static final long serialVersionUID = -3027701380223646753L;

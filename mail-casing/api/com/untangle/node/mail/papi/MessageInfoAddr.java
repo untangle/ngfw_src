@@ -31,7 +31,7 @@ import org.hibernate.annotations.Type;
  */
 @Entity
 @org.hibernate.annotations.Entity(mutable=false)
-    @Table(name="tr_mail_message_info_addr", schema="events")
+    @Table(name="n_mail_message_info_addr", schema="events")
     public class MessageInfoAddr implements Serializable
     {
         /* constants */

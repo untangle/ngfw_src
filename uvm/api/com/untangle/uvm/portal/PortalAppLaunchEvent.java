@@ -31,7 +31,7 @@ import org.hibernate.annotations.Type;
  */
 @Entity
 @org.hibernate.annotations.Entity(mutable=false)
-    @Table(name="portal_app_launch_evt", schema="events")
+    @Table(name="n_portal_app_launch_evt", schema="events")
     public class PortalAppLaunchEvent extends LogEvent implements Serializable
     {
         private static final long serialVersionUID = 1003003630088749917L;

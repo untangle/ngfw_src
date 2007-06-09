@@ -50,7 +50,7 @@ import org.hibernate.annotations.Type;
  * @version 1.0
  */
 @Entity
-@Table(name="tr_nat_settings", schema="settings")
+@Table(name="n_router_settings", schema="settings")
 public class RouterSettingsImpl implements Validatable, RouterSettings, Serializable
 {
     private static final long serialVersionUID = 4691775205493112137L;

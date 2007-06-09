@@ -24,7 +24,7 @@ import org.hibernate.annotations.Type;
  * @version 1.0
  */
 @Entity
-@Table(name="mimetype_rule", schema="settings")
+@Table(name="u_mimetype_rule", schema="settings")
 public class MimeTypeRule extends Rule
 {
     private MimeType mimeType;

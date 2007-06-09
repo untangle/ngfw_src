@@ -32,7 +32,7 @@ import org.hibernate.annotations.Type;
  * @version 1.0
  */
 @Entity
-@Table(name="mvvm_access_settings", schema="settings")
+@Table(name="u_access_settings", schema="settings")
 public class AccessSettings implements Serializable, Validatable
 {
     /* boolean which can be used by the untangle to determine if the

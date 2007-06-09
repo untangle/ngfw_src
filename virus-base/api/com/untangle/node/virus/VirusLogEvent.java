@@ -32,7 +32,7 @@ import org.hibernate.annotations.Type;
  */
 @Entity
 @org.hibernate.annotations.Entity(mutable=false)
-    @Table(name="tr_virus_evt", schema="events")
+    @Table(name="n_virus_evt", schema="events")
     public class VirusLogEvent extends VirusEvent
     {
         private PipelineEndpoints pipelineEndpoints;

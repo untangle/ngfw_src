@@ -37,7 +37,7 @@ import com.untangle.uvm.node.IPMaddrDirectory;
  * @version 1.0
  */
 @Entity
-@Table(name="tr_reporting_settings", schema="settings")
+@Table(name="n_reporting_settings", schema="settings")
 public class ReportingSettings implements Serializable
 {
     private static final long serialVersionUID = 2064742840204258977L;

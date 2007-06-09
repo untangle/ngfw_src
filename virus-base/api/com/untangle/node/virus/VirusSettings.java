@@ -38,7 +38,7 @@ import org.hibernate.annotations.IndexColumn;
  * @version 1.0
  */
 @Entity
-@Table(name="tr_virus_settings", schema="settings")
+@Table(name="n_virus_settings", schema="settings")
 public class VirusSettings implements Serializable
 {
     private static final long serialVersionUID = -7246008133224046834L;

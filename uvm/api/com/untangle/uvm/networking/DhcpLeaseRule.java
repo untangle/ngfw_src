@@ -31,7 +31,7 @@ import org.hibernate.annotations.Type;
  * @version 1.0
  */
 @Entity
-@Table(name="mvvm_dhcp_lease_rule", schema="settings")
+@Table(name="u_dhcp_lease_rule", schema="settings")
 public class DhcpLeaseRule extends Rule
 {
     /* The MAC address associated with this lease */

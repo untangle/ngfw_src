@@ -30,7 +30,7 @@ import javax.persistence.Transient;
  * @version 1.0
  */
 @Entity
-@Table(name="tr_protofilter_pattern", schema="settings")
+@Table(name="n_protofilter_pattern", schema="settings")
 public class ProtoFilterPattern implements Serializable
 {
     // Converter sets all old patterns to this mid

@@ -30,7 +30,7 @@ import org.hibernate.annotations.Type;
  * @version 1.0
  */
 @Entity
-@Table(name="mvvm_network_intf", schema="settings")
+@Table(name="u_network_intf", schema="settings")
 public class Interface extends Rule
 {
     private static final long serialVersionUID = 7720361692356024775L;

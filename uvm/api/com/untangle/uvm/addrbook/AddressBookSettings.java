@@ -28,7 +28,7 @@ import org.hibernate.annotations.Type;
  * Settings for the AddressBook
  */
 @Entity
-@Table(name="ab_settings", schema="settings")
+@Table(name="u_ab_settings", schema="settings")
 public class AddressBookSettings implements Serializable {
     private static final long serialVersionUID = 1981170448212868734L;
 

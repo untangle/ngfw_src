@@ -32,7 +32,7 @@ import com.untangle.uvm.logging.SyslogPriority;
  */
 @Entity
 @org.hibernate.annotations.Entity(mutable=false)
-    @Table(name="tr_http_evt_req", schema="events")
+    @Table(name="n_http_evt_req", schema="events")
     public class HttpRequestEvent extends LogEvent
     {
         private RequestLine requestLine;

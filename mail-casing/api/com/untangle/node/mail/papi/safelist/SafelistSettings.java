@@ -32,7 +32,7 @@ import javax.persistence.Transient;
  * @version 1.0
  */
 @Entity
-@Table(name="tr_mail_safels_settings", schema="settings")
+@Table(name="n_mail_safels_settings", schema="settings")
 public class SafelistSettings implements Serializable
 {
     private static final long serialVersionUID = -7466793822226799781L;

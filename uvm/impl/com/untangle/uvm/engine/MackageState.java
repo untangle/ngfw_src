@@ -24,7 +24,7 @@ import javax.persistence.Table;
  * @version 1.0
  */
 @Entity
-@Table(name="mackage_state", schema="settings")
+@Table(name="u_mackage_state", schema="settings")
 class MackageState
 {
     private Long id;

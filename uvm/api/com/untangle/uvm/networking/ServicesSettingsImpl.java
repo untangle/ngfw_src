@@ -38,7 +38,7 @@ import org.hibernate.annotations.Type;
  * @version 1.0
  */
 @Entity
-@Table(name="mvvm_network_services", schema="settings")
+@Table(name="u_network_services", schema="settings")
 public class ServicesSettingsImpl implements ServicesSettings, Serializable
 {
     private static final long serialVersionUID = 7074952180633919139L;

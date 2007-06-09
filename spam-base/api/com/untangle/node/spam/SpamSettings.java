@@ -39,7 +39,7 @@ import org.hibernate.annotations.IndexColumn;
  * @version 1.0
  */
 @Entity
-@Table(name="tr_spam_settings", schema="settings")
+@Table(name="n_spam_settings", schema="settings")
 @Inheritance(strategy=InheritanceType.JOINED)
 public class SpamSettings implements Serializable
 {

@@ -26,7 +26,7 @@ import com.untangle.node.mail.papi.MessageInfo;
  * @version 1.0
  */
 @Entity
-@Table(name="tr_mail_safels_recipient", schema="settings")
+@Table(name="n_mail_safels_recipient", schema="settings")
 public class SafelistRecipient implements Serializable
 {
     /* constants */

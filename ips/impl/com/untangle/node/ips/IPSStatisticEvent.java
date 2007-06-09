@@ -29,7 +29,7 @@ import com.untangle.uvm.logging.SyslogPriority;
  */
 @Entity
 @org.hibernate.annotations.Entity(mutable=false)
-    @Table(name="tr_ids_statistic_evt", schema="events")
+    @Table(name="n_ips_statistic_evt", schema="events")
     public class IPSStatisticEvent extends StatisticEvent {
         private int dnc = 0; // did-not-care
         private int logged = 0; // logged or alerted

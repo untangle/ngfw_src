@@ -35,7 +35,7 @@ import org.hibernate.annotations.IndexColumn;
  * Settings for the quarantine stuff
  */
 @Entity
-@Table(name="tr_mail_quarantine_settings", schema="settings")
+@Table(name="n_mail_quarantine_settings", schema="settings")
 public class QuarantineSettings implements Serializable {
     private static final long serialVersionUID = -4387806670497574999L;
 

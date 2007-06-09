@@ -39,7 +39,7 @@ import org.hibernate.annotations.IndexColumn;
  * @version 1.0
  */
 @Entity
-@Table(name="tr_firewall_settings", schema="settings")
+@Table(name="n_firewall_settings", schema="settings")
 public class FirewallSettings implements Serializable, Validatable
 {
     private Long id;

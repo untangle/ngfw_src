@@ -32,7 +32,7 @@ import com.untangle.uvm.node.ValidateException;
  * @version 1.0
  */
 @Entity
-@Table(name="mvvm_misc_settings", schema="settings")
+@Table(name="u_misc_settings", schema="settings")
 public class MiscSettings implements Serializable, Validatable
 {
     private Long id;

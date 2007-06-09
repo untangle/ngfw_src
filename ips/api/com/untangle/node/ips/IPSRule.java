@@ -28,7 +28,7 @@ import com.untangle.uvm.node.Rule;
  * @version 1.0
  */
 @Entity
-@Table(name="tr_ids_rule", schema="settings")
+@Table(name="n_ips_rule", schema="settings")
 public class IPSRule extends Rule implements Serializable
 {
     private static final long serialVersionUID = -7009708957041660234L;

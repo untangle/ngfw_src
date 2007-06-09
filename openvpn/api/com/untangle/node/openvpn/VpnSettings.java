@@ -44,7 +44,7 @@ import org.hibernate.annotations.Type;
  * @version 1.0
  */
 @Entity
-@Table(name="tr_openvpn_settings", schema="settings")
+@Table(name="n_openvpn_settings", schema="settings")
 public class VpnSettings implements Serializable, Validatable
 {
     // private static final long serialVersionUID = 1900466626555001143L;

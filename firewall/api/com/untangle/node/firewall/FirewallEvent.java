@@ -34,7 +34,7 @@ import com.untangle.uvm.node.PipelineEndpoints;
  */
 @Entity
 @org.hibernate.annotations.Entity(mutable=false)
-    @Table(name="tr_firewall_evt", schema="events")
+    @Table(name="n_firewall_evt", schema="events")
     public class FirewallEvent extends PipelineEvent implements Serializable
     {
         private FirewallRule rule;

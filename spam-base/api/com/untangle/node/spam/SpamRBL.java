@@ -25,7 +25,7 @@ import javax.persistence.Table;
  * @version 1.0
  */
 @Entity
-@Table(name="tr_spam_rbl", schema="settings")
+@Table(name="n_spam_rbl", schema="settings")
 public class SpamRBL implements Serializable
 {
     private static final long serialVersionUID = -7246008133224041234L;

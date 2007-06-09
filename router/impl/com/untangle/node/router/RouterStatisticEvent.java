@@ -28,7 +28,7 @@ import com.untangle.uvm.logging.SyslogPriority;
  */
 @Entity
 @org.hibernate.annotations.Entity(mutable=false)
-    @Table(name="tr_nat_statistic_evt", schema="events")
+    @Table(name="n_router_statistic_evt", schema="events")
     public class RouterStatisticEvent extends StatisticEvent
     {
         /* Number of outbound nat sessions */

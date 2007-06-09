@@ -42,7 +42,7 @@ import com.untangle.uvm.security.Tid;
  * @version 1.0
  */
 @Entity
-@Table(name="tr_httpblk_template", schema="settings")
+@Table(name="n_webfilter_template", schema="settings")
 public class BlockTemplate implements Serializable
 {
     private static final long serialVersionUID = -2176543704833470091L;

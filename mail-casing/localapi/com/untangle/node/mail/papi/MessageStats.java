@@ -30,7 +30,7 @@ import javax.persistence.Table;
  */
 @Entity
 @org.hibernate.annotations.Entity(mutable=false)
-    @Table(name="tr_mail_message_stats", schema="events")
+    @Table(name="n_mail_message_stats", schema="events")
     public class MessageStats implements Serializable
     {
         /* constants */

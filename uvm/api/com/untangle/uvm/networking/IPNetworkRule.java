@@ -36,7 +36,7 @@ import org.hibernate.annotations.Type;
  * @version 1.0
  */
 @Entity
-@Table(name="mvvm_ip_network", schema="settings")
+@Table(name="u_ip_network", schema="settings")
 public class IPNetworkRule extends Rule
 {
     private static final long serialVersionUID = -7352786448519039201L;

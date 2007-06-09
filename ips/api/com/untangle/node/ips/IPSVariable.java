@@ -26,7 +26,7 @@ import javax.persistence.Transient;
  * @version 1.0
  */
 @Entity
-@Table(name="tr_ids_variable", schema="settings")
+@Table(name="n_ips_variable", schema="settings")
 public class IPSVariable implements Serializable {
     private Long id;
     private static final long serialVersionUID = -7777708957041660234L;

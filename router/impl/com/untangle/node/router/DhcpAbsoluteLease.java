@@ -33,7 +33,7 @@ import org.hibernate.annotations.Type;
  */
 @Entity
 @org.hibernate.annotations.Entity(mutable=false)
-    @Table(name="dhcp_abs_lease", schema="events")
+    @Table(name="n_router_dhcp_abs_lease", schema="events")
     public class DhcpAbsoluteLease
     {
         static final int REGISTERED = 0;

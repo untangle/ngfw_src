@@ -32,7 +32,7 @@ import org.hibernate.annotations.Type;
  */
 @Entity
 @org.hibernate.annotations.Entity(mutable=false)
-    @Table(name="tr_spyware_evt_access", schema="events")
+    @Table(name="n_spyware_evt_access", schema="events")
     public class SpywareAccessEvent extends SpywareEvent
     {
         private PipelineEndpoints pipelineEndpoints;

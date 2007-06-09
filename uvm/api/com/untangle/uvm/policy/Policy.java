@@ -25,7 +25,7 @@ import javax.persistence.Table;
  * @version
  */
 @Entity
-@Table(name="policy", schema="settings")
+@Table(name="u_policy", schema="settings")
 public class Policy implements Serializable
 {
     private static final long serialVersionUID = 6722526125093951941L;

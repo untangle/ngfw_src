@@ -31,7 +31,7 @@ import org.hibernate.annotations.Type;
  */
 @Entity
 @org.hibernate.annotations.Entity(mutable=false)
-    @Table(name="tr_openvpn_distr_evt", schema="events")
+    @Table(name="n_openvpn_distr_evt", schema="events")
     public class ClientDistributionEvent extends LogEvent implements Serializable
     {
         private static final long serialVersionUID = 7746643433102029480L;

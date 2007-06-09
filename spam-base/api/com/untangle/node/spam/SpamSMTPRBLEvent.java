@@ -34,7 +34,7 @@ import org.hibernate.annotations.Type;
  */
 @Entity
 @org.hibernate.annotations.Entity(mutable=false)
-    @Table(name="tr_spam_smtp_rbl_evt", schema="events")
+    @Table(name="n_spam_smtp_rbl_evt", schema="events")
     public class SpamSMTPRBLEvent extends PipelineEvent
     {
         private HostName hostname;

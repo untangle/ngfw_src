@@ -27,7 +27,7 @@ import org.hibernate.annotations.Type;
  * @version 1.0
  */
 @Entity
-@Table(name="logging_settings", schema="settings")
+@Table(name="u_logging_settings", schema="settings")
 public class LoggingSettings implements Serializable
 {
     private Long id;

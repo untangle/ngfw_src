@@ -28,7 +28,7 @@ import com.untangle.node.spam.SpamSettings;
  */
 @Entity
 @PrimaryKeyJoinColumn(name="spam_settings_id")
-@Table(name="tr_clamphish_settings", schema="settings")
+@Table(name="n_phish_settings", schema="settings")
 public class PhishSettings extends SpamSettings implements Serializable
 {
     // XXX

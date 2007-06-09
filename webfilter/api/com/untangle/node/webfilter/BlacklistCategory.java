@@ -31,7 +31,7 @@ import javax.persistence.Transient;
  * @version 1.0
  */
 @Entity
-@Table(name="tr_httpblk_blcat", schema="settings")
+@Table(name="n_webfilter_blcat", schema="settings")
 public class BlacklistCategory implements Serializable
 {
     private static final long serialVersionUID = 445403437262316857L;

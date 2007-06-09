@@ -40,7 +40,7 @@ import com.untangle.uvm.node.PipelineEndpoints;
  */
 @Entity
 @org.hibernate.annotations.Entity(mutable=false)
-    @Table(name="tr_mail_message_info", schema="events")
+    @Table(name="n_mail_message_info", schema="events")
     public class MessageInfo implements Serializable
     {
         /* constants */

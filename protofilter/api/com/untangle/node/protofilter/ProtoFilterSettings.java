@@ -36,7 +36,7 @@ import org.hibernate.annotations.IndexColumn;
  * @version 1.0
  */
 @Entity
-@Table(name="tr_protofilter_settings", schema="settings")
+@Table(name="n_protofilter_settings", schema="settings")
 public class ProtoFilterSettings implements java.io.Serializable
 {
     private static final long serialVersionUID = 266434887860496780L;

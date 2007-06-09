@@ -37,7 +37,7 @@ import org.hibernate.annotations.IndexColumn;
  * @version 1.0
  */
 @Entity
-@Table(name="portal_group", schema="settings")
+@Table(name="n_portal_group", schema="settings")
 public class PortalGroup implements Serializable
 {
     private static final long serialVersionUID = -1681114764096389437L;

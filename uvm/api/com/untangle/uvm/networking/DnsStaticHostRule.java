@@ -27,7 +27,7 @@ import org.hibernate.annotations.Type;
  * @version 1.0
  */
 @Entity
-@Table(name="mvvm_dns_static_host_rule", schema="settings")
+@Table(name="u_dns_static_host_rule", schema="settings")
 public class DnsStaticHostRule extends Rule
 {
     private static final long serialVersionUID = -9166468521319948021L;

@@ -30,7 +30,7 @@ import com.untangle.uvm.node.Rule;
  * Class used to associate two email addresses
  */
 @Entity
-@Table(name="email_addr_pair_rule", schema="settings")
+@Table(name="n_mail_email_addr_pair_rule", schema="settings")
 public class EmailAddressPairRule extends Rule implements Serializable {
     private static final long serialVersionUID = 4188555156332337464L;
 

@@ -22,7 +22,7 @@ import javax.persistence.Table;
  * @version 1.0
  */
 @Entity
-@Table(name="tr_openvpn_c_site_network", schema="settings")
+@Table(name="n_openvpn_c_site_network", schema="settings")
 public class ClientSiteNetwork extends SiteNetwork
 {
     private static final long serialVersionUID = 4617902554944629290L;

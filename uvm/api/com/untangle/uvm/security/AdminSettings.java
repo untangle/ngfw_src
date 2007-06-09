@@ -35,7 +35,7 @@ import org.hibernate.annotations.Cascade;
  * @version 1.0
  */
 @Entity
-@Table(name="admin_settings", schema="settings")
+@Table(name="u_admin_settings", schema="settings")
 public class AdminSettings implements Serializable
 {
     private static final long serialVersionUID = -6013161516125662391L;

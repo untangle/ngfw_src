@@ -25,7 +25,7 @@ import javax.persistence.Table;
  * @version 1.0
  */
 @Entity
-@Table(name="portal_bookmark", schema="settings")
+@Table(name="n_portal_bookmark", schema="settings")
 public class Bookmark implements Serializable
 {
     private static final long serialVersionUID = -7681114679064384937L;

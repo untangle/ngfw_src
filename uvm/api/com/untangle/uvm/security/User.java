@@ -26,7 +26,7 @@ import javax.persistence.Transient;
  * @version 1.0
  */
 @Entity
-@Table(name="mvvm_user", schema="settings")
+@Table(name="u_user", schema="settings")
 public class User implements Serializable
 {
     private static final long serialVersionUID = 11521040868224140L;

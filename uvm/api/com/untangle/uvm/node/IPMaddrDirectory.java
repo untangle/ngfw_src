@@ -35,7 +35,7 @@ import org.hibernate.annotations.IndexColumn;
  * @version 1.0
  */
 @Entity
-@Table(name="ipmaddr_dir", schema="settings")
+@Table(name="u_ipmaddr_dir", schema="settings")
 public class IPMaddrDirectory implements Serializable
 {
     private static final long serialVersionUID = -2636950101710654253L;

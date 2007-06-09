@@ -28,7 +28,7 @@ import com.untangle.uvm.node.IPSessionDesc;
  * @version 1.0
  */
 @Entity
-@Table(name="system_policy_rule", schema="settings")
+@Table(name="u_system_policy_rule", schema="settings")
 public class SystemPolicyRule extends PolicyRule
 {
     /* settings */

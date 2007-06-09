@@ -42,7 +42,7 @@ import org.hibernate.annotations.IndexColumn;
  * @version 1.0
  */
 @Entity
-@Table(name="tr_spyware_settings", schema="settings")
+@Table(name="n_spyware_settings", schema="settings")
 public class SpywareSettings implements Serializable
 {
     private static final long serialVersionUID = -2701816808325279608L;
