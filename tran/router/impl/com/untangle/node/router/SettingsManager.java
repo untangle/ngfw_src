@@ -87,18 +87,18 @@ class SettingsManager
         natSpace = new NetworkSpace();
         natSpace.setName( NetworkUtil.DEFAULT_SPACE_NAME_NAT );
         
-        boolean isRouterEnabled = routerSettings.getRouterEnabled();
-        natSpace.setLive( isRouterEnabled );
+        boolean isNatEnabled = routerSettings.getNatEnabled();
+        natSpace.setLive( isNatEnabled );
         List<IPNetworkRule> networkList = new LinkedList<IPNetworkRule>();
             
-        networkList.add( IPNetworkRule.makeInstance( routerSettings.getRouterInternalAddress(),
-                                                     routerSettings.getRouterInternalSubnet()));
+        networkList.add( IPNetworkRule.makeInstance( routerSettings.getNatInternalAddress(),
+                                                     routerSettings.getNatInternalSubnet()));
         natSpace.setNetworkList( networkList );
         natSpace.setIsDhcpEnabled( false );
         natSpace.setIsTrafficForwarded( true );
-        natSpace.setIsRouterEnabled( true );
-        natSpace.setRouterSpace( primary );
-        natSpace.setRouterAddress( null );
+        natSpace.setIsNatEnabled( true );
+        natSpace.setNatSpace( primary );
+        natSpace.setNatAddress( null );
         
         /* DMZ is disabled on this space */
         natSpace.setIsDmzHostEnabled( false );
@@ -130,7 +130,7 @@ class SettingsManager
 
             if ( intf.getArgonIntf() == IntfConstants.INTERNAL_INTF ) {
                 foundInternal = true;
-                if ( isRouterEnabled ) intf.setNetworkSpace( natSpace );
+                if ( isNatEnabled ) intf.setNetworkSpace( natSpace );
             };
         }
         
@@ -152,7 +152,7 @@ class SettingsManager
                 /* Add each interface to the list */
                 Interface intf =  new Interface( argonIntf, EthernetMedia.AUTO_NEGOTIATE, true );
                 intf.setName( IntfConstants.toName( argonIntf ));
-                if ( isRouterEnabled && ( argonIntf == IntfConstants.INTERNAL_INTF )) {
+                if ( isNatEnabled && ( argonIntf == IntfConstants.INTERNAL_INTF )) {
                     intf.setNetworkSpace( natSpace );
                 } else {
                     intf.setNetworkSpace( primary );
@@ -254,7 +254,7 @@ class SettingsManager
 
 
         for ( NetworkSpace space : networkSpaceList ) {
-            NetworkSpace natSpace = space.getRouterSpace();
+            NetworkSpace natSpace = space.getNatSpace();
             if ( natSpace != null ) {
                 natSpace = networkSpaceMap.get( natSpace.getBusinessPapers());
                 /* if this happens there is nothing the user can do. */
@@ -262,8 +262,8 @@ class SettingsManager
                     throw new ValidateException( "Network space '" + space.getName() + 
                                                  "' has an invalid nat sace." );
                 }
-                space.setRouterSpace( natSpace );
-            } else if ( !space.getIsPrimary() && space.isLive() && space.getIsRouterEnabled()) {
+                space.setNatSpace( natSpace );
+            } else if ( !space.getIsPrimary() && space.isLive() && space.getIsNatEnabled()) {
                 logger.warn( "Network space: " + space.getName() + " has a null nat space" );
             }
         }
@@ -322,17 +322,17 @@ class SettingsManager
             /* Use this for the dmz */
             NetworkSpaceInternal networkSpace = networkSpaceList.get( 0 );
             
-            /* Router is disabled */
-            routerSettings.setRouterEnabled( false );
-            routerSettings.setRouterInternalAddress( RouterUtil.DEFAULT_NAT_ADDRESS );
-            routerSettings.setRouterInternalSubnet( RouterUtil.DEFAULT_NAT_NETMASK );
+            /* Nat is disabled */
+            routerSettings.setNatEnabled( false );
+            routerSettings.setNatInternalAddress( RouterUtil.DEFAULT_NAT_ADDRESS );
+            routerSettings.setNatInternalSubnet( RouterUtil.DEFAULT_NAT_NETMASK );
         } else if ( networkSpaceList.size() > 1 ) {
             NetworkSpaceInternal networkSpace = networkSpaceList.get( 1 );
             
-            routerSettings.setRouterEnabled( networkSpace.getIsEnabled());
+            routerSettings.setNatEnabled( networkSpace.getIsEnabled());
             IPNetwork primary = networkSpace.getPrimaryAddress();
-            routerSettings.setRouterInternalAddress( primary.getNetwork());
-            routerSettings.setRouterInternalSubnet( primary.getNetmask());
+            routerSettings.setNatInternalAddress( primary.getNetwork());
+            routerSettings.setNatInternalSubnet( primary.getNetmask());
         } else {
             logger.error( "No network spaces, returning default settings" );
             routerSettings = getDefaultSettings( tid );
@@ -493,9 +493,9 @@ class SettingsManager
         ProtocolMatcherFactory  prmf = ProtocolMatcherFactory.getInstance();
 
         try {
-            settings.setRouterEnabled( true );
-            settings.setRouterInternalAddress( RouterUtil.DEFAULT_NAT_ADDRESS );
-            settings.setRouterInternalSubnet( RouterUtil.DEFAULT_NAT_NETMASK );
+            settings.setNatEnabled( true );
+            settings.setNatInternalAddress( RouterUtil.DEFAULT_NAT_ADDRESS );
+            settings.setNatInternalSubnet( RouterUtil.DEFAULT_NAT_NETMASK );
 
             settings.setDmzLoggingEnabled( false );
 

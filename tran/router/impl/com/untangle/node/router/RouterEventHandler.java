@@ -319,7 +319,7 @@ class RouterEventHandler extends AbstractEventHandler
             }
 
             
-            if ( space.getIsRouterEnabled()) {
+            if ( space.getIsNatEnabled()) {
                 /* Create a NAT matcher for this space */
                 for ( IPNetwork networkRule : (List<IPNetwork>)space.getNetworkList()) {
                     natMatchers.add( NatMatcher.makeNatMatcher( networkRule, space ));
@@ -396,7 +396,7 @@ class RouterEventHandler extends AbstractEventHandler
             /* All redirecting occurs here */
 
             /* !!!!!!! Need to be able to grab the new address, and have that update with DHCP */
-            InetAddress localAddr = natMatcher.getRouterAddress();
+            InetAddress localAddr = natMatcher.getNatAddress();
 
             // Unfortunately, as of 5/02/05, this can sometimes be null, probably due to
             // initialization order, the sleeping involved, etc.  For now, just make sure
@@ -550,7 +550,7 @@ class RouterEventHandler extends AbstractEventHandler
             }
         }
 
-        if ( space.getIsRouterEnabled()) {
+        if ( space.getIsNatEnabled()) {
             /* Block traffic from entering this network space unfiltered */
             try {
                 unmodified.add( RequestIntfMatcher.makeRouterInstance( space ));
@@ -773,7 +773,7 @@ class NatMatcher
         return this.space;
     }
 
-    InetAddress getRouterAddress()
+    InetAddress getNatAddress()
     {
         /* !!!!! This has to be updated, eg for DHCP on the NATd address */
         return this.natAddress;
@@ -853,7 +853,7 @@ class NatMatcher
                                                        pmf.getAllMatcher(), pmf.getAllMatcher(),
                                                        false, null, -1 );
 
-        InetAddress natAddress = space.getRouterAddress().getAddr();
+        InetAddress natAddress = space.getNatAddress().getAddr();
 
         /* build the interface redirect for nat traffic that is coming back (eg for FTP */
         /* This just redirects it to the first interface in the nat space, this way it gets through */

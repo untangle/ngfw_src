@@ -68,10 +68,10 @@ public class SpaceJPanel extends javax.swing.JPanel implements Savable<Object>, 
         IPaddr natAddress = null;
         if( natEnabled ){
             // NAT ADDRESS SPACE //
-            natSpace = ((RoutertedPair) nattedJComboBox.getSelectedItem()).getNetworkSpace();
+            natSpace = ((NattedPair) nattedJComboBox.getSelectedItem()).getNetworkSpace();
 
             // NAT ADDRESS IP ADDRESS //
-            natAddress = ((RoutertedPair) nattedJComboBox.getSelectedItem()).getNetworkAddress();
+            natAddress = ((NattedPair) nattedJComboBox.getSelectedItem()).getNetworkAddress();
 
             if( (natSpace==null) && (natAddress==null) ){
                 nattedJComboBox.setBackground( Util.INVALID_BACKGROUND_COLOR );
@@ -104,10 +104,10 @@ public class SpaceJPanel extends javax.swing.JPanel implements Savable<Object>, 
 
         // SAVE THE VALUES ////////////////////////////////////
         if( !validateOnly ){
-            thisNetworkSpace.setIsRouterEnabled(natEnabled);
+            thisNetworkSpace.setIsNatEnabled(natEnabled);
             if( natEnabled ){
-                thisNetworkSpace.setRouterSpace(natSpace);
-                thisNetworkSpace.setRouterAddress(natAddress);
+                thisNetworkSpace.setNatSpace(natSpace);
+                thisNetworkSpace.setNatAddress(natAddress);
             }
             thisNetworkSpace.setNetworkList(aliases);
             thisNetworkSpace.setIsTrafficForwarded(forwardingEnabled);
@@ -119,15 +119,15 @@ public class SpaceJPanel extends javax.swing.JPanel implements Savable<Object>, 
 
     String nameCurrent;
     boolean natEnabledCurrent;
-    RoutertedPair nattedPairCurrent;
+    NattedPair nattedPairCurrent;
     String aliasesCurrent;
     boolean forwardingEnabledCurrent;
     int mtuCurrent;
 
-    private class RoutertedPair {
+    private class NattedPair {
         private NetworkSpace networkSpace;
         private IPaddr networkAddress;
-        public RoutertedPair(NetworkSpace networkSpace, IPaddr networkAddress){
+        public NattedPair(NetworkSpace networkSpace, IPaddr networkAddress){
             this.networkSpace = networkSpace;
             this.networkAddress = networkAddress;
         }
@@ -140,9 +140,9 @@ public class SpaceJPanel extends javax.swing.JPanel implements Savable<Object>, 
         public NetworkSpace getNetworkSpace(){ return networkSpace; }
         public IPaddr getNetworkAddress(){ return networkAddress; }
         public boolean equals(Object o){
-            if( !(o instanceof RoutertedPair) || (o==null))
+            if( !(o instanceof NattedPair) || (o==null))
                 return false;
-            RoutertedPair other = (RoutertedPair) o;
+            NattedPair other = (NattedPair) o;
             return isEqual(networkSpace,other.getNetworkSpace())
                 && Util.isEqual(networkAddress,other.getNetworkAddress());
         }
@@ -176,27 +176,27 @@ public class SpaceJPanel extends javax.swing.JPanel implements Savable<Object>, 
 
                 /* If DHCP is enabled, add an address with no address */
                 if (networkSpace.getIsDhcpEnabled()) {
-                    RoutertedPair nattedPair = new RoutertedPair(networkSpace,null);
+                    NattedPair nattedPair = new NattedPair(networkSpace,null);
                     nattedJComboBox.addItem( nattedPair );
                     isFirst = false;
                 }
 
                 for( IPNetworkRule address : (List<IPNetworkRule>) networkSpace.getNetworkList() ){
-                    RoutertedPair nattedPair;
-                    if (isFirst) nattedPair = new RoutertedPair(networkSpace,null);
-                    else         nattedPair = new RoutertedPair(networkSpace,address.getNetwork());
+                    NattedPair nattedPair;
+                    if (isFirst) nattedPair = new NattedPair(networkSpace,null);
+                    else         nattedPair = new NattedPair(networkSpace,address.getNetwork());
                     nattedJComboBox.addItem( nattedPair );
                     isFirst = false;
                 }
             }
         }
-        nattedPairCurrent = new RoutertedPair(thisNetworkSpace.getRouterSpace(),thisNetworkSpace.getRouterAddress());
+        nattedPairCurrent = new NattedPair(thisNetworkSpace.getNatSpace(),thisNetworkSpace.getNatAddress());
         nattedJComboBox.setSelectedItem(nattedPairCurrent);
         nattedJComboBox.setBackground( Util.VALID_BACKGROUND_COLOR );
         nattedJComboBox.setEnabled(true);
 
         // ENABLED ///////////
-        natEnabledCurrent = thisNetworkSpace.getIsRouterEnabled();
+        natEnabledCurrent = thisNetworkSpace.getIsNatEnabled();
         this.setRouterEnabledDependency(natEnabledCurrent);
         if( natEnabledCurrent )
             natEnabledJRadioButton.setSelected(true);
@@ -581,7 +581,7 @@ public class SpaceJPanel extends javax.swing.JPanel implements Savable<Object>, 
 
     private void nattedJComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nattedJComboBoxActionPerformed
         if( (nattedPairCurrent!=null) && (nattedJComboBox.getSelectedItem()!=null) )
-            if( !nattedPairCurrent.equals(((RoutertedPair)nattedJComboBox.getSelectedItem())) && (settingsChangedListener != null) )
+            if( !nattedPairCurrent.equals(((NattedPair)nattedJComboBox.getSelectedItem())) && (settingsChangedListener != null) )
                 settingsChangedListener.settingsChanged(this);
     }//GEN-LAST:event_nattedJComboBoxActionPerformed
 

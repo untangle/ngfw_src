@@ -16,19 +16,19 @@ import com.untangle.uvm.node.IPaddr;
 public interface RouterBasicSettings extends RouterCommonSettings
 {
     /** Get whether or not nat is enabled. */
-    public boolean getRouterEnabled();
+    public boolean getNatEnabled();
 
-    public void setRouterEnabled( boolean newValue );
+    public void setNatEnabled( boolean newValue );
 
     /** Get the base of the internal address. */
-    public IPaddr getRouterInternalAddress();
+    public IPaddr getNatInternalAddress();
 
-    public void setRouterInternalAddress( IPaddr newValue );
+    public void setNatInternalAddress( IPaddr newValue );
 
     /** Get the subnet of the internal addresses. */
-    public IPaddr getRouterInternalSubnet();
+    public IPaddr getNatInternalSubnet();
 
-    public void setRouterInternalSubnet( IPaddr newValue );
+    public void setNatInternalSubnet( IPaddr newValue );
 
     /**  Get whether or not DMZ is being used. */
     public boolean getDmzEnabled();

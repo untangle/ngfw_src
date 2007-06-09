@@ -171,12 +171,12 @@ public class RouterSettingsImpl implements Validatable, RouterSettings, Serializ
      * @return is NAT is being used.
      */
     @Column(name="nat_enabled", nullable=false)
-    public boolean getRouterEnabled()
+    public boolean getNatEnabled()
     {
         return natEnabled;
     }
 
-    public void setRouterEnabled( boolean enabled )
+    public void setNatEnabled( boolean enabled )
     {
         natEnabled = enabled;
     }
@@ -188,7 +188,7 @@ public class RouterSettingsImpl implements Validatable, RouterSettings, Serializ
      */
     @Column(name="nat_internal_addr")
     @Type(type="com.untangle.uvm.type.IPaddrUserType")
-    public IPaddr getRouterInternalAddress()
+    public IPaddr getNatInternalAddress()
     {
         if (this.natInternalAddress == null) {
             this.natInternalAddress = NetworkUtil.EMPTY_IPADDR;
@@ -196,7 +196,7 @@ public class RouterSettingsImpl implements Validatable, RouterSettings, Serializ
         return natInternalAddress;
     }
 
-    public void setRouterInternalAddress( IPaddr addr )
+    public void setNatInternalAddress( IPaddr addr )
     {
         if ( addr == null ) addr = NetworkUtil.EMPTY_IPADDR;
         natInternalAddress = addr;
@@ -209,7 +209,7 @@ public class RouterSettingsImpl implements Validatable, RouterSettings, Serializ
      */
     @Column(name="nat_internal_subnet")
     @Type(type="com.untangle.uvm.type.IPaddrUserType")
-    public IPaddr getRouterInternalSubnet()
+    public IPaddr getNatInternalSubnet()
     {
         if (this.natInternalSubnet == null) {
             this.natInternalSubnet = NetworkUtil.EMPTY_IPADDR;
@@ -217,7 +217,7 @@ public class RouterSettingsImpl implements Validatable, RouterSettings, Serializ
         return natInternalSubnet;
     }
 
-    public void setRouterInternalSubnet( IPaddr addr )
+    public void setNatInternalSubnet( IPaddr addr )
     {
         if ( addr == null ) addr = NetworkUtil.EMPTY_IPADDR;
         this.natInternalSubnet = addr;

@@ -53,7 +53,7 @@ import com.untangle.uvm.util.DataSaver;
 import com.untangle.node.token.TokenAdaptor;
 import org.apache.log4j.Logger;
 
-public class RouterImpl extends AbstractNode implements Nat
+public class RouterImpl extends AbstractNode implements Router
 {
     private final RouterEventHandler handler;
     private final RouterSessionManager sessionManager;
@@ -511,8 +511,8 @@ public class RouterImpl extends AbstractNode implements Nat
             RouterBasicSettings defaultSettings =
                 this.settingsManager.getDefaultSettings( this.getTid());
 
-            defaultSettings.setRouterInternalAddress( RouterUtil.SETUP_INTERNAL_ADDRESS );
-            defaultSettings.setRouterInternalSubnet( RouterUtil.SETUP_INTERNAL_SUBNET );
+            defaultSettings.setNatInternalAddress( RouterUtil.SETUP_INTERNAL_ADDRESS );
+            defaultSettings.setNatInternalSubnet( RouterUtil.SETUP_INTERNAL_SUBNET );
             defaultSettings.setDhcpStartAndEndAddress( RouterUtil.SETUP_DHCP_START, RouterUtil.SETUP_DHCP_END );
 
             NetworkSpacesSettings newNetworkSettings = this.settingsManager.

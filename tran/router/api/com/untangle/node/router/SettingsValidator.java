@@ -50,9 +50,9 @@ class SettingsValidator
         /* Update PING redirects */
         for ( RedirectRule rule : routerSettings.getRedirectList()) rule.fixPing();
 
-        boolean natEnabled = routerSettings.getRouterEnabled();
-        IPaddr  natInternalAddress = routerSettings.getRouterInternalAddress();
-        IPaddr  natInternalSubnet = routerSettings.getRouterInternalSubnet();
+        boolean natEnabled = routerSettings.getNatEnabled();
+        IPaddr  natInternalAddress = routerSettings.getNatInternalAddress();
+        IPaddr  natInternalSubnet = routerSettings.getNatInternalSubnet();
 
         AddressValidator av = AddressValidator.getInstance();
 
@@ -88,9 +88,9 @@ class SettingsValidator
 
         List<InterfaceAlias> aliasList = new LinkedList<InterfaceAlias>();
 
-        if ( routerSettings.getRouterEnabled()) {
-            aliasList.add( new InterfaceAlias( routerSettings.getRouterInternalAddress(), 
-                                               routerSettings.getRouterInternalSubnet()));
+        if ( routerSettings.getNatEnabled()) {
+            aliasList.add( new InterfaceAlias( routerSettings.getNatInternalAddress(), 
+                                               routerSettings.getNatInternalSubnet()));
         } else {
             BasicNetworkSettings networkSettings = routerSettings.getNetworkSettings();
             if ( networkSettings != null ) {
@@ -116,7 +116,7 @@ class SettingsValidator
         int index = 0;
         int c = 0;
         for ( NetworkSpace space : networkSpaceList ) {
-            if ( space.isLive() && space.getIsRouterEnabled()) {
+            if ( space.isLive() && space.getIsNatEnabled()) {
                 index = c;
                 break;
             }
