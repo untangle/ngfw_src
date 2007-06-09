@@ -6,20 +6,20 @@ class NodeBuilder
   BaseSuffix = 'base'
 
   def NodeBuilder.makeNode(buildEnv, name, depsImpl = [],
-                                     depsGui = [], depsLocalApi = [],
-                                     baseNodes = [])
+                           depsGui = [], depsLocalApi = [],
+                           baseNodes = [])
     makePackage(buildEnv, name, NodeSuffix, depsImpl, depsGui,
                 depsLocalApi, baseNodes)
   end
 
   def NodeBuilder.makeCasing(buildEnv, name, depsImpl = [], depsGui = [],
-                                  depsLocalApi = [], baseNodes = [])
+                             depsLocalApi = [], baseNodes = [])
     makePackage(buildEnv, name, CasingSuffix, depsImpl, depsGui, depsLocalApi,
                 baseNodes)
   end
 
   def NodeBuilder.makeBase(buildEnv, name, depsImpl = [], depsGui = [],
-                                depsLocalApi = [], baseNodes = [])
+                           depsLocalApi = [], baseNodes = [])
     makePackage(buildEnv, name, BaseSuffix, depsImpl, depsGui, depsLocalApi,
                 baseNodes)
   end
@@ -90,7 +90,7 @@ class NodeBuilder
     if (FileList["#{home}/#{dirName}/gui/**/*.java"].length > 0)
       deps  = baseJarsGui + depsGui
       baseNodes.each do |bt|
-        pkg = buildEnv["#{bt}-base"]
+        pkg = buildEnv["#{bt}"]
         if pkg.hasTarget?('gui')
           deps << pkg['gui']
         end
@@ -100,7 +100,7 @@ class NodeBuilder
                                  ["#{home}/#{dirName}/api", "#{home}/#{dirName}/gui",
                                    "#{home}/#{dirName}/fake"])
       buildEnv.installTarget.installJars(jt, "#{node.distDirectory}/usr/share/untangle/web/webstart",
-                                 nil, true)
+                                         nil, true)
     end
 
     hierFiles = FileList["#{home}/#{dirName}/hier/**/*"]

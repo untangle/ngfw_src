@@ -9,4 +9,4 @@ guiDeps = []
 end
 
 NodeBuilder.makeNode(BuildEnv::SRC, 'hauri', implDeps, guiDeps,
-                               [], 'virus')
+                               [], 'virus-base')

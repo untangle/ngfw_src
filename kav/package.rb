@@ -9,4 +9,4 @@ guiDeps = []
 end
 
 NodeBuilder.makeNode(BuildEnv::SRC, 'kav', implDeps, guiDeps, [],
-                               'virus')
+                               'virus-base')
