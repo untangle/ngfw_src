@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.node.httpblocker;
+package com.untangle.node.webfilter;
 
 import com.untangle.uvm.tapi.TCPNewSessionRequest;
 import com.untangle.uvm.tapi.TCPSession;
@@ -17,15 +17,15 @@ import com.untangle.node.token.TokenHandler;
 import com.untangle.node.token.TokenHandlerFactory;
 import org.apache.log4j.Logger;
 
-public class HttpBlockerFactory implements TokenHandlerFactory
+public class WebFilterFactory implements TokenHandlerFactory
 {
     private final Logger logger = Logger.getLogger(getClass());
 
-    private final HttpBlockerImpl node;
+    private final WebFilterImpl node;
 
     // constructors -----------------------------------------------------------
 
-    HttpBlockerFactory(HttpBlockerImpl node)
+    WebFilterFactory(WebFilterImpl node)
     {
         this.node = node;
     }
@@ -43,6 +43,6 @@ public class HttpBlockerFactory implements TokenHandlerFactory
 
     public TokenHandler tokenHandler(TCPSession session)
     {
-        return new HttpBlockerHandler(session, node);
+        return new WebFilterHandler(session, node);
     }
 }

@@ -9,20 +9,20 @@
  * $Id$
  */
 
-package com.untangle.node.httpblocker;
+package com.untangle.node.webfilter;
 
 
 import com.untangle.uvm.logging.RepositoryDesc;
 import com.untangle.uvm.logging.SimpleEventFilter;
 
-public class HttpBlockerWhitelistFilter
-    implements SimpleEventFilter<HttpBlockerEvent>
+public class WebFilterWhitelistFilter
+    implements SimpleEventFilter<WebFilterEvent>
 {
     private static final RepositoryDesc REPO_DESC
         = new RepositoryDesc("Whitelisted HTTP Traffic");
 
     private static final String WARM_QUERY
-        = "FROM HttpBlockerEvent evt WHERE evt.action = 'P' AND evt.requestLine.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp DESC";
+        = "FROM WebFilterEvent evt WHERE evt.action = 'P' AND evt.requestLine.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp DESC";
 
     // SimpleEventFilter methods ----------------------------------------------
 
@@ -36,7 +36,7 @@ public class HttpBlockerWhitelistFilter
         return new String[] { WARM_QUERY };
     }
 
-    public boolean accept(HttpBlockerEvent e)
+    public boolean accept(WebFilterEvent e)
     {
         return e.isPersistent() && Action.PASS == e.getAction();
     }

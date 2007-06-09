@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.node.httpblocker;
+package com.untangle.node.webfilter;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -35,14 +35,14 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.IndexColumn;
 
 /**
- * HttpBlocker settings.
+ * WebFilter settings.
  *
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
 @Entity
 @Table(name="tr_httpblk_settings", schema="settings")
-public class HttpBlockerSettings implements Serializable
+public class WebFilterSettings implements Serializable
 {
     private static final long serialVersionUID = 1806394002255164868L;
 
@@ -65,9 +65,9 @@ public class HttpBlockerSettings implements Serializable
 
     // constructors -----------------------------------------------------------
 
-    public HttpBlockerSettings() { }
+    public WebFilterSettings() { }
 
-    public HttpBlockerSettings(Tid tid)
+    public WebFilterSettings(Tid tid)
     {
         this.tid = tid;
     }

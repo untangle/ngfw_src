@@ -10,7 +10,7 @@
  */
 
 
-package com.untangle.node.httpblocker.gui;
+package com.untangle.node.webfilter.gui;
 
 import com.untangle.gui.node.*;
 import com.untangle.gui.pipeline.MPipelineJPanel;

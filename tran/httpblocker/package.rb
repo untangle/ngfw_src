@@ -1,13 +1,13 @@
 # -*-ruby-*-
 
 http = BuildEnv::SRC['http-casing']
-httpblocker = BuildEnv::SRC['httpblocker-node']
+webfilter = BuildEnv::SRC['webfilter-node']
 
-NodeBuilder.makeNode(BuildEnv::SRC, 'httpblocker',
+NodeBuilder.makeNode(BuildEnv::SRC, 'webfilter',
                                [http['localapi']], [http['gui']])
 
-deps = [httpblocker['gui'], http['gui']]
+deps = [webfilter['gui'], http['gui']]
 
-ServletBuilder.new(httpblocker, 'com.untangle.node.httpblocker.jsp',
-                   "#{SRC_HOME}/tran/httpblocker/servlets/httpblocker", [],
+ServletBuilder.new(webfilter, 'com.untangle.node.webfilter.jsp',
+                   "#{SRC_HOME}/tran/webfilter/servlets/webfilter", [],
                    deps, [], [BuildEnv::SERVLET_COMMON])

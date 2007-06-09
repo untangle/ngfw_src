@@ -9,16 +9,16 @@
  * $Id$
  */
 
-package com.untangle.node.httpblocker;
+package com.untangle.node.webfilter;
 
 import com.untangle.uvm.logging.EventManager;
 import com.untangle.uvm.node.Node;
 
-public interface HttpBlocker extends Node
+public interface WebFilter extends Node
 {
-    HttpBlockerSettings getHttpBlockerSettings();
-    void setHttpBlockerSettings(HttpBlockerSettings settings);
-    HttpBlockerBlockDetails getDetails(String nonce);
+    WebFilterSettings getWebFilterSettings();
+    void setWebFilterSettings(WebFilterSettings settings);
+    WebFilterBlockDetails getDetails(String nonce);
 
-    EventManager<HttpBlockerEvent> getEventManager();
+    EventManager<WebFilterEvent> getEventManager();
 }

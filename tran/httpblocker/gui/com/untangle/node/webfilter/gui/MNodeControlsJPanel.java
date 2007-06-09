@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.node.httpblocker.gui;
+package com.untangle.node.webfilter.gui;
 
 import javax.swing.JTabbedPane;
 

@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.node.httpblocker;
+package com.untangle.node.webfilter;
 
 
 import com.untangle.uvm.tapi.TCPSession;
@@ -22,7 +22,7 @@ import com.untangle.node.token.Header;
 import com.untangle.node.token.Token;
 import org.apache.log4j.Logger;
 
-public class HttpBlockerHandler extends HttpStateMachine
+public class WebFilterHandler extends HttpStateMachine
 {
     private static final int SCAN = Node.GENERIC_0_COUNTER;
     private static final int BLOCK = Node.GENERIC_1_COUNTER;
@@ -30,11 +30,11 @@ public class HttpBlockerHandler extends HttpStateMachine
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    private final HttpBlockerImpl node;
+    private final WebFilterImpl node;
 
     // constructors -----------------------------------------------------------
 
-    HttpBlockerHandler(TCPSession session, HttpBlockerImpl node)
+    WebFilterHandler(TCPSession session, WebFilterImpl node)
     {
         super(session);
 

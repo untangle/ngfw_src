@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.node.httpblocker;
+package com.untangle.node.webfilter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,13 +42,13 @@ import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
-public class HttpBlockerImpl extends AbstractNode implements HttpBlocker
+public class WebFilterImpl extends AbstractNode implements WebFilter
 {
     private static int deployCount = 0;
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    private final HttpBlockerFactory factory = new HttpBlockerFactory(this);
+    private final WebFilterFactory factory = new WebFilterFactory(this);
 
     private final PipeSpec pipeSpec = new SoloPipeSpec
         ("http-blocker", this, new TokenAdaptor(this, factory), Fitting.HTTP_TOKENS,
@@ -56,46 +56,46 @@ public class HttpBlockerImpl extends AbstractNode implements HttpBlocker
     private final PipeSpec[] pipeSpecs = new PipeSpec[] { pipeSpec };
 
     private final Blacklist blacklist = new Blacklist(this);
-    private final HttpBlockerReplacementGenerator replacementGenerator;
+    private final WebFilterReplacementGenerator replacementGenerator;
 
-    private final EventLogger<HttpBlockerEvent> eventLogger;
+    private final EventLogger<WebFilterEvent> eventLogger;
 
-    private volatile HttpBlockerSettings settings;
+    private volatile WebFilterSettings settings;
 
     // constructors -----------------------------------------------------------
 
-    public HttpBlockerImpl()
+    public WebFilterImpl()
     {
-        replacementGenerator = new HttpBlockerReplacementGenerator(getTid());
+        replacementGenerator = new WebFilterReplacementGenerator(getTid());
         NodeContext tctx = getNodeContext();
         eventLogger = EventLoggerFactory.factory().getEventLogger(tctx);
-        SimpleEventFilter sef = new HttpBlockerBlockedFilter();
+        SimpleEventFilter sef = new WebFilterBlockedFilter();
         eventLogger.addSimpleEventFilter(sef);
-        ListEventFilter lef = new HttpBlockerAllFilter();
+        ListEventFilter lef = new WebFilterAllFilter();
         eventLogger.addListEventFilter(lef);
-        sef = new HttpBlockerWhitelistFilter();
+        sef = new WebFilterWhitelistFilter();
         eventLogger.addSimpleEventFilter(sef);
-        lef = new HttpBlockerPassedFilter();
+        lef = new WebFilterPassedFilter();
         eventLogger.addListEventFilter(lef);
     }
 
-    // HttpBlocker methods ----------------------------------------------------
+    // WebFilter methods ----------------------------------------------------
 
-    public HttpBlockerSettings getHttpBlockerSettings()
+    public WebFilterSettings getWebFilterSettings()
     {
         if( settings == null )
             logger.error("Settings not yet initialized. State: " + getNodeContext().getRunState() );
         return settings;
     }
 
-    public void setHttpBlockerSettings(final HttpBlockerSettings settings)
+    public void setWebFilterSettings(final WebFilterSettings settings)
     {
         TransactionWork tw = new TransactionWork()
             {
                 public boolean doWork(Session s)
                 {
                     s.saveOrUpdate(settings);
-                    HttpBlockerImpl.this.settings = settings;
+                    WebFilterImpl.this.settings = settings;
                     return true;
                 }
 
@@ -107,12 +107,12 @@ public class HttpBlockerImpl extends AbstractNode implements HttpBlocker
         reconfigure();
     }
 
-    public EventManager<HttpBlockerEvent> getEventManager()
+    public EventManager<WebFilterEvent> getEventManager()
     {
         return eventLogger;
     }
 
-    public HttpBlockerBlockDetails getDetails(String nonce)
+    public WebFilterBlockDetails getDetails(String nonce)
     {
         return replacementGenerator.getNonceData(nonce);
     }
@@ -131,7 +131,7 @@ public class HttpBlockerImpl extends AbstractNode implements HttpBlocker
             logger.debug(getTid() + " init settings");
         }
 
-        HttpBlockerSettings settings = new HttpBlockerSettings(getTid());
+        WebFilterSettings settings = new WebFilterSettings(getTid());
 
         List s = new ArrayList();
 
@@ -305,7 +305,7 @@ public class HttpBlockerImpl extends AbstractNode implements HttpBlocker
 
         updateToCurrentCategories(settings);
 
-        setHttpBlockerSettings(settings);
+        setWebFilterSettings(settings);
     }
     @Override
     protected void postInit(String[] args)
@@ -315,9 +315,9 @@ public class HttpBlockerImpl extends AbstractNode implements HttpBlocker
                 public boolean doWork(Session s)
                 {
                     Query q = s.createQuery
-                        ("from HttpBlockerSettings hbs where hbs.tid = :tid");
+                        ("from WebFilterSettings hbs where hbs.tid = :tid");
                     q.setParameter("tid", getTid());
-                    settings = (HttpBlockerSettings)q.uniqueResult();
+                    settings = (WebFilterSettings)q.uniqueResult();
 
                     updateToCurrentCategories(settings);
 
@@ -352,12 +352,12 @@ public class HttpBlockerImpl extends AbstractNode implements HttpBlocker
         return blacklist;
     }
 
-    void log(HttpBlockerEvent se)
+    void log(WebFilterEvent se)
     {
         eventLogger.log(se);
     }
 
-    String generateNonce(HttpBlockerBlockDetails details)
+    String generateNonce(WebFilterBlockDetails details)
     {
         return replacementGenerator.generateNonce(details);
     }
@@ -393,7 +393,7 @@ public class HttpBlockerImpl extends AbstractNode implements HttpBlocker
     // This is broken out since we added categories in 3.1, and since
     // the list can't be modified by the user it's quite safe to do
     // this here.
-    private void updateToCurrentCategories(HttpBlockerSettings settings)
+    private void updateToCurrentCategories(WebFilterSettings settings)
     {
         List curCategories = settings.getBlacklistCategories();
 
@@ -487,10 +487,10 @@ public class HttpBlockerImpl extends AbstractNode implements HttpBlocker
                 }
             };
 
-        if (asm.loadInsecureApp("/httpblocker", "httpblocker", v)) {
-            logger.debug("Deployed HttpBlocker WebApp");
+        if (asm.loadInsecureApp("/webfilter", "webfilter", v)) {
+            logger.debug("Deployed WebFilter WebApp");
         } else {
-            logger.error("Unable to deploy HttpBlocker WebApp");
+            logger.error("Unable to deploy WebFilter WebApp");
         }
     }
 
@@ -502,10 +502,10 @@ public class HttpBlockerImpl extends AbstractNode implements HttpBlocker
         UvmLocalContext mctx = UvmContextFactory.context();
         LocalAppServerManager asm = mctx.appServerManager();
 
-        if (asm.unloadWebApp("/httpblocker")) {
-            logger.debug("Unloaded HttpBlocker WebApp");
+        if (asm.unloadWebApp("/webfilter")) {
+            logger.debug("Unloaded WebFilter WebApp");
         } else {
-            logger.warn("Unable to unload HttpBlocker WebApp");
+            logger.warn("Unable to unload WebFilter WebApp");
         }
     }
 
@@ -513,11 +513,11 @@ public class HttpBlockerImpl extends AbstractNode implements HttpBlocker
 
     public Object getSettings()
     {
-        return getHttpBlockerSettings();
+        return getWebFilterSettings();
     }
 
     public void setSettings(Object settings)
     {
-        setHttpBlockerSettings((HttpBlockerSettings)settings);
+        setWebFilterSettings((WebFilterSettings)settings);
     }
 }

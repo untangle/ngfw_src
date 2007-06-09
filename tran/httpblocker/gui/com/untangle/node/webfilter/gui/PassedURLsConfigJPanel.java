@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.node.httpblocker.gui;
+package com.untangle.node.webfilter.gui;
 
 import java.awt.Insets;
 import java.net.URL;
@@ -22,7 +22,7 @@ import com.untangle.gui.node.*;
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.editTable.*;
 import com.untangle.uvm.node.*;
-import com.untangle.node.httpblocker.*;
+import com.untangle.node.webfilter.*;
 
 public class PassedURLsConfigJPanel extends MEditTableJPanel {
 
@@ -95,15 +95,15 @@ class PassedURLTableModel extends MSortedTableModel<Object>{
 
         // SAVE SETTINGS /////////
         if( !validateOnly ){
-            HttpBlockerSettings httpBlockerSettings = (HttpBlockerSettings) settings;
-            httpBlockerSettings.setPassedUrls( elemList );
+            WebFilterSettings webFilterSettings = (WebFilterSettings) settings;
+            webFilterSettings.setPassedUrls( elemList );
         }
 
     }
 
     public Vector<Vector> generateRows(Object settings){
-        HttpBlockerSettings httpBlockerSettings = (HttpBlockerSettings) settings;
-        List<StringRule> passedUrls = (List<StringRule>) httpBlockerSettings.getPassedUrls();
+        WebFilterSettings webFilterSettings = (WebFilterSettings) settings;
+        List<StringRule> passedUrls = (List<StringRule>) webFilterSettings.getPassedUrls();
         Vector<Vector> allRows = new Vector<Vector>(passedUrls.size());
         Vector tempRow = null;
         int rowIndex = 0;

@@ -1,4 +1,4 @@
-<%@ page language="java" import="com.untangle.uvm.*, com.untangle.uvm.node.*, com.untangle.uvm.security.*, com.untangle.node.httpblocker.*"%>
+<%@ page language="java" import="com.untangle.uvm.*, com.untangle.uvm.node.*, com.untangle.uvm.security.*, com.untangle.node.webfilter.*"%>
 
 <%
 UvmLocalContext uvm = UvmContextFactory.context();
@@ -13,8 +13,8 @@ String tidStr = request.getParameter("tid");
 Tid tid = new Tid(Long.parseLong(tidStr));
 
 NodeContext tctx = tman.nodeContext(tid);
-HttpBlocker tran = (HttpBlocker)tctx.node();
-HttpBlockerBlockDetails bd = tran.getDetails(nonce);
+WebFilter tran = (WebFilter)tctx.node();
+WebFilterBlockDetails bd = tran.getDetails(nonce);
 
 String header = null == bd ? "" : bd.getHeader();
 String contact = null == bd ? "your administrator" : bd.getContact();

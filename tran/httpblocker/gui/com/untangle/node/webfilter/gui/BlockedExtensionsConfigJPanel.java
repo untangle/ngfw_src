@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.node.httpblocker.gui;
+package com.untangle.node.webfilter.gui;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -23,7 +23,7 @@ import com.untangle.gui.node.*;
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.editTable.*;
 import com.untangle.uvm.node.*;
-import com.untangle.node.httpblocker.*;
+import com.untangle.node.webfilter.*;
 
 public class BlockedExtensionsConfigJPanel extends MEditTableJPanel {
 
@@ -83,14 +83,14 @@ class ExtensionTableModel extends MSortedTableModel<Object>{
         }
 
         if( !validateOnly ){
-            HttpBlockerSettings httpBlockerSettings = (HttpBlockerSettings) settings;
-            httpBlockerSettings.setBlockedExtensions( elemList );
+            WebFilterSettings webFilterSettings = (WebFilterSettings) settings;
+            webFilterSettings.setBlockedExtensions( elemList );
         }
     }
 
     public Vector<Vector> generateRows(Object settings){
-        HttpBlockerSettings httpBlockerSettings = (HttpBlockerSettings) settings;
-        List<StringRule> blockedExtensions = (List<StringRule>) httpBlockerSettings.getBlockedExtensions();
+        WebFilterSettings webFilterSettings = (WebFilterSettings) settings;
+        List<StringRule> blockedExtensions = (List<StringRule>) webFilterSettings.getBlockedExtensions();
         Vector<Vector> allRows = new Vector<Vector>(blockedExtensions.size());
         Vector tempRow = null;
         int rowIndex = 0;

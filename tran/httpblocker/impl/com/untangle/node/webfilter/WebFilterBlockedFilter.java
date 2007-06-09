@@ -9,19 +9,19 @@
  * $Id$
  */
 
-package com.untangle.node.httpblocker;
+package com.untangle.node.webfilter;
 
 
 import com.untangle.uvm.logging.RepositoryDesc;
 import com.untangle.uvm.logging.SimpleEventFilter;
 
-public class HttpBlockerBlockedFilter implements SimpleEventFilter<HttpBlockerEvent>
+public class WebFilterBlockedFilter implements SimpleEventFilter<WebFilterEvent>
 {
     private static final RepositoryDesc REPO_DESC
         = new RepositoryDesc("Blocked HTTP Traffic");
 
     private static final String WARM_QUERY
-        = "FROM HttpBlockerEvent evt WHERE evt.action = 'B' AND evt.requestLine.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp DESC";
+        = "FROM WebFilterEvent evt WHERE evt.action = 'B' AND evt.requestLine.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp DESC";
 
     // SimpleEventFilter methods ----------------------------------------------
 
@@ -35,7 +35,7 @@ public class HttpBlockerBlockedFilter implements SimpleEventFilter<HttpBlockerEv
         return new String[] { WARM_QUERY };
     }
 
-    public boolean accept(HttpBlockerEvent e)
+    public boolean accept(WebFilterEvent e)
     {
         return e.isPersistent() && Action.BLOCK == e.getAction();
     }

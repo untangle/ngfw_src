@@ -10,7 +10,7 @@
  */
 
 
-package com.untangle.node.httpblocker.gui;
+package com.untangle.node.webfilter.gui;
 
 import java.util.*;
 import javax.swing.event.ChangeEvent;
@@ -27,30 +27,30 @@ import com.untangle.uvm.node.PipelineEndpoints;
 import com.untangle.uvm.node.Node;
 import com.untangle.node.http.HttpRequestEvent;
 import com.untangle.node.http.RequestLine;
-import com.untangle.node.httpblocker.Action;
-import com.untangle.node.httpblocker.HttpBlocker;
-import com.untangle.node.httpblocker.HttpBlockerEvent;
-import com.untangle.node.httpblocker.Reason;
+import com.untangle.node.webfilter.Action;
+import com.untangle.node.webfilter.WebFilter;
+import com.untangle.node.webfilter.WebFilterEvent;
+import com.untangle.node.webfilter.Reason;
 
 public class LogJPanel extends MLogTableJPanel {
 
     public LogJPanel(Node node, MNodeControlsJPanel mNodeControlsJPanel){
         super(node, mNodeControlsJPanel);
 
-        final HttpBlocker httpBlocker = (HttpBlocker)logNode;
+        final WebFilter webFilter = (WebFilter)logNode;
 
         setTableModel(new LogTableModel());
 
-        EventManager<HttpBlockerEvent> eventManager = httpBlocker.getEventManager();
+        EventManager<WebFilterEvent> eventManager = webFilter.getEventManager();
         for (RepositoryDesc fd : eventManager.getRepositoryDescs()) {
             queryJComboBox.addItem(fd.getName());
         }
     }
 
     protected void refreshSettings(){
-        HttpBlocker httpBlocker = (HttpBlocker)logNode;
-        EventManager<HttpBlockerEvent> em = httpBlocker.getEventManager();
-        EventRepository<HttpBlockerEvent> ef = em.getRepository((String)queryJComboBox.getSelectedItem());
+        WebFilter webFilter = (WebFilter)logNode;
+        EventManager<WebFilterEvent> em = webFilter.getEventManager();
+        EventRepository<WebFilterEvent> ef = em.getRepository((String)queryJComboBox.getSelectedItem());
         settings = ef.getEvents();
     }
 
@@ -73,11 +73,11 @@ public class LogJPanel extends MLogTableJPanel {
         public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception {}
 
         public Vector<Vector> generateRows(Object settings){
-            List<HttpBlockerEvent> requestLogList = (List<HttpBlockerEvent>) settings;
+            List<WebFilterEvent> requestLogList = (List<WebFilterEvent>) settings;
             Vector<Vector> allEvents = new Vector<Vector>(requestLogList.size());
             Vector event;
 
-            for( HttpBlockerEvent requestLog : requestLogList ){
+            for( WebFilterEvent requestLog : requestLogList ){
                 RequestLine rl = requestLog.getRequestLine();
                 HttpRequestEvent re = null == rl ? null : rl.getHttpRequestEvent();
                 PipelineEndpoints pe = null == rl ? null : rl.getPipelineEndpoints();

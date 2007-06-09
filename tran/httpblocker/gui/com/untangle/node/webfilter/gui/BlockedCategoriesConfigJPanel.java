@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.node.httpblocker.gui;
+package com.untangle.node.webfilter.gui;
 
 import java.util.*;
 import javax.swing.*;
@@ -19,7 +19,7 @@ import javax.swing.table.*;
 import com.untangle.gui.node.*;
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.editTable.*;
-import com.untangle.node.httpblocker.*;
+import com.untangle.node.webfilter.*;
 
 public class BlockedCategoriesConfigJPanel extends MEditTableJPanel {
 
@@ -124,16 +124,16 @@ class CategoryTableModel extends MSortedTableModel<Object> {
 
         // SAVE SETTINGS /////////
         if( !validateOnly ){
-            HttpBlockerSettings httpBlockerSettings = (HttpBlockerSettings) settings;
-            httpBlockerSettings.setBlacklistCategories( elemList );
-            httpBlockerSettings.setFascistMode( isFascistMode );
+            WebFilterSettings webFilterSettings = (WebFilterSettings) settings;
+            webFilterSettings.setBlacklistCategories( elemList );
+            webFilterSettings.setFascistMode( isFascistMode );
         }
 
     }
 
     public Vector<Vector> generateRows(Object settings){
-        HttpBlockerSettings httpBlockerSettings = (HttpBlockerSettings) settings;
-        List<BlacklistCategory> blacklistCategories = (List<BlacklistCategory>) httpBlockerSettings.getBlacklistCategories();
+        WebFilterSettings webFilterSettings = (WebFilterSettings) settings;
+        List<BlacklistCategory> blacklistCategories = (List<BlacklistCategory>) webFilterSettings.getBlacklistCategories();
         Vector<Vector> allRows = new Vector<Vector>(blacklistCategories.size());
         Vector tempRow = null;
         int rowIndex = 0;
@@ -145,7 +145,7 @@ class CategoryTableModel extends MSortedTableModel<Object> {
         tempRow.add( "All Web Content" );
 
         ComboBoxModel newComboBoxModel = copyComboBoxModel(fascistComboBoxModel);
-        if( httpBlockerSettings.getFascistMode() ){
+        if( webFilterSettings.getFascistMode() ){
             newComboBoxModel.setSelectedItem( ACTION_BLOCK );
         }
         else{

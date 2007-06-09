@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.node.httpblocker.gui;
+package com.untangle.node.webfilter.gui;
 
 import java.awt.Insets;
 import java.util.*;
@@ -21,7 +21,7 @@ import com.untangle.gui.node.*;
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.editTable.*;
 import com.untangle.uvm.node.*;
-import com.untangle.node.httpblocker.*;
+import com.untangle.node.webfilter.*;
 
 public class BlockedMIMETypesConfigJPanel extends MEditTableJPanel {
 
@@ -82,15 +82,15 @@ class MIMETypeTableModel extends MSortedTableModel<Object>{
 
         // SAVE SETTINGS //////////////
         if( !validateOnly ){
-            HttpBlockerSettings httpBlockerSettings = (HttpBlockerSettings) settings;
-            httpBlockerSettings.setBlockedMimeTypes( elemList );
+            WebFilterSettings webFilterSettings = (WebFilterSettings) settings;
+            webFilterSettings.setBlockedMimeTypes( elemList );
         }
 
     }
 
     public Vector<Vector> generateRows(Object settings){
-        HttpBlockerSettings httpBlockerSettings = (HttpBlockerSettings) settings;
-        List<MimeTypeRule> blockedMimeTypes = (List<MimeTypeRule>) httpBlockerSettings.getBlockedMimeTypes();
+        WebFilterSettings webFilterSettings = (WebFilterSettings) settings;
+        List<MimeTypeRule> blockedMimeTypes = (List<MimeTypeRule>) webFilterSettings.getBlockedMimeTypes();
         Vector<Vector> allRows = new Vector<Vector>(blockedMimeTypes.size());
         Vector tempRow = null;
         int rowIndex = 0;

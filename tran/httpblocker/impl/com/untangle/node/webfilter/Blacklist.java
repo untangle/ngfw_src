@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.node.httpblocker;
+package com.untangle.node.webfilter;
 
 import java.io.File;
 import java.io.IOException;
@@ -53,15 +53,15 @@ class Blacklist
         }
     }
 
-    private static final File DB_HOME = new File(System.getProperty("bunnicula.db.dir"), "httpblocker");
+    private static final File DB_HOME = new File(System.getProperty("bunnicula.db.dir"), "webfilter");
 
     private final Logger logger = Logger.getLogger(Blacklist.class);
 
-    private final HttpBlockerImpl node;
+    private final WebFilterImpl node;
 
     private final UrlDatabase<String> urlDatabase = new UrlDatabase<String>();
 
-    private volatile HttpBlockerSettings settings;
+    private volatile WebFilterSettings settings;
     private volatile String[] blockedUrls = new String[0];
     private volatile String[] passedUrls = new String[0];
 
@@ -69,14 +69,14 @@ class Blacklist
 
     // constructors -----------------------------------------------------------
 
-    Blacklist(HttpBlockerImpl node)
+    Blacklist(WebFilterImpl node)
     {
         this.node = node;
     }
 
     // blacklist methods ------------------------------------------------------
 
-    void configure(HttpBlockerSettings settings)
+    void configure(WebFilterSettings settings)
     {
         this.settings = settings;
     }
@@ -162,7 +162,7 @@ class Blacklist
         String passCategory = passClient(clientIp);
 
         if (null != passCategory) {
-            HttpBlockerEvent hbe = new HttpBlockerEvent
+            WebFilterEvent hbe = new WebFilterEvent
                 (requestLine.getRequestLine(), Action.PASS, Reason.PASS_CLIENT,
                  passCategory);
             logger.info(hbe);
@@ -175,7 +175,7 @@ class Blacklist
                 String category = null == sr ? null : sr.getDescription();
 
                 if (null != category) {
-                    HttpBlockerEvent hbe = new HttpBlockerEvent
+                    WebFilterEvent hbe = new WebFilterEvent
                         (requestLine.getRequestLine(), Action.PASS,
                          Reason.PASS_URL, category);
                     node.log(hbe);
@@ -186,7 +186,7 @@ class Blacklist
             }
         }
 
-        // check in HttpBlockerSettings
+        // check in WebFilterSettings
         String nonce = checkBlacklist(host, requestLine);
 
         if (null != nonce) {
@@ -200,12 +200,12 @@ class Blacklist
                 if (logger.isDebugEnabled()) {
                     logger.debug("blocking extension " + exn);
                 }
-                HttpBlockerEvent hbe = new HttpBlockerEvent
+                WebFilterEvent hbe = new WebFilterEvent
                     (requestLine.getRequestLine(), Action.BLOCK,
                      Reason.BLOCK_EXTENSION, exn);
                 node.log(hbe);
 
-                HttpBlockerBlockDetails bd = new HttpBlockerBlockDetails
+                WebFilterBlockDetails bd = new WebFilterBlockDetails
                     (settings, host, uri.toString(),
                      "extension (" + exn + ")");
                 return node.generateNonce(bd);
@@ -229,21 +229,21 @@ class Blacklist
         for (MimeTypeRule rule : settings.getBlockedMimeTypes()) {
             MimeType mt = rule.getMimeType();
             if (rule.isLive() && mt.matches(contentType)) {
-                HttpBlockerEvent hbe = new HttpBlockerEvent
+                WebFilterEvent hbe = new WebFilterEvent
                     (requestLine.getRequestLine(), Action.BLOCK,
                      Reason.BLOCK_MIME, contentType);
                 node.log(hbe);
                 String host = header.getValue("host");
                 URI uri = requestLine.getRequestUri().normalize();
 
-                HttpBlockerBlockDetails bd = new HttpBlockerBlockDetails
+                WebFilterBlockDetails bd = new WebFilterBlockDetails
                     (settings, host, uri.toString(),
                      "Mime-Type (" + contentType + ")");
                 return node.generateNonce(bd);
             }
         }
 
-        HttpBlockerEvent e = new HttpBlockerEvent(requestLine.getRequestLine(),
+        WebFilterEvent e = new WebFilterEvent(requestLine.getRequestLine(),
                                                   null, null, null, true);
         node.log(e);
 
@@ -280,11 +280,11 @@ class Blacklist
         if (settings.getFascistMode()) {
             String c = "All Web Content";
             Reason r = Reason.BLOCK_ALL;
-            HttpBlockerEvent hbe = new HttpBlockerEvent
+            WebFilterEvent hbe = new WebFilterEvent
                 (requestLine.getRequestLine(), Action.BLOCK, r, c);
             node.log(hbe);
 
-            HttpBlockerBlockDetails bd = new HttpBlockerBlockDetails
+            WebFilterBlockDetails bd = new WebFilterBlockDetails
                 (settings, host, uri, "not allowed");
             return node.generateNonce(bd);
         }
@@ -317,11 +317,11 @@ class Blacklist
 
             if (null != bc) {
                 Action a = bc.getLogOnly() ? Action.PASS : Action.BLOCK;
-                HttpBlockerEvent hbe = new HttpBlockerEvent
+                WebFilterEvent hbe = new WebFilterEvent
                     (requestLine.getRequestLine(), a, reason, category);
                 node.log(hbe);
             } else if (null == stringRule || stringRule.getLog()) {
-                HttpBlockerEvent hbe = new HttpBlockerEvent
+                WebFilterEvent hbe = new WebFilterEvent
                     (requestLine.getRequestLine(), Action.BLOCK, reason, category);
                 node.log(hbe);
             }
@@ -331,7 +331,7 @@ class Blacklist
             } else if (null != bc && bc.getLogOnly()) {
                 return null;
             } else {
-                HttpBlockerBlockDetails bd = new HttpBlockerBlockDetails
+                WebFilterBlockDetails bd = new WebFilterBlockDetails
                     (settings, host, uri, category);
                 return node.generateNonce(bd);
             }

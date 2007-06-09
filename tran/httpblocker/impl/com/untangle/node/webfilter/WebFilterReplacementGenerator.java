@@ -6,16 +6,16 @@
  * Untangle, Inc. ("Confidential Information"). You shall
  * not disclose such Confidential Information.
  *
- * $Id: HttpBlockerImpl.java 8987 2007-02-27 19:35:47Z amread $
+ * $Id: WebFilterImpl.java 8987 2007-02-27 19:35:47Z amread $
  */
 
-package com.untangle.node.httpblocker;
+package com.untangle.node.webfilter;
 
 import com.untangle.uvm.security.Tid;
 import com.untangle.node.http.ReplacementGenerator;
 
-class HttpBlockerReplacementGenerator
-    extends ReplacementGenerator<HttpBlockerBlockDetails>
+class WebFilterReplacementGenerator
+    extends ReplacementGenerator<WebFilterBlockDetails>
 {
     private static final String BLOCK_TEMPLATE
         = "<HTML><HEAD>"
@@ -33,7 +33,7 @@ class HttpBlockerReplacementGenerator
 
     // constructors -----------------------------------------------------------
 
-    HttpBlockerReplacementGenerator(Tid tid)
+    WebFilterReplacementGenerator(Tid tid)
     {
         super(tid);
     }
@@ -41,7 +41,7 @@ class HttpBlockerReplacementGenerator
     // ReplacementGenerator methods -------------------------------------------
 
     @Override
-    protected String getReplacement(HttpBlockerBlockDetails details)
+    protected String getReplacement(WebFilterBlockDetails details)
     {
         return String.format(BLOCK_TEMPLATE, details.getHeader(),
                              details.getHost(), details.getUri(),
@@ -52,7 +52,7 @@ class HttpBlockerReplacementGenerator
     @Override
     protected String getRedirectUrl(String nonce, String host, Tid tid)
     {
-        return "http://" + host + "/httpblocker/blockpage.jsp?nonce=" + nonce
+        return "http://" + host + "/webfilter/blockpage.jsp?nonce=" + nonce
             + "&tid=" + tid;
     }
 }

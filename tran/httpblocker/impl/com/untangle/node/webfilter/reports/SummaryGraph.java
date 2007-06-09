@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.node.httpblocker.reports;
+package com.untangle.node.webfilter.reports;
 
 import com.untangle.uvm.reporting.*;
 

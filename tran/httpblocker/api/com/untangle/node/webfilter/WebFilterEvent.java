@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.node.httpblocker;
+package com.untangle.node.webfilter;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -34,7 +34,7 @@ import org.hibernate.annotations.Type;
 @Entity
 @org.hibernate.annotations.Entity(mutable=false)
     @Table(name="tr_httpblk_evt_blk", schema="events")
-    public class HttpBlockerEvent extends LogEvent
+    public class WebFilterEvent extends LogEvent
     {
         // action types
         private static final int PASSED = 0;
@@ -51,9 +51,9 @@ import org.hibernate.annotations.Type;
 
         // constructors -----------------------------------------------------------
 
-        public HttpBlockerEvent() { }
+        public WebFilterEvent() { }
 
-        public HttpBlockerEvent(RequestLine requestLine, Action action,
+        public WebFilterEvent(RequestLine requestLine, Action action,
                                 Reason reason, String category, boolean nonEvent)
         {
             this.requestLine = requestLine;
@@ -68,7 +68,7 @@ import org.hibernate.annotations.Type;
             }
         }
 
-        public HttpBlockerEvent(RequestLine requestLine, Action action,
+        public WebFilterEvent(RequestLine requestLine, Action action,
                                 Reason reason, String category)
         {
             this.requestLine = requestLine;
@@ -109,7 +109,7 @@ import org.hibernate.annotations.Type;
          *
          * @return the action.
          */
-        @Type(type="com.untangle.node.httpblocker.ActionUserType")
+        @Type(type="com.untangle.node.webfilter.ActionUserType")
         public Action getAction()
         {
             return action;
@@ -125,7 +125,7 @@ import org.hibernate.annotations.Type;
          *
          * @return the reason.
          */
-        @Type(type="com.untangle.node.httpblocker.ReasonUserType")
+        @Type(type="com.untangle.node.webfilter.ReasonUserType")
         public Reason getReason()
         {
             return reason;
@@ -149,7 +149,7 @@ import org.hibernate.annotations.Type;
             this.category = category;
         }
 
-        // HttpBlockerEvent methods -----------------------------------------------
+        // WebFilterEvent methods -----------------------------------------------
 
         @Transient
         private int getActionType()
@@ -208,7 +208,7 @@ import org.hibernate.annotations.Type;
 
         public String toString()
         {
-            return "HttpBlockerEvent id: " + getId() + " RequestLine: "
+            return "WebFilterEvent id: " + getId() + " RequestLine: "
                 + requestLine;
         }
     }

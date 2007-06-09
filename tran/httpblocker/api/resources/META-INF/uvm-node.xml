@@ -12,9 +12,9 @@ $Id$
 -->
 
 <uvm-node>
-  <node-desc name="httpblocker-node"
+  <node-desc name="webfilter-node"
                   display-name="Web Filter"
-                  classname="com.untangle.node.httpblocker.HttpBlockerImpl"
-                  gui-classname="com.untangle.node.httpblocker.gui.MNodeJPanel"/>
+                  classname="com.untangle.node.webfilter.WebFilterImpl"
+                  gui-classname="com.untangle.node.webfilter.gui.MNodeJPanel"/>
   <parent>http-casing</parent>
 </uvm-node>

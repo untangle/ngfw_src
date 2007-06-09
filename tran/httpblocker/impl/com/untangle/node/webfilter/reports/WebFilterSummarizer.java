@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.node.httpblocker.reports;
+package com.untangle.node.webfilter.reports;
 
 import java.sql.*;
 
@@ -17,11 +17,11 @@ import com.untangle.uvm.reporting.BaseSummarizer;
 import com.untangle.uvm.reporting.Util;
 import org.apache.log4j.Logger;
 
-public class HttpBlockerSummarizer extends BaseSummarizer {
+public class WebFilterSummarizer extends BaseSummarizer {
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    public HttpBlockerSummarizer() { }
+    public WebFilterSummarizer() { }
 
     public String getSummaryHtml(Connection conn, Timestamp startDate, Timestamp endDate)
     {

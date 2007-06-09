@@ -9,19 +9,19 @@
  * $Id$
  */
 
-package com.untangle.node.httpblocker;
+package com.untangle.node.webfilter;
 
 
 import com.untangle.node.http.BlockDetails;
 
-public class HttpBlockerBlockDetails extends BlockDetails
+public class WebFilterBlockDetails extends BlockDetails
 {
-    private final HttpBlockerSettings settings;
+    private final WebFilterSettings settings;
     private final String reason;
 
     // constructor ------------------------------------------------------------
 
-    public HttpBlockerBlockDetails(HttpBlockerSettings settings, String host,
+    public WebFilterBlockDetails(WebFilterSettings settings, String host,
                                    String uri, String reason)
     {
         super(host, uri);

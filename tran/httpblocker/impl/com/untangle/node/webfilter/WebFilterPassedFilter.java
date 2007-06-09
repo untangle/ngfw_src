@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.node.httpblocker;
+package com.untangle.node.webfilter;
 
 import java.util.Iterator;
 import java.util.List;
@@ -22,10 +22,10 @@ import org.hibernate.Hibernate;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
-public class HttpBlockerPassedFilter implements ListEventFilter<HttpBlockerEvent>
+public class WebFilterPassedFilter implements ListEventFilter<WebFilterEvent>
 {
     private static final String RL_QUERY = "FROM RequestLine rl ORDER BY rl.httpRequestEvent.timeStamp DESC";
-    private static final String EVT_QUERY = "FROM HttpBlockerEvent evt WHERE evt.requestLine = :requestLine";
+    private static final String EVT_QUERY = "FROM WebFilterEvent evt WHERE evt.requestLine = :requestLine";
 
     private static final RepositoryDesc REPO_DESC
         = new RepositoryDesc("Passed HTTP Traffic");
@@ -35,12 +35,12 @@ public class HttpBlockerPassedFilter implements ListEventFilter<HttpBlockerEvent
         return REPO_DESC;
     }
 
-    public boolean accept(HttpBlockerEvent e)
+    public boolean accept(WebFilterEvent e)
     {
         return null == e.getAction() || Action.PASS == e.getAction();
     }
 
-    public void warm(Session s, List<HttpBlockerEvent> l, int limit,
+    public void warm(Session s, List<WebFilterEvent> l, int limit,
                      Map<String, Object> params)
     {
         Query q = s.createQuery(RL_QUERY);
@@ -58,9 +58,9 @@ public class HttpBlockerPassedFilter implements ListEventFilter<HttpBlockerEvent
             RequestLine rl = (RequestLine)i.next();
             Query evtQ = s.createQuery(EVT_QUERY);
             evtQ.setEntity("requestLine", rl);
-            HttpBlockerEvent evt = (HttpBlockerEvent)evtQ.uniqueResult();
+            WebFilterEvent evt = (WebFilterEvent)evtQ.uniqueResult();
             if (null == evt) {
-                evt = new HttpBlockerEvent(rl, null, null, null, true);
+                evt = new WebFilterEvent(rl, null, null, null, true);
                 Hibernate.initialize(rl);
                 l.add(evt);
                 c++;
