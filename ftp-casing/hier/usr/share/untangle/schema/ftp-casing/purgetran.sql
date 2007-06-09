@@ -1,1 +1,0 @@
-DROP TABLE settings.tr_ftp_settings;

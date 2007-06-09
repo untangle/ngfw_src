@@ -1,1 +1,0 @@
-DELETE FROM settings.tr_ftp_settings WHERE tid = :tid;
