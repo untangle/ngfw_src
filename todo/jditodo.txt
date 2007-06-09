@@ -1,5 +1,7 @@
 br
 --
+find all instances of (/usr/share/)metavize
+
 debian build afu
 prj.el
 buildtools/alpine.rb?
