@@ -70,7 +70,7 @@ createuser -U postgres -d -A untangle 2>/dev/null
 createdb -O postgres -U postgres uvm 2>/dev/null
 createlang -U postgres plpgsql uvm 2>/dev/null
 
-CLASSPATH="@UVM_HOME@/conf:@UVM_HOME@/lib/uvm/"
+CLASSPATH="@UVM_HOME@/conf:@UVM_HOME@/lib/uvm-bootstrap/"
 
 #
 # build environment tweeks
@@ -108,7 +108,7 @@ done
 exec $JAVA_HOME/bin/java \
     -Djavax.net.ssl.trustStore=@UVM_CONF@/cacerts \
     -Djava.endorsed.dirs=@ENDORSED_LIB@ \
-    -Djava.library.path=@ALPINE_LIB@ \
+    -Djava.library.path=@SRC_LIB@ \
     -Dbunnicula.home=@UVM_HOME@ \
     -Dargon.shield.cfg_file=@UVM_HOME@/conf/shield.cfg \
     -Djdbc.drivers=org.postgresql.Driver \
