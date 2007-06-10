@@ -7,7 +7,7 @@ class Jars
   end
 
   def Jars.makeGroup(*jars)
-     [ jars ].flatten.uniq
+    [ jars ].flatten.uniq
   end
 
   Kernel.system("make -C #{SRC_HOME}/downloads") unless $CleanBuild

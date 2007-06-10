@@ -8,7 +8,7 @@ phish = BuildEnv::SRC['phish-node']
 NodeBuilder.makeNode(BuildEnv::SRC, 'phish',
                      [mail['localapi'], http['localapi']],
                      [mail['gui'], http['gui'] ], [],
-                     ['spam-base', 'clam-base'])
+                     [BuildEnv::SRC['spam-base'], BuildEnv::SRC['clam-base']])
 
 deps = [http['gui'], phish['gui'], spam['gui']]
 

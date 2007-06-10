@@ -27,16 +27,16 @@ class NodeBuilder
   private
   ## Create the necessary packages and targets to build a node
   def NodeBuilder.makePackage(buildEnv, name, suffix, depsImpl = [],
-                                   depsGui = [], depsLocalApi = [],
-                                   baseNodes = [])
+                              depsGui = [], depsLocalApi = [],
+                              baseNodes = [])
     home = buildEnv.home
 
     uvm = BuildEnv::SRC['uvm']
     gui  = BuildEnv::SRC['untangle-client']
     if (suffix == 'node')
-        dirName = name;
+      dirName = name;
     else
-        dirName = "#{name}-#{suffix}"
+      dirName = "#{name}-#{suffix}"
     end
     node = buildEnv["#{name}-#{suffix}"]
     buildEnv['tran'].registerTarget("#{name}-#{suffix}", node)
@@ -48,14 +48,14 @@ class NodeBuilder
     ## If there is a local API, build it first
     localApi = FileList["#{home}/#{dirName}/localapi/**/*.java"]
     baseNodes.each do |bt|
-      localApi += FileList["#{home}/#{bt}/localapi/**/*.java"]
+      localApi += FileList["#{bt.buildEnv.home}/#{bt.name}/localapi/**/*.java"]
     end
 
     if (localApi.length > 0)
       deps  = baseJarsLocalApi + depsLocalApi
 
-      paths = baseNodes.map { |bt| ["#{home}/#{bt}/api",
-          "#{home}/#{bt}/localapi"] }.flatten
+      paths = baseNodes.map { |bt| ["#{bt.buildEnv.home}/#{bt.name}/api",
+          "#{bt.buildEnv.home}/#{bt.name}/localapi"] }.flatten
 
       localApiJar = JarTarget.buildTarget(node, deps, 'localapi',
                                           ["#{home}/#{dirName}/api", "#{home}/#{dirName}/localapi"] + paths)
@@ -70,12 +70,12 @@ class NodeBuilder
     if (localApiJar.nil?)
       ## Only include the API if the localJarApi doesn't exist
       directories << "#{home}/#{dirName}/api"
-      baseNodes.each { |bt| directories << "#{home}/#{bt}/api" }
+      baseNodes.each { |bt| directories << "#{bt.buildEnv.home}/#{bt.name}/api" }
     else
       deps << localApiJar
     end
 
-    baseNodes.each { |bt| directories << "#{home}/#{bt}/impl" }
+    baseNodes.each { |bt| directories << "#{bt.buildEnv.home}/#{bt.name}/impl" }
 
     ## The IMPL jar depends on the reports
     deps << JasperTarget.buildTarget( node,
@@ -89,8 +89,7 @@ class NodeBuilder
     ## Only create the GUI api if there are files for the GUI
     if (FileList["#{home}/#{dirName}/gui/**/*.java"].length > 0)
       deps  = baseJarsGui + depsGui
-      baseNodes.each do |bt|
-        pkg = buildEnv["#{bt}"]
+      baseNodes.each do |pkg|
         if pkg.hasTarget?('gui')
           deps << pkg['gui']
         end

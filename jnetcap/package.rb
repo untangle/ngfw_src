@@ -6,15 +6,15 @@ uvm    = BuildEnv::SRC['uvm']
 ## jnetcap
 j = JarTarget.buildTarget(jnetcap, Jars::Base, 'impl', "#{SRC_HOME}/jnetcap/impl" )
 BuildEnv::SRC.installTarget.installJars(j, "#{uvm.distDirectory}/usr/share/untangle/lib",
-                           nil, false, true)
+                                        nil, false, true)
 
 headerClasses = [ 'com.untangle.jnetcap.Netcap',
-                  'com.untangle.jnetcap.IPTraffic',
-                  'com.untangle.jnetcap.ICMPTraffic',
-                  'com.untangle.jnetcap.NetcapUDPSession',
-                  'com.untangle.jnetcap.NetcapSession',
-                  'com.untangle.jnetcap.NetcapTCPSession',
-                  'com.untangle.jnetcap.Shield' ]
+  'com.untangle.jnetcap.IPTraffic',
+  'com.untangle.jnetcap.ICMPTraffic',
+  'com.untangle.jnetcap.NetcapUDPSession',
+  'com.untangle.jnetcap.NetcapSession',
+  'com.untangle.jnetcap.NetcapTCPSession',
+  'com.untangle.jnetcap.Shield' ]
 
 javah = JavahTarget.new(jnetcap, j, headerClasses)
 

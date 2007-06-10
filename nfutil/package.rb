@@ -11,7 +11,7 @@ file nfutil do
   compilerEnv = CCompilerEnv.new()
 
   CBuilder.new(BuildEnv::SRC, compilerEnv).makeBinary(source, nfutil,
-                                                       [], ['netfilter_queue'])
+                                                      [], ['netfilter_queue'])
 end
 
 BuildEnv::SRC.installTarget.registerDependency(nfutil)

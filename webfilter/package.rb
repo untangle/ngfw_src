@@ -4,7 +4,7 @@ http = BuildEnv::SRC['http-casing']
 webfilter = BuildEnv::SRC['webfilter-node']
 
 NodeBuilder.makeNode(BuildEnv::SRC, 'webfilter',
-                               [http['localapi']], [http['gui']])
+                     [http['localapi']], [http['gui']])
 
 deps = [webfilter['gui'], http['gui']]
 

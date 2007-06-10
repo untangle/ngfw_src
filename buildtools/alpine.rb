@@ -83,7 +83,7 @@ file libalpine_so do
   archivesFiles = archives.map { |n| BuildEnv::SRC[n]['archive'].filename }
 
   CBuilder.new(BuildEnv::SRC, compilerEnv).makeSharedLibrary(archivesFiles, libalpine_so, [],
-                                              ['xml2', 'sysfs', 'netfilter_queue'], ['ipq'])
+                                                             ['xml2', 'sysfs', 'netfilter_queue'], ['ipq'])
 end
 
 BuildEnv::SRC['uvm']['impl'].registerDependency(libalpine_so)

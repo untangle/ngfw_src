@@ -8,19 +8,19 @@ uvm    = BuildEnv::SRC['uvm']
 deps = Jars::Base + [jnetcap['impl']]
 j = JarTarget.buildTarget(jvector, deps, 'impl', "#{SRC_HOME}/jvector/impl")
 BuildEnv::SRC.installTarget.installJars(j, "#{uvm.distDirectory}/usr/share/untangle/lib",
-                           nil, false, true)
+                                        nil, false, true)
 
 headerClasses = [ 'com.untangle.jvector.OutgoingSocketQueue',
-                  'com.untangle.jvector.IncomingSocketQueue',
-                  'com.untangle.jvector.Relay',
-                  'com.untangle.jvector.Vector',
-                  'com.untangle.jvector.Sink',
-                  'com.untangle.jvector.Source',
-                  'com.untangle.jvector.TCPSink',
-                  'com.untangle.jvector.TCPSource',
-                  'com.untangle.jvector.UDPSource',
-                  'com.untangle.jvector.UDPSink',
-                  'com.untangle.jvector.Crumb' ]
+  'com.untangle.jvector.IncomingSocketQueue',
+  'com.untangle.jvector.Relay',
+  'com.untangle.jvector.Vector',
+  'com.untangle.jvector.Sink',
+  'com.untangle.jvector.Source',
+  'com.untangle.jvector.TCPSink',
+  'com.untangle.jvector.TCPSource',
+  'com.untangle.jvector.UDPSource',
+  'com.untangle.jvector.UDPSink',
+  'com.untangle.jvector.Crumb' ]
 
 javah = JavahTarget.new(jvector, j, headerClasses)
 

@@ -4,7 +4,7 @@ http = BuildEnv::SRC['http-casing']
 spyware = BuildEnv::SRC['spyware-node']
 
 NodeBuilder.makeNode(BuildEnv::SRC, 'spyware', [http["localapi"]],
-                               [http["localapi"]])
+                     [http["localapi"]])
 
 deps = [spyware['gui'], http['gui']]
 

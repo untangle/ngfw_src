@@ -9,4 +9,4 @@ guiDeps = []
 end
 
 NodeBuilder.makeNode(BuildEnv::SRC, 'clam', implDeps, guiDeps, [],
-                               ['virus-base', 'clam-base'])
+                     [BuildEnv::SRC['virus-base'], BuildEnv::SRC['clam-base']])
