@@ -33,7 +33,7 @@ resetBunnicula() {
 if [ $# -eq 0 ]; then
     sleep 1
     ## Just append any arguments, they don't matter
-    nohup sh @PREFIX@/usr/share/metavize/uvm_restart.sh 1 2 > @PREFIX@/var/log/uvm/restart.log 2>&1 &
+    nohup sh @PREFIX@/usr/share/untangle/uvm_restart.sh 1 2 > @PREFIX@/var/log/uvm/restart.log 2>&1 &
 else
     resetBunnicula
 fi

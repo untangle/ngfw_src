@@ -7,7 +7,7 @@ IPTABLES="/sbin/iptables"
 EBTABLES="/sbin/ebtables"
 #EBTABLES=ebtablesDbg
 
-RT_TABLE_NAME_PREFIX="metavize-"
+RT_TABLE_NAME_PREFIX="untangle-"
 
 ## Expecte bridge configuration.
 BRIDGE_CFG_FILE=@UVM_CONF@/bridge_cfg
