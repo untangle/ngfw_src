@@ -68,7 +68,6 @@ require "#{SRC_HOME}/spamassassin/package.rb"
 
 ## Virus based nodes
 require "#{SRC_HOME}/clam/package.rb"
-require "#{SRC_HOME}/hauri/package.rb"
 require "#{SRC_HOME}/kav/package.rb"
 
 libalpine_so = "#{BuildEnv::SRC.staging}/libalpine.so"
