@@ -36,7 +36,7 @@ import org.hibernate.annotations.Type;
  * @version 1.0
  */
 @Entity
-@Table(name="node_state_change", schema="events")
+@Table(name="u_node_state_change", schema="events")
 class NodeStateChange extends LogEvent
 {
     private Tid tid;

@@ -27,7 +27,7 @@ import com.untangle.uvm.security.Tid;
  * @version 1.0
  */
 @Entity
-@Table(name="node_manager_state", schema="settings")
+@Table(name="u_node_manager_state", schema="settings")
 class NodeManagerState
 {
     private Long id;

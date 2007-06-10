@@ -33,7 +33,7 @@ import org.hibernate.annotations.Type;
  * @version 1.0
  */
 @Entity
-@Table(name="node_preferences")
+@Table(name="u_node_preferences")
 public class NodePreferences implements Serializable
 {
     private static final long serialVersionUID = 8220361738391151248L;
