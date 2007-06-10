@@ -13,7 +13,7 @@
 !include "setpath.nsi"
 
 !define HOME "openvpn"
-!define MV_FILES "@MVVM_CONF@/openvpn"
+!define MV_FILES "@UVM_CONF@/openvpn"
 !define MV_PACKAGE_DIR "${MV_FILES}/client-packages"
 !define MV_PKI_DIR "${MV_FILES}/pki"
 !define BIN "${HOME}\bin"

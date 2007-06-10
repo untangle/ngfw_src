@@ -1,6 +1,6 @@
 #!/bin/sh
 
-exec >> @MVVM_LOG@/openvpn.log 2>&1
+exec >> @UVM_LOG@/openvpn.log 2>&1
 
 ## Sleep a little while
 sleep 1

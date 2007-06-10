@@ -1,8 +1,8 @@
 #!/bin/sh
 
-exec >> @MVVM_LOG@/openvpn.log 2>&1
+exec >> @UVM_LOG@/openvpn.log 2>&1
 
-GLOBALS=@MVVM_HOME@/openvpn/globals
+GLOBALS=@UVM_HOME@/openvpn/globals
 
 baseNotRequired="true"
 

@@ -1,8 +1,8 @@
 #!/bin/sh
 
-exec >> @MVVM_LOG@/openvpn.log 2>&1
+exec >> @UVM_LOG@/openvpn.log 2>&1
 
-GLOBALS=@MVVM_HOME@/openvpn/globals
+GLOBALS=@UVM_HOME@/openvpn/globals
 
 baseNotRequired="true"
 
@@ -16,13 +16,13 @@ fi
 
 function cleanPKI()
 {
-    ${RM_CMD} -rf '@MVVM_CONF@/openvpn/pki'
+    ${RM_CMD} -rf '@UVM_CONF@/openvpn/pki'
     mkdir -p ${PKI_DIR}
 }
 
 function cleanPackages()
 {
-    ${RM_CMD} -rf '@MVVM_CONF@/openvpn/client-packages'
+    ${RM_CMD} -rf '@UVM_CONF@/openvpn/client-packages'
     mkdir -p ${PACKAGE_DIR}
 }
 
@@ -36,7 +36,7 @@ function cleanOpenvpn()
 
 function cleanMisc()
 {
-    ${RM_CMD} -rf '@MVVM_CONF@/openvpn/misc'
+    ${RM_CMD} -rf '@UVM_CONF@/openvpn/misc'
     mkdir -p ${MISC_DIR}
 }
 

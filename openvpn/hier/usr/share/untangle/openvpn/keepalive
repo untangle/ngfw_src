@@ -1,6 +1,6 @@
 #!/bin/sh
 
-exec >> @MVVM_LOG@/openvpn.log 2>&1
+exec >> @UVM_LOG@/openvpn.log 2>&1
 
 currentPid=`pidof openvpn`
 expectedPid=`cat /var/run/openvpn.client.pid`
@@ -13,9 +13,9 @@ fi
 
 echo -n "."
 
-## Test if the MVVM is aware of the VPN interface
+## Test if the UVM is aware of the VPN interface
 currentYear=`date +"%y"`
-lastError=`tail -n 100 @MVVM_LOG@/console.log | grep 'netcap_intf_db.c:[0-9]*:CRITICAL ERROR: Nothing is known about' | awk  -F '.'  '{ print $1 }' | tail -n 1  | sed "s|^\(..\)-\(..\)|\1/\2/${currentYear}|"`
+lastError=`tail -n 100 @UVM_LOG@/console.log | grep 'netcap_intf_db.c:[0-9]*:CRITICAL ERROR: Nothing is known about' | awk  -F '.'  '{ print $1 }' | tail -n 1  | sed "s|^\(..\)-\(..\)|\1/\2/${currentYear}|"`
 
 if [ "${lastError}x" != "x" ] && (( `date -d "${lastError}" +%s` > ( `date +%s` - 60 ))) ; then
    echo -e "\n[DEBUG:`date`] Running mcli updateAddress to renew interfaces ${lastError}"

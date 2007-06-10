@@ -1,9 +1,9 @@
 #!/bin/sh
 
-SCRIPT_DIR=@MVVM_HOME@/openvpn
+SCRIPT_DIR=@UVM_HOME@/openvpn
 DATA_DIR=${SCRIPT_DIR}
 
-CONF_DIR="@MVVM_CONF@/openvpn"
+CONF_DIR="@UVM_CONF@/openvpn"
 MISC_DIR="${CONF_DIR}/misc"
 
 ZIP_BASE="untangle-vpn"
