@@ -25,7 +25,7 @@ FIELD_7.type=String
 QUERY=\
 SELECT evt.time_stamp, c_client_addr, c_server_addr, c_server_port, \
        virus_name, virus_cleaned, name \
-  FROM tr_virus_evt evt \
+  FROM n_virus_evt evt \
          JOIN pl_endp endp \
            ON (evt.pl_endp_id = endp.event_id \
              AND NOT evt.clean \

@@ -14,7 +14,7 @@ FIELD_4.type=Long
 QUERY=\
 SELECT uname, ident, count, all_count \
   FROM (SELECT page.uid AS uname, evt.ident, COUNT(*) \
-          FROM tr_spyware_evt_cookie evt \
+          FROM n_spyware_evt_cookie evt \
             JOIN reports.webpages page USING (request_id) \
           WHERE page.uid = $P{userName} \
             AND evt.time_stamp >= $P{startTime} \
@@ -23,7 +23,7 @@ SELECT uname, ident, count, all_count \
           ORDER BY count DESC) AS foo, \
        (SELECT SUM(count) AS all_count \
           FROM (SELECT COUNT(*) \
-                  FROM tr_spyware_evt_cookie evt \
+                  FROM n_spyware_evt_cookie evt \
                     JOIN reports.webpages page USING (request_id) \
                   WHERE page.uid = $P{userName} \
                     AND evt.time_stamp >= $P{startTime} \

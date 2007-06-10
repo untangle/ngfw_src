@@ -21,7 +21,7 @@ FIELD_6.type=Long
 QUERY=\
 SELECT time_stamp, client_addr, dropped, rejected, limited, \
        (dropped + rejected + limited) AS total_actions \
-  FROM shield_rejection_evt \
+  FROM n_shield_rejection_evt \
   WHERE time_stamp >= $P{startTime} \
     AND time_stamp < $P{endTime} \
   ORDER BY time_stamp DESC

@@ -24,7 +24,7 @@ QUERY=\
 SELECT activex.time_stamp, COALESCE(NULLIF(page.uid, ''), page.hname) AS name, \
        page.c_client_addr, page.c_server_addr, page.c_server_port, \
        activex.ident, page.host \
-  FROM tr_spyware_evt_activex activex \
+  FROM n_spyware_evt_activex activex \
        JOIN reports.webpages page USING (request_id) \
   WHERE (activex.time_stamp >= $P{startTime} \
     AND activex.time_stamp < $P{endTime}) \

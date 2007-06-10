@@ -33,7 +33,7 @@ SELECT time_stamp, server_type, recip_addr, from_addr, virus_name, ip_addr, \
         evt.virus_name, c_client_addr AS ip_addr, \
         evt.action, evt.notify_action \
    FROM reports.emails_smtp msg \
-        JOIN tr_virus_evt_smtp evt USING (msg_id) \
+        JOIN n_virus_evt_smtp evt USING (msg_id) \
    WHERE (NOT evt.clean \
      AND evt.time_stamp >= $P{startTime} \
      AND evt.time_stamp < $P{endTime} \
@@ -45,7 +45,7 @@ SELECT time_stamp, server_type, recip_addr, from_addr, virus_name, ip_addr, \
         evt.virus_name, s_server_addr AS ip_addr, \
         evt.action, 'N' AS notify_action \
    FROM reports.emails msg  \
-        JOIN tr_virus_evt_mail evt USING (msg_id) \
+        JOIN n_virus_evt_mail evt USING (msg_id) \
    WHERE (NOT evt.clean \
      AND evt.time_stamp >= $P{startTime} \
      AND evt.time_stamp < $P{endTime} \

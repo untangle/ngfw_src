@@ -22,7 +22,7 @@ SELECT start_time, \
        client_name AS user, \
        HOST(remote_address) AS raddr, \
        remote_port AS rport \
-  FROM tr_openvpn_connect_evt \
+  FROM n_openvpn_connect_evt \
   WHERE start_time >= $P{startTime} \
      AND start_time < $P{endTime} \
   ORDER BY start_time DESC

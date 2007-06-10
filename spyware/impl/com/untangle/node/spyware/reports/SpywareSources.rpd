@@ -15,7 +15,7 @@ FIELD_4.type=Long
 QUERY=\
 SELECT ident, count, top_count, all_count \
   FROM (SELECT evt.ident, COUNT(*) \
-          FROM tr_spyware_evt_access evt \
+          FROM n_spyware_evt_access evt \
             JOIN reports.sessions session USING (pl_endp_id) \
           WHERE evt.time_stamp >= $P{startTime} \
             AND evt.time_stamp < $P{endTime} \
@@ -24,7 +24,7 @@ SELECT ident, count, top_count, all_count \
           LIMIT @REPORT_MAX_LENGTH@) AS foo, \
        (SELECT SUM(count) AS top_count \
           FROM (SELECT COUNT(*) \
-                  FROM tr_spyware_evt_access evt \
+                  FROM n_spyware_evt_access evt \
                     JOIN reports.sessions session USING (pl_endp_id) \
                   WHERE evt.time_stamp >= $P{startTime} \
                     AND evt.time_stamp < $P{endTime} \
@@ -33,7 +33,7 @@ SELECT ident, count, top_count, all_count \
                   LIMIT @REPORT_MAX_LENGTH@) AS foo2) AS foo3, \
        (SELECT SUM(count) AS all_count \
           FROM (SELECT COUNT(*) \
-                  FROM tr_spyware_evt_access evt \
+                  FROM n_spyware_evt_access evt \
                     JOIN reports.sessions session USING (pl_endp_id) \
                   WHERE evt.time_stamp >= $P{startTime} \
                     AND evt.time_stamp < $P{endTime} \

@@ -34,7 +34,7 @@
     <parameter name="endTime" isForPrompting="true" class="java.sql.Timestamp"/>
     <queryString><![CDATA[SELECT rule_index AS RULE,
        SUM(p2c_bytes + c2p_bytes) AS DATA_TRANSFERRED
-  FROM tr_nat_redirect_evt evt
+  FROM n_router_redirect_evt evt
          JOIN pl_endp endp ON endp.event_id = evt.pl_endp_id
          JOIN pl_stats stats ON endp.event_id = stats.pl_endp_id
   WHERE evt.time_stamp >= $P{startTime} AND evt.time_stamp < $P{endTime} AND NOT evt.is_dmz

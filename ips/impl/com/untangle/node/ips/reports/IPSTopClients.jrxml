@@ -38,7 +38,7 @@ SELECT rule_sid,
        COUNT(CASE blocked WHEN true THEN 1 ELSE NULL END) AS BLOCKED,
        COUNT(CASE blocked WHEN false THEN 1 ELSE NULL END) AS PASSED,
        COUNT(c_client_addr) AS TOTAL_ACTIONS
-  FROM tr_ids_evt evt
+  FROM n_ips_evt evt
          JOIN pl_endp endp ON (evt.pl_endp_id = endp.event_id)
   WHERE evt.time_stamp >= $P{startTime}
     AND evt.time_stamp < $P{endTime}

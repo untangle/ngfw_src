@@ -27,7 +27,7 @@ FIELD_9.type=String
 QUERY=\
 SELECT evt.time_stamp, c_client_addr, c_server_addr, c_server_port, \
        classification, rule_sid, message, blocked, name \
-  FROM tr_ids_evt evt \
+  FROM n_ips_evt evt \
          JOIN pl_endp endp \
            ON (evt.pl_endp_id = endp.event_id) \
          LEFT OUTER JOIN merged_address_map mam \

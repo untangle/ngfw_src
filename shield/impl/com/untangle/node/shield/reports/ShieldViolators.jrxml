@@ -36,7 +36,7 @@
 SELECT COALESCE(NULLIF(name, ''), HOST(client_addr)) AS HNAME,
        SUM(dropped) AS DROPS, SUM(rejected) AS REJECTS, SUM(limited) AS LIMITS,
        (SUM(dropped) + SUM(rejected) + SUM(limited)) AS TOTAL_ACTIONS
-  FROM shield_rejection_evt
+  FROM n_shield_rejection_evt
          LEFT OUTER JOIN merged_address_map
            ON (client_addr = addr
              AND time_stamp >= start_time

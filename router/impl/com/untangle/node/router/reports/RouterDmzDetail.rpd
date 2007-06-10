@@ -26,7 +26,7 @@ SELECT evt.time_stamp, c_client_addr, c_client_port, \
           WHEN proto = 6 THEN 'TCP' \
           WHEN proto = 17 THEN 'UDP' \
         END) AS protocol \
-  FROM tr_nat_redirect_evt evt \
+  FROM n_router_redirect_evt evt \
          JOIN pl_endp endp \
            ON endp.event_id = evt.pl_endp_id \
   WHERE evt.is_dmz \

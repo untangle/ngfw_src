@@ -32,7 +32,7 @@ SELECT evt.time_stamp, rule_index, c_client_addr, c_client_port, \
           WHEN proto = 6 THEN 'TCP' \
           WHEN proto = 17 THEN 'UDP' \
         END) AS protocol \
-  FROM tr_nat_redirect_evt evt \
+  FROM n_router_redirect_evt evt \
          JOIN pl_endp endp \
            ON evt.pl_endp_id = endp.event_id \
   WHERE NOT evt.is_dmz \

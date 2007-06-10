@@ -1,6 +1,6 @@
 TEMPLATE=Detail
 REPORT_NAME=ProtoFilterDetail
-REPORT_TITLE=Protocol Control - Protocol Policy Violations
+REPORT_TITLE=Protocol Control - Protocol u_policy Violations
 
 EXTRA_PARAM_1.name=reportTitlePrefix
 EXTRA_PARAM_1.type=java.lang.String
@@ -23,7 +23,7 @@ FIELD_7.type=String
 QUERY=\
 SELECT evt.time_stamp, c_client_addr, c_server_addr, c_server_port, \
        protocol, blocked, name \
-  FROM tr_protofilter_evt evt \
+  FROM n_protofilter_evt evt \
          JOIN pl_endp endp \
            ON endp.event_id = evt.pl_endp_id \
          LEFT OUTER JOIN merged_address_map mam \

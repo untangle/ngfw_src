@@ -18,7 +18,7 @@ QUERY=\
 SELECT hname, login, count, top_count, all_count \
   FROM (SELECT COALESCE(NULLIF(name, ''), HOST(client_addr)) AS hname, login, \
                COUNT(*) \
-          FROM mvvm_login_evt evt \
+          FROM u_login_evt evt \
                  LEFT OUTER JOIN merged_address_map mam \
                    ON (evt.client_addr = mam.addr \
                      AND evt.time_stamp >= mam.start_time \
@@ -33,7 +33,7 @@ SELECT hname, login, count, top_count, all_count \
        (SELECT SUM(count) AS top_count \
           FROM (SELECT COALESCE(NULLIF(name, ''), HOST(client_addr)) AS hname, \
                        COUNT(*) \
-                  FROM mvvm_login_evt evt \
+                  FROM u_login_evt evt \
                          LEFT OUTER JOIN merged_address_map mam \
                            ON (evt.client_addr = mam.addr \
                              AND evt.time_stamp >= mam.start_time \
@@ -48,7 +48,7 @@ SELECT hname, login, count, top_count, all_count \
        (SELECT SUM(count) AS all_count \
           FROM (SELECT COALESCE(NULLIF(name, ''), HOST(client_addr)) AS hname, \
                        COUNT(*) \
-                  FROM mvvm_login_evt evt \
+                  FROM u_login_evt evt \
                          LEFT OUTER JOIN merged_address_map mam \
                            ON (evt.client_addr = mam.addr \
                              AND evt.time_stamp >= mam.start_time \

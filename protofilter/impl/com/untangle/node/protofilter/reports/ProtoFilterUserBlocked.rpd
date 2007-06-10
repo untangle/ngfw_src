@@ -19,7 +19,7 @@ QUERY=\
 SELECT uname, protocol, count, size, all_count, all_size \
   FROM (SELECT session.uid AS uname, evt.protocol, COUNT(*), \
         SUM(session.s2p_bytes + session.p2s_bytes) AS size \
-          FROM tr_protofilter_evt AS evt \
+          FROM n_protofilter_evt AS evt \
             JOIN reports.sessions session USING (pl_endp_id) \
           WHERE session.uid = $P{userName} \
             AND evt.blocked \
@@ -30,7 +30,7 @@ SELECT uname, protocol, count, size, all_count, all_size \
        (SELECT SUM(count) AS all_count, SUM(size) AS all_size \
           FROM (SELECT COUNT(*), \
                 SUM(session.s2p_bytes + session.p2s_bytes) AS size \
-                  FROM tr_protofilter_evt AS evt \
+                  FROM n_protofilter_evt AS evt \
                     JOIN reports.sessions session USING (pl_endp_id) \
                   WHERE session.uid = $P{userName} \
                     AND evt.blocked \

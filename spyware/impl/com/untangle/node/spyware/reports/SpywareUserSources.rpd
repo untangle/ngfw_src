@@ -14,7 +14,7 @@ FIELD_4.type=Long
 QUERY=\
 SELECT uname, ident, count, all_count \
   FROM (SELECT session.uid AS uname, evt.ident, COUNT(*) \
-          FROM tr_spyware_evt_access evt \
+          FROM n_spyware_evt_access evt \
             JOIN reports.sessions session USING (pl_endp_id) \
           WHERE session.uid = $P{userName} \
             AND evt.time_stamp >= $P{startTime} \
@@ -23,7 +23,7 @@ SELECT uname, ident, count, all_count \
           ORDER BY count DESC) AS foo, \
        (SELECT SUM(count) AS all_count \
           FROM (SELECT COUNT(*) \
-                  FROM tr_spyware_evt_access evt \
+                  FROM n_spyware_evt_access evt \
                     JOIN reports.sessions session USING (pl_endp_id) \
                   WHERE session.uid = $P{userName} \
                     AND evt.time_stamp >= $P{startTime} \

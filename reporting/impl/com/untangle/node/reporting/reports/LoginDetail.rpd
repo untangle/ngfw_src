@@ -20,7 +20,7 @@ FIELD_6.type=String
 
 QUERY=\
 SELECT evt.time_stamp, client_addr, login, succeeded, reason, name \
-  FROM mvvm_login_evt evt \
+  FROM u_login_evt evt \
          LEFT OUTER JOIN merged_address_map mam \
            ON (evt.client_addr = mam.addr \
              AND evt.time_stamp >= mam.start_time \

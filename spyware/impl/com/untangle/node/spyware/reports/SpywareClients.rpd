@@ -16,7 +16,7 @@ QUERY=\
 SELECT hname, count, top_count, all_count \
   FROM (SELECT COALESCE(NULLIF(name, ''), HOST(c_client_addr)) AS hname, \
                COUNT(*) \
-          FROM tr_spyware_evt_access evt \
+          FROM n_spyware_evt_access evt \
                  JOIN pl_endp endp \
                    ON (evt.pl_endp_id = endp.event_id \
                      AND evt.time_stamp >= $P{startTime} \
@@ -31,7 +31,7 @@ SELECT hname, count, top_count, all_count \
        (SELECT SUM(count) AS top_count \
           FROM (SELECT COALESCE(NULLIF(name, ''), HOST(c_client_addr)) AS hname, \
                        COUNT(*) \
-                  FROM tr_spyware_evt_access evt \
+                  FROM n_spyware_evt_access evt \
                          JOIN pl_endp endp \
                            ON (evt.pl_endp_id = endp.event_id \
                              AND evt.time_stamp >= $P{startTime} \
@@ -46,7 +46,7 @@ SELECT hname, count, top_count, all_count \
        (SELECT SUM(count) AS all_count \
           FROM (SELECT COALESCE(NULLIF(name, ''), HOST(c_client_addr)) AS hname, \
                        COUNT(*) \
-                  FROM tr_spyware_evt_access evt \
+                  FROM n_spyware_evt_access evt \
                          JOIN pl_endp endp \
                            ON (evt.pl_endp_id = endp.event_id \
                              AND evt.time_stamp >= $P{startTime} \

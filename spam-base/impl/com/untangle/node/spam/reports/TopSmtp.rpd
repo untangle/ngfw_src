@@ -19,7 +19,7 @@ QUERY=\
 SELECT lower AS addr, count, top_count, all_count \
   FROM (SELECT LOWER(recip_addr), COUNT(recip_addr) \
           FROM reports.emails_smtp msg \
-               JOIN tr_spam_evt_smtp evt USING (msg_id) \
+               JOIN n_spam_evt_smtp evt USING (msg_id) \
           WHERE (evt.time_stamp >= $P{startTime} \
             AND evt.time_stamp < $P{endTime} \
             AND evt.vendor_name = $P{spamVendor}) \
@@ -29,7 +29,7 @@ SELECT lower AS addr, count, top_count, all_count \
        (SELECT SUM(count) AS top_count \
           FROM (SELECT COUNT(recip_addr) \
                   FROM reports.emails_smtp msg \
-                       JOIN tr_spam_evt_smtp evt USING (msg_id) \
+                       JOIN n_spam_evt_smtp evt USING (msg_id) \
                   WHERE (evt.time_stamp >= $P{startTime} \
                     AND evt.time_stamp < $P{endTime} \
                     AND evt.vendor_name = $P{spamVendor}) \
@@ -39,7 +39,7 @@ SELECT lower AS addr, count, top_count, all_count \
        (SELECT SUM(count) AS all_count \
           FROM (SELECT COUNT(recip_addr) \
                   FROM reports.emails_smtp msg \
-                       JOIN tr_spam_evt_smtp evt USING (msg_id) \
+                       JOIN n_spam_evt_smtp evt USING (msg_id) \
                   WHERE (evt.time_stamp >= $P{startTime} \
                     AND evt.time_stamp < $P{endTime} \
                     AND evt.vendor_name = $P{spamVendor}) \

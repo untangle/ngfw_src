@@ -16,7 +16,7 @@ QUERY=\
 SELECT name, count, top_count, all_count \
   FROM (SELECT COALESCE(NULLIF(page.uid, ''), page.hname) AS name, \
                COUNT(*) \
-          FROM tr_phishhttp_evt evt \
+          FROM n_phish_http_evt evt \
                JOIN reports.webpages page USING (request_id) \
           WHERE (evt.time_stamp >= $P{startTime} \
             AND evt.time_stamp < $P{endTime} \
@@ -27,7 +27,7 @@ SELECT name, count, top_count, all_count \
        (SELECT SUM(count) AS top_count \
           FROM (SELECT COALESCE(NULLIF(page.uid, ''), page.hname) AS name, \
                        COUNT(*) \
-                  FROM tr_phishhttp_evt evt \
+                  FROM n_phish_http_evt evt \
                        JOIN reports.webpages page USING (request_id) \
                   WHERE (evt.time_stamp >= $P{startTime} \
                     AND evt.time_stamp < $P{endTime} \
@@ -38,7 +38,7 @@ SELECT name, count, top_count, all_count \
        (SELECT SUM(count) AS all_count \
           FROM (SELECT COALESCE(NULLIF(page.uid, ''), page.hname) AS name, \
                        COUNT(*) \
-                  FROM tr_phishhttp_evt evt \
+                  FROM n_phish_http_evt evt \
                        JOIN reports.webpages page USING (request_id) \
                   WHERE (evt.time_stamp >= $P{startTime} \
                     AND evt.time_stamp < $P{endTime} \

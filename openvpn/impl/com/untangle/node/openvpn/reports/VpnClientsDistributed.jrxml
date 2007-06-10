@@ -35,7 +35,7 @@
     <queryString><![CDATA[
 SELECT client_name AS user,
        HOST(remote_address) AS raddr
-  FROM tr_openvpn_distr_evt
+  FROM n_openvpn_distr_evt
   WHERE time_stamp >= $P{startTime}
     AND time_stamp < $P{endTime}
   GROUP BY client_name, raddr

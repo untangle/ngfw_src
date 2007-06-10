@@ -12,10 +12,10 @@
   </parameter>
   <queryString><![CDATA[
 SELECT protocol, sum(s2p_bytes + p2s_bytes) AS size, total_size
-FROM (SELECT sum(s2p_bytes + p2s_bytes) AS total_size FROM tr_protofilter_evt AS evt
+FROM (SELECT sum(s2p_bytes + p2s_bytes) AS total_size FROM n_protofilter_evt AS evt
       JOIN pl_stats stats ON stats.pl_endp_id = evt.pl_endp_id
       WHERE evt.time_stamp > $P{startTime} AND evt.time_stamp < $P{endTime}) AS total,
-     tr_protofilter_evt AS evt
+     n_protofilter_evt AS evt
 JOIN pl_stats stats ON stats.pl_endp_id = evt.pl_endp_id
 WHERE evt.time_stamp > $P{startTime}
 AND evt.time_stamp < $P{endTime}

@@ -23,9 +23,9 @@ FIELD_7.type=String
 QUERY=\
 SELECT blk.time_stamp, page.uid AS uname, page.hname, \
        page.host, line.uri, page.c_client_addr, page.c_server_addr \
-  FROM tr_httpblk_evt_blk blk \
+  FROM n_webfilter_evt_blk blk \
        JOIN reports.webpages page USING (request_id) \
-       JOIN tr_http_req_line line USING (request_id) \
+       JOIN n_http_req_line line USING (request_id) \
   WHERE (blk.time_stamp >= $P{startTime} \
     AND blk.time_stamp < $P{endTime} \
     AND blk.action = 'B') \

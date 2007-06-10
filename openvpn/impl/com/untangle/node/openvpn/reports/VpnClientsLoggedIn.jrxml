@@ -36,7 +36,7 @@
        SUM(rx_bytes) AS rx_total,
        SUM(tx_bytes) AS tx_total,
        SUM(rx_bytes + tx_bytes) AS data_total
-  FROM tr_openvpn_connect_evt
+  FROM n_openvpn_connect_evt
   WHERE start_time >= $P{startTime}
     AND start_time < $P{endTime}
   GROUP BY client_name

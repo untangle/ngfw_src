@@ -38,7 +38,7 @@ SELECT c_client_addr AS HOST,
        COUNT(CASE proto WHEN 17 THEN 1 ELSE NULL END) AS UDP_BLOCKS,
        COUNT(CASE proto WHEN 1  THEN 1 ELSE NULL END) AS PING_BLOCKS,
        COUNT(CASE proto WHEN 1 THEN 1 WHEN 6 THEN 1 WHEN 17 THEN 1 ELSE NULL END) AS TOTAL_BLOCKS
-  FROM tr_firewall_evt evt
+  FROM n_firewall_evt evt
          JOIN pl_endp endp ON evt.pl_endp_id = endp.event_id
   WHERE evt.time_stamp >= $P{startTime} AND evt.time_stamp < $P{endTime} AND evt.was_blocked
   GROUP BY HOST

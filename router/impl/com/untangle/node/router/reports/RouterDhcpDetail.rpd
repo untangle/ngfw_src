@@ -26,7 +26,7 @@ SELECT time_stamp, hostname, ip, mac, end_of_lease, \
           WHEN event_type = 2 THEN 'Expire' \
           WHEN event_type = 3 THEN 'Release' \
         END) AS action \
-  FROM tr_nat_evt_dhcp \
+  FROM n_router_evt_dhcp \
   WHERE time_stamp >= $P{startTime} \
     AND time_stamp < $P{endTime} \
   ORDER BY time_stamp DESC

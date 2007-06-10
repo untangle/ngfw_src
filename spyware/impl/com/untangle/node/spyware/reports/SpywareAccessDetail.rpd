@@ -23,7 +23,7 @@ FIELD_7.type=Boolean
 QUERY=\
 SELECT access.time_stamp, name, c_client_addr, c_server_addr, c_server_port, \
        ident, blocked \
-  FROM tr_spyware_evt_access access \
+  FROM n_spyware_evt_access access \
          JOIN pl_endp endp \
            ON (access.pl_endp_id = endp.event_id) \
          LEFT OUTER JOIN merged_address_map mam \

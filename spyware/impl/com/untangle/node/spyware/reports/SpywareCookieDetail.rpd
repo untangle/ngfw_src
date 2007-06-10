@@ -24,7 +24,7 @@ QUERY=\
 SELECT cookie.time_stamp, COALESCE(NULLIF(page.uid, ''), page.hname) AS name, \
        page.c_client_addr, page.c_server_addr, page.c_server_port, \
        cookie.ident, cookie.to_server \
-  FROM tr_spyware_evt_cookie cookie \
+  FROM n_spyware_evt_cookie cookie \
        JOIN reports.webpages page USING (request_id) \
   WHERE (cookie.time_stamp >= $P{startTime} \
     AND cookie.time_stamp < $P{endTime}) \

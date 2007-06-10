@@ -24,9 +24,9 @@ QUERY=\
 SELECT blcklst.time_stamp, COALESCE(NULLIF(page.uid, ''), page.hname) AS name,\
        page.c_client_addr, page.c_server_addr, page.c_server_port, \
        page.host, line.uri \
-  FROM tr_spyware_evt_blacklist blcklst \
+  FROM n_spyware_evt_blacklist blcklst \
        JOIN reports.webpages page USING (request_id) \
-       JOIN tr_http_req_line line USING (request_id) \
+       JOIN n_http_req_line line USING (request_id) \
   WHERE (blcklst.time_stamp >= $P{startTime} \
     AND blcklst.time_stamp < $P{endTime}) \
   ORDER BY blcklst.time_stamp DESC

@@ -18,7 +18,7 @@ FIELD_4.type=Long
 QUERY=\
 (SELECT name, count, top_count, all_count \
    FROM (SELECT virus_name AS name, COUNT(virus_name) \
-           FROM tr_virus_evt_mail \
+           FROM n_virus_evt_mail \
            WHERE NOT clean \
              AND time_stamp >= $P{startTime} \
              AND time_stamp < $P{endTime} \
@@ -28,7 +28,7 @@ QUERY=\
            LIMIT @REPORT_MAX_LENGTH@) AS foo, \
         (SELECT SUM(count) AS top_count \
            FROM (SELECT COUNT(virus_name) \
-                   FROM tr_virus_evt_mail \
+                   FROM n_virus_evt_mail \
                    WHERE NOT clean \
                      AND time_stamp >= $P{startTime} \
                      AND time_stamp < $P{endTime} \
@@ -38,7 +38,7 @@ QUERY=\
                    LIMIT @REPORT_MAX_LENGTH@) AS foo2) AS foo3, \
         (SELECT SUM(count) AS all_count \
            FROM (SELECT COUNT(virus_name) \
-                   FROM tr_virus_evt_mail \
+                   FROM n_virus_evt_mail \
                    WHERE NOT clean \
                      AND time_stamp >= $P{startTime} \
                      AND time_stamp < $P{endTime} \
@@ -49,7 +49,7 @@ QUERY=\
  UNION \
 (SELECT name, count, top_count, all_count \
    FROM (SELECT virus_name AS name, COUNT(virus_name) \
-           FROM tr_virus_evt_smtp \
+           FROM n_virus_evt_smtp \
            WHERE NOT clean \
              AND time_stamp >= $P{startTime} \
              AND time_stamp < $P{endTime} \
@@ -59,7 +59,7 @@ QUERY=\
            LIMIT @REPORT_MAX_LENGTH@) AS foo, \
         (SELECT SUM(count) AS top_count \
            FROM (SELECT COUNT(virus_name) \
-                   FROM tr_virus_evt_smtp \
+                   FROM n_virus_evt_smtp \
                    WHERE NOT clean \
                      AND time_stamp >= $P{startTime} \
                      AND time_stamp < $P{endTime} \
@@ -69,7 +69,7 @@ QUERY=\
                    LIMIT @REPORT_MAX_LENGTH@) AS foo2) AS foo3, \
         (SELECT SUM(count) AS all_count \
            FROM (SELECT COUNT(virus_name) \
-                   FROM tr_virus_evt_smtp \
+                   FROM n_virus_evt_smtp \
                    WHERE NOT clean \
                      AND time_stamp >= $P{startTime} \
                      AND time_stamp < $P{endTime} \

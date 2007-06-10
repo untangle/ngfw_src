@@ -27,7 +27,7 @@ SELECT evt.time_stamp, subject, recip_addr AS user_nm, \
        LOWER(from_addr) AS from_addr, is_spam, \
        s_server_addr AS ip_addr, action \
   FROM reports.emails msg \
-       JOIN tr_spam_evt evt USING (msg_id) \
+       JOIN n_spam_evt evt USING (msg_id) \
   WHERE (evt.is_spam \
     AND evt.time_stamp >= $P{startTime} \
     AND evt.time_stamp < $P{endTime} \

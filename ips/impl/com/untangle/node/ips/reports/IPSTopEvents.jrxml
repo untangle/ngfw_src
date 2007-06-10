@@ -38,7 +38,7 @@ SELECT rule_sid,
        COUNT(rule_sid) AS TOTAL_ACTIONS,
        classification,
        message AS DESCRIPTION
-  FROM tr_ids_evt
+  FROM n_ips_evt
   WHERE time_stamp >= $P{startTime}
     AND time_stamp < $P{endTime}
   GROUP BY rule_sid, blocked, classification, message

@@ -22,7 +22,7 @@ QUERY=\
 SELECT protocol, count, size, top_count, all_count, top_size, all_size \
   FROM (SELECT evt.protocol, COUNT(*), \
         SUM(session.s2p_bytes + session.p2s_bytes) AS size \
-          FROM tr_protofilter_evt AS evt \
+          FROM n_protofilter_evt AS evt \
             JOIN reports.sessions session USING (pl_endp_id) \
           WHERE evt.blocked \
             AND evt.time_stamp >= $P{startTime} \
@@ -33,7 +33,7 @@ SELECT protocol, count, size, top_count, all_count, top_size, all_size \
        (SELECT SUM(count) AS top_count, SUM(size) AS top_size \
           FROM (SELECT COUNT(*), \
                 SUM(session.s2p_bytes + session.p2s_bytes) AS size \
-                  FROM tr_protofilter_evt AS evt \
+                  FROM n_protofilter_evt AS evt \
                     JOIN reports.sessions session USING (pl_endp_id) \
                   WHERE evt.blocked \
                     AND evt.time_stamp >= $P{startTime} \
@@ -44,7 +44,7 @@ SELECT protocol, count, size, top_count, all_count, top_size, all_size \
        (SELECT SUM(count) AS all_count, SUM(size) AS all_size \
           FROM (SELECT COUNT(*), \
                 SUM(session.s2p_bytes + session.p2s_bytes) AS size \
-                  FROM tr_protofilter_evt AS evt \
+                  FROM n_protofilter_evt AS evt \
                     JOIN reports.sessions session USING (pl_endp_id) \
                   WHERE evt.blocked \
                     AND evt.time_stamp >= $P{startTime} \

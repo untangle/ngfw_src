@@ -30,7 +30,7 @@ SELECT evt.time_stamp, was_blocked, rule_index, \
           WHEN proto = 17 THEN 'UDP' \
         END) as protocol, \
        c_server_addr, c_client_addr, c_server_port, c_client_port \
-  FROM tr_firewall_evt evt \
+  FROM n_firewall_evt evt \
          JOIN pl_endp endp \
            ON (evt.pl_endp_id = endp.event_id \
              AND evt.time_stamp >= $P{startTime} \
