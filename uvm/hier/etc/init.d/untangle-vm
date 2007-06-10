@@ -1,8 +1,8 @@
 #! /bin/sh
 # $Id: uvm,v 1.10 2005/03/22 01:51:56 cng Exp $
 
-if [ -f @PREFIX@/etc/default/uvm ] ; then
-    . @PREFIX@/etc/default/uvm
+if [ -f @PREFIX@/etc/default/untangle-vm ] ; then
+    . @PREFIX@/etc/default/untangle-vm
 fi
 
 UVM_LOGDIR=${UVM_LOGDIR:-@PREFIX@/var/log/uvm}

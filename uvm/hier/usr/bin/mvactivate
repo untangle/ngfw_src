@@ -1,6 +1,6 @@
 #!/bin/sh
 
-. @PREFIX@/etc/default/uvm
+. @PREFIX@/etc/default/untangle-vm
 
 REG_KEY="$1"
 

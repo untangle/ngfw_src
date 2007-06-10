@@ -2,7 +2,7 @@
 
 set -e
 
-. @PREFIX@/etc/default/uvm
+. @PREFIX@/etc/default/untangle-vm
 
 NEWPWFILE="/tmp/newpw$$"
 
