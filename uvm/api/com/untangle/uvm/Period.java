@@ -26,7 +26,7 @@ import javax.persistence.Table;
  * @version 1.0
  */
 @Entity
-@Table(schema="settings")
+@Table(name="u_period", schema="settings")
 public class Period implements Serializable
 {
     private static final long serialVersionUID = 2173836337317097459L;
