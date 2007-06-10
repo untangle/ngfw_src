@@ -33,7 +33,7 @@ public class ProtoFilterSummarizer extends BaseSummarizer {
             PreparedStatement ps;
             ResultSet rs;
 
-            sql = "SELECT COUNT(*) FROM tr_protofilter_evt WHERE time_stamp >= ? AND time_stamp < ?";
+            sql = "SELECT COUNT(*) FROM n_protofilter_evt WHERE time_stamp >= ? AND time_stamp < ?";
             ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);
@@ -43,7 +43,7 @@ public class ProtoFilterSummarizer extends BaseSummarizer {
             rs.close();
             ps.close();
 
-            sql = "SELECT COUNT(*) FROM tr_protofilter_evt WHERE time_stamp >= ? AND time_stamp < ? AND blocked";
+            sql = "SELECT COUNT(*) FROM n_protofilter_evt WHERE time_stamp >= ? AND time_stamp < ? AND blocked";
             ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);

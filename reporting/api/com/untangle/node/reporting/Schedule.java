@@ -130,7 +130,7 @@ public class Schedule implements Serializable
     @OneToMany(fetch=FetchType.EAGER)
     @Cascade({ org.hibernate.annotations.CascadeType.ALL,
                    org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    @JoinTable(name="tr_reporting_wk_sched",
+    @JoinTable(name="n_reporting_wk_sched",
                joinColumns=@JoinColumn(name="setting_id"),
                inverseJoinColumns=@JoinColumn(name="rule_id"))
     @IndexColumn(name="position")

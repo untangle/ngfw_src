@@ -76,19 +76,19 @@ public class DhcpMap
     private static final String ABSOLUTE_QUERY =
         "SELECT evt.time_stamp, lease.end_of_lease, lease.ip, lease.hostname, " +
         " CASE WHEN (lease.event_type = 0) THEN 0 ELSE 3 END AS event_type " +
-        " FROM tr_nat_evt_dhcp_abs_leases AS glue, tr_nat_evt_dhcp_abs AS evt, dhcp_abs_lease AS lease " +
+        " FROM tr_nat_evt_n_router_dhcp_abs_leases AS glue, n_router_evt_dhcp_abs AS evt, n_router_dhcp_abs_lease AS lease " +
         " WHERE glue.event_id=evt.event_id AND glue.lease_id = lease.event_id " +
         "  AND (( ? <= evt.time_stamp and evt.time_stamp <= ? ) OR " +
         " (( ? <= lease.end_of_lease and lease.end_of_lease <= ? ))) ORDER BY evt.time_stamp";
 
     private static final String RELATIVE_QUERY =
         "SELECT evt.time_stamp, evt.end_of_lease, evt.ip, evt.hostname, evt.event_type " +
-        "FROM tr_nat_evt_dhcp AS evt WHERE ( ? <= evt.time_stamp AND evt.time_stamp <= ? ) OR " +
+        "FROM n_router_evt_dhcp AS evt WHERE ( ? <= evt.time_stamp AND evt.time_stamp <= ? ) OR " +
         " ( ? <= evt.end_of_lease AND evt.end_of_lease <= ? ) ORDER BY evt.time_stamp";
 
     private static final String STATIC_HOST_QUERY =
         "SELECT hostname_list, static_address " +
-        " FROM mvvm_dns_static_host_rule AS rule,tr_nat_dns_hosts AS list,tr_nat_settings AS settings " +
+        " FROM u_dns_static_host_rule AS rule,n_router_dns_hosts AS list,n_router_settings AS settings " +
         " WHERE ( rule.rule_id=list.rule_id ) AND ( settings.settings_id=list.setting_id )";
 
     private static final String MANUAL_MAP_QUERY =
@@ -98,14 +98,14 @@ public class DhcpMap
         "              UNION SELECT c_server_addr AS addr FROM pl_endp WHERE pl_endp.server_intf = 1 " +
         // "              UNION SELECT s_client_addr AS addr FROM pl_endp " +
         // "              UNION SELECT s_server_addr AS addr FROM pl_endp " +
-        "              UNION SELECT client_addr   AS addr FROM mvvm_login_evt " +
-        // "              UNION SELECT ip            AS addr FROM shield_rejection_evt " +
+        "              UNION SELECT client_addr   AS addr FROM u_login_evt " +
+        // "              UNION SELECT ip            AS addr FROM n_shield_rejection_evt " +
         "             ) AS addrs " +
-        "        JOIN ipmaddr_dir_entries entry JOIN ipmaddr_rule rule USING (rule_id) " +
+        "        JOIN u_u_ipmaddr_dir_entries entry JOIN u_ipmaddr_rule rule USING (rule_id) " +
         "        ON rule.ipmaddr >>= addr " +
         "        WHERE NOT addr ISNULL " +
         "        GROUP BY addr) AS pos_idxs " +
-        " LEFT OUTER JOIN ipmaddr_dir_entries entry JOIN ipmaddr_rule rule USING (rule_id) " +
+        " LEFT OUTER JOIN u_u_ipmaddr_dir_entries entry JOIN u_ipmaddr_rule rule USING (rule_id) " +
         " ON min_idx = position";
 
     private static final String CREATE_TEMPORARY_TABLE =
@@ -125,7 +125,7 @@ public class DhcpMap
         "values ( ?, ?, ?, ? )";
 
     private static final String TEST_INSTALLED =
-        " SELECT 1 FROM tr_nat_evt_dhcp_abs_leases";
+        " SELECT 1 FROM tr_nat_evt_n_router_dhcp_abs_leases";
 
     private DhcpMap()
     {

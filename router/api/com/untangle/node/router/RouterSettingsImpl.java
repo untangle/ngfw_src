@@ -280,7 +280,7 @@ public class RouterSettingsImpl implements Validatable, RouterSettings, Serializ
     @OneToMany(fetch=FetchType.EAGER)
     @Cascade({ org.hibernate.annotations.CascadeType.ALL,
                    org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    @JoinTable(name="tr_nat_redirects",
+    @JoinTable(name="n_router_redirects",
                joinColumns=@JoinColumn(name="setting_id"),
                inverseJoinColumns=@JoinColumn(name="rule_id"))
     @IndexColumn(name="position")
@@ -426,7 +426,7 @@ public class RouterSettingsImpl implements Validatable, RouterSettings, Serializ
     @OneToMany(fetch=FetchType.EAGER)
     @Cascade({ org.hibernate.annotations.CascadeType.ALL,
                    org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    @JoinTable(name="tr_dhcp_leases",
+    @JoinTable(name="n_router_dhcp_leases",
                joinColumns=@JoinColumn(name="setting_id"),
                inverseJoinColumns=@JoinColumn(name="rule_id"))
     @IndexColumn(name="position")
@@ -484,7 +484,7 @@ public class RouterSettingsImpl implements Validatable, RouterSettings, Serializ
     @OneToMany(fetch=FetchType.EAGER)
     @Cascade({ org.hibernate.annotations.CascadeType.ALL,
                    org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    @JoinTable(name="tr_nat_dns_hosts",
+    @JoinTable(name="n_router_dns_hosts",
                joinColumns=@JoinColumn(name="setting_id"),
                inverseJoinColumns=@JoinColumn(name="rule_id"))
     @IndexColumn(name="position")

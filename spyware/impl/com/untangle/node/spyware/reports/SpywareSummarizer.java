@@ -36,7 +36,7 @@ public class SpywareSummarizer extends BaseSummarizer {
             PreparedStatement ps;
             ResultSet rs;
 
-            sql = "SELECT SUM(cookie) FROM tr_spyware_statistic_evt WHERE time_stamp >= ? and time_stamp < ?";
+            sql = "SELECT SUM(cookie) FROM n_spyware_statistic_evt WHERE time_stamp >= ? and time_stamp < ?";
             ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);
@@ -46,7 +46,7 @@ public class SpywareSummarizer extends BaseSummarizer {
             rs.close();
             ps.close();
 
-            sql = "SELECT SUM(activeX) FROM tr_spyware_statistic_evt WHERE time_stamp >= ? and time_stamp < ?";
+            sql = "SELECT SUM(activeX) FROM n_spyware_statistic_evt WHERE time_stamp >= ? and time_stamp < ?";
             ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);
@@ -56,7 +56,7 @@ public class SpywareSummarizer extends BaseSummarizer {
             rs.close();
             ps.close();
 
-            sql = "SELECT SUM(url) FROM tr_spyware_statistic_evt WHERE time_stamp >= ? and time_stamp < ?";
+            sql = "SELECT SUM(url) FROM n_spyware_statistic_evt WHERE time_stamp >= ? and time_stamp < ?";
             ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);
@@ -66,7 +66,7 @@ public class SpywareSummarizer extends BaseSummarizer {
             rs.close();
             ps.close();
 
-            sql = "SELECT SUM(subnet_access) FROM tr_spyware_statistic_evt WHERE time_stamp >= ? and time_stamp < ?";
+            sql = "SELECT SUM(subnet_access) FROM n_spyware_statistic_evt WHERE time_stamp >= ? and time_stamp < ?";
             ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);
@@ -76,7 +76,7 @@ public class SpywareSummarizer extends BaseSummarizer {
             rs.close();
             ps.close();
 
-            sql = "SELECT SUM(pass) FROM tr_spyware_statistic_evt WHERE time_stamp >= ? and time_stamp < ?";
+            sql = "SELECT SUM(pass) FROM n_spyware_statistic_evt WHERE time_stamp >= ? and time_stamp < ?";
             ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);

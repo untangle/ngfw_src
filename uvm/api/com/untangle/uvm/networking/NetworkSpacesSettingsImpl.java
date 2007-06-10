@@ -260,7 +260,7 @@ public class NetworkSpacesSettingsImpl implements NetworkSpacesSettings, Seriali
     @OneToMany(fetch=FetchType.EAGER)
     @Cascade({ org.hibernate.annotations.CascadeType.ALL,
                    org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    @JoinTable(name="mvvm_redirects",
+    @JoinTable(name="u_redirects",
                joinColumns=@JoinColumn(name="setting_id"),
                inverseJoinColumns=@JoinColumn(name="rule_id"))
     @IndexColumn(name="position")

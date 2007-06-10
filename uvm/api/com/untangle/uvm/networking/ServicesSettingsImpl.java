@@ -230,7 +230,7 @@ public class ServicesSettingsImpl implements ServicesSettings, Serializable
     @OneToMany(fetch=FetchType.EAGER)
     @Cascade({ org.hibernate.annotations.CascadeType.ALL,
                    org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    @JoinTable(name="mvvm_dhcp_lease_list",
+    @JoinTable(name="u_dhcp_lease_list",
                joinColumns=@JoinColumn(name="setting_id"),
                inverseJoinColumns=@JoinColumn(name="rule_id"))
     @IndexColumn(name="position")
@@ -311,7 +311,7 @@ public class ServicesSettingsImpl implements ServicesSettings, Serializable
     @OneToMany(fetch=FetchType.EAGER)
     @Cascade({ org.hibernate.annotations.CascadeType.ALL,
                    org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    @JoinTable(name="mvvm_dns_host_list",
+    @JoinTable(name="u_dns_host_list",
                joinColumns=@JoinColumn(name="setting_id"),
                inverseJoinColumns=@JoinColumn(name="rule_id"))
     @IndexColumn(name="position")

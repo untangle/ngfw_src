@@ -47,7 +47,7 @@ public class RouterSummarizer extends BaseSummarizer {
                 " SUM(tcp_incoming), SUM(tcp_outgoing)," +
                 " SUM(udp_incoming), SUM(udp_outgoing)," +
                 " SUM(icmp_incoming), SUM(icmp_outgoing)" +
-                " FROM tr_nat_statistic_evt WHERE time_stamp >= ? AND time_stamp < ?";
+                " FROM n_router_statistic_evt WHERE time_stamp >= ? AND time_stamp < ?";
             ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);

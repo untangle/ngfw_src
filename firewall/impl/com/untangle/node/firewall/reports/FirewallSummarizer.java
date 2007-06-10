@@ -57,7 +57,7 @@ public class FirewallSummarizer extends BaseSummarizer {
                 " SUM(UDP_PASS_DEFAULT),   SUM(UDP_PASS_RULE)," +
                 " SUM(ICMP_BLOCK_DEFAULT), SUM(ICMP_BLOCK_RULE)," +
                 " SUM(ICMP_PASS_DEFAULT),  SUM(ICMP_PASS_RULE)" +
-                " FROM tr_firewall_statistic_evt WHERE time_stamp >= ? and time_stamp < ?";
+                " FROM n_firewall_statistic_evt WHERE time_stamp >= ? and time_stamp < ?";
             ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);

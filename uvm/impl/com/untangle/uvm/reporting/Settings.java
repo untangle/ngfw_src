@@ -36,32 +36,32 @@ public class Settings
 
     private static final String EMAIL_DETAIL =
         "SELECT email_detail " +
-        "FROM settings.tr_reporting_settings settings " +
-        "JOIN settings.node_persistent_state tstate " +
+        "FROM settings.n_reporting_settings settings " +
+        "JOIN settings.u_node_persistent_state tstate " +
         "ON (settings.tid = tstate.tid " +
         "AND name = 'reporting-node' " +
         "AND target_state = 'running')";
 
     private static final String SCHED_DAILY_MONTHLY =
         "SELECT daily, monthly_n_daily, monthly_n_day_of_wk, monthly_n_first " +
-        "FROM settings.tr_reporting_sched sched " +
-        "JOIN settings.tr_reporting_settings settings " +
+        "FROM settings.n_reporting_sched sched " +
+        "JOIN settings.n_reporting_settings settings " +
         "ON (sched.id = settings.schedule) " +
-        "JOIN settings.node_persistent_state tstate " +
+        "JOIN settings.u_node_persistent_state tstate " +
         "ON (settings.tid = tstate.tid " +
         "AND name = 'reporting-node' " +
         "AND target_state = 'running')";
 
     private static final String SCHED_WEEKLY =
         "SELECT day " +
-        "FROM settings.tr_reporting_wk_sched_rule wksched_rule " +
-        "JOIN settings.tr_reporting_wk_sched wksched " +
+        "FROM settings.n_reporting_wk_sched_rule wksched_rule " +
+        "JOIN settings.n_reporting_wk_sched wksched " +
         "ON (wksched_rule.id = wksched.rule_id) " +
-        "JOIN settings.tr_reporting_sched sched " +
+        "JOIN settings.n_reporting_sched sched " +
         "ON (wksched.setting_id = sched.id) " +
-        "JOIN settings.tr_reporting_settings settings " +
+        "JOIN settings.n_reporting_settings settings " +
         "ON (sched.id = settings.schedule) " +
-        "JOIN settings.node_persistent_state tstate " +
+        "JOIN settings.u_node_persistent_state tstate " +
         "ON (settings.tid = tstate.tid " +
         "AND name = 'reporting-node' " +
         "AND target_state = 'running')";

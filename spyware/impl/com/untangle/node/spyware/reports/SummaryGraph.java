@@ -117,7 +117,7 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
             + "      SUM(activeX),"
             + "      SUM(url),"
             + "      SUM(subnet_access)"
-            + " FROM tr_spyware_statistic_evt"
+            + " FROM n_spyware_statistic_evt"
             + " WHERE time_stamp >= ? AND time_stamp < ?"
             + " GROUP BY trunc_ts"
             + " ORDER BY trunc_ts";

@@ -119,7 +119,7 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
             + "  FROM (SELECT DATE_TRUNC('minute', time_stamp) AS trunc_ts,"
             + "          COUNT(CASE is_spam WHEN true THEN 1 ELSE null END) AS clam_ct,"
             + "          COUNT(CASE is_spam WHEN false THEN 1 ELSE null END) AS clean_ct"
-            + "        FROM tr_spam_evt"
+            + "        FROM n_spam_evt"
             + "        WHERE time_stamp >= ? AND time_stamp < ? AND vendor_name='Clam'"
             + "        GROUP BY trunc_ts"
             + "        ORDER BY trunc_ts) AS foo"
@@ -168,7 +168,7 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
             + "  FROM (SELECT DATE_TRUNC('minute', time_stamp) AS trunc_ts,"
             + "          COUNT(CASE is_spam WHEN true THEN 1 ELSE null END) AS clam_ct,"
             + "          COUNT(CASE is_spam WHEN false THEN 1 ELSE null END) AS clean_ct"
-            + "        FROM tr_spam_evt_smtp"
+            + "        FROM n_spam_evt_smtp"
             + "        WHERE time_stamp >= ? AND time_stamp < ? AND vendor_name='Clam'"
             + "        GROUP BY trunc_ts"
             + "        ORDER BY trunc_ts) AS foo"
@@ -208,7 +208,7 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
         // because phishhttp doesn't track them
         // - if it is added, rewrite query and update count loop
         sql = "SELECT DATE_TRUNC('minute', time_stamp) AS trunc_ts, COUNT(*)"
-            + " FROM tr_phishhttp_evt"
+            + " FROM n_phish_http_evt"
             + " WHERE time_stamp >= ? AND time_stamp < ? AND action = 'B'"
             + " GROUP BY trunc_ts"
             + " ORDER BY trunc_ts";

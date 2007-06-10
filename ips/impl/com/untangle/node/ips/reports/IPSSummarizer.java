@@ -29,7 +29,7 @@ public class IPSSummarizer extends BaseSummarizer {
         long blockedEvtCount = 0;
 
         try {
-            String sql = "SELECT SUM(dnc), SUM(logged), SUM(blocked) FROM tr_ids_statistic_evt WHERE time_stamp >= ? AND time_stamp < ?";
+            String sql = "SELECT SUM(dnc), SUM(logged), SUM(blocked) FROM n_ips_statistic_evt WHERE time_stamp >= ? AND time_stamp < ?";
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);

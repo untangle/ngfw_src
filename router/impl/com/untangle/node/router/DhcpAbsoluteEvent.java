@@ -57,7 +57,7 @@ import org.hibernate.annotations.IndexColumn;
         @OneToMany(fetch=FetchType.EAGER)
         @Cascade({ org.hibernate.annotations.CascadeType.ALL,
                        org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-        @JoinTable(name="tr_nat_evt_dhcp_abs_leases",
+        @JoinTable(name="tr_nat_evt_n_router_dhcp_abs_leases",
                    joinColumns=@JoinColumn(name="event_id"),
                    inverseJoinColumns=@JoinColumn(name="lease_id"))
         @IndexColumn(name="position")

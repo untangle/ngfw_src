@@ -107,7 +107,7 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
 
         String sql = "SELECT DATE_TRUNC('minute', time_stamp) AS trunc_ts,"
             + " SUM(nat_sessions), SUM(tcp_incoming + tcp_outgoing + udp_incoming + udp_outgoing + icmp_incoming + icmp_outgoing), SUM(dmz_sessions)" 
-            + " FROM tr_nat_statistic_evt"
+            + " FROM n_router_statistic_evt"
             + " WHERE time_stamp >= ? AND time_stamp < ?"
             + " GROUP BY trunc_ts"
             + " ORDER BY trunc_ts";

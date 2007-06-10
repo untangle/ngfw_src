@@ -218,7 +218,7 @@ public class SpamSettings implements Serializable
     @OneToMany(fetch=FetchType.EAGER)
     @Cascade({org.hibernate.annotations.CascadeType.ALL,
                   org.hibernate.annotations.CascadeType.DELETE_ORPHAN})
-    @JoinTable(name="tr_spam_rbl_list",
+    @JoinTable(name="n_spam_rbl_list",
                joinColumns=@JoinColumn(name="settings_id"),
                inverseJoinColumns=@JoinColumn(name="rule_id"))
     @IndexColumn(name="position")
@@ -241,7 +241,7 @@ public class SpamSettings implements Serializable
     @OneToMany(fetch=FetchType.EAGER)
     @Cascade({org.hibernate.annotations.CascadeType.ALL,
                   org.hibernate.annotations.CascadeType.DELETE_ORPHAN})
-    @JoinTable(name="tr_spam_spamassassin_def_list",
+    @JoinTable(name="n_spamassassin_def_list",
                joinColumns=@JoinColumn(name="settings_id"),
                inverseJoinColumns=@JoinColumn(name="rule_id"))
     @IndexColumn(name="position")
@@ -264,7 +264,7 @@ public class SpamSettings implements Serializable
     @OneToMany(fetch=FetchType.EAGER)
     @Cascade({org.hibernate.annotations.CascadeType.ALL,
                   org.hibernate.annotations.CascadeType.DELETE_ORPHAN})
-    @JoinTable(name="tr_spam_spamassassin_lcl_list",
+    @JoinTable(name="n_spamassassin_lcl_list",
                joinColumns=@JoinColumn(name="settings_id"),
                inverseJoinColumns=@JoinColumn(name="rule_id"))
     @IndexColumn(name="position")

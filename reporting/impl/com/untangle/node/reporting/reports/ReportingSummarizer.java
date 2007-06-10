@@ -68,7 +68,7 @@ public class ReportingSummarizer extends BaseSummarizer {
             rs.close();
             ps.close();
 
-            sql = "select count(*) from mvvm_login_evt where time_stamp >= ? and time_stamp < ? and not local and succeeded";
+            sql = "select count(*) from u_login_evt where time_stamp >= ? and time_stamp < ? and not local and succeeded";
             ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);
@@ -78,7 +78,7 @@ public class ReportingSummarizer extends BaseSummarizer {
             rs.close();
             ps.close();
 
-            sql = "select count(*) from mvvm_login_evt where time_stamp >= ? and time_stamp < ? and not local and not succeeded";
+            sql = "select count(*) from u_login_evt where time_stamp >= ? and time_stamp < ? and not local and not succeeded";
             ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);

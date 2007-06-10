@@ -66,14 +66,14 @@ On clh:
 
 mvvm=> select request_id from reports.foo except all (select distinct(request_id) from reports.foo);
 
-mvvm=> select * from tr_http_evt_req where request_id = 177146844
+mvvm=> select * from n_http_evt_req where request_id = 177146844
 mvvm-> ;
  event_id  | request_id |       host        | content_length |       time_stamp
 -----------+------------+-------------------+----------------+-------------------------
  177146843 |  177146844 | www.panasonic.com |              0 | 2006-10-04 08:23:16.079
 (1 row)
 
-mvvm=> select * from tr_http_evt_resp where request_id = 177146844
+mvvm=> select * from n_http_evt_resp where request_id = 177146844
 mvvm-> ;
  event_id  | request_id | content_type | content_length |       time_stamp
 -----------+------------+--------------+----------------+-------------------------
@@ -88,7 +88,7 @@ needed for protofilter reports:
 
 SELECT evt.time_stamp, c_client_addr, c_server_addr, c_server_port, \
        protocol, blocked, name \
-  FROM tr_protofilter_evt evt \
+  FROM n_protofilter_evt evt \
          JOIN pl_endp endp \
            ON endp.event_id = evt.pl_endp_id \
          LEFT OUTER JOIN merged_address_map mam \

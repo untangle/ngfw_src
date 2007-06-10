@@ -29,7 +29,7 @@ public class LoginSummarizer extends BaseSummarizer {
         int failedCount = 0;
 
         try {
-            String sql = "SELECT COUNT(*) FROM mvvm_login_evt WHERE time_stamp >= ? AND time_stamp < ? AND NOT local AND succeeded";
+            String sql = "SELECT COUNT(*) FROM u_login_evt WHERE time_stamp >= ? AND time_stamp < ? AND NOT local AND succeeded";
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);
@@ -39,7 +39,7 @@ public class LoginSummarizer extends BaseSummarizer {
             rs.close();
             ps.close();
 
-            sql = "SELECT COUNT(*) FROM mvvm_login_evt WHERE time_stamp >= ? AND time_stamp < ? AND NOT local AND NOT succeeded";
+            sql = "SELECT COUNT(*) FROM u_login_evt WHERE time_stamp >= ? AND time_stamp < ? AND NOT local AND NOT succeeded";
             ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);

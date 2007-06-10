@@ -116,7 +116,7 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
             + "      SUM(blocked),"
             + "      SUM(logged),"
             + "      SUM(dnc)"
-            + " FROM tr_ids_statistic_evt"
+            + " FROM n_ips_statistic_evt"
             + " WHERE time_stamp >= ? AND time_stamp < ?"
             + " GROUP BY trunc_ts"
             + " ORDER BY trunc_ts";

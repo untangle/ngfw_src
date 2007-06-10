@@ -1,5 +1,5 @@
 pl_stats
 pl_endp
-mvvm_login_evt
-mvvm_lookup_evt
-shield_rejection_evt
+u_login_evt
+u_lookup_evt
+n_shield_rejection_evt

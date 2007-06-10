@@ -266,7 +266,7 @@ public class SpywareSettings implements Serializable
     @OneToMany(fetch=FetchType.EAGER)
     @Cascade({ org.hibernate.annotations.CascadeType.ALL,
                    org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    @JoinTable(name="tr_spyware_ar",
+    @JoinTable(name="n_spyware_ar,",
                joinColumns=@JoinColumn(name="settings_id"),
                inverseJoinColumns=@JoinColumn(name="rule_id"))
     @IndexColumn(name="position")
@@ -288,7 +288,7 @@ public class SpywareSettings implements Serializable
     @OneToMany(fetch=FetchType.EAGER)
     @Cascade({ org.hibernate.annotations.CascadeType.ALL,
                    org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    @JoinTable(name="tr_spyware_cr",
+    @JoinTable(name="n_spyware_cr",
                joinColumns=@JoinColumn(name="settings_id"),
                inverseJoinColumns=@JoinColumn(name="rule_id"))
     @IndexColumn(name="position")
@@ -310,7 +310,7 @@ public class SpywareSettings implements Serializable
     @OneToMany(fetch=FetchType.EAGER)
     @Cascade({ org.hibernate.annotations.CascadeType.ALL,
                    org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    @JoinTable(name="tr_spyware_sr",
+    @JoinTable(name="n_spyware_sr",
                joinColumns=@JoinColumn(name="settings_id"),
                inverseJoinColumns=@JoinColumn(name="rule_id"))
     @IndexColumn(name="position")
@@ -332,7 +332,7 @@ public class SpywareSettings implements Serializable
     @OneToMany(fetch=FetchType.EAGER)
     @Cascade({ org.hibernate.annotations.CascadeType.ALL,
                    org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    @JoinTable(name="tr_spyware_wl",
+    @JoinTable(name="n_spyware_wl",
                joinColumns=@JoinColumn(name="settings_id"),
                inverseJoinColumns=@JoinColumn(name="rule_id"))
     @IndexColumn(name="position")

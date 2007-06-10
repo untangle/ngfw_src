@@ -36,7 +36,7 @@ import org.hibernate.annotations.IndexColumn;
  * @version 1.0
  */
 @Entity
-@Table(name="n_mail_settings", schema="settings")
+@Table(name="n_u_mail_settings", schema="settings")
 public class MailNodeSettings implements Serializable
 {
     private static final long serialVersionUID = -6466793822226799781L;
@@ -242,7 +242,7 @@ public class MailNodeSettings implements Serializable
      * @return the list of Safelist settings
      */
     @OneToMany(fetch=FetchType.EAGER, cascade=CascadeType.ALL)
-    @JoinTable(name="tr_mail_safelists",
+    @JoinTable(name="n_mail_safelists",
                joinColumns=@JoinColumn(name="setting_id"),
                inverseJoinColumns=@JoinColumn(name="safels_id"))
     @IndexColumn(name="position")

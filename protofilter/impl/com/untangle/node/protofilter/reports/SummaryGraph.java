@@ -108,7 +108,7 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
 
         String sql = "SELECT DATE_TRUNC('minute', time_stamp) AS trunc_ts,"
             + " COUNT(CASE blocked WHEN true THEN 1 ELSE null END), COUNT(*)"
-            + " FROM tr_protofilter_evt"
+            + " FROM n_protofilter_evt"
             + " WHERE time_stamp >= ? AND time_stamp < ?"
             + " GROUP BY trunc_ts"
             + " ORDER BY trunc_ts";

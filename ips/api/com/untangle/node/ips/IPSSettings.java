@@ -89,7 +89,7 @@ public class IPSSettings implements Serializable {
     @OneToMany(fetch=FetchType.EAGER)
     @Cascade({ org.hibernate.annotations.CascadeType.ALL,
                    org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    @JoinTable(name="tr_ids_mutable_variables",
+    @JoinTable(name="n_ips_mutable_variables",
                joinColumns=@JoinColumn(name="setting_id"),
                inverseJoinColumns=@JoinColumn(name="variable_id"))
     @IndexColumn(name="position")
@@ -99,7 +99,7 @@ public class IPSSettings implements Serializable {
     @OneToMany(fetch=FetchType.EAGER)
     @Cascade({ org.hibernate.annotations.CascadeType.ALL,
                    org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    @JoinTable(name="tr_ids_immutable_variables",
+    @JoinTable(name="n_ips_immutable_variables",
                joinColumns=@JoinColumn(name="setting_id"),
                inverseJoinColumns=@JoinColumn(name="variable_id"))
     @IndexColumn(name="position")

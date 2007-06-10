@@ -33,7 +33,7 @@ public class VpnSummarizer extends BaseSummarizer {
             PreparedStatement ps;
             ResultSet rs;
 
-            sql = "SELECT COUNT(*) FROM tr_openvpn_connect_evt WHERE start_time >= ? AND start_time < ?";
+            sql = "SELECT COUNT(*) FROM n_openvpn_connect_evt WHERE start_time >= ? AND start_time < ?";
             ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);
@@ -43,7 +43,7 @@ public class VpnSummarizer extends BaseSummarizer {
             rs.close();
             ps.close();
 
-            sql = "SELECT COUNT(*) FROM tr_openvpn_distr_evt WHERE time_stamp >= ? AND time_stamp < ?";
+            sql = "SELECT COUNT(*) FROM n_openvpn_distr_evt WHERE time_stamp >= ? AND time_stamp < ?";
             ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);
