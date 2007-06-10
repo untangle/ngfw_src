@@ -1,8 +1,0 @@
-reports/VirusMaster.jasper:Kaspersky_AntiVirus--Summary:Summary
-reports/WebVirusDetail.jasper:Kaspersky_AntiVirus--Web_Incidents:Web Incidents
-reports/FtpVirusDetail.jasper:Kaspersky_AntiVirus--FTP_Incidents:FTP Incidents
-reports/EmailVirusDetail.jasper:Kaspersky_AntiVirus--Email_Incidents:Email Incidents
-com.untangle.node.virus.reports.VirusSummarizer:summarizer:Summarizer
-com.untangle.node.virus.reports.SummaryGraph:summaryGraph:Kaspersky_AntiVirus--Summary_Graph
-com.untangle.node.kav.KavScanner:scanner:Scanner
-reportTitlePrefix:parameter:Kaspersky

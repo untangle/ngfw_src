@@ -17,6 +17,15 @@ task :clean do
   Rake::StampHash.instance.clear
 end
 
+task :kindaclean do
+  FileUtils.rm_rf(BuildEnv::SRC.devel) if File.exist?(BuildEnv::SRC.devel)
+  FileUtils.rm_rf(BuildEnv::SRC.staging) if File.exist?(BuildEnv::SRC.staging)
+  FileUtils.rm_rf("foo.dot") if File.exist?("foo.dot")
+  FileUtils.rm_rf(FileList['debian/*'].select { |f| File.directory?(f) })
+  ## Clear the stamp hashes
+  Rake::StampHash.instance.clear
+end
+
 task :build => [BuildEnv::SRC['uvm'], BuildEnv::SRC['untangle-client'], BuildEnv::SRC['tran']]
 
 task :devel => [BuildEnv::SRC['install'], BuildEnv::SRC.installTarget]
