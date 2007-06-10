@@ -10,8 +10,6 @@ case $distribution in
   testing) distribution=mustang ;;
 esac
 
-echo -n "Setting version, setting distribution to \"$distribution\""
-
 if [ -f ../VERSION ] ; then
   versionFile=../VERSION
 elif [ -f ./resources/VERSION ] ; then # Hades
@@ -25,26 +23,30 @@ fi
 revision=`svn info . | awk '/Last Changed Rev: / { print $4 }'`
 timestamp=`svn info . | awk '/Last Changed Date: / { gsub(/-/, "", $4) ; print $4 }'`
 
-# this how we figure out if we're up-to-date or not
+# this is how we figure out if we're up-to-date or not
 hasLocalChanges=`svn status | grep -v -E '^([X?]|Fetching external item into|Performing status on external item at|$)'`
 
+# this is the base version; it will be tweaked a bit oif need be:
+# - append a local modification marker is we're not up to date
+# - prepend the upstream version if UNTANGLE-KEEP-UPSTREAM-VERSION exists
 baseVersion=`cat $versionFile`~svn${timestamp}r${revision}
 
-previousUpstreamVersion=`dpkg-parsechangelog | awk '/Version: / { gsub(/-.*/, "", $2) ; print $2 }'`
-
-if [ -f KEEP-UPSTREAM-VERSION ] ; then
+if [ -f UNTANGLE-KEEP-UPSTREAM-VERSION ] ; then
+  previousUpstreamVersion=`dpkg-parsechangelog | awk '/Version: / { gsub(/-.*/, "", $2) ; print $2 }'`
   baseVersion=${previousUpstreamVersion}+${baseVersion}
 fi
 
 if [ -z "$hasLocalChanges" ] ; then
-  upstreamVersion=$baseVersion
+  version=$baseVersion
 else
-  upstreamVersion=${baseVersion}+$USER`date +"%Y%m%dT%H%M%S"`
+  version=${baseVersion}+$USER`date +"%Y%m%dT%H%M%S"`
   distribution=$USER
 fi
 
-echo -n ", \"version\" to ${upstreamVersion}-1"
-dch -v ${upstreamVersion}-1 -D ${distribution} "auto build"
+version=${version}-1
 
+echo "Setting version to \"${version}\", distribution to \"$distribution\""
+dch -v ${version} -D ${distribution} "auto build"
 echo " done."
+
 
