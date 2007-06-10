@@ -15,7 +15,28 @@ cat <<EOF | $PSQL_VERBOSE
 CREATE SCHEMA settings;
 
 
--- convert pre-3.1 schema_ver to split_schema_ver
+-- convert pre-5.0
+
+UPDATE settings.split_schema_ver SET component = 'webfilter-node' WHERE component = 'httpblocker-transform';
+UPDATE settings.split_schema_ver SET component = 'openvpn-node' WHERE component = 'openvpn-transform';
+UPDATE settings.split_schema_ver SET component = 'ips-node' WHERE component = 'ids-transform';
+UPDATE settings.split_schema_ver SET component = 'sigma-node' WHERE component = 'sigma-transform';
+UPDATE settings.split_schema_ver SET component = 'spamassassin-node' WHERE component = 'spamassassin-transform';
+UPDATE settings.split_schema_ver SET component = 'reporting-node' WHERE component = 'reporting-transform';
+UPDATE settings.split_schema_ver SET component = 'protofilter-node' WHERE component = 'protofilter-transform';
+UPDATE settings.split_schema_ver SET component = 'clam-node' WHERE component = 'clam-transform';
+UPDATE settings.split_schema_ver SET component = 'test-node' WHERE component = 'test-transform';
+UPDATE settings.split_schema_ver SET component = 'nat-node' WHERE component = 'nat-transform';
+UPDATE settings.split_schema_ver SET component = 'spyware-node' WHERE component = 'spyware-transform';
+UPDATE settings.split_schema_ver SET component = 'firewall-node' WHERE component = 'firewall-transform';
+UPDATE settings.split_schema_ver SET component = 'shield-node' WHERE component = 'airgap-transform';
+UPDATE settings.split_schema_ver SET component = 'phish-node' WHERE component = 'clamphish-transform';
+UPDATE settings.split_schema_ver SET component = 'kav-node' WHERE component = 'kav-transform';
+UPDATE settings.split_schema_ver SET component = 'portal-node' WHERE component = 'portal-transform';
+UPDATE settings.split_schema_ver SET component = 'hauri-node' WHERE component = 'hauri-transform';
+UPDATE settings.split_schema_ver SET component = 'boxbackup-node' WHERE component = 'boxbackup-transform';
+
+
 CREATE TABLE settings.split_schema_ver AS
     SELECT component::text, version AS settings_version, version AS events_version
     FROM schema_ver;
