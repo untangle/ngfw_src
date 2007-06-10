@@ -36,7 +36,7 @@ disableOpenVPNStartup
 ## Update legacy clients to use the new configuration
 OPENVPN_CLIENT=/etc/openvpn/client.conf
 if [ -f ${OPENVPN_CLIENT} ]; then
-    sed -i -e 's|^route-up /usr/share/metavize/openvpn/route-up$|route-up "sh /usr/share/metavize/openvpn/route-up"|'  ${OPENVPN_CLIENT} 
+    sed -i -e 's|^route-up /usr/share/untangle/openvpn/route-up$|route-up "sh /usr/share/untangle/openvpn/route-up"|'  ${OPENVPN_CLIENT} 
 
     if [ -z "`grep keepalive ${OPENVPN_CLIENT}`" ]; then
         echo "keepalive 10 120" >> ${OPENVPN_CLIENT}
