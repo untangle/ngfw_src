@@ -65,6 +65,7 @@ if [ ! -e @UVM_CONF@/keystore ]; then
 fi
 
 # add user and uvm database just in case
+echo "ALTER DATABASE mvvm RENAME TO uvm" | psql -X -U postgres template1 2>/dev/null
 createuser -U postgres -d -A metavize 2>/dev/null
 createuser -U postgres -d -A untangle 2>/dev/null
 createdb -O postgres -U postgres uvm 2>/dev/null
