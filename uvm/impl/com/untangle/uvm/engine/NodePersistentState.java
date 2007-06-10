@@ -13,11 +13,8 @@ package com.untangle.uvm.engine;
 
 import java.util.LinkedList;
 import java.util.List;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -27,8 +24,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import com.untangle.uvm.security.Tid;
 import com.untangle.uvm.node.NodeState;
+import com.untangle.uvm.security.Tid;
 import org.hibernate.annotations.CollectionOfElements;
 import org.hibernate.annotations.IndexColumn;
 import org.hibernate.annotations.Type;
@@ -40,7 +37,7 @@ import org.hibernate.annotations.Type;
  * @version 1.0
  */
 @Entity
-@Table(name="node_persistent_state")
+@Table(name="u_node_persistent_state")
 class NodePersistentState
 {
     private Long id;
