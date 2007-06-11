@@ -5,7 +5,7 @@ UVM_NETWORK_PARAMS_FILE=@UVM_CONF@/networking.sh
 
 ## These are parameters that rarely change, these are mostly items that are shared between
 ## the outside world and the uvm (eg inside/outside)
-UVM_DEFAULTS_FILE=@PREFIX@/etc/default/uvm
+UVM_DEFAULTS_FILE=@PREFIX@/etc/default/untangle-vm
 
 ## These are the properties that are shared by the uvm and the networking scripts, these
 ## are done as properties so they are always loaded each time the UVM starts(on crashes
@@ -72,10 +72,10 @@ if [ "${UVM_ALLOW_OUT_HTTPS}x" = "truex" ]; then
         ## Two different ports to antisubscribe
         ## Always antisubsribe to the HTTPS port on the inside
         ANTISUBSCRIBES_LOCAL_TCP_PORTS="${ANTISUBSCRIBES_LOCAL_TCP_PORTS} ${HTTPS_PORT}_inside"
-        
+
         ## Antisubscribe to whichever outside port the user has selected
         ANTISUBSCRIBES_LOCAL_TCP_PORTS="${ANTISUBSCRIBES_LOCAL_TCP_PORTS} ${outsideHttpsPort}"
-    else 
+    else
         ## Always just antisubscribe to the HTTPS port, user has not selected another one
         ANTISUBSCRIBES_LOCAL_TCP_PORTS="${ANTISUBSCRIBES_LOCAL_TCP_PORTS} ${HTTPS_PORT}"
     fi
