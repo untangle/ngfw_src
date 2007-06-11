@@ -9,6 +9,7 @@ Package: libalpine
 Architecture: i386
 Depends: ${misc:Depends}
 XB-Display-Name: libalpine
+XB-Untangle-Type: library
 XB-Is-Service: true
 Description: libalpine
  libalpine.
@@ -17,6 +18,7 @@ Package: ftp-casing
 Architecture: any
 Depends: mvvm
 XB-Display-Name: File Transfer
+XB-Untangle-Type: casing
 XB-Is-Service: true
 Description: The Untangle File Transfer/FTP Decoder
  The Untangle File Transfer/FTP Decoder.
@@ -25,6 +27,7 @@ Package: http-casing
 Architecture: any
 Depends: mvvm
 XB-Display-Name: Web
+XB-Untangle-Type: casing
 XB-Is-Service: true
 Description: The Untangle Web Decoder
  The Untangle Web Decoder.
@@ -36,6 +39,7 @@ Replaces: email-transform
 Provides: email-transform
 Depends: mvvm
 XB-Display-Name: Email
+XB-Untangle-Type: casing
 XB-Is-Service: true
 Description: The Untangle Email Decoder
  The Untangle Email Decoder.
@@ -44,6 +48,7 @@ Package: airgap-transform
 Architecture: any
 Depends: mvvm
 XB-Display-Name: Attack Blocker
+XB-Untangle-Type: node
 XB-View-Position: 1010
 XB-Is-Core: true
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
@@ -154,6 +159,7 @@ Package: spyware-transform
 Architecture: any
 Depends: mvvm, http-casing
 XB-Display-Name: Spyware Blocker
+XB-Untangle-Type: node
 XB-View-Position: 20
 XB-Is-Security: true
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
@@ -240,6 +246,7 @@ Package: httpblocker-transform
 Architecture: any
 Depends: mvvm, http-casing, untangle-urlblacklist
 XB-Display-Name: Web Filter
+XB-Untangle-Type: node
 XB-View-Position: 30
 XB-Is-Security: true
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0RVh0
@@ -337,6 +344,7 @@ Package: hauri-transform
 Architecture: any
 Depends: mvvm, virus-base, untangle-hauri, http-casing, ftp-casing, mail-casing
 XB-Display-Name: Dual Virus Blocker
+XB-Untangle-Type: node
 XB-View-Position: 60
 XB-Is-Security: true
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAACXBIWXMAAAsTAAALEwEAmpwY
@@ -450,6 +458,7 @@ Package: kav-transform
 Architecture: any
 Depends: mvvm, virus-base, kav-mv, http-casing, ftp-casing, mail-casing
 XB-Display-Name: Kaspersky Virus Blocker
+XB-Untangle-Type: node
 XB-View-Position: 50
 XB-Is-Security: true
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAACXBIWXMAAAsTAAALEwEAmpwY
@@ -530,6 +539,7 @@ Package: clam-transform
 Architecture: any
 Depends: mvvm, virus-base, untangle-clamav-config, http-casing, ftp-casing, mail-casing
 XB-Display-Name: Virus Blocker
+XB-Untangle-Type: node
 XB-View-Position: 70
 XB-Is-Security: true
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAACXBIWXMAAAsTAAALEwEAmpwY
@@ -636,6 +646,7 @@ Architecture: any
 Depends: mvvm
 Conflicts: protoanalyzer-transform
 XB-Display-Name: Protocol Control
+XB-Untangle-Type: node
 XB-View-Position: 80
 XB-Is-Security: true
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
@@ -756,6 +767,7 @@ Package: nat-transform
 Architecture: any
 Depends: mvvm, dnsmasq, ftp-casing
 XB-Display-Name: Router
+XB-Untangle-Type: node
 XB-View-Position: 1000
 XB-Is-Core: true
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
@@ -849,6 +861,7 @@ Package: firewall-transform
 Architecture: any
 Depends: mvvm
 XB-Display-Name: Firewall
+XB-Untangle-Type: node
 XB-View-Position: 90
 XB-Is-Security: true
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
@@ -935,6 +948,7 @@ Package: spamassassin-transform
 Architecture: any
 Depends: mvvm, spam-base, mail-casing
 XB-Display-Name: Spam Blocker
+XB-Untangle-Type: node
 XB-View-Position: 15
 XB-Is-Security: true
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
@@ -1049,6 +1063,7 @@ Package: clamphish-transform
 Architecture: any
 Depends: mvvm, spam-base, untangle-clamav-config, mail-casing, http-casing
 XB-Display-Name: Phish Blocker
+XB-Untangle-Type: node
 XB-View-Position: 17
 XB-Is-Security: true
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
@@ -1177,6 +1192,7 @@ Package: test-transform
 Architecture: any
 Depends: mvvm
 XB-Display-Name: Test
+XB-Untangle-Type: node
 XB-View-Position: 2002
 XB-Is-Core: true
 XB-Org-Icon:  iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
@@ -1318,6 +1334,7 @@ Package: openvpn-transform
 Architecture: any
 Depends: mvvm, openvpn, untangle-nsis-addons, sysutils, zip, openssl
 XB-Display-Name: OpenVPN
+XB-Untangle-Type: node
 XB-View-Position: 1003
 XB-Is-Core: true
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
@@ -1421,6 +1438,7 @@ Package: ids-transform
 Architecture: any
 Depends: mvvm, http-casing, untangle-snort-rules
 XB-Display-Name: Intrusion Prevention
+XB-Untangle-Type: node
 XB-View-Position: 75
 XB-Is-Security: true
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
@@ -1526,6 +1544,7 @@ Package: reporting-transform
 Architecture: any
 Depends: mvvm
 XB-Display-Name: Untangle Reports
+XB-Untangle-Type: node
 XB-View-Position: 1020
 XB-Is-Core: true
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
@@ -1611,6 +1630,7 @@ Package: virus-base
 Architecture: any
 Depends: mvvm
 XB-Display-Name: Virus Blocker Base
+XB-Untangle-Type: base
 Description: Virus Blocker Base
  The Virus Blocker Base.
 
@@ -1618,6 +1638,7 @@ Package: spam-base
 Architecture: any
 Depends: mvvm, untangle-spamassassin-update
 XB-Display-Name: Spam Blocker Base
+XB-Untangle-Type: base
 Description: Spam Blocker Base
  The Spam Blocker Base.
 
@@ -1628,6 +1649,7 @@ Provides: metavize-client
 Conflicts: metavize-client (<< 4.1)
 Replaces: metavize-client (<< 4.1)
 XB-Display-Name: Untangle Client
+XB-Untangle-Type: library
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
  RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAbzSURBVHja5Fh7bBzFGZ+ZnX3d
  03e2c04cxwjjxI4fCSQhxKA0oYUUCRKpqgh/gPoHsahUqVKroioghT7U/lkJBbWi/1R9pA/1
@@ -1697,6 +1719,7 @@ Depends: sun-java5-jre
 Conflicts: mvvm (<< 3.0.0-39)
 Replaces: mvvm (<< 3.0.0-39)
 XB-Display-Name: Untangle Server Thirdparty Libraries
+XB-Untangle-Type: library
 Description: Untangle Server Thirdparty Libraries
  The Untangle Server Thirdparty Libraries.
 
@@ -1704,8 +1727,9 @@ Package: mvvm
 Architecture: any
 Depends: untangle-client-windows-jre, libalpine, libmvvm-thirdparty, sudo, iptables (>= 1.3.3-mv1), untangle-restore-tools, libxml2, kernel-mv, untangle-dhclient-config, ntp-simple, snmpd, snmp, sg3-utils, ddclient, slapd, ldap-utils, untangle-libnfnetlink0, libnetfilter-queue0, db4.2-util, untangle-ujac2pdf, at, ebtables, atop, mime-support, nsis, nsis-mv, dnsmasq, pppoe, bridge-utils, libsysfs1, iputils-ping, curl
 Pre-Depends: untangle-postgresql-config
-Conflicts: xenon, xenon-dbg, dlocate, slocate
+Conflicts: dlocate, slocate
 XB-Display-Name: Untangle Server
+XB-Untangle-Type: library
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
  RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAbzSURBVHja5Fh7bBzFGZ+ZnX3d
  03e2c04cxwjjxI4fCSQhxKA0oYUUCRKpqgh/gPoHsahUqVKroioghT7U/lkJBbWi/1R9pA/1

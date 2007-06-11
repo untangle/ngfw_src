@@ -89,18 +89,10 @@ fi
 if [ -z $prefix ] ; then
     # invoked in real environment
     if [ "$1" = "installed" ] ; then
-        (my_dpkg_query '*-storeitem'
-            my_dpkg_query '*-node'
-            my_dpkg_query '*-casing' ;
-            my_dpkg_query 'untangle-client';
-            my_dpkg_query 'virus-base';
-            my_dpkg_query 'spam-base';
-            my_dpkg_query 'uvm') 2>/dev/null \
-                | awk '{ if ($2) printf("%s %s\n",$1,$2) }'
+        my_dpkg_query '*' 2>/dev/null | awk '{ if ($2) printf("%s %s\n",$1,$2) }'
         #RET=$? return code ignored
     elif [ "$1" = "available" ] ; then
-        pkgs=$(apt-cache search '.-storeitem$|.-node$|.-casing$|^virus-base$|^spam-base$|^uvm$|^untangle-client$' 2>/dev/null \
-            | cut -d ' ' -f 1)
+        pkgs=$(apt-cache search '.' 2>/dev/null | cut -d ' ' -f 1)
         for pkg in $pkgs; do
             apt-cache show --no-all-versions $pkg 2>/dev/null
             #RET=$? return code ignored
