@@ -36,10 +36,10 @@ CREATE TABLE settings.n_protofilter_pattern (
 
 -- foreign key constraints
 
-ALTER TABLE settings.tr_protofilter_settings
+ALTER TABLE settings.n_protofilter_settings
     ADD CONSTRAINT fk_tr_protofilter_settings
         FOREIGN KEY (tid) REFERENCES settings.tid;
 
-ALTER TABLE settings.tr_protofilter_pattern
+ALTER TABLE settings.n_protofilter_pattern
     ADD CONSTRAINT fk_tr_protofilter_pattern
-        FOREIGN KEY (settings_id) REFERENCES settings.tr_protofilter_settings;
+        FOREIGN KEY (settings_id) REFERENCES settings.n_protofilter_settings;

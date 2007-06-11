@@ -39,13 +39,13 @@ CREATE TABLE events.n_spam_smtp_rbl_evt (
 
 -- indices for reporting
 
-CREATE INDEX tr_spam_evt_smtp_ts_idx
-    ON events.tr_spam_evt_smtp (time_stamp);
-CREATE INDEX tr_spam_evt_ts_idx
-    ON events.tr_spam_evt (time_stamp);
-CREATE INDEX tr_spam_evt_mid_idx
-    ON events.tr_spam_evt (msg_id);
-CREATE INDEX tr_spam_evt_smtp_mid_idx
-    ON events.tr_spam_evt_smtp (msg_id);
-CREATE INDEX tr_spam_smtp_rbl_evt_ts_idx
-    ON events.tr_spam_smtp_rbl_evt (time_stamp);
+CREATE INDEX n_spam_evt_smtp_ts_idx
+    ON events.n_spam_evt_smtp (time_stamp);
+CREATE INDEX n_spam_evt_ts_idx
+    ON events.n_spam_evt (time_stamp);
+CREATE INDEX n_spam_evt_mid_idx
+    ON events.n_spam_evt (msg_id);
+CREATE INDEX n_spam_evt_smtp_mid_idx
+    ON events.n_spam_evt_smtp (msg_id);
+CREATE INDEX n_spam_smtp_rbl_evt_ts_idx
+    ON events.n_spam_smtp_rbl_evt (time_stamp);

@@ -37,7 +37,7 @@ CREATE TABLE events.n_http_req_line (
 
 -- indices for reporting
 
-CREATE INDEX tr_http_evt_req_ts_idx ON events.tr_http_evt_req (time_stamp);
-CREATE INDEX tr_http_evt_req_rid_idx ON events.tr_http_evt_req (request_id);
-CREATE INDEX tr_http_evt_resp_rid_idx ON events.tr_http_evt_resp (request_id);
+CREATE INDEX n_http_evt_req_ts_idx ON events.n_http_evt_req (time_stamp);
+CREATE INDEX n_http_evt_req_rid_idx ON events.n_http_evt_req (request_id);
+CREATE INDEX n_http_evt_resp_rid_idx ON events.n_http_evt_resp (request_id);
 -- No resp or line time_stamp index since no event log is filled from them.

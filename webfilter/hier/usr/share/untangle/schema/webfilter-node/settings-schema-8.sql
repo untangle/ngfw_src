@@ -71,54 +71,54 @@ CREATE TABLE settings.n_webfilter_blcat (
 
 -- foreign key constraints
 
-ALTER TABLE settings.tr_httpblk_passed_urls
+ALTER TABLE settings.n_webfilter_passed_urls
     ADD CONSTRAINT fk_tr_httpblk_passed_urls
-    FOREIGN KEY (setting_id) REFERENCES settings.tr_httpblk_settings;
+    FOREIGN KEY (setting_id) REFERENCES settings.n_webfilter_settings;
 
-ALTER TABLE settings.tr_httpblk_passed_urls
+ALTER TABLE settings.n_webfilter_passed_urls
     ADD CONSTRAINT fk_tr_httpblk_passed_urls_rule
-    FOREIGN KEY (rule_id) REFERENCES settings.string_rule;
+    FOREIGN KEY (rule_id) REFERENCES settings.u_string_rule;
 
-ALTER TABLE settings.tr_httpblk_settings
+ALTER TABLE settings.n_webfilter_settings
     ADD CONSTRAINT fk_tr_httpblk_settings_template
-    FOREIGN KEY (template) REFERENCES settings.tr_httpblk_template;
+    FOREIGN KEY (template) REFERENCES settings.n_webfilter_template;
 
-ALTER TABLE settings.tr_httpblk_settings
+ALTER TABLE settings.n_webfilter_settings
     ADD CONSTRAINT fk_tr_httpblk_settings
     FOREIGN KEY (tid) REFERENCES settings.tid;
 
-ALTER TABLE settings.tr_httpblk_extensions
+ALTER TABLE settings.n_webfilter_extensions
     ADD CONSTRAINT fk_tr_httpblk_extensions
-    FOREIGN KEY (setting_id) REFERENCES settings.tr_httpblk_settings;
+    FOREIGN KEY (setting_id) REFERENCES settings.n_webfilter_settings;
 
-ALTER TABLE settings.tr_httpblk_extensions
+ALTER TABLE settings.n_webfilter_extensions
     ADD CONSTRAINT fk_tr_httpblk_extensions_rule
-    FOREIGN KEY (rule_id) REFERENCES settings.string_rule;
+    FOREIGN KEY (rule_id) REFERENCES settings.u_string_rule;
 
-ALTER TABLE settings.tr_httpblk_mime_types
+ALTER TABLE settings.n_webfilter_mime_types
     ADD CONSTRAINT fk_tr_httpblk_mime_types
-    FOREIGN KEY (setting_id) REFERENCES settings.tr_httpblk_settings;
+    FOREIGN KEY (setting_id) REFERENCES settings.n_webfilter_settings;
 
-ALTER TABLE settings.tr_httpblk_mime_types
+ALTER TABLE settings.n_webfilter_mime_types
     ADD CONSTRAINT fk_tr_httpblk_mime_types_rule
-    FOREIGN KEY (rule_id) REFERENCES settings.mimetype_rule;
+    FOREIGN KEY (rule_id) REFERENCES settings.u_mimetype_rule;
 
-ALTER TABLE settings.tr_httpblk_passed_clients
+ALTER TABLE settings.n_webfilter_passed_clients
     ADD CONSTRAINT fk_tr_httpblk_passed_clients
-    FOREIGN KEY (setting_id) REFERENCES settings.tr_httpblk_settings;
+    FOREIGN KEY (setting_id) REFERENCES settings.n_webfilter_settings;
 
-ALTER TABLE settings.tr_httpblk_passed_clients
+ALTER TABLE settings.n_webfilter_passed_clients
     ADD CONSTRAINT fk_tr_httpblk_passed_clients_rule
-    FOREIGN KEY (rule_id) REFERENCES settings.ipmaddr_rule;
+    FOREIGN KEY (rule_id) REFERENCES settings.u_ipmaddr_rule;
 
-ALTER TABLE settings.tr_httpblk_blocked_urls
+ALTER TABLE settings.n_webfilter_blocked_urls
     ADD CONSTRAINT fk_tr_httpblk_blocked_urls
-    FOREIGN KEY (setting_id) REFERENCES settings.tr_httpblk_settings;
+    FOREIGN KEY (setting_id) REFERENCES settings.n_webfilter_settings;
 
-ALTER TABLE settings.tr_httpblk_blocked_urls
+ALTER TABLE settings.n_webfilter_blocked_urls
     ADD CONSTRAINT fk_tr_httpblk_blocked_urls_rule
-    FOREIGN KEY (rule_id) REFERENCES settings.string_rule;
+    FOREIGN KEY (rule_id) REFERENCES settings.u_string_rule;
 
-ALTER TABLE settings.tr_httpblk_blcat
+ALTER TABLE settings.n_webfilter_blcat
     ADD CONSTRAINT fk_tr_httpblk_blcat
-    FOREIGN KEY (setting_id) REFERENCES settings.tr_httpblk_settings;
+    FOREIGN KEY (setting_id) REFERENCES settings.n_webfilter_settings;

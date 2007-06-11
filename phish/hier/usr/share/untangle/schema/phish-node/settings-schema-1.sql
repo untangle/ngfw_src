@@ -7,17 +7,17 @@ CREATE TABLE settings.n_phish_settings (
 
 -- foreign key constraints
 
-ALTER TABLE settings.tr_clamphish_settings
+ALTER TABLE settings.n_phish_settings
     ADD CONSTRAINT fk_clamphish_to_spam_settings
     FOREIGN KEY (spam_settings_id)
-    REFERENCES settings.tr_spam_settings;
+    REFERENCES settings.n_spam_settings;
 
 -- this is a conversion step in case the user has a pre-existing
 -- clamphish-transform that was initialized using only the spam-base
 -- schema.
 
-INSERT INTO tr_clamphish_settings
+INSERT INTO n_phish_settings
     SELECT ss.settings_id AS spam_settings_id, true AS enable_google_sb
     FROM transform_persistent_state
-    JOIN tr_spam_settings ss USING (tid)
+    JOIN n_spam_settings ss USING (tid)
     WHERE name = 'clamphish-transform';

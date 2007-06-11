@@ -38,6 +38,6 @@ CREATE TABLE events.n_firewall_statistic_evt (
 
 -- indices for reporting
 
-CREATE INDEX tr_firewall_evt_plepid_idx ON events.tr_firewall_evt (pl_endp_id);
-CREATE INDEX tr_firewall_evt_ts_idx ON events.tr_firewall_evt (time_stamp);
+CREATE INDEX n_firewall_evt_plepid_idx ON events.n_firewall_evt (pl_endp_id);
+CREATE INDEX n_firewall_evt_ts_idx ON events.n_firewall_evt (time_stamp);
 

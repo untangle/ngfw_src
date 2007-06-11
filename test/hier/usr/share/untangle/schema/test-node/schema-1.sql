@@ -5,7 +5,7 @@
 -------------
 
 -- com.untangle.tran.test.TestSettings
-CREATE TABLE settings.tr_test_settings (
+CREATE TABLE settings.n_test_settings (
     id int8 NOT NULL,
     tid int8 NOT NULL UNIQUE,
     mode varchar(255),
@@ -23,7 +23,7 @@ CREATE TABLE settings.tr_test_settings (
 
 -- foreign key constraints
 
-ALTER TABLE settings.tr_test_settings
+ALTER TABLE settings.n_test_settings
     ADD CONSTRAINT fk_tr_test_settings
     FOREIGN KEY (tid) REFERENCES settings.tid;
 

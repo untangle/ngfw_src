@@ -45,17 +45,17 @@ CREATE TABLE settings.n_spam_settings (
     imap_outbound int8 NOT NULL,
     PRIMARY KEY (settings_id));
 
--- BEGIN dirty hack, make settings.tr_clamphish_settings
+-- BEGIN dirty hack, make settings.n_phish_settings
 CREATE TABLE settings.n_phish_settings (
     spam_settings_id int8 NOT NULL,
     enable_google_sb bool NOT NULL,
     PRIMARY KEY (spam_settings_id));
 
-ALTER TABLE settings.tr_clamphish_settings
+ALTER TABLE settings.n_phish_settings
     ADD CONSTRAINT fk_clamphish_to_spam_settings
     FOREIGN KEY (spam_settings_id)
-    REFERENCES settings.tr_spam_settings;
--- END dirty hack, make settings.tr_clamphish_settings
+    REFERENCES settings.n_spam_settings;
+-- END dirty hack, make settings.n_phish_settings
 
 -- com.untangle.tran.spam.SpamSettings.spamRBLList (list construct)
 CREATE TABLE settings.n_spam_rbl_list (
@@ -110,37 +110,37 @@ CREATE TABLE settings.n_spamassassin_lcl (
 
 -- foreign key constraints
 
-ALTER TABLE settings.tr_spam_settings
+ALTER TABLE settings.n_spam_settings
     ADD CONSTRAINT fk_settings_to_tid
     FOREIGN KEY (tid)
     REFERENCES settings.tid;
 
-ALTER TABLE settings.tr_spam_settings
+ALTER TABLE settings.n_spam_settings
     ADD CONSTRAINT fk_in_ss_smtp_cfg
     FOREIGN KEY (smtp_inbound)
-    REFERENCES settings.tr_spam_smtp_config;
+    REFERENCES settings.n_spam_smtp_config;
 
-ALTER TABLE settings.tr_spam_settings
+ALTER TABLE settings.n_spam_settings
     ADD CONSTRAINT fk_out_ss_smtp_cfg
     FOREIGN KEY (smtp_outbound)
-    REFERENCES settings.tr_spam_smtp_config;
+    REFERENCES settings.n_spam_smtp_config;
 
-ALTER TABLE settings.tr_spam_settings
+ALTER TABLE settings.n_spam_settings
     ADD CONSTRAINT fk_in_ss_pop_cfg
     FOREIGN KEY (pop_inbound)
-    REFERENCES settings.tr_spam_pop_config;
+    REFERENCES settings.n_spam_pop_config;
 
-ALTER TABLE settings.tr_spam_settings
+ALTER TABLE settings.n_spam_settings
     ADD CONSTRAINT fk_out_ss_pop_cfg
     FOREIGN KEY (pop_outbound)
-    REFERENCES settings.tr_spam_pop_config;
+    REFERENCES settings.n_spam_pop_config;
 
-ALTER TABLE settings.tr_spam_settings
+ALTER TABLE settings.n_spam_settings
     ADD CONSTRAINT fk_in_ss_imap_cfg
     FOREIGN KEY (imap_inbound)
-    REFERENCES settings.tr_spam_imap_config;
+    REFERENCES settings.n_spam_imap_config;
 
-ALTER TABLE settings.tr_spam_settings
+ALTER TABLE settings.n_spam_settings
     ADD CONSTRAINT fk_out_ss_imap_cfg
     FOREIGN KEY (imap_outbound)
-    REFERENCES settings.tr_spam_imap_config;
+    REFERENCES settings.n_spam_imap_config;

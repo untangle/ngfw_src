@@ -31,9 +31,9 @@ CREATE TABLE settings.n_shield_node_rule (
 
 -- foreign key constraints
 
-ALTER TABLE settings.tr_airgap_settings
+ALTER TABLE settings.n_shield_settings
     ADD CONSTRAINT fk_tr_airgap_settings FOREIGN KEY (tid) REFERENCES tid;
 
-ALTER TABLE settings.tr_airgap_shield_node_rule
+ALTER TABLE settings.n_shield_node_rule
     ADD CONSTRAINT fk_tr_airgap_shield_node_rule
-        FOREIGN KEY (settings_id) REFERENCES settings.tr_airgap_settings;
+        FOREIGN KEY (settings_id) REFERENCES settings.n_shield_settings;

@@ -6,13 +6,13 @@ SET search_path TO settings,events,public;
 
 CREATE SEQUENCE settings.hibernate_sequence;
 
--- com.untangle.mvvm.security.AdminSettings
+-- com.untangle.uvm.security.AdminSettings
 CREATE TABLE settings.u_admin_settings (
     admin_settings_id int8 NOT NULL,
     summary_period_id int8,
     PRIMARY KEY (admin_settings_id));
 
--- com.untangle.mvvm.security.User
+-- com.untangle.uvm.security.User
 CREATE TABLE settings.u_user (
     id int8 NOT NULL,
     login text NOT NULL,
@@ -25,15 +25,15 @@ CREATE TABLE settings.u_user (
     admin_setting_id int8,
     PRIMARY KEY (id));
 
--- com.untangle.mvvm.UpgradeSettings
+-- com.untangle.uvm.UpgradeSettings
 CREATE TABLE settings.u_upgrade_settings (
     upgrade_settings_id int8 NOT NULL,
     auto_upgrade bool NOT NULL,
     period int8 NOT NULL,
     PRIMARY KEY (upgrade_settings_id));
 
--- com.untangle.mvvm.BrandingSettings
-CREATE TABLE settings.mvvm_branding_settings (
+-- com.untangle.uvm.BrandingSettings
+CREATE TABLE settings.uvm_branding_settings (
     settings_id int8 NOT NULL,
     company_name text,
     company_url text,
@@ -42,7 +42,7 @@ CREATE TABLE settings.mvvm_branding_settings (
     contact_email text,
     PRIMARY KEY (settings_id));
 
--- com.untangle.mvvm.MailSettings
+-- com.untangle.uvm.MailSettings
 CREATE TABLE settings.u_mail_settings (
     mail_settings_id int8 NOT NULL,
     report_email text,
@@ -56,7 +56,7 @@ CREATE TABLE settings.u_mail_settings (
     use_mx_records bool NOT NULL,
     PRIMARY KEY (mail_settings_id));
 
--- com.untangle.mvvm.logging.LoggingSettings
+-- com.untangle.uvm.logging.LoggingSettings
 CREATE TABLE settings.u_logging_settings (
     settings_id int8 NOT NULL,
     syslog_enabled bool NOT NULL,
@@ -66,7 +66,7 @@ CREATE TABLE settings.u_logging_settings (
     syslog_threshold int4,
     PRIMARY KEY (settings_id));
 
--- com.untangle.mvvm.policy.Policy
+-- com.untangle.uvm.policy.Policy
 CREATE TABLE settings.u_policy (
     id int8 NOT NULL,
     is_default bool NOT NULL,
@@ -74,12 +74,12 @@ CREATE TABLE settings.u_policy (
     notes text,
     PRIMARY KEY (id));
 
--- com.untangle.mvvm.policy.UserPolicyRuleSet
+-- com.untangle.uvm.policy.UserPolicyRuleSet
 CREATE TABLE settings.u_user_policy_rules (
     set_id int8 NOT NULL,
     PRIMARY KEY (set_id));
 
--- com.untangle.mvvm.policy.UserPolicyRule
+-- com.untangle.uvm.policy.UserPolicyRule
 CREATE TABLE settings.u_user_policy_rule (
     rule_id int8 NOT NULL,
     protocol_matcher text,
@@ -106,7 +106,7 @@ CREATE TABLE settings.u_user_policy_rule (
     invert_entire_duration bool NOT NULL,
     PRIMARY KEY (rule_id));
 
--- com.untangle.mvvm.policy.SystemPolicyRule
+-- com.untangle.uvm.policy.SystemPolicyRule
 CREATE TABLE settings.u_system_policy_rule (
     rule_id int8 NOT NULL,
     client_intf int2 NOT NULL,
@@ -121,14 +121,14 @@ CREATE TABLE settings.u_system_policy_rule (
     log bool,
     PRIMARY KEY (rule_id));
 
--- com.untangle.mvvm.engine.TransformPersistentState.args
+-- com.untangle.uvm.engine.NodePersistentState.args
 CREATE TABLE settings.u_node_args (
     tps_id int8 NOT NULL,
     arg text NOT NULL,
     position int4 NOT NULL,
     PRIMARY KEY (tps_id, position));
 
--- com.untangle.mvvm.engine.MackageState
+-- com.untangle.uvm.engine.MackageState
 CREATE TABLE settings.u_mackage_state (
     id int8 NOT NULL,
     mackage_name text NOT NULL,
@@ -136,13 +136,13 @@ CREATE TABLE settings.u_mackage_state (
     enabled bool NOT NULL,
     PRIMARY KEY (id));
 
--- com.untangle.mvvm.engine.TransformManagerState
+-- com.untangle.uvm.engine.NodeManagerState
 CREATE TABLE settings.u_node_manager_state (
     id int8 NOT NULL,
     last_tid int8,
     PRIMARY KEY (id));
 
--- com.untangle.mvvm.Period
+-- com.untangle.uvm.Period
 CREATE TABLE settings.u_period (
     period_id int8 NOT NULL,
     hour int4 NOT NULL,
@@ -156,7 +156,7 @@ CREATE TABLE settings.u_period (
     saturday bool,
     PRIMARY KEY (period_id));
 
--- com.untangle.mvvm.tran.TransformPreferences
+-- com.untangle.uvm.tran.NodePreferences
 CREATE TABLE settings.u_node_preferences (
     id int8 NOT NULL,
     tid int8,
@@ -166,7 +166,7 @@ CREATE TABLE settings.u_node_preferences (
     alpha int4,
     PRIMARY KEY (id));
 
--- com.untangle.mvvm.tran.StringRule
+-- com.untangle.uvm.tran.StringRule
 CREATE TABLE settings.u_string_rule (
     rule_id int8 NOT NULL,
     string text,
@@ -178,13 +178,13 @@ CREATE TABLE settings.u_string_rule (
     log bool,
     PRIMARY KEY (rule_id));
 
--- com.untangle.mvvm.security.Tid
+-- com.untangle.uvm.security.Tid
 CREATE TABLE settings.u_tid (
     id int8 NOT NULL,
     policy_id int8,
     PRIMARY KEY (id));
 
--- com.untangle.mvvm.engine.TransformPersistentState
+-- com.untangle.uvm.engine.NodePersistentState
 CREATE TABLE settings.u_node_persistent_state (
     id int8 NOT NULL,
     name text NOT NULL,
@@ -193,13 +193,13 @@ CREATE TABLE settings.u_node_persistent_state (
     target_state text NOT NULL,
     PRIMARY KEY (id));
 
--- com.untangle.mvvm.tran.IPMaddrDirectory
+-- com.untangle.uvm.tran.IPMaddrDirectory
 CREATE TABLE settings.u_ipmaddr_dir (
     id int8 NOT NULL,
     notes text,
     PRIMARY KEY (id));
 
--- com.untangle.mvvm.tran.MimeTypeRule
+-- com.untangle.uvm.tran.MimeTypeRule
 CREATE TABLE settings.u_mimetype_rule (
     rule_id int8 NOT NULL,
     mime_type text,
@@ -211,14 +211,14 @@ CREATE TABLE settings.u_mimetype_rule (
     log bool,
     PRIMARY KEY (rule_id));
 
--- com.untangle.mvvm.tran.IPMaddrDirectory.entries
+-- com.untangle.uvm.tran.IPMaddrDirectory.entries
 CREATE TABLE settings.u_ipmaddr_dir_entries (
     ipmaddr_dir_id int8 NOT NULL,
     rule_id int8 NOT NULL,
     position int4 NOT NULL,
     PRIMARY KEY (ipmaddr_dir_id, position));
 
--- com.untangle.mvvm.tran.IPMaddrRule
+-- com.untangle.uvm.tran.IPMaddrRule
 CREATE TABLE settings.u_ipmaddr_rule (
     rule_id int8 NOT NULL,
     ipmaddr inet,
@@ -231,7 +231,7 @@ CREATE TABLE settings.u_ipmaddr_rule (
     PRIMARY KEY (rule_id));
 
 
--- com.untangle.mvvm.snmp.SnmpSettings
+-- com.untangle.uvm.snmp.SnmpSettings
 CREATE TABLE settings.u_snmp_settings (
     snmp_settings_id int8 NOT NULL,
     enabled bool,
@@ -246,7 +246,7 @@ CREATE TABLE settings.u_snmp_settings (
     PRIMARY KEY (snmp_settings_id));
 
 
--- com.untangle.mvvm.addrbook.RepositorySettings
+-- com.untangle.uvm.addrbook.RepositorySettings
 CREATE TABLE settings.u_ab_repository_settings (
     settings_id int8 NOT NULL,
     superuser text,
@@ -258,14 +258,14 @@ CREATE TABLE settings.u_ab_repository_settings (
     PRIMARY KEY (settings_id));
 
 
--- com.untangle.mvvm.addrbook.AddressBookSettings
+-- com.untangle.uvm.addrbook.AddressBookSettings
 CREATE TABLE settings.u_ab_settings (
     settings_id int8 NOT NULL,
     ad_repo_settings int8 NOT NULL,
     ab_configuration char(1) NOT NULL,
     PRIMARY KEY (settings_id));
 
--- com.untangle.mvvm.networking.DynamicDNSSettings -- 3.2
+-- com.untangle.uvm.networking.DynamicDNSSettings -- 3.2
 CREATE TABLE settings.u_ddns_settings (
     settings_id int8 NOT NULL,
     enabled     BOOL,
@@ -274,7 +274,7 @@ CREATE TABLE settings.u_ddns_settings (
     password    TEXT,
     PRIMARY KEY (settings_id));
 
--- com.untangle.mvvm.networking.DhcpLeaseRule -- 3.2
+-- com.untangle.uvm.networking.DhcpLeaseRule -- 3.2
 CREATE TABLE settings.u_dhcp_lease_rule (
     rule_id        INT8 NOT NULL,
     mac_address    TEXT,
@@ -289,7 +289,7 @@ CREATE TABLE settings.u_dhcp_lease_rule (
     log            BOOL,
     PRIMARY KEY    (rule_id));
 
--- com.untangle.mvvm.networking.DnsStaticHostRule -- 3.2
+-- com.untangle.uvm.networking.DnsStaticHostRule -- 3.2
 CREATE TABLE settings.u_dns_static_host_rule (
     rule_id        INT8 NOT NULL,
     hostname_list  TEXT,
@@ -303,7 +303,7 @@ CREATE TABLE settings.u_dns_static_host_rule (
     PRIMARY KEY    (rule_id));
 
 
--- com.untangle.mvvm.networking.Interface -- 3.2
+-- com.untangle.uvm.networking.Interface -- 3.2
 CREATE TABLE settings.u_network_intf (
     rule_id        INT8 NOT NULL,
     argon_intf     INT2,
@@ -320,7 +320,7 @@ CREATE TABLE settings.u_network_intf (
     position       INT4,
     PRIMARY KEY    (rule_id));
 
--- com.untangle.mvvm.networking.IPNetworkRule -- 3.2
+-- com.untangle.uvm.networking.IPNetworkRule -- 3.2
 CREATE TABLE settings.u_ip_network (
     rule_id     INT8 NOT NULL,
     network     TEXT,
@@ -334,7 +334,7 @@ CREATE TABLE settings.u_ip_network (
     position    INT4,
     PRIMARY KEY (rule_id));
 
--- com.untangle.mvvm.networking.Route -- 3.2
+-- com.untangle.uvm.networking.Route -- 3.2
 CREATE TABLE settings.u_network_route (
     rule_id       INT8 NOT NULL,
     network_space INT8,
@@ -350,7 +350,7 @@ CREATE TABLE settings.u_network_route (
     position      INT4,
     PRIMARY KEY   (rule_id));
 
--- com.untangle.mvvm.networking.NetworkSpace -- 3.2
+-- com.untangle.uvm.networking.NetworkSpace -- 3.2
 CREATE TABLE settings.u_network_space (
     rule_id              INT8 NOT NULL,
     papers               INT8,
@@ -373,7 +373,7 @@ CREATE TABLE settings.u_network_space (
     position             INT4,
     PRIMARY KEY          (rule_id));
 
--- com.untangle.mvvm.networking.RedirectRule -- 3.2
+-- com.untangle.uvm.networking.RedirectRule -- 3.2
 CREATE TABLE settings.u_redirect_rule (
     rule_id           INT8 NOT NULL,
     is_dst_redirect   BOOL,
@@ -396,14 +396,14 @@ CREATE TABLE settings.u_redirect_rule (
     primary key      (rule_id));
 
 -- Table linking network settings to redirects -- 3.2x
--- com.untangle.mvvm.networking.NetworkSpacesSettings.redirectList -- 3.2
+-- com.untangle.uvm.networking.NetworkSpacesSettings.redirectList -- 3.2
 CREATE TABLE settings.u_redirects (
     setting_id  INT8 NOT NULL,
     rule_id     INT8 NOT NULL,
     position    INT4 NOT NULL,
     PRIMARY KEY (setting_id, position));
 
--- com.untangle.mvvm.networking.NetworkSpacesSettings -- 3.2
+-- com.untangle.uvm.networking.NetworkSpacesSettings -- 3.2
 CREATE TABLE settings.u_network_settings (
     settings_id INT8 NOT NULL,
     is_enabled BOOL,
@@ -414,7 +414,7 @@ CREATE TABLE settings.u_network_settings (
     completed_setup BOOL,
     PRIMARY KEY (settings_id));
 
--- com.untangle.mvvm.networking.AccessSettings -- 4.2
+-- com.untangle.uvm.networking.AccessSettings -- 4.2
 CREATE TABLE settings.u_access_settings (
     settings_id          INT8 NOT NULL,
     allow_ssh            BOOL,
@@ -428,7 +428,7 @@ CREATE TABLE settings.u_access_settings (
     allow_outside_report BOOL,
     PRIMARY KEY          (settings_id));
 
--- com.untangle.mvvm.networking.MiscSettings -- 4.2
+-- com.untangle.uvm.networking.MiscSettings -- 4.2
 CREATE TABLE settings.u_misc_settings (
     settings_id          INT8 NOT NULL,
     report_exceptions    BOOL,
@@ -437,7 +437,7 @@ CREATE TABLE settings.u_misc_settings (
     custom_rules         TEXT,
     PRIMARY KEY          (settings_id));
 
--- com.untangle.mvvm.networking.AddressSettings -- 4.2
+-- com.untangle.uvm.networking.AddressSettings -- 4.2
 CREATE TABLE settings.u_address_settings (
     settings_id          INT8 NOT NULL,
     https_port           INT4,
@@ -449,7 +449,7 @@ CREATE TABLE settings.u_address_settings (
     PRIMARY KEY          (settings_id));
 
 -- Services settings
--- com.untangle.mvvm.networking.ServicesSettingsImpl -- 3.2
+-- com.untangle.uvm.networking.ServicesSettingsImpl -- 3.2
 CREATE TABLE settings.u_network_services (
        settings_id        INT8 NOT NULL,
        is_dhcp_enabled    BOOL,
@@ -460,21 +460,21 @@ CREATE TABLE settings.u_network_services (
        dns_local_domain   TEXT,
        primary key        (settings_id));
 
--- com.untangle.mvvm.networking.ServicesSettingsImpl.dhcpLeaseList -- 3.2
+-- com.untangle.uvm.networking.ServicesSettingsImpl.dhcpLeaseList -- 3.2
 CREATE TABLE settings.u_dhcp_lease_list (
        setting_id   INT8 NOT NULL,
        rule_id      INT8 NOT NULL,
        position     INT4 NOT NULL,
        PRIMARY KEY  (setting_id, position));
 
--- com.untangle.mvvm.networking.ServicesSettingsImpl.dnsStaticHostList -- 3.2
+-- com.untangle.uvm.networking.ServicesSettingsImpl.dnsStaticHostList -- 3.2
 CREATE TABLE settings.u_dns_host_list (
        setting_id   INT8 NOT NULL,
        rule_id      INT8 NOT NULL,
        position     INT4 NOT NULL,
        PRIMARY KEY  (setting_id, position));
 
--- com.untangle.mvvm.portal.Bookmark -- 4.0
+-- com.untangle.uvm.portal.Bookmark -- 4.0
 CREATE TABLE settings.n_portal_bookmark (
         id               INT8 NOT NULL,
         name             TEXT,
@@ -482,7 +482,7 @@ CREATE TABLE settings.n_portal_bookmark (
         application_name TEXT,
         PRIMARY KEY      (id));
 
--- com.untangle.mvvm.portal.PortalUser -- 4.0
+-- com.untangle.uvm.portal.PortalUser -- 4.0
 CREATE TABLE settings.n_portal_user (
         id               INT8 NOT NULL,
         uid              TEXT,
@@ -494,14 +494,14 @@ CREATE TABLE settings.n_portal_user (
         position         INT4,
         PRIMARY KEY      (id));
 
--- com.untangle.mvvm.portal.PortalUser.bookmarks -- 4.0
+-- com.untangle.uvm.portal.PortalUser.bookmarks -- 4.0
 CREATE TABLE settings.n_portal_user_bm_mt (
     settings_id int8 NOT NULL,
     bookmark_id int8 NOT NULL,
     position int4 NOT NULL,
     PRIMARY KEY (settings_id, position));
 
--- com.untangle.mvvm.portal.PortalGroup -- 4.0
+-- com.untangle.uvm.portal.PortalGroup -- 4.0
 CREATE TABLE settings.n_portal_group (
         id               INT8 NOT NULL,
         name             TEXT,
@@ -511,14 +511,14 @@ CREATE TABLE settings.n_portal_group (
         position         INT4,
         PRIMARY KEY      (id));
 
--- com.untangle.mvvm.portal.PortalGroup.bookmarks -- 4.0
+-- com.untangle.uvm.portal.PortalGroup.bookmarks -- 4.0
 CREATE TABLE settings.n_portal_group_bm_mt (
     settings_id int8 NOT NULL,
     bookmark_id int8 NOT NULL,
     position int4 NOT NULL,
     PRIMARY KEY (settings_id, position));
 
--- com.untangle.mvvm.portal.PortalGlobal -- 4.0
+-- com.untangle.uvm.portal.PortalGlobal -- 4.0
 CREATE TABLE settings.n_portal_global (
         id               INT8 NOT NULL,
         auto_create_users BOOL,
@@ -527,14 +527,14 @@ CREATE TABLE settings.n_portal_global (
         home_settings_id INT8,
         PRIMARY KEY      (id));
 
--- com.untangle.mvvm.portal.PortalGlobal.bookmarks -- 4.0
+-- com.untangle.uvm.portal.PortalGlobal.bookmarks -- 4.0
 CREATE TABLE settings.n_portal_global_bm_mt (
     settings_id int8 NOT NULL,
     bookmark_id int8 NOT NULL,
     position int4 NOT NULL,
     PRIMARY KEY (settings_id, position));
 
--- com.untangle.mvvm.security.PortalHomeSettings
+-- com.untangle.uvm.security.PortalHomeSettings
 CREATE TABLE settings.n_portal_home_settings (
     id              INT8 NOT NULL,
     home_page_title TEXT,
@@ -546,13 +546,13 @@ CREATE TABLE settings.n_portal_home_settings (
     idle_timeout    INT8,
     PRIMARY KEY (id));
 
--- com.untangle.mvvm.security.PortalSettings
+-- com.untangle.uvm.security.PortalSettings
 CREATE TABLE settings.n_portal_settings (
     id int8 NOT NULL,
     global_settings_id INT8,
     PRIMARY KEY (id));
 
--- com.untangle.mvvm.networking.PPPoEConnectionRule -- 4.1
+-- com.untangle.uvm.networking.PPPoEConnectionRule -- 4.1
 CREATE TABLE settings.u_pppoe_connection (
     rule_id           INT8 NOT NULL,
     name              TEXT,
@@ -570,13 +570,13 @@ CREATE TABLE settings.u_pppoe_connection (
     secret_field      TEXT,
     PRIMARY KEY       (rule_id));
 
--- com.untangle.mvvm.networking.PPPoESettings -- 4.1
+-- com.untangle.uvm.networking.PPPoESettings -- 4.1
 CREATE TABLE settings.u_pppoe (
     settings_id       INT8 NOT NULL,
     live              BOOL,
     PRIMARY KEY      (settings_id));
 
--- com.untangle.mvvm.user.WMISettings -- 4.1
+-- com.untangle.uvm.user.WMISettings -- 4.1
 CREATE TABLE settings.u_wmi_settings (
     settings_id       INT8 NOT NULL,
     live              BOOL,
@@ -593,110 +593,110 @@ CREATE TABLE settings.u_wmi_settings (
 
 -- list indeces
 
-CREATE INDEX idx_string_rule ON settings.string_rule (string);
+CREATE INDEX idx_string_rule ON settings.u_string_rule (string);
 
 -- foreign key constraints
 
 ALTER TABLE settings.tid
     ADD CONSTRAINT fk_tid_policy
-    FOREIGN KEY (policy_id) REFERENCES settings.policy;
+    FOREIGN KEY (policy_id) REFERENCES settings.u_policy;
 
 ALTER TABLE settings.user_policy_rule
     ADD CONSTRAINT fk_user_policy_rule_parent
-    FOREIGN KEY (set_id) REFERENCES settings.mvvm_user_policy_rules;
+    FOREIGN KEY (set_id) REFERENCES settings.u_user_policy_rules;
 
 ALTER TABLE settings.user_policy_rule
     ADD CONSTRAINT fk_user_policy_rule_policy
-    FOREIGN KEY (policy_id) REFERENCES settings.policy;
+    FOREIGN KEY (policy_id) REFERENCES settings.u_policy;
 
-ALTER TABLE settings.system_policy_rule
+ALTER TABLE settings.u_system_policy_rule
     ADD CONSTRAINT fk_system_policy_rule_policy
-    FOREIGN KEY (policy_id) REFERENCES settings.policy;
+    FOREIGN KEY (policy_id) REFERENCES settings.u_policy;
 
-ALTER TABLE settings.admin_settings
+ALTER TABLE settings.u_admin_settings
     ADD CONSTRAINT fk_admin_settings
-    FOREIGN KEY (summary_period_id) REFERENCES settings.period;
+    FOREIGN KEY (summary_period_id) REFERENCES settings.u_period;
 
-ALTER TABLE settings.mvvm_user
-    ADD CONSTRAINT fk_mvvm_user
-    FOREIGN KEY (admin_setting_id) REFERENCES settings.admin_settings;
+ALTER TABLE settings.u_user
+    ADD CONSTRAINT fk_uvm_user
+    FOREIGN KEY (admin_setting_id) REFERENCES settings.u_admin_settings;
 
-ALTER TABLE settings.upgrade_settings
+ALTER TABLE settings.u_upgrade_settings
     ADD CONSTRAINT fk_upgrade_settings
-    FOREIGN KEY (period) REFERENCES settings.period;
+    FOREIGN KEY (period) REFERENCES settings.u_period;
 
-ALTER TABLE settings.transform_args
-    ADD CONSTRAINT fk_transform_args
-    FOREIGN KEY (tps_id) REFERENCES settings.transform_persistent_state;
+ALTER TABLE settings.node_args
+    ADD CONSTRAINT fk_node_args
+    FOREIGN KEY (tps_id) REFERENCES settings.u_node_persistent_state;
 
-ALTER TABLE settings.transform_preferences
-    ADD CONSTRAINT fk_transform_preferences
-    FOREIGN KEY (tid) REFERENCES settings.tid;
+ALTER TABLE settings.node_preferences
+    ADD CONSTRAINT fk_node_preferences
+    FOREIGN KEY (tid) REFERENCES settings.u_tid;
 
-ALTER TABLE settings.transform_persistent_state
-    ADD CONSTRAINT fk_transform_persistent_state
-    FOREIGN KEY (tid) REFERENCES settings.tid;
+ALTER TABLE settings.node_persistent_state
+    ADD CONSTRAINT fk_node_persistent_state
+    FOREIGN KEY (tid) REFERENCES settings.u_tid;
 
-ALTER TABLE settings.ipmaddr_dir_entries
+ALTER TABLE settings.u_ipmaddr_dir_entries
     ADD CONSTRAINT fk_ipmaddr_dir_entries
-    FOREIGN KEY (ipmaddr_dir_id) REFERENCES settings.ipmaddr_dir;
+    FOREIGN KEY (ipmaddr_dir_id) REFERENCES settings.u_ipmaddr_dir;
 
 -- Network spaces
 
--- ALTER TABLE mvvm_ip_network
---       ADD CONSTRAINT fk_mvvm_ip_network_space
---       FOREIGN KEY (space_id) REFERENCES mvvm_network_space;
+-- ALTER TABLE u_ip_network
+--       ADD CONSTRAINT fk_uvm_ip_network_space
+--       FOREIGN KEY (space_id) REFERENCES u_network_space;
 
--- ALTER TABLE mvvm_network_intf
---       ADD CONSTRAINT fk_mvvm_intf_network_settings
---       FOREIGN KEY (settings_id) REFERENCES mvvm_network_settings;
+-- ALTER TABLE u_network_intf
+--       ADD CONSTRAINT fk_uvm_intf_network_settings
+--       FOREIGN KEY (settings_id) REFERENCES u_network_settings;
 
--- ALTER TABLE mvvm_network_intf
---       ADD CONSTRAINT fk_mvvm_intf_network_space
---       FOREIGN KEY (network_space) REFERENCES mvvm_network_space;
+-- ALTER TABLE u_network_intf
+--       ADD CONSTRAINT fk_uvm_intf_network_space
+--       FOREIGN KEY (network_space) REFERENCES u_network_space;
 
--- ALTER TABLE mvvm_network_route
---       ADD CONSTRAINT fk_mvvm_route_network_settings
+-- ALTER TABLE u_network_route
+--       ADD CONSTRAINT fk_uvm_route_network_settings
 --       FOREIGN KEY (settings_id) REFERENCES network_settings;
 
--- ALTER TABLE mvvm_network_route
---       ADD CONSTRAINT fk_mvvm_route_network_space
---       FOREIGN KEY (network_space) REFERENCES mvvm_network_space;
+-- ALTER TABLE u_network_route
+--       ADD CONSTRAINT fk_uvm_route_network_space
+--       FOREIGN KEY (network_space) REFERENCES u_network_space;
 
--- ALTER TABLE mvvm_network_space
---       ADD CONSTRAINT fk_mvvm_space_network_settings
+-- ALTER TABLE u_network_space
+--       ADD CONSTRAINT fk_uvm_space_network_settings
 --       FOREIGN KEY (settings_id) REFERENCES network_settings;
 
--- ALTER TABLE mvvm_redirects
---       ADD CONSTRAINT fk_mvvm_redirect_network_settings
+-- ALTER TABLE u_redirects
+--       ADD CONSTRAINT fk_uvm_redirect_network_settings
 --       FOREIGN KEY (setting_id) REFERENCES network_settings;
 
--- ALTER TABLE mvvm_redirects
---       ADD CONSTRAINT fk_mvvm_redirect_redirect
+-- ALTER TABLE u_redirects
+--       ADD CONSTRAINT fk_uvm_redirect_redirect
 --       FOREIGN KEY (rule_id) REFERENCES redirect_rule;
 
 -- -- Services settings
-ALTER TABLE mvvm_dhcp_lease_list
-      ADD CONSTRAINT fk_mvvm_lease_services
-      FOREIGN KEY (setting_id) REFERENCES mvvm_network_services;
+ALTER TABLE u_dhcp_lease_list
+      ADD CONSTRAINT fk_uvm_lease_services
+      FOREIGN KEY (setting_id) REFERENCES u_network_services;
 
-ALTER TABLE mvvm_dhcp_lease_list
-      ADD CONSTRAINT fk_mvvm_lease_lease
-      FOREIGN KEY (rule_id) REFERENCES mvvm_dhcp_lease_rule;
+ALTER TABLE u_dhcp_lease_list
+      ADD CONSTRAINT fk_uvm_lease_lease
+      FOREIGN KEY (rule_id) REFERENCES u_dhcp_lease_rule;
 
-ALTER TABLE mvvm_dns_host_list
-      ADD CONSTRAINT fk_mvvm_dns_services
-      FOREIGN KEY (setting_id) REFERENCES mvvm_network_services;
+ALTER TABLE u_dns_host_list
+      ADD CONSTRAINT fk_uvm_dns_services
+      FOREIGN KEY (setting_id) REFERENCES u_network_services;
 
-ALTER TABLE mvvm_dns_host_list
-      ADD CONSTRAINT fk_mvvm_dns_dns
-      FOREIGN KEY (rule_id) REFERENCES mvvm_dns_static_host_rule;
+ALTER TABLE u_dns_host_list
+      ADD CONSTRAINT fk_uvm_dns_dns
+      FOREIGN KEY (rule_id) REFERENCES u_dns_static_host_rule;
 
 -- Portals
-ALTER TABLE settings.portal_group
+ALTER TABLE settings.n_portal_group
     ADD CONSTRAINT fk_portal_group_parent
-    FOREIGN KEY (settings_id) REFERENCES settings.portal_settings;
+    FOREIGN KEY (settings_id) REFERENCES settings.n_portal_settings;
 
-ALTER TABLE settings.portal_user
+ALTER TABLE settings.n_portal_user
     ADD CONSTRAINT fk_portal_user_parent
-    FOREIGN KEY (settings_id) REFERENCES settings.portal_settings;
+    FOREIGN KEY (settings_id) REFERENCES settings.n_portal_settings;

@@ -73,67 +73,67 @@ CREATE TABLE settings.n_virus_vs_mt (
 
 -- foreign key constraints
 
-ALTER TABLE settings.tr_virus_vs_ext
+ALTER TABLE settings.n_virus_vs_ext
     ADD CONSTRAINT fk_tr_virus_vs_ext
     FOREIGN KEY (settings_id)
-    REFERENCES settings.tr_virus_settings;
+    REFERENCES settings.n_virus_settings;
 
-ALTER TABLE settings.tr_virus_vs_mt
+ALTER TABLE settings.n_virus_vs_mt
     ADD CONSTRAINT fk_tr_virus_vs_mt
     FOREIGN KEY (settings_id)
-    REFERENCES settings.tr_virus_settings;
+    REFERENCES settings.n_virus_settings;
 
-ALTER TABLE settings.tr_virus_settings
+ALTER TABLE settings.n_virus_settings
     ADD CONSTRAINT fk_tr_virus_settings
     FOREIGN KEY (tid)
     REFERENCES settings.tid;
 
-ALTER TABLE settings.tr_virus_settings
+ALTER TABLE settings.n_virus_settings
     ADD CONSTRAINT fk_tr_virus_settings_ftpout
     FOREIGN KEY (ftp_outbound)
-    REFERENCES settings.tr_virus_config;
+    REFERENCES settings.n_virus_config;
 
-ALTER TABLE settings.tr_virus_settings
+ALTER TABLE settings.n_virus_settings
     ADD CONSTRAINT fk_tr_virus_settings_ftpin
     FOREIGN KEY (ftp_inbound)
-    REFERENCES settings.tr_virus_config;
+    REFERENCES settings.n_virus_config;
 
-ALTER TABLE settings.tr_virus_settings
+ALTER TABLE settings.n_virus_settings
     ADD CONSTRAINT fk_tr_virus_settings_httpout
     FOREIGN KEY (http_outbound)
-    REFERENCES settings.tr_virus_config;
+    REFERENCES settings.n_virus_config;
 
-ALTER TABLE settings.tr_virus_settings
+ALTER TABLE settings.n_virus_settings
     ADD CONSTRAINT fk_tr_virus_set_httpin
     FOREIGN KEY (http_inbound)
-    REFERENCES settings.tr_virus_config;
+    REFERENCES settings.n_virus_config;
 
-ALTER TABLE settings.tr_virus_settings
+ALTER TABLE settings.n_virus_settings
     ADD CONSTRAINT fk_tr_virus_settings_smtpout
     FOREIGN KEY (smtp_outbound)
-    REFERENCES settings.tr_virus_smtp_config;
+    REFERENCES settings.n_virus_smtp_config;
 
-ALTER TABLE settings.tr_virus_settings
+ALTER TABLE settings.n_virus_settings
     ADD CONSTRAINT fk_tr_virus_settings_smtpin
     FOREIGN KEY (smtp_inbound)
-    REFERENCES settings.tr_virus_smtp_config;
+    REFERENCES settings.n_virus_smtp_config;
 
-ALTER TABLE settings.tr_virus_settings
+ALTER TABLE settings.n_virus_settings
     ADD CONSTRAINT fk_tr_virus_settings_popout
     FOREIGN KEY (pop_outbound)
-    REFERENCES settings.tr_virus_pop_config;
+    REFERENCES settings.n_virus_pop_config;
 
-ALTER TABLE settings.tr_virus_settings
+ALTER TABLE settings.n_virus_settings
     ADD CONSTRAINT fk_tr_virus_settings_popin
     FOREIGN KEY (pop_inbound)
-    REFERENCES settings.tr_virus_pop_config;
+    REFERENCES settings.n_virus_pop_config;
 
-ALTER TABLE settings.tr_virus_settings
+ALTER TABLE settings.n_virus_settings
     ADD CONSTRAINT fk_tr_virus_settings_imapout
     FOREIGN KEY (imap_outbound)
-    REFERENCES settings.tr_virus_imap_config;
+    REFERENCES settings.n_virus_imap_config;
 
-ALTER TABLE settings.tr_virus_settings
+ALTER TABLE settings.n_virus_settings
     ADD CONSTRAINT fk_tr_virus_settings_imapin
     FOREIGN KEY (imap_inbound)
-    REFERENCES settings.tr_virus_imap_config;
+    REFERENCES settings.n_virus_imap_config;

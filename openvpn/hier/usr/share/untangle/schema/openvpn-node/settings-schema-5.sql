@@ -106,20 +106,20 @@ CREATE TABLE settings.n_openvpn_settings (
         site_name           TEXT,
         primary key (ID));
 
-alter table tr_openvpn_c_site_network add constraint FKF75374E830D9EF2D
-        foreign key (client_id) references tr_openvpn_site;
+alter table n_openvpn_c_site_network add constraint FKF75374E830D9EF2D
+        foreign key (client_id) references n_openvpn_site;
 
-ALTER TABLE tr_openvpn_s_site_network ADD CONSTRAINT FKF75374E89E4538C5
-        FOREIGN KEY (settings_id) REFERENCES tr_openvpn_settings;
+ALTER TABLE n_openvpn_s_site_network ADD CONSTRAINT FKF75374E89E4538C5
+        FOREIGN KEY (settings_id) REFERENCES n_openvpn_settings;
 
-ALTER TABLE tr_openvpn_client ADD CONSTRAINT FKF4113219E4538C5
-        FOREIGN KEY (settings_id) REFERENCES tr_openvpn_settings;
+ALTER TABLE n_openvpn_client ADD CONSTRAINT FKF4113219E4538C5
+        FOREIGN KEY (settings_id) REFERENCES n_openvpn_settings;
 
-ALTER TABLE tr_openvpn_site ADD CONSTRAINT tr_openvpn_site_to_settings
-        FOREIGN KEY (settings_id) REFERENCES tr_openvpn_settings;
+ALTER TABLE n_openvpn_site ADD CONSTRAINT n_openvpn_site_to_settings
+        FOREIGN KEY (settings_id) REFERENCES n_openvpn_settings;
 
-ALTER TABLE tr_openvpn_group ADD CONSTRAINT FKB66694699E4538C5
-        FOREIGN KEY (settings_id) REFERENCES tr_openvpn_settings;
+ALTER TABLE n_openvpn_group ADD CONSTRAINT FKB66694699E4538C5
+        FOREIGN KEY (settings_id) REFERENCES n_openvpn_settings;
 
-ALTER TABLE tr_openvpn_settings ADD CONSTRAINT FK62A65DF939CBD260
+ALTER TABLE n_openvpn_settings ADD CONSTRAINT FK62A65DF939CBD260
         FOREIGN KEY (tid) REFERENCES tid;

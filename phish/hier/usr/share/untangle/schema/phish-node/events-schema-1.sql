@@ -9,4 +9,4 @@ CREATE TABLE events.n_phish_http_evt (
     time_stamp timestamp,
     PRIMARY KEY (event_id));
 
-CREATE INDEX tr_phishhttp_evt_ts_idx ON events.tr_phishhttp_evt (time_stamp);
+CREATE INDEX n_phish_http_evt_ts_idx ON events.n_phish_http_evt (time_stamp);

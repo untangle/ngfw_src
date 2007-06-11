@@ -45,14 +45,14 @@ CREATE TABLE settings.n_reporting_wk_sched (
 
 -- foreign key constraints
 
-ALTER TABLE settings.tr_reporting_settings
+ALTER TABLE settings.n_reporting_settings
     ADD CONSTRAINT fk_tr_reporting_settings
     FOREIGN KEY (tid) REFERENCES settings.tid;
 
-ALTER TABLE settings.tr_reporting_settings
+ALTER TABLE settings.n_reporting_settings
     ADD CONSTRAINT fk_tr_reporting_settings_to_ipmaddr_dir
-    FOREIGN KEY (network_directory) REFERENCES settings.ipmaddr_dir;
+    FOREIGN KEY (network_directory) REFERENCES settings.u_ipmaddr_dir;
 
-ALTER TABLE settings.tr_reporting_settings
+ALTER TABLE settings.n_reporting_settings
     ADD CONSTRAINT fk_tr_reporting_settings_to_schedule
-    FOREIGN KEY (schedule) REFERENCES settings.tr_reporting_sched;
+    FOREIGN KEY (schedule) REFERENCES settings.n_reporting_sched;

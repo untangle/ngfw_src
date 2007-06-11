@@ -38,7 +38,7 @@ CREATE TABLE settings.n_mail_safels_recipient (
 
 -- com.untangle.tran.mail.papi.safelist.SafelistSender
 CREATE TABLE settings.n_mail_safels_sender (
-    LIKE settings.tr_mail_safels_recipient,
+    LIKE settings.n_mail_safels_recipient,
     PRIMARY KEY (id));
 
 -- com.untangle.tran.mail.papi.safelist.SafelistSettings
@@ -93,22 +93,22 @@ CREATE TABLE settings.n_mail_email_addr_rule (
 
 -- foreign key constraints
 
-ALTER TABLE settings.tr_mail_safelists
+ALTER TABLE settings.n_mail_safelists
     ADD CONSTRAINT fk_trml_safelists_to_ml_settings
     FOREIGN KEY (setting_id)
-    REFERENCES settings.tr_mail_settings;
+    REFERENCES settings.n_mail_settings;
 
-ALTER TABLE settings.tr_mail_safelists
+ALTER TABLE settings.n_mail_safelists
     ADD CONSTRAINT fk_trml_safelists_to_sl_settings
     FOREIGN KEY (safels_id)
-    REFERENCES settings.tr_mail_safels_settings;
+    REFERENCES settings.n_mail_safels_settings;
 
-ALTER TABLE settings.tr_mail_safels_settings
+ALTER TABLE settings.n_mail_safels_settings
     ADD CONSTRAINT fk_trml_sl_settings_to_sl_recipient
     FOREIGN KEY (recipient)
-    REFERENCES settings.tr_mail_safels_recipient;
+    REFERENCES settings.n_mail_safels_recipient;
 
-ALTER TABLE settings.tr_mail_safels_settings
+ALTER TABLE settings.n_mail_safels_settings
     ADD CONSTRAINT fk_trml_sl_settings_to_sl_sender
     FOREIGN KEY (sender)
-    REFERENCES settings.tr_mail_safels_sender;
+    REFERENCES settings.n_mail_safels_sender;

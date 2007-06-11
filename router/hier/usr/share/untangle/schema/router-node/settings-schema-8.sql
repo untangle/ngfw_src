@@ -50,6 +50,6 @@ CREATE TABLE settings.n_router_dns_hosts (
 
 -- foreign key constraints
 
-ALTER TABLE settings.tr_nat_settings
+ALTER TABLE settings.n_router_settings
     ADD CONSTRAINT fk_tr_nat_settings
         FOREIGN KEY (tid) REFERENCES settings.tid;

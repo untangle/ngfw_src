@@ -51,11 +51,11 @@ CREATE TABLE events.n_spyware_statistic_evt (
 
 -- indeces for reporting
 
-CREATE INDEX tr_spyware_evt_cookie_rid_idx ON events.tr_spyware_evt_cookie (request_id);
-CREATE INDEX tr_spyware_evt_blacklist_rid_idx ON events.tr_spyware_evt_blacklist (request_id);
-CREATE INDEX tr_spyware_evt_activex_rid_idx ON events.tr_spyware_evt_activex (request_id);
-CREATE INDEX tr_spyware_evt_access_plepid_idx ON events.tr_spyware_evt_access (pl_endp_id);
-CREATE INDEX tr_spyware_evt_cookie_ts_idx ON events.tr_spyware_evt_cookie (time_stamp);
-CREATE INDEX tr_spyware_evt_blacklist_ts_idx ON events.tr_spyware_evt_blacklist (time_stamp);
-CREATE INDEX tr_spyware_evt_activex_ts_idx ON events.tr_spyware_evt_activex (time_stamp);
-CREATE INDEX tr_spyware_evt_access_ts_idx ON events.tr_spyware_evt_access (time_stamp);
+CREATE INDEX n_spyware_evt_cookie_rid_idx ON events.n_spyware_evt_cookie (request_id);
+CREATE INDEX n_spyware_evt_blacklist_rid_idx ON events.n_spyware_evt_blacklist (request_id);
+CREATE INDEX n_spyware_evt_activex_rid_idx ON events.n_spyware_evt_activex (request_id);
+CREATE INDEX n_spyware_evt_access_plepid_idx ON events.n_spyware_evt_access (pl_endp_id);
+CREATE INDEX n_spyware_evt_cookie_ts_idx ON events.n_spyware_evt_cookie (time_stamp);
+CREATE INDEX n_spyware_evt_blacklist_ts_idx ON events.n_spyware_evt_blacklist (time_stamp);
+CREATE INDEX n_spyware_evt_activex_ts_idx ON events.n_spyware_evt_activex (time_stamp);
+CREATE INDEX n_spyware_evt_access_ts_idx ON events.n_spyware_evt_access (time_stamp);

@@ -13,4 +13,4 @@ CREATE TABLE events.n_webfilter_evt_blk (
 
 -- indices for reporting
 
-CREATE INDEX tr_httpblk_evt_blk_ts_idx ON events.tr_httpblk_evt_blk (time_stamp);
+CREATE INDEX n_webfilter_evt_blk_ts_idx ON events.n_webfilter_evt_blk (time_stamp);

@@ -4,13 +4,13 @@
 -- settings |
 -------------
 
-create table settings.TR_IDS_SETTINGS (
+create table settings.n_ips_settings (
     settings_id int8 not null,
     max_chunks int8 not null,
     tid int8 not null unique,
     primary key (settings_id));
 
-create table settings.TR_IDS_VARIABLE (
+create table settings.n_ips_variable (
     VARIABLE_ID int8 not null,
     VARIABLE text,
     DEFINITION text,
@@ -19,19 +19,19 @@ create table settings.TR_IDS_VARIABLE (
     POSITION int4,
     PRIMARY KEY (VARIABLE_ID));
 
-create table settings.TR_IDS_IMMUTABLE_VARIABLES (
+create table settings.n_ips_immutable_variables (
     setting_id int8 NOT NULL,
     variable_id int8 NOT NULL,
     position int4 NOT NULL,
     PRIMARY KEY (setting_id, position));
 
-create table settings.TR_IDS_MUTABLE_VARIABLES (
+create table settings.n_ips_mutable_variables (
     setting_id int8 NOT NULL,
     variable_id int8 NOT NULL,
     position int4 NOT NULL,
     PRIMARY KEY (setting_id, position));
 
-create table settings.TR_IDS_RULE (
+create table settings.n_ips_rule (
     RULE_ID int8 not null,
     RULE text,
     SID int4,

@@ -58,42 +58,42 @@ CREATE TABLE settings.n_spyware_wl (
 
 -- indices
 
-CREATE INDEX idx_spyware_rule_ar ON settings.tr_spyware_ar (rule_id);
+CREATE INDEX idx_spyware_rule_ar ON settings.n_spyware_ar, (rule_id);
 
-CREATE INDEX idx_spyware_rule_cr ON settings.tr_spyware_cr (rule_id);
+CREATE INDEX idx_spyware_rule_cr ON settings.n_spyware_cr (rule_id);
 
-CREATE INDEX idx_spyware_rule_sr ON settings.tr_spyware_sr (rule_id);
+CREATE INDEX idx_spyware_rule_sr ON settings.n_spyware_sr (rule_id);
 
 -- foreign key constraints
 
-ALTER TABLE settings.tr_spyware_ar
+ALTER TABLE settings.n_spyware_ar,
     ADD CONSTRAINT fk_tr_spyware_ar
-    FOREIGN KEY (settings_id) REFERENCES settings.tr_spyware_settings;
+    FOREIGN KEY (settings_id) REFERENCES settings.n_spyware_settings;
 
-ALTER TABLE settings.tr_spyware_ar
+ALTER TABLE settings.n_spyware_ar,
     ADD CONSTRAINT fk_tr_spyware_ar_rule
-    FOREIGN KEY (rule_id) REFERENCES settings.string_rule;
+    FOREIGN KEY (rule_id) REFERENCES settings.u_string_rule;
 
-ALTER TABLE settings.tr_spyware_settings
+ALTER TABLE settings.n_spyware_settings
     ADD CONSTRAINT fk_tr_spyware_settings
     FOREIGN KEY (tid) REFERENCES settings.tid;
 
-ALTER TABLE settings.tr_spyware_cr
+ALTER TABLE settings.n_spyware_cr
     ADD CONSTRAINT fk_tr_spyware_cr
-    FOREIGN KEY (settings_id) REFERENCES settings.tr_spyware_settings;
+    FOREIGN KEY (settings_id) REFERENCES settings.n_spyware_settings;
 
-ALTER TABLE settings.tr_spyware_cr
+ALTER TABLE settings.n_spyware_cr
     ADD CONSTRAINT fk_tr_spyware_cr_rule
-    FOREIGN KEY (rule_id) REFERENCES settings.string_rule;
+    FOREIGN KEY (rule_id) REFERENCES settings.u_string_rule;
 
-ALTER TABLE settings.tr_spyware_sr
+ALTER TABLE settings.n_spyware_sr
     ADD CONSTRAINT fk_tr_spyware_sr
-    FOREIGN KEY (settings_id) REFERENCES settings.tr_spyware_settings;
+    FOREIGN KEY (settings_id) REFERENCES settings.n_spyware_settings;
 
-ALTER TABLE settings.tr_spyware_sr
+ALTER TABLE settings.n_spyware_sr
     ADD CONSTRAINT fk_tr_spyware_sr_rule
-    FOREIGN KEY (rule_id) REFERENCES settings.ipmaddr_rule;
+    FOREIGN KEY (rule_id) REFERENCES settings.u_ipmaddr_rule;
 
-ALTER TABLE settings.tr_spyware_wl
+ALTER TABLE settings.n_spyware_wl
     ADD CONSTRAINT fk_tr_spyware_wl
-    FOREIGN KEY (rule_id) REFERENCES settings.string_rule;
+    FOREIGN KEY (rule_id) REFERENCES settings.u_string_rule;

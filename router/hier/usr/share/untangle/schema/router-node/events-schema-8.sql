@@ -66,5 +66,5 @@ CREATE TABLE events.n_router_statistic_evt (
 
 -- indeces for reporting
 
-CREATE INDEX tr_nat_redirect_evt_plepid_idx ON events.tr_nat_redirect_evt (pl_endp_id);
-CREATE INDEX tr_nat_redirect_evt_ts_idx ON events.tr_nat_redirect_evt (time_stamp);
+CREATE INDEX n_router_redirect_evt_plepid_idx ON events.n_router_redirect_evt (pl_endp_id);
+CREATE INDEX n_router_redirect_evt_ts_idx ON events.n_router_redirect_evt (time_stamp);

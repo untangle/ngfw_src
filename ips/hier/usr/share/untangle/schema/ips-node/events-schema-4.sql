@@ -3,7 +3,7 @@
 -----------
 -- events |
 -----------
-create table events.TR_IDS_EVT (
+create table events.n_ips_evt (
 	event_id int8 NOT NULL,
         pl_endp_id int8,
 	classification text,
@@ -13,7 +13,7 @@ create table events.TR_IDS_EVT (
 	time_stamp timestamp,
 	PRIMARY KEY (event_id));
 
-create table events.TR_IDS_STATISTIC_EVT (
+create table events.n_ips_statistic_evt (
 	event_id int8 NOT NULL,
 	dnc int4,
 	logged int4,
@@ -22,5 +22,5 @@ create table events.TR_IDS_STATISTIC_EVT (
 	PRIMARY KEY (event_id));
 
 -- indices for reporting
-CREATE INDEX tr_ids_evt_plepid_idx ON events.tr_ids_evt (pl_endp_id);
-CREATE INDEX tr_ids_evt_ts_idx ON events.tr_ids_evt (time_stamp);
+CREATE INDEX n_ips_evt_plepid_idx ON events.n_ips_evt (pl_endp_id);
+CREATE INDEX n_ips_evt_ts_idx ON events.n_ips_evt (time_stamp);

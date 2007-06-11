@@ -19,5 +19,5 @@ CREATE TABLE events.n_protofilter_evt (
 
 -- indeces for reporting
 
-CREATE INDEX tr_protofilter_evt_plepid_idx ON events.tr_protofilter_evt (pl_endp_id);
-CREATE INDEX tr_protofilter_evt_ts_idx ON events.tr_protofilter_evt (time_stamp);
+CREATE INDEX n_protofilter_evt_plepid_idx ON events.n_protofilter_evt (pl_endp_id);
+CREATE INDEX n_protofilter_evt_ts_idx ON events.n_protofilter_evt (time_stamp);
