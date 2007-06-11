@@ -43,7 +43,6 @@ class DefaultPolicyManager implements LocalPolicyManager
     private volatile UserPolicyRule[] userRules;
     private volatile SystemPolicyRule[] sysRules;
 
-    private List<Policy> allPolicies; // Also contains default one
     private Policy defaultPolicy;
 
     private Object policyRuleLock = new Object();
@@ -52,31 +51,24 @@ class DefaultPolicyManager implements LocalPolicyManager
     // constructor ------------------------------------------------------------
 
     DefaultPolicyManager() {
-        allPolicies = new ArrayList<Policy>();
-
         TransactionWork tw = new TransactionWork()
             {
                 public boolean doWork(Session s)
                 {
+                    defaultPolicy = null;
                     Query q = s.createQuery("from Policy p order by id asc");
                     List results = q.list();
-
-                    if (results.size() == 0) {
+                    for (Object o : results) {
+                        Policy policy = (Policy)o;
+                        if (policy.isDefault()) {
+                            defaultPolicy = policy;
+                            break;
+                        }
+                    }
+                    if (defaultPolicy == null) {
                         logger.info("Empty policy table.  Creating default policy.");
                         defaultPolicy = new Policy(true, INITIAL_POLICY_NAME, INITIAL_POLICY_NOTES);
-                        allPolicies.add(defaultPolicy);
                         s.save(defaultPolicy);
-                    } else {
-                        for (Object o : results) {
-                            Policy policy = (Policy)o;
-                            if (policy.isDefault()) {
-                                assert allPolicies.size() == 0;
-                                assert defaultPolicy == null;
-                                defaultPolicy = policy;
-                            }
-                            allPolicies.add(policy);
-                        }
-                        assert defaultPolicy != null;
                     }
 
                     q = s.createQuery("from UserPolicyRuleSet uprs");
@@ -106,17 +98,14 @@ class DefaultPolicyManager implements LocalPolicyManager
     private static final Policy[] POLICY_ARRAY_PROTO = new Policy[0];
 
     public Policy[] getPolicies() {
-        return (Policy[]) allPolicies.toArray(POLICY_ARRAY_PROTO);
+        Policy[] result = new Policy[] { defaultPolicy };
+        return result;
     }
 
     public Policy getPolicy(String name)
     {
-        for (Policy p : allPolicies) {
-            if (name.equals(p.getName())) {
-                return p;
-            }
-        }
-
+        if (name.equals(INITIAL_POLICY_NAME))
+            return defaultPolicy;
         return null;
     }
 
@@ -127,98 +116,18 @@ class DefaultPolicyManager implements LocalPolicyManager
     public void addPolicy(String name, String notes)
         throws PolicyException
     {
-        synchronized(policyRuleLock) {
-            if (name == null)
-                throw new PolicyException("New policy must have a name");
-            for (Policy p : allPolicies) {
-                if (name.equalsIgnoreCase(p.getName()))
-                    throw new PolicyException("A policy named " + name + " already exists");
-            }
-
-            final Policy p = new Policy(false, name, notes);
-
-            TransactionWork tw = new TransactionWork()
-                {
-                    public boolean doWork(Session s)
-                    {
-                        s.save(p);
-                        return true;
-                    }
-
-                    public Object getResult()
-                    {
-                        return null;
-                    }
-                };
-            UvmContextFactory.context().runTransaction(tw);
-
-            logger.debug("Added new policy, id: " + p.getId() + ", name: " + p.getName());
-            allPolicies.add(p);
-        }
+        throw new PolicyException("Professional edition only");
     }
 
     public void removePolicy(final Policy p) throws PolicyException
     {
-        logger.debug("Trying to remove policy, id: " + p.getId()
-                     + ", name: " + p.getName());
-        synchronized(policyRuleLock) {
-            if (p == null) {
-                throw new PolicyException("Must specify a policy to remove");
-            } else if (p.isDefault()) {
-                throw new PolicyException("Cannot remove the default policy");
-            } else if (!allPolicies.contains(p)) {
-                throw new PolicyException("Policy " + p.getName()
-                                          + " not found in all policies");
-            } else if (isInUse(p)) {
-                throw new PolicyException("Policy " + p.getName()
-                                          + " cannot be removed because it is in use");
-            }
-
-            TransactionWork tw = new TransactionWork()
-                {
-                    public boolean doWork(Session s)
-                    {
-                        s.delete(p);
-                        return true;
-                    }
-
-                    public Object getResult() { return null; }
-                };
-            UvmContextFactory.context().runTransaction(tw);
-
-            logger.debug("Removed policy, id: " + p.getId()
-                         + ", name: " + p.getName());
-            allPolicies.remove(p);
-        }
+        throw new PolicyException("Professional edition only");
     }
 
     public void setPolicy(final Policy p, String name, String notes)
         throws PolicyException
     {
-        synchronized(policyRuleLock) {
-            if (p == null)
-                throw new PolicyException("Must specify a policy to remove");
-            if (!allPolicies.contains(p))
-                throw new PolicyException("Policy " + p.getName()
-                                          + " not found in all policies");
-
-            p.setName(name);
-            p.setNotes(notes);
-
-            TransactionWork tw = new TransactionWork()
-                {
-                    public boolean doWork(Session s)
-                    {
-                        s.saveOrUpdate(p);
-                        return true;
-                    }
-
-                    public Object getResult() { return null; }
-                };
-            UvmContextFactory.context().runTransaction(tw);
-        }
-        logger.debug("Changed policy, id: " + p.getId()
-                     + ", new name: " + p.getName());
+        throw new PolicyException("Professional edition only");
     }
 
     protected boolean isInUse(Policy p)
@@ -295,7 +204,10 @@ class DefaultPolicyManager implements LocalPolicyManager
 
     // For da UI
     public PolicyConfiguration getPolicyConfiguration() {
-        PolicyConfiguration result = new PolicyConfiguration(allPolicies, sysRules, userRules);
+
+        List pl = new ArrayList();
+        pl.add(defaultPolicy);
+        PolicyConfiguration result = new PolicyConfiguration(pl, sysRules, userRules);
         return result;
     }
 
@@ -303,14 +215,8 @@ class DefaultPolicyManager implements LocalPolicyManager
     public void setPolicyConfiguration(PolicyConfiguration pc)
         throws PolicyException
     {
-        List confpc = pc.getPolicies();
         List syspc = pc.getSystemPolicyRules();
         List userpc = pc.getUserPolicyRules();
-
-        // Sanity check the policies
-        if (confpc == null || confpc.size() < 1)
-            throw new PolicyException("List of policies missing or empty");
-        List<Policy> newAllPolicies = new ArrayList<Policy>(confpc);
 
         // Sanity check the system rules
         if (syspc == null || syspc.size() < 1)
@@ -333,61 +239,8 @@ class DefaultPolicyManager implements LocalPolicyManager
             newUserRules.add(upr);
         }
 
-        List<Policy> pToAdd = new ArrayList<Policy>();
-        List<Policy> pToRemove = new ArrayList<Policy>();
-
-        // what's happening here.
-        for (Policy oldp : allPolicies) {
-            if (oldp.getId() == null)
-                throw new Error("Policy" + oldp.getName() + " has null id");
-        }
-
         // Now do the actual setting
         synchronized(policyRuleLock) {
-            Policy newDefaultPolicy = null;
-            for (Policy newp : newAllPolicies) {
-                boolean foundIt = false;
-                if (newp.isDefault()) {
-                    if (newDefaultPolicy != null)
-                        throw new PolicyException("Cannot have more than one default policy");
-                    newDefaultPolicy = newp;
-                }
-                if (newp.getId() != null) {
-                    for (Policy oldp : allPolicies) {
-                        if (newp.getId().equals(oldp.getId())) {
-                            if (foundIt)
-                                throw new PolicyException("Policy duplicated");
-                            foundIt = true;
-                            setPolicy(oldp, newp.getName(), newp.getNotes());
-                        }
-                    }
-                }
-                if (!foundIt)
-                    pToAdd.add(newp);
-            }
-            if (newDefaultPolicy == null)
-                throw new PolicyException("Default policy missing");
-
-            for (Policy oldp : allPolicies) {
-                boolean foundIt = false;
-                for (Policy newp : newAllPolicies) {
-                    if (oldp.getId().equals(newp.getId())) {
-                        foundIt = true;
-                        logger.debug("Not removing policy " + oldp.getId() + ", found in new list");
-                        break;
-                    }
-                }
-                if (!foundIt)
-                    pToRemove.add(oldp);
-            }
-            for (Policy newp : pToAdd) {
-                addPolicy(newp.getName(), newp.getNotes());
-            }
-            for (Policy oldp : pToRemove) {
-                removePolicy(oldp);
-            }
-            defaultPolicy = newDefaultPolicy;
-
             for (SystemPolicyRule newspr : newSysRules) {
                 boolean foundIt = false;
                 for (SystemPolicyRule oldspr : sysRules) {
@@ -419,7 +272,7 @@ class DefaultPolicyManager implements LocalPolicyManager
     public void reconfigure(final byte[] interfaces)
     {
         // For now do nothing
-        if (allPolicies.size() == 0)
+        if (defaultPolicy == null)
             // Always
             return;
 
