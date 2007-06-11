@@ -52,7 +52,7 @@ public class NetworkHostnameJPanel extends javax.swing.JPanel
         hostnameJTextField.setBackground( Color.WHITE );
         HostName hostname = null;
         try{
-            hostname = HostName.parse( hostnameJTextField.getText().trim());
+            hostname = HostName.parseStrict( hostnameJTextField.getText().trim());
         }
         catch(Exception e){
             hostnameJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );

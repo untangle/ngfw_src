@@ -175,7 +175,7 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
                 if( hostnameString.length() == 0 )
                     throw new Exception();
 
-                hostname = HostName.parse( hostnameString );
+                hostname = HostName.parseStrict( hostnameString );
             }
             catch(Exception e){
                 hostnameJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );

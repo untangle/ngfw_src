@@ -21,6 +21,7 @@ import java.util.regex.PatternSyntaxException;
 
 public class HostName implements Serializable {
     private static final Pattern HOSTLABEL_MATCHER;
+    private static final Pattern HOSTLABEL_STRICT_MATCHER;
     /* From RFC 1035 */
     private static final int HOSTLABEL_MAXLEN = 63;
     private static final int HOSTNAME_MAXLEN  = 255;
@@ -28,7 +29,8 @@ public class HostName implements Serializable {
     private static final HostName EMPTY_HOSTNAME = new HostName( "" );
     private static final List RESERVED_HOSTNAME_LIST = new LinkedList();
 
-    
+    private static final long serialVersionUID = -7181314697064348937L;
+
     private final String hostName;
 
     private HostName( String hostName )
@@ -84,7 +86,20 @@ public class HostName implements Serializable {
         return false;
     }
 
+    // UI uses this one for system host name, etc.
+    public static HostName parseStrict( String input ) throws ParseException
+    { 
+        return parseInternal(input, HOSTLABEL_STRICT_MATCHER);
+    }
+
+    // DB calls in here
     public static HostName parse( String input ) throws ParseException
+    {
+        return parseInternal(input, HOSTLABEL_MATCHER);
+    }
+
+    private static HostName parseInternal( String input, Pattern goodNamePattern )
+        throws ParseException
     { 
         input = input.trim();
 
@@ -111,7 +126,7 @@ public class HostName implements Serializable {
                 throw new ParseException( "A hostname label is limited to " + HOSTLABEL_MAXLEN + " characters" );
             }
             
-            if ( !HOSTLABEL_MATCHER.matcher( tmp[c] ).matches()) {
+            if ( !goodNamePattern.matcher( tmp[c] ).matches()) {
                 throw new ParseException( "A hostname label only contains numbers, letters and dashes: " + input );
             }
         }
@@ -138,18 +153,21 @@ public class HostName implements Serializable {
 
     static
     {
-        Pattern p;
+        Pattern p, q;
 
         try {
             /* According RFC2317, a host label must start a letter (allowing digits), and must end
              * in a digit. */
             p = Pattern.compile( "^[0-9A-Za-z]([-/_0-9A-Za-z]*[0-9A-Za-z])?$" );
+            q = Pattern.compile( "^[0-9A-Za-z]([-0-9A-Za-z]*[0-9A-Za-z])?$" );
         } catch ( PatternSyntaxException e ) {
             System.err.println( "Unable to intialize the host label pattern" );
             p = null;
+            q = null;
         }
 
         HOSTLABEL_MATCHER = p;
+        HOSTLABEL_STRICT_MATCHER = q;
         
         /* Local host is a reserved hostname */
         /* XXX */
