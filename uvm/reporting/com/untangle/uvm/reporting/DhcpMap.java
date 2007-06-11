@@ -76,7 +76,7 @@ public class DhcpMap
     private static final String ABSOLUTE_QUERY =
         "SELECT evt.time_stamp, lease.end_of_lease, lease.ip, lease.hostname, " +
         " CASE WHEN (lease.event_type = 0) THEN 0 ELSE 3 END AS event_type " +
-        " FROM tr_nat_evt_n_router_dhcp_abs_leases AS glue, n_router_evt_dhcp_abs AS evt, n_router_dhcp_abs_lease AS lease " +
+        " FROM n_router_evt_dhcp_abs_leases AS glue, n_router_evt_dhcp_abs AS evt, n_router_dhcp_abs_lease AS lease " +
         " WHERE glue.event_id=evt.event_id AND glue.lease_id = lease.event_id " +
         "  AND (( ? <= evt.time_stamp and evt.time_stamp <= ? ) OR " +
         " (( ? <= lease.end_of_lease and lease.end_of_lease <= ? ))) ORDER BY evt.time_stamp";
@@ -101,11 +101,11 @@ public class DhcpMap
         "              UNION SELECT client_addr   AS addr FROM u_login_evt " +
         // "              UNION SELECT ip            AS addr FROM n_shield_rejection_evt " +
         "             ) AS addrs " +
-        "        JOIN u_u_ipmaddr_dir_entries entry JOIN u_ipmaddr_rule rule USING (rule_id) " +
+        "        JOIN u_ipmaddr_dir_entries entry JOIN u_ipmaddr_rule rule USING (rule_id) " +
         "        ON rule.ipmaddr >>= addr " +
         "        WHERE NOT addr ISNULL " +
         "        GROUP BY addr) AS pos_idxs " +
-        " LEFT OUTER JOIN u_u_ipmaddr_dir_entries entry JOIN u_ipmaddr_rule rule USING (rule_id) " +
+        " LEFT OUTER JOIN u_ipmaddr_dir_entries entry JOIN u_ipmaddr_rule rule USING (rule_id) " +
         " ON min_idx = position";
 
     private static final String CREATE_TEMPORARY_TABLE =
@@ -125,7 +125,7 @@ public class DhcpMap
         "values ( ?, ?, ?, ? )";
 
     private static final String TEST_INSTALLED =
-        " SELECT 1 FROM tr_nat_evt_n_router_dhcp_abs_leases";
+        " SELECT 1 FROM n_router_evt_dhcp_abs_leases";
 
     private DhcpMap()
     {

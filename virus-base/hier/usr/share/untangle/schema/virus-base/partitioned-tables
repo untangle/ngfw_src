@@ -1,4 +1,4 @@
-n_virus_evt
-n_virus_evt_http
-n_virus_evt_smtp
-n_virus_evt_mail
+tr_virus_evt
+tr_virus_evt_http
+tr_virus_evt_smtp
+tr_virus_evt_mail
