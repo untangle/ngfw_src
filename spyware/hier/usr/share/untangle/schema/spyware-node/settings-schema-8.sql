@@ -58,11 +58,11 @@ CREATE TABLE settings.n_spyware_wl (
 
 -- indices
 
-CREATE INDEX idx_spyware_rule_ar ON settings.n_spyware_ar, (rule_id);
+CREATE INDEX n_spyware_ar_rule_idx ON settings.n_spyware_ar, (rule_id);
 
-CREATE INDEX idx_spyware_rule_cr ON settings.n_spyware_cr (rule_id);
+CREATE INDEX n_spyware_cr_rule_idx ON settings.n_spyware_cr (rule_id);
 
-CREATE INDEX idx_spyware_rule_sr ON settings.n_spyware_sr (rule_id);
+CREATE INDEX n_spyware_sr_rule_idx ON settings.n_spyware_sr (rule_id);
 
 -- foreign key constraints
 

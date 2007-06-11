@@ -593,7 +593,7 @@ CREATE TABLE settings.u_wmi_settings (
 
 -- list indeces
 
-CREATE INDEX idx_string_rule ON settings.u_string_rule (string);
+CREATE INDEX u_idx_string_rule ON settings.u_string_rule (string);
 
 -- foreign key constraints
 
