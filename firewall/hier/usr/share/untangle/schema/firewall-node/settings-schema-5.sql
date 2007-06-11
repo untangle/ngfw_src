@@ -42,4 +42,4 @@ CREATE TABLE settings.n_firewall_settings (
 
 ALTER TABLE settings.n_firewall_settings
     ADD CONSTRAINT fk_tr_firewall_settings
-        FOREIGN KEY (tid) REFERENCES settings.tid;
+        FOREIGN KEY (tid) REFERENCES settings.u_tid;

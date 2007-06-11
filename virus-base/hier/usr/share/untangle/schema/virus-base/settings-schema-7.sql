@@ -86,7 +86,7 @@ ALTER TABLE settings.n_virus_vs_mt
 ALTER TABLE settings.n_virus_settings
     ADD CONSTRAINT fk_tr_virus_settings
     FOREIGN KEY (tid)
-    REFERENCES settings.tid;
+    REFERENCES settings.u_tid;
 
 ALTER TABLE settings.n_virus_settings
     ADD CONSTRAINT fk_tr_virus_settings_ftpout

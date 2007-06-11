@@ -113,7 +113,7 @@ CREATE TABLE settings.n_spamassassin_lcl (
 ALTER TABLE settings.n_spam_settings
     ADD CONSTRAINT fk_settings_to_tid
     FOREIGN KEY (tid)
-    REFERENCES settings.tid;
+    REFERENCES settings.u_tid;
 
 ALTER TABLE settings.n_spam_settings
     ADD CONSTRAINT fk_in_ss_smtp_cfg

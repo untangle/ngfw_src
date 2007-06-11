@@ -25,5 +25,5 @@ CREATE TABLE settings.n_test_settings (
 
 ALTER TABLE settings.n_test_settings
     ADD CONSTRAINT fk_tr_test_settings
-    FOREIGN KEY (tid) REFERENCES settings.tid;
+    FOREIGN KEY (tid) REFERENCES settings.u_tid;
 

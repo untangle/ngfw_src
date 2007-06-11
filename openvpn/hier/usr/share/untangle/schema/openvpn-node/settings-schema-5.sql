@@ -122,4 +122,4 @@ ALTER TABLE n_openvpn_group ADD CONSTRAINT FKB66694699E4538C5
         FOREIGN KEY (settings_id) REFERENCES n_openvpn_settings;
 
 ALTER TABLE n_openvpn_settings ADD CONSTRAINT FK62A65DF939CBD260
-        FOREIGN KEY (tid) REFERENCES tid;
+        FOREIGN KEY (tid) REFERENCES u_tid;

@@ -47,7 +47,7 @@ CREATE TABLE settings.n_reporting_wk_sched (
 
 ALTER TABLE settings.n_reporting_settings
     ADD CONSTRAINT fk_tr_reporting_settings
-    FOREIGN KEY (tid) REFERENCES settings.tid;
+    FOREIGN KEY (tid) REFERENCES settings.u_tid;
 
 ALTER TABLE settings.n_reporting_settings
     ADD CONSTRAINT fk_tr_reporting_settings_to_ipmaddr_dir

@@ -38,7 +38,7 @@ CREATE TABLE settings.n_protofilter_pattern (
 
 ALTER TABLE settings.n_protofilter_settings
     ADD CONSTRAINT fk_tr_protofilter_settings
-        FOREIGN KEY (tid) REFERENCES settings.tid;
+        FOREIGN KEY (tid) REFERENCES settings.u_tid;
 
 ALTER TABLE settings.n_protofilter_pattern
     ADD CONSTRAINT fk_tr_protofilter_pattern

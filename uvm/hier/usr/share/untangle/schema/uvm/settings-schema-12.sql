@@ -597,7 +597,7 @@ CREATE INDEX idx_string_rule ON settings.u_string_rule (string);
 
 -- foreign key constraints
 
-ALTER TABLE settings.tid
+ALTER TABLE settings.u_tid
     ADD CONSTRAINT fk_tid_policy
     FOREIGN KEY (policy_id) REFERENCES settings.u_policy;
 

@@ -85,7 +85,7 @@ ALTER TABLE settings.n_webfilter_settings
 
 ALTER TABLE settings.n_webfilter_settings
     ADD CONSTRAINT fk_tr_httpblk_settings
-    FOREIGN KEY (tid) REFERENCES settings.tid;
+    FOREIGN KEY (tid) REFERENCES settings.u_tid;
 
 ALTER TABLE settings.n_webfilter_extensions
     ADD CONSTRAINT fk_tr_httpblk_extensions

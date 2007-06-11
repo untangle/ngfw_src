@@ -76,7 +76,7 @@ ALTER TABLE settings.n_spyware_ar,
 
 ALTER TABLE settings.n_spyware_settings
     ADD CONSTRAINT fk_tr_spyware_settings
-    FOREIGN KEY (tid) REFERENCES settings.tid;
+    FOREIGN KEY (tid) REFERENCES settings.u_tid;
 
 ALTER TABLE settings.n_spyware_cr
     ADD CONSTRAINT fk_tr_spyware_cr
