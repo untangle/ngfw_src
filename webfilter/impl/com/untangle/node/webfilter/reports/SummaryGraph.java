@@ -112,7 +112,7 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
         ResultSet rs;
 
         sql = "SELECT DATE_TRUNC('minute', time_stamp) AS trunc_ts, COUNT(*)" 
-            + " FROM tr_http_evt_req"
+            + " FROM n_http_evt_req"
             + " WHERE time_stamp >= ? AND time_stamp < ?"
             + " GROUP BY trunc_ts"
             + " ORDER BY trunc_ts";
@@ -149,7 +149,7 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
 
         // count includes both blocked and clean/passed events
         sql = "SELECT DATE_TRUNC('minute', time_stamp) AS trunc_ts, COUNT(*)" 
-            + " FROM tr_httpblk_evt_blk"
+            + " FROM n_webfilter_evt_blk"
             + " WHERE time_stamp >= ? AND time_stamp < ?"
             + " GROUP BY trunc_ts"
             + " ORDER BY trunc_ts";

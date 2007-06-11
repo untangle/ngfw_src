@@ -24,10 +24,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
 import com.untangle.uvm.security.Tid;
-import com.untangle.node.shield.ShieldNodeRule;
 import org.hibernate.annotations.IndexColumn;
 
 /**
@@ -37,7 +35,7 @@ import org.hibernate.annotations.IndexColumn;
  * @version 1.0
  */
 @Entity
-@Table(name="tr_shield_settings", schema="settings")
+@Table(name="n_shield_settings", schema="settings")
 public class ShieldSettings implements Serializable
 {
     private static final long serialVersionUID = -4330737456182204381L;

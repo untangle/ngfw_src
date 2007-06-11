@@ -113,7 +113,7 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
         sql = "SELECT DATE_TRUNC('minute', start_time) AS trunc_ts,"
             + " SUM(rx_bytes),"
             + " SUM(tx_bytes)"
-            + " FROM tr_openvpn_statistic_evt"
+            + " FROM n_openvpn_statistic_evt"
             + " WHERE start_time >= ? AND start_time < ?"
             + " GROUP BY trunc_ts"
             + " ORDER BY trunc_ts";

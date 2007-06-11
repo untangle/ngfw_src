@@ -118,7 +118,7 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
 
         sql = "SELECT DATE_TRUNC('minute', time_stamp) AS trunc_ts,"
             + " COUNT(CASE clean WHEN false THEN 1 ELSE null END), COUNT(*)"
-            + " FROM tr_virus_evt_http"
+            + " FROM n_virus_evt_http"
             + " WHERE time_stamp >= ? AND time_stamp < ? AND vendor_name = ?"
             + " GROUP BY trunc_ts"
             + " ORDER BY trunc_ts";
@@ -164,7 +164,7 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
 
         sql = "SELECT DATE_TRUNC('minute', time_stamp) AS trunc_ts,"
             + " COUNT(CASE clean WHEN false THEN 1 ELSE null END), COUNT(*)"
-            + " FROM tr_virus_evt"
+            + " FROM n_virus_evt"
             + " WHERE time_stamp >= ? AND time_stamp < ? AND vendor_name = ?"
             + " GROUP BY trunc_ts"
             + " ORDER BY trunc_ts";
@@ -201,7 +201,7 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
 
         sql = "SELECT DATE_TRUNC('minute', time_stamp) AS trunc_ts,"
             + " COUNT(CASE clean WHEN false THEN 1 ELSE null END), COUNT(*)"
-            + " FROM tr_virus_evt_mail"
+            + " FROM n_virus_evt_mail"
             + " WHERE time_stamp >= ? AND time_stamp < ? AND vendor_name = ?"
             + " GROUP BY trunc_ts"
             + " ORDER BY trunc_ts";
@@ -238,7 +238,7 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
 
         sql = "SELECT DATE_TRUNC('minute', time_stamp) AS trunc_ts,"
             + " COUNT(CASE clean WHEN false THEN 1 ELSE null END), COUNT(*)"
-            + " FROM tr_virus_evt_smtp"
+            + " FROM n_virus_evt_smtp"
             + " WHERE time_stamp >= ? AND time_stamp < ? AND vendor_name = ?"
             + " GROUP BY trunc_ts"
             + " ORDER BY trunc_ts";
