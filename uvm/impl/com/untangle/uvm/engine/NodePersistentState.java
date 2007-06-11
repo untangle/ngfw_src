@@ -116,7 +116,7 @@ class NodePersistentState
      * @return node arguments.
      */
     @CollectionOfElements(fetch=FetchType.EAGER)
-    @JoinTable(name="node_args",
+    @JoinTable(name="u_node_args",
                joinColumns=@JoinColumn(name="tps_id"))
     @Column(name="arg", nullable=false)
     @IndexColumn(name="position")

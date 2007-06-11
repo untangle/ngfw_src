@@ -143,7 +143,7 @@ public class PortalGlobal implements Serializable
     @OneToMany(fetch=FetchType.EAGER)
     @Cascade({ org.hibernate.annotations.CascadeType.ALL,
                    org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    @JoinTable(name="portal_global_bm_mt",
+    @JoinTable(name="n_portal_global_bm_mt",
                joinColumns=@JoinColumn(name="settings_id"),
                inverseJoinColumns=@JoinColumn(name="bookmark_id"))
     @IndexColumn(name="position")
