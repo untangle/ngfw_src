@@ -36,7 +36,6 @@ UPDATE settings.split_schema_ver SET component = 'portal-node' WHERE component =
 UPDATE settings.split_schema_ver SET component = 'hauri-node' WHERE component = 'hauri-transform';
 UPDATE settings.split_schema_ver SET component = 'boxbackup-node' WHERE component = 'boxbackup-transform';
 
-
 CREATE TABLE settings.split_schema_ver AS
     SELECT component::text, version AS settings_version, version AS events_version
     FROM schema_ver;

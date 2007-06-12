@@ -75,6 +75,11 @@ class NodeContextImpl implements NodeContext
     {
         UvmContextImpl mctx = UvmContextImpl.getInstance();
 
+        if (null != tDesc.getNodeBase()) {
+            mctx.schemaUtil().initSchema("settings", tDesc.getNodeBase());
+        }
+        mctx.schemaUtil().initSchema("settings", tDesc.getName());
+
         nodeManager = mctx.nodeManager();
         toolboxManager = mctx.toolboxManager();
 
