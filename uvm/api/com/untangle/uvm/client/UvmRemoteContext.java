@@ -22,7 +22,6 @@ import com.untangle.uvm.addrbook.AddressBook;
 import com.untangle.uvm.logging.LoggingManager;
 import com.untangle.uvm.networking.ping.PingManager;
 import com.untangle.uvm.policy.PolicyManager;
-import com.untangle.uvm.portal.RemotePortalManager;
 import com.untangle.uvm.security.AdminManager;
 import com.untangle.uvm.toolbox.ToolboxManager;
 import com.untangle.uvm.node.RemoteIntfManager;
@@ -127,14 +126,6 @@ public interface UvmRemoteContext
      * @return the singleton
      */
     RemotePhoneBook phoneBook();
-
-    /**
-     * Get the RemotePortalManager singleton for this instance
-     *
-     * @return the singleton
-     */
-    RemotePortalManager portalManager();
-
 
     /**
      * Get the AddressBook singleton for this instance

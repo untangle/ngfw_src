@@ -474,83 +474,6 @@ CREATE TABLE settings.u_dns_host_list (
        position     INT4 NOT NULL,
        PRIMARY KEY  (setting_id, position));
 
--- com.untangle.uvm.portal.Bookmark -- 4.0
-CREATE TABLE settings.n_portal_bookmark (
-        id               INT8 NOT NULL,
-        name             TEXT,
-        target           TEXT,
-        application_name TEXT,
-        PRIMARY KEY      (id));
-
--- com.untangle.uvm.portal.PortalUser -- 4.0
-CREATE TABLE settings.n_portal_user (
-        id               INT8 NOT NULL,
-        uid              TEXT,
-        live             BOOL,
-        description      TEXT,
-        group_id         INT8,
-        home_settings_id INT8,
-        settings_id      INT8,
-        position         INT4,
-        PRIMARY KEY      (id));
-
--- com.untangle.uvm.portal.PortalUser.bookmarks -- 4.0
-CREATE TABLE settings.n_portal_user_bm_mt (
-    settings_id int8 NOT NULL,
-    bookmark_id int8 NOT NULL,
-    position int4 NOT NULL,
-    PRIMARY KEY (settings_id, position));
-
--- com.untangle.uvm.portal.PortalGroup -- 4.0
-CREATE TABLE settings.n_portal_group (
-        id               INT8 NOT NULL,
-        name             TEXT,
-        description      TEXT,
-        home_settings_id INT8,
-        settings_id      INT8,
-        position         INT4,
-        PRIMARY KEY      (id));
-
--- com.untangle.uvm.portal.PortalGroup.bookmarks -- 4.0
-CREATE TABLE settings.n_portal_group_bm_mt (
-    settings_id int8 NOT NULL,
-    bookmark_id int8 NOT NULL,
-    position int4 NOT NULL,
-    PRIMARY KEY (settings_id, position));
-
--- com.untangle.uvm.portal.PortalGlobal -- 4.0
-CREATE TABLE settings.n_portal_global (
-        id               INT8 NOT NULL,
-        auto_create_users BOOL,
-        login_page_title TEXT,
-        login_page_text  TEXT,
-        home_settings_id INT8,
-        PRIMARY KEY      (id));
-
--- com.untangle.uvm.portal.PortalGlobal.bookmarks -- 4.0
-CREATE TABLE settings.n_portal_global_bm_mt (
-    settings_id int8 NOT NULL,
-    bookmark_id int8 NOT NULL,
-    position int4 NOT NULL,
-    PRIMARY KEY (settings_id, position));
-
--- com.untangle.uvm.security.PortalHomeSettings
-CREATE TABLE settings.n_portal_home_settings (
-    id              INT8 NOT NULL,
-    home_page_title TEXT,
-    home_page_text  TEXT,
-    bookmark_table_title TEXT,
-    show_exploder   BOOL,
-    show_bookmarks  BOOL,
-    show_add_bookmark BOOL,
-    idle_timeout    INT8,
-    PRIMARY KEY (id));
-
--- com.untangle.uvm.security.PortalSettings
-CREATE TABLE settings.n_portal_settings (
-    id int8 NOT NULL,
-    global_settings_id INT8,
-    PRIMARY KEY (id));
 
 -- com.untangle.uvm.networking.PPPoEConnectionRule -- 4.1
 CREATE TABLE settings.u_pppoe_connection (
@@ -692,11 +615,3 @@ ALTER TABLE u_dns_host_list
       ADD CONSTRAINT fk_uvm_dns_dns
       FOREIGN KEY (rule_id) REFERENCES u_dns_static_host_rule;
 
--- Portals
-ALTER TABLE settings.n_portal_group
-    ADD CONSTRAINT fk_portal_group_parent
-    FOREIGN KEY (settings_id) REFERENCES settings.n_portal_settings;
-
-ALTER TABLE settings.n_portal_user
-    ADD CONSTRAINT fk_portal_user_parent
-    FOREIGN KEY (settings_id) REFERENCES settings.n_portal_settings;

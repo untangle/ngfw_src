@@ -169,11 +169,6 @@ class AppServerManagerImpl implements LocalAppServerManager
         tomcatManager.rebindExternalHttpsPort(port);
     }
 
-    public boolean loadPortalApp(String urlBase, String rootDir)
-    {
-        return tomcatManager.loadPortalApp(urlBase, rootDir);
-    }
-
     public boolean loadSystemApp(String urlBase, String rootDir)
     {
         return tomcatManager.loadSystemApp(urlBase, rootDir);

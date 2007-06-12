@@ -34,19 +34,6 @@ public interface LocalAppServerManager
     void rebindExternalHttpsPort(int port) throws Exception;
 
     /**
-     * Load a portal web app. This app will use the PortalRealm for
-     * authentication. The web app's files are already assumed to be
-     * unpackaged into the root web apps directory of the edgeguard
-     * deployment
-     *
-     * @param urlBase the base URL
-     * (i.e. "http://edgeguard/<i>urlBase</i>/foo").
-     * @param rootDir the name of the root directory under the "web"
-     * directory of edgeguard w/ the app.
-     */
-    boolean loadPortalApp(String urlBase, String rootDir);
-
-    /**
      * Load a portal web app. This app will use the UvmRealm for
      * authentication. The web app's files are already assumed to be
      * unpackaged into the root web apps directory of the edgeguard

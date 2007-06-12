@@ -86,36 +86,6 @@ CREATE TABLE events.n_shield_statistic_evt (
     time_stamp timestamp,
     PRIMARY KEY (event_id));
 
--- com.untangle.mvvm.portal.PortalLoginEvent
-CREATE TABLE events.n_portal_login_evt (
-    event_id    int8 NOT NULL,
-    client_addr inet,
-    uid         text,
-    succeeded   bool,
-    reason      char(1),
-    time_stamp  timestamp,
-    PRIMARY KEY (event_id));
-
--- com.untangle.mvvm.portal.PortalLogoutEvent
-CREATE TABLE events.n_portal_logout_evt (
-    event_id    int8 NOT NULL,
-    client_addr inet,
-    uid         text,
-    reason      char(1),
-    time_stamp  timestamp,
-    PRIMARY KEY (event_id));
-
--- com.untangle.mvvm.portal.PortalAppLaunchEvent
-CREATE TABLE events.n_portal_app_launch_evt (
-    event_id    int8 NOT NULL,
-    client_addr inet,
-    uid         text,
-    succeeded   bool,
-    reason      char(1),
-    app         text,
-    destination text,
-    time_stamp  timestamp,
-    PRIMARY KEY (event_id));
 
 -- com.untangle.mvvm.user.LookupLogEvent
 CREATE TABLE events.u_lookup_evt (
@@ -146,8 +116,6 @@ CREATE INDEX u_login_evt_ts_idx ON u_login_evt (time_stamp);
 CREATE INDEX u_lookup_evt_ts_idx ON u_lookup_evt (time_stamp);
 CREATE INDEX n_shield_rejection_evt_ts_idx ON n_shield_rejection_evt (time_stamp);
 
-CREATE INDEX n_portal_login_evt_ts_idx ON n_portal_login_evt (time_stamp);
-CREATE INDEX n_portal_logout_evt_ts_idx ON n_portal_logout_evt (time_stamp);
 
 
 --------------------------------------------------------------------------------

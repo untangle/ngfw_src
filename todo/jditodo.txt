@@ -1,5 +1,7 @@
 br
 --
+how to do portal schema conversion?
+
 find all instances of (/usr/share/)metavize
 
 debian build afu

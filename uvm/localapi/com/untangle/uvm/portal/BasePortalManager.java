@@ -11,17 +11,19 @@
 
 package com.untangle.uvm.portal;
 
-import java.util.List;
+import java.security.Principal;
 
-public interface RemotePortalManager
+/**
+ * Base interface to the PortalManager.
+ *
+ * @author <a href="mailto:jdi@slabuntu">John Irwin</a>
+ * @version 1.0
+ */
+public interface BasePortalManager
 {
-    RemoteApplicationManager applicationManager();
+    LocalApplicationManager applicationManager();
 
-    PortalSettings getPortalSettings();
+    boolean isLive(Principal p);
 
-    void setPortalSettings(PortalSettings settings);
-
-    List<PortalLogin> getActiveLogins();
-
-    void forceLogout(PortalLogin login);
+    void destroy();
 }

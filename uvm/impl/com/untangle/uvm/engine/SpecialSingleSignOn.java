@@ -28,7 +28,8 @@ import org.apache.catalina.connector.Request;
 import org.apache.catalina.connector.Response;
 
 import com.untangle.uvm.UvmLocalContext;
-import com.untangle.uvm.portal.PortalLogin;
+import com.untangle.uvm.portal.BasePortalManager;
+import com.untangle.uvm.portal.BasePortalLogin;
 import com.untangle.uvm.security.UvmPrincipal;
 
 
@@ -38,7 +39,7 @@ class SpecialSingleSignOn extends SingleSignOn
     /* Dirty hack designed to ignore sessions that are in this context path */
     private final Set<String> uvmContextSet;
 
-    private PortalManagerImpl pmgr;
+    private BasePortalManager pmgr;
 
     SpecialSingleSignOn(UvmLocalContext uvmContext, String ... contextPathArray )
     {
@@ -48,7 +49,7 @@ class SpecialSingleSignOn extends SingleSignOn
         
         this.uvmContextSet =  Collections.unmodifiableSet( contextSet );
 
-        pmgr = (PortalManagerImpl) uvmContext.portalManager();
+        pmgr = (BasePortalManager) uvmContext.portalManager();
     }
 
     /**
@@ -81,7 +82,7 @@ class SpecialSingleSignOn extends SingleSignOn
         super.invoke( request, response );
 
         Principal principal = request.getUserPrincipal();
-        if (principal != null && principal instanceof PortalLogin) {
+        if (principal != null && principal instanceof BasePortalLogin) {
             if (containerLog.isDebugEnabled())
                 containerLog.debug( "Checking liveness for " + principal.getName());
             boolean live = pmgr.isLive(principal);

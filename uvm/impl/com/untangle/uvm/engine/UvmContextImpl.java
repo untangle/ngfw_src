@@ -41,6 +41,7 @@ import com.untangle.uvm.networking.RemoteNetworkManagerImpl;
 import com.untangle.uvm.networking.ping.PingManagerImpl;
 import com.untangle.uvm.policy.LocalPolicyManager;
 import com.untangle.uvm.policy.PolicyManager;
+import com.untangle.uvm.portal.BasePortalManager;
 import com.untangle.uvm.tapi.MPipeManager;
 import com.untangle.uvm.toolbox.ToolboxManager;
 import com.untangle.uvm.node.NodeContext;
@@ -104,8 +105,7 @@ public class UvmContextImpl extends UvmContextBase
     private BrandingManager brandingManager;
     private LocalBrandingManager localBrandingManager;
     private PhoneBookFactory phoneBookFactory;
-    private PortalManagerImpl portalManager;
-    private RemotePortalManagerImpl remotePortalManager;
+    private BasePortalManager portalManager;
     private TomcatManager tomcatManager;
     private HeapMonitor heapMonitor;
 
@@ -167,14 +167,9 @@ public class UvmContextImpl extends UvmContextBase
         return phoneBookFactory.getLocal();
     }
 
-    public PortalManagerImpl portalManager()
+    public BasePortalManager portalManager()
     {
         return portalManager;
-    }
-
-    RemotePortalManagerImpl remotePortalManager()
-    {
-        return remotePortalManager;
     }
 
     public AppServerManagerImpl appServerManager()
@@ -611,8 +606,19 @@ public class UvmContextImpl extends UvmContextBase
         
         phoneBookFactory = PhoneBookFactory.makeInstance();
 
-        portalManager = new PortalManagerImpl(this);
-        remotePortalManager = new RemotePortalManagerImpl(portalManager);
+        // Fire up the portal manager.
+        String bpmClass = System.getProperty("uvm.portal.manager");
+        if (null == pmClass) {
+            bpmClass = "com.untangle.uvm.portal.RupPortalManager";
+        }
+        BasePortalManager bpm = null;
+        try {
+            bpm = (BasePortalManager)Class.forName(bpmClass).newInstance();
+        } catch (Exception exn) {
+            logger.info("could not load PortalManager: " + bpmClass);
+        }
+        portalManager = null == bpm ? new DefaultPortalManager(this) : bpm;
+        logger.info("using PortalManager: " + portalManager.getClass());
 
         // start nodes:
         nodeManager = new NodeManagerImpl(repositorySelector);

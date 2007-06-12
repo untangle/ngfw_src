@@ -135,6 +135,12 @@ public abstract class MNodeControlsJPanel extends javax.swing.JPanel implements 
     public boolean getControlsShowing(){
         return mNodeJPanel.getControlsShowing();
     }
+    
+    public Node getNode() {
+        if (mNodeJPanel == null)
+            return null;
+        return mNodeJPanel.getNode();
+    }
 
     public void setSaveSettingsHintVisible(boolean isVisible){
         if( isVisible ){

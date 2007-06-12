@@ -23,7 +23,7 @@ import com.untangle.uvm.logging.SyslogManager;
 import com.untangle.uvm.networking.LocalNetworkManager;
 import com.untangle.uvm.networking.ping.PingManager;
 import com.untangle.uvm.policy.LocalPolicyManager;
-import com.untangle.uvm.portal.LocalPortalManager;
+import com.untangle.uvm.portal.BasePortalManager;
 import com.untangle.uvm.security.AdminManager;
 import com.untangle.uvm.tapi.MPipeManager;
 import com.untangle.uvm.tapi.PipelineFoundry;
@@ -91,7 +91,7 @@ public interface UvmLocalContext
      *
      * @return a <code>PortalManager</code> value
      */
-    LocalPortalManager portalManager();
+    BasePortalManager portalManager();
 
     ArgonManager argonManager();
 

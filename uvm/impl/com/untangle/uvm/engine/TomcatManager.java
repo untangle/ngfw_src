@@ -147,11 +147,8 @@ class TomcatManager
         }
     }
 
-    boolean loadPortalApp(String urlBase, String rootDir)
+    boolean loadPortalApp(String urlBase, String rootDir, Realm realm, AuthenticatorBase auth)
     {
-        PortalManagerImpl pm = uvmContext.portalManager();
-        Realm realm = pm.getPortalRealm();
-        AuthenticatorBase auth = pm.newPortalAuthenticator();
         // Need a large timeout since we handle that ourselves.
         WebAppOptions options = new WebAppOptions(false, 24*60);
         return loadWebApp(urlBase, rootDir, realm, auth, options);

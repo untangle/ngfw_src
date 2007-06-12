@@ -18,8 +18,8 @@ import java.util.List;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.UvmLocalContext;
 import com.untangle.uvm.portal.Application;
+import com.untangle.uvm.portal.BasePortalManager;
 import com.untangle.uvm.portal.LocalApplicationManager;
-import com.untangle.uvm.portal.LocalPortalManager;
 import com.untangle.uvm.tapi.AbstractNode;
 import com.untangle.uvm.tapi.CasingPipeSpec;
 import com.untangle.uvm.tapi.Fitting;
@@ -140,7 +140,7 @@ public class MailNodeImpl extends AbstractNode
 
     private void registerApps() {
         UvmLocalContext mctx = UvmContextFactory.context();
-        LocalPortalManager lpm = mctx.portalManager();
+        BasePortalManager lpm = mctx.portalManager();
         LocalApplicationManager lam = lpm.applicationManager();
         quarantineApp = lam.registerApplication("Quarantine",
                                                 "Email Quarantine",
@@ -151,7 +151,7 @@ public class MailNodeImpl extends AbstractNode
 
     private void deregisterApps() {
         UvmLocalContext mctx = UvmContextFactory.context();
-        LocalPortalManager lpm = mctx.portalManager();
+        BasePortalManager lpm = mctx.portalManager();
         LocalApplicationManager lam = lpm.applicationManager();
         lam.deregisterApplication(quarantineApp);
     }

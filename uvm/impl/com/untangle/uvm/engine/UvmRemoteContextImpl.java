@@ -26,7 +26,6 @@ import com.untangle.uvm.client.UvmRemoteContext;
 import com.untangle.uvm.logging.LoggingManager;
 import com.untangle.uvm.networking.ping.PingManager;
 import com.untangle.uvm.policy.PolicyManager;
-import com.untangle.uvm.portal.RemotePortalManager;
 import com.untangle.uvm.security.AdminManager;
 import com.untangle.uvm.toolbox.ToolboxManager;
 import com.untangle.uvm.node.NodeManager;
@@ -123,11 +122,6 @@ class UvmRemoteContextImpl implements UvmRemoteContext
     public BrandingManager brandingManager()
     {
         return context.brandingManager();
-    }
-
-    public RemotePortalManager portalManager()
-    {
-        return context.remotePortalManager();
     }
 
     public void localBackup() throws IOException

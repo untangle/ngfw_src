@@ -58,7 +58,6 @@ import com.untangle.uvm.logging.*;
 import com.untangle.uvm.networking.ping.PingManager;
 import com.untangle.uvm.node.*;
 import com.untangle.uvm.policy.*;
-import com.untangle.uvm.portal.RemotePortalManager;
 import com.untangle.uvm.security.*;
 import com.untangle.uvm.toolbox.ToolboxManager;
 import com.untangle.uvm.user.RemotePhoneBook;
@@ -144,7 +143,6 @@ public class Util {
     private static RemoteAppServerManager appServerManager;
     private static AddressBook addressBook;
     private static RemotePhoneBook phoneBook;
-    private static RemotePortalManager remotePortalManager;
     private static RemoteIntfManager remoteIntfManager;
     private static PingManager pingManager;
     private static BrandingManager brandingManager;
@@ -161,7 +159,6 @@ public class Util {
             appServerManager = uvmContext.appServerManager();
             addressBook = uvmContext.appAddressBook();
             phoneBook = uvmContext.phoneBook();
-            remotePortalManager = uvmContext.portalManager();
             remoteIntfManager = uvmContext.intfManager();
             pingManager = uvmContext.pingManager();
             brandingManager = uvmContext.brandingManager();
@@ -176,7 +173,6 @@ public class Util {
             appServerManager = null;
             addressBook = null;
             phoneBook = null;
-            remotePortalManager = null;
             remoteIntfManager = null;
             pingManager = null;
             brandingManager = null;
@@ -195,7 +191,6 @@ public class Util {
     public static RemoteAppServerManager getAppServerManager(){ return appServerManager; }
     public static AddressBook getAddressBook(){ return addressBook; }
     public static RemotePhoneBook getPhoneBook(){ return phoneBook; }
-    public static RemotePortalManager getRemotePortalManager(){ return remotePortalManager; }
     public static PingManager getPingManager(){ return pingManager; }
     public static BrandingManager getBrandingManager(){ return brandingManager; }
     ///////////////////////////////////

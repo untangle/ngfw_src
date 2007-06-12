@@ -33,9 +33,9 @@ public final class Application
      */
     public interface Destinator
     {
-        String getDestinationHost(Bookmark bm);
+        String getDestinationHost(Object bookmark);
 
-        int getDestinationPort(Bookmark bm);
+        int getDestinationPort(Object bookmark);
     }
 
     private final String name;
