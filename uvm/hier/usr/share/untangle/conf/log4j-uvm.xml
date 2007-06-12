@@ -51,7 +51,7 @@
   </category>
 
   <category name="org.hibernate">
-    <priority value="DEBUG"/>
+    <priority value="WARN"/>
   </category>
 
   <category name="com.untangle.uvm.argon">

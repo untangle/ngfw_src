@@ -28,10 +28,10 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import com.untangle.uvm.security.Tid;
+import com.untangle.node.http.UserWhitelistMode;
 import com.untangle.uvm.node.IPMaddrRule;
 import com.untangle.uvm.node.StringRule;
-import com.untangle.node.http.UserWhitelistMode;
+import com.untangle.uvm.security.Tid;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.IndexColumn;
 
@@ -266,7 +266,7 @@ public class SpywareSettings implements Serializable
     @OneToMany(fetch=FetchType.EAGER)
     @Cascade({ org.hibernate.annotations.CascadeType.ALL,
                    org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    @JoinTable(name="n_spyware_ar,",
+    @JoinTable(name="n_spyware_ar",
                joinColumns=@JoinColumn(name="settings_id"),
                inverseJoinColumns=@JoinColumn(name="rule_id"))
     @IndexColumn(name="position")
