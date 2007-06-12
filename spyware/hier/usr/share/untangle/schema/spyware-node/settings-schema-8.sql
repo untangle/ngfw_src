@@ -32,7 +32,7 @@ CREATE TABLE settings.n_spyware_cr (
     PRIMARY KEY (settings_id, position));
 
 -- com.untangle.tran.spyware.SpywareSettings.activeXRules
-CREATE TABLE settings.n_spyware_ar, (
+CREATE TABLE settings.n_spyware_ar (
     settings_id int8 NOT NULL,
     rule_id int8 NOT NULL,
     position int4 NOT NULL,
