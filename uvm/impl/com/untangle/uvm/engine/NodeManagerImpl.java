@@ -33,18 +33,18 @@ import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.logging.UvmLoggingContext;
 import com.untangle.uvm.logging.UvmLoggingContextFactory;
 import com.untangle.uvm.logging.UvmRepositorySelector;
-import com.untangle.uvm.policy.Policy;
-import com.untangle.uvm.security.Tid;
-import com.untangle.uvm.toolbox.MackageDesc;
 import com.untangle.uvm.node.DeployException;
 import com.untangle.uvm.node.LocalNodeManager;
-import com.untangle.uvm.node.UvmNodeHandler;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.NodeDesc;
 import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.node.NodeState;
 import com.untangle.uvm.node.NodeStats;
 import com.untangle.uvm.node.UndeployException;
+import com.untangle.uvm.node.UvmNodeHandler;
+import com.untangle.uvm.policy.Policy;
+import com.untangle.uvm.security.Tid;
+import com.untangle.uvm.toolbox.MackageDesc;
 import com.untangle.uvm.util.TransactionWork;
 import org.apache.log4j.Logger;
 import org.apache.log4j.helpers.LogLog;
@@ -393,8 +393,8 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
 
         while (0 < unloaded.size()) {
             List<NodePersistentState> startQueue = getLoadable(unloaded,
-                                                                    tDescs,
-                                                                    loadedParents);
+                                                               tDescs,
+                                                               loadedParents);
             if (0 == startQueue.size()) {
                 logger.info("not all parents loaded, proceeding");
                 startUnloaded(unloaded, tDescs, loadedParents);
@@ -434,8 +434,8 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
                         NodeContextImpl tc = null;
                         try {
                             tc = new NodeContextImpl((URLClassLoader)getClass().getClassLoader(), tDesc,
-                                                          mackageDesc.getName(),
-                                                          false);
+                                                     mackageDesc.getName(),
+                                                     false);
                             tids.put(tid, tc);
                             tc.init(args);
                             logger.info("Restarted: " + tid);
@@ -463,8 +463,8 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
     }
 
     private List<NodePersistentState> getLoadable(List<NodePersistentState> unloaded,
-                                                       Map<Tid, NodeDesc> tDescs,
-                                                       Set<String> loadedParents)
+                                                  Map<Tid, NodeDesc> tDescs,
+                                                  Set<String> loadedParents)
     {
         List<NodePersistentState> l = new ArrayList<NodePersistentState>(unloaded.size());
         Set<String> thisPass = new HashSet<String>(unloaded.size());
@@ -513,10 +513,11 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
 
         for (NodePersistentState tps : unloaded) {
             String name = tps.getName();
-            URL[] urls = new URL[] { tbm.getResourceDir(name) };
+            MackageDesc md = tbm.mackageDesc(name);
+
+            URL[] urls = new URL[] { tbm.getResourceDir(md) };
             Tid tid = tps.getTid();
             tid.setNodeName(name);
-            MackageDesc md = tbm.mackageDesc(name);
 
             try {
                 logger.info("initializing node desc for: " + name);
@@ -564,9 +565,9 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
 
         ToolboxManagerImpl tbm = (ToolboxManagerImpl)mctx.toolboxManager();
 
-        URL[] resUrls = new URL[] { tbm.getResourceDir(nodeName) };
-
         MackageDesc mackageDesc = tbm.mackageDesc(nodeName);
+        URL[] resUrls = new URL[] { tbm.getResourceDir(mackageDesc) };
+
         if ((mackageDesc.isService() || mackageDesc.isUtil() || mackageDesc.isCore())
             && tid.getPolicy() != null) {
             throw new DeployException("Cannot specify a policy for a service/util/core: "
@@ -610,7 +611,7 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
      * parent cannot be loaded.
      */
     private NodeDesc initNodeDesc(MackageDesc mackageDesc,
-                                            URL[] urls, Tid tid)
+                                  URL[] urls, Tid tid)
         throws DeployException
     {
         // XXX assumes no parent cl has this file.

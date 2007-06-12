@@ -64,6 +64,7 @@ public class MackageDesc implements Serializable
     private final boolean isSecurity;
     private final boolean isCore;
     private final String extraName;
+    private final String jarPrefix;
 
     public MackageDesc(Map<String, String> m, String installedVersion,
                        String extraName)
@@ -81,10 +82,6 @@ public class MackageDesc implements Serializable
             type = Type.valueOf(ut.toUpperCase());
         }
 
-        boolean isNode = name.endsWith("-node");
-        boolean isCasing = name.endsWith("-casing");
-        boolean isBase = name.endsWith("-base");
-
         displayName = m.get("display-name");
 
         // versions
@@ -97,7 +94,6 @@ public class MackageDesc implements Serializable
         String v = m.get("view-position");
         viewPosition = null == v ? UNKNOWN_POSITION : Integer.parseInt(v);
 
-
         // rack type init
         int rt = RACK_TYPE_UNKNOWN;
 
@@ -109,7 +105,7 @@ public class MackageDesc implements Serializable
         }
 
         // service or not
-        if (isCasing) {
+        if (Type.CASING == type) {
             isService = true;
         } else {
             v = m.get("is-service");
@@ -178,13 +174,19 @@ public class MackageDesc implements Serializable
         // website
         website = m.get("website");
 
+        jarPrefix = m.get("untangle-jar-prefix");
+
         this.installedVersion = installedVersion;
     }
-
 
     public String getName()
     {
         return name;
+    }
+
+    public String getPrice()
+    {
+        return price;
     }
 
     public String getExtraName()
@@ -235,11 +237,6 @@ public class MackageDesc implements Serializable
     public int getInstalledSize()
     {
         return installedSize;
-    }
-
-    public String getPrice()
-    {
-        return price;
     }
 
     public byte[] getOrgIcon()
@@ -312,6 +309,10 @@ public class MackageDesc implements Serializable
             return RACK_TYPE_UNKNOWN;
     }
 
+    public String getJarPrefix()
+    {
+        return jarPrefix;
+    }
 
     // private methods --------------------------------------------------------
 

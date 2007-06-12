@@ -28,15 +28,7 @@ import java.util.Set;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.UvmLocalContext;
-import com.untangle.uvm.policy.Policy;
-import com.untangle.uvm.security.Tid;
-import com.untangle.uvm.tapi.IPSessionDesc;
-import com.untangle.uvm.tapi.NodeBase;
-import com.untangle.uvm.tapi.NodeListener;
-import com.untangle.uvm.tapi.NodeStateChangeEvent;
-import com.untangle.uvm.toolbox.MackageDesc;
 import com.untangle.uvm.node.DeployException;
-import com.untangle.uvm.node.TooManyInstancesException;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.NodeDesc;
@@ -44,7 +36,15 @@ import com.untangle.uvm.node.NodeException;
 import com.untangle.uvm.node.NodePreferences;
 import com.untangle.uvm.node.NodeState;
 import com.untangle.uvm.node.NodeStats;
+import com.untangle.uvm.node.TooManyInstancesException;
 import com.untangle.uvm.node.UndeployException;
+import com.untangle.uvm.policy.Policy;
+import com.untangle.uvm.security.Tid;
+import com.untangle.uvm.tapi.IPSessionDesc;
+import com.untangle.uvm.tapi.NodeBase;
+import com.untangle.uvm.tapi.NodeListener;
+import com.untangle.uvm.tapi.NodeStateChangeEvent;
+import com.untangle.uvm.toolbox.MackageDesc;
 import com.untangle.uvm.util.TransactionWork;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
@@ -267,7 +267,8 @@ class NodeContextImpl implements NodeContext
     public InputStream getResourceAsStream(String res)
     {
         try {
-            URL url = new URL(toolboxManager.getResourceDir(mackageName), res);
+            URL url = new URL(toolboxManager.getResourceDir(getMackageDesc()),
+                              res);
             File f = new File(url.toURI());
             return new FileInputStream(f);
         } catch (MalformedURLException exn) {

@@ -493,10 +493,10 @@ class ToolboxManagerImpl implements ToolboxManager
 
     // package private methods ------------------------------------------------
 
-    URL getResourceDir(String nodeName)
+    URL getResourceDir(MackageDesc md)
     {
         try {
-            return new URL(TOOLBOX_URL, nodeName + "-impl/");
+            return new URL(TOOLBOX_URL, md.getJarPrefix() + "-impl/");
         } catch (MalformedURLException exn) {
             logger.warn(exn); /* should never happen */
             return null;

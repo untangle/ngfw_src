@@ -19,6 +19,7 @@ Architecture: any
 Depends: mvvm
 XB-Display-Name: File Transfer
 XB-Untangle-Type: casing
+XB-Untangle-Jar-Prefix: ftp-casing
 XB-Is-Service: true
 Description: The Untangle File Transfer/FTP Decoder
  The Untangle File Transfer/FTP Decoder.
@@ -28,6 +29,7 @@ Architecture: any
 Depends: mvvm
 XB-Display-Name: Web
 XB-Untangle-Type: casing
+XB-Untangle-Jar-Prefix: http-casing
 XB-Is-Service: true
 Description: The Untangle Web Decoder
  The Untangle Web Decoder.
@@ -40,6 +42,7 @@ Provides: email-transform
 Depends: mvvm
 XB-Display-Name: Email
 XB-Untangle-Type: casing
+XB-Untangle-Jar-Prefix: mail-casing
 XB-Is-Service: true
 Description: The Untangle Email Decoder
  The Untangle Email Decoder.
@@ -49,6 +52,7 @@ Architecture: any
 Depends: mvvm
 XB-Display-Name: Attack Blocker
 XB-Untangle-Type: node
+XB-Untangle-Jar-Prefix: shield-node
 XB-View-Position: 1010
 XB-Is-Core: true
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
@@ -160,6 +164,7 @@ Architecture: any
 Depends: mvvm, http-casing
 XB-Display-Name: Spyware Blocker
 XB-Untangle-Type: node
+XB-Untangle-Jar-Prefix: spyware-node
 XB-View-Position: 20
 XB-Is-Security: true
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
@@ -247,6 +252,7 @@ Architecture: any
 Depends: mvvm, http-casing, untangle-urlblacklist
 XB-Display-Name: Web Filter
 XB-Untangle-Type: node
+XB-Untangle-Jar-Prefix: webfilter-node
 XB-View-Position: 30
 XB-Is-Security: true
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0RVh0
@@ -340,206 +346,12 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAABGdBTUEAANbY1E9YMg
 Description: Web Filter
  The Web Filter product.
 
-Package: hauri-transform
-Architecture: any
-Depends: mvvm, virus-base, untangle-hauri, http-casing, ftp-casing, mail-casing
-XB-Display-Name: Dual Virus Blocker
-XB-Untangle-Type: node
-XB-View-Position: 60
-XB-Is-Security: true
-XB-Org-Icon: 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
-XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAABGdBTUEAANbY1E9YMgAAABl0
- RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAATVSURBVHjazJhLbxxFEMerZ2Yd
- gx2/QTZBQr4TDlxyQZHhE0RBRL7hmxPFUk75BlyTG8opRw4+5hhFQlEUKUIRiMABCwNW4hC8
- K3bX9m72Ma/mXz3d3p7xruN9kN2WyzOz09P966ruquoWUsqPiehXGu0iBEDlwcHBSFNOT0+T
- VywWyfM89TCKxSjR2dnZoTAMadSLs7u7S81mk8rl8kiDeqVSiYIgoGq1SrlcjiYnJ7tqoHDv
- Hj26coUk7o3EkAjCdgr09cLt2/Tp9eu9gzIk1hP5vq+EpwHP2dOWh5cu0Zc/54jwJyuQBiSM
- SYI02ifyHxPVnyzTdxsb/YEyZN/lKQZbBeA/CWyMJiXUGpWgzftYEGdr1G8v3kAm0I+QXcgf
- CShTsfnjIlHNJ6qMNdXzUEGVptiD5CGvIBU60l6s52cIq8WjoFFh2VWwK9EDEFpoAKDOQDRK
- aVCyIXWdaNignQBToKOiUTGetCREGtyIgxcjASo/wL932rcG90rvuu7/t5hebm7So9XVlAmP
- AeqVLRZx76UnrNTcZyDv1Wqq3k1oNtTf2HJkGQzoixs36Ktbt04P+hCQqz/gY+4Jzlz41go3
- FCyIPvKpdktB4o4ii/kMRumO1ejmJ3hA5ivfh+C7CIQIYBTzFdGs9ju83BOizbt3uwNVPM9g
- uAp638PD68wyFzqQ1yDP0eELhEsNarTGdVz0EOMqkfNEv+H6PBlIECfXCO0FaOPwGWIGK2Oy
- Bz8a/4S+AEB/4lqxpoDt0aMkvvtNAEYJu0lIVHTGjQeLxKgTIcQGbkvrvtRXvC/gx7zbwxxV
- GkXEkYg44lUSGrNux5TQgrMl0g1FQaL9sN7KqOz6GCM19LVrUDXRkVkIK8qcVDeyJLDMr5Wq
- OrIHEGXu415XfQKa9CSovWQtEFudRtaicqzoFGQgZcaL9ATKaRrp1K1T1MmGyqzbMVqtW5oO
- rcFIbfbGG8LsiaD+g0g1EGSSDDMdXO3QxztMDQNzkHgx5TjCjOa5HT/xgEq6BuWGiufOUbVe
- pyrvAnRl12RDkBwc9BR2BdONhnLsnmVWV0OwMV7C0f89Nkav8Q0POtYh1d6+8O+u63YP+tmd
- O/Tg2rWUN8rui4x8TQmZilJRomXTOWuxND5OLzBgmYlE2ezL4ch09Wp3oOfxwfkOH9nlG2gn
- 92HigniPFERpF2U0yEDf9rHt6TspUSAfQc7i3kn7R6NxAcCh75mUm0EroUiv6nQoFX2DOoMA
- DTley+NR6chfCtH/SclAQOMEtp023+TI35rpY50JKY3KVuTJ5pxDn6Mm+2kijas3WqDSSjbC
- ARxyDESjh78Q/aujT2BpMNAOvxLHowH6lz57KGcSjVjDikaj/8Vkzp56PYO6uLFBjzVsWcf1
- Qy1Vy/wXdZTrWaN8ghfDNHxGymKeT1suY39zuc0ep13htk8qHOs7xXuPD3D5qDGfz6tKdcTk
- bo4dB1m4/4mJCZqZmTkOure3Rw3Moe3tbdrf36epqamhgXK/DDo/P08LCws0NzfXelcoFJTJ
- t7a2iKH5xJlHJgYQTXoFZcjFxUUlDK3e8ZE4m35tbY0cx1GAw4BMUgKhGBh4DPkrH9WzEs1O
- 4vuVlZXPTaVhwzLg7OwsLS0t0fLyMq2vryvO/wQYAP5qirM6mBOTAAAAAElFTkSuQmCC
-Description: Dual Virus Blocker
- The Dual Virus Blocker product.
-
-Package: kav-transform
-Architecture: any
-Depends: mvvm, virus-base, kav-mv, http-casing, ftp-casing, mail-casing
-XB-Display-Name: Kaspersky Virus Blocker
-XB-Untangle-Type: node
-XB-View-Position: 50
-XB-Is-Security: true
-XB-Org-Icon: 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
- bl76BFsAAAAASUVORK5CYII=
-XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAABGdBTUEAANbY1E9YMgAAABl0
- RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAATVSURBVHjazJhLbxxFEMerZ2Yd
- gx2/QTZBQr4TDlxyQZHhE0RBRL7hmxPFUk75BlyTG8opRw4+5hhFQlEUKUIRiMABCwNW4hC8
- K3bX9m72Ma/mXz3d3p7xruN9kN2WyzOz09P966ruquoWUsqPiehXGu0iBEDlwcHBSFNOT0+T
- VywWyfM89TCKxSjR2dnZoTAMadSLs7u7S81mk8rl8kiDeqVSiYIgoGq1SrlcjiYnJ7tqoHDv
- Hj26coUk7o3EkAjCdgr09cLt2/Tp9eu9gzIk1hP5vq+EpwHP2dOWh5cu0Zc/54jwJyuQBiSM
- SYI02ifyHxPVnyzTdxsb/YEyZN/lKQZbBeA/CWyMJiXUGpWgzftYEGdr1G8v3kAm0I+QXcgf
- CShTsfnjIlHNJ6qMNdXzUEGVptiD5CGvIBU60l6s52cIq8WjoFFh2VWwK9EDEFpoAKDOQDRK
- aVCyIXWdaNignQBToKOiUTGetCREGtyIgxcjASo/wL932rcG90rvuu7/t5hebm7So9XVlAmP
- AeqVLRZx76UnrNTcZyDv1Wqq3k1oNtTf2HJkGQzoixs36Ktbt04P+hCQqz/gY+4Jzlz41go3
- FCyIPvKpdktB4o4ii/kMRumO1ejmJ3hA5ivfh+C7CIQIYBTzFdGs9ju83BOizbt3uwNVPM9g
- uAp638PD68wyFzqQ1yDP0eELhEsNarTGdVz0EOMqkfNEv+H6PBlIECfXCO0FaOPwGWIGK2Oy
- Bz8a/4S+AEB/4lqxpoDt0aMkvvtNAEYJu0lIVHTGjQeLxKgTIcQGbkvrvtRXvC/gx7zbwxxV
- GkXEkYg44lUSGrNux5TQgrMl0g1FQaL9sN7KqOz6GCM19LVrUDXRkVkIK8qcVDeyJLDMr5Wq
- OrIHEGXu415XfQKa9CSovWQtEFudRtaicqzoFGQgZcaL9ATKaRrp1K1T1MmGyqzbMVqtW5oO
- rcFIbfbGG8LsiaD+g0g1EGSSDDMdXO3QxztMDQNzkHgx5TjCjOa5HT/xgEq6BuWGiufOUbVe
- pyrvAnRl12RDkBwc9BR2BdONhnLsnmVWV0OwMV7C0f89Nkav8Q0POtYh1d6+8O+u63YP+tmd
- O/Tg2rWUN8rui4x8TQmZilJRomXTOWuxND5OLzBgmYlE2ezL4ch09Wp3oOfxwfkOH9nlG2gn
- 92HigniPFERpF2U0yEDf9rHt6TspUSAfQc7i3kn7R6NxAcCh75mUm0EroUiv6nQoFX2DOoMA
- DTley+NR6chfCtH/SclAQOMEtp023+TI35rpY50JKY3KVuTJ5pxDn6Mm+2kijas3WqDSSjbC
- ARxyDESjh78Q/aujT2BpMNAOvxLHowH6lz57KGcSjVjDikaj/8Vkzp56PYO6uLFBjzVsWcf1
- Qy1Vy/wXdZTrWaN8ghfDNHxGymKeT1suY39zuc0ep13htk8qHOs7xXuPD3D5qDGfz6tKdcTk
- bo4dB1m4/4mJCZqZmTkOure3Rw3Moe3tbdrf36epqamhgXK/DDo/P08LCws0NzfXelcoFJTJ
- t7a2iKH5xJlHJgYQTXoFZcjFxUUlDK3e8ZE4m35tbY0cx1GAw4BMUgKhGBh4DPkrH9WzEs1O
- 4vuVlZXPTaVhwzLg7OwsLS0t0fLyMq2vryvO/wQYAP5qirM6mBOTAAAAAElFTkSuQmCC
-Description: Kaspersky Virus Blocker
- The Kaspersky Virus Blocker product.
-
 Package: clam-transform
 Architecture: any
 Depends: mvvm, virus-base, untangle-clamav-config, http-casing, ftp-casing, mail-casing
 XB-Display-Name: Virus Blocker
 XB-Untangle-Type: node
+XB-Untangle-Jar-Prefix: clam-node
 XB-View-Position: 70
 XB-Is-Security: true
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAACXBIWXMAAAsTAAALEwEAmpwY
@@ -647,6 +459,7 @@ Depends: mvvm
 Conflicts: protoanalyzer-transform
 XB-Display-Name: Protocol Control
 XB-Untangle-Type: node
+XB-Untangle-Jar-Prefix: protofilter-node
 XB-View-Position: 80
 XB-Is-Security: true
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
@@ -768,6 +581,7 @@ Architecture: any
 Depends: mvvm, dnsmasq, ftp-casing
 XB-Display-Name: Router
 XB-Untangle-Type: node
+XB-Untangle-Jar-Prefix: router-node
 XB-View-Position: 1000
 XB-Is-Core: true
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
@@ -862,6 +676,7 @@ Architecture: any
 Depends: mvvm
 XB-Display-Name: Firewall
 XB-Untangle-Type: node
+XB-Untangle-Jar-Prefix: firewall-node
 XB-View-Position: 90
 XB-Is-Security: true
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
@@ -949,6 +764,7 @@ Architecture: any
 Depends: mvvm, spam-base, mail-casing
 XB-Display-Name: Spam Blocker
 XB-Untangle-Type: node
+XB-Untangle-Jar-Prefix: spamassassin-node
 XB-View-Position: 15
 XB-Is-Security: true
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
@@ -1064,6 +880,7 @@ Architecture: any
 Depends: mvvm, spam-base, untangle-clamav-config, mail-casing, http-casing
 XB-Display-Name: Phish Blocker
 XB-Untangle-Type: node
+XB-Untangle-Jar-Prefix: phish-node
 XB-View-Position: 17
 XB-Is-Security: true
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
@@ -1193,6 +1010,7 @@ Architecture: any
 Depends: mvvm
 XB-Display-Name: Test
 XB-Untangle-Type: node
+XB-Untangle-Jar-Prefix: test-node
 XB-View-Position: 2002
 XB-Is-Core: true
 XB-Org-Icon:  iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
@@ -1335,6 +1153,7 @@ Architecture: any
 Depends: mvvm, openvpn, untangle-nsis-addons, sysutils, zip, openssl
 XB-Display-Name: OpenVPN
 XB-Untangle-Type: node
+XB-Untangle-Jar-Prefix: openvpn-node
 XB-View-Position: 1003
 XB-Is-Core: true
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
@@ -1439,6 +1258,7 @@ Architecture: any
 Depends: mvvm, http-casing, untangle-snort-rules
 XB-Display-Name: Intrusion Prevention
 XB-Untangle-Type: node
+XB-Untangle-Jar-Prefix: ips-node
 XB-View-Position: 75
 XB-Is-Security: true
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
@@ -1545,6 +1365,7 @@ Architecture: any
 Depends: mvvm
 XB-Display-Name: Untangle Reports
 XB-Untangle-Type: node
+XB-Untangle-Jar-Prefix: protofilter-node
 XB-View-Position: 1020
 XB-Is-Core: true
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
