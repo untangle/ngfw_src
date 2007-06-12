@@ -577,7 +577,7 @@ public class UvmContextImpl extends UvmContextBase
         // Fire up the policy manager.
         String pmClass = System.getProperty("uvm.policy.manager");
         if (null == pmClass) {
-            pmClass = "com.untangle.uvm.policy.CharonPolicyManager";
+            pmClass = "com.untangle.uvm.policy.RupPolicyManager";
         }
 
         LocalPolicyManager pm = null;
