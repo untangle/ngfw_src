@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.untangle.uvm.util.TransactionWork;
 import com.untangle.node.mail.MailNodeImpl;
 import com.untangle.node.mail.impl.GlobEmailAddressMapper;
 import com.untangle.node.mail.papi.MailNodeSettings;
@@ -27,11 +26,12 @@ import com.untangle.node.mail.papi.safelist.SafelistActionFailedException;
 import com.untangle.node.mail.papi.safelist.SafelistAdminView;
 import com.untangle.node.mail.papi.safelist.SafelistEndUserView;
 import com.untangle.node.mail.papi.safelist.SafelistManipulation;
+import com.untangle.node.mail.papi.safelist.SafelistNodeView;
 import com.untangle.node.mail.papi.safelist.SafelistRecipient;
 import com.untangle.node.mail.papi.safelist.SafelistSender;
 import com.untangle.node.mail.papi.safelist.SafelistSettings;
-import com.untangle.node.mail.papi.safelist.SafelistNodeView;
 import com.untangle.node.mime.EmailAddress;
+import com.untangle.uvm.util.TransactionWork;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -486,8 +486,7 @@ public class SafelistManager
             {
                 public boolean doWork(Session s)
                 {
-                    Query q = s.createQuery
-                        ("from MailNodeSettings");
+                    Query q = s.createQuery("from MailNodeSettings");
                     mlSettings = (MailNodeSettings)q.uniqueResult();
 
                     return true;

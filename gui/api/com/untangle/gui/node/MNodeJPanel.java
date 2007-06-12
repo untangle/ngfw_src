@@ -146,7 +146,7 @@ public class MNodeJPanel extends javax.swing.JPanel {
         try{
             name = nodeDesc.getName();
             name = name.substring(0, name.indexOf('-'));
-            descriptionIconJLabel.setIcon(new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/untangle/tran/"
+            descriptionIconJLabel.setIcon(new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/untangle/node/"
                                                                                                        + name
                                                                                                        +  "/gui/IconDesc42x42.png")));
         }
