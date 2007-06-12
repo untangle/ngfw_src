@@ -139,7 +139,7 @@ function showMessage() {
 <% } %>
 
 
-      <div style="text-align: right; font-style: italic; margin-top:30px;">
+      <div class="java-download">
        <a href="/java/jre-1_5_0_07-windows-i586-p.exe">Download Java&trade; v1.5 (Offline)</a><br />
 <% if ( !isDownload ) { %>
              <a href="download.html">Download Java&trade; v1.5 (Online)</a><br />

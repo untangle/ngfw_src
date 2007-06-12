@@ -124,5 +124,10 @@ hr {
     font: bold 14pt arial,sans-serif;
     color: #777;
 }
-
-
+.java-download {
+	text-align: right;
+	font-style: italic;
+	font-size: 12px;
+	margin-top: 30px;
+	
+}
