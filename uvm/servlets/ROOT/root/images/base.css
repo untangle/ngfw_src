@@ -93,6 +93,13 @@ hr {
 .main-top-right, .main-mid-right {
     background-position: 100% 0;
 }
+.main-reduced {
+	width: 500px; 
+	margin: 50px auto 0 auto;
+}
+.main-reduced a b {
+	line-height: 30px;
+}
 .page_head {
 	height: 110px;
 }
@@ -117,3 +124,5 @@ hr {
     font: bold 14pt arial,sans-serif;
     color: #777;
 }
+
+

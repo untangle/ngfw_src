@@ -74,7 +74,7 @@ function showMessage() {
 <% } // if ( isIndex ) %>
 </head>
 <body>
-<div id="main" style="width: 500px; margin: 50px auto 0 auto;">
+<div id="main" class="main-reduced"> 
  <!-- Box Start -->
  <div class="main-top-left"></div><div class="main-top-right"></div><div class="main-mid-left"><div class="main-mid-right"><div class="main-mid">
  <!-- Content Start -->
