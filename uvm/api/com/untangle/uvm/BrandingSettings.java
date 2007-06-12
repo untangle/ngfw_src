@@ -25,7 +25,7 @@ import javax.persistence.Table;
  * @version 1.0
  */
 @Entity
-@Table(name="mvvm_branding_settings", schema="settings")
+@Table(name="uvm_branding_settings", schema="settings")
 public class BrandingSettings implements Serializable
 {
     private Long id;
