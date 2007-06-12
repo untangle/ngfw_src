@@ -46,7 +46,7 @@ fi
 version=${version}-1
 
 echo "Setting version to \"${version}\", distribution to \"$distribution\""
-dch -v ${version} -D ${distribution} "auto build"
+DEBEMAIL="${DEBEMAIL:-${USER}@untangle.com}" dch -v ${version} -D ${distribution} "auto build"
 echo " done."
 
 
