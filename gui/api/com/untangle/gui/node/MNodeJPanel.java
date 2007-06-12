@@ -24,10 +24,10 @@ import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.*;
 import com.untangle.gui.widgets.dialogs.*;
 import com.untangle.uvm.*;
+import com.untangle.uvm.node.*;
 import com.untangle.uvm.policy.*;
 import com.untangle.uvm.security.*;
 import com.untangle.uvm.toolbox.MackageDesc;
-import com.untangle.uvm.node.*;
 
 public class MNodeJPanel extends javax.swing.JPanel {
 
@@ -71,7 +71,7 @@ public class MNodeJPanel extends javax.swing.JPanel {
     protected void removeShutdownable(String shutdownableKey){ shutdownableMap.remove(shutdownableKey); }
 
     public static MNodeJPanel instantiate(NodeContext nodeContext, NodeDesc nodeDesc, Policy policy) throws Exception {
-        Class guiClass = Util.getClassLoader().loadClass( nodeDesc.getGuiClassName(), nodeDesc );
+        Class guiClass = Util.getClassLoader().mLoadClass( nodeDesc.getGuiClassName() );
         Constructor guiConstructor = guiClass.getConstructor( new Class[]{NodeContext.class, NodeDesc.class} );
         MNodeJPanel mNodeJPanel = (MNodeJPanel) guiConstructor.newInstance(new Object[]{nodeContext, nodeDesc});
         mNodeJPanel.setPolicy(policy);

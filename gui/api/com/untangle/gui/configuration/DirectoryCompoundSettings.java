@@ -11,24 +11,23 @@
 
 package com.untangle.gui.configuration;
 
-import javax.swing.JPanel;
-import java.util.List;
 import java.lang.reflect.Constructor;
-
-import org.apache.log4j.Logger;
+import java.util.List;
+import javax.swing.JPanel;
 
 import com.untangle.gui.node.CompoundSettings;
 import com.untangle.gui.util.Util;
 import com.untangle.uvm.addrbook.*;
 import com.untangle.uvm.user.WMISettings;
+import org.apache.log4j.Logger;
 
 
 public class DirectoryCompoundSettings implements CompoundSettings {
-    
-    
+
+
     private static final String DIRECTORY_JAR_NAME   = "charon";
     private final Logger logger = Logger.getLogger(getClass());
-    
+
     // ADDRESS BOOK SETTINGS //
     private AddressBookSettings addressBookSettings;
 
@@ -56,8 +55,8 @@ public class DirectoryCompoundSettings implements CompoundSettings {
     public JPanel getLocalJPanel(){ return localJPanel; }
     private JPanel adJPanel;
     public JPanel getRemoteADJPanel(){ return adJPanel; }
-    
-    
+
+
     public void save() throws Exception {
         addressBookSettings.setAddressBookConfiguration(addressBookConfiguration);
         Util.getAddressBook().setAddressBookSettings(addressBookSettings);
@@ -72,31 +71,31 @@ public class DirectoryCompoundSettings implements CompoundSettings {
         wmiSettings = Util.getPhoneBook().getWMISettings();
 
         if (localJPanel==null) {
-           try {
-                // LOCAL DIRECTORY ////////            
-                Class localJPanelClass = Util.getClassLoader().loadClass( "com.untangle.gui.configuration.DirectoryLocalJPanel", DIRECTORY_JAR_NAME );
+            try {
+                // LOCAL DIRECTORY ////////
+                Class localJPanelClass = Util.getClassLoader().mLoadClass( "com.untangle.gui.configuration.DirectoryLocalJPanel" );
                 Constructor localJPanelConstructor = localJPanelClass.getConstructor( new Class[]{} );
-                localJPanel = (JPanel) localJPanelConstructor.newInstance(new Object[]{});            
-           }
-           catch (Exception e) {
+                localJPanel = (JPanel) localJPanelConstructor.newInstance(new Object[]{});
+            }
+            catch (Exception e) {
                 logger.warn("Unable to load: Local Directory", e);
                 throw e;
-           }
+            }
         }
 
         if (adJPanel==null) {
-           try {
-                // REMOTE ACTIVE DIRECTORY ////////        
-                Class adJPanelClass = Util.getClassLoader().loadClass( "com.untangle.gui.configuration.DirectoryRemoteADJPanel", DIRECTORY_JAR_NAME );
+            try {
+                // REMOTE ACTIVE DIRECTORY ////////
+                Class adJPanelClass = Util.getClassLoader().mLoadClass( "com.untangle.gui.configuration.DirectoryRemoteADJPanel" );
                 Constructor adJPanelConstructor = adJPanelClass.getConstructor( new Class[]{} );
-                adJPanel = (JPanel) adJPanelConstructor.newInstance(new Object[]{});            
-           }
-           catch (Exception e) {
+                adJPanel = (JPanel) adJPanelConstructor.newInstance(new Object[]{});
+            }
+            catch (Exception e) {
                 logger.warn("Unable to load: Remote Directory", e);
                 throw e;
-           }
+            }
         }
- 
+
     }
 
     public void validate() throws Exception {

@@ -35,19 +35,19 @@ import javax.swing.*;
 import javax.swing.border.*;
 
 import com.untangle.gui.configuration.*;
+import com.untangle.gui.node.*;
 import com.untangle.gui.pipeline.*;
 import com.untangle.gui.store.*;
-import com.untangle.gui.node.*;
 import com.untangle.gui.upgrade.*;
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.dialogs.*;
 import com.untangle.gui.widgets.separator.Separator;
 import com.untangle.uvm.*;
 import com.untangle.uvm.client.*;
+import com.untangle.uvm.node.*;
 import com.untangle.uvm.policy.*;
 import com.untangle.uvm.security.*;
 import com.untangle.uvm.toolbox.*;
-import com.untangle.uvm.node.*;
 
 public class PolicyStateMachine implements ActionListener, Shutdownable {
 
@@ -1630,7 +1630,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
         }});
     }
     private MNodeJButton addToToolbox(final Policy policy, final MackageDesc mackageDesc,
-                                           final boolean isDeployed, final boolean doRevalidate){
+                                      final boolean isDeployed, final boolean doRevalidate){
         // ONLY UPDATE GUI MODELS IF THIS IS VISIBLE
         if( !isMackageVisible(mackageDesc) )
             return null;
@@ -1816,7 +1816,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                 nodeContext = Util.getNodeManager().nodeContext(casingInstances.get(0));
                 nodeDesc = nodeContext.getNodeDesc();
                 casingGuiClassName = nodeDesc.getGuiClassName();
-                casingGuiClass = Util.getClassLoader().loadClass( casingGuiClassName, nodeDesc );
+                casingGuiClass = Util.getClassLoader().mLoadClass( casingGuiClassName );
                 if(generateGuis){
                     casingGuiConstructor = casingGuiClass.getConstructor(new Class[]{});
                     mCasingJPanel = (MCasingJPanel) casingGuiConstructor.newInstance(new Object[]{});

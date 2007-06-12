@@ -12,8 +12,10 @@
 package com.untangle.gui.util;
 
 import java.net.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
-import com.untangle.uvm.node.NodeDesc;
 import org.apache.log4j.Logger;
 
 public class MURLClassLoader extends URLClassLoader {
@@ -26,20 +28,24 @@ public class MURLClassLoader extends URLClassLoader {
 
     // This now adds all mars for the node, including the base and
     // parents (if any)
-    private void addMarsFor(NodeDesc desc) {
+    private void addMarsFor() {
         Set<URL> urls = new HashSet<URL>(Arrays.asList(getURLs()));
 
         for (String s : Util.getToolboxManager().getWebstartResources()) {
-            URL mu = new URL(Util.getServerCodeBase().toString() + s);
+            try {
+                URL mu = new URL(Util.getServerCodeBase().toString() + s);
 
-            if (!urls.contains(mu)) {
-                addURL(mu);
-                urls.add(mu);
+                if (!urls.contains(mu)) {
+                    addURL(mu);
+                    urls.add(mu);
+                }
+            } catch (MalformedURLException exn) {
+                System.out.println("Bad url: " + exn);
             }
         }
     }
 
-    public synchronized Class loadClass(String className, NodeDesc nodeDesc){
+    public synchronized Class mLoadClass(String className){
 
         Class returnClass = null;
         //logger.debug("--> Trying to load class: " + className + " with mar: " + marName);
@@ -57,7 +63,7 @@ public class MURLClassLoader extends URLClassLoader {
 
         // try to dynamically load the class
         try{
-            this.addMarsFor(nodeDesc);
+            this.addMarsFor();
 
             //URL[] availableURLs = Util.getClassLoader().getURLs();
             //for(int i=0; i<availableURLs.length; i++)
@@ -76,39 +82,6 @@ public class MURLClassLoader extends URLClassLoader {
 
         return returnClass;
     }
-
-
-    public synchronized Class loadClass(String className, String jarName){
-
-        Class returnClass = null;
-        //logger.debug("--> Trying to load class: " + className + " with mar: " + marName);
-        // try to load the class as normal
-        try{
-            returnClass = this.loadClass(className);
-        } catch (ClassNotFoundException e) {
-            returnClass = null;
-        }
-        if(returnClass != null){
-            //logger.info("  |--> Loaded Class from Parent: " + returnClass.getClassLoader() );
-            return returnClass;
-        }
-
-
-        // try to dynamically load the class
-        try{
-            this.addMarIfNeeded(jarName);
-            returnClass = this.loadClass(className);
-
-        }
-        catch(Exception e){
-            //e.printStackTrace();
-            returnClass = null;
-        }
-
-        return returnClass;
-    }
-
-
 
 }
 

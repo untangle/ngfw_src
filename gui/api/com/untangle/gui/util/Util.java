@@ -28,8 +28,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.io.IOException;
-import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.net.*;
 import java.text.*;
@@ -37,7 +35,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
-import java.util.Vector;
 import javax.jnlp.*;
 import javax.swing.*;
 import javax.swing.event.CaretEvent;
@@ -46,28 +43,26 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.text.JTextComponent;
 
-import org.apache.log4j.Logger;
-
 import com.untangle.gui.login.*;
 import com.untangle.gui.main.MMainJFrame;
 import com.untangle.gui.main.PolicyStateMachine;
-import com.untangle.gui.pipeline.MPipelineJPanel;
-import com.untangle.gui.pipeline.MRackJPanel;
 import com.untangle.gui.node.CompoundSettings;
 import com.untangle.gui.node.SettingsChangedListener;
+import com.untangle.gui.pipeline.MPipelineJPanel;
+import com.untangle.gui.pipeline.MRackJPanel;
 import com.untangle.gui.widgets.editTable.*;
 import com.untangle.uvm.*;
 import com.untangle.uvm.addrbook.*;
-import com.untangle.uvm.node.RemoteIntfManager;
 import com.untangle.uvm.client.*;
 import com.untangle.uvm.logging.*;
 import com.untangle.uvm.networking.ping.PingManager;
+import com.untangle.uvm.node.*;
 import com.untangle.uvm.policy.*;
 import com.untangle.uvm.portal.RemotePortalManager;
 import com.untangle.uvm.security.*;
 import com.untangle.uvm.toolbox.ToolboxManager;
-import com.untangle.uvm.node.*;
 import com.untangle.uvm.user.RemotePhoneBook;
+import org.apache.log4j.Logger;
 
 
 public class Util {
@@ -292,7 +287,7 @@ public class Util {
     // CD //////////////////////
     private static boolean IS_CD = false;
     public static boolean getIsCD(){ return IS_CD; }
-    public static void setIsCD(boolean isCD){ IS_CD = isCD; }    
+    public static void setIsCD(boolean isCD){ IS_CD = isCD; }
     //////////////////////////////
 
 
@@ -423,7 +418,7 @@ public class Util {
     public static boolean isDevel() {
         return Boolean.getBoolean(PROPERTY_IS_DEVEL);
     }
-        
+
 
     // WINDOW PLACEMENT AND FORMATTING /////////
     public static GraphicsConfiguration getGraphicsConfiguration(){
@@ -850,7 +845,7 @@ public class Util {
         Node node = getNode(nodeName);
         if( node != null){
             NodeDesc nodeDesc = node.getNodeDesc();
-            Class nodeClass = Util.getClassLoader().loadClass(className, nodeDesc);
+            Class nodeClass = Util.getClassLoader().mLoadClass(className);
             Constructor nodeConstructor = nodeClass.getConstructor(new Class[]{});
             return nodeConstructor.newInstance();
         }

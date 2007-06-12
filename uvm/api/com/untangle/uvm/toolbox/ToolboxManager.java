@@ -145,5 +145,5 @@ public interface ToolboxManager
 
     UpgradeSettings getUpgradeSettings();
 
-    List<String> getWebstartResources()
+    List<String> getWebstartResources();
 }
