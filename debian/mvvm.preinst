@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# handle metavize -> untangle conversion
+tar -C /usr/share/metavize cf - . | tar -C /usr/share/untangle -xkf - 2> /dev/null
+
 # Kill any already-running reports (Bug 1249)
 killall update-reports rollup-logs 2>/dev/null
 

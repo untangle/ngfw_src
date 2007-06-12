@@ -2,15 +2,19 @@
 
 require 'net/smtp'
 
+# constants
 DEFAULT_DISTRIBUTION = "mustang"
 DEFAULT_COMPONENT = "upstream"
 DEFAULT_MAIL_RECIPIENTS = [ "rbscott@untangle.com", "seb@untangle.com" ]
+DEFAULT_SECTION = "utils"
+DEFAULT_PRIORITY = "normal"
 
 REP = "/var/www/untangle"
 INCOMING = "#{REP}/incoming"
 PROCESSED = "#{REP}/processed"
 FAILED = "#{PROCESSED}/failed"
 
+# global functions
 def email(recipients, subject, body)
   recipientsString = recipients.join(',')
   recipients.each { |r|
@@ -29,13 +33,17 @@ EOM
   }
 end
 
+# Custom exceptions
 class UploadFailure < Exception
 end
-
 class UploadFailureByPolicy < UploadFailure
 end
+class UploadFailureNoSection < UploadFailure
+end
+class UploadFailureNoPriority < UploadFailure
+end
 
-class DebianUpload
+class DebianUpload # Main base class
 
   @@doEmailSuccess = true
   @@doEmailFailure = true
@@ -69,6 +77,17 @@ class DebianUpload
     }
   end
 
+  def handleFailure(e)
+    # dumps error message on stdout, and possibly by email too
+    subject = "Upload of #{@name} failed (#{e.class})"
+    body = e.message
+    body += "\n" + e.backtrace.join("\n") if not e.is_a?(UploadFailure)
+    puts "#{subject}\n#{body}"
+    email(@emailRecipientsFailure,
+          subject,
+          body) if @@doEmailFailure      
+  end
+
   def addToRepository
     destination = FAILED
 
@@ -92,8 +111,13 @@ class DebianUpload
       # then try to actually add the package
       output = `#{@command} 2>&1`
       if $? != 0
-        output = "Something went wrong when adding #{@name}\n\n" + output
-        raise UploadFailureByPolicy.new(output)
+        if output =~ /No section was given for '#{@name}', skipping/ then
+          raise UploadFailureNoSection.new(output)
+        elsif output =~ /No priority was given for '#{@name}', skipping/ then
+          raise UploadFailureNoPriority.new(output)
+        else
+          raise UploadFailure.new("Something went wrong when adding #{@name}\n\n" + output)
+        end
       end
 
       destination = PROCESSED
@@ -102,16 +126,14 @@ class DebianUpload
             "Upload of #{@name} succeeded",
             to_s) if @@doEmailSuccess
 
-    rescue UploadFailureByPolicy => e
-      puts e.message
-      email(@emailRecipientsFailure,
-            "Upload of #{@name} failed",
-            e.message) if @@doEmailFailure      
+    rescue UploadFailureNoSection
+      @command = @command.gsub!(/\-V/, "-V --section #{DEFAULT_SECTION}")
+      retry
+    rescue UploadFailureNoPriority
+      @command = @command.gsub!(/\-V/, "-V --priority #{DEFAULT_PRIORITY}")
+      retry
     rescue Exception => e
-      puts e.message + "\n" + e.backtrace.join("\n")
-      email(@emailRecipientsFailure,
-            "Upload of #{@name} failed",
-            e.message + "\n" + e.backtrace.join("\n")) if @@doEmailFailure
+      handleFailure(e)
     ensure
       if @move
         @files.each { |file|
