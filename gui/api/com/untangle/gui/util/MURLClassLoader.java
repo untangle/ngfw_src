@@ -11,100 +11,33 @@
 
 package com.untangle.gui.util;
 
-import java.io.InputStream;
 import java.net.*;
-import java.util.List;
 
 import com.untangle.uvm.node.NodeDesc;
-
 import org.apache.log4j.Logger;
 
 public class MURLClassLoader extends URLClassLoader {
 
     private final Logger logger = Logger.getLogger(getClass());
-    
+
     public MURLClassLoader(ClassLoader parent){
         super( new URL[0], parent );
     }
 
-    private void addMarIfNeeded(String marName) {
-        try {
-            URL marURL = new URL(Util.getServerCodeBase().toString() + marName + "-gui.jar");
-            URL[] existingURLs = getURLs();
-            for (URL url : existingURLs)
-                if (url.equals(marURL))
-                    return;
-            //logger.debug("Adding " + marURL + " to class path");
-            addURL(marURL);
-        } catch(Exception e){
-            //logger.info("Couldn't do it:" + e.getMessage());
-            e.printStackTrace();
-            //logger.info("  |--> Couldn't add mar: " + marName);
+    // This now adds all mars for the node, including the base and
+    // parents (if any)
+    private void addMarsFor(NodeDesc desc) {
+        Set<URL> urls = new HashSet<URL>(Arrays.asList(getURLs()));
+
+        for (String s : Util.getToolboxManager().getWebstartResources()) {
+            URL mu = new URL(Util.getServerCodeBase().toString() + s);
+
+            if (!urls.contains(mu)) {
+                addURL(mu);
+                urls.add(mu);
+            }
         }
     }
-
-    // This now adds all mars for the node, including the base and parents (if any)
-    private void addMarsFor(NodeDesc desc) {
-        String main = desc.getName();
-        String base = desc.getNodeBase();
-        List<String> parents = desc.getParents();
-        if (parents != null)
-            for (String parent : parents)
-                addMarIfNeeded(parent);
-        if (base != null)
-            addMarIfNeeded(base);
-        addMarIfNeeded(main);
-    }
-
-    /*
-      public synchronized void addNewSimpleURL(URL newURL){
-      super.addURL(newURL);
-      logger.info("  |--> Added: " + newURL);
-      }
-
-      public Class loadClass(String className, boolean resolveClass){
-      synchronized(this){
-      Class returnClass = null;
-      logger.info("@ loadClass( " + className + " , " + resolveClass + " ) ");
-      try{
-      returnClass = super.loadClass(className, resolveClass);
-      }
-      catch(Exception e){
-      logger.info("  |--> Failed Load: " + className);
-      e.printStackTrace();
-      returnClass = null;
-      }
-
-      if(returnClass != null)
-      logger.info("  |--> Loaded: " + className);
-      else
-      logger.info("  |--> Failed Load: " + className);
-
-      return returnClass;
-      }
-      }
-
-      public URL getResource(String resourceName){
-      URL returnURL = null;
-      logger.info("@ getResource( " + resourceName + " )" + "  ContextClassLoader: " + Thread.currentThread().getContextClassLoader() );
-      try{
-      returnURL = super.getResource(resourceName);
-      }
-      catch(Exception e){
-      logger.info("  |--> Failed Load: " + resourceName);
-      returnURL = null;
-      }
-
-
-      if(returnURL != null)
-      logger.info("  |--> Loaded: " + resourceName);
-      else
-      logger.info("  |--> Failed Load: " + resourceName);
-
-
-      return returnURL;
-      }
-    */
 
     public synchronized Class loadClass(String className, NodeDesc nodeDesc){
 
@@ -165,7 +98,7 @@ public class MURLClassLoader extends URLClassLoader {
         try{
             this.addMarIfNeeded(jarName);
             returnClass = this.loadClass(className);
-            
+
         }
         catch(Exception e){
             //e.printStackTrace();
@@ -173,7 +106,7 @@ public class MURLClassLoader extends URLClassLoader {
         }
 
         return returnClass;
-    }    
+    }
 
 
 

@@ -144,4 +144,6 @@ public interface ToolboxManager
     void setUpgradeSettings(UpgradeSettings u);
 
     UpgradeSettings getUpgradeSettings();
+
+    List<String> getWebstartResources()
 }

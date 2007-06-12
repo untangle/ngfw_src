@@ -12,6 +12,7 @@
 package com.untangle.uvm.engine;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -473,6 +474,21 @@ class ToolboxManagerImpl implements ToolboxManager
         UvmContextFactory.context().runTransaction(tw);
 
         return tw.getResult();
+    }
+
+    public List<String> getWebstartResources()
+    {
+        List<String> resources = new ArrayList<String>();
+
+        String d = System.getProperty("bunnicula.web.dir") + "/webstart";
+        for (File f : new File(d).listFiles()) {
+            String s = f.getName();
+            if (s.endsWith(".jar")) {
+                resources.add(s);
+            }
+        }
+
+        return resources;
     }
 
     // package private methods ------------------------------------------------
