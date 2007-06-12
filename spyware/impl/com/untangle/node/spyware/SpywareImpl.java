@@ -28,6 +28,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 
+import com.untangle.node.http.UserWhitelistMode;
+import com.untangle.node.token.Header;
+import com.untangle.node.token.Token;
+import com.untangle.node.token.TokenAdaptor;
 import com.untangle.uvm.LocalAppServerManager;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.UvmLocalContext;
@@ -35,22 +39,18 @@ import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.EventLoggerFactory;
 import com.untangle.uvm.logging.EventManager;
 import com.untangle.uvm.logging.SimpleEventFilter;
+import com.untangle.uvm.node.IPMaddr;
+import com.untangle.uvm.node.IPMaddrRule;
+import com.untangle.uvm.node.NodeContext;
+import com.untangle.uvm.node.StringRule;
 import com.untangle.uvm.tapi.AbstractNode;
 import com.untangle.uvm.tapi.Affinity;
 import com.untangle.uvm.tapi.Fitting;
 import com.untangle.uvm.tapi.PipeSpec;
 import com.untangle.uvm.tapi.SoloPipeSpec;
 import com.untangle.uvm.tapi.TCPSession;
-import com.untangle.uvm.node.IPMaddr;
-import com.untangle.uvm.node.IPMaddrRule;
-import com.untangle.uvm.node.StringRule;
-import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.util.OutsideValve;
 import com.untangle.uvm.util.TransactionWork;
-import com.untangle.node.http.UserWhitelistMode;
-import com.untangle.node.token.Header;
-import com.untangle.node.token.Token;
-import com.untangle.node.token.TokenAdaptor;
 import org.apache.catalina.Valve;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
@@ -59,17 +59,17 @@ import org.hibernate.Session;
 public class SpywareImpl extends AbstractNode implements Spyware
 {
     private static final String ACTIVEX_LIST
-        = "com/untangle/tran/spyware/activex.txt";
+        = "com/untangle/node/spyware/activex.txt";
     private static final String ACTIVEX_DIFF_BASE
-        = "com/untangle/tran/spyware/activex-diff-";
+        = "com/untangle/node/spyware/activex-diff-";
     private static final String COOKIE_LIST
-        = "com/untangle/tran/spyware/cookie.txt";
+        = "com/untangle/node/spyware/cookie.txt";
     private static final String COOKIE_DIFF_BASE
-        = "com/untangle/tran/spyware/cookie-diff-";
+        = "com/untangle/node/spyware/cookie-diff-";
     private static final String SUBNET_LIST
-        = "com/untangle/tran/spyware/subnet.txt";
+        = "com/untangle/node/spyware/subnet.txt";
     private static final String SUBNET_DIFF_BASE
-        = "com/untangle/tran/spyware/subnet-diff-";
+        = "com/untangle/node/spyware/subnet-diff-";
 
     private final Logger logger = Logger.getLogger(getClass());
 
