@@ -92,8 +92,8 @@ public class UpgradeProcessJPanel extends JPanel
             int rowIndex = 0;
 
             for( MackageDesc mackageDesc : mackageDescs ){
-                if( mackageDesc.getType() == MackageDesc.CASING_TYPE ||
-                    mackageDesc.getType() == MackageDesc.NODE_BASE_TYPE)
+                if( mackageDesc.getType() == MackageDesc.Type.CASING ||
+                    mackageDesc.getType() == MackageDesc.Type.NODE)
                     continue;
                 try{
                     rowIndex++;
@@ -110,9 +110,9 @@ public class UpgradeProcessJPanel extends JPanel
 
                     tempRow.add( mackageDesc.getDisplayName() );
                     tempRow.add( mackageDesc.getAvailableVersion() );
-                    if( mackageDesc.getType() == MackageDesc.SYSTEM_TYPE )
+                    if( mackageDesc.getType() == MackageDesc.Type.LIBRARY )
                         tempRow.add( "System Component" );
-                    else if( mackageDesc.getType() == MackageDesc.NODE_TYPE )
+                    else if( mackageDesc.getType() == MackageDesc.Type.NODE )
                         tempRow.add( "Product" );
                     else
                         tempRow.add( "Unknown" );

@@ -26,10 +26,15 @@ public class MackageDesc implements Serializable
     public static final int UNKNOWN_POSITION = -1;
 
     /* XXX change to enum in 1.5 */
-    public static final int SYSTEM_TYPE = 0;
-    public static final int NODE_TYPE = 1;
-    public static final int CASING_TYPE = 2;
     public static final int NODE_BASE_TYPE = 3;
+
+    public enum Type {
+        NODE,
+        CASING,
+        LIBRARY,
+        BASE,
+        LIB_ITEM,
+    }
 
     public static final int RACK_TYPE_BUNDLE   = 0; // used for store positioning, not the actual rack
     public static final int RACK_TYPE_SERVICE  = 1;
@@ -40,7 +45,7 @@ public class MackageDesc implements Serializable
 
     private final String name;
     private final String displayName;
-    private final int type;
+    private final Type type;
     private final String installedVersion;
     private final String availableVersion;
     private final String shortDescription;
@@ -68,22 +73,19 @@ public class MackageDesc implements Serializable
         // XXX hack, use Mackage field instead.
         name = m.get("package");
         // XXX hack
+
+        String ut = m.get("untangle-type");
+        if (null == ut) {
+            type = null;
+        } else {
+            type = Type.valueOf(ut.toUpperCase());
+        }
+
         boolean isNode = name.endsWith("-node");
         boolean isCasing = name.endsWith("-casing");
         boolean isBase = name.endsWith("-base");
 
         displayName = m.get("display-name");
-
-        // XXX type
-        if (isNode) {
-            type = NODE_TYPE;
-        } else if (isCasing) {
-            type = CASING_TYPE;
-        } else if (isBase) {
-            type = NODE_BASE_TYPE;
-        } else {
-            type = SYSTEM_TYPE;
-        }
 
         // versions
         availableVersion = m.get("version");
@@ -195,7 +197,7 @@ public class MackageDesc implements Serializable
         return displayName;
     }
 
-    public int getType()
+    public Type getType()
     {
         return type;
     }

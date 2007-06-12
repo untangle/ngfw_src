@@ -33,8 +33,10 @@ import java.util.concurrent.TimeoutException;
 
 import com.untangle.uvm.CronJob;
 import com.untangle.uvm.MessageQueue;
-import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.Period;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.node.NodeContext;
+import com.untangle.uvm.node.NodeException;
 import com.untangle.uvm.security.LoginSession;
 import com.untangle.uvm.security.Tid;
 import com.untangle.uvm.tapi.NodeBase;
@@ -47,8 +49,6 @@ import com.untangle.uvm.toolbox.MackageUninstallException;
 import com.untangle.uvm.toolbox.ToolboxManager;
 import com.untangle.uvm.toolbox.ToolboxMessage;
 import com.untangle.uvm.toolbox.UpgradeSettings;
-import com.untangle.uvm.node.NodeContext;
-import com.untangle.uvm.node.NodeException;
 import com.untangle.uvm.util.TransactionWork;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
@@ -651,11 +651,13 @@ class ToolboxManagerImpl implements ToolboxManager
 
 
                 String name = m.get("package");
-                boolean isNode = name.endsWith("-node");
 
                 MackageState mState = mackageState.get(name);
                 String en = null == mState ? null : mState.getExtraName();
                 MackageDesc md = new MackageDesc(m, instList.get(name), en);
+                if (null == md.getType()) {
+                    continue;
+                }
 
                 logger.debug("Added available mackage: " + name);
                 pkgs.put(name, md);
