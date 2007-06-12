@@ -54,7 +54,6 @@ public class SchemaUtil
     public void initSchema(String type, String component)
     {
         String key = type + "," + component;
-        System.out.println("initSchema: " + key);
         synchronized (converts) {
             while (converts.contains(key)) {
                 try {
@@ -64,8 +63,6 @@ public class SchemaUtil
                 }
             }
         }
-
-        System.out.println("doing: " + key);
 
         try {
             ProcessBuilder pb = new ProcessBuilder("mvnice", "update-schema",
@@ -97,7 +94,5 @@ public class SchemaUtil
                 converts.notifyAll();
             }
         }
-
-        System.out.println("done: " + key);
     }
 }
