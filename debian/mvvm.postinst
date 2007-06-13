@@ -95,3 +95,6 @@ find /usr/share/metavize/web/webstart 2>/dev/null | xargs touch > /dev/null 2>&1
 # delete old files
 rm -f /etc/default/bunnicula
 
+# FIXME: uncomment the next line when metavize -> untangle is in effect
+# (the conversion happens in preinst)
+# rm -fr /usr/share/metavize

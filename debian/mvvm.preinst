@@ -1,7 +1,23 @@
 #!/bin/sh
 
 # handle metavize -> untangle conversion
-tar -C /usr/share/metavize cf - . | tar -C /usr/share/untangle -xkf - 2> /dev/null
+oldShare="/usr/share/metavize"
+newShare="/usr/share/untangle"
+backup="mv.tar"
+tmpBackup="/tmp/$backup"
+finalBackup="${newShare}/$backup"
+
+if [ -d $oldShare ] ; then
+  tar -C $oldShare \
+      --exclude="autodump" \
+      --exclude="reports" \
+      --exclude="db" -cf $tmpBackup .
+
+  mkdir -p $newShare
+  tar -C $newShare -xf $tmpBackup
+  mv $tmpBackup $finalBackup
+  gzip -9 $finalBackup
+fi
 
 # Kill any already-running reports (Bug 1249)
 killall update-reports rollup-logs 2>/dev/null
