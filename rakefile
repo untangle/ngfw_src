@@ -26,7 +26,7 @@ task :kindaclean do
   Rake::StampHash.instance.clear
 end
 
-task :build => [BuildEnv::SRC['uvm'], BuildEnv::SRC['untangle-client'], BuildEnv::SRC['tran']]
+task :build => [BuildEnv::SRC['uvm'], BuildEnv::SRC['untangle-client']
 
 task :devel => [BuildEnv::SRC['install'], BuildEnv::SRC.installTarget]
 

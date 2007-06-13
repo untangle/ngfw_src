@@ -9,5 +9,5 @@ NodeBuilder.makeNode(BuildEnv::SRC, 'webfilter',
 deps = [webfilter['gui'], http['gui']]
 
 ServletBuilder.new(webfilter, 'com.untangle.node.webfilter.jsp',
-                   "#{SRC_HOME}/tran/webfilter/servlets/webfilter", [],
+                   "#{SRC_HOME}/node/webfilter/servlets/webfilter", [],
                    deps, [], [BuildEnv::SERVLET_COMMON])

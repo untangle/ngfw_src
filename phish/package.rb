@@ -13,5 +13,5 @@ NodeBuilder.makeNode(BuildEnv::SRC, 'phish',
 deps = [http['gui'], phish['gui'], spam['gui']]
 
 ServletBuilder.new(phish, 'com.untangle.node.phish.jsp',
-                   "#{SRC_HOME}/tran/phish/servlets/idblocker", [],
+                   "#{SRC_HOME}/node/phish/servlets/idblocker", [],
                    deps, [], [BuildEnv::SERVLET_COMMON])
