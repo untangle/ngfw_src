@@ -20,8 +20,8 @@ fi
 
 # get 2 values from SVN: last changed revision & timestamp for the
 # current directory
-revision=`svn info . | awk '/Last Changed Rev: / { print $4 }'`
-timestamp=`svn info . | awk '/Last Changed Date: / { gsub(/-/, "", $4) ; print $4 }'`
+revision=`svn info --recursive . | awk '/Last Changed Rev: / { print $4 }' | sort | tail -1`
+timestamp=`svn info --recursive . | awk '/Last Changed Date:/ { gsub(/-/, "", $4) ; print $4 }' | sort | tail -1`
 
 # this is how we figure out if we're up-to-date or not
 hasLocalChanges=`svn status | grep -v -E '^([X?]|Fetching external item into|Performing status on external item at|$)'`
