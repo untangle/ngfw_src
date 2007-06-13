@@ -517,6 +517,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                 }
             }
             catch(Exception e){
+                e.printStackTrace();
                 try{ Util.handleExceptionWithRestart("Error moving from toolbox to rack", e); }
                 catch(Exception f){
                     Util.handleExceptionNoRestart("Error moving from toolbox to rack", f);
