@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.license.ProductIdentifier;
 import com.untangle.uvm.policy.LocalPolicyManager;
 import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.policy.PolicyConfiguration;
@@ -390,5 +391,10 @@ class DefaultPolicyManager implements LocalPolicyManager
     public SystemPolicyRule[] getSystemRules()
     {
         return sysRules;
+    }
+
+    public String productIdentifier()
+    {
+        return ProductIdentifier.POLICY_MANAGER;
     }
 }

@@ -91,4 +91,9 @@ class RemotePolicyManagerAdaptor implements PolicyManager
     {
         pm.setPolicyConfiguration(pc);
     }
+
+    public String productIdentifier()
+    {
+        return pm.productIdentifier();
+    }
 }

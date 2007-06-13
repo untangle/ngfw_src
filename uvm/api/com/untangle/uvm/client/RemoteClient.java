@@ -232,6 +232,8 @@ public class RemoteClient
             String[] pwArgs = new String[args.length - 1];
             System.arraycopy(args, 1, pwArgs, 0, pwArgs.length);
             doPasswd(pwArgs);
+        } else if (args[0].equalsIgnoreCase("reloadLicenses")) {
+            doReloadLicenses();
         } else {
             System.out.print("dont know: ");
             for (int i = 0; i < args.length; i++) {
@@ -946,6 +948,11 @@ public class RemoteClient
     private static void updateAddress() throws Exception
     {
         mc.networkManager().updateAddress();
+    }
+
+    private static void doReloadLicenses()
+    {
+        mc.licenseManager().reloadLicenses();
     }
 
     // helper functions -------------------------------------------------------

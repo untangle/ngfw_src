@@ -13,7 +13,9 @@ package com.untangle.uvm.policy;
 
 import  java.util.List;
 
-public interface PolicyManager
+import com.untangle.uvm.license.LicensedProduct;
+
+public interface PolicyManager extends LicensedProduct
 {
     /**
      * Returns all policies.  Don't count on the return order, it will

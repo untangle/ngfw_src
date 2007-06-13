@@ -19,6 +19,7 @@ import com.untangle.uvm.NetworkManager;
 import com.untangle.uvm.RemoteAppServerManager;
 import com.untangle.uvm.ReportingManager;
 import com.untangle.uvm.addrbook.AddressBook;
+import com.untangle.uvm.license.RemoteLicenseManager;
 import com.untangle.uvm.logging.LoggingManager;
 import com.untangle.uvm.networking.ping.PingManager;
 import com.untangle.uvm.policy.PolicyManager;
@@ -141,6 +142,13 @@ public interface UvmRemoteContext
      * @return the BrandingManager.
      */
     BrandingManager brandingManager();
+    
+    /**
+     * The license manager.
+     *
+     * @return the RemoteLicenseManager
+     */
+    RemoteLicenseManager licenseManager();
 
     /**
      * Save settings to local hard drive.

@@ -33,4 +33,9 @@ public class RemotePhoneBookImpl implements RemotePhoneBook
     {
         local.setWMISettings( settings );
     }
+
+    public String productIdentifier()
+    {
+        return local.productIdentifier();
+    }
 }

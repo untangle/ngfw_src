@@ -13,7 +13,9 @@ package com.untangle.uvm.policy;
 
 import java.util.List;
 
-public interface LocalPolicyManager
+import com.untangle.uvm.license.LicensedProduct;
+
+public interface LocalPolicyManager extends LicensedProduct
 {
     /**
      * @see PolicyManager#getPolicies()

@@ -22,6 +22,7 @@ import com.untangle.uvm.CronJob;
 import com.untangle.uvm.LocalBrandingManager;
 import com.untangle.uvm.UvmLocalContext;
 import com.untangle.uvm.UvmState;
+import com.untangle.uvm.UvmException;
 import com.untangle.uvm.Period;
 import com.untangle.uvm.addrbook.AddressBook;
 import com.untangle.uvm.node.RemoteIntfManager;
@@ -49,6 +50,9 @@ import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.user.LocalPhoneBook;
 import com.untangle.uvm.user.PhoneBookFactory;
 import com.untangle.uvm.user.RemotePhoneBook;
+import com.untangle.uvm.license.LicenseManagerFactory;
+import com.untangle.uvm.license.LocalLicenseManager;
+import com.untangle.uvm.license.RemoteLicenseManager;
 import com.untangle.uvm.util.TransactionRunner;
 import com.untangle.uvm.util.TransactionWork;
 import org.apache.log4j.Logger;
@@ -106,6 +110,7 @@ public class UvmContextImpl extends UvmContextBase
     private LocalBrandingManager localBrandingManager;
     private PhoneBookFactory phoneBookFactory;
     private BasePortalManager portalManager;
+    private LicenseManagerFactory licenseManagerFactory;
     private TomcatManager tomcatManager;
     private HeapMonitor heapMonitor;
 
@@ -288,6 +293,17 @@ public class UvmContextImpl extends UvmContextBase
     {
         return this.remoteShieldManager;
     }
+
+    public RemoteLicenseManager remoteLicenseManager()
+    {
+        return this.licenseManagerFactory.getRemoteLicenseManager();
+    }
+
+    public LocalLicenseManager localLicenseManager() throws UvmException
+    {
+        return this.licenseManagerFactory.getLocalLicenseManager();
+    }
+
 
     public MPipeManagerImpl mPipeManager()
     {
@@ -640,6 +656,8 @@ public class UvmContextImpl extends UvmContextBase
 
         appServerManager = new AppServerManagerImpl(this);
         remoteAppServerManager = new RemoteAppServerManagerImpl(appServerManager);
+
+        licenseManagerFactory = LicenseManagerFactory.makeInstance();
 
         // start vectoring:
         String argonFake = System.getProperty(ARGON_FAKE_KEY);

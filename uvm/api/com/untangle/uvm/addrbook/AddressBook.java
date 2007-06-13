@@ -16,6 +16,8 @@ import javax.naming.NameAlreadyBoundException;
 import javax.naming.NameNotFoundException;
 import javax.naming.ServiceUnavailableException;
 
+import com.untangle.uvm.license.LicensedProduct;
+
 /**
  * Interface for an "AddressBook", which acts as both
  * an authentication service and a directory.
@@ -29,7 +31,7 @@ import javax.naming.ServiceUnavailableException;
  *
  *
  */
-public interface AddressBook
+public interface AddressBook extends LicensedProduct
 {
     /**
      * Get the AddressBookSettings of this address book.

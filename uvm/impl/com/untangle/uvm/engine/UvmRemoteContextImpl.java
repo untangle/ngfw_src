@@ -23,6 +23,7 @@ import com.untangle.uvm.addrbook.AddressBook;
 import com.untangle.uvm.node.RemoteIntfManager;
 import com.untangle.uvm.node.RemoteShieldManager;
 import com.untangle.uvm.client.UvmRemoteContext;
+import com.untangle.uvm.license.RemoteLicenseManager;
 import com.untangle.uvm.logging.LoggingManager;
 import com.untangle.uvm.networking.ping.PingManager;
 import com.untangle.uvm.policy.PolicyManager;
@@ -63,6 +64,7 @@ class UvmRemoteContextImpl implements UvmRemoteContext
     {
         return context.remotePolicyManager();
     }
+
 
     public AdminManager adminManager()
     {
@@ -122,6 +124,11 @@ class UvmRemoteContextImpl implements UvmRemoteContext
     public BrandingManager brandingManager()
     {
         return context.brandingManager();
+    }
+
+    public RemoteLicenseManager licenseManager()
+    {
+        return context.remoteLicenseManager();
     }
 
     public void localBackup() throws IOException

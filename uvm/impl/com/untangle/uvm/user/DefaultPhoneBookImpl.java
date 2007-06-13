@@ -13,6 +13,7 @@ package com.untangle.uvm.user;
 
 import java.net.InetAddress;
 
+import com.untangle.uvm.license.ProductIdentifier;
 import com.untangle.uvm.node.ValidateException;
 import com.untangle.node.util.MVLogger;
 
@@ -73,6 +74,11 @@ class DefaultPhoneBookImpl implements LocalPhoneBook
     public void destroy()
     {
         logger.debug( "ignoring init." );
+    }
+
+    public String productIdentifier()
+    {
+        return ProductIdentifier.PHONE_BOOK;
     }
 
     /* ----------------- Package ----------------- */

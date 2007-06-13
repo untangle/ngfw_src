@@ -14,9 +14,12 @@ package com.untangle.uvm;
 import java.io.File;
 import java.io.IOException;
 
+import com.untangle.uvm.UvmException;
 import com.untangle.uvm.addrbook.AddressBook;
 import com.untangle.uvm.localapi.LocalIntfManager;
 import com.untangle.uvm.localapi.LocalShieldManager;
+import com.untangle.uvm.license.RemoteLicenseManager;
+import com.untangle.uvm.license.LocalLicenseManager;
 import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.LoggingManager;
 import com.untangle.uvm.logging.SyslogManager;
@@ -149,6 +152,20 @@ public interface UvmLocalContext
      * @return the singleton
      */
     RemotePhoneBook remotePhoneBook();
+    
+    /**
+     * The license manager.
+     *
+     * @return the RemoteLicenseManager
+     */
+    RemoteLicenseManager remoteLicenseManager();
+    
+    /**
+     * The license manager.
+     *
+     * @return the LocalLicenseManager
+     */
+    LocalLicenseManager localLicenseManager() throws UvmException;
 
     /**
      * Save settings to local hard drive.

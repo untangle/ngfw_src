@@ -222,6 +222,11 @@ public class RemoteAddressBookImpl implements AddressBook {
         throws ServiceUnavailableException, NameNotFoundException {
         this.addressBook.updateLocalPassword(uid,newPassword);
     }
+
+    public String productIdentifier()
+    {
+        return this.addressBook.productIdentifier();
+    }
 }
 
 

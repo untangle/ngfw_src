@@ -26,6 +26,8 @@ import com.untangle.uvm.addrbook.NoSuchEmailException;
 import com.untangle.uvm.addrbook.RepositorySettings;
 import com.untangle.uvm.addrbook.RepositoryType;
 import com.untangle.uvm.addrbook.UserEntry;
+import com.untangle.uvm.license.ProductIdentifier;
+
 
 /**
  * Concrete implementation of the AddressBook.  Note that this class
@@ -256,6 +258,11 @@ public class DefaultAddressBookImpl implements AddressBook {
     public void updateLocalPassword(String uid, String newPassword)
         throws ServiceUnavailableException, NameNotFoundException {
         m_logger.info("ignoring updateLocalPassword");
+    }
+
+    public String productIdentifier()
+    {
+        return ProductIdentifier.ADDRESS_BOOK;
     }
 }
 
