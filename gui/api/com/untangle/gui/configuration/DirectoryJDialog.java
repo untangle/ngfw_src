@@ -31,8 +31,6 @@ import org.apache.log4j.Logger;
 
 public class DirectoryJDialog extends MConfigJDialog {
 
-    private static final String DIRECTORY_JAR_NAME  = "charon";
-
     private static final String NAME_DIRECTORY_CONFIG  = "User Directory Config";
     private static final String NAME_LOCAL_DIRECTORY   = "Local Directory";
     private static final String NAME_REMOTE_ACTIVE_DIRECTORY   = "Remote Active Directory (AD) Server";

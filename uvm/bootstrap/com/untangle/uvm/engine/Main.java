@@ -205,9 +205,17 @@ public class Main
         urls.add(new URL("file://" + bunniculaLib + "/jvector-impl/"));
         urls.add(new URL("file://" + bunniculaLib + "/jnetcap-impl/"));
 
-        String charonFilename = bunniculaLib + "/charon-impl/";
-        if (new File(charonFilename).exists()) {
-            urls.add(new URL("file://" + charonFilename));
+        String rupFilename = bunniculaLib + "/rupuvm-impl/";
+        if (new File(rupFilename).exists()) {
+            urls.add(new URL("file://" + rupFilename));
+        }
+        rupFilename = bunniculaLib + "/rupuvm-api/";
+        if (new File(rupFilename).exists()) {
+            urls.add(new URL("file://" + rupFilename));
+        }
+        rupFilename = bunniculaLib + "/rupuvm-localapi/";
+        if (new File(rupFilename).exists()) {
+            urls.add(new URL("file://" + rupFilename));
         }
 
         String bunniculaToolbox = System.getProperty("bunnicula.toolbox.dir");

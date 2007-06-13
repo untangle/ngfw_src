@@ -25,7 +25,6 @@ import org.apache.log4j.Logger;
 public class DirectoryCompoundSettings implements CompoundSettings {
 
 
-    private static final String DIRECTORY_JAR_NAME   = "charon";
     private final Logger logger = Logger.getLogger(getClass());
 
     // ADDRESS BOOK SETTINGS //
