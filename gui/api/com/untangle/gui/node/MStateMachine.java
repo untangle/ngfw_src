@@ -110,7 +110,7 @@ public class MStateMachine implements java.awt.event.ActionListener {
                     }
                 }
                 else{
-                    if( nodeName.equals("nat-node") ){
+                    if( nodeName.equals("router-node") ){
                         if( (new PowerProceedDialog(displayName, powerJToggleButton.isSelected())).isProceeding() ){
                             new PowerThread();
                         }
