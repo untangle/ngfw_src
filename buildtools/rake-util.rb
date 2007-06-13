@@ -481,7 +481,7 @@ class InstallTarget < Target
 end
 
 BuildEnv::SRC = BuildEnv.new(SRC_HOME, 'src')
-%w(uvm untangle-client).each do |d|
+%w(node uvm untangle-client).each do |d|
   BuildEnv::SRC.installTarget.registerDependency(BuildEnv::SRC[d]);
 end
 
