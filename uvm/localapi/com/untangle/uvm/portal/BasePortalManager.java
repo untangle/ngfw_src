@@ -25,5 +25,7 @@ public interface BasePortalManager
 
     boolean isLive(Principal p);
 
+    String getUid(Principal p);
+
     void destroy();
 }

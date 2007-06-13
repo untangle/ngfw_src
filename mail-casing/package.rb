@@ -7,5 +7,5 @@ mail = BuildEnv::SRC['mail-casing']
 jt = [mail['localapi']]
 
 ServletBuilder.new(mail, 'com.untangle.node.mail.quarantine.jsp',
-                   "#{SRC_HOME}/node/mail-casing/servlets/quarantine", [], jt)
+                   "#{SRC_HOME}/mail-casing/servlets/quarantine", [], jt)
 

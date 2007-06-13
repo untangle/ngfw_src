@@ -12,6 +12,7 @@ package com.untangle.node.mail.web.euv;
 
 import java.io.IOException;
 import java.util.HashSet;
+import java.security.Principal;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -21,8 +22,6 @@ import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.UvmLocalContext;
 import com.untangle.uvm.addrbook.AddressBook;
 import com.untangle.uvm.addrbook.UserEntry;
-import com.untangle.uvm.portal.PortalLogin;
-import com.untangle.uvm.portal.PortalUser;
 import com.untangle.node.mail.papi.quarantine.BadTokenException;
 import com.untangle.node.mail.papi.quarantine.InboxIndex;
 import com.untangle.node.mail.papi.quarantine.InboxRecord;
@@ -93,13 +92,16 @@ public abstract class MaintenenceControlerBase extends HttpServlet {
         try {
             //Attempt to decrypt their token
             if (authTkn.equals("PU")) {
-                PortalLogin pl = (PortalLogin)req.getUserPrincipal();
+                Principal pl = req.getUserPrincipal();
                 if (null != pl) {
                     UvmLocalContext mctx = UvmContextFactory.context();
                     AddressBook ab = mctx.appAddressBook();
-                    UserEntry ue = ab.getEntry(pl.getUser());
-                    if (null != ue) {
-                        account = ue.getEmail();
+                    String user = mctx.portalManager().getUid(pl);
+                    if (user != null) {
+                        UserEntry ue = ab.getEntry(user);
+                        if (null != ue) {
+                            account = ue.getEmail();
+                        }
                     }
                 }
 

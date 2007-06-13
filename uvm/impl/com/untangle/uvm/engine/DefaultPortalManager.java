@@ -78,6 +78,11 @@ class DefaultPortalManager implements BasePortalManager
         return false;
     }
 
+    public String getUid(Principal p)
+    {
+        return null;
+    }
+
     public void destroy()
     {
     }

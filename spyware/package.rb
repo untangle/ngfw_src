@@ -9,5 +9,5 @@ NodeBuilder.makeNode(BuildEnv::SRC, 'spyware', [http["localapi"]],
 deps = [spyware['gui'], http['gui']]
 
 ServletBuilder.new(spyware, 'com.untangle.node.spyware.jsp',
-                   "#{SRC_HOME}/node/spyware/servlets/spyware", [], deps,
+                   "#{SRC_HOME}/spyware/servlets/spyware", [], deps,
                    [], [BuildEnv::SERVLET_COMMON])
