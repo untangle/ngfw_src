@@ -481,7 +481,7 @@ class InstallTarget < Target
 end
 
 BuildEnv::SRC = BuildEnv.new(SRC_HOME, 'src')
-%w(uvm untangle-client tran).each do |d|
+%w(uvm untangle-client).each do |d|
   BuildEnv::SRC.installTarget.registerDependency(BuildEnv::SRC[d]);
 end
 
@@ -562,11 +562,11 @@ class ServletBuilder < Target
     "#{BuildEnv::DOWNLOADS}/#{n}"
   } + ["#{BuildEnv::JAVA_HOME}/lib/tools.jar"];
 
-  def initialize(package, pkgname, path, libdeps = [], trandeps = [], ms = [],
+  def initialize(package, pkgname, path, libdeps = [], nodedeps = [], ms = [],
                  common = [BuildEnv::SERVLET_COMMON], jsp_list = nil)
     @pkgname = pkgname
     @path = path
-    @trandeps = trandeps
+    @nodedeps = nodedeps
     @jsp_list = Set.new(jsp_list)
     name = File.basename(path)
     @destRoot = package.getWebappDir(name)
@@ -603,7 +603,7 @@ class ServletBuilder < Target
     end
     uvm = BuildEnv::SRC['uvm']
 
-    jardeps = libdeps + @trandeps + Jars::Base + FileList["#{@destRoot}/WEB-INF/lib/*.jar"]
+    jardeps = libdeps + @nodedeps + Jars::Base + FileList["#{@destRoot}/WEB-INF/lib/*.jar"]
     jardeps << uvm["api"] << uvm["localapi"]
 
     # XXX make name nil?
@@ -628,7 +628,7 @@ class ServletBuilder < Target
     webfrag.close
 
     uvm = BuildEnv::SRC['uvm']
-    cp = @trandeps.map { |j| j.filename } +
+    cp = @nodedeps.map { |j| j.filename } +
       JspcClassPath + Jars::Base.map { |j| j.filename } +
       [uvm["api"], uvm["localapi"]].map { |t| t.filename } +
       Jars::Base.map {|f| f.filename }

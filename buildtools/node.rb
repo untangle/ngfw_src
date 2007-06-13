@@ -39,7 +39,7 @@ class NodeBuilder
       dirName = "#{name}-#{suffix}"
     end
     node = buildEnv["#{name}-#{suffix}"]
-    buildEnv['tran'].registerTarget("#{name}-#{suffix}", node)
+    buildEnv['node'].registerTarget("#{name}-#{suffix}", node)
 
     localApiJar = nil
 
