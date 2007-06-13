@@ -207,8 +207,9 @@ file uvm_cacerts => [ java_cacerts, mv_ca, ut_ca ] do
 end
 
 if BuildEnv::SRC.isDevel
-  BuildEnv::SRC.installTarget.installFiles('debian/control', "#{uvm.distDirectory}/tmp",
-                                           'pkg-list')
+  BuildEnv::SRC.installTarget.installFiles("#{SRC_HOME}/debian/control",
+                                           "#{uvm.distDirectory}/tmp",
+                                           'pkg-list-main')
 
   activationKey = "#{uvm.distDirectory}/usr/share/untangle/activation.key"
 

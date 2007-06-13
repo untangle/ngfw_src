@@ -144,7 +144,7 @@ if [ -z $prefix ] ; then
 else
     # invoked in development environment
     if [ "$1" = "installed" ] ; then
-        cat $pkglist | awk ' /^Package: / { print $2 " 10.0" } '
+        cat $pkglist* | awk ' /^Package: / { print $2 " 10.0" } '
     elif [ "$1" = "install" ] ; then
         aptlog "start $stamp"
         echo "END PACKAGE LIST" >>$APT_LOG
@@ -158,7 +158,7 @@ else
     elif [ "$1" = "remove" ] ; then
         echo "remove not supported in build environment"
     elif [ "$1" = "available" ] ; then
-        cat $pkglist | sed -e 's/^XB-//' \
+        cat $pkglist* | sed -e 's/^XB-//' \
             | awk '{ print $0 }; /^Package: / { print "Version: 10.0" }'
     fi
 fi
