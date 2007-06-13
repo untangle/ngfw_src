@@ -3,6 +3,7 @@
 jnetcap = BuildEnv::SRC['jnetcap']
 jvector = BuildEnv::SRC['jvector']
 uvm = BuildEnv::SRC['uvm']
+BuildEnv::SRC.installTarget.registerDependency(uvm)
 
 jts = []
 

@@ -2,6 +2,7 @@
 
 uvm = BuildEnv::SRC['uvm']
 gui = BuildEnv::SRC['untangle-client']
+BuildEnv::SRC.installTarget.registerDependency(gui)
 
 class MiniInstallTarget < InstallTarget
   def to_s

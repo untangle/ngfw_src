@@ -39,6 +39,7 @@ class NodeBuilder
       dirName = "#{name}-#{suffix}"
     end
     node = buildEnv["#{name}-#{suffix}"]
+    buildEnv.installTarget.registerDependency(node)
     buildEnv['node'].registerTarget("#{name}-#{suffix}", node)
 
     localApiJar = nil
