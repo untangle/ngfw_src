@@ -1,4 +1,4 @@
 # -*-ruby-*-
 
 NodeBuilder.makeNode(BuildEnv::SRC, 'router',
-                     [BuildEnv::SRC['untangle-casing-ftp']['localapi']])
+                     [BuildEnv::SRC['ftp-casing']['localapi']])

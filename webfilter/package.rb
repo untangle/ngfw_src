@@ -1,6 +1,6 @@
 # -*-ruby-*-
 
-http = BuildEnv::SRC['untangle-casing-http']
+http = BuildEnv::SRC['http-casing']
 webfilter = BuildEnv::SRC['webfilter-node']
 
 NodeBuilder.makeNode(BuildEnv::SRC, 'webfilter',
@@ -9,5 +9,5 @@ NodeBuilder.makeNode(BuildEnv::SRC, 'webfilter',
 deps = [webfilter['gui'], http['gui']]
 
 ServletBuilder.new(webfilter, 'com.untangle.node.webfilter.jsp',
-                   "#{SRC_HOME}/webfilter/servlets/webfilter", [],
+                   "#{SRC_HOME}/tran/webfilter/servlets/webfilter", [],
                    deps, [], [BuildEnv::SERVLET_COMMON])

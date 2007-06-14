@@ -1,7 +1,7 @@
 # -*-ruby-*-
 
-mail = BuildEnv::SRC['untangle-casing-mail']
-http = BuildEnv::SRC['untangle-casing-http']
+mail = BuildEnv::SRC['mail-casing']
+http = BuildEnv::SRC['http-casing']
 spam = BuildEnv::SRC['spam-base']
 phish = BuildEnv::SRC['phish-node']
 
@@ -13,5 +13,5 @@ NodeBuilder.makeNode(BuildEnv::SRC, 'phish',
 deps = [http['gui'], phish['gui'], spam['gui']]
 
 ServletBuilder.new(phish, 'com.untangle.node.phish.jsp',
-                   "#{SRC_HOME}/phish/servlets/idblocker", [],
+                   "#{SRC_HOME}/tran/phish/servlets/idblocker", [],
                    deps, [], [BuildEnv::SERVLET_COMMON])
