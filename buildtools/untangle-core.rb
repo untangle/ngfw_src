@@ -88,7 +88,7 @@ end
 
 BuildEnv::SRC['uvm']['impl'].registerDependency(libuntanglecore_so)
 
-BuildEnv::SRC.installTarget.installFiles(libuntanglecore_so, "#{BuildEnv::SRC['libuntanglecore'].distDirectory}/usr/lib/uvm")
+BuildEnv::SRC.installTarget.installFiles(libuntanglecore_so, "#{BuildEnv::SRC['untangle-libuntanglecore'].distDirectory}/usr/lib/uvm")
 
 # DO IT!
 #graphViz('foo.dot')
