@@ -588,7 +588,7 @@ class ToolboxManagerImpl implements ToolboxManager
             } else {
                 instList.add(md);
 
-                if (md.getName().endsWith("-storeitem")) {
+                if (md.getName().endsWith("-libitem")) {
                     // store items always up to date
                     curList.add(md);
                 } else {

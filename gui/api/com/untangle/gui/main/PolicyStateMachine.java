@@ -52,8 +52,8 @@ import com.untangle.uvm.toolbox.*;
 public class PolicyStateMachine implements ActionListener, Shutdownable {
 
     // FOR REMOVING TRIALS FROM STORE WHEN ITEM IS PURCHASED
-    private final String STOREITEM_EXTENSION = "storeitem";
-    private final String TRIAL_EXTENSION     = "trial30-storeitem";
+    private final String STOREITEM_EXTENSION = "libitem";
+    private final String TRIAL_EXTENSION     = "trial30-libitem";
     // UVM DATA MODELS (USED ONLY DURING INIT) //////
     private List<Tid>                       utilTidList;
     private Map<String,Object>              utilNameMap;
@@ -803,7 +803,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                 MackageDesc[] originalInstalledMackages = Util.getToolboxManager().installed(); // for use later
                 String installName = mNodeJButton.getName();
                 if(mNodeJButton.getIsTrial()){
-                    installName = installName.replace("-storeitem", "-trial30-storeitem");
+                    installName = installName.replace("-libitem", "-trial30-libitem");
                 }
                 long key = Util.getToolboxManager().install(installName);
                 com.untangle.gui.util.Visitor visitor = new com.untangle.gui.util.Visitor(mNodeJButton);
@@ -1838,13 +1838,13 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
             return true;
     }
     private boolean isMackageStoreItem(MackageDesc mackageDesc){
-        if( mackageDesc.getName().endsWith("-storeitem") )
+        if( mackageDesc.getName().endsWith("-libitem") )
             return true;
         else
             return false;
     }
     private boolean isMackageTrial(MackageDesc mackageDesc){
-        if( mackageDesc.getName().endsWith("-trial30-storeitem") )
+        if( mackageDesc.getName().endsWith("-trial30-libitem") )
             return true;
         else if( (mackageDesc.getExtraName()!=null) && (mackageDesc.getExtraName().contains("Trial")) )
             return true;
@@ -1881,7 +1881,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                 return;
             try{
                 String authNonce = Util.getAdminManager().generateAuthNonce();
-                URL newURL = new URL( Util.getServerCodeBase(), "../onlinestore/storeitem.php?name="
+                URL newURL = new URL( Util.getServerCodeBase(), "../onlinestore/libitem.php?name="
                                       + mNodeJButton.getName() + "&" + authNonce);
                 ((BasicService) ServiceManager.lookup("javax.jnlp.BasicService")).showDocument(newURL);
             }

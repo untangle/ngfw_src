@@ -188,7 +188,7 @@ public class MNodeJButton extends JButton {
     public String getName(){
         String name = mackageDesc.getName();
         //if(isTrial)
-        //    name = name.replace("-storeitem", "-trial30-storeitem");
+        //    name = name.replace("-libitem", "-trial30-libitem");
         return name;
     }
     public String getDisplayName(){
