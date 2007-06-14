@@ -1,3 +1,0 @@
-$Id: amrtodo.txt,v 1.11 2005/02/25 00:31:39 amread Exp $
-
-check over indexes for log viewer.
