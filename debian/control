@@ -5,14 +5,14 @@ Maintainer: Sebastien Delafond <seb@untangle.com>
 Build-Depends: debhelper (>> 3.0.0), unzip, build-essential, sun-java5-jdk, libxml2-dev, untangle-iptables-dev (>= 1.3.3), untangle-libnfnetlink-dev, untangle-libnetfilter-queue-dev, libsysfs-dev, dput, rake (>= 0.7.0-1build1)
 Standards-Version: 3.7.2
 
-Package: untangle-libuntangle-core
+Package: untangle-libuntanglecore
 Architecture: i386
 Depends: ${misc:Depends}
-XB-Display-Name: untangle-libuntangle-core
+XB-Display-Name: untangle-libuntanglecore
 XB-Untangle-Type: library
 XB-Is-Service: true
-Description: untangle-libuntangle-core
- untangle-libuntangle-core.
+Description: untangle-libuntanglecore
+ untangle-libuntanglecore.
 
 Package: ftp-casing
 Architecture: any
@@ -1546,7 +1546,7 @@ Description: Untangle Server Thirdparty Libraries
 
 Package: uvm
 Architecture: any
-Depends: untangle-client-windows-jre, untangle-libuntangle-core, libuvm-thirdparty, sudo, iptables (>= 1.3.3-mv1), untangle-restore-tools, libxml2, kernel-mv, untangle-dhclient-config, ntp-simple, snmpd, snmp, sg3-utils, ddclient, slapd, ldap-utils, untangle-libnfnetlink0, libnetfilter-queue0, db4.2-util, untangle-ujac2pdf, at, ebtables, atop, mime-support, nsis, nsis-mv, dnsmasq, pppoe, bridge-utils, libsysfs1, iputils-ping, curl
+Depends: untangle-client-windows-jre, untangle-libuntanglecore, libuvm-thirdparty, sudo, iptables (>= 1.3.3-mv1), untangle-restore-tools, libxml2, kernel-mv, untangle-dhclient-config, ntp-simple, snmpd, snmp, sg3-utils, ddclient, slapd, ldap-utils, untangle-libnfnetlink0, libnetfilter-queue0, db4.2-util, untangle-ujac2pdf, at, ebtables, atop, mime-support, nsis, nsis-mv, dnsmasq, pppoe, bridge-utils, libsysfs1, iputils-ping, curl
 Pre-Depends: untangle-postgresql-config
 Conflicts: dlocate, slocate
 XB-Display-Name: Untangle Server

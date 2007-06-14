@@ -69,26 +69,26 @@ require "#{SRC_HOME}/spamassassin/package.rb"
 ## Virus based nodes
 require "#{SRC_HOME}/clam/package.rb"
 
-libuntangle-core_so = "#{BuildEnv::SRC.staging}/libuntangle-core.so"
+libuntanglecore_so = "#{BuildEnv::SRC.staging}/libuntanglecore.so"
 
 archives = ['libmvutil', 'libnetcap', 'libvector', 'jmvutil', 'jnetcap', 'jvector']
 
 ## Make the so dependent on each archive
 archives.each do |n|
-  file libuntangle-core_so => BuildEnv::SRC[n]['archive']
+  file libuntanglecore_so => BuildEnv::SRC[n]['archive']
 end
 
-file libuntangle-core_so do
+file libuntanglecore_so do
   compilerEnv = CCompilerEnv.new( { "flags" => "-pthread #{CCompilerEnv.defaultDebugFlags}" } )
   archivesFiles = archives.map { |n| BuildEnv::SRC[n]['archive'].filename }
 
-  CBuilder.new(BuildEnv::SRC, compilerEnv).makeSharedLibrary(archivesFiles, libuntangle-core_so, [],
+  CBuilder.new(BuildEnv::SRC, compilerEnv).makeSharedLibrary(archivesFiles, libuntanglecore_so, [],
                                                              ['xml2', 'sysfs', 'netfilter_queue'], ['ipq'])
 end
 
-BuildEnv::SRC['uvm']['impl'].registerDependency(libuntangle-core_so)
+BuildEnv::SRC['uvm']['impl'].registerDependency(libuntanglecore_so)
 
-BuildEnv::SRC.installTarget.installFiles(libuntangle-core_so, "#{BuildEnv::SRC['libuntangle-core'].distDirectory}/usr/lib/uvm")
+BuildEnv::SRC.installTarget.installFiles(libuntanglecore_so, "#{BuildEnv::SRC['libuntanglecore'].distDirectory}/usr/lib/uvm")
 
 # DO IT!
 #graphViz('foo.dot')
