@@ -372,7 +372,7 @@ public final class Netcap {
 
     static
     {
-        System.loadLibrary( "alpine" );
+        System.loadLibrary( "untangle-core" );
     }
 
     /* Debugging and logging */

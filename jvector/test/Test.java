@@ -61,6 +61,6 @@ public class Test
     //     }
 
     static {
-        System.loadLibrary("alpine");
+        System.loadLibrary("untangle-core");
     }
 }

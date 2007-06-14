@@ -2,7 +2,7 @@
 
 SRC_HOME = "."
 
-require "#{SRC_HOME}/buildtools/alpine.rb"
+require "#{SRC_HOME}/buildtools/untangle-core.rb"
 
 task :default => :devel
 task :all => :devel

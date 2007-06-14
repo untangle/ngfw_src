@@ -119,6 +119,6 @@ public class Test2
     }
 
     static {
-        System.loadLibrary("alpine");
+        System.loadLibrary("untangle-core");
     }
 }

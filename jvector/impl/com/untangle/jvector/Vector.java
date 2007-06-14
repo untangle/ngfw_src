@@ -113,7 +113,7 @@ public class Vector
     static
     {
         logInfo( "Loading Vector" );
-        System.loadLibrary("alpine");
+        System.loadLibrary("untangle-core");
         cLoad();
     }
 
