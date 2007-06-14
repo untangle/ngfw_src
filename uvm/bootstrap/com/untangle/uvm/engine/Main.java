@@ -1,7 +1,7 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  *
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
  * as published by the Free Software Foundation.
@@ -164,21 +164,23 @@ public class Main
     {
         String bunniculaHome = System.getProperty("bunnicula.home");
 
-        String bunniculaLib = bunniculaHome + "/lib";
+        String bunniculaLib = bunniculaHome + "/lib/";
         System.setProperty("bunnicula.lib.dir", bunniculaLib);
-        String bunniculaToolbox = bunniculaHome + "/toolbox";
+        String bunniculaBin = bunniculaHome + "/bin/";
+        System.setProperty("bunnicula.bin.dir", bunniculaBin);
+        String bunniculaToolbox = bunniculaHome + "/toolbox/";
         System.setProperty("bunnicula.toolbox.dir", bunniculaToolbox);
-        String bunniculaLog = bunniculaHome + "/log";
+        String bunniculaLog = bunniculaHome + "/log/";
         System.setProperty("bunnicula.log.dir", bunniculaLog);
-        String bunniculaData = bunniculaHome + "/data";
+        String bunniculaData = bunniculaHome + "/data/";
         System.setProperty("bunnicula.data.dir", bunniculaData);
-        String bunniculaDb = bunniculaHome + "/db";
+        String bunniculaDb = bunniculaHome + "/db/";
         System.setProperty("bunnicula.db.dir", bunniculaDb);
-        String bunniculaWeb = bunniculaHome + "/web";
+        String bunniculaWeb = bunniculaHome + "/web/";
         System.setProperty("bunnicula.web.dir", bunniculaWeb);
-        String bunniculaConf = bunniculaHome + "/conf";
+        String bunniculaConf = bunniculaHome + "/conf/";
         System.setProperty("bunnicula.conf.dir", bunniculaConf);
-        String bunniculaTmp = bunniculaHome + "/tmp";
+        String bunniculaTmp = bunniculaHome + "/tmp/";
         System.setProperty("bunnicula.tmp.dir", bunniculaTmp);
 
         logger.info("bunnicula.home        " + bunniculaHome);

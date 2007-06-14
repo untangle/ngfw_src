@@ -175,9 +175,11 @@ public class OpenSSLWrapper {
                 }
             }
 
+            String cmd = System.getProperty("bunnicula.bin.dir") + "inspect_ca";
+
             //Now figure out if this is a CA
             result = SimpleExec.exec(
-                                     "inspect_ca",//cmd
+                                     cmd,
                                      new String[] {//args
                                          certFile.getAbsolutePath(),
                                      },
