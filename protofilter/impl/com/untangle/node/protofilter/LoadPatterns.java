@@ -1,6 +1,6 @@
 
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -15,6 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
 package com.untangle.node.protofilter;
 
 import java.util.TreeMap;
@@ -132,16 +133,6 @@ public class LoadPatterns {
         pats.put(980, new ProtoFilterPattern(980, "Xunlei", "Peer to Peer", " Chinese P2P filesharing - http://xunlei.com", "^[()]...?.?.?(reg|get|query)", "good veryfast fast", false,false,false));
         pats.put(990, new ProtoFilterPattern(990, "Yahoo messenger", "Instant Messenger", " an instant messenger protocol - http://yahoo.com", "^(ymsg|ypns|yhoo).?.?.?.?.?.?.?[lwt].*\\xc0\\x80", "good fast fast", false,false,false));
         pats.put(1000, new ProtoFilterPattern(1000, "ZMAAP", "Networking", " Zeroconf Multicast Address Allocation Protocol", "^\\x1b\\xd7\\x3b\\x48[\\x01\\x02]\\x01?\\x01", "ok veryfast fast", false,false,false));
-        /*
-         * Copyright (c) 2003-2007 Untangle, Inc.
-         * All rights reserved.
-         *
-         * This software is the confidential and proprietary information of
-         * Untangle, Inc. ("Confidential Information"). You shall
-         * not disclose such Confidential Information.
-         *
-         * $Id$
-         */
 
         return pats;
     }
