@@ -594,7 +594,6 @@ class ServletBuilder < Target
       MoveSpec.new("#{c}/", "**/*", "#{@destRoot}")
     end
 
-
     unless 0 == commonMoveSpecs.length
       deps << CopyFiles.new(package, commonMoveSpecs, "#{suffix}-common")
     end

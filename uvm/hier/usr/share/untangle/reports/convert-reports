@@ -107,12 +107,12 @@ do
         fi
       fi
 
-      \mv -f $hf $hf.org
+      mv -f $hf $hf.org
 
       # strip JR look-n-feel
       # (sed script file is customized for JR 1.1.1
       # - sed script file may need to be modified for other JR releases)
-      sed -f @USR_BIN@/convert-reports.sed $hf.org > $hf.new
+      sed -f @UVM_HOME@/reports/convert-reports.sed $hf.org > $hf.new
 
       # add MV look-n-feel
       add_mv_htmlheader

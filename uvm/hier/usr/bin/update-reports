@@ -254,7 +254,7 @@ EOF
 # convert all non-index html pages to have MV look-n-feel
 # (convert-reports doesn't look for daily, weekly, or monthly html pages
 #  so if any set is missing, it is okay)
-        @USR_BIN@/convert-reports
+        @UVM_HOME@/reports/convert-reports
 
 # generate the emailable page
         if [ $MV_EG_DAILY_REPORT == 'y' ]; then
