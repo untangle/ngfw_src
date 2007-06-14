@@ -1,6 +1,6 @@
 /*
- * $HeadURL:$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * $HeadURL$
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -21,9 +21,9 @@ package com.untangle.uvm.engine;
 import java.io.File;
 import java.io.IOException;
 
-import com.untangle.uvm.UvmContextFactory;
 import com.untangle.node.util.IOUtil;
 import com.untangle.node.util.SimpleExec;
+import com.untangle.uvm.UvmContextFactory;
 import org.apache.log4j.Logger;
 
 
@@ -49,9 +49,9 @@ class BackupManager {
         OLD_BACKUP_SCRIPT = System.getProperty("bunnicula.home")
             + "/../../bin/uvmdb-backup";
         BACKUP_SCRIPT = System.getProperty("bunnicula.home")
-            + "/../../bin/mv-backup-bundled.sh";
+            + "/bin/ut-backup-bundled.sh";
         RESTORE_SCRIPT = System.getProperty("bunnicula.home")
-            + "/../../bin/mv-restore-bundled.sh";
+            + "/bin/ut-restore-bundled.sh";
     }
 
 
