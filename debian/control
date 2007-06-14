@@ -36,9 +36,9 @@ Description: The Untangle Web Decoder
 
 Package: mail-casing
 Architecture: any
-Conflicts: email-transform
-Replaces: email-transform
-Provides: email-transform
+Conflicts: untangle-node-email
+Replaces: untangle-node-email
+Provides: untangle-node-email
 Depends: uvm
 XB-Display-Name: Email
 XB-Untangle-Type: casing
@@ -47,7 +47,7 @@ XB-Is-Service: true
 Description: The Untangle Email Decoder
  The Untangle Email Decoder.
 
-Package: airgap-transform
+Package: untangle-node-airgap
 Architecture: any
 Depends: uvm
 XB-Display-Name: Attack Blocker
@@ -159,7 +159,7 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAABGdBTUEAANbY1E9YMg
 Description: Attack Blocker
  The Attack Blocker product.
 
-Package: spyware-transform
+Package: untangle-node-spyware
 Architecture: any
 Depends: uvm, http-casing
 XB-Display-Name: Spyware Blocker
@@ -247,7 +247,7 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAABGdBTUEAANbY1E9YMg
 Description: Spyware Blocker
  The Spyware Blocker product.
 
-Package: httpblocker-transform
+Package: untangle-node-httpblocker
 Architecture: any
 Depends: uvm, http-casing, untangle-urlblacklist
 XB-Display-Name: Web Filter
@@ -346,7 +346,7 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAABGdBTUEAANbY1E9YMg
 Description: Web Filter
  The Web Filter product.
 
-Package: clam-transform
+Package: untangle-node-clam
 Architecture: any
 Depends: uvm, virus-base, untangle-clamav-config, http-casing, ftp-casing, mail-casing
 XB-Display-Name: Virus Blocker
@@ -453,10 +453,10 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAABGdBTUEAANbY1E9YMg
 Description: Virus Blocker
  The Virus Blocker product.
 
-Package: protofilter-transform
+Package: untangle-node-protofilter
 Architecture: any
 Depends: uvm
-Conflicts: protoanalyzer-transform
+Conflicts: untangle-node-protoanalyzer
 XB-Display-Name: Protocol Control
 XB-Untangle-Type: node
 XB-Untangle-Jar-Prefix: protofilter-node
@@ -576,7 +576,7 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAABGdBTUEAANbY1E9YMg
 Description: Protocol Control
  The Protocol Control product.
 
-Package: nat-transform
+Package: untangle-node-nat
 Architecture: any
 Depends: uvm, dnsmasq, ftp-casing
 XB-Display-Name: Router
@@ -671,7 +671,7 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAACXBIWXMAAAsTAAALEw
 Description: Router
  The Router product.
 
-Package: firewall-transform
+Package: untangle-node-firewall
 Architecture: any
 Depends: uvm
 XB-Display-Name: Firewall
@@ -759,7 +759,7 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAACXBIWXMAAAsTAAALEw
 Description: Firewall
  The Firewall product.
 
-Package: spamassassin-transform
+Package: untangle-node-spamassassin
 Architecture: any
 Depends: uvm, spam-base, mail-casing
 XB-Display-Name: Spam Blocker
@@ -875,7 +875,7 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAABGdBTUEAANbY1E9YMg
 Description: Spam Blocker
  The Spam Blocker product.
 
-Package: clamphish-transform
+Package: untangle-node-clamphish
 Architecture: any
 Depends: uvm, spam-base, untangle-clamav-config, mail-casing, http-casing
 XB-Display-Name: Phish Blocker
@@ -1005,7 +1005,7 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAACXBIWXMAAAsTAAALEw
 Description: Phish Blocker
  The Phish Blocker product.
 
-Package: test-transform
+Package: untangle-node-test
 Architecture: any
 Depends: uvm
 XB-Display-Name: Test
@@ -1148,7 +1148,7 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAACXBIWXMAAAsTAAALEw
 Description: Test
  Test.
 
-Package: openvpn-transform
+Package: untangle-node-openvpn
 Architecture: any
 Depends: uvm, openvpn, untangle-nsis-addons, sysutils, zip, openssl
 XB-Display-Name: OpenVPN
@@ -1253,7 +1253,7 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAACXBIWXMAAAsTAAALEw
 Description: OpenVPN
  The OpenVPN product.
 
-Package: ids-transform
+Package: untangle-node-ids
 Architecture: any
 Depends: uvm, http-casing, untangle-snort-rules
 XB-Display-Name: Intrusion Prevention
@@ -1360,7 +1360,7 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAACXBIWXMAAAsTAAALEw
 Description: Intrusion Prevention
  The Intrusion Prevention product.
 
-Package: reporting-transform
+Package: untangle-node-reporting
 Architecture: any
 Depends: uvm
 XB-Display-Name: Untangle Reports
