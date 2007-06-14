@@ -1546,7 +1546,7 @@ Description: Untangle Server Thirdparty Libraries
 
 Package: uvm
 Architecture: any
-Depends: untangle-client-windows-jre, untangle-libuntanglecore, libuvm-thirdparty, sudo, iptables (>= 1.3.3-mv1), untangle-restore-tools, libxml2, kernel-mv, untangle-dhclient-config, ntp-simple, snmpd, snmp, sg3-utils, ddclient, slapd, ldap-utils, untangle-libnfnetlink0, libnetfilter-queue0, db4.2-util, untangle-ujac2pdf, at, ebtables, atop, mime-support, nsis, nsis-mv, dnsmasq, pppoe, bridge-utils, libsysfs1, iputils-ping, curl
+Depends: untangle-client-windows-jre, untangle-libuntanglecore, libuvm-thirdparty, sudo, untangle-iptables (>= 1.3.3), untangle-restore-tools, libxml2, untangle-linux-image (>= 2.6), untangle-dhclient-config, ntp-simple, snmpd, snmp, sg3-utils, ddclient, slapd, ldap-utils, untangle-libnfnetlink0, untangle-libnetfilter-queue0, db4.2-util, untangle-ujac2pdf, at, ebtables, atop, mime-support, untangle-nsis-addons, dnsmasq, pppoe, bridge-utils, libsysfs1, iputils-ping, curl
 Pre-Depends: untangle-postgresql-config
 Conflicts: dlocate, slocate
 XB-Display-Name: Untangle Server
