@@ -1,11 +1,6 @@
-mvvm (5.0.0~svn20070614r10910-1) mustang; urgency=low
-
-  * auto build
-
- -- Sebastien Delafond <seb@untangle.com>  Thu, 14 Jun 2007 03:52:07 -0700
-
-mvvm (5.0.0~svn-1) mustang; urgency=low
+uvm (5.0.0~svn-1) mustang; urgency=low
 
   * Initial one.
 
- -- Sebastien Delafond <seb@untangle.com>  Wed,  9 May 2007 18:59:58 -0700
+ -- Sebastien Delafond <seb@untangle.com>  Thu, 14 Jun 2007 05:27:48 -0700
+
