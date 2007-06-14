@@ -53,13 +53,10 @@ class DefaultPortalManager implements BasePortalManager
 {
     private static final Application[] protoArr = new Application[] { };
 
-    private final UvmContextImpl uvmContext;
     private final PortalApplicationManagerImpl appManager;
 
-    DefaultPortalManager(UvmContextImpl uvmContext)
+    DefaultPortalManager()
     {
-        this.uvmContext = uvmContext;
-
         appManager = PortalApplicationManagerImpl.applicationManager();
     }
 

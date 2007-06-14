@@ -634,7 +634,7 @@ public class UvmContextImpl extends UvmContextBase
         } catch (Exception exn) {
             logger.info("could not load PortalManager: " + bpmClass, exn);
         }
-        portalManager = null == bpm ? new DefaultPortalManager(this) : bpm;
+        portalManager = null == bpm ? new DefaultPortalManager() : bpm;
         logger.info("using PortalManager: " + portalManager.getClass());
 
         // start nodes:
