@@ -372,7 +372,7 @@ public final class Netcap {
 
     static
     {
-        System.loadLibrary( "untangle-core" );
+        System.loadLibrary( "uvmcore" );
     }
 
     /* Debugging and logging */

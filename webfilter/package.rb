@@ -1,6 +1,6 @@
 # -*-ruby-*-
 
-http = BuildEnv::SRC['http-casing']
+http = BuildEnv::SRC['untangle-casing-http']
 webfilter = BuildEnv::SRC['webfilter-node']
 
 NodeBuilder.makeNode(BuildEnv::SRC, 'webfilter',

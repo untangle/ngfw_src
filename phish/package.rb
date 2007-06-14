@@ -1,7 +1,7 @@
 # -*-ruby-*-
 
-mail = BuildEnv::SRC['mail-casing']
-http = BuildEnv::SRC['http-casing']
+mail = BuildEnv::SRC['untangle-casing-mail']
+http = BuildEnv::SRC['untangle-casing-http']
 spam = BuildEnv::SRC['spam-base']
 phish = BuildEnv::SRC['phish-node']
 

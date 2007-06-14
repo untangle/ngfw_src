@@ -1,40 +1,40 @@
-Source: uvm
+Source: untangle-uvm
 Section: net
 Priority: optional
 Maintainer: Sebastien Delafond <seb@untangle.com>
 Build-Depends: debhelper (>> 3.0.0), unzip, build-essential, sun-java5-jdk, libxml2-dev, untangle-iptables-dev (>= 1.3.3), untangle-libnfnetlink-dev, untangle-libnetfilter-queue-dev, libsysfs-dev, dput, rake (>= 0.7.0-1build1)
 Standards-Version: 3.7.2
 
-Package: untangle-libuntanglecore
+Package: untangle-libuvmcore
 Architecture: i386
 Depends: ${misc:Depends}
-XB-Display-Name: untangle-libuntanglecore
+XB-Display-Name: untangle-libuvmcore
 XB-Untangle-Type: library
 XB-Is-Service: true
-Description: untangle-libuntanglecore
- untangle-libuntanglecore.
+Description: untangle-libuvmcore
+ untangle-libuvmcore.
 
-Package: ftp-casing
+Package: untangle-casing-ftp
 Architecture: any
 Depends: uvm
 XB-Display-Name: File Transfer
 XB-Untangle-Type: casing
-XB-Untangle-Jar-Prefix: ftp-casing
+XB-untangle-casing-Jar-Prefix: ftp
 XB-Is-Service: true
 Description: The Untangle File Transfer/FTP Decoder
  The Untangle File Transfer/FTP Decoder.
 
-Package: http-casing
+Package: untangle-casing-http
 Architecture: any
 Depends: uvm
 XB-Display-Name: Web
 XB-Untangle-Type: casing
-XB-Untangle-Jar-Prefix: http-casing
+XB-untangle-casing-Jar-Prefix: http
 XB-Is-Service: true
 Description: The Untangle Web Decoder
  The Untangle Web Decoder.
 
-Package: mail-casing
+Package: untangle-casing-mail
 Architecture: any
 Conflicts: untangle-node-email
 Replaces: untangle-node-email
@@ -42,7 +42,7 @@ Provides: untangle-node-email
 Depends: uvm
 XB-Display-Name: Email
 XB-Untangle-Type: casing
-XB-Untangle-Jar-Prefix: mail-casing
+XB-untangle-casing-Jar-Prefix: mail
 XB-Is-Service: true
 Description: The Untangle Email Decoder
  The Untangle Email Decoder.
@@ -161,7 +161,7 @@ Description: Attack Blocker
 
 Package: untangle-node-spyware
 Architecture: any
-Depends: uvm, http-casing
+Depends: uvm, untangle-casing-http
 XB-Display-Name: Spyware Blocker
 XB-Untangle-Type: node
 XB-Untangle-Jar-Prefix: spyware-node
@@ -249,7 +249,7 @@ Description: Spyware Blocker
 
 Package: untangle-node-httpblocker
 Architecture: any
-Depends: uvm, http-casing, untangle-urlblacklist
+Depends: uvm, untangle-casing-http, untangle-urlblacklist
 XB-Display-Name: Web Filter
 XB-Untangle-Type: node
 XB-Untangle-Jar-Prefix: webfilter-node
@@ -348,7 +348,7 @@ Description: Web Filter
 
 Package: untangle-node-clam
 Architecture: any
-Depends: uvm, virus-base, untangle-clamav-config, http-casing, ftp-casing, mail-casing
+Depends: uvm, virus-base, untangle-clamav-config, http, untangle-casing-ftp, untangle-casing-mail
 XB-Display-Name: Virus Blocker
 XB-Untangle-Type: node
 XB-Untangle-Jar-Prefix: clam-node
@@ -578,7 +578,7 @@ Description: Protocol Control
 
 Package: untangle-node-nat
 Architecture: any
-Depends: uvm, dnsmasq, ftp-casing
+Depends: uvm, dnsmasq, untangle-casing-ftp
 XB-Display-Name: Router
 XB-Untangle-Type: node
 XB-Untangle-Jar-Prefix: router-node
@@ -761,7 +761,7 @@ Description: Firewall
 
 Package: untangle-node-spamassassin
 Architecture: any
-Depends: uvm, spam-base, mail-casing
+Depends: uvm, spam-base, untangle-casing-mail
 XB-Display-Name: Spam Blocker
 XB-Untangle-Type: node
 XB-Untangle-Jar-Prefix: spamassassin-node
@@ -877,7 +877,7 @@ Description: Spam Blocker
 
 Package: untangle-node-clamphish
 Architecture: any
-Depends: uvm, spam-base, untangle-clamav-config, mail-casing, http-casing
+Depends: uvm, spam-base, untangle-clamav-config, mail, untangle-casing-http
 XB-Display-Name: Phish Blocker
 XB-Untangle-Type: node
 XB-Untangle-Jar-Prefix: phish-node
@@ -1255,7 +1255,7 @@ Description: OpenVPN
 
 Package: untangle-node-ids
 Architecture: any
-Depends: uvm, http-casing, untangle-snort-rules
+Depends: uvm, untangle-casing-http, untangle-snort-rules
 XB-Display-Name: Intrusion Prevention
 XB-Untangle-Type: node
 XB-Untangle-Jar-Prefix: ips-node
@@ -1447,7 +1447,7 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAABGdBTUEAANbY1E9YMg
 Description: Untangle Reports
  The Untangle Reports product.
 
-Package: virus-base
+Package: untangle-virus-base
 Architecture: any
 Depends: uvm
 XB-Display-Name: Virus Blocker Base
@@ -1455,7 +1455,7 @@ XB-Untangle-Type: base
 Description: Virus Blocker Base
  The Virus Blocker Base.
 
-Package: spam-base
+Package: untangle-spam-base
 Architecture: any
 Depends: uvm, untangle-spamassassin-update
 XB-Display-Name: Spam Blocker Base
@@ -1534,7 +1534,7 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMg
 Description: Untangle Client
  The Untangle Client.
 
-Package: libuvm-thirdparty
+Package: untangle-libuvmthirdparty
 Architecture: any
 Depends: sun-java5-jre
 Conflicts: uvm (<< 3.0.0-39)
@@ -1544,9 +1544,9 @@ XB-Untangle-Type: library
 Description: Untangle Server Thirdparty Libraries
  The Untangle Server Thirdparty Libraries.
 
-Package: uvm
+Package: untangle-uvm
 Architecture: any
-Depends: untangle-client-windows-jre, untangle-libuntanglecore, libuvm-thirdparty, sudo, untangle-iptables (>= 1.3.3), untangle-restore-tools, libxml2, untangle-linux-image (>= 2.6), untangle-dhclient-config, ntp-simple, snmpd, snmp, sg3-utils, ddclient, slapd, ldap-utils, untangle-libnfnetlink0, untangle-libnetfilter-queue0, db4.2-util, untangle-ujac2pdf, at, ebtables, atop, mime-support, untangle-nsis-addons, dnsmasq, pppoe, bridge-utils, libsysfs1, iputils-ping, curl
+Depends: untangle-client-windows-jre, untangle-libuvmcore, libuvm-thirdparty, sudo, untangle-iptables (>= 1.3.3), untangle-restore-tools, libxml2, untangle-linux-image (>= 2.6), untangle-dhclient-config, ntp-simple, snmpd, snmp, sg3-utils, ddclient, slapd, ldap-utils, untangle-libnfnetlink0, untangle-libnetfilter-queue0, db4.2-util, untangle-ujac2pdf, at, ebtables, atop, mime-support, untangle-nsis-addons, dnsmasq, pppoe, bridge-utils, libsysfs1, iputils-ping, curl
 Pre-Depends: untangle-postgresql-config
 Conflicts: dlocate, slocate
 XB-Display-Name: Untangle Server

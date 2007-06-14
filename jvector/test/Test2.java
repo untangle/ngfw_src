@@ -119,6 +119,6 @@ public class Test2
     }
 
     static {
-        System.loadLibrary("untangle-core");
+        System.loadLibrary("uvmcore");
     }
 }

@@ -2,7 +2,7 @@
 
 NodeBuilder.makeCasing(BuildEnv::SRC, 'mail')
 
-mail = BuildEnv::SRC['mail-casing']
+mail = BuildEnv::SRC['untangle-casing-mail']
 
 jt = [mail['localapi']]
 

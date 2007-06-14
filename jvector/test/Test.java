@@ -61,6 +61,6 @@ public class Test
     //     }
 
     static {
-        System.loadLibrary("untangle-core");
+        System.loadLibrary("uvmcore");
     }
 }
