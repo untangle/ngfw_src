@@ -6,7 +6,7 @@
  * Untangle, Inc. ("Confidential Information"). You shall
  * not disclose such Confidential Information.
  *
- * $Id: $
+ * $Id$
  */
 package com.untangle.node.clam;
 
