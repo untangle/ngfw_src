@@ -64,7 +64,7 @@ function mailReports()
     t_isDetailed=${t_isDetailed/n/false}
     local t_arguments=`getFileName ${t_reportType} ${t_isDetailed} txt`
 
-    cat "@PREFIX@/tmp/${t_arguments}" | xargs @USR_BIN@/mail-reports
+    cat "@PREFIX@/tmp/${t_arguments}" | xargs @UVM_HOME@/reports/mail-reports
 }
 
 ## Parameters:
