@@ -4,7 +4,6 @@ how to do portal schema conversion?
 
 find all instances of (/usr/share/)metavize
 
-debian build afu
 prj.el
 buildtools/alpine.rb?
 grep -i 'metavize' in uvm
@@ -15,7 +14,8 @@ to specially check
   old certificate
   old backup files
 
-put ajaxtk in hades
+put ajaxtk in hades?
+properjavardp in hades?
 
 
 fork server notes

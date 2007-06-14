@@ -625,7 +625,7 @@ public class UvmContextImpl extends UvmContextBase
         // Fire up the portal manager.
         String bpmClass = System.getProperty("uvm.portal.manager");
         if (null == bpmClass) {
-            bpmClass = "com.untangle.uvm.portal.RupPortalManager";
+            bpmClass = "com.untangle.uvm.engine.RupPortalManager";
         }
         BasePortalManager bpm = null;
         try {
