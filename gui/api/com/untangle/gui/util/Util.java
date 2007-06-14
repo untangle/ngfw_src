@@ -54,6 +54,8 @@ import com.untangle.gui.widgets.editTable.*;
 import com.untangle.uvm.*;
 import com.untangle.uvm.addrbook.*;
 import com.untangle.uvm.client.*;
+import com.untangle.uvm.license.LicenseStatus;
+import com.untangle.uvm.license.RemoteLicenseManager;
 import com.untangle.uvm.logging.*;
 import com.untangle.uvm.networking.ping.PingManager;
 import com.untangle.uvm.node.*;
@@ -138,11 +140,11 @@ public class Util {
     private static AdminManager adminManager;
     private static StatsCache statsCache;
     private static NetworkManager networkManager;
-    private static PolicyManager policyManager;
+    // DO NOT CACHE THIS private static PolicyManager policyManager;
     private static LoggingManager loggingManager;
     private static RemoteAppServerManager appServerManager;
-    private static AddressBook addressBook;
-    private static RemotePhoneBook phoneBook;
+    // DO NOT CACHE THIS private static AddressBook addressBook;
+    // DO NOT CACHE THIS private static RemotePhoneBook phoneBook;
     private static RemoteIntfManager remoteIntfManager;
     private static PingManager pingManager;
     private static BrandingManager brandingManager;
@@ -154,11 +156,11 @@ public class Util {
             nodeManager = uvmContext.nodeManager();
             adminManager = uvmContext.adminManager();
             networkManager = uvmContext.networkManager();
-            policyManager = uvmContext.policyManager();
+            // DO NOT CACHE THIS policyManager = uvmContext.policyManager();
             loggingManager = uvmContext.loggingManager();
             appServerManager = uvmContext.appServerManager();
-            addressBook = uvmContext.appAddressBook();
-            phoneBook = uvmContext.phoneBook();
+            // DO NOT CACHE THIS addressBook = uvmContext.appAddressBook();
+            // DO NOT CACHE THIS phoneBook = uvmContext.phoneBook();
             remoteIntfManager = uvmContext.intfManager();
             pingManager = uvmContext.pingManager();
             brandingManager = uvmContext.brandingManager();
@@ -168,17 +170,17 @@ public class Util {
             nodeManager = null;
             adminManager = null;
             networkManager = null;
-            policyManager = null;
+            // DO NOT CACHE THIS policyManager = null;
             loggingManager = null;
             appServerManager = null;
-            addressBook = null;
-            phoneBook = null;
+            // DO NOT CACHE THIS addressBook = null;
+            // DO NOT CACHE THIS phoneBook = null;
             remoteIntfManager = null;
             pingManager = null;
             brandingManager = null;
         }
     }
-
+    
     public static UvmRemoteContext getUvmContext(){ return uvmContext; }
     public static ToolboxManager getToolboxManager(){ return toolboxManager; }
     public static NodeManager getNodeManager(){ return nodeManager; }
@@ -186,13 +188,14 @@ public class Util {
     public static StatsCache getStatsCache(){ return statsCache; }
     public static RemoteIntfManager getIntfManager(){ return remoteIntfManager; }
     public static NetworkManager getNetworkManager(){ return networkManager; }
-    public static PolicyManager getPolicyManager(){ return policyManager; }
+    public static PolicyManager getPolicyManager(){ return uvmContext.policyManager(); }
     public static LoggingManager getLoggingManager(){ return loggingManager; }
     public static RemoteAppServerManager getAppServerManager(){ return appServerManager; }
-    public static AddressBook getAddressBook(){ return addressBook; }
-    public static RemotePhoneBook getPhoneBook(){ return phoneBook; }
+    public static AddressBook getAddressBook(){ return uvmContext.appAddressBook(); }
+    public static RemotePhoneBook getPhoneBook(){ return uvmContext.phoneBook(); }
     public static PingManager getPingManager(){ return pingManager; }
     public static BrandingManager getBrandingManager(){ return brandingManager; }
+    public static RemoteLicenseManager getLicenseManager(){ return uvmContext.licenseManager(); }
     ///////////////////////////////////
 
 
@@ -287,9 +290,9 @@ public class Util {
 
 
     // PREMIUM //////////////////////
-    private static boolean IS_PREMIUM = false;
-    public static boolean getIsPremium(){ return IS_PREMIUM; }
-    public static void setIsPremium(boolean isPremium){ IS_PREMIUM = isPremium; }
+    public static boolean getIsPremium(String identifier){
+        return !getLicenseManager().getLicenseStatus(identifier).isExpired();
+    }
     //////////////////////////////
 
 

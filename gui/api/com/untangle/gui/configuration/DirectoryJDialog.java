@@ -26,6 +26,7 @@ import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.dialogs.*;
 import com.untangle.gui.widgets.editTable.*;
 import com.untangle.gui.widgets.premium.*;
+import com.untangle.uvm.license.ProductIdentifier;
 import org.apache.log4j.Logger;
 
 
@@ -42,7 +43,7 @@ public class DirectoryJDialog extends MConfigJDialog {
         super(parentFrame);
         setTitle(NAME_DIRECTORY_CONFIG);
         setHelpSource("user_directory_config");
-        if (Util.getIsPremium()) {
+        if (Util.getIsPremium(ProductIdentifier.ADDRESS_BOOK)) {
             Class compoundSettingsClass = Util.getClassLoader().mLoadClass( "com.untangle.gui.configuration.DirectoryCompoundSettings" );
             try {
                 Constructor compoundSettingsConstructor = compoundSettingsClass.getConstructor( new Class[]{} );
@@ -51,7 +52,6 @@ public class DirectoryJDialog extends MConfigJDialog {
             catch(Exception e) {
                 logger.warn("Unable to load: Directory Settings",e);
             }
-
         }
     }
 
@@ -59,7 +59,7 @@ public class DirectoryJDialog extends MConfigJDialog {
         super(parentDialog);
         setTitle(NAME_DIRECTORY_CONFIG);
         setHelpSource("user_directory_config");
-        if (Util.getIsPremium()) {
+        if (Util.getIsPremium(ProductIdentifier.ADDRESS_BOOK)) {
             Class compoundSettingsClass = Util.getClassLoader().mLoadClass( "com.untangle.gui.configuration.DirectoryCompoundSettings" );
             try {
                 Constructor compoundSettingsConstructor = compoundSettingsClass.getConstructor( new Class[]{} );
@@ -76,7 +76,7 @@ public class DirectoryJDialog extends MConfigJDialog {
     }
 
     protected void generateGui(){
-        if (Util.getIsPremium()) {
+        if (Util.getIsPremium(ProductIdentifier.ADDRESS_BOOK)) {
 
             // LOCAL DIRECTORY ////////
             try {

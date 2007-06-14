@@ -21,6 +21,7 @@ import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.dialogs.*;
 import com.untangle.gui.widgets.editTable.*;
 import com.untangle.uvm.policy.*;
+import com.untangle.uvm.license.ProductIdentifier;
 
 import com.untangle.gui.widgets.premium.*;
 
@@ -62,9 +63,8 @@ public class PolicyJDialog extends MConfigJDialog {
         addSavable(NAME_USER_POLICIES, policyCustomJPanel);
         addRefreshable(NAME_USER_POLICIES, policyCustomJPanel);
         policyCustomJPanel.setSettingsChangedListener(this);
-
         
-        if (Util.getIsPremium()) {
+        if (Util.getIsPremium(ProductIdentifier.POLICY_MANAGER)) {
             // AVAILABLE RACKS ////// (THIS MUST BE LAST BECAUSE IT VALIDATES SETTINGS)
             PolicyAvailableJPanel policyAvailableJPanel = new PolicyAvailableJPanel();
             addTab(NAME_AVAILABLE_POLICIES, null, policyAvailableJPanel);

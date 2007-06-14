@@ -38,12 +38,17 @@ public class LicenseStatus implements Serializable
     /* Date that the license will expire, unused if <code>hasLicense</code> is false */
     private final Date expirationDate;
     
+    /* Whether or not the license was expired when this object was created. */
+    private final boolean isExpired;
+    
     public LicenseStatus( boolean hasLicense, String identifier, String type, Date expirationDate )
     {
         this.hasLicense = hasLicense;
         this.identifier = identifier;
         this.type = type;
         this.expirationDate = expirationDate;
+        /* it is unstable if it doesn't have a license or the current time is after the expiration time */
+        this.isExpired = !hasLicense || ( System.currentTimeMillis() > expirationDate.getTime());
     }
 
     public boolean hasLicense()
@@ -66,5 +71,12 @@ public class LicenseStatus implements Serializable
     {
         return this.expirationDate;
     }
+    
+    /* Done this way so that timezone issues between the GUI and the UVM */
+    public boolean isExpired()
+    {
+        return this.isExpired;
+    }
+
 }
 

@@ -25,10 +25,12 @@ import com.untangle.gui.configuration.DirectoryCompoundSettings;
 import com.untangle.gui.configuration.DirectoryJDialog;
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.dialogs.*;
+import com.untangle.gui.widgets.premium.PremiumJPanel;
 import com.untangle.uvm.addrbook.RepositoryType;
 import com.untangle.uvm.addrbook.UserEntry;
 import com.untangle.uvm.node.firewall.user.UserMatcherConstants;
 
+import com.untangle.uvm.license.ProductIdentifier;
 
 public class UidSelectJDialog extends javax.swing.JDialog implements java.awt.event.WindowListener {
 
@@ -40,6 +42,8 @@ public class UidSelectJDialog extends javax.swing.JDialog implements java.awt.ev
     private List<String> uidList;
     private boolean isProceeding;
     private Window window;
+
+    private boolean isPremium;
 
     public static UidSelectJDialog factory(Container topLevelContainer){
         UidSelectJDialog uidSelectJDialog;
@@ -62,6 +66,13 @@ public class UidSelectJDialog extends javax.swing.JDialog implements java.awt.ev
     }
 
     private void init(Window window) {
+        this.isPremium = Util.getIsPremium(ProductIdentifier.ADDRESS_BOOK);
+        if ( !this.isPremium ) {
+            getContentPane().add(new PremiumJPanel());
+            this.window = window;
+            return;
+        }
+
         initComponents();
         userJScrolPane.getVerticalScrollBar().setFocusable(false);
         uidJList.setCellRenderer(new UidCellRenderer());
@@ -91,7 +102,7 @@ public class UidSelectJDialog extends javax.swing.JDialog implements java.awt.ev
                     uidJList.repaint();
                 }
             });
-
+        
         this.addWindowListener(this);
         this.window = window;
         setGlassPane(infiniteProgressJComponent);
@@ -103,6 +114,8 @@ public class UidSelectJDialog extends javax.swing.JDialog implements java.awt.ev
     }
 
     public void updateUidModel(List<UserEntry> userEntries){
+        if (!this.isPremium ) return;
+
         Vector<UserEntryWrapper> uidVector = new Vector<UserEntryWrapper>();
 
         UserEntryWrapper t = new UserEntryWrapper(null);
@@ -148,7 +161,7 @@ public class UidSelectJDialog extends javax.swing.JDialog implements java.awt.ev
         if(isVisible){
             pack();
             this.setBounds( Util.generateCenteredBounds(window, this.getWidth(), this.getHeight()) );
-            new PerformRefreshThread();
+            if ( this.isPremium ) new PerformRefreshThread();
         }
         super.setVisible(isVisible);
         if(!isVisible){
