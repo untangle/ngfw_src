@@ -53,7 +53,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
 
     // FOR REMOVING TRIALS FROM STORE WHEN ITEM IS PURCHASED
     private final String STOREITEM_EXTENSION = "libitem";
-    private final String TRIAL_EXTENSION     = "trial30-libitem";
+    private final String TRIAL_EXTENSION     = "libitem-trial30";
     // UVM DATA MODELS (USED ONLY DURING INIT) //////
     private List<Tid>                       utilTidList;
     private Map<String,Object>              utilNameMap;
@@ -676,7 +676,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                     storeButtonName = storeButtonName.substring(0, storeButtonName.indexOf('-'));
                     if( purchasedMackageName.startsWith(storeButtonName) ){
                         mNodeJButton = storeButton;
-                        if( purchasedMackageName.endsWith(TRIAL_EXTENSION) ){
+                        if( purchasedMackageName.matches(TRIAL_EXTENSION) ){
                             mNodeJButton.setIsTrial(true);
                         }
                         else{
@@ -1258,7 +1258,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                     for( MackageDesc mackageDesc : storeItemsAvailable ){
                         String name = mackageDesc.getName();
                         //System.out.println("testing: " + name);
-                        if( name.endsWith(STOREITEM_EXTENSION) && !name.endsWith(TRIAL_EXTENSION) ){
+                        if( name.matches(STOREITEM_EXTENSION) && !name.matches(TRIAL_EXTENSION) ){
                             addToStore(mackageDesc,false);
                             //System.out.println("added");
                         }
