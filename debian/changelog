@@ -1,3 +1,9 @@
+untangle-uvm (5.0.0~svn20070615r10990+seb20070615T100005-1) seb; urgency=low
+
+  * auto build
+
+ -- Sebastien Delafond <seb@untangle.com>  Fri, 15 Jun 2007 10:00:06 -0700
+
 untangle-uvm (5.0.0~svn-1) mustang; urgency=low
 
   * Initial one.

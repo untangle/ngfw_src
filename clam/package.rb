@@ -9,5 +9,5 @@ guiDeps = []
 end
 
 NodeBuilder.makeNode(BuildEnv::SRC, 'untangle-node-clam', 'clam', implDeps, guiDeps, [],
-                     { 'virus-base' => BuildEnv::SRC['untangle-virus'],
-                       'clam-base' => BuildEnv::SRC['untangle-clam'] })
+                     { 'virus-base' => BuildEnv::SRC['untangle-base-virus'],
+                       'clam-base' => BuildEnv::SRC['untangle-base-clam'] })

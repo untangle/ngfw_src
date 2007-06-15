@@ -8,4 +8,4 @@ guiDeps = []
   guiDeps << BuildEnv::SRC[c]['gui']
 end
 
-NodeBuilder.makeBase(BuildEnv::SRC, 'untangle-spam', 'spam-base', implDeps, guiDeps)
+NodeBuilder.makeBase(BuildEnv::SRC, 'untangle-base-spam', 'spam-base', implDeps, guiDeps)

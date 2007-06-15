@@ -8,4 +8,4 @@ guiDeps = []
   guiDeps << BuildEnv::SRC[c]['gui']
 end
 
-NodeBuilder.makeBase(BuildEnv::SRC, 'untangle-virus', 'virus-base', implDeps, guiDeps)
+NodeBuilder.makeBase(BuildEnv::SRC, 'untangle-base-virus', 'virus-base', implDeps, guiDeps)

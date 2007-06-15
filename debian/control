@@ -348,7 +348,7 @@ Description: Web Filter
 
 Package: untangle-node-clam
 Architecture: any
-Depends: untangle-uvm, virus-base, untangle-clamav-config, http, untangle-casing-ftp, untangle-casing-mail
+Depends: untangle-uvm, untangle-virus-base, untangle-clamav-config, untangle-casing-http, untangle-casing-ftp, untangle-casing-mail
 XB-Display-Name: Virus Blocker
 XB-Untangle-Type: node
 XB-Untangle-Jar-Prefix: clam-node
@@ -761,7 +761,7 @@ Description: Firewall
 
 Package: untangle-node-spamassassin
 Architecture: any
-Depends: untangle-uvm, spam-base, untangle-casing-mail
+Depends: untangle-uvm, untangle-base-spam, untangle-casing-mail
 XB-Display-Name: Spam Blocker
 XB-Untangle-Type: node
 XB-Untangle-Jar-Prefix: spamassassin-node
@@ -877,7 +877,7 @@ Description: Spam Blocker
 
 Package: untangle-node-clamphish
 Architecture: any
-Depends: untangle-uvm, spam-base, untangle-clamav-config, mail, untangle-casing-http
+Depends: untangle-uvm, untangle-base-spam, untangle-clamav-config, mail, untangle-casing-http
 XB-Display-Name: Phish Blocker
 XB-Untangle-Type: node
 XB-Untangle-Jar-Prefix: phish-node
@@ -1447,7 +1447,7 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAABGdBTUEAANbY1E9YMg
 Description: Untangle Reports
  The Untangle Reports product.
 
-Package: untangle-virus-base
+Package: untangle-base-virus
 Architecture: any
 Depends: untangle-uvm
 XB-Display-Name: Virus Blocker Base
@@ -1455,7 +1455,7 @@ XB-Untangle-Type: base
 Description: Virus Blocker Base
  The Virus Blocker Base.
 
-Package: untangle-spam-base
+Package: untangle-base-spam
 Architecture: any
 Depends: untangle-uvm, untangle-spamassassin-update
 XB-Display-Name: Spam Blocker Base
