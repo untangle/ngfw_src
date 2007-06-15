@@ -119,7 +119,7 @@ public class UvmContextImpl extends UvmContextBase
     private UvmRemoteContext remoteContext;
     private CronManager cronManager;
     private AppServerManagerImpl appServerManager;
-    private RemoteAppServerManagerImpl remoteAppServerManager;
+    private RemoteAppServerManagerAdaptor remoteAppServerManager;
     private AddressBookFactory addressBookFactory;
     private BrandingManager brandingManager;
     private LocalBrandingManager localBrandingManager;
@@ -197,7 +197,7 @@ public class UvmContextImpl extends UvmContextBase
         return appServerManager;
     }
 
-    RemoteAppServerManagerImpl remoteAppServerManager()
+    RemoteAppServerManagerAdaptor remoteAppServerManager()
     {
         return remoteAppServerManager;
     }
@@ -680,7 +680,7 @@ public class UvmContextImpl extends UvmContextBase
         remoteShieldManager = new RemoteShieldManagerImpl(localShieldManager);
 
         appServerManager = new AppServerManagerImpl(this);
-        remoteAppServerManager = new RemoteAppServerManagerImpl(appServerManager);
+        remoteAppServerManager = new RemoteAppServerManagerAdaptor(appServerManager);
 
         licenseManagerFactory = LicenseManagerFactory.makeInstance();
 

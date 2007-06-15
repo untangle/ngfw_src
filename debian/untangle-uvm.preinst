@@ -22,6 +22,6 @@ fi
 # Kill any already-running reports (Bug 1249)
 killall update-reports rollup-logs 2>/dev/null
 
-if [ -x /usr/bin/mvvm-restart ]; then
-    mvvm-restart restart
+if [ -x /usr/bin/uvm-restart ]; then
+    uvm-restart restart
 fi
