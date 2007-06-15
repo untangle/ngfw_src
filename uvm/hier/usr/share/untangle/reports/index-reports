@@ -777,13 +777,13 @@ tran_dir=$1
 rep_base=$2
 # generate the web viewable page
     if [ $MV_EG_DAILY_REPORT == 'y' ]; then
-        @USR_BIN@/usersummary-reports $tran_dir $rep_base daily $generate_email_index
+        @UVM_HOME@/reports/usersummary-reports $tran_dir $rep_base daily $generate_email_index
     fi
     if [ $MV_EG_WEEKLY_REPORT == 'y' ]; then
-        @USR_BIN@/usersummary-reports $tran_dir $rep_base weekly $generate_email_index
+        @UVM_HOME@/reports/usersummary-reports $tran_dir $rep_base weekly $generate_email_index
     fi
     if [ $MV_EG_MONTHLY_REPORT == 'y' ]; then
-        @USR_BIN@/usersummary-reports $tran_dir $rep_base monthly $generate_email_index
+        @UVM_HOME@/reports/usersummary-reports $tran_dir $rep_base monthly $generate_email_index
     fi
 }
 
