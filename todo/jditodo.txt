@@ -1,3 +1,11 @@
+Rules for files that don't need license
+---------------------------------------
+.png
+.jpg
+.gif
+.form (xml files for gui from netbeans)
+
+
 br
 --
 how to do portal schema conversion?
