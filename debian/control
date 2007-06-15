@@ -47,7 +47,7 @@ XB-Is-Service: true
 Description: The Untangle Email Decoder
  The Untangle Email Decoder.
 
-Package: untangle-node-airgap
+Package: untangle-node-shield
 Architecture: any
 Depends: untangle-uvm
 XB-Display-Name: Attack Blocker

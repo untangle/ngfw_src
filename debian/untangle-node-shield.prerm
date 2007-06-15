@@ -1,0 +1,3 @@
+#! /bin/sh
+
+/usr/bin/ucli -t 30 unregister untangle-node-shield 2>/dev/null || true

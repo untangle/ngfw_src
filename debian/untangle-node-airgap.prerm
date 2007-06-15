@@ -1,3 +1,0 @@
-#! /bin/sh
-
-/usr/bin/ucli -t 30 unregister airgap-node 2>/dev/null || true
