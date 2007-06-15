@@ -320,6 +320,12 @@ public class Util {
     public static boolean getIsPremium(String identifier){
         return !getLicenseManager().getLicenseStatus(identifier).isExpired();
     }
+
+    public static boolean getIsPremium(){
+		// XXX - waiting on isProfessional
+        return false; //getLicenseManager().isProfessional();
+    }
+	
     //////////////////////////////
 
 

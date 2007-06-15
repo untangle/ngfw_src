@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This library is free software; you can redistribute it and/or modify
@@ -70,11 +70,13 @@ public class AboutJDialog extends MConfigJDialog {
         addRefreshable(NAME_ABOUT_INFO, aboutAboutJEditorPane);
 
         // LICENSE ////////////
-        AboutLicenseJEditorPane aboutLicenseJEditorPane = new AboutLicenseJEditorPane();
-        JScrollPane aboutLicenseJScrollPane = addScrollableTab(null, NAME_LICENSE_INFO, null, aboutLicenseJEditorPane, false, true);
-        aboutLicenseJEditorPane.setContainingJScrollPane(aboutLicenseJScrollPane);
-        addRefreshable(NAME_LICENSE_INFO, aboutLicenseJEditorPane);
-                
+		if ( Util.getIsPremium() ) {
+	        AboutLicenseJEditorPane aboutLicenseJEditorPane = new AboutLicenseJEditorPane();
+	        JScrollPane aboutLicenseJScrollPane = addScrollableTab(null, NAME_LICENSE_INFO, null, aboutLicenseJEditorPane, false, true);
+    	    aboutLicenseJEditorPane.setContainingJScrollPane(aboutLicenseJScrollPane);
+	        addRefreshable(NAME_LICENSE_INFO, aboutLicenseJEditorPane);
+		}
+
         // REGISTRATION //////////
         AboutRegistrationJPanel aboutRegistrationJPanel = new AboutRegistrationJPanel();
         addScrollableTab(null, NAME_REGISTRATION_INFO, null, aboutRegistrationJPanel, false, true);

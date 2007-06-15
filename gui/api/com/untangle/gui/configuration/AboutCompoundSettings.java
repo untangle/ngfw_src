@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This library is free software; you can redistribute it and/or modify
@@ -92,7 +92,14 @@ public class AboutCompoundSettings implements CompoundSettings {
         else
             installedVersion = mackageDesc.getInstalledVersion();
         activationKey = Util.getUvmContext().getActivationKey();
-        licenseURL = Util.getClassLoader().getResource("License.txt");
+
+		if ( Util.getIsPremium() ) {
+        	licenseURL = Util.getClassLoader().getResource("LicenseProfessional.txt");
+		}
+		else {
+        	licenseURL = Util.getClassLoader().getResource("LicenseStandard.txt");
+		}
+
         timeZone = Util.getAdminManager().getTimeZone();
         date = Util.getAdminManager().getDate();
         brandingSettings = Util.getBrandingManager().getBrandingSettings();

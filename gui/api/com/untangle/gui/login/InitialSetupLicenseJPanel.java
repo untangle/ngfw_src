@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This library is free software; you can redistribute it and/or modify
@@ -42,21 +42,13 @@ import com.untangle.gui.util.Util;
 import com.untangle.gui.widgets.dialogs.*;
 import com.untangle.gui.widgets.wizard.*;
 
-public class InitialSetupLicenseJPanel extends MWizardPageJPanel implements AdjustmentListener {
-
-    private static final String EXCEPTION_NOT_ACCEPT = "You must accept the license agreement before proceeding.";
-
-    private JScrollBar verticalScrollBar;
-    private boolean readAgreement = false;
+public class InitialSetupLicenseJPanel extends MWizardPageJPanel {
 
     public InitialSetupLicenseJPanel() {
         initComponents();
 
-        verticalScrollBar = contentJScrollPane.getVerticalScrollBar();
-        verticalScrollBar.addAdjustmentListener(this);
-
         try{
-            InputStream licenseInputStream = Util.getClassLoader().getResourceAsStream("License.txt");
+            InputStream licenseInputStream = Util.getClassLoader().getResourceAsStream("LicenseStandard.txt");
             InputStreamReader licenseInputStreamReader = new InputStreamReader(licenseInputStream);
             BufferedReader licenseBufferedReader = new BufferedReader(licenseInputStreamReader);
             StringBuilder licenseStringBuilder = new StringBuilder();
@@ -78,43 +70,12 @@ public class InitialSetupLicenseJPanel extends MWizardPageJPanel implements Adju
         }
     }
 
-    public void adjustmentValueChanged(AdjustmentEvent evt){
-        if( (evt.getValue() == (verticalScrollBar.getMaximum()-verticalScrollBar.getModel().getExtent())) && !readAgreement ){
-            acceptJRadioButton.setEnabled(true);
-            declineJRadioButton.setEnabled(true);
-            readAgreement = true;
-        }
-    }
-
-    Exception exception;
-    Window topLevelWindow;
-
     public void doSave(Object settings, boolean validateOnly) throws Exception {
-        topLevelWindow = (Window) this.getTopLevelAncestor();
-
-        SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
-
-            exception = null;
-
-            if( !acceptJRadioButton.isSelected() ){
-                if( declineJRadioButton.isSelected() ){
-                    MOneButtonJDialog.factory(topLevelWindow,"","<html>You have declined the Untangle License Agreement.  The setup wizard will now exit.  You may run the setup wizard again later.</html>","Setup Wizard Warning","Warning");
-                    System.exit(0);
-                    return;
-                }
-                else{
-                    exception = new Exception(EXCEPTION_NOT_ACCEPT);
-                    return;
-                }
-            }
-        }});
-
-        if( exception != null )
-            throw exception;
     }
 
 
-    private void initComponents() {//GEN-BEGIN:initComponents
+    // <editor-fold defaultstate="collapsed" desc=" Generated Code ">//GEN-BEGIN:initComponents
+    private void initComponents() {
         java.awt.GridBagConstraints gridBagConstraints;
 
         acceptButtonGroup = new javax.swing.ButtonGroup();
@@ -123,9 +84,6 @@ public class InitialSetupLicenseJPanel extends MWizardPageJPanel implements Adju
         contentJScrollPane = new javax.swing.JScrollPane();
         jPanel1 = new javax.swing.JPanel();
         contentJEditorPane = new javax.swing.JEditorPane();
-        actionJPanel = new javax.swing.JPanel();
-        acceptJRadioButton = new javax.swing.JRadioButton();
-        declineJRadioButton = new javax.swing.JRadioButton();
         backgroundJPabel = new javax.swing.JLabel();
 
         setLayout(new java.awt.GridBagLayout());
@@ -152,26 +110,6 @@ public class InitialSetupLicenseJPanel extends MWizardPageJPanel implements Adju
         contentJEditorPane.setEditable(false);
         contentJEditorPane.setFocusable(false);
         jPanel1.add(contentJEditorPane, java.awt.BorderLayout.CENTER);
-
-        actionJPanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        acceptButtonGroup.add(acceptJRadioButton);
-        acceptJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
-        acceptJRadioButton.setText("<html><b>Accept</b> License Agreement</html>");
-        acceptJRadioButton.setEnabled(false);
-        acceptJRadioButton.setMinimumSize(new java.awt.Dimension(185, 23));
-        acceptJRadioButton.setPreferredSize(new java.awt.Dimension(185, 23));
-        actionJPanel.add(acceptJRadioButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 30, -1, -1));
-
-        acceptButtonGroup.add(declineJRadioButton);
-        declineJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
-        declineJRadioButton.setText("<html><b>Decline</b> License Agreement</html>");
-        declineJRadioButton.setEnabled(false);
-        declineJRadioButton.setMinimumSize(new java.awt.Dimension(185, 23));
-        declineJRadioButton.setPreferredSize(new java.awt.Dimension(185, 23));
-        actionJPanel.add(declineJRadioButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 10, -1, -1));
-
-        jPanel1.add(actionJPanel, java.awt.BorderLayout.SOUTH);
 
         contentJScrollPane.setViewportView(jPanel1);
 
@@ -201,18 +139,15 @@ public class InitialSetupLicenseJPanel extends MWizardPageJPanel implements Adju
         gridBagConstraints.weightx = 1.0;
         add(backgroundJPabel, gridBagConstraints);
 
-    }//GEN-END:initComponents
+    }// </editor-fold>//GEN-END:initComponents
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup acceptButtonGroup;
-    private javax.swing.JRadioButton acceptJRadioButton;
-    private javax.swing.JPanel actionJPanel;
     private javax.swing.JLabel backgroundJPabel;
     private javax.swing.JEditorPane contentJEditorPane;
     private javax.swing.JPanel contentJPanel;
     private javax.swing.JScrollPane contentJScrollPane;
-    private javax.swing.JRadioButton declineJRadioButton;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
     // End of variables declaration//GEN-END:variables
