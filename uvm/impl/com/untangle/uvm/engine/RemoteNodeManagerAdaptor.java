@@ -1,6 +1,6 @@
 /*
- * $HeadURL:$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * $HeadURL$
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -21,19 +21,25 @@ package com.untangle.uvm.engine;
 import java.util.List;
 import java.util.Map;
 
-import com.untangle.uvm.policy.Policy;
-import com.untangle.uvm.security.Tid;
 import com.untangle.uvm.node.DeployException;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.node.NodeStats;
 import com.untangle.uvm.node.UndeployException;
+import com.untangle.uvm.policy.Policy;
+import com.untangle.uvm.security.Tid;
 
-class RemoteNodeManagerImpl implements NodeManager
+/**
+ * Adapts NodeManagerImpl to a RemoteNodeManager.
+ *
+ * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
+ * @version 1.0
+ */
+class RemoteNodeManagerAdaptor implements NodeManager
 {
     private final NodeManagerImpl nodeManager;
 
-    RemoteNodeManagerImpl(NodeManagerImpl nodeManager)
+    RemoteNodeManagerAdaptor(NodeManagerImpl nodeManager)
     {
         this.nodeManager = nodeManager;
     }

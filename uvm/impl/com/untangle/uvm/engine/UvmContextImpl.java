@@ -109,7 +109,7 @@ public class UvmContextImpl extends UvmContextBase
     private PipelineFoundryImpl pipelineFoundry;
     private ToolboxManagerImpl toolboxManager;
     private NodeManagerImpl nodeManager;
-    private RemoteNodeManagerImpl remoteNodeManager;
+    private RemoteNodeManagerAdaptor remoteNodeManager;
     private UvmRemoteContext remoteContext;
     private CronManager cronManager;
     private AppServerManagerImpl appServerManager;
@@ -658,7 +658,7 @@ public class UvmContextImpl extends UvmContextBase
 
         // start nodes:
         nodeManager = new NodeManagerImpl(repositorySelector);
-        remoteNodeManager = new RemoteNodeManagerImpl(nodeManager);
+        remoteNodeManager = new RemoteNodeManagerAdaptor(nodeManager);
 
         // Retrieve the reporting configuration manager
         reportingManager = ReportingManagerImpl.reportingManager();
