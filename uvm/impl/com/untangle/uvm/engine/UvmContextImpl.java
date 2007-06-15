@@ -49,8 +49,8 @@ import com.untangle.uvm.networking.NetworkManagerImpl;
 import com.untangle.uvm.networking.RemoteNetworkManagerImpl;
 import com.untangle.uvm.networking.ping.PingManagerImpl;
 import com.untangle.uvm.node.NodeContext;
-import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.node.RemoteIntfManager;
+import com.untangle.uvm.node.RemoteNodeManager;
 import com.untangle.uvm.node.RemoteShieldManager;
 import com.untangle.uvm.policy.LocalPolicyManager;
 import com.untangle.uvm.policy.PolicyManager;
@@ -206,7 +206,7 @@ public class UvmContextImpl extends UvmContextBase
         return nodeManager;
     }
 
-    public NodeManager remoteNodeManager()
+    public RemoteNodeManager remoteNodeManager()
     {
         return remoteNodeManager;
     }

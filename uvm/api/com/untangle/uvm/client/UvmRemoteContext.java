@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -44,12 +44,12 @@ import com.untangle.uvm.addrbook.AddressBook;
 import com.untangle.uvm.license.RemoteLicenseManager;
 import com.untangle.uvm.logging.LoggingManager;
 import com.untangle.uvm.networking.ping.PingManager;
+import com.untangle.uvm.node.RemoteIntfManager;
+import com.untangle.uvm.node.RemoteNodeManager;
+import com.untangle.uvm.node.RemoteShieldManager;
 import com.untangle.uvm.policy.PolicyManager;
 import com.untangle.uvm.security.AdminManager;
 import com.untangle.uvm.toolbox.ToolboxManager;
-import com.untangle.uvm.node.RemoteIntfManager;
-import com.untangle.uvm.node.RemoteShieldManager;
-import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.user.RemotePhoneBook;
 
 /**
@@ -73,7 +73,7 @@ public interface UvmRemoteContext
      *
      * @return the NodeManager.
      */
-    NodeManager nodeManager();
+    RemoteNodeManager nodeManager();
 
     /**
      * Get the <code>LoggingManager</code> singleton.
@@ -164,7 +164,7 @@ public interface UvmRemoteContext
      * @return the BrandingManager.
      */
     BrandingManager brandingManager();
-    
+
     /**
      * The license manager.
      *
@@ -227,7 +227,7 @@ public interface UvmRemoteContext
     /**
      * Return true if running inside a Virtualized Platform (like VMWare)
      *
-     * @return a <code>boolean</code> true if platform is running in a virtualized machine 
+     * @return a <code>boolean</code> true if platform is running in a virtualized machine
      */
     boolean isInsideVM();
 

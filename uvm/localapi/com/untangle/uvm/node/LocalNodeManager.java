@@ -1,6 +1,6 @@
 /*
- * $HeadURL:$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * $HeadURL$
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -39,6 +39,12 @@ import java.util.Map;
 import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.security.Tid;
 
+/**
+ * Local interface for managing Node instances.
+ *
+ * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
+ * @version 1.0
+ */
 public interface LocalNodeManager
 {
     /**
@@ -160,7 +166,15 @@ public interface LocalNodeManager
      */
     NodeContext threadContext();
 
+    /**
+     * Sets the thread's context.
+     *
+     * @param ctx context to associate with thread.
+     */
     void registerThreadContext(NodeContext ctx);
 
+    /**
+     * Returns the thread context to the UVM context.
+     */
     void deregisterThreadContext();
 }

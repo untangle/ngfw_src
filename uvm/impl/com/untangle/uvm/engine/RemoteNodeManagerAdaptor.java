@@ -23,8 +23,8 @@ import java.util.Map;
 
 import com.untangle.uvm.node.DeployException;
 import com.untangle.uvm.node.NodeContext;
-import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.node.NodeStats;
+import com.untangle.uvm.node.RemoteNodeManager;
 import com.untangle.uvm.node.UndeployException;
 import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.security.Tid;
@@ -35,7 +35,7 @@ import com.untangle.uvm.security.Tid;
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
-class RemoteNodeManagerAdaptor implements NodeManager
+class RemoteNodeManagerAdaptor implements RemoteNodeManager
 {
     private final NodeManagerImpl nodeManager;
 

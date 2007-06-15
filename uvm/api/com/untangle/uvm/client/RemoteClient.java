@@ -49,7 +49,7 @@ import java.util.Set;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.NodeDesc;
-import com.untangle.uvm.node.NodeManager;
+import com.untangle.uvm.node.RemoteNodeManager;
 import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.policy.PolicyException;
 import com.untangle.uvm.security.AdminSettings;
@@ -100,7 +100,7 @@ public class RemoteClient
     private static UvmRemoteContext mc;
 
     private static ToolboxManager tool;
-    private static NodeManager tm;
+    private static RemoteNodeManager tm;
 
     public static void main(String[] args) throws Exception
     {

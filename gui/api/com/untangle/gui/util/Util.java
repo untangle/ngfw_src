@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -76,7 +76,6 @@ import com.untangle.gui.widgets.editTable.*;
 import com.untangle.uvm.*;
 import com.untangle.uvm.addrbook.*;
 import com.untangle.uvm.client.*;
-import com.untangle.uvm.license.LicenseStatus;
 import com.untangle.uvm.license.RemoteLicenseManager;
 import com.untangle.uvm.logging.*;
 import com.untangle.uvm.networking.ping.PingManager;
@@ -158,7 +157,7 @@ public class Util {
     // SERVER PROXIES ///////////////
     private static UvmRemoteContext uvmContext;
     private static ToolboxManager toolboxManager;
-    private static NodeManager nodeManager;
+    private static RemoteNodeManager nodeManager;
     private static AdminManager adminManager;
     private static StatsCache statsCache;
     private static NetworkManager networkManager;
@@ -202,10 +201,10 @@ public class Util {
             brandingManager = null;
         }
     }
-    
+
     public static UvmRemoteContext getUvmContext(){ return uvmContext; }
     public static ToolboxManager getToolboxManager(){ return toolboxManager; }
-    public static NodeManager getNodeManager(){ return nodeManager; }
+    public static RemoteNodeManager getNodeManager(){ return nodeManager; }
     public static AdminManager getAdminManager(){ return adminManager; }
     public static StatsCache getStatsCache(){ return statsCache; }
     public static RemoteIntfManager getIntfManager(){ return remoteIntfManager; }

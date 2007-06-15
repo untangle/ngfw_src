@@ -44,7 +44,6 @@ import com.untangle.uvm.node.DeployException;
 import com.untangle.uvm.node.LocalNodeManager;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.NodeDesc;
-import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.node.NodeState;
 import com.untangle.uvm.node.NodeStats;
 import com.untangle.uvm.node.UndeployException;
@@ -110,7 +109,7 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
         this.nodeManagerState = tw.getResult();
     }
 
-    // NodeManager -------------------------------------------------------
+    // RemoteNodeManager ------------------------------------------------------
 
     public List<Tid> nodeInstances()
     {
@@ -296,7 +295,7 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
         logger.info("NodeManager destroyed");
     }
 
-    // LocalNodeManager methods ------------------------------------------
+    // LocalNodeManager methods -----------------------------------------------
 
     public NodeContext threadContext()
     {
@@ -315,7 +314,7 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
         repositorySelector.uvmContext();
     }
 
-    // UvmLoggingContextFactory methods --------------------------------------
+    // UvmLoggingContextFactory methods ---------------------------------------
 
     public UvmLoggingContext get()
     {
