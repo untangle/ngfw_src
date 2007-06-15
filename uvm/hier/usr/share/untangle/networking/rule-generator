@@ -57,7 +57,7 @@ FLAG_INSIDE_INTF="inside"
 FLAG_OUTSIDE_INTF="outside"
 FLAG_BOTH_INTF="both"
 
-## DHCP Port range 
+## DHCP Port range
 DHCP_SERVER_PORT="67"
 DHCP_CLIENT_PORT="68"
 DHCP_PORT_RANGE="${DHCP_SERVER_PORT}:${DHCP_CLIENT_PORT}"
@@ -92,26 +92,26 @@ function blockForwarding() {
     ${IPTABLES} -t filter -F ${CHAIN_LIBERATION}
 
     ## connmark all traffic that enters and exits from the same interface.
-    for l_interface in ${INTERFACE_ORDER}  ; do 
+    for l_interface in ${INTERFACE_ORDER}  ; do
         if [ -z `getBridge ${l_interface}` ]; then
             l_modules=" "
             l_inFlag=" -i "
-            l_outFlag=" -o "            
+            l_outFlag=" -o "
         else
             l_modules=" -m physdev "
             l_inFlag=" --physdev-in "
-            l_outFlag=" --physdev-out "            
+            l_outFlag=" --physdev-out "
         fi
-        
+
         ${IPTABLES} -t filter -A FORWARD ${l_modules} ${l_inFlag} ${l_interface} \
             ${l_outFlag} ${l_interface} -g ${CHAIN_LIBERATION}
     done
-    
+
     ## connmark all antisubscribed packets in the liberation chain, done this way
     ## because some packets cannot be connmarked, but shouldn't hit they shouldn't hit
     ## the rejection rules that are past these rules.
     ${IPTABLES} -t filter -A ${CHAIN_LIBERATION} -j CONNMARK --set-mark ${MARK_ANTISUB}/${MARK_ANTISUB}
-    
+
     ## Block non-antisubscribed TCP traffic from being forwarded
     ${IPTABLES} -t filter -A FORWARD -m mark -p tcp --mark 0/${MARK_ANTISUB} \
         -j REJECT --reject-with tcp-reset
@@ -129,24 +129,24 @@ function blockForwarding() {
                 l_inFlag=" --physdev-in "
                 l_outFlag=" --physdev-out "
             fi
-            
+
             ## Block forwarded DHCP traffic to the inside interface
             ${IPTABLES} ${l_modules} -t filter -A FORWARD -p udp --source-port ${DHCP_PORT_RANGE} \
                 --destination-port ${DHCP_PORT_RANGE} ${l_outFlag} ${l_interface} -j DROP
-            
+
             ## Block forwarded DHCP traffic from the inside interface
             ${IPTABLES} ${l_modules} -t filter -A FORWARD -p udp --source-port ${DHCP_PORT_RANGE} \
                 --destination-port ${DHCP_PORT_RANGE} ${l_inFlag} ${l_interface} -j DROP
-            
+
             ## antisub anything to the DHCP server that is from one of these interfaces.
             ## The logic is, apply the DHCP antisub to the traffic that the DHCP server should see
-            ## At the end, use the another rule to DROP any traffic (on the INPUT chain) 
+            ## At the end, use the another rule to DROP any traffic (on the INPUT chain)
             ## that the DHCP server should not see.
             ${IPTABLES} ${l_modules} -t mangle -A INPUT ${l_inFlag} ${l_interface} -p udp \
                 --destination-port ${DHCP_SERVER_PORT} \
                 -j MARK --or-mark $(( ${MARK_ANTISUB} | ${MARK_DHCP_SERVER_ANTISUB} ))
         done
-        
+
         ## Drop any DHCP traffic that didn't get antisubscribed.
         ${IPTABLES} -t mangle -A INPUT -p udp  \
             --destination-port ${DHCP_SERVER_PORT} -m mark --mark 0/${MARK_DHCP_SERVER_ANTISUB} -j DROP
@@ -159,7 +159,7 @@ function guardRules() {
 
     ## Return for anything that is not local
     ${IPTABLES} -t mangle -A ${CHAIN_GUARDS} -m mark --mark 0/${MARK_LOCAL} -j RETURN
-    
+
     ## Drop stuff going to the UDP divert port from outside.
     ${IPTABLES} -t mangle -A ${CHAIN_GUARDS} -p udp -m mark --mark ${MARK_LOCAL}/${MARK_LOCAL} \
         --destination-port ${UDP_DIVERT_PORT} -j DROP
@@ -204,20 +204,20 @@ function generateGuardRule() {
     protocol=$1
     ports=$2
     intf=$3
-    
+
     if [ "${ports}x" = "x" ]; then
         echo "Ignoring empty ports string"
     fi
-        
+
     regulated=${ports#*_}
-    
+
     if [ "${regulated}x" != "${ports}x" ]; then
         ports=${ports%_*}
         regulated="-s ! ${regulated}"
     else
         regulated=""
     fi
-    
+
     ## This will have to be pushed into each guard rule when there are more than two interfaces.x
     if [ "${intf}x" == "${FLAG_INSIDE_INTF}x" ]; then
         mark=${MARK_INSIDE_INTF}
@@ -234,7 +234,7 @@ function generateGuardRule() {
         echo "Unable to determine which interface to put the guard for ports $ports protocol $protocol"
         return
     fi
-    
+
     if [ "${regulated}x" != "x" ]; then
         ${IPTABLES} -t mangle -A ${CHAIN_GUARDS} -p ${protocol} ${regulated} \
             -m mark --mark ${mark}/${markMask} \
@@ -262,7 +262,7 @@ function markIntfRules () {
 
     ## Clear the lower bits of the interface mark
     ${IPTABLES} -t mangle -A ${CHAIN_MARKINTF} -j MARK --and-mark 0xFFFF0000
-    
+
     c=1
     for interface in ${INTERFACE_ORDER} ; do
         if [ -z "`getBridge $interface`" ]; then
@@ -276,7 +276,7 @@ function markIntfRules () {
             #echo "${addresses}"
             #echo `getBridgeNetmasks $interface`
         fi
-        
+
         mask=${c}
 
         ## The services list determine which interfaces get the inside_intf flag.
@@ -285,7 +285,7 @@ function markIntfRules () {
         fi
 
         ${IPTABLES} -t mangle -A ${CHAIN_MARKINTF} ${matchType} ${interface} -j MARK --or-mark ${mask}
-        
+
         d=${MARK_LOCAL_ADDRESS_BASE}
         for address in $addresses; do
             ${IPTABLES} -t mangle -A ${CHAIN_MARKINTF} ${matchType} ${interface} --destination ${address} \
@@ -307,18 +307,18 @@ function markIntfVpn() {
     local l_mark=$(( ${VPN_TUN_MARK} | ${MARK_INSIDE_INTF} ))
     local l_addresses
     local l_address
-    
+
     ## Not really worried about local traffic to the VPN, just vector it.
     if [  -d "${SYSFS_INTERFACE_PATH}/${VPN_TUN_INTF}" ]; then
         l_interface=${VPN_TUN_INTF}
         l_matchType="-i"
         l_addresses="`getActualAddresses ${l_interface}` `getActualAddresses ${UVM_INTERNAL_INTF}`"
     fi
-    
+
     if [ -d "${SYSFS_INTERFACE_PATH}/${VPN_TAP_INTF}" ]; then
         if [ -n "${l_interface}" ]; then
             echo "error, TUN and TAP interface are configured, using TUN"
-        else 
+        else
             l_interface=${VPN_TAP_INTF}
             l_matchType="-m physdev --physdev-in "
 
@@ -326,10 +326,10 @@ function markIntfVpn() {
             l_addresses="`getActualAddresses ${l_interface}`"
         fi
     fi
-    
+
     ## Nothing to do if neither of the interfaces are configured
     if [ -z "${l_interface}" ]; then return ; fi
-    
+
     ## Mark all packets that come in on on the VPN interface
     ${IPTABLES} -t mangle -A ${CHAIN_MARKINTF} ${l_matchType} ${l_interface} -j MARK --or-mark ${l_mark}
 
@@ -373,7 +373,7 @@ function antisubscribeRules() {
     ${IPTABLES} -t mangle -A ${CHAIN_ANTISUB} -m mark --mark 0/${MARK_ANTISUB} \
         --source 127.0.0.0/8 --destination 127.0.0.0/8 -j MARK --or-mark ${MARK_ANTISUB}
 
-    ## Antisubscribe to ping where necessary, if it isn't set, 
+    ## Antisubscribe to ping where necessary, if it isn't set,
     ## Antisubscribe on all interfaces. (default is a little janky.)
 
     ## If unset, then use default
@@ -386,15 +386,15 @@ function antisubscribeRules() {
     ## Determine whether or not to antisubscribe to local traffic
     antisubscribeLocalTraffic ${FLAG_OUTSIDE_INTF} ${ANTISUBSCRIBE_LOCAL_OUTSIDE}
     antisubscribeLocalTraffic ${FLAG_INSIDE_INTF}  ${ANTISUBSCRIBE_LOCAL_INSIDE}
-    
+
     if [ -n "${HTTPS_INTERNAL_REDIRECT_PORT}" ]; then
     ## Redirect HTTPS packets to the special port
         t_httpsPorts=${HTTPS_PORT}
-        
+
         if [ -n "${outsideHttpsPort}" ] && [ "${t_httpsPort}" != "${outsideHttpsPort}" ]; then
             t_httpsPorts="${t_httpsPorts},${outsideHttpsPort}"
         fi
-        
+
         ## This is the mask for the next check
         t_mark="$(( ${MARK_ANTISUB} | ${MARK_INSIDE_INTF} | ${MARK_LOCAL} ))"
         ## This tells to antisubscribe, and mark as internal redirect any local packet
@@ -404,9 +404,9 @@ function antisubscribeRules() {
             -m multiport --destination-ports ${t_httpsPorts} \
             -j MARK --or-mark $(( ${MARK_ANTISUB} | ${MARK_INTERNAL_REDIRECT} ))
     fi
-    
+
     ## This rule will often be unecessary, but it is there just in case.
-    ## if the public address is ever different than the box address, these are different.    
+    ## if the public address is ever different than the box address, these are different.
     if [ -n "${HTTPS_PUBLIC_ADDR}" ] && [ -n "${HTTPS_PUBLIC_PORT}" ]; then
         ## The first one is for traffic on the inside interface
         ${IPTABLES} -t mangle -A ${CHAIN_ANTISUB} -p tcp \
@@ -428,11 +428,11 @@ function antisubscribeRules() {
     for c_portList in ${ANTISUBSCRIBES_LOCAL_TCP_PORTS}; do
         antisubscribeLocal "tcp" ${c_portList}
     done
-    
+
     for c_portList in ${ANTISUBSCRIBES_LOCAL_UDP_PORTS}; do
         antisubscribeLocal "udp" ${c_portList}
     done
-    
+
     ## antisubscribe to unwanted ICMP
     for icmpType in ${ANTISUBSCRIBES_ICMP} ; do
         ${IPTABLES} -t mangle -A ${CHAIN_ANTISUB} -p icmp -m mark --mark 0/${MARK_ANTISUB} \
@@ -491,7 +491,7 @@ function antisubscribeLocal() {
                 echo "Unable to determine which interface to antisubscribe  for ${t_protocol} ${t_portList}"
                 return
             fi
-            
+
             t_mark=$(( ${t_mark} | ${MARK_LOCAL} ))
             t_markMask=$(( ${MARK_ANTISUB} | ${MARK_LOCAL} | ${t_mask} ))
         else
@@ -544,18 +544,18 @@ function antisubscribeLocalPing() {
     local t_intf
     local t_mark
     local t_mask
-    
+
     for t_intf in ${t_intfList} ; do
         ## Validate the index
-        if [ -z "`isValidIntfIndex ${t_intf}`" ]; then 
+        if [ -z "`isValidIntfIndex ${t_intf}`" ]; then
             echo "'${t_intf}' is not a valid interface, continuing"
-            continue ; 
+            continue ;
         fi
-        
+
         ## Search for packets coming in on the interface, headed locally.
         t_mark=$(( ${t_intf} | ${MARK_LOCAL} ))
         t_markMask=$(( ${MARK_INTF_MASK} | ${MARK_ANTISUB} | ${MARK_LOCAL} ))
-        
+
         ## Antisubscribe to all echo-requests coming in on the right interface.
         ## replies are outgoing and handled by conntrack.
         ${IPTABLES} -t mangle -A ${CHAIN_ANTISUB} -p icmp --icmp-type echo-request \
@@ -566,16 +566,16 @@ function antisubscribeLocalPing() {
 ## intercept everything and then use antisubscribes to not intercept certain packets
 function interceptRules() {
     local t_mark
-    
+
 ## Flush the intercept chain
     ${IPTABLES} -t mangle -F ${CHAIN_INTERCEPT}
 
 ## If the packet is antisubscribed, return
     ${IPTABLES} -t mangle -A ${CHAIN_INTERCEPT} -m mark --mark ${MARK_ANTISUB}/${MARK_ANTISUB} -j RETURN
-    
+
 ## Queue all packets for TCP and ICMP
     ${IPTABLES} -t mangle -A ${CHAIN_INTERCEPT} -p tcp --tcp-flags SYN,ACK SYN -j NFQUEUE
-    
+
     ${IPTABLES} -t mangle -A ${CHAIN_INTERCEPT} -p icmp -j NFQUEUE
 
 ## Divert all of the UDP traffic
@@ -599,7 +599,7 @@ function interceptRules() {
             --destination-port ${HTTPS_PUBLIC_PORT} \
             -j REDIRECT --to-ports ${HTTPS_PORT}
     fi
-    
+
     ## connmark all of the traffic that was unqueued or diverted.
     ## This is for situations when the choice to antisubscribe cannot
     ## be made in iptables.  for example, traffic coming and going
@@ -609,7 +609,7 @@ function interceptRules() {
 
     ${IPTABLES} -t nat -A OUTPUT -m mark --mark ${MARK_LIBERATE}/${MARK_LIBERATE} \
         -j CONNMARK --set-mark ${MARK_ANTISUB}/${MARK_ANTISUB}
-    
+
 ## Redirect all of the TCP traffic that is not antisubscribed
     if [ "${TCP_REDIRECT_PORTS}x" != "x" ]; then
         ${IPTABLES} -t nat -A PREROUTING -m mark --mark 0/${MARK_ANTISUB} -p tcp --tcp-flags SYN,ACK SYN \
@@ -634,7 +634,7 @@ function uturnRules() {
         else
             matchType="-m physdev --physdev-out"
         fi
-        
+
         ${IPTABLES} -t filter -A OUTPUT -m mark ${matchType} ${interface} --mark ${c}/0xF -j DROP
         c=$(( $c + 1 ))
     done
@@ -657,14 +657,14 @@ function stealArpAddress() {
         echo "The interface ${t_intf} is not inside of a bridge, unable to steal ARP address";
         return -1
     fi
-    
+
     t_macAddress=`getMACAddress ${t_bridge}`
 
     if [ -z "${t_macAddress}" ]; then
         echo "Unable to determine the MAC address for the bridge ${t_bridge}";
         return -1
     fi
-    
+
     ${EBTABLES} -t nat -A PREROUTING -i ${t_intf} -p ARP --arp-ip-dst ${t_ip} \
         -j arpreply --arpreply-mac ${t_macAddress}
 }
@@ -673,7 +673,7 @@ function setupMode()
 {
     local t_port
     local t_qualifier
-    
+
     if [ "${IS_IN_SETUP_MODE}x" = "truex" ]; then
         ## Indicate to respond to ARP resquests on the interface where traffic is being stolen
         stealArpAddress ${STEAL_ADDRESS} ${STEAL_INTERFACE} || return 0
@@ -681,7 +681,7 @@ function setupMode()
         ## Antisubscribe from  TCP traffic to the stolen IP here.
         if [ -n "${STEAL_TCP_PORTS}" ]; then
             t_qualifier="-p tcp --destination ${STEAL_ADDRESS} -m multiport --destination-ports ${STEAL_TCP_PORTS}"
-            
+
             ## Redirect traffic to the stolen address to local.
             ${IPTABLES} -t nat -A PREROUTING ${t_qualifier} -j REDIRECT
 
@@ -705,8 +705,8 @@ function setupMode()
 function runCustomRulesScript()
 {
     ## If necessary run the custom rules script
-    if [ -n "${UVM_CUSTOM_RULES}" ]; then 
-        ${UVM_CUSTOM_RULES} ; 
+    if [ -n "${UVM_CUSTOM_RULES}" ]; then
+        ${UVM_CUSTOM_RULES} ;
     else
         ${LOG_DEBUG} "Custom rules script is disabled"
     fi
@@ -730,12 +730,12 @@ getLicenseKey() {
 
   KEY=`cat $ACTIVATION_KEY_FILE_TMP`
 
-  # for CD downloads, the temp key is only 0s, so we need to ask the 
+  # for CD downloads, the temp key is only 0s, so we need to ask the
   # server for a brand new one; that's done by not supplying any value
   # to the CGI variable
-  [[ $KEY = $FAKE_KEY ]] && KEY="" 
+  [[ $KEY = $FAKE_KEY ]] && KEY=""
 
-  if curl -m 10 --insecure --fail -o $TMP_ARCHIVE `printf ${ACTIVATION_URL_TEMPLATE} "$KEY" $(/usr/bin/mvip)`; then
+  if curl -m 10 --insecure --fail -o $TMP_ARCHIVE `printf ${ACTIVATION_URL_TEMPLATE} "$KEY" $(/usr/share/untangle/bin/utip)`; then
     rm -f $ACTIVATION_KEY_FILE_TMP
     tar -C / -xf $TMP_ARCHIVE
     @PREFIX@/usr/bin/mvactivate
@@ -752,13 +752,13 @@ echo "[DEBUG:`date`] Generating iptables rules"
 if [ -f /proc/sys/net/ipv4/tcp_window_scaling ] ; then
     ## If undefined or non-true, disable window scaling
     val=0
-    
+
     if [ "x$TCP_WINDOW_SCALING_EN" = "xtrue" ]; then
         echo "[DEBUG:`date`] enabling TCP Window Scaling"
         val=1
     fi
-    
-    echo $val > /proc/sys/net/ipv4/tcp_window_scaling 
+
+    echo $val > /proc/sys/net/ipv4/tcp_window_scaling
 fi
 
 

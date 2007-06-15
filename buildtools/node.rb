@@ -97,7 +97,8 @@ class NodeBuilder
       end
 
       jt = JarTarget.buildTarget(node, deps, 'gui',
-                                 ["#{home}/#{dirName}/api", "#{home}/#{dirName}/gui",
+                                 ["#{home}/#{dirName}/api",
+                                   "#{home}/#{dirName}/gui",
                                    "#{home}/#{dirName}/fake"])
       buildEnv.installTarget.installJars(jt, "#{node.distDirectory}/usr/share/untangle/web/webstart",
                                          nil, true)
