@@ -1,3 +1,3 @@
 #! /bin/sh
 
-mcli -t 30 unregister clam-transform 2>/dev/null || true
+/usr/bin/ucli -t 30 unregister clam-node 2>/dev/null || true
