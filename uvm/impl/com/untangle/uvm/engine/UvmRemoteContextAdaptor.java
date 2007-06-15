@@ -39,13 +39,19 @@ import com.untangle.uvm.security.AdminManager;
 import com.untangle.uvm.toolbox.ToolboxManager;
 import com.untangle.uvm.user.RemotePhoneBook;
 
-class UvmRemoteContextImpl implements UvmRemoteContext
+/**
+ * Adapts UvmContextImpl to UvmRemoteContext.
+ *
+ * @author <a href="mailto:amread@nyx.net">Aaron Read</a>
+ * @version 1.0
+ */
+class UvmRemoteContextAdaptor implements UvmRemoteContext
 {
     private final UvmContextImpl context;
 
     // constructors -----------------------------------------------------------
 
-    UvmRemoteContextImpl(UvmContextImpl context)
+    UvmRemoteContextAdaptor(UvmContextImpl context)
     {
         this.context = context;
     }
