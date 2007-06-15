@@ -117,7 +117,7 @@ $PSQL -v midnight="'$midnight'" -v daystosave="$NUMDAYSTOKEEP" -v intable="event
 $PSQL -v midnight="'$midnight'" -v daystosave="$NUMDAYSTOKEEP" -v intable="reports.report_data_days" -v outtable="reports.daystoadd" -f @UVM_SCHEMA@/uvm/getdaystoadd.sql uvm
 
 # roll up logs, deleting any more than $NUMDAYSTOKEEP days old (and thus unreportable  on)
-@UVM_HOME@/bin/rollup-logs $midnight $NUMDAYSTOKEEP
+@UVM_HOME@/reports/rollup-logs $midnight $NUMDAYSTOKEEP
 
 # Build event partitions
 # For 4.2, disabled.

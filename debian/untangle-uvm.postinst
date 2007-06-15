@@ -81,7 +81,7 @@ fi
 /bin/chown -R $USER:$GROUP ${MVVM_LOGDIR} ${MVVM_CACHEDIR}
 /bin/chmod 775 ${MVVM_LOGDIR} ${MVVM_CACHEDIR}
 
-update-schema mvvm
+/usr/share/untangle/bin/update-schema mvvm
 echo "UPDATE transform_persistent_state SET name = 'http-casing' WHERE name = 'http-transform';" | psql -X -U postgres mvvm
 
 # start mvvm
