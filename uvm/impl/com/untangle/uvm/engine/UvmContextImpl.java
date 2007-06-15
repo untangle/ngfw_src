@@ -66,6 +66,12 @@ import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.SessionFactory;
 
+/**
+ * Implements UvmLocalContext.
+ *
+ * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
+ * @version 1.0
+ */
 public class UvmContextImpl extends UvmContextBase
     implements UvmLocalContext
 {
