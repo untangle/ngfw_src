@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This library is free software; you can redistribute it and/or modify
@@ -65,7 +65,7 @@ public class InitialSetupWizard extends MWizardJDialog {
         setTitle("Untangle Server Setup Wizard");
         addWizardPageJPanel(new InitialSetupWelcomeJPanel(),         "1. Welcome", false, false);
 
-        if( Util.getIsCD() ){
+        if( !Util.isUntangleAppliance() ){
             addWizardPageJPanel(new InitialSetupContactJPanel(),         "2. Contact Information", true, true);
             //            addWizardPageJPanel(new InitialSetupKeyJPanel(),             "3. Activation Key", false, true);
             addWizardPageJPanel(new InitialSetupPasswordJPanel(),        "3. Admin Account & Time", true, true);
@@ -102,7 +102,7 @@ public class InitialSetupWizard extends MWizardJDialog {
         dialog.setCancelText("Continue Wizard");
         dialog.setVisible(true);
         if( dialog.isProceeding() ){
-            if ( Util.getIsCD() ) {
+            if ( !Util.isUntangleAppliance() ) {
                 if (currentPage >= 2) { // REGISTERED
                     isRegistered = true;
                 }

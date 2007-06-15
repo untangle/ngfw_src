@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This library is free software; you can redistribute it and/or modify
@@ -304,10 +304,16 @@ public class Util {
     //////////////////////////////
 
 
-    // CD //////////////////////
-    private static boolean IS_CD = false;
-    public static boolean getIsCD(){ return IS_CD; }
-    public static void setIsCD(boolean isCD){ IS_CD = isCD; }
+    // UNTANGLE_APPLIANCE //////////////////////
+    public static boolean isUntangleAppliance(){
+        return uvmContext.isUntangleAppliance();
+    }
+    //////////////////////////////
+
+    // INSIDE_VM(ware) //////////////////////
+    public static boolean isInsideVM(){
+        return uvmContext.isInsideVM();
+    }
     //////////////////////////////
 
 

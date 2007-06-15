@@ -57,5 +57,12 @@ UvmLocalContext uvm = UvmContextFactory.context();
 
   </resources>
   <application-desc main-class="com.untangle.gui.util.MLauncher">
+<%
+ if (request.getRemoteHost().equalsIgnoreCase("localhost")) {
+%>
+    <argument>local</argument>
+<%
+ }
+%>
   </application-desc>
 </jnlp>

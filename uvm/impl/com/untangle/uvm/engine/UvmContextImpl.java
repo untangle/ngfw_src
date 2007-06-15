@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc.
+ * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -79,6 +79,8 @@ public class UvmContextImpl extends UvmContextBase
 
     /* true if running in a development environment */
     private static final String PROPERTY_IS_DEVEL = "com.untangle.isDevel";
+    private static final String PROPERTY_IS_UNTANGLE_APPLIANCE = "com.untangle.isUntangleAppliance";
+    private static final String PROPERTY_IS_INSIDE_VM = "com.untangle.isInsideVM";
 
     private final Object startupWaitLock = new Object();
     private final Logger logger = Logger.getLogger(UvmContextImpl.class);
@@ -508,6 +510,16 @@ public class UvmContextImpl extends UvmContextBase
     public boolean isDevel()
     {
         return Boolean.getBoolean(PROPERTY_IS_DEVEL);
+    }
+
+    public boolean isUntangleAppliance()
+    {
+        return Boolean.getBoolean(PROPERTY_IS_UNTANGLE_APPLIANCE);
+    }
+
+    public boolean isInsideVM()
+    {
+        return Boolean.getBoolean(PROPERTY_IS_INSIDE_VM);
     }
 
     public boolean activate(String key) {

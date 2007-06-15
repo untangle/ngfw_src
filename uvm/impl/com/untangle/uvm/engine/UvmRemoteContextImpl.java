@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -176,6 +176,16 @@ class UvmRemoteContextImpl implements UvmRemoteContext
     public boolean isDevel()
     {
         return context.isDevel();
+    }
+
+    public boolean isUntangleAppliance()
+    {
+        return context.isUntangleAppliance();
+    }
+
+    public boolean isInsideVM()
+    {
+        return context.isInsideVM();
     }
 
     public byte[] createBackup() throws IOException

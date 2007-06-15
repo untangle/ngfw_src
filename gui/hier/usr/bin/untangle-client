@@ -28,14 +28,7 @@ ${JAVA_HOME}/bin/javaws -updateVersions
 #echo "Attempting to clear Webstart cache"
 #${JAVA_HOME}/bin/javaws -Xclearcache
 
-if [ -f $CD_INSTALL ] ; then
-  jnlpFile=gui-local-cd.jnlp
-else
-  jnlpFile=gui-local.jnlp
-fi
-
-webstartURL=http://$HOST/webstart/$jnlpFile
+webstartURL=http://$HOST/webstart/gui.jnlp
 
 echo "Webstarting Untangle Client.  Connecting to: $webstartURL"
 exec ${JAVA_HOME}/bin/javaws -Xnosplash $webstartURL
-

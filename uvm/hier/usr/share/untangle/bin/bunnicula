@@ -87,6 +87,13 @@ for f in @THIRDPARTY_REPORTS_LIB@/*jar ; do
     CLASSPATH="$CLASSPATH:$f"
 done
 
+if [ ! -f $CD_INSTALL ] ; then
+    JAVA_OPTS="-Dcom.untangle.isUntangleAppliance=true $JAVA_OPTS"
+fi
+if (lspci|grep -q VMware) then
+    JAVA_OPTS="-Dcom.untangle.isInsideVM=true $JAVA_OPTS"
+fi
+
 unset DISPLAY
 export PATH LD_LIBRARY_PATH CLASSPATH JAVA_HOME
 

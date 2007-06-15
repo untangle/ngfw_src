@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This library is free software; you can redistribute it and/or modify
@@ -252,6 +252,20 @@ public interface UvmLocalContext
      * @return a <code>boolean</code> true if in development.
      */
     boolean isDevel();
+
+    /**
+     * Return true if running in an Untangle Appliance (non-cd/iso install).
+     *
+     * @return a <code>boolean</code> true if in an untangle appliance.
+     */
+    boolean isUntangleAppliance();
+
+    /**
+     * Return true if running inside a Virtualized Platform (like VMWare)
+     *
+     * @return a <code>boolean</code> true if platform is running in a virtualized machine 
+     */
+    boolean isInsideVM();
 
     /**
      * Activates the Untangle Server using the given key.  Returns

@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This library is free software; you can redistribute it and/or modify
@@ -157,8 +157,8 @@ public class InitialSetupContactJPanel extends MWizardPageJPanel {
                 registrationInfo.setState(state);
                 registrationInfo.setZipcode(zipcode);
                 registrationInfo.setPhone(phone);
-                // KEY, IF CD INSTALL
-                if(Util.getIsCD()){
+                // KEY, IF NOT UNTANGLE APPLIANCE
+                if(!Util.isUntangleAppliance()){
                     URL url = Util.getServerCodeBase();
                     boolean isActivated = com.untangle.uvm.client.UvmRemoteContextFactory.factory().isActivated( url.getHost(),
                                                                                                                    url.getPort(),

@@ -33,7 +33,7 @@ mini.installJars(jt, gui.getWebappDir('webstart'), nil, true)
 ServletBuilder.new(gui, 'com.untangle.gui.webstart.jsp',
                    "#{SRC_HOME}/gui/servlets/webstart", [], [], [],
                    [BuildEnv::SERVLET_COMMON],
-                   ['gui.jnlp', 'gui-local.jnlp', 'gui-local-cd.jnlp', 'index.jsp'])
+                   ['gui.jnlp', 'index.jsp'])
 
 BuildEnv::SRC.installTarget.installJars(Jars::Gui, gui.getWebappDir('webstart'), nil, true)
 
