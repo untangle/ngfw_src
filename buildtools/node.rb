@@ -1,62 +1,53 @@
 # -*-ruby-*-
 
 class NodeBuilder
-  NodeSuffix = 'node'
-  CasingSuffix = 'casing'
-  BaseSuffix = 'base'
 
-  def NodeBuilder.makeNode(buildEnv, name, depsImpl = [],
+  def NodeBuilder.makeNode(buildEnv, name, location, depsImpl = [],
                            depsGui = [], depsLocalApi = [],
-                           baseNodes = [])
-    makePackage(buildEnv, name, NodeSuffix, depsImpl, depsGui,
-                depsLocalApi, baseNodes)
+                           baseHash = {})
+    makePackage(buildEnv, name, location, depsImpl, depsGui,
+                depsLocalApi, baseHash)
   end
 
-  def NodeBuilder.makeCasing(buildEnv, name, depsImpl = [], depsGui = [],
-                             depsLocalApi = [], baseNodes = [])
-    makePackage(buildEnv, name, CasingSuffix, depsImpl, depsGui, depsLocalApi,
-                baseNodes)
+  def NodeBuilder.makeCasing(buildEnv, name, location, depsImpl = [], depsGui = [],
+                             depsLocalApi = [], baseHash = {})
+    makePackage(buildEnv, name, location, depsImpl, depsGui, depsLocalApi,
+                baseHash)
   end
 
-  def NodeBuilder.makeBase(buildEnv, name, depsImpl = [], depsGui = [],
-                           depsLocalApi = [], baseNodes = [])
-    makePackage(buildEnv, name, BaseSuffix, depsImpl, depsGui, depsLocalApi,
-                baseNodes)
+  def NodeBuilder.makeBase(buildEnv, name, location, depsImpl = [], depsGui = [],
+                           depsLocalApi = [], baseHash = {})
+    makePackage(buildEnv, name, location, depsImpl, depsGui, depsLocalApi,
+                baseHash)
   end
 
   private
   ## Create the necessary packages and targets to build a node
-  def NodeBuilder.makePackage(buildEnv, name, suffix, depsImpl = [],
+  def NodeBuilder.makePackage(buildEnv, name, location, depsImpl = [],
                               depsGui = [], depsLocalApi = [],
-                              baseNodes = [])
+                              baseHash = {})
     home = buildEnv.home
 
-    uvm = BuildEnv::SRC['uvm']
+    uvm = BuildEnv::SRC['untangle-uvm']
     gui  = BuildEnv::SRC['untangle-client']
-    if (suffix == 'node')
-      dirName = name;
-    else
-      dirName = "#{name}-#{suffix}"
-    end
-    node = buildEnv["#{name}-#{suffix}"]
+    dirName = location
+    node = buildEnv["#{name}"]
     buildEnv.installTarget.registerDependency(node)
-    buildEnv['node'].registerTarget("#{name}-#{suffix}", node)
+    buildEnv['node'].registerTarget("#{name}", node)
 
     localApiJar = nil
 
-    baseNodes = [baseNodes].flatten
-
     ## If there is a local API, build it first
     localApi = FileList["#{home}/#{dirName}/localapi/**/*.java"]
-    baseNodes.each do |bt|
-      localApi += FileList["#{bt.buildEnv.home}/#{bt.name}/localapi/**/*.java"]
+    baseHash.each_pair do |bd, bn|
+      localApi += FileList["#{bn.buildEnv.home}/#{bd}/localapi/**/*.java"]
     end
 
     if (localApi.length > 0)
       deps  = baseJarsLocalApi + depsLocalApi
 
-      paths = baseNodes.map { |bt| ["#{bt.buildEnv.home}/#{bt.name}/api",
-          "#{bt.buildEnv.home}/#{bt.name}/localapi"] }.flatten
+      paths = baseHash.map { |bd, bn| ["#{bn.buildEnv.home}/#{bd}/api",
+          "#{bn.buildEnv.home}/#{bd}/localapi"] }.flatten
 
       localApiJar = JarTarget.buildTarget(node, deps, 'localapi',
                                           ["#{home}/#{dirName}/api", "#{home}/#{dirName}/localapi"] + paths)
@@ -71,12 +62,12 @@ class NodeBuilder
     if (localApiJar.nil?)
       ## Only include the API if the localJarApi doesn't exist
       directories << "#{home}/#{dirName}/api"
-      baseNodes.each { |bt| directories << "#{bt.buildEnv.home}/#{bt.name}/api" }
+      baseHash.each_pair { |bd, bn| directories << "#{bn.buildEnv.home}/#{bd}/api" }
     else
       deps << localApiJar
     end
 
-    baseNodes.each { |bt| directories << "#{bt.buildEnv.home}/#{bt.name}/impl" }
+    baseHash.each_pair { |bd, bn| directories << "#{bn.buildEnv.home}/#{bd}/impl" }
 
     ## The IMPL jar depends on the reports
     deps << JasperTarget.buildTarget( node,
@@ -90,7 +81,7 @@ class NodeBuilder
     ## Only create the GUI api if there are files for the GUI
     if (FileList["#{home}/#{dirName}/gui/**/*.java"].length > 0)
       deps  = baseJarsGui + depsGui
-      baseNodes.each do |pkg|
+      baseHash.each_value do |pkg|
         if pkg.hasTarget?('gui')
           deps << pkg['gui']
         end
@@ -114,7 +105,7 @@ class NodeBuilder
 
   ## Helper to retrieve the standard dependencies for an impl
   def NodeBuilder.baseJarsImpl
-    uvm = BuildEnv::SRC['uvm']
+    uvm = BuildEnv::SRC['untangle-uvm']
     Jars::Base + [Jars::JFreeChart, Jars::Jasper, uvm['api'], uvm['localapi'],
       uvm['reporting']]
   end
@@ -128,6 +119,6 @@ class NodeBuilder
   ## Helper to retrieve the standard dependencies for a GUI jar
   def NodeBuilder.baseJarsGui
     Jars::Base + Jars::Gui + Jars::TomcatEmb +
-      [BuildEnv::SRC['uvm']['api'], BuildEnv::SRC['untangle-client']['api']]
+      [BuildEnv::SRC['untangle-uvm']['api'], BuildEnv::SRC['untangle-client']['api']]
   end
 end

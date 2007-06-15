@@ -15,4 +15,4 @@ file nfutil do
 end
 
 BuildEnv::SRC.installTarget.registerDependency(nfutil)
-BuildEnv::SRC.installTarget.installFiles(nfutil, "#{BuildEnv::SRC['uvm'].distDirectory}/usr/share/untangle/networking/")
+BuildEnv::SRC.installTarget.installFiles(nfutil, "#{BuildEnv::SRC['untangle-uvm'].distDirectory}/usr/share/untangle/networking/")

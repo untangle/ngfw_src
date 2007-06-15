@@ -1,8 +1,8 @@
 # -*-ruby-*-
 
-NodeBuilder.makeCasing(BuildEnv::SRC, 'mail')
+NodeBuilder.makeCasing(BuildEnv::SRC, 'untangle-casing-mail', 'mail-casing')
 
-mail = BuildEnv::SRC['mail-casing']
+mail = BuildEnv::SRC['untangle-casing-mail']
 
 jt = [mail['localapi']]
 

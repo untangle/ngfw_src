@@ -1,9 +1,9 @@
 # -*-ruby-*-
 
-http = BuildEnv::SRC['http-casing']
-spyware = BuildEnv::SRC['spyware-node']
+http = BuildEnv::SRC['untangle-casing-http']
+spyware = BuildEnv::SRC['untangle-node-spyware']
 
-NodeBuilder.makeNode(BuildEnv::SRC, 'spyware', [http["localapi"]],
+NodeBuilder.makeNode(BuildEnv::SRC, 'untangle-node-spyware', 'spyware', [http["localapi"]],
                      [http["localapi"]])
 
 deps = [spyware['gui'], http['gui']]

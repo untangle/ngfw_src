@@ -2,7 +2,7 @@
 
 jvector = BuildEnv::SRC['jvector']
 jnetcap = BuildEnv::SRC['jnetcap']
-uvm    = BuildEnv::SRC['uvm']
+uvm    = BuildEnv::SRC['untangle-uvm']
 
 ## jvector
 deps = Jars::Base + [jnetcap['impl']]

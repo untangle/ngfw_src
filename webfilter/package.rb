@@ -1,9 +1,10 @@
 # -*-ruby-*-
 
-http = BuildEnv::SRC['http-casing']
-webfilter = BuildEnv::SRC['webfilter-node']
+http = BuildEnv::SRC['untangle-casing-http']
 
-NodeBuilder.makeNode(BuildEnv::SRC, 'webfilter',
+webfilter = BuildEnv::SRC['untangle-node-webfilter']
+
+NodeBuilder.makeNode(BuildEnv::SRC, 'untangle-node-webfilter', 'webfilter',
                      [http['localapi']], [http['gui']])
 
 deps = [webfilter['gui'], http['gui']]

@@ -1,3 +1,3 @@
 # -*-ruby-*-
 
-NodeBuilder.makeNode(BuildEnv::SRC, 'sigma')
+NodeBuilder.makeNode(BuildEnv::SRC, 'untangle-node-sigma','sigma')

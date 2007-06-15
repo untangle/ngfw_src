@@ -61,6 +61,7 @@ require "#{SRC_HOME}/ips/package.rb"
 ## Base Nodes
 require "#{SRC_HOME}/spam-base/package.rb"
 require "#{SRC_HOME}/virus-base/package.rb"
+require "#{SRC_HOME}/clam-base/package.rb"
 
 ## SPAM based nodes
 require "#{SRC_HOME}/phish/package.rb"
@@ -86,7 +87,7 @@ file libuvmcore_so do
                                                              ['xml2', 'sysfs', 'netfilter_queue'], ['ipq'])
 end
 
-BuildEnv::SRC['uvm']['impl'].registerDependency(libuvmcore_so)
+BuildEnv::SRC['untangle-uvm']['impl'].registerDependency(libuvmcore_so)
 
 BuildEnv::SRC.installTarget.installFiles(libuvmcore_so, "#{BuildEnv::SRC['untangle-libuvmcore'].distDirectory}/usr/lib/uvm")
 

@@ -1,3 +1,3 @@
 # -*-ruby-*-
 
-NodeBuilder.makeCasing(BuildEnv::SRC, 'ftp')
+NodeBuilder.makeCasing(BuildEnv::SRC, 'untangle-casing-ftp', 'ftp-casing')

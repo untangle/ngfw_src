@@ -1,3 +1,3 @@
 # -*-ruby-*-
 
-NodeBuilder.makeNode(BuildEnv::SRC, 'test')
+NodeBuilder.makeNode(BuildEnv::SRC, 'untangle-node-test', 'test')

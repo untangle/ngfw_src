@@ -1,3 +1,3 @@
 # -*-ruby-*-
 
-NodeBuilder.makeNode(BuildEnv::SRC, 'protofilter')
+NodeBuilder.makeNode(BuildEnv::SRC, 'untangle-node-protofilter', 'protofilter')

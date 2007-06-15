@@ -1,7 +1,7 @@
 # -*-ruby-*-
 
 jnetcap = BuildEnv::SRC['jnetcap']
-uvm    = BuildEnv::SRC['uvm']
+uvm    = BuildEnv::SRC['untangle-uvm']
 
 ## jnetcap
 j = JarTarget.buildTarget(jnetcap, Jars::Base, 'impl', "#{SRC_HOME}/jnetcap/impl" )

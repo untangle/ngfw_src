@@ -1,3 +1,3 @@
 # -*-ruby-*-
 
-NodeBuilder.makeNode(BuildEnv::SRC, 'reporting')
+NodeBuilder.makeNode(BuildEnv::SRC, 'untangle-node-reporting', 'reporting')

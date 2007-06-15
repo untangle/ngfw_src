@@ -1,14 +1,15 @@
 # -*-ruby-*-
 
-mail = BuildEnv::SRC['mail-casing']
-http = BuildEnv::SRC['http-casing']
-spam = BuildEnv::SRC['spam-base']
-phish = BuildEnv::SRC['phish-node']
+mail = BuildEnv::SRC['untangle-casing-mail']
+http = BuildEnv::SRC['untangle-casing-http']
+spam = BuildEnv::SRC['untangle-spam']
+clam = BuildEnv::SRC['untangle-clam']
+phish = BuildEnv::SRC['untangle-node-phish']
 
-NodeBuilder.makeNode(BuildEnv::SRC, 'phish',
-                     [mail['localapi'], http['localapi']],
+NodeBuilder.makeNode(BuildEnv::SRC, 'untangle-node-phish', 'phish',
+                     [mail['localapi'], http['localapi']], 
                      [mail['gui'], http['gui'] ], [],
-                     [BuildEnv::SRC['spam-base'], BuildEnv::SRC['clam-base']])
+                     { 'spam-base' => spam, 'clam-base' => clam })
 
 deps = [http['gui'], phish['gui'], spam['gui']]
 

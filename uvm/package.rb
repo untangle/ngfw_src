@@ -2,7 +2,7 @@
 
 jnetcap = BuildEnv::SRC['jnetcap']
 jvector = BuildEnv::SRC['jvector']
-uvm = BuildEnv::SRC['uvm']
+uvm = BuildEnv::SRC['untangle-uvm']
 BuildEnv::SRC.installTarget.registerDependency(uvm)
 
 jts = []
@@ -231,4 +231,4 @@ deps  = Jars::Base + Jars::TomcatEmb + Jars::JavaMail + Jars::Jcifs +
   Jars::Dom4j + Jars::Activation + Jars::Trove + Jars::Junit + Jars::WBEM +
   [ uvm['bootstrap'], uvm['api'], uvm['localapi'], uvm['impl'], jnetcap['impl'], jvector['impl']]
 
-JarTarget.buildTarget(BuildEnv::SRC["unittest"], deps, 'uvm', "#{SRC_HOME}/uvm/unittest")
+JarTarget.buildTarget(BuildEnv::SRC["unittest"], deps, 'untangle-uvm', "#{SRC_HOME}/uvm/unittest")

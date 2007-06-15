@@ -1,6 +1,6 @@
 # -*-ruby-*-
 
-uvm = BuildEnv::SRC['uvm']
+uvm = BuildEnv::SRC['untangle-uvm']
 gui = BuildEnv::SRC['untangle-client']
 BuildEnv::SRC.installTarget.registerDependency(gui)
 

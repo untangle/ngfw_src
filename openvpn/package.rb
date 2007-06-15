@@ -1,11 +1,11 @@
 # -*-ruby-*-
 
-NodeBuilder.makeNode(BuildEnv::SRC, 'openvpn')
+NodeBuilder.makeNode(BuildEnv::SRC, 'untangle-node-openvpn', 'openvpn')
 
-openvpn = BuildEnv::SRC['openvpn-node']
+openvpn = BuildEnv::SRC['untangle-node-openvpn']
 
 
-deps = Jars::Base + [BuildEnv::SRC['uvm']['api']]
+deps = Jars::Base + [BuildEnv::SRC['untangle-uvm']['api']]
 
 jt = [JarTarget.buildTarget(openvpn, deps, 'api', 'openvpn/api')]
 
