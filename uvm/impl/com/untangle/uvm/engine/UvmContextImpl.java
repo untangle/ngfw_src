@@ -1,6 +1,6 @@
 /*
- * $HeadURL:$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * $HeadURL$
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -27,17 +27,18 @@ import java.util.StringTokenizer;
 import com.untangle.uvm.BrandingManager;
 import com.untangle.uvm.CronJob;
 import com.untangle.uvm.LocalBrandingManager;
+import com.untangle.uvm.Period;
+import com.untangle.uvm.UvmException;
 import com.untangle.uvm.UvmLocalContext;
 import com.untangle.uvm.UvmState;
-import com.untangle.uvm.UvmException;
-import com.untangle.uvm.Period;
 import com.untangle.uvm.addrbook.AddressBook;
-import com.untangle.uvm.node.RemoteIntfManager;
-import com.untangle.uvm.node.RemoteShieldManager;
 import com.untangle.uvm.argon.Argon;
 import com.untangle.uvm.argon.ArgonManagerImpl;
 import com.untangle.uvm.client.UvmRemoteContext;
 import com.untangle.uvm.engine.addrbook.AddressBookFactory;
+import com.untangle.uvm.license.LicenseManagerFactory;
+import com.untangle.uvm.license.LocalLicenseManager;
+import com.untangle.uvm.license.RemoteLicenseManager;
 import com.untangle.uvm.localapi.LocalIntfManager;
 import com.untangle.uvm.localapi.LocalShieldManager;
 import com.untangle.uvm.logging.EventLogger;
@@ -47,19 +48,18 @@ import com.untangle.uvm.logging.UvmRepositorySelector;
 import com.untangle.uvm.networking.NetworkManagerImpl;
 import com.untangle.uvm.networking.RemoteNetworkManagerImpl;
 import com.untangle.uvm.networking.ping.PingManagerImpl;
+import com.untangle.uvm.node.NodeContext;
+import com.untangle.uvm.node.NodeManager;
+import com.untangle.uvm.node.RemoteIntfManager;
+import com.untangle.uvm.node.RemoteShieldManager;
 import com.untangle.uvm.policy.LocalPolicyManager;
 import com.untangle.uvm.policy.PolicyManager;
 import com.untangle.uvm.portal.BasePortalManager;
 import com.untangle.uvm.tapi.MPipeManager;
 import com.untangle.uvm.toolbox.ToolboxManager;
-import com.untangle.uvm.node.NodeContext;
-import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.user.LocalPhoneBook;
 import com.untangle.uvm.user.PhoneBookFactory;
 import com.untangle.uvm.user.RemotePhoneBook;
-import com.untangle.uvm.license.LicenseManagerFactory;
-import com.untangle.uvm.license.LocalLicenseManager;
-import com.untangle.uvm.license.RemoteLicenseManager;
 import com.untangle.uvm.util.TransactionRunner;
 import com.untangle.uvm.util.TransactionWork;
 import org.apache.log4j.Logger;
@@ -626,7 +626,7 @@ public class UvmContextImpl extends UvmContextBase
 
         localBrandingManager = new BrandingManagerImpl();
         brandingManager = new RemoteBrandingManagerImpl(localBrandingManager);
-        
+
         phoneBookFactory = PhoneBookFactory.makeInstance();
 
         // Fire up the portal manager.
@@ -887,8 +887,8 @@ public class UvmContextImpl extends UvmContextBase
     // static initializer -----------------------------------------------------
 
     static {
-        ACTIVATE_SCRIPT = System.getProperty("bunnicula.home")
-            + "/../../bin/mvactivate";
+        ACTIVATE_SCRIPT = System.getProperty("bunnicula.bin.dir")
+            + "utactivate";
         ACTIVATION_KEY_FILE = System.getProperty("bunnicula.home")
             + "/activation.key";
         ARGON_FAKE_KEY = "argon.fake";
