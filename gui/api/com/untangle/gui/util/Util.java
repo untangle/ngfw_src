@@ -305,15 +305,15 @@ public class Util {
 
 
     // UNTANGLE_APPLIANCE //////////////////////
-    public static boolean isUntangleAppliance(){
-        return uvmContext.isUntangleAppliance();
-    }
+    private static boolean isUntangleAppliance = false;
+    public static void setUntangleAppliance(boolean isX) { isUntangleAppliance = isX; }
+    public static boolean isUntangleAppliance(){ return isUntangleAppliance; }
     //////////////////////////////
 
-    // INSIDE_VM(ware) //////////////////////
-    public static boolean isInsideVM(){
-        return uvmContext.isInsideVM();
-    }
+    // INSIDE_VM //////////////////////
+    private static boolean isInsideVM = false;
+    public static void setInsideVM(boolean isX) { isInsideVM = isX; }
+    public static boolean isInsideVM(){ return isInsideVM; }
     //////////////////////////////
 
 

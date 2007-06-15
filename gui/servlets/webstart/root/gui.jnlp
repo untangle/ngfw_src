@@ -63,6 +63,16 @@ UvmLocalContext uvm = UvmContextFactory.context();
     <argument>local</argument>
 <%
  }
+ if (uvm.isUntangleAppliance()) {
+%>
+    <argument>untangle-appliance</argument>
+<%
+ }
+ if (uvm.isInsideVM()) {
+%>
+    <argument>inside-vm</argument>
+<%
+ }
 %>
   </application-desc>
 </jnlp>

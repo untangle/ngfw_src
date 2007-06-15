@@ -131,6 +131,12 @@ public class MLauncher {
             if( arg.equals("local") ){
                 Util.setLocal(true);
             }
+            if( arg.equals("untangle-appliance") ){
+                Util.setUntangleAppliance(true);
+            }
+            if( arg.equals("inside-vm") ){
+                Util.setInsideVM(true);
+            }
         }
 
         // HANDLE FIRST TIME LOGINS
