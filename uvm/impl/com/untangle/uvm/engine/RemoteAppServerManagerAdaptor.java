@@ -30,9 +30,9 @@ import com.untangle.uvm.security.RFC2253Name;
  */
 class RemoteAppServerManagerAdaptor implements RemoteAppServerManager
 {
-    private final AppServerManagerAdaptor lasm;
+    private final AppServerManagerImpl lasm;
 
-    RemoteAppServerManagerAdaptor(AppServerManagerAdaptor lasm)
+    RemoteAppServerManagerAdaptor(AppServerManagerImpl lasm)
     {
         this.lasm = lasm;
     }
