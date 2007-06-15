@@ -1,6 +1,6 @@
 /*
- * $HeadURL:$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * $HeadURL$
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -49,8 +49,8 @@ class AdminManagerImpl implements AdminManager
     private static final String INITIAL_USER_LOGIN = "admin";
     private static final String INITIAL_USER_PASSWORD = "passwd";
 
-    private static final String SET_TIMEZONE_SCRIPT = System.getProperty("bunnicula.home")
-        + "/../../bin/mvtimezone";
+    private static final String SET_TIMEZONE_SCRIPT
+        = System.getProperty("bunnicula.bin.dir") + "uttimezone";
     private static final String TIMEZONE_FILE = System.getProperty("bunnicula.conf.dir")
         + "/timezone";
     private static final String REGISTRATION_INFO_FILE = System.getProperty("bunnicula.home")
