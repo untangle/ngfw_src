@@ -1,6 +1,6 @@
 /*
- * $HeadURL:$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * $HeadURL$
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -46,14 +46,18 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import com.untangle.uvm.node.Node;
+import com.untangle.uvm.node.NodeContext;
+import com.untangle.uvm.node.NodeDesc;
+import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.policy.PolicyException;
 import com.untangle.uvm.security.AdminSettings;
 import com.untangle.uvm.security.LoginSession;
-import com.untangle.uvm.security.UvmPrincipal;
 import com.untangle.uvm.security.RegistrationInfo;
 import com.untangle.uvm.security.Tid;
 import com.untangle.uvm.security.User;
+import com.untangle.uvm.security.UvmPrincipal;
 import com.untangle.uvm.tapi.IPSessionDesc;
 import com.untangle.uvm.tapi.SessionDesc;
 import com.untangle.uvm.tapi.SessionStats;
@@ -71,13 +75,15 @@ import com.untangle.uvm.toolbox.MackageInstallRequest;
 import com.untangle.uvm.toolbox.ProgressVisitor;
 import com.untangle.uvm.toolbox.ToolboxManager;
 import com.untangle.uvm.toolbox.ToolboxMessageVisitor;
-import com.untangle.uvm.node.Node;
-import com.untangle.uvm.node.NodeContext;
-import com.untangle.uvm.node.NodeDesc;
-import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.util.SessionUtil;
 import org.apache.log4j.helpers.AbsoluteTimeDateFormat;
 
+/**
+ * A simple command line interface to the Untangle VM.
+ *
+ * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
+ * @version 1.0
+ */
 public class RemoteClient
 {
     private static String host = "localhost";
