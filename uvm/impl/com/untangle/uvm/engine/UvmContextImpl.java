@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -415,7 +415,7 @@ public class UvmContextImpl extends UvmContextBase
     public Process exec(String[] cmd, String[] envp, File dir) throws IOException
     {
         String[] newCmd = new String[cmd.length + 1];
-        newCmd[0] = "mvnice";
+        newCmd[0] = System.getProperty("bunnicula.bin.dir") + "mvnice";
         System.arraycopy(cmd, 0, newCmd, 1, cmd.length);
         try {
             return Runtime.getRuntime().exec(newCmd, envp, dir);
