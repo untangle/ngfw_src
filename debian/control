@@ -247,7 +247,7 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAABGdBTUEAANbY1E9YMg
 Description: Spyware Blocker
  The Spyware Blocker product.
 
-Package: untangle-node-httpblocker
+Package: untangle-node-webfilter
 Architecture: any
 Depends: untangle-uvm, untangle-casing-http, untangle-urlblacklist
 XB-Display-Name: Web Filter
@@ -456,7 +456,6 @@ Description: Virus Blocker
 Package: untangle-node-protofilter
 Architecture: any
 Depends: untangle-uvm
-Conflicts: untangle-node-protoanalyzer
 XB-Display-Name: Protocol Control
 XB-Untangle-Type: node
 XB-Untangle-Jar-Prefix: protofilter-node
@@ -576,7 +575,7 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAABGdBTUEAANbY1E9YMg
 Description: Protocol Control
  The Protocol Control product.
 
-Package: untangle-node-nat
+Package: untangle-node-router
 Architecture: any
 Depends: untangle-uvm, dnsmasq, untangle-casing-ftp
 XB-Display-Name: Router
@@ -875,7 +874,7 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAABGdBTUEAANbY1E9YMg
 Description: Spam Blocker
  The Spam Blocker product.
 
-Package: untangle-node-clamphish
+Package: untangle-node-phish
 Architecture: any
 Depends: untangle-uvm, untangle-base-spam, untangle-clamav-config, mail, untangle-casing-http
 XB-Display-Name: Phish Blocker
@@ -1253,7 +1252,7 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAACXBIWXMAAAsTAAALEw
 Description: OpenVPN
  The OpenVPN product.
 
-Package: untangle-node-ids
+Package: untangle-node-ips
 Architecture: any
 Depends: untangle-uvm, untangle-casing-http, untangle-snort-rules
 XB-Display-Name: Intrusion Prevention

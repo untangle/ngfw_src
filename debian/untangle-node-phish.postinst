@@ -1,5 +1,5 @@
 #! /bin/sh
 
-mcli -t 30 register clamphish-transform 2>/dev/null || true
+mcli -t 30 register phish-transform 2>/dev/null || true
 
 touch /usr/share/metavize/web/webstart/clamphish-transform-client.mar > /dev/null 2>&1 
