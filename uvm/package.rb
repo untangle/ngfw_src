@@ -184,7 +184,7 @@ uvm.registerTarget('hier', cf)
 BuildEnv::SRC.installTarget.installJars(jts, "#{uvm.distDirectory}/usr/share/untangle/lib",
                                         nil, false, true)
 
-thirdparty = BuildEnv::SRC['libuvm-thirdparty']
+thirdparty = BuildEnv::SRC['untangle-libuvmthirdparty']
 
 BuildEnv::SRC.installTarget.installJars(Jars::Base, "#{thirdparty.distDirectory}/usr/share/java/uvm")
 
