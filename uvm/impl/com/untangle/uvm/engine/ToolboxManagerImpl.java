@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -40,7 +40,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import com.untangle.uvm.CronJob;
-import com.untangle.uvm.MessageQueue;
+import com.untangle.uvm.alerts.MessageQueue;
 import com.untangle.uvm.Period;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.NodeContext;

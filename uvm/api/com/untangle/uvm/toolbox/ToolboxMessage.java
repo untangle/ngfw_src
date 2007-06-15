@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This library is free software; you can redistribute it and/or modify
@@ -33,7 +33,7 @@
 
 package com.untangle.uvm.toolbox;
 
-import com.untangle.uvm.Message;
+import com.untangle.uvm.alerts.Message;
 
 public abstract class ToolboxMessage extends Message
 {

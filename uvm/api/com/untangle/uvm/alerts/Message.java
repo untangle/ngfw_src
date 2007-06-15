@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This library is free software; you can redistribute it and/or modify
@@ -31,23 +31,17 @@
  * to do so, delete this exception statement from your version.
  */
 
-package com.untangle.uvm;
+package com.untangle.uvm.alerts;
 
-import java.util.List;
+import java.io.Serializable;
 
 /**
- * An interface for receiving messages.
+ * Marker class for messages.
  *
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
- * @see com.untangle.uvm.client.MessageClient
+ * @see MessageQueue
  */
-public interface MessageQueue<M extends Message>
+public class Message implements Serializable
 {
-    /**
-     * Get the undelivered messages for this queue.
-     *
-     * @return outstanding messages.
-     */
-    List<M> getMessages();
 }

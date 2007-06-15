@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This library is free software; you can redistribute it and/or modify
@@ -33,7 +33,7 @@
 
 package com.untangle.uvm.client;
 
-import com.untangle.uvm.MessageQueue;
+import com.untangle.uvm.alerts.MessageQueue;
 import com.untangle.uvm.toolbox.ToolboxMessage;
 import com.untangle.uvm.toolbox.ToolboxMessageVisitor;
 import org.apache.log4j.Logger;
