@@ -1,6 +1,6 @@
 /*
- * $HeadURL:$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * $HeadURL$
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -23,10 +23,10 @@ import java.io.*;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.networking.NetworkManagerImpl;
 import com.untangle.uvm.networking.internal.NetworkSpacesInternalSettings;
-import com.untangle.uvm.security.Tid;
 import com.untangle.uvm.node.LocalNodeManager;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeContext;
+import com.untangle.uvm.security.Tid;
 import org.apache.log4j.Logger;
 
 public class SystemStatus
@@ -196,7 +196,7 @@ public class SystemStatus
              * uvm uptime
              */
             sb.append(SPACER);
-            proc = UvmContextFactory.context().exec("/usr/bin/mvuptime");
+            proc = UvmContextFactory.context().exec("/usr/share/untangle/bin/utuptime");
             input  = new BufferedReader(new InputStreamReader(proc.getInputStream()));
             while ((line = input.readLine()) != null) {
                 sb.append("UVM uptime: " + line + RETCHAR);
@@ -204,7 +204,7 @@ public class SystemStatus
         }
         catch (Exception e) {
             logger.error("Exception: ", e);
-            sb.append("Exception on exec (/usr/bin/mvuptime): " + e.toString() + RETCHAR);
+            sb.append("Exception on exec (/usr/share/untangle/bin/utuptime): " + e.toString() + RETCHAR);
         }
         finally {
             if (proc != null)
