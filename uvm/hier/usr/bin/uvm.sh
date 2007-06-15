@@ -124,8 +124,8 @@ getLicenseKey() {
   if curl --insecure --fail -o $TMP_ARCHIVE `printf ${ACTIVATION_URL_TEMPLATE} "$KEY" $(/usr/share/untangle/bin/utip)`; then
     rm -f $ACTIVATION_KEY_FILE_TMP
     tar -C / -xf $TMP_ARCHIVE
-    @PREFIX@/usr/bin/mvactivate
-    @PREFIX@/usr/bin/mvregister # trigger root passwd generation
+    @UVM_HOME@/bin/utactivate
+    @UVM_HOME@/bin/utregister # trigger root passwd generation
   fi
 }
 

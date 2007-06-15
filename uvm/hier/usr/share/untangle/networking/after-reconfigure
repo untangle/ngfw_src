@@ -14,13 +14,13 @@ afterReconfigure() {
     invoke-rc.d ntp-server restart
     invoke-rc.d spamassassin restart
     invoke-rc.d untangle-support-agent restart
-    
+
     # remote support is enabled if sshd us running
     pidof sshd && /etc/init.d/untangle-support-agent restart
 
     if [ -f "$REGINFO" ]; then
         if [ ! -f "$REGDONE" -o "$REGDONE" -ot "$REGINFO" ]; then
-            @PREFIX@/usr/bin/mvregister
+            @UVM_HOME@/bin/utregister
         fi
     fi
 }

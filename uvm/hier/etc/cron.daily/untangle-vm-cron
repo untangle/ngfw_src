@@ -15,7 +15,7 @@ if [ -f "@UVM_HOME@/activation.key" ]; then
 
     if [ -f "$REGINFO" ]; then
         if [ ! -f "$REGDONE" -o "$REGDONE" -ot "$REGINFO" ]; then
-            /usr/bin/mvregister
+            @UVM_HOME@/utregister
         fi
     fi
 fi
