@@ -47,7 +47,7 @@ class BackupManager {
 
     static {
         OLD_BACKUP_SCRIPT = System.getProperty("bunnicula.home")
-            + "/../../bin/uvmdb-backup";
+            + "/bin/uvmdb-backup";
         BACKUP_SCRIPT = System.getProperty("bunnicula.home")
             + "/bin/ut-backup-bundled.sh";
         RESTORE_SCRIPT = System.getProperty("bunnicula.home")

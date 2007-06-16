@@ -1,6 +1,6 @@
 /*
- * $HeadURL:$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * $HeadURL$
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -31,16 +31,16 @@ import java.util.List;
 import java.util.Map;
 
 import com.sleepycat.je.DatabaseException;
-import com.untangle.uvm.node.IPMaddrRule;
-import com.untangle.uvm.node.MimeType;
-import com.untangle.uvm.node.MimeTypeRule;
-import com.untangle.uvm.node.StringRule;
 import com.untangle.node.http.RequestLineToken;
 import com.untangle.node.token.Header;
 import com.untangle.node.util.CharSequenceUtil;
 import com.untangle.node.util.PrefixUrlList;
 import com.untangle.node.util.UrlDatabase;
 import com.untangle.node.util.UrlList;
+import com.untangle.uvm.node.IPMaddrRule;
+import com.untangle.uvm.node.MimeType;
+import com.untangle.uvm.node.MimeTypeRule;
+import com.untangle.uvm.node.StringRule;
 import org.apache.log4j.Logger;
 
 /**

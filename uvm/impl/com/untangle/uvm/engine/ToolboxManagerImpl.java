@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -40,9 +40,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import com.untangle.uvm.CronJob;
-import com.untangle.uvm.alerts.MessageQueue;
 import com.untangle.uvm.Period;
 import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.alerts.MessageQueue;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.NodeException;
 import com.untangle.uvm.security.LoginSession;
@@ -748,7 +748,7 @@ class ToolboxManagerImpl implements ToolboxManager
     {
         Exception exn;
 
-        String cmdStr = System.getProperty("bunnicula.bin.dir") + "mkg"
+        String cmdStr = System.getProperty("bunnicula.bin.dir") + "/mkg"
             + (0 > key ? "" : "-k " + key + " ") + command;
 
         logger.debug("running: " + cmdStr);

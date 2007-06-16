@@ -50,7 +50,7 @@ class AdminManagerImpl implements AdminManager
     private static final String INITIAL_USER_PASSWORD = "passwd";
 
     private static final String SET_TIMEZONE_SCRIPT
-        = System.getProperty("bunnicula.bin.dir") + "uttimezone";
+        = System.getProperty("bunnicula.bin.dir") + "/uttimezone";
     private static final String TIMEZONE_FILE = System.getProperty("bunnicula.conf.dir")
         + "/timezone";
     private static final String REGISTRATION_INFO_FILE = System.getProperty("bunnicula.home")
