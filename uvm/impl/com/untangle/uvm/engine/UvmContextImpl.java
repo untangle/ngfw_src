@@ -710,7 +710,7 @@ public class UvmContextImpl extends UvmContextBase
 
         httpInvoker = HttpInvokerImpl.invoker();
 
-        remoteContext = new UvmRemoteContextImpl(this);
+        remoteContext = new UvmRemoteContextAdaptor(this);
         state = UvmState.INITIALIZED;
     }
 
