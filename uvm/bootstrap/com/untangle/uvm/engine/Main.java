@@ -164,23 +164,23 @@ public class Main
     {
         String bunniculaHome = System.getProperty("bunnicula.home");
 
-        String bunniculaLib = bunniculaHome + "/lib/";
+        String bunniculaLib = bunniculaHome + "/lib";
         System.setProperty("bunnicula.lib.dir", bunniculaLib);
-        String bunniculaBin = bunniculaHome + "/bin/";
+        String bunniculaBin = bunniculaHome + "/bin";
         System.setProperty("bunnicula.bin.dir", bunniculaBin);
-        String bunniculaToolbox = bunniculaHome + "/toolbox/";
+        String bunniculaToolbox = bunniculaHome + "/toolbox";
         System.setProperty("bunnicula.toolbox.dir", bunniculaToolbox);
-        String bunniculaLog = bunniculaHome + "/log/";
+        String bunniculaLog = bunniculaHome + "/log";
         System.setProperty("bunnicula.log.dir", bunniculaLog);
-        String bunniculaData = bunniculaHome + "/data/";
+        String bunniculaData = bunniculaHome + "/data";
         System.setProperty("bunnicula.data.dir", bunniculaData);
-        String bunniculaDb = bunniculaHome + "/db/";
+        String bunniculaDb = bunniculaHome + "/db";
         System.setProperty("bunnicula.db.dir", bunniculaDb);
-        String bunniculaWeb = bunniculaHome + "/web/";
+        String bunniculaWeb = bunniculaHome + "/web";
         System.setProperty("bunnicula.web.dir", bunniculaWeb);
-        String bunniculaConf = bunniculaHome + "/conf/";
+        String bunniculaConf = bunniculaHome + "/conf";
         System.setProperty("bunnicula.conf.dir", bunniculaConf);
-        String bunniculaTmp = bunniculaHome + "/tmp/";
+        String bunniculaTmp = bunniculaHome + "/tmp";
         System.setProperty("bunnicula.tmp.dir", bunniculaTmp);
 
         logger.info("bunnicula.home        " + bunniculaHome);

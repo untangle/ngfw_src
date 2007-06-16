@@ -1,6 +1,6 @@
 /*
- * $HeadURL:$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * $HeadURL$
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -35,12 +35,12 @@ class ShellFlags
     static final String FLAG_EXTERNAL_ROUTER_ADDR = "HTTPS_PUBLIC_ADDR";
     static final String FLAG_EXTERNAL_ROUTER_PORT = "HTTPS_PUBLIC_PORT";
     static final String FLAG_EXTERNAL_ROUTER_EN   = "HTTPS_PUBLIC_REDIRECT_EN";
-    
+
     static final String FLAG_POST_FUNC    = "UVM_POST_CONF";
     static final String POST_FUNC_NAME    = "postConfigurationScript";
     static final String DECL_POST_CONF    = "function " + POST_FUNC_NAME + "() {";
 
-    
+
     static final String FLAG_CUSTOM_RULES = "UVM_CUSTOM_RULES";
     static final String CUSTOM_RULES_NAME = "customRulesScript";
     static final String DECL_CUSTOM_RULES = "function " + CUSTOM_RULES_NAME + "() {";
