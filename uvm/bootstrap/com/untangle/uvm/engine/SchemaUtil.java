@@ -72,8 +72,9 @@ public class SchemaUtil
         }
 
         try {
-            String mvnice = System.getProperty("bunnicula.bin.dir") + "utnice";
-            String us = System.getProperty("bunnicula.bin.dir") + "update-schema";
+            String bd = System.getProperty("bunnicula.home") + "/bin/";
+            String mvnice = bd + "utnice";
+            String us = bd + "update-schema";
             ProcessBuilder pb = new ProcessBuilder(mvnice, us, type, component);
             Process p = pb.start();
             InputStream is = p.getInputStream();

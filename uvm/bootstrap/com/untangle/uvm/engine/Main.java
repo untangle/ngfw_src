@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -207,22 +207,22 @@ public class Main
     {
         List<URL> urls = new ArrayList();
         String bunniculaLib = System.getProperty("bunnicula.lib.dir");
-        urls.add(new URL("file://" + bunniculaLib + "/uvm-impl/"));
-        urls.add(new URL("file://" + bunniculaLib + "/uvm-api/"));
-        urls.add(new URL("file://" + bunniculaLib + "/uvm-localapi/"));
-        urls.add(new URL("file://" + bunniculaLib + "/uvm-reporting/"));
+        urls.add(new URL("file://" + bunniculaLib + "/untangle-uvm-impl/"));
+        urls.add(new URL("file://" + bunniculaLib + "/untangle-uvm-api/"));
+        urls.add(new URL("file://" + bunniculaLib + "/untangle-uvm-localapi/"));
+        urls.add(new URL("file://" + bunniculaLib + "/untangle-uvm-reporting/"));
         urls.add(new URL("file://" + bunniculaLib + "/jvector-impl/"));
         urls.add(new URL("file://" + bunniculaLib + "/jnetcap-impl/"));
 
-        String rupFilename = bunniculaLib + "/rupuvm-impl/";
+        String rupFilename = bunniculaLib + "/untangle-rupuvm-impl/";
         if (new File(rupFilename).exists()) {
             urls.add(new URL("file://" + rupFilename));
         }
-        rupFilename = bunniculaLib + "/rupuvm-api/";
+        rupFilename = bunniculaLib + "/untangle-rupuvm-api/";
         if (new File(rupFilename).exists()) {
             urls.add(new URL("file://" + rupFilename));
         }
-        rupFilename = bunniculaLib + "/rupuvm-localapi/";
+        rupFilename = bunniculaLib + "/untangle-rupuvm-localapi/";
         if (new File(rupFilename).exists()) {
             urls.add(new URL("file://" + rupFilename));
         }

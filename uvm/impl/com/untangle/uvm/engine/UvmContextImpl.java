@@ -421,7 +421,7 @@ public class UvmContextImpl extends UvmContextBase
     public Process exec(String[] cmd, String[] envp, File dir) throws IOException
     {
         String[] newCmd = new String[cmd.length + 1];
-        newCmd[0] = System.getProperty("bunnicula.bin.dir") + "mvnice";
+        newCmd[0] = System.getProperty("bunnicula.bin.dir") + "utnice";
         System.arraycopy(cmd, 0, newCmd, 1, cmd.length);
         try {
             return Runtime.getRuntime().exec(newCmd, envp, dir);
