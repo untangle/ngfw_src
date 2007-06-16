@@ -59,4 +59,18 @@ public class RemoteLicenseManagerImpl implements RemoteLicenseManager
 
         return this.licenseManager.getLicenseStatus( identifier );
     }
+
+
+    /**
+     * Return true if the user has any premium products.
+     */
+    public boolean hasPremiumLicense()
+    {     
+        if ( this.licenseManager == null ) {
+            /* can only have a premium license if they have the full license manager */
+            return false;
+        }
+        
+        return this.licenseManager.hasPremiumLicense();
+    }
 }

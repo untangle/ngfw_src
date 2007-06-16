@@ -322,8 +322,7 @@ public class Util {
     }
 
     public static boolean getIsPremium(){
-		// XXX - waiting on isProfessional
-        return false; //getLicenseManager().isProfessional();
+        return getLicenseManager().hasPremiumLicense();
     }
 	
     //////////////////////////////
