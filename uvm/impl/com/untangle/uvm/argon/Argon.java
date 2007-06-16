@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -27,7 +27,6 @@ import com.untangle.uvm.localapi.LocalIntfManager;
 import com.untangle.uvm.localapi.LocalShieldManager;
 import com.untangle.uvm.networking.NetworkException;
 import com.untangle.uvm.networking.NetworkManagerImpl;
-import com.untangle.uvm.policy.LocalPolicyManager;
 import com.untangle.uvm.shield.ShieldMonitor;
 import org.apache.log4j.Logger;
 
@@ -90,7 +89,7 @@ public class Argon
     {
     }
 
-    public void run( LocalPolicyManager policyManager, NetworkManagerImpl networkManager )
+    public void run( NetworkManagerImpl networkManager )
     {
         this.networkManager = networkManager;
 
@@ -101,7 +100,7 @@ public class Argon
         parseProperties();
 
         try {
-            init( policyManager );
+            init();
         } catch ( ArgonException e ) {
             logger.fatal( "Error initializing argon", e );
             throw new IllegalStateException( "no", e );
@@ -215,14 +214,14 @@ public class Argon
     /**
      * Initialize Netcap and any other supporting libraries.
      */
-    private void init( LocalPolicyManager policyManager ) throws ArgonException
+    private void init() throws ArgonException
     {
         Netcap.init( isShieldEnabled, netcapDebugLevel, jnetcapDebugLevel );
 
         /* Start the scheduler */
         Netcap.startScheduler();
 
-        this.intfManager = new LocalIntfManagerImpl( policyManager );
+        this.intfManager = new LocalIntfManagerImpl();
         this.intfManager.initializeIntfArray( internal, external, dmz );
 
         /* Register the NatChecker */

@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,23 +16,16 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package com.untangle.uvm.engine;
+package com.untangle.uvm.policy;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.license.ProductIdentifier;
-import com.untangle.uvm.policy.LocalPolicyManager;
-import com.untangle.uvm.policy.Policy;
-import com.untangle.uvm.policy.PolicyConfiguration;
-import com.untangle.uvm.policy.PolicyException;
-import com.untangle.uvm.policy.PolicyManager;
-import com.untangle.uvm.policy.SystemPolicyRule;
-import com.untangle.uvm.policy.UserPolicyRule;
-import com.untangle.uvm.policy.UserPolicyRuleSet;
 import com.untangle.uvm.node.LocalNodeManager;
 import com.untangle.uvm.node.firewall.intf.IntfMatcher;
 import com.untangle.uvm.util.TransactionWork;
@@ -47,9 +40,11 @@ class DefaultPolicyManager implements LocalPolicyManager
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    // package protected variables (used by PipelineFoundryImpl)
     private volatile UserPolicyRule[] userRules;
+    private volatile UserPolicyRule[] cUserRules;
+
     private volatile SystemPolicyRule[] sysRules;
+    private volatile SystemPolicyRule[] cSysRules;
 
     private Policy defaultPolicy;
 
@@ -138,23 +133,6 @@ class DefaultPolicyManager implements LocalPolicyManager
         throw new PolicyException("Professional edition only");
     }
 
-    protected boolean isInUse(Policy p)
-    {
-        synchronized(policyRuleLock) {
-            for (SystemPolicyRule spr : sysRules) {
-                if (spr.getPolicy() == p)
-                    return true;
-            }
-            for (UserPolicyRule upr : userRules) {
-                if (upr.getPolicy() == p)
-                    return true;
-            }
-        }
-
-        LocalNodeManager tm = UvmContextFactory.context().nodeManager();
-        return 0 < tm.nodeInstances(p).size();
-    }
-
     public SystemPolicyRule[] getSystemPolicyRules() {
         return sysRules;
     }
@@ -215,7 +193,8 @@ class DefaultPolicyManager implements LocalPolicyManager
 
         List pl = new ArrayList();
         pl.add(defaultPolicy);
-        PolicyConfiguration result = new PolicyConfiguration(pl, sysRules, userRules);
+
+        PolicyConfiguration result = new PolicyConfiguration(pl, sysRules, cUserRules);
         return result;
     }
 
@@ -279,7 +258,8 @@ class DefaultPolicyManager implements LocalPolicyManager
     // rules given this sorting.
     public void reconfigure(final byte[] interfaces)
     {
-        // For now do nothing
+        // For now do nothing (this should never be true)
+        // intended for the case where something was initialized improperly?
         if (defaultPolicy == null)
             // Always
             return;
@@ -378,8 +358,10 @@ class DefaultPolicyManager implements LocalPolicyManager
                         }
 
                         userRuleSet = uprs;
-                        userRules = (UserPolicyRule[]) existingUser.toArray(new UserPolicyRule[] { });
-                        sysRules = (SystemPolicyRule[]) goodSys.toArray(new SystemPolicyRule[] { });
+                        /* update the user policy rules and the system
+                         * policy rules */
+                        updateRules( existingUser, goodSys );
+                       
 
                         return true;
                     }
@@ -403,5 +385,70 @@ class DefaultPolicyManager implements LocalPolicyManager
     public String productIdentifier()
     {
         return ProductIdentifier.POLICY_MANAGER;
+    }
+
+
+    /**
+     * create updated policy rules.  designed to minimize suprises
+     * when going from trial -> expired.
+     * user policy rules with non-default policies (not null or the default policy)
+     * are disabled.
+     * system policies that evaluate to the non-default policies, are updated to the
+     * default policy.
+     * This doesn't affect the database at all, as rules are copied, but if the user
+     * goes into the policy manager and saves settings, the new values are written
+     * to the database. 
+     */     
+    private void updateRules(List<UserPolicyRule> userPolicyRules, List<SystemPolicyRule> systemPolicyRules)
+    {
+        List<UserPolicyRule> userPolicyList = new LinkedList<UserPolicyRule>();
+        List<UserPolicyRule> completePolicyList = new LinkedList<UserPolicyRule>();
+        
+        for (UserPolicyRule upr : userPolicyRules){
+            /* Disable the rules with non-default policies */
+            Policy policy = upr.getPolicy();
+            if ((policy == null ) || (policy.equals(this.defaultPolicy))) {
+                userPolicyList.add(upr);
+                completePolicyList.add(upr);
+            } else {
+                /* Create a new rule, that is not live, that goes to
+                 * the default rack */
+                UserPolicyRule newRule = 
+                    new UserPolicyRule(upr.getClientIntf(),upr.getServerIntf(),
+                                       this.defaultPolicy,upr.isInbound(),upr.getProtocol(),
+                                       upr.getClientAddr(),upr.getServerAddr(),
+                                       upr.getClientPort(),upr.getServerPort(),
+                                       upr.getStartTime(),upr.getEndTime(),
+                                       upr.getDayOfWeek(),upr.getUser(),
+                                       false,upr.isInvertEntireDuration());
+                
+                completePolicyList.add(newRule);
+            }
+        }
+
+        this.userRules = userPolicyList.toArray(new UserPolicyRule[0]);
+        this.cUserRules = completePolicyList.toArray(new UserPolicyRule[0]);
+
+        SystemPolicyRule[] systemPolicyRuleArray = new SystemPolicyRule[systemPolicyRules.size()];
+        int c = 0;
+        for (SystemPolicyRule spr : systemPolicyRules){
+            
+            /* Remap the rules with non-default policies, to default poliices */
+            Policy policy = spr.getPolicy();
+            if ((policy == null) || (policy.equals(this.defaultPolicy))) {
+                systemPolicyRuleArray[c] = spr;
+            } else {
+                /* Create a new policy rule pointing to the default rack */
+                SystemPolicyRule newRule = 
+                    new SystemPolicyRule( spr.getClientIntf(), spr.getServerIntf(),
+                                          this.defaultPolicy, spr.isInbound());
+                
+                systemPolicyRuleArray[c] = newRule;
+            }
+
+            c++;
+        }
+        
+        this.sysRules = systemPolicyRuleArray;
     }
 }

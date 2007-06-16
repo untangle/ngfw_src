@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,15 +16,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package com.untangle.uvm.engine;
+package com.untangle.uvm.policy;
 
-import com.untangle.uvm.policy.LocalPolicyManager;
-import com.untangle.uvm.policy.Policy;
-import com.untangle.uvm.policy.PolicyConfiguration;
-import com.untangle.uvm.policy.PolicyException;
-import com.untangle.uvm.policy.PolicyManager;
-import com.untangle.uvm.policy.SystemPolicyRule;
-import com.untangle.uvm.policy.UserPolicyRule;
 import java.util.List;
 
 class RemotePolicyManagerAdaptor implements PolicyManager

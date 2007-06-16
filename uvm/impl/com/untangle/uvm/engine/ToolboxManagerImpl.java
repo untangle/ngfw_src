@@ -748,7 +748,7 @@ class ToolboxManagerImpl implements ToolboxManager
     {
         Exception exn;
 
-        String cmdStr = System.getProperty("bunnicula.bin.dir") + "/mkg"
+        String cmdStr = System.getProperty("bunnicula.bin.dir") + "/mkg "
             + (0 > key ? "" : "-k " + key + " ") + command;
 
         logger.debug("running: " + cmdStr);

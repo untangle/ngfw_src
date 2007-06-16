@@ -54,6 +54,7 @@ import com.untangle.uvm.node.RemoteNodeManager;
 import com.untangle.uvm.node.RemoteShieldManager;
 import com.untangle.uvm.policy.LocalPolicyManager;
 import com.untangle.uvm.policy.PolicyManager;
+import com.untangle.uvm.policy.PolicyManagerFactory;
 import com.untangle.uvm.portal.BasePortalManager;
 import com.untangle.uvm.tapi.MPipeManager;
 import com.untangle.uvm.toolbox.ToolboxManager;
@@ -102,8 +103,7 @@ public class UvmContextImpl extends UvmContextBase
     private LoggingManagerImpl loggingManager;
     private SyslogManagerImpl syslogManager;
     private EventLogger eventLogger;
-    private LocalPolicyManager policyManager;
-    private PolicyManager remotePolicyManager;
+    private PolicyManagerFactory policyManagerFactory;
     private MPipeManagerImpl mPipeManager;
     private MailSenderImpl mailSender;
     private LogMailerImpl logMailer;
@@ -229,12 +229,12 @@ public class UvmContextImpl extends UvmContextBase
 
     public LocalPolicyManager policyManager()
     {
-        return policyManager;
+        return policyManagerFactory.policyManager();
     }
 
     public PolicyManager remotePolicyManager()
     {
-        return remotePolicyManager;
+        return policyManagerFactory.remotePolicyManager();
     }
 
     public MailSenderImpl mailSender()
@@ -611,20 +611,7 @@ public class UvmContextImpl extends UvmContextBase
         repositorySelector.setLogMailer(logMailer);
 
         // Fire up the policy manager.
-        String pmClass = System.getProperty("uvm.policy.manager");
-        if (null == pmClass) {
-            pmClass = "com.untangle.uvm.policy.RupPolicyManager";
-        }
-
-        LocalPolicyManager pm = null;
-        try {
-            pm = (LocalPolicyManager)Class.forName(pmClass).newInstance();
-        } catch (Exception exn) {
-            logger.info("could not load PolicyManager: " + pmClass);
-        }
-        policyManager = null == pm ? new DefaultPolicyManager() : pm;
-        logger.info("using PolicyManager: " + policyManager.getClass());
-        remotePolicyManager = new RemotePolicyManagerAdaptor(policyManager);
+        policyManagerFactory = PolicyManagerFactory.makeInstance();
 
         toolboxManager = ToolboxManagerImpl.toolboxManager();
 
@@ -687,12 +674,12 @@ public class UvmContextImpl extends UvmContextBase
         // start vectoring:
         String argonFake = System.getProperty(ARGON_FAKE_KEY);
         if (null == argonFake || !argonFake.equalsIgnoreCase("yes")) {
-            Argon.getInstance().run( policyManager, networkManager );
+            Argon.getInstance().run( networkManager );
         } else {
             logger.info( "Argon not activated, using fake interfaces in the "
                          + "policy and networking manager." );
             byte interfaces[] = new byte[] { 0, 1 };
-            policyManager.reconfigure(interfaces);
+            policyManager().reconfigure(interfaces);
             // this is done by the policy manager, but leave it here
             // just in case.
             // XXXX no longer needed.

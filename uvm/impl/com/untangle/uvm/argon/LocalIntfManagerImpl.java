@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -31,6 +31,7 @@ import com.untangle.jnetcap.Netcap;
 import com.untangle.uvm.ArgonException;
 import com.untangle.uvm.IntfConstants;
 import com.untangle.uvm.IntfEnum;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.localapi.ArgonInterface;
 import com.untangle.uvm.localapi.LocalIntfManager;
 import com.untangle.uvm.policy.LocalPolicyManager;
@@ -59,7 +60,6 @@ class LocalIntfManagerImpl implements LocalIntfManager
 
     private ArgonInterfaceConverter intfConverter = null;
 
-    private final LocalPolicyManager policyManager;
     private final Logger logger = Logger.getLogger( this.getClass());
 
     /* Converter from all of the interface indexes to their display name(eg. external) */
@@ -236,9 +236,8 @@ class LocalIntfManagerImpl implements LocalIntfManager
     }
 
     /* ----------------- Package ----------------- */
-    LocalIntfManagerImpl( LocalPolicyManager policyManager )
+    LocalIntfManagerImpl()
     {
-        this.policyManager = policyManager;
     }
 
     /* Initialize the interface converter */
@@ -279,7 +278,7 @@ class LocalIntfManagerImpl implements LocalIntfManager
 
         /* If there are new interfaces, then notify the policy manager */
         if ( !this.intfConverter.hasMatchingInterfaces( prevIntfConverter )) {
-            this.policyManager.reconfigure( getArgonIntfArray());
+            UvmContextFactory.context().policyManager().reconfigure( getArgonIntfArray());
         }
 
         /* Update the interface matcher factory, this should be a listener */

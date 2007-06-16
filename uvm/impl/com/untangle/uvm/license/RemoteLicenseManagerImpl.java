@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -58,5 +58,5 @@ public class RemoteLicenseManagerImpl implements RemoteLicenseManager
         }
 
         return this.licenseManager.getLicenseStatus( identifier );
-    }    
+    }
 }
