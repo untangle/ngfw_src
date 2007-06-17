@@ -1,6 +1,6 @@
 /*
- * $HeadURL:$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * $HeadURL$
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -25,6 +25,8 @@ import java.net.URLClassLoader;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
+
 /**
  * ClassLoader that allows us to add new resources as new applications
  * are installed. The bulk of the UVM and all nodes are loaded
@@ -38,6 +40,7 @@ class UvmClassLoader extends URLClassLoader
 {
     private final Set<URL> resources = new HashSet<URL>();
     private final File toolboxDir;
+    private final Logger logger = Logger.getLogger(getClass());
 
     /**
      * Creates new UvmClassLoader.
@@ -70,19 +73,49 @@ class UvmClassLoader extends URLClassLoader
         boolean changed = false;
 
         for (File f : toolboxDir.listFiles()) {
-            URL url;
-            try {
-                url = f.toURL();
-            } catch (MalformedURLException exn) {
-                throw new RuntimeException(exn);
-            }
-            if (!resources.contains(url)) {
-                addURL(url);
-                resources.add(url);
+            if (addFile(f)) {
                 changed = true;
             }
         }
 
         return changed;
+    }
+
+    boolean loadRup()
+    {
+        String bunniculaLib = System.getProperty("bunnicula.lib.dir");
+
+        return addFile(bunniculaLib + "/untangle-rupuvm-impl/")
+            || addFile(bunniculaLib + "/untangle-rupuvm-api/")
+            || addFile(bunniculaLib + "/untangle-rupuvm-localapi/");
+    }
+
+    // private methods --------------------------------------------------------
+
+    private boolean addFile(File f)
+    {
+        try {
+            URL url = f.toURL();
+            if (!resources.contains(url)) {
+                addURL(url);
+                resources.add(url);
+                return true;
+            } else {
+                return false;
+            }
+        } catch (MalformedURLException exn) {
+            logger.warn("could not load: " + f, exn);
+            return false;
+        }
+    }
+
+    private boolean addFile(String fn)
+    {
+        File f = new File(fn);
+        if (f.exists()) {
+            return addFile(f);
+        } else {
+            return false;
+        }
     }
 }

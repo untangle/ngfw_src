@@ -123,6 +123,14 @@ public class Main
         return schemaUtil;
     }
 
+    /**
+     * Attempt to load premium libraries.
+     */
+    public void loadRup()
+    {
+        mcl.loadRup();
+    }
+
     // private methods --------------------------------------------------------
 
     private void init() throws Exception
@@ -214,23 +222,12 @@ public class Main
         urls.add(new URL("file://" + bunniculaLib + "/jvector-impl/"));
         urls.add(new URL("file://" + bunniculaLib + "/jnetcap-impl/"));
 
-        String rupFilename = bunniculaLib + "/untangle-rupuvm-impl/";
-        if (new File(rupFilename).exists()) {
-            urls.add(new URL("file://" + rupFilename));
-        }
-        rupFilename = bunniculaLib + "/untangle-rupuvm-api/";
-        if (new File(rupFilename).exists()) {
-            urls.add(new URL("file://" + rupFilename));
-        }
-        rupFilename = bunniculaLib + "/untangle-rupuvm-localapi/";
-        if (new File(rupFilename).exists()) {
-            urls.add(new URL("file://" + rupFilename));
-        }
-
         String bunniculaToolbox = System.getProperty("bunnicula.toolbox.dir");
         mcl = new UvmClassLoader(urls.toArray(new URL[urls.size()]),
                                   getClass().getClassLoader(),
                                   new File(bunniculaToolbox));
+
+        loadRup();
 
         ClassLoader oldCl = Thread.currentThread().getContextClassLoader();
         try {

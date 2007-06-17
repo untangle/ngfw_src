@@ -642,7 +642,6 @@ public class UvmContextImpl extends UvmContextBase
         BasePortalManager bpm = null;
         try {
             bpm = (BasePortalManager)Class.forName(bpmClass).newInstance();
-            // bpm = (BasePortalManager) getClass().getClassLoader().loadClass(bpmClass).newInstance();
         } catch (Exception exn) {
             logger.info("could not load PortalManager: " + bpmClass, exn);
         }
