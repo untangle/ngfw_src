@@ -126,9 +126,9 @@ public class Main
     /**
      * Attempt to load premium libraries.
      */
-    public void loadRup()
+    public boolean loadRup()
     {
-        mcl.loadRup();
+        return mcl.loadRup();
     }
 
     // private methods --------------------------------------------------------
@@ -226,8 +226,6 @@ public class Main
         mcl = new UvmClassLoader(urls.toArray(new URL[urls.size()]),
                                   getClass().getClassLoader(),
                                   new File(bunniculaToolbox));
-
-        loadRup();
 
         ClassLoader oldCl = Thread.currentThread().getContextClassLoader();
         try {

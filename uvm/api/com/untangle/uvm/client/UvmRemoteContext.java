@@ -247,13 +247,18 @@ public interface UvmRemoteContext
     /**
      * Restore from a previous {@link #createBackup backup}.
      *
-     *
      * @exception IOException something went wrong to prevent the
      *            restore (not the user's fault).
-     *
      * @exception IllegalArgumentException if the provided bytes do not seem
      *            to have come from a valid backup (is the user's fault).
      */
     void restoreBackup(byte[] backupFileBytes)
         throws IOException, IllegalArgumentException;
+
+    /**
+     * Loads premium functionality.
+     *
+     * @return true if premium functionality was loaded.
+     */
+    boolean loadRup();
 }

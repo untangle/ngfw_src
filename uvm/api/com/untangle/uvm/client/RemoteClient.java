@@ -250,6 +250,8 @@ public class RemoteClient
             doFullGC();
         } else if (args[0].equalsIgnoreCase("messageQueue")) {
             messageQueue();
+        } else if (args[0].equalsIgnoreCase("loadRup")) {
+            loadRup();
         } else if (args[0].equalsIgnoreCase("addPolicy")) {
             addPolicy(args[1], 3 > args.length ? null : args[2]);
         } else if (args[0].equalsIgnoreCase("listPolicies")) {
@@ -912,6 +914,11 @@ public class RemoteClient
         }
     }
 
+    private static void loadRup()
+    {
+        mc.loadRup();
+    }
+
     private static void addPolicy(String policy, String notes)
         throws PolicyException
     {
@@ -982,6 +989,7 @@ public class RemoteClient
     {
         mc.licenseManager().reloadLicenses();
     }
+
 
     // helper functions -------------------------------------------------------
 
@@ -1069,6 +1077,7 @@ public class RemoteClient
         System.out.println("    mcli serverStats");
         System.out.println("    mcli gc");
         System.out.println("    mcli messageQueue");
+        System.out.println("    mcli loadRup");
         System.out.println("  policy manager:");
         System.out.println("    mcli addPolicy name [notes]");
         System.out.println("    mcli listPolicies");

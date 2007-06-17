@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -36,24 +36,23 @@ package com.untangle.uvm;
 import java.io.File;
 import java.io.IOException;
 
-import com.untangle.uvm.UvmException;
 import com.untangle.uvm.addrbook.AddressBook;
+import com.untangle.uvm.license.LocalLicenseManager;
+import com.untangle.uvm.license.RemoteLicenseManager;
 import com.untangle.uvm.localapi.LocalIntfManager;
 import com.untangle.uvm.localapi.LocalShieldManager;
-import com.untangle.uvm.license.RemoteLicenseManager;
-import com.untangle.uvm.license.LocalLicenseManager;
 import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.LoggingManager;
 import com.untangle.uvm.logging.SyslogManager;
 import com.untangle.uvm.networking.LocalNetworkManager;
 import com.untangle.uvm.networking.ping.PingManager;
+import com.untangle.uvm.node.LocalNodeManager;
 import com.untangle.uvm.policy.LocalPolicyManager;
 import com.untangle.uvm.portal.BasePortalManager;
 import com.untangle.uvm.security.AdminManager;
 import com.untangle.uvm.tapi.MPipeManager;
 import com.untangle.uvm.tapi.PipelineFoundry;
 import com.untangle.uvm.toolbox.ToolboxManager;
-import com.untangle.uvm.node.LocalNodeManager;
 import com.untangle.uvm.user.LocalPhoneBook;
 import com.untangle.uvm.user.RemotePhoneBook;
 import com.untangle.uvm.util.TransactionWork;
@@ -174,14 +173,14 @@ public interface UvmLocalContext
      * @return the singleton
      */
     RemotePhoneBook remotePhoneBook();
-    
+
     /**
      * The license manager.
      *
      * @return the RemoteLicenseManager
      */
     RemoteLicenseManager remoteLicenseManager();
-    
+
     /**
      * The license manager.
      *
@@ -263,7 +262,7 @@ public interface UvmLocalContext
     /**
      * Return true if running inside a Virtualized Platform (like VMWare)
      *
-     * @return a <code>boolean</code> true if platform is running in a virtualized machine 
+     * @return a <code>boolean</code> true if platform is running in a virtualized machine
      */
     boolean isInsideVM();
 
@@ -310,19 +309,23 @@ public interface UvmLocalContext
      */
     byte[] createBackup() throws IOException;
 
-
     /**
      * Restore from a previous {@link #createBackup backup}.
      *
-     *
      * @exception IOException something went wrong to prevent the
      *            restore (not the user's fault).
-     *
      * @exception IllegalArgumentException if the provided bytes do not seem
      *            to have come from a valid backup (is the user's fault).
      */
     void restoreBackup(byte[] backupFileBytes)
         throws IOException, IllegalArgumentException;
+
+    /**
+     * Loads premium functionality.
+     *
+     * @return true if premium functionality was loaded.
+     */
+    boolean loadRup();
 
     /*
      * Loads a shared library (.so) into the UVM classloader.  This

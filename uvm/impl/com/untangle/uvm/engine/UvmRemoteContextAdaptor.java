@@ -204,4 +204,9 @@ class UvmRemoteContextAdaptor implements UvmRemoteContext
     {
         context.restoreBackup(backupBytes);
     }
+
+    public boolean loadRup()
+    {
+        return context.loadRup();
+    }
 }

@@ -505,6 +505,11 @@ public class UvmContextImpl extends UvmContextBase
         backupManager.restoreBackup(backupBytes);
     }
 
+    public boolean loadRup()
+    {
+        return loadRup(true);
+    }
+
     public boolean isActivated() {
         // This is ez since we aren't concerned about local box
         // security -- the key is ultimately checked on the release
@@ -593,6 +598,7 @@ public class UvmContextImpl extends UvmContextBase
         UvmRepositorySelector repositorySelector = UvmRepositorySelector.selector();
         loggingManager = new LoggingManagerImpl(repositorySelector);
         loggingManager.initSchema("uvm");
+        loadRup(false);
         loggingManager.start();
         eventLogger = EventLoggerFactory.factory().getEventLogger();
 
@@ -634,19 +640,7 @@ public class UvmContextImpl extends UvmContextBase
 
         phoneBookFactory = PhoneBookFactory.makeInstance();
 
-        // Fire up the portal manager.
-        String bpmClass = System.getProperty("uvm.portal.manager");
-        if (null == bpmClass) {
-            bpmClass = "com.untangle.uvm.engine.RupPortalManager";
-        }
-        BasePortalManager bpm = null;
-        try {
-            bpm = (BasePortalManager)Class.forName(bpmClass).newInstance();
-        } catch (Exception exn) {
-            logger.info("could not load PortalManager: " + bpmClass, exn);
-        }
-        portalManager = null == bpm ? new DefaultPortalManager() : bpm;
-        logger.info("using PortalManager: " + portalManager.getClass());
+        portalManager = findPortalManager();
 
         // start nodes:
         nodeManager = new NodeManagerImpl(repositorySelector);
@@ -887,6 +881,42 @@ public class UvmContextImpl extends UvmContextBase
     }
 
     // private methods --------------------------------------------------------
+
+    private BasePortalManager findPortalManager()
+    {
+        // Fire up the portal manager.
+        String bpmClass = System.getProperty("uvm.portal.manager");
+        if (null == bpmClass) {
+            bpmClass = "com.untangle.uvm.engine.RupPortalManager";
+        }
+        BasePortalManager bpm = null;
+        try {
+            bpm = (BasePortalManager)Class.forName(bpmClass).newInstance();
+        } catch (Exception exn) {
+            logger.info("could not load PortalManager: " + bpmClass, exn);
+        }
+
+        BasePortalManager pm = null == bpm ? new DefaultPortalManager() : bpm;
+        logger.info("using PortalManager: " + pm.getClass());
+
+        return pm;
+    }
+
+    private boolean loadRup(boolean refreshManagers)
+    {
+        if (main.loadRup()) {
+            main.schemaUtil().initSchema("settings", "rupuvm");
+            loggingManager.initSchema("rupuvm");
+
+            if (refreshManagers) {
+                portalManager = findPortalManager();
+            }
+
+            return true;
+        } else {
+            return false;
+        }
+    }
 
     // static initializer -----------------------------------------------------
 
