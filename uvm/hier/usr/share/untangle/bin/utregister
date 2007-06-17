@@ -4,8 +4,6 @@ set -e
 
 . @PREFIX@/etc/default/untangle-vm
 
-NEWPWFILE="/tmp/newpw$$"
-
 /bin/rm -f "$REGISTRATION_DONE_FILE"
 /bin/rm -f "$NEWPWFILE"
 
@@ -15,15 +13,7 @@ NEWPWFILE="/tmp/newpw$$"
 ACTIVATION_KEY=`cat $ACTIVATION_KEY_FILE`
 perl -i -npe "s/$FAKE_KEY/$ACTIVATION_KEY/" $REGISTRATION_INFO_FILE
 
-/usr/bin/wget --timeout=30 --output-document="$NEWPWFILE" --tries=1 --post-file="$REGISTRATION_INFO_FILE" "$REGISTRATION_URL"
+/usr/bin/wget --timeout=30 --output-document="/dev/null" --tries=1 --post-file="$REGISTRATION_INFO_FILE" "$REGISTRATION_URL"
 if [ "$?" -eq "0" ]; then
-    NEWPW=$(/bin/cat "$NEWPWFILE")
-    /bin/rm -f "$NEWPWFILE"
-    if [ ${#NEWPW} -ne 13 ]; then
-        echo "Unable to set pw to $NEWPW"
-        exit 1
-    else
-        echo "root:$NEWPW" | /usr/sbin/chpasswd -e
-    fi
     /bin/touch "$REGISTRATION_DONE_FILE"
 fi
