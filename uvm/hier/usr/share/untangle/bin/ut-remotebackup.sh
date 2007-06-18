@@ -41,7 +41,7 @@
 #================================================================
 
 # Example:
-#./mv-remotebackup.sh -u http://localhost/boxtrack/boxbackup/backup.php -k xyz678
+#./ut-remotebackup.sh -u http://localhost/boxtrack/boxbackup/backup.php -k xyz678
 
 
 # Constants
@@ -141,13 +141,13 @@ debug "Using Timeout - " $TIMEOUT
 
 
 # Create the backups into a directory we provide
-DUMP_DIR=`mktemp -d -t mv-remotebackup.XXXXXXXXXX`
+DUMP_DIR=`mktemp -d -t ut-remotebackup.XXXXXXXXXX`
 createBackup $DUMP_DIR
 
 
 
 # Tar the contents of the temp directory
-TAR_FILE=`mktemp -t mv-remotebackup.XXXXXXXXXX`
+TAR_FILE=`mktemp -t ut-remotebackup.XXXXXXXXXX`
 tarBackupFiles $TAR_FILE $DUMP_DIR
 
 debug "Gzipping $TAR_FILE"
@@ -163,7 +163,7 @@ rm -rf $DUMP_DIR
 
 
 
-HEADER_FILE=`mktemp -t mv-remotebackup.XXXXXXXXXX`
+HEADER_FILE=`mktemp -t ut-remotebackup.XXXXXXXXXX`
 callCurl $TAR_FILE $HEADER_FILE
 CURL_RET=$?
 debug "CURL returned $CURL_RET"

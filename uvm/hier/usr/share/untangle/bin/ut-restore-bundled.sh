@@ -13,7 +13,7 @@
 ####################################################################
 
 #=============================================================
-# Script which takes the output of "mv-backup-bundled" and
+# Script which takes the output of "ut-backup-bundled" and
 # restores it to a system.  This is a wrapper around "untangle-restore"
 # which deals with single .tar.gz files rather than the three
 # files from the "old-style" backups.
@@ -68,7 +68,7 @@ function doIt() {
 
 
 # Create a working directory
-    WORKING_DIR=`mktemp -d -t mv-restore-bundled.XXXXXXXXXX`
+    WORKING_DIR=`mktemp -d -t ut-restore-bundled.XXXXXXXXXX`
     debug "Working in directory $WORKING_DIR"
 
 # Copy our file to the working directory
@@ -167,7 +167,7 @@ done
 ## when bunnicula gets killed this process doesn't exit.
 if [ $NOHUPPED != "true" ]; then
     ## Just append any arguments, they don't matter
-    nohup sh @PREFIX@/usr/bin/mv-restore-bundled.sh "$@" -Q > @PREFIX@/var/log/uvm/restore.log 2>&1 &
+    nohup sh @UVM_HOME@/bin/ut-restore-bundled.sh "$@" -Q > @PREFIX@/var/log/uvm/restore.log 2>&1 &
 else
     doIt
 fi

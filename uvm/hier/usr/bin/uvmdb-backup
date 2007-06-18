@@ -78,7 +78,7 @@ tar zcf $outdir/files-$datestamp.tar.gz --ignore-failed-read -C @PREFIX@/ \
 
 [ $? -eq 0 ] || exit 1
 
-@PREFIX@/usr/bin/mkg installed > $outdir/installed-$datestamp
+@UVM_HOME@/bin/mkg installed > $outdir/installed-$datestamp
 
 [ $? -eq 0 ] || exit 1
 
