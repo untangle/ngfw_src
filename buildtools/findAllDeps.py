@@ -42,13 +42,12 @@ deb http://people.debian.org/~dexter php5 woody
 deb http://www.backports.org/debian sarge-backports main contrib non-free
 # volatile
 deb http://debian.domainmail.org/debian-volatile sarge/volatile main contrib non-free
-#deb http://10.0.0.44/testing testing untangle
-#deb http://10.0.0.44/dev testing untangle\n''')
+deb http://10.0.0.105/untangle mustang main premium upstream\n''')
 
   # create preferences files
   open(PREFS, 'w').write('''
 Package: *
-Pin: origin 10.0.0.44
+Pin: origin 10.0.0.105
 Pin-Priority: 700
 Package: *
 Pin: origin debian.domainmail.org
@@ -65,7 +64,7 @@ def initializeChrootedApt():
   apt_pkg.InitConfig()
   apt_pkg.InitSystem()
   apt_pkg.Config.Set("Dir::Etc::sourcelist", SOURCES)
-#  apt_pkg.Config.Set("Dir::Etc::preferences", PREFS)
+  apt_pkg.Config.Set("Dir::Etc::preferences", PREFS)
   apt_pkg.Config.Set("Dir::Cache::archives", ARCHIVES)
   apt_pkg.Config.Set("Dir::State", STATE)
   apt_pkg.Config.Set("Dir::State::Lists",  LISTS)
