@@ -16,10 +16,11 @@ FAILED = "#{PROCESSED}/failed"
 
 # global functions
 def email(recipients, subject, body)
-  recipientsString = recipients.join(',')
-  recipients.each { |r|
-    r.gsub!(/.*?<(.*)>/, '\1')
+  recipients.delete_if! { |r| not r =~ /@untangle\.com/ }
+  recipients.map! { |r|
+    r.gsub(/.*?<(.*)>/, '\1')
   }
+  recipientsString = recipients.join(',')
   myMessage = <<EOM
 From: Incoming Queue Daemon <seb@untangle.com>
 To: #{recipientsString}
