@@ -3,6 +3,8 @@
 # usage...
 [ ! $# -eq 1 ] && echo "Usage: $0 distribution" && exit 1
 
+rm -f debian/changelog.dch
+
 # CL args
 distribution=${1}
 case $distribution in
