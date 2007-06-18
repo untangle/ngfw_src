@@ -910,6 +910,7 @@ public class UvmContextImpl extends UvmContextBase
 
             if (refreshManagers) {
                 portalManager = findPortalManager();
+                policyManagerFactory.refresh();
             }
 
             return true;
