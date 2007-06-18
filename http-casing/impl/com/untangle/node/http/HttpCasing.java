@@ -27,6 +27,12 @@ import com.untangle.node.token.Unparser;
 import com.untangle.uvm.vnet.TCPSession;
 import org.apache.log4j.Logger;
 
+/**
+ * An HTTP <code>Casing</code>.
+ *
+ * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
+ * @version 1.0
+ */
 class HttpCasing implements Casing
 {
     private final HttpNodeImpl node;

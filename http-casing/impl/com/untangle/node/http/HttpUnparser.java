@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -23,8 +23,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Queue;
 
-import com.untangle.uvm.vnet.TCPSession;
-import com.untangle.uvm.vnet.event.TCPStreamer;
 import com.untangle.node.token.AbstractUnparser;
 import com.untangle.node.token.Chunk;
 import com.untangle.node.token.EndMarker;
@@ -32,8 +30,18 @@ import com.untangle.node.token.Header;
 import com.untangle.node.token.Token;
 import com.untangle.node.token.UnparseResult;
 import com.untangle.node.token.Unparser;
+import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.uvm.tapi.event.TCPStreamer;
+import com.untangle.uvm.vnet.TCPSession;
+import com.untangle.uvm.vnet.event.TCPStreamer;
 import org.apache.log4j.Logger;
 
+/**
+ * An HTTP <code>Unparser</code>.
+ *
+ * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
+ * @version 1.0
+ */
 class HttpUnparser extends AbstractUnparser
 {
     private static final ByteBuffer[] BYTE_BUFFER_PROTO = new ByteBuffer[0];

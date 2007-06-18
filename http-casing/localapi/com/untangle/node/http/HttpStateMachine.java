@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -39,7 +39,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import com.untangle.uvm.vnet.TCPSession;
 import com.untangle.node.token.AbstractTokenHandler;
 import com.untangle.node.token.ArrayTokenStreamer;
 import com.untangle.node.token.Chunk;
@@ -50,8 +49,17 @@ import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenException;
 import com.untangle.node.token.TokenResult;
 import com.untangle.node.token.TokenStreamer;
+import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.uvm.vnet.TCPSession;
 import org.apache.log4j.Logger;
 
+/**
+ * Adapts a stream of HTTP tokens to methods relating to the protocol
+ * state.
+ *
+ * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
+ * @version 1.0
+ */
 public abstract class HttpStateMachine extends AbstractTokenHandler
 {
     private final Logger logger = Logger.getLogger(getClass());

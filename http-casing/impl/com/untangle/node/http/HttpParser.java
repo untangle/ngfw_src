@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -24,11 +24,6 @@ import java.nio.ByteBuffer;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.vnet.Pipeline;
-import com.untangle.uvm.vnet.TCPSession;
-import com.untangle.uvm.vnet.TCPSessionDesc;
-import com.untangle.uvm.node.MimeType;
 import com.untangle.node.token.AbstractParser;
 import com.untangle.node.token.Chunk;
 import com.untangle.node.token.EndMarker;
@@ -38,8 +33,24 @@ import com.untangle.node.token.ParseResult;
 import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenStreamer;
 import com.untangle.node.util.AsciiCharBuffer;
+import com.untangle.uvm.tapi.Pipeline;
+import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.tapi.Pipeline;
+import com.untangle.uvm.node.MimeType;
+import com.untangle.uvm.tapi.Pipeline;
+import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.uvm.tapi.TCPSessionDesc;
+import com.untangle.uvm.vnet.Pipeline;
+import com.untangle.uvm.vnet.TCPSession;
+import com.untangle.uvm.vnet.TCPSessionDesc;
 import org.apache.log4j.Logger;
 
+/**
+ * An HTTP <code>Parser</code>.
+ *
+ * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
+ * @version 1.0
+ */
 public class HttpParser extends AbstractParser
 {
     private static final byte SP = ' ';
@@ -168,7 +179,7 @@ public class HttpParser extends AbstractParser
 
                     if (completeLine(b)) {
                         l.add(firstLine(b));
-                        
+
                         state = ACCUMULATE_HEADER_STATE;
                     } else {
                         b.compact();
