@@ -63,7 +63,7 @@ class SimpleEventCache<E extends LogEvent> extends EventCache<E>
 
     public List<E> getEvents()
     {
-        LoggingManagerImpl lm = UvmContextImpl.getInstance().loggingManager();
+        RemoteLoggingManagerImpl lm = UvmContextImpl.getInstance().loggingManager();
 
         synchronized (cache) {
             if (cold && lm.isConversionComplete()) {

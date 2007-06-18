@@ -40,7 +40,7 @@ package com.untangle.uvm.logging;
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
-public interface LoggingManager
+public interface RemoteLoggingManager
 {
     LoggingSettings getLoggingSettings();
 

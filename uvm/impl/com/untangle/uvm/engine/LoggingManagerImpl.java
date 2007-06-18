@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.concurrent.BlockingQueue;
 
 import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.logging.LoggingManager;
+import com.untangle.uvm.logging.RemoteLoggingManager;
 import com.untangle.uvm.logging.LoggingSettings;
 import com.untangle.uvm.logging.UvmRepositorySelector;
 import com.untangle.uvm.util.TransactionWork;
@@ -32,13 +32,13 @@ import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
-class LoggingManagerImpl implements LoggingManager
+class RemoteLoggingManagerImpl implements RemoteLoggingManager
 {
     private static final Object LOCK = new Object();
     private static final boolean LOGGING_DISABLED
         = Boolean.parseBoolean(System.getProperty("uvm.logging.disabled"));
 
-    private static LoggingManagerImpl LOGGING_MANAGER;
+    private static RemoteLoggingManagerImpl LOGGING_MANAGER;
 
     private final List<String> initQueue = new LinkedList<String>();
     private final LogWorker logWorker = new LogWorker(this);
@@ -50,7 +50,7 @@ class LoggingManagerImpl implements LoggingManager
 
     private volatile boolean conversionComplete = true;
 
-    LoggingManagerImpl(UvmRepositorySelector repositorySelector)
+    RemoteLoggingManagerImpl(UvmRepositorySelector repositorySelector)
     {
         this.repositorySelector = repositorySelector;
 

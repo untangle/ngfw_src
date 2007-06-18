@@ -43,7 +43,7 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Type;
 
 /**
- * Settings for the LoggingManager.
+ * Settings for the RemoteLoggingManager.
  *
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0

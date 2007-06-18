@@ -42,7 +42,7 @@ import com.untangle.uvm.license.RemoteLicenseManager;
 import com.untangle.uvm.localapi.LocalIntfManager;
 import com.untangle.uvm.localapi.LocalShieldManager;
 import com.untangle.uvm.logging.EventLogger;
-import com.untangle.uvm.logging.LoggingManager;
+import com.untangle.uvm.logging.RemoteLoggingManager;
 import com.untangle.uvm.logging.SyslogManager;
 import com.untangle.uvm.networking.LocalNetworkManager;
 import com.untangle.uvm.networking.ping.PingManager;
@@ -88,11 +88,11 @@ public interface LocalUvmContext
     LocalNodeManager nodeManager();
 
     /**
-     * Get the <code>LoggingManager</code> singleton.
+     * Get the <code>RemoteLoggingManager</code> singleton.
      *
-     * @return a <code>LoggingManager</code> value
+     * @return a <code>RemoteLoggingManager</code> value
      */
-    LoggingManager loggingManager();
+    RemoteLoggingManager loggingManager();
 
     SyslogManager syslogManager();
 

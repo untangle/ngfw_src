@@ -99,7 +99,7 @@ public class UvmContextImpl extends UvmContextBase
     private LocalShieldManager localShieldManager;
     private RemoteShieldManager remoteShieldManager;
     private HttpInvokerImpl httpInvoker;
-    private LoggingManagerImpl loggingManager;
+    private RemoteLoggingManagerImpl loggingManager;
     private SyslogManagerImpl syslogManager;
     private EventLogger eventLogger;
     private PolicyManagerFactory policyManagerFactory;
@@ -216,7 +216,7 @@ public class UvmContextImpl extends UvmContextBase
         return remoteNodeManager;
     }
 
-    public LoggingManagerImpl loggingManager()
+    public RemoteLoggingManagerImpl loggingManager()
     {
         return loggingManager;
     }
@@ -595,7 +595,7 @@ public class UvmContextImpl extends UvmContextBase
         cronManager = new CronManager();
         syslogManager = SyslogManagerImpl.manager();
         UvmRepositorySelector repositorySelector = UvmRepositorySelector.selector();
-        loggingManager = new LoggingManagerImpl(repositorySelector);
+        loggingManager = new RemoteLoggingManagerImpl(repositorySelector);
         loggingManager.initSchema("uvm");
         loadRup(false);
         loggingManager.start();
@@ -805,7 +805,7 @@ public class UvmContextImpl extends UvmContextBase
         try {
             loggingManager.stop();
         } catch (Exception exn) {
-            logger.error("could not stop LoggingManager", exn);
+            logger.error("could not stop RemoteLoggingManager", exn);
         }
 
         try {

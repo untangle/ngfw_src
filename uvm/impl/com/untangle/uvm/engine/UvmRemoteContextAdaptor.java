@@ -29,7 +29,7 @@ import com.untangle.uvm.ReportingManager;
 import com.untangle.uvm.addrbook.RemoteAddressBook;
 import com.untangle.uvm.client.RemoteUvmContext;
 import com.untangle.uvm.license.RemoteLicenseManager;
-import com.untangle.uvm.logging.LoggingManager;
+import com.untangle.uvm.logging.RemoteLoggingManager;
 import com.untangle.uvm.networking.ping.PingManager;
 import com.untangle.uvm.node.RemoteIntfManager;
 import com.untangle.uvm.node.RemoteNodeManager;
@@ -68,7 +68,7 @@ class RemoteUvmContextAdaptor implements RemoteUvmContext
         return context.remoteNodeManager();
     }
 
-    public LoggingManager loggingManager()
+    public RemoteLoggingManager loggingManager()
     {
         return context.loggingManager();
     }

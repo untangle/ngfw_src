@@ -39,7 +39,7 @@ class LogWorker implements Runnable
     private static final int DEFAULT_SYNC_TIME = 120000; /* 2 minutes */
     private static final int SYNC_TIME;
 
-    private final LoggingManagerImpl loggingManager;
+    private final RemoteLoggingManagerImpl loggingManager;
     private final List<LogEvent> logQueue = new LinkedList<LogEvent>();
     private final BlockingQueue<LogEventDesc> inputQueue
         = new LinkedBlockingQueue<LogEventDesc>();
@@ -54,7 +54,7 @@ class LogWorker implements Runnable
 
     // constructors -------------------------------------------------------
 
-    LogWorker(LoggingManagerImpl loggingManager)
+    LogWorker(RemoteLoggingManagerImpl loggingManager)
     {
         this.loggingManager = loggingManager;
     }

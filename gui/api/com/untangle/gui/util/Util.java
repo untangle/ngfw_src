@@ -162,7 +162,7 @@ public class Util {
     private static StatsCache statsCache;
     private static RemoteNetworkManager networkManager;
     // DO NOT CACHE THIS private static PolicyManager policyManager;
-    private static LoggingManager loggingManager;
+    private static RemoteLoggingManager loggingManager;
     private static RemoteAppServerManager appServerManager;
     // DO NOT CACHE THIS private static AddressBook addressBook;
     // DO NOT CACHE THIS private static RemotePhoneBook phoneBook;
@@ -210,7 +210,7 @@ public class Util {
     public static RemoteIntfManager getIntfManager(){ return remoteIntfManager; }
     public static RemoteNetworkManager getNetworkManager(){ return networkManager; }
     public static RemotePolicyManager getPolicyManager(){ return uvmContext.policyManager(); }
-    public static LoggingManager getLoggingManager(){ return loggingManager; }
+    public static RemoteLoggingManager getRemoteLoggingManager(){ return loggingManager; }
     public static RemoteAppServerManager getAppServerManager(){ return appServerManager; }
     public static RemoteAddressBook getAddressBook(){ return uvmContext.appAddressBook(); }
     public static RemotePhoneBook getPhoneBook(){ return uvmContext.phoneBook(); }
