@@ -44,7 +44,6 @@ import com.untangle.node.token.Token;
 import com.untangle.node.util.NonceFactory;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.security.Tid;
-import com.untangle.uvm.tapi.TCPSession;
 import com.untangle.uvm.vnet.TCPSession;
 
 /**

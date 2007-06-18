@@ -49,7 +49,6 @@ import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenException;
 import com.untangle.node.token.TokenResult;
 import com.untangle.node.token.TokenStreamer;
-import com.untangle.uvm.tapi.TCPSession;
 import com.untangle.uvm.vnet.TCPSession;
 import org.apache.log4j.Logger;
 
