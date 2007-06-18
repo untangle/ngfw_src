@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -19,26 +19,22 @@
 package com.untangle.uvm.networking.ping;
 
 import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.io.IOException;
-
+import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-
 import java.util.Date;
-import java.util.List;
 import java.util.LinkedList;
-
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.apache.log4j.Logger;
 
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.networking.NetworkException;
 import com.untangle.uvm.node.ValidateException;
+import org.apache.log4j.Logger;
 
-public class PingManagerImpl implements PingManager
+public class PingManagerImpl implements RemotePingManager
 {
     /* If unspecified execute 5 pings */
     public static final int DEFAULT_COUNT = 5;
@@ -68,12 +64,12 @@ public class PingManagerImpl implements PingManager
 
     /* the word "untangle" in hex */
     private static final String PING_PATTERN = "756e74616e676c65";
-    
+
     /* Flag to indicate how long to wait after the last ping */
     private static final int PING_WAIT_DEF  = 2;
 
     /* groups for parsing the PING output */
-    private static final Pattern PATTERN_PACKET = 
+    private static final Pattern PATTERN_PACKET =
         Pattern.compile( "^([0-9]+) bytes from [^:]+: icmp_seq=([0-9]+) ttl=([0-9]+) time=([.0-9]+) ms$");
     private static final int GROUP_SIZE              = 1;
     private static final int GROUP_SEQ               = 2;
@@ -88,7 +84,7 @@ public class PingManagerImpl implements PingManager
     private static final int GROUP_TOTAL_TIME        = 3;
 
     private static final PingManagerImpl INSTANCE = new PingManagerImpl();
-    
+
     private final Logger logger = Logger.getLogger(getClass());
 
     private PingManagerImpl()
@@ -104,7 +100,7 @@ public class PingManagerImpl implements PingManager
     {
         /* First things first, parse the address */
         addressString = addressString.trim();
-        
+
         InetAddress address = null;
 
         if ( count <= 0 ) throw new ValidateException( "Count must be >= zero" + count );
@@ -121,7 +117,7 @@ public class PingManagerImpl implements PingManager
             /* Wait 1 second per ping, and plus the default timeout */
             Date end = new Date( System.currentTimeMillis() + ( 1000 * count ) + DEFAULT_TIMEOUT );
             Helper helper = go( addressString, address, count );
-            
+
             t = new Thread( helper );
             t.start();
 
@@ -130,7 +126,7 @@ public class PingManagerImpl implements PingManager
                     long delay = end.getTime() - System.currentTimeMillis();
                     logger.debug( "joining for " + delay + " millis " );
                     if ( delay <= 0 ) break;
-                    
+
                     t.join( delay );
 
                     /* break after a sucessful join */
@@ -182,7 +178,7 @@ public class PingManagerImpl implements PingManager
 
         return new Helper( addressString, address, count, p );
     }
-    
+
     private class Helper implements Runnable
     {
         private final String hostname;
@@ -206,7 +202,7 @@ public class PingManagerImpl implements PingManager
             long totalTime = this.count * 1000000;
             int totalTransmitted = this.count;
             int totalReceived = 0;
-            
+
             /* read everything from standard output */
             BufferedReader scriptOutput = new BufferedReader(new InputStreamReader(this.p.getInputStream()));
 
@@ -223,7 +219,7 @@ public class PingManagerImpl implements PingManager
                     break;
                 }
             }
-            
+
             while ( true ) {
                 String line = null;
                 try {
@@ -232,7 +228,7 @@ public class PingManagerImpl implements PingManager
                     logger.warn( "ioexception reading output", e );
                     break;
                 }
-                
+
                 if ( line == null ) break;
                 line = line.trim();
                 /* ignore empty lines */
@@ -247,7 +243,7 @@ public class PingManagerImpl implements PingManager
                         int seq  = Integer.parseInt( packetMatcher.group( GROUP_SEQ ));
                         int ttl  = Integer.parseInt( packetMatcher.group( GROUP_TTL ));
                         long micros = (long)(Float.parseFloat( packetMatcher.group( GROUP_MICROS )) * 1000);
-                        
+
                         pingPacketList.add( new PingPacket( seq, ttl, micros, size ));
                     } else if ( totalsMatcher.matches()) {
                         totalTransmitted = Integer.parseInt( totalsMatcher.group( GROUP_TOTAL_TRANSMITTED ));
@@ -275,7 +271,7 @@ public class PingManagerImpl implements PingManager
         {
             return this.result;
         }
-        
+
         Process getProcess()
         {
             return this.p;

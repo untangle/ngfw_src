@@ -45,11 +45,11 @@ import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.RemoteLoggingManager;
 import com.untangle.uvm.logging.SyslogManager;
 import com.untangle.uvm.networking.LocalNetworkManager;
-import com.untangle.uvm.networking.ping.PingManager;
+import com.untangle.uvm.networking.ping.RemotePingManager;
 import com.untangle.uvm.node.LocalNodeManager;
 import com.untangle.uvm.policy.LocalPolicyManager;
 import com.untangle.uvm.portal.BasePortalManager;
-import com.untangle.uvm.security.AdminManager;
+import com.untangle.uvm.security.RemoteAdminManager;
 import com.untangle.uvm.tapi.MPipeManager;
 import com.untangle.uvm.tapi.PipelineFoundry;
 import com.untangle.uvm.toolbox.RemoteToolboxManager;
@@ -104,11 +104,11 @@ public interface LocalUvmContext
     LocalPolicyManager policyManager();
 
     /**
-     * Get the <code>AdminManager</code> singleton.
+     * Get the <code>RemoteAdminManager</code> singleton.
      *
-     * @return a <code>AdminManager</code> value
+     * @return a <code>RemoteAdminManager</code> value
      */
-    AdminManager adminManager();
+    RemoteAdminManager adminManager();
 
     /**
      * Get the <code>PortalManager</code> singleton.
@@ -124,7 +124,7 @@ public interface LocalUvmContext
     // XXX has stuff for local use, should probably be renamed w/o 'Impl'
     LocalNetworkManager networkManager();
 
-    PingManager pingManager();
+    RemotePingManager pingManager();
 
     /** Get the <code>LocalShieldManager</code> singleton.
      *
@@ -132,9 +132,9 @@ public interface LocalUvmContext
      */
     LocalShieldManager localShieldManager();
 
-    ReportingManager reportingManager();
+    RemoteReportingManager reportingManager();
 
-    ConnectivityTester getConnectivityTester();
+    RemoteConnectivityTester getRemoteConnectivityTester();
 
     MailSender mailSender();
 

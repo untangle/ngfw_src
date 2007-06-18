@@ -41,12 +41,12 @@ import com.untangle.uvm.MailSettings;
 import com.untangle.uvm.snmp.SnmpManager;
 
 /**
- * Describe interface <code>AdminManager</code> here.
+ * Describe interface <code>RemoteAdminManager</code> here.
  *
  * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
  * @version 1.0
  */
-public interface AdminManager
+public interface RemoteAdminManager
 {
     AdminSettings getAdminSettings();
 

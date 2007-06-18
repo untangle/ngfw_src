@@ -7,7 +7,7 @@ BrandingSettings bs = uvm.brandingManager().getBrandingSettings();
 String company = bs.getCompanyName();
 String companyUrl = bs.getCompanyUrl();
 
-ReportingManager reportingManager = uvm.reportingManager();
+RemoteReportingManager reportingManager = uvm.reportingManager();
 
 boolean reportingEnabled = reportingManager.isReportingEnabled();
 boolean reportsAvailable = reportingManager.isReportsAvailable();

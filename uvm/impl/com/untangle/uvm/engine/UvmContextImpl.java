@@ -93,7 +93,7 @@ public class UvmContextImpl extends UvmContextBase
     private final BackupManager backupManager;
 
     private UvmState state;
-    private AdminManagerImpl adminManager;
+    private RemoteAdminManagerImpl adminManager;
     private ArgonManagerImpl argonManager;
     private RemoteIntfManagerImpl remoteIntfManager;
     private LocalShieldManager localShieldManager;
@@ -109,8 +109,8 @@ public class UvmContextImpl extends UvmContextBase
     private NetworkManagerImpl networkManager;
     private PingManagerImpl pingManager;
     private RemoteNetworkManagerAdaptor remoteNetworkManager;
-    private ReportingManagerImpl reportingManager;
-    private ConnectivityTesterImpl connectivityTester;
+    private RemoteReportingManagerImpl reportingManager;
+    private RemoteConnectivityTesterImpl connectivityTester;
     private PipelineFoundryImpl pipelineFoundry;
     private RemoteToolboxManagerImpl toolboxManager;
     private NodeManagerImpl nodeManager;
@@ -241,7 +241,7 @@ public class UvmContextImpl extends UvmContextBase
         return mailSender;
     }
 
-    public AdminManagerImpl adminManager()
+    public RemoteAdminManagerImpl adminManager()
     {
         return adminManager;
     }
@@ -261,12 +261,12 @@ public class UvmContextImpl extends UvmContextBase
         return remoteNetworkManager;
     }
 
-    public ReportingManagerImpl reportingManager()
+    public RemoteReportingManagerImpl reportingManager()
     {
         return reportingManager;
     }
 
-    public ConnectivityTesterImpl getConnectivityTester()
+    public RemoteConnectivityTesterImpl getRemoteConnectivityTester()
     {
         return connectivityTester;
     }
@@ -609,7 +609,7 @@ public class UvmContextImpl extends UvmContextBase
                                           System.getProperty("bunnicula.log.dir"));
 
         // start services:
-        adminManager = new AdminManagerImpl(this);
+        adminManager = new RemoteAdminManagerImpl(this);
         mailSender = MailSenderImpl.mailSender();
 
         logMailer = new LogMailerImpl();
@@ -646,10 +646,10 @@ public class UvmContextImpl extends UvmContextBase
         remoteNodeManager = new RemoteNodeManagerAdaptor(nodeManager);
 
         // Retrieve the reporting configuration manager
-        reportingManager = ReportingManagerImpl.reportingManager();
+        reportingManager = RemoteReportingManagerImpl.reportingManager();
 
         // Retrieve the connectivity tester
-        connectivityTester = ConnectivityTesterImpl.getInstance();
+        connectivityTester = RemoteConnectivityTesterImpl.getInstance();
 
         // Retrieve the argon manager
         argonManager = ArgonManagerImpl.getInstance();

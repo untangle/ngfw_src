@@ -75,13 +75,13 @@ public class AboutCompoundSettings implements CompoundSettings {
     public void setBrandingSettings(BrandingSettings bsIn){ brandingSettings = bsIn; }
 
     public void save() throws Exception {
-        Util.getAdminManager().setRegistrationInfo(registrationInfo);
-        Util.getAdminManager().setTimeZone(timeZone);
+        Util.getRemoteAdminManager().setRegistrationInfo(registrationInfo);
+        Util.getRemoteAdminManager().setTimeZone(timeZone);
         Util.getBrandingManager().setBrandingSettings(brandingSettings);
     }
 
     public void refresh() throws Exception {
-        registrationInfo = Util.getAdminManager().getRegistrationInfo();
+        registrationInfo = Util.getRemoteAdminManager().getRegistrationInfo();
         if( registrationInfo == null ){ // for upgrading pre 3.2 boxes
             registrationInfo = new RegistrationInfo();
         }
@@ -99,8 +99,8 @@ public class AboutCompoundSettings implements CompoundSettings {
             licenseURL = Util.getClassLoader().getResource("LicenseStandard.txt");
         }
 
-        timeZone = Util.getAdminManager().getTimeZone();
-        date = Util.getAdminManager().getDate();
+        timeZone = Util.getRemoteAdminManager().getTimeZone();
+        date = Util.getRemoteAdminManager().getDate();
         brandingSettings = Util.getBrandingManager().getBrandingSettings();
     }
 

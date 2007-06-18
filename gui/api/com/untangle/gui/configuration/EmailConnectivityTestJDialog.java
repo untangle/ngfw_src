@@ -314,7 +314,7 @@ public class EmailConnectivityTestJDialog extends javax.swing.JDialog implements
 
             try{
                 String recipient = emailAddressJTextField.getText();
-                boolean result = Util.getAdminManager().sendTestMessage(recipient);
+                boolean result = Util.getRemoteAdminManager().sendTestMessage(recipient);
                 if(!result)
                     throw new Exception();
             }

@@ -127,12 +127,12 @@ public class UserTest
     /*
       @Test(expected=ValidateException.class) public void invalidHost() throws Exception
       {
-      PingManagerImpl.getInstance().ping( "1.2.!xq221223.4  " );
+      RemotePingManagerImpl.getInstance().ping( "1.2.!xq221223.4  " );
       }
 
       @Test(expected=ValidateException.class) public void unknownHost() throws Exception
       {
-      PingManagerImpl.getInstance().ping( "www.does.not.exist.com" );
+      RemotePingManagerImpl.getInstance().ping( "www.does.not.exist.com" );
       }
     */
 }

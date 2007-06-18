@@ -39,7 +39,7 @@ package com.untangle.uvm;
  * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
  * @version 1.0
  */
-public interface ConnectivityTester
+public interface RemoteConnectivityTester
 {
     /**
      * Retrieve the connectivity status of the network.

@@ -36,7 +36,7 @@ public class PingTest
     @Test public void valid() throws Exception
     {
         /* Ping a good host and verify there are no results */
-        PingResult pr = PingManagerImpl.getInstance().ping( "  bebe" );
+        PingResult pr = RemotePingManagerImpl.getInstance().ping( "  bebe" );
         
         Assert.assertEquals( pr.getPercentAnswered(), 100 );
 
@@ -46,7 +46,7 @@ public class PingTest
     @Test public void invalid() throws Exception
     {
         /* Ping a bad host and verify there are no results */
-        PingResult pr = PingManagerImpl.getInstance().ping( "1.2.3.4  " );
+        PingResult pr = RemotePingManagerImpl.getInstance().ping( "1.2.3.4  " );
 
         Assert.assertEquals( pr.getPercentAnswered(), 0 );
 
@@ -55,11 +55,11 @@ public class PingTest
 
     @Test(expected=ValidateException.class) public void invalidHost() throws Exception
     {
-        PingManagerImpl.getInstance().ping( "1.2.!xq221223.4  " );
+        RemotePingManagerImpl.getInstance().ping( "1.2.!xq221223.4  " );
     }
 
     @Test(expected=ValidateException.class) public void unknownHost() throws Exception
     {
-        PingManagerImpl.getInstance().ping( "www.does.not.exist.com" );
+        RemotePingManagerImpl.getInstance().ping( "www.does.not.exist.com" );
     }
 }

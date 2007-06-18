@@ -112,13 +112,13 @@ public class InitialSetupPasswordJPanel extends MWizardPageJPanel {
                 InitialSetupWizard.getInfiniteProgressJComponent().startLater("Saving Password and Timezone...");
 
                 // SEND FINAL SETTINGS
-                AdminSettings adminSettings = Util.getAdminManager().getAdminSettings();
+                AdminSettings adminSettings = Util.getRemoteAdminManager().getAdminSettings();
                 Set<User> users = (Set<User>) adminSettings.getUsers();
                 for( User user : users )
                     if( user.getLogin().equals("admin") )
                         user.setClearPassword(password);
-                Util.getAdminManager().setAdminSettings(adminSettings);
-                Util.getAdminManager().setTimeZone( java.util.TimeZone.getTimeZone(timezone) );
+                Util.getRemoteAdminManager().setAdminSettings(adminSettings);
+                Util.getRemoteAdminManager().setTimeZone( java.util.TimeZone.getTimeZone(timezone) );
 
                 InitialSetupWizard.getInfiniteProgressJComponent().stopLater(1500l);
             }

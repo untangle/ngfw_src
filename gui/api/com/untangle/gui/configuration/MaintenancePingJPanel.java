@@ -205,7 +205,7 @@ public class MaintenancePingJPanel extends javax.swing.JPanel {
         public void run(){
             PingResult pingResult = null;
             try{
-                pingResult = Util.getPingManager().ping(target);
+                pingResult = Util.getRemotePingManager().ping(target);
             }
             catch(ValidateException v){
                 SwingUtilities.invokeLater( new Runnable(){ public void run(){

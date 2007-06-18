@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -36,12 +36,12 @@ package com.untangle.uvm;
 import java.util.Date;
 
 /**
- * Describe interface <code>ReportingManager</code> here.
+ * Manages report generation.
  *
  * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
  * @version 1.0
  */
-public interface ReportingManager  {
+public interface RemoteReportingManager  {
     /**
      * Tests if reporting is enabled, that is if reports will be
      * generated nightly.  Currently this is the same thing as "is the

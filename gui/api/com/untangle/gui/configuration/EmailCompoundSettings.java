@@ -86,13 +86,13 @@ public class EmailCompoundSettings implements CompoundSettings {
     public Component getQuarantineGeneralSettingsComponent(){ return quarantineGeneralSettingsComponent; }
 
     public void save() throws Exception {
-        Util.getAdminManager().setMailSettings(mailSettings);
+        Util.getRemoteAdminManager().setMailSettings(mailSettings);
         if(mailNodeCompoundSettings != null)
             mailNodeCompoundSettings.save();
     }
 
     public void refresh() throws Exception {
-        mailSettings = Util.getAdminManager().getMailSettings();
+        mailSettings = Util.getRemoteAdminManager().getMailSettings();
 
         if(mailNodeCompoundSettings == null){
             mailNodeCompoundSettings = Util.getCompoundSettings("com.untangle.node.mail.gui.MailNodeCompoundSettings", "mail-casing");

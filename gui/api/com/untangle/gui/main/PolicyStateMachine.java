@@ -308,7 +308,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
             }
             if( Util.getUpgradeCount() != 0 )
                 return;
-            String authNonce = Util.getAdminManager().generateAuthNonce();
+            String authNonce = Util.getRemoteAdminManager().generateAuthNonce();
             URL newURL = new URL( Util.getServerCodeBase(), "../library/index.php?option=com_wizard&Itemid=92&" + authNonce);
             ((BasicService) ServiceManager.lookup("javax.jnlp.BasicService")).showDocument(newURL);
         }
@@ -1298,7 +1298,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
     private class StoreSettingsActionListener implements ActionListener{
         public void actionPerformed(ActionEvent e){
             try{
-                String authNonce = Util.getAdminManager().generateAuthNonce();
+                String authNonce = Util.getRemoteAdminManager().generateAuthNonce();
                 URL newURL = new URL( Util.getServerCodeBase(), "../library/index.php?option=com_content&task=view&id=31&Itemid=63&"+ authNonce);
                 ((BasicService) ServiceManager.lookup("javax.jnlp.BasicService")).showDocument(newURL);
             }
@@ -1902,7 +1902,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
             if( Util.getUpgradeCount() != 0 )
                 return;
             try{
-                String authNonce = Util.getAdminManager().generateAuthNonce();
+                String authNonce = Util.getRemoteAdminManager().generateAuthNonce();
                 URL newURL = new URL( Util.getServerCodeBase(), "../library/libitem.php?name="
                                       + mNodeJButton.getName() + "&" + authNonce);
                 ((BasicService) ServiceManager.lookup("javax.jnlp.BasicService")).showDocument(newURL);

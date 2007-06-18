@@ -176,7 +176,7 @@ public class InitialSetupContactJPanel extends MWizardPageJPanel {
                     }
                 }
 
-                Util.getAdminManager().setRegistrationInfo(registrationInfo);
+                Util.getRemoteAdminManager().setRegistrationInfo(registrationInfo);
 
                 InitialSetupWizard.getInfiniteProgressJComponent().stopLater(1500l);
             }

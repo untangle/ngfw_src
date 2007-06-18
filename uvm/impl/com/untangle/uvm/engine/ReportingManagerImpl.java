@@ -30,7 +30,7 @@ import java.util.List;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.UvmException;
 import com.untangle.uvm.LocalUvmContext;
-import com.untangle.uvm.ReportingManager;
+import com.untangle.uvm.RemoteReportingManager;
 import com.untangle.uvm.reporting.Reporter;
 import com.untangle.uvm.security.Tid;
 import com.untangle.uvm.node.NodeContext;
@@ -38,7 +38,7 @@ import com.untangle.uvm.node.LocalNodeManager;
 import com.untangle.uvm.node.NodeState;
 import org.apache.log4j.Logger;
 
-class ReportingManagerImpl implements ReportingManager
+class RemoteReportingManagerImpl implements RemoteReportingManager
 {
     private static final String BUNNICULA_WEB = System.getProperty( "bunnicula.web.dir" );
 
@@ -47,7 +47,7 @@ class ReportingManagerImpl implements ReportingManager
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    private static ReportingManagerImpl REPORTING_MANAGER = new ReportingManagerImpl();
+    private static RemoteReportingManagerImpl REPORTING_MANAGER = new RemoteReportingManagerImpl();
 
     private enum RunState {
         START,                  // Not yet prepared 
@@ -68,13 +68,13 @@ class ReportingManagerImpl implements ReportingManager
     private volatile Thread runThread;
     private Reporter reporter;
 
-    private ReportingManagerImpl() {
+    private RemoteReportingManagerImpl() {
         state = RunState.START;
         runThread = null;
         reporter = null;
     }
 
-    static ReportingManagerImpl reportingManager()
+    static RemoteReportingManagerImpl reportingManager()
     {
         return REPORTING_MANAGER;
     }

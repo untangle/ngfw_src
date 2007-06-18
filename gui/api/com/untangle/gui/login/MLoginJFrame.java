@@ -521,7 +521,7 @@ public class MLoginJFrame extends javax.swing.JFrame {
                         Util.setIsDemo(false);
 
                     // READ-ONLY //
-                    if( Util.getAdminManager().whoAmI().getUvmPrincipal().isReadOnly() )
+                    if( Util.getRemoteAdminManager().whoAmI().getUvmPrincipal().isReadOnly() )
                         Util.setIsDemo(true);
 
                     // READOUT SUCCESS /////////////////

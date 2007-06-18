@@ -24,13 +24,13 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Random;
 
-import com.untangle.uvm.ConnectivityTester;
+import com.untangle.uvm.RemoteConnectivityTester;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.networking.BasicNetworkSettings;
 import com.untangle.uvm.node.script.ScriptRunner;
 import org.apache.log4j.Logger;
 
-class ConnectivityTesterImpl implements ConnectivityTester
+class RemoteConnectivityTesterImpl implements RemoteConnectivityTester
 {
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -63,7 +63,7 @@ class ConnectivityTesterImpl implements ConnectivityTester
 
     private static final Random RANDOM = new Random();
 
-    private static ConnectivityTesterImpl INSTANCE = new ConnectivityTesterImpl();
+    private static RemoteConnectivityTesterImpl INSTANCE = new RemoteConnectivityTesterImpl();
 
     /* Address of release */
     private InetAddress address;
@@ -180,7 +180,7 @@ class ConnectivityTesterImpl implements ConnectivityTester
         return tcpTest.isWorking;
     }
 
-    static ConnectivityTesterImpl getInstance()
+    static RemoteConnectivityTesterImpl getInstance()
     {
         return INSTANCE;
     }
@@ -250,7 +250,7 @@ class ConnectivityTesterImpl implements ConnectivityTester
     }
 }
 
-class ConnectionStatus implements ConnectivityTester.Status
+class ConnectionStatus implements RemoteConnectivityTester.Status
 {
     private static final ConnectionStatus DNS_AND_TCP = new ConnectionStatus( true, true );
     private static final ConnectionStatus DNS         = new ConnectionStatus( true, false );

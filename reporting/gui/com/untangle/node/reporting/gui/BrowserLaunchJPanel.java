@@ -74,7 +74,7 @@ public class BrowserLaunchJPanel extends JPanel implements ActionListener {
     public void actionPerformed(ActionEvent e){
 
         try{
-            String authNonce = Util.getAdminManager().generateAuthNonce();
+            String authNonce = Util.getRemoteAdminManager().generateAuthNonce();
             URL newURL = new URL( Util.getServerCodeBase(), "../reports/?" + authNonce);
             ((BasicService) ServiceManager.lookup("javax.jnlp.BasicService")).showDocument(newURL);
         }

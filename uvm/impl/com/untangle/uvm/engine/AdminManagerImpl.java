@@ -30,7 +30,7 @@ import javax.transaction.TransactionRolledbackException;
 
 import com.untangle.uvm.MailSender;
 import com.untangle.uvm.MailSettings;
-import com.untangle.uvm.security.AdminManager;
+import com.untangle.uvm.security.RemoteAdminManager;
 import com.untangle.uvm.security.AdminSettings;
 import com.untangle.uvm.security.LoginSession;
 import com.untangle.uvm.security.RegistrationInfo;
@@ -43,7 +43,7 @@ import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
-class AdminManagerImpl implements AdminManager
+class RemoteAdminManagerImpl implements RemoteAdminManager
 {
     private static final String INITIAL_USER_NAME = "System Administrator";
     private static final String INITIAL_USER_LOGIN = "admin";
@@ -59,12 +59,12 @@ class AdminManagerImpl implements AdminManager
     private final UvmContextImpl uvmContext;
     private final UvmLoginImpl uvmLogin;
 
-    private final Logger logger = Logger.getLogger(AdminManagerImpl.class);
+    private final Logger logger = Logger.getLogger(RemoteAdminManagerImpl.class);
 
     private AdminSettings adminSettings;
     private SnmpManager snmpManager;
 
-    AdminManagerImpl(UvmContextImpl uvmContext)
+    RemoteAdminManagerImpl(UvmContextImpl uvmContext)
     {
         this.uvmContext = uvmContext;
 
@@ -102,7 +102,7 @@ class AdminManagerImpl implements AdminManager
                 // Already logged.
             }
 
-        logger.info("Initialized AdminManager");
+        logger.info("Initialized RemoteAdminManager");
     }
 
     UvmLoginImpl uvmLogin() {

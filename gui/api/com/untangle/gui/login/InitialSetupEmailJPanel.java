@@ -127,7 +127,7 @@ public class InitialSetupEmailJPanel extends MWizardPageJPanel {
         if( !validateOnly ){
             try{
                 InitialSetupWizard.getInfiniteProgressJComponent().startLater("Saving Email Settings...");
-                MailSettings mailSettings = Util.getAdminManager().getMailSettings();
+                MailSettings mailSettings = Util.getRemoteAdminManager().getMailSettings();
                 mailSettings.setUseMxRecords( mxRecords );
                 if( address.length() > 0 )
                     mailSettings.setFromAddress( address );
@@ -137,7 +137,7 @@ public class InitialSetupEmailJPanel extends MWizardPageJPanel {
                     mailSettings.setAuthUser( login );
                     mailSettings.setAuthPass( password );
                 }
-                Util.getAdminManager().setMailSettings( mailSettings );
+                Util.getRemoteAdminManager().setMailSettings( mailSettings );
                 InitialSetupWizard.getInfiniteProgressJComponent().stopLater(1500l);
             }
             catch(Exception e){

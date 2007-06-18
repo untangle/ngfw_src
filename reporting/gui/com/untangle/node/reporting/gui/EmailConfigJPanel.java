@@ -92,14 +92,14 @@ class EmailTableModel extends MSortedTableModel<Object>{
 
         // SAVE SETTINGS /////
         if( !validateOnly ){
-            MailSettings mailSettings = Util.getAdminManager().getMailSettings();
+            MailSettings mailSettings = Util.getRemoteAdminManager().getMailSettings();
             mailSettings.setReportEmail(elemList.toString());
-            Util.getAdminManager().setMailSettings( (MailSettings) mailSettings );
+            Util.getRemoteAdminManager().setMailSettings( (MailSettings) mailSettings );
         }
     }
 
     public Vector<Vector> generateRows(Object settings){
-        MailSettings mailSettings = Util.getAdminManager().getMailSettings();
+        MailSettings mailSettings = Util.getRemoteAdminManager().getMailSettings();
         String recipients = mailSettings.getReportEmail();
         StringTokenizer recipientsTokenizer = new StringTokenizer(recipients, ",");
         Vector<Vector> allRows = new Vector<Vector>(recipientsTokenizer.countTokens());

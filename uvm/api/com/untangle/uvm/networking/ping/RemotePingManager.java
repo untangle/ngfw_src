@@ -36,7 +36,7 @@ package com.untangle.uvm.networking.ping;
 import com.untangle.uvm.networking.NetworkException;
 import com.untangle.uvm.node.ValidateException;
 
-public interface PingManager
+public interface RemotePingManager
 {
     /* Both of the commands take strings, and SHOULD NOT take
      * InetAddresses since the name lookup should be performed on the

@@ -78,7 +78,7 @@ import com.untangle.uvm.addrbook.*;
 import com.untangle.uvm.client.*;
 import com.untangle.uvm.license.RemoteLicenseManager;
 import com.untangle.uvm.logging.*;
-import com.untangle.uvm.networking.ping.PingManager;
+import com.untangle.uvm.networking.ping.RemotePingManager;
 import com.untangle.uvm.node.*;
 import com.untangle.uvm.policy.*;
 import com.untangle.uvm.security.*;
@@ -158,7 +158,7 @@ public class Util {
     private static RemoteUvmContext uvmContext;
     private static RemoteToolboxManager toolboxManager;
     private static RemoteNodeManager nodeManager;
-    private static AdminManager adminManager;
+    private static RemoteAdminManager adminManager;
     private static StatsCache statsCache;
     private static RemoteNetworkManager networkManager;
     // DO NOT CACHE THIS private static PolicyManager policyManager;
@@ -167,7 +167,7 @@ public class Util {
     // DO NOT CACHE THIS private static AddressBook addressBook;
     // DO NOT CACHE THIS private static RemotePhoneBook phoneBook;
     private static RemoteIntfManager remoteIntfManager;
-    private static PingManager pingManager;
+    private static RemotePingManager pingManager;
     private static RemoteBrandingManager brandingManager;
 
     public static void setUvmContext(RemoteUvmContext uvmContextX){
@@ -205,7 +205,7 @@ public class Util {
     public static RemoteUvmContext getUvmContext(){ return uvmContext; }
     public static RemoteToolboxManager getRemoteToolboxManager(){ return toolboxManager; }
     public static RemoteNodeManager getNodeManager(){ return nodeManager; }
-    public static AdminManager getAdminManager(){ return adminManager; }
+    public static RemoteAdminManager getRemoteAdminManager(){ return adminManager; }
     public static StatsCache getStatsCache(){ return statsCache; }
     public static RemoteIntfManager getIntfManager(){ return remoteIntfManager; }
     public static RemoteNetworkManager getNetworkManager(){ return networkManager; }
@@ -214,7 +214,7 @@ public class Util {
     public static RemoteAppServerManager getAppServerManager(){ return appServerManager; }
     public static RemoteAddressBook getAddressBook(){ return uvmContext.appAddressBook(); }
     public static RemotePhoneBook getPhoneBook(){ return uvmContext.phoneBook(); }
-    public static PingManager getPingManager(){ return pingManager; }
+    public static RemotePingManager getRemotePingManager(){ return pingManager; }
     public static RemoteBrandingManager getBrandingManager(){ return brandingManager; }
     public static RemoteLicenseManager getLicenseManager(){ return uvmContext.licenseManager(); }
     ///////////////////////////////////

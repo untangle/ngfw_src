@@ -70,8 +70,8 @@ public class RemoteCompoundSettings implements CompoundSettings {
 
     public void save() throws Exception {
         Util.getNetworkManager().setSettings(accessSettings, addressSettings);
-        Util.getAdminManager().getSnmpManager().setSnmpSettings(snmpSettings);
-        Util.getAdminManager().setAdminSettings(adminSettings);
+        Util.getRemoteAdminManager().getSnmpManager().setSnmpSettings(snmpSettings);
+        Util.getRemoteAdminManager().setAdminSettings(adminSettings);
         Util.getRemoteLoggingManager().setLoggingSettings(loggingSettings);
         // certInfo is not meant to be saved back out, only read in
     }
@@ -79,8 +79,8 @@ public class RemoteCompoundSettings implements CompoundSettings {
     public void refresh() throws Exception {
         accessSettings = Util.getNetworkManager().getAccessSettings();
         addressSettings = Util.getNetworkManager().getAddressSettings();
-        snmpSettings = Util.getAdminManager().getSnmpManager().getSnmpSettings();
-        adminSettings = Util.getAdminManager().getAdminSettings();
+        snmpSettings = Util.getRemoteAdminManager().getSnmpManager().getSnmpSettings();
+        adminSettings = Util.getRemoteAdminManager().getAdminSettings();
         loggingSettings = Util.getRemoteLoggingManager().getLoggingSettings();
         certInfo = Util.getAppServerManager().getCertInfo(Util.getAppServerManager().getCurrentServerCert());
     }

@@ -35,20 +35,20 @@ package com.untangle.uvm.client;
 
 import java.io.IOException;
 
-import com.untangle.uvm.ConnectivityTester;
 import com.untangle.uvm.RemoteAppServerManager;
 import com.untangle.uvm.RemoteBrandingManager;
+import com.untangle.uvm.RemoteConnectivityTester;
 import com.untangle.uvm.RemoteNetworkManager;
-import com.untangle.uvm.ReportingManager;
+import com.untangle.uvm.RemoteReportingManager;
 import com.untangle.uvm.addrbook.RemoteAddressBook;
 import com.untangle.uvm.license.RemoteLicenseManager;
 import com.untangle.uvm.logging.RemoteLoggingManager;
-import com.untangle.uvm.networking.ping.PingManager;
+import com.untangle.uvm.networking.ping.RemotePingManager;
 import com.untangle.uvm.node.RemoteIntfManager;
 import com.untangle.uvm.node.RemoteNodeManager;
 import com.untangle.uvm.node.RemoteShieldManager;
 import com.untangle.uvm.policy.RemotePolicyManager;
-import com.untangle.uvm.security.AdminManager;
+import com.untangle.uvm.security.RemoteAdminManager;
 import com.untangle.uvm.toolbox.RemoteToolboxManager;
 import com.untangle.uvm.user.RemotePhoneBook;
 
@@ -90,11 +90,11 @@ public interface RemoteUvmContext
     RemotePolicyManager policyManager();
 
     /**
-     * Get the <code>AdminManager</code> singleton.
+     * Get the <code>RemoteAdminManager</code> singleton.
      *
-     * @return the AdminManager.
+     * @return the RemoteAdminManager.
      */
-    AdminManager adminManager();
+    RemoteAdminManager adminManager();
 
     /**
      * Get the <code>RemoteIntfManager</code> singleton.
@@ -104,11 +104,11 @@ public interface RemoteUvmContext
     RemoteIntfManager intfManager();
 
     /**
-     * Get the <code>PingManager</code> singleton.
+     * Get the <code>RemotePingManager</code> singleton.
      *
-     * @return the PingManager.
+     * @return the RemotePingManager.
      */
-    PingManager pingManager();
+    RemotePingManager pingManager();
 
     /**
      * Get the <code>NetworkManager</code> singleton.
@@ -124,18 +124,18 @@ public interface RemoteUvmContext
     RemoteShieldManager shieldManager();
 
     /**
-     * Get the <code>ReportingManager</code> singleton.
+     * Get the <code>RemoteReportingManager</code> singleton.
      *
-     * @return the ReportingManager.
+     * @return the RemoteReportingManager.
      */
-    ReportingManager reportingManager();
+    RemoteReportingManager reportingManager();
 
     /**
-     * Get the <code>ConnectivityTester</code> singleton.
+     * Get the <code>RemoteConnectivityTester</code> singleton.
      *
-     * @return the ConnectivityTester
+     * @return the RemoteConnectivityTester
      */
-    ConnectivityTester getConnectivityTester();
+    RemoteConnectivityTester getRemoteConnectivityTester();
 
     /**
      * Get the AppServerManager singleton for this instance
@@ -227,7 +227,8 @@ public interface RemoteUvmContext
     /**
      * Return true if running inside a Virtualized Platform (like VMWare)
      *
-     * @return a <code>boolean</code> true if platform is running in a virtualized machine
+     * @return a <code>boolean</code> true if platform is running in a
+     * virtualized machine
      */
     boolean isInsideVM();
 

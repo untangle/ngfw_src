@@ -21,21 +21,21 @@ package com.untangle.uvm.engine;
 import java.io.IOException;
 
 import com.untangle.uvm.ArgonManager;
-import com.untangle.uvm.ConnectivityTester;
+import com.untangle.uvm.RemoteConnectivityTester;
 import com.untangle.uvm.RemoteAppServerManager;
 import com.untangle.uvm.RemoteBrandingManager;
 import com.untangle.uvm.RemoteNetworkManager;
-import com.untangle.uvm.ReportingManager;
+import com.untangle.uvm.RemoteReportingManager;
 import com.untangle.uvm.addrbook.RemoteAddressBook;
 import com.untangle.uvm.client.RemoteUvmContext;
 import com.untangle.uvm.license.RemoteLicenseManager;
 import com.untangle.uvm.logging.RemoteLoggingManager;
-import com.untangle.uvm.networking.ping.PingManager;
+import com.untangle.uvm.networking.ping.RemotePingManager;
 import com.untangle.uvm.node.RemoteIntfManager;
 import com.untangle.uvm.node.RemoteNodeManager;
 import com.untangle.uvm.node.RemoteShieldManager;
 import com.untangle.uvm.policy.RemotePolicyManager;
-import com.untangle.uvm.security.AdminManager;
+import com.untangle.uvm.security.RemoteAdminManager;
 import com.untangle.uvm.toolbox.RemoteToolboxManager;
 import com.untangle.uvm.user.RemotePhoneBook;
 
@@ -79,7 +79,7 @@ class RemoteUvmContextAdaptor implements RemoteUvmContext
     }
 
 
-    public AdminManager adminManager()
+    public RemoteAdminManager adminManager()
     {
         return context.adminManager();
     }
@@ -99,7 +99,7 @@ class RemoteUvmContextAdaptor implements RemoteUvmContext
         return context.remoteNetworkManager();
     }
 
-    public PingManager pingManager()
+    public RemotePingManager pingManager()
     {
         return context.pingManager();
     }
@@ -109,14 +109,14 @@ class RemoteUvmContextAdaptor implements RemoteUvmContext
         return context.remoteShieldManager();
     }
 
-    public ReportingManager reportingManager()
+    public RemoteReportingManager reportingManager()
     {
         return context.reportingManager();
     }
 
-    public ConnectivityTester getConnectivityTester()
+    public RemoteConnectivityTester getRemoteConnectivityTester()
     {
-        return context.getConnectivityTester();
+        return context.getRemoteConnectivityTester();
     }
 
     public RemoteAppServerManager appServerManager()
