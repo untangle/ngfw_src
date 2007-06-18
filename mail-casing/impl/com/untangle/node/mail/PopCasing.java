@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -18,15 +18,15 @@
 
 package com.untangle.node.mail;
 
-import com.untangle.uvm.tapi.TCPSession;
 import com.untangle.node.mail.impl.pop.PopClientParser;
 import com.untangle.node.mail.impl.pop.PopServerParser;
 import com.untangle.node.mail.impl.pop.PopUnparser;
-import com.untangle.node.token.AbstractCasing;
+import com.untangle.node.token.Casing;
 import com.untangle.node.token.Parser;
 import com.untangle.node.token.Unparser;
+import com.untangle.uvm.tapi.TCPSession;
 
-public class PopCasing extends AbstractCasing
+public class PopCasing implements Casing
 {
     private final Parser parser;
     private final PopUnparser unparser;

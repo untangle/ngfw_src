@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -21,16 +21,15 @@ package com.untangle.node.mail.impl;
 import java.io.File;
 import java.nio.ByteBuffer;
 
+import com.untangle.node.token.Casing;
 import com.untangle.uvm.tapi.TCPSession;
 import com.untangle.uvm.tapi.event.TCPStreamer;
-import com.untangle.node.token.AbstractCasing;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 
-public abstract class AbstractMailCasing
-    extends AbstractCasing {
-
+public abstract class AbstractMailCasing implements Casing
+{
     private final boolean m_trace;
     private final CasingTracer m_tracer;
 
