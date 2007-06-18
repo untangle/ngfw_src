@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -152,7 +152,7 @@ class HttpClientCache
         String key = Long.toHexString(random.nextLong());
         Cookie c = new Cookie(HTTPCLIENT_ID, key);
         c.setMaxAge(7200);
-        c.setPath("/onlinestore");
+        c.setPath("/library");
         resp.addCookie(c);
 
         return c;

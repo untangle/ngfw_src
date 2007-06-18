@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This library is free software; you can redistribute it and/or modify
@@ -309,7 +309,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
             if( Util.getUpgradeCount() != 0 )
                 return;
             String authNonce = Util.getAdminManager().generateAuthNonce();
-            URL newURL = new URL( Util.getServerCodeBase(), "../onlinestore/index.php?option=com_wizard&Itemid=92&" + authNonce);
+            URL newURL = new URL( Util.getServerCodeBase(), "../library/index.php?option=com_wizard&Itemid=92&" + authNonce);
             ((BasicService) ServiceManager.lookup("javax.jnlp.BasicService")).showDocument(newURL);
         }
         catch(Exception f){
@@ -1299,7 +1299,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
         public void actionPerformed(ActionEvent e){
             try{
                 String authNonce = Util.getAdminManager().generateAuthNonce();
-                URL newURL = new URL( Util.getServerCodeBase(), "../onlinestore/index.php?option=com_content&task=view&id=31&Itemid=63&"+ authNonce);
+                URL newURL = new URL( Util.getServerCodeBase(), "../library/index.php?option=com_content&task=view&id=31&Itemid=63&"+ authNonce);
                 ((BasicService) ServiceManager.lookup("javax.jnlp.BasicService")).showDocument(newURL);
             }
             catch(Exception f){
@@ -1903,7 +1903,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                 return;
             try{
                 String authNonce = Util.getAdminManager().generateAuthNonce();
-                URL newURL = new URL( Util.getServerCodeBase(), "../onlinestore/libitem.php?name="
+                URL newURL = new URL( Util.getServerCodeBase(), "../library/libitem.php?name="
                                       + mNodeJButton.getName() + "&" + authNonce);
                 ((BasicService) ServiceManager.lookup("javax.jnlp.BasicService")).showDocument(newURL);
             }

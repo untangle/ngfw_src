@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -96,7 +96,7 @@ class TomcatManager
          * otherwise it is supposed to throw an IllegalStateException */
         loadSystemApp("/session-dumper", "session-dumper", new WebAppOptions(new AdministrationOutsideAccessValve()));
         loadSystemApp("/webstart", "webstart", new WebAppOptions(new AdministrationOutsideAccessValve()));
-        loadSystemApp("/onlinestore", "onlinestore", new WebAppOptions(new AdministrationOutsideAccessValve()));
+        loadSystemApp("/library", "onlinestore", new WebAppOptions(new AdministrationOutsideAccessValve()));
         loadSystemApp("/reports", "reports", new WebAppOptions(true,new ReportingOutsideAccessValve()));
         loadSystemApp("/wmi", "wmi", new WebAppOptions(new WMIServerValve()));
     }
@@ -279,7 +279,7 @@ class TomcatManager
             OurSingleSignOn ourSsoWorkaroundValve = new OurSingleSignOn();
             /* XXXXX Hackstered to get single sign on to ignore certain contexts */
             SingleSignOn ssoValve = new SpecialSingleSignOn( uvmContext, "/session-dumper", "/webstart", "", "/reports",
-                                                             "/onlinestore" );
+                                                             "/library" );
             // ssoValve.setRequireReauthentication(true);
             baseHost.getPipeline().addValve(ourSsoWorkaroundValve);
             baseHost.getPipeline().addValve(ssoValve);

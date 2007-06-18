@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -67,7 +67,7 @@ public class ProxyServlet extends HttpServlet
 
     static {
         String s = System.getProperty("uvm.store.host");
-        STORE_HOST = null == s ? "store.untangle.com" : s;
+        STORE_HOST = null == s ? "library.untangle.com" : s;
         COOKIE_DOMAIN = STORE_HOST;
         s = System.getProperty("uvm.store.uri");
         URI_BASE = null == s ? "" : s;
