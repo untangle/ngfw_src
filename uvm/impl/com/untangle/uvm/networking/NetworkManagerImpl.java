@@ -47,7 +47,7 @@ import com.untangle.uvm.node.firewall.ip.IPMatcherFactory;
 import com.untangle.uvm.node.script.ScriptRunner;
 import com.untangle.uvm.node.script.ScriptWriter;
 import com.untangle.uvm.security.Tid;
-import com.untangle.uvm.toolbox.ToolboxManager;
+import com.untangle.uvm.toolbox.RemoteToolboxManager;
 import com.untangle.uvm.util.DataLoader;
 import com.untangle.uvm.util.DataSaver;
 import org.apache.log4j.Logger;
@@ -711,7 +711,7 @@ public class NetworkManagerImpl implements LocalNetworkManager
                 for( Tid tid : tidList )
                     nodeManager.destroy(tid);
             }
-            ToolboxManager tool = LocalUvmContextFactory.context().toolboxManager();
+            RemoteToolboxManager tool = LocalUvmContextFactory.context().toolboxManager();
             tool.uninstall(NAT_NODE_NAME);
         }
         catch(Exception e){

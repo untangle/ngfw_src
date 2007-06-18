@@ -222,11 +222,11 @@ public class UpgradeProcessJPanel extends JPanel
                 Util.getStatsCache().doShutdown();
 
                 // DO THE DOWNLOAD AND INSTALL
-                long key = Util.getToolboxManager().upgrade();
+                long key = Util.getRemoteToolboxManager().upgrade();
                 com.untangle.gui.util.Visitor visitor =
                     new com.untangle.gui.util.Visitor(((MConfigJDialog)UpgradeProcessJPanel.this.getTopLevelAncestor()).getInfiniteProgressJComponent().getProgressBar());
                 while (true) {
-                    java.util.List<InstallProgress> lip = Util.getToolboxManager().getProgress(key);
+                    java.util.List<InstallProgress> lip = Util.getRemoteToolboxManager().getProgress(key);
                     for (InstallProgress ip : lip) {
                         ip.accept(visitor);
                         if( visitor.isDone() )

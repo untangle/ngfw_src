@@ -56,7 +56,7 @@ import com.untangle.uvm.policy.PolicyManagerFactory;
 import com.untangle.uvm.policy.RemotePolicyManager;
 import com.untangle.uvm.portal.BasePortalManager;
 import com.untangle.uvm.tapi.MPipeManager;
-import com.untangle.uvm.toolbox.ToolboxManager;
+import com.untangle.uvm.toolbox.RemoteToolboxManager;
 import com.untangle.uvm.user.LocalPhoneBook;
 import com.untangle.uvm.user.PhoneBookFactory;
 import com.untangle.uvm.user.RemotePhoneBook;
@@ -112,7 +112,7 @@ public class UvmContextImpl extends UvmContextBase
     private ReportingManagerImpl reportingManager;
     private ConnectivityTesterImpl connectivityTester;
     private PipelineFoundryImpl pipelineFoundry;
-    private ToolboxManagerImpl toolboxManager;
+    private RemoteToolboxManagerImpl toolboxManager;
     private NodeManagerImpl nodeManager;
     private RemoteNodeManagerAdaptor remoteNodeManager;
     private RemoteUvmContext remoteContext;
@@ -201,7 +201,7 @@ public class UvmContextImpl extends UvmContextBase
         return remoteAppServerManager;
     }
 
-    public ToolboxManagerImpl toolboxManager()
+    public RemoteToolboxManagerImpl toolboxManager()
     {
         return toolboxManager;
     }
@@ -618,7 +618,7 @@ public class UvmContextImpl extends UvmContextBase
         // Fire up the policy manager.
         policyManagerFactory = PolicyManagerFactory.makeInstance();
 
-        toolboxManager = ToolboxManagerImpl.toolboxManager();
+        toolboxManager = RemoteToolboxManagerImpl.toolboxManager();
 
         mPipeManager = MPipeManagerImpl.manager();
         pipelineFoundry = PipelineFoundryImpl.foundry();
@@ -786,7 +786,7 @@ public class UvmContextImpl extends UvmContextBase
         try {
             toolboxManager.destroy();
         } catch (Exception exn) {
-            logger.warn("could not destroy ToolboxManager", exn);
+            logger.warn("could not destroy RemoteToolboxManager", exn);
         }
         toolboxManager = null;
 

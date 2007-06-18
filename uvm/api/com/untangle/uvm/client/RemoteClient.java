@@ -73,7 +73,7 @@ import com.untangle.uvm.toolbox.MackageDesc;
 import com.untangle.uvm.toolbox.MackageInstallException;
 import com.untangle.uvm.toolbox.MackageInstallRequest;
 import com.untangle.uvm.toolbox.ProgressVisitor;
-import com.untangle.uvm.toolbox.ToolboxManager;
+import com.untangle.uvm.toolbox.RemoteToolboxManager;
 import com.untangle.uvm.toolbox.ToolboxMessageVisitor;
 import com.untangle.uvm.util.SessionUtil;
 import org.apache.log4j.helpers.AbsoluteTimeDateFormat;
@@ -99,7 +99,7 @@ public class RemoteClient
 
     private static RemoteUvmContext mc;
 
-    private static ToolboxManager tool;
+    private static RemoteToolboxManager tool;
     private static RemoteNodeManager tm;
 
     public static void main(String[] args) throws Exception

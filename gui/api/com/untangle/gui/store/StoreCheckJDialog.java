@@ -257,8 +257,8 @@ public class StoreCheckJDialog extends javax.swing.JDialog implements java.awt.e
 
                 Thread.sleep(2000l);
 
-                Util.getToolboxManager().update();
-                mackageDescs = Util.getToolboxManager().upgradable();
+                Util.getRemoteToolboxManager().update();
+                mackageDescs = Util.getRemoteToolboxManager().upgradable();
                 if( Util.isArrayEmpty(mackageDescs) ){
                     Util.getMMainJFrame().updateJButton(0);
                     Util.setUpgradeCount(0);

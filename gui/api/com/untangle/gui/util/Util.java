@@ -82,7 +82,7 @@ import com.untangle.uvm.networking.ping.PingManager;
 import com.untangle.uvm.node.*;
 import com.untangle.uvm.policy.*;
 import com.untangle.uvm.security.*;
-import com.untangle.uvm.toolbox.ToolboxManager;
+import com.untangle.uvm.toolbox.RemoteToolboxManager;
 import com.untangle.uvm.user.RemotePhoneBook;
 import org.apache.log4j.Logger;
 
@@ -156,7 +156,7 @@ public class Util {
 
     // SERVER PROXIES ///////////////
     private static RemoteUvmContext uvmContext;
-    private static ToolboxManager toolboxManager;
+    private static RemoteToolboxManager toolboxManager;
     private static RemoteNodeManager nodeManager;
     private static AdminManager adminManager;
     private static StatsCache statsCache;
@@ -203,7 +203,7 @@ public class Util {
     }
 
     public static RemoteUvmContext getUvmContext(){ return uvmContext; }
-    public static ToolboxManager getToolboxManager(){ return toolboxManager; }
+    public static RemoteToolboxManager getRemoteToolboxManager(){ return toolboxManager; }
     public static RemoteNodeManager getNodeManager(){ return nodeManager; }
     public static AdminManager getAdminManager(){ return adminManager; }
     public static StatsCache getStatsCache(){ return statsCache; }

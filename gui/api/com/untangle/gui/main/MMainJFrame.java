@@ -865,7 +865,7 @@ public class MMainJFrame extends javax.swing.JFrame {
             // FORCE THE SERVER TO UPDATE ONCE
             updateJButton(Util.UPGRADE_CHECKING);
             try{
-                Util.getToolboxManager().update();
+                Util.getRemoteToolboxManager().update();
             }
             catch(Exception e){
                 Util.handleExceptionNoRestart("Error updating upgrades on server", e);
@@ -875,7 +875,7 @@ public class MMainJFrame extends javax.swing.JFrame {
                 try{
                     // CHECK FOR UPGRADES
                     updateJButton(Util.UPGRADE_CHECKING);
-                    mackageDescs = Util.getToolboxManager().upgradable();
+                    mackageDescs = Util.getRemoteToolboxManager().upgradable();
                     if( Util.isArrayEmpty(mackageDescs) ){
                         updateJButton(0);
                         Util.setUpgradeCount(0);

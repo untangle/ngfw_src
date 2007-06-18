@@ -662,7 +662,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
         public void run(){
             try{
                 // UNINSTALL IN UVM
-                Util.getToolboxManager().uninstall(mNodeJButton.getName());
+                Util.getRemoteToolboxManager().uninstall(mNodeJButton.getName());
                 // REMOVE FROM TOOLBOX
                 removeFromToolbox(mNodeJButton.getMackageDesc());
                 // UPDATE STORE MODEL
@@ -786,7 +786,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
         private void purchase(MNodeJButton mNodeJButton, final Policy targetPolicy) throws InterruptedException {
             try{
                 //// MAKE SURE NOT PREVIOUSLY INSTALLED AS PART OF A BUNDLE
-                MackageDesc[] originalUninstalledMackages = Util.getToolboxManager().uninstalled();
+                MackageDesc[] originalUninstalledMackages = Util.getRemoteToolboxManager().uninstalled();
                 boolean installed = true;
                 for( MackageDesc mackageDesc : originalUninstalledMackages ){
                     if(mNodeJButton.getName().equals(mackageDesc.getName())){
@@ -822,15 +822,15 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                 }
 
                 //// DOWNLOAD FROM SERVER
-                MackageDesc[] originalInstalledMackages = Util.getToolboxManager().installed(); // for use later
+                MackageDesc[] originalInstalledMackages = Util.getRemoteToolboxManager().installed(); // for use later
                 String installName = mNodeJButton.getName();
                 if(mNodeJButton.getIsTrial()){
                     installName = installName.replace("-libitem", "-trial30-libitem");
                 }
-                long key = Util.getToolboxManager().install(installName);
+                long key = Util.getRemoteToolboxManager().install(installName);
                 com.untangle.gui.util.Visitor visitor = new com.untangle.gui.util.Visitor(mNodeJButton);
                 while (true) {
-                    java.util.List<InstallProgress> lip = Util.getToolboxManager().getProgress(key);
+                    java.util.List<InstallProgress> lip = Util.getRemoteToolboxManager().getProgress(key);
                     for (InstallProgress ip : lip) {
                         ip.accept(visitor);
                         if( visitor.isDone() )
@@ -855,7 +855,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                 MackageDesc[] currentInstalledMackages = null;
                 while( !mackageInstalled &&
                        ((System.currentTimeMillis() - installStartTime) < INSTALL_CHECK_TIMEOUT_MILLIS) ){
-                    currentInstalledMackages = Util.getToolboxManager().installed();
+                    currentInstalledMackages = Util.getRemoteToolboxManager().installed();
                     for( MackageDesc mackageDesc : currentInstalledMackages ){
                         if(mackageDesc.getName().equals(installName)){
                             mackageInstalled = true;
@@ -1143,8 +1143,8 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
             boolean connectedToStore = false;
             MackageDesc[] storeItemsAvailable = null;
             try{
-                Util.getToolboxManager().update();
-                storeItemsAvailable = Util.getToolboxManager().uninstalled();
+                Util.getRemoteToolboxManager().update();
+                storeItemsAvailable = Util.getRemoteToolboxManager().uninstalled();
                 /*
                   if( storeItemsAvailable == null )
                   System.out.println("items: null");
@@ -1315,7 +1315,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
     private void initToolboxModel(final JProgressBar progressBar){
         // BUILD THE MODEL
         Map<String,MackageDesc> installedMackageMap = new HashMap<String,MackageDesc>();
-        for( MackageDesc mackageDesc : Util.getToolboxManager().installedVisible() ){
+        for( MackageDesc mackageDesc : Util.getRemoteToolboxManager().installedVisible() ){
             installedMackageMap.put(mackageDesc.getName(),mackageDesc);
         }
         SwingUtilities.invokeLater( new Runnable(){ public void run(){

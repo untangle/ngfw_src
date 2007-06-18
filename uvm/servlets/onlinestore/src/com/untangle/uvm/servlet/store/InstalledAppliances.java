@@ -32,7 +32,7 @@ import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.LocalUvmContext;
 
 import com.untangle.uvm.toolbox.MackageDesc;
-import com.untangle.uvm.toolbox.ToolboxManager;
+import com.untangle.uvm.toolbox.RemoteToolboxManager;
 
 import org.apache.log4j.Logger;
 
@@ -53,7 +53,7 @@ public class InstalledAppliances extends HttpServlet
         ServletOutputStream out = resp.getOutputStream();
         out.println("var installed = new Array();");
         
-        ToolboxManager tool = ctx.toolboxManager();
+        RemoteToolboxManager tool = ctx.toolboxManager();
         for (MackageDesc md : tool.installed()) {
             out.println("installed['" + md.getName() + "'] = '" + md.getInstalledVersion() + "';");
         }

@@ -54,7 +54,7 @@ import com.untangle.uvm.toolbox.MackageException;
 import com.untangle.uvm.toolbox.MackageInstallException;
 import com.untangle.uvm.toolbox.MackageInstallRequest;
 import com.untangle.uvm.toolbox.MackageUninstallException;
-import com.untangle.uvm.toolbox.ToolboxManager;
+import com.untangle.uvm.toolbox.RemoteToolboxManager;
 import com.untangle.uvm.toolbox.ToolboxMessage;
 import com.untangle.uvm.toolbox.UpgradeSettings;
 import com.untangle.uvm.util.TransactionWork;
@@ -62,7 +62,7 @@ import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
-class ToolboxManagerImpl implements ToolboxManager
+class RemoteToolboxManagerImpl implements RemoteToolboxManager
 {
     static final URL TOOLBOX_URL;
 
@@ -70,7 +70,7 @@ class ToolboxManagerImpl implements ToolboxManager
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    private static ToolboxManagerImpl TOOLBOX_MANAGER;
+    private static RemoteToolboxManagerImpl TOOLBOX_MANAGER;
 
     static {
         try {
@@ -98,7 +98,7 @@ class ToolboxManagerImpl implements ToolboxManager
 
     private long lastTailKey = System.currentTimeMillis();
 
-    private ToolboxManagerImpl()
+    private RemoteToolboxManagerImpl()
     {
         mackageState = loadMackageState();
 
@@ -110,11 +110,11 @@ class ToolboxManagerImpl implements ToolboxManager
         refreshLists();
     }
 
-    static ToolboxManagerImpl toolboxManager()
+    static RemoteToolboxManagerImpl toolboxManager()
     {
         synchronized (LOCK) {
             if (null == TOOLBOX_MANAGER) {
-                TOOLBOX_MANAGER = new ToolboxManagerImpl();
+                TOOLBOX_MANAGER = new RemoteToolboxManagerImpl();
             }
         }
         return TOOLBOX_MANAGER;
@@ -122,11 +122,11 @@ class ToolboxManagerImpl implements ToolboxManager
 
     void destroy()
     {
-        logger.info("ToolboxManager destroyed");
+        logger.info("RemoteToolboxManager destroyed");
         cronJob.cancel();
     }
 
-    // ToolboxManager implementation ------------------------------------------
+    // RemoteToolboxManager implementation ------------------------------------------
 
     // all known mackages
     public MackageDesc[] available()
@@ -405,7 +405,7 @@ class ToolboxManagerImpl implements ToolboxManager
         return mq;
     }
 
-    // ToolboxManagerPriv implementation --------------------------------------
+    // RemoteToolboxManagerPriv implementation --------------------------------------
 
     // registers a mackage and restarts all instances in previous state
     public void register(String pkgName) throws MackageInstallException

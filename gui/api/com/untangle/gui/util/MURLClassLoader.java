@@ -53,7 +53,7 @@ public class MURLClassLoader extends URLClassLoader {
     private void addMarsFor() {
         Set<URL> urls = new HashSet<URL>(Arrays.asList(getURLs()));
 
-        for (String s : Util.getToolboxManager().getWebstartResources()) {
+        for (String s : Util.getRemoteToolboxManager().getWebstartResources()) {
             try {
                 URL mu = new URL(Util.getServerCodeBase().toString() + s);
 

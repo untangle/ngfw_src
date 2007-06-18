@@ -44,7 +44,7 @@ import javax.servlet.http.HttpSession;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.toolbox.MackageDesc;
-import com.untangle.uvm.toolbox.ToolboxManager;
+import com.untangle.uvm.toolbox.RemoteToolboxManager;
 import org.apache.commons.httpclient.Cookie;
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
@@ -130,7 +130,7 @@ public class ProxyServlet extends HttpServlet
         HttpClient httpClient = clientCache.getClient(req, resp);
         HttpState state = httpClient.getState();
 
-        ToolboxManager tool = ctx.toolboxManager();
+        RemoteToolboxManager tool = ctx.toolboxManager();
         tool.installed();
         StringBuilder sb = new StringBuilder();
         for (MackageDesc md : tool.installed()) {

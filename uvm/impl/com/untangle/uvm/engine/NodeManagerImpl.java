@@ -342,7 +342,7 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
 
     void restart(String name)
     {
-        ToolboxManagerImpl tbm = (ToolboxManagerImpl)LocalUvmContextFactory
+        RemoteToolboxManagerImpl tbm = (RemoteToolboxManagerImpl)LocalUvmContextFactory
             .context().toolboxManager();
 
         String availVer = tbm.mackageDesc(name).getInstalledVersion();
@@ -401,7 +401,7 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
 
         UvmContextImpl mctx = UvmContextImpl.getInstance();
 
-        ToolboxManagerImpl tbm = (ToolboxManagerImpl)mctx.toolboxManager();
+        RemoteToolboxManagerImpl tbm = (RemoteToolboxManagerImpl)mctx.toolboxManager();
 
         while (0 < unloaded.size()) {
             List<NodePersistentState> startQueue = getLoadable(unloaded,
@@ -424,7 +424,7 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
                                Map<Tid, NodeDesc> tDescs,
                                Set<String> loadedParents)
     {
-        ToolboxManagerImpl tbm = (ToolboxManagerImpl)LocalUvmContextFactory
+        RemoteToolboxManagerImpl tbm = (RemoteToolboxManagerImpl)LocalUvmContextFactory
             .context().toolboxManager();
 
 
@@ -518,7 +518,7 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
 
     private Map<Tid, NodeDesc> loadNodeDescs(List<NodePersistentState> unloaded)
     {
-        ToolboxManagerImpl tbm = (ToolboxManagerImpl)LocalUvmContextFactory
+        RemoteToolboxManagerImpl tbm = (RemoteToolboxManagerImpl)LocalUvmContextFactory
             .context().toolboxManager();
 
         Map<Tid, NodeDesc> tDescs = new HashMap<Tid, NodeDesc>(unloaded.size());
@@ -575,7 +575,7 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
     {
         UvmContextImpl mctx = UvmContextImpl.getInstance();
 
-        ToolboxManagerImpl tbm = (ToolboxManagerImpl)mctx.toolboxManager();
+        RemoteToolboxManagerImpl tbm = (RemoteToolboxManagerImpl)mctx.toolboxManager();
 
         MackageDesc mackageDesc = tbm.mackageDesc(nodeName);
         URL[] resUrls = new URL[] { tbm.getResourceDir(mackageDesc) };
@@ -653,7 +653,7 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
     private Policy getDefaultPolicyForNode(String nodeName)
         throws DeployException
     {
-        ToolboxManagerImpl tbm = (ToolboxManagerImpl)LocalUvmContextFactory
+        RemoteToolboxManagerImpl tbm = (RemoteToolboxManagerImpl)LocalUvmContextFactory
             .context().toolboxManager();
         MackageDesc mackageDesc = tbm.mackageDesc(nodeName);
         if (mackageDesc == null)

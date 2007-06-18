@@ -85,7 +85,7 @@ public class AboutCompoundSettings implements CompoundSettings {
         if( registrationInfo == null ){ // for upgrading pre 3.2 boxes
             registrationInfo = new RegistrationInfo();
         }
-        MackageDesc mackageDesc = Util.getToolboxManager().mackageDesc("uvm");
+        MackageDesc mackageDesc = Util.getRemoteToolboxManager().mackageDesc("uvm");
         if( mackageDesc == null )
             installedVersion = "unknown";
         else

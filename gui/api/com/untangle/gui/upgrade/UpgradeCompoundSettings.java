@@ -50,16 +50,16 @@ public class UpgradeCompoundSettings implements CompoundSettings {
     public MackageDesc[] getUpgradableMackageDescs(){ return upgradableMackageDescs; }
 
     public void save() throws Exception {
-        Util.getToolboxManager().setUpgradeSettings(upgradeSettings);
+        Util.getRemoteToolboxManager().setUpgradeSettings(upgradeSettings);
     }
 
     public void refresh() throws Exception {
-        upgradeSettings = Util.getToolboxManager().getUpgradeSettings();
+        upgradeSettings = Util.getRemoteToolboxManager().getUpgradeSettings();
 
         // HANDLE THE CASE WHERE THE STORE IS UNREACHABLE
         try{
-            Util.getToolboxManager().update();
-            upgradableMackageDescs = Util.getToolboxManager().upgradable();
+            Util.getRemoteToolboxManager().update();
+            upgradableMackageDescs = Util.getRemoteToolboxManager().upgradable();
         }
         catch(Exception e){
             Util.getMMainJFrame().updateJButton(Util.UPGRADE_UNAVAILABLE);

@@ -36,7 +36,7 @@ import com.untangle.uvm.node.RemoteNodeManager;
 import com.untangle.uvm.node.RemoteShieldManager;
 import com.untangle.uvm.policy.RemotePolicyManager;
 import com.untangle.uvm.security.AdminManager;
-import com.untangle.uvm.toolbox.ToolboxManager;
+import com.untangle.uvm.toolbox.RemoteToolboxManager;
 import com.untangle.uvm.user.RemotePhoneBook;
 
 /**
@@ -58,7 +58,7 @@ class RemoteUvmContextAdaptor implements RemoteUvmContext
 
     // RemoteUvmContext methods ----------------------------------------------
 
-    public ToolboxManager toolboxManager()
+    public RemoteToolboxManager toolboxManager()
     {
         return context.toolboxManager();
     }

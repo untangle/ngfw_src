@@ -49,7 +49,7 @@ import com.untangle.uvm.node.RemoteNodeManager;
 import com.untangle.uvm.node.RemoteShieldManager;
 import com.untangle.uvm.policy.RemotePolicyManager;
 import com.untangle.uvm.security.AdminManager;
-import com.untangle.uvm.toolbox.ToolboxManager;
+import com.untangle.uvm.toolbox.RemoteToolboxManager;
 import com.untangle.uvm.user.RemotePhoneBook;
 
 /**
@@ -62,11 +62,11 @@ import com.untangle.uvm.user.RemotePhoneBook;
 public interface RemoteUvmContext
 {
     /**
-     * Get the <code>ToolboxManager</code> singleton.
+     * Get the <code>RemoteToolboxManager</code> singleton.
      *
-     * @return the ToolboxManager.
+     * @return the RemoteToolboxManager.
      */
-    ToolboxManager toolboxManager();
+    RemoteToolboxManager toolboxManager();
 
     /**
      * Get the <code>NodeManager</code> singleton.
