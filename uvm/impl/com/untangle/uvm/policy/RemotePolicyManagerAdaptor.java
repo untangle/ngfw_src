@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -20,7 +20,13 @@ package com.untangle.uvm.policy;
 
 import java.util.List;
 
-class RemotePolicyManagerAdaptor implements PolicyManager
+/**
+ * Adapts LocalPolicyManager to RemotePolicyManager.
+ *
+ * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
+ * @version 1.0
+ */
+class RemotePolicyManagerAdaptor implements RemotePolicyManager
 {
     private final LocalPolicyManager pm;
 

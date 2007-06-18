@@ -209,7 +209,7 @@ public class Util {
     public static StatsCache getStatsCache(){ return statsCache; }
     public static RemoteIntfManager getIntfManager(){ return remoteIntfManager; }
     public static NetworkManager getNetworkManager(){ return networkManager; }
-    public static PolicyManager getPolicyManager(){ return uvmContext.policyManager(); }
+    public static RemotePolicyManager getPolicyManager(){ return uvmContext.policyManager(); }
     public static LoggingManager getLoggingManager(){ return loggingManager; }
     public static RemoteAppServerManager getAppServerManager(){ return appServerManager; }
     public static RemoteAddressBook getAddressBook(){ return uvmContext.appAddressBook(); }

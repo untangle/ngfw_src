@@ -1,6 +1,6 @@
 /*
- * $HeadURL:$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * $HeadURL$
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -37,7 +37,7 @@ import  java.util.List;
 
 import com.untangle.uvm.license.LicensedProduct;
 
-public interface PolicyManager extends LicensedProduct
+public interface RemotePolicyManager extends LicensedProduct
 {
     /**
      * Returns all policies.  Don't count on the return order, it will
@@ -85,7 +85,8 @@ public interface PolicyManager extends LicensedProduct
      */
     void removePolicy(Policy policy) throws PolicyException;
 
-    void setPolicy(Policy rule, String name, String notes) throws PolicyException;
+    void setPolicy(Policy rule, String name, String notes)
+        throws PolicyException;
 
     /**
      * Returns all system policies rules. The order isn't important,
@@ -106,7 +107,8 @@ public interface PolicyManager extends LicensedProduct
      * @param inbound a <code>boolean</code> giving the new direction
      * @param description a <code>String</code> giving the new description
      */
-    void setSystemPolicyRule(SystemPolicyRule rule, Policy p, boolean inbound, String description);
+    void setSystemPolicyRule(SystemPolicyRule rule, Policy p, boolean inbound,
+                             String description);
 
     /**
      * Returns all user policies rules.

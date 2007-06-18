@@ -52,8 +52,8 @@ import com.untangle.uvm.node.RemoteIntfManager;
 import com.untangle.uvm.node.RemoteNodeManager;
 import com.untangle.uvm.node.RemoteShieldManager;
 import com.untangle.uvm.policy.LocalPolicyManager;
-import com.untangle.uvm.policy.PolicyManager;
 import com.untangle.uvm.policy.PolicyManagerFactory;
+import com.untangle.uvm.policy.RemotePolicyManager;
 import com.untangle.uvm.portal.BasePortalManager;
 import com.untangle.uvm.tapi.MPipeManager;
 import com.untangle.uvm.toolbox.ToolboxManager;
@@ -231,7 +231,7 @@ public class UvmContextImpl extends UvmContextBase
         return policyManagerFactory.policyManager();
     }
 
-    public PolicyManager remotePolicyManager()
+    public RemotePolicyManager remotePolicyManager()
     {
         return policyManagerFactory.remotePolicyManager();
     }

@@ -34,7 +34,7 @@ import com.untangle.uvm.networking.ping.PingManager;
 import com.untangle.uvm.node.RemoteIntfManager;
 import com.untangle.uvm.node.RemoteNodeManager;
 import com.untangle.uvm.node.RemoteShieldManager;
-import com.untangle.uvm.policy.PolicyManager;
+import com.untangle.uvm.policy.RemotePolicyManager;
 import com.untangle.uvm.security.AdminManager;
 import com.untangle.uvm.toolbox.ToolboxManager;
 import com.untangle.uvm.user.RemotePhoneBook;
@@ -73,7 +73,7 @@ class UvmRemoteContextAdaptor implements UvmRemoteContext
         return context.loggingManager();
     }
 
-    public PolicyManager policyManager()
+    public RemotePolicyManager policyManager()
     {
         return context.remotePolicyManager();
     }

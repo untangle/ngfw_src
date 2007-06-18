@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -34,13 +34,13 @@ public class PolicyManagerFactory
     private LocalPolicyManager premium = null;
 
     /** remote address book */
-    private PolicyManager remote = new RemotePolicyManagerAdaptor(limited);
-    
+    private RemotePolicyManager remote = new RemotePolicyManagerAdaptor(limited);
+
     private PolicyManagerFactory()
     {
     }
 
-    public PolicyManager remotePolicyManager()
+    public RemotePolicyManager remotePolicyManager()
     {
         return this.remote;
     }
@@ -80,10 +80,10 @@ public class PolicyManagerFactory
     }
 
     /**
-     * Inner interface used to indicate the additional methods that the 
+     * Inner interface used to indicate the additional methods that the
      * premium offering must implement.
      */
     static interface PremiumPolicyManager extends LocalPolicyManager
     {
     }
-} 
+}
