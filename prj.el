@@ -1,15 +1,9 @@
 ;; project file for jdee
 ;; $Id$
 
+;; Aaron Read <amread@untangle.com>
+
 (jde-project-file-version "1.0")
-
-(setq casings '("mail" "http" "ftp"))
-
-(setq transforms '("airgap" "email" "fprot" "httpblocker" "protofilter"
-                   "reporting" "sophos" "spyware" "test" "virus" "spam"
-                   "portal"))
-
-(setq jni-projects '("jnetcap" "jvector"))
 
 (setq prj-dir (file-name-directory jde-loading-project-file))
 (jde-set-variables

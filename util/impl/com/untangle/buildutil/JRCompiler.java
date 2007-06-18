@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -19,15 +19,13 @@
 package com.untangle.buildutil;
 
 import java.io.File;
-
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-
-import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperCompileManager;
 
 public class JRCompiler
 {
@@ -61,23 +59,23 @@ public class JRCompiler
     {
         for ( String file : files ) compile( file );
     }
-    
+
     public void compile( String src ) throws JRException, InvalidSuffixException
     {
         /* Make sure to use the correct compiler */
         System.setProperty( "jasper.reports.compiler.class",
                             "net.sf.jasperreports.engine.design.JRJdk13Compiler" );
         src = src.trim();
-        
+
         File destination = getDestination( src );
         File parent = new File( destination.getParent());
-        
+
         /* Make all of the parent directories */
         if ( parent != null && !parent.exists()) {
             System.out.println( "Making the directory: '" + parent + "'" );
             parent.mkdirs();
         }
-        
+
         System.out.printf( "[JRXML->JASPER]: %s -> %s\n", src, destination );
 
         JasperCompileManager.compileReportToFile( src, destination.toString());
@@ -92,14 +90,14 @@ public class JRCompiler
         } else {
             throw new InvalidSuffixException( src );
         }
-        
+
         return new File( this.destinationDirectory + "/" + name );
     }
 
     private static JRCompiler parseArgs( String args[] )
     {
         String destination = "";
-        
+
         int i;
         for ( i = 0 ;  i < args.length ; i++ ) {
             String arg = args[i];
@@ -112,14 +110,14 @@ public class JRCompiler
                 dieUsage();
             }
         }
-        
+
         int numFiles = args.length - i;
 
         if ( numFiles == 0 ) dieUsage();
 
         String files[] = new String[numFiles];
         System.arraycopy( args, i, files, 0, numFiles );
-        
+
         return new JRCompiler( destination, Arrays.asList( files ));
     }
 
