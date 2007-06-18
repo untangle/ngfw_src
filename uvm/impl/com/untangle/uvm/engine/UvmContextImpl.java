@@ -24,10 +24,10 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.StringTokenizer;
 
-import com.untangle.uvm.BrandingManager;
 import com.untangle.uvm.CronJob;
 import com.untangle.uvm.LocalBrandingManager;
 import com.untangle.uvm.Period;
+import com.untangle.uvm.RemoteBrandingManager;
 import com.untangle.uvm.UvmException;
 import com.untangle.uvm.UvmLocalContext;
 import com.untangle.uvm.UvmState;
@@ -121,7 +121,7 @@ public class UvmContextImpl extends UvmContextBase
     private AppServerManagerImpl appServerManager;
     private RemoteAppServerManagerAdaptor remoteAppServerManager;
     private AddressBookFactory addressBookFactory;
-    private BrandingManager brandingManager;
+    private RemoteBrandingManager brandingManager;
     private LocalBrandingManager localBrandingManager;
     private PhoneBookFactory phoneBookFactory;
     private BasePortalManager portalManager;
@@ -167,7 +167,7 @@ public class UvmContextImpl extends UvmContextBase
         return addressBookFactory.getRemoteAddressBook();
     }
 
-    public BrandingManager brandingManager()
+    public RemoteBrandingManager brandingManager()
     {
         return brandingManager;
     }
@@ -636,7 +636,7 @@ public class UvmContextImpl extends UvmContextBase
         addressBookFactory = AddressBookFactory.makeInstance();
 
         localBrandingManager = new BrandingManagerImpl();
-        brandingManager = new RemoteBrandingManagerImpl(localBrandingManager);
+        brandingManager = new RemoteBrandingManagerAdaptor(localBrandingManager);
 
         phoneBookFactory = PhoneBookFactory.makeInstance();
 

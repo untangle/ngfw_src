@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -39,10 +39,9 @@ import java.util.TimeZone;
 
 import com.untangle.gui.node.CompoundSettings;
 import com.untangle.gui.util.Util;
+import com.untangle.uvm.BrandingSettings;
 import com.untangle.uvm.security.RegistrationInfo;
 import com.untangle.uvm.toolbox.MackageDesc;
-import com.untangle.uvm.BrandingManager;
-import com.untangle.uvm.BrandingSettings;
 
 public class AboutCompoundSettings implements CompoundSettings {
 
@@ -74,11 +73,11 @@ public class AboutCompoundSettings implements CompoundSettings {
     private BrandingSettings brandingSettings;
     public BrandingSettings getBrandingSettings(){ return brandingSettings; }
     public void setBrandingSettings(BrandingSettings bsIn){ brandingSettings = bsIn; }
-    
+
     public void save() throws Exception {
         Util.getAdminManager().setRegistrationInfo(registrationInfo);
         Util.getAdminManager().setTimeZone(timeZone);
-        Util.getBrandingManager().setBrandingSettings(brandingSettings);        
+        Util.getBrandingManager().setBrandingSettings(brandingSettings);
     }
 
     public void refresh() throws Exception {
@@ -93,12 +92,12 @@ public class AboutCompoundSettings implements CompoundSettings {
             installedVersion = mackageDesc.getInstalledVersion();
         activationKey = Util.getUvmContext().getActivationKey();
 
-		if ( Util.getIsPremium() ) {
-        	licenseURL = Util.getClassLoader().getResource("LicenseProfessional.txt");
-		}
-		else {
-        	licenseURL = Util.getClassLoader().getResource("LicenseStandard.txt");
-		}
+        if ( Util.getIsPremium() ) {
+            licenseURL = Util.getClassLoader().getResource("LicenseProfessional.txt");
+        }
+        else {
+            licenseURL = Util.getClassLoader().getResource("LicenseStandard.txt");
+        }
 
         timeZone = Util.getAdminManager().getTimeZone();
         date = Util.getAdminManager().getDate();

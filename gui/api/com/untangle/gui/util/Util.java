@@ -168,7 +168,7 @@ public class Util {
     // DO NOT CACHE THIS private static RemotePhoneBook phoneBook;
     private static RemoteIntfManager remoteIntfManager;
     private static PingManager pingManager;
-    private static BrandingManager brandingManager;
+    private static RemoteBrandingManager brandingManager;
 
     public static void setUvmContext(UvmRemoteContext uvmContextX){
         uvmContext = uvmContextX;
@@ -215,7 +215,7 @@ public class Util {
     public static AddressBook getAddressBook(){ return uvmContext.appAddressBook(); }
     public static RemotePhoneBook getPhoneBook(){ return uvmContext.phoneBook(); }
     public static PingManager getPingManager(){ return pingManager; }
-    public static BrandingManager getBrandingManager(){ return brandingManager; }
+    public static RemoteBrandingManager getBrandingManager(){ return brandingManager; }
     public static RemoteLicenseManager getLicenseManager(){ return uvmContext.licenseManager(); }
     ///////////////////////////////////
 
@@ -324,7 +324,7 @@ public class Util {
     public static boolean getIsPremium(){
         return getLicenseManager().hasPremiumLicense();
     }
-	
+
     //////////////////////////////
 
 

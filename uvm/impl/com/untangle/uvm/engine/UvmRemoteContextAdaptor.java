@@ -21,10 +21,10 @@ package com.untangle.uvm.engine;
 import java.io.IOException;
 
 import com.untangle.uvm.ArgonManager;
-import com.untangle.uvm.BrandingManager;
 import com.untangle.uvm.ConnectivityTester;
 import com.untangle.uvm.NetworkManager;
 import com.untangle.uvm.RemoteAppServerManager;
+import com.untangle.uvm.RemoteBrandingManager;
 import com.untangle.uvm.ReportingManager;
 import com.untangle.uvm.addrbook.AddressBook;
 import com.untangle.uvm.client.UvmRemoteContext;
@@ -134,7 +134,7 @@ class UvmRemoteContextAdaptor implements UvmRemoteContext
         return context.appRemoteAddressBook();
     }
 
-    public BrandingManager brandingManager()
+    public RemoteBrandingManager brandingManager()
     {
         return context.brandingManager();
     }

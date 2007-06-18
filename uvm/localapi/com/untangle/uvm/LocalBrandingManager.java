@@ -1,6 +1,6 @@
 /*
- * $HeadURL:$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * $HeadURL$
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -41,8 +41,22 @@ import java.io.File;
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
-public interface LocalBrandingManager extends BrandingManager
+public interface LocalBrandingManager
 {
+    /**
+     * Get the settings.
+     *
+     * @return the settings.
+     */
+    BrandingSettings getBrandingSettings();
+
+    /**
+     * Set the settings.
+     *
+     * @param bs the settings.
+     */
+    void setBrandingSettings(BrandingSettings bs);
+
     /**
      * Retrieve the file that holds the logo.
      */

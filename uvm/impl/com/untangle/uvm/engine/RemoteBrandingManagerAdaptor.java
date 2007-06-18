@@ -1,6 +1,6 @@
 /*
- * $HeadURL:$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * $HeadURL$
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -18,15 +18,21 @@
 
 package com.untangle.uvm.engine;
 
-import com.untangle.uvm.BrandingManager;
 import com.untangle.uvm.BrandingSettings;
 import com.untangle.uvm.LocalBrandingManager;
+import com.untangle.uvm.RemoteBrandingManager;
 
-class RemoteBrandingManagerImpl implements BrandingManager
+/**
+ * Adapts LocalBrandingManager to a RemoteBrandingManager.
+ *
+ * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
+ * @version 1.0
+ */
+class RemoteBrandingManagerAdaptor implements RemoteBrandingManager
 {
-    private final BrandingManager brandingManager;
+    private final LocalBrandingManager brandingManager;
 
-    RemoteBrandingManagerImpl(LocalBrandingManager brandingManager)
+    RemoteBrandingManagerAdaptor(LocalBrandingManager brandingManager)
     {
         this.brandingManager = brandingManager;
     }
@@ -40,6 +46,4 @@ class RemoteBrandingManagerImpl implements BrandingManager
     {
         this.brandingManager.setBrandingSettings(bs);
     }
-        
-
 }

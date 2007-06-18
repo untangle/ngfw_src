@@ -156,10 +156,16 @@ public interface UvmLocalContext
      * The BrandingManager allows for customization of logo and
      * branding information.
      *
-     * @return the BrandingManager.
+     * @return the RemoteBrandingManager.
      */
-    BrandingManager brandingManager();
+    RemoteBrandingManager brandingManager();
 
+    /**
+     * The BrandingManager allows for customization of logo and
+     * branding information.
+     *
+     * @return the LocalBrandingManager.
+     */
     LocalBrandingManager localBrandingManager();
 
     /**
