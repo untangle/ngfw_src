@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -47,6 +47,12 @@ import com.untangle.uvm.client.InvocationConnectionException;
 import com.untangle.uvm.client.InvocationException;
 import com.untangle.uvm.security.LoginSession;
 
+/**
+ * Client side of RPC service.
+ *
+ * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
+ * @version 1.0
+ */
 public class HttpInvokerStub implements InvocationHandler, Serializable
 {
     private static final long serialVersionUID = 7987422171291937863L;
@@ -63,6 +69,13 @@ public class HttpInvokerStub implements InvocationHandler, Serializable
 
     // constructors -----------------------------------------------------------
 
+    /**
+     * Creates a new <code>HttpInvokerStub</code> instance.
+     *
+     * @param url server url of the RPC service.
+     * @param loginSession the client's LoginSession.
+     * @param targetId server object's id.
+     */
     public HttpInvokerStub(URL url, LoginSession loginSession,
                            Integer targetId)
     {
@@ -72,6 +85,12 @@ public class HttpInvokerStub implements InvocationHandler, Serializable
     }
 
 
+    /**
+     * Creates a new <code>HttpInvokerStub</code> instance.
+     *
+     * @param url server url of the RPC service.
+     * @param classLoader the client's target ClassLoader.
+     */
     public HttpInvokerStub(URL url, ClassLoader classLoader)
     {
         this.loginSession = null;
@@ -84,6 +103,11 @@ public class HttpInvokerStub implements InvocationHandler, Serializable
 
     // static methods ---------------------------------------------------------
 
+    /**
+     * Timeout for requests.
+     *
+     * @param timeout an <code>int</code> value
+     */
     public static void setTimeout(int timeout)
     {
         HttpInvokerStub.timeout = timeout;
@@ -118,6 +142,11 @@ public class HttpInvokerStub implements InvocationHandler, Serializable
 
     // public methods ---------------------------------------------------------
 
+    /**
+     * Gets the client's LoginSession.
+     *
+     * @return the LoginSession.
+     */
     public LoginSession getLoginSession()
     {
         return loginSession;

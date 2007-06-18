@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -45,6 +45,12 @@ import com.untangle.uvm.client.RemoteUvmContext;
 import com.untangle.uvm.security.LoginSession;
 import org.apache.log4j.Logger;
 
+/**
+ * Implements server side of RPC service.
+ *
+ * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
+ * @version 1.0
+ */
 class HttpInvokerImpl implements HttpInvoker
 {
     private static final boolean ALLOW_MULTIPLE_LOGINS

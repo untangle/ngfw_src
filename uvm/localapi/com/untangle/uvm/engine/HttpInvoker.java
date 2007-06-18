@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -37,10 +37,25 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetAddress;
 
+/**
+ * Server side of RPC service.
+ *
+ * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
+ * @version 1.0
+ */
 public interface HttpInvoker
 {
     boolean GZIP_RESPONSE = true;
 
+    /**
+     * Handles an RPC request, reading the request from the input
+     * stream and writing the result to the output stream.
+     *
+     * @param is InputStream containing the request.
+     * @param os OutputStream for the result.
+     * @param isLocal if the connection is from localhost.
+     * @param remoteAddr the InetAddress of the client.
+     */
     void handle(InputStream is, OutputStream os, boolean isLocal,
                 InetAddress remoteAddr);
 }

@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -34,10 +34,16 @@
 package com.untangle.uvm.engine;
 
 import java.io.Serializable;
-
-import com.untangle.uvm.security.LoginSession;
 import java.net.URL;
 
+import com.untangle.uvm.security.LoginSession;
+
+/**
+ * Holds information for a RPC request from client.
+ *
+ * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
+ * @version 1.0
+ */
 class HttpInvocation implements Serializable
 {
     private static final long serialVersionUID = 3529724701056849106L;
@@ -49,6 +55,16 @@ class HttpInvocation implements Serializable
     final URL url;
     final int timeout;
 
+    /**
+     * Creates a new <code>HttpInvocation</code> instance.
+     *
+     * @param loginSession the client's LoginSession.
+     * @param targetId target object on server.
+     * @param methodSignature signature of method to call on target object.
+     * @param definingClass the defining class of the method.
+     * @param url server url the request was made on.
+     * @param timeout timeout for the call.
+     */
     HttpInvocation(LoginSession loginSession, Integer targetId,
                    String methodSignature, String definingClass,
                    URL url, int timeout)
