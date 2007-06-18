@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -29,8 +29,8 @@ import org.hibernate.Session;
 
 import com.untangle.uvm.ArgonException;
 import com.untangle.uvm.IntfConstants;
-import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.UvmLocalContext;
+import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.LocalUvmContext;
 
 import com.untangle.uvm.localapi.ArgonInterface;
 import com.untangle.uvm.localapi.LocalIntfManager;
@@ -284,7 +284,7 @@ class PPPoEManagerImpl
         /* Don't need to do anything if the connection is not enabled */
         if (( null == this.settings ) || !this.settings.getIsEnabled()) return;
 
-        LocalIntfManager lim = UvmContextFactory.context().localIntfManager();
+        LocalIntfManager lim = LocalUvmContextFactory.context().localIntfManager();
         
         List<ArgonInterface> registeredIntfList = new LinkedList<ArgonInterface>();
         
@@ -323,7 +323,7 @@ class PPPoEManagerImpl
             return;
         }
 
-        LocalIntfManager lim = UvmContextFactory.context().localIntfManager();
+        LocalIntfManager lim = LocalUvmContextFactory.context().localIntfManager();
         
         /* Iterate each of the cached entries and replace with their original values */
         for ( ArgonInterface intf : this.registeredIntfList ) {
@@ -342,7 +342,7 @@ class PPPoEManagerImpl
     /* This is for the ohh no situtation, just a way to get back to the interfaces at startup */
     synchronized void resetIntfs()
     {
-        UvmContextFactory.context().localIntfManager().resetSecondaryIntfs();
+        LocalUvmContextFactory.context().localIntfManager().resetSecondaryIntfs();
         
         this.registeredIntfList = null;
     }
@@ -368,7 +368,7 @@ class PPPoEManagerImpl
     private PPPoESettingsInternal loadSettings() throws ValidateException
     {
         DataLoader<PPPoESettings> loader = new DataLoader<PPPoESettings>( "PPPoESettings",
-                                                                          UvmContextFactory.context());
+                                                                          LocalUvmContextFactory.context());
         PPPoESettings dbSettings = loader.loadData();
 
         /* No database settings */
@@ -384,7 +384,7 @@ class PPPoEManagerImpl
     private void saveSettings( PPPoESettingsInternal newSettings )
     {
         DataSaver<PPPoESettings> saver =
-            new PPPoESettingsDataSaver( UvmContextFactory.context());
+            new PPPoESettingsDataSaver( LocalUvmContextFactory.context());
 
         if ( saver.saveData( newSettings.toSettings()) == null ) {
             logger.error( "Unable to save the pppoe settings." );
@@ -405,7 +405,7 @@ class PPPoEManagerImpl
     /* Data saver used to delete other instances of the object */
     private static class PPPoESettingsDataSaver extends DataSaver<PPPoESettings>
     {
-        PPPoESettingsDataSaver( UvmLocalContext local )
+        PPPoESettingsDataSaver( LocalUvmContext local )
         {
             super( local );
         }
@@ -448,7 +448,7 @@ class PPPoEManagerImpl
         {
             /* If this is the external interface, replace the default route */
             byte argonIndex = connection.getArgonIntf();
-            ArgonInterface ai = UvmContextFactory.context().localIntfManager().getIntfByArgon( argonIndex );
+            ArgonInterface ai = LocalUvmContextFactory.context().localIntfManager().getIntfByArgon( argonIndex );
             
             /* Only update the default route if this is the final interface */
             if ( argonIndex == IntfConstants.EXTERNAL_INTF ) {

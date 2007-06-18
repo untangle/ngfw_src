@@ -155,7 +155,7 @@ public class Util {
     //////////////////////////////
 
     // SERVER PROXIES ///////////////
-    private static UvmRemoteContext uvmContext;
+    private static RemoteUvmContext uvmContext;
     private static ToolboxManager toolboxManager;
     private static RemoteNodeManager nodeManager;
     private static AdminManager adminManager;
@@ -170,7 +170,7 @@ public class Util {
     private static PingManager pingManager;
     private static RemoteBrandingManager brandingManager;
 
-    public static void setUvmContext(UvmRemoteContext uvmContextX){
+    public static void setUvmContext(RemoteUvmContext uvmContextX){
         uvmContext = uvmContextX;
         if( uvmContext != null ){
             toolboxManager = uvmContext.toolboxManager();
@@ -202,7 +202,7 @@ public class Util {
         }
     }
 
-    public static UvmRemoteContext getUvmContext(){ return uvmContext; }
+    public static RemoteUvmContext getUvmContext(){ return uvmContext; }
     public static ToolboxManager getToolboxManager(){ return toolboxManager; }
     public static RemoteNodeManager getNodeManager(){ return nodeManager; }
     public static AdminManager getAdminManager(){ return adminManager; }
@@ -710,7 +710,7 @@ public class Util {
                     doShutdown();
                     mLoginJFrame.resetLogin("Server communication failure.  Re-login.");
                     mLoginJFrame.reshowLogin();
-                    UvmRemoteContextFactory.factory().logout();
+                    RemoteUvmContextFactory.factory().logout();
                 }
                 return;
             }
@@ -721,7 +721,7 @@ public class Util {
                     doShutdown();
                     mLoginJFrame.resetLogin("Server synchronization failure.  Re-login.");
                     mLoginJFrame.reshowLogin();
-                    UvmRemoteContextFactory.factory().logout();
+                    RemoteUvmContextFactory.factory().logout();
                 }
                 return;
             }
@@ -732,7 +732,7 @@ public class Util {
                     doShutdown();
                     mLoginJFrame.resetLogin("Login expired.  Re-login.");
                     mLoginJFrame.reshowLogin();
-                    UvmRemoteContextFactory.factory().logout();
+                    RemoteUvmContextFactory.factory().logout();
                 }
                 return;
             }
@@ -745,7 +745,7 @@ public class Util {
                     doShutdown();
                     mLoginJFrame.resetLogin("Server connection failure.  Re-login.");
                     mLoginJFrame.reshowLogin();
-                    UvmRemoteContextFactory.factory().logout();
+                    RemoteUvmContextFactory.factory().logout();
                 }
                 return;
             }
@@ -758,7 +758,7 @@ public class Util {
                     doShutdown();
                     mLoginJFrame.resetLogin("Login ended by: " + loginName + " at " + loginAddress);
                     mLoginJFrame.reshowLogin();
-                    UvmRemoteContextFactory.factory().logout();
+                    RemoteUvmContextFactory.factory().logout();
                 }
                 return;
             }

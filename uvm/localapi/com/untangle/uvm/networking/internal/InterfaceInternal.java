@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This library is free software; you can redistribute it and/or modify
@@ -36,7 +36,7 @@ package com.untangle.uvm.networking.internal;
 import com.untangle.uvm.node.ValidateException;
 
 import com.untangle.uvm.ArgonException;
-import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.localapi.ArgonInterface;
 import com.untangle.uvm.localapi.LocalIntfManager;
 
@@ -153,7 +153,7 @@ public class InterfaceInternal
         ArgonInterface argonIntf = null;
 
         try {
-            LocalIntfManager lim = UvmContextFactory.context().localIntfManager();
+            LocalIntfManager lim = LocalUvmContextFactory.context().localIntfManager();
             argonIntf = lim.getIntfByArgon( intf.getArgonIntf());
         } catch ( ArgonException e ) {
             throw new ValidateException( "Invalid argon interface: " + argonIntf, e );

@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -21,7 +21,7 @@ package com.untangle.node.virus;
 import java.io.*;
 import java.util.*;
 
-import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.tapi.*;
 import com.untangle.node.mail.papi.*;
 import com.untangle.node.mail.papi.smtp.*;
@@ -56,7 +56,7 @@ public class SmtpSessionHandler
 
         m_virusImpl = impl;
         m_config = config;
-        m_pipeline = UvmContextFactory.context().
+        m_pipeline = LocalUvmContextFactory.context().
             pipelineFoundry().getPipeline(session.id());
         m_fileFactory = new TempFileFactory(m_pipeline);
     }
@@ -149,7 +149,7 @@ public class SmtpSessionHandler
         if(foundVirus) {
             //Perform notification (if we should)
             if(m_config.getNotificationMessageGenerator().sendNotification(
-                                                                           UvmContextFactory.context().mailSender(),
+                                                                           LocalUvmContextFactory.context().mailSender(),
                                                                            m_config.getNotifyAction(),
                                                                            msg,
                                                                            tx,
@@ -253,7 +253,7 @@ public class SmtpSessionHandler
         if(foundVirus) {
             //Make notification
             if(m_config.getNotificationMessageGenerator().sendNotification(
-                                                                           UvmContextFactory.context().mailSender(),
+                                                                           LocalUvmContextFactory.context().mailSender(),
                                                                            m_config.getNotifyAction(),
                                                                            msg,
                                                                            tx,

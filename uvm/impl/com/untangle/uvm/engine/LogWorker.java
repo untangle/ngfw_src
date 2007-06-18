@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -25,7 +25,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.logging.SyslogManager;
 import com.untangle.uvm.util.TransactionWork;
@@ -44,7 +44,7 @@ class LogWorker implements Runnable
     private final BlockingQueue<LogEventDesc> inputQueue
         = new LinkedBlockingQueue<LogEventDesc>();
 
-    private final SyslogManager syslogManager = UvmContextFactory
+    private final SyslogManager syslogManager = LocalUvmContextFactory
         .context().syslogManager();
 
     private final Logger logger = Logger.getLogger(getClass());
@@ -154,7 +154,7 @@ class LogWorker implements Runnable
                 }
             };
 
-        boolean s = UvmContextFactory.context().runTransaction(tw);
+        boolean s = LocalUvmContextFactory.context().runTransaction(tw);
         if (!s) {
             logger.error("could not log events");
         }
@@ -165,7 +165,7 @@ class LogWorker implements Runnable
     void start()
     {
         if (!loggingManager.isLoggingDisabled()) {
-            UvmContextFactory.context().newThread(this).start();
+            LocalUvmContextFactory.context().newThread(this).start();
         }
     }
 

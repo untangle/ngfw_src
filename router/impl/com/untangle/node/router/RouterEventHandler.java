@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -29,7 +29,7 @@ import java.util.Collections;
 import com.untangle.uvm.ArgonManager;
 import com.untangle.uvm.NetworkManager;
 import com.untangle.uvm.IntfConstants;
-import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.LocalUvmContextFactory;
 
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.localapi.ArgonInterface;
@@ -292,8 +292,8 @@ class RouterEventHandler extends AbstractEventHandler
     void configure( NetworkSpacesInternalSettings settings )
         throws NodeException
     {        
-        ArgonManager argonManager = UvmContextFactory.context().argonManager();
-        NetworkManager networkManager = UvmContextFactory.context().networkManager();
+        ArgonManager argonManager = LocalUvmContextFactory.context().argonManager();
+        NetworkManager networkManager = LocalUvmContextFactory.context().networkManager();
 
         /* Create a new override */
         List<InterfaceRedirect> overrideList = new LinkedList<InterfaceRedirect>();
@@ -371,7 +371,7 @@ class RouterEventHandler extends AbstractEventHandler
     /* Not sure if this should ever throw an exception */
     void deconfigure()
     {
-        UvmContextFactory.context().networkManager().subscribeLocalOutside( false );
+        LocalUvmContextFactory.context().networkManager().subscribeLocalOutside( false );
     }
 
     /**

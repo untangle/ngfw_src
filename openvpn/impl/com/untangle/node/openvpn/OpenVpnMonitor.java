@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -38,8 +38,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.UvmLocalContext;
+import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.EventLoggerFactory;
 import com.untangle.uvm.logging.EventRepository;
@@ -121,7 +121,7 @@ class OpenVpnMonitor implements Runnable
     /* Whether or not openvpn is started */
     private volatile boolean isEnabled = false;
 
-    private final UvmLocalContext localContext;
+    private final LocalUvmContext localContext;
 
     OpenVpnMonitor( VpnNodeImpl node )
     {
@@ -133,7 +133,7 @@ class OpenVpnMonitor implements Runnable
         clientConnectLogger.addEventRepository(new ActiveEventCache(clientConnectLogger));//For "open" events
         clientConnectLogger.addSimpleEventFilter(new ClientConnectEventAllFilter());//For "closed" events
 
-        this.localContext = UvmContextFactory.context();
+        this.localContext = LocalUvmContextFactory.context();
         this.node = node;
     }
 

@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -26,8 +26,8 @@ import java.util.List;
 import com.untangle.uvm.ArgonException;
 import com.untangle.uvm.BrandingSettings;
 import com.untangle.uvm.IntfConstants;
-import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.UvmLocalContext;
+import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.NetworkManager;
 import com.untangle.uvm.networking.internal.ServicesInternalSettings;
 import com.untangle.uvm.node.HostName;
@@ -182,15 +182,15 @@ class OpenVpnManager
             boolean isBridgeMode = settings.isBridgeMode();
 
             /* ** XXXXXXX Bridge mode is unsupported */
-            UvmContextFactory.context().localIntfManager().
+            LocalUvmContextFactory.context().localIntfManager().
                 registerIntf( DEVICE_ROUTING, IntfConstants.VPN_INTF );
 
             /* ** XXXXXXX Bridge mode is unsupported */
 
             // if ( isBridgeMode ) {
-            // am.enableInternalBridgeIntf( UvmContextFactory.context().networkingManager().get(), intf );
+            // am.enableInternalBridgeIntf( LocalUvmContextFactory.context().networkingManager().get(), intf );
             // }
-            UvmContextFactory.context().networkManager().updateAddress();
+            LocalUvmContextFactory.context().networkManager().updateAddress();
         } catch ( ArgonException e ) {
             throw new NodeException( e );
         } catch ( Exception e ) {
@@ -211,8 +211,8 @@ class OpenVpnManager
 
         try {
             //
-            // am.disableInternalBridgeIntf( UvmContextFactory.context().networkingManager().get());
-            UvmContextFactory.context().networkManager().updateAddress();
+            // am.disableInternalBridgeIntf( LocalUvmContextFactory.context().networkingManager().get());
+            LocalUvmContextFactory.context().networkManager().updateAddress();
         } catch ( Exception e ) {
             throw new NodeException( e );
         }
@@ -310,7 +310,7 @@ class OpenVpnManager
     void writeClientConfigurationFiles( VpnSettings settings, VpnClientBase client )
         throws NodeException
     {
-        UvmLocalContext uvm = UvmContextFactory.context();
+        LocalUvmContext uvm = LocalUvmContextFactory.context();
         NetworkManager nm = uvm.networkManager();
 
         BrandingSettings bs = uvm.brandingManager().getBrandingSettings();
@@ -368,7 +368,7 @@ class OpenVpnManager
         sw.appendVariable( FLAG_CA,   CLI_KEY_DIR + "/" + siteName + "-ca.crt" );
 
         /* VPN configuratoins needs information from the networking settings. */
-        NetworkManager networkManager = UvmContextFactory.context().networkManager();
+        NetworkManager networkManager = LocalUvmContextFactory.context().networkManager();
 
         /* This is kind of janky */
         String publicAddress = networkManager.getPublicAddress();
@@ -402,7 +402,7 @@ class OpenVpnManager
         } catch ( Exception e ) {
             logger.error( "Unable to delete the previous client configuration files." );
         }
-        ServicesInternalSettings sis = UvmContextFactory.context().
+        ServicesInternalSettings sis = LocalUvmContextFactory.context().
             networkManager().getServicesInternalSettings();
 
         for ( VpnClient client : settings.getClientList()) {

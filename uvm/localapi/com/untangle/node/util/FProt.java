@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This library is free software; you can redistribute it and/or modify
@@ -37,7 +37,7 @@ import java.nio.*;
 import java.nio.channels.*;
 import java.util.*;
 
-import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.LocalUvmContextFactory;
 
 public class FProt {
 
@@ -56,7 +56,7 @@ public class FProt {
     public static int scanFile (String fileName) throws IOException,InterruptedException
     {
         byte[] outbuf = new byte[CHUNK_SIZE];
-        Process proc = UvmContextFactory.context().exec("f-prot " + fileName);
+        Process proc = LocalUvmContextFactory.context().exec("f-prot " + fileName);
         InputStream is  = proc.getInputStream();
         OutputStream os = proc.getOutputStream();
         int i;

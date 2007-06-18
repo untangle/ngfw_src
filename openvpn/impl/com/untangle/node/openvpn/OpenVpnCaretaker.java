@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -22,8 +22,8 @@ import java.util.Date;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.UvmLocalContext;
+import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.LocalUvmContext;
 
 import com.untangle.uvm.node.NodeException;
 import com.untangle.uvm.node.script.ScriptRunner;
@@ -41,7 +41,7 @@ class OpenVpnCaretaker implements Runnable
     private final Logger logger = Logger.getLogger( this.getClass());
 
     /* Local context */
-    private final UvmLocalContext localContext;
+    private final LocalUvmContext localContext;
 
     /* Status of the monitor */
     private volatile boolean isAlive = false;
@@ -51,7 +51,7 @@ class OpenVpnCaretaker implements Runnable
 
     OpenVpnCaretaker()
     {
-        this.localContext = UvmContextFactory.context();
+        this.localContext = LocalUvmContextFactory.context();
     }
 
     public void run()

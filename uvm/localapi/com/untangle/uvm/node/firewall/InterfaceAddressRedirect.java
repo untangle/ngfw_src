@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This library is free software; you can redistribute it and/or modify
@@ -37,7 +37,7 @@ import java.net.InetAddress;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.ArgonException;
 import com.untangle.uvm.IntfConstants;
 
@@ -102,7 +102,7 @@ public class InterfaceAddressRedirect extends InterfaceRedirect
         if (( null == this.redirectAddress ) || ( check != this.lastUpdate )) return;
 
         try {
-            byte newIntf = UvmContextFactory.context().argonManager().
+            byte newIntf = LocalUvmContextFactory.context().argonManager().
                 getOutgoingInterface( this.redirectAddress );
             if ( newIntf == IntfConstants.NETCAP_LOOPBACK ) {
                 logger.info( "Redirect is destined to local host, matching sessions will be dropped." );

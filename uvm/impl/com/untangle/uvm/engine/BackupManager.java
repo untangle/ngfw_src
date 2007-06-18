@@ -23,7 +23,7 @@ import java.io.IOException;
 
 import com.untangle.node.util.IOUtil;
 import com.untangle.node.util.SimpleExec;
-import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.LocalUvmContextFactory;
 import org.apache.log4j.Logger;
 
 
@@ -192,7 +192,7 @@ class BackupManager {
 
     private void backup(boolean local) throws IOException {
 
-        Process p = UvmContextFactory.context().exec(new String[]
+        Process p = LocalUvmContextFactory.context().exec(new String[]
             { OLD_BACKUP_SCRIPT, local ? LOCAL_ARG : USB_ARG });
         for (byte[] buf = new byte[1024]; 0 <= p.getInputStream().read(buf); );
 

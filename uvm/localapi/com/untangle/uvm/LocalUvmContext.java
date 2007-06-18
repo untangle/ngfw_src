@@ -64,7 +64,7 @@ import com.untangle.uvm.util.TransactionWork;
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
-public interface UvmLocalContext
+public interface LocalUvmContext
 {
     /**
      * Gets the current state of the UVM

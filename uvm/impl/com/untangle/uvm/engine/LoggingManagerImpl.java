@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -23,7 +23,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 
-import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.logging.LoggingManager;
 import com.untangle.uvm.logging.LoggingSettings;
 import com.untangle.uvm.logging.UvmRepositorySelector;
@@ -69,7 +69,7 @@ class LoggingManagerImpl implements LoggingManager
                     return true;
                 }
             };
-        UvmContextFactory.context().runTransaction(tw);
+        LocalUvmContextFactory.context().runTransaction(tw);
 
         SyslogManagerImpl.manager().reconfigure(loggingSettings);
     }
@@ -97,7 +97,7 @@ class LoggingManagerImpl implements LoggingManager
                 }
             };
 
-        UvmContextFactory.context().runTransaction(tw);
+        LocalUvmContextFactory.context().runTransaction(tw);
 
         SyslogManagerImpl.manager().reconfigure(loggingSettings);
     }

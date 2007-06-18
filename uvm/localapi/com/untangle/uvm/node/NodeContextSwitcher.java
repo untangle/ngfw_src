@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This library is free software; you can redistribute it and/or modify
@@ -33,7 +33,7 @@
 
 package com.untangle.uvm.node;
 
-import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.LocalUvmContextFactory;
 
 public class NodeContextSwitcher<T>
 {
@@ -46,7 +46,7 @@ public class NodeContextSwitcher<T>
 
     public void run(Event<T> event, T argument)
     {
-        LocalNodeManager tm = UvmContextFactory.context().nodeManager();
+        LocalNodeManager tm = LocalUvmContextFactory.context().nodeManager();
         try {
             tm.registerThreadContext(this.nodeContext);
             event.handle(argument);

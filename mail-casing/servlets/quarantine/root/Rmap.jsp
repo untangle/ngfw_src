@@ -15,7 +15,7 @@
 <%@ taglib uri="/WEB-INF/taglibs/quarantine_euv.tld" prefix="quarantine" %>
 
 <%
-UvmLocalContext uvm = UvmContextFactory.context();
+LocalUvmContext uvm = LocalUvmContextFactory.context();
 BrandingSettings bs = uvm.brandingManager().getBrandingSettings();
 String company = bs.getCompanyName();
 String companyUrl = bs.getCompanyUrl();

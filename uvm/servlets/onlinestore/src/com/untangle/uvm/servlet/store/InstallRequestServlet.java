@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -24,8 +24,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.UvmLocalContext;
+import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.security.UvmPrincipal;
 import org.apache.log4j.Logger;
 
@@ -50,7 +50,7 @@ public class InstallRequestServlet extends HttpServlet
             String mackageName = req.getParameter("mackage");
 
             if (null != mackageName) {
-                UvmLocalContext ctx = UvmContextFactory.context();
+                LocalUvmContext ctx = LocalUvmContextFactory.context();
                 ctx.toolboxManager().requestInstall(mackageName);
             } else {
                 try {

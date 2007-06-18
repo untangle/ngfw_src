@@ -27,7 +27,7 @@ import com.untangle.uvm.RemoteAppServerManager;
 import com.untangle.uvm.RemoteBrandingManager;
 import com.untangle.uvm.ReportingManager;
 import com.untangle.uvm.addrbook.RemoteAddressBook;
-import com.untangle.uvm.client.UvmRemoteContext;
+import com.untangle.uvm.client.RemoteUvmContext;
 import com.untangle.uvm.license.RemoteLicenseManager;
 import com.untangle.uvm.logging.LoggingManager;
 import com.untangle.uvm.networking.ping.PingManager;
@@ -40,23 +40,23 @@ import com.untangle.uvm.toolbox.ToolboxManager;
 import com.untangle.uvm.user.RemotePhoneBook;
 
 /**
- * Adapts UvmContextImpl to UvmRemoteContext.
+ * Adapts UvmContextImpl to RemoteUvmContext.
  *
  * @author <a href="mailto:amread@nyx.net">Aaron Read</a>
  * @version 1.0
  */
-class UvmRemoteContextAdaptor implements UvmRemoteContext
+class RemoteUvmContextAdaptor implements RemoteUvmContext
 {
     private final UvmContextImpl context;
 
     // constructors -----------------------------------------------------------
 
-    UvmRemoteContextAdaptor(UvmContextImpl context)
+    RemoteUvmContextAdaptor(UvmContextImpl context)
     {
         this.context = context;
     }
 
-    // UvmRemoteContext methods ----------------------------------------------
+    // RemoteUvmContext methods ----------------------------------------------
 
     public ToolboxManager toolboxManager()
     {

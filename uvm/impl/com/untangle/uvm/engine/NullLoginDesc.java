@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -21,7 +21,7 @@ package com.untangle.uvm.engine;
 import java.lang.ref.WeakReference;
 import java.net.URL;
 
-import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.security.UvmLogin;
 
 final class NullLoginDesc extends LoginDesc
@@ -34,7 +34,7 @@ final class NullLoginDesc extends LoginDesc
     {
         super(url, timeout, null);
 
-        UvmLogin login = ((UvmContextImpl)UvmContextFactory.context()).uvmLogin();
+        UvmLogin login = ((UvmContextImpl)LocalUvmContextFactory.context()).uvmLogin();
 
         targetDesc = new TargetDesc(url, timeout, null, 0,
                                     new WeakReference(login));

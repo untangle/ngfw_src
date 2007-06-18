@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -24,7 +24,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.InterruptedException;
 
-import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.LocalUvmContextFactory;
 import org.apache.log4j.Logger;
 
 public class SpamAssassinDaemon
@@ -60,7 +60,7 @@ public class SpamAssassinDaemon
     private boolean executeCmd(String cmdStr, String replyStr) {
         Process cmdProcess = null;
         try {
-            cmdProcess = UvmContextFactory.context().exec(cmdStr);
+            cmdProcess = LocalUvmContextFactory.context().exec(cmdStr);
         } catch (Exception e) {
             logger.error(BASE_CMD + " could not be exec'ed: ", e);
             return false;

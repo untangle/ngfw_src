@@ -22,7 +22,7 @@ import com.untangle.jnetcap.Netcap;
 import com.untangle.jnetcap.Shield;
 import com.untangle.jvector.Vector;
 import com.untangle.uvm.ArgonException;
-import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.localapi.LocalIntfManager;
 import com.untangle.uvm.localapi.LocalShieldManager;
 import com.untangle.uvm.networking.NetworkException;
@@ -235,7 +235,7 @@ public class Argon
         }
 
         /* Initialize the shield configuration */
-        LocalShieldManager lsm = UvmContextFactory.context().localShieldManager();
+        LocalShieldManager lsm = LocalUvmContextFactory.context().localShieldManager();
         lsm.setIsShieldEnabled( isShieldEnabled );
         lsm.setShieldConfigurationFile( shieldFile );
 

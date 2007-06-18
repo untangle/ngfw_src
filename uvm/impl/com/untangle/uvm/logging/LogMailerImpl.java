@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -28,7 +28,7 @@ import javax.mail.Part;
 import javax.mail.internet.MimeBodyPart;
 
 import com.untangle.uvm.MailSender;
-import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.UvmState;
 import com.untangle.uvm.Version;
 import org.apache.log4j.Logger;
@@ -107,8 +107,8 @@ public class LogMailerImpl implements LogMailer, Runnable
                 long now = System.currentTimeMillis();
                 if (now - MIN_MESSAGE_PERIOD < lastSendTime)
                     Thread.sleep(MIN_MESSAGE_PERIOD  - (now - lastSendTime));
-                if (UvmContextFactory.state() == UvmState.RUNNING &&
-                    UvmContextFactory.context().networkManager().
+                if (LocalUvmContextFactory.state() == UvmState.RUNNING &&
+                    LocalUvmContextFactory.context().networkManager().
                     getMiscSettingsInternal().getIsExceptionReportingEnabled()) {
                     sendMessage(triggerer);
                 }
@@ -173,7 +173,7 @@ public class LogMailerImpl implements LogMailer, Runnable
 
     private void doSend(String subjectBase, String bodyBase,
                         List<MimeBodyPart> parts) {
-        String host = UvmContextFactory.context().networkManager().
+        String host = LocalUvmContextFactory.context().networkManager().
             getAddressSettingsInternal().getHostName().toString();
 
         String bodyText = sysstat.systemStatus();
@@ -187,7 +187,7 @@ public class LogMailerImpl implements LogMailer, Runnable
         sb.append(version);
         String subjectText = sb.toString();
 
-        MailSender ms = UvmContextFactory.context().mailSender();
+        MailSender ms = LocalUvmContextFactory.context().mailSender();
         ms.sendErrorLogs(subjectText, bodyText, parts);
     }
 

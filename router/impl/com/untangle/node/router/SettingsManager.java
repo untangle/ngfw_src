@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -27,7 +27,7 @@ import java.util.HashMap;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.IntfConstants;
-import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.ArgonManager;
 
 import com.untangle.uvm.networking.SetupState;
@@ -149,7 +149,7 @@ class SettingsManager
             
             interfaceList = new LinkedList<Interface>();
 
-            byte argonIntfArray[] = UvmContextFactory.context().localIntfManager().getArgonIntfArray();
+            byte argonIntfArray[] = LocalUvmContextFactory.context().localIntfManager().getArgonIntfArray();
                 
             Arrays.sort( argonIntfArray );
             for ( byte argonIntf : argonIntfArray ) {
@@ -382,7 +382,7 @@ class SettingsManager
         /* XXX The network settings are already known, there isn't really a need to craete
          * a new object, but this is more convenient */
         routerSettings.
-            setNetworkSettings( UvmContextFactory.context().networkManager().getBasicSettings());
+            setNetworkSettings( LocalUvmContextFactory.context().networkManager().getBasicSettings());
                 
         return routerSettings;
     }

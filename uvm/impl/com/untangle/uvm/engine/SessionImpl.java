@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -18,7 +18,7 @@
 
 package com.untangle.uvm.engine;
 
-import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.tapi.*;
 // import org.apache.commons.jxpath.JXPathContext;
 
@@ -62,7 +62,7 @@ abstract class SessionImpl implements Session {
     /*
       public ExtendedPreferences sessionNode()
       {
-      return UvmContextFactory.uvmContext().preferencesManager()
+      return LocalUvmContextFactory.uvmContext().preferencesManager()
       .sessionPreferences(id());
       }
     */
@@ -70,7 +70,7 @@ abstract class SessionImpl implements Session {
     /*
       public String sessionPath()
       {
-      return UvmContextFactory.uvmContext().preferencesManager()
+      return LocalUvmContextFactory.uvmContext().preferencesManager()
       .sessionPreferencesPath(id());
       }
     */
@@ -78,7 +78,7 @@ abstract class SessionImpl implements Session {
     /*
       public JXPathContext sessionContext()
       {
-      return JXPathContext.newContext(UvmContextFactory.uvmContext()
+      return JXPathContext.newContext(LocalUvmContextFactory.uvmContext()
       .preferencesManager()
       .sessionPreferences(id()));
       }

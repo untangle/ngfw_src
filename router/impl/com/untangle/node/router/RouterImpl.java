@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -21,8 +21,8 @@ import java.net.InetAddress;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.UvmLocalContext;
+import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.UvmState;
 import com.untangle.uvm.localapi.SessionMatcher;
 import com.untangle.uvm.localapi.SessionMatcherFactory;
@@ -93,7 +93,7 @@ public class RouterImpl extends AbstractNode implements Router
         this.sessionManager   = new RouterSessionManager(this);
         this.statisticManager = new RouterStatisticManager(getNodeContext());
         this.settingsManager  = new SettingsManager();
-        this.dhcpMonitor      = new DhcpMonitor( this, UvmContextFactory.context());
+        this.dhcpMonitor      = new DhcpMonitor( this, LocalUvmContextFactory.context());
         this.listener         = new SettingsListener();
         this.assistant        = new PhoneBookAssistant( this.dhcpMonitor );
 
@@ -305,7 +305,7 @@ public class RouterImpl extends AbstractNode implements Router
         /* Register a listener, this should hang out until the node is removed dies. */
         getNetworkManager().registerListener( this.listener );
 
-        UvmContextFactory.context().localPhoneBook().registerAssistant( this.assistant );
+        LocalUvmContextFactory.context().localPhoneBook().registerAssistant( this.assistant );
 
         /* Check if the settings have been upgraded yet */
         DataLoader<RouterSettingsImpl> natLoader = new DataLoader<RouterSettingsImpl>( "RouterSettingsImpl",
@@ -353,7 +353,7 @@ public class RouterImpl extends AbstractNode implements Router
 
     protected void preStart() throws NodeStartException
     {
-        UvmLocalContext context = UvmContextFactory.context();
+        LocalUvmContext context = LocalUvmContextFactory.context();
         UvmState state = context.state();
         LocalNetworkManager networkManager = getNetworkManager();
 
@@ -402,7 +402,7 @@ public class RouterImpl extends AbstractNode implements Router
         /* Kill all active sessions */
         shutdownMatchingSessions();
 
-        UvmLocalContext context = UvmContextFactory.context();
+        LocalUvmContext context = LocalUvmContextFactory.context();
 
         UvmState state = context.state();
 
@@ -438,7 +438,7 @@ public class RouterImpl extends AbstractNode implements Router
         /* Deregister the network settings listener */
         getNetworkManager().unregisterListener( this.listener );
 
-        UvmContextFactory.context().localPhoneBook().unregisterAssistant( this.assistant );
+        LocalUvmContextFactory.context().localPhoneBook().unregisterAssistant( this.assistant );
     }
 
     public void networkSettingsEvent( ) throws NodeException
@@ -596,7 +596,7 @@ public class RouterImpl extends AbstractNode implements Router
 
     private LocalNetworkManager getNetworkManager()
     {
-        return UvmContextFactory.context().networkManager();
+        return LocalUvmContextFactory.context().networkManager();
     }
     private NetworkSpacesInternalSettings getNetworkSettings()
     {

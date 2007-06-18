@@ -59,7 +59,7 @@ import com.untangle.uvm.user.RemotePhoneBook;
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
-public interface UvmRemoteContext
+public interface RemoteUvmContext
 {
     /**
      * Get the <code>ToolboxManager</code> singleton.

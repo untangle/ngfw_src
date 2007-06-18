@@ -1,6 +1,6 @@
 <%@ page language="java" import="com.untangle.uvm.*" %>
 <%
-UvmLocalContext uvm = UvmContextFactory.context();
+LocalUvmContext uvm = LocalUvmContextFactory.context();
 boolean reportingEnabled = uvm.reportingManager().isReportingEnabled();
 String host=request.getHeader("host");
 String scheme=request.getScheme();

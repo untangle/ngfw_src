@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -21,7 +21,7 @@ package com.untangle.uvm.snmp;
 import java.io.File;
 import java.io.FileOutputStream;
 
-import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.node.util.IOUtil;
 import org.apache.log4j.Logger;
@@ -81,7 +81,7 @@ public class SnmpManagerImpl
 
                 public Object getResult() { return null; }
             };
-        UvmContextFactory.context().runTransaction(tw);
+        LocalUvmContextFactory.context().runTransaction(tw);
 
         m_logger.info("Initialized SnmpManager");
         if(!isSnmpInstalled()) {
@@ -106,7 +106,7 @@ public class SnmpManagerImpl
 
                 public Object getResult() { return null; }
             };
-        UvmContextFactory.context().runTransaction(tw);
+        LocalUvmContextFactory.context().runTransaction(tw);
         m_settings = settings;
 
         if(!isSnmpInstalled()) {
@@ -229,7 +229,7 @@ public class SnmpManagerImpl
     private void restartDaemon() {
         try {
             m_logger.debug("Restarting the snmpd...");
-            Process p = UvmContextFactory.context().exec(new String[] {
+            Process p = LocalUvmContextFactory.context().exec(new String[] {
                 "/etc/init.d/snmpd", "restart"});
             p.waitFor();
             m_logger.debug("Restart of SNMPD exited with " +

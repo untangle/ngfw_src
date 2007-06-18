@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -21,7 +21,7 @@ package com.untangle.node.spam;
 import java.io.File;
 import java.util.LinkedList;
 
-import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.tapi.TCPSession;
 import com.untangle.node.mail.papi.MessageInfo;
 import com.untangle.node.mail.papi.imap.BufferingImapTokenStreamHandler;
@@ -55,7 +55,7 @@ public class SpamImapHandler
         m_spamImpl = impl;
         m_safelist = safelist;
         m_config = config;
-        m_fileFactory = new TempFileFactory(UvmContextFactory.context().
+        m_fileFactory = new TempFileFactory(LocalUvmContextFactory.context().
                                             pipelineFoundry().getPipeline(session.id()));
     }
 

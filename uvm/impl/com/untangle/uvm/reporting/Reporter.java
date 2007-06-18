@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -25,8 +25,8 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.jar.*;
 
-import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.UvmLocalContext;
+import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.engine.DataSourceFactory;
 import com.untangle.uvm.reporting.summary.*;
 import com.untangle.uvm.security.Tid;
@@ -224,7 +224,7 @@ public class Reporter implements Runnable
     }
 
     public void run() {
-        UvmLocalContext uvm = UvmContextFactory.context();
+        LocalUvmContext uvm = LocalUvmContextFactory.context();
         List<Tid> tids = uvm.nodeManager().nodeInstances();
         List<NodeContext> toreport = new ArrayList<NodeContext>();
         for (Tid t : tids) {

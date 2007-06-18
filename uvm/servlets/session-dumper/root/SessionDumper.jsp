@@ -8,7 +8,7 @@
 <BODY>
 <%
   AbsoluteTimeDateFormat atdf = new AbsoluteTimeDateFormat();
-  UvmLocalContext mc = UvmContextFactory.context();
+  LocalUvmContext mc = LocalUvmContextFactory.context();
   LocalNodeManager tm = mc.nodeManager();
   StringBuffer buf;
   for (Tid tid : tm.nodeInstances()) {

@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -35,7 +35,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.NetworkManager;
 import com.untangle.uvm.node.HostName;
 import com.untangle.uvm.node.HostNameList;
@@ -109,7 +109,7 @@ class DhcpManager
 
     void configure( ServicesInternalSettings settings ) throws NetworkException
     {
-        NetworkManagerImpl nm = (NetworkManagerImpl)UvmContextFactory.context().networkManager();
+        NetworkManagerImpl nm = (NetworkManagerImpl)LocalUvmContextFactory.context().networkManager();
         
         NetworkSpacesInternalSettings networkSettings = nm.getNetworkInternalSettings();
         
@@ -164,7 +164,7 @@ class DhcpManager
         /* Re-enable DHCP forwarding */
         try {
             logger.info( "Reenabling DHCP forwarding" );
-            UvmContextFactory.context().networkManager().enableDhcpForwarding();
+            LocalUvmContextFactory.context().networkManager().enableDhcpForwarding();
         } catch ( Exception e ) {
             logger.error( "Error enabling DHCP forwarding", e );
         }

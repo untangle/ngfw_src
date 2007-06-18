@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.node.virus.VirusClientContext;
 import com.untangle.node.virus.VirusClientSocket;
 import com.untangle.node.virus.VirusScannerClientLauncher;
@@ -93,7 +93,7 @@ public class ClamScannerClientLauncher extends VirusScannerClientLauncher {
     private ClamClient createClient() {
         cContext = new VirusClientContext(msgFile, VirusClientSocket.CLAMD_DEFHOST, VirusClientSocket.CLAMD_DEFPORT);
         client = new ClamClient(cContext);
-        Thread thread = UvmContextFactory.context().newThread(client);
+        Thread thread = LocalUvmContextFactory.context().newThread(client);
         client.setThread(thread);
         return client;
     }

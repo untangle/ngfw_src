@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -20,7 +20,7 @@ package com.untangle.node.spam;
 
 import java.util.*;
 
-import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.tapi.TCPNewSessionRequest;
 import org.apache.log4j.Logger;
 
@@ -180,7 +180,7 @@ public class RBLChecker {
 
     private RBLClient createClient(RBLClientContext cContext) {
         RBLClient client = new RBLClient(cContext);
-        Thread thread = UvmContextFactory.context().newThread(client);
+        Thread thread = LocalUvmContextFactory.context().newThread(client);
         client.setThread(thread);
         clientMap.put(client, cContext);
         return client;

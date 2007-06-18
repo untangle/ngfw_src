@@ -39,7 +39,7 @@ import com.untangle.gui.node.*;
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.dialogs.*;
 import com.untangle.gui.widgets.wizard.*;
-import com.untangle.uvm.client.UvmRemoteContextFactory;
+import com.untangle.uvm.client.RemoteUvmContextFactory;
 
 public class InitialSetupWizard extends MWizardJDialog {
 
@@ -147,7 +147,7 @@ public class InitialSetupWizard extends MWizardJDialog {
             keepAliveThread.doShutdown();
             Util.setUvmContext(null);
             try{
-                UvmRemoteContextFactory.factory().logout();
+                RemoteUvmContextFactory.factory().logout();
             }
             catch(Exception e){ Util.handleExceptionNoRestart("Error logging off", e); };
         }

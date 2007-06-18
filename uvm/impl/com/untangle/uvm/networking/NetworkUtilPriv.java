@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -33,7 +33,7 @@ import com.untangle.jnetcap.InterfaceData;
 import com.untangle.jnetcap.Netcap;
 import com.untangle.uvm.ArgonException;
 import com.untangle.uvm.IntfConstants;
-import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.localapi.LocalIntfManager;
 import com.untangle.uvm.networking.internal.InterfaceInternal;
 import com.untangle.uvm.networking.internal.NetworkSpaceInternal;
@@ -147,7 +147,7 @@ class NetworkUtilPriv extends NetworkUtil
         /* Boolean to indicate whether or not the user has completed setup */
         boolean hasCompletedSetup = networkSettings.getHasCompletedSetup();
 
-        LocalIntfManager lim = UvmContextFactory.context().localIntfManager();
+        LocalIntfManager lim = LocalUvmContextFactory.context().localIntfManager();
 
         int index = SPACE_INDEX_BASE;
 
@@ -339,7 +339,7 @@ class NetworkUtilPriv extends NetworkUtil
     NetworkSpacesInternalSettings toInternal( BasicNetworkSettings basic )
         throws NetworkException, ValidateException
     {
-        LocalIntfManager lim = UvmContextFactory.context().localIntfManager();
+        LocalIntfManager lim = LocalUvmContextFactory.context().localIntfManager();
 
         NetworkSpacesSettings newSettings = new NetworkSpacesSettingsImpl();
 
@@ -478,7 +478,7 @@ class NetworkUtilPriv extends NetworkUtil
             new DhcpStatus( NetworkUtil.BOGUS_DHCP_ADDRESS, NetworkUtil.BOGUS_DHCP_NETMASK );
 
         try {
-            LocalIntfManager lim = UvmContextFactory.context().localIntfManager();
+            LocalIntfManager lim = LocalUvmContextFactory.context().localIntfManager();
 
             /* XXX Right now the only space that supports DHCP is the external space,
              * need to update for when there are others */
@@ -729,7 +729,7 @@ class NetworkUtilPriv extends NetworkUtil
 
     byte[] getArgonIntfArray()
     {
-        return UvmContextFactory.context().localIntfManager().getArgonIntfArray();
+        return LocalUvmContextFactory.context().localIntfManager().getArgonIntfArray();
     }
 
     /* Get the hostname of the box from the /etc/hostname file */
@@ -892,7 +892,7 @@ class NetworkUtilPriv extends NetworkUtil
         try {
             logger.debug( "Restarting ddclient server" );
 
-            Process p = UvmContextFactory.context().exec( DDCLIENT_CMD_RESTART );
+            Process p = LocalUvmContextFactory.context().exec( DDCLIENT_CMD_RESTART );
             code = p.waitFor();
         } catch ( Exception e ) {
             logger.error( "Unable to restart ddclient server", e );
@@ -910,7 +910,7 @@ class NetworkUtilPriv extends NetworkUtil
         try {
             logger.debug( "Stopping ddclient server" );
 
-            Process p = UvmContextFactory.context().exec( DDCLIENT_CMD_STOP );
+            Process p = LocalUvmContextFactory.context().exec( DDCLIENT_CMD_STOP );
             code = p.waitFor();
         } catch ( Exception e ) {
             logger.error( "Unable to stop ddclient server", e );

@@ -42,10 +42,10 @@ import com.untangle.uvm.toolbox.ToolboxMessageVisitor;
 public class MessageClientThread extends Thread implements Shutdownable {
 
     private volatile ToolboxMessageVisitor toolboxMessageVisitor;
-    private final UvmRemoteContext uvmContext;
+    private final RemoteUvmContext uvmContext;
     private volatile boolean stop = false;
 
-    public MessageClientThread(UvmRemoteContext uvmContext, ToolboxMessageVisitor v){
+    public MessageClientThread(RemoteUvmContext uvmContext, ToolboxMessageVisitor v){
         setDaemon(true);
         setName("MV-MessageClientThread");
         this.uvmContext = uvmContext;

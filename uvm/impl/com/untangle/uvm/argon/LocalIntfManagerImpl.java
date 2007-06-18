@@ -31,7 +31,7 @@ import com.untangle.jnetcap.Netcap;
 import com.untangle.uvm.ArgonException;
 import com.untangle.uvm.IntfConstants;
 import com.untangle.uvm.IntfEnum;
-import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.localapi.ArgonInterface;
 import com.untangle.uvm.localapi.LocalIntfManager;
 import com.untangle.uvm.policy.LocalPolicyManager;
@@ -278,7 +278,7 @@ class LocalIntfManagerImpl implements LocalIntfManager
 
         /* If there are new interfaces, then notify the policy manager */
         if ( !this.intfConverter.hasMatchingInterfaces( prevIntfConverter )) {
-            UvmContextFactory.context().policyManager().reconfigure( getArgonIntfArray());
+            LocalUvmContextFactory.context().policyManager().reconfigure( getArgonIntfArray());
         }
 
         /* Update the interface matcher factory, this should be a listener */

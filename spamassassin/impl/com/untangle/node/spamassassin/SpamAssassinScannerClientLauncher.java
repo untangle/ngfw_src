@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.node.spam.ReportItem;
 import com.untangle.node.spam.SpamReport;
 import org.apache.log4j.Logger;
@@ -89,7 +89,7 @@ public class SpamAssassinScannerClientLauncher {
 
     private SpamAssassinClient createClient(SpamAssassinClientContext cContext) {
         SpamAssassinClient client = new SpamAssassinClient(cContext, "spamc");
-        Thread thread = UvmContextFactory.context().newThread(client);
+        Thread thread = LocalUvmContextFactory.context().newThread(client);
         client.setThread(thread);
         clientMap.put(client, cContext);
         return client;

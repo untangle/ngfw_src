@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -35,7 +35,7 @@ import com.untangle.jvector.Source;
 import com.untangle.jvector.Vector;
 
 import com.untangle.uvm.IntfConstants;
-import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.engine.PipelineFoundryImpl;
 
 import com.untangle.uvm.policy.Policy;
@@ -82,7 +82,7 @@ abstract class ArgonHook implements Runnable
     private boolean isMirrored = false;
 
     protected static final PipelineFoundryImpl pipelineFoundry = 
-        (PipelineFoundryImpl)UvmContextFactory.context().pipelineFoundry();
+        (PipelineFoundryImpl)LocalUvmContextFactory.context().pipelineFoundry();
 
     /**
      * State of the session
@@ -160,7 +160,7 @@ abstract class ArgonHook implements Runnable
 
             /* lookup the user information */
 
-            UserInfo info = UvmContextFactory.context().localPhoneBook().lookup( clientSide.clientAddr());
+            UserInfo info = LocalUvmContextFactory.context().localPhoneBook().lookup( clientSide.clientAddr());
             
             if ( logger.isDebugEnabled()) logger.debug( "user information: " + info );
             

@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This library is free software; you can redistribute it and/or modify
@@ -37,7 +37,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.IOException;
 
-import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.node.NodeException;
 import org.apache.log4j.Logger;
 
@@ -78,7 +78,7 @@ public class ScriptRunner
 
         try {
             int code = 0;
-            Process p = UvmContextFactory.context().exec( input );
+            Process p = LocalUvmContextFactory.context().exec( input );
             StringBuilder sb = new StringBuilder();
             BufferedReader scriptOutput = new BufferedReader(new InputStreamReader(p.getInputStream()));
             String line;

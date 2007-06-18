@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -40,8 +40,8 @@ import com.untangle.node.token.Header;
 import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenAdaptor;
 import com.untangle.uvm.LocalAppServerManager;
-import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.UvmLocalContext;
+import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.EventLoggerFactory;
 import com.untangle.uvm.logging.EventManager;
@@ -681,7 +681,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
             return;
         }
 
-        UvmLocalContext mctx = UvmContextFactory.context();
+        LocalUvmContext mctx = LocalUvmContextFactory.context();
         LocalAppServerManager asm = mctx.appServerManager();
 
         Valve v = new OutsideValve()
@@ -722,7 +722,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
             return;
         }
 
-        UvmLocalContext mctx = UvmContextFactory.context();
+        LocalUvmContext mctx = LocalUvmContextFactory.context();
         LocalAppServerManager asm = mctx.appServerManager();
 
         if (asm.unloadWebApp("/spyware")) {

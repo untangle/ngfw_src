@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -22,8 +22,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.UvmLocalContext;
+import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.portal.Application;
 import com.untangle.uvm.portal.BasePortalManager;
 import com.untangle.uvm.portal.LocalApplicationManager;
@@ -123,7 +123,7 @@ public class MailNodeImpl extends AbstractNode
 
     private static synchronized void deployWebAppIfRequired(Logger logger) {
         if(!s_deployedWebApp) {
-            if(UvmContextFactory.context().appServerManager().loadQuarantineApp("/quarantine", "quarantine")) {
+            if(LocalUvmContextFactory.context().appServerManager().loadQuarantineApp("/quarantine", "quarantine")) {
                 logger.debug("Deployed Quarantine web app");
             }
             else {
@@ -135,7 +135,7 @@ public class MailNodeImpl extends AbstractNode
 
     private static synchronized void unDeployWebAppIfRequired(Logger logger) {
         if(!s_unDeployedWebApp) {
-            if(UvmContextFactory.context().appServerManager().unloadWebApp("/quarantine")) {
+            if(LocalUvmContextFactory.context().appServerManager().unloadWebApp("/quarantine")) {
                 logger.debug("Unloaded Quarantine web app");
             }
             else {
@@ -146,7 +146,7 @@ public class MailNodeImpl extends AbstractNode
     }
 
     private void registerApps() {
-        UvmLocalContext mctx = UvmContextFactory.context();
+        LocalUvmContext mctx = LocalUvmContextFactory.context();
         BasePortalManager lpm = mctx.portalManager();
         LocalApplicationManager lam = lpm.applicationManager();
         quarantineApp = lam.registerApplication("Quarantine",
@@ -157,7 +157,7 @@ public class MailNodeImpl extends AbstractNode
     }
 
     private void deregisterApps() {
-        UvmLocalContext mctx = UvmContextFactory.context();
+        LocalUvmContext mctx = LocalUvmContextFactory.context();
         BasePortalManager lpm = mctx.portalManager();
         LocalApplicationManager lam = lpm.applicationManager();
         lam.deregisterApplication(quarantineApp);

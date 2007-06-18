@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This library is free software; you can redistribute it and/or modify
@@ -35,7 +35,7 @@ package com.untangle.uvm.util;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 
-import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.LocalUvmContextFactory;
 import org.apache.log4j.Logger;
 
 public class ConfigFileUtil {
@@ -77,7 +77,7 @@ public class ConfigFileUtil {
             logger.debug( "Protecting " + fileName );
 
             String command = CHMOD_PROTECT_CMD + fileName;
-            Process p = UvmContextFactory.context().exec(command);
+            Process p = LocalUvmContextFactory.context().exec(command);
             code = p.waitFor();
         } catch ( Exception e ) {
             logger.error( "Unable to protect " + fileName, e );

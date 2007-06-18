@@ -97,7 +97,7 @@ public class RemoteClient
     private static boolean verbose = false;
     private static int timeout = 120000;
 
-    private static UvmRemoteContext mc;
+    private static RemoteUvmContext mc;
 
     private static ToolboxManager tool;
     private static RemoteNodeManager tm;
@@ -129,7 +129,7 @@ public class RemoteClient
             System.exit(-1);
         }
 
-        UvmRemoteContextFactory factory = UvmRemoteContextFactory.factory();
+        RemoteUvmContextFactory factory = RemoteUvmContextFactory.factory();
         if (host.equals("localhost")) {
             mc = factory.systemLogin(timeout);
         } else {
@@ -754,7 +754,7 @@ public class RemoteClient
 
     private static void who()
     {
-        LoginSession l = UvmRemoteContextFactory.factory().loginSession();
+        LoginSession l = RemoteUvmContextFactory.factory().loginSession();
         String ln = null == l ? "nobody" : l.getUvmPrincipal().getName();
         System.out.println("You are: " + ln + " " + l.getSessionId());
         LoginSession[] ls = mc.adminManager().loggedInUsers();

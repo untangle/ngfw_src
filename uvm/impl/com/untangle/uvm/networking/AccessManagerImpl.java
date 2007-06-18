@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -23,7 +23,7 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.LocalUvmContextFactory;
 
 import com.untangle.uvm.node.IPaddr;
 import com.untangle.uvm.node.script.ScriptRunner;
@@ -90,7 +90,7 @@ class AccessManagerImpl implements LocalAccessManager
         /* Need to save the settings to the database, then update the
          * local value, everything is executed later */
         DataSaver<AccessSettings> saver = 
-            new DeletingDataSaver<AccessSettings>( UvmContextFactory.context(), "AccessSettings" );
+            new DeletingDataSaver<AccessSettings>( LocalUvmContextFactory.context(), "AccessSettings" );
 
         AccessSettingsInternal newSettings = AccessSettingsInternal.makeInstance( settings );
         saver.saveData( newSettings.toSettings());
@@ -104,7 +104,7 @@ class AccessManagerImpl implements LocalAccessManager
     synchronized void init()
     {
         DataLoader<AccessSettings> loader =
-            new DataLoader<AccessSettings>( "AccessSettings", UvmContextFactory.context());
+            new DataLoader<AccessSettings>( "AccessSettings", LocalUvmContextFactory.context());
 
         AccessSettings settings = loader.loadData();
         

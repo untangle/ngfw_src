@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -29,7 +29,7 @@ import com.untangle.jnetcap.PortRange;
 
 import com.untangle.uvm.ArgonException;
 import com.untangle.uvm.IntfConstants;
-import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.localapi.ArgonInterface;
 import com.untangle.uvm.localapi.LocalIntfManager;
 
@@ -151,7 +151,7 @@ public class RuleManager
         
         String servicesInterfaceList = "";
         
-        LocalIntfManager lim = UvmContextFactory.context().localIntfManager();
+        LocalIntfManager lim = LocalUvmContextFactory.context().localIntfManager();
 
         for ( InterfaceInternal intf : interfaceList ) {
             ArgonInterface argonIntf = intf.getArgonIntf();
@@ -223,7 +223,7 @@ public class RuleManager
             scriptWriter.appendVariable( SERVICES_INTERFACE_LIST, this.servicesInterfaceList );
         }
         
-        LocalIntfManager lim = UvmContextFactory.context().localIntfManager();
+        LocalIntfManager lim = LocalUvmContextFactory.context().localIntfManager();
         
         /* Setup a rule for stealing ARPs */
         if ( !this.hasCompletedSetup ) {

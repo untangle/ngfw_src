@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This library is free software; you can redistribute it and/or modify
@@ -32,8 +32,8 @@
  */
 package com.untangle.uvm.node;
 
-import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.UvmLocalContext;
+import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.StatisticEvent;
 import org.apache.log4j.Logger;
@@ -54,15 +54,15 @@ public abstract class StatisticManager implements Runnable
 
     protected final EventLogger eventLogger;
     private final Logger logger = Logger.getLogger( this.getClass());
-    private final UvmLocalContext localContext;
+    private final LocalUvmContext localContext;
 
     protected StatisticManager(EventLogger eventLogger)
     {
-        this.localContext = UvmContextFactory.context();
+        this.localContext = LocalUvmContextFactory.context();
         this.eventLogger = eventLogger;
     }
 
-    protected StatisticManager(UvmLocalContext localContext,
+    protected StatisticManager(LocalUvmContext localContext,
                                EventLogger eventLogger)
     {
         this.localContext = localContext;

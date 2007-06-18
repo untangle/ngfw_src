@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.tapi.TCPSession;
 import com.untangle.uvm.tapi.event.TCPStreamer;
 import com.untangle.node.mail.PopCasing;
@@ -74,7 +74,7 @@ public class PopUnparser extends AbstractUnparser
 
         zMsgDataReply = null;
         zByteStuffer = null;
-        zTempFactory = new TempFileFactory(UvmContextFactory.context().pipelineFoundry()
+        zTempFactory = new TempFileFactory(LocalUvmContextFactory.context().pipelineFoundry()
                                            .getPipeline(session.id()));
     }
 

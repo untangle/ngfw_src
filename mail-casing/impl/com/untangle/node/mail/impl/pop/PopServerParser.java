@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -29,7 +29,7 @@ import java.nio.channels.FileChannel;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.tapi.Pipeline;
 import com.untangle.uvm.tapi.TCPSession;
 import com.untangle.node.mail.PopCasing;
@@ -91,7 +91,7 @@ public class PopServerParser extends AbstractParser
         super(session, true);
         lineBuffering(false);
 
-        pipeline = UvmContextFactory.context().pipelineFoundry().getPipeline(session.id());
+        pipeline = LocalUvmContextFactory.context().pipelineFoundry().getPipeline(session.id());
         this.zCasing = zCasing;
         zMBScanner = new MessageBoundaryScanner();
 

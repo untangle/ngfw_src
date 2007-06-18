@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -27,7 +27,7 @@ import java.net.InetAddress;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.tapi.TCPSession;
 import com.untangle.node.mail.papi.MessageInfo;
 import com.untangle.node.mail.papi.quarantine.MailSummary;
@@ -74,7 +74,7 @@ public class SmtpSessionHandler
         m_quarantine = quarantine;
         m_safelist = safelist;
         m_config = config;
-        m_fileFactory = new TempFileFactory(UvmContextFactory.context().
+        m_fileFactory = new TempFileFactory(LocalUvmContextFactory.context().
                                             pipelineFoundry().getPipeline(session.id()));
     }
 
@@ -149,7 +149,7 @@ public class SmtpSessionHandler
 
             //Perform notification (if we should)
             if(m_config.getNotifyMessageGenerator().sendNotification(
-                                                                     UvmContextFactory.context().mailSender(),
+                                                                     LocalUvmContextFactory.context().mailSender(),
                                                                      SpamSMTPNotifyAction.toSMTPNotifyAction(m_config.getNotifyAction()),
                                                                      msg,
                                                                      tx,

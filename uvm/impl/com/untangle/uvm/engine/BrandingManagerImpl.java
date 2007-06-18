@@ -29,7 +29,7 @@ import java.sql.SQLException;
 
 import com.untangle.uvm.BrandingSettings;
 import com.untangle.uvm.LocalBrandingManager;
-import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.util.TransactionWork;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
@@ -71,7 +71,7 @@ class BrandingManagerImpl implements LocalBrandingManager
 
                 public BrandingSettings getResult() { return bs; }
             };
-        UvmContextFactory.context().runTransaction(tw);
+        LocalUvmContextFactory.context().runTransaction(tw);
 
         this.settings = tw.getResult();
         setBrandingProperties(settings);

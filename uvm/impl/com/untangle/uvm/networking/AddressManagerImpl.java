@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -27,7 +27,7 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.UvmState;
 
 
@@ -94,7 +94,7 @@ class AddressManagerImpl implements LocalAddressManager
         /* Need to save the settings to the database, then update the
          * local value, everything is executed later */
         DataSaver<AddressSettings> saver = 
-            new DeletingDataSaver<AddressSettings>( UvmContextFactory.context(), "AddressSettings" );
+            new DeletingDataSaver<AddressSettings>( LocalUvmContextFactory.context(), "AddressSettings" );
 
         AddressSettingsInternal newSettings = calculatePublicAddress( settings );
         
@@ -119,7 +119,7 @@ class AddressManagerImpl implements LocalAddressManager
     synchronized void init()
     {
         DataLoader<AddressSettings> loader =
-            new DataLoader<AddressSettings>( "AddressSettings", UvmContextFactory.context());
+            new DataLoader<AddressSettings>( "AddressSettings", LocalUvmContextFactory.context());
 
         AddressSettings settings = loader.loadData();
         
@@ -315,9 +315,9 @@ class AddressManagerImpl implements LocalAddressManager
         int port = address.getHttpsPort();
 
         try {
-            UvmContextFactory.context().appServerManager().rebindExternalHttpsPort( port );
+            LocalUvmContextFactory.context().appServerManager().rebindExternalHttpsPort( port );
         } catch ( Exception e ) {
-            if ( !UvmContextFactory.context().state().equals( UvmState.RUNNING )) {
+            if ( !LocalUvmContextFactory.context().state().equals( UvmState.RUNNING )) {
                 logger.info( "unable to rebind port at startup, expected. " + e );
             } else {
                 logger.warn( "unable to rebind https to port: " + port, e );

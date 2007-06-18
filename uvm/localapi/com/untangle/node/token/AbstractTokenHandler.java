@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This library is free software; you can redistribute it and/or modify
@@ -33,7 +33,7 @@
 
 package com.untangle.node.token;
 
-import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.tapi.Pipeline;
 import com.untangle.uvm.tapi.TCPSession;
 import org.apache.log4j.Logger;
@@ -50,7 +50,7 @@ public abstract class AbstractTokenHandler implements TokenHandler
     protected AbstractTokenHandler(TCPSession session)
     {
         this.session = session;
-        this.pipeline = UvmContextFactory.context().pipelineFoundry()
+        this.pipeline = LocalUvmContextFactory.context().pipelineFoundry()
             .getPipeline(session.id());
     }
 

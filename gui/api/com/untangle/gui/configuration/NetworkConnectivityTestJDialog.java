@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This library is free software; you can redistribute it and/or modify
@@ -38,7 +38,7 @@ import javax.swing.*;
 
 import com.untangle.gui.util.Util;
 import com.untangle.uvm.*;
-import com.untangle.uvm.client.UvmRemoteContextFactory;
+import com.untangle.uvm.client.RemoteUvmContextFactory;
 
 public class NetworkConnectivityTestJDialog extends javax.swing.JDialog implements java.awt.event.WindowListener {
 
@@ -253,10 +253,10 @@ public class NetworkConnectivityTestJDialog extends javax.swing.JDialog implemen
 
             ConnectivityTester.Status status = null;
             try{
-                int initialTimeout = UvmRemoteContextFactory.factory().getTimeout();
-                UvmRemoteContextFactory.factory().setTimeout(Util.RECONFIGURE_NETWORK_TIMEOUT_MILLIS);
+                int initialTimeout = RemoteUvmContextFactory.factory().getTimeout();
+                RemoteUvmContextFactory.factory().setTimeout(Util.RECONFIGURE_NETWORK_TIMEOUT_MILLIS);
                 status = Util.getUvmContext().getConnectivityTester().getStatus();
-                UvmRemoteContextFactory.factory().setTimeout(initialTimeout);
+                RemoteUvmContextFactory.factory().setTimeout(initialTimeout);
             }
             catch(Exception e){
                 Util.handleExceptionNoRestart("Error running connectivity tester", e);

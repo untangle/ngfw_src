@@ -24,7 +24,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.license.ProductIdentifier;
 import com.untangle.uvm.node.LocalNodeManager;
 import com.untangle.uvm.node.firewall.intf.IntfMatcher;
@@ -93,7 +93,7 @@ class DefaultPolicyManager implements LocalPolicyManager
                 public Object getResult() { return null; }
             };
 
-        UvmContextFactory.context().runTransaction(tw);
+        LocalUvmContextFactory.context().runTransaction(tw);
 
         logger.info("Initialized PolicyManager");
     }
@@ -157,7 +157,7 @@ class DefaultPolicyManager implements LocalPolicyManager
 
                             public Object getResult() { return null; }
                         };
-                    UvmContextFactory.context().runTransaction(tw);
+                    LocalUvmContextFactory.context().runTransaction(tw);
                 }
             }
         }
@@ -184,7 +184,7 @@ class DefaultPolicyManager implements LocalPolicyManager
 
                     public Object getResult() { return null; }
                 };
-            UvmContextFactory.context().runTransaction(tw);
+            LocalUvmContextFactory.context().runTransaction(tw);
         }
     }
 
@@ -368,7 +368,7 @@ class DefaultPolicyManager implements LocalPolicyManager
 
                     public Object getResult() { return null; }
                 };
-            UvmContextFactory.context().runTransaction(tw);
+            LocalUvmContextFactory.context().runTransaction(tw);
         }
     }
 

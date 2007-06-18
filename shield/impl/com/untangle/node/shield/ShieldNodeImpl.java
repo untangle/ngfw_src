@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -27,7 +27,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.untangle.uvm.IntfEnum;
-import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.localapi.LocalShieldManager;
 import com.untangle.uvm.shield.ShieldNodeSettings;
 import com.untangle.uvm.tapi.AbstractNode;
@@ -86,7 +86,7 @@ public class ShieldNodeImpl extends AbstractNode
         getNodeContext().runTransaction(tw);
 
         if ( getRunState() == NodeState.RUNNING ) {
-            LocalShieldManager lsm = UvmContextFactory.context().localShieldManager();
+            LocalShieldManager lsm = LocalUvmContextFactory.context().localShieldManager();
 
             try {
                 lsm.setShieldNodeSettings( this.settings.getShieldNodeRuleList());
@@ -149,7 +149,7 @@ public class ShieldNodeImpl extends AbstractNode
             {
                 public boolean doWork(Session s) throws SQLException
                 {
-                    IntfEnum intfEnum = UvmContextFactory.context().localIntfManager().getIntfEnum();
+                    IntfEnum intfEnum = LocalUvmContextFactory.context().localIntfManager().getIntfEnum();
 
                     Connection c = s.connection();
                     PreparedStatement ps = c.prepareStatement( SHIELD_REJECTION_EVENT_QUERY );
@@ -195,7 +195,7 @@ public class ShieldNodeImpl extends AbstractNode
     protected void postStart() throws NodeStartException
     {
         validateSettings();
-        LocalShieldManager lsm = UvmContextFactory.context().localShieldManager();
+        LocalShieldManager lsm = LocalUvmContextFactory.context().localShieldManager();
 
         try {
             lsm.setShieldNodeSettings( this.settings.getShieldNodeRuleList());
@@ -206,7 +206,7 @@ public class ShieldNodeImpl extends AbstractNode
 
     protected void postStop() throws NodeStopException
     {
-        LocalShieldManager lsm = UvmContextFactory.context().localShieldManager();
+        LocalShieldManager lsm = LocalUvmContextFactory.context().localShieldManager();
 
         try {
             /* Deconfigure all of the nodes */

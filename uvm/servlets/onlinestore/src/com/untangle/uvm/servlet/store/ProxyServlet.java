@@ -41,8 +41,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.UvmLocalContext;
+import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.toolbox.MackageDesc;
 import com.untangle.uvm.toolbox.ToolboxManager;
 import org.apache.commons.httpclient.Cookie;
@@ -123,7 +123,7 @@ public class ProxyServlet extends HttpServlet
                       HttpServletResponse resp)
         throws ServletException
     {
-        UvmLocalContext ctx = UvmContextFactory.context();
+        LocalUvmContext ctx = LocalUvmContextFactory.context();
 
         HttpSession s = req.getSession();
 

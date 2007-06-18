@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -41,7 +41,7 @@ import com.untangle.uvm.client.InvocationTargetExpiredException;
 import com.untangle.uvm.client.LoginExpiredException;
 import com.untangle.uvm.client.LoginStolenException;
 import com.untangle.uvm.client.MultipleLoginsException;
-import com.untangle.uvm.client.UvmRemoteContext;
+import com.untangle.uvm.client.RemoteUvmContext;
 import com.untangle.uvm.security.LoginSession;
 import org.apache.log4j.Logger;
 
@@ -199,7 +199,7 @@ class HttpInvokerImpl implements HttpInvoker
                 // Left NodeClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             }
 
-            if (retVal instanceof UvmRemoteContext) { // XXX if is to login()
+            if (retVal instanceof RemoteUvmContext) { // XXX if is to login()
                 NewLoginDesc nld = newLogin.get();
                 newLogin.remove();
 

@@ -12,7 +12,7 @@
  * $Id$
  */
 
-UvmLocalContext uvm = UvmContextFactory.context();
+LocalUvmContext uvm = LocalUvmContextFactory.context();
 BrandingSettings bs = uvm.brandingManager().getBrandingSettings();
 String company = bs.getCompanyName();
 String companyUrl = bs.getCompanyUrl();

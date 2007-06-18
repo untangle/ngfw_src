@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -24,7 +24,7 @@ import java.nio.ByteBuffer;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.tapi.Pipeline;
 import com.untangle.uvm.tapi.TCPSession;
 import com.untangle.uvm.tapi.TCPSessionDesc;
@@ -1101,7 +1101,7 @@ public class HttpParser extends AbstractParser
 
     private TokenStreamer endMarkerStreamer()
     {
-        Pipeline pipeline = UvmContextFactory.context().pipelineFoundry()
+        Pipeline pipeline = LocalUvmContextFactory.context().pipelineFoundry()
             .getPipeline(session.id());
 
         return new TokenStreamer()

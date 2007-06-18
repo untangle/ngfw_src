@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -23,9 +23,9 @@ import java.util.Iterator;
 import java.util.Set;
 import javax.security.auth.login.FailedLoginException;
 
-import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.client.MultipleLoginsException;
-import com.untangle.uvm.client.UvmRemoteContext;
+import com.untangle.uvm.client.RemoteUvmContext;
 import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.security.LoginFailureReason;
 import com.untangle.uvm.security.LoginSession;
@@ -48,7 +48,7 @@ class UvmLoginImpl implements UvmLogin
     private static final UvmLoginImpl UVM_LOGIN = new UvmLoginImpl();
 
     private final Logger logger = Logger.getLogger(UvmLoginImpl.class);
-    private final EventLogger eventLogger = UvmContextFactory.context()
+    private final EventLogger eventLogger = LocalUvmContextFactory.context()
         .eventLogger();
 
     private int loginId = 0;
@@ -67,16 +67,16 @@ class UvmLoginImpl implements UvmLogin
     // Activation methods ------------------------------------------------------
     public boolean isActivated()
     {
-        return UvmContextFactory.context().isActivated();
+        return LocalUvmContextFactory.context().isActivated();
     }
 
-    public UvmRemoteContext activationLogin(String key)
+    public RemoteUvmContext activationLogin(String key)
         throws FailedLoginException
     {
         if (isActivated())
             throw new FailedLoginException("Product has already been activated");
 
-        boolean success = UvmContextFactory.context().activate(key);
+        boolean success = LocalUvmContextFactory.context().activate(key);
         if (!success)
             throw new FailedLoginException("Activation key invalid");
 
@@ -88,7 +88,7 @@ class UvmLoginImpl implements UvmLogin
 
     // UvmLogin methods ------------------------------------------------------
 
-    public UvmRemoteContext interactiveLogin(final String login,
+    public RemoteUvmContext interactiveLogin(final String login,
                                               String password,
                                               boolean force)
         throws FailedLoginException, MultipleLoginsException
@@ -101,7 +101,7 @@ class UvmLoginImpl implements UvmLogin
         HttpInvokerImpl invoker = HttpInvokerImpl.invoker();
         InetAddress clientAddr = invoker.getClientAddr();
 
-        Set users = UvmContextFactory.context().adminManager()
+        Set users = LocalUvmContextFactory.context().adminManager()
             .getAdminSettings().getUsers();
         User user = null;
         for (Iterator iter = users.iterator(); iter.hasNext(); ) {
@@ -140,7 +140,7 @@ class UvmLoginImpl implements UvmLogin
 
     }
 
-    public UvmRemoteContext systemLogin(String username, String password)
+    public RemoteUvmContext systemLogin(String username, String password)
         throws FailedLoginException
     {
         HttpInvokerImpl invoker = HttpInvokerImpl.invoker();
@@ -176,7 +176,7 @@ class UvmLoginImpl implements UvmLogin
         }
     }
 
-    private UvmRemoteContext login(String username, boolean readOnly,
+    private RemoteUvmContext login(String username, boolean readOnly,
                                     InetAddress clientAddr,
                                     LoginSession.LoginType loginType,
                                     boolean force)

@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This library is free software; you can redistribute it and/or modify
@@ -36,19 +36,19 @@ package com.untangle.uvm.security;
 import javax.security.auth.login.FailedLoginException;
 
 import com.untangle.uvm.client.MultipleLoginsException;
-import com.untangle.uvm.client.UvmRemoteContext;
+import com.untangle.uvm.client.RemoteUvmContext;
 
 public interface UvmLogin
 {
     boolean isActivated();
 
-    UvmRemoteContext activationLogin(String key)
+    RemoteUvmContext activationLogin(String key)
         throws FailedLoginException, MultipleLoginsException;
 
-    UvmRemoteContext interactiveLogin(String username, String password,
+    RemoteUvmContext interactiveLogin(String username, String password,
                                        boolean force)
         throws FailedLoginException, MultipleLoginsException;
 
-    UvmRemoteContext systemLogin(String username, String password)
+    RemoteUvmContext systemLogin(String username, String password)
         throws FailedLoginException;
 }

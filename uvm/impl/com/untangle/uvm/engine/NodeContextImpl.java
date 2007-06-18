@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -33,8 +33,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.UvmLocalContext;
+import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.node.DeployException;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeContext;
@@ -146,7 +146,7 @@ class NodeContextImpl implements NodeContext
             parentCtxs.add(startParent(parent, tid.getPolicy()));
         }
 
-        final UvmLocalContext mctx = UvmContextFactory.context();
+        final LocalUvmContext mctx = LocalUvmContextFactory.context();
         try {
             nodeManager.registerThreadContext(this);
 
@@ -273,7 +273,7 @@ class NodeContextImpl implements NodeContext
     @Deprecated
     public boolean runTransaction(TransactionWork tw)
     {
-        return UvmContextFactory.context().runTransaction(tw);
+        return LocalUvmContextFactory.context().runTransaction(tw);
     }
 
     public InputStream getResourceAsStream(String res)
@@ -340,7 +340,7 @@ class NodeContextImpl implements NodeContext
 
                 public Object getResult() { return null; }
             };
-        UvmContextFactory.context().runTransaction(tw);
+        LocalUvmContextFactory.context().runTransaction(tw);
     }
 
     // private classes --------------------------------------------------------

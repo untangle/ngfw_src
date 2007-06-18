@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -20,7 +20,7 @@ package com.untangle.node.mail.impl;
 
 import java.nio.ByteBuffer;
 
-import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.tapi.Pipeline;
 import com.untangle.uvm.tapi.TCPSession;
 import com.untangle.node.token.AbstractParser;
@@ -60,7 +60,7 @@ public abstract class AbstractMailParser
         m_trace = parent.isTrace();
         m_protocol = protocolName;
         m_parentCasing = parent;
-        m_pipeline = UvmContextFactory.context().
+        m_pipeline = LocalUvmContextFactory.context().
             pipelineFoundry().getPipeline(session.id());
     }
 

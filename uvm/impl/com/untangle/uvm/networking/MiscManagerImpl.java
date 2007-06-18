@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -18,7 +18,7 @@
 
 package com.untangle.uvm.networking;
 
-import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.networking.internal.MiscSettingsInternal;
 import com.untangle.uvm.node.script.ScriptWriter;
 import com.untangle.uvm.util.DataLoader;
@@ -71,7 +71,7 @@ class MiscManagerImpl implements LocalMiscManager
         /* Need to save the settings to the database, then update the
          * local value, everything is executed later */
         DataSaver<MiscSettings> saver =
-            new DeletingDataSaver<MiscSettings>( UvmContextFactory.context(), "MiscSettings" );
+            new DeletingDataSaver<MiscSettings>( LocalUvmContextFactory.context(), "MiscSettings" );
 
         MiscSettingsInternal newSettings = MiscSettingsInternal.makeInstance( settings );
         saver.saveData( newSettings.toSettings());
@@ -83,7 +83,7 @@ class MiscManagerImpl implements LocalMiscManager
     synchronized void init()
     {
         DataLoader<MiscSettings> loader =
-            new DataLoader<MiscSettings>( "MiscSettings", UvmContextFactory.context());
+            new DataLoader<MiscSettings>( "MiscSettings", LocalUvmContextFactory.context());
 
         MiscSettings settings = loader.loadData();
 

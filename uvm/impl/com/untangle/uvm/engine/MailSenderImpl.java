@@ -32,7 +32,7 @@ import javax.mail.internet.*;
 import com.sun.mail.smtp.SMTPTransport;
 import com.untangle.uvm.MailSender;
 import com.untangle.uvm.MailSettings;
-import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.networking.AddressSettingsListener;
 import com.untangle.uvm.networking.NetworkManagerImpl;
 import com.untangle.uvm.networking.internal.AddressSettingsInternal;
@@ -169,7 +169,7 @@ class MailSenderImpl implements MailSender
     // is up and runing
     void postInit() {
         reconfigure();
-        ((NetworkManagerImpl)UvmContextFactory.context().networkManager()).
+        ((NetworkManagerImpl)LocalUvmContextFactory.context().networkManager()).
             registerListener(new AddressSettingsListener() {
                     public void event( AddressSettingsInternal settings )
                     {
@@ -191,7 +191,7 @@ class MailSenderImpl implements MailSender
     private boolean runTransaction(TransactionWork tw)
     {
         if (null == transactionRunner) {
-            return UvmContextFactory.context().runTransaction(tw);
+            return LocalUvmContextFactory.context().runTransaction(tw);
         } else {
             return transactionRunner.runTransaction(tw);
         }
@@ -226,7 +226,7 @@ class MailSenderImpl implements MailSender
         File exim_dir = new File(EXIM_CONF_DIR);
         if (exim_dir.isDirectory()) {
 
-            String hostName = UvmContextFactory.context().networkManager().
+            String hostName = LocalUvmContextFactory.context().networkManager().
                 getAddressSettingsInternal().getHostName().toString();
             if (hostName == null) {
                 logger.warn("null hostname, using untangle-server");
@@ -307,12 +307,12 @@ class MailSenderImpl implements MailSender
                     // insert new "  port = xx"
                     String cmd2[] = {"/bin/sed","-e","s|  driver = smtp|  driver = smtp\\n  port = " + mailSettings.getSmtpPort() + "|g","-i",EXIM_TEMPLATE_FILE};
 
-                    proc = UvmContextFactory.context().exec(cmd1);
+                    proc = LocalUvmContextFactory.context().exec(cmd1);
                     input  = new BufferedReader(new InputStreamReader(proc.getInputStream()));
                     while ((line = input.readLine()) != null) {logger.warn(line);}
                     proc.destroy();
                     
-                    proc = UvmContextFactory.context().exec(cmd2);
+                    proc = LocalUvmContextFactory.context().exec(cmd2);
                     input  = new BufferedReader(new InputStreamReader(proc.getInputStream()));
                     while ((line = input.readLine()) != null) {logger.warn(line);}
                     proc.destroy();
@@ -389,7 +389,7 @@ class MailSenderImpl implements MailSender
 
     private void sendAlertWithAttachment(String subject, String bodyText, List attachment) {
         // Compute the list of recipients from the user list.
-        AdminSettings adminSettings = UvmContextFactory.context()
+        AdminSettings adminSettings = LocalUvmContextFactory.context()
             .adminManager().getAdminSettings();
         Set users = adminSettings.getUsers();
         List alertableUsers = new ArrayList();

@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This library is free software; you can redistribute it and/or modify
@@ -41,7 +41,7 @@ import com.untangle.gui.configuration.EmailConnectivityTestJDialog;
 import com.untangle.gui.util.Util;
 import com.untangle.gui.widgets.wizard.*;
 import com.untangle.uvm.*;
-import com.untangle.uvm.client.UvmRemoteContextFactory;
+import com.untangle.uvm.client.RemoteUvmContextFactory;
 
 public class InitialSetupEmailJPanel extends MWizardPageJPanel {
 
@@ -154,12 +154,12 @@ public class InitialSetupEmailJPanel extends MWizardPageJPanel {
                     try{
                         if( InitialSetupRoutingJPanel.getNatEnabled() ){
                             if( InitialSetupRoutingJPanel.getNatChanged() )
-                                UvmRemoteContextFactory.factory().setTimeout(Util.DISCONNECT_NETWORK_TIMEOUT_MILLIS);
+                                RemoteUvmContextFactory.factory().setTimeout(Util.DISCONNECT_NETWORK_TIMEOUT_MILLIS);
                             Util.getNetworkManager().setWizardNatEnabled(InitialSetupRoutingJPanel.getAddress(),
                                                                          InitialSetupRoutingJPanel.getNetmask());
                         }
                         else{
-                            UvmRemoteContextFactory.factory().setTimeout(Util.DISCONNECT_NETWORK_TIMEOUT_MILLIS);
+                            RemoteUvmContextFactory.factory().setTimeout(Util.DISCONNECT_NETWORK_TIMEOUT_MILLIS);
                             Util.getNetworkManager().setWizardNatDisabled();
                         }
                     }

@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -21,7 +21,7 @@ package com.untangle.uvm.networking;
 import java.util.List;
 
 import com.untangle.uvm.ArgonException;
-import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.localapi.ArgonInterface;
 import com.untangle.uvm.localapi.LocalIntfManager;
 import com.untangle.uvm.networking.internal.InterfaceInternal;
@@ -120,7 +120,7 @@ class InterfacesScriptWriter extends ScriptWriter
 
         appendLine( "iface " + name + " inet manual" );
         
-        LocalIntfManager lim = UvmContextFactory.context().localIntfManager();
+        LocalIntfManager lim = LocalUvmContextFactory.context().localIntfManager();
         
         /* Insert the flush command for the first network space */
         if ( isFirst ) {

@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -33,7 +33,7 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.LocalUvmContextFactory;
 
 /**
  * Class that monitors the total memory size and the prints an error message if grows
@@ -166,7 +166,7 @@ class HeapMonitor
 
         logger.debug( "Starting the heap monitor" );
         
-        this.thread = UvmContextFactory.context().newThread(new Task());
+        this.thread = LocalUvmContextFactory.context().newThread(new Task());
     }
     
     synchronized void stop()

@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -26,7 +26,7 @@ import java.io.OutputStreamWriter;
 import java.util.Arrays;
 import java.util.Properties;
 
-import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.node.mail.papi.quarantine.InboxIndex;
 import com.untangle.node.mail.papi.quarantine.InboxRecord;
 import com.untangle.node.mail.papi.quarantine.InboxRecordComparator;
@@ -289,7 +289,7 @@ class DigestGenerator {
             context.put(MAX_DAYS_IDLE_INBOX_VV, maxIdleInboxInDays);
 
 
-            String companyName = UvmContextFactory.context().brandingManager()
+            String companyName = LocalUvmContextFactory.context().brandingManager()
                 .getBrandingSettings().getCompanyName();
             context.put(COMPANY_NAME_VV, companyName);
 

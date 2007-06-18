@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This library is free software; you can redistribute it and/or modify
@@ -35,8 +35,8 @@ package com.untangle.uvm.tapi;
 
 import java.util.Set;
 
-import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.UvmLocalContext;
+import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.tapi.event.SessionEventListener;
 import com.untangle.uvm.node.Node;
 import org.apache.log4j.Logger;
@@ -183,7 +183,7 @@ public class SoloPipeSpec extends PipeSpec
     // static initialization --------------------------------------------------
 
     static {
-        UvmLocalContext mlc = UvmContextFactory.context();
+        LocalUvmContext mlc = LocalUvmContextFactory.context();
         MPIPE_MANAGER = mlc.mPipeManager();
         FOUNDRY = mlc.pipelineFoundry();
     }

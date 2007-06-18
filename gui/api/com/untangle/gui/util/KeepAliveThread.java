@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This library is free software; you can redistribute it and/or modify
@@ -33,15 +33,15 @@
 
 package com.untangle.gui.util;
 
-import com.untangle.uvm.client.UvmRemoteContext;
+import com.untangle.uvm.client.RemoteUvmContext;
 
 public class KeepAliveThread extends Thread implements Shutdownable {
 
     private static final long PING_DELAY = 60000l; // 1 minute
-    private UvmRemoteContext uvmRemoteContext;
+    private RemoteUvmContext uvmRemoteContext;
     private volatile boolean stop = false;
 
-    public KeepAliveThread(UvmRemoteContext uvmRemoteContext){
+    public KeepAliveThread(RemoteUvmContext uvmRemoteContext){
         setName("MV-CLIENT: KeepAliveThread");
         this.uvmRemoteContext = uvmRemoteContext;
         start();

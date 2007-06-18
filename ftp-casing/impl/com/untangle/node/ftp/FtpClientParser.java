@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -22,7 +22,7 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.List;
 
-import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.tapi.Fitting;
 import com.untangle.uvm.tapi.Pipeline;
 import com.untangle.uvm.tapi.TCPSession;
@@ -52,7 +52,7 @@ public class FtpClientParser extends AbstractParser
         super(session, true);
         lineBuffering(true);
 
-        Pipeline p = UvmContextFactory.context().pipelineFoundry()
+        Pipeline p = LocalUvmContextFactory.context().pipelineFoundry()
             .getPipeline(session.id());
         fitting = p.getClientFitting(session.mPipe());
     }

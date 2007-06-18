@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -24,7 +24,7 @@ import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
 import java.net.SocketException;
 
-import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.logging.LoggingSettings;
 import com.untangle.uvm.logging.SyslogManager;
@@ -85,7 +85,7 @@ class SyslogManagerImpl implements SyslogManager
 
     void postInit()
     {
-        final LocalNetworkManager nmi = UvmContextFactory.context().networkManager();
+        final LocalNetworkManager nmi = LocalUvmContextFactory.context().networkManager();
 
         nmi.registerListener(new NetworkSettingsListener() {
                 public void event(NetworkSpacesInternalSettings s)

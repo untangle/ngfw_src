@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -25,8 +25,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.UvmLocalContext;
+import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.addrbook.AddressBook;
 import com.untangle.uvm.addrbook.UserEntry;
 import com.untangle.node.mail.papi.quarantine.BadTokenException;
@@ -101,7 +101,7 @@ public abstract class MaintenenceControlerBase extends HttpServlet {
             if (authTkn.equals("PU")) {
                 Principal pl = req.getUserPrincipal();
                 if (null != pl) {
-                    UvmLocalContext mctx = UvmContextFactory.context();
+                    LocalUvmContext mctx = LocalUvmContextFactory.context();
                     AddressBook ab = mctx.appAddressBook();
                     String user = mctx.portalManager().getUid(pl);
                     if (user != null) {

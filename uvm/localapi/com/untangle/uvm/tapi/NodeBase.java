@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This library is free software; you can redistribute it and/or modify
@@ -38,7 +38,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.localapi.SessionMatcher;
 import com.untangle.uvm.localapi.SessionMatcherFactory;
 import com.untangle.uvm.policy.Policy;
@@ -83,7 +83,7 @@ public abstract class NodeBase implements Node
 
     protected NodeBase()
     {
-        nodeManager = UvmContextFactory.context().nodeManager();
+        nodeManager = LocalUvmContextFactory.context().nodeManager();
         nodeContext = nodeManager.threadContext();
         tid = nodeContext.getTid();
 
@@ -126,7 +126,7 @@ public abstract class NodeBase implements Node
                         return result;
                     }
                 };
-            UvmContextFactory.context().runTransaction(tw);
+            LocalUvmContextFactory.context().runTransaction(tw);
 
             return 0 == tw.getResult();
         }
@@ -555,7 +555,7 @@ public abstract class NodeBase implements Node
      */
     protected void shutdownMatchingSessions()
     {
-        UvmContextFactory.context().argonManager()
+        LocalUvmContextFactory.context().argonManager()
             .shutdownMatches(sessionMatcher());
     }
 

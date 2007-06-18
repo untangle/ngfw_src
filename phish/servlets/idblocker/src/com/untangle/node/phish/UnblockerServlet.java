@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -24,7 +24,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.security.Tid;
 import com.untangle.uvm.node.LocalNodeManager;
 import com.untangle.uvm.node.NodeContext;
@@ -45,7 +45,7 @@ public class UnblockerServlet extends HttpServlet
         boolean global = Boolean.parseBoolean(req.getParameter("global"));
 
         try {
-            LocalNodeManager tman = UvmContextFactory.context().nodeManager();
+            LocalNodeManager tman = LocalUvmContextFactory.context().nodeManager();
             Tid tid = new Tid(Long.parseLong(tidStr));
             NodeContext tctx = tman.nodeContext(tid);
             Phish tran = (Phish)tctx.node();

@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This library is free software; you can redistribute it and/or modify
@@ -38,7 +38,7 @@ import java.util.Iterator;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
-import com.untangle.uvm.UvmLocalContext;
+import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.node.NodeContext;
 
 /* This is a DataSaver designed to delete any related objects before saving the data */
@@ -52,7 +52,7 @@ public class DeletingDataSaver<T> extends DataSaver<T>
         this.className = className;
     }
 
-    public DeletingDataSaver( UvmLocalContext local, String className )
+    public DeletingDataSaver( LocalUvmContext local, String className )
     {
         super( local );
         this.className = className;

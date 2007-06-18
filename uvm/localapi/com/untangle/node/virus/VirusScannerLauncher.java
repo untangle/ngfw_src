@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This library is free software; you can redistribute it and/or modify
@@ -34,7 +34,7 @@ package com.untangle.node.virus;
 
 import java.io.File;
 
-import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.LocalUvmContextFactory;
 import org.apache.log4j.Logger;
 
 abstract public class VirusScannerLauncher implements Runnable
@@ -59,7 +59,7 @@ abstract public class VirusScannerLauncher implements Runnable
      */
     public VirusScannerResult doScan(long timeout)
     {
-        Thread thread = UvmContextFactory.context().newThread(this);
+        Thread thread = LocalUvmContextFactory.context().newThread(this);
         long startTime = System.currentTimeMillis();
         try {
             synchronized (this) {

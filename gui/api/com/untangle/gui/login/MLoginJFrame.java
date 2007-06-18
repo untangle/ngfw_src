@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This library is free software; you can redistribute it and/or modify
@@ -493,7 +493,7 @@ public class MLoginJFrame extends javax.swing.JFrame {
                     // LOGIN ///////////
                     Util.setShutdownInitiated(false);
                     URL url = Util.getServerCodeBase();
-                    UvmRemoteContext uvmContext = UvmRemoteContextFactory.factory().interactiveLogin( url.getHost(), url.getPort(),
+                    RemoteUvmContext uvmContext = RemoteUvmContextFactory.factory().interactiveLogin( url.getHost(), url.getPort(),
                                                                                                          loginJTextField.getText(),
                                                                                                          new String(passJPasswordField.getPassword()),
                                                                                                          0, Util.getClassLoader(),

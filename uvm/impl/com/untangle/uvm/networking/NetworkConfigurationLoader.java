@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -32,7 +32,7 @@ import java.util.Properties;
 
 import com.untangle.jnetcap.InterfaceData;
 import com.untangle.jnetcap.Netcap;
-import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.node.HostName;
 import com.untangle.uvm.node.IPaddr;
 import com.untangle.uvm.node.ParseException;
@@ -184,7 +184,7 @@ class NetworkConfigurationLoader
 
         String external;
 
-        external = UvmContextFactory.context().localIntfManager().getExternal().getName();
+        external = LocalUvmContextFactory.context().localIntfManager().getExternal().getName();
 
         netcap.updateAddress();
 

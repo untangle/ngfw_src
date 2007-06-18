@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This library is free software; you can redistribute it and/or modify
@@ -37,7 +37,7 @@ package com.untangle.node.mail.papi.smtp;
 import java.net.InetAddress;
 import java.util.*;
 
-import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.tapi.Pipeline;
 import com.untangle.uvm.tapi.TCPSession;
 import com.untangle.node.mail.papi.BeginMIMEToken;
@@ -84,7 +84,7 @@ public class SmtpTokenStream
     public SmtpTokenStream(TCPSession session, SmtpTokenStreamHandler handler) {
         super(session);
         setHandler(handler);
-        m_pipeline = UvmContextFactory.context().pipelineFoundry().getPipeline(session.id());
+        m_pipeline = LocalUvmContextFactory.context().pipelineFoundry().getPipeline(session.id());
         updateTimestamps(true, true);
     }
 

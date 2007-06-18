@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.untangle.uvm.CronJob;
-import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.Period;
 import com.untangle.node.mail.MailNodeImpl;
 import com.untangle.node.mail.impl.GlobEmailAddressList;
@@ -162,7 +162,7 @@ public class Quarantine
                                 cronCallback();
                             }
                         };
-                    m_cronJob = UvmContextFactory.context().makeCronJob(p, r);
+                    m_cronJob = LocalUvmContextFactory.context().makeCronJob(p, r);
                 }
             }
         }
@@ -230,7 +230,7 @@ public class Quarantine
     }
 
     private String getInternalIPAsString() {
-        return UvmContextFactory.context().networkManager().getPublicAddress();
+        return LocalUvmContextFactory.context().networkManager().getPublicAddress();
     }
 
     //--QuarantineNodeView--
@@ -594,7 +594,7 @@ public class Quarantine
             return false;
         }
 
-        String fromAddr = UvmContextFactory.context().mailSender().getMailSettings().getFromAddress();
+        String fromAddr = LocalUvmContextFactory.context().mailSender().getMailSettings().getFromAddress();
         MIMEMessage msg = m_digestGenerator.generateMsg(index,
                                                         internalHost,
                                                         account,
@@ -618,7 +618,7 @@ public class Quarantine
         }
 
         //Attempt the send
-        boolean ret = UvmContextFactory.context().mailSender().sendMessage(in, account);
+        boolean ret = LocalUvmContextFactory.context().mailSender().sendMessage(in, account);
 
         IOUtil.close(in);
 
@@ -691,7 +691,7 @@ public class Quarantine
             try {
                 fIn = new FileInputStream(data);
                 BufferedInputStream bufIn = new BufferedInputStream(fIn);
-                boolean success = UvmContextFactory.context().mailSender().sendMessage(bufIn, recipients);
+                boolean success = LocalUvmContextFactory.context().mailSender().sendMessage(bufIn, recipients);
                 if(success) {
                     m_logger.debug("Released mail \"" + record.getMailID() + "\" for " + recipients.length +
                                    " recipients from inbox \"" + inboxAddress + "\"");

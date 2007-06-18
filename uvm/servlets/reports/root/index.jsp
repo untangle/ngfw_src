@@ -1,7 +1,7 @@
 <%@ page language="java" import="com.untangle.uvm.*, com.untangle.uvm.security.Tid, com.untangle.uvm.node.*, com.untangle.uvm.tapi.*, com.untangle.uvm.util.SessionUtil, org.apache.log4j.helpers.AbsoluteTimeDateFormat, java.util.Properties, java.net.URL, java.io.PrintWriter, javax.naming.*" %>
 
 <%
-UvmLocalContext uvm = UvmContextFactory.context();
+LocalUvmContext uvm = LocalUvmContextFactory.context();
 
 BrandingSettings bs = uvm.brandingManager().getBrandingSettings();
 String company = bs.getCompanyName();

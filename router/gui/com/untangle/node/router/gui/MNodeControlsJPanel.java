@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -33,7 +33,7 @@ import com.untangle.gui.node.*;
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.dialogs.*;
 import com.untangle.gui.widgets.editTable.*;
-import com.untangle.uvm.client.UvmRemoteContextFactory;
+import com.untangle.uvm.client.RemoteUvmContextFactory;
 import com.untangle.uvm.networking.*;
 import com.untangle.uvm.node.IPaddr;
 import com.untangle.uvm.node.firewall.ip.IPDBMatcher;
@@ -275,16 +275,16 @@ public class MNodeControlsJPanel extends com.untangle.gui.node.MNodeControlsJPan
     }
 
     public void saveAll() throws Exception {
-        int previousTimeout = UvmRemoteContextFactory.factory().getTimeout();
+        int previousTimeout = RemoteUvmContextFactory.factory().getTimeout();
 
         /* Load the current networking configuration, this is used in validation, this is here
          * because it is a remote call. [RBS, per recommendation of inieves] */
         BasicNetworkSettings basicNetworkSettings = Util.getNetworkManager().getBasicSettings();
         ((RouterCommonSettings)settings).setNetworkSettings(basicNetworkSettings);
 
-        UvmRemoteContextFactory.factory().setTimeout(Util.RECONFIGURE_NETWORK_TIMEOUT_MILLIS);
+        RemoteUvmContextFactory.factory().setTimeout(Util.RECONFIGURE_NETWORK_TIMEOUT_MILLIS);
         super.saveAll();
-        UvmRemoteContextFactory.factory().setTimeout(previousTimeout);
+        RemoteUvmContextFactory.factory().setTimeout(previousTimeout);
     }
 
     public void refreshAll() throws Exception {

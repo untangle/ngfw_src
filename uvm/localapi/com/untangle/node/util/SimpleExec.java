@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This library is free software; you can redistribute it and/or modify
@@ -38,7 +38,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
-import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.LocalUvmContextFactory;
 import org.apache.log4j.Logger;
 
 /**
@@ -185,7 +185,7 @@ public final class SimpleExec {
         fullCmd[0] = cmd;
         System.arraycopy(args, 0, fullCmd, 1, args.length);
 
-        m_process = useUVMThread ? UvmContextFactory.context().exec(fullCmd, env, rootDir) : Runtime.getRuntime().exec(fullCmd, env, rootDir);
+        m_process = useUVMThread ? LocalUvmContextFactory.context().exec(fullCmd, env, rootDir) : Runtime.getRuntime().exec(fullCmd, env, rootDir);
 
         //If we're here, we created a process
         try {
@@ -251,7 +251,7 @@ public final class SimpleExec {
     }
 
     private Thread createThread(Runnable r, boolean useUVMThread) {
-        return useUVMThread?UvmContextFactory.context().newThread(r):new Thread(r);
+        return useUVMThread?LocalUvmContextFactory.context().newThread(r):new Thread(r);
     }
 
     /**

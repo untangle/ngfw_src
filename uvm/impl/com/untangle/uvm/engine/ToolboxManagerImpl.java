@@ -41,7 +41,7 @@ import java.util.concurrent.TimeoutException;
 
 import com.untangle.uvm.CronJob;
 import com.untangle.uvm.Period;
-import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.alerts.MessageQueue;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.NodeException;
@@ -105,7 +105,7 @@ class ToolboxManagerImpl implements ToolboxManager
         UpgradeSettings us = getUpgradeSettings();
         Period p = us.getPeriod();
 
-        cronJob = UvmContextFactory.context().makeCronJob(p, updateTask);
+        cronJob = LocalUvmContextFactory.context().makeCronJob(p, updateTask);
 
         refreshLists();
     }
@@ -223,9 +223,9 @@ class ToolboxManagerImpl implements ToolboxManager
             tails.put(i, alt);
         }
 
-        UvmContextFactory.context().newThread(alt).start();
+        LocalUvmContextFactory.context().newThread(alt).start();
 
-        UvmContextFactory.context().newThread(new Runnable() {
+        LocalUvmContextFactory.context().newThread(new Runnable() {
                 public void run()
                 {
                     try {
@@ -266,7 +266,7 @@ class ToolboxManagerImpl implements ToolboxManager
                 }
             });
 
-        UvmContextFactory.context().newThread(f).start();
+        LocalUvmContextFactory.context().newThread(f).start();
 
         boolean tryAgain;
         do {
@@ -299,9 +299,9 @@ class ToolboxManagerImpl implements ToolboxManager
             tails.put(i, alt);
         }
 
-        UvmContextFactory.context().newThread(alt).start();
+        LocalUvmContextFactory.context().newThread(alt).start();
 
-        UvmContextFactory.context().newThread(new Runnable() {
+        LocalUvmContextFactory.context().newThread(new Runnable() {
                 public void run()
                 {
                     try {
@@ -325,7 +325,7 @@ class ToolboxManagerImpl implements ToolboxManager
             ms.setEnabled(true);
         }
 
-        NodeManagerImpl tm = (NodeManagerImpl)UvmContextFactory
+        NodeManagerImpl tm = (NodeManagerImpl)LocalUvmContextFactory
             .context().nodeManager();
         for (Tid tid : tm.nodeInstances(mackageName)) {
             NodeContext tctx = tm.nodeContext(tid);
@@ -349,7 +349,7 @@ class ToolboxManagerImpl implements ToolboxManager
             ms.setEnabled(false);
         }
 
-        NodeManagerImpl tm = (NodeManagerImpl)UvmContextFactory
+        NodeManagerImpl tm = (NodeManagerImpl)LocalUvmContextFactory
             .context().nodeManager();
         for (Tid tid : tm.nodeInstances(mackageName)) {
             NodeContext tctx = tm.nodeContext(tid);
@@ -418,7 +418,7 @@ class ToolboxManagerImpl implements ToolboxManager
             mctx.refreshSessionFactory();
         }
 
-        NodeManagerImpl tm = (NodeManagerImpl)UvmContextFactory
+        NodeManagerImpl tm = (NodeManagerImpl)LocalUvmContextFactory
             .context().nodeManager();
         tm.restart(pkgName);
     }
@@ -428,7 +428,7 @@ class ToolboxManagerImpl implements ToolboxManager
     {
         // XXX protect this method
         // stop mackage intances
-        NodeManagerImpl tm = (NodeManagerImpl)UvmContextFactory
+        NodeManagerImpl tm = (NodeManagerImpl)LocalUvmContextFactory
             .context().nodeManager();
         List<Tid> tids = tm.nodeInstances(pkgName);
         logger.debug("unloading " + tids.size() + " nodes");
@@ -449,7 +449,7 @@ class ToolboxManagerImpl implements ToolboxManager
 
                 public Object getResult() { return null; }
             };
-        UvmContextFactory.context().runTransaction(tw);
+        LocalUvmContextFactory.context().runTransaction(tw);
 
         cronJob.reschedule(us.getPeriod());
     }
@@ -478,7 +478,7 @@ class ToolboxManagerImpl implements ToolboxManager
 
                 public UpgradeSettings getResult() { return us; }
             };
-        UvmContextFactory.context().runTransaction(tw);
+        LocalUvmContextFactory.context().runTransaction(tw);
 
         return tw.getResult();
     }
@@ -557,7 +557,7 @@ class ToolboxManagerImpl implements ToolboxManager
                     return true;
                 }
             };
-        UvmContextFactory.context().runTransaction(tw);
+        LocalUvmContextFactory.context().runTransaction(tw);
 
         return m;
     }
@@ -572,7 +572,7 @@ class ToolboxManagerImpl implements ToolboxManager
                     return true;
                 }
             };
-        UvmContextFactory.context().runTransaction(tw);
+        LocalUvmContextFactory.context().runTransaction(tw);
     }
 
     // package list functions -------------------------------------------------
@@ -632,7 +632,7 @@ class ToolboxManagerImpl implements ToolboxManager
         Map<String, MackageDesc> pkgs;
 
         try {
-            Process p = UvmContextFactory.context().exec("mkg available");
+            Process p = LocalUvmContextFactory.context().exec("mkg available");
             pkgs = readPkgList(p.getInputStream(), instList);
         } catch (Exception exn) {
             logger.fatal("Unable to parse mkg available list, proceeding with empty list", exn);
@@ -717,7 +717,7 @@ class ToolboxManagerImpl implements ToolboxManager
         Map<String, String> instList;
 
         try {
-            Process p = UvmContextFactory.context().exec("mkg installed");
+            Process p = LocalUvmContextFactory.context().exec("mkg installed");
             instList = readInstalledList(p.getInputStream());
         } catch (IOException exn) {
             throw new RuntimeException(exn); // XXX
@@ -753,7 +753,7 @@ class ToolboxManagerImpl implements ToolboxManager
 
         logger.debug("running: " + cmdStr);
         try {
-            Process proc = UvmContextFactory.context().exec(cmdStr);
+            Process proc = LocalUvmContextFactory.context().exec(cmdStr);
             InputStream is = proc.getInputStream();
             byte[] outBuf = new byte[4092];
             int i;

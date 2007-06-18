@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -27,8 +27,8 @@ import java.util.Random;
 import com.untangle.uvm.ArgonException;
 import com.untangle.uvm.IntfConstants;
 import com.untangle.uvm.MailSender;
-import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.UvmLocalContext;
+import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.logging.EventManager;
 import com.untangle.uvm.tapi.AbstractNode;
 import com.untangle.uvm.tapi.Affinity;
@@ -317,7 +317,7 @@ public class VpnNodeImpl extends AbstractNode
             }
 
             /* Add the file for the logo */
-            UvmLocalContext uvm = UvmContextFactory.context();
+            LocalUvmContext uvm = LocalUvmContextFactory.context();
 
             File logo = uvm.localBrandingManager().getLogoFile();
 
@@ -408,7 +408,7 @@ public class VpnNodeImpl extends AbstractNode
     private synchronized void deployWebApp()
     {
         if ( !isWebAppDeployed ) {
-            if ( UvmContextFactory.context().appServerManager().loadInsecureApp( WEB_APP_PATH, WEB_APP )) {
+            if ( LocalUvmContextFactory.context().appServerManager().loadInsecureApp( WEB_APP_PATH, WEB_APP )) {
                 logger.debug( "Deployed openvpn web app" );
             }
             else logger.warn( "Unable to deploy openvpn web app" );
@@ -416,13 +416,13 @@ public class VpnNodeImpl extends AbstractNode
         isWebAppDeployed = true;
 
         /* unregister the service with the UVM */
-        UvmContextFactory.context().networkManager().registerService( SERVICE_NAME );
+        LocalUvmContextFactory.context().networkManager().registerService( SERVICE_NAME );
     }
 
     private synchronized void unDeployWebApp()
     {
         if ( isWebAppDeployed ) {
-            if( UvmContextFactory.context().appServerManager().unloadWebApp(WEB_APP_PATH )) {
+            if( LocalUvmContextFactory.context().appServerManager().unloadWebApp(WEB_APP_PATH )) {
                 logger.debug( "Unloaded openvpn web app" );
             } else logger.warn( "Unable to unload openvpn web app" );
         }
@@ -430,7 +430,7 @@ public class VpnNodeImpl extends AbstractNode
 
 
         /* unregister the service with the UVM */
-        UvmContextFactory.context().networkManager().unregisterService( SERVICE_NAME );
+        LocalUvmContextFactory.context().networkManager().unregisterService( SERVICE_NAME );
     }
 
     // AbstractNode methods ----------------------------------------------
@@ -453,7 +453,7 @@ public class VpnNodeImpl extends AbstractNode
 
         /* Initially use tun0, even though it could eventually be configured to the tap interface  */
         try {
-            UvmContextFactory.context().localIntfManager().registerIntf( "tun0", IntfConstants.VPN_INTF );
+            LocalUvmContextFactory.context().localIntfManager().registerIntf( "tun0", IntfConstants.VPN_INTF );
         } catch ( ArgonException e ) {
             throw new NodeException( "Unable to register VPN interface", e );
         }
@@ -464,7 +464,7 @@ public class VpnNodeImpl extends AbstractNode
         super.postInit( args );
 
         /* register the assistant with the phonebook */
-        UvmContextFactory.context().localPhoneBook().registerAssistant( this.assistant );
+        LocalUvmContextFactory.context().localPhoneBook().registerAssistant( this.assistant );
 
         TransactionWork tw = new TransactionWork()
             {
@@ -552,7 +552,7 @@ public class VpnNodeImpl extends AbstractNode
         this.assistant.configure( settings, false );
 
         /* unregister the service with the UVM */
-        UvmContextFactory.context().networkManager().unregisterService( SERVICE_NAME );
+        LocalUvmContextFactory.context().networkManager().unregisterService( SERVICE_NAME );
     }
 
     @Override protected void postDestroy() throws NodeException
@@ -566,7 +566,7 @@ public class VpnNodeImpl extends AbstractNode
             logger.warn( "Error stopping openvpn monitor", e );
         }
 
-        UvmContextFactory.context().localPhoneBook().unregisterAssistant( this.assistant );
+        LocalUvmContextFactory.context().localPhoneBook().unregisterAssistant( this.assistant );
 
         unDeployWebApp();
     }
@@ -578,7 +578,7 @@ public class VpnNodeImpl extends AbstractNode
         unDeployWebApp();
 
         try {
-            UvmContextFactory.context().localIntfManager().unregisterIntf( IntfConstants.VPN_INTF );
+            LocalUvmContextFactory.context().localIntfManager().unregisterIntf( IntfConstants.VPN_INTF );
         } catch ( Exception e ) {
             /* There is nothing else to do but print out the message */
             logger.error( "Unable to deregister vpn interface", e );

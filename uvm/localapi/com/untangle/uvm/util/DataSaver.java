@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This library is free software; you can redistribute it and/or modify
@@ -36,7 +36,7 @@ package com.untangle.uvm.util;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
-import com.untangle.uvm.UvmLocalContext;
+import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.node.NodeContext;
 
 
@@ -52,7 +52,7 @@ public class DataSaver<T>
 
     /* One of these must be null, use the non-null one */
     private final NodeContext nodeContext;
-    private final UvmLocalContext localContext;
+    private final LocalUvmContext localContext;
     
     public DataSaver( NodeContext node ) 
     {
@@ -61,7 +61,7 @@ public class DataSaver<T>
         this.data = null;
     }
 
-    public DataSaver( UvmLocalContext local ) 
+    public DataSaver( LocalUvmContext local ) 
     {
         this.nodeContext = null;
         this.localContext = local;

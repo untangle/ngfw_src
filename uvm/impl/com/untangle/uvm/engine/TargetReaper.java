@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -24,7 +24,7 @@ import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.LocalUvmContextFactory;
 import org.apache.log4j.Logger;
 
 class TargetReaper implements Runnable
@@ -67,7 +67,7 @@ class TargetReaper implements Runnable
 
     void init()
     {
-        thread = UvmContextFactory.context().newThread(this);
+        thread = LocalUvmContextFactory.context().newThread(this);
         thread.start();
     }
 

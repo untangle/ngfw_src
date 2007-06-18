@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -24,7 +24,7 @@ import javax.swing.*;
 import com.untangle.gui.node.*;
 import com.untangle.gui.util.Util;
 import com.untangle.gui.widgets.dialogs.*;
-import com.untangle.uvm.client.UvmRemoteContextFactory;
+import com.untangle.uvm.client.RemoteUvmContextFactory;
 import com.untangle.uvm.networking.*;
 import com.untangle.node.router.*;
 
@@ -258,13 +258,13 @@ public class AdvancedJPanel extends javax.swing.JPanel implements Refreshable<Ob
 
             try{
                 Router routerNode = com.untangle.node.router.gui.MNodeControlsJPanel.getRouterNode();
-                int previousTimeout = UvmRemoteContextFactory.factory().getTimeout();
-                UvmRemoteContextFactory.factory().setTimeout(Util.RECONFIGURE_NETWORK_TIMEOUT_MILLIS);
+                int previousTimeout = RemoteUvmContextFactory.factory().getTimeout();
+                RemoteUvmContextFactory.factory().setTimeout(Util.RECONFIGURE_NETWORK_TIMEOUT_MILLIS);
                 if( isAdvanced )
                     routerNode.switchToAdvanced();
                 else
                     routerNode.resetBasic();
-                UvmRemoteContextFactory.factory().setTimeout(previousTimeout);
+                RemoteUvmContextFactory.factory().setTimeout(previousTimeout);
             }
             catch(Exception e){
                 try{ Util.handleExceptionWithRestart("Error reconfiguring", e); }

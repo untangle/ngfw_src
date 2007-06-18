@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -34,7 +34,7 @@ import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.networking.NetworkException;
 import com.untangle.uvm.node.ValidateException;
 
@@ -178,7 +178,7 @@ public class PingManagerImpl implements PingManager
         args[arg++] = PING_PATTERN;
         args[arg++] = address.getHostAddress();
 
-        Process p = UvmContextFactory.context().exec( args );
+        Process p = LocalUvmContextFactory.context().exec( args );
 
         return new Helper( addressString, address, count, p );
     }

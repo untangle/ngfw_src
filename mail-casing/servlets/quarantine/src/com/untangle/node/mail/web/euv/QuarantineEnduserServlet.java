@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -23,8 +23,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.untangle.uvm.client.UvmRemoteContext;
-import com.untangle.uvm.client.UvmRemoteContextFactory;
+import com.untangle.uvm.client.RemoteUvmContext;
+import com.untangle.uvm.client.RemoteUvmContextFactory;
 import com.untangle.uvm.security.Tid;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.node.mail.papi.MailNode;
@@ -144,7 +144,7 @@ public class QuarantineEnduserServlet
      */
     private void initRemoteRefs() {
         try {
-            UvmRemoteContext ctx = UvmRemoteContextFactory.factory().systemLogin(0, Thread.currentThread().getContextClassLoader());
+            RemoteUvmContext ctx = RemoteUvmContextFactory.factory().systemLogin(0, Thread.currentThread().getContextClassLoader());
             Tid tid = ctx.nodeManager().nodeInstances("mail-casing").get(0);
             NodeContext tc = ctx.nodeManager().nodeContext(tid);
             MailNode mt = (MailNode) tc.node();

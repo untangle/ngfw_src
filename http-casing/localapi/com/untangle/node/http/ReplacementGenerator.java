@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This library is free software; you can redistribute it and/or modify
@@ -37,7 +37,7 @@ import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.util.regex.Pattern;
 
-import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.security.Tid;
 import com.untangle.uvm.tapi.TCPSession;
 import com.untangle.node.token.Chunk;
@@ -119,7 +119,7 @@ public abstract class ReplacementGenerator<T extends BlockDetails>
         if (imagePreferred(uri, requestHeader)) {
             return generateSimplePage(nonce, persistent, true);
         } else {
-            InetAddress addr = UvmContextFactory.context().networkManager()
+            InetAddress addr = LocalUvmContextFactory.context().networkManager()
                 .getInternalHttpAddress(session);
             if (null == addr) {
                 return generateSimplePage(nonce, persistent, false);

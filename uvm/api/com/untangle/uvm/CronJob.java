@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This library is free software; you can redistribute it and/or modify
@@ -39,7 +39,7 @@ package com.untangle.uvm;
  *
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
- * @see UvmLocalContext#makeCronJob(Period, Runnable)
+ * @see LocalUvmContext#makeCronJob(Period, Runnable)
  */
 public interface CronJob
 {

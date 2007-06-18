@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This library is free software; you can redistribute it and/or modify
@@ -33,7 +33,7 @@
 
 package com.untangle.uvm.util;
 
-import com.untangle.uvm.UvmLocalContext;
+import com.untangle.uvm.LocalUvmContext;
 import org.apache.log4j.Logger;
 
 public class WorkerRunner
@@ -45,19 +45,19 @@ public class WorkerRunner
     private static final int MAX_STOP_INTERRUPT_COUNT = 5;
 
     private final Worker worker;
-    private final UvmLocalContext localContext;
+    private final LocalUvmContext localContext;
     private final long stopDelayMillis;
 
     private Thread thread;
 
     private final Logger logger = Logger.getLogger( this.getClass());
 
-    public WorkerRunner( Worker worker, UvmLocalContext localContext )
+    public WorkerRunner( Worker worker, LocalUvmContext localContext )
     {
         this( worker, localContext, DEFAULT_STOP_DELAY_MILLIS );
     }
 
-    public WorkerRunner( Worker worker, UvmLocalContext localContext, long stopDelayMillis )
+    public WorkerRunner( Worker worker, LocalUvmContext localContext, long stopDelayMillis )
     {
         this.worker = worker;
         this.localContext = localContext;

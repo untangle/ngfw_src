@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -32,8 +32,8 @@ import org.hibernate.Session;
 
 import com.untangle.jnetcap.Netcap;
 import com.untangle.uvm.IntfConstants;
-import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.UvmLocalContext;
+import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.NetworkManager;
 import com.untangle.uvm.ArgonException;
 import com.untangle.uvm.node.IPSessionDesc;
@@ -681,7 +681,7 @@ public class NetworkManagerImpl implements LocalNetworkManager
             newSettings.setNetworkSpaceList( networkSpaceList );
 
             if ( !hasChanged ) {
-                UvmContextFactory.context().adminManager().logout();
+                LocalUvmContextFactory.context().adminManager().logout();
             }
 
             /* Indicate that the user has completed setup */
@@ -703,17 +703,17 @@ public class NetworkManagerImpl implements LocalNetworkManager
 
     public void setWizardNatDisabled()
     {
-        UvmContextFactory.context().adminManager().logout();
+        LocalUvmContextFactory.context().adminManager().logout();
 
         try{
             logger.debug( "disabling nat as requested by setup wizard: " );
-            LocalNodeManager nodeManager = UvmContextFactory.context().nodeManager();
+            LocalNodeManager nodeManager = LocalUvmContextFactory.context().nodeManager();
             List<Tid> tidList = nodeManager.nodeInstances(NAT_NODE_NAME);
             if( tidList != null ){
                 for( Tid tid : tidList )
                     nodeManager.destroy(tid);
             }
-            ToolboxManager tool = UvmContextFactory.context().toolboxManager();
+            ToolboxManager tool = LocalUvmContextFactory.context().toolboxManager();
             tool.uninstall(NAT_NODE_NAME);
         }
         catch(Exception e){
@@ -1099,7 +1099,7 @@ public class NetworkManagerImpl implements LocalNetworkManager
     {
         DataLoader<NetworkSpacesSettingsImpl> loader =
             new DataLoader<NetworkSpacesSettingsImpl>( "NetworkSpacesSettingsImpl",
-                                                       UvmContextFactory.context());
+                                                       LocalUvmContextFactory.context());
         NetworkSpacesSettings dbSettings = loader.loadData();
 
         /* No database settings */
@@ -1114,7 +1114,7 @@ public class NetworkManagerImpl implements LocalNetworkManager
     private DynamicDNSSettings loadDynamicDnsSettings()
     {
         DataLoader<DynamicDNSSettings> loader =
-            new DataLoader<DynamicDNSSettings>( "DynamicDNSSettings", UvmContextFactory.context());
+            new DataLoader<DynamicDNSSettings>( "DynamicDNSSettings", LocalUvmContextFactory.context());
 
         return loader.loadData();
     }
@@ -1122,7 +1122,7 @@ public class NetworkManagerImpl implements LocalNetworkManager
     private ServicesInternalSettings loadServicesSettings()
     {
         DataLoader<ServicesSettingsImpl> loader =
-            new DataLoader<ServicesSettingsImpl>( "ServicesSettingsImpl", UvmContextFactory.context());
+            new DataLoader<ServicesSettingsImpl>( "ServicesSettingsImpl", LocalUvmContextFactory.context());
 
         ServicesSettingsImpl dbSettings = loader.loadData();
 
@@ -1151,7 +1151,7 @@ public class NetworkManagerImpl implements LocalNetworkManager
         throws NetworkException, ValidateException
     {
         DataSaver<NetworkSpacesSettingsImpl> saver =
-            new NetworkSettingsDataSaver(UvmContextFactory.context());
+            new NetworkSettingsDataSaver(LocalUvmContextFactory.context());
 
         NetworkUtilPriv nup = NetworkUtilPriv.getPrivInstance();
 
@@ -1176,7 +1176,7 @@ public class NetworkManagerImpl implements LocalNetworkManager
     private void saveDynamicDnsSettings( DynamicDNSSettings newSettings )
     {
         DataSaver<DynamicDNSSettings> saver =
-            new DynamicDnsSettingsDataSaver( UvmContextFactory.context(), newSettings );
+            new DynamicDnsSettingsDataSaver( LocalUvmContextFactory.context(), newSettings );
 
         newSettings = saver.saveData( newSettings );
         if ( newSettings == null ) {
@@ -1196,7 +1196,7 @@ public class NetworkManagerImpl implements LocalNetworkManager
         this.dhcpManager.fleeceLeases( newSettings );
 
         DataSaver<ServicesSettingsImpl> saver =
-            new ServicesSettingsDataSaver( UvmContextFactory.context());
+            new ServicesSettingsDataSaver( LocalUvmContextFactory.context());
 
         if ( this.networkSettings == null ) {
             logger.error( "Unable to update the services settings, because the network settings are null." );
@@ -1334,7 +1334,7 @@ public class NetworkManagerImpl implements LocalNetworkManager
 
 class NetworkSettingsDataSaver extends DataSaver<NetworkSpacesSettingsImpl>
 {
-    public NetworkSettingsDataSaver( UvmLocalContext local )
+    public NetworkSettingsDataSaver( LocalUvmContext local )
     {
         super( local );
     }
@@ -1351,7 +1351,7 @@ class NetworkSettingsDataSaver extends DataSaver<NetworkSpacesSettingsImpl>
 
 class ServicesSettingsDataSaver extends DataSaver<ServicesSettingsImpl>
 {
-    public ServicesSettingsDataSaver( UvmLocalContext local )
+    public ServicesSettingsDataSaver( LocalUvmContext local )
     {
         super( local );
     }
@@ -1369,7 +1369,7 @@ class ServicesSettingsDataSaver extends DataSaver<ServicesSettingsImpl>
 class DynamicDnsSettingsDataSaver extends DataSaver<DynamicDNSSettings>
 {
     private final DynamicDNSSettings newData;
-    public DynamicDnsSettingsDataSaver( UvmLocalContext local, DynamicDNSSettings newData )
+    public DynamicDnsSettingsDataSaver( LocalUvmContext local, DynamicDNSSettings newData )
     {
         super( local );
         this.newData = newData;

@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -22,7 +22,7 @@ import java.nio.*;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
 
-import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.tapi.*;
 import com.untangle.uvm.tapi.event.*;
 import com.untangle.uvm.node.Node;
@@ -77,7 +77,7 @@ public class EventHandler extends AbstractEventHandler
         // We now don't allocate memory until we need it.
         sessInfo.clientBuffer = null;
         sessInfo.serverBuffer = null;
-        sessInfo.pipeline = UvmContextFactory.context().pipelineFoundry().getPipeline(sess.id());
+        sessInfo.pipeline = LocalUvmContextFactory.context().pipelineFoundry().getPipeline(sess.id());
         sess.attach(sessInfo);
     }
 
@@ -89,7 +89,7 @@ public class EventHandler extends AbstractEventHandler
         // We now don't allocate memory until we need it.
         sessInfo.clientBuffer = null;
         sessInfo.serverBuffer = null;
-        sessInfo.pipeline = UvmContextFactory.context().pipelineFoundry().getPipeline(sess.id());
+        sessInfo.pipeline = LocalUvmContextFactory.context().pipelineFoundry().getPipeline(sess.id());
         sess.attach(sessInfo);
     }
 

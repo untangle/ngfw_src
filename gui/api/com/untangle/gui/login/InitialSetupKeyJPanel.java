@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This library is free software; you can redistribute it and/or modify
@@ -82,9 +82,9 @@ public class InitialSetupKeyJPanel extends MWizardPageJPanel {
             try{
                 InitialSetupWizard.getInfiniteProgressJComponent().startLater("Saving Key...");
                 URL url = Util.getServerCodeBase();
-                boolean isActivated = com.untangle.uvm.client.UvmRemoteContextFactory.factory().isActivated( url.getHost(), url.getPort(), 0, Util.isSecureViaHttps() );
+                boolean isActivated = com.untangle.uvm.client.RemoteUvmContextFactory.factory().isActivated( url.getHost(), url.getPort(), 0, Util.isSecureViaHttps() );
                 if( !isActivated ){
-                    UvmRemoteContext uvmContext = UvmRemoteContextFactory.factory().activationLogin( url.getHost(), url.getPort(),
+                    RemoteUvmContext uvmContext = RemoteUvmContextFactory.factory().activationLogin( url.getHost(), url.getPort(),
                                                                                                         key,
                                                                                                         0,
                                                                                                         Util.getClassLoader(),

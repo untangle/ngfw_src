@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -27,9 +27,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.UvmException;
-import com.untangle.uvm.UvmLocalContext;
+import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.ReportingManager;
 import com.untangle.uvm.reporting.Reporter;
 import com.untangle.uvm.security.Tid;
@@ -154,7 +154,7 @@ class ReportingManagerImpl implements ReportingManager
                         }
                     }
                 };
-            runThread = UvmContextFactory.context().newThread(task, "Reports");
+            runThread = LocalUvmContextFactory.context().newThread(task, "Reports");
         }
         runThread.start();
     }
@@ -191,7 +191,7 @@ class ReportingManagerImpl implements ReportingManager
     }
 
     public boolean isReportingEnabled() {
-        UvmLocalContext uvm = UvmContextFactory.context();
+        LocalUvmContext uvm = LocalUvmContextFactory.context();
         LocalNodeManager nodeManager = uvm.nodeManager();
         List<Tid> tids = nodeManager.nodeInstances("reporting-node");
         if(tids == null || tids.size() == 0)

@@ -40,7 +40,7 @@ import org.apache.log4j.Logger;
 
 public class MessageClient
 {
-    private final UvmRemoteContext uvmContext;
+    private final RemoteUvmContext uvmContext;
     private final PollWorker pollWorker = new PollWorker();
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -48,7 +48,7 @@ public class MessageClient
 
     // constructors -----------------------------------------------------------
 
-    public MessageClient(UvmRemoteContext uvmContext)
+    public MessageClient(RemoteUvmContext uvmContext)
     {
         this.uvmContext = uvmContext;
     }

@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -22,7 +22,7 @@ import java.net.InetAddress;
 
 import com.untangle.jnetcap.Shield;
 import com.untangle.jnetcap.ShieldEventListener;
-import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.logging.EventLogger;
 import org.apache.log4j.Logger;
 
@@ -30,7 +30,7 @@ public class ShieldMonitor implements ShieldEventListener
 {
     private static ShieldMonitor INSTANCE = null;
 
-    private final EventLogger eventLogger = UvmContextFactory.context().eventLogger();
+    private final EventLogger eventLogger = LocalUvmContextFactory.context().eventLogger();
     private final Logger logger = Logger.getLogger( this.getClass());
 
     private ShieldMonitor()
@@ -49,7 +49,7 @@ public class ShieldMonitor implements ShieldEventListener
                      " limited: " + limited + " dropped: " + dropped + " rejected: " + rejected  );
 
         try {
-            clientIntf = UvmContextFactory.context().localIntfManager().toArgon( clientIntf );
+            clientIntf = LocalUvmContextFactory.context().localIntfManager().toArgon( clientIntf );
 
             eventLogger.log( new ShieldRejectionEvent( ip, clientIntf, reputation, mode, limited, dropped,
                                                        rejected ));

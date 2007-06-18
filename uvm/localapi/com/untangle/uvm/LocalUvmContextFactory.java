@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This library is free software; you can redistribute it and/or modify
@@ -41,13 +41,13 @@ import java.lang.reflect.Method;
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
-public class UvmContextFactory
+public class LocalUvmContextFactory
 {
-    private static UvmLocalContext UVM_CONTEXT = null;
+    private static LocalUvmContext UVM_CONTEXT = null;
 
     /**
      * Gets the current state of the UVM.  This provides a way to get
-     * the state without creating the UvmLocalContext in case we're
+     * the state without creating the LocalUvmContext in case we're
      * calling this at a very early stage.
      *
      * @return a <code>UvmState</code> enumerated value
@@ -65,17 +65,17 @@ public class UvmContextFactory
      * Get the <code>UvmContext</code> from this classloader.
      * used by Nodes to get the context internally.
      *
-     * @return the <code>UvmLocalContext</code>.
+     * @return the <code>LocalUvmContext</code>.
      */
-    public static UvmLocalContext context()
+    public static LocalUvmContext context()
     {
         if (null == UVM_CONTEXT) {
-            synchronized (UvmContextFactory.class) {
+            synchronized (LocalUvmContextFactory.class) {
                 if (null == UVM_CONTEXT) {
                     try {
                         Class c = Class.forName("com.untangle.uvm.engine.UvmContextImpl");
                         Method m = c.getMethod("context");
-                        UVM_CONTEXT = (UvmLocalContext)m.invoke(null);
+                        UVM_CONTEXT = (LocalUvmContext)m.invoke(null);
                     } catch ( Exception e ) {
                         System.err.println( "No class or method for the UVM context" );
                         e.printStackTrace();

@@ -17,7 +17,7 @@ int colonIndex = host.indexOf(':');
 if( colonIndex >= 0 )
     host = host.substring(0, colonIndex);
 
-UvmLocalContext uvm = UvmContextFactory.context();
+LocalUvmContext uvm = LocalUvmContextFactory.context();
 %>
 
 <?xml version="1.0" encoding="utf-8"?>

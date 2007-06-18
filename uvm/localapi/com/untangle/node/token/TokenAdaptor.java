@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This library is free software; you can redistribute it and/or modify
@@ -39,7 +39,7 @@ import java.nio.ByteBuffer;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.tapi.AbstractEventHandler;
 import com.untangle.uvm.tapi.MPipeException;
 import com.untangle.uvm.tapi.Pipeline;
@@ -67,7 +67,7 @@ public class TokenAdaptor extends AbstractEventHandler
     private final TokenHandlerFactory handlerFactory;
     private final Map handlers = new ConcurrentHashMap();
 
-    private final PipelineFoundry pipeFoundry = UvmContextFactory.context()
+    private final PipelineFoundry pipeFoundry = LocalUvmContextFactory.context()
         .pipelineFoundry();
     private final Logger logger = Logger.getLogger(TokenAdaptor.class);
 

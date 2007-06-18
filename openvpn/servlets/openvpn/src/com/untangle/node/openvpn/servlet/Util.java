@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -34,8 +34,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.UvmLocalContext;
+import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.security.Tid;
 import com.untangle.uvm.node.IPaddr;
 import com.untangle.uvm.node.NodeContext;
@@ -99,7 +99,7 @@ class Util
                 /* XXX Should this be cached?? */
                 IPaddr address = IPaddr.parse( request.getRemoteAddr());
 
-                UvmLocalContext ctx = UvmContextFactory.context();
+                LocalUvmContext ctx = LocalUvmContextFactory.context();
                 Tid tid = ctx.nodeManager().nodeInstances( "openvpn-node" ).get( 0 );
                 NodeContext tc = ctx.nodeManager().nodeContext( tid );
                 commonName = ((VpnNode)tc.node()).lookupClientDistributionKey( key, address );

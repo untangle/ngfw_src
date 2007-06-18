@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This library is free software; you can redistribute it and/or modify
@@ -43,7 +43,7 @@ import java.util.regex.PatternSyntaxException;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.LocalUvmContextFactory;
 
 /* XXX This should probably be abstracted, up to a script writer and then have a
  * class that is a shell script writer
@@ -239,7 +239,7 @@ public class ScriptWriter
         if ( permissions == null ) return;
 
         try {
-            Process p = UvmContextFactory.context().
+            Process p = LocalUvmContextFactory.context().
                 exec( new String[] { "/bin/chmod", permissions, fileName } );
 
             /* Read out standard error and input */

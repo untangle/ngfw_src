@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -26,7 +26,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.logging.ListEventFilter;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.logging.RepositoryDesc;
@@ -119,7 +119,7 @@ class SimpleEventCache<E extends LogEvent> extends EventCache<E>
                     };
 
                 if (null == tctx) {
-                    UvmContextFactory.context().runTransaction(tw);
+                    LocalUvmContextFactory.context().runTransaction(tw);
                 } else {
                     tctx.runTransaction(tw);
                 }

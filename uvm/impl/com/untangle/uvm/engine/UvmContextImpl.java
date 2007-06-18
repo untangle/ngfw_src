@@ -29,12 +29,12 @@ import com.untangle.uvm.LocalBrandingManager;
 import com.untangle.uvm.Period;
 import com.untangle.uvm.RemoteBrandingManager;
 import com.untangle.uvm.UvmException;
-import com.untangle.uvm.UvmLocalContext;
+import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.UvmState;
 import com.untangle.uvm.addrbook.RemoteAddressBook;
 import com.untangle.uvm.argon.Argon;
 import com.untangle.uvm.argon.ArgonManagerImpl;
-import com.untangle.uvm.client.UvmRemoteContext;
+import com.untangle.uvm.client.RemoteUvmContext;
 import com.untangle.uvm.license.LicenseManagerFactory;
 import com.untangle.uvm.license.LocalLicenseManager;
 import com.untangle.uvm.license.RemoteLicenseManager;
@@ -67,13 +67,13 @@ import org.hibernate.HibernateException;
 import org.hibernate.SessionFactory;
 
 /**
- * Implements UvmLocalContext.
+ * Implements LocalUvmContext.
  *
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
 public class UvmContextImpl extends UvmContextBase
-    implements UvmLocalContext
+    implements LocalUvmContext
 {
     private static final UvmContextImpl CONTEXT = new UvmContextImpl();
 
@@ -115,7 +115,7 @@ public class UvmContextImpl extends UvmContextBase
     private ToolboxManagerImpl toolboxManager;
     private NodeManagerImpl nodeManager;
     private RemoteNodeManagerAdaptor remoteNodeManager;
-    private UvmRemoteContext remoteContext;
+    private RemoteUvmContext remoteContext;
     private CronManager cronManager;
     private AppServerManagerImpl appServerManager;
     private RemoteAppServerManagerAdaptor remoteAppServerManager;
@@ -149,7 +149,7 @@ public class UvmContextImpl extends UvmContextBase
         return CONTEXT;
     }
 
-    public static UvmLocalContext context()
+    public static LocalUvmContext context()
     {
         return CONTEXT;
     }
@@ -689,7 +689,7 @@ public class UvmContextImpl extends UvmContextBase
 
         httpInvoker = HttpInvokerImpl.invoker();
 
-        remoteContext = new UvmRemoteContextAdaptor(this);
+        remoteContext = new RemoteUvmContextAdaptor(this);
         state = UvmState.INITIALIZED;
     }
 
@@ -860,7 +860,7 @@ public class UvmContextImpl extends UvmContextBase
         return tomcatManager;
     }
 
-    UvmRemoteContext remoteContext()
+    RemoteUvmContext remoteContext()
     {
         return remoteContext;
     }

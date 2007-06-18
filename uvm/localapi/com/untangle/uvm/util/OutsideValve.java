@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This library is free software; you can redistribute it and/or modify
@@ -39,7 +39,7 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 
 import com.untangle.uvm.LocalAppServerManager;
-import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.networking.NetworkUtil;
 import com.untangle.uvm.networking.internal.AccessSettingsInternal;
 import com.untangle.uvm.networking.internal.AddressSettingsInternal;
@@ -85,12 +85,12 @@ public abstract class OutsideValve extends ValveBase
 
     protected AccessSettingsInternal getAccessSettings()
     {
-        return UvmContextFactory.context().networkManager().getAccessSettingsInternal();
+        return LocalUvmContextFactory.context().networkManager().getAccessSettingsInternal();
     }
 
     protected AddressSettingsInternal getAddressSettings()
     {
-        return UvmContextFactory.context().networkManager().getAddressSettingsInternal();
+        return LocalUvmContextFactory.context().networkManager().getAddressSettingsInternal();
     }
 
 

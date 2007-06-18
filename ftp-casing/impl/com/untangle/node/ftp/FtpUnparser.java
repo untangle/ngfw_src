@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -22,7 +22,7 @@ import java.net.InetSocketAddress;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
 
-import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.tapi.Fitting;
 import com.untangle.uvm.tapi.TCPSession;
 import com.untangle.uvm.tapi.event.TCPStreamer;
@@ -93,7 +93,7 @@ class FtpUnparser extends AbstractUnparser
         }
 
         if (null != socketAddress) {
-            UvmContextFactory.context().pipelineFoundry()
+            LocalUvmContextFactory.context().pipelineFoundry()
                 .registerConnection(socketAddress, Fitting.FTP_DATA_STREAM);
         }
 

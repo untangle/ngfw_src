@@ -36,7 +36,7 @@ import java.util.Set;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.logging.UvmLoggingContext;
 import com.untangle.uvm.logging.UvmLoggingContextFactory;
 import com.untangle.uvm.logging.UvmRepositorySelector;
@@ -105,7 +105,7 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
 
                 public NodeManagerState getResult() { return tms; }
             };
-        UvmContextFactory.context().runTransaction(tw);
+        LocalUvmContextFactory.context().runTransaction(tw);
         this.nodeManagerState = tw.getResult();
     }
 
@@ -342,7 +342,7 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
 
     void restart(String name)
     {
-        ToolboxManagerImpl tbm = (ToolboxManagerImpl)UvmContextFactory
+        ToolboxManagerImpl tbm = (ToolboxManagerImpl)LocalUvmContextFactory
             .context().toolboxManager();
 
         String availVer = tbm.mackageDesc(name).getInstalledVersion();
@@ -424,7 +424,7 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
                                Map<Tid, NodeDesc> tDescs,
                                Set<String> loadedParents)
     {
-        ToolboxManagerImpl tbm = (ToolboxManagerImpl)UvmContextFactory
+        ToolboxManagerImpl tbm = (ToolboxManagerImpl)LocalUvmContextFactory
             .context().toolboxManager();
 
 
@@ -438,7 +438,7 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
             final String[] args = tps.getArgArray();
             final MackageDesc mackageDesc = tbm.mackageDesc(name);
 
-            Thread t = UvmContextFactory.context().newThread(new Runnable()
+            Thread t = LocalUvmContextFactory.context().newThread(new Runnable()
                 {
                     public void run()
                     {
@@ -518,7 +518,7 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
 
     private Map<Tid, NodeDesc> loadNodeDescs(List<NodePersistentState> unloaded)
     {
-        ToolboxManagerImpl tbm = (ToolboxManagerImpl)UvmContextFactory
+        ToolboxManagerImpl tbm = (ToolboxManagerImpl)LocalUvmContextFactory
             .context().toolboxManager();
 
         Map<Tid, NodeDesc> tDescs = new HashMap<Tid, NodeDesc>(unloaded.size());
@@ -565,7 +565,7 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
 
                 public Object getResult() { return null; }
             };
-        UvmContextFactory.context().runTransaction(tw);
+        LocalUvmContextFactory.context().runTransaction(tw);
 
         return unloaded;
     }
@@ -653,7 +653,7 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
     private Policy getDefaultPolicyForNode(String nodeName)
         throws DeployException
     {
-        ToolboxManagerImpl tbm = (ToolboxManagerImpl)UvmContextFactory
+        ToolboxManagerImpl tbm = (ToolboxManagerImpl)LocalUvmContextFactory
             .context().toolboxManager();
         MackageDesc mackageDesc = tbm.mackageDesc(nodeName);
         if (mackageDesc == null)
@@ -661,7 +661,7 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
         if (!mackageDesc.isSecurity())
             return null;
         else
-            return UvmContextFactory.context().policyManager().getDefaultPolicy();
+            return LocalUvmContextFactory.context().policyManager().getDefaultPolicy();
     }
 
     private Tid newTid(Policy policy, String nodeName)
@@ -682,7 +682,7 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
 
                 public Object getResult() { return null; }
             };
-        UvmContextFactory.context().runTransaction(tw);
+        LocalUvmContextFactory.context().runTransaction(tw);
 
         return tid;
     }

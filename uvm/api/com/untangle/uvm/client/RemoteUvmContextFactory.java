@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This library is free software; you can redistribute it and/or modify
@@ -44,25 +44,25 @@ import com.untangle.uvm.security.LoginSession;
 import com.untangle.uvm.security.UvmLogin;
 
 /**
- * Factory to get the UvmRemoteContext for an UVM instance.
+ * Factory to get the RemoteUvmContext for an UVM instance.
  *
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
-public class UvmRemoteContextFactory
+public class RemoteUvmContextFactory
 {
     private static final String SYSTEM_USER = "localadmin";
     private static final String SYSTEM_PASSWORD = "nimda11lacol";
 
-    private static final UvmRemoteContextFactory FACTORY
-        = new UvmRemoteContextFactory();
+    private static final RemoteUvmContextFactory FACTORY
+        = new RemoteUvmContextFactory();
 
-    private UvmRemoteContext remoteContext;
+    private RemoteUvmContext remoteContext;
     private HttpInvokerStub httpInvokerStub;
 
     // factory methods --------------------------------------------------------
 
-    public static UvmRemoteContextFactory factory()
+    public static RemoteUvmContextFactory factory()
     {
         return FACTORY;
     }
@@ -70,12 +70,12 @@ public class UvmRemoteContextFactory
     // public methods ---------------------------------------------------------
 
     /**
-     * Get the <code>UvmRemoteContext</code> from this classloader.
+     * Get the <code>RemoteUvmContext</code> from this classloader.
      * used by the GUI to get the context remotely.
      *
      * @return the <code>UvmContext</code>.
      */
-    public UvmRemoteContext uvmContext()
+    public RemoteUvmContext uvmContext()
     {
         return remoteContext;
     }
@@ -120,7 +120,7 @@ public class UvmRemoteContextFactory
     }
 
     /**
-     * Log in and get a UvmRemoteContext. This method is for
+     * Log in and get a RemoteUvmContext. This method is for
      * interactive clients that require an exclusive login.
      *
      * @param host the host of the Uvm.
@@ -138,7 +138,7 @@ public class UvmRemoteContextFactory
      * @exception MultipleLoginsException when there is already an
      * interactive login and force is false.
      */
-    public UvmRemoteContext interactiveLogin(String host, String username,
+    public RemoteUvmContext interactiveLogin(String host, String username,
                                               String password, int timeout,
                                               ClassLoader classLoader,
                                               boolean secure, boolean force)
@@ -150,7 +150,7 @@ public class UvmRemoteContextFactory
 
 
     /**
-     * Log in and get a UvmRemoteContext. This method is for
+     * Log in and get a RemoteUvmContext. This method is for
      * interactive clients that require an exclusive login.
      *
      * @param host the host of the Uvm.
@@ -169,7 +169,7 @@ public class UvmRemoteContextFactory
      * @exception MultipleLoginsException when there is already an
      * interactive login and force is false.
      */
-    public UvmRemoteContext interactiveLogin(String host, int port,
+    public RemoteUvmContext interactiveLogin(String host, int port,
                                               String username, String password,
                                               int timeout,
                                               ClassLoader classLoader,
@@ -199,13 +199,13 @@ public class UvmRemoteContextFactory
      * @param timeout an <code>int</code> value.
      * @param classLoader the class loader to be used for deserialization.
      * @param secure use a SSL connection.
-     * @return a <code>UvmRemoteContext</code> value
+     * @return a <code>RemoteUvmContext</code> value
      * @exception UvmConnectException when an UvmLogin object cannot
      * be accessed at given <code>host</code> and <code>port</code>.
      * @exception FailedLoginException if the key isn't kosher or the
      * product has already been activated
      */
-    public UvmRemoteContext activationLogin(String host, String key,
+    public RemoteUvmContext activationLogin(String host, String key,
                                              int timeout,
                                              ClassLoader classLoader,
                                              boolean secure)
@@ -223,13 +223,13 @@ public class UvmRemoteContextFactory
      * @param timeout an <code>int</code> value.
      * @param classLoader the class loader to be used for deserialization.
      * @param secure use a SSL connection.
-     * @return a <code>UvmRemoteContext</code> value
+     * @return a <code>RemoteUvmContext</code> value
      * @exception UvmConnectException when an UvmLogin object cannot
      *    be accessed at given <code>host</code> and <code>port</code>.
      * @exception FailedLoginException if the key isn't kosher or the
      *    product has already been activated
      */
-    public UvmRemoteContext activationLogin(String host, int port, String key,
+    public RemoteUvmContext activationLogin(String host, int port, String key,
                                              int timeout,
                                              ClassLoader classLoader,
                                              boolean secure)
@@ -249,7 +249,7 @@ public class UvmRemoteContextFactory
     }
 
     /**
-     * Log in and get a UvmRemoteContext. This is for system logins
+     * Log in and get a RemoteUvmContext. This is for system logins
      * that do not require exclusive access to the UVM. These logins
      * are allowed even when a client has an interactive login. Even
      * though some of these applications (mcli) may change the UVM
@@ -257,11 +257,11 @@ public class UvmRemoteContextFactory
      * functionality is not exposed to end users.
      *
      * @param timeout an <code>int</code> value
-     * @return the remote UvmRemoteContext.
+     * @return the remote RemoteUvmContext.
      * @exception FailedLoginException if an error occurs
      * @exception UvmConnectException if an error occurs
      */
-    public UvmRemoteContext systemLogin(int timeout, ClassLoader cl)
+    public RemoteUvmContext systemLogin(int timeout, ClassLoader cl)
         throws FailedLoginException, UvmConnectException
     {
         URL url;
@@ -283,7 +283,7 @@ public class UvmRemoteContextFactory
         return remoteContext;
     }
 
-    public UvmRemoteContext systemLogin(int timeout)
+    public RemoteUvmContext systemLogin(int timeout)
         throws FailedLoginException, UvmConnectException
     {
         return systemLogin(timeout, null);

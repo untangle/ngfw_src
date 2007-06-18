@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -30,7 +30,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.untangle.uvm.UvmLocalContext;
+import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.node.HostName;
 import com.untangle.uvm.node.IPaddr;
 import com.untangle.uvm.node.ParseException;
@@ -83,10 +83,10 @@ class DhcpMonitor implements Runnable
 
     private final Logger logger = Logger.getLogger( this.getClass());
     private final RouterImpl node;
-    private final UvmLocalContext localContext;
+    private final LocalUvmContext localContext;
 
 
-    DhcpMonitor( RouterImpl node, UvmLocalContext localContext )
+    DhcpMonitor( RouterImpl node, LocalUvmContext localContext )
     {
         this.node = node;
         this.localContext = localContext;

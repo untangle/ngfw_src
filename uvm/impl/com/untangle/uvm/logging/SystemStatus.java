@@ -20,7 +20,7 @@ package com.untangle.uvm.logging;
 
 import java.io.*;
 
-import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.networking.NetworkManagerImpl;
 import com.untangle.uvm.networking.internal.NetworkSpacesInternalSettings;
 import com.untangle.uvm.node.LocalNodeManager;
@@ -124,7 +124,7 @@ public class SystemStatus
              * Uname info
              */
             sb.append(SPACER);
-            proc = UvmContextFactory.context().exec("/bin/uname -a");
+            proc = LocalUvmContextFactory.context().exec("/bin/uname -a");
             input  = new BufferedReader(new InputStreamReader(proc.getInputStream()));
             while ((line = input.readLine()) != null) {
                 sb.append(line + RETCHAR);
@@ -135,7 +135,7 @@ public class SystemStatus
              * lspci
              */
             sb.append(SPACER);
-            proc = UvmContextFactory.context().exec("/usr/bin/lspci");
+            proc = LocalUvmContextFactory.context().exec("/usr/bin/lspci");
             input  = new BufferedReader(new InputStreamReader(proc.getInputStream()));
             while ((line = input.readLine()) != null) {
                 sb.append(line + RETCHAR);
@@ -175,7 +175,7 @@ public class SystemStatus
              * uptime
              */
             sb.append(SPACER);
-            proc = UvmContextFactory.context().exec("/usr/bin/uptime");
+            proc = LocalUvmContextFactory.context().exec("/usr/bin/uptime");
             input  = new BufferedReader(new InputStreamReader(proc.getInputStream()));
             while ((line = input.readLine()) != null) {
                 sb.append(line + RETCHAR);
@@ -196,7 +196,7 @@ public class SystemStatus
              * uvm uptime
              */
             sb.append(SPACER);
-            proc = UvmContextFactory.context().exec("/usr/share/untangle/bin/utuptime");
+            proc = LocalUvmContextFactory.context().exec("/usr/share/untangle/bin/utuptime");
             input  = new BufferedReader(new InputStreamReader(proc.getInputStream()));
             while ((line = input.readLine()) != null) {
                 sb.append("UVM uptime: " + line + RETCHAR);
@@ -250,7 +250,7 @@ public class SystemStatus
              * free -m
              */
             sb.append(SPACER);
-            proc = UvmContextFactory.context().exec("/usr/bin/free -m");
+            proc = LocalUvmContextFactory.context().exec("/usr/bin/free -m");
             input  = new BufferedReader(new InputStreamReader(proc.getInputStream()));
             while ((line = input.readLine()) != null) {
                 sb.append(line + RETCHAR);
@@ -286,7 +286,7 @@ public class SystemStatus
              * df
              */
             sb.append(SPACER);
-            proc = UvmContextFactory.context().exec("/bin/df -h");
+            proc = LocalUvmContextFactory.context().exec("/bin/df -h");
             input  = new BufferedReader(new InputStreamReader(proc.getInputStream()));
             while ((line = input.readLine()) != null) {
                 sb.append(line + RETCHAR);
@@ -307,7 +307,7 @@ public class SystemStatus
              * ps aux
              */
             sb.append(SPACER);
-            proc = UvmContextFactory.context().exec("/bin/ps --sort -rss aux");
+            proc = LocalUvmContextFactory.context().exec("/bin/ps --sort -rss aux");
             input  = new BufferedReader(new InputStreamReader(proc.getInputStream()));
             while ((line = input.readLine()) != null) {
                 sb.append(line + RETCHAR);
@@ -328,7 +328,7 @@ public class SystemStatus
              * mii-tool
              */
             sb.append(SPACER);
-            proc = UvmContextFactory.context().exec("/sbin/mii-tool");
+            proc = LocalUvmContextFactory.context().exec("/sbin/mii-tool");
             input  = new BufferedReader(new InputStreamReader(proc.getInputStream()));
             while ((line = input.readLine()) != null) {
                 sb.append(line + RETCHAR);
@@ -359,7 +359,7 @@ public class SystemStatus
              * Network Config
              */
             sb.append(SPACER);
-            NetworkSpacesInternalSettings netConf = ((NetworkManagerImpl) UvmContextFactory.context().networkManager()).getNetworkInternalSettings();
+            NetworkSpacesInternalSettings netConf = ((NetworkManagerImpl) LocalUvmContextFactory.context().networkManager()).getNetworkInternalSettings();
             sb.append(netConf.toString());
             sb.append(RETCHAR);
 
@@ -367,7 +367,7 @@ public class SystemStatus
              * Node Config
              */
             sb.append(SPACER);
-            LocalNodeManager tm = UvmContextFactory.context().nodeManager();
+            LocalNodeManager tm = LocalUvmContextFactory.context().nodeManager();
             for (Tid t : tm.nodeInstances()) {
                 NodeContext tctx = tm.nodeContext(t);
                 if (tctx == null) {
@@ -389,7 +389,7 @@ public class SystemStatus
              */
             sb.append(SPACER);
             sb.append("Estimated Sesssion Count: ");
-            sb.append(UvmContextFactory.context().argonManager().getSessionCount());
+            sb.append(LocalUvmContextFactory.context().argonManager().getSessionCount());
             sb.append(RETCHAR);
             /* Insert anything else here */
         }

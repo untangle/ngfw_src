@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -34,7 +34,7 @@ import org.apache.catalina.authenticator.SingleSignOn;
 import org.apache.catalina.connector.Request;
 import org.apache.catalina.connector.Response;
 
-import com.untangle.uvm.UvmLocalContext;
+import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.portal.BasePortalManager;
 import com.untangle.uvm.portal.BasePortalLogin;
 import com.untangle.uvm.security.UvmPrincipal;
@@ -48,7 +48,7 @@ class SpecialSingleSignOn extends SingleSignOn
 
     private BasePortalManager pmgr;
 
-    SpecialSingleSignOn(UvmLocalContext uvmContext, String ... contextPathArray )
+    SpecialSingleSignOn(LocalUvmContext uvmContext, String ... contextPathArray )
     {
         Set<String> contextSet = new HashSet<String>();
         

@@ -1,7 +1,7 @@
 <%@ page language="java" import="com.untangle.uvm.*,com.untangle.uvm.node.*, com.untangle.uvm.security.*, com.untangle.node.http.*, com.untangle.node.phish.*"%>
 
 <%
-UvmLocalContext uvm = UvmContextFactory.context();
+LocalUvmContext uvm = LocalUvmContextFactory.context();
 BrandingSettings bs = uvm.brandingManager().getBrandingSettings();
 String company = bs.getCompanyName();
 String companyUrl = bs.getCompanyUrl();

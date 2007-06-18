@@ -32,8 +32,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.UvmLocalContext;
+import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.LocalUvmContext;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpState;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
@@ -67,7 +67,7 @@ class HttpClientCache
         boolean resetClient = false;
 
         if (null != client) {
-            UvmLocalContext ctx = UvmContextFactory.context();
+            LocalUvmContext ctx = LocalUvmContextFactory.context();
             String boxKey = ctx.getActivationKey();
             for (org.apache.commons.httpclient.Cookie c : client.getState().getCookies()) {
                 if (c.getName().equals("boxkey") && !c.getValue().equals(boxKey)) {
@@ -122,7 +122,7 @@ class HttpClientCache
     {
         HttpClient client = new HttpClient(new MultiThreadedHttpConnectionManager());
         HttpState state = client.getState();
-        UvmLocalContext ctx = UvmContextFactory.context();
+        LocalUvmContext ctx = LocalUvmContextFactory.context();
         String boxKey = ctx.getActivationKey();
         state.addCookie(new org.apache.commons.httpclient.Cookie(cookieDomain, "boxkey", boxKey, "/", -1, false));
 
