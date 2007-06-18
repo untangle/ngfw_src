@@ -42,6 +42,8 @@ class UploadFailureNoSection < UploadFailure
 end
 class UploadFailureNoPriority < UploadFailure
 end
+class UploadFailureAlreadyUploaded < UploadFailure
+end
 
 class DebianUpload # Main base class
 
@@ -115,6 +117,8 @@ class DebianUpload # Main base class
           raise UploadFailureNoSection.new(output)
         elsif output =~ /No priority was given for '#{@name}', skipping/ then
           raise UploadFailureNoPriority.new(output)
+        elsif output =~ /is already registered with other md5sum/ then
+          raise UploadFailureAlreadyUploaded.new(output)
         else
           raise UploadFailure.new("Something went wrong when adding #{@name}\n\n" + output)
         end
