@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -22,10 +22,8 @@ import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
-
-import java.net.InetAddress;
 import java.net.Inet4Address;
-
+import java.net.InetAddress;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -33,24 +31,20 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
-
 import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.NetworkManager;
+import com.untangle.uvm.networking.internal.DhcpLeaseInternal;
+import com.untangle.uvm.networking.internal.DnsStaticHostInternal;
+import com.untangle.uvm.networking.internal.NetworkSpaceInternal;
+import com.untangle.uvm.networking.internal.NetworkSpacesInternalSettings;
+import com.untangle.uvm.networking.internal.ServicesInternalSettings;
 import com.untangle.uvm.node.HostName;
 import com.untangle.uvm.node.HostNameList;
 import com.untangle.uvm.node.IPNullAddr;
 import com.untangle.uvm.node.IPaddr;
-import com.untangle.uvm.node.ParseException;
+import com.untangle.uvm.node.NodeException;
 import com.untangle.uvm.node.firewall.MACAddress;
 import com.untangle.uvm.node.script.ScriptRunner;
-import com.untangle.uvm.node.NodeException;
-
-import com.untangle.uvm.networking.internal.DhcpLeaseInternal;
-import com.untangle.uvm.networking.internal.DnsStaticHostInternal;
-import com.untangle.uvm.networking.internal.NetworkSpacesInternalSettings;
-import com.untangle.uvm.networking.internal.NetworkSpaceInternal;
-import com.untangle.uvm.networking.internal.ServicesInternalSettings;
+import org.apache.log4j.Logger;
 
 class DhcpManager
 {
@@ -110,9 +104,9 @@ class DhcpManager
     void configure( ServicesInternalSettings settings ) throws NetworkException
     {
         NetworkManagerImpl nm = (NetworkManagerImpl)LocalUvmContextFactory.context().networkManager();
-        
+
         NetworkSpacesInternalSettings networkSettings = nm.getNetworkInternalSettings();
-        
+
         if ( !settings.getIsEnabled()) {
             logger.debug( "Services are currently disabled, deconfiguring dns masq" );
             writeHosts( settings, networkSettings );
@@ -156,7 +150,7 @@ class DhcpManager
         try {
             writeDisabledConfiguration();
 
-            ScriptRunner.getInstance().exec( DNS_MASQ_CMD, "restart", "false" );                        
+            ScriptRunner.getInstance().exec( DNS_MASQ_CMD, "restart", "false" );
         } catch ( NodeException e ) {
             logger.error( "Error while disabling the DNS masq server", e );
         }
@@ -202,7 +196,7 @@ class DhcpManager
 
         /* Lay over the settings from NAT */
         List <DhcpLeaseRule> staticList = settings.getDhcpLeaseList();
-        
+
         overlayStaticLeases( staticList, leaseList, macMap );
 
         /* Set the list */
@@ -333,21 +327,21 @@ class DhcpManager
         /* This may get disabled (eg in the case where the wizard detects it should go into bridge mode) */
         servicesSettings.setDhcpEnabled( true );
         servicesSettings.setDnsEnabled( true );
-        
+
         /* Convert to an array of bytes, to calculate the start/end address */
         byte addressArray[] = address.getAddr().getAddress();
         byte netmaskArray[] = netmask.getAddr().getAddress();
-        
+
         if (( netmaskArray[3] & 0x3F ) != 0 ) {
             logger.info( "Netmask is too restricting, ignoring settings change" );
             return servicesSettings;
         }
-        
+
         byte startArray[] = new byte[4];
         byte endArray[] = new byte[4];
         System.arraycopy( addressArray, 0, startArray, 0, NetworkUtilPriv.IP_ADDR_SIZE_BYTES );
         System.arraycopy( addressArray, 0, endArray, 0, NetworkUtilPriv.IP_ADDR_SIZE_BYTES );
-        
+
         /* The ideal case */
         if ( netmaskArray[3] == 0 ) {
             if (( addressArray[3] < 100 ) || ( addressArray[3] > 200 )) {
@@ -360,7 +354,7 @@ class DhcpManager
         } else {
             int min = byteToInt( netmaskArray[3] & addressArray[3] );
             int max = byteToInt( min | ( ~netmaskArray[3] ));
-                        
+
             int startValue = byteToInt( addressArray[3] );
 
             /* Address is in the first half */
@@ -372,7 +366,7 @@ class DhcpManager
             startArray[3] = (byte)startValue;
             endArray[3]   = (byte)endValue;
         }
-        
+
         try {
             IPaddr start = new IPaddr((Inet4Address)InetAddress.getByAddress( startArray ));
             IPaddr end   = new IPaddr((Inet4Address)InetAddress.getByAddress( endArray ));
@@ -380,21 +374,21 @@ class DhcpManager
         } catch ( Exception e ) {
             logger.warn( "Exception creating IP addr, ignoring settings change", e );
         }
-        
+
         return servicesSettings;
     }
-    
-    private int byteToInt ( byte val ) 
+
+    private int byteToInt ( byte val )
     {
         int num = val;
         if ( num < 0 ) num = num & 0x7F + 0x80;
         return num;
     }
-    
-    private int byteToInt ( int val ) 
+
+    private int byteToInt ( int val )
     {
         int num = val;
-        
+
         if ( num < 0 ) num = num & 0x7F + 0x80;
         return num;
     }
@@ -469,10 +463,10 @@ class DhcpManager
                 comment( sb, "Local domain name is empty, using " + NetworkUtil.LOCAL_DOMAIN_DEFAULT );
                 localDomain = NetworkUtil.LOCAL_DOMAIN_DEFAULT;
             }
-            
+
             /* This flag is used to return address based on the subnet */
             sb.append( FLAG_DNS_LOCALIZE + "\n" );
-            
+
             sb.append( FLAG_DNS_LOCAL_DOMAIN + "=" + localDomain + "\n\n" );
         }
 
@@ -504,7 +498,7 @@ class DhcpManager
                 servicesAddress = networkSpaceList.get( 0 ).getPrimaryAddress().getNetwork();
             }
         }
-        
+
         if ( servicesAddress != null && !servicesAddress.isEmpty()) {
             sb.append( servicesAddress.toString() + "\t" + boxHostname + "\n" );
         } else {

@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -19,29 +19,34 @@
 package com.untangle.node.router;
 
 import java.net.InetAddress;
-import java.net.Inet4Address;
-
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Collections;
 
 import com.untangle.uvm.ArgonManager;
-import com.untangle.uvm.NetworkManager;
 import com.untangle.uvm.IntfConstants;
 import com.untangle.uvm.LocalUvmContextFactory;
-
+import com.untangle.uvm.RemoteNetworkManager;
 import com.untangle.uvm.logging.LogEvent;
-import com.untangle.uvm.localapi.ArgonInterface;
-
-import com.untangle.uvm.networking.NetworkException;
 import com.untangle.uvm.networking.IPNetwork;
-import com.untangle.uvm.networking.RedirectRule;
+import com.untangle.uvm.networking.internal.InterfaceInternal;
 import com.untangle.uvm.networking.internal.NetworkSpaceInternal;
 import com.untangle.uvm.networking.internal.NetworkSpacesInternalSettings;
-import com.untangle.uvm.networking.internal.InterfaceInternal;
 import com.untangle.uvm.networking.internal.RedirectInternal;
-
+import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.Node;
+import com.untangle.uvm.node.NodeException;
+import com.untangle.uvm.node.ParseException;
+import com.untangle.uvm.node.firewall.InterfaceAddressRedirect;
+import com.untangle.uvm.node.firewall.InterfaceRedirect;
+import com.untangle.uvm.node.firewall.InterfaceStaticRedirect;
+import com.untangle.uvm.node.firewall.intf.IntfMatcher;
+import com.untangle.uvm.node.firewall.intf.IntfMatcherFactory;
+import com.untangle.uvm.node.firewall.ip.IPMatcher;
+import com.untangle.uvm.node.firewall.ip.IPMatcherFactory;
+import com.untangle.uvm.node.firewall.port.PortMatcherFactory;
+import com.untangle.uvm.node.firewall.protocol.ProtocolMatcherFactory;
 import com.untangle.uvm.tapi.AbstractEventHandler;
 import com.untangle.uvm.tapi.IPNewSessionRequest;
 import com.untangle.uvm.tapi.IPSession;
@@ -53,23 +58,6 @@ import com.untangle.uvm.tapi.event.TCPNewSessionRequestEvent;
 import com.untangle.uvm.tapi.event.TCPSessionEvent;
 import com.untangle.uvm.tapi.event.UDPNewSessionRequestEvent;
 import com.untangle.uvm.tapi.event.UDPSessionEvent;
-import com.untangle.uvm.node.IPaddr;
-import com.untangle.uvm.node.Node;
-import com.untangle.uvm.node.NodeException;
-import com.untangle.uvm.node.ParseException;
-
-import com.untangle.uvm.node.firewall.ip.IPMatcher;
-import com.untangle.uvm.node.firewall.ip.IPMatcherFactory;
-import com.untangle.uvm.node.firewall.intf.IntfMatcher;
-import com.untangle.uvm.node.firewall.intf.IntfMatcherFactory;
-import com.untangle.uvm.node.firewall.port.PortMatcher;
-import com.untangle.uvm.node.firewall.port.PortMatcherFactory;
-import com.untangle.uvm.node.firewall.InterfaceAddressRedirect;
-import com.untangle.uvm.node.firewall.InterfaceRedirect;
-import com.untangle.uvm.node.firewall.InterfaceStaticRedirect;
-import com.untangle.uvm.node.firewall.protocol.ProtocolMatcher;
-import com.untangle.uvm.node.firewall.protocol.ProtocolMatcherFactory;
-
 import org.apache.log4j.Logger;
 
 import static com.untangle.node.router.RouterConstants.*;
@@ -77,7 +65,7 @@ import static com.untangle.node.router.RouterConstants.*;
 class RouterEventHandler extends AbstractEventHandler
 {
     private final Logger logger = Logger.getLogger(RouterEventHandler.class);
-    
+
     private static final String PROPERTY_BASE = "com.untangle.node.router.";
     private static final String PROPERTY_TCP_PORT_START = PROPERTY_BASE + "tcp-port-start";
     private static final String PROPERTY_TCP_PORT_END   = PROPERTY_BASE + "tcp-port-end";
@@ -85,7 +73,7 @@ class RouterEventHandler extends AbstractEventHandler
     private static final String PROPERTY_UDP_PORT_END   = PROPERTY_BASE + "udp-port-end";
     private static final String PROPERTY_ICMP_PID_START = PROPERTY_BASE + "icmp-pid-start";
     private static final String PROPERTY_ICMP_PID_END   = PROPERTY_BASE + "icmp-pid-end";
-    
+
     /* match to determine whether a session is natted */
     private List<NatMatcher> natMatchers     = Collections.emptyList();
 
@@ -102,7 +90,7 @@ class RouterEventHandler extends AbstractEventHandler
     /* All of the other rules */
     /* Use an empty list rather than null */
     private List<RedirectMatcher> redirectList = new LinkedList<RedirectMatcher>();
-    
+
     /* A list of all of the traffic blockers */
     private List<RequestIntfMatcher> trafficBlockers = new LinkedList<RequestIntfMatcher>();
 
@@ -164,19 +152,19 @@ class RouterEventHandler extends AbstractEventHandler
         RouterAttachment attachment = new RouterAttachment();
 
         request.attach( attachment );
-        
+
         if ( matchesTrafficBlocker( request )) {
             node.incrementCount( BLOCK_COUNTER ); // BLOCK COUNTER
-            
+
             /* XXX How should the session be rejected */
             request.rejectSilently();
             return;
         }
-        
+
         /* Check for NAT, Redirects or DMZ */
         try {
             if (logger.isInfoEnabled()) logger.info( "Testing <" + request + ">" );
-                
+
             if ( handleRouter( request, protocol )      ||
                  handleRedirect( request, protocol ) ||
                  handleDmzHost( request,  protocol )) {
@@ -203,7 +191,7 @@ class RouterEventHandler extends AbstractEventHandler
              * redirected or dmzed, it must be rejected */
             if ( isUnmodifiedSessionBlocked( request )) {
                 node.incrementCount( BLOCK_COUNTER ); // BLOCK COUNTER
-                
+
                 /* XXX How should the session be rejected */
                 request.rejectSilently();
                 return;
@@ -281,7 +269,7 @@ class RouterEventHandler extends AbstractEventHandler
                               pid + "!=" + releasePid );
             } else {
                 if ( logger.isDebugEnabled()) logger.debug( "ICMP: Releasing pid: " + releasePid );
-                
+
                 icmpPidList.releasePort( releasePid );
             }
         } else {
@@ -291,13 +279,13 @@ class RouterEventHandler extends AbstractEventHandler
 
     void configure( NetworkSpacesInternalSettings settings )
         throws NodeException
-    {        
+    {
         ArgonManager argonManager = LocalUvmContextFactory.context().argonManager();
-        NetworkManager networkManager = LocalUvmContextFactory.context().networkManager();
+        RemoteNetworkManager networkManager = LocalUvmContextFactory.context().networkManager();
 
         /* Create a new override */
         List<InterfaceRedirect> overrideList = new LinkedList<InterfaceRedirect>();
-        
+
         /* Create a list of the NAT Matchers */
         List<NatMatcher> natMatchers = new LinkedList<NatMatcher>();
 
@@ -306,34 +294,34 @@ class RouterEventHandler extends AbstractEventHandler
 
         /* Create a list to block traffic from being forwarded */
         List<RequestIntfMatcher> trafficBlockers = new LinkedList<RequestIntfMatcher>();
-        
+
         /* Create a list to block unmodified traffic that shouldn't be forwarded. */
         List<RequestIntfMatcher> unmodifiedBlockers = new LinkedList<RequestIntfMatcher>();
-                
+
         /* First deal with all of the NATd spaces */
         for ( NetworkSpaceInternal space : settings.getNetworkSpaceList()) {
             /* When settings are disabled, ignore everything but the primary space or
              * if the space is just disabled. */
             if (( !settings.getIsEnabled() && space.getIndex() != 0 ) || !space.getIsEnabled()) continue;
-            
+
             /* If the network space has multiple interfaces, than the traffic has to be allowed
              * between those interfaces */
             setupTrafficFlow( space, trafficBlockers, unmodifiedBlockers );
-            
+
             if ( space.getIsDmzHostEnabled()) {
                 logger.debug( "Inserting new dmz host matcher: " + space );
                 dmzHostMatchers.add( DmzMatcher.makeDmzMatcher( space, settings ));
             }
 
-            
+
             if ( space.getIsNatEnabled()) {
                 /* Create a NAT matcher for this space */
                 for ( IPNetwork networkRule : (List<IPNetwork>)space.getNetworkList()) {
                     natMatchers.add( NatMatcher.makeNatMatcher( networkRule, space ));
-                }                
+                }
             }
         }
-        
+
         /* Save all of the objects at once */
 
         /* Empty out the list */
@@ -346,17 +334,17 @@ class RouterEventHandler extends AbstractEventHandler
 
                 logger.debug( "Adding redirect: redirect" );
                 redirectMatcherList.add( redirect );
-                
+
                 overrideList.add( makeInterfaceAddressRedirect( internal ));
             }
         }
-        
+
         /* Add the DMZ overrides first */
         for ( DmzMatcher dmzMatcher : dmzHostMatchers ) overrideList.add( dmzMatcher.getInterfaceRedirect());
-        
+
         /* Last add the NAT overrides */
         for ( NatMatcher natMatcher : natMatchers ) overrideList.add( natMatcher.getInterfaceRedirect());
-        
+
         /* Set the redirect list at the end(avoid concurrency issues) */
         this.redirectList        = redirectMatcherList;
         this.natMatchers         = natMatchers;
@@ -381,10 +369,10 @@ class RouterEventHandler extends AbstractEventHandler
         throws MPipeException, RouterUnconfiguredException
     {
         int port;
-        
+
         boolean isRouter = false;
         NatMatcher natMatcher = null;
-        
+
         for ( NatMatcher matcher : natMatchers ) {
             if ( matcher.isMatch( request, protocol )) {
                 natMatcher = matcher;
@@ -416,7 +404,7 @@ class RouterEventHandler extends AbstractEventHandler
             /* Set the client port */
             /* XXX THIS IS A HACK, it really should check if the protocol is ICMP, but
              * for now there are only UDP sessions */
-            /* !!!!! This actually gets worse memory wise, because now there should be 
+            /* !!!!! This actually gets worse memory wise, because now there should be
              * a port list per space */
             if ( request.clientPort() == 0 && request.serverPort() == 0 ) {
                 port = icmpPidList.getNextPort();
@@ -476,7 +464,7 @@ class RouterEventHandler extends AbstractEventHandler
                     if ( attachment == null ) {
                         logger.error( "null attachment to a NAT session" );
                     } else {
-                        attachment.eventToLog(new RedirectEvent( request.pipelineEndpoints(), 
+                        attachment.eventToLog(new RedirectEvent( request.pipelineEndpoints(),
                                                                  matcher.ruleIndex()));
                     }
                 }
@@ -497,7 +485,7 @@ class RouterEventHandler extends AbstractEventHandler
     {
         for ( DmzMatcher matcher : dmzHostMatchers ) {
             if ( logger.isDebugEnabled()) logger.debug( "testing dmz matcher" );
-            
+
             if ( matcher.isMatch( request, protocol )) {
                 if ( logger.isDebugEnabled()) logger.debug( "dmz match" ); //  DELME
 
@@ -508,7 +496,7 @@ class RouterEventHandler extends AbstractEventHandler
 
                 if ( matcher.getIsLoggingEnabled()) {
                     RouterAttachment attachment = (RouterAttachment)request.attachment();
-                    
+
                     if ( attachment == null ) {
                         logger.error( "null attachment to a NAT session" );
                     } else {
@@ -540,8 +528,8 @@ class RouterEventHandler extends AbstractEventHandler
         getPortList( protocol ).releasePort( port );
     }
 
-    private void setupTrafficFlow( NetworkSpaceInternal space, 
-                                   List<RequestIntfMatcher> blockers, 
+    private void setupTrafficFlow( NetworkSpaceInternal space,
+                                   List<RequestIntfMatcher> blockers,
                                    List<RequestIntfMatcher> unmodified )
     {
         List<InterfaceInternal> interfaceList = space.getInterfaceList();
@@ -561,7 +549,7 @@ class RouterEventHandler extends AbstractEventHandler
             /* Block traffic from entering this network space unfiltered */
             try {
                 unmodified.add( RequestIntfMatcher.makeRouterInstance( space ));
-            } catch ( NodeException e ) { 
+            } catch ( NodeException e ) {
                 logger.error( "Unable to create a traffic passer for [" + space + "]", e );
             }
         }
@@ -577,7 +565,7 @@ class RouterEventHandler extends AbstractEventHandler
 
         return false;
     }
-    
+
     /** Returns true if the request should be allowed through unmodified (not NATd or redirected) */
     private boolean isUnmodifiedSessionBlocked( IPNewSessionRequest request )
     {
@@ -671,7 +659,7 @@ class RequestIntfMatcher
     private final boolean isBidirectional;
     private final IntfMatcher client;
     private final IntfMatcher server;
-    
+
     RequestIntfMatcher( IntfMatcher client, IntfMatcher server )
     {
         this( client, server, true );
@@ -687,7 +675,7 @@ class RequestIntfMatcher
     boolean isMatch( IPNewSessionRequest request )
     {
         return (( this.client.isMatch( request.clientIntf()) && this.server.isMatch( request.serverIntf())) ||
-                ( this.isBidirectional && 
+                ( this.isBidirectional &&
                   this.client.isMatch( request.serverIntf()) && this.server.isMatch( request.clientIntf())));
     }
 
@@ -696,14 +684,14 @@ class RequestIntfMatcher
         String connector = this.isBidirectional ? " <-> " : " -> ";
         return this.client.toString() + connector + this.server;
     }
-    
+
     static RequestIntfMatcher makeInstance( NetworkSpaceInternal space ) throws NodeException
     {
         List<InterfaceInternal> interfaceList = space.getInterfaceList();
         IntfMatcherFactory imf = IntfMatcherFactory.getInstance();
-        
+
         byte intfArray[] = new byte[interfaceList.size()];
-        
+
         int c = 0;
         for ( InterfaceInternal intf : interfaceList ) intfArray[c++] = intf.getArgonIntf().getArgon();
 
@@ -715,7 +703,7 @@ class RequestIntfMatcher
         } catch ( ParseException e ) {
             throw new NodeException( "Unable to create the interface matchers", e );
         }
-        
+
         return new RequestIntfMatcher( clientIntfMatcher, serverIntfMatcher );
     }
 
@@ -723,10 +711,10 @@ class RequestIntfMatcher
     {
         List<InterfaceInternal> interfaceList = space.getInterfaceList();
         IntfMatcherFactory imf = IntfMatcherFactory.getInstance();
-        
+
         byte clientIntfArray[] = new byte[interfaceList.size()+1];
         byte serverIntfArray[] = new byte[interfaceList.size()];
-        
+
         int c = 0;
         for ( InterfaceInternal intf : interfaceList ) {
             serverIntfArray[c] = clientIntfArray[c++] = intf.getArgonIntf().getArgon();
@@ -742,7 +730,7 @@ class RequestIntfMatcher
         } catch ( ParseException e ) {
             throw new NodeException( "Unable to create the interface matchers", e );
         }
-        
+
         return new RequestIntfMatcher( clientIntfMatcher, serverIntfMatcher );
     }
 
@@ -754,12 +742,12 @@ class NatMatcher
     private final NetworkSpaceInternal space;
     private InetAddress natAddress;
     private final InterfaceRedirect interfaceRedirect;
-    
+
     private final IntfMatcher vpnClientMatcher;
     private final IntfMatcher vpnServerMatcher;
 
     NatMatcher( RedirectMatcher matcher, NetworkSpaceInternal space, InetAddress natAddress,
-                InterfaceRedirect interfaceRedirect, IntfMatcher vpnClientMatcher, 
+                InterfaceRedirect interfaceRedirect, IntfMatcher vpnClientMatcher,
                 IntfMatcher vpnServerMatcher )
     {
         this.matcher    = matcher;
@@ -794,8 +782,8 @@ class NatMatcher
     boolean isMatch( IPNewSessionRequest request, Protocol protocol )
     {
         /* If the matcher matchers, or this fits the profile of a VPN session, NAT it */
-        return this.matcher.isMatch( request, protocol ) || 
-            ( vpnClientMatcher.isMatch( request.clientIntf()) && 
+        return this.matcher.isMatch( request, protocol ) ||
+            ( vpnClientMatcher.isMatch( request.clientIntf()) &&
               vpnServerMatcher.isMatch( request.serverIntf()));
     }
 
@@ -803,7 +791,7 @@ class NatMatcher
     {
         return this.interfaceRedirect;
     }
-    
+
     /* Create a matcher for handling traffic to be NATd */
     static NatMatcher makeNatMatcher( IPNetwork network, NetworkSpaceInternal space )
         throws NodeException
@@ -814,7 +802,7 @@ class NatMatcher
         ProtocolMatcherFactory  prmf = ProtocolMatcherFactory.getInstance();
 
         IPMatcher clientIPMatcher = imf.makeSubnetMatcher( network.getNetwork(), network.getNetmask());
-        
+
         List<InterfaceInternal> interfaceList = space.getInterfaceList();
         byte intfArray[] = new byte[interfaceList.size()];
         byte dstIntfArray[] = new byte[interfaceList.size() + 1 ];
@@ -827,21 +815,21 @@ class NatMatcher
 
         /* This is used to detect vpn sessions */
         boolean hasInternal = false;
-        
+
         int c = 0;
         for ( InterfaceInternal intf : interfaceList ) {
             byte argonIntf = intf.getArgonIntf().getArgon();
             intfArray[c] = argonIntf;
             dstIntfArray[c+1] = argonIntf;
-            
+
             if ( argonIntf == IntfConstants.INTERNAL_INTF ) hasInternal = true;
             c++;
         }
-        
+
         IntfMatcher clientIntfMatcher, serverIntfMatcher;
 
         try {
-            clientIntfMatcher = intfMatcherFactory.makeSetMatcher( intfArray );            
+            clientIntfMatcher = intfMatcherFactory.makeSetMatcher( intfArray );
             serverIntfMatcher = intfMatcherFactory.makeInverseMatcher( dstIntfArray );
         } catch ( ParseException e ) {
             throw new NodeException( "Unable to create the client or server interface matcher " +
@@ -897,7 +885,7 @@ class DmzMatcher
     {
         return this.space;
     }
-    
+
     boolean isMatch( IPNewSessionRequest request, Protocol protocol )
     {
         return matcher.isMatch( request, protocol );
@@ -919,7 +907,7 @@ class DmzMatcher
     }
 
     /* Create a matcher for handling DMZ traffic */
-    static DmzMatcher makeDmzMatcher( NetworkSpaceInternal space, NetworkSpacesInternalSettings settings ) 
+    static DmzMatcher makeDmzMatcher( NetworkSpaceInternal space, NetworkSpacesInternalSettings settings )
         throws NodeException
     {
         IntfMatcherFactory intfMatcherFactory = IntfMatcherFactory.getInstance();
@@ -932,13 +920,13 @@ class DmzMatcher
         List<InterfaceInternal> interfaceList = space.getInterfaceList();
 
         boolean hasAllInterfaces = ( interfaceList.size() == settings.getInterfaceList().size());
-        
+
         byte intfArray[] = new byte[interfaceList.size()];
-        
+
         int c = 0;
         for ( InterfaceInternal intf : interfaceList ) {
             byte argonIntf = intf.getArgonIntf().getArgon();
-            
+
             /* Don't add the internal interface if the network space has all of the interface.
              * this is special cased to handle the situtation where dmz is enabled, but nat is
              * not, unusual, but possible */
@@ -970,7 +958,7 @@ class DmzMatcher
             clientIntfMatcher = intfMatcherFactory.getNilMatcher();
             serverIntfMatcher = intfMatcherFactory.getNilMatcher();
         }
-                
+
         RedirectMatcher matcher = new RedirectMatcher( true, space.getIsDmzHostLoggingEnabled(),
                                                        prmf.getAllMatcher(),
                                                        clientIntfMatcher, serverIntfMatcher,
@@ -985,7 +973,7 @@ class DmzMatcher
                                           imf.getAllMatcher(), serverIPMatcher,
                                           pmf.getAllMatcher(), pmf.getAllMatcher(),
                                           dmzHost );
-        
+
         return new DmzMatcher( matcher, space, redirect );
     }
 }

@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -26,17 +26,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
-import org.hibernate.Query;
-import org.hibernate.Session;
-
 import com.untangle.jnetcap.Netcap;
-import com.untangle.uvm.IntfConstants;
-import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.LocalUvmContext;
-import com.untangle.uvm.NetworkManager;
 import com.untangle.uvm.ArgonException;
-import com.untangle.uvm.node.IPSessionDesc;
+import com.untangle.uvm.IntfConstants;
+import com.untangle.uvm.LocalUvmContext;
+import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.networking.internal.AccessSettingsInternal;
 import com.untangle.uvm.networking.internal.AddressSettingsInternal;
 import com.untangle.uvm.networking.internal.InterfaceInternal;
@@ -44,17 +38,21 @@ import com.untangle.uvm.networking.internal.MiscSettingsInternal;
 import com.untangle.uvm.networking.internal.NetworkSpaceInternal;
 import com.untangle.uvm.networking.internal.NetworkSpacesInternalSettings;
 import com.untangle.uvm.networking.internal.ServicesInternalSettings;
-import com.untangle.uvm.security.Tid;
-import com.untangle.uvm.toolbox.ToolboxManager;
 import com.untangle.uvm.node.HostName;
+import com.untangle.uvm.node.IPSessionDesc;
 import com.untangle.uvm.node.IPaddr;
 import com.untangle.uvm.node.LocalNodeManager;
 import com.untangle.uvm.node.ValidateException;
 import com.untangle.uvm.node.firewall.ip.IPMatcherFactory;
 import com.untangle.uvm.node.script.ScriptRunner;
 import com.untangle.uvm.node.script.ScriptWriter;
+import com.untangle.uvm.security.Tid;
+import com.untangle.uvm.toolbox.ToolboxManager;
 import com.untangle.uvm.util.DataLoader;
 import com.untangle.uvm.util.DataSaver;
+import org.apache.log4j.Logger;
+import org.hibernate.Query;
+import org.hibernate.Session;
 
 import static com.untangle.uvm.networking.ShellFlags.FILE_RULE_CFG;
 
@@ -187,7 +185,7 @@ public class NetworkManagerImpl implements LocalNetworkManager
     IPaddr getPrimaryAddress()
     {
         NetworkSpacesInternalSettings settings = this.networkSettings;
-        
+
         if ( settings == null ) return null;
 
         List<NetworkSpaceInternal> spaceList = settings.getNetworkSpaceList();
@@ -211,17 +209,17 @@ public class NetworkManagerImpl implements LocalNetworkManager
         }
 
         this.pppoeManager.setExternalSettings( basic.getPPPoESettings());
-        
+
         setNetworkSettings( NetworkUtilPriv.getPrivInstance().
                             toInternal( basic, this.networkSettings, true ));
     }
 
     /* Save the basic network settings during the wizard */
-    public synchronized void setSetupSettings( AddressSettings address, BasicNetworkSettings basic ) 
+    public synchronized void setSetupSettings( AddressSettings address, BasicNetworkSettings basic )
         throws NetworkException, ValidateException
     {
         this.pppoeManager.setExternalSettings( basic.getPPPoESettings());
-        
+
         this.addressManager.setSettings( address );
         setNetworkSettings( NetworkUtilPriv.getPrivInstance().
                             toInternal( basic, this.networkSettings, false ));
@@ -239,7 +237,7 @@ public class NetworkManagerImpl implements LocalNetworkManager
     {
         return this.accessManager.getInternalSettings();
     }
-    
+
     public void setAccessSettings( AccessSettings access )
     {
         this.accessManager.setSettings( access );
@@ -257,7 +255,7 @@ public class NetworkManagerImpl implements LocalNetworkManager
     {
         return this.addressManager.getInternalSettings();
     }
-    
+
     public void setAddressSettings( AddressSettings address )
     {
         this.addressManager.setSettings( address );
@@ -275,7 +273,7 @@ public class NetworkManagerImpl implements LocalNetworkManager
     {
         return this.miscManager.getInternalSettings();
     }
-    
+
     public void setMiscSettings( MiscSettings misc )
     {
         this.miscManager.setSettings( misc );
@@ -292,7 +290,7 @@ public class NetworkManagerImpl implements LocalNetworkManager
             logger.error( "Unable to create rules", e );
         }
     }
-    
+
     /* Remove a service that needs outside access to HTTPs, the name should be unique */
     public synchronized void unregisterService( String name )
     {
@@ -334,7 +332,7 @@ public class NetworkManagerImpl implements LocalNetworkManager
 
         NetworkUtilPriv nup = NetworkUtilPriv.getPrivInstance();
         NetworkSpacesInternalSettings internal = nup.toInternal( settings );;
-        
+
         /* If the saving is disable, then don't actually reconfigured,
          * just save the settings to the database. */
         if ( configure ) {
@@ -397,7 +395,7 @@ public class NetworkManagerImpl implements LocalNetworkManager
         throws NetworkException, ValidateException
     {
         this.addressManager.setSettings( address );
-        
+
         setBasicSettings( basic );
     }
 
@@ -538,7 +536,7 @@ public class NetworkManagerImpl implements LocalNetworkManager
             throw new NetworkException( "Unable to turn on network spaces" );
         }
     }
-    
+
     /* Get the current hostname */
     public HostName getHostname()
     {
@@ -725,7 +723,7 @@ public class NetworkManagerImpl implements LocalNetworkManager
     public boolean isAddressLocal( IPaddr address )
     {
         NetworkUtilPriv nup = NetworkUtilPriv.getPrivInstance();
-        
+
         return nup.isAddressLocal( this.networkSettings, address );
     }
 
@@ -746,10 +744,10 @@ public class NetworkManagerImpl implements LocalNetworkManager
                                           this.networkSettings.getServiceSpace());
 
             this.addressManager.updateAddress();
-            
+
             /* Have to do this too, because the ip address may have changed */
             updateServicesSettings();
-            
+
             generateRules();
 
             callNetworkListeners();
@@ -790,7 +788,7 @@ public class NetworkManagerImpl implements LocalNetworkManager
 
         /* ignore everything on the external or DMZ interface */
         if ( argonIntf == IntfConstants.EXTERNAL_INTF || argonIntf == IntfConstants.DMZ_INTF ) return null;
-        
+
         return internalAddress;
     }
 
@@ -800,7 +798,7 @@ public class NetworkManagerImpl implements LocalNetworkManager
         ScriptWriter scriptWriter = new ScriptWriter();
         /* Set whether or not setup has completed */
         this.ruleManager.setHasCompletedSetup( this.networkSettings.getHasCompletedSetup());
-        
+
         this.accessManager.commit( scriptWriter );
         this.addressManager.commit( scriptWriter );
         this.miscManager.commit( scriptWriter );
@@ -930,7 +928,7 @@ public class NetworkManagerImpl implements LocalNetworkManager
         if ( Boolean.valueOf( disableSaveSettings ) == true ) {
             this.saveSettings = false;
         }
-        
+
         loadAllSettings();
 
         /* Create new dynamic dns settings, only if they are not set */
@@ -958,7 +956,7 @@ public class NetworkManagerImpl implements LocalNetworkManager
 
             /* Save the network settings */
             setNetworkSettings( internal );
-            
+
             /* Attempt to load the services settings */
             this.servicesSettings = loadServicesSettings();
 
@@ -1046,7 +1044,7 @@ public class NetworkManagerImpl implements LocalNetworkManager
         throws NetworkException, ArgonException
     {
         /* This is a script writer customized to generate etc interfaces files */
-        InterfacesScriptWriter isw = 
+        InterfacesScriptWriter isw =
             new InterfacesScriptWriter( newSettings, this.miscManager.getInternalSettings());
         isw.addNetworkSettings();
         isw.writeFile( ETC_INTERFACES_FILE );
@@ -1075,14 +1073,14 @@ public class NetworkManagerImpl implements LocalNetworkManager
             logger.error( "Error loading network settings, setting to null to be initialized later", e );
             this.networkSettings = null;
         }
-        
+
         /* These must load after the dynamic dns and the network settings in order to initialze
          * the public address. */
 
         /* Load the miscellaneous settings */
         this.miscManager.init();
 
-        /* Load the access settings. */        
+        /* Load the access settings. */
         this.accessManager.init();
 
         /* Load the address/hostname settings */
@@ -1285,7 +1283,7 @@ public class NetworkManagerImpl implements LocalNetworkManager
                     break;
                 }
             }
-            
+
             if ( !isFound ) logger.warn( "unable to find internal interface, using primary interface" );
 
             List<IPNetwork> internalNetworkList = new LinkedList<IPNetwork>( internal.getNetworkList());
@@ -1303,18 +1301,18 @@ public class NetworkManagerImpl implements LocalNetworkManager
             }
 
             for ( IPNetwork network : internalNetworkList ) logger.debug( "internal network: " + network );
-            
+
             ipmf.setInternalNetworks( internalNetworkList );
 
             /* somewhat of a hack, because this is where the internal space is looked up */
-            try { 
+            try {
                 IPaddr addr = internal.getPrimaryAddress().getNetwork();
                 if ( addr.isEmpty()) internalAddress = null;
                 else internalAddress = addr.getAddr();
             } catch ( Exception e ) {
                 logger.warn( "unable to properly update the internal address, using null", e );
                 internalAddress = null;
-            }            
+            }
         }
     }
 

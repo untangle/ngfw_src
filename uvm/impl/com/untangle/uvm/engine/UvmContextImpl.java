@@ -26,10 +26,10 @@ import java.util.StringTokenizer;
 
 import com.untangle.uvm.CronJob;
 import com.untangle.uvm.LocalBrandingManager;
+import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.Period;
 import com.untangle.uvm.RemoteBrandingManager;
 import com.untangle.uvm.UvmException;
-import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.UvmState;
 import com.untangle.uvm.addrbook.RemoteAddressBook;
 import com.untangle.uvm.argon.Argon;
@@ -45,7 +45,7 @@ import com.untangle.uvm.logging.EventLoggerFactory;
 import com.untangle.uvm.logging.LogMailerImpl;
 import com.untangle.uvm.logging.UvmRepositorySelector;
 import com.untangle.uvm.networking.NetworkManagerImpl;
-import com.untangle.uvm.networking.RemoteNetworkManagerImpl;
+import com.untangle.uvm.networking.RemoteNetworkManagerAdaptor;
 import com.untangle.uvm.networking.ping.PingManagerImpl;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.RemoteIntfManager;
@@ -108,7 +108,7 @@ public class UvmContextImpl extends UvmContextBase
     private LogMailerImpl logMailer;
     private NetworkManagerImpl networkManager;
     private PingManagerImpl pingManager;
-    private RemoteNetworkManagerImpl remoteNetworkManager;
+    private RemoteNetworkManagerAdaptor remoteNetworkManager;
     private ReportingManagerImpl reportingManager;
     private ConnectivityTesterImpl connectivityTester;
     private PipelineFoundryImpl pipelineFoundry;
@@ -256,7 +256,7 @@ public class UvmContextImpl extends UvmContextBase
         return pingManager;
     }
 
-    RemoteNetworkManagerImpl remoteNetworkManager()
+    RemoteNetworkManagerAdaptor remoteNetworkManager()
     {
         return remoteNetworkManager;
     }
@@ -627,7 +627,7 @@ public class UvmContextImpl extends UvmContextBase
         // but NAT may register a listener, and thus the network
         // manager should exist.
         networkManager = NetworkManagerImpl.getInstance();
-        remoteNetworkManager = new RemoteNetworkManagerImpl(networkManager);
+        remoteNetworkManager = new RemoteNetworkManagerAdaptor(networkManager);
 
         pingManager = PingManagerImpl.getInstance();
 

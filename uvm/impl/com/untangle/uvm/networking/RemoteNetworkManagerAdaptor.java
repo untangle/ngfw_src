@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -18,16 +18,16 @@
 
 package com.untangle.uvm.networking;
 
-import com.untangle.uvm.NetworkManager;
+import com.untangle.uvm.RemoteNetworkManager;
 import com.untangle.uvm.node.HostName;
 import com.untangle.uvm.node.IPaddr;
 import com.untangle.uvm.node.ValidateException;
 
-public class RemoteNetworkManagerImpl implements NetworkManager
+public class RemoteNetworkManagerAdaptor implements RemoteNetworkManager
 {
     final LocalNetworkManager lnm;
 
-    public RemoteNetworkManagerImpl( LocalNetworkManager lnm )
+    public RemoteNetworkManagerAdaptor(LocalNetworkManager lnm)
     {
         this.lnm = lnm;
     }
@@ -48,7 +48,7 @@ public class RemoteNetworkManagerImpl implements NetworkManager
     }
 
     /* Save the basic network settings during the wizard */
-    public synchronized void setSetupSettings( AddressSettings address, BasicNetworkSettings basic ) 
+    public synchronized void setSetupSettings( AddressSettings address, BasicNetworkSettings basic )
         throws NetworkException, ValidateException
     {
         this.lnm.setSetupSettings( address, basic );
@@ -84,7 +84,7 @@ public class RemoteNetworkManagerImpl implements NetworkManager
     {
         return this.lnm.getAccessSettings();
     }
-    
+
     public void setAccessSettings( AccessSettings access )
     {
         this.lnm.setAccessSettings( access );
@@ -97,7 +97,7 @@ public class RemoteNetworkManagerImpl implements NetworkManager
     {
         return this.lnm.getAddressSettings();
     }
-    
+
     public void setAddressSettings( AddressSettings address )
     {
         this.lnm.setAddressSettings( address );
@@ -110,12 +110,12 @@ public class RemoteNetworkManagerImpl implements NetworkManager
     {
         return lnm.getMiscSettings();
     }
-    
+
     public void setMiscSettings( MiscSettings misc )
     {
         lnm.setMiscSettings( misc );
     }
-   
+
     /**
      * Retrieve the current network configuration
      */

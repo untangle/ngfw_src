@@ -160,7 +160,7 @@ public class Util {
     private static RemoteNodeManager nodeManager;
     private static AdminManager adminManager;
     private static StatsCache statsCache;
-    private static NetworkManager networkManager;
+    private static RemoteNetworkManager networkManager;
     // DO NOT CACHE THIS private static PolicyManager policyManager;
     private static LoggingManager loggingManager;
     private static RemoteAppServerManager appServerManager;
@@ -208,7 +208,7 @@ public class Util {
     public static AdminManager getAdminManager(){ return adminManager; }
     public static StatsCache getStatsCache(){ return statsCache; }
     public static RemoteIntfManager getIntfManager(){ return remoteIntfManager; }
-    public static NetworkManager getNetworkManager(){ return networkManager; }
+    public static RemoteNetworkManager getNetworkManager(){ return networkManager; }
     public static RemotePolicyManager getPolicyManager(){ return uvmContext.policyManager(); }
     public static LoggingManager getLoggingManager(){ return loggingManager; }
     public static RemoteAppServerManager getAppServerManager(){ return appServerManager; }

@@ -36,9 +36,9 @@ package com.untangle.uvm.client;
 import java.io.IOException;
 
 import com.untangle.uvm.ConnectivityTester;
-import com.untangle.uvm.NetworkManager;
 import com.untangle.uvm.RemoteAppServerManager;
 import com.untangle.uvm.RemoteBrandingManager;
+import com.untangle.uvm.RemoteNetworkManager;
 import com.untangle.uvm.ReportingManager;
 import com.untangle.uvm.addrbook.RemoteAddressBook;
 import com.untangle.uvm.license.RemoteLicenseManager;
@@ -115,7 +115,7 @@ public interface RemoteUvmContext
      *
      * @return the NetworkManager.
      */
-    NetworkManager networkManager();
+    RemoteNetworkManager networkManager();
 
     /** Get the <code>RemoteShieldManager</code> singleton.
      *

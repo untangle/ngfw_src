@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -26,9 +26,9 @@ import java.util.List;
 import com.untangle.uvm.ArgonException;
 import com.untangle.uvm.BrandingSettings;
 import com.untangle.uvm.IntfConstants;
-import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.LocalUvmContext;
-import com.untangle.uvm.NetworkManager;
+import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.RemoteNetworkManager;
 import com.untangle.uvm.networking.internal.ServicesInternalSettings;
 import com.untangle.uvm.node.HostName;
 import com.untangle.uvm.node.IPaddr;
@@ -311,7 +311,7 @@ class OpenVpnManager
         throws NodeException
     {
         LocalUvmContext uvm = LocalUvmContextFactory.context();
-        NetworkManager nm = uvm.networkManager();
+        RemoteNetworkManager nm = uvm.networkManager();
 
         BrandingSettings bs = uvm.brandingManager().getBrandingSettings();
 
@@ -368,7 +368,7 @@ class OpenVpnManager
         sw.appendVariable( FLAG_CA,   CLI_KEY_DIR + "/" + siteName + "-ca.crt" );
 
         /* VPN configuratoins needs information from the networking settings. */
-        NetworkManager networkManager = LocalUvmContextFactory.context().networkManager();
+        RemoteNetworkManager networkManager = LocalUvmContextFactory.context().networkManager();
 
         /* This is kind of janky */
         String publicAddress = networkManager.getPublicAddress();
