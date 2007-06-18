@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -35,7 +35,21 @@ package com.untangle.node.token;
 
 import com.untangle.uvm.tapi.TCPSession;
 
+/**
+ * Creates casing instance to handle a session.
+ *
+ * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
+ * @version 1.0
+ */
 public interface CasingFactory
 {
+    /**
+     * Creates a casing.
+     *
+     * @param session the casing's session.
+     * @param clientSide true if casing will be on the side nearest to
+     * the client.
+     * @return a new casing for this session.
+     */
     Casing casing(TCPSession session, boolean clientSide);
 }
