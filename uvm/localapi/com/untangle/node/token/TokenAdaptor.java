@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -40,6 +40,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.node.MutateTStats;
+import com.untangle.uvm.node.Node;
 import com.untangle.uvm.tapi.AbstractEventHandler;
 import com.untangle.uvm.tapi.MPipeException;
 import com.untangle.uvm.tapi.Pipeline;
@@ -56,10 +58,15 @@ import com.untangle.uvm.tapi.event.TCPStreamer;
 import com.untangle.uvm.tapi.event.UDPNewSessionRequestEvent;
 import com.untangle.uvm.tapi.event.UDPPacketEvent;
 import com.untangle.uvm.tapi.event.UDPSessionEvent;
-import com.untangle.uvm.node.MutateTStats;
-import com.untangle.uvm.node.Node;
 import org.apache.log4j.Logger;
 
+/**
+ * Adapts a Token session's underlying byte-stream a
+ * <code>TokenHandler</code>.
+ *
+ * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
+ * @version 1.0
+ */
 public class TokenAdaptor extends AbstractEventHandler
 {
     private static final ByteBuffer[] BYTE_BUFFER_PROTO = new ByteBuffer[0];

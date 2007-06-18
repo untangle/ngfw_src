@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -33,18 +33,17 @@
 
 package com.untangle.node.token;
 
-
-import java.util.*;
+import java.util.Iterator;
+import java.util.List;
 
 import com.untangle.uvm.tapi.Pipeline;
-
+import java.util.ArrayList;
 
 /**
- * Class to assemble a TokenResult incrementally.  Handles
- * the impendence mis-match between Tokens and TokenStreamers.
- * <br>
- * The order in-which tokens/streamers are added is maintained
- * in the {@link #getTokenResult returned result}.
+ * Class to assemble a TokenResult incrementally.  Handles the
+ * impendence mis-match between Tokens and TokenStreamers.  The order
+ * in-which tokens/streamers are added is maintained in the {@link
+ * #getTokenResult returned result}.
  */
 public class TokenResultBuilder {
 
@@ -55,7 +54,6 @@ public class TokenResultBuilder {
     private DynTokenStreamer m_forServerStreamer;
 
     private Pipeline m_pipeline;
-
 
     public TokenResultBuilder(Pipeline pipeline) {
         m_pipeline = pipeline;

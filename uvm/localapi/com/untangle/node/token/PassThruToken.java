@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -35,13 +35,10 @@ package com.untangle.node.token;
 
 
 /**
- * Token representing the directive that
- * downstream TokenHandlers should enter
- * Passthru mode (letting through all
- * bytes unmolested).
+ * Token representing the directive that downstream TokenHandlers
+ * should enter pass-through mode (letting through all bytes unmolested).
  */
-public class PassThruToken
-    extends MetadataToken {
+public class PassThruToken extends MetadataToken {
 
     public static final PassThruToken PASSTHRU = new PassThruToken();
 

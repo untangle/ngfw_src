@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -37,6 +37,12 @@ import java.nio.ByteBuffer;
 
 import com.untangle.uvm.tapi.event.TCPStreamer;
 
+/**
+ * Flushes a session when unparser receives a <code>Release</code>.
+ *
+ * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
+ * @version 1.0
+ */
 class ReleaseTcpStreamer implements TCPStreamer
 {
     private final TCPStreamer streamer;

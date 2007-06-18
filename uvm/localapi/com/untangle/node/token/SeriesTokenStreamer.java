@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -38,6 +38,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.RandomAccess;
 
+/**
+ * Streams out <code>Token</code>s from a series of
+ * <code>TokenStreamer</code>s.
+ *
+ * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
+ * @version 1.0
+ */
 public class SeriesTokenStreamer implements TokenStreamer
 {
     private final List<TokenStreamer> streamers;
