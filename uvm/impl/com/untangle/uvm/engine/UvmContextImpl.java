@@ -31,11 +31,10 @@ import com.untangle.uvm.RemoteBrandingManager;
 import com.untangle.uvm.UvmException;
 import com.untangle.uvm.UvmLocalContext;
 import com.untangle.uvm.UvmState;
-import com.untangle.uvm.addrbook.AddressBook;
+import com.untangle.uvm.addrbook.RemoteAddressBook;
 import com.untangle.uvm.argon.Argon;
 import com.untangle.uvm.argon.ArgonManagerImpl;
 import com.untangle.uvm.client.UvmRemoteContext;
-import com.untangle.uvm.engine.addrbook.AddressBookFactory;
 import com.untangle.uvm.license.LicenseManagerFactory;
 import com.untangle.uvm.license.LocalLicenseManager;
 import com.untangle.uvm.license.RemoteLicenseManager;
@@ -157,12 +156,12 @@ public class UvmContextImpl extends UvmContextBase
 
     // singletons -------------------------------------------------------------
 
-    public AddressBook appAddressBook()
+    public RemoteAddressBook appAddressBook()
     {
         return addressBookFactory.getAddressBook();
     }
 
-    public AddressBook appRemoteAddressBook()
+    public RemoteAddressBook appRemoteAddressBook()
     {
         return addressBookFactory.getRemoteAddressBook();
     }

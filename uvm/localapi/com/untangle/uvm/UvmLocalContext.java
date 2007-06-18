@@ -36,7 +36,7 @@ package com.untangle.uvm;
 import java.io.File;
 import java.io.IOException;
 
-import com.untangle.uvm.addrbook.AddressBook;
+import com.untangle.uvm.addrbook.RemoteAddressBook;
 import com.untangle.uvm.license.LocalLicenseManager;
 import com.untangle.uvm.license.RemoteLicenseManager;
 import com.untangle.uvm.localapi.LocalIntfManager;
@@ -150,7 +150,7 @@ public interface UvmLocalContext
      *
      * @return the singleton
      */
-    AddressBook appAddressBook();
+    RemoteAddressBook appAddressBook();
 
     /**
      * The BrandingManager allows for customization of logo and

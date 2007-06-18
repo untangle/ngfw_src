@@ -1,6 +1,6 @@
 /*
- * $HeadURL:$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * $HeadURL$
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -16,44 +16,56 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package com.untangle.uvm.engine.addrbook;
+package com.untangle.uvm.engine;
 
+import java.util.ArrayList;
 import java.util.List;
 import javax.naming.NameAlreadyBoundException;
 import javax.naming.NameNotFoundException;
 import javax.naming.ServiceUnavailableException;
 
-import com.untangle.uvm.addrbook.AddressBook;
+import com.untangle.uvm.addrbook.AddressBookConfiguration;
 import com.untangle.uvm.addrbook.AddressBookSettings;
 import com.untangle.uvm.addrbook.NoSuchEmailException;
+import com.untangle.uvm.addrbook.RemoteAddressBook;
+import com.untangle.uvm.addrbook.RepositorySettings;
 import com.untangle.uvm.addrbook.RepositoryType;
 import com.untangle.uvm.addrbook.UserEntry;
+import com.untangle.uvm.license.ProductIdentifier;
+import org.apache.log4j.Logger;
+
 
 /**
  * Concrete implementation of the AddressBook.  Note that this class
  * should only be used by classes in "engine" (the parent package).
  *
  */
-public class RemoteAddressBookImpl implements AddressBook {
+class DefaultAddressBookImpl implements RemoteAddressBook {
 
-    private final AddressBook addressBook;
+    private static final ABStatus status = new ABStatus();
 
-    RemoteAddressBookImpl(AddressBook addressBook) {
-        this.addressBook = addressBook;
+    private final Logger m_logger =
+        Logger.getLogger(getClass());
+
+    DefaultAddressBookImpl() {
     }
 
     //====================================================
     // See doc on com.untangle.uvm.addrbook.AddressBook
     //====================================================
     public AddressBookSettings getAddressBookSettings() {
-        return this.addressBook.getAddressBookSettings();
+        m_logger.info("getting invalid settings");
+        AddressBookSettings m_settings = new AddressBookSettings();
+        m_settings.setAddressBookConfiguration(AddressBookConfiguration.NOT_CONFIGURED);
+        m_settings.setADRepositorySettings(new RepositorySettings());
+        return m_settings;
     }
 
     //====================================================
     // See doc on com.untangle.uvm.addrbook.AddressBook
     //====================================================
     public void setAddressBookSettings(final AddressBookSettings newSettings) {
-        this.addressBook.setAddressBookSettings(newSettings);
+        m_logger.info("ignoring save settings");
     }
 
 
@@ -62,11 +74,20 @@ public class RemoteAddressBookImpl implements AddressBook {
     //====================================================
     public boolean authenticate(String uid, String pwd)
         throws ServiceUnavailableException {
-        return this.addressBook.authenticate(uid,pwd);
+        m_logger.info("ignoring authenticate.");
+        return false;
     }
-        
+
+    private static class ABStatus implements RemoteAddressBook.Status {
+        public boolean isLocalWorking() { return false; }
+        public boolean isADWorking() { return false; }
+        public String localDetail() { return "unconfigured"; }
+        public String adDetail() { return "unconfigured"; }
+    }
+
     public Status getStatus() {
-        return this.addressBook.getStatus();
+        m_logger.info("ignoring get status.");
+        return this.status;
     }
 
 
@@ -75,7 +96,9 @@ public class RemoteAddressBookImpl implements AddressBook {
     //====================================================
     public boolean authenticateByEmail(String email, String pwd)
         throws ServiceUnavailableException, NoSuchEmailException {
-        return this.addressBook.authenticateByEmail(email,pwd);
+
+        m_logger.info("ignoring authenticate by email.");
+        return false;
     }
 
 
@@ -85,7 +108,8 @@ public class RemoteAddressBookImpl implements AddressBook {
     //====================================================
     public RepositoryType containsEmail(String address, RepositoryType searchIn)
         throws ServiceUnavailableException {
-        return this.addressBook.containsEmail(address,searchIn);
+        m_logger.info("ignoring contains email.");
+        return RepositoryType.NONE;
     }
 
 
@@ -95,7 +119,8 @@ public class RemoteAddressBookImpl implements AddressBook {
     //====================================================
     public RepositoryType containsEmail(String address)
         throws ServiceUnavailableException {
-        return this.addressBook.containsEmail(address);
+        m_logger.info("ignoring contains email.");
+        return RepositoryType.NONE;
     }
 
     //====================================================
@@ -103,7 +128,8 @@ public class RemoteAddressBookImpl implements AddressBook {
     //====================================================
     public RepositoryType containsUid(String uid)
         throws ServiceUnavailableException {
-        return this.addressBook.containsUid(uid);
+        m_logger.info("ignoring contains uid.");
+        return RepositoryType.NONE;
     }
 
 
@@ -113,7 +139,8 @@ public class RemoteAddressBookImpl implements AddressBook {
     //====================================================
     public RepositoryType containsUid(String uid, RepositoryType searchIn)
         throws ServiceUnavailableException {
-        return this.addressBook.containsUid(uid,searchIn);
+        m_logger.info("ignoring contains uid.");
+        return RepositoryType.NONE;
     }
 
 
@@ -122,7 +149,8 @@ public class RemoteAddressBookImpl implements AddressBook {
     //====================================================
     public List<UserEntry> getLocalUserEntries()
         throws ServiceUnavailableException {
-        return this.addressBook.getLocalUserEntries();
+        m_logger.info("ignoring contains getLocalUserEntries.");
+        return new ArrayList<UserEntry>();
     }
 
 
@@ -131,7 +159,7 @@ public class RemoteAddressBookImpl implements AddressBook {
     //====================================================
     public void setLocalUserEntries(List<UserEntry> userEntries)
         throws ServiceUnavailableException, NameNotFoundException, NameAlreadyBoundException {
-        this.addressBook.setLocalUserEntries(userEntries);
+        m_logger.info("ignoring contains setLocalUserEntries.");
     }
 
 
@@ -140,7 +168,8 @@ public class RemoteAddressBookImpl implements AddressBook {
     //====================================================
     public List<UserEntry> getUserEntries()
         throws ServiceUnavailableException {
-        return this.addressBook.getUserEntries();
+        m_logger.info("ignoring getUserEntries");
+        return new ArrayList<UserEntry>();
     }
 
 
@@ -150,8 +179,10 @@ public class RemoteAddressBookImpl implements AddressBook {
     //====================================================
     public List<UserEntry> getUserEntries(RepositoryType searchIn)
         throws ServiceUnavailableException {
-        return this.addressBook.getUserEntries(searchIn);
+        m_logger.info("ignoring getUserEntries");
+        return new ArrayList<UserEntry>();
     }
+
 
 
     //====================================================
@@ -159,7 +190,8 @@ public class RemoteAddressBookImpl implements AddressBook {
     //====================================================
     public UserEntry getEntry(String uid)
         throws ServiceUnavailableException {
-        return this.addressBook.getEntry(uid);
+        m_logger.info("ignoring getEntry");
+        return null;
     }
 
 
@@ -169,7 +201,8 @@ public class RemoteAddressBookImpl implements AddressBook {
     //====================================================
     public UserEntry getEntry(String uid, RepositoryType searchIn)
         throws ServiceUnavailableException {
-        return this.addressBook.getEntry(uid,searchIn);
+        m_logger.info("ignoring getEntry");
+        return null;
     }
 
     //====================================================
@@ -177,7 +210,8 @@ public class RemoteAddressBookImpl implements AddressBook {
     //====================================================
     public UserEntry getEntryByEmail(String email)
         throws ServiceUnavailableException {
-        return this.addressBook.getEntryByEmail(email);
+        m_logger.info("ignoring getEntryByEmail");
+        return null;
     }
 
 
@@ -187,7 +221,8 @@ public class RemoteAddressBookImpl implements AddressBook {
     //====================================================
     public UserEntry getEntryByEmail(String email, RepositoryType searchIn)
         throws ServiceUnavailableException {
-        return this.addressBook.getEntryByEmail(email,searchIn);
+        m_logger.info("ignoring getEntryByEmail");
+        return null;
     }
 
 
@@ -197,7 +232,7 @@ public class RemoteAddressBookImpl implements AddressBook {
     //====================================================
     public void createLocalEntry(UserEntry newEntry, String password)
         throws NameAlreadyBoundException, ServiceUnavailableException {
-        this.addressBook.createLocalEntry(newEntry,password);
+        m_logger.info("ignoring createLocalEntry");
     }
 
 
@@ -207,7 +242,8 @@ public class RemoteAddressBookImpl implements AddressBook {
     //====================================================
     public boolean deleteLocalEntry(String entryUid)
         throws ServiceUnavailableException {
-        return this.addressBook.deleteLocalEntry(entryUid);
+        m_logger.info("ignoring deleteLocalEntry");
+        return false;
     }
 
 
@@ -217,7 +253,7 @@ public class RemoteAddressBookImpl implements AddressBook {
     //====================================================
     public void updateLocalEntry(UserEntry changedEntry)
         throws ServiceUnavailableException, NameNotFoundException {
-        this.addressBook.updateLocalEntry(changedEntry);
+        m_logger.info("ignoring updateLocalEntry");
     }
 
 
@@ -227,12 +263,12 @@ public class RemoteAddressBookImpl implements AddressBook {
     //====================================================
     public void updateLocalPassword(String uid, String newPassword)
         throws ServiceUnavailableException, NameNotFoundException {
-        this.addressBook.updateLocalPassword(uid,newPassword);
+        m_logger.info("ignoring updateLocalPassword");
     }
 
     public String productIdentifier()
     {
-        return this.addressBook.productIdentifier();
+        return ProductIdentifier.ADDRESS_BOOK;
     }
 }
 

@@ -1,6 +1,6 @@
 /*
- * $HeadURL:$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * $HeadURL$
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -16,38 +16,35 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package com.untangle.uvm.engine.addrbook;
-
-import com.untangle.uvm.addrbook.AddressBook;
+package com.untangle.uvm.engine;
 
 import com.untangle.node.util.MVLogger;
+import com.untangle.uvm.addrbook.RemoteAddressBook;
 
-public class AddressBookFactory
+class AddressBookFactory
 {
     private static final String PROPERTY_ADDRESSBOOK_IMPL = "com.untangle.uvm.addrbook";
     private static final String PREMIUM_ADDRESSBOOK_IMPL = "com.untangle.uvm.engine.addrbook.PremiumAddressBookImpl";
 
-    private final MVLogger logger = new MVLogger( getClass());
+    private final MVLogger logger = new MVLogger(getClass());
 
     /** The stripped down default limited address book */
     private final DefaultAddressBookImpl limited = new DefaultAddressBookImpl();
 
     /** The premium address book */
-    private AddressBook premium = null;
+    private RemoteAddressBook premium = null;
 
     /** remote address book */
-    private AddressBook remote = new RemoteAddressBookImpl(limited);
-    
-    private AddressBookFactory()
-    {
-    }
+    private RemoteAddressBook remote = new RemoteAddressBookAdaptor(limited);
 
-    public AddressBook getAddressBook()
+    private AddressBookFactory() { }
+
+    public RemoteAddressBook getAddressBook()
     {
         return ( this.premium == null ) ? this.limited : this.premium;
     }
 
-    public AddressBook getRemoteAddressBook()
+    public RemoteAddressBook getRemoteAddressBook()
     {
         return this.remote;
     }
@@ -60,17 +57,17 @@ public class AddressBookFactory
             return;
         }
 
-        String className = System.getProperty( PROPERTY_ADDRESSBOOK_IMPL );
-        if ( null == className ) {
+        String className = System.getProperty(PROPERTY_ADDRESSBOOK_IMPL);
+        if (null == className) {
             className = PREMIUM_ADDRESSBOOK_IMPL;
         }
         try {
-            this.premium = (PremiumAddressBook)Class.forName( className ).newInstance();
-            this.remote = new RemoteAddressBookImpl( this.premium );
+            this.premium = (PremiumAddressBook)Class.forName(className).newInstance();
+            this.remote = new RemoteAddressBookAdaptor(this.premium);
         } catch ( Exception e ) {
             logger.info( "Could not load premium AddressBook: " + className, e );
             this.premium = null;
-            this.remote = new RemoteAddressBookImpl( this.limited );
+            this.remote = new RemoteAddressBookAdaptor(this.limited);
         }
     }
 
@@ -92,10 +89,10 @@ public class AddressBookFactory
     }
 
     /**
-     * Inner interface used to indicate the additional methods that the 
+     * Inner interface used to indicate the additional methods that the
      * premium offering must implement.
      */
-    static interface PremiumAddressBook extends AddressBook
+    static interface PremiumAddressBook extends RemoteAddressBook
     {
     }
-} 
+}

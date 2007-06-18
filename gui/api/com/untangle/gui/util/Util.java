@@ -212,7 +212,7 @@ public class Util {
     public static PolicyManager getPolicyManager(){ return uvmContext.policyManager(); }
     public static LoggingManager getLoggingManager(){ return loggingManager; }
     public static RemoteAppServerManager getAppServerManager(){ return appServerManager; }
-    public static AddressBook getAddressBook(){ return uvmContext.appAddressBook(); }
+    public static RemoteAddressBook getAddressBook(){ return uvmContext.appAddressBook(); }
     public static RemotePhoneBook getPhoneBook(){ return uvmContext.phoneBook(); }
     public static PingManager getPingManager(){ return pingManager; }
     public static RemoteBrandingManager getBrandingManager(){ return brandingManager; }

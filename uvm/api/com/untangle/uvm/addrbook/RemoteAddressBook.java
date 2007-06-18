@@ -1,6 +1,6 @@
 /*
- * $HeadURL:$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * $HeadURL$
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -50,10 +50,8 @@ import com.untangle.uvm.license.LicensedProduct;
  *
  * Note that the initial state of the AddressBook is
  * {@link com.untangle.uvm.addrbook.AddressBookConfiguration#NOT_CONFIGURED NOT_CONFIGURED}.
- *
- *
  */
-public interface AddressBook extends LicensedProduct
+public interface RemoteAddressBook extends LicensedProduct
 {
     /**
      * Get the AddressBookSettings of this address book.
@@ -102,7 +100,7 @@ public interface AddressBook extends LicensedProduct
     interface Status
     {
         boolean isLocalWorking();
-        
+
         boolean isADWorking();
 
         String localDetail();

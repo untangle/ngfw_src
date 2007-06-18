@@ -26,7 +26,7 @@ import com.untangle.uvm.NetworkManager;
 import com.untangle.uvm.RemoteAppServerManager;
 import com.untangle.uvm.RemoteBrandingManager;
 import com.untangle.uvm.ReportingManager;
-import com.untangle.uvm.addrbook.AddressBook;
+import com.untangle.uvm.addrbook.RemoteAddressBook;
 import com.untangle.uvm.client.UvmRemoteContext;
 import com.untangle.uvm.license.RemoteLicenseManager;
 import com.untangle.uvm.logging.LoggingManager;
@@ -129,7 +129,7 @@ class UvmRemoteContextAdaptor implements UvmRemoteContext
         return context.remotePhoneBook();
     }
 
-    public AddressBook appAddressBook()
+    public RemoteAddressBook appAddressBook()
     {
         return context.appRemoteAddressBook();
     }

@@ -40,7 +40,7 @@ import com.untangle.uvm.NetworkManager;
 import com.untangle.uvm.RemoteAppServerManager;
 import com.untangle.uvm.RemoteBrandingManager;
 import com.untangle.uvm.ReportingManager;
-import com.untangle.uvm.addrbook.AddressBook;
+import com.untangle.uvm.addrbook.RemoteAddressBook;
 import com.untangle.uvm.license.RemoteLicenseManager;
 import com.untangle.uvm.logging.LoggingManager;
 import com.untangle.uvm.networking.ping.PingManager;
@@ -155,7 +155,7 @@ public interface UvmRemoteContext
      *
      * @return the singleton
      */
-    AddressBook appAddressBook();
+    RemoteAddressBook appAddressBook();
 
     /**
      * The BrandingManager allows for customization of logo and

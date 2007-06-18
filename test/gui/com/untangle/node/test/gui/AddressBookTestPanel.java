@@ -1,6 +1,6 @@
 /*
- * $HeadURL:$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * $HeadURL$
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -25,9 +25,9 @@ import java.util.List;
 import com.untangle.gui.test.MVUITest;
 import com.untangle.gui.test.TestPanel;
 import com.untangle.gui.util.Util;
-import com.untangle.uvm.addrbook.AddressBook;
 import com.untangle.uvm.addrbook.AddressBookConfiguration;
 import com.untangle.uvm.addrbook.AddressBookSettings;
+import com.untangle.uvm.addrbook.RemoteAddressBook;
 import com.untangle.uvm.addrbook.RepositorySettings;
 import com.untangle.uvm.addrbook.UserEntry;
 import com.untangle.uvm.client.UvmRemoteContext;
@@ -60,7 +60,7 @@ class ToggleStateAction extends MVUITest {
         panel.println("Get the Remote Context");
         UvmRemoteContext ctx = Util.getUvmContext();
         panel.println("Get the Address Book");
-        AddressBook ab = ctx.appAddressBook();
+        RemoteAddressBook ab = ctx.appAddressBook();
         panel.println("Get the Address Book Settings");
         AddressBookSettings settings = ab.getAddressBookSettings();
         AddressBookConfiguration conf = settings.getAddressBookConfiguration();
@@ -134,7 +134,7 @@ class AddEntryAction extends MVUITest {
             panel.println("Get the RemoteContext");
             UvmRemoteContext ctx = Util.getUvmContext();
             panel.println("Get the Address Book");
-            AddressBook ab = ctx.appAddressBook();
+            RemoteAddressBook ab = ctx.appAddressBook();
 
             UserEntry entry = new UserEntry(
                                             map.get("Login"),
@@ -169,7 +169,7 @@ class ListEntriesAction extends MVUITest {
         panel.println("Get the RemoteContext");
         UvmRemoteContext ctx = Util.getUvmContext();
         panel.println("Get the Address Book");
-        AddressBook ab = ctx.appAddressBook();
+        RemoteAddressBook ab = ctx.appAddressBook();
 
         List<UserEntry> allEntries = ab.getUserEntries();
         panel.println("********** BEGIN ENTRIES ***********");
@@ -196,7 +196,7 @@ class AuthenticateUIDAction extends MVUITest {
         panel.println("Get the RemoteContext");
         UvmRemoteContext ctx = Util.getUvmContext();
         panel.println("Get the Address Book");
-        AddressBook ab = ctx.appAddressBook();
+        RemoteAddressBook ab = ctx.appAddressBook();
 
         HashMap<String, String> map = panel.collectInfo(
                                                         "New Account",
@@ -228,7 +228,7 @@ class AuthenticateEmailAction extends MVUITest {
         panel.println("Get the RemoteContext");
         UvmRemoteContext ctx = Util.getUvmContext();
         panel.println("Get the Address Book");
-        AddressBook ab = ctx.appAddressBook();
+        RemoteAddressBook ab = ctx.appAddressBook();
 
         HashMap<String, String> map = panel.collectInfo(
                                                         "New Account",
