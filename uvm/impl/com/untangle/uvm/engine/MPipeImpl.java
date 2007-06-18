@@ -20,14 +20,14 @@ package com.untangle.uvm.engine;
 
 import com.untangle.uvm.argon.ArgonAgent;
 import com.untangle.uvm.argon.ArgonAgentImpl;
-import com.untangle.uvm.tapi.IPSessionDesc;
-import com.untangle.uvm.tapi.MPipe;
-import com.untangle.uvm.tapi.MPipeException;
-import com.untangle.uvm.tapi.PipeSpec;
-import com.untangle.uvm.tapi.Session;
-import com.untangle.uvm.tapi.TCPSession;
-import com.untangle.uvm.tapi.UDPSession;
-import com.untangle.uvm.tapi.event.SessionEventListener;
+import com.untangle.uvm.vnet.IPSessionDesc;
+import com.untangle.uvm.vnet.MPipe;
+import com.untangle.uvm.vnet.MPipeException;
+import com.untangle.uvm.vnet.PipeSpec;
+import com.untangle.uvm.vnet.Session;
+import com.untangle.uvm.vnet.TCPSession;
+import com.untangle.uvm.vnet.UDPSession;
+import com.untangle.uvm.vnet.event.SessionEventListener;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeDesc;
 import com.untangle.uvm.util.MetaEnv;
@@ -85,7 +85,7 @@ class MPipeImpl implements MPipe {
         logger = Logger.getLogger(MPipe.class);
         sessionLogger = Logger.getLogger(Session.class);
         // XXX
-        sessionEventLogger = Logger.getLogger("com.untangle.uvm.tapi.SessionEvent");
+        sessionEventLogger = Logger.getLogger("com.untangle.uvm.vnet.SessionEvent");
         sessionLoggerTCP = Logger.getLogger(TCPSession.class);
         sessionLoggerUDP = Logger.getLogger(UDPSession.class);
 

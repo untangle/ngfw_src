@@ -25,9 +25,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.tapi.Pipeline;
-import com.untangle.uvm.tapi.TCPSession;
-import com.untangle.uvm.tapi.TCPSessionDesc;
+import com.untangle.uvm.vnet.Pipeline;
+import com.untangle.uvm.vnet.TCPSession;
+import com.untangle.uvm.vnet.TCPSessionDesc;
 import com.untangle.uvm.node.MimeType;
 import com.untangle.node.token.AbstractParser;
 import com.untangle.node.token.Chunk;

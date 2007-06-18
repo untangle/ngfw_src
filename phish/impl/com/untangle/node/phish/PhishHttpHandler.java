@@ -21,7 +21,7 @@ package com.untangle.node.phish;
 import java.net.InetAddress;
 import java.net.URI;
 
-import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.uvm.vnet.TCPSession;
 import com.untangle.node.http.HttpStateMachine;
 import com.untangle.node.http.RequestLineToken;
 import com.untangle.node.http.StatusLine;

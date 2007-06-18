@@ -31,12 +31,12 @@
  * to do so, delete this exception statement from your version.
  */
 
-package com.untangle.uvm.tapi.client;
+package com.untangle.uvm.vnet.client;
 
 import com.untangle.uvm.node.SessionEndpoints;
 
-import com.untangle.uvm.tapi.SessionStats;
-import com.untangle.uvm.tapi.UDPSessionDesc;
+import com.untangle.uvm.vnet.SessionStats;
+import com.untangle.uvm.vnet.UDPSessionDesc;
 import java.net.InetAddress;
 
 public class UDPSessionDescImpl extends IPSessionDescImpl implements UDPSessionDesc {

@@ -21,7 +21,7 @@ package com.untangle.node.spam;
 import java.util.*;
 
 import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.tapi.TCPNewSessionRequest;
+import com.untangle.uvm.vnet.TCPNewSessionRequest;
 import org.apache.log4j.Logger;
 
 /**

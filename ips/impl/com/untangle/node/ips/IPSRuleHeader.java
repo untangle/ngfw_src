@@ -24,7 +24,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.untangle.uvm.node.SessionEndpoints;
-import com.untangle.uvm.tapi.Protocol;
+import com.untangle.uvm.vnet.Protocol;
 import com.untangle.uvm.node.PortRange;
 import com.untangle.uvm.node.firewall.ip.IPMatcher;
 import com.untangle.uvm.node.firewall.ip.IPMatcherFactory;

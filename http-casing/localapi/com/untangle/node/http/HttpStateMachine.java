@@ -39,7 +39,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.uvm.vnet.TCPSession;
 import com.untangle.node.token.AbstractTokenHandler;
 import com.untangle.node.token.ArrayTokenStreamer;
 import com.untangle.node.token.Chunk;

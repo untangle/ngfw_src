@@ -18,13 +18,13 @@
 
 package com.untangle.node.spam;
 
-import com.untangle.uvm.tapi.AbstractEventHandler;
-import com.untangle.uvm.tapi.MPipeException;
-import com.untangle.uvm.tapi.Session;
-import com.untangle.uvm.tapi.TCPNewSessionRequest;
+import com.untangle.uvm.vnet.AbstractEventHandler;
+import com.untangle.uvm.vnet.MPipeException;
+import com.untangle.uvm.vnet.Session;
+import com.untangle.uvm.vnet.TCPNewSessionRequest;
 
-import com.untangle.uvm.tapi.event.TCPNewSessionRequestEvent;
-import com.untangle.uvm.tapi.event.TCPSessionEvent;
+import com.untangle.uvm.vnet.event.TCPNewSessionRequestEvent;
+import com.untangle.uvm.vnet.event.TCPSessionEvent;
 
 import org.apache.log4j.Logger;
 

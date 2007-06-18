@@ -35,7 +35,7 @@ package com.untangle.uvm.node.firewall.protocol;
 
 import java.io.Serializable;
 
-import com.untangle.uvm.tapi.Protocol;
+import com.untangle.uvm.vnet.Protocol;
 
 /**
  * An ProtocolDBMatcher that is capable of being saved to and loaded

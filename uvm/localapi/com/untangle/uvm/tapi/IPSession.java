@@ -31,7 +31,7 @@
  * to do so, delete this exception statement from your version.
  */
 
-package com.untangle.uvm.tapi;
+package com.untangle.uvm.vnet;
 
 import com.untangle.uvm.node.PipelineEndpoints;
 import java.net.InetAddress;

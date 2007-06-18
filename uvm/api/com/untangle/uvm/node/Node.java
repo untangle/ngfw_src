@@ -34,7 +34,7 @@
 package com.untangle.uvm.node;
 
 import com.untangle.uvm.security.Tid;
-import com.untangle.uvm.tapi.IPSessionDesc;
+import com.untangle.uvm.vnet.IPSessionDesc;
 
 /**
  * Interface for a node instance, provides public runtime control

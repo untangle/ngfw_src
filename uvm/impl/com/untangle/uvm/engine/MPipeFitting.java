@@ -18,8 +18,8 @@
 
 package com.untangle.uvm.engine;
 
-import com.untangle.uvm.tapi.Fitting;
-import com.untangle.uvm.tapi.MPipe;
+import com.untangle.uvm.vnet.Fitting;
+import com.untangle.uvm.vnet.MPipe;
 
 class MPipeFitting
 {

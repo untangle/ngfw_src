@@ -1,4 +1,4 @@
-<%@ page language="java" import="com.untangle.uvm.*, com.untangle.uvm.client.*, com.untangle.uvm.security.Tid, com.untangle.uvm.node.*, com.untangle.uvm.tapi.*, com.untangle.uvm.util.SessionUtil, org.apache.log4j.helpers.AbsoluteTimeDateFormat, java.util.Properties, java.net.URL, java.io.*, java.util.Vector, java.util.Collections, java.util.Comparator, java.util.Calendar, java.util.GregorianCalendar, java.util.StringTokenizer, javax.naming.*" %>
+<%@ page language="java" import="com.untangle.uvm.*, com.untangle.uvm.client.*, com.untangle.uvm.security.Tid, com.untangle.uvm.node.*, com.untangle.uvm.vnet.*, com.untangle.uvm.util.SessionUtil, org.apache.log4j.helpers.AbsoluteTimeDateFormat, java.util.Properties, java.net.URL, java.io.*, java.util.Vector, java.util.Collections, java.util.Comparator, java.util.Calendar, java.util.GregorianCalendar, java.util.StringTokenizer, javax.naming.*" %>
 
 <%
     BrandingSettings bs = LocalUvmContextFactory.context().brandingManager().getBrandingSettings();

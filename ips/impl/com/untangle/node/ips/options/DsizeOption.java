@@ -18,7 +18,7 @@
 
 package com.untangle.node.ips.options;
 
-import com.untangle.uvm.tapi.event.*;
+import com.untangle.uvm.vnet.event.*;
 import com.untangle.node.ips.IPSRuleSignature;
 import com.untangle.node.ips.IPSSessionInfo;
 import org.apache.log4j.Logger;

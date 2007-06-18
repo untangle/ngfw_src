@@ -1,4 +1,4 @@
-<%@ page language="java" import="com.untangle.uvm.*, com.untangle.uvm.security.Tid, com.untangle.uvm.node.*, com.untangle.uvm.tapi.*, com.untangle.uvm.util.SessionUtil, org.apache.log4j.helpers.AbsoluteTimeDateFormat, java.util.List, java.util.Properties, java.net.URL, java.io.PrintWriter, javax.naming.*" %>
+<%@ page language="java" import="com.untangle.uvm.*, com.untangle.uvm.security.Tid, com.untangle.uvm.node.*, com.untangle.uvm.vnet.*, com.untangle.uvm.util.SessionUtil, org.apache.log4j.helpers.AbsoluteTimeDateFormat, java.util.List, java.util.Properties, java.net.URL, java.io.PrintWriter, javax.naming.*" %>
 
 <HTML>
 <HEAD>
@@ -70,7 +70,7 @@
       }
 %>
 <%
-      com.untangle.uvm.tapi.IPSessionDesc[] sdescs = tctx.liveSessionDescs();
+      com.untangle.uvm.vnet.IPSessionDesc[] sdescs = tctx.liveSessionDescs();
       sdescs = SessionUtil.sortDescs(sdescs);
       if (sdescs == null)
          continue;
@@ -91,12 +91,12 @@
          <TH>T->C B
 <%
       for (int j = 0; j < sdescs.length; j++) {
-          com.untangle.uvm.tapi.IPSessionDesc sd = (com.untangle.uvm.tapi.IPSessionDesc) sdescs[j];
+          com.untangle.uvm.vnet.IPSessionDesc sd = (com.untangle.uvm.vnet.IPSessionDesc) sdescs[j];
           SessionStats stats = sd.stats();
           char proto = 'N';
-          if (sd instanceof com.untangle.uvm.tapi.UDPSessionDesc)
+          if (sd instanceof com.untangle.uvm.vnet.UDPSessionDesc)
              proto = 'U';
-          else if (sd instanceof com.untangle.uvm.tapi.TCPSessionDesc)
+          else if (sd instanceof com.untangle.uvm.vnet.TCPSessionDesc)
              proto = 'T';
 %>
           <TR>

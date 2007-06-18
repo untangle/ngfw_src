@@ -20,8 +20,8 @@ package com.untangle.uvm.engine;
 
 import java.net.InetAddress;
 
-import com.untangle.uvm.tapi.IPNewSessionRequest;
-import com.untangle.uvm.tapi.MPipe;
+import com.untangle.uvm.vnet.IPNewSessionRequest;
+import com.untangle.uvm.vnet.MPipe;
 import com.untangle.uvm.node.PipelineEndpoints;
 
 abstract class IPNewSessionRequestImpl implements IPNewSessionRequest {

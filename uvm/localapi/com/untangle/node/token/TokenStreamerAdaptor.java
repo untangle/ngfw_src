@@ -35,8 +35,8 @@ package com.untangle.node.token;
 
 import java.nio.ByteBuffer;
 
-import com.untangle.uvm.tapi.Pipeline;
-import com.untangle.uvm.tapi.event.TCPStreamer;
+import com.untangle.uvm.vnet.Pipeline;
+import com.untangle.uvm.vnet.event.TCPStreamer;
 import org.apache.log4j.Logger;
 
 /**

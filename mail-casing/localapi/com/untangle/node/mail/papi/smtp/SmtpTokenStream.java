@@ -38,8 +38,8 @@ import java.net.InetAddress;
 import java.util.*;
 
 import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.tapi.Pipeline;
-import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.uvm.vnet.Pipeline;
+import com.untangle.uvm.vnet.TCPSession;
 import com.untangle.node.mail.papi.BeginMIMEToken;
 import com.untangle.node.mail.papi.CompleteMIMEToken;
 import com.untangle.node.mail.papi.ContinuedMIMEToken;

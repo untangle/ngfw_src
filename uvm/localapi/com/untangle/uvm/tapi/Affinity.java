@@ -31,7 +31,7 @@
  * to do so, delete this exception statement from your version.
  */
 
-package com.untangle.uvm.tapi;
+package com.untangle.uvm.vnet;
 
 // XXX make this an enum when i dump xdoclet
 public class Affinity

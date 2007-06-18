@@ -31,7 +31,7 @@
  * to do so, delete this exception statement from your version.
  */
 
-package com.untangle.uvm.tapi;
+package com.untangle.uvm.vnet;
 
 /**
  * This class just contains IP header low-level data from a UDP packet such as TTL, TOS and options.

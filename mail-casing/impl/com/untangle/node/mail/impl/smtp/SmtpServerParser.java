@@ -22,7 +22,7 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.uvm.vnet.TCPSession;
 import com.untangle.node.mail.papi.smtp.Response;
 import com.untangle.node.mail.papi.smtp.ResponseParser;
 import com.untangle.node.mail.papi.smtp.SASLExchangeToken;

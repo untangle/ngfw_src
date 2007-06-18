@@ -24,7 +24,7 @@ import java.util.List;
 import com.untangle.node.token.Casing;
 import com.untangle.node.token.Parser;
 import com.untangle.node.token.Unparser;
-import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.uvm.vnet.TCPSession;
 import org.apache.log4j.Logger;
 
 class HttpCasing implements Casing

@@ -31,13 +31,13 @@
  * to do so, delete this exception statement from your version.
  */
 
-package com.untangle.uvm.tapi;
+package com.untangle.uvm.vnet;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 
-import com.untangle.uvm.tapi.event.TCPStreamer;
+import com.untangle.uvm.vnet.event.TCPStreamer;
 import org.apache.log4j.Logger;
 
 public class FileStreamer implements TCPStreamer

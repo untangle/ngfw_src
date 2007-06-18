@@ -35,9 +35,9 @@ package com.untangle.uvm.node.firewall;
 
 import java.net.InetAddress;
 
-import com.untangle.uvm.tapi.Protocol;
-import com.untangle.uvm.tapi.IPNewSessionRequest;
-import com.untangle.uvm.tapi.IPSessionDesc;
+import com.untangle.uvm.vnet.Protocol;
+import com.untangle.uvm.vnet.IPNewSessionRequest;
+import com.untangle.uvm.vnet.IPSessionDesc;
 
 import com.untangle.uvm.node.firewall.ip.IPMatcher;
 import com.untangle.uvm.node.firewall.intf.IntfMatcher;

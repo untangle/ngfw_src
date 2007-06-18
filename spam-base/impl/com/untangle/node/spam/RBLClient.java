@@ -24,7 +24,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.*;
 
-import com.untangle.uvm.tapi.TCPNewSessionRequest;
+import com.untangle.uvm.vnet.TCPNewSessionRequest;
 import com.untangle.uvm.node.PipelineEndpoints;
 import org.apache.log4j.Logger;
 

@@ -36,7 +36,7 @@ package com.untangle.gui.util;
 import java.util.*;
 
 import com.untangle.uvm.security.Tid;
-import com.untangle.uvm.tapi.IPSessionDesc;
+import com.untangle.uvm.vnet.IPSessionDesc;
 import com.untangle.uvm.node.*;
 
 public class StatsCache implements Shutdownable

@@ -31,9 +31,9 @@
  * to do so, delete this exception statement from your version.
  */
 
-package com.untangle.uvm.tapi;
+package com.untangle.uvm.vnet;
 
-import com.untangle.uvm.tapi.event.TCPStreamer;
+import com.untangle.uvm.vnet.event.TCPStreamer;
 
 /**
  * A TCPSession is

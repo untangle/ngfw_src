@@ -18,7 +18,7 @@
 
 package com.untangle.node.mail.impl.imap;
 
-import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.uvm.vnet.TCPSession;
 import com.untangle.node.mail.impl.AbstractMailCasing;
 import com.untangle.node.token.Parser;
 import com.untangle.node.token.Unparser;

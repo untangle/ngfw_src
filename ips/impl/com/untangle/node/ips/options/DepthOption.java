@@ -20,7 +20,7 @@ package com.untangle.node.ips.options;
 
 import java.util.regex.*;
 
-import com.untangle.uvm.tapi.event.*;
+import com.untangle.uvm.vnet.event.*;
 import com.untangle.uvm.node.ParseException;
 import com.untangle.node.ips.IPSRuleSignature;
 import org.apache.log4j.Logger;

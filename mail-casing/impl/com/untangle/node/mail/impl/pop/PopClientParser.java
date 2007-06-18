@@ -26,8 +26,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.tapi.Pipeline;
-import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.uvm.vnet.Pipeline;
+import com.untangle.uvm.vnet.TCPSession;
 import com.untangle.node.mail.PopCasing;
 import com.untangle.node.mail.papi.pop.PopCommand;
 import com.untangle.node.mail.papi.pop.PopCommandMore;

@@ -35,7 +35,7 @@ package com.untangle.node.token;
 
 import java.nio.ByteBuffer;
 
-import com.untangle.uvm.tapi.event.TCPStreamer;
+import com.untangle.uvm.vnet.event.TCPStreamer;
 
 /**
  * Flushes a session when unparser receives a <code>Release</code>.

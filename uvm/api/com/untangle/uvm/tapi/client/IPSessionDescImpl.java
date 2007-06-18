@@ -31,10 +31,10 @@
  * to do so, delete this exception statement from your version.
  */
 
-package com.untangle.uvm.tapi.client;
+package com.untangle.uvm.vnet.client;
 
-import com.untangle.uvm.tapi.IPSessionDesc;
-import com.untangle.uvm.tapi.SessionStats;
+import com.untangle.uvm.vnet.IPSessionDesc;
+import com.untangle.uvm.vnet.SessionStats;
 import java.net.InetAddress;
 
 class IPSessionDescImpl extends SessionDescImpl implements IPSessionDesc {

@@ -39,7 +39,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 
-import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.uvm.vnet.TCPSession;
 import com.untangle.node.mail.papi.DoNotCareChunkT;
 import com.untangle.node.mail.papi.DoNotCareT;
 import com.untangle.node.mail.papi.MIMEMessageT;

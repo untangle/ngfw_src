@@ -47,7 +47,7 @@ import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.NodeException;
 import com.untangle.uvm.security.LoginSession;
 import com.untangle.uvm.security.Tid;
-import com.untangle.uvm.tapi.NodeBase;
+import com.untangle.uvm.vnet.NodeBase;
 import com.untangle.uvm.toolbox.InstallProgress;
 import com.untangle.uvm.toolbox.MackageDesc;
 import com.untangle.uvm.toolbox.MackageException;

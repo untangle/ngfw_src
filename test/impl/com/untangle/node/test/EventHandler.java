@@ -20,8 +20,8 @@ package com.untangle.node.test;
 import java.io.*;
 import java.nio.*;
 
-import com.untangle.uvm.tapi.*;
-import com.untangle.uvm.tapi.event.*;
+import com.untangle.uvm.vnet.*;
+import com.untangle.uvm.vnet.event.*;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.util.MetaEnv;
 import com.untangle.uvm.util.SessionUtil;

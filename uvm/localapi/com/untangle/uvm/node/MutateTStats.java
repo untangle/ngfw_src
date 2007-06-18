@@ -33,8 +33,8 @@
 
 package com.untangle.uvm.node;
 
-import com.untangle.uvm.tapi.MPipe;
-import com.untangle.uvm.tapi.Session;
+import com.untangle.uvm.vnet.MPipe;
+import com.untangle.uvm.vnet.Session;
 import com.untangle.uvm.util.MetaEnv;
 
 /**

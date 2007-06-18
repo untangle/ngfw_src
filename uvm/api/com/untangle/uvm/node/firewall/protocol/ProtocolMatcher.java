@@ -33,7 +33,7 @@
 
 package com.untangle.uvm.node.firewall.protocol;
 
-import com.untangle.uvm.tapi.Protocol;
+import com.untangle.uvm.vnet.Protocol;
 
 /**
  * An interface to test for an address.

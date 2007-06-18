@@ -24,7 +24,7 @@ import com.untangle.node.mail.impl.pop.PopUnparser;
 import com.untangle.node.token.Casing;
 import com.untangle.node.token.Parser;
 import com.untangle.node.token.Unparser;
-import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.uvm.vnet.TCPSession;
 
 public class PopCasing implements Casing
 {

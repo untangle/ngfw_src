@@ -34,9 +34,9 @@
 package com.untangle.node.ftp;
 
 import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.tapi.Fitting;
-import com.untangle.uvm.tapi.Pipeline;
-import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.uvm.vnet.Fitting;
+import com.untangle.uvm.vnet.Pipeline;
+import com.untangle.uvm.vnet.TCPSession;
 import com.untangle.node.token.AbstractTokenHandler;
 import com.untangle.node.token.Chunk;
 import com.untangle.node.token.EndMarker;

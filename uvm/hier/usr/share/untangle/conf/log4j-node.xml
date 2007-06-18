@@ -51,11 +51,11 @@
   <!-- #      DEBUG           new session debugging -->
   <!-- #      INFO            each new session -->
   <!-- #      WARN            exceptions -->
-  <category name="com.untangle.uvm.tapi.MPipe">
+  <category name="com.untangle.uvm.vnet.MPipe">
     <priority value="WARN"/>
   </category>
 
-  <category name="com.untangle.uvm.tapi.Dispatcher">
+  <category name="com.untangle.uvm.vnet.Dispatcher">
     <priority value="WARN"/>
   </category>
 
@@ -64,7 +64,7 @@
   <!-- #      DEBUG          Data events -->
   <!-- #      INFO           shutdown, close, other session events. -->
   <!-- #      WARN           New session, new session request events -->
-  <category name="com.untangle.uvm.tapi.SessionEvent">
+  <category name="com.untangle.uvm.vnet.SessionEvent">
     <!-- No logging by default -->
     <priority value="ERROR"/>
   </category>
@@ -74,19 +74,19 @@
   <!-- #                      statistics -->
   <!-- #      INFO            (currently same as WARN) -->
   <!-- #      WARN            exceptions or unusual conditions  -->
-  <category name="com.untangle.uvm.tapi.Session">
+  <category name="com.untangle.uvm.vnet.Session">
     <priority value="WARN"/>
   </category>
 
-  <category name="com.untangle.uvm.tapi.TCPSession">
+  <category name="com.untangle.uvm.vnet.TCPSession">
     <priority value="WARN"/>
   </category>
 
-  <category name="com.untangle.uvm.tapi.UDPSession">
+  <category name="com.untangle.uvm.vnet.UDPSession">
     <priority value="WARN"/>
   </category>
 
-  <category name="com.untangle.uvm.tapi.SessionTimes">
+  <category name="com.untangle.uvm.vnet.SessionTimes">
     <priority value="WARN"/>
   </category>
 

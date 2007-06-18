@@ -33,8 +33,8 @@
 
 package com.untangle.node.token;
 
-import com.untangle.uvm.tapi.TCPNewSessionRequest;
-import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.uvm.vnet.TCPNewSessionRequest;
+import com.untangle.uvm.vnet.TCPSession;
 
 /**
  * Creates a <code>TokenHandler</code> for a session.

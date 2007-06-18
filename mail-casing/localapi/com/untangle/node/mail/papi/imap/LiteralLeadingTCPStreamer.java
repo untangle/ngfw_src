@@ -35,7 +35,7 @@ package com.untangle.node.mail.papi.imap;
 
 import java.nio.ByteBuffer;
 
-import com.untangle.uvm.tapi.event.TCPStreamer;
+import com.untangle.uvm.vnet.event.TCPStreamer;
 
 /**
  * Wraps a TCPStreamer, leading with an IMAP literal "{nnn}CRLF"

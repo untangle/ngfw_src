@@ -19,7 +19,7 @@
 package com.untangle.uvm.engine;
 
 import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.tapi.*;
+import com.untangle.uvm.vnet.*;
 // import org.apache.commons.jxpath.JXPathContext;
 
 abstract class SessionImpl implements Session {

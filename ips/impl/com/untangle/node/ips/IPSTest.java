@@ -25,8 +25,8 @@ import java.nio.channels.FileChannel;
 import java.util.*;
 
 import com.untangle.uvm.node.SessionEndpoints;
-import com.untangle.uvm.tapi.*;
-import com.untangle.uvm.tapi.event.*;
+import com.untangle.uvm.vnet.*;
+import com.untangle.uvm.vnet.event.*;
 import com.untangle.uvm.node.ParseException;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;

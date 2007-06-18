@@ -1,3 +1,10 @@
+for 5.0
+-------
+check which machines needed, & where.
+
+
+
+
 Rules for files that don't need license
 ---------------------------------------
 .png

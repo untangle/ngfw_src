@@ -23,8 +23,8 @@ import java.util.ArrayList;
 import java.util.regex.Pattern;
 
 import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.tapi.*;
-import com.untangle.uvm.tapi.event.*;
+import com.untangle.uvm.vnet.*;
+import com.untangle.uvm.vnet.event.*;
 import com.untangle.uvm.node.Node;
 import com.untangle.node.util.AsciiCharBuffer;
 import org.apache.log4j.Logger;

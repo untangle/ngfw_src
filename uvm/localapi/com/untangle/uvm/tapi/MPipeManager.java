@@ -31,11 +31,11 @@
  * to do so, delete this exception statement from your version.
  */
 
-package com.untangle.uvm.tapi;
+package com.untangle.uvm.vnet;
 
 import java.net.*;
 
-import com.untangle.uvm.tapi.event.SessionEventListener;
+import com.untangle.uvm.vnet.event.SessionEventListener;
 
 
 /**

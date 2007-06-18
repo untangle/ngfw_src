@@ -34,7 +34,7 @@
 package com.untangle.node.mail.papi;
 
 
-import com.untangle.uvm.tapi.ProxyGenerator;
+import com.untangle.uvm.vnet.ProxyGenerator;
 import org.apache.log4j.Logger;
 
 /**

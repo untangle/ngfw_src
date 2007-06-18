@@ -36,7 +36,7 @@ package com.untangle.node.util;
 import java.io.File;
 import java.io.IOException;
 
-import com.untangle.uvm.tapi.Pipeline;
+import com.untangle.uvm.vnet.Pipeline;
 
 /**
  * Implementation of FileFactory which creates temp files.

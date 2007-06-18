@@ -39,7 +39,7 @@ import java.util.regex.Pattern;
 
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.security.Tid;
-import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.uvm.vnet.TCPSession;
 import com.untangle.node.token.Chunk;
 import com.untangle.node.token.EndMarker;
 import com.untangle.node.token.Header;

@@ -22,8 +22,8 @@ import java.io.File;
 import java.nio.ByteBuffer;
 
 import com.untangle.node.token.Casing;
-import com.untangle.uvm.tapi.TCPSession;
-import com.untangle.uvm.tapi.event.TCPStreamer;
+import com.untangle.uvm.vnet.TCPSession;
+import com.untangle.uvm.vnet.event.TCPStreamer;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 

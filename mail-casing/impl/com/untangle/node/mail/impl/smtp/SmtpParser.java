@@ -20,7 +20,7 @@ package com.untangle.node.mail.impl.smtp;
 
 import java.nio.ByteBuffer;
 
-import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.uvm.vnet.TCPSession;
 import com.untangle.node.mail.impl.AbstractMailParser;
 import org.apache.log4j.Logger;
 

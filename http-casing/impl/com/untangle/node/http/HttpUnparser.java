@@ -23,8 +23,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Queue;
 
-import com.untangle.uvm.tapi.TCPSession;
-import com.untangle.uvm.tapi.event.TCPStreamer;
+import com.untangle.uvm.vnet.TCPSession;
+import com.untangle.uvm.vnet.event.TCPStreamer;
 import com.untangle.node.token.AbstractUnparser;
 import com.untangle.node.token.Chunk;
 import com.untangle.node.token.EndMarker;

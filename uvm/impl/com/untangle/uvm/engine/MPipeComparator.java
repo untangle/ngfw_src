@@ -20,9 +20,9 @@ package com.untangle.uvm.engine;
 
 import java.util.Comparator;
 
-import com.untangle.uvm.tapi.Affinity;
-import com.untangle.uvm.tapi.MPipe;
-import com.untangle.uvm.tapi.SoloPipeSpec;
+import com.untangle.uvm.vnet.Affinity;
+import com.untangle.uvm.vnet.MPipe;
+import com.untangle.uvm.vnet.SoloPipeSpec;
 
 /**
  * Compares MPipes with SoloPipeSpecs.

@@ -55,7 +55,7 @@ import com.untangle.uvm.policy.LocalPolicyManager;
 import com.untangle.uvm.policy.PolicyManagerFactory;
 import com.untangle.uvm.policy.RemotePolicyManager;
 import com.untangle.uvm.portal.BasePortalManager;
-import com.untangle.uvm.tapi.MPipeManager;
+import com.untangle.uvm.vnet.MPipeManager;
 import com.untangle.uvm.toolbox.RemoteToolboxManager;
 import com.untangle.uvm.user.LocalPhoneBook;
 import com.untangle.uvm.user.PhoneBookFactory;

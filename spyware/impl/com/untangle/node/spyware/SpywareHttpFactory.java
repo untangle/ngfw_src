@@ -19,8 +19,8 @@
 package com.untangle.node.spyware;
 
 
-import com.untangle.uvm.tapi.TCPNewSessionRequest;
-import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.uvm.vnet.TCPNewSessionRequest;
+import com.untangle.uvm.vnet.TCPSession;
 import com.untangle.node.token.TokenHandler;
 import com.untangle.node.token.TokenHandlerFactory;
 import org.apache.log4j.Logger;

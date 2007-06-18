@@ -31,9 +31,9 @@
  * to do so, delete this exception statement from your version.
  */
 
-package com.untangle.uvm.tapi.event;
+package com.untangle.uvm.vnet.event;
 
-import com.untangle.uvm.tapi.MPipe;
+import com.untangle.uvm.vnet.MPipe;
 
 public abstract class MPipeEvent extends java.util.EventObject
 {

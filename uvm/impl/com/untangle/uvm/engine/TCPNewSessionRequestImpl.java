@@ -18,7 +18,7 @@
 
 package com.untangle.uvm.engine;
 
-import com.untangle.uvm.tapi.TCPNewSessionRequest;
+import com.untangle.uvm.vnet.TCPNewSessionRequest;
 
 class TCPNewSessionRequestImpl extends IPNewSessionRequestImpl implements TCPNewSessionRequest {
 

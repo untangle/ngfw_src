@@ -19,7 +19,7 @@
 package com.untangle.node.webfilter;
 
 
-import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.uvm.vnet.TCPSession;
 import com.untangle.uvm.node.Node;
 import com.untangle.node.http.HttpStateMachine;
 import com.untangle.node.http.RequestLineToken;

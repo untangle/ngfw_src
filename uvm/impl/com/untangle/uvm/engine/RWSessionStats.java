@@ -20,7 +20,7 @@ package com.untangle.uvm.engine;
 
 import java.util.Date;
 
-import com.untangle.uvm.tapi.*;
+import com.untangle.uvm.vnet.*;
 import com.untangle.uvm.util.MetaEnv;
 
 /**

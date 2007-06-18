@@ -34,7 +34,7 @@
 package com.untangle.node.token;
 
 import com.untangle.uvm.node.MutateTStats;
-import com.untangle.uvm.tapi.Session;
+import com.untangle.uvm.vnet.Session;
 import org.apache.log4j.Logger;
 
 import static com.untangle.node.token.CasingAdaptor.TOKEN_SIZE;

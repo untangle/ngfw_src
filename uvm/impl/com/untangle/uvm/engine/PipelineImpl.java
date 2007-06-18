@@ -26,9 +26,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import com.untangle.uvm.tapi.Fitting;
-import com.untangle.uvm.tapi.MPipe;
-import com.untangle.uvm.tapi.Pipeline;
+import com.untangle.uvm.vnet.Fitting;
+import com.untangle.uvm.vnet.MPipe;
+import com.untangle.uvm.vnet.Pipeline;
 import com.untangle.uvm.node.PipelineEndpoints;
 
 class PipelineImpl implements Pipeline

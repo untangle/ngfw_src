@@ -40,7 +40,7 @@ import com.untangle.uvm.engine.PipelineFoundryImpl;
 
 import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.policy.PolicyRule;
-import com.untangle.uvm.tapi.PipelineFoundry;
+import com.untangle.uvm.vnet.PipelineFoundry;
 import com.untangle.uvm.node.PipelineEndpoints;
 import com.untangle.uvm.user.UserInfo;
 import com.untangle.uvm.user.Username;

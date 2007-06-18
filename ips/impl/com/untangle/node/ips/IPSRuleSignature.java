@@ -23,8 +23,8 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Vector;
 
-import com.untangle.uvm.tapi.IPSession;
-import com.untangle.uvm.tapi.event.*;
+import com.untangle.uvm.vnet.IPSession;
+import com.untangle.uvm.vnet.event.*;
 import com.untangle.uvm.node.Node;
 import com.untangle.node.ips.options.*;
 import org.apache.log4j.Logger;

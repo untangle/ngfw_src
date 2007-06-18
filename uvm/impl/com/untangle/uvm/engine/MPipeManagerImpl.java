@@ -21,8 +21,8 @@ package com.untangle.uvm.engine;
 import java.net.*;
 import java.util.*;
 
-import com.untangle.uvm.tapi.*;
-import com.untangle.uvm.tapi.event.SessionEventListener;
+import com.untangle.uvm.vnet.*;
+import com.untangle.uvm.vnet.event.SessionEventListener;
 
 /**
  * Service-provider & manager class for MPipes.

@@ -19,8 +19,8 @@ package com.untangle.node.router;
 
 import com.untangle.uvm.logging.EventLoggerFactory;
 import com.untangle.uvm.logging.StatisticEvent;
-import com.untangle.uvm.tapi.IPNewSessionRequest;
-import com.untangle.uvm.tapi.Protocol;
+import com.untangle.uvm.vnet.IPNewSessionRequest;
+import com.untangle.uvm.vnet.Protocol;
 import com.untangle.uvm.node.StatisticManager;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.firewall.intf.IntfMatcher;

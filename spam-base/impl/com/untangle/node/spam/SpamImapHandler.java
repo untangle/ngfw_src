@@ -22,7 +22,7 @@ import java.io.File;
 import java.util.LinkedList;
 
 import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.uvm.vnet.TCPSession;
 import com.untangle.node.mail.papi.MessageInfo;
 import com.untangle.node.mail.papi.imap.BufferingImapTokenStreamHandler;
 import com.untangle.node.mail.papi.safelist.SafelistNodeView;

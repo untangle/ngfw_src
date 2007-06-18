@@ -18,7 +18,7 @@
 
 package com.untangle.node.phish;
 
-import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.uvm.vnet.TCPSession;
 import com.untangle.node.mail.papi.MailExport;
 import com.untangle.node.spam.SpamPopHandler;
 

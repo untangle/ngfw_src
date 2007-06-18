@@ -17,10 +17,10 @@
  */
 package com.untangle.node.ftp;
 
-import com.untangle.uvm.tapi.AbstractNode;
-import com.untangle.uvm.tapi.CasingPipeSpec;
-import com.untangle.uvm.tapi.Fitting;
-import com.untangle.uvm.tapi.PipeSpec;
+import com.untangle.uvm.vnet.AbstractNode;
+import com.untangle.uvm.vnet.CasingPipeSpec;
+import com.untangle.uvm.vnet.Fitting;
+import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.util.TransactionWork;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;

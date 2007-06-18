@@ -23,7 +23,7 @@ import java.text.CharacterIterator;
 import java.util.regex.*;
 
 import com.sun.org.apache.xerces.internal.impl.xpath.regex.BMPattern;
-import com.untangle.uvm.tapi.event.*;
+import com.untangle.uvm.vnet.event.*;
 import com.untangle.node.ips.IPSRuleSignature;
 import com.untangle.node.ips.IPSSessionInfo;
 import com.untangle.node.util.AsciiCharBuffer;

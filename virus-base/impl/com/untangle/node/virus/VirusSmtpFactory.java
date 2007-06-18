@@ -17,7 +17,7 @@
  */
 package com.untangle.node.virus;
 
-import com.untangle.uvm.tapi.*;
+import com.untangle.uvm.vnet.*;
 import com.untangle.node.mail.*;
 import com.untangle.node.mail.papi.*;
 import com.untangle.node.mail.papi.smtp.*;

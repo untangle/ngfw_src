@@ -31,10 +31,10 @@
  * to do so, delete this exception statement from your version.
  */
 
-package com.untangle.uvm.tapi.event;
+package com.untangle.uvm.vnet.event;
 
-import com.untangle.uvm.tapi.MPipe;
-import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.uvm.vnet.MPipe;
+import com.untangle.uvm.vnet.TCPSession;
 import java.nio.ByteBuffer;
 
 public class TCPChunkEvent extends TCPSessionEvent

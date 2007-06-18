@@ -36,7 +36,7 @@ package com.untangle.node.token;
 import java.util.Iterator;
 import java.util.List;
 
-import com.untangle.uvm.tapi.Pipeline;
+import com.untangle.uvm.vnet.Pipeline;
 import java.util.ArrayList;
 
 /**

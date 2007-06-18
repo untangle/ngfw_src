@@ -17,8 +17,8 @@
  */
 package com.untangle.node.reporting;
 
-import com.untangle.uvm.tapi.AbstractNode;
-import com.untangle.uvm.tapi.PipeSpec;
+import com.untangle.uvm.vnet.AbstractNode;
+import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.util.TransactionWork;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;

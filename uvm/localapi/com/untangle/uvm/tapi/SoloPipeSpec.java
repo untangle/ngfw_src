@@ -31,13 +31,13 @@
  * to do so, delete this exception statement from your version.
  */
 
-package com.untangle.uvm.tapi;
+package com.untangle.uvm.vnet;
 
 import java.util.Set;
 
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.LocalUvmContext;
-import com.untangle.uvm.tapi.event.SessionEventListener;
+import com.untangle.uvm.vnet.event.SessionEventListener;
 import com.untangle.uvm.node.Node;
 import org.apache.log4j.Logger;
 

@@ -32,7 +32,7 @@ import com.untangle.jnetcap.NetcapSession;
 
 import com.untangle.uvm.localapi.LocalIntfManager;
 
-import com.untangle.uvm.tapi.Protocol;
+import com.untangle.uvm.vnet.Protocol;
 
 import com.untangle.uvm.node.firewall.InterfaceRedirect;
 

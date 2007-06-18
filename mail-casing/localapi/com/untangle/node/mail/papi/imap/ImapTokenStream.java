@@ -33,7 +33,7 @@
 
 package com.untangle.node.mail.papi.imap;
 
-import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.uvm.vnet.TCPSession;
 import com.untangle.node.mail.papi.ContinuedMIMEToken;
 import com.untangle.node.token.AbstractTokenHandler;
 import com.untangle.node.token.Chunk;

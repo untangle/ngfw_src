@@ -20,8 +20,8 @@ package com.untangle.node.router;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 
-import com.untangle.uvm.tapi.Protocol;
-import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.uvm.vnet.Protocol;
+import com.untangle.uvm.vnet.TCPSession;
 import com.untangle.node.ftp.FtpCommand;
 import com.untangle.node.ftp.FtpEpsvReply;
 import com.untangle.node.ftp.FtpFunction;

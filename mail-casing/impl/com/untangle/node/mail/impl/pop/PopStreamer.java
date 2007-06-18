@@ -25,7 +25,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 
-import com.untangle.uvm.tapi.event.TCPStreamer;
+import com.untangle.uvm.vnet.event.TCPStreamer;
 import com.untangle.node.mail.papi.ByteBufferByteStuffer;
 import org.apache.log4j.Logger;
 

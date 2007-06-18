@@ -33,7 +33,7 @@
 
 package com.untangle.node.token;
 
-import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.uvm.vnet.TCPSession;
 
 /**
  * Creates casing instance to handle a session.

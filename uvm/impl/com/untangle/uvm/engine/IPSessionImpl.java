@@ -31,8 +31,8 @@ import com.untangle.jvector.DataCrumb;
 import com.untangle.jvector.IncomingSocketQueue;
 import com.untangle.jvector.OutgoingSocketQueue;
 import com.untangle.uvm.argon.PipelineListener;
-import com.untangle.uvm.tapi.*;
-import com.untangle.uvm.tapi.event.IPStreamer;
+import com.untangle.uvm.vnet.*;
+import com.untangle.uvm.vnet.event.IPStreamer;
 import com.untangle.uvm.node.PipelineEndpoints;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeContext;
@@ -73,7 +73,7 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
         this.stats = new RWSessionStats();
         this.pipelineEndpoints = pe;
         if (RWSessionStats.DoDetailedTimes)
-            timesLogger = Logger.getLogger("com.untangle.uvm.tapi.SessionTimes");
+            timesLogger = Logger.getLogger("com.untangle.uvm.vnet.SessionTimes");
         nodeManager = UvmContextImpl.getInstance().nodeManager();
         logger = disp.mPipe().sessionLogger();
     }

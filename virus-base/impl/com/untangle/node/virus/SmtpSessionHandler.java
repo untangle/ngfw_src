@@ -22,7 +22,7 @@ import java.io.*;
 import java.util.*;
 
 import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.tapi.*;
+import com.untangle.uvm.vnet.*;
 import com.untangle.node.mail.papi.*;
 import com.untangle.node.mail.papi.smtp.*;
 import com.untangle.node.mail.papi.smtp.sapi.*;

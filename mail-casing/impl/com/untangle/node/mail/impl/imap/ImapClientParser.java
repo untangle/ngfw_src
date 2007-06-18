@@ -21,7 +21,7 @@ package com.untangle.node.mail.impl.imap;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
-import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.uvm.vnet.TCPSession;
 import com.untangle.node.mail.papi.imap.IMAPTokenizer;
 import com.untangle.node.mail.papi.imap.ImapChunk;
 import com.untangle.node.token.Chunk;

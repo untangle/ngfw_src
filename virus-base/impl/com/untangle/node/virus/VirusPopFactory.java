@@ -17,8 +17,8 @@
  */
 package com.untangle.node.virus;
 
-import com.untangle.uvm.tapi.TCPNewSessionRequest;
-import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.uvm.vnet.TCPNewSessionRequest;
+import com.untangle.uvm.vnet.TCPSession;
 import com.untangle.node.mail.papi.MailExport;
 import com.untangle.node.mail.papi.MailExportFactory;
 import com.untangle.node.token.TokenHandler;

@@ -33,8 +33,8 @@
 
 package com.untangle.node.mail.papi.imap;
 
-import com.untangle.uvm.tapi.Pipeline;
-import com.untangle.uvm.tapi.event.TCPStreamer;
+import com.untangle.uvm.vnet.Pipeline;
+import com.untangle.uvm.vnet.event.TCPStreamer;
 import com.untangle.node.mail.papi.CompleteMIMEToken;
 import com.untangle.node.mail.papi.MIMETCPStreamer;
 import com.untangle.node.mail.papi.MessageInfo;

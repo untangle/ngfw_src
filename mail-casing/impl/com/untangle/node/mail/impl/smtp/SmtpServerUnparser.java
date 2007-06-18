@@ -21,7 +21,7 @@ package com.untangle.node.mail.impl.smtp;
 import static com.untangle.node.util.ASCIIUtil.bbToString;
 import java.nio.ByteBuffer;
 
-import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.uvm.vnet.TCPSession;
 import com.untangle.node.mail.papi.BeginMIMEToken;
 import com.untangle.node.mail.papi.ByteBufferByteStuffer;
 import com.untangle.node.mail.papi.CompleteMIMEToken;

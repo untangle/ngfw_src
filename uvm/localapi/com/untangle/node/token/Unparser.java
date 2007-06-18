@@ -33,7 +33,7 @@
 
 package com.untangle.node.token;
 
-import com.untangle.uvm.tapi.event.TCPStreamer;
+import com.untangle.uvm.vnet.event.TCPStreamer;
 
 /**
  * An Unparser nodes tokens into bytes.
@@ -71,7 +71,7 @@ public interface Unparser
 
     /**
      * Called when both client and server sides 
-     * {@link com.untangle.uvm.tapi.event.SessionEventListener#handleTCPFinalized are shutdown}
+     * {@link com.untangle.uvm.vnet.event.SessionEventListener#handleTCPFinalized are shutdown}
      */
     void handleFinalized();    
 }

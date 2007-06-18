@@ -31,12 +31,12 @@
  * to do so, delete this exception statement from your version.
  */
 
-package com.untangle.uvm.tapi.client;
+package com.untangle.uvm.vnet.client;
 
 import java.io.Serializable;
 
-import com.untangle.uvm.tapi.SessionDesc;
-import com.untangle.uvm.tapi.SessionStats;
+import com.untangle.uvm.vnet.SessionDesc;
+import com.untangle.uvm.vnet.SessionStats;
 
 abstract class SessionDescImpl implements SessionDesc, Serializable {
     private static final long serialVersionUID = 2962776047684793850L;

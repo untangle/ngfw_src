@@ -21,7 +21,7 @@ package com.untangle.node.virus;
 import java.io.File;
 
 import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.uvm.vnet.TCPSession;
 import com.untangle.node.mail.papi.MessageInfo;
 import com.untangle.node.mail.papi.imap.BufferingImapTokenStreamHandler;
 import com.untangle.node.mime.MIMEMessage;

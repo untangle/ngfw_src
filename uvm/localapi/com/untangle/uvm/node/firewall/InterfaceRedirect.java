@@ -37,7 +37,7 @@ import java.net.InetAddress;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.tapi.Protocol;
+import com.untangle.uvm.vnet.Protocol;
 
 import com.untangle.uvm.node.firewall.ip.IPMatcher;
 import com.untangle.uvm.node.firewall.intf.IntfMatcher;

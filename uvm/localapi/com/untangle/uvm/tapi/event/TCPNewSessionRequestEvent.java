@@ -31,10 +31,10 @@
  * to do so, delete this exception statement from your version.
  */
 
-package com.untangle.uvm.tapi.event;
+package com.untangle.uvm.vnet.event;
 
-import com.untangle.uvm.tapi.MPipe;
-import com.untangle.uvm.tapi.TCPNewSessionRequest;
+import com.untangle.uvm.vnet.MPipe;
+import com.untangle.uvm.vnet.TCPNewSessionRequest;
 
 public class TCPNewSessionRequestEvent extends MPipeEvent {
     

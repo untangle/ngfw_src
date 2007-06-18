@@ -36,7 +36,7 @@ package com.untangle.uvm.node.firewall.protocol;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.untangle.uvm.tapi.Protocol;
+import com.untangle.uvm.vnet.Protocol;
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.firewall.Parser;
 

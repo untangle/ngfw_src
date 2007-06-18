@@ -18,7 +18,7 @@
 
 package com.untangle.uvm.engine;
 
-import com.untangle.uvm.tapi.AbstractEventHandler;
+import com.untangle.uvm.vnet.AbstractEventHandler;
 import com.untangle.uvm.node.Node;
 
 /**

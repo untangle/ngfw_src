@@ -78,7 +78,7 @@ public interface Parser
 
     /**
      * Called when both client and server sides
-     * {@link com.untangle.uvm.tapi.event.SessionEventListener#handleTCPFinalized are shutdown}
+     * {@link com.untangle.uvm.vnet.event.SessionEventListener#handleTCPFinalized are shutdown}
      */
     void handleFinalized();
 }

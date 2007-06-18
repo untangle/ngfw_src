@@ -20,7 +20,7 @@ package com.untangle.uvm.engine;
 
 import java.net.*;
 
-import com.untangle.uvm.tapi.MPipeManager;
+import com.untangle.uvm.vnet.MPipeManager;
 
 
 /**

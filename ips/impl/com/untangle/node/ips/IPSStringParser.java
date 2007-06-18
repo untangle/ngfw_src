@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Vector;
 import java.util.regex.*;
 
-import com.untangle.uvm.tapi.Protocol;
+import com.untangle.uvm.vnet.Protocol;
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.PortRange;
 import com.untangle.uvm.node.firewall.ip.IPMatcher;

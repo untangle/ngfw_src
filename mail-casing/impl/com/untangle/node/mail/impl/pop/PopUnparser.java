@@ -30,8 +30,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.tapi.TCPSession;
-import com.untangle.uvm.tapi.event.TCPStreamer;
+import com.untangle.uvm.vnet.TCPSession;
+import com.untangle.uvm.vnet.event.TCPStreamer;
 import com.untangle.node.mail.PopCasing;
 import com.untangle.node.mail.papi.ByteBufferByteStuffer;
 import com.untangle.node.mail.papi.DoNotCareChunkT;

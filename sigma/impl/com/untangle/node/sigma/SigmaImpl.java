@@ -18,11 +18,11 @@
 package com.untangle.node.sigma;
 
 
-import com.untangle.uvm.tapi.AbstractNode;
-import com.untangle.uvm.tapi.Affinity;
-import com.untangle.uvm.tapi.Fitting;
-import com.untangle.uvm.tapi.PipeSpec;
-import com.untangle.uvm.tapi.SoloPipeSpec;
+import com.untangle.uvm.vnet.AbstractNode;
+import com.untangle.uvm.vnet.Affinity;
+import com.untangle.uvm.vnet.Fitting;
+import com.untangle.uvm.vnet.PipeSpec;
+import com.untangle.uvm.vnet.SoloPipeSpec;
 import com.untangle.uvm.node.NodeException;
 import com.untangle.uvm.node.NodeStartException;
 import com.untangle.uvm.util.TransactionWork;

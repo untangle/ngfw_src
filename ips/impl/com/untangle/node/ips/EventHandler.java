@@ -18,8 +18,8 @@
 
 package com.untangle.node.ips;
 
-import com.untangle.uvm.tapi.*;
-import com.untangle.uvm.tapi.event.*;
+import com.untangle.uvm.vnet.*;
+import com.untangle.uvm.vnet.event.*;
 
 public class EventHandler extends AbstractEventHandler {
 

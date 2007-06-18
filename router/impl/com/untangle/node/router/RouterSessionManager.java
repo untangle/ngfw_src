@@ -22,11 +22,11 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.untangle.uvm.tapi.IPNewSessionRequest;
-import com.untangle.uvm.tapi.IPSession;
-import com.untangle.uvm.tapi.MPipeException;
-import com.untangle.uvm.tapi.Protocol;
-import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.uvm.vnet.IPNewSessionRequest;
+import com.untangle.uvm.vnet.IPSession;
+import com.untangle.uvm.vnet.MPipeException;
+import com.untangle.uvm.vnet.Protocol;
+import com.untangle.uvm.vnet.TCPSession;
 import org.apache.log4j.Logger;
 
 class RouterSessionManager

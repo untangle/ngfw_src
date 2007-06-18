@@ -20,7 +20,7 @@ package com.untangle.node.mail.impl.smtp;
 
 import java.nio.ByteBuffer;
 
-import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.uvm.vnet.TCPSession;
 import com.untangle.node.mail.papi.smtp.Response;
 import com.untangle.node.mail.papi.smtp.SASLExchangeToken;
 import com.untangle.node.token.MetadataToken;

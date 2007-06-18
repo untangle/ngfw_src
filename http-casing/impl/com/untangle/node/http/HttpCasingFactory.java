@@ -20,7 +20,7 @@ package com.untangle.node.http;
 
 import com.untangle.node.token.Casing;
 import com.untangle.node.token.CasingFactory;
-import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.uvm.vnet.TCPSession;
 
 /**
  * Creates an HTTP casing.

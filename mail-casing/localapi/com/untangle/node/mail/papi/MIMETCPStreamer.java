@@ -38,8 +38,8 @@ import java.io.FileInputStream;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 
-import com.untangle.uvm.tapi.Pipeline;
-import com.untangle.uvm.tapi.event.TCPStreamer;
+import com.untangle.uvm.vnet.Pipeline;
+import com.untangle.uvm.vnet.event.TCPStreamer;
 import com.untangle.node.mime.MIMEMessage;
 import com.untangle.node.util.TempFileFactory;
 import org.apache.log4j.Logger;

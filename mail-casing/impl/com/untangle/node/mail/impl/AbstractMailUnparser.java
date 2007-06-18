@@ -21,9 +21,9 @@ package com.untangle.node.mail.impl;
 import java.nio.ByteBuffer;
 
 import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.tapi.Pipeline;
-import com.untangle.uvm.tapi.TCPSession;
-import com.untangle.uvm.tapi.event.TCPStreamer;
+import com.untangle.uvm.vnet.Pipeline;
+import com.untangle.uvm.vnet.TCPSession;
+import com.untangle.uvm.vnet.event.TCPStreamer;
 import com.untangle.node.token.AbstractUnparser;
 import com.untangle.node.token.PassThruToken;
 import com.untangle.node.token.Token;

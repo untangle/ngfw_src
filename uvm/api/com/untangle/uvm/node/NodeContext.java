@@ -36,7 +36,7 @@ package com.untangle.uvm.node;
 import java.io.InputStream;
 
 import com.untangle.uvm.security.Tid;
-import com.untangle.uvm.tapi.IPSessionDesc;
+import com.untangle.uvm.vnet.IPSessionDesc;
 import com.untangle.uvm.toolbox.MackageDesc;
 import com.untangle.uvm.util.TransactionWork;
 

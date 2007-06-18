@@ -31,9 +31,9 @@
  * to do so, delete this exception statement from your version.
  */
 
-package com.untangle.uvm.tapi.event;
+package com.untangle.uvm.vnet.event;
 
-import com.untangle.uvm.tapi.*;
+import com.untangle.uvm.vnet.*;
 
 /**
  * The listener interface for receiving Smith events.

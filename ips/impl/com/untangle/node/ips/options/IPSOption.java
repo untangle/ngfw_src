@@ -21,7 +21,7 @@ package com.untangle.node.ips.options;
 import java.lang.reflect.*;
 import java.util.regex.PatternSyntaxException;
 
-import com.untangle.uvm.tapi.event.*;
+import com.untangle.uvm.vnet.event.*;
 import com.untangle.node.ips.IPSDetectionEngine;
 import com.untangle.node.ips.IPSRuleSignature;
 import com.untangle.node.ips.IPSSessionInfo;

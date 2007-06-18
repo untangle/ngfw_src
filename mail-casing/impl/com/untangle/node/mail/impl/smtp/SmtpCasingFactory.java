@@ -18,7 +18,7 @@
 
 package com.untangle.node.mail.impl.smtp;
 
-import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.uvm.vnet.TCPSession;
 import com.untangle.node.token.Casing;
 import com.untangle.node.token.CasingFactory;
 

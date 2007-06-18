@@ -23,11 +23,11 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.untangle.uvm.IntfConstants;
-import com.untangle.uvm.tapi.AbstractEventHandler;
-import com.untangle.uvm.tapi.IPNewSessionRequest;
-import com.untangle.uvm.tapi.MPipeException;
-import com.untangle.uvm.tapi.event.TCPNewSessionRequestEvent;
-import com.untangle.uvm.tapi.event.UDPNewSessionRequestEvent;
+import com.untangle.uvm.vnet.AbstractEventHandler;
+import com.untangle.uvm.vnet.IPNewSessionRequest;
+import com.untangle.uvm.vnet.MPipeException;
+import com.untangle.uvm.vnet.event.TCPNewSessionRequestEvent;
+import com.untangle.uvm.vnet.event.UDPNewSessionRequestEvent;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.firewall.ip.IPMatcher;
 import com.untangle.uvm.node.firewall.ip.IPMatcherFactory;

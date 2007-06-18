@@ -29,7 +29,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.uvm.vnet.TCPSession;
 import com.untangle.uvm.node.StringRule;
 import com.untangle.node.http.HttpStateMachine;
 import com.untangle.node.http.RequestLineToken;

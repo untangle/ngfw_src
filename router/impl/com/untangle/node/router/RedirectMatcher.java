@@ -24,7 +24,7 @@ import org.apache.log4j.Logger;
 
 import com.untangle.uvm.networking.RedirectRule;
 import com.untangle.uvm.networking.internal.RedirectInternal;
-import com.untangle.uvm.tapi.IPNewSessionRequest;
+import com.untangle.uvm.vnet.IPNewSessionRequest;
 import com.untangle.uvm.node.firewall.TrafficIntfMatcher;
 import com.untangle.uvm.node.firewall.intf.IntfMatcher;
 import com.untangle.uvm.node.firewall.intf.IntfMatcherFactory;

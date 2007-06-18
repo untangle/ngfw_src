@@ -27,8 +27,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.untangle.uvm.tapi.*;
-import com.untangle.uvm.tapi.event.*;
+import com.untangle.uvm.vnet.*;
+import com.untangle.uvm.vnet.event.*;
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.Node;
 import org.apache.log4j.Logger;
