@@ -23,15 +23,6 @@ com.untangle.uvm.policy.Policy
 com.untangle.uvm.policy.SystemPolicyRule
 com.untangle.uvm.policy.UserPolicyRule
 com.untangle.uvm.policy.UserPolicyRuleSet
-com.untangle.uvm.portal.Bookmark
-com.untangle.uvm.portal.PortalAppLaunchEvent
-com.untangle.uvm.portal.PortalGlobal
-com.untangle.uvm.portal.PortalGroup
-com.untangle.uvm.portal.PortalHomeSettings
-com.untangle.uvm.portal.PortalLoginEvent
-com.untangle.uvm.portal.PortalLogoutEvent
-com.untangle.uvm.portal.PortalSettings
-com.untangle.uvm.portal.PortalUser
 com.untangle.uvm.security.AdminSettings
 com.untangle.uvm.security.Tid
 com.untangle.uvm.security.User
