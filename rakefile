@@ -39,3 +39,10 @@ task :install => [BuildEnv::SRC['install'], BuildEnv::SRC.installTarget] do
   end
 end
 
+task :javadoc do
+  dirs = (FileList['**/api'] + FileList['**/localapi'] + FileList['**/impl']).select { |e| not (/downloads/ =~ e or /staging/ =~ e or /dist/ =~ e) }.join(':')
+
+  Kernel.exec('javadoc', '-sourcepath', dirs,
+              '-d', "#{BuildEnv::SRC.staging}/javadoc",
+              '-subpackages', 'com.untangle')
+end
