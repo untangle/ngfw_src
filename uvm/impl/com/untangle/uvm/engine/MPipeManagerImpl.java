@@ -54,7 +54,7 @@ class MPipeManagerImpl implements MPipeManager
     }
 
     /**
-     * The <code>plumbLocal</code> method connects the MetaSmith to a MPIPE
+     * The <code>plumbLocal</code> method connects to a MPIPE
 
      * on the local machine.  No remote MPIPE may be contacted in this way.
      *

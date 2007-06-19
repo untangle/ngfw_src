@@ -37,7 +37,7 @@ import com.untangle.uvm.policy.Policy;
  * This class's instances represent and contain the subscription state, pipeline state,
  * and accessors to get the live sessions for the pipe.
  *
- * This used to be half of the class called 'Xenon', the other half is the view as seen
+ * This class is wrapped inside the view as seen
  * by the node and node API, which is now MPipe.
  *
  * @author <a href="mailto:jdi@untangle.com"></a>
@@ -108,7 +108,7 @@ public class ArgonAgentImpl implements ArgonAgent {
      * all sessions and threads, and keeps any new sessions or further commands
      * from being issued.
      *
-     * The xenon may not be used again.  State will be <code>DEAD_ARGON</code>
+     * The ArgonAgent may not be used again.  State will be <code>DEAD_ARGON</code>
      * from here on out.
      *
      */

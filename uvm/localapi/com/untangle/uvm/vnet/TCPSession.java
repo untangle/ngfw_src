@@ -45,12 +45,12 @@ public interface TCPSession extends TCPSessionDesc, IPSession {
 
     static final int TCP_MAX_CHUNK_SIZE = 65536;
 
-    // Tells the Smith to give a TCPClientReadableEvent with at most one line in the buffer.  (or
+    // Tells VNet to give a TCPClientReadableEvent with at most one line in the buffer.  (or
     // to the buffer limit if no end-of-line comes before that happens)
     // The end of line character(s) are left in the buffer.
     void clientLineBuffering(boolean oneLine);
 
-    // Tells the Smith to give a TCPServerReadableEvent with at most one line in the buffer.  (or
+    // Tells VNet to give a TCPServerReadableEvent with at most one line in the buffer.  (or
     // to the buffer limit if no end-of-line comes before that happens)
     // The end of line character(s) are left in the buffer.
     void serverLineBuffering(boolean oneLine);
@@ -89,7 +89,7 @@ public interface TCPSession extends TCPSessionDesc, IPSession {
      */
     void serverReadBufferSize(int numBytes);
 
-    // To tell the Smith to give a TCPClientReadableEvent with at most this
+    // To tell Vnet to give a TCPClientReadableEvent with at most this
     // many bytes in the buffer, adjust this. There is a system maximum.  Defaults
     // to the client read buffer size.
     int clientReadLimit();
@@ -102,7 +102,7 @@ public interface TCPSession extends TCPSessionDesc, IPSession {
      */
     void clientReadLimit(int numBytes);
 
-    // To tell the Smith to give a TCPServerReadableEvent with at most this
+    // To tell VNet to give a TCPServerReadableEvent with at most this
     // many bytes in the buffer, adjust this. There is a system maximum.  Defaults
     // to the server read buffer size.
     int serverReadLimit();

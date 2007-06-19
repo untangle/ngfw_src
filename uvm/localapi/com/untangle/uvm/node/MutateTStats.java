@@ -38,7 +38,7 @@ import com.untangle.uvm.vnet.Session;
 import com.untangle.uvm.util.MetaEnv;
 
 /**
- * <code>MutateTStats</code> is a helper class that allows the Smith to modify NodeStats
+ * <code>MutateTStats</code> is a helper class that allows VNet to modify NodeStats
  * (which are normally read-only).
  *
  * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
