@@ -13,9 +13,9 @@ $Id$
 
 <uvm-node>
   <node-desc name="untangle-node-router"
-                  display-name="Router"
-                  classname="com.untangle.node.router.RouterImpl"
-                  gui-classname="com.untangle.node.router.gui.MNodeJPanel"
-                  single-instance="true"/>
+             display-name="Router"
+             classname="com.untangle.node.router.RouterImpl"
+             gui-classname="com.untangle.node.router.gui.MNodeJPanel"
+             single-instance="true"/>
   <parent>untangle-casing-ftp</parent>
 </uvm-node>

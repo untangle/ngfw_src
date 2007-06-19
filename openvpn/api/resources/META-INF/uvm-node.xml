@@ -2,8 +2,8 @@
 
 <uvm-node>
   <node-desc name="untangle-node-openvpn"
-                  display-name="OpenVPN"
-                  classname="com.untangle.node.openvpn.VpnNodeImpl"
-                  gui-classname="com.untangle.node.openvpn.gui.MNodeJPanel"
-                  single-instance="true"/>
+             display-name="OpenVPN"
+             classname="com.untangle.node.openvpn.VpnNodeImpl"
+             gui-classname="com.untangle.node.openvpn.gui.MNodeJPanel"
+             single-instance="true"/>
 </uvm-node>

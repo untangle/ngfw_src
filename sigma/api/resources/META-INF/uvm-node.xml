@@ -13,7 +13,7 @@ $Id$
 
 <uvm-node>
   <node-desc name="sigma-node"
-                  display-name="Sigma Node"
-                  classname="com.untangle.node.sigma.SigmaImpl"
-                  gui-classname="com.untangle.node.sigma.gui.MNodeJPanel"/>
+             display-name="Sigma Node"
+             classname="com.untangle.node.sigma.SigmaImpl"
+             gui-classname="com.untangle.node.sigma.gui.MNodeJPanel"/>
 </uvm-node>

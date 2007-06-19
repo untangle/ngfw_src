@@ -2,7 +2,7 @@
 
 <uvm-node>
   <node-desc name="untangle-node-reporting"
-                  display-name="Untangle Reports"
-                  classname="com.untangle.node.reporting.ReportingNodeImpl"
-                  gui-classname="com.untangle.node.reporting.gui.MNodeJPanel"/>
+             display-name="Untangle Reports"
+             classname="com.untangle.node.reporting.ReportingNodeImpl"
+             gui-classname="com.untangle.node.reporting.gui.MNodeJPanel"/>
 </uvm-node>

@@ -2,7 +2,7 @@
 
 <uvm-node>
   <node-desc name="untangle-node-test"
-                  display-name="Test Device"
-                  classname="com.untangle.node.test.TestNodeImpl"
-                  gui-classname="com.untangle.node.test.gui.MNodeJPanel"/>
+             display-name="Test Device"
+             classname="com.untangle.node.test.TestNodeImpl"
+             gui-classname="com.untangle.node.test.gui.MNodeJPanel"/>
 </uvm-node>

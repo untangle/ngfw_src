@@ -2,7 +2,7 @@
 
 <uvm-node>
   <node-desc name="untangle-node-shield"
-                  display-name="Attack Blocker"
-                  classname="com.untangle.node.shield.ShieldNodeImpl"
-                  gui-classname="com.untangle.node.shield.gui.MNodeJPanel"/>
+             display-name="Attack Blocker"
+             classname="com.untangle.node.shield.ShieldNodeImpl"
+             gui-classname="com.untangle.node.shield.gui.MNodeJPanel"/>
 </uvm-node>

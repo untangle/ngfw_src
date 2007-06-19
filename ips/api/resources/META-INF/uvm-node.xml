@@ -13,9 +13,9 @@ $Id$
 
 <uvm-node>
   <node-desc name="untangle-node-ips"
-                  display-name="Intrusion Prevention"
-                  classname="com.untangle.node.ips.IPSNodeImpl"
-                  gui-classname="com.untangle.node.ips.gui.MNodeJPanel"
-  />
+             display-name="Intrusion Prevention"
+             classname="com.untangle.node.ips.IPSNodeImpl"
+             gui-classname="com.untangle.node.ips.gui.MNodeJPanel"
+             />
   <parent>untangle-casing-http</parent>
 </uvm-node>

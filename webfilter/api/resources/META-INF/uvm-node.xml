@@ -13,8 +13,8 @@ $Id$
 
 <uvm-node>
   <node-desc name="untangle-node-webfilter"
-                  display-name="Web Filter"
-                  classname="com.untangle.node.webfilter.WebFilterImpl"
-                  gui-classname="com.untangle.node.webfilter.gui.MNodeJPanel"/>
+             display-name="Web Filter"
+             classname="com.untangle.node.webfilter.WebFilterImpl"
+             gui-classname="com.untangle.node.webfilter.gui.MNodeJPanel"/>
   <parent>untangle-casing-http</parent>
 </uvm-node>

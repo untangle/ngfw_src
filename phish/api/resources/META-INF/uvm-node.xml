@@ -13,10 +13,10 @@ $Id$
 
 <uvm-node>
   <node-desc name="untangle-node-phish"
-                  display-name="Phish Blocker"
-                  classname="com.untangle.node.phish.PhishNode"
-                  gui-classname="com.untangle.node.phish.gui.MNodeJPanel"
-                  node-base="spam-base"/>
+             display-name="Phish Blocker"
+             classname="com.untangle.node.phish.PhishNode"
+             gui-classname="com.untangle.node.phish.gui.MNodeJPanel"
+             node-base="spam-base"/>
   <parent>untangle-casing-http</parent>
   <parent>untangle-casing-mail</parent>
 </uvm-node>

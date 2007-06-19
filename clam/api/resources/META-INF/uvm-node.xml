@@ -13,10 +13,10 @@ $Id$
 
 <uvm-node>
   <node-desc name="untangle-node-clam"
-                  display-name="Virus Blocker"
-                  classname="com.untangle.node.clam.ClamNode"
-                  gui-classname="com.untangle.node.clam.gui.MNodeJPanel"
-                  node-base="virus-base"/>
+             display-name="Virus Blocker"
+             classname="com.untangle.node.clam.ClamNode"
+             gui-classname="com.untangle.node.clam.gui.MNodeJPanel"
+             node-base="virus-base"/>
   <parent>untangle-casing-ftp</parent>
   <parent>untangle-casing-http</parent>
   <parent>untangle-casing-mail</parent>
