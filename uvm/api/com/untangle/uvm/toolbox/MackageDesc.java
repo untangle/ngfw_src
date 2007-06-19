@@ -323,18 +323,19 @@ public class MackageDesc implements Serializable
 
     public int getRackType()
     {
-        if( rackType == RACK_TYPE_SERVICE )
+        if (rackType == RACK_TYPE_SERVICE) {
             return RACK_TYPE_SERVICE;
-        else if( rackType == RACK_TYPE_UTIL )
+        } else if (rackType == RACK_TYPE_UTIL) {
             return RACK_TYPE_UTIL;
-        else if( rackType == RACK_TYPE_SECURITY )
+        } else if (rackType == RACK_TYPE_SECURITY) {
             return RACK_TYPE_SECURITY;
-        else if( rackType == RACK_TYPE_CORE )
+        } else if (rackType == RACK_TYPE_CORE) {
             return RACK_TYPE_CORE;
-        else if( rackType == RACK_TYPE_BUNDLE )
+        } else if (rackType == RACK_TYPE_BUNDLE) {
             return RACK_TYPE_BUNDLE;
-        else
+        } else {
             return RACK_TYPE_UNKNOWN;
+        }
     }
 
     public String getJarPrefix()
@@ -342,7 +343,14 @@ public class MackageDesc implements Serializable
         return jarPrefix;
     }
 
-    // private methods --------------------------------------------------------
+    // Object methods ----------------------------------------------------------
+
+    public String toString()
+    {
+        return "Mackage name: " + name + "type: " + type;
+    }
+
+    // private methods ---------------------------------------------------------
 
     private byte[] decode(String v)
     {

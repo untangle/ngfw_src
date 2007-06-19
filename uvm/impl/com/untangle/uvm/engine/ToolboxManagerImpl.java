@@ -638,7 +638,9 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
         Map<String, MackageDesc> pkgs;
 
         try {
-            Process p = LocalUvmContextFactory.context().exec("mkg available");
+            String cmd = System.getProperty("bunnicula.bin.dir")
+                + "/mkg available";
+            Process p = LocalUvmContextFactory.context().exec(cmd);
             pkgs = readPkgList(p.getInputStream(), instList);
         } catch (Exception exn) {
             logger.fatal("Unable to parse mkg available list, proceeding with empty list", exn);
@@ -723,7 +725,9 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
         Map<String, String> instList;
 
         try {
-            Process p = LocalUvmContextFactory.context().exec("mkg installed");
+            String cmd = System.getProperty("bunnicula.bin.dir")
+                + "/mkg installed";
+            Process p = LocalUvmContextFactory.context().exec(cmd);
             instList = readInstalledList(p.getInputStream());
         } catch (IOException exn) {
             throw new RuntimeException(exn); // XXX
