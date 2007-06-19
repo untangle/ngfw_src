@@ -1,5 +1,10 @@
 #!/bin/sh
 
+# Creates a jfreechart-gui.jar with the subset of classes required for
+# our swing client.
+
+# Aaron Read <amread@untangle.com>
+
 util_dir=$(pwd)
 jfreechart_home=$util_dir/../downloads/output/jfreechart-1.0.1
 

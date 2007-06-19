@@ -1,5 +1,10 @@
 #!/bin/sh
 
+# Creates a hibnernate-client.jar with the subset of classes required
+# to use objects serialized from a Hibernate Session.
+
+# Aaron Read <amread@untangle.com>
+
 unpacked=$(mktemp -d)
 closure=$(mktemp)
 
