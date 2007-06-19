@@ -1,24 +1,26 @@
 #! /usr/bin/ruby
 
-# Sebastian Delafond <seb@untangle.com>
+# Sebastien Delafond <seb@untangle.com>
 
 require 'net/smtp'
 
 # constants
+REP = "/var/www/untangle"
+DISTS = "#{REP}/dists"
+INCOMING = "#{REP}/incoming"
+PROCESSED = "#{REP}/processed"
+FAILED = "#{PROCESSED}/failed"
+
+DISTRIBUTIONS = Dir.entries(DISTS).delete_if { |f| f =~ /\./ }
 DEFAULT_DISTRIBUTION = "mustang"
 DEFAULT_COMPONENT = "upstream"
 DEFAULT_MAIL_RECIPIENTS = [ "rbscott@untangle.com", "seb@untangle.com" ]
 DEFAULT_SECTION = "utils"
 DEFAULT_PRIORITY = "normal"
 
-REP = "/var/www/untangle"
-INCOMING = "#{REP}/incoming"
-PROCESSED = "#{REP}/processed"
-FAILED = "#{PROCESSED}/failed"
-
 # global functions
 def email(recipients, subject, body)
-  recipients.delete_if! { |r| not r =~ /@untangle\.com/ }
+  recipients.delete_if { |r| not r =~ /@untangle\.com/ }
   recipients.map! { |r|
     r.gsub(/.*?<(.*)>/, '\1')
   }
@@ -115,6 +117,7 @@ class DebianUpload # Main base class
 
       # then try to actually add the package
       output = `#{@command} 2>&1`
+      puts output
       if $? != 0
         if output =~ /No section was given for '#{@name}', skipping/ then
           raise UploadFailureNoSection.new(output)
@@ -133,6 +136,22 @@ class DebianUpload # Main base class
             "Upload of #{@name} succeeded",
             to_s) if @@doEmailSuccess
 
+    rescue UploadFailureAlreadyUploaded
+      puts "there: #{DISTRIBUTIONS}"
+      DISTRIBUTIONS.each { |d|
+        puts d
+        @files.each { |f|
+          if f =~ /.+\/(.+?)_.+\.deb$/ then
+            packageName = $1
+            puts "  #{packageName}"
+            removeCommand = "reprepro -V -b #{REP} remove #{d} #{packageName}"
+            puts "  #{removeCommand}"
+            output = `#{removeCommand} 2>&1`
+            puts output
+          end
+        }
+      }
+      retry
     rescue UploadFailureNoSection
       @command = @command.gsub!(/\-V/, "-V --section #{DEFAULT_SECTION}")
       retry
