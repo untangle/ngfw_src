@@ -1,3 +1,3 @@
 #! /bin/sh
 
-/usr/bin/ucli -t 30 unregister mail-casing 2>/dev/null || true
+/usr/bin/ucli -t 30 unregister untangle-casing-mail 2>/dev/null || true
