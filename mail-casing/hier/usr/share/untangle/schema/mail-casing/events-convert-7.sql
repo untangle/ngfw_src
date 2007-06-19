@@ -16,6 +16,8 @@
 -- Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
 --
 
+DROP TABLE events.new_tr_mail_message_info_addr;
+
 CREATE TABLE events.new_tr_mail_message_info_addr (
     id int8 NOT NULL,
     addr text NOT NULL,
@@ -23,8 +25,7 @@ CREATE TABLE events.new_tr_mail_message_info_addr (
     kind char(1),
     msg_id int8,
     position int4,
-    time_stamp timestamp,
-    PRIMARY KEY (id));
+    time_stamp timestamp);
 
 INSERT INTO events.new_tr_mail_message_info_addr
   SELECT addr.*, msg.time_stamp FROM tr_mail_message_info_addr addr
@@ -32,14 +33,14 @@ INSERT INTO events.new_tr_mail_message_info_addr
 
 DROP TABLE events.tr_mail_message_info_addr;
 ALTER TABLE events.new_tr_mail_message_info_addr RENAME TO tr_mail_message_info_addr;
+ALTER TABLE events.tr_mail_message_info_addr ADD PRIMARY KEY (id);
 
 CREATE TABLE events.new_tr_mail_message_stats (
     id int8 NOT NULL,
     msg_id int8,
     msg_bytes int8,
     msg_attachments int4,
-    time_stamp timestamp,
-    PRIMARY KEY (id));
+    time_stamp timestamp);
 
 INSERT INTO events.new_tr_mail_message_stats
   SELECT stats.*, msg.time_stamp FROM tr_mail_message_stats stats
@@ -47,6 +48,7 @@ INSERT INTO events.new_tr_mail_message_stats
 
 DROP TABLE events.tr_mail_message_stats;
 ALTER TABLE events.new_tr_mail_message_stats RENAME TO tr_mail_message_stats;
+ALTER TABLE events.tr_mail_message_stats ADD PRIMARY KEY (id);
 
 
 DROP INDEX events.tr_mail_mio_plepid_idx;

@@ -16,13 +16,14 @@
 -- Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
 --
 
+DROP TABLE events.new_tr_http_req_line;
+
 CREATE TABLE events.new_tr_http_req_line (
     request_id int8 NOT NULL,
     pl_endp_id int8,
     method char(1),
     uri text,
-    time_stamp timestamp,
-    PRIMARY KEY (request_id));
+    time_stamp timestamp);
 
 INSERT INTO events.new_tr_http_req_line
   SELECT line.*, reqevt.time_stamp FROM tr_http_req_line line
@@ -30,3 +31,4 @@ INSERT INTO events.new_tr_http_req_line
 
 DROP TABLE events.tr_http_req_line;
 ALTER TABLE events.new_tr_http_req_line RENAME TO tr_http_req_line;
+ALTER TABLE events.tr_http_req_line ADD PRIMARY KEY (request_id);
