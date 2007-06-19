@@ -82,7 +82,6 @@ public class MackageDesc implements Serializable
     private final int size;
     private final int installedSize;
     private final String price;
-    private final byte[] orgIcon;
     private final byte[] descIcon;
     private final int viewPosition;
     private final int rackType;
@@ -183,14 +182,6 @@ public class MackageDesc implements Serializable
             longDescription = "";
         }
 
-        // org icon
-        v = m.get("org-icon");
-        if (null != v) {
-            orgIcon = decode(v);
-        } else {
-            orgIcon = null; // XXX default
-        }
-
         // desc icon
         v = m.get("desc-icon");
         if (null != v) {
@@ -265,18 +256,6 @@ public class MackageDesc implements Serializable
     public int getInstalledSize()
     {
         return installedSize;
-    }
-
-    public byte[] getOrgIcon()
-    {
-        byte[] retVal = null;
-
-        if (null != orgIcon) {
-            retVal = new byte[orgIcon.length];
-            System.arraycopy(orgIcon, 0, retVal, 0, orgIcon.length);
-        }
-
-        return retVal;
     }
 
     public byte[] getDescIcon()
