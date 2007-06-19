@@ -876,7 +876,7 @@ Description: Spam Blocker
 
 Package: untangle-node-phish
 Architecture: any
-Depends: untangle-uvm, untangle-base-spam, untangle-clamav-config, mail, untangle-casing-http
+Depends: untangle-uvm, untangle-base-spam, untangle-clamav-config, untangle-casing-mail, untangle-casing-http
 XB-Display-Name: Phish Blocker
 XB-Untangle-Type: node
 XB-Untangle-Jar-Prefix: phish-node
