@@ -19,7 +19,7 @@ Architecture: any
 Depends: untangle-uvm
 XB-Display-Name: File Transfer
 XB-Untangle-Type: casing
-XB-untangle-casing-Jar-Prefix: ftp
+XB-untangle-Jar-Prefix: untangle-casing-ftp
 XB-Is-Service: true
 Description: The Untangle File Transfer/FTP Decoder
  The Untangle File Transfer/FTP Decoder.
@@ -29,7 +29,7 @@ Architecture: any
 Depends: untangle-uvm
 XB-Display-Name: Web
 XB-Untangle-Type: casing
-XB-untangle-casing-Jar-Prefix: http
+XB-untangle-Jar-Prefix: untangle-casing-http
 XB-Is-Service: true
 Description: The Untangle Web Decoder
  The Untangle Web Decoder.
@@ -42,7 +42,7 @@ Provides: untangle-node-email
 Depends: untangle-uvm
 XB-Display-Name: Email
 XB-Untangle-Type: casing
-XB-untangle-casing-Jar-Prefix: mail
+XB-untangle-Jar-Prefix: untangle-casing-mail
 XB-Is-Service: true
 Description: The Untangle Email Decoder
  The Untangle Email Decoder.
@@ -52,7 +52,7 @@ Architecture: any
 Depends: untangle-uvm
 XB-Display-Name: Attack Blocker
 XB-Untangle-Type: node
-XB-Untangle-Jar-Prefix: shield-node
+XB-Untangle-Jar-Prefix: untangle-node-shield
 XB-View-Position: 1010
 XB-Is-Core: true
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
@@ -164,7 +164,7 @@ Architecture: any
 Depends: untangle-uvm, untangle-casing-http
 XB-Display-Name: Spyware Blocker
 XB-Untangle-Type: node
-XB-Untangle-Jar-Prefix: spyware-node
+XB-Untangle-Jar-Prefix: untangle-node-spyware
 XB-View-Position: 20
 XB-Is-Security: true
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
@@ -252,7 +252,7 @@ Architecture: any
 Depends: untangle-uvm, untangle-casing-http, untangle-urlblacklist
 XB-Display-Name: Web Filter
 XB-Untangle-Type: node
-XB-Untangle-Jar-Prefix: webfilter-node
+XB-Untangle-Jar-Prefix: untangle-node-webfilter
 XB-View-Position: 30
 XB-Is-Security: true
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0RVh0
@@ -351,7 +351,7 @@ Architecture: any
 Depends: untangle-uvm, untangle-virus-base, untangle-clamav-config, untangle-casing-http, untangle-casing-ftp, untangle-casing-mail
 XB-Display-Name: Virus Blocker
 XB-Untangle-Type: node
-XB-Untangle-Jar-Prefix: clam-node
+XB-Untangle-Jar-Prefix: untangle-node-clam
 XB-View-Position: 70
 XB-Is-Security: true
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAACXBIWXMAAAsTAAALEwEAmpwY
@@ -458,7 +458,7 @@ Architecture: any
 Depends: untangle-uvm
 XB-Display-Name: Protocol Control
 XB-Untangle-Type: node
-XB-Untangle-Jar-Prefix: protofilter-node
+XB-Untangle-Jar-Prefix: untangle-node-protofilter
 XB-View-Position: 80
 XB-Is-Security: true
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
@@ -580,7 +580,7 @@ Architecture: any
 Depends: untangle-uvm, dnsmasq, untangle-casing-ftp
 XB-Display-Name: Router
 XB-Untangle-Type: node
-XB-Untangle-Jar-Prefix: router-node
+XB-Untangle-Jar-Prefix: untangle-node-router
 XB-View-Position: 1000
 XB-Is-Core: true
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
@@ -675,7 +675,7 @@ Architecture: any
 Depends: untangle-uvm
 XB-Display-Name: Firewall
 XB-Untangle-Type: node
-XB-Untangle-Jar-Prefix: firewall-node
+XB-Untangle-Jar-Prefix: untangle-node-firewall
 XB-View-Position: 90
 XB-Is-Security: true
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
@@ -763,7 +763,7 @@ Architecture: any
 Depends: untangle-uvm, untangle-base-spam, untangle-casing-mail
 XB-Display-Name: Spam Blocker
 XB-Untangle-Type: node
-XB-Untangle-Jar-Prefix: spamassassin-node
+XB-Untangle-Jar-Prefix: untangle-node-spamassassin
 XB-View-Position: 15
 XB-Is-Security: true
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
@@ -879,7 +879,7 @@ Architecture: any
 Depends: untangle-uvm, untangle-base-spam, untangle-clamav-config, untangle-casing-mail, untangle-casing-http
 XB-Display-Name: Phish Blocker
 XB-Untangle-Type: node
-XB-Untangle-Jar-Prefix: phish-node
+XB-Untangle-Jar-Prefix: untangle-node-phish
 XB-View-Position: 17
 XB-Is-Security: true
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
@@ -1009,7 +1009,7 @@ Architecture: any
 Depends: untangle-uvm
 XB-Display-Name: Test
 XB-Untangle-Type: node
-XB-Untangle-Jar-Prefix: test-node
+XB-Untangle-Jar-Prefix: untangle-node-test
 XB-View-Position: 2002
 XB-Is-Core: true
 XB-Org-Icon:  iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
@@ -1152,7 +1152,7 @@ Architecture: any
 Depends: untangle-uvm, openvpn, untangle-nsis-addons, sysutils, zip, openssl
 XB-Display-Name: OpenVPN
 XB-Untangle-Type: node
-XB-Untangle-Jar-Prefix: openvpn-node
+XB-Untangle-Jar-Prefix: untangle-node-openvpn
 XB-View-Position: 1003
 XB-Is-Core: true
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
@@ -1257,7 +1257,7 @@ Architecture: any
 Depends: untangle-uvm, untangle-casing-http, untangle-snort-rules
 XB-Display-Name: Intrusion Prevention
 XB-Untangle-Type: node
-XB-Untangle-Jar-Prefix: ips-node
+XB-Untangle-Jar-Prefix: untangle-node-ips
 XB-View-Position: 75
 XB-Is-Security: true
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
@@ -1364,11 +1364,11 @@ Architecture: any
 Depends: untangle-uvm
 XB-Display-Name: Untangle Reports
 XB-Untangle-Type: node
-XB-Untangle-Jar-Prefix: protofilter-node
+XB-Untangle-Jar-Prefix: untangle-node-reporting
 XB-View-Position: 1020
 XB-Is-Core: true
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
- RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAbzSURBVHja5Fh7bBzFGZ+ZnX3d
+ RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAbzSURBVH1ja5Fh7bBzFGZ+ZnX3d
  03e2c04cxwjjxI4fCSQhxKA0oYUUCRKpqgh/gPoHsahUqVKroioghT7U/lkJBbWi/1R9pA/1
  JUGlVEALFdShNXVcbIgdx3Hsc3xuYvved7s7uzP99va8WMRJz20PKnW1Ot38dnZ+33zzzW++
  b/GhL7+xpUlvjqrRoKyrEpUwqs8lESxTolBMCOZcPPfD9wHE2z939gdf6lFkIkuEEIRRfegr
