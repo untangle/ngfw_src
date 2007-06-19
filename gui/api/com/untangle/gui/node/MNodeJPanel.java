@@ -177,7 +177,7 @@ public class MNodeJPanel extends javax.swing.JPanel {
           try{
           name = nodeDesc.getName();
           name = name.substring(0, name.indexOf('-'));
-          organizationIconJLabel.setIcon(new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/untangle/tran/"
+          organizationIconJLabel.setIcon(new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/untangle/node/"
           + name
           + "/gui/IconOrg42x42.png")));
           }

@@ -54,7 +54,7 @@ public class ServerRoutingWizardWelcomeJPanel extends MWizardPageJPanel {
         jLabel2.setText("<html>This wizard will help guide you through your initial setup and configuration of OpenVPN as a VPN Routing Server.<br><br><font color=\"#FF0000\">Warning:  Finishing this wizard will cause any previous OpenVPN settings you had to be lost, and overwritten by new settings.  Only finish this wizard if you would like completely new settings.</font></html>");
         add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 110, 375, -1));
 
-        jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/tran/openvpn/gui/ProductShot.png")));
+        jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/node/openvpn/gui/ProductShot.png")));
         add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(-130, 230, -1, -1));
 
     }//GEN-END:initComponents

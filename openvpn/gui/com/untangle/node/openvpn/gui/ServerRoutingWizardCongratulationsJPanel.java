@@ -49,7 +49,7 @@ public class ServerRoutingWizardCongratulationsJPanel extends MWizardPageJPanel 
         jLabel2.setText("<html>\nIf necessary, you can change the configuration of OpenVPN<br>\nby launching the Setup Wizard again.</html>");
         add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 110, -1, -1));
 
-        jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/tran/openvpn/gui/ProductShot.png")));
+        jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/node/openvpn/gui/ProductShot.png")));
         add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(-130, 230, -1, -1));
 
     }//GEN-END:initComponents

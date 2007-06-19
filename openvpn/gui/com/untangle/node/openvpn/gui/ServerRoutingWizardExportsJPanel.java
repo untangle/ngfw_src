@@ -104,7 +104,7 @@ public class ServerRoutingWizardExportsJPanel extends MWizardPageJPanel {
 
         add(configExportsJPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(5, 90, 465, 210));
 
-        jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/tran/openvpn/gui/ProductShot.png")));
+        jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/node/openvpn/gui/ProductShot.png")));
         jLabel3.setEnabled(false);
         add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(-130, 230, -1, -1));
 

@@ -218,7 +218,7 @@ public class ClientWizardServerJPanel extends MWizardPageJPanel {
         serverJLabel2.setText("Password:");
         add(serverJLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(157, 142, -1, -1));
 
-        jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/tran/openvpn/gui/ProductShot.png")));
+        jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/node/openvpn/gui/ProductShot.png")));
         add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(-130, 230, -1, -1));
 
         methodButtonGroup.add(keyJRadioButton);

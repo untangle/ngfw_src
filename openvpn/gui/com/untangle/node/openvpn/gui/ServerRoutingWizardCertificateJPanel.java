@@ -204,7 +204,7 @@ public class ServerRoutingWizardCertificateJPanel extends MWizardPageJPanel {
 
         add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 80, 350, 110));
 
-        jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/tran/openvpn/gui/ProductShot.png")));
+        jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/node/openvpn/gui/ProductShot.png")));
         add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(-130, 230, -1, -1));
 
     }//GEN-END:initComponents
