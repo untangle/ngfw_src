@@ -24,7 +24,7 @@ package com.untangle.uvm.logging;
  * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
  * @version 1.0
  */
-public class MvMailLayout extends MvPatternLayout
+public class MvMailLayout extends UtPatternlayout
 {
     // If null, we're the uvm.
     private final String componentName;
@@ -34,7 +34,7 @@ public class MvMailLayout extends MvPatternLayout
     public MvMailLayout(String componentName)
     {
         // This gets reset by our xml config later...
-        super(MvPatternLayout.MV_DEFAULT_CONVERSION_PATTERN);
+        super(UtPatternlayout.MV_DEFAULT_CONVERSION_PATTERN);
 
         this.componentName = componentName;
     }

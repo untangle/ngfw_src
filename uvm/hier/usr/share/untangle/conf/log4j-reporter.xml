@@ -17,7 +17,7 @@
     <param name="MaxFileSize" value="500KB"/>
     <param name="MaxBackupIndex" value="9"/>
     <param name="Threshold" value="ALL"/>
-    <layout class="com.untangle.uvm.logging.MvPatternLayout">
+    <layout class="com.untangle.uvm.logging.UtPatternlayout">
       <!-- This is actually the default conversion, so we could leave it out... -->
       <param name="ConversionPattern" value="%D %-5p [%c{1}] %m%n"/>
     </layout>

@@ -29,18 +29,18 @@ import org.apache.log4j.helpers.PatternParser;
  * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
  * @version 1.0
  */
-public class MvPatternLayout extends PatternLayout
+public class UtPatternlayout extends PatternLayout
 {
     static final String MV_DEFAULT_CONVERSION_PATTERN = "%D %-5p [%c{1}] %m%n";
 
     // constructors -----------------------------------------------------------
 
-    public MvPatternLayout(String pattern)
+    public UtPatternlayout(String pattern)
     {
         super(pattern);
     }
 
-    public MvPatternLayout()
+    public UtPatternlayout()
     {
         this(MV_DEFAULT_CONVERSION_PATTERN);
     }
