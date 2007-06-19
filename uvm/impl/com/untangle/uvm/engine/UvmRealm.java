@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -40,6 +40,12 @@ import org.apache.catalina.realm.RealmBase;
 import org.apache.log4j.Logger;
 import sun.misc.BASE64Encoder;
 
+/**
+ * Authenticates against the UvmUser password.
+ *
+ * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
+ * @version 1.0
+ */
 class UvmRealm extends RealmBase
 {
     private final Logger logger = Logger.getLogger(getClass());

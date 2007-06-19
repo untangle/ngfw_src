@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -29,11 +29,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.untangle.uvm.node.IPSessionDesc;
 import com.untangle.uvm.argon.ArgonAgent;
 import com.untangle.uvm.argon.PipelineDesc;
 import com.untangle.uvm.argon.SessionEndpoints;
 import com.untangle.uvm.logging.EventLogger;
+import com.untangle.uvm.node.IPSessionDesc;
+import com.untangle.uvm.node.PipelineEndpoints;
+import com.untangle.uvm.node.PipelineStats;
 import com.untangle.uvm.policy.LocalPolicyManager;
 import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.policy.PolicyRule;
@@ -45,10 +47,14 @@ import com.untangle.uvm.vnet.MPipe;
 import com.untangle.uvm.vnet.Pipeline;
 import com.untangle.uvm.vnet.PipelineFoundry;
 import com.untangle.uvm.vnet.SoloPipeSpec;
-import com.untangle.uvm.node.PipelineEndpoints;
-import com.untangle.uvm.node.PipelineStats;
 import org.apache.log4j.Logger;
 
+/**
+ * Implements PipelineFoundry.
+ *
+ * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
+ * @version 1.0
+ */
 public class PipelineFoundryImpl implements PipelineFoundry
 {
     private static final PipelineFoundryImpl PIPELINE_FOUNDRY_IMPL

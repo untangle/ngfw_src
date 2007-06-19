@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -30,12 +30,19 @@ import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.logging.ListEventFilter;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.logging.RepositoryDesc;
-import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.node.NodeContext;
+import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.util.TransactionWork;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
 
+/**
+ * Implements a <code>EventCache</code> cache using a
+ * <Code>ListEventFilter</code> for filtering and warming.
+ *
+ * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
+ * @version 1.0
+ */
 class SimpleEventCache<E extends LogEvent> extends EventCache<E>
 {
     private EventLoggerImpl<E> eventLogger;

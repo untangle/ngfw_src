@@ -32,6 +32,12 @@ import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
+/**
+ * Manages event logging.
+ *
+ * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
+ * @version 1.0
+ */
 class RemoteLoggingManagerImpl implements RemoteLoggingManager
 {
     private static final Object LOCK = new Object();

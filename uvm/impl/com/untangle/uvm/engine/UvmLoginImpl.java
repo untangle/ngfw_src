@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -29,12 +29,18 @@ import com.untangle.uvm.client.RemoteUvmContext;
 import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.security.LoginFailureReason;
 import com.untangle.uvm.security.LoginSession;
-import com.untangle.uvm.security.UvmLogin;
-import com.untangle.uvm.security.UvmPrincipal;
 import com.untangle.uvm.security.PasswordUtil;
 import com.untangle.uvm.security.User;
+import com.untangle.uvm.security.UvmLogin;
+import com.untangle.uvm.security.UvmPrincipal;
 import org.apache.log4j.Logger;
 
+/**
+ * Implements UvmLogin.
+ *
+ * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
+ * @version 1.0
+ */
 class UvmLoginImpl implements UvmLogin
 {
     private static final String ACTIVATION_USER    = "admin";

@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -35,9 +35,14 @@ package com.untangle.uvm.node;
 
 import com.untangle.uvm.UvmException;
 
-// relates to the creation of instances
-// XXX rename?
-public class DeployException extends UvmException {
+/**
+ * Signals problem deploying an Node instance.
+ *
+ * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
+ * @version 1.0
+ */
+public class DeployException extends UvmException
+{
     public DeployException() { super(); }
     public DeployException(String message) { super(message); }
     public DeployException(String message, Throwable cause) { super(message, cause); }

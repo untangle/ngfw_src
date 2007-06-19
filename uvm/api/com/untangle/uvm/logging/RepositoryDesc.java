@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -35,6 +35,12 @@ package com.untangle.uvm.logging;
 
 import java.io.Serializable;
 
+/**
+ * A description of an <code>EventRepository</code<.
+ *
+ * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
+ * @version 1.0
+ */
 public class RepositoryDesc implements Serializable
 {
     private final String name;

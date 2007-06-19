@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -22,6 +22,13 @@ import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.EventRepository;
 import com.untangle.uvm.logging.LogEvent;
 
+/**
+ * Server side of Event logging. Provides an interface for logging
+ * events and a cache for the latest events.
+ *
+ * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
+ * @version 1.0
+ */
 abstract class EventCache<E extends LogEvent> implements EventRepository<E>
 {
     public abstract void log(E e);

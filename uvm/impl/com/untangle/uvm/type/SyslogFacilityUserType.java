@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -28,6 +28,13 @@ import com.untangle.uvm.logging.SyslogFacility;
 import org.hibernate.HibernateException;
 import org.hibernate.usertype.UserType;
 
+/**
+ * Hibernate <code>UserType</code> for persisting
+ * <code>SyslogFacility</code> objects.
+ *
+ * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
+ * @version 1.0
+ */
 public class SyslogFacilityUserType implements UserType
 {
     private static final int[] SQL_TYPES = { Types.INTEGER };

@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -35,7 +35,14 @@ package com.untangle.uvm.node;
 
 import com.untangle.uvm.UvmException;
 
-public class UndeployException extends UvmException {
+/**
+ * Signals a problem undeploying an instance of a <code>Node</code>.
+ *
+ * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
+ * @version 1.0
+ */
+public class UndeployException extends UvmException
+{
     public UndeployException() { super(); }
     public UndeployException(String message) { super(message); }
     public UndeployException(String message, Throwable cause)

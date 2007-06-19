@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -35,6 +35,12 @@ package com.untangle.uvm.node;
 
 import java.net.InetAddress;
 
+/**
+ * Gives information about a sessions endpoints.
+ *
+ * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
+ * @version 1.0
+ */
 public interface SessionEndpoints
 {
     public static final short PROTO_ICMP = 1; // Only used for ping sessions

@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -27,6 +27,12 @@ import com.untangle.uvm.portal.Application;
 import com.untangle.uvm.portal.LocalApplicationManager;
 import org.apache.log4j.Logger;
 
+/**
+ * A registry of Portal applications registered with the system.
+ *
+ * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
+ * @version 1.0
+ */
 class PortalApplicationManagerImpl implements LocalApplicationManager
 {
     private static final PortalApplicationManagerImpl APPLICATION_MANAGER

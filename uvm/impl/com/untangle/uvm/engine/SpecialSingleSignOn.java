@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -19,26 +19,21 @@
 package com.untangle.uvm.engine;
 
 import java.io.IOException;
-
 import java.security.Principal;
-
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-
 import javax.servlet.ServletException;
 
+import com.untangle.uvm.LocalUvmContext;
+import com.untangle.uvm.portal.BasePortalLogin;
+import com.untangle.uvm.portal.BasePortalManager;
+import com.untangle.uvm.security.UvmPrincipal;
 import org.apache.catalina.Valve;
 import org.apache.catalina.authenticator.Constants;
 import org.apache.catalina.authenticator.SingleSignOn;
 import org.apache.catalina.connector.Request;
 import org.apache.catalina.connector.Response;
-
-import com.untangle.uvm.LocalUvmContext;
-import com.untangle.uvm.portal.BasePortalManager;
-import com.untangle.uvm.portal.BasePortalLogin;
-import com.untangle.uvm.security.UvmPrincipal;
-
 
 class SpecialSingleSignOn extends SingleSignOn
 {
@@ -51,9 +46,9 @@ class SpecialSingleSignOn extends SingleSignOn
     SpecialSingleSignOn(LocalUvmContext uvmContext, String ... contextPathArray )
     {
         Set<String> contextSet = new HashSet<String>();
-        
+
         for ( String contextPath : contextPathArray ) contextSet.add( contextPath );
-        
+
         this.uvmContextSet =  Collections.unmodifiableSet( contextSet );
 
         pmgr = (BasePortalManager) uvmContext.portalManager();
@@ -77,7 +72,7 @@ class SpecialSingleSignOn extends SingleSignOn
             if ( containerLog.isDebugEnabled()) {
                 containerLog.debug( "The path: [" + contextPath + "] is ignored by single sign on" );
             }
-            
+
             Valve next = getNext();
             if ( next != null ) next.invoke(request,response);
             return;
@@ -117,7 +112,7 @@ class SpecialSingleSignOn extends SingleSignOn
 
             return;
         }
-        
+
         super.register(ssoId,principal,authType,username,password);
     }
 }

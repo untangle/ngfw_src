@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -20,15 +20,20 @@ package com.untangle.uvm.type;
 
 import com.untangle.uvm.node.IPaddr;
 
-import java.net.UnknownHostException;
-
+/**
+ * Hibernate <code>UserType</code> for persisting
+ * <code>IPaddr</code> objects.
+ *
+ * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
+ * @version 1.0
+ */
 public class IPaddrUserType extends StringBasedUserType
 {
     private static final IPaddr EMPTY_IPADDR = new IPaddr( null );
 
     /* special string used to represent an empty ip addr */
     private static final String EMPTY_STRING = "0.0.0.0/31";
-    
+
     public Class returnedClass()
     {
         return IPaddr.class;
@@ -38,11 +43,11 @@ public class IPaddrUserType extends StringBasedUserType
     {
         /* null (don't actually have to worry about null because of the StringBasedUserType.) */
         if ( v == null ) return null;
-        
+
         IPaddr i = (IPaddr)v;
-        
+
         if ( i.isEmpty()) return EMPTY_STRING;
-        
+
         return ((IPaddr)v).toString();
     }
 
@@ -62,7 +67,7 @@ public class IPaddrUserType extends StringBasedUserType
          * address of 0.0.0.0) differs from IPaddr( null ) (no address
          * at all). */
         if ( EMPTY_STRING.equals( val )) return EMPTY_IPADDR;
-       
+
         return IPaddr.parse( val );
     }
 }

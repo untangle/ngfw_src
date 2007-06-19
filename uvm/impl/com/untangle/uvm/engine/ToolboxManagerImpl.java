@@ -40,14 +40,13 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import com.untangle.uvm.CronJob;
-import com.untangle.uvm.Period;
 import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.Period;
 import com.untangle.uvm.alerts.MessageQueue;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.NodeException;
 import com.untangle.uvm.security.LoginSession;
 import com.untangle.uvm.security.Tid;
-import com.untangle.uvm.vnet.NodeBase;
 import com.untangle.uvm.toolbox.InstallProgress;
 import com.untangle.uvm.toolbox.MackageDesc;
 import com.untangle.uvm.toolbox.MackageException;
@@ -58,10 +57,17 @@ import com.untangle.uvm.toolbox.RemoteToolboxManager;
 import com.untangle.uvm.toolbox.ToolboxMessage;
 import com.untangle.uvm.toolbox.UpgradeSettings;
 import com.untangle.uvm.util.TransactionWork;
+import com.untangle.uvm.vnet.NodeBase;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
+/**
+ * Implements RemoteToolboxManager.
+ *
+ * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
+ * @version 1.0
+ */
 class RemoteToolboxManagerImpl implements RemoteToolboxManager
 {
     static final URL TOOLBOX_URL;

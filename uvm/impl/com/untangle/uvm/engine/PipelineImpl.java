@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -29,8 +29,13 @@ import java.util.Map;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.MPipe;
 import com.untangle.uvm.vnet.Pipeline;
-import com.untangle.uvm.node.PipelineEndpoints;
 
+/**
+ * Implementation of <code>Pipeline</code>.
+ *
+ * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
+ * @version 1.0
+ */
 class PipelineImpl implements Pipeline
 {
     private static final File BUNNICULA_TMP

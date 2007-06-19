@@ -30,10 +30,10 @@ import javax.transaction.TransactionRolledbackException;
 
 import com.untangle.uvm.MailSender;
 import com.untangle.uvm.MailSettings;
-import com.untangle.uvm.security.RemoteAdminManager;
 import com.untangle.uvm.security.AdminSettings;
 import com.untangle.uvm.security.LoginSession;
 import com.untangle.uvm.security.RegistrationInfo;
+import com.untangle.uvm.security.RemoteAdminManager;
 import com.untangle.uvm.security.User;
 import com.untangle.uvm.snmp.SnmpManager;
 import com.untangle.uvm.snmp.SnmpManagerImpl;
@@ -43,6 +43,12 @@ import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
+/**
+ * Remote interface for administrative user management.
+ *
+ * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
+ * @version 1.0
+ */
 class RemoteAdminManagerImpl implements RemoteAdminManager
 {
     private static final String INITIAL_USER_NAME = "System Administrator";

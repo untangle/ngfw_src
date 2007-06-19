@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -23,12 +23,18 @@ import java.net.InetAddress;
 import java.util.Date;
 import java.util.Formatter;
 
+import com.untangle.node.util.AsciiCharBuffer;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.logging.SyslogBuilder;
 import com.untangle.uvm.node.IPaddr;
-import com.untangle.node.util.AsciiCharBuffer;
 import org.apache.log4j.Logger;
 
+/**
+ * Builds Syslog packets from <code>LogEvent</code>s.
+ *
+ * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
+ * @version 1.0
+ */
 class SyslogBuilderImpl implements SyslogBuilder
 {
     private static final int PACKET_SIZE = 1024;

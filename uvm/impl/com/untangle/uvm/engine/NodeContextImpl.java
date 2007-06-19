@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -33,8 +33,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.LocalUvmContext;
+import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.node.DeployException;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeContext;
@@ -47,17 +47,23 @@ import com.untangle.uvm.node.TooManyInstancesException;
 import com.untangle.uvm.node.UndeployException;
 import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.security.Tid;
+import com.untangle.uvm.toolbox.MackageDesc;
+import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.IPSessionDesc;
 import com.untangle.uvm.vnet.NodeBase;
 import com.untangle.uvm.vnet.NodeListener;
 import com.untangle.uvm.vnet.NodeStateChangeEvent;
-import com.untangle.uvm.toolbox.MackageDesc;
-import com.untangle.uvm.util.TransactionWork;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
-// XXX decouple from NodeBase
+/**
+ * Implements <code>NodeContext</code>. Contains code to load and set
+ * up a <code>Node</code>.
+ *
+ * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
+ * @version 1.0
+ */
 class NodeContextImpl implements NodeContext
 {
     private final Logger logger = Logger.getLogger(getClass());

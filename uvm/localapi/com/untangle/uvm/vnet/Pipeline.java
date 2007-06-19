@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -36,8 +36,14 @@ package com.untangle.uvm.vnet;
 import java.io.File;
 import java.io.IOException;
 
-import com.untangle.uvm.node.PipelineEndpoints;
 
+/**
+ * A Pipeline is a chain of <code>MPipe</code>s for one
+ * <code>Session</code>.
+ *
+ * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
+ * @version 1.0
+ */
 public interface Pipeline
 {
     Long attach(Object o);

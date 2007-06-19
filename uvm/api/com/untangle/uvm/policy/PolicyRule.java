@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -44,8 +44,8 @@ import com.untangle.uvm.node.IPSessionDesc;
 import com.untangle.uvm.node.Rule;
 
 /**
- * Hibernate mappings for this class are in the subclasses UserPolicyRule
- * and SystemPolicyRule.
+ * Hibernate mappings for this class are in the subclasses
+ * UserPolicyRule and SystemPolicyRule.
  */
 @MappedSuperclass
 public abstract class PolicyRule extends Rule

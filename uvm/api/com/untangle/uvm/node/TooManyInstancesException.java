@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -34,8 +34,13 @@
 package com.untangle.uvm.node;
 
 
-// relates to the creation of instances
-// XXX rename?
+/**
+ * Thrown if too many instance of a Node are created when the node is
+ * a service or other type that only allows a single instance.
+ *
+ * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
+ * @version 1.0
+ */
 public class TooManyInstancesException extends DeployException {
     public TooManyInstancesException() { super(); }
 

@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -36,6 +36,12 @@ package com.untangle.uvm.security;
 import java.io.Serializable;
 import java.net.InetAddress;
 
+/**
+ * Represents a administrative login session.
+ *
+ * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
+ * @version 1.0
+ */
 public class LoginSession implements Serializable
 {
     private static final long serialVersionUID = -585571141103354067L;

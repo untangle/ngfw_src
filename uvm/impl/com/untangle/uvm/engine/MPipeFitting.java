@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -21,6 +21,12 @@ package com.untangle.uvm.engine;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.MPipe;
 
+/**
+ * Binds a <code>Fitting</code> to a <code>MPipe</code>.
+ *
+ * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
+ * @version 1.0
+ */
 class MPipeFitting
 {
     final MPipe mPipe;

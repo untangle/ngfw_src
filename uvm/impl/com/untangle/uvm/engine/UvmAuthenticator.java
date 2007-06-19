@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -31,7 +31,12 @@ import org.apache.catalina.deploy.LoginConfig;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-
+/**
+ * BasicAuthenticator for the UVMRealm.
+ *
+ * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
+ * @version 1.0
+ */
 class UvmAuthenticator extends BasicAuthenticator
 {
     public static final String AUTH_NONCE_FIELD_NAME = "nonce";
@@ -124,17 +129,6 @@ class UvmAuthenticator extends BasicAuthenticator
         }
 
         return super.authenticate(request, response, config);
-
-        //         if (isAuthenticated) {
-        //             org.apache.catalina.Session session = request.getSessionInternal(false);
-        //             if (null != session) {
-        //                 principal = session.getPrincipal();
-        //                 debug("Found principal[", request.getUserPrincipal(), "] from getUserPrincipal ");
-        //                 debug("Found principal[", principal, "] from session: ", session);
-        //             }
-        //         }
-
-        //         return isAuthenticated;
     }
 
     private boolean isValidPrincipal(Principal principal)
