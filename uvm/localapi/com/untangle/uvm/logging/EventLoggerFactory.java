@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -38,6 +38,12 @@ import java.lang.reflect.Method;
 
 import com.untangle.uvm.node.NodeContext;
 
+/**
+ * Factory for getting UVM and Node EventLoggers.
+ *
+ * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
+ * @version 1.0
+ */
 public abstract class EventLoggerFactory
 {
     private static final String LOGGER_CLASS
@@ -71,5 +77,6 @@ public abstract class EventLoggerFactory
     }
 
     public abstract <E extends LogEvent> EventLogger<E> getEventLogger();
+
     public abstract <E extends LogEvent> EventLogger<E> getEventLogger(NodeContext tctx);
 }

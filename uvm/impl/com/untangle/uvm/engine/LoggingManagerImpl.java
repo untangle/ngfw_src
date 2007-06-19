@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -24,8 +24,8 @@ import java.util.List;
 import java.util.concurrent.BlockingQueue;
 
 import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.logging.RemoteLoggingManager;
 import com.untangle.uvm.logging.LoggingSettings;
+import com.untangle.uvm.logging.RemoteLoggingManager;
 import com.untangle.uvm.logging.UvmRepositorySelector;
 import com.untangle.uvm.util.TransactionWork;
 import org.apache.log4j.Logger;
