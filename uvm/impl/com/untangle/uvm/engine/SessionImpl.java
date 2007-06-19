@@ -27,7 +27,7 @@ import com.untangle.uvm.vnet.*;
  * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
  * @version 1.0
  */
-bstract class SessionImpl implements Session {
+abstract class SessionImpl implements Session {
 
     // For when we use a two-element array to store state for both sides.
     protected static final int CLIENT = 0;
