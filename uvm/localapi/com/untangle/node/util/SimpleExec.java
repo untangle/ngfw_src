@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -42,28 +42,30 @@ import com.untangle.uvm.LocalUvmContextFactory;
 import org.apache.log4j.Logger;
 
 /**
- * Wrapper around a simple exec (short-lived) which takes care of timeouts and buffering
- * output.  Does not handle stdin.
- *
+ * Wrapper around a simple exec (short-lived) which takes care of
+ * timeouts and buffering output.  Does not handle stdin.
  */
-public final class SimpleExec {
-
+public final class SimpleExec
+{
     /**
-     * The results of a call to {@link SimpleExec#exec exec}
+     * The results of a call to {@link SimpleExec#exec exec}.
      */
-    public static class SimpleExecResult {
+    public static class SimpleExecResult
+    {
         /**
-         * The exit code of the process
+         * The exit code of the process.
          */
         public final int exitCode;
+
         /**
-         * The buffered output of the executed processes stdout.  If stdout
-         * was not captured this may be null
+         * The buffered output of the executed processes stdout.  If
+         * stdout was not captured this may be null.
          */
         public final byte[] stdOut;
+
         /**
-         * The buffered output of the executed processes stderr.  If stderr
-         * was not captured this may be null
+         * The buffered output of the executed processes stderr.  If
+         * stderr was not captured this may be null.
          */
         public final byte[] stdErr;
 
@@ -97,7 +99,6 @@ public final class SimpleExec {
             }
             return sb.toString();
         }
-
     }
 
 
@@ -115,7 +116,8 @@ public final class SimpleExec {
     private InputStream m_stdErr;
 
     private SimpleExec(long maxTime,
-                       Logger logAs) {
+                       Logger logAs)
+    {
 
 
         m_logger = logAs==null?Logger.getLogger(SimpleExec.class):logAs;
@@ -123,7 +125,7 @@ public final class SimpleExec {
     }
 
     /**
-     * Callback method for the thread watching for timeouts
+     * Callback method for the thread watching for timeouts.
      */
     private void timeoutWatcher() {
         long then = System.currentTimeMillis() + m_maxTime;
@@ -144,10 +146,11 @@ public final class SimpleExec {
 
 
     /**
-     * Class which drains a stream to a ByteArrayOutputStream
+     * Class which drains a stream to a ByteArrayOutputStream.
      */
     private class StreamDrainer
-        implements Runnable {
+        implements Runnable
+    {
         private final InputStream m_in;
         private final ByteArrayOutputStream m_out;
 
@@ -170,15 +173,14 @@ public final class SimpleExec {
         }
     }
 
-
     private SimpleExecResult doIt(String cmd,
                                   String[] args,
                                   String[] env,
                                   File rootDir,
                                   boolean bufferStdOut,
                                   boolean bufferStdErr,
-                                  boolean useUVMThread) throws IOException {
-
+                                  boolean useUVMThread) throws IOException
+    {
         //Assemble full command
         args = args==null?EMPTY_ARRAY:args;
         String[] fullCmd = new String[1 + args.length];
@@ -216,8 +218,7 @@ public final class SimpleExec {
             return new SimpleExecResult(retCode,
                                         bufferStdOut?m_stdOutBuf.toByteArray():null,
                                         bufferStdErr?m_stdErrBuf.toByteArray():null);
-        }
-        catch(InterruptedException ex) {
+        } catch (InterruptedException ex) {
             done();
             closeStreams();
             destroyProcess();
@@ -231,22 +232,24 @@ public final class SimpleExec {
                 throw new IOException("Interrupted");
             }
         }
-
     }
 
-    private void done() {
-        synchronized(m_lock) {
+    private void done()
+    {
+        synchronized (m_lock) {
             m_done = true;
             m_lock.notify();
         }
     }
 
-    private void closeStreams() {
+    private void closeStreams()
+    {
         try{m_stdOut.close();}catch(Exception ignore){}
         try{m_stdErr.close();}catch(Exception ignore){}
     }
 
-    private void destroyProcess() {
+    private void destroyProcess()
+    {
         try {m_process.destroy();}catch(Exception ignore){}
     }
 

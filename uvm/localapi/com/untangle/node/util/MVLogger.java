@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -32,24 +32,21 @@
  */
 
 package com.untangle.node.util;
+
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
-
 /**
- * Wrapper around a Log4J Logger, which
- * delays String concatination until
- * it is known if a message will reach the
- * actual log file.
- * <br><br>
- * Works like the log4J version, except Throwables are
- * the <b>first</b> argument to methods if you want to
- * log the exception w/ its stack.  By using JDK 1.5
- * varargs and auto boxing, you can also pass as many
- * arguments of any type to the logging methods.
+ * Wrapper around a Log4J Logger, which delays String concatination
+ * until it is known if a message will reach the actual log file.
+ *
+ * Works like the log4J version, except Throwables are the
+ * <b>first</b> argument to methods if you want to log the exception
+ * w/ its stack.  By using JDK 1.5 varargs and auto boxing, you can
+ * also pass as many arguments of any type to the logging methods.
  */
-public class MVLogger {
-
+public class MVLogger
+{
     private Logger m_logger;
 
     public MVLogger(Logger logger) {
@@ -147,5 +144,4 @@ public class MVLogger {
         }
         return sb.toString();
     }
-
 }

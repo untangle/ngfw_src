@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -56,6 +56,14 @@ import com.sleepycat.je.DatabaseException;
 import org.apache.log4j.Logger;
 import sun.misc.BASE64Decoder;
 
+/**
+ * <code>UrlList</code> that holds entries that are encoded as
+ * described in:
+ * {@link http://wiki.mozilla.org/Phishing_Protection:_Server_Spec}.
+ *
+ * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
+ * @version 1.0
+ */
 public class EncryptedUrlList extends UrlList
 {
     private static final byte[] DB_SALT = "oU3q.72p".getBytes();

@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -36,19 +36,17 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * Interface which can create Files.  This provides
- * an abstraction, such that classes which need to create
- * Files can so so in a way that the larger application
- * can control their name and lifetime.
+ * Interface which can create Files.  This provides an abstraction,
+ * such that classes which need to create Files can so so in a way
+ * that the larger application can control their name and lifetime.
  */
 public interface FileFactory {
 
     /**
-     * Create a file based on the given name.  Implementations
-     * are permitted to create a File with a name which is
-     * a function of <code>name</code>, or ignore the
-     * name alltogether.  In other words, the name
-     * is a hint.
+     * Create a file based on the given name.  Implementations are
+     * permitted to create a File with a name which is a function of
+     * <code>name</code>, or ignore the name alltogether.  In other
+     * words, the name is a hint.
      */
     public File createFile(String name)
         throws IOException;
