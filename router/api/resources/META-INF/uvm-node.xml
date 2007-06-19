@@ -12,10 +12,10 @@ $Id$
 -->
 
 <uvm-node>
-  <node-desc name="router-node"
+  <node-desc name="untangle-node-router"
                   display-name="Router"
                   classname="com.untangle.node.router.RouterImpl"
                   gui-classname="com.untangle.node.router.gui.MNodeJPanel"
                   single-instance="true"/>
-  <parent>ftp-casing</parent>
+  <parent>untangle-casing-ftp</parent>
 </uvm-node>

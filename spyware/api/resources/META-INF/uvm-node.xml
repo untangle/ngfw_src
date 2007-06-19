@@ -12,9 +12,9 @@ $Id$
 -->
 
 <uvm-node>
-  <node-desc name="spyware-node"
+  <node-desc name="untangle-node-spyware"
                   display-name="Spyware Blocker"
                   classname="com.untangle.node.spyware.SpywareImpl"
                   gui-classname="com.untangle.node.spyware.gui.MNodeJPanel"/>
-  <parent>http-casing</parent>
+  <parent>untangle-casing-http</parent>
 </uvm-node>

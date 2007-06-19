@@ -12,9 +12,9 @@ $Id$
 -->
 
 <uvm-node>
-  <node-desc name="firewall-node"
+  <node-desc name="untangle-node-firewall"
                   display-name="Firewall"
                   classname="com.untangle.node.firewall.FirewallImpl"
                   gui-classname="com.untangle.node.firewall.gui.MNodeJPanel"
-	          single-instance="true"/>
+              single-instance="true"/>
 </uvm-node>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <uvm-node>
-  <node-desc name="openvpn-node"
+  <node-desc name="untangle-node-openvpn"
                   display-name="OpenVPN"
                   classname="com.untangle.node.openvpn.VpnNodeImpl"
                   gui-classname="com.untangle.node.openvpn.gui.MNodeJPanel"

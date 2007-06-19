@@ -12,10 +12,9 @@ $Id$
 -->
 
 <uvm-node>
-  <node-desc name="http-casing"
+  <node-desc name="untangle-casing-http"
                   display-name="Web"
                   classname="com.untangle.node.http.HttpNodeImpl"
                   gui-classname="com.untangle.node.http.gui.MCasingJPanel"
                   single-instance="true"/>
-  <export>http-casing-localapi.jar</export>
 </uvm-node>

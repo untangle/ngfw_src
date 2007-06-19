@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <uvm-node>
-  <node-desc name="test-node"
+  <node-desc name="untangle-node-test"
                   display-name="Test Device"
                   classname="com.untangle.node.test.TestNodeImpl"
                   gui-classname="com.untangle.node.test.gui.MNodeJPanel"/>

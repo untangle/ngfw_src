@@ -12,10 +12,10 @@ $Id$
 -->
 
 <uvm-node>
-  <node-desc name="spamassassin-node"
+  <node-desc name="untangle-node-spamassassin"
                   display-name="Spam Blocker"
                   classname="com.untangle.node.spamassassin.SpamAssassinNode"
                   gui-classname="com.untangle.node.spamassassin.gui.MNodeJPanel"
                   node-base="spam-base"/>
-  <parent>mail-casing</parent>
+  <parent>untangle-casing-mail</parent>
 </uvm-node>

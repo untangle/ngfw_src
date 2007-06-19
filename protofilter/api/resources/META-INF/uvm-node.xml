@@ -12,7 +12,7 @@ $Id$
 -->
 
 <uvm-node>
-  <node-desc name="protofilter-node"
+  <node-desc name="untangle-node-protofilter"
                   display-name="Protocol Control"
                   classname="com.untangle.node.protofilter.ProtoFilterImpl"
                   gui-classname="com.untangle.node.protofilter.gui.MNodeJPanel"/>
