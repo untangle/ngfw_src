@@ -92,7 +92,7 @@ public class RemoteClient
     private static String policyName = null;
     private static Policy policy = null;
 
-    private static final String SHIELD_STATUS_USAGE = "mcli shieldStatus ip port [interval]";
+    private static final String SHIELD_STATUS_USAGE = "ucli shieldStatus ip port [interval]";
 
     private static boolean verbose = false;
     private static int timeout = 120000;
@@ -278,7 +278,7 @@ public class RemoteClient
         factory.logout();
     }
 
-    private static class McliToolboxMessageVisitor
+    private static class UcliToolboxMessageVisitor
         implements ToolboxMessageVisitor
     {
         public void visitMackageInstallRequest(MackageInstallRequest req)
@@ -562,7 +562,7 @@ public class RemoteClient
         String password = null;
         if (args.length < 1) {
             System.out.println("Usage: ");
-            System.out.println("    mcli passwd [ -a | -d ] login [ password ]");
+            System.out.println("    ucli passwd [ -a | -d ] login [ password ]");
             System.exit(-1);
         }
         if ("-a".equals(args[i])) {
@@ -574,7 +574,7 @@ public class RemoteClient
         }
         if (args.length <= i || args.length > i + 2 || (delUser && args.length > i + 1)) {
             System.out.println("Usage: ");
-            System.out.println("    mcli passwd [ -a | -d ] login [ password ]");
+            System.out.println("    ucli passwd [ -a | -d ] login [ password ]");
             System.exit(-1);
         }
         login = args[i++];
@@ -900,10 +900,10 @@ public class RemoteClient
     private static void messageQueue()
     {
         MessageClient msgClient = new MessageClient(mc);
-        msgClient.setToolboxMessageVisitor(new McliToolboxMessageVisitor());
+        msgClient.setToolboxMessageVisitor(new UcliToolboxMessageVisitor());
         msgClient.start();
 
-        // msgClient uses a daemon thread (only needed for mcli)
+        // msgClient uses a daemon thread (only needed for ucli)
         while (true) {
             try {
                 Thread.sleep(600000);
@@ -1043,66 +1043,66 @@ public class RemoteClient
         System.out.println("    -p policy");
         System.out.println("    -v");
         System.out.println("  toolbox commands:");
-        System.out.println("    mcli install mackage-name");
-        System.out.println("    mcli uninstall mackage-name");
-        System.out.println("    mcli update");
-        System.out.println("    mcli upgrade");
-        System.out.println("    mcli enable mackage-name");
-        System.out.println("    mcli disable mackage-name");
-        System.out.println("    mcli extraName mackage-name extra-name");
-        System.out.println("    mcli upgrade");
-        System.out.println("    mcli requestInstall mackage-name");
+        System.out.println("    ucli install mackage-name");
+        System.out.println("    ucli uninstall mackage-name");
+        System.out.println("    ucli update");
+        System.out.println("    ucli upgrade");
+        System.out.println("    ucli enable mackage-name");
+        System.out.println("    ucli disable mackage-name");
+        System.out.println("    ucli extraName mackage-name extra-name");
+        System.out.println("    ucli upgrade");
+        System.out.println("    ucli requestInstall mackage-name");
         System.out.println("  toolbox lists:");
-        System.out.println("    mcli available");
-        System.out.println("    mcli installed");
-        System.out.println("    mcli uninstalled");
-        System.out.println("    mcli upgradable");
-        System.out.println("    mcli uptodate");
+        System.out.println("    ucli available");
+        System.out.println("    ucli installed");
+        System.out.println("    ucli uninstalled");
+        System.out.println("    ucli upgradable");
+        System.out.println("    ucli uptodate");
         System.out.println("  node manager commands:");
-        System.out.println("    mcli instantiate mackage-name [ args ]");
-        System.out.println("    mcli start TID");
-        System.out.println("    mcli stop TID");
-        System.out.println("    mcli destroy TID");
-        System.out.println("    mcli neverStarted");
+        System.out.println("    ucli instantiate mackage-name [ args ]");
+        System.out.println("    ucli start TID");
+        System.out.println("    ucli stop TID");
+        System.out.println("    ucli destroy TID");
+        System.out.println("    ucli neverStarted");
         System.out.println("  node manager lists:");
-        System.out.println("    mcli instances");
+        System.out.println("    ucli instances");
         System.out.println("  node live sessions:");
-        System.out.println("    mcli sessions [ TID ]");
+        System.out.println("    ucli sessions [ TID ]");
         System.out.println("  admin manager:");
-        System.out.println("    mcli who");
-        System.out.println("    mcli getRegInfo");
-        System.out.println("    mcli passwd [ -a | -d ] login [ password ]");
+        System.out.println("    ucli who");
+        System.out.println("    ucli getRegInfo");
+        System.out.println("    ucli passwd [ -a | -d ] login [ password ]");
         System.out.println("  uvm commands:");
-        System.out.println("    mcli shutdown");
-        System.out.println("    mcli serverStats");
-        System.out.println("    mcli gc");
-        System.out.println("    mcli messageQueue");
-        System.out.println("    mcli loadRup");
+        System.out.println("    ucli shutdown");
+        System.out.println("    ucli serverStats");
+        System.out.println("    ucli gc");
+        System.out.println("    ucli messageQueue");
+        System.out.println("    ucli loadRup");
         System.out.println("  policy manager:");
-        System.out.println("    mcli addPolicy name [notes]");
-        System.out.println("    mcli listPolicies");
+        System.out.println("    ucli addPolicy name [notes]");
+        System.out.println("    ucli listPolicies");
         System.out.println("  reporting manager: ");
-        System.out.println("    mcli isReportingEnabled");
-        System.out.println("    mcli areReportsAvailable");
-        System.out.println("    mcli prepareReports [ args ]");
-        System.out.println("    mcli startReports");
-        System.out.println("    mcli stopReports");
-        System.out.println("    mcli isReportingRunning");
+        System.out.println("    ucli isReportingEnabled");
+        System.out.println("    ucli areReportsAvailable");
+        System.out.println("    ucli prepareReports [ args ]");
+        System.out.println("    ucli startReports");
+        System.out.println("    ucli stopReports");
+        System.out.println("    ucli isReportingRunning");
         System.out.println("  logging manager: ");
-        System.out.println("    mcli userLogs tid");
-        System.out.println("    mcli resetLogs");
-        System.out.println("    mcli logError [text]");
+        System.out.println("    ucli userLogs tid");
+        System.out.println("    ucli resetLogs");
+        System.out.println("    ucli logError [text]");
         System.out.println("  combo commands:");
-        System.out.println("    mcli loadt short-name [ args ]");
-        System.out.println("    mcli reloadt short-name");
-        System.out.println("    mcli unloadt short-name");
+        System.out.println("    ucli loadt short-name [ args ]");
+        System.out.println("    ucli reloadt short-name");
+        System.out.println("    ucli unloadt short-name");
         System.out.println("  apt commands:");
-        System.out.println("    mcli register mackage-name");
-        System.out.println("    mcli unregister mackage-name");
+        System.out.println("    ucli register mackage-name");
+        System.out.println("    ucli unregister mackage-name");
         System.out.println("  argon commands:");
         System.out.println("    " + SHIELD_STATUS_USAGE);
-        System.out.println("    mcli shieldReconfigure");
+        System.out.println("    ucli shieldReconfigure");
         System.out.println("  debugging commands:");
-        System.out.println("    mcli aptTail");
+        System.out.println("    ucli aptTail");
     }
 }
