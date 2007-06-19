@@ -1,5 +1,7 @@
 #! /usr/bin/ruby
 
+# Sebastian Delafond <seb@untangle.com>
+
 def usage
   puts "Usage: #{$0} <directory> <numberToKeep> (delete|move|nothing)"
   exit 1

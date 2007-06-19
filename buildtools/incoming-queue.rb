@@ -1,5 +1,7 @@
 #! /usr/bin/ruby
 
+# Sebastian Delafond <seb@untangle.com>
+
 require 'net/smtp'
 
 # constants
@@ -67,7 +69,7 @@ class DebianUpload # Main base class
     s += "  uploader = #{@uploader}\n"
     s += "  version = #{@version}\n"
     s += "  files =\n"
-    @files.each { |file| 
+    @files.each { |file|
       s += "    #{file}\n"
     }
     return s
@@ -88,7 +90,7 @@ class DebianUpload # Main base class
     puts "#{subject}\n#{body}"
     email(@emailRecipientsFailure,
           subject,
-          body) if @@doEmailFailure      
+          body) if @@doEmailFailure
   end
 
   def addToRepository
@@ -185,7 +187,7 @@ class ChangeFileUpload < DebianUpload
       when /^-----BEGIN PGP SIGNATURE-----/
         break # stop processing
       end
-      
+
       if filesSection
         parts = line.split
         @files << INCOMING + "/" + parts[-1]

@@ -1,6 +1,6 @@
 # -*-ruby-*-
 # $HeadURL$
-# Copyright (c) 2003-2007 Untangle, Inc. 
+# Copyright (c) 2003-2007 Untangle, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License, version 2,
@@ -16,14 +16,16 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
 #
 
+# Robert Scott <rbscott@untangle.com>
+
 #++
 #
 # = StampTask
-# 
-# This is a task that keeps track of the last time that it was 
+#
+# This is a task that keeps track of the last time that it was
 # executed.  This is useful if you have operations that perform
 # a lot of tasks, but can't be defined by exactly one file.
-# For example, if you have a task that Generates a number of 
+# For example, if you have a task that Generates a number of
 # source files, it is easy to depend for another task to depend
 # on that task, but difficult to depend on the files that it
 # creates.
@@ -49,7 +51,7 @@ module Rake
       ## If execute fails, then the timestamp will not be set
       Rake::StampHash.instance.set(name)
     end
-    
+
     private
 
     # Are there any prerequisites with a later time than the given
@@ -67,7 +69,7 @@ module Rake
       @save = false
       @clear = false
       @lock = Mutex.new
-      
+
       return unless File.exist? Rake::StampFile
 
       open(Rake::StampFile,"r") do |input|
@@ -77,9 +79,9 @@ module Rake
           next if ( params.length != 3 )
           @stampHash[params[0]]=Time.at(params[1].to_i,params[2].to_i)
         end
-      end 
+      end
     end
-    
+
     ## Lookup a task
     def [](name)
       value = @stampHash[name]
@@ -107,7 +109,7 @@ module Rake
         @save = true
       end
     end
-    
+
     ## Save the state back to a file
     def save
       ## If you are clearing all of the state, save an empty hash
