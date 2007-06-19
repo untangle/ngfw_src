@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -38,8 +38,8 @@ import com.untangle.uvm.node.Node;
 
 /**
  * The <code>MPipe</code> interface represents an active MetaPipe.
- * Most nodes only have one active <code>MPipe</code> at a time,
- * the rest have exactly 2 (casings).
+ * Most nodes only have one active <code>MPipe</code> at a time, the
+ * rest have exactly 2 (casings).
  *
  * This class's instances represent and contain the subscription
  * state, pipeline state, and accessors to get the live sessions for
