@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -168,9 +168,7 @@ public class MNodeJPanel extends javax.swing.JPanel {
         try{
             name = nodeDesc.getName();
             name = name.substring(0, name.indexOf('-'));
-            descriptionIconJLabel.setIcon(new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/untangle/node/"
-                                                                                                       + name
-                                                                                                       +  "/gui/IconDesc42x42.png")));
+            descriptionIconJLabel.setIcon(new ImageIcon(mackageDesc.getDescIcon()));
         }
         catch(Exception e){ Util.handleExceptionNoRestart("Error adding icon: " + name , e); }
 
