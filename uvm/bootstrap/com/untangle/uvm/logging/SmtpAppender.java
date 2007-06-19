@@ -53,7 +53,7 @@ public class SmtpAppender extends AppenderSkeleton
         name = ctx.getName();
 
         // We make the layout ourselves -- it's not in the XML.
-        Layout layout = new MvMailLayout(name);
+        Layout layout = new UtMailLayout(name);
         setLayout(layout);
     }
 
@@ -61,7 +61,7 @@ public class SmtpAppender extends AppenderSkeleton
 
     // DOM XML parser calls in here with LayoutConversionPattern param.
     public void setLayoutConversionPattern(String pattern) {
-        MvMailLayout layout = (MvMailLayout) getLayout();
+        UtMailLayout layout = (UtMailLayout) getLayout();
         layout.setConversionPattern(pattern);
     }
 

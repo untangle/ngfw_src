@@ -24,14 +24,14 @@ package com.untangle.uvm.logging;
  * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
  * @version 1.0
  */
-public class MvMailLayout extends UtPatternlayout
+public class UtMailLayout extends UtPatternlayout
 {
     // If null, we're the uvm.
     private final String componentName;
 
     // constructors -----------------------------------------------------------
 
-    public MvMailLayout(String componentName)
+    public UtMailLayout(String componentName)
     {
         // This gets reset by our xml config later...
         super(UtPatternlayout.MV_DEFAULT_CONVERSION_PATTERN);

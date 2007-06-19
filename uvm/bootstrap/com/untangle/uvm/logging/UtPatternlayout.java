@@ -51,6 +51,6 @@ public class UtPatternlayout extends PatternLayout
     public PatternParser createPatternParser(String pattern)
     {
         String p = null == pattern ? MV_DEFAULT_CONVERSION_PATTERN : pattern;
-        return new MvPatternParser(p);
+        return new UtPatternParser(p);
     }
 }

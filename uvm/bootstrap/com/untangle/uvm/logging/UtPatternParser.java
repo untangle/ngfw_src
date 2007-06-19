@@ -37,11 +37,11 @@ import org.apache.log4j.spi.LoggingEvent;
  * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
  * @version 1.0
  */
-class MvPatternParser extends PatternParser
+class UtPatternParser extends PatternParser
 {
     // constructors -----------------------------------------------------------
 
-    public MvPatternParser(String pattern)
+    public UtPatternParser(String pattern)
     {
         super(pattern);
     }
