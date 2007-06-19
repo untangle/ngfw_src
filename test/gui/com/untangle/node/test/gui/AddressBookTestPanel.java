@@ -22,8 +22,8 @@ package com.untangle.node.test.gui;
 import java.util.HashMap;
 import java.util.List;
 
-import com.untangle.gui.test.MVUITest;
 import com.untangle.gui.test.TestPanel;
+import com.untangle.gui.test.UtUiTest;
 import com.untangle.gui.util.Util;
 import com.untangle.uvm.addrbook.AddressBookConfiguration;
 import com.untangle.uvm.addrbook.AddressBookSettings;
@@ -39,7 +39,7 @@ import com.untangle.uvm.client.RemoteUvmContext;
 public class AddressBookTestPanel extends TestPanel {
 
     public AddressBookTestPanel() {
-        super(new MVUITest[] {
+        super(new UtUiTest[] {
             new ToggleStateAction(),
             new ListEntriesAction(),
             new AddEntryAction(),
@@ -49,7 +49,7 @@ public class AddressBookTestPanel extends TestPanel {
     }
 }
 
-class ToggleStateAction extends MVUITest {
+class ToggleStateAction extends UtUiTest {
 
     ToggleStateAction() {
         super("Toggle Configuration", "Toggles between NONE, LOCAL, and LOCAL/AD modes", null);
@@ -112,7 +112,7 @@ class ToggleStateAction extends MVUITest {
 }
 
 
-class AddEntryAction extends MVUITest {
+class AddEntryAction extends UtUiTest {
 
     AddEntryAction() {
         super("Add Entry", "Adds a new entry to the repository (local)", null);
@@ -156,7 +156,7 @@ class AddEntryAction extends MVUITest {
     }
 }
 
-class ListEntriesAction extends MVUITest {
+class ListEntriesAction extends UtUiTest {
 
     ListEntriesAction() {
         super("List Entries", "Lists all users in both repositories", null);
@@ -184,7 +184,7 @@ class ListEntriesAction extends MVUITest {
 
 
 
-class AuthenticateUIDAction extends MVUITest {
+class AuthenticateUIDAction extends UtUiTest {
 
     AuthenticateUIDAction() {
         super("Authenticate by UID", "Try a login", null);
@@ -216,7 +216,7 @@ class AuthenticateUIDAction extends MVUITest {
     }
 }
 
-class AuthenticateEmailAction extends MVUITest {
+class AuthenticateEmailAction extends UtUiTest {
 
     AuthenticateEmailAction() {
         super("Authenticate by Email", "Try a login", null);

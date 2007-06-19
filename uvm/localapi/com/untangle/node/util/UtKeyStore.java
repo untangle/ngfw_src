@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -57,7 +57,7 @@ import com.untangle.uvm.security.RFC2253Name;
  * recommended that a single (synchronized) instance be used for a given
  * VM/File pair.
  */
-public class MVKeyStore {
+public class UtKeyStore {
 
     private final String m_ktPass;
     private final File m_ktFile;
@@ -66,7 +66,7 @@ public class MVKeyStore {
     /**
      * Enum of the different entries within the key store
      */
-    public static enum MVKSEntryType {
+    public static enum UtKSEntryType {
         PrivKey,
         SecKey,
         TrustedCert
@@ -75,7 +75,7 @@ public class MVKeyStore {
     /**
      * Private constructor.
      */
-    private MVKeyStore(File ktFile, String ktPass) {
+    private UtKeyStore(File ktFile, String ktPass) {
         m_ktFile = ktFile;
         m_ktPass = ktPass;
     }
@@ -147,7 +147,7 @@ public class MVKeyStore {
 
         KeyStore ks = openKeyJavaStore();
 
-        MVKSEntryType type = getEntryTypeImpl(ks, oldAlias);
+        UtKSEntryType type = getEntryTypeImpl(ks, oldAlias);
         if(type == null) {
             return false;
         }
@@ -437,7 +437,7 @@ public class MVKeyStore {
         return (String[]) ret.toArray(new String[ret.size()]);
     }
 
-    public MVKSEntryType getEntryType(String alias)
+    public UtKSEntryType getEntryType(String alias)
         throws IOException, GeneralSecurityException {
         return getEntryTypeImpl(openKeyJavaStore(), alias);
     }
@@ -451,7 +451,7 @@ public class MVKeyStore {
      *
      * @return the opened key store
      */
-    public static MVKeyStore create(String fileName,
+    public static UtKeyStore create(String fileName,
                                     String pwd)
         throws IOException {
 
@@ -495,7 +495,7 @@ public class MVKeyStore {
 
 
         if(result.exitCode==0) {
-            return new MVKeyStore(f, pwd);
+            return new UtKeyStore(f, pwd);
         }
         throw new IOException("Error creating file.  stdout \"" +
                               new String(result.stdOut) + "\", stderr \"" +
@@ -515,7 +515,7 @@ public class MVKeyStore {
      *
      * @return the opened key store
      */
-    public static MVKeyStore open(String fileName,
+    public static UtKeyStore open(String fileName,
                                   String pwd,
                                   boolean autoCreate)
         throws FileNotFoundException,
@@ -531,7 +531,7 @@ public class MVKeyStore {
             throw new FileNotFoundException("No such keystore file \"" + fileName + "\"");
         }
 
-        MVKeyStore ret = new MVKeyStore(f, pwd);
+        UtKeyStore ret = new UtKeyStore(f, pwd);
 
         //Test via "list".  Will throw exception if problem
         ret.listAliases();
@@ -544,16 +544,16 @@ public class MVKeyStore {
     /**
      * Returns null if not found
      */
-    private static MVKSEntryType getEntryTypeImpl(KeyStore ks,
+    private static UtKSEntryType getEntryTypeImpl(KeyStore ks,
                                                   String alias) throws GeneralSecurityException {
         if(ks.entryInstanceOf(alias, KeyStore.SecretKeyEntry.class)) {
-            return MVKSEntryType.PrivKey;
+            return UtKSEntryType.PrivKey;
         }
         else if(ks.entryInstanceOf(alias, KeyStore.PrivateKeyEntry.class)) {
-            return MVKSEntryType.SecKey;
+            return UtKSEntryType.SecKey;
         }
         else if(ks.entryInstanceOf(alias, KeyStore.TrustedCertificateEntry.class)) {
-            return MVKSEntryType.TrustedCert;
+            return UtKSEntryType.TrustedCert;
         }
         return null;
     }

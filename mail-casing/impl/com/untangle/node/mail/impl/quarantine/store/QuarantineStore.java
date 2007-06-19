@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -29,8 +29,8 @@ import com.untangle.node.mail.papi.quarantine.InboxRecord;
 import com.untangle.node.mail.papi.quarantine.MailSummary;
 import com.untangle.node.mail.papi.quarantine.QuarantineEjectionHandler;
 import com.untangle.node.util.IOUtil;
-import com.untangle.node.util.MVLogger;
 import com.untangle.node.util.Pair;
+import com.untangle.node.util.UtLogger;
 
 
 /**
@@ -84,7 +84,7 @@ public class QuarantineStore {
         ERROR
     };
 
-    private final MVLogger m_logger = new MVLogger(QuarantineStore.class);
+    private final UtLogger m_logger = new UtLogger(QuarantineStore.class);
     private File m_rootDir;
     private AddressLock m_addressLock;
     private MasterTable m_masterTable;

@@ -45,14 +45,14 @@ import org.apache.log4j.Logger;
  * w/ its stack.  By using JDK 1.5 varargs and auto boxing, you can
  * also pass as many arguments of any type to the logging methods.
  */
-public class MVLogger
+public class UtLogger
 {
     private Logger m_logger;
 
-    public MVLogger(Logger logger) {
+    public UtLogger(Logger logger) {
         m_logger = logger;
     }
-    public MVLogger(Class category) {
+    public UtLogger(Class category) {
         this(Logger.getLogger(category));
     }
 

@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -49,7 +49,7 @@ import com.untangle.gui.util.Util;
  * want to take the time to build a real UI).
  * <br>
  * The TestPanel makes available all
- * {@link com.untangle.gui.test.MVUITest MVUITests} passed
+ * {@link com.untangle.gui.test.UtUiTest UtUiTests} passed
  * to its constructor to the end-user.  The real work is
  * in the tests, but again these do not require UI knowledge
  * to build.
@@ -100,8 +100,8 @@ public class TestPanel extends JPanel {
      * and have them behave correctly.
      */
     private class TestCBWrapper {
-        final MVUITest action;
-        TestCBWrapper(MVUITest action) {
+        final UtUiTest action;
+        TestCBWrapper(UtUiTest action) {
             this.action = action;
         }
         @Override
@@ -123,7 +123,7 @@ public class TestPanel extends JPanel {
      * @param actions the tests to be made available on
      *        this panel.
      */
-    public TestPanel(MVUITest[] actions) {
+    public TestPanel(UtUiTest[] actions) {
 
         setLayout(new GridBagLayout());
 
@@ -300,7 +300,7 @@ public class TestPanel extends JPanel {
 
     //Callback when they select a new test
     private void testSelectionChanged() {
-        MVUITest action = ((TestCBWrapper) m_testSelector.getSelectedItem()).action;
+        UtUiTest action = ((TestCBWrapper) m_testSelector.getSelectedItem()).action;
         m_testSelector.setToolTipText(action.getDescription());
         m_executeButton.setToolTipText("Executes " +
                                        action.getName() + " (" + action.getDescription() + ")");
@@ -308,7 +308,7 @@ public class TestPanel extends JPanel {
 
     //Callback when they want to run a test.
     private void runSelectedTest() {
-        MVUITest action = ((TestCBWrapper) m_testSelector.getSelectedItem()).action;
+        UtUiTest action = ((TestCBWrapper) m_testSelector.getSelectedItem()).action;
         try {
             println("");
             println("------------------------");

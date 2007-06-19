@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -18,21 +18,21 @@
 
 package com.untangle.uvm.user;
 
-import com.untangle.node.util.MVLogger;
+import com.untangle.node.util.UtLogger;
 
 public class PhoneBookFactory
 {
     private static final String PROPERTY_PHONEBOOK_IMPL = "com.untangle.uvm.phonebook";
     private static final String PREMIUM_PHONEBOOK_IMPL = "com.untangle.uvm.user.PremiumPhoneBookImpl";
 
-    private final MVLogger logger = new MVLogger( getClass());
+    private final UtLogger logger = new UtLogger( getClass());
 
     /** The stripped down default limited phone book */
     private final DefaultPhoneBookImpl limited = new DefaultPhoneBookImpl();
 
     /** The current phonebook */
     private PremiumPhoneBook premium = null;
-    
+
     /* The current remote phonebook */
     private RemotePhoneBook remote = new RemotePhoneBookImpl( this.limited );
 
@@ -90,13 +90,13 @@ public class PhoneBookFactory
     }
 
     /**
-     * Inner interface used to indicate the additional methods that the 
+     * Inner interface used to indicate the additional methods that the
      * premium offering must implement.
      */
     static interface PremiumPhoneBook extends LocalPhoneBook
     {
         public void init();
-        
+
         public void destroy();
     }
-} 
+}

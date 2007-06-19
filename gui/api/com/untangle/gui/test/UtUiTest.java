@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -39,29 +39,29 @@ package com.untangle.gui.test;
  * a callback from the UI saying "do this test now".
  * <br>
  * The action can either be defined by subclassing
- * MVUITest (and overidding {@link #actionSelected actionSelected}
- * or by implementing {@link com.untangle.gui.test.MVUITestAction MVUITestAction}
+ * UtUiTest (and overidding {@link #actionSelected actionSelected}
+ * or by implementing {@link com.untangle.gui.test.UtUiTestAction UtUiTestAction}
  * (similar to the pattern for Java threads with the "Runnable"
  * interface).
  * <br>
  * Note that tests should be stateless, creating all dependent
  * objects on each call to {@link #actionSelected actionSelected}.
  */
-public class MVUITest
-    implements MVUITestAction {
+public class UtUiTest
+    implements UtUiTestAction {
 
     private final String m_name;
     private final String m_desc;
-    private final MVUITestAction m_callback;
+    private final UtUiTestAction m_callback;
 
-    public MVUITest(String name,
+    public UtUiTest(String name,
                     String desc) {
         this(name, desc, null);
     }
 
-    public MVUITest(String name,
+    public UtUiTest(String name,
                     String desc,
-                    MVUITestAction callback) {
+                    UtUiTestAction callback) {
 
         m_name = name;
         m_desc = desc;
@@ -76,16 +76,14 @@ public class MVUITest
     }
 
     /**
-     * Callback indicating that the given
-     * action has been selected (the button
-     * was pushed).  This may be overidden.
+     * Callback indicating that the given action has been selected
+     * (the button was pushed).  This may be overidden.
      *
      * @param panel the panel, with all the method needed to
-     *        communicate with the user of the UI.
-     *
-     * @exception anything thrown by the test.  Note that this
-     *            will make it to the display screen in some
-     *            way to show the user what went wrong.
+     * communicate with the user of the UI.
+     * @exception anything thrown by the test.  Note that this will
+     * make it to the display screen in some way to show the user what
+     * went wrong.
      */
     public void actionSelected(TestPanel panel)
         throws Exception {

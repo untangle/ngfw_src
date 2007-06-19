@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -33,18 +33,18 @@
 package com.untangle.gui.test;
 
 /**
- * Callback interface used when a {@link com.untangle.gui.test.MVUITest MVUITest}
- * has been requested to run by the user.
+ * Callback interface used when a {@link
+ * com.untangle.gui.test.MVUITest MVUITest} has been requested to run
+ * by the user.
  */
-public interface MVUITestAction {
+public interface UtUiTestAction {
 
     /**
-     * Callback indicating that the given
-     * action has been selected (the button
-     * was pushed).
+     * Callback indicating that the given action has been selected
+     * (the button was pushed).
      *
      * @param panel the panel, with all the method needed to
-     *        communicate with the user of the UI.
+     * communicate with the user of the UI.
      */
     public void actionSelected(TestPanel panel) throws Exception;
 }

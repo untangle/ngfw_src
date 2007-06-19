@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -22,7 +22,7 @@ import java.nio.ByteBuffer;
 
 import com.untangle.node.mail.papi.imap.IMAPTokenizer;
 import com.untangle.node.token.Token;
-import com.untangle.node.util.MVLogger;
+import com.untangle.node.util.UtLogger;
 import static com.untangle.node.util.Ascii.*;
 
 /**
@@ -144,8 +144,8 @@ public class ImapBodyScanner {
     private int m_state = S03;
     private int m_msgLength = -1;
     private int m_pushedStateForLiteral = -1;
-    private MVLogger m_logger =
-        new MVLogger(ImapBodyScanner.class);
+    private UtLogger m_logger =
+        new UtLogger(ImapBodyScanner.class);
     private final IMAPTokenizer m_tokenizer;
 
 

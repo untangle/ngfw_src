@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -25,7 +25,6 @@ import java.nio.ByteBuffer;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.untangle.uvm.vnet.TCPSession;
 import com.untangle.node.mail.papi.AddressKind;
 import com.untangle.node.mail.papi.ContinuedMIMEToken;
 import com.untangle.node.mail.papi.MIMEAccumulator;
@@ -40,7 +39,8 @@ import com.untangle.node.token.Chunk;
 import com.untangle.node.token.ParseResult;
 import com.untangle.node.token.PassThruToken;
 import com.untangle.node.token.Token;
-import com.untangle.node.util.MVLogger;
+import com.untangle.node.util.UtLogger;
+import com.untangle.uvm.vnet.TCPSession;
 
 /**
  * 'name says it all...
@@ -833,8 +833,8 @@ public class ImapServerParser
         DRAINING_HOSED,
     };
 
-    private final MVLogger m_logger =
-        new MVLogger(ImapServerParser.class);
+    private final UtLogger m_logger =
+        new UtLogger(ImapServerParser.class);
 
     private ImapBodyScanner m_msgBoundaryScanner;
     private ISPState m_state = ISPState.SCANNING;

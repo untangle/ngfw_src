@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -22,6 +22,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.util.Properties;
 
+import com.untangle.node.util.OpenSSLWrapper;
+import com.untangle.node.util.UtKeyStore;
 import com.untangle.uvm.LocalAppServerManager;
 import com.untangle.uvm.networking.AddressSettingsListener;
 import com.untangle.uvm.networking.NetworkUtil;
@@ -30,8 +32,6 @@ import com.untangle.uvm.security.CertInfo;
 import com.untangle.uvm.security.RFC2253Name;
 import com.untangle.uvm.security.RegistrationInfo;
 import com.untangle.uvm.util.QuarantineOutsideAccessValve;
-import com.untangle.node.util.MVKeyStore;
-import com.untangle.node.util.OpenSSLWrapper;
 import org.apache.catalina.Valve;
 import org.apache.log4j.Logger;
 
@@ -53,7 +53,7 @@ class AppServerManagerImpl implements LocalAppServerManager
     private final UvmContextImpl mctx;
     private final TomcatManager tomcatManager;
 
-    private MVKeyStore keyStore;
+    private UtKeyStore keyStore;
 
     AppServerManagerImpl(UvmContextImpl mctx)
     {
@@ -111,7 +111,7 @@ class AppServerManagerImpl implements LocalAppServerManager
         String eHost = getFQDN();
 
         try {
-            keyStore = MVKeyStore.open(System.getProperty("bunnicula.conf.dir")
+            keyStore = UtKeyStore.open(System.getProperty("bunnicula.conf.dir")
                                        + "/keystore", KS_STORE_PASS, true);
         } catch (Exception ex) {
             logger.error("Exception opening KeyStore", ex);
@@ -338,7 +338,7 @@ class AppServerManagerImpl implements LocalAppServerManager
         String reason = "";
         try {
             if (keyStore.containsAlias(newHostName)
-                && keyStore.getEntryType(newHostName) == MVKeyStore.MVKSEntryType.PrivKey) {
+                && keyStore.getEntryType(newHostName) == UtKeyStore.UtKSEntryType.PrivKey) {
                 reason = "Unable to rebind tomcat to existing key with alias \""
                     + newHostName + "\"";
                 tomcatManager.setSecurityInfo("conf/keystore", KS_STORE_PASS,

@@ -18,7 +18,7 @@
 
 package com.untangle.uvm.engine;
 
-import com.untangle.node.util.MVLogger;
+import com.untangle.node.util.UtLogger;
 import com.untangle.uvm.addrbook.RemoteAddressBook;
 
 class AddressBookFactory
@@ -26,7 +26,7 @@ class AddressBookFactory
     private static final String PROPERTY_ADDRESSBOOK_IMPL = "com.untangle.uvm.addrbook";
     private static final String PREMIUM_ADDRESSBOOK_IMPL = "com.untangle.uvm.engine.addrbook.PremiumAddressBookImpl";
 
-    private final MVLogger logger = new MVLogger(getClass());
+    private final UtLogger logger = new UtLogger(getClass());
 
     /** The stripped down default limited address book */
     private final DefaultAddressBookImpl limited = new DefaultAddressBookImpl();
