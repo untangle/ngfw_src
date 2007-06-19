@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -17,12 +17,17 @@
  */
 package com.untangle.node.virus;
 
-
-import com.untangle.uvm.vnet.TCPNewSessionRequest;
-import com.untangle.uvm.vnet.TCPSession;
 import com.untangle.node.token.TokenHandler;
 import com.untangle.node.token.TokenHandlerFactory;
+import com.untangle.uvm.vnet.TCPNewSessionRequest;
+import com.untangle.uvm.vnet.TCPSession;
 
+/**
+ * Factory for HTTP <code>TokenHandler</code>s.
+ *
+ * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
+ * @version 1.0
+ */
 public class VirusHttpFactory implements TokenHandlerFactory
 {
     private final VirusNodeImpl node;

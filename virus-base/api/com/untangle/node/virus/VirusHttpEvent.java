@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -42,13 +42,13 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import com.untangle.uvm.node.PipelineEndpoints;
 import com.untangle.node.http.RequestLine;
+import com.untangle.uvm.node.PipelineEndpoints;
 import org.hibernate.annotations.Columns;
 import org.hibernate.annotations.Type;
 
 /**
- * Log for Virus events.
+ * Log for HTTP Virus events.
  *
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0

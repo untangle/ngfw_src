@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -25,10 +25,6 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 
-import com.untangle.uvm.vnet.Pipeline;
-import com.untangle.uvm.vnet.TCPSession;
-import com.untangle.uvm.vnet.event.TCPStreamer;
-import com.untangle.uvm.node.Node;
 import com.untangle.node.ftp.FtpCommand;
 import com.untangle.node.ftp.FtpFunction;
 import com.untangle.node.ftp.FtpReply;
@@ -42,8 +38,18 @@ import com.untangle.node.token.TokenResult;
 import com.untangle.node.token.TokenStreamer;
 import com.untangle.node.token.TokenStreamerAdaptor;
 import com.untangle.node.util.TempFileFactory;
+import com.untangle.uvm.node.Node;
+import com.untangle.uvm.vnet.Pipeline;
+import com.untangle.uvm.vnet.TCPSession;
+import com.untangle.uvm.vnet.event.TCPStreamer;
 import org.apache.log4j.Logger;
 
+/**
+ * Handler for the FTP protocol.
+ *
+ * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
+ * @version 1.0
+ */
 class VirusFtpHandler extends FtpStateMachine
 {
     /* XXX Should be from the same place as the HTTP constants */

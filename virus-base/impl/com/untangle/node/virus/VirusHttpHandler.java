@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -26,10 +26,6 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.Iterator;
 
-import com.untangle.uvm.vnet.TCPSession;
-import com.untangle.uvm.node.MimeTypeRule;
-import com.untangle.uvm.node.StringRule;
-import com.untangle.uvm.node.Node;
 import com.untangle.node.http.HttpMethod;
 import com.untangle.node.http.HttpStateMachine;
 import com.untangle.node.http.RequestLine;
@@ -42,8 +38,18 @@ import com.untangle.node.token.Header;
 import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenException;
 import com.untangle.node.util.TempFileFactory;
+import com.untangle.uvm.node.MimeTypeRule;
+import com.untangle.uvm.node.Node;
+import com.untangle.uvm.node.StringRule;
+import com.untangle.uvm.vnet.TCPSession;
 import org.apache.log4j.Logger;
 
+/**
+ * Virus handler for HTTP.
+ *
+ * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
+ * @version 1.0
+ */
 class VirusHttpHandler extends HttpStateMachine
 {
     // make configurable

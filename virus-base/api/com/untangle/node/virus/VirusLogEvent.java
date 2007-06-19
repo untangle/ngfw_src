@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -47,7 +47,7 @@ import org.hibernate.annotations.Columns;
 import org.hibernate.annotations.Type;
 
 /**
- * Log for non-mail, non-HTTP Virus events.  Currently just FTP.
+ * Log for FTP virus events.
  *
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
