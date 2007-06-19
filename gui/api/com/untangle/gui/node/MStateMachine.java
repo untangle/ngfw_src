@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -268,7 +268,7 @@ public class MStateMachine implements java.awt.event.ActionListener {
                     setOffView(true);
             }
             catch(UnconfiguredException e){
-                if( nodeName.equals("openvpn-node") ){
+                if( nodeName.endsWith("openvpn") ){
                     MOneButtonJDialog.factory((Window)mNodeJPanel.getTopLevelAncestor(), displayName,
                                               "You must configure OpenVPN as either a VPN Routing Server" +
                                               " or a VPN Client before you can turn it on.<br>You may do this" +

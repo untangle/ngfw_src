@@ -522,7 +522,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                 // FOCUS AND HIGHLIGHT IN CURRENT RACK
                 focusInRack(mNodeJPanel);
                 // AUTO ON
-                if( nodeDesc.getName().endsWith("nat") || nodeDesc.getName().endsWith("openvpn") ){
+                if( nodeDesc.getName().endsWith("router") || nodeDesc.getName().endsWith("openvpn") ){
                     mNodeJPanel.setPowerOnHintVisible(true);
                     MOneButtonJDialog.factory( Util.getMMainJFrame(), "", nodeDesc.getDisplayName()
                                                + " can not be automatically turned on."
@@ -921,7 +921,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                         addToRack(newPolicy, mNodeJPanel, true);
                         focusInRack(mNodeJPanel);
                         // AUTO ON
-                        if( newMackageDesc.getName().startsWith("nat") || newMackageDesc.getName().startsWith("openvpn") ){
+                        if( newMackageDesc.getName().endsWith("router") || newMackageDesc.getName().endsWith("openvpn") ){
                             mNodeJPanel.setPowerOnHintVisible(true);
                             MOneButtonJDialog.factory( Util.getMMainJFrame(), "", newMackageDesc.getDisplayName()
                                                        + " can not be automatically turned on."
