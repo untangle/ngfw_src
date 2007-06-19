@@ -71,7 +71,7 @@ createuser -U postgres -d -A untangle 2>/dev/null
 createdb -O postgres -U postgres uvm 2>/dev/null
 createlang -U postgres plpgsql uvm 2>/dev/null
 
-CLASSPATH="@UVM_HOME@/conf:@UVM_HOME@/lib/untangle-uvm-bootstrap/"
+CLASSPATH="@UVM_HOME@/conf:@UVM_HOME@/lib/untangle-vm-bootstrap/"
 
 #
 # build environment tweeks

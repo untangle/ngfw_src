@@ -13,7 +13,7 @@
 export DH_COMPAT=4
 
 PACKAGES := $(shell dh_listpackages)
-UVM_DESTDIR := $(CURDIR)/debian/untangle-uvm
+UVM_DESTDIR := $(CURDIR)/debian/untangle-vm
 
 TMP_NAT_DEB := /tmp/nat-transform.deb
 

@@ -16,7 +16,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
 #
 
-uvm = BuildEnv::SRC['untangle-uvm']
+uvm = BuildEnv::SRC['untangle-vm']
 gui = BuildEnv::SRC['untangle-client']
 BuildEnv::SRC.installTarget.registerDependency(gui)
 

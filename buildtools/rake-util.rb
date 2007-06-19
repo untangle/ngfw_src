@@ -616,7 +616,7 @@ class ServletBuilder < Target
     unless 0 == commonMoveSpecs.length
       deps << CopyFiles.new(package, commonMoveSpecs, "#{suffix}-common")
     end
-    uvm = BuildEnv::SRC['untangle-uvm']
+    uvm = BuildEnv::SRC['untangle-vm']
 
     jardeps = libdeps + @nodedeps + Jars::Base + FileList["#{@destRoot}/WEB-INF/lib/*.jar"]
     jardeps << uvm["api"] << uvm["localapi"]
@@ -642,7 +642,7 @@ class ServletBuilder < Target
     webfrag = Tempfile.new("file-list")
     webfrag.close
 
-    uvm = BuildEnv::SRC['untangle-uvm']
+    uvm = BuildEnv::SRC['untangle-vm']
     cp = @nodedeps.map { |j| j.filename } +
       JspcClassPath + Jars::Base.map { |j| j.filename } +
       [uvm["api"], uvm["localapi"]].map { |t| t.filename } +

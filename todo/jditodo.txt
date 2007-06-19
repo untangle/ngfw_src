@@ -399,7 +399,7 @@ script list for dirk
 
     sudo for running bunnicula in devel mode
 
-    flushing of iptables rules from xenon wrapper to bunnicula wrapper
+    flushing of iptables rules from mpipe wrapper to bunnicula wrapper
 
     adding of settability of:
         TCP windowing

@@ -215,10 +215,10 @@ public class Main
     {
         List<URL> urls = new ArrayList();
         String bunniculaLib = System.getProperty("bunnicula.lib.dir");
-        urls.add(new URL("file://" + bunniculaLib + "/untangle-uvm-impl/"));
-        urls.add(new URL("file://" + bunniculaLib + "/untangle-uvm-api/"));
-        urls.add(new URL("file://" + bunniculaLib + "/untangle-uvm-localapi/"));
-        urls.add(new URL("file://" + bunniculaLib + "/untangle-uvm-reporting/"));
+        urls.add(new URL("file://" + bunniculaLib + "/untangle-vm-impl/"));
+        urls.add(new URL("file://" + bunniculaLib + "/untangle-vm-api/"));
+        urls.add(new URL("file://" + bunniculaLib + "/untangle-vm-localapi/"));
+        urls.add(new URL("file://" + bunniculaLib + "/untangle-vm-reporting/"));
         urls.add(new URL("file://" + bunniculaLib + "/jvector-impl/"));
         urls.add(new URL("file://" + bunniculaLib + "/jnetcap-impl/"));
 
