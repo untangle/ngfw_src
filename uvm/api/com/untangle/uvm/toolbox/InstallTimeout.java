@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -35,9 +35,15 @@ package com.untangle.uvm.toolbox;
 
 import java.io.Serializable;
 
+/**
+ * Signals that an install has timed out.
+ *
+ * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
+ * @version 1.0
+ */
 public class InstallTimeout implements InstallProgress, Serializable
 {
-    // XXX serial UID
+    private static final long serialVersionUID = -7760003444590856198L;
 
     private final long time;
 
