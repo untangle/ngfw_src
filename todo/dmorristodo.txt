@@ -1,3 +1,0 @@
-make /usr/share/java/reporting with jasper thirdparty jars.
-split mar and transform jar
-change jeans (have been wearing for 10 days straight now)
