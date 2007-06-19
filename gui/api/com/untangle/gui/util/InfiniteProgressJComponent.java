@@ -200,9 +200,8 @@ public class InfiniteProgressJComponent extends JComponent implements MouseListe
                 }});
             }
             catch(Exception e){ Util.handleExceptionNoRestart("Error sleeping", e); }
-            if( true ){
-                
-                try{ Thread.currentThread().sleep(10000000); }
+            if( sleepTime > 0 ){
+                try{ Thread.currentThread().sleep(sleepTime); }
                 catch(Exception e){ Util.handleExceptionNoRestart("Error sleeping", e); }
             }
         }
