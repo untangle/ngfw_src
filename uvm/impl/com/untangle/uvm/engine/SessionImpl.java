@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -20,8 +20,6 @@ package com.untangle.uvm.engine;
 
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.vnet.*;
-// import org.apache.commons.jxpath.JXPathContext;
-a
 
 /**
  * Abstract base class for all live sessions
