@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -41,8 +41,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.LocalUvmContext;
+import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.toolbox.MackageDesc;
 import com.untangle.uvm.toolbox.RemoteToolboxManager;
 import org.apache.commons.httpclient.Cookie;
@@ -54,7 +54,16 @@ import org.apache.commons.httpclient.StatusLine;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.log4j.Logger;
 
-// XXX we should reuse WebProxy from the Portal
+/**
+ * A reverse proxy that makes our online store appear to be hosted on
+ * the Untangle appliance. Implemented by replacing all strings with a
+ * base URL with the base URL of the appliance.
+ *
+ * XXX we should reuse WebProxy from the Portal
+ *
+ * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
+ * @version 1.0
+ */
 public class ProxyServlet extends HttpServlet
 {
     private static final String STORE_HOST;
@@ -289,7 +298,6 @@ public class ProxyServlet extends HttpServlet
                     offset = (offset + (j + 1)) % buf.length;
                     i = buf.length - (j + 1);
                 } else {
-                    // extra-credit: do good suffix heuristics
                     int l = Math.max(j - k, 1);
 
                     for (int m = 0; m < l; m++) {
