@@ -36,6 +36,12 @@ package com.untangle.uvm.vnet.event;
 import java.nio.ByteBuffer;
 
 
+/**
+ * TCP chunk result -- returned by node's event handler to indicate disposition of chunk
+ *
+ * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
+ * @version 1.0
+ */
 public class TCPChunkResult extends IPDataResult
 {
     private static final byte TYPE_READ_MORE_NO_WRITE = 2;

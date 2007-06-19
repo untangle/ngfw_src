@@ -36,6 +36,12 @@ import com.untangle.uvm.node.MutateTStats;
 import com.untangle.uvm.node.PipelineEndpoints;
 import com.untangle.uvm.util.MetaEnv;
 
+/**
+ * This is the primary implementation class for UDP live sessions.
+ *
+ * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
+ * @version 1.0
+ */
 class UDPSessionImpl extends IPSessionImpl implements UDPSession
 {
     protected int[] maxPacketSize;

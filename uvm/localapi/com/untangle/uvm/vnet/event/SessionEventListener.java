@@ -36,17 +36,15 @@ package com.untangle.uvm.vnet.event;
 import com.untangle.uvm.vnet.*;
 
 /**
- * The listener interface for receiving Smith events.
+ * The listener interface for receiving Vnet events.
  *
- * Note that each handler method is free to rethrow a ArgonException received from
+ * Note that each handler method is free to rethrow a MPipeException received from
  * sending a request, modifying a session, etc.
  *
- * @author <a href="mailto:jdi@bebe">jdi</a>
+ * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
  * @version 1.0
  */
 public interface SessionEventListener extends java.util.EventListener {
-
-    //    void handleArgonHeartbeatRequest(ArgonHeartbeatRequestEvent event) throws ArgonException;
 
     /**
      * <code>handleTimer</code> is called when the scheduled timer expires.

@@ -36,9 +36,9 @@ package com.untangle.uvm.vnet;
 import com.untangle.uvm.vnet.event.TCPStreamer;
 
 /**
- * A TCPSession is
+ * A TCPSession is the most specific interface for VNet TCP sessions
  *
- * @author <a href="mailto:jdi@untangle.com"></a>
+ * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
  * @version 1.0
  */
 public interface TCPSession extends TCPSessionDesc, IPSession {

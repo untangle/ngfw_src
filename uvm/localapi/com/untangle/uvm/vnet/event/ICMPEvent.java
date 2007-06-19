@@ -40,7 +40,7 @@ import java.net.*;
  * The class <code>ICMPEvent</code> is for events from incoming ICMP messages that are
  * not associated with a given session.  Currently this means echo-request/echo-reply.
  *
- * @author <a href="mailto:jdi@TOWELIE"></a>
+ * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
  * @version 1.0
  */
 public class ICMPEvent extends MPipeEvent {

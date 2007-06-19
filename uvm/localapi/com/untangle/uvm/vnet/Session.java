@@ -36,9 +36,9 @@ package com.untangle.uvm.vnet;
 // import org.apache.commons.jxpath.JXPathContext;
 
 /**
- * The interface <code>Session</code> here.
+ * The base Sessoin interface
  *
- * @author <a href="mailto:jdi@untangle.com"></a>
+ * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
  * @version 1.0
  */
 public interface Session extends SessionDesc {

@@ -36,6 +36,12 @@ package com.untangle.uvm.vnet;
 import java.net.InetAddress;
 import com.untangle.uvm.node.SessionEndpoints;
 
+/**
+ * IP Session description interface
+ *
+ * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
+ * @version 1.0
+ */
 public interface IPSessionDesc extends com.untangle.uvm.node.IPSessionDesc, SessionDesc, SessionEndpoints
 {
     /**

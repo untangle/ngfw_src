@@ -35,6 +35,12 @@ package com.untangle.uvm.vnet.event;
 
 import java.nio.ByteBuffer;
 
+/**
+ * Base of all IP data events
+ *
+ * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
+ * @version 1.0
+ */
 public interface IPDataEvent
 {
     ByteBuffer data();

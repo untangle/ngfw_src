@@ -41,7 +41,7 @@ import com.untangle.uvm.util.MetaEnv;
  * <code>MutateTStats</code> is a helper class that allows the Smith to modify NodeStats
  * (which are normally read-only).
  *
- * @author <a href="mailto:jdi@slab.ninthwave.com">John Irwin</a>
+ * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
  * @version 1.0
  */
 public final class MutateTStats {

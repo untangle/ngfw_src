@@ -38,7 +38,7 @@ import org.apache.log4j.Logger;
  * Status and control of a pipe happen here.
  * Events are handled in Dispatcher instead.
  *
- * @author <a href="mailto:jdi@towelie">jdi</a>
+ * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
  * @version 1.0
  */
 class MPipeImpl implements MPipe {

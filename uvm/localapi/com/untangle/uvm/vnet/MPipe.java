@@ -45,9 +45,7 @@ import com.untangle.uvm.node.Node;
  * state, pipeline state, and accessors to get the live sessions for
  * the pipe, as well as
  *
- * This used to be called 'Xenon'.
- *
- * @author <a href="mailto:jdi@untangle.com"></a>
+ * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
  * @version 1.0
  */
 public interface MPipe {
@@ -57,7 +55,7 @@ public interface MPipe {
      * This kills all sessions and threads, and keeps any new sessions
      * or further commands from being issued.
      *
-     * The xenon may not be used again.  State will be
+     * The MPipe may not be used again.  State will be
      * <code>DEAD_ARGON</code> from here on out.
      */
     void destroy();

@@ -55,9 +55,8 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.MDC;
 
 /**
- * One dispatcher per MPipe.  The dispatcher is the reading quarter of
- * the bottom half (writing is in the MPipeImpl class), containing the
- * main event loop and all threads.
+ * One dispatcher per MPipe.  This where all the new session logic
+ * lives, and the event dispatching.
  *
  * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
  * @version 1.0

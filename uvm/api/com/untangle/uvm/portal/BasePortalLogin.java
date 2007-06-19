@@ -36,7 +36,7 @@ package com.untangle.uvm.portal;
 /**
  * Base of Portal Logins.
  *
- * @author <a href="mailto:jdi@slabuntu">John Irwin</a>
+ * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
  * @version 1.0
  */
 public interface BasePortalLogin

@@ -33,6 +33,12 @@
 
 package com.untangle.uvm.vnet;
 
+/**
+ * The TCP specific version of new session request
+ *
+ * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
+ * @version 1.0
+ */
 public interface TCPNewSessionRequest extends IPNewSessionRequest {
     /**
      * <code>acked</code> returns true if the new session has already been ACKed to the client.

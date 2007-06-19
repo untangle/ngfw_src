@@ -47,7 +47,8 @@ import com.untangle.uvm.vnet.event.SessionEventListener;
  * system-wide default manager instance, which is returned by the {@link
  * #manager manager} method.  The first invocation of that method will locate
  * and cache the default provider as specified below.
- * @author <a href="mailto:jdi@untangle.com"></a>
+ *
+ * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
  * @version 1.0
  */
 public interface MPipeManager {

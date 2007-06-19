@@ -37,11 +37,11 @@ import com.untangle.uvm.vnet.MPipe;
 import com.untangle.uvm.vnet.Session;
 
 /**
- * Describe class <code>SessionEvent</code> here.
+ * Base event class for all VNet session events
  *
  * For all session events, the source is the session.
  *
- * @author <a href="mailto:jdi@bebe">jdi</a>
+ * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
  * @version 1.0
  */
 public abstract class SessionEvent extends MPipeEvent {

@@ -36,6 +36,12 @@ package com.untangle.uvm.vnet.event;
 import com.untangle.uvm.vnet.MPipe;
 import com.untangle.uvm.vnet.IPSession;
 
+/**
+ * Base class for all IP live session events
+ *
+ * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
+ * @version 1.0
+ */
 public class IPSessionEvent extends SessionEvent {
 
     public IPSessionEvent(MPipe mPipe, IPSession session)

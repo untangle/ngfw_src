@@ -35,6 +35,12 @@ package com.untangle.uvm.vnet.event;
 
 import com.untangle.uvm.vnet.MPipe;
 
+/**
+ * Top level abstract class for all VNet events
+ *
+ * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
+ * @version 1.0
+ */
 public abstract class MPipeEvent extends java.util.EventObject
 {
     private MPipe mPipe;

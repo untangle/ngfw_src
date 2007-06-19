@@ -37,9 +37,9 @@ import java.net.InetAddress;
 import java.nio.ByteBuffer;
 
 /**
- * A UDPSession is
+ * A UDPSession is the most specific interface for VNet UDP sessions
  *
- * @author <a href="mailto:jdi@untangle.com"></a>
+ * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
  * @version 1.0
  */
 public interface UDPSession extends UDPSessionDesc, IPSession {

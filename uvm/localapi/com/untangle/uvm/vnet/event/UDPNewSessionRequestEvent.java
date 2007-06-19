@@ -36,6 +36,12 @@ package com.untangle.uvm.vnet.event;
 import com.untangle.uvm.vnet.MPipe;
 import com.untangle.uvm.vnet.UDPNewSessionRequest;
 
+/**
+ * New UDP session request event
+ *
+ * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
+ * @version 1.0
+ */
 public class UDPNewSessionRequestEvent extends MPipeEvent {
     
     public UDPNewSessionRequestEvent(MPipe mPipe, UDPNewSessionRequest sessionRequest)

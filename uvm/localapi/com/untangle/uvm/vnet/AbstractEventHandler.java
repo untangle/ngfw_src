@@ -37,6 +37,13 @@ import com.untangle.uvm.vnet.event.*;
 import com.untangle.uvm.node.Node;
 
 
+/**
+ * <code>AbstractEventHandler</code> is the abstract base class that provides
+ * the default actions that any node event handler will need.
+ *
+ * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
+ * @version 1.0
+ */
 public abstract class AbstractEventHandler implements SessionEventListener {
 
     protected AbstractNode xform;

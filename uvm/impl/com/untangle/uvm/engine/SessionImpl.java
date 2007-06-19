@@ -21,8 +21,15 @@ package com.untangle.uvm.engine;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.vnet.*;
 // import org.apache.commons.jxpath.JXPathContext;
+a
 
-abstract class SessionImpl implements Session {
+/**
+ * Abstract base class for all live sessions
+ *
+ * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
+ * @version 1.0
+ */
+bstract class SessionImpl implements Session {
 
     // For when we use a two-element array to store state for both sides.
     protected static final int CLIENT = 0;

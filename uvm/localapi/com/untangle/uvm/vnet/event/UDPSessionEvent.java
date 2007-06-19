@@ -36,6 +36,12 @@ package com.untangle.uvm.vnet.event;
 import com.untangle.uvm.vnet.MPipe;
 import com.untangle.uvm.vnet.UDPSession;
 
+/**
+ * Base class for all UDP live session events
+ *
+ * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
+ * @version 1.0
+ */
 public class UDPSessionEvent extends IPSessionEvent {
     
     public UDPSessionEvent(MPipe mPipe, UDPSession session)

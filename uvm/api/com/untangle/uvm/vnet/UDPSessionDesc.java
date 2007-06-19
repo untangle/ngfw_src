@@ -33,6 +33,12 @@
 
 package com.untangle.uvm.vnet;
 
+/**
+ * The <code>UDPSessionDesc</code> interface adds UDP specific session description.
+ *
+ * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
+ * @version 1.0
+ */
 public interface UDPSessionDesc extends IPSessionDesc {
     
     /**

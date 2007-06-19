@@ -35,6 +35,12 @@ package com.untangle.uvm.vnet.event;
 
 import java.nio.ByteBuffer;
 
+/**
+ * Streamer for UDP sessions (not yet implemented)
+ *
+ * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
+ * @version 1.0
+ */
 public interface UDPStreamer extends IPStreamer
 {
     /**

@@ -47,7 +47,7 @@ import java.util.LinkedList;
  * deal with masks only of form 1*0*
  * This implementation sux and should be refactored.
  *
- * @author <a href="mailto:jdi@chef">jdi</a>
+ * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
  * @version 1.0
  */
 public class IPMaddr implements Serializable, Comparable

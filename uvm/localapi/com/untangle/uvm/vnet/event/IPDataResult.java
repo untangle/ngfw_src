@@ -40,7 +40,7 @@ import java.nio.ByteBuffer;
  * IPDataResult is "mostly abstract" -- you probably want to be looking at
  * <code>TCPChunkResult</code> <code>UDPPacketResult</code>.
  *
- * @author <a href="mailto:jdi@slab.ninthwave.com">John Irwin</a>
+ * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
  * @version 1.0
  */
 public class IPDataResult

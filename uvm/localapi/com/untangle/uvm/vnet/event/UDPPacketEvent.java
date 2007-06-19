@@ -38,6 +38,12 @@ import com.untangle.uvm.vnet.IPPacketHeader;
 import com.untangle.uvm.vnet.UDPSession;
 import java.nio.ByteBuffer;
 
+/**
+ * UDP packet event -- packet received.
+ *
+ * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
+ * @version 1.0
+ */
 public class UDPPacketEvent extends UDPSessionEvent
     implements IPDataEvent
 {

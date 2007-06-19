@@ -24,6 +24,12 @@ import com.untangle.uvm.vnet.IPNewSessionRequest;
 import com.untangle.uvm.vnet.MPipe;
 import com.untangle.uvm.node.PipelineEndpoints;
 
+/**
+ * Abstract base class for IP new session request implementations
+ *
+ * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
+ * @version 1.0
+ */
 abstract class IPNewSessionRequestImpl implements IPNewSessionRequest {
 
     protected MPipeImpl mPipe;

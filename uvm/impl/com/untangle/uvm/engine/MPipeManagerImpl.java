@@ -36,7 +36,7 @@ import com.untangle.uvm.vnet.event.SessionEventListener;
  *
  * We also add internally used functionality here.
  *
- * @author <a href="mailto:jdi@untangle.com"></a>
+ * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
  * @version 1.0
  */
 class MPipeManagerImpl implements MPipeManager

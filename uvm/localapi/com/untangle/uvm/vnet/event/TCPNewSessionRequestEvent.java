@@ -36,6 +36,12 @@ package com.untangle.uvm.vnet.event;
 import com.untangle.uvm.vnet.MPipe;
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
 
+/**
+ * New TCP session request event
+ *
+ * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
+ * @version 1.0
+ */
 public class TCPNewSessionRequestEvent extends MPipeEvent {
     
     public TCPNewSessionRequestEvent(MPipe mPipe, TCPNewSessionRequest sessionRequest)

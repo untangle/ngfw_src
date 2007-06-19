@@ -33,6 +33,12 @@ import com.untangle.uvm.node.MutateTStats;
 import com.untangle.uvm.node.PipelineEndpoints;
 import com.untangle.uvm.util.MetaEnv;
 
+/**
+ * This is the primary implementation class for TCP live sessions.
+ *
+ * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
+ * @version 1.0
+ */
 class TCPSessionImpl extends IPSessionImpl implements TCPSession
 {
     protected static final ByteBuffer SHUTDOWN_COOKIE_BUF = ByteBuffer.allocate(1);

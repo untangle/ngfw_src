@@ -43,7 +43,7 @@ import java.util.Date;
  * XXX if this is for the client, it should probably be moved to
  * com.untangle.uvm.node.
  *
- * @author <a href="mailto:jdi@untangle.com"></a>
+ * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
  * @version 1.0
  */
 public class SessionStats implements Serializable

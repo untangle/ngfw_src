@@ -33,6 +33,12 @@
 
 package com.untangle.uvm.vnet;
 
+/**
+ * The <code>SessionDesc</code> interface defines the basest VNet session interface.
+ *
+ * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
+ * @version 1.0
+ */
 public interface SessionDesc {
 
     /**

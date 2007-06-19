@@ -37,6 +37,12 @@ import com.untangle.uvm.vnet.IPSessionDesc;
 import com.untangle.uvm.vnet.SessionStats;
 import java.net.InetAddress;
 
+/**
+ * Client side IP Session Description.
+ *
+ * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
+ * @version 1.0
+ */
 class IPSessionDescImpl extends SessionDescImpl implements IPSessionDesc {
 
     protected byte clientState;

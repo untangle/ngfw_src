@@ -20,6 +20,12 @@ package com.untangle.uvm.engine;
 
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
 
+/**
+ * Implementation class for TCP new session requests
+ *
+ * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
+ * @version 1.0
+ */
 class TCPNewSessionRequestImpl extends IPNewSessionRequestImpl implements TCPNewSessionRequest {
 
     protected TCPNewSessionRequestImpl(Dispatcher disp,

@@ -36,6 +36,12 @@ package com.untangle.uvm.vnet;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * The <code>Protocol</code> interface represents an IP protocol.
+ *
+ * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
+ * @version 1.0
+ */
 public class Protocol
 {
     private static final Map<String,Protocol> NAME_TO_PROTOCOL_MAP = new HashMap<String,Protocol>();

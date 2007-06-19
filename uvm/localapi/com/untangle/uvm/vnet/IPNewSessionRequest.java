@@ -37,6 +37,12 @@ import java.net.InetAddress;
 import com.untangle.uvm.node.PipelineEndpoints;
 import com.untangle.uvm.node.SessionEndpoints;
 
+/**
+ * The new IP session request interface
+ *
+ * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
+ * @version 1.0
+ */
 public interface IPNewSessionRequest extends NewSessionRequest, SessionEndpoints {
 
     /**

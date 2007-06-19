@@ -33,6 +33,12 @@
 
 package com.untangle.uvm.vnet;
 
+/**
+ * The UDP specific version of new session request
+ *
+ * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
+ * @version 1.0
+ */
 public interface UDPNewSessionRequest extends IPNewSessionRequest {
     /**
      * Retrieve the ICMP associated with the session

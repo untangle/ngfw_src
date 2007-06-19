@@ -33,6 +33,12 @@
 
 package com.untangle.uvm.vnet;
 
+/**
+ * Many VNet exceptions are rooted here.
+ *
+ * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
+ * @version 1.0
+ */
 public class MPipeException extends Exception
 {
     protected transient MPipe myMPipe;

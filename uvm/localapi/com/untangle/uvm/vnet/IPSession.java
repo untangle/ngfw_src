@@ -38,9 +38,9 @@ import java.net.InetAddress;
 import java.nio.ByteBuffer;
 
 /**
- * The interface <code>Session</code> here.
+ * The IP Session interface
  *
- * @author <a href="mailto:jdi@untangle.com"></a>
+ * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
  * @version 1.0
  */
 public interface IPSession extends IPSessionDesc, Session  {

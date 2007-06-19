@@ -43,7 +43,7 @@ import java.net.InetAddress;
  * The class <code>UDPErrorEvent</code> is for events from incoming ICMP messages that are
  * associated with a given UDP session.
  *
- * @author <a href="mailto:jdi@TOWELIE"></a>
+ * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
  * @version 1.0
  */
 public class UDPErrorEvent extends UDPPacketEvent {

@@ -42,6 +42,12 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.MDC;
 import org.apache.log4j.helpers.AbsoluteTimeDateFormat;
 
+/**
+ * Abstract base class for all IP live sessions
+ *
+ * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
+ * @version 1.0
+ */
 abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineListener {
 
     protected boolean released = false;
@@ -143,10 +149,10 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
             Mnp req = RequestUtil.createReleaseNewSession();
             ReleaseNewSessionType rl = req.getReleaseNewSession();
             rl.setSessId(id);
-            xenon.requestNoReply(req);
-            } catch (XenonException x) {
+            mpipe.requestNoReply(req);
+            } catch (MPipeException x) {
             // Not expected, just log
-            xenon.sessionLogger().warn("Exception releasing new session", x);
+            mpipe.sessionLogger().warn("Exception releasing new session", x);
             }
         */
         released = true;
@@ -173,12 +179,12 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
     {
         if (delay < 0)
             throw new IllegalArgumentException("Delay must be non-negative");
-        // xenon.scheduleTimer(this, delay);
+        // mpipe.scheduleTimer(this, delay);
     }
 
     public void cancelTimer()
     {
-        // xenon.cancelTimer(this);
+        // mpipe.cancelTimer(this);
     }
 
     protected Crumb getNextCrumb2Send(int side) {

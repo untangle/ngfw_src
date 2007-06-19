@@ -35,6 +35,12 @@ package com.untangle.uvm.vnet.event;
 
 import java.nio.ByteBuffer;
 
+/**
+ * Streamer for TCP sessions
+ *
+ * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
+ * @version 1.0
+ */
 public interface TCPStreamer extends IPStreamer
 {
     /**

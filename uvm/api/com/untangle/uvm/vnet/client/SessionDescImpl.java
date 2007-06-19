@@ -38,6 +38,12 @@ import java.io.Serializable;
 import com.untangle.uvm.vnet.SessionDesc;
 import com.untangle.uvm.vnet.SessionStats;
 
+/**
+ * Client side Session Description.
+ *
+ * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
+ * @version 1.0
+ */
 abstract class SessionDescImpl implements SessionDesc, Serializable {
     private static final long serialVersionUID = 2962776047684793850L;
 

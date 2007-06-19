@@ -39,6 +39,12 @@ import com.untangle.uvm.vnet.SessionStats;
 import com.untangle.uvm.vnet.TCPSessionDesc;
 import java.net.InetAddress;
 
+/**
+ * Client side TCP Session Description.
+ *
+ * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
+ * @version 1.0
+ */
 public class TCPSessionDescImpl extends IPSessionDescImpl implements TCPSessionDesc {
 
     public TCPSessionDescImpl(int id, SessionStats stats,

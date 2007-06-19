@@ -39,6 +39,12 @@ import com.untangle.uvm.vnet.SessionStats;
 import com.untangle.uvm.vnet.UDPSessionDesc;
 import java.net.InetAddress;
 
+/**
+ * Client side UDP Session Description.
+ *
+ * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
+ * @version 1.0
+ */
 public class UDPSessionDescImpl extends IPSessionDescImpl implements UDPSessionDesc {
 
     public UDPSessionDescImpl(int id, SessionStats stats,

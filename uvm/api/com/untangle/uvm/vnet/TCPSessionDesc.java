@@ -33,6 +33,12 @@
 
 package com.untangle.uvm.vnet;
 
+/**
+ * The <code>TCPSessionDesc</code> interface adds TCP specific session description.
+ *
+ * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
+ * @version 1.0
+ */
 public interface TCPSessionDesc extends IPSessionDesc {
 
     /**

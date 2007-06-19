@@ -43,7 +43,7 @@ import org.apache.log4j.Logger;
  //
  * Describe class <code>FakeNodeStats</code> here.
  *
- * @author <a href="mailto:jdi@slab.ninthwave.com">John Irwin</a>
+ * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
  * @version 1.0
  */
 class FakeNodeStats {

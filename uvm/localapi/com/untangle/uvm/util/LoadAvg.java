@@ -45,7 +45,7 @@ import org.apache.log4j.Logger;
  * LoadAvg gets the load average from the kernel.  It does this efficiently, only sampling
  * once every 5 seconds, which is how often the load average is updated by the kernel.
  *
- * @author <a href="mailto:jdi@slab.ninthwave.com">John Irwin</a>
+ * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
  * @version 1.0
  */
 public class LoadAvg {

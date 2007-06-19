@@ -37,6 +37,12 @@ import com.untangle.uvm.vnet.MPipe;
 import com.untangle.uvm.vnet.TCPSession;
 import java.nio.ByteBuffer;
 
+/**
+ * TCP data event -- chunk of bytes received.
+ *
+ * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
+ * @version 1.0
+ */
 public class TCPChunkEvent extends TCPSessionEvent
     implements IPDataEvent
 {

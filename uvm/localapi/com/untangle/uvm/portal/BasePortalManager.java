@@ -38,7 +38,7 @@ import java.security.Principal;
 /**
  * Base interface to the PortalManager.
  *
- * @author <a href="mailto:jdi@slabuntu">John Irwin</a>
+ * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
  * @version 1.0
  */
 public interface BasePortalManager
