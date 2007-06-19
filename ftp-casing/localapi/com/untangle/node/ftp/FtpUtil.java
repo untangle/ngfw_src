@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -36,13 +36,19 @@ package com.untangle.node.ftp;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
-import java.util.regex.Pattern;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import com.untangle.node.token.ParseException;
 import com.untangle.uvm.node.IPaddr;
 
+/**
+ * Utilities for the FTP protocol.
+ *
+ * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
+ * @version 1.0
+ */
 class FtpUtil
 {
     static final String EPRT_DELIM = "|";
@@ -51,7 +57,7 @@ class FtpUtil
 
     static final Pattern EXTENDED_PORT_PATTERN;
     static final Pattern EXTENDED_PASV_PATTERN;
-    
+
     static InetSocketAddress parsePort(String s) throws ParseException
     {
         String[] toks = Pattern.compile(",").split(s);
@@ -76,12 +82,12 @@ class FtpUtil
     static InetSocketAddress parseExtendedPort(String s) throws ParseException
     {
         Matcher matcher = EXTENDED_PORT_PATTERN.matcher( s );
-        
+
         try {
             if (!matcher.matches()) {
                 throw new ParseException( "Unable to parse extended port command" );
             }
-            
+
             return new InetSocketAddress(IPaddr.parse(matcher.group(2)).getAddr(),
                                          Integer.valueOf(matcher.group(3)));
         } catch (ParseException e) {
@@ -90,16 +96,16 @@ class FtpUtil
             throw new ParseException( "Unable to parse extended port command" );
         }
     }
-    
+
     static InetSocketAddress parseExtendedPasvReply(String s) throws ParseException
     {
         Matcher matcher = EXTENDED_PASV_PATTERN.matcher(s);
-        
+
         try {
             if (!matcher.matches()) {
                 throw new ParseException("Unable to parse extended pasv reply: '" + s + "'");
             }
-            
+
             return new InetSocketAddress(Integer.valueOf(matcher.group(2)));
         } catch (ParseException e) {
             throw e;
@@ -146,14 +152,14 @@ class FtpUtil
         sb.append(EPRT_DELIM);
         sb.append(socketAddress.getPort());
         sb.append(EPRT_DELIM);
-        return sb.toString();        
+        return sb.toString();
     }
 
     static
     {
         Pattern extended = null;
         Pattern extendedPasv = null;
-        
+
         try {
             extended     = Pattern.compile("([\\x21-\\x7E])" + EXT_IPV4 + "\\1(.+)\\1(.+)\\1");
             extendedPasv = Pattern.compile("([\\x21-\\x7E])\\1\\1(.+)\\1");
@@ -165,5 +171,5 @@ class FtpUtil
 
         EXTENDED_PORT_PATTERN = extended;
         EXTENDED_PASV_PATTERN = extendedPasv;
-    }    
+    }
 }

@@ -23,6 +23,12 @@ import com.untangle.node.token.Parser;
 import com.untangle.node.token.Unparser;
 import com.untangle.uvm.vnet.TCPSession;
 
+/**
+ * FTP casing.
+ *
+ * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
+ * @version 1.0
+ */
 class FtpCasing implements Casing
 {
     private final Parser parser;
