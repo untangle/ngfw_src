@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -522,7 +522,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                 // FOCUS AND HIGHLIGHT IN CURRENT RACK
                 focusInRack(mNodeJPanel);
                 // AUTO ON
-                if( nodeDesc.getName().startsWith("nat") || nodeDesc.getName().startsWith("openvpn") ){
+                if( nodeDesc.getName().endsWith("nat") || nodeDesc.getName().endsWith("openvpn") ){
                     mNodeJPanel.setPowerOnHintVisible(true);
                     MOneButtonJDialog.factory( Util.getMMainJFrame(), "", nodeDesc.getDisplayName()
                                                + " can not be automatically turned on."
