@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -22,8 +22,14 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-// XXX to enum when we XDoclet gets out of the way
-
+/**
+ * Reason a Request or Response was blocked.
+ *
+ * XXX to enum when we XDoclet gets out of the way
+ *
+ * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
+ * @version 1.0
+ */
 public class Reason implements Serializable
 {
     private static final long serialVersionUID = -1388743204136725990L;

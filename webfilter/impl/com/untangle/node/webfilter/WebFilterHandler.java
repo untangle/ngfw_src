@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -18,17 +18,22 @@
 
 package com.untangle.node.webfilter;
 
-
-import com.untangle.uvm.vnet.TCPSession;
-import com.untangle.uvm.node.Node;
 import com.untangle.node.http.HttpStateMachine;
 import com.untangle.node.http.RequestLineToken;
 import com.untangle.node.http.StatusLine;
 import com.untangle.node.token.Chunk;
 import com.untangle.node.token.Header;
 import com.untangle.node.token.Token;
+import com.untangle.uvm.node.Node;
+import com.untangle.uvm.vnet.TCPSession;
 import org.apache.log4j.Logger;
 
+/**
+ * Blocks HTTP traffic that is on an active block list.
+ *
+ * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
+ * @version 1.0
+ */
 public class WebFilterHandler extends HttpStateMachine
 {
     private static final int SCAN = Node.GENERIC_0_COUNTER;

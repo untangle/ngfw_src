@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -21,34 +21,40 @@ package com.untangle.node.webfilter;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.untangle.node.token.Header;
+import com.untangle.node.token.Token;
+import com.untangle.node.token.TokenAdaptor;
 import com.untangle.uvm.LocalAppServerManager;
-import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.LocalUvmContext;
+import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.EventLoggerFactory;
 import com.untangle.uvm.logging.EventManager;
 import com.untangle.uvm.logging.ListEventFilter;
 import com.untangle.uvm.logging.SimpleEventFilter;
+import com.untangle.uvm.node.MimeType;
+import com.untangle.uvm.node.MimeTypeRule;
+import com.untangle.uvm.node.NodeContext;
+import com.untangle.uvm.node.StringRule;
+import com.untangle.uvm.util.OutsideValve;
+import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.AbstractNode;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.vnet.SoloPipeSpec;
 import com.untangle.uvm.vnet.TCPSession;
-import com.untangle.uvm.node.MimeType;
-import com.untangle.uvm.node.MimeTypeRule;
-import com.untangle.uvm.node.StringRule;
-import com.untangle.uvm.node.NodeContext;
-import com.untangle.uvm.util.OutsideValve;
-import com.untangle.uvm.util.TransactionWork;
-import com.untangle.node.token.Header;
-import com.untangle.node.token.Token;
-import com.untangle.node.token.TokenAdaptor;
 import org.apache.catalina.Valve;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
+/**
+ * Implementation of the Web Filter.
+ *
+ * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
+ * @version 1.0
+ */
 public class WebFilterImpl extends AbstractNode implements WebFilter
 {
     private static int deployCount = 0;

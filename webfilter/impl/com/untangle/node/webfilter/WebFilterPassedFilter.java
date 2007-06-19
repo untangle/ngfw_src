@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -22,13 +22,19 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.untangle.node.http.RequestLine;
 import com.untangle.uvm.logging.ListEventFilter;
 import com.untangle.uvm.logging.RepositoryDesc;
-import com.untangle.node.http.RequestLine;
 import org.hibernate.Hibernate;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
+/**
+ * Filter for passed HTTP traffic.
+ *
+ * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
+ * @version 1.0
+ */
 public class WebFilterPassedFilter implements ListEventFilter<WebFilterEvent>
 {
     private static final String RL_QUERY = "FROM RequestLine rl ORDER BY rl.httpRequestEvent.timeStamp DESC";

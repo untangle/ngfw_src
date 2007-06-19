@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -18,9 +18,15 @@
 
 package com.untangle.node.webfilter;
 
-import com.untangle.uvm.security.Tid;
 import com.untangle.node.http.ReplacementGenerator;
+import com.untangle.uvm.security.Tid;
 
+/**
+ * ReplacementGenerator for WebFilter.
+ *
+ * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
+ * @version 1.0
+ */
 class WebFilterReplacementGenerator
     extends ReplacementGenerator<WebFilterBlockDetails>
 {

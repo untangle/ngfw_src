@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -22,7 +22,14 @@ package com.untangle.node.webfilter;
 import com.untangle.uvm.logging.RepositoryDesc;
 import com.untangle.uvm.logging.SimpleEventFilter;
 
-public class WebFilterBlockedFilter implements SimpleEventFilter<WebFilterEvent>
+/**
+ * Selects Blocked HTTP traffic.
+ *
+ * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
+ * @version 1.0
+ */
+public class WebFilterBlockedFilter
+    implements SimpleEventFilter<WebFilterEvent>
 {
     private static final RepositoryDesc REPO_DESC
         = new RepositoryDesc("Blocked HTTP Traffic");
