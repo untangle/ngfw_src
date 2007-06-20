@@ -1,6 +1,6 @@
 -- events conversion for release-5.0
 -- $HeadURL$
--- Copyright (c) 2003-2007 Untangle, Inc. 
+-- Copyright (c) 2003-2007 Untangle, Inc.
 --
 -- This program is free software; you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License, version 2,
@@ -15,4 +15,12 @@
 -- along with this program; if not, write to the Free Software
 -- Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
 --
+
+ALTER TABLE events.TR_IDS_EVT RENAME TO n_ips_evt;
+ALTER TABLE events.TR_IDS_STATISTIC_EVT RENAME TO n_ips_statistic_evt;
+
+DROP INDEX tr_ids_evt_plepid_idx;
+CREATE INDEX n_ips_evt_plepid_idx ON events.n_ips_evt (pl_endp_id);
+DROP INDEX tr_ids_evt_ts_idx;
+CREATE INDEX n_ips_evt_ts_idx ON events.n_ips_evt (time_stamp);
 

@@ -1,6 +1,6 @@
 -- events schema for release-5.0
 -- $HeadURL$
--- Copyright (c) 2003-2007 Untangle, Inc. 
+-- Copyright (c) 2003-2007 Untangle, Inc.
 --
 -- This program is free software; you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License, version 2,
@@ -70,7 +70,6 @@ CREATE TABLE events.n_virus_evt_mail (
 -- indices for reporting
 
 CREATE INDEX n_virus_evt_http_rid_idx ON events.n_virus_evt_http (request_line);
-
 CREATE INDEX n_virus_evt_http_ts_idx ON events.n_virus_evt_http (time_stamp);
 CREATE INDEX n_virus_evt_ts_idx ON events.n_virus_evt (time_stamp);
 CREATE INDEX n_virus_evt_smtp_ts_idx ON events.n_virus_evt_smtp (time_stamp);

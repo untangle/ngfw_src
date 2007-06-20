@@ -1,6 +1,6 @@
 -- events conversion for release-5.0
 -- $HeadURL$
--- Copyright (c) 2003-2007 Untangle, Inc. 
+-- Copyright (c) 2003-2007 Untangle, Inc.
 --
 -- This program is free software; you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License, version 2,
@@ -26,3 +26,12 @@ ALTER TABLE events.portal_login_evt RENAME TO n_portal_login_evt;
 ALTER TABLE events.portal_logout_evt RENAME TO n_portal_logout_evt;
 ALTER TABLE events.portal_app_launch_evt RENAME TO n_portal_app_launch_evt;
 ALTER TABLE events.mvvm_lookup_evt RENAME TO u_lookup_evt;
+
+DROP INDEX mvvm_login_evt_ts_idx;
+DROP INDEX mvvm_lookup_evt_ts_idx;
+DROP INDEX shield;
+
+CREATE INDEX u_login_evt_ts_idx ON u_login_evt (time_stamp);
+CREATE INDEX u_lookup_evt_ts_idx ON u_lookup_evt (time_stamp);
+CREATE INDEX n_shield_rejection_evt_ts_idx ON n_shield_rejection_evt (time_stamp);
+

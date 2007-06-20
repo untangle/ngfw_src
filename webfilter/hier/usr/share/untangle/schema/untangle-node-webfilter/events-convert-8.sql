@@ -1,6 +1,6 @@
 -- events conversion for release-5.0
 -- $HeadURL$
--- Copyright (c) 2003-2007 Untangle, Inc. 
+-- Copyright (c) 2003-2007 Untangle, Inc.
 --
 -- This program is free software; you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License, version 2,
@@ -17,3 +17,7 @@
 --
 
 ALTER TABLE events.tr_httpblk_evt_blk RENAME TO n_webfilter_evt_blk;
+
+DROP INDEX events.tr_httpblk_evt_blk_ts_idx;
+CREATE INDEX n_webfilter_evt_blk_ts_idx ON events.n_webfilter_evt_blk (time_stamp);
+
