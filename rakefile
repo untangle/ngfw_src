@@ -42,7 +42,7 @@ end
 task :javadoc do
   dirs = (FileList['**/api'] + FileList['**/localapi'] + FileList['**/impl']).select { |e| not (/downloads/ =~ e or /staging/ =~ e or /dist/ =~ e) }.join(':')
 
-  Kernel.exec('javadoc', '-sourcepath', dirs,
+  Kernel.exec('javadoc', '-splitindex','-docencoding','UTF-8','-use','-docfilessubdirs', '-sourcepath', dirs,
               '-d', "#{BuildEnv::SRC.staging}/javadoc",
-              '-subpackages', 'com.untangle')
+              '-subpackages', 'com.untangle', '-J-Xmx512m')
 end
