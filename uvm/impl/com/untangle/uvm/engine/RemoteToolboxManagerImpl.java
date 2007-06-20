@@ -386,8 +386,14 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
 
     public void requestInstall(String mackageName)
     {
+        MackageDesc md = packageMap.get(mackageName);
+        if (null == md) {
+            logger.warn("Could not find package for: " + mackageName);
+            return;
+        }
+        MackageInstallRequest mir = new MackageInstallRequest(md);
+
         synchronized (messageQueues) {
-            MackageInstallRequest mir = new MackageInstallRequest(mackageName);
             logger.info("requestInstall: " + mackageName);
             for (MessageQueueImpl<ToolboxMessage> mq : messageQueues.values()) {
                 mq.enqueue(mir);

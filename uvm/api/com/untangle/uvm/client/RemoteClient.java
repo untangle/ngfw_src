@@ -58,11 +58,6 @@ import com.untangle.uvm.security.RegistrationInfo;
 import com.untangle.uvm.security.Tid;
 import com.untangle.uvm.security.User;
 import com.untangle.uvm.security.UvmPrincipal;
-import com.untangle.uvm.vnet.IPSessionDesc;
-import com.untangle.uvm.vnet.SessionDesc;
-import com.untangle.uvm.vnet.SessionStats;
-import com.untangle.uvm.vnet.TCPSessionDesc;
-import com.untangle.uvm.vnet.UDPSessionDesc;
 import com.untangle.uvm.toolbox.DownloadComplete;
 import com.untangle.uvm.toolbox.DownloadProgress;
 import com.untangle.uvm.toolbox.DownloadSummary;
@@ -76,6 +71,11 @@ import com.untangle.uvm.toolbox.ProgressVisitor;
 import com.untangle.uvm.toolbox.RemoteToolboxManager;
 import com.untangle.uvm.toolbox.ToolboxMessageVisitor;
 import com.untangle.uvm.util.SessionUtil;
+import com.untangle.uvm.vnet.IPSessionDesc;
+import com.untangle.uvm.vnet.SessionDesc;
+import com.untangle.uvm.vnet.SessionStats;
+import com.untangle.uvm.vnet.TCPSessionDesc;
+import com.untangle.uvm.vnet.UDPSessionDesc;
 import org.apache.log4j.helpers.AbsoluteTimeDateFormat;
 
 /**
@@ -283,7 +283,7 @@ public class RemoteClient
     {
         public void visitMackageInstallRequest(MackageInstallRequest req)
         {
-            String mackageName = req.getMackageName();
+            String mackageName = req.getMackageDesc().getName();
             System.out.println("Installing: " + mackageName);
             try {
                 tool.install(mackageName);

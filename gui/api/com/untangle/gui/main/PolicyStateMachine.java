@@ -688,7 +688,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
     private class StoreMessageVisitor implements ToolboxMessageVisitor {
         public void visitMackageInstallRequest(final MackageInstallRequest req) {
             synchronized(storeLock){
-                String purchasedMackageName = req.getMackageName();
+                String purchasedMackageName = req.getMackageDesc().getName();
                 // FIND THE BUTTON THAT WOULD HAVE BEEN CLICKED
                 MNodeJButton mNodeJButton = null;
                 for( MNodeJButton storeButton : storeMap.values() ){
@@ -702,9 +702,9 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                     if(mNodeJButton == null){
                         MOneButtonJDialog.factory(Util.getMMainJFrame(), "",
                                                   "A problem occurred while purchasing:<br>"
-                                                  + req.getMackageName()
+                                                  + req.getMackageDesc().getName()
                                                   + "<br>Please try again.",
-                                                  req.getMackageName() + " Warning", "");
+                                                  req.getMackageDesc().getName() + " Warning", "");
                         return;
                     }
                     Policy purchasePolicy;

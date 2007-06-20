@@ -42,16 +42,16 @@ package com.untangle.uvm.toolbox;
  */
 public class MackageInstallRequest extends ToolboxMessage
 {
-    private final String mackageName;
+    private final MackageDesc mackageDesc;
 
-    public MackageInstallRequest(String mackageName)
+    public MackageInstallRequest(MackageDesc mackageDesc)
     {
-        this.mackageName = mackageName;
+        this.mackageDesc = mackageDesc;
     }
 
-    public String getMackageName()
+    public MackageDesc getMackageDesc()
     {
-        return mackageName;
+        return mackageDesc;
     }
 
     // ToolboxMessage methods -------------------------------------------------
