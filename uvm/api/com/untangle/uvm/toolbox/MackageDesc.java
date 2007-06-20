@@ -61,7 +61,8 @@ public class MackageDesc implements Serializable
         CASING,
         LIBRARY,
         BASE,
-        LIB_ITEM
+        LIB_ITEM,
+        TRIAL
     }
 
     public static final int RACK_TYPE_BUNDLE   = 0; // used for store positioning, not the actual rack
