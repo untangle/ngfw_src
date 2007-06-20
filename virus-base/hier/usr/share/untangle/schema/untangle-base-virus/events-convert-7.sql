@@ -16,6 +16,11 @@
 -- Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
 --
 
+ALTER TABLE events.tr_virus_evt RENAME TO n_virus_evt;
+ALTER TABLE events.tr_virus_evt_http RENAME TO n_virus_evt_http;
+ALTER TABLE events.tr_virus_evt_smtp RENAME TO n_virus_evt_smtp;
+ALTER TABLE events.tr_virus_evt_mail RENAME TO n_virus_evt_mail;
+
 DROP INDEX events.tr_virus_evt_http_rid_idx;
 DROP INDEX events.tr_virus_evt_http_ts_idx;
 DROP INDEX events.tr_virus_evt_ts_idx;
@@ -31,9 +36,3 @@ CREATE INDEX n_virus_evt_smtp_ts_idx ON events.n_virus_evt_smtp (time_stamp);
 CREATE INDEX n_virus_evt_mail_ts_idx ON events.n_virus_evt_mail (time_stamp);
 CREATE INDEX n_virus_evt_smtp_mid_idx ON events.n_virus_evt_smtp (msg_id);
 CREATE INDEX n_virus_evt_mail_mid_idx ON events.n_virus_evt_mail (msg_id);
-
-
-ALTER TABLE events.tr_virus_evt RENAME TO n_virus_evt;
-ALTER TABLE events.tr_virus_evt_http RENAME TO n_virus_evt_http;
-ALTER TABLE events.tr_virus_evt_smtp RENAME TO n_virus_evt_smtp;
-ALTER TABLE events.tr_virus_evt_mail RENAME TO n_virus_evt_mail;

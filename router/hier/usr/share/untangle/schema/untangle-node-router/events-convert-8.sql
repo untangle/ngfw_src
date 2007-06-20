@@ -1,6 +1,6 @@
 -- events conversion for release-5.0
 -- $HeadURL$
--- Copyright (c) 2003-2007 Untangle, Inc. 
+-- Copyright (c) 2003-2007 Untangle, Inc.
 --
 -- This program is free software; you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License, version 2,
@@ -22,3 +22,9 @@ ALTER TABLE events.tr_nat_evt_dhcp_abs RENAME TO n_router_evt_dhcp_abs;
 ALTER TABLE events.tr_nat_evt_dhcp_abs_leases RENAME TO n_router_evt_dhcp_abs_leases;
 ALTER TABLE events.tr_nat_redirect_evt RENAME TO n_router_redirect_evt;
 ALTER TABLE events.tr_nat_statistic_evt RENAME TO n_router_statistic_evt;
+
+DROP INDEX tr_nat_redirect_evt_plepid_idx;
+DROP INDEX tr_nat_redirect_evt_ts_idx;
+
+CREATE INDEX n_router_redirect_evt_plepid_idx ON events.n_router_redirect_evt (pl_endp_id);
+CREATE INDEX n_router_redirect_evt_ts_idx ON events.n_router_redirect_evt (time_stamp);
