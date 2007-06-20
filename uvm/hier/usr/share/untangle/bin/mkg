@@ -48,7 +48,7 @@ aptlog()
 
 my_dpkg_query()
 {
-    PKGS="`dpkg --get-selections $1 | egrep -w 'install$' | awk '{print $1}'`"
+    PKGS="`dpkg --get-selections "$1" | egrep -w 'install$' | awk '{print $1}'`"
     if [ ! -z "$PKGS" ] ; then
         echo "$PKGS" | xargs dpkg-query -W
     fi
