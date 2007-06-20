@@ -80,6 +80,7 @@ public class MackageDesc implements Serializable
     private final String shortDescription;
     private final String longDescription;
     private final String website;
+    private final String fullVersion;
     private final int size;
     private final int installedSize;
     private final String price;
@@ -183,6 +184,9 @@ public class MackageDesc implements Serializable
             longDescription = "";
         }
 
+        // description
+        fullVersion = m.get("untangle-full-version");
+
         // desc icon
         v = m.get("desc-icon");
         if (null != v) {
@@ -242,6 +246,11 @@ public class MackageDesc implements Serializable
     public String getLongDescription()
     {
         return longDescription;
+    }
+
+    public String getFullVersion()
+    {
+        return fullVersion;
     }
 
     public String getWebsite()
