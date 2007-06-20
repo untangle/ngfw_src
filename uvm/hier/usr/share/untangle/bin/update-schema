@@ -17,6 +17,7 @@ CREATE SCHEMA settings;
 
 -- convert pre-5.0
 
+UPDATE settings.split_schema_ver SET component = 'uvm' WHERE component = 'mvvm';
 UPDATE settings.split_schema_ver SET component = 'webfilter-node' WHERE component = 'httpblocker-transform';
 UPDATE settings.split_schema_ver SET component = 'openvpn-node' WHERE component = 'openvpn-transform';
 UPDATE settings.split_schema_ver SET component = 'ips-node' WHERE component = 'ids-transform';
