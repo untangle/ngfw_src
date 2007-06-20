@@ -56,6 +56,8 @@ import javax.jnlp.ServiceManager;
 import javax.swing.*;
 import javax.swing.border.*;
 
+import org.apache.log4j.Logger;
+
 import com.untangle.gui.configuration.*;
 import com.untangle.gui.node.*;
 import com.untangle.gui.pipeline.*;
@@ -72,6 +74,8 @@ import com.untangle.uvm.security.*;
 import com.untangle.uvm.toolbox.*;
 
 public class PolicyStateMachine implements ActionListener, Shutdownable {
+
+    private final Logger logger = Logger.getLogger(getClass());
 
     // FOR REMOVING TRIALS FROM STORE WHEN ITEM IS PURCHASED
     // UVM DATA MODELS (USED ONLY DURING INIT) //////
@@ -688,8 +692,20 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
     private class StoreMessageVisitor implements ToolboxMessageVisitor {
         public void visitMackageInstallRequest(final MackageInstallRequest req) {
             synchronized(storeLock){
-                String purchasedMackageName = req.getMackageDesc().getName();
-                // FIND THE BUTTON THAT WOULD HAVE BEEN CLICKED
+                MackageDesc mackageDesc = req.getMackageDesc();
+                String purchasedMackageName = mackageDesc.getName();
+
+                if ( MackageDesc.Type.TRIAL.equals( mackageDesc.getType())) {
+                    purchasedMackageName = mackageDesc.getFullVersion();
+                }
+                
+                if ( purchasedMackageName == null ) {
+                    /* set so this will never match in the later code */
+                    logger.warn( "Trial Package, " + mackageDesc.getName() + " has no fullVersion." );
+                    purchasedMackageName = "1233432453";
+                }
+                         
+                 // FIND THE BUTTON THAT WOULD HAVE BEEN CLICKED
                 MNodeJButton mNodeJButton = null;
                 for( MNodeJButton storeButton : storeMap.values() ){
                     String storeButtonName = storeButton.getName();
@@ -1133,12 +1149,12 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
             try{
                 Util.getRemoteToolboxManager().update();
                 storeItemsAvailable = Util.getRemoteToolboxManager().uninstalled();
-                /*
-                  if( storeItemsAvailable == null )
-                  System.out.println("items: null");
-                  else
-                  System.out.println("items: " + storeItemsAvailable.length);
-                */
+                if( storeItemsAvailable == null ) {
+                    logger.debug("items: null");
+                } else {
+                    logger.debug("items: " + storeItemsAvailable.length);
+                }
+
                 connectedToStore = true;
             }
             catch(Exception e){

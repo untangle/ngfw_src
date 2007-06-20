@@ -33,6 +33,8 @@
 
 package com.untangle.gui.configuration;
 
+import org.apache.log4j.Logger;
+
 import com.untangle.gui.node.CompoundSettings;
 import com.untangle.gui.node.MCasingJPanel;
 import com.untangle.gui.util.Util;
@@ -42,6 +44,7 @@ import com.untangle.uvm.networking.NetworkSpacesSettings;
 
 
 public class MaintenanceCompoundSettings implements CompoundSettings {
+    private final Logger logger = Logger.getLogger(getClass());
 
     // ACCESS SETTINGS //
     private AccessSettings accessSettings;
@@ -114,7 +117,7 @@ public class MaintenanceCompoundSettings implements CompoundSettings {
     public void validate() throws Exception {
         accessSettings.validate();
         miscSettings.validate();
-        System.err.println( "need validation for network settings" );
+        logger.debug( "need validation for network settings" );
         //networkSettings.validate();
     }
 

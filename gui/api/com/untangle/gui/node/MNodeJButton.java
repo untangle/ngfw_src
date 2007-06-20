@@ -57,7 +57,6 @@ public class MNodeJButton extends JButton {
     private JLabel organizationIconJLabel;
     private JLabel descriptionIconJLabel;
     private String toolTipString;
-    private boolean isTrial = false;
     private JPanel contentJPanel;
 
     private static Color COLOR_NAME_DISABLED = new Color(140,140,140);
@@ -187,23 +186,13 @@ public class MNodeJButton extends JButton {
         return newMNodeJButton;
     }
 
-    public boolean getIsTrial()
-    { 
-        return this.mackageDesc.getType() == MackageDesc.Type.TRIAL;
-    }
-
-
-
     // CONVENIENCE WRAPPERS FOR MACKAGE /////////
     public MackageDesc getMackageDesc(){ return mackageDesc; }
     public String getFullDescription(){ return new String( mackageDesc.getLongDescription() ); }
     public String getShortDescription(){ return new String( mackageDesc.getShortDescription() ); }
     public String getExtraName(){ return mackageDesc.getExtraName(); }
     public String getName(){
-        String name = mackageDesc.getName();
-        //if(isTrial)
-        //    name = name.replace("-libitem", "-trial30-libitem");
-        return name;
+        return mackageDesc.getName();
     }
     public String getDisplayName(){
         return mackageDesc.getDisplayName();
