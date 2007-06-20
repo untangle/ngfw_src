@@ -74,7 +74,6 @@ import com.untangle.uvm.toolbox.*;
 public class PolicyStateMachine implements ActionListener, Shutdownable {
 
     // FOR REMOVING TRIALS FROM STORE WHEN ITEM IS PURCHASED
-    private final String STOREITEM_EXTENSION = "libitem";
     private final String TRIAL_EXTENSION     = "libitem-trial30";
     // UVM DATA MODELS (USED ONLY DURING INIT) //////
     private List<Tid>                       utilTidList;
@@ -1278,9 +1277,10 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
 
                     // ADD TO STORE IF NOT A TRIAL
                     for( MackageDesc mackageDesc : storeItemsAvailable ){
+                        MackageDesc.Type type = mackageDesc.getType();
                         String name = mackageDesc.getName();
                         //System.out.println("testing: " + name);
-                        if( name.matches(STOREITEM_EXTENSION) && !name.matches(TRIAL_EXTENSION) ){
+                        if( type.equals( MackageDesc.Type.LIB_ITEM )) {
                             addToStore(mackageDesc,false);
                             //System.out.println("added");
                         }
@@ -1860,15 +1860,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
             return true;
     }
     private boolean isMackageStoreItem(MackageDesc mackageDesc){
-        if( mackageDesc.getName().endsWith("-libitem") )
-            return true;
-        else
-            return false;
-    }
-    private boolean isMackageTrial(MackageDesc mackageDesc){
-        if( mackageDesc.getName().endsWith("-trial30-libitem") )
-            return true;
-        else if( (mackageDesc.getExtraName()!=null) && (mackageDesc.getExtraName().contains("Trial")) )
+        if( mackageDesc.getType().equals( MackageDesc.Type.LIB_ITEM ))
             return true;
         else
             return false;
