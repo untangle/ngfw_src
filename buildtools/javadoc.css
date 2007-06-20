@@ -1,0 +1,171 @@
+* {
+  font-family: arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+body {
+  font-size: 14px;
+  padding: 2px 10px;
+  background: #fff;
+}
+a b, b a {
+ font-size: 0.9em;
+ text-decoration: none;
+}
+pre {
+  margin: 5px 0 5px 10px;
+}
+code, pre {
+  font-family: monospace;
+}
+code a {
+  font-size: 1em;
+  line-height: 1.5em;
+}
+hr {
+  border: 1px solid #eee;
+  clear: both;
+  margin: 8px 0;
+}
+h3 {
+  font-size: 1em;
+  line-height: 2.5em;
+}
+h2 {
+  font-size: 1.5em;
+  line-height: 2em;
+}
+table {
+  border-color: #aaa;
+}
+table[border="1"] {
+ border-style: solid;
+}
+td, th {
+  border:0;
+}
+.TableHeadingColor th, .TableSubHeadingColor th {
+ border-bottom: 1px solid #999;
+ text-indent: 5px;
+}
+.TableRowColor th, .TableRowColor td {
+   border-bottom: 1px solid #ccc;
+}
+th {
+  line-height: auto;
+  vertical-align: middle;
+}
+a {
+  color: #00c;
+}
+a:visited {
+  color: #669;
+}
+a:hover {
+  color: #333;
+}
+ul {
+  margin: 10px 0 10px 100px;
+}
+li {
+  line-height: 1.25em;
+}
+dt {
+  line-height: 1.5em;
+  margin-top: 1em;
+}
+dd {
+  line-height: 1.25em;
+}
+.NavBarCell1 table{
+  margin-left: 150px;
+}
+.NavBarCell1 {
+  background: #67bd49;
+  line-height: 2em;
+  padding: 3px;
+}
+td.NavBarCell1 {
+  -moz-border-radius-topleft: 8px;
+  -moz-border-radius-topright: 8px;	
+}
+.NavBarCell1 a, .NavBarCell1 a:visited {
+  color: #060;
+  text-decoration: none;
+  -moz-border-radius: 8px;
+}
+.NavBarCell1 a:hover {
+  color: #000;
+}
+.NavBarFont1 {
+  font-weight: bold;
+  margin: 0 10px;
+  color: #090;
+}
+.NavBarCell1 a .NavBarFont1, .NavBarCell1 a:visited .NavBarFont1 {
+  color: #060;
+  text-decoration: underline;
+}
+.NavBarCell1 a:hover .NavBarFont1 {
+  color: #000;
+}
+.NavBarCell2, .NavBarCell3 {
+	background: #ccc;
+}
+.NavBarCell2 {
+  -moz-border-radius-bottomleft: 8px;
+  line-height: 1.5em;
+}
+.NavBarCell2 + .NavBarCell2 {
+  -moz-border-radius-bottomleft: 0;
+  -moz-border-radius-bottomright: 8px;
+}
+.NavBarCell3 {
+  background: #fff;
+  color: #000;
+}
+.NavBarCell2 a:link, .NavBarCell2 a:visited, .NavBarCell3 a:link, .NavBarCell3 a:visited {
+ color: #060;
+}
+.NavBarCell2 a:hover, .NavBarCell3 a:hover {
+ color: #000;
+}
+.NavBarCell1Rev {
+  -moz-border-radius: 8px 8px;  
+  padding: 0 8px;
+  color: #000;
+  vertical-align: middle;
+}
+.TableHeadingColor th {
+  background: #feffee; 
+  text-indent: 5px;
+}
+.TableHeadingColor font, .TableHeadingColor b, .TableHeadingColor a {
+  font-size: 1.2em;
+  color: #333;
+  line-height: 1.5em;
+}
+.TableHeadingColor a, .TableHeadingColor a:visited  {
+  font-size: 1em;
+  color: #039;
+  text-decoration: none;
+}
+.TableHeadingColor a:hover {
+  color: #000;
+}
+.TableSubHeadingColor th {
+  line-height: 1.5em;
+  background: #feffee; 
+}
+.TableRowColor td {
+  padding: 0 5px;
+  line-height: 1.25em;
+}
+.NavBarCell2, .NavBarCell3 {
+  padding: 2px 20px;
+}
+.TableHeadingColor font {
+  position: relative;
+  line-height: 1em;
+}
+
