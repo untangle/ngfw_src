@@ -187,17 +187,9 @@ public class MNodeJButton extends JButton {
         return newMNodeJButton;
     }
 
-    public boolean getIsTrial(){ return isTrial; }
-    public void setIsTrial(boolean isTrial){
-        this.isTrial = isTrial;
-        /*
-          String tempName;
-          if(isTrial)
-          tempName = mackageDesc.getDisplayName() + " (Trial)";
-          else
-          tempName = mackageDesc.getDisplayName();
-          nameJLabel.setText( "<html><b>" + Util.wrapString(tempName, 19) + "</b></html>");
-        */
+    public boolean getIsTrial()
+    { 
+        return this.mackageDesc.getType() == MackageDesc.Type.TRIAL;
     }
 
 

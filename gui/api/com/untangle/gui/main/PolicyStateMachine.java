@@ -74,7 +74,6 @@ import com.untangle.uvm.toolbox.*;
 public class PolicyStateMachine implements ActionListener, Shutdownable {
 
     // FOR REMOVING TRIALS FROM STORE WHEN ITEM IS PURCHASED
-    private final String TRIAL_EXTENSION     = "libitem-trial30";
     // UVM DATA MODELS (USED ONLY DURING INIT) //////
     private List<Tid>                       utilTidList;
     private Map<String,Object>              utilNameMap;
@@ -694,15 +693,8 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                 MNodeJButton mNodeJButton = null;
                 for( MNodeJButton storeButton : storeMap.values() ){
                     String storeButtonName = storeButton.getName();
-                    storeButtonName = storeButtonName.substring(0, storeButtonName.indexOf('-'));
-                    if( purchasedMackageName.startsWith(storeButtonName) ){
+                    if ( purchasedMackageName.equals( storeButtonName )) {
                         mNodeJButton = storeButton;
-                        if( purchasedMackageName.matches(TRIAL_EXTENSION) ){
-                            mNodeJButton.setIsTrial(true);
-                        }
-                        else{
-                            mNodeJButton.setIsTrial(false);
-                        }
                         break;
                     }
                 }
@@ -798,7 +790,6 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                 //// GET THE CORRECT BUTTON TO MESS WIT CAUSE STORE REFRESH MAY HAVE SHANKED US
                 for( final MNodeJButton storeButton : storeMap.values() ){
                     if( storeButton.getName().equals(mNodeJButton.getName()) ){
-                        storeButton.setIsTrial(mNodeJButton.getIsTrial());
                         mNodeJButton = storeButton;
                         SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
                             storeButton.setEnabled(false);
@@ -823,9 +814,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                 //// DOWNLOAD FROM SERVER
                 MackageDesc[] originalInstalledMackages = Util.getRemoteToolboxManager().installed(); // for use later
                 String installName = mNodeJButton.getName();
-                if(mNodeJButton.getIsTrial()){
-                    installName = installName.replace("-libitem", "-trial30-libitem");
-                }
+
                 long key = Util.getRemoteToolboxManager().install(installName);
                 com.untangle.gui.util.Visitor visitor = new com.untangle.gui.util.Visitor(mNodeJButton);
                 while (true) {
