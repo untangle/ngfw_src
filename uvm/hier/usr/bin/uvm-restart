@@ -1,0 +1,30 @@
+#!/bin/sh
+
+echo "$0 $@: $$"
+
+if [ "xreboot" = "x$1" ]; then
+    mode=reboot
+elif [ "xrestart" = "x$1" ]; then
+    mode=restart
+else
+    echo "usage: $0 [ reboot | restart ]"
+    exit 1
+fi
+
+pidfile=/var/run/uvm-$mode.pid
+
+if [ -e $pidfile ]; then
+    if ps p $(cat $pidfile) >/dev/null 2>&1; then
+        echo "restart already scheduled"
+        exit;
+    else
+        rm $pidfile
+    fi
+fi
+
+if [ -x /etc/init.d/untangle-vm ]; then
+    /etc/init.d/untangle-vm stop || true
+fi
+nohup uvm-restart-wait $mode >>/var/log/restart-uvm.log 2>&1 &
+
+while [ ! -e $pidfile ]; do true; done
