@@ -40,9 +40,11 @@ task :install => [BuildEnv::SRC['install'], BuildEnv::SRC.installTarget] do
 end
 
 task :javadoc do
-  dirs = (FileList['**/api'] + FileList['**/localapi'] + FileList['**/impl']).select { |e| not (/downloads/ =~ e or /staging/ =~ e or /dist/ =~ e) }.join(':')
+  dirs = 'uvm/api:uvm/localapi'
+  cpath = FileList['staging/*'].map { |e| "#{e}/" }.join(':') + ":" + FileList['downloads/output/**/*jar'].join(':')
+  css = "#{SRC_HOME}/buildtools/javadoc.css"
 
-  Kernel.exec('javadoc', '-splitindex','-docencoding','UTF-8','-use','-docfilessubdirs', '-sourcepath', dirs,
+  Kernel.exec('javadoc', '-splitindex','-docencoding','UTF-8','-use','-docfilessubdirs', '-stylesheetfile', css, '-sourcepath', dirs, '-classpath', cpath,
               '-d', "#{BuildEnv::SRC.staging}/javadoc",
               '-subpackages', 'com.untangle', '-J-Xmx512m')
 end
