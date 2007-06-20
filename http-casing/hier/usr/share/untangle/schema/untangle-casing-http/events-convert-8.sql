@@ -1,6 +1,6 @@
 -- events conversion for release-5.0
 -- $HeadURL$
--- Copyright (c) 2003-2007 Untangle, Inc. 
+-- Copyright (c) 2003-2007 Untangle, Inc.
 --
 -- This program is free software; you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License, version 2,
@@ -19,3 +19,11 @@
 ALTER TABLE events.tr_http_evt_resp RENAME TO n_http_evt_resp;
 ALTER TABLE events.tr_http_evt_req RENAME TO n_http_evt_req;
 ALTER TABLE events.tr_http_req_line RENAME TO n_http_req_line;
+
+DROP INDEX tr_http_evt_req_ts_idx;
+DROP INDEX tr_http_evt_req_rid_idx;
+DROP INDEX tr_http_evt_resp_rid_idx;
+
+CREATE INDEX n_http_evt_req_ts_idx ON events.n_http_evt_req (time_stamp);
+CREATE INDEX n_http_evt_req_rid_idx ON events.n_http_evt_req (request_id);
+CREATE INDEX n_http_evt_resp_rid_idx ON events.n_http_evt_resp (request_id);

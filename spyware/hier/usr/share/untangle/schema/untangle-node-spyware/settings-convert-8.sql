@@ -1,6 +1,6 @@
 -- settings conversion for release-5.0
 -- $HeadURL$
--- Copyright (c) 2003-2007 Untangle, Inc. 
+-- Copyright (c) 2003-2007 Untangle, Inc.
 --
 -- This program is free software; you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License, version 2,
@@ -21,3 +21,11 @@ ALTER TABLE settings.tr_spyware_cr RENAME TO n_spyware_cr;
 ALTER TABLE settings.tr_spyware_ar RENAME TO n_spyware_ar,;
 ALTER TABLE settings.tr_spyware_sr RENAME TO n_spyware_sr;
 ALTER TABLE settings.tr_spyware_wl RENAME TO n_spyware_wl;
+
+DROP INDEX idx_spyware_rule_ar;
+DROP INDEX idx_spyware_rule_cr;
+DROP INDEX idx_spyware_rule_sr;
+
+CREATE INDEX n_spyware_ar_rule_idx ON settings.n_spyware_ar, (rule_id);
+CREATE INDEX n_spyware_cr_rule_idx ON settings.n_spyware_cr (rule_id);
+CREATE INDEX n_spyware_sr_rule_idx ON settings.n_spyware_sr (rule_id);

@@ -1,6 +1,6 @@
 -- events conversion for release-5.0
 -- $HeadURL$
--- Copyright (c) 2003-2007 Untangle, Inc. 
+-- Copyright (c) 2003-2007 Untangle, Inc.
 --
 -- This program is free software; you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License, version 2,
@@ -21,3 +21,21 @@ ALTER TABLE events.tr_spyware_evt_activex RENAME TO n_spyware_evt_activex;
 ALTER TABLE events.tr_spyware_evt_cookie RENAME TO n_spyware_evt_cookie;
 ALTER TABLE events.tr_spyware_evt_blacklist RENAME TO n_spyware_evt_blacklist;
 ALTER TABLE events.tr_spyware_statistic_evt RENAME TO n_spyware_statistic_evt;
+
+DROP INDEX tr_spyware_cookie_rid_idx;
+DROP INDEX tr_spyware_bl_rid_idx;
+DROP INDEX tr_spyware_ax_rid_idx;
+DROP INDEX tr_spyware_acc_plepid_idx;
+DROP INDEX tr_spyware_evt_cookie_ts_idx;
+DROP INDEX tr_spyware_evt_blacklist_ts_idx;
+DROP INDEX tr_spyware_evt_activex_ts_idx;
+DROP INDEX tr_spyware_evt_access_ts_idx;
+
+CREATE INDEX n_spyware_cookie_rid_idx ON events.n_spyware_evt_cookie (request_id);
+CREATE INDEX n_spyware_bl_rid_idx ON events.n_spyware_evt_blacklist (request_id);
+CREATE INDEX n_spyware_ax_rid_idx ON events.n_spyware_evt_activex (request_id);
+CREATE INDEX n_spyware_acc_plepid_idx ON events.n_spyware_evt_access (pl_endp_id);
+CREATE INDEX n_spyware_evt_cookie_ts_idx ON events.n_spyware_evt_cookie (time_stamp);
+CREATE INDEX n_spyware_evt_blacklist_ts_idx ON events.n_spyware_evt_blacklist (time_stamp);
+CREATE INDEX n_spyware_evt_activex_ts_idx ON events.n_spyware_evt_activex (time_stamp);
+CREATE INDEX n_spyware_evt_access_ts_idx ON events.n_spyware_evt_access (time_stamp);

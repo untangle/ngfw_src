@@ -1,6 +1,6 @@
 -- events conversion for release-5.0
 -- $HeadURL$
--- Copyright (c) 2003-2007 Untangle, Inc. 
+-- Copyright (c) 2003-2007 Untangle, Inc.
 --
 -- This program is free software; you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License, version 2,
@@ -17,3 +17,7 @@
 --
 
 ALTER TABLE events.tr_phishhttp_evt RENAME TO n_phish_http_evt;
+
+DROP INDEX tr_phishhttp_evt_ts_idx;
+
+CREATE INDEX n_phish_http_evt_ts_idx ON events.n_phish_http_evt (time_stamp);

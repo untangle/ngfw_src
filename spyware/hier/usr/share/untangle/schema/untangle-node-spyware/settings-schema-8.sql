@@ -1,6 +1,6 @@
 -- settings schema for release-5.0
 -- $HeadURL$
--- Copyright (c) 2003-2007 Untangle, Inc. 
+-- Copyright (c) 2003-2007 Untangle, Inc.
 --
 -- This program is free software; you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License, version 2,
@@ -75,9 +75,7 @@ CREATE TABLE settings.n_spyware_wl (
 -- indices
 
 CREATE INDEX n_spyware_ar_rule_idx ON settings.n_spyware_ar, (rule_id);
-
 CREATE INDEX n_spyware_cr_rule_idx ON settings.n_spyware_cr (rule_id);
-
 CREATE INDEX n_spyware_sr_rule_idx ON settings.n_spyware_sr (rule_id);
 
 -- foreign key constraints

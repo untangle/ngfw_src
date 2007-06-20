@@ -1,6 +1,6 @@
 -- events conversion for release-5.0
 -- $HeadURL$
--- Copyright (c) 2003-2007 Untangle, Inc. 
+-- Copyright (c) 2003-2007 Untangle, Inc.
 --
 -- This program is free software; you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License, version 2,
@@ -19,3 +19,20 @@
 ALTER TABLE events.tr_spam_evt_smtp RENAME TO n_spam_evt_smtp;
 ALTER TABLE events.tr_spam_evt RENAME TO n_spam_evt;
 ALTER TABLE events.tr_spam_smtp_rbl_evt RENAME TO n_spam_smtp_rbl_evt;
+
+DROP INDEX tr_spam_evt_smtp_ts_idx;
+DROP INDEX tr_spam_evt_ts_idx;
+DROP INDEX tr_spam_evt_mid_idx;
+DROP INDEX tr_spam_evt_smtp_mid_idx;
+DROP INDEX tr_spam_smtp_rbl_evt_ts_idx;
+
+CREATE INDEX n_spam_evt_smtp_ts_idx
+    ON events.n_spam_evt_smtp (time_stamp);
+CREATE INDEX n_spam_evt_ts_idx
+    ON events.n_spam_evt (time_stamp);
+CREATE INDEX n_spam_evt_mid_idx
+    ON events.n_spam_evt (msg_id);
+CREATE INDEX n_spam_evt_smtp_mid_idx
+    ON events.n_spam_evt_smtp (msg_id);
+CREATE INDEX n_spam_smtp_rbl_evt_ts_idx
+    ON events.n_spam_smtp_rbl_evt (time_stamp);
