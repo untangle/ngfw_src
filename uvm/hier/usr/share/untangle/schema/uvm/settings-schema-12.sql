@@ -1,6 +1,6 @@
 -- settings schema for release-5.0
 -- $HeadURL$
--- Copyright (c) 2003-2007 Untangle, Inc. 
+-- Copyright (c) 2003-2007 Untangle, Inc.
 --
 -- This program is free software; you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License, version 2,
@@ -579,40 +579,6 @@ ALTER TABLE settings.node_persistent_state
 ALTER TABLE settings.u_ipmaddr_dir_entries
     ADD CONSTRAINT fk_ipmaddr_dir_entries
     FOREIGN KEY (ipmaddr_dir_id) REFERENCES settings.u_ipmaddr_dir;
-
--- Network spaces
-
--- ALTER TABLE u_ip_network
---       ADD CONSTRAINT fk_uvm_ip_network_space
---       FOREIGN KEY (space_id) REFERENCES u_network_space;
-
--- ALTER TABLE u_network_intf
---       ADD CONSTRAINT fk_uvm_intf_network_settings
---       FOREIGN KEY (settings_id) REFERENCES u_network_settings;
-
--- ALTER TABLE u_network_intf
---       ADD CONSTRAINT fk_uvm_intf_network_space
---       FOREIGN KEY (network_space) REFERENCES u_network_space;
-
--- ALTER TABLE u_network_route
---       ADD CONSTRAINT fk_uvm_route_network_settings
---       FOREIGN KEY (settings_id) REFERENCES network_settings;
-
--- ALTER TABLE u_network_route
---       ADD CONSTRAINT fk_uvm_route_network_space
---       FOREIGN KEY (network_space) REFERENCES u_network_space;
-
--- ALTER TABLE u_network_space
---       ADD CONSTRAINT fk_uvm_space_network_settings
---       FOREIGN KEY (settings_id) REFERENCES network_settings;
-
--- ALTER TABLE u_redirects
---       ADD CONSTRAINT fk_uvm_redirect_network_settings
---       FOREIGN KEY (setting_id) REFERENCES network_settings;
-
--- ALTER TABLE u_redirects
---       ADD CONSTRAINT fk_uvm_redirect_redirect
---       FOREIGN KEY (rule_id) REFERENCES redirect_rule;
 
 -- -- Services settings
 ALTER TABLE u_dhcp_lease_list

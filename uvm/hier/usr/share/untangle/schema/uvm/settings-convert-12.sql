@@ -1,6 +1,6 @@
 -- settings conversion for release-5.0
 -- $HeadURL$
--- Copyright (c) 2003-2007 Untangle, Inc. 
+-- Copyright (c) 2003-2007 Untangle, Inc.
 --
 -- This program is free software; you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License, version 2,
@@ -68,6 +68,9 @@ ALTER TABLE settings.portal_settings RENAME TO n_portal_settings;
 ALTER TABLE settings.mvvm_pppoe_connection RENAME TO u_pppoe_connection;
 ALTER TABLE settings.mvvm_pppoe RENAME TO u_pppoe;
 ALTER TABLE settings.mvvm_wmi_settings RENAME TO u_wmi_settings;
+
+DROP INDEX settings.idx_string_rule;
+CREATE INDEX u_idx_string_rule ON settings.u_string_rule (string);
 
 UPDATE settings.u_node_persistent_state SET name = 'webfilter-node' WHERE name = 'httpblocker-transform';
 UPDATE settings.u_node_persistent_state SET name = 'openvpn-node' WHERE name = 'openvpn-transform';
