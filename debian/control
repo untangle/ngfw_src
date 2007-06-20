@@ -245,7 +245,7 @@ Description: Web Filter
 
 Package: untangle-node-clam
 Architecture: any
-Depends: untangle-vm, untangle-virus-base, untangle-clamav-config, untangle-casing-http, untangle-casing-ftp, untangle-casing-mail
+Depends: untangle-vm, untangle-base-virus, untangle-clamav-config, untangle-casing-http, untangle-casing-ftp, untangle-casing-mail
 XB-Display-Name: Virus Blocker
 XB-Untangle-Type: node
 XB-Untangle-Jar-Prefix: untangle-node-clam
