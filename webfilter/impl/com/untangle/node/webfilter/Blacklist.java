@@ -54,7 +54,7 @@ class Blacklist
     private static final URL BLACKLIST_HOME;
     static {
         try {
-            BLACKLIST_HOME = new URL("http://tweek/diffserver");
+            BLACKLIST_HOME = new URL("http://webupdates.untangle.com/diffserver");
         } catch (MalformedURLException exn) {
             throw new RuntimeException(exn);
         }
