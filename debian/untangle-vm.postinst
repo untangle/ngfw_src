@@ -1,96 +1,24 @@
 #! /bin/sh
 
-MVVM_LOGDIR="/var/log/mvvm"
-MVVM_CACHEDIR="/var/lib/mvvm"
-NAT_CACHE_DEST="${MVVM_CACHEDIR}/nat-transform.deb"
-
-APT_CACHE_DIR="/var/cache/apt/archives"
+UVM_LOGDIR="/var/log/uvm"
+UVM_CACHEDIR="/var/lib/uvm"
 
 USER=root
 GROUP=adm
 
-# fix sources.list
-sed -i -e 's/\([^:]\)metavize/\1untangle/g' /etc/apt/sources.list
-
-# modify limit to support many file descriptors
-LIMITS_FILE=/etc/security/limits.conf
-LIMITS_LINE="${USER}    soft    nofile  128000"
-LIMITS_LINE2="${USER}   hard    nofile  128000"
-
-if [ -z "`grep ${USER} ${LIMITS_FILE}`" ] ; then
-    echo ${LIMITS_LINE} >> ${LIMITS_FILE}
-    echo ${LIMITS_LINE2} >> ${LIMITS_FILE}
-else
-    sed -i -e "s|^${USER}.*soft.*|${LIMITS_LINE}|g" ${LIMITS_FILE}
-    sed -i -e "s|^${USER}.*hard.*|${LIMITS_LINE2}|g" ${LIMITS_FILE}
-fi
-
-# tell PAM (login and su) to read the limits file
-LOGIN_LINE="session    required   pam_limits.so"
-
-LOGIN_FILE=/etc/pam.d/login
-if [ -z "`grep pam_limits.so ${LOGIN_FILE}`" ] ; then
-    echo ${LOGIN_LINE} >> ${LOGIN_FILE}
-else
-    sed -i -e "s|^.*pam_limits.so.*|${LOGIN_LINE}|g" ${LOGIN_FILE}
-fi
-
-LOGIN_FILE=/etc/pam.d/su
-if [ -z "`grep pam_limits.so ${LOGIN_FILE}`" ] ; then
-    echo ${LOGIN_LINE} >> ${LOGIN_FILE}
-else
-    sed -i -e "s|^.*pam_limits.so.*|${LOGIN_LINE}|g" ${LOGIN_FILE}
-fi
-
-# Have cron.daily run earlier in the day, at a random time between 1:00 and 2:00
-CRONTAB_FILE=/etc/crontab
-if [ -f "${CRONTAB_FILE}" ] ; then
-    let "ranmin = $RANDOM % 60"
-    grep -sq "^25 6" ${CRONTAB_FILE} && sed -i -e "s|^25 6|${ranmin} 1|" ${CRONTAB_FILE}
-fi
-
-# Extract the activation key if we were installed by a version older than 3.1
-if [ ! -f /usr/share/metavize/activation.key ]; then
-    grep -sq "release.*\.untangle\.com" /etc/apt/sources.list && grep "release.*\.untangle\.com" /etc/apt/sources.list | sed -e "s|^.*http://||" -e "s|:.*||" > /usr/share/metavize/activation.key
-fi
-
-# Fix up older production boxes
-if [ -d /usr/sbin/mv ]; then
-    sed -i -e "s|FSCKFIX=.*|FSCKFIX=yes|" /etc/default/rcS
-    sed -i -e "s|errors=remount-ro|errors=panic|" /etc/fstab
-    grep -sq panic= /boot/grub/menu.lst || sed -i -e "s|nodhcp|nodhcp panic=5|" /boot/grub/menu.lst
-fi
-
-# Fix up boxes so they don't fsck after 6 months.  Now only limit is 32 reboots.
-rootdev=`cat /etc/mtab | grep " / " | awk '{print $1}'`
-tune2fs -i 0 $rootdev
-
-# Be very careful with this one.
-CHECKROOTSH=/etc/init.d/checkroot.sh
-SYSVINITVER=
-SYSVINITPKG="`dpkg --get-selections sysvinit | egrep 'install$' | awk '{print $1}'`"
-if [ ! -z "$SYSVINITPKG" ] ; then
-    SYSVINITVER=`dpkg-query -W "$SYSVINITPKG" | awk '{ if ($2) print $2; }'`
-    if [ "2:2.84-188" = "$SYSVINITVER" ] ; then
-        grep -sq -e '-gt 1' $CHECKROOTSH && sed -i -e 's|-gt 1|-gt 3|' -e 's|reboot -f|reboot -f\n    elif [ $? -ge 2 ]\n    then\n      reboot -f|' $CHECKROOTSH
-    fi
-fi
-
-
 # right permissions for all those dirs
-/bin/chown -R $USER:$GROUP ${MVVM_LOGDIR} ${MVVM_CACHEDIR}
-/bin/chmod 775 ${MVVM_LOGDIR} ${MVVM_CACHEDIR}
+/bin/chown -R $USER:$GROUP ${UVM_LOGDIR} ${UVM_CACHEDIR}
+/bin/chmod 775 ${UVM_LOGDIR} ${UVM_CACHEDIR}
 
-/usr/share/untangle/bin/update-schema mvvm
-echo "UPDATE transform_persistent_state SET name = 'http-casing' WHERE name = 'http-transform';" | psql -X -U postgres mvvm
+/usr/share/untangle/bin/update-schema uvm
 
-# start mvvm
-if [ -x "/etc/init.d/mvvm" ]; then
-    update-rc.d mvvm defaults 50 > /dev/null
+# start uvm
+if [ -x "/etc/init.d/untangle-vm" ]; then
+    update-rc.d uvm defaults 50 > /dev/null
 fi
 
 ## Touch all of the webstart files so the client always loads the new version
-find /usr/share/metavize/web/webstart 2>/dev/null | xargs touch > /dev/null 2>&1
+find /usr/share/untangle/web/webstart 2>/dev/null | xargs touch > /dev/null 2>&1
 
 # delete old files
 rm -f /etc/default/bunnicula
