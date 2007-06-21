@@ -176,7 +176,7 @@ Description: Spyware Blocker
 
 Package: untangle-node-webfilter
 Architecture: any
-Depends: untangle-vm, untangle-casing-http, untangle-urlblacklist
+Depends: untangle-vm, untangle-casing-http
 XB-Display-Name: Web Filter
 XB-Untangle-Type: node
 XB-Untangle-Jar-Prefix: untangle-node-webfilter
