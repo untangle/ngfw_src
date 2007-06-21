@@ -20,9 +20,8 @@ fi
 ## Touch all of the webstart files so the client always loads the new version
 find /usr/share/untangle/web/webstart 2>/dev/null | xargs touch > /dev/null 2>&1
 
-# delete old files
-rm -f /etc/default/bunnicula
-
 # FIXME: uncomment the next line when metavize -> untangle is in effect
 # (the conversion happens in preinst)
 # rm -fr /usr/share/metavize
+
+exit 0
