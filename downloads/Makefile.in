@@ -98,10 +98,7 @@ endif
 ## then that will override the build target in child directories, make
 ## always builds with the first rule, so this will default to make
 ## build
-default: 
-	@echo $(src_roota)
-	@echo $(src_root)
-	exit
+default: all
 
 # The funny ${<:.c=.o} insures that the object is stored in the same
 # directory as the .c file.
