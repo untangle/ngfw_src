@@ -27,7 +27,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.LocalUvmContext;
-import com.untangle.uvm.addrbook.AddressBook;
+import com.untangle.uvm.addrbook.RemoteAddressBook;
 import com.untangle.uvm.addrbook.UserEntry;
 import com.untangle.node.mail.papi.quarantine.BadTokenException;
 import com.untangle.node.mail.papi.quarantine.InboxIndex;
@@ -102,7 +102,7 @@ public abstract class MaintenenceControlerBase extends HttpServlet {
                 Principal pl = req.getUserPrincipal();
                 if (null != pl) {
                     LocalUvmContext mctx = LocalUvmContextFactory.context();
-                    AddressBook ab = mctx.appAddressBook();
+                    RemoteAddressBook ab = mctx.appAddressBook();
                     String user = mctx.portalManager().getUid(pl);
                     if (user != null) {
                         UserEntry ue = ab.getEntry(user);
