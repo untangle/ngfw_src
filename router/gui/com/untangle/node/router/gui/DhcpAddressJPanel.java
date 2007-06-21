@@ -69,7 +69,7 @@ public class DhcpAddressJPanel extends MEditTableJPanel{
 
         private final int C8_MW = Util.chooseMax(T_TW - (C0_MW + C2_MW + C3_MW + C4_MW + C5_MW + C6_MW + C7_MW), 120); /* description */
 
-
+        protected boolean getSortable(){ return false; }
 
 
         public TableColumnModel getTableColumnModel(){
