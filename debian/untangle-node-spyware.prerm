@@ -1,3 +1,5 @@
 #! /bin/sh
 
-/usr/bin/ucli -t 30 unregister untangle-node-spyware 2>/dev/null || true
+/usr/bin/mcli -t 30 unregister untangle-node-spyware 2>/dev/null || true
+
+exit 0
