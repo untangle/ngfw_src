@@ -23,5 +23,5 @@ mail = BuildEnv::SRC['untangle-casing-mail']
 jt = [mail['localapi']]
 
 ServletBuilder.new(mail, 'com.untangle.node.mail.quarantine.jsp',
-                   "#{SRC_HOME}/tran/mail-casing/servlets/quarantine", [], jt)
+                   "#{SRC_HOME}/mail-casing/servlets/quarantine", [], jt)
 
