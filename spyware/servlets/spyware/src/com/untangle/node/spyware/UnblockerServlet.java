@@ -30,7 +30,6 @@ import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.security.Tid;
 import com.untangle.uvm.node.LocalNodeManager;
 import com.untangle.uvm.node.NodeContext;
-import com.untangle.uvm.node.NodeManager;
 
 public class UnblockerServlet extends HttpServlet
 {
