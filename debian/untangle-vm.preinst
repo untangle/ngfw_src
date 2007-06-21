@@ -17,6 +17,7 @@ if [ -d $oldShare ] ; then
   tar -C $newShare -xf $tmpBackup
   mv $tmpBackup $finalBackup
   gzip -9 $finalBackup
+  rm -fr $oldShare
 fi
 
 # Kill any already-running reports (Bug 1249)
