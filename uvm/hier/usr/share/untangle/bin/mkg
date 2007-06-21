@@ -1,14 +1,4 @@
 #!/bin/sh
-#
-# Copyright (c) 2003-2007 Untangle, Inc.
-# All rights reserved.
-#
-# This software is the confidential and proprietary information of
-# Untangle, Inc. ("Confidential Information"). You shall
-# not disclose such Confidential Information.
-#
-# $Id: mkg,v 1.12 2005/03/23 06:06:18 amread Exp $
-#
 
 exec 2>&1
 

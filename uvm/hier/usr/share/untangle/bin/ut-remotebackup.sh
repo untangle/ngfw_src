@@ -1,17 +1,5 @@
 #!/bin/sh
 
-####################################################################
-# Copyright (c) 2003-2007 Untangle, Inc.
-# All rights reserved.
-#
-# This software is the confidential and proprietary information of
-# Untangle, Inc. ("Confidential Information"). You shall
-# not disclose such Confidential Information.
-#
-#  $Id$
-#
-####################################################################
-
 #=============================================================
 # This application creates a backup of the system, then
 # sends it to the given URL.  The intention is to post to

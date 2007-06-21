@@ -1,17 +1,5 @@
 #!/bin/sh
 
-####################################################################
-# Copyright (c) 2003-2007 Untangle, Inc.
-# All rights reserved.
-#
-# This software is the confidential and proprietary information of
-# Untangle, Inc. ("Confidential Information"). You shall
-# not disclose such Confidential Information.
-#
-#  $Id$
-#
-####################################################################
-
 #=============================================================
 # Script which takes the output of "ut-backup-bundled" and
 # restores it to a system.  This is a wrapper around "untangle-restore"

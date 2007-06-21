@@ -1,17 +1,5 @@
 #!/bin/sh
 
-####################################################################
-# Copyright (c) 2003-2007 Untangle, Inc.
-# All rights reserved.
-#
-# This software is the confidential and proprietary information of
-# Untangle, Inc. ("Confidential Information"). You shall
-# not disclose such Confidential Information.
-#
-#  $Id$
-#
-####################################################################
-
 #=============================================================
 # Little script which creates a backup of the system (like
 # "backup-ut") then creates a single tar.gz file of the results.
