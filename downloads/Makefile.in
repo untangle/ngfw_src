@@ -16,8 +16,9 @@ source_path=src
 dir_target=ensure_dir_target
 
 ## Location of the build directory
-src_root     = $(dir $(word $(words $(MAKEFILE_LIST)),$(MAKEFILE_LIST)))../
-src_root    := $(shell mkdir -p $(src_root)/ &> /dev/null && cd $(src_root)/ &> /dev/null && pwd)
+src_root    = $(dir $(word $(words $(MAKEFILE_LIST)),$(MAKEFILE_LIST)))../
+src_root    := $(shell mkdir -p $(src_root)/ 1> /dev/null 2>&1 && cd $(src_root)/ 1> /dev/null 2>&1 && pwd)
+
 # build_dist     ?= /tmp/jdimv
 build_dist     ?= $(src_root)/output
 build_prefix   ?= $(build_dist)
@@ -97,7 +98,10 @@ endif
 ## then that will override the build target in child directories, make
 ## always builds with the first rule, so this will default to make
 ## build
-default: all
+default: 
+	@echo $(src_roota)
+	@echo $(src_root)
+	exit
 
 # The funny ${<:.c=.o} insures that the object is stored in the same
 # directory as the .c file.
