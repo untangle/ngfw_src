@@ -291,15 +291,15 @@ public class NetworkConnectivityTestJDialog extends javax.swing.JDialog implemen
                     result = "Success! Internet and DNS are both working.";
                 }
                 else{
-                    result = "Warning! DNS succeeded, but connectivity failed.";
+                    result = "Warning! DNS succeeded, but internet failed.";
                 }
             }
             else{
                 if( status.isTcpWorking() ){
-                    result = "Warning! Connectivity succeeded, but DNS failed.";
+                    result = "Warning! Internet succeeded, but DNS failed.";
                 }
                 else{
-                    result = "Warning! Connectivity and DNS failed.";
+                    result = "Warning! Internet and DNS failed.";
                 }
             }
 
