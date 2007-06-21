@@ -56,7 +56,7 @@ public class InstallLicenseJPanel extends MWizardPageJPanel implements Adjustmen
         verticalScrollBar.addAdjustmentListener(this);
 
         try{
-            InputStream licenseInputStream = getClass().getClassLoader().getResourceAsStream("License.txt");
+            InputStream licenseInputStream = getClass().getClassLoader().getResourceAsStream("LicenseStandard.txt");
             InputStreamReader licenseInputStreamReader = new InputStreamReader(licenseInputStream);
             BufferedReader licenseBufferedReader = new BufferedReader(licenseInputStreamReader);
             StringBuilder licenseStringBuilder = new StringBuilder();
