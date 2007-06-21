@@ -264,7 +264,7 @@ public class NetworkConnectivityTestJDialog extends javax.swing.JDialog implemen
                 SwingUtilities.invokeLater( new Runnable(){ public void run(){
                     NetworkConnectivityTestJDialog.this.jProgressBar.setIndeterminate(false);
                     NetworkConnectivityTestJDialog.this.jProgressBar.setValue(0);
-                    NetworkConnectivityTestJDialog.this.jProgressBar.setString("Warning!  Test incomplete for an unknown reason.");
+                    NetworkConnectivityTestJDialog.this.jProgressBar.setString("Warning! Test failed for an unknown reason.");
                 }});
                 return;
             }
@@ -288,18 +288,18 @@ public class NetworkConnectivityTestJDialog extends javax.swing.JDialog implemen
             final String result;
             if( status.isDnsWorking() ){
                 if( status.isTcpWorking() ){
-                    result = "Success!  Internet and DNS are both working.";
+                    result = "Success! Internet and DNS are both working.";
                 }
                 else{
-                    result = "Warning!  DNS was contacted, but the Internet cannot be contacted.";
+                    result = "Warning! DNS succeeded, but connectivity failed.";
                 }
             }
             else{
                 if( status.isTcpWorking() ){
-                    result = "Warning!  The Internet was contacted, but DNS cannot be contacted.";
+                    result = "Warning! Connectivity succeeded, but DNS failed.";
                 }
                 else{
-                    result = "Warning!  The Internet and DNS cannot be contacted.";
+                    result = "Warning! Connectivity and DNS failed.";
                 }
             }
 
