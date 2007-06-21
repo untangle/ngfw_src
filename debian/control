@@ -972,7 +972,7 @@ Description: Spam Blocker Base
 
 Package: untangle-client
 Architecture: any
-Depends: untangle-client-windows-jre
+Depends: untangle-client-windows-jre, sun-java5-jre
 Provides: metavize-client
 Conflicts: metavize-client (<< 4.1)
 Replaces: metavize-client (<< 4.1)
