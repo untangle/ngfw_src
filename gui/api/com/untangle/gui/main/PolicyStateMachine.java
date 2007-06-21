@@ -916,8 +916,9 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                                                          false);
                 //// AUTO-INSTALL INTO RACK
                 for( MackageDesc newMackageDesc : newMackageDescs ){
-                    if( isMackageStoreItem(newMackageDesc) || !isMackageVisible(newMackageDesc) )
+                    if( !isMackageNode(newMackageDesc) && !isMackageCasing(newMackageDesc)) {
                         continue;
+                    }
                     try{
                         Policy newPolicy = null;
                         if( !newMackageDesc.isCore() )
@@ -1875,6 +1876,20 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
         else
             return false;
     }
+
+    private boolean isMackageTrial(MackageDesc mackageDesc){
+        return mackageDesc.getType().equals( MackageDesc.Type.TRIAL );
+    }
+
+    private boolean isMackageNode(MackageDesc mackageDesc){
+        return mackageDesc.getType().equals( MackageDesc.Type.NODE );
+    }
+
+    private boolean isMackageCasing(MackageDesc mackageDesc){
+        return mackageDesc.getType().equals( MackageDesc.Type.CASING );
+    }
+
+
     private class PolicyRenderer implements ListCellRenderer{
         private ListCellRenderer listCellRenderer;
         public PolicyRenderer(ListCellRenderer listCellRenderer){
