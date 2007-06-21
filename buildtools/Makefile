@@ -32,7 +32,7 @@ pkg: checkroot
 	dpkg-parsechangelog | awk '/Version: / { print $$2 }' >| debian/version
 	# FIXME: sign packages when we move to apt 0.6
 	# FIXME: don't clean before building !!!
-	/usr/bin/debuild -i -us -uc
+	/usr/bin/debuild -e HADES_KEYSTORE -e HADES_KEY_ALIAS -e HADES_KEY_PASS -i -us -uc
 	svn revert debian/changelog
 
 release: checkroot
