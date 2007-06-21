@@ -85,9 +85,9 @@ class UvmClassLoader extends URLClassLoader
     {
         String bunniculaLib = System.getProperty("bunnicula.lib.dir");
 
-        return addFile(bunniculaLib + "/untangle-rupvm-impl/")
-            || addFile(bunniculaLib + "/untangle-rupvm-api/")
-            || addFile(bunniculaLib + "/untangle-rupvm-localapi/");
+        return addFile(bunniculaLib + "/untangle-professional-core-impl/")
+            && addFile(bunniculaLib + "/untangle-professional-core-api/")
+            && addFile(bunniculaLib + "/untangle-professional-core-localapi/");
     }
 
     // private methods --------------------------------------------------------
