@@ -732,7 +732,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                     SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
                         target.setProcuringView();
                     }});
-                    purchaseBlockingQueue.put(new PurchaseWrapper(mNodeJButton, purchasePolicy));
+                    purchaseBlockingQueue.put(new PurchaseWrapper(mNodeJButton, purchasePolicy, mackageDesc));
                 }
                 catch (Exception e) {
                     e.printStackTrace();
@@ -744,14 +744,17 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
     }
 
     private class PurchaseWrapper {
-        private MNodeJButton mNodeJButton;
-        private Policy selectedPolicy;
-        public PurchaseWrapper(MNodeJButton mNodeJButton, Policy selectedPolicy){
+        private final MNodeJButton mNodeJButton;
+        private final Policy selectedPolicy;
+        private final MackageDesc mackageDesc;
+        public PurchaseWrapper(MNodeJButton mNodeJButton, Policy selectedPolicy, MackageDesc mackageDesc){
             this.mNodeJButton = mNodeJButton;
             this.selectedPolicy = selectedPolicy;
+            this.mackageDesc = mackageDesc;
         }
         public MNodeJButton getMNodeJButton(){ return mNodeJButton; }
         public Policy getPolicy(){ return selectedPolicy; }
+        public MackageDesc getMackageDesc() { return mackageDesc; }
     }
     /*
       public void moveFromStoreToToolbox(final MNodeJButton mNodeJButton){
@@ -783,20 +786,23 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
             while(!stop){
                 MNodeJButton purchasedMNodeJButton;
                 try{
-                    PurchaseWrapper purchaseWrapper = purchaseBlockingQueue.take();
-                    purchase(purchaseWrapper.getMNodeJButton(), purchaseWrapper.getPolicy());
+                    purchase(purchaseBlockingQueue.take());
                 }
                 catch(InterruptedException e){ continue; }
             }
             Util.printMessage("MoveFromStoreToToolboxThread Stopped");
         }
-        private void purchase(MNodeJButton mNodeJButton, final Policy targetPolicy) throws InterruptedException {
+        private void purchase(PurchaseWrapper wrapper) throws InterruptedException {
+            MNodeJButton mNodeJButton = wrapper.getMNodeJButton();
+            final Policy targetPolicy = wrapper.getPolicy();
+            final MackageDesc requestedMackageDesc = wrapper.getMackageDesc();
+            final String installName = requestedMackageDesc.getName();
             try{
                 //// MAKE SURE NOT PREVIOUSLY INSTALLED AS PART OF A BUNDLE
                 MackageDesc[] originalUninstalledMackages = Util.getRemoteToolboxManager().uninstalled();
                 boolean installed = true;
                 for( MackageDesc mackageDesc : originalUninstalledMackages ){
-                    if(mNodeJButton.getName().equals(mackageDesc.getName())){
+                    if(installName.equals(mackageDesc.getName())){
                         installed = false;
                         break;
                     }
@@ -829,7 +835,6 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
 
                 //// DOWNLOAD FROM SERVER
                 MackageDesc[] originalInstalledMackages = Util.getRemoteToolboxManager().installed(); // for use later
-                String installName = mNodeJButton.getName();
 
                 long key = Util.getRemoteToolboxManager().install(installName);
                 com.untangle.gui.util.Visitor visitor = new com.untangle.gui.util.Visitor(mNodeJButton);
