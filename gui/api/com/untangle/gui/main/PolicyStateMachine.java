@@ -890,7 +890,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                 // ADD TO TOOLBOX
                 Policy currentPolicy = (Policy) viewSelector.getSelectedItem();
                 for( MackageDesc newMackageDesc : newMackageDescs ){
-                    if( !isMackageStoreItem(newMackageDesc) && isMackageVisible(newMackageDesc) ){
+                    if( isMackageNode(newMackageDesc)){
                         MNodeJButton newMNodeJButton = null;
                         if( newMackageDesc.isUtil() || newMackageDesc.isService()){
                             newMNodeJButton = addToToolbox(null,newMackageDesc,false,false);
@@ -916,7 +916,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                                                          false);
                 //// AUTO-INSTALL INTO RACK
                 for( MackageDesc newMackageDesc : newMackageDescs ){
-                    if( !isMackageNode(newMackageDesc) && !isMackageCasing(newMackageDesc)) {
+                    if( !isMackageNode(newMackageDesc)) {
                         continue;
                     }
                     try{
