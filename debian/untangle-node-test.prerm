@@ -1,4 +1,5 @@
 #! /bin/sh
+# This file automatically created - do not modify
 
 /usr/bin/mcli -t 30 unregister untangle-node-test 2>/dev/null || true
 

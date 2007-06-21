@@ -1,3 +1,6 @@
 #! /bin/sh
+# This file automatically created - do not modify
 
 /usr/bin/mcli -t 30 unregister untangle-casing-ftp 2>/dev/null || true
+
+exit 0

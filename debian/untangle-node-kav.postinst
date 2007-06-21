@@ -1,7 +1,9 @@
 #! /bin/sh
+# This file automatically created - do not modify
 
 /usr/bin/mcli -t 30 register untangle-node-kav 2>/dev/null || true
 
+# touch so the java client will know there is a newer version and throw out cache
 /bin/touch /usr/share/untangle/web/webstart/kav-node-client.mar > /dev/null 2>&1 
 
 exit 0
