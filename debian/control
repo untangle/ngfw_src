@@ -36,9 +36,6 @@ Description: The Untangle Web Decoder
 
 Package: untangle-casing-mail
 Architecture: any
-Conflicts: untangle-node-email
-Replaces: untangle-node-email
-Provides: untangle-node-email
 Depends: untangle-vm
 XB-Display-Name: Email
 XB-Untangle-Type: casing
@@ -1022,6 +1019,8 @@ Description: Untangle Server Thirdparty Libraries
 Package: untangle-vm
 Architecture: any
 Depends: untangle-client-windows-jre, untangle-libuvmcore, libuvm-thirdparty, sudo, untangle-iptables (>= 1.3.3), libxml2, ddclient, untangle-libnfnetlink0, untangle-libnetfilter-queue0, db4.2-util, untangle-ujac2pdf, at, ebtables, mime-support, untangle-nsis-addons, dnsmasq, pppoe, bridge-utils, libsysfs1, iputils-ping, curl
+Conflicts: mvvm
+Replaces: mvvm
 XB-Display-Name: Untangle Server
 XB-Untangle-Type: library
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
