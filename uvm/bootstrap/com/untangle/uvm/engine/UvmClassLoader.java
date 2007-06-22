@@ -73,9 +73,7 @@ class UvmClassLoader extends URLClassLoader
         boolean changed = false;
 
         for (File f : toolboxDir.listFiles()) {
-            if (addFile(f)) {
-                changed = true;
-            }
+            changed |= addFile(f);
         }
 
         return changed;
@@ -85,9 +83,13 @@ class UvmClassLoader extends URLClassLoader
     {
         String bunniculaLib = System.getProperty("bunnicula.lib.dir");
 
-        return addFile(bunniculaLib + "/untangle-professional-core-impl/")
-            && addFile(bunniculaLib + "/untangle-professional-core-api/")
-            && addFile(bunniculaLib + "/untangle-professional-core-localapi/");
+        boolean r = false;
+
+        r |= r addFile(bunniculaLib + "/untangle-professional-core-impl/");
+        r |= r addFile(bunniculaLib + "/untangle-professional-core-api/");
+        r |= r addFile(bunniculaLib + "/untangle-professional-core-localapi/");
+
+        return r;
     }
 
     // private methods --------------------------------------------------------
@@ -113,6 +115,7 @@ class UvmClassLoader extends URLClassLoader
     {
         File f = new File(fn);
         if (f.exists()) {
+            logger.info("adding file to classloader: " + fn);
             return addFile(f);
         } else {
             return false;
