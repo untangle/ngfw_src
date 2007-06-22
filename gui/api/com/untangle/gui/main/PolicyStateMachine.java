@@ -1677,7 +1677,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
         else
             mNodeJButton.setDeployableView();
         SwingUtilities.invokeLater( new Runnable(){ public void run(){
-            if( mackageDesc.isUtil() || mackageDesc.isService() ){
+            if( isMackageNode(mackageDesc)){
                 // UPDATE GUI DATA MODEL
                 MNodeJButton removeMNodeJButton = utilToolboxMap.remove(buttonKey); // to remove possible trial
                 utilToolboxMap.put(buttonKey,mNodeJButton);
