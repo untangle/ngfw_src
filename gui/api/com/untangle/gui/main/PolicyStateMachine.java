@@ -1337,7 +1337,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
         final float overallFinal = (float) (installedMackageMap.size() * (policyTidMap.size()+2)); // +1 for cores, +1 for util&serv
         // NODES
         for( MackageDesc mackageDesc : installedMackageMap.values() ){
-            if( isMackageNode(mackageDesc)){
+            if( isMackageNode(mackageDesc) && mackageDesc.isCore()){
                 boolean isDeployed = nonPolicyNameMap.containsKey(mackageDesc.getName());
                 addToToolbox(null,mackageDesc,isDeployed,false);
             }
@@ -1355,24 +1355,12 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
             policyToolboxJPanelMap.put(policy, toolboxJPanel);
             policyToolboxMap.put(policy, new TreeMap<ButtonKey,MNodeJButton>());
             for( MackageDesc mackageDesc : installedMackageMap.values() ){
-                if( mackageDesc.isSecurity() ){
+                if( isMackageNode( mackageDesc ) && mackageDesc.isSecurity() ){
                     boolean isDeployed = policyNameMap.get(policy).containsKey(mackageDesc.getName());
                     addToToolbox(policy,mackageDesc,isDeployed,false);
                 }
                 progress++;
             }
-            final float progressFinal = (float) progress;
-            SwingUtilities.invokeLater( new Runnable(){ public void run(){
-                progressBar.setValue(64 + (int) (32f*progressFinal/overallFinal) );
-            }});
-        }
-        // CORE
-        for( MackageDesc mackageDesc : installedMackageMap.values() ){
-            if( mackageDesc.isCore() ){
-                boolean isDeployed = nonPolicyNameMap.containsKey(mackageDesc.getName());
-                addToToolbox(null,mackageDesc,isDeployed,false);
-            }
-            progress++;
             final float progressFinal = (float) progress;
             SwingUtilities.invokeLater( new Runnable(){ public void run(){
                 progressBar.setValue(64 + (int) (32f*progressFinal/overallFinal) );
@@ -1670,6 +1658,9 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
             return null;
         else if( isMackageStoreItem(mackageDesc) )
             return null;
+        else if ( !isMackageNode(mackageDesc))
+            return null;
+
         final ButtonKey buttonKey = new ButtonKey(mackageDesc);
         final MNodeJButton mNodeJButton = new MNodeJButton(mackageDesc);
         if( isDeployed )
@@ -1677,20 +1668,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
         else
             mNodeJButton.setDeployableView();
         SwingUtilities.invokeLater( new Runnable(){ public void run(){
-            if( isMackageNode(mackageDesc)){
-                // UPDATE GUI DATA MODEL
-                MNodeJButton removeMNodeJButton = utilToolboxMap.remove(buttonKey); // to remove possible trial
-                utilToolboxMap.put(buttonKey,mNodeJButton);
-                mNodeJButton.addActionListener( new ToolboxActionListener(null,mNodeJButton) );
-                // UPDATE GUI VIEW MODEL
-                int position = ((TreeMap)utilToolboxMap).headMap(buttonKey).size();
-                if(removeMNodeJButton!=null)
-                    coreToolboxJPanel.remove(removeMNodeJButton);
-                utilToolboxJPanel.add(mNodeJButton, buttonGridBagConstraints, position);
-                if(doRevalidate)
-                    utilToolboxJPanel.revalidate();
-            }
-            else if(mackageDesc.isSecurity()){
+            if(mackageDesc.isSecurity()){
                 // UPDATE GUI DATA MODEL
                 Map<ButtonKey,MNodeJButton> toolboxMap = policyToolboxMap.get(policy);
                 MNodeJButton removeMNodeJButton = toolboxMap.remove(buttonKey); // to remove possible trial
