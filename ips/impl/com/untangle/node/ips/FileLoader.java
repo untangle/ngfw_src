@@ -30,7 +30,7 @@ import org.apache.log4j.Logger;
 
 
 class FileLoader {
-    public static final String SNORT_RULES_HOME = "/usr/share/untangle-snort-rules/rules";
+    public static final String SNORT_RULES_HOME = "/usr/share/untangle-snort-rules";
 
     public static final String[] IGNORED_RULE_FILES = {
         "deleted.rules", "experimental.rules",
