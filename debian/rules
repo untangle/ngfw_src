@@ -15,8 +15,6 @@ export DH_COMPAT=4
 PACKAGES := $(shell dh_listpackages)
 UVM_DESTDIR := $(CURDIR)/debian/untangle-vm
 
-TMP_NAT_DEB := /tmp/nat-transform.deb
-
 ifneq (,$(findstring debug,$(DEB_BUILD_OPTIONS)))
 	CFLAGS += -g
 endif
@@ -106,7 +104,7 @@ binary-arch: install
 	# FIXME: oh, nastiness (not as nasty as Dirk's rebuildmvvm.sh, but that ain't saying much heh)
 	@cp -f ../untangle-node-router_*`cat debian/version`*deb $(UVM_DESTDIR)/var/lib/uvm/untangle-node-router.deb
 	@dh_md5sums
-	@dh_builddeb -p mvvm --destdir=../ 2>&1 | egrep -v "(user-defined|ignoring)"
+	@dh_builddeb -p untangle-vm --destdir=../ 2>&1 | egrep -v "(user-defined|ignoring)"
 
 binary-indep: install
 # nothing to do
