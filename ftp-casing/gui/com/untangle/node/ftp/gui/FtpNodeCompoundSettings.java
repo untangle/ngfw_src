@@ -42,11 +42,11 @@ public class FtpNodeCompoundSettings implements CompoundSettings {
 
     public void refresh() throws Exception {
         if(ftpNode == null)
-            ftpNode = (FtpNode) Util.getNode("ftp-casing");
+            ftpNode = (FtpNode) Util.getNode("untangle-casing-ftp");
         ftpNodeSettings = (FtpSettings) ftpNode.getFtpSettings();
 
         if(generalSettingsComponent == null)
-            generalSettingsComponent = Util.getSettingsComponent("com.untangle.node.ftp.gui.MCasingJPanel", "ftp-casing");
+            generalSettingsComponent = Util.getSettingsComponent("com.untangle.node.ftp.gui.MCasingJPanel", "untangle-casing-ftp");
     }
 
     public void validate() throws Exception {

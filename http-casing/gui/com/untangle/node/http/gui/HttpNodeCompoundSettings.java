@@ -43,11 +43,11 @@ public class HttpNodeCompoundSettings implements CompoundSettings {
 
     public void refresh() throws Exception {
         if(httpNode == null)
-            httpNode = (HttpNode) Util.getNode("http-casing");
+            httpNode = (HttpNode) Util.getNode("untangle-casing-http");
         httpNodeSettings = (HttpSettings) ((Node)httpNode).getSettings();
 
         if(generalSettingsComponent == null)
-            generalSettingsComponent = Util.getSettingsComponent("com.untangle.node.http.gui.MCasingJPanel", "http-casing");
+            generalSettingsComponent = Util.getSettingsComponent("com.untangle.node.http.gui.MCasingJPanel", "untangle-casing-http");
     }
 
     public void validate() throws Exception {

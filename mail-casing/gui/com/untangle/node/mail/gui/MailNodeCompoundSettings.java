@@ -129,7 +129,7 @@ public class MailNodeCompoundSettings implements CompoundSettings {
 
     public void refresh() throws Exception {
         if(mailNode == null)
-            mailNode = (MailNode) Util.getNode("mail-casing");
+            mailNode = (MailNode) Util.getNode("untangle-casing-mail");
         mailNodeSettings = mailNode.getMailNodeSettings();
         quarantineSettings = mailNodeSettings.getQuarantineSettings();
 
@@ -146,17 +146,17 @@ public class MailNodeCompoundSettings implements CompoundSettings {
         globalSafelist = Arrays.asList( safelistAdminView.getSafelistContents(GLOBAL_BUSINESS_PAPERS) );
 
         if(generalSettingsComponent == null)
-            generalSettingsComponent = Util.getSettingsComponent("com.untangle.node.mail.gui.MCasingJPanel", "mail-casing");
+            generalSettingsComponent = Util.getSettingsComponent("com.untangle.node.mail.gui.MCasingJPanel", "untangle-casing-mail");
         if(safelistComponent == null)
-            safelistComponent = Util.getSettingsComponent("com.untangle.node.mail.gui.WhitelistAllUsersJPanel", "mail-casing");
+            safelistComponent = Util.getSettingsComponent("com.untangle.node.mail.gui.WhitelistAllUsersJPanel", "untangle-casing-mail");
         if(quarantineReleaseAndPurgeComponent == null)
-            quarantineReleaseAndPurgeComponent = Util.getSettingsComponent("com.untangle.node.mail.gui.QuarantineAllUsersJPanel", "mail-casing");
+            quarantineReleaseAndPurgeComponent = Util.getSettingsComponent("com.untangle.node.mail.gui.QuarantineAllUsersJPanel", "untangle-casing-mail");
         if(quarantinableAddressesComponent == null)
-            quarantinableAddressesComponent = Util.getSettingsComponent("com.untangle.node.mail.gui.QuarantinableAddressesJPanel", "mail-casing");
+            quarantinableAddressesComponent = Util.getSettingsComponent("com.untangle.node.mail.gui.QuarantinableAddressesJPanel", "untangle-casing-mail");
         if(quarantinableForwardsComponent == null)
-            quarantinableForwardsComponent = Util.getSettingsComponent("com.untangle.node.mail.gui.QuarantinableForwardsJPanel", "mail-casing");
+            quarantinableForwardsComponent = Util.getSettingsComponent("com.untangle.node.mail.gui.QuarantinableForwardsJPanel", "untangle-casing-mail");
         if(quarantineGeneralSettingsComponent == null)
-            quarantineGeneralSettingsComponent = Util.getSettingsComponent("com.untangle.node.mail.gui.QuarantineGeneralSettingsJPanel", "mail-casing");
+            quarantineGeneralSettingsComponent = Util.getSettingsComponent("com.untangle.node.mail.gui.QuarantineGeneralSettingsJPanel", "untangle-casing-mail");
     }
 
     public void validate() throws Exception {
