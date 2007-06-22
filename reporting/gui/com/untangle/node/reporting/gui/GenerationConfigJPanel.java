@@ -231,6 +231,7 @@ public class GenerationConfigJPanel extends javax.swing.JPanel implements Savabl
 
         // OPTIONS //
         includeIncidentsCurrent = reportingSettings.getEmailDetail();
+        includeIncidentsJCheckBox.setSelected( includeIncidentsCurrent );
 
     }
 
