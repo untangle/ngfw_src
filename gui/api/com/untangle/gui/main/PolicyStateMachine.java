@@ -1335,9 +1335,9 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
         }});
         int progress = 0;
         final float overallFinal = (float) (installedMackageMap.size() * (policyTidMap.size()+2)); // +1 for cores, +1 for util&serv
-        // UTIL & SERVICE
+        // NODES
         for( MackageDesc mackageDesc : installedMackageMap.values() ){
-            if( mackageDesc.isUtil() || mackageDesc.isService() ){
+            if( isMackageNode(mackageDesc)){
                 boolean isDeployed = nonPolicyNameMap.containsKey(mackageDesc.getName());
                 addToToolbox(null,mackageDesc,isDeployed,false);
             }
