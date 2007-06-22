@@ -1,4 +1,4 @@
-<%@ page language="java" import="com.untangle.uvm.*, com.untangle.uvm.toolbox.*" %>
+<%@ page language="java" import="com.untangle.uvm.*, com.untangle.uvm.toolbox.*, com.untangle.uvm.node.*" %>
 <%--
  * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
@@ -75,7 +75,21 @@ LocalUvmContext uvm = LocalUvmContextFactory.context();
   </resources>
   <application-desc main-class="com.untangle.gui.util.MLauncher">
 <%
- if (request.getRemoteHost().equalsIgnoreCase("localhost")) {
+ boolean isLocal = false;
+ String remoteHost = request.getRemoteHost();
+ if (!"localhost".equals(remoteHost)) {
+   // Try numeric
+   IPaddr localNetwork = IPaddr.parse("127.0.0.0");
+   IPaddr localNetmask = IPaddr.parse("255.0.0.0");
+   try {
+     IPaddr addr = IPaddr.parse(remoteHost);
+     if (addr.isInNetwork(localNetwork, localNetmask))
+        isLocal = true;
+   } catch (ParseException x) { }
+ } else {
+   isLocal = true;
+ }
+ if (isLocal) {
 %>
     <argument>local</argument>
 <%
