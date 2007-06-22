@@ -125,7 +125,7 @@ function doIt() {
 
 # Invoke untangle-restore ("Usage: $0 dumpfile tarfile instfile")
 
-    untangle-restore $WORKING_DIR/$DB_FILE $WORKING_DIR/$FILES_FILE $WORKING_DIR/$INSTALLED_FILE
+    @UVM_HOME@/bin/untangle-restore $WORKING_DIR/$DB_FILE $WORKING_DIR/$FILES_FILE $WORKING_DIR/$INSTALLED_FILE
 
     EXIT_VAL=$?
 

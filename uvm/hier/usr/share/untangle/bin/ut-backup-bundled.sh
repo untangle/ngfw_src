@@ -46,7 +46,7 @@ function doHelp() {
 #
 function createBackup() {
   debug "Creating Backup in " $1
-  backup-ut $1
+  @UVM_HOME@/bin/backup-ut $1
 #  pushd $1 > /dev/null 2>&1
 #  datestamp=$(date '+%Y%m%d%H%M')
 #  echo "FOO" > uvmdb-$datestamp.gz
