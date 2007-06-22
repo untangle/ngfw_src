@@ -212,7 +212,7 @@ public class NodeDesc implements Serializable
 
     /**
      * The nodeBase is the name of the base node. For example
-     * clam-node's nodeBase is virus-base.
+     * clam-node's nodeBase is untangle-base-virus.
      *
      * @return the nodeBase, null if node does not have a base.
      */

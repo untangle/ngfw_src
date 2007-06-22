@@ -22,7 +22,7 @@
              display-name="Phish Blocker"
              classname="com.untangle.node.phish.PhishNode"
              gui-classname="com.untangle.node.phish.gui.MNodeJPanel"
-             node-base="spam-base"/>
+             node-base="untangle-base-spam"/>
   <parent>untangle-casing-http</parent>
   <parent>untangle-casing-mail</parent>
 </uvm-node>

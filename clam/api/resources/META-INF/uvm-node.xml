@@ -22,7 +22,7 @@
              display-name="Virus Blocker"
              classname="com.untangle.node.clam.ClamNode"
              gui-classname="com.untangle.node.clam.gui.MNodeJPanel"
-             node-base="virus-base"/>
+             node-base="untangle-base-virus"/>
   <parent>untangle-casing-ftp</parent>
   <parent>untangle-casing-http</parent>
   <parent>untangle-casing-mail</parent>

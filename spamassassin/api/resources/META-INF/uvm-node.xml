@@ -22,6 +22,6 @@
              display-name="Spam Blocker"
              classname="com.untangle.node.spamassassin.SpamAssassinNode"
              gui-classname="com.untangle.node.spamassassin.gui.MNodeJPanel"
-             node-base="spam-base"/>
+             node-base="untangle-base-spam"/>
   <parent>untangle-casing-mail</parent>
 </uvm-node>
