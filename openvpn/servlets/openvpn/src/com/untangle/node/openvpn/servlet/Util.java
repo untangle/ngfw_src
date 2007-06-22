@@ -100,7 +100,7 @@ class Util
                 IPaddr address = IPaddr.parse( request.getRemoteAddr());
 
                 LocalUvmContext ctx = LocalUvmContextFactory.context();
-                Tid tid = ctx.nodeManager().nodeInstances( "openvpn-node" ).get( 0 );
+                Tid tid = ctx.nodeManager().nodeInstances( "untangle-node-openvpn" ).get( 0 );
                 NodeContext tc = ctx.nodeManager().nodeContext( tid );
                 commonName = ((VpnNode)tc.node()).lookupClientDistributionKey( key, address );
             } catch ( Exception e ) {

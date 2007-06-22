@@ -1424,7 +1424,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
             nonNatFound = true;
         count += coreRackMap.size();
         for( MNodeJPanel target : coreRackMap.values() )
-            if(!target.getMackageDesc().getName().equals("router-node"))
+            if(!target.getMackageDesc().getName().equals("untangle-node-router"))
                 nonNatFound = true;
         if( (count <= 1) && (!nonNatFound) )
             rackViewJPanel.add(storeWizardJButton, storeWizardGridBagConstraints);
@@ -1606,7 +1606,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                 nonNatFound = true;
             count += coreRackMap.size();
             for( MNodeJPanel target : coreRackMap.values() )
-                if(!target.getMackageDesc().getName().equals("router-node"))
+                if(!target.getMackageDesc().getName().equals("untangle-node-router"))
                     nonNatFound = true;
             if( (count <= 1) && (!nonNatFound) && (storeWizardJButton.getParent()==null) )
                 rackViewJPanel.add(storeWizardJButton, storeWizardGridBagConstraints);
@@ -1785,7 +1785,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                 nonNatFound = true;
             count += coreRackMap.size();
             for( MNodeJPanel target : coreRackMap.values() )
-                if(!target.getMackageDesc().getName().equals("router-node"))
+                if(!target.getMackageDesc().getName().equals("untangle-node-router"))
                     nonNatFound = true;
             if( ((count > 1) || (nonNatFound)) && (storeWizardJButton.getParent()!=null) )
                 rackViewJPanel.remove(storeWizardJButton);

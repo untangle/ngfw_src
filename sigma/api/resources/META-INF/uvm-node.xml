@@ -18,7 +18,7 @@
 -->
 
 <uvm-node>
-  <node-desc name="sigma-node"
+  <node-desc name="untangle-node-sigma"
              display-name="Sigma Node"
              classname="com.untangle.node.sigma.SigmaImpl"
              gui-classname="com.untangle.node.sigma.gui.MNodeJPanel"/>

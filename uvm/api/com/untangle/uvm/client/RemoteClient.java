@@ -1006,10 +1006,10 @@ public class RemoteClient
 
     private static String pkgName(String mkg)
     {
-        if (mkg.equals("http") || mkg.equals("ftp")) {
-            return (mkg + "-casing");
+        if (mkg.equals("http") || mkg.equals("ftp") || mkg.equals("mail")) {
+            return ("untangle-casing-" + mkg);
         } else {
-            return (mkg + "-node");
+            return ("untangle-node-" + mkg);
         }
     }
 

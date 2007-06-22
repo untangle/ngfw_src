@@ -132,7 +132,7 @@ public class MStateMachine implements java.awt.event.ActionListener {
                     }
                 }
                 else{
-                    if( nodeName.equals("router-node") ){
+                    if( nodeName.equals("untangle-node-router") ){
                         if( (new PowerProceedDialog(displayName, powerJToggleButton.isSelected())).isProceeding() ){
                             new PowerThread();
                         }
