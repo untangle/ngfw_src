@@ -66,7 +66,7 @@ public class NetworkManagerImpl implements LocalNetworkManager
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    static final String NAT_NODE_NAME = "router";
+    static final String NAT_NODE_NAME = "untangle-node-router";
 
     static final String BUNNICULA_BASE = System.getProperty( "bunnicula.home" );
     static final String BUNNICULA_CONF = System.getProperty( "bunnicula.conf.dir" );
