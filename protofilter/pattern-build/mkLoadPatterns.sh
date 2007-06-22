@@ -63,5 +63,5 @@ cat ../LoadPatterns_end.java >> $FILE
 cd ..
 
 echo "Saving LoadPatterns.java"
-cp LoadPatterns.java ../impl/com/untangle/tran/protofilter/
+cp LoadPatterns.java ../impl/com/untangle/node/protofilter/
 rm LoadPatterns.java

@@ -54,7 +54,7 @@ class DigestGenerator {
 
     //Template name stuff
     private static final String RESOURCE_ROOT =
-        "com/untangle/tran/mail/impl/quarantine/";
+        "com/untangle/node/mail/impl/quarantine/";
     private static final String HTML_TEMPLATE_NAME = "DigestEmail_HTML.vm";
     private static final String TEXT_TEMPLATE_NAME = "DigestEmail_TXT.vm";
 

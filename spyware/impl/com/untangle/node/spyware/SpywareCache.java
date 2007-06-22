@@ -31,7 +31,7 @@ import org.apache.log4j.Logger;
 class SpywareCache
 {
     private static final String URL_LIST
-        = "com/untangle/tran/spyware/urlblacklist.txt";
+        = "com/untangle/node/spyware/urlblacklist.txt";
 
     private static final SpywareCache CACHE = new SpywareCache();
 
