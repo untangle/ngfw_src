@@ -96,19 +96,19 @@ public class MaintenanceCompoundSettings implements CompoundSettings {
         casingJPanels = Util.getPolicyStateMachine().loadAllCasings(true);
 
         if(mailNodeCompoundSettings == null){
-            mailNodeCompoundSettings = Util.getCompoundSettings("com.untangle.node.mail.gui.MailNodeCompoundSettings", "mail-casing");
+            mailNodeCompoundSettings = Util.getCompoundSettings("com.untangle.node.mail.gui.MailNodeCompoundSettings", "untangle-casing-mail");
         }
         if(mailNodeCompoundSettings != null)
             mailNodeCompoundSettings.refresh();
 
         if(httpNodeCompoundSettings == null){
-            httpNodeCompoundSettings = Util.getCompoundSettings("com.untangle.node.http.gui.HttpNodeCompoundSettings", "http-casing");
+            httpNodeCompoundSettings = Util.getCompoundSettings("com.untangle.node.http.gui.HttpNodeCompoundSettings", "untangle-casing-http");
         }
         if(httpNodeCompoundSettings != null)
             httpNodeCompoundSettings.refresh();
 
         if(ftpNodeCompoundSettings == null){
-            ftpNodeCompoundSettings = Util.getCompoundSettings("com.untangle.node.ftp.gui.FtpNodeCompoundSettings", "ftp-casing");
+            ftpNodeCompoundSettings = Util.getCompoundSettings("com.untangle.node.ftp.gui.FtpNodeCompoundSettings", "untangle-casing-ftp");
         }
         if(ftpNodeCompoundSettings != null)
             ftpNodeCompoundSettings.refresh();
