@@ -36,19 +36,32 @@ package com.untangle.gui.install;
 import java.awt.Window;
 import java.awt.event.*;
 import java.io.*;
+import java.util.Properties;
 import javax.swing.*;
 
 import com.untangle.gui.util.Util;
 import com.untangle.gui.widgets.dialogs.*;
 import com.untangle.gui.widgets.wizard.*;
 
+import org.apache.log4j.PropertyConfigurator;
+import org.apache.log4j.Logger;
+
 public class InstallLicenseJPanel extends MWizardPageJPanel {
 
+    private static final String LOG4J_DEFAULT_PROPERTIES = "com/untangle/gui/log4j.properties";
+    private static final String LOG4J_DEVEL_PROPERTIES   = "com/untangle/gui/log4j-devel.properties";
+
+    private static final Logger logger = Logger.getLogger(InstallLicenseJPanel.class);
+
     public InstallLicenseJPanel() {
+	    // CONFIGURE LOGGING
+    	configureLogging();
+
         initComponents();
 
+
         try{
-            InputStream licenseInputStream = Util.getClassLoader().getResourceAsStream("LicenseStandard.txt");
+            InputStream licenseInputStream = getClass().getClassLoader().getResourceAsStream("LicenseStandard.txt");
             InputStreamReader licenseInputStreamReader = new InputStreamReader(licenseInputStream);
             BufferedReader licenseBufferedReader = new BufferedReader(licenseInputStreamReader);
             StringBuilder licenseStringBuilder = new StringBuilder();
@@ -140,6 +153,52 @@ public class InstallLicenseJPanel extends MWizardPageJPanel {
         add(backgroundJPabel, gridBagConstraints);
 
     }// </editor-fold>//GEN-END:initComponents
+
+
+    static void configureLogging()
+    {
+        Properties props = new Properties();
+
+        /* defaults in case it can't parse the log4j.properties */
+        props.setProperty("log4j.appender.A1", "org.apache.log4j.ConsoleAppender");
+        props.setProperty("log4j.appender.A1.layout","org.apache.log4j.PatternLayout");
+        props.setProperty("log4j.appender.A1.layout.ConversionPattern",
+                          "%d{HH:mm:ss,SSS} (%t) %-5p [%c] - %m%n");
+        props.setProperty("log4j.rootLogger=WARN","A1");
+
+        try {
+            InputStream is = InstallLicenseJPanel.class.getClassLoader().
+                getResourceAsStream(LOG4J_DEFAULT_PROPERTIES);
+
+            if (is != null) {
+                props.load(is);
+            } else {
+                System.err.println("Unable to load default log4j properties");
+            }
+
+        } catch ( IOException e ) {
+            System.err.println("Unable to load default logging properties.");
+            System.err.println("Using defaults." );
+        }
+
+        try {
+            if ( Util.isDevel()) {
+                System.out.println("enabling debug.");
+
+                InputStream is = InstallLicenseJPanel.class.getClassLoader().
+                    getResourceAsStream(LOG4J_DEVEL_PROPERTIES);
+                if (is != null) {
+                    props.load(is);
+                } else {
+                    System.err.println("Unable to load development log4j properties.");
+                }
+            }
+        } catch ( IOException e ) {
+            System.err.println("Unable to load development log4j properties.");
+        }
+
+        PropertyConfigurator.configure(props);
+    }
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
