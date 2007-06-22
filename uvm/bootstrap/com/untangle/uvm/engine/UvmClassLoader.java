@@ -85,9 +85,9 @@ class UvmClassLoader extends URLClassLoader
 
         boolean r = false;
 
-        r |= r addFile(bunniculaLib + "/untangle-professional-core-impl/");
-        r |= r addFile(bunniculaLib + "/untangle-professional-core-api/");
-        r |= r addFile(bunniculaLib + "/untangle-professional-core-localapi/");
+        r |= addFile(bunniculaLib + "/untangle-professional-core-impl/");
+        r |= addFile(bunniculaLib + "/untangle-professional-core-api/");
+        r |= addFile(bunniculaLib + "/untangle-professional-core-localapi/");
 
         return r;
     }
