@@ -272,6 +272,10 @@ public class QuarantineSettings implements Serializable {
 
     private void eliminateNulls(List l)
     {
+        /*
+         * Disabled for 5.0, caused "org.hibernate.LazyInitializationException: illegal access to loading collection"
+         * in postInit of mail node when reading quarantine settings.
+         *
         for (Iterator i = l.iterator(); i.hasNext(); ) {
             Object o = i.next();
             if (null == o) {
@@ -281,5 +285,6 @@ public class QuarantineSettings implements Serializable {
                 i.remove();
             }
         }
+        */
     }
 }
