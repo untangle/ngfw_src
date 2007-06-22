@@ -115,7 +115,7 @@ public class UpgradeProcessJPanel extends JPanel
 
             for( MackageDesc mackageDesc : mackageDescs ){
                 if( mackageDesc.getType() == MackageDesc.Type.CASING ||
-                    mackageDesc.getType() == MackageDesc.Type.NODE)
+                    mackageDesc.getType() == MackageDesc.Type.BASE)
                     continue;
                 try{
                     rowIndex++;
