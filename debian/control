@@ -653,6 +653,7 @@ Description: Phish Blocker
  The Phish Blocker product.
 
 Package: untangle-node-test
+Section: qa/net
 Architecture: any
 Depends: untangle-vm
 XB-Display-Name: Test
