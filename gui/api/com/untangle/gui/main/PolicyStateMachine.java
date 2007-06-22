@@ -1833,7 +1833,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
         public void run(){ doIt(false); }
     }
     private MCasingJPanel[] doIt(boolean generateGuis){
-        final String casingNames[] = {"http-casing", "mail-casing", "ftp-casing"};
+        final String casingNames[] = {"untangle-casing-http", "untangle-casing-mail", "untangle-casing-ftp"};
         Vector<MCasingJPanel> mCasingJPanels = new Vector<MCasingJPanel>();
         List<Tid> casingInstances = null;
         NodeContext nodeContext = null;
