@@ -64,6 +64,9 @@ hr {
 	margin: 0; padding: 0;
 	clear: both;
 }
+p {
+	margin-bottom: 4px;
+}
 .main-top-left, .main-top-right, .main-bot-left, .main-bot-right {
     background-image: url(/images/bg_main_top_bot.gif);
     height: 23px;
