@@ -125,7 +125,7 @@ public class StoreCheckJDialog extends javax.swing.JDialog implements java.awt.e
         jPanel1.add(labelJLabel, gridBagConstraints);
 
         messageJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
-        messageJLabel.setText("<html><center>\nYou must perform all possible upgrades before purchasing a new Product.<br>\n<br>\nNow checking for available upgrades.\n</center></html>");
+        messageJLabel.setText("<html><center>\nYou must perform all possible upgrades before downloading from the library.<br>\n<br>\nNow checking for available upgrades.\n</center></html>");
         messageJLabel.setFocusable(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
