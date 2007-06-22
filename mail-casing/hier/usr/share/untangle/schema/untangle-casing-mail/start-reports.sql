@@ -51,7 +51,7 @@ DELETE FROM reports.emails_smtp WHERE time_stamp < (:cutoff)::timestamp;
 DROP TABLE reports.newemails;
 CREATE TABLE reports.newemails AS
   SELECT msg.id as msg_id, subject, server_type, msg.time_stamp, c_client_addr, s_server_addr
-    FROM tr_mail_message_info msg
+    FROM n_mail_message_info msg
     JOIN pl_endp endp ON (endp.event_id = msg.pl_endp_id)
    WHERE server_type != 'S'
      AND msg.time_stamp > (SELECT COALESCE(max(time_stamp), timestamp '2004-01-01') from reports.emails);
@@ -59,13 +59,13 @@ CREATE TABLE reports.newemails AS
 INSERT INTO reports.emails
   SELECT msg.msg_id, subject, server_type, time_stamp, recip_addr.addr AS recip_addr, recip_addr.kind AS recip_kind, from_addr.addr AS from_addr, c_client_addr, s_server_addr
     FROM reports.newemails msg
-         LEFT OUTER JOIN tr_mail_message_info_addr recip_addr ON (msg.msg_id = recip_addr.msg_id AND recip_addr.kind = 'U' and recip_addr.position = 1)
-         LEFT OUTER JOIN tr_mail_message_info_addr from_addr ON (msg.msg_id = from_addr.msg_id AND from_addr.kind = 'F' and from_addr.position = 1);
+         LEFT OUTER JOIN n_mail_message_info_addr recip_addr ON (msg.msg_id = recip_addr.msg_id AND recip_addr.kind = 'U' and recip_addr.position = 1)
+         LEFT OUTER JOIN n_mail_message_info_addr from_addr ON (msg.msg_id = from_addr.msg_id AND from_addr.kind = 'F' and from_addr.position = 1);
 
 DROP TABLE reports.newemails_smtp;
 CREATE TABLE reports.newemails_smtp AS
   SELECT msg.id as msg_id, subject, server_type, msg.time_stamp, c_client_addr, s_server_addr
-    FROM tr_mail_message_info msg
+    FROM n_mail_message_info msg
     JOIN pl_endp endp ON (endp.event_id = msg.pl_endp_id)
    WHERE server_type = 'S'
      AND msg.time_stamp > (SELECT COALESCE(max(time_stamp), timestamp '2004-01-01') from reports.emails_smtp);
@@ -73,8 +73,8 @@ CREATE TABLE reports.newemails_smtp AS
 INSERT INTO reports.emails_smtp
   SELECT msg.msg_id, subject, server_type, time_stamp, recip_addr.addr AS recip_addr, recip_addr.kind AS recip_kind, from_addr.addr AS from_addr, c_client_addr, s_server_addr
     FROM reports.newemails_smtp msg
-         LEFT OUTER JOIN tr_mail_message_info_addr recip_addr ON (msg.msg_id = recip_addr.msg_id AND recip_addr.kind = 'B' and recip_addr.position = 1)
-         LEFT OUTER JOIN tr_mail_message_info_addr from_addr ON (msg.msg_id = from_addr.msg_id AND from_addr.kind = 'F' and from_addr.position = 1);
+         LEFT OUTER JOIN n_mail_message_info_addr recip_addr ON (msg.msg_id = recip_addr.msg_id AND recip_addr.kind = 'B' and recip_addr.position = 1)
+         LEFT OUTER JOIN n_mail_message_info_addr from_addr ON (msg.msg_id = from_addr.msg_id AND from_addr.kind = 'F' and from_addr.position = 1);
 
 DROP TABLE reports.newemails;
 DROP TABLE reports.newemails_smtp;

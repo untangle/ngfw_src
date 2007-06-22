@@ -15,6 +15,6 @@
 -- Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
 --
 
-DELETE FROM tr_openvpn_statistic_evt WHERE time_stamp < (:cutoff)::timestamp;
-DELETE FROM tr_openvpn_connect_evt WHERE time_stamp < (:cutoff)::timestamp;
-DELETE FROM tr_openvpn_distr_evt WHERE time_stamp < (:cutoff)::timestamp;
+DELETE FROM n_openvpn_statistic_evt WHERE time_stamp < (:cutoff)::timestamp;
+DELETE FROM n_openvpn_connect_evt WHERE time_stamp < (:cutoff)::timestamp;
+DELETE FROM n_openvpn_distr_evt WHERE time_stamp < (:cutoff)::timestamp;

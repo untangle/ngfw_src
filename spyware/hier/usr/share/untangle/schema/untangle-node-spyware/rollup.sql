@@ -15,4 +15,4 @@
 -- Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
 --
 
-DELETE FROM tr_spyware_statistic_evt WHERE time_stamp < (:cutoff)::timestamp;
+DELETE FROM n_spyware_statistic_evt WHERE time_stamp < (:cutoff)::timestamp;

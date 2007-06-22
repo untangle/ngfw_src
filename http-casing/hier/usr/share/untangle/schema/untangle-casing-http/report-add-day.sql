@@ -49,8 +49,8 @@ CREATE TABLE newpages AS
   SELECT max(evt.event_id) as event_id, max(evt.request_id) as request_id,
          host, COALESCE(max(resp.content_length), 0) as content_length,
          max(evt.time_stamp) as time_stamp
-      FROM tr_http_evt_req evt
-      LEFT OUTER JOIN tr_http_evt_resp resp ON
+      FROM n_http_evt_req evt
+      LEFT OUTER JOIN n_http_evt_resp resp ON
              (evt.request_id = resp.request_id AND resp.content_length > 0)
       WHERE evt.time_stamp >= TIMESTAMP :daybegin AND evt.time_stamp <= TIMESTAMP :dayend
       GROUP BY evt.event_id, host;
@@ -59,7 +59,7 @@ INSERT INTO webpages_:dayname
   SELECT evt.request_id, evt.time_stamp, COALESCE(NULLIF(name, ''), HOST(c_client_addr)) AS hname,
          stats.uid, c_client_addr, c_server_addr, c_server_port, evt.host, evt.content_length
     FROM newpages evt
-      JOIN tr_http_req_line line USING (request_id)
+      JOIN n_http_req_line line USING (request_id)
       JOIN pl_endp endp ON (line.pl_endp_id = endp.event_id)
       JOIN pl_stats stats ON (line.pl_endp_id = stats.pl_endp_id)
       LEFT OUTER JOIN merged_address_map mam ON (endp.c_client_addr = mam.addr AND
