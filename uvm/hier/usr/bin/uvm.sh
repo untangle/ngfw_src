@@ -162,7 +162,7 @@ restartServiceIfNeeded() {
     slapd)
       pidFile=/var/run/slapd/slapd.pid
       isServiceRunning slapd && return
-      needToRun=yes # always has to run
+      dpkg -l untangle-slapd | grep -q -E '^ii' && needToRun=yes
       ;;
     spamassassin)
       pidFile=/var/run/spamd.pid
