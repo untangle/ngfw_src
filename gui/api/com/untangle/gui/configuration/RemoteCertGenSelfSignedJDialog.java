@@ -85,7 +85,8 @@ public class RemoteCertGenSelfSignedJDialog extends javax.swing.JDialog implemen
         new RefreshThread();
     }
 
-    private void initComponents() {//GEN-BEGIN:initComponents
+    // <editor-fold defaultstate="collapsed" desc=" Generated Code ">//GEN-BEGIN:initComponents
+    private void initComponents() {
         java.awt.GridBagConstraints gridBagConstraints;
 
         buttonGroup1 = new javax.swing.ButtonGroup();
@@ -128,7 +129,7 @@ public class RemoteCertGenSelfSignedJDialog extends javax.swing.JDialog implemen
         gridBagConstraints.insets = new java.awt.Insets(20, 20, 20, 20);
         getContentPane().add(iconJLabel, gridBagConstraints);
 
-        dividerJPanel.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(154, 154, 154)));
+        dividerJPanel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(154, 154, 154)));
         dividerJPanel.setMaximumSize(new java.awt.Dimension(1, 1600));
         dividerJPanel.setMinimumSize(new java.awt.Dimension(1, 10));
         dividerJPanel.setOpaque(false);
@@ -224,17 +225,16 @@ public class RemoteCertGenSelfSignedJDialog extends javax.swing.JDialog implemen
         cancelJButton.setFont(new java.awt.Font("Default", 0, 12));
         cancelJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconCancel_16x16.png")));
         cancelJButton.setText("Cancel");
-        cancelJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         cancelJButton.setMargin(new java.awt.Insets(4, 8, 4, 8));
         cancelJButton.setMaximumSize(null);
         cancelJButton.setMinimumSize(null);
         cancelJButton.setOpaque(false);
         cancelJButton.setPreferredSize(null);
         cancelJButton.addActionListener(new java.awt.event.ActionListener() {
-                public void actionPerformed(java.awt.event.ActionEvent evt) {
-                    cancelJButtonActionPerformed(evt);
-                }
-            });
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cancelJButtonActionPerformed(evt);
+            }
+        });
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -253,10 +253,10 @@ public class RemoteCertGenSelfSignedJDialog extends javax.swing.JDialog implemen
         proceedJButton.setOpaque(false);
         proceedJButton.setPreferredSize(null);
         proceedJButton.addActionListener(new java.awt.event.ActionListener() {
-                public void actionPerformed(java.awt.event.ActionEvent evt) {
-                    proceedJButtonActionPerformed(evt);
-                }
-            });
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                proceedJButtonActionPerformed(evt);
+            }
+        });
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
@@ -290,7 +290,7 @@ public class RemoteCertGenSelfSignedJDialog extends javax.swing.JDialog implemen
         gridBagConstraints.weighty = 1.0;
         getContentPane().add(backgroundJLabel, gridBagConstraints);
 
-    }//GEN-END:initComponents
+    }// </editor-fold>//GEN-END:initComponents
 
     String organization;
     String organizationUnit;

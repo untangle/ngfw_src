@@ -75,7 +75,8 @@ public class RemoteCertGenTrustedJDialog extends javax.swing.JDialog implements 
 
     }
 
-    private void initComponents() {//GEN-BEGIN:initComponents
+    // <editor-fold defaultstate="collapsed" desc=" Generated Code ">//GEN-BEGIN:initComponents
+    private void initComponents() {
         java.awt.GridBagConstraints gridBagConstraints;
 
         buttonGroup1 = new javax.swing.ButtonGroup();
@@ -108,7 +109,7 @@ public class RemoteCertGenTrustedJDialog extends javax.swing.JDialog implements 
         gridBagConstraints.insets = new java.awt.Insets(20, 20, 20, 20);
         getContentPane().add(iconJLabel, gridBagConstraints);
 
-        dividerJPanel.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(154, 154, 154)));
+        dividerJPanel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(154, 154, 154)));
         dividerJPanel.setMaximumSize(new java.awt.Dimension(1, 1600));
         dividerJPanel.setMinimumSize(new java.awt.Dimension(1, 10));
         dividerJPanel.setOpaque(false);
@@ -169,10 +170,10 @@ public class RemoteCertGenTrustedJDialog extends javax.swing.JDialog implements 
         cancelJButton.setOpaque(false);
         cancelJButton.setPreferredSize(null);
         cancelJButton.addActionListener(new java.awt.event.ActionListener() {
-                public void actionPerformed(java.awt.event.ActionEvent evt) {
-                    cancelJButtonActionPerformed(evt);
-                }
-            });
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cancelJButtonActionPerformed(evt);
+            }
+        });
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -191,10 +192,10 @@ public class RemoteCertGenTrustedJDialog extends javax.swing.JDialog implements 
         proceedJButton.setOpaque(false);
         proceedJButton.setPreferredSize(null);
         proceedJButton.addActionListener(new java.awt.event.ActionListener() {
-                public void actionPerformed(java.awt.event.ActionEvent evt) {
-                    proceedJButtonActionPerformed(evt);
-                }
-            });
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                proceedJButtonActionPerformed(evt);
+            }
+        });
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
@@ -227,7 +228,7 @@ public class RemoteCertGenTrustedJDialog extends javax.swing.JDialog implements 
         gridBagConstraints.weightx = 1.0;
         getContentPane().add(backgroundJLabel, gridBagConstraints);
 
-    }//GEN-END:initComponents
+    }// </editor-fold>//GEN-END:initComponents
 
 
     private void proceedJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_proceedJButtonActionPerformed

@@ -93,7 +93,7 @@ public class InitialSetupLicenseJPanel extends MWizardPageJPanel {
 
         contentJPanel.setOpaque(false);
         jLabel2.setFont(new java.awt.Font("Dialog", 0, 12));
-        jLabel2.setText("<html>Please read and accept the following license agreement before proceeding.<br>  <b><font color=\"#FF0000\">You must scroll to the bottom before you can accept.</font></b></html>");
+        jLabel2.setText("<html>License Agreement</html>");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
