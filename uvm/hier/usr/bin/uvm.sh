@@ -230,7 +230,7 @@ needToRestart() {
 
     # gc failure (persistent heap full)
     cmfcount=`tail -50 $UVM_GC_LOG | grep -ci "concurrent mode failure"`
-    if [ $cmfcount -gt 2 ]; then
+    if [ $cmfcount -gt 3 ]; then
         echo "*** java heap cmf on `date` in `pwd` ***" >> $UVM_WRAPPER_LOG
         return 0;
     fi
