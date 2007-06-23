@@ -75,7 +75,8 @@ public class QuarantineSettings implements Serializable {
     private List<EmailAddressPairRule> m_addressRemaps;
     private List<EmailAddressRule> m_allowedAddressPatterns;
 
-    private final Logger logger = Logger.getLogger(getClass());
+    // logger here caused proxy serialization to freak out.
+    // private final Logger logger = Logger.getLogger(getClass());
 
     @Id
     @Column(name="settings_id")
