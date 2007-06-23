@@ -317,7 +317,7 @@ function generateUserSummary()
     ## Now actually generate standalone user summary PDFs
     ## for the index html files
     local USUMOUTPUT_FILE=`echo ${rep_base}--${REPORT_TYPE}.pdf`
-    ujac2pdf "${DIRECTORY_TEMPLATES}/${TEMPLATE_UNAMESUM_INDEX}" ${t_properties} ${t_key}/${USUMOUTPUT_FILE}
+    untangle-ujac2pdf "${DIRECTORY_TEMPLATES}/${TEMPLATE_UNAMESUM_INDEX}" ${t_properties} ${t_key}/${USUMOUTPUT_FILE}
 }
 
 function generateEmail()
@@ -389,7 +389,7 @@ generateTopLevel
 generateSubReports
 
 ## Now actually generate the PDF
-ujac2pdf "${DIRECTORY_TEMPLATES}/${TEMPLATE_MASTER}" ${topLevel} ${OUTPUT_FILE}
+untangle-ujac2pdf "${DIRECTORY_TEMPLATES}/${TEMPLATE_MASTER}" ${topLevel} ${OUTPUT_FILE}
 
 ## Build the email
 generateEmail
