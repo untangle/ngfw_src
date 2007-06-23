@@ -133,7 +133,7 @@ public class BrandingSettings implements Serializable
 
     public void setContactName(String name)
     {
-        this.contactName = contactName;
+        this.contactName = name;
     }
 
     /**
@@ -150,5 +150,14 @@ public class BrandingSettings implements Serializable
     public void setContactEmail(String contactEmail)
     {
         this.contactEmail = contactEmail;
+    }
+
+    public void copy(BrandingSettings settings)
+    {
+        settings.setCompanyName(this.companyName);
+        settings.setCompanyUrl(this.companyUrl);
+        settings.setContactName(this.contactName);
+        settings.setLogo(this.logo);
+        settings.setContactEmail(this.contactEmail);
     }
 }

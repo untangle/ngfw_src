@@ -30,6 +30,7 @@ import java.sql.SQLException;
 import com.untangle.uvm.BrandingSettings;
 import com.untangle.uvm.LocalBrandingManager;
 import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.util.DeletingDataSaver;
 import com.untangle.uvm.util.TransactionWork;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
@@ -87,9 +88,13 @@ class BrandingManagerImpl implements LocalBrandingManager
 
     public void setBrandingSettings(BrandingSettings settings)
     {
-        this.settings = settings;
-        setBrandingProperties(settings);
-        setLogo(settings.getLogo());
+        /* delete whatever is in the db, and just make a fresh settings object */
+        BrandingSettings copy = new BrandingSettings();
+        settings.copy(copy);
+        saveSettings(copy);
+        this.settings = copy;
+        setBrandingProperties(this.settings);
+        setLogo(this.settings.getLogo());
     }
 
     public File getLogoFile()
@@ -122,6 +127,13 @@ class BrandingManagerImpl implements LocalBrandingManager
                 pr.close();
             }
         }
+    }
+
+    private void saveSettings(BrandingSettings settings)
+    {
+        DeletingDataSaver<BrandingSettings> saver = 
+            new DeletingDataSaver<BrandingSettings>(LocalUvmContextFactory.context(),"BrandingSettings");
+        this.settings = saver.saveData(settings);
     }
 
     private void setLogo(byte[] logo)
