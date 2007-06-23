@@ -103,7 +103,7 @@ cat > $base_file <<EOF
 </tr>
 <tr valign=top>
   <td><img src="../images/px" style="width: 20px; height: 24px"></td>
-  <td colspan=2 rowspan=9><img src="../images/BrandingLogo.gif" border=0 style="width: 150px; height: 96px"></td>
+  <td colspan=2 rowspan=9><img src="/images/BrandingLogo.gif" border=0 style="width: 150px; height: 96px"></td>
   <td colspan=17><img src="../images/px" style="width: 496px; height: 24px"></td>
 </tr>
 <tr valign=top>

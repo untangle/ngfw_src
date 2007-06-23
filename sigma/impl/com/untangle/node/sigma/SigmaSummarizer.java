@@ -36,7 +36,7 @@ public class SigmaSummarizer extends BaseSummarizer {
         int blockCount = 0;
 
         try {
-            String sql = "select count(*) from tr_sigma_evt where time_stamp >= ? and time_stamp < ?";
+            String sql = "select count(*) from n_sigma_evt where time_stamp >= ? and time_stamp < ?";
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);
@@ -46,7 +46,7 @@ public class SigmaSummarizer extends BaseSummarizer {
             rs.close();
             ps.close();
 
-            sql = "select count(*) from tr_sigma_evt where time_stamp >= ? and time_stamp < ? and blocked = 't'";
+            sql = "select count(*) from n_sigma_evt where time_stamp >= ? and time_stamp < ? and blocked = 't'";
             ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);

@@ -218,7 +218,7 @@ h4 {
             <table width="100%">
               <tr>
               <td width="96" valign="middle">
-                <img src="$web_base/images/BrandingLogo.gif" alt="$COMPANY_NAME" width="150" height="96"/>
+                <img src="/images/BrandingLogo.gif" alt="$COMPANY_NAME" width="150" height="96"/>
               </td>
               <td style="padding: 0px 0px 0px 10px" class="page_header_title" align="left" valign="middle">$COMPANY_NAME<br/>Reports</td>
               <td align="right">
