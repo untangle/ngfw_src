@@ -46,7 +46,7 @@ public class Settings
         "FROM settings.n_reporting_settings settings " +
         "JOIN settings.u_node_persistent_state tstate " +
         "ON (settings.tid = tstate.tid " +
-        "AND name = 'reporting-node' " +
+        "AND name = 'untangle-node-reporting' " +
         "AND target_state = 'running')";
 
     private static final String SCHED_DAILY_MONTHLY =
@@ -56,7 +56,7 @@ public class Settings
         "ON (sched.id = settings.schedule) " +
         "JOIN settings.u_node_persistent_state tstate " +
         "ON (settings.tid = tstate.tid " +
-        "AND name = 'reporting-node' " +
+        "AND name = 'untangle-node-reporting' " +
         "AND target_state = 'running')";
 
     private static final String SCHED_WEEKLY =
@@ -70,7 +70,7 @@ public class Settings
         "ON (sched.id = settings.schedule) " +
         "JOIN settings.u_node_persistent_state tstate " +
         "ON (settings.tid = tstate.tid " +
-        "AND name = 'reporting-node' " +
+        "AND name = 'untangle-node-reporting' " +
         "AND target_state = 'running')";
 
     public Settings(Connection conn, Calendar cal) {
