@@ -48,6 +48,7 @@ import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.dialogs.*;
 import com.untangle.gui.widgets.editTable.*;
 import com.untangle.gui.widgets.premium.*;
+import com.untangle.uvm.license.LicenseStatus;
 import com.untangle.uvm.license.ProductIdentifier;
 import org.apache.log4j.Logger;
 
@@ -65,7 +66,12 @@ public class DirectoryJDialog extends MConfigJDialog {
         super(parentFrame);
         setTitle(NAME_DIRECTORY_CONFIG);
         setHelpSource("user_directory_config");
-        if (Util.getIsPremium(ProductIdentifier.ADDRESS_BOOK)) {
+        LicenseStatus status = Util.getLicenseStatus(ProductIdentifier.ADDRESS_BOOK);
+        String timeLeft = status.getTimeRemaining();
+        if (!status.isExpired()) {
+            if (status.isTrial()) {
+                setTitle(NAME_DIRECTORY_CONFIG + " : " + status.getType() + " (" + timeLeft + ")");
+            }
             Class compoundSettingsClass = Util.getClassLoader().mLoadClass( "com.untangle.gui.configuration.DirectoryCompoundSettings" );
             try {
                 Constructor compoundSettingsConstructor = compoundSettingsClass.getConstructor( new Class[]{} );
@@ -81,7 +87,12 @@ public class DirectoryJDialog extends MConfigJDialog {
         super(parentDialog);
         setTitle(NAME_DIRECTORY_CONFIG);
         setHelpSource("user_directory_config");
-        if (Util.getIsPremium(ProductIdentifier.ADDRESS_BOOK)) {
+        LicenseStatus status = Util.getLicenseStatus(ProductIdentifier.ADDRESS_BOOK);
+        String timeLeft = status.getTimeRemaining();
+        if (!status.isExpired()) {
+            if (status.isTrial()) {
+                setTitle(NAME_DIRECTORY_CONFIG + " : " + status.getType() + " (" + timeLeft + ")");
+            }
             Class compoundSettingsClass = Util.getClassLoader().mLoadClass( "com.untangle.gui.configuration.DirectoryCompoundSettings" );
             try {
                 Constructor compoundSettingsConstructor = compoundSettingsClass.getConstructor( new Class[]{} );

@@ -7,8 +7,8 @@ mkdir -p ${DESTINATION_BASE}
 writeFile() {
     local t_dest="${DESTINATION_BASE}/${1}"
     
-    ## If the file exists already, don't expand it
-    if [ -f "${t_test}" ]  || [ -f "${t_test/.ulg$/.ulf}" ]; then
+    ## If the license file already exists, don't expand it
+    if [ -f "${t_dest/.ulg$/.ulf}" ]; then
         t_dest=/dev/null
     fi
     

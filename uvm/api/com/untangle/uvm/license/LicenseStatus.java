@@ -62,8 +62,15 @@ public class LicenseStatus implements Serializable
     
     /* Whether or not the license was expired when this object was created. */
     private final boolean isExpired;
+
+    /* The amount of time remaining as a string */
+    private final String timeRemaining;
+
+    /* true if this is a trial */
+    private final boolean isTrial;
     
-    public LicenseStatus( boolean hasLicense, String identifier, String type, Date expirationDate )
+    public LicenseStatus( boolean hasLicense, String identifier, String type, Date expirationDate, 
+                          String timeRemaining, boolean isTrial )
     {
         this.hasLicense = hasLicense;
         this.identifier = identifier;
@@ -71,6 +78,8 @@ public class LicenseStatus implements Serializable
         this.expirationDate = expirationDate;
         /* it is unstable if it doesn't have a license or the current time is after the expiration time */
         this.isExpired = !hasLicense || ( System.currentTimeMillis() > expirationDate.getTime());
+        this.timeRemaining = timeRemaining;
+        this.isTrial = isTrial;
     }
 
     public boolean hasLicense()
@@ -94,6 +103,16 @@ public class LicenseStatus implements Serializable
         return this.expirationDate;
     }
     
+    public String getTimeRemaining()
+    {
+        return this.timeRemaining;
+    }
+    
+    public boolean isTrial()
+    {
+        return this.isTrial;
+    }
+
     /* Done this way so that timezone issues between the GUI and the UVM */
     public boolean isExpired()
     {

@@ -43,6 +43,7 @@ import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.dialogs.*;
 import com.untangle.gui.widgets.editTable.*;
 import com.untangle.uvm.policy.*;
+import com.untangle.uvm.license.LicenseStatus;
 import com.untangle.uvm.license.ProductIdentifier;
 
 import com.untangle.gui.widgets.premium.*;
@@ -86,7 +87,13 @@ public class PolicyJDialog extends MConfigJDialog {
         addRefreshable(NAME_USER_POLICIES, policyCustomJPanel);
         policyCustomJPanel.setSettingsChangedListener(this);
         
-        if (Util.getIsPremium(ProductIdentifier.POLICY_MANAGER)) {
+        LicenseStatus status = Util.getLicenseStatus(ProductIdentifier.POLICY_MANAGER);
+        String timeLeft = status.getTimeRemaining();
+        if (!status.isExpired()) {
+            // IF THIS IS A TRIAL, UPDATE THE TITLE BAR
+            if (status.isTrial()) {
+                setTitle(NAME_POLICY_MANAGER + " : " + status.getType() + " (" + timeLeft + ")");
+            }
             // AVAILABLE RACKS ////// (THIS MUST BE LAST BECAUSE IT VALIDATES SETTINGS)
             PolicyAvailableJPanel policyAvailableJPanel = new PolicyAvailableJPanel();
             addTab(NAME_AVAILABLE_POLICIES, null, policyAvailableJPanel);
@@ -95,6 +102,11 @@ public class PolicyJDialog extends MConfigJDialog {
             policyAvailableJPanel.setSettingsChangedListener(this);
         }
         else {
+            // IF THIS IS A TRIAL, UPDATE THE TITLE BAR
+            if (status.hasLicense() && status.isTrial()) {
+                setTitle(NAME_POLICY_MANAGER + " : " + status.getType() + " (" + timeLeft + ")");
+            }
+
             PremiumJPanel policyPremiumJPanel = new PremiumJPanel();            
             addTab(NAME_AVAILABLE_POLICIES, null, policyPremiumJPanel);
         }

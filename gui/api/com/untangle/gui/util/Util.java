@@ -77,6 +77,7 @@ import com.untangle.uvm.*;
 import com.untangle.uvm.addrbook.*;
 import com.untangle.uvm.client.*;
 import com.untangle.uvm.license.RemoteLicenseManager;
+import com.untangle.uvm.license.LicenseStatus;
 import com.untangle.uvm.logging.*;
 import com.untangle.uvm.networking.ping.RemotePingManager;
 import com.untangle.uvm.node.*;
@@ -318,7 +319,11 @@ public class Util {
 
     // PREMIUM //////////////////////
     public static boolean getIsPremium(String identifier){
-        return !getLicenseManager().getLicenseStatus(identifier).isExpired();
+        return !getLicenseStatus(identifier).isExpired();
+    }
+
+    public static LicenseStatus getLicenseStatus(String identifier){
+        return getLicenseManager().getLicenseStatus(identifier);
     }
 
     public static boolean getIsPremium(){

@@ -54,7 +54,7 @@ public class RemoteLicenseManagerImpl implements RemoteLicenseManager
     {
         if ( this.licenseManager == null ) {
             /* no manager, so status is always no license */
-            return new LicenseStatus( false, identifier, "unused", new Date( 0 ));
+            return new LicenseStatus( false, identifier, "unused", new Date( 0 ), "expired", false);
         }
 
         return this.licenseManager.getLicenseStatus( identifier );
