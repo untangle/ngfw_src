@@ -41,7 +41,7 @@ class SpecialSingleSignOn extends SingleSignOn
     /* Dirty hack designed to ignore sessions that are in this context path */
     private final Set<String> uvmContextSet;
 
-    private BasePortalManager pmgr;
+    private final LocalUvmContext uvmContext;
 
     SpecialSingleSignOn(LocalUvmContext uvmContext, String ... contextPathArray )
     {
@@ -49,9 +49,8 @@ class SpecialSingleSignOn extends SingleSignOn
 
         for ( String contextPath : contextPathArray ) contextSet.add( contextPath );
 
+        this.uvmContext = uvmContext;
         this.uvmContextSet =  Collections.unmodifiableSet( contextSet );
-
-        pmgr = (BasePortalManager) uvmContext.portalManager();
     }
 
     /**
@@ -87,6 +86,7 @@ class SpecialSingleSignOn extends SingleSignOn
         if (principal != null && principal instanceof BasePortalLogin) {
             if (containerLog.isDebugEnabled())
                 containerLog.debug( "Checking liveness for " + principal.getName());
+            BasePortalManager pmgr = (BasePortalManager) uvmContext.portalManager();
             boolean live = pmgr.isLive(principal);
             if (!live) {
                 request.setAuthType(null);
