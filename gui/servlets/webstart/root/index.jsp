@@ -108,7 +108,7 @@ function showMessage() {
 <% } %>
             
 <% if ( isDownload ) { %>
-            <object codebase="http://java.sun.com/update/1.6.0/jinstall-6-windows-i586.cab#Version=6,0,0,99">
+            <object codebase="http://java.sun.com/update/1.6.0/jinstall-6-windows-i586.cab#Version=6,0,0,99"
                     classid="clsid:8AD9C840-044E-11D1-B3E9-00805F499D93"
                     height="0"
                     width="0">
