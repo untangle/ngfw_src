@@ -892,7 +892,8 @@ public class UvmContextImpl extends UvmContextBase
         try {
             bpm = (BasePortalManager)Class.forName(bpmClass).newInstance();
         } catch (Exception exn) {
-            logger.info("could not load PortalManager: " + bpmClass, exn);
+            logger.info("could not load PortalManager: " + bpmClass);
+            logger.debug("unable to load PortalManager: " + bpmClass, exn);
         }
 
         BasePortalManager pm = null == bpm ? new DefaultPortalManager() : bpm;
@@ -910,6 +911,7 @@ public class UvmContextImpl extends UvmContextBase
             if (refreshManagers) {
                 portalManager = findPortalManager();
                 policyManagerFactory.refresh();
+                addressBookFactory.refresh();
             }
 
             return true;

@@ -24,7 +24,7 @@ import com.untangle.uvm.addrbook.RemoteAddressBook;
 class AddressBookFactory
 {
     private static final String PROPERTY_ADDRESSBOOK_IMPL = "com.untangle.uvm.addrbook";
-    private static final String PREMIUM_ADDRESSBOOK_IMPL = "com.untangle.uvm.engine.addrbook.PremiumAddressBookImpl";
+    private static final String PREMIUM_ADDRESSBOOK_IMPL = "com.untangle.uvm.engine.PremiumAddressBookImpl";
 
     private final UtLogger logger = new UtLogger(getClass());
 
