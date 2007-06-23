@@ -292,7 +292,7 @@ function areBridgesUnconfigured() {
         
         ## Dump all of the interfaces, excluding the interfaces that are not
         ## interesting
-        find ${SYSFS_INTERFACE_PATH} -maxdepth 1 -mindepth 1 | grep -v '\(lo\|dummy\|tun\|br\|tap\|ppp\)'
+        find ${SYSFS_INTERFACE_PATH} -maxdepth 1 -mindepth 1 | grep -v '\(lo\|dummy\|tun\|br\|tap\|ppp\|bpq\|yam\|shaper\|sdl\|scc\|eql\|bond\|bcsh\|bcsf\|bcp\|bce\)'
         
         ## Remove the prefixes and jibberish
     } |  sed -e "s|${SYSFS_INTERFACE_PATH}/||g" -e 's|/brif/| |' | sort |
@@ -310,7 +310,7 @@ function deconfigureAllInterfaces() {
         ifconfig ${l_interface} 0.0.0.0 -promisc
     done
 
-    l_interfaceList=`ifconfig -a | \grep '^[^ ]' | awk '{ print $1 }' | \grep  '\(br\|eth\)'`
+    l_interfaceList=`ifconfig -a | \grep '^[^ ]' | awk '{ print $1 }' | \grep '\(br\|eth\)'`
     echo "Deconfiguring all interfaces, second pass: ${l_interfaceList}"
     ## This is a safety measure to delete aliases.
     for l_interface in ${l_interfaceList} ; do 
