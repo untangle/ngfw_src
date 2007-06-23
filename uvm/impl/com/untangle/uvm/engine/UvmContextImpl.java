@@ -907,9 +907,9 @@ public class UvmContextImpl extends UvmContextBase
         if (main.loadRup()) {
             main.schemaUtil().initSchema("settings", "rupuvm");
             loggingManager.initSchema("rupuvm");
+            refreshSessionFactory();
 
             if (refreshManagers) {
-                refreshSessionFactory();
                 portalManager = findPortalManager();
                 policyManagerFactory.refresh();
                 addressBookFactory.refresh();
