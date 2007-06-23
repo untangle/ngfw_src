@@ -204,7 +204,7 @@ EOF
         echo "ANALYZE;" | $PSQL uvm
 
         # create files w/ username and hostname lists for usersummary-reports
-        $PSQL -qt uvm -c "SELECT DISTINCT username FROM events.uvm_lookup_evt;" -o $REPORT_DIR/current/uname.tmp2
+        $PSQL -qt uvm -c "SELECT DISTINCT username FROM events.u_lookup_evt;" -o $REPORT_DIR/current/uname.tmp2
         grep -v "^$" $REPORT_DIR/current/uname.tmp2 > $REPORT_DIR/current/uname.tmp
         $PSQL -qt uvm -c "SELECT DISTINCT hname FROM reports.sessions WHERE client_intf=1;" -o $REPORT_DIR/current/hname.tmp2
         grep -v "^$" $REPORT_DIR/current/hname.tmp2 > $REPORT_DIR/current/hname.tmp

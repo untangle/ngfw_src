@@ -15,4 +15,4 @@
 -- Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
 --
 
-DELETE FROM shield_statistic_evt WHERE time_stamp < (:cutoff)::timestamp;
+DELETE FROM n_shield_statistic_evt WHERE time_stamp < (:cutoff)::timestamp;

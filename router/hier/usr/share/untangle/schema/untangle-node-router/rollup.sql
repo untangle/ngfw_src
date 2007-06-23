@@ -32,5 +32,5 @@ DELETE FROM n_router_evt_dhcp_abs_leases
 
 DELETE FROM n_router_dhcp_abs_lease
     WHERE NOT EXISTS
-        (SELECT 1 FROM tr_nat_evt_n_router_dhcp_abs_leases
+        (SELECT 1 FROM n_router_dhcp_abs_leases
             WHERE n_router_dhcp_abs_lease.event_id = lease_id);
