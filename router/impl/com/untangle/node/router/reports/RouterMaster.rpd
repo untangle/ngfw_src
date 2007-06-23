@@ -1,5 +1,5 @@
 TEMPLATE=MasterOfTwoChildren
-REPORT_NAME=NatMaster
+REPORT_NAME=RouterMaster
 REPORT_TITLE=Router - Summary
 EXTRA_PARAM_1.name=reportTitlePrefix
 EXTRA_PARAM_1.type=java.lang.String
