@@ -108,10 +108,10 @@ function showMessage() {
 <% } %>
             
 <% if ( isDownload ) { %>
-            <object codebase="http://java.sun.com/update/1.5.0/jinstall-1_5_0_07-windows-i586.cab"
-                            classid="clsid:5852F5ED-8BF4-11D4-A245-0080C6F74284"
-                            height="0"
-                            width="0">
+            <object codebase="http://java.sun.com/update/1.6.0/jinstall-6-windows-i586.cab#Version=6,0,0,99">
+                    classid="clsid:8AD9C840-044E-11D1-B3E9-00805F499D93"
+                    height="0"
+                    width="0">
               <param name="type" value="application/x-java-applet" />
               <param name="app" value="<%=cb%>gui.jnlp" />
               <param name="back" value="true" />
@@ -119,7 +119,7 @@ function showMessage() {
 
             </div>            
             <!-- Alternate HTML for browsers which cannot instantiate the object -->
-            <a href="http://www.untangle.com/javainstaller.html"><b>Download Java&trade; v1.5</b></a>
+            <a href="http://www.untangle.com/javainstaller.html"><b>Download Java&trade; v1.6</b></a>
             
        </center>                                
 <% } %>
@@ -157,9 +157,9 @@ function showMessage() {
 
 
       <div class="java-download">
-       <a href="/java/jre-1_5_0_07-windows-i586-p.exe">Download Java&trade; v1.5 (Offline)</a><br />
+       <a href="/java/jre-6u1-windows-i586-p.exe">Download Java&trade; v1.6 (Offline)</a><br />
 <% if ( !isDownload ) { %>
-             <a href="download.html">Download Java&trade; v1.5 (Online)</a><br />
+             <a href="download.html">Download Java&trade; v1.6 (Online)</a><br />
 <% } %>
       </div>
 
