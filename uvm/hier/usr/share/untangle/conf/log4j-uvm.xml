@@ -100,7 +100,7 @@
   </category>
 
   <category name="com.untangle.uvm.reporting">
-    <priority value="DEBUG"/>
+    <priority value="INFO"/>
   </category>
 
   <category name="com.untangle.node.portal.proxy">
