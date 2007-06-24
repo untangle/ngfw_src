@@ -884,7 +884,7 @@ class MailSenderImpl implements MailSender
     public static void main(String[] args)
     {
         String subject = "Untangle Reports"; // XXX Make default unsuck.
-        JarFile uvmJarFile = null;
+        File uvmClassDir = null;
         File bodyFile = null;
         List<File> extraFiles = new ArrayList<File>();
         List<String> extraLocations = new ArrayList<String>();
@@ -893,8 +893,8 @@ class MailSenderImpl implements MailSender
             for (int i = 0; i < args.length; i++) {
                 if (args[i].equals("-s")) {
                     subject = args[++i];
-                } else if (uvmJarFile == null) {
-                    uvmJarFile = new JarFile(args[i]);
+                } else if (uvmClassDir == null) {
+                    uvmClassDir = new File(args[i]);
                 } else if (bodyFile == null) {
                     bodyFile = new File(args[i]);
                 } else {
@@ -919,12 +919,12 @@ class MailSenderImpl implements MailSender
                     extraFiles.add(extraFile);
                 }
             }
-            if (uvmJarFile == null || bodyFile == null)
+            if (uvmClassDir == null || bodyFile == null)
                 usage();
 
-            List<JarFile> jfs = new ArrayList<JarFile>();
-            jfs.add(uvmJarFile);
-            org.hibernate.SessionFactory sessionFactory = Util.makeStandaloneSessionFactory(jfs);
+            List<File> cds = new ArrayList<File>();
+            cds.add(uvmClassDir);
+            org.hibernate.SessionFactory sessionFactory = Util.makeStandaloneSessionFactory(cds, null);
             MailSenderImpl us = new MailSenderImpl(sessionFactory);
 
             // Read in the body file.

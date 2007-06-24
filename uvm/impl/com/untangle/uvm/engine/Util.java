@@ -65,13 +65,13 @@ class Util
         return sessionFactory;
     }
 
-    static SessionFactory makeStandaloneSessionFactory(List<JarFile> jfs)
+    static SessionFactory makeStandaloneSessionFactory(List<File> classDirs, List<JarFile> jfs)
     {
         SessionFactory sessionFactory = null;
 
         try {
             AnnotationConfiguration cfg = new AnnotationConfiguration();
-            addAnnotatedClasses(jfs, cfg);
+            addAnnotatedClasses(classDirs, jfs, cfg);
 
             long t0 = System.currentTimeMillis();
             sessionFactory = cfg.buildSessionFactory();
@@ -123,17 +123,30 @@ class Util
         }
     }
 
-    private static void addAnnotatedClasses(List<JarFile> jfs,
+    private static void addAnnotatedClasses(List<File> classDirs, List<JarFile> jfs,
                                             AnnotationConfiguration cfg)
     {
         List<URL> urls = new ArrayList<URL>(jfs.size());
 
-        for (JarFile jf : jfs) {
-            String urlStr = "file://" + jf.getName();
-            try {
-                urls.add(new URL(urlStr));
-            } catch (MalformedURLException exn) {
-                logger.warn("skipping bad url: " + urlStr, exn);
+        if (classDirs != null) {
+            for (File cd : classDirs) {
+                String urlStr = "file://" + cd.getPath();
+                try {
+                    urls.add(new URL(urlStr));
+                } catch (MalformedURLException exn) {
+                    logger.warn("skipping bad url: " + urlStr, exn);
+                }
+            }
+        }
+
+        if (jfs != null) {
+            for (JarFile jf : jfs) {
+                String urlStr = "file://" + jf.getName();
+                try {
+                    urls.add(new URL(urlStr));
+                } catch (MalformedURLException exn) {
+                    logger.warn("skipping bad url: " + urlStr, exn);
+                }
             }
         }
 
