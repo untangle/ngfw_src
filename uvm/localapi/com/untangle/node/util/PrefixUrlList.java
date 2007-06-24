@@ -115,7 +115,7 @@ public class PrefixUrlList extends UrlList
 
             // For 5.0, give other threads a chance since this loop is so heavy. XXX
             try {
-                Thread.sleep(2);
+                Thread.sleep(1);
             } catch (InterruptedException x) {
                 throw new IOException("Interrupted in sleep");
             }
