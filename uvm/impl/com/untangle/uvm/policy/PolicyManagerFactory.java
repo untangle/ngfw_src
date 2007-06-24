@@ -18,6 +18,8 @@
 
 package com.untangle.uvm.policy;
 
+import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.localapi.LocalIntfManager;
 import org.apache.log4j.Logger;
 
 public class PolicyManagerFactory
@@ -64,6 +66,8 @@ public class PolicyManagerFactory
         }
         try {
             this.premium = (PremiumPolicyManager)Class.forName(className).newInstance();
+            LocalIntfManager lim = LocalUvmContextFactory.context().localIntfManager();
+            this.premium.reconfigure(lim.getArgonIntfArray());
             this.remote = new RemotePolicyManagerAdaptor(this.premium);
         } catch ( Exception e ) {
             logger.info("Could not load premium PolicyManager: " + className, e);
