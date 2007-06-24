@@ -127,7 +127,7 @@ class Util
     private static void addAnnotatedClasses(List<File> classDirs, List<JarFile> jfs,
                                             AnnotationConfiguration cfg)
     {
-        List<URL> urls = new ArrayList<URL>(jfs.size());
+        List<URL> urls = new ArrayList<URL>();
 
         if (classDirs != null) {
             for (File cd : classDirs) {
