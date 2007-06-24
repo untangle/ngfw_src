@@ -112,6 +112,13 @@ public class PrefixUrlList extends UrlList
                     logger.warn("could not add database entry", exn);
                 }
             }
+
+            // For 5.0, give other threads a chance since this loop is so heavy. XXX
+            try {
+                Thread.sleep(2);
+            } catch (InterruptedException x) {
+                throw new IOException("Interrupted in sleep");
+            }
         }
     }
 
