@@ -910,9 +910,10 @@ public class UvmContextImpl extends UvmContextBase
             refreshSessionFactory();
 
             if (refreshManagers) {
-                portalManager = findPortalManager();
+                // Do these in same order as boot time.
                 policyManagerFactory.refresh();
                 addressBookFactory.refresh();
+                portalManager = findPortalManager();
             }
 
             return true;
