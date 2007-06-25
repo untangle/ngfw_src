@@ -1,3 +1,0 @@
-For developer build type: rake
-For Debian packages: debuild -us -uc
-For more information: http://wiki.untangle.com/index.php/Building_the_Code

@@ -82,17 +82,35 @@ public class UrlDatabase<T>
 
     public void updateAll(boolean async)
     {
+        if (async) {
+            Thread t = new Thread(new Runnable() {
+                    public void run()
+                    {
+                        updateAllInternal();
+                    }
+                }, "UrlDatadbase.updateAll");
+            t.setDaemon(true);
+            t.start();
+        } else {
+            updateAllInternal();
+        }
+    }
+
+    // This one always updates synchronously, so that we don't have multiple
+    // threads killing us just after startup.
+    private void updateAllInternal()
+    {
         for (T o : whitelists.keySet()) {
             UrlList ul = whitelists.get(o);
             if (null != ul) {
-                ul.update(async);
+                ul.update(false);
             }
         }
 
         for (T o : blacklists.keySet()) {
             UrlList ul = blacklists.get(o);
             if (null != ul) {
-                ul.update(async);
+                ul.update(false);
             }
         }
     }
