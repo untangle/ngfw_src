@@ -310,3 +310,41 @@ hr {
     font: bold 14pt Arial,Sans-Serif;
     color: #777;
 }
+
+/* Old style */
+#table_main_center {
+    background: url(../images/background_table_main_center.gif) repeat;
+}
+
+#table_main_top {
+    background: url(../images/background_table_main_top.gif) repeat-x;
+}
+
+#table_main_top_left {
+    background: url(../images/rounded_corner_main_top_left.gif) no-repeat;
+}
+
+#table_main_top_right {
+    background: url(../images/rounded_corner_main_top_right.gif) no-repeat;
+}
+
+#table_main_right {
+    background: url(../images/background_table_main_right.gif) repeat-y;
+}
+
+#table_main_bottom {
+    background: url(../images/background_table_main_bottom.gif) repeat-x;
+}
+
+#table_main_bottom_left {
+    background: url(../images/rounded_corner_main_bottom_left.gif) no-repeat;
+}
+
+#table_main_bottom_right {
+    background: url(../images/rounded_corner_main_bottom_right.gif) no-repeat;
+}
+
+#table_main_left {
+    background: url(../images/background_table_main_left.gif) repeat-y;
+}
+
