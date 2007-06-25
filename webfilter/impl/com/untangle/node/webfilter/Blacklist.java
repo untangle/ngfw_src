@@ -121,7 +121,7 @@ class Blacklist
             }
         }
 
-        urlDatabase.updateAll(true);
+        urlDatabase.updateAll(false);
 
         blockedUrls = makeCustomList(settings.getBlockedUrls());
         passedUrls = makeCustomList(settings.getPassedUrls());
