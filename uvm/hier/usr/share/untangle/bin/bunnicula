@@ -90,7 +90,7 @@ done
 if [ ! -f $CD_INSTALL ] ; then
     JAVA_OPTS="-Dcom.untangle.isUntangleAppliance=true $JAVA_OPTS"
 fi
-if (lspci|grep -q VMware) then
+if (lspci|grep -qi VMWare) then
     JAVA_OPTS="-Dcom.untangle.isInsideVM=true $JAVA_OPTS"
 fi
 
