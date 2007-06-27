@@ -17,6 +17,9 @@ Description: untangle-libuvmcore
 Package: untangle-casing-ftp
 Architecture: any
 Depends: untangle-vm
+Conflicts: ftp-casing
+Provides: ftp-casing
+Replaces: ftp-casing
 XB-Display-Name: File Transfer
 XB-Untangle-Type: casing
 XB-untangle-Jar-Prefix: untangle-casing-ftp
@@ -27,6 +30,9 @@ Description: The Untangle File Transfer/FTP Decoder
 Package: untangle-casing-http
 Architecture: any
 Depends: untangle-vm
+Conflicts: http-casing
+Provides: http-casing
+Replaces: http-casing
 XB-Display-Name: Web
 XB-Untangle-Type: casing
 XB-untangle-Jar-Prefix: untangle-casing-http
@@ -37,6 +43,9 @@ Description: The Untangle Web Decoder
 Package: untangle-casing-mail
 Architecture: any
 Depends: untangle-vm
+Conflicts: mail-casing
+Provides: mail-casing
+Replaces: mail-casing
 XB-Display-Name: Email
 XB-Untangle-Type: casing
 XB-untangle-Jar-Prefix: untangle-casing-mail
@@ -47,6 +56,9 @@ Description: The Untangle Email Decoder
 Package: untangle-node-shield
 Architecture: any
 Depends: untangle-vm
+Conflicts: airgap-transform
+Provides: airgap-transform
+Replaces: airgap-transform
 XB-Display-Name: Attack Blocker
 XB-Untangle-Type: node
 XB-Untangle-Jar-Prefix: untangle-node-shield
@@ -124,6 +136,9 @@ Description: Attack Blocker
 Package: untangle-node-spyware
 Architecture: any
 Depends: untangle-vm, untangle-casing-http
+Conflicts: spyware-transform
+Provides: spyware-transform
+Replaces: spyware-transform
 XB-Display-Name: Spyware Blocker
 XB-Untangle-Type: node
 XB-Untangle-Jar-Prefix: untangle-node-spyware
@@ -177,6 +192,9 @@ Description: Spyware Blocker
 Package: untangle-node-webfilter
 Architecture: any
 Depends: untangle-vm, untangle-casing-http
+Conflicts: httpblocker-transform
+Provides: httpblocker-transform
+Replaces: httpblocker-transform
 XB-Display-Name: Web Filter
 XB-Untangle-Type: node
 XB-Untangle-Jar-Prefix: untangle-node-webfilter
@@ -243,6 +261,9 @@ Description: Web Filter
 Package: untangle-node-clam
 Architecture: any
 Depends: untangle-vm, untangle-base-virus, untangle-clamav-config, untangle-casing-http, untangle-casing-ftp, untangle-casing-mail
+Conflicts: clam-transform
+Provides: clam-transform
+Replaces: clam-transform
 XB-Display-Name: Virus Blocker
 XB-Untangle-Type: node
 XB-Untangle-Jar-Prefix: untangle-node-clam
@@ -279,6 +300,9 @@ Description: Virus Blocker
 Package: untangle-node-protofilter
 Architecture: any
 Depends: untangle-vm
+Conflicts: protofilter-transform
+Provides: protofilter-transform
+Replaces: protofilter-transform
 XB-Display-Name: Protocol Control
 XB-Untangle-Type: node
 XB-Untangle-Jar-Prefix: untangle-node-protofilter
@@ -366,6 +390,9 @@ Description: Protocol Control
 Package: untangle-node-router
 Architecture: any
 Depends: untangle-vm, dnsmasq, untangle-casing-ftp
+Conflicts: nat-transform
+Provides: nat-transform
+Replaces: nat-transform
 XB-Display-Name: Router
 XB-Untangle-Type: node
 XB-Untangle-Jar-Prefix: untangle-node-router
@@ -426,6 +453,9 @@ Description: Router
 Package: untangle-node-firewall
 Architecture: any
 Depends: untangle-vm
+Conflicts: firewall-transform
+Provides: firewall-transform
+Replaces: firewall-transform
 XB-Display-Name: Firewall
 XB-Untangle-Type: node
 XB-Untangle-Jar-Prefix: untangle-node-firewall
@@ -479,6 +509,9 @@ Description: Firewall
 Package: untangle-node-spamassassin
 Architecture: any
 Depends: untangle-vm, untangle-base-spam, untangle-casing-mail
+Conflicts: spamassassin-transform
+Provides: spamassassin-transform
+Replaces: spamassassin-transform
 XB-Display-Name: Spam Blocker
 XB-Untangle-Type: node
 XB-Untangle-Jar-Prefix: untangle-node-spamassassin
@@ -560,6 +593,9 @@ Description: Spam Blocker
 Package: untangle-node-phish
 Architecture: any
 Depends: untangle-vm, untangle-base-spam, untangle-clamav-config, untangle-casing-mail, untangle-casing-http
+Conflicts: clamphish-transform
+Provides: clamphish-transform
+Replaces: clamphish-transform
 XB-Display-Name: Phish Blocker
 XB-Untangle-Type: node
 XB-Untangle-Jar-Prefix: untangle-node-phish
@@ -656,6 +692,9 @@ Package: untangle-node-test
 Section: qa/net
 Architecture: any
 Depends: untangle-vm
+Conflicts: test-transform
+Provides: test-transform
+Replaces: test-transform
 XB-Display-Name: Test
 XB-Untangle-Type: node
 XB-Untangle-Jar-Prefix: untangle-node-test
@@ -764,6 +803,9 @@ Description: Test
 Package: untangle-node-openvpn
 Architecture: any
 Depends: untangle-vm, openvpn, untangle-nsis-addons, sysutils, zip, openssl
+Conflicts: openvpn-transform
+Provides: openvpn-transform
+Replaces: openvpn-transform
 XB-Display-Name: OpenVPN
 XB-Untangle-Type: node
 XB-Untangle-Jar-Prefix: untangle-node-openvpn
@@ -834,6 +876,9 @@ Description: OpenVPN
 Package: untangle-node-ips
 Architecture: any
 Depends: untangle-vm, untangle-casing-http, untangle-snort-rules
+Conflicts: ids-transform
+Provides: ids-transform
+Replaces: ids-transform
 XB-Display-Name: Intrusion Prevention
 XB-Untangle-Type: node
 XB-Untangle-Jar-Prefix: untangle-node-ips
@@ -906,6 +951,9 @@ Description: Intrusion Prevention
 Package: untangle-node-reporting
 Architecture: any
 Depends: untangle-vm
+Conflicts: reporting-transform
+Provides: reporting-transform
+Replaces: reporting-transform
 XB-Display-Name: Untangle Reports
 XB-Untangle-Type: node
 XB-Untangle-Jar-Prefix: untangle-node-reporting
@@ -958,6 +1006,9 @@ Description: Untangle Reports
 Package: untangle-base-virus
 Architecture: any
 Depends: untangle-vm
+Conflicts: virus-base
+Provides: virus-base
+Replaces: virus-base
 XB-Display-Name: Virus Blocker Base
 XB-Untangle-Type: base
 Description: Virus Blocker Base
@@ -966,6 +1017,9 @@ Description: Virus Blocker Base
 Package: untangle-base-spam
 Architecture: any
 Depends: untangle-vm, untangle-spamassassin-update
+Conflicts: spam-base
+Provides: spam-base
+Replaces: spam-base
 XB-Display-Name: Spam Blocker Base
 XB-Untangle-Type: base
 Description: Spam Blocker Base
@@ -1020,6 +1074,7 @@ Description: Untangle Server Thirdparty Libraries
 Package: untangle-vm
 Architecture: any
 Depends: untangle-client-windows-jre, untangle-libuvmcore, libuvm-thirdparty, sudo, untangle-iptables (>= 1.3.3), libxml2, ddclient, untangle-libnfnetlink0, untangle-libnetfilter-queue0, db4.2-util, untangle-ujac2pdf, at, ebtables, mime-support, untangle-nsis-addons, dnsmasq, pppoe, bridge-utils, libsysfs1, iputils-ping, curl, sg3-utils
+Provides: mvvm
 Conflicts: mvvm
 Replaces: mvvm
 XB-Display-Name: Untangle Server
