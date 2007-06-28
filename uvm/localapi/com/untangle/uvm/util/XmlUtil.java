@@ -1,5 +1,5 @@
 /*
- * $HeadURL: svn://chef/work/src/uvm/localapi/com/untangle/uvm/util/XmlUtil.java $
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify

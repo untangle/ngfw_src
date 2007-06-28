@@ -27,7 +27,7 @@ jts = []
 jts << JarTarget.buildTarget(uvm, Jars::Base, 'bootstrap', "#{SRC_HOME}/uvm/bootstrap")
 
 ## API
-jts << (jt = JarTarget.buildTarget(uvm, Jars::Base, 'api', ["#{SRC_HOME}/uvm/api", '../version']))
+jts << (jt = JarTarget.buildTarget(uvm, Jars::Base, 'api', ["#{SRC_HOME}/uvm/api", 'version']))
 BuildEnv::SRC.installTarget.installJars(jt, uvm.getWebappDir('webstart'), nil, true)
 
 ## Local API
