@@ -52,15 +52,17 @@ public class Version {
      */
     public static String getVersion()
     {
-        String line;
+        String line = "unknown version";
 
         try {
             InputStream is = Version.class.getClassLoader().getResourceAsStream("PUBVERSION");
-            InputStreamReader isr = new InputStreamReader(is);
-            BufferedReader bis = new BufferedReader(isr);
-            line = bis.readLine();
+            if (is != null) {
+                InputStreamReader isr = new InputStreamReader(is);
+                BufferedReader bis = new BufferedReader(isr);
+                line = bis.readLine();
+            }
         } catch (IOException exn) {
-            line = "unknown version";
+            System.out.println("Exception reading PUBVERSION: " + exn);
         }
 
         return line;
