@@ -1,12 +1,12 @@
-                UNTANGLE NETWORKS INC.
+                     UNTANGLE INC.
 
          PROPRIETARY END USER LICENSE AGREEMENT
 
 This End User License Agreement (this "Agreement") is entered into
-between Untangle Networks, Inc. ("Untangle") and the person or
-entity ("you" or "Licensee") that purchases, receives, installs, or
-uses the software program accompanying this Agreement. If you do
-not agree to the terms and conditions of this Agreement, Untangle
+between Untangle, Inc. ("Untangle") and the person or entity 
+("you" or "Licensee") that purchases, receives, installs, or uses 
+the software program accompanying this Agreement. If you do not 
+agree to the terms and conditions of this Agreement, Untangle
 is unwilling to license the Software Products to you.
 
 PLEASE CAREFULLY READ THE TERMS BELOW BEFORE CLICKING ON THE "I
