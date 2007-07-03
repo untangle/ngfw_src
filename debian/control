@@ -1064,6 +1064,9 @@ Description: Untangle Client
 Package: untangle-libuvmthirdparty
 Architecture: any
 Depends: sun-java5-jre
+Conflicts: libuvm-thirdparty
+Provides: libuvm-thirdparty
+Replaces: libuvm-thirdparty
 XB-Display-Name: Untangle Server Thirdparty Libraries
 XB-Untangle-Type: library
 Description: Untangle Server Thirdparty Libraries
