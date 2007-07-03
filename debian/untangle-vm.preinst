@@ -16,7 +16,10 @@ if [ -d $oldShare ] ; then
   mkdir -p $newShare
   tar -C $newShare -xf $tmpBackup
   mv $tmpBackup $finalBackup
-  gzip -9 $finalBackup
+  gzip $finalBackup
+  mv $oldShare/web/reports $newShare/web
+  mv $oldShare/db $newShare
+  mv $oldShare/autodump $newShare
   rm -fr $oldShare
 fi
 
