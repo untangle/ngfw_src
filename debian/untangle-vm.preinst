@@ -8,12 +8,13 @@ tmpBackup="/tmp/$backup"
 finalBackup="${newShare}/$backup"
 
 if [ -d $oldShare ] ; then
-  tar -C $oldShare -cf $tmpBackup conf
+  tar -C $oldShare -cf $tmpBackup conf activation.key
   mkdir -p $newShare/web
   tar -C $newShare -xf $tmpBackup
   mv $tmpBackup $finalBackup
   gzip $finalBackup
   mv $oldShare/web/reports $newShare/web
+  mv $oldShare/quarantine $newShare
 #  rm -fr $oldShare
 fi
 
