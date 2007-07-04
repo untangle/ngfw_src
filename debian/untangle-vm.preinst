@@ -8,19 +8,13 @@ tmpBackup="/tmp/$backup"
 finalBackup="${newShare}/$backup"
 
 if [ -d $oldShare ] ; then
-  tar -C $oldShare \
-      --exclude="autodump" \
-      --exclude="reports" \
-      --exclude="db" -cf $tmpBackup .
-
-  mkdir -p $newShare
+  tar -C $oldShare -cf $tmpBackup conf
+  mkdir -p $newShare/web
   tar -C $newShare -xf $tmpBackup
   mv $tmpBackup $finalBackup
   gzip $finalBackup
   mv $oldShare/web/reports $newShare/web
-  mv $oldShare/db $newShare
-  mv $oldShare/autodump $newShare
-  rm -fr $oldShare
+#  rm -fr $oldShare
 fi
 
 # Kill any already-running reports (Bug 1249)
