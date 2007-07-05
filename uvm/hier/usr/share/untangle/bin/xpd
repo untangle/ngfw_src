@@ -5,7 +5,7 @@ GENERATOR_BASE=/usr/share/untangle/conf/licenses
 t_generator="${GENERATOR_BASE}/${1}"
 t_password=$2
 t_prefix=$3
-t_destination="${t_generator/.ulg/.ulf}"
+t_destination="${t_generator/.ulg$/.ulf}"
 
 if [ ! -f "${t_generator}" ]; then
     exit
