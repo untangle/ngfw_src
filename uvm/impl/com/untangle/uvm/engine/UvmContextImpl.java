@@ -913,6 +913,7 @@ public class UvmContextImpl extends UvmContextBase
                 // Do these in same order as boot time.
                 policyManagerFactory.refresh();
                 addressBookFactory.refresh();
+                phoneBookFactory.refresh();
                 portalManager = findPortalManager();
             }
 
