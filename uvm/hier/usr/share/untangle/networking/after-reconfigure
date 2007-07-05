@@ -13,6 +13,7 @@ afterReconfigure() {
     invoke-rc.d ntpdate restart
     invoke-rc.d ntp-server restart
     invoke-rc.d spamassassin restart
+    invoke-rc.d untangle-support-agent restart
 
     # remote support is enabled if sshd us running
     pidof sshd && /etc/init.d/untangle-support-agent restart
