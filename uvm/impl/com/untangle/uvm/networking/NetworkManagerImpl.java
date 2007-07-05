@@ -795,6 +795,8 @@ public class NetworkManagerImpl implements LocalNetworkManager
     /* Update all of the iptables rules and the inside address database */
     private void generateRules() throws NetworkException
     {
+        if ( this.isShutdown ) return;
+
         ScriptWriter scriptWriter = new ScriptWriter();
         /* Set whether or not setup has completed */
         this.ruleManager.setHasCompletedSetup( this.networkSettings.getHasCompletedSetup());

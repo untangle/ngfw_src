@@ -7,7 +7,7 @@ REGINFO="@UVM_HOME@/registration.info"
 
 afterReconfigure() {
 
-    # Gotta wait a little whlie for the bridge to reconfigure
+    # Gotta wait a little while for the bridge to reconfigure
     sleep 5
 
     invoke-rc.d ntpdate restart
