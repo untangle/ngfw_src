@@ -106,7 +106,7 @@ class LogWorker implements Runnable
                     try {
                         persist();
                     } catch (Exception exn) { // never say die
-                        logger.error("fire on the poop deck", exn);
+                        logger.error("Hibernate error, see nested exception below", exn);
                     }
                 }
 
