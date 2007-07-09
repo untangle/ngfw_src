@@ -540,11 +540,11 @@ ALTER TABLE settings.u_tid
     ADD CONSTRAINT fk_tid_policy
     FOREIGN KEY (policy_id) REFERENCES settings.u_policy;
 
-ALTER TABLE settings.user_policy_rule
+ALTER TABLE settings.u_user_policy_rule
     ADD CONSTRAINT fk_user_policy_rule_parent
     FOREIGN KEY (set_id) REFERENCES settings.u_user_policy_rules;
 
-ALTER TABLE settings.user_policy_rule
+ALTER TABLE settings.u_user_policy_rule
     ADD CONSTRAINT fk_user_policy_rule_policy
     FOREIGN KEY (policy_id) REFERENCES settings.u_policy;
 
@@ -564,15 +564,15 @@ ALTER TABLE settings.u_upgrade_settings
     ADD CONSTRAINT fk_upgrade_settings
     FOREIGN KEY (period) REFERENCES settings.u_period;
 
-ALTER TABLE settings.node_args
+ALTER TABLE settings.u_node_args
     ADD CONSTRAINT fk_node_args
     FOREIGN KEY (tps_id) REFERENCES settings.u_node_persistent_state;
 
-ALTER TABLE settings.node_preferences
+ALTER TABLE settings.u_node_preferences
     ADD CONSTRAINT fk_node_preferences
     FOREIGN KEY (tid) REFERENCES settings.u_tid;
 
-ALTER TABLE settings.node_persistent_state
+ALTER TABLE settings.u_node_persistent_state
     ADD CONSTRAINT fk_node_persistent_state
     FOREIGN KEY (tid) REFERENCES settings.u_tid;
 

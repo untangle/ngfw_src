@@ -39,6 +39,8 @@ UPDATE settings.split_schema_ver SET component = 'untangle-node-boxbackup' WHERE
 UPDATE settings.split_schema_ver SET component = 'untangle-casing-ftp' WHERE component = 'ftp-casing';
 UPDATE settings.split_schema_ver SET component = 'untangle-casing-http' WHERE component = 'http-casing';
 UPDATE settings.split_schema_ver SET component = 'untangle-casing-mail' WHERE component = 'mail-casing';
+UPDATE settings.split_schema_ver SET component = 'untangle-base-virus' WHERE component = 'virus-base';
+UPDATE settings.split_schema_ver SET component = 'untangle-base-spam' WHERE component = 'spam-base';
 
 CREATE TABLE settings.split_schema_ver AS
     SELECT component::text, version AS settings_version, version AS events_version
@@ -75,7 +77,7 @@ elif [ "x$ver" = "x" ]; then
     echo "Initializing schema"
 
     cat <<EOF | $PSQL_VERBOSE
-INSERT INTO split_schema_ver VALUES ('$component', null, null);
+INSERT INTO split_schema_ver (component, settings_version, events_version)  VALUES ('$component', null, null);
 EOF
 
     if [ -e "$schema_dir/${type}-schema-$latest_ver.sql" ]; then

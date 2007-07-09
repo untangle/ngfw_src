@@ -27,11 +27,10 @@ ALTER TABLE events.portal_logout_evt RENAME TO n_portal_logout_evt;
 ALTER TABLE events.portal_app_launch_evt RENAME TO n_portal_app_launch_evt;
 ALTER TABLE events.mvvm_lookup_evt RENAME TO u_lookup_evt;
 
-DROP INDEX mvvm_login_evt_ts_idx;
-DROP INDEX mvvm_lookup_evt_ts_idx;
-DROP INDEX shield;
+-- Indexes
+ALTER TABLE mvvm_login_evt_ts_idx RENAME TO u_login_evt_ts_idx;
+ALTER TABLE mvvm_lookup_evt_ts_idx RENAME TO u_lookup_evt_ts_idx;
+ALTER TABLE shield_rejection_evt_ts_idx RENAME TO n_shield_rejection_evt_ts_idx;
 
-CREATE INDEX u_login_evt_ts_idx ON u_login_evt (time_stamp);
-CREATE INDEX u_lookup_evt_ts_idx ON u_lookup_evt (time_stamp);
-CREATE INDEX n_shield_rejection_evt_ts_idx ON n_shield_rejection_evt (time_stamp);
-
+ALTER TABLE portal_login_evt_ts_idx RENAME TO n_portal_login_evt_ts_idx;
+ALTER TABLE portal_logout_evt_ts_idx RENAME TO n_portal_logout_evt_ts_idx;
