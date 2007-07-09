@@ -158,10 +158,6 @@ public class RemoteClient
             update();
         } else if (args[0].equalsIgnoreCase("upgrade")) {
             upgrade();
-        } else if (args[0].equalsIgnoreCase("enable")) {
-            enable(args[1]);
-        } else if (args[0].equalsIgnoreCase("disable")) {
-            disable(args[1]);
         } else if (args[0].equalsIgnoreCase("extraName")) {
             extraName(args[1], args[2]);
         } else if (args[0].equalsIgnoreCase("requestInstall")) {
@@ -373,18 +369,6 @@ public class RemoteClient
         long key = tool.upgrade();
 
         doAptTail(key);
-    }
-
-    private static void enable(String mackage)
-        throws Exception
-    {
-        tool.enable(mackage);
-    }
-
-    private static void disable(String mackage)
-        throws Exception
-    {
-        tool.disable(mackage);
     }
 
     private static void extraName(String mackage, String extraName)
@@ -1046,10 +1030,6 @@ public class RemoteClient
         System.out.println("    ucli install mackage-name");
         System.out.println("    ucli uninstall mackage-name");
         System.out.println("    ucli update");
-        System.out.println("    ucli upgrade");
-        System.out.println("    ucli enable mackage-name");
-        System.out.println("    ucli disable mackage-name");
-        System.out.println("    ucli extraName mackage-name extra-name");
         System.out.println("    ucli upgrade");
         System.out.println("    ucli requestInstall mackage-name");
         System.out.println("  toolbox lists:");
