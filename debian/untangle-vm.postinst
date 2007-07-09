@@ -22,8 +22,4 @@ find /usr/share/untangle/web/webstart 2>/dev/null | xargs touch > /dev/null 2>&1
 
 /usr/share/untangle/bin/rup
 
-# FIXME: uncomment the next line when metavize -> untangle is in effect
-# (the conversion happens in preinst)
-# rm -fr /usr/share/metavize
-
 exit 0

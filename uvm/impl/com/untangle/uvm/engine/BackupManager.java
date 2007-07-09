@@ -86,7 +86,6 @@ class BackupManager {
             //Copy the bytes to a temp file
             IOUtil.bytesToFile(backupFileBytes, tempFile);
 
-            //nohup sh @PREFIX@/usr/share/metavize/uvm_restart.sh 1 2 > @PREFIX@/var/log/uvm/restart.log 2>&1 &
 
             File restartLog = new File(
                                        System.getProperty("bunnicula.log.dir") +
