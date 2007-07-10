@@ -365,7 +365,7 @@ public class UvmContextImpl extends UvmContextBase
 
     public Thread newThread(final Runnable runnable)
     {
-        return newThread(runnable, "MVThread-" + ThreadNumber.nextThreadNum());
+        return newThread(runnable, "UTThread-" + ThreadNumber.nextThreadNum());
     }
 
     public Thread newThread(final Runnable runnable, final String name)
