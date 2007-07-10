@@ -71,7 +71,7 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
 {
     private static final String DESC_PATH = "META-INF/uvm-node.xml";
 
-    private static final Object LOCK = new Object();
+    private static final int LOAD_LIMIT = 4;
 
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -481,7 +481,7 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
         List<NodePersistentState> l = new ArrayList<NodePersistentState>(unloaded.size());
         Set<String> thisPass = new HashSet<String>(unloaded.size());
 
-        for (Iterator<NodePersistentState> i = unloaded.iterator(); i.hasNext(); ) {
+        for (Iterator<NodePersistentState> i = unloaded.iterator(); l.size() < LOAD_LIMIT && i.hasNext(); ) {
             NodePersistentState tps = i.next();
             Tid tid = tps.getTid();
             NodeDesc tDesc = tDescs.get(tid);
