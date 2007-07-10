@@ -481,7 +481,8 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
         List<NodePersistentState> l = new ArrayList<NodePersistentState>(unloaded.size());
         Set<String> thisPass = new HashSet<String>(unloaded.size());
 
-        for (Iterator<NodePersistentState> i = unloaded.iterator(); l.size() < LOAD_LIMIT && i.hasNext(); ) {
+        for (Iterator<NodePersistentState> i = unloaded.iterator();
+             l.size() < LOAD_LIMIT && i.hasNext(); ) {
             NodePersistentState tps = i.next();
             Tid tid = tps.getTid();
             NodeDesc tDesc = tDescs.get(tid);
