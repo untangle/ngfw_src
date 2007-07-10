@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -81,7 +81,7 @@ public abstract class UrlList
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    // constructors -----------------------------------------------------------
+    // constructors ----------------------------------------------------------
 
     public UrlList(File dbHome, URL baseUrl, String dbName)
         throws DatabaseException
@@ -101,7 +101,7 @@ public abstract class UrlList
         db = dbEnv.openDatabase(null, dbName, dbCfg);
     }
 
-    // public methods ---------------------------------------------------------
+    // public methods --------------------------------------------------------
 
     public void update(boolean async) {
         if (async) {
@@ -139,7 +139,7 @@ public abstract class UrlList
         return false;
     }
 
-    // protected methods ------------------------------------------------------
+    // protected methods -----------------------------------------------------
 
     protected abstract void updateDatabase(Database db, BufferedReader br)
         throws IOException;
@@ -196,7 +196,7 @@ public abstract class UrlList
         return (0 > i) ? (dStr + "\t" + pStr).getBytes() : data;
     }
 
-    // private methods --------------------------------------------------------
+    // private methods -------------------------------------------------------
 
     private List<String> getPatterns(String hostStr)
     {
@@ -269,53 +269,55 @@ public abstract class UrlList
             }
         }
 
-        BufferedReader br = null;
-        try {
-            String oldVersion = getVersion(db);
+        synchronized (DB_LOCKS) {
+            BufferedReader br = null;
+            try {
+                String oldVersion = getVersion(db);
 
-            String v = null == oldVersion ? "1:1" : oldVersion.replace(".", ":");
-            URL url = new URL(baseUrl + "/update?version=" + dbName + ":" + v);
-            logger.info("updating from URL: " + url);
+                String v = null == oldVersion ? "1:1" : oldVersion.replace(".", ":");
+                URL url = new URL(baseUrl + "/update?version=" + dbName + ":" + v);
+                logger.info("updating from URL: " + url);
 
-            InputStream is = url.openStream();
-            InputStreamReader isr = new InputStreamReader(is);
-            br = new BufferedReader(isr);
+                InputStream is = url.openStream();
+                InputStreamReader isr = new InputStreamReader(is);
+                br = new BufferedReader(isr);
 
-            String line = br.readLine();
-            if (null == line) {
-                logger.info("no update");
-                return;
-            }
+                String line = br.readLine();
+                if (null == line) {
+                    logger.info("no update");
+                    return;
+                }
 
-            String newVersion;
-            boolean update;
-            Matcher matcher = VERSION_PATTERN.matcher(line);
-            if (matcher.find()) {
-                newVersion = matcher.group(1);
-                update = null != matcher.group(2);
-            } else {
-                logger.info("no update");
-                return;
-            }
+                String newVersion;
+                boolean update;
+                Matcher matcher = VERSION_PATTERN.matcher(line);
+                if (matcher.find()) {
+                    newVersion = matcher.group(1);
+                    update = null != matcher.group(2);
+                } else {
+                    logger.info("no update");
+                    return;
+                }
 
-            logger.info("updating: " + dbLock + " from: " + oldVersion
-                        + " to: " + newVersion);
+                logger.info("updating: " + dbLock + " from: " + oldVersion
+                            + " to: " + newVersion);
 
-            if (!update) {
-                clearDatabase();
-            }
+                if (!update) {
+                    clearDatabase();
+                }
 
-            updateDatabase(db, br);
+                updateDatabase(db, br);
 
-            setVersion(db, newVersion);
+                setVersion(db, newVersion);
 
-            db.getEnvironment().sync();
-        } catch (DatabaseException exn) {
-            logger.warn("could not update database", exn);
-        } catch (IOException exn) {
-            logger.warn("could not update database", exn);
-        } finally {
-            synchronized (dbLock) {
+                db.getEnvironment().sync();
+
+                logger.info(dbLock + " number entries: " + db.count());
+            } catch (DatabaseException exn) {
+                logger.warn("could not update database", exn);
+            } catch (IOException exn) {
+                logger.warn("could not update database", exn);
+            } finally {
                 DB_LOCKS.remove(dbLock);
             }
         }

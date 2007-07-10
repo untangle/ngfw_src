@@ -351,8 +351,21 @@ class Blacklist
         String category = null;
         if (dbNames != null)
             for (String dbName : dbNames) {
+                System.out.println("dbName: " + dbName);
+
+                String cat = dbName;
+
                 int i = dbName.indexOf('-');
-                String cat = 0 > i ? dbName : dbName.substring(0, i);
+                if (0 < i) {
+                    i++;
+                    if (dbName.length() > i) {
+                        int j = dbName.indexOf('-', i);
+                        if (i < j) {
+                            cat = dbName.substring(i, j);
+                        }
+                    }
+                }
+                System.out.println("CAT: " + cat);
 
                 if (category == null) {
                     category = cat;
