@@ -69,8 +69,7 @@ ALTER TABLE settings.mvvm_pppoe_connection RENAME TO u_pppoe_connection;
 ALTER TABLE settings.mvvm_pppoe RENAME TO u_pppoe;
 ALTER TABLE settings.mvvm_wmi_settings RENAME TO u_wmi_settings;
 
-DROP INDEX settings.idx_string_rule;
-CREATE INDEX u_idx_string_rule ON settings.u_string_rule (string);
+ALTER TABLE settings.idx_string_rule RENAME TO  u_idx_string_rule;
 
 UPDATE settings.u_node_persistent_state SET name = 'untangle-node-webfilter' WHERE name = 'httpblocker-transform';
 UPDATE settings.u_node_persistent_state SET name = 'untangle-node-openvpn' WHERE name = 'openvpn-transform';

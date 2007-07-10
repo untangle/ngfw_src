@@ -28,9 +28,11 @@ ALTER TABLE events.portal_app_launch_evt RENAME TO n_portal_app_launch_evt;
 ALTER TABLE events.mvvm_lookup_evt RENAME TO u_lookup_evt;
 
 -- Indexes
-ALTER TABLE mvvm_login_evt_ts_idx RENAME TO u_login_evt_ts_idx;
-ALTER TABLE mvvm_lookup_evt_ts_idx RENAME TO u_lookup_evt_ts_idx;
-ALTER TABLE shield_rejection_evt_ts_idx RENAME TO n_shield_rejection_evt_ts_idx;
+ALTER TABLE events.mvvm_login_evt_ts_idx RENAME TO u_login_evt_ts_idx;
+ALTER TABLE events.mvvm_lookup_evt_ts_idx RENAME TO u_lookup_evt_ts_idx;
+ALTER TABLE events.shield_rejection_evt_ts_idx RENAME TO n_shield_rejection_evt_ts_idx;
+ALTER TABLE events.portal_login_evt_ts_idx RENAME TO n_portal_login_evt_ts_idx;
+ALTER TABLE events.portal_logout_evt_ts_idx RENAME TO n_portal_logout_evt_ts_idx;
 
 ALTER TABLE portal_login_evt_ts_idx RENAME TO n_portal_login_evt_ts_idx;
 ALTER TABLE portal_logout_evt_ts_idx RENAME TO n_portal_logout_evt_ts_idx;

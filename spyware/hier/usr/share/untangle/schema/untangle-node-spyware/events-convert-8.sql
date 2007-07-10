@@ -22,20 +22,11 @@ ALTER TABLE events.tr_spyware_evt_cookie RENAME TO n_spyware_evt_cookie;
 ALTER TABLE events.tr_spyware_evt_blacklist RENAME TO n_spyware_evt_blacklist;
 ALTER TABLE events.tr_spyware_statistic_evt RENAME TO n_spyware_statistic_evt;
 
-DROP INDEX tr_spyware_cookie_rid_idx;
-DROP INDEX tr_spyware_bl_rid_idx;
-DROP INDEX tr_spyware_ax_rid_idx;
-DROP INDEX tr_spyware_acc_plepid_idx;
-DROP INDEX tr_spyware_evt_cookie_ts_idx;
-DROP INDEX tr_spyware_evt_blacklist_ts_idx;
-DROP INDEX tr_spyware_evt_activex_ts_idx;
-DROP INDEX tr_spyware_evt_access_ts_idx;
-
-CREATE INDEX n_spyware_cookie_rid_idx ON events.n_spyware_evt_cookie (request_id);
-CREATE INDEX n_spyware_bl_rid_idx ON events.n_spyware_evt_blacklist (request_id);
-CREATE INDEX n_spyware_ax_rid_idx ON events.n_spyware_evt_activex (request_id);
-CREATE INDEX n_spyware_acc_plepid_idx ON events.n_spyware_evt_access (pl_endp_id);
-CREATE INDEX n_spyware_evt_cookie_ts_idx ON events.n_spyware_evt_cookie (time_stamp);
-CREATE INDEX n_spyware_evt_blacklist_ts_idx ON events.n_spyware_evt_blacklist (time_stamp);
-CREATE INDEX n_spyware_evt_activex_ts_idx ON events.n_spyware_evt_activex (time_stamp);
-CREATE INDEX n_spyware_evt_access_ts_idx ON events.n_spyware_evt_access (time_stamp);
+ALTER TABLE events.tr_spyware_cookie_rid_idx RENAME TO n_spyware_cookie_rid_idx;
+ALTER TABLE events.tr_spyware_bl_rid_idx RENAME TO n_spyware_bl_rid_idx;
+ALTER TABLE events.tr_spyware_ax_rid_idx RENAME TO n_spyware_ax_rid_idx;
+ALTER TABLE events.tr_spyware_acc_plepid_idx RENAME TO n_spyware_acc_plepid_idx;
+ALTER TABLE events.tr_spyware_evt_cookie_ts_idx RENAME TO n_spyware_evt_cookie_ts_idx;
+ALTER TABLE events.tr_spyware_evt_blacklist_ts_idx RENAME TO n_spyware_evt_blacklist_ts_idx;
+ALTER TABLE events.tr_spyware_evt_activex_ts_idx RENAME TO n_spyware_evt_activex_ts_idx;
+ALTER TABLE events.tr_spyware_evt_access_ts_idx RENAME TO n_spyware_evt_access_ts_idx;

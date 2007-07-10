@@ -18,8 +18,5 @@
 
 ALTER TABLE events.tr_protofilter_evt RENAME TO n_protofilter_evt;
 
-DROP INDEX tr_protofilter_evt_plepid_idx;
-DROP INDEX tr_protofilter_evt_ts_idx;
-
-CREATE INDEX n_protofilter_evt_plepid_idx ON events.n_protofilter_evt (pl_endp_id);
-CREATE INDEX n_protofilter_evt_ts_idx ON events.n_protofilter_evt (time_stamp);
+ALTER TABLE events.tr_protofilter_evt_plepid_idx RENAME TO n_protofilter_evt_plepid_idx;
+ALTER TABLE events.tr_protofilter_evt_ts_idx RENAME TO n_protofilter_evt_ts_idx;

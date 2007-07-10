@@ -20,8 +20,5 @@ ALTER TABLE events.tr_mail_message_info RENAME TO n_mail_message_info;
 ALTER TABLE events.tr_mail_message_info_addr RENAME TO n_mail_message_info_addr;
 ALTER TABLE events.tr_mail_message_stats RENAME TO n_mail_message_stats;
 
-DROP INDEX tr_mail_message_info_plepid_idx;
-DROP INDEX tr_mail_message_info_addr_parent_idx;
-
-CREATE INDEX n_mail_message_info_plepid_idx ON events.n_mail_message_info (pl_endp_id);
-CREATE INDEX n_mail_message_info_addr_parent_idx ON events.n_mail_message_info_addr (msg_id);
+ALTER TABLE events.tr_mail_message_info_plepid_idx RENAME TO n_mail_message_info_plepid_idx;
+ALTER TABLE events.tr_mail_message_info_addr_parent_idx RENAME TO n_mail_message_info_addr_parent_idx;

@@ -18,6 +18,4 @@
 
 ALTER TABLE events.tr_httpblk_evt_blk RENAME TO n_webfilter_evt_blk;
 
-DROP INDEX events.tr_httpblk_evt_blk_ts_idx;
-CREATE INDEX n_webfilter_evt_blk_ts_idx ON events.n_webfilter_evt_blk (time_stamp);
-
+ALTER TABLE events.tr_httpblk_evt_blk_ts_idx RENAME TO n_webfilter_evt_blk_ts_idx;

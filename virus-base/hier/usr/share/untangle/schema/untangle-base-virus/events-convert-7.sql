@@ -21,18 +21,10 @@ ALTER TABLE events.tr_virus_evt_http RENAME TO n_virus_evt_http;
 ALTER TABLE events.tr_virus_evt_smtp RENAME TO n_virus_evt_smtp;
 ALTER TABLE events.tr_virus_evt_mail RENAME TO n_virus_evt_mail;
 
-DROP INDEX events.tr_virus_evt_http_rid_idx;
-DROP INDEX events.tr_virus_evt_http_ts_idx;
-DROP INDEX events.tr_virus_evt_ts_idx;
-DROP INDEX events.tr_virus_evt_smtp_ts_idx;
-DROP INDEX events.tr_virus_evt_mail_ts_idx;
-DROP INDEX events.tr_virus_evt_smtp_mid_idx;
-DROP INDEX events.tr_virus_evt_mail_mid_idx;
-
-CREATE INDEX n_virus_evt_http_rid_idx ON events.n_virus_evt_http (request_line);
-CREATE INDEX n_virus_evt_http_ts_idx ON events.n_virus_evt_http (time_stamp);
-CREATE INDEX n_virus_evt_ts_idx ON events.n_virus_evt (time_stamp);
-CREATE INDEX n_virus_evt_smtp_ts_idx ON events.n_virus_evt_smtp (time_stamp);
-CREATE INDEX n_virus_evt_mail_ts_idx ON events.n_virus_evt_mail (time_stamp);
-CREATE INDEX n_virus_evt_smtp_mid_idx ON events.n_virus_evt_smtp (msg_id);
-CREATE INDEX n_virus_evt_mail_mid_idx ON events.n_virus_evt_mail (msg_id);
+ALTER TABLE events.tr_virus_evt_http_rid_idx RENAME TO n_virus_evt_http_rid_idx;
+ALTER TABLE events.tr_virus_evt_http_ts_idx RENAME TO n_virus_evt_http_ts_idx;
+ALTER TABLE events.tr_virus_evt_ts_idx RENAME TO n_virus_evt_ts_idx;
+ALTER TABLE events.tr_virus_evt_smtp_ts_idx RENAME TO n_virus_evt_smtp_ts_idx;
+ALTER TABLE events.tr_virus_evt_mail_ts_idx RENAME TO n_virus_evt_mail_ts_idx;
+ALTER TABLE events.tr_virus_evt_smtp_mid_idx RENAME TO n_virus_evt_smtp_mid_idx;
+ALTER TABLE events.tr_virus_evt_mail_mid_idx RENAME TO n_virus_evt_mail_mid_idx;

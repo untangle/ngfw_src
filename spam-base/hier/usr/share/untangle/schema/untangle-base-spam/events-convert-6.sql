@@ -20,19 +20,8 @@ ALTER TABLE events.tr_spam_evt_smtp RENAME TO n_spam_evt_smtp;
 ALTER TABLE events.tr_spam_evt RENAME TO n_spam_evt;
 ALTER TABLE events.tr_spam_smtp_rbl_evt RENAME TO n_spam_smtp_rbl_evt;
 
-DROP INDEX tr_spam_evt_smtp_ts_idx;
-DROP INDEX tr_spam_evt_ts_idx;
-DROP INDEX tr_spam_evt_mid_idx;
-DROP INDEX tr_spam_evt_smtp_mid_idx;
-DROP INDEX tr_spam_smtp_rbl_evt_ts_idx;
-
-CREATE INDEX n_spam_evt_smtp_ts_idx
-    ON events.n_spam_evt_smtp (time_stamp);
-CREATE INDEX n_spam_evt_ts_idx
-    ON events.n_spam_evt (time_stamp);
-CREATE INDEX n_spam_evt_mid_idx
-    ON events.n_spam_evt (msg_id);
-CREATE INDEX n_spam_evt_smtp_mid_idx
-    ON events.n_spam_evt_smtp (msg_id);
-CREATE INDEX n_spam_smtp_rbl_evt_ts_idx
-    ON events.n_spam_smtp_rbl_evt (time_stamp);
+ALTER TABLE events.tr_spam_evt_smtp_ts_idx RENAME TO n_spam_evt_smtp_ts_idx;
+ALTER TABLE events.tr_spam_evt_ts_idx RENAME TO n_spam_evt_ts_idx;
+ALTER TABLE events.tr_spam_evt_mid_idx RENAME TO n_spam_evt_mid_idx;
+ALTER TABLE events.tr_spam_evt_smtp_mid_idx RENAME TO n_spam_evt_smtp_mid_idx;
+ALTER TABLE events.tr_spam_smtp_rbl_evt_ts_idx RENAME TO n_spam_smtp_rbl_evt_ts_idx;

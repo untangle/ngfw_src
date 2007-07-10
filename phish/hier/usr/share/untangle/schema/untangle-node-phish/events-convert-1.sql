@@ -18,6 +18,4 @@
 
 ALTER TABLE events.tr_phishhttp_evt RENAME TO n_phish_http_evt;
 
-DROP INDEX tr_phishhttp_evt_ts_idx;
-
-CREATE INDEX n_phish_http_evt_ts_idx ON events.n_phish_http_evt (time_stamp);
+ALTER TABLE events.tr_phishhttp_evt_ts_idx RENAME TO n_phish_http_evt_ts_idx;

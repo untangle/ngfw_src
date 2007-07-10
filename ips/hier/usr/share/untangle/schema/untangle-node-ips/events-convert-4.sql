@@ -19,8 +19,6 @@
 ALTER TABLE events.TR_IDS_EVT RENAME TO n_ips_evt;
 ALTER TABLE events.TR_IDS_STATISTIC_EVT RENAME TO n_ips_statistic_evt;
 
-DROP INDEX tr_ids_evt_plepid_idx;
-CREATE INDEX n_ips_evt_plepid_idx ON events.n_ips_evt (pl_endp_id);
-DROP INDEX tr_ids_evt_ts_idx;
-CREATE INDEX n_ips_evt_ts_idx ON events.n_ips_evt (time_stamp);
+ALTER TABLE tr_ids_evt_plepid_idx RENAME TO n_ips_evt_plepid_idx;
+ALTER TABLE tr_ids_evt_ts_idx RENAME TO n_ips_evt_ts_idx;
 

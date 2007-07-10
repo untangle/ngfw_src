@@ -23,8 +23,5 @@ ALTER TABLE events.tr_nat_evt_dhcp_abs_leases RENAME TO n_router_evt_dhcp_abs_le
 ALTER TABLE events.tr_nat_redirect_evt RENAME TO n_router_redirect_evt;
 ALTER TABLE events.tr_nat_statistic_evt RENAME TO n_router_statistic_evt;
 
-DROP INDEX tr_nat_redirect_evt_plepid_idx;
-DROP INDEX tr_nat_redirect_evt_ts_idx;
-
-CREATE INDEX n_router_redirect_evt_plepid_idx ON events.n_router_redirect_evt (pl_endp_id);
-CREATE INDEX n_router_redirect_evt_ts_idx ON events.n_router_redirect_evt (time_stamp);
+ALTER TABLE events.tr_nat_redirect_evt_plepid_idx RENAME TO n_router_redirect_evt_plepid_idx;
+ALTER TABLE events.tr_nat_redirect_evt_ts_idx RENAME TO n_router_redirect_evt_ts_idx;

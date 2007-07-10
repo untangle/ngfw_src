@@ -22,10 +22,6 @@ ALTER TABLE settings.tr_spyware_ar RENAME TO n_spyware_ar;
 ALTER TABLE settings.tr_spyware_sr RENAME TO n_spyware_sr;
 ALTER TABLE settings.tr_spyware_wl RENAME TO n_spyware_wl;
 
-DROP INDEX idx_spyware_rule_ar;
-DROP INDEX idx_spyware_rule_cr;
-DROP INDEX idx_spyware_rule_sr;
-
-CREATE INDEX n_spyware_ar_rule_idx ON settings.n_spyware_ar (rule_id);
-CREATE INDEX n_spyware_cr_rule_idx ON settings.n_spyware_cr (rule_id);
-CREATE INDEX n_spyware_sr_rule_idx ON settings.n_spyware_sr (rule_id);
+ALTER TABLE settings.idx_spyware_rule_ar RENAME TO n_spyware_ar_rule_idx;
+ALTER TABLE settings.idx_spyware_rule_cr RENAME TO n_spyware_cr_rule_idx;
+ALTER TABLE settings.idx_spyware_rule_sr RENAME TO n_spyware_sr_rule_idx;
