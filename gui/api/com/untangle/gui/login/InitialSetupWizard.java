@@ -59,15 +59,30 @@ public class InitialSetupWizard extends MWizardJDialog {
     protected Dimension getContentJPanelPreferredSize(){ return new Dimension(535,480); }
 
     private InitialSetupInterfaceJPanel initialSetupInterfaceJPanel;
+    private int lastPage = 0;
 
     public InitialSetupWizard() {
         setModal(true);
         setTitle("Untangle Server Setup Wizard");
         addWizardPageJPanel(new InitialSetupWelcomeJPanel(),         "1. Welcome", false, false);
 
-        if( !Util.isUntangleAppliance() ){
+        if( Util.isInsideVM()) {
+            // VM Install needs to show license, needs interface test, auto key fetch
+            addWizardPageJPanel(new InitialSetupLicenseJPanel(),         "2. License Agreement", false, false);
+            addWizardPageJPanel(new InitialSetupContactJPanel(),         "3. Contact Information", false, false);
+            addWizardPageJPanel(new InitialSetupPasswordJPanel(),        "4. Admin Account & Time", true, true);
+            initialSetupInterfaceJPanel = new InitialSetupInterfaceJPanel();
+            addWizardPageJPanel(initialSetupInterfaceJPanel,             "5. Interface Test", false, false);
+            addWizardPageJPanel(new InitialSetupNetworkJPanel(),         "6. External Address", false, true);
+            addWizardPageJPanel(new InitialSetupConnectivityJPanel(),    "7. Connectivity Test", false, true);
+            addWizardPageJPanel(new InitialSetupRoutingJPanel(),         "8. Routing", false, true);
+            addWizardPageJPanel(new InitialSetupEmailJPanel(),           "9. Email Settings", false, true);
+            addWizardPageJPanel(new InitialSetupCongratulationsJPanel(), "10. Finished!", true, true);
+            lastPage = 9;       // 0 based
+        }
+        else if ( !Util.isUntangleAppliance() ){
+            // CD Install already showed license, needs interface test, auto key fetch
             addWizardPageJPanel(new InitialSetupContactJPanel(),         "2. Contact Information", true, true);
-            //            addWizardPageJPanel(new InitialSetupKeyJPanel(),             "3. Activation Key", false, true);
             addWizardPageJPanel(new InitialSetupPasswordJPanel(),        "3. Admin Account & Time", true, true);
             initialSetupInterfaceJPanel = new InitialSetupInterfaceJPanel();
             addWizardPageJPanel(initialSetupInterfaceJPanel,             "4. Interface Test", false, false);
@@ -76,22 +91,25 @@ public class InitialSetupWizard extends MWizardJDialog {
             addWizardPageJPanel(new InitialSetupRoutingJPanel(),         "7. Routing", false, true);
             addWizardPageJPanel(new InitialSetupEmailJPanel(),           "8. Email Settings", false, true);
             addWizardPageJPanel(new InitialSetupCongratulationsJPanel(), "9. Finished!", true, true);
+            lastPage = 8;       // 0 based
         }
         else{
-//            addWizardPageJPanel(new InitialSetupLicenseJPanel(),         "2. License Agreement", false, false);
-            addWizardPageJPanel(new InitialSetupContactJPanel(),         "2. Contact Information", false, false);
-            addWizardPageJPanel(new InitialSetupKeyJPanel(),             "3. Activation Key", false, true);
-            addWizardPageJPanel(new InitialSetupPasswordJPanel(),        "4. Admin Account & Time", true, true);
-            addWizardPageJPanel(new InitialSetupNetworkJPanel(),         "5. External Address", false, true);
-            addWizardPageJPanel(new InitialSetupConnectivityJPanel(),    "6. Connectivity Test", false, true);
-            addWizardPageJPanel(new InitialSetupRoutingJPanel(),         "7. Routing", false, true);
-            addWizardPageJPanel(new InitialSetupEmailJPanel(),           "8. Email Settings", false, true);
-            addWizardPageJPanel(new InitialSetupCongratulationsJPanel(), "9. Finished!", true, true);
+            // Appliance Install needs to show license, no interface test, manual key entry
+            addWizardPageJPanel(new InitialSetupLicenseJPanel(),         "2. License Agreement", false, false);
+            addWizardPageJPanel(new InitialSetupContactJPanel(),         "3. Contact Information", false, false);
+            addWizardPageJPanel(new InitialSetupKeyJPanel(),             "4. Activation Key", false, true);
+            addWizardPageJPanel(new InitialSetupPasswordJPanel(),        "5. Admin Account & Time", true, true);
+            addWizardPageJPanel(new InitialSetupNetworkJPanel(),         "6. External Address", false, true);
+            addWizardPageJPanel(new InitialSetupConnectivityJPanel(),    "7. Connectivity Test", false, true);
+            addWizardPageJPanel(new InitialSetupRoutingJPanel(),         "8. Routing", false, true);
+            addWizardPageJPanel(new InitialSetupEmailJPanel(),           "9. Email Settings", false, true);
+            addWizardPageJPanel(new InitialSetupCongratulationsJPanel(), "10. Finished!", true, true);
+            lastPage = 9;       // 0 based
         }
     }
 
     protected void wizardFinishedAbnormal(int currentPage){
-        if( currentPage == 8 ){
+        if( currentPage == lastPage ){
             wizardFinishedNormal();
             return;
         }
@@ -102,7 +120,19 @@ public class InitialSetupWizard extends MWizardJDialog {
         dialog.setCancelText("Continue Wizard");
         dialog.setVisible(true);
         if( dialog.isProceeding() ){
-            if ( !Util.isUntangleAppliance() ) {
+            if( Util.isInsideVM()) {
+                if (currentPage >= 3) { // REGISTERED
+                    isRegistered = true;
+                }
+                if (currentPage <= 2) { // NOT REGISTERED, MUST DO WIZARD AGAIN
+                    MOneButtonJDialog.factory(this, "", MESSAGE_NOT_REGISTERED, MESSAGE_DIALOG_TITLE, "");
+                }
+                else if (currentPage <= 3) { // PASSWORD NOT SET
+                    MOneButtonJDialog.factory(this, "", MESSAGE_NO_PASSWORD, MESSAGE_DIALOG_TITLE, "");     
+                }                
+                initialSetupInterfaceJPanel.finishedAbnormal();
+            }
+            else if ( !Util.isUntangleAppliance() ) {
                 if (currentPage >= 2) { // REGISTERED
                     isRegistered = true;
                 }
@@ -115,13 +145,13 @@ public class InitialSetupWizard extends MWizardJDialog {
                 initialSetupInterfaceJPanel.finishedAbnormal();
             }
             else {                
-                if (currentPage >= 2) { // REGISTERED
+                if (currentPage >= 3) { // REGISTERED
                     isRegistered = true;
                 }
-                if (currentPage <= 1) { // NOT REGISTERED, MUST DO WIZARD AGAIN
+                if (currentPage <= 2) { // NOT REGISTERED, MUST DO WIZARD AGAIN
                     MOneButtonJDialog.factory(this, "", MESSAGE_NOT_REGISTERED, MESSAGE_DIALOG_TITLE, "");
                 }
-                else if (currentPage <= 3) { // PASSWORD NOT SET
+                else if (currentPage <= 4) { // PASSWORD NOT SET
                     MOneButtonJDialog.factory(this, "", MESSAGE_NO_PASSWORD, MESSAGE_DIALOG_TITLE, "");     
                 }                                
             }
