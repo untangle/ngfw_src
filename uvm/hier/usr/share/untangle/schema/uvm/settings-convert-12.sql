@@ -68,6 +68,7 @@ ALTER TABLE settings.portal_settings RENAME TO n_portal_settings;
 ALTER TABLE settings.mvvm_pppoe_connection RENAME TO u_pppoe_connection;
 ALTER TABLE settings.mvvm_pppoe RENAME TO u_pppoe;
 ALTER TABLE settings.mvvm_wmi_settings RENAME TO u_wmi_settings;
+ALTER TABLE settings.mvvm_branding_settings RENAME TO uvm_branding_settings;
 
 ALTER TABLE settings.idx_string_rule RENAME TO  u_idx_string_rule;
 
