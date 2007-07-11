@@ -8,7 +8,7 @@ tmpBackup="/tmp/$backup"
 finalBackup="${newShare}/$backup"
 
 if [ -d $oldShare ] ; then
-  tar -C $oldShare -cf $tmpBackup conf activation.key
+  tar -C $oldShare -cf $tmpBackup conf activation.key registration.info .regdone .cdinstall
   mkdir -p $newShare/web
   tar -C $newShare -xf $tmpBackup
   mv $tmpBackup $finalBackup
