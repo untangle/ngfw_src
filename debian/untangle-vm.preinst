@@ -15,7 +15,8 @@ if [ -d $oldShare ] ; then
   gzip $finalBackup
   mv $oldShare/web/reports $newShare/web
   mv $oldShare/quarantine $newShare
-#  rm -fr $oldShare
+# Nuke only the old stuff that can't be useful
+  rm -fr $oldShare/db
 fi
 
 # Kill any already-running reports (Bug 1249)
