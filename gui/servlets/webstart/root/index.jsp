@@ -1,7 +1,7 @@
 <%@ page language="java" import="com.untangle.uvm.*" %>
 <%--
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -91,13 +91,13 @@ function showMessage() {
 <% } // if ( isIndex ) %>
 </head>
 <body>
-<div id="main" class="main-reduced"> 
+<div id="main" class="main-reduced">
  <!-- Box Start -->
  <div class="main-top-left"></div><div class="main-top-right"></div><div class="main-mid-left"><div class="main-mid-right"><div class="main-mid">
  <!-- Content Start -->
-	
+
       <center>
-            <img alt="Untangle" src="/images/Logo150x96.gif" />
+            <img alt="Untangle" src="/images/BrandingLogo.gif" />
 
             <div style="margin: 0 auto; width: 250px; padding: 40px 0 5px;">
 <% if ( host.equalsIgnoreCase( "untangledemo.untangle.com" )  && !isDownload ) { %>
@@ -106,7 +106,7 @@ function showMessage() {
                 <b>Password: untangledemo</b><br />
 
 <% } %>
-            
+
 <% if ( isDownload ) { %>
             <object codebase="http://java.sun.com/update/1.6.0/jinstall-6-windows-i586.cab#Version=6,0,0,99"
                     classid="clsid:8AD9C840-044E-11D1-B3E9-00805F499D93"
@@ -117,11 +117,11 @@ function showMessage() {
               <param name="back" value="true" />
             </object>
 
-            </div>            
+            </div>
             <!-- Alternate HTML for browsers which cannot instantiate the object -->
             <a href="http://www.untangle.com/javainstaller.html"><b>Download Java&trade; v1.6</b></a>
-            
-       </center>                                
+
+       </center>
 <% } %>
 
 <% if ( !isDownload ) { %>
@@ -166,7 +166,7 @@ function showMessage() {
  <!-- Content End -->
  </div></div></div><div class="main-bot-left"></div><div class="main-bot-right"></div>
  <!-- Box End -->
-</div>	
-                       
+</div>
+
 </body>
 </html>

@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -36,17 +36,17 @@ package com.untangle.gui.login;
 import java.awt.*;
 import java.lang.Thread;
 import java.lang.reflect.*;
+import java.net.MalformedURLException;
 import java.net.URL;
 import javax.security.auth.login.FailedLoginException;
 import javax.swing.*;
-
-import org.apache.log4j.Logger;
 
 import com.untangle.gui.main.MMainJFrame;
 import com.untangle.gui.util.*;
 import com.untangle.uvm.*;
 import com.untangle.uvm.client.*;
 import com.untangle.uvm.security.*;
+import org.apache.log4j.Logger;
 
 public class MLoginJFrame extends javax.swing.JFrame {
 
@@ -186,7 +186,16 @@ public class MLoginJFrame extends javax.swing.JFrame {
         contentJPanel.setMinimumSize(new java.awt.Dimension(330, 238));
         contentJPanel.setPreferredSize(new java.awt.Dimension(330, 400));
         logoLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        logoLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/main/Logo150x96.png")));
+        logoLabel.setMaximumSize(new java.awt.Dimension(150, 96));
+        logoLabel.setMinimumSize(new java.awt.Dimension(150, 96));
+        logoLabel.setPreferredSize(new java.awt.Dimension(150, 96));
+        try {
+            String host = Util.getServerCodeBase().getHost();
+            URL url = new URL("http://" + host + "/images/BrandingLogo.gif");
+            logoLabel.setIcon(new ImageIcon(url));
+        } catch (MalformedURLException exn) {
+            logoLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/main/Logo150x96.png")));
+        }
         logoLabel.setFocusable(false);
         logoLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         logoLabel.setIconTextGap(0);
@@ -494,10 +503,10 @@ public class MLoginJFrame extends javax.swing.JFrame {
                     Util.setShutdownInitiated(false);
                     URL url = Util.getServerCodeBase();
                     RemoteUvmContext uvmContext = RemoteUvmContextFactory.factory().interactiveLogin( url.getHost(), url.getPort(),
-                                                                                                         loginJTextField.getText(),
-                                                                                                         new String(passJPasswordField.getPassword()),
-                                                                                                         0, Util.getClassLoader(),
-                                                                                                         Util.isSecureViaHttps(), useForce );
+                                                                                                      loginJTextField.getText(),
+                                                                                                      new String(passJPasswordField.getPassword()),
+                                                                                                      0, Util.getClassLoader(),
+                                                                                                      Util.isSecureViaHttps(), useForce );
 
                     Util.setUvmContext(uvmContext);
 
@@ -668,8 +677,4 @@ public class MLoginJFrame extends javax.swing.JFrame {
 
         }
     }
-
-
-
-
 }

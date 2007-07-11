@@ -1,7 +1,6 @@
-
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -40,6 +39,7 @@ import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.Rectangle;
 import java.awt.event.*;
+import java.net.MalformedURLException;
 import java.net.URL;
 import javax.jnlp.BasicService;
 import javax.jnlp.ServiceManager;
@@ -48,17 +48,17 @@ import javax.swing.border.*;
 import javax.swing.event.*;
 
 import com.untangle.gui.configuration.*;
+import com.untangle.gui.node.*;
 import com.untangle.gui.pipeline.*;
 import com.untangle.gui.store.*;
-import com.untangle.gui.node.*;
 import com.untangle.gui.upgrade.*;
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.dialogs.*;
 import com.untangle.uvm.*;
+import com.untangle.uvm.node.*;
 import com.untangle.uvm.policy.*;
 import com.untangle.uvm.security.*;
 import com.untangle.uvm.toolbox.MackageDesc;
-import com.untangle.uvm.node.*;
 
 public class MMainJFrame extends javax.swing.JFrame {
     // CONSTANTS
@@ -226,15 +226,15 @@ public class MMainJFrame extends javax.swing.JFrame {
         setFocusCycleRoot(false);
         setIconImage((new javax.swing.ImageIcon( this.getClass().getResource("/com/untangle/gui/main/Logo16x16.png"))).getImage());
         addComponentListener(new java.awt.event.ComponentAdapter() {
-            public void componentResized(java.awt.event.ComponentEvent evt) {
-                formComponentResized(evt);
-            }
-        });
+                public void componentResized(java.awt.event.ComponentEvent evt) {
+                    formComponentResized(evt);
+                }
+            });
         addWindowListener(new java.awt.event.WindowAdapter() {
-            public void windowClosing(java.awt.event.WindowEvent evt) {
-                exitForm(evt);
-            }
-        });
+                public void windowClosing(java.awt.event.WindowEvent evt) {
+                    exitForm(evt);
+                }
+            });
 
         controlsJPanel.setLayout(new java.awt.GridBagLayout());
 
@@ -243,7 +243,6 @@ public class MMainJFrame extends javax.swing.JFrame {
         controlsJPanel.setMinimumSize(new java.awt.Dimension(220, 427));
         controlsJPanel.setOpaque(false);
         controlsJPanel.setPreferredSize(new java.awt.Dimension(220, 410));
-        untangleJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/main/Logo150x96.png")));
         untangleJButton.setBorderPainted(false);
         untangleJButton.setContentAreaFilled(false);
         untangleJButton.setDoubleBuffered(true);
@@ -254,11 +253,18 @@ public class MMainJFrame extends javax.swing.JFrame {
         untangleJButton.setMaximumSize(new java.awt.Dimension(150, 96));
         untangleJButton.setMinimumSize(new java.awt.Dimension(150, 96));
         untangleJButton.setPreferredSize(new java.awt.Dimension(150, 96));
+        try {
+            String host = Util.getServerCodeBase().getHost();
+            URL url = new URL("http://" + host + "/images/BrandingLogo.gif");
+            untangleJButton.setIcon(new ImageIcon(url));
+        } catch (MalformedURLException exn) {
+            untangleJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/main/Logo150x96.png")));
+        }
         untangleJButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                untangleJButtonActionPerformed(evt);
-            }
-        });
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    untangleJButtonActionPerformed(evt);
+                }
+            });
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -402,10 +408,10 @@ public class MMainJFrame extends javax.swing.JFrame {
         networkJButton.setMargin(new java.awt.Insets(3, 3, 3, 2));
         networkJButton.setMaximumSize(new java.awt.Dimension(810, 370));
         networkJButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                networkJButtonActionPerformed(evt);
-            }
-        });
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    networkJButtonActionPerformed(evt);
+                }
+            });
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -424,10 +430,10 @@ public class MMainJFrame extends javax.swing.JFrame {
         remoteJButton.setMargin(new java.awt.Insets(3, 3, 3, 2));
         remoteJButton.setMaximumSize(new java.awt.Dimension(810, 370));
         remoteJButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                remoteJButtonActionPerformed(evt);
-            }
-        });
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    remoteJButtonActionPerformed(evt);
+                }
+            });
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -446,10 +452,10 @@ public class MMainJFrame extends javax.swing.JFrame {
         emailJButton.setMargin(new java.awt.Insets(3, 3, 3, 2));
         emailJButton.setMaximumSize(new java.awt.Dimension(810, 370));
         emailJButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                emailJButtonActionPerformed(evt);
-            }
-        });
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    emailJButtonActionPerformed(evt);
+                }
+            });
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -468,10 +474,10 @@ public class MMainJFrame extends javax.swing.JFrame {
         directoryJButton.setMargin(new java.awt.Insets(3, 3, 3, 2));
         directoryJButton.setMaximumSize(new java.awt.Dimension(810, 370));
         directoryJButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                directoryJButtonActionPerformed(evt);
-            }
-        });
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    directoryJButtonActionPerformed(evt);
+                }
+            });
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -490,10 +496,10 @@ public class MMainJFrame extends javax.swing.JFrame {
         backupJButton.setMargin(new java.awt.Insets(3, 3, 3, 2));
         backupJButton.setMaximumSize(new java.awt.Dimension(810, 370));
         backupJButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                backupJButtonActionPerformed(evt);
-            }
-        });
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    backupJButtonActionPerformed(evt);
+                }
+            });
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -512,10 +518,10 @@ public class MMainJFrame extends javax.swing.JFrame {
         maintenanceJButton.setMargin(new java.awt.Insets(3, 3, 3, 2));
         maintenanceJButton.setMaximumSize(new java.awt.Dimension(810, 370));
         maintenanceJButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                maintenanceJButtonActionPerformed(evt);
-            }
-        });
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    maintenanceJButtonActionPerformed(evt);
+                }
+            });
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -538,10 +544,10 @@ public class MMainJFrame extends javax.swing.JFrame {
         upgradeJButton.setOpaque(false);
         upgradeJButton.setPreferredSize(new java.awt.Dimension(96, 48));
         upgradeJButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                upgradeJButtonActionPerformed(evt);
-            }
-        });
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    upgradeJButtonActionPerformed(evt);
+                }
+            });
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -560,10 +566,10 @@ public class MMainJFrame extends javax.swing.JFrame {
         aboutJButton.setMargin(new java.awt.Insets(3, 3, 3, 2));
         aboutJButton.setMaximumSize(new java.awt.Dimension(810, 370));
         aboutJButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                aboutJButtonActionPerformed(evt);
-            }
-        });
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    aboutJButtonActionPerformed(evt);
+                }
+            });
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -611,10 +617,10 @@ public class MMainJFrame extends javax.swing.JFrame {
         helpJButton.setMargin(new java.awt.Insets(4, 8, 4, 8));
         helpJButton.setOpaque(false);
         helpJButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                helpJButtonActionPerformed(evt);
-            }
-        });
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    helpJButtonActionPerformed(evt);
+                }
+            });
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
