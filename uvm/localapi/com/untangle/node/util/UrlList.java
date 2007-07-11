@@ -166,34 +166,47 @@ public abstract class UrlList
         return l;
     }
 
-    protected byte[] del(byte[] data, byte[] prefix)
+    protected void del(StringBuilder sb, byte[] prefix)
     {
-        String dStr = new String(data);
         String pStr = new String(prefix);
-        int i = dStr.indexOf(pStr);
-        if (0 <= i) {
-            int j;
-            if (dStr.length() > i + pStr.length()
-                && '\t' == dStr.charAt(i + pStr.length())) {
-                j = i + pStr.length() + 1;
+
+        int i = sb.indexOf(pStr);
+        int j;
+
+        if (0 == i) {
+            if (sb.length() == pStr.length()) {
+                j = pStr.length();
             } else {
-                j = i + pStr.length();
+                j = pStr.length() + 1;
+                if ('\t' != sb.charAt(j)) {
+                    logger.warn("tab expected at char " + j + " in: " + sb);
+                    i = j = 0;
+                }
             }
-            StringBuilder sb = new StringBuilder(dStr.length());
-            sb.append(dStr.subSequence(0, i));
-            sb.append(dStr.subSequence(j, dStr.length()));
-            return sb.toString().getBytes();
+        } else if (0 < i) {
+            i--;
+            if ('\t' != sb.charAt(i)) {
+                logger.warn("tab expected at char " + i + " in: " + sb);
+                i = j = 0;
+            }
+            j = pStr.length() + 1;
         } else {
-            return data;
+            i = j = 0;
         }
+
+        sb.delete(i, j);
     }
 
-    protected byte[] add(byte[] data, byte[] prefix)
+    protected void add(StringBuilder sb, byte[] prefix)
     {
-        String dStr = new String(data);
         String pStr = new String(prefix);
-        int i = dStr.indexOf(pStr);
-        return (0 > i) ? (dStr + "\t" + pStr).getBytes() : data;
+
+        if (0 == sb.length()) {
+            sb.append(pStr);
+        } else if (0 > sb.indexOf(pStr)) {
+            sb.append('\t');
+            sb.append(pStr);
+        }
     }
 
     // private methods -------------------------------------------------------

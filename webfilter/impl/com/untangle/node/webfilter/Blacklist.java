@@ -351,8 +351,6 @@ class Blacklist
         String category = null;
         if (dbNames != null)
             for (String dbName : dbNames) {
-                System.out.println("dbName: " + dbName);
-
                 String cat = dbName;
 
                 int i = dbName.indexOf('-');
@@ -365,7 +363,6 @@ class Blacklist
                         }
                     }
                 }
-                System.out.println("CAT: " + cat);
 
                 if (category == null) {
                     category = cat;

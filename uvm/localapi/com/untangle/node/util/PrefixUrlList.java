@@ -37,6 +37,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -73,6 +74,11 @@ public class PrefixUrlList extends UrlList
     {
         String line;
 
+        byte[] lastHost = null;
+        StringBuilder sb = new StringBuilder();
+        DatabaseEntry k = new DatabaseEntry();
+        DatabaseEntry v = new DatabaseEntry();
+
         while (null != (line = br.readLine())) {
             Matcher matcher = TUPLE_PATTERN.matcher(line);
             if (matcher.find()) {
@@ -86,32 +92,56 @@ public class PrefixUrlList extends UrlList
                                  + " prefix: " + new String(prefix));
                 }
 
-                try {
-                    DatabaseEntry k = new DatabaseEntry(host);
-                    DatabaseEntry v = new DatabaseEntry();
+                if (null == lastHost) {
+                    lastHost = host;
+                    k.setData(host);
+                    try {
+                        OperationStatus s = db.get(null, k, v, LockMode.DEFAULT);
 
-                    OperationStatus s = db.get(null, k, v,
-                                               LockMode.READ_UNCOMMITTED);
-                    if (OperationStatus.SUCCESS == s) {
-                        byte[] data = v.getData();
-                        byte[] newData = add ? add(data, prefix)
-                            : del(data, prefix);
-                        if (0 == newData.length) {
-                            db.delete(null, k);
-                        } else {
-                            v.setData(newData);
-                            db.put(null, k, v);
+                        if (OperationStatus.SUCCESS == s) {
+                            sb.append(new AsciiString(v.getData()));
                         }
-                    } else {
-                        if (add) {
-                            v.setData(prefix);
-                            db.put(null, k, v);
-                        }
+                    } catch (DatabaseException exn) {
+                        logger.warn("could not get entry", exn);
                     }
-                } catch (DatabaseException exn) {
-                    logger.warn("could not add database entry", exn);
+                } else if (!Arrays.equals(lastHost, host)) {
+                    k.setData(lastHost);
+                    v.setData(sb.toString().getBytes());
+                    try {
+                        db.put(null, k, v);
+                    } catch (DatabaseException exn) {
+                        logger.warn("could not save entry", exn);
+                    }
+
+                    lastHost = host;
+
+                    k.setData(host);
+                    sb.delete(0, sb.length());
+                    try {
+                        OperationStatus s = db.get(null, k, v, LockMode.DEFAULT);
+
+                        if (OperationStatus.SUCCESS == s) {
+                            sb.append(new AsciiString(v.getData()));
+                        }
+                    } catch (DatabaseException exn) {
+                        logger.warn("could not get entry", exn);
+                    }
+                }
+
+                if (add) {
+                    add(sb, prefix);
+                } else {
+                    del(sb, prefix);
                 }
             }
+        }
+
+        k.setData(lastHost);
+        v.setData(sb.toString().getBytes());
+        try {
+            db.put(null, k, v);
+        } catch (DatabaseException exn) {
+            logger.warn("could not save entry", exn);
         }
     }
 
