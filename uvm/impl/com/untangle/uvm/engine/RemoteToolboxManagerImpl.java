@@ -53,6 +53,7 @@ import com.untangle.uvm.toolbox.MackageException;
 import com.untangle.uvm.toolbox.MackageInstallException;
 import com.untangle.uvm.toolbox.MackageInstallRequest;
 import com.untangle.uvm.toolbox.MackageUninstallException;
+import com.untangle.uvm.toolbox.MackageUpdateExtraName;
 import com.untangle.uvm.toolbox.RemoteToolboxManager;
 import com.untangle.uvm.toolbox.ToolboxMessage;
 import com.untangle.uvm.toolbox.UpgradeSettings;
@@ -382,6 +383,15 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
         syncMackageState(ms);
 
         refreshLists();
+
+        MackageUpdateExtraName mue = new MackageUpdateExtraName(mackageName,extraName);
+
+        synchronized (messageQueues) {
+            logger.info("updateExtraName: " + mackageName + " new extraname: " + extraName);
+            for (MessageQueueImpl<ToolboxMessage> mq : messageQueues.values()) {
+                mq.enqueue(mue);
+            }
+        }
     }
 
     public void requestInstall(String mackageName)

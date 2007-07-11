@@ -46,6 +46,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -289,13 +290,9 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
     }
 
     public void doShutdown(){
-        for(MNodeJPanel mNodeJPanel : coreRackMap.values() )
+        for ( MNodeJPanel mNodeJPanel : getAllNodePanels()) {
             mNodeJPanel.doShutdown();
-        for(MNodeJPanel mNodeJPanel : utilRackMap.values() )
-            mNodeJPanel.doShutdown();
-        for(Policy policy : policyRackMap.keySet() )
-            for(MNodeJPanel mNodeJPanel : policyRackMap.get(policy).values() )
-                mNodeJPanel.doShutdown();
+        }
         Util.printMessage("PolicyStateMachine Stopped");
     }
 
@@ -741,6 +738,32 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                 }
             }
         }
+
+        public void visitUpdateExtraName(MackageUpdateExtraName req)
+        {
+            String name = req.getMackageName();
+            String extraName = req.getExtraName();
+            logger.debug("new extra name: '" + extraName + "' for mackage: '" + name + "'" );
+
+            final List<MNodeJPanel> panels = new LinkedList<MNodeJPanel>();
+            for (MNodeJPanel mNodeJPanel : getAllNodePanels()) {
+                MackageDesc mackageDesc = mNodeJPanel.getMackageDesc();
+                if (null == mackageDesc) continue;
+                if (name.equals(mackageDesc.getName())) panels.add(mNodeJPanel);
+            }
+
+            /* Refresh the state in the swing thread */
+            Thread thread = new Thread( new Runnable() {
+                public void run() {
+                    logger.debug("Refreshing the state for " + panels.size() + " panels");
+                    for  (MNodeJPanel mNodeJPanel : panels) {
+                        mNodeJPanel.doRefreshState();
+                    }
+                }
+            } );
+
+            thread.start();
+        }
     }
 
     private class PurchaseWrapper {
@@ -969,15 +992,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                 }});
                 Thread.currentThread().sleep(INSTALL_FINAL_PAUSE_MILLIS);
                 // REFRESH STATE OF ALL EXISTING APPLIANCES
-                for(Policy policy : policyRackMap.keySet()){
-                    for(MNodeJPanel mNodeJPanel : policyRackMap.get(policy).values()){
-                        mNodeJPanel.doRefreshState();
-                    }
-                }
-                for(MNodeJPanel mNodeJPanel : utilRackMap.values()){
-                    mNodeJPanel.doRefreshState();
-                }
-                for(MNodeJPanel mNodeJPanel : coreRackMap.values()){
+                for ( MNodeJPanel mNodeJPanel : getAllNodePanels()) {
                     mNodeJPanel.doRefreshState();
                 }
             }
@@ -1122,18 +1137,9 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
         }
         private void initStoreModel(){
             // REFRESH STATE OF ALL EXISTING APPLIANCES
-            for(Policy policy : policyRackMap.keySet()){
-                for(MNodeJPanel mNodeJPanel : policyRackMap.get(policy).values()){
-                    mNodeJPanel.doRefreshState();
-                }
-            }
-            for(MNodeJPanel mNodeJPanel : utilRackMap.values()){
+            for ( MNodeJPanel mNodeJPanel : getAllNodePanels()) {
                 mNodeJPanel.doRefreshState();
             }
-            for(MNodeJPanel mNodeJPanel : coreRackMap.values()){
-                mNodeJPanel.doRefreshState();
-            }
-
 
             // SHOW THE USER WHATS GOING ON
             SwingUtilities.invokeLater( new Runnable(){ public void run(){
@@ -1807,6 +1813,23 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
             return null;
         }
     }
+
+    private List<MNodeJPanel> getAllNodePanels() {
+        List<MNodeJPanel> panels = new LinkedList<MNodeJPanel>();
+
+        /* Add all of the panels from the various racks */
+        for( Map<ButtonKey,MNodeJPanel> policyMap : policyRackMap.values()){
+            panels.addAll( policyMap.values());
+        }
+        
+        /* Add all of the panels from the util rack (does this exist anymore?) */
+        panels.addAll(utilRackMap.values());
+
+        /* Add all of the panels from the core rack (does this exist anymore?) */
+        panels.addAll(coreRackMap.values());
+        
+        return panels;
+    }
     private class DoItRunnable implements Runnable {
         public void run(){ doIt(false); }
     }
@@ -1935,13 +1958,9 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
     //////////////////////////////////////
     // PRIVATE CLASSES AND UTILS /////////
     public void stopAllGraphs(){
-        for( ButtonKey key : utilRackMap.keySet() )
-            utilRackMap.get(key).mNodeDisplayJPanel().setDoVizUpdates(false);
-        for( Policy policy : policyRackMap.keySet() )
-            for( MNodeJPanel appliance : policyRackMap.get(policy).values() )
-                appliance.mNodeDisplayJPanel().setDoVizUpdates(false);
-        for( ButtonKey key : coreRackMap.keySet() )
-            coreRackMap.get(key).mNodeDisplayJPanel().setDoVizUpdates(false);
+        for ( MNodeJPanel mNodeJPanel : getAllNodePanels()) {
+            mNodeJPanel.mNodeDisplayJPanel().setDoVizUpdates(false);
+        }
     }
     private void focusInRack(final MNodeJPanel mNodeJPanel){
         SwingUtilities.invokeLater( new Runnable() { public void run() {

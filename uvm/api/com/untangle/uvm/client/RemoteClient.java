@@ -67,9 +67,11 @@ import com.untangle.uvm.toolbox.InstallTimeout;
 import com.untangle.uvm.toolbox.MackageDesc;
 import com.untangle.uvm.toolbox.MackageInstallException;
 import com.untangle.uvm.toolbox.MackageInstallRequest;
+import com.untangle.uvm.toolbox.MackageUpdateExtraName;
 import com.untangle.uvm.toolbox.ProgressVisitor;
 import com.untangle.uvm.toolbox.RemoteToolboxManager;
 import com.untangle.uvm.toolbox.ToolboxMessageVisitor;
+
 import com.untangle.uvm.util.SessionUtil;
 import com.untangle.uvm.vnet.IPSessionDesc;
 import com.untangle.uvm.vnet.SessionDesc;
@@ -288,6 +290,13 @@ public class RemoteClient
                 System.out.println("could not install: " + mackageName);
                 exn.printStackTrace();
             }
+        }
+
+        public void visitUpdateExtraName(MackageUpdateExtraName req)
+        {
+            String name = req.getMackageName();
+            String extraName = req.getExtraName();
+            System.out.println("new extra name: '" + extraName + "' for mackage: '" + name + "'" );
         }
     }
 

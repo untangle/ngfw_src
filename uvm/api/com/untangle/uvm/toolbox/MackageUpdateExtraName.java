@@ -34,15 +34,36 @@
 package com.untangle.uvm.toolbox;
 
 /**
- * Visitor for {@link ToolboxMessage} messages.
+ * Signals a request for the Swing GUI to initiate installation of a
+ * Debian package.
  *
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
-public interface ToolboxMessageVisitor
+public class MackageUpdateExtraName extends ToolboxMessage
 {
-    void visitMackageInstallRequest(MackageInstallRequest req);
+    private final String mackageName;
+    private final String extraName;
+    
+    public MackageUpdateExtraName(String mackageName, String extraName)
+    {
+        this.mackageName = mackageName;
+        this.extraName = extraName;
+    }
 
-    /* extra name has been modified */
-    void visitUpdateExtraName(MackageUpdateExtraName req);
+    public String getMackageName()
+    {
+        return mackageName;
+    }
+
+    public String getExtraName()
+    {
+        return this.extraName;
+    }
+
+    // ToolboxMessage methods -------------------------------------------------
+    public void accept(ToolboxMessageVisitor v)
+    {
+        v.visitUpdateExtraName(this);
+    }
 }
