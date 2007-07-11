@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -176,6 +176,16 @@ public class UvmRepositorySelector implements RepositorySelector
         return ctx;
     }
 
+    /**
+     * Get the set of {@link SmtpAppender}s registered.
+     *
+     * @return the set of {@link SmtpAppender}s.
+     */
+    public Set<SmtpAppender> getSmtpAppenders()
+    {
+        return smtpAppenders;
+    }
+
     // package protected methods ----------------------------------------------
 
     /**
@@ -198,16 +208,6 @@ public class UvmRepositorySelector implements RepositorySelector
     void deregisterSmtpAppender(SmtpAppender appender)
     {
         smtpAppenders.remove(appender);
-    }
-
-    /**
-     * Get the set of {@link SmtpAppender}s registered.
-     *
-     * @return the set of {@link SmtpAppender}s.
-     */
-    Set<SmtpAppender> getSmtpAppenders()
-    {
-        return smtpAppenders;
     }
 
     // private methods --------------------------------------------------------
