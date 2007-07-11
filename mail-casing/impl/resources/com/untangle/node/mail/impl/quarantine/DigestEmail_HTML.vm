@@ -396,9 +396,11 @@ hr {
           <tbody>
             <tr>
               <td valign="middle" width="150">
+#if ($company_name == "Untangle")
                 <a href="http://www.untangle.com">
                   <img src="$image_root/Logo150x96.gif" border="0" alt="$company_name"/>
                 </a>
+#end
               </td>
 
               <td style="padding: 0px 0px 0px 10px;" class="page_header_title" align="left" valign="middle">
@@ -423,7 +425,7 @@ hr {
 
         <!-- INTRO MESSAGE -->
         #if ($hasRecords)
-        The emails listed below have been quarantined by Untangle Server and
+        The emails listed below have been quarantined by the $company_name Spam Blocker and
         will be deleted automatically after $daysToIntern days.
         <br><br>
         To release a specific email from the quarantine and have it delivered to your email account or
@@ -540,7 +542,7 @@ hr {
         #end
 
         <br/>
-    <center>Powered by Untangle&trade; Server</center>
+    <center>Powered by Untangle&trade; Network Gateway</center>
 
           <hr size="1" width="100%"/>
         </td>
