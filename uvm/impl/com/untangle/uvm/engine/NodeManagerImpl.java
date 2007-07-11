@@ -71,8 +71,6 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
 {
     private static final String DESC_PATH = "META-INF/uvm-node.xml";
 
-    private static final int LOAD_LIMIT = 4;
-
     private final Logger logger = Logger.getLogger(getClass());
 
     private final NodeManagerState nodeManagerState;
@@ -420,6 +418,8 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
         logger.info("time to restart nodes: " + (t1 - t0));
     }
 
+    private static int startThreadNum = 0;
+
     private void startUnloaded(List<NodePersistentState> startQueue,
                                Map<Tid, NodeDesc> tDescs,
                                Set<String> loadedParents)
@@ -428,7 +428,7 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
             .context().toolboxManager();
 
 
-        List<Thread> threads = new ArrayList<Thread>(startQueue.size());
+        List<Runnable> restarters = new ArrayList<Runnable>(startQueue.size());
 
         for (NodePersistentState tps : startQueue) {
             final NodeDesc tDesc = tDescs.get(tps.getTid());
@@ -438,7 +438,7 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
             final String[] args = tps.getArgArray();
             final MackageDesc mackageDesc = tbm.mackageDesc(name);
 
-            Thread t = LocalUvmContextFactory.context().newThread(new Runnable()
+            Runnable r = new Runnable()
                 {
                     public void run()
                     {
@@ -460,18 +460,46 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
                             tids.remove(tid);
                         }
                     }
-                });
-            threads.add(t);
-            t.start();
+                };
+            restarters.add(r);
         }
 
-        for (Thread t : threads) {
-            try {
+        Set<Thread> threads = new HashSet<Thread>(restarters.size());
+        int loadLimit = Runtime.getRuntime().availableProcessors() << 1;
+        try {
+            for (Iterator<Runnable> riter = restarters.iterator(); riter.hasNext();) {
+                while (getRunnableCount(threads) < loadLimit && riter.hasNext()) {
+                    Thread t = LocalUvmContextFactory.context().
+                        newThread(riter.next(), "START_" + startThreadNum++);
+                    threads.add(t);
+                    t.start();
+                }
+                if (riter.hasNext())
+                    Thread.sleep(200);
+            }
+            // Must wait for them to start before we can go on to next wave.
+            for (Thread t : threads)
                 t.join();
-            } catch (InterruptedException exn) {
-                break; // XXX give up
+        } catch (InterruptedException exn) {
+            logger.error("Interrupted while starting transforms"); // Give up
+        }
+    }
+
+    private int getRunnableCount(Set<Thread> threads) {
+        int result = 0;
+        for (Iterator<Thread> iter = threads.iterator(); iter.hasNext();) {
+            Thread t = iter.next();
+            if (!t.isAlive()) {
+                // logger.info("Thread " + t.getName() + " is dead, removing.");
+                iter.remove();
+            } else {
+                Thread.State state = t.getState();
+                // logger.info("Thread " + t.getName() + " is in state " + t.getState());
+                if (state == Thread.State.RUNNABLE)
+                    result++;
             }
         }
+        return result;
     }
 
     private List<NodePersistentState> getLoadable(List<NodePersistentState> unloaded,
@@ -481,8 +509,7 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
         List<NodePersistentState> l = new ArrayList<NodePersistentState>(unloaded.size());
         Set<String> thisPass = new HashSet<String>(unloaded.size());
 
-        for (Iterator<NodePersistentState> i = unloaded.iterator();
-             l.size() < LOAD_LIMIT && i.hasNext(); ) {
+        for (Iterator<NodePersistentState> i = unloaded.iterator(); i.hasNext(); ) {
             NodePersistentState tps = i.next();
             Tid tid = tps.getTid();
             NodeDesc tDesc = tDescs.get(tid);
