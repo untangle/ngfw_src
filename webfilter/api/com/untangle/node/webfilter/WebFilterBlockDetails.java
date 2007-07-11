@@ -48,11 +48,6 @@ public class WebFilterBlockDetails extends BlockDetails
         return settings.getBlockTemplate().getHeader();
     }
 
-    public String getContact()
-    {
-        return settings.getBlockTemplate().getContact();
-    }
-
     public String getReason()
     {
         return reason;

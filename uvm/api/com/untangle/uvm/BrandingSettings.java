@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -39,6 +39,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 /**
  * Contains properties that a vendor may use to rebrand the product.
@@ -150,6 +151,17 @@ public class BrandingSettings implements Serializable
     public void setContactEmail(String contactEmail)
     {
         this.contactEmail = contactEmail;
+    }
+
+    @Transient
+    public String getContactHtml()
+    {
+        if (null != contactEmail && !contactEmail.trim().equals("")) {
+            return "<a href='mailto:" + contactEmail + "'>" + contactName
+                + "</a>";
+        } else {
+            return contactName;
+        }
     }
 
     public void copy(BrandingSettings settings)
