@@ -136,12 +136,14 @@ public class PrefixUrlList extends UrlList
             }
         }
 
-        k.setData(lastHost);
-        v.setData(sb.toString().getBytes());
-        try {
-            db.put(null, k, v);
-        } catch (DatabaseException exn) {
-            logger.warn("could not save entry", exn);
+        if (null != lastHost) {
+            k.setData(lastHost);
+            v.setData(sb.toString().getBytes());
+            try {
+                db.put(null, k, v);
+            } catch (DatabaseException exn) {
+                logger.warn("could not save entry", exn);
+            }
         }
     }
 

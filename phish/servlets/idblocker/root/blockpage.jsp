@@ -1,7 +1,7 @@
 <%@ page language="java" import="com.untangle.uvm.*,com.untangle.uvm.node.*, com.untangle.uvm.security.*, com.untangle.node.http.*, com.untangle.node.phish.*"%>
 <%--
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -34,6 +34,8 @@ Phish tran = (Phish)tctx.node();
 UserWhitelistMode mode = tran.getUserWhitelistMode();
 PhishBlockDetails bd = tran.getBlockDetails(nonce);
 
+String contact = bs.getContactHtml();
+
 String header = "Phish Blocker";
 String host = null == bd ? "" : bd.getFormattedHost();
 String url = null == bd ? "" : bd.getFormattedUrl();
@@ -63,43 +65,44 @@ url = '<%=null == bd ? "javascript:history.back()" : bd.getUrl()%>';
  <!-- Box Start -->
  <div class="main-top-left"></div><div class="main-top-right"></div><div class="main-mid-left"><div class="main-mid-right"><div class="main-mid">
  <!-- Content Start -->
-	
-	<div class="page_head">
+
+    <div class="page_head">
         <a href="<%=companyUrl%>"><img src="/images/BrandingLogo.gif" border="0" alt="<%=company%> logo"/></a> <div><%=header%></div>
-	</div>
-	
+    </div>
+
     <hr />
-    
 
-	<center>
-	<div style="padding: 10px 0; margin: 0 auto; width: 500px;">
-		This web page was blocked because it may be designed to steal personal information.<br /><br />
-		<p><b>Host:</b> <%=host%></p>
-		<p><b>URL:</b> <%=url%></p>
-	</div>
-	</center>
 
-	<center>
+    <center>
+    <div style="padding: 10px 0; margin: 0 auto; width: 500px;">
+        This web page was blocked because it may be designed to steal personal information.<br /><br />
+        <p><b>Host:</b> <%=host%></p>
+        <p><b>URL:</b> <%=url%></p>
+        <p>Please contact <%=contact%>.</p>
+    </div>
+    </center>
+
+    <center>
 <% if (UserWhitelistMode.NONE != mode && null != bd && null != bd.getWhitelistHost()) { %>
       <button id="unblockNowButton" type="button" onclick="unblockSite(false)">Unblock For Now</button>
-	<% if (UserWhitelistMode.USER_AND_GLOBAL == mode) { %>
+    <% if (UserWhitelistMode.USER_AND_GLOBAL == mode) { %>
       <button id="unblockGlobalButton" type="button" onclick="unblockSite(true)">Unblock Permanently</button>
 
-<% 
-	   }
+<%
+       }
    }
 %>
-  
-	</center>
+
+    </center>
 
     <address><%=company%> Phish Blocker</address>
-    
-	<hr />
-	
+
+    <hr />
+
  <!-- Content End -->
  </div></div></div><div class="main-bot-left"></div><div class="main-bot-right"></div>
  <!-- Box End -->
-</div>	
+</div>
 
 </body>
 </html>
