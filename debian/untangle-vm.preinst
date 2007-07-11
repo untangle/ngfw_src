@@ -17,6 +17,7 @@ if [ -d $oldShare ] ; then
   mv $oldShare/quarantine $newShare
 # Nuke only the old stuff that can't be useful
   rm -fr $oldShare/db
+  mv $oldShare ${oldShare}.backup
 fi
 
 # Kill any already-running reports (Bug 1249)
