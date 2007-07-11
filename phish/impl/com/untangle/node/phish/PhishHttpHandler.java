@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -21,7 +21,6 @@ package com.untangle.node.phish;
 import java.net.InetAddress;
 import java.net.URI;
 
-import com.untangle.uvm.vnet.TCPSession;
 import com.untangle.node.http.HttpStateMachine;
 import com.untangle.node.http.RequestLineToken;
 import com.untangle.node.http.StatusLine;
@@ -29,6 +28,7 @@ import com.untangle.node.token.Chunk;
 import com.untangle.node.token.Header;
 import com.untangle.node.token.Token;
 import com.untangle.node.util.UrlDatabaseResult;
+import com.untangle.uvm.vnet.TCPSession;
 import org.apache.log4j.Logger;
 
 public class PhishHttpHandler extends HttpStateMachine
@@ -73,9 +73,9 @@ public class PhishHttpHandler extends HttpStateMachine
         }
         host = host.toLowerCase();
 
-        // XXX yuck
         UrlDatabaseResult result;
-        if (node.isWhitelistedDomain(host, getSession().clientAddr())) {
+        if (!node.getPhishSettings().getEnableGooglePhishList()
+            || node.isWhitelistedDomain(host, getSession().clientAddr())) {
             result = null;
         } else {
             result = node.getUrlDatabase()
@@ -83,7 +83,6 @@ public class PhishHttpHandler extends HttpStateMachine
         }
 
         if (null != result) {
-            // XXX fire off event
             if (result.blacklisted()) {
                 // XXX change this category value
                 node.logHttp(new PhishHttpEvent(rlToken.getRequestLine(), Action.BLOCK, "Google Safe Browsing"));
@@ -98,8 +97,8 @@ public class PhishHttpHandler extends HttpStateMachine
 
                 blockRequest(r);
                 return requestHeader;
-            } // else log Action.PASS now
-        } // else log Action.PASS now
+            }
+        }
 
         releaseRequest();
         return requestHeader;
