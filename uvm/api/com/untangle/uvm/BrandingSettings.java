@@ -55,7 +55,7 @@ public class BrandingSettings implements Serializable
     private String companyName = "Untangle";
     private String companyUrl = "http://www.untangle.com";
     private byte[] logo = null;
-    private String contactName = "Your System Administrator";
+    private String contactName = "your network administrator";
     private String contactEmail = null;
 
     public BrandingSettings() { }
