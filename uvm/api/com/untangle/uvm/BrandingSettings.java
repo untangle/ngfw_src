@@ -129,7 +129,7 @@ public class BrandingSettings implements Serializable
     @Column(name="contact_name")
     public String getContactName()
     {
-        return null == contactName ? "Your System Administrator" : contactName;
+        return null == contactName ? "your network administrator" : contactName;
     }
 
     public void setContactName(String name)
