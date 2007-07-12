@@ -130,6 +130,10 @@ public class UpgradeProcessJPanel extends JPanel
                 }
 
                 try{
+                    String displayName = mackageDesc.getDisplayName();
+                    /* no need to show items that don't have display names */
+                    if ( null == displayName ) continue;
+
                     rowIndex++;
                     tempRow = new Vector(8);
                     tempRow.add( MSortedTableModel.ROW_SAVED  );
@@ -144,7 +148,7 @@ public class UpgradeProcessJPanel extends JPanel
                         tempRow.add( new ImageIcon(getClass().getResource("/com/untangle/gui/node/IconDescUnknown42x42.png"))) ;
                     }
 
-                    tempRow.add( mackageDesc.getDisplayName() );
+                    tempRow.add( displayName );
                     tempRow.add( mackageDesc.getAvailableVersion() );
                     if( mackageDesc.getType() == MackageDesc.Type.LIBRARY )
                         tempRow.add( "System Component" );
