@@ -1,7 +1,7 @@
 <%@ page language="java" import="com.untangle.uvm.*, com.untangle.uvm.toolbox.*, com.untangle.uvm.node.*" %>
 <%--
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -35,17 +35,21 @@ if( colonIndex >= 0 )
     host = host.substring(0, colonIndex);
 
 LocalUvmContext uvm = LocalUvmContextFactory.context();
+BrandingSettings bs = uvm.brandingManager().getBrandingSettings();
+String company = bs.getCompanyName();
+String companyInc = company.equalsIgnoreCase("untangle") ? "Untangle, Inc." : company;
+String companyUrl = bs.getCompanyUrl();
 %>
 
 <?xml version="1.0" encoding="utf-8"?>
 <!-- JNLP File for Untangle Platform -->
 <jnlp spec="1.0+" codebase="<%=cb%>" href="<%=href%>">
   <information>
-    <title>Untangle Server @ <%=host%>  </title>
-    <vendor>Untangle, Inc.</vendor>
-    <homepage href="http://www.untangle.com"/>
-    <description>Untangle @ <%=host%>  </description>
-    <description kind="short">The graphical client for configuring, controlling, and monitoring Untangle.</description>
+    <title><%=company%> Server @ <%=host%>  </title>
+    <vendor><%=companyInc%></vendor>
+    <homepage href="<%=companyUrl%>"/>
+    <description><%=company%> @ <%=host%>  </description>
+    <description kind="short">The graphical client for configuring, controlling, and monitoring <%=company%>.</description>
     <icon href="images/Logo128x128.gif" width="128" height="128"/>
     <icon href="images/Logo64x64.gif" kind="splash" width="64" height="64"/>
     <icon href="images/Logo32x32.gif" width="32" height="32"/>
