@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -30,20 +30,6 @@ import java.util.Map;
 import java.util.Set;
 
 import com.sleepycat.je.DatabaseException;
-import com.untangle.uvm.LocalAppServerManager;
-import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.LocalUvmContext;
-import com.untangle.uvm.logging.EventLogger;
-import com.untangle.uvm.logging.EventLoggerFactory;
-import com.untangle.uvm.logging.EventManager;
-import com.untangle.uvm.logging.ListEventFilter;
-import com.untangle.uvm.logging.SimpleEventFilter;
-import com.untangle.uvm.vnet.Affinity;
-import com.untangle.uvm.vnet.Fitting;
-import com.untangle.uvm.vnet.PipeSpec;
-import com.untangle.uvm.vnet.SoloPipeSpec;
-import com.untangle.uvm.vnet.TCPSession;
-import com.untangle.uvm.util.OutsideValve;
 import com.untangle.node.http.UserWhitelistMode;
 import com.untangle.node.spam.SpamImpl;
 import com.untangle.node.spam.SpamSettings;
@@ -53,6 +39,20 @@ import com.untangle.node.util.EncryptedUrlList;
 import com.untangle.node.util.PrefixUrlList;
 import com.untangle.node.util.UrlDatabase;
 import com.untangle.node.util.UrlList;
+import com.untangle.uvm.LocalAppServerManager;
+import com.untangle.uvm.LocalUvmContext;
+import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.logging.EventLogger;
+import com.untangle.uvm.logging.EventLoggerFactory;
+import com.untangle.uvm.logging.EventManager;
+import com.untangle.uvm.logging.ListEventFilter;
+import com.untangle.uvm.logging.SimpleEventFilter;
+import com.untangle.uvm.util.OutsideValve;
+import com.untangle.uvm.vnet.Affinity;
+import com.untangle.uvm.vnet.Fitting;
+import com.untangle.uvm.vnet.PipeSpec;
+import com.untangle.uvm.vnet.SoloPipeSpec;
+import com.untangle.uvm.vnet.TCPSession;
 import org.apache.catalina.Valve;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
@@ -374,7 +374,7 @@ public class PhishNode extends SpamImpl
         return urlDatabase;
     }
 
-    // private methods --------------------------------------------------------
+    // private methods -------------------------------------------------------
 
     // XXX factor out this shit
     private static synchronized void deployWebAppIfRequired(Logger logger) {

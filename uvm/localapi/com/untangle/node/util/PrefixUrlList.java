@@ -67,7 +67,7 @@ public class PrefixUrlList extends UrlList
         super(dbHome, databaseUrl, dbName);
     }
 
-    // UrlList methods --------------------------------------------------------
+    // UrlList methods -------------------------------------------------------
 
     protected void updateDatabase(Database db, BufferedReader br)
         throws IOException

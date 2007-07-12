@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -19,10 +19,12 @@
 package com.untangle.node.spyware;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.util.Collections;
@@ -35,13 +37,18 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 
+import com.sleepycat.je.DatabaseException;
 import com.untangle.node.http.UserWhitelistMode;
 import com.untangle.node.token.Header;
 import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenAdaptor;
+import com.untangle.node.util.PrefixUrlList;
+import com.untangle.node.util.UrlDatabase;
+import com.untangle.node.util.UrlDatabaseResult;
+import com.untangle.node.util.UrlList;
 import com.untangle.uvm.LocalAppServerManager;
-import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.LocalUvmContext;
+import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.EventLoggerFactory;
 import com.untangle.uvm.logging.EventManager;
@@ -50,14 +57,14 @@ import com.untangle.uvm.node.IPMaddr;
 import com.untangle.uvm.node.IPMaddrRule;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.StringRule;
+import com.untangle.uvm.util.OutsideValve;
+import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.AbstractNode;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.vnet.SoloPipeSpec;
 import com.untangle.uvm.vnet.TCPSession;
-import com.untangle.uvm.util.OutsideValve;
-import com.untangle.uvm.util.TransactionWork;
 import org.apache.catalina.Valve;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
@@ -78,21 +85,29 @@ public class SpywareImpl extends AbstractNode implements Spyware
     private static final String SUBNET_DIFF_BASE
         = "com/untangle/node/spyware/subnet-diff-";
 
-    private final Logger logger = Logger.getLogger(getClass());
+    private static final File DB_HOME = new File(System.getProperty("bunnicula.db.dir"), "spyware");
+    private static final URL BLACKLIST_HOME;
 
     private static final int HTTP = 0;
     private static final int BYTE = 1;
 
     private static int deployCount = 0;
 
+    static {
+        try {
+            BLACKLIST_HOME = new URL("http://webupdates.untangle.com/diffserver");
+        } catch (MalformedURLException exn) {
+            throw new RuntimeException(exn);
+        }
+    }
+
     private final SpywareHttpFactory factory = new SpywareHttpFactory(this);
     private final TokenAdaptor tokenAdaptor = new TokenAdaptor(this, factory);
     private final SpywareEventHandler streamHandler = new SpywareEventHandler(this);
 
-    final SpywareStatisticManager statisticManager;
     private final EventLogger<SpywareEvent> eventLogger;
 
-    private final Set urlBlacklist;
+    private final UrlDatabase urlDatabase = new UrlDatabase();
 
     private final PipeSpec[] pipeSpecs = new PipeSpec[]
         { new SoloPipeSpec("spyware-http", this, tokenAdaptor,
@@ -100,10 +115,12 @@ public class SpywareImpl extends AbstractNode implements Spyware
           new SoloPipeSpec("spyware-byte", this, streamHandler,
                            Fitting.OCTET_STREAM, Affinity.SERVER, 0) };
 
-    private volatile SpywareSettings settings;
-
     private final Map<InetAddress, Set<String>> hostWhitelists
         = new HashMap<InetAddress, Set<String>>();
+
+    private final Logger logger = Logger.getLogger(getClass());
+
+    private volatile SpywareSettings settings;
 
     private volatile Map<String, StringRule> activeXRules;
     private volatile Map<String, StringRule> cookieRules;
@@ -111,13 +128,23 @@ public class SpywareImpl extends AbstractNode implements Spyware
 
     private final SpywareReplacementGenerator replacementGenerator;
 
+    final SpywareStatisticManager statisticManager;
+
     // constructors -----------------------------------------------------------
 
     public SpywareImpl()
     {
         replacementGenerator = new SpywareReplacementGenerator(getTid());
 
-        urlBlacklist = SpywareCache.cache().getUrls();
+        try {
+            UrlList l = new PrefixUrlList(DB_HOME, BLACKLIST_HOME, "spyware-blocked-url");
+            urlDatabase.addBlacklist("spyware-blocked-url", l);
+            urlDatabase.updateAll(true);
+        } catch (IOException exn) {
+            logger.warn("could not set up database", exn);
+        } catch (DatabaseException exn) {
+            logger.warn("could not set up database", exn);
+        }
 
         NodeContext tctx = getNodeContext();
         eventLogger = EventLoggerFactory.factory().getEventLogger(tctx);
@@ -292,12 +319,14 @@ public class SpywareImpl extends AbstractNode implements Spyware
     protected void preStart()
     {
         statisticManager.start();
+        urlDatabase.startUpdateTimer();
     }
 
     @Override
     protected void postStop()
     {
         statisticManager.stop();
+        urlDatabase.stopUpdateTimer();
     }
 
     @Override
@@ -333,7 +362,8 @@ public class SpywareImpl extends AbstractNode implements Spyware
 
         domain = null == domain ? null : domain.toLowerCase();
         for (String d = domain; !match && null != d; d = nextHost(d)) {
-            match = urlBlacklist.contains(d);
+            UrlDatabaseResult udr = urlDatabase.search("http", d, "/");
+            match = null != udr && udr.blacklisted();
         }
 
         return match;

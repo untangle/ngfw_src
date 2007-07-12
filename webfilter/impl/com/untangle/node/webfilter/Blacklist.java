@@ -129,7 +129,7 @@ class Blacklist
 
     void startUpdateTimer()
     {
-        urlDatabase.startUpdateTimer(1800000); // 30 min
+        urlDatabase.startUpdateTimer();
     }
 
     void stopUpdateTimer()
