@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -18,8 +18,11 @@
 
 package com.untangle.node.phish;
 
-import com.untangle.uvm.security.Tid;
 import com.untangle.node.http.ReplacementGenerator;
+import com.untangle.uvm.BrandingSettings;
+import com.untangle.uvm.LocalUvmContext;
+import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.security.Tid;
 
 class PhishReplacementGenerator
     extends ReplacementGenerator<PhishBlockDetails>
@@ -33,8 +36,7 @@ class PhishReplacementGenerator
         + " personal information.</p>"
         + "<p>Host: %s</p>"
         + "<p>URI: %s</p>"
-        + "<HR>"
-        + "<ADDRESS>Untangle</ADDRESS>"
+        + "<p>Please contact %s</p>"
         + "</BODY></HTML>";
 
     // constructors -----------------------------------------------------------
@@ -49,8 +51,11 @@ class PhishReplacementGenerator
     @Override
     protected String getReplacement(PhishBlockDetails details)
     {
+        LocalUvmContext uvm = LocalUvmContextFactory.context();
+        BrandingSettings bs = uvm.brandingManager().getBrandingSettings();
+
         return String.format(BLOCK_TEMPLATE, details.getHost(),
-                             details.getUri());
+                             details.getUri(), bs.getContactHtml());
     }
 
     @Override

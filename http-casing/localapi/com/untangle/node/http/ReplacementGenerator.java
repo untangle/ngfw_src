@@ -146,7 +146,6 @@ public abstract class ReplacementGenerator<T extends BlockDetails>
     private Token[] generateSimplePage(String nonce, boolean persistent,
                                        boolean gif)
     {
-
         Chunk chunk;
         if (gif) {
             byte[] buf = new byte[WHITE_GIF.length];

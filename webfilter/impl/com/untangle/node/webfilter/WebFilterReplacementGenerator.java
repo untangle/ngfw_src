@@ -43,8 +43,6 @@ class WebFilterReplacementGenerator
         + "<p>URI: %s</p>"
         + "<p>Reason: %s</p>"
         + "<p>Please contact %s</p>"
-        + "<HR>"
-        + "<ADDRESS>Untangle</ADDRESS>"
         + "</BODY></HTML>";
 
     // constructors -----------------------------------------------------------
