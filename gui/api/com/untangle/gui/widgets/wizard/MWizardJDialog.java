@@ -166,7 +166,7 @@ public class MWizardJDialog extends javax.swing.JDialog implements java.awt.even
                 nextJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/widgets/wizard/IconNext_16x16.png")));
             }
             else{
-                closeJButton.setEnabled(false);
+                closeJButton.setEnabled(true); //Sometimes user may want to abort on last step
                 nextJButton.setEnabled(true);
                 previousJButton.setVisible(true);
                 nextJButton.setText(STRING_FINAL_PAGE);
@@ -481,6 +481,13 @@ public class MWizardJDialog extends javax.swing.JDialog implements java.awt.even
             else{
                 if( changePage )
                     wizardFinishedNormal();
+                else{
+                    try{
+                        SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
+                            updateButtonState(false);
+                        }});
+                    }catch(Exception e){ Util.handleExceptionNoRestart("Error updating wizard on move next", e); }
+                }
             }
 
         }
