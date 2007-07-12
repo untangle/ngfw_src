@@ -125,7 +125,7 @@ getLicenseKey() {
     rm -f $ACTIVATION_KEY_FILE_TMP
     tar -C / -xf $TMP_ARCHIVE
     @UVM_HOME@/bin/utactivate
-    @UVM_HOME@/bin/utregister # trigger root passwd generation
+    @UVM_HOME@/bin/utregister # register under new key
   fi
 }
 
@@ -135,8 +135,9 @@ isServiceRunning() {
     extraArgs="-x"
     shift
   fi
-  # I cannot fucking believe I have to call pidof 3 times in a row to
-  # "make sure" (#2534)
+  # If you can believe it, pidof sometimes doesn't work!
+  # Calling it three times seems to be enough to work around the pidof
+  # bug and "make sure" (#2534)
   let i=0
   while [[ $i -lt 3 ]] ; do
     pidof $extraArgs "$1" && return 0
