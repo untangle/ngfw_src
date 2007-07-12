@@ -58,7 +58,9 @@ public class MPipelineJPanel extends javax.swing.JPanel {
         mPipelineJScrollPane.getVerticalScrollBar().setFocusable(false);
     }
 
-
+    public void setPremiumEnabled(boolean p){
+        ((MRackJPanel)nodeJPanel).setPremiumEnabled(p);
+    }
 
     public JScrollPane getJScrollPane(){ return mPipelineJScrollPane; }
 

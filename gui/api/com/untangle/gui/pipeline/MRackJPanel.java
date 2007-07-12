@@ -49,6 +49,7 @@ public class MRackJPanel extends JPanel {
     private static final int MIN_RACK_HEIGHT = 2; // in half U
     private static final int RACK_BUFFER_TOP = 1; // in half U
     private static final int RACK_BUFFER_BOT = 1; // in half U
+    private boolean premiumEnabled;
 
     // private ImageIcon RackBottom;
     // private ImageIcon RackTop;
@@ -111,6 +112,11 @@ public class MRackJPanel extends JPanel {
     }
 
 
+    public void setPremiumEnabled(boolean p) {
+             premiumEnabled = p;
+    }
+
+
     private int paintIndex;
     private int paintHeight;
     private int paintWidth;
@@ -142,6 +148,14 @@ public class MRackJPanel extends JPanel {
         }
         RackLeftShort.paintIcon(this, g2d, (paintWidth-718)/2 -6, paintI*FULL_U_HEIGHT + (paintIndex));
         RackRightShort.paintIcon(this, g2d, (paintWidth-718)/2 + 659 -6,  paintI*FULL_U_HEIGHT + (paintIndex));
+        
+        //Draw Premium Label
+        if (premiumEnabled) {
+            g.setFont(new Font("Arial", Font.BOLD, 16));
+            g.setColor(new Color(93,154,211));
+            g.drawString("Premium Updates Enabled", (paintWidth/2)-112, 30);
+        }
+        
 
         g2d.dispose();
     }

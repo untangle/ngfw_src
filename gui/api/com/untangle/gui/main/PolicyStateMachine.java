@@ -995,6 +995,8 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                 for ( MNodeJPanel mNodeJPanel : getAllNodePanels()) {
                     mNodeJPanel.doRefreshState();
                 }
+                // SHOW IF PREMIUM SIGNATURE SERVICE WAS ENABLED
+                updatePremiumStatus();
             }
             catch(InterruptedException e){ throw e; }
             catch(Exception e){
@@ -1335,6 +1337,8 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
         for( MackageDesc mackageDesc : Util.getRemoteToolboxManager().installedVisible() ){
             installedMackageMap.put(mackageDesc.getName(),mackageDesc);
         }
+        // SHOW IF PREMIUM SIGNATURE SERVICE WAS ENABLED
+        updatePremiumStatus();
         SwingUtilities.invokeLater( new Runnable(){ public void run(){
             progressBar.setValue(64);
             progressBar.setString("Populating My Apps...");
@@ -1957,6 +1961,12 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
 
     //////////////////////////////////////
     // PRIVATE CLASSES AND UTILS /////////
+
+    private void updatePremiumStatus(){
+        boolean premiumEnabled = (null==Util.getRemoteToolboxManager().mackageDesc("untangle-libitem-update-service"));
+        Util.getMPipelineJPanel().setPremiumEnabled(premiumEnabled);
+    }
+    
     public void stopAllGraphs(){
         for ( MNodeJPanel mNodeJPanel : getAllNodePanels()) {
             mNodeJPanel.mNodeDisplayJPanel().setDoVizUpdates(false);
