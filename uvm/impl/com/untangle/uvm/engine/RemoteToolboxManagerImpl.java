@@ -618,7 +618,7 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
                 instList.add(md);
 
                 
-                if (MackageDesc.Type.LIB_ITEM.equals( md.getType())) {
+                if (MackageDesc.Type.LIB_ITEM == md.getType()) {
                     // lib items always up to date
                     curList.add(md);
                 } else {

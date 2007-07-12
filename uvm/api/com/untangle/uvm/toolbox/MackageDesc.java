@@ -108,7 +108,7 @@ public class MackageDesc implements Serializable
         String ut = m.get("untangle-type");
         Type untangleType = Type.UNKNOWN;
         if (null == ut) {
-            untangleType = Type.UNKNOWN;
+            untangleType = null;
         } else {
             try {
                 untangleType = Type.valueOf(ut.toUpperCase());

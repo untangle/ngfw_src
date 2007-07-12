@@ -692,7 +692,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                 MackageDesc mackageDesc = req.getMackageDesc();
                 String purchasedMackageName = mackageDesc.getName();
 
-                if ( MackageDesc.Type.TRIAL.equals( mackageDesc.getType())) {
+                if ( MackageDesc.Type.TRIAL == mackageDesc.getType()) {
                     purchasedMackageName = mackageDesc.getFullVersion();
                 }
                 
@@ -1299,7 +1299,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                         MackageDesc.Type type = mackageDesc.getType();
                         String name = mackageDesc.getName();
                         //System.out.println("testing: " + name);
-                        if( type.equals( MackageDesc.Type.LIB_ITEM )) {
+                        if( type == MackageDesc.Type.LIB_ITEM ) {
                             addToStore(mackageDesc,false);
                             //System.out.println("added");
                         }
@@ -1876,22 +1876,22 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
             return true;
     }
     private boolean isMackageStoreItem(MackageDesc mackageDesc){
-        if( mackageDesc.getType().equals( MackageDesc.Type.LIB_ITEM ))
+        if( MackageDesc.Type.LIB_ITEM == mackageDesc.getType())
             return true;
         else
             return false;
     }
 
     private boolean isMackageTrial(MackageDesc mackageDesc){
-        return mackageDesc.getType().equals( MackageDesc.Type.TRIAL );
+        return MackageDesc.Type.TRIAL == mackageDesc.getType();
     }
 
     private boolean isMackageNode(MackageDesc mackageDesc){
-        return mackageDesc.getType().equals( MackageDesc.Type.NODE );
+        return MackageDesc.Type.NODE == mackageDesc.getType();
     }
 
     private boolean isMackageCasing(MackageDesc mackageDesc){
-        return mackageDesc.getType().equals( MackageDesc.Type.CASING );
+        return MackageDesc.Type.CASING == mackageDesc.getType();
     }
 
 

@@ -143,6 +143,11 @@ public class ProxyServlet extends HttpServlet
         tool.installed();
         StringBuilder sb = new StringBuilder();
         for (MackageDesc md : tool.installed()) {
+            MackageDesc.Type type = md.getType();
+            /* ignore packages that don't have an untangle type */
+            if (null == type || MackageDesc.Type.UNKNOWN == type) {
+                continue;
+            }
             sb.append(md.getName());
             sb.append("=");
             sb.append(md.getInstalledVersion());
