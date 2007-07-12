@@ -190,8 +190,10 @@ public class MLoginJFrame extends javax.swing.JFrame {
         logoLabel.setMinimumSize(new java.awt.Dimension(150, 96));
         logoLabel.setPreferredSize(new java.awt.Dimension(150, 96));
         try {
-            String host = Util.getServerCodeBase().getHost();
-            URL url = new URL("http://" + host + "/images/BrandingLogo.gif");
+            URL cb = Util.getServerCodeBase();
+            String proto = cb.getProtocol();
+            String host = cb.getHost();
+            URL url = new URL(proto + "://" + host + "/images/BrandingLogo.gif");
             logoLabel.setIcon(new ImageIcon(url));
         } catch (MalformedURLException exn) {
             logoLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/main/Logo150x96.png")));

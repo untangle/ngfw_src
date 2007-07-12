@@ -254,8 +254,10 @@ public class MMainJFrame extends javax.swing.JFrame {
         untangleJButton.setMinimumSize(new java.awt.Dimension(150, 96));
         untangleJButton.setPreferredSize(new java.awt.Dimension(150, 96));
         try {
-            String host = Util.getServerCodeBase().getHost();
-            URL url = new URL("http://" + host + "/images/BrandingLogo.gif");
+            URL cb = Util.getServerCodeBase();
+            String proto = cb.getProtocol();
+            String host = cb.getHost();
+            URL url = new URL(proto + "://" + host + "/images/BrandingLogo.gif");
             untangleJButton.setIcon(new ImageIcon(url));
         } catch (MalformedURLException exn) {
             untangleJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/main/Logo150x96.png")));
