@@ -93,6 +93,7 @@ public class AboutCompoundSettings implements CompoundSettings {
         activationKey = Util.getUvmContext().getActivationKey();
 
         if ( Util.getIsPremium() ) {
+            Util.getClassLoader().refreshClassLoader();
             licenseURL = Util.getClassLoader().getResource("LicenseProfessional.txt");
         }
         else {
