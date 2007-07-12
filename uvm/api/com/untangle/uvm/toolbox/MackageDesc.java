@@ -62,7 +62,8 @@ public class MackageDesc implements Serializable
         LIBRARY,
         BASE,
         LIB_ITEM,
-        TRIAL
+        TRIAL,
+        UNKNOWN
     }
 
     public static final int RACK_TYPE_BUNDLE   = 0; // used for store positioning, not the actual rack
@@ -106,9 +107,13 @@ public class MackageDesc implements Serializable
 
         String ut = m.get("untangle-type");
         if (null == ut) {
-            type = null;
+            type = Type.UNKNOWN;
         } else {
-            type = Type.valueOf(ut.toUpperCase());
+            try {
+                type = Type.valueOf(ut.toUpperCase());
+            } catch ( ) {
+                type = Type.UNKNOWN;
+            }
         }
 
         displayName = m.get("display-name");

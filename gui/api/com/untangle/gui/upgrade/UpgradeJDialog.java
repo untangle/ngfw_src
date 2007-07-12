@@ -91,5 +91,4 @@ public class UpgradeJDialog extends MConfigJDialog {
         addRefreshable(NAME_SETTINGS, upgradeSettingsJPanel);
         upgradeSettingsJPanel.setSettingsChangedListener(this);
     }
-
 }

@@ -39,6 +39,8 @@ import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.table.*;
 
+import org.apache.log4j.Logger;
+
 import com.untangle.gui.node.*;
 import com.untangle.gui.util.Util;
 import com.untangle.gui.widgets.dialogs.*;
@@ -48,6 +50,8 @@ import com.untangle.uvm.toolbox.*;
 
 public class UpgradeProcessJPanel extends JPanel
     implements Refreshable<UpgradeCompoundSettings> {
+
+    private final Logger logger = Logger.getLogger(getClass());
 
     private static final int DOWNLOAD_SLEEP_MILLIS = 1000;
     private static final int DOWNLOAD_FINAL_SLEEP_MILLIS = 3000;
@@ -114,9 +118,17 @@ public class UpgradeProcessJPanel extends JPanel
             int rowIndex = 0;
 
             for( MackageDesc mackageDesc : mackageDescs ){
-                if( mackageDesc.getType() == MackageDesc.Type.CASING ||
-                    mackageDesc.getType() == MackageDesc.Type.BASE)
+                switch ( mackageDesc.getType()) {
+                case CASING:
+                case LIB_ITEM:
+                case TRIAL:
+                case BASE:
                     continue;
+                    
+                default:
+                    /* process the remaining types */
+                }
+
                 try{
                     rowIndex++;
                     tempRow = new Vector(8);
@@ -125,10 +137,12 @@ public class UpgradeProcessJPanel extends JPanel
 
                     byte[] descIcon = mackageDesc.getDescIcon();
 
-                    if( descIcon != null)
+                    if( descIcon != null) {
                         tempRow.add( new ImageIcon(descIcon) );
-                    else
+                    } else {
+                        logger.warn("Unable to load icon for the mackage: " + mackageDesc.getName());
                         tempRow.add( new ImageIcon(getClass().getResource("/com/untangle/gui/node/IconDescUnknown42x42.png"))) ;
+                    }
 
                     tempRow.add( mackageDesc.getDisplayName() );
                     tempRow.add( mackageDesc.getAvailableVersion() );

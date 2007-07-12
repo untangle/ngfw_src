@@ -617,8 +617,9 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
             } else {
                 instList.add(md);
 
-                if (md.getName().endsWith("-libitem")) {
-                    // store items always up to date
+                
+                if (MackageDesc.Type.LIB_ITEM.equals( md.getType())) {
+                    // lib items always up to date
                     curList.add(md);
                 } else {
                     String instVer = md.getInstalledVersion();
