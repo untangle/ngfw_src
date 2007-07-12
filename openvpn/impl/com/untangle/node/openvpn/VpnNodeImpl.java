@@ -323,7 +323,6 @@ public class VpnNodeImpl extends AbstractNode
 
             if ( logo.exists()) {
                 extraList.add( logo );
-                locationList.add( Constants.EMAIL_LOGO_IMAGE );
             } else {
                 logger.warn( "The logo: " + logo + " doesn't exist." );
             }
