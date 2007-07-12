@@ -377,14 +377,17 @@ public class AboutBrandingJPanel extends javax.swing.JPanel
 
     private void defaultDisabledRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_defaultDisabledRadioButtonActionPerformed
         setDefaultEnabledDependency( false );
+        settingsChangedListener.settingsChanged(null);
     }//GEN-LAST:event_defaultDisabledRadioButtonActionPerformed
 
     private void defaultEnabledRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_defaultEnabledRadioButtonActionPerformed
         setDefaultEnabledDependency( true );
+        settingsChangedListener.settingsChanged(null);        
     }//GEN-LAST:event_defaultEnabledRadioButtonActionPerformed
 
     private void setDefaultEnabledDependency(boolean enabled){
         uploadJButton.setEnabled( !enabled );
+        settingsChangedListener.settingsChanged(null);
     }
 
     private class ImageChoiceThread extends Thread {
@@ -409,9 +412,9 @@ public class AboutBrandingJPanel extends javax.swing.JPanel
                 
                     // SET THE BYTE ARRAY TO THE FILE
                     AboutBrandingJPanel.this.logoByteArray = IOUtil.fileToBytes(file);
-                
+                    AboutBrandingJPanel.this.settingsChangedListener.settingsChanged(null);
                 }
-
+   
             }
             catch(Exception e){
                 Util.handleExceptionNoRestart("Error choosing image", e);                
