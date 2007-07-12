@@ -8,11 +8,11 @@ Standards-Version: 3.7.2
 Package: untangle-libuvmcore
 Architecture: i386
 Depends: ${misc:Depends}
-XB-Display-Name: untangle-libuvmcore
+XB-Display-Name: Untangle Core Library
 XB-Untangle-Type: library
 XB-Is-Service: true
-Description: untangle-libuvmcore
- untangle-libuvmcore.
+Description: Untangle Core Library
+ Untangle Core Library.
 
 Package: untangle-casing-ftp
 Architecture: any

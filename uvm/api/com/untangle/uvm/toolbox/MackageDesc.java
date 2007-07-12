@@ -104,17 +104,21 @@ public class MackageDesc implements Serializable
         // XXX hack, use Mackage field instead.
         name = m.get("package");
         // XXX hack
-
+        
         String ut = m.get("untangle-type");
+        Type untangleType = Type.UNKNOWN;
         if (null == ut) {
-            type = Type.UNKNOWN;
+            untangleType = Type.UNKNOWN;
         } else {
             try {
-                type = Type.valueOf(ut.toUpperCase());
-            } catch ( ) {
-                type = Type.UNKNOWN;
+                untangleType = Type.valueOf(ut.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                logger.warn("Unknown type: " + ut);
+                untangleType = Type.UNKNOWN;
             }
         }
+        
+        type = untangleType;
 
         displayName = m.get("display-name");
 
