@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -50,7 +50,7 @@ public class MURLClassLoader extends URLClassLoader {
 
     // This now adds all mars for the node, including the base and
     // parents (if any)
-    private void addMarsFor() {
+    public synchronized void refreshClassLoader() {
         Set<URL> urls = new HashSet<URL>(Arrays.asList(getURLs()));
 
         for (String s : Util.getRemoteToolboxManager().getWebstartResources()) {
@@ -85,7 +85,7 @@ public class MURLClassLoader extends URLClassLoader {
 
         // try to dynamically load the class
         try{
-            this.addMarsFor();
+            this.refreshClassLoader();
 
             //URL[] availableURLs = Util.getClassLoader().getURLs();
             //for(int i=0; i<availableURLs.length; i++)
