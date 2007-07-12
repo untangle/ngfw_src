@@ -409,7 +409,7 @@ String companyUrl = bs.getCompanyUrl();
         </center>
 
         <br/>
-    <address>Powered by Untangle&trade; Server</address>
+    <address>Powered by Untangle&trade;</address>
 
           <hr size="1" width="100%"/>
         </td>
