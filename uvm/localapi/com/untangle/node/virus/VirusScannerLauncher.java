@@ -68,7 +68,7 @@ abstract public class VirusScannerLauncher implements Runnable
 
                 this.wait(timeout);
 
-                // FuckinA, Java can return from wait() spuriously!
+                // Argh! Java can return from wait() spuriously!
                 if (this.result == null) {
                     long currentTime = System.currentTimeMillis();
                     while (this.result == null && (currentTime - startTime) < timeout) {
