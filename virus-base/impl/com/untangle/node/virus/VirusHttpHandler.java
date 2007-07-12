@@ -38,6 +38,9 @@ import com.untangle.node.token.Header;
 import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenException;
 import com.untangle.node.util.TempFileFactory;
+import com.untangle.uvm.BrandingSettings;
+import com.untangle.uvm.LocalUvmContext;
+import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.node.MimeTypeRule;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.StringRule;
@@ -65,9 +68,7 @@ class VirusHttpHandler extends HttpStateMachine
         + "<p>This site blocked because it contained a virus</p>"
         + "<p>Host: %s</p>"
         + "<p>URI: %s</p>"
-        + "<p>Please contact your network administrator</p>"
-        + "<HR>"
-        + "<ADDRESS>Untangle Virus Blocker</ADDRESS>"
+        + "<p>Please contact %s</p>"
         + "</BODY></HTML>";
 
     private static final int SCAN_COUNTER  = Node.GENERIC_0_COUNTER;
@@ -283,7 +284,9 @@ class VirusHttpHandler extends HttpStateMachine
         String uri = null != rl ? rl.getRequestUri().toString() : "";
         String host = getResponseHost();
 
-        String message = String.format(BLOCK_MESSAGE, host, uri);
+        LocalUvmContext uvm = LocalUvmContextFactory.context();
+        BrandingSettings bs = uvm.brandingManager().getBrandingSettings();
+        String message = String.format(BLOCK_MESSAGE, host, uri, bs.getContactHtml());
 
         Header h = new Header();
         h.addField("Content-Length", Integer.toString(message.length()));
