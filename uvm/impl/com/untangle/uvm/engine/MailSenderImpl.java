@@ -883,7 +883,7 @@ class MailSenderImpl implements MailSender
 
     public static void main(String[] args)
     {
-        String subject = "Untangle Reports"; // XXX Make default unsuck.
+        String subject = "Untangle Reports";
         File uvmClassDir = null;
         File bodyFile = null;
         List<File> extraFiles = new ArrayList<File>();

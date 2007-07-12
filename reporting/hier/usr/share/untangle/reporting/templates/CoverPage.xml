@@ -42,7 +42,7 @@
   <box x="${boxX}" y="${boxY}" width="${boxWidth}" height="${boxHeight}" valign="top" halign="center"
        padding-top="10">
     <paragraph halign="center" spacing-after="10">
-      <image source="${imageDirectory + 'images/Logo450x300.png'}" width="200"/>
+      <image source="${imageDirectory + 'images/BrandingLogo.gif}" width="200"/>
     </paragraph>
     
     <paragraph font="title" halign="center" spacing-after="20">

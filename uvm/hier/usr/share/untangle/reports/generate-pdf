@@ -51,6 +51,7 @@ EMAIL_TEMPLATE="@UVM_HOME@/reporting/email.html"
 
 BRANDING_PROPS=@UVM_CONF@/branding.properties
 COMPANY_NAME=$(grep '^uvm.branding.companyName=' $BRANDING_PROPS |sed 's/^[^=]\+=\(.*\)$/\1/')
+COMPANY_URL=$(grep '^uvm.branding.companyUrl=' $BRANDING_PROPS |sed 's/^[^=]\+=\(.*\)$/\1/')
 
 function generateTopLevel()
 {
@@ -330,6 +331,7 @@ function generateEmail()
     sed -e "s|%%REPORT_TYPE%%|${reportType}|g" \
         -e "s|%%REPORT_PREPARED%%|${REPORT_PREPARED}|g" \
         -e "s|%%COMPANY_NAME%%|${COMPANY_NAME}|g" \
+        -e "s|%%COMPANY_URL%%|${COMPANY_URL}|g" \
         ${EMAIL_TEMPLATE:-"baz"} \
         > ${t_email}
 
