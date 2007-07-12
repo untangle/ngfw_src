@@ -69,7 +69,7 @@ public class InitialSetupWizard extends MWizardJDialog {
         if( Util.isInsideVM()) {
             // VM Install needs to show license, needs interface test, auto key fetch
             addWizardPageJPanel(new InitialSetupLicenseJPanel(),         "2. License Agreement", false, false);
-            addWizardPageJPanel(new InitialSetupContactJPanel(),         "3. Contact Information", false, false);
+            addWizardPageJPanel(new InitialSetupContactJPanel(),         "3. Contact Information", true, true);
             addWizardPageJPanel(new InitialSetupPasswordJPanel(),        "4. Admin Account & Time", true, true);
             initialSetupInterfaceJPanel = new InitialSetupInterfaceJPanel();
             addWizardPageJPanel(initialSetupInterfaceJPanel,             "5. Interface Test", false, false);
