@@ -229,13 +229,12 @@ needToRestart() {
         esac
     fi
 
-    #  FIXME removed this test for 5.0 (bug #2987) FIXME
     #  garbage collection failure (usually happens when persistent heap full)
-    #  cmfcount=`tail -50 $UVM_GC_LOG | grep -ci "concurrent mode failure"`
-    #  if [ $cmfcount -gt 3 ]; then
-    #      echo "*** java heap cmf on `date` in `pwd` ***" >> $UVM_WRAPPER_LOG
-    #      return 0;
-    #  fi
+    cmfcount=`tail -50 $UVM_GC_LOG | grep -ci "concurrent mode failure"`
+    if [ $cmfcount -gt 2 ]; then
+        echo "*** java heap cmf on `date` in `pwd` ***" >> $UVM_WRAPPER_LOG
+        return 0;
+    fi
 
     # extra nightime checks
     if [ `date +%H` -eq 1 ]; then
