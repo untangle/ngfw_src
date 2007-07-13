@@ -44,6 +44,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -75,7 +76,15 @@ public class EncryptedUrlList extends UrlList
     public EncryptedUrlList(File dbHome, URL databaseUrl, String dbName)
         throws DatabaseException, IOException
     {
-        super(dbHome, databaseUrl, dbName);
+        super(dbHome, databaseUrl, dbName,
+              (Map<String, String>)Collections.EMPTY_MAP);
+    }
+
+    public EncryptedUrlList(File dbHome, URL databaseUrl, String dbName,
+                            Map<String, String> extraParams)
+        throws DatabaseException, IOException
+    {
+        super(dbHome, databaseUrl, dbName, extraParams);
     }
 
     // UrlList methods --------------------------------------------------------

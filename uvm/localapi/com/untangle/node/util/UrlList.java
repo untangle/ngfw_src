@@ -43,6 +43,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -79,11 +80,14 @@ public abstract class UrlList
     private final Database db;
     private final String dbLock;
 
+    private final String suffix;
+
     private final Logger logger = Logger.getLogger(getClass());
 
     // constructors ----------------------------------------------------------
 
-    public UrlList(File dbHome, URL baseUrl, String dbName)
+    public UrlList(File dbHome, URL baseUrl, String dbName,
+                   Map<String, String> extraParams)
         throws DatabaseException
     {
         this.baseUrl = baseUrl;
@@ -99,6 +103,16 @@ public abstract class UrlList
         DatabaseConfig dbCfg = new DatabaseConfig();
         dbCfg.setAllowCreate(true);
         db = dbEnv.openDatabase(null, dbName, dbCfg);
+
+        StringBuilder sb = new StringBuilder();
+        for (String k : extraParams.keySet()) {
+            sb.append("&");
+            sb.append(k);
+            sb.append("=");
+            sb.append(extraParams.get(k));
+        }
+
+        suffix = sb.toString();
     }
 
     // public methods --------------------------------------------------------
@@ -288,7 +302,7 @@ public abstract class UrlList
                 String oldVersion = getVersion(db);
 
                 String v = null == oldVersion ? "1:1" : oldVersion.replace(".", ":");
-                URL url = new URL(baseUrl + "/update?version=" + dbName + ":" + v);
+                URL url = new URL(baseUrl + "/update?version=" + dbName + ":" + v + suffix);
                 logger.info("updating from URL: " + url);
 
                 InputStream is = url.openStream();

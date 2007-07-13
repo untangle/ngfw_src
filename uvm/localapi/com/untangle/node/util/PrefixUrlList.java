@@ -38,7 +38,9 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -64,7 +66,15 @@ public class PrefixUrlList extends UrlList
     public PrefixUrlList(File dbHome, URL databaseUrl, String dbName)
         throws DatabaseException, IOException
     {
-        super(dbHome, databaseUrl, dbName);
+        super(dbHome, databaseUrl, dbName,
+              (Map<String, String>)Collections.EMPTY_MAP);
+    }
+
+    public PrefixUrlList(File dbHome, URL databaseUrl, String dbName,
+                         Map<String, String> extraParams)
+        throws DatabaseException, IOException
+    {
+        super(dbHome, databaseUrl, dbName, extraParams);
     }
 
     // UrlList methods -------------------------------------------------------

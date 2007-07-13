@@ -57,6 +57,7 @@ import com.untangle.uvm.node.IPMaddr;
 import com.untangle.uvm.node.IPMaddrRule;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.StringRule;
+import com.untangle.uvm.toolbox.RemoteToolboxManager;
 import com.untangle.uvm.util.OutsideValve;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.AbstractNode;
@@ -137,7 +138,14 @@ public class SpywareImpl extends AbstractNode implements Spyware
         replacementGenerator = new SpywareReplacementGenerator(getTid());
 
         try {
-            UrlList l = new PrefixUrlList(DB_HOME, BLACKLIST_HOME, "spyware-blocked-url");
+            LocalUvmContext uvm = LocalUvmContextFactory.context();
+            Map m = new HashMap();
+            m.put("key", uvm.getActivationKey());
+            RemoteToolboxManager tm = uvm.toolboxManager();
+            Boolean rup = null == tm.mackageDesc("untangle-libitem-update-service");
+            m.put("premium", rup.toString());
+
+            UrlList l = new PrefixUrlList(DB_HOME, BLACKLIST_HOME, "spyware-blocked-url", m);
             urlDatabase.addBlacklist("spyware-blocked-url", l);
             urlDatabase.updateAll(true);
         } catch (IOException exn) {

@@ -27,6 +27,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -37,10 +38,13 @@ import com.untangle.node.util.CharSequenceUtil;
 import com.untangle.node.util.PrefixUrlList;
 import com.untangle.node.util.UrlDatabase;
 import com.untangle.node.util.UrlList;
+import com.untangle.uvm.LocalUvmContext;
+import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.node.IPMaddrRule;
 import com.untangle.uvm.node.MimeType;
 import com.untangle.uvm.node.MimeTypeRule;
 import com.untangle.uvm.node.StringRule;
+import com.untangle.uvm.toolbox.RemoteToolboxManager;
 import org.apache.log4j.Logger;
 
 /**
@@ -90,6 +94,13 @@ class Blacklist
 
     synchronized void reconfigure()
     {
+        LocalUvmContext uvm = LocalUvmContextFactory.context();
+        Map m = new HashMap();
+        m.put("key", uvm.getActivationKey());
+        RemoteToolboxManager tm = uvm.toolboxManager();
+        Boolean rup = null == tm.mackageDesc("untangle-libitem-update-service");
+        m.put("premium", rup.toString());
+
         urlDatabase.clear();
 
         for (BlacklistCategory cat : settings.getBlacklistCategories()) {
@@ -98,7 +109,7 @@ class Blacklist
                 String dbName = "ubl-" + catName + "-dom";
                 try {
                     UrlList ul = new PrefixUrlList(DB_HOME, BLACKLIST_HOME,
-                                                   dbName);
+                                                   dbName, m);
                     urlDatabase.addBlacklist(dbName, ul);
                 } catch (IOException exn) {
                     logger.warn("could not open: " + dbName, exn);
@@ -111,7 +122,7 @@ class Blacklist
                 String dbName = "ubl-" + catName + "-url";
                 try {
                     UrlList ul = new PrefixUrlList(DB_HOME, BLACKLIST_HOME,
-                                                   dbName);
+                                                   dbName, m);
                     urlDatabase.addBlacklist(dbName, ul);
                 } catch (IOException exn) {
                     logger.warn("could not open: " + dbName, exn);

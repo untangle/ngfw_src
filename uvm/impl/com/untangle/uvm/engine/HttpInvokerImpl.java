@@ -172,8 +172,10 @@ class HttpInvokerImpl implements HttpInvoker
                 return;
             }
 
-            if (logger.isDebugEnabled())
-                logger.debug("Invoking " + target.getClass() + "." + methodName);
+            if (logger.isDebugEnabled()) {
+                logger.debug("Invoking " + target.getClass()
+                             + "." + methodName);
+            }
 
             Method method = targetDesc.getMethod(methodName);
 
