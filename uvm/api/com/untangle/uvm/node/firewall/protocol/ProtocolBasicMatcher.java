@@ -96,7 +96,6 @@ public final class ProtocolBasicMatcher extends ProtocolDBMatcher
         this.ping = ping;
     }
 
-    
     /**
      * Test if <param>protocol<param> matches this matcher.
      *
@@ -147,6 +146,20 @@ public final class ProtocolBasicMatcher extends ProtocolDBMatcher
     public String toString()
     {
         return this.name;
+    }
+
+    public boolean equals( Object o )
+    {
+        if (!( o instanceof ProtocolBasicMatcher )) return false;
+
+        /* just use to string, this will is only incorrect if this is
+         * subclassed, and this class is final. */
+        return toString().equals( o.toString());
+    }
+
+    public int hashCode()
+    {
+        return toString().hashCode();
     }
 
     /**
