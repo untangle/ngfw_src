@@ -98,7 +98,7 @@ class Blacklist
         Map m = new HashMap();
         m.put("key", uvm.getActivationKey());
         RemoteToolboxManager tm = uvm.toolboxManager();
-        Boolean rup = null == tm.mackageDesc("untangle-libitem-update-service");
+        Boolean rup = tm.hasPremiumSubscription();
         m.put("premium", rup.toString());
 
         urlDatabase.clear();

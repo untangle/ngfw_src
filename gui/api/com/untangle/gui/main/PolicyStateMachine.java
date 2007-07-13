@@ -57,8 +57,6 @@ import javax.jnlp.ServiceManager;
 import javax.swing.*;
 import javax.swing.border.*;
 
-import org.apache.log4j.Logger;
-
 import com.untangle.gui.configuration.*;
 import com.untangle.gui.node.*;
 import com.untangle.gui.pipeline.*;
@@ -73,6 +71,7 @@ import com.untangle.uvm.node.*;
 import com.untangle.uvm.policy.*;
 import com.untangle.uvm.security.*;
 import com.untangle.uvm.toolbox.*;
+import org.apache.log4j.Logger;
 
 public class PolicyStateMachine implements ActionListener, Shutdownable {
 
@@ -695,13 +694,13 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                 if ( MackageDesc.Type.TRIAL == mackageDesc.getType()) {
                     purchasedMackageName = mackageDesc.getFullVersion();
                 }
-                
+
                 if ( purchasedMackageName == null ) {
                     /* set so this will never match in the later code */
                     logger.warn( "Trial Package, " + mackageDesc.getName() + " has no fullVersion." );
                     purchasedMackageName = "1233432453";
                 }
-                         
+
                  // FIND THE BUTTON THAT WOULD HAVE BEEN CLICKED
                 MNodeJButton mNodeJButton = null;
                 for( MNodeJButton storeButton : storeMap.values() ){
@@ -1825,13 +1824,13 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
         for( Map<ButtonKey,MNodeJPanel> policyMap : policyRackMap.values()){
             panels.addAll( policyMap.values());
         }
-        
+
         /* Add all of the panels from the util rack (does this exist anymore?) */
         panels.addAll(utilRackMap.values());
 
         /* Add all of the panels from the core rack (does this exist anymore?) */
         panels.addAll(coreRackMap.values());
-        
+
         return panels;
     }
     private class DoItRunnable implements Runnable {
@@ -1963,10 +1962,10 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
     // PRIVATE CLASSES AND UTILS /////////
 
     private void updatePremiumStatus(){
-        boolean premiumEnabled = (null==Util.getRemoteToolboxManager().mackageDesc("untangle-libitem-update-service"));
+        boolean premiumEnabled = Util.getRemoteToolboxManager().hasPremiumSubscription();
         Util.getMPipelineJPanel().setPremiumEnabled(premiumEnabled);
     }
-    
+
     public void stopAllGraphs(){
         for ( MNodeJPanel mNodeJPanel : getAllNodePanels()) {
             mNodeJPanel.mNodeDisplayJPanel().setDoVizUpdates(false);

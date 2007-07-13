@@ -133,7 +133,7 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
         cronJob.cancel();
     }
 
-    // RemoteToolboxManager implementation ------------------------------------------
+    // RemoteToolboxManager implementation ------------------------------------
 
     // all known mackages
     public MackageDesc[] available()
@@ -427,7 +427,7 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
         return mq;
     }
 
-    // RemoteToolboxManagerPriv implementation --------------------------------------
+    // RemoteToolboxManagerPriv implementation --------------------------------
 
     // registers a mackage and restarts all instances in previous state
     public void register(String pkgName) throws MackageInstallException
@@ -518,6 +518,17 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
         }
 
         return resources;
+    }
+
+    public boolean hasPremiumSubscription()
+    {
+        for (MackageDesc md : this.installed) {
+            if (md.getName().equals("untangle-libitem-update-service")) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     // package private methods ------------------------------------------------
@@ -617,7 +628,7 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
             } else {
                 instList.add(md);
 
-                
+
                 if (MackageDesc.Type.LIB_ITEM == md.getType()) {
                     // lib items always up to date
                     curList.add(md);

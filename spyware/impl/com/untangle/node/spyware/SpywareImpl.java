@@ -142,7 +142,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
             Map m = new HashMap();
             m.put("key", uvm.getActivationKey());
             RemoteToolboxManager tm = uvm.toolboxManager();
-            Boolean rup = null == tm.mackageDesc("untangle-libitem-update-service");
+            Boolean rup = tm.hasPremiumSubscription();
             m.put("premium", rup.toString());
 
             UrlList l = new PrefixUrlList(DB_HOME, BLACKLIST_HOME, "spyware-blocked-url", m);
