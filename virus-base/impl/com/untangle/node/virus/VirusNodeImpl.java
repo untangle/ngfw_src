@@ -136,7 +136,7 @@ public abstract class VirusNodeImpl extends AbstractNode
                 }
 
                 if (testClientPort(client.clientPort()) || testServerPort(client.serverPort()) ||
-                    testClientPort(client.clientPort()) || testServerPort(server.serverPort())) {
+                    testClientPort(server.clientPort()) || testServerPort(server.serverPort())) {
                     return true;
                 }
 

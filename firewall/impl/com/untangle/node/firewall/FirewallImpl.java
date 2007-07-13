@@ -89,7 +89,7 @@ public class FirewallImpl extends AbstractNode implements Firewall
             List<FirewallRule> l = settings.getFirewallRuleList();
             for (Iterator<FirewallRule> i = l.iterator(); i.hasNext(); ) {
                 FirewallRule r = i.next();
-                if (null == i) {
+                if (null == r) {
                     logger.warn("Removing null from list");
                     i.remove();
                 }
