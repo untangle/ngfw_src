@@ -49,11 +49,8 @@ ServletBuilder.new(uvm, 'com.untangle.uvm.invoker.jsp',
                    "#{SRC_HOME}/uvm/servlets/http-invoker", [], [], [],
                    [BuildEnv::SERVLET_COMMON])
 
-deps = %w( commons-codec-1.3/commons-codec-1.3.jar
-           commons-fileupload-1.1/commons-fileupload-1.1.jar
-         ).map { |n| ThirdpartyJar.get("#{BuildEnv::DOWNLOADS}/#{n}") }
 ServletBuilder.new(uvm, 'com.untangle.uvm.store.jsp',
-                   "#{SRC_HOME}/uvm/servlets/onlinestore", deps)
+                   "#{SRC_HOME}/uvm/servlets/onlinestore", [])
 
 ServletBuilder.new(uvm, 'com.untangle.uvm.reports.jsp',
                    "#{SRC_HOME}/uvm/servlets/reports")

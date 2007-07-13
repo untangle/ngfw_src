@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -116,7 +116,6 @@ public class QuarantineSettings implements Serializable {
         if (patterns == null) {
             patterns = new ArrayList<EmailAddressRule>();
         }
-        eliminateNulls(patterns);
         m_allowedAddressPatterns = patterns;
     }
 
@@ -166,7 +165,6 @@ public class QuarantineSettings implements Serializable {
         if(remaps == null) {
             remaps = new ArrayList<EmailAddressPairRule>();
         }
-        eliminateNulls(remaps);
         m_addressRemaps = remaps;
     }
 
@@ -273,19 +271,13 @@ public class QuarantineSettings implements Serializable {
 
     private void eliminateNulls(List l)
     {
-        /*
-         * Disabled for 5.0, caused "org.hibernate.LazyInitializationException: illegal access to loading collection"
-         * in postInit of mail node when reading quarantine settings.
-         *
         for (Iterator i = l.iterator(); i.hasNext(); ) {
             Object o = i.next();
             if (null == o) {
                 Exception exn = new Exception("null in list");
                 exn.fillInStackTrace();
-                logger.warn("null removed from list", exn);
                 i.remove();
             }
         }
-        */
     }
 }
