@@ -53,10 +53,7 @@ esac
 
 datestamp=$(date '+%Y%m%d%H%M')
 
-(pg_dump -U postgres -n settings uvm;
-    echo "SET SESSION AUTHORIZATION 'postgres';";
-    pg_dump -U postgres -n events -s uvm) \
-        | gzip > $outdir/uvmdb-$datestamp.gz
+pg_dump -U postgres -n settings uvm | gzip > $outdir/uvmdb-$datestamp.gz
 
 [ $? -eq 0 ] || exit 1
 
