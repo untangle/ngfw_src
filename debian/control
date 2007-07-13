@@ -1021,7 +1021,7 @@ Description: Untangle Reports
 
 Package: untangle-base-virus
 Architecture: any
-Depends: untangle-vm
+Depends: untangle-vm, untangle-casing-http, untangle-casing-mail
 Conflicts: virus-base
 Provides: virus-base
 Replaces: virus-base
@@ -1032,7 +1032,7 @@ Description: Virus Blocker Base
 
 Package: untangle-base-spam
 Architecture: any
-Depends: untangle-vm, untangle-spamassassin-update
+Depends: untangle-vm, untangle-spamassassin-update, untangle-casing-mail
 Conflicts: spam-base
 Provides: spam-base
 Replaces: spam-base
