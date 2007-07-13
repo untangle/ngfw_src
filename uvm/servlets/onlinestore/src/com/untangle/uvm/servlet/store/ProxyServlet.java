@@ -107,6 +107,7 @@ public class ProxyServlet extends HttpServlet
         throws ServletException
     {
         String url = getUrl(req);
+
         HttpMethod get = new GetMethod(url);
         get.setFollowRedirects(false);
 

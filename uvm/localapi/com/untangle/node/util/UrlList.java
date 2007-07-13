@@ -57,6 +57,9 @@ import com.sleepycat.je.Environment;
 import com.sleepycat.je.EnvironmentConfig;
 import com.sleepycat.je.LockMode;
 import com.sleepycat.je.OperationStatus;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpMethod;
+import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.log4j.Logger;
 
 /**
@@ -305,7 +308,10 @@ public abstract class UrlList
                 URL url = new URL(baseUrl + "/update?version=" + dbName + ":" + v + suffix);
                 logger.info("updating from URL: " + url);
 
-                InputStream is = url.openStream();
+                HttpClient hc = new HttpClient();
+                HttpMethod get = new GetMethod(url.toString());
+                int rc = hc.executeMethod(get);
+                InputStream is = get.getResponseBodyAsStream();
                 InputStreamReader isr = new InputStreamReader(is);
                 br = new BufferedReader(isr);
 

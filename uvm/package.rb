@@ -1,6 +1,6 @@
 # -*-ruby-*-
 # $HeadURL$
-# Copyright (c) 2003-2007 Untangle, Inc. 
+# Copyright (c) 2003-2007 Untangle, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License, version 2,
@@ -31,10 +31,10 @@ jts << (jt = JarTarget.buildTarget(uvm, Jars::Base, 'api', ["#{SRC_HOME}/uvm/api
 BuildEnv::SRC.installTarget.installJars(jt, uvm.getWebappDir('webstart'), nil, true)
 
 ## Local API
-jts << JarTarget.buildTarget(uvm, Jars::Base + [ uvm['api']], 'localapi', "#{SRC_HOME}/uvm/localapi")
+jts << JarTarget.buildTarget(uvm, Jars::Base + [uvm['api']], 'localapi', "#{SRC_HOME}/uvm/localapi")
 
 ## Reporting
-deps  = Jars::Base + Jars::Jasper + Jars::JFreeChart + [ uvm['api']]
+deps  = Jars::Base + Jars::Jasper + Jars::JFreeChart + [uvm['api']]
 jts << JarTarget.buildTarget(uvm, deps, 'reporting', "#{SRC_HOME}/uvm/reporting")
 
 ## Implementation
@@ -49,8 +49,7 @@ ServletBuilder.new(uvm, 'com.untangle.uvm.invoker.jsp',
                    "#{SRC_HOME}/uvm/servlets/http-invoker", [], [], [],
                    [BuildEnv::SERVLET_COMMON])
 
-deps = %w( commons-httpclient-3.0/commons-httpclient-3.0.jar
-           commons-codec-1.3/commons-codec-1.3.jar
+deps = %w( commons-codec-1.3/commons-codec-1.3.jar
            commons-fileupload-1.1/commons-fileupload-1.1.jar
          ).map { |n| ThirdpartyJar.get("#{BuildEnv::DOWNLOADS}/#{n}") }
 ServletBuilder.new(uvm, 'com.untangle.uvm.store.jsp',

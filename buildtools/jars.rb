@@ -83,11 +83,17 @@ class Jars
   Junit      = [ Jars.downloadTarget('junit4.1/junit-4.1.jar') ]
   Bdb        = [ Jars.downloadTarget('je-3.2.13/lib/je-3.2.13.jar') ]
 
+  HttpClient = %w( commons-httpclient-3.0/commons-httpclient-3.0.jar
+                   commons-codec-1.3/commons-codec-1.3.jar
+                   commons-fileupload-1.1/commons-fileupload-1.1.jar
+                 ).map { |n| Jars.downloadTarget(n) }
+
   ## Groups used for compiling
   # This is available to everything?
   Base       = Jars.makeGroup(Log4j, Hibernate, HibernateAnnotations, Postgres,
                               Activation, Jcifs, C3p0, Ant, JavaMailApi,
-                              JavaMail, TomcatEmb, Velocity, WBEM, Bdb)
+                              JavaMail, TomcatEmb, Velocity, WBEM, Bdb,
+                              HttpClient)
 
   # Jars for compiling the GUI, and GUI node components
   Gui        = Jars.makeGroup(Alloy, JFreeChartGui, Netbeans, Jnlp)
