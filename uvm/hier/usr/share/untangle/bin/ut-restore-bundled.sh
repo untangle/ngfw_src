@@ -11,6 +11,7 @@
 # 2 - Not a tar file
 # 3 - Missing content from file
 # 4 - Error from restore file
+# 5 - Restore file too old
 #
 #==============================================================
 
@@ -96,6 +97,7 @@ function doIt() {
     DB_FILE=`ls | grep uvmdb*.gz`
     FILES_FILE=`ls | grep files*.tar.gz`
     INSTALLED_FILE=`ls | grep installed*`
+    OLD_DB_FILE=`ls | grep mvvmdb*.gz`
 
     debug "DB file $DB_FILE"
     debug "Files file $FILES_FILE"
@@ -104,20 +106,27 @@ function doIt() {
     popd  > /dev/null 2>&1
 
 
+# Check version
+    if [ -n "$OLD_DB_FILE" ]; then
+        err "Restore file too old"
+        exit 5
+    fi
+
+
 # Verify files
-    if [ -z $INSTALLED_FILE ]; then
+    if [ -z "$INSTALLED_FILE" ]; then
         err "Unable to find installed packages file"
         rm -rf $WORKING_DIR
         exit 3
     fi
 
-    if [ -z $FILES_FILE ]; then
+    if [ -z "$FILES_FILE" ]; then
         err "Unable to find system files file"
         rm -rf $WORKING_DIR
         exit 3
     fi
 
-    if [ -z $DB_FILE ]; then
+    if [ -z "$DB_FILE" ]; then
         err "Unable to find database file"
         rm -rf $WORKING_DIR
         exit 3

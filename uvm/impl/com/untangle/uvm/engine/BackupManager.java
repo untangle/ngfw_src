@@ -135,9 +135,11 @@ class BackupManager {
             case 1:
             case 2:
             case 3:
-                throw new IllegalArgumentException("File does not seem to be valid untangle backup");
+                throw new IllegalArgumentException("File does not seem to be valid Untangle backup");
             case 4:
                 throw new IOException("Error in processing restore itself (yet file seems valid)");
+            case 5:
+                throw new IOException("File is from an older version of Untangle and cannot be used");
             default:
                 throw new IOException("Unknown error in local processing");
             }

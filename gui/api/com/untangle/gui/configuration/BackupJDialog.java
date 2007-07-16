@@ -617,7 +617,7 @@ public class BackupJDialog extends javax.swing.JDialog implements java.awt.event
             super("MVCLIENT-RestoreThread");
             setDaemon(true);
             successString = "Success:  The Local File restore procedure completed.";
-            failedString = "Error:  The Local File restore procedure failed.  Contact support for further direction.";
+            failedString = "Error:  The Local File restore procedure failed.  The reason reported by the Untangle Server was:\n";
             infiniteProgressJComponent.start("Restoring...");
             this.start();
         }
@@ -657,7 +657,7 @@ public class BackupJDialog extends javax.swing.JDialog implements java.awt.event
                 Util.handleExceptionNoRestart("Error restoring", e);
                 infiniteProgressJComponent.setTextLater("Restore Failure");
                 MOneButtonJDialog.factory(BackupJDialog.this, "",
-                                          failedString,
+                                          failedString + e.getMessage(),
                                           "Restore Failure Warning", "");
             }
             finally{
