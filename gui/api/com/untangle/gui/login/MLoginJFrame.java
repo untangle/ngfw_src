@@ -193,7 +193,8 @@ public class MLoginJFrame extends javax.swing.JFrame {
             URL cb = Util.getServerCodeBase();
             String proto = cb.getProtocol();
             String host = cb.getHost();
-            URL url = new URL(proto + "://" + host + "/images/BrandingLogo.gif");
+            int port = cb.getPort();
+            URL url = new URL(proto + "://" + host + ":" + port + "/images/BrandingLogo.gif");
             logoLabel.setIcon(new ImageIcon(url));
         } catch (MalformedURLException exn) {
             logoLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/main/Logo150x96.png")));

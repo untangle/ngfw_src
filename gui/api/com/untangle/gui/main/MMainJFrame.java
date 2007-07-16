@@ -257,7 +257,8 @@ public class MMainJFrame extends javax.swing.JFrame {
             URL cb = Util.getServerCodeBase();
             String proto = cb.getProtocol();
             String host = cb.getHost();
-            URL url = new URL(proto + "://" + host + "/images/BrandingLogo.gif");
+            int port = cb.getPort();
+            URL url = new URL(proto + "://" + host + ":" + port + "/images/BrandingLogo.gif");
             untangleJButton.setIcon(new ImageIcon(url));
         } catch (MalformedURLException exn) {
             untangleJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/main/Logo150x96.png")));
