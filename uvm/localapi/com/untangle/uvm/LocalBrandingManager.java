@@ -61,4 +61,12 @@ public interface LocalBrandingManager
      * Retrieve the file that holds the logo.
      */
     File getLogoFile();
+
+    /**
+     * <code>getLogoWebPath</code> returns the path from the web root to the branding logo.
+     * This is typically used for images embedded into emails.
+     *
+     * @return a <code>String</code> giving the path from the web root to the branding logo.
+     */
+    String getLogoWebPath();
 }

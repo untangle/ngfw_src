@@ -46,6 +46,7 @@ class BrandingManagerImpl implements LocalBrandingManager
 {
     private static final File DEFAULT_LOGO;
     private static final File BRANDING_LOGO;
+    private static final String BRANDING_LOGO_WEB_PATH;
     private static final File BRANDING_PROPS;
 
     private final Logger logger = Logger.getLogger(getClass());
@@ -100,6 +101,11 @@ class BrandingManagerImpl implements LocalBrandingManager
     public File getLogoFile()
     {
         return BRANDING_LOGO;
+    }
+
+    public String getLogoWebPath()
+    {
+        return BRANDING_LOGO_WEB_PATH;
     }
 
     // private methods --------------------------------------------------------
@@ -180,6 +186,7 @@ class BrandingManagerImpl implements LocalBrandingManager
         File id = new File(wd, "ROOT/images");
         DEFAULT_LOGO = new File(id, "Logo150x96.gif");
         BRANDING_LOGO = new File(id, "BrandingLogo.gif");
+        BRANDING_LOGO_WEB_PATH = "images/BrandingLogo.gif";
         wd = System.getProperty("bunnicula.conf.dir");
         id = new File(wd);
         BRANDING_PROPS = new File(id, "branding.properties");

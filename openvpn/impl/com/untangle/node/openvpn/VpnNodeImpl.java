@@ -320,9 +320,8 @@ public class VpnNodeImpl extends AbstractNode
             LocalUvmContext uvm = LocalUvmContextFactory.context();
 
             File logo = uvm.localBrandingManager().getLogoFile();
-
             if ( logo.exists()) {
-                extraList.add( logo );
+                extraList.add( uvm.localBrandingManager().getLogoWebPath() );
             } else {
                 logger.warn( "The logo: " + logo + " doesn't exist." );
             }
