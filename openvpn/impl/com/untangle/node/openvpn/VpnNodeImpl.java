@@ -321,7 +321,7 @@ public class VpnNodeImpl extends AbstractNode
 
             File logo = uvm.localBrandingManager().getLogoFile();
             if ( logo.exists()) {
-                extraList.add( uvm.localBrandingManager().getLogoWebPath() );
+                locationList.add( uvm.localBrandingManager().getLogoWebPath() );
             } else {
                 logger.warn( "The logo: " + logo + " doesn't exist." );
             }
