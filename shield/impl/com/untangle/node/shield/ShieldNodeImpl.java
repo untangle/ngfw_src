@@ -46,7 +46,7 @@ public class ShieldNodeImpl extends AbstractNode
 {
     private static final String SHIELD_REJECTION_EVENT_QUERY
         = "SELECT time_stamp, client_addr, client_intf, reputation, limited, dropped, rejected"
-        + " FROM shield_rejection_evt "
+        + " FROM n_shield_rejection_evt "
         + " ORDER BY time_stamp DESC LIMIT ?";
 
     private static final int CREATE_DATE_IDX =  1;
