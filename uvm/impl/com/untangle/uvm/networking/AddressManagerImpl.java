@@ -142,6 +142,8 @@ class AddressManagerImpl implements LocalAddressManager
         }
         
         updateShellScript( scriptWriter, this.addressSettings );
+        
+        saveProperties( this.addressSettings );
     }
 
     /* Used to refresh the value of the public address */
