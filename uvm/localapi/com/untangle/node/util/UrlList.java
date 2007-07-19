@@ -100,7 +100,21 @@ public abstract class UrlList
 
         EnvironmentConfig envCfg = new EnvironmentConfig();
         envCfg.setAllowCreate(true);
-        Environment dbEnv = new Environment(dbHome, envCfg);
+
+        int tries = 0;
+        Environment dbEnv = null;
+        synchronized (DB_LOCKS) {
+            while (null == dbEnv && 3 > tries++) {
+                try {
+                    dbEnv = new Environment(dbHome, envCfg);
+                } catch (DatabaseException exn) {
+                    logger.warn("couldn't load environment, try: " + tries, exn);
+                    for (File f : dbHome.listFiles()) {
+                        boolean deleted = f.delete();
+                    }
+                }
+            }
+        }
 
         // Open the database. Create it if it does not already exist.
         DatabaseConfig dbCfg = new DatabaseConfig();

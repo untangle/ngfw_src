@@ -375,14 +375,15 @@ class Blacklist
                     }
                 }
 
+                BlacklistCategory bc = settings.getBlacklistCategory(cat);
+
                 if (category == null) {
-                    category = cat;
+                    category = bc.getDisplayName();
                 } else {
-                    BlacklistCategory bc = settings.getBlacklistCategory(cat);
                     if (null == bc || bc.getLogOnly()) {
                         continue;
                     }
-                    category = cat;
+                    category = bc.getDisplayName();
                 }
             }
         return category;
