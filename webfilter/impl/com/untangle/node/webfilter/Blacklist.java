@@ -336,7 +336,7 @@ class Blacklist
             if (null != bc) {
                 Action a = bc.getLogOnly() ? Action.PASS : Action.BLOCK;
                 WebFilterEvent hbe = new WebFilterEvent
-                    (requestLine.getRequestLine(), a, reason, category);
+                    (requestLine.getRequestLine(), a, reason, bc.getDisplayName());
                 node.log(hbe);
             } else if (null == stringRule || stringRule.getLog()) {
                 WebFilterEvent hbe = new WebFilterEvent
@@ -378,12 +378,12 @@ class Blacklist
                 BlacklistCategory bc = settings.getBlacklistCategory(cat);
 
                 if (category == null) {
-                    category = bc.getDisplayName();
+                    category = cat;
                 } else {
                     if (null == bc || bc.getLogOnly()) {
                         continue;
                     }
-                    category = bc.getDisplayName();
+                    category = cat;
                 }
             }
         return category;
