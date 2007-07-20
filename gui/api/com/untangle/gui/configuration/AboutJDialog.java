@@ -62,6 +62,9 @@ public class AboutJDialog extends MConfigJDialog {
         compoundSettings = new AboutCompoundSettings();
     }
 
+    private static boolean showBrandingPanel;
+    public static void setShowBrandingPanel(boolean showBrandingPanelX){ showBrandingPanel = showBrandingPanelX; }
+
     public void generateGui(){
         // ABOUT /////////////
         AboutAboutJEditorPane aboutAboutJEditorPane = new AboutAboutJEditorPane();
@@ -92,11 +95,13 @@ public class AboutJDialog extends MConfigJDialog {
         timezoneJPanel.setSettingsChangedListener(this);
                 
         // BRANDING //////
-        AboutBrandingJPanel brandingJPanel = new AboutBrandingJPanel();
-        addScrollableTab(null, NAME_BRANDING_PANEL, null, brandingJPanel, false, true);
-        addSavable(NAME_BRANDING_PANEL, brandingJPanel);
-        addRefreshable(NAME_BRANDING_PANEL, brandingJPanel);
-        brandingJPanel.setSettingsChangedListener(this);        
+        if(showBrandingPanel) {
+            AboutBrandingJPanel brandingJPanel = new AboutBrandingJPanel();
+            addScrollableTab(null, NAME_BRANDING_PANEL, null, brandingJPanel, false, true);
+            addSavable(NAME_BRANDING_PANEL, brandingJPanel);
+            addRefreshable(NAME_BRANDING_PANEL, brandingJPanel);
+            brandingJPanel.setSettingsChangedListener(this);        
+        }   
     }
 
 

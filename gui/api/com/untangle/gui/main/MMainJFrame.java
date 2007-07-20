@@ -715,9 +715,6 @@ public class MMainJFrame extends javax.swing.JFrame {
     private void maintenanceJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_maintenanceJButtonActionPerformed
         try{
             maintenanceJButton.setEnabled(false);
-            int modifiers = evt.getModifiers();
-            boolean showHiddenPanel = ((modifiers & evt.SHIFT_MASK) > 0) && ((modifiers & evt.CTRL_MASK) > 0);
-            MaintenanceJDialog.setShowHiddenPanel( showHiddenPanel );
             MaintenanceJDialog maintenanceJDialog = new MaintenanceJDialog(this);
             maintenanceJDialog.setVisible(true);
         }
@@ -778,6 +775,9 @@ public class MMainJFrame extends javax.swing.JFrame {
     private void aboutJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aboutJButtonActionPerformed
         try{
             aboutJButton.setEnabled(false);
+            int modifiers = evt.getModifiers();
+            boolean showBrandingPanel = ((modifiers & evt.SHIFT_MASK) > 0) && ((modifiers & evt.CTRL_MASK) > 0);
+            AboutJDialog.setShowBrandingPanel( showBrandingPanel );
             AboutJDialog aboutJDialog = new AboutJDialog(this);
             aboutJDialog.setVisible(true);
         }

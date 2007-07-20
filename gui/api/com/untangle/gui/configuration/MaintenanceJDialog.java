@@ -54,9 +54,7 @@ public class MaintenanceJDialog extends MConfigJDialog {
     private static final String NAME_SECRET_PANEL       = "Advanced Support";
     private static final String NAME_PING_TEST          = "Ping Test";
 
-    private static boolean showHiddenPanel;
-    public static void setShowHiddenPanel(boolean showHiddenPanelX){ showHiddenPanel = showHiddenPanelX; }
-
+    
     public MaintenanceJDialog( Frame parentFrame ) {
         super(parentFrame);
         setTitle(NAME_MAINTENANCE_CONFIG);
@@ -107,13 +105,12 @@ public class MaintenanceJDialog extends MConfigJDialog {
         addTab(NAME_PING_TEST, null, maintenancePingJPanel);
 
         // SECRET HIDDEN PANEL //////
-        if( showHiddenPanel ){
-            MaintenanceSecretJPanel maintenanceSecretJPanel = new MaintenanceSecretJPanel();
-            addTab(NAME_SECRET_PANEL, null, maintenanceSecretJPanel);
-            addSavable(NAME_SECRET_PANEL, maintenanceSecretJPanel);
-            addRefreshable(NAME_SECRET_PANEL, maintenanceSecretJPanel);
-            maintenanceSecretJPanel.setSettingsChangedListener(this);
-        }
+        MaintenanceSecretJPanel maintenanceSecretJPanel = new MaintenanceSecretJPanel();
+        addTab(NAME_SECRET_PANEL, null, maintenanceSecretJPanel);
+        addSavable(NAME_SECRET_PANEL, maintenanceSecretJPanel);
+        addRefreshable(NAME_SECRET_PANEL, maintenanceSecretJPanel);
+        maintenanceSecretJPanel.setSettingsChangedListener(this);
+        
     }
 
 
