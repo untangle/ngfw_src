@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -29,6 +29,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import com.untangle.node.util.UvmUtil;
 import com.untangle.uvm.node.IPaddr;
 import com.untangle.uvm.node.ValidateException;
 import org.hibernate.annotations.Cascade;
@@ -78,7 +79,7 @@ public class VpnSite extends VpnClientBase
     {
         if ( this.exportedAddressList == null ) this.exportedAddressList = new LinkedList<ClientSiteNetwork>();
 
-        return this.exportedAddressList;
+        return UvmUtil.eliminateNulls(this.exportedAddressList);
     }
 
     public void setExportedAddressList( List<ClientSiteNetwork> exportedAddressList )

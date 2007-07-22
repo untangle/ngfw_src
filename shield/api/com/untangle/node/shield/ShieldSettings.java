@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -32,6 +32,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.untangle.node.util.UvmUtil;
 import com.untangle.uvm.security.Tid;
 import org.hibernate.annotations.IndexColumn;
 
@@ -104,7 +105,7 @@ public class ShieldSettings implements Serializable
             this.shieldNodeRuleList = new LinkedList();
         }
 
-        return this.shieldNodeRuleList;
+        return UvmUtil.eliminateNulls(this.shieldNodeRuleList);
     }
 
     public void setShieldNodeRuleList(List shieldNodeRuleList)

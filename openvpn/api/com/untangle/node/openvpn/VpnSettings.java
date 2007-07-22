@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -35,11 +35,12 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import com.untangle.uvm.security.Tid;
+import com.untangle.node.util.UvmUtil;
 import com.untangle.uvm.node.HostAddress;
 import com.untangle.uvm.node.IPaddr;
 import com.untangle.uvm.node.Validatable;
 import com.untangle.uvm.node.ValidateException;
+import com.untangle.uvm.security.Tid;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.IndexColumn;
 import org.hibernate.annotations.Type;
@@ -234,7 +235,7 @@ public class VpnSettings implements Serializable, Validatable
     {
         if ( this.groupList == null ) this.groupList = new LinkedList<VpnGroup>();
 
-        return this.groupList;
+        return UvmUtil.eliminateNulls(this.groupList);
     }
 
     public void setGroupList( List<VpnGroup> groupList )
@@ -256,7 +257,7 @@ public class VpnSettings implements Serializable, Validatable
     {
         if ( this.clientList == null ) this.clientList = new LinkedList<VpnClient>();
 
-        return this.clientList;
+        return UvmUtil.eliminateNulls(this.clientList);
     }
 
     public void setClientList( List<VpnClient> clientList )
@@ -278,7 +279,7 @@ public class VpnSettings implements Serializable, Validatable
     {
         if ( this.siteList == null ) this.siteList = new LinkedList<VpnSite>();
 
-        return this.siteList;
+        return UvmUtil.eliminateNulls(this.siteList);
     }
 
     public void setSiteList( List<VpnSite> siteList )
@@ -383,7 +384,7 @@ public class VpnSettings implements Serializable, Validatable
     {
         if ( this.exportedAddressList == null ) this.exportedAddressList = new LinkedList<ServerSiteNetwork>();
 
-        return this.exportedAddressList;
+        return UvmUtil.eliminateNulls(this.exportedAddressList);
     }
     public void setExportedAddressList( List<ServerSiteNetwork> exportedAddressList )
     {

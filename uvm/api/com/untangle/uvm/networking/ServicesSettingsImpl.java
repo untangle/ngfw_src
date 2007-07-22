@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -47,6 +47,7 @@ import javax.persistence.JoinTable;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.untangle.node.util.UvmUtil;
 import com.untangle.uvm.node.HostName;
 import com.untangle.uvm.node.IPaddr;
 import org.hibernate.annotations.Cascade;
@@ -69,7 +70,7 @@ public class ServicesSettingsImpl implements ServicesSettings, Serializable
 
     /* Is dhcp enabled */
     private boolean dhcpEnabled = false;
-    
+
     /* Start of the DHCP servers dynamic range */
     private IPaddr  dhcpStartAddress;
 
@@ -84,7 +85,7 @@ public class ServicesSettingsImpl implements ServicesSettings, Serializable
 
     /* Is the DNS server enabled. */
     private boolean  dnsEnabled = false;
-    
+
     /* The local domain for the DNS server */
     private HostName dnsLocalDomain = HostName.getEmptyHostName();
 
@@ -258,7 +259,7 @@ public class ServicesSettingsImpl implements ServicesSettings, Serializable
     @IndexColumn(name="position")
     public List<DhcpLeaseRule> getDhcpLeaseList()
     {
-        return dhcpLeaseList;
+        return UvmUtil.eliminateNulls(dhcpLeaseList);
     }
 
 
@@ -339,7 +340,7 @@ public class ServicesSettingsImpl implements ServicesSettings, Serializable
     @IndexColumn(name="position")
     public List<DnsStaticHostRule> getDnsStaticHostList()
     {
-        return dnsStaticHostList;
+        return UvmUtil.eliminateNulls(dnsStaticHostList);
     }
 
     /**

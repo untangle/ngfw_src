@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -34,10 +34,11 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import com.untangle.uvm.security.Tid;
+import com.untangle.node.util.UvmUtil;
 import com.untangle.uvm.node.IPMaddrRule;
 import com.untangle.uvm.node.MimeTypeRule;
 import com.untangle.uvm.node.StringRule;
+import com.untangle.uvm.security.Tid;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.IndexColumn;
 
@@ -193,7 +194,7 @@ public class WebFilterSettings implements Serializable
     @IndexColumn(name="position")
     public List<IPMaddrRule> getPassedClients()
     {
-        return passedClients;
+        return UvmUtil.eliminateNulls(passedClients);
     }
 
     public void setPassedClients(List<IPMaddrRule> passedClients)
@@ -215,7 +216,7 @@ public class WebFilterSettings implements Serializable
     @IndexColumn(name="position")
     public List<StringRule> getPassedUrls()
     {
-        return passedUrls;
+        return UvmUtil.eliminateNulls(passedUrls);
     }
 
     public void setPassedUrls(List<StringRule> passedUrls)
@@ -237,7 +238,7 @@ public class WebFilterSettings implements Serializable
     @IndexColumn(name="position")
     public List<StringRule> getBlockedUrls()
     {
-        return blockedUrls;
+        return UvmUtil.eliminateNulls(blockedUrls);
     }
 
     public void setBlockedUrls(List<StringRule> blockedUrls)
@@ -259,7 +260,7 @@ public class WebFilterSettings implements Serializable
     @IndexColumn(name="position")
     public List<MimeTypeRule> getBlockedMimeTypes()
     {
-        return blockedMimeTypes;
+        return UvmUtil.eliminateNulls(blockedMimeTypes);
     }
 
     public void setBlockedMimeTypes(List<MimeTypeRule> blockedMimeTypes)
@@ -281,7 +282,7 @@ public class WebFilterSettings implements Serializable
     @IndexColumn(name="position")
     public List<StringRule> getBlockedExtensions()
     {
-        return blockedExtensions;
+        return UvmUtil.eliminateNulls(blockedExtensions);
     }
 
     public void setBlockedExtensions(List<StringRule> blockedExtensions)
@@ -301,7 +302,7 @@ public class WebFilterSettings implements Serializable
     @IndexColumn(name="position")
     public List<BlacklistCategory> getBlacklistCategories()
     {
-        return blacklistCategories;
+        return UvmUtil.eliminateNulls(blacklistCategories);
     }
 
     public void setBlacklistCategories(List<BlacklistCategory> blacklistCategories)

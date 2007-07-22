@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -47,6 +47,7 @@ import javax.persistence.JoinTable;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.untangle.node.util.UvmUtil;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.IndexColumn;
 
@@ -105,7 +106,7 @@ public class IPMaddrDirectory implements Serializable
     @IndexColumn(name="position")
     public List<IPMaddrRule> getEntries()
     {
-        return entries;
+        return UvmUtil.eliminateNulls(entries);
     }
 
     public void setEntries(List<IPMaddrRule> entries)

@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -47,9 +47,10 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import com.untangle.uvm.security.Tid;
+import com.untangle.node.util.UvmUtil;
 import com.untangle.uvm.node.MimeTypeRule;
 import com.untangle.uvm.node.StringRule;
+import com.untangle.uvm.security.Tid;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.IndexColumn;
 
@@ -406,7 +407,7 @@ public class VirusSettings implements Serializable
     @IndexColumn(name="position")
     public List<MimeTypeRule> getHttpMimeTypes()
     {
-        return httpMimeTypes;
+        return UvmUtil.eliminateNulls(httpMimeTypes);
     }
 
     public void setHttpMimeTypes(List<MimeTypeRule> httpMimeTypes)
@@ -428,7 +429,7 @@ public class VirusSettings implements Serializable
     @IndexColumn(name="position")
     public List<StringRule> getExtensions()
     {
-        return extensions;
+        return UvmUtil.eliminateNulls(extensions);
     }
 
     public void setExtensions(List<StringRule> extensions)

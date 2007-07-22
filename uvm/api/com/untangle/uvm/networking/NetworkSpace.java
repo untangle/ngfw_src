@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -46,6 +46,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import com.untangle.node.util.UvmUtil;
 import com.untangle.uvm.node.IPaddr;
 import com.untangle.uvm.node.Rule;
 import org.hibernate.annotations.Cascade;
@@ -85,7 +86,7 @@ public class NetworkSpace extends Rule
     /* This is a special piece, it should stay the same for the life
      * of a network space.  */
     private long businessPapers;
-    
+
     /* True if DHCP is enabled for this network space. */
     private boolean isDhcpEnabled;
 
@@ -94,7 +95,7 @@ public class NetworkSpace extends Rule
 
     /* The MTU for all of the interfaces in this network space. */
     private int mtu = DEFAULT_MTU;
-    
+
     /* True if traffic should be NATd */
     private boolean isNatEnabled;
 
@@ -103,15 +104,15 @@ public class NetworkSpace extends Rule
 
     /* The address to nat traffic to */
     private IPaddr  natAddress;
-    
+
     /* DMZ Host is a deprecated concept that is going away. */
     /* True if there is a DMZ Host for this space.  DMZ Host is used
      * to redirect all traffic to a specific address */
     private boolean isDmzHostEnabled = false;
-    
+
     /* True to log all redirects from the DMZ Host */
     private boolean isDmzHostLoggingEnabled = false;
-    
+
     /* The Host to redirect all traffic destined to this space */
     private IPaddr  dmzHost;
 
@@ -188,7 +189,7 @@ public class NetworkSpace extends Rule
     {
         if ( this.networkList == null ) this.networkList = new LinkedList<IPNetworkRule>();
 
-        return this.networkList;
+        return UvmUtil.eliminateNulls(this.networkList);
     }
 
     /**
@@ -296,10 +297,10 @@ public class NetworkSpace extends Rule
 
     /** XXX Should this have cascade="all" because this is typically
      * inside of the NetworkSettings object, which also saves the list
-     * of network spaces. 
+     * of network spaces.
      */
-     
-    /** 
+
+    /**
      * The network space to NAT to.  If this is non-null, then NAT
      * will use the primary address of the selected network space as
      * the NAT address.  This cannot point to itself.
@@ -313,7 +314,7 @@ public class NetworkSpace extends Rule
         return this.natSpace;
     }
 
-    /** 
+    /**
      * Set the network space to NAT to.  If this is non-null, then NAT
      * will use the primary address of the selected network space as
      * the NAT address.  This cannot point to itself.
@@ -429,7 +430,7 @@ public class NetworkSpace extends Rule
         return this.dhcpStatus;
     }
 
-    
+
     /**
      * Set the address a DHCP assigned to this network space
      *

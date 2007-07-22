@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -46,6 +46,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.untangle.node.util.UvmUtil;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.IndexColumn;
 
@@ -104,7 +105,7 @@ public class UserPolicyRuleSet implements Serializable
     @IndexColumn(name="position")
     public List<UserPolicyRule> getRules()
     {
-        return rules;
+        return UvmUtil.eliminateNulls(rules);
     }
 
     public void setRules(List<UserPolicyRule> rules)

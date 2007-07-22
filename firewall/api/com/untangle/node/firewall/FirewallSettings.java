@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -33,9 +33,10 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import com.untangle.uvm.security.Tid;
+import com.untangle.node.util.UvmUtil;
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.Validatable;
+import com.untangle.uvm.security.Tid;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.IndexColumn;
 
@@ -163,7 +164,7 @@ public class FirewallSettings implements Serializable, Validatable
     @IndexColumn(name="position")
     public List<FirewallRule> getFirewallRuleList()
     {
-        return firewallRuleList;
+        return UvmUtil.eliminateNulls(firewallRuleList);
     }
 
     public void setFirewallRuleList(List<FirewallRule> s)

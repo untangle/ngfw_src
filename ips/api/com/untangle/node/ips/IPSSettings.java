@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -33,6 +33,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.untangle.node.util.UvmUtil;
 import com.untangle.uvm.security.Tid;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.IndexColumn;
@@ -90,7 +91,7 @@ public class IPSSettings implements Serializable {
                    org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     @JoinColumn(name="settings_id")
     @IndexColumn(name="position")
-    public List<IPSRule> getRules() { return this.rules; }
+    public List<IPSRule> getRules() { return UvmUtil.eliminateNulls(this.rules); }
     public void setRules(List<IPSRule> rules) { this.rules = rules; }
 
     @OneToMany(fetch=FetchType.EAGER)
@@ -100,7 +101,7 @@ public class IPSSettings implements Serializable {
                joinColumns=@JoinColumn(name="setting_id"),
                inverseJoinColumns=@JoinColumn(name="variable_id"))
     @IndexColumn(name="position")
-    public List<IPSVariable> getVariables() { return this.variables; }
+    public List<IPSVariable> getVariables() { return UvmUtil.eliminateNulls(this.variables); }
     public void setVariables(List<IPSVariable> variables) { this.variables = variables; }
 
     @OneToMany(fetch=FetchType.EAGER)
@@ -110,6 +111,6 @@ public class IPSSettings implements Serializable {
                joinColumns=@JoinColumn(name="setting_id"),
                inverseJoinColumns=@JoinColumn(name="variable_id"))
     @IndexColumn(name="position")
-    public List<IPSVariable> getImmutableVariables() { return this.immutableVariables; }
+    public List<IPSVariable> getImmutableVariables() { return UvmUtil.eliminateNulls(this.immutableVariables); }
     public void setImmutableVariables(List<IPSVariable> variables) { this.immutableVariables = variables; }
 }

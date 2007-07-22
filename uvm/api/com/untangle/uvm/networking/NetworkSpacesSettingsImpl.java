@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -48,6 +48,7 @@ import javax.persistence.JoinTable;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.untangle.node.util.UvmUtil;
 import com.untangle.uvm.node.IPaddr;
 import com.untangle.uvm.node.Validatable;
 import com.untangle.uvm.node.ValidateException;
@@ -69,7 +70,7 @@ public class NetworkSpacesSettingsImpl implements NetworkSpacesSettings, Seriali
 
     /** The current setup state */
     private SetupState setupState = SetupState.BASIC;
-    
+
     /* Whether or not network spaces are enabled */
     private boolean isEnabled = false;
 
@@ -78,10 +79,10 @@ public class NetworkSpacesSettingsImpl implements NetworkSpacesSettings, Seriali
 
     /* The list of interfaces */
     private List<Interface> interfaceList = new LinkedList<Interface>();
-    
+
     /* The current list of network spaces. */
     private List<NetworkSpace> networkSpaceList = new LinkedList();
-    
+
     /* The routing table */
     private List<Route> routingTable = new LinkedList<Route>();
 
@@ -175,7 +176,7 @@ public class NetworkSpacesSettingsImpl implements NetworkSpacesSettings, Seriali
         if ( this.interfaceList == null ) {
             this.interfaceList = new LinkedList<Interface>();
         }
-        return this.interfaceList;
+        return UvmUtil.eliminateNulls(this.interfaceList);
     }
 
     /**
@@ -205,7 +206,7 @@ public class NetworkSpacesSettingsImpl implements NetworkSpacesSettings, Seriali
         if ( this.networkSpaceList == null ) {
             this.networkSpaceList = new LinkedList<NetworkSpace>();
         }
-        return this.networkSpaceList;
+        return UvmUtil.eliminateNulls(this.networkSpaceList);
     }
 
 
@@ -233,7 +234,7 @@ public class NetworkSpacesSettingsImpl implements NetworkSpacesSettings, Seriali
     public List<Route> getRoutingTable()
     {
         if ( this.routingTable == null ) this.routingTable = new LinkedList<Route>();
-        return this.routingTable;
+        return UvmUtil.eliminateNulls(this.routingTable);
     }
 
     /**
@@ -289,7 +290,7 @@ public class NetworkSpacesSettingsImpl implements NetworkSpacesSettings, Seriali
     public List<RedirectRule> getRedirectList()
     {
         if ( this.redirectList == null ) this.redirectList = new LinkedList<RedirectRule>();
-        return this.redirectList;
+        return UvmUtil.eliminateNulls(this.redirectList);
     }
 
     /**
@@ -355,7 +356,7 @@ public class NetworkSpacesSettingsImpl implements NetworkSpacesSettings, Seriali
     }
 
     /**
-     * Check if the secondary DNS entry is empty. 
+     * Check if the secondary DNS entry is empty.
      *
      * @return True iff the is a secondary DNS entry
      */

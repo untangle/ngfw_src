@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -18,6 +18,7 @@
 
 package com.untangle.node.router;
 
+
 import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
@@ -30,6 +31,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import com.untangle.node.util.UvmUtil;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.logging.SyslogBuilder;
 import com.untangle.uvm.logging.SyslogPriority;
@@ -70,7 +72,7 @@ import org.hibernate.annotations.IndexColumn;
         @IndexColumn(name="position")
         public List<DhcpAbsoluteLease> getAbsoluteLeaseList()
         {
-            return absoluteLeaseList;
+            return UvmUtil.eliminateNulls(absoluteLeaseList);
         }
 
         public void setAbsoluteLeaseList( List<DhcpAbsoluteLease> s )

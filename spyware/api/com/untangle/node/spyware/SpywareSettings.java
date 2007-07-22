@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -36,6 +36,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.untangle.node.http.UserWhitelistMode;
+import com.untangle.node.util.UvmUtil;
 import com.untangle.uvm.node.IPMaddrRule;
 import com.untangle.uvm.node.StringRule;
 import com.untangle.uvm.security.Tid;
@@ -279,7 +280,7 @@ public class SpywareSettings implements Serializable
     @IndexColumn(name="position")
     public List<StringRule> getActiveXRules()
     {
-        return activeXRules;
+        return UvmUtil.eliminateNulls(activeXRules);
     }
 
     public void setActiveXRules(List<StringRule> activeXRules)
@@ -301,7 +302,7 @@ public class SpywareSettings implements Serializable
     @IndexColumn(name="position")
     public List<StringRule> getCookieRules()
     {
-        return cookieRules;
+        return UvmUtil.eliminateNulls(cookieRules);
     }
 
     public void setCookieRules(List<StringRule> cookieRules)
@@ -323,7 +324,7 @@ public class SpywareSettings implements Serializable
     @IndexColumn(name="position")
     public List<IPMaddrRule> getSubnetRules()
     {
-        return subnetRules;
+        return UvmUtil.eliminateNulls(subnetRules);
     }
 
     public void setSubnetRules(List<IPMaddrRule> subnetRules)
@@ -345,7 +346,7 @@ public class SpywareSettings implements Serializable
     @IndexColumn(name="position")
     public List<StringRule> getDomainWhitelist()
     {
-        return domainWhitelist;
+        return UvmUtil.eliminateNulls(domainWhitelist);
     }
 
     public void setDomainWhitelist(List<StringRule> domainWhitelist)

@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -50,6 +50,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.untangle.node.util.UvmUtil;
 import com.untangle.uvm.security.Tid;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.IndexColumn;
@@ -246,7 +247,7 @@ public class SpamSettings implements Serializable
     @IndexColumn(name="position")
     public List<SpamRBL> getSpamRBLList()
     {
-        return spamRBLList;
+        return UvmUtil.eliminateNulls(spamRBLList);
     }
 
     public void setSpamRBLList(List<SpamRBL> spamRBLList)
@@ -269,7 +270,7 @@ public class SpamSettings implements Serializable
     @IndexColumn(name="position")
     public List<SpamAssassinDef> getSpamAssassinDefList()
     {
-        return spamAssassinDefList;
+        return UvmUtil.eliminateNulls(spamAssassinDefList);
     }
 
     public void setSpamAssassinDefList(List<SpamAssassinDef> spamAssassinDefList)
@@ -292,7 +293,7 @@ public class SpamSettings implements Serializable
     @IndexColumn(name="position")
     public List<SpamAssassinLcl> getSpamAssassinLclList()
     {
-        return spamAssassinLclList;
+        return UvmUtil.eliminateNulls(spamAssassinLclList);
     }
 
     public void setSpamAssassinLclList(List<SpamAssassinLcl> spamAssassinLclList)

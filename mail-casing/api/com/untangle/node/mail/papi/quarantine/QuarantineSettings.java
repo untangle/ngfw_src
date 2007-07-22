@@ -35,7 +35,6 @@ package com.untangle.node.mail.papi.quarantine;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -49,6 +48,7 @@ import javax.persistence.Table;
 
 import com.untangle.node.mail.papi.EmailAddressPairRule;
 import com.untangle.node.mail.papi.EmailAddressRule;
+import com.untangle.node.util.UvmUtil;
 import org.apache.log4j.Logger;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.IndexColumn;
@@ -108,8 +108,7 @@ public class QuarantineSettings implements Serializable {
         if (m_allowedAddressPatterns == null) {
             setAllowedAddressPatterns(null);
         }
-        eliminateNulls(m_allowedAddressPatterns);
-        return m_allowedAddressPatterns;
+        return UvmUtil.eliminateNulls(m_allowedAddressPatterns);
     }
 
     public void setAllowedAddressPatterns(List<EmailAddressRule> patterns) {
@@ -147,8 +146,7 @@ public class QuarantineSettings implements Serializable {
         if(m_addressRemaps == null) {
             setAddressRemaps(null);
         }
-        eliminateNulls(m_addressRemaps);
-        return m_addressRemaps;
+        return UvmUtil.eliminateNulls(m_addressRemaps);
     }
 
     /**
@@ -267,17 +265,5 @@ public class QuarantineSettings implements Serializable {
      */
     public void setMaxIdleInbox(long max) {
         m_maxMailIntern = max;
-    }
-
-    private void eliminateNulls(List l)
-    {
-        for (Iterator i = l.iterator(); i.hasNext(); ) {
-            Object o = i.next();
-            if (null == o) {
-                Exception exn = new Exception("null in list");
-                exn.fillInStackTrace();
-                i.remove();
-            }
-        }
     }
 }

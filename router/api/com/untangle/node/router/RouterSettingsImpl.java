@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -35,17 +35,18 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import com.untangle.node.util.UvmUtil;
 import com.untangle.uvm.networking.BasicNetworkSettings;
 import com.untangle.uvm.networking.DhcpLeaseRule;
 import com.untangle.uvm.networking.DnsStaticHostRule;
 import com.untangle.uvm.networking.NetworkUtil;
 import com.untangle.uvm.networking.RedirectRule;
 import com.untangle.uvm.networking.SetupState;
-import com.untangle.uvm.security.Tid;
 import com.untangle.uvm.node.HostName;
 import com.untangle.uvm.node.IPaddr;
 import com.untangle.uvm.node.Validatable;
 import com.untangle.uvm.node.ValidateException;
+import com.untangle.uvm.security.Tid;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.IndexColumn;
 import org.hibernate.annotations.Type;
@@ -293,7 +294,7 @@ public class RouterSettingsImpl implements Validatable, RouterSettings, Serializ
     @IndexColumn(name="position")
     public List<RedirectRule> getRedirectList()
     {
-        return redirectList;
+        return UvmUtil.eliminateNulls(redirectList);
     }
 
     public void setRedirectList( List<RedirectRule> s )
@@ -439,7 +440,7 @@ public class RouterSettingsImpl implements Validatable, RouterSettings, Serializ
     @IndexColumn(name="position")
     public List<DhcpLeaseRule> getDhcpLeaseList()
     {
-        return dhcpLeaseList;
+        return UvmUtil.eliminateNulls(dhcpLeaseList);
     }
 
     public void setDhcpLeaseList( List<DhcpLeaseRule> s )
@@ -497,7 +498,7 @@ public class RouterSettingsImpl implements Validatable, RouterSettings, Serializ
     @IndexColumn(name="position")
     public List<DnsStaticHostRule> getDnsStaticHostList()
     {
-        return dnsStaticHostList;
+        return UvmUtil.eliminateNulls(dnsStaticHostList);
     }
 
     public void setDnsStaticHostList( List<DnsStaticHostRule> s )

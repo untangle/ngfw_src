@@ -49,6 +49,7 @@ import javax.persistence.Table;
 
 import com.untangle.node.mail.papi.quarantine.QuarantineSettings;
 import com.untangle.node.mail.papi.safelist.SafelistSettings;
+import com.untangle.node.util.UvmUtil;
 import org.hibernate.annotations.IndexColumn;
 
 /**
@@ -270,7 +271,7 @@ public class MailNodeSettings implements Serializable
     @IndexColumn(name="position")
     public List<SafelistSettings> getSafelistSettings()
     {
-        return safelistSettings;
+        return UvmUtil.eliminateNulls(safelistSettings);
     }
 
     public void setSafelistSettings(List<SafelistSettings> safelistSettings)
