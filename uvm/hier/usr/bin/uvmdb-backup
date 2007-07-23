@@ -1,7 +1,5 @@
 #!/bin/sh
 
-set -e
-
 if [ $# -eq 0 ]; then
     echo "usage; $0 [ usb | local ] (out dir)"
     exit 1
@@ -57,7 +55,7 @@ pg_dump -U postgres -n settings uvm | gzip > $outdir/uvmdb-$datestamp.gz
 
 [ $? -eq 0 ] || exit 1
 
-slapcat -l @PREFIX@/usr/share/untangle/conf/dirbackup.ldif
+[ -x /usr/sbin/slapcat ] && /usr/sbin/slapcat -l @PREFIX@/usr/share/untangle/conf/dirbackup.ldif
 
 tar zcf $outdir/files-$datestamp.tar.gz --ignore-failed-read -C @PREFIX@/ \
         etc/hostname \
@@ -73,7 +71,8 @@ tar zcf $outdir/files-$datestamp.tar.gz --ignore-failed-read -C @PREFIX@/ \
         usr/share/untangle/conf/timezone \
         usr/share/untangle/conf/dirbackup.ldif
 
-[ $? -eq 0 ] || exit 1
+# Tar exits with non-zero when some files don't exist, which can happen.
+# [ $? -eq 0 ] || exit 1
 
 @UVM_HOME@/bin/mkg installed > $outdir/installed-$datestamp
 
