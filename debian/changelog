@@ -1,3 +1,9 @@
+untangle-vm (5.0.1-1) mustang-1; urgency=low
+
+  * auto build
+
+ --  <seb@untangle.com>  Fri, 27 Jul 2007 14:42:35 -0700
+
 untangle-vm (5.0.0~svn20070621r11355-1) amread; urgency=low
 
   * auto build
