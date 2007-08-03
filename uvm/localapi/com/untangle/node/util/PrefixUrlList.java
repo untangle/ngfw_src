@@ -88,6 +88,7 @@ public class PrefixUrlList extends UrlList
         StringBuilder sb = new StringBuilder();
         DatabaseEntry k = new DatabaseEntry();
         DatabaseEntry v = new DatabaseEntry();
+        DatabaseEntry t = new DatabaseEntry();
 
         while (null != (line = br.readLine())) {
             Matcher matcher = TUPLE_PATTERN.matcher(line);
@@ -118,7 +119,13 @@ public class PrefixUrlList extends UrlList
                     k.setData(lastHost);
                     v.setData(sb.toString().getBytes());
                     try {
-                        db.put(null, k, v);
+                        if (0 == sb.length()) {
+                            if (OperationStatus.SUCCESS == db.get(null, k, t, LockMode.DEFAULT)) {
+                                db.delete(null, k);
+                            }
+                        } else {
+                            db.put(null, k, v);
+                        }
                     } catch (DatabaseException exn) {
                         logger.warn("could not save entry", exn);
                     }
@@ -150,7 +157,13 @@ public class PrefixUrlList extends UrlList
             k.setData(lastHost);
             v.setData(sb.toString().getBytes());
             try {
-                db.put(null, k, v);
+                if (0 == sb.length()) {
+                    if (OperationStatus.SUCCESS == db.get(null, k, t, LockMode.DEFAULT)) {
+                        db.delete(null, k);
+                    }
+                } else {
+                    db.put(null, k, v);
+                }
             } catch (DatabaseException exn) {
                 logger.warn("could not save entry", exn);
             }
@@ -169,6 +182,6 @@ public class PrefixUrlList extends UrlList
 
     protected boolean matches(String str, String pat)
     {
-        return str.startsWith(pat);
+        return !pat.equals("") && str.startsWith(pat);
     }
 }
