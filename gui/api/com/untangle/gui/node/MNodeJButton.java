@@ -115,7 +115,7 @@ public class MNodeJButton extends JButton {
         contentJPanel.add(descriptionIconJLabel, gridBagConstraints);
 
         //DISPLAY NAME
-        nameJLabel = new JLabel();
+        nameJLabel = new AAJLabel();
         String tempName;
         tempName = mackageDesc.getDisplayName();
         if( (mackageDesc.getExtraName()!=null) && (mackageDesc.getExtraName().contains("Trial")) )
@@ -134,8 +134,6 @@ public class MNodeJButton extends JButton {
         gridBagConstraints.weighty = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
         contentJPanel.add(nameJLabel, gridBagConstraints);
-        try{ ((JComponent)nameJLabel).putClientProperty(com.sun.java.swing.SwingUtilities2.AA_TEXT_PROPERTY_KEY, new Boolean(true)); }
-        catch(Throwable t){}
 
         //status progressbar
         statusJProgressBar = new JProgressBar();
@@ -167,6 +165,14 @@ public class MNodeJButton extends JButton {
         setOpaque(false);
 
     }
+
+    private class AAJLabel extends JLabel {
+        public void paintComponent(Graphics g){
+            ((Graphics2D)g).setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            super.paintComponent(g);
+        }
+    }
+    
 
     public Dimension getPreferredSize(){
         Dimension d = contentJPanel.getPreferredSize();

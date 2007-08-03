@@ -33,6 +33,7 @@
 
 package com.untangle.gui.widgets.separator;
 
+import com.untangle.gui.util.Util;
 
 import java.awt.*;
 import javax.swing.*;
@@ -52,12 +53,11 @@ public class Separator extends JLabel {
         init();
         if(showComboBox){
             setLayout(new GridBagLayout());
-            jComboBox = new JComboBox();
-            jComboBox.setFocusable(false);
+            jComboBox = new AAJComboBox();
             jComboBox.setBackground(new Color(173,173,173));
             jComboBox.setForeground(new Color(129,129,129));
             jComboBox.setFont(new Font("Arial", Font.PLAIN, 20));
-            jComboBox.setRenderer( new SeparatorRenderer(jComboBox.getRenderer()) );
+            jComboBox.setRenderer(new SeparatorRenderer());
             jComboBox.setMinimumSize(new Dimension(240,30));
             jComboBox.setMaximumSize(new Dimension(240,30));
             jComboBox.setPreferredSize(new Dimension(240,30));
@@ -103,15 +103,38 @@ public class Separator extends JLabel {
 
 }
 
+class AAJComboBox extends JComboBox {
+    public void paintComponent(Graphics g){
+        ((Graphics2D)g).setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        super.paintComponent(g);
+    }
+}
+
 class SeparatorRenderer implements ListCellRenderer {
-    private ListCellRenderer listCellRenderer;
-    public SeparatorRenderer(ListCellRenderer listCellRenderer){
-        this.listCellRenderer = listCellRenderer;
+    private JLabel aaJLabel;
+    public SeparatorRenderer(){
+        aaJLabel = new AAJLabel();
+        aaJLabel.setOpaque(true);
+        aaJLabel.setFont(new Font("Arial", Font.PLAIN, 20));
+        aaJLabel.setForeground(new Color(129,129,129));
     }
     public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus){
-        Component tempComponent = listCellRenderer.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-        try{ ((JComponent)tempComponent).putClientProperty(com.sun.java.swing.SwingUtilities2.AA_TEXT_PROPERTY_KEY, new Boolean(true)); }
-        catch(Throwable t){}
-        return tempComponent;
+        aaJLabel.setText(value.toString());
+        if(index == -1){
+            aaJLabel.setBackground(new Color(173,173,173));
+        }
+        else{
+            aaJLabel.setBackground(Color.WHITE);
+        }
+        if(isSelected){
+            aaJLabel.setBackground(new Color(216,216,216));
+        }
+        return aaJLabel;
+    }
+    class AAJLabel extends JLabel {
+        public void paintComponent(Graphics g){
+            ((Graphics2D)g).setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            super.paintComponent(g);
+        }
     }
 }
