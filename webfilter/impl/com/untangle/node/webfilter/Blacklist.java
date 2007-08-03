@@ -100,6 +100,7 @@ class Blacklist
         RemoteToolboxManager tm = uvm.toolboxManager();
         Boolean rup = tm.hasPremiumSubscription();
         m.put("premium", rup.toString());
+        m.put("client-version", uvm.getFullVersion());
 
         urlDatabase.clear();
 

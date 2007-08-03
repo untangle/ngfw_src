@@ -50,12 +50,12 @@ import com.untangle.uvm.node.LocalNodeManager;
 import com.untangle.uvm.policy.LocalPolicyManager;
 import com.untangle.uvm.portal.BasePortalManager;
 import com.untangle.uvm.security.RemoteAdminManager;
-import com.untangle.uvm.vnet.MPipeManager;
-import com.untangle.uvm.vnet.PipelineFoundry;
 import com.untangle.uvm.toolbox.RemoteToolboxManager;
 import com.untangle.uvm.user.LocalPhoneBook;
 import com.untangle.uvm.user.RemotePhoneBook;
 import com.untangle.uvm.util.TransactionWork;
+import com.untangle.uvm.vnet.MPipeManager;
+import com.untangle.uvm.vnet.PipelineFoundry;
 
 /**
  * Provides an interface to get all local UVM components from an UVM
@@ -229,6 +229,8 @@ public interface LocalUvmContext
 
     // making sure the client and uvm versions are the same
     String version();
+
+    String getFullVersion();
 
     /**
      * Get the <code>MPipeManager</code> singleton.

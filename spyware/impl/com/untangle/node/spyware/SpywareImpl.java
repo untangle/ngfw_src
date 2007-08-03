@@ -144,6 +144,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
             RemoteToolboxManager tm = uvm.toolboxManager();
             Boolean rup = tm.hasPremiumSubscription();
             m.put("premium", rup.toString());
+            m.put("client-version", uvm.getFullVersion());
 
             UrlList l = new PrefixUrlList(DB_HOME, BLACKLIST_HOME, "spyware-blocked-url", m);
             urlDatabase.addBlacklist("spyware-blocked-url", l);

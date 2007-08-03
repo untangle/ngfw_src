@@ -55,13 +55,13 @@ import com.untangle.uvm.policy.LocalPolicyManager;
 import com.untangle.uvm.policy.PolicyManagerFactory;
 import com.untangle.uvm.policy.RemotePolicyManager;
 import com.untangle.uvm.portal.BasePortalManager;
-import com.untangle.uvm.vnet.MPipeManager;
 import com.untangle.uvm.toolbox.RemoteToolboxManager;
 import com.untangle.uvm.user.LocalPhoneBook;
 import com.untangle.uvm.user.PhoneBookFactory;
 import com.untangle.uvm.user.RemotePhoneBook;
 import com.untangle.uvm.util.TransactionRunner;
 import com.untangle.uvm.util.TransactionWork;
+import com.untangle.uvm.vnet.MPipeManager;
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.SessionFactory;
@@ -483,6 +483,11 @@ public class UvmContextImpl extends UvmContextBase
     public String version()
     {
         return com.untangle.uvm.Version.getVersion();
+    }
+
+    public String getFullVersion()
+    {
+        return com.untangle.uvm.Version.getFullVersion();
     }
 
     public void localBackup() throws IOException

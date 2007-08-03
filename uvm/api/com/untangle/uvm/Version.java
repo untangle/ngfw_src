@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -52,17 +52,32 @@ public class Version {
      */
     public static String getVersion()
     {
+        return getVersion("PUBVERSION");
+    }
+
+    /**
+     * Get the public version number.
+     *
+     * @return the version string.
+     */
+    public static String getFullVersion()
+    {
+        return getVersion("VERSION");
+    }
+
+    private static String getVersion(String type)
+    {
         String line = "unknown version";
 
         try {
-            InputStream is = Version.class.getClassLoader().getResourceAsStream("PUBVERSION");
+            InputStream is = Version.class.getClassLoader().getResourceAsStream(type);
             if (is != null) {
                 InputStreamReader isr = new InputStreamReader(is);
                 BufferedReader bis = new BufferedReader(isr);
                 line = bis.readLine();
             }
         } catch (IOException exn) {
-            System.out.println("Exception reading PUBVERSION: " + exn);
+            System.out.println("Exception reading: " + type + " " + exn);
         }
 
         return line;
