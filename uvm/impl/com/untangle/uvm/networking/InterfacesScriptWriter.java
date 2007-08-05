@@ -226,7 +226,7 @@ class InterfacesScriptWriter extends ScriptWriter
                 appendCommands( "up ifconfig " + aliasName + " " + network.getNetwork() +
                                 " netmask " + network.getNetmask() + " mtu " + mtu );
             } else {
-                appendCommands( "up ip route add to " + nu.toRouteString( network ) + " dev " + name );
+                appendCommands( "up ip route replace to " + nu.toRouteString( network ) + " dev " + name );
             }
         }
     }
@@ -260,12 +260,12 @@ class InterfacesScriptWriter extends ScriptWriter
             // logger.warn( "Custom routing rules with per network space are presently not supported" );
             //}
 
-            appendCommands( "up ip route add to " + nup.toRouteString( destination ) + " via " + nextHop );
+            appendCommands( "up ip route replace to " + nup.toRouteString( destination ) + " via " + nextHop );
         }
 
         /* Add the default route last */
         if ( !isDhcpEnabled && ( defaultRoute != null ) && ( !defaultRoute.isEmpty())) {
-            appendCommands( "up ip route add to default via " + defaultRoute );
+            appendCommands( "up ip route replace to default via " + defaultRoute );
         }
 
         appendCommands( "up ip route flush table cache" );
