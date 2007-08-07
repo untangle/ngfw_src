@@ -78,7 +78,8 @@ public enum TimeZone {
     BAKU("GMT+04:00","Baku, Tbilsi, Yerevan","Asia/Baku"),
     KABUL("GMT+04:30","Kabul","Asia/Kabul"),
     KARACHI("GMT+05:00","Ekaterinburg, Islamabad, Karachi, Tashkent","Asia/Karachi"),
-    //KATHMANDU("GMT+05:45","Kathmandu","Asia/Kathmandu"),  SEEMS TO CAUSE FAILURE
+    KOLKATA("GMT+05:30", "Chennai, Kolkata, Mumbai, New Delhi", "Asia/Calcutta"), // NOTICE TWO SPELLINGS OF KOLKATA/CALCUTTA
+    KATHMANDU("GMT+05:45","Kathmandu","Asia/Katmandu"),  // NOTICE TWO SPELLINGS OF KATMANDU/KATHMANDU
     ALMATY("GMT+06:00","Almaty, Novosibirsk","Asia/Almaty"),
     DHAKA("GMT+06:00","Astana, Dhaka","Asia/Dhaka"),
     RANGOON("GMT+06:30","Rangoon","Asia/Rangoon"),
