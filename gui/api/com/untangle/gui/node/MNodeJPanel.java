@@ -210,11 +210,7 @@ public class MNodeJPanel extends javax.swing.JPanel {
         addShutdownable("ShowControlsThread", showControlsThread);
 
         // SETUP NAME AND MESSAGE
-        try{ ((JComponent)descriptionTextJLabel).putClientProperty(com.sun.java.swing.SwingUtilities2.AA_TEXT_PROPERTY_KEY, new Boolean(true)); }
-        catch(Throwable t){}
         descriptionTextJLabel.setText( nodeDesc.getDisplayName() );
-        try{ ((JComponent)messageTextJLabel).putClientProperty(com.sun.java.swing.SwingUtilities2.AA_TEXT_PROPERTY_KEY, new Boolean(true)); }
-        catch(Throwable t){}
         String extraName = mackageDesc.getExtraName();
         if( extraName != null )
             messageTextJLabel.setText( extraName );
@@ -228,6 +224,14 @@ public class MNodeJPanel extends javax.swing.JPanel {
         mNodeControlsJPanel.reloadJButton().addActionListener(mStateMachine);
         mNodeControlsJPanel.removeJButton().addActionListener(mStateMachine);
     }
+
+    class AAJLabel extends JLabel {
+        public void paint(Graphics g){
+            ((Graphics2D)g).setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            super.paint(g);
+        }
+    }
+
 
     public boolean getDoneRefreshing(){ return mStateMachine.getDoneRefreshing(); }
 
@@ -265,7 +269,7 @@ public class MNodeJPanel extends javax.swing.JPanel {
     JLabel messageTextJLabel(){ return messageTextJLabel; }
     private void initComponents() {//GEN-BEGIN:initComponents
         onOffbuttonGroup = new javax.swing.ButtonGroup();
-        descriptionTextJLabel = new javax.swing.JLabel();
+        descriptionTextJLabel = new AAJLabel();
         nbPowerOnHintJLabel = powerOnHintJLabel;
         stateJLabel = (JLabel) new com.untangle.gui.node.BlinkJLabel();
         controlsJToggleButton = new javax.swing.JToggleButton();
@@ -273,7 +277,7 @@ public class MNodeJPanel extends javax.swing.JPanel {
         descriptionIconJLabel = new javax.swing.JLabel();
         organizationIconJLabel = new javax.swing.JLabel();
         jProgressBar = new javax.swing.JProgressBar();
-        messageTextJLabel = new javax.swing.JLabel();
+        messageTextJLabel = new AAJLabel();
         powerJToggleButton = new javax.swing.JToggleButton();
         effectsJPanel = new javax.swing.JPanel();
         backgroundJLabel = new javax.swing.JLabel();

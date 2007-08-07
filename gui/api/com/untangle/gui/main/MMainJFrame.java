@@ -33,8 +33,10 @@
 
 package com.untangle.gui.main;
 
+import java.awt.RenderingHints;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.Rectangle;
@@ -184,6 +186,12 @@ public class MMainJFrame extends javax.swing.JFrame {
 
     public Dimension getMinimumSize(){ return MIN_SIZE; } // used for form resizing
 
+    class AAJButton extends JButton {
+        public void paintComponent(Graphics g){
+            ((Graphics2D)g).setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            super.paintComponent(g);
+        }
+    }
 
     // <editor-fold defaultstate="collapsed" desc=" Generated Code ">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -206,16 +214,16 @@ public class MMainJFrame extends javax.swing.JFrame {
         configurationJPanel = new javax.swing.JPanel();
         configurationJScrollPane = new javax.swing.JScrollPane();
         jPanel8 = new javax.swing.JPanel();
-        networkJButton = new javax.swing.JButton();
-        remoteJButton = new javax.swing.JButton();
-        emailJButton = new javax.swing.JButton();
-        directoryJButton = new javax.swing.JButton();
-        backupJButton = new javax.swing.JButton();
-        maintenanceJButton = new javax.swing.JButton();
-        upgradeJButton = new javax.swing.JButton();
-        aboutJButton = new javax.swing.JButton();
+        networkJButton = new AAJButton();
+        remoteJButton = new AAJButton();
+        emailJButton = new AAJButton();
+        directoryJButton = new AAJButton();
+        backupJButton = new AAJButton();
+        maintenanceJButton = new AAJButton();
+        upgradeJButton = new AAJButton();
+        aboutJButton = new AAJButton();
         configurationSpacerJPanel1 = new javax.swing.JPanel();
-        helpJButton = new javax.swing.JButton();
+        helpJButton = new AAJButton();
         mPipelineJPanel = new com.untangle.gui.pipeline.MPipelineJPanel();
         backgroundJPanel = new BackgroundJPanel();
 

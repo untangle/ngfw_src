@@ -785,18 +785,6 @@ public class Util {
         jSpinner.setModel(new SpinnerNumberModel(defaultValue,0,65535,1));
         ((JSpinner.NumberEditor)jSpinner.getEditor()).getFormat().setGroupingUsed(false);
     }
-    public static void setAAClientProperty(Component parentComponent, boolean isAAEnabled){
-        if( parentComponent instanceof JComponent ){
-            try{ ((JComponent)parentComponent).putClientProperty(com.sun.java.swing.SwingUtilities2.AA_TEXT_PROPERTY_KEY, new Boolean(isAAEnabled)); }
-            catch(Throwable t){}
-        }
-
-        if( parentComponent instanceof Container ){
-            for( Component component : ((Container)parentComponent).getComponents() ){
-                setAAClientProperty(component, isAAEnabled);
-            }
-        }
-    }
     public static int chooseMax(int iValue, int iMinValue){
         if(iValue >= iMinValue){ return iValue; }
         else { return iMinValue; }
