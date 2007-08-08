@@ -172,7 +172,7 @@ public abstract class UrlList
 
     // protected methods -----------------------------------------------------
 
-    protected abstract void updateDatabase(Database db, BufferedReader br)
+    protected abstract boolean updateDatabase(Database db, BufferedReader br)
         throws IOException;
 
     protected abstract byte[] getKey(byte[] host);
@@ -353,9 +353,9 @@ public abstract class UrlList
                     clearDatabase();
                 }
 
-                updateDatabase(db, br);
+                boolean done = updateDatabase(db, br);
 
-                setVersion(db, newVersion);
+                setVersion(db, done ? newVersion : "1.1");
 
                 db.getEnvironment().sync();
 

@@ -89,11 +89,15 @@ public class EncryptedUrlList extends UrlList
 
     // UrlList methods --------------------------------------------------------
 
-    protected void updateDatabase(Database db, BufferedReader br)
+    protected boolean updateDatabase(Database db, BufferedReader br)
         throws IOException
     {
+        boolean blankLine = false;
+
         String line;
         while (null != (line = br.readLine())) {
+            blankLine = line.trim().equals("");
+
             Matcher matcher = TUPLE_PATTERN.matcher(line);
             if (matcher.find()) {
                 boolean add = matcher.group(1).equals("+");
@@ -112,6 +116,8 @@ public class EncryptedUrlList extends UrlList
                 }
             }
         }
+
+        return blankLine;
     }
 
     protected byte[] getKey(byte[] host)
