@@ -79,7 +79,7 @@ public class PrefixUrlList extends UrlList
 
     // UrlList methods -------------------------------------------------------
 
-    protected void updateDatabase(Database db, BufferedReader br)
+    protected boolean updateDatabase(Database db, BufferedReader br)
         throws IOException
     {
         String line;
@@ -90,7 +90,11 @@ public class PrefixUrlList extends UrlList
         DatabaseEntry v = new DatabaseEntry();
         DatabaseEntry t = new DatabaseEntry();
 
+        boolean blankLine = false;
+
         while (null != (line = br.readLine())) {
+            blankLine = line.trim().equals("");
+
             Matcher matcher = TUPLE_PATTERN.matcher(line);
             if (matcher.find()) {
                 boolean add = matcher.group(1).equals("+");
@@ -168,6 +172,8 @@ public class PrefixUrlList extends UrlList
                 logger.warn("could not save entry", exn);
             }
         }
+
+        return blankLine;
     }
 
     protected byte[] getKey(byte[] host)
