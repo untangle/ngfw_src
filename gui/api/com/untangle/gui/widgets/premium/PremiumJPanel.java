@@ -55,9 +55,9 @@ public class PremiumJPanel extends javax.swing.JPanel {
 
         setLayout(new java.awt.BorderLayout());
 
-        setBorder(javax.swing.BorderFactory.createTitledBorder("Premium Feature"));
+        setBorder(javax.swing.BorderFactory.createTitledBorder("Professional Package Feature"));
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setText("<html><center><b>This is a premium feature that is unavailable in the standard version.<br>You can purchase this feature from the Library.</b></center></html>");
+        jLabel1.setText("<html><center><b>This feature is enabled when the Professional Package is installed.<br>You can purchase this package from the Library.</b></center></html>");
         add(jLabel1, java.awt.BorderLayout.CENTER);
 
     }// </editor-fold>//GEN-END:initComponents
