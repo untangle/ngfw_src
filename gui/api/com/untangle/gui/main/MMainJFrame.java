@@ -155,34 +155,6 @@ public class MMainJFrame extends javax.swing.JFrame {
         }
     }
 
-    public void updateJButton(final int count){
-        Runnable updateButtonInSwing = new Runnable(){
-                public void run() {
-                    if( count == 0 ){
-                        upgradeJButton.setText("<html><center>Upgrade<br>(none)</center></html>");
-                        upgradeJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/upgrade/IconUnavailable32x32.png")));
-                        upgradeJButton.setEnabled(true);
-                    }
-                    else if( count >= 1 ){
-                        upgradeJButton.setText("<html><center><b>Upgrade</b></center></html>");
-                        upgradeJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/upgrade/IconAvailable32x32.png")));
-                        upgradeJButton.setEnabled(true);
-                    }
-                    else if( count == Util.UPGRADE_UNAVAILABLE ){
-                        upgradeJButton.setText("<html><center>Upgrade<br>(unavail.)</center></html>");
-                        upgradeJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/upgrade/IconUnavailable32x32.png")));
-                        upgradeJButton.setEnabled(true);
-                    }
-                    else if( count == Util.UPGRADE_CHECKING ){
-                        upgradeJButton.setText("<html><center>Upgrade<br>(checking)</center></html>");
-                        upgradeJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/upgrade/IconUnavailable32x32.png")));
-                        upgradeJButton.setEnabled(true);
-                    }
-                }
-            };
-        //SwingUtilities.invokeLater( updateButtonInSwing );
-    }
-
 
     public Dimension getMinimumSize(){ return MIN_SIZE; } // used for form resizing
 
@@ -880,7 +852,6 @@ public class MMainJFrame extends javax.swing.JFrame {
             MackageDesc[] mackageDescs;
 
             // FORCE THE SERVER TO UPDATE ONCE
-            updateJButton(Util.UPGRADE_CHECKING);
             try{
                 Util.getRemoteToolboxManager().update();
             }
@@ -891,14 +862,11 @@ public class MMainJFrame extends javax.swing.JFrame {
             while(!stop){
                 try{
                     // CHECK FOR UPGRADES
-                    updateJButton(Util.UPGRADE_CHECKING);
                     mackageDescs = Util.getRemoteToolboxManager().upgradable();
                     if( Util.isArrayEmpty(mackageDescs) ){
-                        updateJButton(0);
                         Util.setUpgradeCount(0);
                     }
                     else{
-                        updateJButton(mackageDescs.length);
                         Util.setUpgradeCount(mackageDescs.length);
                     }
                     Thread.sleep(Util.UPGRADE_THREAD_SLEEP_MILLIS);
@@ -907,7 +875,6 @@ public class MMainJFrame extends javax.swing.JFrame {
                 catch(Exception e){
                     if( !isInterrupted() ){
                         Util.handleExceptionNoRestart("Error checking for upgrades on server", e);
-                        updateJButton(Util.UPGRADE_UNAVAILABLE);
                         try{ Thread.currentThread().sleep(10000); }  catch(Exception f){}
                     }
                 }

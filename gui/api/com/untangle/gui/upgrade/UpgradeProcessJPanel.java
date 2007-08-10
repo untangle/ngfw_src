@@ -117,6 +117,7 @@ public class UpgradeProcessJPanel extends JPanel
             Vector tempRow = null;
             int rowIndex = 0;
 
+            boolean somethingVisibleAdded = false;
             for( MackageDesc mackageDesc : mackageDescs ){
                 switch ( mackageDesc.getType()) {
                 case CASING:
@@ -126,6 +127,7 @@ public class UpgradeProcessJPanel extends JPanel
                     continue;
                     
                 default:
+                    somethingVisibleAdded = true;
                     /* process the remaining types */
                 }
 
@@ -162,6 +164,23 @@ public class UpgradeProcessJPanel extends JPanel
                 }
                 catch(Exception e){
                     Util.handleExceptionNoRestart("Error adding upgrade row", e);
+                }
+                if(!somethingVisibleAdded){
+                    rowIndex++;
+                    tempRow = new Vector(8);
+                    tempRow.add( MSortedTableModel.ROW_SAVED );
+                    tempRow.add( rowIndex );
+                    tempRow.add( new ImageIcon(getClass().getResource("/com/untangle/gui/node/IconDescUnknown42x42.png"))) ;
+                    tempRow.add( "Various Updates" );
+                    tempRow.add( "N/A" );
+                    tempRow.add( "Misc." );
+                    int size = 0;
+                    for( MackageDesc m : mackageDescs ){
+                        size += m.getSize();
+                    }
+                    tempRow.add( Integer.toString(size/1000) );
+                    tempRow.add( "" ); // description isn't even visible
+                    allRows.add( tempRow );
                 }
             }
             return allRows;

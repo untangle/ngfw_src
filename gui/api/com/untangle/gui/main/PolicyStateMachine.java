@@ -1159,15 +1159,22 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
             // CHECK FOR STORE CONNECTIVITY AND AVAILABLE ITEMS
             boolean connectedToStore = false;
             MackageDesc[] storeItemsAvailable = null;
+            Vector<MackageDesc> storeItemsVisible = new Vector<MackageDesc>();
             try{
                 Util.getRemoteToolboxManager().update();
                 storeItemsAvailable = Util.getRemoteToolboxManager().uninstalled();
                 if( storeItemsAvailable == null ) {
                     logger.debug("items: null");
-                } else {
-                    logger.debug("items: " + storeItemsAvailable.length);
                 }
-
+                else {
+                    for(MackageDesc m : storeItemsAvailable){
+                        MackageDesc.Type type = m.getType();
+                        if( type == MackageDesc.Type.LIB_ITEM ) {
+                            storeItemsVisible.add(m);
+                        }
+                        logger.debug("items: " + storeItemsVisible.size());                        
+                    }
+                }
                 connectedToStore = true;
             }
             catch(Exception e){
@@ -1187,7 +1194,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                 }});
             }
             else{
-                if( storeItemsAvailable.length == 0 ){
+                if( storeItemsVisible.size() == 0 ){
                     // CONNECTION, BUT NO ITEMS AVAILABLE
                     SwingUtilities.invokeLater( new Runnable(){ public void run(){
                         storeProgressBar.setValue(1);
@@ -1225,88 +1232,11 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                     }});
 
 
-
-                    // REMOVE TRIAL IF THE ACTUAL THING WAS PURCHASED (IS NO LONGER IN THE STORE)
-                    /*
-                      Map<String,String> storeItemMap = new HashMap<String,String>();
-                      for( MackageDesc mackageDesc : storeItemsAvailable ){
-                      String name = mackageDesc.getName();
-                      if( name.endsWith(STOREITEM_EXTENSION) && !name.endsWith(TRIAL_EXTENSION) ){
-                      name = name.substring(0, name.indexOf('-'));
-                      storeItemMap.put(name, name);
-                      }
-                      }
-                      for( MackageDesc mackageDesc : storeItemsAvailable ){
-                      String name = mackageDesc.getName();
-                      if( name.endsWith(TRIAL_EXTENSION) ){
-                      name = name.substring(0, name.indexOf('-'));
-                      if( storeItemMap.containsKey(name) ){
-                      addToStore(mackageDesc,false);
-                      }
-                      else
-                      continue;
-                      }
-                      else
-                      addToStore(mackageDesc,false);
-                      }
-                    */
-
-
-                    /*
-                    // COMPUTE REMOVED BUTTONS
-                    Vector<MNodeJButton> removedVector = new Vector<MNodeJButton>();
-                    for( MNodeJButton storeButton : storeMap.values() ){
-                    String storeButtonName = storeButton.getName().substring(0, storeButtonName.indexOf('-'));
-                    boolean found = false;
-                    for( MackageDesc mackageDesc : storeItemsAvailable ){
-                    String mackageDescName = mackageDesc.getName();
-                    if( mackageDescName.endsWith(STOREITEM_EXTENSION) && !mackageDescName.endsWith(TRIAL_EXTENSION) ){
-                    mackageDescName = mackageDescName.substring(0, mackageDescName.indexOf('-'));
-                    if( storeButtonName.equals(mackageDescName) ){
-                    found = true;
-                    break;
-                    }
-                    }
-                    }
-                    if(!found)
-                    removedVector.add(storeButton);
-                    }
-
-                    // COMPUTE ADDABLE MACKAGES
-                    Vector<MackageDesc> addableVector = new Vector<MackageDesc>();
-                    for( MackageDesc mackageDesc : storeItemsAvailable ){
-                    String mackageDescName = mackageDesc.getName();
-                    boolean found = false;
-                    if( mackageDescName.endsWith(STOREITEM_EXTENSION) && !mackageDescName.endsWith(TRIAL_EXTENSION) ){
-                    mackageDescName = mackageDescName.substring(0, mackageDescName.indexOf('-'));
-                    for( MNodeJButton storeButton : storeMap.values() ){
-                    String storeButtonName = storeButton.getName().substring(0, storeButtonName.indexOf('-'));
-                    if( storeButtonName.equals(mackageDescName) ){
-                    found = true;
-                    break;
-                    }
-                    }
-                    }
-                    if(!found)
-                    addableVector.add(mackageDesc);
-                    }
-                    */
-
-
                     // ADD TO STORE IF NOT A TRIAL
-                    for( MackageDesc mackageDesc : storeItemsAvailable ){
-                        MackageDesc.Type type = mackageDesc.getType();
-                        String name = mackageDesc.getName();
-                        //System.out.println("testing: " + name);
-                        if( type == MackageDesc.Type.LIB_ITEM ) {
-                            addToStore(mackageDesc,false);
-                            //System.out.println("added");
-                        }
-                        else{
-                            //System.out.println("failed");
-                        }
+                    for( MackageDesc mackageDesc : storeItemsVisible ){
+                        addToStore(mackageDesc, false);
+                        logger.debug("added: " + mackageDesc.getName());
                     }
-
                     revalidateStore();
                 }
             }
