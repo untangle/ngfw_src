@@ -62,7 +62,6 @@ public class UpgradeCompoundSettings implements CompoundSettings {
             upgradableMackageDescs = Util.getRemoteToolboxManager().upgradable();
         }
         catch(Exception e){
-            Util.getMMainJFrame().updateJButton(Util.UPGRADE_UNAVAILABLE);
             Util.setUpgradeCount(Util.UPGRADE_UNAVAILABLE);
 
             MOneButtonJDialog.factory(UpgradeJDialog.getInstance(), "",
@@ -72,11 +71,9 @@ public class UpgradeCompoundSettings implements CompoundSettings {
         }
 
         if( Util.isArrayEmpty(upgradableMackageDescs) ){
-            Util.getMMainJFrame().updateJButton(0);
             Util.setUpgradeCount(0);
         }
         else{
-            Util.getMMainJFrame().updateJButton(upgradableMackageDescs.length);
             Util.setUpgradeCount(upgradableMackageDescs.length);
         }
     }

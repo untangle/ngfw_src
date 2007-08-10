@@ -260,7 +260,6 @@ public class StoreCheckJDialog extends javax.swing.JDialog implements java.awt.e
                 Util.getRemoteToolboxManager().update();
                 mackageDescs = Util.getRemoteToolboxManager().upgradable();
                 if( Util.isArrayEmpty(mackageDescs) ){
-                    Util.getMMainJFrame().updateJButton(0);
                     Util.setUpgradeCount(0);
                     SwingUtilities.invokeLater( new Runnable(){ public void run(){
                         StoreCheckJDialog.this.jProgressBar.setIndeterminate(false);
@@ -271,7 +270,6 @@ public class StoreCheckJDialog extends javax.swing.JDialog implements java.awt.e
                     StoreCheckJDialog.this.setVisible(false);
                 }
                 else{
-                    Util.getMMainJFrame().updateJButton(mackageDescs.length);
                     Util.setUpgradeCount(mackageDescs.length);
                     SwingUtilities.invokeLater( new Runnable(){ public void run(){
                         StoreCheckJDialog.this.jProgressBar.setIndeterminate(false);
