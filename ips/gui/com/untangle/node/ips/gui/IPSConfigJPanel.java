@@ -126,7 +126,12 @@ class IPSTableModel extends MSortedTableModel<Object>{
             tempRow.add( newElem.getCategory() );
             tempRow.add( newElem.isLive() );
             tempRow.add( newElem.getLog() );
-            tempRow.add( newElem.getClassification() + " (" + newElem.getDescription() + ")");
+            String descriptionText = "";
+            if(newElem.getClassification() != null)
+                descriptionText += newElem.getClassification() + " ";
+            if(newElem.getDescription() != null)
+                descriptionText += "(" + newElem.getDescription() + ")";
+            tempRow.add(descriptionText);
             UrlButtonRunnable urlButtonRunnable = new UrlButtonRunnable("true");
             if( (newElem.getURL() == null) || (newElem.getURL().length() == 0) )
                 urlButtonRunnable.setEnabled(false);
