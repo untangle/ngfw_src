@@ -5,18 +5,28 @@ exec >> @UVM_LOG@/iptables.log 2>&1
 REGDONE="@UVM_HOME@/.regdone"
 REGINFO="@UVM_HOME@/registration.info"
 
+restartService() {
+    local t_service=$1
+    
+    if [ ! -f /etc/init.d/${t_service} ];  then
+        echo "[DEBUG:`date`] missing the service ${t_service}"
+        return 0
+    fi
+    
+    /etc/init.d/${t_service} restart
+}
 afterReconfigure() {
 
     # Gotta wait a little while for the bridge to reconfigure
     sleep 5
 
-    invoke-rc.d ntpdate restart
-    invoke-rc.d ntp-server restart
-    invoke-rc.d spamassassin restart
-    invoke-rc.d untangle-support-agent restart
+    restartService ntpdate
+    restartService ntp-server
+    restartService spamassassin
+    restartService untangle-support-agent
 
     # remote support is enabled if sshd us running
-    pidof sshd && /etc/init.d/untangle-support-agent restart
+    pidof sshd && restartService untangle-support-agent
 
     if [ -f "$REGINFO" ]; then
         if [ ! -f "$REGDONE" -o "$REGDONE" -ot "$REGINFO" ]; then
