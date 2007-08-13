@@ -18,6 +18,10 @@
 
 package com.untangle.node.spam;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import com.untangle.uvm.vnet.AbstractEventHandler;
 import com.untangle.uvm.vnet.MPipeException;
 import com.untangle.uvm.vnet.Session;
@@ -32,6 +36,8 @@ class RBLEventHandler extends AbstractEventHandler
 {
     private final Logger m_logger = Logger.getLogger(RBLEventHandler.class);
 
+    private final List<SpamRBL> rblList;
+
     private SpamImpl m_spamImpl;
 
     RBLEventHandler(SpamImpl spamImpl)
@@ -39,6 +45,10 @@ class RBLEventHandler extends AbstractEventHandler
         super(spamImpl);
 
         this.m_spamImpl = spamImpl;
+
+        List<SpamRBL> rblList = new ArrayList<SpamRBL>( 1 );
+        rblList.add( new SpamRBL("zen.spamhaus.org", "Spamhaus Block and Exploits Block Lists", true));
+        this.rblList = Collections.unmodifiableList(rblList);
     }
 
     @Override
@@ -67,7 +77,7 @@ class RBLEventHandler extends AbstractEventHandler
         
         if (spamConfig.getThrottle()) {
             //m_logger.debug("Check DNSBL(s) for connection from: " + tsr.clientAddr());
-            RBLChecker rblChecker = new RBLChecker(spamSettings.getSpamRBLList(),m_spamImpl);
+            RBLChecker rblChecker = new RBLChecker(this.rblList,m_spamImpl);
             if (true == rblChecker.check(tsr, spamConfig.getThrottleSec())) {
                 m_logger.debug("DNSBL hit confirmed, rejecting connection from: " + tsr.clientAddr());
                 /* get finalization in order to log rejection */

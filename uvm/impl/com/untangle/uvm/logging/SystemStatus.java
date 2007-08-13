@@ -37,6 +37,8 @@ public class SystemStatus
     public static final String  JITTER_THREAD_FREQ_PROPERTY = "uvm.jitter.thread.freq";
     public static final long    JITTER_THREAD_FREQ_DEFAULT = 500;
 
+    private static final int DEFAULT_HALF_KEY_LENGTH = 9;
+
     public static boolean JITTER_THREAD;
     public static long    JITTER_THREAD_FREQ;
 
@@ -120,6 +122,7 @@ public class SystemStatus
         BufferedReader input;
         int i = 0;
         try {
+            appendActivationKey(sb);            
             /**
              * Uname info
              */
@@ -346,6 +349,23 @@ public class SystemStatus
         return sb.toString();
     }
 
+    /**
+     * Append the first half of the activation key
+     */
+    private void appendActivationKey(StringBuilder sb)
+    {
+        sb.append(SPACER);
+        String key = LocalUvmContextFactory.context().getActivationKey();
+        if ((key==null) || (key.length()==0)) {
+            key = "unset";
+        } else {
+            /* get at most half of the key */
+            key = key.substring(0,Math.min(key.length()/2,DEFAULT_HALF_KEY_LENGTH));
+        }
+
+        sb.append("activation key: " + key + "\n");
+    }
+
     private String _buildUVMStat ()
     {
         StringBuilder sb = new StringBuilder();
@@ -412,7 +432,6 @@ public class SystemStatus
         }
         return sb.toString();
     }
-
 
     private class JitterThread implements Runnable
     {
