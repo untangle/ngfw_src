@@ -351,7 +351,7 @@ class Blacklist
                 return null;
             } else {
                 WebFilterBlockDetails bd = new WebFilterBlockDetails
-                    (settings, host, uri, category);
+                    (settings, host, uri, null == bc ? category : bc.getDisplayName());
                 return node.generateNonce(bd);
             }
         }
