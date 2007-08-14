@@ -383,21 +383,16 @@ public class Util {
     }
     public static synchronized int getUpgradeCount(){ return upgradeCount; }
     public static synchronized boolean mustCheckUpgrades(){
-        System.out.println("MUST CHECK UPGRADES: ");
         if( lastUpgradeCheck == 0l ){
-            System.out.println("  check due to first run");
             return true;
         }
         else if( System.currentTimeMillis() - lastUpgradeCheck > UPGRADE_STORE_CHECK_FRESH_MILLIS){
-            System.out.println("  check due to expiration");
             return true;
         }
         else if (upgradeCount != 0){
-            System.out.println("  check due to upgradeCount: " + upgradeCount);
             return true;
         }
         else{
-            System.out.println("  no check necessary");
             return false;
         }
     }
