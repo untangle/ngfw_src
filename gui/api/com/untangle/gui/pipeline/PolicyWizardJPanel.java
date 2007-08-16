@@ -244,7 +244,8 @@ public class PolicyWizardJPanel extends javax.swing.JPanel
     }
 
 
-    private void initComponents() {//GEN-BEGIN:initComponents
+    // <editor-fold defaultstate="collapsed" desc=" Generated Code ">//GEN-BEGIN:initComponents
+    private void initComponents() {
         java.awt.GridBagConstraints gridBagConstraints;
 
         smtpButtonGroup = new javax.swing.ButtonGroup();
@@ -311,10 +312,10 @@ public class PolicyWizardJPanel extends javax.swing.JPanel
 
         setMaximumSize(new java.awt.Dimension(460, 1000));
         setMinimumSize(new java.awt.Dimension(460, 1000));
-        setPreferredSize(new java.awt.Dimension(460, 1000));
+        setPreferredSize(new java.awt.Dimension(460, 876));
         protocolJPanel.setLayout(new java.awt.GridBagLayout());
 
-        protocolJPanel.setBorder(new javax.swing.border.TitledBorder(null, "Protocol", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
+        protocolJPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Protocol", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
         protocolJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
         protocolJLabel.setText("The protocol you would like this policy to handle.");
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -359,7 +360,7 @@ public class PolicyWizardJPanel extends javax.swing.JPanel
 
         interfaceJPanel.setLayout(new java.awt.GridBagLayout());
 
-        interfaceJPanel.setBorder(new javax.swing.border.TitledBorder(null, "Interface", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
+        interfaceJPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Interface", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
         interfaceJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
         interfaceJLabel.setText("The ethernet interface (NIC) you would like this policy to handle.");
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -422,7 +423,7 @@ public class PolicyWizardJPanel extends javax.swing.JPanel
 
         addressJPanel.setLayout(new java.awt.GridBagLayout());
 
-        addressJPanel.setBorder(new javax.swing.border.TitledBorder(null, "Address", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
+        addressJPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Address", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
         addressJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
         addressJLabel.setText("The IP address which you would like this policy to handle.");
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -488,7 +489,7 @@ public class PolicyWizardJPanel extends javax.swing.JPanel
 
         portJPanel.setLayout(new java.awt.GridBagLayout());
 
-        portJPanel.setBorder(new javax.swing.border.TitledBorder(null, "Port", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
+        portJPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Port", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
         portJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
         portJLabel.setText("The port which you would like this policy to handle.");
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -535,7 +536,7 @@ public class PolicyWizardJPanel extends javax.swing.JPanel
 
         userJPanel.setLayout(new java.awt.GridBagLayout());
 
-        userJPanel.setBorder(new javax.swing.border.TitledBorder(null, "Users", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
+        userJPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Users", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
         userJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
         userJLabel.setText("The users you would like to apply this policy to.");
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -559,10 +560,10 @@ public class PolicyWizardJPanel extends javax.swing.JPanel
         userSettingsJButton.setFont(new java.awt.Font("Dialog", 0, 12));
         userSettingsJButton.setText("Change Users");
         userSettingsJButton.addActionListener(new java.awt.event.ActionListener() {
-                public void actionPerformed(java.awt.event.ActionEvent evt) {
-                    userSettingsJButtonActionPerformed(evt);
-                }
-            });
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                userSettingsJButtonActionPerformed(evt);
+            }
+        });
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -585,7 +586,7 @@ public class PolicyWizardJPanel extends javax.swing.JPanel
 
         timeJPanel.setLayout(new java.awt.GridBagLayout());
 
-        timeJPanel.setBorder(new javax.swing.border.TitledBorder(null, "Time of Day", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
+        timeJPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Time of Day", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
         timeJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
         timeJLabel.setText("The time of day you would like this policy active.");
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -651,7 +652,7 @@ public class PolicyWizardJPanel extends javax.swing.JPanel
 
         dayJPanel.setLayout(new java.awt.GridBagLayout());
 
-        dayJPanel.setBorder(new javax.swing.border.TitledBorder(null, "Days of Week", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
+        dayJPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Days of Week", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
         dayJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
         dayJLabel.setText("The days of the week you would like this policy active.");
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -729,7 +730,10 @@ public class PolicyWizardJPanel extends javax.swing.JPanel
 
         invertJPanel.setLayout(new java.awt.GridBagLayout());
 
-        invertJPanel.setBorder(new javax.swing.border.TitledBorder(null, "Invert Time", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
+        invertJPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Invert Time", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
+        invertJPanel.setMaximumSize(new java.awt.Dimension(2147483647, 0));
+        invertJPanel.setMinimumSize(new java.awt.Dimension(147, 0));
+        invertJPanel.setPreferredSize(new java.awt.Dimension(595, 0));
         invertJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
         invertJLabel.setText("<html>This allows you to activate a policy when it is normally off, and deactivate it when it is normally on.</html>");
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -768,7 +772,7 @@ public class PolicyWizardJPanel extends javax.swing.JPanel
 
         rackJPanel.setLayout(new java.awt.GridBagLayout());
 
-        rackJPanel.setBorder(new javax.swing.border.TitledBorder(null, "Rack", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
+        rackJPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Rack", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
         rackJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
         rackJLabel.setText("The rack you would like to use to handle this policy.");
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -841,7 +845,7 @@ public class PolicyWizardJPanel extends javax.swing.JPanel
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
         add(rackJPanel, gridBagConstraints);
 
-    }//GEN-END:initComponents
+    }// </editor-fold>//GEN-END:initComponents
 
     private void userSettingsJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_userSettingsJButtonActionPerformed
         UidSelectJDialog uidSelectJDialog = UidSelectJDialog.factory((Window) getTopLevelAncestor());
