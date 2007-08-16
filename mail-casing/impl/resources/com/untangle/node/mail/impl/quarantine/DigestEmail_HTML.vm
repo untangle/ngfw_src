@@ -152,9 +152,10 @@ table.actions tbody TD + TD {
   padding-bottom: 10;
 }
 
+/* #68BD49 is Untangle green*/
 .messageText {
   font: normal 20 Arial, Geneva;
-  color: #00ff00;
+  color: #68BD49;
   padding-left: 10;
   padding-right: 10;
   padding-bottom: 10;
