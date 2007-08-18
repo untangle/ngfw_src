@@ -295,7 +295,7 @@ public class SpamImpl extends AbstractNode implements SpamNode
 
     protected void initSpamRBLList(SpamSettings tmpSpamSettings) {
         List<SpamRBL> spamRBLList = tmpSpamSettings.getSpamRBLList();
-        if (false == spamRBLList.isEmpty()) {
+        if (( null == spamRBLList) || ( false == spamRBLList.isEmpty())) {
             // if already initialized,
             // use list as-is (e.g., database contains final word)
             //
@@ -305,10 +305,10 @@ public class SpamImpl extends AbstractNode implements SpamNode
             return;
         } // else initialize list now (e.g., upgrade has just occurred)
 
-        spamRBLList.add(new SpamRBL("dul.dnsbl.sorbs.net", "Spam and Open-Relay Blocking System", true));
-        spamRBLList.add(new SpamRBL("list.dsbl.org", "Distributed Sender Blackhole List", true));
-        //spamRBLList.add(new SpamRBL("sbl-xbl.spamhaus.org", "Spamhaus Block and Exploits Block Lists", true));
-        spamRBLList.add(new SpamRBL("bl.spamcop.net", "SpamCop Blocking List", true));
+        spamRBLList.add(new SpamRBL("zen.spamhaus.org", "Spamhaus SBL, XBL and PBL lists.", true));
+        // spamRBLList.add(new SpamRBL("list.dsbl.org", "Distributed Sender Blackhole List", true));
+        // spamRBLList.add(new SpamRBL("sbl-xbl.spamhaus.org", "Spamhaus Block and Exploits Block Lists", true));
+        // spamRBLList.add(new SpamRBL("bl.spamcop.net", "SpamCop Blocking List", true));
 
         return;
     }
