@@ -377,7 +377,7 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
         enableRemoteJPanel.setLayout(new java.awt.GridBagLayout());
 
         serverJLabel1.setFont(new java.awt.Font("Dialog", 0, 12));
-        serverJLabel1.setText("<html>This allows the Untangle Server to connect to an <b>Active Directory Server</b> in order to recognize various users for use in reporting, firewall, router, policies, etc.</html>");
+        serverJLabel1.setText("<html>This allows your server to connect to an <b>Active Directory Server</b> in order to recognize various users for use in reporting, firewall, router, policies, etc.</html>");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;

@@ -50,9 +50,17 @@ String companyUrl = bs.getCompanyUrl();
     <homepage href="<%=companyUrl%>"/>
     <description><%=company%> @ <%=host%>  </description>
     <description kind="short">The graphical client for configuring, controlling, and monitoring <%=company%>.</description>
-    <icon href="images/Logo128x128.gif" width="128" height="128"/>
-    <icon href="images/Logo64x64.gif" kind="splash" width="64" height="64"/>
-    <icon href="images/Logo32x32.gif" width="32" height="32"/>
+
+    <%  
+    if(uvm.brandingManager().getBrandingSettings().getCompanyName().equals("Untangle")){
+    %>
+        <icon href="images/Logo128x128.gif" width="128" height="128"/>
+        <icon href="images/Logo64x64.gif" kind="splash" width="64" height="64"/>
+        <icon href="images/Logo32x32.gif" width="32" height="32"/>
+    <%
+    }
+    %>
+
   </information>
   <security>
     <all-permissions/>
@@ -106,6 +114,11 @@ String companyUrl = bs.getCompanyUrl();
  if (uvm.isInsideVM()) {
 %>
     <argument>inside-vm</argument>
+<%
+ }  
+ if(!uvm.brandingManager().getBrandingSettings().getCompanyName().equals("Untangle")){
+%>
+    <argument>custom-branding</argument>
 <%
  }
 %>

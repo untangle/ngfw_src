@@ -73,6 +73,10 @@ public class MaintenanceCompoundSettings implements CompoundSettings {
     private MCasingJPanel[] casingJPanels;
     public MCasingJPanel[] getCasingJPanels(){ return casingJPanels; }
 
+    // BRANDING //
+    private boolean isBrandingEnabled;
+    public boolean isBrandingEnabled(){ return isBrandingEnabled; }
+
     public void save() throws Exception {
         Util.getNetworkManager().setSettings(accessSettings,miscSettings,networkSettings);
 
@@ -112,6 +116,8 @@ public class MaintenanceCompoundSettings implements CompoundSettings {
         }
         if(ftpNodeCompoundSettings != null)
             ftpNodeCompoundSettings.refresh();
+
+        isBrandingEnabled = !Util.getBrandingManager().getBrandingSettings().getCompanyName().equals(Util.getCompanyName());
     }
 
     public void validate() throws Exception {
