@@ -270,6 +270,8 @@ class OpenVpnManager
          * not sure about this comment, the entries seem to get
          * pushed automatically. */
         for ( ServerSiteNetwork siteNetwork : settings.getExportedAddressList()) {
+            if ( !siteNetwork.isLive()) continue;
+
             writePushRoute( sw, siteNetwork.getNetwork(), siteNetwork.getNetmask());
         }
 
@@ -278,6 +280,8 @@ class OpenVpnManager
             if ( !site.isEnabled()) continue;
 
             for ( ClientSiteNetwork siteNetwork : site.getExportedAddressList()) {
+                if ( !siteNetwork.isLive()) continue;
+
                 IPaddr network = siteNetwork.getNetwork();
                 IPaddr netmask = siteNetwork.getNetmask();
 
@@ -298,6 +302,8 @@ class OpenVpnManager
         sw.appendComment( "Groups" );
 
         for ( VpnGroup group : (List<VpnGroup>)settings.getGroupList()) {
+            if ( !group.isLive()) continue;
+
             writeRoute( sw, group.getAddress(), group.getNetmask());
         }
 
@@ -454,6 +460,8 @@ class OpenVpnManager
             sw.appendVariable( FLAG_CLI_IFCONFIG, "" + localEndpoint + " " + remoteEndpoint );
 
             for ( ClientSiteNetwork siteNetwork : site.getExportedAddressList()) {
+                if ( !siteNetwork.isLive()) continue;
+
                 writeClientRoute( sw, siteNetwork.getNetwork(), siteNetwork.getNetmask());
             }
 

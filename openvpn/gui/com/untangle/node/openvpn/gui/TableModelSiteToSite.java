@@ -136,9 +136,9 @@ public class TableModelSiteToSite extends MSortedTableModel<Object>{
             ComboBoxModel groupComboBoxModel = super.copyComboBoxModel(groupModel);
             groupComboBoxModel.setSelectedItem( vpnSite.getGroup() );
             tempRow.add( groupComboBoxModel );
-            /* XXX RBS-Could use convenience method getSiteNetwork */
-            tempRow.add( new IPaddrString(((ClientSiteNetwork) vpnSite.getExportedAddressList().get(0)).getNetwork()) );
-            tempRow.add( new IPaddrString(((ClientSiteNetwork) vpnSite.getExportedAddressList().get(0)).getNetmask()) );
+            ClientSiteNetwork siteNetwork = vpnSite.getSiteNetwork();
+            tempRow.add( new IPaddrString( siteNetwork.getNetwork()));
+            tempRow.add( new IPaddrString( siteNetwork.getNetmask()));
             KeyButtonRunnable keyButtonRunnable = new KeyButtonRunnable("true");
             keyButtonRunnable.setVpnClient( vpnSite );
             tempRow.add( keyButtonRunnable );
