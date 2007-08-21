@@ -95,6 +95,7 @@ public class MaintenanceAccessJPanel extends javax.swing.JPanel
         // BRANDING ////
         if(maintenanceCompoundSettings.isBrandingEnabled()){
             supportJCheckBox.setText("<html><b>Allow</b> us to securely access your server for support purposes.</html>");
+            reportJCheckBox.setText("<html><b>Send</b> us data about your server. This will send us status updates and an email if any unexpected problems occur, but will not allow us to login to your server. No personal information about your network traffic will be transmitted.</html>");
         }
     }
 
