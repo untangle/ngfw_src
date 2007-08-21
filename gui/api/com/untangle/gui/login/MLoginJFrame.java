@@ -55,6 +55,8 @@ public class MLoginJFrame extends javax.swing.JFrame {
 
     private final Logger logger = Logger.getLogger(getClass());
 
+    private boolean customBrandingEnabled = false;
+
     public MLoginJFrame(final String[] args) {
 
         // CREATE AND SHOW THE LOGIN
@@ -70,6 +72,12 @@ public class MLoginJFrame extends javax.swing.JFrame {
                 protocolJTextField.setText( "https (secure)");
             else
                 protocolJTextField.setText( "http (standard)");
+            for(String s : args){
+                if(s.equals("custom-branding")){
+                    setTitle("Client " + Version.getVersion());
+                    customBrandingEnabled = true;
+                }
+            }
             MLoginJFrame.this.setVisible(true);
         }});
         resetLogin("Please enter your login and password.");
@@ -616,7 +624,7 @@ public class MLoginJFrame extends javax.swing.JFrame {
 
                     // (UPDATE GUI) tell the user we are about to see the gui
                     SwingUtilities.invokeAndWait( new Runnable(){ public void run (){
-                        statusJProgressBar.setString("Showing Untangle Client...");
+                        statusJProgressBar.setString("Showing Client...");
                         statusJProgressBar.setValue(100);
                     }});
 
@@ -631,10 +639,16 @@ public class MLoginJFrame extends javax.swing.JFrame {
                         else
                             securedString = "  |  Connection: http (standard)";
 
-                        mMainJFrame.setTitle( "Untangle Client " +
+                        mMainJFrame.setTitle( "Untangle " +
                                               Version.getVersion() + "  |  Login: " +
                                               loginJTextField.getText() + "  |  Server: " +
                                               Util.getServerCodeBase().getHost() + securedString );
+                        if(customBrandingEnabled){
+                        mMainJFrame.setTitle( "Client " +
+                                              Version.getVersion() + "  |  Login: " +
+                                              loginJTextField.getText() + "  |  Server: " +
+                                              Util.getServerCodeBase().getHost() + securedString );
+                        }
                         if(Util.getIsDemo()){
                             if( loginJTextField.getText().equals("untangledemo") )
                                 mMainJFrame.setTitle( mMainJFrame.getTitle() + "  [DEMO MODE]" );

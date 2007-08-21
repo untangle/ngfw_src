@@ -91,6 +91,11 @@ public class MaintenanceAccessJPanel extends javax.swing.JPanel
         boolean isExceptionReportingEnabled = miscSettings.getIsExceptionReportingEnabled();
         reportJCheckBox.setSelected( isExceptionReportingEnabled );
         Util.addSettingChangeListener(settingsChangedListener, this, reportJCheckBox);
+
+        // BRANDING ////
+        if(maintenanceCompoundSettings.isBrandingEnabled()){
+            supportJCheckBox.setText("<html><b>Allow</b> us to securely access your server for support purposes.</html>");
+        }
     }
 
 
@@ -112,7 +117,7 @@ public class MaintenanceAccessJPanel extends javax.swing.JPanel
         maintainRemoteJPanel.setBorder(new javax.swing.border.TitledBorder(null, "Untangle Support", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
 
         supportJCheckBox.setFont(new java.awt.Font("Dialog", 0, 12));
-        supportJCheckBox.setText("<html><b>Allow</b> Untangle complete access to my Untangle Server. This will allow the Untangle Support team to monitor and change settings on your Untangle Server.</html>");
+        supportJCheckBox.setText("<html><b>Allow</b> Untangle to securely access my Untangle Server. This will allow the Untangle Support team to monitor and change settings on your Untangle Server.</html>");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;

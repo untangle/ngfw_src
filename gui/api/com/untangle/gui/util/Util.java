@@ -135,6 +135,9 @@ public class Util {
         VALID_BACKGROUND_COLOR = new Color(224, 224, 224);
     }
 
+    // BRANDING ///////////////////
+    public static final String getCompanyName(){ return "Untangle"; }
+
     // LOGOUT /////////////////////
     private static volatile boolean shutdownInitiated = false;
     public static boolean getShutdownInitiated(){ return shutdownInitiated; }
