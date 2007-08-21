@@ -62,7 +62,6 @@ public class UpgradeJDialog extends MConfigJDialog {
         instance = this;
         setTitle(NAME_TITLE);
         setHelpSource("upgrade_config");
-        setResizable(false);
         compoundSettings = new UpgradeCompoundSettings();
     }
 
