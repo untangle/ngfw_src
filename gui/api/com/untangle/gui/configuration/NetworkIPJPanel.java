@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -41,8 +41,8 @@ import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.dialogs.*;
 import com.untangle.uvm.*;
 import com.untangle.uvm.networking.BasicNetworkSettings;
-import com.untangle.uvm.security.*;
 import com.untangle.uvm.node.*;
+import com.untangle.uvm.security.*;
 
 public class NetworkIPJPanel extends javax.swing.JPanel
     implements Savable<NetworkCompoundSettings>, Refreshable<NetworkCompoundSettings> {
@@ -483,7 +483,7 @@ public class NetworkIPJPanel extends javax.swing.JPanel
         dhcpJPanel.add(jSeparator3, gridBagConstraints);
 
         jLabel10.setFont(new java.awt.Font("Dialog", 0, 12));
-        jLabel10.setText("<html>The <b>Connectivity Test</b> tells you if the Untangle Server can contact DNS and the internet.</html>");
+        jLabel10.setText("<html>The <b>Connectivity Test</b> tells you if the server can contact DNS and the internet.</html>");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
@@ -577,7 +577,7 @@ public class NetworkIPJPanel extends javax.swing.JPanel
         if( Util.getIsDemo() )
             return;
         MTwoButtonJDialog warning = MTwoButtonJDialog.factory((Window)this.getTopLevelAncestor(), "Networking Config",
-                                                              "Renewing your DHCP lease may cause you to get disconnected from Untangle.<br>"
+                                                              "Renewing your DHCP lease may cause you to get disconnected from the server.<br>"
                                                               + "You can login again if you get disconnected.",
                                                               "Networking Config Warning", "Warning");
         warning.setVisible(true);

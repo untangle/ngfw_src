@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -48,7 +48,7 @@ final public class NetworkDhcpRenewDialog extends MOneButtonProgressJDialog {
         super(parentDialog);
         this.setTitle("Renewing DHCP Lease");
         this.labelJLabel.setText("Renewing DHCP Lease");
-        this.messageJLabel.setText("<html>You have requested that the Untangle Server contact the networks"
+        this.messageJLabel.setText("<html>You have requested that the server contact the networks"
                                    +"<br>DHCP server in order to renew its lease on DHCP settings.</html>");
         new DhcpLeaseRenewThread();
         this.setVisible(true);
