@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -41,8 +41,8 @@ import com.untangle.gui.widgets.dialogs.MConfigJDialog;
 import com.untangle.uvm.*;
 import com.untangle.uvm.networking.AccessSettings;
 import com.untangle.uvm.networking.MiscSettings;
-import com.untangle.uvm.security.*;
 import com.untangle.uvm.node.*;
+import com.untangle.uvm.security.*;
 
 public class MaintenanceAccessJPanel extends javax.swing.JPanel
     implements Savable<MaintenanceCompoundSettings>, Refreshable<MaintenanceCompoundSettings> {
@@ -115,7 +115,7 @@ public class MaintenanceAccessJPanel extends javax.swing.JPanel
         setPreferredSize(new java.awt.Dimension(563, 180));
         maintainRemoteJPanel.setLayout(new java.awt.GridBagLayout());
 
-        maintainRemoteJPanel.setBorder(new javax.swing.border.TitledBorder(null, "Untangle Support", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
+        maintainRemoteJPanel.setBorder(new javax.swing.border.TitledBorder(null, "Support", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
 
         supportJCheckBox.setFont(new java.awt.Font("Dialog", 0, 12));
         supportJCheckBox.setText("<html><b>Allow</b> Untangle to securely access my Untangle Server. This will allow the Untangle Support team to monitor and change settings on your Untangle Server.</html>");
