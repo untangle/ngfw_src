@@ -109,8 +109,8 @@ public abstract class LogEvent implements Comparable, Serializable
     // public methods ---------------------------------------------------------
 
     /**
-     * LogEvents inserted into the database when this method returns
-     * true.
+     * LogEvents inserted into the database and syslog when this method
+     * returns true.
      *
      * @return true when this event is saved to the database.
      */
