@@ -66,7 +66,7 @@ component=$2
 schema_dir=@UVM_SCHEMA@/$component
 
 ver=$(echo "SELECT ${type}_version FROM split_schema_ver WHERE component = '$component' AND ${type}_version IS NOT NULL" | $PSQL)
-latest_ver=$(ls $schema_dir/*schema-*.sql | sed 's/^.*schema-\([0-9]\+\).sql/\1/' | sort -n -r | head -n1)
+latest_ver=$(ls $schema_dir/*convert-*.sql | sed 's/^.*convert-\([0-9]\+\).sql/\1/' | sort -n -r | head -n1)
 echo "Updating schema: $component on $(date)"
 echo "Current schema version: $ver"
 echo "Latest schema version: $latest_ver"
@@ -80,9 +80,9 @@ elif [ "x$ver" = "x" ]; then
 INSERT INTO split_schema_ver (component, settings_version, events_version)  VALUES ('$component', null, null);
 EOF
 
-    if [ -e "$schema_dir/${type}-schema-$latest_ver.sql" ]; then
-        echo "running $schema_dir/${type}-schema-$latest_ver.sql"
-        psql -X -e -f "$schema_dir/${type}-schema-$latest_ver.sql" -U postgres uvm
+    if [ -e "$schema_dir/${type}-schema.sql" ]; then
+        echo "running $schema_dir/${type}-schema.sql"
+        psql -X -e -f "$schema_dir/${type}-schema.sql" -U postgres uvm
         cat <<EOF | $PSQL_VERBOSE
 UPDATE split_schema_ver SET ${type}_version = $latest_ver WHERE component = '$component';
 EOF
@@ -130,11 +130,11 @@ EOF
 
     echo "running schema-$latest_ver just in case"
 
-    if [ -e "$schema_dir/${type}-schema-$latest_ver.sql" ]; then
-        echo "running $schema_dir/${type}-schema-$latest_ver.sql"
-        psql -X -e -f "$schema_dir/${type}-schema-$latest_ver.sql" -U postgres uvm </dev/null
+    if [ -e "$schema_dir/${type}-schema.sql" ]; then
+        echo "running $schema_dir/${type}-schema.sql"
+        psql -X -e -f "$schema_dir/${type}-schema.sql" -U postgres uvm </dev/null
     else
-        echo "running $schema_dir/schema-$latest_ver.sql"
-        psql -X -e -f "$schema_dir/schema-$latest_ver.sql" -U postgres uvm </dev/null
+        echo "running $schema_dir/schema.sql"
+        psql -X -e -f "$schema_dir/schema.sql" -U postgres uvm </dev/null
     fi
 fi

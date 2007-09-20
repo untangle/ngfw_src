@@ -45,24 +45,22 @@ import com.untangle.uvm.node.Rule;
 
 /**
  * Hibernate mappings for this class are in the subclasses
- * UserPolicyRule and SystemPolicyRule.
+ * UserPolicyRule.
  */
 @MappedSuperclass
 public abstract class PolicyRule extends Rule
 {
     /* settings */
     protected Policy policy;
-    protected boolean inbound;
 
     // constructors -----------------------------------------------------------
 
     protected PolicyRule() { }
 
-    protected PolicyRule(boolean live, Policy policy, boolean inbound)
+    protected PolicyRule(boolean live, Policy policy)
     {
         super(live);
         this.policy = policy;
-        this.inbound = inbound;
     }
 
     // abstract methods -------------------------------------------------------
@@ -86,22 +84,5 @@ public abstract class PolicyRule extends Rule
     public void setPolicy(Policy policy)
     {
         this.policy = policy;
-    }
-
-    /**
-     * Choose the inbound side of the policy?  If false, choose the
-     * outbound side.
-     *
-     * @return true to use inbound side of policy, false outbound
-     */
-    @Column(name="is_inbound", nullable=false)
-    public boolean isInbound()
-    {
-        return inbound;
-    }
-
-    public void setInbound(boolean inbound)
-    {
-        this.inbound = inbound;
     }
 }

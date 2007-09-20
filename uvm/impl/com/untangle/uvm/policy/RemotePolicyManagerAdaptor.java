@@ -66,17 +66,6 @@ class RemotePolicyManagerAdaptor implements RemotePolicyManager
         pm.setPolicy(rule, name, notes);
     }
 
-    public SystemPolicyRule[] getSystemPolicyRules()
-    {
-        return pm.getSystemPolicyRules();
-    }
-
-    public void setSystemPolicyRule(SystemPolicyRule rule, Policy p,
-                                    boolean inbound, String description)
-    {
-        pm.setSystemPolicyRule(rule, p, inbound, description);
-    }
-
     public UserPolicyRule[] getUserPolicyRules()
     {
         return pm.getUserPolicyRules();

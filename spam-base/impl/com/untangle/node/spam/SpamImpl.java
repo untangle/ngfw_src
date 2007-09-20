@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -21,19 +21,19 @@ package com.untangle.node.spam;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.untangle.node.token.TokenAdaptor;
 import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.EventLoggerFactory;
 import com.untangle.uvm.logging.EventManager;
 import com.untangle.uvm.logging.SimpleEventFilter;
+import com.untangle.uvm.node.Node;
+import com.untangle.uvm.node.NodeContext;
+import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.AbstractNode;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.vnet.SoloPipeSpec;
-import com.untangle.uvm.node.Node;
-import com.untangle.uvm.node.NodeContext;
-import com.untangle.uvm.util.TransactionWork;
-import com.untangle.node.token.TokenAdaptor;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -47,44 +47,32 @@ public class SpamImpl extends AbstractNode implements SpamNode
     //===============================
     // Defaults for templates
 
-    private static final String OUT_MOD_SUB_TEMPLATE =
+    private static final String MOD_SUB_TEMPLATE =
         "[SPAM] $MIMEMessage:SUBJECT$";
-    // OLD
-    // private static final String OUT_MOD_BODY_TEMPLATE =
-    // "The attached message from $MIMEMessage:FROM$ was determined\r\n " +
-    // "to be SPAM based on a score of $SPAMReport:SCORE$ where anything above $SPAMReport:THRESHOLD$\r\n" +
-    // "is SPAM.  The details of the report are as follows:\r\n\r\n" +
-    // "$SPAMReport:FULL$";
-    private static final String OUT_MOD_BODY_TEMPLATE =
+
+    private static final String MOD_BODY_TEMPLATE =
         "The attached message from $MIMEMessage:FROM$\r\n" +
         "was determined by Untangle Spam Blocker to be spam based on a score\r\n" +
         "of $SPAMReport:SCORE$ where anything above $SPAMReport:THRESHOLD$ is spam.\r\n";
 
-    private static final String OUT_MOD_BODY_SMTP_TEMPLATE =
+    private static final String MOD_BODY_SMTP_TEMPLATE =
         "The attached message from $MIMEMessage:FROM$ ($SMTPTransaction:FROM$)\r\n" +
         "was determined by Untangle Spam Blocker to be spam based on a score\r\n" +
         "of $SPAMReport:SCORE$ where anything above $SPAMReport:THRESHOLD$ is spam.\r\n";
 
-    private static final String IN_MOD_SUB_TEMPLATE = OUT_MOD_SUB_TEMPLATE;
-    private static final String IN_MOD_BODY_TEMPLATE = OUT_MOD_BODY_TEMPLATE;
-    private static final String IN_MOD_BODY_SMTP_TEMPLATE = OUT_MOD_BODY_SMTP_TEMPLATE;
-
     private static final String SPAM_HEADER_NAME = "X-Spam-Flag";
-    private final static String IS_SPAM_HDR_VALUE = "YES";
-    private final static String IS_HAM_HDR_VALUE = "NO";
+    private final static String SPAM_HDR_VALUE = "YES";
+    private final static String HAM_HDR_VALUE = "NO";
 
-    private static final String OUT_NOTIFY_SUB_TEMPLATE =
+    private static final String NOTIFY_SUB_TEMPLATE =
         "[SPAM NOTIFICATION] re: $MIMEMessage:SUBJECT$";
 
-    private static final String OUT_NOTIFY_BODY_TEMPLATE =
+    private static final String NOTIFY_BODY_TEMPLATE =
         "On $MIMEHeader:DATE$ a message from $MIMEMessage:FROM$ ($SMTPTransaction:FROM$)" + CRLF +
         "was received by $SMTPTransaction:TO$.  The message was determined" + CRLF +
         "by Untangle Spam Blocker to be spam based on a score of $SPAMReport:SCORE$ where anything" + CRLF +
         "above $SPAMReport:THRESHOLD$ is spam.  The details of the report are as follows:" + CRLF + CRLF +
         "$SPAMReport:FULL$";
-
-    private static final String IN_NOTIFY_SUB_TEMPLATE = OUT_NOTIFY_SUB_TEMPLATE;
-    private static final String IN_NOTIFY_BODY_TEMPLATE = OUT_NOTIFY_BODY_TEMPLATE;
 
     private final RBLEventHandler rblHandler = new RBLEventHandler(this);
 
@@ -190,29 +178,29 @@ public class SpamImpl extends AbstractNode implements SpamNode
      * Method for subclass (currently - clamphish) to define
      * the default Subject template for POP/IMAP wrapped messages
      */
-    public String getDefaultSubjectWrapperTemplate(boolean inbound) {
-        return inbound?IN_MOD_SUB_TEMPLATE:OUT_MOD_SUB_TEMPLATE;
+    public String getDefaultSubjectWrapperTemplate() {
+        return MOD_SUB_TEMPLATE;
     }
     /**
      * Method for subclass (currently - clamphish) to define
      * the default wrapping body template for POP/IMAP
      */
-    public String getDefaultBodyWrapperTemplate(boolean inbound) {
-        return inbound?IN_MOD_BODY_TEMPLATE:OUT_MOD_BODY_TEMPLATE;
+    public String getDefaultBodyWrapperTemplate() {
+        return MOD_BODY_TEMPLATE;
     }
     /**
      * Method for subclass (currently - clamphish) to define
      * the default Subject template for SMTP wrapped messages
      */
-    public String getDefaultSMTPSubjectWrapperTemplate(boolean inbound) {
-        return getDefaultSubjectWrapperTemplate(inbound);
+    public String getDefaultSMTPSubjectWrapperTemplate() {
+        return getDefaultSubjectWrapperTemplate();
     }
     /**
      * Method for subclass (currently - clamphish) to define
      * the default wrapping body template for SMTP
      */
-    public String getDefaultSMTPBodyWrapperTemplate(boolean inbound) {
-        return inbound?IN_MOD_BODY_SMTP_TEMPLATE:OUT_MOD_BODY_SMTP_TEMPLATE;
+    public String getDefaultSMTPBodyWrapperTemplate() {
+        return MOD_BODY_SMTP_TEMPLATE;
     }
 
     /**
@@ -228,23 +216,23 @@ public class SpamImpl extends AbstractNode implements SpamNode
      * indicating if the email is/is not spam
      */
     public String getDefaultIndicatorHeaderValue(boolean isSpam) {
-        return isSpam?IS_SPAM_HDR_VALUE:IS_HAM_HDR_VALUE;
+        return isSpam?SPAM_HDR_VALUE:HAM_HDR_VALUE;
     }
 
     /**
      * Get the default template used for notification messages'
      * subject
      */
-    public String getDefaultNotifySubjectTemplate(boolean inbound) {
-        return inbound?IN_NOTIFY_SUB_TEMPLATE:OUT_NOTIFY_SUB_TEMPLATE;
+    public String getDefaultNotifySubjectTemplate() {
+        return NOTIFY_SUB_TEMPLATE;
     }
 
     /**
      * Get the default template used to create notification
      * messages' bodies
      */
-    public String getDefaultNotifyBodyTemplate(boolean inbound) {
-        return inbound?IN_NOTIFY_BODY_TEMPLATE:OUT_NOTIFY_BODY_TEMPLATE;
+    public String getDefaultNotifyBodyTemplate() {
+        return NOTIFY_BODY_TEMPLATE;
     }
 
     /**
@@ -255,42 +243,25 @@ public class SpamImpl extends AbstractNode implements SpamNode
      * Once we move these to the database, this method is obsolete.
      */
     private void ensureTemplateSettings(SpamSettings ss) {
-        ss.getIMAPInbound().setSubjectWrapperTemplate(getDefaultSubjectWrapperTemplate(true));
-        ss.getIMAPOutbound().setSubjectWrapperTemplate(getDefaultSubjectWrapperTemplate(false));
-        ss.getIMAPInbound().setBodyWrapperTemplate(getDefaultBodyWrapperTemplate(true));
-        ss.getIMAPOutbound().setBodyWrapperTemplate(getDefaultBodyWrapperTemplate(false));
-        ss.getIMAPInbound().setHeaderName(getDefaultIndicatorHeaderName());
-        ss.getIMAPOutbound().setHeaderName(getDefaultIndicatorHeaderName());
-        ss.getIMAPInbound().setHeaderValue(getDefaultIndicatorHeaderValue(true), true);
-        ss.getIMAPInbound().setHeaderValue(getDefaultIndicatorHeaderValue(false), false);
-        ss.getIMAPOutbound().setHeaderValue(getDefaultIndicatorHeaderValue(true), true);
-        ss.getIMAPOutbound().setHeaderValue(getDefaultIndicatorHeaderValue(false), false);
+        ss.getImapConfig().setSubjectWrapperTemplate(getDefaultSubjectWrapperTemplate());
+        ss.getImapConfig().setBodyWrapperTemplate(getDefaultBodyWrapperTemplate());
+        ss.getImapConfig().setHeaderName(getDefaultIndicatorHeaderName());
+        ss.getImapConfig().setHeaderValue(getDefaultIndicatorHeaderValue(true), true);
+        ss.getImapConfig().setHeaderValue(getDefaultIndicatorHeaderValue(false), false);
 
-        ss.getPOPInbound().setSubjectWrapperTemplate(getDefaultSubjectWrapperTemplate(true));
-        ss.getPOPOutbound().setSubjectWrapperTemplate(getDefaultSubjectWrapperTemplate(false));
-        ss.getPOPInbound().setBodyWrapperTemplate(getDefaultBodyWrapperTemplate(true));
-        ss.getPOPOutbound().setBodyWrapperTemplate(getDefaultBodyWrapperTemplate(false));
-        ss.getPOPInbound().setHeaderName(getDefaultIndicatorHeaderName());
-        ss.getPOPOutbound().setHeaderName(getDefaultIndicatorHeaderName());
-        ss.getPOPInbound().setHeaderValue(getDefaultIndicatorHeaderValue(true), true);
-        ss.getPOPInbound().setHeaderValue(getDefaultIndicatorHeaderValue(false), false);
-        ss.getPOPOutbound().setHeaderValue(getDefaultIndicatorHeaderValue(true), true);
-        ss.getPOPOutbound().setHeaderValue(getDefaultIndicatorHeaderValue(false), false);
+        ss.getPopConfig().setSubjectWrapperTemplate(getDefaultSubjectWrapperTemplate());
+        ss.getPopConfig().setBodyWrapperTemplate(getDefaultBodyWrapperTemplate());
+        ss.getPopConfig().setHeaderName(getDefaultIndicatorHeaderName());
+        ss.getPopConfig().setHeaderValue(getDefaultIndicatorHeaderValue(true), true);
+        ss.getPopConfig().setHeaderValue(getDefaultIndicatorHeaderValue(false), false);
 
-        ss.getSMTPInbound().setSubjectWrapperTemplate(getDefaultSMTPSubjectWrapperTemplate(true));
-        ss.getSMTPOutbound().setSubjectWrapperTemplate(getDefaultSMTPSubjectWrapperTemplate(false));
-        ss.getSMTPInbound().setBodyWrapperTemplate(getDefaultSMTPBodyWrapperTemplate(true));
-        ss.getSMTPOutbound().setBodyWrapperTemplate(getDefaultSMTPBodyWrapperTemplate(false));
-        ss.getSMTPInbound().setHeaderName(getDefaultIndicatorHeaderName());
-        ss.getSMTPOutbound().setHeaderName(getDefaultIndicatorHeaderName());
-        ss.getSMTPInbound().setHeaderValue(getDefaultIndicatorHeaderValue(true), true);
-        ss.getSMTPInbound().setHeaderValue(getDefaultIndicatorHeaderValue(false), false);
-        ss.getSMTPOutbound().setHeaderValue(getDefaultIndicatorHeaderValue(true), true);
-        ss.getSMTPOutbound().setHeaderValue(getDefaultIndicatorHeaderValue(false), false);
-        ss.getSMTPInbound().setNotifySubjectTemplate(getDefaultNotifySubjectTemplate(true));
-        ss.getSMTPOutbound().setNotifySubjectTemplate(getDefaultNotifySubjectTemplate(false));
-        ss.getSMTPInbound().setNotifyBodyTemplate(getDefaultNotifyBodyTemplate(true));
-        ss.getSMTPOutbound().setNotifyBodyTemplate(getDefaultNotifyBodyTemplate(false));
+        ss.getSmtpConfig().setSubjectWrapperTemplate(getDefaultSMTPSubjectWrapperTemplate());
+        ss.getSmtpConfig().setBodyWrapperTemplate(getDefaultSMTPBodyWrapperTemplate());
+        ss.getSmtpConfig().setHeaderName(getDefaultIndicatorHeaderName());
+        ss.getSmtpConfig().setHeaderValue(getDefaultIndicatorHeaderValue(true), true);
+        ss.getSmtpConfig().setHeaderValue(getDefaultIndicatorHeaderValue(false), false);
+        ss.getSmtpConfig().setNotifySubjectTemplate(getDefaultNotifySubjectTemplate());
+        ss.getSmtpConfig().setNotifyBodyTemplate(getDefaultNotifyBodyTemplate());
     }
 
     protected void initSpamRBLList(SpamSettings tmpSpamSettings) {
@@ -453,83 +424,40 @@ public class SpamImpl extends AbstractNode implements SpamNode
     }
 
     protected void configureSpamSettings(SpamSettings tmpSpamSettings) {
-        tmpSpamSettings.setSMTPInbound(
-                                       new SpamSMTPConfig(true,
-                                                          SMTPSpamMessageAction.QUARANTINE,
-                                                          SpamSMTPNotifyAction.NEITHER,
-                                                          SpamProtoConfig.DEFAULT_STRENGTH,
-                                                          "Scan incoming SMTP e-mail",
-                                                          getDefaultSubjectWrapperTemplate(true),
-                                                          getDefaultBodyWrapperTemplate(true),
-                                                          getDefaultIndicatorHeaderName(),
-                                                          getDefaultIndicatorHeaderValue(true),
-                                                          getDefaultIndicatorHeaderValue(false),
-                                                          getDefaultNotifySubjectTemplate(true),
-                                                          getDefaultNotifyBodyTemplate(true),
-                                                          true,
-                                                          15));
-
-        tmpSpamSettings.setSMTPOutbound(
-                                        new SpamSMTPConfig(false,
-                                                           SMTPSpamMessageAction.PASS,
-                                                           SpamSMTPNotifyAction.NEITHER,
-                                                           SpamProtoConfig.DEFAULT_STRENGTH,
-                                                           "Scan outgoing SMTP e-mail",
-                                                           getDefaultSubjectWrapperTemplate(false),
-                                                           getDefaultBodyWrapperTemplate(false),
-                                                           getDefaultIndicatorHeaderName(),
-                                                           getDefaultIndicatorHeaderValue(true),
-                                                           getDefaultIndicatorHeaderValue(false),
-                                                           getDefaultNotifySubjectTemplate(false),
-                                                           getDefaultNotifyBodyTemplate(false),
-                                                           false,
-                                                           15));
-
-        tmpSpamSettings.setPOPInbound(
-                                      new SpamPOPConfig(true,
-                                                        SpamMessageAction.MARK,
-                                                        SpamProtoConfig.DEFAULT_STRENGTH,
-                                                        "Scan incoming POP e-mail",
-                                                        getDefaultSubjectWrapperTemplate(true),
-                                                        getDefaultBodyWrapperTemplate(true),
-                                                        getDefaultIndicatorHeaderName(),
-                                                        getDefaultIndicatorHeaderValue(true),
-                                                        getDefaultIndicatorHeaderValue(false) ));
-
-        tmpSpamSettings.setPOPOutbound(
-                                       new SpamPOPConfig(false,
-                                                         SpamMessageAction.PASS,
+        tmpSpamSettings.setSmtpConfig(new SpamSMTPConfig(true,
+                                                         SMTPSpamMessageAction.QUARANTINE,
+                                                         SpamSMTPNotifyAction.NEITHER,
                                                          SpamProtoConfig.DEFAULT_STRENGTH,
-                                                         "Scan outgoing POP e-mail",
-                                                         getDefaultSubjectWrapperTemplate(false),
-                                                         getDefaultBodyWrapperTemplate(false),
+                                                         "Scan incoming SMTP e-mail",
+                                                         getDefaultSubjectWrapperTemplate(),
+                                                         getDefaultBodyWrapperTemplate(),
+                                                         getDefaultIndicatorHeaderName(),
+                                                         getDefaultIndicatorHeaderValue(true),
+                                                         getDefaultIndicatorHeaderValue(false),
+                                                         getDefaultNotifySubjectTemplate(),
+                                                         getDefaultNotifyBodyTemplate(),
+                                                         true,
+                                                         15));
+
+        tmpSpamSettings.setPopConfig(new SpamPOPConfig(true,
+                                                       SpamMessageAction.MARK,
+                                                       SpamProtoConfig.DEFAULT_STRENGTH,
+                                                       "Scan incoming POP e-mail",
+                                                       getDefaultSubjectWrapperTemplate(),
+                                                       getDefaultBodyWrapperTemplate(),
+                                                       getDefaultIndicatorHeaderName(),
+                                                       getDefaultIndicatorHeaderValue(true),
+                                                       getDefaultIndicatorHeaderValue(false) ));
+
+        tmpSpamSettings.setImapConfig(new SpamIMAPConfig(true,
+                                                         SpamMessageAction.MARK,
+                                                         SpamProtoConfig.DEFAULT_STRENGTH,
+                                                         "Scan incoming IMAP e-mail",
+                                                         getDefaultSMTPSubjectWrapperTemplate(),
+                                                         getDefaultSMTPBodyWrapperTemplate(),
                                                          getDefaultIndicatorHeaderName(),
                                                          getDefaultIndicatorHeaderValue(true),
                                                          getDefaultIndicatorHeaderValue(false) ));
-
-        tmpSpamSettings.setIMAPInbound(
-                                       new SpamIMAPConfig(true,
-                                                          SpamMessageAction.MARK,
-                                                          SpamProtoConfig.DEFAULT_STRENGTH,
-                                                          "Scan incoming IMAP e-mail",
-                                                          getDefaultSMTPSubjectWrapperTemplate(true),
-                                                          getDefaultSMTPBodyWrapperTemplate(true),
-                                                          getDefaultIndicatorHeaderName(),
-                                                          getDefaultIndicatorHeaderValue(true),
-                                                          getDefaultIndicatorHeaderValue(false) ));
-
-        tmpSpamSettings.setIMAPOutbound(
-                                        new SpamIMAPConfig(false,
-                                                           SpamMessageAction.PASS,
-                                                           SpamProtoConfig.DEFAULT_STRENGTH,
-                                                           "Scan outgoing IMAP e-mail",
-                                                           getDefaultSMTPSubjectWrapperTemplate(false),
-                                                           getDefaultSMTPBodyWrapperTemplate(false),
-                                                           getDefaultIndicatorHeaderName(),
-                                                           getDefaultIndicatorHeaderValue(true),
-                                                           getDefaultIndicatorHeaderValue(false) ));
-
-        return;
     }
 
     public SpamSettings getSpamSettings()

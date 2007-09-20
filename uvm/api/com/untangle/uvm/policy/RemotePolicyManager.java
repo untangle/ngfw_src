@@ -89,28 +89,6 @@ public interface RemotePolicyManager extends LicensedProduct
         throws PolicyException;
 
     /**
-     * Returns all system policies rules. The order isn't important,
-     * but for convenience is the suggested display order.  If there
-     * are 'n' interfaces, there will be 'n choose 2' * 2 of these.
-     *
-     * @return an array of <code>SystemPolicyRule</code>, one for each
-     * system policy rule
-     */
-    SystemPolicyRule[] getSystemPolicyRules();
-
-    /**
-     * Changes the given system policy rule to the given policy and
-     * direction.
-     *
-     * @param rule a <code>SystemPolicyRule</code> to be changed
-     * @param p a <code>Policy</code> giving the new policy
-     * @param inbound a <code>boolean</code> giving the new direction
-     * @param description a <code>String</code> giving the new description
-     */
-    void setSystemPolicyRule(SystemPolicyRule rule, Policy p, boolean inbound,
-                             String description);
-
-    /**
      * Returns all user policies rules.
      *
      * @return a <code>UserPolicyRulep[</code> array containing the ordered

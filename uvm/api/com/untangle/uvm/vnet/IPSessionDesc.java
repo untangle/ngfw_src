@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -45,21 +45,18 @@ import com.untangle.uvm.node.SessionEndpoints;
 public interface IPSessionDesc extends com.untangle.uvm.node.IPSessionDesc, SessionDesc, SessionEndpoints
 {
     /**
-     * Sessions are inbound when the inbound side of the policy is selected.  This is decided
-     * at welding time and is no longer dependent only on the client/server interfaces.
+     * DIRDOC_XXX
      *
      * @return true if the session is inbound, false if it is outbound
      */
-    boolean isInbound();
+    boolean isIncoming();
 
     /**
-     * Sessions are outbound when the outbound side of the policy is selected.  This is decided
-     * at welding time and is no longer dependent only on the client/server interfaces.  This is
-     * the inverse of <code>isInbound</code>
+     * DIRDOC_XXX
      *
      * @return true if the session is outbound, false if it is inbound
      */
-    boolean isOutbound();
+    boolean isOutgoing();
 
     /**
      * IP clients and servers have a state of <code>CLOSED</code> when both the input and

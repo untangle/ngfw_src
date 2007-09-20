@@ -71,12 +71,9 @@ public class SpamSettings implements Serializable
     private Long id;
     private Tid tid;
 
-    private SpamSMTPConfig SMTPInbound;
-    private SpamSMTPConfig SMTPOutbound;
-    private SpamPOPConfig POPInbound;
-    private SpamPOPConfig POPOutbound;
-    private SpamIMAPConfig IMAPInbound;
-    private SpamIMAPConfig IMAPOutbound;
+    private SpamSMTPConfig smtpConfig;
+    private SpamPOPConfig popConfig;
+    private SpamIMAPConfig imapConfig;
     private List<SpamRBL> spamRBLList; // spam only
     private List<SpamAssassinDef> spamAssassinDefList; // spamassassin only
     private List<SpamAssassinLcl> spamAssassinLclList; // spamassassin only
@@ -126,111 +123,54 @@ public class SpamSettings implements Serializable
     }
 
     /**
-     * Inbound SMTP spam settings.
+     * SMTP settings.
      *
-     * @return inbound SMTP settings.
+     * @return SMTP settings.
      */
     @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
-    @JoinColumn(name="smtp_inbound", nullable=false)
-    public SpamSMTPConfig getSMTPInbound()
+    @JoinColumn(name="smtp_config", nullable=false)
+    public SpamSMTPConfig getSmtpConfig()
     {
-        return SMTPInbound;
+        return smtpConfig;
     }
 
-    public void setSMTPInbound(SpamSMTPConfig SMTPInbound)
+    public void setSmtpConfig(SpamSMTPConfig smtpConfig)
     {
-        this.SMTPInbound = SMTPInbound;
-        return;
+        this.smtpConfig = smtpConfig;
     }
 
     /**
-     * Outbound SMTP spam settings.
+     * POP spam settings.
      *
-     * @return outbound SMTP settings.
+     * @return POP settings.
      */
     @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
-    @JoinColumn(name="smtp_outbound", nullable=false)
-    public SpamSMTPConfig getSMTPOutbound()
+    @JoinColumn(name="pop_config", nullable=false)
+    public SpamPOPConfig getPopConfig()
     {
-        return SMTPOutbound;
+        return popConfig;
     }
 
-    public void setSMTPOutbound(SpamSMTPConfig SMTPOutbound)
+    public void setPopConfig(SpamPOPConfig popConfig)
     {
-        this.SMTPOutbound = SMTPOutbound;
-        return;
+        this.popConfig = popConfig;
     }
 
     /**
-     * Inbound POP spam settings.
+     * IMAP spam settings.
      *
-     * @return inbound POP settings.
+     * @return IMAP settings.
      */
     @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
-    @JoinColumn(name="pop_inbound", nullable=false)
-    public SpamPOPConfig getPOPInbound()
+    @JoinColumn(name="imap_config", nullable=false)
+    public SpamIMAPConfig getImapConfig()
     {
-        return POPInbound;
+        return imapConfig;
     }
 
-    public void setPOPInbound(SpamPOPConfig POPInbound)
+    public void setImapConfig(SpamIMAPConfig imapConfig)
     {
-        this.POPInbound = POPInbound;
-        return;
-    }
-
-    /**
-     * Outbound POP spam settings.
-     *
-     * @return outbound POP settings.
-     */
-    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
-    @JoinColumn(name="pop_outbound", nullable=false)
-    public SpamPOPConfig getPOPOutbound()
-    {
-        return POPOutbound;
-    }
-
-    public void setPOPOutbound(SpamPOPConfig POPOutbound)
-    {
-        this.POPOutbound = POPOutbound;
-        return;
-    }
-
-    /**
-     * Inbound IMAP spam settings.
-     *
-     * @return inbound IMAP settings.
-     */
-    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
-    @JoinColumn(name="imap_inbound", nullable=false)
-    public SpamIMAPConfig getIMAPInbound()
-    {
-        return IMAPInbound;
-    }
-
-    public void setIMAPInbound(SpamIMAPConfig IMAPInbound)
-    {
-        this.IMAPInbound = IMAPInbound;
-        return;
-    }
-
-    /**
-     * Outbound IMAP spam settings.
-     *
-     * @return outbound IMAP settings.
-     */
-    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
-    @JoinColumn(name="imap_outbound", nullable=false)
-    public SpamIMAPConfig getIMAPOutbound()
-    {
-        return IMAPOutbound;
-    }
-
-    public void setIMAPOutbound(SpamIMAPConfig IMAPOutbound)
-    {
-        this.IMAPOutbound = IMAPOutbound;
-        return;
+        this.imapConfig = imapConfig;
     }
 
     /**
@@ -253,7 +193,6 @@ public class SpamSettings implements Serializable
     public void setSpamRBLList(List<SpamRBL> spamRBLList)
     {
         this.spamRBLList = spamRBLList;
-        return;
     }
 
     /**
@@ -276,7 +215,6 @@ public class SpamSettings implements Serializable
     public void setSpamAssassinDefList(List<SpamAssassinDef> spamAssassinDefList)
     {
         this.spamAssassinDefList = spamAssassinDefList;
-        return;
     }
 
     /**
@@ -299,6 +237,5 @@ public class SpamSettings implements Serializable
     public void setSpamAssassinLclList(List<SpamAssassinLcl> spamAssassinLclList)
     {
         this.spamAssassinLclList = spamAssassinLclList;
-        return;
     }
 }

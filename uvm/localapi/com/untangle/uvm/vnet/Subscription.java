@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -34,11 +34,10 @@
 package com.untangle.uvm.vnet;
 
 
-import com.untangle.uvm.node.IPSessionDesc;
-import com.untangle.uvm.node.SessionEndpoints;
-
 import com.untangle.uvm.node.IPMaddr;
+import com.untangle.uvm.node.IPSessionDesc;
 import com.untangle.uvm.node.PortRange;
+import com.untangle.uvm.node.SessionEndpoints;
 import org.apache.log4j.Logger;
 
 /**
@@ -56,8 +55,6 @@ public class Subscription
     private final Logger logger = Logger.getLogger(getClass());
 
     private final Protocol protocol;
-    private final boolean inbound;
-    private final boolean outbound;
     private final IPMaddr serverAddress;
     private final IPMaddr clientAddress;
     private final PortRange serverRange;
@@ -66,13 +63,10 @@ public class Subscription
     // constructors -----------------------------------------------------------
 
     public Subscription(Protocol protocol,
-                        boolean inbound, boolean outbound,
                         IPMaddr clientAddress, PortRange clientRange,
                         IPMaddr serverAddress, PortRange serverRange)
     {
         this.protocol = protocol;
-        this.inbound = inbound;
-        this.outbound = outbound;
         this.clientAddress = clientAddress;
         this.clientRange = clientRange;
         this.serverAddress = serverAddress;
@@ -82,19 +76,6 @@ public class Subscription
     public Subscription(Protocol protocol)
     {
         this.protocol = protocol;
-        this.inbound = true;
-        this.outbound = true;
-        this.serverAddress = IPMaddr.anyAddr;
-        this.clientAddress = IPMaddr.anyAddr;
-        this.serverRange = PortRange.ANY;
-        this.clientRange = PortRange.ANY;
-    }
-
-    public Subscription(Protocol protocol, boolean inbound, boolean outbound)
-    {
-        this.protocol = protocol;
-        this.inbound = inbound;
-        this.outbound = outbound;
         this.serverAddress = IPMaddr.anyAddr;
         this.clientAddress = IPMaddr.anyAddr;
         this.serverRange = PortRange.ANY;
@@ -103,7 +84,7 @@ public class Subscription
 
     // business methods -------------------------------------------------------
 
-    public boolean matches(IPSessionDesc sessionDesc, boolean sessionInbound)
+    public boolean matches(IPSessionDesc sessionDesc)
     {
         switch (sessionDesc.protocol()) {
         case SessionEndpoints.PROTO_TCP:
@@ -119,9 +100,7 @@ public class Subscription
             return false;
         }
 
-        if ((sessionInbound && !inbound) || (!sessionInbound && !outbound)) {
-            return false;
-        } else if (!clientAddress.contains(sessionDesc.clientAddr())) {
+        if (!clientAddress.contains(sessionDesc.clientAddr())) {
             return false;
         } else if (!clientRange.contains(sessionDesc.clientPort())) {
             return false;
@@ -144,26 +123,6 @@ public class Subscription
     public Protocol getProtocol()
     {
         return protocol;
-    }
-
-    /**
-     * Whether or not to match for inbound sessions
-     *
-     * @return true if we should match inbound sessions
-     */
-    public boolean isInbound()
-    {
-        return inbound;
-    }
-
-    /**
-     * Whether or not to match for outbound sessions
-     *
-     * @return true if we should match outbound sessions
-     */
-    public boolean isOutbound()
-    {
-        return outbound;
     }
 
     /**
@@ -212,8 +171,6 @@ public class Subscription
     {
         Subscription s = (Subscription)o;
         return s.protocol == protocol
-            && s.inbound == inbound
-            && s.outbound == outbound
             && s.clientAddress.equals(clientAddress)
             && s.serverAddress.equals(serverAddress)
             && s.clientRange.equals(clientRange)
@@ -224,10 +181,6 @@ public class Subscription
     {
         int result = 17;
         result = 37 * result + protocol.hashCode();
-        if (inbound)
-            result = 23 * result;
-        if (outbound)
-            result = 27 * result;
         result = 37 * result + clientAddress.hashCode();
         result = 37 * result + serverAddress.hashCode();
         result = 37 * result + clientRange.hashCode();

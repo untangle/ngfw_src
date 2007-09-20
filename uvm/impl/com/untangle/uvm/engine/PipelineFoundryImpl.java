@@ -22,7 +22,6 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -39,7 +38,6 @@ import com.untangle.uvm.node.PipelineStats;
 import com.untangle.uvm.policy.LocalPolicyManager;
 import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.policy.PolicyRule;
-import com.untangle.uvm.policy.SystemPolicyRule;
 import com.untangle.uvm.policy.UserPolicyRule;
 import com.untangle.uvm.vnet.CasingPipeSpec;
 import com.untangle.uvm.vnet.Fitting;
@@ -64,9 +62,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
         = UvmContextImpl.context().eventLogger();
     private final Logger logger = Logger.getLogger(getClass());
 
-    private final Map<Fitting, List<MPipe>> inboundMPipes
-        = new HashMap<Fitting, List<MPipe>>();
-    private final Map<Fitting, List<MPipe>> outboundMPipes
+    private final Map<Fitting, List<MPipe>> mPipes
         = new HashMap<Fitting, List<MPipe>>();
     private final Map<MPipe, MPipe> casings = new HashMap<MPipe, MPipe>();
 
@@ -78,15 +74,8 @@ public class PipelineFoundryImpl implements PipelineFoundry
 
     // These don't need to be concurrent and being able to use a null key
     // is currently useful for the null policy.
-    private static final Map<Policy, Map<Fitting, List<MPipeFitting>>> inboundChains
+    private static final Map<Policy, Map<Fitting, List<MPipeFitting>>> chains
         = new HashMap<Policy, Map<Fitting, List<MPipeFitting>>>();
-    private static final Map<Policy, Map<Fitting, List<MPipeFitting>>> outboundChains
-        = new HashMap<Policy, Map<Fitting, List<MPipeFitting>>>();
-
-    /* Rule used to track u-turn sessions */
-    /* rbscott added this nugget for u-turn traffic, should be verified by aaron and john. */
-    private static final SystemPolicyRule uturnPolicyRule =
-        new SystemPolicyRule((byte)-1, (byte)-1, (Policy)null, true);
 
     private PipelineFoundryImpl() { }
 
@@ -104,7 +93,6 @@ public class PipelineFoundryImpl implements PipelineFoundry
             logger.error("No policy rule found for session " + sd);
         }
         Policy p = null == pr ? null : pr.getPolicy();
-        boolean isInbound = pr == null ? false : pr.isInbound();
 
         InetAddress sAddr = sd.serverAddr();
         int sPort = sd.serverPort();
@@ -145,7 +133,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
         }
 
         long ct0 = System.nanoTime();
-        List<MPipeFitting> chain = makeChain(sd, p, isInbound, start);
+        List<MPipeFitting> chain = makeChain(sd, p, start);
         long ct1 = System.nanoTime();
 
         // filter list
@@ -171,7 +159,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
                     al.add( ((MPipeImpl)mPipe).getArgonAgent());
                 } else {
                     end = mpf.end;
-                }
+               }
             }
         }
 
@@ -210,8 +198,8 @@ public class PipelineFoundryImpl implements PipelineFoundry
             logger.debug("removed: " + pipeline + " for: " + start.id());
         }
 
-        // Endpoints can be null, if the session was never properly set up at all
-        // (unknown server interface for example)
+        // Endpoints can be null, if the session was never properly
+        // set up at all (unknown server interface for example)
         if (pe != null)
             eventLogger.log(new PipelineStats(start, end, pe, uid));
 
@@ -220,18 +208,38 @@ public class PipelineFoundryImpl implements PipelineFoundry
 
     public void registerMPipe(MPipe mPipe)
     {
-        synchronized (this) {
-            registerMPipe(inboundMPipes, mPipe, new MPipeComparator(true));
-            registerMPipe(outboundMPipes, mPipe, new MPipeComparator(false));
+        SoloPipeSpec sps = (SoloPipeSpec)mPipe.getPipeSpec();
+        Fitting f = sps.getFitting();
+
+        List l = (List)mPipes.get(f);
+
+        if (null == l) {
+            l = new ArrayList();
+            l.add(null);
+            mPipes.put(f, l);
         }
+
+        int i = Collections.binarySearch(l, mPipe, MPipeComparator.COMPARATOR);
+        l.add(0 > i ? -i - 1 : i, mPipe);
+
+        clearCache();
     }
 
     public void deregisterMPipe(MPipe mPipe)
     {
-        synchronized (this) {
-            deregisterMPipe(inboundMPipes, mPipe, new MPipeComparator(true));
-            deregisterMPipe(outboundMPipes, mPipe, new MPipeComparator(false));
+        SoloPipeSpec sps = (SoloPipeSpec)mPipe.getPipeSpec();
+        Fitting f = sps.getFitting();
+
+        List l = mPipes.get(f);
+
+        int i = Collections.binarySearch(l, mPipe, MPipeComparator.COMPARATOR);
+        if (0 > i) {
+            logger.warn("deregistering nonregistered pipe");
+        } else {
+            l.remove(i);
         }
+
+        clearCache();
     }
 
     public void registerCasing(MPipe insideMPipe, MPipe outsideMPipe)
@@ -268,11 +276,8 @@ public class PipelineFoundryImpl implements PipelineFoundry
     // private methods --------------------------------------------------------
 
     private List<MPipeFitting> makeChain(IPSessionDesc sd, Policy p,
-                                         boolean inbound, Fitting start)
+                                         Fitting start)
     {
-        Map<Policy, Map<Fitting, List<MPipeFitting>>> chains = inbound
-            ? inboundChains : outboundChains;
-
         List<MPipeFitting> mPipeFittings = null;
 
         Map<Fitting, List<MPipeFitting>> fcs = chains.get(p);
@@ -295,10 +300,8 @@ public class PipelineFoundryImpl implements PipelineFoundry
                 if (null == mPipeFittings) {
                     Map<MPipe, MPipe> availCasings = new HashMap(casings);
 
-                    Map<Fitting, List<MPipe>> mp = inbound ? inboundMPipes
-                        : outboundMPipes;
                     Map<Fitting, List<MPipe>> availMPipes
-                        = new HashMap<Fitting, List<MPipe>>(mp);
+                        = new HashMap<Fitting, List<MPipe>>(mPipes);
 
                     int s = availCasings.size() + availMPipes.size();
                     mPipeFittings = new ArrayList<MPipeFitting>(s);
@@ -409,49 +412,11 @@ public class PipelineFoundryImpl implements PipelineFoundry
         return welded;
     }
 
-    private void registerMPipe(Map mPipes, MPipe mPipe, Comparator c)
-    {
-        SoloPipeSpec sps = (SoloPipeSpec)mPipe.getPipeSpec();
-        Fitting f = sps.getFitting();
-
-        List l = (List)mPipes.get(f);
-
-        if (null == l) {
-            l = new ArrayList();
-            l.add(null);
-            mPipes.put(f, l);
-        }
-
-        int i = Collections.binarySearch(l, mPipe, c);
-        l.add(0 > i ? -i - 1 : i, mPipe);
-
-        clearCache();
-    }
-
-    private void deregisterMPipe(Map<Fitting, List<MPipe>> mPipes,
-                                 MPipe mPipe, Comparator c)
-    {
-        SoloPipeSpec sps = (SoloPipeSpec)mPipe.getPipeSpec();
-        Fitting f = sps.getFitting();
-
-        List l = mPipes.get(f);
-
-        int i = Collections.binarySearch(l, mPipe, c);
-        if (0 > i) {
-            logger.warn("deregistering nonregistered pipe");
-        } else {
-            l.remove(i);
-        }
-
-        clearCache();
-    }
-
     private PolicyRule selectPolicy(IPSessionDesc sd)
     {
         LocalPolicyManager pmi = UvmContextImpl.getInstance().policyManager();
 
         UserPolicyRule[] userRules = pmi.getUserRules();
-        SystemPolicyRule[] sysRules = pmi.getSystemRules();
 
         for (UserPolicyRule upr : userRules) {
             if (upr.matches(sd)) {
@@ -459,23 +424,11 @@ public class PipelineFoundryImpl implements PipelineFoundry
             }
         }
 
-        for (SystemPolicyRule spr : sysRules) {
-            if (spr.matches(sd)) {
-                return spr;
-            }
-        }
-
-        /* rbscott added this nugget for u-turn traffic, should be verified by aaron and john. */
-        if (sd.clientIntf() == sd.serverIntf()) {
-            return uturnPolicyRule;
-        }
-
-        return null;
+        return pmi.getDefaultPolicyRule();
     }
 
     private void clearCache()
     {
-        inboundChains.clear();
-        outboundChains.clear();
+        chains.clear();
     }
 }

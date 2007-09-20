@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -17,6 +17,9 @@
  */
 package com.untangle.node.test;
 
+import com.untangle.uvm.node.IPMaddr;
+import com.untangle.uvm.node.PortRange;
+import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.AbstractNode;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
@@ -24,9 +27,6 @@ import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.vnet.Protocol;
 import com.untangle.uvm.vnet.SoloPipeSpec;
 import com.untangle.uvm.vnet.Subscription;
-import com.untangle.uvm.node.IPMaddr;
-import com.untangle.uvm.node.PortRange;
-import com.untangle.uvm.util.TransactionWork;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -157,8 +157,7 @@ public class TestNodeImpl extends AbstractNode
         if (!this.noTCP && (this.tcpSub == null)) {
             logger.debug("Adding TCP Sub");
             tcpSub = new Subscription
-                (Protocol.TCP, true, true,
-                 IPMaddr.anyAddr, PortRange.ANY, IPMaddr.anyAddr,
+                (Protocol.TCP, IPMaddr.anyAddr, PortRange.ANY, IPMaddr.anyAddr,
                  new PortRange(minPort, maxPort));
             pipeSpec.addSubscription(tcpSub);
         }
@@ -166,8 +165,7 @@ public class TestNodeImpl extends AbstractNode
         if (!noUDP && (udpSub == null)) {
             logger.debug("Adding UDP Sub");
             udpSub = new Subscription
-                (Protocol.UDP, true, true,
-                 IPMaddr.anyAddr, PortRange.ANY, IPMaddr.anyAddr,
+                (Protocol.UDP, IPMaddr.anyAddr, PortRange.ANY, IPMaddr.anyAddr,
                  new PortRange(minPort,maxPort));
             pipeSpec.addSubscription(udpSub);
         }

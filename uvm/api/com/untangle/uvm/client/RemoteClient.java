@@ -71,7 +71,6 @@ import com.untangle.uvm.toolbox.MackageUpdateExtraName;
 import com.untangle.uvm.toolbox.ProgressVisitor;
 import com.untangle.uvm.toolbox.RemoteToolboxManager;
 import com.untangle.uvm.toolbox.ToolboxMessageVisitor;
-
 import com.untangle.uvm.util.SessionUtil;
 import com.untangle.uvm.vnet.IPSessionDesc;
 import com.untangle.uvm.vnet.SessionDesc;
@@ -715,8 +714,6 @@ public class RemoteClient
             else if (sd instanceof TCPSessionDesc)
                 result.append("T");
             result.append(sd.id());
-            result.append("\t");
-            result.append(sd.isInbound() ? "In" : "Out");
             result.append("\t");
             result.append(SessionUtil.prettyState(sd.clientState()));
             result.append("\t");

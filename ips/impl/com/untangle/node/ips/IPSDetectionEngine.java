@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -27,10 +27,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.untangle.uvm.node.Node;
+import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.vnet.*;
 import com.untangle.uvm.vnet.event.*;
-import com.untangle.uvm.node.ParseException;
-import com.untangle.uvm.node.Node;
 import org.apache.log4j.Logger;
 
 public class IPSDetectionEngine {
@@ -220,9 +220,9 @@ public class IPSDetectionEngine {
         }
 
         //Check matches
-        List<IPSRuleSignature> c2sSignatures = manager.matchesHeader(request, request.isInbound(), IPSRuleManager.TO_SERVER, c2sList);
+        List<IPSRuleSignature> c2sSignatures = manager.matchesHeader(request, request.isIncoming(), IPSRuleManager.TO_SERVER, c2sList);
 
-        List<IPSRuleSignature> s2cSignatures = manager.matchesHeader(request, request.isInbound(), IPSRuleManager.TO_CLIENT, s2cList);
+        List<IPSRuleSignature> s2cSignatures = manager.matchesHeader(request, request.isIncoming(), IPSRuleManager.TO_CLIENT, s2cList);
 
         if (log.isDebugEnabled())
             log.debug("s2cSignature list size: " + s2cSignatures.size() + ", c2sSignature list size: " +

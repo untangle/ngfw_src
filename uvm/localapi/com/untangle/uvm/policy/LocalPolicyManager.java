@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -68,17 +68,6 @@ public interface LocalPolicyManager extends LicensedProduct
         throws PolicyException;
 
     /**
-     * @see PolicyManager#getSystemPolicyRules()
-     */
-    SystemPolicyRule[] getSystemPolicyRules();
-
-    /**
-     * @see PolicyManager#setSystemPolicyRule()
-     */
-    void setSystemPolicyRule(SystemPolicyRule rule, Policy p, boolean inbound,
-                             String description);
-
-    /**
      * @see PolicyManager#getUserPolicyRules()
      */
     UserPolicyRule[] getUserPolicyRules();
@@ -99,6 +88,8 @@ public interface LocalPolicyManager extends LicensedProduct
     void setPolicyConfiguration(PolicyConfiguration pc) throws PolicyException;
 
     void reconfigure(byte[] interfaces);
+
     UserPolicyRule[] getUserRules();
-    SystemPolicyRule[] getSystemRules();
+
+    PolicyRule getDefaultPolicyRule();
 }

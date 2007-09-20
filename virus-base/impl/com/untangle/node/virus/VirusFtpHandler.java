@@ -59,8 +59,7 @@ class VirusFtpHandler extends FtpStateMachine
 
 
     private final VirusNodeImpl node;
-    private final boolean scanClient;
-    private final boolean scanServer;
+    private final boolean scan;
 
     private final Logger logger = Logger.getLogger(FtpStateMachine.class);
 
@@ -80,13 +79,7 @@ class VirusFtpHandler extends FtpStateMachine
 
         VirusSettings vs = node.getVirusSettings();
 
-        if (!session.isInbound()) { // outgoing
-            scanClient = vs.getFtpOutbound().getScan();
-            scanServer = vs.getFtpInbound().getScan();
-        } else {
-            scanClient = vs.getFtpInbound().getScan();
-            scanServer = vs.getFtpOutbound().getScan();
-        }
+        scan = vs.getFtpConfig().getScan();
 
         m_fileFactory = new TempFileFactory(getPipeline());
     }
@@ -96,7 +89,7 @@ class VirusFtpHandler extends FtpStateMachine
     @Override
     protected TokenResult doClientData(Chunk c) throws TokenException
     {
-        if (scanClient) {
+        if (scan) {
             logger.debug("doServerData()");
 
             if (null == file) {
@@ -116,7 +109,7 @@ class VirusFtpHandler extends FtpStateMachine
     @Override
     protected TokenResult doServerData(Chunk c) throws TokenException
     {
-        if (scanServer) {
+        if (scan) {
             logger.debug("doServerData()");
 
             if (null == file) {
@@ -138,7 +131,7 @@ class VirusFtpHandler extends FtpStateMachine
     {
         logger.debug("doClientDataEnd()");
 
-        if (scanClient && c2s && null != file) {
+        if (scan && c2s && null != file) {
             try {
                 outChannel.close();
             } catch (IOException exn) {
@@ -163,7 +156,7 @@ class VirusFtpHandler extends FtpStateMachine
     {
         logger.debug("doServerDataEnd()");
 
-        if (scanServer && !c2s && null != file) {
+        if (scan && !c2s && null != file) {
             try {
                 outChannel.close();
             } catch (IOException exn) {

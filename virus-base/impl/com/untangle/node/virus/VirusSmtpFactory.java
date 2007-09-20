@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -17,13 +17,13 @@
  */
 package com.untangle.node.virus;
 
-import com.untangle.uvm.vnet.*;
 import com.untangle.node.mail.*;
 import com.untangle.node.mail.papi.*;
 import com.untangle.node.mail.papi.smtp.*;
 import com.untangle.node.mail.papi.smtp.sapi.Session;
 import com.untangle.node.token.TokenHandler;
 import com.untangle.node.token.TokenHandlerFactory;
+import com.untangle.uvm.vnet.*;
 import org.apache.log4j.Logger;
 
 public class VirusSmtpFactory
@@ -42,11 +42,7 @@ public class VirusSmtpFactory
 
     public TokenHandler tokenHandler(TCPSession session) {
 
-        boolean inbound = session.isInbound();
-
-        VirusSMTPConfig virusConfig = inbound?
-            m_virusImpl.getVirusSettings().getSMTPInbound():
-            m_virusImpl.getVirusSettings().getSMTPOutbound();
+        VirusSMTPConfig virusConfig = m_virusImpl.getVirusSettings().getSmtpConfig();
 
         if(!virusConfig.getScan()) {
             m_logger.debug("Scanning disabled.  Return passthrough token handler");
@@ -55,14 +51,11 @@ public class VirusSmtpFactory
 
         MailNodeSettings casingSettings = m_mailExport.getExportSettings();
         return new Session(session,
-                           new SmtpSessionHandler(
-                                                  session,
-                                                  inbound?casingSettings.getSmtpInboundTimeout():casingSettings.getSmtpOutboundTimeout(),
-                                                  inbound?casingSettings.getSmtpInboundTimeout():casingSettings.getSmtpOutboundTimeout(),
+                           new SmtpSessionHandler(session,
+                                                  casingSettings.getSmtpTimeout(),
+                                                  casingSettings.getSmtpTimeout(),
                                                   m_virusImpl,
                                                   virusConfig));
-
-
     }
 
     public void handleNewSessionRequest(TCPNewSessionRequest tsr)

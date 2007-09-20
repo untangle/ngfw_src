@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -26,12 +26,12 @@ import com.untangle.jvector.IncomingSocketQueue;
 import com.untangle.jvector.OutgoingSocketQueue;
 import com.untangle.jvector.ResetCrumb;
 import com.untangle.jvector.ShutdownCrumb;
-import com.untangle.uvm.vnet.*;
-import com.untangle.uvm.vnet.client.TCPSessionDescImpl;
-import com.untangle.uvm.vnet.event.*;
 import com.untangle.uvm.node.MutateTStats;
 import com.untangle.uvm.node.PipelineEndpoints;
 import com.untangle.uvm.util.MetaEnv;
+import com.untangle.uvm.vnet.*;
+import com.untangle.uvm.vnet.client.TCPSessionDescImpl;
+import com.untangle.uvm.vnet.event.*;
 
 /**
  * This is the primary implementation class for TCP live sessions.
@@ -141,7 +141,7 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
     {
         return new TCPSessionDescImpl(id(), new SessionStats(stats),
                                       clientState(), serverState(), clientIntf(), serverIntf(),
-                                      clientAddr(), serverAddr(), clientPort(), serverPort(), isInbound());
+                                      clientAddr(), serverAddr(), clientPort(), serverPort(), isIncoming());
     }
 
     public byte clientState()

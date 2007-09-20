@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -22,8 +22,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.LinkedList;
 
-import com.untangle.uvm.vnet.TCPSession;
-import com.untangle.uvm.node.Node;
 import com.untangle.node.mail.papi.MIMEMessageT;
 import com.untangle.node.mail.papi.MailExport;
 import com.untangle.node.mail.papi.MailNodeSettings;
@@ -38,6 +36,8 @@ import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenException;
 import com.untangle.node.token.TokenResult;
 import com.untangle.node.util.TempFileFactory;
+import com.untangle.uvm.node.Node;
+import com.untangle.uvm.vnet.TCPSession;
 import org.apache.log4j.Logger;
 
 public class SpamPopHandler extends PopStateMachine
@@ -75,13 +75,8 @@ public class SpamPopHandler extends PopStateMachine
 
         MailNodeSettings zMTSettings = zMExport.getExportSettings();
 
-        if (!session.isInbound()) {
-            zConfig = node.getSpamSettings().getPOPInbound();
-            lTimeout = zMTSettings.getPopInboundTimeout();
-        } else {
-            zConfig = node.getSpamSettings().getPOPOutbound();
-            lTimeout = zMTSettings.getPopOutboundTimeout();
-        }
+        zConfig = node.getSpamSettings().getPopConfig();
+        lTimeout = zMTSettings.getPopTimeout();
         bScan = zConfig.getScan();
         zMsgAction = zConfig.getMsgAction();
         strength = zConfig.getStrength();

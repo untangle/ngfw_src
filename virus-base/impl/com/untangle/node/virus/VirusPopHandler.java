@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -21,8 +21,6 @@ package com.untangle.node.virus;
 import java.io.File;
 import java.io.IOException;
 
-import com.untangle.uvm.vnet.TCPSession;
-import com.untangle.uvm.node.Node;
 import com.untangle.node.mail.papi.MIMEMessageT;
 import com.untangle.node.mail.papi.MailExport;
 import com.untangle.node.mail.papi.MailNodeSettings;
@@ -36,6 +34,8 @@ import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenException;
 import com.untangle.node.token.TokenResult;
 import com.untangle.node.util.TempFileFactory;
+import com.untangle.uvm.node.Node;
+import com.untangle.uvm.vnet.TCPSession;
 import org.apache.log4j.Logger;
 
 public class VirusPopHandler extends PopStateMachine
@@ -70,20 +70,13 @@ public class VirusPopHandler extends PopStateMachine
         VirusPOPConfig zConfig;
         WrappedMessageGenerator zWMGenerator;
 
-        if (!session.isInbound()) {
-            zConfig = node.getVirusSettings().getPOPInbound();
-            zWMGenerator = zConfig.getMessageGenerator();
-            lTimeout = zMTSettings.getPopInboundTimeout();
-        } else {
-            zConfig = node.getVirusSettings().getPOPOutbound();
-            zWMGenerator = zConfig.getMessageGenerator();
-            lTimeout = zMTSettings.getPopOutboundTimeout();
-        }
+        zConfig = node.getVirusSettings().getPopConfig();
+        zWMGenerator = zConfig.getMessageGenerator();
+        lTimeout = zMTSettings.getPopTimeout();
 
         bScan = zConfig.getScan();
         zMsgAction = zConfig.getMsgAction();
         zWMsgGenerator = zWMGenerator;
-        //logger.debug("scan: " + bScan + ", message action: " + zMsgAction + ", timeout: " + lTimeout);
     }
 
     // PopStateMachine methods -----------------------------------------------

@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -74,32 +74,23 @@ class PopTableModel extends MSortedTableModel<Object>{
         return tableColumnModel;
     }
 
-    private static final String SOURCE_INBOUND = "inbound POP";
-    private static final String SOURCE_OUTBOUND = "outbound POP";
-
-    public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception {
-        SpamPOPConfig spamPOPConfigInbound = null;
-        SpamPOPConfig spamPOPConfigOutbound = null;
+    public void generateSettings(Object settings, Vector<Vector> tableVector,
+                                 boolean validateOnly)
+        throws Exception
+    {
+        SpamPOPConfig spamPopConfig = null;
 
         for( Vector rowVector : tableVector ){
-            SpamPOPConfig spamPOPConfig = (SpamPOPConfig) rowVector.elementAt(6);
-            spamPOPConfig.setScan( (Boolean) rowVector.elementAt(3) );
-            spamPOPConfig.setMsgAction( (SpamMessageAction) ((ComboBoxModel)rowVector.elementAt(4)).getSelectedItem() );
-            spamPOPConfig.setNotes( (String) rowVector.elementAt(5) );
-
-            if( ((String)rowVector.elementAt(2)).equals(SOURCE_INBOUND) ){
-                spamPOPConfigInbound = spamPOPConfig;
-            }
-            else if( ((String)rowVector.elementAt(2)).equals(SOURCE_OUTBOUND) ){
-                spamPOPConfigOutbound = spamPOPConfig;
-            }
+            spamPopConfig = (SpamPOPConfig) rowVector.elementAt(6);
+            spamPopConfig.setScan( (Boolean) rowVector.elementAt(3) );
+            spamPopConfig.setMsgAction( (SpamMessageAction) ((ComboBoxModel)rowVector.elementAt(4)).getSelectedItem() );
+            spamPopConfig.setNotes( (String) rowVector.elementAt(5) );
         }
 
         // SAVE SETTINGS ////////
         if( !validateOnly ){
             SpamSettings spamSettings = (SpamSettings) settings;
-            spamSettings.setPOPInbound( spamPOPConfigInbound );
-            spamSettings.setPOPOutbound( spamPOPConfigOutbound );
+            spamSettings.setPopConfig( spamPopConfig );
         }
 
     }
@@ -109,31 +100,16 @@ class PopTableModel extends MSortedTableModel<Object>{
         Vector<Vector> allRows = new Vector<Vector>(2);
         int rowIndex = 0;
 
-        // INBOUND
         rowIndex++;
-        Vector inboundRow = new Vector(7);
-        SpamPOPConfig spamPOPConfigInbound = spamSettings.getPOPInbound();
-        inboundRow.add( super.ROW_SAVED );
-        inboundRow.add( rowIndex );
-        inboundRow.add( SOURCE_INBOUND );
-        inboundRow.add( spamPOPConfigInbound.getScan() );
-        inboundRow.add( super.generateComboBoxModel(SpamMessageAction.getValues(), spamPOPConfigInbound.getMsgAction()) );
-        inboundRow.add( spamPOPConfigInbound.getNotes() );
-        inboundRow.add( spamPOPConfigInbound );
-        allRows.add(inboundRow);
-
-        // OUTBOUND
-        rowIndex++;
-        Vector outboundRow = new Vector(7);
-        SpamPOPConfig spamPOPConfigOutbound = spamSettings.getPOPOutbound();
-        outboundRow.add( super.ROW_SAVED );
-        outboundRow.add( rowIndex );
-        outboundRow.add( SOURCE_OUTBOUND );
-        outboundRow.add( spamPOPConfigOutbound.getScan() );
-        outboundRow.add( super.generateComboBoxModel(SpamMessageAction.getValues(), spamPOPConfigOutbound.getMsgAction()) );
-        outboundRow.add( spamPOPConfigOutbound.getNotes() );
-        outboundRow.add( spamPOPConfigOutbound );
-        allRows.add(outboundRow);
+        Vector row = new Vector(7);
+        SpamPOPConfig spamPopConfig = spamSettings.getPopConfig();
+        row.add( super.ROW_SAVED );
+        row.add( rowIndex );
+        row.add( spamPopConfig.getScan() );
+        row.add( super.generateComboBoxModel(SpamMessageAction.getValues(), spamPopConfig.getMsgAction()) );
+        row.add( spamPopConfig.getNotes() );
+        row.add( spamPopConfig );
+        allRows.add(row);
 
         return allRows;
     }

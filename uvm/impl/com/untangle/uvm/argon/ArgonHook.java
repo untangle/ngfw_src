@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -33,17 +33,15 @@ import com.untangle.jvector.ResetCrumb;
 import com.untangle.jvector.Sink;
 import com.untangle.jvector.Source;
 import com.untangle.jvector.Vector;
-
 import com.untangle.uvm.IntfConstants;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.engine.PipelineFoundryImpl;
-
+import com.untangle.uvm.node.PipelineEndpoints;
 import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.policy.PolicyRule;
-import com.untangle.uvm.vnet.PipelineFoundry;
-import com.untangle.uvm.node.PipelineEndpoints;
 import com.untangle.uvm.user.UserInfo;
 import com.untangle.uvm.user.Username;
+import com.untangle.uvm.vnet.PipelineFoundry;
 import org.apache.log4j.Logger;
 
 /**
@@ -81,7 +79,7 @@ abstract class ArgonHook implements Runnable
 
     private boolean isMirrored = false;
 
-    protected static final PipelineFoundryImpl pipelineFoundry = 
+    protected static final PipelineFoundryImpl pipelineFoundry =
         (PipelineFoundryImpl)LocalUvmContextFactory.context().pipelineFoundry();
 
     /**
@@ -121,7 +119,7 @@ abstract class ArgonHook implements Runnable
             /* Update the server interface with the override table */
             byte originalServerNetcapIntf = netcapSession.serverSide().interfaceId();
             byte originalServerArgonIntf = Argon.getInstance().getIntfManager().toArgon( originalServerNetcapIntf );
-            
+
             InterfaceOverride.getInstance().updateDestinationInterface( netcapSession );
 
             if ( logger.isDebugEnabled()) logger.debug( netcapSession );
@@ -138,12 +136,13 @@ abstract class ArgonHook implements Runnable
                 return;
             }
 
-            /* Determine whether or not the session should be allowed even though it is
-             * going out the same interface it came in on(mirrored).
-             * This is valid if the session is redirected (serverInterface changed),
-             * and the client was NATd.
+            /* Determine whether or not the session should be allowed
+             * even though it is going out the same interface it came
+             * in on(mirrored).  This is valid if the session is
+             * redirected (serverInterface changed), and the client
+             * was NATd.
              */
-            if (( serverIntf == clientIntf ) && 
+            if (( serverIntf == clientIntf ) &&
                 !isVpnToVpn( clientIntf, serverIntf ) &&
                 !checkIsMirrored( originalServerNetcapIntf, serverIntf )) {
                 if ( logger.isInfoEnabled()) {
@@ -161,9 +160,9 @@ abstract class ArgonHook implements Runnable
             /* lookup the user information */
 
             UserInfo info = LocalUvmContextFactory.context().localPhoneBook().lookup( clientSide.clientAddr());
-            
+
             if ( logger.isDebugEnabled()) logger.debug( "user information: " + info );
-            
+
             Username username;
 
             /* should cache the lookup key, but no worries for now */
@@ -172,22 +171,25 @@ abstract class ArgonHook implements Runnable
                 String u = username.toString().trim();
                 if ( u.length() > 0 ) sessionGlobalState.setUser( u );
             }
-                
+
             pipelineDesc = pipelineFoundry.weld( clientSide );
             pipelineAgents = pipelineDesc.getAgents();
-            
-            // Create the (fake) endpoints early so they can be available at request time.
+
+            // Create the (fake) endpoints early so they can be
+            // available at request time.
             endpoints = pipelineFoundry.createInitialEndpoints(clientSide);
 
-            /* Initialize all of the nodes, sending the request events to each in turn */
+            /* Initialize all of the nodes, sending the request events
+             * to each in turn */
             initNodes( originalServerArgonIntf, endpoints );
 
             /* Connect to the server */
             boolean serverActionCompleted = connectServer();
 
             /* Now generate the server side since the nodes may have
-             * modified the endpoints (we can't do it until we connect to the server since
-             * that is what actually modifies the session global state. */
+             * modified the endpoints (we can't do it until we connect
+             * to the server since that is what actually modifies the
+             * session global state. */
             serverSide = new NetcapIPSessionDescImpl( sessionGlobalState, false );
 
             /* Connect to the client */
@@ -195,7 +197,7 @@ abstract class ArgonHook implements Runnable
 
             if (serverActionCompleted && clientActionCompleted) {
                 PolicyRule pr = pipelineDesc.getPolicyRule();
-                endpoints.completeEndpoints(clientSide, serverSide, pr.getPolicy(), pr.isInbound());
+                endpoints.completeEndpoints(clientSide, serverSide, pr.getPolicy());
                 this.policy = pr.getPolicy();
                 pipelineFoundry.registerEndpoints(endpoints);
             } else {
@@ -203,8 +205,9 @@ abstract class ArgonHook implements Runnable
                 endpoints = null;
             }
 
-            /* Remove all non-vectored sessions, it is non-efficient to iterate the session
-             * list twice, but the list is typically small and this logic may get very complex
+            /* Remove all non-vectored sessions, it is non-efficient
+             * to iterate the session list twice, but the list is
+             * typically small and this logic may get very complex
              * otherwise */
             for ( Iterator<Session> iter = sessionList.iterator(); iter.hasNext() ; ) {
                 Session session = iter.next();
@@ -215,7 +218,8 @@ abstract class ArgonHook implements Runnable
                     releasedSessionList.add( session );
                 }
 
-                // Deliver the super secret sauce (if we completed) (everyone needs the secret sauce)
+                // Deliver the super secret sauce (if we completed)
+                // (everyone needs the secret sauce)
                 if (endpoints != null) ((SessionImpl)session).complete();
             }
 
@@ -281,8 +285,9 @@ abstract class ArgonHook implements Runnable
             }
 
             /* Remove the vector from the vectron table */
-            /* You must remove the vector before razing, or else
-             * the vector may receive a message(eg shutdown) from another thread */
+            /* You must remove the vector before razing, or else the
+             * vector may receive a message(eg shutdown) from another
+             * thread */
             activeVectrons.remove( vector );
         } catch ( Exception e ) {
             logger.error( "Exception destroying pipeline", e );
@@ -312,9 +317,10 @@ abstract class ArgonHook implements Runnable
             if ( state == IPNewSessionRequest.REQUESTED ) {
                 newSessionRequest( agent, iter, originalServerIntf, pe );
             } else {
-                /* Session has been rejected or endpointed, remaining nodes need not be informed */
-                // Don't need to remove anything from the pipeline, it is just used here
-                // iter.remove();
+                /* Session has been rejected or endpointed, remaining
+                 * nodes need not be informed */
+                // Don't need to remove anything from the pipeline, it
+                // is just used here iter.remove();
                 break;
             }
         }
@@ -323,19 +329,22 @@ abstract class ArgonHook implements Runnable
     /**
      * Describe <code>connectServer</code> method here.
      *
-     * @return a <code>boolean</code> true if the server was completed OR we explicitly rejected
+     * @return a <code>boolean</code> true if the server was completed
+     * OR we explicitly rejected
      */
     private boolean connectServer()
     {
         boolean serverActionCompleted = true;
         switch ( state ) {
         case IPNewSessionRequest.REQUESTED:
-            /* If the session is mirrored, just check to see if the client and
-             * server addresses are unique, if they are not, reject the session */
+            /* If the session is mirrored, just check to see if the
+             * client and server addresses are unique, if they are
+             * not, reject the session */
             if ( this.isMirrored ) {
                 boolean validMirror = false;
                 if ( !sessionList.isEmpty()) {
-                    /* Get the last session and check to see if the client and server are different */
+                    /* Get the last session and check to see if the
+                     * client and server are different */
                     IPSession session = (IPSession)sessionList.get( sessionList.size() - 1 );
                     NetcapSession netcapSession = sessionGlobalState.netcapSession();
                     InetAddress clientAddress = netcapSession.clientSide().client().host();
@@ -344,7 +353,8 @@ abstract class ArgonHook implements Runnable
                     if ( !clientAddress.equals( serverAddress )) validMirror = true;
                 }
 
-                /* If using the same server and client address, tear down the session silently */
+                /* If using the same server and client address, tear
+                 * down the session silently */
                 if ( !validMirror ) {
                     this.state = IPNewSessionRequest.REJECTED_SILENT;
                     return false;
@@ -355,7 +365,8 @@ abstract class ArgonHook implements Runnable
             if ( !serverComplete()) {
                 /* ??? May want to send different codes, or something ??? */
                 if ( vectorReset()) {
-                    /* Forward the rejection type that was passed from the server */
+                    /* Forward the rejection type that was passed from
+                     * the server */
                     state        = IPNewSessionRequest.REJECTED;
                     rejectCode = REJECT_CODE_SRV;
                     serverActionCompleted = false;
@@ -381,7 +392,8 @@ abstract class ArgonHook implements Runnable
     /**
      * Describe <code>connectClient</code> method here.
      *
-     * @return a <code>boolean</code> true if the client was completed OR we explicitly rejected
+     * @return a <code>boolean</code> true if the client was completed
+     * OR we explicitly rejected.
      */
     private boolean connectClient()
     {
@@ -469,7 +481,8 @@ abstract class ArgonHook implements Runnable
                 relayList.add( new Relay( prevOutgoingSQ, serverSink ));
                 relayList.add( new Relay( serverSource, prevIncomingSQ ));
             } else if ( state == IPNewSessionRequest.ENDPOINTED ) {
-                /* XXX Also have to close the socket queues if the session is endpointed */
+                /* XXX Also have to close the socket queues if the
+                 * session is endpointed */
             } else {
             }
         }
@@ -487,8 +500,9 @@ abstract class ArgonHook implements Runnable
         switch ( request.state()) {
         case IPNewSessionRequest.RELEASED:
             if ( session == null ) {
-                /* Released sessions don't need a session, but for those that redirects may
-                 * modify session parameters */
+                /* Released sessions don't need a session, but for
+                 * those that redirects may modify session
+                 * parameters */
                 break;
             }
 
@@ -500,8 +514,9 @@ abstract class ArgonHook implements Runnable
                 logger.debug( "Adding released session: " + session );
 
 
-            /* Add to the session list, and then move it in buildPipeline,
-             * this way, any modifications to the session will occur in order */
+            /* Add to the session list, and then move it in
+             * buildPipeline, this way, any modifications to the
+             * session will occur in order */
             sessionList.add( session );
             break;
 
@@ -538,9 +553,10 @@ abstract class ArgonHook implements Runnable
     }
 
     /**
-     * Call finalize on each node session that participates in this session, also raze
-     * all of the sinks associated with the endpoints.  This is just an extra precaution
-     * just in case they were not razed by the pipeline.
+     * Call finalize on each node session that participates in this
+     * session, also raze all of the sinks associated with the
+     * endpoints.  This is just an extra precaution just in case they
+     * were not razed by the pipeline.
      */
     private void razeSessions()
     {
@@ -622,10 +638,11 @@ abstract class ArgonHook implements Runnable
     }
 
 
-    /** Helper function determine if a session is going to and from a VPN interface */
+    /** Helper function determine if a session is going to and from a
+     * VPN interface */
     private boolean isVpnToVpn( byte netcapClientIntf, byte netcapServerIntf )
     {
-        return (( netcapClientIntf == IntfConstants.NETCAP_VPN ) && 
+        return (( netcapClientIntf == IntfConstants.NETCAP_VPN ) &&
                 ( netcapServerIntf == IntfConstants.NETCAP_VPN ));
     }
 
@@ -676,8 +693,8 @@ abstract class ArgonHook implements Runnable
     protected abstract SideListener serverSideListener();
 
     /**
-     * Complete the connection to the server, returning whether or not the
-     * connection was succesful
+     * Complete the connection to the server, returning whether or not
+     * the connection was succesful.
      * @return - True connection was succesful, false otherwise.
      */
     protected abstract boolean serverComplete();

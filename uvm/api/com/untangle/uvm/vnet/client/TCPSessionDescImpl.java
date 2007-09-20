@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -33,11 +33,11 @@
 
 package com.untangle.uvm.vnet.client;
 
-import com.untangle.uvm.node.SessionEndpoints;
+import java.net.InetAddress;
 
+import com.untangle.uvm.node.SessionEndpoints;
 import com.untangle.uvm.vnet.SessionStats;
 import com.untangle.uvm.vnet.TCPSessionDesc;
-import java.net.InetAddress;
 
 /**
  * Client side TCP Session Description.
@@ -45,15 +45,19 @@ import java.net.InetAddress;
  * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
  * @version 1.0
  */
-public class TCPSessionDescImpl extends IPSessionDescImpl implements TCPSessionDesc {
+public class TCPSessionDescImpl
+    extends IPSessionDescImpl
+    implements TCPSessionDesc
+{
 
     public TCPSessionDescImpl(int id, SessionStats stats,
-                              byte clientState, byte serverState, 
-                              byte clientIntf, byte serverIntf, 
+                              byte clientState, byte serverState,
+                              byte clientIntf, byte serverIntf,
                               InetAddress clientAddr, InetAddress serverAddr,
-                              int clientPort, int serverPort, boolean isInbound)
+                              int clientPort, int serverPort, boolean incoming)
     {
         super(id, SessionEndpoints.PROTO_TCP, stats, clientState, serverState,
-              clientIntf, serverIntf, clientAddr, serverAddr, clientPort, serverPort, isInbound);
+              clientIntf, serverIntf, clientAddr, serverAddr, clientPort,
+              serverPort, incoming);
     }
 }

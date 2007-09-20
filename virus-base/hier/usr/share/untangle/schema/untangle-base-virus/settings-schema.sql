@@ -1,6 +1,6 @@
 -- settings schema for release-5.0
 -- $HeadURL$
--- Copyright (c) 2003-2007 Untangle, Inc. 
+-- Copyright (c) 2003-2007 Untangle, Inc.
 --
 -- This program is free software; you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License, version 2,
@@ -26,16 +26,11 @@ CREATE TABLE settings.n_virus_settings (
     disable_ftp_resume bool,
     disable_http_resume bool,
     trickle_percent int4,
-    http_inbound int8 NOT NULL,
-    http_outbound int8 NOT NULL,
-    ftp_inbound int8 NOT NULL,
-    ftp_outbound int8 NOT NULL,
-    smtp_inbound int8 NOT NULL,
-    smtp_outbound int8 NOT NULL,
-    pop_inbound int8 NOT NULL,
-    pop_outbound int8 NOT NULL,
-    imap_inbound int8 NOT NULL,
-    imap_outbound int8 NOT NULL,
+    http_config int8 NOT NULL,
+    ftp_config int8 NOT NULL,
+    smtp_config int8 NOT NULL,
+    pop_config int8 NOT NULL,
+    imap_config int8 NOT NULL,
     ftp_disable_resume_details text,
     http_disable_resume_details text,
     trickle_percent_details text,
@@ -105,51 +100,26 @@ ALTER TABLE settings.n_virus_settings
     REFERENCES settings.u_tid;
 
 ALTER TABLE settings.n_virus_settings
-    ADD CONSTRAINT fk_tr_virus_settings_ftpout
-    FOREIGN KEY (ftp_outbound)
-    REFERENCES settings.n_virus_config;
-
-ALTER TABLE settings.n_virus_settings
     ADD CONSTRAINT fk_tr_virus_settings_ftpin
-    FOREIGN KEY (ftp_inbound)
-    REFERENCES settings.n_virus_config;
-
-ALTER TABLE settings.n_virus_settings
-    ADD CONSTRAINT fk_tr_virus_settings_httpout
-    FOREIGN KEY (http_outbound)
+    FOREIGN KEY (ftp_config)
     REFERENCES settings.n_virus_config;
 
 ALTER TABLE settings.n_virus_settings
     ADD CONSTRAINT fk_tr_virus_set_httpin
-    FOREIGN KEY (http_inbound)
+    FOREIGN KEY (http_config)
     REFERENCES settings.n_virus_config;
 
 ALTER TABLE settings.n_virus_settings
-    ADD CONSTRAINT fk_tr_virus_settings_smtpout
-    FOREIGN KEY (smtp_outbound)
-    REFERENCES settings.n_virus_smtp_config;
-
-ALTER TABLE settings.n_virus_settings
     ADD CONSTRAINT fk_tr_virus_settings_smtpin
-    FOREIGN KEY (smtp_inbound)
+    FOREIGN KEY (smtp_config)
     REFERENCES settings.n_virus_smtp_config;
-
-ALTER TABLE settings.n_virus_settings
-    ADD CONSTRAINT fk_tr_virus_settings_popout
-    FOREIGN KEY (pop_outbound)
-    REFERENCES settings.n_virus_pop_config;
 
 ALTER TABLE settings.n_virus_settings
     ADD CONSTRAINT fk_tr_virus_settings_popin
-    FOREIGN KEY (pop_inbound)
+    FOREIGN KEY (pop_config)
     REFERENCES settings.n_virus_pop_config;
 
 ALTER TABLE settings.n_virus_settings
-    ADD CONSTRAINT fk_tr_virus_settings_imapout
-    FOREIGN KEY (imap_outbound)
-    REFERENCES settings.n_virus_imap_config;
-
-ALTER TABLE settings.n_virus_settings
     ADD CONSTRAINT fk_tr_virus_settings_imapin
-    FOREIGN KEY (imap_inbound)
+    FOREIGN KEY (imap_config)
     REFERENCES settings.n_virus_imap_config;

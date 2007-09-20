@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -18,14 +18,14 @@
 
 package com.untangle.node.spam;
 
-import com.untangle.uvm.vnet.TCPNewSessionRequest;
-import com.untangle.uvm.vnet.TCPSession;
 import com.untangle.node.mail.papi.MailExport;
 import com.untangle.node.mail.papi.MailExportFactory;
 import com.untangle.node.mail.papi.imap.ImapTokenStream;
 import com.untangle.node.mail.papi.safelist.SafelistNodeView;
 import com.untangle.node.token.TokenHandler;
 import com.untangle.node.token.TokenHandlerFactory;
+import com.untangle.uvm.vnet.TCPNewSessionRequest;
+import com.untangle.uvm.vnet.TCPSession;
 import org.apache.log4j.Logger;
 
 public class SpamImapFactory
@@ -47,19 +47,14 @@ public class SpamImapFactory
 
     public TokenHandler tokenHandler(TCPSession session) {
 
-        boolean inbound = session.isInbound();
-
-        SpamIMAPConfig config = (!inbound)?
-            m_impl.getSpamSettings().getIMAPInbound():
-            m_impl.getSpamSettings().getIMAPOutbound();
+        SpamIMAPConfig config = m_impl.getSpamSettings().getImapConfig();
 
         if(!config.getScan()) {
             m_logger.debug("Scanning disabled.  Return passthrough token handler");
             return new ImapTokenStream(session);
         }
 
-        long timeout = (!inbound)?m_mailExport.getExportSettings().getImapInboundTimeout():
-            m_mailExport.getExportSettings().getImapOutboundTimeout();
+        long timeout = m_mailExport.getExportSettings().getImapTimeout();
 
         return new ImapTokenStream(session,
                                    new SpamImapHandler(

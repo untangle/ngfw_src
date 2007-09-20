@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -37,9 +37,9 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
+import com.untangle.uvm.node.Node;
 import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.policy.PolicyRule;
-import com.untangle.uvm.node.Node;
 import org.apache.log4j.Logger;
 
 /**
@@ -144,7 +144,6 @@ public abstract class PipeSpec
     {
         Policy tp = node.getTid().getPolicy();
         Policy p = null == pr ? null : pr.getPolicy();
-        boolean sessionInbound = null == pr ? true : pr.isInbound();
 
         // We want the node if its policy matches, or the node has no
         // policy (is a service).
@@ -153,7 +152,7 @@ public abstract class PipeSpec
 
             for (Iterator i = s.iterator(); i.hasNext(); ) {
                 Subscription subscription = (Subscription)i.next();
-                if (subscription.matches(sd, sessionInbound)) {
+                if (subscription.matches(sd)) {
                     return true;
                 }
             }

@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -24,13 +24,13 @@ import javax.swing.event.ChangeListener;
 import javax.swing.table.*;
 
 import com.untangle.gui.node.*;
-import com.untangle.gui.widgets.editTable.*;
 import com.untangle.gui.util.*;
-import com.untangle.uvm.logging.EventRepository;
+import com.untangle.gui.widgets.editTable.*;
+import com.untangle.node.spam.*;
 import com.untangle.uvm.logging.EventManager;
+import com.untangle.uvm.logging.EventRepository;
 import com.untangle.uvm.logging.RepositoryDesc;
 import com.untangle.uvm.node.Node;
-import com.untangle.node.spam.*;
 
 public class EmailLogJPanel extends MLogTableJPanel {
 
@@ -67,7 +67,6 @@ public class EmailLogJPanel extends MLogTableJPanel {
             addTableColumn( tableColumnModel,  3,  100, true,  false, false, true,  String.class, null, "subject" );
             addTableColumn( tableColumnModel,  4,  100, true,  false, false, false, String.class, null, "receiver" );
             addTableColumn( tableColumnModel,  5,  100, true,  false, false, false, String.class, null, "sender" );
-            addTableColumn( tableColumnModel,  6,  100, true,  false, false, false, String.class, null, sc.html("direction") );
             addTableColumn( tableColumnModel,  7,  165, true,  false, false, false, IPPortString.class, null, "server" );
             return tableColumnModel;
         }
@@ -88,7 +87,6 @@ public class EmailLogJPanel extends MLogTableJPanel {
                 event.add( requestLog.getSubject() );
                 event.add( requestLog.getReceiver() );
                 event.add( requestLog.getSender() );
-                event.add( requestLog.getDirectionName() );
                 event.add( new IPPortString(requestLog.getServerAddr(), requestLog.getServerPort()) );
                 allEvents.add( event );
             }

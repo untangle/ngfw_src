@@ -67,7 +67,7 @@ public abstract class VirusNodeImpl extends AbstractNode
     //of the "message" emails generated as a result
     //of a virus being found (and "notify" being
     //enabled.
-    private static final String OUT_MOD_SUB_TEMPLATE =
+    private static final String MOD_SUB_TEMPLATE =
         "[VIRUS] $MIMEMessage:SUBJECT$";
 
     // OLD
@@ -76,30 +76,23 @@ public abstract class VirusNodeImpl extends AbstractNode
     // "the virus \"$VirusReport:VIRUS_NAME$\".  The infected portion of the attached email was removed\r\n" +
     // "by Untangle Virus Blocker.\r\n";
 
-    private static final String OUT_MOD_BODY_TEMPLATE =
+    private static final String MOD_BODY_TEMPLATE =
         "The attached message from $MIMEMessage:FROM$\r\n" +
         "was found to contain the virus \"$VirusReport:VIRUS_NAME$\".\r\n"+
         "The infected portion of the message was removed by Untangle Virus Blocker.\r\n";
-    private static final String OUT_MOD_BODY_SMTP_TEMPLATE =
+    private static final String MOD_BODY_SMTP_TEMPLATE =
         "The attached message from $MIMEMessage:FROM$ ($SMTPTransaction:FROM$)\r\n" +
         "was found to contain the virus \"$VirusReport:VIRUS_NAME$\".\r\n"+
         "The infected portion of the message was removed by Untangle Virus Blocker.\r\n";
 
-    private static final String IN_MOD_SUB_TEMPLATE = OUT_MOD_SUB_TEMPLATE;
-    private static final String IN_MOD_BODY_TEMPLATE = OUT_MOD_BODY_TEMPLATE;
-    private static final String IN_MOD_BODY_SMTP_TEMPLATE = OUT_MOD_BODY_SMTP_TEMPLATE;
-
-    private static final String OUT_NOTIFY_SUB_TEMPLATE =
+    private static final String NOTIFY_SUB_TEMPLATE =
         "[VIRUS NOTIFICATION] re: $MIMEMessage:SUBJECT$";
 
-    private static final String OUT_NOTIFY_BODY_TEMPLATE =
+    private static final String NOTIFY_BODY_TEMPLATE =
         "On $MIMEHeader:DATE$ a message from $MIMEMessage:FROM$ ($SMTPTransaction:FROM$)" + CRLF +
         "was received by $SMTPTransaction:TO$.  The message was found" + CRLF +
         "to contain the virus \"$VirusReport:VIRUS_NAME$\"." + CRLF +
         "The infected portion of the message was removed by Untangle Virus Blocker";
-
-    private static final String IN_NOTIFY_SUB_TEMPLATE = OUT_NOTIFY_SUB_TEMPLATE;
-    private static final String IN_NOTIFY_BODY_TEMPLATE = OUT_NOTIFY_BODY_TEMPLATE;
 
     private static final PipelineFoundry FOUNDRY = LocalUvmContextFactory.context()
         .pipelineFoundry();
@@ -272,25 +265,14 @@ public abstract class VirusNodeImpl extends AbstractNode
             Subscription subscription = new Subscription(Protocol.TCP);
             subscriptions.add(subscription);
         }
-
         pipeSpecs[FTP].setSubscriptions(subscriptions);
 
         // HTTP
         subscriptions = new HashSet();
-        if (settings.getHttpInbound().getScan()) {
-            // Incoming settings for outbound sessions
-            Subscription subscription = new Subscription
-                (Protocol.TCP, false, true);
+        if (settings.getHttpConfig().getScan()) {
+            Subscription subscription = new Subscription(Protocol.TCP);
             subscriptions.add(subscription);
         }
-
-        if (settings.getHttpOutbound().getScan()) {
-            // Outgoing settings for inbound sessions
-            Subscription subscription = new Subscription
-                (Protocol.TCP, true, false);
-            subscriptions.add(subscription);
-        }
-
         pipeSpecs[HTTP].setSubscriptions(subscriptions);
 
         // SMTP
@@ -299,7 +281,6 @@ public abstract class VirusNodeImpl extends AbstractNode
             Subscription subscription = new Subscription(Protocol.TCP);
             subscriptions.add(subscription);
         }
-
         pipeSpecs[SMTP].setSubscriptions(subscriptions);
 
         // POP
@@ -308,7 +289,6 @@ public abstract class VirusNodeImpl extends AbstractNode
             Subscription subscription = new Subscription(Protocol.TCP);
             subscriptions.add(subscription);
         }
-
         pipeSpecs[POP].setSubscriptions(subscriptions);
     }
 
@@ -332,85 +312,46 @@ public abstract class VirusNodeImpl extends AbstractNode
      * this method is obsolete.
      */
     private void ensureTemplateSettings(VirusSettings vs) {
-        vs.getIMAPInbound().setSubjectWrapperTemplate(IN_MOD_SUB_TEMPLATE);
-        vs.getIMAPOutbound().setSubjectWrapperTemplate(OUT_MOD_SUB_TEMPLATE);
-        vs.getIMAPInbound().setBodyWrapperTemplate(IN_MOD_BODY_TEMPLATE);
-        vs.getIMAPOutbound().setBodyWrapperTemplate(OUT_MOD_BODY_TEMPLATE);
+        vs.getImapConfig().setSubjectWrapperTemplate(MOD_SUB_TEMPLATE);
+        vs.getImapConfig().setBodyWrapperTemplate(MOD_BODY_TEMPLATE);
+        vs.getImapConfig().setBodyWrapperTemplate(MOD_BODY_TEMPLATE);
 
-        vs.getPOPInbound().setSubjectWrapperTemplate(IN_MOD_SUB_TEMPLATE);
-        vs.getPOPOutbound().setSubjectWrapperTemplate(OUT_MOD_SUB_TEMPLATE);
-        vs.getPOPInbound().setBodyWrapperTemplate(IN_MOD_BODY_TEMPLATE);
-        vs.getPOPOutbound().setBodyWrapperTemplate(OUT_MOD_BODY_TEMPLATE);
+        vs.getPopConfig().setSubjectWrapperTemplate(MOD_SUB_TEMPLATE);
+        vs.getPopConfig().setBodyWrapperTemplate(MOD_BODY_TEMPLATE);
 
-        vs.getSMTPInbound().setSubjectWrapperTemplate(IN_MOD_SUB_TEMPLATE);
-        vs.getSMTPOutbound().setSubjectWrapperTemplate(OUT_MOD_SUB_TEMPLATE);
-        vs.getSMTPInbound().setBodyWrapperTemplate(IN_MOD_BODY_SMTP_TEMPLATE);
-        vs.getSMTPOutbound().setBodyWrapperTemplate(OUT_MOD_BODY_SMTP_TEMPLATE);
+        vs.getSmtpConfig().setSubjectWrapperTemplate(MOD_SUB_TEMPLATE);
+        vs.getSmtpConfig().setBodyWrapperTemplate(MOD_BODY_SMTP_TEMPLATE);
 
-        vs.getSMTPInbound().setNotifySubjectTemplate(IN_NOTIFY_SUB_TEMPLATE);
-        vs.getSMTPOutbound().setNotifySubjectTemplate(OUT_NOTIFY_SUB_TEMPLATE);
-        vs.getSMTPInbound().setNotifyBodyTemplate(IN_NOTIFY_BODY_TEMPLATE);
-        vs.getSMTPOutbound().setNotifyBodyTemplate(OUT_NOTIFY_BODY_TEMPLATE);
+        vs.getSmtpConfig().setNotifySubjectTemplate(NOTIFY_SUB_TEMPLATE);
+        vs.getSmtpConfig().setNotifyBodyTemplate(NOTIFY_BODY_TEMPLATE);
     }
 
     public void initializeSettings()
     {
         VirusSettings vs = new VirusSettings(getTid());
-        vs.setHttpInbound(new VirusConfig(true, true, "Scan incoming HTTP files on outbound sessions"));
-        vs.setHttpOutbound(new VirusConfig(false, true, "Scan outgoing HTTP files on inbound sessions" ));
-        vs.setFtpInbound(new VirusConfig(true, true, "Scan incoming FTP files on inbound and outbound sessions" ));
-        vs.setFtpOutbound(new VirusConfig(false, true, "Scan outgoing FTP files on inbound and outbound sessions" ));
+        vs.setHttpConfig(new VirusConfig(true, true, "Scan HTTP files"));
+        vs.setFtpConfig(new VirusConfig(true, true, "Scan FTP files" ));
 
+        vs.setSmtpConfig(new VirusSMTPConfig(true,
+                                             SMTPVirusMessageAction.REMOVE,
+                                             SMTPNotifyAction.NEITHER,
+                                             "Scan SMTP e-mail",
+                                             MOD_SUB_TEMPLATE,
+                                             MOD_BODY_SMTP_TEMPLATE,
+                                             NOTIFY_SUB_TEMPLATE,
+                                             NOTIFY_BODY_TEMPLATE));
 
-        vs.setSMTPInbound(
-                          new VirusSMTPConfig(true,
-                                              SMTPVirusMessageAction.REMOVE,
-                                              SMTPNotifyAction.NEITHER,
-                                              "Scan incoming SMTP e-mail",
-                                              IN_MOD_SUB_TEMPLATE,
-                                              IN_MOD_BODY_SMTP_TEMPLATE,
-                                              IN_NOTIFY_SUB_TEMPLATE,
-                                              IN_NOTIFY_BODY_TEMPLATE));
+        vs.setPopConfig(new VirusPOPConfig(true,
+                                           VirusMessageAction.REMOVE,
+                                           "Scan POP e-mail",
+                                           MOD_SUB_TEMPLATE,
+                                           MOD_BODY_TEMPLATE));
 
-        vs.setSMTPOutbound(
-                           new VirusSMTPConfig(false,
-                                               SMTPVirusMessageAction.PASS,
-                                               SMTPNotifyAction.NEITHER,
-                                               "Scan outgoing SMTP e-mail",
-                                               OUT_MOD_SUB_TEMPLATE,
-                                               OUT_MOD_BODY_SMTP_TEMPLATE,
-                                               OUT_NOTIFY_SUB_TEMPLATE,
-                                               OUT_NOTIFY_BODY_TEMPLATE));
-
-
-        vs.setPOPInbound(
-                         new VirusPOPConfig(true,
-                                            VirusMessageAction.REMOVE,
-                                            "Scan incoming POP e-mail",
-                                            IN_MOD_SUB_TEMPLATE,
-                                            IN_MOD_BODY_TEMPLATE));
-
-        vs.setPOPOutbound(
-                          new VirusPOPConfig(false,
-                                             VirusMessageAction.PASS,
-                                             "Scan outgoing POP e-mail",
-                                             OUT_MOD_SUB_TEMPLATE,
-                                             OUT_MOD_BODY_TEMPLATE));
-
-
-        vs.setIMAPInbound(
-                          new VirusIMAPConfig(true,
-                                              VirusMessageAction.REMOVE,
-                                              "Scan incoming IMAP e-mail",
-                                              IN_MOD_SUB_TEMPLATE,
-                                              IN_MOD_BODY_TEMPLATE));
-
-        vs.setIMAPOutbound(
-                           new VirusIMAPConfig(false,
-                                               VirusMessageAction.PASS,
-                                               "Scan outgoing IMAP e-mail",
-                                               OUT_MOD_SUB_TEMPLATE,
-                                               OUT_MOD_BODY_TEMPLATE));
+        vs.setImapConfig(new VirusIMAPConfig(true,
+                                             VirusMessageAction.REMOVE,
+                                             "Scan IMAP e-mail",
+                                             MOD_SUB_TEMPLATE,
+                                             MOD_BODY_TEMPLATE));
 
         initMimeTypes(vs);
         initFileExtensions(vs);
@@ -421,15 +362,6 @@ public abstract class VirusNodeImpl extends AbstractNode
     private void initMimeTypes(VirusSettings vs)
     {
         List s = new ArrayList();
-        // Note that category is unused in the UI
-        // s.add(new MimeTypeRule(new MimeType("application/x-javascript"), "JavaScript", "executable", false));
-        // s.add(new MimeTypeRule(new MimeType("application/x-shockwave-flash"), "Shockwave Flash", "executable", false));
-        // s.add(new MimeTypeRule(new MimeType("application/x-director"), "Macromedia Shockwave", "multimedia", false));
-        // s.add(new MimeTypeRule(new MimeType("application/futuresplash"), "Macromedia FutureSplash", "multimedia", false));
-        // s.add(new MimeTypeRule(new MimeType("application/x-java-applet"), "Java Applet", "executable", false));
-        // s.add(new MimeTypeRule(new MimeType("application/rtf"), "Rich Text Format", "document", false));
-        // s.add(new MimeTypeRule(new MimeType("application/pdf"), "Adobe Acrobat", "document", false));
-        // s.add(new MimeTypeRule(new MimeType("application/postscript"), "Postscript", "document", false));
         s.add(new MimeTypeRule(new MimeType("message/*"), "messages", "misc", true));
 
         vs.setHttpMimeTypes(s);

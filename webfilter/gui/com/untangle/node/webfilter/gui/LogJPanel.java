@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -25,19 +25,19 @@ import javax.swing.event.ChangeListener;
 import javax.swing.table.*;
 
 import com.untangle.gui.node.*;
-import com.untangle.gui.widgets.editTable.*;
 import com.untangle.gui.util.*;
-import com.untangle.uvm.logging.EventManager;
-import com.untangle.uvm.logging.EventRepository;
-import com.untangle.uvm.logging.RepositoryDesc;
-import com.untangle.uvm.node.PipelineEndpoints;
-import com.untangle.uvm.node.Node;
+import com.untangle.gui.widgets.editTable.*;
 import com.untangle.node.http.HttpRequestEvent;
 import com.untangle.node.http.RequestLine;
 import com.untangle.node.webfilter.Action;
+import com.untangle.node.webfilter.Reason;
 import com.untangle.node.webfilter.WebFilter;
 import com.untangle.node.webfilter.WebFilterEvent;
-import com.untangle.node.webfilter.Reason;
+import com.untangle.uvm.logging.EventManager;
+import com.untangle.uvm.logging.EventRepository;
+import com.untangle.uvm.logging.RepositoryDesc;
+import com.untangle.uvm.node.Node;
+import com.untangle.uvm.node.PipelineEndpoints;
 
 public class LogJPanel extends MLogTableJPanel {
 
@@ -97,7 +97,6 @@ public class LogJPanel extends MLogTableJPanel {
                 event.add( null == rl ? "" : rl.getUrl().toString() );
                 Reason r = requestLog.getReason();
                 event.add( null == r ? "none" : r.toString() );
-                event.add( null == pe ? "" : pe.getDirectionName() );
                 event.add( null == pe ? new IPPortString() : new IPPortString(pe.getSServerAddr(), pe.getSServerPort()) );
                 allEvents.add( event );
             }

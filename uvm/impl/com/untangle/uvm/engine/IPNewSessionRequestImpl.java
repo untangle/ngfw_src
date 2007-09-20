@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -32,26 +32,26 @@ import com.untangle.uvm.node.PipelineEndpoints;
  */
 abstract class IPNewSessionRequestImpl implements IPNewSessionRequest {
 
-    protected MPipeImpl mPipe;
+    protected final MPipeImpl mPipe;
 
     protected volatile Object attachment = null;
 
     protected boolean needsFinalization = true;
     protected boolean modified = false;
-    protected boolean isInbound;
+    protected final boolean incoming;
 
     /**
      * The pipeline request that corresponds to this (node) request.
      *
      */
-    protected com.untangle.uvm.argon.IPNewSessionRequest pRequest;
+    protected final com.untangle.uvm.argon.IPNewSessionRequest pRequest;
 
     protected IPNewSessionRequestImpl(Dispatcher disp,
                                       com.untangle.uvm.argon.IPNewSessionRequest pRequest,
-                                      boolean isInbound) {
+                                      boolean incoming) {
         this.mPipe = disp.mPipe();
         this.pRequest = pRequest;
-        this.isInbound = isInbound;
+        this.incoming = incoming;
     }
 
     public MPipe mPipe() {
@@ -62,12 +62,12 @@ abstract class IPNewSessionRequestImpl implements IPNewSessionRequest {
         return pRequest.id();
     }
 
-    public boolean isInbound() {
-        return isInbound;
+    public boolean isIncoming() {
+        return incoming;
     }
 
-    public boolean isOutbound() {
-        return !isInbound;
+    public boolean isOutgoing() {
+        return !incoming;
     }
 
     public short protocol() {

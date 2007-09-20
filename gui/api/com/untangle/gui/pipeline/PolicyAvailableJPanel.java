@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -31,7 +31,6 @@
  * to do so, delete this exception statement from your version.
  */
 
-
 package com.untangle.gui.pipeline;
 
 import java.awt.Insets;
@@ -44,9 +43,9 @@ import com.untangle.gui.node.*;
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.editTable.*;
 import com.untangle.uvm.*;
+import com.untangle.uvm.node.*;
 import com.untangle.uvm.policy.*;
 import com.untangle.uvm.security.*;
-import com.untangle.uvm.node.*;
 
 public class PolicyAvailableJPanel extends MEditTableJPanel {
 
@@ -93,14 +92,7 @@ class AvailablePolicyTableModel extends MSortedTableModel<PolicyCompoundSettings
         boolean oneRackLeft = false;
         int rowIndex = 0;
         Map<String,Object> nameMap = new HashMap<String,Object>();
-        Map<String,Object> systemUsageMap = new HashMap<String,Object>();
         Map<String,Object> userUsageMap = new HashMap<String,Object>();
-        // BUILD THE LIST OF SYSTEM-NEEDED POLICIES
-        for( SystemPolicyRule systemPolicyRule : (List<SystemPolicyRule>) policyConfiguration.getSystemPolicyRules() )
-            if( systemPolicyRule.getPolicy() != null )
-                systemUsageMap.put(systemPolicyRule.getPolicy().getName(), null);
-            else
-                systemUsageMap.put( null, null );
         // BUILD THE LIST OF USER-NEEDED POLICIES
         for( UserPolicyRule userPolicyRule : (List<UserPolicyRule>) policyConfiguration.getUserPolicyRules() )
             if( userPolicyRule.getPolicy() != null )
@@ -115,12 +107,8 @@ class AvailablePolicyTableModel extends MSortedTableModel<PolicyCompoundSettings
             Policy policy = (Policy) rowVector.elementAt(4);
 
             if( ROW_REMOVE.equals(state) ){
-                // if the rack is being removed, it cannot be in use by a system rule
-                if( systemUsageMap.containsKey(name) ){
-                    throw new Exception("The rack in row: " + rowIndex + " cannot be removed because it is currently being used in \"Default Policies\".");
-                }
                 // if the rack is being removed, it cannot be in use by a user rule
-                else if( userUsageMap.containsKey(name) ){
+                if( userUsageMap.containsKey(name) ){
                     throw new Exception("The rack in row: " + rowIndex + " cannot be removed because it is currently being used in \"Custom Policies\".");
                 }
                 // if the rack is being removed, it cannot be non-empty
@@ -150,7 +138,6 @@ class AvailablePolicyTableModel extends MSortedTableModel<PolicyCompoundSettings
         if( !oneRackLeft ){
             throw new Exception("There must always be at least one available rack.");
         }
-
     }
 
     public void generateSettings(PolicyCompoundSettings policyCompoundSettings,

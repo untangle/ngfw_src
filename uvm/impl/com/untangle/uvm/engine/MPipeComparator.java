@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -32,12 +32,9 @@ import com.untangle.uvm.vnet.SoloPipeSpec;
  */
 class MPipeComparator implements Comparator
 {
-    private final boolean incoming;
+    static final MPipeComparator COMPARATOR = new MPipeComparator();
 
-    MPipeComparator(boolean incoming)
-    {
-        this.incoming = incoming;
-    }
+    private MPipeComparator() { }
 
     public int compare(Object o1, Object o2)
     {
@@ -47,8 +44,8 @@ class MPipeComparator implements Comparator
         SoloPipeSpec ps1 = null == mp1 ? null : (SoloPipeSpec)mp1.getPipeSpec();
         SoloPipeSpec ps2 = null == mp2 ? null : (SoloPipeSpec)mp2.getPipeSpec();
 
-        Affinity ra1 = relativeAffinity(ps1);
-        Affinity ra2 = relativeAffinity(ps2);
+        Affinity ra1 = null == ps1 ? null : ps1.getAffinity();
+        Affinity ra2 = null == ps2 ? null : ps2.getAffinity();
 
         if (null == ra1) {
             if (null == ra2) {
@@ -95,47 +92,6 @@ class MPipeComparator implements Comparator
             return 1;
         } else {
             throw new RuntimeException("programmer malfunction");
-        }
-    }
-
-    public boolean equals(Object o)
-    {
-        if (!(o instanceof MPipeComparator)) {
-            return false;
-        } else {
-            MPipeComparator sc = (MPipeComparator)o;
-            return incoming == sc.incoming;
-        }
-    }
-
-    private Affinity relativeAffinity(SoloPipeSpec ps)
-    {
-        if (null == ps) {
-            return null;
-        }
-
-        Affinity a = ps.getAffinity();
-
-        if (Affinity.CLIENT == a || Affinity.SERVER == a) {
-            return a;
-        } else {
-            if (incoming) {
-                if (Affinity.INSIDE == a) {
-                    return Affinity.SERVER;
-                } else if (Affinity.OUTSIDE == a) {
-                    return Affinity.CLIENT;
-                } else {
-                    throw new IllegalArgumentException("unknown: " + a);
-                }
-            } else {
-                if (Affinity.INSIDE == a) {
-                    return Affinity.CLIENT;
-                } else if (Affinity.OUTSIDE == a) {
-                    return Affinity.SERVER;
-                } else {
-                    throw new IllegalArgumentException("unknown: " + a);
-                }
-            }
         }
     }
 }

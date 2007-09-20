@@ -73,12 +73,9 @@ public class MailNodeSettings implements Serializable
     public static final long TIMEOUT_MAX = 86400000l;
     public static final long TIMEOUT_MIN = 0l;
 
-    private long smtpInboundTimeout;
-    private long smtpOutboundTimeout;
-    private long popInboundTimeout;
-    private long popOutboundTimeout;
-    private long imapInboundTimeout;
-    private long imapOutboundTimeout;
+    private long smtpTimeout;
+    private long popTimeout;
+    private long imapTimeout;
     private QuarantineSettings quarantineSettings;
     private List<SafelistSettings> safelistSettings;
 
@@ -150,99 +147,51 @@ public class MailNodeSettings implements Serializable
     }
 
     /**
-     * Timeout for SMTP inbound traffic.
+     * Timeout for SMTP traffic.
      *
-     * @return timeout for SMTP in millis.
+     * @return for SMTP in millis.
      */
-    @Column(name="smtp_inbound_timeout", nullable=false)
-    public long getSmtpInboundTimeout()
+    @Column(name="smtp_timeout", nullable=false)
+    public long getSmtpTimeout()
     {
-        return smtpInboundTimeout;
+        return smtpTimeout;
     }
 
-    public void setSmtpInboundTimeout(long smtpInboundTimeout)
+    public void setSmtpTimeout(long smtpTimeout)
     {
-        this.smtpInboundTimeout = smtpInboundTimeout;
+        this.smtpTimeout = smtpTimeout;
     }
 
     /**
-     * Timeout for SMTP outbound traffic.
-     *
-     * @return timeout for SMTP in millis.
-     */
-    @Column(name="Smtp_outbound_timeout", nullable=false)
-    public long getSmtpOutboundTimeout()
-    {
-        return smtpOutboundTimeout;
-    }
-
-    public void setSmtpOutboundTimeout(long smtpOutboundTimeout)
-    {
-        this.smtpOutboundTimeout = smtpOutboundTimeout;
-    }
-
-    /**
-     * Timeout for POP inbound traffic.
+     * Timeout for POP traffic.
      *
      * @return timeout for POP in millis.
      */
-    @Column(name="pop_inbound_timeout", nullable=false)
-    public long getPopInboundTimeout()
+    @Column(name="pop_timeout", nullable=false)
+    public long getPopTimeout()
     {
-        return popInboundTimeout;
+        return popTimeout;
     }
 
-    public void setPopInboundTimeout(long popInboundTimeout)
+    public void setPopTimeout(long popTimeout)
     {
-        this.popInboundTimeout = popInboundTimeout;
-    }
-
-    /**
-     * Timeout for POP outbound traffic.
-     *
-     * @return timeout for POP in millis.
-     */
-    @Column(name="pop_outbound_timeout", nullable=false)
-    public long getPopOutboundTimeout()
-    {
-        return popOutboundTimeout;
-    }
-
-    public void setPopOutboundTimeout(long popOutboundTimeout)
-    {
-        this.popOutboundTimeout = popOutboundTimeout;
+        this.popTimeout = popTimeout;
     }
 
     /**
-     * Timeout for IMAP inbound traffic.
+     * Timeout for IMAP traffic.
      *
      * @return timeout for IMAP in millis.
      */
-    @Column(name="imap_inbound_timeout", nullable=false)
-    public long getImapInboundTimeout()
+    @Column(name="imap_timeout", nullable=false)
+    public long getImapTimeout()
     {
-        return imapInboundTimeout;
+        return imapTimeout;
     }
 
-    public void setImapInboundTimeout(long imapInboundTimeout)
+    public void setImapTimeout(long imapTimeout)
     {
-        this.imapInboundTimeout = imapInboundTimeout;
-    }
-
-    /**
-     * Timeout for IMAP outbound traffic.
-     *
-     * @return timeout for IMAP in millis.
-     */
-    @Column(name="imap_outbound_timeout", nullable=false)
-    public long getImapOutboundTimeout()
-    {
-        return imapOutboundTimeout;
-    }
-
-    public void setImapOutboundTimeout(long imapOutboundTimeout)
-    {
-        this.imapOutboundTimeout = imapOutboundTimeout;
+        this.imapTimeout = imapTimeout;
     }
 
     /**

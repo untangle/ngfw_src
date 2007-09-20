@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -22,10 +22,8 @@ import com.untangle.uvm.vnet.AbstractEventHandler;
 import com.untangle.uvm.vnet.MPipeException;
 import com.untangle.uvm.vnet.Session;
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
-
 import com.untangle.uvm.vnet.event.TCPNewSessionRequestEvent;
 import com.untangle.uvm.vnet.event.TCPSessionEvent;
-
 import org.apache.log4j.Logger;
 
 class RBLEventHandler extends AbstractEventHandler
@@ -58,13 +56,11 @@ class RBLEventHandler extends AbstractEventHandler
     {
         TCPNewSessionRequest tsr = event.sessionRequest();
 
-        boolean inbound = tsr.isInbound();
         SpamSettings spamSettings = m_spamImpl.getSpamSettings();
-        SpamSMTPConfig spamConfig = inbound ?
-            spamSettings.getSMTPInbound() : spamSettings.getSMTPOutbound();
-        
+        SpamSMTPConfig spamConfig = spamSettings.getSmtpConfig();
+
         boolean releaseSession = true;
-        
+
         if (spamConfig.getThrottle()) {
             //m_logger.debug("Check DNSBL(s) for connection from: " + tsr.clientAddr());
             RBLChecker rblChecker = new RBLChecker(spamSettings.getSpamRBLList(),m_spamImpl);

@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -35,20 +35,19 @@ package com.untangle.uvm.node.firewall;
 
 import java.net.InetAddress;
 
-import com.untangle.uvm.vnet.Protocol;
-import com.untangle.uvm.vnet.IPNewSessionRequest;
-import com.untangle.uvm.vnet.IPSessionDesc;
-
 import com.untangle.uvm.node.firewall.ip.IPMatcher;
 import com.untangle.uvm.node.firewall.port.PortMatcher;
 import com.untangle.uvm.node.firewall.protocol.ProtocolMatcher;
+import com.untangle.uvm.vnet.IPNewSessionRequest;
+import com.untangle.uvm.vnet.IPSessionDesc;
+import com.untangle.uvm.vnet.Protocol;
 
 
-public abstract class TrafficDirectionMatcher extends TrafficMatcher 
+public abstract class TrafficDirectionMatcher extends TrafficMatcher
 {
     private final DirectionMatcher direction;
 
-    public TrafficDirectionMatcher( boolean     isEnabled,  ProtocolMatcher protocol, 
+    public TrafficDirectionMatcher( boolean     isEnabled,  ProtocolMatcher protocol,
                                     DirectionMatcher direction,
                                     IPMatcher   srcAddress, IPMatcher       dstAddress,
                                     PortMatcher srcPort,    PortMatcher     dstPort )
@@ -62,26 +61,27 @@ public abstract class TrafficDirectionMatcher extends TrafficMatcher
         super( rule );
         this.direction = DirectionMatcher.getInstance( rule.getInbound(), rule.getOutbound());
     }
-    
+
     public boolean isMatch( IPSessionDesc session, Protocol protocol )
     {
-        return ( isMatchDirection( session.isInbound()) && super.isMatch( session, protocol ));
+        return ( isMatchDirection( session.isIncoming()) && super.isMatch( session, protocol ));
     }
 
     public boolean isMatch( IPNewSessionRequest request, Protocol protocol )
     {
-        return ( isMatchDirection( request.isInbound()) && super.isMatch( request, protocol ));
+        return ( isMatchDirection( request.isIncoming()) && super.isMatch( request, protocol ));
     }
-    
-    public boolean isMatch( Protocol protocol, boolean isInbound, InetAddress srcAddress, 
-                            InetAddress dstAddress, int srcPort, int dstPort )
+
+    public boolean isMatch( Protocol protocol, boolean inbound,
+                            InetAddress srcAddress, InetAddress dstAddress,
+                            int srcPort, int dstPort )
     {
-        return ( isMatchDirection( isInbound ) && 
+        return ( isMatchDirection( inbound ) &&
                  super.isMatch( protocol, srcAddress, dstAddress, srcPort, dstPort ));
     }
 
-    public boolean isMatchDirection( boolean isInbound )
+    public boolean isMatchDirection( boolean inbound )
     {
-        return this.direction.isMatch( isInbound );
+        return this.direction.isMatch( inbound );
     }
 }

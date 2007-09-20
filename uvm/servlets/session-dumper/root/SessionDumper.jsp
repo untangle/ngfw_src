@@ -1,7 +1,7 @@
 <%@ page language="java" import="com.untangle.uvm.*, com.untangle.uvm.security.Tid, com.untangle.uvm.node.*, com.untangle.uvm.vnet.*, com.untangle.uvm.util.SessionUtil, org.apache.log4j.helpers.AbsoluteTimeDateFormat, java.util.List, java.util.Properties, java.net.URL, java.io.PrintWriter, javax.naming.*" %>
 <%--
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -118,7 +118,7 @@
 %>
           <TR>
              <TD><%= proto %><%= sd.id() %>
-             <TD><%= sd.isInbound() ? "In" : "Out" %>
+             <TD><%= sd.isIncoming() ? "In" : "Out" %>
              <TD><%= SessionUtil.prettyState(sd.clientState()) %>
              <TD><%= sd.clientAddr().getHostAddress() %>:<%= sd.clientPort() %>
              <TD><%= SessionUtil.prettyState(sd.serverState()) %>

@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -45,27 +45,27 @@ import java.net.InetAddress;
  */
 class IPSessionDescImpl extends SessionDescImpl implements IPSessionDesc {
 
-    protected byte clientState;
-    protected byte serverState;
+    protected final byte clientState;
+    protected final byte serverState;
 
-    protected short protocol;
+    protected final short protocol;
 
-    protected byte clientIntf;
-    protected byte serverIntf;
+    protected final byte clientIntf;
+    protected final byte serverIntf;
 
-    protected boolean isInbound;
+    protected final boolean incoming;
 
-    protected InetAddress clientAddr;
-    protected InetAddress serverAddr;
+    protected final InetAddress clientAddr;
+    protected final InetAddress serverAddr;
 
-    protected int clientPort;
-    protected int serverPort;
+    protected final int clientPort;
+    protected final int serverPort;
 
     protected IPSessionDescImpl(int id, short protocol, SessionStats stats,
                                 byte clientState, byte serverState,
                                 byte clientIntf, byte serverIntf,
                                 InetAddress clientAddr, InetAddress serverAddr,
-                                int clientPort, int serverPort, boolean isInbound)
+                                int clientPort, int serverPort, boolean incoming)
     {
         super(id, stats);
         this.protocol = protocol;
@@ -77,14 +77,14 @@ class IPSessionDescImpl extends SessionDescImpl implements IPSessionDesc {
         this.serverAddr = serverAddr;
         this.clientPort = clientPort;
         this.serverPort = serverPort;
-        this.isInbound = isInbound;
+        this.incoming = incoming;
     }
 
     public short protocol()
     {
         return protocol;
     }
-    
+
     public byte clientIntf()
     {
         return clientIntf;
@@ -125,13 +125,13 @@ class IPSessionDescImpl extends SessionDescImpl implements IPSessionDesc {
         return serverPort;
     }
 
-    public boolean isInbound()
+    public boolean isIncoming()
     {
-        return isInbound;
+        return incoming;
     }
 
-    public boolean isOutbound()
+    public boolean isOutgoing()
     {
-        return !isInbound;
+        return !incoming;
     }
 }

@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -100,14 +100,14 @@ public class UserPolicyRule extends PolicyRule
 
     public UserPolicyRule() { }
 
-    public UserPolicyRule(IntfMatcher clientIntf, IntfMatcher serverIntf, Policy policy,
-                          boolean inbound, ProtocolMatcher protocol,
+    public UserPolicyRule(IntfMatcher clientIntf, IntfMatcher serverIntf,
+                          Policy policy, ProtocolMatcher protocol,
                           IPMatcher clientAddr, IPMatcher serverAddr,
                           PortMatcher clientPort, PortMatcher serverPort,
                           Date startTime, Date endTime,
                           DayOfWeekMatcher dayOfWeek, UserMatcher user,
                           boolean live, boolean invertEntireDuration) {
-        super(live, policy, inbound);
+        super(live, policy);
         this.clientIntf = clientIntf;
         this.serverIntf = serverIntf;
         this.protocol = protocol;
@@ -439,7 +439,6 @@ public class UserPolicyRule extends PolicyRule
             return ((policy == null ? pr.policy == null : policy.equals(pr.policy)) &&
                     (clientIntf == null ? pr.clientIntf == null : clientIntf.equals(pr.clientIntf)) &&
                     (serverIntf == null ? pr.serverIntf == null : serverIntf.equals(pr.serverIntf)) &&
-                    inbound == pr.inbound &&
                     (protocol == null ? pr.protocol == null : protocol.equals(pr.protocol)) &&
                     (clientAddr == null ? pr.clientAddr == null : clientAddr.equals(pr.clientAddr)) &&
                     (serverAddr == null ? pr.serverAddr == null : serverAddr.equals(pr.serverAddr)) &&

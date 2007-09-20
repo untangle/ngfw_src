@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -42,19 +42,15 @@ import com.untangle.gui.configuration.*;
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.dialogs.*;
 import com.untangle.gui.widgets.editTable.*;
-import com.untangle.uvm.policy.*;
+import com.untangle.gui.widgets.premium.*;
 import com.untangle.uvm.license.LicenseStatus;
 import com.untangle.uvm.license.ProductIdentifier;
-
-import com.untangle.gui.widgets.premium.*;
-
-
+import com.untangle.uvm.policy.*;
 
 public class PolicyJDialog extends MConfigJDialog {
 
     private static final String NAME_POLICY_MANAGER     = "Policy Manager";
     private static final String NAME_POLICIES           = "Policy-To-Rack Map";
-    private static final String NAME_SYSTEM_POLICIES    = "Default Policies";
     private static final String NAME_USER_POLICIES      = "Custom Policies";
     private static final String NAME_AVAILABLE_POLICIES = "Rack List";
 
@@ -73,20 +69,13 @@ public class PolicyJDialog extends MConfigJDialog {
         // POLICIES //////
         JTabbedPane policiesJTabbedPane = addTabbedPane(NAME_POLICIES, null);
 
-        // SYSTEM POLICIES //////
-        PolicyDefaultJPanel policyDefaultJPanel = new PolicyDefaultJPanel();
-        policiesJTabbedPane.addTab(NAME_SYSTEM_POLICIES, null, policyDefaultJPanel);
-        addSavable(NAME_SYSTEM_POLICIES, policyDefaultJPanel);
-        addRefreshable(NAME_SYSTEM_POLICIES, policyDefaultJPanel);
-        policyDefaultJPanel.setSettingsChangedListener(this);
-
         // USER POLICIES //////
         PolicyCustomJPanel policyCustomJPanel = new PolicyCustomJPanel(this);
         policiesJTabbedPane.addTab(NAME_USER_POLICIES, null, policyCustomJPanel);
         addSavable(NAME_USER_POLICIES, policyCustomJPanel);
         addRefreshable(NAME_USER_POLICIES, policyCustomJPanel);
         policyCustomJPanel.setSettingsChangedListener(this);
-        
+
         LicenseStatus status = Util.getLicenseStatus(ProductIdentifier.POLICY_MANAGER);
         String timeLeft = status.getTimeRemaining();
         if (!status.isExpired()) {
@@ -107,7 +96,7 @@ public class PolicyJDialog extends MConfigJDialog {
                 setTitle(NAME_POLICY_MANAGER + " : " + status.getType() + " (" + timeLeft + ")");
             }
 
-            PremiumJPanel policyPremiumJPanel = new PremiumJPanel();            
+            PremiumJPanel policyPremiumJPanel = new PremiumJPanel();
             addTab(NAME_AVAILABLE_POLICIES, null, policyPremiumJPanel);
         }
     }

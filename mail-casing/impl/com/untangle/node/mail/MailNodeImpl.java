@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -22,17 +22,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.LocalUvmContext;
-import com.untangle.uvm.portal.Application;
-import com.untangle.uvm.portal.BasePortalManager;
-import com.untangle.uvm.portal.LocalApplicationManager;
-import com.untangle.uvm.vnet.AbstractNode;
-import com.untangle.uvm.vnet.CasingPipeSpec;
-import com.untangle.uvm.vnet.Fitting;
-import com.untangle.uvm.vnet.PipeSpec;
-import com.untangle.uvm.node.NodeException;
-import com.untangle.uvm.util.TransactionWork;
 import com.untangle.node.mail.impl.imap.ImapCasingFactory;
 import com.untangle.node.mail.impl.quarantine.Quarantine;
 import com.untangle.node.mail.impl.safelist.SafelistManager;
@@ -45,8 +34,8 @@ import com.untangle.node.mail.papi.quarantine.InboxIndex;
 import com.untangle.node.mail.papi.quarantine.MailSummary;
 import com.untangle.node.mail.papi.quarantine.NoSuchInboxException;
 import com.untangle.node.mail.papi.quarantine.QuarantineMaintenenceView;
-import com.untangle.node.mail.papi.quarantine.QuarantineSettings;
 import com.untangle.node.mail.papi.quarantine.QuarantineNodeView;
+import com.untangle.node.mail.papi.quarantine.QuarantineSettings;
 import com.untangle.node.mail.papi.quarantine.QuarantineUserActionFailedException;
 import com.untangle.node.mail.papi.quarantine.QuarantineUserView;
 import com.untangle.node.mail.papi.safelist.NoSuchSafelistException;
@@ -54,9 +43,20 @@ import com.untangle.node.mail.papi.safelist.SafelistActionFailedException;
 import com.untangle.node.mail.papi.safelist.SafelistAdminView;
 import com.untangle.node.mail.papi.safelist.SafelistEndUserView;
 import com.untangle.node.mail.papi.safelist.SafelistManipulation;
-import com.untangle.node.mail.papi.safelist.SafelistSettings;
 import com.untangle.node.mail.papi.safelist.SafelistNodeView;
+import com.untangle.node.mail.papi.safelist.SafelistSettings;
 import com.untangle.node.mime.EmailAddress;
+import com.untangle.uvm.LocalUvmContext;
+import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.node.NodeException;
+import com.untangle.uvm.portal.Application;
+import com.untangle.uvm.portal.BasePortalManager;
+import com.untangle.uvm.portal.LocalApplicationManager;
+import com.untangle.uvm.util.TransactionWork;
+import com.untangle.uvm.vnet.AbstractNode;
+import com.untangle.uvm.vnet.CasingPipeSpec;
+import com.untangle.uvm.vnet.Fitting;
+import com.untangle.uvm.vnet.PipeSpec;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -282,12 +282,9 @@ public class MailNodeImpl extends AbstractNode
                         settings.setSmtpEnabled(true);
                         settings.setPopEnabled(true);
                         settings.setImapEnabled(true);
-                        settings.setSmtpInboundTimeout(1000*30);
-                        settings.setSmtpOutboundTimeout(1000*30);
-                        settings.setPopInboundTimeout(1000*30);
-                        settings.setPopOutboundTimeout(1000*30);
-                        settings.setImapInboundTimeout(1000*30);
-                        settings.setImapOutboundTimeout(1000*30);
+                        settings.setSmtpTimeout(1000*30);
+                        settings.setPopTimeout(1000*30);
+                        settings.setImapTimeout(1000*30);
                         shouldSave = true;
                     }
 

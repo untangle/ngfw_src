@@ -83,14 +83,13 @@ public class PipelineEndpoints extends LogEvent
     private int sServerPort;
 
     private Policy policy;
-    private boolean policyInbound;
 
     // constructors -----------------------------------------------------------
 
     public PipelineEndpoints() { }
 
     public PipelineEndpoints(IPSessionDesc begin, IPSessionDesc end,
-                             Policy policy, boolean policyInbound)
+                             Policy policy)
     {
         // Begin & end and all in between have the same ID
         sessionId = begin.id();
@@ -111,7 +110,6 @@ public class PipelineEndpoints extends LogEvent
         serverIntf = end.serverIntf();
 
         this.policy = policy;
-        this.policyInbound = policyInbound;
     }
 
     // This one is called by ArgonHook, just to get an object which is
@@ -127,7 +125,7 @@ public class PipelineEndpoints extends LogEvent
     // business methods -------------------------------------------------------
 
     public void completeEndpoints(IPSessionDesc begin, IPSessionDesc end,
-                                  Policy policy, boolean policyInbound)
+                                  Policy policy)
     {
         cClientAddr = begin.clientAddr();
         cClientPort = begin.clientPort();
@@ -139,13 +137,6 @@ public class PipelineEndpoints extends LogEvent
         sServerPort = end.serverPort();
         serverIntf = end.serverIntf();
         this.policy = policy;
-        this.policyInbound = policyInbound;
-    }
-
-    @Transient
-    public String getDirectionName()
-    {
-        return policyInbound ? "inbound" : "outbound";
     }
 
     /* This doesn't really belong here */
@@ -386,23 +377,6 @@ public class PipelineEndpoints extends LogEvent
         this.policy = policy;
     }
 
-    /**
-     * Was the the inbound side of the policy chosen?  If false, the
-     * outbound side was chosen.
-     *
-     * @return true if the inbound side of policy was chosen, false if outbound
-     */
-    @Column(name="policy_inbound", nullable=false)
-    public boolean isInbound()
-    {
-        return policyInbound;
-    }
-
-    public void setInbound(boolean inbound)
-    {
-        this.policyInbound = inbound;
-    }
-
     // Syslog methods ---------------------------------------------------------
 
     public void appendSyslog(SyslogBuilder sb)
@@ -413,7 +387,6 @@ public class PipelineEndpoints extends LogEvent
         sb.addField("protocol", getProtocolName());
 
         sb.addField("policy", (( policy == null ) ? "<none>" : policy.getName()));
-        sb.addField("policy-direction", getDirectionName());
 
         sb.addField("client-iface", getClientIntf(clientIntf));
         //Client address, at the client side.

@@ -128,11 +128,8 @@ public class CasingAdaptor extends AbstractEventHandler
     @Override
     public IPDataResult handleTCPClientChunk(TCPChunkEvent e)
     {
-        boolean inbound = e.session().isInbound();
-
         if (logger.isDebugEnabled()) {
-            logger.debug("handling client chunk, session: " + e.session().id()
-                         + "client inbound: " + inbound);
+            logger.debug("handling client chunk, session: " + e.session().id());
         }
 
         if (clientSide) {
@@ -145,11 +142,8 @@ public class CasingAdaptor extends AbstractEventHandler
     @Override
     public IPDataResult handleTCPServerChunk(TCPChunkEvent e)
     {
-        boolean inbound = e.session().isInbound();
-
         if (logger.isDebugEnabled()) {
-            logger.debug("handling server chunk, session: " + e.session().id()
-                         + "server inbound: " + inbound);
+            logger.debug("handling server chunk, session: " + e.session().id());
         }
 
         if (clientSide) {
@@ -162,11 +156,8 @@ public class CasingAdaptor extends AbstractEventHandler
     @Override
     public IPDataResult handleTCPClientDataEnd(TCPChunkEvent e)
     {
-        boolean inbound = e.session().isInbound();
-
         if (logger.isDebugEnabled()) {
-            logger.debug("handling client chunk, session: " + e.session().id()
-                         + "client inbound: " + inbound);
+            logger.debug("handling client chunk, session: " + e.session().id());
         }
 
         if (clientSide) {
@@ -182,11 +173,8 @@ public class CasingAdaptor extends AbstractEventHandler
     @Override
     public IPDataResult handleTCPServerDataEnd(TCPChunkEvent e)
     {
-        boolean inbound = e.session().isInbound();
-
         if (logger.isDebugEnabled()) {
-            logger.debug("handling server chunk, session: " + e.session().id()
-                         + "server inbound: " + inbound);
+            logger.debug("handling server chunk, session: " + e.session().id());
         }
 
         if (clientSide) {

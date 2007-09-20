@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -43,43 +43,36 @@ public class PolicyConfiguration implements Serializable
 
     private List policies;
 
-    private List systemPolicyRules;
+    private List<UserPolicyRule> userPolicyRules;
 
-    private List userPolicyRules;
-
-    public PolicyConfiguration(List policies, SystemPolicyRule[] sysRules, UserPolicyRule[] userRules) {
+    public PolicyConfiguration(List policies, UserPolicyRule[] userRules)
+    {
         this.policies = new ArrayList(policies);
-        systemPolicyRules = new ArrayList(sysRules.length);
-        for (int i = 0; i < sysRules.length; i++)
-            systemPolicyRules.add(sysRules[i]);
-        userPolicyRules = new ArrayList(userRules.length);
-        for (int i = 0; i < userRules.length; i++)
+        userPolicyRules = new ArrayList<UserPolicyRule>(userRules.length);
+        for (int i = 0; i < userRules.length; i++) {
             userPolicyRules.add(userRules[i]);
+        }
     }
 
-    public List getPolicies() {
+    public List<Policy> getPolicies()
+    {
         return policies;
     }
 
-    public void setPolicies(List policies) {
+    public void setPolicies(List<Policy> policies)
+    {
         this.policies = policies;
     }
 
-    public List getSystemPolicyRules() {
-        return systemPolicyRules;
-    }
-
-    public void setSystemPolicyRules(List systemPolicyRules) {
-        this.systemPolicyRules = systemPolicyRules;
-    }
-
-    public List getUserPolicyRules() {
+    public List<UserPolicyRule> getUserPolicyRules()
+    {
         return userPolicyRules;
     }
 
-    public void setUserPolicyRules(List userPolicyRules) {
+    public void setUserPolicyRules(List<UserPolicyRule> userPolicyRules)
+    {
         this.userPolicyRules = userPolicyRules;
     }
 }
 
-    
+

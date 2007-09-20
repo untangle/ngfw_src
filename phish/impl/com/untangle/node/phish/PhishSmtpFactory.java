@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -18,8 +18,6 @@
 
 package com.untangle.node.phish;
 
-import com.untangle.uvm.vnet.TCPNewSessionRequest;
-import com.untangle.uvm.vnet.TCPSession;
 import com.untangle.node.mail.papi.MailExport;
 import com.untangle.node.mail.papi.MailExportFactory;
 import com.untangle.node.mail.papi.MailNodeSettings;
@@ -30,10 +28,12 @@ import com.untangle.node.mail.papi.smtp.sapi.Session;
 import com.untangle.node.spam.SpamSMTPConfig;
 import com.untangle.node.token.TokenHandler;
 import com.untangle.node.token.TokenHandlerFactory;
+import com.untangle.uvm.vnet.TCPNewSessionRequest;
+import com.untangle.uvm.vnet.TCPSession;
 import org.apache.log4j.Logger;
 
-public class PhishSmtpFactory
-    implements TokenHandlerFactory {
+public class PhishSmtpFactory implements TokenHandlerFactory
+{
 
     private MailExport m_mailExport;
     private PhishNode m_phishImpl;
@@ -50,13 +50,9 @@ public class PhishSmtpFactory
 
 
 
-    public TokenHandler tokenHandler(TCPSession session) {
-
-        boolean inbound = session.isInbound();
-
-        SpamSMTPConfig spamConfig = inbound?
-            m_phishImpl.getSpamSettings().getSMTPInbound():
-            m_phishImpl.getSpamSettings().getSMTPOutbound();
+    public TokenHandler tokenHandler(TCPSession session)
+    {
+        SpamSMTPConfig spamConfig = m_phishImpl.getSpamSettings().getSmtpConfig();
 
         if(!spamConfig.getScan()) {
             m_logger.debug("Scanning disabled.  Return passthrough token handler");
@@ -66,8 +62,8 @@ public class PhishSmtpFactory
         MailNodeSettings casingSettings = m_mailExport.getExportSettings();
         return new Session(session,
                            new PhishSmtpHandler(session,
-                                                inbound?casingSettings.getSmtpInboundTimeout():casingSettings.getSmtpOutboundTimeout(),
-                                                inbound?casingSettings.getSmtpInboundTimeout():casingSettings.getSmtpOutboundTimeout(),
+                                                casingSettings.getSmtpTimeout(),
+                                                casingSettings.getSmtpTimeout(),
                                                 m_phishImpl,
                                                 spamConfig,
                                                 m_quarantine,
@@ -76,16 +72,13 @@ public class PhishSmtpFactory
 
     public void handleNewSessionRequest(TCPNewSessionRequest tsr)
     {
-        boolean inbound = tsr.isInbound();
+        SpamSMTPConfig spamConfig = m_phishImpl.getSpamSettings().getSmtpConfig();
 
-        SpamSMTPConfig spamConfig = inbound?
-            m_phishImpl.getSpamSettings().getSMTPInbound():
-            m_phishImpl.getSpamSettings().getSMTPOutbound();
-
-        // Note that we may *****NOT***** release the session here.  This is because
-        // the mail casings currently assume that there will be at least one node
-        // inline at all times.  The contained node's state machine handles some
-        // of the casing's job currently. 10/06 jdi
+        // Note that we may *****NOT***** release the session here.
+        // This is because the mail casings currently assume that
+        // there will be at least one node inline at all times.  The
+        // contained node's state machine handles some of the casing's
+        // job currently. 10/06 jdi
         if(!spamConfig.getScan()) {
             return;
         }

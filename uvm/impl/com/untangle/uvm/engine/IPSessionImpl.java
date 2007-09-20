@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -31,13 +31,13 @@ import com.untangle.jvector.DataCrumb;
 import com.untangle.jvector.IncomingSocketQueue;
 import com.untangle.jvector.OutgoingSocketQueue;
 import com.untangle.uvm.argon.PipelineListener;
-import com.untangle.uvm.vnet.*;
-import com.untangle.uvm.vnet.event.IPStreamer;
-import com.untangle.uvm.node.PipelineEndpoints;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.NodeState;
+import com.untangle.uvm.node.PipelineEndpoints;
 import com.untangle.uvm.util.MetaEnv;
+import com.untangle.uvm.vnet.*;
+import com.untangle.uvm.vnet.event.IPStreamer;
 import org.apache.log4j.Logger;
 import org.apache.log4j.MDC;
 import org.apache.log4j.helpers.AbsoluteTimeDateFormat;
@@ -52,46 +52,49 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
 
     protected boolean released = false;
     protected boolean needsFinalization = true;
-    protected boolean isInbound;
+    protected final boolean incoming;
 
-    protected Dispatcher dispatcher;
+    protected final Dispatcher dispatcher;
 
-    protected PipelineEndpoints pipelineEndpoints;
+    protected final PipelineEndpoints pipelineEndpoints;
 
-    protected List<Crumb>[] crumbs2write = new ArrayList[] { null, null };
+    protected final List<Crumb>[] crumbs2write = new ArrayList[] { null, null };
 
     protected IPStreamer[] streamer = null;
 
     protected Logger logger;
 
-    protected RWSessionStats stats;
+    protected final RWSessionStats stats;
 
-    private Logger timesLogger = null;
+    private final Logger timesLogger;
 
     private final NodeManagerImpl nodeManager;
 
-    protected IPSessionImpl(Dispatcher disp, com.untangle.uvm.argon.IPSession pSession, boolean isInbound,
+    protected IPSessionImpl(Dispatcher disp, com.untangle.uvm.argon.IPSession pSession, boolean incoming,
                             PipelineEndpoints pe)
     {
         super(disp.mPipe(), pSession);
         this.dispatcher = disp;
-        this.isInbound = isInbound;
+        this.incoming = incoming;
         this.stats = new RWSessionStats();
         this.pipelineEndpoints = pe;
-        if (RWSessionStats.DoDetailedTimes)
+        if (RWSessionStats.DoDetailedTimes) {
             timesLogger = Logger.getLogger("com.untangle.uvm.vnet.SessionTimes");
+        } else {
+            timesLogger = null;
+        }
         nodeManager = UvmContextImpl.getInstance().nodeManager();
         logger = disp.mPipe().sessionLogger();
     }
 
-    public boolean isInbound()
+    public boolean isIncoming()
     {
-        return isInbound;
+        return incoming;
     }
 
-    public boolean isOutbound()
+    public boolean isOutgoing()
     {
-        return !isInbound;
+        return !incoming;
     }
 
     public short protocol()

@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -31,8 +31,8 @@ import com.untangle.jvector.Sink;
 import com.untangle.jvector.Source;
 import com.untangle.jvector.TCPSink;
 import com.untangle.jvector.TCPSource;
-import com.untangle.uvm.policy.PolicyRule;
 import com.untangle.uvm.node.PipelineEndpoints;
+import com.untangle.uvm.policy.PolicyRule;
 import org.apache.log4j.Logger;
 
 public class TCPHook implements NetcapHook
@@ -263,11 +263,11 @@ public class TCPHook implements NetcapHook
                 request = new TCPNewSessionRequestImpl( prevSession, agent, originalServerIntf, pe );
             }
 
-            PolicyRule pr = pipelineDesc.getPolicyRule();
-            boolean isInbound = pr == null ? true : pr.isInbound();
+            // DIRDECISION_XXX (not sure if we want to push this lower, or keep at this level)
+            boolean incoming = false;
 
             // TAPI returns null when rejecting the session
-            TCPSession session = agent.getNewSessionEventListener().newSession( request, isInbound );
+            TCPSession session = agent.getNewSessionEventListener().newSession( request, incoming );
 
             processSession( request, session );
 

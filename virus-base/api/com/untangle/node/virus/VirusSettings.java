@@ -74,17 +74,12 @@ public class VirusSettings implements Serializable
     private String ftpDisableResumeDetails = "no description";
     private String httpDisableResumeDetails = "no description";
     private String tricklePercentDetails = "no description";
-    private VirusConfig httpInbound;
-    private VirusConfig httpOutbound;
-    private VirusConfig ftpInbound;
-    private VirusConfig ftpOutbound;
+    private VirusConfig httpConfig;
+    private VirusConfig ftpConfig;
 
-    private VirusSMTPConfig SMTPInbound;
-    private VirusSMTPConfig SMTPOutbound;
-    private VirusPOPConfig POPInbound;
-    private VirusPOPConfig POPOutbound;
-    private VirusIMAPConfig IMAPInbound;
-    private VirusIMAPConfig IMAPOutbound;
+    private VirusSMTPConfig smtpConfig;
+    private VirusPOPConfig popConfig;
+    private VirusIMAPConfig imapConfig;
 
     private List<MimeTypeRule> httpMimeTypes;
     private List<StringRule> extensions;
@@ -218,179 +213,88 @@ public class VirusSettings implements Serializable
     }
 
     /**
-     * Inbound HTTP virus settings.
+     * HTTP virus settings.
      *
-     * @return inbound HTTP settings.
+     * @return HTTP settings.
      */
     @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
-    @JoinColumn(name="http_inbound", nullable=false)
-    public VirusConfig getHttpInbound()
+    @JoinColumn(name="http_config", nullable=false)
+    public VirusConfig getHttpConfig()
     {
-        return httpInbound;
+        return httpConfig;
     }
 
-    public void setHttpInbound(VirusConfig httpInbound)
+    public void setHttpConfig(VirusConfig httpConfig)
     {
-        this.httpInbound = httpInbound;
+        this.httpConfig = httpConfig;
     }
 
     /**
-     * Outbound HTTP virus settings.
+     * FTP virus settings.
      *
-     * @return outbound HTTP settings.
+     * @return FTP settings.
      */
     @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
-    @JoinColumn(name="http_outbound", nullable=false)
-    public VirusConfig getHttpOutbound()
+    @JoinColumn(name="ftp_config", nullable=false)
+    public VirusConfig getFtpConfig()
     {
-        return httpOutbound;
+        return ftpConfig;
     }
 
-    public void setHttpOutbound(VirusConfig httpOutbound)
+    public void setFtpConfig(VirusConfig ftpConfig)
     {
-        this.httpOutbound = httpOutbound;
+        this.ftpConfig = ftpConfig;
     }
 
     /**
-     * Inbound FTP virus settings.
+     * SMTP virus settings.
      *
-     * @return inbound FTP settings.
+     * @return SMTP settings.
      */
     @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
-    @JoinColumn(name="ftp_inbound", nullable=false)
-    public VirusConfig getFtpInbound()
+    @JoinColumn(name="smtp_config", nullable=false)
+    public VirusSMTPConfig getSmtpConfig()
     {
-        return ftpInbound;
+        return smtpConfig;
     }
 
-    public void setFtpInbound(VirusConfig ftpInbound)
+    public void setSmtpConfig(VirusSMTPConfig smtpConfig)
     {
-        this.ftpInbound = ftpInbound;
+        this.smtpConfig = smtpConfig;
     }
 
     /**
-     * Outbound FTP virus settings.
+     * POP virus settings.
      *
-     * @return outbound FTP settings.
+     * @return POP settings.
      */
     @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
-    @JoinColumn(name="ftp_outbound", nullable=false)
-    public VirusConfig getFtpOutbound()
+    @JoinColumn(name="pop_config", nullable=false)
+    public VirusPOPConfig getPopConfig()
     {
-        return ftpOutbound;
+        return popConfig;
     }
 
-    public void setFtpOutbound(VirusConfig ftpOutbound)
+    public void setPopConfig(VirusPOPConfig popConfig)
     {
-        this.ftpOutbound = ftpOutbound;
+        this.popConfig = popConfig;
     }
 
     /**
-     * Inbound SMTP virus settings.
+     * IMAP virus settings.
      *
-     * @return inbound SMTP settings.
+     * @return IMAP settings.
      */
     @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
-    @JoinColumn(name="smtp_inbound", nullable=false)
-    public VirusSMTPConfig getSMTPInbound()
+    @JoinColumn(name="imap_config", nullable=false)
+    public VirusIMAPConfig getImapConfig()
     {
-        return SMTPInbound;
+        return imapConfig;
     }
 
-    public void setSMTPInbound(VirusSMTPConfig SMTPInbound)
+    public void setImapConfig(VirusIMAPConfig imapConfig)
     {
-        this.SMTPInbound = SMTPInbound;
-        return;
-    }
-
-    /**
-     * Outbound SMTP virus settings.
-     *
-     * @return outbound SMTP settings.
-     */
-    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
-    @JoinColumn(name="smtp_outbound", nullable=false)
-    public VirusSMTPConfig getSMTPOutbound()
-    {
-        return SMTPOutbound;
-    }
-
-    public void setSMTPOutbound(VirusSMTPConfig SMTPOutbound)
-    {
-        this.SMTPOutbound = SMTPOutbound;
-        return;
-    }
-
-    /**
-     * Inbound POP virus settings.
-     *
-     * @return inbound POP settings.
-     */
-    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
-    @JoinColumn(name="pop_inbound", nullable=false)
-    public VirusPOPConfig getPOPInbound()
-    {
-        return POPInbound;
-    }
-
-    public void setPOPInbound(VirusPOPConfig POPInbound)
-    {
-        this.POPInbound = POPInbound;
-        return;
-    }
-
-    /**
-     * Outbound POP virus settings.
-     *
-     * @return outbound POP settings.
-     */
-    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
-    @JoinColumn(name="pop_outbound", nullable=false)
-    public VirusPOPConfig getPOPOutbound()
-    {
-        return POPOutbound;
-    }
-
-    public void setPOPOutbound(VirusPOPConfig POPOutbound)
-    {
-        this.POPOutbound = POPOutbound;
-        return;
-    }
-
-    /**
-     * Inbound IMAP virus settings.
-     *
-     * @return inbound IMAP settings.
-     */
-    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
-    @JoinColumn(name="imap_inbound", nullable=false)
-    public VirusIMAPConfig getIMAPInbound()
-    {
-        return IMAPInbound;
-    }
-
-    public void setIMAPInbound(VirusIMAPConfig IMAPInbound)
-    {
-        this.IMAPInbound = IMAPInbound;
-        return;
-    }
-
-    /**
-     * Outbound IMAP virus settings.
-     *
-     * @return outbound IMAP settings.
-     */
-    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
-    @JoinColumn(name="imap_outbound", nullable=false)
-    public VirusIMAPConfig getIMAPOutbound()
-    {
-        return IMAPOutbound;
-    }
-
-    public void setIMAPOutbound(VirusIMAPConfig IMAPOutbound)
-    {
-        this.IMAPOutbound = IMAPOutbound;
-        return;
+        this.imapConfig = imapConfig;
     }
 
     /**

@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -27,6 +27,12 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.untangle.uvm.argon.ArgonAgent;
+import com.untangle.uvm.node.MutateTStats;
+import com.untangle.uvm.node.Node;
+import com.untangle.uvm.node.NodeContext;
+import com.untangle.uvm.node.NodeDesc;
+import com.untangle.uvm.util.MetaEnv;
+import com.untangle.uvm.util.SessionUtil;
 import com.untangle.uvm.vnet.IPSession;
 import com.untangle.uvm.vnet.IPSessionDesc;
 import com.untangle.uvm.vnet.MPipeException;
@@ -43,12 +49,6 @@ import com.untangle.uvm.vnet.event.UDPErrorEvent;
 import com.untangle.uvm.vnet.event.UDPNewSessionRequestEvent;
 import com.untangle.uvm.vnet.event.UDPPacketEvent;
 import com.untangle.uvm.vnet.event.UDPSessionEvent;
-import com.untangle.uvm.node.MutateTStats;
-import com.untangle.uvm.node.Node;
-import com.untangle.uvm.node.NodeContext;
-import com.untangle.uvm.node.NodeDesc;
-import com.untangle.uvm.util.MetaEnv;
-import com.untangle.uvm.util.SessionUtil;
 import gnu.trove.TIntArrayList;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -756,7 +756,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener  {
                 System.out.print("T");
             System.out.print(sd.id());
             System.out.print("\t");
-            System.out.print(sd.isInbound() ? "In" : "Out");
+            System.out.print(sd.isIncoming() ? "In" : "Out");
             System.out.print("\t");
             System.out.print(SessionUtil.prettyState(sd.clientState()));
             System.out.print("\t");

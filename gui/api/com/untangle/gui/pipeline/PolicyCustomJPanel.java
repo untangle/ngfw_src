@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -49,7 +49,6 @@ import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.dialogs.*;
 import com.untangle.gui.widgets.editTable.*;
 import com.untangle.uvm.*;
-import com.untangle.uvm.policy.*;
 import com.untangle.uvm.node.*;
 import com.untangle.uvm.node.firewall.*;
 import com.untangle.uvm.node.firewall.intf.*;
@@ -58,6 +57,7 @@ import com.untangle.uvm.node.firewall.port.PortMatcherFactory;
 import com.untangle.uvm.node.firewall.protocol.ProtocolMatcherFactory;
 import com.untangle.uvm.node.firewall.time.*;
 import com.untangle.uvm.node.firewall.user.UserMatcherFactory;
+import com.untangle.uvm.policy.*;
 
 public class PolicyCustomJPanel extends MEditTableJPanel {
 
@@ -125,8 +125,6 @@ class CustomPolicyTableModel extends MSortedTableModel<PolicyCompoundSettings>{
     protected boolean getSortable(){ return false; }
 
     private static final String NULL_STRING = "> No rack";
-    private static final String INBOUND_STRING = " (inbound)";
-    private static final String OUTBOUND_STRING = " (outbound)";
 
 
     private ComboBoxModel protocolModel =
@@ -139,8 +137,8 @@ class CustomPolicyTableModel extends MSortedTableModel<PolicyCompoundSettings>{
     private void updatePolicyNames(List<Policy> policyList){
         policyNames.clear();
         for( Policy policy : policyList ){
-            policyNames.put( policy.getName()+INBOUND_STRING, policy );
-            policyNames.put( policy.getName()+OUTBOUND_STRING, policy );
+            policyNames.put( policy.getName(), policy );
+            policyNames.put( policy.getName(), policy );
         }
         policyNames.put( NULL_STRING, null);
     }
@@ -216,8 +214,6 @@ class CustomPolicyTableModel extends MSortedTableModel<PolicyCompoundSettings>{
             newElem.setLive( isLive );
             Policy policy = policyNames.get((String) ((ComboBoxModel)rowVector.elementAt(4)).getSelectedItem());
             newElem.setPolicy( policy );
-            boolean isInbound = ((String) ((ComboBoxModel)rowVector.elementAt(4)).getSelectedItem()).contains(INBOUND_STRING);
-            newElem.setInbound( isInbound );
 
             newElem.setClientIntf( (IntfMatcher)((ComboBoxModel)rowVector.elementAt(5)).getSelectedItem() );
             newElem.setServerIntf( (IntfMatcher)((ComboBoxModel)rowVector.elementAt(6)).getSelectedItem() );
@@ -287,7 +283,7 @@ class CustomPolicyTableModel extends MSortedTableModel<PolicyCompoundSettings>{
             tempRow.add( newElem.isLive() );
             String policyName;
             if( newElem.getPolicy() != null )
-                policyName = newElem.getPolicy().getName() + (newElem.isInbound()?INBOUND_STRING:OUTBOUND_STRING);
+                policyName = newElem.getPolicy().getName();
             else
                 policyName = NULL_STRING;
             tempRow.add( super.generateComboBoxModel(policyNames.keySet().toArray(), policyName) );

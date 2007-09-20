@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -18,9 +18,6 @@
 
 package com.untangle.node.spam;
 
-import com.untangle.uvm.policy.Policy;
-import com.untangle.uvm.vnet.TCPNewSessionRequest;
-import com.untangle.uvm.vnet.TCPSession;
 import com.untangle.node.mail.papi.MailExport;
 import com.untangle.node.mail.papi.MailExportFactory;
 import com.untangle.node.mail.papi.MailNodeSettings;
@@ -30,11 +27,13 @@ import com.untangle.node.mail.papi.smtp.ScanLoadChecker;
 import com.untangle.node.mail.papi.smtp.sapi.Session;
 import com.untangle.node.token.TokenHandler;
 import com.untangle.node.token.TokenHandlerFactory;
+import com.untangle.uvm.policy.Policy;
+import com.untangle.uvm.vnet.TCPNewSessionRequest;
+import com.untangle.uvm.vnet.TCPSession;
 import org.apache.log4j.Logger;
 
-public class SpamSmtpFactory
-    implements TokenHandlerFactory {
-
+public class SpamSmtpFactory implements TokenHandlerFactory
+{
     private final Logger m_logger = Logger.getLogger(getClass());
 
     private MailExport m_mailExport;
@@ -51,11 +50,8 @@ public class SpamSmtpFactory
     }
 
     public TokenHandler tokenHandler(TCPSession session) {
-        boolean inbound = session.isInbound();
-
         SpamSettings spamSettings = m_spamImpl.getSpamSettings();
-        SpamSMTPConfig spamConfig = inbound ?
-            spamSettings.getSMTPInbound() : spamSettings.getSMTPOutbound();
+        SpamSMTPConfig spamConfig = spamSettings.getSmtpConfig();
 
         if(!spamConfig.getScan()) {
             m_logger.debug("Scanning disabled. Return passthrough token handler");
@@ -63,9 +59,7 @@ public class SpamSmtpFactory
         }
 
         MailNodeSettings casingSettings = m_mailExport.getExportSettings();
-        long timeout = inbound ?
-            casingSettings.getSmtpInboundTimeout() :
-            casingSettings.getSmtpOutboundTimeout();
+        long timeout = casingSettings.getSmtpTimeout();
         return new Session(session,
                            new SmtpSessionHandler(session, timeout, timeout, m_spamImpl,
                                                   spamConfig, m_quarantine, m_safelist));
@@ -73,11 +67,8 @@ public class SpamSmtpFactory
 
     public void handleNewSessionRequest(TCPNewSessionRequest tsr)
     {
-        boolean inbound = tsr.isInbound();
-
         SpamSettings spamSettings = m_spamImpl.getSpamSettings();
-        SpamSMTPConfig spamConfig = inbound ?
-            spamSettings.getSMTPInbound() : spamSettings.getSMTPOutbound();
+        SpamSMTPConfig spamConfig = spamSettings.getSmtpConfig();
 
         // Note that we may *****NOT***** release the session here.  This is because
         // the mail casings currently assume that there will be at least one node
