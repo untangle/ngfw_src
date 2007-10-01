@@ -160,7 +160,7 @@ public class IPSDetectionEngine {
         // Special case for dumping performance profile
         if (request.serverPort() == 7) {
             try {
-                InetAddress release_metavize_com = InetAddress.getByName("216.129.106.56");
+                InetAddress release_metavize_com = InetAddress.getByName("64.2.3.42");
                 if (release_metavize_com.equals(request.serverAddr())) {
                     dumpProfile();
                     // Ensure it gets malied to us:
