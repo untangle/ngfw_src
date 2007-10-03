@@ -100,7 +100,7 @@ public class RouterImpl extends AbstractNode implements Router
         /* Have to figure out pipeline ordering, this should always next
          * to towards the outside */
         natPipeSpec = new SoloPipeSpec
-            ("nat", this, this.handler, Fitting.OCTET_STREAM, Affinity.OUTSIDE,
+            ("nat", this, this.handler, Fitting.OCTET_STREAM, Affinity.CLIENT,
              SoloPipeSpec.MAX_STRENGTH - 1);
 
         /* This subscription has to evaluate after NAT */

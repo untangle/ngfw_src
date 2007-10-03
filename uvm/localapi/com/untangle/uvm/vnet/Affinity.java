@@ -44,9 +44,6 @@ public class Affinity
     public static final Affinity CLIENT = new Affinity("client");
     public static final Affinity SERVER = new Affinity("server");
 
-    public static final Affinity INSIDE = new Affinity("inside");
-    public static final Affinity OUTSIDE = new Affinity("outside");
-
     private String affinity;
 
     private Affinity(String affinity)

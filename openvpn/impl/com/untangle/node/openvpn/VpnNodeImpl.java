@@ -99,7 +99,7 @@ public class VpnNodeImpl extends AbstractNode
         /* Have to figure out pipeline ordering, this should always
          * next to towards the outside, then there is OpenVpn and then Nat */
         this.pipeSpec = new SoloPipeSpec
-            ( TRAN_NAME, this, handler, Fitting.OCTET_STREAM, Affinity.OUTSIDE,
+            ( TRAN_NAME, this, handler, Fitting.OCTET_STREAM, Affinity.CLIENT,
               SoloPipeSpec.MAX_STRENGTH - 2);
         this.pipeSpecs = new SoloPipeSpec[] { pipeSpec };
     }
