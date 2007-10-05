@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -30,6 +30,7 @@ import com.untangle.uvm.networking.NetworkSettingsListener;
 import com.untangle.uvm.networking.internal.InterfaceInternal;
 import com.untangle.uvm.networking.internal.NetworkSpaceInternal;
 import com.untangle.uvm.networking.internal.NetworkSpacesInternalSettings;
+import com.untangle.uvm.node.InterfaceComparator;
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.firewall.intf.IntfMatcher;
 import com.untangle.uvm.node.firewall.intf.IntfMatcherFactory;
@@ -42,46 +43,46 @@ class NatChecker implements NetworkSettingsListener
 {
     private List<NatMatcher> natMatcherList = new LinkedList<NatMatcher>();
 
-    private final Logger logger = Logger.getLogger( getClass());
+    private final Logger logger = Logger.getLogger(getClass());
 
     NatChecker()
     {
     }
 
-    boolean isNat( NetcapSession client )
+    boolean isNat(NetcapSession client)
     {
-        for ( NatMatcher matcher : this.natMatcherList ) {
-            if ( matcher.isMatch( client )) return true;
+        for (NatMatcher matcher : this.natMatcherList) {
+            if (matcher.isMatch(client)) return true;
         }
 
         return false;
     }
 
     /* Update the list of NAT matchers */
-    public void event( NetworkSpacesInternalSettings settings )
+    public void event(NetworkSpacesInternalSettings settings)
     {
         /* Indicate that the event occured */
-        logger.info( "Updating the NAT matchers for argon." );
+        logger.info("Updating the NAT matchers for argon.");
 
         List<NatMatcher> matchers = new LinkedList<NatMatcher>();
 
-        if ( settings.getIsEnabled()) {
-            for ( NetworkSpaceInternal space : settings.getNetworkSpaceList()) {
-                logger.info( "Updating the network space: " + space.getIndex());
-                if ( space.getIsEnabled() && space.getIsNatEnabled()) {
-                    for ( IPNetwork network : space.getNetworkList()) {
-                        matchers.add( NatMatcher.makeMatcher( space, network ));
+        if (settings.getIsEnabled()) {
+            for (NetworkSpaceInternal space : settings.getNetworkSpaceList()) {
+                logger.info("Updating the network space: " + space.getIndex());
+                if (space.getIsEnabled() && space.getIsNatEnabled()) {
+                    for (IPNetwork network : space.getNetworkList()) {
+                        matchers.add(NatMatcher.makeMatcher(space, network));
                     }
                 } else {
-                    logger.info( "NAT is disabled for network space:" + space.getIndex());
+                    logger.info("NAT is disabled for network space:" + space.getIndex());
                 }
             }
         } else {
-            logger.debug( "Network spaces are disabled skipping all network spaces" );
+            logger.debug("Network spaces are disabled skipping all network spaces");
         }
 
         /* Set this list once at the end to avoid locks */
-        this.natMatcherList = Collections.unmodifiableList( matchers );
+        this.natMatcherList = Collections.unmodifiableList(matchers);
     }
 
     static class NatMatcher
@@ -92,52 +93,56 @@ class NatChecker implements NetworkSettingsListener
         private final IPMatcher   ipMatcher;
         private final IntfMatcher intfMatcher;
         private final Logger logger = Logger.getLogger(getClass());
-        
-        
-        NatMatcher( IPMatcher ipMatcher, IntfMatcher intfMatcher )
+
+
+        NatMatcher(IPMatcher ipMatcher, IntfMatcher intfMatcher)
         {
             this.ipMatcher = ipMatcher;
             this.intfMatcher = intfMatcher;
         }
-        
-        boolean isMatch( NetcapSession netcapSession )
+
+        boolean isMatch(NetcapSession netcapSession)
         {
             LocalIntfManager lim = Argon.getInstance().getIntfManager();
-            
-            byte clientIntf = lim.toArgon( netcapSession.clientSide().interfaceId());
+
+            byte clientIntf = lim.toArgon(netcapSession.clientSide().interfaceId());
+            byte serverIntf = lim.toArgon(netcapSession.serverSide().interfaceId());
+            InterfaceComparator c = lim.getInterfaceComparator();
+
             InetAddress clientAddr = netcapSession.clientSide().client().host();
-            
-            return this.intfMatcher.isMatch( clientIntf ) && this.ipMatcher.isMatch( clientAddr );
+
+            return this.intfMatcher.isMatch(clientIntf, serverIntf, c)
+                && this.ipMatcher.isMatch(clientAddr);
         }
-        
+
         public String toString()
         {
             return "<NatMatcher: " + ipMatcher + "/" + intfMatcher + ">";
         }
-        
-        
-        static NatMatcher makeMatcher( NetworkSpaceInternal space, IPNetwork network )
+
+
+        static NatMatcher makeMatcher(NetworkSpaceInternal space, IPNetwork network)
         {
             IPMatcher ip = IPMatcherFactory.getInstance().
-                makeSubnetMatcher( network.getNetwork(), network.getNetmask());
-            
+                makeSubnetMatcher(network.getNetwork(), network.getNetmask());
+
             List<InterfaceInternal> intfList = space.getInterfaceList();
-            
+
             byte intfArray[] = new byte[intfList.size()];
-            
+
             int c = 0 ;
-            for ( InterfaceInternal intf : intfList ) intfArray[c++] = intf.getArgonIntf().getArgon();
-            
+            for (InterfaceInternal intf : intfList) intfArray[c++] = intf.getArgonIntf().getArgon();
+
             IntfMatcher intfMatcher;
             try {
-                intfMatcher = IntfMatcherFactory.getInstance().makeSetMatcher( intfArray );
-            } catch ( ParseException e ) {
+                intfMatcher = IntfMatcherFactory.getInstance().makeSetMatcher(intfArray);
+            } catch (ParseException e) {
                 Logger logger = Logger.getLogger(NatChecker.class);
-                logger.error( "Error making set matcher, using the nil matcher.", e );
+                logger.error("Error making set matcher, using the nil matcher.", e);
                 intfMatcher = IntfMatcherFactory.getInstance().getNilMatcher();
             }
-            
-            return new NatMatcher( ip, intfMatcher );
+
+            return new NatMatcher(ip, intfMatcher);
         }
     }
 }

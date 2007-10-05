@@ -106,7 +106,6 @@ CREATE TABLE settings.u_user_policy_rule (
     client_intf_matcher text,
     server_intf_matcher text,
     policy_id int8,
-    is_inbound bool NOT NULL,
     name text,
     category text,
     description text,

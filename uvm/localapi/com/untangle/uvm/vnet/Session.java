@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -33,18 +33,18 @@
 
 package com.untangle.uvm.vnet;
 
-// import org.apache.commons.jxpath.JXPathContext;
-
 /**
  * The base Sessoin interface
  *
  * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
  * @version 1.0
  */
-public interface Session extends SessionDesc {
+public interface Session extends SessionDesc
+{
 
     /**
-     * <code>mPipe</code> returns the Meta Pipe <code>MPipe</code> that this session lives on.
+     * <code>mPipe</code> returns the Meta Pipe <code>MPipe</code>
+     * that this session lives on.
      *
      * @return the <code>MPipe</code> that this session is for
      */
@@ -53,29 +53,24 @@ public interface Session extends SessionDesc {
     /**
      * Attaches the given object to this session.
      *
-     * <p> An attached object may later be retrieved via the {@link #attachment
-     * attachment} method.  Only one object may be attached at a time; invoking
-     * this method causes any previous attachment to be discarded.  The current
-     * attachment may be discarded by attaching <tt>null</tt>.  </p>
+     * <p> An attached object may later be retrieved via the {@link
+     * #attachment attachment} method.  Only one object may be
+     * attached at a time; invoking this method causes any previous
+     * attachment to be discarded.  The current attachment may be
+     * discarded by attaching <tt>null</tt>.
      *
-     * @param  ob
-     *         The object to be attached; may be <tt>null</tt>
+     * @param ob The object to be attached; may be <tt>null</tt>
      *
-     * @return  The previously-attached object, if any,
-     *          otherwise <tt>null</tt>
+     * @return The previously-attached object, if any, otherwise
+     *          <tt>null</tt>
      */
     Object attach(Object ob);
 
     /**
-     * Retrieves the current attachment.  </p>
+     * Retrieves the current attachment.
      *
-     * @return  The object currently attached to this session,
-     *          or <tt>null</tt> if there is no attachment
+     * @return The object currently attached to this session, or
+     *          <tt>null</tt> if there is no attachment
      */
     Object attachment();
-
-    // JXPathContext sessionContext();
-
-    // ExtendedPreferences sessionNode();
-
 }

@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -28,18 +28,20 @@ import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.EventLoggerFactory;
 import com.untangle.uvm.logging.EventManager;
 import com.untangle.uvm.logging.SimpleEventFilter;
+import com.untangle.uvm.node.NodeContext;
+import com.untangle.uvm.node.NodeException;
+import com.untangle.uvm.node.NodeStartException;
+import com.untangle.uvm.node.firewall.intf.IntfDBMatcher;
+import com.untangle.uvm.node.firewall.intf.IntfMatcherFactory;
+import com.untangle.uvm.node.firewall.ip.IPMatcherFactory;
+import com.untangle.uvm.node.firewall.port.PortMatcherFactory;
+import com.untangle.uvm.node.firewall.protocol.ProtocolMatcherFactory;
+import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.AbstractNode;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.vnet.SoloPipeSpec;
-import com.untangle.uvm.node.NodeContext;
-import com.untangle.uvm.node.NodeException;
-import com.untangle.uvm.node.NodeStartException;
-import com.untangle.uvm.node.firewall.ip.IPMatcherFactory;
-import com.untangle.uvm.node.firewall.port.PortMatcherFactory;
-import com.untangle.uvm.node.firewall.protocol.ProtocolMatcherFactory;
-import com.untangle.uvm.util.TransactionWork;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -59,7 +61,7 @@ public class FirewallImpl extends AbstractNode implements Firewall
 
     public FirewallImpl()
     {
-        this.handler = new EventHandler( this );
+        this.handler = new EventHandler(this);
         this.statisticManager = new FirewallStatisticManager(getNodeContext());
 
         /* Have to figure out pipeline ordering, this should always
@@ -87,7 +89,7 @@ public class FirewallImpl extends AbstractNode implements Firewall
                          + getNodeContext().getRunState());
         } else {
             List<FirewallRule> l = settings.getFirewallRuleList();
-            for (Iterator<FirewallRule> i = l.iterator(); i.hasNext(); ) {
+            for (Iterator<FirewallRule> i = l.iterator(); i.hasNext();) {
                 FirewallRule r = i.next();
                 if (null == r) {
                     logger.warn("Removing null from list");
@@ -201,17 +203,17 @@ public class FirewallImpl extends AbstractNode implements Firewall
             throw new NodeException("Failed to get Firewall settings: " + settings);
         }
 
-        handler.configure( settings );
+        handler.configure(settings);
     }
 
     private   void updateToCurrent(FirewallSettings settings)
     {
         if (settings == null) {
-            logger.error( "NULL Firewall Settings" );
+            logger.error("NULL Firewall Settings");
             return;
         }
 
-        logger.info( "Update Settings Complete" );
+        logger.info("Update Settings Complete");
     }
 
     void log(FirewallEvent logEvent)
@@ -221,8 +223,8 @@ public class FirewallImpl extends AbstractNode implements Firewall
 
     FirewallSettings getDefaultSettings()
     {
-        logger.info( "Loading the default settings" );
-        FirewallSettings settings = new FirewallSettings( this.getTid());
+        logger.info("Loading the default settings");
+        FirewallSettings settings = new FirewallSettings(this.getTid());
 
         try {
             IPMatcherFactory ipmf = IPMatcherFactory.getInstance();
@@ -231,56 +233,67 @@ public class FirewallImpl extends AbstractNode implements Firewall
 
 
             /* A few sample settings */
-            settings.setQuickExit( true );
-            settings.setRejectSilently( true );
-            settings.setDefaultAccept( true );
+            settings.setQuickExit(true);
+            settings.setRejectSilently(true);
+            settings.setDefaultAccept(true);
 
             List<FirewallRule> firewallList = new LinkedList<FirewallRule>();
 
-            FirewallRule tmp = new FirewallRule( false, prmf.getTCPAndUDPMatcher(),
-                                                 false, true,
-                                                 ipmf.getAllMatcher(), ipmf.getAllMatcher(),
-                                                 pmf.getAllMatcher(), pmf.makeSingleMatcher( 21 ),
-                                                 true );
-            tmp.setLog( true );
-            tmp.setDescription( "Block and log all incoming traffic destined to port 21 (FTP)" );
-            firewallList.add( tmp );
+            IntfMatcherFactory imf = IntfMatcherFactory.getInstance();
+            IntfDBMatcher any = imf.getAllMatcher();
+            IntfDBMatcher external = imf.getMoreExternalMatcher();
+            IntfDBMatcher internal = imf.getMoreInternalMatcher();
+
+            FirewallRule tmp = new FirewallRule(false,
+                                                prmf.getTCPAndUDPMatcher(),
+                                                any, internal,
+                                                ipmf.getAllMatcher(),
+                                                ipmf.getAllMatcher(),
+                                                pmf.getAllMatcher(),
+                                                pmf.makeSingleMatcher(21),
+                                                true);
+            tmp.setLog(true);
+            tmp.setDescription("Block and log all incoming traffic destined to port 21 (FTP)");
+            firewallList.add(tmp);
 
             /* Block all traffic TCP traffic from the network 1.2.3.4/255.255.255.0 */
-            tmp = new FirewallRule( false, prmf.getTCPMatcher(),
-                                    true, true,
-                                    ipmf.parse( "1.2.3.0/255.255.255.0" ), ipmf.getAllMatcher(),
-                                    pmf.getAllMatcher(), pmf.getAllMatcher(),
-                                    true );
-            tmp.setDescription( "Block all TCP traffic from 1.2.3.0 netmask 255.255.255.0" );
-            firewallList.add( tmp );
+            tmp = new FirewallRule(false, prmf.getTCPMatcher(),
+                                   any, external,
+                                   ipmf.parse("1.2.3.0/255.255.255.0"),
+                                   ipmf.getAllMatcher(),
+                                   pmf.getAllMatcher(), pmf.getAllMatcher(),
+                                   true);
+            tmp.setDescription("Block all TCP traffic from 1.2.3.0 netmask 255.255.255.0");
+            firewallList.add(tmp);
 
-            tmp = new FirewallRule( false, prmf.getTCPAndUDPMatcher(),
-                                    true, true,
-                                    ipmf.getAllMatcher(), ipmf.parse( "1.2.3.1 - 1.2.3.10" ),
-                                    pmf.makeRangeMatcher( 1000, 5000 ), pmf.getAllMatcher(),
-                                    false );
-            tmp.setLog( true );
-            tmp.setDescription( "Accept and log all traffic to the range 1.2.3.1 - 1.2.3.10 from ports 1000-5000" );
-            firewallList.add( tmp );
+            tmp = new FirewallRule(false, prmf.getTCPAndUDPMatcher(),
+                                   any, any,
+                                   ipmf.getAllMatcher(),
+                                   ipmf.parse("1.2.3.1 - 1.2.3.10"),
+                                   pmf.makeRangeMatcher(1000, 5000),
+                                   pmf.getAllMatcher(),
+                                   false);
+            tmp.setLog(true);
+            tmp.setDescription("Accept and log all traffic to the range 1.2.3.1 - 1.2.3.10 from ports 1000-5000");
+            firewallList.add(tmp);
 
-            tmp = new FirewallRule( false, prmf.getPingMatcher(),
-                                    true, true,
-                                    ipmf.getAllMatcher(), ipmf.parse( "1.2.3.1" ),
-                                    pmf.getPingMatcher(), pmf.getPingMatcher(),
-                                    false );
-            tmp.setDescription( "Accept PINGs to 1.2.3.1.  Note: the source and destination ports are ignored." );
-            firewallList.add( tmp );
+            tmp = new FirewallRule(false, prmf.getPingMatcher(),
+                                   any, any,
+                                   ipmf.getAllMatcher(), ipmf.parse("1.2.3.1"),
+                                   pmf.getPingMatcher(), pmf.getPingMatcher(),
+                                   false);
+            tmp.setDescription("Accept PINGs to 1.2.3.1.  Note: the source and destination ports are ignored.");
+            firewallList.add(tmp);
 
 
-            for ( Iterator<FirewallRule> iter = firewallList.iterator() ; iter.hasNext() ; ) {
-                iter.next().setCategory( "[Sample]" );
+            for (Iterator<FirewallRule> iter = firewallList.iterator() ; iter.hasNext() ;) {
+                iter.next().setCategory("[Sample]");
             }
 
-            settings.setFirewallRuleList( firewallList );
+            settings.setFirewallRuleList(firewallList);
 
-        } catch (Exception e ) {
-            logger.error( "This should never happen", e );
+        } catch (Exception e) {
+            logger.error("This should never happen", e);
         }
 
         return settings;
@@ -289,7 +302,7 @@ public class FirewallImpl extends AbstractNode implements Firewall
     /* Kill all sessions when starting or stopping this node */
     protected SessionMatcher sessionMatcher()
     {
-        return SessionMatcherFactory.makePolicyInstance( getPolicy());
+        return SessionMatcherFactory.makePolicyInstance(getPolicy());
     }
 
     // XXX soon to be deprecated ----------------------------------------------

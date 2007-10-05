@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -35,60 +35,63 @@ package com.untangle.uvm.node.firewall;
 
 import java.net.InetAddress;
 
-import com.untangle.uvm.vnet.Protocol;
-import com.untangle.uvm.vnet.IPNewSessionRequest;
-import com.untangle.uvm.vnet.IPSessionDesc;
-
-import com.untangle.uvm.node.firewall.ip.IPMatcher;
+import com.untangle.uvm.node.InterfaceComparator;
 import com.untangle.uvm.node.firewall.intf.IntfMatcher;
+import com.untangle.uvm.node.firewall.ip.IPMatcher;
 import com.untangle.uvm.node.firewall.port.PortMatcher;
 import com.untangle.uvm.node.firewall.protocol.ProtocolMatcher;
+import com.untangle.uvm.vnet.IPNewSessionRequest;
+import com.untangle.uvm.vnet.IPSessionDesc;
+import com.untangle.uvm.vnet.Protocol;
 
 
-public abstract class TrafficIntfMatcher extends TrafficMatcher 
-{    
+public abstract class TrafficIntfMatcher extends TrafficMatcher
+{
     final IntfMatcher srcIntf;
     final IntfMatcher dstIntf;
-    
-    public TrafficIntfMatcher( boolean     isEnabled,  ProtocolMatcher protocol, 
-                               IntfMatcher srcIntf,    IntfMatcher     dstIntf,
-                               IPMatcher   srcAddress, IPMatcher       dstAddress,
-                               PortMatcher srcPort,    PortMatcher     dstPort )
+
+    public TrafficIntfMatcher(boolean isEnabled, ProtocolMatcher protocol,
+                              IntfMatcher srcIntf, IntfMatcher dstIntf,
+                              IPMatcher srcAddress, IPMatcher dstAddress,
+                              PortMatcher srcPort, PortMatcher dstPort)
     {
-        super( isEnabled, protocol, srcAddress, dstAddress, srcPort, dstPort );
+        super(isEnabled, protocol, srcAddress, dstAddress, srcPort, dstPort);
         this.srcIntf  = srcIntf;
         this.dstIntf  = dstIntf;
     }
 
-    protected TrafficIntfMatcher( TrafficIntfRule rule )
+    protected TrafficIntfMatcher(TrafficIntfRule rule)
     {
-        super( rule );
+        super(rule);
         this.srcIntf = rule.getSrcIntf();
         this.dstIntf = rule.getDstIntf();
     }
-    
-    public boolean isMatch( IPSessionDesc session, Protocol protocol )
+
+    public boolean isMatch(IPSessionDesc session, Protocol protocol,
+                           InterfaceComparator c)
     {
-        return ( isMatchIntf( session.clientIntf(), session.serverIntf()) && 
-                 super.isMatch( session, protocol )); 
+        return (isMatchIntf(session.clientIntf(), session.serverIntf(), c) &&
+                super.isMatch(session, protocol));
     }
 
-    public boolean isMatch( IPNewSessionRequest request, Protocol protocol )
+    public boolean isMatch(IPNewSessionRequest request, Protocol protocol,
+                           InterfaceComparator c)
     {
-        return ( isMatchIntf( request.clientIntf(), request.originalServerIntf()) && 
-                 super.isMatch( request, protocol ));     
-    }
-    
-    public boolean isMatch( Protocol protocol, byte srcIntf, byte dstIntf, 
-                            InetAddress srcAddress, InetAddress dstAddress, 
-                            int srcPort, int dstPort )                            
-    {
-        return ( isMatchIntf( srcIntf, dstIntf ) && 
-                 super.isMatch( protocol, srcAddress, dstAddress, srcPort, dstPort ));
+        return isMatchIntf(request.clientIntf(), request.originalServerIntf(), c)
+            && super.isMatch(request, protocol);
     }
 
-    public boolean isMatchIntf( byte src, byte dst )
+    public boolean isMatch(Protocol protocol, byte srcIntf, byte dstIntf,
+                           InetAddress srcAddress, InetAddress dstAddress,
+                           int srcPort, int dstPort, InterfaceComparator c)
     {
-        return this.srcIntf.isMatch( src ) && this.dstIntf.isMatch( dst );
+        return (isMatchIntf(srcIntf, dstIntf, c) &&
+                super.isMatch(protocol, srcAddress, dstAddress, srcPort, dstPort));
+    }
+
+    public boolean isMatchIntf(byte src, byte dst, InterfaceComparator c)
+    {
+        return this.srcIntf.isMatch(src, dst, c)
+            && this.dstIntf.isMatch(dst, src, c);
     }
 }

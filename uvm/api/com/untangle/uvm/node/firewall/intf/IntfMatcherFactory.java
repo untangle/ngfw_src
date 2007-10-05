@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -34,9 +34,7 @@
 package com.untangle.uvm.node.firewall.intf;
 
 import com.untangle.uvm.IntfEnum;
-
 import com.untangle.uvm.node.ParseException;
-
 import com.untangle.uvm.node.firewall.ParsingFactory;
 
 
@@ -55,26 +53,39 @@ public class IntfMatcherFactory
 
     private IntfMatcherFactory()
     {
-        this.parser = new ParsingFactory<IntfDBMatcher>( "intf matcher" );
-        this.parser.registerParsers( IntfSimpleMatcher.PARSER, IntfSingleMatcher.PARSER, 
-                                     IntfInverseMatcher.PARSER, IntfSetMatcher.PARSER );
+        this.parser = new ParsingFactory<IntfDBMatcher>("intf matcher");
+        this.parser.registerParsers(IntfSimpleMatcher.PARSER,
+                                    IntfRelativeMatcher.PARSER,
+                                    IntfSingleMatcher.PARSER,
+                                    IntfInverseMatcher.PARSER,
+                                    IntfSetMatcher.PARSER);
     }
 
-    public IntfDBMatcher getAllMatcher() 
+    public IntfDBMatcher getAllMatcher()
     {
         return IntfSimpleMatcher.getAllMatcher();
     }
 
-    public IntfDBMatcher getNilMatcher() 
+    public IntfDBMatcher getNilMatcher()
     {
         return IntfSimpleMatcher.getNilMatcher();
+    }
+
+    public IntfDBMatcher getMoreInternalMatcher()
+    {
+        return IntfRelativeMatcher.getMoreInternalMatcher();
+    }
+
+    public IntfDBMatcher getMoreExternalMatcher()
+    {
+        return IntfRelativeMatcher.getMoreExternalMatcher();
     }
 
     public IntfDBMatcher getExternalMatcher()
     {
         return IntfSingleMatcher.getExternalMatcher();
     }
-    
+
     public IntfDBMatcher getInternalMatcher()
     {
         return IntfSingleMatcher.getInternalMatcher();
@@ -89,22 +100,22 @@ public class IntfMatcherFactory
     {
         return IntfSingleMatcher.getVpnMatcher();
     }
-    
+
     /**
      * Update the enumeration of IntfMatchers.
      *
      * @param intfEnum The new interface enumeration.
      */
-    public void updateEnumeration( IntfEnum intfEnum )
+    public void updateEnumeration(IntfEnum intfEnum)
     {
-        IntfMatcherEnumeration.getInstance().updateEnumeration( intfEnum );
+        IntfMatcherEnumeration.getInstance().updateEnumeration(intfEnum);
     }
 
     /**
      * Retrieve the enumeration of possible IntfMatchers.
      *
      * @return An array of valid IntfMatchers.
-     */    
+     */
     public IntfDBMatcher[] getEnumeration()
     {
         return IntfMatcherEnumeration.getInstance().getEnumeration();
@@ -125,9 +136,9 @@ public class IntfMatcherFactory
      *
      * @param intf The interface to match.
      */
-    public IntfDBMatcher makeSingleMatcher( byte intf ) throws ParseException
+    public IntfDBMatcher makeSingleMatcher(byte intf) throws ParseException
     {
-        return IntfSingleMatcher.makeInstance( intf );
+        return IntfSingleMatcher.makeInstance(intf);
     }
 
     /**
@@ -136,12 +147,12 @@ public class IntfMatcherFactory
      *
      * @param intfArray An array of interfaces to match.
      */
-    public IntfDBMatcher makeSetMatcher( byte ... intfArray ) throws ParseException
+    public IntfDBMatcher makeSetMatcher(byte ... intfArray) throws ParseException
     {
-        switch ( intfArray.length ) {
+        switch (intfArray.length) {
         case 0: return IntfSimpleMatcher.getNilMatcher();
-        case 1: return makeSingleMatcher( intfArray[0] );
-        default: return IntfSetMatcher.makeInstance( intfArray );
+        case 1: return makeSingleMatcher(intfArray[0]);
+        default: return IntfSetMatcher.makeInstance(intfArray);
         }
     }
 
@@ -151,11 +162,11 @@ public class IntfMatcherFactory
      *
      * @param intfArray Array of interfaces that shouldn't match.
      */
-    public IntfDBMatcher makeInverseMatcher( byte ... intfArray ) throws ParseException
+    public IntfDBMatcher makeInverseMatcher(byte ... intfArray) throws ParseException
     {
-        switch ( intfArray.length ) {
+        switch (intfArray.length) {
         case 0:  return IntfSimpleMatcher.getAllMatcher();
-        default: return IntfInverseMatcher.makeInstance( intfArray );
+        default: return IntfInverseMatcher.makeInstance(intfArray);
         }
     }
 
@@ -164,9 +175,9 @@ public class IntfMatcherFactory
      *
      * @param value The string to parse.
      */
-    public static IntfDBMatcher parse( String value ) throws ParseException
+    public static IntfDBMatcher parse(String value) throws ParseException
     {
-        return INSTANCE.parser.parse( value );
+        return INSTANCE.parser.parse(value);
     }
 
     public static IntfMatcherFactory getInstance()
@@ -174,4 +185,3 @@ public class IntfMatcherFactory
         return INSTANCE;
     }
 }
-

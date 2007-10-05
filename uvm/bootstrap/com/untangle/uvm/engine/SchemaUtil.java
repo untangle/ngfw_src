@@ -38,6 +38,8 @@ import org.apache.log4j.Logger;
  */
 public class SchemaUtil
 {
+    private final Logger logger = Logger.getLogger(getClass());
+
     private final Set<String> converts = new HashSet<String>();
 
     // constructors -----------------------------------------------------------
@@ -61,6 +63,9 @@ public class SchemaUtil
     public void initSchema(String type, String component)
     {
         String key = type + "," + component;
+
+        logger.info("initializing schema: " + key);
+
         synchronized (converts) {
             while (converts.contains(key)) {
                 try {
@@ -88,14 +93,12 @@ public class SchemaUtil
                     p.waitFor();
                 } catch (InterruptedException exn) {
                     // can happen from the EventLogger
-                    Logger logger = Logger.getLogger(SchemaUtil.class);
                     logger.debug("waiting for update-schema");
                     tryAgain = true;
                 }
             } while (tryAgain);
 
         } catch (IOException exn) {
-            Logger logger = Logger.getLogger(SchemaUtil.class);
             logger.warn("error in update-schema", exn);
         } finally {
             synchronized (converts) {

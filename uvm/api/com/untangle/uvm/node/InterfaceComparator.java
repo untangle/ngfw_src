@@ -1,5 +1,5 @@
 /*
- * $HeadURL$
+ * $HeadURL: svn://chef/branch/prod/sdr/work/src/uvm/api/com/untangle/uvm/node/AddressRange.java $
  * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
@@ -31,47 +31,44 @@
  * to do so, delete this exception statement from your version.
  */
 
-package com.untangle.uvm.node.firewall;
+package com.untangle.uvm.node;
 
-/**
- * A pool of constants used for parsing.  Modify these with caution,
- * because the database representation depends on these constants.
- *
- * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
- * @version 1.0
- */
-public class ParsingConstants
+import java.io.Serializable;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
+public class InterfaceComparator implements Comparator<Byte>, Serializable
 {
-    /* User representation of a matcher that should never match */
-    public static final String MARKER_NOTHING = "none";
+    private final Integer[] positions;
 
-    /* User representation of a matcher that should always return true */
-    public static final String MARKER_ANY = "any";
+    // ordered from external to internal
+    public InterfaceComparator(List<Byte> interfaces)
+    {
+        int length = Collections.max(interfaces) + 1;
 
-    /* User representation of a matcher that should always return true */
-    public static final String MARKER_ALL = "all";
+        positions = new Integer[length];
 
-    /* User representation of a matcher that should return true if
-     * more internal than the other interface */
-    public static final String MARKER_MORE_INTERNAL = "more_internal";
+        for (int i = 0; i < interfaces.size(); i++) {
+            positions[interfaces.get(i)] = i;
+        }
+    }
 
-    /* User representation of a matcher that should return true if
-     * more external than the other interface */
-    public static final String MARKER_MORE_EXTERNAL = "more_external";
+    public boolean isMoreInternal(Byte o1, Byte o2)
+    {
+        return 0 < compare(o1, o2);
+    }
 
-    /* String for when a matcher is not applicable to the application. */
-    public static final String MARKER_NA = "n/a";
+    public boolean isMoreExternal(Byte o1, Byte o2)
+    {
+        return 0 > compare(o1, o2);
+    }
 
-    /* Token separating a matcher that uses a range. */
-    public static final String MARKER_RANGE = "-";
-
-    /* Token separating a matcher that always matches. */
-    public static final String MARKER_WILDCARD = "*";
-
-    /* Token used to separate the values in a set matcher */
-    public static final String MARKER_SEPERATOR = ",";
-
-    /* Token used at the beginning of a matcher to signify it should
-     * invert its matching algorithm */
-    public static final String MARKER_INVERSE = "~";
+    // < 0, external
+    // > 0, internal
+    public int compare(Byte o1, Byte o2)
+    {
+        return positions[o1].compareTo(positions[o2]);
+    }
 }

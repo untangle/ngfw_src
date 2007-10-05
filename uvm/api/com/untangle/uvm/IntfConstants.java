@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -46,7 +46,10 @@ public class IntfConstants
     public static final String EXTERNAL = "External";
     public static final String DMZ      = "DMZ";
     public static final String VPN      = "VPN";
-    
+
+    public static final String MORE_EXTERNAL = "more_external";
+    public static final String MORE_INTERNAL = "more_internal";
+
     /* The argon index for the four default interfaces */
     public static final byte   EXTERNAL_INTF = 0;
     public static final byte   INTERNAL_INTF = 1;
@@ -54,10 +57,11 @@ public class IntfConstants
     public static final byte   VPN_INTF      = 3;
 
     /* Internal constants, the string representation is never shown to the user */
+
     public static final byte   MAX_INTF      = 8;
     public static final byte   UNKNOWN_INTF  = MAX_INTF + 2;
     public static final byte   LOOPBACK_INTF = MAX_INTF + 1;
-    
+
     /* These are constants for netcap interfaces that are not actually interfaces. */
     /* Index used when netcap had an error determining the interface */
     public static final byte  NETCAP_ERROR    = 0;
@@ -92,7 +96,7 @@ public class IntfConstants
 
     /**
      * Convert an argon interface index to its name.
-     * 
+     *
      * @param argonIntf Argon interface index.
      * @return The user string represented by <code>argonIntf</code>.
      */
@@ -104,7 +108,7 @@ public class IntfConstants
         case DMZ_INTF: return DMZ;
         case VPN_INTF: return VPN;
         }
-        
+
         return "unknown";
     }
 }

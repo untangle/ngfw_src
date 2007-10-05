@@ -24,8 +24,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.license.ProductIdentifier;
+import com.untangle.uvm.localapi.LocalIntfManager;
+import com.untangle.uvm.node.InterfaceComparator;
 import com.untangle.uvm.node.LocalNodeManager;
 import com.untangle.uvm.node.firewall.intf.IntfMatcher;
 import com.untangle.uvm.util.TransactionWork;
@@ -156,8 +159,8 @@ class DefaultPolicyManager implements LocalPolicyManager
     }
 
     // For da UI
-    public PolicyConfiguration getPolicyConfiguration() {
-
+    public PolicyConfiguration getPolicyConfiguration()
+    {
         List pl = new ArrayList();
         pl.add(defaultPolicy);
 
@@ -200,6 +203,10 @@ class DefaultPolicyManager implements LocalPolicyManager
             return; // Always
         }
 
+        LocalUvmContext up = LocalUvmContextFactory.context();
+        LocalIntfManager im = up.localIntfManager();
+        final InterfaceComparator c = im.getInterfaceComparator();
+
         synchronized(policyRuleLock) {
             if (logger.isDebugEnabled()) {
                 logger.debug("Setting interfaces to " + interfaces);
@@ -229,8 +236,8 @@ class DefaultPolicyManager implements LocalPolicyManager
                                     UserPolicyRule upr = (UserPolicyRule)o;
                                     IntfMatcher clientIntf = upr.getClientIntf();
                                     IntfMatcher serverIntf = upr.getServerIntf();
-                                    if ((clientIntf.isMatch(firstIntf) && serverIntf.isMatch(secondIntf)) ||
-                                        (clientIntf.isMatch(secondIntf) && serverIntf.isMatch(firstIntf))) {
+                                    if ((clientIntf.isMatch(firstIntf, secondIntf, c) && serverIntf.isMatch(secondIntf, firstIntf, c))
+                                        || (clientIntf.isMatch(secondIntf, firstIntf, c) && serverIntf.isMatch(firstIntf, secondIntf, c))) {
                                         // Good to go.
                                         if (logger.isDebugEnabled())
                                             logger.debug("Found existing UserPolicyRule for ci: " + clientIntf + ", si: " + serverIntf);

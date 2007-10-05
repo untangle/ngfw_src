@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -33,6 +33,8 @@
 
 package com.untangle.uvm.node.firewall.intf;
 
+import com.untangle.uvm.node.InterfaceComparator;
+
 /**
  * An interface to test for particular interfaces.
  *
@@ -47,9 +49,9 @@ public interface IntfMatcher
      * @param intf The interface to test
      * @return True if the <param>intf</param> matches.
      */
-    public boolean isMatch( byte intf );
+    public boolean isMatch(byte intf, byte otherIface, InterfaceComparator c);
 
-    
+
     /**
      * Retrieve the database representation of this interface matcher.
      *

@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -29,14 +29,14 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import com.untangle.uvm.security.Tid;
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.Validatable;
-
-import com.untangle.uvm.node.firewall.TrafficDirectionRule;
+import com.untangle.uvm.node.firewall.TrafficIntfRule;
+import com.untangle.uvm.node.firewall.intf.IntfDBMatcher;
 import com.untangle.uvm.node.firewall.ip.IPDBMatcher;
 import com.untangle.uvm.node.firewall.port.PortDBMatcher;
 import com.untangle.uvm.node.firewall.protocol.ProtocolDBMatcher;
+import com.untangle.uvm.security.Tid;
 
 /**
  * Rule for matching based on IP addresses and subnets.
@@ -46,9 +46,9 @@ import com.untangle.uvm.node.firewall.protocol.ProtocolDBMatcher;
  */
 @Entity
 @Table(name="n_firewall_rule", schema="settings")
-public class FirewallRule extends TrafficDirectionRule
+public class FirewallRule extends TrafficIntfRule
 {
-    private static final long serialVersionUID = -5024800839738084290L;
+    //    private static final long serialVersionUID = -5024800839738084290L;
 
     private static final String ACTION_BLOCK     = "Block";
     private static final String ACTION_PASS      = "Pass";
@@ -61,13 +61,14 @@ public class FirewallRule extends TrafficDirectionRule
 
     public FirewallRule() { }
 
-    public FirewallRule( boolean       isLive,     ProtocolDBMatcher protocol,
-                         boolean       inbound,    boolean outbound,
-                         IPDBMatcher   srcAddress, IPDBMatcher       dstAddress,
-                         PortDBMatcher srcPort,    PortDBMatcher     dstPort,
-                         boolean isTrafficBlocker )
+    public FirewallRule(boolean isLive, ProtocolDBMatcher protocol,
+                        IntfDBMatcher clientIface, IntfDBMatcher serverIface,
+                        IPDBMatcher srcAddress, IPDBMatcher dstAddress,
+                        PortDBMatcher srcPort, PortDBMatcher dstPort,
+                        boolean isTrafficBlocker)
     {
-        super( isLive, protocol, inbound, outbound, srcAddress, dstAddress, srcPort, dstPort );
+        super(isLive, protocol, clientIface, serverIface,
+              srcAddress, dstAddress, srcPort, dstPort);
 
         /* Attributes of the firewall */
         this.isTrafficBlocker = isTrafficBlocker;

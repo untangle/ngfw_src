@@ -33,7 +33,6 @@
 
 package com.untangle.uvm.policy;
 
-import java.util.*;
 import javax.persistence.Column;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
@@ -41,6 +40,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
 
 import com.untangle.uvm.node.IPSessionDesc;
+import com.untangle.uvm.node.InterfaceComparator;
 import com.untangle.uvm.node.Rule;
 
 /**
@@ -65,7 +65,8 @@ public abstract class PolicyRule extends Rule
 
     // abstract methods -------------------------------------------------------
 
-    public abstract boolean matches(IPSessionDesc sessionDesc);
+    public abstract boolean matches(IPSessionDesc sessionDesc,
+                                    InterfaceComparator c);
 
     // accessors --------------------------------------------------------------
 

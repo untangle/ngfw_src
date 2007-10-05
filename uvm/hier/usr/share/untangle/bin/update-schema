@@ -1,140 +1,343 @@
-#!/bin/sh
-exec >>@UVM_LOG@/schema.log 2>&1
+#!/usr/bin/env /usr/bin/ruby
 
-PSQL="psql -X -U postgres --tuples-only uvm"
-PSQL_VERBOSE="psql -X -U postgres -e uvm"
+require 'logger'
+require 'dbi'
+require 'set'
 
-if [ $# -ne 2 ]; then
-    echo "usage: $0 [ settings | events ] [ uvm | node ]"
-    exit 1
-fi
+LOG_FILE = '@UVM_LOG@/schema.log'
+LOG = Logger.new(LOG_FILE, 10, 1048576)
+STDOUT.reopen(LOG_FILE, 'a')
+STDERR.reopen(LOG_FILE, 'a')
 
-echo "*** RUNNING $0 $*"
+class SqlHelper
+  def SqlHelper.log_sql_error(msg, e)
+    LOG.warn <<MSG
+#{msg}
+Error code: #{e.err}
+Error message: #{e.errstr}
+Error SQLSTATE: #{e.state}
+MSG
+  end
 
-cat <<EOF | $PSQL_VERBOSE
-CREATE SCHEMA settings;
+  def initialize(dbh)
+    @dbh = dbh
+  end
 
+  def remove_columns(table, columns, cascade = true)
+    [columns].flatten.each do |c|
+      begin
+      @dbh.do(<<SQL)
+ALTER TABLE #{table} DROP COLUMN #{c}#{' CASCADE' if cascade}
+SQL
+      rescue DBI::DatabaseError => e
+        log_sql_error("Could not remove column #{c}", e)
+      end
+    end
+  end
 
--- convert pre-5.0
+  def drop_tables(tables, cascade = true)
+    begin
+      @dbh.do(<<SQL)
+DROP TABLE #{[tables].flatten.join(', ')}#{' CASCADE' if cascade}
+SQL
+    rescue DBI::DatabaseError => e
+      log_sql_error("Could not remove tables #{[tables].flatten.join(', ')}", e)
+    end
+  end
 
-UPDATE settings.split_schema_ver SET component = 'uvm' WHERE component = 'mvvm';
-UPDATE settings.split_schema_ver SET component = 'untangle-node-webfilter' WHERE component = 'httpblocker-transform';
-UPDATE settings.split_schema_ver SET component = 'untangle-node-openvpn' WHERE component = 'openvpn-transform';
-UPDATE settings.split_schema_ver SET component = 'untangle-node-ips' WHERE component = 'ids-transform';
-UPDATE settings.split_schema_ver SET component = 'untangle-node-sigma' WHERE component = 'sigma-transform';
-UPDATE settings.split_schema_ver SET component = 'untangle-node-spamassassin' WHERE component = 'spamassassin-transform';
-UPDATE settings.split_schema_ver SET component = 'untangle-node-reporting' WHERE component = 'reporting-transform';
-UPDATE settings.split_schema_ver SET component = 'untangle-node-protofilter' WHERE component = 'protofilter-transform';
-UPDATE settings.split_schema_ver SET component = 'untangle-node-clam' WHERE component = 'clam-transform';
-UPDATE settings.split_schema_ver SET component = 'untangle-node-test' WHERE component = 'test-transform';
-UPDATE settings.split_schema_ver SET component = 'untangle-node-router' WHERE component = 'nat-transform';
-UPDATE settings.split_schema_ver SET component = 'untangle-node-spyware' WHERE component = 'spyware-transform';
-UPDATE settings.split_schema_ver SET component = 'untangle-node-firewall' WHERE component = 'firewall-transform';
-UPDATE settings.split_schema_ver SET component = 'untangle-node-shield' WHERE component = 'airgap-transform';
-UPDATE settings.split_schema_ver SET component = 'untangle-node-phish' WHERE component = 'clamphish-transform';
-UPDATE settings.split_schema_ver SET component = 'untangle-node-kav' WHERE component = 'kav-transform';
-UPDATE settings.split_schema_ver SET component = 'untangle-node-portal' WHERE component = 'portal-transform';
-UPDATE settings.split_schema_ver SET component = 'untangle-node-hauri' WHERE component = 'hauri-transform';
-UPDATE settings.split_schema_ver SET component = 'untangle-node-boxbackup' WHERE component = 'boxbackup-transform';
-UPDATE settings.split_schema_ver SET component = 'untangle-casing-ftp' WHERE component = 'ftp-casing';
-UPDATE settings.split_schema_ver SET component = 'untangle-casing-http' WHERE component = 'http-casing';
-UPDATE settings.split_schema_ver SET component = 'untangle-casing-mail' WHERE component = 'mail-casing';
-UPDATE settings.split_schema_ver SET component = 'untangle-base-virus' WHERE component = 'virus-base';
-UPDATE settings.split_schema_ver SET component = 'untangle-base-spam' WHERE component = 'spam-base';
+  def synchronize_table(table_name, primary_key, list)
+    keys = get_keys(primary_key, list)
+    bad_keys = [ ]
+    update_row_keys = Set.new
 
-CREATE TABLE settings.split_schema_ver AS
-    SELECT component::text, version AS settings_version, version AS events_version
-    FROM schema_ver;
+    @dbh.execute("SELECT #{primary_key.to_s} FROM #{table_name}") do |r|
+      r.fetch do |e|
+        k = e.first
+        if keys.member?(k)
+          update_row_keys << k
+        else
+          bad_keys << k
+        end
+      end
+    end
 
-DROP TABLE schema_ver;
+    new_row_keys = keys - update_row_keys.to_a
+    new_rows = list.select { |e| new_row_keys.member?(e[primary_key]) }
+    insert_rows(table_name, new_rows)
 
-CREATE TABLE settings.split_schema_ver (
-    component text,
-    settings_version int4,
-    events_version int4);
+    update_rows = list.select { |e| update_row_keys.member?(e[primary_key]) }
+    update_rows(table_name, primary_key, update_rows)
 
+    @dbh.prepare("DELETE FROM #{table_name} WHERE #{primary_key} = ?") do |ps|
+      bad_keys.each do |e|
+        ps.execute(e)
+      end
+    end
+  end
+
+  private
+
+  def get_keys(primary_key, list)
+     list.inject(Set.new) { |m, o| m << o[primary_key] }.to_a
+  end
+
+  def get_all_columns(rows)
+    rows.inject(Set.new) do |m, o|
+      m += o.instance_of?(Hash) ? o.keys : o.field_names
+    end.to_a
+  end
+
+  def bind_values(columns, row)
+    columns.map { |c| row[c] }
+  end
+
+  def get_insert_statement(table, columns)
+    <<SQL
+INSERT INTO #{table} (#{columns.join(', ')})
+VALUES (#{columns.map {|e| '?'}.join(', ') })
+SQL
+  end
+
+  def get_update_statement(table, primary_key, columns)
+    <<SQL
+UPDATE #{table}
+SET #{columns.map { |c| "#{c} = ?"}.join(', ')}
+WHERE #{primary_key} = ?
+SQL
+  end
+
+  def insert_rows(table, rows)
+    columns = get_all_columns(rows)
+    @dbh.prepare(get_insert_statement(table, columns)) do |ps|
+      rows.each do |r|
+        ps.execute(*bind_values(columns, r))
+      end
+    end
+  end
+
+  def update_rows(table, primary_key, rows)
+    columns = get_all_columns(rows).reject { |c| primary_key == c }
+    @dbh.prepare(get_update_statement(table, primary_key, columns)) do |ps|
+      rows.each do |r|
+        ps.execute(*bind_values(columns + [primary_key], r))
+      end
+    end
+  end
+end
+
+class SchemaUpdater
+  def update_schema(dbh)
+    LOG.warn('update_schema() not implemented')
+  end
+
+  def initialize(dbh)
+    @dbh = dbh
+    @log = LOG
+  end
+end
+
+def bad_args()
+  LOG.error "usage: update-schema [ settings | events ] [ uvm | node ]"
+  Kernel.exit 1
+end
+
+def get_column(type)
+  case type
+  when 'settings'
+    'settings_version'
+  when 'events'
+    'events_version'
+  else
+    raise UnsupportedFileType
+  end
+end
+
+def get_latest_version(schema_dir, type)
+  Dir.new(schema_dir).map do |f|
+    if /#{type}-convert-([0-9]+)\.(sql|rb)$/ =~ f
+      $1.to_i
+    else
+      nil
+    end
+  end.reject { |e| e.nil? }.max
+end
+
+def get_inst_version(dbh, component, type)
+  column = get_column(type)
+
+  ps = dbh.prepare(<<SQL)
+SELECT #{column} FROM split_schema_ver
+WHERE component = ? AND #{column} IS NOT NULL
+SQL
+  ps.bind_param(1, component)
+  ps.execute
+  e = ps.entries.first
+  e.nil? ? nil : e.first.to_i
+end
+
+def update_schema_ver(dbh, component, type, version)
+  ps = dbh.prepare(<<SQL)
+select * from split_schema_ver where component = ?
+SQL
+  ps.bind_param(1, component)
+  ps.execute
+
+  unless ps.any?
+    ps = dbh.prepare(<<SQL)
+INSERT INTO split_schema_ver (component, settings_version, events_version)
+    VALUES (?, null, null);
+SQL
+    ps.bind_param(1, component)
+    ps.execute()
+  end
+
+  ps = dbh.prepare(<<SQL)
+UPDATE split_schema_ver SET #{get_column(type)} = ?
+    WHERE component = ?
+SQL
+  ps.bind_param(1, version)
+  ps.bind_param(2, component)
+  ps.execute()
+end
+
+def run_sql_file(file)
+  LOG.info "Running SQL file: #{file}"
+  Kernel.system "psql -X -U postgres -e uvm -f #{file}"
+end
+
+def run_rb_file(dbh, file)
+  updater = SchemaUpdater.new(dbh)
+  updater.instance_eval(File.readlines(file).join("\n"))
+  updater.update_schema()
+end
+
+def run_file(dbh, file)
+  if /\.sql$/ =~ file
+    run_sql_file(file)
+  elsif /\.rb$/ =~ file
+    run_rb_file(dbh, file)
+  else
+    LOG.error("Don't know how to handle: #{file}")
+    raise BadFileType
+  end
+end
+
+def run_schema_init(dbh, dir, type)
+  f = ['rb', 'sql'].map { |e| "#{dir}/#{type}-schema.#{e}" }.find { |f| File.exist? f }
+  run_file(dbh, f)
+end
+
+def run_schema_convert(dbh, dir, type, n)
+  f = ['rb', 'sql'].map { |e| "#{dir}/#{type}-convert-#{n}.#{e}" }.find { |f| File.exist? f }
+  run_file(dbh, f)
+end
+
+def pre50_hacks(dbh)
+  ps = dbh.prepare(<<SQL)
+UPDATE settings.split_schema_ver SET component = ?
+WHERE component = ?
+SQL
+
+  { 'uvm' => 'mvvm',
+    'untangle-node-webfilter' => 'httpblocker-transform',
+    'untangle-node-openvpn' => 'openvpn-transform',
+    'untangle-node-ips' => 'ids-transform',
+    'untangle-node-sigma' => 'sigma-transform',
+    'untangle-node-spamassassin' => 'spamassassin-transform',
+    'untangle-node-reporting' => 'reporting-transform',
+    'untangle-node-protofilter' => 'protofilter-transform',
+    'untangle-node-clam' => 'clam-transform',
+    'untangle-node-test' => 'test-transform',
+    'untangle-node-router' => 'nat-transform',
+    'untangle-node-spyware' => 'spyware-transform',
+    'untangle-node-firewall' => 'firewall-transform',
+    'untangle-node-shield' => 'airgap-transform',
+    'untangle-node-phish' => 'clamphish-transform',
+    'untangle-node-kav' => 'kav-transform',
+    'untangle-node-portal' => 'portal-transform',
+    'untangle-node-hauri' => 'hauri-transform',
+    'untangle-node-boxbackup' => 'boxbackup-transform',
+    'untangle-casing-ftp' => 'ftp-casing',
+    'untangle-casing-http' => 'http-casing',
+    'untangle-casing-mail' => 'mail-casing',
+    'untangle-base-virus' => 'virus-base',
+    'untangle-base-spam' => 'spam-base' }.each_pair do |k, v|
+    ps.bind_param(1, k)
+    ps.bind_param(2, v)
+    ps.execute()
+  end
+end
+
+def setup_schema(dbh)
+  unless dbh.select_one('select current_schemas(false)')[0].any? { |e| 'settings' == e }
+    dbh.do('CREATE SCHEMA settings')
+  end
+
+  unless dbh.tables.any? { |t| 'split_schema_ver' == t }
+    dbh.do(<<SQL)
+CREATE TABLE settings.split_schema_ver(component text,
+                                       settings_version int4,
+                                       events_version int4)
+SQL
+    dbh.do(<<SQL)
 ALTER TABLE settings.split_schema_ver
-    ADD CONSTRAINT schema_ver_pkey PRIMARY KEY (component);
+ADD CONSTRAINT schema_ver_pkey PRIMARY KEY (component)
+SQL
 
-ALTER TABLE split_schema_ver ALTER COLUMN component SET NOT NULL;
+    dbh.do(<<SQL)
+ALTER TABLE split_schema_ver ALTER COLUMN component SET NOT NULL
+SQL
+  end
+end
 
+bad_args() unless 2 == ARGV.length
+
+TYPE=ARGV[0]
+bad_args() unless 'settings' == TYPE || 'events' == TYPE
+
+COMPONENT=ARGV[1]
+
+SCHEMA_HOME='@UVM_SCHEMA@'
+SCHEMA_DIR="#{SCHEMA_HOME}/#{COMPONENT}"
+
+LOG.info "*** BEGIN update-schema for type: #{TYPE} component: #{COMPONENT}"
+
+begin
+  dbh = DBI.connect('DBI:Pg:uvm', 'postgres')
+
+  setup_schema(dbh)
+  pre50_hacks(dbh)
+
+  latest_version = get_latest_version(SCHEMA_DIR, TYPE)
+  inst_version = get_inst_version(dbh, COMPONENT, TYPE)
+
+  LOG.info <<EOF
+Component #{COMPONENT}
+Type: #{TYPE}
+Installed schema: #{inst_version}
+Latest schema version: #{latest_version}
 EOF
 
-type=$1
-component=$2
+  if latest_version.nil?
+    LOG.info 'No schema for this component.'
+  elsif inst_version.nil?
+    LOG.info 'Initializing schema'
+    run_schema_init(dbh, SCHEMA_DIR, TYPE)
+    update_schema_ver(dbh, COMPONENT, TYPE, latest_version)
+  elsif inst_version > latest_version
+    LOG.error 'Installed version greater than latest version'
+  elsif inst_version < latest_version
+    LOG.info "Converting schema from #{inst_version} to #{latest_version}"
+    (inst_version + 1).upto(latest_version) do |n|
+      run_schema_convert(dbh, SCHEMA_DIR, TYPE, n)
+      update_schema_ver(dbh, COMPONENT, TYPE, n)
+    end
+  else
+    LOG.info 'Schema is up-to-date, initializing schema just in case'
+    run_schema_init(dbh, SCHEMA_DIR, TYPE)
+  end
 
-schema_dir=@UVM_SCHEMA@/$component
-
-ver=$(echo "SELECT ${type}_version FROM split_schema_ver WHERE component = '$component' AND ${type}_version IS NOT NULL" | $PSQL)
-latest_ver=$(ls $schema_dir/*convert-*.sql | sed 's/^.*convert-\([0-9]\+\).sql/\1/' | sort -n -r | head -n1)
-echo "Updating schema: $component on $(date)"
-echo "Current schema version: $ver"
-echo "Latest schema version: $latest_ver"
-
-if [ "x$latest_ver" = "x" ]; then
-    echo "No schema"
-elif [ "x$ver" = "x" ]; then
-    echo "Initializing schema"
-
-    cat <<EOF | $PSQL_VERBOSE
-INSERT INTO split_schema_ver (component, settings_version, events_version)  VALUES ('$component', null, null);
-EOF
-
-    if [ -e "$schema_dir/${type}-schema.sql" ]; then
-        echo "running $schema_dir/${type}-schema.sql"
-        psql -X -e -f "$schema_dir/${type}-schema.sql" -U postgres uvm
-        cat <<EOF | $PSQL_VERBOSE
-UPDATE split_schema_ver SET ${type}_version = $latest_ver WHERE component = '$component';
-EOF
-    else
-        echo "running $schema_dir/schema-$latest_ver.sql"
-        psql -X -e -f "$schema_dir/schema-$latest_ver.sql" -U postgres uvm
-        cat <<EOF | $PSQL_VERBOSE
-UPDATE split_schema_ver SET settings_version = $latest_ver WHERE component = '$component';
-UPDATE split_schema_ver SET events_version = $latest_ver WHERE component = '$component';
-EOF
-    fi
-
-elif [ "$ver" -gt "$latest_ver" ]; then
-    echo "Installed version is greater than latest version."
-else
-    if [ "$ver" -ne "$latest_ver" ]; then
-        echo "Updating Schema..."
-        for v in $(seq $(expr $ver + 1) $latest_ver); do
-            echo "Updating to $v"
-            if [ -e "$schema_dir/${type}-convert-$v.sql" ]; then
-                echo "running $schema_dir/${type}-convert-$v.sql"
-                psql -X -e -f "$schema_dir/${type}-convert-$v.sql" -U postgres uvm
-                eval ${type}_version=$v
-            else
-                echo "running $schema_dir/convert-$v.sql"
-                psql -X -e -f "$schema_dir/convert-$v.sql" -U postgres uvm
-                events_version=$v
-                settings_version=$v
-            fi
-        done
-
-        if [ "x$events_version" != "x" ]; then
-            cat <<EOF | $PSQL_VERBOSE
-UPDATE split_schema_ver SET events_version = $events_version WHERE component = '$component';
-EOF
-        fi
-
-        if [ "x$settings_version" != "x" ]; then
-            cat <<EOF | $PSQL_VERBOSE
-UPDATE split_schema_ver SET settings_version = $settings_version WHERE component = '$component';
-EOF
-        fi
-
-    fi
-
-    echo "running schema-$latest_ver just in case"
-
-    if [ -e "$schema_dir/${type}-schema.sql" ]; then
-        echo "running $schema_dir/${type}-schema.sql"
-        psql -X -e -f "$schema_dir/${type}-schema.sql" -U postgres uvm </dev/null
-    else
-        echo "running $schema_dir/schema.sql"
-        psql -X -e -f "$schema_dir/schema.sql" -U postgres uvm </dev/null
-    fi
-fi
+ensure
+  dbh.disconnect if dbh
+  LOG.info "*** END update-schema for type: #{TYPE} component: #{COMPONENT}"
+end

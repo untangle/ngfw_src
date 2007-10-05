@@ -64,31 +64,6 @@ abstract class SessionImpl implements Session {
         return pSession.user();
     }
 
-    /*
-      public ExtendedPreferences sessionNode()
-      {
-      return LocalUvmContextFactory.uvmContext().preferencesManager()
-      .sessionPreferences(id());
-      }
-    */
-
-    /*
-      public String sessionPath()
-      {
-      return LocalUvmContextFactory.uvmContext().preferencesManager()
-      .sessionPreferencesPath(id());
-      }
-    */
-
-    /*
-      public JXPathContext sessionContext()
-      {
-      return JXPathContext.newContext(LocalUvmContextFactory.uvmContext()
-      .preferencesManager()
-      .sessionPreferences(id()));
-      }
-    */
-
     public Object attach(Object ob)
     {
         Object oldOb = attachment;

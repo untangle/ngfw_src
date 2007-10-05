@@ -47,22 +47,19 @@ import com.untangle.uvm.node.firewall.ParsingConstants;
  * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
  * @version 1.0
  */
-public final class IntfSimpleMatcher extends IntfDBMatcher
+public final class IntfRelativeMatcher extends IntfDBMatcher
 {
-    /* An interface matcher that matches everything */
-    private static final IntfDBMatcher ALL_MATCHER
-        = new IntfSimpleMatcher(true);
-
-    /* An interface matcher that doesn't match anything */
-    private static final IntfDBMatcher NOTHING_MATCHER
-        = new IntfSimpleMatcher(false);
+    private static final IntfDBMatcher MORE_EXTERNAL_MATCHER
+        = new IntfRelativeMatcher(false);
+    private static final IntfDBMatcher MORE_INTERNAL_MATCHER
+        = new IntfRelativeMatcher(true);
 
     /* true if this is the all matcher */
-    private final boolean isAll;
+    private final boolean moreInternal;
 
-    private IntfSimpleMatcher(boolean isAll)
+    private IntfRelativeMatcher(boolean moreInternal)
     {
-        this.isAll = isAll;
+        this.moreInternal = moreInternal;
     }
 
     /**
@@ -72,38 +69,41 @@ public final class IntfSimpleMatcher extends IntfDBMatcher
      */
     public boolean isMatch(byte intf, byte otherIntf, InterfaceComparator c)
     {
-        return isAll;
+        return moreInternal ? c.isMoreInternal(intf, otherIntf)
+            : c.isMoreExternal(intf, otherIntf);
     }
 
     public String toDatabaseString()
     {
-        return toString();
+        return moreInternal ? ParsingConstants.MARKER_MORE_INTERNAL
+            : ParsingConstants.MARKER_MORE_EXTERNAL;
     }
 
     public String toString()
     {
-        if (isAll) return ParsingConstants.MARKER_ANY;
-        return ParsingConstants.MARKER_NOTHING;
+        return moreInternal ? "More Internal" : "More External";
     }
 
     /**
-     * Retrieve the all matcher
+     * Retrieve the more_internal matcher.
      *
-     * @return An interface matcher that matches everything
+     * @return An interface matcher that matches if this interface is
+     * more internal than the other interface.
      */
-    public static IntfDBMatcher getAllMatcher()
+    public static IntfDBMatcher getMoreInternalMatcher()
     {
-        return ALL_MATCHER;
+        return MORE_INTERNAL_MATCHER;
     }
 
     /**
-     * Retrieve the nil matcher
+     * Retrieve the more_external matcher.
      *
-     * @return An interface matcher that doesn't match anything.
+     * @return An interface matcher that matches if the interface is
+     * more external than the other interface.
      */
-    public static IntfDBMatcher getNilMatcher()
+    public static IntfDBMatcher getMoreExternalMatcher()
     {
-        return NOTHING_MATCHER;
+        return MORE_EXTERNAL_MATCHER;
     }
 
     /* The parse for simple matchers */
@@ -112,32 +112,27 @@ public final class IntfSimpleMatcher extends IntfDBMatcher
         /* This has the most specific syntax and should alyways first */
         public int priority()
         {
-            return 0;
+            return 1;
         }
 
-        public boolean isParseable(String value)
+        public boolean isParseable( String value )
         {
-            return (value.equalsIgnoreCase(ParsingConstants.MARKER_ANY) ||
-                     value.equalsIgnoreCase(ParsingConstants.MARKER_WILDCARD) ||
-                     value.equalsIgnoreCase(ParsingConstants.MARKER_ALL) ||
-                     value.equalsIgnoreCase(ParsingConstants.MARKER_NOTHING));
+            return value.equalsIgnoreCase(ParsingConstants.MARKER_MORE_INTERNAL)
+            || value.equalsIgnoreCase(ParsingConstants.MARKER_MORE_EXTERNAL);
         }
 
         public IntfDBMatcher parse(String value) throws ParseException
         {
             if (!isParseable(value)) {
+                throw new ParseException("Invalid intf simple matcher '"
+                                         + value + "'");
+            } else if (value.equalsIgnoreCase(ParsingConstants.MARKER_MORE_EXTERNAL)) {
+                return MORE_EXTERNAL_MATCHER;
+            } else if (value.equalsIgnoreCase(ParsingConstants.MARKER_MORE_INTERNAL)) {
+                return MORE_INTERNAL_MATCHER;
+            } else {
                 throw new ParseException("Invalid intf simple matcher '" + value + "'");
             }
-
-            if (value.equalsIgnoreCase(ParsingConstants.MARKER_ANY) ||
-                 value.equalsIgnoreCase(ParsingConstants.MARKER_WILDCARD) ||
-                 value.equalsIgnoreCase(ParsingConstants.MARKER_ALL)) {
-                     return ALL_MATCHER;
-                 } else if (value.equalsIgnoreCase(ParsingConstants.MARKER_NOTHING)) {
-                     return NOTHING_MATCHER;
-                 }
-
-            throw new ParseException("Invalid intf simple matcher '" + value + "'");
         }
     };
 }

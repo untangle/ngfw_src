@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -19,12 +19,15 @@
 package com.untangle.uvm.engine;
 
 import com.untangle.uvm.IntfEnum;
-
-import com.untangle.uvm.node.RemoteIntfManager;
 import com.untangle.uvm.localapi.LocalIntfManager;
+import com.untangle.uvm.node.InterfaceComparator;
+import com.untangle.uvm.node.RemoteIntfManager;
 
-/** Passthru class for access to the api function inside of the interface manager */
-public class RemoteIntfManagerImpl implements  RemoteIntfManager
+/**
+ * Passthru class for access to the api function inside of the
+ * interface manager
+ */
+public class RemoteIntfManagerImpl implements RemoteIntfManager
 {
     private final LocalIntfManager localIntfManager;
 
@@ -37,5 +40,10 @@ public class RemoteIntfManagerImpl implements  RemoteIntfManager
     public IntfEnum getIntfEnum()
     {
         return this.localIntfManager.getIntfEnum();
+    }
+
+    public InterfaceComparator getInterfaceComparator()
+    {
+        return this.localIntfManager.getInterfaceComparator();
     }
 }

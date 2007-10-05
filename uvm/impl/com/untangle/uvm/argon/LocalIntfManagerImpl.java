@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -34,8 +34,9 @@ import com.untangle.uvm.IntfEnum;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.localapi.ArgonInterface;
 import com.untangle.uvm.localapi.LocalIntfManager;
-import com.untangle.uvm.policy.LocalPolicyManager;
+import com.untangle.uvm.node.InterfaceComparator;
 import com.untangle.uvm.node.firewall.intf.IntfMatcherFactory;
+import com.untangle.uvm.policy.LocalPolicyManager;
 import org.apache.log4j.Logger;
 
 /* Manager for controlling argon -> netcap interface matching */
@@ -256,6 +257,13 @@ class LocalIntfManagerImpl implements LocalIntfManager
 
         notifyDependents( null );
     }
+
+    public InterfaceComparator getInterfaceComparator()
+    {
+        // XXX get real interface ordering
+        return new InterfaceComparator(Arrays.asList(new Byte[] { new Byte((byte)0), new Byte((byte)1), new Byte((byte)2), new Byte((byte)3) }));
+    }
+
 
     /* ----------------- Private ----------------- */
     /* Notify everything that needs to be aware of changes to the interface array */

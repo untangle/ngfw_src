@@ -1,6 +1,6 @@
 -- settings schema for release-5.0
 -- $HeadURL$
--- Copyright (c) 2003-2007 Untangle, Inc. 
+-- Copyright (c) 2003-2007 Untangle, Inc.
 --
 -- This program is free software; you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License, version 2,
@@ -31,8 +31,8 @@ CREATE TABLE settings.n_firewall_rule (
     dst_ip_matcher text,
     src_port_matcher text,
     dst_port_matcher text,
-    inbound bool,
-    outbound bool,
+    src_intf_matcher text,
+    dst_intf_matcher text,
     name text,
     category text,
     description text,

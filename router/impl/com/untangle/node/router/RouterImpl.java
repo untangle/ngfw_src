@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -21,8 +21,9 @@ import java.net.InetAddress;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.node.token.TokenAdaptor;
 import com.untangle.uvm.LocalUvmContext;
+import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.UvmState;
 import com.untangle.uvm.localapi.SessionMatcher;
 import com.untangle.uvm.localapi.SessionMatcherFactory;
@@ -42,12 +43,6 @@ import com.untangle.uvm.networking.SetupState;
 import com.untangle.uvm.networking.internal.NetworkSpaceInternal;
 import com.untangle.uvm.networking.internal.NetworkSpacesInternalSettings;
 import com.untangle.uvm.networking.internal.ServicesInternalSettings;
-import com.untangle.uvm.vnet.AbstractNode;
-import com.untangle.uvm.vnet.Affinity;
-import com.untangle.uvm.vnet.Fitting;
-import com.untangle.uvm.vnet.MPipe;
-import com.untangle.uvm.vnet.PipeSpec;
-import com.untangle.uvm.vnet.SoloPipeSpec;
 import com.untangle.uvm.node.AddressValidator;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.NodeContextSwitcher;
@@ -57,7 +52,12 @@ import com.untangle.uvm.node.NodeState;
 import com.untangle.uvm.node.NodeStopException;
 import com.untangle.uvm.util.DataLoader;
 import com.untangle.uvm.util.DataSaver;
-import com.untangle.node.token.TokenAdaptor;
+import com.untangle.uvm.vnet.AbstractNode;
+import com.untangle.uvm.vnet.Affinity;
+import com.untangle.uvm.vnet.Fitting;
+import com.untangle.uvm.vnet.MPipe;
+import com.untangle.uvm.vnet.PipeSpec;
+import com.untangle.uvm.vnet.SoloPipeSpec;
 import org.apache.log4j.Logger;
 
 public class RouterImpl extends AbstractNode implements Router

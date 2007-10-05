@@ -48,8 +48,10 @@ import org.apache.log4j.helpers.AbsoluteTimeDateFormat;
  * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
  * @version 1.0
  */
-abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineListener {
-
+abstract class IPSessionImpl
+    extends SessionImpl
+    implements IPSession, PipelineListener
+{
     protected boolean released = false;
     protected boolean needsFinalization = true;
     protected final boolean incoming;
@@ -70,7 +72,9 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
 
     private final NodeManagerImpl nodeManager;
 
-    protected IPSessionImpl(Dispatcher disp, com.untangle.uvm.argon.IPSession pSession, boolean incoming,
+    protected IPSessionImpl(Dispatcher disp,
+                            com.untangle.uvm.argon.IPSession pSession,
+                            boolean incoming,
                             PipelineEndpoints pe)
     {
         super(disp.mPipe(), pSession);

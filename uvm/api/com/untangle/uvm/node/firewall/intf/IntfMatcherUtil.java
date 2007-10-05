@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -52,7 +52,7 @@ class IntfMatcherUtil
 
     /* A map from the interface database name to its argon index */
     private final Map<String,Byte> DATA_TO_INTF_MAP;
-    
+
     /* A map from the argon index to the interfaces database name */
     private final Map<Byte,String> INTF_TO_DATA_MAP;
 
@@ -83,7 +83,8 @@ class IntfMatcherUtil
      *
      * @param value The database string to convert.
      * @return The argon index for <param>value</param>
-     * @exception ParseException If <param>value</param> is not a valid database string. 
+     * @exception ParseException If <param>value</param> is not a
+     * valid database string.
      */
     byte databaseToIntf( String value ) throws ParseException
     {
@@ -97,7 +98,8 @@ class IntfMatcherUtil
      *
      * @param intf Argon index to convert.
      * @return Database representation of argon intf.
-     * @exception ParseException If <param>intf</param> is an unknown interface. 
+     * @exception ParseException If <param>intf</param> is an unknown
+     * interface.
      */
     String intfToDatabase( byte intf ) throws ParseException
     {
@@ -111,7 +113,8 @@ class IntfMatcherUtil
      *
      * @param intf Argon index to convert.
      * @return User string for <param>intf</param>
-     * @exception ParseException If <param>intf</param> is an unknown interface. 
+     * @exception ParseException If <param>intf</param> is an unknown
+     * interface.
      */
     String intfToUser( byte intf ) throws ParseException
     {
@@ -121,7 +124,8 @@ class IntfMatcherUtil
     }
 
     /**
-     * Utility method for creating all of the necessary maps for an interface.
+     * Utility method for creating all of the necessary maps for an
+     * interface.
      *
      * @param intf Argon index to map.
      * @param user User representation of <param>intf</param>

@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -26,15 +26,10 @@ import java.util.Random;
 
 import com.untangle.uvm.ArgonException;
 import com.untangle.uvm.IntfConstants;
-import com.untangle.uvm.MailSender;
-import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.LocalUvmContext;
+import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.MailSender;
 import com.untangle.uvm.logging.EventManager;
-import com.untangle.uvm.vnet.AbstractNode;
-import com.untangle.uvm.vnet.Affinity;
-import com.untangle.uvm.vnet.Fitting;
-import com.untangle.uvm.vnet.PipeSpec;
-import com.untangle.uvm.vnet.SoloPipeSpec;
 import com.untangle.uvm.node.HostAddress;
 import com.untangle.uvm.node.HostName;
 import com.untangle.uvm.node.IPaddr;
@@ -47,6 +42,11 @@ import com.untangle.uvm.node.UnconfiguredException;
 import com.untangle.uvm.node.ValidateException;
 import com.untangle.uvm.node.script.ScriptRunner;
 import com.untangle.uvm.util.TransactionWork;
+import com.untangle.uvm.vnet.AbstractNode;
+import com.untangle.uvm.vnet.Affinity;
+import com.untangle.uvm.vnet.Fitting;
+import com.untangle.uvm.vnet.PipeSpec;
+import com.untangle.uvm.vnet.SoloPipeSpec;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;

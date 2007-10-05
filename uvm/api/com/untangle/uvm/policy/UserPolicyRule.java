@@ -34,7 +34,8 @@
 package com.untangle.uvm.policy;
 
 import java.sql.Timestamp;
-import java.util.*;
+import java.util.Calendar;
+import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -43,6 +44,7 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import com.untangle.uvm.node.IPSessionDesc;
+import com.untangle.uvm.node.InterfaceComparator;
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.firewall.intf.IntfMatcher;
 import com.untangle.uvm.node.firewall.intf.IntfMatcherFactory;
@@ -79,14 +81,14 @@ public class UserPolicyRule extends PolicyRule
     private IntfMatcher serverIntf = IntfMatcherFactory.getInstance()
         .getInternalMatcher();
 
-    private IPMatcher   clientAddr;
-    private IPMatcher   serverAddr;
+    private IPMatcher clientAddr;
+    private IPMatcher serverAddr;
 
     private PortMatcher clientPort;
     private PortMatcher serverPort;
 
-    private Date   startTime;
-    private Date   endTime;
+    private Date startTime;
+    private Date endTime;
 
     private DayOfWeekMatcher dayOfWeek = DayOfWeekMatcherFactory.getInstance()
         .getAllMatcher();
@@ -130,12 +132,12 @@ public class UserPolicyRule extends PolicyRule
 
     // PolicyRule methods -----------------------------------------------------
 
-    public boolean matches(IPSessionDesc sd)
+    public boolean matches(IPSessionDesc sd, InterfaceComparator c)
     {
         boolean basicOk =
             isLive()
-            && clientIntf.isMatch(sd.clientIntf())
-            && serverIntf.isMatch(sd.serverIntf())
+            && clientIntf.isMatch(sd.clientIntf(), sd.serverIntf(), c)
+            && serverIntf.isMatch(sd.serverIntf(), sd.clientIntf(), c)
             && protocol.isMatch(sd.protocol())
             && clientAddr.isMatch(sd.clientAddr())
             && serverAddr.isMatch(sd.serverAddr())

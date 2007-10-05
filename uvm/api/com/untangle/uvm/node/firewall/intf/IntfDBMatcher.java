@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -35,6 +35,8 @@ package com.untangle.uvm.node.firewall.intf;
 
 import java.io.Serializable;
 
+import com.untangle.uvm.node.InterfaceComparator;
+
 /**
  * An IntfMatcher that is capable of being saved to the database.
  * Done as an abstract class so only classes in this package can
@@ -45,12 +47,14 @@ import java.io.Serializable;
  */
 public abstract class IntfDBMatcher implements IntfMatcher, Serializable
 {
-    /** Package protected so that only classes in the package can add to the list
-     * of database saveable intf matchers */
-    IntfDBMatcher()
-    {
-    }
+    /**
+     * Package protected so that only classes in the package can add to
+     * the list of database saveable intf matchers
+     */
+    IntfDBMatcher() { }
 
-    public abstract boolean isMatch( byte intf );
+    public abstract boolean isMatch(byte iface, byte otherIface,
+                                    InterfaceComparator c);
+
     public abstract String toDatabaseString();
 }

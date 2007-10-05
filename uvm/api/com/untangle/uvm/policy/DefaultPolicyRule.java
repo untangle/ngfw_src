@@ -34,6 +34,7 @@
 package com.untangle.uvm.policy;
 
 import com.untangle.uvm.node.IPSessionDesc;
+import com.untangle.uvm.node.InterfaceComparator;
 
 /**
  * Default policy rule matches all unmatched sessions.
@@ -52,7 +53,7 @@ public class DefaultPolicyRule extends PolicyRule
 
     // PolicyRule methods -----------------------------------------------------
 
-    public boolean matches(IPSessionDesc sd)
+    public boolean matches(IPSessionDesc sd, InterfaceComparator c)
     {
         return true;
     }

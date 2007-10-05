@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -33,11 +33,12 @@
 
 package com.untangle.uvm.node.firewall.intf;
 
-import java.util.Map;
+import java.io.Serializable;
 import java.util.HashMap;
+import java.util.Map;
 
 import com.untangle.uvm.IntfConstants;
-
+import com.untangle.uvm.node.InterfaceComparator;
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.firewall.Parser;
 import com.untangle.uvm.node.firewall.ParsingConstants;
@@ -87,21 +88,24 @@ public final class IntfSingleMatcher extends IntfDBMatcher
      * @param intf Interface to test.
      * @return True if the interface matches.
      */
-    public boolean isMatch( byte intf )
-    {        
+    public boolean isMatch(byte iface, byte otherIface, InterfaceComparator c)
+    {
         /* These interfaces always match true */
-        if ( IntfConstants.UNKNOWN_INTF == intf || IntfConstants.LOOPBACK_INTF == intf ) return true;
-
-        if ( intf >= IntfConstants.MAX_INTF ) return false;
-        
-        return ( this.intf == intf );
+        if (IntfConstants.UNKNOWN_INTF == intf
+            || IntfConstants.LOOPBACK_INTF == intf) {
+            return true;
+        } else if ( intf >= IntfConstants.MAX_INTF ) {
+            return false;
+        } else {
+            return ( this.intf == intf );
+        }
     }
 
     public String toDatabaseString()
     {
         return this.databaseRepresentation;
     }
-    
+
     public String toString()
     {
         return this.userRepresentation;
@@ -149,24 +153,24 @@ public final class IntfSingleMatcher extends IntfDBMatcher
     }
 
     /* The parser for the single matcher */
-    static final Parser<IntfDBMatcher> PARSER = new Parser<IntfDBMatcher>() 
+    static final Parser<IntfDBMatcher> PARSER = new Parser<IntfDBMatcher>()
     {
         public int priority()
         {
-            return 1;
+            return 2;
         }
-        
+
         public boolean isParseable( String value )
         {
             return ( !value.contains( ParsingConstants.MARKER_SEPERATOR ));
         }
-        
+
         public IntfDBMatcher parse( String value ) throws ParseException
         {
             if ( !isParseable( value )) {
                 throw new ParseException( "Invalid intf single matcher '" + value + "'" );
             }
-            
+
             return makeInstance( IntfMatcherUtil.getInstance().databaseToIntf( value ));
         }
     };
@@ -193,4 +197,3 @@ public final class IntfSingleMatcher extends IntfDBMatcher
         VPN_MATCHER      = vpn;
     }
 }
-

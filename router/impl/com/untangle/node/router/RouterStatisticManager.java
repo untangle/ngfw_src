@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -17,14 +17,17 @@
  */
 package com.untangle.node.router;
 
+import com.untangle.uvm.LocalUvmContext;
+import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.logging.EventLoggerFactory;
 import com.untangle.uvm.logging.StatisticEvent;
-import com.untangle.uvm.vnet.IPNewSessionRequest;
-import com.untangle.uvm.vnet.Protocol;
-import com.untangle.uvm.node.StatisticManager;
+import com.untangle.uvm.node.InterfaceComparator;
 import com.untangle.uvm.node.NodeContext;
+import com.untangle.uvm.node.StatisticManager;
 import com.untangle.uvm.node.firewall.intf.IntfMatcher;
 import com.untangle.uvm.node.firewall.intf.IntfMatcherFactory;
+import com.untangle.uvm.vnet.IPNewSessionRequest;
+import com.untangle.uvm.vnet.Protocol;
 
 class RouterStatisticManager extends StatisticManager
 {
@@ -47,7 +50,7 @@ class RouterStatisticManager extends StatisticManager
 
     protected StatisticEvent getNewStatisticEvent()
     {
-        return ( this.statisticEvent = new RouterStatisticEvent());
+        return (this.statisticEvent = new RouterStatisticEvent());
     }
 
     void incrRouterSessions()
@@ -55,23 +58,28 @@ class RouterStatisticManager extends StatisticManager
         this.statisticEvent.incrRouterSessions();
     }
 
-    void incrRedirect( Protocol protocol, IPNewSessionRequest request )
+    void incrRedirect(Protocol protocol, IPNewSessionRequest request)
     {
-        /* XXX Incoming/outgoing is all wrong */
-        boolean isOutgoing = matcherIncoming.isMatch( request.clientIntf());
+        LocalUvmContext uc = LocalUvmContextFactory.context();
+        InterfaceComparator c = uc.localIntfManager().getInterfaceComparator();
 
-        if ( protocol == Protocol.TCP ) {
-            if ( isOutgoing ) incrTcpOutgoingRedirects();
+        /* XXX Incoming/outgoing is all wrong */
+        boolean isOutgoing = matcherIncoming.isMatch(request.clientIntf(),
+                                                     request.serverIntf(),
+                                                     c);
+
+        if (protocol == Protocol.TCP) {
+            if (isOutgoing) incrTcpOutgoingRedirects();
             else              incrTcpIncomingRedirects();
         } else {
             /* XXX ICMP Hack */
-            if (( request.clientPort() == 0 ) && ( request.serverPort() == 0 )) {
+            if ((request.clientPort() == 0) && (request.serverPort() == 0)) {
                 /* Ping Sessions */
-                if ( isOutgoing ) incrIcmpOutgoingRedirects();
+                if (isOutgoing) incrIcmpOutgoingRedirects();
                 else              incrIcmpIncomingRedirects();
             } else {
                 /* UDP Sessions */
-                if ( isOutgoing ) incrUdpOutgoingRedirects();
+                if (isOutgoing) incrUdpOutgoingRedirects();
                 else              incrUdpIncomingRedirects();
             }
         }

@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -22,6 +22,10 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.untangle.uvm.LocalUvmContext;
+import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.node.InterfaceComparator;
+import com.untangle.uvm.node.Node;
 import com.untangle.uvm.vnet.AbstractEventHandler;
 import com.untangle.uvm.vnet.IPNewSessionRequest;
 import com.untangle.uvm.vnet.MPipeException;
@@ -32,7 +36,6 @@ import com.untangle.uvm.vnet.event.TCPNewSessionRequestEvent;
 import com.untangle.uvm.vnet.event.TCPSessionEvent;
 import com.untangle.uvm.vnet.event.UDPNewSessionRequestEvent;
 import com.untangle.uvm.vnet.event.UDPSessionEvent;
-import com.untangle.uvm.node.Node;
 import org.apache.log4j.Logger;
 
 class EventHandler extends AbstractEventHandler
@@ -40,7 +43,7 @@ class EventHandler extends AbstractEventHandler
     private static final int BLOCK_COUNTER = Node.GENERIC_0_COUNTER;
     private static final int PASS_COUNTER  = Node.GENERIC_1_COUNTER;
 
-    private final Logger logger = Logger.getLogger( EventHandler.class );
+    private final Logger logger = Logger.getLogger(EventHandler.class);
 
     private List <FirewallMatcher> firewallRuleList = new LinkedList<FirewallMatcher>();
 
@@ -53,39 +56,43 @@ class EventHandler extends AbstractEventHandler
     /* Firewall Node */
     private final FirewallImpl node;
 
-    EventHandler( FirewallImpl node )
+    EventHandler(FirewallImpl node)
     {
         super(node);
 
         this.node = node;
     }
 
-    public void handleTCPNewSessionRequest( TCPNewSessionRequestEvent event )
+    public void handleTCPNewSessionRequest(TCPNewSessionRequestEvent event)
         throws MPipeException
     {
-        handleNewSessionRequest( event.sessionRequest(), Protocol.TCP );
+        handleNewSessionRequest(event.sessionRequest(), Protocol.TCP);
     }
 
     public void handleUDPNewSessionRequest(UDPNewSessionRequestEvent event)
         throws MPipeException
     {
-        handleNewSessionRequest( event.sessionRequest(), Protocol.UDP );
+        handleNewSessionRequest(event.sessionRequest(), Protocol.UDP);
     }
 
-    private void handleNewSessionRequest( IPNewSessionRequest request, Protocol protocol )
+    private void handleNewSessionRequest(IPNewSessionRequest request,
+                                         Protocol protocol)
     {
         /* By default, do whatever the first rule is */
         boolean reject    = !isDefaultAccept;
         FirewallRule rule = null;
         int ruleIndex     = 0;
 
-        for ( Iterator<FirewallMatcher> iter = firewallRuleList.iterator() ; iter.hasNext() ; ) {
+        LocalUvmContext uc = LocalUvmContextFactory.context();
+        InterfaceComparator c = uc.localIntfManager().getInterfaceComparator();
+
+        for (Iterator<FirewallMatcher> iter = firewallRuleList.iterator() ; iter.hasNext() ;) {
             FirewallMatcher matcher = iter.next();
 
-            if ( matcher.isMatch( request, protocol )) {
+            if (matcher.isMatch(request, protocol, c)) {
                 reject = matcher.isTrafficBlocker();
 
-                if ( isQuickExit ) {
+                if (isQuickExit) {
                     rule      = matcher.rule();
                     ruleIndex = matcher.ruleIndex();
                     break;
@@ -93,51 +100,51 @@ class EventHandler extends AbstractEventHandler
             }
         }
 
-        boolean log = ( rule != null && rule.getLog()) ? true : false;
-        
-        if ( reject ) {            
+        boolean log = (rule != null && rule.getLog()) ? true : false;
+
+        if (reject) {
             if (logger.isDebugEnabled()) {
-                logger.debug( "Rejecting session: " + request );
+                logger.debug("Rejecting session: " + request);
             }
-            
-            if ( rejectSilently ) {
+
+            if (rejectSilently) {
                 /* use finalization only if logging */
-                request.rejectSilently( log );
+                request.rejectSilently(log);
             } else {
-                if ( protocol == Protocol.UDP ) {
-                    request.rejectReturnUnreachable( IPNewSessionRequest.PORT_UNREACHABLE, log );
+                if (protocol == Protocol.UDP) {
+                    request.rejectReturnUnreachable(IPNewSessionRequest.PORT_UNREACHABLE, log);
                 } else {
-                    ((TCPNewSessionRequest)request).rejectReturnRst( log );
+                    ((TCPNewSessionRequest)request).rejectReturnRst(log);
                 }
             }
-            
+
             /* Increment the block counter */
-            node.incrementCount( BLOCK_COUNTER ); // BLOCK COUNTER
-            
+            node.incrementCount(BLOCK_COUNTER); // BLOCK COUNTER
+
             /* If necessary log the event */
-            if ( log ) {
+            if (log) {
                 request.attach(new FirewallEvent(request.pipelineEndpoints(), rule, reject, ruleIndex));
             }
-            
+
         } else {
             if (logger.isDebugEnabled()) {
-                logger.debug( "Releasing session: " + request );
+                logger.debug("Releasing session: " + request);
             }
-            
+
             /* only finalize if logging */
-            request.release( log );
-            
+            request.release(log);
+
             /* Increment the pass counter */
-            node.incrementCount( PASS_COUNTER ); // PASS COUNTER
-            
+            node.incrementCount(PASS_COUNTER); // PASS COUNTER
+
             /* If necessary log the event */
-            if ( log ) {
+            if (log) {
                 request.attach(new FirewallEvent(request.pipelineEndpoints(), rule, reject, ruleIndex));
             }
         }
 
         /* Track the statistics */
-        node.statisticManager.incrRequest( protocol, request, reject, rule == null );
+        node.statisticManager.incrRequest(protocol, request, reject, rule == null);
     }
 
     @Override
@@ -162,7 +169,7 @@ class EventHandler extends AbstractEventHandler
         }
     }
 
-    void configure( FirewallSettings settings )
+    void configure(FirewallSettings settings)
     {
         this.isQuickExit = settings.isQuickExit();
         this.rejectSilently = settings.isRejectSilently();
@@ -173,17 +180,17 @@ class EventHandler extends AbstractEventHandler
 
         List<FirewallRule> list = (List<FirewallRule>)settings.getFirewallRuleList();
 
-        if ( list == null ) {
-            logger.error( "Settings contain null firewall list" );
+        if (list == null) {
+            logger.error("Settings contain null firewall list");
         } else {
             int index = 1;
 
             /* Update all of the rules */
-            for ( Iterator<FirewallRule> iter = list.iterator() ; iter.hasNext() ; index++ ) {
+            for (Iterator<FirewallRule> iter = list.iterator() ; iter.hasNext() ; index++) {
                 FirewallRule rule = iter.next();
                 /* Don't insert inactive rules */
-                if ( !rule.isLive()) continue;
-                firewallRuleList.add( new FirewallMatcher( rule, index ));
+                if (!rule.isLive()) continue;
+                firewallRuleList.add(new FirewallMatcher(rule, index));
             }
         }
 

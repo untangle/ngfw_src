@@ -31,8 +31,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.untangle.uvm.argon.ArgonAgent;
 import com.untangle.uvm.argon.PipelineDesc;
 import com.untangle.uvm.argon.SessionEndpoints;
+import com.untangle.uvm.localapi.LocalIntfManager;
 import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.node.IPSessionDesc;
+import com.untangle.uvm.node.InterfaceComparator;
 import com.untangle.uvm.node.PipelineEndpoints;
 import com.untangle.uvm.node.PipelineStats;
 import com.untangle.uvm.policy.LocalPolicyManager;
@@ -414,12 +416,16 @@ public class PipelineFoundryImpl implements PipelineFoundry
 
     private PolicyRule selectPolicy(IPSessionDesc sd)
     {
-        LocalPolicyManager pmi = UvmContextImpl.getInstance().policyManager();
+        UvmContextImpl upi = UvmContextImpl.getInstance();
+        LocalPolicyManager pmi = upi.policyManager();
+        LocalIntfManager im = upi.localIntfManager();
 
         UserPolicyRule[] userRules = pmi.getUserRules();
 
+        InterfaceComparator c = im.getInterfaceComparator();
+
         for (UserPolicyRule upr : userRules) {
-            if (upr.matches(sd)) {
+            if (upr.matches(sd, c)) {
                 return upr;
             }
         }
