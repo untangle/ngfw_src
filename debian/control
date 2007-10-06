@@ -2,7 +2,7 @@ Source: untangle-vm
 Section: net
 Priority: optional
 Maintainer: Sebastien Delafond <seb@untangle.com>
-Build-Depends: debhelper (>> 3.0.0), unzip, build-essential, sun-java5-jdk, libxml2-dev, untangle-iptables-dev (>= 1.3.3), untangle-libnfnetlink-dev, untangle-libnetfilter-queue-dev, libsysfs-dev, linux-kernel-headers, dput, rake (>= 0.7.0-1build1)
+Build-Depends: debhelper (>> 3.0.0), unzip, build-essential, sun-java5-jdk, libxml2-dev, untangle-iptables-dev (>= 1.3.3), untangle-libnfnetlink-dev, untangle-libnetfilter-queue-dev, libsysfs-dev, linux-kernel-headers, dput, rake (>= 0.7.0-1build1), libdbi-ruby
 Standards-Version: 3.7.2
 
 Package: untangle-libuvmcore
