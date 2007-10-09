@@ -34,6 +34,7 @@
 package com.untangle.uvm.vnet;
 
 import java.net.InetAddress;
+
 import com.untangle.uvm.node.PipelineEndpoints;
 import com.untangle.uvm.node.SessionEndpoints;
 
@@ -46,42 +47,42 @@ import com.untangle.uvm.node.SessionEndpoints;
 public interface IPNewSessionRequest extends NewSessionRequest, SessionEndpoints {
 
     /**
-     * DIRDOC_XXX
+     * The session direction, based upon the interface ordering.
      *
-     * @return true if the session is inbound, false if it is outbound
+     * @return true if the session is inbound, false if it is outbound.
      */
     boolean isIncoming();
 
     /**
-     * DIRDOC_XXX
+     * The session direction, based upon the interface ordering.
      *
-     * @return true if the session is outbound, false if it is inbound
+     * @return true if the session is outbound, false if it is inbound.
      */
     boolean isOutgoing();
 
     /**
-     * Sets the client address for this session.</p>
+     * Sets the client address for this session.
      */
     void clientAddr( InetAddress addr );
 
     /**
-     * Sets the client port for this session.</p>
+     * Sets the client port for this session.
      */
     void clientPort( int port );
 
     /**
-     * Sets the server address for this session.</p>
+     * Sets the server address for this session.
      */
     void serverAddr( InetAddress addr );
 
     /**
-     * Sets the server port for this session.</p>
+     * Sets the server port for this session.
      */
 
     void serverPort( int port );
 
     /**
-     * Sets the server interface.</p>
+     * Sets the server interface.
      */
     void serverIntf( byte intf );
 
@@ -92,10 +93,12 @@ public interface IPNewSessionRequest extends NewSessionRequest, SessionEndpoints
 
     PipelineEndpoints pipelineEndpoints();
 
-    // May only be called before session is established (from UDPNewSessionRequestEvent handler)
+    // May only be called before session is established (from
+    // UDPNewSessionRequestEvent handler)
     void rejectSilently();
 
-    // May only be called before session is established (from UDPNewSessionRequestEvent handler)
+    // May only be called before session is established (from
+    // UDPNewSessionRequestEvent handler)
     void rejectSilently(boolean needsFinalization);
 
     // Codes for rejectReturnUnreachable()
@@ -109,20 +112,26 @@ public interface IPNewSessionRequest extends NewSessionRequest, SessionEndpoints
     // static final byte PROHIBITED_HOST = 10;      // By RFC1812, should use PROHIBITED instead
     static final byte PROHIBITED = 13;
 
-    // May only be called before session is established (from UDPNewSessionRequestEvent handler)
+    // May only be called before session is established (from
+    // UDPNewSessionRequestEvent handler)
     void rejectReturnUnreachable(byte code);
 
-    // May only be called before session is established (from UDPNewSessionRequestEvent handler)
+    // May only be called before session is established (from
+    // UDPNewSessionRequestEvent handler)
     void rejectReturnUnreachable(byte code, boolean needsFinalization);
 
     /**
-     * <code>release</code> notifies the TAPI that this session may continue with the current settings
-     * (which may be modified, IE: NAT modifies the endpoint), but no data events will be delivered for
-     * the session.  If needsFinalization is false, no further events will be delivered for the session
-     * at all.  IF needsFinalization is true, then the only event that will be delivered is a Finalization
-     * event when the resulting session ends.
+     * <code>release</code> notifies the TAPI that this session may
+     * continue with the current settings (which may be modified, IE:
+     * NAT modifies the endpoint), but no data events will be
+     * delivered for the session.  If needsFinalization is false, no
+     * further events will be delivered for the session at all.  IF
+     * needsFinalization is true, then the only event that will be
+     * delivered is a Finalization event when the resulting session
+     * ends.
      *
-     * @param needsFinalization a <code>boolean</code> true if the node needs a finalization event when the released session ends.
+     * @param needsFinalization a <code>boolean</code> true if the
+     * node needs a finalization event when the released session ends.
      */
     void release(boolean needsFinalization);
 

@@ -23,6 +23,25 @@ MSG
     @dbh = dbh
   end
 
+  def next_id()
+    @dbh.select_one(<<SQL).first
+SELECT nextval('hibernate_sequence')
+SQL
+  end
+
+  def add_column(table, column, type, options)
+    @dbh.do(<<SQL)
+ALTER TABLE #{table} ADD COLUMN #{column} #{type}
+SQL
+    yield
+
+    if options[:not_null]
+      @dbh.do(<<SQL)
+ALTER TABLE #{table} ALTER COLUMN #{column} SET NOT NULL
+SQL
+    end
+  end
+
   def remove_columns(table, columns, cascade = true)
     [columns].flatten.each do |c|
       begin
@@ -30,9 +49,15 @@ MSG
 ALTER TABLE #{table} DROP COLUMN #{c}#{' CASCADE' if cascade}
 SQL
       rescue DBI::DatabaseError => e
-        log_sql_error("Could not remove column #{c}", e)
+        SqlHelper.log_sql_error("Could not remove column #{c}", e)
       end
     end
+  end
+
+  def rename_column(table, old_name, new_name)
+    @dbh.do(<<SQL)
+ALTER TABLE #{table} RENAME COLUMN #{old_name} TO #{new_name}
+SQL
   end
 
   def drop_tables(tables, cascade = true)
@@ -41,7 +66,7 @@ SQL
 DROP TABLE #{[tables].flatten.join(', ')}#{' CASCADE' if cascade}
 SQL
     rescue DBI::DatabaseError => e
-      log_sql_error("Could not remove tables #{[tables].flatten.join(', ')}", e)
+      SqlHelper.log_sql_error("Could not remove tables #{[tables].flatten.join(', ')}", e)
     end
   end
 
@@ -206,6 +231,7 @@ def run_sql_file(file)
 end
 
 def run_rb_file(dbh, file)
+  LOG.info "Running RB file: #{file}"
   updater = SchemaUpdater.new(dbh)
   updater.instance_eval(File.readlines(file).join("\n"))
   updater.update_schema()

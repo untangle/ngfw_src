@@ -20,18 +20,44 @@ SQL
 
   sql_helper.remove_columns('settings.u_user_policy_rule', 'is_inbound')
 
+  set_id = get_set_id()
+
+  if set_id.nil?
+    set_id = sql_helper.next_id()
+
+    @dbh.prepare('INSERT INTO settings.u_user_policy_rules VALUES (?)') do |ps|
+      ps.execute(set_id);
+    end
+  end
+
   user_policy_rules = @dbh.select_all(<<SQL)
 SELECT * FROM settings.u_user_policy_rule ORDER BY position ASC
 SQL
 
-  set_id = get_set_id()
-
-  if set_id.nil?
-    @dbh.do(<<SQL)
-INSERT INTO settings.u_user_policy_rules VALUES (nextval('hibernate_sequence'))
-SQL
-    set_id = get_set_id()
-  end
+  user_policy_rules << {
+    'rule_id' => sql_helper.next_id(),
+    'protocol_matcher' => 'ANY',
+    'client_ip_matcher' => 'any',
+    'server_ip_matcher' => 'any',
+    'client_port_matcher' => 'any',
+    'server_port_matcher' => '25',
+    'client_intf_matcher' => 'any',
+    'server_intf_matcher' => 'O',
+    'policy_id' => nil,
+    'name' => '[no name]',
+    'category' => '[no category]',
+    'description' => 'STMP outbound bypass',
+    'live' => true,
+    'alert' => false,
+    'log' => false,
+    'set_id' => set_id,
+    'position' => nil,
+    'start_time' => '00:00:00',
+    'end_time' => '23:59:00',
+    'day_of_week_matcher' => 'any',
+    'user_matcher' => '[any]',
+    'invert_entire_duration' => false
+  }
 
   sprs = @dbh.select_all(<<SQL)
 SELECT * FROM settings.u_system_policy_rule spr

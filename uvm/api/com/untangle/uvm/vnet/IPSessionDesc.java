@@ -34,6 +34,7 @@
 package com.untangle.uvm.vnet;
 
 import java.net.InetAddress;
+
 import com.untangle.uvm.node.SessionEndpoints;
 
 /**
@@ -45,14 +46,14 @@ import com.untangle.uvm.node.SessionEndpoints;
 public interface IPSessionDesc extends com.untangle.uvm.node.IPSessionDesc, SessionDesc, SessionEndpoints
 {
     /**
-     * DIRDOC_XXX
+     * The session direction, based upon the interface ordering.
      *
      * @return true if the session is inbound, false if it is outbound
      */
     boolean isIncoming();
 
     /**
-     * DIRDOC_XXX
+     * The session direction, based upon the interface ordering.
      *
      * @return true if the session is outbound, false if it is inbound
      */

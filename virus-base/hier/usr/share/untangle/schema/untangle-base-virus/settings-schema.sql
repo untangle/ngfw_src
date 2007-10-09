@@ -23,8 +23,8 @@
 CREATE TABLE settings.n_virus_settings (
     settings_id int8 NOT NULL,
     tid int8 NOT NULL UNIQUE,
-    disable_ftp_resume bool,
-    disable_http_resume bool,
+    disable_ftp_resume bool NOT NULL,
+    disable_http_resume bool NOT NULL,
     trickle_percent int4,
     http_config int8 NOT NULL,
     ftp_config int8 NOT NULL,
@@ -100,12 +100,12 @@ ALTER TABLE settings.n_virus_settings
     REFERENCES settings.u_tid;
 
 ALTER TABLE settings.n_virus_settings
-    ADD CONSTRAINT fk_tr_virus_settings_ftpin
+    ADD CONSTRAINT fk_tr_virus_settings_ftpout
     FOREIGN KEY (ftp_config)
     REFERENCES settings.n_virus_config;
 
 ALTER TABLE settings.n_virus_settings
-    ADD CONSTRAINT fk_tr_virus_set_httpin
+    ADD CONSTRAINT fk_tr_virus_set_httpout
     FOREIGN KEY (http_config)
     REFERENCES settings.n_virus_config;
 
@@ -115,11 +115,11 @@ ALTER TABLE settings.n_virus_settings
     REFERENCES settings.n_virus_smtp_config;
 
 ALTER TABLE settings.n_virus_settings
-    ADD CONSTRAINT fk_tr_virus_settings_popin
+    ADD CONSTRAINT fk_tr_virus_settings_popout
     FOREIGN KEY (pop_config)
     REFERENCES settings.n_virus_pop_config;
 
 ALTER TABLE settings.n_virus_settings
-    ADD CONSTRAINT fk_tr_virus_settings_imapin
+    ADD CONSTRAINT fk_tr_virus_settings_imapout
     FOREIGN KEY (imap_config)
     REFERENCES settings.n_virus_imap_config;

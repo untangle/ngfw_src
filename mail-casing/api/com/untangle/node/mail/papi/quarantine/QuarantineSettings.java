@@ -75,6 +75,8 @@ public class QuarantineSettings implements Serializable {
     private List<EmailAddressPairRule> m_addressRemaps;
     private List<EmailAddressRule> m_allowedAddressPatterns;
 
+    private boolean quarantineExternalMail = false;
+
     // logger here caused proxy serialization to freak out.
     // private final Logger logger = Logger.getLogger(getClass());
 
@@ -265,5 +267,16 @@ public class QuarantineSettings implements Serializable {
      */
     public void setMaxIdleInbox(long max) {
         m_maxMailIntern = max;
+    }
+
+    @Column(name="quarantine_external_mail", nullable=false)
+    public boolean getQuarantineExternalMail()
+    {
+        return quarantineExternalMail;
+    }
+
+    public void setQuarantineExternalMail(boolean quarantineExternalMail)
+    {
+        this.quarantineExternalMail = quarantineExternalMail;
     }
 }

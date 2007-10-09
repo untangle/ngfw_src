@@ -134,11 +134,11 @@ ALTER TABLE settings.n_spam_settings
     REFERENCES settings.n_spam_smtp_config;
 
 ALTER TABLE settings.n_spam_settings
-    ADD CONSTRAINT fk_in_ss_pop_cfg
+    ADD CONSTRAINT fk_out_ss_pop_cfg
     FOREIGN KEY (pop_config)
     REFERENCES settings.n_spam_pop_config;
 
 ALTER TABLE settings.n_spam_settings
-    ADD CONSTRAINT fk_in_ss_imap_cfg
+    ADD CONSTRAINT fk_out_ss_imap_cfg
     FOREIGN KEY (imap_config)
     REFERENCES settings.n_spam_imap_config;
