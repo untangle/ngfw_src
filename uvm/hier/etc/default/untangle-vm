@@ -24,7 +24,7 @@ UVM_SESSION_LIMIT=""
 UVM_ARGS=""
 
 # postgresql stuff
-PG_VERSION=`dpkg -l postgresql | awk '/^ii/ { print $3 }'`
+PG_VERSION=`dpkg -l postgresql | awk '/^ii/ { gsub(/\..-.*/, "", $3) ; print $3 }'`
 if [[ "$PG_VERSION" == 7* ]] ; then
     PGDATA=${POSTGRES_DATA:-/var/lib/postgres/data}
     PGSERVICE="postgresql"
