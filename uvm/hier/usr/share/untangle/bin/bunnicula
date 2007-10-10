@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# get a bunch of default values
+source @PREFIX@/etc/default/untangle-vm
 
 JAVA_HOME=${JAVA_HOME:-/usr/lib/jvm/java-1.5.0-sun}
 PATH=/sbin:/bin:/usr/sbin:/usr/bin:${JAVA_HOME}/bin
@@ -66,8 +68,8 @@ fi
 
 # add user and uvm database just in case
 echo "ALTER DATABASE mvvm RENAME TO uvm" | psql -X -U postgres template1 2>/dev/null
-createuser -U postgres -d -A metavize 2>/dev/null
-createuser -U postgres -d -A untangle 2>/dev/null
+createuser -U postgres ${PG_CREATEUSER_OPTIONS} metavize 2>/dev/null
+createuser -U postgres ${PG_CREATEUSER_OPTIONS} untangle 2>/dev/null
 createdb -O postgres -U postgres uvm 2>/dev/null
 createlang -U postgres plpgsql uvm 2>/dev/null
 
