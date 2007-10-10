@@ -24,7 +24,7 @@ UVM_SESSION_LIMIT=""
 UVM_ARGS=""
 
 # postgresql stuff
-PG_VERSION=`dpkg --get-selections postgresql-mv* | awk '/install$/ { gsub(/postgresql-mv-?/, "", $1) ; print $1 }'`
+PG_VERSION=`dpkg --get-selections postgresql* | awk '/install$/ { gsub(/postgresql-mv-?/, "", $1) ; print $1 }'`
 if [[ -z "$PG_VERSION" ]] ; then
     PGDATA=${POSTGRES_DATA:-/var/lib/postgres/data}
     PGSERVICE="postgresql"
