@@ -1,6 +1,7 @@
+
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -34,7 +35,6 @@
 package com.untangle.uvm.node.firewall.user;
 
 import com.untangle.uvm.node.ParseException;
-
 import com.untangle.uvm.node.firewall.ParsingFactory;
 
 public class UserMatcherFactory
@@ -50,12 +50,12 @@ public class UserMatcherFactory
                                      UserSetMatcher.PARSER );
     }
 
-    public UserDBMatcher getAllMatcher() 
+    public UserDBMatcher getAllMatcher()
     {
         return UserSimpleMatcher.getAllMatcher();
     }
-    
-    public UserDBMatcher getNilMatcher() 
+
+    public UserDBMatcher getNilMatcher()
     {
         return UserSimpleMatcher.getNilMatcher();
     }
@@ -73,7 +73,7 @@ public class UserMatcherFactory
         default: return UserSetMatcher.makeInstance( userArray );
         }
     }
-    
+
     public static final UserDBMatcher parse( String value ) throws ParseException
     {
         return INSTANCE.parser.parse( value );

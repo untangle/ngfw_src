@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -34,7 +34,6 @@
 package com.untangle.uvm.node.firewall.protocol;
 
 import com.untangle.uvm.node.ParseException;
-
 import com.untangle.uvm.node.firewall.ParsingFactory;
 
 import static com.untangle.uvm.node.firewall.protocol.ProtocolParsingConstants.MARKER_TCP;
@@ -56,7 +55,7 @@ public class ProtocolMatcherFactory
     private final ParsingFactory<ProtocolDBMatcher> factory;
 
     /* This is the enumeration of all of the available matchers */
-    private static final String[] ENUMERATION = { 
+    private static final String[] ENUMERATION = {
         MARKER_TCP_AND_UDP, MARKER_UDP, MARKER_TCP, MARKER_PING, MARKER_ANY
     };
 
@@ -65,7 +64,7 @@ public class ProtocolMatcherFactory
         this.factory = new ParsingFactory<ProtocolDBMatcher>( "protocol matcher" );
         factory.registerParsers( ProtocolSimpleMatcher.PARSER, ProtocolBasicMatcher.PARSER );
     }
-        
+
     /**
      * Retrieve the all matcher.
      *
@@ -85,7 +84,7 @@ public class ProtocolMatcherFactory
     {
         return ProtocolSimpleMatcher.getNilMatcher();
     }
-    
+
     /**
      * Retrieve the TCP matcher.
      *
@@ -96,7 +95,6 @@ public class ProtocolMatcherFactory
         return ProtocolBasicMatcher.getTCPMatcher();
     }
 
-    
     /**
      * Retrieve the UDP matcher.
      *
@@ -158,6 +156,6 @@ public class ProtocolMatcherFactory
     {
         return INSTANCE.factory.parse( value );
     }
-    
-    
+
+
 }

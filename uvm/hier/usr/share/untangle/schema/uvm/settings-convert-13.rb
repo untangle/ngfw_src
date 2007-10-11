@@ -36,7 +36,7 @@ SQL
 
   user_policy_rules << {
     'rule_id' => sql_helper.next_id(),
-    'protocol_matcher' => 'ANY',
+    'protocol_matcher' => 'TCP',
     'client_ip_matcher' => 'any',
     'server_ip_matcher' => 'any',
     'client_port_matcher' => 'any',

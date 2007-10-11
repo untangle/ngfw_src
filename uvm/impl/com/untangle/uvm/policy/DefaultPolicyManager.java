@@ -18,7 +18,10 @@
 
 package com.untangle.uvm.policy;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -30,7 +33,24 @@ import com.untangle.uvm.license.ProductIdentifier;
 import com.untangle.uvm.localapi.LocalIntfManager;
 import com.untangle.uvm.node.InterfaceComparator;
 import com.untangle.uvm.node.LocalNodeManager;
+import com.untangle.uvm.node.firewall.intf.IntfDBMatcher;
 import com.untangle.uvm.node.firewall.intf.IntfMatcher;
+import com.untangle.uvm.node.firewall.intf.IntfMatcherFactory;
+import com.untangle.uvm.node.firewall.ip.IPDBMatcher;
+import com.untangle.uvm.node.firewall.ip.IPMatcher;
+import com.untangle.uvm.node.firewall.ip.IPMatcherFactory;
+import com.untangle.uvm.node.firewall.port.PortDBMatcher;
+import com.untangle.uvm.node.firewall.port.PortMatcher;
+import com.untangle.uvm.node.firewall.port.PortMatcherFactory;
+import com.untangle.uvm.node.firewall.protocol.ProtocolDBMatcher;
+import com.untangle.uvm.node.firewall.protocol.ProtocolMatcher;
+import com.untangle.uvm.node.firewall.protocol.ProtocolMatcherFactory;
+import com.untangle.uvm.node.firewall.time.DayOfWeekDBMatcher;
+import com.untangle.uvm.node.firewall.time.DayOfWeekMatcher;
+import com.untangle.uvm.node.firewall.time.DayOfWeekMatcherFactory;
+import com.untangle.uvm.node.firewall.user.UserDBMatcher;
+import com.untangle.uvm.node.firewall.user.UserMatcher;
+import com.untangle.uvm.node.firewall.user.UserMatcherFactory;
 import com.untangle.uvm.util.TransactionWork;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
@@ -81,6 +101,24 @@ class DefaultPolicyManager implements LocalPolicyManager
                     if (results.size() == 0) {
                         logger.info("Empty User Policy Rule Set.  Creating empty one.");
                         UserPolicyRuleSet uprs = new UserPolicyRuleSet();
+                        try {
+                            IntfMatcher allIntf = IntfMatcherFactory.getInstance().getAllMatcher();
+                            IntfMatcher outside = IntfMatcherFactory.getInstance().makeSingleMatcher((byte)0);
+                            ProtocolMatcher tcp = ProtocolMatcherFactory.getInstance().getTCPMatcher();
+                            IPMatcher allAddr = IPMatcherFactory.getInstance().getAllMatcher();
+                            PortMatcher allPorts = PortMatcherFactory.getInstance().getAllMatcher();
+                            DateFormat dateFormat = new SimpleDateFormat("HH:mm");
+                            DayOfWeekMatcher allDays = DayOfWeekMatcherFactory.getInstance().getAllMatcher();
+                            UserMatcher allUsers = UserMatcherFactory.getInstance().getAllMatcher();
+
+                            UserPolicyRule upr = new UserPolicyRule(allIntf, outside, null, tcp, allAddr, allAddr, allPorts, allPorts, dateFormat.parse("00:00"), dateFormat.parse("23:59"), allDays, allUsers, true, false);
+                            upr.setDescription("SMTP outbound bypass");
+                            uprs.addRule(upr);
+                        } catch (com.untangle.uvm.node.ParseException exn) {
+                            logger.warn("could not create SMTP bypass rule", exn);
+                        } catch (java.text.ParseException exn) {
+                            logger.warn("could not create SMTP bypass rule", exn);
+                        }
                         s.save(uprs);
                     } else if (results.size() > 1) {
                         logger.fatal("Found " + results.size() + " user policy rule sets! Deleting all but first");
@@ -253,6 +291,7 @@ class DefaultPolicyManager implements LocalPolicyManager
                         s.saveOrUpdate(uprs);
 
                         userRuleSet = uprs;
+                        updateRules(existingUser);
 
                         return true;
                     }
