@@ -6,6 +6,9 @@ prefix=@PREFIX@
 pkglist=@FAKE_PKG_LIST@
 APT_LOG=@PREFIX@/var/log/uvm/apt.log
 
+# this is needed now !
+export DEBIAN_FRONTEND=noninteractive
+
 INST_OPTS=" -o DPkg::Options::=--force-confnew --yes --force-yes --fix-broken --purge "
 UPGD_OPTS=" -o DPkg::Options::=--force-confnew --yes --force-yes --fix-broken --purge "
 UPDT_OPTS=" --yes --force-yes --purge "
