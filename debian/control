@@ -1123,7 +1123,7 @@ Description: Untangle Server Thirdparty Libraries
 
 Package: untangle-vm
 Architecture: any
-Depends: sun-java5-jre, untangle-libuvmcore, untangle-libuvmthirdparty, sudo, untangle-ntpdate-config, untangle-ifrename-config, untangle-iptables (>= 1.3.3), ddclient, untangle-libnfnetlink0, db4.2-util, untangle-ujac2pdf, at, ebtables, mime-support, untangle-nsis-addons, dnsmasq, pppoe, bridge-utils, iputils-ping, curl, sg3-utils, pciutils, untangle-postgresql-config, libdbd-pg-ruby
+Depends: sun-java5-jre, untangle-libuvmcore, untangle-libuvmthirdparty, sudo, untangle-ntpdate-config, untangle-ifrename-config, untangle-iptables (>= 1.3.3), ddclient, untangle-libnfnetlink0, db4.2-util, untangle-ujac2pdf, at, ebtables, mime-support, untangle-nsis-addons, dnsmasq, pppoe, bridge-utils, iputils-ping, curl, sg3-utils, pciutils, untangle-postgresql-config, libdbd-pg-ruby, ruby
 Recommends: untangle-dhclient-config, untangle-postgresql-config, untangle-iptables
 Provides: mvvm
 Conflicts: mvvm
