@@ -190,10 +190,6 @@ BuildEnv::SRC.installTarget.registerDependency(bundledAjx)
 ServletBuilder.new(uvm_lib, 'com.untangle.uvm.sessiondumper.jsp',
                    "#{SRC_HOME}/uvm-lib/servlets/session-dumper")
 
-ms = MoveSpec.new("#{SRC_HOME}/uvm-lib/hier", FileList["#{SRC_HOME}/uvm-lib/hier/**/*"], uvm_lib.distDirectory)
-cf = CopyFiles.new(uvm_lib, ms, 'hier', BuildEnv::SRC.filterset)
-uvm_lib.registerTarget('hier', cf)
-
 BuildEnv::SRC.installTarget.installJars(jts, "#{uvm_lib.distDirectory}/usr/share/untangle/lib",
                                         nil, false, true)
 
