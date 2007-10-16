@@ -146,7 +146,7 @@ restartServiceIfNeeded() {
     postgresql)
 # Removing the postgres pid file just makes restarting harder.  The init.d script deals ok as is.
       pidFile=
-      isServiceRunning postgres && return
+      isServiceRunning $PG_DAEMON_NAME && return
       serviceName=$PGSERVICE
       needToRun=yes # always has to run
       ;;
