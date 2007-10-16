@@ -616,17 +616,17 @@ class ServletBuilder < Target
     unless 0 == commonMoveSpecs.length
       deps << CopyFiles.new(package, commonMoveSpecs, "#{suffix}-common")
     end
-    uvm = BuildEnv::SRC['untangle-libuvm']
+    uvm_lib = BuildEnv::SRC['untangle-libuvm']
 
     jardeps = libdeps + @nodedeps + Jars::Base + FileList["#{@destRoot}/WEB-INF/lib/*.jar"]
-    jardeps << uvm["api"] << uvm["localapi"]
+    jardeps << uvm_lib["api"] << uvm_lib["localapi"]
 
     # XXX make name nil?
     @srcJar = JarTarget.buildTarget(package, jardeps, name, "#{path}/src",
                                     false);
     deps << @srcJar
 
-    super(package, deps, suffix)
+    super(package, deps + jardeps, suffix)
   end
 
   def build
@@ -642,10 +642,10 @@ class ServletBuilder < Target
     webfrag = Tempfile.new("file-list")
     webfrag.close
 
-    uvm = BuildEnv::SRC['untangle-libuvm']
+    uvm_lib = BuildEnv::SRC['untangle-libuvm']
     cp = @nodedeps.map { |j| j.filename } +
       JspcClassPath + Jars::Base.map { |j| j.filename } +
-      [uvm["api"], uvm["localapi"]].map { |t| t.filename } +
+      [uvm_lib["api"], uvm_lib["localapi"]].map { |t| t.filename } +
       Jars::Base.map {|f| f.filename }
 
     args = ["-s", "-die", "-l", "-v", "-compile", "-d", classroot,
@@ -900,9 +900,6 @@ class JarTarget < Target
 end
 
 def graphViz(filename)
-  i = 0;
-  m = {};
-
   File.open(filename, "w") { |f|
     f.puts <<EOF
 digraph packages {
@@ -910,28 +907,11 @@ size="1600,1200";
 EOF
     Rake.application.tasks.each do |t|
       if t.class != Rake::FileTask
-        n = m[t.name]
-        if n.nil?
-          i = i + 1
-          n = i
-          m[t.name] = n
-        end
-
         if 0 == t.prerequisites.length
-          f.puts("\"#{n}\"")
-          #f.puts("\"#{t.name}\"[fontsize=8]")
+          f.puts("\"#{t.name}\"")
         else
           t.prerequisites.each do |prereq|
-            if Rake.application[prereq].class != Rake::FileTask
-              p = m[prereq]
-              if p.nil?
-                i = i + 1
-                p = i
-                m[prereq] = p
-              end
-              #f.puts("\"#{n}\" -> \"#{p}\"")
-              f.puts("\"#{t.name}\" -> \"#{prereq}\"[fontsize=8]")
-            end
+            f.puts("\"#{t.name}\" -> \"#{prereq}\"")
           end
         end
       end
