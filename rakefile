@@ -64,5 +64,3 @@ task :javadoc do
               '-d', "#{BuildEnv::SRC.staging}/javadoc",
               '-subpackages', 'com.untangle', '-J-Xmx512m')
 end
-
-graphViz('foo.dot')
