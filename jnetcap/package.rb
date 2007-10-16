@@ -1,6 +1,6 @@
 # -*-ruby-*-
 # $HeadURL$
-# Copyright (c) 2003-2007 Untangle, Inc. 
+# Copyright (c) 2003-2007 Untangle, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License, version 2,
@@ -17,11 +17,11 @@
 #
 
 jnetcap = BuildEnv::SRC['jnetcap']
-uvm    = BuildEnv::SRC['untangle-vm']
+uvm_lib    = BuildEnv::SRC['untangle-libuvm']
 
 ## jnetcap
 j = JarTarget.buildTarget(jnetcap, Jars::Base, 'impl', "#{SRC_HOME}/jnetcap/impl" )
-BuildEnv::SRC.installTarget.installJars(j, "#{uvm.distDirectory}/usr/share/untangle/lib",
+BuildEnv::SRC.installTarget.installJars(j, "#{uvm_lib.distDirectory}/usr/share/untangle/lib",
                                         nil, false, true)
 
 headerClasses = [ 'com.untangle.jnetcap.Netcap',

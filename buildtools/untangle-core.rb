@@ -58,7 +58,7 @@ require "#{SRC_HOME}/jmvutil/package.rb"
 require "#{SRC_HOME}/jnetcap/package.rb"
 require "#{SRC_HOME}/jvector/package.rb"
 require "#{SRC_HOME}/nfutil/package.rb"
-require "#{SRC_HOME}/uvm/package.rb"
+require "#{SRC_HOME}/uvm-lib/package.rb"
 require "#{SRC_HOME}/gui/package.rb"
 
 require "#{SRC_HOME}/test/package.rb"
@@ -106,7 +106,7 @@ file libuvmcore_so do
                                                              ['xml2', 'sysfs', 'netfilter_queue'], ['ipq'])
 end
 
-BuildEnv::SRC['untangle-vm']['impl'].registerDependency(libuvmcore_so)
+BuildEnv::SRC['untangle-libuvm']['impl'].registerDependency(libuvmcore_so)
 
 BuildEnv::SRC.installTarget.installFiles(libuvmcore_so, "#{BuildEnv::SRC['untangle-libuvmcore'].distDirectory}/usr/lib/uvm")
 

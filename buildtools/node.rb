@@ -47,7 +47,7 @@ class NodeBuilder
                               baseHash = {})
     home = buildEnv.home
 
-    uvm = BuildEnv::SRC['untangle-vm']
+    uvm_lib = BuildEnv::SRC['untangle-libuvm']
     gui  = BuildEnv::SRC['untangle-client']
     dirName = location
     node = buildEnv["#{name}"]
@@ -124,9 +124,9 @@ class NodeBuilder
 
   ## Helper to retrieve the standard dependencies for an impl
   def NodeBuilder.baseJarsImpl
-    uvm = BuildEnv::SRC['untangle-vm']
-    Jars::Base + [Jars::JFreeChart, Jars::Jasper, uvm['api'], uvm['localapi'],
-      uvm['reporting']]
+    uvm_lib = BuildEnv::SRC['untangle-libuvm']
+    Jars::Base + [Jars::JFreeChart, Jars::Jasper, uvm_lib['api'], uvm_lib['localapi'],
+      uvm_lib['reporting']]
   end
 
   ## Helper to retrieve the standard dependencies for local API
@@ -138,6 +138,6 @@ class NodeBuilder
   ## Helper to retrieve the standard dependencies for a GUI jar
   def NodeBuilder.baseJarsGui
     Jars::Base + Jars::Gui + Jars::TomcatEmb +
-      [BuildEnv::SRC['untangle-vm']['api'], BuildEnv::SRC['untangle-client']['api']]
+      [BuildEnv::SRC['untangle-libuvm']['api'], BuildEnv::SRC['untangle-client']['api']]
   end
 end

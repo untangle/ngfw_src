@@ -1,6 +1,6 @@
 # -*-ruby-*-
 # $HeadURL$
-# Copyright (c) 2003-2007 Untangle, Inc. 
+# Copyright (c) 2003-2007 Untangle, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License, version 2,
@@ -16,7 +16,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
 #
 
-uvm = BuildEnv::SRC['untangle-vm']
+uvm_lib = BuildEnv::SRC['untangle-libuvm']
 gui = BuildEnv::SRC['untangle-client']
 BuildEnv::SRC.installTarget.registerDependency(gui)
 
@@ -31,7 +31,7 @@ mini = MiniInstallTarget.new(BuildEnv::SRC['gui-temp'],
                              'install')
 
 ## Api
-deps = Jars::Base + Jars::Gui + Jars::TomcatEmb + [uvm['api']]
+deps = Jars::Base + Jars::Gui + Jars::TomcatEmb + [uvm_lib['api']]
 jt = JarTarget.buildTarget(gui, deps, 'api', "#{SRC_HOME}/gui/api")
 
 # XXX renaming because the package name is bad
@@ -39,7 +39,7 @@ BuildEnv::SRC.installTarget.installJars(jt, gui.getWebappDir('webstart'), nil, t
 mini.installJars(jt, gui.getWebappDir('webstart'), nil, true)
 
 ## Implementation
-deps = Jars::Base + Jars::Gui + Jars::TomcatEmb + [uvm['api'], gui['api']]
+deps = Jars::Base + Jars::Gui + Jars::TomcatEmb + [uvm_lib['api'], gui['api']]
 jt = JarTarget.buildTarget(gui, deps, 'impl', "#{SRC_HOME}/gui/impl")
 
 # XXX renaming because the package name is bad

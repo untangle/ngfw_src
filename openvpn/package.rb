@@ -21,7 +21,7 @@ NodeBuilder.makeNode(BuildEnv::SRC, 'untangle-node-openvpn', 'openvpn')
 openvpn = BuildEnv::SRC['untangle-node-openvpn']
 
 
-deps = Jars::Base + [BuildEnv::SRC['untangle-vm']['api']]
+deps = Jars::Base + [BuildEnv::SRC['untangle-libuvm']['api']]
 
 jt = [JarTarget.buildTarget(openvpn, deps, 'api', 'openvpn/api')]
 

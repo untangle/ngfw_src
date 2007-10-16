@@ -1,6 +1,6 @@
 # -*-ruby-*-
 # $HeadURL$
-# Copyright (c) 2003-2007 Untangle, Inc. 
+# Copyright (c) 2003-2007 Untangle, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License, version 2,
@@ -18,12 +18,12 @@
 
 jvector = BuildEnv::SRC['jvector']
 jnetcap = BuildEnv::SRC['jnetcap']
-uvm    = BuildEnv::SRC['untangle-vm']
+uvm_lib    = BuildEnv::SRC['untangle-libuvm']
 
 ## jvector
 deps = Jars::Base + [jnetcap['impl']]
 j = JarTarget.buildTarget(jvector, deps, 'impl', "#{SRC_HOME}/jvector/impl")
-BuildEnv::SRC.installTarget.installJars(j, "#{uvm.distDirectory}/usr/share/untangle/lib",
+BuildEnv::SRC.installTarget.installJars(j, "#{uvm_lib.distDirectory}/usr/share/untangle/lib",
                                         nil, false, true)
 
 headerClasses = [ 'com.untangle.jvector.OutgoingSocketQueue',

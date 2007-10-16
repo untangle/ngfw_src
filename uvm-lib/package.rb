@@ -18,51 +18,52 @@
 
 jnetcap = BuildEnv::SRC['jnetcap']
 jvector = BuildEnv::SRC['jvector']
-uvm = BuildEnv::SRC['untangle-vm']
-BuildEnv::SRC.installTarget.registerDependency(uvm)
+uvm_lib = BuildEnv::SRC['untangle-libuvm']
+BuildEnv::SRC.installTarget.registerDependency(uvm_lib)
 
 jts = []
 
 ## Bootstrap
-jts << JarTarget.buildTarget(uvm, Jars::Base, 'bootstrap', "#{SRC_HOME}/uvm/bootstrap")
+jts << JarTarget.buildTarget(uvm_lib, Jars::Base, 'bootstrap', "#{SRC_HOME}/uvm-lib/bootstrap")
 
 ## API
-jts << (jt = JarTarget.buildTarget(uvm, Jars::Base, 'api', ["#{SRC_HOME}/uvm/api", 'version']))
-BuildEnv::SRC.installTarget.installJars(jt, uvm.getWebappDir('webstart'), nil, true)
+jts << (jt = JarTarget.buildTarget(uvm_lib, Jars::Base, 'api', ["#{SRC_HOME}/uvm-lib/api", 'version']))
+BuildEnv::SRC.installTarget.installJars(jt, uvm_lib.getWebappDir('webstart'), nil, true)
 
 ## Local API
-jts << JarTarget.buildTarget(uvm, Jars::Base + [uvm['api']], 'localapi', "#{SRC_HOME}/uvm/localapi")
+jts << JarTarget.buildTarget(uvm_lib, Jars::Base + [uvm_lib['api']], 'localapi', "#{SRC_HOME}/uvm-lib/localapi")
 
 ## Reporting
-deps  = Jars::Base + Jars::Jasper + Jars::JFreeChart + [uvm['api']]
-jts << JarTarget.buildTarget(uvm, deps, 'reporting', "#{SRC_HOME}/uvm/reporting")
+deps  = Jars::Base + Jars::Jasper + Jars::JFreeChart + [uvm_lib['api']]
+jts << JarTarget.buildTarget(uvm_lib, deps, 'reporting', "#{SRC_HOME}/uvm-lib/reporting")
 
 ## Implementation
 deps  = Jars::Base + Jars::TomcatEmb + Jars::JavaMail + Jars::Jcifs +
   Jars::Dom4j + Jars::Activation + Jars::Trove + Jars::Jasper + Jars::JFreeChart +
-  [ uvm['bootstrap'], uvm['api'], uvm['localapi'], uvm['reporting'], jnetcap['impl'], jvector['impl']]
+  [ uvm_lib['bootstrap'], uvm_lib['api'], uvm_lib['localapi'], uvm_lib['reporting'], jnetcap['impl'], jvector['impl']]
 
-jts << JarTarget.buildTarget(uvm, deps, 'impl', "#{SRC_HOME}/uvm/impl")
+jts << JarTarget.buildTarget(uvm_lib, deps, 'impl', "#{SRC_HOME}/uvm-lib/impl")
 
 # servlets
-ServletBuilder.new(uvm, 'com.untangle.uvm.invoker.jsp',
-                   "#{SRC_HOME}/uvm/servlets/http-invoker", [], [], [],
+ServletBuilder.new(uvm_lib, 'com.untangle.uvm.invoker.jsp',
+                   "#{SRC_HOME}/uvm-lib/servlets/http-invoker", [], [], [],
                    [BuildEnv::SERVLET_COMMON])
 
-ServletBuilder.new(uvm, 'com.untangle.uvm.store.jsp',
-                   "#{SRC_HOME}/uvm/servlets/onlinestore", [])
+ServletBuilder.new(uvm_lib, 'com.untangle.uvm.store.jsp',
+                   "#{SRC_HOME}/uvm-lib/servlets/onlinestore", [])
 
-ServletBuilder.new(uvm, 'com.untangle.uvm.reports.jsp',
-                   "#{SRC_HOME}/uvm/servlets/reports")
+ServletBuilder.new(uvm_lib, 'com.untangle.uvm.reports.jsp',
+                   "#{SRC_HOME}/uvm-lib/servlets/reports")
 
 # wmi installer
-ServletBuilder.new(uvm, "com.untangle.uvm.user.servlet","uvm/servlets/wmi", [])
+ServletBuilder.new(uvm_lib, "com.untangle.uvm.user.servlet",
+                   "uvm-lib/servlets/wmi", [])
 
 
 deps = FileList["#{BuildEnv::DOWNLOADS}/Ajax/jars/*jar"].exclude(/.*servlet-api.jar/).map { |n| ThirdpartyJar.get(n) }
 ms = [ MoveSpec.new("#{BuildEnv::DOWNLOADS}/Ajax/WebRoot/js", '**/*', 'AjaxTk')]
-ServletBuilder.new(uvm, 'com.untangle.uvm.root.jsp',
-                   "#{SRC_HOME}/uvm/servlets/ROOT", deps, [], ms)
+ServletBuilder.new(uvm_lib, 'com.untangle.uvm.root.jsp',
+                   "#{SRC_HOME}/uvm-lib/servlets/ROOT", deps, [], ms)
 
 ajaxTkList =
   [
@@ -171,7 +172,7 @@ ajaxTkList =
   'dwt/xforms/ButtonGrid.js',
 ].map { |e| "#{BuildEnv::DOWNLOADS}/Ajax/WebRoot/js/#{e}" }
 
-bundledAjx = "#{uvm.getWebappDir("ROOT")}/AjaxTk/BundledAjx.js"
+bundledAjx = "#{uvm_lib.getWebappDir("ROOT")}/AjaxTk/BundledAjx.js"
 
 file bundledAjx => ajaxTkList do
   File.open(bundledAjx, 'w') do |o|
@@ -186,14 +187,14 @@ file bundledAjx => ajaxTkList do
 end
 BuildEnv::SRC.installTarget.registerDependency(bundledAjx)
 
-ServletBuilder.new(uvm, 'com.untangle.uvm.sessiondumper.jsp',
-                   "#{SRC_HOME}/uvm/servlets/session-dumper")
+ServletBuilder.new(uvm_lib, 'com.untangle.uvm.sessiondumper.jsp',
+                   "#{SRC_HOME}/uvm-lib/servlets/session-dumper")
 
-ms = MoveSpec.new("#{SRC_HOME}/uvm/hier", FileList["#{SRC_HOME}/uvm/hier/**/*"], uvm.distDirectory)
-cf = CopyFiles.new(uvm, ms, 'hier', BuildEnv::SRC.filterset)
-uvm.registerTarget('hier', cf)
+ms = MoveSpec.new("#{SRC_HOME}/uvm-lib/hier", FileList["#{SRC_HOME}/uvm-lib/hier/**/*"], uvm_lib.distDirectory)
+cf = CopyFiles.new(uvm_lib, ms, 'hier', BuildEnv::SRC.filterset)
+uvm_lib.registerTarget('hier', cf)
 
-BuildEnv::SRC.installTarget.installJars(jts, "#{uvm.distDirectory}/usr/share/untangle/lib",
+BuildEnv::SRC.installTarget.installJars(jts, "#{uvm_lib.distDirectory}/usr/share/untangle/lib",
                                         nil, false, true)
 
 thirdparty = BuildEnv::SRC['untangle-libuvmthirdparty']
@@ -202,12 +203,12 @@ BuildEnv::SRC.installTarget.installJars(Jars::Base, "#{thirdparty.distDirectory}
 
 BuildEnv::SRC.installTarget.installJars(Jars::Reporting, "#{thirdparty.distDirectory}/usr/share/java/reports")
 
-BuildEnv::SRC.installTarget.installDirs("#{uvm.distDirectory}/usr/share/untangle/toolbox")
+BuildEnv::SRC.installTarget.installDirs("#{uvm_lib.distDirectory}/usr/share/untangle/toolbox")
 
-uvm_cacerts = "#{uvm.distDirectory}/usr/share/untangle/conf/cacerts"
+uvm_cacerts = "#{uvm_lib.distDirectory}/usr/share/untangle/conf/cacerts"
 java_cacerts = "#{BuildEnv::JAVA_HOME}/jre/lib/security/cacerts"
-mv_ca = "#{SRC_HOME}/uvm/resources/mv-ca.pem"
-ut_ca = "#{SRC_HOME}/uvm/resources/ut-ca.pem"
+mv_ca = "#{SRC_HOME}/uvm-lib/resources/mv-ca.pem"
+ut_ca = "#{SRC_HOME}/uvm-lib/resources/ut-ca.pem"
 
 file uvm_cacerts => [ java_cacerts, mv_ca, ut_ca ] do
   ensureDirectory(File.dirname(uvm_cacerts))
@@ -223,10 +224,10 @@ end
 
 if BuildEnv::SRC.isDevel
   BuildEnv::SRC.installTarget.installFiles("#{SRC_HOME}/debian/control",
-                                           "#{uvm.distDirectory}/tmp",
+                                           "#{uvm_lib.distDirectory}/tmp",
                                            'pkg-list-main')
 
-  activationKey = "#{uvm.distDirectory}/usr/share/untangle/activation.key"
+  activationKey = "#{uvm_lib.distDirectory}/usr/share/untangle/activation.key"
 
   ## Insert the activation key if necessary.  Done here to not include
   ## The file inside of packages
@@ -241,6 +242,6 @@ BuildEnv::SRC.installTarget.registerDependency(uvm_cacerts)
 
 deps  = Jars::Base + Jars::TomcatEmb + Jars::JavaMail + Jars::Jcifs +
   Jars::Dom4j + Jars::Activation + Jars::Trove + Jars::Junit + Jars::WBEM +
-  [ uvm['bootstrap'], uvm['api'], uvm['localapi'], uvm['impl'], jnetcap['impl'], jvector['impl']]
+  [ uvm_lib['bootstrap'], uvm_lib['api'], uvm_lib['localapi'], uvm_lib['impl'], jnetcap['impl'], jvector['impl']]
 
-JarTarget.buildTarget(BuildEnv::SRC["unittest"], deps, 'untangle-vm', "#{SRC_HOME}/uvm/unittest")
+JarTarget.buildTarget(BuildEnv::SRC["unittest"], deps, 'untangle-libuvm', "#{SRC_HOME}/uvm-lib/unittest")
