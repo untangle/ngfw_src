@@ -22,6 +22,11 @@
 # Certified Filthy2007
 ENV["JAVA_HOME"] = "/usr/lib/jvm/java-1.5.0-sun"
 
+## This is how you define where the stamp file will go
+module Rake
+  StampFile = "./taskstamps.txt"
+end
+
 $DevelBuild = true
 $CleanBuild = false
 ARGV.each do |arg|
@@ -33,6 +38,13 @@ ARGV.each do |arg|
     $CleanBuild = true
   end
 end
+
+require "./buildtools/stamp-task.rb"
+require "./buildtools/rake-util.rb"
+require "./buildtools/c-compiler.rb"
+require "./buildtools/jars.rb"
+require "./buildtools/jasper.rb"
+require "./buildtools/node.rb"
 
 ## Require all of the sub packages.
 ## Done manually because order matters.
@@ -46,8 +58,8 @@ require "./jmvutil/package.rb"
 require "./jnetcap/package.rb"
 require "./jvector/package.rb"
 require "./nfutil/package.rb"
-require "./uvm-lib/package.rb"
 require "./uvm/package.rb"
+require "./uvm-lib/package.rb"
 require "./gui/package.rb"
 
 require "./test/package.rb"
