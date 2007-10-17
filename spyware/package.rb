@@ -25,5 +25,5 @@ NodeBuilder.makeNode(BuildEnv::SRC, 'untangle-node-spyware', 'spyware', [http["l
 deps = [spyware['gui'], http['gui']]
 
 ServletBuilder.new(spyware, 'com.untangle.node.spyware.jsp',
-                   "#{SRC_HOME}/spyware/servlets/spyware", [], deps,
+                   "./spyware/servlets/spyware", [], deps,
                    [], [BuildEnv::SERVLET_COMMON])

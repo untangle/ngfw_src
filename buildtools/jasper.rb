@@ -24,7 +24,7 @@ class JasperCompiler
   ReportGenerator = "#{BuildUtilPkg}.ReportGenerator"
   JRCompiler = "#{BuildUtilPkg}.JRCompiler"
 
-  TemplateDirectory = "#{SRC_HOME}/uvm-lib/resources/reports"
+  TemplateDirectory = "./uvm-lib/resources/reports"
 
   include Singleton
 

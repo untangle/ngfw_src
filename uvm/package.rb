@@ -19,6 +19,6 @@
 uvm = BuildEnv::SRC['untangle-vm']
 BuildEnv::SRC.installTarget.registerDependency(uvm)
 
-ms = MoveSpec.new("#{SRC_HOME}/uvm/hier", FileList["#{SRC_HOME}/uvm/hier/**/*"], uvm.distDirectory)
+ms = MoveSpec.new("./uvm/hier", FileList["./uvm/hier/**/*"], uvm.distDirectory)
 cf = CopyFiles.new(uvm, ms, 'hier', BuildEnv::SRC.filterset)
 uvm.registerTarget('hier', cf)

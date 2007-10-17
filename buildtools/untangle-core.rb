@@ -34,61 +34,49 @@ ARGV.each do |arg|
   end
 end
 
-## This is how you define where the stamp file will go
-module Rake
-  StampFile = "#{SRC_HOME}/taskstamps.txt"
-end
-
-require "#{SRC_HOME}/buildtools/stamp-task.rb"
-require "#{SRC_HOME}/buildtools/rake-util.rb"
-require "#{SRC_HOME}/buildtools/c-compiler.rb"
-require "#{SRC_HOME}/buildtools/jars.rb"
-require "#{SRC_HOME}/buildtools/jasper.rb"
-require "#{SRC_HOME}/buildtools/node.rb"
-
 ## Require all of the sub packages.
 ## Done manually because order matters.
 ## XXX Could create a new helper method that sets a prefix directory before
 ## calling require and then unsets it afterwards.
-require "#{SRC_HOME}/util/package.rb"
-require "#{SRC_HOME}/libmvutil/package.rb"
-require "#{SRC_HOME}/libnetcap/package.rb"
-require "#{SRC_HOME}/libvector/package.rb"
-require "#{SRC_HOME}/jmvutil/package.rb"
-require "#{SRC_HOME}/jnetcap/package.rb"
-require "#{SRC_HOME}/jvector/package.rb"
-require "#{SRC_HOME}/nfutil/package.rb"
-require "#{SRC_HOME}/uvm-lib/package.rb"
-require "#{SRC_HOME}/uvm/package.rb"
-require "#{SRC_HOME}/gui/package.rb"
+require "./util/package.rb"
+require "./libmvutil/package.rb"
+require "./libnetcap/package.rb"
+require "./libvector/package.rb"
+require "./jmvutil/package.rb"
+require "./jnetcap/package.rb"
+require "./jvector/package.rb"
+require "./nfutil/package.rb"
+require "./uvm-lib/package.rb"
+require "./uvm/package.rb"
+require "./gui/package.rb"
 
-require "#{SRC_HOME}/test/package.rb"
-require "#{SRC_HOME}/reporting/package.rb"
-require "#{SRC_HOME}/ftp-casing/package.rb"
-require "#{SRC_HOME}/http-casing/package.rb"
-require "#{SRC_HOME}/mail-casing/package.rb"
-require "#{SRC_HOME}/spyware/package.rb"
-require "#{SRC_HOME}/router/package.rb"
+require "./test/package.rb"
+require "./reporting/package.rb"
+require "./ftp-casing/package.rb"
+require "./http-casing/package.rb"
+require "./mail-casing/package.rb"
+require "./spyware/package.rb"
+require "./router/package.rb"
 
-require "#{SRC_HOME}/shield/package.rb"
-require "#{SRC_HOME}/firewall/package.rb"
-require "#{SRC_HOME}/openvpn/package.rb"
-require "#{SRC_HOME}/protofilter/package.rb"
-require "#{SRC_HOME}/sigma/package.rb"
-require "#{SRC_HOME}/webfilter/package.rb"
-require "#{SRC_HOME}/ips/package.rb"
+require "./shield/package.rb"
+require "./firewall/package.rb"
+require "./openvpn/package.rb"
+require "./protofilter/package.rb"
+require "./sigma/package.rb"
+require "./webfilter/package.rb"
+require "./ips/package.rb"
 
 ## Base Nodes
-require "#{SRC_HOME}/spam-base/package.rb"
-require "#{SRC_HOME}/virus-base/package.rb"
-require "#{SRC_HOME}/clam-base/package.rb"
+require "./spam-base/package.rb"
+require "./virus-base/package.rb"
+require "./clam-base/package.rb"
 
 ## SPAM based nodes
-require "#{SRC_HOME}/phish/package.rb"
-require "#{SRC_HOME}/spamassassin/package.rb"
+require "./phish/package.rb"
+require "./spamassassin/package.rb"
 
 ## Virus based nodes
-require "#{SRC_HOME}/clam/package.rb"
+require "./clam/package.rb"
 
 libuvmcore_so = "#{BuildEnv::SRC.staging}/libuvmcore.so"
 

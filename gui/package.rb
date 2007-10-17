@@ -32,7 +32,7 @@ mini = MiniInstallTarget.new(BuildEnv::SRC['gui-temp'],
 
 ## Api
 deps = Jars::Base + Jars::Gui + Jars::TomcatEmb + [uvm_lib['api']]
-jt = JarTarget.buildTarget(gui, deps, 'api', "#{SRC_HOME}/gui/api")
+jt = JarTarget.buildTarget(gui, deps, 'api', "./gui/api")
 
 # XXX renaming because the package name is bad
 BuildEnv::SRC.installTarget.installJars(jt, gui.getWebappDir('webstart'), nil, true)
@@ -40,14 +40,14 @@ mini.installJars(jt, gui.getWebappDir('webstart'), nil, true)
 
 ## Implementation
 deps = Jars::Base + Jars::Gui + Jars::TomcatEmb + [uvm_lib['api'], gui['api']]
-jt = JarTarget.buildTarget(gui, deps, 'impl', "#{SRC_HOME}/gui/impl")
+jt = JarTarget.buildTarget(gui, deps, 'impl', "./gui/impl")
 
 # XXX renaming because the package name is bad
 BuildEnv::SRC.installTarget.installJars(jt, gui.getWebappDir('webstart'), nil, true)
 mini.installJars(jt, gui.getWebappDir('webstart'), nil, true)
 
 ServletBuilder.new(gui, 'com.untangle.gui.webstart.jsp',
-                   "#{SRC_HOME}/gui/servlets/webstart", [], [], [],
+                   "./gui/servlets/webstart", [], [], [],
                    [BuildEnv::SERVLET_COMMON],
                    ['gui.jnlp', 'index.jsp'])
 
@@ -62,6 +62,6 @@ guiRuntimeJars += Jars::Log4j;
 guiRuntimeJars << Jars.downloadTarget('hibernate-client/hibernate-client.jar')
 BuildEnv::SRC.installTarget.installJars(guiRuntimeJars, gui.getWebappDir('webstart'), nil, true)
 
-ms = MoveSpec.new("#{SRC_HOME}/gui/hier", FileList["#{SRC_HOME}/gui/hier/**/*"], gui.distDirectory)
+ms = MoveSpec.new("./gui/hier", FileList["./gui/hier/**/*"], gui.distDirectory)
 cf = CopyFiles.new(gui, ms, 'hier', BuildEnv::SRC.filterset)
 gui.registerTarget('hier', cf)

@@ -24,36 +24,36 @@ BuildEnv::SRC.installTarget.registerDependency(uvm_lib)
 jts = []
 
 ## Bootstrap
-jts << JarTarget.buildTarget(uvm_lib, Jars::Base, 'bootstrap', "#{SRC_HOME}/uvm-lib/bootstrap")
+jts << JarTarget.buildTarget(uvm_lib, Jars::Base, 'bootstrap', "./uvm-lib/bootstrap")
 
 ## API
-jts << (jt = JarTarget.buildTarget(uvm_lib, Jars::Base, 'api', ["#{SRC_HOME}/uvm-lib/api", 'version']))
+jts << (jt = JarTarget.buildTarget(uvm_lib, Jars::Base, 'api', ["./uvm-lib/api", 'version']))
 BuildEnv::SRC.installTarget.installJars(jt, uvm_lib.getWebappDir('webstart'), nil, true)
 
 ## Local API
-jts << JarTarget.buildTarget(uvm_lib, Jars::Base + [uvm_lib['api']], 'localapi', "#{SRC_HOME}/uvm-lib/localapi")
+jts << JarTarget.buildTarget(uvm_lib, Jars::Base + [uvm_lib['api']], 'localapi', "./uvm-lib/localapi")
 
 ## Reporting
 deps  = Jars::Base + Jars::Jasper + Jars::JFreeChart + [uvm_lib['api']]
-jts << JarTarget.buildTarget(uvm_lib, deps, 'reporting', "#{SRC_HOME}/uvm-lib/reporting")
+jts << JarTarget.buildTarget(uvm_lib, deps, 'reporting', "./uvm-lib/reporting")
 
 ## Implementation
 deps  = Jars::Base + Jars::TomcatEmb + Jars::JavaMail + Jars::Jcifs +
   Jars::Dom4j + Jars::Activation + Jars::Trove + Jars::Jasper + Jars::JFreeChart +
   [ uvm_lib['bootstrap'], uvm_lib['api'], uvm_lib['localapi'], uvm_lib['reporting'], jnetcap['impl'], jvector['impl']]
 
-jts << JarTarget.buildTarget(uvm_lib, deps, 'impl', "#{SRC_HOME}/uvm-lib/impl")
+jts << JarTarget.buildTarget(uvm_lib, deps, 'impl', "./uvm-lib/impl")
 
 # servlets
 ServletBuilder.new(uvm_lib, 'com.untangle.uvm.invoker.jsp',
-                   "#{SRC_HOME}/uvm-lib/servlets/http-invoker", [], [], [],
+                   "./uvm-lib/servlets/http-invoker", [], [], [],
                    [BuildEnv::SERVLET_COMMON])
 
 ServletBuilder.new(uvm_lib, 'com.untangle.uvm.store.jsp',
-                   "#{SRC_HOME}/uvm-lib/servlets/onlinestore", [])
+                   "./uvm-lib/servlets/onlinestore", [])
 
 ServletBuilder.new(uvm_lib, 'com.untangle.uvm.reports.jsp',
-                   "#{SRC_HOME}/uvm-lib/servlets/reports")
+                   "./uvm-lib/servlets/reports")
 
 # wmi installer
 ServletBuilder.new(uvm_lib, "com.untangle.uvm.user.servlet",
@@ -63,7 +63,7 @@ ServletBuilder.new(uvm_lib, "com.untangle.uvm.user.servlet",
 deps = FileList["#{BuildEnv::DOWNLOADS}/Ajax/jars/*jar"].exclude(/.*servlet-api.jar/).map { |n| ThirdpartyJar.get(n) }
 ms = [ MoveSpec.new("#{BuildEnv::DOWNLOADS}/Ajax/WebRoot/js", '**/*', 'AjaxTk')]
 ServletBuilder.new(uvm_lib, 'com.untangle.uvm.root.jsp',
-                   "#{SRC_HOME}/uvm-lib/servlets/ROOT", deps, [], ms)
+                   "./uvm-lib/servlets/ROOT", deps, [], ms)
 
 ajaxTkList =
   [
@@ -188,7 +188,7 @@ end
 BuildEnv::SRC.installTarget.registerDependency(bundledAjx)
 
 ServletBuilder.new(uvm_lib, 'com.untangle.uvm.sessiondumper.jsp',
-                   "#{SRC_HOME}/uvm-lib/servlets/session-dumper")
+                   "./uvm-lib/servlets/session-dumper")
 
 BuildEnv::SRC.installTarget.installJars(jts, "#{uvm_lib.distDirectory}/usr/share/untangle/lib",
                                         nil, false, true)
@@ -203,8 +203,8 @@ BuildEnv::SRC.installTarget.installDirs("#{uvm_lib.distDirectory}/usr/share/unta
 
 uvm_cacerts = "#{uvm_lib.distDirectory}/usr/share/untangle/conf/cacerts"
 java_cacerts = "#{BuildEnv::JAVA_HOME}/jre/lib/security/cacerts"
-mv_ca = "#{SRC_HOME}/uvm-lib/resources/mv-ca.pem"
-ut_ca = "#{SRC_HOME}/uvm-lib/resources/ut-ca.pem"
+mv_ca = "./uvm-lib/resources/mv-ca.pem"
+ut_ca = "./uvm-lib/resources/ut-ca.pem"
 
 file uvm_cacerts => [ java_cacerts, mv_ca, ut_ca ] do
   ensureDirectory(File.dirname(uvm_cacerts))
@@ -219,7 +219,7 @@ file uvm_cacerts => [ java_cacerts, mv_ca, ut_ca ] do
 end
 
 if BuildEnv::SRC.isDevel
-  BuildEnv::SRC.installTarget.installFiles("#{SRC_HOME}/debian/control",
+  BuildEnv::SRC.installTarget.installFiles("./debian/control",
                                            "#{uvm_lib.distDirectory}/tmp",
                                            'pkg-list-main')
 
@@ -240,4 +240,4 @@ deps  = Jars::Base + Jars::TomcatEmb + Jars::JavaMail + Jars::Jcifs +
   Jars::Dom4j + Jars::Activation + Jars::Trove + Jars::Junit + Jars::WBEM +
   [ uvm_lib['bootstrap'], uvm_lib['api'], uvm_lib['localapi'], uvm_lib['impl'], jnetcap['impl'], jvector['impl']]
 
-JarTarget.buildTarget(BuildEnv::SRC["unittest"], deps, 'untangle-libuvm', "#{SRC_HOME}/uvm-lib/unittest")
+JarTarget.buildTarget(BuildEnv::SRC["unittest"], deps, 'untangle-libuvm', "./uvm-lib/unittest")

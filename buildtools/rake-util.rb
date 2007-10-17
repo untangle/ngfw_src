@@ -98,8 +98,8 @@ class BuildEnv
   THIRD_PARTY_JAR = 'usr/share/java/uvm'
 
   # XXX XXX should these live here???
-  DOWNLOADS = "#{SRC_HOME}/downloads/output"
-  SERVLET_COMMON = "#{SRC_HOME}/servlet/common"
+  DOWNLOADS = "./downloads/output"
+  SERVLET_COMMON = "./servlet/common"
 
   attr_reader :home, :prefix, :staging, :devel, :deb, :isDevel, :grabbag, :downloads, :servletcommon, :include, :installTarget
   attr_writer :prefix, :target, :isDevel
@@ -115,7 +115,7 @@ class BuildEnv
     @isDevel = $DevelBuild
 
     ## Devel is the development environment
-    @devel   =  File.expand_path("#{SRC_HOME}/dist")
+    @devel   =  File.expand_path("./dist")
 
     ## This is the staging ground for debian packages
     @deb    = "#{home}/debian"
@@ -499,7 +499,7 @@ class InstallTarget < Target
   end
 end
 
-BuildEnv::SRC = BuildEnv.new(SRC_HOME, 'src')
+BuildEnv::SRC = BuildEnv.new('.', 'src')
 
 class EmptyTarget < Target
   include Singleton

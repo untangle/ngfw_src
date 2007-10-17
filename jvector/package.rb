@@ -22,7 +22,7 @@ uvm_lib    = BuildEnv::SRC['untangle-libuvm']
 
 ## jvector
 deps = Jars::Base + [jnetcap['impl']]
-j = JarTarget.buildTarget(jvector, deps, 'impl', "#{SRC_HOME}/jvector/impl")
+j = JarTarget.buildTarget(jvector, deps, 'impl', "./jvector/impl")
 BuildEnv::SRC.installTarget.installJars(j, "#{uvm_lib.distDirectory}/usr/share/untangle/lib",
                                         nil, false, true)
 

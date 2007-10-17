@@ -29,7 +29,7 @@ class Jars
     [ jars ].flatten.uniq
   end
 
-  Kernel.system("make -C #{SRC_HOME}/downloads") unless $CleanBuild
+  Kernel.system("make -C ./downloads") unless $CleanBuild
 
   ## Named groups of jars
   Log4j      = [ Jars.downloadTarget('logging-log4j-1.2.14/dist/lib/log4j-1.2.14.jar') ]

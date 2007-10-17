@@ -16,9 +16,8 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
 #
 
-SRC_HOME = "."
-
-require "#{SRC_HOME}/buildtools/untangle-core.rb"
+require "./buildtools/untangle-helpers.rb"
+require "./buildtools/untangle-core.rb"
 
 task :default => :devel
 task :all => :devel
@@ -50,15 +49,15 @@ task :devel => [BuildEnv::SRC['install'], BuildEnv::SRC.installTarget]
 task :install => [BuildEnv::SRC['install'], BuildEnv::SRC.installTarget] do
   # FIXME: hrm, we're taking init scripts from the staging area under
   # debian/packagename/... and put it back under debian/ ????
-  FileList["#{SRC_HOME}/debian/**/etc/init.d/*"].each do |f|
-    FileUtils.cp(f, "#{SRC_HOME}/debian/#{File.basename(f)}.init")
+  FileList["./debian/**/etc/init.d/*"].each do |f|
+    FileUtils.cp(f, "./debian/#{File.basename(f)}.init")
   end
 end
 
 task :javadoc do
   dirs = 'uvm/api:uvm/localapi'
   cpath = FileList['staging/*'].map { |e| "#{e}/" }.join(':') + ":" + FileList['downloads/output/**/*jar'].join(':')
-  css = "#{SRC_HOME}/buildtools/javadoc.css"
+  css = "./buildtools/javadoc.css"
 
   Kernel.exec('javadoc', '-splitindex','-docencoding','UTF-8','-use','-docfilessubdirs', '-stylesheetfile', css, '-sourcepath', dirs, '-classpath', cpath,
               '-d', "#{BuildEnv::SRC.staging}/javadoc",
