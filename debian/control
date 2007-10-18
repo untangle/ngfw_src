@@ -1198,3 +1198,9 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9Y
  3tKQEpgPAAAAAElFTkSuQmCC
 Description: Untangle Server Libraries
  The Untangle Server Libraries.
+
+Package: untangle-buildutil
+Architecture: any
+Depends: sun-java5-jre
+Description: Untangle Server Build Utils
+ The Untangle Build Utils.
