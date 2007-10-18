@@ -67,11 +67,11 @@ class ImapTableModel extends MSortedTableModel<Object>{
         //                                 #  min    rsz    edit   remv   desc   typ            def
         addTableColumn( tableColumnModel,  0, C0_MW, false, false, true, false, String.class,  null, sc.TITLE_STATUS);
         addTableColumn( tableColumnModel,  1, C1_MW, false, false, true,  false, Integer.class, null, sc.TITLE_INDEX);
-        addTableColumn( tableColumnModel,  3, C3_MW, false, true,  false, false, Boolean.class,  null, sc.bold("scan") );
-        addTableColumn( tableColumnModel,  4, C4_MW, false, true,  false, false, ComboBoxModel.class,  null, sc.html("scan<br>strength"));
-        addTableColumn( tableColumnModel,  5, C5_MW, false, true,  false, false, ComboBoxModel.class,  null, sc.html("action if<br>SPAM detected"));
-        addTableColumn( tableColumnModel,  6, C6_MW, true,  true,  false, true,  String.class,  sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION);
-        addTableColumn( tableColumnModel,  7, 10,    false, false, true,  false, SpamIMAPConfig.class,  null, "");
+        addTableColumn( tableColumnModel,  2, C3_MW, false, true,  false, false, Boolean.class,  null, sc.bold("scan") );
+        addTableColumn( tableColumnModel,  3, C4_MW, false, true,  false, false, ComboBoxModel.class,  null, sc.html("scan<br>strength"));
+        addTableColumn( tableColumnModel,  4, C5_MW, false, true,  false, false, ComboBoxModel.class,  null, sc.html("action if<br>SPAM detected"));
+        addTableColumn( tableColumnModel,  5, C6_MW, true,  true,  false, true,  String.class,  sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION);
+        addTableColumn( tableColumnModel,  6, 10,    false, false, true,  false, SpamIMAPConfig.class,  null, "");
         return tableColumnModel;
     }
 
@@ -82,11 +82,11 @@ class ImapTableModel extends MSortedTableModel<Object>{
         SpamIMAPConfig spamIMAPConfig = null;
 
         for( Vector rowVector : tableVector ){
-            spamIMAPConfig = (SpamIMAPConfig) rowVector.elementAt(7);
-            spamIMAPConfig.setScan( (Boolean) rowVector.elementAt(3) );
-            spamIMAPConfig.setStrengthByName( (String) ((ComboBoxModel)rowVector.elementAt(4)).getSelectedItem() );
-            spamIMAPConfig.setMsgAction( (SpamMessageAction) ((ComboBoxModel)rowVector.elementAt(5)).getSelectedItem() );
-            spamIMAPConfig.setNotes( (String) rowVector.elementAt(6) );
+            spamIMAPConfig = (SpamIMAPConfig) rowVector.elementAt(6);
+            spamIMAPConfig.setScan( (Boolean) rowVector.elementAt(2) );
+            spamIMAPConfig.setStrengthByName( (String) ((ComboBoxModel)rowVector.elementAt(3)).getSelectedItem() );
+            spamIMAPConfig.setMsgAction( (SpamMessageAction) ((ComboBoxModel)rowVector.elementAt(4)).getSelectedItem() );
+            spamIMAPConfig.setNotes( (String) rowVector.elementAt(5) );
         }
 
         // SAVE SETTINGS ////////

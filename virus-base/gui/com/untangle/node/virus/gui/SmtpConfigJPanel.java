@@ -54,10 +54,10 @@ class SmtpTableModel extends MSortedTableModel<Object>{
     private static final int T_TW = Util.TABLE_TOTAL_WIDTH;
     private static final int C0_MW = Util.STATUS_MIN_WIDTH; /* status */
     private static final int C1_MW = Util.LINENO_MIN_WIDTH; /* # - invisible */
-    private static final int C3_MW = 55;  /* scan */
-    private static final int C4_MW = 140; /* action if SPAM detected */
-    private static final int C5_MW = 190; /* notification if SPAM detected */
-    private static final int C6_MW = Util.chooseMax(T_TW - (C0_MW + C3_MW + C4_MW + C5_MW), 120); /* description */
+    private static final int C2_MW = 55;  /* scan */
+    private static final int C3_MW = 140; /* action if SPAM detected */
+    private static final int C4_MW = 190; /* notification if SPAM detected */
+    private static final int C5_MW = Util.chooseMax(T_TW - (C0_MW + C3_MW + C4_MW), 120); /* description */
 
     protected boolean getSortable(){ return false; }
 
@@ -67,10 +67,10 @@ class SmtpTableModel extends MSortedTableModel<Object>{
         //                                 #  min    rsz    edit   remv   desc   typ            def
         addTableColumn( tableColumnModel,  0, C0_MW, false, false, true, false, String.class,  null, sc.TITLE_STATUS);
         addTableColumn( tableColumnModel,  1, C1_MW, false, false, true,  false, Integer.class, null, sc.TITLE_INDEX);
-        addTableColumn( tableColumnModel,  3, C3_MW, false, true,  false, false, Boolean.class,  null, sc.bold("scan") );
-        addTableColumn( tableColumnModel,  4, C4_MW, false, true,  false, false, ComboBoxModel.class,  null, sc.html("action if<br>Virus detected"));
-        addTableColumn( tableColumnModel,  5, C6_MW, true,  true,  false, true,  String.class,  sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION);
-        addTableColumn( tableColumnModel,  6, 10,    false, false, true,  false, VirusSMTPConfig.class,  null, "");
+        addTableColumn( tableColumnModel,  2, C2_MW, false, true,  false, false, Boolean.class,  null, sc.bold("scan") );
+        addTableColumn( tableColumnModel,  3, C3_MW, false, true,  false, false, ComboBoxModel.class,  null, sc.html("action if<br>Virus detected"));
+        addTableColumn( tableColumnModel,  4, C4_MW, true,  true,  false, true,  String.class,  sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION);
+        addTableColumn( tableColumnModel,  5, 10,    false, false, true,  false, VirusSMTPConfig.class,  null, "");
         return tableColumnModel;
     }
 
@@ -78,10 +78,10 @@ class SmtpTableModel extends MSortedTableModel<Object>{
         VirusSMTPConfig virusSmtpConfig = null;
 
         for( Vector rowVector : tableVector ){
-            VirusSMTPConfig virusSMTPConfig = (VirusSMTPConfig) rowVector.elementAt(6);
-            virusSMTPConfig.setScan( (Boolean) rowVector.elementAt(3) );
-            virusSMTPConfig.setMsgAction( (SMTPVirusMessageAction) ((ComboBoxModel)rowVector.elementAt(4)).getSelectedItem() );
-            virusSMTPConfig.setNotes( (String) rowVector.elementAt(5) );
+            VirusSMTPConfig virusSMTPConfig = (VirusSMTPConfig) rowVector.elementAt(5);
+            virusSMTPConfig.setScan( (Boolean) rowVector.elementAt(2) );
+            virusSMTPConfig.setMsgAction( (SMTPVirusMessageAction) ((ComboBoxModel)rowVector.elementAt(3)).getSelectedItem() );
+            virusSMTPConfig.setNotes( (String) rowVector.elementAt(4) );
         }
 
         // SAVE SETTINGS ////////

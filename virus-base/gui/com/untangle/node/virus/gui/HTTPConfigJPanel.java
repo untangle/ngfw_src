@@ -55,8 +55,8 @@ class HTTPTableModel extends MSortedTableModel<Object>{
     private static final int T_TW = Util.TABLE_TOTAL_WIDTH;
     private static final int C0_MW = Util.STATUS_MIN_WIDTH; /* status */
     private static final int C1_MW = Util.LINENO_MIN_WIDTH; /* # - invisible */
-    private static final int C3_MW = 55;  /* block */
-    private static final int C4_MW = Util.chooseMax(T_TW - (C0_MW + C3_MW), 120); /* description */
+    private static final int C2_MW = 55;  /* block */
+    private static final int C3_MW = Util.chooseMax(T_TW - (C0_MW + C2_MW), 120); /* description */
 
     protected boolean getSortable(){ return false; }
 
@@ -66,18 +66,18 @@ class HTTPTableModel extends MSortedTableModel<Object>{
         //                                 #  min    rsz    edit   remv   desc   typ            def
         addTableColumn( tableColumnModel,  0, C0_MW, false, false, true, false, String.class,  null, sc.TITLE_STATUS);
         addTableColumn( tableColumnModel,  1, C1_MW, false, false, true,  false, Integer.class, null, sc.TITLE_INDEX);
-        addTableColumn( tableColumnModel,  3, C3_MW, false, true,  false, false, Boolean.class, null, sc.bold("scan"));
-        addTableColumn( tableColumnModel,  4, C4_MW, true,  true,  false, true,  String.class, sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION );
-        addTableColumn( tableColumnModel,  5, 10,    false, false, true,  false, VirusConfig.class, null, "" );
+        addTableColumn( tableColumnModel,  2, C2_MW, false, true,  false, false, Boolean.class, null, sc.bold("scan"));
+        addTableColumn( tableColumnModel,  3, C3_MW, true,  true,  false, true,  String.class, sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION );
+        addTableColumn( tableColumnModel,  4, 10,    false, false, true,  false, VirusConfig.class, null, "" );
         return tableColumnModel;
     }
 
     public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception {
         for( Vector rowVector : tableVector ){
 
-            VirusConfig virusConfig = (VirusConfig) rowVector.elementAt(5);
-            virusConfig.setScan( (Boolean) rowVector.elementAt(3) );
-            virusConfig.setNotes( (String) rowVector.elementAt(4) );
+            VirusConfig virusConfig = (VirusConfig) rowVector.elementAt(4);
+            virusConfig.setScan( (Boolean) rowVector.elementAt(2) );
+            virusConfig.setNotes( (String) rowVector.elementAt(3) );
 
             // SAVE SETTINGS
             if( !validateOnly ){

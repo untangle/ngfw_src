@@ -88,12 +88,16 @@ class Jars
                    commons-fileupload-1.1/commons-fileupload-1.1.jar
                  ).map { |n| Jars.downloadTarget(n) }
 
+  HtmlParser = [ Jars.downloadTarget('htmlparser1_6_20060319/htmlparser1_6/lib/htmlparser.jar') ]
+
+  VncViewer = [ Jars.downloadTarget('tightvnc-1.2.9/classes/VncViewer.jar') ]
+
   ## Groups used for compiling
   # This is available to everything?
   Base       = Jars.makeGroup(Log4j, Hibernate, HibernateAnnotations, Postgres,
                               Activation, Jcifs, C3p0, Ant, JavaMailApi,
                               JavaMail, TomcatEmb, Velocity, WBEM, Bdb,
-                              HttpClient)
+                              HttpClient, HtmlParser, VncViewer)
 
   # Jars for compiling the GUI, and GUI node components
   Gui        = Jars.makeGroup(Alloy, JFreeChartGui, Netbeans, Jnlp)

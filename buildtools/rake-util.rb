@@ -166,7 +166,6 @@ class BuildEnv
       /@THIRDPARTY_TOMCAT_LIB@/ => "#{@prefix}/usr/share/java/tomcat",
       /@THIRDPARTY_REPORTS_LIB@/ => "#{@prefix}/usr/share/java/reports",
       /@ENDORSED_LIB@/ => "#{@prefix}/usr/share/java/endorsed",
-      /@FAKE_PKG_LIST@/ => "#{@prefix}/tmp/pkg-list",
       /@SRC_LIB@/ => "#{@prefix}/usr/lib/uvm",
       /@IS_DEVEL@/ => "#{@isDevel}"
     }
