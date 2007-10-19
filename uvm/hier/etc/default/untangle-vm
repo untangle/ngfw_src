@@ -30,6 +30,7 @@ SPAMASSASSIN_PORT=783
 SPAMASSASSIN_PID_FILE=/var/run/spamd.pid
 CLAMD_PORT=3310
 CLAMD_PID_FILE=/var/run/clamav/clamd.pid
+SPAMASSASSIN_LOG_ERROR="bayes: cannot open bayes databases /home/spamc/.spamassassin/bayes_* R/W: lock failed: Interrupted system call"
 
 # activation stuff...
 CD_INSTALL=@UVM_HOME@/.cdinstall
