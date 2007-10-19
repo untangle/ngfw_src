@@ -553,7 +553,12 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
 
         for (NodePersistentState tps : unloaded) {
             String name = tps.getName();
+            logger.info("Getting mackage desc for: " + name);
             MackageDesc md = tbm.mackageDesc(name);
+            if (null == md) {
+                logger.warn("could not get mackage desc for: " + name);
+                continue;
+            }
 
             URL[] urls = new URL[] { tbm.getResourceDir(md) };
             Tid tid = tps.getTid();
