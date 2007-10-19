@@ -26,6 +26,9 @@ class Jars
     if File.exist?(p)
       ThirdpartyJar.get(p)
     else
+      puts "FUCK"
+      puts p
+      exit
       b = File.basename(path)
       p = [ "/usr/share/java/uvm/#{b}",
             "/usr/share/java/reports/#{b}",
@@ -87,7 +90,7 @@ class Jars
                  'tomcat-http.jar',
                  'tomcat-util.jar'
                ].map do |n|
-    Jars.downloadTarget("#{BuildEnv::DOWNLOADS}/apache-tomcat-5.5.17-embed/lib/#{n}")
+    Jars.downloadTarget("apache-tomcat-5.5.17-embed/lib/#{n}")
   end
 
   ## WBEM Jars
