@@ -1021,7 +1021,7 @@ Description: Untangle Reports
 
 Package: untangle-base-virus
 Architecture: any
-Depends: untangle-vm, untangle-casing-http, untangle-casing-mail
+Depends: untangle-libuvm, untangle-casing-http, untangle-casing-mail
 Conflicts: virus-base
 Provides: virus-base
 Replaces: virus-base

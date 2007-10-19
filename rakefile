@@ -16,6 +16,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
 #
 
+require "./buildtools/buildtools.rb"
 require "./buildtools/untangle-core.rb"
 
 task :default => :devel

@@ -23,7 +23,6 @@
 ## Done manually because order matters.
 ## XXX Could create a new helper method that sets a prefix directory before
 ## calling require and then unsets it afterwards.
-require "./util/package.rb"
 require "./libmvutil/package.rb"
 require "./libnetcap/package.rb"
 require "./libvector/package.rb"
@@ -62,6 +61,9 @@ require "./spamassassin/package.rb"
 
 ## Virus based nodes
 require "./clam/package.rb"
+
+## Other packages
+require "./util/package.rb"
 
 libuvmcore_so = "#{BuildEnv::SRC.staging}/libuvmcore.so"
 
