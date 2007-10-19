@@ -24,7 +24,10 @@ class JasperCompiler
   ReportGenerator = "#{BuildUtilPkg}.ReportGenerator"
   JRCompiler = "#{BuildUtilPkg}.JRCompiler"
 
-  TemplateDirectory = "./uvm-lib/resources/reports"
+  TemplateDirectory = [ "./util/hier/usr/share/untangle/reports",
+                        "/usr/share/untangle/reports" ].find do |f|
+    File.exist?(f)
+  end
 
   include Singleton
 
