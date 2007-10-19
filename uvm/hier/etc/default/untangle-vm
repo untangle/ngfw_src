@@ -23,6 +23,14 @@ UVM_SESSION_LIMIT=""
 
 UVM_ARGS=""
 
+# nanny stuff
+BANNER_NANNY=/usr/share/untangle/bin/banner-nanny.rb
+TIMEOUT=8 # in seconds
+SPAMASSASSIN_PORT=783
+SPAMASSASSIN_PID_FILE=/var/run/spamd.pid
+CLAMD_PORT=3310
+CLAMD_PID_FILE=/var/run/clamav/clamd.pid
+
 # activation stuff...
 CD_INSTALL=@UVM_HOME@/.cdinstall
 REGISTRATION_DONE_FILE=@UVM_HOME@/.regdone
