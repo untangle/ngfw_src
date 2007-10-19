@@ -138,7 +138,7 @@ public class UDPSink extends Sink
                            options, isUdp, sourceAddress );
 
         if ( numWritten < 0 ) {
-            Vector.logError( "UDP: Unable to write crumb" );
+            Vector.logWarn( "UDP: Unable to write crumb" );
             
             return Vector.ACTION_SHUTDOWN;
         }
