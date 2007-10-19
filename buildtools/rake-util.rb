@@ -481,7 +481,7 @@ class InstallTarget < Target
     else
       is = []
 
-      [jarTargets].flatten.each do |jt|
+      [jarTargets].flatten.compact.each do |jt|
         is << MoveSpec.fileMove(jt.filename, dest, name)
       end
 
