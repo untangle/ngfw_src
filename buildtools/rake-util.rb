@@ -98,7 +98,7 @@ class BuildEnv
   THIRD_PARTY_JAR = 'usr/share/java/uvm'
 
   # XXX XXX should these live here???
-  DOWNLOADS = "./downloads/output"
+  DOWNLOADS = ['./downloads/output', '/usr/share/java/uvm'].find { |d| File.exist?(d) }
   SERVLET_COMMON = "./servlet/common"
 
   attr_reader :home, :prefix, :staging, :devel, :deb, :isDevel, :grabbag, :downloads, :servletcommon, :include, :installTarget
@@ -498,7 +498,128 @@ class InstallTarget < Target
   end
 end
 
-BuildEnv::SRC = BuildEnv.new('.', 'src')
+## This is a precompiled third-party JAR
+class InstalledJar < Target
+  def initialize(package, path)
+    @fullpath = "#{path}"
+    name = File.basename(@fullpath, '.jar').split('-').last
+    super(package, [], name)
+  end
+
+  ## Retrieve a third party jar, returning the cached value if it else
+  ## or a new one otherwise
+  def InstalledJar.get(package, path)
+    return package[path] if (package.hasTarget?(path))
+
+    ## Otherwise return a new instances(This will automatically get
+    ## registered in package)
+    InstalledJar.new(package, path)
+  end
+
+  def makeDependencies()
+    stamptask self => @fullpath
+  end
+
+  def build()
+    debug "Nothing required to build #{@fullpath}"
+  end
+
+  def file?
+    true
+  end
+
+  def filename
+    @fullpath
+  end
+
+  def to_s
+    "installedjar:#{@fullpath}"
+  end
+end
+
+SRC_HOME = [ ENV['SRC_HOME'], '../../work/src' ].compact.find do |d|
+  File.exist?(d)
+end
+
+unless SRC_HOME.nil?
+  BuildEnv::SRC = BuildEnv.new(SRC_HOME, 'src')
+else
+  BuildEnv::SRC = BuildEnv.new('.', 'src')
+
+  uvm_lib = BuildEnv::SRC['untangle-libuvm']
+  ['bootstrap', 'api', 'localapi', 'impl', 'reporting'].each do |n|
+    InstalledJar.get(uvm_lib, "/usr/share/untangle/lib/untangle-libuvm-#{n}/")
+  end
+
+  buildutil = BuildEnv::SRC['untangle-buildutil']
+  ['impl'].each do |n|
+    InstalledJar.get(buildutil, "/usr/share/untangle/lib/untangle-buildutil-#{n}.jar")
+  end
+
+  gui = BuildEnv::SRC['untangle-client']
+  ['api'] .each do |n|
+    InstalledJar.get(gui, "/usr/share/untangle/web/webstart/untangle-client-#{n}.jar")
+  end
+
+  [ 'mail', 'ftp', 'http' ].each do |c|
+    p =  BuildEnv::SRC["untangle-casing-#{c}"]
+    ['localapi'].each do |n|
+      InstalledJar.get(p, "/usr/share/untangle/toolbox/untangle-casing-#{c}-#{n}.jar")
+    end
+
+    InstalledJar.get(p, "/usr/share/untangle/web/webstart/untangle-casing-#{c}-gui.jar")
+  end
+
+  [ 'virus' ].each do |c|
+    p =  BuildEnv::SRC["untangle-base-#{c}"]
+    ['impl'].each do |n|
+      InstalledJar.get(p, "/usr/share/untangle/toolbox/untangle-base-#{c}-#{n}/")
+    end
+
+    InstalledJar.get(p, "/usr/share/untangle/web/webstart/untangle-base-#{c}-gui.jar")
+  end
+
+end
+
+## This is a precompiled third-party JAR
+class ThirdpartyJar < Target
+  @@package = BuildEnv::SRC['thirdpartyjars']
+
+  def initialize(path)
+    @fullpath = "#{path}"
+    super(@@package, [], path)
+  end
+
+  ## Retrieve a third party jar, returning the cached value if it else
+  ## or a new one otherwise
+  def ThirdpartyJar.get(path)
+    return @@package[path] if (@@package.hasTarget?(path))
+
+    ## Otherwise return a new instances(This will automatically get
+    ## registered in package)
+    ThirdpartyJar.new(path)
+  end
+
+  def makeDependencies()
+    stamptask self => @fullpath
+  end
+
+  def build()
+    debug "Nothing required to build the THIRD_PARTY_JAR #{@fullpath}"
+  end
+
+  def file?
+    true
+  end
+
+  def filename
+    @fullpath
+  end
+
+  def to_s
+    "thirdpartyjar:#{@fullpath}"
+  end
+end
 
 class EmptyTarget < Target
   include Singleton
@@ -507,7 +628,7 @@ class EmptyTarget < Target
   end
 
   def to_s
-    "the-empty-target"
+    ''
   end
 end
 
@@ -757,46 +878,6 @@ class JavaCompilerTarget < Target
   attr_reader :isEmpty
 end
 
-## This is a precompiled third-party JAR
-class ThirdpartyJar < Target
-  @@package = BuildEnv::SRC['thirdpartyjars']
-
-  def initialize(path)
-    @fullpath = "#{path}"
-    super(@@package, [], path)
-  end
-
-  ## Retrieve a third party jar, returning the cached value if it else
-  ## or a new one otherwise
-  def ThirdpartyJar.get(path)
-    return @@package[path] if (@@package.hasTarget?(path))
-
-    ## Otherwise return a new instances(This will automatically get
-    ## registered in package)
-    ThirdpartyJar.new(path)
-  end
-
-  def makeDependencies()
-    stamptask self => @fullpath
-  end
-
-  def build()
-    debug "Nothing required to build the THIRD_PARTY_JAR #{@fullpath}"
-  end
-
-  def file?
-    true
-  end
-
-  def filename
-    @fullpath
-  end
-
-  def to_s
-    "thirdpartyjar:#{@fullpath}"
-  end
-end
-
 ## This is a JAR that must be built from Java Files
 class JarTarget < Target
   def initialize(package, deps, suffix, buildDirectory, registerTarget=true)
@@ -875,6 +956,7 @@ class JarTarget < Target
   end
 
   private
+
   def JarTarget.buildJavaCompilerTarget(package, jars, destination, suffix,
                                         basepaths)
     JavaCompilerTarget.new(package, jars, destination, suffix, basepaths)

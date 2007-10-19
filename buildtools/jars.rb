@@ -22,14 +22,33 @@
 class Jars
   ## Makes the target with the downloads path prepended
   def Jars.downloadTarget(path)
-    ThirdpartyJar.get "#{BuildEnv::DOWNLOADS}/#{path}"
+    p =  "#{BuildEnv::DOWNLOADS}/#{path}"
+    if File.exist?(p)
+      ThirdpartyJar.get(p)
+    else
+      b = File.basename(path)
+      p = [ "/usr/share/java/uvm/#{b}",
+            "/usr/share/java/reports/#{b}",
+            "/usr/share/untangle/web/webstart/#{b}" ].find do |f|
+        File.exist?(f)
+      end
+
+      if p.nil?
+        warn "Could not find #{path}"
+      else
+        ThirdpartyJar.get(p)
+      end
+    end
   end
 
   def Jars.makeGroup(*jars)
     [ jars ].flatten.uniq
   end
 
-  Kernel.system("make -C ./downloads") unless $CleanBuild
+  # XXX Move this into main rakefile
+  if File.exist?('./downloads') and not $CleanBuild
+    Kernel.system("make -C ./downloads")
+  end
 
   ## Named groups of jars
   Log4j      = [ Jars.downloadTarget('logging-log4j-1.2.14/dist/lib/log4j-1.2.14.jar') ]
@@ -51,8 +70,24 @@ class Jars
   C3p0       = [ Jars.downloadTarget('c3p0-0.9.0.4/lib/c3p0-0.9.0.4.jar') ]
   Ant        = [ Jars.downloadTarget('apache-ant-1.6.5/lib/ant.jar') ]
   JavaMailApi= [ Jars.downloadTarget('javamail-1.3.3_01/lib/mailapi.jar') ]
-  TomcatEmb  = FileList["#{BuildEnv::DOWNLOADS}/apache-tomcat-5.5.17-embed/lib/*.jar"].map do |n|
-    ThirdpartyJar.get(n)
+  TomcatEmb  = [ 'catalina-optional.jar',
+                 'catalina.jar',
+                 'commons-el.jar',
+                 'commons-logging.jar',
+                 'commons-modeler.jar',
+                 'jasper-compiler-jdt.jar',
+                 'jasper-compiler.jar',
+                 'jasper-runtime.jar',
+                 'jsp-api.jar',
+                 'naming-factory.jar',
+                 'naming-resources.jar',
+                 'servlet-api.jar',
+                 'servlets-default.jar',
+                 'tomcat-coyote.jar',
+                 'tomcat-http.jar',
+                 'tomcat-util.jar'
+               ].map do |n|
+    Jars.downloadTarget("#{BuildEnv::DOWNLOADS}/apache-tomcat-5.5.17-embed/lib/#{n}")
   end
 
   ## WBEM Jars
@@ -60,7 +95,6 @@ class Jars
 
   ## GUIJars
   Alloy      = [ Jars.downloadTarget('alloylnf-1_4_4-1/alloy.jar') ]
-  ## Kunstoff   = [ Jars.downloadTarget('kunststoff-2_0_1/kunststoff-mv.jar') ]
   JFreeChartGui = [ 'jfreechart-gui/jfreechart-gui.jar' ].map { |p| Jars.downloadTarget(p) }
   JFreeChart = [ 'jfreechart-1.0.1.jar', 'jcommon-1.0.0.jar' ].map { |p| Jars.downloadTarget("jfreechart-1.0.1/#{p}") }
   Netbeans   = [ Jars.downloadTarget('netbeans-3.5/netbeans-3.5.jar') ]

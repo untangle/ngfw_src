@@ -19,33 +19,6 @@
 # Robert Scott <rbscott@untangle.com>
 # Aaron Read <amread@untangle.com>
 
-# Certified Filthy2007
-ENV["JAVA_HOME"] = "/usr/lib/jvm/java-1.5.0-sun"
-
-## This is how you define where the stamp file will go
-module Rake
-  StampFile = "./taskstamps.txt"
-end
-
-$DevelBuild = true
-$CleanBuild = false
-ARGV.each do |arg|
-  if arg =~ /install/
-    $DevelBuild = false
-  end
-
-  if arg =~ /clean/
-    $CleanBuild = true
-  end
-end
-
-require "./buildtools/stamp-task.rb"
-require "./buildtools/rake-util.rb"
-require "./buildtools/c-compiler.rb"
-require "./buildtools/jars.rb"
-require "./buildtools/jasper.rb"
-require "./buildtools/node.rb"
-
 ## Require all of the sub packages.
 ## Done manually because order matters.
 ## XXX Could create a new helper method that sets a prefix directory before
