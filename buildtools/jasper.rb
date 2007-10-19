@@ -46,7 +46,7 @@ class JasperCompiler
 
   private
   def JasperCompiler.classpath
-    [Jars::Reporting + Jars::JDKTools + [BuildEnv::SRC['buildutil']['impl'].filename ]].flatten.join(":")
+    [Jars::Reporting + Jars::JDKTools + [BuildEnv::SRC['untangle-buildutil']['impl'].filename ]].flatten.join(":")
   end
 end
 
@@ -68,7 +68,7 @@ class JRXMLTarget < Target
 
   def makeDependencies
     ## ReportGenerator is built inside of the build utils
-    buildutil = BuildEnv::SRC['buildutil']
+    buildutil = BuildEnv::SRC['untangle-buildutil']
 
     @rpdFiles.each do |f|
       jrxmlFile =  "#{@buildDirectory}/#{File.basename( f ).gsub(/.rpd$/,".jrxml")}"
