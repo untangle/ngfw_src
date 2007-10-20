@@ -26,9 +26,6 @@ class Jars
     if File.exist?(p)
       ThirdpartyJar.get(p)
     else
-      puts "FUCK"
-      puts p
-      exit
       b = File.basename(path)
       p = [ "/usr/share/java/uvm/#{b}",
             "/usr/share/java/reports/#{b}",
