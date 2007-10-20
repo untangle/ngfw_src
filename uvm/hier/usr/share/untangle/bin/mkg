@@ -3,7 +3,6 @@
 exec 2>&1
 
 prefix=@PREFIX@
-pkglist=@FAKE_PKG_LIST@
 APT_LOG=@PREFIX@/var/log/uvm/apt.log
 
 # this is needed now !
@@ -137,7 +136,7 @@ if [ -z $prefix ] ; then
 else
     # invoked in development environment
     if [ "$1" = "installed" ] ; then
-        cat $pkglist* | awk ' /^Package: / { print $2 " 10.0" } '
+        cat $prefix/tmp/pkg-list* | awk ' /^Package: / { print $2 " 10.0" } '
     elif [ "$1" = "install" ] ; then
         aptlog "start $stamp"
         echo "END PACKAGE LIST" >>$APT_LOG
@@ -151,7 +150,7 @@ else
     elif [ "$1" = "remove" ] ; then
         echo "remove not supported in build environment"
     elif [ "$1" = "available" ] ; then
-        cat $pkglist* | sed -e 's/^XB-//' \
+        cat $prefix/tmp/pkg-list* | sed -e 's/^XB-//' \
             | awk '{ print $0 }; /^Package: / { print "Version: 10.0" }'
     fi
 fi
