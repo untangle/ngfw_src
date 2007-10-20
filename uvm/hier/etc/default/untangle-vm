@@ -25,7 +25,7 @@ UVM_ARGS=""
 
 # nanny stuff
 BANNER_NANNY=/usr/share/untangle/bin/banner-nanny.rb
-TIMEOUT=8 # in seconds
+TIMEOUT=20 # in seconds
 SPAMASSASSIN_PORT=783
 SPAMASSASSIN_PID_FILE=/var/run/spamd.pid
 CLAMD_PORT=3310
