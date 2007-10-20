@@ -39,6 +39,11 @@ ARGV.each do |arg|
   end
 end
 
+# XXX Move this into main rakefile
+if File.exist?('./downloads') and not $CleanBuild
+  Kernel.system("make -C ./downloads")
+end
+
 require "./buildtools/stamp-task.rb"
 require "./buildtools/rake-util.rb"
 require "./buildtools/jars.rb"

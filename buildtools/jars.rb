@@ -45,11 +45,6 @@ class Jars
     [ jars ].flatten.uniq
   end
 
-  # XXX Move this into main rakefile
-  if File.exist?('./downloads') and not $CleanBuild
-    Kernel.system("make -C ./downloads")
-  end
-
   ## Named groups of jars
   Log4j      = [ Jars.downloadTarget('logging-log4j-1.2.14/dist/lib/log4j-1.2.14.jar') ]
   Hibernate   = %w( hibernate-3.2/hibernate3.jar
