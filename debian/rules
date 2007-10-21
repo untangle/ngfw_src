@@ -50,7 +50,7 @@ clean:
 	@dh_testdir
 	@dh_testroot
 	@rm -f build-arch-stamp build-indep-stamp configure-stamp
-	@rm -f ./debian/*.init
+#	@rm -f ./debian/*.init
 	@dh_clean
 	rake clean
 
@@ -61,7 +61,7 @@ distclean:
 	@dh_testdir
 	@dh_testroot
 	@rm -f build-arch-stamp build-indep-stamp configure-stamp
-	@rm -f ./debian/*.init
+#	@rm -f ./debian/*.init
 	@dh_clean
 
 install: build
