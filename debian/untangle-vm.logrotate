@@ -1,4 +1,4 @@
-/var/log/mvvm/console.log {
+/var/log/uvm/console.log {
 rotate 9
 size 500k
 compress
@@ -6,7 +6,7 @@ notifempty
 copytruncate
 }
 
-/var/log/mvvm/apt.log {
+/var/log/uvm/apt.log {
 rotate 9
 size 500k
 compress
@@ -14,7 +14,7 @@ notifempty
 copytruncate
 }
 
-/var/log/mvvm/schema.log {
+/var/log/uvm/schema.log {
 rotate 9
 size 500k
 compress
@@ -22,15 +22,7 @@ notifempty
 copytruncate
 }
 
-/var/log/mvvm/wrapper.log {
-rotate 2
-size 500k
-compress
-notifempty
-copytruncate
-}
-
-/var/log/mvvm/gc.log {
+/var/log/uvm/wrapper.log {
 rotate 9
 size 500k
 compress
@@ -38,7 +30,7 @@ notifempty
 copytruncate
 }
 
-/var/log/mvvm/iptables.log {
+/var/log/uvm/gc.log {
 rotate 9
 size 500k
 compress
@@ -46,8 +38,17 @@ notifempty
 copytruncate
 }
 
-/var/log/mvvm/report.log {
+/var/log/uvm/iptables.log {
 rotate 9
+size 500k
+compress
+notifempty
+copytruncate
+}
+
+/var/log/uvm/report.log {
+rotate 9
+size 500k
 compress
 notifempty
 copytruncate
