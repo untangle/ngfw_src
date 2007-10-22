@@ -165,8 +165,9 @@ fi
 ## Limit Berkeley DB caching to 5% of java heap
 UVM_ARGS="${UVM_ARGS} -Dje.maxMemory=${MAX_UCB_DB_MEG}"
 
-## Disable DNS caching
-UVM_ARGS="-Dnetworkaddress.cache.ttl=0 -Dnetworkaddress.cache.negative.ttl=0"
+## Reduce DNS caching to minimal (30 seconds).  Don't eliminate completely
+## to limit impact of multiple lookups in a short period.
+UVM_ARGS="${UVM_ARGS} -Dnetworkaddress.cache.ttl=30 -Dsun.net.inetaddr.ttl=30 -Dnetworkaddress.cache.negative.ttl=10"
 
 if [ "x$USE_THROUGHPUT_COLLECTOR" = "xyes" ] ; then
 # Goals: 85% throughput (don't set maxpausegcmillis here, you'll regret it)
