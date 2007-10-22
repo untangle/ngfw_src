@@ -62,8 +62,8 @@ public class Argon
 
     private LocalIntfManagerImpl intfManager;
     int sessionThreadLimit  = 10000;
-    int newSessionSchedPolicy  = SCHED_NORMAL;
-    int sessionSchedPolicy  = SCHED_NORMAL;
+    int newSessionSchedPolicy  = SCHED_SOFTREAL;
+    int sessionSchedPolicy  = SCHED_SOFTREAL;
     boolean isShieldEnabled = true;
     String shieldFile       = null;
     Shield shield;
