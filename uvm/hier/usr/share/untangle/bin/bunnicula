@@ -24,6 +24,7 @@ procset() {
 }
 
 # check nfqueue
+modprobe -q nfnetlink_queue
 if [ ! -f /proc/net/netfilter/nfnetlink_queue ]; then
     echo "ERROR: kernel does not have IP_NF_QUEUE" >& 2
     exit 1
@@ -33,7 +34,7 @@ elif [ "`cat /proc/net/netfilter/nfnetlink_queue | wc -l`x" != "0x" ] ; then
 fi
 
 # also check ip_queue
-# check ip_queue
+modprobe -q ip_queue
 if [ -f /proc/net/ip_queue ] && [ "`grep Peer /proc/net/ip_queue  | awk '{ print $4 }'`" != "0" ]; then
     echo "ERROR: ip_queue allocated, exiting" >&2
     exit 1
