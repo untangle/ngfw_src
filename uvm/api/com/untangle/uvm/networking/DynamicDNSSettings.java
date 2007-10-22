@@ -59,7 +59,8 @@ public class DynamicDNSSettings implements Serializable
 {
     // XXXXXXXX put serializable stuff in here
 
-    private static final String PROVIDER_DYNDNS = "www.dyndns.org";
+    private static final String PROVIDER_DYNDNS = "www.dyndns.com";
+    private static final String PROVIDER_DYNDNS_OLD = "www.dyndns.org";
     private static final String PROVIDER_EASYDNS = "www.easydns.com";
     private static final String PROVIDER_ZONEEDIT = "www.zoneedit.com";
 
@@ -165,6 +166,8 @@ public class DynamicDNSSettings implements Serializable
     {
         if (PROVIDER_DYNDNS.equals(provider))
             return PROTOCOL_DYNDNS;
+	else if (PROVIDER_DYNDNS_OLD.equals(provider))
+            return PROTOCOL_DYNDNS;
         else if  (PROVIDER_EASYDNS.equals(provider))
             return PROTOCOL_EASYDNS;
         else if  (PROVIDER_ZONEEDIT.equals(provider))
@@ -177,6 +180,8 @@ public class DynamicDNSSettings implements Serializable
     String getServer()
     {
         if (PROVIDER_DYNDNS.equals(provider))
+            return SERVER_DYNDNS;
+	else if (PROVIDER_DYNDNS_OLD.equals(provider))
             return SERVER_DYNDNS;
         else if  (PROVIDER_EASYDNS.equals(provider))
             return SERVER_EASYDNS;
