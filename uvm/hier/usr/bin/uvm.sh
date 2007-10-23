@@ -300,7 +300,8 @@ while true; do
             restartServiceIfNeeded untangle-support-agent
         fi
 
-	if [ $counter -gt 30 ] ; then # fire up the banner nanny(s)
+	if [ $counter -gt 30 ] ; then # fire up the other nannies
+	  [ `tail -n 50 /var/log/mail.info | grep -c "$SPAMASSASSIN_LOG_ERROR"` -gt 2 ] && restartService spamassassin $SPAMASSASSIN_PID_FILE "non-functional"
 	  $BANNER_NANNY $SPAMASSASSIN_PORT $TIMEOUT || restartService spamassassin $SPAMASSASSIN_PID_FILE "hung"
           $BANNER_NANNY $CLAMD_PORT $TIMEOUT || restartService clamav-daemon $CLAMD_PID_FILE "hung"
 	  counter=0
