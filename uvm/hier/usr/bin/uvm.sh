@@ -156,13 +156,13 @@ restartServiceIfNeeded() {
       dpkg -l untangle-slapd | grep -q -E '^ii' && needToRun=yes
       ;;
     spamassassin)
-      pidFile=/var/run/spamd.pid
+      pidFile=$SPAMASSASSIN_PID_FILE
       isServiceRunning --find-shell spamd && return
       confFile=/etc/default/spamassassin
       [ -f $confFile ] && grep -q ENABLED=1 $confFile && needToRun=yes
       ;;
     clamav-daemon)
-      pidFile="/var/run/clamav/clamd.pid"
+      pidFile=$CLAMD_PID_FILE
       isServiceRunning clamd && return
       dpkg -l clamav-daemon | grep -q -E '^ii' && needToRun=yes
       ;;
@@ -179,14 +179,19 @@ restartServiceIfNeeded() {
       ;;
   esac
 
-  if [ $needToRun == "yes" ] ; then
-    echo "*** restarting missing $serviceName on `date` ***" >> $UVM_WRAPPER_LOG
-    if [ -n "$pidFile" ]; then
-        rm -f $pidFile
-    fi
-#    /etc/init.d/$serviceName stop
-    /etc/init.d/$serviceName start
+  [ $needToRun == "yes" ] && restartService $serviceName $pidFile "missing"
+}
+
+restartService() {
+  serviceName=$1
+  pidFile=$2
+  reason=$3
+  echo "*** restarting $reason $serviceName on `date` ***" >> $UVM_WRAPPER_LOG
+  if [ -n "$pidFile" ]; then
+    rm -f $pidFile
   fi
+#    /etc/init.d/$serviceName stop
+  /etc/init.d/$serviceName start
 }
 
 # Return true (0) when we need to reap and restart the uvm.
@@ -264,6 +269,9 @@ while true; do
     echo "Bunnicula launched. (pid:$pid) (`date`)" >> $UVM_WRAPPER_LOG
 
 # Instead of waiting, we now monitor.
+
+    counter=0
+
     while true; do
 
         # try to fetch a key right away; bg'ed so as to not block the
@@ -272,6 +280,7 @@ while true; do
         getLicenseKey &
 
         sleep $SLEEP_TIME
+	let counter=${counter}+$SLEEP_TIME
 
         if [ "x" = "x@PREFIX@" ] ; then
             if [ ! -d /proc/$pid ] ; then
@@ -290,6 +299,12 @@ while true; do
             restartServiceIfNeeded slapd
             restartServiceIfNeeded untangle-support-agent
         fi
+
+	if [ $counter -gt 30 ] ; then # fire up the banner nanny(s)
+	  $BANNER_NANNY $SPAMASSASSIN_PORT $TIMEOUT || restartService spamassassin $SPAMASSASSIN_PID_FILE "hung"
+          $BANNER_NANNY $CLAMD_PORT $TIMEOUT || restartService clamav-daemon $CLAMD_PID_FILE "hung"
+	  counter=0
+	fi
     done
 
 # Clean up the zombie.  Risky? XXX
