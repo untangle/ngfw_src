@@ -196,11 +196,12 @@ restartService() {
   serviceName=$1
   pidFile=$2
   reason=$3
+  stopFirst=$4
   echo "*** restarting $reason $serviceName on `date` ***" >> $UVM_WRAPPER_LOG
   if [ -n "$pidFile" ]; then
     rm -f $pidFile
   fi
-#    /etc/init.d/$serviceName stop
+  [ -n "$stopFirst" ] && /etc/init.d/$serviceName stop
   /etc/init.d/$serviceName start
 }
 
@@ -313,10 +314,10 @@ while true; do
 	if [ $counter -gt 30 ] ; then # fire up the other nannies
 	  [ `tail -n 50 /var/log/mail.info | grep -c "$SPAMASSASSIN_LOG_ERROR"` -gt 2 ] && restartService spamassassin $SPAMASSASSIN_PID_FILE "non-functional"
 	  if [ -f /etc/default/spamassassin ] && grep -q ENABLED=1 /etc/default/spamassassin ; then
-	    $BANNER_NANNY $SPAMASSASSIN_PORT $TIMEOUT || restartService spamassassin $SPAMASSASSIN_PID_FILE "hung"
+	    $BANNER_NANNY $SPAMASSASSIN_PORT $TIMEOUT || restartService spamassassin $SPAMASSASSIN_PID_FILE "hung" stopFirst
 	  fi
 	  if dpkg -l clamav-daemon | grep -q -E '^ii' ; then
-            $BANNER_NANNY $CLAMD_PORT $TIMEOUT || restartService clamav-daemon $CLAMD_PID_FILE "hung"
+            $BANNER_NANNY $CLAMD_PORT $TIMEOUT || restartService clamav-daemon $CLAMD_PID_FILE "hung" stopFirst
 	  fi
 	  counter=0
 	fi
