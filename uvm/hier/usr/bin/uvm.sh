@@ -311,8 +311,8 @@ while true; do
             restartServiceIfNeeded untangle-support-agent
         fi
 
-	if [ $counter -gt 30 ] ; then # fire up the other nannies
-	  [ `tail -n 50 /var/log/mail.info | grep -c "$SPAMASSASSIN_LOG_ERROR"` -gt 2 ] && restartService spamassassin $SPAMASSASSIN_PID_FILE "non-functional"
+	if [ $counter -gt 60 ] ; then # fire up the other nannies
+	  [ `tail -n 50 /var/log/mail.info | grep -c "$SPAMASSASSIN_LOG_ERROR"` -gt 2 ] && restartService spamassassin $SPAMASSASSIN_PID_FILE "non-functional" stopFirst
 	  if [ -f /etc/default/spamassassin ] && grep -q ENABLED=1 /etc/default/spamassassin ; then
 	    $BANNER_NANNY $SPAMASSASSIN_PORT $TIMEOUT || restartService spamassassin $SPAMASSASSIN_PID_FILE "hung" stopFirst
 	  fi
