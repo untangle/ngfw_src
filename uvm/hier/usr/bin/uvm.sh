@@ -191,7 +191,8 @@ restartService() {
   if [ -n "$pidFile" ]; then
     rm -f $pidFile
   fi
-  [ -n "$stopFirst" ] && /etc/init.d/$serviceName stop
+  # FIXME: not exactly the right place to initiate the dumping of netstat output
+  [ -n "$stopFirst" ] && netstat -plunt >> $UVM_WRAPPER_LOG && /etc/init.d/$serviceName stop
   /etc/init.d/$serviceName start
 }
 
