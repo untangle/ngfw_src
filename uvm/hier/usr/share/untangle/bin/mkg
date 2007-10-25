@@ -45,7 +45,7 @@ class DevMkg
 
   def available()
     each_pkg_list_line do |l|
-      puts l unless /^XB-/ =~ l
+      puts l.gsub(/^XB-/, '')
       puts "Version: 10.0" if /^Package: / =~ l
     end
     0
@@ -175,93 +175,93 @@ class RealMkg
     $?
   end
 
-    def get_tempdir()
-      tmp = Tempfile.new('mkg')
-      path = tmp.path
-      tmp.delete
-      Dir.mkdir(path)
-      Dir.new(path)
-    end
+  def get_tempdir()
+    tmp = Tempfile.new('mkg')
+    path = tmp.path
+    tmp.delete
+    Dir.mkdir(path)
+    Dir.new(path)
+  end
 
-    def get_pkg_list(apt_cmd)
-      pkg_list = []
+  def get_pkg_list(apt_cmd)
+    pkg_list = []
 
-      IO.popen(apt_cmd, 'r') do |io|
-        io.each_line do |l|
-          if /^'(http:\/\/.*)' / =~ l
-            pkg_list << $1
-          end
+    IO.popen(apt_cmd, 'r') do |io|
+      io.each_line do |l|
+        if /^'(http:\/\/.*)' / =~ l
+          pkg_list << $1
         end
       end
-
-      pkg_list
     end
 
-    def download(pkg, pkg_list)
-      pkg_list.each { |p| log p }
-      log "END PACKAGE LIST"
+    pkg_list
+  end
 
-      tmp_dir = get_tempdir()
-      begin
-        pkg_list.each do |p|
-          log "downloading: #{p}"
+  def download(pkg, pkg_list)
+    pkg_list.each { |p| log p }
+    log "END PACKAGE LIST"
 
-          cmd_to_stderr("wget --progress=dot -P #{tmp_dir.path} #{p} 2>&1")
+    tmp_dir = get_tempdir()
+    begin
+      pkg_list.each do |p|
+        log "downloading: #{p}"
 
-          if $?.success?
-            tmp_dir.select { |f| /\.deb$/ =~ f }.each do |f|
-              FileUtils.mv("#{tmp_dir.path}/#{f}", "/var/cache/apt/archives")
-            end
-            log "DOWNLOAD SUCCEEDED: #{pkg}"
-          else
-            log "DOWNLOAD FAILED: #{pkg}"
+        cmd_to_stderr("wget --progress=dot -P #{tmp_dir.path} #{p} 2>&1")
+
+        if $?.success?
+          tmp_dir.select { |f| /\.deb$/ =~ f }.each do |f|
+            FileUtils.mv("#{tmp_dir.path}/#{f}", "/var/cache/apt/archives")
           end
-
+          log "DOWNLOAD SUCCEEDED: #{pkg}"
+        else
+          log "DOWNLOAD FAILED: #{pkg}"
         end
-      ensure
-        FileUtils.rm_rf(tmp_dir.path)
+
       end
-    end
-
-  end
-
-  stamp = nil
-
-  opts = GetoptLong.new([ '-k', GetoptLong::REQUIRED_ARGUMENT ])
-  opts.each do |opt, arg|
-    if '-k' == opt
-      stamp = arg
+    ensure
+      FileUtils.rm_rf(tmp_dir.path)
     end
   end
 
-  if ARGV.length < 1
-    printusage()
-    exit(1)
+end
+
+stamp = nil
+
+opts = GetoptLong.new([ '-k', GetoptLong::REQUIRED_ARGUMENT ])
+opts.each do |opt, arg|
+  if '-k' == opt
+    stamp = arg
   end
+end
 
-  ret = 0
+if ARGV.length < 1
+  printusage()
+  exit(1)
+end
 
-  mkg = PREFIX.empty? ? RealMkg.new(stamp) : DevMkg.new(stamp)
+ret = 0
 
-  exit case ARGV.shift
-  when 'installed'
-    mkg.installed()
-  when 'available'
-    mkg.available()
-  when 'install'
-    if ARGV.empty?
-      printusage()
-    else
-      mkg.install(ARGV.shift)
-    end
-  when 'update'
-    mkg.update()
-  when 'upgrade'
-    mkg.upgrade()
-  when 'remove'
-    if ARGV.empty?
-      printusage()
-    else
-      mkg.remove(ARGV.shift)
-    end
-  end
+mkg = PREFIX.empty? ? RealMkg.new(stamp) : DevMkg.new(stamp)
+
+exit case ARGV.shift
+     when 'installed'
+       mkg.installed()
+     when 'available'
+       mkg.available()
+     when 'install'
+       if ARGV.empty?
+         printusage()
+       else
+         mkg.install(ARGV.shift)
+       end
+     when 'update'
+       mkg.update()
+     when 'upgrade'
+       mkg.upgrade()
+     when 'remove'
+       if ARGV.empty?
+         printusage()
+       else
+         mkg.remove(ARGV.shift)
+       end
+     end

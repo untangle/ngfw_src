@@ -38,7 +38,7 @@ else
 fi
 
 # nanny stuff
-BANNER_NANNY=/usr/share/untangle/bin/banner-nanny.rb
+BANNER_NANNY=@PREFIX@/usr/share/untangle/bin/banner-nanny.rb
 TIMEOUT=8 # in seconds
 SPAMASSASSIN_PORT=783
 SPAMASSASSIN_PID_FILE=/var/run/spamd.pid

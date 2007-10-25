@@ -4,7 +4,7 @@ set -e
 
 JAVA_HOME=${JAVA_HOME:-@DEFAULT_JAVA_HOME@}
 
-CLASSPATH="@UVM_LIB@/untangle-professional-core-api/:@UVM_LIB@/untangle-vm-api/:@THIRDPARTY_UVM_LIB@/hibernate3.jar:@THIRDPARTY_UVM_LIB@/log4j-1.2.14.jar"
+CLASSPATH="@UVM_LIB@/untangle-professional-core-api/:@UVM_LIB@/untangle-libuvm-api/:@THIRDPARTY_UVM_LIB@/hibernate3.jar:@THIRDPARTY_UVM_LIB@/log4j-1.2.14.jar"
 for f in @THIRDPARTY_REPORTS_LIB@/*jar ; do
     CLASSPATH="$CLASSPATH:$f"
 done
