@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -16,9 +16,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-
 package com.untangle.node.virus.gui;
-
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -31,9 +29,9 @@ import javax.swing.table.*;
 import com.untangle.gui.node.*;
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.editTable.*;
+import com.untangle.node.virus.*;
 import com.untangle.uvm.*;
 import com.untangle.uvm.node.*;
-import com.untangle.node.virus.*;
 
 public class ExtensionsConfigJPanel extends MEditTableJPanel {
 

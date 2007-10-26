@@ -180,7 +180,7 @@ class RealMkg
     path = tmp.path
     tmp.delete
     Dir.mkdir(path)
-    Dir.new(path)
+    path
   end
 
   def get_pkg_list(apt_cmd)
@@ -201,25 +201,23 @@ class RealMkg
     pkg_list.each { |p| log p }
     log "END PACKAGE LIST"
 
-    tmp_dir = get_tempdir()
+    tmp = get_tempdir()
     begin
       pkg_list.each do |p|
         log "downloading: #{p}"
 
-        cmd_to_stderr("wget --progress=dot -P #{tmp_dir.path} #{p} 2>&1")
-
-        if $?.success?
-          tmp_dir.select { |f| /\.deb$/ =~ f }.each do |f|
-            FileUtils.mv("#{tmp_dir.path}/#{f}", "/var/cache/apt/archives")
+        if cmd_to_stderr("wget --progress=dot -P #{tmp} #{p} 2>&1")
+          Dir.new(tmp).select { |f| /\.deb$/ =~ f }.each do |f|
+            FileUtils.mv("#{tmp}/#{f}", "/var/cache/apt/archives")
           end
-          log "DOWNLOAD SUCCEEDED: #{pkg}"
+          log "DOWNLOAD SUCCEEDED: #{p}"
         else
-          log "DOWNLOAD FAILED: #{pkg}"
+          log "DOWNLOAD FAILED: #{p}"
         end
 
       end
     ensure
-      FileUtils.rm_rf(tmp_dir.path)
+      FileUtils.rm_rf(tmp)
     end
   end
 
