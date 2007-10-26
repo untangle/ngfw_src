@@ -145,7 +145,7 @@ restartServiceIfNeeded() {
   case $serviceName in
     postgresql)
 # Removing the postgres pid file just makes restarting harder.  The init.d script deals ok as is.
-      pidFile=
+      pidFile=/tmp/foo
       isServiceRunning $PG_DAEMON_NAME && return
       serviceName=$PGSERVICE
       needToRun=yes # always has to run
@@ -188,11 +188,12 @@ restartService() {
   reason=$3
   stopFirst=$4
   echo "*** restarting $reason $serviceName on `date` ***" >> $UVM_WRAPPER_LOG
-  if [ -n "$pidFile" ]; then
-    rm -f $pidFile
+  if [ -n "$stopFirst" ] ; then
+    # FIXME: not exactly the right place to initiate the dumping of netstat output
+    netstat -plunt >> $UVM_WRAPPER_LOG && /etc/init.d/$serviceName stop
+  else
+    [ -n "$pidFile" ] && rm -f $pidFile
   fi
-  # FIXME: not exactly the right place to initiate the dumping of netstat output
-  [ -n "$stopFirst" ] && netstat -plunt >> $UVM_WRAPPER_LOG && /etc/init.d/$serviceName stop
   /etc/init.d/$serviceName start
 }
 
