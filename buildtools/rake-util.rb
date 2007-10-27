@@ -207,8 +207,12 @@ class JavaCompiler
     src = jarTarget.javacDirectory
     dst = jarTarget.jarFile
 
-    info "Jar #{src} -> #{dst}"
-    raise "jar failed" unless  Kernel.system(JarCommand, "cf", dst, "-C", src, ".")
+    if File.exist? src
+      info "Jar #{src} -> #{dst}"
+      raise "jar failed" unless
+        Kernel.system(JarCommand, "cf", dst, "-C", src, ".")
+    end
+
     dst
   end
 
@@ -741,10 +745,18 @@ class ServletBuilder < Target
     jardeps = libdeps + @nodedeps + Jars::Base + FileList["#{@destRoot}/WEB-INF/lib/*.jar"]
     jardeps << uvm_lib["api"] << uvm_lib["localapi"]
 
-    # XXX make name nil?
     @srcJar = JarTarget.buildTarget(package, jardeps, name, "#{path}/src",
                                     false);
     deps << @srcJar
+
+    po_dir = "#{path}/po"
+    if File.exist? po_dir
+      MsgFmtTarget.make_po_targets(package, po_dir,
+                                   @srcJar.javacDirectory,
+                                   "#{pkgname}.Messages").each do |t|
+        @srcJar.registerDependency(t)
+      end
+    end
 
     super(package, deps + jardeps, suffix)
   end
@@ -754,7 +766,9 @@ class ServletBuilder < Target
 
     if (@srcJar.file?)
       srcJarName = @srcJar.filename()
-      FileUtils.cp(srcJarName, "#{@destRoot}/WEB-INF/lib")
+      if File.exist? srcJarName
+        FileUtils.cp(srcJarName, "#{@destRoot}/WEB-INF/lib")
+      end
     end
 
     classroot = File.join(@destRoot, "WEB-INF", "classes")
@@ -878,6 +892,60 @@ class JavaCompilerTarget < Target
   attr_reader :isEmpty
 end
 
+class MsgFmtTarget < Target
+  def initialize(package, po_file, dest, basename)
+    @po_file = po_file
+    @dest = dest
+    @basename = basename
+    @lang = File.basename(@po_file, '.po')
+
+    @filename = "#{dest}/#{@basename.gsub(/\./, '/')}_#{@lang}.class"
+
+    super(package, [@po_file], @filename)
+  end
+
+  def MsgFmtTarget.make_po_targets(package, src, dest, basename)
+    ts = []
+
+    Dir.new(src).select { |f| /\.po$/ =~ f }.each do |f|
+      ts << MsgFmtTarget.new(package, "#{src}/#{f}", dest, basename)
+    end
+
+    ts
+  end
+
+  def file?
+    true
+  end
+
+  def filename
+    @filename
+  end
+
+  protected
+
+  def makeDependencies
+    task self => @po_file
+    file filename => self
+  end
+
+  def build()
+    ensureDirectory @dest
+    raise "msgfmt failed" unless
+      Kernel.system <<CMD
+msgfmt --java2 -d #{@dest} -r #{@basename} -l #{@lang} #{@po_file}
+CMD
+
+    props = "#{File.dirname(filename())}/i18n.properties"
+    unless File.exist?(props)
+      File.open(props, 'w') do |f|
+        f.puts "basename=#{@basename}"
+      end
+    end
+
+  end
+end
+
 ## This is a JAR that must be built from Java Files
 class JarTarget < Target
   def initialize(package, deps, suffix, buildDirectory, registerTarget=true)
@@ -887,7 +955,7 @@ class JarTarget < Target
     @buildDirectory = buildDirectory
 
     suffix = nil unless registerTarget
-    super(package,deps,suffix)
+    super(package, deps, suffix)
 
     file jarFile => self
   end
@@ -928,7 +996,7 @@ class JarTarget < Target
     javaCompiler = buildJavaCompilerTarget(package, jars, buildDirectory,
                                            suffix, basepaths)
 
-    return EmptyTarget.instance if javaCompiler.isEmpty
+    #return EmptyTarget.instance if javaCompiler.isEmpty
 
     ap = basepaths.map do |bp|
       ac = "#{bp}/resources/META-INF/annotated-classes"

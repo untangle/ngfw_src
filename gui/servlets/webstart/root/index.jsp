@@ -1,4 +1,4 @@
-<%@ page language="java" import="com.untangle.uvm.*" %>
+<%@ page language="java" import="com.untangle.uvm.*,org.xnap.commons.i18n.*" %>
 <%--
  * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc.
@@ -17,6 +17,9 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
 --%>
 <%
+
+I18n i18n = I18nFactory.getI18n(getClass(), request.getLocale(), I18nFactory.FALLBACK);
+
 LocalUvmContext uvm = LocalUvmContextFactory.context();
 boolean reportingEnabled = uvm.reportingManager().isReportingEnabled();
 String host=request.getHeader("host");
@@ -147,7 +150,7 @@ function showMessage() {
       </script>
     <% if ( !isDownload ) { %>
             <center>
-              <a href="gui.jnlp"><b>Launch Untangle Client</b></a>
+              <a href="gui.jnlp"><b><%=i18n.tr("Launch Untangle Client")%></b></a>
               <% if (reportingEnabled) { %>
                     <br /><a href="<%=scheme%>://<%=host%>/reports"><b>View Untangle Reports</b></a><br />
               <% } %>

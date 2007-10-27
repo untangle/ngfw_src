@@ -65,6 +65,8 @@ class Jars
   C3p0       = [ Jars.downloadTarget('c3p0-0.9.0.4/lib/c3p0-0.9.0.4.jar') ]
   Ant        = [ Jars.downloadTarget('apache-ant-1.6.5/lib/ant.jar') ]
   JavaMailApi= [ Jars.downloadTarget('javamail-1.3.3_01/lib/mailapi.jar') ]
+  GetText    = [ Jars.downloadTarget('gettext-commons-0.9.1/gettext-commons-0.9.1.jar') ]
+
   TomcatEmb  = [ 'catalina-optional.jar',
                  'catalina.jar',
                  'commons-el.jar',
@@ -125,8 +127,8 @@ class Jars
   # This is available to everything?
   Base       = Jars.makeGroup(Log4j, Hibernate, HibernateAnnotations, Postgres,
                               Activation, Jcifs, C3p0, Ant, JavaMailApi,
-                              JavaMail, TomcatEmb, Velocity, WBEM, Bdb,
-                              HttpClient, HtmlParser, VncViewer)
+                              GetText, JavaMail, TomcatEmb, Velocity, WBEM,
+                              Bdb, HttpClient, HtmlParser, VncViewer)
 
   # Jars for compiling the GUI, and GUI node components
   Gui        = Jars.makeGroup(Alloy, JFreeChartGui, Netbeans, Jnlp)
