@@ -46,6 +46,7 @@ end
 
 require "./buildtools/stamp-task.rb"
 require "./buildtools/rake-util.rb"
+require "./buildtools/target.rb"
 require "./buildtools/jars.rb"
 require "./buildtools/c-compiler.rb"
 require "./buildtools/jasper.rb"
