@@ -18,7 +18,7 @@
 
 uvm_lib = BuildEnv::SRC['untangle-libuvm']
 gui = BuildEnv::SRC['untangle-client']
-BuildEnv::SRC.installTarget.registerDependency(gui)
+BuildEnv::SRC.installTarget.register_dependency(gui)
 
 class MiniInstallTarget < InstallTarget
   def to_s
@@ -32,35 +32,35 @@ mini = MiniInstallTarget.new(BuildEnv::SRC['gui-temp'],
 
 ## Api
 deps = Jars::Base + Jars::Gui + Jars::TomcatEmb + [uvm_lib['api']]
-jt = JarTarget.buildTarget(gui, deps, 'api', "./gui/api")
+jt = JarTarget.build_target(gui, deps, 'api', "./gui/api")
 
 # XXX renaming because the package name is bad
-BuildEnv::SRC.installTarget.installJars(jt, gui.getWebappDir('webstart'), nil, true)
-mini.installJars(jt, gui.getWebappDir('webstart'), nil, true)
+BuildEnv::SRC.installTarget.install_jars(jt, gui.getWebappDir('webstart'), nil, true)
+mini.install_jars(jt, gui.getWebappDir('webstart'), nil, true)
 
 ## Implementation
 deps = Jars::Base + Jars::Gui + Jars::TomcatEmb + [uvm_lib['api'], gui['api']]
-jt = JarTarget.buildTarget(gui, deps, 'impl', "./gui/impl")
+jt = JarTarget.build_target(gui, deps, 'impl', "./gui/impl")
 
 # XXX renaming because the package name is bad
-BuildEnv::SRC.installTarget.installJars(jt, gui.getWebappDir('webstart'), nil, true)
-mini.installJars(jt, gui.getWebappDir('webstart'), nil, true)
+BuildEnv::SRC.installTarget.install_jars(jt, gui.getWebappDir('webstart'), nil, true)
+mini.install_jars(jt, gui.getWebappDir('webstart'), nil, true)
 
 ServletBuilder.new(gui, 'com.untangle.gui.webstart.jsp',
                    "./gui/servlets/webstart", [], [], [],
                    [BuildEnv::SERVLET_COMMON],
                    ['gui.jnlp', 'index.jsp'])
 
-BuildEnv::SRC.installTarget.installJars(Jars::Gui, gui.getWebappDir('webstart'), nil, true)
+BuildEnv::SRC.installTarget.install_jars(Jars::Gui, gui.getWebappDir('webstart'), nil, true)
 
-mini.installJars(Jars::Gui, gui.getWebappDir('webstart'), nil, true)
+mini.install_jars(Jars::Gui, gui.getWebappDir('webstart'), nil, true)
 
 guiRuntimeJars = ['asm.jar', 'cglib-2.1.3.jar', 'commons-logging-1.0.4.jar' ].map do |f|
   Jars.downloadTarget("hibernate-3.2/lib/#{f}")
 end
 guiRuntimeJars += Jars::Log4j;
 guiRuntimeJars << Jars.downloadTarget('hibernate-client/hibernate-client.jar')
-BuildEnv::SRC.installTarget.installJars(guiRuntimeJars, gui.getWebappDir('webstart'), nil, true)
+BuildEnv::SRC.installTarget.install_jars(guiRuntimeJars, gui.getWebappDir('webstart'), nil, true)
 
 ms = MoveSpec.new("./gui/hier", FileList["./gui/hier/**/*"], gui.distDirectory)
 cf = CopyFiles.new(gui, ms, 'hier', BuildEnv::SRC.filterset)

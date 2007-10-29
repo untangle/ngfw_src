@@ -20,8 +20,8 @@ jnetcap = BuildEnv::SRC['jnetcap']
 uvm_lib    = BuildEnv::SRC['untangle-libuvm']
 
 ## jnetcap
-j = JarTarget.buildTarget(jnetcap, Jars::Base, 'impl', "./jnetcap/impl" )
-BuildEnv::SRC.installTarget.installJars(j, "#{uvm_lib.distDirectory}/usr/share/untangle/lib",
+j = JarTarget.build_target(jnetcap, Jars::Base, 'impl', "./jnetcap/impl" )
+BuildEnv::SRC.installTarget.install_jars(j, "#{uvm_lib.distDirectory}/usr/share/untangle/lib",
                                         nil, false, true)
 
 headerClasses = [ 'com.untangle.jnetcap.Netcap',
@@ -38,7 +38,7 @@ compilerEnv = CCompilerEnv.new({'pkg' => "#{CCompilerEnv::JNetcap}" })
 
 
 ## jnetcap
-ArchiveTarget.buildTarget(jnetcap, [ BuildEnv::SRC['libmvutil'], BuildEnv::SRC['jmvutil'], javah ], compilerEnv,
+ArchiveTarget.build_target(jnetcap, [ BuildEnv::SRC['libmvutil'], BuildEnv::SRC['jmvutil'], javah ], compilerEnv,
                           ["#{BuildEnv::JAVA_HOME}/include", "#{BuildEnv::JAVA_HOME}/include/linux"])
 
 stamptask BuildEnv::SRC.installTarget => jnetcap

@@ -30,5 +30,5 @@ file nfutil do
                                                       [], ['netfilter_queue'])
 end
 
-BuildEnv::SRC.installTarget.registerDependency(nfutil)
-BuildEnv::SRC.installTarget.installFiles(nfutil, "#{BuildEnv::SRC['untangle-libuvm'].distDirectory}/usr/share/untangle/networking/")
+BuildEnv::SRC.installTarget.register_dependency(nfutil)
+BuildEnv::SRC.installTarget.install_files(nfutil, "#{BuildEnv::SRC['untangle-libuvm'].distDirectory}/usr/share/untangle/networking/")

@@ -82,9 +82,9 @@ file libuvmcore_so do
                                                              ['xml2', 'sysfs', 'netfilter_queue'], ['ipq'])
 end
 
-BuildEnv::SRC['untangle-libuvm']['impl'].registerDependency(libuvmcore_so)
+BuildEnv::SRC['untangle-libuvm']['impl'].register_dependency(libuvmcore_so)
 
-BuildEnv::SRC.installTarget.installFiles(libuvmcore_so, "#{BuildEnv::SRC['untangle-libuvmcore'].distDirectory}/usr/lib/uvm")
+BuildEnv::SRC.installTarget.install_files(libuvmcore_so, "#{BuildEnv::SRC['untangle-libuvmcore'].distDirectory}/usr/lib/uvm")
 
 # DO IT!
 #graphViz('foo.dot')

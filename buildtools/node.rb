@@ -51,7 +51,7 @@ class NodeBuilder
     gui  = BuildEnv::SRC['untangle-client']
     dirName = location
     node = buildEnv["#{name}"]
-    buildEnv.installTarget.registerDependency(node)
+    buildEnv.installTarget.register_dependency(node)
     buildEnv['node'].registerTarget("#{name}", node)
 
     localApiJar = nil
@@ -68,9 +68,9 @@ class NodeBuilder
       paths = baseHash.map { |bd, bn| ["#{bn.buildEnv.home}/#{bd}/api",
           "#{bn.buildEnv.home}/#{bd}/localapi"] }.flatten
 
-      localApiJar = JarTarget.buildTarget(node, deps, 'localapi',
+      localApiJar = JarTarget.build_target(node, deps, 'localapi',
                                           ["#{home}/#{dirName}/api", "#{home}/#{dirName}/localapi"] + paths)
-      buildEnv.installTarget.installJars(localApiJar, "#{node.distDirectory}/usr/share/untangle/toolbox")
+      buildEnv.installTarget.install_jars(localApiJar, "#{node.distDirectory}/usr/share/untangle/toolbox")
     end
 
     ## Build the IMPL jar.
@@ -89,13 +89,13 @@ class NodeBuilder
     baseHash.each_pair { |bd, bn| directories << "#{bn.buildEnv.home}/#{bd}/impl" }
 
     ## The IMPL jar depends on the reports
-    deps << JasperTarget.buildTarget( node,
+    deps << JasperTarget.build_target( node,
                                       "#{buildEnv.staging}/#{node.name}-impl/reports",
                                       directories )
 
-    jt = JarTarget.buildTarget(node, deps, "impl", directories)
+    jt = JarTarget.build_target(node, deps, "impl", directories)
 
-    buildEnv.installTarget.installJars(jt, "#{node.distDirectory}/usr/share/untangle/toolbox", nil, false, true)
+    buildEnv.installTarget.install_jars(jt, "#{node.distDirectory}/usr/share/untangle/toolbox", nil, false, true)
 
     ## Only create the GUI api if there are files for the GUI
     if (FileList["#{home}/#{dirName}/gui/**/*.java"].length > 0)
@@ -106,11 +106,11 @@ class NodeBuilder
         end
       end
 
-      jt = JarTarget.buildTarget(node, deps, 'gui',
+      jt = JarTarget.build_target(node, deps, 'gui',
                                  ["#{home}/#{dirName}/api",
                                    "#{home}/#{dirName}/gui",
                                    "#{home}/#{dirName}/fake"])
-      buildEnv.installTarget.installJars(jt, "#{node.distDirectory}/usr/share/untangle/web/webstart",
+      buildEnv.installTarget.install_jars(jt, "#{node.distDirectory}/usr/share/untangle/web/webstart",
                                          nil, true)
     end
 

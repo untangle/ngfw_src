@@ -204,8 +204,8 @@ class JavaCompiler
   end
 
   def JavaCompiler.jar(jarTarget)
-    src = jarTarget.javacDirectory
-    dst = jarTarget.jarFile
+    src = jarTarget.javac_dir
+    dst = jarTarget.jar_file
 
     if File.exist? src
       info "Jar #{src} -> #{dst}"
@@ -218,7 +218,7 @@ class JavaCompiler
 
   def JavaCompiler.unjar(jt, dest)
     ensureDirectory(dest)
-    src = File.expand_path(jt.jarFile)
+    src = File.expand_path(jt.jar_file)
 
     info "UnJar #{src} -> #{dest}"
     wd = Dir.pwd

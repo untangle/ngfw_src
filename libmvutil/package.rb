@@ -22,6 +22,6 @@ compilerEnv = CCompilerEnv.new({ 'pkg' => "#{CCompilerEnv::Mvutil}",
                                  'version' => "#{getVersion(libmvutil)}" })
 
 ## libmvutil
-ArchiveTarget.buildTarget(libmvutil, [], compilerEnv)
+ArchiveTarget.build_target(libmvutil, [], compilerEnv)
 
 stamptask BuildEnv::SRC.installTarget => libmvutil

@@ -18,9 +18,9 @@
 
 buildutil = BuildEnv::SRC["untangle-buildutil"]
 
-jt = JarTarget.buildTarget(buildutil, [Jars::Becl , Jars::Reporting], 'impl', ["./util/impl"])
-BuildEnv::SRC.installTarget.installJars(jt, "#{buildutil.distDirectory}/usr/share/untangle/lib")
-BuildEnv::SRC.installTarget.installJars(Jars::Becl, "#{buildutil.distDirectory}/usr/share/java/uvm")
+jt = JarTarget.build_target(buildutil, [Jars::Becl , Jars::Reporting], 'impl', ["./util/impl"])
+BuildEnv::SRC.installTarget.install_jars(jt, "#{buildutil.distDirectory}/usr/share/untangle/lib")
+BuildEnv::SRC.installTarget.install_jars(Jars::Becl, "#{buildutil.distDirectory}/usr/share/java/uvm")
 
 ms = MoveSpec.new("./util/hier", FileList["./util/hier/**/*"], buildutil.distDirectory)
 cf = CopyFiles.new(buildutil, ms, 'hier', BuildEnv::SRC.filterset)

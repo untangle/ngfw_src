@@ -55,13 +55,13 @@ end
 
 ## This is a target for converting a list of RPD files into JRXML files
 class JRXMLTarget < Target
-  def initialize( package, buildDirectory, basepaths )
+  def initialize( package, build_dir, basepaths )
     @targetName = "rpdtojrxml:#{package.name}"
 
     ## Force basepath to be an array
     @basepaths = [ basepaths ].flatten
 
-    @buildDirectory = buildDirectory
+    @build_dir = build_dir
 
     @rpdFiles = FileList[ @basepaths.map { |basepath| "#{basepath}/**/*.rpd"} ]
 
@@ -69,12 +69,12 @@ class JRXMLTarget < Target
     super( package )
   end
 
-  def makeDependencies
+  def make_dependencies
     ## ReportGenerator is built inside of the build utils
     buildutil = BuildEnv::SRC['untangle-buildutil']
 
     @rpdFiles.each do |f|
-      jrxmlFile =  "#{@buildDirectory}/#{File.basename( f ).gsub(/.rpd$/,".jrxml")}"
+      jrxmlFile =  "#{@build_dir}/#{File.basename( f ).gsub(/.rpd$/,".jrxml")}"
       debug jrxmlFile
 
       ## Make the classfile depend on the source itself
@@ -93,7 +93,7 @@ class JRXMLTarget < Target
   end
 
   def build
-    JasperCompiler.rpdToJrxml( @rpdFiles, @buildDirectory )
+    JasperCompiler.rpdToJrxml( @rpdFiles, @build_dir )
   end
 
   def to_s
@@ -104,20 +104,20 @@ end
 
 ## This is a target for converting a list of JRXML files into a Jasper file
 class JasperTarget < Target
-  def initialize(package, deps, buildDirectory, basepaths )
+  def initialize(package, deps, build_dir, basepaths )
     @targetName = "jrxmltojasper:#{package.name}"
 
     ## Force basepath to be an array
     @basepaths = [ basepaths ].flatten
 
-    @buildDirectory = buildDirectory
+    @build_dir = build_dir
 
     @jrxmlFiles = FileList[ @basepaths.map { |basepath| "#{basepath}/**/*.jrxml"} ]
 
     super(package,deps)
   end
 
-  def makeDependencies
+  def make_dependencies
     @jrxmlFiles.each { |f| stamptask self => f }
   end
 
@@ -125,14 +125,14 @@ class JasperTarget < Target
     ## Have to re-evaluate in order to get the RPD files
     jrxmlFiles = FileList[ @basepaths.map { |basepath| "#{basepath}/**/*.jrxml"} ]
 
-    JasperCompiler.jrxmlToJasper( jrxmlFiles, @buildDirectory )
+    JasperCompiler.jrxmlToJasper( jrxmlFiles, @build_dir )
   end
 
   def to_s
     @targetName
   end
 
-  def JasperTarget.buildTarget( package, destination, basepaths )
+  def JasperTarget.build_target( package, destination, basepaths )
     basepaths = [ basepaths ].flatten
 
     ## Build all of the JRXML files from the RPDs

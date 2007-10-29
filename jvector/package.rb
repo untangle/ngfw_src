@@ -22,8 +22,8 @@ uvm_lib    = BuildEnv::SRC['untangle-libuvm']
 
 ## jvector
 deps = Jars::Base + [jnetcap['impl']]
-j = JarTarget.buildTarget(jvector, deps, 'impl', "./jvector/impl")
-BuildEnv::SRC.installTarget.installJars(j, "#{uvm_lib.distDirectory}/usr/share/untangle/lib",
+j = JarTarget.build_target(jvector, deps, 'impl', "./jvector/impl")
+BuildEnv::SRC.installTarget.install_jars(j, "#{uvm_lib.distDirectory}/usr/share/untangle/lib",
                                         nil, false, true)
 
 headerClasses = [ 'com.untangle.jvector.OutgoingSocketQueue',
@@ -43,7 +43,7 @@ javah = JavahTarget.new(jvector, j, headerClasses)
 compilerEnv = CCompilerEnv.new({ 'pkg' => "#{CCompilerEnv::JVector}" })
 
 
-ArchiveTarget.buildTarget(jvector, [BuildEnv::SRC['libmvutil'], BuildEnv::SRC['jmvutil'], javah],
+ArchiveTarget.build_target(jvector, [BuildEnv::SRC['libmvutil'], BuildEnv::SRC['jmvutil'], javah],
                           compilerEnv, ["#{BuildEnv::JAVA_HOME}/include", "#{BuildEnv::JAVA_HOME}/include/linux"])
 
 stamptask BuildEnv::SRC.installTarget => jvector

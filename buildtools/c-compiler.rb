@@ -162,7 +162,7 @@ class CBuilder
 end
 
 class CCompilerTarget < Target
-  def initialize(package, deps, builder, buildDirectory, basepaths)
+  def initialize(package, deps, builder, build_dir, basepaths)
     @targetName = "c-compiler:#{package.name}"
 
     @builder = builder
@@ -170,7 +170,7 @@ class CCompilerTarget < Target
     ## Force basepath to be an array
     @basepaths = [ basepaths ].flatten
 
-    @buildDirectory = buildDirectory
+    @build_dir = build_dir
 
     ## Doesn't support nested directories.
     @sourceFiles = FileList[ @basepaths.map { |basepath| "#{basepath}/*.c"} ]
@@ -178,19 +178,19 @@ class CCompilerTarget < Target
     super(package,deps)
   end
 
-  def makeDependencies
+  def make_dependencies
     if 0 == @sourceFiles.length
       warn "#{self} has no input files."
       return
     end
 
     @sourceFiles.each do |sourceFile|
-      objectFile =  "#{@buildDirectory}/#{File.basename( sourceFile ).gsub( /.c$/, ".o" )}"
+      objectFile =  "#{@build_dir}/#{File.basename( sourceFile ).gsub( /.c$/, ".o" )}"
       debug "Building dependency for #{sourceFile} => #{objectFile}"
 
       ## Make the classfile depend on the source itself
       file objectFile => sourceFile do
-        ensureDirectory( @buildDirectory )
+        ensureDirectory( @build_dir )
         @builder.makeObject( sourceFile, objectFile )
       end
 
@@ -234,7 +234,7 @@ class ArchiveTarget < Target
   ## deps: Dependencies for this archive
   ## env: Build environment for this archive
   ## includes: Any additional include directories required to build this archive.
-  def ArchiveTarget.buildTarget(package, deps, env, includes = [] )
+  def ArchiveTarget.build_target(package, deps, env, includes = [] )
     directory = "./#{package.name}"
 
     ## Create a builder
@@ -251,21 +251,21 @@ class ArchiveTarget < Target
 
     ## Each package really only has one c-compile, no
     ## need for a suffix
-    buildDirectory = "#{package.buildEnv.staging}/#{package.name}/obj"
+    build_dir = "#{package.buildEnv.staging}/#{package.name}/obj"
     includeDirectory = "#{package.buildEnv.include}"
 
     ## Make a copyfiles target to copy in all of the includes.
     ms = MoveSpec.new("#{directory}/include", "**/*.h",includeDirectory)
     copyTarget = CopyFiles.new(package,ms,"includes")
 
-    compilerTarget = CCompilerTarget.new(package, deps, builder, buildDirectory, sourceDirectory )
+    compilerTarget = CCompilerTarget.new(package, deps, builder, build_dir, sourceDirectory )
     ## Make a c-compiler target that depends on the dependencies
     archiveDeps =  [ copyTarget, compilerTarget ]
 
     destination = "#{package.buildEnv.staging}/#{package.name}/#{package.name}.a"
 
     ## Make an archive that depens on the CCompilerTarget
-    ArchiveTarget.new(package,archiveDeps,destination,buildDirectory,builder)
+    ArchiveTarget.new(package,archiveDeps,destination,build_dir,builder)
   end
 
   def filename
