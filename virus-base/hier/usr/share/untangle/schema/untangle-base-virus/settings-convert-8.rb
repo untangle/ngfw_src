@@ -16,23 +16,27 @@ def update_schema()
                             [ 'http_inbound', 'ftp_inbound', 'smtp_outbound',
                               'pop_inbound', 'imap_inbound' ])
 
-  [
-   'DELETE FROM n_virus_config
+  schema_rewrite = [ 'DELETE FROM n_virus_config
 WHERE config_id
 NOT IN ((SELECT http_config FROM n_virus_settings) UNION
         (SELECT ftp_config FROM n_virus_settings))',
-   'DELETE FROM n_virus_smtp_config
+                     'DELETE FROM n_virus_smtp_config
 WHERE config_id NOT IN (SELECT smtp_config FROM n_virus_settings)',
-   'DELETE FROM n_virus_imap_config
+                     'DELETE FROM n_virus_imap_config
 WHERE config_id NOT IN (SELECT imap_config FROM n_virus_settings)',
-   'DELETE FROM n_virus_pop_config
-WHERE config_id NOT IN (SELECT pop_config FROM n_virus_settings)'
-  ].each do |sql|
+                     'DELETE FROM n_virus_pop_config
+WHERE config_id NOT IN (SELECT pop_config FROM n_virus_settings)' ]
+
+  memo_update = [ 'n_virus_smtp_config', 'n_virus_imap_config',
+                  'n_virus_pop_config', 'n_virus_config' ].map do | o |
+    "UPDATE #{o} SET notes = 'no description'"
+  end
+
+  (schema_rewrite + memo_update).each do |sql|
     begin
       @dbh.do(sql)
     rescue DBI::DatabaseError => e
       SqlHelper.log_sql_error("Could not run #{sql}", e)
     end
   end
-
 end
