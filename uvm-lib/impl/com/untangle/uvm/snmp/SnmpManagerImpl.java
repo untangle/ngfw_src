@@ -177,7 +177,8 @@ public class SnmpManagerImpl
         snmpd_config.append("pass .1.3.6.1.4.1.2021.6971.1 /bin/sh /usr/share/untangle/bin/uvmsnmp.sh webfilter").append(EOL);
         snmpd_config.append("pass .1.3.6.1.4.1.2021.6971.2 /bin/sh /usr/share/untangle/bin/uvmsnmp.sh firewall").append(EOL);
         snmpd_config.append("pass .1.3.6.1.4.1.2021.6971.3 /bin/sh /usr/share/untangle/bin/uvmsnmp.sh attackblocker").append(EOL);
-        snmpd_config.append("pass .1.3.6.1.4.1.2021.6971.4 /bin/sh /usr/share/untangle/bin/uvmsnmp.sh protofilter").append(TWO_LINES);
+        snmpd_config.append("pass .1.3.6.1.4.1.2021.6971.4 /bin/sh /usr/share/untangle/bin/uvmsnmp.sh protofilter").append(EOL);
+        snmpd_config.append(TWO_LINES);
 
         if(isNotNullOrBlank(settings.getCommunityString())) {
             snmpd_config.append("# Simple access rules, so there is only one read").append(EOL);
