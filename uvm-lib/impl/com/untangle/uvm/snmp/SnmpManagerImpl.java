@@ -173,6 +173,7 @@ public class SnmpManagerImpl
 
         snmpd_config.append("sysservices 78").append(TWO_LINES);
 
+	// Inject pass commands to handle UVM SNMP stats.
         snmpd_config.append("pass .1.3.6.1.4.1.2021.6971.1 /bin/sh /usr/share/untangle/bin/uvmsnmp.sh webfilter").append(EOL);
         snmpd_config.append("pass .1.3.6.1.4.1.2021.6971.2 /bin/sh /usr/share/untangle/bin/uvmsnmp.sh firewall").append(EOL);
         snmpd_config.append("pass .1.3.6.1.4.1.2021.6971.3 /bin/sh /usr/share/untangle/bin/uvmsnmp.sh attackblocker").append(EOL);
