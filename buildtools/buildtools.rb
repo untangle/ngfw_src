@@ -51,3 +51,40 @@ require "./buildtools/jars.rb"
 require "./buildtools/c-compiler.rb"
 require "./buildtools/jasper.rb"
 require "./buildtools/node.rb"
+
+if SRC_HOME.nil?
+  uvm_lib = BuildEnv::SRC['untangle-libuvm']
+  ['bootstrap', 'api', 'localapi', 'impl', 'reporting'].each do |n|
+    InstalledJar.get(uvm_lib, "/usr/share/untangle/lib/untangle-libuvm-#{n}/")
+  end
+
+  buildutil = BuildEnv::SRC['untangle-buildutil']
+  ['impl'].each do |n|
+    InstalledJar.get(buildutil, "/usr/share/untangle/lib/untangle-buildutil-#{n}.jar")
+  end
+
+  gui = BuildEnv::SRC['untangle-client']
+  ['api'] .each do |n|
+    InstalledJar.get(gui, "/usr/share/untangle/web/webstart/untangle-client-#{n}.jar")
+  end
+
+  [ 'mail', 'ftp', 'http' ].each do |c|
+    p =  BuildEnv::SRC["untangle-casing-#{c}"]
+    ['localapi'].each do |n|
+      InstalledJar.get(p, "/usr/share/untangle/toolbox/untangle-casing-#{c}-#{n}.jar")
+    end
+
+    InstalledJar.get(p, "/usr/share/untangle/web/webstart/untangle-casing-#{c}-gui.jar")
+  end
+
+  [ 'virus' ].each do |c|
+    p =  BuildEnv::SRC["untangle-base-#{c}"]
+    ['impl'].each do |n|
+      InstalledJar.get(p, "/usr/share/untangle/toolbox/untangle-base-#{c}-#{n}/")
+    end
+
+    InstalledJar.get(p, "/usr/share/untangle/web/webstart/untangle-base-#{c}-gui.jar")
+  end
+else
+  require "./buildtools/untangle-core.rb"
+end
