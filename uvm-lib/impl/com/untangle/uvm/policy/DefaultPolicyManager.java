@@ -107,11 +107,12 @@ class DefaultPolicyManager implements LocalPolicyManager
                             ProtocolMatcher tcp = ProtocolMatcherFactory.getInstance().getTCPMatcher();
                             IPMatcher allAddr = IPMatcherFactory.getInstance().getAllMatcher();
                             PortMatcher allPorts = PortMatcherFactory.getInstance().getAllMatcher();
+                            PortMatcher smtpPort = PortMatcherFactory.getInstance().makeSingleMatcher(25);
                             DateFormat dateFormat = new SimpleDateFormat("HH:mm");
                             DayOfWeekMatcher allDays = DayOfWeekMatcherFactory.getInstance().getAllMatcher();
                             UserMatcher allUsers = UserMatcherFactory.getInstance().getAllMatcher();
 
-                            UserPolicyRule upr = new UserPolicyRule(allIntf, outside, null, tcp, allAddr, allAddr, allPorts, allPorts, dateFormat.parse("00:00"), dateFormat.parse("23:59"), allDays, allUsers, true, false);
+                            UserPolicyRule upr = new UserPolicyRule(allIntf, outside, null, tcp, allAddr, allAddr, allPorts, smtpPort, dateFormat.parse("00:00"), dateFormat.parse("23:59"), allDays, allUsers, true, false);
                             upr.setDescription("SMTP outbound bypass");
                             uprs.addRule(upr);
                         } catch (com.untangle.uvm.node.ParseException exn) {
