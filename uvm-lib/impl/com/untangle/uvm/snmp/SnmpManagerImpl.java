@@ -173,6 +173,11 @@ public class SnmpManagerImpl
 
         snmpd_config.append("sysservices 78").append(TWO_LINES);
 
+        snmpd_config.append("pass .1.3.6.1.4.1.2021.6971.1 /bin/sh /usr/share/untangle/bin/uvmsnmp.sh webfilter").append(EOL);
+        snmpd_config.append("pass .1.3.6.1.4.1.2021.6971.2 /bin/sh /usr/share/untangle/bin/uvmsnmp.sh firewall").append(EOL);
+        snmpd_config.append("pass .1.3.6.1.4.1.2021.6971.3 /bin/sh /usr/share/untangle/bin/uvmsnmp.sh attackblocker").append(EOL);
+        snmpd_config.append("pass .1.3.6.1.4.1.2021.6971.4 /bin/sh /usr/share/untangle/bin/uvmsnmp.sh protofilter").append(TWO_LINES);
+
         if(isNotNullOrBlank(settings.getCommunityString())) {
             snmpd_config.append("# Simple access rules, so there is only one read").append(EOL);
             snmpd_config.append("# only connumity.").append(EOL);
@@ -181,12 +186,8 @@ public class SnmpManagerImpl
             snmpd_config.append("group MyROGroup v2c local").append(EOL);
             snmpd_config.append("group MyROGroup usm local").append(EOL);
             snmpd_config.append("view mib2 included  .iso.org.dod.internet.mgmt.mib-2").append(EOL);
-            /**
-             * Note re: Bug 985.  For reasons I do not understand, saying you only want to
-             * include "mib-2" seems to include the host MIB.  Whatever.  We can *exclude*
-             * the "HOST-RESOURCES-MIB" explicitly as shown below.
-             */
-            snmpd_config.append("view mib2 excluded  .1.3.6.1.2.1.25.").append(EOL);
+	    // ***TODO: need to externalize or patch on install the UVM mib root: ...1.2021.6971
+	    snmpd_config.append("view mib2 included  .iso.org.dod.internet.private.1.2021.6971").append(EOL);
             snmpd_config.append("access MyROGroup \"\" any noauth exact mib2 none none").append(EOL);
         }
         else {
