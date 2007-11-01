@@ -330,7 +330,7 @@ class ServletBuilder < Target
       deps << CopyFiles.new(package, ms, "#{suffix}-ms", nil, @destRoot)
     end
 
-    libMoveSpecs = libdeps.map do |d|
+    libMoveSpecs = libdeps.compact.map do |d|
       file = d.filename
       MoveSpec.new(File.dirname(file), File.basename(file),
                    "#{@destRoot}/WEB-INF/lib")
