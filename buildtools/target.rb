@@ -241,6 +241,8 @@ class EmptyTarget < Target
   end
 end
 
+task '' # XXX hack attack
+
 class CopyFiles < Target
   @@ignored_extensions = /(jpe?g|png|gif|exe|ico|lib|jar|sys|bmp|dll)$/
 

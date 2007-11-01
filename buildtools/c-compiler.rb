@@ -301,6 +301,6 @@ end
 
 def getVersion(package)
   version = ""
-  File.open( "./#{package.name}/VERSION" ) { |f| version=f.gets.strip }
+  File.open( "#{package.buildEnv.home}/#{package.name}/VERSION" ) { |f| version=f.gets.strip }
   version
 end
