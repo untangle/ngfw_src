@@ -115,7 +115,7 @@ class BuildEnv
     @isDevel = $DevelBuild
 
     ## Devel is the development environment
-    @devel   =  File.expand_path("./dist")
+    @devel   =  File.expand_path("#{SRC_HOME || '.'}/dist")
 
     ## This is the staging ground for debian packages
     @deb    = "#{home}/debian"

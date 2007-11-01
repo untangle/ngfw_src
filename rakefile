@@ -17,7 +17,6 @@
 #
 
 require "./buildtools/buildtools.rb"
-require "./buildtools/untangle-core.rb"
 
 task :default => :devel
 task :all => :devel
