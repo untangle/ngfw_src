@@ -3,6 +3,10 @@
 require 'fileutils'
 require 'getoptlong'
 require 'tempfile'
+require 'gettext'
+
+include GetText
+bindtextdomain('untangle-vm')
 
 ENV['DEBIAN_FRONTEND'] = 'noninteractive'
 
@@ -16,8 +20,8 @@ PREFIX = "@PREFIX@"
 STDERR.reopen('@UVM_LOG@/apt.log', 'a')
 
 def printusage()
-  puts <<STR
-usage:
+  puts _('usage:')
+puts <<STR
   mkg installed
   mkg available
   mkg install <mackage>
