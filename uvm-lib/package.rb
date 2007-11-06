@@ -59,7 +59,11 @@ ServletBuilder.new(uvm_lib, 'com.untangle.uvm.reports.jsp',
 ServletBuilder.new(uvm_lib, "com.untangle.uvm.user.servlet",
                    "uvm-lib/servlets/wmi", [])
 
+# mo files
+mft = MsgFmtTarget.new(uvm_lib, './uvm-lib/po')
+#BuildEnv::SRC.installTarget.register_dependency(mft)
 
+# Ajax Tk
 deps = FileList["#{BuildEnv::DOWNLOADS}/Ajax/jars/*jar"].exclude(/.*servlet-api.jar/).map { |n| ThirdpartyJar.get(n) }
 ms = [ MoveSpec.new("#{BuildEnv::DOWNLOADS}/Ajax/WebRoot/js", '**/*', 'AjaxTk')]
 ServletBuilder.new(uvm_lib, 'com.untangle.uvm.root.jsp',

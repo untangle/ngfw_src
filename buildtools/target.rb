@@ -19,6 +19,8 @@
 # Robert Scott <rbscott@untangle.com>
 # Aaron Read <amread@untangle.com>
 
+require 'gettext/utils'
+
 class Target
   attr_reader :package, :dependencies
 
@@ -358,9 +360,9 @@ class ServletBuilder < Target
 
     po_dir = "#{path}/po"
     if File.exist? po_dir
-      MsgFmtTarget.make_po_targets(package, po_dir,
-                                   @srcJar.javac_dir,
-                                   "#{pkgname}.Messages").each do |t|
+      JavaMsgFmtTarget.make_po_targets(package, po_dir,
+                                        @srcJar.javac_dir,
+                                        "#{pkgname}.Messages").each do |t|
         @srcJar.register_dependency(t)
       end
     end
@@ -499,7 +501,7 @@ class JavaCompilerTarget < Target
   attr_reader :isEmpty
 end
 
-class MsgFmtTarget < Target
+class JavaMsgFmtTarget < Target
   def initialize(package, po_file, dest, basename)
     @po_file = po_file
     @dest = dest
@@ -511,11 +513,11 @@ class MsgFmtTarget < Target
     super(package, [@po_file], @filename)
   end
 
-  def MsgFmtTarget.make_po_targets(package, src, dest, basename)
+  def JavaMsgFmtTarget.make_po_targets(package, src, dest, basename)
     ts = []
 
     Dir.new(src).select { |f| /\.po$/ =~ f }.each do |f|
-      ts << MsgFmtTarget.new(package, "#{src}/#{f}", dest, basename)
+      ts << JavaMsgFmtTarget.new(package, "#{src}/#{f}", dest, basename)
     end
 
     ts
@@ -550,6 +552,30 @@ CMD
       end
     end
 
+  end
+end
+
+class MsgFmtTarget < Target
+  def initialize(package, src)
+    po_files = FileList["#{src}/**/*.po"]
+    super(package, po_files, "#{package.name}-mo")
+
+    @src = src
+    @dest = "#{package.distDirectory()}/usr/share/locale"
+  end
+
+  def file?
+    false
+  end
+
+  def filename
+    @dest
+  end
+
+  protected
+
+  def build()
+    GetText::create_mofiles(false, @src, @dest)
   end
 end
 
