@@ -19,7 +19,9 @@
 package com.untangle.uvm.engine;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.FileNotFoundException;
 
 import com.untangle.node.util.IOUtil;
 import com.untangle.node.util.SimpleExec;
@@ -75,9 +77,24 @@ class BackupManager {
      * @exception IllegalArgumentException if the provided bytes do not seem
      *            to have come from a valid backup (is the user's fault).
      */
-    void restoreBackup(byte[] backupFileBytes)
+    void restoreBackup(String fileName) 
         throws IOException, IllegalArgumentException {
 
+        try {
+            // Read bytes from file and pass to restoreBackup(byte[]) if successful.
+            File file = new File(fileName);
+            FileInputStream fileData  = new FileInputStream(file);
+            int length = (int) file.length();
+            byte[] bytes = new byte[length];
+            fileData.read(bytes);
+            restoreBackup(bytes);
+        } catch (FileNotFoundException ex) {
+            m_logger.error("Exception performing restore from file", ex);
+        }
+    }
+
+    void restoreBackup(byte[] backupFileBytes)
+        throws IOException, IllegalArgumentException {
 
         File tempFile = File.createTempFile("restore_", ".tar.gz");
         SimpleExec.SimpleExecResult result = null;
