@@ -22,3 +22,6 @@ BuildEnv::SRC.installTarget.register_dependency(uvm)
 ms = MoveSpec.new("./uvm/hier", FileList["./uvm/hier/**/*"], uvm.distDirectory)
 cf = CopyFiles.new(uvm, ms, 'hier', BuildEnv::SRC.filterset)
 uvm.registerTarget('hier', cf)
+
+# mo files
+MsgFmtTarget.new(uvm, './uvm/po')
