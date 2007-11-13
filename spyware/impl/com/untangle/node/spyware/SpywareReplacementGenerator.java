@@ -34,7 +34,7 @@ public class SpywareReplacementGenerator
         + "<script id='metavizeDetect' type='text/javascript'>\n"
         + "var e = document.getElementById(\"metavizeDetect\")\n"
         + "if (window == window.top && e.parentNode.tagName == \"BODY\") {\n"
-        + "  document.writeln(\"<center><b>Metavize Spyware Blocker</b></center>\")\n"
+        + "  document.writeln(\"<center><b>Untangle Spyware Blocker</b></center>\")\n"
         + "  document.writeln(\"<p>This site blocked because it may be a spyware site.</p>\")\n"
         + "  document.writeln(\"<p>Host: %s</p>\")\n"
         + "  document.writeln(\"<p>URI: %s</p>\")\n"
