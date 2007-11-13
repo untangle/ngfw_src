@@ -24,7 +24,7 @@ class JasperCompiler
   ReportGenerator = "#{BuildUtilPkg}.ReportGenerator"
   JRCompiler = "#{BuildUtilPkg}.JRCompiler"
 
-  TemplateDirectory = [ "./util/hier/usr/share/untangle/reports",
+  TemplateDirectory = [ "#{SRC_HOME}/util/hier/usr/share/untangle/reports",
                         "/usr/share/untangle/reports" ].find do |f|
     File.exist?(f)
   end
