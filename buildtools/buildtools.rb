@@ -22,6 +22,10 @@
 # Certified Filthy2007
 ENV["JAVA_HOME"] = "/usr/lib/jvm/java-1.5.0-sun"
 
+SRC_HOME = [ ENV['SRC_HOME'], '../../work/src' ].compact.find do |d|
+  File.exist?(d)
+end
+
 ## This is how you define where the stamp file will go
 module Rake
   StampFile = "./taskstamps.txt"

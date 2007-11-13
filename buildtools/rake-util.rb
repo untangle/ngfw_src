@@ -98,7 +98,7 @@ class BuildEnv
   THIRD_PARTY_JAR = 'usr/share/java/uvm'
 
   # XXX XXX should these live here???
-  DOWNLOADS = ['./downloads/output', '/usr/share/java/uvm'].find { |d| File.exist?(d) }
+  DOWNLOADS = ["#{SRC_HOME}/downloads/output", '/usr/share/java/uvm'].find { |d| File.exist?(d) }
   SERVLET_COMMON = "./servlet/common"
 
   attr_reader :home, :prefix, :staging, :devel, :deb, :isDevel, :grabbag, :downloads, :servletcommon, :include, :installTarget

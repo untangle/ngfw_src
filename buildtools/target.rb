@@ -182,10 +182,6 @@ class InstalledJar < Target
   end
 end
 
-SRC_HOME = [ ENV['SRC_HOME'], '../../work/src' ].compact.find do |d|
-  File.exist?(d)
-end
-
 unless SRC_HOME.nil?
   BuildEnv::SRC = BuildEnv.new(SRC_HOME, 'src')
 else
