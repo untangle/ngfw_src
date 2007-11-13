@@ -250,7 +250,9 @@ end
 
 def run_schema_init(dbh, dir, type)
   f = ['rb', 'sql'].map { |e| "#{dir}/#{type}-schema.#{e}" }.find { |f| File.exist? f }
-  run_file(dbh, f)
+  unless f.nil?
+    run_file(dbh, f)
+  end
 end
 
 def run_schema_convert(dbh, dir, type, n)
@@ -344,12 +346,12 @@ Installed schema: #{inst_version}
 Latest schema version: #{latest_version}
 EOF
 
-  if latest_version.nil?
-    LOG.info 'No schema for this component.'
-  elsif inst_version.nil?
+  if inst_version.nil?
     LOG.info 'Initializing schema'
     run_schema_init(dbh, SCHEMA_DIR, TYPE)
     update_schema_ver(dbh, COMPONENT, TYPE, latest_version)
+  elsif latest_version.nil?
+    LOG.info 'No schema for this component.'
   elsif inst_version > latest_version
     LOG.error 'Installed version greater than latest version'
   elsif inst_version < latest_version
