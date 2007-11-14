@@ -180,7 +180,7 @@ public class EncryptedUrlList extends UrlList
         try {
             return str.matches(pat);
         } catch (PatternSyntaxException exn) {
-            logger.warn("bad pattern", exn);
+            logger.warn("bad pattern: " + exn.getMessage());
             return false;
         }
     }
