@@ -299,7 +299,7 @@ public class EventHandler extends AbstractEventHandler
         for (int i = 0; i < _patternList.size(); i++) {
             ProtoFilterPattern elem = (ProtoFilterPattern)_patternList.get(i);
             Pattern pat = PatternFactory.createRegExPattern(elem.getDefinition());
-            if (pat.matcher(toScan).find())
+            if (pat != null && pat.matcher(toScan).find())
                 return elem; /* XXX - can match multiple patterns */
         }
 

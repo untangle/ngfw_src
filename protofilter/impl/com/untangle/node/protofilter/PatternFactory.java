@@ -61,13 +61,17 @@ public class PatternFactory {
 
         synchronized(_cachedPatterns) {
             result = (Pattern) _cachedPatterns.get(inputRegEx);
-            if (result != null)
+            if (_cachedPatterns.containsKey(inputRegEx))
                 return result;
         }
 
         String regEx = _perlRegexTranslate(inputRegEx);
         logger.info( "Factory modified regex to " + regEx );
-        result = Pattern.compile(regEx, Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+        try {
+            result = Pattern.compile(regEx, Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+        } catch (PatternSyntaxException exn) {
+            logger.warn("bad pattern: " + exn.getMessage());
+        }
 
         synchronized(_cachedPatterns) {
             _cachedPatterns.put(inputRegEx, result);
