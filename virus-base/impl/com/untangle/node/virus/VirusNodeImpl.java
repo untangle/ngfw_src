@@ -482,6 +482,11 @@ public abstract class VirusNodeImpl extends AbstractNode
         return settings.getFtpDisableResume();
     }
 
+    boolean getHttpDisableResume()
+    {
+        return settings.getHttpDisableResume();
+    }
+
     void log(VirusEvent evt)
     {
         eventLogger.log(evt);

@@ -82,7 +82,7 @@ public class WebFilterHandler extends HttpStateMachine
             boolean p = isRequestPersistent();
             String uri = getRequestLine().getRequestUri().toString();
             Token[] response = node.generateResponse(nonce, sess, uri,
-                                                          requestHeader, p);
+                                                     requestHeader, p);
             blockRequest(response);
         }
 

@@ -123,7 +123,8 @@ class VirusHttpHandler extends HttpStateMachine
     {
         logger.debug("got a request header");
 
-        if (null != requestHeader.getValue("range")) {
+        if (null != requestHeader.getValue("range")
+            && node.getHttpDisableResume()) {
             String ua = requestHeader.getValue("user-agent");
             if (!ua.startsWith("Microsoft BITS")) {
                 requestHeader.removeField("range");
