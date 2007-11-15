@@ -189,8 +189,8 @@ restartService() {
   stopFirst=$4
   echo "*** restarting $reason $serviceName on `date` ***" >> $UVM_WRAPPER_LOG
   if [ -n "$stopFirst" ] ; then
-    # FIXME: not exactly the right place to initiate the dumping of netstat output
-#    netstat -plunt >> $UVM_WRAPPER_LOG && /etc/init.d/$serviceName stop
+    # netstat -plunt >> $UVM_WRAPPER_LOG && /etc/init.d/$serviceName stop
+    echo "blah"
   else
     [ -n "$pidFile" ] && rm -f $pidFile
   fi
