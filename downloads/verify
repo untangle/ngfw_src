@@ -1,4 +1,4 @@
-#!/bin/sh
+#! /bin/bash
 
 OUTPUT_DIR=output
 MD5_FILE=output.md5

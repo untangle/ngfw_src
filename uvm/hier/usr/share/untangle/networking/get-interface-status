@@ -1,4 +1,4 @@
-#!/bin/sh
+#! /bin/bash
 
 exec 2>> @UVM_LOG@/iptables.log
 

@@ -1,4 +1,4 @@
-#! /bin/sh
+#! /bin/bash
 
 UVM_LOGDIR="/var/log/uvm"
 UVM_CACHEDIR="/var/lib/uvm"

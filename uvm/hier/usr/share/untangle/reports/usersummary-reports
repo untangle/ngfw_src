@@ -1,4 +1,4 @@
-#!/bin/sh
+#! /bin/bash
 
 tran_name=$1
 rep_base=$2

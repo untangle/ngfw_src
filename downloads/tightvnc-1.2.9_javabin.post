@@ -1,4 +1,4 @@
-#!/bin/sh
+#! /bin/bash
 #
 # Fixup location
 mkdir $1/tightvnc-1.2.9

@@ -1,4 +1,4 @@
-#!/bin/sh
+#! /bin/bash
 
 #=============================================================
 # This application creates a backup of the system, then

@@ -1,4 +1,4 @@
-#! /bin/sh
+#! /bin/bash
 
 getIP() {
   ifconfig $1 | perl -nle 'print $1 if (m/inet addr:(.*?)\s/)'

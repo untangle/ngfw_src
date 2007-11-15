@@ -1,4 +1,4 @@
-#!/bin/sh
+#! /bin/bash
 
 # Modified for 4.1 to work in new fork system.
 

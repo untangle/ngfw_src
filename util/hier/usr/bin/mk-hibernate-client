@@ -1,4 +1,4 @@
-#!/bin/sh
+#! /bin/bash
 
 # Creates a hibnernate-client.jar with the subset of classes required
 # to use objects serialized from a Hibernate Session.

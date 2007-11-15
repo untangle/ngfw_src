@@ -1,4 +1,4 @@
-#!/bin/sh
+#! /bin/bash
 
 # handle metavize -> untangle conversion
 oldShare="/usr/share/metavize"

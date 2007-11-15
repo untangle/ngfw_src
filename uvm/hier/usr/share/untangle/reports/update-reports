@@ -1,4 +1,4 @@
-#!/bin/sh
+#! /bin/bash
 
 if [ $# -gt 1 ]; then
     echo "Usage: update-reports [ yyyy-mm-dd ]"

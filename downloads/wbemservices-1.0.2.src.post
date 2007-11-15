@@ -1,4 +1,4 @@
-#!/bin/sh
+#! /bin/bash
 
 output=$1
 destination=$1/wbemservices-1.0.2.src/

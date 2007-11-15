@@ -1,4 +1,4 @@
-#! /bin/sh
+#! /bin/bash
 # This file automatically created - do not modify
 
 /usr/bin/mcli -t 30 register untangle-node-shield 2>/dev/null || true

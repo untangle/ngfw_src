@@ -1,4 +1,4 @@
-#!/bin/sh
+#! /bin/bash
 
 ## A few constants
 IPTABLES="/sbin/iptables"

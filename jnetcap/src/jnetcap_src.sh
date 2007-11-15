@@ -1,4 +1,4 @@
-#!/bin/zsh
+#! /bin/bash
 
 ## first: element = c name or if no second, c and java name
 ## second: java name

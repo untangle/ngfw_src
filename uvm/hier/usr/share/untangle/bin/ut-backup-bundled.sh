@@ -1,4 +1,4 @@
-#!/bin/sh
+#! /bin/bash
 
 #=============================================================
 # Little script which creates a backup of the system (like

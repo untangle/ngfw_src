@@ -1,4 +1,4 @@
-#! /bin/sh
+#! /bin/bash
 # This file automatically created - do not modify
 
 /usr/bin/mcli -t 30 register untangle-casing-http 2>/dev/null || true

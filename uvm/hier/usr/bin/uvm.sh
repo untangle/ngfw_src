@@ -1,4 +1,4 @@
-#! /bin/sh
+#! /bin/bash
 # $Id$
 
 # get a bunch of default values

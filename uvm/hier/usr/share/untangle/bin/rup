@@ -1,4 +1,4 @@
-#!/bin/sh
+#! /bin/bash
 
 DESTINATION_BASE=@UVM_CONF@/licenses
 

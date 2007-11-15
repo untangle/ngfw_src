@@ -1,4 +1,4 @@
-#!/bin/sh
+#! /bin/bash
 
 # Creates a jfreechart-gui.jar with the subset of classes required for
 # our swing client.

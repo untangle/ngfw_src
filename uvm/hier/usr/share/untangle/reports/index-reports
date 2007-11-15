@@ -1,4 +1,4 @@
-#!/bin/sh
+#! /bin/bash
 
 main_index=@UVM_REPORTS@/current/$1
 index=$1

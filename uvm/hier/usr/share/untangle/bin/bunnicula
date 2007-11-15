@@ -1,4 +1,4 @@
-#!/bin/sh
+#! /bin/bash
 
 # get a bunch of default values
 source @PREFIX@/etc/default/untangle-vm

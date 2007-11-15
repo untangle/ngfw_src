@@ -1,4 +1,4 @@
-#!/bin/sh
+#! /bin/bash
 
 # exclude email-node, it is custom
 files="`ls *-node-*.postinst | grep -v template`"

@@ -1,4 +1,4 @@
-#!/bin/sh
+#! /bin/bash
 
 ## Log all output to the UVM logging
 exec >> @UVM_LOG@/iptables.log 2>&1

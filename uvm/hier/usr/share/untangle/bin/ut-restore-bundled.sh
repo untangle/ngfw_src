@@ -1,4 +1,4 @@
-#!/bin/sh
+#! /bin/bash
 
 #=============================================================
 # Script which takes the output of "ut-backup-bundled" and

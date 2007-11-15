@@ -1,4 +1,4 @@
-#!/bin/sh
+#! /bin/bash
 #
 #   libnet support file
 #   Ensures a target directory will exist for the installer.

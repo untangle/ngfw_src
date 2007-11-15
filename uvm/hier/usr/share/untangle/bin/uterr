@@ -1,4 +1,4 @@
-#! /bin/sh
+#! /bin/bash
 # $Id: uvm.sh,v 1.8 2005/03/22 18:46:43 cng Exp $
 
 DIR=@PREFIX@/var/log/uvm/

@@ -1,4 +1,4 @@
-#!/bin/sh
+#! /bin/bash
 
 for PKG_NAME in untangle-support-agent ssh ; do
   INIT_SCRIPT="/etc/init.d/${PKG_NAME}"

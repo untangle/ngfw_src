@@ -1,4 +1,4 @@
-#!/bin/sh
+#! /bin/bash
 
 # Script to look for a CA line in the output of OpenSSL.  This
 # was a pain to do in Java.  Exits with "0" if a CA, 1 otherwise

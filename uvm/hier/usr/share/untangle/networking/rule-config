@@ -1,4 +1,4 @@
-#!/bin/sh
+#! /bin/bash
 
 ## These are for network configuration settings.
 UVM_NETWORK_PARAMS_FILE=@UVM_CONF@/networking.sh

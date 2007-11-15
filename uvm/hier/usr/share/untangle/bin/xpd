@@ -1,4 +1,4 @@
-#!/bin/sh
+#! /bin/bash
 
 GENERATOR_BASE=/usr/share/untangle/conf/licenses
 
