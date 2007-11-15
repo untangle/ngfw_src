@@ -18,6 +18,7 @@
 
 package com.untangle.node.http;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
@@ -800,12 +801,10 @@ public class HttpParser extends AbstractParser
         return new Chunk(buffer.slice());
     }
 
-    // Request-URI    = "*" | absoluteURI | abs_path | authority
-    private URI requestUri(ByteBuffer b) throws ParseException
+    private String requestUriString(ByteBuffer b)
+        throws ParseException
     {
-        int l = b.remaining();
-
-        StringBuilder uri = new StringBuilder(b.remaining());
+        ByteBuffer dup = b.duplicate();
 
         for (int i = 0; b.hasRemaining(); i++) {
             if (maxUri <= i && blockLongUris) {
@@ -820,50 +819,100 @@ public class HttpParser extends AbstractParser
 
             if (SP == c || HT == c) {
                 b.position(b.position() - 1);
+                dup.limit(b.position());
                 break;
             }
+        }
+
+        byte[] a = new byte[dup.remaining()];
+        dup.get(a);
+        try {
+            return new String(a, "UTF-8");
+        } catch (UnsupportedEncodingException exn) {
+            logger.warn("Could not decode URI", exn);
+            return new String(a);
+        }
+    }
+
+    private String escapeUri(String uri)
+    {
+        StringBuilder sb = new StringBuilder(uri.length() + 32);
+
+        for (int i = 0; i < uri.length(); i++) {
+            char c = (char)uri.charAt(i);
 
             switch (c) {
                 // unwise
-            case '{': uri.append("%7B"); break;
-            case '}': uri.append("%7D"); break;
-            case '|': uri.append("%7C"); break;
-            case '\\': uri.append("%5C"); break;
-            case '^': uri.append("%5E"); break;
-            case '[': uri.append("%5B"); break;
-            case ']': uri.append("%5D"); break;
-            case '`': uri.append("%60"); break;
+            case '{': sb.append("%7B"); break;
+            case '}': sb.append("%7D"); break;
+            case '|': sb.append("%7C"); break;
+            case '\\': sb.append("%5C"); break;
+            case '^': sb.append("%5E"); break;
+            case '[': sb.append("%5B"); break;
+            case ']': sb.append("%5D"); break;
+            case '`': sb.append("%60"); break;
                 // delimiter (except #)
-            case '<': uri.append("%3C"); break;
-            case '>': uri.append("%3E"); break;
-            case '"': uri.append("%22"); break;
+            case '<': sb.append("%3C"); break;
+            case '>': sb.append("%3E"); break;
+            case '"': sb.append("%22"); break;
             case '%':
-                if (2 > b.remaining()
-                    || (!isHex((byte)b.get(b.position()))
-                        || !isHex((byte)b.get(b.position() + 1)))) {
-                    uri.append("%25");
+                if (3 > uri.length() - i
+                    || !isHex((byte)uri.charAt(i + 1))
+                    || !isHex((byte)uri.charAt(i + 2))) {
+                    sb.append("%25");
                 } else {
-                    uri.append('%');
+                    sb.append('%');
                 }
                 break;
             default:
-                if (Character.isISOControl(c)) {
-                    uri.append('%');
+                if (0x7F < c) {
+                    String in;
+                    if (Character.isHighSurrogate(c)) {
+                        in = new String(new char[] { c, uri.charAt(++i) });
+                    } else {
+                        in = new String(new char[] { c });
+                    }
+                    byte[] utf8;
+                    try {
+                        utf8 = in.getBytes("UTF-8");
+                    } catch (UnsupportedEncodingException exn) {
+                        logger.warn("could not encode UTF-8", exn);
+                        utf8 = in.getBytes();
+                    }
+                    for (int j = 0; j < utf8.length; j++) {
+                        sb.append('%');
+                        String hexStr = Integer.toHexString(utf8[j] & 0x00FF);
+                        if (2 > hexStr.length()) {
+                            sb.append("0");
+                        }
+                        sb.append(hexStr.toUpperCase());
+                    }
+                } else if (Character.isISOControl(c)) {
+                    sb.append('%');
                     String hexStr = Integer.toHexString(c);
                     if (2 > hexStr.length()) {
-                        hexStr = "0" + hexStr;
+                        sb.append("0");
                     }
-                    uri.append(hexStr);
+                    sb.append(hexStr.toUpperCase());
                 } else {
-                    uri.append(c);
+                    sb.append(c);
                 }
                 break;
             }
-
         }
 
+        return sb.toString();
+    }
+
+    // Request-URI    = "*" | absoluteURI | abs_path | authority
+    private URI requestUri(ByteBuffer b)
+               throws ParseException
+    {
+        String uriStr = requestUriString(b);
+        uriStr = escapeUri(uriStr);
+
         try {
-            return new URI(uri.toString());
+            return new URI(uriStr);
         } catch (URISyntaxException exn) {
             throw new ParseException(exn);
         }

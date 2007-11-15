@@ -772,16 +772,21 @@ public class NetworkManagerImpl implements LocalNetworkManager
         this.ruleManager.dhcpEnableForwarding( true );
     }
 
-    /* This relic really should go away.  In production environments, none of the
-     * interfaces are antisubscribed (this is the way it should be).
-     * the antisubscribes are then for specific traffic protocols, such as HTTP, */
+    /*
+     * This relic really should go away.  In production environments,
+     * none of the interfaces are antisubscribed (this is the way it
+     * should be).  the antisubscribes are then for specific traffic
+     * protocols, such as HTTP.
+     */
     public void subscribeLocalOutside( boolean newValue )
     {
         this.ruleManager.subscribeLocalOutside( newValue );
     }
 
-    /* This returns an address where the host should be able to access HTTP.  if HTTP is
-     * not reachable, this returns NULL */
+    /*
+     * This returns an address where the host should be able to access
+     * HTTP.  if HTTP is not reachable, this returns NULL
+     */
     public InetAddress getInternalHttpAddress( IPSessionDesc session )
     {
         byte argonIntf = session.clientIntf();
