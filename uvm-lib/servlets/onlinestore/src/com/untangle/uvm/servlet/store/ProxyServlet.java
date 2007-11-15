@@ -208,11 +208,19 @@ public class ProxyServlet extends HttpServlet
             }
 
         } catch (UnknownHostException exn) {
-            // XXX show page about this instead
-            throw new ServletException("unknown host", exn);
+            logger.warn("unknown host", exn);
+            try {
+                resp.sendError(HttpServletResponse.SC_REQUEST_TIMEOUT, "could not resolve host");
+            } catch (IOException e) {
+                logger.warn("could not send error page", e);
+            }
         } catch (IOException exn) {
-            // XXX show page about this instead
-            throw new ServletException("unknown host", exn);
+            logger.warn("unknown host", exn);
+            try {
+                resp.sendError(HttpServletResponse.SC_REQUEST_TIMEOUT, "request timed out");
+            } catch (IOException e) {
+                logger.warn("could not send error page", e);
+            }
         } finally {
             if (null != is) {
                 try {
