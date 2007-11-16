@@ -509,6 +509,11 @@ public class UvmContextImpl extends UvmContextBase
         backupManager.restoreBackup(backupBytes);
     }
 
+    public void restoreBackup(String fileName)
+        throws IOException, IllegalArgumentException {
+        backupManager.restoreBackup(String fileName);
+    }
+
     public boolean loadRup()
     {
         return loadRup(true);
