@@ -27,6 +27,7 @@ import java.net.InetAddress;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.untangle.uvm.IntfConstants;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.vnet.TCPSession;
 import com.untangle.node.mail.papi.MessageInfo;
@@ -59,6 +60,7 @@ public class SmtpSessionHandler
     private final SpamSMTPConfig m_config;
     private final QuarantineNodeView m_quarantine;
     private final SafelistNodeView m_safelist;
+    private final TCPSession m_session;
 
     public SmtpSessionHandler(TCPSession session,
                               long maxClientWait,
@@ -74,6 +76,7 @@ public class SmtpSessionHandler
         m_quarantine = quarantine;
         m_safelist = safelist;
         m_config = config;
+        m_session = session;
         m_fileFactory = new TempFileFactory(LocalUvmContextFactory.context().
                                             pipelineFoundry().getPipeline(session.id()));
     }
@@ -144,6 +147,16 @@ public class SmtpSessionHandler
 
         SMTPSpamMessageAction action = m_config.getMsgAction();
 
+        //Anything going out External MARK instead of QUARANTINE
+        if(action == SMTPSpamMessageAction.QUARANTINE 
+        		&& m_session.serverIntf() == IntfConstants.EXTERNAL_INTF) {
+            //Change action now, as it'll make the event logs
+            //more accurate
+            m_logger.debug("Implicitly converting policy from \"QUARANTINE\"" +
+                           " to \"MARK\" as we have a message going out external");
+            action = SMTPSpamMessageAction.MARK;
+        }
+        
         if(report.isSpam()) {//BEGIN SPAM
             m_logger.debug("Spam found");
 
@@ -248,6 +261,17 @@ public class SmtpSessionHandler
         }
 
         SMTPSpamMessageAction action = m_config.getMsgAction();
+
+        //Anything going out External MARK instead of QUARANTINE
+        if(action == SMTPSpamMessageAction.QUARANTINE 
+        		&& m_session.serverIntf() == IntfConstants.EXTERNAL_INTF) {
+            //Change action now, as it'll make the event logs
+            //more accurate
+            m_logger.debug("Implicitly converting policy from \"QUARANTINE\"" +
+                           " to \"MARK\" as we have a message going out external");
+            action = SMTPSpamMessageAction.MARK;
+        }
+        
         //Check for the impossible-to-satisfy action of "REMOVE"
         if(action == SMTPSpamMessageAction.MARK) {
             //Change action now, as it'll make the event logs
