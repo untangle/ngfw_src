@@ -205,6 +205,12 @@ class RemoteUvmContextAdaptor implements RemoteUvmContext
         context.restoreBackup(backupBytes);
     }
 
+    public void restoreBackup(String fileName)
+        throws IOException, IllegalArgumentException
+    {
+        context.restoreBackup(fileName);
+    }
+
     public boolean loadRup()
     {
         return context.loadRup();
