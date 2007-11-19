@@ -1,0 +1,9 @@
+#!/bin/sh
+
+for f in @PREFIX@/usr/share/untangle/web/webstart/untangle*jar; do
+    CLASSPATH=$f:$CLASSPATH
+done
+
+export CLASSPATH
+
+jruby @PREFIX@/usr/lib/jruby-ut0.9/lib/ruby/1.8/rush.rb "$@"
