@@ -99,6 +99,7 @@ class TomcatManager
         loadSystemApp("/library", "onlinestore", new WebAppOptions(new AdministrationOutsideAccessValve()));
         loadSystemApp("/reports", "reports", new WebAppOptions(true,new ReportingOutsideAccessValve()));
         loadSystemApp("/wmi", "wmi", new WebAppOptions(new WMIServerValve()));
+	loadInsecureApp("/adpb","adpb");
     }
 
     // package protected methods ----------------------------------------------

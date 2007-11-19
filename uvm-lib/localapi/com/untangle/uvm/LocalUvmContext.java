@@ -53,6 +53,7 @@ import com.untangle.uvm.security.RemoteAdminManager;
 import com.untangle.uvm.toolbox.RemoteToolboxManager;
 import com.untangle.uvm.user.LocalPhoneBook;
 import com.untangle.uvm.user.RemotePhoneBook;
+import com.untangle.uvm.user.ADPhoneBookAssistant;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.MPipeManager;
 import com.untangle.uvm.vnet.PipelineFoundry;
@@ -294,6 +295,15 @@ public interface LocalUvmContext
     EventLogger eventLogger();
 
     void waitForStartup();
+
+
+    /**
+     * Get the ADPhoneBookAssistant singleton for this instance
+     *
+     * @return the singleton
+     */
+    ADPhoneBookAssistant adPhoneBookAssistant();
+
 
     CronJob makeCronJob(Period p, Runnable r);
 

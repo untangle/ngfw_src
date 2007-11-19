@@ -59,6 +59,8 @@ import com.untangle.uvm.toolbox.RemoteToolboxManager;
 import com.untangle.uvm.user.LocalPhoneBook;
 import com.untangle.uvm.user.PhoneBookFactory;
 import com.untangle.uvm.user.RemotePhoneBook;
+import com.untangle.uvm.user.ADPhoneBookAssistant;
+import com.untangle.uvm.user.ADPhoneBookAssistantManager;
 import com.untangle.uvm.util.TransactionRunner;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.MPipeManager;
@@ -127,6 +129,8 @@ public class UvmContextImpl extends UvmContextBase
     private LicenseManagerFactory licenseManagerFactory;
     private TomcatManager tomcatManager;
     private HeapMonitor heapMonitor;
+
+    private ADPhoneBookAssistant adPhoneBookAssistant;
 
     private volatile SessionFactory sessionFactory;
     private volatile TransactionRunner transactionRunner;
@@ -345,6 +349,11 @@ public class UvmContextImpl extends UvmContextBase
                 }
             }
         }
+    }
+
+    public ADPhoneBookAssistant adPhoneBookAssistant()
+    {
+        return adPhoneBookAssistant;
     }
 
     // service methods --------------------------------------------------------
@@ -693,6 +702,8 @@ public class UvmContextImpl extends UvmContextBase
         if (null != useHeapMonitor && Boolean.valueOf(useHeapMonitor)) {
             this.heapMonitor.start();
         }
+
+	adPhoneBookAssistant = ADPhoneBookAssistantManager.getADPhoneBookAssistant();
 
         /* initalize everything and start it up */
         phoneBookFactory.init();

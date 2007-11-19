@@ -59,6 +59,9 @@ ServletBuilder.new(uvm_lib, 'com.untangle.uvm.reports.jsp',
 ServletBuilder.new(uvm_lib, "com.untangle.uvm.user.servlet",
                    "uvm-lib/servlets/wmi", [])
 
+ServletBuilder.new(uvm_lib, "com.untangle.uvm.user.servlet",
+                   "uvm-lib/servlets/adpb", [])
+
 # Ajax Tk
 deps = FileList["#{BuildEnv::DOWNLOADS}/Ajax/jars/*jar"].exclude(/.*servlet-api.jar/).map { |n| ThirdpartyJar.get(n) }
 ms = [ MoveSpec.new("#{BuildEnv::DOWNLOADS}/Ajax/WebRoot/js", '**/*', 'AjaxTk')]
