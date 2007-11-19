@@ -20,9 +20,11 @@ class Rush
       end
     elsif @options[:command]
       Kernel.eval(@options[:command])
-    elsif STDIN.isatty and STDOUT.isatty
+    elsif @options[:tty]
       require 'irb'
       IRB.start()
+    else
+      Kernel.eval(STDIN.readlines.join("\n"))
     end
   end
 
@@ -44,10 +46,15 @@ if __FILE__ == $0
   OptionParser.new do |opts|
     opts.banner = "usage: rush [-c command] script.rb"
 
+    opts.on("-t", "--tty", "is a tty") do |v|
+      options[:tty] = v
+    end
+
     opts.on("-c", "--command [COMMAND]", "command string") do |v|
       options[:command] = v
     end
   end.parse!
+
 
   RUSH = Rush.new(options, ARGV)
 
