@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -33,6 +33,7 @@ public class MNodeControlsJPanel extends com.untangle.gui.node.MNodeControlsJPan
     private static final String NAME_BLOCK_URLS = "URLs";
     private static final String NAME_BLOCK_CATEGORIES = "Categories";
     private static final String NAME_LOG = "Event Log";
+    private static final String NAME_SETTINGS = "General Settings";
 
 
     public MNodeControlsJPanel(MNodeJPanel mNodeJPanel){
@@ -87,6 +88,13 @@ public class MNodeControlsJPanel extends com.untangle.gui.node.MNodeControlsJPan
         addSavable(NAME_PASS + " " + NAME_PASS_CLIENTS, passedClientsConfigJPanel);
         addRefreshable(NAME_PASS + " " + NAME_PASS_CLIENTS, passedClientsConfigJPanel);
         passedClientsConfigJPanel.setSettingsChangedListener(this);
+
+        // GENERAL SETTINGS ////////
+        GeneralConfigJPanel generalConfigJPanel = new GeneralConfigJPanel();
+        addTab(NAME_SETTINGS, null, generalConfigJPanel);
+        addSavable(NAME_SETTINGS, generalConfigJPanel);
+        addRefreshable(NAME_SETTINGS, generalConfigJPanel);
+        generalConfigJPanel.setSettingsChangedListener(this);
 
         // EVENT LOG ///////
         LogJPanel logJPanel = new LogJPanel(mNodeJPanel.getNode(), this);
