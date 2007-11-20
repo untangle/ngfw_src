@@ -23,10 +23,19 @@ import com.untangle.uvm.node.HostName;
 import com.untangle.uvm.user.Assistant;
 import com.untangle.uvm.user.UserInfo;
 import com.untangle.uvm.user.Username;
+import com.untangle.uvm.user.ADPhoneBookAssistant;
 
-public interface ADPhoneBookAssistant extends Assistant
+public class LocalADPhoneBookAssistantImpl implements ADPhoneBookAssistant
 {
-    public void addOrUpdate(InetAddress inetAddress, String username, String domain, String hostname);
+    private int PRIORITY=2000000000;
+    public void addOrUpdate(InetAddress inetAddress, String username, String domain, String hostname) {}
 
-    public String toString();
+    public String toString() { return new String(); }
+    public void lookup( UserInfo info ) {}
+
+    /* retrieve the priority of this assistant, higher numbers are lower priority */
+    public int priority() {
+	return PRIORITY;
+    }
+
 }

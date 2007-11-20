@@ -19,6 +19,7 @@
 package com.untangle.uvm.user;
 
 import com.untangle.uvm.user.ADPhoneBookAssistant;
+import com.untangle.uvm.user.LocalADPhoneBookAssistantImpl;
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
 
@@ -30,9 +31,12 @@ import com.untangle.node.util.UtLogger;
  */
 public class ADPhoneBookAssistantManager
 {
-    private final UtLogger logger = new UtLogger( getClass());
+
+    private static final String PROPERTY_ADPHONEBOOKASSISTANT_IMPL = "com.untangle.uvm.adphonebookassistant";
+    private static final String PREMIUM_ADPHONEBOOKASSISTANT_IMPL = "com.untangle.uvm.user.ADPhoneBookAssistantImpl";
 
     private static ADPhoneBookAssistant assistant = null;
+    private static ADPhoneBookAssistant premium = null;
 
     private ADPhoneBookAssistantManager()
     {
@@ -40,30 +44,42 @@ public class ADPhoneBookAssistantManager
 
     public static ADPhoneBookAssistant getADPhoneBookAssistant()
     {
+	refresh();
+	if (premium != null) {
+	    return premium;
+	}
 	if (assistant == null) {
-	    assistant = new ADPhoneBookAssistant();
-	    /* register the assistant with the phonebook */
-	    LocalUvmContextFactory.context().localPhoneBook().registerAssistant( assistant );
+	    assistant = new LocalADPhoneBookAssistantImpl();
 	}
 	return assistant;
     }
 
-    public void refresh()
+    public static void refresh()
+    {
+        if ( premium != null ) {
+            return;
+        }
+
+        String className = System.getProperty( PROPERTY_ADPHONEBOOKASSISTANT_IMPL );
+        if ( null == className ) {
+            className = PREMIUM_ADPHONEBOOKASSISTANT_IMPL;
+        }
+        try {
+            premium = (ADPhoneBookAssistant)Class.forName( className ).newInstance();
+	    /* register the assistant with the phonebook */
+	    LocalUvmContextFactory.context().localPhoneBook().registerAssistant( premium );
+        } catch ( Exception e ) {
+            premium = null;
+        }
+    }
+
+    public static void init()
     {
     }
 
-    public void init()
+    public static void destroy()
     {
+	premium = null;
+	assistant = null;
     }
-
-    public void destroy()
-    {
-    }
-
-    //public static ADPhoneBookAssistantManager makeInstance()
-    //{
-    //    ADPhoneBookAssistantManager factory = new ADPhoneBookAssistantManager();
-        //factory.refresh();
-    //    return factory;
-    //}
 }
