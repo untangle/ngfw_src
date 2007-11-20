@@ -317,7 +317,8 @@ while true; do
 	  fi
 	  if pidof sshd ; then # support-agent is supposed to run; FIXME: need something better
 	    if [ -f "$SUPPORT_AGENT_PID_FILE" ] && [ $(ps -o %cpu= `cat $SUPPORT_AGENT_PID_FILE` | perl -pe 's/\..*//') -gt $SUPPORT_AGENT_MAX_ALLOWED_CPU ] ; then
-	    restartService untangle-support-agent $SUPPORT_AGENT_PID_FILE "spinning" stopFirst
+	      restartService untangle-support-agent $SUPPORT_AGENT_PID_FILE "spinning" stopFirst
+	    fi
 	  fi
 	  counter=0
 	fi
