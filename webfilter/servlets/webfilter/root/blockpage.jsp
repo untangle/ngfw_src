@@ -1,4 +1,4 @@
-<%@ page language="java" import="com.untangle.uvm.*, com.untangle.uvm.node.*, com.untangle.uvm.security.*, com.untangle.node.webfilter.*"%>
+<%@ page language="java" import="com.untangle.uvm.*, com.untangle.uvm.node.*, com.untangle.uvm.security.*, com.untangle.node.webfilter.*, com.untangle.node.http.*"%>
 <%--
  * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc.
@@ -31,6 +31,7 @@ Tid tid = new Tid(Long.parseLong(tidStr));
 
 NodeContext tctx = tman.nodeContext(tid);
 WebFilter tran = (WebFilter)tctx.node();
+UserWhitelistMode mode = tran.getUserWhitelistMode();
 WebFilterBlockDetails bd = tran.getDetails(nonce);
 
 String header = null == bd ? "" : bd.getHeader();
@@ -57,6 +58,7 @@ tid = '<%=tidStr%>';
 url = '<%=null == bd ? "javascript:history.back()" : bd.getUrl()%>';
 // ]]>
 </script>
+<script type="text/javascript" src="webfilter.js"></script>
 </head>
 <body>
 <div id="main">
@@ -81,6 +83,23 @@ This web page was blocked because it is considered inappropriate.<br /><br />
 <p><b>Reason:</b> <%=reason%></p>
 <p>Please contact <%=contact%>.</p>
 </div>
+</center>
+
+<center>
+
+<%
+if (UserWhitelistMode.NONE != mode && null != bd && null != bd.getWhitelistHost()) {
+%>
+      <button id="unblockNowButton" type="button" onclick="unblockSite(false)">Unblock For Now</button>
+<%
+    if (UserWhitelistMode.USER_AND_GLOBAL == mode) {
+%>
+      <button id="unblockGlobalButton" type="button" onclick="unblockSite(true)">Unblock Permanently</button>
+<%
+    }
+}
+%>
+
 </center>
 
     <br />

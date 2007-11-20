@@ -28,8 +28,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.sleepycat.je.DatabaseException;
 import com.untangle.node.http.RequestLineToken;
@@ -71,6 +73,9 @@ class Blacklist
     private final WebFilterImpl node;
 
     private final UrlDatabase<String> urlDatabase = new UrlDatabase<String>();
+
+    private final Map<InetAddress, Set<String>> hostWhitelists
+        = new HashMap<InetAddress, Set<String>>();
 
     private volatile WebFilterSettings settings;
     private volatile String[] blockedUrls = new String[0];
@@ -139,6 +144,22 @@ class Blacklist
         passedUrls = makeCustomList(settings.getPassedUrls());
     }
 
+    void addWhitelistHost(InetAddress addr, String site)
+    {
+        Set<String> wl;
+        synchronized (hostWhitelists) {
+            wl = hostWhitelists.get(addr);
+            if (null == wl) {
+                wl = new HashSet<String>();
+                hostWhitelists.put(addr, wl);
+            }
+        }
+
+        synchronized (wl) {
+            wl.add(site);
+        }
+    }
+
     void startUpdateTimer()
     {
         urlDatabase.startUpdateTimer();
@@ -188,25 +209,36 @@ class Blacklist
             return null;
         } else {
             String dom = host;
-            while (null != dom) {
-                StringRule sr = findCategory(passedUrls, dom + path,
-                                             settings.getPassedUrls());
-                String category = null == sr ? null : sr.getDescription();
 
-                if (null != category) {
-                    WebFilterEvent hbe = new WebFilterEvent
-                        (requestLine.getRequestLine(), Action.PASS,
-                         Reason.PASS_URL, category);
-                    node.log(hbe);
+            if (isUserWhitelistedDomain(dom, clientIp)) {
+                WebFilterEvent hbe = new WebFilterEvent
+                    (requestLine.getRequestLine(), Action.PASS,
+                     Reason.PASS_URL, "unblocked temporarily");
+                node.log(hbe);
 
-                    return null;
+                return null;
+            } else {
+                while (null != dom) {
+
+                    StringRule sr = findCategory(passedUrls, dom + path,
+                                                 settings.getPassedUrls());
+                    String category = null == sr ? null : sr.getDescription();
+
+                    if (null != category) {
+                        WebFilterEvent hbe = new WebFilterEvent
+                            (requestLine.getRequestLine(), Action.PASS,
+                             Reason.PASS_URL, category);
+                        node.log(hbe);
+
+                        return null;
+                    }
+                    dom = nextHost(dom);
                 }
-                dom = nextHost(dom);
             }
         }
 
         // check in WebFilterSettings
-        String nonce = checkBlacklist(host, requestLine);
+        String nonce = checkBlacklist(clientIp, host, requestLine);
 
         if (null != nonce) {
             return nonce;
@@ -226,7 +258,7 @@ class Blacklist
 
                 WebFilterBlockDetails bd = new WebFilterBlockDetails
                     (settings, host, uri.toString(),
-                     "extension (" + exn + ")");
+                     "extension (" + exn + ")", clientIp);
                 return node.generateNonce(bd);
             }
         }
@@ -257,13 +289,13 @@ class Blacklist
 
                 WebFilterBlockDetails bd = new WebFilterBlockDetails
                     (settings, host, uri.toString(),
-                     "Mime-Type (" + contentType + ")");
+                     "Mime-Type (" + contentType + ")", clientIp);
                 return node.generateNonce(bd);
             }
         }
 
         WebFilterEvent e = new WebFilterEvent(requestLine.getRequestLine(),
-                                                  null, null, null, true);
+                                              null, null, null, true);
         node.log(e);
 
         return null;
@@ -288,7 +320,7 @@ class Blacklist
         return null;
     }
 
-    private String checkBlacklist(String host,
+    private String checkBlacklist(InetAddress clientIp, String host,
                                   RequestLineToken requestLine)
     {
         String uri = requestLine.getRequestUri().normalize().toString();
@@ -304,7 +336,7 @@ class Blacklist
             node.log(hbe);
 
             WebFilterBlockDetails bd = new WebFilterBlockDetails
-                (settings, host, uri, "not allowed");
+                (settings, host, uri, "not allowed", clientIp);
             return node.generateNonce(bd);
         }
 
@@ -351,7 +383,7 @@ class Blacklist
                 return null;
             } else {
                 WebFilterBlockDetails bd = new WebFilterBlockDetails
-                    (settings, host, uri, null == bc ? category : bc.getDisplayName());
+                    (settings, host, uri, null == bc ? category : bc.getDisplayName(), clientIp);
                 return node.generateNonce(bd);
             }
         }
@@ -503,5 +535,32 @@ class Blacklist
         }
 
         return uri;
+    }
+
+    private boolean isUserWhitelistedDomain(String domain, InetAddress clientAddr)
+    {
+        if (null == domain) {
+            return false;
+        } else {
+            domain = domain.toLowerCase();
+
+            Set<String> l = hostWhitelists.get(clientAddr);
+            if (null == l) {
+                return false;
+            } else {
+                return findMatch(l, domain);
+            }
+        }
+    }
+
+    private boolean findMatch(Set<String> rules, String domain)
+    {
+        for (String d = domain; null != d; d = nextHost(d)) {
+            if (rules.contains(d)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

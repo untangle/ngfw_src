@@ -18,9 +18,11 @@
 
 package com.untangle.node.webfilter;
 
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.untangle.node.http.UserWhitelistMode;
 import com.untangle.node.token.Header;
 import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenAdaptor;
@@ -125,9 +127,70 @@ public class WebFilterImpl extends AbstractNode implements WebFilter
         return eventLogger;
     }
 
+    public UserWhitelistMode getUserWhitelistMode()
+    {
+        return settings.getUserWhitelistMode();
+    }
+
     public WebFilterBlockDetails getDetails(String nonce)
     {
         return replacementGenerator.getNonceData(nonce);
+    }
+
+    // XXX factor with SpywareImpl.unblockSite
+    public boolean unblockSite(String nonce, boolean global)
+    {
+        WebFilterBlockDetails bd = replacementGenerator.removeNonce(nonce);
+
+        switch (settings.getUserWhitelistMode()) {
+        case NONE:
+            logger.debug("attempting to unblock in UserWhitelistMode.NONE");
+            return false;
+        case USER_ONLY:
+            if (global) {
+                logger.debug("attempting to unblock global in UserWhitelistMode.USER_ONLY");
+                return false;
+            }
+        case USER_AND_GLOBAL:
+            // its all good
+            break;
+        default:
+            logger.error("missing case: " + settings.getUserWhitelistMode());
+            break;
+        }
+
+        if (null == bd) {
+            logger.debug("no BlockDetails for nonce");
+            return false;
+        } else if (global) {
+            String site = bd.getWhitelistHost();
+            if (null == site) {
+                logger.warn("cannot unblock null host");
+                return false;
+            } else {
+                logger.warn("permanently unblocking site: " + site);
+                StringRule sr = new StringRule(site, site, "user whitelisted",
+                                               "whitelisted by user", true);
+                settings.getPassedUrls().add(sr);
+                setWebFilterSettings(settings);
+
+                return true;
+            }
+        } else {
+            String site = bd.getWhitelistHost();
+            if (null == site) {
+                logger.warn("cannot unblock null host");
+                return false;
+            } else {
+                String url = "http://" + site;
+                logger.warn("temporarily unblocking site: " + site);
+                InetAddress addr = bd.getClientAddress();
+
+                blacklist.addWhitelistHost(addr, site);
+
+                return true;
+            }
+        }
     }
 
     // Node methods ------------------------------------------------------

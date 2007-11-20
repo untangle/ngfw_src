@@ -18,6 +18,8 @@
 
 package com.untangle.node.webfilter;
 
+import java.net.InetAddress;
+
 import com.untangle.node.http.BlockDetails;
 
 /**
@@ -30,15 +32,18 @@ public class WebFilterBlockDetails extends BlockDetails
 {
     private final WebFilterSettings settings;
     private final String reason;
+    private final InetAddress clientAddr;
 
     // constructor ------------------------------------------------------------
 
     public WebFilterBlockDetails(WebFilterSettings settings, String host,
-                                   String uri, String reason)
+                                 String uri, String reason,
+                                 InetAddress clientAddr)
     {
         super(host, uri);
         this.settings = settings;
         this.reason = reason;
+        this.clientAddr = clientAddr;
     }
 
     // public methods ---------------------------------------------------------
@@ -51,5 +56,12 @@ public class WebFilterBlockDetails extends BlockDetails
     public String getReason()
     {
         return reason;
+    }
+
+    // public methods ---------------------------------------------------------
+
+    public InetAddress getClientAddress()
+    {
+        return clientAddr;
     }
 }

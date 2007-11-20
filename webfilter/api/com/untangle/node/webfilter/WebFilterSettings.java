@@ -25,6 +25,8 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -34,6 +36,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.untangle.node.http.UserWhitelistMode;
 import com.untangle.node.util.UvmUtil;
 import com.untangle.uvm.node.IPMaddrRule;
 import com.untangle.uvm.node.MimeTypeRule;
@@ -56,6 +59,7 @@ public class WebFilterSettings implements Serializable
 
     private Long id;
     private Tid tid;
+    private UserWhitelistMode userWhitelistMode = UserWhitelistMode.USER_ONLY;
 
     private BlockTemplate blockTemplate = new BlockTemplate();
 
@@ -308,5 +312,17 @@ public class WebFilterSettings implements Serializable
     public void setBlacklistCategories(List<BlacklistCategory> blacklistCategories)
     {
         this.blacklistCategories = blacklistCategories;
+    }
+
+    @Enumerated(EnumType.STRING)
+    @Column(name="user_whitelist_mode", nullable=false)
+    public UserWhitelistMode getUserWhitelistMode()
+    {
+        return userWhitelistMode;
+    }
+
+    public void setUserWhitelistMode(UserWhitelistMode userWhitelistMode)
+    {
+        this.userWhitelistMode = userWhitelistMode;
     }
 }

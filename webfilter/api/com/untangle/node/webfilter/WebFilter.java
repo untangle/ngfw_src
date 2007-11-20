@@ -18,6 +18,7 @@
 
 package com.untangle.node.webfilter;
 
+import com.untangle.node.http.UserWhitelistMode;
 import com.untangle.uvm.logging.EventManager;
 import com.untangle.uvm.node.Node;
 
@@ -32,6 +33,9 @@ public interface WebFilter extends Node
     WebFilterSettings getWebFilterSettings();
     void setWebFilterSettings(WebFilterSettings settings);
     WebFilterBlockDetails getDetails(String nonce);
+    boolean unblockSite(String nonce, boolean global);
+
+    UserWhitelistMode getUserWhitelistMode();
 
     EventManager<WebFilterEvent> getEventManager();
 }
