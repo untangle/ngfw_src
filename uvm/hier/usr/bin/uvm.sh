@@ -189,9 +189,12 @@ restartService() {
   stopFirst=$4
   echo "*** restarting $reason $serviceName on `date` ***" >> $UVM_WRAPPER_LOG
   if [ -n "$stopFirst" ] ; then
-    # netstat -plunt >> $UVM_WRAPPER_LOG && /etc/init.d/$serviceName stop
-    echo "blah"
-  else
+    # netstat -plunt >> $UVM_WRAPPER_LOG
+    [ -n "$pidFile" ] && pid=`cat $pidFile`
+    /etc/init.d/$serviceName stop
+    # just to be sure
+    [ -n "$pid" ] && kill -9 $pid
+  else # remove the pidfile
     [ -n "$pidFile" ] && rm -f $pidFile
   fi
   /etc/init.d/$serviceName start
@@ -301,6 +304,7 @@ while true; do
             restartServiceIfNeeded spamassassin
             restartServiceIfNeeded slapd
             restartServiceIfNeeded untangle-support-agent
+	    
         fi
 
 	if [ $counter -gt 60 ] ; then # fire up the other nannies
@@ -310,6 +314,11 @@ while true; do
 	  fi
 	  if dpkg -l clamav-daemon | grep -q -E '^ii' ; then
             $BANNER_NANNY $CLAMD_PORT $TIMEOUT || restartService clamav-daemon $CLAMD_PID_FILE "hung" stopFirst
+	  fi
+	  if pidof sshd ; then # support-agent is supposed to run; FIXME: need something better
+	    pid=`pidof ruby`
+	    if [ -n "$pid" ] && [ `ps -o %cpu= $pid | perl -pe 's/\..*//'` -gt $SUPPORT_AGENT_MAX_ALLOWED_CPU ] ; then
+	    restartService untangle-support-agent $SUPPORT_AGENT_PID_FILE "spinning" stopFirst
 	  fi
 	  counter=0
 	fi
