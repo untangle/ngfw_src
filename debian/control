@@ -7,7 +7,7 @@ Standards-Version: 3.7.2
 
 Package: untangle-libuvmcore
 Architecture: i386
-Depends: ${misc:Depends}, ${shlibs:Depends}
+Depends: ${misc:Depends}, libc6 (>= 2.3.2), untangle-libnetfilter-queue0 (>= 0.0.15), libsysfs2, libxml2 (>= 2.6.29)
 XB-Display-Name: Untangle Core Library
 XB-Untangle-Type: library
 XB-Is-Service: true
