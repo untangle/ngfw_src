@@ -307,7 +307,6 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
         jSeparator4 = new javax.swing.JSeparator();
         loginJPanel = new javax.swing.JPanel();
         domainLoginJTextField = new javax.swing.JTextField();
-        domainPasswordJLabel = new javax.swing.JLabel();
         domainPasswordJPasswordField = new javax.swing.JPasswordField();
         jSeparator5 = new javax.swing.JSeparator();
         restrictIPJPanel3 = new javax.swing.JPanel();
@@ -616,14 +615,6 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 2, 0);
         loginJPanel.add(domainLoginJTextField, gridBagConstraints);
 
-        domainPasswordJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
-        domainPasswordJLabel.setText("Domain Administrator Password:");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 3;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        loginJPanel.add(domainPasswordJLabel, gridBagConstraints);
-
         domainPasswordJPasswordField.setMaximumSize(new java.awt.Dimension(150, 19));
         domainPasswordJPasswordField.setMinimumSize(new java.awt.Dimension(150, 19));
         domainPasswordJPasswordField.setPreferredSize(new java.awt.Dimension(150, 19));
@@ -843,7 +834,6 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
 
     private void domainEnabledDependency(boolean enabled){
         domainLoginJTextField.setEnabled(enabled);
-        domainPasswordJLabel.setEnabled(enabled);
         domainPasswordJPasswordField.setEnabled(enabled);
     }
 
@@ -855,7 +845,6 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
     private javax.swing.JLabel baseJLabel;
     public javax.swing.JTextField baseJTextField;
     public javax.swing.JTextField domainLoginJTextField;
-    private javax.swing.JLabel domainPasswordJLabel;
     private javax.swing.JPasswordField domainPasswordJPasswordField;
     private javax.swing.JPanel enableRemoteJPanel;
     private javax.swing.JPanel externalRemoteJPanel;
