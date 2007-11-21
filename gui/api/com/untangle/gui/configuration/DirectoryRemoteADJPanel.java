@@ -270,9 +270,6 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
         testJLabel = new javax.swing.JLabel();
         adTestJButton = new javax.swing.JButton();
         jSeparator4 = new javax.swing.JSeparator();
-        loginJPanel = new javax.swing.JPanel();
-        jSeparator5 = new javax.swing.JSeparator();
-        restrictIPJPanel3 = new javax.swing.JPanel();
 
         setLayout(new java.awt.GridBagLayout());
 
@@ -554,31 +551,6 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         enableRemoteJPanel.add(jSeparator4, gridBagConstraints);
 
-        loginJPanel.setLayout(new java.awt.GridBagLayout());
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(5, 87, 5, 0);
-        enableRemoteJPanel.add(loginJPanel, gridBagConstraints);
-
-        jSeparator5.setForeground(new java.awt.Color(200, 200, 200));
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        enableRemoteJPanel.add(jSeparator5, gridBagConstraints);
-
-        restrictIPJPanel3.setLayout(new java.awt.GridBagLayout());
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(0, 50, 5, 0);
-        enableRemoteJPanel.add(restrictIPJPanel3, gridBagConstraints);
-
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
@@ -712,9 +684,7 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator3;
     private javax.swing.JSeparator jSeparator4;
-    private javax.swing.JSeparator jSeparator5;
     private javax.swing.JLabel loginJLabel;
-    private javax.swing.JPanel loginJPanel;
     public javax.swing.JTextField loginJTextField;
     private javax.swing.JLabel orgJLabel;
     public javax.swing.JTextField orgJTextField;
@@ -724,7 +694,6 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
     private javax.swing.JSpinner portJSpinner;
     private javax.swing.JPanel restrictIPJPanel;
     private javax.swing.JPanel restrictIPJPanel1;
-    private javax.swing.JPanel restrictIPJPanel3;
     private javax.swing.ButtonGroup serverButtonGroup;
     private javax.swing.JLabel serverJLabel1;
     private javax.swing.JLabel testJLabel;
