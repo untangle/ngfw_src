@@ -62,7 +62,6 @@ public class AdlsJPanel extends javax.swing.JPanel
 
     public AdlsJPanel() {
         initComponents();
-        Util.addFocusHighlight(baseJTextField);
         Util.addFocusHighlight(orgJTextField);
         Util.addFocusHighlight(serverIPJTextField);
         Util.addFocusHighlight(domainLoginJTextField);
@@ -78,9 +77,6 @@ public class AdlsJPanel extends javax.swing.JPanel
     ///////////////////////////////////////////
 
     public void doSave(DirectoryCompoundSettings directoryCompoundSettings, boolean validateOnly) throws Exception {
-        // DOMAIN /////
-        String domain = baseJTextField.getText();
-
         // ORG //
         String org = orgJTextField.getText();
 
@@ -121,7 +117,6 @@ public class AdlsJPanel extends javax.swing.JPanel
         if( !validateOnly ){
             directoryCompoundSettings.setAddressBookConfiguration( AddressBookConfiguration.AD_AND_LOCAL );
             RepositorySettings repositorySettings = directoryCompoundSettings.getAddressBookSettings().getADRepositorySettings();
-            repositorySettings.setDomain( domain );
             repositorySettings.setOUFilter( org );
 
             WMISettings wmiSettings = directoryCompoundSettings.getWMISettings();
@@ -160,12 +155,6 @@ public class AdlsJPanel extends javax.swing.JPanel
 
         // PASSWORD /////
         passwordCurrent = repositorySettings.getSuperuserPass();
-
-        // DOMAIN //////
-        domainCurrent = repositorySettings.getDomain();
-        baseJTextField.setText( domainCurrent );
-        baseJTextField.setBackground( Color.WHITE );
-        Util.addSettingChangeListener(settingsChangedListener, this, baseJTextField);
 
         // ORG //
         orgCurrent = repositorySettings.getOUFilter();
@@ -221,7 +210,6 @@ public class AdlsJPanel extends javax.swing.JPanel
         externalRemoteJPanel = new javax.swing.JPanel();
         enableRemoteJPanel = new javax.swing.JPanel();
         restrictIPJPanel1 = new javax.swing.JPanel();
-        baseJTextField = new javax.swing.JTextField();
         orgJTextField = new javax.swing.JTextField();
         jSeparator3 = new javax.swing.JSeparator();
         testJLabel = new javax.swing.JLabel();
@@ -258,21 +246,6 @@ public class AdlsJPanel extends javax.swing.JPanel
         enableRemoteJPanel.setLayout(new java.awt.GridBagLayout());
 
         restrictIPJPanel1.setLayout(new java.awt.GridBagLayout());
-
-        baseJTextField.setMaximumSize(new java.awt.Dimension(200, 19));
-        baseJTextField.setMinimumSize(new java.awt.Dimension(200, 19));
-        baseJTextField.setPreferredSize(new java.awt.Dimension(200, 19));
-        baseJTextField.addCaretListener(new javax.swing.event.CaretListener() {
-            public void caretUpdate(javax.swing.event.CaretEvent evt) {
-                baseJTextFieldCaretUpdate(evt);
-            }
-        });
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        restrictIPJPanel1.add(baseJTextField, gridBagConstraints);
 
         orgJTextField.setMaximumSize(new java.awt.Dimension(200, 19));
         orgJTextField.setMinimumSize(new java.awt.Dimension(200, 19));
@@ -617,13 +590,7 @@ public class AdlsJPanel extends javax.swing.JPanel
         new TestThread();
     }//GEN-LAST:event_adTestJButtonActionPerformed
 
-    private void baseJTextFieldCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_baseJTextFieldCaretUpdate
-        if( !baseJTextField.getText().trim().equals( domainCurrent ) )
-            ;
-    }//GEN-LAST:event_baseJTextFieldCaretUpdate
-
     private void adEnabledDependency(boolean enabled){
-        baseJTextField.setEnabled( enabled );
         orgJTextField.setEnabled( enabled );
         adTestJButton.setEnabled( enabled );
 
@@ -660,7 +627,6 @@ public class AdlsJPanel extends javax.swing.JPanel
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup adButtonGroup;
     private javax.swing.JButton adTestJButton;
-    public javax.swing.JTextField baseJTextField;
     private javax.swing.JCheckBox domainJCheckBox;
     private javax.swing.JLabel domainLoginJLabel;
     public javax.swing.JTextField domainLoginJTextField;
