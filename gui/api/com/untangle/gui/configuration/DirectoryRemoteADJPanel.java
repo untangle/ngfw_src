@@ -306,7 +306,6 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
         adTestJButton = new javax.swing.JButton();
         jSeparator4 = new javax.swing.JSeparator();
         loginJPanel = new javax.swing.JPanel();
-        domainLoginJLabel = new javax.swing.JLabel();
         domainLoginJTextField = new javax.swing.JTextField();
         domainPasswordJLabel = new javax.swing.JLabel();
         domainPasswordJPasswordField = new javax.swing.JPasswordField();
@@ -599,14 +598,6 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
 
         loginJPanel.setLayout(new java.awt.GridBagLayout());
 
-        domainLoginJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
-        domainLoginJLabel.setText("Domain Administrator Login:");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        loginJPanel.add(domainLoginJLabel, gridBagConstraints);
-
         domainLoginJTextField.setMaximumSize(new java.awt.Dimension(150, 19));
         domainLoginJTextField.setMinimumSize(new java.awt.Dimension(150, 19));
         domainLoginJTextField.setPreferredSize(new java.awt.Dimension(150, 19));
@@ -851,7 +842,6 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
     }
 
     private void domainEnabledDependency(boolean enabled){
-        domainLoginJLabel.setEnabled(enabled);
         domainLoginJTextField.setEnabled(enabled);
         domainPasswordJLabel.setEnabled(enabled);
         domainPasswordJPasswordField.setEnabled(enabled);
@@ -864,7 +854,6 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
     private javax.swing.JButton adTestJButton;
     private javax.swing.JLabel baseJLabel;
     public javax.swing.JTextField baseJTextField;
-    private javax.swing.JLabel domainLoginJLabel;
     public javax.swing.JTextField domainLoginJTextField;
     private javax.swing.JLabel domainPasswordJLabel;
     private javax.swing.JPasswordField domainPasswordJPasswordField;
