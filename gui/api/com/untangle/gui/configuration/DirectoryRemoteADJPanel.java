@@ -276,7 +276,6 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
         loginJPanel = new javax.swing.JPanel();
         jSeparator5 = new javax.swing.JSeparator();
         restrictIPJPanel3 = new javax.swing.JPanel();
-        messageJLabel = new javax.swing.JLabel();
         urlJLabel = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         urlJTextArea = new javax.swing.JTextArea();
@@ -578,17 +577,6 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
 
         restrictIPJPanel3.setLayout(new java.awt.GridBagLayout());
 
-        messageJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
-        messageJLabel.setText("<html>Please cut and paste the address below into your browser.</html>");
-        messageJLabel.setMaximumSize(null);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.gridwidth = 2;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.insets = new java.awt.Insets(5, 0, 5, 0);
-        restrictIPJPanel3.add(messageJLabel, gridBagConstraints);
-
         urlJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
         urlJLabel.setText("URL to download installer:");
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -747,7 +735,6 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
     }
 
     private void serverEnabledDependency(boolean enabled){
-        messageJLabel.setEnabled( enabled );
         urlJLabel.setEnabled( enabled );
         urlJTextArea.setEnabled( enabled );
     }
@@ -772,7 +759,6 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
     private javax.swing.JLabel loginJLabel;
     private javax.swing.JPanel loginJPanel;
     public javax.swing.JTextField loginJTextField;
-    private javax.swing.JLabel messageJLabel;
     private javax.swing.JLabel orgJLabel;
     public javax.swing.JTextField orgJTextField;
     private javax.swing.JLabel passwordJLabel;
