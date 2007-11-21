@@ -458,51 +458,6 @@
                 </Constraint>
               </Constraints>
             </Component>
-            <Component class="javax.swing.JRadioButton" name="serverDisabledJRadioButton">
-              <Properties>
-                <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
-                  <ComponentRef name="serverButtonGroup"/>
-                </Property>
-                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                  <Font name="Dialog" size="12" style="0"/>
-                </Property>
-                <Property name="text" type="java.lang.String" value="&lt;html&gt;&lt;b&gt;Disabled&lt;/b&gt;&lt;/html&gt;"/>
-                <Property name="actionCommand" type="java.lang.String" value="&lt;html&gt;&lt;b&gt;Use DHCP&lt;/b&gt; to automatically set Untangle&apos;s IP address from the network&apos;s DHCP server.&lt;/html&gt;"/>
-              </Properties>
-              <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="serverDisabledJRadioButtonActionPerformed"/>
-              </Events>
-              <AuxValues>
-                <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
-              </AuxValues>
-              <Constraints>
-                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
-                  <GridBagConstraints gridX="0" gridY="-1" gridWidth="1" gridHeight="1" fill="2" ipadX="0" ipadY="0" insetsTop="0" insetsLeft="50" insetsBottom="0" insetsRight="0" anchor="10" weightX="1.0" weightY="0.0"/>
-                </Constraint>
-              </Constraints>
-            </Component>
-            <Component class="javax.swing.JRadioButton" name="serverEnabledJRadioButton">
-              <Properties>
-                <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
-                  <ComponentRef name="serverButtonGroup"/>
-                </Property>
-                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                  <Font name="Dialog" size="12" style="0"/>
-                </Property>
-                <Property name="text" type="java.lang.String" value="&lt;html&gt;&lt;b&gt;Enabled&lt;/b&gt;&lt;/html&gt;"/>
-              </Properties>
-              <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="serverEnabledJRadioButtonActionPerformed"/>
-              </Events>
-              <AuxValues>
-                <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
-              </AuxValues>
-              <Constraints>
-                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
-                  <GridBagConstraints gridX="0" gridY="-1" gridWidth="1" gridHeight="1" fill="2" ipadX="0" ipadY="0" insetsTop="0" insetsLeft="50" insetsBottom="0" insetsRight="0" anchor="10" weightX="1.0" weightY="0.0"/>
-                </Constraint>
-              </Constraints>
-            </Component>
             <Container class="javax.swing.JPanel" name="restrictIPJPanel2">
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">

@@ -142,16 +142,13 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
             }
         }
 
-        // SERVER ENABLED
-        boolean serverEnabled = serverEnabledJRadioButton.isSelected();
-
         // DOMAIN LOGIN & PASSWORD
         boolean domainEnabled = domainJCheckBox.isSelected();
         String domainLogin = null;
         String domainPassword = null;
         domainLoginJTextField.setBackground( Color.WHITE );
         domainPasswordJPasswordField.setBackground( Color.WHITE );
-        if( enabled && serverEnabled && domainEnabled ){
+        if( enabled && domainEnabled ){
             domainLogin = domainLoginJTextField.getText().trim();
             if(domainLogin.length() == 0){
                 domainLoginJTextField.setBackground(Util.INVALID_BACKGROUND_COLOR);
@@ -178,16 +175,13 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
                 repositorySettings.setOUFilter( org );
 
                 WMISettings wmiSettings = directoryCompoundSettings.getWMISettings();
-                wmiSettings.setIsEnabled( serverEnabled );
-                if( serverEnabled ){
-                    if(domainEnabled){
-                        wmiSettings.setUsername( domainLogin );
-                        wmiSettings.setPassword( domainPassword );
-                    }
-                    else{
-                        wmiSettings.setUsername( login );
-                        wmiSettings.setPassword( password );
-                    }
+                if(domainEnabled){
+                    wmiSettings.setUsername( domainLogin );
+                    wmiSettings.setPassword( domainPassword );
+                }
+                else{
+                    wmiSettings.setUsername( login );
+                    wmiSettings.setPassword( password );
                 }
             }
             else{
@@ -264,13 +258,7 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
 
         // SERVER ENABLED
         serverEnabledCurrent = directoryCompoundSettings.getWMISettings().getIsEnabled();
-        if( serverEnabledCurrent )
-            serverEnabledJRadioButton.setSelected( true );
-        else
-            serverDisabledJRadioButton.setSelected( true );
         serverEnabledDependency( enabledCurrent && serverEnabledCurrent );
-        Util.addSettingChangeListener(settingsChangedListener, this, serverEnabledJRadioButton);
-        Util.addSettingChangeListener(settingsChangedListener, this, serverDisabledJRadioButton);
 
         // DOMAIN LOGIN & PASSWORD
         domainLoginCurrent = directoryCompoundSettings.getWMISettings().getUsername();
@@ -326,8 +314,6 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
         testJLabel = new javax.swing.JLabel();
         adTestJButton = new javax.swing.JButton();
         jSeparator4 = new javax.swing.JSeparator();
-        serverDisabledJRadioButton = new javax.swing.JRadioButton();
-        serverEnabledJRadioButton = new javax.swing.JRadioButton();
         restrictIPJPanel2 = new javax.swing.JPanel();
         jSeparator6 = new javax.swing.JSeparator();
         loginJPanel = new javax.swing.JPanel();
@@ -623,39 +609,6 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         enableRemoteJPanel.add(jSeparator4, gridBagConstraints);
 
-        serverButtonGroup.add(serverDisabledJRadioButton);
-        serverDisabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
-        serverDisabledJRadioButton.setText("<html><b>Disabled</b></html>");
-        serverDisabledJRadioButton.setActionCommand("<html><b>Use DHCP</b> to automatically set Untangle's IP address from the network's DHCP server.</html>");
-        serverDisabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                serverDisabledJRadioButtonActionPerformed(evt);
-            }
-        });
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(0, 50, 0, 0);
-        enableRemoteJPanel.add(serverDisabledJRadioButton, gridBagConstraints);
-
-        serverButtonGroup.add(serverEnabledJRadioButton);
-        serverEnabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
-        serverEnabledJRadioButton.setText("<html><b>Enabled</b></html>");
-        serverEnabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                serverEnabledJRadioButtonActionPerformed(evt);
-            }
-        });
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(0, 50, 0, 0);
-        enableRemoteJPanel.add(serverEnabledJRadioButton, gridBagConstraints);
-
         restrictIPJPanel2.setLayout(new java.awt.GridBagLayout());
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -844,14 +797,6 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
     }//GEN-LAST:event_domainJCheckBoxActionPerformed
 
 
-    private void serverEnabledJRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_serverEnabledJRadioButtonActionPerformed
-        serverEnabledDependency(true);
-    }//GEN-LAST:event_serverEnabledJRadioButtonActionPerformed
-
-    private void serverDisabledJRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_serverDisabledJRadioButtonActionPerformed
-        serverEnabledDependency(false);
-    }//GEN-LAST:event_serverDisabledJRadioButtonActionPerformed
-
     private void orgJTextFieldCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_orgJTextFieldCaretUpdate
         if( !orgJTextField.getText().trim().equals( orgCurrent ) )
             ;
@@ -937,11 +882,9 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
         orgJLabel.setEnabled( enabled );
         adTestJButton.setEnabled( enabled );
 
-        serverEnabledJRadioButton.setEnabled( enabled );
-        serverDisabledJRadioButton.setEnabled( enabled );
         if( !enabled )
             serverEnabledDependency( false );
-        else if( serverEnabledJRadioButton.isSelected() )
+        else
             serverEnabledDependency( true );
     }
 
@@ -1002,8 +945,6 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
     private javax.swing.JPanel restrictIPJPanel2;
     private javax.swing.JPanel restrictIPJPanel3;
     private javax.swing.ButtonGroup serverButtonGroup;
-    public javax.swing.JRadioButton serverDisabledJRadioButton;
-    public javax.swing.JRadioButton serverEnabledJRadioButton;
     private javax.swing.JLabel serverJLabel1;
     private javax.swing.JLabel testJLabel;
     private javax.swing.JLabel urlJLabel;
