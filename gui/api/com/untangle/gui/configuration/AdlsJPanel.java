@@ -62,7 +62,6 @@ public class AdlsJPanel extends javax.swing.JPanel
 
     public AdlsJPanel() {
         initComponents();
-        Util.addFocusHighlight(loginJTextField);
         Util.addFocusHighlight(passwordJPasswordField);
         Util.addFocusHighlight(baseJTextField);
         Util.addFocusHighlight(orgJTextField);
@@ -80,9 +79,6 @@ public class AdlsJPanel extends javax.swing.JPanel
     ///////////////////////////////////////////
 
     public void doSave(DirectoryCompoundSettings directoryCompoundSettings, boolean validateOnly) throws Exception {
-        // LOGIN /////
-        String login = loginJTextField.getText();
-
         // PASSWORD /////
         String password = new String(passwordJPasswordField.getPassword());
 
@@ -129,7 +125,6 @@ public class AdlsJPanel extends javax.swing.JPanel
         if( !validateOnly ){
             directoryCompoundSettings.setAddressBookConfiguration( AddressBookConfiguration.AD_AND_LOCAL );
             RepositorySettings repositorySettings = directoryCompoundSettings.getAddressBookSettings().getADRepositorySettings();
-            repositorySettings.setSuperuser( login );
             repositorySettings.setSuperuserPass( password );
             repositorySettings.setDomain( domain );
             repositorySettings.setOUFilter( org );
@@ -143,7 +138,6 @@ public class AdlsJPanel extends javax.swing.JPanel
                     wmiSettings.setPassword( domainPassword );
                 }
                 else{
-                    wmiSettings.setUsername( login );
                     wmiSettings.setPassword( password );
                 }
             }
@@ -171,12 +165,6 @@ public class AdlsJPanel extends javax.swing.JPanel
         // AD ENABLED //
         enabledCurrent = addressBookConfiguration.equals( AddressBookConfiguration.AD_AND_LOCAL );
         adEnabledDependency( enabledCurrent );
-
-        // LOGIN //////
-        loginCurrent = repositorySettings.getSuperuser();
-        loginJTextField.setText( loginCurrent );
-        loginJTextField.setBackground( Color.WHITE );
-        Util.addSettingChangeListener(settingsChangedListener, this, loginJTextField);
 
         // PASSWORD /////
         passwordCurrent = repositorySettings.getSuperuserPass();
@@ -245,7 +233,6 @@ public class AdlsJPanel extends javax.swing.JPanel
         enableRemoteJPanel = new javax.swing.JPanel();
         helpJButton = new javax.swing.JButton();
         restrictIPJPanel = new javax.swing.JPanel();
-        loginJTextField = new javax.swing.JTextField();
         passwordJPasswordField = new javax.swing.JPasswordField();
         jSeparator2 = new javax.swing.JSeparator();
         restrictIPJPanel1 = new javax.swing.JPanel();
@@ -308,22 +295,6 @@ public class AdlsJPanel extends javax.swing.JPanel
         enableRemoteJPanel.add(helpJButton, gridBagConstraints);
 
         restrictIPJPanel.setLayout(new java.awt.GridBagLayout());
-
-        loginJTextField.setMaximumSize(new java.awt.Dimension(150, 19));
-        loginJTextField.setMinimumSize(new java.awt.Dimension(150, 19));
-        loginJTextField.setPreferredSize(new java.awt.Dimension(150, 19));
-        loginJTextField.addCaretListener(new javax.swing.event.CaretListener() {
-            public void caretUpdate(javax.swing.event.CaretEvent evt) {
-                loginJTextFieldCaretUpdate(evt);
-            }
-        });
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 2, 0);
-        restrictIPJPanel.add(loginJTextField, gridBagConstraints);
 
         passwordJPasswordField.setMaximumSize(new java.awt.Dimension(150, 19));
         passwordJPasswordField.setMinimumSize(new java.awt.Dimension(150, 19));
@@ -753,11 +724,6 @@ public class AdlsJPanel extends javax.swing.JPanel
         new TestThread();
     }//GEN-LAST:event_adTestJButtonActionPerformed
 
-    private void loginJTextFieldCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_loginJTextFieldCaretUpdate
-        if( !loginJTextField.getText().trim().equals( loginCurrent ) )
-            ;
-    }//GEN-LAST:event_loginJTextFieldCaretUpdate
-
     private void passwordJPasswordFieldCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_passwordJPasswordFieldCaretUpdate
         String password = new String(passwordJPasswordField.getPassword());
         if( !password.trim().equals(passwordCurrent) )
@@ -770,7 +736,6 @@ public class AdlsJPanel extends javax.swing.JPanel
     }//GEN-LAST:event_baseJTextFieldCaretUpdate
 
     private void adEnabledDependency(boolean enabled){
-        loginJTextField.setEnabled( enabled );
         passwordJPasswordField.setEnabled( enabled );
         baseJTextField.setEnabled( enabled );
         baseJLabel.setEnabled( enabled );
@@ -829,7 +794,6 @@ public class AdlsJPanel extends javax.swing.JPanel
     private javax.swing.JSeparator jSeparator5;
     private javax.swing.JSeparator jSeparator6;
     private javax.swing.JPanel loginJPanel;
-    public javax.swing.JTextField loginJTextField;
     private javax.swing.JLabel messageJLabel;
     private javax.swing.JLabel orgJLabel;
     public javax.swing.JTextField orgJTextField;
