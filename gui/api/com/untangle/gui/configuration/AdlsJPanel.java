@@ -266,11 +266,8 @@ public class AdlsJPanel extends javax.swing.JPanel
         helpJButton = new javax.swing.JButton();
         restrictIPJPanel = new javax.swing.JPanel();
         hostJTextField = new javax.swing.JTextField();
-        portJLabel = new javax.swing.JLabel();
         portJSpinner = new javax.swing.JSpinner();
-        loginJLabel = new javax.swing.JLabel();
         loginJTextField = new javax.swing.JTextField();
-        passwordJLabel = new javax.swing.JLabel();
         passwordJPasswordField = new javax.swing.JPasswordField();
         jSeparator2 = new javax.swing.JSeparator();
         restrictIPJPanel1 = new javax.swing.JPanel();
@@ -350,14 +347,6 @@ public class AdlsJPanel extends javax.swing.JPanel
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 2, 0);
         restrictIPJPanel.add(hostJTextField, gridBagConstraints);
 
-        portJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
-        portJLabel.setText("Port:");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        restrictIPJPanel.add(portJLabel, gridBagConstraints);
-
         portJSpinner.setFont(new java.awt.Font("Dialog", 0, 12));
         portJSpinner.setMaximumSize(new java.awt.Dimension(75, 19));
         portJSpinner.setMinimumSize(new java.awt.Dimension(75, 19));
@@ -375,14 +364,6 @@ public class AdlsJPanel extends javax.swing.JPanel
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 2, 0);
         restrictIPJPanel.add(portJSpinner, gridBagConstraints);
 
-        loginJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
-        loginJLabel.setText("Authentication Login:");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        restrictIPJPanel.add(loginJLabel, gridBagConstraints);
-
         loginJTextField.setMaximumSize(new java.awt.Dimension(150, 19));
         loginJTextField.setMinimumSize(new java.awt.Dimension(150, 19));
         loginJTextField.setPreferredSize(new java.awt.Dimension(150, 19));
@@ -398,14 +379,6 @@ public class AdlsJPanel extends javax.swing.JPanel
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 2, 0);
         restrictIPJPanel.add(loginJTextField, gridBagConstraints);
-
-        passwordJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
-        passwordJLabel.setText("Authentication Password:");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 3;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        restrictIPJPanel.add(passwordJLabel, gridBagConstraints);
 
         passwordJPasswordField.setMaximumSize(new java.awt.Dimension(150, 19));
         passwordJPasswordField.setMinimumSize(new java.awt.Dimension(150, 19));
@@ -863,11 +836,8 @@ public class AdlsJPanel extends javax.swing.JPanel
     private void adEnabledDependency(boolean enabled){
         hostJTextField.setEnabled( enabled );
         portJSpinner.setEnabled( enabled );
-        portJLabel.setEnabled( enabled );
         loginJTextField.setEnabled( enabled );
-        loginJLabel.setEnabled( enabled );
         passwordJPasswordField.setEnabled( enabled );
-        passwordJLabel.setEnabled( enabled );
         baseJTextField.setEnabled( enabled );
         baseJLabel.setEnabled( enabled );
         orgJTextField.setEnabled( enabled );
@@ -925,16 +895,13 @@ public class AdlsJPanel extends javax.swing.JPanel
     private javax.swing.JSeparator jSeparator4;
     private javax.swing.JSeparator jSeparator5;
     private javax.swing.JSeparator jSeparator6;
-    private javax.swing.JLabel loginJLabel;
     private javax.swing.JPanel loginJPanel;
     public javax.swing.JTextField loginJTextField;
     private javax.swing.JLabel messageJLabel;
     private javax.swing.JLabel orgJLabel;
     public javax.swing.JTextField orgJTextField;
     private javax.swing.JLabel orgOptionalJLabel;
-    private javax.swing.JLabel passwordJLabel;
     private javax.swing.JPasswordField passwordJPasswordField;
-    private javax.swing.JLabel portJLabel;
     private javax.swing.JSpinner portJSpinner;
     private javax.swing.JPanel restrictIPJPanel;
     private javax.swing.JPanel restrictIPJPanel1;
