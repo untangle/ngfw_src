@@ -70,7 +70,6 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
         Util.addFocusHighlight(passwordJPasswordField);
         Util.addFocusHighlight(baseJTextField);
         Util.addFocusHighlight(orgJTextField);
-        Util.addFocusHighlight(serverIPJTextField);
         Util.addFocusHighlight(domainLoginJTextField);
         Util.addFocusHighlight(domainPasswordJPasswordField);
         Util.addFocusHighlight(urlJTextArea);
@@ -146,16 +145,6 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
         // SERVER ENABLED
         boolean serverEnabled = serverEnabledJRadioButton.isSelected();
 
-        // SERVER ADDRESS
-        IPaddr serverIPaddr = null;
-        serverIPJTextField.setBackground( Color.WHITE );
-        if( enabled && serverEnabled ){
-            try{ serverIPaddr = IPaddr.parse(serverIPJTextField.getText()); }
-            catch(Exception e){ throw new Exception (EXCEPTION_SERVER_ADDRESS); }
-            if( serverIPaddr.isEmpty() )
-                throw new Exception(EXCEPTION_SERVER_ADDRESS);
-        }
-
         // DOMAIN LOGIN & PASSWORD
         boolean domainEnabled = domainJCheckBox.isSelected();
         String domainLogin = null;
@@ -191,9 +180,6 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
                 WMISettings wmiSettings = directoryCompoundSettings.getWMISettings();
                 wmiSettings.setIsEnabled( serverEnabled );
                 if( serverEnabled ){
-                    wmiSettings.setAddress( serverIPaddr );
-                    // rbs unecessary: wmiSettings.setPort( wmiPort );
-                    // rbs unecessary: wmiSettings.setScheme( "https" );
                     if(domainEnabled){
                         wmiSettings.setUsername( domainLogin );
                         wmiSettings.setPassword( domainPassword );
@@ -286,12 +272,6 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
         Util.addSettingChangeListener(settingsChangedListener, this, serverEnabledJRadioButton);
         Util.addSettingChangeListener(settingsChangedListener, this, serverDisabledJRadioButton);
 
-        // SERVER ADDRESS
-        serverAddressCurrent = directoryCompoundSettings.getWMISettings().getAddress().toString();
-        serverIPJTextField.setText( serverAddressCurrent );
-        serverIPJTextField.setBackground( Color.WHITE );
-        Util.addSettingChangeListener(settingsChangedListener, this, serverIPJTextField);
-
         // DOMAIN LOGIN & PASSWORD
         domainLoginCurrent = directoryCompoundSettings.getWMISettings().getUsername();
         domainPasswordCurrent = directoryCompoundSettings.getWMISettings().getPassword();
@@ -349,7 +329,6 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
         serverDisabledJRadioButton = new javax.swing.JRadioButton();
         serverEnabledJRadioButton = new javax.swing.JRadioButton();
         restrictIPJPanel2 = new javax.swing.JPanel();
-        serverIPJTextField = new javax.swing.JTextField();
         jSeparator6 = new javax.swing.JSeparator();
         loginJPanel = new javax.swing.JPanel();
         domainJCheckBox = new javax.swing.JCheckBox();
@@ -679,16 +658,6 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
 
         restrictIPJPanel2.setLayout(new java.awt.GridBagLayout());
 
-        serverIPJTextField.setMaximumSize(new java.awt.Dimension(200, 19));
-        serverIPJTextField.setMinimumSize(new java.awt.Dimension(200, 19));
-        serverIPJTextField.setPreferredSize(new java.awt.Dimension(200, 19));
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 2, 0);
-        restrictIPJPanel2.add(serverIPJTextField, gridBagConstraints);
-
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
@@ -978,7 +947,6 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
 
     private void serverEnabledDependency(boolean enabled){
         messageJLabel.setEnabled( enabled );
-        serverIPJTextField.setEnabled( enabled );
         urlJLabel.setEnabled( enabled );
         urlJTextArea.setEnabled( enabled );
 
@@ -1036,7 +1004,6 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
     private javax.swing.ButtonGroup serverButtonGroup;
     public javax.swing.JRadioButton serverDisabledJRadioButton;
     public javax.swing.JRadioButton serverEnabledJRadioButton;
-    public javax.swing.JTextField serverIPJTextField;
     private javax.swing.JLabel serverJLabel1;
     private javax.swing.JLabel testJLabel;
     private javax.swing.JLabel urlJLabel;
