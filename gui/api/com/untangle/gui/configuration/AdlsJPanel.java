@@ -220,10 +220,7 @@ public class AdlsJPanel extends javax.swing.JPanel
         serverButtonGroup = new javax.swing.ButtonGroup();
         externalRemoteJPanel = new javax.swing.JPanel();
         enableRemoteJPanel = new javax.swing.JPanel();
-        restrictIPJPanel = new javax.swing.JPanel();
-        jSeparator2 = new javax.swing.JSeparator();
         restrictIPJPanel1 = new javax.swing.JPanel();
-        baseJLabel = new javax.swing.JLabel();
         baseJTextField = new javax.swing.JTextField();
         orgJLabel = new javax.swing.JLabel();
         orgJTextField = new javax.swing.JTextField();
@@ -262,31 +259,7 @@ public class AdlsJPanel extends javax.swing.JPanel
         externalRemoteJPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Active Directory (AD) Server", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
         enableRemoteJPanel.setLayout(new java.awt.GridBagLayout());
 
-        restrictIPJPanel.setLayout(new java.awt.GridBagLayout());
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 3;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(0, 114, 5, 0);
-        enableRemoteJPanel.add(restrictIPJPanel, gridBagConstraints);
-
-        jSeparator2.setForeground(new java.awt.Color(200, 200, 200));
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        enableRemoteJPanel.add(jSeparator2, gridBagConstraints);
-
         restrictIPJPanel1.setLayout(new java.awt.GridBagLayout());
-
-        baseJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
-        baseJLabel.setText("Active Directory Domain:");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        restrictIPJPanel1.add(baseJLabel, gridBagConstraints);
 
         baseJTextField.setMaximumSize(new java.awt.Dimension(200, 19));
         baseJTextField.setMinimumSize(new java.awt.Dimension(200, 19));
@@ -671,7 +644,6 @@ public class AdlsJPanel extends javax.swing.JPanel
 
     private void adEnabledDependency(boolean enabled){
         baseJTextField.setEnabled( enabled );
-        baseJLabel.setEnabled( enabled );
         orgJTextField.setEnabled( enabled );
         orgJLabel.setEnabled( enabled );
         orgOptionalJLabel.setEnabled( enabled );
@@ -710,7 +682,6 @@ public class AdlsJPanel extends javax.swing.JPanel
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup adButtonGroup;
     private javax.swing.JButton adTestJButton;
-    private javax.swing.JLabel baseJLabel;
     public javax.swing.JTextField baseJTextField;
     private javax.swing.JCheckBox domainJCheckBox;
     private javax.swing.JLabel domainLoginJLabel;
@@ -720,7 +691,6 @@ public class AdlsJPanel extends javax.swing.JPanel
     private javax.swing.JPanel enableRemoteJPanel;
     private javax.swing.JPanel externalRemoteJPanel;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator3;
     private javax.swing.JSeparator jSeparator4;
     private javax.swing.JSeparator jSeparator5;
@@ -730,7 +700,6 @@ public class AdlsJPanel extends javax.swing.JPanel
     private javax.swing.JLabel orgJLabel;
     public javax.swing.JTextField orgJTextField;
     private javax.swing.JLabel orgOptionalJLabel;
-    private javax.swing.JPanel restrictIPJPanel;
     private javax.swing.JPanel restrictIPJPanel1;
     private javax.swing.JPanel restrictIPJPanel2;
     private javax.swing.JPanel restrictIPJPanel3;
