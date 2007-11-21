@@ -70,7 +70,6 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
         Util.addFocusHighlight(passwordJPasswordField);
         Util.addFocusHighlight(baseJTextField);
         Util.addFocusHighlight(orgJTextField);
-        Util.addFocusHighlight(urlJTextArea);
     }
 
     // SETTINGS CHANGE NOTIFICATION /////////
@@ -226,7 +225,6 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
 
         // SERVER ENABLED
         serverEnabledCurrent = directoryCompoundSettings.getWMISettings().getIsEnabled();
-        serverEnabledDependency( enabledCurrent && serverEnabledCurrent );
 
         // DOMAIN LOGIN & PASSWORD
         domainLoginCurrent = directoryCompoundSettings.getWMISettings().getUsername();
@@ -238,7 +236,6 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
 
         // SERVER URL
         serverURLCurrent = directoryCompoundSettings.getWMISettings().getUrl();
-        urlJTextArea.setText( serverURLCurrent );
     }
 
 
@@ -276,8 +273,6 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
         loginJPanel = new javax.swing.JPanel();
         jSeparator5 = new javax.swing.JSeparator();
         restrictIPJPanel3 = new javax.swing.JPanel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        urlJTextArea = new javax.swing.JTextArea();
 
         setLayout(new java.awt.GridBagLayout());
 
@@ -576,24 +571,6 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
 
         restrictIPJPanel3.setLayout(new java.awt.GridBagLayout());
 
-        jScrollPane1.setBackground(new java.awt.Color(255, 255, 255));
-        jScrollPane1.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        jScrollPane1.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
-        jScrollPane1.setMaximumSize(new java.awt.Dimension(450, 18));
-        jScrollPane1.setMinimumSize(new java.awt.Dimension(450, 18));
-        jScrollPane1.setPreferredSize(new java.awt.Dimension(450, 18));
-        urlJTextArea.setColumns(25);
-        urlJTextArea.setEditable(false);
-        urlJTextArea.setMaximumSize(new java.awt.Dimension(275, 15));
-        urlJTextArea.setMinimumSize(new java.awt.Dimension(275, 15));
-        urlJTextArea.setOpaque(false);
-        jScrollPane1.setViewportView(urlJTextArea);
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 3;
-        restrictIPJPanel3.add(jScrollPane1, gridBagConstraints);
-
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
@@ -718,15 +695,6 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
         orgJTextField.setEnabled( enabled );
         orgJLabel.setEnabled( enabled );
         adTestJButton.setEnabled( enabled );
-
-        if( !enabled )
-            serverEnabledDependency( false );
-        else
-            serverEnabledDependency( true );
-    }
-
-    private void serverEnabledDependency(boolean enabled){
-        urlJTextArea.setEnabled( enabled );
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -741,7 +709,6 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
     private javax.swing.JButton helpJButton;
     private javax.swing.JLabel hostJLabel;
     public javax.swing.JTextField hostJTextField;
-    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator3;
     private javax.swing.JSeparator jSeparator4;
@@ -761,7 +728,6 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
     private javax.swing.ButtonGroup serverButtonGroup;
     private javax.swing.JLabel serverJLabel1;
     private javax.swing.JLabel testJLabel;
-    private javax.swing.JTextArea urlJTextArea;
     // End of variables declaration//GEN-END:variables
 
 
