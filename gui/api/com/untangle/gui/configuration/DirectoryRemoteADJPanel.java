@@ -276,7 +276,6 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
         loginJPanel = new javax.swing.JPanel();
         jSeparator5 = new javax.swing.JSeparator();
         restrictIPJPanel3 = new javax.swing.JPanel();
-        urlJLabel = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         urlJTextArea = new javax.swing.JTextArea();
 
@@ -577,14 +576,6 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
 
         restrictIPJPanel3.setLayout(new java.awt.GridBagLayout());
 
-        urlJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
-        urlJLabel.setText("URL to download installer:");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        restrictIPJPanel3.add(urlJLabel, gridBagConstraints);
-
         jScrollPane1.setBackground(new java.awt.Color(255, 255, 255));
         jScrollPane1.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         jScrollPane1.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
@@ -735,7 +726,6 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
     }
 
     private void serverEnabledDependency(boolean enabled){
-        urlJLabel.setEnabled( enabled );
         urlJTextArea.setEnabled( enabled );
     }
 
@@ -771,7 +761,6 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
     private javax.swing.ButtonGroup serverButtonGroup;
     private javax.swing.JLabel serverJLabel1;
     private javax.swing.JLabel testJLabel;
-    private javax.swing.JLabel urlJLabel;
     private javax.swing.JTextArea urlJTextArea;
     // End of variables declaration//GEN-END:variables
 
