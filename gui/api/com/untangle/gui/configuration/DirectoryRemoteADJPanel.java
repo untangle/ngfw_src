@@ -314,8 +314,6 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
         testJLabel = new javax.swing.JLabel();
         adTestJButton = new javax.swing.JButton();
         jSeparator4 = new javax.swing.JSeparator();
-        restrictIPJPanel2 = new javax.swing.JPanel();
-        jSeparator6 = new javax.swing.JSeparator();
         loginJPanel = new javax.swing.JPanel();
         domainJCheckBox = new javax.swing.JCheckBox();
         domainLoginJLabel = new javax.swing.JLabel();
@@ -608,22 +606,6 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
         gridBagConstraints.gridx = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         enableRemoteJPanel.add(jSeparator4, gridBagConstraints);
-
-        restrictIPJPanel2.setLayout(new java.awt.GridBagLayout());
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(0, 50, 5, 0);
-        enableRemoteJPanel.add(restrictIPJPanel2, gridBagConstraints);
-
-        jSeparator6.setForeground(new java.awt.Color(200, 200, 200));
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        enableRemoteJPanel.add(jSeparator6, gridBagConstraints);
 
         loginJPanel.setLayout(new java.awt.GridBagLayout());
 
@@ -929,7 +911,6 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
     private javax.swing.JSeparator jSeparator3;
     private javax.swing.JSeparator jSeparator4;
     private javax.swing.JSeparator jSeparator5;
-    private javax.swing.JSeparator jSeparator6;
     private javax.swing.JLabel loginJLabel;
     private javax.swing.JPanel loginJPanel;
     public javax.swing.JTextField loginJTextField;
@@ -942,7 +923,6 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
     private javax.swing.JSpinner portJSpinner;
     private javax.swing.JPanel restrictIPJPanel;
     private javax.swing.JPanel restrictIPJPanel1;
-    private javax.swing.JPanel restrictIPJPanel2;
     private javax.swing.JPanel restrictIPJPanel3;
     private javax.swing.ButtonGroup serverButtonGroup;
     private javax.swing.JLabel serverJLabel1;
