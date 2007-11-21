@@ -62,8 +62,6 @@ public class AdlsJPanel extends javax.swing.JPanel
 
     public AdlsJPanel() {
         initComponents();
-        Util.setPortView(portJSpinner, 25);
-        Util.addFocusHighlight(portJSpinner);
         Util.addFocusHighlight(loginJTextField);
         Util.addFocusHighlight(passwordJPasswordField);
         Util.addFocusHighlight(baseJTextField);
@@ -174,13 +172,6 @@ public class AdlsJPanel extends javax.swing.JPanel
         enabledCurrent = addressBookConfiguration.equals( AddressBookConfiguration.AD_AND_LOCAL );
         adEnabledDependency( enabledCurrent );
 
-        // PORT /////
-        portCurrent = repositorySettings.getLDAPPort();
-        portJSpinner.setValue( portCurrent );
-        ((JSpinner.DefaultEditor)portJSpinner.getEditor()).getTextField().setText(Integer.toString(portCurrent));
-        ((JSpinner.DefaultEditor)portJSpinner.getEditor()).getTextField().setBackground(Color.WHITE);
-        Util.addSettingChangeListener(settingsChangedListener, this, portJSpinner);
-
         // LOGIN //////
         loginCurrent = repositorySettings.getSuperuser();
         loginJTextField.setText( loginCurrent );
@@ -254,7 +245,6 @@ public class AdlsJPanel extends javax.swing.JPanel
         enableRemoteJPanel = new javax.swing.JPanel();
         helpJButton = new javax.swing.JButton();
         restrictIPJPanel = new javax.swing.JPanel();
-        portJSpinner = new javax.swing.JSpinner();
         loginJTextField = new javax.swing.JTextField();
         passwordJPasswordField = new javax.swing.JPasswordField();
         jSeparator2 = new javax.swing.JSeparator();
@@ -318,23 +308,6 @@ public class AdlsJPanel extends javax.swing.JPanel
         enableRemoteJPanel.add(helpJButton, gridBagConstraints);
 
         restrictIPJPanel.setLayout(new java.awt.GridBagLayout());
-
-        portJSpinner.setFont(new java.awt.Font("Dialog", 0, 12));
-        portJSpinner.setMaximumSize(new java.awt.Dimension(75, 19));
-        portJSpinner.setMinimumSize(new java.awt.Dimension(75, 19));
-        portJSpinner.setPreferredSize(new java.awt.Dimension(75, 19));
-        portJSpinner.addChangeListener(new javax.swing.event.ChangeListener() {
-            public void stateChanged(javax.swing.event.ChangeEvent evt) {
-                portJSpinnerStateChanged(evt);
-            }
-        });
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 2, 0);
-        restrictIPJPanel.add(portJSpinner, gridBagConstraints);
 
         loginJTextField.setMaximumSize(new java.awt.Dimension(150, 19));
         loginJTextField.setMinimumSize(new java.awt.Dimension(150, 19));
@@ -780,10 +753,6 @@ public class AdlsJPanel extends javax.swing.JPanel
         new TestThread();
     }//GEN-LAST:event_adTestJButtonActionPerformed
 
-    private void portJSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_portJSpinnerStateChanged
-        ;
-    }//GEN-LAST:event_portJSpinnerStateChanged
-
     private void loginJTextFieldCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_loginJTextFieldCaretUpdate
         if( !loginJTextField.getText().trim().equals( loginCurrent ) )
             ;
@@ -801,7 +770,6 @@ public class AdlsJPanel extends javax.swing.JPanel
     }//GEN-LAST:event_baseJTextFieldCaretUpdate
 
     private void adEnabledDependency(boolean enabled){
-        portJSpinner.setEnabled( enabled );
         loginJTextField.setEnabled( enabled );
         passwordJPasswordField.setEnabled( enabled );
         baseJTextField.setEnabled( enabled );
@@ -867,7 +835,6 @@ public class AdlsJPanel extends javax.swing.JPanel
     public javax.swing.JTextField orgJTextField;
     private javax.swing.JLabel orgOptionalJLabel;
     private javax.swing.JPasswordField passwordJPasswordField;
-    private javax.swing.JSpinner portJSpinner;
     private javax.swing.JPanel restrictIPJPanel;
     private javax.swing.JPanel restrictIPJPanel1;
     private javax.swing.JPanel restrictIPJPanel2;
