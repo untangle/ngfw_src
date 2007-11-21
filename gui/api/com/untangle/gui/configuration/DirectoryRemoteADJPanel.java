@@ -70,7 +70,6 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
         Util.addFocusHighlight(passwordJPasswordField);
         Util.addFocusHighlight(baseJTextField);
         Util.addFocusHighlight(orgJTextField);
-        Util.addFocusHighlight(domainPasswordJPasswordField);
         Util.addFocusHighlight(urlJTextArea);
     }
 
@@ -141,19 +140,6 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
             }
         }
 
-        // DOMAIN LOGIN & PASSWORD
-        String domainLogin = null;
-        String domainPassword = null;
-        domainPasswordJPasswordField.setBackground( Color.WHITE );
-        if( enabled ){
-            domainPassword = new String(domainPasswordJPasswordField.getPassword()).trim();
-            if(domainPassword.length() == 0){
-                domainPasswordJPasswordField.setBackground(Util.INVALID_BACKGROUND_COLOR);
-                throw new Exception(EXCEPTION_DOMAIN_PASSWORD);
-            }
-        }
-
-
         // SAVE SETTINGS ////////////
         if( !validateOnly ){
             if( enabled ){
@@ -165,10 +151,6 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
                 repositorySettings.setLDAPPort( port );
                 repositorySettings.setDomain( domain );
                 repositorySettings.setOUFilter( org );
-
-                WMISettings wmiSettings = directoryCompoundSettings.getWMISettings();
-                wmiSettings.setUsername( domainLogin );
-                wmiSettings.setPassword( domainPassword );
             }
             else{
                 directoryCompoundSettings.setAddressBookConfiguration( AddressBookConfiguration.LOCAL_ONLY );
@@ -253,10 +235,6 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
             domainEnabledCurrent = false;
         else
             domainEnabledCurrent = true;
-        domainEnabledDependency( enabledCurrent && serverEnabledCurrent && domainEnabledCurrent);
-        domainPasswordJPasswordField.setText(domainPasswordCurrent);
-        domainPasswordJPasswordField.setBackground(Color.WHITE);
-        Util.addSettingChangeListener(settingsChangedListener, this, domainPasswordJPasswordField);
 
         // SERVER URL
         serverURLCurrent = directoryCompoundSettings.getWMISettings().getUrl();
@@ -296,7 +274,6 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
         adTestJButton = new javax.swing.JButton();
         jSeparator4 = new javax.swing.JSeparator();
         loginJPanel = new javax.swing.JPanel();
-        domainPasswordJPasswordField = new javax.swing.JPasswordField();
         jSeparator5 = new javax.swing.JSeparator();
         restrictIPJPanel3 = new javax.swing.JPanel();
         messageJLabel = new javax.swing.JLabel();
@@ -586,24 +563,6 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
 
         loginJPanel.setLayout(new java.awt.GridBagLayout());
 
-        domainPasswordJPasswordField.setMaximumSize(new java.awt.Dimension(150, 19));
-        domainPasswordJPasswordField.setMinimumSize(new java.awt.Dimension(150, 19));
-        domainPasswordJPasswordField.setPreferredSize(new java.awt.Dimension(150, 19));
-        domainPasswordJPasswordField.addInputMethodListener(new java.awt.event.InputMethodListener() {
-            public void caretPositionChanged(java.awt.event.InputMethodEvent evt) {
-                domainPasswordJPasswordFieldCaretPositionChanged(evt);
-            }
-            public void inputMethodTextChanged(java.awt.event.InputMethodEvent evt) {
-            }
-        });
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 3;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 2, 0);
-        loginJPanel.add(domainPasswordJPasswordField, gridBagConstraints);
-
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
@@ -694,10 +653,6 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
             Util.handleExceptionNoRestart("Error showing help", f);
         }
     }//GEN-LAST:event_helpJButtonActionPerformed
-
-    private void domainPasswordJPasswordFieldCaretPositionChanged(java.awt.event.InputMethodEvent evt) {//GEN-FIRST:event_domainPasswordJPasswordFieldCaretPositionChanged
-        // TODO add your handling code here:
-    }//GEN-LAST:event_domainPasswordJPasswordFieldCaretPositionChanged
 
 
     private void orgJTextFieldCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_orgJTextFieldCaretUpdate
@@ -795,12 +750,6 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
         messageJLabel.setEnabled( enabled );
         urlJLabel.setEnabled( enabled );
         urlJTextArea.setEnabled( enabled );
-
-        domainEnabledDependency(enabled);
-    }
-
-    private void domainEnabledDependency(boolean enabled){
-        domainPasswordJPasswordField.setEnabled(enabled);
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -810,7 +759,6 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
     private javax.swing.JButton adTestJButton;
     private javax.swing.JLabel baseJLabel;
     public javax.swing.JTextField baseJTextField;
-    private javax.swing.JPasswordField domainPasswordJPasswordField;
     private javax.swing.JPanel enableRemoteJPanel;
     private javax.swing.JPanel externalRemoteJPanel;
     private javax.swing.JButton helpJButton;
