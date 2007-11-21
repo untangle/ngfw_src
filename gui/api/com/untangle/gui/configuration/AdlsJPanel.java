@@ -90,12 +90,11 @@ public class AdlsJPanel extends javax.swing.JPanel
         }
 
         // DOMAIN LOGIN & PASSWORD
-        boolean domainEnabled = domainJCheckBox.isSelected();
         String domainLogin = null;
         String domainPassword = null;
         domainLoginJTextField.setBackground( Color.WHITE );
         domainPasswordJPasswordField.setBackground( Color.WHITE );
-        if( serverEnabled && domainEnabled ){
+        if( serverEnabled ){
             domainLogin = domainLoginJTextField.getText().trim();
             if(domainLogin.length() == 0){
                 domainLoginJTextField.setBackground(Util.INVALID_BACKGROUND_COLOR);
@@ -118,10 +117,8 @@ public class AdlsJPanel extends javax.swing.JPanel
             wmiSettings.setIsEnabled( serverEnabled );
             if( serverEnabled ){
                 wmiSettings.setAddress( serverIPaddr );
-                if(domainEnabled){
-                    wmiSettings.setUsername( domainLogin );
-                    wmiSettings.setPassword( domainPassword );
-                }
+                wmiSettings.setUsername( domainLogin );
+                wmiSettings.setPassword( domainPassword );
             }
         }
     }
@@ -174,8 +171,6 @@ public class AdlsJPanel extends javax.swing.JPanel
             domainEnabledCurrent = false;
         else
             domainEnabledCurrent = true;
-        domainJCheckBox.setSelected(domainEnabledCurrent);
-        Util.addSettingChangeListener(settingsChangedListener, this, domainJCheckBox);
         domainEnabledDependency( enabledCurrent && serverEnabledCurrent && domainEnabledCurrent);
         domainLoginJTextField.setText(domainLoginCurrent);
         domainLoginJTextField.setBackground(Color.WHITE);
@@ -206,7 +201,6 @@ public class AdlsJPanel extends javax.swing.JPanel
         serverIPJTextField = new javax.swing.JTextField();
         jSeparator6 = new javax.swing.JSeparator();
         loginJPanel = new javax.swing.JPanel();
-        domainJCheckBox = new javax.swing.JCheckBox();
         domainLoginJLabel = new javax.swing.JLabel();
         domainLoginJTextField = new javax.swing.JTextField();
         domainPasswordJLabel = new javax.swing.JLabel();
@@ -305,20 +299,6 @@ public class AdlsJPanel extends javax.swing.JPanel
         enableRemoteJPanel.add(jSeparator6, gridBagConstraints);
 
         loginJPanel.setLayout(new java.awt.GridBagLayout());
-
-        domainJCheckBox.setFont(new java.awt.Font("Dialog", 0, 12));
-        domainJCheckBox.setText("<html>Use alternative Login and Password below, instead of the Login and Password for your AD server.</html>");
-        domainJCheckBox.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                domainJCheckBoxActionPerformed(evt);
-            }
-        });
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridwidth = 2;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.insets = new java.awt.Insets(5, 0, 10, 0);
-        loginJPanel.add(domainJCheckBox, gridBagConstraints);
 
         domainLoginJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
         domainLoginJLabel.setText("Domain Administrator Login:");
@@ -459,10 +439,6 @@ public class AdlsJPanel extends javax.swing.JPanel
         // TODO add your handling code here:
     }//GEN-LAST:event_domainLoginJTextFieldCaretPositionChanged
 
-    private void domainJCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_domainJCheckBoxActionPerformed
-        domainEnabledDependency(domainJCheckBox.isSelected());
-    }//GEN-LAST:event_domainJCheckBoxActionPerformed
-
 
     private void serverEnabledJRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_serverEnabledJRadioButtonActionPerformed
         serverEnabledDependency(true);
@@ -514,12 +490,7 @@ public class AdlsJPanel extends javax.swing.JPanel
         serverIPJTextField.setEnabled( enabled );
         urlJLabel.setEnabled( enabled );
         urlJTextArea.setEnabled( enabled );
-
-        domainJCheckBox.setEnabled(enabled);
-        if( !enabled )
-            domainEnabledDependency(false);
-        else
-            domainEnabledDependency(domainJCheckBox.isSelected());
+        domainEnabledDependency(enabled);
     }
 
     private void domainEnabledDependency(boolean enabled){
@@ -531,7 +502,6 @@ public class AdlsJPanel extends javax.swing.JPanel
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup adButtonGroup;
-    private javax.swing.JCheckBox domainJCheckBox;
     private javax.swing.JLabel domainLoginJLabel;
     public javax.swing.JTextField domainLoginJTextField;
     private javax.swing.JLabel domainPasswordJLabel;
