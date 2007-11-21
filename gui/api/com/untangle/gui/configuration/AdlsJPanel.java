@@ -220,7 +220,6 @@ public class AdlsJPanel extends javax.swing.JPanel
         serverButtonGroup = new javax.swing.ButtonGroup();
         externalRemoteJPanel = new javax.swing.JPanel();
         enableRemoteJPanel = new javax.swing.JPanel();
-        helpJButton = new javax.swing.JButton();
         restrictIPJPanel = new javax.swing.JPanel();
         jSeparator2 = new javax.swing.JSeparator();
         restrictIPJPanel1 = new javax.swing.JPanel();
@@ -262,25 +261,6 @@ public class AdlsJPanel extends javax.swing.JPanel
 
         externalRemoteJPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Active Directory (AD) Server", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
         enableRemoteJPanel.setLayout(new java.awt.GridBagLayout());
-
-        helpJButton.setFont(new java.awt.Font("Dialog", 0, 12));
-        helpJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconHelp_18x16.png")));
-        helpJButton.setText("Help");
-        helpJButton.setIconTextGap(6);
-        helpJButton.setMargin(new java.awt.Insets(4, 8, 4, 8));
-        helpJButton.setOpaque(false);
-        helpJButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                helpJButtonActionPerformed(evt);
-            }
-        });
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 3;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 10);
-        enableRemoteJPanel.add(helpJButton, gridBagConstraints);
 
         restrictIPJPanel.setLayout(new java.awt.GridBagLayout());
 
@@ -626,18 +606,6 @@ public class AdlsJPanel extends javax.swing.JPanel
 
     }// </editor-fold>//GEN-END:initComponents
 
-    private void helpJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_helpJButtonActionPerformed
-        try{
-            URL newURL = new URL( "http://www.untangle.com/docs/get.php?"
-                                  + "version=" + Version.getVersion()
-                                  + "&source=active_directory_config");
-            ((BasicService) ServiceManager.lookup("javax.jnlp.BasicService")).showDocument(newURL);
-        }
-        catch(Exception f){
-            Util.handleExceptionNoRestart("Error showing help", f);
-        }
-    }//GEN-LAST:event_helpJButtonActionPerformed
-
     private void domainPasswordJPasswordFieldCaretPositionChanged(java.awt.event.InputMethodEvent evt) {//GEN-FIRST:event_domainPasswordJPasswordFieldCaretPositionChanged
         // TODO add your handling code here:
     }//GEN-LAST:event_domainPasswordJPasswordFieldCaretPositionChanged
@@ -751,7 +719,6 @@ public class AdlsJPanel extends javax.swing.JPanel
     private javax.swing.JPasswordField domainPasswordJPasswordField;
     private javax.swing.JPanel enableRemoteJPanel;
     private javax.swing.JPanel externalRemoteJPanel;
-    private javax.swing.JButton helpJButton;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator3;
