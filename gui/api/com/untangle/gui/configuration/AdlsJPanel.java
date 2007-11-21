@@ -62,7 +62,6 @@ public class AdlsJPanel extends javax.swing.JPanel
 
     public AdlsJPanel() {
         initComponents();
-        Util.addFocusHighlight(orgJTextField);
         Util.addFocusHighlight(serverIPJTextField);
         Util.addFocusHighlight(domainLoginJTextField);
         Util.addFocusHighlight(domainPasswordJPasswordField);
@@ -77,9 +76,6 @@ public class AdlsJPanel extends javax.swing.JPanel
     ///////////////////////////////////////////
 
     public void doSave(DirectoryCompoundSettings directoryCompoundSettings, boolean validateOnly) throws Exception {
-        // ORG //
-        String org = orgJTextField.getText();
-
         // SERVER ENABLED
         boolean serverEnabled = serverEnabledJRadioButton.isSelected();
 
@@ -117,7 +113,6 @@ public class AdlsJPanel extends javax.swing.JPanel
         if( !validateOnly ){
             directoryCompoundSettings.setAddressBookConfiguration( AddressBookConfiguration.AD_AND_LOCAL );
             RepositorySettings repositorySettings = directoryCompoundSettings.getAddressBookSettings().getADRepositorySettings();
-            repositorySettings.setOUFilter( org );
 
             WMISettings wmiSettings = directoryCompoundSettings.getWMISettings();
             wmiSettings.setIsEnabled( serverEnabled );
@@ -155,12 +150,6 @@ public class AdlsJPanel extends javax.swing.JPanel
 
         // PASSWORD /////
         passwordCurrent = repositorySettings.getSuperuserPass();
-
-        // ORG //
-        orgCurrent = repositorySettings.getOUFilter();
-        orgJTextField.setText( orgCurrent );
-        orgJTextField.setBackground( Color.WHITE );
-        Util.addSettingChangeListener(settingsChangedListener, this, orgJTextField);
 
         // SERVER ENABLED
         serverEnabledCurrent = directoryCompoundSettings.getWMISettings().getIsEnabled();
@@ -209,9 +198,6 @@ public class AdlsJPanel extends javax.swing.JPanel
         serverButtonGroup = new javax.swing.ButtonGroup();
         externalRemoteJPanel = new javax.swing.JPanel();
         enableRemoteJPanel = new javax.swing.JPanel();
-        restrictIPJPanel1 = new javax.swing.JPanel();
-        orgJTextField = new javax.swing.JTextField();
-        jSeparator3 = new javax.swing.JSeparator();
         testJLabel = new javax.swing.JLabel();
         adTestJButton = new javax.swing.JButton();
         jSeparator4 = new javax.swing.JSeparator();
@@ -244,37 +230,6 @@ public class AdlsJPanel extends javax.swing.JPanel
 
         externalRemoteJPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Active Directory (AD) Server", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
         enableRemoteJPanel.setLayout(new java.awt.GridBagLayout());
-
-        restrictIPJPanel1.setLayout(new java.awt.GridBagLayout());
-
-        orgJTextField.setMaximumSize(new java.awt.Dimension(200, 19));
-        orgJTextField.setMinimumSize(new java.awt.Dimension(200, 19));
-        orgJTextField.setPreferredSize(new java.awt.Dimension(200, 19));
-        orgJTextField.addCaretListener(new javax.swing.event.CaretListener() {
-            public void caretUpdate(javax.swing.event.CaretEvent evt) {
-                orgJTextFieldCaretUpdate(evt);
-            }
-        });
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(2, 0, 0, 0);
-        restrictIPJPanel1.add(orgJTextField, gridBagConstraints);
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(5, 87, 5, 0);
-        enableRemoteJPanel.add(restrictIPJPanel1, gridBagConstraints);
-
-        jSeparator3.setForeground(new java.awt.Color(200, 200, 200));
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        enableRemoteJPanel.add(jSeparator3, gridBagConstraints);
 
         testJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
         testJLabel.setText("<html>The <b>Active Directory Test</b> can be used to test that your settings above are correct.</html>");
@@ -553,11 +508,6 @@ public class AdlsJPanel extends javax.swing.JPanel
         serverEnabledDependency(false);
     }//GEN-LAST:event_serverDisabledJRadioButtonActionPerformed
 
-    private void orgJTextFieldCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_orgJTextFieldCaretUpdate
-        if( !orgJTextField.getText().trim().equals( orgCurrent ) )
-            ;
-    }//GEN-LAST:event_orgJTextFieldCaretUpdate
-
     private class TestThread extends Thread {
         public TestThread(){
             setName("MVCLIENT-TestThread");
@@ -591,7 +541,6 @@ public class AdlsJPanel extends javax.swing.JPanel
     }//GEN-LAST:event_adTestJButtonActionPerformed
 
     private void adEnabledDependency(boolean enabled){
-        orgJTextField.setEnabled( enabled );
         adTestJButton.setEnabled( enabled );
 
         serverEnabledJRadioButton.setEnabled( enabled );
@@ -635,14 +584,11 @@ public class AdlsJPanel extends javax.swing.JPanel
     private javax.swing.JPanel enableRemoteJPanel;
     private javax.swing.JPanel externalRemoteJPanel;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JSeparator jSeparator3;
     private javax.swing.JSeparator jSeparator4;
     private javax.swing.JSeparator jSeparator5;
     private javax.swing.JSeparator jSeparator6;
     private javax.swing.JPanel loginJPanel;
     private javax.swing.JLabel messageJLabel;
-    public javax.swing.JTextField orgJTextField;
-    private javax.swing.JPanel restrictIPJPanel1;
     private javax.swing.JPanel restrictIPJPanel2;
     private javax.swing.JPanel restrictIPJPanel3;
     private javax.swing.ButtonGroup serverButtonGroup;
