@@ -70,7 +70,6 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
         Util.addFocusHighlight(passwordJPasswordField);
         Util.addFocusHighlight(baseJTextField);
         Util.addFocusHighlight(orgJTextField);
-        Util.addFocusHighlight(domainLoginJTextField);
         Util.addFocusHighlight(domainPasswordJPasswordField);
         Util.addFocusHighlight(urlJTextArea);
     }
@@ -145,14 +144,8 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
         // DOMAIN LOGIN & PASSWORD
         String domainLogin = null;
         String domainPassword = null;
-        domainLoginJTextField.setBackground( Color.WHITE );
         domainPasswordJPasswordField.setBackground( Color.WHITE );
         if( enabled ){
-            domainLogin = domainLoginJTextField.getText().trim();
-            if(domainLogin.length() == 0){
-                domainLoginJTextField.setBackground(Util.INVALID_BACKGROUND_COLOR);
-                throw new Exception(EXCEPTION_DOMAIN_LOGIN);
-            }
             domainPassword = new String(domainPasswordJPasswordField.getPassword()).trim();
             if(domainPassword.length() == 0){
                 domainPasswordJPasswordField.setBackground(Util.INVALID_BACKGROUND_COLOR);
@@ -261,9 +254,6 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
         else
             domainEnabledCurrent = true;
         domainEnabledDependency( enabledCurrent && serverEnabledCurrent && domainEnabledCurrent);
-        domainLoginJTextField.setText(domainLoginCurrent);
-        domainLoginJTextField.setBackground(Color.WHITE);
-        Util.addSettingChangeListener(settingsChangedListener, this, domainLoginJTextField);
         domainPasswordJPasswordField.setText(domainPasswordCurrent);
         domainPasswordJPasswordField.setBackground(Color.WHITE);
         Util.addSettingChangeListener(settingsChangedListener, this, domainPasswordJPasswordField);
@@ -306,7 +296,6 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
         adTestJButton = new javax.swing.JButton();
         jSeparator4 = new javax.swing.JSeparator();
         loginJPanel = new javax.swing.JPanel();
-        domainLoginJTextField = new javax.swing.JTextField();
         domainPasswordJPasswordField = new javax.swing.JPasswordField();
         jSeparator5 = new javax.swing.JSeparator();
         restrictIPJPanel3 = new javax.swing.JPanel();
@@ -597,24 +586,6 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
 
         loginJPanel.setLayout(new java.awt.GridBagLayout());
 
-        domainLoginJTextField.setMaximumSize(new java.awt.Dimension(150, 19));
-        domainLoginJTextField.setMinimumSize(new java.awt.Dimension(150, 19));
-        domainLoginJTextField.setPreferredSize(new java.awt.Dimension(150, 19));
-        domainLoginJTextField.addInputMethodListener(new java.awt.event.InputMethodListener() {
-            public void caretPositionChanged(java.awt.event.InputMethodEvent evt) {
-                domainLoginJTextFieldCaretPositionChanged(evt);
-            }
-            public void inputMethodTextChanged(java.awt.event.InputMethodEvent evt) {
-            }
-        });
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 2, 0);
-        loginJPanel.add(domainLoginJTextField, gridBagConstraints);
-
         domainPasswordJPasswordField.setMaximumSize(new java.awt.Dimension(150, 19));
         domainPasswordJPasswordField.setMinimumSize(new java.awt.Dimension(150, 19));
         domainPasswordJPasswordField.setPreferredSize(new java.awt.Dimension(150, 19));
@@ -728,10 +699,6 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
         // TODO add your handling code here:
     }//GEN-LAST:event_domainPasswordJPasswordFieldCaretPositionChanged
 
-    private void domainLoginJTextFieldCaretPositionChanged(java.awt.event.InputMethodEvent evt) {//GEN-FIRST:event_domainLoginJTextFieldCaretPositionChanged
-        // TODO add your handling code here:
-    }//GEN-LAST:event_domainLoginJTextFieldCaretPositionChanged
-
 
     private void orgJTextFieldCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_orgJTextFieldCaretUpdate
         if( !orgJTextField.getText().trim().equals( orgCurrent ) )
@@ -833,7 +800,6 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
     }
 
     private void domainEnabledDependency(boolean enabled){
-        domainLoginJTextField.setEnabled(enabled);
         domainPasswordJPasswordField.setEnabled(enabled);
     }
 
@@ -844,7 +810,6 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
     private javax.swing.JButton adTestJButton;
     private javax.swing.JLabel baseJLabel;
     public javax.swing.JTextField baseJTextField;
-    public javax.swing.JTextField domainLoginJTextField;
     private javax.swing.JPasswordField domainPasswordJPasswordField;
     private javax.swing.JPanel enableRemoteJPanel;
     private javax.swing.JPanel externalRemoteJPanel;
