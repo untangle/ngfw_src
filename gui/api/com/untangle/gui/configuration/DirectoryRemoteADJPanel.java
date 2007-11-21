@@ -315,7 +315,8 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
     }
 
 
-    private void initComponents() {//GEN-BEGIN:initComponents
+    // <editor-fold defaultstate="collapsed" desc=" Generated Code ">//GEN-BEGIN:initComponents
+    private void initComponents() {
         java.awt.GridBagConstraints gridBagConstraints;
 
         adButtonGroup = new javax.swing.ButtonGroup();
@@ -341,7 +342,6 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
         baseJTextField = new javax.swing.JTextField();
         orgJLabel = new javax.swing.JLabel();
         orgJTextField = new javax.swing.JTextField();
-        orgOptionalJLabel = new javax.swing.JLabel();
         jSeparator3 = new javax.swing.JSeparator();
         testJLabel = new javax.swing.JLabel();
         adTestJButton = new javax.swing.JButton();
@@ -373,7 +373,7 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
         setPreferredSize(new java.awt.Dimension(563, 687));
         externalRemoteJPanel.setLayout(new java.awt.GridBagLayout());
 
-        externalRemoteJPanel.setBorder(new javax.swing.border.TitledBorder(null, "Active Directory (AD) Server", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
+        externalRemoteJPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Active Directory (AD) Server", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
         enableRemoteJPanel.setLayout(new java.awt.GridBagLayout());
 
         serverJLabel1.setFont(new java.awt.Font("Dialog", 0, 12));
@@ -390,10 +390,10 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
         adDisabledJRadioButton.setText("<html><b>Disabled</b></html>");
         adDisabledJRadioButton.setActionCommand("<html><b>Use DHCP</b> to automatically set Untangle's IP address from the network's DHCP server.</html>");
         adDisabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
-                public void actionPerformed(java.awt.event.ActionEvent evt) {
-                    adDisabledJRadioButtonActionPerformed(evt);
-                }
-            });
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                adDisabledJRadioButtonActionPerformed(evt);
+            }
+        });
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -406,10 +406,10 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
         adEnabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
         adEnabledJRadioButton.setText("<html><b>Enabled</b></html>");
         adEnabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
-                public void actionPerformed(java.awt.event.ActionEvent evt) {
-                    adEnabledJRadioButtonActionPerformed(evt);
-                }
-            });
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                adEnabledJRadioButtonActionPerformed(evt);
+            }
+        });
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -425,10 +425,10 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
         helpJButton.setMargin(new java.awt.Insets(4, 8, 4, 8));
         helpJButton.setOpaque(false);
         helpJButton.addActionListener(new java.awt.event.ActionListener() {
-                public void actionPerformed(java.awt.event.ActionEvent evt) {
-                    helpJButtonActionPerformed(evt);
-                }
-            });
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                helpJButtonActionPerformed(evt);
+            }
+        });
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -451,10 +451,10 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
         hostJTextField.setMinimumSize(new java.awt.Dimension(200, 19));
         hostJTextField.setPreferredSize(new java.awt.Dimension(200, 19));
         hostJTextField.addCaretListener(new javax.swing.event.CaretListener() {
-                public void caretUpdate(javax.swing.event.CaretEvent evt) {
-                    hostJTextFieldCaretUpdate(evt);
-                }
-            });
+            public void caretUpdate(javax.swing.event.CaretEvent evt) {
+                hostJTextFieldCaretUpdate(evt);
+            }
+        });
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
@@ -476,10 +476,10 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
         portJSpinner.setMinimumSize(new java.awt.Dimension(75, 19));
         portJSpinner.setPreferredSize(new java.awt.Dimension(75, 19));
         portJSpinner.addChangeListener(new javax.swing.event.ChangeListener() {
-                public void stateChanged(javax.swing.event.ChangeEvent evt) {
-                    portJSpinnerStateChanged(evt);
-                }
-            });
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                portJSpinnerStateChanged(evt);
+            }
+        });
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
@@ -500,10 +500,10 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
         loginJTextField.setMinimumSize(new java.awt.Dimension(150, 19));
         loginJTextField.setPreferredSize(new java.awt.Dimension(150, 19));
         loginJTextField.addCaretListener(new javax.swing.event.CaretListener() {
-                public void caretUpdate(javax.swing.event.CaretEvent evt) {
-                    loginJTextFieldCaretUpdate(evt);
-                }
-            });
+            public void caretUpdate(javax.swing.event.CaretEvent evt) {
+                loginJTextFieldCaretUpdate(evt);
+            }
+        });
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
@@ -524,10 +524,10 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
         passwordJPasswordField.setMinimumSize(new java.awt.Dimension(150, 19));
         passwordJPasswordField.setPreferredSize(new java.awt.Dimension(150, 19));
         passwordJPasswordField.addCaretListener(new javax.swing.event.CaretListener() {
-                public void caretUpdate(javax.swing.event.CaretEvent evt) {
-                    passwordJPasswordFieldCaretUpdate(evt);
-                }
-            });
+            public void caretUpdate(javax.swing.event.CaretEvent evt) {
+                passwordJPasswordFieldCaretUpdate(evt);
+            }
+        });
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
@@ -564,10 +564,10 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
         baseJTextField.setMinimumSize(new java.awt.Dimension(200, 19));
         baseJTextField.setPreferredSize(new java.awt.Dimension(200, 19));
         baseJTextField.addCaretListener(new javax.swing.event.CaretListener() {
-                public void caretUpdate(javax.swing.event.CaretEvent evt) {
-                    baseJTextFieldCaretUpdate(evt);
-                }
-            });
+            public void caretUpdate(javax.swing.event.CaretEvent evt) {
+                baseJTextFieldCaretUpdate(evt);
+            }
+        });
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
@@ -588,10 +588,10 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
         orgJTextField.setMinimumSize(new java.awt.Dimension(200, 19));
         orgJTextField.setPreferredSize(new java.awt.Dimension(200, 19));
         orgJTextField.addCaretListener(new javax.swing.event.CaretListener() {
-                public void caretUpdate(javax.swing.event.CaretEvent evt) {
-                    orgJTextFieldCaretUpdate(evt);
-                }
-            });
+            public void caretUpdate(javax.swing.event.CaretEvent evt) {
+                orgJTextFieldCaretUpdate(evt);
+            }
+        });
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
@@ -599,15 +599,6 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(2, 0, 0, 0);
         restrictIPJPanel1.add(orgJTextField, gridBagConstraints);
-
-        orgOptionalJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
-        orgOptionalJLabel.setText(" (Optional)");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 2;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        gridBagConstraints.insets = new java.awt.Insets(2, 0, 0, 0);
-        restrictIPJPanel1.add(orgOptionalJLabel, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -639,10 +630,10 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
         adTestJButton.setMinimumSize(null);
         adTestJButton.setPreferredSize(null);
         adTestJButton.addActionListener(new java.awt.event.ActionListener() {
-                public void actionPerformed(java.awt.event.ActionEvent evt) {
-                    adTestJButtonActionPerformed(evt);
-                }
-            });
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                adTestJButtonActionPerformed(evt);
+            }
+        });
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -669,10 +660,10 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
         serverDisabledJRadioButton.setText("<html><b>Disabled</b></html>");
         serverDisabledJRadioButton.setActionCommand("<html><b>Use DHCP</b> to automatically set Untangle's IP address from the network's DHCP server.</html>");
         serverDisabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
-                public void actionPerformed(java.awt.event.ActionEvent evt) {
-                    serverDisabledJRadioButtonActionPerformed(evt);
-                }
-            });
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                serverDisabledJRadioButtonActionPerformed(evt);
+            }
+        });
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -685,10 +676,10 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
         serverEnabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
         serverEnabledJRadioButton.setText("<html><b>Enabled</b></html>");
         serverEnabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
-                public void actionPerformed(java.awt.event.ActionEvent evt) {
-                    serverEnabledJRadioButtonActionPerformed(evt);
-                }
-            });
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                serverEnabledJRadioButtonActionPerformed(evt);
+            }
+        });
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -736,10 +727,10 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
         domainJCheckBox.setFont(new java.awt.Font("Dialog", 0, 12));
         domainJCheckBox.setText("<html>Use alternative Login and Password below, instead of the Login and Password for your AD server.</html>");
         domainJCheckBox.addActionListener(new java.awt.event.ActionListener() {
-                public void actionPerformed(java.awt.event.ActionEvent evt) {
-                    domainJCheckBoxActionPerformed(evt);
-                }
-            });
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                domainJCheckBoxActionPerformed(evt);
+            }
+        });
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = 2;
@@ -759,12 +750,12 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
         domainLoginJTextField.setMinimumSize(new java.awt.Dimension(150, 19));
         domainLoginJTextField.setPreferredSize(new java.awt.Dimension(150, 19));
         domainLoginJTextField.addInputMethodListener(new java.awt.event.InputMethodListener() {
-                public void caretPositionChanged(java.awt.event.InputMethodEvent evt) {
-                    domainLoginJTextFieldCaretPositionChanged(evt);
-                }
-                public void inputMethodTextChanged(java.awt.event.InputMethodEvent evt) {
-                }
-            });
+            public void caretPositionChanged(java.awt.event.InputMethodEvent evt) {
+                domainLoginJTextFieldCaretPositionChanged(evt);
+            }
+            public void inputMethodTextChanged(java.awt.event.InputMethodEvent evt) {
+            }
+        });
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
@@ -785,12 +776,12 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
         domainPasswordJPasswordField.setMinimumSize(new java.awt.Dimension(150, 19));
         domainPasswordJPasswordField.setPreferredSize(new java.awt.Dimension(150, 19));
         domainPasswordJPasswordField.addInputMethodListener(new java.awt.event.InputMethodListener() {
-                public void caretPositionChanged(java.awt.event.InputMethodEvent evt) {
-                    domainPasswordJPasswordFieldCaretPositionChanged(evt);
-                }
-                public void inputMethodTextChanged(java.awt.event.InputMethodEvent evt) {
-                }
-            });
+            public void caretPositionChanged(java.awt.event.InputMethodEvent evt) {
+                domainPasswordJPasswordFieldCaretPositionChanged(evt);
+            }
+            public void inputMethodTextChanged(java.awt.event.InputMethodEvent evt) {
+            }
+        });
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
@@ -876,7 +867,7 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 10);
         add(externalRemoteJPanel, gridBagConstraints);
 
-    }//GEN-END:initComponents
+    }// </editor-fold>//GEN-END:initComponents
 
     private void helpJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_helpJButtonActionPerformed
         try{
@@ -994,7 +985,6 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
         baseJLabel.setEnabled( enabled );
         orgJTextField.setEnabled( enabled );
         orgJLabel.setEnabled( enabled );
-        orgOptionalJLabel.setEnabled( enabled );
         adTestJButton.setEnabled( enabled );
 
         serverEnabledJRadioButton.setEnabled( enabled );
@@ -1056,7 +1046,6 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
     private javax.swing.JLabel messageJLabel;
     private javax.swing.JLabel orgJLabel;
     public javax.swing.JTextField orgJTextField;
-    private javax.swing.JLabel orgOptionalJLabel;
     private javax.swing.JLabel passwordJLabel;
     private javax.swing.JPasswordField passwordJPasswordField;
     private javax.swing.JLabel portJLabel;
