@@ -349,7 +349,6 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
         serverDisabledJRadioButton = new javax.swing.JRadioButton();
         serverEnabledJRadioButton = new javax.swing.JRadioButton();
         restrictIPJPanel2 = new javax.swing.JPanel();
-        serverIPJLabel = new javax.swing.JLabel();
         serverIPJTextField = new javax.swing.JTextField();
         jSeparator6 = new javax.swing.JSeparator();
         loginJPanel = new javax.swing.JPanel();
@@ -680,14 +679,6 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
 
         restrictIPJPanel2.setLayout(new java.awt.GridBagLayout());
 
-        serverIPJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
-        serverIPJLabel.setText("Server IP Address:");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        restrictIPJPanel2.add(serverIPJLabel, gridBagConstraints);
-
         serverIPJTextField.setMaximumSize(new java.awt.Dimension(200, 19));
         serverIPJTextField.setMinimumSize(new java.awt.Dimension(200, 19));
         serverIPJTextField.setPreferredSize(new java.awt.Dimension(200, 19));
@@ -987,7 +978,6 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
 
     private void serverEnabledDependency(boolean enabled){
         messageJLabel.setEnabled( enabled );
-        serverIPJLabel.setEnabled( enabled );
         serverIPJTextField.setEnabled( enabled );
         urlJLabel.setEnabled( enabled );
         urlJTextArea.setEnabled( enabled );
@@ -1046,7 +1036,6 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
     private javax.swing.ButtonGroup serverButtonGroup;
     public javax.swing.JRadioButton serverDisabledJRadioButton;
     public javax.swing.JRadioButton serverEnabledJRadioButton;
-    private javax.swing.JLabel serverIPJLabel;
     public javax.swing.JTextField serverIPJTextField;
     private javax.swing.JLabel serverJLabel1;
     private javax.swing.JLabel testJLabel;
