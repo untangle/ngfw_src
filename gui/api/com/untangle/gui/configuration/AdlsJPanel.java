@@ -63,7 +63,6 @@ public class AdlsJPanel extends javax.swing.JPanel
     public AdlsJPanel() {
         initComponents();
         Util.setPortView(portJSpinner, 25);
-        Util.addFocusHighlight(hostJTextField);
         Util.addFocusHighlight(portJSpinner);
         Util.addFocusHighlight(loginJTextField);
         Util.addFocusHighlight(passwordJPasswordField);
@@ -83,9 +82,6 @@ public class AdlsJPanel extends javax.swing.JPanel
     ///////////////////////////////////////////
 
     public void doSave(DirectoryCompoundSettings directoryCompoundSettings, boolean validateOnly) throws Exception {
-        // HOSTNAME ///////
-        String host = hostJTextField.getText();
-
         // LOGIN /////
         String login = loginJTextField.getText();
 
@@ -137,7 +133,6 @@ public class AdlsJPanel extends javax.swing.JPanel
             RepositorySettings repositorySettings = directoryCompoundSettings.getAddressBookSettings().getADRepositorySettings();
             repositorySettings.setSuperuser( login );
             repositorySettings.setSuperuserPass( password );
-            repositorySettings.setLDAPHost( host );
             repositorySettings.setDomain( domain );
             repositorySettings.setOUFilter( org );
 
@@ -178,12 +173,6 @@ public class AdlsJPanel extends javax.swing.JPanel
         // AD ENABLED //
         enabledCurrent = addressBookConfiguration.equals( AddressBookConfiguration.AD_AND_LOCAL );
         adEnabledDependency( enabledCurrent );
-
-        // HOST /////
-        hostCurrent = repositorySettings.getLDAPHost();
-        hostJTextField.setText( hostCurrent );
-        hostJTextField.setBackground( Color.WHITE );
-        Util.addSettingChangeListener(settingsChangedListener, this, hostJTextField);
 
         // PORT /////
         portCurrent = repositorySettings.getLDAPPort();
@@ -265,7 +254,6 @@ public class AdlsJPanel extends javax.swing.JPanel
         enableRemoteJPanel = new javax.swing.JPanel();
         helpJButton = new javax.swing.JButton();
         restrictIPJPanel = new javax.swing.JPanel();
-        hostJTextField = new javax.swing.JTextField();
         portJSpinner = new javax.swing.JSpinner();
         loginJTextField = new javax.swing.JTextField();
         passwordJPasswordField = new javax.swing.JPasswordField();
@@ -330,22 +318,6 @@ public class AdlsJPanel extends javax.swing.JPanel
         enableRemoteJPanel.add(helpJButton, gridBagConstraints);
 
         restrictIPJPanel.setLayout(new java.awt.GridBagLayout());
-
-        hostJTextField.setMaximumSize(new java.awt.Dimension(200, 19));
-        hostJTextField.setMinimumSize(new java.awt.Dimension(200, 19));
-        hostJTextField.setPreferredSize(new java.awt.Dimension(200, 19));
-        hostJTextField.addCaretListener(new javax.swing.event.CaretListener() {
-            public void caretUpdate(javax.swing.event.CaretEvent evt) {
-                hostJTextFieldCaretUpdate(evt);
-            }
-        });
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 2, 0);
-        restrictIPJPanel.add(hostJTextField, gridBagConstraints);
 
         portJSpinner.setFont(new java.awt.Font("Dialog", 0, 12));
         portJSpinner.setMaximumSize(new java.awt.Dimension(75, 19));
@@ -812,11 +784,6 @@ public class AdlsJPanel extends javax.swing.JPanel
         ;
     }//GEN-LAST:event_portJSpinnerStateChanged
 
-    private void hostJTextFieldCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_hostJTextFieldCaretUpdate
-        if( !hostJTextField.getText().trim().equals( hostCurrent ) )
-            ;
-    }//GEN-LAST:event_hostJTextFieldCaretUpdate
-
     private void loginJTextFieldCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_loginJTextFieldCaretUpdate
         if( !loginJTextField.getText().trim().equals( loginCurrent ) )
             ;
@@ -834,7 +801,6 @@ public class AdlsJPanel extends javax.swing.JPanel
     }//GEN-LAST:event_baseJTextFieldCaretUpdate
 
     private void adEnabledDependency(boolean enabled){
-        hostJTextField.setEnabled( enabled );
         portJSpinner.setEnabled( enabled );
         loginJTextField.setEnabled( enabled );
         passwordJPasswordField.setEnabled( enabled );
@@ -888,7 +854,6 @@ public class AdlsJPanel extends javax.swing.JPanel
     private javax.swing.JPanel enableRemoteJPanel;
     private javax.swing.JPanel externalRemoteJPanel;
     private javax.swing.JButton helpJButton;
-    public javax.swing.JTextField hostJTextField;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator3;
