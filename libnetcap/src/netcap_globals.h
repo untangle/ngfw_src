@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -65,7 +65,7 @@
  */
 
 #ifndef IP_NONLOCAL
-#define IP_NONLOCAL 18
+#define IP_NONLOCAL 19
 #endif
 #ifndef IP_SADDR
 #define IP_SADDR	20
