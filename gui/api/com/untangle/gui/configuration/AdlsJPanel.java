@@ -198,9 +198,6 @@ public class AdlsJPanel extends javax.swing.JPanel
         serverButtonGroup = new javax.swing.ButtonGroup();
         externalRemoteJPanel = new javax.swing.JPanel();
         enableRemoteJPanel = new javax.swing.JPanel();
-        testJLabel = new javax.swing.JLabel();
-        adTestJButton = new javax.swing.JButton();
-        jSeparator4 = new javax.swing.JSeparator();
         serverJLabel = new javax.swing.JLabel();
         serverDisabledJRadioButton = new javax.swing.JRadioButton();
         serverEnabledJRadioButton = new javax.swing.JRadioButton();
@@ -230,39 +227,6 @@ public class AdlsJPanel extends javax.swing.JPanel
 
         externalRemoteJPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Active Directory (AD) Server", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
         enableRemoteJPanel.setLayout(new java.awt.GridBagLayout());
-
-        testJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
-        testJLabel.setText("<html>The <b>Active Directory Test</b> can be used to test that your settings above are correct.</html>");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 0);
-        enableRemoteJPanel.add(testJLabel, gridBagConstraints);
-
-        adTestJButton.setFont(new java.awt.Font("Dialog", 0, 12));
-        adTestJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconTest_16x16.png")));
-        adTestJButton.setText("Active Directory Test");
-        adTestJButton.setMargin(new java.awt.Insets(4, 8, 4, 8));
-        adTestJButton.setMaximumSize(null);
-        adTestJButton.setMinimumSize(null);
-        adTestJButton.setPreferredSize(null);
-        adTestJButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                adTestJButtonActionPerformed(evt);
-            }
-        });
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 5, 0);
-        enableRemoteJPanel.add(adTestJButton, gridBagConstraints);
-
-        jSeparator4.setForeground(new java.awt.Color(200, 200, 200));
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        enableRemoteJPanel.add(jSeparator4, gridBagConstraints);
 
         serverJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
         serverJLabel.setText("<html>The <b>Active Directory Lookup Server</b> can be used to determine which users are logged into which machines for policies, reporting, etc.  You must download the installer using the URL below, install the server, and then specify the IP address of the server in the field below.</html>");
@@ -534,15 +498,7 @@ public class AdlsJPanel extends javax.swing.JPanel
         }
     }
 
-    private void adTestJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_adTestJButtonActionPerformed
-        if( Util.getIsDemo() )
-            return;
-        new TestThread();
-    }//GEN-LAST:event_adTestJButtonActionPerformed
-
     private void adEnabledDependency(boolean enabled){
-        adTestJButton.setEnabled( enabled );
-
         serverEnabledJRadioButton.setEnabled( enabled );
         serverDisabledJRadioButton.setEnabled( enabled );
         if( !enabled )
@@ -575,7 +531,6 @@ public class AdlsJPanel extends javax.swing.JPanel
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup adButtonGroup;
-    private javax.swing.JButton adTestJButton;
     private javax.swing.JCheckBox domainJCheckBox;
     private javax.swing.JLabel domainLoginJLabel;
     public javax.swing.JTextField domainLoginJTextField;
@@ -584,7 +539,6 @@ public class AdlsJPanel extends javax.swing.JPanel
     private javax.swing.JPanel enableRemoteJPanel;
     private javax.swing.JPanel externalRemoteJPanel;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JSeparator jSeparator4;
     private javax.swing.JSeparator jSeparator5;
     private javax.swing.JSeparator jSeparator6;
     private javax.swing.JPanel loginJPanel;
@@ -597,7 +551,6 @@ public class AdlsJPanel extends javax.swing.JPanel
     private javax.swing.JLabel serverIPJLabel;
     public javax.swing.JTextField serverIPJTextField;
     private javax.swing.JLabel serverJLabel;
-    private javax.swing.JLabel testJLabel;
     private javax.swing.JLabel urlJLabel;
     private javax.swing.JTextArea urlJTextArea;
     // End of variables declaration//GEN-END:variables
