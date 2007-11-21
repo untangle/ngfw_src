@@ -265,7 +265,6 @@ public class AdlsJPanel extends javax.swing.JPanel
         enableRemoteJPanel = new javax.swing.JPanel();
         helpJButton = new javax.swing.JButton();
         restrictIPJPanel = new javax.swing.JPanel();
-        hostJLabel = new javax.swing.JLabel();
         hostJTextField = new javax.swing.JTextField();
         portJLabel = new javax.swing.JLabel();
         portJSpinner = new javax.swing.JSpinner();
@@ -334,14 +333,6 @@ public class AdlsJPanel extends javax.swing.JPanel
         enableRemoteJPanel.add(helpJButton, gridBagConstraints);
 
         restrictIPJPanel.setLayout(new java.awt.GridBagLayout());
-
-        hostJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
-        hostJLabel.setText("AD Server IP or Hostname:");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        restrictIPJPanel.add(hostJLabel, gridBagConstraints);
 
         hostJTextField.setMaximumSize(new java.awt.Dimension(200, 19));
         hostJTextField.setMinimumSize(new java.awt.Dimension(200, 19));
@@ -871,7 +862,6 @@ public class AdlsJPanel extends javax.swing.JPanel
 
     private void adEnabledDependency(boolean enabled){
         hostJTextField.setEnabled( enabled );
-        hostJLabel.setEnabled( enabled );
         portJSpinner.setEnabled( enabled );
         portJLabel.setEnabled( enabled );
         loginJTextField.setEnabled( enabled );
@@ -928,7 +918,6 @@ public class AdlsJPanel extends javax.swing.JPanel
     private javax.swing.JPanel enableRemoteJPanel;
     private javax.swing.JPanel externalRemoteJPanel;
     private javax.swing.JButton helpJButton;
-    private javax.swing.JLabel hostJLabel;
     public javax.swing.JTextField hostJTextField;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSeparator jSeparator2;
