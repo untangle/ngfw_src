@@ -346,7 +346,6 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
         testJLabel = new javax.swing.JLabel();
         adTestJButton = new javax.swing.JButton();
         jSeparator4 = new javax.swing.JSeparator();
-        serverJLabel = new javax.swing.JLabel();
         serverDisabledJRadioButton = new javax.swing.JRadioButton();
         serverEnabledJRadioButton = new javax.swing.JRadioButton();
         restrictIPJPanel2 = new javax.swing.JPanel();
@@ -645,15 +644,6 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
         gridBagConstraints.gridx = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         enableRemoteJPanel.add(jSeparator4, gridBagConstraints);
-
-        serverJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
-        serverJLabel.setText("<html>The <b>Active Directory Lookup Server</b> can be used to determine which users are logged into which machines for policies, reporting, etc.  You must download the installer using the URL below, install the server, and then specify the IP address of the server in the field below.</html>");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 0);
-        enableRemoteJPanel.add(serverJLabel, gridBagConstraints);
 
         serverButtonGroup.add(serverDisabledJRadioButton);
         serverDisabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
@@ -996,7 +986,6 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
     }
 
     private void serverEnabledDependency(boolean enabled){
-        serverJLabel.setEnabled( enabled );
         messageJLabel.setEnabled( enabled );
         serverIPJLabel.setEnabled( enabled );
         serverIPJTextField.setEnabled( enabled );
@@ -1059,7 +1048,6 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
     public javax.swing.JRadioButton serverEnabledJRadioButton;
     private javax.swing.JLabel serverIPJLabel;
     public javax.swing.JTextField serverIPJTextField;
-    private javax.swing.JLabel serverJLabel;
     private javax.swing.JLabel serverJLabel1;
     private javax.swing.JLabel testJLabel;
     private javax.swing.JLabel urlJLabel;
