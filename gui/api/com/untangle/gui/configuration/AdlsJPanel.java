@@ -201,6 +201,7 @@ public class AdlsJPanel extends javax.swing.JPanel
         serverIPJTextField = new javax.swing.JTextField();
         jSeparator6 = new javax.swing.JSeparator();
         loginJPanel = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
         domainLoginJLabel = new javax.swing.JLabel();
         domainLoginJTextField = new javax.swing.JTextField();
         domainPasswordJLabel = new javax.swing.JLabel();
@@ -300,6 +301,12 @@ public class AdlsJPanel extends javax.swing.JPanel
 
         loginJPanel.setLayout(new java.awt.GridBagLayout());
 
+        jLabel1.setFont(new java.awt.Font("Dialog", 0, 12));
+        jLabel1.setText("Account must be entered in Pre-WIndows 2000 Style - DOMAIN\\account name");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        loginJPanel.add(jLabel1, gridBagConstraints);
+
         domainLoginJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
         domainLoginJLabel.setText("Domain Administrator Login:");
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -354,9 +361,8 @@ public class AdlsJPanel extends javax.swing.JPanel
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(5, 87, 5, 0);
+        gridBagConstraints.insets = new java.awt.Insets(5, 0, 5, 0);
         enableRemoteJPanel.add(loginJPanel, gridBagConstraints);
 
         jSeparator5.setForeground(new java.awt.Color(200, 200, 200));
@@ -508,6 +514,7 @@ public class AdlsJPanel extends javax.swing.JPanel
     private javax.swing.JPasswordField domainPasswordJPasswordField;
     private javax.swing.JPanel enableRemoteJPanel;
     private javax.swing.JPanel externalRemoteJPanel;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSeparator jSeparator5;
     private javax.swing.JSeparator jSeparator6;
