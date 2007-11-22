@@ -24,5 +24,9 @@ import com.untangle.uvm.node.Node;
 public interface IPSNode extends Node {
     IPSSettings getIPSSettings();
     void setIPSSettings(IPSSettings settings);
+    void addRule(IPSRule rule);
+    void deleteRule(int sid);
+    void addVariable(IPSVariable variable);
+    void deleteVariable(String variable);    
     EventManager<IPSLogEvent> getEventManager();
 }

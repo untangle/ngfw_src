@@ -18,27 +18,26 @@
 
 package com.untangle.node.ips;
 
-import java.io.*;
-import java.nio.*;
-import java.nio.channels.*;
+import java.util.Iterator;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+import org.hibernate.Query;
+import org.hibernate.Session;
+
+import com.untangle.node.token.TokenAdaptor;
 import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.EventLoggerFactory;
 import com.untangle.uvm.logging.EventManager;
 import com.untangle.uvm.logging.SimpleEventFilter;
+import com.untangle.uvm.node.NodeException;
+import com.untangle.uvm.node.NodeStartException;
+import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.AbstractNode;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.vnet.SoloPipeSpec;
-import com.untangle.uvm.node.NodeException;
-import com.untangle.uvm.node.NodeStartException;
-import com.untangle.uvm.util.TransactionWork;
-import com.untangle.node.token.TokenAdaptor;
-import org.apache.log4j.Logger;
-import org.hibernate.Query;
-import org.hibernate.Session;
 
 public class IPSNodeImpl extends AbstractNode implements IPSNode {
     private final Logger logger = Logger.getLogger(getClass());
@@ -109,6 +108,50 @@ public class IPSNodeImpl extends AbstractNode implements IPSNode {
             logger.error("Could not save IPS settings", exn);
         }
     }
+    
+	public void addRule(IPSRule rule) {
+		getIPSSettings().getRules().add(rule);
+		//persist the new rule
+		setIPSSettings(getIPSSettings());
+	}
+
+	public void deleteRule(int sid) {
+		boolean removed = false;
+		for (Iterator<IPSRule> iterator = getIPSSettings().getRules().iterator(); iterator.hasNext();) {
+			IPSRule element = (IPSRule) iterator.next();
+			if (element.getSid() == sid){
+				iterator.remove();
+				removed = true;
+				//break;
+			}
+		}
+		// persist the changes
+		if(removed) {
+			setIPSSettings(getIPSSettings());
+		}
+	}
+	
+	public void addVariable(IPSVariable variable) {
+		getIPSSettings().getVariables().add(variable);
+		//persist the new variable
+		setIPSSettings(getIPSSettings());
+	}
+
+	public void deleteVariable(String variable) {
+		boolean removed = false;
+		for (Iterator<IPSVariable> iterator = getIPSSettings().getVariables().iterator(); iterator.hasNext();) {
+			IPSVariable element = (IPSVariable) iterator.next();
+			if (element.getVariable().equals(variable)){
+				iterator.remove();
+				removed = true;
+				//break;
+			}
+		}
+		// persist the changes
+		if(removed) {
+			setIPSSettings(getIPSSettings());
+		}
+	}
 
     public EventManager<IPSLogEvent> getEventManager()
     {
@@ -209,4 +252,5 @@ public class IPSNodeImpl extends AbstractNode implements IPSNode {
     public Object getSettings() { return getIPSSettings(); }
 
     public void setSettings(Object obj) { setIPSSettings((IPSSettings)obj); }
+
 }
