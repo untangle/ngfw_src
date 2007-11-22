@@ -65,12 +65,6 @@ class ProtoFilter < UVMFilterNode
   # Command handlers.
   #
   
-  # Default command: list all protocol filters
-  # TODO: we should consider moving this method to UVMFilterNode class
-  def cmd_(*args)
-    return list_filternodes()
-  end
-  
   # Add a protocol to the list
   def add_protocol(tid, category, protocol, block, log, description, signature)
     update_protocol_helper(tid, -1, category, protocol, block, log, description, signature)
@@ -125,14 +119,6 @@ class ProtoFilter < UVMFilterNode
 
   def cmd_remove(tid, pos)
     remove_protocol(tid, pos.to_i)
-  end
-
-  def cmd_snmp(tid, *args)
-    get_statistics(tid, args)
-  end
-
-  def cmd_stats(tid, *args)
-    get_statistics(tid, args)
   end
 
   #-- Helper methods
