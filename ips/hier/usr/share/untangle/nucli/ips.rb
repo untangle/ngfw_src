@@ -50,29 +50,172 @@ class Ips < UVMFilterNode
   
   def get_help_text()
     return <<-HELP
--- To be implemented.
-    HELP
+- ips -- enumerate all intrusion prevention nodes running on effective #{BRAND} server.
+- ips <TID> rule-list
+    -- Display intrusion prevention rule list for node TID
+- ips <TID> rule-list add category [block:true|false] [log:true|false] description info-URL sid signature
+    -- Add a new rule to the rule-list with specified settings.
+- ips <TID> rule-list update [rule-sid] category [block:true|false] [log:true|false] description info-URL sid signature
+    -- Update item identified by '[rule-sid]' with specified settings.
+- ips <TID> rule-list remove [rule-sid]
+    -- Remove item identified by sid '[rule-sid]' from rule list.
+- ips <TID> variable-list
+    -- Display intrusion prevention variable list for node TID
+- ips <TID> variable-list add name value description
+    -- Add a new variable to the variable-list with specified settings.
+- ips <TID> variable-list update [variable-number] name value description
+    -- Update item identified by '[variable-name]' with specified settings.
+- ips <TID> variable-list remove [variable-name]
+    -- Remove item identified by '[variable-name]' from variable list.
+- ips <TID> <snmp|stats>
+    -- Display intrusion prevention TID statistics.
+  HELP
   end
 
   def cmd_rule_list(tid)
-    ret = "#,category,block,log,description,info URL,sid,signature\n"
-    get_rules(tid).each_with_index { |rule, index|
-      ret << [(index+1).to_s,
+    ret = "category,block,log,description,info-URL,sid,signature\n"
+    get_rules(tid).each { |rule|
+      ret << [
               rule.getCategory,
-#              pattern.getProtocol,
-#              pattern.isBlocked.to_s,
+              rule.isLive.to_s,
               rule.getLog.to_s,
               rule.getDescription,
-              rule.getRule
+              rule.getURL,
+              rule.getSid,
+              rule.getText
              ].join(",")
       ret << "\n"
     }
     return ret
   end
 
+  def cmd_rule_list_add(tid, *args)
+    add_rule(tid, false, *args)
+  end
+
+  def cmd_rule_list_update(tid, sid, *args)
+    remove_rule(tid, sid.to_i)
+    add_rule(tid, true, *args)
+  end
+
+  def cmd_rule_list_remove(tid, sid)
+    remove_rule(tid, sid.to_i)
+  end
+
+  def cmd_variable_list(tid)
+    ret = "name,value,description\n"
+    get_variables(tid).each { |variable|
+      ret << [
+              variable.getVariable,
+              variable.getDefinition,
+              variable.getDescription
+             ].join(",")
+      ret << "\n"
+    }
+    return ret
+  end
+
+  def cmd_variable_list_add(tid, *args)
+    add_variable(tid, false, *args)
+  end
+
+  def cmd_variable_list_update(tid, var_name, *args)
+    remove_variable(tid, var_name)
+    add_variable(tid, true, *args)
+  end
+
+  def cmd_variable_list_remove(tid, var_name)
+    remove_variable(tid, var_name)
+  end
+  
+  #
+  # Command handlers.
+  #
+  
+  # Add a rule to the rule-list
+  def add_rule(tid, update, category, block, log, description, info_url, sid, signature)
+    node = get_node(tid)
+    begin
+      validate_bool(block, "block")
+      validate_bool(log, "log")
+      rule = com.untangle.node.ips.IPSRule.new
+      rule.setCategory(category)
+      rule.setLive(block == "true")
+      rule.setLog(log == "true")
+      rule.setDescription(description)
+      rule.setURL(info_url)
+      rule.setSid(sid.to_i)      
+      rule.setText(signature)      
+    rescue => ex
+      return ex.to_s
+    end
+
+    node.addRule(rule)
+    if update
+      msg = "Rule updated."
+    else 
+      msg = "Rule added to the rule-list."
+    end
+    @diag.if_level(2) { puts! msg }
+    return msg
+  end
+  
+  # Remove a rule from the rule-list
+  def remove_rule(tid, sid)
+    begin
+      node = get_node(tid)
+      node.deleteRule(sid)
+      msg = "Rule #{sid} was removed from the rule-list."
+      @diag.if_level(2) { puts! msg }
+      return msg
+    rescue => ex
+      return ex.to_s
+    end
+  end
+
+  # Add a variable to the variable-list
+  def add_variable(tid, update, name, value, description)
+    node = get_node(tid)
+    begin
+      variable = com.untangle.node.ips.IPSVariable.new(name, value, description)
+    rescue => ex
+      return ex.to_s
+    end
+
+    node.addVariable(variable)
+    if update
+      msg = "Variable updated."
+    else 
+      msg = "Variable added to the variable-list."
+    end
+    @diag.if_level(2) { puts! msg }
+    return msg
+  end
+  
+  # Remove a variable from the variable-list
+  def remove_variable(tid, var_name)
+    begin
+      node = get_node(tid)
+      node.deleteVariable(var_name)
+      msg = "Variable #{var_name} was removed from the variable-list."
+      @diag.if_level(2) { puts! msg }
+      return msg
+    rescue => ex
+      return ex.to_s
+    end
+  end
+  
   #-- Helper methods
+  def get_node(tid)
+    @@uvmRemoteContext.nodeManager.nodeContext(tid).node
+  end
+  
   def get_rules(tid)
-    @@uvmRemoteContext.nodeManager.nodeContext(tid).node.getIPSSettings.getRules
+    get_node(tid).getIPSSettings.getRules
+  end
+  
+  def get_variables(tid)
+    get_node(tid).getIPSSettings.getVariables
   end
 
 end
