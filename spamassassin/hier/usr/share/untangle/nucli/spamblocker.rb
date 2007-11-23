@@ -89,12 +89,6 @@ HELP
   # Command handlers.
   #
 
-  # Default command: list all span blocker FNs
-  # TODO: we should consider moving this method to UVMFilterNode class
-  def cmd_(*args)
-    return list_filternodes()
-  end
-  
   def cmd_SMTP(tid)
     display_settings(tid, "SMTP")
   end
@@ -117,14 +111,6 @@ HELP
   
   def cmd_IMAP_update(tid, key, value)
     update_protocol_setting(tid, "IMAP", key, value)
-  end
-  
-  def cmd_snmp(tid, *args)
-    get_statistics(tid, args)
-  end
-
-  def cmd_stats(tid, *args)
-    get_statistics(tid, args)
   end
   
   def display_settings(tid, protocol)
