@@ -53,9 +53,9 @@ class Ips < UVMFilterNode
 - ips -- enumerate all intrusion prevention nodes running on effective #{BRAND} server.
 - ips <TID> rule-list
     -- Display intrusion prevention rule list for node TID
-- ips <TID> rule-list add category [block:true|false] [log:true|false] description info-URL sid signature
+- ips <TID> rule-list add sid category [block:true|false] [log:true|false] description info-URL signature
     -- Add a new rule to the rule-list with specified settings.
-- ips <TID> rule-list update [rule-sid] category [block:true|false] [log:true|false] description info-URL sid signature
+- ips <TID> rule-list update [rule-sid] category [block:true|false] [log:true|false] description info-URL signature
     -- Update item identified by '[rule-sid]' with specified settings.
 - ips <TID> rule-list remove [rule-sid]
     -- Remove item identified by sid '[rule-sid]' from rule list.
@@ -63,7 +63,7 @@ class Ips < UVMFilterNode
     -- Display intrusion prevention variable list for node TID
 - ips <TID> variable-list add name value description
     -- Add a new variable to the variable-list with specified settings.
-- ips <TID> variable-list update [variable-number] name value description
+- ips <TID> variable-list update [variable-name] value description
     -- Update item identified by '[variable-name]' with specified settings.
 - ips <TID> variable-list remove [variable-name]
     -- Remove item identified by '[variable-name]' from variable list.
@@ -73,15 +73,15 @@ class Ips < UVMFilterNode
   end
 
   def cmd_rule_list(tid)
-    ret = "category,block,log,description,info-URL,sid,signature\n"
+    ret = "sid, category,block,log,description,info-URL,signature\n"
     get_rules(tid).each { |rule|
       ret << [
+              rule.getSid,
               rule.getCategory,
               rule.isLive.to_s,
               rule.getLog.to_s,
               rule.getDescription,
               rule.getURL,
-              rule.getSid,
               rule.getText
              ].join(",")
       ret << "\n"
@@ -95,7 +95,7 @@ class Ips < UVMFilterNode
 
   def cmd_rule_list_update(tid, sid, *args)
     remove_rule(tid, sid.to_i)
-    add_rule(tid, true, *args)
+    add_rule(tid, true, sid, *args)
   end
 
   def cmd_rule_list_remove(tid, sid)
@@ -121,7 +121,7 @@ class Ips < UVMFilterNode
 
   def cmd_variable_list_update(tid, var_name, *args)
     remove_variable(tid, var_name)
-    add_variable(tid, true, *args)
+    add_variable(tid, true, var_name, *args)
   end
 
   def cmd_variable_list_remove(tid, var_name)
@@ -133,18 +133,18 @@ class Ips < UVMFilterNode
   #
   
   # Add a rule to the rule-list
-  def add_rule(tid, update, category, block, log, description, info_url, sid, signature)
+  def add_rule(tid, update, sid, category, block, log, description, info_url, signature)
     node = get_node(tid)
     begin
       validate_bool(block, "block")
       validate_bool(log, "log")
       rule = com.untangle.node.ips.IPSRule.new
+      rule.setSid(sid.to_i)      
       rule.setCategory(category)
       rule.setLive(block == "true")
       rule.setLog(log == "true")
       rule.setDescription(description)
       rule.setURL(info_url)
-      rule.setSid(sid.to_i)      
       rule.setText(signature)      
     rescue => ex
       return ex.to_s
@@ -152,7 +152,7 @@ class Ips < UVMFilterNode
 
     node.addRule(rule)
     if update
-      msg = "Rule updated."
+      msg = "Rule #{sid} was updated."
     else 
       msg = "Rule added to the rule-list."
     end
@@ -184,7 +184,7 @@ class Ips < UVMFilterNode
 
     node.addVariable(variable)
     if update
-      msg = "Variable updated."
+      msg = "Variable #{name} was updated."
     else 
       msg = "Variable added to the variable-list."
     end
