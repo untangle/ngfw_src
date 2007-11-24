@@ -567,6 +567,12 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
 
         jButton1.setFont(new java.awt.Font("Dialog", 0, 12));
         jButton1.setText("Active Directory Users");
+        jButton1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                refreshAdUsers(evt);
+            }
+        });
+
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -605,6 +611,10 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
         add(externalRemoteJPanel, gridBagConstraints);
 
     }// </editor-fold>//GEN-END:initComponents
+
+    private void refreshAdUsers(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_refreshAdUsers
+// TODO add your handling code here:
+    }//GEN-LAST:event_refreshAdUsers
 
     private void helpJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_helpJButtonActionPerformed
         try{
