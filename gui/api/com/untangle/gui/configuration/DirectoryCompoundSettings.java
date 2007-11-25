@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -76,6 +76,8 @@ public class DirectoryCompoundSettings implements CompoundSettings {
     public JPanel getLocalJPanel(){ return localJPanel; }
     private JPanel adJPanel;
     public JPanel getRemoteADJPanel(){ return adJPanel; }
+    private JPanel adlsJPanel;
+    public JPanel getRemoteADLSJPanel(){ return adlsJPanel; }
 
 
     public void save() throws Exception {
@@ -110,6 +112,19 @@ public class DirectoryCompoundSettings implements CompoundSettings {
                 Class adJPanelClass = Util.getClassLoader().mLoadClass( "com.untangle.gui.configuration.DirectoryRemoteADJPanel" );
                 Constructor adJPanelConstructor = adJPanelClass.getConstructor( new Class[]{} );
                 adJPanel = (JPanel) adJPanelConstructor.newInstance(new Object[]{});
+            }
+            catch (Exception e) {
+                logger.warn("Unable to load: Remote Directory", e);
+                throw e;
+            }
+        }
+
+        if (adlsJPanel==null) {
+            try {
+                // REMOTE ACTIVE DIRECTORY ////////
+                Class adlsJPanelClass = Util.getClassLoader().mLoadClass( "com.untangle.gui.configuration.AdlsJPanel" );
+                Constructor adlsJPanelConstructor = adlsJPanelClass.getConstructor( new Class[]{} );
+                adlsJPanel = (JPanel) adlsJPanelConstructor.newInstance(new Object[]{});
             }
             catch (Exception e) {
                 logger.warn("Unable to load: Remote Directory", e);

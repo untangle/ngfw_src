@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -128,6 +128,19 @@ public class DirectoryJDialog extends MConfigJDialog {
             // REMOTE ACTIVE DIRECTORY ////////
             try {
                 Method adJPanelMethod = compoundSettings.getClass().getDeclaredMethod("getRemoteADJPanel", new Class[]{});
+                JPanel adJPanel = (JPanel) adJPanelMethod.invoke(compoundSettings, new Object[]{});
+                addScrollableTab(null, NAME_REMOTE_ACTIVE_DIRECTORY, null, adJPanel, false, true);
+                addSavable(NAME_REMOTE_ACTIVE_DIRECTORY, (Savable) adJPanel);
+                addRefreshable(NAME_REMOTE_ACTIVE_DIRECTORY, (Refreshable) adJPanel);
+                ((Changeable) adJPanel).setSettingsChangedListener(this);
+            }
+            catch(Exception e) {
+                logger.warn("Unable to load: Remote Directory Panel",e);
+            }
+
+            // REMOTE ACTIVE DIRECTORY ////////
+            try {
+                Method adJPanelMethod = compoundSettings.getClass().getDeclaredMethod("getRemoteADLSJPanel", new Class[]{});
                 JPanel adJPanel = (JPanel) adJPanelMethod.invoke(compoundSettings, new Object[]{});
                 addScrollableTab(null, NAME_REMOTE_ACTIVE_DIRECTORY, null, adJPanel, false, true);
                 addSavable(NAME_REMOTE_ACTIVE_DIRECTORY, (Savable) adJPanel);

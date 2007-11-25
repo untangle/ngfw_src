@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -44,9 +44,9 @@ import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.dialogs.*;
 import com.untangle.uvm.*;
 import com.untangle.uvm.addrbook.*;
+import com.untangle.uvm.node.*;
 import com.untangle.uvm.security.*;
 import com.untangle.uvm.snmp.*;
-import com.untangle.uvm.node.*;
 import com.untangle.uvm.user.WMISettings;
 
 public class DirectoryRemoteADJPanel extends javax.swing.JPanel
@@ -713,6 +713,8 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
         orgJTextField.setEnabled( enabled );
         orgJLabel.setEnabled( enabled );
         adTestJButton.setEnabled( enabled );
+        jButton1.setEnabled(enabled);
+        jList1.setEnabled(enabled);
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
