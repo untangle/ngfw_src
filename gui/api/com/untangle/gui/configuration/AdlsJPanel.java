@@ -234,6 +234,7 @@ public class AdlsJPanel extends javax.swing.JPanel
 
         serverButtonGroup.add(serverDisabledJRadioButton);
         serverDisabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
+        serverDisabledJRadioButton.setSelected(true);
         serverDisabledJRadioButton.setText("<html><b>Disabled</b></html>");
         serverDisabledJRadioButton.setActionCommand("<html><b>Use DHCP</b> to automatically set Untangle's IP address from the network's DHCP server.</html>");
         serverDisabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {

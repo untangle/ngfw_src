@@ -77,6 +77,7 @@
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Dialog" size="12" style="0"/>
                 </Property>
+                <Property name="selected" type="boolean" value="true"/>
                 <Property name="text" type="java.lang.String" value="&lt;html&gt;&lt;b&gt;Disabled&lt;/b&gt;&lt;/html&gt;"/>
                 <Property name="actionCommand" type="java.lang.String" value="&lt;html&gt;&lt;b&gt;Use DHCP&lt;/b&gt; to automatically set Untangle&apos;s IP address from the network&apos;s DHCP server.&lt;/html&gt;"/>
               </Properties>
