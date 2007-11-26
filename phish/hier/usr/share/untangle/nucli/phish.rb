@@ -145,7 +145,7 @@ HELP
     rescue => ex
       return ex.to_s
     end
-    update_phish_settings(tid, protocol, config)
+    update_protocol_config(tid, protocol, config)
     msg = "#{key} for #{protocol} updated."
 
     @diag.if_level(2) { puts! msg }
@@ -166,6 +166,7 @@ HELP
     rescue => ex
       return ex.to_s
     end
+    update_phish_settings(tid, settings)
     msg = "Web anti-phishing protection " + 
         (enable == "true" ? "enabled" : "disabled");
 
@@ -176,6 +177,10 @@ HELP
   #-- Helper methods
   def get_phish_settings(tid)
     @@uvmRemoteContext.nodeManager.nodeContext(tid).node.getPhishSettings
+  end
+  
+  def update_phish_settings(tid, settings)
+    @@uvmRemoteContext.nodeManager.nodeContext(tid).node.setPhishSettings(settings)
   end
   
   def get_protocol_config(tid, protocol)
@@ -190,7 +195,7 @@ HELP
     end
   end
   
-  def update_phish_settings(tid, protocol, config)
+  def update_protocol_config(tid, protocol, config)
     node = @@uvmRemoteContext.nodeManager.nodeContext(tid).node
     settings = node.getPhishSettings
 
