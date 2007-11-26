@@ -107,6 +107,15 @@ HELP
     update_protocol_setting(tid, "IMAP", key, value)
   end
   
+  def cmd_web(tid, *args)
+    if args.empty?
+      then 
+        display_web_settings(tid)
+      else
+        update_web_settings(tid, args[0])
+    end
+  end
+  
   def display_settings(tid, protocol)
     config = get_protocol_config(tid, protocol)
     ret = "scan,action,description\n"
@@ -143,6 +152,26 @@ HELP
     return msg
   end
   
+  def display_web_settings(tid)
+    settings = get_phish_settings(tid)
+    return "Web anti-phishing protection: " + 
+        (settings.getEnableGooglePhishList ? "enabled" : "disabled"); 
+  end
+  
+  def update_web_settings(tid, enable)
+    settings = get_phish_settings(tid)
+    begin
+      validate_bool(enable, "enable")
+      settings.setEnableGooglePhishList(enable == "true")
+    rescue => ex
+      return ex.to_s
+    end
+    msg = "Web anti-phishing protection " + 
+        (enable == "true" ? "enabled" : "disabled");
+
+    @diag.if_level(2) { puts! msg }
+    return msg
+  end
 
   #-- Helper methods
   def get_phish_settings(tid)
