@@ -559,13 +559,15 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 0);
         externalRemoteJPanel.add(enableRemoteJPanel, gridBagConstraints);
 
         jPanel1.setLayout(new java.awt.GridBagLayout());
 
+        jPanel1.setMinimumSize(new java.awt.Dimension(300, 300));
+        jPanel1.setPreferredSize(new java.awt.Dimension(600, 600));
         jButton1.setFont(new java.awt.Font("Dialog", 0, 12));
         jButton1.setText("Active Directory Users");
         jButton1.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -581,8 +583,7 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
         gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
         jPanel1.add(jButton1, gridBagConstraints);
 
-        jScrollPane1.setMinimumSize(new java.awt.Dimension(600, 300));
-        jList1.setPreferredSize(new java.awt.Dimension(200, 600));
+        jScrollPane1.setPreferredSize(new java.awt.Dimension(300, 200));
         jScrollPane1.setViewportView(jList1);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -597,9 +598,11 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.gridheight = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
         externalRemoteJPanel.add(jPanel1, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
