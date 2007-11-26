@@ -58,6 +58,7 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
     private static final String EXCEPTION_LOGIN_MISSING    = "A \"Login\" must be specified if a \"Password\" is specified.";
     private static final String EXCEPTION_HOSTNAME_MISSING = "A \"Hostname\" must be specified if \"Login\" or \"Password\" are specified.";
     private static final String EXCEPTION_DOMAIN_MISSING   = "A \"Search Base\" must be specified.";
+    private static final String EXCEPTION_ORG_MISSING   = "An \"Active Directory Organization\" must be specified.";
     private static final String EXCEPTION_SERVER_ADDRESS   = "You must specify a valid IP address for your Lookup Server.";
     private static final String EXCEPTION_DOMAIN_PASSWORD  = "A \"Domain Password\" must be specified if a \"Domain Login\" is specified.";
     private static final String EXCEPTION_DOMAIN_LOGIN     = "A \"Domain Login\" must be specified if a \"Domain Password\" is specified.";
@@ -142,6 +143,14 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
                 baseJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
                 throw new Exception(EXCEPTION_DOMAIN_MISSING);
             }
+
+            // CHECK THAT A ORG IS SUPPLIED
+            orgJTextField.setBackground( Color.WHITE );
+            if( org.length() == 0 ){
+                orgJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
+                throw new Exception(EXCEPTION_ORG_MISSING);
+            }
+
         }
 
         // SAVE SETTINGS ////////////
@@ -338,6 +347,9 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
         jButton1 = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         jList1 = new javax.swing.JList();
+        jSeparator5 = new javax.swing.JSeparator();
+        jPanel2 = new javax.swing.JPanel();
+        jButton2 = new javax.swing.JButton();
 
         setLayout(new java.awt.GridBagLayout());
 
@@ -622,7 +634,7 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 0);
@@ -663,15 +675,33 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        gridBagConstraints.gridheight = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
         externalRemoteJPanel.add(jPanel1, gridBagConstraints);
 
+        jSeparator5.setForeground(new java.awt.Color(200, 200, 200));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        externalRemoteJPanel.add(jSeparator5, gridBagConstraints);
+
+        jButton2.setFont(new java.awt.Font("Dialog", 0, 12));
+        jButton2.setText("AD Lookup Script");
+        jButton2.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                openAdPage(evt);
+            }
+        });
+
+        jPanel2.add(jButton2);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        externalRemoteJPanel.add(jPanel2, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
@@ -679,6 +709,16 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
         add(externalRemoteJPanel, gridBagConstraints);
 
     }// </editor-fold>//GEN-END:initComponents
+
+    private void openAdPage(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_openAdPage
+        try{
+            String authNonce = Util.getRemoteAdminManager().generateAuthNonce();
+            URL newURL = new URL( Util.getServerCodeBase(), "../adpb&" + authNonce);
+            ((BasicService) ServiceManager.lookup("javax.jnlp.BasicService")).showDocument(newURL);
+        } catch(Exception f){
+            Util.handleExceptionNoRestart("Error showing store wizard.", f);
+        }
+    }//GEN-LAST:event_openAdPage
 
     private void refreshAdUsers(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_refreshAdUsers
         try {
@@ -718,13 +758,12 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
     }
 
     private void helpJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_helpJButtonActionPerformed
-        try{
+        try {
             URL newURL = new URL( "http://www.untangle.com/docs/get.php?"
                                   + "version=" + Version.getVersion()
                                   + "&source=active_directory_config");
             ((BasicService) ServiceManager.lookup("javax.jnlp.BasicService")).showDocument(newURL);
-        }
-        catch(Exception f){
+        } catch(Exception f){
             Util.handleExceptionNoRestart("Error showing help", f);
         }
     }//GEN-LAST:event_helpJButtonActionPerformed
@@ -831,12 +870,15 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
     private javax.swing.JLabel hostJLabel;
     public javax.swing.JTextField hostJTextField;
     private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
     private javax.swing.JList jList1;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator3;
     private javax.swing.JSeparator jSeparator4;
+    private javax.swing.JSeparator jSeparator5;
     private javax.swing.JLabel loginJLabel;
     public javax.swing.JTextField loginJTextField;
     private javax.swing.JLabel orgJLabel;
