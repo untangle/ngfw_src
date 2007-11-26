@@ -57,6 +57,7 @@ public class DirectoryJDialog extends MConfigJDialog {
 
     private static final String NAME_DIRECTORY_CONFIG  = "User Directory Config";
     private static final String NAME_LOCAL_DIRECTORY   = "Local Directory";
+    private static final String NAME_ADLS   = "Remote Active Directory Lookup Server";
     private static final String NAME_REMOTE_ACTIVE_DIRECTORY   = "Remote Active Directory (AD) Server";
     private static final String NAME_PREMIUM_PURCHASE   = "Feature Not Available";
 
@@ -142,9 +143,9 @@ public class DirectoryJDialog extends MConfigJDialog {
             try {
                 Method adJPanelMethod = compoundSettings.getClass().getDeclaredMethod("getRemoteADLSJPanel", new Class[]{});
                 JPanel adJPanel = (JPanel) adJPanelMethod.invoke(compoundSettings, new Object[]{});
-                addScrollableTab(null, NAME_REMOTE_ACTIVE_DIRECTORY, null, adJPanel, false, true);
-                addSavable(NAME_REMOTE_ACTIVE_DIRECTORY, (Savable) adJPanel);
-                addRefreshable(NAME_REMOTE_ACTIVE_DIRECTORY, (Refreshable) adJPanel);
+                addScrollableTab(null, NAME_ADLS, null, adJPanel, false, true);
+                addSavable(NAME_ADLS, (Savable) adJPanel);
+                addRefreshable(NAME_ADLS, (Refreshable) adJPanel);
                 ((Changeable) adJPanel).setSettingsChangedListener(this);
             }
             catch(Exception e) {
