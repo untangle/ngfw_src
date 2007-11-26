@@ -60,7 +60,7 @@ import com.untangle.uvm.user.LocalPhoneBook;
 import com.untangle.uvm.user.PhoneBookFactory;
 import com.untangle.uvm.user.RemotePhoneBook;
 import com.untangle.uvm.user.ADPhoneBookAssistant;
-import com.untangle.uvm.user.ADPhoneBookAssistantManager;
+import com.untangle.uvm.engine.ADPhoneBookAssistantManager;
 import com.untangle.uvm.util.TransactionRunner;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.MPipeManager;
