@@ -35,6 +35,7 @@ package com.untangle.gui.configuration;
 
 import java.awt.*;
 import java.net.URL;
+import java.util.Vector;
 import javax.jnlp.BasicService;
 import javax.jnlp.ServiceManager;
 import javax.swing.*;
@@ -45,6 +46,7 @@ import com.untangle.gui.widgets.dialogs.*;
 import com.untangle.uvm.*;
 import com.untangle.uvm.addrbook.*;
 import com.untangle.uvm.node.*;
+import com.untangle.uvm.node.firewall.user.UserMatcherConstants;
 import com.untangle.uvm.security.*;
 import com.untangle.uvm.snmp.*;
 import com.untangle.uvm.user.WMISettings;
@@ -59,6 +61,9 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
     private static final String EXCEPTION_SERVER_ADDRESS   = "You must specify a valid IP address for your Lookup Server.";
     private static final String EXCEPTION_DOMAIN_PASSWORD  = "A \"Domain Password\" must be specified if a \"Domain Login\" is specified.";
     private static final String EXCEPTION_DOMAIN_LOGIN     = "A \"Domain Login\" must be specified if a \"Domain Password\" is specified.";
+
+    public static final String ANY_USER = UserMatcherConstants.MARKER_ANY;
+    public static final String MULTIPLE_USERS = "[multiple selections]";
 
     public DirectoryRemoteADJPanel() {
         initComponents();
@@ -239,6 +244,65 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
     }
 
 
+    private class UserEntryWrapper extends JCheckBox implements Comparable<UserEntryWrapper>{
+        private UserEntry userEntry;
+        public UserEntryWrapper(UserEntry userEntry){
+            this.userEntry = userEntry;
+            setText(toString());
+            setSelected(false);
+            setOpaque(false);
+        }
+
+        public String toString(){
+            if(userEntry==null)
+                return ANY_USER;
+            String repository;
+            switch(userEntry.getStoredIn()){
+            case MS_ACTIVE_DIRECTORY : repository = "Active Directory";
+                break;
+            case LOCAL_DIRECTORY : repository = "Local";
+                break;
+            default:
+            case NONE : repository = "UNKNOWN";
+                break;
+            }
+            return userEntry.getUID() + " (" + repository + ")";
+        }
+        public String getUID(){
+            if(userEntry!=null)
+                return userEntry.getUID();
+            else
+                return ANY_USER;
+        }
+        public UserEntry getUserEntry(){
+            return userEntry;
+        }
+
+        public boolean equals(Object obj){
+            if( ! (obj instanceof UserEntryWrapper) )
+                return false;
+            else if(userEntry==null)
+                return false;
+            UserEntry other = ((UserEntryWrapper) obj).getUserEntry();
+            return getUserEntry().equals(other);
+        }
+
+        public int compareTo(UserEntryWrapper userEntryWrapper){
+            if(userEntry==null)
+                return -1;
+            else if(userEntryWrapper.userEntry==null)
+                return 1;
+            switch(userEntry.getStoredIn().compareTo(userEntryWrapper.userEntry.getStoredIn())){
+            case -1 :
+                return -1;
+            case 1 :
+                return 1;
+            default:
+            case 0 :
+                return userEntry.getUID().compareTo(userEntryWrapper.userEntry.getUID());
+            }
+        }
+    }
     // <editor-fold defaultstate="collapsed" desc=" Generated Code ">//GEN-BEGIN:initComponents
     private void initComponents() {
         java.awt.GridBagConstraints gridBagConstraints;
@@ -617,8 +681,41 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
     }// </editor-fold>//GEN-END:initComponents
 
     private void refreshAdUsers(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_refreshAdUsers
-// TODO add your handling code here:
+        try {
+            final java.util.List<UserEntry> allUserEntries = new Vector<UserEntry>();
+            try{
+                allUserEntries.addAll( Util.getAddressBook().getUserEntries(RepositoryType.MS_ACTIVE_DIRECTORY) );
+            }
+            catch(Exception f){
+                Util.handleExceptionNoRestart("Error doing refresh", f);
+                MOneButtonJDialog.factory(this, "Policy Manager", "There was a problem refreshing Active Directory users.  Please check your Active Directory settings and then try again.",
+                                          "Policy Manager Warning", "Policy Manager Warning");
+            }
+
+            SwingUtilities.invokeLater( new Runnable(){ public void run(){
+                updateUidModel(allUserEntries);
+            }});
+        } catch(Exception e){
+            try{ Util.handleExceptionWithRestart("Error doing refresh", e); }
+            catch(Exception f){
+                Util.handleExceptionNoRestart("Error doing refresh", f);
+                MOneButtonJDialog.factory(this, "Policy Manager", "There was a problem refreshing.  Please try again.",
+                                          "Policy Manager Warning", "Policy Manager Warning");
+            }
+        }
     }//GEN-LAST:event_refreshAdUsers
+
+    public void updateUidModel(java.util.List<UserEntry> userEntries){
+        Vector<UserEntryWrapper> uidVector = new Vector<UserEntryWrapper>();
+
+        UserEntryWrapper t = new UserEntryWrapper(null);
+        uidVector.add(t);
+        for( UserEntry userEntry : userEntries ){
+            t = new UserEntryWrapper(userEntry);
+            uidVector.add( t );
+        }
+        jList1.setListData(uidVector);
+    }
 
     private void helpJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_helpJButtonActionPerformed
         try{
