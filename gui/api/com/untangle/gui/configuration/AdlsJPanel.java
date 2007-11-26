@@ -371,8 +371,7 @@ public class AdlsJPanel extends javax.swing.JPanel
         restrictIPJPanel3.setLayout(new java.awt.GridBagLayout());
 
         messageJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
-        messageJLabel.setText("<html>Please cut and paste the address below into your browser.</html>");
-        messageJLabel.setMaximumSize(null);
+        messageJLabel.setText("Please cut and paste the address below into your browser.");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
