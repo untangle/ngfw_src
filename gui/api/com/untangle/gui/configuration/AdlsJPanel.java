@@ -1,6 +1,6 @@
 /*
  * $HeadURL: svn://chef/work/src/gui/api/com/untangle/gui/configuration/DirectoryRemoteADJPanel.java $
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -44,9 +44,9 @@ import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.dialogs.*;
 import com.untangle.uvm.*;
 import com.untangle.uvm.addrbook.*;
+import com.untangle.uvm.node.*;
 import com.untangle.uvm.security.*;
 import com.untangle.uvm.snmp.*;
-import com.untangle.uvm.node.*;
 import com.untangle.uvm.user.WMISettings;
 
 public class AdlsJPanel extends javax.swing.JPanel
@@ -140,10 +140,6 @@ public class AdlsJPanel extends javax.swing.JPanel
     public void doRefresh(DirectoryCompoundSettings directoryCompoundSettings){
         RepositorySettings repositorySettings = directoryCompoundSettings.getAddressBookSettings().getADRepositorySettings();
         AddressBookConfiguration addressBookConfiguration = directoryCompoundSettings.getAddressBookConfiguration();
-
-        // AD ENABLED //
-        enabledCurrent = addressBookConfiguration.equals( AddressBookConfiguration.AD_AND_LOCAL );
-        adEnabledDependency( enabledCurrent );
 
         // PASSWORD /////
         passwordCurrent = repositorySettings.getSuperuserPass();
@@ -481,18 +477,10 @@ public class AdlsJPanel extends javax.swing.JPanel
         }
     }
 
-    private void adEnabledDependency(boolean enabled){
-        serverEnabledJRadioButton.setEnabled( enabled );
-        serverDisabledJRadioButton.setEnabled( enabled );
-        if( !enabled )
-            serverEnabledDependency( false );
-        else if( serverEnabledJRadioButton.isSelected() )
-            serverEnabledDependency( true );
-    }
-
     private void serverEnabledDependency(boolean enabled){
         serverJLabel.setEnabled( enabled );
         messageJLabel.setEnabled( enabled );
+        jLabel1.setEnabled(enabled);
         serverIPJLabel.setEnabled( enabled );
         serverIPJTextField.setEnabled( enabled );
         urlJLabel.setEnabled( enabled );
