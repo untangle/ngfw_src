@@ -27,6 +27,7 @@ import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -67,6 +68,9 @@ import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.vnet.SoloPipeSpec;
 import com.untangle.uvm.vnet.TCPSession;
 import org.apache.catalina.Valve;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpMethod;
+import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -146,34 +150,19 @@ public class SpywareImpl extends AbstractNode implements Spyware
         m.put("premium", rup.toString());
         m.put("client-version", uvm.getFullVersion());
 
-        try {
-            UrlList l = new PrefixUrlList(DB_HOME, BLACKLIST_HOME, "spyware-blocked-url", m);
-            urlDatabase.addBlacklist("spyware-blocked-url", l);
-            urlDatabase.updateAll(true);
-        } catch (IOException exn) {
-            logger.warn("could not set up database", exn);
-        } catch (DatabaseException exn) {
-            logger.warn("could not set up database", exn);
-        }
-
-        try {
-            UrlList l = new PrefixUrlList(DB_HOME, BLACKLIST_HOME, "mbl-block-url", m);
-            urlDatabase.addBlacklist("mbl-block-url", l);
-            urlDatabase.updateAll(true);
-        } catch (IOException exn) {
-            logger.warn("could not set up database", exn);
-        } catch (DatabaseException exn) {
-            logger.warn("could not set up database", exn);
-        }
-
-        try {
-            UrlList l = new PrefixUrlList(DB_HOME, BLACKLIST_HOME, "mbl-cookie-dom", m);
-            cookieDatabase.addBlacklist("mbl-cookie-dom", l);
-            cookieDatabase.updateAll(true);
-        } catch (IOException exn) {
-            logger.warn("could not set up database", exn);
-        } catch (DatabaseException exn) {
-            logger.warn("could not set up database", exn);
+        for (String list : getSpywareLists()) {
+            if (list.startsWith("spyware-")) {
+                UrlDatabase db = list.endsWith("cookie") ? cookieDatabase : urlDatabase;
+                try {
+                    UrlList l = new PrefixUrlList(DB_HOME, BLACKLIST_HOME, list, m);
+                    db.addBlacklist(list, l);
+                    db.updateAll(true);
+                } catch (IOException exn) {
+                    logger.warn("could not set up database", exn);
+                } catch (DatabaseException exn) {
+                    logger.warn("could not set up database", exn);
+                }
+            }
         }
 
         NodeContext tctx = getNodeContext();
@@ -858,6 +847,27 @@ public class SpywareImpl extends AbstractNode implements Spyware
         }
 
         return uri;
+    }
+
+    private List<String> getSpywareLists()
+    {
+        List<String> l = new ArrayList<String>();
+
+        try {
+            HttpClient hc = new HttpClient();
+            HttpMethod get = new GetMethod(new URL(BLACKLIST_HOME, "list").toString());
+            int rc = hc.executeMethod(get);
+            InputStream is = get.getResponseBodyAsStream();
+            InputStreamReader isr = new InputStreamReader(is);
+            BufferedReader br = new BufferedReader(isr);
+            for (String s = br.readLine(); null != s; s = br.readLine()) {
+                l.add(s);
+            }
+        } catch (IOException exn) {
+            logger.warn("could not get listing", exn);
+        }
+
+        return l;
     }
 
     // XXX soon to be deprecated ----------------------------------------------
