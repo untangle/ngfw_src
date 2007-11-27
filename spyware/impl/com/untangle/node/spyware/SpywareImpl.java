@@ -109,6 +109,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
     private final EventLogger<SpywareEvent> eventLogger;
 
     private final UrlDatabase urlDatabase = new UrlDatabase();
+    private final UrlDatabase cookieDatabase = new UrlDatabase();
 
     private final PipeSpec[] pipeSpecs = new PipeSpec[]
         { new SoloPipeSpec("spyware-http", this, tokenAdaptor,
@@ -137,22 +138,38 @@ public class SpywareImpl extends AbstractNode implements Spyware
     {
         replacementGenerator = new SpywareReplacementGenerator(getTid());
 
-        try {
-            LocalUvmContext uvm = LocalUvmContextFactory.context();
-            Map m = new HashMap();
-            m.put("key", uvm.getActivationKey());
-            RemoteToolboxManager tm = uvm.toolboxManager();
-            Boolean rup = tm.hasPremiumSubscription();
-            m.put("premium", rup.toString());
-            m.put("client-version", uvm.getFullVersion());
+        LocalUvmContext uvm = LocalUvmContextFactory.context();
+        Map m = new HashMap();
+        m.put("key", uvm.getActivationKey());
+        RemoteToolboxManager tm = uvm.toolboxManager();
+        Boolean rup = tm.hasPremiumSubscription();
+        m.put("premium", rup.toString());
+        m.put("client-version", uvm.getFullVersion());
 
+        try {
             UrlList l = new PrefixUrlList(DB_HOME, BLACKLIST_HOME, "spyware-blocked-url", m);
             urlDatabase.addBlacklist("spyware-blocked-url", l);
             urlDatabase.updateAll(true);
+        } catch (IOException exn) {
+            logger.warn("could not set up database", exn);
+        } catch (DatabaseException exn) {
+            logger.warn("could not set up database", exn);
+        }
 
-            l = new PrefixUrlList(DB_HOME, BLACKLIST_HOME, "mbl-swall-url", m);
-            urlDatabase.addBlacklist("mbl-swall-url", l);
+        try {
+            UrlList l = new PrefixUrlList(DB_HOME, BLACKLIST_HOME, "mbl-block-url", m);
+            urlDatabase.addBlacklist("mbl-block-url", l);
             urlDatabase.updateAll(true);
+        } catch (IOException exn) {
+            logger.warn("could not set up database", exn);
+        } catch (DatabaseException exn) {
+            logger.warn("could not set up database", exn);
+        }
+
+        try {
+            UrlList l = new PrefixUrlList(DB_HOME, BLACKLIST_HOME, "mbl-cookie-dom", m);
+            cookieDatabase.addBlacklist("mbl-cookie-dom", l);
+            cookieDatabase.updateAll(true);
         } catch (IOException exn) {
             logger.warn("could not set up database", exn);
         } catch (DatabaseException exn) {
@@ -333,6 +350,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
     {
         statisticManager.start();
         urlDatabase.startUpdateTimer();
+        cookieDatabase.startUpdateTimer();
     }
 
     @Override
@@ -340,6 +358,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
     {
         statisticManager.stop();
         urlDatabase.stopUpdateTimer();
+        cookieDatabase.stopUpdateTimer();
     }
 
     @Override
@@ -416,7 +435,8 @@ public class SpywareImpl extends AbstractNode implements Spyware
             return false;
         }
 
-        boolean match = false;
+        UrlDatabaseResult udr = cookieDatabase.search("http", domain, "/");
+        boolean match = null != udr && udr.blacklisted();
 
         for (String d = domain; !match && null != d; d = nextHost(d)) {
             StringRule sr = cookieRules.get(d);
