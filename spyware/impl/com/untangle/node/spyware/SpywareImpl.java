@@ -113,7 +113,6 @@ public class SpywareImpl extends AbstractNode implements Spyware
     private final EventLogger<SpywareEvent> eventLogger;
 
     private final UrlDatabase urlDatabase = new UrlDatabase();
-    private final UrlDatabase cookieDatabase = new UrlDatabase();
 
     private final PipeSpec[] pipeSpecs = new PipeSpec[]
         { new SoloPipeSpec("spyware-http", this, tokenAdaptor,
@@ -151,12 +150,12 @@ public class SpywareImpl extends AbstractNode implements Spyware
         m.put("client-version", uvm.getFullVersion());
 
         for (String list : getSpywareLists()) {
-            if (list.startsWith("spyware-")) {
-                UrlDatabase db = list.endsWith("cookie") ? cookieDatabase : urlDatabase;
+            if (list.startsWith("spyware-")
+                && (list.endsWith("dom") || list.endsWith("url"))) {
                 try {
                     UrlList l = new PrefixUrlList(DB_HOME, BLACKLIST_HOME, list, m);
-                    db.addBlacklist(list, l);
-                    db.updateAll(true);
+                    urlDatabase.addBlacklist(list, l);
+                    urlDatabase.updateAll(true);
                 } catch (IOException exn) {
                     logger.warn("could not set up database", exn);
                 } catch (DatabaseException exn) {
@@ -339,7 +338,6 @@ public class SpywareImpl extends AbstractNode implements Spyware
     {
         statisticManager.start();
         urlDatabase.startUpdateTimer();
-        cookieDatabase.startUpdateTimer();
     }
 
     @Override
@@ -347,7 +345,6 @@ public class SpywareImpl extends AbstractNode implements Spyware
     {
         statisticManager.stop();
         urlDatabase.stopUpdateTimer();
-        cookieDatabase.stopUpdateTimer();
     }
 
     @Override
@@ -424,8 +421,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
             return false;
         }
 
-        UrlDatabaseResult udr = cookieDatabase.search("http", domain, "/");
-        boolean match = null != udr && udr.blacklisted();
+        boolean match = false;
 
         for (String d = domain; !match && null != d; d = nextHost(d)) {
             StringRule sr = cookieRules.get(d);
@@ -855,7 +851,8 @@ public class SpywareImpl extends AbstractNode implements Spyware
 
         try {
             HttpClient hc = new HttpClient();
-            HttpMethod get = new GetMethod(new URL(BLACKLIST_HOME, "list").toString());
+            String url = BLACKLIST_HOME.toString() + "/list";
+            HttpMethod get = new GetMethod(url);
             int rc = hc.executeMethod(get);
             InputStream is = get.getResponseBodyAsStream();
             InputStreamReader isr = new InputStreamReader(is);
