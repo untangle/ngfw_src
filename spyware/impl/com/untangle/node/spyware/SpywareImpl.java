@@ -149,6 +149,10 @@ public class SpywareImpl extends AbstractNode implements Spyware
             UrlList l = new PrefixUrlList(DB_HOME, BLACKLIST_HOME, "spyware-blocked-url", m);
             urlDatabase.addBlacklist("spyware-blocked-url", l);
             urlDatabase.updateAll(true);
+
+            l = new PrefixUrlList(DB_HOME, BLACKLIST_HOME, "mbl-swall-url", m);
+            urlDatabase.addBlacklist("mbl-swall-url", l);
+            urlDatabase.updateAll(true);
         } catch (IOException exn) {
             logger.warn("could not set up database", exn);
         } catch (DatabaseException exn) {

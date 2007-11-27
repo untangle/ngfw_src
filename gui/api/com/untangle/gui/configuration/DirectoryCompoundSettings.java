@@ -76,9 +76,6 @@ public class DirectoryCompoundSettings implements CompoundSettings {
     public JPanel getLocalJPanel(){ return localJPanel; }
     private JPanel adJPanel;
     public JPanel getRemoteADJPanel(){ return adJPanel; }
-    private JPanel adlsJPanel;
-    public JPanel getRemoteADLSJPanel(){ return adlsJPanel; }
-
 
     public void save() throws Exception {
         addressBookSettings.setAddressBookConfiguration(addressBookConfiguration);
@@ -118,20 +115,6 @@ public class DirectoryCompoundSettings implements CompoundSettings {
                 throw e;
             }
         }
-
-        if (adlsJPanel==null) {
-            try {
-                // REMOTE ACTIVE DIRECTORY ////////
-                Class adlsJPanelClass = Util.getClassLoader().mLoadClass( "com.untangle.gui.configuration.AdlsJPanel" );
-                Constructor adlsJPanelConstructor = adlsJPanelClass.getConstructor( new Class[]{} );
-                adlsJPanel = (JPanel) adlsJPanelConstructor.newInstance(new Object[]{});
-            }
-            catch (Exception e) {
-                logger.warn("Unable to load: Remote Directory", e);
-                throw e;
-            }
-        }
-
     }
 
     public void validate() throws Exception {
