@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -40,9 +40,10 @@ public class Settings
     private final boolean monthlyNDaily;
     private final int monthlyNDayOfWk;
     private final boolean monthlyNFirst;
+    private final int daysToKeep;
 
     private static final String EMAIL_DETAIL =
-        "SELECT email_detail " +
+        "SELECT email_detail, days_to_keep " +
         "FROM settings.n_reporting_settings settings " +
         "JOIN settings.u_node_persistent_state tstate " +
         "ON (settings.tid = tstate.tid " +
@@ -78,6 +79,7 @@ public class Settings
         ResultSet rs;
 
         boolean ed;
+        int dtk;
         boolean dy;
         ArrayList<Integer> wyL = new ArrayList<Integer>();
         boolean mdy;
@@ -89,6 +91,7 @@ public class Settings
             rs = ps.executeQuery();
             rs.first();
             ed = rs.getBoolean(1);
+            dtk = rs.getInt(2);
             rs.close();
             ps.close();
 
@@ -118,6 +121,7 @@ public class Settings
             logger.error("Could not get JDBC connection", exn);
             // set to defaults
             ed = false;
+            dtk = 33;
             dy = true;
             wyL.clear();
             wyL.add(Calendar.SUNDAY);
@@ -133,14 +137,15 @@ public class Settings
         }
 
         emailDetail = ed;
+        daysToKeep = dtk;
         daily = dy;
         weeklyList = wyL;
         monthlyNDaily = mdy;
         monthlyNDayOfWk = mwy;
         monthlyNFirst = mft;
 
-        weekly = getWeekly(cal);
-        monthly = getMonthly(cal);
+        weekly = 7 > daysToKeep ? false : getWeekly(cal);
+        monthly = 30 > daysToKeep ? false : getMonthly(cal);
 
         //logger.info("reporting schedule: weekly list: " + weeklyList + ", monthly daily: " + monthlyNDaily + ", monthly weekly: " + monthlyNDayOfWk + ", monthly first: " + monthlyNFirst);
         logger.info("reporting schedule: email detail: " + emailDetail + ", daily: " + daily + ", weekly: " + weekly + ", monthly: " + monthly);
