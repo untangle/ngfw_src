@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -80,6 +80,7 @@ public class GenerationConfigJPanel extends javax.swing.JPanel implements Savabl
         // SAVE THE VALUES ////////////////////////////////////
         if( !validateOnly ){
             ReportingSettings reportingSettings = (ReportingSettings) settings;
+            reportingSettings.setDaysToKeep(keepAWeekJCheckBox.isSelected() ? 8 : 33);
             Schedule schedule = reportingSettings.getSchedule();
 
             schedule.setDaily( daily );
@@ -142,6 +143,9 @@ public class GenerationConfigJPanel extends javax.swing.JPanel implements Savabl
 
     public void doRefresh(Object settings) {
         ReportingSettings reportingSettings = (ReportingSettings) settings;
+
+        keepAWeekJCheckBox.setSelected(reportingSettings.getDaysToKeep() <= 8);
+
         Schedule schedule = reportingSettings.getSchedule();
 
         // DAILY //
