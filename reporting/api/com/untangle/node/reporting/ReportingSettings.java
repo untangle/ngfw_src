@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -34,8 +34,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import com.untangle.uvm.security.Tid;
 import com.untangle.uvm.node.IPMaddrDirectory;
+import com.untangle.uvm.security.Tid;
 
 /**
  * Settings for the Reporting Node.
@@ -55,6 +55,7 @@ public class ReportingSettings implements Serializable
     private boolean emailDetail = false; // do not email detail info
     private IPMaddrDirectory networkDirectory = new IPMaddrDirectory();
     private Schedule schedule = new Schedule();
+    private int daysToKeep;
 
     public ReportingSettings() { }
 
@@ -139,5 +140,16 @@ public class ReportingSettings implements Serializable
     {
         this.schedule = schedule;
         return;
+    }
+
+    @Column(name="days_to_keep", nullable=false)
+    public int getDaysToKeep()
+    {
+        return daysToKeep;
+    }
+
+    public void setDaysToKeep(int daysToKeep)
+    {
+        this.daysToKeep = daysToKeep;
     }
 }
