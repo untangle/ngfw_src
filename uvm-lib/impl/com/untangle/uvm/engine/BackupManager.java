@@ -200,7 +200,7 @@ class BackupManager {
             //Don't forget to delete the temp file
             IOUtil.delete(tempFile);
             m_logger.error("Exception creating backup for transfer to client", ex);
-            throw new IOException("Unable to create backup file");//Generic, in case it ever gets shown in the UI
+            throw new IOException("Unable to create backup file - can't transfer to client.");//Generic, in case it ever gets shown in the UI
         }
     }
 
