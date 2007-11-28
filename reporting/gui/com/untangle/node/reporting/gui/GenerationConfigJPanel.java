@@ -271,7 +271,7 @@ public class GenerationConfigJPanel extends javax.swing.JPanel implements Savabl
         includeIncidentsJCheckBox = new javax.swing.JCheckBox();
         externalRemoteJPanel2 = new javax.swing.JPanel();
         jPanel5 = new javax.swing.JPanel();
-        includeIncidentsJCheckBox1 = new javax.swing.JCheckBox();
+        keepAWeekJCheckBox = new javax.swing.JCheckBox();
 
         setLayout(new java.awt.GridBagLayout());
 
@@ -594,11 +594,11 @@ public class GenerationConfigJPanel extends javax.swing.JPanel implements Savabl
         externalRemoteJPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Data Retention", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
         jPanel5.setLayout(new java.awt.GridBagLayout());
 
-        includeIncidentsJCheckBox1.setFont(new java.awt.Font("Dialog", 0, 12));
-        includeIncidentsJCheckBox1.setText("<html><b>Keep One Week's Datay</b> - limits data retention to one week, this allows reports to run faster on high traffic sites.</html>");
-        includeIncidentsJCheckBox1.addActionListener(new java.awt.event.ActionListener() {
+        keepAWeekJCheckBox.setFont(new java.awt.Font("Dialog", 0, 12));
+        keepAWeekJCheckBox.setText("<html><b>Keep One Week's Data</b> - limits data retention to one week, this allows reports to run faster on high traffic sites.</html>");
+        keepAWeekJCheckBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                includeIncidentsJCheckBox1ActionPerformed(evt);
+                keepAWeekJCheckBoxActionPerformed(evt);
             }
         });
 
@@ -608,7 +608,7 @@ public class GenerationConfigJPanel extends javax.swing.JPanel implements Savabl
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
-        jPanel5.add(includeIncidentsJCheckBox1, gridBagConstraints);
+        jPanel5.add(keepAWeekJCheckBox, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -631,9 +631,9 @@ public class GenerationConfigJPanel extends javax.swing.JPanel implements Savabl
 
     }// </editor-fold>//GEN-END:initComponents
 
-    private void includeIncidentsJCheckBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_includeIncidentsJCheckBox1ActionPerformed
+    private void keepAWeekJCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_keepAWeekJCheckBoxActionPerformed
 // TODO add your handling code here:
-    }//GEN-LAST:event_includeIncidentsJCheckBox1ActionPerformed
+    }//GEN-LAST:event_keepAWeekJCheckBoxActionPerformed
 
     private void setMonthlyDependency(boolean enabled){
         monthlyOnceJComboBox.setEnabled( enabled );
@@ -723,7 +723,6 @@ public class GenerationConfigJPanel extends javax.swing.JPanel implements Savabl
     private javax.swing.JPanel externalRemoteJPanel1;
     private javax.swing.JPanel externalRemoteJPanel2;
     private javax.swing.JCheckBox includeIncidentsJCheckBox;
-    private javax.swing.JCheckBox includeIncidentsJCheckBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -732,6 +731,7 @@ public class GenerationConfigJPanel extends javax.swing.JPanel implements Savabl
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
+    private javax.swing.JCheckBox keepAWeekJCheckBox;
     private javax.swing.ButtonGroup monthlyButtonGroup;
     private javax.swing.JRadioButton monthlyEverydayJRadioButton;
     private javax.swing.JRadioButton monthlyFirstJRadioButton;
