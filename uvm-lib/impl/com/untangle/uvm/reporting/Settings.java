@@ -155,6 +155,11 @@ public class Settings
         return emailDetail;
     }
 
+    public int getDaysToKeep()
+    {
+        return daysToKeep;
+    }
+
     public boolean getDaily() {
         return daily;
     }

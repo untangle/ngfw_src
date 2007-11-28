@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -25,14 +25,14 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.jar.*;
 
-import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.LocalUvmContext;
+import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.engine.DataSourceFactory;
-import com.untangle.uvm.reporting.summary.*;
-import com.untangle.uvm.security.Tid;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.NodeState;
+import com.untangle.uvm.reporting.summary.*;
+import com.untangle.uvm.security.Tid;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.export.*;
 import org.apache.log4j.Logger;
@@ -161,6 +161,7 @@ public class Reporter implements Runnable
         }
 
         String emailDetail = "export MV_EG_EMAIL_DETAIL=";
+        String daysToKeep = "export MV_EG_DAYS_TO_KEEP=";
         String daily = "export MV_EG_DAILY_REPORT=";
         String weekly = "export MV_EG_WEEKLY_REPORT=";
         String monthly = "export MV_EG_MONTHLY_REPORT=";
@@ -170,6 +171,8 @@ public class Reporter implements Runnable
         } else {
             emailDetail += "y";
         }
+
+        daysToKeep += settings.getDaysToKeep();
 
         if (false == settings.getDaily()) {
             daily += "n";
@@ -201,6 +204,8 @@ public class Reporter implements Runnable
             BufferedWriter envBWriter = new BufferedWriter(envFWriter);
 
             envBWriter.write(emailDetail);
+            envBWriter.newLine();
+            envBWriter.write(daysToKeep);
             envBWriter.newLine();
             envBWriter.write(daily);
             envBWriter.newLine();

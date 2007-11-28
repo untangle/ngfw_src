@@ -110,7 +110,7 @@ fi
 
 # We keep more than 30 days so that we'll have all the session starts, dhcp
 # starts, etc for the 30 day period.
-NUMDAYSTOKEEP=33
+NUMDAYSTOKEEP=${MV_EG_DAYS_TO_KEEP:-33}
 
 # Build list of event & report days for which generation is needed.
 $PSQL -v midnight="'$midnight'" -v daystosave="$NUMDAYSTOKEEP" -v intable="events.event_data_days" -v outtable="events.daystoadd" -f @UVM_SCHEMA@/uvm/getdaystoadd.sql uvm
