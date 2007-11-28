@@ -281,15 +281,16 @@ SQL
     'untangle-node-firewall' => 'firewall-transform',
     'untangle-node-shield' => 'airgap-transform',
     'untangle-node-phish' => 'clamphish-transform',
-    'untangle-node-kav' => 'kav-transform',
     'untangle-node-portal' => 'portal-transform',
     'untangle-node-hauri' => 'hauri-transform',
+    'untangle-node-kav' => 'kav-transform',
     'untangle-node-boxbackup' => 'boxbackup-transform',
     'untangle-casing-ftp' => 'ftp-casing',
     'untangle-casing-http' => 'http-casing',
     'untangle-casing-mail' => 'mail-casing',
     'untangle-base-virus' => 'virus-base',
-    'untangle-base-spam' => 'spam-base' }.each_pair do |k, v|
+    'untangle-base-spam' => 'spam-base'
+  }.each_pair do |k, v|
     ps.bind_param(1, k)
     ps.bind_param(2, v)
     ps.execute()
