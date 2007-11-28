@@ -16,12 +16,19 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
 #
 require 'filternode'
+include_class('com.untangle.node.http.UserWhitelistMode')
 
 class Spyware < UVMFilterNode
 
   UVM_NODE_NAME = "untangle-node-spyware"
   NODE_NAME = "Spyware"
   MIB_ROOT = UVM_FILTERNODE_MIB_ROOT + ".8"
+
+  @@userWhitelistModeValues = {
+    "none" => UserWhitelistMode::NONE,
+    "user-only" => UserWhitelistMode::USER_ONLY,
+    "user-and-global" => UserWhitelistMode::USER_AND_GLOBAL
+  }
 
   def initialize
     @diag = Diag.new(DEFAULT_DIAG_LEVEL)
@@ -135,10 +142,12 @@ class Spyware < UVMFilterNode
     remove_block_list_subnet(tid, pos.to_i)
   end  
   
-  # TODO consider using a unique identification instead of the position, when updating/removing a subnet rule; for example name or ip_maddr
+  # TODO consider using a unique identification instead of the position, 
+  # when updating/removing a subnet rule; for example name or ip_maddr
   def update_block_list_subnet(tid, pos, name, subnet, log)
     rules = get_block_list_subnet_rules(tid)
     begin
+      validate_range(pos, 1..rules.length, "subnet rule number") if pos != -1
       validate_bool(log, "log")
       ip_maddr = validate_subnet(subnet, "subnet")
       
@@ -152,10 +161,10 @@ class Spyware < UVMFilterNode
 
     if pos == -1
       rules.add(rule)
-      msg = "Subnet added to the subnet block list."
+      msg = "Subnet rule added to the block list."
     else
       rules[pos - 1] = rule
-      msg = "Subnet #{pos} updated."
+      msg = "Subnet rule #{pos} updated."
     end
     
     update_block_list_subnet_rules(tid, rules)
@@ -167,11 +176,11 @@ class Spyware < UVMFilterNode
   def remove_block_list_subnet(tid, pos)
     rules = get_block_list_subnet_rules(tid)
     begin
-      validate_range(pos, 1..rules.length, "block-list subnet rule number")
+      validate_range(pos, 1..rules.length, "subnet rule number")
       
       rules.remove(rules[pos - 1])
       update_block_list_subnet_rules(tid, rules)
-      msg = "Subnet #{pos} was removed from the block list."
+      msg = "Subnet rule #{pos} was removed from the block list."
       
       @diag.if_level(2) { puts! msg }
       return msg
@@ -179,25 +188,81 @@ class Spyware < UVMFilterNode
       return ex.to_s
     end
   end  
-  
-  
+    
   def cmd_block_list_cookie(tid)
     ret = "#,identification,block\n"
     get_block_list_cookie_rules(tid).each_with_index { |rule, index|
       ret << [(index+1).to_s,
-              rule.getName,
+              rule.getString,
               rule.isLive.to_s
              ].join(",")
       ret << "\n"
     }
     return ret
   end
+  
+  def cmd_block_list_cookie_add(tid, identification, block)
+    update_block_list_cookie(tid, -1,  identification, block)
+  end  
+  
+  def cmd_block_list_cookie_update(tid, pos, identification, block)
+    update_block_list_cookie(tid, pos.to_i, identification, block)
+  end
+  
+  def cmd_block_list_cookie_remove(tid, pos)
+    remove_block_list_cookie(tid, pos.to_i)
+  end  
+  
+  # TODO consider using a unique identification instead of the position, 
+  # when updating/removing a cookie rule; for example identification
+  def update_block_list_cookie(tid, pos, identification, block)
+    rules = get_block_list_cookie_rules(tid)
+    begin
+      validate_range(pos, 1..rules.length, "cookie rule number") if pos != -1 
+      validate_bool(block, "block")
+      
+      rule = com.untangle.uvm.node.StringRule.new
+      rule.setString(identification)
+      rule.setLive(block == "true")
+    rescue => ex
+      return ex.to_s
+    end
+
+    if pos == -1
+      rules.add(rule)
+      msg = "Cookie rule added to the block list."
+    else
+      rules[pos - 1] = rule
+      msg = "Cookie rule #{pos} updated."
+    end
+    
+    update_block_list_cookie_rules(tid, rules)
+
+    @diag.if_level(2) { puts! msg }
+    return msg
+  end
+  
+  def remove_block_list_cookie(tid, pos)
+    rules = get_block_list_cookie_rules(tid)
+    begin
+      validate_range(pos, 1..rules.length, "cookie rule number")
+      
+      rules.remove(rules[pos - 1])
+      update_block_list_cookie_rules(tid, rules)
+      msg = "Cookie rule #{pos} was removed from the block list."
+      
+      @diag.if_level(2) { puts! msg }
+      return msg
+    rescue => ex
+      return ex.to_s
+    end
+  end  
 
   def cmd_block_list_activex(tid)
     ret = "#,identification,block\n"
-    get_block_list_cookie_rules(tid).each_with_index { |rule, index|
+    get_block_list_activex_rules(tid).each_with_index { |rule, index|
       ret << [(index+1).to_s,
-              rule.getName,
+              rule.getString,
               rule.isLive.to_s
              ].join(",")
       ret << "\n"
@@ -205,6 +270,192 @@ class Spyware < UVMFilterNode
     return ret
   end
 
+  def cmd_block_list_activex_add(tid, identification, block)
+    update_block_list_activex(tid, -1,  identification, block)
+  end  
+  
+  def cmd_block_list_activex_update(tid, pos, identification, block)
+    update_block_list_activex(tid, pos.to_i, identification, block)
+  end
+  
+  def cmd_block_list_activex_remove(tid, pos)
+    remove_block_list_activex(tid, pos.to_i)
+  end  
+  
+  # TODO consider using a unique identification instead of the position, 
+  # when updating/removing a activex rule; for example identification
+  def update_block_list_activex(tid, pos, identification, block)
+    rules = get_block_list_activex_rules(tid)
+    begin
+      validate_range(pos, 1..rules.length, "ActiveX rule number") if pos != -1
+      validate_bool(block, "block")
+      
+      rule = com.untangle.uvm.node.StringRule.new
+      rule.setString(identification)
+      rule.setLive(block == "true")
+    rescue => ex
+      return ex.to_s
+    end
+
+    if pos == -1
+      rules.add(rule)
+      msg = "ActiveX rule added to the block list."
+    else
+      rules[pos - 1] = rule
+      msg = "ActiveX rule #{pos} updated."
+    end
+    
+    update_block_list_activex_rules(tid, rules)
+
+    @diag.if_level(2) { puts! msg }
+    return msg
+  end
+  
+  def remove_block_list_activex(tid, pos)
+    rules = get_block_list_activex_rules(tid)
+    begin
+      validate_range(pos, 1..rules.length, "ActiveX rule number")
+      
+      rules.remove(rules[pos - 1])
+      update_block_list_activex_rules(tid, rules)
+      msg = "ActiveX rule #{pos} was removed from the block list."
+      
+      @diag.if_level(2) { puts! msg }
+      return msg
+    rescue => ex
+      return ex.to_s
+    end
+  end  
+
+  def cmd_pass_list(tid)
+    ret = "#,pass,domain\n"
+    get_pass_list(tid).each_with_index { |domain, index|
+      ret << [(index+1).to_s,
+              domain.isLive.to_s,
+              domain.getString
+             ].join(",")
+      ret << "\n"
+    }
+    return ret
+  end
+  
+  def cmd_pass_list_add(tid, pass, domain)
+    update_pass_list(tid, -1, pass, domain)
+  end  
+  
+  def cmd_pass_list_update(tid, pos, pass, domain)
+    update_pass_list(tid, pos.to_i, pass, domain)
+  end
+  
+  def cmd_pass_list_remove(tid, pos)
+    remove_pass_list(tid, pos.to_i)
+  end  
+  
+  # TODO consider using a unique identification instead of the position, 
+  # when updating/removing a pass domaine; for example domain
+  def update_pass_list(tid, pos, pass, domain)
+    list = get_pass_list(tid)
+    begin
+      validate_range(pos, 1..list.length, "domain number") if pos != -1 
+      validate_bool(pass, "pass")
+      #TODO validate domain
+      
+      elem = com.untangle.uvm.node.StringRule.new
+      elem.setLive(pass == "true")
+      elem.setString(domain)
+    rescue => ex
+      return ex.to_s
+    end
+
+    if pos == -1
+      list.add(elem)
+      msg = "Domain added to the pass list."
+    else
+      list[pos - 1] = elem
+      msg = "Domain #{pos} updated."
+    end
+    
+    update_pass_list_settings(tid, list)
+
+    @diag.if_level(2) { puts! msg }
+    return msg
+  end
+  
+  def remove_pass_list(tid, pos)
+    list = get_pass_list(tid)
+    begin
+      validate_range(pos, 1..list.length, "domain number")
+      
+      list.remove(list[pos - 1])
+      update_pass_list_settings(tid, list)
+      msg = "Domain #{pos} was removed from the pass list."
+      
+      @diag.if_level(2) { puts! msg }
+      return msg
+    rescue => ex
+      return ex.to_s
+    end
+  end  
+
+  def cmd_block_all_activex(tid, *args)
+    if args.empty?
+      then 
+        display_block_all_activex_settings(tid)
+      else
+        update_block_all_activex_settings(tid, args[0])
+    end
+  end
+  
+  def display_block_all_activex_settings(tid)
+    settings = get_settings(tid)
+    return "Block all ActiveX: " + 
+        (settings.getBlockAllActiveX ? "enabled" : "disabled"); 
+  end
+  
+  def update_block_all_activex_settings(tid, enable)
+    settings = get_settings(tid)
+    begin
+      validate_bool(enable, "enable")
+      settings.setBlockAllActiveX(enable == "true")
+    rescue => ex
+      return ex.to_s
+    end
+    update_settings(tid, settings)
+    msg = "Block all ActiveX " + 
+        (enable == "true" ? "enabled" : "disabled")
+
+    @diag.if_level(2) { puts! msg }
+    return msg
+  end
+
+  def cmd_quick_passlist(tid, *args)
+    if args.empty?
+      then 
+        display_quick_passlist_settings(tid)
+      else
+        update_quick_passlist_settings(tid, args[0])
+    end
+  end
+  
+  def display_quick_passlist_settings(tid)
+    settings = get_settings(tid)
+    return "Quick-passlist: " + settings.getUserWhitelistMode.to_s
+  end
+  
+  def update_quick_passlist_settings(tid, new_value)
+    settings = get_settings(tid)
+    begin
+      validate_list(new_value, @@userWhitelistModeValues.keys ,"quick-passlist")
+      settings.setUserWhitelistMode(@@userWhitelistModeValues[new_value])
+    rescue => ex
+      return ex.to_s
+    end
+    update_settings(tid, settings)
+    msg = "Quick-passlist " + settings.getUserWhitelistMode.to_s
+
+    @diag.if_level(2) { puts! msg }
+    return msg
+  end
   
   #
   # Command handlers.
@@ -245,8 +496,30 @@ class Spyware < UVMFilterNode
     get_settings(tid).getCookieRules
   end
   
+  def update_block_list_cookie_rules(tid, rules)
+    settings = get_node(tid).getSpywareSettings
+    settings.setCookieRules(rules)
+    update_settings(tid, settings)
+  end
+  
   def get_block_list_activex_rules(tid)
     get_settings(tid).getActiveXRules
+  end
+  
+  def update_block_list_activex_rules(tid, rules)
+    settings = get_node(tid).getSpywareSettings
+    settings.setActiveXRules(rules)
+    update_settings(tid, settings)
+  end
+  
+  def get_pass_list(tid)
+    get_settings(tid).getDomainWhitelist
+  end
+  
+  def update_pass_list_settings(tid, list)
+    settings = get_node(tid).getSpywareSettings
+    settings.setDomainWhitelist(list)
+    update_settings(tid, settings)
   end
   
 end
