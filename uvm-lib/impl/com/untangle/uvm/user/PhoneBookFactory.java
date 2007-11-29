@@ -53,32 +53,23 @@ public class PhoneBookFactory
     /* Retest for the premium class */
     public void refresh()
     {
-	//Disabling the premium phone book code
-	if ( this.premium == null && this.remote != null ) {
-	    this.premium = null;
-	    this.remote = new RemotePhoneBookImpl( this.limited );
-	    return;
-	}
+        if ( this.premium != null ) {
+            logger.debug( "Already loaded the premium offering" );
+            return;
+        }
 
-	//Uncomment this and remove above code if you ever want the premium 
-	//phone book (WMIAssistant) back
-//         if ( this.premium != null ) {
-//             logger.debug( "Already loaded the premium offering" );
-//             return;
-//         }
-
-//         String className = System.getProperty( PROPERTY_PHONEBOOK_IMPL );
-//         if ( null == className ) {
-//             className = PREMIUM_PHONEBOOK_IMPL;
-//         }
-//         try {
-//             this.premium = (PremiumPhoneBook)Class.forName( className ).newInstance();
-//             this.remote = new RemotePhoneBookImpl( this.premium );
-//         } catch ( Exception e ) {
-//             logger.info( "Could not load LocalPhoneBook: " + className, e );
-//             this.premium = null;
-//             this.remote = new RemotePhoneBookImpl( this.limited );
-//         }
+        String className = System.getProperty( PROPERTY_PHONEBOOK_IMPL );
+        if ( null == className ) {
+            className = PREMIUM_PHONEBOOK_IMPL;
+        }
+        try {
+            this.premium = (PremiumPhoneBook)Class.forName( className ).newInstance();
+            this.remote = new RemotePhoneBookImpl( this.premium );
+        } catch ( Exception e ) {
+            logger.info( "Could not load LocalPhoneBook: " + className, e );
+            this.premium = null;
+            this.remote = new RemotePhoneBookImpl( this.limited );
+        }
     }
 
     public void init()
