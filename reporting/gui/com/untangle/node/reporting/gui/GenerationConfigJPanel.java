@@ -280,7 +280,7 @@ public class GenerationConfigJPanel extends javax.swing.JPanel implements Savabl
         setLayout(new java.awt.GridBagLayout());
 
         setMinimumSize(new java.awt.Dimension(530, 638));
-        setPreferredSize(new java.awt.Dimension(530, 638));
+        setPreferredSize(new java.awt.Dimension(530, 714));
         explanationJPanel1.setLayout(new java.awt.GridBagLayout());
 
         explanationJPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Daily Report Delivery", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
@@ -322,6 +322,7 @@ public class GenerationConfigJPanel extends javax.swing.JPanel implements Savabl
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 10);
         add(explanationJPanel1, gridBagConstraints);
@@ -443,6 +444,7 @@ public class GenerationConfigJPanel extends javax.swing.JPanel implements Savabl
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 10);
         add(explanationJPanel, gridBagConstraints);
@@ -549,6 +551,7 @@ public class GenerationConfigJPanel extends javax.swing.JPanel implements Savabl
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 10);
         add(externalRemoteJPanel, gridBagConstraints);
@@ -589,7 +592,6 @@ public class GenerationConfigJPanel extends javax.swing.JPanel implements Savabl
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
         gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
         add(externalRemoteJPanel1, gridBagConstraints);
 
@@ -629,15 +631,25 @@ public class GenerationConfigJPanel extends javax.swing.JPanel implements Savabl
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
         gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
         add(externalRemoteJPanel2, gridBagConstraints);
 
     }// </editor-fold>//GEN-END:initComponents
 
     private void keepAWeekJCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_keepAWeekJCheckBoxActionPerformed
-// TODO add your handling code here:
+        enableWeeklySettings(keepAWeekJCheckBox.isSelected());
     }//GEN-LAST:event_keepAWeekJCheckBoxActionPerformed
+
+    private void enableWeeklySettings(boolean enabled)
+    {
+        externalRemoteJPanel.setEnabled(enabled);
+        jLabel3.setEnabled(enabled);
+        monthlyNoneJRadioButton.setEnabled(enabled);
+        monthlyFirstJRadioButton.setEnabled(enabled);
+        monthlyEverydayJRadioButton.setEnabled(enabled);
+        monthlyOnceJRadioButton.setEnabled(enabled);
+        monthlyOnceJComboBox.setEnabled(enabled);
+    }
 
     private void setMonthlyDependency(boolean enabled){
         monthlyOnceJComboBox.setEnabled( enabled );

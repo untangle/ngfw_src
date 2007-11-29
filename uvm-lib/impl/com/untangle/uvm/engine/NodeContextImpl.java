@@ -446,6 +446,12 @@ class NodeContextImpl implements NodeContext
         }
 
         MackageDesc md = toolboxManager.mackageDesc(parent);
+
+        if (null == md) {
+            logger.warn("parent does not exist: " + parent);
+            throw new DeployException("could not create parent: " + parent);
+        }
+
         if (md.isService()) {
             policy = null;
         }
