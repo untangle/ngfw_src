@@ -40,5 +40,6 @@ public interface RemoteIntfManager
     /* Retrieve the current interface enumeration */
     public IntfEnum getIntfEnum();
 
+    public void loadInterfaceConfig();
     public InterfaceComparator getInterfaceComparator();
 }

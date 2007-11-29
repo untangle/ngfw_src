@@ -42,6 +42,11 @@ public class RemoteIntfManagerImpl implements RemoteIntfManager
         return this.localIntfManager.getIntfEnum();
     }
 
+    public void loadInterfaceConfig()
+    {
+        this.localIntfManager.loadInterfaceConfig();
+    }
+
     public InterfaceComparator getInterfaceComparator()
     {
         return this.localIntfManager.getInterfaceComparator();

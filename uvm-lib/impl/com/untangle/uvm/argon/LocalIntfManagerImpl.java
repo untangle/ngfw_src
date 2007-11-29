@@ -66,6 +66,8 @@ class LocalIntfManagerImpl implements LocalIntfManager
     /* Converter from all of the interface indexes to their display name(eg. external) */
     private IntfEnum intfEnum;
 
+    private InterfaceComparator interfaceComparator;
+
     /**
      * Convert an interface using the argon standard (0 = outside, 1 = inside, 2 = DMZ 1, etc)
      * to an interface that uses that netcap unique identifiers
@@ -239,6 +241,7 @@ class LocalIntfManagerImpl implements LocalIntfManager
     /* ----------------- Package ----------------- */
     LocalIntfManagerImpl()
     {
+        loadInterfaceConfig();
     }
 
     /* Initialize the interface converter */
@@ -260,8 +263,7 @@ class LocalIntfManagerImpl implements LocalIntfManager
 
     public InterfaceComparator getInterfaceComparator()
     {
-        // XXX get real interface ordering
-        return new InterfaceComparator(Arrays.asList(new Byte[] { new Byte((byte)0), new Byte((byte)1), new Byte((byte)2), new Byte((byte)3) }));
+        return interfaceComparator;
     }
 
 
@@ -412,4 +414,11 @@ class LocalIntfManagerImpl implements LocalIntfManager
 
         return list;
     }
+
+    public void loadInterfaceConfig()
+    {
+        // XXX do it!
+        interfaceComparator = new InterfaceComparator(Arrays.asList(new Byte[] { new Byte((byte)0), new Byte((byte)1), new Byte((byte)2), new Byte((byte)3) }));
+    }
+
 }
