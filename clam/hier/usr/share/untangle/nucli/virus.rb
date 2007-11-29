@@ -44,8 +44,43 @@ class Virus < UVMFilterNode
   
   def get_help_text()
     return <<-HELP
--- To be implemented.
-    HELP
+- virus -- enumerate all virus blocker nodes running on effective #{BRAND} server.
+- virus <TID> web http <scan:true|false>
+    -- Display/Update 'Scan HTTP files' option for node TID.
+- virus <TID> web file-extension-list
+    -- Display virus scanning options for each specified file type for node TID
+- virus <TID> web file-extension-list add extension [scan:true|false] description
+    -- Add a new item to the file-extension-list with specified settings.
+- virus <TID> web file-extension-list update [item-number] extension [scan:true|false] description
+    -- Update item '[item-number]' with specified settings.
+- virus <TID> web file-extension-list remove [item-number]
+    -- Remove item '[item-number]' from file-extension-list.
+- virus <TID> web mime-type-list
+    -- Display virus scanning options for each specified MIME type for node TID
+- virus <TID> web mime-type-list add mime-type [scan:true|false] description
+    -- Add a new item to the mime-type-list with specified settings.
+- virus <TID> web mime-type-list update [item-number] mime-type [scan:true|false] description
+    -- Update item '[item-number]' with specified settings.
+- virus <TID> web mime-type-list remove [item-number]
+    -- Remove item '[item-number]' from mime-type-list.
+- virus <TID> email [protocol:SMTP|POP|IMAP]
+    -- Display email anti-virus protection options for node TID and the specified protocol.
+- virus <TID> email [protocol:SMTP|POP|IMAP] update [key:scan|action|description] new_value
+    -- Update email anti-virus protection options with specified settings:
+      scan:true|false
+      action:remove-infection|pass-msg|block-msg for SMTP and remove-infection|pass-msg for POP and IMAP
+      description:any string
+- virus <TID> ftp <scan:true|false>
+    -- Display/Update 'Scan FTP files' option for node TID.
+- virus <TID> ftp-resume <enable:true|false>
+    -- Display/Update 'FTP download resume' option for node TID.
+- virus <TID> http-resume <enable:true|false>
+    -- Display/Update 'HTTP download resume' option for node TID.
+- virus <TID> trickle-rate <new_value>
+    -- Display/Update 'scan trickle rate (percent)' option for node TID.
+- virus <TID> <snmp|stats>
+    -- Display virus blocker TID statistics
+HELP
   end
 
 end
