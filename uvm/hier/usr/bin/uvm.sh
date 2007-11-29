@@ -316,7 +316,7 @@ while true; do
             $BANNER_NANNY $CLAMD_PORT $TIMEOUT || restartService clamav-daemon $CLAMD_PID_FILE "hung" stopFirst
 	  fi
 	  if pidof sshd > /dev/null ; then # support-agent is supposed to run; FIXME: need something better
-	    if [ -f "$SUPPORT_AGENT_PID_FILE" ] && [ ps `cat $SUPPORT_AGENT_PID_FILE` > /dev/null ]; then # it runs
+	    if [ -f "$SUPPORT_AGENT_PID_FILE" ] && ps `cat $SUPPORT_AGENT_PID_FILE` > /dev/null ; then # it runs
 	      if [ $(ps -o %cpu= `cat $SUPPORT_AGENT_PID_FILE` | perl -pe 's/\..*//') -gt $SUPPORT_AGENT_MAX_ALLOWED_CPU ] ; then
 		restartService untangle-support-agent $SUPPORT_AGENT_PID_FILE "spinning" stopFirst
 	      fi
