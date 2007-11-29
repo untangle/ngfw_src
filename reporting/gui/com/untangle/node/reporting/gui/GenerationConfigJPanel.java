@@ -20,6 +20,7 @@ package com.untangle.node.reporting.gui;
 
 import java.awt.*;
 import java.util.List;
+import javax.swing.border.TitledBorder;
 
 import com.untangle.gui.node.*;
 import com.untangle.gui.util.Util;
@@ -144,7 +145,9 @@ public class GenerationConfigJPanel extends javax.swing.JPanel implements Savabl
     public void doRefresh(Object settings) {
         ReportingSettings reportingSettings = (ReportingSettings) settings;
 
-        keepAWeekJCheckBox.setSelected(reportingSettings.getDaysToKeep() <= 8);
+        boolean keepAWeek = reportingSettings.getDaysToKeep() <= 8;
+        keepAWeekJCheckBox.setSelected(keepAWeek);
+        enableMonthlySettings(!keepAWeek);
 
         Schedule schedule = reportingSettings.getSchedule();
 
@@ -538,7 +541,7 @@ public class GenerationConfigJPanel extends javax.swing.JPanel implements Savabl
         externalRemoteJPanel.add(jPanel3, gridBagConstraints);
 
         jLabel3.setFont(new java.awt.Font("Dialog", 0, 12));
-        jLabel3.setText("<html>This report is delivered at midnight and covers events from the previous 30 days, up to, but not including the day of delivery.</html>");
+        jLabel3.setText("This report is delivered at midnight and covers events from the previous 30 days, up to, but not including the day of delivery.");
         jLabel3.setFocusable(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -637,12 +640,14 @@ public class GenerationConfigJPanel extends javax.swing.JPanel implements Savabl
     }// </editor-fold>//GEN-END:initComponents
 
     private void keepAWeekJCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_keepAWeekJCheckBoxActionPerformed
-        enableWeeklySettings(keepAWeekJCheckBox.isSelected());
+        settingsChangedListener.settingsChanged(this);
+        enableMonthlySettings(!keepAWeekJCheckBox.isSelected());
     }//GEN-LAST:event_keepAWeekJCheckBoxActionPerformed
 
-    private void enableWeeklySettings(boolean enabled)
+    private void enableMonthlySettings(boolean enabled)
     {
         externalRemoteJPanel.setEnabled(enabled);
+        ((TitledBorder)externalRemoteJPanel.getBorder()).setTitleColor(enabled ? SystemColor.textText : SystemColor.textInactiveText);
         jLabel3.setEnabled(enabled);
         monthlyNoneJRadioButton.setEnabled(enabled);
         monthlyFirstJRadioButton.setEnabled(enabled);
