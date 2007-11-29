@@ -180,13 +180,13 @@ public class Reporter implements Runnable
             daily += "y";
         }
 
-        if (false == settings.getWeekly()) {
+        if (false == settings.getWeekly() || 7 > settings.getDaysToKeep()) {
             weekly += "n";
         } else {
             weekly += "y";
         }
 
-        if (false == settings.getMonthly()) {
+        if (false == settings.getMonthly() || 30 > settings.getDaysToKeep()) {
             monthly += "n";
         } else {
             monthly += "y";
