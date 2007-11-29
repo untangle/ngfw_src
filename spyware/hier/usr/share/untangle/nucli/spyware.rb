@@ -164,7 +164,7 @@ class Spyware < UVMFilterNode
       msg = "Subnet rule added to the block list."
     else
       rules[pos - 1] = rule
-      msg = "Subnet rule #{pos} updated."
+      msg = "Subnet rule #{pos} was updated."
     end
     
     update_block_list_subnet_rules(tid, rules)
@@ -233,7 +233,7 @@ class Spyware < UVMFilterNode
       msg = "Cookie rule added to the block list."
     else
       rules[pos - 1] = rule
-      msg = "Cookie rule #{pos} updated."
+      msg = "Cookie rule #{pos} was updated."
     end
     
     update_block_list_cookie_rules(tid, rules)
@@ -302,7 +302,7 @@ class Spyware < UVMFilterNode
       msg = "ActiveX rule added to the block list."
     else
       rules[pos - 1] = rule
-      msg = "ActiveX rule #{pos} updated."
+      msg = "ActiveX rule #{pos} was updated."
     end
     
     update_block_list_activex_rules(tid, rules)
@@ -372,7 +372,7 @@ class Spyware < UVMFilterNode
       msg = "Domain added to the pass list."
     else
       list[pos - 1] = elem
-      msg = "Domain #{pos} updated."
+      msg = "Domain #{pos} was updated."
     end
     
     update_pass_list_settings(tid, list)
