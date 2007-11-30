@@ -193,7 +193,7 @@ HELP
       return ex.to_s
     end
     update_protocol_config(tid, protocol, config)
-    msg = "#{key} for #{protocol} updated."
+    msg = "#{key.capitalize} for #{protocol} was updated."
 
     @diag.if_level(2) { puts! msg }
     return msg
