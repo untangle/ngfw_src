@@ -35,6 +35,8 @@ package com.untangle.node.util;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -82,6 +84,7 @@ public abstract class UrlList
     private final String dbName;
     private final Database db;
     private final String dbLock;
+    private final File initFile;
 
     private final String suffix;
 
@@ -90,11 +93,13 @@ public abstract class UrlList
     // constructors ----------------------------------------------------------
 
     public UrlList(File dbHome, URL baseUrl, String dbName,
-                   Map<String, String> extraParams)
+                   Map<String, String> extraParams,
+                   File initFile)
         throws DatabaseException
     {
         this.baseUrl = baseUrl;
         this.dbName = dbName;
+        this.initFile = initFile;
 
         dbLock = new File(dbHome, dbName).getAbsolutePath().intern();
 
@@ -122,11 +127,13 @@ public abstract class UrlList
         db = dbEnv.openDatabase(null, dbName, dbCfg);
 
         StringBuilder sb = new StringBuilder();
-        for (String k : extraParams.keySet()) {
-            sb.append("&");
-            sb.append(k);
-            sb.append("=");
-            sb.append(extraParams.get(k));
+        if (null != extraParams) {
+            for (String k : extraParams.keySet()) {
+                sb.append("&");
+                sb.append(k);
+                sb.append("=");
+                sb.append(extraParams.get(k));
+            }
         }
 
         suffix = sb.toString();
@@ -139,13 +146,13 @@ public abstract class UrlList
             Thread t = new Thread(new Runnable() {
                     public void run()
                     {
-                        update();
+                        doUpdate(false);
                     }
                 }, "update-" + dbLock);
             t.setDaemon(true);
             t.start();
         } else {
-            update();
+            doUpdate(false);
         }
     }
 
@@ -303,8 +310,10 @@ public abstract class UrlList
         }
     }
 
-    private void update()
+    private void doUpdate(boolean updatedOnce)
     {
+        boolean fileInit = false;
+
         synchronized (DB_LOCKS) {
             if (DB_LOCKS.contains(dbLock)) {
                 return;
@@ -318,14 +327,28 @@ public abstract class UrlList
             try {
                 String oldVersion = getVersion(db);
 
-                String v = null == oldVersion ? "1:1" : oldVersion.replace(".", ":");
-                URL url = new URL(baseUrl + "/update?version=" + dbName + ":" + v + suffix);
-                logger.info("updating from URL: " + url);
+                InputStream is = null;
 
-                HttpClient hc = new HttpClient();
-                HttpMethod get = new GetMethod(url.toString());
-                int rc = hc.executeMethod(get);
-                InputStream is = get.getResponseBodyAsStream();
+                if (null == oldVersion && null != initFile && initFile.exists()) {
+                    try {
+                        is = new FileInputStream(initFile);
+                        fileInit = true;
+                    } catch (FileNotFoundException exn) {
+                        is = null;
+                    }
+                }
+
+                if (null == is) {
+                    String v = null == oldVersion ? "1:1" : oldVersion.replace(".", ":");
+                    URL url = new URL(baseUrl + "/update?version=" + dbName + ":" + v + suffix);
+                    logger.info("updating from URL: " + url);
+
+                    HttpClient hc = new HttpClient();
+                    HttpMethod get = new GetMethod(url.toString());
+                    int rc = hc.executeMethod(get);
+                    is = get.getResponseBodyAsStream();
+                }
+
                 InputStreamReader isr = new InputStreamReader(is);
                 br = new BufferedReader(isr);
 
@@ -367,6 +390,10 @@ public abstract class UrlList
             } finally {
                 DB_LOCKS.remove(dbLock);
             }
+        }
+
+        if (!updatedOnce && fileInit) {
+            doUpdate(true);
         }
     }
 

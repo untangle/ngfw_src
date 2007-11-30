@@ -66,15 +66,14 @@ public class PrefixUrlList extends UrlList
     public PrefixUrlList(File dbHome, URL databaseUrl, String dbName)
         throws DatabaseException, IOException
     {
-        super(dbHome, databaseUrl, dbName,
-              (Map<String, String>)Collections.EMPTY_MAP);
+        super(dbHome, databaseUrl, dbName, null, null);
     }
 
     public PrefixUrlList(File dbHome, URL databaseUrl, String dbName,
-                         Map<String, String> extraParams)
+                         Map<String, String> extraParams, File initFile)
         throws DatabaseException, IOException
     {
-        super(dbHome, databaseUrl, dbName, extraParams);
+        super(dbHome, databaseUrl, dbName, extraParams, initFile);
     }
 
     // UrlList methods -------------------------------------------------------

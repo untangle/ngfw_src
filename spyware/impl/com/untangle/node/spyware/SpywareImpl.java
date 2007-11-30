@@ -153,7 +153,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
             if (list.startsWith("spyware-")
                 && (list.endsWith("dom") || list.endsWith("url"))) {
                 try {
-                    UrlList l = new PrefixUrlList(DB_HOME, BLACKLIST_HOME, list, m);
+                    UrlList l = new PrefixUrlList(DB_HOME, BLACKLIST_HOME, list, m, null);
                     urlDatabase.addBlacklist(list, l);
                     urlDatabase.updateAll(true);
                 } catch (IOException exn) {
