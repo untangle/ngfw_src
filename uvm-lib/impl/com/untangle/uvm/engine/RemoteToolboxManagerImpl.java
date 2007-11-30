@@ -491,7 +491,7 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
                         logger.info("creating new UpgradeSettings");
                         // pick a random time.
                         Random rand = new Random();
-                        Period period = new Period(rand.nextInt(5), rand.nextInt(60), true);
+                        Period period = new Period(23, 30, true);
                         us = new UpgradeSettings(period);
                         s.save(us);
                     }
