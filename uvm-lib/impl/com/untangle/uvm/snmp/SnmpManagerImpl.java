@@ -173,16 +173,16 @@ public class SnmpManagerImpl
 
         snmpd_config.append("sysservices 78").append(TWO_LINES);
 
-        snmpd_config.append("pass .1.3.6.1.4.1.2021.6971.1 /bin/sh /usr/share/untangle/bin/uvmsnmp.sh webfilter").append(EOL);
-        snmpd_config.append("pass .1.3.6.1.4.1.2021.6971.2 /bin/sh /usr/share/untangle/bin/uvmsnmp.sh firewall").append(EOL);
-        snmpd_config.append("pass .1.3.6.1.4.1.2021.6971.3 /bin/sh /usr/share/untangle/bin/uvmsnmp.sh attack").append(EOL);
-        snmpd_config.append("pass .1.3.6.1.4.1.2021.6971.4 /bin/sh /usr/share/untangle/bin/uvmsnmp.sh protofilter").append(EOL);
-        snmpd_config.append("pass .1.3.6.1.4.1.2021.6971.5 /bin/sh /usr/share/untangle/bin/uvmsnmp.sh ips").append(EOL);
-        snmpd_config.append("pass .1.3.6.1.4.1.2021.6971.6 /bin/sh /usr/share/untangle/bin/uvmsnmp.sh phish").append(EOL);
-        snmpd_config.append("pass .1.3.6.1.4.1.2021.6971.7 /bin/sh /usr/share/untangle/bin/uvmsnmp.sh router").append(EOL);
-        snmpd_config.append("pass .1.3.6.1.4.1.2021.6971.8 /bin/sh /usr/share/untangle/bin/uvmsnmp.sh spyware").append(EOL);
-        snmpd_config.append("pass .1.3.6.1.4.1.2021.6971.9 /bin/sh /usr/share/untangle/bin/uvmsnmp.sh virus").append(EOL);
-        snmpd_config.append("pass .1.3.6.1.4.1.2021.6971.10 /bin/sh /usr/share/untangle/bin/uvmsnmp.sh spamblocker").append(TWO_LINES);
+        snmpd_config.append("pass .1.3.6.1.4.1.30054.1 /bin/sh /usr/share/untangle/bin/uvmsnmp.sh webfilter").append(EOL);
+        snmpd_config.append("pass .1.3.6.1.4.1.30054.2 /bin/sh /usr/share/untangle/bin/uvmsnmp.sh firewall").append(EOL);
+        snmpd_config.append("pass .1.3.6.1.4.1.30054.3 /bin/sh /usr/share/untangle/bin/uvmsnmp.sh attack").append(EOL);
+        snmpd_config.append("pass .1.3.6.1.4.1.30054.4 /bin/sh /usr/share/untangle/bin/uvmsnmp.sh protofilter").append(EOL);
+        snmpd_config.append("pass .1.3.6.1.4.1.30054.5 /bin/sh /usr/share/untangle/bin/uvmsnmp.sh ips").append(EOL);
+        snmpd_config.append("pass .1.3.6.1.4.1.30054.6 /bin/sh /usr/share/untangle/bin/uvmsnmp.sh phish").append(EOL);
+        snmpd_config.append("pass .1.3.6.1.4.1.30054.7 /bin/sh /usr/share/untangle/bin/uvmsnmp.sh router").append(EOL);
+        snmpd_config.append("pass .1.3.6.1.4.1.30054.8 /bin/sh /usr/share/untangle/bin/uvmsnmp.sh spyware").append(EOL);
+        snmpd_config.append("pass .1.3.6.1.4.1.30054.9 /bin/sh /usr/share/untangle/bin/uvmsnmp.sh virus").append(EOL);
+        snmpd_config.append("pass .1.3.6.1.4.1.30054.10 /bin/sh /usr/share/untangle/bin/uvmsnmp.sh spamblocker").append(TWO_LINES);
 
         if(isNotNullOrBlank(settings.getCommunityString())) {
             snmpd_config.append("# Simple access rules, so there is only one read").append(EOL);
@@ -192,8 +192,7 @@ public class SnmpManagerImpl
             snmpd_config.append("group MyROGroup v2c local").append(EOL);
             snmpd_config.append("group MyROGroup usm local").append(EOL);
             snmpd_config.append("view mib2 included  .iso.org.dod.internet.mgmt.mib-2").append(EOL);
-	    // ***TODO: need to externalize or patch on install the UVM mib root: ...1.2021.6971
-	    snmpd_config.append("view mib2 included  .iso.org.dod.internet.private.1.2021.6971").append(EOL);
+	    snmpd_config.append("view mib2 included  .iso.org.dod.internet.private.1.30054").append(EOL);
             snmpd_config.append("access MyROGroup \"\" any noauth exact mib2 none none").append(EOL);
         }
         else {
