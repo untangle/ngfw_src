@@ -71,4 +71,21 @@ public class InterfaceComparator implements Comparator<Byte>, Serializable
     {
         return positions[o1].compareTo(positions[o2]);
     }
+
+    @Override
+    public String toString()
+    {
+        StringBuilder sb = new StringBuilder("Interface Order: ");
+        boolean first = true;
+        for (Integer i : positions) {
+            if (first) {
+                first = false;
+            } else {
+                sb.append(",");
+            }
+            sb.append(i);
+        }
+
+        return sb.toString();
+    }
 }

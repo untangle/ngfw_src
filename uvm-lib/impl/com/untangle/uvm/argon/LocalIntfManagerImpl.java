@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -48,7 +49,7 @@ class LocalIntfManagerImpl implements LocalIntfManager
         = System.getProperty( "bunnicula.conf.dir" ) + "/argon.properties";
 
     private static final File INTF_ORDER_FILE
-        = new File("/etc/untangle-net-alpaca/intf_order");
+        = new File("/etc/untangle-net-alpaca/interface.properties");
 
     /* Name of the property used for the custom interfaces */
     private static final String PROPERTY_CUSTOM_INTF = "argon.userintf";
@@ -275,9 +276,28 @@ class LocalIntfManagerImpl implements LocalIntfManager
         if (INTF_ORDER_FILE.exists()) {
             FileInputStream fis = null;
             try {
-                fis = new FileInputStream(INTF_ORDER_FILE);
-                // XXX parse file
-                loadDefaultIntfOrder();
+                Properties p = new Properties();
+                p.load(new FileInputStream(INTF_ORDER_FILE));
+                String o = p.getProperty("com.untangle.interface-order");
+                String[] ifds = o.split(",");
+                List<Byte> l = new ArrayList<Byte>(ifds.length);
+                for (String ifd : ifds) {
+                    String[] d = ifd.split(":");
+                    if (3 < d.length) {
+                        logger.warn("skiping bad interface description: "
+                                    + ifd);
+                    } else {
+                        try {
+                            l.add(Byte.parseByte(d[2]));
+                        } catch (NumberFormatException exn) {
+                            logger.warn("skiping bad interface description: "
+                                        + ifd);
+                        }
+                    }
+                }
+                interfaceComparator = new InterfaceComparator(l);
+                logger.info("using interface order: "
+                            + interfaceComparator.toString());
             } catch (IOException exn) {
                 logger.warn("Can not read interface order", exn);
                 loadDefaultIntfOrder();
