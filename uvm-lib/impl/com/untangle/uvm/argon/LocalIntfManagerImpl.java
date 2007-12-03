@@ -21,6 +21,7 @@ package com.untangle.uvm.argon;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -43,8 +44,11 @@ import org.apache.log4j.Logger;
 class LocalIntfManagerImpl implements LocalIntfManager
 {
     /* File where the custom interface properties are stored */
-    private static final String CUSTOM_INTF_FILE =
-        System.getProperty( "bunnicula.conf.dir" ) + "/argon.properties";
+    private static final String CUSTOM_INTF_FILE
+        = System.getProperty( "bunnicula.conf.dir" ) + "/argon.properties";
+
+    private static final File INTF_ORDER_FILE
+        = new File("/etc/untangle-net-alpaca/intf_order");
 
     /* Name of the property used for the custom interfaces */
     private static final String PROPERTY_CUSTOM_INTF = "argon.userintf";
@@ -266,6 +270,32 @@ class LocalIntfManagerImpl implements LocalIntfManager
         return interfaceComparator;
     }
 
+    public void loadInterfaceConfig()
+    {
+        if (INTF_ORDER_FILE.exists()) {
+            FileInputStream fis = null;
+            try {
+                fis = new FileInputStream(INTF_ORDER_FILE);
+                // XXX parse file
+                loadDefaultIntfOrder();
+            } catch (IOException exn) {
+                logger.warn("Can not read interface order", exn);
+                loadDefaultIntfOrder();
+            } finally {
+                if (null != fis) {
+                    try {
+                        fis.close();
+                    } catch (IOException exn) {
+                        logger.warn("could not close: " + INTF_ORDER_FILE, exn);
+                    }
+                }
+            }
+        } else {
+            logger.warn("Could not load: " + INTF_ORDER_FILE);
+            loadDefaultIntfOrder();
+        }
+
+    }
 
     /* ----------------- Private ----------------- */
     /* Notify everything that needs to be aware of changes to the interface array */
@@ -415,9 +445,9 @@ class LocalIntfManagerImpl implements LocalIntfManager
         return list;
     }
 
-    public void loadInterfaceConfig()
+    private void loadDefaultIntfOrder()
     {
-        // XXX do it!
+        logger.warn("Using default interface order");
         interfaceComparator = new InterfaceComparator(Arrays.asList(new Byte[] { new Byte((byte)0), new Byte((byte)1), new Byte((byte)2), new Byte((byte)3) }));
     }
 
