@@ -230,17 +230,22 @@ class JavaCompiler
 
   def JavaCompiler.jarSigner(jar)
     ks = ENV['HADES_KEYSTORE']
-    if ks.nil?
+    if not ks.nil? and File.file?(ks)
+      a = ENV['HADES_KEY_ALIAS']
+      pw = ENV['HADES_KEY_PASS']
+    elsif File.file?("/usr/share/untangle/keystore")
+      ks = "/usr/share/untangle/keystore"
+      a = ENV['HADES_KEY_ALIAS']
+      pw = ENV['HADES_KEY_PASS']
+    elsif File.file?("/usr/share/untangle/keystore.selfsigned")
+      ks = "/usr/share/untangle/keystore.selfsigned"
+      a = 'hermes'
+      pw = 'hermes'
+    else
       ks = "#{BuildEnv::SRC.staging}/keystore"
       a = 'hermes'
       pw = 'hermes'
-
-      unless File.exists?(ks)
-        JavaCompiler.selfSignedCert(ks, a, pw)
-      end
-    else
-      a = ENV['HADES_KEY_ALIAS']
-      pw = ENV['HADES_KEY_PASS']
+      JavaCompiler.selfSignedCert(ks, a, pw)
     end
 
     raise "JarSigner failed" unless
