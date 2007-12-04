@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -98,6 +98,7 @@ class TomcatManager
         loadSystemApp("/webstart", "webstart", new WebAppOptions(new AdministrationOutsideAccessValve()));
         loadSystemApp("/library", "onlinestore", new WebAppOptions(new AdministrationOutsideAccessValve()));
         loadSystemApp("/reports", "reports", new WebAppOptions(true,new ReportingOutsideAccessValve()));
+        loadSystemApp("/alpaca", "alpaca", new WebAppOptions(true,new ReportingOutsideAccessValve()));
         loadSystemApp("/wmi", "wmi", new WebAppOptions(new WMIServerValve()));
     }
 
