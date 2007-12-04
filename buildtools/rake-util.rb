@@ -245,7 +245,7 @@ class JavaCompiler
       ks = "#{BuildEnv::SRC.staging}/keystore"
       a = 'hermes'
       pw = 'hermes'
-      JavaCompiler.selfSignedCert(ks, a, pw)
+      JavaCompiler.selfSignedCert(ks, a, pw) if not File.file?(ks)
     end
 
     raise "JarSigner failed" unless
