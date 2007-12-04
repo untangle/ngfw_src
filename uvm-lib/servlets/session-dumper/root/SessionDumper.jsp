@@ -118,7 +118,6 @@
 %>
           <TR>
              <TD><%= proto %><%= sd.id() %>
-             <TD><%= sd.isIncoming() ? "In" : "Out" %>
              <TD><%= SessionUtil.prettyState(sd.clientState()) %>
              <TD><%= sd.clientAddr().getHostAddress() %>:<%= sd.clientPort() %>
              <TD><%= SessionUtil.prettyState(sd.serverState()) %>
