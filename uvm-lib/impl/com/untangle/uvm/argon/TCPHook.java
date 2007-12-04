@@ -263,11 +263,8 @@ public class TCPHook implements NetcapHook
                 request = new TCPNewSessionRequestImpl( prevSession, agent, originalServerIntf, pe );
             }
 
-            // DIRDECISION_XXX (not sure if we want to push this lower, or keep at this level)
-            boolean incoming = false;
-
             // TAPI returns null when rejecting the session
-            TCPSession session = agent.getNewSessionEventListener().newSession( request, incoming );
+            TCPSession session = agent.getNewSessionEventListener().newSession( request );
 
             processSession( request, session );
 

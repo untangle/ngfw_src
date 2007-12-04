@@ -20,9 +20,9 @@ package com.untangle.uvm.engine;
 
 import java.net.InetAddress;
 
+import com.untangle.uvm.node.PipelineEndpoints;
 import com.untangle.uvm.vnet.IPNewSessionRequest;
 import com.untangle.uvm.vnet.MPipe;
-import com.untangle.uvm.node.PipelineEndpoints;
 
 /**
  * Abstract base class for IP new session request implementations
@@ -38,7 +38,6 @@ abstract class IPNewSessionRequestImpl implements IPNewSessionRequest {
 
     protected boolean needsFinalization = true;
     protected boolean modified = false;
-    protected final boolean incoming;
 
     /**
      * The pipeline request that corresponds to this (node) request.
@@ -47,11 +46,9 @@ abstract class IPNewSessionRequestImpl implements IPNewSessionRequest {
     protected final com.untangle.uvm.argon.IPNewSessionRequest pRequest;
 
     protected IPNewSessionRequestImpl(Dispatcher disp,
-                                      com.untangle.uvm.argon.IPNewSessionRequest pRequest,
-                                      boolean incoming) {
+                                      com.untangle.uvm.argon.IPNewSessionRequest pRequest) {
         this.mPipe = disp.mPipe();
         this.pRequest = pRequest;
-        this.incoming = incoming;
     }
 
     public MPipe mPipe() {
@@ -60,14 +57,6 @@ abstract class IPNewSessionRequestImpl implements IPNewSessionRequest {
 
     public int id() {
         return pRequest.id();
-    }
-
-    public boolean isIncoming() {
-        return incoming;
-    }
-
-    public boolean isOutgoing() {
-        return !incoming;
     }
 
     public short protocol() {

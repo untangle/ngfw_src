@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -22,11 +22,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
-
 import com.untangle.uvm.localapi.SessionMatcher;
-
 import com.untangle.uvm.policy.Policy;
+import org.apache.log4j.Logger;
 
 /**
  * The <code>ArgonAgent</code> interface represents an active Node as seen by
@@ -54,14 +52,14 @@ public class ArgonAgentImpl implements ArgonAgent {
     private final Logger logger = Logger.getLogger(getClass());
 
     private static final NewSessionEventListener NULL_NEW_SESSION_LISTENER = new NewSessionEventListener() {
-            public UDPSession newSession( UDPNewSessionRequest request, boolean isInbound )
+            public UDPSession newSession( UDPNewSessionRequest request )
             {
                 /* Release everything */
                 request.release();
                 return null;
             }
 
-            public TCPSession newSession( TCPNewSessionRequest request, boolean isInbound )
+            public TCPSession newSession( TCPNewSessionRequest request )
             {
                 /* Release everything */
                 request.release();
@@ -125,9 +123,9 @@ public class ArgonAgentImpl implements ArgonAgent {
 
         /* Create a session matcher to shutdown all active sessions */
         ActiveSessionMatcher matcher = new ActiveSessionMatcher( this.activeSessions );
-        
+
         VectronTable.getInstance().shutdownMatches( matcher );
-        
+
         int numActiveSessions = matcher.getNumberActiveSessions();
         if ( numActiveSessions == 0 ) {
             logger.info( "Shutdown all active sessions" );
@@ -184,7 +182,7 @@ public class ArgonAgentImpl implements ArgonAgent {
         }
         /**
          * Tells if the session matches */
-        public boolean isMatch( Policy policy, com.untangle.uvm.node.IPSessionDesc clientSide, 
+        public boolean isMatch( Policy policy, com.untangle.uvm.node.IPSessionDesc clientSide,
                                 com.untangle.uvm.node.IPSessionDesc serverSide )
         {
             Integer id = clientSide.id();
@@ -205,6 +203,6 @@ public class ArgonAgentImpl implements ArgonAgent {
         {
             return this.activeSessionIds.size();
         }
-        
+
     }
 }

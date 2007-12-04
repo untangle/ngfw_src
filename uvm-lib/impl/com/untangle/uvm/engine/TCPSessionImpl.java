@@ -54,11 +54,11 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
 
     protected TCPSessionImpl(Dispatcher disp,
                              com.untangle.uvm.argon.TCPSession pSession,
-                             boolean isInbound, PipelineEndpoints pe,
+                             PipelineEndpoints pe,
                              int clientReadBufferSize,
                              int serverReadBufferSize)
     {
-        super(disp, pSession, isInbound, pe);
+        super(disp, pSession, pe);
 
         logPrefix = "T" + id();
 
@@ -141,7 +141,7 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
     {
         return new TCPSessionDescImpl(id(), new SessionStats(stats),
                                       clientState(), serverState(), clientIntf(), serverIntf(),
-                                      clientAddr(), serverAddr(), clientPort(), serverPort(), isIncoming());
+                                      clientAddr(), serverAddr(), clientPort(), serverPort());
     }
 
     public byte clientState()

@@ -45,21 +45,6 @@ import com.untangle.uvm.node.SessionEndpoints;
  * @version 1.0
  */
 public interface IPNewSessionRequest extends NewSessionRequest, SessionEndpoints {
-
-    /**
-     * The session direction, based upon the interface ordering.
-     *
-     * @return true if the session is inbound, false if it is outbound.
-     */
-    boolean isIncoming();
-
-    /**
-     * The session direction, based upon the interface ordering.
-     *
-     * @return true if the session is outbound, false if it is inbound.
-     */
-    boolean isOutgoing();
-
     /**
      * Sets the client address for this session.
      */

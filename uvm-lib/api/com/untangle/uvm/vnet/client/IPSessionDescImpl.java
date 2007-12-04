@@ -33,9 +33,10 @@
 
 package com.untangle.uvm.vnet.client;
 
+import java.net.InetAddress;
+
 import com.untangle.uvm.vnet.IPSessionDesc;
 import com.untangle.uvm.vnet.SessionStats;
-import java.net.InetAddress;
 
 /**
  * Client side IP Session Description.
@@ -53,8 +54,6 @@ class IPSessionDescImpl extends SessionDescImpl implements IPSessionDesc {
     protected final byte clientIntf;
     protected final byte serverIntf;
 
-    protected final boolean incoming;
-
     protected final InetAddress clientAddr;
     protected final InetAddress serverAddr;
 
@@ -65,7 +64,7 @@ class IPSessionDescImpl extends SessionDescImpl implements IPSessionDesc {
                                 byte clientState, byte serverState,
                                 byte clientIntf, byte serverIntf,
                                 InetAddress clientAddr, InetAddress serverAddr,
-                                int clientPort, int serverPort, boolean incoming)
+                                int clientPort, int serverPort)
     {
         super(id, stats);
         this.protocol = protocol;
@@ -77,7 +76,6 @@ class IPSessionDescImpl extends SessionDescImpl implements IPSessionDesc {
         this.serverAddr = serverAddr;
         this.clientPort = clientPort;
         this.serverPort = serverPort;
-        this.incoming = incoming;
     }
 
     public short protocol()
@@ -123,15 +121,5 @@ class IPSessionDescImpl extends SessionDescImpl implements IPSessionDesc {
     public int serverPort()
     {
         return serverPort;
-    }
-
-    public boolean isIncoming()
-    {
-        return incoming;
-    }
-
-    public boolean isOutgoing()
-    {
-        return !incoming;
     }
 }

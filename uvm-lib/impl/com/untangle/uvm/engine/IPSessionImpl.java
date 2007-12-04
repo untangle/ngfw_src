@@ -54,7 +54,6 @@ abstract class IPSessionImpl
 {
     protected boolean released = false;
     protected boolean needsFinalization = true;
-    protected final boolean incoming;
 
     protected final Dispatcher dispatcher;
 
@@ -74,12 +73,10 @@ abstract class IPSessionImpl
 
     protected IPSessionImpl(Dispatcher disp,
                             com.untangle.uvm.argon.IPSession pSession,
-                            boolean incoming,
                             PipelineEndpoints pe)
     {
         super(disp.mPipe(), pSession);
         this.dispatcher = disp;
-        this.incoming = incoming;
         this.stats = new RWSessionStats();
         this.pipelineEndpoints = pe;
         if (RWSessionStats.DoDetailedTimes) {
@@ -89,16 +86,6 @@ abstract class IPSessionImpl
         }
         nodeManager = UvmContextImpl.getInstance().nodeManager();
         logger = disp.mPipe().sessionLogger();
-    }
-
-    public boolean isIncoming()
-    {
-        return incoming;
-    }
-
-    public boolean isOutgoing()
-    {
-        return !incoming;
     }
 
     public short protocol()

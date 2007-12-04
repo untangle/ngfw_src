@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -29,9 +29,8 @@ import com.untangle.uvm.vnet.UDPNewSessionRequest;
 class UDPNewSessionRequestImpl extends IPNewSessionRequestImpl implements UDPNewSessionRequest {
 
     protected UDPNewSessionRequestImpl(Dispatcher disp,
-                                       com.untangle.uvm.argon.UDPNewSessionRequest pRequest,
-                                       boolean isInbound) {
-        super(disp, pRequest, isInbound);
+                                       com.untangle.uvm.argon.UDPNewSessionRequest pRequest) {
+        super(disp, pRequest);
     }
 
     /**
@@ -41,7 +40,7 @@ class UDPNewSessionRequestImpl extends IPNewSessionRequestImpl implements UDPNew
     {
         return ((com.untangle.uvm.argon.UDPNewSessionRequest)pRequest).isPing();
     }
-    
+
     /**
      * Retrieve the ICMP associated with the session
      */

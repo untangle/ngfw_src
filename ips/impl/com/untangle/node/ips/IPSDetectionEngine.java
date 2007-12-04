@@ -27,8 +27,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.localapi.LocalIntfManager;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.ParseException;
+import com.untangle.uvm.node.PipelineEndpoints;
 import com.untangle.uvm.vnet.*;
 import com.untangle.uvm.vnet.event.*;
 import org.apache.log4j.Logger;
@@ -50,6 +53,8 @@ public class IPSDetectionEngine {
 
     private IPSRuleManager   manager;
     private IPSNodeImpl node;
+
+    private static final LocalIntfManager intfManager = LocalUvmContextFactory.context().localIntfManager();
 
     // We can't just attach the session info to a session, we have to attach it to the 'pipeline', since
     // we have to access it from multiple pipes (octet & http).  So we keep the registry here.
@@ -220,9 +225,11 @@ public class IPSDetectionEngine {
         }
 
         //Check matches
-        List<IPSRuleSignature> c2sSignatures = manager.matchesHeader(request, request.isIncoming(), IPSRuleManager.TO_SERVER, c2sList);
+        PipelineEndpoints pe = request.pipelineEndpoints();
+        boolean incoming = intfManager.getInterfaceComparator().isMoreInternal(pe.getServerIntf(), pe.getClientIntf());
+        List<IPSRuleSignature> c2sSignatures = manager.matchesHeader(request, incoming, IPSRuleManager.TO_SERVER, c2sList);
 
-        List<IPSRuleSignature> s2cSignatures = manager.matchesHeader(request, request.isIncoming(), IPSRuleManager.TO_CLIENT, s2cList);
+        List<IPSRuleSignature> s2cSignatures = manager.matchesHeader(request, incoming, IPSRuleManager.TO_CLIENT, s2cList);
 
         if (log.isDebugEnabled())
             log.debug("s2cSignature list size: " + s2cSignatures.size() + ", c2sSignature list size: " +

@@ -250,10 +250,7 @@ public class UDPHook implements NetcapHook
                 request = new UDPNewSessionRequestImpl( prevSession, agent, originalServerIntf, pe );
             }
 
-            // DIRDECISION_XXX (not sure if we want to push this lower, or keep at this level)
-            boolean incoming = false;
-
-            UDPSession session = agent.getNewSessionEventListener().newSession( request, incoming );
+            UDPSession session = agent.getNewSessionEventListener().newSession( request );
 
             processSession( request, session );
 

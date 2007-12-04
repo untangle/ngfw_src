@@ -61,7 +61,8 @@ import org.apache.log4j.MDC;
  * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
  * @version 1.0
  */
-class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener  {
+class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
+{
 
     // This should be a config param XXX
     // Note we only send a heartbeat once we haven't communicated with
@@ -278,26 +279,24 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener  {
             agent.removeSession(sess.pSession);
     }
 
-    public com.untangle.uvm.argon.TCPSession newSession(com.untangle.uvm.argon.TCPNewSessionRequest request,
-                                                         boolean isInbound)
+    public com.untangle.uvm.argon.TCPSession newSession(com.untangle.uvm.argon.TCPNewSessionRequest request)
     {
         try {
             nodeManager.registerThreadContext(nodeContext);
             MDC.put(SESSION_ID_MDC_KEY, "NT" + request.id());
-            return newSessionInternal(request, isInbound);
+            return newSessionInternal(request);
         } finally {
             nodeManager.deregisterThreadContext();
             MDC.remove(SESSION_ID_MDC_KEY);
         }
     }
 
-    public com.untangle.uvm.argon.UDPSession newSession(com.untangle.uvm.argon.UDPNewSessionRequest request,
-                                                         boolean isInbound)
+    public com.untangle.uvm.argon.UDPSession newSession(com.untangle.uvm.argon.UDPNewSessionRequest request)
     {
         try {
             nodeManager.registerThreadContext(nodeContext);
             MDC.put(SESSION_ID_MDC_KEY, "NU" + request.id());
-            return newSessionInternal(request, isInbound);
+            return newSessionInternal(request);
         } finally {
             nodeManager.deregisterThreadContext();
             MDC.remove(SESSION_ID_MDC_KEY);
@@ -306,7 +305,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener  {
 
 
     // Here's the callback that Argon calls to notify of a new TCP session:
-    public com.untangle.uvm.argon.TCPSession newSessionInternal(com.untangle.uvm.argon.TCPNewSessionRequest request, boolean isInbound)
+    public com.untangle.uvm.argon.TCPSession newSessionInternal(com.untangle.uvm.argon.TCPNewSessionRequest request)
     {
         int sessionId = -1;
 
@@ -320,7 +319,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener  {
             NodeDesc td = node.getNodeDesc();
             sessionId = request.id();
 
-            TCPNewSessionRequestImpl treq = new TCPNewSessionRequestImpl(this, request, isInbound);
+            TCPNewSessionRequestImpl treq = new TCPNewSessionRequestImpl(this, request);
             if (RWSessionStats.DoDetailedTimes)
                 dispatchRequestTime = MetaEnv.currentTimeMillis();
             MutateTStats.requestTCPSession(mPipe);
@@ -375,7 +374,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener  {
             // Create the session, client and server channels
             com.untangle.uvm.argon.TCPSession pSession =
                 new com.untangle.uvm.argon.TCPSessionImpl(request);
-            TCPSessionImpl session = new TCPSessionImpl(this, pSession, isInbound, request.pipelineEndpoints(),
+            TCPSessionImpl session = new TCPSessionImpl(this, pSession, request.pipelineEndpoints(),
                                                         td.getTcpClientReadBufferSize(),
                                                         td.getTcpServerReadBufferSize());
             session.attach(treq.attachment());
@@ -429,7 +428,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener  {
         }
     }
 
-    public com.untangle.uvm.argon.UDPSession newSessionInternal(com.untangle.uvm.argon.UDPNewSessionRequest request, boolean isInbound)
+    public com.untangle.uvm.argon.UDPSession newSessionInternal(com.untangle.uvm.argon.UDPNewSessionRequest request)
     {
         int sessionId = -1;
 
@@ -443,7 +442,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener  {
             NodeDesc td = node.getNodeDesc();
             sessionId = request.id();
 
-            UDPNewSessionRequestImpl ureq = new UDPNewSessionRequestImpl(this, request, isInbound);
+            UDPNewSessionRequestImpl ureq = new UDPNewSessionRequestImpl(this, request);
             if (RWSessionStats.DoDetailedTimes)
                 dispatchRequestTime = MetaEnv.currentTimeMillis();
             MutateTStats.requestUDPSession(mPipe);
@@ -488,7 +487,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener  {
             // Create the session, client and server channels
             com.untangle.uvm.argon.UDPSession pSession =
                 new com.untangle.uvm.argon.UDPSessionImpl(request);
-            UDPSessionImpl session = new UDPSessionImpl(this, pSession, isInbound, request.pipelineEndpoints(),
+            UDPSessionImpl session = new UDPSessionImpl(this, pSession, request.pipelineEndpoints(),
                                                         td.getUdpMaxPacketSize(),
                                                         td.getUdpMaxPacketSize());
             session.attach(ureq.attachment());
@@ -755,8 +754,6 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener  {
             else if (sd instanceof TCPSession)
                 System.out.print("T");
             System.out.print(sd.id());
-            System.out.print("\t");
-            System.out.print(sd.isIncoming() ? "In" : "Out");
             System.out.print("\t");
             System.out.print(SessionUtil.prettyState(sd.clientState()));
             System.out.print("\t");

@@ -48,11 +48,11 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
 
     protected UDPSessionImpl(Dispatcher disp,
                              com.untangle.uvm.argon.UDPSession pSession,
-                             boolean isInbound, PipelineEndpoints pe,
+                             PipelineEndpoints pe,
                              int clientMaxPacketSize,
                              int serverMaxPacketSize)
     {
-        super(disp, pSession, isInbound, pe);
+        super(disp, pSession, pe);
 
         if (clientMaxPacketSize < 2 || clientMaxPacketSize > UDP_MAX_MESG_SIZE)
             throw new IllegalArgumentException("Illegal maximum client packet bufferSize: " + clientMaxPacketSize);
@@ -98,8 +98,7 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
         return new UDPSessionDescImpl(id(), new SessionStats(stats),
                                       clientState(), serverState(),
                                       clientIntf(), serverIntf(), clientAddr(),
-                                      serverAddr(), clientPort(), serverPort(),
-                                      isIncoming());
+                                      serverAddr(), clientPort(), serverPort());
     }
 
     public byte clientState()

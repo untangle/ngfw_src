@@ -53,11 +53,11 @@ public class UDPSessionDescImpl
                               byte clientState, byte serverState,
                               byte clientIntf, byte serverIntf,
                               InetAddress clientAddr, InetAddress serverAddr,
-                              int clientPort, int serverPort, boolean incoming)
+                              int clientPort, int serverPort)
     {
         super(id, SessionEndpoints.PROTO_UDP, stats, clientState, serverState,
               clientIntf, serverIntf, clientAddr, serverAddr, clientPort,
-              serverPort, incoming);
+              serverPort);
     }
 
     public boolean isPing()

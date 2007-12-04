@@ -46,20 +46,6 @@ import com.untangle.uvm.node.SessionEndpoints;
 public interface IPSessionDesc extends com.untangle.uvm.node.IPSessionDesc, SessionDesc, SessionEndpoints
 {
     /**
-     * The session direction, based upon the interface ordering.
-     *
-     * @return true if the session is inbound, false if it is outbound
-     */
-    boolean isIncoming();
-
-    /**
-     * The session direction, based upon the interface ordering.
-     *
-     * @return true if the session is outbound, false if it is inbound
-     */
-    boolean isOutgoing();
-
-    /**
      * IP clients and servers have a state of <code>CLOSED</code> when both the input and
      * output sides are dead.
      *
