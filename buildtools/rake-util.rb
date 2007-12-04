@@ -230,6 +230,8 @@ class JavaCompiler
 
   def JavaCompiler.jarSigner(jar)
     ks = ENV['HADES_KEYSTORE']
+    defaultAlias = 'hermes'
+    defaultPasswd = 'hermes'
     if not ks.nil? and File.file?(ks)
       a = ENV['HADES_KEY_ALIAS']
       pw = ENV['HADES_KEY_PASS']
@@ -239,12 +241,20 @@ class JavaCompiler
       pw = ENV['HADES_KEY_PASS']
     elsif File.file?("/usr/share/untangle/keystore.selfsigned")
       ks = "/usr/share/untangle/keystore.selfsigned"
-      a = 'hermes'
-      pw = 'hermes'
+      a = defaultAlias
+      pw = defaultPasswd
     else
       ks = "#{BuildEnv::SRC.staging}/keystore"
-      a = 'hermes'
-      pw = 'hermes'
+      a = defaultAlias
+      pw = defaultPasswd
+      JavaCompiler.selfSignedCert(ks, a, pw) if not File.file?(ks)
+    end
+
+    if a.nil? or pw.nil? then
+      info "The keystore alias or passwd is null (alias='#{a}', passwd='#{pw}'), reverting to using the dummy keystore"
+      ks = "#{BuildEnv::SRC.staging}/keystore"
+      a = defaultAlias
+      pw = defaultPasswd
       JavaCompiler.selfSignedCert(ks, a, pw) if not File.file?(ks)
     end
 
