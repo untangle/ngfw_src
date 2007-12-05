@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -23,12 +23,12 @@ PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
 
 <web-app>
 
-  <display-name>Store</display-name>
+  <display-name>Alpaca</display-name>
 
   <servlet>
     <servlet-name>Proxy</servlet-name>
     <servlet-class>
-      com.untangle.uvm.servlet.store.ProxyServlet
+      com.untangle.uvm.servlet.alpaca.ProxyServlet
     </servlet-class>
   </servlet>
 
@@ -36,31 +36,6 @@ PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
     <servlet-name>Proxy</servlet-name>
     <url-pattern>/*</url-pattern>
   </servlet-mapping>
-
-  <servlet>
-    <servlet-name>InstallRequest</servlet-name>
-    <servlet-class>
-      com.untangle.uvm.servlet.store.InstallRequestServlet
-    </servlet-class>
-  </servlet>
-
-  <servlet-mapping>
-    <servlet-name>InstallRequest</servlet-name>
-    <url-pattern>/instreq</url-pattern>
-  </servlet-mapping>
-
-  <servlet>
-    <servlet-name>InstalledAppliances</servlet-name>
-    <servlet-class>
-      com.untangle.uvm.servlet.store.InstalledAppliances
-    </servlet-class>
-  </servlet>
-
-  <servlet-mapping>
-    <servlet-name>InstalledAppliances</servlet-name>
-    <url-pattern>/installed.js</url-pattern>
-  </servlet-mapping>
-
 
   @JSP_PRE_COMPILED_SERVLETS@
 
