@@ -83,7 +83,7 @@ class NetworkConfigurationLoader
 
     private static final String DHCP_RENEW_SCRIPT  = BUNNICULA_BASE + "/networking/dhcp-renew";
 
-    private static final String SSHD_PID_FILE     = "/var/run/sshd.pid";
+    private static final String SSHD_PID_FILE     = "/var/run/untangle-sshd.pid";
     private static final String DHCP_TEST_SCRIPT  = BUNNICULA_BASE + "/networking/dhcp-check";
     private static final int    DHCP_ENABLED_CODE = 1;
 
