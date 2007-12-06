@@ -27,6 +27,7 @@ public class NetcapUDPSession extends NetcapSession
     protected static final int MERGED_DEAD = 0xDEAD00D;
 
     private static final int DEFAULT_LIBERATE_FLAGS = 0;
+    private static final int DEFAULT_SERVER_COMPLETE_FLAGS = 0;
     
     /** These cannot conflict with the flags inside of NetcapTCPSession and NetcapSession */
     private final static int FLAG_TTL            = 64;
@@ -139,7 +140,18 @@ public class NetcapUDPSession extends NetcapSession
     {
         liberate( pointer.value(), DEFAULT_LIBERATE_FLAGS );
     }
-    
+
+    /**
+     * Complete a connection.
+     */
+    public void serverComplete( IPTraffic serverTraffic )
+    {
+        /* Move the first packet over to the server sink, this is used to confirm 
+         * The conntrack entry */
+        transferFirstPacketID( pointer.value(), serverTraffic.pointer());
+        // serverComplete( pointer.value(), DEFAULT_SERVER_COMPLETE_FLAGS );
+    }
+
     private static native long   read( long sessionPointer, boolean ifClient, int timeout );
     private static native byte[] data( long packetPointer );
     private static native int    getData( long packetPointer, byte[] buffer );
@@ -176,6 +188,12 @@ public class NetcapUDPSession extends NetcapSession
 
     /* Release a session that was previously captured */
     private static native void liberate( long sessionPointer, int flags );
+
+    /* Complete a session that was previously captured */
+    private static native void serverComplete( long sessionPointer, int flags );
+
+    /* Move over the first packet ID in the session */
+    private static native void transferFirstPacketID( long sessionPointer, long serverTraffic );
     
     class UDPSessionMailbox implements PacketMailbox
     {

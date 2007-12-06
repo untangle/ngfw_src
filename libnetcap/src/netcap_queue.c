@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -35,6 +35,7 @@
 #include <netinet/tcp.h>
 #include <netinet/udp.h>
 
+#include <libnfnetlink/libnfnetlink.h>
 #include <libnetfilter_queue/libnetfilter_queue.h>
 
 #include <mvutil/errlog.h>
@@ -44,6 +45,8 @@
 #include "libnetcap.h"
 #include "netcap_globals.h"
 #include "netcap_interface.h"
+#include "netcap_nfconntrack.h"
+
 
 /*
  * input buffer
@@ -74,6 +77,7 @@ static struct
     pthread_key_t tls_key;
     struct nfq_handle*  nfq_h;
     struct nfq_q_handle* nfq_qh;
+    /* socket to accept connections on */
     int nfq_fd;
     int    raw_sock;
 } _queue = 
@@ -83,6 +87,11 @@ static struct
     .raw_sock = -1,
     .tls_key  = -1
 };
+
+/* This is a helper function to retrieve the ctinfo
+ */
+static int _nfq_get_conntrack( struct nfq_data *nfad, netcap_pkt_t* pkt );
+
 
 /* This is the callback for netfilter queuing */
 static int _nf_callback( struct nfq_q_handle *qh, struct nfgenmsg *nfmsg, struct nfq_data *nfa, void *data );
@@ -121,7 +130,10 @@ int  netcap_queue_init (void)
         }
         
         /* set the copy mode */
-        if ( nfq_set_mode( _queue.nfq_qh, NFQNL_COPY_PACKET, 0xFFFF ) < 0) return perrlog( "nfq_set_mode" );
+        /* set untangle copy mode to include conntrack info */
+        if ( nfq_set_mode( _queue.nfq_qh, NFQNL_COPY_PACKET|NFQNL_COPY_UNTANGLE_MODE, 0xFFFF ) < 0){
+            return perrlog( "nfq_set_mode" );
+        }
 
         /* Retrieve the file descriptor for the netfilter queue */
         if (( _queue.nfq_fd = nfnl_fd( nfq_nfnlh( _queue.nfq_h ))) <= 0 ) {
@@ -173,7 +185,6 @@ int  netcap_nfqueue_get_sock (void)
     return _queue.nfq_fd;
 }
 
-
 int  netcap_set_verdict ( u_int32_t packet_id, int verdict, u_char* buf, int len)
 {
     return netcap_set_verdict_mark( packet_id, verdict, buf, len, 0, 0 );
@@ -189,6 +200,7 @@ int  netcap_set_verdict_mark( u_int32_t packet_id, int verdict, u_char* buf, int
         nf_verdict = NF_DROP;
         break;
     case NF_ACCEPT:
+      debug(10, "FLAG: NF_ACCEPTing packet %d with mark %d\n", packet_id, mark);
         nf_verdict = NF_ACCEPT;
         break;
     case NF_STOLEN:
@@ -198,6 +210,8 @@ int  netcap_set_verdict_mark( u_int32_t packet_id, int verdict, u_char* buf, int
         errlog(ERR_CRITICAL, "Invalid verdict, dropping packet %d\n", verdict );
         nf_verdict = NF_DROP;
     }
+
+    if ( packet_id == 0 ) return errlog( ERR_CRITICAL, "Unable to set the verdict on packet id 0\n" );
     
     if ( set_mark == 0 ) {
         if ( nfq_set_verdict( _queue.nfq_qh, packet_id, nf_verdict, len, buf ) < 0 ) {
@@ -266,7 +280,7 @@ int  netcap_raw_send (u_char* pkt, int len)
     to.sin_family = AF_INET;
     to.sin_port = 0;
     to.sin_addr.s_addr = iph->daddr;
-    
+
     if (sendto( _queue.raw_sock, pkt, len, 0, (struct sockaddr*)&to, sizeof(struct sockaddr)) < 0 ) {
         return perrlog("sendto");
     }
@@ -279,10 +293,7 @@ static int _nf_callback( struct nfq_q_handle *qh, struct nfgenmsg *nfmsg, struct
 {
     u_char* data = NULL;
     int data_len = 0;
-    struct iphdr* ip_header = NULL;
-    struct tcphdr* tcp_header = NULL;
-    struct udphdr* udp_header = NULL;
-    
+    struct iphdr* ip_header = NULL;    
     struct nfqnl_msg_packet_hdr *ph = NULL;
     netcap_pkt_t* pkt = NULL;
     _nf_callback_args_t* args = NULL;
@@ -307,18 +318,61 @@ static int _nf_callback( struct nfq_q_handle *qh, struct nfgenmsg *nfmsg, struct
     ip_header = (struct iphdr*)data;
     
     /* XXX correct? can't be larger than 16 */
-    if ( ip_header->ihl > 20 ) {
-        errlog(ERR_WARNING,"Illogical IP header length (%i), Assuming 5.\n",ntohs(ip_header->ihl));
-        tcp_header = (struct tcphdr*) (data + sizeof(struct iphdr));
-        udp_header = (struct udphdr*) (data + sizeof(struct iphdr));
-    }
-    else {
-        tcp_header = (struct tcphdr*) ( data + ( 4 * ip_header->ihl ));
-        udp_header = (struct udphdr*) ( data + ( 4 * ip_header->ihl ));
+    if (( ip_header->ihl < 5 ) || ( ip_header->ihl > 16 )) {
+        return errlog( ERR_WARNING, "Dropping illegal IP header length (%i).\n", ip_header->ihl );
     }
 
     if ( data_len < ntohs( ip_header->tot_len )) return errlogcons();
+
+    debug(10, "FLAG: Try to get the conntrack information\n");
+    if ( _nfq_get_conntrack( nfa, pkt ) < 0 ) {
+        return errlog( ERR_CRITICAL, "_nfq_get_conntrack\n" );
+    }
+
+    debug( 10, "Conntrack original info: %s:%d -> %s:%d\n",
+           unet_next_inet_ntoa( pkt->nat_info.original.src_address ), 
+           ntohs( pkt->nat_info.original.src_protocol_id ),
+           unet_next_inet_ntoa( pkt->nat_info.original.dst_address ), 
+           ntohs( pkt->nat_info.original.dst_protocol_id ));
     
+    debug( 10, "Conntrack reply info: %s:%d -> %s:%d\n",
+           unet_next_inet_ntoa( pkt->nat_info.reply.src_address ), 
+           ntohs( pkt->nat_info.reply.src_protocol_id ),
+           unet_next_inet_ntoa( pkt->nat_info.reply.dst_address ), 
+           ntohs( pkt->nat_info.reply.dst_protocol_id ));
+
+    /**
+     * undo any NATing.
+     */
+    if (( ip_header->saddr == pkt->nat_info.reply.dst_address ) &&
+        ( ip_header->daddr == pkt->nat_info.reply.src_address )) {
+        /* This is a packet from the original side that has been NATd */
+        debug( 10, "QUEUE: Packet from client post NAT.\n");
+        ip_header->saddr = pkt->nat_info.original.src_address;
+        ip_header->daddr = pkt->nat_info.original.dst_address;
+        pkt->queue_type = NETCAP_QUEUE_CLIENT_POST_NAT;
+    } else if (( ip_header->saddr == pkt->nat_info.original.dst_address ) &&
+               ( ip_header->daddr == pkt->nat_info.original.src_address )) {
+        debug( 10, "QUEUE: Packet from server post NAT.\n");
+        ip_header->saddr = pkt->nat_info.reply.src_address;
+        ip_header->daddr = pkt->nat_info.reply.dst_address;
+        pkt->queue_type = NETCAP_QUEUE_SERVER_POST_NAT;
+    } else if (( ip_header->saddr == pkt->nat_info.original.src_address ) &&
+               ( ip_header->daddr == pkt->nat_info.original.dst_address )) {
+        debug( 10, "QUEUE: Packet from client pre NAT.\n");
+        pkt->queue_type = NETCAP_QUEUE_CLIENT_PRE_NAT;
+    } else if (( ip_header->saddr == pkt->nat_info.reply.src_address ) &&
+               ( ip_header->daddr == pkt->nat_info.reply.dst_address )) {
+        debug( 10, "QUEUE: Packet from server pre NAT.\n");
+        pkt->queue_type = NETCAP_QUEUE_SERVER_PRE_NAT;
+    } else {
+        return errlog( ERR_CRITICAL, "Packet doesn't match either side of the conntrack data\n" );
+    }
+        
+    ip_header->check = 0;
+    errlog( ERR_WARNING, "New checksum doesn't include options.\n" );
+    ip_header->check = unet_in_cksum((u_int16_t *) ip_header, sizeof(struct iphdr));
+
     pkt->src.host.s_addr = ip_header->saddr;
     pkt->dst.host.s_addr = ip_header->daddr;
     
@@ -330,8 +384,22 @@ static int _nf_callback( struct nfq_q_handle *qh, struct nfgenmsg *nfmsg, struct
     /* XXX The flags should always be initialized to zero has to be cleared out */
     pkt->th_flags = 0;
     if ( ip_header->protocol == IPPROTO_TCP ) {
+        struct tcphdr* tcp_header = (struct tcphdr*) ( data + ( 4 * ip_header->ihl ));
         if ( data_len < ( sizeof( struct iphdr ) + sizeof( struct tcphdr ))) return errlogcons();
-            
+        
+        switch ( pkt->queue_type ) {
+        case NETCAP_QUEUE_CLIENT_POST_NAT:
+            tcp_header->dest = (u_int16_t)pkt->nat_info.original.dst_protocol_id;
+            tcp_header->source = (u_int16_t)pkt->nat_info.original.src_protocol_id;
+            break;
+        case NETCAP_QUEUE_SERVER_POST_NAT:
+            tcp_header->dest = (u_int16_t)pkt->nat_info.reply.dst_protocol_id;
+            tcp_header->source = (u_int16_t)pkt->nat_info.reply.src_protocol_id;
+            break;
+        default:
+            break;
+        }
+
         pkt->src.port = ntohs(tcp_header->source);
         pkt->dst.port = ntohs(tcp_header->dest);
         if ( tcp_header->ack ) pkt->th_flags |= TH_ACK;
@@ -340,12 +408,42 @@ static int _nf_callback( struct nfq_q_handle *qh, struct nfgenmsg *nfmsg, struct
         if ( tcp_header->rst ) pkt->th_flags |= TH_RST;
         if ( tcp_header->urg ) pkt->th_flags |= TH_URG;
         if ( tcp_header->psh ) pkt->th_flags |= TH_PUSH;
+
+        int tcp_len = ntohs(ip_header->tot_len) - (ip_header->ihl * 4);
+        debug( 12, "FLAG unet_tcp_sum_calc\n    len_tcp = %d\n    src_addr = %s\n    dst_addr = %s\n",
+               tcp_len, unet_next_inet_ntoa(ip_header->saddr),
+               unet_next_inet_ntoa(ip_header->daddr));
+        tcp_header->check = 0;
+        tcp_header->check = unet_tcp_sum_calc( tcp_len,(u_int8_t*)&ip_header->saddr,
+                                               (u_int8_t*)&ip_header->daddr, (u_int8_t*)tcp_header );
     }
     else if ( ip_header->protocol == IPPROTO_UDP ) {
+        struct udphdr* udp_header = (struct udphdr*) ( data + ( 4 * ip_header->ihl ));
         if ( data_len < (sizeof(struct iphdr) + sizeof( struct udphdr ))) return errlogcons();
+
+        switch ( pkt->queue_type ) {
+        case NETCAP_QUEUE_CLIENT_POST_NAT:
+            udp_header->dest = (u_int16_t)pkt->nat_info.original.dst_protocol_id;
+            udp_header->source = (u_int16_t)pkt->nat_info.original.src_protocol_id;
+            break;
+        case NETCAP_QUEUE_SERVER_POST_NAT:
+            udp_header->dest = (u_int16_t)pkt->nat_info.reply.dst_protocol_id;
+            udp_header->source = (u_int16_t)pkt->nat_info.reply.src_protocol_id;
+            break;
+        default:
+            break;
+        }
             
         pkt->src.port = ntohs( udp_header->source );
         pkt->dst.port = ntohs( udp_header->dest );
+
+        int udp_len = ntohs(ip_header->tot_len) - (ip_header->ihl * 4);
+        debug( 12, "FLAG unet_udp_sum_calc\n    len_tcp = %d\n    src_addr = %s\n    dst_addr = %s\n",
+               udp_len, unet_next_inet_ntoa( ip_header->saddr ),
+               unet_next_inet_ntoa( ip_header->daddr ));
+        udp_header->check = 0;
+        udp_header->check = unet_udp_sum_calc( udp_len,(u_int8_t*)&ip_header->saddr,
+                                               (u_int8_t*)&ip_header->daddr, (u_int8_t*)udp_header );
     }
     else {
         pkt->src.port = 0;
@@ -362,23 +460,75 @@ static int _nf_callback( struct nfq_q_handle *qh, struct nfgenmsg *nfmsg, struct
         errlog( ERR_WARNING, "Unable to determine the source interface from mark[%s:%d -> %s:%d]\n",
                 unet_next_inet_ntoa( pkt->src.host.s_addr ), pkt->src.port,
                 unet_next_inet_ntoa( pkt->dst.host.s_addr ), pkt->dst.port );
+    } else {
+      debug( 10, "NFQUEUE Input device %d\n", pkt->src_intf );
+    }    
+
+    /* First lookup the physdev in */
+    /* if that fails, check the indev */
+    /*
+    u_int32_t in_dev = nfq_get_physindev( nfa );
+    if ( in_dev == 0 ) in_dev = nfq_get_indev( nfa );
+    if ( in_dev == 0 ) {
+      errlog( ERR_WARNING, "Unable to determine the source interface with nfq_get_physindev\n");
+    } else {
+      debug( 10, "NFQUEUE Input device %d\n", in_dev );
+    }
+    */
+
+    /* First lookup the physdev_out */
+    /* if that fails, check the out_dev */
+    u_int32_t out_dev = nfq_get_physoutdev( nfa );
+    if ( out_dev == 0 ) out_dev = nfq_get_outdev( nfa );
+    if ( out_dev == 0 ) {
+      errlog( ERR_WARNING, "Unable to determine the destination interface with nfq_get_physoutdev\n");
+    } else {
+      debug( 10, "NFQUEUE Output device %d\n", out_dev );
     }
 
-    /* Verify that the marks match, eventually, it should just go to this other method */
-    /* First lookup the physdev in */
-    u_int32_t dev = nfq_get_physindev( nfa );
-    if ( dev == 0 ) dev = nfq_get_indev( nfa );
-
-    debug( 10, "NFQUEUE Input device %d\n", dev );
-
+    if (( pkt->dst_intf = netcap_interface_index_to_intf( out_dev )) == 0 ) {
+        /* This occurs when the interface is a bridge */
+        pkt->dst_intf = NC_INTF_UNK;
+    }
+    
+#if 0  // we are not currently matching interfaces by mark 
     /* Verify that the device matches the device indicated from the mark */
-    if (( dev == 0 ) || ( netcap_interface_index_to_intf( dev ) != pkt->src_intf )) {
+    if (( in_dev == 0 ) || ( netcap_interface_index_to_intf( in_dev ) != pkt->src_intf )) {
         errlog( ERR_WARNING, "Unable to determine the source interface from nfq [%s:%d -> %s:%d]\n",
                 unet_next_inet_ntoa( pkt->src.host.s_addr ), pkt->src.port,
                 unet_next_inet_ntoa( pkt->dst.host.s_addr ), pkt->dst.port );
         
     }
-    pkt->dst_intf = NC_INTF_UNK;
-    
+#endif   // we are not currently matching interfaces by mark 
+
     return 0;
 }
+
+
+static int _nfq_get_conntrack( struct nfq_data *nfad, netcap_pkt_t* pkt )
+{
+    struct nf_conntrack_tuple* original;
+    struct nf_conntrack_tuple* reply;
+
+    if ( nfq_get_conntrack( nfad, &original,  &reply ) < 0 ) {
+        errlog( ERR_WARNING, "nfq_get_conntrack could not find conntrack info\n" );
+        return 0;
+    }
+
+    /* using the union from the nfqueue structure, doesn't matter if
+     * this is TCP, UDP, whatever, but it is kind of filthy. */
+    pkt->nat_info.original.src_address     = original->src.u3.ip;
+    pkt->nat_info.original.src_protocol_id = original->src.u.tcp.port;
+    pkt->nat_info.original.dst_address     = original->dst.u3.ip;
+    pkt->nat_info.original.dst_protocol_id = original->dst.u.tcp.port;
+    
+    /* using the union from the nfqueue structure, doesn't matter if
+     * this is TCP, UDP, whatever, but it is kind of filthy. */
+    pkt->nat_info.reply.src_address     = reply->src.u3.ip;
+    pkt->nat_info.reply.src_protocol_id = reply->src.u.tcp.port;
+    pkt->nat_info.reply.dst_address     = reply->dst.u3.ip;
+    pkt->nat_info.reply.dst_protocol_id = reply->dst.u.tcp.port;
+
+    return 0;
+}
+

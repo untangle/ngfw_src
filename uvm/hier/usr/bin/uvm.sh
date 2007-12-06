@@ -68,10 +68,20 @@ reapChild() {
 
 
 flushIptables() {
-    /sbin/iptables -t nat -F
-    /sbin/iptables -t mangle -F
-    /sbin/iptables -t filter -F
-    /sbin/iptables -t raw -F
+    if [ ! -f /etc/untangle-net-alpaca/nonce ] ; then
+        echo "the nonce doesn't exist, unable to regenerate rules."
+        return
+    fi
+
+    local t_nonce=`head -n 1 /etc/untangle-net-alpaca/nonce`
+
+    ## Tell the alpaca to reload the rules
+    ruby <<EOF
+require "xmlrpc/client"
+ 
+client = XMLRPC::Client.new( "localhost", "/uvm/api?nonce=${t_nonce}", 3000 )
+ok, status = client.call( "generate_rules" )
+EOF
 }
 
 raiseFdLimit() {

@@ -148,14 +148,10 @@ public class UDPHook implements NetcapHook
             }
 
             /* Packets cannot go back out on the client interface */
-            if ( isMirrored()) {
-                serverTraffic.isMarkEnabled( false );
-            } else {
-                /* Setup the marking */
-                serverTraffic.isMarkEnabled( true );
-
-                serverTraffic.mark( lim.toNetcap( clientSide.clientIntf()));
-            }
+            /* Setup the marking */
+            serverTraffic.isMarkEnabled( true );
+            
+            serverTraffic.mark( lim.toNetcap( clientSide.clientIntf()));
 
             serverTraffic.lock();
 
@@ -176,6 +172,8 @@ public class UDPHook implements NetcapHook
                 }
             }
 
+            netcapUDPSession.serverComplete( serverTraffic );
+
             return true;
         }
 
@@ -190,14 +188,10 @@ public class UDPHook implements NetcapHook
             clientTraffic = IPTraffic.makeSwapped( netcapUDPSession.clientSide());
 
             /* Setup the marking */
-            if ( isMirrored()) {
-                clientTraffic.isMarkEnabled( false );
-            } else {
-                clientTraffic.isMarkEnabled( true );
-
-                /* Packets cannot go back out on the server interface */
-                clientTraffic.mark( Argon.getInstance().getIntfManager().toNetcap( serverSide.serverIntf()));
-            }
+            clientTraffic.isMarkEnabled( true );
+                
+            /* Packets cannot go back out on the server interface */
+            clientTraffic.mark( Argon.getInstance().getIntfManager().toNetcap( serverSide.serverIntf()));
 
             clientTraffic.lock();
             return true;
@@ -240,14 +234,14 @@ public class UDPHook implements NetcapHook
             return new UDPSource( netcapUDPSession.serverMailbox(), serverSideListener );
         }
 
-        protected void newSessionRequest( ArgonAgent agent, Iterator iter, byte originalServerIntf, PipelineEndpoints pe )
+        protected void newSessionRequest( ArgonAgent agent, Iterator iter, PipelineEndpoints pe )
         {
             UDPNewSessionRequest request;
 
             if ( prevSession == null ) {
-                request = new UDPNewSessionRequestImpl( sessionGlobalState, agent, originalServerIntf, pe );
+                request = new UDPNewSessionRequestImpl( sessionGlobalState, agent, pe );
             } else {
-                request = new UDPNewSessionRequestImpl( prevSession, agent, originalServerIntf, pe );
+                request = new UDPNewSessionRequestImpl( prevSession, agent, pe, sessionGlobalState );
             }
 
             UDPSession session = agent.getNewSessionEventListener().newSession( request );
@@ -270,6 +264,9 @@ public class UDPHook implements NetcapHook
 
         protected void liberate()
         {
+	    if (logger.isDebugEnabled()) {
+		logger.debug("Liberating UDP Session: "+netcapUDPSession);
+	    }
             netcapUDPSession.liberate();
         }
 

@@ -46,16 +46,6 @@ public interface IPNewSessionRequest extends NewSessionRequest, IPSessionDesc
      */
     void serverPort( int port );
 
-    /**
-     * Sets the server interface.</p>
-     */
-    void serverIntf( byte intf );
-
-    /**
-     * Get the original server interface before any of the overrides occurred 
-     */
-    byte originalServerIntf();
-
     PipelineEndpoints pipelineEndpoints();
 
     /**
@@ -124,4 +114,9 @@ public interface IPNewSessionRequest extends NewSessionRequest, IPSessionDesc
 
     // May only be called before session is established (from TCPNewSessionRequestEvent handler)
     void release();
+
+    public InetAddress getNatFromHost();
+    public int getNatFromPort();
+    public InetAddress getNatToHost();
+    public int getNatToPort();
 }

@@ -208,7 +208,7 @@ public class RuleManager
             divertPort = DEFAULT_DIVERT_PORT;
         }
         
-        scriptWriter.appendVariable( TCP_REDIRECT_PORT_FLAG, tcp.low() + ":" + tcp.high());
+        scriptWriter.appendVariable( TCP_REDIRECT_PORT_FLAG, tcp.low() + "-" + tcp.high());
         scriptWriter.appendVariable( UDP_DIVERT_PORT_FLAG, divertPort );
         scriptWriter.appendVariable( ANTISUBSCRIBE_LOCAL_IN_FLAG, !subscribeLocalInside );
         scriptWriter.appendVariable( ANTISUBSCRIBE_LOCAL_OUT_FLAG, !subscribeLocalOutside );

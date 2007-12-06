@@ -265,18 +265,6 @@ public final class Netcap {
     public native void setSessionSchedPolicy( int policy );
 
     /**
-     * Retrieve the netcap interface that an ip will go out on.
-     */
-    public byte getOutgoingInterface( InetAddress destination ) throws JNetcapException
-    {
-        try {
-            return cGetOutgoingInterface( Inet4AddressConverter.toLong( destination ));
-        } catch ( Exception e ) {
-            throw new JNetcapException( "Error retrieving outgoing interface", e );
-        }        
-    }
-
-    /**
      * Retrieve the IP address of an interface
      */
     private native int getInterfaceDataArray( String interfaceString, long input[] );
@@ -433,9 +421,4 @@ public final class Netcap {
      * Function to configure the netcap interface array 
      */
     private native void cConfigureInterfaceArray( byte intfIndexArray[], String interfaceArray[] );
-
-    /**
-     * Function to retrieve the outgoing interface for an ip address
-     */
-    private native byte cGetOutgoingInterface( long destination );
 }

@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -581,7 +581,7 @@ static u16 _unet_sum_calc ( u16 len, u8 src_addr[],u8 dest_addr[], u8 buff[], u8
 		
 	sum = ~sum;
 
-    return ((unsigned short) sum);
+    return htons((u16) sum);
 }
 
 static int _unet_startlisten (struct sockaddr_in* addr)

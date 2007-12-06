@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -685,29 +685,6 @@ JNIEXPORT jint JNICALL JF_Netcap( cUdpDivertPort )
 
 /*
  * Class:     com_untangle_jnetcap_Netcap
- * Method:    cGetOutgoingInterface
- * Signature: (J)B
- */
-JNIEXPORT jbyte JNICALL Java_com_untangle_jnetcap_Netcap_cGetOutgoingInterface
-  (JNIEnv* env, jobject _this, jlong j_address )
-{
-    struct in_addr address = {
-        .s_addr   = UINT_TO_JLONG(j_address)
-    };
-    netcap_intf_t netcap_intf;
-    
-    /* Retrieve the outgoing netcap interface */
-    if ( netcap_interface_dst_intf_delay( &netcap_intf, NC_INTF_0, NULL, &address, 
-                                          _jnetcap.delay_array ) < 0 ) {
-        jmvutil_error_void( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, "netcap_interface_dst_intf_delay\n" );
-        return 0;
-    }
-
-    return netcap_intf;
-}
-
-/*
- * Class:     com_untangle_jnetcap_Netcap
  * Method:    cConfigureInterfaceArray
  * Signature: ([Ljava/lang/String;)V
  */
@@ -813,7 +790,7 @@ static void*             _icmp_run_thread( void* arg )
 static void              _udp_hook( netcap_session_t* netcap_sess, void* arg )
 {
     jnetcap_thread_t* thread_arg = NULL;
-    
+    debug(10, "FLAG _udp_hook\n");
     if ( netcap_sess == NULL ) { 
         errlogargs();
         return;

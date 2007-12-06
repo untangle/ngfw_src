@@ -28,6 +28,8 @@ import com.untangle.uvm.vnet.MPipeException;
 import com.untangle.uvm.vnet.Protocol;
 import com.untangle.uvm.vnet.TCPSession;
 import org.apache.log4j.Logger;
+import com.untangle.uvm.node.script.ScriptRunner;
+import java.io.*;
 
 class RouterSessionManager
 {
@@ -63,6 +65,7 @@ class RouterSessionManager
         if (( tmp = map.put( request.id(), data )) != null ) {
             logger.error( "Duplicate session key: " + tmp );
         }
+	
     }
 
     void releaseSession( IPSession session, Protocol protocol )
@@ -79,7 +82,9 @@ class RouterSessionManager
         /* Have to release all of the SessionRedirect */
         for ( Iterator<SessionRedirect> iter = sessionData.redirectList().iterator() ; iter.hasNext() ; ) {
             SessionRedirect sessionRedirect = iter.next();
-
+	    if (logger.isDebugEnabled()) {
+		logger.debug( "Releasing sessionRedirect ");
+	    }
             /* Remove the item from the iterating list */
             iter.remove();
 
@@ -120,21 +125,25 @@ class RouterSessionManager
      * Check to see if this session should be redirected because of one of the
      * it is in the session redirect map
      */
-    boolean isSessionRedirect( IPNewSessionRequest request, Protocol protocol ) throws MPipeException
+    boolean isSessionRedirect( IPNewSessionRequest request, Protocol protocol, RouterImpl node ) 
     {
         SessionRedirectKey key = new SessionRedirectKey( request, protocol );
         SessionRedirect redirect;
 
-        // logger.debug( "Looking up session: " + key );
+	if ( logger.isDebugEnabled()) {
+	    logger.debug( "Looking up session: " + key );
+	}
 
         if (( redirect = redirectMap.remove( key )) == null ) {
             return false;
         }
+	if ( logger.isDebugEnabled()) {
+	    logger.debug( "Session redirect match: " + redirect );
+	}
 
-        // logger.debug( "Session redirect match: " + redirect );
-
-        /* Apply the redirect to the request */
-        redirect.redirect( request, node );
+        /* Remove the redirect rule once it is matched */
+	// free the reserved port!!!
+	redirect.cleanup(node);
 
         return true;
     }
@@ -209,6 +218,8 @@ class SessionRedirectKey
     }
 }
 
+
+
 class SessionRedirect
 {
     /* For each item, the item is null or zero if it is unused */
@@ -223,13 +234,21 @@ class SessionRedirect
 
     // Set to a non-zero value to reserve a port
     int               reservedPort;
-
+    private final Logger logger = Logger.getLogger( this.getClass());
     final SessionRedirectKey key;
+
+    private String CreateRedirectCommand;
+    private String RemoveRedirectCommand;
 
     SessionRedirect( InetAddress clientAddr, int clientPort,
                      InetAddress serverAddr, int serverPort,
-                     int reservedPort, SessionRedirectKey key )
+                     int reservedPort, InetAddress myAddr,
+		     SessionRedirectKey key )
     {
+	createRedirectRule(clientAddr, clientPort,
+			   serverAddr, serverPort,
+			   reservedPort, myAddr);
+
         this.clientAddr   = clientAddr;
         this.clientPort   = clientPort;
 
@@ -290,11 +309,73 @@ class SessionRedirect
 
     synchronized void cleanup( RouterImpl node )
     {
+
         if ( reservedPort > 0 ) {
             node.getHandler().releasePort( key.protocol, reservedPort );
+	    removeRedirectRule();
         }
-
+	
         reservedPort = 0;
     }
+    private synchronized void createRedirectRule( InetAddress clientAddr, int clientPort,
+						  InetAddress serverAddr, int serverPort,
+						  int reservedPort, InetAddress myAddr
+						  )
+    {
+        if (logger.isDebugEnabled()) {
+	    logger.debug("clientAddr:"+clientAddr);
+	    logger.debug("clientPort:"+clientPort);
+	    logger.debug("serverAddr:"+serverAddr);
+	    logger.debug("serverPort:"+serverPort);
+	    logger.debug("reservedPort:"+reservedPort);
+	}
+	CreateRedirectCommand =
+	    "iptables -A PREROUTING -t nat -p tcp "
+	    +" -s "+clientAddr.getHostAddress()
+	    +" -d "+myAddr.getHostAddress()
+	    +" --dport "+reservedPort 
+	    +" -j DNAT --to-destination "+serverAddr.getHostAddress()
+	    +":"+serverPort;
+	RemoveRedirectCommand =
+	    "iptables -D PREROUTING -t nat -p tcp "
+	    +" -s "+clientAddr.getHostAddress()
+	    +" -d "+myAddr.getHostAddress()
+	    +" --dport "+reservedPort 
+	    +" -j DNAT --to-destination "+serverAddr.getHostAddress()
+	    +":"+serverPort;
+	if (logger.isDebugEnabled()) {
+	    logger.debug(CreateRedirectCommand);
+	}
+	try{
+	    BufferedWriter writer = new BufferedWriter(new FileWriter(new File("/tmp/foo")));
+	    writer.write("#!/bin/bash\n");
+	    writer.write(CreateRedirectCommand);
+	    writer.newLine();
+	    writer.close();
+	    ScriptRunner.getInstance().exec("/tmp/foo");
+	}catch(java.io.IOException err){
+	    logger.debug(err);
+	}catch(com.untangle.uvm.node.NodeException err){
+	    logger.debug(err);
+	}
+    }
+
+    private synchronized void removeRedirectRule()
+    {
+	logger.debug(RemoveRedirectCommand);
+	try{
+	    BufferedWriter writer = new BufferedWriter(new FileWriter(new File("/tmp/foo")));
+	    writer.write("#!/bin/bash\n");
+	    writer.write(RemoveRedirectCommand);
+	    writer.newLine();
+	    writer.close();
+	    ScriptRunner.getInstance().exec("/tmp/foo");
+	}catch(java.io.IOException err){
+	    logger.debug(err);
+	}catch(com.untangle.uvm.node.NodeException err){
+	    logger.debug(err);
+	}
+    }
+
 }
 

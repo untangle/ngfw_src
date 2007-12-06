@@ -35,9 +35,13 @@ public abstract class NetcapSession {
 
     /* For the following options one of FLAG_ClientMask or FLAG_ServerMask AND FLAG_SrcMask or FLAG_DstMask,
      * must also be set */
-    private final static int FLAG_HOST        = 16;
-    private final static int FLAG_PORT        = 17;
-    private final static int FLAG_INTERFACE   = 18;
+    private final static int FLAG_HOST          = 16;
+    private final static int FLAG_PORT          = 17;
+    private final static int FLAG_INTERFACE     = 18;
+    private final static int FLAG_NAT_FROM_HOST = 19;
+    private final static int FLAG_NAT_FROM_PORT = 20;
+    private final static int FLAG_NAT_TO_HOST   = 21;
+    private final static int FLAG_NAT_TO_PORT   = 22;
 
     /* This is the mask for the remove the client/server parts */
     private final static int FLAG_MASK        = 0xFFF;
@@ -48,6 +52,9 @@ public abstract class NetcapSession {
     final ICMPMailbox icmpClientMailbox;
     final ICMPMailbox icmpServerMailbox;
 
+    public NatInfo natInfo;
+
+
     /* This is for children that override the SessionEndpoints class */
     protected NetcapSession( int id, short protocol )
     {
@@ -55,12 +62,13 @@ public abstract class NetcapSession {
 
         clientSide = makeEndpoints( true );
         serverSide = makeEndpoints( false );
-        
+     	
         /* Create the server and client ICMP mailboxes */
         icmpClientMailbox = new ICMPMailbox( new CPointer( icmpMailbox( true )));
         icmpServerMailbox = new ICMPMailbox( new CPointer( icmpMailbox( false )));
+	updateNatInfo();
     }
-
+    
     /* Returns one of Netcap.IPPROTO_UDP, Netcap.IPPROTO_TCP, Netcap.IPPROTO_ICMP */
     public short protocol()
     {
@@ -92,19 +100,6 @@ public abstract class NetcapSession {
     {
         return icmpServerMailbox;
     }
-
-    public void raze()
-    {
-        raze( pointer.value());
-
-        pointer.raze();
-    }
-
-    /** Interface should be a netcap interface id */
-    public void serverInterfaceId( byte intf )
-    {
-        serverInterfaceId( pointer.value(), intf );
-    }
     
     public String toString( boolean ifClient )
     {
@@ -116,10 +111,27 @@ public abstract class NetcapSession {
         return toString( pointer.value(), true );
     }
 
-    public void updateServerIntf()
+    public void determineServerIntf()
     {
-        updateServerIntf( pointer.value());
+        determineServerIntf( pointer.value());
     }
+
+    public void raze()
+    {
+        raze( pointer.value());
+
+        pointer.raze();
+    }
+
+    private void updateNatInfo()
+    {
+	natInfo = new NatInfo();
+	natInfo.fromHost = Inet4AddressConverter.toAddress(getLongValue( FLAG_NAT_FROM_HOST, pointer.value()));
+	natInfo.fromPort = getIntValue( FLAG_NAT_FROM_PORT, pointer.value());
+	natInfo.toHost   = Inet4AddressConverter.toAddress(getLongValue( FLAG_NAT_TO_HOST, pointer.value()));
+	natInfo.toPort   = getIntValue( FLAG_NAT_TO_PORT, pointer.value());
+    }
+
     
     protected abstract Endpoints makeEndpoints( boolean ifClient );
 
@@ -128,6 +140,7 @@ public abstract class NetcapSession {
 
     private static native long getSession( int id, short protocol );
     private static native void raze( long session );
+    private static native void determineServerIntf( long session );
 
     protected static native long   getLongValue  ( int id, long session );
     protected static native int    getIntValue   ( int id, long session );
@@ -135,13 +148,17 @@ public abstract class NetcapSession {
 
     protected static native String toString( long session, boolean ifClient );
 
-    private native void updateServerIntf( long session );
-
-    private native void serverInterfaceId( long session, byte intf );
-
     static
     {
         Netcap.load();
+    }
+
+    public class NatInfo 
+    {
+	public InetAddress fromHost;
+	public int fromPort;
+	public InetAddress toHost;
+	public int toPort;
     }
 
     protected class SessionEndpoints implements Endpoints

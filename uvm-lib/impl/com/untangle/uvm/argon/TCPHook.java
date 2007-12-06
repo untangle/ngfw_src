@@ -35,6 +35,9 @@ import com.untangle.uvm.node.PipelineEndpoints;
 import com.untangle.uvm.policy.PolicyRule;
 import org.apache.log4j.Logger;
 
+
+import java.lang.Math;
+
 public class TCPHook implements NetcapHook
 {
     private static TCPHook INSTANCE;
@@ -253,35 +256,38 @@ public class TCPHook implements NetcapHook
             return new TCPSource( netcapTCPSession.tcpServerSide().fd(), serverSideListener );
         }
 
-        protected void newSessionRequest( ArgonAgent agent, Iterator iter, byte originalServerIntf, PipelineEndpoints pe )
+        protected void newSessionRequest( ArgonAgent agent, Iterator iter, PipelineEndpoints pe )
         {
             TCPNewSessionRequest request;
 
             if ( prevSession == null ) {
-                request = new TCPNewSessionRequestImpl( sessionGlobalState, agent, originalServerIntf, pe );
+                request = new TCPNewSessionRequestImpl( sessionGlobalState, agent, pe );
             } else {
-                request = new TCPNewSessionRequestImpl( prevSession, agent, originalServerIntf, pe );
+                request = new TCPNewSessionRequestImpl( prevSession, agent, pe, sessionGlobalState );
             }
 
             // TAPI returns null when rejecting the session
             TCPSession session = agent.getNewSessionEventListener().newSession( request );
-
-            processSession( request, session );
-
-            if ( iter.hasNext()) {
-                /* Advance the previous session if the node requested or released the session */
-                if (( request.state() == IPNewSessionRequest.REQUESTED ) ||
-                    ( request.state() == IPNewSessionRequest.RELEASED && session != null )) {
-                    prevSession = session;
-                }
-            } else {
-                prevSession = null;
-            }
+	    
+	    processSession( request, session );
+	    
+	    if ( iter.hasNext()) {
+		/* Advance the previous session if the node requested or released the session */
+		if (( request.state() == IPNewSessionRequest.REQUESTED ) ||
+		    ( request.state() == IPNewSessionRequest.RELEASED && session != null )) {
+		    prevSession = session;
+		}
+	    } else {
+		prevSession = null;
+	    }
         }
 
         protected void liberate()
         {
-            netcapTCPSession.liberate();
+	    if (logger.isDebugEnabled()) {
+		logger.debug("Liberating TCP Session: "+netcapTCPSession);
+	    }
+	    netcapTCPSession.liberate();
         }
 
         protected void raze()

@@ -21,7 +21,7 @@ UVM_USER=root
 ## Defaults to 10000 in the code, set here if you want something else
 UVM_SESSION_LIMIT=""
 
-UVM_ARGS=""
+UVM_ARGS="-Dargon.debug.netcap=10 -Dargon.debug.jnetcap=10 "
 
 # postgresql stuff
 PG_VERSION=`dpkg -l postgresql | awk '/^ii/ { gsub(/\..-.*/, "", $3) ; print $3 }'`

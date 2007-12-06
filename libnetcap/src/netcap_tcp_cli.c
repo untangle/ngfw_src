@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -26,7 +26,7 @@
 #include <errno.h>
 #include <netinet/ip.h>
 #include <netinet/ip_icmp.h>
-#define __FAVOR_BSD
+#define __FAVOR_BSD   // DUDE! 
 #include <netinet/tcp.h>
 #include <mvutil/errlog.h>
 #include <mvutil/debug.h>
@@ -42,7 +42,8 @@
 #include "netcap_shield.h"
 #include "netcap_icmp.h"
 #include "netcap_queue.h"
-
+#include "netcap_nfconntrack.h"
+#include "netcap_virtual_interface.h"
 /* Maximum size for an ICMP response, these are responses to SYNs so they shouldn't be that large */
 /* This goes on the stack, so any of the max packet sizes would probably exceed that size. */
 #define _ICMP_MAX_RESPONSE_SIZE 1024
@@ -72,7 +73,7 @@ int _netcap_tcp_callback_cli_complete( netcap_session_t* netcap_sess, netcap_cal
 {
     int fd;
     tcp_msg_t* msg;
-
+    debug( 10, "FLAG _netcap_tcp_callback_cli_complete\n");
     if ( netcap_sess == NULL ) return errlogargs();
 
     if ( !netcap_sess->syn_mode ) {
@@ -105,10 +106,56 @@ int _netcap_tcp_callback_cli_complete( netcap_session_t* netcap_sess, netcap_cal
         return -1;
     }
 
+
+    struct iphdr *ip_header = (struct iphdr *) msg->pkt->data;
+    struct tcphdr *tcp_header = (struct tcphdr*) ( msg->pkt->data + ( 4 * ip_header->ihl ));
     /**
-     * Release the SYN
+     * Delete the conntrack entry
      */
-    netcap_pkt_action_raze( msg->pkt, NF_ACCEPT );
+    debug( 10, "FLAG attemping to delete the conntrack entry\n");
+    netcap_nfconntrack_ipv4_tuple_t tuple;
+    netcap_ip_tuple nat_info = msg->pkt->nat_info.original;
+    tuple.protocol = ip_header->protocol;
+    tuple.src_address = nat_info.src_address;
+    tuple.src_port = (u_int16_t)nat_info.src_protocol_id;
+    tuple.dst_address = nat_info.dst_address;
+    tuple.dst_port = (u_int16_t)nat_info.dst_protocol_id;
+
+    /* This will automatically ignore the error of the entry not existing. */
+    if( netcap_nfconntrack_del_entry_tuple( &tuple, NFCONNTRACK_DIRECTION_ORIG, 1 ) < 0 ) {
+        return errlog( ERR_WARNING,"netcap_nfconntrack_del_entry_tuple\n");
+    }
+
+    /**
+     * Undo any NATing...
+     */
+
+    /* Update the packet to contain the original source and destination tuple */
+    ip_header->saddr = msg->pkt->nat_info.original.src_address;
+    tcp_header->th_sport = (u_int16_t)msg->pkt->nat_info.original.src_protocol_id;
+    ip_header->daddr = msg->pkt->nat_info.original.dst_address;
+    tcp_header->th_dport = (u_int16_t)msg->pkt->nat_info.original.dst_protocol_id;
+
+    
+    int tcp_len = ntohs(ip_header->tot_len) - (ip_header->ihl * 4);
+    debug( 10, "FLAG unet_tcp_sum_calc\n    len_tcp = %d\n    src_addr = %s\n    dst_addr = %s\n    buff = %p\n",
+	   tcp_len,
+	   unet_next_inet_ntoa(ip_header->saddr),
+	   unet_next_inet_ntoa(ip_header->daddr),
+	   tcp_header );
+    tcp_header->th_sum = 0;
+    tcp_header->th_sum = unet_tcp_sum_calc( tcp_len, (u_int8_t*)&ip_header->saddr, 
+                                            (u_int8_t*)&ip_header->daddr, (u_int8_t*)tcp_header );
+                                            
+    ip_header->check = 0;
+    ip_header->check = unet_in_cksum((u_int16_t *) ip_header, sizeof(struct iphdr));
+
+
+    /**
+     * Reinject the SYN packet
+     */
+    netcap_virtual_interface_send_pkt( msg->pkt );
+    netcap_pkt_action_raze( msg->pkt, NF_DROP );
     msg->pkt = NULL;
     netcap_tcp_msg_raze( msg );
     msg = NULL;
@@ -139,7 +186,7 @@ int _netcap_tcp_callback_cli_complete( netcap_session_t* netcap_sess, netcap_cal
                 /**
                  * This is bad behavior, the host used up the resources, but 
                  * client did not respond (Typically a SYN flood)
-                 * Although this happens if the client decides not to connect before the server connection completes
+
                  * (e.g. the person presses the stop button in their browser before connected)
                  */
                 netcap_shield_rep_blame( &netcap_sess->cli.cli.host, NC_SHIELD_ERR_3 );
@@ -295,7 +342,7 @@ int _netcap_tcp_cli_send_reset( netcap_pkt_t* pkt )
     /**
      * compute checksum
      */
-    tcph->th_sum = htons( unet_tcp_sum_calc( tcp_len, (u_int8_t*)&iph->saddr, (u_int8_t*)&iph->daddr, (u_int8_t*)tcph ) );
+    tcph->th_sum = unet_tcp_sum_calc( tcp_len, (u_int8_t*)&iph->saddr, (u_int8_t*)&iph->daddr, (u_int8_t*)tcph );
     
     /* send the packet out a raw socket */    
     if ( netcap_raw_send( pkt->data, pkt->data_len-extra_len ) < 0 )
@@ -395,8 +442,8 @@ static int  _retrieve_and_reject( netcap_session_t* netcap_sess, netcap_callback
             drop_pkt = 0x0;
             /* to liberate just release the packet with the appropriate mark */
             if ( netcap_set_verdict_mark( msg->pkt->packet_id, NF_ACCEPT, NULL, 0, 1, 
-                                          msg->pkt->nfmark | MARK_ANTISUB | MARK_LIBERATE ) < 0 ) {
-                ret = errlog( ERR_CRITICAL, "netcap_set_verdict_mark\n" );
+                                          msg->pkt->nfmark | MARK_ANTISUB ) < 0 ) { 
+                ret = errlog( ERR_CRITICAL, "netcap_set_verdict_mark\n" ); 
             }
             break;
 

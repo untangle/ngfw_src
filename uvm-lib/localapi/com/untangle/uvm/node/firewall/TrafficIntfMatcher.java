@@ -77,7 +77,7 @@ public abstract class TrafficIntfMatcher extends TrafficMatcher
     public boolean isMatch(IPNewSessionRequest request, Protocol protocol,
                            InterfaceComparator c)
     {
-        return isMatchIntf(request.clientIntf(), request.originalServerIntf(), c)
+        return isMatchIntf(request.clientIntf(), request.serverIntf(), c)
             && super.isMatch(request, protocol);
     }
 

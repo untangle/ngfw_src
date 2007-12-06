@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -33,13 +33,14 @@
 #include <mvutil/unet.h>
 
 #include "libnetcap.h"
-#include "netcap_init.h"
+
 #include "netcap_globals.h"
-#include "netcap_tcp.h"
+#include "netcap_init.h"
 #include "netcap_icmp.h"
 #include "netcap_icmp_msg.h"
+#include "netcap_queue.h"
 #include "netcap_sesstable.h"
-#include "netcap_route.h"
+#include "netcap_tcp.h"
 
 static u_int session_index = 1;
 static lock_t session_index_lock;
@@ -277,7 +278,7 @@ int netcap_session_init( netcap_session_t* netcap_sess, netcap_endpoints_t *endp
     if ( mailbox_init( &netcap_sess->icmp_srv_mb ) < 0 ) {
         return errlog( ERR_CRITICAL, "mailbox_init\n" );
     }
-
+    netcap_sess->first_pkt_id = 0;
 
     return 0;
 }
@@ -340,14 +341,22 @@ int netcap_nc_session__destroy (netcap_session_t* netcap_sess, int if_mb) {
 
     if ( !netcap_sess ) return errlogargs();
 
+    if ( netcap_sess->first_pkt_id != 0 ) {
+        if ( netcap_set_verdict( netcap_sess->first_pkt_id, NF_DROP, NULL, 0 ) < 0 ) {
+            errlog( ERR_CRITICAL, "netcap_set_verdict\n" );
+        }
+    }
+
+    netcap_sess->first_pkt_id = 0;
+
     // Clear out the two mailboxes
     if ( if_mb ) {
         while((pkt = (netcap_pkt_t*)mailbox_try_get(&netcap_sess->cli_mb))) {
-            netcap_pkt_raze(pkt);
+            netcap_pkt_action_raze( pkt, NF_DROP );
         }
 
         while((pkt = (netcap_pkt_t*)mailbox_try_get(&netcap_sess->srv_mb))) {
-            netcap_pkt_raze(pkt);
+            netcap_pkt_action_raze( pkt, NF_DROP );
         }
 
         if (mailbox_destroy(&netcap_sess->cli_mb)<0) {
@@ -380,7 +389,6 @@ int netcap_nc_session__destroy (netcap_session_t* netcap_sess, int if_mb) {
     if (mailbox_destroy( &netcap_sess->icmp_srv_mb)<0) {
         errlog( ERR_WARNING, "mailbox_destroy failed\n" );
     }
-
     
     return 0;
 }

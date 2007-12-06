@@ -77,8 +77,6 @@ abstract class ArgonHook implements Runnable
 
     protected Policy policy = null;
 
-    private boolean isMirrored = false;
-
     protected static final PipelineFoundryImpl pipelineFoundry =
         (PipelineFoundryImpl)LocalUvmContextFactory.context().pipelineFoundry();
 
@@ -100,29 +98,14 @@ abstract class ArgonHook implements Runnable
 
             sessionGlobalState = new SessionGlobalState( netcapSession(), clientSideListener(),
                                                          serverSideListener(), this );
-
+            NetcapSession netcapSession = sessionGlobalState.netcapSession();
             if ( logger.isDebugEnabled()) {
-                logger.debug( "New thread for session id: " + netcapSession().id() +
+                logger.debug( "New thread for session id: " + netcapSession.id() +
                               " " + sessionGlobalState );
             }
-
-            /* Update the server interface with the current server address */
-            NetcapSession netcapSession = sessionGlobalState.netcapSession();
-            try {
-                netcapSession.updateServerIntf();
-            } catch ( Exception e ) {
-                logger.warn( "Unable to update server intf for the following session " + netcapSession, e );
-                raze();
-                return;
-            }
-
-            /* Update the server interface with the override table */
-            byte originalServerNetcapIntf = netcapSession.serverSide().interfaceId();
-            byte originalServerArgonIntf = Argon.getInstance().getIntfManager().toArgon( originalServerNetcapIntf );
-
-            InterfaceOverride.getInstance().updateDestinationInterface( netcapSession );
-
-            if ( logger.isDebugEnabled()) logger.debug( netcapSession );
+	    
+            /* Update the server interface */
+            netcapSession.determineServerIntf();
 
             /* If the server interface is still unknown, drop the session */
             byte serverIntf = netcapSession.serverSide().interfaceId();
@@ -136,22 +119,11 @@ abstract class ArgonHook implements Runnable
                 return;
             }
 
-            /* Determine whether or not the session should be allowed
-             * even though it is going out the same interface it came
-             * in on(mirrored).  This is valid if the session is
-             * redirected (serverInterface changed), and the client
-             * was NATd.
-             */
-            if (( serverIntf == clientIntf ) &&
-                !isVpnToVpn( clientIntf, serverIntf ) &&
-                !checkIsMirrored( originalServerNetcapIntf, serverIntf )) {
-                if ( logger.isInfoEnabled()) {
-                    logger.info( "" + netcapSession + " has matching client and server interface, liberate and raze." );
-                }
-                liberate();
-                raze();
-                return;
-            }
+	    //we dont want to watch internal traffic that is redirected back to the internal network
+	    if (serverIntf == clientIntf){
+		liberate();
+		return;
+	    }
 
             clientSide = new NetcapIPSessionDescImpl( sessionGlobalState, true );
 
@@ -181,7 +153,7 @@ abstract class ArgonHook implements Runnable
 
             /* Initialize all of the nodes, sending the request events
              * to each in turn */
-            initNodes( originalServerArgonIntf, endpoints );
+            initNodes( endpoints );
 
             /* Connect to the server */
             boolean serverActionCompleted = connectServer();
@@ -309,13 +281,13 @@ abstract class ArgonHook implements Runnable
     /**
      * Initialize each of the nodes for the new session. </p>
      */
-    private void initNodes( byte originalServerIntf, PipelineEndpoints pe )
+    private void initNodes( PipelineEndpoints pe )
     {
         for ( Iterator<ArgonAgent> iter = pipelineAgents.iterator() ; iter.hasNext() ; ) {
             ArgonAgent agent = iter.next();
 
             if ( state == IPNewSessionRequest.REQUESTED ) {
-                newSessionRequest( agent, iter, originalServerIntf, pe );
+                newSessionRequest( agent, iter, pe );
             } else {
                 /* Session has been rejected or endpointed, remaining
                  * nodes need not be informed */
@@ -337,30 +309,6 @@ abstract class ArgonHook implements Runnable
         boolean serverActionCompleted = true;
         switch ( state ) {
         case IPNewSessionRequest.REQUESTED:
-            /* If the session is mirrored, just check to see if the
-             * client and server addresses are unique, if they are
-             * not, reject the session */
-            if ( this.isMirrored ) {
-                boolean validMirror = false;
-                if ( !sessionList.isEmpty()) {
-                    /* Get the last session and check to see if the
-                     * client and server are different */
-                    IPSession session = (IPSession)sessionList.get( sessionList.size() - 1 );
-                    NetcapSession netcapSession = sessionGlobalState.netcapSession();
-                    InetAddress clientAddress = netcapSession.clientSide().client().host();
-                    InetAddress serverAddress = session.clientAddr();
-
-                    if ( !clientAddress.equals( serverAddress )) validMirror = true;
-                }
-
-                /* If using the same server and client address, tear
-                 * down the session silently */
-                if ( !validMirror ) {
-                    this.state = IPNewSessionRequest.REJECTED_SILENT;
-                    return false;
-                }
-            }
-
             /* If the server doesn't complete, we have to "vector" the reset */
             if ( !serverComplete()) {
                 /* ??? May want to send different codes, or something ??? */
@@ -646,22 +594,6 @@ abstract class ArgonHook implements Runnable
                 ( netcapServerIntf == IntfConstants.NETCAP_VPN ));
     }
 
-    /* Helper function to determine if a session is going to be NATd and going in and out
-     * the same interface. */
-    private boolean checkIsMirrored( byte originalServerIntf, byte serverIntf )
-    {
-        if ( originalServerIntf == serverIntf ) return ( this.isMirrored = false );
-
-        this.isMirrored = Argon.getInstance().getNatChecker().isNat( this.sessionGlobalState.netcapSession());
-        return this.isMirrored;
-    }
-
-    /* Lookup the value of isMirrored */
-    protected boolean isMirrored()
-    {
-        return this.isMirrored;
-    }
-
     protected boolean alive()
     {
         if ( state == IPNewSessionRequest.REQUESTED || state == IPNewSessionRequest.ENDPOINTED ) {
@@ -713,7 +645,7 @@ abstract class ArgonHook implements Runnable
     protected abstract Source makeClientSource();
     protected abstract Source makeServerSource();
 
-    protected abstract void newSessionRequest( ArgonAgent agent, Iterator iter, byte originalServerIntf, PipelineEndpoints pe );
+    protected abstract void newSessionRequest( ArgonAgent agent, Iterator iter, PipelineEndpoints pe );
 
     protected abstract void raze();
 

@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -105,11 +105,13 @@ int  netcap_pkt_action_raze( netcap_pkt_t* pkt, int action )
     if (!pkt)
         return errlogargs();
        
-    if ( netcap_set_verdict( pkt->packet_id, action, NULL, 0 ) < 0 ) {
+    if (( pkt->packet_id != 0 ) && netcap_set_verdict( pkt->packet_id, action, NULL, 0 ) < 0 ) {
         perrlog( "netcap_set_verdict" );
         netcap_pkt_raze( pkt );
         return -1;
     }
+
+    pkt->packet_id = 0;
 
     netcap_pkt_raze( pkt );
     return 0;

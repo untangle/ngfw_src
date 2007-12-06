@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -25,8 +25,6 @@
 netcap_pkt_t*  netcap_pkt_malloc (void);
 int            netcap_pkt_init   (netcap_pkt_t* pkt);
 netcap_pkt_t*  netcap_pkt_create (void);
-
-int            netcap_pkt_action_raze ( netcap_pkt_t* pkt, int action );
 
 struct iphdr*  netcap_pkt_get_ip_hdr  ( netcap_pkt_t* pkt );
 struct tcphdr* netcap_pkt_get_tcp_hdr ( netcap_pkt_t* pkt );

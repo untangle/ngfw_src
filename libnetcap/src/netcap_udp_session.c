@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -18,15 +18,22 @@
 
 #include <stdlib.h>
 
+#include <netinet/ip.h>
+#include <netinet/udp.h>
+
 #include <mvutil/debug.h>
 #include <mvutil/errlog.h>
 
 #include <libnetcap.h>
 
 #include "netcap_globals.h"
+#include "netcap_queue.h"
+#include "netcap_nfconntrack.h"
 #include "netcap_session.h"
 #include "netcap_sesstable.h"
-#include "netcap_route.h"
+
+/* 30 second timeout for the initial conntrack entry */
+#define UDP_SESSION_TIMEOUT  30
 
 /* callback for a UDP session */
 static int _callback    ( netcap_session_t* netcap_sess, netcap_callback_action_t action, 
@@ -57,7 +64,7 @@ int netcap_udp_session_init( netcap_session_t* netcap_sess, netcap_pkt_t* pkt )
     
     endpoints.intf = pkt->src_intf;
 
-    if ( netcap_session_init( netcap_sess, &endpoints, NC_INTF_UNK, NC_SESSION_IF_MB ) < 0 ) {
+    if ( netcap_session_init( netcap_sess, &endpoints, pkt->dst_intf, NC_SESSION_IF_MB ) < 0 ) {
         return errlog( ERR_CRITICAL, "netcap_session_init\n" );
     }
 
@@ -73,6 +80,9 @@ int netcap_udp_session_init( netcap_session_t* netcap_sess, netcap_pkt_t* pkt )
 
     /* Set the callback, for most actions this doesn't do anything */
     netcap_sess->callback = _callback;
+
+    debug(7,"UDP: FLAG Copying NAT info from packet to session\n");
+    netcap_sess->nat_info = pkt->nat_info;
 
     return 0;
 }
@@ -151,11 +161,10 @@ static int _callback ( netcap_session_t* netcap_sess, netcap_callback_action_t a
     if ( netcap_sess == NULL ) return errlogargs();
         
     switch ( action ) {
+    case SRV_COMPLETE: 
+        /* fallthrough */
     case CLI_COMPLETE: 
         /* fall through */
-    case SRV_COMPLETE: 
-        /* fall through */
-        /* fallthrough */
     case CLI_DROP:
         /* fallthrough */
         return 0;
@@ -227,8 +236,12 @@ static int _liberate_pkt( netcap_pkt_t* pkt )
         /* !!!! ICMP or UDP !!!! */
         switch ( pkt->proto ) {
         case IPPROTO_UDP:
-            netcap_udp_send( pkt->data, pkt->data_len, pkt );
-                break;
+	  if ( netcap_set_verdict_mark( pkt->packet_id, NF_ACCEPT, NULL, 0, 1,  
+					pkt->nfmark | MARK_ANTISUB ) < 0 ) {  
+	    errlog( ERR_CRITICAL, "netcap_set_verdict_mark\n" );  
+	  } 
+	  //netcap_udp_send( pkt->data, pkt->data_len, pkt );
+	  break;
                 
         case IPPROTO_ICMP:
             netcap_icmp_send( pkt->data, pkt->data_len, pkt );

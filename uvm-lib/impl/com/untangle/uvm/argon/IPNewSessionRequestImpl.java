@@ -36,8 +36,12 @@ public abstract class IPNewSessionRequestImpl extends NewSessionRequestImpl impl
 
     protected InetAddress serverAddr;
     protected int serverPort;
-    final byte originalServerIntf;
     protected byte serverIntf;
+
+    protected final InetAddress natFromHost;
+    protected final int natFromPort;
+    protected final InetAddress natToHost;
+    protected final int natToPort;
 
     protected PipelineEndpoints pipelineEndpoints;
 
@@ -53,7 +57,7 @@ public abstract class IPNewSessionRequestImpl extends NewSessionRequestImpl impl
      * A. Pass in the netcap session and get the parameters from there.
      */
     public IPNewSessionRequestImpl( SessionGlobalState sessionGlobalState, ArgonAgent agent,
-                                    byte originalServerIntf, PipelineEndpoints pe )
+                                    PipelineEndpoints pe )
     {
         super( sessionGlobalState, agent );
 
@@ -70,17 +74,22 @@ public abstract class IPNewSessionRequestImpl extends NewSessionRequestImpl impl
         LocalIntfManager lim = Argon.getInstance().getIntfManager();
         clientIntf = lim.toArgon( clientSide.interfaceId());
         serverIntf = lim.toArgon( serverSide.interfaceId());
-        this.originalServerIntf = originalServerIntf;
         this.pipelineEndpoints = pe;
 
         serverAddr = server.host();
         serverPort = server.port();
+
+	natFromHost = sessionGlobalState.netcapSession.natInfo.fromHost;
+	natFromPort = sessionGlobalState.netcapSession.natInfo.fromPort;
+	natToHost = sessionGlobalState.netcapSession.natInfo.toHost;
+	natToPort = sessionGlobalState.netcapSession.natInfo.toPort;
     }
 
     /* Two ways to create an IPNewSessionRequest:
      * B. Pass in the previous request and get the parameters from there
      */
-    public IPNewSessionRequestImpl( IPSession session, ArgonAgent agent, byte originalServerIntf, PipelineEndpoints pe )
+    public IPNewSessionRequestImpl( IPSession session, ArgonAgent agent, PipelineEndpoints pe,
+				    SessionGlobalState sessionGlobalState)
     {
         super( session.sessionGlobalState(), agent);
 
@@ -93,7 +102,11 @@ public abstract class IPNewSessionRequestImpl extends NewSessionRequestImpl impl
         serverPort = session.serverPort();
         serverIntf = session.serverIntf();
 
-        this.originalServerIntf = originalServerIntf;
+	natFromHost = sessionGlobalState.netcapSession.natInfo.fromHost;
+	natFromPort = sessionGlobalState.netcapSession.natInfo.fromPort;
+	natToHost = sessionGlobalState.netcapSession.natInfo.toHost;
+	natToPort = sessionGlobalState.netcapSession.natInfo.toPort;
+
         this.pipelineEndpoints = pe;
     }
 
@@ -151,16 +164,6 @@ public abstract class IPNewSessionRequestImpl extends NewSessionRequestImpl impl
     public byte serverIntf()
     {
         return serverIntf;
-    }
-
-    public void serverIntf( byte intf )
-    {
-        serverIntf = intf;
-    }
-
-    public byte originalServerIntf()
-    {
-        return this.originalServerIntf;
     }
 
     public PipelineEndpoints pipelineEndpoints()
@@ -230,5 +233,25 @@ public abstract class IPNewSessionRequestImpl extends NewSessionRequestImpl impl
         }
 
         state = RELEASED;
+    }
+
+    public InetAddress getNatFromHost()
+    {
+	return natFromHost;
+    }
+
+    public int getNatFromPort()
+    {
+	return natFromPort;
+    }
+
+    public InetAddress getNatToHost()
+    {
+	return natToHost;
+    }
+
+    public int getNatToPort()
+    {
+	return natToPort;
     }
 }

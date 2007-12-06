@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -21,10 +21,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/socket.h>
+#include <arpa/inet.h>
+
 #include <netinet/in.h>
 #include <netinet/ip.h>
 #include <netinet/ip_icmp.h>
-#include <arpa/inet.h>
+
+#include <linux/netfilter.h>
 
 #include <libnetcap.h>
 #include <libmvutil.h>
@@ -352,7 +355,7 @@ JNIEXPORT void JNICALL JF_IPTraffic( raze )
     if ( pkt == NULL ) return (void)errlogargs();
 
     /* Remove the packet */
-    netcap_pkt_raze( pkt );
+    netcap_pkt_action_raze( pkt, NF_DROP );
 
     return;
 }
@@ -366,7 +369,7 @@ JNIEXPORT jlong JNICALL JF_UDPSession( read )
   (JNIEnv* env, jclass _class, jlong session_ptr, jboolean if_client, jint timeout )
 {
     struct timeval tv;
-
+    netcap_pkt_t *pkt = NULL;
     mailbox_t*    mb = NULL;
     netcap_session_t* netcap_sess = (netcap_session_t*)JLONG_TO_UINT( session_ptr );
     if ( netcap_sess == NULL ) return UINT_TO_JLONG((uint)errlogargs_null());
@@ -377,8 +380,13 @@ JNIEXPORT jlong JNICALL JF_UDPSession( read )
     if ( utime_msec_add_now( &tv, timeout ) < 0 ) {
         return UINT_TO_JLONG((u_int)errlog_null( ERR_CRITICAL, "utime_msec_add_now\n" ));
     }
-                                     
-    return UINT_TO_JLONG((uint)mailbox_utimed_get( mb, &tv ));
+    pkt = (netcap_pkt_t *) mailbox_utimed_get( mb, &tv );
+    if ( (pkt != NULL) && (pkt->packet_id != NULL) ){
+        debug(10, "pulled intact UDP packet %d from mailbox, droping\n",pkt->packet_id);
+	netcap_set_verdict( pkt->packet_id, NF_DROP, NULL, 0 );
+	pkt->packet_id = NULL;
+    }
+    return  UINT_TO_JLONG((uint) pkt );
 }
 
 /*
@@ -536,6 +544,46 @@ JNIEXPORT void JNICALL JF_UDPSession( liberate )
     _udp_callback( session_ptr, LIBERATE, flags );
 }
 
+/*
+ * Class:     com_untangle_jnetcap_NetcapUDPSession
+ * Method:    transferFirstPacketID
+ * Signature: (JII)I
+ */
+JNIEXPORT void JNICALL JF_UDPSession( transferFirstPacketID )
+    ( JNIEnv *env, jclass _class, jlong session_ptr, jlong server_traffic_ptr )
+{
+    if ( session_ptr == 0 || server_traffic_ptr == 0 ) {
+        return (void)jmvutil_error( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, "Invalid Arguments\n" );
+    }
+
+    netcap_session_t* session = (netcap_session_t*)JLONG_TO_UINT( session_ptr );
+    netcap_pkt_t* server_traffic = (netcap_pkt_t*)JLONG_TO_UINT( server_traffic_ptr );
+
+    debug( 10, "NetcapUDPSession: Transferring the first packet id\n" );
+
+    if ( session->first_pkt_id == 0 ) {
+        return (void)jmvutil_error( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, "First packet ID is zero\n" );
+    }
+
+    if ( server_traffic->packet_id != 0 ) {
+        return (void)jmvutil_error( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, "Packet ID is non-zero\n" );
+    }
+
+    /* Transfer the first packet id */
+    server_traffic->packet_id = session->first_pkt_id;
+    session->first_pkt_id = 0;
+}
+
+/*
+ * Class:     com_untangle_jnetcap_NetcapUDPSession
+ * Method:    serverComplete
+ * Signature: (JI)I
+ */
+JNIEXPORT void JNICALL JF_UDPSession( serverComplete )
+    ( JNIEnv *env, jclass _class, jlong session_ptr, jint flags )
+{
+    _udp_callback( session_ptr, SRV_COMPLETE, flags );
+}
 
 /*
  * Class:     com_untangle_jnetcap_ICMPTraffic

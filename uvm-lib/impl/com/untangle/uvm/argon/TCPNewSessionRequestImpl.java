@@ -28,17 +28,18 @@ class TCPNewSessionRequestImpl extends IPNewSessionRequestImpl implements TCPNew
     final boolean acked;
 
     public TCPNewSessionRequestImpl( SessionGlobalState sessionGlobalState, ArgonAgent agent,
-                                     byte originalServerIntf, PipelineEndpoints pe )
+                                     PipelineEndpoints pe )
     {
-        super( sessionGlobalState, agent, originalServerIntf, pe );
+        super( sessionGlobalState, agent, pe );
 
         /* Retrieve the value for acked */
         acked = sessionGlobalState.netcapTCPSession().acked();
     }
 
-    public TCPNewSessionRequestImpl( TCPSession session, ArgonAgent agent, byte originalServerIntf, PipelineEndpoints pe )
+    public TCPNewSessionRequestImpl( TCPSession session, ArgonAgent agent, PipelineEndpoints pe,
+				     SessionGlobalState sessionGlobalState)
     {
-        super( session, agent, originalServerIntf, pe );
+        super( session, agent, pe, sessionGlobalState);
 
         /* Retrieve the value for acked */
         acked = sessionGlobalState.netcapTCPSession().acked();

@@ -35,32 +35,32 @@ require "#{SRC_HOME}/uvm-lib/package.rb"
 require "#{SRC_HOME}/gui/package.rb"
 
 require "#{SRC_HOME}/test/package.rb"
-require "#{SRC_HOME}/reporting/package.rb"
+# XXX ENABLE ME # require "#{SRC_HOME}/reporting/package.rb"
 require "#{SRC_HOME}/ftp-casing/package.rb"
-require "#{SRC_HOME}/http-casing/package.rb"
-require "#{SRC_HOME}/mail-casing/package.rb"
-require "#{SRC_HOME}/spyware/package.rb"
+# XXX ENABLE ME # require "#{SRC_HOME}/http-casing/package.rb"
+# XXX ENABLE ME # require "#{SRC_HOME}/mail-casing/package.rb"
+# XXX ENABLE ME # require "#{SRC_HOME}/spyware/package.rb"
 require "#{SRC_HOME}/router/package.rb"
 
-require "#{SRC_HOME}/shield/package.rb"
-require "#{SRC_HOME}/firewall/package.rb"
-require "#{SRC_HOME}/openvpn/package.rb"
-require "#{SRC_HOME}/protofilter/package.rb"
-require "#{SRC_HOME}/sigma/package.rb"
-require "#{SRC_HOME}/webfilter/package.rb"
-require "#{SRC_HOME}/ips/package.rb"
+# XXX ENABLE ME # require "#{SRC_HOME}/shield/package.rb"
+# XXX ENABLE ME # require "#{SRC_HOME}/firewall/package.rb"
+# XXX ENABLE ME # require "#{SRC_HOME}/openvpn/package.rb"
+# XXX ENABLE ME # require "#{SRC_HOME}/protofilter/package.rb"
+# XXX ENABLE ME # require "#{SRC_HOME}/sigma/package.rb"
+# XXX ENABLE ME # require "#{SRC_HOME}/webfilter/package.rb"
+# XXX ENABLE ME # require "#{SRC_HOME}/ips/package.rb"
 
 ## Base Nodes
-require "#{SRC_HOME}/spam-base/package.rb"
-require "#{SRC_HOME}/virus-base/package.rb"
-require "#{SRC_HOME}/clam-base/package.rb"
+# XXX ENABLE ME # require "#{SRC_HOME}/spam-base/package.rb"
+# XXX ENABLE ME # require "#{SRC_HOME}/virus-base/package.rb"
+# XXX ENABLE ME # require "#{SRC_HOME}/clam-base/package.rb"
 
 ## SPAM based nodes
-require "#{SRC_HOME}/phish/package.rb"
-require "#{SRC_HOME}/spamassassin/package.rb"
+# XXX ENABLE ME # require "#{SRC_HOME}/phish/package.rb"
+# XXX ENABLE ME # require "#{SRC_HOME}/spamassassin/package.rb"
 
 ## Virus based nodes
-require "#{SRC_HOME}/clam/package.rb"
+# XXX ENABLE ME # require "#{SRC_HOME}/clam/package.rb"
 
 ## Other packages
 require "#{SRC_HOME}/util/package.rb"
@@ -79,7 +79,7 @@ file libuvmcore_so do
   archivesFiles = archives.map { |n| BuildEnv::SRC[n]['archive'].filename }
 
   CBuilder.new(BuildEnv::SRC, compilerEnv).makeSharedLibrary(archivesFiles, libuvmcore_so, [],
-                                                             ['xml2', 'sysfs', 'netfilter_queue'], ['ipq'])
+                                                             ['xml2', 'sysfs', 'netfilter_queue','netfilter_conntrack'], ['ipq'])
 end
 
 BuildEnv::SRC['untangle-libuvm']['impl'].register_dependency(libuvmcore_so)

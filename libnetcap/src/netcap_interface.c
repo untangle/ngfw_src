@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -19,6 +19,7 @@
 
 #include <stdlib.h>
 #include <sys/ioctl.h>
+#include <sys/stat.h>
 #include <sys/types.h>
 #include <net/if.h>
 #include <pthread.h>
@@ -35,6 +36,8 @@
 #include <mvutil/utime.h>
 
 #include "libnetcap.h"
+
+#include "netcap_arp.h"
 #include "netcap_globals.h"
 #include "netcap_init.h"
 #include "netcap_sched.h"
@@ -48,7 +51,9 @@
 
 #define LOCAL_HOST              htonl(0x7F000001)
 
+/* The interface information database must be cleaned up. */
 #define BRIDGE_PREFIX            "br"
+
 /* XXXX brif is magic string, it is normally SYSFS_BRIDGE_ATTR, but the header that has this
  * doesn't have that value set */
 #ifndef SYSFS_BRIDGE_ATTR
@@ -80,7 +85,10 @@
 #define SYSFS_ATTRIBUTE_INDEX  "ifindex"
 
 #define NETCAP_MARK_INTF_MAX    8 // temp lowered
-#define NETCAP_MARK_INTF_MASK   0xF
+#define NETCAP_MARK_INTF_MASK   0xFF
+
+// lookup maximum for the table
+#define NETCAP_LOOKUP_MAX       129
 
 // Wait this amount of time before freeing an old bridge configuration
 #define _GARBAGE_DELAY_USEC     SEC_TO_USEC( 20 )
@@ -118,6 +126,9 @@ static struct
 
     /* Number of interfaces in intf_name_array */
     int intf_count;
+
+    /* Lookup up table to convert bits to an interface index.  EG _mark_lookup_table[8] -> 3 */
+    char mark_lookup_table[NETCAP_LOOKUP_MAX];
 
     /* Mutex for reconfiguring the interface database.  This
      * guarantees that the database isn't being reconfigured twice at
@@ -174,7 +185,22 @@ static int _is_ignore_interface( char* name );
  */
 int netcap_interface_init ( void )
 {
+    /* Build the lookup table */
+    int c = 0;
+    int bit = 1;
+    int index = 1;
+    for ( c = 0 ; c < NETCAP_LOOKUP_MAX ; c++ ) {
+        if ( c == bit ) {
+            _interface.mark_lookup_table[c] = index;
+            index++;
+            bit = bit << 1;
+        } else {
+            _interface.mark_lookup_table[c] = 0;
+        }
+    }
+
     if ( _update_intf_info() < 0 ) return errlog( ERR_CRITICAL, "_update_intf_info\n" );
+
 
     return 0;
 }
@@ -325,10 +351,18 @@ int  netcap_interface_mark_to_intf(int nfmark, netcap_intf_t* intf)
 {
     if ( intf == NULL ) return errlogargs();
 
+    *intf = 0;
+
     nfmark &= NETCAP_MARK_INTF_MASK;
 
+    /* Now convert the mark from a bit to a mark */
+    if ( nfmark < 1 || nfmark >= NETCAP_LOOKUP_MAX ) {
+        return errlog( ERR_CRITICAL, "Invalid interface mark[%d]\n", nfmark );
+    }
+
+    nfmark = _interface.mark_lookup_table[nfmark];
+
     if ( nfmark <= 0 || nfmark > NETCAP_MARK_INTF_MAX ) {
-        *intf = 0;
         return errlog( ERR_CRITICAL, "Invalid interface mark[%d]\n", nfmark );
     }
 
@@ -449,16 +483,25 @@ int netcap_interface_intf_to_index( netcap_intf_t netcap_intf )
     return tmp->index;
 }
 
-int netcap_interface_dst_intf       ( netcap_intf_t* intf, netcap_intf_t src_intf, struct in_addr* src_ip,
-                                      struct in_addr* dst_ip )
+int netcap_interface_dst_intf       ( netcap_session_t* session )
 {
-    return netcap_arp_dst_intf( intf, src_intf, src_ip, dst_ip );
-}
+    if ( session == NULL ) return errlogargs();
+    
+    if ( session->srv.intf != NC_INTF_UNK ) {
+        debug( 10, "INTERFACE: (%10u) Destination interface is already known %d\n", 
+               session->session_id, session->srv.intf );
+        return 0;
+    }
+    
+    if ( netcap_arp_dst_intf( &session->srv.intf, session->cli.intf, &session->srv.cli.host, 
+                              &session->srv.srv.host ) < 0 ) {
+        return errlog( ERR_CRITICAL, "netcap_arp_dst_intf\n" );
+    }
+    
+    debug( 10, "INTERFACE: (%10u) Session is going out %d\n", 
+           session->session_id, session->srv.intf );
 
-int netcap_interface_dst_intf_delay ( netcap_intf_t* intf, netcap_intf_t src_intf, struct in_addr* src_ip,
-                                      struct in_addr* dst_ip, unsigned long* delay_array )
-{
-    return netcap_arp_dst_intf_delay( intf, src_intf, src_ip, dst_ip, delay_array );
+    return 0;
 }
 
 /* This should be called with the mutex lock */
@@ -514,10 +557,9 @@ static int _update_intf_info( void )
             /* Copy in the interface name */
             strncpy( intf_info.name.s, in->name.s, sizeof( intf_info.name ));
 
-            switch( netcap_intf_db_fill_data( &intf_info, sockfd, &in->name )) {
-            case 1: intf_info.is_valid = 1; break;
-            case 0: intf_info.is_valid = 0; break;
-            default: return errlog( ERR_CRITICAL, "netcap_intf_db_fill_info\n" );
+            /* Some interfaces may not have interface data */
+            if ( netcap_intf_db_fill_data( &intf_info, sockfd, &in->name ) < 0 ) {
+                return errlog( ERR_CRITICAL, "netcap_intf_db_fill_info\n" );
             }
 
             /* Insert the device into the hash table, this automatically checks for duplicates. */
@@ -583,6 +625,8 @@ static int _update_bridge_devices( netcap_intf_db_t* db )
     int c;
     int ret = 0;
     struct sysfs_class_device* dev;
+    char sysfs_bridge_path[SYSFS_PATH_MAX];
+    struct stat file_stat_buf;
 
     for ( c = 0 ; c < NETCAP_MAX_INTERFACES ; c++ ) {
         netcap_intf_info_t* intf_info = &db->info[c];
@@ -592,10 +636,25 @@ static int _update_bridge_devices( netcap_intf_db_t* db )
             continue;
         }
 
-        /* Don't include the null character in the comparison */
-        /* XXX Kind of a jenky way of determining if this is a bridge */
+
+        /* Check if this is a bridge using sysfs, it is a bridge if
+         * /sys/class/net/<ifname>/bridge exist. */
+        snprintf( sysfs_bridge_path, sizeof( sysfs_bridge_path ), "%s/%s/bridge", SYSFS_CLASS_NET_DIR,
+                  intf_info->name.s );
+
+        if ( stat( sysfs_bridge_path, &file_stat_buf ) < 0 ) {
+            if ( errno == ENOENT ) {
+                debug( 4, "Ignoring non-bridge interface %s\n", intf_info->name.s );
+            } else {
+                errlog( ERR_WARNING, "Unable to stat sysfs bridge information for %s, %s\n", 
+                        intf_info->name.s, errstr );
+            }
+            continue;
+        }
+
         if ( strncmp( intf_info->name.s, BRIDGE_PREFIX, sizeof( BRIDGE_PREFIX ) - 1 ) != 0 ) {
             debug( 4, "Ignoring non-bridge interface %s\n", intf_info->name.s );
+            errlog( ERR_CRITICAL, "BRIDGE LOOKUP IS DISABLED, talk to rbscott\n" );
             continue;
         }
 
@@ -674,11 +733,19 @@ static int _update_bridge_device( netcap_intf_db_t* db, netcap_intf_info_t* brid
 
     int ret = 0;
 
-    /* A quick check to make sure there is no NULL derefenced */
+    /* XXX This was used more extensively before, the mac_address and broadcast addresses
+     * are no longer needed, and now it is just a memory block */
+    if ( bridge_info->bridge_info != NULL ) {
+        errlog( ERR_WARNING, "Bridge already has configuration data, freeing\n" );
+        free( bridge_info->bridge_info );
+        bridge_info->bridge_info = NULL;
+    }
+
     if ( netcap_arp_configure_bridge( db, bridge_info ) < 0 ) {
         return errlog( ERR_CRITICAL, "netcap_arp_configure_bridge\n" );
     }
 
+    /* Double check to make sure the memory was allocated */
     if ( bridge_info->bridge_info == NULL ) return errlog( ERR_CRITICAL, "netcap_arp_configure_bridge\n" );
 
     snprintf( path, sizeof( path ), "%s/%s", dev->path, SYSFS_BRIDGE_PORT_SUBDIR );
@@ -817,7 +884,7 @@ static int _update_aliases           ( netcap_intf_db_t* db, int sockfd )
         netcap_intf_info_t* intf_info = netcap_intf_db_name_to_info( db, &name );
 
         if ( intf_info == NULL ) {
-            errlog( ERR_CRITICAL, "Unknown interface '%s', continuing\n", ifreq->ifr_name );
+            debug( 0, "Unknown interface '%s', continuing\n", ifreq->ifr_name );
             continue;
         }
 

@@ -467,12 +467,12 @@ class NetworkConfigurationLoader
                     } else if ( str.startsWith( FLAG_POST_FUNC )) {
                         /* Nothing to do here, this is just here to indicate that a
                          * post configuration function exists */
-                    } else if ( str.equals( DECL_POST_CONF )) {
+                    } else if ( str.indexOf( DECL_POST_CONF ) >= 0 ) {
                         misc.setPostConfigurationScript( parseScript( in ));
                     } else if ( str.startsWith( FLAG_CUSTOM_RULES )) {
                         /* Nothing to do here, this is just here to indicate that a
                          * post configuration function exists */
-                    } else if ( str.equals( DECL_CUSTOM_RULES )) {
+                    } else if ( str.indexOf( DECL_CUSTOM_RULES ) >= 0 ) {
                         misc.setCustomRules( parseScript( in ));
                     } else {
                         logger.info( "Unknown line: '" + str + "'" );

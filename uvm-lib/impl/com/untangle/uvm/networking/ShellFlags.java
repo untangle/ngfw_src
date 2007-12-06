@@ -38,12 +38,12 @@ class ShellFlags
 
     static final String FLAG_POST_FUNC    = "UVM_POST_CONF";
     static final String POST_FUNC_NAME    = "postConfigurationScript";
-    static final String DECL_POST_CONF    = "function " + POST_FUNC_NAME + "() {";
+    static final String DECL_POST_CONF    = POST_FUNC_NAME + "() {";
 
 
     static final String FLAG_CUSTOM_RULES = "UVM_CUSTOM_RULES";
     static final String CUSTOM_RULES_NAME = "customRulesScript";
-    static final String DECL_CUSTOM_RULES = "function " + CUSTOM_RULES_NAME + "() {";
+    static final String DECL_CUSTOM_RULES = CUSTOM_RULES_NAME + "() {";
 
     static final String FLAG_IS_HOSTNAME_PUBLIC = "UVM_IS_HOSTNAME_EN";
     static final String FLAG_HOSTNAME          = "UVM_HOSTNAME";

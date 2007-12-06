@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -28,6 +28,7 @@
 #include <mvutil/uthread.h>
 
 #include "netcap_globals.h"
+#include "netcap_arp.h"
 #include "netcap_server.h"
 #include "netcap_queue.h"
 #include "netcap_hook.h"
@@ -39,6 +40,11 @@
 #include "netcap_sesstable.h"
 #include "netcap_shield.h"
 #include "netcap_sched.h"
+#include "netcap_nfconntrack.h"
+#include "netcap_virtual_interface.h"
+
+#define NETCAP_TUN_DEVICE_NAME "utun"
+
 
 enum {
     STATUS_UNINITIALIZED,
@@ -91,8 +97,8 @@ static int _netcap_init( int shield_enable )
     if ( pthread_key_create( &_init.tls_key, uthread_tls_free ) != 0 )
         return perrlog( "pthread_key_create\n" );
 
-    if (netcap_arp_init()<0) 
-        return perrlog("netcap_arp_init");
+    if (netcap_arp_init()<0)
+        return errlog(ERR_CRITICAL,"netcap_arp_init\n");
     if (netcap_interface_init()<0) 
         return perrlog("netcap_interface_init");
     if (netcap_sesstable_init()<0)
@@ -115,7 +121,11 @@ static int _netcap_init( int shield_enable )
         return perrlog("netcap_sched_init");
     if ( shield_enable == NETCAP_SHIELD_ENABLE && ( netcap_shield_init() < 0 ))
         return perrlog("netcap_shield_init");
-
+    if (netcap_nfconntrack_init()<0)
+        return errlog( ERR_CRITICAL, "netcap_nfconntrack_init\n" );
+    if (netcap_virtual_interface_init(NETCAP_TUN_DEVICE_NAME)<0)
+        return errlog( ERR_CRITICAL, "netcap_virtual_interface_init\n" );
+    
     debug(1,"NETCAP %s Initialized\n",netcap_version());
 
     return 0;
@@ -160,12 +170,13 @@ int netcap_cleanup()
         perrlog("netcap_sesstable_cleanup");
     if (netcap_interface_cleanup()<0) 
         perrlog("netcap_interface_cleanup");
-    if (netcap_arp_cleanup()<0) 
-        perrlog("netcap_arp_cleanup");
+    if (netcap_arp_cleanup()<0)
+        return errlog(ERR_CRITICAL,"netcap_arp_init\n");
     if (netcap_shield_cleanup()<0)
         perrlog("netcap_shield_cleanup");
     if (netcap_sched_cleanup_z ( NULL ) < 0 )
         perrlog("netcap_sched_cleanup");
+    netcap_virtual_interface_destroy();
     
     debug(1,"NETCAP: Cleaned.\n");
 

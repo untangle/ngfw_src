@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -25,7 +25,6 @@ int  netcap_queue_init       ( void );
 int  netcap_queue_cleanup    ( void );
 int  netcap_nfqueue_get_sock ( void );
 int  netcap_nfqueue_read     ( u_char* buffer, int max, netcap_pkt_t* props );
-int  netcap_set_verdict      ( u_int32_t packet_id, int verdict, u_char* buffer, int len );
 int  netcap_set_verdict_mark ( u_int32_t packet_id, int verdict, u_char* buf, int len, int set_mark, 
                                u_int32_t mark );
 int  netcap_raw_send         ( u_char* pkt, int len );

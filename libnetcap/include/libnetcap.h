@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -20,7 +20,11 @@
 
 #include <sys/types.h>
 #include <netinet/in.h>
-#include <net/if.h>
+
+//#include <net/if.h>
+#ifndef IF_NAMESIZE
+#define IF_NAMESIZE       16
+#endif
 #include <pthread.h>
 #include <semaphore.h>
 #include <mvutil/lock.h>
@@ -35,6 +39,8 @@
 #define NETCAP_MAX_INTERFACES   32 /* XXX */
 
 #define NC_INTF_MAX NC_INTF_LOOPBACK
+
+
 
 typedef enum {
     ACTION_NULL=0,
@@ -90,6 +96,14 @@ enum {
     TCP_CLI_DEAD_NULL
 };
 
+typedef enum
+{
+    NETCAP_QUEUE_CLIENT_PRE_NAT,
+    NETCAP_QUEUE_CLIENT_POST_NAT,
+    NETCAP_QUEUE_SERVER_PRE_NAT,
+    NETCAP_QUEUE_SERVER_POST_NAT
+} netcap_queue_type_t;
+
 typedef struct
 {
     char s[NETCAP_MAX_IF_NAME_LEN];
@@ -110,6 +124,23 @@ typedef struct netcap_endpoints {
 } netcap_endpoints_t;
 
 #define IS_MARKED_FORCE_FLAG 0xD0ED1273
+
+typedef struct netcap_ip_tuple
+{
+    u_int32_t src_address;
+    /* these are stored in network byte order */
+    u_int32_t src_protocol_id;
+
+    u_int32_t dst_address;
+    /* these are stored in network byte order */
+    u_int32_t dst_protocol_id;
+} netcap_ip_tuple;
+
+typedef struct nat_info {
+  netcap_ip_tuple original;
+  netcap_ip_tuple reply;
+} nat_info_t;
+
 
 typedef struct netcap_pkt {
     /**
@@ -192,6 +223,12 @@ typedef struct netcap_pkt {
      * free to be used by the application
      */
     void* app_data;
+
+    /* Information about the packet before and after it was NATd */
+    nat_info_t  nat_info;
+
+    /* this indicates where the packet was queued */
+    netcap_queue_type_t queue_type;
 } netcap_pkt_t;
 
 #define NETCAP_SESSION_REMOVE_SERVER_TUPLE 0x7BCD
@@ -203,6 +240,9 @@ typedef struct netcap_session {
     int protocol; 
 
     int syn_mode; /* 1 = syn_mode, 0 = opaque mode */
+
+    nat_info_t  nat_info;
+
 
     /**
      * alive: Just for UDP!  Only modify if you have a lock on the session table
@@ -328,6 +368,12 @@ typedef struct netcap_session {
     netcap_tcp_conn_state_t cli_state;
     netcap_tcp_conn_state_t srv_state;
 
+    /**
+     * UDP information
+     */
+    /* Packet identifier of the first packet to come through */
+    u_int32_t first_pkt_id;
+
     /* Data that is specific to an application */
     void *app_data;
 } netcap_session_t;
@@ -405,6 +451,7 @@ int   netcap_icmp_get_source( char* data, int data_len, netcap_pkt_t* pkt, struc
 void          netcap_pkt_free    (netcap_pkt_t* pkt);
 void          netcap_pkt_destroy (netcap_pkt_t* pkt);
 void          netcap_pkt_raze    (netcap_pkt_t* pkt);
+int           netcap_pkt_action_raze ( netcap_pkt_t* pkt, int action );
 
 /**
  * UDP and TCP session
@@ -447,6 +494,10 @@ int netcap_interface_is_multicast   ( in_addr_t addr );
 
 int netcap_interface_count          ( void );
 
+/* Update the session information for a netcap session */
+int netcap_interface_dst_intf       ( netcap_session_t* session );
+
+
 /* Holder for interface data for a particular interface or one of its aliases */
 typedef struct 
 {
@@ -466,14 +517,6 @@ int netcap_interface_get_data       ( char* name, netcap_intf_address_data_t* da
 /* blocking on configuration.
  * Retrieve the netmask for an interface */
 int netcap_interface_get_netmask    ( char* interface_name, struct in_addr* netmask );
-
-/* Retrieve the destination interface
- * blocking on configuration */
-int netcap_interface_dst_intf       ( netcap_intf_t* intf, netcap_intf_t src_intf, struct in_addr* src_ip, 
-                                      struct in_addr* dst_ip );
-
-int netcap_interface_dst_intf_delay ( netcap_intf_t* intf, netcap_intf_t src_intf, struct in_addr* src_ip, 
-                                      struct in_addr* dst_ip, unsigned long* delay_array );
 
 /**
  * Query information about the redirect and divert ports
@@ -670,6 +713,10 @@ char* netcap_session_srv_endp_print ( netcap_session_t* sess );
 char* netcap_session_cli_endp_print ( netcap_session_t* sess );
 
 char* netcap_session_fd_tuple_print  ( netcap_session_t* sess );
+
+/* Set the verdict on a packet */
+int  netcap_set_verdict      ( u_int32_t packet_id, int verdict, u_char* buffer, int len );
+
 
 
 #endif

@@ -103,7 +103,7 @@ public class Argon
             init();
         } catch ( ArgonException e ) {
             logger.fatal( "Error initializing argon", e );
-            throw new IllegalStateException( "no", e );
+            throw new IllegalStateException( "Unable to initialize argon", e );
         }
 
         registerHooks();
@@ -216,7 +216,9 @@ public class Argon
      */
     private void init() throws ArgonException
     {
-        Netcap.init( isShieldEnabled, netcapDebugLevel, jnetcapDebugLevel );
+        if ( Netcap.init( isShieldEnabled, netcapDebugLevel, jnetcapDebugLevel ) < 0 ) {
+            throw new ArgonException( "Unable to initialize netcap" );
+        }
 
         /* Start the scheduler */
         Netcap.startScheduler();
@@ -253,10 +255,6 @@ public class Argon
         totalThreads    = numThreads;
         activeThreads   = 0;
         Netcap.getInstance().setSessionLimit( this.sessionThreadLimit );
-
-        /* Initialize the InterfaceOverride table, this is just so the logger doesn't get into the NAT
-         * node context */
-        InterfaceOverride.getInstance().clearOverrideList();
     }
 
     public void destroy()

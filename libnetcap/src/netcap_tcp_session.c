@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -33,7 +33,6 @@
 #include "netcap_session.h"
 #include "netcap_sesstable.h"
 #include "netcap_tcp.h"
-#include "netcap_route.h"
 #include "netcap_pkt.h"
 
 int netcap_tcp_session_init( netcap_session_t* netcap_sess,

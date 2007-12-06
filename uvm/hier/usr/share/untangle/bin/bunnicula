@@ -23,6 +23,9 @@ procset() {
     fi
 }
 
+#configure the dummy interface
+ifconfig dummy0 192.0.2.42 255.255.255.0 up
+
 # check nfqueue
 modprobe -q nfnetlink_queue
 if [ ! -f /proc/net/netfilter/nfnetlink_queue ]; then

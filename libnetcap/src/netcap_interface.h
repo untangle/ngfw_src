@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -22,7 +22,6 @@
 #include <netinet/if_ether.h>
 #include <linux/if_packet.h>
 
-#include "netcap_route.h"
 #include "netcap_intf_db.h"
 
 int            netcap_interface_init         ( void );

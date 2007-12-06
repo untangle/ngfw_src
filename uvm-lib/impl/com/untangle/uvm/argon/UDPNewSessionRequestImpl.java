@@ -32,9 +32,9 @@ class UDPNewSessionRequestImpl extends IPNewSessionRequestImpl implements UDPNew
     private final boolean isPing;
 
     public UDPNewSessionRequestImpl( SessionGlobalState sessionGlobalState, ArgonAgent agent,
-                                     byte originalServerIntf, PipelineEndpoints pe )
+                                     PipelineEndpoints pe )
     {
-        super( sessionGlobalState, agent, originalServerIntf, pe );
+        super( sessionGlobalState, agent, pe );
 
         NetcapUDPSession netcapUDPSession = sessionGlobalState.netcapUDPSession();
 
@@ -47,9 +47,10 @@ class UDPNewSessionRequestImpl extends IPNewSessionRequestImpl implements UDPNew
         this.isPing = netcapUDPSession.isIcmpSession();
     }
     
-    public UDPNewSessionRequestImpl( UDPSession session, ArgonAgent agent, byte originalServerIntf, PipelineEndpoints pe )
+    public UDPNewSessionRequestImpl( UDPSession session, ArgonAgent agent, PipelineEndpoints pe,
+				     SessionGlobalState sessionGlobalState)
     {
-        super( session, agent, originalServerIntf, pe );
+        super( session, agent, pe, sessionGlobalState );
 
         /* Grab the TTL and TOS from the last request */
         this.ttl    = session.ttl();

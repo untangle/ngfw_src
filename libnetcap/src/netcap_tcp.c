@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -46,7 +46,7 @@
 #include "netcap_interface.h"
 #include "netcap_sesstable.h"
 #include "netcap_shield.h"
-
+#include "netcap_nfconntrack.h"
 /* The number of sockets to listen on for TCP */
 #define RDR_TCP_LOCALS_SOCKS 128
 
@@ -327,7 +327,7 @@ static int  _redirect_ports_open( void )
 {
     int c;
     u_short base_port;
-    
+
     _tcp.base_port = -1;
 
     /* Clear out all of the ports */
@@ -387,6 +387,7 @@ static int  _netcap_tcp_accept_hook ( int cli_sock, struct sockaddr_in client )
     netcap_session_t* sess = NULL;
     int nfmark;
     u_int nfmark_len = sizeof(nfmark);
+
     /**
      * Get the mark
      * and convert it to and interface index
@@ -442,13 +443,15 @@ static int  _netcap_tcp_accept_hook ( int cli_sock, struct sockaddr_in client )
     else {
         _session_put_complete_fd( sess, cli_sock );
     }
-    
+
     return 0;
 }
 
 static int  _netcap_tcp_syn_hook ( netcap_pkt_t* syn )
 {
-    netcap_intf_t cli_intf_idx;
+    netcap_intf_t cli_intf;
+    netcap_intf_t srv_intf;
+        
     in_addr_t cli_addr,srv_addr;
     u_short   cli_port,srv_port;
     int   flags = 0;
@@ -460,19 +463,20 @@ static int  _netcap_tcp_syn_hook ( netcap_pkt_t* syn )
     cli_port = syn->src.port;
     srv_addr = syn->dst.host.s_addr;
     srv_port = syn->dst.port;
-    cli_intf_idx = syn->src_intf;
+    cli_intf = syn->src_intf;
+    srv_intf = syn->dst_intf;
 
     arg   = NULL; /* XXX */
     flags = 0;    /* XXX */
 
-    debug( 8, "SYN: Intercepted packet ::  (%s:%-5i -> %s:%i) (src.intf:%d) (syn:%i ack:%i)\n",
+    debug( 8, "SYN: Intercepted packet ::  (%s:%-5i -> %s:%i) (intf:%d,%d) (syn:%i ack:%i)\n",
            unet_next_inet_ntoa( cli_addr ), cli_port, unet_next_inet_ntoa( srv_addr ), srv_port, 
-           cli_intf_idx,!!( syn->th_flags & TH_SYN ), !!( syn->th_flags & TH_ACK ));
+           cli_intf, srv_intf, !!( syn->th_flags & TH_SYN ), !!( syn->th_flags & TH_ACK ));
 
     /* XXXXX Need to hold a lock between calling the get and putting the SYN in the mailbox
      * so the mailbox cannot be deleted from underneath the function */
     sess = _netcap_get_or_create_sess( &new_sess_flag, cli_addr, cli_port, -1, srv_addr, srv_port, -1,
-                                       cli_intf_idx, NC_INTF_UNK, flags, 0 );
+                                       cli_intf, srv_intf, flags, 0 );
 
     if ( sess == NULL ) {
         return errlog( ERR_CRITICAL, "Could not find or create new session\n" );
@@ -485,11 +489,14 @@ static int  _netcap_tcp_syn_hook ( netcap_pkt_t* syn )
     
     _session_put_syn( sess, syn );
 
+    debug(7,"TCP: FLAG Copying NAT info from packet to session\n");
+    sess->nat_info = syn->nat_info;
+
     if ( new_sess_flag ) {
         debug( 8, "TCP: (%10u) Calling TCP hook\n", sess->session_id );
         global_tcp_hook( sess, arg );
     }
-    
+
     return 0;
 }
 
@@ -502,7 +509,7 @@ static int  _netcap_tcp_syn_hook ( netcap_pkt_t* syn )
 static int  _session_put_syn      ( netcap_session_t* netcap_sess, netcap_pkt_t* syn )
 {
     tcp_msg_t* msg;
-    
+
     if ( netcap_sess->cli_state == CONN_STATE_COMPLETE ) {
         debug(5,"TCP: (%10u) Dropping SYN\n", netcap_sess->session_id);
         return netcap_pkt_action_raze( syn, NF_DROP );

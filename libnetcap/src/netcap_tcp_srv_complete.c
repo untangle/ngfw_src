@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -47,7 +47,7 @@
 #include "netcap_sesstable.h"
 #include "netcap_shield.h"
 #include "netcap_icmp.h"
-
+#include "netcap_nfconntrack.h"
 /* When completing to the server, this is essentially one plus number of ICMP messages to receive
  * before giving up.  On the last attempt, incoming ICMP messages are ignored */
 #define TCP_SRV_COMPLETE_ATTEMPTS 3
@@ -88,6 +88,25 @@ int  _netcap_tcp_callback_srv_complete ( netcap_session_t* netcap_sess, netcap_c
     }
     
     ret = 0;
+
+    
+#if 0
+    /**
+     * Delete the conntrack entry
+     */
+    debug( 10, "FLAG attemping to delete the conntrack entry\n");
+
+    netcap_nfconntrack_ipv4_tuple_t tuple;
+    tuple.protocol = netcap_sess->protocol;
+    tuple.src_address = netcap_sess->cli.cli.host.s_addr;
+    tuple.src_port = htons((u_int16_t)netcap_sess->cli.cli.port);
+    tuple.dst_address = netcap_sess->cli.srv.host.s_addr;
+    tuple.dst_port = htons((u_int16_t)netcap_sess->cli.srv.port);
+
+    if(netcap_nfconntrack_del_entry_tuple(&tuple ,NFCONNTRACK_DIRECTION_ORIG) < 0){
+      return errlog( ERR_CRITICAL,"netcap_nfconntrack_del_entry_tuple\n");
+    }
+#endif
     
     /* Grab the session table lock */
     SESSTABLE_WRLOCK();
@@ -122,7 +141,7 @@ static int  _netcap_tcp_setsockopt_srv ( int sock )
     
     struct ip_sendnfmark_opts nfmark = {
         .on = 1,
-        .mark = MARK_NOTRACK
+        .mark = MARK_NOTRACK | MARK_ANTISUB
     };
     
     if (setsockopt(sock,SOL_IP,IP_NONLOCAL,&one,sizeof(one))<0) 

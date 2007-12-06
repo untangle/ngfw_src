@@ -42,19 +42,8 @@ import com.untangle.uvm.ArgonException;
 import com.untangle.uvm.localapi.LocalIntfManager;
 import com.untangle.uvm.localapi.SessionMatcher;
 
-import com.untangle.uvm.node.firewall.InterfaceRedirect;
-
 public interface ArgonManager
 {    
-    /** Set the list of interface overrides */
-    public void setInterfaceOverrideList( List<InterfaceRedirect>overrideList );
-
-    /** Clear the list of interface overrides */
-    public void clearInterfaceOverrideList();
-
-    /** Get the outgoing argon interface for an IP address */
-    public byte getOutgoingInterface( InetAddress destination ) throws ArgonException;
-
     /** Get the interface manager */
     public LocalIntfManager getIntfManager();
     

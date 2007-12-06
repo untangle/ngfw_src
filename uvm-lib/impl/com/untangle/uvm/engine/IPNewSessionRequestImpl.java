@@ -87,10 +87,6 @@ abstract class IPNewSessionRequestImpl implements IPNewSessionRequest {
         return pRequest.serverIntf();
     }
 
-    public byte originalServerIntf() {
-        return pRequest.originalServerIntf();
-    }
-
     public PipelineEndpoints pipelineEndpoints()
     {
         return pRequest.pipelineEndpoints();
@@ -117,12 +113,6 @@ abstract class IPNewSessionRequestImpl implements IPNewSessionRequest {
     public void serverPort(int port)
     {
         pRequest.serverPort(port);
-        modified = true;
-    }
-
-    public void serverIntf(byte intf)
-    {
-        pRequest.serverIntf(intf);
         modified = true;
     }
 
@@ -188,4 +178,25 @@ abstract class IPNewSessionRequestImpl implements IPNewSessionRequest {
     {
         return modified;
     }
+
+    public InetAddress getNatFromHost()
+    {
+	return pRequest.getNatFromHost();
+    }
+
+    public int getNatFromPort()
+    {
+        return pRequest.getNatFromPort();
+    }
+
+    public InetAddress getNatToHost()
+    {
+        return pRequest.getNatToHost();
+    }
+
+    public int getNatToPort()
+    {
+        return pRequest.getNatToPort();
+    }
+
 }

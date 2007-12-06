@@ -42,9 +42,6 @@ import com.untangle.uvm.ArgonManager;
 import com.untangle.uvm.localapi.SessionMatcher;
 import com.untangle.uvm.localapi.LocalIntfManager;
 
-import com.untangle.uvm.node.firewall.InterfaceRedirect;
-
-
 /**
  * Argon manager.
  *
@@ -73,31 +70,7 @@ public class ArgonManagerImpl implements ArgonManager
     {
         isShutdown = true;
     }    
-            
-    /* Set the interface override list. */
-    public void setInterfaceOverrideList( List<InterfaceRedirect> overrideList )
-    {
-        InterfaceOverride.getInstance().setOverrideList( overrideList );
-    }
-
-    /* Set the interface override list. */
-    public void clearInterfaceOverrideList()
-    {
-        InterfaceOverride.getInstance().clearOverrideList();
-    }
     
-    /* Get the outgoing argon interface for an IP address */
-    public byte getOutgoingInterface( InetAddress destination ) throws ArgonException
-    {
-        try {
-            byte netcapIntf = netcap.getOutgoingInterface( destination );
-            
-            return  Argon.getInstance().getIntfManager().toArgon( netcapIntf );
-        } catch ( JNetcapException e ) {
-            throw new ArgonException( e );
-        }
-    }
-
     /** Get the interface manager */
     public LocalIntfManager getIntfManager()
     {

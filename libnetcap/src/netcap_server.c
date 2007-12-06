@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -134,6 +134,7 @@ static struct {
 int  netcap_server_init (void)
 {
     int c;
+    debug(10, "FLAG netcap_server_init\n");
 
     if (lock_init(&_server_lock,LOCK_FLAG_NOTRACK_READERS)<0)
         return perrlog("lock_init");
@@ -266,6 +267,7 @@ int  netcap_server (void)
                     return 0;
                 break;
             case POLL_TCP_INCOMING:
+	      debug(10, "FLAG! calling _handle_tcp_incoming\n");
                 _handle_tcp_incoming(info, events[i].events, events[i].data.fd );
                 break;
             case POLL_UDP_INCOMING:
@@ -379,6 +381,7 @@ static int  _handle_tcp_incoming (epoll_info_t* info, int revents, int fd )
     struct sockaddr_in cli_addr;
     u_int cli_addrlen = sizeof(cli_addr);
     int cli_sock;
+    debug(10, "FLAG _handle_tcp_incoming\n");
 
     if ( !info ) {
         _server_unlock();

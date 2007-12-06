@@ -68,7 +68,7 @@ class RouterFtpHandler extends FtpStateMachine
 
         if ( !updateSessionData()) {
             if (logger.isDebugEnabled()) {
-                logger.debug( "Ignoring unmodified session" );
+                logger.debug( "doCommand: Ignoring unmodified session" );
             }
             return new TokenResult( null, new Token[] { command } );
         }
@@ -105,7 +105,7 @@ class RouterFtpHandler extends FtpStateMachine
         int replyCode = reply.getReplyCode();
 
         if ( !updateSessionData()) {
-            logger.debug( "Ignoring unmodified session" );
+            logger.debug( "doReply: Ignoring unmodified session" );
             return new TokenResult( new Token[] { reply }, null );
         }
 
@@ -165,7 +165,7 @@ class RouterFtpHandler extends FtpStateMachine
         InetSocketAddress addr;
 
         if ( !updateSessionData()) {
-            logger.debug( "Ignoring unmodified session" );
+            logger.debug( "hanglePortCommand: Ignoring unmodified session" );
             return new TokenResult( null, new Token[] { command } );
         }
 
@@ -217,7 +217,9 @@ class RouterFtpHandler extends FtpStateMachine
             /* Queue the message for when the port command reply comes back, and make sure to free
              * the necessary port */
             portCommandSessionRedirect =
-                new SessionRedirect( null, 0, sessionData.originalClientAddr(), addr.getPort(), port,
+                new SessionRedirect( sessionData.originalServerAddr(), 0,
+				     sessionData.originalClientAddr(), addr.getPort(),
+				     port, sessionData.modifiedClientAddr(),
                                      portCommandKey );
 
             addr = new InetSocketAddress( sessionData.modifiedClientAddr(), port );

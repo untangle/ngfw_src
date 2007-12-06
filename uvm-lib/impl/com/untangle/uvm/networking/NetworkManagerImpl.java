@@ -1030,43 +1030,18 @@ public class NetworkManagerImpl implements LocalNetworkManager
     private void writeEtcFiles( NetworkSpacesInternalSettings newSettings )
         throws NetworkException, ArgonException
     {
-        writeInterfaces( newSettings );
-
-        List<NetworkSpaceInternal> networkSpaceList = newSettings.getNetworkSpaceList();
-
-        boolean resolvConf = true;
-
-        if ( networkSpaceList == null || networkSpaceList.size() == 0 ) {
-            logger.warn( "no network spaces" );
-        } else if ( networkSpaceList.get( 0 ).getIsDhcpEnabled()) {
-            /* Don't write the resolv conf if dhcp is enabled on the first space. */
-            resolvConf = false;
-        }
-
-        if ( resolvConf ) writeResolvConf( newSettings );
     }
 
     /* This is for /etc/network/interfaces interfaces */
     private void writeInterfaces( NetworkSpacesInternalSettings newSettings )
         throws NetworkException, ArgonException
     {
-        /* This is a script writer customized to generate etc interfaces files */
-        InterfacesScriptWriter isw =
-            new InterfacesScriptWriter( newSettings, this.miscManager.getInternalSettings());
-        isw.addNetworkSettings();
-        isw.writeFile( ETC_INTERFACES_FILE );
-
-        BridgeConfigurationWriter bcw = new BridgeConfigurationWriter( newSettings );
-        bcw.addBridgeConfiguration();
-        bcw.writeFile( BRIDGE_CFG_FILE );
+        logger.warn( "moved into the alpaca" );
     }
 
     private void writeResolvConf( NetworkSpacesInternalSettings newSettings )
     {
-        /* This is a script writer customized to generate etc resolv.conf files */
-        ResolvScriptWriter rsw = new ResolvScriptWriter( newSettings );
-        rsw.addNetworkSettings();
-        rsw.writeFile( ETC_RESOLV_FILE );
+        logger.warn( "moved into the alpaca" );
     }
 
     /* Methods for saving and loading the settings files from the database at startup */

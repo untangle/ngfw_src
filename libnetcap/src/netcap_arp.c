@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -32,7 +32,7 @@
 #include <mvutil/errlog.h>
 #include <mvutil/unet.h>
 
-#include "netcap_route.h"
+#include "netcap_arp.h"
 #include "netcap_interface.h"
 
 #define BRCTL_GET_DEVNAME    19
@@ -219,7 +219,7 @@ int netcap_arp_configure_bridge( netcap_intf_db_t* db, netcap_intf_info_t* intf_
         return 0;
     }
 
-    if ( !_is_initialized()) return errlog( ERR_CRITICAL, "netcap_route is not initialized\n" );
+    if ( !_is_initialized()) return errlog( ERR_CRITICAL, "netcap_arp is not initialized\n" );
         
     if (( bridge_info = calloc( 1, sizeof( *bridge_info ))) == NULL ) return errlogmalloc();
     

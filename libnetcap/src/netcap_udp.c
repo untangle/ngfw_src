@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -46,6 +46,8 @@
 #include "netcap_icmp.h"
 #include "netcap_icmp_msg.h"
 #include "netcap_ip.h"
+#include "netcap_pkt.h"
+
 
 /* Cleanup at most 2 UDP packets per iteration */
 #define _ICMP_CACHE_CLEANUP_MAX 2
@@ -81,7 +83,14 @@ static int _parse_udp_ip_header( netcap_pkt_t* pkt, char* header, int header_len
  */
 static int _cache_packet( u_char* full_pkt, int full_pkt_len, mailbox_t* icmp_mb );
 
-static struct cmsghdr * my__cmsg_nxthdr(struct msghdr *msg, struct cmsghdr *cmsg, int size);
+/**
+ * This will release the first packet with a zero length header in order to
+ * establish the conntrack session.
+ */
+static int _insert_first_pkt( netcap_session_t* session, netcap_pkt_t* pkt );
+
+
+struct cmsghdr * my__cmsg_nxthdr(struct msghdr *msg, struct cmsghdr *cmsg, int size);
 
 int  netcap_udp_init ()
 {
@@ -279,7 +288,7 @@ int  netcap_udp_call_hooks (netcap_pkt_t* pkt, void* arg)
             switch ( response.ans ) {
             case NC_SHIELD_DROP:
             case NC_SHIELD_RESET:
-                netcap_pkt_raze ( pkt );
+                netcap_pkt_action_raze( pkt, NF_DROP );
                 SESSTABLE_UNLOCK();
                 if ( response.if_print ) {
                     unet_reset_inet_ntoa();
@@ -302,11 +311,11 @@ int  netcap_udp_call_hooks (netcap_pkt_t* pkt, void* arg)
         }
 
         // Create a UDP session
-        session = netcap_udp_session_create (pkt);
+        session = netcap_udp_session_create( pkt );
         
         if ( !session ) {
             // Drop the packet
-            netcap_pkt_raze(pkt);
+            netcap_pkt_action_raze( pkt, NF_DROP );
             SESSTABLE_UNLOCK();
             return perrlog("netcap_udp_session_create");
         }
@@ -316,7 +325,7 @@ int  netcap_udp_call_hooks (netcap_pkt_t* pkt, void* arg)
                                              pkt->src.host.s_addr, pkt->dst.host.s_addr,
                                              pkt->src.port,pkt->dst.port,0 ) ) {
             netcap_udp_session_raze(!NC_SESSTABLE_LOCK, session);
-            netcap_pkt_raze(pkt);
+            netcap_pkt_action_raze( pkt, NF_DROP );
             SESSTABLE_UNLOCK();
             return perrlog("netcap_nc_sesstable_add_tuple");
         }
@@ -324,7 +333,7 @@ int  netcap_udp_call_hooks (netcap_pkt_t* pkt, void* arg)
         // Add the session to itself
         if ( netcap_nc_sesstable_add ( !NC_SESSTABLE_LOCK, session )) {
             netcap_udp_session_raze(!NC_SESSTABLE_LOCK, session);
-            netcap_pkt_raze(pkt);
+            netcap_pkt_action_raze( pkt, NF_DROP );
             SESSTABLE_UNLOCK();
             return perrlog("netcap_sesstable_add");
         }
@@ -333,14 +342,14 @@ int  netcap_udp_call_hooks (netcap_pkt_t* pkt, void* arg)
 
         // Put the packet into the mailbox
         if (mailbox_size(&session->cli_mb) > MAX_MB_SIZE ) {
-            errlog(ERR_WARNING,"Mailbox Full: Dropping Packet (from %s:%i)\n",
-                   inet_ntoa(pkt->src.host),pkt->src.port);
-            netcap_pkt_raze(pkt);
+            errlog( ERR_WARNING,"Mailbox Full: Dropping Packet (from %s:%i)\n",
+                    inet_ntoa( pkt->src.host ), pkt->src.port );
+            netcap_pkt_action_raze( pkt, NF_DROP );
             full_pkt = NULL;
         } else if (mailbox_put(&session->cli_mb,(void*)pkt)<0) {
-            netcap_pkt_raze(pkt);
-            perrlog("mailbox_put");
-            full_pkt = NULL;
+	    netcap_pkt_action_raze( pkt, NF_DROP );
+	    perrlog("mailbox_put");
+	    full_pkt = NULL;
         }
         
         /* Caching order is not significant since the other thread/session doesn't exist yet */
@@ -348,6 +357,13 @@ int  netcap_udp_call_hooks (netcap_pkt_t* pkt, void* arg)
         // Put a copy of the full packet into the mailbox
         if ( full_pkt != NULL && ( _cache_packet( full_pkt, full_pkt_len, &session->icmp_cli_mb ) < 0 )) {
             errlog( ERR_CRITICAL, "_cache_packet\n" );
+        }
+
+        if ( _insert_first_pkt( session, pkt ) < 0 ) {
+            netcap_udp_session_raze( !NC_SESSTABLE_LOCK, session );
+            //netcap_pkt_action_raze( pkt, NF_DROP );
+            SESSTABLE_UNLOCK();
+            return errlog( ERR_CRITICAL, "_insert_first_pkt\n" );
         }
 
         SESSTABLE_UNLOCK();
@@ -362,6 +378,18 @@ int  netcap_udp_call_hooks (netcap_pkt_t* pkt, void* arg)
         debug(10,"Calling UDP hook(s)\n");
         global_udp_hook(session,arg);
     } else {
+        /* Session has already started, so drop the packet (only need to accept the first one) */
+        int packet_id;
+        if (( packet_id = pkt->packet_id ) == 0 ) {
+            debug( 10, "UDP packet was already dropped or had zero id\n" );
+        } else {
+            pkt->packet_id = 0;
+            if ( netcap_set_verdict( packet_id, NF_DROP, NULL, 0 ) < 0 ) {
+                errlog( ERR_CRITICAL, "netcap_set_verdict\n" );
+                return -1;
+            }
+        }
+        
         netcap_intf_t intf;
 
         /* Add this chunk against the client reputation */
@@ -525,7 +553,7 @@ static int _netcap_udp_sendto (int sock, void* data, size_t data_len, int flags,
     char               control[MAX_CONTROL_MSG];
     u_short            sport;
     int                ret;
-    u_int              nfmark = ( MARK_ANTISUB | MARK_NOTRACK | (pkt->is_marked ? pkt->nfmark : 0 )); 
+    u_int              nfmark = ( MARK_ANTISUB | MARK_NOTRACK | ( pkt->is_marked ? pkt->nfmark : 0 )); 
     /* mark is  antisub + notrack + whatever packet marks are specified */
 
     /* if the caller uses the force flag, then override the default bits of the mark */
@@ -671,24 +699,12 @@ static int _netcap_udp_sendto (int sock, void* data, size_t data_len, int flags,
 
 static int _process_queue_pkt( netcap_pkt_t* pkt, u_char** full_pkt, int* full_pkt_len )
 {
-    int packet_id;
     int offset;
     struct iphdr* iph = (struct iphdr*)pkt->data;
 
     /* Update the full packet */
     *full_pkt     = NULL;
     *full_pkt_len = 0;
-
-    if (( packet_id = pkt->packet_id ) == 0 ) {
-        debug( 10, "UDP packet was already dropped or had zero id\n" );
-    } else {
-        pkt->packet_id = 0;
-        
-        if ( netcap_set_verdict( packet_id, NF_DROP, NULL, 0 ) < 0 ) {
-            errlog( ERR_CRITICAL, "netcap_set_verdict\n" );
-            return -1;
-        }
-    }
     
     if (( iph = (struct iphdr*)pkt->data ) == NULL ) {
         return errlog( ERR_CRITICAL, "Queued UDP packet without IP header\n" );
@@ -757,7 +773,7 @@ static int _cache_packet( u_char* full_pkt, int full_pkt_len, mailbox_t* icmp_mb
  */
 static int _parse_udp_ip_header( netcap_pkt_t* pkt, char* header, int header_len, int buf_len )
 {
-    struct iphdr* iphdr  = (struct iphdr*)header;
+    struct iphdr* ip_header  = (struct iphdr*)header;
     struct udphdr* udphdr;
     
     if ( buf_len < ( pkt->data_len + header_len )) {
@@ -765,7 +781,7 @@ static int _parse_udp_ip_header( netcap_pkt_t* pkt, char* header, int header_len
                        buf_len, pkt->data_len + header_len );
     }
     
-    if (( udphdr = netcap_ip_get_udp_header( iphdr, header_len )) == NULL ) {
+    if (( udphdr = netcap_ip_get_udp_header( ip_header, header_len )) == NULL ) {
         return errlog( ERR_CRITICAL, "netcap_ip_get_udp_header\n" );
     }
 
@@ -788,8 +804,20 @@ static int _parse_udp_ip_header( netcap_pkt_t* pkt, char* header, int header_len
     return 0;
 }
 
+static int _insert_first_pkt( netcap_session_t* session, netcap_pkt_t* pkt )
+{
+    /* Copy the packet id into the first_pkt structure */
+    if (( session->first_pkt_id = pkt->packet_id ) == 0 ) {
+        return errlog( ERR_CRITICAL, "UDP SESSION: First packet already dropped.\n" );
+    }
+
+    //pkt->packet_id = 0;
+
+    return 0;
+}
+
 /* this gets rid of the mess in libc (in bits/socket.h) */
-static struct cmsghdr * my__cmsg_nxthdr(struct msghdr *msg, struct cmsghdr *cmsg, int size)
+struct cmsghdr * my__cmsg_nxthdr(struct msghdr *msg, struct cmsghdr *cmsg, int size)
 {
 	struct cmsghdr * ptr;
 

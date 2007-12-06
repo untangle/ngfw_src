@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -101,6 +101,13 @@ JNIEXPORT jlong JNICALL JF_Session( getLongValue )
 
     switch( req_id & JN_Session( FLAG_MASK )) {
     case JN_Session( FLAG_HOST ): return UINT_TO_JLONG( endpoint->host.s_addr );
+    case JN_Session( FLAG_NAT_FROM_HOST ):
+      debug(10,"FLAG: FLAG_NAT_FROM_HOST = %s\n",unet_next_inet_ntoa(session->nat_info.reply.dst_address ));
+      return session->nat_info.reply.dst_address;
+    case JN_Session( FLAG_NAT_TO_HOST   ):
+      debug(10,"FLAG: FLAG_NAT_TO_HOST = %s\n",unet_next_inet_ntoa(session->nat_info.reply.src_address ));
+      return session->nat_info.reply.src_address;
+
     case JN_Session( FLAG_ICMP_MB ):
         if ( req_id & JN_Session( FLAG_IF_CLIENT_MASK )) return UINT_TO_JLONG( &session->icmp_cli_mb );
         return UINT_TO_JLONG( &session->icmp_srv_mb );
@@ -125,6 +132,14 @@ JNIEXPORT jint JNICALL JF_Session( getIntValue )
     JLONG_TO_SESSION( session, session_ptr );
 
     switch( req_id & JN_Session( FLAG_MASK )) { 
+
+    case JN_Session( FLAG_NAT_FROM_PORT ):
+      debug(10,"FLAG: FLAG_NAT_FROM_PORT = %u\n",ntohs(session->nat_info.reply.dst_protocol_id ));
+      return ntohs(session->nat_info.reply.dst_protocol_id);
+    case JN_Session( FLAG_NAT_TO_PORT   ):
+      debug(10,"FLAG: FLAG_NAT_TO_PORT = %u\n",ntohs(session->nat_info.reply.src_protocol_id ));      
+      return ntohs(session->nat_info.reply.src_protocol_id);
+
     case JN_Session( FLAG_ID ): return session->session_id;
     case JN_Session( FLAG_PROTOCOL ): return session->protocol;
     case JN_TCPSession( FLAG_FD ):
@@ -214,6 +229,24 @@ JNIEXPORT jstring JNICALL JF_Session( getStringValue )
  * Method:    raze
  * Signature: (J)I
  */
+JNIEXPORT void JNICALL JF_Session( determineServerIntf )
+(JNIEnv* env, jclass _this, jlong session_ptr )
+{
+    netcap_session_t* session;
+
+    JLONG_TO_SESSION_VOID( session, session_ptr );
+    
+    if ( netcap_interface_dst_intf( session ) < 0 ) {
+        jmvutil_error( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, "netcap_interface_dst_intf\n" );
+        return;
+    }    
+}
+
+/*
+ * Class:     com_untangle_jnetcap_NetcapSession
+ * Method:    raze
+ * Signature: (J)I
+ */
 JNIEXPORT void JNICALL JF_Session( raze )
 (JNIEnv* env, jclass _this, jlong session_ptr )
 {
@@ -238,7 +271,7 @@ JNIEXPORT jstring JNICALL JF_Session( toString )
     netcap_endpoints_t* endpoints;
     /* Just leaving some slack in case */
     char buf[sizeof( "[cc]xxx.xxx.xxx.xxx:ppppp -> [cc]xxx.xxx.xxx.xxx:ppppp" ) + 16];
-
+    
     JLONG_TO_SESSION_NULL( session, session_ptr );
 
     if ( ifClient == JNI_TRUE ) endpoints = &session->cli;
@@ -251,41 +284,4 @@ JNIEXPORT jstring JNICALL JF_Session( toString )
               session->srv.intf, unet_next_inet_ntoa( endpoints->srv.host.s_addr ), endpoints->srv.port );
 
     return (*env)->NewStringUTF( env, buf );
-}
-
-/*
- * Class:     com_untangle_jnetcap_NetcapSession
- * Method:    updateServerIntf
- * Signature: (J)V
- */
-JNIEXPORT void JNICALL JF_Session( updateServerIntf )
-(JNIEnv *env, jobject _this, jlong session_ptr )
-{
-    netcap_session_t* session;
-    JLONG_TO_SESSION_VOID( session, session_ptr );
-
-    if ( netcap_interface_dst_intf( &session->srv.intf, session->cli.intf, 
-                                    &session->cli.cli.host, &session->cli.srv.host ) < 0 ) {
-        return jmvutil_error_void( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, "netcap_arp_dst_intf\n" );
-    }
-}
-
-/*
- * Class:     com_untangle_jnetcap_NetcapSession
- * Method:    serverInterfaceId
- * Signature: (JB)V
- */
-JNIEXPORT void JNICALL JF_Session( serverInterfaceId )
-  ( JNIEnv *env, jobject _this, jlong session_ptr, jbyte j_intf )
-{
-    netcap_session_t* session;
-    netcap_intf_t intf = (netcap_intf_t)j_intf;
-
-    JLONG_TO_SESSION_VOID( session, session_ptr );
-    if ( netcap_interface_intf_verify( intf ) < 0 ) {
-        return jmvutil_error_void( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, "Invalid interface %d\n", intf );
-    }
-    
-    /* Modify the server interface */
-    session->srv.intf = intf;
 }

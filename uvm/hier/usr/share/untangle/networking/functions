@@ -1,8 +1,8 @@
 #! /bin/bash
 
 ## A few constants
-IPTABLES="/sbin/iptables"
-#IPTABLES=iptablesDbg
+#IPTABLES="/sbin/iptables"
+IPTABLES=iptablesDbg
 
 EBTABLES="/sbin/ebtables"
 #EBTABLES=ebtablesDbg
@@ -28,7 +28,8 @@ fi
 # if necessary
 LOG_DEBUG=logDebug
 
-TABLE_LIST="nat mangle filter raw"
+# always put tune first, so local traffic can't get stuck in queues when flushing.
+TABLE_LIST="tune nat mangle filter raw"
 EBTABLE_LIST="nat filter broute"
 CHAIN_MARKINTF="markintf"
 CHAIN_GUARDS="guards"
@@ -37,7 +38,7 @@ CHAIN_INTERCEPT="intercept"
 CHAIN_LIBERATION="liberation"
 
 ## These are all for the mangle prerouting rules
-CHAINS_ORDER="${CHAIN_MARKINTF} ${CHAIN_GUARDS} ${CHAIN_ANTISUB} ${CHAIN_INTERCEPT}"
+CHAINS_ORDER="${CHAIN_MARKINTF} ${CHAIN_GUARDS} ${CHAIN_ANTISUB} ${CHAIN_INTERCEPT} "
 
 ## Invalid address and netmask used when dhcp loading fails.
 BOGUS_ADDRESS_BASE="169.254.210.5"
