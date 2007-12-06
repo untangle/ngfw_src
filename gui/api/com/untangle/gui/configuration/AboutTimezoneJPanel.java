@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -40,9 +40,9 @@ import javax.swing.*;
 import com.untangle.gui.node.*;
 import com.untangle.gui.util.*;
 import com.untangle.uvm.*;
+import com.untangle.uvm.node.*;
 import com.untangle.uvm.security.*;
 import com.untangle.uvm.snmp.*;
-import com.untangle.uvm.node.*;
 
 public class AboutTimezoneJPanel extends javax.swing.JPanel
     implements Savable<AboutCompoundSettings>, Refreshable<AboutCompoundSettings> {
@@ -72,7 +72,9 @@ public class AboutTimezoneJPanel extends javax.swing.JPanel
 
         // SAVE SETTINGS ////////////
         if( !validateOnly ){
-            aboutCompoundSettings.setTimeZone( java.util.TimeZone.getTimeZone(timezone) );
+            java.util.TimeZone tz = java.util.TimeZone.getTimeZone(timezone);
+            aboutCompoundSettings.setTimeZone( tz );
+            java.util.TimeZone.setDefault(tz);
         }
 
     }
