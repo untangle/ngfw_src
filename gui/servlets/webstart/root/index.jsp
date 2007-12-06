@@ -52,6 +52,7 @@ if (!( isIndex || isDownload)) isIndex = true;
 var javawsInstalled    = 0;
 var javaws142Installed = 0;
 var javaws150Installed = 0;
+var javaws160Installed = 0;
 isIE = "false";
 if (navigator.mimeTypes && navigator.mimeTypes.length) {
     x = navigator.mimeTypes['application/x-java-jnlp-file'];
@@ -59,6 +60,7 @@ if (navigator.mimeTypes && navigator.mimeTypes.length) {
         javawsInstalled = 1;
         javaws142Installed=1;
         javaws150Installed=1;
+        javaws160Installed=1;
     }
 }
 else {
@@ -66,8 +68,8 @@ else {
 }
 
 function showMessage() {
-  if ( javaws150Installed == 0 && ( navigator.userAgent.indexOf("Gecko") == -1 )) {
-     document.write( 'Java&trade; v1.5 was not detected.  You may need to download and install Java&trade; v1.5.<br /><br />' );
+  if ( (javaws150Installed == 0) && (javaws160Installed == 0) && ( navigator.userAgent.indexOf("Gecko") == -1 )) {
+     document.write( 'Java&trade; (>= v1.5) was not detected.  You may need to download and install Java&trade; v1.5 (or v1.6).<br /><br />' );
   }
 }
 // ]]>
@@ -87,6 +89,10 @@ function showMessage() {
             If Not(IsObject(CreateObject("JavaWebStart.isInstalled.1.5.0.0"))) Then
                     javaws150Installed = 0
             Else javaws150Installed = 1
+            End If
+            If Not(IsObject(CreateObject("JavaWebStart.isInstalled.1.6.0.0"))) Then
+                    javaws160Installed = 0
+            Else javaws160Installed = 1
             End If
     End If
 </script>
