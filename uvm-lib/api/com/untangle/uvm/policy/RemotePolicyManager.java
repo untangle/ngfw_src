@@ -120,4 +120,12 @@ public interface RemotePolicyManager extends LicensedProduct
      * @exception PolicyException if there is some problem with the settings.
      */
     void setPolicyConfiguration(PolicyConfiguration pc) throws PolicyException;
+
+    /**
+     * Shuts down all sessions matching the given policy - shuts down all
+     * sessions if no policy is provided.
+     *
+     * @param rules an <code>List</code> of <code>UserPolicyRule</code> values
+     */
+    void shutdownSessions(Policy policy);
 }

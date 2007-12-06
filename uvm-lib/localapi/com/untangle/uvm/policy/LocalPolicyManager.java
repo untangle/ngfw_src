@@ -87,6 +87,11 @@ public interface LocalPolicyManager extends LicensedProduct
      */
     void setPolicyConfiguration(PolicyConfiguration pc) throws PolicyException;
 
+    /**
+     * @see PolicyManager#shutdownSessions()
+     */
+    void shutdownSessions(Policy policy);
+
     void reconfigure(byte[] interfaces);
 
     UserPolicyRule[] getUserRules();

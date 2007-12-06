@@ -91,4 +91,10 @@ class RemotePolicyManagerAdaptor implements RemotePolicyManager
     {
         return pm.productIdentifier();
     }
+
+    public void shutdownSessions(Policy policy)
+    {
+        pm.shutdownSessions(policy);
+    }
+
 }

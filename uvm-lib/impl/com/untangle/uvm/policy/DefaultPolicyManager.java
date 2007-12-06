@@ -1,4 +1,4 @@
-/*
+	/*
  * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc.
  *
@@ -31,6 +31,8 @@ import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.license.ProductIdentifier;
 import com.untangle.uvm.localapi.LocalIntfManager;
+import com.untangle.uvm.localapi.SessionMatcherFactory;
+import com.untangle.uvm.ArgonManager;
 import com.untangle.uvm.node.InterfaceComparator;
 import com.untangle.uvm.node.LocalNodeManager;
 import com.untangle.uvm.node.firewall.intf.IntfDBMatcher;
@@ -356,5 +358,21 @@ class DefaultPolicyManager implements LocalPolicyManager
 
         this.userRules = userPolicyList.toArray(new UserPolicyRule[0]);
         this.cUserRules = completePolicyList.toArray(new UserPolicyRule[0]);
+    }
+
+    /**
+     * shut down all sessions associated with the given policy - shut down
+     * all sessions if policy is null.  
+     *
+     * ***TODO: add logic to shutdown sessions for just a given policy.
+     *
+     * ***TODO: this should potentially be refactored into a RemoteArgonManager 
+     *          class with this being its only method - this way the existing 
+     *          shutdownMatches() method can be used.
+     */
+    public void shutdownSessions(Policy policy)
+    {
+        ArgonManager argonManager = LocalUvmContextFactory.context().argonManager();        
+	argonManager.shutdownMatches(SessionMatcherFactory.makePolicyInstance(policy));
     }
 }
