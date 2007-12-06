@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -34,19 +34,17 @@
 package com.untangle.gui.util;
 
 import java.awt.*;
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.*;
 import java.security.*;
 import java.util.Properties;
 import javax.swing.*;
 
-import org.apache.log4j.PropertyConfigurator;
-
 import com.untangle.gui.login.*;
 import com.untangle.uvm.client.*;
-
 import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
 
 public class MLauncher {
     private static final String LOG4J_DEFAULT_PROPERTIES = "com/untangle/gui/log4j.properties";
@@ -58,6 +56,10 @@ public class MLauncher {
     private static final Logger logger = Logger.getLogger(MLauncher.class);
 
     public static void main(final String args[]) {
+        String tzStr = System.getProperty("user.timezone");
+        if (null != tzStr) {
+            java.util.TimeZone.setDefault(java.util.TimeZone.getTimeZone(tzStr));
+        }
 
         // SET CLASS LOADER NORMAL WAYS
         final MURLClassLoader mUrlClassLoader = new MURLClassLoader( MLauncher.class.getClassLoader() );
@@ -73,7 +75,7 @@ public class MLauncher {
                 Thread.currentThread().setContextClassLoader(mUrlClassLoader);
             }});
         }
-        catch(Exception e){            
+        catch(Exception e){
             logger.info("Error setting class loader:", e);
         }
 
@@ -98,7 +100,7 @@ public class MLauncher {
         catch (Exception e) {
             logger.info("Error starting LAF:",e);
         }
-            
+
         // SET CLASSLOADER
         Util.initialize();
         Util.setClassLoader( mUrlClassLoader );
@@ -177,7 +179,7 @@ public class MLauncher {
         props.setProperty("log4j.appender.A1.layout.ConversionPattern",
                           "%d{HH:mm:ss,SSS} (%t) %-5p [%c] - %m%n");
         props.setProperty("log4j.rootLogger=WARN","A1");
-        
+
         try {
             InputStream is = MLauncher.class.getClassLoader().
                 getResourceAsStream(LOG4J_DEFAULT_PROPERTIES);
@@ -190,7 +192,7 @@ public class MLauncher {
 
         } catch ( IOException e ) {
             System.err.println("Unable to load default logging properties.");
-            System.err.println("Using defaults." );            
+            System.err.println("Using defaults." );
         }
 
         try {
