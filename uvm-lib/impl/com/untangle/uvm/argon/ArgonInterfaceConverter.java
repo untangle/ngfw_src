@@ -237,15 +237,18 @@ final class ArgonInterfaceConverter
 
         for ( ArgonInterface intf : intfList ) {
             if ( argon.put( intf.getArgon(), intf ) != null ) {
-                throw new ArgonException( "The argon interface: " + intf.getArgon() + " is used twice" );
+                logger.warn( "The argon interface: " + intf.getArgon() + " is used twice" );
+                continue;
             }
 
             if ( netcap.put( intf.getNetcap(), intf ) != null ) {
-                throw new ArgonException( "The netcap interface: " + intf.getNetcap() + " is used twice" );
+                logger.warn( "The netcap interface: " + intf.getNetcap() + " is used twice" );
+                continue;
             }
 
             if ( name.put( intf.getName(), intf ) != null ) {
-                throw new ArgonException( "The name: " + intf.getName() + " is used twice" );
+                logger.warn( "The name: " + intf.getName() + " is used twice" );
+                continue;
             }
 
             logger.debug( "Adding the interface: " + intf );
@@ -255,6 +258,7 @@ final class ArgonInterfaceConverter
         ArgonInterface internal = argon.get( IntfConstants.INTERNAL_INTF );
         ArgonInterface dmz      = argon.get( IntfConstants.DMZ_INTF );
 
+        /* Should this still be an error? */
         if ( internal == null ) throw new ArgonException( "The internal interface is not set" );
         if ( external == null ) throw new ArgonException( "The external interface is not set" );
 

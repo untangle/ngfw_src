@@ -686,15 +686,6 @@ public class UvmContextImpl extends UvmContextBase
         String argonFake = System.getProperty(ARGON_FAKE_KEY);
         if (null == argonFake || !argonFake.equalsIgnoreCase("yes")) {
             Argon.getInstance().run( networkManager );
-        } else {
-            logger.info( "Argon not activated, using fake interfaces in the "
-                         + "policy and networking manager." );
-            byte interfaces[] = new byte[] { 0, 1 };
-            policyManager().reconfigure(interfaces);
-            // this is done by the policy manager, but leave it here
-            // just in case.
-            // XXXX no longer needed.
-            // networkingManager.buildIntfEnum();
         }
 
         this.heapMonitor = new HeapMonitor();

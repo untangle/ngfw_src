@@ -36,11 +36,11 @@ package com.untangle.uvm.localapi;
 import java.util.List;
 
 import com.untangle.uvm.ArgonException;
+import com.untangle.uvm.IntfEnum;
 import com.untangle.uvm.localapi.ArgonInterface;
 import com.untangle.uvm.node.InterfaceComparator;
-import com.untangle.uvm.node.RemoteIntfManager;
 
-public interface LocalIntfManager extends RemoteIntfManager
+public interface LocalIntfManager
 {
     /* Convert from an argon interface to a netcap interface */
     byte toNetcap( byte argonIntf );
@@ -100,7 +100,10 @@ public interface LocalIntfManager extends RemoteIntfManager
     /* This clears all of the secondary interfaces  */
     void resetSecondaryIntfs();
 
-    void loadInterfaceConfig();
+   /* Retrieve the current interface enumeration */
+    public IntfEnum getIntfEnum();
+
+    void loadInterfaceConfig() throws ArgonException;
     InterfaceComparator getInterfaceComparator();
 }
 

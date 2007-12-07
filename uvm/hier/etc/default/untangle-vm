@@ -21,7 +21,7 @@ UVM_USER=root
 ## Defaults to 10000 in the code, set here if you want something else
 UVM_SESSION_LIMIT=""
 
-UVM_ARGS="-Dargon.debug.netcap=10 -Dargon.debug.jnetcap=10 "
+UVM_ARGS=""
 
 # postgresql stuff
 PG_VERSION=`dpkg -l postgresql | awk '/^ii/ { gsub(/\..-.*/, "", $3) ; print $3 }'`
@@ -61,35 +61,13 @@ REMOTE_SUPPORT_ENABLE_URL_TEMPLATE="https://activation.untangle.com/cgi-bin/enab
 FAKE_KEY=0000-0000-0000-0000
 KEY_VERIFICATION="@UVM_HOME@/conf/etc/mvverifykey"
 
-## For testing, uncomment and setup interfaces here, the values below should not be modified.
-#UVM_INTERNAL_INTF=""
-#UVM_EXTERNAL_INTF=""
-#UVM_DMZ_INTF=""
-
 ## For testing uncomment if you want to generate /etc/network/interfaces files.
 # UVM_ENABLE_NETWORK_CFG="anything"
-
-## Set internal and external interface to a default if it is not set, for testing
-## modify the interface above, this setting will only change if the variable
-## has not been set yet.
-UVM_INTERNAL_INTF=${UVM_INTERNAL_INTF:-"eth1"}
-UVM_EXTERNAL_INTF=${UVM_EXTERNAL_INTF:-"eth0"}
 
 if [ "x${USER}" = "x" -o "x${USER}" = "xroot" ]; then
         UVM_NICENESS=0
 else
         UVM_NICENESS=0
-fi
-
-UVM_ARGS="${UVM_ARGS} -Dargon.internal=${UVM_INTERNAL_INTF} -Dargon.external=${UVM_EXTERNAL_INTF}"
-
-## Check for a DMZ Interface if the default is not set, (just check for eth2)
-if [ -z "${UVM_DMZ_INTF}" ] && [ -d "/sys/class/net/${DEFAULT_DMZ}" ]; then
-    UVM_DMZ_INTF=${DEFAULT_DMZ}
-fi
-
-if [ -n "${UVM_DMZ_INTF}" ]; then
-    UVM_ARGS="${UVM_ARGS} -Dargon.dmz=${UVM_DMZ_INTF}"
 fi
 
 # if in the build, disable network configuration by default

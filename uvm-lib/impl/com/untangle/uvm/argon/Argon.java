@@ -74,16 +74,6 @@ public class Argon
     /* Debugging */
     private final Logger logger = Logger.getLogger( this.getClass());
 
-    /* Default device values */
-    String external = "eth0";
-    String internal  = "eth1";
-
-    /* If there is a DMZ interface, it is passed in using the system property */
-    String dmz     = "";
-
-    /* The NAT Checker */
-    private final NatChecker natChecker = new NatChecker();
-
     /* Singleton */
     private Argon()
     {
@@ -109,43 +99,12 @@ public class Argon
         registerHooks();
     }
 
-    NatChecker getNatChecker()
-    {
-        return this.natChecker;
-    }
-
     /**
      * Parse the user supplied properties
      */
     private void parseProperties()
     {
         String temp;
-        if (( temp = System.getProperty( "argon.internal" )) != null ) {
-            internal = temp;
-        }
-
-        if (( temp = System.getenv( "UVM_INTERNAL_INTF" )) != null ) {
-            if ( !temp.equals( internal )) logger.warn( "argon.internal,environ mismatch" );
-            internal = temp;
-        }
-
-        if (( temp = System.getProperty( "argon.external" )) != null ) {
-            external = temp;
-        }
-
-        if (( temp = System.getenv( "UVM_EXTERNAL_INTF" )) != null ) {
-            if ( !temp.equals( external )) logger.warn( "argon.external,environ mismatch" );
-            external = temp;
-        }
-
-        if (( temp = System.getProperty( "argon.dmz" )) != null ) {
-            dmz = temp;
-        }
-
-        if (( temp = System.getenv( "UVM_DMZ_INTF" )) != null ) {
-            if ( !temp.equals( external )) logger.warn( "argon.dmz,environ mismatch" );
-            dmz = temp;
-        }
 
         if (( temp = System.getProperty( "argon.numthreads" )) != null ) {
             int count;
@@ -224,10 +183,7 @@ public class Argon
         Netcap.startScheduler();
 
         this.intfManager = new LocalIntfManagerImpl();
-        this.intfManager.initializeIntfArray( internal, external, dmz );
-
-        /* Register the NatChecker */
-        networkManager.registerListener( this.natChecker );
+        this.intfManager.initializeIntfArray();
 
         /* Initialize the network manager, this has to be done after netcap init. */
         networkManager.init();

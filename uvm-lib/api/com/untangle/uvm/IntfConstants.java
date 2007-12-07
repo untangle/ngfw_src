@@ -54,7 +54,7 @@ public class IntfConstants
     public static final byte   EXTERNAL_INTF = 0;
     public static final byte   INTERNAL_INTF = 1;
     public static final byte   DMZ_INTF      = 2;
-    public static final byte   VPN_INTF      = 3;
+    public static final byte   VPN_INTF      = 7;
 
     /* Internal constants, the string representation is never shown to the user */
 

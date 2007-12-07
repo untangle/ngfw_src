@@ -18,6 +18,9 @@
 
 package com.untangle.uvm.engine;
 
+import org.apache.log4j.Logger;
+
+import com.untangle.uvm.ArgonException;
 import com.untangle.uvm.IntfEnum;
 import com.untangle.uvm.localapi.LocalIntfManager;
 import com.untangle.uvm.node.InterfaceComparator;
@@ -30,6 +33,8 @@ import com.untangle.uvm.node.RemoteIntfManager;
 public class RemoteIntfManagerImpl implements RemoteIntfManager
 {
     private final LocalIntfManager localIntfManager;
+
+    private final Logger logger = Logger.getLogger( this.getClass());
 
     RemoteIntfManagerImpl( LocalIntfManager lim )
     {
@@ -44,7 +49,11 @@ public class RemoteIntfManagerImpl implements RemoteIntfManager
 
     public void loadInterfaceConfig()
     {
-        this.localIntfManager.loadInterfaceConfig();
+        try {
+            localIntfManager.loadInterfaceConfig();
+        } catch ( ArgonException e ) {
+            logger.warn( "Unable to loadInterafceConfig", e );
+        }
     }
 
     public InterfaceComparator getInterfaceComparator()

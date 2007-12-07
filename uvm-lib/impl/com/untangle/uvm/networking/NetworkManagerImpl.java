@@ -498,8 +498,6 @@ public class NetworkManagerImpl implements LocalNetworkManager
             logger.debug( "Saving new ddns settings: " + newSettings );
         }
         saveDynamicDnsSettings( newSettings );
-
-        doDDNSUpdate();
     }
 
 
@@ -1001,7 +999,6 @@ public class NetworkManagerImpl implements LocalNetworkManager
         updateLinkStatus();
 
         // Register the built-in listeners
-        registerListener(new DynamicDNSListener());
         registerListener(new AfterReconfigureScriptListener());
     }
 
@@ -1214,22 +1211,6 @@ public class NetworkManagerImpl implements LocalNetworkManager
         INSTANCE = new NetworkManagerImpl();
 
         return INSTANCE;
-    }
-
-    private void doDDNSUpdate()
-    {
-        NetworkUtilPriv nup = NetworkUtilPriv.getPrivInstance();
-        NetworkSpaceInternal externalSpace = networkSettings.getNetworkSpaceList().get(0);
-        String externalInterfaceName = externalSpace.getDeviceName();
-        nup.writeDDNSConfiguration(getDynamicDnsSettings(), getHostname(), externalInterfaceName);
-    }
-
-    class DynamicDNSListener implements AddressSettingsListener
-    {
-        public void event( AddressSettingsInternal settings )
-        {
-            doDDNSUpdate();
-        }
     }
 
     class IPMatcherListener implements NetworkSettingsListener

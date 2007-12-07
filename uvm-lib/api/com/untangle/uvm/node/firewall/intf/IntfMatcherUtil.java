@@ -37,6 +37,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.untangle.uvm.IntfConstants;
 import com.untangle.uvm.node.ParseException;
 
 /**
@@ -67,11 +68,10 @@ class IntfMatcherUtil
 
 
         /* XXXXXXXXXXXXXXXXXXXXX Use argon or something else */
-        /* These values should not be hardcoded here. */
-        mapIntf( (byte)0, "External", "O", dataToIntf, intfToData, intfToUser );
-        mapIntf( (byte)1, "Internal", "I", dataToIntf, intfToData, intfToUser );
-        mapIntf( (byte)2, "DMZ",      "D", dataToIntf, intfToData, intfToUser );
-        mapIntf( (byte)3, "VPN",      "V", dataToIntf, intfToData, intfToUser );
+        mapIntf( IntfConstants.EXTERNAL_INTF, "External", "O", dataToIntf, intfToData, intfToUser );
+        mapIntf( IntfConstants.INTERNAL_INTF, "Internal", "I", dataToIntf, intfToData, intfToUser );
+        mapIntf( IntfConstants.DMZ_INTF, "DMZ", "D", dataToIntf, intfToData, intfToUser );
+        mapIntf( IntfConstants.VPN_INTF, "VPN", "V", dataToIntf, intfToData, intfToUser );
 
         DATA_TO_INTF_MAP = Collections.unmodifiableMap( dataToIntf );
         INTF_TO_DATA_MAP = Collections.unmodifiableMap( intfToData );
