@@ -381,12 +381,12 @@ JNIEXPORT jlong JNICALL JF_UDPSession( read )
         return UINT_TO_JLONG((u_int)errlog_null( ERR_CRITICAL, "utime_msec_add_now\n" ));
     }
     pkt = (netcap_pkt_t *) mailbox_utimed_get( mb, &tv );
-    if ( (pkt != NULL) && (pkt->packet_id != NULL) ){
+    if (( pkt != NULL ) && ( pkt->packet_id != 0 )) {
         debug(10, "pulled intact UDP packet %d from mailbox, droping\n",pkt->packet_id);
-	netcap_set_verdict( pkt->packet_id, NF_DROP, NULL, 0 );
-	pkt->packet_id = NULL;
+        netcap_set_verdict( pkt->packet_id, NF_DROP, NULL, 0 );
+        pkt->packet_id = 0;
     }
-    return  UINT_TO_JLONG((uint) pkt );
+    return  UINT_TO_JLONG( pkt );
 }
 
 /*

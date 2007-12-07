@@ -199,12 +199,13 @@ public class ShieldNodeRule extends Rule implements ShieldNodeSettings
             "5 users",
             "25 users",
             "50 users",
-            "100 users"
+            "100 users",
+            "unlimited"
         };
 
         /* A little bit of a tapering off starting at 50 for 100
          * (capped in netcap to the value NC_SHIELD_DIVIDER_MAX */
-        DIVIDER_VALUES = new float[] { 5.0f, 25.0f, 40.0f, 75.0f };
+        DIVIDER_VALUES = new float[] { 5.0f, 25.0f, 40.0f, 75.0f, -1.0f };
 
         for (int c = 0 ; c < DIVIDER_ENUMERATION.length ; c++) {
             DIVIDER_MAP_FLOAT_TO_STRING.put(DIVIDER_VALUES[c],

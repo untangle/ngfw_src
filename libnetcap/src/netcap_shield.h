@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -35,8 +35,8 @@
 #define NC_SHIELD_DEBUG_LOW   7
 #define NC_SHIELD_DEBUG_HIGH 11
 
-// This is the maximum value for the divider, 100.1, to allow for 100.0
-#define NC_SHIELD_DIVIDER_MAX  ( 100.1 )
+// This is the maximum value for the divider, 200.1, to allow for 200.0
+#define NC_SHIELD_DIVIDER_MAX  ( 200.1 )
 
 // This is the minimum value for the divider.
 #define NC_SHIELD_DIVIDER_MIN  ( 1.0 / 50.0 )
@@ -79,6 +79,9 @@ typedef struct
 
     /* Configuration data */
     double divider;
+
+    /* Allows the host to do whatever they want. */
+    int pass_all;
 
     struct in_addr ip;
 

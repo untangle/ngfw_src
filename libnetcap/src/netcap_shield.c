@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -48,6 +48,9 @@
 
 /* A limit check to make sure it doesn't go into a long loop */
 #define BLESS_COUNT_MAX        128
+
+/* Flag to indicate that all of the traffic should be passed */
+#define _PASS_ALL_FLAG         0x10DDBA11
 
 #define _DEFAULT_DIVIDER       1.0
 
@@ -301,6 +304,7 @@ int netcap_shield_init    ( void )
 
     /* Initialize the divider */
     rep.divider = _DEFAULT_DIVIDER;
+    rep.pass_all = 0;
 
     /* The init function will initialize the mutex, the functions above, *
      * guarantee that the last update times all get set */
@@ -391,7 +395,6 @@ int netcap_shield_rep_check ( netcap_shield_response_t* response, struct in_addr
         debug( 0, "Unable to track session for interface %d, using %d\n", intf, NC_INTF_0 );
         intf = NC_INTF_0;
     }
-
     
     if ( reputation != NULL ) {
         switch ( response->ans ) {
@@ -634,14 +637,16 @@ static int _set_node_settings ( double divider, struct in_addr* ip, struct in_ad
     netcap_trie_line_t      line;
     netcap_trie_element_t   element;
     nc_shield_reputation_t* reputation;
+    int pass_all = 0;
     
-    if ( divider < NC_SHIELD_DIVIDER_MIN ) {
+    if ( divider < 0 ) {
+        pass_all = _PASS_ALL_FLAG;
+        divider = NC_SHIELD_DIVIDER_MAX;
+    } else if ( divider < NC_SHIELD_DIVIDER_MIN ) {
         errlog( ERR_CRITICAL, "divider[%g] must greater than %g, using min\n", 
                 divider, NC_SHIELD_DIVIDER_MIN );
         divider = NC_SHIELD_DIVIDER_MIN;
-    }
-    
-    if ( divider > NC_SHIELD_DIVIDER_MAX ) {
+    } else if ( divider > NC_SHIELD_DIVIDER_MAX ) {
         errlog( ERR_CRITICAL, "divider[%g] must less than %g, using max\n", 
                 divider, NC_SHIELD_DIVIDER_MAX );
         divider = NC_SHIELD_DIVIDER_MAX;
@@ -667,6 +672,7 @@ static int _set_node_settings ( double divider, struct in_addr* ip, struct in_ad
     
     /* Set the divider */
     reputation->divider = divider;
+    reputation->pass_all = pass_all;
     
     /* Add the node to the permanent list */
     if ( netcap_lru_permanent_add( &_shield.lru, &reputation->lru_node, element.base, NULL ) < 0 ) {
@@ -916,6 +922,12 @@ static int  _get_response        ( netcap_shield_response_t* response, nc_shield
     
     if (( *reputation = element.base->data ) == NULL ) {
         return errlog( ERR_CRITICAL, "_get_end_of_line\n" );
+    }
+
+    if ((*reputation)->pass_all == _PASS_ALL_FLAG ) {
+        response->if_print = 0;
+        response->ans = NC_SHIELD_YES;
+        return 0;
     }
 
     nc_shield_score_t score = (*reputation)->score;
