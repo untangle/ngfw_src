@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -387,7 +387,7 @@ int  netcap_icmp_call_hook( netcap_pkt_t* pkt )
         }
         
         /* Clear out the packet id */
-        pkt->packet_id = 0;
+        //pkt->packet_id = 0;
         
         if ( _icmp_fix_packet( pkt, &full_pkt, &full_pkt_len ) < 0 ) {
             ret = errlog( ERR_CRITICAL, "_icmp_fix_packet\n" );
