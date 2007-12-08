@@ -42,6 +42,11 @@ else
   # This next will fail if testing on development machines, which is "a good thing"
   echo "Installing sources list"
   KEY=`cat $ACTIVATION_KEY_FILE`
-  cat @UVM_HOME@/conf/etc/apt_sources.list | sed "s/XXX_REG_KEY_XXX/$KEY/" > @PREFIX@/etc/apt/sources.list
+  if  [ grep -q "$KEY" $SOURCES_LIST ] ; then # already taken care of
+    true
+  else # dump the right source in the right place :)
+    touch $SOURCES_LIST # so that we don't fail next line because of noclobber
+    echo $DEFAULT_UNTANGLE_SOURCE | sed "s/$KEY_TEMPLATE/$KEY/" >> $SOURCES_LIST
+  fi
   apt-get update
 fi
