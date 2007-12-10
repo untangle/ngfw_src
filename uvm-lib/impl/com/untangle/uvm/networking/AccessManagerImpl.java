@@ -29,6 +29,8 @@ import com.untangle.uvm.node.IPaddr;
 import com.untangle.uvm.node.script.ScriptRunner;
 import com.untangle.uvm.node.script.ScriptWriter;
 
+import com.untangle.uvm.toolbox.RemoteUpstreamManager;
+
 import com.untangle.uvm.util.DataLoader;
 import com.untangle.uvm.util.DataSaver;
 import com.untangle.uvm.util.DeletingDataSaver;
@@ -46,9 +48,6 @@ import static com.untangle.uvm.networking.ShellFlags.FLAG_OUT_MASK;
 class AccessManagerImpl implements LocalAccessManager
 {
     
-    private static final String SSH_ENABLE_SCRIPT  = BUNNICULA_BASE + "/ssh_enable.sh";
-    private static final String SSH_DISABLE_SCRIPT = BUNNICULA_BASE + "/ssh_disable.sh";
-
     /* These are the services keys, each one must be unique */
     private static final String KEY_ADMINISTRATION = "administration";
     private static final String KEY_QUARANTINE = "quarantine";
@@ -96,7 +95,7 @@ class AccessManagerImpl implements LocalAccessManager
         saver.saveData( newSettings.toSettings());
         this.accessSettings = newSettings;
 
-        setSshAccess( this.accessSettings );
+        setSupportAccess( this.accessSettings );
     }
 
     /* ---------------------- PACKAGE ---------------------- */
@@ -170,26 +169,26 @@ class AccessManagerImpl implements LocalAccessManager
         }
     }
 
-    private void setSshAccess( AccessSettingsInternal access )
+    private void setSupportAccess( AccessSettingsInternal access )
     {
         if ( !NetworkManagerImpl.getInstance().getSaveSettings()) {
-            logger.warn( "not modifying SSH access as requested." );
+            logger.warn( "not modifying support access as requested." );
             return;
         }
 
         if ( access == null ) {
-            logger.warn( "unable to save hostname, address settings are not initialized." );            
+            logger.warn( "unable to set support access, address settings are not initialized." );            
             return;
         }
         
         try {
             if ( access.getIsSupportEnabled()) {
-                ScriptRunner.getInstance().exec( SSH_ENABLE_SCRIPT );
+                LocalUvmContextFactory.context().upstreamManager().enableService(RemoteUpstreamManager.SUPPORT_SERVICE_NAME);
             } else {
-                ScriptRunner.getInstance().exec( SSH_DISABLE_SCRIPT );
+                LocalUvmContextFactory.context().upstreamManager().disableService(RemoteUpstreamManager.SUPPORT_SERVICE_NAME);
             }
         } catch ( Exception ex ) {
-            logger.error( "Unable to configure ssh", ex );
+            logger.error( "Unable to enable support", ex );
         }
     }
 

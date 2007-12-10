@@ -45,10 +45,11 @@ import java.io.File;
  */
 public interface RemoteUpstreamManager
 {
-    // Service names could be statically defined here, but are currently
-    // in each place that needs to query them.
-    // static String EXIM_SERVICE = "exim4";
-    // static String SUPPORT_SERVICE = "support";
+    // Built-in service names are statically defined here.  User could still
+    // remove them from the upstream-services definition file, so don't skip
+    // the null test.
+    static String SUPPORT_SERVICE_NAME = "support";
+    static String EXIM_SERVICE_NAME = "exim4";
     // ...
 
     /**

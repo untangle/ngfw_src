@@ -59,8 +59,13 @@ class RemoteUpstreamManagerImpl implements RemoteUpstreamManager
 
     private RemoteUpstreamManagerImpl(RemoteToolboxManager toolboxMgr) {
         this.toolboxMgr = toolboxMgr;
-        MackageDesc[] installed = toolboxMgr.installed();
 
+        refresh();
+    }
+
+    // Called at init time and whenever refreshToolbox runs.
+    void refresh() {
+        MackageDesc[] installed = toolboxMgr.installed();
         services = new ArrayList<UpstreamService>();
 
         // Each line in upstream-services that is not a comment is of
@@ -92,7 +97,7 @@ class RemoteUpstreamManagerImpl implements RemoteUpstreamManager
                         serv = new UpstreamService(sname, true, null);
                     } else {
                         for (MackageDesc md : installed) {
-                            logger.info("checking " + spack + " against " + md.getName());
+                            logger.debug("checking " + spack + " against " + md.getName());
                             if (spack.equals(md.getName())) {
                                 enabled = true;
                                 break;

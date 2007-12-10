@@ -38,6 +38,8 @@ import com.untangle.uvm.networking.NetworkManagerImpl;
 import com.untangle.uvm.networking.internal.AddressSettingsInternal;
 import com.untangle.uvm.security.AdminSettings;
 import com.untangle.uvm.security.User;
+import com.untangle.uvm.toolbox.RemoteUpstreamManager;
+import com.untangle.uvm.toolbox.UpstreamService;
 import com.untangle.uvm.node.script.ScriptRunner;
 import com.untangle.uvm.util.ConfigFileUtil;
 import com.untangle.uvm.util.TransactionRunner;
@@ -197,6 +199,15 @@ class MailSenderImpl implements MailSender
         }
     }
 
+    public boolean isAutoConfigEnabled()
+    {
+        UpstreamService svc = LocalUvmContextFactory.context().
+            upstreamManager().getService(RemoteUpstreamManager.EXIM_SERVICE_NAME);
+        if (svc == null)
+            return false;
+        return svc.enabled();
+    }
+
     public void setMailSettings(final MailSettings settings)
     {
         TransactionWork tw = new TransactionWork()
@@ -349,8 +360,10 @@ class MailSenderImpl implements MailSender
 
     private void reconfigure() {
         refreshSessions();
-        writeConfiguration();
-        restartMailDaemon();
+        if (isAutoConfigEnabled()) {
+            writeConfiguration();
+            restartMailDaemon();
+        }
     }
 
     // Called when settings updated.

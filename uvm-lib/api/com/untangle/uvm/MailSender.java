@@ -52,6 +52,15 @@ public interface MailSender
         + DEFAULT_LOCAL_DOMAIN;
 
     /**
+     * Returns true if automatic configuration of the underlying MTA (currently Exim4)
+     * is enabled.  If it is not enabled, then the corresponding MailSettings
+     * (smtpHost, authUser, etc) are ignored.
+     *
+     * @return a <code>boolean</code> true if auto configuration of the local MTA is enabled
+     */
+    boolean isAutoConfigEnabled();
+
+    /**
      * Set the mail settings.
      *
      * @param settings the new mail settings.

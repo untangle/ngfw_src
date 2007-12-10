@@ -36,6 +36,8 @@ import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.node.HostName;
 import com.untangle.uvm.node.IPaddr;
 import com.untangle.uvm.node.ParseException;
+import com.untangle.uvm.toolbox.RemoteUpstreamManager;
+import com.untangle.uvm.toolbox.UpstreamService;
 import com.untangle.uvm.util.StringUtil;
 import org.apache.log4j.Logger;
 
@@ -83,7 +85,6 @@ class NetworkConfigurationLoader
 
     private static final String DHCP_RENEW_SCRIPT  = BUNNICULA_BASE + "/networking/dhcp-renew";
 
-    private static final String SSHD_PID_FILE     = "/var/run/untangle-sshd.pid";
     private static final String DHCP_TEST_SCRIPT  = BUNNICULA_BASE + "/networking/dhcp-check";
     private static final int    DHCP_ENABLED_CODE = 1;
 
@@ -123,7 +124,7 @@ class NetworkConfigurationLoader
         loadFlags( settings );
         /* have to load properties after loading flags */
         loadProperties( settings );
-        loadSshFlag( settings );
+        loadSupportFlag( settings );
         settings.isClean( false );
     }
 
@@ -489,12 +490,15 @@ class NetworkConfigurationLoader
         }
     }
 
-    private void loadSshFlag( AccessSettings access )
+    private void loadSupportFlag( AccessSettings access )
     {
-        /* SSH is enabled if and only if this file exists */
-        File sshd = new File( SSHD_PID_FILE );
+        boolean enabled = false;
+        UpstreamService supportSvc =
+            LocalUvmContextFactory.context().upstreamManager().getService(RemoteUpstreamManager.SUPPORT_SERVICE_NAME);
+        if (supportSvc != null)
+            enabled = supportSvc.enabled();
 
-        access.setIsSupportEnabled( sshd.exists());
+        access.setIsSupportEnabled(enabled);
     }
 
     private boolean parseBooleanFlag( String nameValuePair, String name )

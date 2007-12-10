@@ -855,7 +855,9 @@ public class UvmContextImpl extends UvmContextBase
 
     boolean refreshToolbox()
     {
-        return main.refreshToolbox();
+        boolean result = main.refreshToolbox();
+        upstreamManager.refresh();
+        return result;
     }
 
     SchemaUtil schemaUtil()
