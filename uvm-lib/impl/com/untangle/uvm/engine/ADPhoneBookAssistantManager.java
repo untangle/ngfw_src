@@ -75,11 +75,11 @@ public class ADPhoneBookAssistantManager
             className = PREMIUM_ADPHONEBOOKASSISTANT_IMPL;
         }
         try {
+            premium = (ADPhoneBookAssistant)Class.forName( className ).newInstance();
+            logger.debug("getADPhoneBookAssistant loaded premium");
 	    logger.debug("getADPhoneBookAssistant loading the webapp");
 	    UvmContextImpl.getInstance().tomcatManager().loadInsecureApp("/"+PREMIUM_WEBAPP, PREMIUM_WEBAPP);
 	    logger.debug("getADPhoneBookAssistant done loading the webapp");
-            premium = (ADPhoneBookAssistant)Class.forName( className ).newInstance();
-	    logger.debug("getADPhoneBookAssistant loaded premium");
 	    /* register the assistant with the phonebook */
 	    LocalUvmContextFactory.context().localPhoneBook().registerAssistant( premium );
 	    logger.debug("getADPhoneBookAssistant registering assistant");
