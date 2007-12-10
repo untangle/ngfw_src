@@ -57,9 +57,8 @@ class RemoteUpstreamManagerImpl implements RemoteUpstreamManager
     // with a Map.
     private List<UpstreamService> services; 
 
-    private RemoteUpstreamManagerImpl()
-    {
-        toolboxMgr = LocalUvmContextFactory.context().toolboxManager();
+    private RemoteUpstreamManagerImpl(RemoteToolboxManager toolboxMgr) {
+        this.toolboxMgr = toolboxMgr;
         MackageDesc[] installed = toolboxMgr.installed();
 
         services = new ArrayList<UpstreamService>();
@@ -114,7 +113,8 @@ class RemoteUpstreamManagerImpl implements RemoteUpstreamManager
         if (null == UPSTREAM_MANAGER) {
             synchronized (LOCK) {
                 if (null == UPSTREAM_MANAGER) {
-                    UPSTREAM_MANAGER = new RemoteUpstreamManagerImpl();
+                    UPSTREAM_MANAGER =
+                        new RemoteUpstreamManagerImpl(LocalUvmContextFactory.context().toolboxManager());
                 }
             }
         }
@@ -154,6 +154,7 @@ class RemoteUpstreamManagerImpl implements RemoteUpstreamManager
         String configPackage = service.configPackage();
         if (configPackage == null)
             return;
+        logger.info("Enabling upstream service: " + name);
         toolboxMgr.install(configPackage);
 
         // Finally since we didn't throw a Mackage exception, change the
@@ -173,6 +174,7 @@ class RemoteUpstreamManagerImpl implements RemoteUpstreamManager
         String configPackage = service.configPackage();
         if (configPackage == null)
             throw new IllegalArgumentException("Service " + service + " has no configPackage");
+        logger.info("Disabling upstream service: " + name);
         toolboxMgr.uninstall(configPackage);
 
         // Finally since we didn't throw a Mackage exception, change the
@@ -185,5 +187,11 @@ class RemoteUpstreamManagerImpl implements RemoteUpstreamManager
     static {
         String cd = System.getProperty("bunnicula.conf.dir");
         UPSTREAM_SERVICES_FILE = new File(cd, "upstream-services");
+    }
+
+    // Test
+    public static void main(String[] args) {
+        RemoteUpstreamManager mgr =
+            new RemoteUpstreamManagerImpl(RemoteToolboxManagerImpl.toolboxManager());
     }
 }
