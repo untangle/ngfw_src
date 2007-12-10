@@ -73,7 +73,7 @@ class RemoteUpstreamManagerImpl implements RemoteUpstreamManager
             boolean enabled;
             while ((line = r.readLine()) != null) {
                 line.trim();
-                if (line.charAt(0) == '#')
+                if (line.size() == 0 || line.charAt(0) == '#')
                     continue;
                 namepack = line.split("\\s");
                 if (namepack.length == 0) {
