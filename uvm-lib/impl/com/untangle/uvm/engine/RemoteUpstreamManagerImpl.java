@@ -83,7 +83,8 @@ class RemoteUpstreamManagerImpl implements RemoteUpstreamManager
                     sname = namepack[0];
                     logger.info("Adding new always enabled upstream service: " + sname);
                     serv = new UpstreamService(sname, true, null);
-                } else if (namepack.length == 2 || namepack[2].charAt(0) == '#') {
+                } else if (namepack.length == 2 || namepack[2].length() == 0 ||
+                           namepack[2].charAt(0) == '#') {
                     enabled = false;
                     sname = namepack[0];
                     spack = namepack[1];
