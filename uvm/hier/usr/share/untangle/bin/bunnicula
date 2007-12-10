@@ -23,6 +23,12 @@ procset() {
     fi
 }
 
+# make sure we're using untangle kernel.  There should be a cleaner way to do this. XX
+if ! modprobe -q iptable_tune; then
+    echo "ERROR: kernel does not have Untangle extensions.  Need untangle-linux-image."
+    exit 1
+fi
+
 #configure the dummy interface
 ifconfig dummy0 192.0.2.42 255.255.255.0 up
 
@@ -42,10 +48,6 @@ if [ -f /proc/net/ip_queue ] && [ "`grep Peer /proc/net/ip_queue  | awk '{ print
     echo "ERROR: ip_queue allocated, exiting" >&2
     exit 1
 fi
-
-# and if_tune
-modprobe -q iptables_tune
-# add check XXX
 
 # Not Optional
 procset /proc/sys/net/ipv4/ip_forward 1 1
