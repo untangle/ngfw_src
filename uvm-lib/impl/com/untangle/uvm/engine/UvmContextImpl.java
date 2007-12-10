@@ -56,6 +56,7 @@ import com.untangle.uvm.policy.PolicyManagerFactory;
 import com.untangle.uvm.policy.RemotePolicyManager;
 import com.untangle.uvm.portal.BasePortalManager;
 import com.untangle.uvm.toolbox.RemoteToolboxManager;
+import com.untangle.uvm.toolbox.RemoteUpstreamManager;
 import com.untangle.uvm.user.LocalPhoneBook;
 import com.untangle.uvm.user.PhoneBookFactory;
 import com.untangle.uvm.user.RemotePhoneBook;
@@ -115,6 +116,7 @@ public class UvmContextImpl extends UvmContextBase
     private RemoteConnectivityTesterImpl connectivityTester;
     private PipelineFoundryImpl pipelineFoundry;
     private RemoteToolboxManagerImpl toolboxManager;
+    private RemoteUpstreamManagerImpl upstreamManager;
     private NodeManagerImpl nodeManager;
     private RemoteNodeManagerAdaptor remoteNodeManager;
     private RemoteUvmContext remoteContext;
@@ -208,6 +210,11 @@ public class UvmContextImpl extends UvmContextBase
     public RemoteToolboxManagerImpl toolboxManager()
     {
         return toolboxManager;
+    }
+
+    public RemoteUpstreamManagerImpl upstreamManager()
+    {
+        return upstreamManager;
     }
 
     public NodeManagerImpl nodeManager()
@@ -638,6 +645,8 @@ public class UvmContextImpl extends UvmContextBase
         policyManagerFactory = PolicyManagerFactory.makeInstance();
 
         toolboxManager = RemoteToolboxManagerImpl.toolboxManager();
+
+        upstreamManager = RemoteUpstreamManagerImpl.upstreamManager();
 
         mPipeManager = MPipeManagerImpl.manager();
         pipelineFoundry = PipelineFoundryImpl.foundry();

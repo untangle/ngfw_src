@@ -50,6 +50,7 @@ import com.untangle.uvm.node.RemoteShieldManager;
 import com.untangle.uvm.policy.RemotePolicyManager;
 import com.untangle.uvm.security.RemoteAdminManager;
 import com.untangle.uvm.toolbox.RemoteToolboxManager;
+import com.untangle.uvm.toolbox.RemoteUpstreamManager;
 import com.untangle.uvm.user.RemotePhoneBook;
 
 /**
@@ -81,6 +82,15 @@ public interface RemoteUvmContext
      * @return the RemoteLoggingManager.
      */
     RemoteLoggingManager loggingManager();
+
+    /**
+     * Get the <code>RemoteUpstreamManager</code> singleton.
+     * This provides registration & control of upstream
+     * services, normally those running on the local machine.
+     *
+     * @return the <code>UpstreamManager</code>
+     */
+    RemoteUpstreamManager upstreamManager();
 
     /**
      * Get the <code>PolicyManager</code> singleton.
