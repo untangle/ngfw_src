@@ -162,9 +162,9 @@ class RealMkg
 
   def remove(pkg)
     log "start #{@stamp}"
-    log "apt-get remove #{REMO_OPTS} \"$2\""
-    r = cmd_to_stderr("apt-get remove #{REMO_OPTS}")
-    cmd_to_stderr("apt-get clean")
+    log "apt-get remove #{REMO_OPTS} #{pkg}"
+    r = cmd_to_stderr("apt-get remove #{REMO_OPTS} #{pkg}")
+#   cmd_to_stderr("apt-get clean")
     log "done #{@stamp}"
 
     0
