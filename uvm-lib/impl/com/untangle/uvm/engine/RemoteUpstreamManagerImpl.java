@@ -75,7 +75,7 @@ class RemoteUpstreamManagerImpl implements RemoteUpstreamManager
                 line.trim();
                 if (line.length() == 0 || line.charAt(0) == '#')
                     continue;
-                namepack = line.split("\\s");
+                namepack = line.split("\\s+");
                 if (namepack.length == 0) {
                     continue;
                 } else if (namepack.length == 1) {
@@ -83,21 +83,26 @@ class RemoteUpstreamManagerImpl implements RemoteUpstreamManager
                     sname = namepack[0];
                     logger.info("Adding new always enabled upstream service: " + sname);
                     serv = new UpstreamService(sname, true, null);
-                } else if (namepack.length == 2 || namepack[2].length() == 0 ||
-                           namepack[2].charAt(0) == '#') {
+                } else if (namepack.length == 2 || namepack[2].charAt(0) == '#') {
                     enabled = false;
                     sname = namepack[0];
                     spack = namepack[1];
-                    for (MackageDesc md : installed) {
-                        if (spack.equals(md.getName())) {
-                            enabled = true;
-                            break;
+                    if (spack.equals(NO_PACKAGE)) {
+                        logger.info("Adding new always enabled upstream service: " + sname);
+                        serv = new UpstreamService(sname, true, null);
+                    } else {
+                        for (MackageDesc md : installed) {
+                            logger.info("checking " + spack + " against " + md.getName());
+                            if (spack.equals(md.getName())) {
+                                enabled = true;
+                                break;
+                            }
                         }
+                        logger.info("Adding new upstream service: " + sname +
+                                    " conditional on " + spack + ", currently " +
+                                    (enabled ? "enabled" : "disabled"));
+                        serv = new UpstreamService(sname, enabled, spack);
                     }
-                    logger.info("Adding new upstream service: " + sname +
-                                " conditional on " + spack + ", currently " +
-                                (enabled ? "enabled" : "disabled"));
-                    serv = new UpstreamService(sname, enabled, spack);
                 } else {
                     logger.error("Weird upstream service line ignored: " + line);
                     continue;
@@ -192,7 +197,15 @@ class RemoteUpstreamManagerImpl implements RemoteUpstreamManager
 
     // Test
     public static void main(String[] args) {
-        RemoteUpstreamManager mgr =
-            new RemoteUpstreamManagerImpl(RemoteToolboxManagerImpl.toolboxManager());
+        BufferedReader in = new BufferedReader(new java.io.InputStreamReader(System.in));
+        try {
+            String line = in.readLine();
+            String[] strs = line.split("\\s+");
+            for (String str : strs) {
+                System.out.println("'" + str + "'");
+            }
+        } catch (IOException x) { }
+        //        RemoteUpstreamManager mgr =
+        //             new RemoteUpstreamManagerImpl(RemoteToolboxManagerImpl.toolboxManager());
     }
 }
