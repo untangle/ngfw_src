@@ -90,6 +90,7 @@ struct ip_sendnfmark_opts {
 /* Bits for the Netfilter marks */
 #define MARK_ANTISUB   0x01000000
 #define MARK_NOTRACK   0x02000000
+#define MARK_DUPE      0x20000000
 
 /* This mark is used to indicate that a packet came in on one of the internal interfaces.
  * this is used by the https server to determined.

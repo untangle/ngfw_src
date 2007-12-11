@@ -207,6 +207,9 @@ int  netcap_set_verdict_mark( u_int32_t packet_id, int verdict, u_char* buf, int
     case NF_STOLEN:
         nf_verdict = NF_STOLEN;
         break;
+    case NF_REPEAT:
+        nf_verdict = NF_REPEAT;
+        break;	
     default:
         errlog(ERR_CRITICAL, "Invalid verdict, dropping packet %d\n", verdict );
         nf_verdict = NF_DROP;
@@ -467,7 +470,12 @@ static int _nf_callback( struct nfq_q_handle *qh, struct nfgenmsg *nfmsg, struct
     pkt->data_len = data_len;
     pkt->proto = ip_header->protocol;
     pkt->nfmark  = nfq_get_nfmark( nfa );
-    
+
+    if ( pkt->nfmark & (MARK_DUPE | MARK_ANTISUB)){
+      netcap_set_verdict(pkt->packet_id, NF_DROP, NULL, 0);
+      return errlog( ERR_WARNING, "Queued a REINJECTED or ANTISUBSCRIBED packet\n");
+    }
+
     if ( netcap_interface_mark_to_intf( pkt->nfmark, &pkt->src_intf ) < 0 ) {
         errlog( ERR_WARNING, "Unable to determine the source interface from mark[%s:%d -> %s:%d]\n",
                 unet_next_inet_ntoa( pkt->src.host.s_addr ), pkt->src.port,

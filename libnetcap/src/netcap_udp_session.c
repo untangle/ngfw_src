@@ -236,8 +236,8 @@ static int _liberate_pkt( netcap_pkt_t* pkt )
         /* !!!! ICMP or UDP !!!! */
         switch ( pkt->proto ) {
         case IPPROTO_UDP:
-	  if ( netcap_set_verdict_mark( pkt->packet_id, NF_ACCEPT, NULL, 0, 1,  
-					pkt->nfmark | MARK_ANTISUB ) < 0 ) {  
+	  if ( netcap_set_verdict_mark( pkt->packet_id, NF_REPEAT, NULL, 0, 1,  
+					pkt->nfmark | MARK_ANTISUB | MARK_DUPE ) < 0 ) {  
 	    errlog( ERR_CRITICAL, "netcap_set_verdict_mark\n" );  
 	  } 
 	  //netcap_udp_send( pkt->data, pkt->data_len, pkt );
