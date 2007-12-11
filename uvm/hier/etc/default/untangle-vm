@@ -61,7 +61,7 @@ REMOTE_SUPPORT_ENABLE_URL_TEMPLATE="https://activation.untangle.com/cgi-bin/enab
 FAKE_KEY=0000-0000-0000-0000
 KEY_VERIFICATION="@UVM_HOME@/conf/etc/mvverifykey"
 KEY_TEMPLATE=XXX_REG_KEY_XXX
-ETC_ISSUE=@PREFIX@/etc/issue
+ETC_ISSUE=/etc/issue
 SOURCES_LIST_OLD=@PREFIX@/etc/apt/sources.list
 SOURCES_LIST_NEW=@PREFIX@/${SOURCES_LIST_OLD}.d/untangle.list
 # finding the correct repository
