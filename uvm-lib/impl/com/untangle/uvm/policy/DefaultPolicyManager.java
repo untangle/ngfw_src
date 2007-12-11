@@ -269,8 +269,8 @@ class DefaultPolicyManager implements LocalPolicyManager
         return defaultPolicyRule;
     }
 
-    /* Load the user rules from the database */
-    private void loadUserRules()
+    /* re/load the user rules from the database */
+    void loadUserRules()
     {
         // For now do nothing (this should never be true)
         // intended for the case where something was initialized improperly?
