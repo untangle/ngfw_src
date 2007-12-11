@@ -67,10 +67,10 @@ class SmtpTableModel extends MSortedTableModel<Object>{
         //                                 #  min    rsz    edit   remv   desc   typ            def
         addTableColumn( tableColumnModel,  0, C0_MW, false, false, true, false, String.class,  null, sc.TITLE_STATUS);
         addTableColumn( tableColumnModel,  1, C1_MW, false, false, true,  false, Integer.class, null, sc.TITLE_INDEX);
-        addTableColumn( tableColumnModel,  3, C3_MW, false, true,  false, false, Boolean.class,  null, sc.bold("scan") );
-        addTableColumn( tableColumnModel,  4, C4_MW, false, true,  false, false, ComboBoxModel.class,  null, sc.html("action if<br>PHISH detected"));
-        addTableColumn( tableColumnModel,  5, C6_MW, true,  true,  false, true,  String.class,  sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION);
-        addTableColumn( tableColumnModel,  6, 10,    false, false, true,  false, SpamSMTPConfig.class, null, "");
+        addTableColumn( tableColumnModel,  2, C3_MW, false, true,  false, false, Boolean.class,  null, sc.bold("scan") );
+        addTableColumn( tableColumnModel,  3, C4_MW, false, true,  false, false, ComboBoxModel.class,  null, sc.html("action if<br>PHISH detected"));
+        addTableColumn( tableColumnModel,  4, C6_MW, true,  true,  false, true,  String.class,  sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION);
+        addTableColumn( tableColumnModel,  5, 10,    false, false, true,  false, SpamSMTPConfig.class, null, "");
         return tableColumnModel;
     }
 
@@ -80,10 +80,10 @@ class SmtpTableModel extends MSortedTableModel<Object>{
         SpamSMTPConfig spamSMTPConfig = null;
 
         for( Vector rowVector : tableVector ){
-            spamSMTPConfig = (SpamSMTPConfig) rowVector.elementAt(6);
-            spamSMTPConfig.setScan( (Boolean) rowVector.elementAt(3) );
-            spamSMTPConfig.setMsgAction( (SMTPSpamMessageAction) ((ComboBoxModel)rowVector.elementAt(4)).getSelectedItem() );
-            spamSMTPConfig.setNotes( (String) rowVector.elementAt(5) );
+            spamSMTPConfig = (SpamSMTPConfig) rowVector.elementAt(5);
+            spamSMTPConfig.setScan( (Boolean) rowVector.elementAt(2) );
+            spamSMTPConfig.setMsgAction( (SMTPSpamMessageAction) ((ComboBoxModel)rowVector.elementAt(3)).getSelectedItem() );
+            spamSMTPConfig.setNotes( (String) rowVector.elementAt(4) );
         }
 
         // SAVE SETTINGS ////////
