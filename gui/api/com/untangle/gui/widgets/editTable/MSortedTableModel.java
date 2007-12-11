@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -49,6 +49,7 @@ import com.untangle.gui.node.*;
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.MPasswordField;
 import com.untangle.uvm.node.*;
+import org.apache.log4j.Logger;
 
 /**
  * TableSorter is a decorator for TableModels; adding sorting
@@ -104,6 +105,8 @@ import com.untangle.uvm.node.*;
 
 public abstract class MSortedTableModel<T> extends DefaultTableModel
     implements Refreshable<T>, Savable<T> {
+
+    private final Logger logger = Logger.getLogger(getClass());
 
     public MSortedTableModel() {
         this.mouseListener = new MouseHandler();
@@ -655,7 +658,14 @@ public abstract class MSortedTableModel<T> extends DefaultTableModel
         }
     }
     public Object getValueAt(int viewRow, int viewCol) {
-        return super.getValueAt( getRowViewToModelIndex(viewRow), viewCol );
+        try {
+            return super.getValueAt( getRowViewToModelIndex(viewRow), viewCol );
+        } catch (ArrayIndexOutOfBoundsException exn) {
+            logger.warn("bad column in: " + getClass()
+                        + " row: " + viewRow + " col: " + viewCol
+                        + " data: " + dataVector);
+            throw exn;
+        }
     }
     public Class getColumnClass(int modelCol){
         return (Class) classTypeVector.elementAt(modelCol);
