@@ -1,4 +1,4 @@
-	/*
+/*
  * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc.
  *
@@ -66,6 +66,8 @@ class DefaultPolicyManager implements LocalPolicyManager
     private final Logger logger = Logger.getLogger(getClass());
 
     private volatile UserPolicyRule[] userRules = new UserPolicyRule[0];
+    /* This is the complete original list of rules that are disabled,
+     * going to the default rack. */
     private volatile UserPolicyRule[] cUserRules = new UserPolicyRule[0];
 
     private Policy defaultPolicy;
@@ -138,6 +140,10 @@ class DefaultPolicyManager implements LocalPolicyManager
 
         LocalUvmContextFactory.context().runTransaction(tw);
 
+        /* This is in a separate function for historical reasons, but could
+         * be joined with loading uprs above. */
+        loadUserRules();
+
         logger.info("Initialized PolicyManager");
     }
 
@@ -188,7 +194,7 @@ class DefaultPolicyManager implements LocalPolicyManager
                         List urs = userRuleSet.getRules();
                         urs.clear();
                         urs.addAll(rules);
-                        userRules = (UserPolicyRule[])rules.toArray(new UserPolicyRule[] { });
+                        updateRules(rules);
                         s.saveOrUpdate(userRuleSet);
                         return true;
                     }
@@ -231,6 +237,22 @@ class DefaultPolicyManager implements LocalPolicyManager
         }
     }
 
+    /**
+     * shut down all sessions associated with the given policy - shut down
+     * all sessions if policy is null.  
+     *
+     * ***TODO: add logic to shutdown sessions for just a given policy.
+     *
+     * ***TODO: this should potentially be refactored into a RemoteArgonManager 
+     *          class with this being its only method - this way the existing 
+     *          shutdownMatches() method can be used.
+     */
+    public void shutdownSessions(Policy policy)
+    {
+        ArgonManager argonManager = LocalUvmContextFactory.context().argonManager();
+	argonManager.shutdownMatches(SessionMatcherFactory.makePolicyInstance(policy));
+    }
+
     // LocalPolicyManager methods ---------------------------------------------
     public UserPolicyRule[] getUserRules()
     {
@@ -242,10 +264,39 @@ class DefaultPolicyManager implements LocalPolicyManager
         return ProductIdentifier.POLICY_MANAGER;
     }
 
-
     public PolicyRule getDefaultPolicyRule()
     {
         return defaultPolicyRule;
+    }
+
+    /* Load the user rules from the database */
+    private void loadUserRules()
+    {
+        // For now do nothing (this should never be true)
+        // intended for the case where something was initialized improperly?
+        if (defaultPolicy == null) {
+            return; // Always
+        }
+
+        synchronized(policyRuleLock) {
+            TransactionWork tw = new TransactionWork()
+                {
+                    public boolean doWork(Session s)
+                    {
+                        Query userq = s.createQuery("from UserPolicyRuleSet uprs");
+                        UserPolicyRuleSet uprs = (UserPolicyRuleSet) userq.uniqueResult();
+                        List existingUser = uprs.getRules();
+
+                        userRuleSet = uprs;
+                        updateRules(existingUser);
+
+                        return true;
+                    }
+
+                    public Object getResult() { return null; }
+                };
+            LocalUvmContextFactory.context().runTransaction(tw);
+        }
     }
 
     /**
@@ -285,21 +336,5 @@ class DefaultPolicyManager implements LocalPolicyManager
 
         this.userRules = userPolicyList.toArray(new UserPolicyRule[0]);
         this.cUserRules = completePolicyList.toArray(new UserPolicyRule[0]);
-    }
-
-    /**
-     * shut down all sessions associated with the given policy - shut down
-     * all sessions if policy is null.  
-     *
-     * ***TODO: add logic to shutdown sessions for just a given policy.
-     *
-     * ***TODO: this should potentially be refactored into a RemoteArgonManager 
-     *          class with this being its only method - this way the existing 
-     *          shutdownMatches() method can be used.
-     */
-    public void shutdownSessions(Policy policy)
-    {
-        ArgonManager argonManager = LocalUvmContextFactory.context().argonManager();        
-	argonManager.shutdownMatches(SessionMatcherFactory.makePolicyInstance(policy));
     }
 }
