@@ -75,14 +75,11 @@ class SmtpTableModel extends MSortedTableModel<Object>{
     }
 
     public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception {
-        VirusSMTPConfig virusSmtpConfig = null;
-
-        for( Vector rowVector : tableVector ){
-            VirusSMTPConfig virusSMTPConfig = (VirusSMTPConfig) rowVector.elementAt(5);
-            virusSMTPConfig.setScan( (Boolean) rowVector.elementAt(2) );
-            virusSMTPConfig.setMsgAction( (SMTPVirusMessageAction) ((ComboBoxModel)rowVector.elementAt(3)).getSelectedItem() );
-            virusSMTPConfig.setNotes( (String) rowVector.elementAt(4) );
-        }
+        Vector rowVector = tableVector.elementAt(0);
+        VirusSMTPConfig virusSmtpConfig = (VirusSMTPConfig) rowVector.elementAt(5);
+        virusSmtpConfig.setScan( (Boolean) rowVector.elementAt(2) );
+        virusSmtpConfig.setMsgAction( (SMTPVirusMessageAction) ((ComboBoxModel)rowVector.elementAt(3)).getSelectedItem() );
+        virusSmtpConfig.setNotes( (String) rowVector.elementAt(4) );
 
         // SAVE SETTINGS ////////
         if( !validateOnly ){
