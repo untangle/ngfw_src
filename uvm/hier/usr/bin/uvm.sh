@@ -1,6 +1,8 @@
 #! /bin/bash
 # $Id$
 
+NAME=$0
+
 # get a bunch of default values
 source @PREFIX@/etc/default/untangle-vm
 
@@ -15,7 +17,7 @@ SLEEP_TIME=5
 
 # Used to kill a child with extreme prejudice
 nukeIt() {
-    echo "uvm.sh: Killing -9 all bunnicula \"$pid\" (`date`)" >> $UVM_WRAPPER_LOG
+    echo "$NAME: Killing -9 all bunnicula \"$pid\" (`date`)" >> $UVM_WRAPPER_LOG
     kill -3 $pid
     kill -9 $pid
     kill -9 `ps awwx | grep java | grep bunnicula | awk '{print $1}'` 2>/dev/null
@@ -27,11 +29,11 @@ reapChildHardest() {
 }
 
 reapChildHarder() {
-    echo "uvm.sh: Killing -15 all bunnicula \"$pid\" (`date`)" >> $UVM_WRAPPER_LOG
+    echo "$NAME: Killing -15 all bunnicula \"$pid\" (`date`)" >> $UVM_WRAPPER_LOG
     kill $pid
     sleep 1
     if [ ! -z "`ps awwx | grep java | grep bunnicula | awk '{print $1}'`" ] ; then
-        echo "uvm.sh: Killing -15 all bunnicula \"$pid\" (`date`)" >> $UVM_WRAPPER_LOG
+        echo "$NAME: Killing -15 all bunnicula \"$pid\" (`date`)" >> $UVM_WRAPPER_LOG
         for i in `seq 1 5` ; do
             if [ -z "`ps awwx | grep java | grep bunnicula | awk '{print $1}'`" ] ; then
                 flushIptables ; exit
@@ -46,13 +48,13 @@ reapChildHarder() {
 }
 
 reapChild() {
-    echo "uvm.sh: shutting down bunnicula " >> $UVM_WRAPPER_LOG
+    echo "$NAME: shutting down bunnicula " >> $UVM_WRAPPER_LOG
     kill -3 $pid
     @PREFIX@/usr/bin/mcli -t 20000 shutdown &> /dev/null
     sleep 1
     kill -INT $pid
     if [ ! -z "`ps awwx | grep java | grep bunnicula | awk '{print $1}'`" ] ; then
-        echo "uvm.sh: Killing -INT all bunnicula \"$pid\" (`date`)" >> $UVM_WRAPPER_LOG
+        echo "$NAME: Killing -INT all bunnicula \"$pid\" (`date`)" >> $UVM_WRAPPER_LOG
         for i in `seq 1 5` ; do
             if [ -z "`ps awwx | grep java | grep bunnicula | awk '{print $1}'`" ] ; then
                 flushIptables ; exit
@@ -122,10 +124,14 @@ getLicenseKey() {
   [[ $KEY = $FAKE_KEY ]] && KEY=""
 
   if curl --insecure --fail -o $TMP_ARCHIVE `printf ${ACTIVATION_URL_TEMPLATE} "$KEY" $(/usr/share/untangle/bin/utip)`; then
+    echo "$NAME curl call for license key succeeded" >> $UVM_WRAPPER_LOG
+    echo "$NAME $TMP_ARCHIVE is a `file $TMP_ARCHIVE`" >> $UVM_WRAPPER_LOG
     rm -f $ACTIVATION_KEY_FILE_TMP
     tar -C / -xf $TMP_ARCHIVE
     @UVM_HOME@/bin/utactivate
     @UVM_HOME@/bin/utregister # register under new key
+  else
+    echo "$NAME curl call for license key succeeded (RC=$?)" >> $UVM_WRAPPER_LOG    
   fi
 }
 
