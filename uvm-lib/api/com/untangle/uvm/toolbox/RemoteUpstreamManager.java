@@ -50,6 +50,7 @@ public interface RemoteUpstreamManager
     // the null test.
     static String SUPPORT_SERVICE_NAME = "support";
     static String EXIM_SERVICE_NAME = "exim4";
+    static String SNMPD_SERVICE_NAME = "snmpd";
     // ...
 
     /**

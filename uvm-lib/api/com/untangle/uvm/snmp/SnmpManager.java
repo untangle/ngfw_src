@@ -44,4 +44,12 @@ public interface SnmpManager {
 
     void setSnmpSettings(SnmpSettings settings);
 
+    /**
+     * Returns true if automatic configuration of the underlying snmpd
+     * is enabled.  If it is not enabled, then the corresponding SnmpSettings
+     * (all of them) are ignored.
+     *
+     * @return a <code>boolean</code> true if auto configuration of the local SNMP Daemon is enabled
+     */
+    boolean isAutoConfigEnabled();
 }
