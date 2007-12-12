@@ -65,8 +65,7 @@ public class LogJPanel extends MLogTableJPanel {
             addTableColumn( tableColumnModel,  2,  165, true,  false, false, false, IPPortString.class, null, "client" );
             addTableColumn( tableColumnModel,  3,  200, true,  false, false, true,  String.class, null, "request" );
             addTableColumn( tableColumnModel,  4,  100, true,  false, false, false, String.class, null, sc.html("reason for<br>action") );
-            addTableColumn( tableColumnModel,  5,  100, true,  false, false, false, String.class, null, sc.html("direction") );
-            addTableColumn( tableColumnModel,  6,  165, true,  false, false, false, IPPortString.class, null, "server" );
+            addTableColumn( tableColumnModel,  5,  165, true,  false, false, false, IPPortString.class, null, "server" );
             return tableColumnModel;
         }
 
@@ -79,7 +78,7 @@ public class LogJPanel extends MLogTableJPanel {
 
             for( SpywareEvent requestLog : requestLogList ){
                 PipelineEndpoints pe = requestLog.getPipelineEndpoints();
-                event = new Vector(7);
+                event = new Vector(6);
                 event.add( requestLog.getTimeStamp() );
                 event.add(requestLog.isBlocked() ? "block" : "pass");
                 event.add(null == pe ? new IPPortString() : new IPPortString(pe.getCClientAddr(), pe.getCClientPort()) );
