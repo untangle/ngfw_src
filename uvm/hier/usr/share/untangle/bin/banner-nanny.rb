@@ -11,7 +11,7 @@ failures = 0
 begin
   Timeout::timeout(timeout.to_i) {
     s = TCPSocket.new('localhost', port.to_i)
-    s.puts "junk"
+    s.puts "PING SPAMC/1.2"
     s.read(BYTES_TO_READ)
   }
   exit 0
