@@ -5,9 +5,7 @@ if [ $# -eq 0 ]; then
     exit 1
 fi
 
-JAVA_HOME=${JAVA_HOME:-/usr/lib/jvm/java-1.5.0-sun}
-
-export JAVA_HOME
+source @PREFIX@/etc/default/untangle-vm
 
 uvm_lib=../output/usr/share/untangle/lib
 third_lib=../output/usr/share/java/uvm

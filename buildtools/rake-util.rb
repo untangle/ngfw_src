@@ -149,9 +149,15 @@ class BuildEnv
   end
 
   def filterset
+    jvm5 = '/usr/lib/jvm/java-1.5.0-sun'
+    jvm6 = '/usr/lib/jvm/java-1.6.0-sun'
+    # we pick 5 if it exists; if not, 6 should be there, since we
+    # depend on 5 | 6
+    jvm = ( File.directory?(jvm5) ? jvm5 : jvm6 )
+
     {
       /@PREFIX@/ => @prefix,
-      /@DEFAULT_JAVA_HOME@/ => '/usr/lib/jvm/java-1.5.0-sun',
+      /@DEFAULT_JAVA_HOME@/ => jvm,
       /@USR_BIN@/ => "#{@prefix}/usr/bin",
       /@UVM_HOME@/ => "#{@prefix}/usr/share/untangle",
       /@UVM_DUMP@/ => "#{@prefix}/usr/share/untangle/dump",

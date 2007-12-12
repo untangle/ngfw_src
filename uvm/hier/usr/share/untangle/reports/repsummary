@@ -2,7 +2,7 @@
 
 set -e
 
-JAVA_HOME=${JAVA_HOME:-@DEFAULT_JAVA_HOME@}
+source @PREFIX@/etc/default/untangle-vm
 
 CLASSPATH="@UVM_LIB@/uvm/"
 for f in @THIRDPARTY_REPORTS_LIB@/*jar ; do

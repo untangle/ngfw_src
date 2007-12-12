@@ -1,5 +1,7 @@
 #! /bin/bash
 
+source @PREFIX@/etc/default/untangle-vm
+
 dir="$1"
 
 echo "Fixing hbm.xml in $dir"
