@@ -6,15 +6,50 @@ UVM_CACHEDIR="/var/lib/uvm"
 USER=root
 GROUP=adm
 
+# modify limit to support many file descriptors
+LIMITS_FILE=/etc/security/limits.conf
+LIMITS_LINE="${USER}    soft    nofile  128000"
+LIMITS_LINE2="${USER}   hard    nofile  128000"
+
+if [ -z "`grep ${USER} ${LIMITS_FILE}`" ] ; then
+    echo ${LIMITS_LINE} >> ${LIMITS_FILE}
+    echo ${LIMITS_LINE2} >> ${LIMITS_FILE}
+else
+    sed -i -e "s|^${USER}.*soft.*|${LIMITS_LINE}|g" ${LIMITS_FILE}
+    sed -i -e "s|^${USER}.*hard.*|${LIMITS_LINE2}|g" ${LIMITS_FILE}
+fi
+
+# tell PAM (login and su) to read the limits file
+LOGIN_LINE="session    required   pam_limits.so"
+
+LOGIN_FILE=/etc/pam.d/login
+if [ -z "`grep pam_limits.so ${LOGIN_FILE}`" ] ; then
+    echo ${LOGIN_LINE} >> ${LOGIN_FILE}
+else
+    sed -i -e "s|^.*pam_limits.so.*|${LOGIN_LINE}|g" ${LOGIN_FILE}
+fi
+
+LOGIN_FILE=/etc/pam.d/su
+if [ -z "`grep pam_limits.so ${LOGIN_FILE}`" ] ; then
+    echo ${LOGIN_LINE} >> ${LOGIN_FILE}
+else
+    sed -i -e "s|^.*pam_limits.so.*|${LOGIN_LINE}|g" ${LOGIN_FILE}
+fi
+
 # right permissions for all those dirs
 /bin/chown -R $USER:$GROUP ${UVM_LOGDIR} ${UVM_CACHEDIR}
 /bin/chmod 775 ${UVM_LOGDIR} ${UVM_CACHEDIR}
 
 /usr/share/untangle/bin/update-schema uvm
 
-# start uvm
+# set up uvm to start at boot
 if [ -x "/etc/init.d/untangle-vm" ]; then
     update-rc.d untangle-vm defaults 50 > /dev/null
+fi
+
+# if it's our first install, start it.
+if [ -z "$2" ]; then
+    /etc/init.d/untangle-vm start
 fi
 
 ## Touch all of the webstart files so the client always loads the new version

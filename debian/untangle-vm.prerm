@@ -1,0 +1,9 @@
+#!/bin/bash
+# untangle-vm prerm
+
+if [ "$1" = "remove" ] ; then
+   if [ -x /etc/init.d/untangle-vm ]; then
+     /etc/init.d/untangle-vm stop
+   fi
+  echo "Note: Untangle virtual machine stopped."
+fi
