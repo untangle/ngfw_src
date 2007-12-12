@@ -34,7 +34,6 @@ WebFilter tran = (WebFilter)tctx.node();
 UserWhitelistMode mode = tran.getUserWhitelistMode();
 WebFilterBlockDetails bd = tran.getDetails(nonce);
 
-String header = null == bd ? "" : bd.getHeader();
 String contact = bs.getContactHtml();
 String host = null == bd ? "" : bd.getFormattedHost();
 String url = null == bd ? "" : bd.getFormattedUrl();
@@ -69,7 +68,7 @@ url = '<%=null == bd ? "javascript:history.back()" : bd.getUrl()%>';
 
     <div class="page_head">
         <a href="<%=companyUrl%>"><img src="/images/BrandingLogo.gif" border="0" alt="<%=company%>" /></a>
-        <div><%=header%></div>
+        <div>Web Filter</div>
     </div>
 
     <hr />
