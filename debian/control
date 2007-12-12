@@ -44,7 +44,7 @@ Description: Untangle Core Library
  Untangle Core Library.
 
 Package: untangle-casing-ftp
-Architecture: any
+Architecture: all
 Depends: untangle-libuvm
 Conflicts: ftp-casing
 Provides: ftp-casing
@@ -57,7 +57,7 @@ Description: The Untangle File Transfer/FTP Decoder
  The Untangle File Transfer/FTP Decoder.
 
 Package: untangle-casing-http
-Architecture: any
+Architecture: all
 Depends: untangle-libuvm
 Conflicts: http-casing
 Provides: http-casing
@@ -70,7 +70,7 @@ Description: The Untangle Web Decoder
  The Untangle Web Decoder.
 
 Package: untangle-casing-mail
-Architecture: any
+Architecture: all
 Depends: untangle-libuvm
 Conflicts: mail-casing
 Provides: mail-casing
@@ -83,7 +83,7 @@ Description: The Untangle Email Decoder
  The Untangle Email Decoder.
 
 Package: untangle-node-shield
-Architecture: any
+Architecture: all
 Depends: untangle-vm
 Conflicts: airgap-transform
 Provides: airgap-transform
@@ -150,7 +150,7 @@ Description: Attack Blocker
  The Attack Blocker product.
 
 Package: untangle-node-spyware
-Architecture: any
+Architecture: all
 Depends: untangle-vm, untangle-casing-http
 Conflicts: spyware-transform
 Provides: spyware-transform
@@ -206,7 +206,7 @@ Description: Spyware Blocker
  The Spyware Blocker product.
 
 Package: untangle-node-webfilter
-Architecture: any
+Architecture: all
 Depends: untangle-vm, untangle-casing-http, untangle-webfilter-init
 Conflicts: httpblocker-transform
 Provides: httpblocker-transform
@@ -275,7 +275,7 @@ Description: Web Filter
  The Web Filter product.
 
 Package: untangle-node-clam
-Architecture: any
+Architecture: all
 Depends: untangle-vm, untangle-base-virus, untangle-clamav-config, untangle-casing-http, untangle-casing-ftp, untangle-casing-mail
 Conflicts: clam-transform
 Provides: clam-transform
@@ -314,7 +314,7 @@ Description: Virus Blocker
  The Virus Blocker product.
 
 Package: untangle-node-protofilter
-Architecture: any
+Architecture: all
 Depends: untangle-vm
 Conflicts: protofilter-transform
 Provides: protofilter-transform
@@ -404,7 +404,7 @@ Description: Protocol Control
  The Protocol Control product.
 
 Package: untangle-node-router
-Architecture: any
+Architecture: all
 Depends: untangle-vm, dnsmasq, untangle-casing-ftp
 Conflicts: nat-transform
 Provides: nat-transform
@@ -467,7 +467,7 @@ Description: Router
  The Router product.
 
 Package: untangle-node-firewall
-Architecture: any
+Architecture: all
 Depends: untangle-vm
 Conflicts: firewall-transform
 Provides: firewall-transform
@@ -523,7 +523,7 @@ Description: Firewall
  The Firewall product.
 
 Package: untangle-node-spamassassin
-Architecture: any
+Architecture: all
 Depends: untangle-vm, untangle-base-spam, untangle-casing-mail
 Conflicts: spamassassin-transform
 Provides: spamassassin-transform
@@ -607,7 +607,7 @@ Description: Spam Blocker
  The Spam Blocker product.
 
 Package: untangle-node-phish
-Architecture: any
+Architecture: all
 Depends: untangle-vm, untangle-base-spam, untangle-clamav-config, untangle-casing-mail, untangle-casing-http
 Conflicts: clamphish-transform
 Provides: clamphish-transform
@@ -706,7 +706,7 @@ Description: Phish Blocker
 
 Package: untangle-node-test
 Section: qa/net
-Architecture: any
+Architecture: all
 Depends: untangle-vm
 Conflicts: test-transform
 Provides: test-transform
@@ -817,7 +817,7 @@ Description: Test
  Test.
 
 Package: untangle-node-openvpn
-Architecture: any
+Architecture: all
 Depends: untangle-vm, untangle-nsis-addons, openssl, openvpn
 Conflicts: openvpn-transform
 Provides: openvpn-transform
@@ -890,7 +890,7 @@ Description: OpenVPN
  The OpenVPN product.
 
 Package: untangle-node-ips
-Architecture: any
+Architecture: all
 Depends: untangle-vm, untangle-casing-http, untangle-snort-rules
 Conflicts: ids-transform
 Provides: ids-transform
@@ -965,7 +965,7 @@ Description: Intrusion Prevention
  The Intrusion Prevention product.
 
 Package: untangle-node-reporting
-Architecture: any
+Architecture: all
 Depends: untangle-vm
 Conflicts: reporting-transform
 Provides: reporting-transform
@@ -1020,7 +1020,7 @@ Description: Untangle Reports
  The Untangle Reports product.
 
 Package: untangle-base-virus
-Architecture: any
+Architecture: all
 Depends: untangle-libuvm, untangle-casing-http, untangle-casing-mail
 Conflicts: virus-base
 Provides: virus-base
@@ -1031,7 +1031,7 @@ Description: Virus Blocker Base
  The Virus Blocker Base.
 
 Package: untangle-base-spam
-Architecture: any
+Architecture: all
 Depends: untangle-vm, untangle-spamassassin-update, untangle-casing-mail
 Conflicts: spam-base
 Provides: spam-base
@@ -1042,7 +1042,7 @@ Description: Spam Blocker Base
  The Spam Blocker Base.
 
 Package: untangle-client
-Architecture: any
+Architecture: all
 Depends: sun-java5-jre | sun-java6-jre
 Provides: metavize-client
 Conflicts: metavize-client (<< 4.1)
@@ -1082,7 +1082,7 @@ Description: Untangle Client
  The Untangle Client.
 
 Package: untangle-libuvmthirdparty
-Architecture: any
+Architecture: all
 Depends: sun-java5-jre | sun-java6-jre
 Conflicts: mvvm (<< 5.0), libuvm-thirdparty, libmvvm-thirdparty
 Provides: libuvm-thirdparty
@@ -1122,7 +1122,7 @@ Description: Untangle Server Thirdparty Libraries
  The Untangle Server Thirdparty Libraries.
 
 Package: untangle-vm
-Architecture: any
+Architecture: all
 Depends: sun-java5-jre | sun-java6-jre, untangle-libuvm, untangle-libuvmcore, untangle-libuvmthirdparty, sudo, iptables (>= 1.3.6), untangle-libnfnetlink0, db4.2-util, untangle-ujac2pdf, at, ebtables, mime-support, untangle-nsis-addons, dnsmasq, pppoe, bridge-utils, iputils-ping, curl, sg3-utils, pciutils, libdbd-pg-ruby, ruby, postgresql-client | postgresql-client-7.4 | postgresql-client-8.1 | postgresql-client-8.2, postgresql | postgresql-7.4 | postgresql-8.1 | postgresql-8.2, untangle-linux-image, mail-transport-agent, jruby1.0, libgettext-ruby, ethtool, net-tools, untangle-net-alpaca
 Recommends: untangle-postgresql-config, untangle-gateway-light
 Provides: mvvm
@@ -1163,7 +1163,7 @@ Description: Untangle Server
  The Untangle Server.
 
 Package: untangle-libuvm
-Architecture: any
+Architecture: all
 Depends: sun-java5-jre | sun-java6-jre
 XB-Display-Name: Untangle Server Libraries
 XB-Untangle-Type: library
@@ -1200,7 +1200,7 @@ Description: Untangle Server Libraries
  The Untangle Server Libraries.
 
 Package: untangle-buildutil
-Architecture: any
+Architecture: all
 Depends: sun-java5-jre | sun-java6-jre
 Description: Untangle Server Build Utils
  The Untangle Build Utils.
