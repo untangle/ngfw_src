@@ -87,6 +87,10 @@ class Jars
     Jars.downloadTarget("apache-tomcat-5.5.17-embed/lib/#{n}")
   end
 
+  ## XmlRpc Jars
+  XmlRpc     = [ Jars.downloadTarget('xmlrpc-3.1/lib/xmlrpc-client-3.1.jar'),
+    	         Jars.downloadTarget('xmlrpc-3.1/lib/xmlrpc-common-3.1.jar'),
+		 Jars.downloadTarget('xmlrpc-3.1/lib/ws-commons-util-1.0.2.jar') ]
   ## WBEM Jars
   WBEM       = [ Jars.downloadTarget('wbemservices-1.0.2.src/dist/wbemservices/lib/wbem.jar') ]
 
@@ -128,8 +132,8 @@ class Jars
   Base       = Jars.makeGroup(Log4j, Hibernate, HibernateAnnotations, Postgres,
                               Activation, Jcifs, C3p0, Ant, JavaMailApi,
                               GetText, JavaMail, TomcatEmb, Velocity, WBEM,
-                              Bdb, HttpClient, HtmlParser, VncViewer)
-
+                              Bdb, HttpClient, HtmlParser, VncViewer, XmlRpc)
+ 
   # Jars for compiling the GUI, and GUI node components
   Gui        = Jars.makeGroup(Alloy, JFreeChartGui, Netbeans, Jnlp)
 

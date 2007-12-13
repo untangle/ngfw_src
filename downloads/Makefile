@@ -23,7 +23,7 @@ tarballs_gz=apache-ant-1.6.5.tar.gz commons-beanutils-1.7.0.tar.gz \
 	jcifs_1.2.9.tar.gz commons-fileupload-1.1.tar.gz commons-io-1.1.tar.gz \
 	commons-httpclient-3.0.tar.gz AjaxTK-3.1.1_GA_394-src.tar.gz \
 	commons-codec-1.3.tar.gz tightvnc-1.2.9_javabin.tar.gz \
-    je-3.2.13.tar.gz
+        je-3.2.13.tar.gz xmlrpc-current-bin.tar.gz
 
 tarballs_bz2=ant-contrib-1.0b2.tar.bz2 jaf-1.0.2.tar.bz2 \
 	jasperreports-1.1.1.tar.bz2 junit3.8.1.tar.bz2 junit4.1.tar.bz2  \
