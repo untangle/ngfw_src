@@ -41,6 +41,8 @@ import com.untangle.uvm.node.script.ScriptWriter;
 import com.untangle.uvm.networking.internal.InterfaceInternal;
 import com.untangle.uvm.networking.internal.NetworkSpaceInternal;
 
+import com.untangle.uvm.util.XMLRPCUtil;
+
 import static com.untangle.uvm.networking.NetworkManagerImpl.BUNNICULA_BASE;
 import static com.untangle.uvm.networking.NetworkManagerImpl.BUNNICULA_CONF;
 
@@ -111,22 +113,31 @@ public class RuleManager
         }
 
         try {
-            ScriptRunner.getInstance().exec( RULE_GENERATOR_SCRIPT );
+            XMLRPCUtil.NullAsyncCallback callback = new XMLRPCUtil.NullAsyncCallback( this.logger );
+            /* Make an asynchronous request */
+            XMLRPCUtil.getInstance().callAlpaca( "uvm", "generate_rules", callback );
         } catch ( Exception e ) {
             logger.error( "Error while generating iptables rules", e );
             throw new NetworkException( "Unable to generate iptables rules", e );
-        }        
+        }
     }
 
     synchronized void destroyIptablesRules() throws NetworkException
     {
+        if ( isShutdown ) {
+            logger.warn( "UVM is already shutting down, no longer able to generate rules" );
+            return;
+        }
+
         try {
-            /* Call the rule generator */
-            ScriptRunner.getInstance().exec( RULE_DESTROYER_SCRIPT );            
+            XMLRPCUtil.NullAsyncCallback callback = new XMLRPCUtil.NullAsyncCallback( this.logger );
+            /* Make an asynchronous request, this will automatically remove the UVM if the queue
+            * has been closed. */
+            XMLRPCUtil.getInstance().callAlpaca( "uvm", "generate_rules", callback );
         } catch ( Exception e ) {
-            logger.error( "Error while removing iptables rules", e );
-            throw new NetworkException( "Unable to remove iptables rules", e );
-        }        
+            logger.error( "Error while generating iptables rules", e );
+            throw new NetworkException( "Unable to generate iptables rules", e );
+        }
     }
 
     void subscribeLocalInside( boolean subscribeLocalInside )
