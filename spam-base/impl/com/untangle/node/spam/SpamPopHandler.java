@@ -82,7 +82,9 @@ public class SpamPopHandler extends PopStateMachine
         strength = zConfig.getStrength();
         giveUpSize = zConfig.getMsgSizeLimit();
         zWMsgGenerator = zConfig.getMessageGenerator();
-        //logger.debug("scan: " + bScan + ", message action: " + zMsgAction + ", timeout: " + lTimeout);
+        if (logger.isDebugEnabled()) {
+            logger.debug("scan: " + bScan + ", message action: " + zMsgAction + ", timeout: " + lTimeout);
+        }
     }
 
     // PopStateMachine methods -----------------------------------------------
@@ -121,9 +123,11 @@ public class SpamPopHandler extends PopStateMachine
             } else {
                 zNode.incrementCount(PASS_COUNTER);
             }
-        } //else {
-        //logger.debug("scan is not enabled");
-        //}
+        } else {
+            if (logger.isDebugEnabled()) {
+                logger.debug("scan is not enabled");
+            }
+        }
 
         return new TokenResult(new Token[] { zMMessageT }, null);
     }

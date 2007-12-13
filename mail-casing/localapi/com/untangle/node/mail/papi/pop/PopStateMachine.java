@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -39,7 +39,6 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 
-import com.untangle.uvm.vnet.TCPSession;
 import com.untangle.node.mail.papi.DoNotCareChunkT;
 import com.untangle.node.mail.papi.DoNotCareT;
 import com.untangle.node.mail.papi.MIMEMessageT;
@@ -58,6 +57,7 @@ import com.untangle.node.token.EndMarker;
 import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenException;
 import com.untangle.node.token.TokenResult;
+import com.untangle.uvm.vnet.TCPSession;
 import org.apache.log4j.Logger;
 
 public abstract class PopStateMachine extends AbstractTokenHandler
@@ -133,7 +133,9 @@ public abstract class PopStateMachine extends AbstractTokenHandler
     public TokenResult handleClientToken(Token token) throws TokenException
     {
         clientState = nextClientState(token);
-        //logger.debug("next state: " + clientState + ", " + this);
+        if (logger.isDebugEnabled()) {
+            logger.debug("next state: " + clientState + ", " + this);
+        }
 
         TokenResult zResult;
 
@@ -158,7 +160,9 @@ public abstract class PopStateMachine extends AbstractTokenHandler
     public TokenResult handleServerToken(Token token) throws TokenException
     {
         serverState = nextServerState(token);
-        //logger.debug("next state: " + serverState + ", " + this);
+        if (logger.isDebugEnabled()) {
+            logger.debug("next state: " + serverState + ", " + this);
+        }
 
         TokenResult zResult;
 
@@ -347,13 +351,17 @@ public abstract class PopStateMachine extends AbstractTokenHandler
 
     protected TokenResult doMIMEMessageTrickle(MIMEMessageTrickleT zMMTrickleT) throws TokenException
     {
-        //logger.debug("trickling message (contd): " + zMMTrickleT.toString());
+        if (logger.isDebugEnabled()) {
+            logger.debug("trickling message (contd): " + zMMTrickleT.toString());
+        }
         return new TokenResult(new Token[] { zMMTrickleT }, null);
     }
 
     protected TokenResult doMIMEMessageTrickleChunk(Chunk zChunkT) throws TokenException
     {
-        //logger.debug("trickling chunk (contd): " + zChunkT.toString());
+        if (logger.isDebugEnabled()) {
+            logger.debug("trickling chunk (contd): " + zChunkT.toString());
+        }
         return new TokenResult(new Token[] { zChunkT }, null);
     }
 
@@ -361,7 +369,9 @@ public abstract class PopStateMachine extends AbstractTokenHandler
     {
         resetServer(); /* done so reset */
 
-        //logger.debug("trickling marker (contd): " + zEndMarkerT.toString());
+        if (logger.isDebugEnabled()) {
+            logger.debug("trickling marker (contd): " + zEndMarkerT.toString());
+        }
         return new TokenResult(new Token[] { zEndMarkerT }, null);
     }
 
@@ -407,35 +417,49 @@ public abstract class PopStateMachine extends AbstractTokenHandler
     private TokenResult trickleMessage(MIMEMessageT zMMessageT)
     {
         MIMEMessageTrickleT zMMTrickleT = new MIMEMessageTrickleT(zMMessageT);
-        //logger.debug("trickling message: " + zMMessageT.toString() + ", " + zMMTrickleT.toString() + ", " + this);
+        if (logger.isDebugEnabled()) {
+            logger.debug("trickling message: " + zMMessageT.toString() + ", " + zMMTrickleT.toString() + ", " + this);
+        }
         serverState = ServerState.TRICKLE_START;
-        //logger.debug("next state: " + serverState + ", " + this);
+        if (logger.isDebugEnabled()) {
+            logger.debug("next state: " + serverState + ", " + this);
+        }
         return new TokenResult(new Token[] { zMMTrickleT }, null);
     }
 
     private TokenResult trickleChunk(Chunk zChunkT)
     {
         MIMEMessageTrickleT zMMTrickleT = new MIMEMessageTrickleT(zMMessageT);
-        //logger.debug("trickling message w/chunk: " + zMMessageT.toString() + ", " + zMMTrickleT.toString() + ", " + this);
+        if (logger.isDebugEnabled()) {
+            logger.debug("trickling message w/chunk: " + zMMessageT.toString() + ", " + zMMTrickleT.toString() + ", " + this);
+        }
         zMMessageT = null;
         serverState = ServerState.TRICKLE_DATA;
-        //logger.debug("next state: " + serverState + ", " + this);
+        if (logger.isDebugEnabled()) {
+            logger.debug("next state: " + serverState + ", " + this);
+        }
         return new TokenResult(new Token[] { zMMTrickleT, zChunkT }, null);
     }
 
     private TokenResult trickleMarker(EndMarker zEndMarkerT)
     {
         MIMEMessageTrickleT zMMTrickleT = new MIMEMessageTrickleT(zMMessageT);
-        //logger.debug("trickling message w/marker: " + zMMessageT.toString() + ", " + zMMTrickleT.toString() + ", " + this);
+        if (logger.isDebugEnabled()) {
+            logger.debug("trickling message w/marker: " + zMMessageT.toString() + ", " + zMMTrickleT.toString() + ", " + this);
+        }
         zMMessageT = null;
         serverState = ServerState.TRICKLE_MARKER;
-        //logger.debug("next state: " + serverState + ", " + this);
+        if (logger.isDebugEnabled()) {
+            logger.debug("next state: " + serverState + ", " + this);
+        }
         return new TokenResult(new Token[] { zMMTrickleT, zEndMarkerT }, null);
     }
 
     private ClientState nextClientState(Token token) throws TokenException
     {
-        //logger.debug("current state: " + clientState + ", " + token.toString() + ", " + this);
+        if (logger.isDebugEnabled()) {
+            logger.debug("current state: " + clientState + ", " + token.toString() + ", " + this);
+        }
         switch (clientState) {
         case COMMAND:
         case COMMAND_MORE:
@@ -460,7 +484,9 @@ public abstract class PopStateMachine extends AbstractTokenHandler
 
     private ServerState nextServerState(Token token) throws TokenException
     {
-        //logger.debug("current state: " + serverState + ", " + token.toString() + ", " + this);
+        if (logger.isDebugEnabled()) {
+            logger.debug("current state: " + serverState + ", " + token.toString() + ", " + this);
+        }
         switch (serverState) {
         case REPLY:
             if (token instanceof PopReply) {

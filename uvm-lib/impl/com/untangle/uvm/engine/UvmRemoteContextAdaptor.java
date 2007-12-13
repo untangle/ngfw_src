@@ -21,9 +21,10 @@ package com.untangle.uvm.engine;
 import java.io.IOException;
 
 import com.untangle.uvm.ArgonManager;
-import com.untangle.uvm.RemoteConnectivityTester;
+import com.untangle.uvm.MailSender;
 import com.untangle.uvm.RemoteAppServerManager;
 import com.untangle.uvm.RemoteBrandingManager;
+import com.untangle.uvm.RemoteConnectivityTester;
 import com.untangle.uvm.RemoteNetworkManager;
 import com.untangle.uvm.RemoteReportingManager;
 import com.untangle.uvm.addrbook.RemoteAddressBook;
@@ -123,6 +124,11 @@ class RemoteUvmContextAdaptor implements RemoteUvmContext
     public RemoteConnectivityTester getRemoteConnectivityTester()
     {
         return context.getRemoteConnectivityTester();
+    }
+
+    public MailSender mailSender()
+    {
+        return context.mailSender();
     }
 
     public RemoteAppServerManager appServerManager()

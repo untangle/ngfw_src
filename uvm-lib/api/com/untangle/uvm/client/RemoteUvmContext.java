@@ -35,6 +35,7 @@ package com.untangle.uvm.client;
 
 import java.io.IOException;
 
+import com.untangle.uvm.MailSender;
 import com.untangle.uvm.RemoteAppServerManager;
 import com.untangle.uvm.RemoteBrandingManager;
 import com.untangle.uvm.RemoteConnectivityTester;
@@ -146,6 +147,8 @@ public interface RemoteUvmContext
      * @return the RemoteConnectivityTester
      */
     RemoteConnectivityTester getRemoteConnectivityTester();
+
+    MailSender mailSender();
 
     /**
      * Get the AppServerManager singleton for this instance

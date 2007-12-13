@@ -20,17 +20,18 @@ procset() {
     fi
 }
 
-# make sure we're using untangle kernel.  There should be a cleaner way to do this. XX
-if ! modprobe -q iptable_tune; then
+# make sure we're using untangle kernel.  There should be a cleaner
+# way to do this. XX
+if ! /sbin/modprobe -q iptable_tune; then
     echo "ERROR: kernel does not have Untangle extensions.  Need untangle-linux-image."
     exit 1
 fi
 
 #configure the dummy interface
-ifconfig dummy0 192.0.2.42 255.255.255.0 up
+/sbin/ifconfig dummy0 192.0.2.42 255.255.255.0 up
 
 # check nfqueue
-modprobe -q nfnetlink_queue
+/sbin/modprobe -q nfnetlink_queue
 if [ ! -f /proc/net/netfilter/nfnetlink_queue ]; then
     echo "ERROR: kernel does not have IP_NF_QUEUE" >& 2
     exit 1
@@ -40,7 +41,7 @@ elif [ "`cat /proc/net/netfilter/nfnetlink_queue | wc -l`x" != "0x" ] ; then
 fi
 
 # also check ip_queue
-modprobe -q ip_queue
+/sbin/modprobe -q ip_queue
 if [ -f /proc/net/ip_queue ] && [ "`grep Peer /proc/net/ip_queue  | awk '{ print $4 }'`" != "0" ]; then
     echo "ERROR: ip_queue allocated, exiting" >&2
     exit 1
