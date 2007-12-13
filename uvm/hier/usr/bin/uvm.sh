@@ -12,8 +12,8 @@ UVM_GC_LOG=${UVM_GC_LOG:-"@PREFIX@/var/log/uvm/gc.log"}
 UVM_WRAPPER_LOG=${UVM_WRAPPER_LOG:-"@PREFIX@/var/log/uvm/wrapper.log"}
 UVM_LAUNCH=${UVM_LAUNCH:-"@PREFIX@/usr/share/untangle/bin/bunnicula"}
 
-# Short enough to restart uvm promptly
-SLEEP_TIME=5
+# Short enough to restart services and uvm promptly
+SLEEP_TIME=15
 
 # Used to kill a child with extreme prejudice
 nukeIt() {
@@ -156,46 +156,42 @@ isServiceRunning() {
 restartServiceIfNeeded() {
   serviceName=$1
 
-  needToRun=no
-
   case $serviceName in
     postgresql)
 # Removing the postgres pid file just makes restarting harder.  The init.d script deals ok as is.
-      pidFile=/tmp/foo
+      pidFile=/tmp/foo-doesnt-exist
       isServiceRunning $PG_DAEMON_NAME && return
       serviceName=$PGSERVICE
-      needToRun=yes # always has to run
       ;;
     slapd)
       pidFile=/var/run/slapd/slapd.pid
+      dpkg -l untangle-ldap-server | grep -q -E '^ii' || return
       isServiceRunning slapd && return
-      dpkg -l untangle-slapd | grep -q -E '^ii' && needToRun=yes
       ;;
     spamassassin)
       pidFile=$SPAMASSASSIN_PID_FILE
+      dpkg -l untangle-spamassassin-update | grep -q -E '^ii' || return
       isServiceRunning --find-shell spamd && return
-      confFile=/etc/default/spamassassin
-      [ -f $confFile ] && grep -q ENABLED=1 $confFile && needToRun=yes
       ;;
     clamav-daemon)
       pidFile=$CLAMD_PID_FILE
+      dpkg -l untangle-clamav-config | grep -q -E '^ii' || return
       isServiceRunning clamd && return
-      dpkg -l clamav-daemon | grep -q -E '^ii' && needToRun=yes
       ;;
     clamav-freshclam)
       pidFile="/var/run/clamav/freshclam.pid"
+      dpkg -l untangle-clamav-config | grep -q -E '^ii' || return
       isServiceRunning freshclam && return
-      dpkg -l clamav-freshclam | grep -q -E '^ii' && needToRun=yes
       ;;
     untangle-support-agent)
       pidFile="/var/run/rbot.pid"
+      dpkg -l untangle-support-agent | grep -q -E '^ii' || return
       # this is a bit janky, need something better...
       isServiceRunning ruby && return
-      dpkg -l untangle-openssh-server | grep -q ii && needToRun=yes
       ;;
   esac
 
-  [ $needToRun == "yes" ] && restartService $serviceName $pidFile "missing"
+  restartService $serviceName $pidFile "missing"
 }
 
 restartService() {
@@ -324,19 +320,19 @@ while true; do
         fi
 
 	if [ $counter -gt 60 ] ; then # fire up the other nannies
-	  [ `tail -n 50 /var/log/mail.info | grep -c "$SPAMASSASSIN_LOG_ERROR"` -gt 2 ] && restartService spamassassin $SPAMASSASSIN_PID_FILE "non-functional" stopFirst
-	  if [ -f /etc/default/spamassassin ] && grep -q ENABLED=1 /etc/default/spamassassin ; then
-	    $BANNER_NANNY $SPAMASSASSIN_PORT $TIMEOUT || restartService spamassassin $SPAMASSASSIN_PID_FILE "hung" stopFirst
+	  if dpkg -l untangle-spamassassin-update | grep -q ii ; then # we're managing spamassassin
+	      [ `tail -n 50 /var/log/mail.info | grep -c "$SPAMASSASSIN_LOG_ERROR"` -gt 2 ] && restartService spamassassin $SPAMASSASSIN_PID_FILE "non-functional" stopFirst
+	      $BANNER_NANNY $SPAMASSASSIN_PORT $TIMEOUT || restartService spamassassin $SPAMASSASSIN_PID_FILE "hung" stopFirst
 	  fi
-	  if dpkg -l clamav-daemon | grep -q -E '^ii' ; then
-            $BANNER_NANNY $CLAMD_PORT $TIMEOUT || restartService clamav-daemon $CLAMD_PID_FILE "hung" stopFirst
+	  if dpkg -l untangle-clamav-config | grep -q -E '^ii' ; then # we're managing clamav
+              $BANNER_NANNY $CLAMD_PORT $TIMEOUT || restartService clamav-daemon $CLAMD_PID_FILE "hung" stopFirst
 	  fi
-	  if dpkg -l untangle-openssh-server | grep -q ii ; then # support-agent is supposed to run; FIXME: need something better
-	    if [ -f "$SUPPORT_AGENT_PID_FILE" ] && ps `cat $SUPPORT_AGENT_PID_FILE` > /dev/null ; then # it runs
-	      if [ $(ps -o %cpu= `cat $SUPPORT_AGENT_PID_FILE` | perl -pe 's/\..*//') -gt $SUPPORT_AGENT_MAX_ALLOWED_CPU ] ; then
-		restartService untangle-support-agent $SUPPORT_AGENT_PID_FILE "spinning" stopFirst
+	  if dpkg -l untangle-support-agent | grep -q ii ; then # support-agent is supposed to run
+	      if [ -f "$SUPPORT_AGENT_PID_FILE" ] && ps `cat $SUPPORT_AGENT_PID_FILE` > /dev/null ; then # it runs
+	          if [ $(ps -o %cpu= `cat $SUPPORT_AGENT_PID_FILE` | perl -pe 's/\..*//') -gt $SUPPORT_AGENT_MAX_ALLOWED_CPU ] ; then
+		      restartService untangle-support-agent $SUPPORT_AGENT_PID_FILE "spinning" stopFirst
+	          fi
 	      fi
-	    fi
 	  fi
 	  counter=0
 	fi
