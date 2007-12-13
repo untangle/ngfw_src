@@ -115,7 +115,7 @@ public class RuleManager
         try {
             XMLRPCUtil.NullAsyncCallback callback = new XMLRPCUtil.NullAsyncCallback( this.logger );
             /* Make an asynchronous request */
-            XMLRPCUtil.getInstance().callAlpaca( "uvm", "generate_rules", callback );
+            XMLRPCUtil.getInstance().callAlpaca( XMLRPCUtil.CONTROLLER_UVM, "generate_rules", callback );
         } catch ( Exception e ) {
             logger.error( "Error while generating iptables rules", e );
             throw new NetworkException( "Unable to generate iptables rules", e );
@@ -133,7 +133,7 @@ public class RuleManager
             XMLRPCUtil.NullAsyncCallback callback = new XMLRPCUtil.NullAsyncCallback( this.logger );
             /* Make an asynchronous request, this will automatically remove the UVM if the queue
             * has been closed. */
-            XMLRPCUtil.getInstance().callAlpaca( "uvm", "generate_rules", callback );
+            XMLRPCUtil.getInstance().callAlpaca( XMLRPCUtil.CONTROLLER_UVM, "generate_rules", callback );
         } catch ( Exception e ) {
             logger.error( "Error while generating iptables rules", e );
             throw new NetworkException( "Unable to generate iptables rules", e );
