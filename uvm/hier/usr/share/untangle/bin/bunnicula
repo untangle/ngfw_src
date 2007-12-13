@@ -97,7 +97,7 @@ for f in @THIRDPARTY_REPORTS_LIB@/*jar ; do
     CLASSPATH="$CLASSPATH:$f"
 done
 
-if [ ! -f $CD_INSTALL ] ; then
+if [ -f $UNTANGLE_HARDARE ] ; then
     JAVA_OPTS="-Dcom.untangle.isUntangleAppliance=true $JAVA_OPTS"
 fi
 if (lspci|grep -qi VMWare) then

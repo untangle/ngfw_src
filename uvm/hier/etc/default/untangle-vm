@@ -8,7 +8,6 @@ join_string() {
 
 DEFAULT_DMZ="eth2"
 
-# Use the following to configure your local installation
 UVM_LOGDIR=@PREFIX@/var/log/uvm
 UVM_RUNDIR=@PREFIX@/var/run
 UVM_RESTART_PIDFILE=$UVM_RUNDIR/uvm-restart.pid
@@ -21,6 +20,7 @@ UVM_USER=root
 ## Defaults to 10000 in the code, set here if you want something else
 UVM_SESSION_LIMIT=""
 
+# Use the following to configure your local installation.
 UVM_ARGS=""
 
 # postgresql stuff
@@ -49,7 +49,7 @@ SUPPORT_AGENT_MAX_ALLOWED_CPU=30
 SUPPORT_AGENT_PID_FILE=/var/run/rbot.pid
 
 # activation stuff...
-CD_INSTALL=@UVM_HOME@/.cdinstall
+UNTANGLE_HARDWARE=@UVM_HOME@/.untanglehw
 REGISTRATION_DONE_FILE=@UVM_HOME@/.regdone
 REGISTRATION_INFO_FILE=@UVM_HOME@/registration.info
 REGISTRATION_URL=https://poptrack.untangle.com/register/custreg.php
