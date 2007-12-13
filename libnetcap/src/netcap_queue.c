@@ -350,16 +350,18 @@ static int _nf_callback( struct nfq_q_handle *qh, struct nfgenmsg *nfmsg, struct
      */
     if (ip_header->protocol == IPPROTO_ICMP){ 
         debug(10, "caught ICMP packet\n");
+#if 0
 	struct icmphdr *icmp_header = (struct icmphdr*) ( data + ( 4 * ip_header->ihl ));
 	debug(10, "FLAG: ICMP type: %d, code: %d\n",icmp_header->type, icmp_header->code);
 	if( (icmp_header->type == ICMP_ECHOREPLY) || (icmp_header->type == ICMP_ECHO) ){
 	  netcap_set_verdict(pkt->packet_id, NF_ACCEPT,NULL,0);
 	  return errlog(ERR_WARNING, "Caught a ping packet, ACCEPTING it for delivery\n");
 	}else{
-	  debug(10, "Caught ICMP error message\n");
+	  debug(10, "Caught ICMP message\n");
 	}
-    }else if (( ip_header->saddr == pkt->nat_info.reply.dst_address ) &&
-	      ( ip_header->daddr == pkt->nat_info.reply.src_address )) {
+#endif	
+    } else if (( ip_header->saddr == pkt->nat_info.reply.dst_address ) &&
+	       ( ip_header->daddr == pkt->nat_info.reply.src_address )) {
         /* This is a packet from the original side that has been NATd */
         debug( 10, "QUEUE: Packet from client post NAT.\n");
         ip_header->saddr = pkt->nat_info.original.src_address;
