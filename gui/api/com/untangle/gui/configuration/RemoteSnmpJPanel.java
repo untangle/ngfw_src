@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -35,13 +35,14 @@ package com.untangle.gui.configuration;
 
 import java.awt.*;
 import javax.swing.*;
+import javax.swing.border.TitledBorder;
 
 import com.untangle.gui.node.*;
 import com.untangle.gui.util.*;
 import com.untangle.uvm.*;
+import com.untangle.uvm.node.*;
 import com.untangle.uvm.security.*;
 import com.untangle.uvm.snmp.*;
-import com.untangle.uvm.node.*;
 
 public class RemoteSnmpJPanel extends javax.swing.JPanel
     implements Savable<RemoteCompoundSettings>, Refreshable<RemoteCompoundSettings> {
@@ -194,6 +195,9 @@ public class RemoteSnmpJPanel extends javax.swing.JPanel
         ((JSpinner.DefaultEditor)trapPortJSpinner.getEditor()).getTextField().setText(Integer.toString(trapPort));
         ((JSpinner.DefaultEditor)trapPortJSpinner.getEditor()).getTextField().setBackground(Color.WHITE);
         Util.addSettingChangeListener(settingsChangedListener, this, trapPortJSpinner);
+
+        boolean ace = Util.getUvmContext().adminManager().getSnmpManager().isAutoConfigEnabled();
+        setAutoConfigEnabledDependency(ace);
     }
 
 
@@ -473,7 +477,24 @@ public class RemoteSnmpJPanel extends javax.swing.JPanel
     }//GEN-LAST:event_snmpEnabledRadioButtonActionPerformed
 
 
+    private void setAutoConfigEnabledDependency(boolean enabled)
+    {
+        Color c = enabled ? (Color)UIManager.get("Label.foreground") : (Color) UIManager.get("Label.disabledForeground");
+        if (!enabled) {
+            setSnmpEnabledDependency(false);
+            setTrapEnabledDependency(false);
+            externalRemoteJPanel.setEnabled(false);
+            ((TitledBorder)externalRemoteJPanel.getBorder()).setTitleColor(c);
+            externalRemoteJPanel.setForeground(c);
+            snmpDisabledRadioButton.setEnabled(false);
+            snmpDisabledRadioButton.setForeground(c);
+            snmpEnabledRadioButton.setEnabled(false);
+            snmpEnabledRadioButton.setForeground(c);
+        }
+    }
+
     private void setSnmpEnabledDependency(boolean enabled){
+        Color c = enabled ? (Color)UIManager.get("Label.foreground") : (Color) UIManager.get("Label.disabledForeground");
         snmpCommunityJTextField.setEnabled( enabled );
         snmpCommunityJLabel.setEnabled( enabled );
         snmpContactJTextField.setEnabled( enabled );
@@ -481,7 +502,9 @@ public class RemoteSnmpJPanel extends javax.swing.JPanel
         snmpLocationJTextField.setEnabled( enabled );
         snmpLocationJLabel.setEnabled( enabled );
         trapEnabledRadioButton.setEnabled( enabled );
+        trapEnabledRadioButton.setForeground( c );
         trapDisabledRadioButton.setEnabled( enabled );
+        trapDisabledRadioButton.setForeground( c );
         if(!enabled)
             setTrapEnabledDependency(false);
         else

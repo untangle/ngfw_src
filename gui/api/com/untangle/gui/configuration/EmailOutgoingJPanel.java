@@ -250,7 +250,7 @@ public class EmailOutgoingJPanel extends javax.swing.JPanel
 
         smtpButtonGroup.add(smtpDisabledJRadioButton);
         smtpDisabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
-        smtpDisabledJRadioButton.setText("<html>Send Email Directly</html>");
+        smtpDisabledJRadioButton.setText("Send Email Directly");
         smtpDisabledJRadioButton.setActionCommand("<html><b>Use DHCP</b> to automatically set Untangle's IP address from the network's DHCP server.</html>");
         smtpDisabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -267,7 +267,7 @@ public class EmailOutgoingJPanel extends javax.swing.JPanel
 
         smtpButtonGroup.add(smtpEnabledJRadioButton);
         smtpEnabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
-        smtpEnabledJRadioButton.setText("<html>Send Email using the specified SMTP Server</html>");
+        smtpEnabledJRadioButton.setText("Send Email using the specified SMTP Server");
         smtpEnabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 smtpEnabledJRadioButtonActionPerformed(evt);
@@ -556,10 +556,12 @@ public class EmailOutgoingJPanel extends javax.swing.JPanel
 
     private void setAutoConfigEnabledDependency(boolean enabled)
     {
-        setMxRecordsEnabledDependency(!enabled);
-        jLabel13.setEnabled(enabled);
-        smtpDisabledJRadioButton.setEnabled(enabled);
-        smtpEnabledJRadioButton.setEnabled(enabled);
+        if (!enabled) {
+            setMxRecordsEnabledDependency(true);
+            jLabel13.setEnabled(false);
+            smtpDisabledJRadioButton.setEnabled(false);
+            smtpEnabledJRadioButton.setEnabled(false);
+        }
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
