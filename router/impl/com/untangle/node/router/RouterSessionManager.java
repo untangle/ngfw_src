@@ -29,7 +29,11 @@ import com.untangle.uvm.vnet.Protocol;
 import com.untangle.uvm.vnet.TCPSession;
 import org.apache.log4j.Logger;
 import com.untangle.uvm.node.script.ScriptRunner;
+import com.untangle.uvm.util.XMLRPCUtil;
+// this one is temporary
 import java.io.*;
+
+
 
 class RouterSessionManager
 {
@@ -317,6 +321,9 @@ class SessionRedirect
 	
         reservedPort = 0;
     }
+    private String redirectRuleFilter;
+    private String redirectRuleIp;
+    private int redirectRulePort;
     private synchronized void createRedirectRule( InetAddress clientAddr, int clientPort,
 						  InetAddress serverAddr, int serverPort,
 						  int reservedPort, InetAddress myAddr
@@ -329,53 +336,44 @@ class SessionRedirect
 	    logger.debug("serverPort:"+serverPort);
 	    logger.debug("reservedPort:"+reservedPort);
 	}
-	CreateRedirectCommand =
-	    "iptables -A PREROUTING -t nat -p tcp "
-	    +" -s "+clientAddr.getHostAddress()
+	redirectRuleFilter = 
+	    "-p tcp "
 	    +" -d "+myAddr.getHostAddress()
-	    +" --dport "+reservedPort 
-	    +" -j DNAT --to-destination "+serverAddr.getHostAddress()
-	    +":"+serverPort;
-	RemoveRedirectCommand =
-	    "iptables -D PREROUTING -t nat -p tcp "
-	    +" -s "+clientAddr.getHostAddress()
-	    +" -d "+myAddr.getHostAddress()
-	    +" --dport "+reservedPort 
-	    +" -j DNAT --to-destination "+serverAddr.getHostAddress()
-	    +":"+serverPort;
+	    +" --dport "+reservedPort ;
+	redirectRuleIp = serverAddr.getHostAddress();
+	redirectRulePort = serverPort;
 	if (logger.isDebugEnabled()) {
-	    logger.debug(CreateRedirectCommand);
+	    logger.debug("Asking the Alpaca to CREATE redirect rule");
+	    logger.debug("rule filter: "+redirectRuleFilter);
+	    logger.debug("rule clientIp: "+redirectRuleIp);
+	    logger.debug("rule clientPort: "+redirectRulePort);
 	}
 	try{
-	    BufferedWriter writer = new BufferedWriter(new FileWriter(new File("/tmp/foo")));
-	    writer.write("#!/bin/bash\n");
-	    writer.write(CreateRedirectCommand);
-	    writer.newLine();
-	    writer.close();
-	    ScriptRunner.getInstance().exec("/tmp/foo");
-	}catch(java.io.IOException err){
-	    logger.debug(err);
-	}catch(com.untangle.uvm.node.NodeException err){
-	    logger.debug(err);
+	    XMLRPCUtil.getInstance().callAlpaca("uvm","session_redirect_create", null,
+						redirectRuleFilter,
+						redirectRuleIp,
+						new Integer(redirectRulePort));
+	} catch(Exception e){
+	    logger.error("Failure creating redirect rule:"+ e);
 	}
+	return;
     }
 
     private synchronized void removeRedirectRule()
     {
-	logger.debug(RemoveRedirectCommand);
-	try{
-	    BufferedWriter writer = new BufferedWriter(new FileWriter(new File("/tmp/foo")));
-	    writer.write("#!/bin/bash\n");
-	    writer.write(RemoveRedirectCommand);
-	    writer.newLine();
-	    writer.close();
-	    ScriptRunner.getInstance().exec("/tmp/foo");
-	}catch(java.io.IOException err){
-	    logger.debug(err);
-	}catch(com.untangle.uvm.node.NodeException err){
-	    logger.debug(err);
+	if (logger.isDebugEnabled()) {
+	    logger.debug("Asking the Alpaca to DESTROY redirect rule");
+	    logger.debug("rule filter: "+redirectRuleFilter);
+	    logger.debug("rule clientIp: "+redirectRuleIp);
+	    logger.debug("rule clientPort: "+redirectRulePort);
 	}
+	try{
+	    XMLRPCUtil.getInstance().callAlpaca("uvm","session_redirect_delete", null,
+						redirectRuleFilter,
+						redirectRuleIp,
+						new Integer(redirectRulePort));
+	} catch(Exception e){
+	    logger.error("Failure creating redirect rule:"+ e);
+	}	
     }
-
 }
-
