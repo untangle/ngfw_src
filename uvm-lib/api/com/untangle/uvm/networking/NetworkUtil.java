@@ -501,7 +501,7 @@ public class NetworkUtil
 
         try {
             h = HostName.parse( "local.domain" );
-            l = HostName.parse( "untangle.local.domain" );
+            l = HostName.parse( "untangle.example.com" );
         } catch ( ParseException e ) {
             /* This should never happen */
             System.err.println( "Unable to initialize LOCAL_DOMAIN_DEFAULT: " + e );
