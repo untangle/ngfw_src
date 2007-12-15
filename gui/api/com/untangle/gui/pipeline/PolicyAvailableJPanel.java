@@ -49,6 +49,9 @@ import com.untangle.uvm.security.*;
 
 public class PolicyAvailableJPanel extends MEditTableJPanel {
 
+    static final String NO_RACK = "No rack";
+    static final String SELECT_NO_RACK = "> No rack";
+
     public PolicyAvailableJPanel() {
         super(true, true);
         super.setInsets(new Insets(4, 4, 2, 2));
@@ -93,6 +96,7 @@ class AvailablePolicyTableModel extends MSortedTableModel<PolicyCompoundSettings
         int rowIndex = 0;
         Map<String,Object> nameMap = new HashMap<String,Object>();
         Map<String,Object> userUsageMap = new HashMap<String,Object>();
+
         // BUILD THE LIST OF USER-NEEDED POLICIES
         for( UserPolicyRule userPolicyRule : (List<UserPolicyRule>) policyConfiguration.getUserPolicyRules() )
             if( userPolicyRule.getPolicy() != null )
@@ -106,6 +110,12 @@ class AvailablePolicyTableModel extends MSortedTableModel<PolicyCompoundSettings
             String name = (String) rowVector.elementAt(2);
             Policy policy = (Policy) rowVector.elementAt(4);
 
+            // Bug 2860 -- don't let the user hurt themselves too much
+            if (PolicyAvailableJPanel.NO_RACK.equalsIgnoreCase(name) ||
+                PolicyAvailableJPanel.SELECT_NO_RACK.equalsIgnoreCase(name)) {
+                throw new Exception("The rack in row: " + rowIndex + " has an invalid name: " + name);
+            }
+        
             if( ROW_REMOVE.equals(state) ){
                 // if the rack is being removed, it cannot be in use by a user rule
                 if( userUsageMap.containsKey(name) ){

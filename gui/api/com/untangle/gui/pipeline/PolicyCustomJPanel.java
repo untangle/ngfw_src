@@ -124,9 +124,6 @@ class CustomPolicyTableModel extends MSortedTableModel<PolicyCompoundSettings>{
 
     protected boolean getSortable(){ return false; }
 
-    private static final String NULL_STRING = "> No rack";
-
-
     private ComboBoxModel protocolModel =
         super.generateComboBoxModel( ProtocolMatcherFactory.getProtocolEnumeration(),
                                      ProtocolMatcherFactory.getProtocolDefault());
@@ -140,7 +137,7 @@ class CustomPolicyTableModel extends MSortedTableModel<PolicyCompoundSettings>{
             policyNames.put( policy.getName(), policy );
             policyNames.put( policy.getName(), policy );
         }
-        policyNames.put( NULL_STRING, null);
+        policyNames.put( PolicyAvailableJPanel.SELECT_NO_RACK, null);
     }
     private void updatePolicyModel(){
         policyModel.removeAllElements();
@@ -287,7 +284,7 @@ class CustomPolicyTableModel extends MSortedTableModel<PolicyCompoundSettings>{
             if( newElem.getPolicy() != null )
                 policyName = newElem.getPolicy().getName();
             else
-                policyName = NULL_STRING;
+                policyName = PolicyAvailableJPanel.SELECT_NO_RACK;
             tempRow.add( super.generateComboBoxModel(policyNames.keySet().toArray(), policyName) );
             tempRow.add( super.generateComboBoxModel(intfEnumeration, newElem.getClientIntf()) );
             tempRow.add( super.generateComboBoxModel(intfEnumeration, newElem.getServerIntf()) );
