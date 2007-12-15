@@ -85,6 +85,8 @@ class RouterEventHandler extends AbstractEventHandler
     /* Router Node */
     private final RouterImpl node;
 
+    /* reserved port for NATing TCP */
+    private int reservedPort;
 
     /* Setup  */
     RouterEventHandler(RouterImpl node)
@@ -146,6 +148,8 @@ class RouterEventHandler extends AbstractEventHandler
 	    }
 	}
 
+	reservedPort = 0; // We only mangle the client port if we are not NATing a TCP connection
+
 	// if the kernel changed anything then we must be NATing.
 	if ( !origClientAddr.equals(newClientAddr) ||
 	     !origServerAddr.equals(newServerAddr) ||
@@ -155,7 +159,18 @@ class RouterEventHandler extends AbstractEventHandler
 	    /* Update the session information so it matches what is in the NAT info */
 	    /* Here is where we have to insert the magic, just for TCP */
 	    request.clientAddr( newClientAddr );
-	    request.clientPort( newClientPort );
+	    if( protocol == Protocol.TCP ){
+		// if we are NATing a TCP connection (and hence have deleted the conntrack entry,
+		// we will need to allocate client port manually because the kernel will not know about 
+		// ports we are non-locally bound to and may try to reuse them prematurly.
+		reservedPort = getNextPort( Protocol.TCP );
+		if ( logger.isDebugEnabled()) {
+		    logger.debug("Mangeling client port from "+newClientPort+" to "+reservedPort);
+		}
+		request.clientPort( reservedPort );
+	    } else {
+		request.clientPort( newClientPort );
+	    }
 	    request.serverAddr( newServerAddr );
 	    request.serverPort( newServerPort );
 
@@ -290,7 +305,13 @@ class RouterEventHandler extends AbstractEventHandler
 	
 	node.getSessionManager().releaseSession(session, protocol);
 	
-
+	if (reservedPort != 0){
+	    if (logger.isDebugEnabled()) {
+		logger.debug("Releasing client port: " + reservedPort);
+	    }
+	    releasePort(protocol, reservedPort);
+	}
+	
         if (attachment == null) {
             logger.error("null attachment on Routerd session");
             return;
