@@ -91,6 +91,7 @@ public class SpamPopHandler extends PopStateMachine
 
     protected TokenResult scanMessage() throws TokenException
     {
+        logger.debug("SCAN MESSAGE!");
         if (giveUpSize < zMsgFile.length()) {
             postSpamEvent(zMsgInfo, cleanReport(), SpamMessageAction.OVERSIZE);
             zNode.incrementCount(PASS_COUNTER);

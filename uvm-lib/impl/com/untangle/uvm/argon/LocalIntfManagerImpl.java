@@ -47,12 +47,12 @@ class LocalIntfManagerImpl implements LocalIntfManager
     private static final File INTF_ORDER_FILE
         = new File("/etc/untangle-net-alpaca/interface.properties");
 
-    private static final String DEFAULT_INTERFACE_ORDER = 
+    private static final String DEFAULT_INTERFACE_ORDER =
         "External:eth0:1,DMZ:eth2:3,VPN:tun0:8,Internal:eth1:2";
 
     private ArgonInterfaceConverter intfConverter = null;
 
-    private final Logger logger = Logger.getLogger( this.getClass());
+    private final Logger logger = Logger.getLogger(this.getClass());
 
     /* Converter from all of the interface indexes to their display name(eg. external) */
     private IntfEnum intfEnum;
@@ -63,18 +63,18 @@ class LocalIntfManagerImpl implements LocalIntfManager
      * Convert an interface using the argon standard (0 = outside, 1 = inside, 2 = DMZ 1, etc)
      * to an interface that uses that netcap unique identifiers
      */
-    public byte toNetcap( byte argonIntf )
+    public byte toNetcap(byte argonIntf)
     {
-        switch ( argonIntf ) {
+        switch (argonIntf) {
         case IntfConstants.ARGON_ERROR:
-            throw new IllegalArgumentException( "Invalid argon interface[" + argonIntf + "]" );
+            throw new IllegalArgumentException("Invalid argon interface[" + argonIntf + "]");
         case IntfConstants.ARGON_UNKNOWN:  return IntfConstants.NETCAP_UNKNOWN;
         case IntfConstants.ARGON_LOOPBACK: return IntfConstants.NETCAP_LOOPBACK;
         }
 
         /* May actually want to check if interfaces exists */
-        if ( argonIntf < IntfConstants.ARGON_MIN  || argonIntf > IntfConstants.ARGON_MAX ) {
-            throw new IllegalArgumentException( "Invalid argon interface[" + argonIntf + "]" );
+        if (argonIntf < IntfConstants.ARGON_MIN  || argonIntf > IntfConstants.ARGON_MAX) {
+            throw new IllegalArgumentException("Invalid argon interface[" + argonIntf + "]");
         }
 
         return (byte)(argonIntf + 1);
@@ -83,45 +83,45 @@ class LocalIntfManagerImpl implements LocalIntfManager
     /**
      * Convert an interface from a netcap interface to the argon standard
      */
-    public byte toArgon( byte netcapIntf )
+    public byte toArgon(byte netcapIntf)
     {
-        switch ( netcapIntf ) {
+        switch (netcapIntf) {
         case IntfConstants.NETCAP_ERROR:
-            throw new IllegalArgumentException( "Invalid netcap interface[" + netcapIntf + "]" );
+            throw new IllegalArgumentException("Invalid netcap interface[" + netcapIntf + "]");
         case IntfConstants.NETCAP_UNKNOWN:  return IntfConstants.ARGON_UNKNOWN;
         case IntfConstants.NETCAP_LOOPBACK: return IntfConstants.ARGON_LOOPBACK;
         }
 
         /* May actually want to check if interfaces exists */
-        if ( netcapIntf < IntfConstants.NETCAP_MIN  || netcapIntf > IntfConstants.NETCAP_MAX ) {
-            throw new IllegalArgumentException( "Invalid netcap interface[" + netcapIntf + "]" );
+        if (netcapIntf < IntfConstants.NETCAP_MIN  || netcapIntf > IntfConstants.NETCAP_MAX) {
+            throw new IllegalArgumentException("Invalid netcap interface[" + netcapIntf + "]");
         }
 
         return (byte)(netcapIntf - 1);
     }
 
     /* Convert from an argon interface to the physical name of the interface */
-    public String argonIntfToString( byte argonIntf ) throws ArgonException
+    public String argonIntfToString(byte argonIntf) throws ArgonException
     {
-        return this.intfConverter.getIntfByArgon( argonIntf ).getName();
+        return this.intfConverter.getIntfByArgon(argonIntf).getName();
     }
 
     /* Retrieve the interface that corresponds to a specific argon interface */
-    public ArgonInterface getIntfByArgon( byte argonIntf ) throws ArgonException
+    public ArgonInterface getIntfByArgon(byte argonIntf) throws ArgonException
     {
-        return this.intfConverter.getIntfByArgon( argonIntf );
+        return this.intfConverter.getIntfByArgon(argonIntf);
     }
 
     /* Retrieve the interface that corresponds to a specific netcap interface */
-    public ArgonInterface getIntfByNetcap( byte netcapIntf ) throws ArgonException
+    public ArgonInterface getIntfByNetcap(byte netcapIntf) throws ArgonException
     {
-        return this.intfConverter.getIntfByNetcap( netcapIntf );
+        return this.intfConverter.getIntfByNetcap(netcapIntf);
     }
 
     /* Retrieve the interface that corresponds to the name */
-    public ArgonInterface getIntfByName( String name ) throws ArgonException
+    public ArgonInterface getIntfByName(String name) throws ArgonException
     {
-        return this.intfConverter.getIntfByName( name );
+        return this.intfConverter.getIntfByName(name);
     }
 
     /* Get the External interface */
@@ -147,7 +147,7 @@ class LocalIntfManagerImpl implements LocalIntfManager
         return this.intfConverter.getIntfList();
     }
 
-    /* This is a list of non-physical interfaces (everything except for internal, external and dmz ).
+    /* This is a list of non-physical interfaces (everything except for internal, external and dmz).
      * This list would contain interfaces like VPN. */
     public List<ArgonInterface> getCustomIntfList()
     {
@@ -161,51 +161,51 @@ class LocalIntfManagerImpl implements LocalIntfManager
     }
 
     /* Register a custom interface.  EG. VPN */
-    public synchronized void registerIntf( String name, byte argon ) throws ArgonException
+    public synchronized void registerIntf(String name, byte argon) throws ArgonException
     {
         ArgonInterfaceConverter prevIntfConverter = this.intfConverter;
 
         /* Unable to replace internal and DMZ, those can only be replaced as secondary interfaces */
-        if ( argon == IntfConstants.EXTERNAL_INTF || argon == IntfConstants.INTERNAL_INTF ) {
-            throw new ArgonException( "Unable to re-register the internal or external interfaces: " + name );
+        if (argon == IntfConstants.EXTERNAL_INTF || argon == IntfConstants.INTERNAL_INTF) {
+            throw new ArgonException("Unable to re-register the internal or external interfaces: " + name);
         }
 
-        logger.debug( "Registering the interface: [" + argon + ":" + name +"]" );
-        this.intfConverter = this.intfConverter.registerIntf( new ArgonInterface( name, argon ));
+        logger.debug("Registering the interface: [" + argon + ":" + name +"]");
+        this.intfConverter = this.intfConverter.registerIntf(new ArgonInterface(name, argon));
 
-        notifyDependents( prevIntfConverter );
+        notifyDependents(prevIntfConverter);
     }
 
     /* Register a secondary interface, this is an interface that replaces another interface,
      * EG. if ETH0 -> PPP0, PPP0 is the secondary interface and ETH0 is the primary interface */
-    public synchronized void registerSecondaryIntf( String name, byte argon ) throws ArgonException
+    public synchronized void registerSecondaryIntf(String name, byte argon) throws ArgonException
     {
         ArgonInterfaceConverter prevIntfConverter = this.intfConverter;
 
-        logger.debug( "Registering the secondary interface: [" + argon + ":" + name +"]" );
-        ArgonInterface intf = this.intfConverter.getIntfByArgon( argon );
-        this.intfConverter = this.intfConverter.registerIntf( intf.makeNewSecondaryIntf( name ));
-        notifyDependents( prevIntfConverter );
+        logger.debug("Registering the secondary interface: [" + argon + ":" + name +"]");
+        ArgonInterface intf = this.intfConverter.getIntfByArgon(argon);
+        this.intfConverter = this.intfConverter.registerIntf(intf.makeNewSecondaryIntf(name));
+        notifyDependents(prevIntfConverter);
     }
 
     /* Unregister a custom interface or DMZ. */
-    public synchronized void unregisterIntf( byte argon ) throws ArgonException
+    public synchronized void unregisterIntf(byte argon) throws ArgonException
     {
         ArgonInterfaceConverter prevIntfConverter = this.intfConverter;
-        this.intfConverter = this.intfConverter.unregisterIntf( argon );
+        this.intfConverter = this.intfConverter.unregisterIntf(argon);
 
-        notifyDependents( prevIntfConverter );
+        notifyDependents(prevIntfConverter);
     }
 
     /* Unregister an individual secondary interface */
-    public synchronized void unregisterSecondaryIntf( byte argon ) throws ArgonException
+    public synchronized void unregisterSecondaryIntf(byte argon) throws ArgonException
     {
         ArgonInterfaceConverter prevIntfConverter = this.intfConverter;
 
-        logger.debug( "Unregistering the secondary interface: [" + argon + "]" );
-        ArgonInterface intf = this.intfConverter.getIntfByArgon( argon );
-        this.intfConverter = this.intfConverter.registerIntf( intf.makeNewSecondaryIntf( null ));
-        notifyDependents( prevIntfConverter );
+        logger.debug("Unregistering the secondary interface: [" + argon + "]");
+        ArgonInterface intf = this.intfConverter.getIntfByArgon(argon);
+        this.intfConverter = this.intfConverter.registerIntf(intf.makeNewSecondaryIntf(null));
+        notifyDependents(prevIntfConverter);
     }
 
     /* This resets all of the secondary interfaces to their physical interfaces */
@@ -213,12 +213,12 @@ class LocalIntfManagerImpl implements LocalIntfManager
     {
         ArgonInterfaceConverter prevIntfConverter = this.intfConverter;
 
-        logger.debug( "Unregistering all secondary interfaces." );
+        logger.debug("Unregistering all secondary interfaces.");
         try {
             this.intfConverter = this.intfConverter.resetSecondaryIntfs();
-            notifyDependents( prevIntfConverter );
-        } catch ( ArgonException e ) {
-            logger.error( "Error while resetting the secondary interfaces continuing.", e );
+            notifyDependents(prevIntfConverter);
+        } catch (ArgonException e) {
+            logger.error("Error while resetting the secondary interfaces continuing.", e);
         }
     }
 
@@ -241,48 +241,48 @@ class LocalIntfManagerImpl implements LocalIntfManager
         try {
             Properties p = new Properties();
             fis = new FileInputStream(INTF_ORDER_FILE);
-            p.load( fis );
-            interfaceOrder = p.getProperty( "com.untangle.interface-order" );
-        } catch ( IOException exn ) {
-            logger.warn( "could not close: " + INTF_ORDER_FILE, exn );
+            p.load(fis);
+            interfaceOrder = p.getProperty("com.untangle.interface-order");
+        } catch (IOException exn) {
+            logger.warn("could not close: " + INTF_ORDER_FILE, exn);
         } finally {
-            if ( null != fis ) {
+            if (null != fis) {
                 try {
                     fis.close();
-                } catch ( IOException exn ) {
-                    logger.warn( "could not close: " + INTF_ORDER_FILE, exn );
+                } catch (IOException exn) {
+                    logger.warn("could not close: " + INTF_ORDER_FILE, exn);
                 }
             }
         }
 
-        if ( interfaceOrder == null || interfaceOrder.trim().length() == 0 ) {
+        if (interfaceOrder == null || interfaceOrder.trim().length() == 0) {
             interfaceOrder = DEFAULT_INTERFACE_ORDER;
         }
         interfaceOrder = interfaceOrder.trim();
 
-        logger.debug( "Loading the interface order: " + interfaceOrder );
+        logger.debug("Loading the interface order: " + interfaceOrder);
 
         String[] ifds = interfaceOrder.split(",");
         List<Byte> l = new ArrayList<Byte>(ifds.length);
         List<ArgonInterface> argonInterfaceList = new LinkedList<ArgonInterface>();
-        
+
         for (String ifd : ifds) {
             String[] d = ifd.split(":");
             if (3 < d.length) {
                 logger.warn("skiping bad interface description: "
                             + ifd);
             } else {
-                
-                
+
+
                 try {
-                    byte netcap = Byte.parseByte( d[2] );
-                    byte argon = (byte)( netcap - 1 );
-                    
+                    byte netcap = Byte.parseByte(d[2]);
+                    byte argon = (byte)(netcap - 1);
+
                     String userString = d[0];
                     String osName = d[1];
-                    l.add( argon );
-                    
-                    argonInterfaceList.add( new ArgonInterface( osName, argon, netcap ));
+                    l.add(argon);
+
+                    argonInterfaceList.add(new ArgonInterface(osName, argon, netcap));
                 } catch (NumberFormatException exn) {
                     logger.warn("skiping bad interface description: "
                                 + ifd);
@@ -295,8 +295,8 @@ class LocalIntfManagerImpl implements LocalIntfManager
                     + interfaceComparator.toString());
 
         ArgonInterfaceConverter prevIntfConverter = this.intfConverter;
-        this.intfConverter = ArgonInterfaceConverter.makeInstance( argonInterfaceList );
-        notifyDependents( prevIntfConverter );
+        this.intfConverter = ArgonInterfaceConverter.makeInstance(argonInterfaceList);
+        notifyDependents(prevIntfConverter);
     }
 
     /* ----------------- Package ----------------- */
@@ -313,49 +313,38 @@ class LocalIntfManagerImpl implements LocalIntfManager
 
     /* ----------------- Private ----------------- */
     /* Notify everything that needs to be aware of changes to the interface array */
-    private void notifyDependents( ArgonInterfaceConverter prevIntfConverter ) throws ArgonException
+    private void notifyDependents(ArgonInterfaceConverter prevIntfConverter) throws ArgonException
     {
         /* Notify netcap that there has been a change to the interfaces */
         try {
-            Netcap.getInstance().configureInterfaceArray( this.intfConverter.getNetcapIntfArray(),
+            Netcap.getInstance().configureInterfaceArray(this.intfConverter.getNetcapIntfArray(),
                                                           this.intfConverter.getNameArray());
-        } catch ( JNetcapException e ) {
-            logger.warn( "Error updating interface array", e );
-            throw new ArgonException( "Unable to configure interface array", e );
+        } catch (JNetcapException e) {
+            logger.warn("Error updating interface array", e);
+            throw new ArgonException("Unable to configure interface array", e);
         }
 
         /* Update the interface enumeration */
         updateIntfEnum();
 
         /* Update the interface matcher factory, this should be a listener */
-        IntfMatcherFactory.getInstance().updateEnumeration( this.intfEnum );
+        IntfMatcherFactory.getInstance().updateEnumeration(this.intfEnum);
     }
 
     /* Update the interface enumeration */
     private void updateIntfEnum()
     {
-        byte[] argonIntfArray = getArgonIntfArray();
+        List<ArgonInterface> ail = this.intfConverter.getIntfList();
+        byte[] argonIntfArray = new byte[ail.size()];
+        String[] intfNameArray = new String[ail.size()];
 
-        Arrays.sort( argonIntfArray );
-
-        String[] intfNameArray = new String[argonIntfArray.length];
-
-        for ( int c = 0; c < argonIntfArray.length ; c++ ) {
-            String name = "unknown";
-            byte intf = argonIntfArray[c];
-            switch ( intf ) {
-            case IntfConstants.EXTERNAL_INTF: name = IntfConstants.EXTERNAL; break;
-            case IntfConstants.INTERNAL_INTF: name = IntfConstants.INTERNAL; break;
-            case IntfConstants.DMZ_INTF:      name = IntfConstants.DMZ;      break;
-            case IntfConstants.VPN_INTF:      name = IntfConstants.VPN;      break;
-            default:
-                logger.error( "Unknown interface: " + intf + " using unknown" );
-                continue;
-            }
-
-            intfNameArray[c] = name;
+        int i = 0;
+        for (ArgonInterface ai : ail) {
+            argonIntfArray[i] = ai.getArgon();
+            intfNameArray[i] = ai.getName();
+            i++;
         }
 
-        this.intfEnum = new IntfEnum( argonIntfArray, intfNameArray );
+        this.intfEnum = new IntfEnum(argonIntfArray, intfNameArray);
     }
 }

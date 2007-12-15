@@ -77,9 +77,6 @@ public final class IntfMatcherEnumeration
         try {
             matchers.add( IntfSimpleMatcher.getAllMatcher());
 
-            matchers.add( IntfRelativeMatcher.getMoreExternalMatcher());
-            matchers.add( IntfRelativeMatcher.getMoreInternalMatcher());
-
             matchers.add( IntfSingleMatcher.makeInstance( IntfConstants.INTERNAL_INTF ));
             matchers.add( IntfSingleMatcher.makeInstance( IntfConstants.EXTERNAL_INTF ));
 
@@ -93,6 +90,10 @@ public final class IntfMatcherEnumeration
                 matchers.add( IntfSetMatcher.makeInstance( IntfConstants.EXTERNAL_INTF,
                                                            IntfConstants.DMZ_INTF ));
             }
+
+            matchers.add( IntfRelativeMatcher.getMoreExternalMatcher());
+            matchers.add( IntfRelativeMatcher.getMoreInternalMatcher());
+
         } catch ( ParseException e ) {
             /* Use System.err because log4j shouldn't be used inside of API */
             System.err.println( "Unable to initialize the interface matcher enumeration" );
