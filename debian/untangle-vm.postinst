@@ -48,7 +48,7 @@ if [ -x "/etc/init.d/untangle-vm" ]; then
 fi
 
 # if it's our first install, and the running kernel is already right, start it.
-[ -z "$2" ] && echo `uname -r` | grep -iq "untangle" && /etc/init.d/untangle-vm start
+[ -z "$2" ] && uname -r | grep -iq "untangle" && /etc/init.d/untangle-vm start
 
 ## Touch all of the webstart files so the client always loads the new version
 find /usr/share/untangle/web/webstart 2>/dev/null | xargs touch > /dev/null 2>&1
