@@ -97,10 +97,10 @@ for f in @THIRDPARTY_REPORTS_LIB@/*jar ; do
     CLASSPATH="$CLASSPATH:$f"
 done
 
-if [ -f $UNTANGLE_HARDARE ] ; then
+if [ -f "$UNTANGLE_HARDWARE" ] ; then
     JAVA_OPTS="-Dcom.untangle.isUntangleAppliance=true $JAVA_OPTS"
 fi
-if (lspci|grep -qi VMWare) then
+if ( lspci | grep -qi VMWare ) then
     JAVA_OPTS="-Dcom.untangle.isInsideVM=true $JAVA_OPTS"
 fi
 
