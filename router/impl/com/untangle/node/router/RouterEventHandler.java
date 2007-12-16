@@ -165,7 +165,7 @@ class RouterEventHandler extends AbstractEventHandler
 		// ports we are non-locally bound to and may try to reuse them prematurly.
 		reservedPort = getNextPort( Protocol.TCP );
 		if ( logger.isDebugEnabled()) {
-		    logger.debug("Mangeling client port from "+newClientPort+" to "+reservedPort);
+		    logger.debug("Mangleing client port from "+newClientPort+" to "+reservedPort);
 		}
 		request.clientPort( reservedPort );
 	    } else {

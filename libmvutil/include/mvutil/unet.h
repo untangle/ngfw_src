@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -38,15 +38,18 @@ int     unet_startlisten_local(u_short listenport);
  */
 int     unet_startlisten      (u_short listenport);
 
+int     unet_startlisten_addr (u_short listenport, struct in_addr* bind_addr );
+
 /**
  * Opens up a range of consecutive TCP ports for listening.
  * count: The number of ports to open
  * port:  This will be set to the first port that is open in the range.
  * fds:   Array of filedescriptors, this should contain at least <code>count</code> items.
+ * ip: IP to bind to or NULL to bind to 0.0.0.0.
  * If there is an error, or it is unable to open the range in a 
  * reasonable number of attempts, this returns -1.
  */
-int     unet_startlisten_on_portrange(  int count, u_short* port, int* fds );
+int     unet_startlisten_on_portrange(  int count, u_short* port, int* fds, char* ip );
 
 /**
  * opens a UDP socket for listening on listenport
@@ -59,7 +62,7 @@ int     unet_startlisten_udp (u_short listenport);
  * sets port to port and insock to fd
  * returns 0 or -1 on error 
  */
-int     unet_startlisten_on_anyport_tcp (u_short* port, int* fd);
+int     unet_startlisten_on_anyport_tcp( u_short* port, int* fd, struct in_addr* bind_addr );
 
 /**
  * opens a UDP socket for listening on any port

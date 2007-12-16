@@ -37,7 +37,8 @@
 #define __QUEUE_LENGTH 2048
 #define START_PORT 9500
 
-#define PORT_RANGE_ATTEMPS 5
+#define PORT_RANGE_ATTEMPTS 5
+#define LISTEN_ATTEMPTS 5
 
 #define ENABLE_BLOCKING 0xDABBA
 #define NON_BLOCKING_FLAGS   O_NDELAY | O_NONBLOCK
@@ -107,6 +108,18 @@ int     unet_startlisten (u_short listenport)
     return _unet_startlisten(&listen_addr);
 }
 
+int     unet_startlisten_addr(u_short listenport, struct in_addr* bind_addr )
+{
+    struct sockaddr_in listen_addr;
+
+    memset(&listen_addr,0,sizeof(listen_addr));
+    listen_addr.sin_port = htons(listenport);
+    listen_addr.sin_family = AF_INET;
+    listen_addr.sin_addr.s_addr = bind_addr->s_addr; 
+
+    return _unet_startlisten(&listen_addr);
+}
+
 int     unet_startlisten_local (u_short listenport)
 {
     struct sockaddr_in listen_addr;
@@ -142,27 +155,37 @@ int     unet_startlisten_udp (u_short listenport)
 
 /* Opens up a consecutive range of ports for a TCP connection, if unable to open up a consecutive
  * range after a 5 attempts, return an error */
-int     unet_startlisten_on_portrange(  int count, u_short* base_port, int* socks )
+int     unet_startlisten_on_portrange(  int count, u_short* base_port, int* socks, char* ip )
 {
     int c;
     
     if ( count < 1 || base_port == NULL || socks == NULL )
         return errlogargs();
+
+    struct in_addr bind_addr = {
+        .s_addr = htonl( INADDR_ANY )
+    };
+    
+    if ( ip != NULL ) {
+        if ( inet_aton( ip, &bind_addr ) < 0 ) {
+            return errlog( ERR_CRITICAL, "Unable to convert ip '%s' (inet_aton)", ip );
+        }
+    } 
     
     for ( c = 0 ; c < count ; c++ )
         socks[c] = -1;
 
-    for ( c = 0 ; c < PORT_RANGE_ATTEMPS; c++ ) {
+    for ( c = 0 ; c < PORT_RANGE_ATTEMPTS; c++ ) {
         int d;
         u_short port;
 
         /* Get the first port */
-        if ( unet_startlisten_on_anyport_tcp( base_port, socks )) {
+        if ( unet_startlisten_on_anyport_tcp( base_port, &socks[0], &bind_addr )) {
             return errlog( ERR_CRITICAL, "unet_startlisten_on_anyport_tcp\n" );
         }
         
         for ( d = 1 ; d < count ; d++ ) {
-            if ( unet_startlisten_on_anyport_tcp( &port, &socks[d] )) {
+            if ( unet_startlisten_on_anyport_tcp( &port, &socks[d], &bind_addr )) {
                 _close_socks( d, socks );
                 return errlog( ERR_CRITICAL, "unet_startlisten_on_anyport_tcp\n" );
             }
@@ -190,17 +213,22 @@ static void _close_socks( int count, int* socks )
 }
 
 
-int     unet_startlisten_on_anyport_tcp (u_short* port, int* fd)
+int     unet_startlisten_on_anyport_tcp( u_short* port, int* fd, struct in_addr* bind_addr )
 {
     *fd = -1;
     *port = next_port_tcp++;
+    int attempts = LISTEN_ATTEMPTS;
 
     if (next_port_tcp < 2048 || next_port_tcp > 65000)
         next_port_tcp = START_PORT;
     
     while (*fd == -1) {
-        
-        if ((*fd = unet_startlisten(*port))<0) {
+
+        if ( attempts -- < 0 ) {
+            return errlog( ERR_CRITICAL, "Unable to open a port in %d attempts", LISTEN_ATTEMPTS );
+        }
+
+        if ((*fd = unet_startlisten_addr(*port, bind_addr ))<0) {
 
             if (errno == EINVAL  || errno == EADDRINUSE) {
                 *port = *port + 1; 

@@ -57,7 +57,7 @@ public class XMLRPCUtil
     /* This is the controller for the UVM */
     public static final String CONTROLLER_UVM = "uvm";
 
-    private static final String ALPACA_BASE_URL = "http://localhost:3000/";
+    private static final String ALPACA_BASE_URL = "http://localhost:3000/alpaca/";
     private static final String ALPACA_NONCE_FILE = "/etc/untangle-net-alpaca/nonce";
 
     /* 10 seconds */
