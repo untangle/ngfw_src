@@ -724,7 +724,7 @@ public abstract class MSortedTableModel<T> extends DefaultTableModel
         return filteredData;
     }
     public ComboBoxModel copyComboBoxModel(ComboBoxModel comboBoxModel){
-        DefaultComboBoxModel newComboBoxModel = new DefaultComboBoxModel();
+        UtComboBoxModel newComboBoxModel = new UtComboBoxModel();
         int size = comboBoxModel.getSize();
         for(int i=0; i<size; i++){
             newComboBoxModel.insertElementAt(comboBoxModel.getElementAt(i), i);
@@ -732,11 +732,11 @@ public abstract class MSortedTableModel<T> extends DefaultTableModel
         newComboBoxModel.setSelectedItem(comboBoxModel.getSelectedItem());
         return newComboBoxModel;
     }
-    public ComboBoxModel generateComboBoxModel(List optionList, Object setting){
+    public UtComboBoxModel generateComboBoxModel(List optionList, Object setting){
         return generateComboBoxModel(optionList.toArray(), setting);
     }
-    public ComboBoxModel generateComboBoxModel(Object[] options, Object setting){
-        DefaultComboBoxModel returnComboBoxModel = new DefaultComboBoxModel();
+    public UtComboBoxModel generateComboBoxModel(Object[] options, Object setting){
+        UtComboBoxModel returnComboBoxModel = new UtComboBoxModel();
         for( Object option : options ){
             returnComboBoxModel.addElement(option);
         }

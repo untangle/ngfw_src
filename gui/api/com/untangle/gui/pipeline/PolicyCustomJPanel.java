@@ -151,7 +151,9 @@ class CustomPolicyTableModel extends MSortedTableModel<PolicyCompoundSettings>{
         IntfMatcherFactory imf = IntfMatcherFactory.getInstance();
         IntfEnum intfEnum = Util.getIntfManager().getIntfEnum();
         imf.updateEnumeration(intfEnum);
-        ComboBoxModel interfaceModel = super.generateComboBoxModel( imf.getEnumeration(), imf.getDefault() );
+        UtComboBoxModel interfaceModel = super.generateComboBoxModel( imf.getEnumeration(), imf.getDefault() );
+        interfaceModel.insertElementAt(new UtComboBoxRenderer.Separator(), 1);
+        interfaceModel.insertElementAt(new UtComboBoxRenderer.Separator(), interfaceModel.getSize() - 2);
 
         timeModel.addElement(TIME_INCLUDE);
         timeModel.addElement(TIME_EXCLUDE);

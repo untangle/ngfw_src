@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -44,11 +44,11 @@ import com.untangle.gui.node.*;
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.dialogs.MConfigJDialog;
 import com.untangle.uvm.*;
-import com.untangle.uvm.security.*;
-import com.untangle.uvm.snmp.*;
 import com.untangle.uvm.node.*;
 import com.untangle.uvm.node.firewall.ip.IPMatcherFactory;
 import com.untangle.uvm.node.firewall.port.PortMatcherFactory;
+import com.untangle.uvm.security.*;
+import com.untangle.uvm.snmp.*;
 
 public class PolicyWizardJPanel extends javax.swing.JPanel
     implements Savable<CompoundVector> {
@@ -159,11 +159,15 @@ public class PolicyWizardJPanel extends javax.swing.JPanel
         ComboBoxModel protocolModel = (ComboBoxModel) newRow.elementAt(7);
         protocolSettingJComboBox.setModel(protocolModel);
 
+        JSeparator separator = new JSeparator(JSeparator.HORIZONTAL);
+
         ComboBoxModel serverInterfaceModel = (ComboBoxModel) newRow.elementAt(6);
         interfaceServerJComboBox.setModel(serverInterfaceModel);
+        interfaceServerJComboBox.setRenderer(new UtComboBoxRenderer());
 
         ComboBoxModel clientInterfaceModel = (ComboBoxModel) newRow.elementAt(5);
         interfaceClientJComboBox.setModel(clientInterfaceModel);
+        interfaceClientJComboBox.setRenderer(new UtComboBoxRenderer());
 
         String serverAddress = (String) newRow.elementAt(9);
         addressServerJTextField.setText(serverAddress);
