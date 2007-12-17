@@ -2,7 +2,7 @@
 
 exec >> @UVM_LOG@/iptables.log 2>&1
 
-DEFAULT_HOSTNAME="untangle.local.domain"
+DEFAULT_HOSTNAME="untangle.example.com"
 
 ## Function to set the hostname
 function setHostname() {
