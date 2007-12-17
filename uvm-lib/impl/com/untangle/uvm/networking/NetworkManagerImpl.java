@@ -636,7 +636,8 @@ public class NetworkManagerImpl implements LocalNetworkManager
             try {
                 XMLRPCUtil.getInstance().callAlpaca( XMLRPCUtil.CONTROLLER_UVM, 
                                                      "wizard_internal_interface_nat", null,
-                                                     address, netmask, dhcpStart, dhcpEnd );
+                                                     address.toString(), netmask.toString(), 
+                                                     dhcpStart.toString(), dhcpEnd.toString());
             } catch ( Exception e ) {
                 logger.warn( "Unable to enable NAT.", e );
             }
