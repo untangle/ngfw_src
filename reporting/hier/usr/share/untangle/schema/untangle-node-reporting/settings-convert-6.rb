@@ -6,7 +6,7 @@ def update_schema()
                         'int4',
                         :not_null => true) do
     @dbh.do(<<SQL)
-UPDATE settings.n_reporting_settings days_to_keep = 33
+UPDATE settings.n_reporting_settings SET days_to_keep = 33
 SQL
   end
 
