@@ -573,7 +573,7 @@ public class NetworkManagerImpl implements LocalNetworkManager
     }
 
     /* Save the basic network settings during the wizard */
-    public synchronized void setSetupSettings( AddressSettings address, BasicNetworkSettings basic )
+    public void setSetupSettings( AddressSettings address, BasicNetworkSettings basic )
         throws NetworkException, ValidateException
     {
         this.addressManager.setSettings( address );
@@ -586,7 +586,7 @@ public class NetworkManagerImpl implements LocalNetworkManager
 
         if ( pppoe.isLive()) {
             /* PPPoE Setup */
-            args = new Object[2];
+            args = new String[2];
             method = "wizard_external_interface_pppoe";
             args[0] = pppoe.getUsername();
             args[1] = pppoe.getPassword();
@@ -597,11 +597,11 @@ public class NetworkManagerImpl implements LocalNetworkManager
         } else {
             /* Must be a static address */
             args = new String[5];
-            args[0] = basic.host();
-            args[1] = basic.netmask();
-            args[2] = basic.gateway();
-            args[3] = basic.dns1();
-            args[4] = basic.dns2();
+            args[0] = basic.host().toString();
+            args[1] = basic.netmask().toString();
+            args[2] = basic.gateway().toString();
+            args[3] = basic.dns1().toString();
+            args[4] = basic.dns2().toString();
             method = "wizard_external_interface_static";
         }
 

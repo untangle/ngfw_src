@@ -7,7 +7,7 @@ t_nonce=`head -n 1 /etc/untangle-net-alpaca/nonce`
 ruby <<EOF
 require "xmlrpc/client"
  
-client = XMLRPC::Client.new( "localhost", "/uvm/api?nonce=${t_nonce}", 3000 )
+client = XMLRPC::Client.new( "localhost", "/alpaca/uvm/api?nonce=${t_nonce}", 3000 )
 ok, status = client.call( "generate_rules" )
 EOF
 
