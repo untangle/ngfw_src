@@ -137,7 +137,6 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
     private Separator utilSeparator;
     private Separator policySeparator;
     private Separator coreSeparator;
-    private static final String POLICY_MANAGER_SEPARATOR = "____________";
     private static final String POLICY_MANAGER_OPTION = "Show Policy Manager";
     private static final int CONCURRENT_LOAD_MAX = 2;
     private static Semaphore loadSemaphore;
@@ -413,8 +412,8 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
         // BUILD A GUI MODEL AND UVM MODEL
         Map<Policy,Object> currentPolicyRacks = new HashMap<Policy,Object>();
         Map<Policy,Object> newPolicyRacks = new LinkedHashMap<Policy,Object>();
-        for(int i=0; i<((DefaultComboBoxModel)viewSelector.getModel()).getSize()-2; i++) // -2 for the last 2 policy manager options
-            currentPolicyRacks.put( (Policy) ((DefaultComboBoxModel)viewSelector.getModel()).getElementAt(i), null );
+        for(int i=0; i<((UtComboBoxModel)viewSelector.getModel()).getSize()-2; i++) // -2 for the last 2 policy manager options
+            currentPolicyRacks.put( (Policy) ((UtComboBoxModel)viewSelector.getModel()).getElementAt(i), null );
         for( Policy policy : policies )
             newPolicyRacks.put( policy, null );
         // FIND THE DIFFERENCES
@@ -428,7 +427,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                 removedPolicyVector.add( currentPolicy );
         // UPDATE VIEW SELECTOR
         Policy activePolicy = (Policy) viewSelector.getSelectedItem();
-        DefaultComboBoxModel newModel = new DefaultComboBoxModel();
+        UtComboBoxModel newModel = new UtComboBoxModel();
         for( Policy newPolicy : newPolicyRacks.keySet() ){
             newModel.addElement(newPolicy);
             if( activePolicy.equals(newPolicy) ){
@@ -436,7 +435,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                 selectedPolicy = newPolicy;
             }
         }
-        newModel.addElement(POLICY_MANAGER_SEPARATOR);
+        newModel.addElement(new UtComboBoxRenderer.Separator());
         newModel.addElement(POLICY_MANAGER_OPTION);
         if( newModel.getSelectedItem() == null ){
             newModel.setSelectedItem( newModel.getElementAt(0) );
@@ -1172,7 +1171,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                         if( type == MackageDesc.Type.LIB_ITEM ) {
                             storeItemsVisible.add(m);
                         }
-                        logger.debug("items: " + storeItemsVisible.size());                        
+                        logger.debug("items: " + storeItemsVisible.size());
                     }
                 }
                 connectedToStore = true;
@@ -1414,14 +1413,14 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
         }
     }
     private void initViewSelector(){
-        DefaultComboBoxModel newModel = new DefaultComboBoxModel();
+        UtComboBoxModel newModel = new UtComboBoxModel();
         for( Policy policy : policyTidMap.keySet() )
             newModel.addElement(policy);
-        newModel.addElement(POLICY_MANAGER_SEPARATOR);
+        newModel.addElement(new UtComboBoxRenderer.Separator());
         newModel.addElement(POLICY_MANAGER_OPTION);
         newModel.setSelectedItem( newModel.getElementAt(0) );
         viewSelector.setModel(newModel);
-        viewSelector.setRenderer( new PolicyRenderer(viewSelector.getRenderer()) );
+        viewSelector.setRenderer( new PolicyRenderer(new UtComboBoxRenderer()) );
         handleViewSelector();
     }
     ////////////////////////////////////////
@@ -1830,8 +1829,8 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
             this.listCellRenderer = listCellRenderer;
         }
         public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean hasFocus){
-            String text = (value instanceof Policy?((Policy)value).getName():value.toString());
-            Component renderComponent = listCellRenderer.getListCellRendererComponent(list, text, index, isSelected, hasFocus);
+            Object o = (value instanceof Policy?((Policy)value).getName():value);
+            Component renderComponent = listCellRenderer.getListCellRendererComponent(list, o, index, isSelected, hasFocus);
             renderComponent.setForeground(Color.BLACK);
 
             //((JLabel)renderComponent).setBorder(new javax.swing.border.LineBorder(new Color(130,130,130), 1));
