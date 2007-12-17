@@ -31,6 +31,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 
+import com.untangle.node.util.UriUtil;
 import org.hibernate.HibernateException;
 import org.hibernate.usertype.UserType;
 
@@ -68,7 +69,7 @@ public class UriUserType implements UserType
             if (1 <= name.length() && '%' == name.charAt(name.length() - 1)) {
                 name = name.substring(0, name.length() - 1);
             } else if (2 <= name.length() && '%' == name.charAt(name.length() - 2)) {
-                name = name.substring(0, name.length() - 2);
+                name = UriUtil.escapeUri(name.substring(0, name.length() - 2));
             }
             try {
                 return new URI(name);
