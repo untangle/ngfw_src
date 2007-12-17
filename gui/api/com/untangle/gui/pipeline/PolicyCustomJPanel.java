@@ -151,9 +151,14 @@ class CustomPolicyTableModel extends MSortedTableModel<PolicyCompoundSettings>{
         IntfMatcherFactory imf = IntfMatcherFactory.getInstance();
         IntfEnum intfEnum = Util.getIntfManager().getIntfEnum();
         imf.updateEnumeration(intfEnum);
-        UtComboBoxModel interfaceModel = super.generateComboBoxModel( imf.getEnumeration(), imf.getDefault() );
-        interfaceModel.insertElementAt(new UtComboBoxRenderer.Separator(), 1);
-        interfaceModel.insertElementAt(new UtComboBoxRenderer.Separator(), interfaceModel.getSize() - 2);
+
+        UtComboBoxModel sIfaceModel = super.generateComboBoxModel( imf.getEnumeration(), imf.getDefault() );
+        sIfaceModel.insertElementAt(new UtComboBoxRenderer.Separator(), 1);
+        sIfaceModel.insertElementAt(new UtComboBoxRenderer.Separator(), sIfaceModel.getSize() - 2);
+
+        UtComboBoxModel cIfaceModel = super.generateComboBoxModel( imf.getEnumeration(), imf.getDefault() );
+        cIfaceModel.insertElementAt(new UtComboBoxRenderer.Separator(), 1);
+        cIfaceModel.insertElementAt(new UtComboBoxRenderer.Separator(), cIfaceModel.getSize() - 2);
 
         timeModel.addElement(TIME_INCLUDE);
         timeModel.addElement(TIME_EXCLUDE);
@@ -167,8 +172,8 @@ class CustomPolicyTableModel extends MSortedTableModel<PolicyCompoundSettings>{
         addTableColumn( tableColumnModel,  2,  C2_MW,  false, true,  false, false, EditButtonRunnable.class, "true", sc.html("edit"));
         addTableColumn( tableColumnModel,  3,  C3_MW,  false, true,  false, false, Boolean.class, "true", sc.html("<b>live</b>"));
         addTableColumn( tableColumnModel,  4,  C4_MW,  true,  true,  false, false, ComboBoxModel.class, policyModel, sc.html("<b>use this rack</b> when the<br>next columns are matched..."));
-        addTableColumn( tableColumnModel,  5,  C5_MW,  true,  true,  false, false, ComboBoxModel.class, interfaceModel, sc.html("client<br>interface"));
-        addTableColumn( tableColumnModel,  6,  C6_MW,  true,  true,  false, false, ComboBoxModel.class, interfaceModel, sc.html("server<br>interface"));
+        addTableColumn( tableColumnModel,  5,  C5_MW,  true,  true,  false, false, ComboBoxModel.class, cIfaceModel, sc.html("client<br>interface"));
+        addTableColumn( tableColumnModel,  6,  C6_MW,  true,  true,  false, false, ComboBoxModel.class, sIfaceModel, sc.html("server<br>interface"));
         addTableColumn( tableColumnModel,  7,  C7_MW,  true,  true,  false, false, ComboBoxModel.class, protocolModel, sc.html("protocol"));
         addTableColumn( tableColumnModel,  8,  C8_MW,  true,  true,  false, false, String.class, "any", sc.html("client<br>address"));
         addTableColumn( tableColumnModel,  9,  C9_MW,  true,  true,  false, false, String.class, "any", sc.html("server<br>address"));
@@ -288,8 +293,19 @@ class CustomPolicyTableModel extends MSortedTableModel<PolicyCompoundSettings>{
             else
                 policyName = PolicyAvailableJPanel.SELECT_NO_RACK;
             tempRow.add( super.generateComboBoxModel(policyNames.keySet().toArray(), policyName) );
-            tempRow.add( super.generateComboBoxModel(intfEnumeration, newElem.getClientIntf()) );
-            tempRow.add( super.generateComboBoxModel(intfEnumeration, newElem.getServerIntf()) );
+
+            IntfMatcherFactory imf = IntfMatcherFactory.getInstance();
+            IntfEnum intfEnum = Util.getIntfManager().getIntfEnum();
+            imf.updateEnumeration(intfEnum);
+            UtComboBoxModel interfaceModel = super.generateComboBoxModel( imf.getEnumeration(), newElem.getClientIntf());
+            interfaceModel.insertElementAt(new UtComboBoxRenderer.Separator(), 1);
+            interfaceModel.insertElementAt(new UtComboBoxRenderer.Separator(), interfaceModel.getSize() - 2);
+            tempRow.add(interfaceModel);
+            interfaceModel = super.generateComboBoxModel( imf.getEnumeration(), newElem.getServerIntf());
+            interfaceModel.insertElementAt(new UtComboBoxRenderer.Separator(), 1);
+            interfaceModel.insertElementAt(new UtComboBoxRenderer.Separator(), interfaceModel.getSize() - 2);
+            tempRow.add(interfaceModel);
+
             tempRow.add( super.generateComboBoxModel(ProtocolMatcherFactory.getProtocolEnumeration(), newElem.getProtocol()) );
             tempRow.add( newElem.getClientAddr().toString() );
             tempRow.add( newElem.getServerAddr().toString() );
