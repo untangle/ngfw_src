@@ -97,18 +97,11 @@ public class PolicyWizardJPanel extends javax.swing.JPanel
         Date endDate = null;
         try{ startDate = sdf.parse( timeStartJTextField.getText() ); }
         catch(Exception e){ throw new Exception("You must specify a valid start time."); }
-        newRow.setElementAt( timeStartJTextField.getText(), 14);
+        newRow.setElementAt( timeStartJTextField.getText(), 13);
 
         try{ endDate = sdf.parse( timeEndJTextField.getText() ); }
         catch(Exception e){ throw new Exception("You must specify a valid end time."); }
-        newRow.setElementAt( timeEndJTextField.getText(), 15);
-
-        ComboBoxModel timeModel = (ComboBoxModel) newRow.elementAt(13);
-        if( timeInvertJCheckBox.isSelected() )
-            timeModel.setSelectedItem("Invert day/time");
-        else
-            timeModel.setSelectedItem("Normal day/time");
-        newRow.setElementAt( timeModel, 13);
+        newRow.setElementAt( timeEndJTextField.getText(), 14);
 
         boolean allDaysSelected = true;
         String dayString = new String();
@@ -145,12 +138,12 @@ public class PolicyWizardJPanel extends javax.swing.JPanel
             throw new Exception("You must select at least one day for this policy to be active.");
         dayString = dayString.substring(0, dayString.length()-2);
         if(allDaysSelected)
-            newRow.setElementAt("any", 16);
+            newRow.setElementAt("any", 15);
         else
-            newRow.setElementAt(dayString, 16);
+            newRow.setElementAt(dayString, 15);
 
         newRow.setElementAt(rackSelectJComboBox.getModel(), 4);
-        newRow.setElementAt(rackDescJTextField.getText(), 17);
+        newRow.setElementAt(rackDescJTextField.getText(), 16);
         newRow.setElementAt(rackEnableJCheckBox.isSelected(), 3);
     }
 
@@ -186,16 +179,13 @@ public class PolicyWizardJPanel extends javax.swing.JPanel
             newUserString = newUserList.get(0);
         userSettingsJLabel.setText("User: " + newUserString);
 
-        String startTime = (String) newRow.elementAt(14);
+        String startTime = (String) newRow.elementAt(13);
         timeStartJTextField.setText(startTime);
 
-        String endTime = (String) newRow.elementAt(15);
+        String endTime = (String) newRow.elementAt(14);
         timeEndJTextField.setText(endTime);
 
-        boolean invertTime = ((ComboBoxModel) newRow.elementAt(13)).getSelectedItem().equals("Invert day/time"); // comes from policy custom panel
-        timeInvertJCheckBox.setSelected(invertTime);
-
-        String dayString = (String) newRow.elementAt(16);
+        String dayString = (String) newRow.elementAt(15);
 
         if(dayString.contains("Sunday"))
             sundayJCheckBox.setSelected(true);
@@ -239,7 +229,7 @@ public class PolicyWizardJPanel extends javax.swing.JPanel
         ComboBoxModel policyModel = (ComboBoxModel) newRow.elementAt(4);
         rackSelectJComboBox.setModel(policyModel);
 
-        String description = (String) newRow.elementAt(17);
+        String description = (String) newRow.elementAt(16);
         rackDescJTextField.setText(description);
 
         boolean enabled = (Boolean) newRow.elementAt(3);

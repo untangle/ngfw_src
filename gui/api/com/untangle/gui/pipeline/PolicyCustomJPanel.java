@@ -95,9 +95,6 @@ class CustomPolicyTableModel extends MSortedTableModel<PolicyCompoundSettings>{
 
     private MConfigJDialog mConfigJDialog;
 
-    public static String TIME_EXCLUDE = "Invert day/time"; // depended on is policy wizard page
-    private String TIME_INCLUDE = "Normal day/time";
-
     public CustomPolicyTableModel(MConfigJDialog mConfigJDialog){
         this.mConfigJDialog = mConfigJDialog;
     }
@@ -116,11 +113,10 @@ class CustomPolicyTableModel extends MSortedTableModel<PolicyCompoundSettings>{
     private static final int C10_MW = 100; /* client port */
     private static final int C11_MW = 100; /* server port */
     private static final int C12_MW = 165; /* user */
-    private static final int C13_MW = 165; /* time range */
-    private static final int C14_MW = 100; /* start time */
-    private static final int C15_MW = 100; /* end time */
-    private static final int C16_MW = 100; /* days */
-    private static final int C17_MW = Util.chooseMax(T_TW - (C0_MW + C1_MW + C2_MW + C3_MW + C4_MW + C5_MW + C6_MW + C7_MW + C8_MW + C9_MW + C10_MW + C11_MW + C12_MW + C13_MW + C14_MW + C15_MW + C16_MW), 125); /* description */
+    private static final int C13_MW = 100; /* start time */
+    private static final int C14_MW = 100; /* end time */
+    private static final int C15_MW = 100; /* days */
+    private static final int C16_MW = Util.chooseMax(T_TW - (C0_MW + C1_MW + C2_MW + C3_MW + C4_MW + C5_MW + C6_MW + C7_MW + C8_MW + C9_MW + C10_MW + C11_MW + C12_MW + C13_MW + C14_MW + C15_MW), 125); /* description */
 
     protected boolean getSortable(){ return false; }
 
@@ -129,7 +125,6 @@ class CustomPolicyTableModel extends MSortedTableModel<PolicyCompoundSettings>{
                                      ProtocolMatcherFactory.getProtocolDefault());
     private DefaultComboBoxModel policyModel = new DefaultComboBoxModel();
     private IntfEnum intfEnum;
-    DefaultComboBoxModel timeModel = new DefaultComboBoxModel();
     private Map<String,Policy> policyNames = new LinkedHashMap();
     private void updatePolicyNames(List<Policy> policyList){
         policyNames.clear();
@@ -160,11 +155,6 @@ class CustomPolicyTableModel extends MSortedTableModel<PolicyCompoundSettings>{
         cIfaceModel.insertElementAt(new UtComboBoxRenderer.Separator(), 1);
         cIfaceModel.insertElementAt(new UtComboBoxRenderer.Separator(), cIfaceModel.getSize() - 2);
 
-        timeModel.addElement(TIME_INCLUDE);
-        timeModel.addElement(TIME_EXCLUDE);
-        timeModel.setSelectedItem(TIME_INCLUDE);
-
-
         DefaultTableColumnModel tableColumnModel = new DefaultTableColumnModel();
         //                                 #   min     rsz    edit   remv   desc   typ            def
         addTableColumn( tableColumnModel,  0,  C0_MW,  false, false, true, false, String.class,  null, sc.TITLE_STATUS );
@@ -180,12 +170,11 @@ class CustomPolicyTableModel extends MSortedTableModel<PolicyCompoundSettings>{
         addTableColumn( tableColumnModel,  10, C10_MW, true,  true,  true,  false, String.class, "any", sc.html("client<br>port"));
         addTableColumn( tableColumnModel,  11, C11_MW, true,  true,  false, false, String.class, "any", sc.html("server<br>port"));
         addTableColumn( tableColumnModel,  12, C12_MW, true,  true,  false, false, UidButtonRunnable.class, "true", sc.html("user ID/login"));
-        addTableColumn( tableColumnModel,  13, C13_MW, true,  true,  false, false, ComboBoxModel.class, timeModel, sc.html("day/time"));
-        addTableColumn( tableColumnModel,  14, C14_MW, true,  true,  false, false, String.class, "00:00", sc.html("start time"));
-        addTableColumn( tableColumnModel,  15, C15_MW, true,  true,  false, false, String.class, "23:59", sc.html("end time"));
-        addTableColumn( tableColumnModel,  16, C16_MW, true,  true,  false, false, String.class, "any", sc.html("days"));
-        addTableColumn( tableColumnModel,  17, C17_MW, true,  true,  false, true,  String.class, sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION );
-        addTableColumn( tableColumnModel,  18, 18,     false, false, true,  false, UserPolicyRule.class, null, "" );
+        addTableColumn( tableColumnModel,  13, C13_MW, true,  true,  false, false, String.class, "00:00", sc.html("start time"));
+        addTableColumn( tableColumnModel,  14, C14_MW, true,  true,  false, false, String.class, "23:59", sc.html("end time"));
+        addTableColumn( tableColumnModel,  15, C15_MW, true,  true,  false, false, String.class, "any", sc.html("days"));
+        addTableColumn( tableColumnModel,  16, C16_MW, true,  true,  false, true,  String.class, sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION );
+        addTableColumn( tableColumnModel,  17, 17,     false, false, true,  false, UserPolicyRule.class, null, "" );
 
         return tableColumnModel;
     }
@@ -212,7 +201,7 @@ class CustomPolicyTableModel extends MSortedTableModel<PolicyCompoundSettings>{
 
         for( Vector rowVector : tableVector ){
             rowIndex++;
-            newElem = (UserPolicyRule) rowVector.elementAt(18);
+            newElem = (UserPolicyRule) rowVector.elementAt(17);
 
             boolean isLive = (Boolean) rowVector.elementAt(3);
             newElem.setLive( isLive );
@@ -239,17 +228,15 @@ class CustomPolicyTableModel extends MSortedTableModel<PolicyCompoundSettings>{
             catch(Exception e){ throw new Exception("Invalid \"server port\" in row: " + rowIndex); }
             try{ newElem.setUser( umf.parse(((UidButtonRunnable) rowVector.elementAt(12)).getUids()) ); }
             catch(Exception e){ throw new Exception("Invalid \"user name\" in row: " + rowIndex); }
-            boolean invertTime = ((String)((ComboBoxModel)rowVector.elementAt(13)).getSelectedItem()).equals(TIME_EXCLUDE);
-            newElem.setInvertEntireDuration(invertTime);
-            try{ newElem.setStartTime( dateFormat.parse((String)rowVector.elementAt(14)) ); }
+            try{ newElem.setStartTime( dateFormat.parse((String)rowVector.elementAt(13)) ); }
             catch(Exception e){ throw new Exception("Invalid \"start time\" in row: " + rowIndex); }
-            try{ newElem.setEndTime( dateFormat.parse((String)rowVector.elementAt(15)) ); }
+            try{ newElem.setEndTime( dateFormat.parse((String)rowVector.elementAt(14)) ); }
             catch(Exception e){ throw new Exception("Invalid \"end time\" in row: " + rowIndex); }
             if( newElem.getStartTime().compareTo(newElem.getEndTime()) > 0 )
                 throw new Exception("The start time cannot be later than the end time in row: " + rowIndex);
-            try{ newElem.setDayOfWeek( dmf.parse((String)rowVector.elementAt(16)) ); }
+            try{ newElem.setDayOfWeek( dmf.parse((String)rowVector.elementAt(15)) ); }
             catch(Exception e){ throw new Exception("Invalid \"days\" in row: " + rowIndex); }
-            newElem.setDescription( (String) rowVector.elementAt(17) );
+            newElem.setDescription( (String) rowVector.elementAt(16) );
             elemList.add(newElem);
         }
 
@@ -280,7 +267,7 @@ class CustomPolicyTableModel extends MSortedTableModel<PolicyCompoundSettings>{
 
         for( UserPolicyRule newElem : userPolicyRules ){
             rowIndex++;
-            tempRow = new Vector(19);
+            tempRow = new Vector(18);
             tempRow.add( super.ROW_SAVED );
             tempRow.add( rowIndex );
             EditButtonRunnable editButtonRunnable = new EditButtonRunnable("true");
@@ -314,7 +301,6 @@ class CustomPolicyTableModel extends MSortedTableModel<PolicyCompoundSettings>{
             UidButtonRunnable uidButtonRunnable = new UidButtonRunnable("true");
             uidButtonRunnable.setUid( newElem.getUser().toString() );
             tempRow.add( uidButtonRunnable );
-            tempRow.add( super.copyComboBoxModel(timeModel) );
             tempRow.add( dateFormat.format(newElem.getStartTime()) );
             tempRow.add( dateFormat.format(newElem.getEndTime()) );
             tempRow.add( newElem.getDayOfWeek().toString() );
