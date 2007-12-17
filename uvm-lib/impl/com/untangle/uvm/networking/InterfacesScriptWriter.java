@@ -92,10 +92,6 @@ class InterfacesScriptWriter extends ScriptWriter
             if ( !this.settings.getIsEnabled()) break;
         }
         
-        /* Add the PPPoE Settings, this is kind of a hack right now, should be genericized.
-         * XXX should this occur before or after the routing table is updated. */
-        NetworkManagerImpl.getInstance().getPPPoEManager().addInterfaceConfig( this );
-        
         /* Add this after the last interface, done this way so there isn't a space
          * in between the interface and the final commands */
         addRoutingTable();
@@ -181,34 +177,27 @@ class InterfacesScriptWriter extends ScriptWriter
 
         /* Add the primary address */
         if ( space.getIsDhcpEnabled()) {
-            /* only output the DHCP stuff if pppoe is disabled */
-            if ( !NetworkManagerImpl.getInstance().getPPPoEManager().getExternalSettings().isLive()) {
-                /* This jibberish guarantees that if the device doesn't come up, it still
-                 * gets an address */
-                String flags = "";
-                
-                /* If this is not the primary space, then the gateway and
-                 * /etc/resolv.conf should not be updated. */
-                /* XXXX Presently not supported, I believe dhclient only works
-                 * with one call for all of them */
-                // if ( !isFirst ) flags = DHCP_FLAG_ADDRESS_ONLY;
-                
-                String command = "up ";
-                
-                if ( isBridge ) {
-                    /* Give some time for the bridge to come alive */
-                    command += "sleep 5;  ";
-                }
-                
-                command += " dhclient " + flags + " " + name;
-                
-                appendCommands( command );
-                appendCommands( "up ifconfig " + name + " mtu " + mtu );
-            } else {
-                logger.debug( "ignoring dhcp because pppoe is enabled" );
-                
-                appendCommands( "up ifconfig " + name + " up " );
+            /* This jibberish guarantees that if the device doesn't come up, it still
+             * gets an address */
+            String flags = "";
+            
+            /* If this is not the primary space, then the gateway and
+             * /etc/resolv.conf should not be updated. */
+            /* XXXX Presently not supported, I believe dhclient only works
+             * with one call for all of them */
+            // if ( !isFirst ) flags = DHCP_FLAG_ADDRESS_ONLY;
+            
+            String command = "up ";
+            
+            if ( isBridge ) {
+                /* Give some time for the bridge to come alive */
+                command += "sleep 5;  ";
             }
+            
+            command += " dhclient " + flags + " " + name;
+            
+            appendCommands( command );
+            appendCommands( "up ifconfig " + name + " mtu " + mtu );
         } else {
             primaryAddress = space.getPrimaryAddress();
             appendCommands( "up ifconfig " + name + " " + primaryAddress.getNetwork() +

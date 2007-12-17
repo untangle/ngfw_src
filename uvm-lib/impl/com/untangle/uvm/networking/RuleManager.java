@@ -84,10 +84,6 @@ public class RuleManager
 
     private final Logger logger = Logger.getLogger( getClass());
 
-    private boolean subscribeLocalInside  = true;
-    private boolean subscribeLocalOutside = true;
-    private boolean dhcpEnableForwarding  = true;
-
     private boolean isShutdown = false;
 
     /* Set to true in order to use the value specified in the interface list */
@@ -138,21 +134,6 @@ public class RuleManager
             logger.error( "Error while generating iptables rules", e );
             throw new NetworkException( "Unable to generate iptables rules", e );
         }
-    }
-
-    void subscribeLocalInside( boolean subscribeLocalInside )
-    {
-        this.subscribeLocalInside = subscribeLocalInside;
-    }
-
-    void subscribeLocalOutside( boolean subscribeLocalOutside )
-    {
-        this.subscribeLocalOutside = subscribeLocalOutside;
-    }
-    
-    void dhcpEnableForwarding( boolean dhcpEnableForwarding )
-    {
-        this.dhcpEnableForwarding = dhcpEnableForwarding;
     }
 
     /* Just used to setup the antisubscribes */
@@ -220,10 +201,6 @@ public class RuleManager
         }
         
         scriptWriter.appendVariable( TCP_REDIRECT_PORT_FLAG, tcp.low() + "-" + tcp.high());
-        scriptWriter.appendVariable( UDP_DIVERT_PORT_FLAG, divertPort );
-        scriptWriter.appendVariable( ANTISUBSCRIBE_LOCAL_IN_FLAG, !subscribeLocalInside );
-        scriptWriter.appendVariable( ANTISUBSCRIBE_LOCAL_OUT_FLAG, !subscribeLocalOutside );
-        scriptWriter.appendVariable( DHCP_BLOCK_FORWARD_FLAG, !dhcpEnableForwarding );
 
         if ( pingInterfaceEnable ) {
             scriptWriter.appendVariable( PING_ANTISUBSCRIBE_FLAG, true );

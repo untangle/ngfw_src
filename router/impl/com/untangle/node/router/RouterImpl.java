@@ -32,8 +32,6 @@ import com.untangle.uvm.logging.EventLoggerFactory;
 import com.untangle.uvm.logging.EventManager;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.logging.SimpleEventFilter;
-import com.untangle.uvm.networking.IPNetwork;
-import com.untangle.uvm.networking.IPNetworkRule;
 import com.untangle.uvm.networking.LocalNetworkManager;
 import com.untangle.uvm.networking.NetworkException;
 import com.untangle.uvm.networking.NetworkSettingsListener;
@@ -43,7 +41,6 @@ import com.untangle.uvm.networking.SetupState;
 import com.untangle.uvm.networking.internal.NetworkSpaceInternal;
 import com.untangle.uvm.networking.internal.NetworkSpacesInternalSettings;
 import com.untangle.uvm.networking.internal.ServicesInternalSettings;
-import com.untangle.uvm.node.AddressValidator;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.NodeContextSwitcher;
 import com.untangle.uvm.node.NodeException;
@@ -52,6 +49,7 @@ import com.untangle.uvm.node.NodeState;
 import com.untangle.uvm.node.NodeStopException;
 import com.untangle.uvm.util.DataLoader;
 import com.untangle.uvm.util.DataSaver;
+import com.untangle.uvm.util.XMLRPCUtil;
 import com.untangle.uvm.vnet.AbstractNode;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
@@ -81,9 +79,16 @@ public class RouterImpl extends AbstractNode implements Router
 
     private final EventLogger<LogEvent> eventLogger;
 
-    /** Used to turn on network spaces if the appliances is on, otherwise, network
-     * spaces are not turned on at startup. */
-    private boolean isUpgrade = false;
+    /* Indication of what should happen at startup. */
+    /* WIZARD : Wizard needs to be run, initialize to the default settings.
+     * UPGRADE : An upgrade has been performed, need to migrate the settings.
+     * DISABLED : Do nothing at startup, just start as usual.
+     */
+    private enum StartupType { WIZARD, UPGRADE, DISABLED };
+
+    /** Used to turn on network spaces if the appliances is on,
+     * otherwise, network spaces are not turned on at startup. */
+    private StartupType startupType  = StartupType.DISABLED;
 
     private final Logger logger = Logger.getLogger( RouterImpl.class );
 
@@ -237,7 +242,7 @@ public class RouterImpl extends AbstractNode implements Router
     {
         SetupState state = getNetworkSettings().getSetupState();
         if ( state == null ) {
-            logger.error( "NULL State" );
+            logger.error( "NULL SetupState" );
             state = SetupState.BASIC;
         }
 
@@ -287,8 +292,6 @@ public class RouterImpl extends AbstractNode implements Router
 
         try {
             setRouterSettings( settings );
-            // Handler doesn't need to be deconfigured at initialization.
-            // handler.deconfigure();
         } catch( Exception e ) {
             logger.error( "Unable to set Router Settings", e );
         }
@@ -308,13 +311,13 @@ public class RouterImpl extends AbstractNode implements Router
         LocalUvmContextFactory.context().localPhoneBook().registerAssistant( this.assistant );
 
         /* Check if the settings have been upgraded yet */
-        DataLoader<RouterSettingsImpl> natLoader = new DataLoader<RouterSettingsImpl>( "RouterSettingsImpl",
-                                                                                 getNodeContext());
+        DataLoader<RouterSettingsImpl> natLoader = 
+            new DataLoader<RouterSettingsImpl>( "RouterSettingsImpl", getNodeContext());
 
         RouterSettingsImpl settings = natLoader.loadData();
 
         if ( settings == null ) {
-
+            logger.info( "null router settings." );
         } else {
             /* In deprecated, mode, update and save new settings */
             SetupState state = settings.getSetupState();
@@ -330,19 +333,19 @@ public class RouterImpl extends AbstractNode implements Router
                 }
 
                 /* Indicate to enable network spaces when then devices powers on */
-                this.isUpgrade = true;
+                this.startupType = StartupType.UPGRADE;
             } else if ( state.equals( SetupState.WIZARD )) {
                 postInitWizard();
 
                 /* Indicate to enable network spaces when then devices powers on */
-                this.isUpgrade = true;
+                this.startupType = StartupType.WIZARD;
             }  else {
                 logger.info( "Settings are in [" + settings.getSetupState() +"]  mode, ignoring." );
             }
 
             /* If upgrading change the setting to basic mode, this just means they
              * won't be upgraded again.*/
-            if ( this.isUpgrade ) {
+            if ( this.startupType != StartupType.DISABLED ) {
                 /* Change to basic mode */
                 settings.setSetupState( SetupState.BASIC );
                 DataSaver<RouterSettingsImpl> dataSaver = new DataSaver<RouterSettingsImpl>( getNodeContext());
@@ -357,36 +360,38 @@ public class RouterImpl extends AbstractNode implements Router
         UvmState state = context.state();
         LocalNetworkManager networkManager = getNetworkManager();
 
-        /* Enable the network settings */
-        if ( state.equals( UvmState.RUNNING ) || this.isUpgrade ) {
-            logger.debug( "enabling network spaces settings because user powered on nat or upgrade." );
 
+        switch ( this.startupType ) {
+        case WIZARD:
+            /* Run the commands to initialize the alpaca for the wizard */
+            logger.info( "Initializing the alpaca to the wizard configuration" );
+            
+            /* Make a synchronous request */
             try {
-                networkManager.enableNetworkSpaces();
+                XMLRPCUtil.getInstance().callAlpaca( XMLRPCUtil.CONTROLLER_UVM, "wizard_start", null );
             } catch ( Exception e ) {
-                throw new NodeStartException( "Unable to enable network spaces", e );
+                throw new NodeStartException( "Unable to initialize the wizard", e );
             }
+            break;
 
-            this.isUpgrade = false;
-        } else {
-            logger.debug( "not enabling network spaces settings at startup" );
+        case UPGRADE:
+            /* Not sure what to do here? */
+            logger.info( "In the upgrade state." );
+            break;
+
+        case DISABLED:
+            /* No longer need to do anything at router startup */
+            logger.debug( "nothing to do at startup" );
         }
+        
+        /* no longer at startup. */
+        this.startupType = StartupType.DISABLED;
 
         NetworkSpacesInternalSettings networkSettings = getNetworkSettings();
         ServicesInternalSettings servicesSettings = getServicesSettings();
 
-        try {
-            configureDhcpMonitor( servicesSettings.getIsDhcpEnabled());
-            this.assistant.configure( servicesSettings );
-            this.handler.configure( networkSettings );
-            networkManager.startServices();
-        } catch( NodeException e ) {
-            logger.error( "Could not configure the handler.", e );
-            throw new NodeStartException( "Unable to configure the handler" );
-        } catch( NetworkException e ) {
-            logger.error( "Could not start services.", e );
-            throw new NodeStartException( "Unable to configure the handler" );
-        }
+        configureDhcpMonitor( servicesSettings.getIsDhcpEnabled());
+        this.assistant.configure( servicesSettings );
 
         statisticManager.start();
     }
@@ -418,9 +423,6 @@ public class RouterImpl extends AbstractNode implements Router
 
         statisticManager.stop();
 
-        /* deconfigure the event handle */
-        handler.deconfigure();
-
         /* Deconfigure the network spaces */
         /* Only stop the services if the box isn't going down (the user turned off the appliance) */
         if ( state.equals( UvmState.RUNNING )) {
@@ -445,8 +447,6 @@ public class RouterImpl extends AbstractNode implements Router
     {
         logger.info("networkSettingsEvent");
 
-        /* ????, what goes here. Configure the handler */
-
         /* Retrieve the new settings from the network manager */
         LocalNetworkManager nm = getNetworkManager();
         NetworkSpacesInternalSettings networkSettings = nm.getNetworkInternalSettings();
@@ -455,10 +455,8 @@ public class RouterImpl extends AbstractNode implements Router
         if ( getRunState() == NodeState.RUNNING ) {
             /* Have to configure DHCP before the handler, this automatically starts the dns server */
             configureDhcpMonitor( servicesSettings.getIsDhcpEnabled());
-            this.handler.configure( networkSettings );
         } else {
             nm.stopServices();
-            this.handler.deconfigure();
         }
 
         this.assistant.configure( servicesSettings );
@@ -526,72 +524,9 @@ public class RouterImpl extends AbstractNode implements Router
                 toNetworkSettings( networkSettings, (RouterBasicSettings)defaultSettings );
 
             newNetworkSettings.setHasCompletedSetup( false );
-
-            /* Change the primary space to DHCP, this way it only happens once at startup. */
-            NetworkSpace primary = newNetworkSettings.getNetworkSpaceList().get( 0 );
-            primary.setIsDhcpEnabled( true );
-            /* Clear the list of aliases */
-            primary.setNetworkList( new LinkedList<IPNetworkRule>());
-
-            networkManager.setNetworkSettings( newNetworkSettings, false );
-            networkManager.setServicesSettings( defaultSettings );
-
-            /* Trigger an update address to regenerate the iptables rules */
-            networkManager.updateAddress();
         } catch ( Exception e ) {
             logger.error( "Unable to set wizard nat settings", e );
         }
-    }
-
-    /**
-     * Returns true if the edgeguard detects that there is a Router on the outside
-     * of it that is NATing traffic
-     */
-    private boolean isRouterDetected()
-    {
-        NetworkSpacesInternalSettings networkSettings = getNetworkSettings();
-
-        /* Nothing to check, settings are null */
-        if ( networkSettings == null ) {
-            logger.warn( "Unable to detect router, null network settings" );
-            return false;
-        }
-
-        List<NetworkSpaceInternal> networkSpaceList = networkSettings.getNetworkSpaceList();
-
-        if ( networkSpaceList == null ) {
-            logger.warn( "Unable to detect router, null network space list" );
-            return false;
-        }
-
-        if ( networkSpaceList.size() == 0 ) {
-            logger.warn( "Unable to detect router, No network spaces" );
-            return false;
-        }
-
-        NetworkSpaceInternal space = networkSpaceList.get( 0 );
-
-        IPNetwork network = space.getPrimaryAddress();
-        if ( network == null || IPNetwork.getEmptyNetwork().equals( network )) {
-            logger.warn( "Unable to detect router, NULL or empty network on primary space." );
-            return false;
-        }
-
-        /* Verify that the address was retrieved using DHCP */
-        if ( !space.getIsDhcpEnabled()) {
-            logger.debug( "DHCP is disabled, assuming an external router is not in place." );
-            return false;
-        }
-
-        /* If not in a private network, this is a public address */
-        InetAddress publicAddress = network.getNetwork().getAddr();
-        if ( !AddressValidator.getInstance().isInPrivateNetwork( network.getNetwork().getAddr())) {
-            logger.debug( "Detected public address for '"+ publicAddress.getHostAddress() + "'" );
-            return false;
-        }
-
-        logger.debug( "Detected private address for '"+ publicAddress.getHostAddress() + "'" );
-        return true;
     }
 
     private LocalNetworkManager getNetworkManager()
@@ -643,4 +578,4 @@ public class RouterImpl extends AbstractNode implements Router
             }
         }
     }
-}
+} 

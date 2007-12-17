@@ -483,10 +483,10 @@ public class NetworkUtil
             bogusAddress   = IPaddr.parse( "169.254.210.50" );
             bogusNetmask   = IPaddr.parse( "255.255.255.0" );
 
-            dhcpStart      = IPaddr.parse( "192.168.1.100" );
-            dhcpEnd        = IPaddr.parse( "192.168.1.200" );
+            dhcpStart      = IPaddr.parse( "192.168.2.100" );
+            dhcpEnd        = IPaddr.parse( "192.168.2.200" );
 
-            natAddress = IPaddr.parse( "192.168.1.1" );
+            natAddress = IPaddr.parse( "192.168.2.254" );
             natNetmask = IPaddr.parse( "255.255.255.0" );
 
             setupAddress = IPaddr.parse( "192.168.1.1" );

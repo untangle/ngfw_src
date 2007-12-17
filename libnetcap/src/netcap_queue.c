@@ -477,42 +477,20 @@ static int _nf_callback( struct nfq_q_handle *qh, struct nfgenmsg *nfmsg, struct
       debug( 10, "NFQUEUE Input device %d\n", pkt->src_intf );
     }    
 
-    /* First lookup the physdev in */
-    /* if that fails, check the indev */
-    /*
-    u_int32_t in_dev = nfq_get_physindev( nfa );
-    if ( in_dev == 0 ) in_dev = nfq_get_indev( nfa );
-    if ( in_dev == 0 ) {
-      errlog( ERR_WARNING, "Unable to determine the source interface with nfq_get_physindev\n");
-    } else {
-      debug( 10, "NFQUEUE Input device %d\n", in_dev );
-    }
-    */
-
     /* First lookup the physdev_out */
     /* if that fails, check the out_dev */
     u_int32_t out_dev = nfq_get_physoutdev( nfa );
     if ( out_dev == 0 ) out_dev = nfq_get_outdev( nfa );
     if ( out_dev == 0 ) {
-      errlog( ERR_WARNING, "Unable to determine the destination interface with nfq_get_physoutdev\n");
-    } else {
-      debug( 10, "NFQUEUE Output device %d\n", out_dev );
+        errlog( ERR_WARNING, "Unable to determine the destination interface with nfq_get_physoutdev\n");
     }
 
     if (( pkt->dst_intf = netcap_interface_index_to_intf( out_dev )) == 0 ) {
         /* This occurs when the interface is a bridge */
         pkt->dst_intf = NC_INTF_UNK;
     }
-    
-#if 0  // we are not currently matching interfaces by mark 
-    /* Verify that the device matches the device indicated from the mark */
-    if (( in_dev == 0 ) || ( netcap_interface_index_to_intf( in_dev ) != pkt->src_intf )) {
-        errlog( ERR_WARNING, "Unable to determine the source interface from nfq [%s:%d -> %s:%d]\n",
-                unet_next_inet_ntoa( pkt->src.host.s_addr ), pkt->src.port,
-                unet_next_inet_ntoa( pkt->dst.host.s_addr ), pkt->dst.port );
-        
-    }
-#endif   // we are not currently matching interfaces by mark 
+
+    debug( 10, "NFQUEUE Output device %d\n", pkt->dst_intf );
 
     return 0;
 }

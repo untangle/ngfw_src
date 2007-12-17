@@ -35,12 +35,14 @@ package com.untangle.uvm.util;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.IOException;
 
 import java.net.URL;
 import java.net.MalformedURLException;
 
 import org.apache.log4j.Logger;
 
+import org.apache.xmlrpc.XmlRpcException;
 import org.apache.xmlrpc.XmlRpcRequest;
 
 import org.apache.xmlrpc.client.AsyncCallback;
@@ -48,6 +50,7 @@ import org.apache.xmlrpc.client.XmlRpcClient;
 import org.apache.xmlrpc.client.XmlRpcClientConfig;
 import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
 
+import com.untangle.uvm.networking.NetworkException;
 
 // Utility for calling XML-RPC utilities
 public class XMLRPCUtil
@@ -57,6 +60,7 @@ public class XMLRPCUtil
     /* This is the controller for the UVM */
     public static final String CONTROLLER_UVM = "uvm";
 
+    /* XXX Should be able to configure these values in properties XXX */
     private static final String ALPACA_BASE_URL = "http://localhost:3000/alpaca/";
     private static final String ALPACA_NONCE_FILE = "/etc/untangle-net-alpaca/nonce";
 
@@ -80,7 +84,7 @@ public class XMLRPCUtil
      * @param params Parameters to pass to the method.
      */
     public Object call( String url, String method, AsyncCallback callback, Object ... params )
-        throws Exception
+        throws MalformedURLException, XmlRpcException
     {
         XmlRpcClientConfig config = makeConfig( url ) ;
 
@@ -99,7 +103,7 @@ public class XMLRPCUtil
      * @param params Parameters to pass to the method.
      */
     public Object callAlpaca( String component, String method, AsyncCallback callback, Object ... params )
-        throws Exception
+        throws MalformedURLException, XmlRpcException, IOException, NetworkException
     {
         return call( ALPACA_BASE_URL + component + "/api?nonce=" + getNonce(), method, callback, params );
     }
@@ -133,22 +137,23 @@ public class XMLRPCUtil
     }
 
     /* --------- private --------- */
-    private String getNonce() throws Exception
+    private String getNonce() throws IOException, NetworkException 
     {
         BufferedReader stream = null;
         try {
             stream = new BufferedReader( new FileReader( ALPACA_NONCE_FILE ));
             
             String nonce = stream.readLine();
-            if ( nonce.length() < 8 ) {
-                throw new Exception( "Unable to read the nonce file, invalid nonce: '" + nonce + "'" );
+            if ( nonce.length() < 3 ) {
+                throw new NetworkException( "Invalid nonce in the file [" + ALPACA_NONCE_FILE + "]: ', " + 
+                                            nonce + "'" );
             }
 
             return nonce;
         } finally {
             try {
                 if ( stream != null ) stream.close();
-            } catch ( Exception e ) {
+            } catch ( IOException e ) {
                 logger.warn( "Unable to close the nonce file: " + ALPACA_NONCE_FILE, e );
             }
         }

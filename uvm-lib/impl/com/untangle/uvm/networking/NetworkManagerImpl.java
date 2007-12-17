@@ -19,10 +19,8 @@
 package com.untangle.uvm.networking;
 
 import java.net.InetAddress;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -33,7 +31,6 @@ import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.networking.internal.AccessSettingsInternal;
 import com.untangle.uvm.networking.internal.AddressSettingsInternal;
-import com.untangle.uvm.networking.internal.InterfaceInternal;
 import com.untangle.uvm.networking.internal.MiscSettingsInternal;
 import com.untangle.uvm.networking.internal.NetworkSpaceInternal;
 import com.untangle.uvm.networking.internal.NetworkSpacesInternalSettings;
@@ -43,13 +40,13 @@ import com.untangle.uvm.node.IPSessionDesc;
 import com.untangle.uvm.node.IPaddr;
 import com.untangle.uvm.node.LocalNodeManager;
 import com.untangle.uvm.node.ValidateException;
-import com.untangle.uvm.node.firewall.ip.IPMatcherFactory;
 import com.untangle.uvm.node.script.ScriptRunner;
 import com.untangle.uvm.node.script.ScriptWriter;
 import com.untangle.uvm.security.Tid;
 import com.untangle.uvm.toolbox.RemoteToolboxManager;
 import com.untangle.uvm.util.DataLoader;
 import com.untangle.uvm.util.DataSaver;
+import com.untangle.uvm.util.XMLRPCUtil;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -100,9 +97,6 @@ public class NetworkManagerImpl implements LocalNetworkManager
     /* Manager for the DHCP/DNS server */
     private final DhcpManager dhcpManager;
 
-    /* Manager for PPPoE connections */
-    private final PPPoEManagerImpl pppoeManager;
-
     /* Manager for AccessSettings */
     private final AccessManagerImpl accessManager;
 
@@ -144,7 +138,6 @@ public class NetworkManagerImpl implements LocalNetworkManager
         this.ruleManager = RuleManager.getInstance();
         this.networkConfigurationLoader = NetworkConfigurationLoader.getInstance();
         this.dhcpManager  = new DhcpManager();
-        this.pppoeManager = new PPPoEManagerImpl();
         this.accessManager = new AccessManagerImpl();
         this.addressManager = new AddressManagerImpl();
         this.miscManager = new MiscManagerImpl();
@@ -197,7 +190,6 @@ public class NetworkManagerImpl implements LocalNetworkManager
     public BasicNetworkSettings getBasicSettings()
     {
         BasicNetworkSettings basic = NetworkUtilPriv.getPrivInstance().toBasic( this.networkSettings );
-        basic.setPPPoESettings( this.pppoeManager.getExternalSettings());
         return basic;
     }
 
@@ -208,21 +200,8 @@ public class NetworkManagerImpl implements LocalNetworkManager
             logger.debug( "saving the basic settings:\n" + basic );
         }
 
-        this.pppoeManager.setExternalSettings( basic.getPPPoESettings());
-
         setNetworkSettings( NetworkUtilPriv.getPrivInstance().
                             toInternal( basic, this.networkSettings, true ));
-    }
-
-    /* Save the basic network settings during the wizard */
-    public synchronized void setSetupSettings( AddressSettings address, BasicNetworkSettings basic )
-        throws NetworkException, ValidateException
-    {
-        this.pppoeManager.setExternalSettings( basic.getPPPoESettings());
-
-        this.addressManager.setSettings( address );
-        setNetworkSettings( NetworkUtilPriv.getPrivInstance().
-                            toInternal( basic, this.networkSettings, false ));
     }
 
     /**
@@ -593,7 +572,48 @@ public class NetworkManagerImpl implements LocalNetworkManager
         updateAddress();
     }
 
-    public void setWizardNatEnabled(IPaddr address, IPaddr netmask)
+    /* Save the basic network settings during the wizard */
+    public synchronized void setSetupSettings( AddressSettings address, BasicNetworkSettings basic )
+        throws NetworkException, ValidateException
+    {
+        this.addressManager.setSettings( address );
+
+        /* Send the call onto the alpaca */
+        PPPoEConnectionRule pppoe = basic.getPPPoESettings();
+
+        Object args[] = null;
+        String method = null;
+
+        if ( pppoe.isLive()) {
+            /* PPPoE Setup */
+            args = new Object[2];
+            method = "wizard_external_interface_pppoe";
+            args[0] = pppoe.getUsername();
+            args[1] = pppoe.getPassword();
+        } else if ( basic.isDhcpEnabled()) {
+            /* Dynamic address */
+            args = new String[0];
+            method = "wizard_external_interface_dynamic";
+        } else {
+            /* Must be a static address */
+            args = new String[5];
+            args[0] = basic.host();
+            args[1] = basic.netmask();
+            args[2] = basic.gateway();
+            args[3] = basic.dns1();
+            args[4] = basic.dns2();
+            method = "wizard_external_interface_static";
+        }
+
+        /* Make a synchronous request */
+        try {
+            XMLRPCUtil.getInstance().callAlpaca( XMLRPCUtil.CONTROLLER_UVM, method, null, args );
+        } catch ( Exception e ) {
+            throw new NetworkException( "Unable to configure the external interface.", e );
+        }
+    }
+
+    public void setWizardNatEnabled( IPaddr address, IPaddr netmask )
     {
         try{
             boolean hasChanged = true;
@@ -605,92 +625,28 @@ public class NetworkManagerImpl implements LocalNetworkManager
 
             logger.debug( "enabling nat as requested by setup wizard: " + address + "/" + netmask );
 
-            NetworkSpacesSettings newSettings = getNetworkSettings();
+            /* Just use the utility function to calculate the new start and end range */
+            ServicesSettings servicesSettings = new ServicesSettingsImpl();
+            this.dhcpManager.updateDhcpRange( servicesSettings, address, netmask );
 
-            List<NetworkSpace> networkSpaceList = newSettings.getNetworkSpaceList();
+            IPaddr dhcpStart = servicesSettings.getDhcpStartAddress();
+            IPaddr dhcpEnd = servicesSettings.getDhcpEndAddress();
 
-            List<IPNetworkRule> networkList = new LinkedList<IPNetworkRule>();
-
-            networkList.add( IPNetworkRule.makeInstance( address, netmask ));
-
-            NetworkSpace primary = networkSpaceList.get( 0 );
-            NetworkSpace natSpace = null;
-
-            if ( networkSpaceList.size() == 1 ) {
-                /* Only one space, have to create the second space */
-
-                /* Space is enabled, dhcp is disabled, traffic is forward, nat is enabled.
-                 * nat address is null, dmz is all disabled. */
-                natSpace = new NetworkSpace( true, networkList,
-                                             false, true, NetworkSpace.DEFAULT_MTU, true,
-                                             null, false, false, NetworkUtil.EMPTY_IPADDR );
-                networkSpaceList.add( natSpace );
-            } else {
-                natSpace = networkSpaceList.get( 1 );
+            /* Make a synchronous request */
+            try {
+                XMLRPCUtil.getInstance().callAlpaca( XMLRPCUtil.CONTROLLER_UVM, 
+                                                     "wizard_internal_interface_nat", null,
+                                                     address, netmask, dhcpStart, dhcpEnd );
+            } catch ( Exception e ) {
+                logger.warn( "Unable to enable NAT.", e );
             }
 
-            /* Disable the nat address, and set the nat space */
-            natSpace.setName( NetworkUtil.DEFAULT_SPACE_NAME_NAT );
-            natSpace.setIsNatEnabled( true );
-            natSpace.setNetworkList( networkList );
-            natSpace.setNatAddress( null );
-            natSpace.setNatSpace( primary );
-
-            primary.setNatAddress( null );
-            primary.setNatSpace( null );
-            primary.setIsNatEnabled( false );
-
-            List<Interface> interfaceList = newSettings.getInterfaceList();
-            boolean foundInternal = false;
-            for ( Interface intf : interfaceList ) {
-                if ( intf.getArgonIntf() == IntfConstants.INTERNAL_INTF ) {
-                    intf.setNetworkSpace( natSpace );
-                    foundInternal = true;
-                } else {
-                    intf.setNetworkSpace( primary );
-                }
-            }
-
-            if ( !foundInternal ) {
-                logger.warn( "Unable to find internal interface in list, creating a new interface list" );
-                interfaceList = new LinkedList<Interface>();
-
-                byte argonIntfArray[] = NetworkUtilPriv.getPrivInstance().getArgonIntfArray();
-                Arrays.sort( argonIntfArray );
-                for ( byte argonIntf : argonIntfArray ) {
-                    /* The VPN interface doesn't belong to a network space */
-                    if ( argonIntf == IntfConstants.VPN_INTF ) continue;
-
-                    /* Add each interface to the list */
-                    Interface intf =  new Interface( argonIntf, EthernetMedia.AUTO_NEGOTIATE, true );
-                    intf.setName( IntfConstants.toName( argonIntf ));
-                    if ( argonIntf == IntfConstants.INTERNAL_INTF ) {
-                        intf.setNetworkSpace( natSpace );
-                    } else {
-                        intf.setNetworkSpace( primary );
-                    }
-
-                    interfaceList.add( intf );
-                }
-            }
-            newSettings.setInterfaceList( interfaceList );
-            newSettings.setNetworkSpaceList( networkSpaceList );
-
-            if ( !hasChanged ) {
-                LocalUvmContextFactory.context().adminManager().logout();
-            }
+            if ( !hasChanged ) LocalUvmContextFactory.context().adminManager().logout();
 
             /* Indicate that the user has completed setup */
+            NetworkSpacesSettings newSettings = getNetworkSettings();
             newSettings.setHasCompletedSetup( true );
-
             setNetworkSettings( newSettings );
-
-            /* Update the DHCP settings */
-            if ( this.servicesSettings != null ) {
-                setServicesSettings( dhcpManager.updateDhcpRange( this.servicesSettings, address, netmask ));
-            } else {
-                logger.warn( "null services settings during wizard setup, not updating the DHCP range" );
-            }
         }
         catch(Exception e){
             logger.error( "Error setting up NAT in wizard", e );
@@ -701,20 +657,27 @@ public class NetworkManagerImpl implements LocalNetworkManager
     {
         LocalUvmContextFactory.context().adminManager().logout();
 
-        try{
-            logger.debug( "disabling nat as requested by setup wizard: " );
+        logger.debug( "disabling nat as requested by setup wizard: " );
+
+        /* Make a synchronous request */
+        try {
+            XMLRPCUtil.getInstance().callAlpaca( XMLRPCUtil.CONTROLLER_UVM, 
+                                                 "wizard_internal_interface_bridge", null );
+        } catch ( Exception e ) {
+            logger.warn( "Unable to disable NAT for wizard", e );
+        }
+
+        try {
             LocalNodeManager nodeManager = LocalUvmContextFactory.context().nodeManager();
-            List<Tid> tidList = nodeManager.nodeInstances(NAT_NODE_NAME);
-            if( tidList != null ){
-                for( Tid tid : tidList )
-                    nodeManager.destroy(tid);
+            List<Tid> tidList = nodeManager.nodeInstances( NAT_NODE_NAME );
+            if( tidList != null ) {
+                for( Tid tid : tidList ) nodeManager.destroy(tid);
             }
             RemoteToolboxManager tool = LocalUvmContextFactory.context().toolboxManager();
             tool.uninstall(NAT_NODE_NAME);
-        }
-        catch(Exception e){
+        } catch( Exception e ) {
             logger.warn( "Error removing NAT in wizard", e );
-        }
+        }            
     }
 
     /* Returns true if address is local to the edgeguard */
@@ -731,7 +694,7 @@ public class NetworkManagerImpl implements LocalNetworkManager
         NetworkSpacesInternalSettings previous = this.networkSettings;
 
         try {
-            /* Update the netcap address */
+            /* Update the address database in netcap */
             Netcap.getInstance().updateAddress();
 
             this.networkSettings = NetworkUtilPriv.getPrivInstance().updateDhcpAddresses( previous );
@@ -757,28 +720,6 @@ public class NetworkManagerImpl implements LocalNetworkManager
 
     public void pppoe( String args[] ) throws NetworkException
     {
-        this.pppoeManager.pppoe( args );
-    }
-
-    public void disableDhcpForwarding()
-    {
-        this.ruleManager.dhcpEnableForwarding( false );
-    }
-
-    public void enableDhcpForwarding()
-    {
-        this.ruleManager.dhcpEnableForwarding( true );
-    }
-
-    /*
-     * This relic really should go away.  In production environments,
-     * none of the interfaces are antisubscribed (this is the way it
-     * should be).  the antisubscribes are then for specific traffic
-     * protocols, such as HTTP.
-     */
-    public void subscribeLocalOutside( boolean newValue )
-    {
-        this.ruleManager.subscribeLocalOutside( newValue );
     }
 
     /*
@@ -914,11 +855,6 @@ public class NetworkManagerImpl implements LocalNetworkManager
     }
 
     /* ----------------- Package ----------------- */
-    PPPoEManagerImpl getPPPoEManager()
-    {
-        return this.pppoeManager;
-    }
-
     boolean getSaveSettings()
     {
         return this.saveSettings;
@@ -1010,35 +946,6 @@ public class NetworkManagerImpl implements LocalNetworkManager
             logger.warn( "Not writing configuration files because the debug property was set" );
             return;
         }
-
-        try {
-            writeEtcFiles( newSettings );
-        } catch ( ArgonException e ) {
-            logger.error( "Unable to write network settings" );
-        }
-
-        try {
-            this.pppoeManager.writeConfigFiles( newSettings );
-        } catch ( PPPoEException e ) {
-            logger.error( "Unable to write the PPPoE Settings", e );
-        }
-    }
-
-    private void writeEtcFiles( NetworkSpacesInternalSettings newSettings )
-        throws NetworkException, ArgonException
-    {
-    }
-
-    /* This is for /etc/network/interfaces interfaces */
-    private void writeInterfaces( NetworkSpacesInternalSettings newSettings )
-        throws NetworkException, ArgonException
-    {
-        logger.warn( "moved into the alpaca" );
-    }
-
-    private void writeResolvConf( NetworkSpacesInternalSettings newSettings )
-    {
-        logger.warn( "moved into the alpaca" );
     }
 
     /* Methods for saving and loading the settings files from the database at startup */
@@ -1064,9 +971,6 @@ public class NetworkManagerImpl implements LocalNetworkManager
 
         /* Load the address/hostname settings */
         this.addressManager.init();
-
-        /* Load the PPPoE settings */
-        this.pppoeManager.init();
 
         /* Load the services settings */
         if ( this.networkSettings != null ) this.servicesSettings = loadServicesSettings();
@@ -1211,72 +1115,6 @@ public class NetworkManagerImpl implements LocalNetworkManager
         INSTANCE = new NetworkManagerImpl();
 
         return INSTANCE;
-    }
-
-    class IPMatcherListener implements NetworkSettingsListener
-    {
-        public void event( NetworkSpacesInternalSettings settings )
-        {
-            List<NetworkSpaceInternal> networkSpaceList = settings.getNetworkSpaceList();
-            NetworkSpaceInternal primary = networkSpaceList.get( 0 );
-            IPMatcherFactory ipmf = IPMatcherFactory.getInstance();
-
-            List<IPNetwork> networkList = primary.getNetworkList();
-
-            InetAddress addressArray[] = new InetAddress[networkList.size()];
-
-            /* Add all of the addresses to the address array */
-            int c = 0;
-            for ( IPNetwork network : networkList ) addressArray[c++] = network.getNetwork().getAddr();
-
-            InetAddress primaryAddress = primary.getPrimaryAddress().getNetwork().getAddr();
-
-            logger.debug( "Setting local address: " + primaryAddress );
-            logger.debug( "Setting public address array to: " + Arrays.toString( addressArray ));
-
-            ipmf.setLocalAddresses( primaryAddress, addressArray );
-
-            /* Set the IP address(es) for the private matcher */
-            NetworkSpaceInternal internal = primary;
-            boolean isFound = false;
-            for ( InterfaceInternal intf : settings.getInterfaceList()) {
-                if ( intf.getArgonIntf().getArgon() == IntfConstants.INTERNAL_INTF ) {
-                    internal = intf.getNetworkSpace();
-                    isFound = true;
-                    break;
-                }
-            }
-
-            if ( !isFound ) logger.warn( "unable to find internal interface, using primary interface" );
-
-            List<IPNetwork> internalNetworkList = new LinkedList<IPNetwork>( internal.getNetworkList());
-
-            /* add the private network, if it is in there twice, it doesn't matter */
-            IPNetwork n =  internal.getPrimaryAddress();
-
-            if ( n != null && n.getNetwork() != null && !n.getNetwork().isEmpty() &&
-                 n.getNetmask() != null && !n.getNetmask().isEmpty()) {
-                internalNetworkList.add( n );
-            }
-
-            if ( internalNetworkList.size() == 0 ) {
-                logger.warn( "no networks for the internal network space: " + internal );
-            }
-
-            for ( IPNetwork network : internalNetworkList ) logger.debug( "internal network: " + network );
-
-            ipmf.setInternalNetworks( internalNetworkList );
-
-            /* somewhat of a hack, because this is where the internal space is looked up */
-            try {
-                IPaddr addr = internal.getPrimaryAddress().getNetwork();
-                if ( addr.isEmpty()) internalAddress = null;
-                else internalAddress = addr.getAddr();
-            } catch ( Exception e ) {
-                logger.warn( "unable to properly update the internal address, using null", e );
-                internalAddress = null;
-            }
-        }
     }
 
     class AfterReconfigureScriptListener implements NetworkSettingsListener

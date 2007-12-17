@@ -157,22 +157,6 @@ public class RemoteNetworkManagerAdaptor implements RemoteNetworkManager
         lnm.setDynamicDnsSettings( newValue );
     }
 
-    /** This should require an interface list to block */
-    public void disableDhcpForwarding()
-    {
-        lnm.disableDhcpForwarding();
-    }
-
-    public void enableDhcpForwarding()
-    {
-        lnm.enableDhcpForwarding();
-    }
-
-    public void subscribeLocalOutside( boolean newValue )
-    {
-        lnm.subscribeLocalOutside( newValue );
-    }
-
     /* Retrieve a mapping of all of the interfaces, this presently lives in the
      * networking manager*/
     // public IntfEnum getIntfEnum();

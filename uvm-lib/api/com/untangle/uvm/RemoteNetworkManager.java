@@ -118,12 +118,6 @@ public interface RemoteNetworkManager
     /* Set the dynamic dns settings */
     void setDynamicDnsSettings( DynamicDNSSettings newValue );
 
-    /** This should require an interface list to block */
-    void disableDhcpForwarding();
-     void enableDhcpForwarding();
-
-    void subscribeLocalOutside( boolean newValue );
-
     /* Renew the DHCP address and return a new network settings with
      * the updated address */
     BasicNetworkSettings renewDhcpLease() throws NetworkException;

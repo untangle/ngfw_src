@@ -28,8 +28,6 @@ import com.untangle.uvm.node.IPaddr;
 import com.untangle.uvm.networking.internal.NetworkSpaceInternal;
 import com.untangle.uvm.networking.internal.NetworkSpacesInternalSettings;
 
-
-/* XXX Each of the listeners should be moved into their own files, or perhaps into a separate */
 class CifsListener implements NetworkSettingsListener
 {
     private final Logger logger = Logger.getLogger(getClass());
@@ -37,11 +35,16 @@ class CifsListener implements NetworkSettingsListener
     private static final String BROADCAST_PROPERTY    = "jcifs.netbios.baddr";
     private static final String SMB_BIND_PROPERTY     = "jcifs.smb.client.laddr";
     private static final String NETBIOS_BIND_PROPERTY = "jcifs.netbios.laddr";
+
+    CifsListener()
+    {
+    }
     
     public void event( NetworkSpacesInternalSettings settings )
     {     
         NetworkSpaceInternal internal = settings.getServiceSpace();
         
+        logger.error( "CifsListener must use the settings from the interface database" );
         if ( internal == null ) return;
         
         IPNetwork network = internal.getPrimaryAddress();

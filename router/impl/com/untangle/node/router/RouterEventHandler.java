@@ -267,16 +267,6 @@ class RouterEventHandler extends AbstractEventHandler
         }
     }
 
-    void configure(NetworkSpacesInternalSettings settings)
-        throws NodeException
-    {
-    }
-
-    /* Not sure if this should ever throw an exception */
-    void deconfigure()
-    {
-    }
-
     /**
      * Retrieve the next port from the port list
      */
