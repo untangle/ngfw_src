@@ -601,7 +601,10 @@ public class NetworkManagerImpl implements LocalNetworkManager
             args[1] = basic.netmask().toString();
             args[2] = basic.gateway().toString();
             args[3] = basic.dns1().toString();
-            args[4] = basic.dns2().toString();
+            args[4] = "";
+            
+            IPaddr dns2 = basic.dns2();
+            if ( !dns2.isEmpty()) args[4] = dns2;
             method = "wizard_external_interface_static";
         }
 
