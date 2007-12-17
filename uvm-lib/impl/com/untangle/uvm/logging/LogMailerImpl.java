@@ -164,6 +164,13 @@ public class LogMailerImpl implements LogMailer, Runnable
                 parts.add(part);
             }
 
+            part = getOtherLogPart("wrapper.log");
+            if (part != null) {
+                part.setFileName("wrapper.log");
+                part.setDisposition(Part.INLINE);
+                parts.add(part);
+            }
+
             // Send it!
             doSend(SUBJECT_BASE, BODY_BASE, parts);
         } catch(Exception e) {
