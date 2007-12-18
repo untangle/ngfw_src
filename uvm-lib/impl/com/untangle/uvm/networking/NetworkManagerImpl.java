@@ -729,12 +729,6 @@ public class NetworkManagerImpl implements LocalNetworkManager
         }
 
         try {
-            generateRules();
-        } catch ( Exception e ) {
-            logger.error( "Exception generating rules", e );
-        }
-
-        try {
             callNetworkListeners();
         } catch ( Exception e ) {
             logger.error( "Exception in a listener", e );
@@ -953,6 +947,12 @@ public class NetworkManagerImpl implements LocalNetworkManager
         registerListener(new CifsListener());
 
         updateAddress();
+
+        try {
+            generateRules();
+        } catch ( Exception e ) {
+            logger.error( "Exception generating rules", e );
+        }
 
         /* Update the link status for all of the interfaces */
         updateLinkStatus();
