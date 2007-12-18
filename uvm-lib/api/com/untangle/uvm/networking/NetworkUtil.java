@@ -500,7 +500,7 @@ public class NetworkUtil
         }
 
         try {
-            h = HostName.parse( "local.domain" );
+            h = HostName.parse( "example.com" );
             l = HostName.parse( "untangle.example.com" );
         } catch ( ParseException e ) {
             /* This should never happen */
