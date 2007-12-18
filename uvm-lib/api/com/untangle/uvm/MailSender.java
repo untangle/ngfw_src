@@ -47,7 +47,7 @@ import javax.mail.internet.MimeBodyPart;
 public interface MailSender
 {
     public static final String DEFAULT_SENDER = "untangle";
-    public static final String DEFAULT_LOCAL_DOMAIN = "local.domain";
+    public static final String DEFAULT_LOCAL_DOMAIN = "example.com";
     public static final String DEFAULT_FROM_ADDRESS = DEFAULT_SENDER + "@"
         + DEFAULT_LOCAL_DOMAIN;
 
