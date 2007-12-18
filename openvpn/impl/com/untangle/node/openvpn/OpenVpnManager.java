@@ -181,9 +181,11 @@ class OpenVpnManager
         try {
             boolean isBridgeMode = settings.isBridgeMode();
 
+
+            // XXX ALPACA_INTEGRATION
             /* ** XXXXXXX Bridge mode is unsupported */
-            LocalUvmContextFactory.context().localIntfManager().
-                registerIntf( DEVICE_ROUTING, IntfConstants.VPN_INTF );
+//             LocalUvmContextFactory.context().localIntfManager().
+//                 registerIntf( DEVICE_ROUTING, IntfConstants.VPN_INTF );
 
             /* ** XXXXXXX Bridge mode is unsupported */
 
@@ -191,8 +193,8 @@ class OpenVpnManager
             // am.enableInternalBridgeIntf( LocalUvmContextFactory.context().networkingManager().get(), intf );
             // }
             LocalUvmContextFactory.context().networkManager().updateAddress();
-        } catch ( ArgonException e ) {
-            throw new NodeException( e );
+//         } catch ( ArgonException e ) {
+//             throw new NodeException( e );
         } catch ( Exception e ) {
             throw new NodeException( e );
         }

@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -34,7 +34,7 @@
 package com.untangle.uvm;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.HashMap;
 
 /**
  * This singleton enumerates the interfaces present in the UVM.  It
@@ -49,53 +49,64 @@ public class IntfEnum implements Serializable
 
     public static final byte INTF_NONE_NUM = -1;
 
-    private final TreeMap<Byte, String> intfs;
+    private final byte[] intfs;
+
+    private final HashMap<Byte, String> names;
+    private final HashMap<Byte, String> userNames;
 
     // constructors -----------------------------------------------------------
 
     // Only used internally by NetworkingManagerImpl
-    public IntfEnum(byte[] intfNums, String[] intfNames)
+    public IntfEnum(byte[] intfNums, String[] intfNames, String[] intfUserNames)
     {
-        intfs = new TreeMap<Byte, String>();
-        for (int i = 0; i < intfNums.length; i++)
-            intfs.put(intfNums[i], intfNames[i]);
+        this.intfs = new byte[intfNums.length];
+        System.arraycopy(intfNums, 0, this.intfs, 0, intfNums.length);
+
+        names = new HashMap<Byte, String>();
+        userNames = new HashMap<Byte, String>();
+        for (int i = 0; i < intfNums.length; i++) {
+            names.put(intfNums[i], intfNames[i]);
+            userNames.put(intfNums[i], intfUserNames[i]);
+        }
     }
 
     // Accessors
 
     public String getIntfName(byte intfNum)
     {
-        return intfs.get(intfNum);
+        return names.get(intfNum);
     }
 
-    public byte getIntfNum(String intfName)
+    public String getIntfUserName(byte intfNum)
     {
-        for (Byte num : intfs.keySet()) {
-            String name = intfs.get(num);
-            if (intfName.equalsIgnoreCase(name))
-                return num;
-        }
-        return INTF_NONE_NUM;
+        return userNames.get(intfNum);
     }
 
     // Enumerations -----------------------------------------------------------
 
     public byte[] getIntfNums()
     {
-        byte[] result = new byte[intfs.size()];
-        int i = 0;
-        for (Byte num : intfs.keySet())
-            result[i++] = num;
+        byte[] result = new byte[intfs.length];
+        System.arraycopy(intfs, 0, result, 0, intfs.length);
         return result;
     }
 
     public String[] getIntfNames()
     {
-        String[] result = new String[intfs.size()];
+        String[] result = new String[intfs.length];
         int i = 0;
-        for (Byte num : intfs.keySet()) {
-            String name = intfs.get(num);
-            result[i++] = name;
+        for (Byte num : intfs) {
+            result[i++] = names.get(num);
+        }
+        return result;
+    }
+
+    public String[] getIntfUserNames()
+    {
+        String[] result = new String[intfs.length];
+        int i = 0;
+        for (Byte num : intfs) {
+            result[i++] = userNames.get(num);
         }
         return result;
     }
@@ -111,12 +122,15 @@ public class IntfEnum implements Serializable
 
         IntfEnum i = (IntfEnum)o;
 
-        return intfs.equals(i.intfs);
+        return names.equals(i.names) && userNames.equals(i.userNames);
     }
 
     @Override
     public int hashCode()
     {
-        return intfs.hashCode();
+        int result = 17;
+        result = (37 * result) + names.hashCode();
+        result = (37 * result) + userNames.hashCode();
+        return result;
     }
 }

@@ -81,9 +81,6 @@ public interface LocalIntfManager
     /* Return an array of the argon interfaces */
     byte[] getArgonIntfArray();
 
-    /* Register a replacement or custom interface.  EG. VPN or PPP0 */
-    void registerIntf( String name, byte argon ) throws ArgonException;
-
     /*
      * Register a secondary interface, this is an interface that
      * replaces another interface, EG. if ETH0 -> PPP0, PPP0 is the
