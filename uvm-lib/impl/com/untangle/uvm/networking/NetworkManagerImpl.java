@@ -193,7 +193,7 @@ public class NetworkManagerImpl implements LocalNetworkManager
         return basic;
     }
 
-    public synchronized void setBasicSettings( BasicNetworkSettings basic )
+    public void setBasicSettings( BasicNetworkSettings basic )
         throws NetworkException, ValidateException
     {
         if ( logger.isDebugEnabled()) {
@@ -292,7 +292,7 @@ public class NetworkManagerImpl implements LocalNetworkManager
         return this.networkSettings;
     }
 
-    public synchronized void setNetworkSettings( NetworkSpacesSettings settings )
+    public void setNetworkSettings( NetworkSpacesSettings settings )
         throws NetworkException, ValidateException
     {
         setNetworkSettings( settings, true );
@@ -370,20 +370,25 @@ public class NetworkManagerImpl implements LocalNetworkManager
 
     /* Set the network settings and the address settings at once, used
      * by the networking panel */
-    public synchronized void setSettings( BasicNetworkSettings basic, AddressSettings address )
+    public void setSettings( BasicNetworkSettings basic, AddressSettings address )
         throws NetworkException, ValidateException
     {
-        this.addressManager.setSettings( address );
+        synchronized ( this ) {
+            this.addressManager.setSettings( address );
+        }
 
         setBasicSettings( basic );
     }
 
     /* Set the access and address settings, used by the Remote Panel */
-    public synchronized void setSettings( AccessSettings access, AddressSettings address )
+    public void setSettings( AccessSettings access, AddressSettings address )
         throws NetworkException, ValidateException
     {
-        this.accessManager.setSettings( access );
-        this.addressManager.setSettings( address );
+        synchronized ( this ) {
+            this.accessManager.setSettings( access );
+            this.addressManager.setSettings( address );
+        }
+
         generateRules();
     }
 
@@ -437,19 +442,23 @@ public class NetworkManagerImpl implements LocalNetworkManager
         }
     }
 
-    public synchronized void startServices() throws NetworkException
+    public void startServices() throws NetworkException
     {
-        this.dhcpManager.configure( this.servicesSettings );
-        this.dhcpManager.startDnsMasq();
+        synchronized( this ) {
+            this.dhcpManager.configure( this.servicesSettings );
+            this.dhcpManager.startDnsMasq();
+        }
 
         /* Have to recreate the rules to change the DHCP forwarding settings */
         generateRules();
     }
 
-    public synchronized void stopServices()
+    public  void stopServices()
     {
-        this.dhcpManager.deconfigure();
-
+        synchronized( this ) {
+            this.dhcpManager.deconfigure();
+        }
+        
         /* Have to recreate the rules to change the DHCP forwarding settings */
         try {
             generateRules();
@@ -692,33 +701,43 @@ public class NetworkManagerImpl implements LocalNetworkManager
         return nup.isAddressLocal( this.networkSettings, address );
     }
 
-    public synchronized void updateAddress()
+    public void updateAddress()
     {
         /* Get the new address for any dhcp spaces */
         NetworkSpacesInternalSettings previous = this.networkSettings;
 
+        synchronized( this ) {
+            try {
+                /* Update the address database in netcap */
+                Netcap.getInstance().updateAddress();
+                
+                this.networkSettings = NetworkUtilPriv.getPrivInstance().updateDhcpAddresses( previous );
+                
+                /* Update the interface list for the iptables rules (this
+                 * affects the antisubscribes for PING) */
+                ruleManager.setInterfaceList( this.networkSettings.getInterfaceList(),
+                                              this.networkSettings.getServiceSpace());
+                
+                this.addressManager.updateAddress();
+                
+                /* Have to do this too, because the ip address may have changed */
+                updateServicesSettings();
+            } catch ( Exception e ) {
+                logger.error( "Exception updating address, reverting to previous settings", e );
+                this.networkSettings = previous;
+            }
+        }
+
         try {
-            /* Update the address database in netcap */
-            Netcap.getInstance().updateAddress();
-
-            this.networkSettings = NetworkUtilPriv.getPrivInstance().updateDhcpAddresses( previous );
-
-            /* Update the interface list for the iptables rules (this
-             * affects the antisubscribes for PING) */
-            ruleManager.setInterfaceList( this.networkSettings.getInterfaceList(),
-                                          this.networkSettings.getServiceSpace());
-
-            this.addressManager.updateAddress();
-
-            /* Have to do this too, because the ip address may have changed */
-            updateServicesSettings();
-
             generateRules();
+        } catch ( Exception e ) {
+            logger.error( "Exception generating rules", e );
+        }
 
+        try {
             callNetworkListeners();
         } catch ( Exception e ) {
-            logger.error( "Exception updating address, reverting to previous settings", e );
-            this.networkSettings = previous;
+            logger.error( "Exception in a listener", e );
         }
     }
 
