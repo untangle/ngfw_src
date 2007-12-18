@@ -450,13 +450,12 @@ public class VpnNodeImpl extends AbstractNode
             logger.warn( "Unable to start openvpn monitor." );
         }
 
-        // XXX ALPACA_INTEGRATION
         /* Initially use tun0, even though it could eventually be configured to the tap interface  */
-//         try {
-//             LocalUvmContextFactory.context().localIntfManager().registerIntf( "tun0", IntfConstants.VPN_INTF );
-//         } catch ( ArgonException e ) {
-//             throw new NodeException( "Unable to register VPN interface", e );
-//         }
+        try {
+            LocalUvmContextFactory.context().localIntfManager().registerIntf( "tun0", IntfConstants.VPN_INTF );
+        } catch ( ArgonException e ) {
+            throw new NodeException( "Unable to register VPN interface", e );
+        }
     }
 
     @Override protected void postInit(final String[] args) throws NodeException

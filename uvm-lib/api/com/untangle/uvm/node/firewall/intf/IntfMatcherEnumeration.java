@@ -77,8 +77,18 @@ public final class IntfMatcherEnumeration
         try {
             matchers.add( IntfSimpleMatcher.getAllMatcher());
 
-            for (byte num : intfEnum.getIntfNums()) {
-                matchers.add(IntfSingleMatcher.makeInstance(num));
+            matchers.add( IntfSingleMatcher.makeInstance( IntfConstants.INTERNAL_INTF ));
+            matchers.add( IntfSingleMatcher.makeInstance( IntfConstants.EXTERNAL_INTF ));
+
+            if ( intfEnum.getIntfName( IntfConstants.VPN_INTF ) != null ) {
+                matchers.add( IntfSingleMatcher.makeInstance( IntfConstants.VPN_INTF ));
+                /* ??? Possibly add VPN and Internal */
+            }
+
+            if ( intfEnum.getIntfName( IntfConstants.DMZ_INTF ) != null ) {
+                matchers.add( IntfSingleMatcher.makeInstance( IntfConstants.DMZ_INTF ));
+                matchers.add( IntfSetMatcher.makeInstance( IntfConstants.EXTERNAL_INTF,
+                                                           IntfConstants.DMZ_INTF ));
             }
 
             matchers.add( IntfRelativeMatcher.getMoreExternalMatcher());

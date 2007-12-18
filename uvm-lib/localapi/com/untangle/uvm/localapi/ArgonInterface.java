@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc.
+ * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -41,12 +41,10 @@ public final class ArgonInterface
 {
     /* The physical name of the interface, eg eth0 */
     private final String physicalName;
-
+    
     /* Secondary name of an interface.  This is for virtual devices
      * like ppp which can replace the physical interface. */
     private final String secondaryName;
-
-    private final String userName;
 
     /* Netcap index for the interface */
     private final byte netcap;
@@ -57,52 +55,51 @@ public final class ArgonInterface
     /* The string value */
     private final String string;
 
-    public ArgonInterface( String physicalName, byte argon, byte netcap, String userName )
+    public ArgonInterface( String physicalName, byte argon, byte netcap )
     {
-        this( physicalName, null, argon, netcap, userName );
+        this( physicalName, null, argon, netcap );
     }
-
+    
     /**
-     * In order to avoid the pain of typecasting everywhere, netcap and argon are
-     * should be bytes, but are typecast inside of the constructor
+     * In order to avoid the pain of typecasting everywhere, netcap and argon are 
+     * should be bytes, but are typecast inside of the constructor 
      */
-    public ArgonInterface( String physicalName, String secondaryName, byte argon, byte netcap, String userName )
+    public ArgonInterface( String physicalName, String secondaryName, byte argon, byte netcap )
     {
         this.physicalName = physicalName.trim();
         if ( secondaryName == null ) secondaryName = "";
         this.secondaryName = secondaryName.trim();
         this.netcap = netcap;
         this.argon = argon;
-        this.string =  "'" + this.physicalName + "," +  this.secondaryName + "' " +
+        this.string =  "'" + this.physicalName + "," +  this.secondaryName + "' " + 
             this.argon + "/" + this.netcap;
-        this.userName = userName;
+    }
+
+    public ArgonInterface( String physicalName, byte argon )
+    {
+        this( physicalName, argon, (byte)(argon + 1 ));
     }
 
     /** Get the name of the interface where traffic should go be routed. */
     public String getName()
     {
         if ( this.secondaryName != null && this.secondaryName.length() > 0 ) return this.secondaryName;
-
+        
         return this.physicalName;
     }
-
+    
     /** Get the linux/physical name of the interface (eg. eth0) */
     public String getPhysicalName()
     {
         return this.physicalName;
     }
-
+    
     /** Get the name of the secondary interface, either (eg. null or ppp0) */
     public String getSecondaryName()
     {
         return this.secondaryName;
     }
-
-    public String getUserName()
-    {
-        return this.userName;
-    }
-
+    
     /** Determine if there is a secondary name */
     public boolean hasSecondaryName()
     {
@@ -120,12 +117,12 @@ public final class ArgonInterface
     {
         return this.argon;
     }
-
+    
     public String toString()
     {
         return this.string;
     }
-
+    
     /** Get how "outside" or trustworty an interface is.  This is
      * useful for sorting inside the policy manager which determines
      * policies by comparing whether an interface is more inside of
@@ -145,15 +142,15 @@ public final class ArgonInterface
     /** Return a new argon interface with a modified secondary interface */
     public ArgonInterface makeNewSecondaryIntf( String secondaryName )
     {
-        return new ArgonInterface( this.physicalName, secondaryName, this.argon, this.netcap, this.userName );
+        return new ArgonInterface( this.physicalName, secondaryName, this.argon, this.netcap );
     }
 
     public boolean equals(Object o)
     {
         ArgonInterface ai = (ArgonInterface)o;
-        return ( this.physicalName == null ? ai.physicalName == null :
+        return ( this.physicalName == null ? ai.physicalName == null : 
                  this.physicalName.equals( ai.physicalName )) &&
-            ( this.secondaryName == null ? ai.secondaryName == null :
+            ( this.secondaryName == null ? ai.secondaryName == null : 
               this.secondaryName.equals( ai.secondaryName )) &&
             ( this.netcap == ai.netcap ) && ( this.argon == ai.argon );
     }
