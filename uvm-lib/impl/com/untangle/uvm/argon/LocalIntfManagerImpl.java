@@ -160,22 +160,6 @@ class LocalIntfManagerImpl implements LocalIntfManager
         return this.intfConverter.getArgonIntfArray();
     }
 
-    /* Register a custom interface.  EG. VPN */
-    public synchronized void registerIntf(String name, byte argon) throws ArgonException
-    {
-        ArgonInterfaceConverter prevIntfConverter = this.intfConverter;
-
-        /* Unable to replace internal and DMZ, those can only be replaced as secondary interfaces */
-        if (argon == IntfConstants.EXTERNAL_INTF || argon == IntfConstants.INTERNAL_INTF) {
-            throw new ArgonException("Unable to re-register the internal or external interfaces: " + name);
-        }
-
-        logger.debug("Registering the interface: [" + argon + ":" + name +"]");
-        this.intfConverter = this.intfConverter.registerIntf(new ArgonInterface(name, argon));
-
-        notifyDependents(prevIntfConverter);
-    }
-
     /* Register a secondary interface, this is an interface that replaces another interface,
      * EG. if ETH0 -> PPP0, PPP0 is the secondary interface and ETH0 is the primary interface */
     public synchronized void registerSecondaryIntf(String name, byte argon) throws ArgonException
@@ -282,7 +266,7 @@ class LocalIntfManagerImpl implements LocalIntfManager
                     String osName = d[1];
                     l.add(argon);
 
-                    argonInterfaceList.add(new ArgonInterface(osName, argon, netcap));
+                    argonInterfaceList.add(new ArgonInterface(osName, argon, netcap, userString));
                 } catch (NumberFormatException exn) {
                     logger.warn("skiping bad interface description: "
                                 + ifd);
@@ -337,14 +321,17 @@ class LocalIntfManagerImpl implements LocalIntfManager
         List<ArgonInterface> ail = this.intfConverter.getIntfList();
         byte[] argonIntfArray = new byte[ail.size()];
         String[] intfNameArray = new String[ail.size()];
+        String[] intfUserNameArray = new String[ail.size()];
 
         int i = 0;
         for (ArgonInterface ai : ail) {
             argonIntfArray[i] = ai.getArgon();
             intfNameArray[i] = ai.getName();
+            intfUserNameArray[i] = ai.getUserName();
             i++;
         }
 
-        this.intfEnum = new IntfEnum(argonIntfArray, intfNameArray);
+        this.intfEnum = new IntfEnum(argonIntfArray, intfNameArray,
+                                     intfUserNameArray);
     }
 }
