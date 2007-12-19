@@ -69,17 +69,9 @@ public final class IntfSingleMatcher extends IntfDBMatcher
     /* The interface this matcher matches */
     private final byte intf;
 
-    /* Database representation of this interface matcher */
-    private final String databaseRepresentation;
-
-    /* User representation of this interface matcher */
-    private final String userRepresentation;
-
-    private IntfSingleMatcher( byte intf, String userRepresentation, String databaseRepresentation )
+    private IntfSingleMatcher(byte intf)
     {
         this.intf = intf;
-        this.databaseRepresentation = databaseRepresentation;
-        this.userRepresentation = userRepresentation;
     }
 
     /**
@@ -94,21 +86,21 @@ public final class IntfSingleMatcher extends IntfDBMatcher
         if (IntfConstants.UNKNOWN_INTF == intf
             || IntfConstants.LOOPBACK_INTF == intf) {
             return true;
-        } else if ( intf >= IntfConstants.MAX_INTF ) {
+        } else if (intf >= IntfConstants.MAX_INTF) {
             return false;
         } else {
-            return ( this.intf == intf );
+            return (this.intf == intf);
         }
     }
 
     public String toDatabaseString()
     {
-        return this.databaseRepresentation;
+        return Byte.toString(intf);
     }
 
     public String toString()
     {
-        return this.userRepresentation;
+        return IntfMatcherEnumeration.getInstance().getIntfUserName(intf);
     }
 
     /**
@@ -139,16 +131,15 @@ public final class IntfSingleMatcher extends IntfDBMatcher
         return VPN_MATCHER;
     }
 
-    public static IntfDBMatcher makeInstance( byte intf ) throws ParseException
+    public static IntfDBMatcher makeInstance(byte intf)
     {
-        IntfMatcherUtil imu = IntfMatcherUtil.getInstance();
-        return makeInstance( intf, imu.intfToUser( intf ), imu.intfToDatabase( intf ));
-    }
+        IntfSingleMatcher cache = CACHE.get(intf);
 
-    private static IntfDBMatcher makeInstance( byte intf, String user, String database )
-    {
-        IntfSingleMatcher cache = CACHE.get( intf );
-        if ( cache == null ) CACHE.put( intf, cache = new IntfSingleMatcher( intf, user, database ));
+        if (null == cache) {
+            cache = new IntfSingleMatcher(intf);
+            CACHE.put(intf, cache);
+        }
+
         return cache;
     }
 
@@ -160,40 +151,30 @@ public final class IntfSingleMatcher extends IntfDBMatcher
             return 2;
         }
 
-        public boolean isParseable( String value )
+        public boolean isParseable(String value)
         {
-            return ( !value.contains( ParsingConstants.MARKER_SEPERATOR ));
+            return (!value.contains(ParsingConstants.MARKER_SEPERATOR));
         }
 
-        public IntfDBMatcher parse( String value ) throws ParseException
+        public IntfDBMatcher parse(String value) throws ParseException
         {
-            if ( !isParseable( value )) {
-                throw new ParseException( "Invalid intf single matcher '" + value + "'" );
+            if (!isParseable(value)) {
+                throw new ParseException("Invalid intf single matcher '" + value + "'");
             }
 
-            return makeInstance( IntfMatcherUtil.getInstance().databaseToIntf( value ));
+            try {
+                return makeInstance(Byte.parseByte(value));
+            } catch (NumberFormatException exn) {
+                throw new ParseException("could not parse interface "
+                                         + value, exn);
+            }
         }
     };
 
     static
     {
-        IntfDBMatcher external, internal, dmz, vpn;
-
-        try {
-            external = makeInstance( IntfConstants.EXTERNAL_INTF );
-            internal = makeInstance( IntfConstants.INTERNAL_INTF );
-            dmz      = makeInstance( IntfConstants.DMZ_INTF );
-            vpn      = makeInstance( IntfConstants.VPN_INTF );
-        } catch ( ParseException e ) {
-            System.err.println( "This should never occur" );
-            e.printStackTrace();
-            /* Just so the compiler doesn't complain about unitialized values */
-            vpn = dmz = internal = external = null;
-        }
-
-        EXTERNAL_MATCHER = external;
-        INTERNAL_MATCHER = internal;
-        DMZ_MATCHER      = dmz;
-        VPN_MATCHER      = vpn;
-    }
-}
+        EXTERNAL_MATCHER = makeInstance(IntfConstants.EXTERNAL_INTF);
+        INTERNAL_MATCHER = makeInstance(IntfConstants.INTERNAL_INTF);
+        DMZ_MATCHER = makeInstance(IntfConstants.DMZ_INTF);
+        VPN_MATCHER = makeInstance(IntfConstants.VPN_INTF);
+    }}
