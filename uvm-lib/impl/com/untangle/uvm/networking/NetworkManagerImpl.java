@@ -347,12 +347,6 @@ public class NetworkManagerImpl implements LocalNetworkManager
                 /* XXXXXXX not totally sure what to do here, kind of boned */
                 logger.warn( "Error writing misc scripts" );
             }
-            try {
-                ScriptRunner.getInstance().exec( NET_CONFIGURE_SCRIPT );
-            } catch ( Exception e ) {
-                /* XXXXXXX not totally sure what to do here, kind of boned */
-                logger.warn( "Error setting up network", e );
-            }
         } else {
             logger.warn( "Not loading new network settings because networking is disabled" );
         }
