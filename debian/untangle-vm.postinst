@@ -47,8 +47,19 @@ if [ -x "/etc/init.d/untangle-vm" ]; then
     update-rc.d untangle-vm defaults 50 > /dev/null
 fi
 
-# if it's our first install, and the running kernel is already right, start it.
-[ -z "$2" ] && uname -r | grep -iq "untangle" && /etc/init.d/untangle-vm start
+# It's almost never right to just start the untangle-vm after installation, so let
+# the user know what to do next.
+if [ -z "$2" ]; then
+    if uname -r | grep -iq "untangle"; then
+        echo "**************************************************************"
+        echo "Untangle installed.  Start with: /etc/init.d/untangle-vm start"
+        echo "**************************************************************"
+    else
+        echo "********************************************************"
+        echo "Untangle installed.  Need to reboot into Untangle kernel"
+        echo "********************************************************"
+    fi
+fi
 
 ## Touch all of the webstart files so the client always loads the new version
 find /usr/share/untangle/web/webstart 2>/dev/null | xargs touch > /dev/null 2>&1
