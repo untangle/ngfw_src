@@ -258,12 +258,14 @@ class CustomPolicyTableModel extends MSortedTableModel<PolicyCompoundSettings>{
         Vector tempRow = null;
         int rowIndex = 0;
 
-        IntfDBMatcher intfEnumeration[] = IntfMatcherFactory.getInstance().getEnumeration();
-
         DateFormat dateFormat = new SimpleDateFormat("HH:mm");
 
         updatePolicyNames( policyConfiguration.getPolicies() );
         updatePolicyModel();
+
+        IntfMatcherFactory imf = IntfMatcherFactory.getInstance();
+        IntfEnum intfEnum = Util.getIntfManager().getIntfEnum();
+        imf.updateEnumeration(intfEnum);
 
         for( UserPolicyRule newElem : userPolicyRules ){
             rowIndex++;
@@ -281,9 +283,6 @@ class CustomPolicyTableModel extends MSortedTableModel<PolicyCompoundSettings>{
                 policyName = PolicyAvailableJPanel.SELECT_NO_RACK;
             tempRow.add( super.generateComboBoxModel(policyNames.keySet().toArray(), policyName) );
 
-            IntfMatcherFactory imf = IntfMatcherFactory.getInstance();
-            IntfEnum intfEnum = Util.getIntfManager().getIntfEnum();
-            imf.updateEnumeration(intfEnum);
             UtComboBoxModel interfaceModel = super.generateComboBoxModel( imf.getEnumeration(), newElem.getClientIntf());
             interfaceModel.insertElementAt(new UtComboBoxRenderer.Separator(), 1);
             interfaceModel.insertElementAt(new UtComboBoxRenderer.Separator(), interfaceModel.getSize() - 2);

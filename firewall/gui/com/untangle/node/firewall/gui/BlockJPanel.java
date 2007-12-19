@@ -79,11 +79,16 @@ public class BlockJPanel extends MEditTableJPanel{
         protected boolean getSortable(){ return false; }
 
         public TableColumnModel getTableColumnModel(){
-
             IntfMatcherFactory imf = IntfMatcherFactory.getInstance();
             IntfEnum intfEnum = Util.getIntfManager().getIntfEnum();
-            imf.updateEnumeration(intfEnum);
-            ComboBoxModel interfaceModel = super.generateComboBoxModel( imf.getEnumeration(), imf.getDefault() );
+
+            UtComboBoxModel sIfaceModel = super.generateComboBoxModel( imf.getEnumeration(), imf.getDefault() );
+            sIfaceModel.insertElementAt(new UtComboBoxRenderer.Separator(), 1);
+            sIfaceModel.insertElementAt(new UtComboBoxRenderer.Separator(), sIfaceModel.getSize() - 2);
+
+            UtComboBoxModel cIfaceModel = super.generateComboBoxModel( imf.getEnumeration(), imf.getDefault() );
+            cIfaceModel.insertElementAt(new UtComboBoxRenderer.Separator(), 1);
+            cIfaceModel.insertElementAt(new UtComboBoxRenderer.Separator(), cIfaceModel.getSize() - 2);
 
             DefaultTableColumnModel tableColumnModel = new DefaultTableColumnModel();
             //                                 #   min    rsz    edit   remv   desc   typ            def
@@ -93,8 +98,8 @@ public class BlockJPanel extends MEditTableJPanel{
             addTableColumn( tableColumnModel,  3,  C3_MW, false, true,  false, false, ComboBoxModel.class, actionModel, sc.bold("action") );
             addTableColumn( tableColumnModel,  4,  C4_MW, false, true,  false, false, Boolean.class, "false", sc.bold("log") );
             addTableColumn( tableColumnModel,  5,  C5_MW, false, true,  false, false, ComboBoxModel.class, protocolModel, sc.html("traffic<br>type") );
-            addTableColumn( tableColumnModel,  6,  C6_MW, false, true,  false, false, ComboBoxModel.class, interfaceModel, "client interface" );
-            addTableColumn( tableColumnModel,  7,  C7_MW, false, true,  false, false, ComboBoxModel.class, interfaceModel, "server interface" );
+            addTableColumn( tableColumnModel,  6,  C6_MW, false, true,  false, false, ComboBoxModel.class, sIfaceModel, "client interface" );
+            addTableColumn( tableColumnModel,  7,  C7_MW, false, true,  false, false, ComboBoxModel.class, cIfaceModel, "server interface" );
             addTableColumn( tableColumnModel,  8,  C8_MW, true,  true,  false, false, String.class, "1.2.3.4", sc.html("source<br>address") );
             addTableColumn( tableColumnModel,  9,  C9_MW, true,  true,  false, false, String.class, "1.2.3.4", sc.html("destination<br>address") );
             addTableColumn( tableColumnModel,  10,  C10_MW, true,  true,  false, false, String.class, "any", sc.html("source<br>port") );
@@ -111,8 +116,6 @@ public class BlockJPanel extends MEditTableJPanel{
                                      boolean validateOnly)
             throws Exception
         {
-            IntfMatcherFactory imf = IntfMatcherFactory.getInstance();
-
             List elemList = new ArrayList(tableVector.size());
             FirewallRule newElem = null;
             int rowIndex = 0;
@@ -151,7 +154,9 @@ public class BlockJPanel extends MEditTableJPanel{
 
 
         public Vector<Vector> generateRows(Object settings) {
-            IntfDBMatcher intfEnumeration[] = IntfMatcherFactory.getInstance().getEnumeration();
+            IntfMatcherFactory imf = IntfMatcherFactory.getInstance();
+            IntfEnum intfEnum = Util.getIntfManager().getIntfEnum();
+            imf.updateEnumeration(intfEnum);
 
             FirewallSettings firewallSettings = (FirewallSettings) settings;
             List<FirewallRule> firewallRuleList = (List<FirewallRule>) firewallSettings.getFirewallRuleList();
@@ -168,8 +173,16 @@ public class BlockJPanel extends MEditTableJPanel{
                 tempRow.add( super.generateComboBoxModel( FirewallRule.getActionEnumeration(), firewallRule.getAction().toString() ) );
                 tempRow.add( firewallRule.getLog() );
                 tempRow.add( super.generateComboBoxModel( ProtocolMatcherFactory.getProtocolEnumeration(), firewallRule.getProtocol().toString() ) );
-                tempRow.add( super.generateComboBoxModel(intfEnumeration, firewallRule.getSrcIntf()) );
-                tempRow.add( super.generateComboBoxModel(intfEnumeration, firewallRule.getDstIntf()) );
+
+                UtComboBoxModel interfaceModel = super.generateComboBoxModel( imf.getEnumeration(), firewallRule.getSrcIntf());
+                interfaceModel.insertElementAt(new UtComboBoxRenderer.Separator(), 1);
+                interfaceModel.insertElementAt(new UtComboBoxRenderer.Separator(), interfaceModel.getSize() - 2);
+                tempRow.add(interfaceModel);
+                interfaceModel = super.generateComboBoxModel( imf.getEnumeration(), firewallRule.getDstIntf());
+                interfaceModel.insertElementAt(new UtComboBoxRenderer.Separator(), 1);
+                interfaceModel.insertElementAt(new UtComboBoxRenderer.Separator(), interfaceModel.getSize() - 2);
+                tempRow.add(interfaceModel);
+
                 tempRow.add( firewallRule.getSrcAddress().toString() );
                 tempRow.add( firewallRule.getDstAddress().toString() );
                 tempRow.add( firewallRule.getSrcPort().toString() );

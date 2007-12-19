@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -26,6 +26,7 @@ import javax.swing.table.*;
 import com.untangle.gui.node.*;
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.editTable.*;
+import com.untangle.node.router.*;
 import com.untangle.uvm.IntfEnum;
 import com.untangle.uvm.networking.RedirectRule;
 import com.untangle.uvm.node.*;
@@ -34,7 +35,6 @@ import com.untangle.uvm.node.firewall.intf.IntfMatcherFactory;
 import com.untangle.uvm.node.firewall.ip.IPMatcherFactory;
 import com.untangle.uvm.node.firewall.port.PortMatcherFactory;
 import com.untangle.uvm.node.firewall.protocol.ProtocolMatcherFactory;
-import com.untangle.node.router.*;
 
 public class RedirectJPanel extends MEditTableJPanel {
 
@@ -86,10 +86,13 @@ public class RedirectJPanel extends MEditTableJPanel {
             IntfMatcherFactory imf = IntfMatcherFactory.getInstance();
             IntfEnum intfEnum = Util.getIntfManager().getIntfEnum();
 
-            /* XXXXX This is not where this code should be executed */
-            imf.updateEnumeration( intfEnum );
+            UtComboBoxModel sIfaceModel = super.generateComboBoxModel( imf.getEnumeration(), imf.getDefault() );
+            sIfaceModel.insertElementAt(new UtComboBoxRenderer.Separator(), 1);
+            sIfaceModel.insertElementAt(new UtComboBoxRenderer.Separator(), sIfaceModel.getSize() - 2);
 
-            ComboBoxModel intfMatcherModel = super.generateComboBoxModel( imf.getEnumeration(), imf.getDefault());
+            UtComboBoxModel cIfaceModel = super.generateComboBoxModel( imf.getEnumeration(), imf.getDefault() );
+            cIfaceModel.insertElementAt(new UtComboBoxRenderer.Separator(), 1);
+            cIfaceModel.insertElementAt(new UtComboBoxRenderer.Separator(), cIfaceModel.getSize() - 2);
 
             DefaultTableColumnModel tableColumnModel = new DefaultTableColumnModel();
             //                                 #   min    rsz    edit   remv   desc   typ            def
@@ -98,8 +101,8 @@ public class RedirectJPanel extends MEditTableJPanel {
             addTableColumn( tableColumnModel,  2,  C2_MW, false, true,  false, false, Boolean.class, "true", sc.bold("enable") );
             addTableColumn( tableColumnModel,  3,  C3_MW, false, true,  false, false, Boolean.class, "false",  sc.bold("log"));
             addTableColumn( tableColumnModel,  4,  C4_MW, false, true,  false, false, ComboBoxModel.class, protocolModel, sc.html("traffic<br>type") );
-            addTableColumn( tableColumnModel,  5,  C5_MW, false, true,  false, false, ComboBoxModel.class, intfMatcherModel, sc.html( "source<br>interface" ));
-            addTableColumn( tableColumnModel,  6,  C6_MW, false, true,  false, false, ComboBoxModel.class, intfMatcherModel, sc.html( "destination<br>interface" ));
+            addTableColumn( tableColumnModel,  5,  C5_MW, false, true,  false, false, ComboBoxModel.class, sIfaceModel, sc.html( "source<br>interface" ));
+            addTableColumn( tableColumnModel,  6,  C6_MW, false, true,  false, false, ComboBoxModel.class, cIfaceModel, sc.html( "destination<br>interface" ));
             addTableColumn( tableColumnModel,  7,  C7_MW, true,  true,  false, false, String.class, "1.2.3.4", sc.html("source<br>address") );
             addTableColumn( tableColumnModel,  8,  C8_MW, true,  true,  false, false, String.class, "1.2.3.4", sc.html("destination<br>address") );
             addTableColumn( tableColumnModel,  9,  C9_MW, true,  true,  false, false, String.class, "any", sc.html("source<br>port") );
@@ -155,13 +158,15 @@ public class RedirectJPanel extends MEditTableJPanel {
 
 
         public Vector<Vector> generateRows(Object settings) {
+            IntfMatcherFactory imf = IntfMatcherFactory.getInstance();
+            IntfEnum intfEnum = Util.getIntfManager().getIntfEnum();
+            imf.updateEnumeration(intfEnum);
+
             RouterCommonSettings routerSettings = (RouterCommonSettings) settings;
             List<RedirectRule> redirectList = (List<RedirectRule>) routerSettings.getGlobalRedirectList();
             Vector<Vector> allRows = new Vector<Vector>(redirectList.size());
             Vector tempRow = null;
             int rowIndex = 0;
-
-            IntfDBMatcher intfEnumeration[] = IntfMatcherFactory.getInstance().getEnumeration();
 
             for( RedirectRule redirectRule : redirectList ){
                 rowIndex++;
@@ -171,8 +176,16 @@ public class RedirectJPanel extends MEditTableJPanel {
                 tempRow.add( redirectRule.isLive() );
                 tempRow.add( redirectRule.getLog() );
                 tempRow.add( super.generateComboBoxModel( ProtocolMatcherFactory.getProtocolEnumeration(), redirectRule.getProtocol().toString() ) );
-                tempRow.add( super.generateComboBoxModel( intfEnumeration, redirectRule.getSrcIntf() ));
-                tempRow.add( super.generateComboBoxModel( intfEnumeration, redirectRule.getDstIntf() ));
+
+                UtComboBoxModel interfaceModel = super.generateComboBoxModel( imf.getEnumeration(), redirectRule.getSrcIntf());
+                interfaceModel.insertElementAt(new UtComboBoxRenderer.Separator(), 1);
+                interfaceModel.insertElementAt(new UtComboBoxRenderer.Separator(), interfaceModel.getSize() - 2);
+                tempRow.add(interfaceModel);
+                interfaceModel = super.generateComboBoxModel( imf.getEnumeration(), redirectRule.getDstIntf());
+                interfaceModel.insertElementAt(new UtComboBoxRenderer.Separator(), 1);
+                interfaceModel.insertElementAt(new UtComboBoxRenderer.Separator(), interfaceModel.getSize() - 2);
+                tempRow.add(interfaceModel);
+
                 tempRow.add( redirectRule.getSrcAddress().toString() );
                 tempRow.add( redirectRule.getDstAddress().toString() );
                 tempRow.add( redirectRule.getSrcPort().toString() );
