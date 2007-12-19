@@ -114,24 +114,6 @@ public class IntfEnum implements Serializable
     // Object methods ---------------------------------------------------------
 
     @Override
-    public String toString()
-    {
-        StringBuilder sb = new StringBuilder();
-        sb.append("[ ");
-        for (byte intf : intfs) {
-            sb.append(Byte.toString(intf));
-            sb.append(":");
-            sb.append(names.get(intf));
-            sb.append(":");
-            sb.append(userNames.get(intf));
-            sb.append(" ");
-        }
-        sb.append("]");
-
-        return sb.toString();
-    }
-
-    @Override
     public boolean equals(Object o)
     {
         if (!(o instanceof IntfEnum)) {

@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc.
+ * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -34,6 +34,7 @@
 package com.untangle.uvm.node.firewall.intf;
 
 import java.io.Serializable;
+
 import java.util.BitSet;
 
 /**
@@ -45,7 +46,7 @@ import java.util.BitSet;
 final class ImmutableBitSet implements Serializable
 {
     private final BitSet bitSet;
-
+    
     ImmutableBitSet( BitSet bitSet )
     {
         /* Create a copy of bitset */
@@ -54,9 +55,9 @@ final class ImmutableBitSet implements Serializable
         /* Or in the present values */
         this.bitSet.or( bitSet );
     }
-
+    
     /**
-     * Get the value from the bitset
+     * Get the value from the bitset 
      *
      * @param value The bit to test.
      * @return True if <param>value</param> is set.
@@ -64,11 +65,6 @@ final class ImmutableBitSet implements Serializable
     boolean get( byte value )
     {
         return bitSet.get((int)value );
-    }
-
-    public int nextSetBit(int fromIndex)
-    {
-        return bitSet.nextSetBit(fromIndex);
     }
 
     public int hashCode()
@@ -79,9 +75,9 @@ final class ImmutableBitSet implements Serializable
     public boolean equals( Object o )
     {
         if ( o == null ) return false;
-
+        
         if (!( o instanceof ImmutableBitSet )) return false;
-
+        
         return bitSet.equals( ((ImmutableBitSet)o).bitSet );
     }
 
