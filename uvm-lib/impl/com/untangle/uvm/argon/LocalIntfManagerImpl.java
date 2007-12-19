@@ -256,8 +256,6 @@ class LocalIntfManagerImpl implements LocalIntfManager
                 logger.warn("skiping bad interface description: "
                             + ifd);
             } else {
-
-
                 try {
                     byte netcap = Byte.parseByte(d[2]);
                     byte argon = (byte)(netcap - 1);

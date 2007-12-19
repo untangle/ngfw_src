@@ -61,15 +61,11 @@ public final class IntfSetMatcher extends IntfDBMatcher
     /* String representation for the database */
     private final String databaseRepresentation;
 
-    /* String representation for the user */
-    private final String userRepresentation;
-
-    private IntfSetMatcher(ImmutableBitSet intfSet, String userRepresentation,
-                            String databaseRepresentation)
+    private IntfSetMatcher(ImmutableBitSet intfSet,
+                           String databaseRepresentation)
     {
         this.intfSet = intfSet;
         this.databaseRepresentation = databaseRepresentation;
-        this.userRepresentation = userRepresentation;
     }
 
     /**
@@ -97,7 +93,19 @@ public final class IntfSetMatcher extends IntfDBMatcher
 
     public String toString()
     {
-        return this.userRepresentation;
+        StringBuilder ur = new StringBuilder();
+
+        IntfMatcherEnumeration ime = IntfMatcherEnumeration.getInstance();
+
+        for (int intf = intfSet.nextSetBit(0); intf >= 0;
+             intf = intfSet.nextSetBit(intf + 1)) {
+            if (0 < ur.length()) {
+                ur.append(" & ");
+            }
+            ur.append(ime.getIntfUserName((byte)intf));
+        }
+
+        return ur.toString();
     }
 
     /**
@@ -110,28 +118,21 @@ public final class IntfSetMatcher extends IntfDBMatcher
     {
         BitSet intfSet = new BitSet(IntfConstants.MAX_INTF);
 
-        IntfMatcherUtil imu = IntfMatcherUtil.getInstance();
-
         /* The first pass is to just fill the bitset */
         for (byte intf : intfArray) intfSet.set(intf);
 
-        String databaseRepresentation = "";
-        String userRepresentation = "";
+        StringBuilder dbr = new StringBuilder();
 
         /* Second pass, build up the user and database string */
         for (int intf = intfSet.nextSetBit(0); intf >= 0;
              intf = intfSet.nextSetBit(intf + 1)) {
-            if (databaseRepresentation.length() > 0) {
-                databaseRepresentation += ",";
-                userRepresentation += " & ";
+            if (dbr.length() > 0) {
+                dbr.append(",");
             }
-            databaseRepresentation += imu.intfToDatabase((byte)intf);
-            userRepresentation += imu.intfToUser((byte)intf);
+            dbr.append(Byte.toString((byte)intf));
         }
 
-
-        return makeInstance(intfSet, userRepresentation,
-                            databaseRepresentation);
+        return makeInstance(intfSet, dbr.toString());
     }
 
     /**
@@ -164,10 +165,13 @@ public final class IntfSetMatcher extends IntfDBMatcher
             byte intfArray[] = new byte[databaseArray.length];
 
             int c = 0;
-            IntfMatcherUtil imu = IntfMatcherUtil.getInstance();
-
             for (String databaseString : databaseArray) {
-                intfArray[c++] = imu.databaseToIntf(databaseString);
+                try {
+                    intfArray[c++] = Byte.parseByte(databaseString);
+                } catch (NumberFormatException exn) {
+                    throw new ParseException("could not parse interface "
+                                             + databaseString, exn);
+                }
             }
 
             return makeInstance(intfArray);
@@ -182,13 +186,12 @@ public final class IntfSetMatcher extends IntfDBMatcher
      * @param user User string for this interface matcher.
      * @param database Database representation for this bitset.
      */
-    private static IntfDBMatcher makeInstance(BitSet intfSet, String user,
-                                              String database)
+    private static IntfDBMatcher makeInstance(BitSet intfSet, String database)
     {
         ImmutableBitSet i = new ImmutableBitSet(intfSet);
         IntfSetMatcher cache = CACHE.get(i);
-        if (cache == null) {
-            CACHE.put(i, cache = new IntfSetMatcher(i, user, database));
+        if (null == cache) {
+            CACHE.put(i, cache = new IntfSetMatcher(i, database));
         }
         return cache;
     }

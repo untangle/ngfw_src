@@ -39,16 +39,20 @@ import java.util.List;
 import com.untangle.uvm.IntfConstants;
 import com.untangle.uvm.IntfEnum;
 import com.untangle.uvm.node.ParseException;
+import org.apache.log4j.Logger;
 
 /**
- * An enumeration of all of the IntfMatchers that should be available to the GUI.
+ * An enumeration of all of the IntfMatchers that should be available
+ * to the GUI.
  *
  * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
  * @version 1.0
  */
-public final class IntfMatcherEnumeration
+final class IntfMatcherEnumeration
 {
     private static IntfMatcherEnumeration INSTANCE = new IntfMatcherEnumeration();
+
+    private final Logger logger = Logger.getLogger(getClass());
 
     /* Just in case it is not initialized */
     private IntfDBMatcher enumeration[] = new IntfDBMatcher[] { IntfSimpleMatcher.getAllMatcher() };
@@ -58,15 +62,23 @@ public final class IntfMatcherEnumeration
     {
     }
 
+    public String getIntfUserName(byte intfNum)
+    {
+        String s = null == intfEnumCache ? null : intfEnumCache.getIntfUserName(intfNum);
+        return null == s ? "Unknown" : s;
+    }
+
     /**
-     * Update the current enumeration.  Used when interfaces changes, such as when VPN or
-     * USB interfaces are created.  All, Internal and External are always available.
-     * If there is a DMZ interface, then DMZ and DMZ & External are created.  A single
-     * matcher for VPN is created when the VPN interface is registered.
+     * Update the current enumeration.  Used when interfaces changes,
+     * such as when VPN or USB interfaces are created.  All, Internal
+     * and External are always available.  If there is a DMZ
+     * interface, then DMZ and DMZ & External are created.  A single
+     * matcher for VPN is created when the VPN interface is
+     * registered.
      *
-     * @param intfEnum An enumeration of all of the current interfaces.
+     * @param intfEnum An enumeration of all of the current
+     * interfaces.
      */
-    /* XXX This must be extended when we support more than three interfaces */
     synchronized void updateEnumeration( IntfEnum intfEnum )
     {
         /* If the cache is up to date, there is nothing to do */
@@ -74,20 +86,15 @@ public final class IntfMatcherEnumeration
 
         List<IntfDBMatcher> matchers = new LinkedList<IntfDBMatcher>();
 
-        try {
-            matchers.add( IntfSimpleMatcher.getAllMatcher());
+        matchers.add( IntfSimpleMatcher.getAllMatcher());
 
-            for (byte num : intfEnum.getIntfNums()) {
-                matchers.add(IntfSingleMatcher.makeInstance(num));
-            }
-
-            matchers.add( IntfRelativeMatcher.getMoreExternalMatcher());
-            matchers.add( IntfRelativeMatcher.getMoreInternalMatcher());
-
-        } catch ( ParseException e ) {
-            /* Use System.err because log4j shouldn't be used inside of API */
-            System.err.println( "Unable to initialize the interface matcher enumeration" );
+        for (byte num : intfEnum.getIntfNums()) {
+            IntfDBMatcher im = IntfSingleMatcher.makeInstance(num);
+            matchers.add(im);
         }
+
+        matchers.add( IntfRelativeMatcher.getMoreExternalMatcher());
+        matchers.add( IntfRelativeMatcher.getMoreInternalMatcher());
 
         /* Convert to an immutable list */
         this.enumeration = matchers.toArray( new IntfDBMatcher[matchers.size()]);

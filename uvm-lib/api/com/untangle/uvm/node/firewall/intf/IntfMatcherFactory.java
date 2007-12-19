@@ -57,7 +57,6 @@ public class IntfMatcherFactory
         this.parser.registerParsers(IntfSimpleMatcher.PARSER,
                                     IntfRelativeMatcher.PARSER,
                                     IntfSingleMatcher.PARSER,
-                                    IntfInverseMatcher.PARSER,
                                     IntfSetMatcher.PARSER);
     }
 
@@ -153,20 +152,6 @@ public class IntfMatcherFactory
         case 0: return IntfSimpleMatcher.getNilMatcher();
         case 1: return makeSingleMatcher(intfArray[0]);
         default: return IntfSetMatcher.makeInstance(intfArray);
-        }
-    }
-
-    /**
-     * Retrieve an intf matcher that doesn't match any of the
-     * interfaces in <param>intfArray</param>
-     *
-     * @param intfArray Array of interfaces that shouldn't match.
-     */
-    public IntfDBMatcher makeInverseMatcher(byte ... intfArray) throws ParseException
-    {
-        switch (intfArray.length) {
-        case 0:  return IntfSimpleMatcher.getAllMatcher();
-        default: return IntfInverseMatcher.makeInstance(intfArray);
         }
     }
 
