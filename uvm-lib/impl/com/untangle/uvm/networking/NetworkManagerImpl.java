@@ -674,17 +674,7 @@ public class NetworkManagerImpl implements LocalNetworkManager
             logger.warn( "Unable to disable NAT for wizard", e );
         }
 
-        try {
-            LocalNodeManager nodeManager = LocalUvmContextFactory.context().nodeManager();
-            List<Tid> tidList = nodeManager.nodeInstances( NAT_NODE_NAME );
-            if( tidList != null ) {
-                for( Tid tid : tidList ) nodeManager.destroy(tid);
-            }
-            RemoteToolboxManager tool = LocalUvmContextFactory.context().toolboxManager();
-            tool.uninstall(NAT_NODE_NAME);
-        } catch( Exception e ) {
-            logger.warn( "Error removing NAT in wizard", e );
-        }            
+        // We no longer uninstall the router if nat is disabled.
     }
 
     /* Returns true if address is local to the edgeguard */
