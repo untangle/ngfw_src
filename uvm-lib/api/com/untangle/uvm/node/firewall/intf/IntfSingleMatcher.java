@@ -162,12 +162,8 @@ public final class IntfSingleMatcher extends IntfDBMatcher
                 throw new ParseException("Invalid intf single matcher '" + value + "'");
             }
 
-            try {
-                return makeInstance(Byte.parseByte(value));
-            } catch (NumberFormatException exn) {
-                throw new ParseException("could not parse interface "
-                                         + value, exn);
-            }
+            IntfMatcherEnumeration ime = IntfMatcherEnumeration.getInstance();
+            return makeInstance(ime.parseInterface(value));
         }
     };
 

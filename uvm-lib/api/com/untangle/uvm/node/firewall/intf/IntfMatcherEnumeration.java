@@ -68,6 +68,27 @@ final class IntfMatcherEnumeration
         return null == s ? "Unknown" : s;
     }
 
+    public byte parseInterface(String v)
+        throws ParseException
+    {
+        try {
+            return Byte.parseByte(v);
+        } catch (NumberFormatException exn) {
+            // XXX hacks for pre 5.1
+            if (v.equalsIgnoreCase("o")) {
+                return 0;
+            } else if (v.equalsIgnoreCase("i")) {
+                return 1;
+            } else if (v.equalsIgnoreCase("d")) {
+                return 2;
+            } else if (v.equalsIgnoreCase("v")) {
+                return 7;
+            } else {
+                throw new ParseException("Bad interface: " + v);
+            }
+        }
+    }
+
     /**
      * Update the current enumeration.  Used when interfaces changes,
      * such as when VPN or USB interfaces are created.  All, Internal

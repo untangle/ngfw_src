@@ -166,12 +166,8 @@ public final class IntfSetMatcher extends IntfDBMatcher
 
             int c = 0;
             for (String databaseString : databaseArray) {
-                try {
-                    intfArray[c++] = Byte.parseByte(databaseString);
-                } catch (NumberFormatException exn) {
-                    throw new ParseException("could not parse interface "
-                                             + databaseString, exn);
-                }
+                IntfMatcherEnumeration ime = IntfMatcherEnumeration.getInstance();
+                intfArray[c++] = ime.parseInterface(databaseString);
             }
 
             return makeInstance(intfArray);
