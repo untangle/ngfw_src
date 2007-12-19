@@ -178,16 +178,16 @@ public class SnmpManagerImpl
 
         snmpd_config.append("sysservices 78").append(TWO_LINES);
 
-        snmpd_config.append("pass .1.3.6.1.4.1.30054.1 /bin/sh /usr/share/untangle/bin/uvmsnmp.sh webfilter").append(EOL);
-        snmpd_config.append("pass .1.3.6.1.4.1.30054.2 /bin/sh /usr/share/untangle/bin/uvmsnmp.sh firewall").append(EOL);
-        snmpd_config.append("pass .1.3.6.1.4.1.30054.3 /bin/sh /usr/share/untangle/bin/uvmsnmp.sh attack").append(EOL);
-        snmpd_config.append("pass .1.3.6.1.4.1.30054.4 /bin/sh /usr/share/untangle/bin/uvmsnmp.sh protofilter").append(EOL);
-        snmpd_config.append("pass .1.3.6.1.4.1.30054.5 /bin/sh /usr/share/untangle/bin/uvmsnmp.sh ips").append(EOL);
-        snmpd_config.append("pass .1.3.6.1.4.1.30054.6 /bin/sh /usr/share/untangle/bin/uvmsnmp.sh phish").append(EOL);
-        snmpd_config.append("pass .1.3.6.1.4.1.30054.7 /bin/sh /usr/share/untangle/bin/uvmsnmp.sh router").append(EOL);
-        snmpd_config.append("pass .1.3.6.1.4.1.30054.8 /bin/sh /usr/share/untangle/bin/uvmsnmp.sh spyware").append(EOL);
-        snmpd_config.append("pass .1.3.6.1.4.1.30054.9 /bin/sh /usr/share/untangle/bin/uvmsnmp.sh virus").append(EOL);
-        snmpd_config.append("pass .1.3.6.1.4.1.30054.10 /bin/sh /usr/share/untangle/bin/uvmsnmp.sh spamblocker").append(TWO_LINES);
+        snmpd_config.append("pass .1.3.6.1.4.1.30054.1 /bin/sh /usr/bin/uvmsnmp.sh webfilter").append(EOL);
+        snmpd_config.append("pass .1.3.6.1.4.1.30054.2 /bin/sh /usr/bin/uvmsnmp.sh firewall").append(EOL);
+        snmpd_config.append("pass .1.3.6.1.4.1.30054.3 /bin/sh /usr/bin/uvmsnmp.sh attack").append(EOL);
+        snmpd_config.append("pass .1.3.6.1.4.1.30054.4 /bin/sh /usr/bin/uvmsnmp.sh protofilter").append(EOL);
+        snmpd_config.append("pass .1.3.6.1.4.1.30054.5 /bin/sh /usr/bin/uvmsnmp.sh ips").append(EOL);
+        snmpd_config.append("pass .1.3.6.1.4.1.30054.6 /bin/sh /usr/bin/uvmsnmp.sh phish").append(EOL);
+        snmpd_config.append("pass .1.3.6.1.4.1.30054.7 /bin/sh /usr/bin/uvmsnmp.sh router").append(EOL);
+        snmpd_config.append("pass .1.3.6.1.4.1.30054.8 /bin/sh /usr/bin/uvmsnmp.sh spyware").append(EOL);
+        snmpd_config.append("pass .1.3.6.1.4.1.30054.9 /bin/sh /usr/bin/uvmsnmp.sh virus").append(EOL);
+        snmpd_config.append("pass .1.3.6.1.4.1.30054.10 /bin/sh /usr/bin/uvmsnmp.sh spamblocker").append(TWO_LINES);
 
         if(isNotNullOrBlank(settings.getCommunityString())) {
             snmpd_config.append("# Simple access rules, so there is only one read").append(EOL);
