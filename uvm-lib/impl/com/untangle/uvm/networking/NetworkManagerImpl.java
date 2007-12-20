@@ -712,6 +712,23 @@ public class NetworkManagerImpl implements LocalNetworkManager
             }
         }
 
+	/* XXX This should be rethought,but it is important for the firewall
+	 * rules for the QA push XXXX */
+	try {
+	    ScriptWriter scriptWriter = new ScriptWriter();
+	    /* Set whether or not setup has completed */
+	    
+	    this.accessManager.commit( scriptWriter );
+	    this.addressManager.commit( scriptWriter );
+	    this.miscManager.commit( scriptWriter );
+	    this.ruleManager.commit( scriptWriter );
+
+	    /* Save out the script */
+	    scriptWriter.writeFile( FILE_RULE_CFG );
+	} catch ( Exception e ) {
+	    logger.warn( "Error committing the networking.sh file", e );
+	}
+
         try {
             callNetworkListeners();
         } catch ( Exception e ) {
