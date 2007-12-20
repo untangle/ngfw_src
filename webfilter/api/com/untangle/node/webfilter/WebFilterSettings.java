@@ -59,7 +59,7 @@ public class WebFilterSettings implements Serializable
 
     private Long id;
     private Tid tid;
-    private UserWhitelistMode userWhitelistMode = UserWhitelistMode.USER_ONLY;
+    private UserWhitelistMode userWhitelistMode = UserWhitelistMode.NONE;
 
     private BlockTemplate blockTemplate = new BlockTemplate();
 
