@@ -105,7 +105,7 @@ public class XMLRPCUtil
     public Object callAlpaca( String component, String method, AsyncCallback callback, Object ... params )
         throws MalformedURLException, XmlRpcException, IOException, NetworkException
     {
-        return call( ALPACA_BASE_URL + component + "/api?nonce=" + getNonce(), method, callback, params );
+        return call( ALPACA_BASE_URL + component + "/api?argyle=" + getNonce(), method, callback, params );
     }
     
     public static XMLRPCUtil getInstance()

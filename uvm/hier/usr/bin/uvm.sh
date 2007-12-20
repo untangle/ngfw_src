@@ -81,7 +81,7 @@ flushIptables() {
     ruby <<EOF
 require "xmlrpc/client"
  
-client = XMLRPC::Client.new( "localhost", "/alpaca/uvm/api?nonce=${t_nonce}", 3000 )
+client = XMLRPC::Client.new( "localhost", "/alpaca/uvm/api?argyle=${t_nonce}", 3000 )
 ok, status = client.call( "generate_rules" )
 EOF
 }
