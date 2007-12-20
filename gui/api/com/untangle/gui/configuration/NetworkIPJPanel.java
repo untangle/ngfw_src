@@ -207,9 +207,11 @@ public class NetworkIPJPanel extends javax.swing.JPanel
     private void launchAlpacaJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_launchAlpacaJButtonActionPerformed
         try {
             URL scb = Util.getServerCodeBase();
-            String authNonce = Util.getRemoteAdminManager().getAlpacaNonce();
-            String q = null == authNonce ? "" : "?nonce=" + authNonce;
-            URL url = new URL("http://" + scb.getHost() + "/alpaca" + q);
+            String q = "?" + Util.getRemoteAdminManager().generateAuthNonce();
+            String alpacaNonce = Util.getRemoteAdminManager().getAlpacaNonce();
+            q += null == alpacaNonce ? "" : "&argyle=" + alpacaNonce;
+            URL url = new URL("http://" + scb.getHost() + "/alpaca/" + q);
+            System.out.println("URL: " + url);
             ((BasicService) ServiceManager.lookup("javax.jnlp.BasicService")).showDocument(url);
         } catch (MalformedURLException exn) {
             logger.warn("could not launch alpaca", exn);
