@@ -120,6 +120,10 @@ class AccessManagerImpl implements LocalAccessManager
     /* This should also be synchronized from its callers. */
     synchronized void commit( ScriptWriter scriptWriter )
     {
+	if ( this.accessSettings == null ) {
+	    logger.warn( "Null access settings" );
+	    return;
+	}
         setServiceStatus( this.accessSettings.getIsOutsideAdministrationEnabled(), KEY_ADMINISTRATION );
         setServiceStatus( this.accessSettings.getIsOutsideQuarantineEnabled(), KEY_QUARANTINE );
         setServiceStatus( this.accessSettings.getIsOutsideReportingEnabled(), KEY_REPORTING );

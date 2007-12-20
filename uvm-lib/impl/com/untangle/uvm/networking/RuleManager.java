@@ -194,7 +194,7 @@ public class RuleManager
         try {
             tcp = netcap.tcpRedirectPortRange();
             divertPort = netcap.udpDivertPort();
-        } catch ( JNetcapException e ) {
+        } catch ( Exception e ) {
             logger.error( "unable to determine the TCP or UDP redirect ports, using default", e );
             tcp = DEFAULT_TCP_PORT_RANGE;
             divertPort = DEFAULT_DIVERT_PORT;
