@@ -33,13 +33,13 @@
 
 package com.untangle.gui.main;
 
-import java.awt.RenderingHints;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.Rectangle;
+import java.awt.RenderingHints;
 import java.awt.event.*;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -739,9 +739,12 @@ public class MMainJFrame extends javax.swing.JFrame {
 
     private void networkJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_networkJButtonActionPerformed
         try{
-            networkJButton.setEnabled(false);
-            NetworkJDialog networkJDialog = new NetworkJDialog(this);
-            networkJDialog.setVisible(true);
+            URL scb = Util.getServerCodeBase();
+            String q = "?" + Util.getRemoteAdminManager().generateAuthNonce();
+            String alpacaNonce = Util.getRemoteAdminManager().getAlpacaNonce();
+            q += null == alpacaNonce ? "" : "&argyle=" + alpacaNonce;
+            URL url = new URL("http://" + scb.getHost() + "/alpaca/" + q);
+            ((BasicService) ServiceManager.lookup("javax.jnlp.BasicService")).showDocument(url);
         }
         catch(Exception e){
             try{ Util.handleExceptionWithRestart("Error showing network settings", e); }
@@ -751,6 +754,7 @@ public class MMainJFrame extends javax.swing.JFrame {
             networkJButton.setEnabled(true);
         }
     }//GEN-LAST:event_networkJButtonActionPerformed
+
 
     private void aboutJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aboutJButtonActionPerformed
         try{
