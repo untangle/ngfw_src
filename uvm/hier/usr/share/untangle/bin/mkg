@@ -193,6 +193,7 @@ class RealMkg
     IO.popen(apt_cmd, 'r') do |io|
       io.each_line do |l|
         if /^'(http:\/\/.*)' / =~ l
+          log l
           pkg_list << $1
         end
       end
@@ -202,7 +203,6 @@ class RealMkg
   end
 
   def download(pkg_list)
-    pkg_list.each { |p| log p }
     log "END PACKAGE LIST"
 
     tmp = get_tempdir()
