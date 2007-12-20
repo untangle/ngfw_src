@@ -6,7 +6,7 @@ def update_schema()
                         'text',
                         :not_null => true) do
     @dbh.do(<<SQL)
-UPDATE settings.n_webfilter_settings set user_whitelist_mode = 'USER_ONLY'
+UPDATE settings.n_webfilter_settings set user_whitelist_mode = 'NONE'
 SQL
   end
 
