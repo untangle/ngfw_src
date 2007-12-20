@@ -30,6 +30,7 @@ import javax.transaction.TransactionRolledbackException;
 
 import com.untangle.uvm.MailSender;
 import com.untangle.uvm.MailSettings;
+import com.untangle.uvm.networking.NetworkException;
 import com.untangle.uvm.security.AdminSettings;
 import com.untangle.uvm.security.LoginSession;
 import com.untangle.uvm.security.RegistrationInfo;
@@ -61,6 +62,8 @@ class RemoteAdminManagerImpl implements RemoteAdminManager
         + "/timezone";
     private static final String REGISTRATION_INFO_FILE = System.getProperty("bunnicula.home")
         + "/registration.info";
+
+    private static final String ALPACA_NONCE_FILE = "/etc/untangle-net-alpaca/nonce";
 
     private final UvmContextImpl uvmContext;
     private final UvmLoginImpl uvmLogin;
@@ -271,5 +274,33 @@ class RemoteAdminManagerImpl implements RemoteAdminManager
         TomcatManager tm = uvmContext.tomcatManager();
         logger.info("Generating auth nonce for " + ls.getClientAddr() + " " + ls.getUvmPrincipal());
         return tm.generateAuthNonce(ls.getClientAddr(), ls.getUvmPrincipal());
+    }
+
+    public String getAlpacaNonce()
+    {
+        BufferedReader stream = null;
+        try {
+            stream = new BufferedReader(new FileReader(ALPACA_NONCE_FILE));
+
+            String nonce = stream.readLine();
+            if (nonce.length() < 3) {
+                logger.warn("Invalid nonce in the file ["
+                            + ALPACA_NONCE_FILE + "]: ', " +
+                            nonce + "'");
+                return null;
+            }
+
+            return nonce;
+        } catch (IOException exn) {
+            logger.warn("could not get alpaca nonce", exn);
+            return null;
+        } finally {
+            try {
+                if (stream != null) stream.close();
+            } catch (IOException e) {
+                logger.warn("Unable to close the nonce file: "
+                            + ALPACA_NONCE_FILE, e);
+            }
+        }
     }
 }
