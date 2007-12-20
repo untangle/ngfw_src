@@ -377,7 +377,7 @@ static int _nf_callback( struct nfq_q_handle *qh, struct nfgenmsg *nfmsg, struct
     
         
     ip_header->check = 0;
-    errlog( ERR_WARNING, "New checksum doesn't include options.\n" );
+    debug(0, "WARNING, New checksum doesn't include options.\n" );
     ip_header->check = unet_in_cksum((u_int16_t *) ip_header, sizeof(struct iphdr));
 
     pkt->src.host.s_addr = ip_header->saddr;
