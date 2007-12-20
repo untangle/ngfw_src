@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -51,10 +51,9 @@ public class MaintenanceJDialog extends MConfigJDialog {
     private static final String NAME_REMOTE_SETTINGS    = "Access Restrictions";
     private static final String NAME_PROTOCOL_OVERRIDE  = "Manual Protocol Override";
     private static final String NAME_NETWORK_INTERFACES = "Network Interfaces";
-    private static final String NAME_SECRET_PANEL       = "Advanced Support";
     private static final String NAME_PING_TEST          = "Ping Test";
 
-    
+
     public MaintenanceJDialog( Frame parentFrame ) {
         super(parentFrame);
         setTitle(NAME_MAINTENANCE_CONFIG);
@@ -103,14 +102,6 @@ public class MaintenanceJDialog extends MConfigJDialog {
         // PING TEST //
         MaintenancePingJPanel maintenancePingJPanel = new MaintenancePingJPanel();
         addTab(NAME_PING_TEST, null, maintenancePingJPanel);
-
-        // SECRET HIDDEN PANEL //////
-        MaintenanceSecretJPanel maintenanceSecretJPanel = new MaintenanceSecretJPanel();
-        addTab(NAME_SECRET_PANEL, null, maintenanceSecretJPanel);
-        addSavable(NAME_SECRET_PANEL, maintenanceSecretJPanel);
-        addRefreshable(NAME_SECRET_PANEL, maintenanceSecretJPanel);
-        maintenanceSecretJPanel.setSettingsChangedListener(this);
-        
     }
 
 
