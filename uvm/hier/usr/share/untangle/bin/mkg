@@ -120,7 +120,7 @@ class RealMkg
     log "start #{@stamp}"
     log "downloading: \"#{pkg}\""
     pkg_list = get_pkg_list("apt-get install #{INST_OPTS} --print-uris #{pkg}")
-    download(pkg, pkg_list)
+    download(pkg_list)
     log "installing: \"#{pkg}\""
 
     IO.popen("apt-get install #{INST_OPTS} #{pkg}", 'r') do |input|
@@ -201,7 +201,7 @@ class RealMkg
     pkg_list
   end
 
-  def download(pkg, pkg_list)
+  def download(pkg_list)
     pkg_list.each { |p| log p }
     log "END PACKAGE LIST"
 
