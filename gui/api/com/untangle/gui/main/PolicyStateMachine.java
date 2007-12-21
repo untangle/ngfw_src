@@ -1170,7 +1170,8 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                 else {
                     for(MackageDesc m : storeItemsAvailable){
                         MackageDesc.Type type = m.getType();
-                        if( type == MackageDesc.Type.LIB_ITEM ) {
+                        if(type == MackageDesc.Type.LIB_ITEM
+                           && !m.getName().equals("untangle-libitem-router")) {
                             storeItemsVisible.add(m);
                         }
                         logger.debug("items: " + storeItemsVisible.size());
@@ -1277,7 +1278,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
         final float overallFinal = (float) (installedMackageMap.size() * (policyTidMap.size()+2)); // +1 for cores, +1 for util&serv
         // NODES
         for( MackageDesc mackageDesc : installedMackageMap.values() ){
-            if( isMackageNode(mackageDesc) && mackageDesc.isCore()){
+            if( isMackageNode(mackageDesc) && mackageDesc.isCore() && !mackageDesc.getName().equals("untangle-node-router")){
                 boolean isDeployed = nonPolicyNameMap.containsKey(mackageDesc.getName());
                 addToToolbox(null,mackageDesc,isDeployed,false);
             }
