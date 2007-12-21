@@ -513,26 +513,28 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                 // CREATE APPLIANCE
                 NodeContext nodeContext = Util.getNodeManager().nodeContext( tid );
                 NodeDesc nodeDesc = nodeContext.getNodeDesc();
-                MNodeJPanel mNodeJPanel = MNodeJPanel.instantiate(nodeContext, nodeDesc, policy);
-                // DEPLOY APPLIANCE TO CURRENT POLICY RACK (OR CORE RACK)
-                addToRack(policy, mNodeJPanel,true);
-                // FOCUS AND HIGHLIGHT IN CURRENT RACK
-                focusInRack(mNodeJPanel);
-                // AUTO ON
-                if( nodeDesc.getName().endsWith("router") || nodeDesc.getName().endsWith("openvpn") ){
-                    mNodeJPanel.setPowerOnHintVisible(true);
-                    MOneButtonJDialog.factory( Util.getMMainJFrame(), "", nodeDesc.getDisplayName()
-                                               + " can not be automatically turned on."
-                                               + "<br>Please configure its settings first.",
-                                               nodeDesc.getDisplayName() + " Warning", "");
-                }
-                else{
-                    while(!mNodeJPanel.getDoneRefreshing())
-                        sleep(100L);
-                    final MNodeJPanel target = mNodeJPanel;
-                    SwingUtilities.invokeLater( new Runnable(){ public void run(){
-                        target.powerJToggleButton().doClick();
-                    }});
+                if (!nodeDesc.getName().equals("untangle-node-router")) {
+                    MNodeJPanel mNodeJPanel = MNodeJPanel.instantiate(nodeContext, nodeDesc, policy);
+                    // DEPLOY APPLIANCE TO CURRENT POLICY RACK (OR CORE RACK)
+                    addToRack(policy, mNodeJPanel,true);
+                    // FOCUS AND HIGHLIGHT IN CURRENT RACK
+                    focusInRack(mNodeJPanel);
+                    // AUTO ON
+                    if( nodeDesc.getName().endsWith("router") || nodeDesc.getName().endsWith("openvpn") ){
+                        mNodeJPanel.setPowerOnHintVisible(true);
+                        MOneButtonJDialog.factory( Util.getMMainJFrame(), "", nodeDesc.getDisplayName()
+                                                   + " can not be automatically turned on."
+                                                   + "<br>Please configure its settings first.",
+                                                   nodeDesc.getDisplayName() + " Warning", "");
+                    }
+                    else{
+                        while(!mNodeJPanel.getDoneRefreshing())
+                            sleep(100L);
+                        final MNodeJPanel target = mNodeJPanel;
+                        SwingUtilities.invokeLater( new Runnable(){ public void run(){
+                            target.powerJToggleButton().doClick();
+                        }});
+                    }
                 }
             }
             catch(Exception e){
@@ -1392,9 +1394,11 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                 // GET THE NODE CONTEXT AND MACKAGE DESC
                 NodeContext nodeContext = Util.getNodeManager().nodeContext(tid);
                 NodeDesc nodeDesc = nodeContext.getNodeDesc();
-                // CONSTRUCT AND ADD THE APPLIANCE
-                MNodeJPanel mNodeJPanel = MNodeJPanel.instantiate(nodeContext,nodeDesc,policy);
-                addToRack(policy,mNodeJPanel,false);
+                if (!nodeDesc.getName().equals("untangle-node-router")) {
+                    // CONSTRUCT AND ADD THE APPLIANCE
+                    MNodeJPanel mNodeJPanel = MNodeJPanel.instantiate(nodeContext,nodeDesc,policy);
+                    addToRack(policy,mNodeJPanel,false);
+                }
             }
             catch(Exception e){
                 try{ Util.handleExceptionWithRestart("Error instantiating product: " + tid, e); }

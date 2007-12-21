@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -33,11 +33,11 @@ import com.untangle.gui.node.*;
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.dialogs.*;
 import com.untangle.gui.widgets.editTable.*;
+import com.untangle.node.router.*;
 import com.untangle.uvm.client.RemoteUvmContextFactory;
 import com.untangle.uvm.networking.*;
 import com.untangle.uvm.node.IPaddr;
 import com.untangle.uvm.node.firewall.ip.IPDBMatcher;
-import com.untangle.node.router.*;
 
 public class MNodeControlsJPanel extends com.untangle.gui.node.MNodeControlsJPanel {
 
@@ -83,6 +83,7 @@ public class MNodeControlsJPanel extends com.untangle.gui.node.MNodeControlsJPan
 
     public MNodeControlsJPanel(MNodeJPanel mNodeJPanel) {
         super(mNodeJPanel);
+        Thread.currentThread().dumpStack();
     }
 
     private void generateSpecificGui(){
