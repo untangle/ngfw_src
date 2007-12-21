@@ -28,7 +28,7 @@ if ! /sbin/modprobe -q iptable_tune; then
 fi
 
 #configure the dummy interface
-/sbin/ifconfig dummy0 192.0.2.42 255.255.255.0 up
+/sbin/ifconfig dummy0 192.0.2.42 netmask 255.255.255.0 up
 
 # check nfqueue
 /sbin/modprobe -q nfnetlink_queue
