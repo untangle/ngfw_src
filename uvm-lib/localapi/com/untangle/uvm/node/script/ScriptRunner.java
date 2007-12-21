@@ -49,7 +49,7 @@ public class ScriptRunner
 
     private static final String EMPTY_ARGS[] = new String[0];
 
-    private static final String SCRIPT_COMMAND = "sh";
+    private static final String SCRIPT_COMMAND = "bash";
 
     protected ScriptRunner()
     {
