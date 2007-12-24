@@ -86,7 +86,7 @@ class InterfaceTester
         }
 
 
-        for ( InterfaceInternal intf : settings.getEnabledList()) {
+        for ( InterfaceInternal intf : settings.getInterfaceList()) {
             String intfName = intf.getArgonIntf().getPhysicalName();
             String intfStatus = statusMap.get( intfName );
             intf.setConnectionState( UNKNOWN );
@@ -127,7 +127,7 @@ class InterfaceTester
 
     private String[] getArgs( NetworkSpacesInternalSettings settings )
     {
-        List<InterfaceInternal> interfaceList = settings.getEnabledList();
+        List<InterfaceInternal> interfaceList = settings.getInterfaceList();
 
         String args[] = new String[interfaceList.size()];
 

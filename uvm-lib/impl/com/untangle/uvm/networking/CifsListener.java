@@ -42,9 +42,9 @@ class CifsListener implements NetworkSettingsListener
     
     public void event( NetworkSpacesInternalSettings settings )
     {     
-        NetworkSpaceInternal internal = settings.getServiceSpace();
+        NetworkSpaceInternal internal = null;
         
-        logger.error( "CifsListener must use the settings from the interface database" );
+        logger.error( "CifsListener must use the settings from the interface database." );
         if ( internal == null ) return;
         
         IPNetwork network = internal.getPrimaryAddress();

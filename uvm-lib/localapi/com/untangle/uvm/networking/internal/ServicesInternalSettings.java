@@ -52,9 +52,6 @@ public class ServicesInternalSettings
 {
     // !!!!! private static final long serialVersionUID = 4349679825783697834L;
     
-    /* The global flag for whether all services are enabled */
-    private final boolean isEnabled;
-
     /* This is the address where you can definitely reach services */
     private final IPaddr serviceAddress;
 
@@ -75,16 +72,14 @@ public class ServicesInternalSettings
     private final String interfaceName;
 
 
-    private ServicesInternalSettings( boolean isEnabled,
-                                      boolean isDhcpEnabled, IPaddr dhcpStartAddress, IPaddr dhcpEndAddress,
+    private ServicesInternalSettings( boolean isDhcpEnabled, 
+                                      IPaddr dhcpStartAddress, IPaddr dhcpEndAddress,
                                       int dhcpLeaseTime, List<DhcpLeaseInternal> leaseList, 
                                       boolean isDnsEnabled, HostName dnsLocalDomain, 
                                       List<DnsStaticHostInternal> hostList,
                                       IPaddr defaultRoute, IPaddr netmask, List<IPaddr> dnsServerList,
                                       String interfaceName, IPaddr serviceAddress )
     {
-        /* Indicator for whether or not services are enabled */
-        this.isEnabled         = isEnabled;
         this.serviceAddress    = serviceAddress;
 
         /* dhcp settings */
@@ -109,7 +104,7 @@ public class ServicesInternalSettings
     /** Return whether or not services are enabled */
     public boolean getIsEnabled()
     {
-        return this.isEnabled;
+        return true;
     }
 
     /**
@@ -266,7 +261,7 @@ public class ServicesInternalSettings
     }
 
     public static ServicesInternalSettings 
-        makeInstance( boolean isEnabled, DhcpServerSettings dhcp, DnsServerSettings dns,
+        makeInstance( DhcpServerSettings dhcp, DnsServerSettings dns,
                       IPaddr defaultRoute, IPaddr netmask, List<IPaddr> dnsServerList,
                       String interfaceName, IPaddr serviceAddress )
     {
@@ -294,14 +289,14 @@ public class ServicesInternalSettings
         
         if ( serviceAddress == null ) serviceAddress = NetworkUtil.BOGUS_DHCP_ADDRESS;
 
-        return new ServicesInternalSettings( isEnabled, isDhcpEnabled, dhcpStartAddress, dhcpEndAddress,
+        return new ServicesInternalSettings( isDhcpEnabled, dhcpStartAddress, dhcpEndAddress,
                                              leaseTime, leaseList, isDnsEnabled, local, hostList,
                                              defaultRoute, netmask, dnsServerList, interfaceName, 
                                              serviceAddress );
     }
 
     public static ServicesInternalSettings 
-        makeInstance( boolean isEnabled, ServicesInternalSettings server,
+        makeInstance( ServicesInternalSettings server,
                       IPaddr defaultRoute, IPaddr netmask, List<IPaddr> dnsServerList,
                       String interfaceName, IPaddr serviceAddress )
     {
@@ -328,8 +323,7 @@ public class ServicesInternalSettings
 
         if ( serviceAddress == null ) serviceAddress = NetworkUtil.BOGUS_DHCP_ADDRESS;
 
-        return new ServicesInternalSettings( isEnabled, 
-                                             isDhcpEnabled, dhcpStartAddress, dhcpEndAddress,
+        return new ServicesInternalSettings( isDhcpEnabled, dhcpStartAddress, dhcpEndAddress,
                                              leaseTime, leaseList, isDnsEnabled, local, hostList,
                                              defaultRoute, netmask, dnsServerList, interfaceName,
                                              serviceAddress );

@@ -56,21 +56,6 @@ public class RuleManager
     /* Flags to set the redirect for traffic to the internal admin port */
     private static final String INTERNAL_OPEN_REDIRECT_FLAG  = "HTTPS_INTERNAL_REDIRECT_PORT";
 
-    /* Flags to use to steal an address and a few ports */
-    private static final String SETUP_MODE_FLAG              = "IS_IN_SETUP_MODE";
-    private static final String SETUP_ADDRESS_FLAG           = "STEAL_ADDRESS";
-    private static final String SETUP_INTERFACE_FLAG         = "STEAL_INTERFACE";
-    private static final String SETUP_TCP_PORTS_FLAG         = "STEAL_TCP_PORTS";
-    private static final String SETUP_UDP_PORTS_FLAG         = "STEAL_UDP_PORTS";
-
-    /* Set to a list of interfaces that are in the services space that need to be able to
-     * access the services */
-    private static final String SERVICES_INTERFACE_LIST      = "UVM_SERVICES_INTF_LIST";
-
-    /* Set to the index of the interfaces where ping should be enabled. */
-    private static final String PING_ANTISUBSCRIBE_FLAG      = "UVM_PING_EN";
-    private static final String PING_ANTISUBSCRIBE_LIST      = "UVM_PING_LIST";
-
     /* This is the default port range, rarely do these ever vary */
     private static final PortRange DEFAULT_TCP_PORT_RANGE = new PortRange( 9500, 9627 );
     private static final int DEFAULT_DIVERT_PORT = 9500;
@@ -85,18 +70,6 @@ public class RuleManager
     private final Logger logger = Logger.getLogger( getClass());
 
     private boolean isShutdown = false;
-
-    /* Set to true in order to use the value specified in the interface list */
-    private boolean pingInterfaceEnable = false;
-
-    /* List of the interfaces where ping is enabled */
-    private String pingInterfaceList = "";
-
-    /* List of interfaces that are in the services spaces */
-    private String servicesInterfaceList = "";
-
-    /* True if setup has been completed */
-    private boolean hasCompletedSetup = true;
 
     /* ---------------------- PACKAGE ---------------------- */
 
@@ -136,49 +109,6 @@ public class RuleManager
         }
     }
 
-    /* Just used to setup the antisubscribes */
-    void setInterfaceList( List<InterfaceInternal> interfaceList, NetworkSpaceInternal serviceSpace )
-    {
-        String pingAntisubscribeList = "";
-        
-        String servicesInterfaceList = "";
-        
-        LocalIntfManager lim = LocalUvmContextFactory.context().localIntfManager();
-
-        for ( InterfaceInternal intf : interfaceList ) {
-            ArgonInterface argonIntf = intf.getArgonIntf();
-            if ( serviceSpace != null && serviceSpace.equals( intf.getNetworkSpace())) {
-                switch( argonIntf.getArgon()) {
-                case IntfConstants.EXTERNAL_INTF:
-                    /* Always ignore the external interface */
-                    break;
-                    
-                case IntfConstants.DMZ_INTF:
-                    /* DMZ interface is not added if it is in the public space */
-                    if ( 0 == serviceSpace.getIndex()) break;
-                    
-                    /* fallthrough */
-                default:
-                    /* All other interfaces are always added unconditionally */
-                    servicesInterfaceList += " " + argonIntf.getName();
-                }
-            }
-            
-            if ( intf.isPingable()) {
-                pingAntisubscribeList = pingAntisubscribeList + " " + argonIntf.getNetcap();
-            }
-        }
-        
-        this.pingInterfaceEnable = true;
-        this.pingInterfaceList   = pingAntisubscribeList.trim();
-        this.servicesInterfaceList = servicesInterfaceList.trim();
-    }
-
-    void setHasCompletedSetup( boolean newValue )
-    {
-        this.hasCompletedSetup = newValue;
-    }
-
     synchronized void isShutdown()
     {
         this.isShutdown = true;
@@ -201,33 +131,8 @@ public class RuleManager
         }
         
         scriptWriter.appendVariable( TCP_REDIRECT_PORT_FLAG, tcp.low() + "-" + tcp.high());
-
-        if ( pingInterfaceEnable ) {
-            scriptWriter.appendVariable( PING_ANTISUBSCRIBE_FLAG, true );
-            scriptWriter.appendVariable( PING_ANTISUBSCRIBE_LIST, this.pingInterfaceList );
-        }
-        
-        if (( null != this.servicesInterfaceList ) && ( this.servicesInterfaceList.length() > 0 )) {
-            scriptWriter.appendVariable( SERVICES_INTERFACE_LIST, this.servicesInterfaceList );
-        }
         
         LocalIntfManager lim = LocalUvmContextFactory.context().localIntfManager();
-        
-        /* Setup a rule for stealing ARPs */
-        if ( !this.hasCompletedSetup ) {
-            String internal = "eth1";
-            
-            internal = lim.getInternal().getName();
-            
-            scriptWriter.appendVariable( SETUP_MODE_FLAG, true );
-            scriptWriter.appendVariable( SETUP_ADDRESS_FLAG, "" + NetworkUtil.SETUP_ADDRESS );
-            scriptWriter.appendVariable( SETUP_INTERFACE_FLAG, internal );
-            /* Steal ports 80 and 443 for HTTP and HTTPs */
-            scriptWriter.appendVariable( SETUP_TCP_PORTS_FLAG, "80,443" );
-            
-            /* Steal port 53 for DHCP */
-            scriptWriter.appendVariable( SETUP_UDP_PORTS_FLAG, "53" );
-        }
         
         /* Setup all of the values for the interfaces */
         /* XXX When we want to use custom interfaces we should just redefine INTERFACE_ORDER */

@@ -40,13 +40,6 @@ public class RemoteNetworkManagerAdaptor implements RemoteNetworkManager
         return lnm.getBasicSettings();
     }
 
-    /* Save the basic network settings */
-    public void setBasicSettings( BasicNetworkSettings basic )
-        throws NetworkException, ValidateException
-    {
-        this.lnm.setBasicSettings( basic );
-    }
-
     /* Save the basic network settings during the wizard */
     public synchronized void setSetupSettings( AddressSettings address, BasicNetworkSettings basic )
         throws NetworkException, ValidateException
@@ -124,47 +117,10 @@ public class RemoteNetworkManagerAdaptor implements RemoteNetworkManager
         return lnm.getNetworkSettings();
     }
 
-    /**
-     * Set a network configuration.
-     * @param configuration - Configuration to save
-     */
-    public void setNetworkSettings( NetworkSpacesSettings networkSettings )
-        throws NetworkException, ValidateException
-    {
-        lnm.setNetworkSettings( networkSettings );
-    }
-
     /** Update the internal representation of the address */
     public void updateAddress() throws NetworkException
     {
         lnm.updateAddress();
-    }
-
-    public void pppoe( String args[] ) throws NetworkException
-    {
-        lnm.pppoe( args );
-    }
-
-    /* Get the current dynamic dns settings */
-    public DynamicDNSSettings getDynamicDnsSettings()
-    {
-        return lnm.getDynamicDnsSettings();
-    }
-
-    /* Set the dynamic dns settings */
-    public void setDynamicDnsSettings( DynamicDNSSettings newValue )
-    {
-        lnm.setDynamicDnsSettings( newValue );
-    }
-
-    /* Retrieve a mapping of all of the interfaces, this presently lives in the
-     * networking manager*/
-    // public IntfEnum getIntfEnum();
-
-    /* Renew the DHCP address and return a new network settings with the updated address */
-    public BasicNetworkSettings renewDhcpLease() throws NetworkException
-    {
-        return lnm.renewDhcpLease();
     }
 
     /* Get the external HTTPS port */

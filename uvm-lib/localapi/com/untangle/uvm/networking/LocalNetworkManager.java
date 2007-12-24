@@ -62,29 +62,9 @@ public interface LocalNetworkManager extends RemoteNetworkManager
      * should be unique */
     void unregisterService( String name );
 
-    void setNetworkSettings(NetworkSpacesSettings settings, boolean configure)
-        throws NetworkException, ValidateException;
-
-    void setServicesSettings( ServicesSettings servicesSettings )
-        throws NetworkException;
-
-    void setServicesSettings( DhcpServerSettings dhcp, DnsServerSettings dns )
-        throws NetworkException;
-
     /* This returns an address where the host should be able to access
      * HTTP.  if HTTP is not reachable, this returns NULL */
     InetAddress getInternalHttpAddress( IPSessionDesc session );
-
-    /* Insert all of the dynamic leases with their current values */
-    void updateLeases( DhcpServerSettings settings );
-
-    void startServices() throws NetworkException;
-
-    void stopServices();
-
-    void disableNetworkSpaces() throws NetworkException;
-
-    void enableNetworkSpaces() throws NetworkException;
 
     void registerListener( NetworkSettingsListener networkListener );
 

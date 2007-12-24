@@ -52,10 +52,6 @@ public interface RemoteNetworkManager
      */
     BasicNetworkSettings getBasicSettings();
 
-    /* Save the basic network settings */
-    void setBasicSettings( BasicNetworkSettings basic )
-        throws NetworkException, ValidateException;
-
     /* Save the basic network settings during the wizard */
     void setSetupSettings(AddressSettings address, BasicNetworkSettings basic)
         throws NetworkException, ValidateException;
@@ -88,9 +84,6 @@ public interface RemoteNetworkManager
      */
     NetworkSpacesSettingsImpl getNetworkSettings();
 
-    void setNetworkSettings( NetworkSpacesSettings networkSettings )
-        throws NetworkException, ValidateException;
-
     /* Set the network settings and the address settings at once, used
      * by the networking panel */
     void setSettings( BasicNetworkSettings basic, AddressSettings address )
@@ -108,19 +101,6 @@ public interface RemoteNetworkManager
 
     /** Update the internal representation of the address */
     void updateAddress() throws NetworkException;
-
-    /* Helper function for running some pppoe stuff */
-    void pppoe( String args[] ) throws NetworkException;
-
-    /* Get the current dynamic dns settings */
-    DynamicDNSSettings getDynamicDnsSettings();
-
-    /* Set the dynamic dns settings */
-    void setDynamicDnsSettings( DynamicDNSSettings newValue );
-
-    /* Renew the DHCP address and return a new network settings with
-     * the updated address */
-    BasicNetworkSettings renewDhcpLease() throws NetworkException;
 
     /* Get the external HTTPS port */
     int getPublicHttpsPort();

@@ -68,15 +68,6 @@ public class NetworkManagerImpl implements LocalNetworkManager
     static final String BUNNICULA_BASE = System.getProperty( "bunnicula.home" );
     static final String BUNNICULA_CONF = System.getProperty( "bunnicula.conf.dir" );
 
-    /* Script to run whenever the interfaces should be reconfigured */
-    private static final String NET_CONFIGURE_SCRIPT = BUNNICULA_BASE + "/networking/configure";
-
-    /* Script to run whenever the iptables should be updated */
-    private static final String IPTABLES_SCRIPT      = BUNNICULA_BASE + "/networking/rule-generator";
-
-    /* Script to run renew the DHCP lease */
-    private static final String DHCP_RENEW_SCRIPT    = BUNNICULA_BASE + "/networking/dhcp-renew";
-
     /* Script to run after reconfiguration (from NetworkSettings Listener) */
     private static final String AFTER_RECONFIGURE_SCRIPT = BUNNICULA_BASE + "/networking/after-reconfigure";
 
@@ -93,9 +84,6 @@ public class NetworkManagerImpl implements LocalNetworkManager
 
     /* Manager for the iptables rules */
     private final RuleManager ruleManager;
-
-    /* Manager for the DHCP/DNS server */
-    private final DhcpManager dhcpManager;
 
     /* Manager for AccessSettings */
     private final AccessManagerImpl accessManager;
@@ -118,12 +106,6 @@ public class NetworkManagerImpl implements LocalNetworkManager
      * should never be null */
     private NetworkSpacesInternalSettings networkSettings = null;
 
-    /** The configuration for the DHCP/DNS Server */
-    private ServicesInternalSettings servicesSettings = null;
-
-    /* These are the dynamic dns settings */
-    private DynamicDNSSettings ddnsSettings = null;
-
     /* the netcap  */
     private final Netcap netcap = Netcap.getInstance();
 
@@ -137,7 +119,6 @@ public class NetworkManagerImpl implements LocalNetworkManager
     {
         this.ruleManager = RuleManager.getInstance();
         this.networkConfigurationLoader = NetworkConfigurationLoader.getInstance();
-        this.dhcpManager  = new DhcpManager();
         this.accessManager = new AccessManagerImpl();
         this.addressManager = new AddressManagerImpl();
         this.miscManager = new MiscManagerImpl();
@@ -191,17 +172,6 @@ public class NetworkManagerImpl implements LocalNetworkManager
     {
         BasicNetworkSettings basic = NetworkUtilPriv.getPrivInstance().toBasic( this.networkSettings );
         return basic;
-    }
-
-    public void setBasicSettings( BasicNetworkSettings basic )
-        throws NetworkException, ValidateException
-    {
-        if ( logger.isDebugEnabled()) {
-            logger.debug( "saving the basic settings:\n" + basic );
-        }
-
-        setNetworkSettings( NetworkUtilPriv.getPrivInstance().
-                            toInternal( basic, this.networkSettings, true ));
     }
 
     /**
@@ -371,7 +341,7 @@ public class NetworkManagerImpl implements LocalNetworkManager
             this.addressManager.setSettings( address );
         }
 
-        setBasicSettings( basic );
+        logger.warn( "implement: setBasicSettings( basic )" );
     }
 
     /* Set the access and address settings, used by the Remote Panel */
@@ -397,124 +367,18 @@ public class NetworkManagerImpl implements LocalNetworkManager
         setNetworkSettings( network );
     }
 
-    /* XXXX This is kind of busted since you can't change the services on/off switch from here */
-    /* XXXX This is just kind of busted because it passes the same argument twice */
-    public synchronized void setServicesSettings( ServicesSettings servicesSettings )
-        throws NetworkException
-    {
-        setServicesSettings( servicesSettings, servicesSettings );
-    }
-
-    /**
-     * RBS: 04/05/2006: Don't really need a function that takes a seperate DNS and DHCP settings object
-     */
-    public synchronized void setServicesSettings( DhcpServerSettings dhcp, DnsServerSettings dns )
-        throws NetworkException
-    {
-        if ( logger.isDebugEnabled()) {
-            logger.debug( "Loading the new dhcp settings: " + dhcp );
-            logger.debug( "Loading the new dns settings: " + dns );
-        }
-
-        saveServicesSettings( new ServicesSettingsImpl( dhcp, dns ));
-
-        this.dhcpManager.configure( this.servicesSettings );
-        this.dhcpManager.startDnsMasq();
-    }
-
     public ServicesInternalSettings getServicesInternalSettings()
     {
-        return this.servicesSettings;
+        logger.error( "getServicesInternalSettings: fixme", new Exception());
+        return null;
     }
-
-    public void updateLeases( DhcpServerSettings settings )
-    {
-        if ( settings.getDhcpEnabled()) {
-            this.dhcpManager.loadLeases( settings );
-        } else {
-            this.dhcpManager.fleeceLeases( settings );
-        }
-    }
-
-    public void startServices() throws NetworkException
-    {
-        synchronized( this ) {
-            this.dhcpManager.configure( this.servicesSettings );
-            this.dhcpManager.startDnsMasq();
-        }
-
-        /* Have to recreate the rules to change the DHCP forwarding settings */
-        generateRules();
-    }
-
-    public  void stopServices()
-    {
-        synchronized( this ) {
-            this.dhcpManager.deconfigure();
-        }
-        
-        /* Have to recreate the rules to change the DHCP forwarding settings */
-        try {
-            generateRules();
-        } catch ( NetworkException e ) {
-            logger.warn( "Unable to refresh iptables rules.", e );
-        }
-    }
-
-    public synchronized DynamicDNSSettings getDynamicDnsSettings()
-    {
-        if ( this.ddnsSettings == null ) {
-            logger.error( "null ddns settings, returning fresh object." );
-            this.ddnsSettings = new DynamicDNSSettings();
-            this.ddnsSettings.setEnabled( false );
-        }
-
-        if ( logger.isDebugEnabled()) logger.debug( "getting ddns settings: " + this.ddnsSettings );
-
-        return this.ddnsSettings;
-    }
-
-    public synchronized void setDynamicDnsSettings( DynamicDNSSettings newSettings )
-    {
-        if ( logger.isDebugEnabled()) {
-            logger.debug( "Saving new ddns settings: " + newSettings );
-        }
-        saveDynamicDnsSettings( newSettings );
-    }
-
 
     /* Returns true if dynamic dns is enabled */
     boolean isDynamicDnsEnabled()
     {
-        DynamicDNSSettings settings = this.ddnsSettings;
-        if ( settings == null ) return false;
-        return settings.isEnabled();
-    }
-
-    public synchronized void disableNetworkSpaces() throws NetworkException
-    {
-        try {
-            NetworkSpacesSettings nss = getNetworkSettings();
-            nss.setIsEnabled( false );
-            /* Disabling network spaces is a sign that the wizard has been completed */
-            nss.setHasCompletedSetup( true );
-            setNetworkSettings( nss );
-        } catch ( Exception e ) {
-            logger.error( "Unable to disable network settings", e );
-            throw new NetworkException( "Unable to turn off network sharing", e );
-        }
-    }
-
-    public synchronized void enableNetworkSpaces() throws NetworkException
-    {
-        try {
-            NetworkSpacesSettings nss = getNetworkSettings();
-            nss.setIsEnabled( true );
-            setNetworkSettings( nss );
-        } catch ( Exception e ) {
-            logger.error( "Error enabling network spaces", e );
-            throw new NetworkException( "Unable to turn on network spaces" );
-        }
+        logger.warn( "isDynamicDnsEnabled: fixme", new Exception());
+        
+        return false;
     }
 
     /* Get the current hostname */
@@ -532,47 +396,6 @@ public class NetworkManagerImpl implements LocalNetworkManager
     public int getPublicHttpsPort()
     {
         return this.addressManager.getInternalSettings().getCurrentPublicPort();
-    }
-
-    /* Renew the DHCP address and return a new network settings with the updated address */
-    public synchronized BasicNetworkSettings renewDhcpLease() throws NetworkException
-    {
-        renewDhcpLease( 0 );
-
-        return getBasicSettings();
-    }
-
-    /* Renew the DHCP address for a network space, this function isn't really
-     * useful until it is possible to refresh individual spaces. */
-    synchronized void renewDhcpLease( int index ) throws NetworkException
-    {
-        if (( index < 0 ) || ( index >= this.networkSettings.getNetworkSpaceList().size())) {
-            throw new NetworkException( "There isn't a network space at index " + index );
-        }
-
-        boolean isPrimary = ( index == 0 );
-
-        NetworkSpaceInternal space = this.networkSettings.getNetworkSpaceList().get( index );
-
-        if ( !space.getIsDhcpEnabled()) {
-            throw new NetworkException( "DHCP is not enabled on this network space." );
-        }
-
-        /* Renew the address */
-        try {
-            String flags = "";
-
-            // if ( !isPrimary ) flags = InterfacesScriptWriter.DHCP_FLAG_ADDRESS_ONLY;
-
-            ScriptRunner.getInstance().exec( DHCP_RENEW_SCRIPT, space.getDeviceName(),
-                                             String.valueOf( space.getIndex()), flags );
-        } catch ( Exception e ) {
-            logger.warn( "Error renewing DHCP address", e );
-            throw new NetworkException( "Unable to renew the DHCP lease" );
-        }
-
-        /* Update the address and generate new rules */
-        updateAddress();
     }
 
     /* Save the basic network settings during the wizard */
@@ -633,8 +456,7 @@ public class NetworkManagerImpl implements LocalNetworkManager
 
             /* Just use the utility function to calculate the new start and end range */
             ServicesSettings servicesSettings = new ServicesSettingsImpl();
-            this.dhcpManager.updateDhcpRange( servicesSettings, address, netmask );
-
+            logger.error( "DHCP Start and DHCP End Address are not calculated correctly" );
             IPaddr dhcpStart = servicesSettings.getDhcpStartAddress();
             IPaddr dhcpEnd = servicesSettings.getDhcpEndAddress();
 
@@ -697,15 +519,7 @@ public class NetworkManagerImpl implements LocalNetworkManager
                 
                 this.networkSettings = NetworkUtilPriv.getPrivInstance().updateDhcpAddresses( previous );
                 
-                /* Update the interface list for the iptables rules (this
-                 * affects the antisubscribes for PING) */
-                ruleManager.setInterfaceList( this.networkSettings.getInterfaceList(),
-                                              this.networkSettings.getServiceSpace());
-                
-                this.addressManager.updateAddress();
-                
-                /* Have to do this too, because the ip address may have changed */
-                updateServicesSettings();
+                this.addressManager.updateAddress();                
             } catch ( Exception e ) {
                 logger.error( "Exception updating address, reverting to previous settings", e );
                 this.networkSettings = previous;
@@ -736,10 +550,6 @@ public class NetworkManagerImpl implements LocalNetworkManager
         }
     }
 
-    public void pppoe( String args[] ) throws NetworkException
-    {
-    }
-
     /*
      * This returns an address where the host should be able to access
      * HTTP.  if HTTP is not reachable, this returns NULL
@@ -760,9 +570,6 @@ public class NetworkManagerImpl implements LocalNetworkManager
         if ( this.isShutdown ) return;
 
         ScriptWriter scriptWriter = new ScriptWriter();
-        /* Set whether or not setup has completed */
-        this.ruleManager.setHasCompletedSetup( this.networkSettings.getHasCompletedSetup());
-
         this.accessManager.commit( scriptWriter );
         this.addressManager.commit( scriptWriter );
         this.miscManager.commit( scriptWriter );
@@ -772,28 +579,6 @@ public class NetworkManagerImpl implements LocalNetworkManager
         scriptWriter.writeFile( FILE_RULE_CFG );
 
         this.ruleManager.generateIptablesRules();
-    }
-
-    private void updateServicesSettings() throws NetworkException
-    {
-        if ( this.servicesSettings == null || this.networkSettings == null ) {
-            logger.info( "Ignoring services settings update, null settings" );
-            return;
-        }
-
-        logger.debug( "Updating the services settings, network settings changed" );
-
-        /* Update the services settings with the new addresses from network settings, and then
-         * reload the services. */
-        this.servicesSettings =
-            NetworkUtilPriv.getPrivInstance().update( this.networkSettings, this.servicesSettings );
-
-        try {
-            this.dhcpManager.configure( this.servicesSettings );
-            this.dhcpManager.startDnsMasq();
-        } catch ( NetworkException e ) {
-            logger.error( "Unable to reconfigure dhcp manager, continuing.", e );
-        }
     }
 
     public void isShutdown()
@@ -890,13 +675,6 @@ public class NetworkManagerImpl implements LocalNetworkManager
 
         loadAllSettings();
 
-        /* Create new dynamic dns settings, only if they are not set */
-        if ( this.ddnsSettings == null ) {
-            DynamicDNSSettings ddns = new DynamicDNSSettings();
-            ddns.setEnabled( false );
-            saveDynamicDnsSettings( ddns );
-        }
-
         NetworkUtilPriv nup = NetworkUtilPriv.getPrivInstance();
 
         /* If there are no settings, get the settings from the boxes configuration */
@@ -915,32 +693,6 @@ public class NetworkManagerImpl implements LocalNetworkManager
 
             /* Save the network settings */
             setNetworkSettings( internal );
-
-            /* Attempt to load the services settings */
-            this.servicesSettings = loadServicesSettings();
-
-            if ( this.servicesSettings == null ) {
-                /* Get new settings for the services */
-                setServicesSettings( nup.getDefaultServicesSettings());
-            }
-        } else if ( this.networkSettings.getSetupState().isRestore()) {
-            logger.debug( "Settings need to be restored, configuring box." );
-            NetworkSpacesSettingsImpl restoredSettings = nup.toSettings( this.networkSettings );
-
-            SetupState state = this.networkSettings.getSetupState();
-
-            if ( SetupState.ADVANCED_RESTORE.equals( state )) {
-                restoredSettings.setSetupState( SetupState.ADVANCED );
-            } else {
-                restoredSettings.setSetupState( SetupState.BASIC );
-            }
-
-
-            try {
-                setNetworkSettings( restoredSettings );
-            } catch ( Exception e ) {
-                logger.error( "Unable to reload network settings, continuing", e );
-            }
         }
 
         /* Done before so these get called on the first update */
@@ -975,8 +727,6 @@ public class NetworkManagerImpl implements LocalNetworkManager
     /* Methods for saving and loading the settings files from the database at startup */
     private void loadAllSettings()
     {
-        this.ddnsSettings = loadDynamicDnsSettings();
-
         try {
             this.networkSettings = loadNetworkSettings();
         } catch ( Exception e ) {
@@ -995,9 +745,6 @@ public class NetworkManagerImpl implements LocalNetworkManager
 
         /* Load the address/hostname settings */
         this.addressManager.init();
-
-        /* Load the services settings */
-        if ( this.networkSettings != null ) this.servicesSettings = loadServicesSettings();
     }
 
     private NetworkSpacesInternalSettings loadNetworkSettings() throws NetworkException, ValidateException
@@ -1014,35 +761,6 @@ public class NetworkManagerImpl implements LocalNetworkManager
         }
 
         return NetworkUtilPriv.getPrivInstance().toInternal( dbSettings );
-    }
-
-    private DynamicDNSSettings loadDynamicDnsSettings()
-    {
-        DataLoader<DynamicDNSSettings> loader =
-            new DataLoader<DynamicDNSSettings>( "DynamicDNSSettings", LocalUvmContextFactory.context());
-
-        return loader.loadData();
-    }
-
-    private ServicesInternalSettings loadServicesSettings()
-    {
-        DataLoader<ServicesSettingsImpl> loader =
-            new DataLoader<ServicesSettingsImpl>( "ServicesSettingsImpl", LocalUvmContextFactory.context());
-
-        ServicesSettingsImpl dbSettings = loader.loadData();
-
-        if ( dbSettings == null ) {
-            logger.info( "There are no services settings" );
-            return null;
-        }
-
-        /* Convert these settings to internal settings */
-        if ( this.networkSettings == null ) {
-            logger.warn( "null network settings, unable to load services settings." );
-            return null;
-        }
-
-        return NetworkUtilPriv.getPrivInstance().toInternal( this.networkSettings, dbSettings, dbSettings );
     }
 
     /**
@@ -1076,53 +794,6 @@ public class NetworkManagerImpl implements LocalNetworkManager
         }
 
         this.networkSettings = nssi;
-    }
-
-    private void saveDynamicDnsSettings( DynamicDNSSettings newSettings )
-    {
-        DataSaver<DynamicDNSSettings> saver =
-            new DynamicDnsSettingsDataSaver( LocalUvmContextFactory.context(), newSettings );
-
-        newSettings = saver.saveData( newSettings );
-        if ( newSettings == null ) {
-            logger.error( "Unable to save the dynamic dns settings." );
-            return;
-        }
-
-        this.ddnsSettings = newSettings;
-    }
-
-    private void saveServicesSettings( ServicesSettingsImpl newSettings )
-        throws NetworkException
-    {
-        NetworkUtilPriv nup = NetworkUtilPriv.getPrivInstance();
-
-        /* Fleece the leases before saving */
-        this.dhcpManager.fleeceLeases( newSettings );
-
-        DataSaver<ServicesSettingsImpl> saver =
-            new ServicesSettingsDataSaver( LocalUvmContextFactory.context());
-
-        if ( this.networkSettings == null ) {
-            logger.error( "Unable to update the services settings, because the network settings are null." );
-            return;
-        }
-
-        /* Convert to internal first, and then use the internal to swap out to database */
-        ServicesInternalSettings newInternal =
-            nup.toInternal( this.networkSettings, newSettings, newSettings );
-
-        newSettings = newInternal.toSettings();
-
-        newSettings = saver.saveData( newSettings );
-
-        /* No database settings */
-        if ( newSettings == null ) {
-            logger.error( "Unable to save the services settings to the databse." );
-            return;
-        }
-
-        this.servicesSettings = newInternal;
     }
 
     /* Create a networking manager, this is a first come first serve

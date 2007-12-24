@@ -261,7 +261,6 @@ class NetworkUtilPriv extends NetworkUtil
 
         IPaddr defaultRoute  = networkSettings.getDefaultRoute();
 
-        SetupState setupState = networkSettings.getSetupState();
         boolean isEnabled     = networkSettings.getIsEnabled();
 
         /* Create all of the redirects */
@@ -293,11 +292,7 @@ class NetworkUtilPriv extends NetworkUtil
             networkSpaceList.add( 0, nwi );
         }
 
-        return NetworkSpacesInternalSettings.
-            makeInstance( setupState, isEnabled, hasCompletedSetup,
-                          realInterfaceList, interfaceList, networkSpaceList,
-                          routingTable, redirectList, dns1, dns2, defaultRoute );
-
+        return new NetworkSpacesInternalSettings( interfaceList, networkSpaceList, dns1, dns2, defaultRoute );
     }
 
     BasicNetworkSettings toBasic( NetworkSpacesInternalSettings settings )
@@ -415,52 +410,6 @@ class NetworkUtilPriv extends NetworkUtil
         return toInternal( newSettings );
     }
 
-    ServicesInternalSettings toInternal( NetworkSpacesInternalSettings settings, DhcpServerSettings dhcp,
-                                         DnsServerSettings dns )
-    {
-        NetworkSpaceInternal serviceSpace = settings.getServiceSpace();
-
-        boolean isEnabled = settings.getIsEnabled();
-
-        IPaddr defaultRoute;
-        IPaddr netmask;
-        List<IPaddr> dnsServerList = new LinkedList<IPaddr>();
-        String interfaceName =  null;
-        IPNetwork primary = serviceSpace.getPrimaryAddress();
-
-        if ( serviceSpace.getIsNatEnabled()) {
-            defaultRoute = primary.getNetwork();
-            netmask = primary.getNetmask();
-            /* Only add the default route if dns is enabled */
-            if ( isEnabled && dns.getDnsEnabled() ) {
-                dnsServerList.add( defaultRoute );
-            } else {
-                /* Otherwise, dhcp would serve the addresses the box uses for DNS */
-                if ( !settings.getDns1().isEmpty()) dnsServerList.add( settings.getDns1());
-                if ( !settings.getDns2().isEmpty()) dnsServerList.add( settings.getDns2());
-            }
-            interfaceName = serviceSpace.getDeviceName();
-        } else {
-            /* This might be incorrect to assume the default route of the box */
-            defaultRoute = settings.getDefaultRoute();
-            netmask = primary.getNetmask();
-            if ( isEnabled && dns.getDnsEnabled()) {
-                dnsServerList.add( primary.getNetwork());
-            } else {
-                if ( !settings.getDns1().isEmpty()) dnsServerList.add( settings.getDns1());
-                if ( !settings.getDns2().isEmpty()) dnsServerList.add( settings.getDns2());
-            }
-
-
-            /* Don't bind to an interface */
-            interfaceName = null;
-        }
-
-        return ServicesInternalSettings.
-            makeInstance( isEnabled, dhcp, dns, defaultRoute, netmask, dnsServerList,
-                          interfaceName, primary.getNetwork());
-    }
-
     /** Used when update address is called.  This only updates the dhcp address */
     NetworkSpacesInternalSettings updateDhcpAddresses( NetworkSpacesInternalSettings internal )
         throws NetworkException, ValidateException
@@ -528,82 +477,15 @@ class NetworkUtilPriv extends NetworkUtil
         return toInternal( settings );
     }
 
-    /* Get the default settings for services */
-    ServicesSettingsImpl getDefaultServicesSettings()
-    {
-        ServicesSettingsImpl services = new ServicesSettingsImpl();
-
-        services.setDhcpEnabled( false );
-        services.setDhcpStartAddress( NetworkUtil.DEFAULT_DHCP_START );
-        services.setDhcpEndAddress( NetworkUtil.DEFAULT_DHCP_END );
-        services.setDhcpLeaseTime( NetworkUtil.DEFAULT_LEASE_TIME_SEC );
-
-        services.setDnsEnabled( false );
-        return services;
-
-    }
-
-    /* Used when the network settings change, but the dns masq settings haven't */
-    ServicesInternalSettings update( NetworkSpacesInternalSettings settings,
-                                     ServicesInternalSettings services )
-    {
-        NetworkSpaceInternal serviceSpace = settings.getServiceSpace();
-
-        IPaddr defaultRoute;
-        IPaddr netmask;
-        List<IPaddr> dnsServerList = new LinkedList<IPaddr>();
-        String interfaceName =  null;
-
-        boolean isEnabled = settings.getIsEnabled();
-
-        IPNetwork primary = serviceSpace.getPrimaryAddress();
-
-        /* XXX Code is duplicated with toInternal XXX */
-        if ( serviceSpace.getIsNatEnabled()) {
-            defaultRoute = primary.getNetwork();
-            netmask = primary.getNetmask();
-            /* Only add the default route if dns is enabled */
-            if ( isEnabled && services.getIsDnsEnabled() ) {
-                dnsServerList.add( defaultRoute );
-            } else {
-                /* Otherwise, dhcp would serve the addresses the box uses for DNS */
-                if ( !settings.getDns1().isEmpty()) dnsServerList.add( settings.getDns1());
-                if ( !settings.getDns2().isEmpty()) dnsServerList.add( settings.getDns2());
-            }
-            interfaceName = serviceSpace.getDeviceName();
-        } else {
-            /* This might be incorrect to assume the default route of the box */
-            defaultRoute = settings.getDefaultRoute();
-            netmask = primary.getNetmask();
-            if ( isEnabled && services.getIsDnsEnabled()) {
-                dnsServerList.add( primary.getNetwork());
-            } else {
-                if ( !settings.getDns1().isEmpty()) dnsServerList.add( settings.getDns1());
-                if ( !settings.getDns2().isEmpty()) dnsServerList.add( settings.getDns2());
-            }
-
-
-            /* Don't bind to an interface */
-            interfaceName = null;
-        }
-
-        return ServicesInternalSettings.
-            makeInstance( settings.getIsEnabled(), services, defaultRoute, netmask, dnsServerList,
-                          interfaceName, primary.getNetwork());
-
-    }
-
     /* Return the impl so this can go into a database */
     NetworkSpacesSettingsImpl toSettings( NetworkSpacesInternalSettings internalSettings )
     {
         NetworkSpacesSettingsImpl settings = new NetworkSpacesSettingsImpl();
 
-        settings.setSetupState( internalSettings.getSetupState());
-
         /* Generate the list network spaces and a map from internal -> normal. */
         List<NetworkSpace> networkSpaceList = new LinkedList<NetworkSpace>();
 
-        settings.setIsEnabled( internalSettings.getIsEnabled());
+        settings.setIsEnabled( true );
 
         Map<NetworkSpaceInternal,NetworkSpace> networkSpaceMap =
             new HashMap<NetworkSpaceInternal,NetworkSpace>();
@@ -638,10 +520,9 @@ class NetworkUtilPriv extends NetworkUtil
             }
         }
 
-        /* Generate the interfaces, wire them up to the correct network space.
-         * always wire settings up as if they were enabled. */
+        /* Generate the interfaces, wire them up to the correct network space */
         List<Interface> intfList = new LinkedList<Interface>();
-        for ( InterfaceInternal intfInternal : internalSettings.getEnabledList()) {
+        for ( InterfaceInternal intfInternal : internalSettings.getInterfaceList()) {
             Interface i = intfInternal.toInterface();
             NetworkSpace space = networkSpaceMap.get( intfInternal.getNetworkSpace());
             i.setNetworkSpace(( space == null ) ? primary : space );
@@ -650,7 +531,6 @@ class NetworkUtilPriv extends NetworkUtil
 
         /* Generate the routing table. */
         List<Route> routingTable = new LinkedList<Route>();
-        for( RouteInternal r : internalSettings.getRoutingTable()) routingTable.add( r.toRoute());
 
         /* Set all of the simple settings (eg defaultRoute) */
         settings.setInterfaceList( intfList );
@@ -659,9 +539,9 @@ class NetworkUtilPriv extends NetworkUtil
         settings.setDefaultRoute( internalSettings.getDefaultRoute());
         settings.setDns1( internalSettings.getDns1());
         settings.setDns2( internalSettings.getDns2());
-        settings.setHasCompletedSetup( internalSettings.getHasCompletedSetup());
+        settings.setHasCompletedSetup( true );
 
-        settings.setRedirectList( internalSettings.getRedirectRuleList());
+        settings.setRedirectList( new LinkedList<RedirectRule>());
 
         return settings;
     }
@@ -719,9 +599,6 @@ class NetworkUtilPriv extends NetworkUtil
                         return true;
                 }
             }
-
-            /* Only check the first space if it is not enabled */
-            if ( !settings.getIsEnabled()) break;
         }
 
         return false;
