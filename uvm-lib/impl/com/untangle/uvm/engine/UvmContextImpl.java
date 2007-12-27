@@ -938,6 +938,7 @@ public class UvmContextImpl extends UvmContextBase
                 addressBookFactory.refresh();
                 phoneBookFactory.refresh();
                 portalManager = findPortalManager();
+                adPhoneBookAssistant = ADPhoneBookAssistantManager.getADPhoneBookAssistant();
             }
 
             return true;
