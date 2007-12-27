@@ -139,7 +139,7 @@ public class InterfaceInternal
         StringBuilder sb = new StringBuilder();
         sb.append( "argon intf:  " ).append( getArgonIntf());
         sb.append( "\nname:        " ).append( getName());
-        sb.append( "\nspace-index: " ).append( getNetworkSpace().getIndex());
+        sb.append( "\nspace-name: " ).append( getNetworkSpace().getName());
         sb.append( "\neth-media:   " ).append( getEthernetMedia());
         sb.append( "\nstatus:      " ).append( getConnectionState() + "/" + getCurrentMedia());
         sb.append( "\npingable:    " ).append( isPingable());

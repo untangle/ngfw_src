@@ -44,8 +44,6 @@ import com.untangle.uvm.node.script.ScriptRunner;
 import com.untangle.uvm.node.script.ScriptWriter;
 import com.untangle.uvm.security.Tid;
 import com.untangle.uvm.toolbox.RemoteToolboxManager;
-import com.untangle.uvm.util.DataLoader;
-import com.untangle.uvm.util.DataSaver;
 import com.untangle.uvm.util.XMLRPCUtil;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
@@ -70,10 +68,6 @@ public class NetworkManagerImpl implements LocalNetworkManager
 
     /* Script to run after reconfiguration (from NetworkSettings Listener) */
     private static final String AFTER_RECONFIGURE_SCRIPT = BUNNICULA_BASE + "/networking/after-reconfigure";
-
-    /* Write the expected bridge configuration here, if it is in place, then
-     * bridges are not regenerated each time the network is saved */
-    private static final String BRIDGE_CFG_FILE = BUNNICULA_CONF + "/bridge_cfg";
 
     /* A flag for devel environments, used to determine whether or not
      * the etc files actually are written, this enables/disables reconfiguring networking */
@@ -262,88 +256,6 @@ public class NetworkManagerImpl implements LocalNetworkManager
         return this.networkSettings;
     }
 
-    public void setNetworkSettings( NetworkSpacesSettings settings )
-        throws NetworkException, ValidateException
-    {
-        setNetworkSettings( settings, true );
-    }
-
-    /**
-     * @params:
-     * @param: settings - Network settings to save.
-     * @param: configure - Set to true in order to configure the new settings, this is the default
-     *                   - and is really only used as false by the router..
-     */
-    public synchronized void setNetworkSettings( NetworkSpacesSettings settings, boolean configure )
-        throws NetworkException, ValidateException
-    {
-        if ( logger.isDebugEnabled()) logger.debug( "Loading the new network settings: " + settings );
-
-        NetworkUtilPriv nup = NetworkUtilPriv.getPrivInstance();
-        NetworkSpacesInternalSettings internal = nup.toInternal( settings );;
-
-        /* If the saving is disable, then don't actually reconfigured,
-         * just save the settings to the database. */
-        if ( configure ) {
-            setNetworkSettings( internal );
-        } else {
-            logger.info( "Configuring network settings disabled, only writing to database" );
-
-            /* In order to save it has to be an Impl, convert from
-             * internal and then back out again to get an impl */
-            saveNetworkSettings( nup.toSettings( internal ));
-        }
-    }
-
-    private synchronized void setNetworkSettings( NetworkSpacesInternalSettings newSettings )
-        throws NetworkException, ValidateException
-    {
-        NetworkUtilPriv nup = NetworkUtilPriv.getPrivInstance();
-
-        if ( logger.isDebugEnabled()) logger.debug( "Loading the new network settings: " + newSettings );
-
-        /* Write the settings */
-        writeConfiguration( newSettings );
-
-        /* Actually load the new settings */
-        if ( this.saveSettings ) {
-
-            /* temporary fix for bug 2693. secret field doesn't run until second save. */
-            try {
-                ScriptWriter scriptWriter = new ScriptWriter();
-                this.miscManager.commit( scriptWriter );
-                scriptWriter.writeFile( FILE_RULE_CFG );
-            } catch ( Exception e ) {
-                /* XXXXXXX not totally sure what to do here, kind of boned */
-                logger.warn( "Error writing misc scripts" );
-            }
-        } else {
-            logger.warn( "Not loading new network settings because networking is disabled" );
-        }
-
-        /* Save the configuration to the database */
-        try {
-            saveNetworkSettings( nup.toSettings( newSettings ));
-        } catch ( Exception e ) {
-            logger.error( "Unable to save settings, updating address anyway", e );
-        }
-
-        /* Have to update the settings */
-        updateAddress();
-    }
-
-    /* Set the network settings and the address settings at once, used
-     * by the networking panel */
-    public void setSettings( BasicNetworkSettings basic, AddressSettings address )
-        throws NetworkException, ValidateException
-    {
-        synchronized ( this ) {
-            this.addressManager.setSettings( address );
-        }
-
-        logger.warn( "implement: setBasicSettings( basic )" );
-    }
-
     /* Set the access and address settings, used by the Remote Panel */
     public void setSettings( AccessSettings access, AddressSettings address )
         throws NetworkException, ValidateException
@@ -353,18 +265,22 @@ public class NetworkManagerImpl implements LocalNetworkManager
             this.addressManager.setSettings( address );
         }
 
-        generateRules();
+        logger.warn( "commit settings" ); 
+
+        updateAddress();
     }
 
     /* Set the Access, Misc and Network settings at once.  Used by the
      * support panel */
-    public synchronized void setSettings( AccessSettings access, MiscSettings misc,
-                                          NetworkSpacesSettings network )
+    public synchronized void setSettings( AccessSettings access, MiscSettings misc )
         throws NetworkException, ValidateException
     {
         this.accessManager.setSettings( access );
         this.miscManager.setSettings( misc );
-        setNetworkSettings( network );
+
+        logger.warn( "commit settings" ); 
+
+        updateAddress();
     }
 
     public ServicesInternalSettings getServicesInternalSettings()
@@ -471,11 +387,6 @@ public class NetworkManagerImpl implements LocalNetworkManager
             }
 
             if ( !hasChanged ) LocalUvmContextFactory.context().adminManager().logout();
-
-            /* Indicate that the user has completed setup */
-            NetworkSpacesSettings newSettings = getNetworkSettings();
-            newSettings.setHasCompletedSetup( true );
-            setNetworkSettings( newSettings );
         }
         catch(Exception e){
             logger.error( "Error setting up NAT in wizard", e );
@@ -517,13 +428,21 @@ public class NetworkManagerImpl implements LocalNetworkManager
                 /* Update the address database in netcap */
                 Netcap.getInstance().updateAddress();
                 
-                this.networkSettings = NetworkUtilPriv.getPrivInstance().updateDhcpAddresses( previous );
-                
+                logger.warn( "Create a new network settings object" );
+                                
                 this.addressManager.updateAddress();                
             } catch ( Exception e ) {
                 logger.error( "Exception updating address, reverting to previous settings", e );
-                this.networkSettings = previous;
             }
+        }
+
+        try {
+            this.networkSettings = NetworkUtilPriv.getPrivInstance().loadConfiguration();
+
+            logger.debug( "New network settings: " + this.networkSettings.toString());
+        } catch ( Exception e ) {
+            logger.error( "Exception updating address, reverting to previous settings", e );
+            this.networkSettings = previous;
         }
 
 	/* XXX This should be rethought,but it is important for the firewall
@@ -677,24 +596,6 @@ public class NetworkManagerImpl implements LocalNetworkManager
 
         NetworkUtilPriv nup = NetworkUtilPriv.getPrivInstance();
 
-        /* If there are no settings, get the settings from the boxes configuration */
-        if ( this.networkSettings == null ) {
-            /* Need to create new settings, (The method setNetworkingConfiguration assumes that
-             * settings is already set, and cannot be used here) */
-            BasicNetworkSettings basic = networkConfigurationLoader.loadBasicNetworkSettings();
-
-            /* Save these settings */
-            NetworkSpacesInternalSettings internal = nup.toInternal( basic );
-
-            if ( logger.isDebugEnabled()) {
-                logger.debug( "Loaded the configuration:\n" + basic );
-                logger.debug( "Converted to:\n" + internal );
-            }
-
-            /* Save the network settings */
-            setNetworkSettings( internal );
-        }
-
         /* Done before so these get called on the first update */
         registerListener(new IPMatcherListener());
         registerListener(new CifsListener());
@@ -714,29 +615,9 @@ public class NetworkManagerImpl implements LocalNetworkManager
         registerListener(new AfterReconfigureScriptListener());
     }
 
-    /* Methods for writing the configuration files */
-    private void writeConfiguration( NetworkSpacesInternalSettings newSettings ) throws NetworkException
-    {
-        if ( !this.saveSettings ) {
-            /* Set to a warn, because if this gets emailed out, something has gone terribly awry */
-            logger.warn( "Not writing configuration files because the debug property was set" );
-            return;
-        }
-    }
-
     /* Methods for saving and loading the settings files from the database at startup */
     private void loadAllSettings()
     {
-        try {
-            this.networkSettings = loadNetworkSettings();
-        } catch ( Exception e ) {
-            logger.error( "Error loading network settings, setting to null to be initialized later", e );
-            this.networkSettings = null;
-        }
-
-        /* These must load after the dynamic dns and the network settings in order to initialze
-         * the public address. */
-
         /* Load the miscellaneous settings */
         this.miscManager.init();
 
@@ -745,55 +626,6 @@ public class NetworkManagerImpl implements LocalNetworkManager
 
         /* Load the address/hostname settings */
         this.addressManager.init();
-    }
-
-    private NetworkSpacesInternalSettings loadNetworkSettings() throws NetworkException, ValidateException
-    {
-        DataLoader<NetworkSpacesSettingsImpl> loader =
-            new DataLoader<NetworkSpacesSettingsImpl>( "NetworkSpacesSettingsImpl",
-                                                       LocalUvmContextFactory.context());
-        NetworkSpacesSettings dbSettings = loader.loadData();
-
-        /* No database settings */
-        if ( dbSettings == null ) {
-            logger.info( "There are no network database settings" );
-            return null;
-        }
-
-        return NetworkUtilPriv.getPrivInstance().toInternal( dbSettings );
-    }
-
-    /**
-     * RBS: 04/05/2006: After rereading this, it is a little redundant code.
-     * the only caller to this function has internal settings and then converts
-     * them to settings in order to call this function.  It would make more sense
-     * to pass in the internal, and convert those to settings rather than going
-     * back and forth twice.
-     */
-    private void saveNetworkSettings( NetworkSpacesSettingsImpl newSettings )
-        throws NetworkException, ValidateException
-    {
-        DataSaver<NetworkSpacesSettingsImpl> saver =
-            new NetworkSettingsDataSaver(LocalUvmContextFactory.context());
-
-        NetworkUtilPriv nup = NetworkUtilPriv.getPrivInstance();
-
-        /* Convert the settings to internal before saving
-         * them.  Settings should be legit if they can be converted to internal
-         * by converting them first, and then converting them out, this guarantees
-         * that valid settings are always saved */
-        NetworkSpacesInternalSettings nssi = nup.toInternal( newSettings );
-        newSettings = nup.toSettings( nssi );
-
-        NetworkSpacesSettings dbSettings = saver.saveData( newSettings );
-
-        /* No database settings */
-        if ( dbSettings == null ) {
-            logger.error( "Unable to save the network settings." );
-            return;
-        }
-
-        this.networkSettings = nssi;
     }
 
     /* Create a networking manager, this is a first come first serve
@@ -825,64 +657,3 @@ public class NetworkManagerImpl implements LocalNetworkManager
         }
     }
 }
-
-class NetworkSettingsDataSaver extends DataSaver<NetworkSpacesSettingsImpl>
-{
-    public NetworkSettingsDataSaver( LocalUvmContext local )
-    {
-        super( local );
-    }
-
-    protected void preSave( Session s )
-    {
-        Query q = s.createQuery( "from NetworkSpacesSettingsImpl" );
-        for ( Iterator iter = q.iterate() ; iter.hasNext() ; ) {
-            NetworkSpacesSettingsImpl settings = (NetworkSpacesSettingsImpl)iter.next();
-            s.delete( settings );
-        }
-    }
-}
-
-class ServicesSettingsDataSaver extends DataSaver<ServicesSettingsImpl>
-{
-    public ServicesSettingsDataSaver( LocalUvmContext local )
-    {
-        super( local );
-    }
-
-    protected void preSave( Session s )
-    {
-        Query q = s.createQuery( "from ServicesSettingsImpl" );
-        for ( Iterator iter = q.iterate() ; iter.hasNext() ; ) {
-            ServicesSettingsImpl settings = (ServicesSettingsImpl)iter.next();
-            s.delete( settings );
-        }
-    }
-}
-
-class DynamicDnsSettingsDataSaver extends DataSaver<DynamicDNSSettings>
-{
-    private final DynamicDNSSettings newData;
-    public DynamicDnsSettingsDataSaver( LocalUvmContext local, DynamicDNSSettings newData )
-    {
-        super( local );
-        this.newData = newData;
-    }
-
-    protected void preSave( Session s )
-    {
-        Query q = s.createQuery( "from DynamicDNSSettings ds where ds.id != :id" );
-
-        /* Don't delete the new settings object */
-        Long settingsId = newData.getId();
-
-        q.setParameter( "id", (( settingsId != null ) ? settingsId : 0 ));
-        for ( Iterator iter = q.iterate() ; iter.hasNext() ; ) {
-            DynamicDNSSettings settings = (DynamicDNSSettings)iter.next();
-
-            s.delete( settings );
-        }
-    }
-
-}
-

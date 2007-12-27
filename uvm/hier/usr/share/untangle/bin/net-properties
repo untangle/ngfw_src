@@ -1,0 +1,47 @@
+#!/bin/dash
+
+DNS_MASQ_CONF="/home/rbscott/server.conf"
+
+PROPERTY_NET_CONF="com.untangle.networking.net-conf"
+PROPERTY_BRIDGE_CONF="com.untangle.networking.bridge-conf"
+PROPERTY_DNS_1="com.untangle.networking.dns-1"
+PROPERTY_DNS_2="com.untangle.networking.dns-2"
+PROPERTY_DEFAULT_GW="com.untangle.networking.default-gateway"
+
+## This returns a string of the form:
+## [:::<interface-name>[;<ip-address>/<netmask-cidr>]*]*
+network_configuration()
+{
+    ip addr show \
+        | awk '/^[0-9]/ { interface = $2 ; sub( ":$", "", interface ) ; printf ":::%s", interface } ; /^ *inet/ { printf ";%s", $2 } END { printf "\n"  }'
+}
+
+## This returns a string of the form:
+## [:::<bridge-name>[;<bridge-interface]*]*
+bridge_configuration()
+{
+    find /sys/class/net/ -path '*/brif/*' \
+        | sort \
+        | awk '{ split( $0, path, "/" ) ; if ( path[5] != bridge ) { bridge = path[5] ; printf ":::%s", bridge } ; printf ";%s", path[7] } END { printf "\n" }'
+}
+
+get_dns_1()
+{
+    awk 'BEGIN { server = "yes" } /server/ { gsub( "server=", "" ) ; if ( server == "yes" ) { print ; server = "no" }}' ${DNS_MASQ_CONF}
+}
+
+get_dns_2()
+{
+    awk 'BEGIN { server = "no" } /server/ { gsub( "server=", "" ) ; if ( server == "no" ) { server = "yes" } else if ( server == "yes" ) { print ; server = "done" }}' ${DNS_MASQ_CONF}
+}
+
+get_default_gateway()
+{
+    ip route show | awk '/default/ { print $3 }'
+}
+
+echo "${PROPERTY_NET_CONF}=`network_configuration`"
+echo "${PROPERTY_BRIDGE_CONF}=`bridge_configuration`"
+echo "${PROPERTY_DNS_1}=`get_dns_1`"
+echo "${PROPERTY_DNS_2}=`get_dns_2`"
+echo "${PROPERTY_DEFAULT_GW}=`get_default_gateway`"

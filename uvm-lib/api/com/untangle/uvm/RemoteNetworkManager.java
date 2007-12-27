@@ -84,19 +84,13 @@ public interface RemoteNetworkManager
      */
     NetworkSpacesSettingsImpl getNetworkSettings();
 
-    /* Set the network settings and the address settings at once, used
-     * by the networking panel */
-    void setSettings( BasicNetworkSettings basic, AddressSettings address )
-        throws NetworkException, ValidateException;
-
     /* Set the access and address settings, used by the Remote Panel */
     void setSettings( AccessSettings access, AddressSettings address )
         throws NetworkException, ValidateException;
 
     /* Set the Access, Misc and Network settings at once.  Used by the
      * support panel */
-    void setSettings( AccessSettings access, MiscSettings misc,
-                      NetworkSpacesSettings network )
+    void setSettings( AccessSettings access, MiscSettings misc )
         throws NetworkException, ValidateException;
 
     /** Update the internal representation of the address */

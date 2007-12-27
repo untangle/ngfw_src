@@ -23,8 +23,10 @@ import org.apache.log4j.Logger;
 import jcifs.Config;
 import jcifs.netbios.NbtAddress;
 
+import com.untangle.uvm.IntfConstants;
 import com.untangle.uvm.node.IPaddr;
 
+import com.untangle.uvm.networking.internal.InterfaceInternal;
 import com.untangle.uvm.networking.internal.NetworkSpaceInternal;
 import com.untangle.uvm.networking.internal.NetworkSpacesInternalSettings;
 
@@ -42,16 +44,32 @@ class CifsListener implements NetworkSettingsListener
     
     public void event( NetworkSpacesInternalSettings settings )
     {     
-        NetworkSpaceInternal internal = null;
+        InterfaceInternal internal = settings.getInterface( IntfConstants.INTERNAL_INTF );
         
-        logger.error( "CifsListener must use the settings from the interface database." );
-        if ( internal == null ) return;
-        
-        IPNetwork network = internal.getPrimaryAddress();
+        if ( internal == null ) {
+            logger.warn( "Internal interface doesn't exist." );
+            return;
+        }
+
+        NetworkSpaceInternal space = internal.getNetworkSpace();
+
+        if ( space == null ) {
+            logger.warn( "Internal interface doesn't have a network space." );
+            return;
+        }
+
+        IPNetwork network = space.getPrimaryAddress();
+
+        if ( network == null ) {
+            logger.warn( "Internal interface doesn't have a primary address." );
+            return;
+        }
         
         IPaddr address   = network.getNetwork();
         IPaddr netmask   = network.getNetmask();
         IPaddr broadcast = address.or( netmask.inverse());
+
+        logger.debug( "Upading the local address: " + address + "/" + netmask + "," + broadcast );
                 
         Config.setProperty( BROADCAST_PROPERTY,    broadcast.toString());
         Config.setProperty( SMB_BIND_PROPERTY,     address.toString());

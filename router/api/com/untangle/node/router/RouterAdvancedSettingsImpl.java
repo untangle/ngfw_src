@@ -37,7 +37,6 @@ import com.untangle.uvm.networking.ServicesSettingsImpl;
 import com.untangle.uvm.networking.SetupState;
 import com.untangle.uvm.node.HostName;
 import com.untangle.uvm.node.IPaddr;
-import com.untangle.uvm.node.ValidateException;
 import com.untangle.uvm.node.firewall.ip.IPDBMatcher;
 
 public class RouterAdvancedSettingsImpl implements RouterAdvancedSettings, Serializable
@@ -351,17 +350,4 @@ public class RouterAdvancedSettingsImpl implements RouterAdvancedSettings, Seria
     {
         this.networkSettings = networkSettings;
     }
-
-    /* Validate method */
-    public void validate() throws ValidateException
-    {
-        /* implement me */
-        NetworkUtil.getInstance().validate( this.networkSpacesSettings );
-
-        /* Done afterwards because the validate function will disable
-         * the spaces that have no interfaces mapped to them. */
-        SettingsValidator.getInstance().validate( this );
-    }
-
-
 }

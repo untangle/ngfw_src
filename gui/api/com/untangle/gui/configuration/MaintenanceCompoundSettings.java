@@ -78,7 +78,7 @@ public class MaintenanceCompoundSettings implements CompoundSettings {
     public boolean isBrandingEnabled(){ return isBrandingEnabled; }
 
     public void save() throws Exception {
-        Util.getNetworkManager().setSettings(accessSettings,miscSettings,networkSettings);
+        Util.getNetworkManager().setSettings(accessSettings,miscSettings);
 
         if(mailNodeCompoundSettings != null){
             mailNodeCompoundSettings.save();

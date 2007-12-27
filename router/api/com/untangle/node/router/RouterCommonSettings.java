@@ -22,8 +22,6 @@ import java.io.Serializable;
 
 import java.util.List;
 
-import com.untangle.uvm.node.Validatable;
-
 import com.untangle.uvm.networking.BasicNetworkSettings;
 import com.untangle.uvm.networking.ServicesSettings;
 import com.untangle.uvm.networking.RedirectRule;
@@ -33,7 +31,7 @@ import com.untangle.uvm.node.HostName;
 import com.untangle.uvm.node.IPaddr;
 import com.untangle.uvm.node.firewall.ip.IPDBMatcher;
 
-public interface RouterCommonSettings extends ServicesSettings, Validatable
+public interface RouterCommonSettings extends ServicesSettings
 {
     // !!!!! private static final long serialVersionUID = 4349679825783697834L;
 

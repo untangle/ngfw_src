@@ -44,8 +44,6 @@ import com.untangle.uvm.networking.RedirectRule;
 import com.untangle.uvm.networking.SetupState;
 import com.untangle.uvm.node.HostName;
 import com.untangle.uvm.node.IPaddr;
-import com.untangle.uvm.node.Validatable;
-import com.untangle.uvm.node.ValidateException;
 import com.untangle.uvm.security.Tid;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.IndexColumn;
@@ -59,7 +57,7 @@ import org.hibernate.annotations.Type;
  */
 @Entity
 @Table(name="n_router_settings", schema="settings")
-public class RouterSettingsImpl implements Validatable, RouterSettings, Serializable
+public class RouterSettingsImpl implements RouterSettings, Serializable
 {
     private static final long serialVersionUID = 4691775205493112137L;
 
@@ -118,12 +116,6 @@ public class RouterSettingsImpl implements Validatable, RouterSettings, Serializ
             localMatcherList = RouterUtil.getInstance().getEmptyLocalMatcherList();
         }
         this.localMatcherList = Collections.unmodifiableList(localMatcherList);
-    }
-
-
-    public void validate() throws ValidateException
-    {
-        SettingsValidator.getInstance().validate( this );
     }
 
     @Id
