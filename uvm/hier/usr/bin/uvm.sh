@@ -199,6 +199,7 @@ restartService() {
   pidFile=$2
   reason=$3
   stopFirst=$4
+  servicePid=
   echo "*** restarting $reason $serviceName on `date` ***" >> $UVM_WRAPPER_LOG
   if [ -n "$stopFirst" ] ; then
     # netstat -plunt >> $UVM_WRAPPER_LOG
