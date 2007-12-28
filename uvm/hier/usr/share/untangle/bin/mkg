@@ -119,11 +119,15 @@ class RealMkg
   def install(pkg)
     log "start #{@stamp}"
     log "downloading: \"#{pkg}\""
-    pkg_list = get_pkg_list("apt-get install #{INST_OPTS} --print-uris #{pkg}")
+
+    recs = get_recommends(pkg).join(' ')
+    log "RECS: #{recs}"
+
+    pkg_list = get_pkg_list("apt-get install #{INST_OPTS} --print-uris #{pkg} #{recs}")
     download(pkg_list)
     log "installing: \"#{pkg}\""
 
-    IO.popen("apt-get install #{INST_OPTS} #{pkg}", 'r') do |input|
+    IO.popen("apt-get install #{INST_OPTS} #{pkg} #{recs}", 'r') do |input|
       input.each_line { |l| log l }
     end
     r = $?
@@ -171,6 +175,32 @@ class RealMkg
   end
 
   private
+
+  def get_recommends(pkg)
+    in_recommends = false
+
+    recs = ''
+
+    IO.popen("apt-cache show #{pkg}") do |io|
+      io.each_line do |l|
+        if in_recommends
+          if /^\s+(.*)$/ =~ l
+            l += $1
+          else
+            in_recommends = false
+          end
+        elsif /^Recommends:(.*)$/ =~ l
+          in_recommends = true
+          recs += $1
+        end
+      end
+    end
+
+    recs.split(',').map do |e|
+      r = e.split('|').first
+      r.nil? ? nil : r.strip
+    end.compact
+  end
 
   def cmd_to_stderr(cmd)
     IO.popen(cmd) do |io|
