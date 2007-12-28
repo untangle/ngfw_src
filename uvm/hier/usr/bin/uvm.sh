@@ -202,10 +202,10 @@ restartService() {
   echo "*** restarting $reason $serviceName on `date` ***" >> $UVM_WRAPPER_LOG
   if [ -n "$stopFirst" ] ; then
     # netstat -plunt >> $UVM_WRAPPER_LOG
-    [ -n "$pidFile" ] && pid=`cat $pidFile`
+    [ -n "$pidFile" ] && servicePid=`cat $pidFile`
     /etc/init.d/$serviceName stop
     # just to be sure
-    [ -n "$pid" ] && kill -9 $pid
+    [ -n "$servicePid" ] && kill -9 $servicePid
   else # remove the pidfile
     [ -n "$pidFile" ] && rm -f $pidFile
   fi
