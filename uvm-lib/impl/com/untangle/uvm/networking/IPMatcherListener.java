@@ -46,54 +46,52 @@ class IPMatcherListener implements NetworkSettingsListener
 
     public void event( NetworkSpacesInternalSettings settings )
     {
-        List<NetworkSpaceInternal> networkSpaceList = settings.getNetworkSpaceList();
-        NetworkSpaceInternal primary = networkSpaceList.get( 0 );
+        NetworkSpaceInternal internal = settings.getNetworkSpace( IntfConstants.INTERNAL_INTF );
+        NetworkSpaceInternal external = settings.getNetworkSpace( IntfConstants.EXTERNAL_INTF );
+
         IPMatcherFactory ipmf = IPMatcherFactory.getInstance();
 
-        List<IPNetwork> networkList = primary.getNetworkList();
-
-        InetAddress addressArray[] = new InetAddress[networkList.size()];
-
-        /* Add all of the addresses to the address array */
-        int c = 0;
-        for ( IPNetwork network : networkList ) addressArray[c++] = network.getNetwork().getAddr();
-
-        InetAddress primaryAddress = primary.getPrimaryAddress().getNetwork().getAddr();
-
-        logger.debug( "Setting local address: " + primaryAddress );
-        logger.debug( "Setting public address array to: " + Arrays.toString( addressArray ));
-
-        ipmf.setLocalAddresses( primaryAddress, addressArray );
-
-        /* Set the IP address(es) for the private matcher */
-        NetworkSpaceInternal internal = primary;
-        boolean isFound = false;
-        for ( InterfaceInternal intf : settings.getInterfaceList()) {
-            if ( intf.getArgonIntf().getArgon() == IntfConstants.INTERNAL_INTF ) {
-                internal = intf.getNetworkSpace();
-                isFound = true;
-                break;
-            }
+        /* Load the list of networks for the internal interface */
+        List<IPNetwork> networkList = new LinkedList<IPNetwork>();
+        if ( internal == null ) {
+            logger.warn( "Internal interface doesn't have a network space." );
+        } else {
+            networkList.addAll( internal.getNetworkList());
         }
 
-        if ( !isFound ) logger.warn( "unable to find internal interface, using primary interface" );
-
-        List<IPNetwork> internalNetworkList = new LinkedList<IPNetwork>( internal.getNetworkList());
-
-        /* add the private network, if it is in there twice, it doesn't matter */
-        IPNetwork n =  internal.getPrimaryAddress();
-
-        if ( n != null && n.getNetwork() != null && !n.getNetwork().isEmpty() &&
-             n.getNetmask() != null && !n.getNetmask().isEmpty()) {
-            internalNetworkList.add( n );
-        }
-
-        if ( internalNetworkList.size() == 0 ) {
+        if ( networkList.size() == 0 ) {
             logger.warn( "no networks for the internal network space: " + internal );
         }
+        
+        for ( IPNetwork network : networkList ) logger.debug( "internal network: " + network );
 
-        for ( IPNetwork network : internalNetworkList ) logger.debug( "internal network: " + network );
+        ipmf.setInternalNetworks( networkList );
+        
+        /* Load the list of networks for the external interface. */
+        networkList.clear();
+        if ( external == null ) {
+            logger.warn( "External interface doesn't have a network space." );
+        } else {
+            networkList.addAll( external.getNetworkList());
+        }
+        
+        InetAddress primaryAddress = NetworkUtil.BOGUS_DHCP_ADDRESS.getAddr();
 
-        ipmf.setInternalNetworks( internalNetworkList );
+        InetAddress addressArray[] = new InetAddress[networkList.size()];
+                    
+        for ( int c = 0 ; c < addressArray.length ; c++ ) {
+            InetAddress address  =  networkList.get( c ).getNetwork().getAddr();
+            addressArray[c] = address;
+            logger.debug( "external network: " + address.getHostAddress());
+        }
+
+        if ( addressArray.length == 0 ) {
+            logger.warn( "no networks for the external network space: " + external );
+        } else {
+            primaryAddress = addressArray[0];
+        }
+
+
+        ipmf.setLocalAddresses( primaryAddress, addressArray );
     }
 }

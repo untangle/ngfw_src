@@ -89,6 +89,18 @@ public class NetworkSpacesInternalSettings
         return null;
     }
 
+    public NetworkSpaceInternal getNetworkSpace( byte argonIndex )
+    {
+        for ( InterfaceInternal i : this.interfaceList ) {
+            if ( i.getArgonIntf().getArgon() == argonIndex ) {
+                return i.getNetworkSpace();
+            }
+        }
+
+        return null;
+    }
+
+
     public IPaddr getDefaultRoute()
     {
         return this.defaultRoute;

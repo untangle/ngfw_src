@@ -1,6 +1,6 @@
 #!/bin/dash
 
-DNS_MASQ_CONF="/home/rbscott/server.conf"
+DNS_MASQ_CONF="/etc/dnsmasq.conf"
 
 PROPERTY_NET_CONF="com.untangle.networking.net-conf"
 PROPERTY_BRIDGE_CONF="com.untangle.networking.bridge-conf"

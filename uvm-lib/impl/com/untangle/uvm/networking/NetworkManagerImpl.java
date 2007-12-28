@@ -156,10 +156,11 @@ public class NetworkManagerImpl implements LocalNetworkManager
 
         if ( settings == null ) return null;
 
-        List<NetworkSpaceInternal> spaceList = settings.getNetworkSpaceList();
-        if ( spaceList.size() < 1 ) return null;
+        NetworkSpaceInternal external = settings.getNetworkSpace( IntfConstants.EXTERNAL_INTF );
+        
+        if ( external == null ) return null;
 
-        return spaceList.get( 0 ).getPrimaryAddress().getNetwork();
+        return external.getPrimaryAddress().getNetwork();
     }
 
     public BasicNetworkSettings getBasicSettings()
@@ -439,7 +440,9 @@ public class NetworkManagerImpl implements LocalNetworkManager
         try {
             this.networkSettings = NetworkUtilPriv.getPrivInstance().loadConfiguration();
 
-            logger.debug( "New network settings: " + this.networkSettings.toString());
+            if ( logger.isDebugEnabled()) {
+                logger.debug( "New network settings: " + this.networkSettings.toString());
+            }
         } catch ( Exception e ) {
             logger.error( "Exception updating address, reverting to previous settings", e );
             this.networkSettings = previous;

@@ -26,7 +26,6 @@ import jcifs.netbios.NbtAddress;
 import com.untangle.uvm.IntfConstants;
 import com.untangle.uvm.node.IPaddr;
 
-import com.untangle.uvm.networking.internal.InterfaceInternal;
 import com.untangle.uvm.networking.internal.NetworkSpaceInternal;
 import com.untangle.uvm.networking.internal.NetworkSpacesInternalSettings;
 
@@ -43,15 +42,8 @@ class CifsListener implements NetworkSettingsListener
     }
     
     public void event( NetworkSpacesInternalSettings settings )
-    {     
-        InterfaceInternal internal = settings.getInterface( IntfConstants.INTERNAL_INTF );
-        
-        if ( internal == null ) {
-            logger.warn( "Internal interface doesn't exist." );
-            return;
-        }
-
-        NetworkSpaceInternal space = internal.getNetworkSpace();
+    {       
+        NetworkSpaceInternal space = settings.getNetworkSpace( IntfConstants.INTERNAL_INTF );
 
         if ( space == null ) {
             logger.warn( "Internal interface doesn't have a network space." );
