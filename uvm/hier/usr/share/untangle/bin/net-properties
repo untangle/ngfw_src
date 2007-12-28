@@ -7,6 +7,8 @@ PROPERTY_BRIDGE_CONF="com.untangle.networking.bridge-conf"
 PROPERTY_DNS_1="com.untangle.networking.dns-1"
 PROPERTY_DNS_2="com.untangle.networking.dns-2"
 PROPERTY_DEFAULT_GW="com.untangle.networking.default-gateway"
+PROPERTY_DDNS_EN="com.untangle.networking.ddns-en"
+PROPERTY_HOSTNAME="com.untangle.networking.hostname"
 
 ## This returns a string of the form:
 ## [:::<interface-name>[;<ip-address>/<netmask-cidr>]*]*
@@ -40,8 +42,18 @@ get_default_gateway()
     ip route show | awk '/default/ { print $3 }'
 }
 
+get_is_ddns_running()
+{
+    # Either of these processes are running means dynamic dns is running.
+    pgrep '(ddclient|no-ip)' > /dev/null 2>&1 && echo "true"
+}
+
 echo "${PROPERTY_NET_CONF}=`network_configuration`"
 echo "${PROPERTY_BRIDGE_CONF}=`bridge_configuration`"
 echo "${PROPERTY_DNS_1}=`get_dns_1`"
 echo "${PROPERTY_DNS_2}=`get_dns_2`"
 echo "${PROPERTY_DEFAULT_GW}=`get_default_gateway`"
+echo "${PROPERTY_DDDNS_EN}=`get_is_ddns_running`"
+echo "${PROPERTY_HOSTNAME}=`hostname`"
+
+
