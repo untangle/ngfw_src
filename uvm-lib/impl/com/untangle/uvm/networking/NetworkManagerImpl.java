@@ -22,6 +22,7 @@ import java.net.InetAddress;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Properties;
 import java.util.Set;
 
 import com.untangle.jnetcap.Netcap;
@@ -99,6 +100,9 @@ public class NetworkManagerImpl implements LocalNetworkManager
     /** The nuts and bolts of networking, the real bits of panther.  this my friend
      * should never be null */
     private NetworkSpacesInternalSettings networkSettings = null;
+    
+    /** The current services settings */
+    private ServicesInternalSettings servicesSettings = null;
 
     /* the netcap  */
     private final Netcap netcap = Netcap.getInstance();
@@ -437,15 +441,24 @@ public class NetworkManagerImpl implements LocalNetworkManager
             }
         }
 
+        NetworkUtilPriv nup = NetworkUtilPriv.getPrivInstance();
+        
+        Properties properties = null;
+        
         try {
-            this.networkSettings = NetworkUtilPriv.getPrivInstance().loadConfiguration();
-
-            if ( logger.isDebugEnabled()) {
-                logger.debug( "New network settings: " + this.networkSettings.toString());
-            }
+            properties = nup.loadProperties();
         } catch ( Exception e ) {
-            logger.error( "Exception updating address, reverting to previous settings", e );
-            this.networkSettings = previous;
+            logger.warn( "Unable to load the network properties, using empty properties.", e );
+            properties = new Properties();
+        }
+
+        this.networkSettings = NetworkUtilPriv.getPrivInstance().loadNetworkSettings( properties );
+
+        this.servicesSettings = NetworkUtilPriv.getPrivInstance().loadServicesSettings( properties );
+        
+        if ( logger.isDebugEnabled()) {
+            logger.debug( "New network settings: " + this.networkSettings );
+            logger.debug( "New services settings: " + this.servicesSettings );
         }
 
 	/* XXX This should be rethought,but it is important for the firewall

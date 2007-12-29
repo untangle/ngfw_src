@@ -52,9 +52,6 @@ public class ServicesInternalSettings
 {
     // !!!!! private static final long serialVersionUID = 4349679825783697834L;
     
-    /* This is the address where you can definitely reach services */
-    private final IPaddr serviceAddress;
-
     private final boolean isDhcpEnabled;
     private final IPaddr dhcpStartAddress;
     private final IPaddr dhcpEndAddress;
@@ -67,21 +64,15 @@ public class ServicesInternalSettings
     private final List<DnsStaticHostInternal> staticHostList;
 
     private final IPaddr defaultRoute;
-    private final IPaddr netmask;
     private final List<IPaddr> dnsServerList;
-    private final String interfaceName;
-
 
     private ServicesInternalSettings( boolean isDhcpEnabled, 
                                       IPaddr dhcpStartAddress, IPaddr dhcpEndAddress,
                                       int dhcpLeaseTime, List<DhcpLeaseInternal> leaseList, 
                                       boolean isDnsEnabled, HostName dnsLocalDomain, 
                                       List<DnsStaticHostInternal> hostList,
-                                      IPaddr defaultRoute, IPaddr netmask, List<IPaddr> dnsServerList,
-                                      String interfaceName, IPaddr serviceAddress )
+                                      IPaddr defaultRoute, List<IPaddr> dnsServerList )
     {
-        this.serviceAddress    = serviceAddress;
-
         /* dhcp settings */
         this.isDhcpEnabled     = isDhcpEnabled;
         this.dhcpStartAddress  = dhcpStartAddress;
@@ -96,9 +87,7 @@ public class ServicesInternalSettings
         
         /* peripheral settings */
         this.defaultRoute      = defaultRoute;
-        this.netmask           = netmask;
         this.dnsServerList     = Collections.unmodifiableList( new LinkedList( dnsServerList ));
-        this.interfaceName     = interfaceName;
     }
 
     /** Return whether or not services are enabled */
@@ -167,12 +156,6 @@ public class ServicesInternalSettings
         return this.defaultRoute;
     }
 
-    /* The netmask to tell clients */
-    public IPaddr getNetmask()
-    {
-        return this.netmask;
-    }
-
     /* The list of nameservers to advertise */
     public List<IPaddr> getDnsServerList()
     {
@@ -215,18 +198,7 @@ public class ServicesInternalSettings
 
         return list;
     }
-
-    /* The name of interface to bind to, may be null if the server shouldn't bind */
-    public String getInterfaceName()
-    {
-        return this.interfaceName;
-    }
     
-    public IPaddr getServiceAddress()
-    {
-        return this.serviceAddress;
-    }
-
     public ServicesSettingsImpl toSettings()
     {
         ServicesSettingsImpl settings = new ServicesSettingsImpl();
@@ -252,7 +224,7 @@ public class ServicesInternalSettings
         sb.append( "is-enabled: " + getIsEnabled());
         sb.append( "\ndhcp: " + getIsDhcpEnabled());
         sb.append( "\ndhcp-range: " + getDhcpStartAddress() + "-" + getDhcpEndAddress());
-        sb.append( "\ndhcp-params: " + getDefaultRoute() + "/" + getNetmask());
+        sb.append( "\ndhcp-params: " + getDefaultRoute());
         for ( IPaddr dnsServer : getDnsServerList()) sb.append( "\ndns-server: " + dnsServer );
         sb.append( "\ndns: " + getIsDnsEnabled());
         sb.append( "\ndns-domain: " + getDnsLocalDomain());
@@ -262,8 +234,7 @@ public class ServicesInternalSettings
 
     public static ServicesInternalSettings 
         makeInstance( DhcpServerSettings dhcp, DnsServerSettings dns,
-                      IPaddr defaultRoute, IPaddr netmask, List<IPaddr> dnsServerList,
-                      String interfaceName, IPaddr serviceAddress )
+                      IPaddr defaultRoute, List<IPaddr> dnsServerList )
     {
         boolean isDhcpEnabled   = dhcp.getDhcpEnabled();
         IPaddr dhcpStartAddress = dhcp.getDhcpStartAddress();
@@ -287,18 +258,14 @@ public class ServicesInternalSettings
             hostList.add( new DnsStaticHostInternal( rule ));
         }
         
-        if ( serviceAddress == null ) serviceAddress = NetworkUtil.BOGUS_DHCP_ADDRESS;
-
         return new ServicesInternalSettings( isDhcpEnabled, dhcpStartAddress, dhcpEndAddress,
                                              leaseTime, leaseList, isDnsEnabled, local, hostList,
-                                             defaultRoute, netmask, dnsServerList, interfaceName, 
-                                             serviceAddress );
+                                             defaultRoute, dnsServerList );
     }
 
     public static ServicesInternalSettings 
         makeInstance( ServicesInternalSettings server,
-                      IPaddr defaultRoute, IPaddr netmask, List<IPaddr> dnsServerList,
-                      String interfaceName, IPaddr serviceAddress )
+                      IPaddr defaultRoute, List<IPaddr> dnsServerList )
     {
         /* If the previous server settings are null, then return new null settings */
         if ( server == null ) return null;
@@ -321,11 +288,8 @@ public class ServicesInternalSettings
         /* Build a new list of static host mapping entries */
         List<DnsStaticHostInternal> hostList = server.getDnsStaticHostList();
 
-        if ( serviceAddress == null ) serviceAddress = NetworkUtil.BOGUS_DHCP_ADDRESS;
-
         return new ServicesInternalSettings( isDhcpEnabled, dhcpStartAddress, dhcpEndAddress,
                                              leaseTime, leaseList, isDnsEnabled, local, hostList,
-                                             defaultRoute, netmask, dnsServerList, interfaceName,
-                                             serviceAddress );
+                                             defaultRoute, dnsServerList );
     }
 }

@@ -1,0 +1,4 @@
+#!/bin/dash
+
+## This should print all of the Dns Static Hosts in the form [<IP Address>;<Hostname>[ <Hostname>]*\n]*
+

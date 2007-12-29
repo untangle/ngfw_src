@@ -20,6 +20,10 @@ package com.untangle.uvm.networking;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.InputStreamReader;
+import java.io.IOException;
+
+
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.HashMap;
@@ -44,9 +48,11 @@ import com.untangle.uvm.networking.internal.RedirectInternal;
 import com.untangle.uvm.networking.internal.RouteInternal;
 import com.untangle.uvm.networking.internal.ServicesInternalSettings;
 import com.untangle.uvm.node.HostName;
+import com.untangle.uvm.node.HostNameList;
 import com.untangle.uvm.node.IPaddr;
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.ValidateException;
+import com.untangle.uvm.node.firewall.MACAddress;
 import com.untangle.uvm.util.ConfigFileUtil;
 import org.apache.log4j.Logger;
 
@@ -101,52 +107,107 @@ class NetworkUtilPriv extends NetworkUtil
         return basic;
     }
 
-    /* Load the network configuration */
-    NetworkSpacesInternalSettings loadConfiguration()
+    /* Load the network properties, these are used for some of the settings. */
+    Properties loadProperties() throws IOException
     {
-        try {
-            String cmd = System.getProperty( "bunnicula.bin.dir" ) + "/net-properties";
-            Process process = LocalUvmContextFactory.context().exec( cmd );
-            Properties properties = new Properties();
-            properties.load( process.getInputStream());
-            String networkConfiguration = properties.getProperty( "com.untangle.networking.net-conf" );
-            String bridgeConfiguration = properties.getProperty( "com.untangle.networking.bridge-conf" );
-
-            /* Load the network configuration */
-            Map<String,NetworkSpaceInternal> networkSpaceMap = new HashMap<String,NetworkSpaceInternal>();
-
-            for ( String config : networkConfiguration.split( ":::" )) {
-                NetworkSpaceInternal networkSpace = parseConfig( config );
-                if ( networkSpace == null ) continue;
-                networkSpaceMap.put( networkSpace.getName(), networkSpace );
-            }
-            
-            /* Convert the hash to a list */
-            List<NetworkSpaceInternal> networkSpaceList = 
-                new LinkedList<NetworkSpaceInternal>( networkSpaceMap.values());
-
-
-            List<InterfaceInternal> interfaceList = 
-                buildInterfaceList( bridgeConfiguration, networkSpaceMap );
-
-            IPaddr dns1 = parseIPaddr( properties.getProperty( "com.untangle.networking.dns-1" ));
-            IPaddr dns2 = parseIPaddr( properties.getProperty( "com.untangle.networking.dns-2" ));
-            IPaddr defaultGateway = parseIPaddr( properties.getProperty( "com.untangle.networking.default-gateway" ));
-
-            /* just in case dns2 is specified and dns1 is not */
-            if ( dns1 == null ) {
-                dns1 = dns2;
-                dns2 = null;
-            }
-            
-            return new NetworkSpacesInternalSettings( interfaceList, networkSpaceList, 
-                                                      dns1, dns2, defaultGateway );
-        } catch ( Exception e ) {
-            logger.warn( "unable to load network configuration.", e );
-            return null;
-        } 
+        String cmd = System.getProperty( "bunnicula.bin.dir" ) + "/net-properties";
+        Process process = LocalUvmContextFactory.context().exec( cmd );
+        Properties properties = new Properties();
+        properties.load( process.getInputStream());
+        return properties;
     }
 
+    /* Load the network configuration */
+    NetworkSpacesInternalSettings loadNetworkSettings( Properties properties )
+    {
+        String networkConfiguration = properties.getProperty( "com.untangle.networking.net-conf" );
+        String bridgeConfiguration = properties.getProperty( "com.untangle.networking.bridge-conf" );
+        
+        if ( networkConfiguration == null ) {
+            logger.warn( "The network configuration property is missing" );
+            networkConfiguration = "";
+        }
+        if ( bridgeConfiguration == null ) bridgeConfiguration = "";
+        
+        /* Load the network configuration */
+        Map<String,NetworkSpaceInternal> networkSpaceMap = new HashMap<String,NetworkSpaceInternal>();
+        
+        for ( String config : networkConfiguration.split( ":::" )) {
+            NetworkSpaceInternal networkSpace = parseConfig( config );
+            if ( networkSpace == null ) continue;
+            networkSpaceMap.put( networkSpace.getName(), networkSpace );
+        }
+        
+        /* Convert the hash to a list */
+        List<NetworkSpaceInternal> networkSpaceList = 
+            new LinkedList<NetworkSpaceInternal>( networkSpaceMap.values());
+
+
+        List<InterfaceInternal> interfaceList = 
+            buildInterfaceList( bridgeConfiguration, networkSpaceMap );
+
+        IPaddr dns1 = parseIPaddr( properties, "com.untangle.networking.dns-1" );
+        IPaddr dns2 = parseIPaddr( properties, "com.untangle.networking.dns-2" );
+        IPaddr defaultGateway = parseIPaddr( properties, "com.untangle.networking.default-gateway" );
+
+        /* just in case dns2 is specified and dns1 is not */
+        if ( dns1 == null ) {
+            dns1 = dns2;
+            dns2 = null;
+        }
+            
+        return new NetworkSpacesInternalSettings( interfaceList, networkSpaceList, 
+                                                  dns1, dns2, defaultGateway );
+    }
+
+    /* Load the services settings based on the values inside of properties,
+     * and in the dnsmasq.conf file */
+    ServicesInternalSettings loadServicesSettings( Properties properties )
+    {
+        ServicesSettingsImpl servicesSettings = new ServicesSettingsImpl();
+
+        servicesSettings.
+            setDhcpEnabled( parseBoolean( properties, "com.untangle.networking.dhcp-enabled" ));
+
+        servicesSettings.
+            setDhcpStartAddress( parseIPaddr( properties, "com.untangle.networking.dhcp-start" ));
+        
+        servicesSettings.
+            setDhcpEndAddress( parseIPaddr( properties, "com.untangle.networking.dhcp-end" ));
+
+        try {
+            loadDhcpLeaseList( servicesSettings );
+        } catch ( IOException e ) {
+            logger.warn( "Error loading the DHCP Lease List", e );
+        }
+
+        servicesSettings.
+            setDnsEnabled(  parseBoolean( properties, "com.untangle.networking.dns-enabled" ));
+
+        servicesSettings.
+            setDnsLocalDomain( parseHostname( properties, "com.untangle.networking.dns-local-domain" ));
+
+        try {
+            loadDnsStaticHostList( servicesSettings );
+        } catch ( IOException e ) {
+            logger.warn( "Error loading the DHCP Lease List", e );
+        }
+        
+        IPaddr defaultGateway = parseIPaddr( properties, "com.untangle.networking.dns-default-gateway" );
+
+        List<IPaddr> dnsServerList = new LinkedList<IPaddr>();
+        String dnsServers = properties.getProperty( "com.untangle.networking.dns-dns-servers" );
+        if ( dnsServers != null ) {
+            for ( String dnsServer : dnsServers.split( ";" )) {
+                IPaddr ds = parseIPaddr( dnsServer );
+                if ( ds != null ) dnsServerList.add( ds );
+            }
+        }
+
+        return ServicesInternalSettings.makeInstance( servicesSettings, servicesSettings,
+                                                      defaultGateway, dnsServerList );
+    }
+    
     /* Return the impl so this can go into a database */
     NetworkSpacesSettingsImpl toSettings( NetworkSpacesInternalSettings internalSettings )
     {
@@ -396,6 +457,81 @@ class NetworkUtilPriv extends NetworkUtil
         return interfaceList;
     }
 
+    private void loadDhcpLeaseList( ServicesSettings servicesSettings ) throws IOException
+    {
+        String cmd = System.getProperty( "bunnicula.bin.dir" ) + "/dhcp-lease-list";
+        Process process = LocalUvmContextFactory.context().exec( cmd );
+        
+        BufferedReader reader = new BufferedReader( new InputStreamReader( process.getInputStream()));
+        
+        List<DhcpLeaseRule> dhcpLeaseList = new LinkedList<DhcpLeaseRule>();
+
+        String line;
+
+        while (( line = reader.readLine()) != null ) {
+            DhcpLeaseRule rule = new DhcpLeaseRule();
+            String pieces[] = line.split( ";" );
+            if ( pieces.length != 2 ) continue;
+            try {
+                rule.setMacAddress( MACAddress.parse( pieces[0] ));
+                rule.setHostname( pieces[1] );
+
+                dhcpLeaseList.add( rule );
+            } catch ( Exception e ) {
+                /* silently ignoring exceptions. */
+                logger.warn( "Unable to parse '" + line + "'", e );
+            }
+        }
+
+        try {
+            reader.close();
+        } catch ( IOException e ) {
+            logger.warn( "Unable to close the process reader", e );
+        }
+
+        servicesSettings.setDhcpLeaseList( dhcpLeaseList );
+    }
+
+    private void loadDnsStaticHostList( ServicesSettings servicesSettings ) throws IOException
+    {
+        String cmd = System.getProperty( "bunnicula.bin.dir" ) + "/dns-static-host-list";
+        Process process = LocalUvmContextFactory.context().exec( cmd );
+        
+        BufferedReader reader = new BufferedReader( new InputStreamReader( process.getInputStream()));
+        
+        List<DnsStaticHostRule> dnsStaticHostList = new LinkedList<DnsStaticHostRule>();
+
+        String line;
+
+        while (( line = reader.readLine()) != null ) {
+            DnsStaticHostRule rule = new DnsStaticHostRule();
+            String pieces[] = line.split( ";" );
+            if ( pieces.length != 2 ) continue;
+            try {
+                rule.setStaticAddress( IPaddr.parse( pieces[0] ));
+                rule.setHostNameList( HostNameList.parse( pieces[1] ));
+
+                dnsStaticHostList.add( rule );
+            } catch ( Exception e ) {
+                /* silently ignoring exceptions. */
+                logger.warn( "Unable to parse '" + line + "'", e );
+            }
+        }
+
+        try {
+            reader.close();
+        } catch ( IOException e ) {
+            logger.warn( "Unable to close the process reader", e );
+        }
+
+        servicesSettings.setDnsStaticHostList( dnsStaticHostList );
+    }
+    
+    private IPaddr parseIPaddr( Properties properties, String property )
+    {
+        return parseIPaddr( properties.getProperty( property ));
+    }
+
     private IPaddr parseIPaddr( String value )
     {
         if ( value == null ) return null;
@@ -408,6 +544,25 @@ class NetworkUtilPriv extends NetworkUtil
             logger.debug( "Unable to parse: '" + value + "'" );
         } catch ( UnknownHostException e ) {
             logger.debug( "Unable to parse: '" + value + "'" );
+        }
+        
+        return null;
+    }
+
+    private boolean parseBoolean( Properties properties, String property )
+    {
+        return Boolean.parseBoolean( properties.getProperty( property ));
+    }
+
+    private HostName parseHostname( Properties properties, String property )
+    {
+        String value = properties.getProperty( property );
+        if ( value == null ) return null;
+
+        try {
+            return HostName.parse( value );
+        } catch ( ParseException e ) {
+            logger.warn( "Unable to parse hostname: '" + value + "'", e );
         }
         
         return null;
