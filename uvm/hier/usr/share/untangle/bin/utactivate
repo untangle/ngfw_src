@@ -46,7 +46,7 @@ else
     true
   else # dump the right source in the right place :)
     touch $SOURCES_LIST # so that we don't fail next line because of noclobber
-    echo $DEFAULT_UNTANGLE_SOURCE | sed "s/$KEY_TEMPLATE/$KEY/" >> $SOURCES_LIST
+    echo -e $DEFAULT_UNTANGLE_SOURCE | sed "s/$KEY_TEMPLATE/$KEY/" >> $SOURCES_LIST
   fi
   apt-get update
 fi
