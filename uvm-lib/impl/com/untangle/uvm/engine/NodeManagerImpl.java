@@ -42,6 +42,7 @@ import com.untangle.uvm.logging.UvmLoggingContextFactory;
 import com.untangle.uvm.logging.UvmRepositorySelector;
 import com.untangle.uvm.node.DeployException;
 import com.untangle.uvm.node.LocalNodeManager;
+import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.NodeDesc;
 import com.untangle.uvm.node.NodeStartException;
@@ -449,7 +450,23 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
         }
 
         NodeContext nc = nodeContext(t);
-        nc.node().start();
+        if (null == nc) {
+            logger.warn("No node context for router tid: " + t);
+        } else {
+            Node n = nc.node();
+            NodeState ns = n.getRunState();
+            switch (ns) {
+            case INITIALIZED:
+                n.start();
+                break;
+            case RUNNING:
+                // nothing left to do.
+                break;
+            default:
+                logger.warn("router unexpected state: " + ns);
+                break;
+            }
+        }
     }
 
     private static int startThreadNum = 0;
