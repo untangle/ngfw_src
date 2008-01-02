@@ -41,9 +41,9 @@ package com.untangle.uvm.toolbox;
  */
 public interface ProgressVisitor
 {
-    public void visitDownloadSummary(DownloadSummary ds);
-    public void visitDownloadProgress(DownloadProgress dp);
-    public void visitDownloadComplete(DownloadComplete dc);
-    public void visitInstallComplete(InstallComplete ic);
-    public void visitInstallTimeout(InstallTimeout it);
+    void visitDownloadSummary(DownloadSummary ds);
+    void visitDownloadProgress(DownloadProgress dp);
+    void visitDownloadComplete(DownloadComplete dc);
+    void visitInstallComplete(InstallComplete ic);
+    void visitInstallTimeout(InstallTimeout it);
 }

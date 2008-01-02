@@ -64,6 +64,14 @@ public interface RemoteToolboxManager
     MackageDesc[] installed();
 
     /**
+     * Tests if a package is installed.
+     *
+     * @param name of the package.
+     * @return true if the package is installed.
+     */
+    boolean isInstalled(String name);
+
+    /**
      * All installed mackages, which are visible within the GUI
      *
      * @return a <code>MackageDesc[]</code> value
@@ -121,6 +129,16 @@ public interface RemoteToolboxManager
      *     be installed.
      */
     long install(String name) throws MackageInstallException;
+
+    /**
+     * Install a Mackage in the Toolbox, returning only after it is
+     * completely installed..
+     *
+     * @param name the name of the Mackage.
+     * @exception MackageInstallException when <code>name</code> cannot
+     *     be installed.
+     */
+    void installSynchronously(String name) throws MackageInstallException;
 
     /**
      * Remove a Mackage from the toolbox.

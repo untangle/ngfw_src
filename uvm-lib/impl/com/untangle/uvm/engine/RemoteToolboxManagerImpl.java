@@ -47,13 +47,19 @@ import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.NodeException;
 import com.untangle.uvm.security.LoginSession;
 import com.untangle.uvm.security.Tid;
+import com.untangle.uvm.toolbox.DownloadComplete;
+import com.untangle.uvm.toolbox.DownloadProgress;
+import com.untangle.uvm.toolbox.DownloadSummary;
+import com.untangle.uvm.toolbox.InstallComplete;
 import com.untangle.uvm.toolbox.InstallProgress;
+import com.untangle.uvm.toolbox.InstallTimeout;
 import com.untangle.uvm.toolbox.MackageDesc;
 import com.untangle.uvm.toolbox.MackageException;
 import com.untangle.uvm.toolbox.MackageInstallException;
 import com.untangle.uvm.toolbox.MackageInstallRequest;
 import com.untangle.uvm.toolbox.MackageUninstallException;
 import com.untangle.uvm.toolbox.MackageUpdateExtraName;
+import com.untangle.uvm.toolbox.ProgressVisitor;
 import com.untangle.uvm.toolbox.RemoteToolboxManager;
 import com.untangle.uvm.toolbox.ToolboxMessage;
 import com.untangle.uvm.toolbox.UpgradeSettings;
@@ -152,6 +158,11 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
         return retVal;
     }
 
+    public boolean isInstalled(String name)
+    {
+        return null != packageMap.get(name);
+    }
+
     public MackageDesc[] installedVisible()
     {
         MackageDesc[] installed = installed();
@@ -220,7 +231,7 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
         return l;
     }
 
-    public long install(final String name) throws MackageInstallException
+    public long install(final String name)
     {
         final AptLogTail alt;
 
@@ -244,6 +255,18 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
             }).start();
 
         return alt.getKey();
+    }
+
+    public void installSynchronously(String name) throws MackageInstallException
+    {
+        long k = install(name);
+
+        InstallVisitor v = new InstallVisitor();
+        while (!v.isDone()) {
+            for (InstallProgress p : getProgress(k)) {
+                p.accept(v);
+            }
+        }
     }
 
     public void uninstall(String name) throws MackageUninstallException
@@ -570,6 +593,40 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
                     logger.warn("could not upgrade", exn);
                 }
             }
+        }
+    }
+
+    private static class InstallVisitor implements ProgressVisitor
+    {
+        private final Logger logger = Logger.getLogger(getClass());
+
+        private boolean done = false;
+
+        // ProgressVisitor methods --------------------------------------------
+
+        public void visitDownloadSummary(DownloadSummary ds) { }
+
+        public void visitDownloadProgress(DownloadProgress dp) { }
+
+        public void visitDownloadComplete(DownloadComplete dc) { }
+
+        public void visitInstallComplete(InstallComplete ic)
+        {
+            logger.info("install complete, success: " + ic.getSuccess());
+            done = true;
+        }
+
+        public void visitInstallTimeout(InstallTimeout it)
+        {
+            logger.info("install timed out");
+            done = true;
+        }
+
+        // package protected methods ------------------------------------------
+
+        boolean isDone()
+        {
+            return done;
         }
     }
 

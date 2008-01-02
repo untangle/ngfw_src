@@ -44,6 +44,7 @@ import com.untangle.uvm.node.DeployException;
 import com.untangle.uvm.node.LocalNodeManager;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.NodeDesc;
+import com.untangle.uvm.node.NodeStartException;
 import com.untangle.uvm.node.NodeState;
 import com.untangle.uvm.node.NodeStats;
 import com.untangle.uvm.node.UndeployException;
@@ -51,6 +52,8 @@ import com.untangle.uvm.node.UvmNodeHandler;
 import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.security.Tid;
 import com.untangle.uvm.toolbox.MackageDesc;
+import com.untangle.uvm.toolbox.MackageInstallException;
+import com.untangle.uvm.toolbox.RemoteToolboxManager;
 import com.untangle.uvm.util.TransactionWork;
 import org.apache.log4j.Logger;
 import org.apache.log4j.helpers.LogLog;
@@ -340,7 +343,7 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
 
     void restart(String name)
     {
-        RemoteToolboxManagerImpl tbm = (RemoteToolboxManagerImpl)LocalUvmContextFactory
+        RemoteToolboxManager tbm = LocalUvmContextFactory
             .context().toolboxManager();
 
         String availVer = tbm.mackageDesc(name).getInstalledVersion();
@@ -392,14 +395,13 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
 
         logger.info("Restarting unloaded nodes...");
 
-
         List<NodePersistentState> unloaded = getUnloaded();
         Map<Tid, NodeDesc> tDescs = loadNodeDescs(unloaded);
         Set<String> loadedParents = new HashSet<String>(unloaded.size());
 
         UvmContextImpl mctx = UvmContextImpl.getInstance();
 
-        RemoteToolboxManagerImpl tbm = (RemoteToolboxManagerImpl)mctx.toolboxManager();
+        RemoteToolboxManager tbm = mctx.toolboxManager();
 
         while (0 < unloaded.size()) {
             List<NodePersistentState> startQueue = getLoadable(unloaded,
@@ -416,6 +418,38 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
 
         long t1 = System.currentTimeMillis();
         logger.info("time to restart nodes: " + (t1 - t0));
+
+        try {
+            ensureRouterStarted();
+        } catch (MackageInstallException exn) {
+            logger.warn("could not install router", exn);
+        } catch (DeployException exn) {
+            logger.warn("could not instantiate router", exn);
+        } catch (NodeStartException exn) {
+            logger.warn("could not start router", exn);
+        }
+    }
+
+    private void ensureRouterStarted()
+        throws MackageInstallException, DeployException, NodeStartException
+    {
+        Tid t = null;
+
+        List<Tid> l = nodeInstances("untangle-node-router");
+
+        if (0 == l.size()) {
+            RemoteToolboxManager tbm = LocalUvmContextFactory
+                .context().toolboxManager();
+            if (!tbm.isInstalled("untangle-node-router")) {
+                tbm.installSynchronously("untangle-node-router");
+            }
+            t = instantiate("untangle-node-router");
+        } else {
+            t = l.get(0);
+        }
+
+        NodeContext nc = nodeContext(t);
+        nc.node().start();
     }
 
     private static int startThreadNum = 0;
@@ -424,7 +458,7 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
                                Map<Tid, NodeDesc> tDescs,
                                Set<String> loadedParents)
     {
-        RemoteToolboxManagerImpl tbm = (RemoteToolboxManagerImpl)LocalUvmContextFactory
+        RemoteToolboxManager tbm = LocalUvmContextFactory
             .context().toolboxManager();
 
 
@@ -686,7 +720,7 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
     private Policy getDefaultPolicyForNode(String nodeName)
         throws DeployException
     {
-        RemoteToolboxManagerImpl tbm = (RemoteToolboxManagerImpl)LocalUvmContextFactory
+        RemoteToolboxManager tbm = LocalUvmContextFactory
             .context().toolboxManager();
         MackageDesc mackageDesc = tbm.mackageDesc(nodeName);
         if (mackageDesc == null)
