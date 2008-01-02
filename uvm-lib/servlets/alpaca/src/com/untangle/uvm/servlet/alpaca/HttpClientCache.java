@@ -18,6 +18,8 @@
 
 package com.untangle.uvm.servlet.alpaca;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.ref.Reference;
 import java.lang.ref.ReferenceQueue;
 import java.lang.ref.WeakReference;
@@ -37,6 +39,7 @@ import com.untangle.uvm.LocalUvmContextFactory;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpState;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
+import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.log4j.Logger;
 
 /**
@@ -71,19 +74,6 @@ class HttpClientCache
         HttpClient client = (HttpClient)s.getAttribute(HTTP_CLIENT);
 
         boolean resetClient = false;
-
-        if (null != client) {
-            LocalUvmContext ctx = LocalUvmContextFactory.context();
-            String boxKey = ctx.getActivationKey();
-            for (org.apache.commons.httpclient.Cookie c : client.getState().getCookies()) {
-                if (c.getName().equals("boxkey") && !c.getValue().equals(boxKey)) {
-                    client = null;
-                    s.setAttribute(HTTP_CLIENT,null);
-                    resetClient = true;
-                    break;
-                }
-            }
-        }
 
         if (null == client) {
             synchronized (this) {
@@ -129,9 +119,21 @@ class HttpClientCache
         HttpClient client = new HttpClient(new MultiThreadedHttpConnectionManager());
         HttpState state = client.getState();
         LocalUvmContext ctx = LocalUvmContextFactory.context();
-        String boxKey = ctx.getActivationKey();
-        state.addCookie(new org.apache.commons.httpclient.Cookie(cookieDomain, "boxkey", boxKey, "/", -1, false));
 
+        String alpacaNonce = LocalUvmContextFactory.context()
+            .adminManager().getAlpacaNonce();
+        String url = "http://localhost:3000/alpaca?argyle=" + alpacaNonce;
+        GetMethod get = new GetMethod(url);
+        get.setFollowRedirects(false);
+        try {
+            client.executeMethod(get);
+            InputStream is = get.getResponseBodyAsStream();
+            if (null != is) {
+                is.close();
+            }
+        } catch (IOException exn) {
+            logger.warn("Could not log into alpaca", exn);
+        }
         return client;
     }
 

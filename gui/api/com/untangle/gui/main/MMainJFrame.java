@@ -741,8 +741,6 @@ public class MMainJFrame extends javax.swing.JFrame {
         try{
             URL scb = Util.getServerCodeBase();
             String q = "?" + Util.getRemoteAdminManager().generateAuthNonce();
-            String alpacaNonce = Util.getRemoteAdminManager().getAlpacaNonce();
-            q += null == alpacaNonce ? "" : "&argyle=" + alpacaNonce;
             URL url = new URL("http://" + scb.getHost() + "/alpaca/" + q);
             ((BasicService) ServiceManager.lookup("javax.jnlp.BasicService")).showDocument(url);
         }
