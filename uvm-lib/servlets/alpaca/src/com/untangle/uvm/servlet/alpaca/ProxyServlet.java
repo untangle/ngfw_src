@@ -98,7 +98,7 @@ public class ProxyServlet extends HttpServlet
     {
         String url = getUrl(req);
         RawPostMethod post = new RawPostMethod(url);
-        post.setFollowRedirects(true);
+        //post.setFollowRedirects(true);
         try {
             post.setBodyStream(req.getContentType(), req.getInputStream(),
                                req.getIntHeader("Content-Length"));
