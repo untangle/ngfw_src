@@ -375,7 +375,7 @@ public class RouterImpl extends AbstractNode implements Router
         TransactionWork tw = new TransactionWork() {
                 public boolean doWork( Session s )
                 {
-                    Query q = s.createQuery( "from RouterSettingsImpl" );
+                    Query q = s.createQuery( "from RouterSettings" );
                     for ( Iterator iter = q.iterate() ; iter.hasNext() ; ) {
                         RouterSettingsImpl settings = (RouterSettingsImpl)iter.next();
                         s.delete( settings );
