@@ -250,7 +250,7 @@ public class RouterImpl extends AbstractNode implements Router
             try {
                 XMLRPCUtil.getInstance().callAlpaca( XMLRPCUtil.CONTROLLER_UVM, "wizard_start", null );
             } catch ( Exception e ) {
-                throw new NodeStartException( "Unable to initialize the wizard", e );
+                logger.warn( "Unable to initialize the wizard", e );
             }
             break;
 
