@@ -101,7 +101,7 @@ public class RouterSettingsImpl implements RouterSettings, Serializable
 
     private final List localMatcherList;
 
-    private RouterSettingsImpl()
+    RouterSettingsImpl()
     {
         this.localMatcherList = RouterUtil.getInstance()
             .getEmptyLocalMatcherList();
