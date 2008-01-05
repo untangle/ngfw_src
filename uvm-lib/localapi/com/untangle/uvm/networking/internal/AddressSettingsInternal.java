@@ -47,7 +47,7 @@ public class AddressSettingsInternal
 
     /* The following should go into address settings */
     private final HostName hostname;
-    private final boolean isHostnamePublic;
+    private final boolean isHostNamePublic;
     
     private final boolean isPublicAddressEnabled;
     /* publicAddress is computed using publicIPaddr and publicPort */
@@ -65,7 +65,7 @@ public class AddressSettingsInternal
         this.httpsPort = settings.getHttpsPort();
         this.hostname = settings.getHostName();
 
-        this.isHostnamePublic = settings.getIsHostNamePublic();
+        this.isHostNamePublic = settings.getIsHostNamePublic();
         this.isPublicAddressEnabled = settings.getIsPublicAddressEnabled();
         this.publicAddress = settings.getPublicAddress();
         this.publicIPaddr = settings.getPublicIPaddr();
@@ -100,7 +100,7 @@ public class AddressSettingsInternal
     /* Returns if the hostname for this box is publicly resolvable to this box */
     public boolean getIsHostNamePublic()
     {
-        return this.isHostnamePublic;
+        return this.isHostNamePublic;
     }
 
     /* True if the public address should be used */
@@ -127,7 +127,6 @@ public class AddressSettingsInternal
         return this.publicPort;
     }
 
-
     /** ******* the following Settings that are computed. */
     public HostAddress getCurrentAddress()
     {
@@ -152,16 +151,30 @@ public class AddressSettingsInternal
         settings.setHostName( getHostName());
         settings.setIsHostNamePublic( getIsHostNamePublic());
         settings.setIsPublicAddressEnabled( getIsPublicAddressEnabled());
-        /* *** the next call is a helper functino that just sets the public ip address and port.  */
-        // settings.setPublicAddress( getPublicAddress());
         settings.setPublicIPaddr( getPublicIPaddr());
         settings.setPublicPort( getPublicPort());
         return settings;
     }
 
-    public static AddressSettingsInternal makeInstance( AddressSettings settings, HostAddress currentAddress, 
+    public String toString()
+    {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append( "https-port: " + this.httpsPort );
+        sb.append( "\nhostname: " + this.hostname );
+        sb.append( "\nis-hostname-public: " + this.isHostNamePublic );
+        sb.append( "\nis-public-address-enabled: " + this.isPublicAddressEnabled );
+        sb.append( "\npublic-address: " + this.publicAddress );
+        sb.append( "\npublic-ip-addr: " + this.publicIPaddr );
+        sb.append( "\npublic-port: " + this.publicPort );
+        sb.append( "\ncurrent-public-address: " +  this.currentPublicAddress );
+        sb.append( "\ncurrent-public-port: " +  this.currentPublicPort );
+        sb.append( "\nurl: " +  this.url );
+        return sb.toString();
+    }
+
+    public static AddressSettingsInternal makeInstance( AddressSettings settings, HostAddress currentAddress,
                                                         int currentPort )
-                                                        
     {
         return new AddressSettingsInternal( settings, currentAddress, currentPort ); 
     }

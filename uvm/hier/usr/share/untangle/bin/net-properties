@@ -1,5 +1,7 @@
 #!/bin/dash
 
+exec 2> /dev/null
+
 DNS_MASQ_CONF="/etc/dnsmasq.conf"
 
 PROPERTY_NET_CONF="com.untangle.networking.net-conf"
@@ -9,6 +11,11 @@ PROPERTY_DNS_2="com.untangle.networking.dns-2"
 PROPERTY_DEFAULT_GW="com.untangle.networking.default-gateway"
 PROPERTY_DDNS_EN="com.untangle.networking.ddns-en"
 PROPERTY_HOSTNAME="com.untangle.networking.hostname"
+PROPERTY_DHCP_EN="com.untangle.networking.dhcp-enabled"
+PROPERTY_DHCP_START="com.untangle.networking.dhcp-start"
+PROPERTY_DHCP_END="com.untangle.networking.dhcp-end"
+PROPERTY_DHCP_DEFAULT_GW="com.untangle.networking.dhcp-default-gateway"
+
 
 ## This returns a string of the form:
 ## [:::<interface-name>[;<ip-address>/<netmask-cidr>]*]*
@@ -27,19 +34,53 @@ bridge_configuration()
         | awk '{ split( $0, path, "/" ) ; if ( path[5] != bridge ) { bridge = path[5] ; printf ":::%s", bridge } ; printf ";%s", path[7] } END { printf "\n" }'
 }
 
+get_default_gateway()
+{
+    ip route show | awk '/default/ { print $3 }'
+}
+
+## Here goes nothing, 4 calls to awk to accomplish what could be done in one.
 get_dns_1()
 {
-    awk 'BEGIN { server = "yes" } /server/ { gsub( "server=", "" ) ; if ( server == "yes" ) { print ; server = "no" }}' ${DNS_MASQ_CONF}
+    if [ -f ${DNS_MASQ_CONF} ] ; then
+        awk 'BEGIN { server = "yes" } /server/ { gsub( "server=", "" ) ; if ( server == "yes" ) { print ; server = "no" }}' ${DNS_MASQ_CONF}
+    fi
 }
 
 get_dns_2()
 {
-    awk 'BEGIN { server = "no" } /server/ { gsub( "server=", "" ) ; if ( server == "no" ) { server = "yes" } else if ( server == "yes" ) { print ; server = "done" }}' ${DNS_MASQ_CONF}
+    if [ -f ${DNS_MASQ_CONF} ] ; then
+        awk 'BEGIN { server = "no" } /server/ { gsub( "server=", "" ) ; if ( server == "no" ) { server = "yes" } else if ( server == "yes" ) { print ; server = "done" }}' ${DNS_MASQ_CONF}
+    fi
 }
 
-get_default_gateway()
+get_dhcp_enabled()
 {
-    ip route show | awk '/default/ { print $3 }'
+    if [ -f ${DNS_MASQ_CONF} ] ; then
+        grep -q "dhcp-range" ${DNS_MASQ_CONF} && echo "true"
+    fi
+}
+
+get_dhcp_start()
+{
+    if [ -f ${DNS_MASQ_CONF} ] ; then
+        awk '/^dhcp-range=/ { sub( "dhcp-range=", "" ) ; split( $0, v, "," )  ; print v[1] } ' ${DNS_MASQ_CONF}
+    fi
+}
+
+get_dhcp_end()
+{
+    if [ -f ${DNS_MASQ_CONF} ] ; then
+        awk '/^dhcp-range=/ { sub( "dhcp-range=", "" ) ; split( $0, v, "," )  ; print v[2] } ' ${DNS_MASQ_CONF}
+    fi
+}
+
+## This is the gateway the dhcp server would recommend in its leases.
+get_dhcp_default_gateway()
+{
+    if [ -f ${DNS_MASQ_CONF} ] ; then
+        awk '/^dhcp-option=3,/ { sub( "dhcp-option=3,", "" ) ; print } ' ${DNS_MASQ_CONF}
+    fi
 }
 
 get_is_ddns_running()
@@ -53,7 +94,12 @@ echo "${PROPERTY_BRIDGE_CONF}=`bridge_configuration`"
 echo "${PROPERTY_DNS_1}=`get_dns_1`"
 echo "${PROPERTY_DNS_2}=`get_dns_2`"
 echo "${PROPERTY_DEFAULT_GW}=`get_default_gateway`"
-echo "${PROPERTY_DDDNS_EN}=`get_is_ddns_running`"
 echo "${PROPERTY_HOSTNAME}=`hostname`"
+echo "${PROPERTY_DHCP_EN}=`get_dhcp_enabled`"
+echo "${PROPERTY_DHCP_START}=`get_dhcp_start`"
+echo "${PROPERTY_DHCP_END}=`get_dhcp_end`"
+echo "${PROPERTY_DHCP_DEFAULT_GW}=`get_dhcp_default_gateway`"
+echo "${PROPERTY_DDNS_EN}=`get_is_ddns_running`"
 
 
+exit 0

@@ -295,7 +295,11 @@ public class Pulse
                     notifyAll();
                 }
                 
-                waitForNextBlip();
+                try {
+                    waitForNextBlip();
+                } catch ( Exception e ) {
+                    logger.info( "Exception waiting for next blip: ", e );
+                }
             }
 
             logger.debug( "pulse is stopping" );
@@ -327,6 +331,11 @@ public class Pulse
             
             while ( true ) {
                 try {
+                    if ( delay <= 0 ) {
+                        logger.info( "Delay(" + delay + ") <= 0, firing immediately." );
+                        break;
+                    }
+
                     synchronized( this ) {
                         wait( delay );
                     }

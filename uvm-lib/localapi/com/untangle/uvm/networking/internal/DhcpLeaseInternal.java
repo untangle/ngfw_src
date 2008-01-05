@@ -137,4 +137,9 @@ public class DhcpLeaseInternal
         
         return rule;
     }
+
+    public String toString()
+    {
+        return "" + getMacAddress() + ";" + getStaticAddress();
+    }
 }

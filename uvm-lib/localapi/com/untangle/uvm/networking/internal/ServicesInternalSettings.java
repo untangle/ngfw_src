@@ -228,6 +228,10 @@ public class ServicesInternalSettings
         for ( IPaddr dnsServer : getDnsServerList()) sb.append( "\ndns-server: " + dnsServer );
         sb.append( "\ndns: " + getIsDnsEnabled());
         sb.append( "\ndns-domain: " + getDnsLocalDomain());
+        
+
+        for ( DhcpLeaseInternal lease : this.leaseList ) sb.append( "\nlease: " + lease );
+        for ( DnsStaticHostInternal host : this.staticHostList ) sb.append( "\nhost: " + host );
 
         return sb.toString();
     }

@@ -128,4 +128,9 @@ public class DnsStaticHostInternal
         
         return rule;
     }
+
+    public String toString()
+    {
+        return "" + getStaticAddress() + ";" + getHostNameList();
+    }
 }

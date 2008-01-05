@@ -433,11 +433,9 @@ public class NetworkManagerImpl implements LocalNetworkManager
                 /* Update the address database in netcap */
                 Netcap.getInstance().updateAddress();
                 
-                logger.warn( "Create a new network settings object" );
-                                
-                this.addressManager.updateAddress();                
+                logger.warn( "Create a new network settings object" );                                
             } catch ( Exception e ) {
-                logger.error( "Exception updating address, reverting to previous settings", e );
+                logger.error( "Exception updating address.", e );
             }
         }
 
@@ -455,6 +453,8 @@ public class NetworkManagerImpl implements LocalNetworkManager
         this.networkSettings = NetworkUtilPriv.getPrivInstance().loadNetworkSettings( properties );
 
         this.servicesSettings = NetworkUtilPriv.getPrivInstance().loadServicesSettings( properties );
+
+        this.addressManager.updateAddress( properties );
         
         if ( logger.isDebugEnabled()) {
             logger.debug( "New network settings: " + this.networkSettings );

@@ -30,10 +30,10 @@ import org.apache.log4j.Logger;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.UvmState;
 
-
 import com.untangle.uvm.node.HostAddress;
 import com.untangle.uvm.node.HostName;
 import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.script.ScriptWriter;
 import com.untangle.uvm.node.script.ScriptRunner;
 
@@ -147,9 +147,25 @@ class AddressManagerImpl implements LocalAddressManager
     }
 
     /* Used to refresh the value of the public address */
-    synchronized void updateAddress()
+    synchronized void updateAddress( Properties properties )
     {
-        this.addressSettings = calculatePublicAddress( this.addressSettings.toSettings());
+        AddressSettings settings = this.addressSettings.toSettings();
+        String hostname = properties.getProperty( "com.untangle.networking.hostname" );
+        try {
+            if ( hostname == null ) settings.setHostName( null );
+            else {
+                settings.setHostName( HostName.parse( hostname ));
+            }
+        } catch ( ParseException e ) {
+            logger.warn( "Unable to parse the hostname: '" + hostname + "'", e );
+            settings.setHostName( null );
+        }
+        
+        this.addressSettings = calculatePublicAddress( settings );
+
+        if ( logger.isDebugEnabled()) {
+            logger.debug( "New Address Settings:\n" + this.addressSettings );
+        }
 
         /* xxx not sure if it should call the listeners here, most of
          * them are concerned with the hostname, so i don't think

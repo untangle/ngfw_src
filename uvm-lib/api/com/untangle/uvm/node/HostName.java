@@ -122,7 +122,9 @@ public class HostName implements Serializable {
 
     private static HostName parseInternal( String input, Pattern goodNamePattern )
         throws ParseException
-    { 
+    {
+        if ( input == null ) input = "";
+
         input = input.trim();
 
         if ( input.length() == 0 ) {

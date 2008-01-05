@@ -50,6 +50,7 @@ import com.untangle.uvm.networking.internal.ServicesInternalSettings;
 import com.untangle.uvm.node.HostName;
 import com.untangle.uvm.node.HostNameList;
 import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.IPNullAddr;
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.ValidateException;
 import com.untangle.uvm.node.firewall.MACAddress;
@@ -175,6 +176,17 @@ class NetworkUtilPriv extends NetworkUtil
         servicesSettings.
             setDhcpEndAddress( parseIPaddr( properties, "com.untangle.networking.dhcp-end" ));
 
+        IPaddr defaultGateway = parseIPaddr( properties, "com.untangle.networking.dhcp-default-gateway" );
+
+        List<IPaddr> dnsServerList = new LinkedList<IPaddr>();
+        String dnsServers = properties.getProperty( "com.untangle.networking.dhcp-dns-servers" );
+        if ( dnsServers != null ) {
+            for ( String dnsServer : dnsServers.split( ";" )) {
+                IPaddr ds = parseIPaddr( dnsServer );
+                if ( ds != null ) dnsServerList.add( ds );
+            }
+        }
+
         try {
             loadDhcpLeaseList( servicesSettings );
         } catch ( IOException e ) {
@@ -193,17 +205,6 @@ class NetworkUtilPriv extends NetworkUtil
             logger.warn( "Error loading the DHCP Lease List", e );
         }
         
-        IPaddr defaultGateway = parseIPaddr( properties, "com.untangle.networking.dns-default-gateway" );
-
-        List<IPaddr> dnsServerList = new LinkedList<IPaddr>();
-        String dnsServers = properties.getProperty( "com.untangle.networking.dns-dns-servers" );
-        if ( dnsServers != null ) {
-            for ( String dnsServer : dnsServers.split( ";" )) {
-                IPaddr ds = parseIPaddr( dnsServer );
-                if ( ds != null ) dnsServerList.add( ds );
-            }
-        }
-
         return ServicesInternalSettings.makeInstance( servicesSettings, servicesSettings,
                                                       defaultGateway, dnsServerList );
     }
@@ -474,7 +475,7 @@ class NetworkUtilPriv extends NetworkUtil
             if ( pieces.length != 2 ) continue;
             try {
                 rule.setMacAddress( MACAddress.parse( pieces[0] ));
-                rule.setHostname( pieces[1] );
+                rule.setStaticAddress( IPNullAddr.parse( pieces[1] ));
 
                 dhcpLeaseList.add( rule );
             } catch ( Exception e ) {
