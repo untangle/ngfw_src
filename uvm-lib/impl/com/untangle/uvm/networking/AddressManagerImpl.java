@@ -40,6 +40,7 @@ import com.untangle.uvm.node.script.ScriptRunner;
 import com.untangle.uvm.util.DataLoader;
 import com.untangle.uvm.util.DataSaver;
 import com.untangle.uvm.util.DeletingDataSaver;
+import com.untangle.uvm.util.XMLRPCUtil;
 
 import com.untangle.uvm.networking.internal.AddressSettingsInternal;
 
@@ -80,38 +81,40 @@ class AddressManagerImpl implements LocalAddressManager
     }
 
     /* Use this to modify the address settings without modifying the network settings */
-    public synchronized void setSettings( AddressSettings settings )
+    public void setSettings( AddressSettings settings )
     {
         setSettings( settings, false );
     }
 
     /* Use this to modify the address settings without modifying the network settings */
-    public synchronized void setSettings( AddressSettings settings, boolean forceSave )
+    public void setSettings( AddressSettings settings, boolean forceSave )
     {
         /* should validate settings */
         if ( !forceSave && settings.isClean()) logger.debug( "settings are clean, leaving alone." );
         
-        /* Need to save the settings to the database, then update the
-         * local value, everything is executed later */
-        DataSaver<AddressSettings> saver = 
-            new DeletingDataSaver<AddressSettings>( LocalUvmContextFactory.context(), "AddressSettings" );
+        synchronized ( this ) {
+            /* Need to save the settings to the database, then update the
+             * local value, everything is executed later */
+            DataSaver<AddressSettings> saver = 
+                new DeletingDataSaver<AddressSettings>( LocalUvmContextFactory.context(), "AddressSettings" );
 
-        AddressSettingsInternal newSettings = calculatePublicAddress( settings );
+            AddressSettingsInternal newSettings = calculatePublicAddress( settings );
+            
+            saver.saveData( newSettings.toSettings());
+            this.addressSettings = newSettings;
+                        
+            /* Save the properties */
+            saveProperties( this.addressSettings );
+            
+            /* Rebind https to the new port */
+            rebindHttps( this.addressSettings );
+            
+            /* Call the listeners */
+            callListeners( this.addressSettings );
+        }
         
-        saver.saveData( newSettings.toSettings());
-        this.addressSettings = newSettings;
-
         /* Save the hostname */
         setHostName( this.addressSettings );
-
-        /* Save the properties */
-        saveProperties( this.addressSettings );
-
-        /* Rebind https to the new port */
-        rebindHttps( this.addressSettings );
-
-        /* Call the listeners */
-        callListeners( this.addressSettings );
     }
 
     /* ---------------------- PACKAGE ---------------------- */
@@ -316,10 +319,14 @@ class AddressManagerImpl implements LocalAddressManager
             return;
         }
         
+        /* Make a synchronous request */
         try {
-            ScriptRunner.getInstance().exec( HOSTNAME_SCRIPT, address.getHostName().toString());
+            /* This will save the hostname but not commit it to the O/S, have to commit it
+             * when there is no locks. */
+            XMLRPCUtil.getInstance().callAlpaca( XMLRPCUtil.CONTROLLER_UVM, "save_hostname", null,
+                                                 address.getHostName().toString());
         } catch ( Exception e ) {
-            logger.error( "unable to save the hostname." );
+            logger.warn( "Unable to save the hostname", e );
         }
     }
 

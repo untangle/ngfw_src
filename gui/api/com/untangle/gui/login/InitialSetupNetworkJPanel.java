@@ -184,6 +184,7 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
                         dns2 = IPaddr.parse( dns2String );
                     } else {
                         /* Ignoring empty secondary DNS entry, dns2 = null is okay for network settings */
+                        dns2 = null;
                     }
                 }
                 catch(Exception e){
@@ -258,7 +259,6 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
                 throw new Exception("A network communication error occurred.  Please retry.");
             }
         }
-
     }
 
 

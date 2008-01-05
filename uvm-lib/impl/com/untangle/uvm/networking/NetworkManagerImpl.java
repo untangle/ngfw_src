@@ -265,10 +265,8 @@ public class NetworkManagerImpl implements LocalNetworkManager
     public void setSettings( AccessSettings access, AddressSettings address )
         throws NetworkException, ValidateException
     {
-        synchronized ( this ) {
-            this.accessManager.setSettings( access );
-            this.addressManager.setSettings( address );
-        }
+        this.accessManager.setSettings( access );
+        this.addressManager.setSettings( address );
 
         logger.warn( "commit settings" ); 
 
@@ -277,7 +275,7 @@ public class NetworkManagerImpl implements LocalNetworkManager
 
     /* Set the Access, Misc and Network settings at once.  Used by the
      * support panel */
-    public synchronized void setSettings( AccessSettings access, MiscSettings misc )
+    public void setSettings( AccessSettings access, MiscSettings misc )
         throws NetworkException, ValidateException
     {
         this.accessManager.setSettings( access );
@@ -351,7 +349,7 @@ public class NetworkManagerImpl implements LocalNetworkManager
             args[4] = "";
             
             IPaddr dns2 = basic.dns2();
-            if ( !dns2.isEmpty()) args[4] = dns2;
+            if ( !dns2.isEmpty()) args[4] = dns2.toString();
             method = "wizard_external_interface_static";
         }
 
