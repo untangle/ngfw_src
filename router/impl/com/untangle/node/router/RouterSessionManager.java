@@ -264,48 +264,6 @@ class SessionRedirect
         this.key          = key;
     }
 
-    /* XXX I think this function is no longer used */
-    synchronized void redirect( IPNewSessionRequest request, RouterImpl node ) throws MPipeException
-    {
-        RouterAttachment attachment = (RouterAttachment)request.attachment();
-
-        if ( isExpired ) throw new MPipeException( node.getRouterMPipe(), "Expired redirect" );
-
-        /* Have to take this off the list, if it is reserved */
-        if ( reservedPort > 0 ) {
-            if ( attachment.releasePort() != 0 ) {
-                /* This will be cleaned up when the session is cleaned up */
-                throw new MPipeException( node.getRouterMPipe(), "Session is already using a NAT port" );
-            }
-        }
-
-        /* Modify the client */
-        if ( this.clientAddr != null ) {
-            request.clientAddr( clientAddr );
-        }
-
-        if ( this.clientPort != 0 ) {
-            request.clientPort( clientPort );
-        }
-
-        /* Modify the server */
-        if ( this.serverAddr != null ) {
-            request.serverAddr( serverAddr );
-        }
-
-        if ( this.serverPort != 0 ) {
-            request.serverPort( serverPort );
-        }
-
-        if ( this.reservedPort > 0 ) {
-            attachment.releasePort( reservedPort );
-            this.reservedPort = 0;
-        }
-
-        /* Indicate to never use this redirect again */
-        isExpired = true;
-    }
-
     public String toString()
     {
         return "SessionRedirect| " + clientAddr + ":" + clientPort + "/" + serverAddr + ":" + serverPort;
@@ -326,8 +284,7 @@ class SessionRedirect
     private int redirectRulePort;
     private synchronized void createRedirectRule( InetAddress clientAddr, int clientPort,
 						  InetAddress serverAddr, int serverPort,
-						  int reservedPort, InetAddress myAddr
-						  )
+						  int reservedPort, InetAddress myAddr )
     {
         if (logger.isDebugEnabled()) {
 	    logger.debug("clientAddr:"+clientAddr);

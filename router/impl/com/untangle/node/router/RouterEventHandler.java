@@ -63,14 +63,8 @@ class RouterEventHandler extends AbstractEventHandler
     /* Tracks the open UDP ports for NAT */
     private final PortList udpPortList;
 
-    /* Tracks the open ICMP identifiers, Not exactly a port, but same kind of thing */
-    private final PortList icmpPidList;
-
     /* Router Node */
     private final RouterImpl node;
-
-    /* reserved port for NATing TCP */
-    private int reservedPort;
 
     /* Setup  */
     RouterEventHandler(RouterImpl node)
@@ -84,10 +78,6 @@ class RouterEventHandler extends AbstractEventHandler
         start = Integer.getInteger(PROPERTY_UDP_PORT_START, UDP_NAT_PORT_START);
         end = Integer.getInteger(PROPERTY_UDP_PORT_END, UDP_NAT_PORT_END);
         udpPortList = PortList.makePortList(start, end);
-
-        start = Integer.getInteger(PROPERTY_ICMP_PID_START, ICMP_PID_START);
-        end = Integer.getInteger(PROPERTY_ICMP_PID_END, ICMP_PID_END);
-        icmpPidList = PortList.makePortList(start, end);
         this.node = node;
     }
 
@@ -110,18 +100,21 @@ class RouterEventHandler extends AbstractEventHandler
 	InetAddress newClientAddr = request.getNatFromHost();
 	InetAddress origServerAddr = request.serverAddr();
 	InetAddress newServerAddr = request.getNatToHost();
-	if ( logger.isDebugEnabled()) {
-	    logger.debug( "pre-translation: " + request.clientAddr() + ":" + request.clientPort() +  " -> "
-			  + request.serverAddr() + ":" + request.serverPort());
-	}
 	int origClientPort = request.clientPort();
 	int newClientPort  = request.getNatFromPort();
 	int origServerPort = request.serverPort();
 	int newServerPort  = request.getNatToPort();
+
 	if ( logger.isDebugEnabled()) {
-	    logger.debug( "post-translation: " + request.clientAddr() + ":" + request.clientPort() +  " -> "
-			  + request.serverAddr() + ":" + request.serverPort());
+	    logger.debug( "pre-translation: " + origClientAddr + ":" + origClientPort +  " -> "
+			  + origServerAddr + ":" + origServerPort );
+	    logger.debug( "pre-translation: " + newClientAddr + ":" + newClientPort +  " -> "
+			  + newServerAddr + ":" + newServerPort );
 	}
+
+        RouterAttachment attachment = new RouterAttachment();
+
+        request.attach( attachment );
 
 	// if  we are a redirected session, we will already be registered with the 
 	// session manager. If so it will automatically delete the iptables rule that was used to 
@@ -131,8 +124,6 @@ class RouterEventHandler extends AbstractEventHandler
 		logger.debug( "Found a redirected session");
 	    }
 	}
-
-	reservedPort = 0; // We only mangle the client port if we are not NATing a TCP connection
 
 	// if the kernel changed anything then we must be NATing.
 	if ( !origClientAddr.equals(newClientAddr) ||
@@ -147,11 +138,12 @@ class RouterEventHandler extends AbstractEventHandler
 		// if we changed the source addr of a TCP connection,
 		// we will need to allocate client port manually because the kernel will not know about 
 		// ports we are non-locally bound to and may try to reuse them prematurly.
-		reservedPort = getNextPort( Protocol.TCP );
+		int port = getNextPort( Protocol.TCP );
 		if ( logger.isDebugEnabled()) {
-		    logger.debug("Mangleing client port from "+newClientPort+" to "+reservedPort);
+		    logger.debug( "Mangling client port from " + origClientPort + " to " + port );
 		}
-		request.clientPort( reservedPort );
+		request.clientPort( port );
+                attachment.releasePort( port );
 	    } else {
 		request.clientPort( newClientPort );
 	    }
@@ -166,6 +158,8 @@ class RouterEventHandler extends AbstractEventHandler
 		node.getSessionManager().registerSession( request, protocol,
 							  origClientAddr, origClientPort,
 							  origServerAddr, origServerPort );
+                
+                attachment.isManagedSession( true );
 	    }else{
 		if ( logger.isDebugEnabled()) {
 		    logger.debug( "non-Ftp Session NATed, not registering with the SessionManager");
@@ -219,36 +213,7 @@ class RouterEventHandler extends AbstractEventHandler
     public void handleUDPFinalized(UDPSessionEvent event)
         throws MPipeException
     {
-        /* XXX Special case ICMP */
-        UDPSession udpsession = (UDPSession)event.ipsession();
-
-        if (udpsession.isPing()) {
-            RouterAttachment attachment = (RouterAttachment)udpsession.attachment();
-            int pid = udpsession.icmpId();
-            int releasePid;
-
-            if (attachment == null) {
-                logger.error("null attachment on Routerd session");
-                return;
-            }
-
-            releasePid = attachment.releasePort();
-
-            if (releasePid == 0) {
-                if (logger.isDebugEnabled()) logger.debug("Ignoring non-natted PID: " + pid);
-            } else if (pid != releasePid) {
-                /* This is now an error, because the releasePid should be zero if it is not
-                 * to be released */
-                logger.error("Mismatch on the attached PID and the session PID " +
-                              pid + "!=" + releasePid);
-            } else {
-                if (logger.isDebugEnabled()) logger.debug("ICMP: Releasing pid: " + releasePid);
-
-                icmpPidList.releasePort(releasePid);
-            }
-        } else {
-            cleanupSession(Protocol.UDP, udpsession);
-        }
+        cleanupSession(Protocol.UDP, event.ipsession());
     }
 
     /**
@@ -275,16 +240,6 @@ class RouterEventHandler extends AbstractEventHandler
     private void cleanupSession(Protocol protocol, IPSession session)
     {
         RouterAttachment attachment = (RouterAttachment)session.attachment();
-
-	
-	node.getSessionManager().releaseSession(session, protocol);
-	
-	if (reservedPort != 0){
-	    if (logger.isDebugEnabled()) {
-		logger.debug("Releasing client port: " + reservedPort);
-	    }
-	    releasePort(protocol, reservedPort);
-	}
 	
         if (attachment == null) {
             logger.error("null attachment on Routerd session");
@@ -293,28 +248,22 @@ class RouterEventHandler extends AbstractEventHandler
 
         int releasePort = attachment.releasePort();
 
-        if (releasePort != 0) {
-            if (releasePort != session.clientPort() &&
-                 releasePort != session.serverPort()) {
+        if ( releasePort != 0 ) {
+            if ( releasePort != session.clientPort() && releasePort != session.serverPort()) {
                 /* This happens for all NAT ftp PORT sessions */
                 logger.info("Release port " + releasePort +" is neither client nor server port");
             }
 
-            if (logger.isDebugEnabled()) {
-                logger.debug("Releasing port: " + releasePort);
-            }
+            if (logger.isDebugEnabled()) logger.debug("Releasing port: " + releasePort);
 
-            getPortList(protocol).releasePort(releasePort);
+            getPortList( protocol).releasePort( releasePort );
         } else {
-            if (logger.isDebugEnabled())
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Ignoring non-natted port: "
-                                  + session.clientPort()
-                                  + "/" + session.serverPort());
-                }
+            if ( logger.isDebugEnabled()) {
+                logger.debug("Ignoring non-natd port: " + session.clientPort() + "/" + session.serverPort());
+            }
         }
 
-        if (attachment.isManagedSession()) {
+        if ( attachment.isManagedSession()) {
             logger.debug("Removing session from the managed list");
 
             node.getSessionManager().releaseSession(session, protocol);
@@ -323,13 +272,13 @@ class RouterEventHandler extends AbstractEventHandler
 
     private PortList getPortList(Protocol protocol)
     {
-        if (protocol == Protocol.UDP) {
+        if ( protocol == Protocol.UDP ) {
             return udpPortList;
-        } else if (protocol == Protocol.TCP) {
+        } else if ( protocol == Protocol.TCP ) {
             return tcpPortList;
         }
 
-        throw new IllegalArgumentException("Unknown protocol: " + protocol);
+        throw new IllegalArgumentException( "Unhandled protocol: " + protocol );
     }
 
     private boolean isFtp(IPNewSessionRequest request, Protocol protocol)
