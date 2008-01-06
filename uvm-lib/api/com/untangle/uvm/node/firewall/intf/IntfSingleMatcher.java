@@ -83,13 +83,13 @@ public final class IntfSingleMatcher extends IntfDBMatcher
     public boolean isMatch(byte iface, byte otherIface, InterfaceComparator c)
     {
         /* These interfaces always match true */
-        if (IntfConstants.UNKNOWN_INTF == intf
-            || IntfConstants.LOOPBACK_INTF == intf) {
+        if (IntfConstants.UNKNOWN_INTF == iface
+            || IntfConstants.LOOPBACK_INTF == iface) {
             return true;
-        } else if (intf >= IntfConstants.MAX_INTF) {
+        } else if (iface >= IntfConstants.MAX_INTF) {
             return false;
         } else {
-            return (this.intf == intf);
+            return (this.intf == iface);
         }
     }
 
