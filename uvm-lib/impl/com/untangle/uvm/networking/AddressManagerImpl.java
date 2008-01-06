@@ -55,8 +55,6 @@ import static com.untangle.uvm.networking.ShellFlags.PROPERTY_HTTPS_PORT;
 
 class AddressManagerImpl implements LocalAddressManager
 {
-    private static final String HOSTNAME_SCRIPT    = BUNNICULA_BASE + "/networking/save-hostname";
-
     private static final String PROPERTY_COMMENT    = "Properties for the https port at startup.";
 
     private final Logger logger = Logger.getLogger(getClass());

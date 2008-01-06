@@ -482,8 +482,12 @@ public class NetworkManagerImpl implements LocalNetworkManager
 	    logger.warn( "Error committing the networking.sh file", e );
 	}
 
+        /* Update the internal address */
+        
         try {
             callNetworkListeners();
+            updateInternalAddress( this.networkSettings );
+            logger.debug( "New internal address is: '" + this.internalAddress + "'" );
         } catch ( Exception e ) {
             logger.error( "Exception in a listener", e );
         }
@@ -646,6 +650,20 @@ public class NetworkManagerImpl implements LocalNetworkManager
 
         /* Load the address/hostname settings */
         this.addressManager.init();
+    }
+
+    /* Method to calculate what the current internal address is */
+    private void updateInternalAddress( NetworkSpacesInternalSettings settings )
+    {
+        this.internalAddress = null;
+        if ( settings == null ) return;
+
+        NetworkSpaceInternal internal = settings.getNetworkSpace( IntfConstants.INTERNAL_INTF );
+        
+        if ( internal == null ) return;
+        
+        IPaddr address = internal.getPrimaryAddress().getNetwork();
+        this.internalAddress = address.getAddr();        
     }
 
     /* Create a networking manager, this is a first come first serve
