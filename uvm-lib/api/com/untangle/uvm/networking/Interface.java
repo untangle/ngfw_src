@@ -75,13 +75,25 @@ public class Interface extends Rule
     /* The current state of the connection */
     private String connectionState = "";
 
-    public Interface() { }
+    private final boolean isPhysicalInterface;
 
-    public Interface( byte argonIntf, EthernetMedia ethernetMedia, boolean isPingable )
+    public Interface()
+    {
+        this.isPhysicalInterface = true;
+    }
+
+    public Interface( boolean isPhysicalInterface )
+    {
+        this.isPhysicalInterface = isPhysicalInterface;
+    }
+
+    public Interface( byte argonIntf, EthernetMedia ethernetMedia, boolean isPingable, 
+                      boolean isPhysicalInterface )
     {
         this.argonIntf     = argonIntf;
         this.ethernetMedia = ethernetMedia;
         this.isPingable    = isPingable;
+        this.isPhysicalInterface = isPhysicalInterface;
     }
 
     /**
@@ -219,5 +231,14 @@ public class Interface extends Rule
     public void setCurrentMedia( String newValue )
     {
         this.currentMedia = newValue;
+    }
+
+    /**
+     * Get whether or not this is a physical interface
+     */
+    @Transient
+    public boolean isPhysicalInterface()
+    {
+        return this.isPhysicalInterface;
     }
 }

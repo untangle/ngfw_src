@@ -211,6 +211,7 @@ public class InitialSetupInterfaceJPanel extends MWizardPageJPanel {
             int rowIndex = 0;
 
             for( Interface intf : interfaceList ){
+                if ( !intf.isPhysicalInterface()) continue;
                 rowIndex++;
                 tempRow = new Vector(5);
                 tempRow.add( super.ROW_SAVED );

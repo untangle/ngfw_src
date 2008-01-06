@@ -28,6 +28,7 @@ import com.untangle.uvm.localapi.LocalShieldManager;
 import com.untangle.uvm.networking.NetworkException;
 import com.untangle.uvm.networking.NetworkManagerImpl;
 import com.untangle.uvm.shield.ShieldMonitor;
+import com.untangle.uvm.util.XMLRPCUtil;
 import org.apache.log4j.Logger;
 
 public class Argon
@@ -181,6 +182,14 @@ public class Argon
 
         /* Start the scheduler */
         Netcap.startScheduler();
+
+        /* Ensure that the alpaca has initialized all of the necessary files for the UVM */
+        /* Make a synchronous request */
+        try {
+            XMLRPCUtil.getInstance().callAlpaca( XMLRPCUtil.CONTROLLER_UVM, "write_files", null );
+        } catch ( Exception e ) {
+            logger.warn( "Unable to commit initial alpaca files.", e );
+        }
 
         this.intfManager = new LocalIntfManagerImpl();
         this.intfManager.initializeIntfArray();

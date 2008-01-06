@@ -428,6 +428,12 @@ public class NetworkManagerImpl implements LocalNetworkManager
 
         synchronized( this ) {
             try {
+                LocalUvmContextFactory.context().localIntfManager().loadInterfaceConfig();
+            } catch ( Exception e ) {
+                logger.error( "Exception loading the interface configuration.", e );
+            }
+
+            try {
                 /* Update the address database in netcap */
                 Netcap.getInstance().updateAddress();
                 

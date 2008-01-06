@@ -51,6 +51,7 @@ public class InterfaceInternal
     private final NetworkSpaceInternal networkSpace;
     private final EthernetMedia ethernetMedia;
     private final boolean isPingable;
+    private final boolean isPhysicalInterface;
 
     private String connectionState ="";
     private String currentMedia = "";
@@ -68,6 +69,7 @@ public class InterfaceInternal
 
         this.connectionState = intf.getConnectionState();
         this.currentMedia = intf.getCurrentMedia();
+        this.isPhysicalInterface = intf.isPhysicalInterface();
 
         this.name = intf.getName();
     }
@@ -119,6 +121,13 @@ public class InterfaceInternal
         this.currentMedia = newValue;
     }
 
+    /**
+     * Get whether or not this is a physical interface
+     */
+    public boolean isPhysicalInterface()
+    {
+        return this.isPhysicalInterface;
+    }
 
     /* Returns a new interface object pre-filled with all of the data from this object,
      * careful using this method, this should only be used by NetworkUtilPriv since the space
@@ -126,7 +135,8 @@ public class InterfaceInternal
      */
     public Interface toInterface()
     {
-        Interface i = new Interface( this.argonIntf.getArgon(), this.ethernetMedia, this.isPingable );
+        Interface i = new Interface( this.argonIntf.getArgon(), this.ethernetMedia, this.isPingable, 
+                                     this.isPhysicalInterface );
         i.setName( getName());
         i.setConnectionState( getConnectionState());
         i.setCurrentMedia( getCurrentMedia());
@@ -143,6 +153,7 @@ public class InterfaceInternal
         sb.append( "\neth-media:   " ).append( getEthernetMedia());
         sb.append( "\nstatus:      " ).append( getConnectionState() + "/" + getCurrentMedia());
         sb.append( "\npingable:    " ).append( isPingable());
+        sb.append( "\nis-physical:    " ).append( isPhysicalInterface());
         return sb.toString();
     }
     

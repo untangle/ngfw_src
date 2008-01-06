@@ -445,8 +445,11 @@ class NetworkUtilPriv extends NetworkUtil
                 /* this is not all that legit */
                 networkSpace = parseConfig( name + ";192.0.2.1/32" );
             }
-            Interface i = new Interface();
+            boolean isPhysicalInterface = true;
+            if ( argonIntf.getArgon() == IntfConstants.VPN_INTF ) isPhysicalInterface = false;
+            Interface i = new Interface( isPhysicalInterface );
             i.setArgonIntf( argonIntf.getArgon());
+            i.setName( argonIntf.getUserName());
             
             try {
                 interfaceList.add( InterfaceInternal.makeInterfaceInternal( i, networkSpace ));

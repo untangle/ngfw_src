@@ -59,6 +59,10 @@ class LocalIntfManagerImpl implements LocalIntfManager
 
     private InterfaceComparator interfaceComparator;
 
+    /** The current value from the properties value, if the value hasn't changed, the interfaces
+     * are not reloaded. */
+    private String currentInterfaceOrder = null;
+
     /**
      * Convert an interface using the argon standard (0 = outside, 1 = inside, 2 = DMZ 1, etc)
      * to an interface that uses that netcap unique identifiers
@@ -244,6 +248,11 @@ class LocalIntfManagerImpl implements LocalIntfManager
         }
         interfaceOrder = interfaceOrder.trim();
 
+        if (( this.currentInterfaceOrder != null ) && this.currentInterfaceOrder.equals( interfaceOrder )) {
+            logger.info( "The interface order is current, not reloading interfaces." );
+            return;
+        }
+
         logger.debug("Loading the interface order: " + interfaceOrder);
 
         String[] ifds = interfaceOrder.split(",");
@@ -279,6 +288,7 @@ class LocalIntfManagerImpl implements LocalIntfManager
         ArgonInterfaceConverter prevIntfConverter = this.intfConverter;
         this.intfConverter = ArgonInterfaceConverter.makeInstance(argonInterfaceList);
         notifyDependents(prevIntfConverter);
+        this.currentInterfaceOrder = interfaceOrder;
     }
 
     /* ----------------- Package ----------------- */
