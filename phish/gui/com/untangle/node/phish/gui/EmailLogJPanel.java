@@ -67,7 +67,7 @@ public class EmailLogJPanel extends MLogTableJPanel {
             addTableColumn( tableColumnModel,  3,  100, true,  false, false, true,  String.class, null, "subject" );
             addTableColumn( tableColumnModel,  4,  100, true,  false, false, false, String.class, null, "receiver" );
             addTableColumn( tableColumnModel,  5,  100, true,  false, false, false, String.class, null, "sender" );
-            addTableColumn( tableColumnModel,  7,  165, true,  false, false, false, IPPortString.class, null, "server" );
+            addTableColumn( tableColumnModel,  6,  165, true,  false, false, false, IPPortString.class, null, "server" );
             return tableColumnModel;
         }
 
