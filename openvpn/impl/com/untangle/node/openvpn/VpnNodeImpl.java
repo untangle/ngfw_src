@@ -415,6 +415,7 @@ public class VpnNodeImpl extends AbstractNode
         isWebAppDeployed = true;
 
         /* unregister the service with the UVM */
+        /* Make sure to leave this in because it reloads the iptables rules. */
         LocalUvmContextFactory.context().networkManager().registerService( SERVICE_NAME );
     }
 
@@ -427,8 +428,8 @@ public class VpnNodeImpl extends AbstractNode
         }
         isWebAppDeployed = false;
 
-
         /* unregister the service with the UVM */
+        /* Make sure to leave this in because it reloads the iptables rules. */
         LocalUvmContextFactory.context().networkManager().unregisterService( SERVICE_NAME );
     }
 
@@ -552,6 +553,7 @@ public class VpnNodeImpl extends AbstractNode
         this.assistant.configure( settings, false );
 
         /* unregister the service with the UVM */
+        /* Make sure to leave this in because it reloads the iptables rules. */
         LocalUvmContextFactory.context().networkManager().unregisterService( SERVICE_NAME );
     }
 
