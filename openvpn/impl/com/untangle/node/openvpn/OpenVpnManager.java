@@ -51,6 +51,8 @@ class OpenVpnManager
     private static final String VPN_STOP_SCRIPT  = Constants.SCRIPT_DIR + "/stop-openvpn";
     private static final String GENERATE_DISTRO_SCRIPT = Constants.SCRIPT_DIR + "/generate-distro";
 
+    private static final String PACKET_FILTER_RULES_FILE = System.getProperty( "bunnicula.conf.dir" ) + "/openvpn-pf";
+
     /* Most likely want to bind to the outside address when using NAT */
     private static final String FLAG_LOCAL       = "local";
 
@@ -227,6 +229,7 @@ class OpenVpnManager
 
         writeSettings( settings );
         writeClientFiles( settings );
+        writePacketFilterRules( settings );
     }
 
     private void writeSettings( VpnSettings settings ) throws NodeException
@@ -534,6 +537,16 @@ class OpenVpnManager
         }
 
         sw.appendVariable( type, value );
+    }
+
+    private void writePacketFilterRules( VpnSettings settings )
+    {
+        AlpacaRulesWriter arw = new AlpacaRulesWriter();
+        
+        /* Append all of the exported addresses */
+        arw.appendExportedAddresses( settings.getExportedAddressList());
+        
+        arw.writeFile( PACKET_FILTER_RULES_FILE );
     }
 
     /* A safe function (exceptionless) for InetAddress.getByAddress */
