@@ -41,10 +41,9 @@ class Kav < UVMFilterNode
   }
 
   def initialize
-    @diag = Diag.new(DEFAULT_DIAG_LEVEL)
-    @diag.if_level(3) { puts! "Initializing #{get_node_name()}..." }
+    @@diag.if_level(3) { puts! "Initializing #{get_node_name()}..." }
     super
-    @diag.if_level(3) { puts! "Done initializing #{get_node_name()}..." }
+    @@diag.if_level(3) { puts! "Done initializing #{get_node_name()}..." }
   end
   
   def get_uvm_node_name()
@@ -135,7 +134,7 @@ HELP
     msg = "Scan #{protocol} files " + 
         (scan == "true" ? "enabled" : "disabled");
 
-    @diag.if_level(2) { puts! msg }
+    @@diag.if_level(2) { puts! msg }
     return msg
   end
 
@@ -195,7 +194,7 @@ HELP
     update_protocol_config(tid, protocol, config)
     msg = "#{key.capitalize} for #{protocol} was updated."
 
-    @diag.if_level(2) { puts! msg }
+    @@diag.if_level(2) { puts! msg }
     return msg
   end
 
@@ -277,7 +276,7 @@ HELP
     
     update_scan_list_settings(tid, list_type, list)
 
-    @diag.if_level(2) { puts! msg }
+    @@diag.if_level(2) { puts! msg }
     return msg
   end
   
@@ -290,7 +289,7 @@ HELP
       update_scan_list_settings(tid, list_type, list)
       msg = "Item #{pos} was removed from the #{list_type}."
       
-      @diag.if_level(2) { puts! msg }
+      @@diag.if_level(2) { puts! msg }
       return msg
     rescue => ex
       return ex.to_s
@@ -334,7 +333,7 @@ HELP
     update_settings(tid, settings)
     msg = "Disable #{protocol} download resume set to #{value}"
 
-    @diag.if_level(2) { puts! msg }
+    @@diag.if_level(2) { puts! msg }
     return msg
   end
 
@@ -363,7 +362,7 @@ HELP
     update_settings(tid, settings)
     msg = "Scan trickle rate (percent) set to #{value}"
 
-    @diag.if_level(2) { puts! msg }
+    @@diag.if_level(2) { puts! msg }
     return msg
   end
 

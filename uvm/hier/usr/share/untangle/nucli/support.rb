@@ -20,10 +20,9 @@ require 'configelem'
 class Support < UVMConfigElement
 
   def initialize
-    @diag = Diag.new(DEFAULT_DIAG_LEVEL)
-    @diag.if_level(3) { puts! "Initializing #{get_node_name()}..." }
+    @@diag.if_level(3) { puts! "Initializing #{get_node_name()}..." }
     super
-    @diag.if_level(3) { puts! "Done initializing #{get_node_name()}..." }
+    @@diag.if_level(3) { puts! "Done initializing #{get_node_name()}..." }
   end
   
   def get_node_name()
@@ -119,12 +118,12 @@ class Support < UVMConfigElement
         @@uvmRemoteContext.networkManager().setAccessSettings(settings)
       rescue Exception => ex
         msg = "Error: unable to set support access to '#{args[0]}'"
-        @diag.if_level(3) { puts! msg; puts! ex; puts! ex.backtrace }          
+        @@diag.if_level(3) { puts! msg; puts! ex; puts! ex.backtrace }          
         return msg + ": #{ex}"
       end
     end
     msg = "Support access is #{ settings.getIsSupportEnabled() ? 'allowed.' : 'disallowed.'}"
-    @diag.if_level(3) { puts! msg }          
+    @@diag.if_level(3) { puts! msg }          
     return msg
   end
 
@@ -136,12 +135,12 @@ class Support < UVMConfigElement
         @@uvmRemoteContext.networkManager().setMiscSettings(settings)
       rescue Exception => ex
         msg = "Error: unable to set #{BRAND} reporting to '#{args[0]}'"
-        @diag.if_level(3) { puts! msg; puts! ex; puts! ex.backtrace }          
+        @@diag.if_level(3) { puts! msg; puts! ex; puts! ex.backtrace }          
         return msg + ": #{ex}"
       end
     end
     msg = "Sending of #{BRAND} Server data to #{BRAND} is #{ settings.getIsExceptionReportingEnabled() ? 'allowed.' : 'disallowed.'}"
-    @diag.if_level(3) { puts! msg }          
+    @@diag.if_level(3) { puts! msg }          
     return msg
   end
 
@@ -149,7 +148,7 @@ class Support < UVMConfigElement
     tids = @@uvmRemoteContext.nodeManager.nodeInstances("untangle-casing-http")
     if tids.empty?
       msg = "Error: there is no HTTP casing running on the effective UVM server!  This is unexpected; contact techical support."
-      @diag.if_level(3) { puts! msg }
+      @@diag.if_level(3) { puts! msg }
       return msg
     end
     node_ctx = @@uvmRemoteContext.nodeManager.nodeContext(tids[0])
@@ -165,13 +164,13 @@ class Support < UVMConfigElement
         node.setSettings(settings)
       rescue Exception => ex
         msg = "Error: unable to set web override to '#{args[0]}'"
-        @diag.if_level(3) { puts! msg; puts! ex; puts! ex.backtrace }          
+        @@diag.if_level(3) { puts! msg; puts! ex; puts! ex.backtrace }          
         return msg + ": #{ex}"
       end
     end
     settings = node.getSettings()
     msg = "Processing of web traffic is #{ settings.isEnabled() ? 'enabled.' : 'disabled.'}"
-    @diag.if_level(3) { puts! msg }          
+    @@diag.if_level(3) { puts! msg }          
     return msg
   end
   
@@ -187,20 +186,20 @@ class Support < UVMConfigElement
             settings.setMaxUriLength(max_uri)
           rescue Exception => ex
             msg = "Error: invalid maximum URI length '#{args[1]}'"
-            @diag.if_level(3) { puts! msg; puts! ex; puts! ex.backtrace }          
+            @@diag.if_level(3) { puts! msg; puts! ex; puts! ex.backtrace }          
             return msg + ": #{ex}"
           end
         end
         node.setSettings(settings)
       rescue Exception => ex
         msg = "Error: unable to set long URIs to '#{args[0]}'"
-        @diag.if_level(3) { puts! msg; puts! ex; puts! ex.backtrace }          
+        @@diag.if_level(3) { puts! msg; puts! ex; puts! ex.backtrace }          
         return msg + ": #{ex}"
       end
     end
     settings = node.getSettings()
     msg = "Processing of long URIs is #{ settings.getBlockLongUris() ? 'diabled' : 'enabled'} (#{settings.getMaxUriLength()})" 
-    @diag.if_level(3) { puts! msg }          
+    @@diag.if_level(3) { puts! msg }          
     return msg
   end
 
@@ -216,20 +215,20 @@ class Support < UVMConfigElement
             settings.setMaxHeaderLength(max_hdr)
           rescue Exception => ex
             msg = "Error: invalid maximum header length '#{args[1]}'"
-            @diag.if_level(3) { puts! msg; puts! ex; puts! ex.backtrace }          
+            @@diag.if_level(3) { puts! msg; puts! ex; puts! ex.backtrace }          
             return msg + ": #{ex}"
           end
         end
         node.setSettings(settings)
       rescue Exception => ex
         msg = "Error: unable to set long headers to '#{args[0]}'"
-        @diag.if_level(3) { puts! msg; puts! ex; puts! ex.backtrace }          
+        @@diag.if_level(3) { puts! msg; puts! ex; puts! ex.backtrace }          
         return msg + ": #{ex}"
       end
     end
     settings = node.getSettings()
     msg = "Processing of long headers is #{ settings.getBlockLongHeaders() ? 'diabled' : 'enabled'} (#{settings.getMaxHeaderLength()})" 
-    @diag.if_level(3) { puts! msg }          
+    @@diag.if_level(3) { puts! msg }          
     return msg
   end
   
@@ -242,13 +241,13 @@ class Support < UVMConfigElement
         node.setSettings(settings)
       rescue Exception => ex
         msg = "Error: unable to set non-http blocking to '#{args[0]}'"
-        @diag.if_level(3) { puts! msg; puts! ex; puts! ex.backtrace }          
+        @@diag.if_level(3) { puts! msg; puts! ex; puts! ex.backtrace }          
         return msg + ": #{ex}"
       end
     end
     settings = node.getSettings()
     msg = "Processing of non-http traffic is #{ settings.isNonHttpBlocked() ? 'diabled.' : 'enabled.'}" 
-    @diag.if_level(3) { puts! msg }          
+    @@diag.if_level(3) { puts! msg }          
     return msg
   end
 
@@ -256,7 +255,7 @@ class Support < UVMConfigElement
     tids = @@uvmRemoteContext.nodeManager.nodeInstances("untangle-casing-mail")
     if tids.empty?
       msg = "Error: there is no mail casing running on the effective UVM server! This is unexpected; contact techical support."
-      @diag.if_level(3) { puts! msg }
+      @@diag.if_level(3) { puts! msg }
       return msg
     end
     node_ctx = @@uvmRemoteContext.nodeManager.nodeContext(tids[0])
@@ -272,13 +271,13 @@ class Support < UVMConfigElement
         node.setSettings(settings)
       rescue Exception => ex
         msg = "Error: unable to set SMPT processing to '#{args[0]}'"
-        @diag.if_level(3) { puts! msg; puts! ex; puts! ex.backtrace }          
+        @@diag.if_level(3) { puts! msg; puts! ex; puts! ex.backtrace }          
         return msg + ": #{ex}"
       end
     end
     settings = node.getSettings()
     msg = "Processing of SMTP email is #{ settings.isSmtpEnabled() ? 'enabled.' : 'disabled.'}" 
-    @diag.if_level(3) { puts! msg }          
+    @@diag.if_level(3) { puts! msg }          
     return msg
   end
   
@@ -291,13 +290,13 @@ class Support < UVMConfigElement
         node.setSettings(settings)
       rescue Exception => ex
         msg = "Error: unable to set POP processing to '#{args[0]}'"
-        @diag.if_level(3) { puts! msg; puts! ex; puts! ex.backtrace }          
+        @@diag.if_level(3) { puts! msg; puts! ex; puts! ex.backtrace }          
         return msg + ": #{ex}"
       end
     end
     settings = node.getSettings()
     msg = "Processing of POP email is #{ settings.isPopEnabled() ? 'enabled.' : 'disabled.'}" 
-    @diag.if_level(3) { puts! msg }          
+    @@diag.if_level(3) { puts! msg }          
     return msg
   end
 
@@ -310,13 +309,13 @@ class Support < UVMConfigElement
         node.setSettings(settings)
       rescue Exception => ex
         msg = "Error: unable to set IMAP processing to '#{args[0]}'"
-        @diag.if_level(3) { puts! msg; puts! ex; puts! ex.backtrace }          
+        @@diag.if_level(3) { puts! msg; puts! ex; puts! ex.backtrace }          
         return msg + ": #{ex}"
       end
     end
     settings = node.getSettings()
     msg = "Processing of IMAP email is #{ settings.isPopEnabled() ? 'enabled.' : 'disabled.'}" 
-    @diag.if_level(3) { puts! msg }          
+    @@diag.if_level(3) { puts! msg }          
     return msg
   end
 
@@ -329,13 +328,13 @@ class Support < UVMConfigElement
         node.setSettings(settings)
       rescue Exception => ex
         msg = "Error: unable to set SMPT processing to '#{args[0]}'"
-        @diag.if_level(3) { puts! msg; puts! ex; puts! ex.backtrace }          
+        @@diag.if_level(3) { puts! msg; puts! ex; puts! ex.backtrace }          
         return msg + ": #{ex}"
       end
     end
     settings = node.getSettings()
     msg = "SMTP timeout is #{settings.getSmtpTimeout()/1000} seconds." 
-    @diag.if_level(3) { puts! msg }          
+    @@diag.if_level(3) { puts! msg }          
     return msg
   end
 
@@ -348,13 +347,13 @@ class Support < UVMConfigElement
         node.setSettings(settings)
       rescue Exception => ex
         msg = "Error: unable to set POP processing to '#{args[0]}'"
-        @diag.if_level(3) { puts! msg; puts! ex; puts! ex.backtrace }          
+        @@diag.if_level(3) { puts! msg; puts! ex; puts! ex.backtrace }          
         return msg + ": #{ex}"
       end
     end
     settings = node.getSettings()
     msg = "POP timeout is #{settings.getPopTimeout()/1000} seconds." 
-    @diag.if_level(3) { puts! msg }          
+    @@diag.if_level(3) { puts! msg }          
     return msg
   end
 
@@ -367,13 +366,13 @@ class Support < UVMConfigElement
         node.setSettings(settings)
       rescue Exception => ex
         msg = "Error: unable to set IMAP processing to '#{args[0]}'"
-        @diag.if_level(3) { puts! msg; puts! ex; puts! ex.backtrace }          
+        @@diag.if_level(3) { puts! msg; puts! ex; puts! ex.backtrace }          
         return msg + ": #{ex}"
       end
     end
     settings = node.getSettings()
     msg = "IMAP timeout is #{settings.getPopTimeout()/1000} seconds." 
-    @diag.if_level(3) { puts! msg }          
+    @@diag.if_level(3) { puts! msg }          
     return msg
   end
 
@@ -381,7 +380,7 @@ class Support < UVMConfigElement
     tids = @@uvmRemoteContext.nodeManager.nodeInstances("untangle-casing-ftp")
     if tids.empty?
       msg = "Error: there is no FTP casing running on the effective UVM server! This is unexpected; contact techical support."
-      @diag.if_level(3) { puts! msg }
+      @@diag.if_level(3) { puts! msg }
       return msg
     end
     node_ctx = @@uvmRemoteContext.nodeManager.nodeContext(tids[0])
@@ -397,13 +396,13 @@ class Support < UVMConfigElement
         node.setSettings(settings)
       rescue Exception => ex
         msg = "Error: unable to set FTP processing to '#{args[0]}'"
-        @diag.if_level(3) { puts! msg; puts! ex; puts! ex.backtrace }          
+        @@diag.if_level(3) { puts! msg; puts! ex; puts! ex.backtrace }          
         return msg + ": #{ex}"
       end
     end
     settings = node.getSettings()
     msg = "Processing of FTP traffic is #{ settings.isEnabled() ? 'enabled.' : 'disabled.'}" 
-    @diag.if_level(3) { puts! msg }          
+    @@diag.if_level(3) { puts! msg }          
     return msg
   end
 

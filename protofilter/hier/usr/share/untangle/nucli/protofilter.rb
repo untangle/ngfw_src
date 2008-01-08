@@ -24,10 +24,9 @@ class ProtoFilter < UVMFilterNode
   PROTOFILTER_MIB_ROOT = UVM_FILTERNODE_MIB_ROOT + ".4"
 
   def initialize
-    @diag = Diag.new(DEFAULT_DIAG_LEVEL)
-    @diag.if_level(3) { puts! "Initializing #{get_node_name()}..." }
+    @@diag.if_level(3) { puts! "Initializing #{get_node_name()}..." }
     super
-    @diag.if_level(3) { puts! "Done initializing #{get_node_name()}..." }
+    @@diag.if_level(3) { puts! "Done initializing #{get_node_name()}..." }
   end
   
   #
@@ -83,7 +82,7 @@ class ProtoFilter < UVMFilterNode
       patterns.remove(patterns[pos - 1])
       update_patterns(tid, patterns)
       msg = "Protocol #{pos} was removed from the list."
-      @diag.if_level(2) { puts! msg }
+      @@diag.if_level(2) { puts! msg }
       return msg
     rescue => ex
       return ex.to_s
@@ -160,7 +159,7 @@ class ProtoFilter < UVMFilterNode
 
     update_patterns(tid, patterns)
 
-    @diag.if_level(2) { puts! msg }
+    @@diag.if_level(2) { puts! msg }
     return msg
   end
 end

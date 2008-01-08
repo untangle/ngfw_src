@@ -38,10 +38,9 @@ class Phish < UVMFilterNode
   }
 
   def initialize
-    @diag = Diag.new(DEFAULT_DIAG_LEVEL)
-    @diag.if_level(3) { puts! "Initializing #{get_node_name()}..." }
+    @@diag.if_level(3) { puts! "Initializing #{get_node_name()}..." }
     super
-    @diag.if_level(3) { puts! "Done initializing #{get_node_name()}..." }
+    @@diag.if_level(3) { puts! "Done initializing #{get_node_name()}..." }
   end
 
   #
@@ -148,7 +147,7 @@ HELP
     update_protocol_config(tid, protocol, config)
     msg = "#{key} for #{protocol} updated."
 
-    @diag.if_level(2) { puts! msg }
+    @@diag.if_level(2) { puts! msg }
     return msg
   end
   
@@ -170,7 +169,7 @@ HELP
     msg = "Web anti-phishing protection " + 
         (enable == "true" ? "enabled" : "disabled");
 
-    @diag.if_level(2) { puts! msg }
+    @@diag.if_level(2) { puts! msg }
     return msg
   end
 

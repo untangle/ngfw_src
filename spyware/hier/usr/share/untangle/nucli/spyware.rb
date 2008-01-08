@@ -31,10 +31,9 @@ class Spyware < UVMFilterNode
   }
 
   def initialize
-    @diag = Diag.new(DEFAULT_DIAG_LEVEL)
-    @diag.if_level(3) { puts! "Initializing #{get_node_name()}..." }
+    @@diag.if_level(3) { puts! "Initializing #{get_node_name()}..." }
     super
-    @diag.if_level(3) { puts! "Done initializing #{get_node_name()}..." }
+    @@diag.if_level(3) { puts! "Done initializing #{get_node_name()}..." }
   end
   
   #
@@ -113,7 +112,7 @@ class Spyware < UVMFilterNode
     msg = "Spyware and ad URL blocking " + 
         (enable == "true" ? "enabled" : "disabled");
 
-    @diag.if_level(2) { puts! msg }
+    @@diag.if_level(2) { puts! msg }
     return msg
   end
 
@@ -169,7 +168,7 @@ class Spyware < UVMFilterNode
     
     update_block_list_subnet_rules(tid, rules)
 
-    @diag.if_level(2) { puts! msg }
+    @@diag.if_level(2) { puts! msg }
     return msg
   end
   
@@ -182,7 +181,7 @@ class Spyware < UVMFilterNode
       update_block_list_subnet_rules(tid, rules)
       msg = "Subnet rule #{pos} was removed from the block list."
       
-      @diag.if_level(2) { puts! msg }
+      @@diag.if_level(2) { puts! msg }
       return msg
     rescue => ex
       return ex.to_s
@@ -238,7 +237,7 @@ class Spyware < UVMFilterNode
     
     update_block_list_cookie_rules(tid, rules)
 
-    @diag.if_level(2) { puts! msg }
+    @@diag.if_level(2) { puts! msg }
     return msg
   end
   
@@ -251,7 +250,7 @@ class Spyware < UVMFilterNode
       update_block_list_cookie_rules(tid, rules)
       msg = "Cookie rule #{pos} was removed from the block list."
       
-      @diag.if_level(2) { puts! msg }
+      @@diag.if_level(2) { puts! msg }
       return msg
     rescue => ex
       return ex.to_s
@@ -307,7 +306,7 @@ class Spyware < UVMFilterNode
     
     update_block_list_activex_rules(tid, rules)
 
-    @diag.if_level(2) { puts! msg }
+    @@diag.if_level(2) { puts! msg }
     return msg
   end
   
@@ -320,7 +319,7 @@ class Spyware < UVMFilterNode
       update_block_list_activex_rules(tid, rules)
       msg = "ActiveX rule #{pos} was removed from the block list."
       
-      @diag.if_level(2) { puts! msg }
+      @@diag.if_level(2) { puts! msg }
       return msg
     rescue => ex
       return ex.to_s
@@ -377,7 +376,7 @@ class Spyware < UVMFilterNode
     
     update_pass_list_settings(tid, list)
 
-    @diag.if_level(2) { puts! msg }
+    @@diag.if_level(2) { puts! msg }
     return msg
   end
   
@@ -390,7 +389,7 @@ class Spyware < UVMFilterNode
       update_pass_list_settings(tid, list)
       msg = "Domain #{pos} was removed from the pass list."
       
-      @diag.if_level(2) { puts! msg }
+      @@diag.if_level(2) { puts! msg }
       return msg
     rescue => ex
       return ex.to_s
@@ -424,7 +423,7 @@ class Spyware < UVMFilterNode
     msg = "Block all ActiveX " + 
         (enable == "true" ? "enabled" : "disabled")
 
-    @diag.if_level(2) { puts! msg }
+    @@diag.if_level(2) { puts! msg }
     return msg
   end
 
@@ -453,7 +452,7 @@ class Spyware < UVMFilterNode
     update_settings(tid, settings)
     msg = "Quick-passlist " + settings.getUserWhitelistMode.to_s
 
-    @diag.if_level(2) { puts! msg }
+    @@diag.if_level(2) { puts! msg }
     return msg
   end
   

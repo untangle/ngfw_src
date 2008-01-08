@@ -24,10 +24,9 @@ class Firewall < UVMFilterNode
     FIREWALL_MIB_ROOT = UVM_FILTERNODE_MIB_ROOT + ".2"
     
     def initialize
-        @diag = Diag.new(DEFAULT_DIAG_LEVEL)
-	@diag.if_level(3) { puts! "Initializing #{get_node_name()}..." }
+	@@diag.if_level(3) { puts! "Initializing #{get_node_name()}..." }
         super
-	@diag.if_level(3) { puts! "Done initializing #{get_node_name()}..." }
+	@@diag.if_level(3) { puts! "Done initializing #{get_node_name()}..." }
     end
 
     #
@@ -105,7 +104,7 @@ class Firewall < UVMFilterNode
             return rules
         rescue Exception => ex
             msg = "Error: #{self.class}.get_rule_list caught an unhandled exception -- " + ex
-            @diag.if_level(2) { puts! msg ; p ex }
+            @@diag.if_level(2) { puts! msg ; p ex }
             return msg
         end
     end
@@ -142,31 +141,31 @@ class Firewall < UVMFilterNode
 	    begin rule.setProtocol(com.untangle.uvm.node.firewall.protocol.ProtocolMatcherFactory.parse(traffic_type.upcase))
             rescue Exception => ex
                 msg = "Error: invalid protocol value."
-                @diag.if_level(2) { puts! msg ; p ex }
+                @@diag.if_level(2) { puts! msg ; p ex }
                 return msg
 	    end
 	    begin rule.setSrcAddress(com.untangle.uvm.node.firewall.ip.IPMatcherFactory.parse(src_addr))
             rescue Exception => ex
                 msg = "Error: invalid source address value."
-                @diag.if_level(2) { puts! msg ; p ex }
+                @@diag.if_level(2) { puts! msg ; p ex }
                 return msg
 	    end
 	    begin rule.setDstAddress(com.untangle.uvm.node.firewall.ip.IPMatcherFactory.parse(dst_addr))
             rescue Exception => ex
                 msg = "Error: invalid destination address value."
-                @diag.if_level(2) { puts! msg ; p ex }
+                @@diag.if_level(2) { puts! msg ; p ex }
                 return msg
 	    end
 	    begin rule.setSrcPort(com.untangle.uvm.node.firewall.port.PortMatcherFactory.parse(src_addr))
             rescue Exception => ex
                 msg = "Error: invalid source port value."
-                @diag.if_level(2) { puts! msg ; p ex }
+                @@diag.if_level(2) { puts! msg ; p ex }
                 return msg
 	    end
 	    begin rule.setDstPort(com.untangle.uvm.node.firewall.port.PortMatcherFactory.parse(dst_port))
             rescue Exception => ex
                 msg = "Error: invalid destination port value."
-                @diag.if_level(2) { puts! msg ; p ex }
+                @@diag.if_level(2) { puts! msg ; p ex }
                 return msg
 	    end	    
 	    rule.setCategory(category) if category
@@ -182,11 +181,11 @@ class Firewall < UVMFilterNode
 	    node.setSettings(settings)
 	    
 	    msg = (rule_num != -1) ? "Rule ##{rule_num} updated in firewall rule list." : "Rule added to firewall rule list."
-	    @diag.if_level(2) { puts! msg }
+	    @@diag.if_level(2) { puts! msg }
             return msg
         rescue Exception => ex
             msg = "Error: #{self.class}.add_rule caught an unhandled exception -- " + ex
-            @diag.if_level(2) { puts! msg ; p ex }
+            @@diag.if_level(2) { puts! msg ; p ex }
             return msg
         end
     end
@@ -210,11 +209,11 @@ class Firewall < UVMFilterNode
 	    node.setSettings(settings)
 	    
 	    msg = "Rule #{rule_num} removed from firewall rule list."
-	    @diag.if_level(2) { puts! msg }
+	    @@diag.if_level(2) { puts! msg }
             return msg
         rescue Exception => ex
             msg = "Error: #{self.class}.remove_rule caught an unhandled exception -- " + ex
-            @diag.if_level(2) { puts! msg ; p ex }
+            @@diag.if_level(2) { puts! msg ; p ex }
             return msg
         end
     end
@@ -235,7 +234,7 @@ class Firewall < UVMFilterNode
             default_action = "Default action: #{settings.isDefaultAccept() ? "pass" : "block"}"
         rescue Exception => ex
             msg = "Error: #{self.class}.list_settings_default_action caught an unhandled exception -- " + ex
-            @diag.if_level(2) { puts! msg ; p ex }
+            @@diag.if_level(2) { puts! msg ; p ex }
             return msg
         end
     end
@@ -249,13 +248,13 @@ class Firewall < UVMFilterNode
             settings.setDefaultAccept(action == "pass")
             node.setSettings(settings)
             res = "#{self.class} Settings Default Action set to '#{action}'"
-            @diag.if_level(2) { puts! res }
+            @@diag.if_level(2) { puts! res }
             return res
         rescue ArgumentError
             return "Error: invalid value for Default Action -- valid actions are 'pass' and 'block'."
         rescue Exception => ex
             msg = "Error: #{self.class}.settings_default_actioncaught an unhandled exception -- " + ex
-            @diag.if_level(2) { puts! msg ; p ex }
+            @@diag.if_level(2) { puts! msg ; p ex }
             return msg
         end
     end

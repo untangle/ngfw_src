@@ -23,10 +23,9 @@ class Webfilter < UVMFilterNode
     WEBFILTER_MIB_ROOT = UVM_FILTERNODE_MIB_ROOT + ".1"
 
     def initialize
-        @diag = Diag.new(DEFAULT_DIAG_LEVEL)
-	@diag.if_level(3) { puts! "Initializing #{get_node_name()}..." }
+	@@diag.if_level(3) { puts! "Initializing #{get_node_name()}..." }
         super
-	@diag.if_level(3) { puts! "Done initializing #{get_node_name()}..." }
+	@@diag.if_level(3) { puts! "Done initializing #{get_node_name()}..." }
     end
 
     #
@@ -132,7 +131,7 @@ class Webfilter < UVMFilterNode
             blocked = (url.getString() + "," + url.isLive().to_s + "," + url.getLog().to_s + "," + url.getDescription() + "\n")
             blocked_urls << blocked
         } if blocked_urls_list
-        @diag.if_level(3) { puts! blocked_urls }
+        @@diag.if_level(3) { puts! blocked_urls }
         return blocked_urls
     end
 
@@ -155,10 +154,10 @@ class Webfilter < UVMFilterNode
             else
                 blocked << ",action unknown - correct via #{BRAND} admin. GUI."
             end
-            @diag.if_level(3) { blocked << (" (" + cat.getBlockDomains().to_s + "," + cat.getBlockUrls().to_s + "," + cat.getBlockExpressions().to_s + "," + cat.getLogOnly().to_s + ")") }
+            @@diag.if_level(3) { blocked << (" (" + cat.getBlockDomains().to_s + "," + cat.getBlockUrls().to_s + "," + cat.getBlockExpressions().to_s + "," + cat.getLogOnly().to_s + ")") }
             blocked << "\n"
             blocked_cats << blocked
-            @diag.if_level(3) { puts! blocked }
+            @@diag.if_level(3) { puts! blocked }
         } if blocked_cats_list
         return blocked_cats
     end
@@ -168,7 +167,7 @@ class Webfilter < UVMFilterNode
         node = node_ctx.node()
         settings =  node.getSettings()
         blocked_mime_types_list = settings.getBlockedMimeTypes()
-        @diag.if_level(3) { puts "# blocked mime types = #{blocked_mime_types_list.length}" if blocked_mime_types_list }
+        @@diag.if_level(3) { puts "# blocked mime types = #{blocked_mime_types_list.length}" if blocked_mime_types_list }
         blocked_mime_types = "MIME type,block,name,category,description,log\n"
         blocked_mime_types_list.each { |mime_type_rule|
             mime_type = mime_type_rule.getMimeType                
@@ -180,7 +179,7 @@ class Webfilter < UVMFilterNode
             blocked << ("," + (mime_type_rule.getLog ? "logged" : "not logged"))
             blocked << "\n"
             blocked_mime_types << blocked
-            @diag.if_level(3) { puts! blocked }
+            @@diag.if_level(3) { puts! blocked }
         } if blocked_mime_types_list
         return blocked_mime_types
     end
@@ -198,7 +197,7 @@ class Webfilter < UVMFilterNode
             blocked_file << extension.getDescription + "\n"
             blocked_files << blocked_file
         } if blocked_files_list
-        @diag.if_level(3) { puts! blocked_files }
+        @@diag.if_level(3) { puts! blocked_files }
         return blocked_files
     end
 
@@ -210,7 +209,7 @@ class Webfilter < UVMFilterNode
             settings =  node.getSettings()
             blockedUrlsList = settings.getBlockedUrls()   
             url = url.gsub(/^www./, '')
-            @diag.if_level(2) { puts! "Attempting to add #{url} to blocked list." }
+            @@diag.if_level(2) { puts! "Attempting to add #{url} to blocked list." }
             newUrlToBlock = com.untangle.uvm.node.StringRule.new(url)
             newUrlToBlock.setLive(block == "false" ? false : true)
             newUrlToBlock.setLog(log == "true")
@@ -227,10 +226,10 @@ class Webfilter < UVMFilterNode
             settings.setBlockedUrls(blockedUrlsList)
             node.setSettings(settings)
             msg = "URL '#{url}' added to Block list."
-            @diag.if_level(3) { puts! msg }
+            @@diag.if_level(3) { puts! msg }
             return msg
         rescue Exception => ex
-            @diag.if_level(3) { p ex }
+            @@diag.if_level(3) { p ex }
             return "Adding URL to block list failed:\n" + ex
         end
     end
@@ -243,7 +242,7 @@ class Webfilter < UVMFilterNode
             settings =  node.getSettings()
             blockedUrlsList = settings.getBlockedUrls()   
             url = url.gsub(/^www./, '')
-            @diag.if_level(2) { puts! "Attempting to remove #{url} from blocked list." }
+            @@diag.if_level(2) { puts! "Attempting to remove #{url} from blocked list." }
 
             rule_to_remove = blockedUrlsList.detect { |blocked_url|
                 blocked_url.getString() == url
@@ -257,10 +256,10 @@ class Webfilter < UVMFilterNode
                 msg = "Error: can't remove - URL not found."
             end
 
-            @diag.if_level(3) { puts! msg }
+            @@diag.if_level(3) { puts! msg }
             return msg
         rescue Exception => ex
-            @diag.if_level(3) { p ex }
+            @@diag.if_level(3) { p ex }
             return "Adding URL to block list failed:\n" + ex
         end
     end
@@ -272,7 +271,7 @@ class Webfilter < UVMFilterNode
             node = node_ctx.node()
             settings =  node.getSettings()
             blockedMimesList = settings.getBlockedMimeTypes()
-            @diag.if_level(3) { puts! "Attempting to add #{mime_type} to Block list." }
+            @@diag.if_level(3) { puts! "Attempting to add #{mime_type} to Block list." }
             mimeType = com.untangle.uvm.node.MimeType.new(mime_type)
             block = (block.nil? || (block != "true")) ? false : true
             name ||= "[no name]" 
@@ -289,10 +288,10 @@ class Webfilter < UVMFilterNode
             settings.setBlockedMimeTypes(blockedMimesList)
             node.setSettings(settings)
             msg = "Mime type '#{mime_type}' added to Block list."
-            @diag.if_level(2) { puts! msg }
+            @@diag.if_level(2) { puts! msg }
             return msg
         rescue Exception => ex
-            @diag.if_level(3) { p ex }
+            @@diag.if_level(3) { p ex }
             return "Adding mime type to block list failed:\n" + ex
         end
     end
@@ -306,7 +305,7 @@ class Webfilter < UVMFilterNode
             blockedMimesList = settings.getBlockedMimeTypes()
             return "Error: there are no blocked mime types defined." if blockedMimesList.nil? || blockedMimesList.length == 0
             
-            @diag.if_level(3) { puts! "Attempting to remove #{mime_type} from block list." }
+            @@diag.if_level(3) { puts! "Attempting to remove #{mime_type} from block list." }
             rule_to_remove = blockedMimesList.detect{ |blocked_mime|
                 blocked_mime.getMimeType().getType() == mime_type
             }
@@ -319,11 +318,11 @@ class Webfilter < UVMFilterNode
                 msg = "Error: can't remove - MIME type not found."
             end
             
-            @diag.if_level(2) { puts! msg }
+            @@diag.if_level(2) { puts! msg }
             return msg
         rescue Exception => ex
             msg = "Remove of MIME type from block list failed:\n" + ex
-            @diag.if_level(3) { puts! msg ; p ex }
+            @@diag.if_level(3) { puts! msg ; p ex }
             return msg
         end
     end
@@ -335,7 +334,7 @@ class Webfilter < UVMFilterNode
             node = node_ctx.node()
             settings =  node.getSettings()
             blockedExtensionsList = settings.getBlockedExtensions()   
-            @diag.if_level(2) { puts! "Attempting to add #{file_ext} to Block list." }
+            @@diag.if_level(2) { puts! "Attempting to add #{file_ext} to Block list." }
             block = (block.nil? || (block != "true")) ? false : true
             stringRule = com.untangle.uvm.node.StringRule.new(file_ext, "[no name]", "[no category]", description, block)
             rule_to_update = -1
@@ -350,10 +349,10 @@ class Webfilter < UVMFilterNode
             settings.setBlockedExtensions(blockedExtensionsList)
             node.setSettings(settings)
             msg = "File extension '#{file_ext}' added to Block list."
-            @diag.if_level(3) { puts! msg }
+            @@diag.if_level(3) { puts! msg }
             return msg
         rescue Exception => ex
-            @diag.if_level(3) { p ex }
+            @@diag.if_level(3) { p ex }
             return "Adding extension '#{file_ext}' to block list failed:\n" + ex
         end
     end
@@ -365,7 +364,7 @@ class Webfilter < UVMFilterNode
             node = node_ctx.node()
             settings = node.getSettings()
             blockedExtensionsList = settings.getBlockedExtensions()   
-            @diag.if_level(2) { puts! "Attempting to remove #{file_ext} from block list." }
+            @@diag.if_level(2) { puts! "Attempting to remove #{file_ext} from block list." }
 
             rule_to_remove = blockedExtensionsList.detect{ |blocked_file|
                 blocked_file.getString() == file_ext
@@ -379,11 +378,11 @@ class Webfilter < UVMFilterNode
                 msg = "Error: can't remove - File type not found."
             end
             
-            @diag.if_level(2) { puts! msg }
+            @@diag.if_level(2) { puts! msg }
             return msg
 
         rescue Exception => ex
-            @diag.if_level(3) { p ex }
+            @@diag.if_level(3) { p ex }
             return "Remove file type '#{file_ext}' from block list failed:\n" + ex
         end
     end
@@ -426,7 +425,7 @@ class Webfilter < UVMFilterNode
             settings.setBlacklistCategories(blocked_cats_list)
             node.setSettings(settings)
             msg = "Category '#{cat_to_block}' action updated."
-            @diag.if_level(2) { puts! msg }
+            @@diag.if_level(2) { puts! msg }
             return msg
         end
     end
@@ -484,7 +483,7 @@ class Webfilter < UVMFilterNode
             passed = ""
             passed << (url.getString() + "," + url.isLive().to_s + "," + url.getDescription() + "\n")
             passed_urls << passed
-            @diag.if_level(3) { puts! passed }
+            @@diag.if_level(3) { puts! passed }
         } if passed_urls_list
         return passed_urls
     end
@@ -499,7 +498,7 @@ class Webfilter < UVMFilterNode
             passed = ""
             passed << (client.getIpMaddr().getAddr() + "," + client.isLive().to_s + "," + client.getDescription() + "\n")
             passed_clients << passed
-            @diag.if_level(3) { puts! passed }
+            @@diag.if_level(3) { puts! passed }
         } if passed_clients_list
         return passed_clients
     end
@@ -512,7 +511,7 @@ class Webfilter < UVMFilterNode
             settings =  node.getSettings()
             passedUrlsList = settings.getPassedUrls()   
             url = url.gsub(/^www./, '')
-            @diag.if_level(2) { puts! "Attempting to add #{url} to passed list." }
+            @@diag.if_level(2) { puts! "Attempting to add #{url} to passed list." }
             newUrlToPass = com.untangle.uvm.node.StringRule.new(url)
             newUrlToPass.setLive(block == "true")
             newUrlToPass.setDescription(desc) if desc
@@ -528,11 +527,11 @@ class Webfilter < UVMFilterNode
             settings.setPassedUrls(passedUrlsList)
             node.setSettings(settings)
             msg = (rule_to_update == -1) ? "URL '#{url}' added to Pass List." : "Pass list URL '#{url}' updated.'"
-            @diag.if_level(3) { puts! msg }
+            @@diag.if_level(3) { puts! msg }
             return msg
         rescue Exception => ex
             msg = "Adding URL to block list failed: " + ex
-            @diag.if_level(3) { puts! msg ; p ex }
+            @@diag.if_level(3) { puts! msg ; p ex }
             return msg
         end
     end
@@ -545,7 +544,7 @@ class Webfilter < UVMFilterNode
             settings =  node.getSettings()
             passedUrlsList = settings.getPassedUrls()   
             url = url.gsub(/^www./, '')
-            @diag.if_level(2) { puts! "Attempting to add #{url} to passed list." }
+            @@diag.if_level(2) { puts! "Attempting to add #{url} to passed list." }
 
             rule_to_remove = passedUrlsList.detect { |passed_url|
                 passed_url.getString() == url
@@ -558,10 +557,10 @@ class Webfilter < UVMFilterNode
             else
                 msg = "Error: can't remove - URL not found."
             end
-            @diag.if_level(3) { puts! msg }
+            @@diag.if_level(3) { puts! msg }
             return msg
         rescue Exception => ex
-            @diag.if_level(3) { p ex }
+            @@diag.if_level(3) { p ex }
             return "Adding URL to block list failed:\n" + ex
         end
     end
@@ -573,7 +572,7 @@ class Webfilter < UVMFilterNode
             node = node_ctx.node()
             settings =  node.getSettings()
             passedClientsList = settings.getPassedClients()
-            @diag.if_level(2) { puts! "Attempting to add #{client} to passed list." }
+            @@diag.if_level(2) { puts! "Attempting to add #{client} to passed list." }
             newClientIpMaddr = com.untangle.uvm.node.IPMaddr.new(client)
             newClientToPass = com.untangle.uvm.node.IPMaddrRule.new()
             newClientToPass.setIpMaddr(newClientIpMaddr)
@@ -591,10 +590,10 @@ class Webfilter < UVMFilterNode
             settings.setPassedClients(passedClientsList)
             node.setSettings(settings)
             msg = "Client '#{client}' added to Pass List."
-            @diag.if_level(3) { puts! msg }
+            @@diag.if_level(3) { puts! msg }
             return msg
         rescue Exception => ex
-            @diag.if_level(3) { p ex }
+            @@diag.if_level(3) { p ex }
             return "Adding client to pass list failed:\n" + ex
         end
     end
@@ -606,7 +605,7 @@ class Webfilter < UVMFilterNode
             node = node_ctx.node()
             settings =  node.getSettings()
             passedClientsList = settings.getPassedClients()   
-            @diag.if_level(2) { puts! "Attempting to remove #{client} from pass list." }
+            @@diag.if_level(2) { puts! "Attempting to remove #{client} from pass list." }
             
             rule_to_remove = passedClientsList.detect { |passed_client|
                 passed_client.getIpMaddr().getAddr() == client
@@ -619,10 +618,10 @@ class Webfilter < UVMFilterNode
             else
                 msg = "Error: can't remove - client address not found."
             end
-            @diag.if_level(3) { puts! msg }
+            @@diag.if_level(3) { puts! msg }
             return msg
         rescue Exception => ex
-            @diag.if_level(3) { p ex }
+            @@diag.if_level(3) { p ex }
             return "Adding URL to block list failed:\n" + ex
         end
     end

@@ -26,10 +26,9 @@ class Ips < UVMFilterNode
   MIB_ROOT = UVM_FILTERNODE_MIB_ROOT + ".5"
 
   def initialize
-    @diag = Diag.new(DEFAULT_DIAG_LEVEL)
-    @diag.if_level(3) { puts! "Initializing #{get_node_name()}..." }
+    @@diag.if_level(3) { puts! "Initializing #{get_node_name()}..." }
     super
-    @diag.if_level(3) { puts! "Done initializing #{get_node_name()}..." }
+    @@diag.if_level(3) { puts! "Done initializing #{get_node_name()}..." }
   end
   
   
@@ -156,7 +155,7 @@ class Ips < UVMFilterNode
     else 
       msg = "Rule added to the rule-list."
     end
-    @diag.if_level(2) { puts! msg }
+    @@diag.if_level(2) { puts! msg }
     return msg
   end
   
@@ -166,7 +165,7 @@ class Ips < UVMFilterNode
       node = get_node(tid)
       node.deleteRule(sid)
       msg = "Rule #{sid} was removed from the rule-list."
-      @diag.if_level(2) { puts! msg }
+      @@diag.if_level(2) { puts! msg }
       return msg
     rescue => ex
       return ex.to_s
@@ -188,7 +187,7 @@ class Ips < UVMFilterNode
     else 
       msg = "Variable added to the variable-list."
     end
-    @diag.if_level(2) { puts! msg }
+    @@diag.if_level(2) { puts! msg }
     return msg
   end
   
@@ -198,7 +197,7 @@ class Ips < UVMFilterNode
       node = get_node(tid)
       node.deleteVariable(var_name)
       msg = "Variable #{var_name} was removed from the variable-list."
-      @diag.if_level(2) { puts! msg }
+      @@diag.if_level(2) { puts! msg }
       return msg
     rescue => ex
       return ex.to_s

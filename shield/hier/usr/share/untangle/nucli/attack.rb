@@ -24,10 +24,9 @@ class Attack < UVMFilterNode
     MIB_ROOT = UVM_FILTERNODE_MIB_ROOT + ".3"
 
     def initialize
-        @diag = Diag.new(DEFAULT_DIAG_LEVEL)
-	@diag.if_level(3) { puts! "Initializing #{get_node_name()}..." }
+	@@diag.if_level(3) { puts! "Initializing #{get_node_name()}..." }
         super
-	@diag.if_level(3) { puts! "Done initializing #{get_node_name()}..." }
+	@@diag.if_level(3) { puts! "Done initializing #{get_node_name()}..." }
     end
 
     #
@@ -91,7 +90,7 @@ class Attack < UVMFilterNode
             return rules
         rescue Exception => ex
             msg = "Error: #{self.class}.list_rules caught an unhandled exception -- " + ex
-            @diag.if_level(3) { puts! msg ; p ex }
+            @@diag.if_level(3) { puts! msg ; p ex }
             return msg
         end
     end
@@ -100,15 +99,15 @@ class Attack < UVMFilterNode
 	
 	if !["true", "false"].include?(enable)
 	    msg = "Error: invalid value for 'enable' - valid values are 'true' and 'false'."
-            @diag.if_level(3) { puts! msg }
+            @@diag.if_level(3) { puts! msg }
             return msg
 	elsif !(address =~ /(\d+\.)+\d+/)
             msg = "Error: invalid value for 'address' - valid values are well formatted IP addresses plus optional netmask, e.g., 192.168.0.10[/255.255.255.0]"
-            @diag.if_level(3) { puts! msg }
+            @@diag.if_level(3) { puts! msg }
             return msg
 	elsif !["5", "25", "50", "100"].include?(user_count)
 	    msg = "Error: invalid value for 'user-count' - valid values are 5, 25, 50, 100."
-            @diag.if_level(3) { puts! msg }
+            @@diag.if_level(3) { puts! msg }
             return msg
 	end
 	
@@ -122,7 +121,7 @@ class Attack < UVMFilterNode
             rule_num = rule_num.to_i
             if (rule_num < 1 || rule_num > ruleList.length) && (rule_num != -1)
                 msg = "Error: invalid rule number - valid values are 1...#{ruleList.length}"
-                @diag.if_level(3) { puts! msg }
+                @@diag.if_level(3) { puts! msg }
                 return msg
             end
             
@@ -134,7 +133,7 @@ class Attack < UVMFilterNode
                 rule.setAddress(com.untangle.uvm.node.IPaddr.parse(address))
 	    rescue Exception
                 msg = "Error: invalid IP address '#{address}'"
-                @diag.if_level(3) { puts! msg }
+                @@diag.if_level(3) { puts! msg }
                 return msg                
             end
 	    
@@ -143,11 +142,11 @@ class Attack < UVMFilterNode
 	    node.setSettings(settings)
 	    
 	    msg = (rule_num != -1) ? "Rule ##{rule_num} updated in #{get_node_name} rule list." : "Rule added to #{get_node_name} rule list."
-	    @diag.if_level(3) { puts! msg }
+	    @@diag.if_level(3) { puts! msg }
             return msg
         rescue Exception => ex
             msg = "Error: #{self.class}.add_rule caught an unhandled exception -- " + ex
-            @diag.if_level(3) { puts! msg ; p ex }
+            @@diag.if_level(3) { puts! msg ; p ex }
             return msg
         end
     end
@@ -171,11 +170,11 @@ class Attack < UVMFilterNode
 	    node.setSettings(settings)
 	    
 	    msg = "Rule #{rule_num} removed from #{get_node_name} rule list."
-	    @diag.if_level(2) { puts! msg }
+	    @@diag.if_level(2) { puts! msg }
             return msg
         rescue Exception => ex
             msg = "Error: #{self.class}.remove_rule caught an unhandled exception -- " + ex
-            @diag.if_level(2) { puts! msg ; p ex }
+            @@diag.if_level(2) { puts! msg ; p ex }
             return msg
         end
     end
