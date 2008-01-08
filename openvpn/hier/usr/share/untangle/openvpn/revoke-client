@@ -30,7 +30,7 @@ validateBase()
     fi
 }
 
-function revokeClient()
+revokeClient()
 {
     local clientCrl=`mktemp || exit -3`
     local revokeTest=`mktemp || exit -3`

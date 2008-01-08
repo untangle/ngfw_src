@@ -20,13 +20,13 @@ SERVER_CRT="${PKI_DIR}/server.crt"
 ## Directory with pre-generated diffie hellman parameters
 DH_DIR="${DATA_DIR}/dh"
 
-function diffieHellman()
+diffieHellman()
 {
     local t_dhFile="${DH_DIR}/dh${KEY_SIZE}-$(( ${RANDOM} % 4 )).pem"
     cp ${t_dhFile} ${OPENVPN_DATA_DIR}/dh.pem
 }
 
-function generateCA()
+generateCA()
 {
     export COMMON_NAME=${CA_NAME}
     export KEY_DN_QUALIFIER=${DN_QUALIFIER_CA}
@@ -41,7 +41,7 @@ function generateCA()
     cp ${CA_KEY} ${CA_CRT} ${OPENVPN_DATA_DIR}
 }
 
-function generateServerKey()
+generateServerKey()
 {
     local serverCsr=`mktemp || exit -3`
 
@@ -65,13 +65,13 @@ function generateServerKey()
     cp ${SERVER_KEY} ${SERVER_CRT} ${OPENVPN_DATA_DIR}
 }
 
-function cleanBase()
+cleanBase()
 {
     ${RM_CMD} -f ${PKI_DIR}/*
     ${RM_CMD} -f ${OPENVPN_DATA_DIR}/*
 }
 
-function makeBase()
+makeBase()
 {
     mkdir -p ${CONF_DIR}
     mkdir -p ${PKI_DIR}

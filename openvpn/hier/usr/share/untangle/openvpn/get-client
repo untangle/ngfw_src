@@ -45,9 +45,9 @@ destination="${PACKAGE_DIR}/config-${commonName}.zip"
 
 logFile=/var/log/openvpn-eg.log
 
-function copyFromUsb()
+copyFromUsb()
 {
-    local t_usbDevice=`lookupUsbDevice`
+    local t_usbDevice=`lookup_usb_device`
     
     if [ -z "${t_usbDevice}" ]; then
         echo "Unable to find USB device"
@@ -70,7 +70,7 @@ function copyFromUsb()
     usbCleanup ${t_mountPoint}
 }
 
-function downloadClient()
+downloadClient()
 {
     wget --timeout ${DOWNLOAD_TIMEOUT} \
         --tries ${DOWNLOAD_RETRIES} \
@@ -78,7 +78,7 @@ function downloadClient()
         -O ${destination} || exit ${DOWNLOAD_ERROR}
 }
 
-function installClient()
+installClient()
 {
     local t_output=`mktemp -d || exit -3`
     
@@ -103,7 +103,7 @@ function installClient()
     ${RM_CMD} -rf ${t_output}
 }
 
-function testInstall()
+testInstall()
 {
     /etc/init.d/openvpn start
     local t
@@ -129,7 +129,7 @@ function testInstall()
     fi
 }
 
-function completeInstall()
+completeInstall()
 {
     ## Modify the startup script to run a command to update the route after startup
     sed  -i -e "\$ a route-up \"sh ${SCRIPT_DIR}/route-up\"" ${OPENVPN_CONF_DIR}/client.conf    

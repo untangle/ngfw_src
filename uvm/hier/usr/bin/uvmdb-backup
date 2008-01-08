@@ -7,17 +7,14 @@ fi
 
 USB_MOUNT_POINT=/mnt/usb-mv-mount
 
-function lookupUsbDevice()
+lookup_usb_device()
 {
-    local t_sg
-    local t_dev
-
-    ## The sed command just joins every other line
-    t_sg=`sg_scan -i | sed -e '{N;s|\n| |g;}' | grep -v ATA | head -n 1 | sed 's|\(.*\):.*|\1|'`
-    if [ -z "${t_sg}" ]; then return ; fi
-
-    ## Append the one to always try dev 1
-    sg_map | grep ${t_sg} | awk '{ print $2 "1" }'
+    udevinfo --export | awk '/^N:/ { device="/dev/"$2 ; is_usb=0 ; is_disk=0; is_partition=0 }
+/ID_BUS=usb/ { is_usb=1  }
+/ID_TYPE=disk/ { is_disk=1 }
+/ID_FS_USAGE=filesystem/ { is_partition=1 }
+/^$/ { if ( is_usb == 1 && is_disk == 1 ) { print device ; is_usb=0 ; is_disk=0 ; if ( is_partition == 1 ) exit }}
+' | tail -n 1
 }
 
 method=$1
@@ -31,7 +28,7 @@ mkdir -p $outdir
 
 case $method in
     usb)
-        usb_device=`lookupUsbDevice`
+        usb_device=`lookup_usb_device`
 
         if [ -z "${usb_device}" ]; then
             exit -1

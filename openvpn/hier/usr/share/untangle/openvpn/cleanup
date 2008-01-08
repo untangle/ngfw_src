@@ -14,19 +14,19 @@ else
     exit -2
 fi
 
-function cleanPKI()
+cleanPKI()
 {
     ${RM_CMD} -rf '@UVM_CONF@/openvpn/pki'
     mkdir -p ${PKI_DIR}
 }
 
-function cleanPackages()
+cleanPackages()
 {
     ${RM_CMD} -rf '@UVM_CONF@/openvpn/client-packages'
     mkdir -p ${PACKAGE_DIR}
 }
 
-function cleanOpenvpn()
+cleanOpenvpn()
 {
     ${RM_CMD} -rf '/etc/openvpn'
     mkdir -p ${OPENVPN_CONF_DIR}
@@ -34,7 +34,7 @@ function cleanOpenvpn()
     mkdir -p ${OPENVPN_CCD_DIR}    
 }
 
-function cleanMisc()
+cleanMisc()
 {
     ${RM_CMD} -rf '@UVM_CONF@/openvpn/misc'
     mkdir -p ${MISC_DIR}

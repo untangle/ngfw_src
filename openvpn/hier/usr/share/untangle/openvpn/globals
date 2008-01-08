@@ -65,44 +65,45 @@ DN_QUALIFIER_CA="certificateAuthority"
 OPENVPN_SCRIPT="/etc/init.d/openvpn"
 
 ## Debugging functions
-function opensslDbg()
+opensslDbg()
 {
     echo openssl $@
     openssl $@
 }
 
-function rmDbg()
+rmDbg()
 {
     echo rm $@
     rm $@
 }
 
 
-function validateUsbKey()
+validateUsbKey()
 {
 ############################# XXXXXXXXXXXXXXXXXXXXXXXXXX
     true
 }
 
-function saveToUsbKey()
+saveToUsbKey()
 {
 ############################# XXXXXXXXXXXXXXXXXXXXXXXXXX
     true
 }
 
-function removeSpaces() {
+removeSpaces() {
     ## don't know why but this works, and just 'echo ${*// /_}' doesn't.
     local val="$*"
     echo ${val// /_}
 }
 
-function getSerialNumber() {
+getSerialNumber()
+{
     local crt=${1}
 
     grep "Serial Number" ${crt} | sed 's/.*(0x\([^(]*\)).*/\1/g'
 }
 
-function isRevoked()
+isRevoked()
 {
     local commonName="${1}"
     local clientCrt=`getClientCrtFile ${commonName}`
@@ -119,18 +120,18 @@ function isRevoked()
     if [ -n "${search}" ]; then echo "true" ; fi
 }
 
-function getClientCrtFile()
+getClientCrtFile()
 {
     echo "${PKI_DIR}/client-${1}.crt"
 }
 
-function getClientKeyFile()
+getClientKeyFile()
 {
     echo "${PKI_DIR}/client-${1}.key"
 }
 
-## XXXX This function isn't used anymore
-function getClientRevokedCrtFile()
+## XXXX This isn't used anymore
+getClientRevokedCrtFile()
 {
     local commonName="${1}"
     local clientCrt=`getClientCrtFile ${commonName}`
@@ -139,7 +140,7 @@ function getClientRevokedCrtFile()
 }
 
 ## Write a new client status file which java uses to check the status of each client
-function updateClientStatus()
+updateClientStatus()
 {
     ## Delete any line that has a dnQualifier for the server
     sed -e "/dnQualifier=${DN_QUALIFIER_SERVER}/d" \
@@ -147,27 +148,24 @@ function updateClientStatus()
         uniq > ${CLIENT_STATUS_FILE}
 }
 
-function getCommonNames()
+getCommonNames()
 {
     sed -e "/dnQualifier=${DN_QUALIFIER_SERVER}/d" \
         -e 's|.*\/CN=\([^/]*\).*|\1|' ${INDEX_FILE} | \
         uniq
 }
 
-function lookupUsbDevice()
+lookup_usb_device()
 {
-    local t_sg
-    local t_dev
-
-    ## The sed command just joins every other line
-    t_sg=`sg_scan -i | sed -e '{N;s|\n| |g;}' | grep -v ATA | head -n 1 | sed 's|\(.*\):.*|\1|'`
-    if [ -z "${t_sg}" ]; then return ; fi
-
-    ## Append the one to always try dev 1
-    sg_map | grep ${t_sg} | awk '{ print $2 "1" }'
+    udevinfo --export | awk '/^N:/ { device="/dev/"$2 ; is_usb=0 ; is_disk=0; is_partition=0 }
+/ID_BUS=usb/ { is_usb=1  }
+/ID_TYPE=disk/ { is_disk=1 }
+/ID_FS_USAGE=filesystem/ { is_partition=1 }
+/^$/ { if ( is_usb == 1 && is_disk == 1 ) { print device ; is_usb=0 ; is_disk=0 ; if ( is_partition == 1 ) exit }}
+' | tail -n 1
 }
 
-function usbCleanup()
+usbCleanup()
 {
     local t_mountPoint=$1
     local t_exitCode=$2
@@ -178,7 +176,7 @@ function usbCleanup()
     if [ -n "${t_exitCode}" ]; then exit -${t_exitCode} ; fi
 }
 
-function disableOpenVPNStartup()
+disableOpenVPNStartup()
 {
     echo "Disabling the openvpn server from starting at system startup"
 

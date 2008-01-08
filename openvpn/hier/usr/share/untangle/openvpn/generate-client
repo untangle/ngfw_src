@@ -21,7 +21,7 @@ recreateCrt="${2}"
 CLIENT_KEY=`getClientKeyFile ${commonName}`
 CLIENT_CRT=`getClientCrtFile ${commonName}`
 
-function clientExists()
+clientExists()
 {
     if [ -f ${CLIENT_CRT} ]; then
         echo "The client ${commonName} already has a key"
@@ -48,7 +48,7 @@ validateBase() {
     fi
 }
 
-function generateClientKey()
+generateClientKey()
 {
     local clientCsr=`mktemp || exit -3`
 

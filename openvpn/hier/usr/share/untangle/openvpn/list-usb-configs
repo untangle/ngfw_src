@@ -17,9 +17,9 @@ fi
 ## This is where to write the listing of all of the client files
 destination="${MISC_DIR}/client-list"
 
-function listUsb()
+listUsb()
 {
-    local t_usbDevice=`lookupUsbDevice`
+    local t_usbDevice=`lookup_usb_device`
     
     if [ -z "${t_usbDevice}" ]; then
         echo "Unable to find USB device"

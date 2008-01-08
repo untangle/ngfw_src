@@ -49,7 +49,7 @@ NSI_SCRIPT=${DATA_DIR}/installer/openvpn-gui.nsi
 mkdir -p ${PACKAGE_DIR}
 
 ## Create a tempory directory for the client
-function buildConfigFile() {
+buildConfigFile() {
     local tmpDir=`mktemp -d || exit -3`
 
     ## Done this way so the zip directory is called
@@ -83,7 +83,7 @@ function buildConfigFile() {
     rmdir ${tmpDir}
 }
 
-function buildEmail()
+buildEmail()
 {
     local t_emailFile="${PACKAGE_DIR}/mail-${commonName}.eml"
     local t_mailTemplate=${EMAIL_TEMPLATE}
@@ -101,9 +101,9 @@ function buildEmail()
         ${t_mailTemplate} > ${t_emailFile}
 }
 
-function copyToUsb()
+copyToUsb()
 {
-    local t_usbDevice=`lookupUsbDevice`
+    local t_usbDevice=`lookup_usb_device`
     ## Unique qualifier to distinguish the file on the USB key
     local fileKey="${siteName}-${commonName}"
     
