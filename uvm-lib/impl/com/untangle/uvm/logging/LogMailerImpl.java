@@ -149,7 +149,7 @@ public class LogMailerImpl implements LogMailer, Runnable
                 }
             }
 
-            // Finally, get some of non-log4j logs: console.log and gc.log
+            // Finally, get some of more helpful non-log4j logs: console.log, gc.log, etc.
             MimeBodyPart part = getOtherLogPart("console.log");
             if (part != null) {
                 part.setFileName("console.log");
@@ -167,6 +167,13 @@ public class LogMailerImpl implements LogMailer, Runnable
             part = getOtherLogPart("wrapper.log");
             if (part != null) {
                 part.setFileName("wrapper.log");
+                part.setDisposition(Part.INLINE);
+                parts.add(part);
+            }
+
+            part = getOtherLogPart("apt.log");
+            if (part != null) {
+                part.setFileName("apt.log");
                 part.setDisposition(Part.INLINE);
                 parts.add(part);
             }
