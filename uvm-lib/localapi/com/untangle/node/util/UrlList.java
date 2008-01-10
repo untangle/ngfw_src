@@ -76,6 +76,10 @@ import org.apache.log4j.Logger;
 public abstract class UrlList
 {
     private static final byte[] VERSION_KEY = "__version".getBytes();
+    private static final byte[] LAST_UPDATE_KEY = "__last_update".getBytes();
+
+    private static final long UPDATE_FORCE_INTERVAL = 604800000L; // 1 week
+
     private static final Pattern VERSION_PATTERN = Pattern.compile("\\[[^ ]+ ([0-9.]+)( update)?\\]");
 
     private static final Set<String> DB_LOCKS = new HashSet<String>();
@@ -281,9 +285,9 @@ public abstract class UrlList
         }
     }
 
-    private String getVersion(Database db)
+    private String getAttr(byte[] key, Database db)
     {
-        DatabaseEntry k = new DatabaseEntry(VERSION_KEY);
+        DatabaseEntry k = new DatabaseEntry(key);
         DatabaseEntry v = new DatabaseEntry();
         try {
             OperationStatus s = db.get(null, k, v, LockMode.READ_UNCOMMITTED);
@@ -297,18 +301,49 @@ public abstract class UrlList
         }
     }
 
-    private void setVersion(Database db, String version)
+    private void setAttr(byte[] key, Database db, String value)
     {
-        if (null != version) {
+        if (null != value) {
             try {
-                DatabaseEntry k = new DatabaseEntry(VERSION_KEY);
-                DatabaseEntry v = new DatabaseEntry(version.getBytes());
+                DatabaseEntry k = new DatabaseEntry(key);
+                DatabaseEntry v = new DatabaseEntry(value.getBytes());
                 db.put(null, k, v);
             } catch (DatabaseException exn) {
-                logger.warn("could not set version", exn);
+                logger.warn("could not set " + key, exn);
             }
         }
     }
+
+    private String getVersion(Database db)
+    {
+        return getAttr(VERSION_KEY, db);
+    }
+
+    private void setVersion(Database db, String version)
+    {
+        setAttr(VERSION_KEY, db, version);
+    }
+
+    private long getLastUpdate(Database db)
+    {
+        String s = getAttr(LAST_UPDATE_KEY, db);
+        if (null == s) {
+            return 0;
+        } else {
+            try {
+                return Long.parseLong(s);
+            } catch (NumberFormatException exn) {
+                logger.warn("bad time: " + s, exn);
+                return 0;
+            }
+        }
+    }
+
+    private void setLastUpdate(Database db, long time)
+    {
+        setAttr(LAST_UPDATE_KEY, db, Long.toString(time));
+    }
+
 
     private void doUpdate(boolean updatedOnce)
     {
@@ -325,7 +360,14 @@ public abstract class UrlList
         synchronized (DB_LOCKS) {
             BufferedReader br = null;
             try {
-                String oldVersion = getVersion(db);
+                String oldVersion;
+                if (System.currentTimeMillis() - getLastUpdate(db) > UPDATE_FORCE_INTERVAL) {
+                    logger.info(dbLock + " old database, forcing reinitialization");
+                    oldVersion = "1:1";
+                } else {
+                    logger.info(dbLock + " recent database, doing incremental database");
+                    oldVersion = getVersion(db);
+                }
 
                 InputStream is = null;
 
@@ -341,7 +383,7 @@ public abstract class UrlList
                 if (null == is) {
                     String v = null == oldVersion ? "1:1" : oldVersion.replace(".", ":");
                     URL url = new URL(baseUrl + "/update?version=" + dbName + ":" + v + suffix);
-                    logger.info("updating from URL: " + url);
+                    logger.info(dbLock + " updating from URL: " + url);
 
                     HttpClient hc = new HttpClient();
                     HttpMethod get = new GetMethod(url.toString());
@@ -354,7 +396,7 @@ public abstract class UrlList
 
                 String line = br.readLine();
                 if (null == line) {
-                    logger.info("no update");
+                    logger.info(dbLock + " no update");
                     return;
                 }
 
@@ -373,20 +415,22 @@ public abstract class UrlList
                             + " to: " + newVersion);
 
                 if (!update) {
+                    logger.warn("clearing database: " + dbLock);
                     clearDatabase();
                 }
 
                 boolean done = updateDatabase(db, br);
 
                 setVersion(db, done ? newVersion : "1.1");
+                setLastUpdate(db, System.currentTimeMillis());
 
                 db.getEnvironment().sync();
 
                 logger.info(dbLock + " number entries: " + db.count());
             } catch (DatabaseException exn) {
-                logger.warn("could not update database", exn);
+                logger.warn("could not update database: " + dbLock, exn);
             } catch (IOException exn) {
-                logger.warn("could not update database", exn);
+                logger.warn("could not update database: " + dbLock, exn);
             } finally {
                 DB_LOCKS.remove(dbLock);
             }
