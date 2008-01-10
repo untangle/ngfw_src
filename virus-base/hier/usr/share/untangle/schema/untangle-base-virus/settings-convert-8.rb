@@ -29,8 +29,9 @@ WHERE config_id NOT IN (SELECT pop_config FROM n_virus_settings)' ]
 
   memo_update = [ 'n_virus_smtp_config', 'n_virus_imap_config',
                   'n_virus_pop_config', 'n_virus_config' ].map do | o |
-    "UPDATE #{o} SET notes = 'no description'"
-  end
+    [ "UPDATE #{o} SET notes = replace(notes, ' incoming', '')",
+      "UPDATE #{o} SET notes = replace(notes, ' outgoing', '')" ]
+  end.flatten
 
   (schema_rewrite + memo_update).each do |sql|
     begin
