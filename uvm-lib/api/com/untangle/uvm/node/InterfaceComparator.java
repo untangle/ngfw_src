@@ -55,12 +55,12 @@ public class InterfaceComparator implements Comparator<Byte>, Serializable
         }
     }
 
-    public boolean isMoreInternal(Byte o1, Byte o2)
+    public boolean isMoreTrusted(Byte o1, Byte o2)
     {
         return 0 < compare(o1, o2);
     }
 
-    public boolean isMoreExternal(Byte o1, Byte o2)
+    public boolean isLessTrusted(Byte o1, Byte o2)
     {
         return 0 > compare(o1, o2);
     }

@@ -42,24 +42,25 @@ import com.untangle.uvm.node.firewall.Parser;
 import com.untangle.uvm.node.firewall.ParsingConstants;
 
 /**
- * An IntfMatcher that matches the simple cases (all or nothing).
+ * An interface matcher that matches an interface with a position
+ * relative to the other interface.
  *
- * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
+ * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
 public final class IntfRelativeMatcher extends IntfDBMatcher
 {
-    private static final IntfDBMatcher MORE_EXTERNAL_MATCHER
+    private static final IntfDBMatcher LESS_TRUSTED_MATCHER
         = new IntfRelativeMatcher(false);
-    private static final IntfDBMatcher MORE_INTERNAL_MATCHER
+    private static final IntfDBMatcher MORE_TRUSTED_MATCHER
         = new IntfRelativeMatcher(true);
 
     /* true if this is the all matcher */
-    private final boolean moreInternal;
+    private final boolean moreTrusted;
 
-    private IntfRelativeMatcher(boolean moreInternal)
+    private IntfRelativeMatcher(boolean moreTrusted)
     {
-        this.moreInternal = moreInternal;
+        this.moreTrusted = moreTrusted;
     }
 
     /**
@@ -69,41 +70,41 @@ public final class IntfRelativeMatcher extends IntfDBMatcher
      */
     public boolean isMatch(byte intf, byte otherIntf, InterfaceComparator c)
     {
-        return moreInternal ? c.isMoreInternal(intf, otherIntf)
-            : c.isMoreExternal(intf, otherIntf);
+        return moreTrusted ? c.isMoreTrusted(intf, otherIntf)
+            : c.isLessTrusted(intf, otherIntf);
     }
 
     public String toDatabaseString()
     {
-        return moreInternal ? ParsingConstants.MARKER_MORE_INTERNAL
-            : ParsingConstants.MARKER_MORE_EXTERNAL;
+        return moreTrusted ? ParsingConstants.MARKER_MORE_TRUSTED
+            : ParsingConstants.MARKER_LESS_TRUSTED;
     }
 
     public String toString()
     {
-        return moreInternal ? "More Internal" : "More External";
+        return moreTrusted ? "More Trusted" : "Less Trusted";
     }
 
     /**
-     * Retrieve the more_internal matcher.
+     * Retrieve the more_trusted matcher.
      *
      * @return An interface matcher that matches if this interface is
      * more internal than the other interface.
      */
-    public static IntfDBMatcher getMoreInternalMatcher()
+    public static IntfDBMatcher getMoreTrustedMatcher()
     {
-        return MORE_INTERNAL_MATCHER;
+        return MORE_TRUSTED_MATCHER;
     }
 
     /**
-     * Retrieve the more_external matcher.
+     * Retrieve the less_trusted matcher.
      *
      * @return An interface matcher that matches if the interface is
      * more external than the other interface.
      */
-    public static IntfDBMatcher getMoreExternalMatcher()
+    public static IntfDBMatcher getLessTrustedMatcher()
     {
-        return MORE_EXTERNAL_MATCHER;
+        return LESS_TRUSTED_MATCHER;
     }
 
     /* The parse for simple matchers */
@@ -117,8 +118,8 @@ public final class IntfRelativeMatcher extends IntfDBMatcher
 
         public boolean isParseable( String value )
         {
-            return value.equalsIgnoreCase(ParsingConstants.MARKER_MORE_INTERNAL)
-            || value.equalsIgnoreCase(ParsingConstants.MARKER_MORE_EXTERNAL);
+            return value.equalsIgnoreCase(ParsingConstants.MARKER_MORE_TRUSTED)
+            || value.equalsIgnoreCase(ParsingConstants.MARKER_LESS_TRUSTED);
         }
 
         public IntfDBMatcher parse(String value) throws ParseException
@@ -126,10 +127,10 @@ public final class IntfRelativeMatcher extends IntfDBMatcher
             if (!isParseable(value)) {
                 throw new ParseException("Invalid intf simple matcher '"
                                          + value + "'");
-            } else if (value.equalsIgnoreCase(ParsingConstants.MARKER_MORE_EXTERNAL)) {
-                return MORE_EXTERNAL_MATCHER;
-            } else if (value.equalsIgnoreCase(ParsingConstants.MARKER_MORE_INTERNAL)) {
-                return MORE_INTERNAL_MATCHER;
+            } else if (value.equalsIgnoreCase(ParsingConstants.MARKER_LESS_TRUSTED)) {
+                return LESS_TRUSTED_MATCHER;
+            } else if (value.equalsIgnoreCase(ParsingConstants.MARKER_MORE_TRUSTED)) {
+                return MORE_TRUSTED_MATCHER;
             } else {
                 throw new ParseException("Invalid intf simple matcher '" + value + "'");
             }

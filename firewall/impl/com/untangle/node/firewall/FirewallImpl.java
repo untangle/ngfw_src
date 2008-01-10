@@ -241,8 +241,8 @@ public class FirewallImpl extends AbstractNode implements Firewall
 
             IntfMatcherFactory imf = IntfMatcherFactory.getInstance();
             IntfDBMatcher any = imf.getAllMatcher();
-            IntfDBMatcher external = imf.getMoreExternalMatcher();
-            IntfDBMatcher internal = imf.getMoreInternalMatcher();
+            IntfDBMatcher external = imf.getLessTrustedMatcher();
+            IntfDBMatcher internal = imf.getMoreTrustedMatcher();
 
             FirewallRule tmp = new FirewallRule(false,
                                                 prmf.getTCPAndUDPMatcher(),

@@ -53,11 +53,11 @@ public class ParsingConstants
 
     /* User representation of a matcher that should return true if
      * more internal than the other interface */
-    public static final String MARKER_MORE_INTERNAL = "more_internal";
+    public static final String MARKER_MORE_TRUSTED = "more_trusted";
 
     /* User representation of a matcher that should return true if
      * more external than the other interface */
-    public static final String MARKER_MORE_EXTERNAL = "more_external";
+    public static final String MARKER_LESS_TRUSTED = "less_trusted";
 
     /* String for when a matcher is not applicable to the application. */
     public static final String MARKER_NA = "n/a";

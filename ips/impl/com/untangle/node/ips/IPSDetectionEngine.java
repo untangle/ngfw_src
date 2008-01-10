@@ -226,7 +226,7 @@ public class IPSDetectionEngine {
 
         //Check matches
         PipelineEndpoints pe = request.pipelineEndpoints();
-        boolean incoming = intfManager.getInterfaceComparator().isMoreInternal(pe.getServerIntf(), pe.getClientIntf());
+        boolean incoming = intfManager.getInterfaceComparator().isMoreTrusted(pe.getServerIntf(), pe.getClientIntf());
         List<IPSRuleSignature> c2sSignatures = manager.matchesHeader(request, incoming, IPSRuleManager.TO_SERVER, c2sList);
 
         List<IPSRuleSignature> s2cSignatures = manager.matchesHeader(request, incoming, IPSRuleManager.TO_CLIENT, s2cList);

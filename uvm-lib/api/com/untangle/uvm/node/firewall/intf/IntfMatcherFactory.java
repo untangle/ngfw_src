@@ -70,14 +70,14 @@ public class IntfMatcherFactory
         return IntfSimpleMatcher.getNilMatcher();
     }
 
-    public IntfDBMatcher getMoreInternalMatcher()
+    public IntfDBMatcher getMoreTrustedMatcher()
     {
-        return IntfRelativeMatcher.getMoreInternalMatcher();
+        return IntfRelativeMatcher.getMoreTrustedMatcher();
     }
 
-    public IntfDBMatcher getMoreExternalMatcher()
+    public IntfDBMatcher getLessTrustedMatcher()
     {
-        return IntfRelativeMatcher.getMoreExternalMatcher();
+        return IntfRelativeMatcher.getLessTrustedMatcher();
     }
 
     public IntfDBMatcher getExternalMatcher()

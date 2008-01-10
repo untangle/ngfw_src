@@ -47,8 +47,8 @@ public class IntfConstants
     public static final String DMZ      = "DMZ";
     public static final String VPN      = "VPN";
 
-    public static final String MORE_EXTERNAL = "more_external";
-    public static final String MORE_INTERNAL = "more_internal";
+    public static final String LESS_TRUSTED = "less_trusted";
+    public static final String MORE_TRUSTED = "more_trusted";
 
     /* The argon index for the four default interfaces */
     public static final byte   EXTERNAL_INTF = 0;
