@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -17,21 +17,20 @@
  */
 package com.untangle.node.router;
 
+import java.io.*;
 import java.net.InetAddress;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.untangle.uvm.node.script.ScriptRunner;
+import com.untangle.uvm.util.XMLRPCUtil;
 import com.untangle.uvm.vnet.IPNewSessionRequest;
 import com.untangle.uvm.vnet.IPSession;
 import com.untangle.uvm.vnet.MPipeException;
 import com.untangle.uvm.vnet.Protocol;
 import com.untangle.uvm.vnet.TCPSession;
 import org.apache.log4j.Logger;
-import com.untangle.uvm.node.script.ScriptRunner;
-import com.untangle.uvm.util.XMLRPCUtil;
-// this one is temporary
-import java.io.*;
 
 
 
@@ -69,7 +68,7 @@ class RouterSessionManager
         if (( tmp = map.put( request.id(), data )) != null ) {
             logger.error( "Duplicate session key: " + tmp );
         }
-	
+
     }
 
     void releaseSession( IPSession session, Protocol protocol )
@@ -79,7 +78,7 @@ class RouterSessionManager
             logger.debug( "Releasing session: " + session.id());
         }
         if (( sessionData = map.remove( session.id())) == null ) {
-            logger.error( "Released an unmanaged session: " + session );
+            logger.debug( "Released an unmanaged session: " + session );
             return;
         }
 
@@ -129,7 +128,7 @@ class RouterSessionManager
      * Check to see if this session should be redirected because of one of the
      * it is in the session redirect map
      */
-    boolean isSessionRedirect( IPNewSessionRequest request, Protocol protocol, RouterImpl node ) 
+    boolean isSessionRedirect( IPNewSessionRequest request, Protocol protocol, RouterImpl node )
     {
         SessionRedirectKey key = new SessionRedirectKey( request, protocol );
         SessionRedirect redirect;
@@ -195,9 +194,9 @@ class SessionRedirectKey
         if (!( o instanceof SessionRedirectKey )) return false;
 
         SessionRedirectKey key = (SessionRedirectKey)o;
-        
-        if ( this.protocol != key.protocol || 
-             !this.serverAddr.equals( key.serverAddr ) || 
+
+        if ( this.protocol != key.protocol ||
+             !this.serverAddr.equals( key.serverAddr ) ||
              this.serverPort != key.serverPort ) {
             return false;
         }
@@ -276,7 +275,7 @@ class SessionRedirect
             node.getHandler().releasePort( key.protocol, reservedPort );
 	    removeRedirectRule();
         }
-	
+
         reservedPort = 0;
     }
     private String redirectRuleFilter;
@@ -293,7 +292,7 @@ class SessionRedirect
 	    logger.debug("serverPort:"+serverPort);
 	    logger.debug("reservedPort:"+reservedPort);
 	}
-	redirectRuleFilter = 
+	redirectRuleFilter =
 	    "-p tcp "
 	    +" -d "+myAddr.getHostAddress()
 	    +" --dport "+reservedPort ;
@@ -331,6 +330,6 @@ class SessionRedirect
 						new Integer(redirectRulePort));
 	} catch(Exception e){
 	    logger.error("Failure creating redirect rule:"+ e);
-	}	
+	}
     }
 }

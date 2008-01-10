@@ -216,7 +216,7 @@ public abstract class UrlList
                 j = pStr.length();
             } else {
                 j = pStr.length() + 1;
-                if ('\t' != sb.charAt(j)) {
+                if ('\t' != sb.charAt(j - 1)) {
                     logger.warn("tab expected at char " + j + " in: " + sb);
                     i = j = 0;
                 }
@@ -227,7 +227,7 @@ public abstract class UrlList
                 logger.warn("tab expected at char " + i + " in: " + sb);
                 i = j = 0;
             }
-            j = pStr.length() + 1;
+            j = i + pStr.length() + 1;
         } else {
             i = j = 0;
         }

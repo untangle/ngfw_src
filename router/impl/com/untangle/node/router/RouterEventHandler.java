@@ -116,8 +116,8 @@ class RouterEventHandler extends AbstractEventHandler
 
         request.attach( attachment );
 
-	// if  we are a redirected session, we will already be registered with the 
-	// session manager. If so it will automatically delete the iptables rule that was used to 
+	// if  we are a redirected session, we will already be registered with the
+	// session manager. If so it will automatically delete the iptables rule that was used to
 	// start this session
 	if (node.getSessionManager().isSessionRedirect(request, protocol,node)){
 	    if ( logger.isDebugEnabled()) {
@@ -136,7 +136,7 @@ class RouterEventHandler extends AbstractEventHandler
 	    request.clientAddr( newClientAddr );
 	    if( protocol == Protocol.TCP && !origClientAddr.equals(newClientAddr)){
 		// if we changed the source addr of a TCP connection,
-		// we will need to allocate client port manually because the kernel will not know about 
+		// we will need to allocate client port manually because the kernel will not know about
 		// ports we are non-locally bound to and may try to reuse them prematurly.
 		int port = getNextPort( Protocol.TCP );
 		if ( logger.isDebugEnabled()) {
@@ -158,7 +158,7 @@ class RouterEventHandler extends AbstractEventHandler
 		node.getSessionManager().registerSession( request, protocol,
 							  origClientAddr, origClientPort,
 							  origServerAddr, origServerPort );
-                
+
                 attachment.isManagedSession( true );
 	    }else{
 		if ( logger.isDebugEnabled()) {
@@ -172,7 +172,7 @@ class RouterEventHandler extends AbstractEventHandler
 	}
 
     }
-	
+
 
     @Override
     public void handleTCPComplete(TCPSessionEvent event)
@@ -240,9 +240,9 @@ class RouterEventHandler extends AbstractEventHandler
     private void cleanupSession(Protocol protocol, IPSession session)
     {
         RouterAttachment attachment = (RouterAttachment)session.attachment();
-	
+
         if (attachment == null) {
-            logger.error("null attachment on Routerd session");
+            logger.debug("null attachment on routered session");
             return;
         }
 
