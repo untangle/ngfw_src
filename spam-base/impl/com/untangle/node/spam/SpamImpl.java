@@ -52,12 +52,12 @@ public class SpamImpl extends AbstractNode implements SpamNode
 
     private static final String MOD_BODY_TEMPLATE =
         "The attached message from $MIMEMessage:FROM$\r\n" +
-        "was determined by Untangle Spam Blocker to be spam based on a score\r\n" +
+        "was determined by the Spam Blocker to be spam based on a score\r\n" +
         "of $SPAMReport:SCORE$ where anything above $SPAMReport:THRESHOLD$ is spam.\r\n";
 
     private static final String MOD_BODY_SMTP_TEMPLATE =
         "The attached message from $MIMEMessage:FROM$ ($SMTPTransaction:FROM$)\r\n" +
-        "was determined by Untangle Spam Blocker to be spam based on a score\r\n" +
+        "was determined by the Spam Blocker to be spam based on a score\r\n" +
         "of $SPAMReport:SCORE$ where anything above $SPAMReport:THRESHOLD$ is spam.\r\n";
 
     private static final String SPAM_HEADER_NAME = "X-Spam-Flag";
@@ -70,7 +70,7 @@ public class SpamImpl extends AbstractNode implements SpamNode
     private static final String NOTIFY_BODY_TEMPLATE =
         "On $MIMEHeader:DATE$ a message from $MIMEMessage:FROM$ ($SMTPTransaction:FROM$)" + CRLF +
         "was received by $SMTPTransaction:TO$.  The message was determined" + CRLF +
-        "by Untangle Spam Blocker to be spam based on a score of $SPAMReport:SCORE$ where anything" + CRLF +
+        "by the Spam Blocker to be spam based on a score of $SPAMReport:SCORE$ where anything" + CRLF +
         "above $SPAMReport:THRESHOLD$ is spam.  The details of the report are as follows:" + CRLF + CRLF +
         "$SPAMReport:FULL$";
 
