@@ -244,7 +244,9 @@ int  netcap_nfqueue_read( u_char* buf, int buf_len, netcap_pkt_t* pkt )
 
         debug( 11, "NFQUEUE Received %d bytes.\n", pkt_len );
 
-        if ( nfq_handle_packet( _queue.nfq_h, buf, pkt_len ) < 0 ) perrlog( "nfq_handle_packet" );
+        if ( nfq_handle_packet( _queue.nfq_h, buf, pkt_len ) < 0 ) {
+	    return errlog(ERR_WARNING, "nfq_handle_packet" );
+	}
 
         debug( 11, "NFQUEUE Packet ID: %#010x.\n", pkt->packet_id );
         
@@ -330,7 +332,9 @@ static int _nf_callback( struct nfq_q_handle *qh, struct nfgenmsg *nfmsg, struct
 
     debug(10, "FLAG: Try to get the conntrack information\n");
     if ( _nfq_get_conntrack( nfa, pkt ) < 0 ) {
-        return errlog( ERR_CRITICAL, "_nfq_get_conntrack\n" );
+        netcap_set_verdict(pkt->packet_id, NF_DROP, NULL, 0);
+        pkt->packet_id = 0;
+        return errlog( ERR_WARNING, "DROPPING PACKET because it has no conntrack info.\n" );
     }
 
     debug( 10, "Conntrack original info: %s:%d -> %s:%d\n",
@@ -503,7 +507,7 @@ static int _nfq_get_conntrack( struct nfq_data *nfad, netcap_pkt_t* pkt )
 
     if ( nfq_get_conntrack( nfad, &original,  &reply ) < 0 ) {
         errlog( ERR_WARNING, "nfq_get_conntrack could not find conntrack info\n" );
-        return 0;
+        return -1;
     }
 
     /* using the union from the nfqueue structure, doesn't matter if
