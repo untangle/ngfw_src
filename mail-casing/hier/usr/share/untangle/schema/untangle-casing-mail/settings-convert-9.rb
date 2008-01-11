@@ -18,5 +18,10 @@ def update_schema()
     @dbh.do(<<SQL)
 UPDATE settings.n_mail_quarantine_settings set quarantine_external_mail = true
 SQL
+
+  @dbh.do(<<SQL)
+UPDATE settings.n_mail_settings set smtp_timeout = 240000
+SQL
+
   end
 end
