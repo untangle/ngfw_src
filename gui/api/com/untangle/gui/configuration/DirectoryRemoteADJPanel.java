@@ -713,7 +713,7 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
     private void openAdPage(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_openAdPage
         try{
             String authNonce = Util.getRemoteAdminManager().generateAuthNonce();
-            URL newURL = new URL( Util.getServerCodeBase(), "../adpb&" + authNonce);
+            URL newURL = new URL( Util.getServerCodeBase(), "../adpb/?" + authNonce);
             ((BasicService) ServiceManager.lookup("javax.jnlp.BasicService")).showDocument(newURL);
         } catch(Exception f){
             Util.handleExceptionNoRestart("Error showing store wizard.", f);
