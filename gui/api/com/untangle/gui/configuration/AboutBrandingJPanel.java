@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -38,15 +38,14 @@ import java.io.File;
 import javax.swing.*;
 import javax.swing.filechooser.*;
 
-
 import com.untangle.gui.node.*;
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.dialogs.*;
+import com.untangle.node.util.IOUtil;
 import com.untangle.uvm.*;
 import com.untangle.uvm.networking.BasicNetworkSettings;
-import com.untangle.uvm.security.*;
 import com.untangle.uvm.node.*;
-import com.untangle.node.util.IOUtil;
+import com.untangle.uvm.security.*;
 
 
 public class AboutBrandingJPanel extends javax.swing.JPanel
@@ -64,7 +63,7 @@ public class AboutBrandingJPanel extends javax.swing.JPanel
         Util.addFocusHighlight(companyNameJTextField);
         Util.addFocusHighlight(companyUrlJTextField);
         Util.addFocusHighlight(contactNameJTextField);
-        Util.addFocusHighlight(contactEmailJTextField);       
+        Util.addFocusHighlight(contactEmailJTextField);
         this.mConfigJDialog = mConfigJDialog;
     }
 
@@ -83,10 +82,15 @@ public class AboutBrandingJPanel extends javax.swing.JPanel
         // FIELDS ////////////
         String companyName = companyNameJTextField.getText().trim();
         String companyUrl = companyUrlJTextField.getText().trim();
+        String cu = companyUrl.toLowerCase();
+        if (!cu.startsWith("http://") && !cu.startsWith("https://")) {
+            throw new Exception("Company URL must start with http:// or https://");
+        }
+
         String contactName = contactNameJTextField.getText().trim();
         String contactEmail = contactEmailJTextField.getText().trim();
-                
-        
+
+
         // SAVE SETTINGS ////////////
         if( !validateOnly ){
             BrandingSettings brandingSettings = aboutCompoundSettings.getBrandingSettings();
@@ -94,13 +98,13 @@ public class AboutBrandingJPanel extends javax.swing.JPanel
                 brandingSettings.setLogo( null );
             }
             else {
-                brandingSettings.setLogo(logoByteArray);    
+                brandingSettings.setLogo(logoByteArray);
             }
-            
+
             brandingSettings.setCompanyName(companyName);
             brandingSettings.setCompanyUrl(companyUrl);
             brandingSettings.setContactName(contactName);
-            brandingSettings.setContactEmail(contactEmail);            
+            brandingSettings.setContactEmail(contactEmail);
         }
     }
 
@@ -110,11 +114,11 @@ public class AboutBrandingJPanel extends javax.swing.JPanel
     String companyUrlCurrent;
     String contactNameCurrent;
     String contactEmailCurrent;
-    
+
     public void doRefresh(AboutCompoundSettings aboutCompoundSettings){
         BrandingSettings brandingSettings = aboutCompoundSettings.getBrandingSettings();
 
-        // DEFAULT ENABLED /////               
+        // DEFAULT ENABLED /////
         logoByteArray = brandingSettings.getLogo();
         if (logoByteArray == null) {
             defaultEnabledRadioButton.setSelected( true );
@@ -135,11 +139,11 @@ public class AboutBrandingJPanel extends javax.swing.JPanel
         contactNameCurrent = brandingSettings.getContactName();
         contactNameJTextField.setText( contactNameCurrent );
         Util.addSettingChangeListener(settingsChangedListener, this, contactNameJTextField);
-        
+
         contactEmailCurrent = brandingSettings.getContactEmail();
         contactEmailJTextField.setText( contactEmailCurrent );
         Util.addSettingChangeListener(settingsChangedListener, this, contactEmailJTextField);
-        
+
     }
 
 
@@ -349,9 +353,9 @@ public class AboutBrandingJPanel extends javax.swing.JPanel
     }// </editor-fold>//GEN-END:initComponents
 
     private void uploadJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_uploadJButtonActionPerformed
-        if ( Util.getIsDemo() ) 
+        if ( Util.getIsDemo() )
             return;
-        
+
         new ImageChoiceThread();
     }//GEN-LAST:event_uploadJButtonActionPerformed
 
@@ -360,19 +364,19 @@ public class AboutBrandingJPanel extends javax.swing.JPanel
     }//GEN-LAST:event_companyNameJTextFieldActionPerformed
 
     private void contactEmailJTextFieldCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_contactEmailJTextFieldCaretUpdate
-        
+
     }//GEN-LAST:event_contactEmailJTextFieldCaretUpdate
 
     private void contactNameJTextFieldCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_contactNameJTextFieldCaretUpdate
-        
+
     }//GEN-LAST:event_contactNameJTextFieldCaretUpdate
 
     private void companyUrlJTextFieldCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_companyUrlJTextFieldCaretUpdate
-        
+
     }//GEN-LAST:event_companyUrlJTextFieldCaretUpdate
 
     private void companyNameJTextFieldCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_companyNameJTextFieldCaretUpdate
-        
+
     }//GEN-LAST:event_companyNameJTextFieldCaretUpdate
 
     private void defaultDisabledRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_defaultDisabledRadioButtonActionPerformed
@@ -382,7 +386,7 @@ public class AboutBrandingJPanel extends javax.swing.JPanel
 
     private void defaultEnabledRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_defaultEnabledRadioButtonActionPerformed
         setDefaultEnabledDependency( true );
-        settingsChangedListener.settingsChanged(null);        
+        settingsChangedListener.settingsChanged(null);
     }//GEN-LAST:event_defaultEnabledRadioButtonActionPerformed
 
     private void setDefaultEnabledDependency(boolean enabled){
@@ -393,47 +397,47 @@ public class AboutBrandingJPanel extends javax.swing.JPanel
     private class ImageChoiceThread extends Thread {
         public ImageChoiceThread(){
             super("MVCLIENT-ImageChoiceThread");
-            setDaemon(true);            
+            setDaemon(true);
             this.start();
         }
         public void run() {
             try{
                 // PERFORM THE IMAGE UPLOAD
-                                
+
                 JFileChooser chooser = new JFileChooser();
                 chooser.addChoosableFileFilter(new LogoFileFilter());
                 int retVal = chooser.showSaveDialog(AboutBrandingJPanel.this.getTopLevelAncestor());
                 if(retVal == JFileChooser.APPROVE_OPTION){
                     File file = chooser.getSelectedFile();
-                    
+
                     if(!file.exists()){
                         return;
                     }
-                
+
                     // SET THE BYTE ARRAY TO THE FILE
                     AboutBrandingJPanel.this.logoByteArray = IOUtil.fileToBytes(file);
                     AboutBrandingJPanel.this.settingsChangedListener.settingsChanged(null);
                 }
-   
+
             }
             catch(Exception e){
-                Util.handleExceptionNoRestart("Error choosing image", e);                
+                Util.handleExceptionNoRestart("Error choosing image", e);
                 MOneButtonJDialog.factory(AboutBrandingJPanel.this.getTopLevelAncestor(), "",
                                           "image Choice Failure",
                                           "Image Choice Failure Warning", "");
             }
         }
     }
-    
-    
+
+
 
     private class LogoFileFilter extends javax.swing.filechooser.FileFilter {
-        private static final String IMAGE_EXTENSION = ".gif";       
+        private static final String IMAGE_EXTENSION = ".gif";
         public boolean accept(File f){
             if(f.isDirectory())
                 return true;
             else if(f.getName().endsWith(IMAGE_EXTENSION))
-                return true;            
+                return true;
             else
                 return false;
         }
@@ -441,7 +445,7 @@ public class AboutBrandingJPanel extends javax.swing.JPanel
             return "Logo Image Files (*" + IMAGE_EXTENSION + ")";
         }
     }
-    
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel brandingJPanel;
     private javax.swing.JLabel companyNameJLabel;
