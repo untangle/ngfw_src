@@ -257,10 +257,8 @@ class JavaCompiler
       a = defaultAlias
       pw = defaultPasswd
       JavaCompiler.selfSignedCert(ks, a, pw) if not File.file?(ks)
-      puts "Using dunamically generated keystore"
+      puts "Using dynamically generated keystore"
     end
-
-    puts "alias: #{a}, pw: #{pw}"
 
     if a.nil? or pw.nil? then
       info "The keystore alias or passwd is null (alias='#{a}', passwd='#{pw}'), reverting to using the dummy keystore"
@@ -270,11 +268,14 @@ class JavaCompiler
       JavaCompiler.selfSignedCert(ks, a, pw) if not File.file?(ks)
     end
 
+    puts "ks: #{ks}, alias: #{a}, pw: #{pw}"
+
     raise "JarSigner failed" unless
       Kernel.system(JarSignerCommand, '-keystore', ks, '-storepass', pw, jar, a)
   end
 
   def JavaCompiler.selfSignedCert(keystore, aliaz, passwd)
+    puts "Dynamically generating keystore" 
     raise "KeyTool failed" unless
       Kernel.system(KeyToolCommand, '-genkey', '-alias', aliaz,
                     '-keypass', passwd, '-storepass', passwd,
