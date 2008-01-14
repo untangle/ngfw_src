@@ -71,6 +71,9 @@
 /* Flag for whether or not to update the load at this time */
 #define _NC_UPDATE_LOAD        0xDA14D
 
+/* Ignore array size */
+#define IGNORE_ARRAY_SIZE BLESS_COUNT_MAX
+
 static void            _null_event_hook     ( netcap_shield_event_data_t* data );
     
 static struct {
@@ -110,6 +113,9 @@ static struct {
 
     /* Mutex to limit the number of times to print out messages about high reputations */
     pthread_mutex_t threshold_mutex;
+
+    /* Ignore array. (XXX, not efficient (and fixed sized), but this requires zero locking.) */
+    in_addr_t ignore_array[IGNORE_ARRAY_SIZE];
 } _shield = {
     .root       = NULL,
     .mode       = NC_SHIELD_MODE_RELAXED,
@@ -177,7 +183,7 @@ static int  _get_response        ( netcap_shield_response_t* response, nc_shield
                                    int protocol, struct in_addr* address );
 
 static int  _get_response_closed ( netcap_shield_response_t* response, nc_shield_reputation_t** reputation,
-                                   int protocol );
+                                   int protocol, struct in_addr* address );
 
 static int  _reputation_update   ( nc_shield_reputation_t* reputation );
 
@@ -188,6 +194,8 @@ static int             _reputation_init     ( netcap_trie_item_t* item, struct i
 static void            _reputation_destroy  ( netcap_trie_item_t* item );
 static netcap_shield_ans_t _put_in_fence    ( nc_shield_fence_t* fence, nc_shield_score_t rep_val, 
                                               nc_shield_reputation_t* rep, int protocol );
+
+static int _is_on_ignore_list( struct in_addr* address );
 
 static int _reset_dividers( void );
 
@@ -272,6 +280,10 @@ int netcap_shield_init    ( void )
     nc_shield_reputation_t rep;
 
     _shield.enabled = NETCAP_SHIELD_ENABLE;
+
+    /* Zero out the ignore array */
+    bzero( _shield.ignore_array, sizeof( _shield.ignore_array ));
+       
 
 #ifdef _TRIE_DEBUG_PRINT
     if ( list_init( &_shield.ip_list, 0 ) < 0 ) {
@@ -379,7 +391,7 @@ int netcap_shield_rep_check ( netcap_shield_response_t* response, struct in_addr
         
     /* If things are really bad, do not let anything in */
     if ( _shield.mode == NC_SHIELD_MODE_CLOSED ) {
-        if ( _get_response_closed( response, &reputation, protocol ) < 0 ) {
+        if ( _get_response_closed( response, &reputation, protocol, ip ) < 0 ) {
             return errlog( ERR_CRITICAL, "_get_response_closed\n" );
         }        
     } else {        
@@ -586,10 +598,21 @@ int nc_shield_event_hook( netcap_shield_event_data_t* event )
 /* Clear the Permanent, and then add nodes to the permanent */
 int netcap_shield_bless_users( netcap_shield_bless_array_t* nodes )
 {
+
+    int count;
+
     if ( nodes == NULL || nodes->d == NULL ) return errlogargs();
 
-    if ( nodes->count < 0 || nodes->count > BLESS_COUNT_MAX  ) {
+    if ( nodes->count < 0 ) {
         return errlog( ERR_CRITICAL, "Invalid node count %d\n", nodes->count );
+    }
+
+    count = nodes->count;
+
+    if ( nodes->count > BLESS_COUNT_MAX ) {
+        errlog( ERR_WARNING, "Node count %d is higher than max, blessing %d nodes\n", nodes->count,
+                BLESS_COUNT_MAX );
+        count = BLESS_COUNT_MAX;
     }
 
     if ( _shield.enabled != NETCAP_SHIELD_ENABLE ) {
@@ -601,20 +624,24 @@ int netcap_shield_bless_users( netcap_shield_bless_array_t* nodes )
 
     int _critical_section( void ) {
         /* Iterate all of the items on the permanent LRU and set their dividers to 1.0 */
-        if ( _reset_dividers() < 0 ) return errlog( ERR_CRITICAL, "_reset_dividers\n" );
+        if ( _reset_dividers() < 0 ) return errlog( ERR_CRITICAL, "_reset_dividers\n" );       
 
         if ( netcap_lru_permanent_clear( &_shield.lru, NULL ) < 0 ) {
             return errlog( ERR_CRITICAL, "netcap_lru_permanent_clear\n" );
         }
 
         int c;
-        for ( c = 0 ; c < nodes->count ; c++ ) {
+        int ignore_list_size = 0;
+        for ( c = 0 ; c < count ; c++ ) {
             netcap_shield_bless_t* item = &nodes->d[c];
             debug( NC_SHIELD_DEBUG_LOW, "Divider[%d] settings %s %g\n", c,
                    unet_next_inet_ntoa( item->address.s_addr ), item->divider );
+            
             if ( _set_node_settings( item->divider, &item->address, &item->netmask ) < 0 ) {
                 return errlog( ERR_CRITICAL, "netcap_shield_set_settings\n" );
             }
+
+            if ( item->divider < 0 ) _shield.ignore_array[ignore_list_size++] = item->address.s_addr;
         }
 
         return 0;
@@ -947,13 +974,19 @@ static int  _get_response        ( netcap_shield_response_t* response, nc_shield
 }
 
 static int  _get_response_closed ( netcap_shield_response_t* response, nc_shield_reputation_t** reputation,
-                                   int protocol )
+                                   int protocol, struct in_addr* ip )
 {
     /* The root reputation is always used when the shield is closed */
     if ( reputation == NULL ) return errlogargs();
 
     *reputation = _shield.root;
     
+    if ( _is_on_ignore_list( ip ) == 1 ) {
+        response->ans = NC_SHIELD_YES;
+        response->if_print = 0;
+        return 0;
+    }
+
     response->ans = _put_in_fence( &_shield.cfg.fence.closed, _shield.cfg.fence.closed.limited.post, 
                                    _shield.root, protocol );
 
@@ -1168,6 +1201,9 @@ static int _reset_dividers( void )
     int c;
 
     list_node_t* node;
+
+    /* Zero out the ignore array */
+    bzero( _shield.ignore_array, sizeof( _shield.ignore_array ));
     
     node = list_head( &_shield.lru.permanent_list );
 
@@ -1489,6 +1525,21 @@ static int _clean_lru_and_trie( void )
     return ret;
 }
 
+static int _is_on_ignore_list( struct in_addr* address )
+{
+    int c;
+
+    if ( address == NULL ) return 0;
+
+    for ( c = 0 ; c < IGNORE_ARRAY_SIZE ; c++ ) {
+        if ( _shield.ignore_array[c] == 0 ) return 0;
+        
+        if ( _shield.ignore_array[c] == address->s_addr ) return 1;
+    }
+
+    return 0;
+}
+
 #ifdef _TRIE_DEBUG_PRINT
 static int  _status             ( int conn, struct sockaddr_in *dst_addr )
 {
@@ -1573,6 +1624,4 @@ static int  _status             ( int conn, struct sockaddr_in *dst_addr )
 
 }
 #endif
-
-
 
