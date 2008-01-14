@@ -386,18 +386,11 @@ public class NetworkManagerImpl implements LocalNetworkManager
 
             logger.debug( "enabling nat as requested by setup wizard: " + address + "/" + netmask );
 
-            /* Just use the utility function to calculate the new start and end range */
-            ServicesSettings servicesSettings = new ServicesSettingsImpl();
-            logger.error( "DHCP Start and DHCP End Address are not calculated correctly" );
-            IPaddr dhcpStart = servicesSettings.getDhcpStartAddress();
-            IPaddr dhcpEnd = servicesSettings.getDhcpEndAddress();
-
             /* Make a synchronous request */
             try {
                 XMLRPCUtil.getInstance().callAlpaca( XMLRPCUtil.CONTROLLER_UVM, 
                                                      "wizard_internal_interface_nat", null,
-                                                     address.toString(), netmask.toString(), 
-                                                     dhcpStart.toString(), dhcpEnd.toString());
+                                                     address.toString(), netmask.toString());
             } catch ( Exception e ) {
                 logger.warn( "Unable to enable NAT.", e );
             }
