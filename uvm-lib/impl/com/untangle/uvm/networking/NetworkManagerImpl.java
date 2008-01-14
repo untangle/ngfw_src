@@ -89,10 +89,6 @@ public class NetworkManagerImpl implements LocalNetworkManager
     /* Manager for MiscSettings */
     private final MiscManagerImpl miscManager;
 
-    /* Converter to create the initial networking configuration object if
-     * network spaces has never been executed before */
-    private NetworkConfigurationLoader networkConfigurationLoader;
-
     /* ??? Does the order matter, it shouldn't.  */
     private Set<NetworkSettingsListener> networkListeners = new HashSet<NetworkSettingsListener>();
     private Set<IntfEnumListener> intfEnumListeners = new HashSet<IntfEnumListener>();
@@ -110,13 +106,17 @@ public class NetworkManagerImpl implements LocalNetworkManager
     /* the address of the internal interface, used for the web address */
     private InetAddress internalAddress;
 
+    /* True if Dynamic DNS is available */
+    private boolean isDynamicDnsEnabled = false;
+
     /* Flag to indicate when the UVM has been shutdown */
     private boolean isShutdown = false;
+
+ 
 
     private NetworkManagerImpl()
     {
         this.ruleManager = RuleManager.getInstance();
-        this.networkConfigurationLoader = NetworkConfigurationLoader.getInstance();
         this.accessManager = new AccessManagerImpl();
         this.addressManager = new AddressManagerImpl();
         this.miscManager = new MiscManagerImpl();
@@ -207,6 +207,14 @@ public class NetworkManagerImpl implements LocalNetworkManager
     public void setAddressSettings( AddressSettings address )
     {
         this.addressManager.setSettings( address );
+
+        updateAddress();
+
+        try {
+            generateRules();
+        } catch ( Exception e ) {
+            logger.warn( "Unable to generate rules.", e );
+        }
     }
 
     /**
@@ -225,6 +233,14 @@ public class NetworkManagerImpl implements LocalNetworkManager
     public void setMiscSettings( MiscSettings misc )
     {
         this.miscManager.setSettings( misc );
+
+        updateAddress();
+
+        try {
+            generateRules();
+        } catch ( Exception e ) {
+            logger.warn( "Unable to generate rules.", e );
+        }
     }
 
     /* Register a service that needs outside access to HTTPs, the name should be unique */
@@ -268,9 +284,9 @@ public class NetworkManagerImpl implements LocalNetworkManager
         this.accessManager.setSettings( access );
         this.addressManager.setSettings( address );
 
-        logger.warn( "commit settings" ); 
-
         updateAddress();
+
+        generateRules();
     }
 
     /* Set the Access, Misc and Network settings at once.  Used by the
@@ -281,23 +297,20 @@ public class NetworkManagerImpl implements LocalNetworkManager
         this.accessManager.setSettings( access );
         this.miscManager.setSettings( misc );
 
-        logger.warn( "commit settings" ); 
-
         updateAddress();
+
+        generateRules();
     }
 
     public ServicesInternalSettings getServicesInternalSettings()
     {
-        logger.error( "getServicesInternalSettings: fixme", new Exception());
-        return null;
+        return this.servicesSettings;
     }
 
     /* Returns true if dynamic dns is enabled */
     boolean isDynamicDnsEnabled()
     {
-        logger.warn( "isDynamicDnsEnabled: fixme", new Exception());
-        
-        return false;
+        return this.isDynamicDnsEnabled;
     }
 
     /* Get the current hostname */
@@ -436,8 +449,6 @@ public class NetworkManagerImpl implements LocalNetworkManager
             try {
                 /* Update the address database in netcap */
                 Netcap.getInstance().updateAddress();
-                
-                logger.warn( "Create a new network settings object" );                                
             } catch ( Exception e ) {
                 logger.error( "Exception updating address.", e );
             }
@@ -456,7 +467,19 @@ public class NetworkManagerImpl implements LocalNetworkManager
 
         this.networkSettings = NetworkUtilPriv.getPrivInstance().loadNetworkSettings( properties );
 
-        this.servicesSettings = NetworkUtilPriv.getPrivInstance().loadServicesSettings( properties );
+        /* Load whether or not dynamic DNS is enabled */
+        this.isDynamicDnsEnabled = 
+            Boolean.parseBoolean( properties.getProperty( "com.untangle.networking.ddns-en" ));
+        logger.debug( "DynamicDns: " + this.isDynamicDnsEnabled );
+        
+        /* Load the internal address (has to happen before the services settings are loaded) */
+        updateInternalAddress( this.networkSettings );
+        logger.debug( "New internal address is: '" + this.internalAddress + "'" );
+        IPaddr serviceAddress = NetworkUtil.BOGUS_DHCP_ADDRESS;
+        if ( this.internalAddress != null ) serviceAddress = new IPaddr( this.internalAddress );
+
+        this.servicesSettings = 
+            NetworkUtilPriv.getPrivInstance().loadServicesSettings( properties, serviceAddress );
 
         this.addressManager.updateAddress( properties );
         
@@ -486,8 +509,6 @@ public class NetworkManagerImpl implements LocalNetworkManager
         
         try {
             callNetworkListeners();
-            updateInternalAddress( this.networkSettings );
-            logger.debug( "New internal address is: '" + this.internalAddress + "'" );
         } catch ( Exception e ) {
             logger.error( "Exception in a listener", e );
         }

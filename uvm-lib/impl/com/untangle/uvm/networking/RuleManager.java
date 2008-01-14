@@ -64,9 +64,6 @@ public class RuleManager
 
     private final String UVM_TMP_FILE  = BUNNICULA_CONF + "/tmp_params";
 
-    private final String RULE_GENERATOR_SCRIPT = BUNNICULA_BASE + "/networking/rule-generator";
-    private final String RULE_DESTROYER_SCRIPT = BUNNICULA_BASE + "/networking/rule-destroyer";
-
     private final Logger logger = Logger.getLogger( getClass());
 
     private boolean isShutdown = false;

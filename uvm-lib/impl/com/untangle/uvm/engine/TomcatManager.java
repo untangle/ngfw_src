@@ -55,6 +55,9 @@ class TomcatManager
 
     private static final String STANDARD_WELCOME = "webstart";
 
+    private final InetAddress bindAddress;
+    private final InetAddress localhost;
+
     private final Logger logger = Logger.getLogger(getClass());
 
     private final List<WebAppDescriptor> descriptors = new ArrayList<WebAppDescriptor>();
@@ -78,6 +81,7 @@ class TomcatManager
     private String welcomeFile = STANDARD_WELCOME;
 
     private Connector defaultHTTPConnector;
+    private Connector localHTTPConnector;
     private Connector defaultHTTPSConnector;
     private Connector internalOpenHTTPSConnector; /* Sessions on this port are unrestricted */
     private Connector externalHTTPSConnector;
@@ -87,6 +91,22 @@ class TomcatManager
     TomcatManager(UvmContextImpl uvmContext, String catalinaHome,
                   String webAppRoot, String logDir)
     {
+        InetAddress l;
+        InetAddress b;
+
+        try {
+            b = InetAddress.getByName("192.0.2.42");
+            l = InetAddress.getByName("127.0.0.1");
+        } catch (Exception exn) { 
+            /* If it is null, it will just bind to 0.0.0.0 */
+            l = null;
+            b = null;
+            logger.warn("Unable to parse 192.0.2.42 or 127.0.0.1", exn);
+        }
+
+        this.bindAddress = b;
+        this.localhost = l;
+
         this.uvmContext = uvmContext;
         this.catalinaHome = catalinaHome;
         this.webAppRoot = webAppRoot;
@@ -210,6 +230,8 @@ class TomcatManager
     void rebindExternalHttpsPort(int port)
         throws Exception
     {
+        /* We no longer need this port, the DNAT in the alpaca handles this redirect
+         * on, leaving it in just in case. */
         /* Synchronize on the external thread */
         synchronized(this.modifyExternalSynch) {
             doRebindExternalHttpsPort(port);
@@ -325,6 +347,7 @@ class TomcatManager
 
             // create Connectors
             defaultHTTPConnector = createConnector(internalHTTPPort, false);
+            localHTTPConnector = createConnector(internalHTTPPort, false,this.localhost);
             defaultHTTPSConnector = createConnector(internalHTTPSPort, true);
             internalOpenHTTPSConnector = createConnector(internalOpenHTTPSPort, true);
 
@@ -582,13 +605,18 @@ class TomcatManager
         }
     }
 
+    private Connector createConnector(int port, boolean secure)
+    {
+        return createConnector(port,secure,this.bindAddress);
+    }
+
     /**
      * Helper method - no synchronization
      */
-    private Connector createConnector(int port, boolean secure)
+    private Connector createConnector(int port, boolean secure, InetAddress address)
     {
         Connector ret = emb
-            .createConnector((InetAddress)null, port, secure);
+            .createConnector(address, port, secure);
 
         if (secure) {
             Http11BaseProtocol ph = (Http11BaseProtocol)ret.getProtocolHandler();

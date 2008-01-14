@@ -162,8 +162,11 @@ class NetworkUtilPriv extends NetworkUtil
     }
 
     /* Load the services settings based on the values inside of properties,
-     * and in the dnsmasq.conf file */
-    ServicesInternalSettings loadServicesSettings( Properties properties )
+     * and in the dnsmasq.conf file
+     * @param properties properties file from net-properties script
+     * @param serviceAddress Address that dnsmasq is bound to on the internal interface.
+     */
+    ServicesInternalSettings loadServicesSettings( Properties properties, IPaddr serviceAddress )
     {
         ServicesSettingsImpl servicesSettings = new ServicesSettingsImpl();
 
@@ -178,13 +181,18 @@ class NetworkUtilPriv extends NetworkUtil
 
         IPaddr defaultGateway = parseIPaddr( properties, "com.untangle.networking.dhcp-default-gateway" );
 
+        if ( defaultGateway == null ) defaultGateway = serviceAddress;
+
         List<IPaddr> dnsServerList = new LinkedList<IPaddr>();
         String dnsServers = properties.getProperty( "com.untangle.networking.dhcp-dns-servers" );
-        if ( dnsServers != null ) {
-            for ( String dnsServer : dnsServers.split( ";" )) {
+        if ( dnsServers != null || ( dnsServers.trim().length() == 0 )) {
+            for ( String dnsServer : dnsServers.split( "," )) {
                 IPaddr ds = parseIPaddr( dnsServer );
                 if ( ds != null ) dnsServerList.add( ds );
             }
+        } else {
+            /* Otherwise just use the address that is hosting services */
+            dnsServerList.add( serviceAddress );
         }
 
         try {

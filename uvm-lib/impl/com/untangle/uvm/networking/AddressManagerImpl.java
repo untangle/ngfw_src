@@ -49,6 +49,7 @@ import static com.untangle.uvm.networking.NetworkManagerImpl.BUNNICULA_BASE;
 import static com.untangle.uvm.networking.ShellFlags.FLAG_EXTERNAL_ROUTER_ADDR;
 import static com.untangle.uvm.networking.ShellFlags.FLAG_EXTERNAL_ROUTER_EN;
 import static com.untangle.uvm.networking.ShellFlags.FLAG_EXTERNAL_ROUTER_PORT;
+import static com.untangle.uvm.networking.ShellFlags.FLAG_EXTERNAL_HTTPS_PORT;
 
 import static com.untangle.uvm.networking.ShellFlags.FILE_PROPERTIES;
 import static com.untangle.uvm.networking.ShellFlags.PROPERTY_HTTPS_PORT;
@@ -279,6 +280,8 @@ class AddressManagerImpl implements LocalAddressManager
         scriptWriter.appendVariable( FLAG_EXTERNAL_ROUTER_ADDR, ip.toString());
         scriptWriter.appendVariable( FLAG_EXTERNAL_ROUTER_PORT, String.valueOf( port ));
         
+        /* This is used to know what to redirect to 443 */
+        scriptWriter.appendVariable( FLAG_EXTERNAL_HTTPS_PORT, this.addressSettings.getHttpsPort());
         if ( this.addressSettings.getIsPublicAddressEnabled()) {
             scriptWriter.appendVariable( FLAG_EXTERNAL_ROUTER_EN, "true" );
         }        

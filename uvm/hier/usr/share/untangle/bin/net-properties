@@ -15,6 +15,9 @@ PROPERTY_DHCP_EN="com.untangle.networking.dhcp-enabled"
 PROPERTY_DHCP_START="com.untangle.networking.dhcp-start"
 PROPERTY_DHCP_END="com.untangle.networking.dhcp-end"
 PROPERTY_DHCP_DEFAULT_GW="com.untangle.networking.dhcp-default-gateway"
+PROPERTY_DNS_EN="com.untangle.networking.dns-enabled"
+PROPERTY_DNS_LOCAL_DOMAIN="com.untangle.networking.dns-local-domain"
+PROPERTY_DHCP_DNS_SERVERS="com.untangle.networking.dhcp-dns-servers"
 
 
 ## This returns a string of the form:
@@ -22,7 +25,7 @@ PROPERTY_DHCP_DEFAULT_GW="com.untangle.networking.dhcp-default-gateway"
 network_configuration()
 {
     ip addr show \
-        | awk '/^[0-9]/ { interface = $2 ; sub( ":$", "", interface ) ; printf ":::%s", interface } ; /^ *inet/ { printf ";%s", $2 } END { printf "\n"  }'
+        | awk '/^[0-9]/ { interface = $2 ; sub( ":$", "", interface ) ; printf ":::%s", interface } ; /^ *inet.*brd/ { printf ";%s", $2 } END { printf "\n"  }'
 }
 
 ## This returns a string of the form:
@@ -39,7 +42,7 @@ get_default_gateway()
     ip route show | awk '/default/ { print $3 }'
 }
 
-## Here goes nothing, 4 calls to awk to accomplish what could be done in one.
+## Here goes nothing, several calls to awk to accomplish what could be done in one.
 get_dns_1()
 {
     if [ -f ${DNS_MASQ_CONF} ] ; then
@@ -83,6 +86,28 @@ get_dhcp_default_gateway()
     fi
 }
 
+## This is the gateway the DNS Servers the DHCP server will recommend in its leases.
+get_dhcp_dns_servers()
+{
+    if [ -f ${DNS_MASQ_CONF} ]; then
+        awk '/^dhcp-option=6,/ { sub( "dhcp-option=6,", "" ) ; print } ' ${DNS_MASQ_CONF}
+    fi
+}
+
+get_dns_enabled()
+{
+    if [ -f ${DNS_MASQ_CONF} ]; then
+        grep -q '# DNS Server disabled, not saving hosts.' ${DNS_MASQ_CONF} || echo "true"
+    fi
+}
+
+get_dns_local_domain()
+{
+    if [ -f ${DNS_MASQ_CONF} ]; then
+        awk '/^domain-suffix=/ { sub( "domain-suffix=", "" ) ; print } ' ${DNS_MASQ_CONF}
+    fi
+}
+
 get_is_ddns_running()
 {
     # Either of these processes are running means dynamic dns is running.
@@ -99,7 +124,11 @@ echo "${PROPERTY_DHCP_EN}=`get_dhcp_enabled`"
 echo "${PROPERTY_DHCP_START}=`get_dhcp_start`"
 echo "${PROPERTY_DHCP_END}=`get_dhcp_end`"
 echo "${PROPERTY_DHCP_DEFAULT_GW}=`get_dhcp_default_gateway`"
+echo "${PROPERTY_DHCP_DNS_SERVERS}=`get_dhcp_dns_servers`"
+echo "${PROPERTY_DNS_EN}=`get_dns_enabled`"
+echo "${PROPERTY_DNS_LOCAL_DOMAIN}=`get_dns_local_domain`"
 echo "${PROPERTY_DDNS_EN}=`get_is_ddns_running`"
 
 
 exit 0
+

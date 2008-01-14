@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -205,6 +205,11 @@ int               netcap_intf_db_configure_intf( netcap_intf_db_t* db, netcap_in
              * this could actually happen at startup if EG VPN is registered but the
              * interface is not setup yet.  (VPN transform doesn't start until after
              * the first initialization) */
+            /* It is safe to ignore these interfaces. */
+            if (( strncmp( "tun0", (const char*)intf_name, sizeof( netcap_intf_string_t )) == 0 ) ||
+                ( strncmp( "dummy0", (const char*)intf_name, sizeof( netcap_intf_string_t )) == 0 ) ||
+                ( strncmp( "utun", (const char*)intf_name, sizeof( netcap_intf_string_t )) == 0 )) continue;
+
             errlog( ERR_WARNING, "Ignoring unkown interface '%s' at index %d.\n", intf_name->s, c );
             errlog( ERR_WARNING, "Interfaces may be configured incorrectly.\n" );
             continue;
@@ -270,6 +275,10 @@ netcap_intf_info_t* netcap_intf_db_name_to_info  ( netcap_intf_db_t* db, netcap_
     }
     
     if (( intf_info = ht_lookup( &db->name_to_info, name )) == NULL || !intf_info->is_valid ) {
+        if (( strncmp( "tun0", (const char*)name, sizeof( netcap_intf_string_t )) == 0 ) ||
+            ( strncmp( "dummy0", (const char*)name, sizeof( netcap_intf_string_t )) == 0 ) ||
+            ( strncmp( "utun", (const char*)name, sizeof( netcap_intf_string_t )) == 0 )) return NULL;
+
         return errlog_null( ERR_CRITICAL, "Nothing is known about '%s'\n", name );
     }
     return intf_info;
@@ -326,7 +335,6 @@ int                netcap_intf_db_fill_data( netcap_intf_info_t* intf_info, int 
     
     return 1;
 }
-
 
 static int  _add_data( netcap_intf_info_t* intf_info, netcap_intf_address_data_t* data )
 {
