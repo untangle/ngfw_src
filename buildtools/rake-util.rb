@@ -168,6 +168,7 @@ class BuildEnv
       /@UVM_SCHEMA@/ => "#{@prefix}/usr/share/untangle/schema",
       /@UVM_WEB@/ => "#{@prefix}/usr/share/untangle/web",
       /@UVM_REPORTS@/ => "#{@prefix}/usr/share/untangle/web/reports",
+      /@THIRDPARTY_LIB_BASE@/ => "#{@prefix}/usr/share/java",
       /@THIRDPARTY_UVM_LIB@/ => "#{@prefix}/usr/share/java/uvm",
       /@THIRDPARTY_TOMCAT_LIB@/ => "#{@prefix}/usr/share/java/tomcat",
       /@THIRDPARTY_REPORTS_LIB@/ => "#{@prefix}/usr/share/java/reports",
