@@ -29,14 +29,16 @@ static struct
     pthread_key_t tls_key;    
     struct nfct_handle *handle;
     struct nfct_handle *exp_handle;
+    pthread_mutex_t mutex;
 } _netcap_nfconntrack =
 {
     .handle = NULL,
     .exp_handle = NULL,
-    .tls_key = -1
+    .tls_key = -1,
+    .mutex = PTHREAD_MUTEX_INITIALIZER
 };
 
-pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+
 /* This is the callback used to query things about the conntrack */
 static int _nf_check_tuple_callback( enum nf_conntrack_msg_type type, struct nf_conntrack *conntrack,
                                      void * user_data );
@@ -388,11 +390,11 @@ int netcap_nfconntrack_del_entry_tuple( netcap_nfconntrack_ipv4_tuple_t* tuple,
     if (( ct = nfct_new()) == NULL ) return errlog( ERR_CRITICAL, "nfct_new\n" );
 
     int ret;
-    if ( pthread_mutex_lock( &mutex ) < 0 ) {
+    if ( pthread_mutex_lock( &_netcap_nfconntrack.mutex ) < 0 ) {
         return perrlog( "pthread_mutex_lock" );
     }
     ret = _critical_section();
-    if ( pthread_mutex_unlock( &mutex ) < 0 ) {
+    if ( pthread_mutex_unlock( &_netcap_nfconntrack.mutex ) < 0 ) {
         return perrlog( "pthread_mutex_lock" );
     }
     if ( ct != NULL ) nfct_destroy( ct );
