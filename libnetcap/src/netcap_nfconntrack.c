@@ -26,16 +26,17 @@
 
 static struct
 {
+    pthread_key_t tls_key;    
     struct nfct_handle *handle;
     struct nfct_handle *exp_handle;
-    struct nf_conntrack* found_ct;
 } _netcap_nfconntrack =
 {
     .handle = NULL,
     .exp_handle = NULL,
-    .found_ct = NULL
+    .tls_key = -1
 };
 
+pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 /* This is the callback used to query things about the conntrack */
 static int _nf_check_tuple_callback( enum nf_conntrack_msg_type type, struct nf_conntrack *conntrack,
                                      void * user_data );
@@ -51,6 +52,8 @@ int  netcap_nfconntrack_init( void )
     if ( _netcap_nfconntrack.handle != NULL ) return errlog( ERR_CRITICAL, "Already initialized" );
 
     debug( 2, "Initializing netcap_nfconntrack.\n" );
+
+    if ( pthread_key_create( &_netcap_nfconntrack.tls_key, NULL ) < 0 ) return perrlog( "pthread_key_create" );
     
     if (( _netcap_nfconntrack.handle = nfct_open( CONNTRACK, 0 )) == NULL ) return perrlog( "nfct_open" );
     if (( _netcap_nfconntrack.exp_handle = nfct_open( EXPECT, 0 )) == NULL ) return perrlog( "nfct_open" );
@@ -128,6 +131,7 @@ struct nf_conntrack *netcap_nfconntrack_get_entry_tuple( netcap_nfconntrack_ipv4
                                                   netcap_nfconntrack_direction_t direction )
 {
     struct nf_conntrack* ct = NULL;
+    struct nf_conntrack* ct_result = NULL;
 
     int _critical_section() {
         if ( direction == NFCONNTRACK_DIRECTION_ORIG ) {
@@ -166,8 +170,7 @@ struct nf_conntrack *netcap_nfconntrack_get_entry_tuple( netcap_nfconntrack_ipv4
 
         netcap_nfconntrack_print_entry( 10, ct );
 
-        _netcap_nfconntrack.found_ct = NULL;
-        
+	
         /* Actually make the query */
         errno = 0;
         errlog( ERR_WARNING, "Errno: %d\n", errno );
@@ -191,14 +194,17 @@ struct nf_conntrack *netcap_nfconntrack_get_entry_tuple( netcap_nfconntrack_ipv4
     if (( ct = nfct_new()) == NULL ) return errlog_null( ERR_CRITICAL, "nfct_new\n" );
 
     int ret;
+    /* save a pointer to ct_result to TLS */
+    pthread_setspecific( _netcap_nfconntrack.tls_key, &ct_result );
     ret = _critical_section();
+    pthread_setspecific( _netcap_nfconntrack.tls_key, NULL );
 
     if ( ct != NULL ) nfct_destroy( ct );
 
     if ( ret < 0 ) return errlog_null( ERR_CRITICAL, "_critical_section\n" );
 
     /* This will just return NULL if it doesn't find one */
-    return _netcap_nfconntrack.found_ct;
+    return ct_result;
 }
 
 /**
@@ -382,8 +388,13 @@ int netcap_nfconntrack_del_entry_tuple( netcap_nfconntrack_ipv4_tuple_t* tuple,
     if (( ct = nfct_new()) == NULL ) return errlog( ERR_CRITICAL, "nfct_new\n" );
 
     int ret;
+    if ( pthread_mutex_lock( &mutex ) < 0 ) {
+        return perrlog( "pthread_mutex_lock" );
+    }
     ret = _critical_section();
-
+    if ( pthread_mutex_unlock( &mutex ) < 0 ) {
+        return perrlog( "pthread_mutex_lock" );
+    }
     if ( ct != NULL ) nfct_destroy( ct );
 
     if ( ret < 0 ) return errlog( ERR_CRITICAL, "_critical_section\n" );
@@ -487,10 +498,13 @@ static int _nf_check_tuple_callback( enum nf_conntrack_msg_type type, struct nf_
     if ( conntrack == NULL ) return errlogargs();
 
     debug( 6, "Found a conntrack entry %#010x, matching on first\n", conntrack );
-
+    struct nf_conntrack **ct_result;
+    if (( ct_result = pthread_getspecific( _netcap_nfconntrack.tls_key  )) == NULL ) {
+        return errlog( ERR_CRITICAL, "null args\n" );
+    }
     /* assuming it is the correct one for now, and assuming this is a get call */
-    _netcap_nfconntrack.found_ct = nfct_clone( conntrack );
-    
+    *ct_result = nfct_clone( conntrack );
+
     /* match on the first */
     return NFCT_CB_STOP;
 }
