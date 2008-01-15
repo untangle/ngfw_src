@@ -27,6 +27,7 @@ clean_dirs()
     rm -rf /usr/share/untangle/conf/openvpn
     rm -rf /etc/openvpn
     rm -f  /usr/share/untangle/conf/dirbackup.ldif
+    rm -f  /usr/share/untangle/conf/alpaca-backup.uab
 }
 
 restore_packages()
@@ -75,8 +76,8 @@ fi
 # try to download needed files, this may fail because the network settings may not be correct
 restore_packages $instfile
 
-# restart the networking with new settings
-/etc/init.d/networking restart
+# Restore the network settings
+[ -x /usr/share/untangle-net-alpaca/scripts/restore -a -f /usr/share/untangle/conf/alpaca-backup.uab ] && /usr/share/untangle-net-alpaca/scripts/restore /usr/share/untangle/conf/alpaca-backup.uab
 
 # try again just in case these network settings are "better" than the previous
 restore_packages $instfile

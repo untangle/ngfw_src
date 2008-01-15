@@ -54,6 +54,9 @@ pg_dump -U postgres -n settings uvm | gzip > $outdir/uvmdb-$datestamp.gz
 
 [ -x /usr/sbin/slapcat ] && /usr/sbin/slapcat -l @PREFIX@/usr/share/untangle/conf/dirbackup.ldif
 
+## Run the script to backup the alpaca
+[ -x  /usr/share/untangle-net-alpaca/scripts/backup ] && /usr/share/untangle-net-alpaca/scripts/backup @PREFIX@/usr/share/untangle/conf/alpaca-backup.uab "UVM Backup"
+
 tar zcf $outdir/files-$datestamp.tar.gz --ignore-failed-read -C @PREFIX@/ \
         etc/hostname \
         etc/network/interfaces \
@@ -66,7 +69,8 @@ tar zcf $outdir/files-$datestamp.tar.gz --ignore-failed-read -C @PREFIX@/ \
         usr/share/untangle/conf/openvpn/misc \
         usr/share/untangle/conf/openvpn/pki \
         usr/share/untangle/conf/timezone \
-        usr/share/untangle/conf/dirbackup.ldif
+        usr/share/untangle/conf/dirbackup.ldif \
+        usr/share/untangle/conf/alpaca-backup.uab
 
 # Tar exits with non-zero when some files don't exist, which can happen.
 # [ $? -eq 0 ] || exit 1
