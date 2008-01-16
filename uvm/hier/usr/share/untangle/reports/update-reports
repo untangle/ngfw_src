@@ -258,6 +258,7 @@ EOF
         @UVM_HOME@/reports/convert-reports
 
 # generate the emailable page
+        cd /
         if [ $MV_EG_DAILY_REPORT == 'y' ]; then
             generateEmail "daily"
         fi

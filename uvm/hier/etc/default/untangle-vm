@@ -48,6 +48,10 @@ SPAMASSASSIN_LOG_ERROR="bayes: cannot open bayes databases /home/spamc/.spamassa
 SUPPORT_AGENT_MAX_ALLOWED_CPU=30
 SUPPORT_AGENT_PID_FILE=/var/run/rbot.pid
 
+# cli stuff
+CLI_SERVER_HOME=/usr/share/untangle-cli-server/src
+# JRUBY_HOME=/usr/lib/jruby1.0
+
 # activation stuff...
 UNTANGLE_HARDWARE=@UVM_HOME@/.untanglehw
 REGISTRATION_DONE_FILE=@UVM_HOME@/.regdone
