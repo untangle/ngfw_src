@@ -22,7 +22,12 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.lang.reflect.Method;
 import java.util.StringTokenizer;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.untangle.uvm.CronJob;
 import com.untangle.uvm.LocalBrandingManager;
@@ -91,6 +96,8 @@ public class UvmContextImpl extends UvmContextBase
     private static final String PROPERTY_IS_UNTANGLE_APPLIANCE = "com.untangle.isUntangleAppliance";
     private static final String PROPERTY_IS_INSIDE_VM = "com.untangle.isInsideVM";
 
+    private static final String PROPERTY_CLI_SERVER_HOME = "com.untangle.cli.server.home";
+
     private final Object startupWaitLock = new Object();
     private final Logger logger = Logger.getLogger(UvmContextImpl.class);
     private final BackupManager backupManager;
@@ -131,6 +138,9 @@ public class UvmContextImpl extends UvmContextBase
     private LicenseManagerFactory licenseManagerFactory;
     private TomcatManager tomcatManager;
     private HeapMonitor heapMonitor;
+
+    // Will be null if cliServer is not enabled
+    private CliServerManager cliServerManager;
 
     private ADPhoneBookAssistant adPhoneBookAssistant;
 
@@ -727,6 +737,7 @@ public class UvmContextImpl extends UvmContextBase
 
         logger.debug("starting HttpInvoker");
         httpInvoker.init();
+        startCliServer();
         logger.debug("postInit complete");
         synchronized (startupWaitLock) {
             state = UvmState.RUNNING;
@@ -751,6 +762,10 @@ public class UvmContextImpl extends UvmContextBase
             logger.warn("could not destroy HttpInvoker", exn);
         }
         httpInvoker = null;
+
+        // stop cli server
+        if (cliServerManager != null)
+            cliServerManager.doDestroy();
 
         // stop vectoring:
         String argonFake = System.getProperty(ARGON_FAKE_KEY);
@@ -944,6 +959,144 @@ public class UvmContextImpl extends UvmContextBase
             return true;
         } else {
             return false;
+        }
+    }
+
+    private void startCliServer()
+    {
+        String cliHome = System.getProperty(PROPERTY_CLI_SERVER_HOME);
+        if (cliHome != null) {
+            cliServerManager = new CliServerManager(cliHome);
+            cliServerManager.init();
+        }
+    }
+
+
+    // Uses reflection to allow easier optionality.
+    private static class CliServerManager implements Runnable {
+        private String cliServerHome;
+        private Thread serverThread;
+        private final Logger logger = Logger.getLogger(CliServerManager.class);
+        private static final String configClassName = "org.jruby.RubyInstanceConfig";
+        private static final String mainClassName = "org.jruby.Main";
+        private volatile boolean keepRunning = true;
+
+        CliServerManager(String cliHome) {
+            this.cliServerHome = cliHome;
+            this.serverThread = new Thread(null, this, "UTCliServerThread", 1000000);
+        }
+
+        // Computes classpath for new classloader to be created to contain cli server.
+        // Needs jruby stuff, uvm api, and node apis.
+        private URL[] getClasspath()
+        {
+            List<URL> urls = new ArrayList();
+                /*
+            try {
+                File jrubyLib = new File(System.getProperty("jruby.lib"));
+                for (File f : jrubyLib.listFiles(
+                                                 new FilenameFilter() {
+                                                     public boolean accept(File dir, String name) {
+                                                         return (name.endsWith(".jar"));
+                                                     }
+                                                 })) {
+                    urls.add(new URL("file://" + f));
+                }
+
+                String bunniculaLib = System.getProperty("bunnicula.lib.dir");
+                urls.add(new URL("file://" + bunniculaLib + "/untangle-libuvm-api/"));
+
+                String bunniculaWebstart = System.getProperty("bunnicula.web.dir") + "/webstart";
+                File webstartDir = new File(bunniculaWebstart);
+                for (File f : webstartDir.listFiles(
+                                                    new FilenameFilter() {
+                                                        public boolean accept(File dir, String name) {
+                                                            return (name.endsWith("-gui.jar")
+                                                                    && name.startsWith("untangle"));
+                                                        }
+                                                    })) {
+                    urls.add(new URL("file://" + f));
+                }
+            } catch (MalformedURLException x) {
+                // Can't really happen
+                logger.fatal("Unable to find classpath for cli server", x);
+            }
+
+                */
+            for (URL url : urls) {
+                System.out.println("cli cp: " + url);
+            }
+
+            return urls.toArray(new URL[urls.size()]);
+        }
+
+        // Creates a new classloader every time to allow best potential growth prevention.
+        public void run() {
+            String[] jrubyArgs = new String[] { cliServerHome + "/server.rb" };
+            ClassLoader oldCl = Thread.currentThread().getContextClassLoader();
+            URL[] cp = getClasspath();
+            URLClassLoader clicl = new URLClassLoader(cp, oldCl);
+            logger.info("starting cli server");
+                try {
+                    // Entering CLI ClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                    Thread.currentThread().setContextClassLoader(clicl);
+
+                    Object main;
+                    Method runner;
+                    try {
+                        Class configClass = clicl.loadClass(configClassName);
+                        Object config = configClass.newInstance();
+                        Method scd = configClass.getMethod("setCurrentDirectory", new Class[] { String.class });
+                        scd.invoke(config, cliServerHome);
+                        Class mainClass = clicl.loadClass(mainClassName);
+                        main = mainClass.getConstructor(new Class[] { configClass }).
+                            newInstance(config);
+                        Class strArrayClass = (new String[] { }).getClass();
+                        runner = mainClass.getMethod("run", new Class[] { String[].class });
+                    } catch (Exception x) {
+                        logger.error("Unable to invoke cli server: ", x);
+                        return;
+                    }
+                    while (keepRunning) {
+                        try {
+                            int result = (Integer)
+                                runner.invoke(main, new Object[] { jrubyArgs });
+                            logger.error("cli server unexpectedly exited with status " + result);
+                        } catch (Exception x) {
+                            logger.error("cli server: ", x);
+                        }
+                        // Sleep a little to let the socket close
+                        try { Thread.sleep(5000); } catch (InterruptedException x) { }
+                    }
+                } finally {
+                    Thread.currentThread().setContextClassLoader(oldCl);
+                    // restored classloader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                }
+        }
+
+        void init() {
+            serverThread.start();
+        }
+
+        // Called when a node is loaded.
+        void doRefresh() {
+            keepRunning = false;
+            if (serverThread != null) {
+                serverThread.interrupt();
+                try {
+                    serverThread.join();
+                } catch (InterruptedException x) { }
+            }
+            serverThread = new Thread(null, this, "UTCliServerThread", 1000000);
+            init();
+        }
+
+        void doDestroy() {
+            keepRunning = false;
+            if (serverThread != null) {
+                serverThread.interrupt();
+                serverThread = null;
+            }
         }
     }
 
