@@ -168,6 +168,11 @@ restartServiceIfNeeded() {
       dpkg -l untangle-ldap-server | grep -q -E '^ii' || return
       isServiceRunning slapd && return
       ;;
+    snmpd)
+      pidFile=/var/run/snmpd.pid
+      dpkg -l snmpd | grep -q -E '^ii' || return
+      isServiceRunning snmpd && return
+      ;;
     spamassassin)
       pidFile=$SPAMASSASSIN_PID_FILE
       dpkg -l untangle-spamassassin-update | grep -q -E '^ii' || return
