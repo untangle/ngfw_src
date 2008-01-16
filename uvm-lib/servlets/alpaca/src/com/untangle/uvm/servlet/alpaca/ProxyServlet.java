@@ -190,11 +190,18 @@ public class ProxyServlet extends HttpServlet
 
     private String getUrl(HttpServletRequest req)
     {
+        String alpacaNonce = LocalUvmContextFactory.context()
+            .adminManager().getAlpacaNonce();
+
         String pi = req.getPathInfo();
         String qs = req.getQueryString();
+        if (qs == null || qs.equals("")) {
+            qs = "argyle=" + alpacaNonce;
+        } else {
+            qs += "&argyle=" + alpacaNonce;
+        }
 
-        return BASE_URL + (null == pi ? "" : pi)
-            + (null == qs ? "" : ("?" + qs));
+        return BASE_URL + (null == pi ? "" : pi) + "?" + qs;
     }
 
     private void copyStream(InputStream is, OutputStream os)

@@ -120,20 +120,6 @@ class HttpClientCache
         HttpState state = client.getState();
         LocalUvmContext ctx = LocalUvmContextFactory.context();
 
-        String alpacaNonce = LocalUvmContextFactory.context()
-            .adminManager().getAlpacaNonce();
-        String url = "http://localhost:3000/alpaca?argyle=" + alpacaNonce;
-        GetMethod get = new GetMethod(url);
-        get.setFollowRedirects(false);
-        try {
-            client.executeMethod(get);
-            InputStream is = get.getResponseBodyAsStream();
-            if (null != is) {
-                is.close();
-            }
-        } catch (IOException exn) {
-            logger.warn("Could not log into alpaca", exn);
-        }
         return client;
     }
 
