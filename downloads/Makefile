@@ -33,7 +33,7 @@ zips=ant-pack200.zip javamail-1_3_3_01.zip alloylnf-1_4_4-1.zip \
 	htmlparser1_6_20060319.zip wbemservices-1.0.2.src.zip
 
 jars=itext-1.3.jar hibernate-client.jar jfreechart-gui.jar \
-	gettext-commons-0.9.1.jar
+	gettext-commons-0.9.1.jar jruby-complete.jar
 
 ## wbem needs ANT in order to compile
 wbemservices-1.0.2.src.zip: $(OUTPUT_DIRECTORY)/apache-ant-1.6.5

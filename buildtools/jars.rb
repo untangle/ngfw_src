@@ -111,6 +111,7 @@ class Jars
   Trove      = [ Jars.downloadTarget('trove-1.0.2/lib/trove.jar') ]
   Postgres   = [ Jars.downloadTarget('postgres-jdbc-7.4_215/pg74.215.jdbc3.jar')]
   Velocity   = [ Jars.downloadTarget('velocity-1.4/velocity-1.4.jar') ]
+  JRuby      = [ Jars.downloadTarget('jruby-complete/jruby-complete.jar') ]
 
   Jnlp       = [ ThirdpartyJar.get("#{BuildEnv::JAVA_HOME}/sample/jnlp/servlet/jnlp.jar") ]
 
@@ -131,7 +132,7 @@ class Jars
   # This is available to everything?
   Base       = Jars.makeGroup(Log4j, Hibernate, HibernateAnnotations, Postgres,
                               Activation, Jcifs, C3p0, Ant, JavaMailApi,
-                              GetText, JavaMail, TomcatEmb, Velocity, WBEM,
+                              GetText, JavaMail, TomcatEmb, Velocity, WBEM, JRuby,
                               Bdb, HttpClient, HtmlParser, VncViewer, XmlRpc)
  
   # Jars for compiling the GUI, and GUI node components
