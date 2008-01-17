@@ -211,8 +211,9 @@ class CustomPolicyTableModel extends MSortedTableModel<PolicyCompoundSettings>{
             newElem.setClientIntf( (IntfMatcher)((ComboBoxModel)rowVector.elementAt(5)).getSelectedItem() );
             newElem.setServerIntf( (IntfMatcher)((ComboBoxModel)rowVector.elementAt(6)).getSelectedItem() );
 
-            if( newElem.getClientIntf() != IntfSimpleMatcher.getAllMatcher()
-                && newElem.getClientIntf() == newElem.getServerIntf() ) {
+            if (newElem.getClientIntf() instanceof IntfSimpleMatcher
+               && !((IntfSimpleMatcher)newElem.getClientIntf()).isAllMatcher()
+               && newElem.getClientIntf() == newElem.getServerIntf()) {
                 throw new Exception("In row: " + rowIndex + ". The \"client interface\" cannot match the \"server interface\"");
             }
 

@@ -86,6 +86,11 @@ public final class IntfSimpleMatcher extends IntfDBMatcher
         return ParsingConstants.MARKER_NOTHING;
     }
 
+    public boolean isAllMatcher()
+    {
+        return isAll;
+    }
+
     /**
      * Retrieve the all matcher
      *
