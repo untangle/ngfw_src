@@ -360,18 +360,12 @@ public abstract class UrlList
         synchronized (DB_LOCKS) {
             BufferedReader br = null;
             try {
-                String oldVersion;
-                if (System.currentTimeMillis() - getLastUpdate(db) > UPDATE_FORCE_INTERVAL) {
-                    logger.info(dbLock + " old database, forcing reinitialization");
-                    oldVersion = "1:1";
-                } else {
-                    logger.info(dbLock + " recent database, doing incremental database");
-                    oldVersion = getVersion(db);
-                }
+                String oldVersion = getVersion(db);
 
                 InputStream is = null;
 
                 if (null == oldVersion && null != initFile && initFile.exists()) {
+                    logger.info(dbName + " initilizing from file: " + initFile);
                     try {
                         is = new FileInputStream(initFile);
                         fileInit = true;
@@ -381,9 +375,14 @@ public abstract class UrlList
                 }
 
                 if (null == is) {
+                    if (System.currentTimeMillis() - getLastUpdate(db) > UPDATE_FORCE_INTERVAL) {
+                        logger.info(dbName + " old database, forcing reinitialization");
+                        oldVersion = "1:1";
+                    }
+
                     String v = null == oldVersion ? "1:1" : oldVersion.replace(".", ":");
                     URL url = new URL(baseUrl + "/update?version=" + dbName + ":" + v + suffix);
-                    logger.info(dbLock + " updating from URL: " + url);
+                    logger.info(dbName + " updating from URL: " + url);
 
                     HttpClient hc = new HttpClient();
                     HttpMethod get = new GetMethod(url.toString());
@@ -396,7 +395,7 @@ public abstract class UrlList
 
                 String line = br.readLine();
                 if (null == line) {
-                    logger.info(dbLock + " no update");
+                    logger.info(dbName + " no update");
                     return;
                 }
 
@@ -411,11 +410,11 @@ public abstract class UrlList
                     return;
                 }
 
-                logger.info("updating: " + dbLock + " from: " + oldVersion
+                logger.info("updating: " + dbName + " from: " + oldVersion
                             + " to: " + newVersion);
 
                 if (!update) {
-                    logger.warn("clearing database: " + dbLock);
+                    logger.warn("clearing database: " + dbName);
                     clearDatabase();
                 }
 
@@ -426,11 +425,11 @@ public abstract class UrlList
 
                 db.getEnvironment().sync();
 
-                logger.info(dbLock + " number entries: " + db.count());
+                logger.info(dbName + " number entries: " + db.count());
             } catch (DatabaseException exn) {
-                logger.warn("could not update database: " + dbLock, exn);
+                logger.warn("could not update database: " + dbName, exn);
             } catch (IOException exn) {
-                logger.warn("could not update database: " + dbLock, exn);
+                logger.warn("could not update database: " + dbName, exn);
             } finally {
                 DB_LOCKS.remove(dbLock);
             }
