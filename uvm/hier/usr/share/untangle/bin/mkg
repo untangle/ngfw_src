@@ -18,6 +18,8 @@ REMO_OPTS = " --yes --force-yes --fix-broken --purge "
 PREFIX = "@PREFIX@"
 
 STDERR.reopen('@UVM_LOG@/apt.log', 'a')
+STDERR.puts(Time.new.strftime("%Y/%m/%d %H:%M:%S"))
+STDERR.flush
 
 def printusage()
   puts _('usage:')
