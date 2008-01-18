@@ -1,0 +1,60 @@
+#! /bin/bash
+
+tar_files()
+{
+    tarfile=$1
+
+    [ -x /usr/sbin/slapcat ] && /usr/sbin/slapcat -l /usr/share/untangle/conf/dirbackup.ldif
+
+    [ -x  /usr/share/untangle-net-alpaca/scripts/backup ] && /usr/share/untangle-net-alpaca/scripts/backup /usr/share/untangle/conf/alpaca-backup.uab "UVM Backup"
+
+    tar zcf $tarfile --ignore-failed-read -C / \
+        etc/hostname \
+        etc/network/interfaces \
+        etc/openvpn \
+        etc/resolv.conf \
+        usr/share/untangle/conf/argon.properties \
+        usr/share/untangle/conf/keystore \
+        usr/share/untangle/conf/uvm.networking.properties \
+        usr/share/untangle/conf/networking.sh \
+        usr/share/untangle/conf/openvpn/misc \
+        usr/share/untangle/conf/openvpn/pki \
+        usr/share/untangle/conf/timezone \
+        usr/share/untangle/conf/dirbackup.ldif \
+        usr/share/untangle/conf/alpaca-backup.uab
+
+    # Tar exits with non-zero when some files don't exist, which can happen.
+    return 0
+}
+
+dump_installed()
+{
+    instlist=$1
+
+    /usr/share/untangle/bin/mkg installed > $instlist
+}
+
+dump_db()
+{
+    outfile=$1
+    pg_dump -U postgres -n settings uvm | gzip > $outfile 2>/dev/null
+}
+
+backup()
+{
+    outdir=$1
+
+    datestamp=$(date '+%Y%m%d%H%M')
+    dumpfile=$outdir/uvmdb-$datestamp.gz
+    tarfile=$outdir/files-$datestamp.tar.gz
+    instlist=$outdir/installed-$datestamp
+
+    dump_db $dumpfile && tar_files $tarfile && dump_installed $instlist
+}
+
+if [ $# -lt 1 ] ; then
+    echo "Usage: $0 dumpdir"
+fi
+
+
+backup $1
