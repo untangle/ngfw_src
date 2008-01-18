@@ -18,8 +18,6 @@
 require 'filternode'
 
 class Ips < UVMFilterNode
-  include CmdDispatcher
-  include RetryLogin
 
   UVM_NODE_NAME = "untangle-node-ips"
   NODE_NAME = "IPS"
