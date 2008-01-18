@@ -362,6 +362,11 @@ public abstract class UrlList
             try {
                 String oldVersion = getVersion(db);
 
+                if (System.currentTimeMillis() - getLastUpdate(db) > UPDATE_FORCE_INTERVAL) {
+                    logger.info(dbName + " old database, forcing reinitialization");
+                    oldVersion = null;
+                }
+
                 InputStream is = null;
 
                 if (null == oldVersion && null != initFile && initFile.exists()) {
@@ -375,11 +380,6 @@ public abstract class UrlList
                 }
 
                 if (null == is) {
-                    if (System.currentTimeMillis() - getLastUpdate(db) > UPDATE_FORCE_INTERVAL) {
-                        logger.info(dbName + " old database, forcing reinitialization");
-                        oldVersion = "1:1";
-                    }
-
                     String v = null == oldVersion ? "1:1" : oldVersion.replace(".", ":");
                     URL url = new URL(baseUrl + "/update?version=" + dbName + ":" + v + suffix);
                     logger.info(dbName + " updating from URL: " + url);
