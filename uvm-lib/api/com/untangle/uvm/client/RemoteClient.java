@@ -261,6 +261,8 @@ public class RemoteClient
             doPasswd(pwArgs);
         } else if (args[0].equalsIgnoreCase("reloadLicenses")) {
             doReloadLicenses();
+        } else if (args[0].equalsIgnoreCase("restartCliServer")) {
+            doRestartCliServer();
         } else {
             System.out.print("dont know: ");
             for (int i = 0; i < args.length; i++) {
@@ -1088,7 +1090,14 @@ public class RemoteClient
         System.out.println("  argon commands:");
         System.out.println("    " + SHIELD_STATUS_USAGE);
         System.out.println("    ucli shieldReconfigure");
+        System.out.println("  nucli server commands:");
+        System.out.println("    ucli restartCliServer");
         System.out.println("  debugging commands:");
         System.out.println("    ucli aptTail");
+    }
+
+    private static void doRestartCliServer()
+    {
+        mc.restartCliServer(); 
     }
 }

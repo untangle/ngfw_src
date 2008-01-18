@@ -286,4 +286,9 @@ public interface RemoteUvmContext
      * @return true if premium functionality was loaded.
      */
     boolean loadRup();
+
+    /**
+     * Restarts Command Line Interface Server
+     */
+    void restartCliServer();
 }

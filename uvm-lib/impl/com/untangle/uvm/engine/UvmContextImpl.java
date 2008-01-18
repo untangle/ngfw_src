@@ -28,6 +28,7 @@ import java.lang.reflect.Method;
 import java.util.StringTokenizer;
 import java.util.ArrayList;
 import java.util.List;
+import java.lang.reflect.InvocationTargetException;
 
 import com.untangle.uvm.CronJob;
 import com.untangle.uvm.LocalBrandingManager;
@@ -1059,9 +1060,15 @@ public class UvmContextImpl extends UvmContextBase
                     }
                     while (keepRunning) {
                         try {
-                            int result = (Integer)
-                                runner.invoke(main, new Object[] { jrubyArgs });
+                            int result = (Integer) runner.invoke(main, new Object[] { jrubyArgs });
                             logger.error("cli server unexpectedly exited with status " + result);
+		        } catch (InvocationTargetException x) {
+                            Throwable cause = x.getTargetException();
+                            if ((cause != null) && (cause instanceof java.lang.AssertionError) && 
+				cause.getMessage().contains("InterruptedException"))
+                            	logger.info("cli server: exiting on interrupt.");
+			    else
+                                logger.error("cli server: ", x);
                         } catch (Exception x) {
                             logger.error("cli server: ", x);
                         }
@@ -1098,6 +1105,12 @@ public class UvmContextImpl extends UvmContextBase
                 serverThread = null;
             }
         }
+    }
+
+    public void restartCliServer()
+    {
+        if (cliServerManager != null)
+	    cliServerManager.doRefresh();
     }
 
     // static initializer -----------------------------------------------------

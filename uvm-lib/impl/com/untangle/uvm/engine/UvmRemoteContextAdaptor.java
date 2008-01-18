@@ -226,4 +226,9 @@ class RemoteUvmContextAdaptor implements RemoteUvmContext
     {
         return context.loadRup();
     }
+
+    public void restartCliServer()
+    {
+        context.restartCliServer();
+    }
 }
