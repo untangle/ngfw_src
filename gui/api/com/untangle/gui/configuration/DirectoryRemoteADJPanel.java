@@ -58,7 +58,6 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
     private static final String EXCEPTION_LOGIN_MISSING    = "A \"Login\" must be specified if a \"Password\" is specified.";
     private static final String EXCEPTION_HOSTNAME_MISSING = "A \"Hostname\" must be specified if \"Login\" or \"Password\" are specified.";
     private static final String EXCEPTION_DOMAIN_MISSING   = "A \"Search Base\" must be specified.";
-    private static final String EXCEPTION_ORG_MISSING   = "An \"Active Directory Organization\" must be specified.";
     private static final String EXCEPTION_SERVER_ADDRESS   = "You must specify a valid IP address for your Lookup Server.";
     private static final String EXCEPTION_DOMAIN_PASSWORD  = "A \"Domain Password\" must be specified if a \"Domain Login\" is specified.";
     private static final String EXCEPTION_DOMAIN_LOGIN     = "A \"Domain Login\" must be specified if a \"Domain Password\" is specified.";
@@ -143,14 +142,6 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
                 baseJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
                 throw new Exception(EXCEPTION_DOMAIN_MISSING);
             }
-
-            // CHECK THAT A ORG IS SUPPLIED
-            orgJTextField.setBackground( Color.WHITE );
-            if( org.length() == 0 ){
-                orgJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
-                throw new Exception(EXCEPTION_ORG_MISSING);
-            }
-
         }
 
         // SAVE SETTINGS ////////////
@@ -339,6 +330,7 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
         baseJTextField = new javax.swing.JTextField();
         orgJLabel = new javax.swing.JLabel();
         orgJTextField = new javax.swing.JTextField();
+        optionalJLabel = new javax.swing.JLabel();
         jSeparator3 = new javax.swing.JSeparator();
         testJLabel = new javax.swing.JLabel();
         adTestJButton = new javax.swing.JButton();
@@ -585,6 +577,14 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(2, 0, 0, 0);
         restrictIPJPanel1.add(orgJTextField, gridBagConstraints);
+
+        optionalJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
+        optionalJLabel.setText("(optional)");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
+        restrictIPJPanel1.add(optionalJLabel, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -881,6 +881,7 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
     private javax.swing.JSeparator jSeparator5;
     private javax.swing.JLabel loginJLabel;
     public javax.swing.JTextField loginJTextField;
+    private javax.swing.JLabel optionalJLabel;
     private javax.swing.JLabel orgJLabel;
     public javax.swing.JTextField orgJTextField;
     private javax.swing.JLabel passwordJLabel;
