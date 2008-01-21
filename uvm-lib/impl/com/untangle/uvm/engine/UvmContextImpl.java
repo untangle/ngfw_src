@@ -980,7 +980,7 @@ public class UvmContextImpl extends UvmContextBase
         private final Logger logger = Logger.getLogger(CliServerManager.class);
         private static final String configClassName = "org.jruby.RubyInstanceConfig";
         private static final String mainClassName = "org.jruby.Main";
-        private volatile boolean keepRunning = true;
+        private volatile boolean keepRunning;
 
         CliServerManager(String cliHome) {
             this.cliServerHome = cliHome;
@@ -1082,6 +1082,7 @@ public class UvmContextImpl extends UvmContextBase
         }
 
         void init() {
+	    keepRunning = true;
             serverThread.start();
         }
 
