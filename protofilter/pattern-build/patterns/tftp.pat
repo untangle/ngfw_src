@@ -1,5 +1,5 @@
 # TFTP - Trivial File Transfer Protocol - used for bootstrapping - RFC 1350
-# Pattern attributes: marginal fast fast
+# Pattern attributes: marginal veryfast fast
 # Protocol groups: document_retrieval ietf_internet_standard
 # Wiki: http://www.protocolinfo.org/wiki/TFTP
 #

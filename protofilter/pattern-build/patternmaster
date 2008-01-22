@@ -26,7 +26,7 @@
 200|: Ares|: Peer to Peer
 210|: Battlefield 1942|: Video Game
 220|: Battlefield 2|: Video Game
-230|: BGP|: Networking
+222|: Battlefield 2142|: Video Game
 240|: Bittorrent|: Peer to Peer
 250|: Cisco VPN|: Networking
 260|: Code Red|: Worm
@@ -78,6 +78,7 @@
 700|: Half Life 1 engine games (HL 1, Quake 2/3/World, Counterstrike 1.6, etc.)|: Video Game
 710|: Quake 1|: Video Game
 720|: RDP|: Remote Deskop
+725|: ReplayTV Internet Video Sharing|: Streaming Video
 730|: rlogin|: System Administration
 740|: RTSP|: Streaming Video
 750|: Shoutcast and Icecast|: Music
@@ -93,6 +94,7 @@
 845|: STUN|: Networking
 850|: Subspace|: Video Game
 855|: Subversion|: Software Development
+858|: Team Fortress 2|: Video Game
 860|: TeamSpeak|: Voice over IP
 870|: Telnet|: System Administration
 890|: Tesla Advanced Communication|: Peer to Peer

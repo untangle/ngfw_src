@@ -1,5 +1,5 @@
 # X Windows Version 11 - Networked GUI system used in most Unices
-# Pattern attributes: good veryfast fast
+# Pattern attributes: good notsofast fast
 # Protocol groups: remote_access x_consortium_standard
 # Wiki: http://www.protocolinfo.org/wiki/X11
 #

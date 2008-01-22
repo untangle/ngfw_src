@@ -10,7 +10,7 @@
 # This pattern has been tested and is believed to work well.
 
 aim
-# See http://gridley.acns.carleton.edu/~straitm/final (and various other places)
+# See http://gridley.res.carleton.edu/~straitm/final (and various other places)
 # The first bit matches OSCAR signon and data commands, but not sure what
 # \x03\x0b matches, but it works apparently.
 # The next three bits match various parts of the TOC signon process.

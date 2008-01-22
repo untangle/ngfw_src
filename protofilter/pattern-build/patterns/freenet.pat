@@ -1,5 +1,5 @@
 # Freenet - Anonymous information retrieval - http://freenetproject.org
-# Pattern attributes: marginal veryfast fast
+# Pattern attributes: poor veryfast fast
 # Protocol groups: p2p document_retrieval open_source
 # Wiki: http://www.protocolinfo.org/wiki/Freenet
 

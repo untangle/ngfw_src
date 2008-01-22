@@ -21,8 +21,8 @@ rm uucp.pat
 # an untested hack:
 rm citrix.pat
 
-# duplicate of tls:
-rm ssl.pat
+# renaming of tls:
+mv ssl.pat tls.pat
 
 # overmatches:
 rm biff.pat
@@ -33,6 +33,18 @@ rm qq.pat
 rm skypetoskype.pat
 rm tsp.pat
 rm whois.pat
+rm bgp.pat
 
 # don't even work:
 rm skypeout.pat
+
+# don't care, games
+rm armagetron.pat
+rm liveforspeed.pat
+
+# don't care, outside NA
+rm chikka.pat
+rm cimd.pat
+
+# Fematech remote admin
+rm radmin.pat

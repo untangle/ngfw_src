@@ -1,5 +1,5 @@
 # Samba/SMB - Server Message Block - Microsoft Windows filesharing
-# Pattern attributes: good notsofast notsofast
+# Pattern attributes: good fast notsofast
 # Protocol groups: document_retrieval networking proprietary
 # Wiki: http://www.protocolinfo.org/wiki/SMB
 #

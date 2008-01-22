@@ -1,5 +1,5 @@
 # NNTP - Network News Transfer Protocol - RFCs 977 and 2980
-# Pattern attributes: good fast fast
+# Pattern attributes: good veryfast fast
 # Protocol groups: ietf_proposed_standard
 # Wiki: http://www.protocolinfo.org/wiki/NNTP
 #

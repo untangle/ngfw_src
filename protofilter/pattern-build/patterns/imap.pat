@@ -1,5 +1,5 @@
 # IMAP - Internet Message Access Protocol (A common e-mail protocol)
-# Pattern attributes: good fast fast
+# Pattern attributes: great veryfast fast
 # Protocol groups: mail ietf_proposed_standard
 # Wiki: http://www.protocolinfo.org/wiki/IMAP
 #

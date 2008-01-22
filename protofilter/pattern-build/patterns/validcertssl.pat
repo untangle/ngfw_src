@@ -1,5 +1,5 @@
 # Valid certificate SSL 
-# Pattern attributes: good slow fast subset
+# Pattern attributes: good notsofast notsofast subset
 # Protocol groups: secure ietf_proposed_standard
 # Wiki: http://www.protocolinfo.org/wiki/SSL
 

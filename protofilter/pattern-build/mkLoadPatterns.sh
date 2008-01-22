@@ -19,7 +19,7 @@ echo > $FILE
 cat ../LoadPatterns_start.java >> $FILE
 
 for i in `ls ./*.pat` ; do
-    cat $i | sed -e '/^[ \t]*#/d' | sed -e '/^[ \t]*$/d' > $i.new
+    cat $i | sed -e '/^userspace /d' -e '/^[ \t]*#/d' | sed -e '/^[ \t]*$/d' > $i.new
     STR="`cat $i | head -n 1 | sed -e 's/.*#//' -e 's/"//g'`"
     NAME="`echo $STR | perl -p -e 's/(.*?) +-.*/\1/g'`"
     DESC="`echo $STR | perl -p -e 's/.*?-(.*)/\1/g'`"

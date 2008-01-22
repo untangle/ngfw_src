@@ -1,5 +1,5 @@
 # VNC - Virtual Network Computing.  Also known as RFB - Remote Frame Buffer
-# Pattern attributes: good veryfast fast
+# Pattern attributes: great veryfast fast
 # Protocol groups: remote_access
 # Wiki: http://www.protocolinfo.org/wiki/VNC
 #

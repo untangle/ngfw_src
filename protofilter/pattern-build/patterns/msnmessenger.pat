@@ -22,6 +22,6 @@ msnmessenger
 #   ANS 1 quadong@hotmail.com 1139803431.29427 17522047
 #   USR 1 quadong@hotmail.com 530423708.968145.366138
 
-# Branches are written entirely separately for performance reasons.
+# Branches are written entirely separately for better performance.
 ver [0-9]+ msnp[1-9][0-9]? [\x09-\x0d -~]*cvr0\x0d\x0a$|usr 1 [!-~]+ [0-9. ]+\x0d\x0a$|ans 1 [!-~]+ [0-9. ]+\x0d\x0a$
 

@@ -1,5 +1,5 @@
 # IRC - Internet Relay Chat - RFC 1459
-# Pattern attributes: good fast fast
+# Pattern attributes: great veryfast fast
 # Protocol groups: chat ietf_proposed_standard
 # Wiki: http://www.protocolinfo.org/wiki/IRC
 #
