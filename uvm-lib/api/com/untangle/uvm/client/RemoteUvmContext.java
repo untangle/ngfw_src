@@ -291,4 +291,9 @@ public interface RemoteUvmContext
      * Restarts Command Line Interface Server
      */
     void restartCliServer();
+
+    /**
+     * Stops Command Line Interface Server
+     */
+    void stopCliServer();
 }

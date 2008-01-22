@@ -263,6 +263,8 @@ public class RemoteClient
             doReloadLicenses();
         } else if (args[0].equalsIgnoreCase("restartCliServer")) {
             doRestartCliServer();
+        } else if (args[0].equalsIgnoreCase("stopCliServer")) {
+            doStopCliServer();
         } else {
             System.out.print("dont know: ");
             for (int i = 0; i < args.length; i++) {
@@ -1099,5 +1101,10 @@ public class RemoteClient
     private static void doRestartCliServer()
     {
         mc.restartCliServer(); 
+    }
+
+    private static void doStopCliServer()
+    {
+        mc.stopCliServer(); 
     }
 }

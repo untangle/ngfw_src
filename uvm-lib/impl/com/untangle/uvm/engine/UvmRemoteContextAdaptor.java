@@ -231,4 +231,9 @@ class RemoteUvmContextAdaptor implements RemoteUvmContext
     {
         context.restartCliServer();
     }
+
+    public void stopCliServer()
+    {
+        context.stopCliServer();
+    }
 }

@@ -980,7 +980,7 @@ public class UvmContextImpl extends UvmContextBase
         private final Logger logger = Logger.getLogger(CliServerManager.class);
         private static final String configClassName = "org.jruby.RubyInstanceConfig";
         private static final String mainClassName = "org.jruby.Main";
-        private volatile boolean keepRunning;
+        private volatile boolean keepRunning = true;
 
         CliServerManager(String cliHome) {
             this.cliServerHome = cliHome;
@@ -1099,6 +1099,16 @@ public class UvmContextImpl extends UvmContextBase
             init();
         }
 
+        void doStop() {
+            keepRunning = false;
+            if (serverThread != null) {
+                serverThread.interrupt();
+                try {
+                    serverThread.join();
+                } catch (InterruptedException x) { }
+            }
+        }
+
         void doDestroy() {
             keepRunning = false;
             if (serverThread != null) {
@@ -1112,6 +1122,12 @@ public class UvmContextImpl extends UvmContextBase
     {
         if (cliServerManager != null)
 	    cliServerManager.doRefresh();
+    }
+
+    public void stopCliServer()
+    {
+        if (cliServerManager != null)
+	    cliServerManager.doStop();
     }
 
     // static initializer -----------------------------------------------------
