@@ -17,3 +17,4 @@
 --
 
 UPDATE settings.u_node_persistent_state SET name = 'untangle-node-kav' WHERE name = 'untangle-node-hauri';
+UPDATE settings.u_mackage_state SET mackage_name = 'untangle-node-kav' WHERE mackage_name = 'untangle-node-hauri';
