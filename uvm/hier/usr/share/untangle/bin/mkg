@@ -70,7 +70,7 @@ class DevMkg
 
   def upgrade()
     log "start $stamp"
-    log "END PACKAGE LIST" >>$APT_LOG
+    log "END PACKAGE LIST"
     log "done $stamp"
     0
   end
