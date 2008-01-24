@@ -117,8 +117,8 @@ class TomcatManager
         loadSystemApp("/session-dumper", "session-dumper", new WebAppOptions(new AdministrationOutsideAccessValve()));
         loadSystemApp("/webstart", "webstart", new WebAppOptions(new AdministrationOutsideAccessValve()));
         loadSystemApp("/library", "onlinestore", new WebAppOptions(new AdministrationOutsideAccessValve()));
-        loadSystemApp("/reports", "reports", new WebAppOptions(true,new AdministrationOutsideAccessValve()));
-        loadSystemApp("/alpaca", "alpaca", new WebAppOptions(true,new ReportingOutsideAccessValve()));
+        loadSystemApp("/reports", "reports", new WebAppOptions(true,new ReportingOutsideAccessValve()));
+        loadSystemApp("/alpaca", "alpaca", new WebAppOptions(true,new AdministrationOutsideAccessValve()));
         //loadSystemApp("/wmi", "wmi", new WebAppOptions(new WMIServerValve()));
     }
 
