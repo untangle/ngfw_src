@@ -334,7 +334,7 @@ public class NetworkManagerImpl implements LocalNetworkManager
     public void setSetupSettings( AddressSettings address, BasicNetworkSettings basic )
         throws NetworkException, ValidateException
     {
-        this.addressManager.setSettings( address );
+        this.addressManager.setWizardSettings( address );
 
         /* Send the call onto the alpaca */
         PPPoEConnectionRule pppoe = basic.getPPPoESettings();

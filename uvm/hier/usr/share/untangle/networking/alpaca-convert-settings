@@ -5,6 +5,9 @@ BACKUP_SCRIPT=/usr/share/untangle-net-alpaca/scripts/backup
 
 BASE_DIR=/var/lib/rails/untangle-net-alpaca/
 
+## rails environment, defaults to production
+MONGREL_ENV="production"
+
 trap "restartAlpaca" EXIT
 
 restartAlpaca()
@@ -33,7 +36,7 @@ rm -f /var/lib/rails/utangle-net-alpaca/database/*.db
 
 ## Change into the directory and convert the settings
 cd ${BASE_DIR} && {
-    rake alpaca:upgrade    
+    rake alpaca:upgrade RAILS_ENV=${MONGREL_ENV} || echo "Unable to migrate the network settings from the UVM to the alapca."  
 } || {
     echo "Unable to change into the alpaca directory (${BASE_DIR})"
 }
