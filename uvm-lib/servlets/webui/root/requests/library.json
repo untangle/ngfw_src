@@ -1,0 +1,15 @@
+{'success':true,'msg':null,'data':
+ {'library':[
+	{'name':'openSourcePackage','displayName':'Open Source Package','image':'images/node/IconDesc42x42.png','action':{'url':'http://localhost/library/index.php?option=com_content&task=view&id=12&Itemid=62'}},
+	{'name':'professionalPackage','displayName':'Professional Package','image':'images/node/IconDesc42x42.png','action':{'url':'http://localhost/library/index.php?option=com_content&task=view&id=210&Itemid=95'}},
+	{'name':'spamBlocker','displayName':'Spam Blocker','image':'images/node/spamassassin/IconDesc42x42.png','action':{'url':'http://localhost/library/index.php?option=com_content&task=view&id=15&Itemid=67'}},
+	{'name':'spywareBlocker','displayName':'Spyware Blocker','image':'images/node/spyware/IconDesc42x42.png','action':{'url':'http://localhost/library/index.php?option=com_content&task=view&id=17&Itemid=69'}},
+	{'name':'dualVirusBlocker','displayName':'Dual Virus Blocker','image':'images/node/clam/IconDesc42x42.png','action':{'url':'http://localhost/library/index.php?option=com_content&task=view&id=18&Itemid=85'}},
+	{'name':'virusBlocker','displayName':'Virus Blocker','image':'images/node/clam/IconDesc42x42.png','action':{'url':' http://localhost/library/index.php?option=com_content&task=view&id=19&Itemid=71'}},
+	{'name':'firewall','displayName':'Firewall','image':'images/node/firewall/IconDesc42x42.png','action':{'url':'http://localhost/library/index.php?option=com_content&task=view&id=21&Itemid=74'}},
+	{'name':'openVPN','displayName':'OpenVPN','image':'images/node/openvpn/IconDesc42x42.png','action':{'url':'http://localhost/library/index.php?option=com_content&task=view&id=25&Itemid=77'}},
+	{'name':'attackBlocker','displayName':'Attack Blocker','image':'images/node/shield/IconDesc42x42.png','action':{'url':'http://www.google.com'}},
+	{'name':'configurationBackup','displayName':'Configuration Backup','image':'images/node/IconDesc42x42.png','action':{'url':'http://www.google.com'}},
+	{'name':'remoteAccessPortal','displayName':'Remote Access Portal','image':'images/node/IconDesc42x42.png','action':{'url':'http://www.google.com'}}
+ ]}
+}

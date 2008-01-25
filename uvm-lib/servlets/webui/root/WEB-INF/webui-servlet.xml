@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+  <!-- the application context definition for the webui DispatcherServlet -->
+    <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
+        <property name="basename" value="messages"/>
+    </bean>
+
+	<bean id="localeResolver" class="org.springframework.web.servlet.i18n.SessionLocaleResolver">
+		<property name="defaultLocale" value="us"/>
+	</bean>
+	
+	<bean id="localeChangeInterceptor"
+	      class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor">
+	    <property name="paramName" value="siteLanguage"/>
+	</bean>
+	
+    <bean id="themeSource" class="org.springframework.ui.context.support.ResourceBundleThemeSource"/>
+    
+	<bean id="themeResolver" class="org.springframework.web.servlet.theme.SessionThemeResolver">
+		<property name="defaultThemeName" value="default"/>
+	</bean>
+	
+	<bean id="themeChangeInterceptor"
+	      class="org.springframework.web.servlet.theme.ThemeChangeInterceptor">
+	    <property name="paramName" value="siteTheme"/>
+	</bean>
+	
+    <bean id="urlMapping" class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping">
+	    <property name="interceptors">
+	        <list>
+	            <ref bean="localeChangeInterceptor"/>
+	            <ref bean="themeChangeInterceptor"/>
+	        </list>
+	    </property>
+    </bean>
+    
+	<bean id="jspViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+	    <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"></property>
+	    <property name="prefix" value="/WEB-INF/jsp/"></property>
+	    <property name="suffix" value=".jsp"></property>        
+	</bean>
+	
+	<bean id="viewResolver" class="org.springframework.web.servlet.view.XmlViewResolver">
+		<property name="order" value="1" />
+		<property name="location" value="/WEB-INF/views.xml" />
+	</bean>
+	
+	<bean name="/startPage.htm" class="com.untangle.uvm.webui.web.StartPageController"/>
+    
+    <bean name="/rack.htm" class="com.untangle.uvm.webui.web.MainRackController">
+    	<property name="methodNameResolver">
+	        <bean class="org.springframework.web.servlet.mvc.multiaction.ParameterMethodNameResolver">
+	            <property name="paramName" value="action"/>
+	        </bean>
+    	</property>
+        <property name="mainRackService" ref="mainRackService"/>
+    </bean>
+    
+    <bean name="/protofilter.htm" class="com.untangle.uvm.webui.web.ProtoFilterController">
+    	<property name="methodNameResolver">
+	        <bean class="org.springframework.web.servlet.mvc.multiaction.ParameterMethodNameResolver">
+	            <property name="paramName" value="action"/>
+	        </bean>
+    	</property>
+        <property name="mainRackService" ref="mainRackService"/>
+    </bean>    
+    
+</beans>

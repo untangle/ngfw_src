@@ -1,0 +1,6 @@
+{'success':true,'msg':null,'data':
+	{'virtualRacks':[
+		{id:'1','name':'Default Rack','notes':'This is the default Rack','isDefault':true},
+		{id:'2','name':'My Rack','notes':'This is the my Rack','isDefault':false},
+	]}
+}

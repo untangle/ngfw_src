@@ -1,0 +1,207 @@
+<div style="display: none;">
+<div id="settings_phish_tabs_web">
+<div style="position:relative;left:120px;margin:10px;line-height: 20px;">
+<input type="radio" name="settings_phish_web"> <b>Enable</b> phish list blocking<br />
+<input type="radio" name="settings_phish_web" checked> <b>Disable</b> phish list blocking
+</div>
+</div>
+<div id="settings_phish_tabs_smtp">
+<div id="grid-example"></div>
+</div>
+</div>
+<select name="settings_phish_smtp_detected" id="settings_phish_smtp_detected" style="display: none;text-align: left;">
+	<option value="mark">mark message</option>
+	<option value="pass">pass message</option>
+	<option value="block">block message</option>
+	<option value="quarantine">quarantine message</option>
+</select>
+<script type="text/javascript">
+Ext.grid.CheckColumn = function(config){
+    Ext.apply(this, config);
+    if(!this.id){
+        this.id = Ext.id();
+    }
+    this.renderer = this.renderer.createDelegate(this);
+};
+
+Ext.grid.CheckColumn.prototype ={
+    init : function(grid){
+        this.grid = grid;
+        this.grid.on('render', function(){
+            var view = this.grid.getView();
+            view.mainBody.on('mousedown', this.onMouseDown, this);
+        }, this);
+    },
+
+    onMouseDown : function(e, t){
+        if(t.className && t.className.indexOf('x-grid3-cc-'+this.id) != -1){
+            e.stopEvent();
+            var index = this.grid.getView().findRowIndex(t);
+            var record = this.grid.store.getAt(index);
+            record.set(this.dataIndex, !record.data[this.dataIndex]);
+        }
+    },
+
+    renderer : function(v, p, record){
+        p.css += ' x-grid3-check-col-td'; 
+        return '<div class="x-grid3-check-col'+(v?'-on':'')+' x-grid3-cc-'+this.id+'">&#160;</div>';
+    }
+};
+
+	function initNodeSettings_phish() {
+	    
+	    Ext.state.Manager.setProvider(new Ext.state.CookieProvider());
+
+	
+	    var dataSMTP = [
+			["inbound SMPT", true, "quarantine message","Scan incoming SMPT e-mail"],
+			["outbound SMPT", true, "pass message", "Scan outgoing SMPT e-mail"]
+	    ];
+	
+	    // create the data store
+	    var storeSMTP = new Ext.data.SimpleStore({
+	        fields: [
+	           {name: 'source'},
+	           {name: 'scan'},
+	           {name: 'detected'},
+	           {name: 'description'}
+	        ]
+	    });
+	    storeSMTP.loadData(dataSMTP);
+    // the column model has information about grid columns
+    // dataIndex maps the column to the specific data field in
+    // the data store (created below)
+    var checkColumn = new Ext.grid.CheckColumn({
+       header: "scan", width: 75, sortable: true,  dataIndex: 'scan'
+    });
+    var cmSMTP = new Ext.grid.ColumnModel([
+          {id:'source',header: "source", width: 160, sortable: true, dataIndex: 'source',
+	          editor: new Ext.form.TextField({
+	               allowBlank: false
+	           })
+           },
+          checkColumn,
+          {id:'detected',header: "action if PHISH detected", width: 200, sortable: true,dataIndex: 'detected',
+	          editor: new Ext.form.ComboBox({
+	               typeAhead: true,
+	               triggerAction: 'all',
+	               transform:'settings_phish_smtp_detected',
+	               lazyRender:true,
+	               listClass: 'x-combo-list-small'
+	            })
+           },
+          {header: "description", width: 200, sortable: true, dataIndex: 'description',
+	          editor: new Ext.form.TextField({
+	               allowBlank: false
+	           })
+	       }
+	]);
+
+    // by default columns are sortable
+    cmSMTP.defaultSortable = true;
+	
+	    // create the Grid
+    var gridSMTP = new Ext.grid.EditorGridPanel({
+        store: storeSMTP,
+        cm: cmSMTP,
+        tbar:[{
+	            text:'Add',
+	            tooltip:'Add New Row',
+	            iconCls:'add'
+	        }, '-', {
+	            text:'Remove',
+	            tooltip:'Remove Row - Use this button to remove the selected rows',
+	            iconCls:'remove'
+	        }],
+        stripeRows: true,
+        plugins:checkColumn,
+        autoExpandColumn: 'detected',
+        clicksToEdit:1,
+        title:'SMTP'
+    });
+
+
+
+
+
+
+
+	    var dataPOP = [
+			["inbound POP", true, "quarantine message","Scan incoming POP e-mail"],
+			["outbound POP", true, "pass message", "Scan outgoing POP e-mail"]
+	    ];
+	
+	    // create the data store
+	    var storePOP = new Ext.data.SimpleStore({
+	        fields: [
+	           {name: 'source'},
+	           {name: 'scan'},
+	           {name: 'detected'},
+	           {name: 'description'}
+	        ]
+	    });
+	    storePOP.loadData(dataPOP);
+	
+	    // create the Grid
+	    var gridPOP = new Ext.grid.GridPanel({
+	        store: storePOP,
+	        columns: [
+	            {id:'source',header: "source", width: 160, sortable: true, dataIndex: 'source'},
+	            {header: "scan", width: 75, sortable: true,  dataIndex: 'scan'},
+	            {id:'detected',header: "action if PHISH detected", width: 200, sortable: true,dataIndex: 'detected'},
+	            {header: "description", width: 200, sortable: true, dataIndex: 'description'}
+	        ],
+	        stripeRows: true,
+	        autoExpandColumn: 'detected',
+	        title:'POP'
+	    });
+
+	    var dataIMAP = [
+			["inbound IMAP", true, "quarantine message","Scan incoming IMAP e-mail"],
+			["outbound IMAP", true, "pass message", "Scan outgoing IMAP e-mail"]
+	    ];
+	
+	    // create the data store
+	    var storeIMAP = new Ext.data.SimpleStore({
+	        fields: [
+	           {name: 'source'},
+	           {name: 'scan'},
+	           {name: 'detected'},
+	           {name: 'description'}
+	        ]
+	    });
+	    storeIMAP.loadData(dataIMAP);
+	
+	    // create the Grid
+	    var gridIMAP = new Ext.grid.GridPanel({
+	        store: storeIMAP,
+	        columns: [
+	            {id:'source',header: "source", width: 160, sortable: true, dataIndex: 'source'},
+	            {header: "scan", width: 75, sortable: true,  dataIndex: 'scan'},
+	            {id:'detected',header: "action if PHISH detected", width: 200, sortable: true,dataIndex: 'detected'},
+	            {header: "description", width: 200, sortable: true, dataIndex: 'description'}
+	        ],
+	        stripeRows: true,
+	        autoExpandColumn: 'detected',
+	        title:'IMAP'
+	    });
+		
+		var nodeId="phish";
+		var tabs = new Ext.TabPanel({
+	        renderTo: 'settings_'+nodeId,
+	        width:690,
+	        height:580,
+	        activeTab: 0,
+	        frame:true,
+	        items:[
+	            {title: 'Web', contentEl:'settings_phish_tabs_web'},
+	            gridSMTP,
+	            gridPOP,
+	            gridIMAP,
+	            {title: 'Web Event Log', html:'Web Event Log'},
+	            {title: 'Email Event Log', html:'Email Event Log'}
+	        ]
+	    });
+	}
+	initNodeSettings_phish();
+</script>
