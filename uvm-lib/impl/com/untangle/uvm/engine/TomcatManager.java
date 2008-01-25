@@ -120,6 +120,7 @@ class TomcatManager
         loadSystemApp("/reports", "reports", new WebAppOptions(true,new AdministrationOutsideAccessValve()));
         loadSystemApp("/alpaca", "alpaca", new WebAppOptions(true,new ReportingOutsideAccessValve()));
         loadSystemApp("/wmi", "wmi", new WebAppOptions(new WMIServerValve()));
+        loadInsecureApp("/webui", "webui");        
     }
 
     // package protected methods ----------------------------------------------

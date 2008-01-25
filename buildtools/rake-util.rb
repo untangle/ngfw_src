@@ -207,7 +207,7 @@ class JavaCompiler
     info "javac -d #{dstdir}"
 
     raise "javac failed" unless
-      Kernel.system(JavacCommand, "-classpath", cp, "-d", dstdir, "@" + files.path)
+      Kernel.system(JavacCommand, "-g", "-classpath", cp, "-d", dstdir, "@" + files.path)
   end
 
   def JavaCompiler.jar(jarTarget)
