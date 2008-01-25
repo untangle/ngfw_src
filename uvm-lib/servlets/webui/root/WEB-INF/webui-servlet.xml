@@ -61,13 +61,17 @@
         <property name="mainRackService" ref="mainRackService"/>
     </bean>
     
-    <bean name="/protofilter.htm" class="com.untangle.uvm.webui.web.ProtoFilterController">
+    <bean name="/protofilter.htm" class="com.untangle.uvm.webui.web.NodeController">
+        <property name="mainRackService" ref="mainRackService"/>
+    </bean>
+    
+    <!--bean name="/protofilter.htm" class="com.untangle.uvm.webui.web.NodeController">
     	<property name="methodNameResolver">
 	        <bean class="org.springframework.web.servlet.mvc.multiaction.ParameterMethodNameResolver">
 	            <property name="paramName" value="action"/>
 	        </bean>
     	</property>
         <property name="mainRackService" ref="mainRackService"/>
-    </bean>    
+    </bean-->    
     
 </beans>

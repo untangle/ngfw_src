@@ -13,7 +13,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import com.untangle.node.protofilter.ProtoFilter;
 import com.untangle.node.protofilter.ProtoFilterLogEvent;
@@ -21,17 +20,23 @@ import com.untangle.node.protofilter.ProtoFilterPattern;
 import com.untangle.node.protofilter.ProtoFilterSettings;
 import com.untangle.uvm.logging.EventManager;
 import com.untangle.uvm.logging.EventRepository;
-import com.untangle.uvm.webui.WebuiUvmException;
-import com.untangle.uvm.webui.service.MainRackService;
+import com.untangle.uvm.node.Node;
 import com.untangle.uvm.webui.view.ProtoFilterEventLogJSONView;
 import com.untangle.uvm.webui.view.ProtoFilterListJSONView;
 
-public class ProtoFilterController extends MultiActionController {
+public class ProtoFilterController /*extends MultiActionController*/ {
 
 	protected final Log logger = LogFactory.getLog(getClass());
 	
-	private MainRackService mainRackService = null;
+	private Node node = null;
 	
+	
+	
+	public ProtoFilterController(Node node) {
+		super();
+		this.node = node;
+	}
+
 	public ModelAndView loadProtocolList(HttpServletRequest request, HttpServletResponse response) {
 		boolean success = true;		
 		String msg = null;
@@ -40,9 +45,8 @@ public class ProtoFilterController extends MultiActionController {
 		Object data = null;
 		try {
 			// TODO we can cache the node object in the session
-			ProtoFilter protoFilter = (ProtoFilter)getMainRackService().getNode(nodeName, nodeId);
-			data = protoFilter.getProtoFilterSettings().getPatterns();
-		} catch (WebuiUvmException e) {
+			data = getProtoFilter().getProtoFilterSettings().getPatterns();
+		} catch (Exception e) {
 			msg = e.getMessage();
 			success = false;
 		}
@@ -58,10 +62,9 @@ public class ProtoFilterController extends MultiActionController {
 		Long nodeId = Long.parseLong(request.getParameter("nodeId"));
 		List<EventRepository<ProtoFilterLogEvent>> repositories = null;
 		try {
-			ProtoFilter protoFilter = (ProtoFilter)getMainRackService().getNode(nodeName, nodeId);
-	        EventManager<ProtoFilterLogEvent> em = protoFilter.getEventManager();
+	        EventManager<ProtoFilterLogEvent> em = getProtoFilter().getEventManager();
 	        repositories = em.getRepositories();
-		} catch (WebuiUvmException e) {
+		} catch (Exception e) {
 			msg = e.getMessage();
 			success = false;
 		}
@@ -79,22 +82,21 @@ public class ProtoFilterController extends MultiActionController {
 		String jsonData = request.getParameter("data");
 
 		try {
-			ProtoFilter node = (ProtoFilter)getMainRackService().getNode(nodeName, nodeId);
-			ProtoFilterSettings settings = node.getProtoFilterSettings();
+			ProtoFilterSettings settings = getProtoFilter().getProtoFilterSettings();
 			
 			JSONArray jsonPatterns = new JSONArray(jsonData);
 			List<ProtoFilterPattern> patterns = createPatterns(jsonPatterns);
 			
 		    settings.setPatterns(patterns);
-		    node.setProtoFilterSettings(settings);
+		    getProtoFilter().setProtoFilterSettings(settings);
 			
-		} catch (WebuiUvmException e) {
-			msg = e.getMessage();
-			success = false;
 		} catch (JSONException jsone) {
 			logger.error("Ivalid data", jsone);
 			//TODO I18N this
 			msg = "Invalid data!";
+			success = false;
+		} catch (Exception e) {
+			msg = e.getMessage();
 			success = false;
 		}
 			
@@ -136,12 +138,7 @@ public class ProtoFilterController extends MultiActionController {
 		return result;
 	}
 	
-	public MainRackService getMainRackService() {
-		return mainRackService;
+	private ProtoFilter getProtoFilter(){
+		return (ProtoFilter) node;
 	}
-
-	public void setMainRackService(MainRackService mainRackService) {
-		this.mainRackService = mainRackService;
-	}
-
 }
