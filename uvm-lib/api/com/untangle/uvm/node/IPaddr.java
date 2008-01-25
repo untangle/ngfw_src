@@ -87,9 +87,14 @@ public class IPaddr implements Comparable, Serializable
 
         /* Validation */
         for ( int c = 0 ; c < tmp.length ; c++ ) {
-            int val = Integer.parseInt( tmp[c] );
-            if ( val < 0 || val > 255 ) {
-                throw new ParseException( "Each component must be between 0 and 255 " + tmp);
+            try {
+                int val = Integer.parseInt( tmp[c] );
+                
+                if ( val < 0 || val > 255 ) {
+                    throw new ParseException( "Each component must be between 0 and 255 " + tmp );
+                }
+            } catch ( NumberFormatException e ) {
+                throw new ParseException( "Each component must be between 0 and 255 " + tmp );
             }
         }
 
