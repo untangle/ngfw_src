@@ -32,7 +32,7 @@ backupSettings "pre-upgrade"
 /etc/init.d/untangle-net-alpaca stop
 
 ## Delete all of the databases
-rm -f /var/lib/rails/utangle-net-alpaca/database/*.db
+rm -f ${BASE_DIR}/database/*.db
 
 ## Change into the directory and convert the settings
 cd ${BASE_DIR} && {
