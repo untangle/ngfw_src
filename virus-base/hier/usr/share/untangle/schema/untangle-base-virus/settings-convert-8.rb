@@ -1,20 +1,20 @@
 def update_schema()
   sql_helper = SqlHelper.new(@dbh)
 
-  sql_helper.rename_column('settings.n_virus_settings', 'http_outbound',
+  sql_helper.rename_column('settings.n_virus_settings', 'http_inbound',
                            'http_config')
-  sql_helper.rename_column('settings.n_virus_settings', 'ftp_outbound',
+  sql_helper.rename_column('settings.n_virus_settings', 'ftp_inbound',
                            'ftp_config')
   sql_helper.rename_column('settings.n_virus_settings', 'smtp_inbound',
                            'smtp_config')
-  sql_helper.rename_column('settings.n_virus_settings', 'pop_outbound',
+  sql_helper.rename_column('settings.n_virus_settings', 'pop_inbound',
                            'pop_config')
-  sql_helper.rename_column('settings.n_virus_settings', 'imap_outbound',
+  sql_helper.rename_column('settings.n_virus_settings', 'imap_inbound',
                            'imap_config')
 
   sql_helper.remove_columns('settings.n_virus_settings',
-                            [ 'http_inbound', 'ftp_inbound', 'smtp_outbound',
-                              'pop_inbound', 'imap_inbound' ])
+                            [ 'http_outbound', 'ftp_outbound', 'smtp_outbound',
+                              'pop_outbound', 'imap_outbound' ])
 
   schema_rewrite = [ 'DELETE FROM n_virus_config
 WHERE config_id
