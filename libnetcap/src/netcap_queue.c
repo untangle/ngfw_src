@@ -241,13 +241,13 @@ int  netcap_nfqueue_read( u_char* buf, int buf_len, netcap_pkt_t* pkt )
         int pkt_len = 0;
         
         if (( pkt_len = recv( _queue.nfq_fd, buf, buf_len, 0 )) < 0 ) return perrlog( "recv" );
-
+        
         debug( 11, "NFQUEUE Received %d bytes.\n", pkt_len );
-
+        
         if ( nfq_handle_packet( _queue.nfq_h, buf, pkt_len ) < 0 ) {
-	    return errlog(ERR_WARNING, "nfq_handle_packet" );
-	}
-
+            return errlog(ERR_WARNING, "nfq_handle_packet\n" );
+        }
+        
         debug( 11, "NFQUEUE Packet ID: %#010x.\n", pkt->packet_id );
         
         return 0;
@@ -381,7 +381,7 @@ static int _nf_callback( struct nfq_q_handle *qh, struct nfgenmsg *nfmsg, struct
     
         
     ip_header->check = 0;
-    debug(0, "WARNING, New checksum doesn't include options.\n" );
+    debug( 1, "WARNING, New checksum doesn't include options.\n" );
     ip_header->check = unet_in_cksum((u_int16_t *) ip_header, sizeof(struct iphdr));
 
     pkt->src.host.s_addr = ip_header->saddr;

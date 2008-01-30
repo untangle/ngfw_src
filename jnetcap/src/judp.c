@@ -356,9 +356,12 @@ JNIEXPORT void JNICALL JF_IPTraffic( raze )
 
     /* Remove the packet */
     debug(10, "FLAG: IPTraffic.raze packet %d\n", pkt->packet_id);
-    if(pkt->packet_id == 0) {
-        netcap_pkt_action_raze( pkt, NF_DROP );
-    }
+        
+    /* This will occasionally happen if a session is dropped after being accepted.  In this
+     * case we must drop the packet */
+    if ( pkt->packet_id != 0 ) debug( 3, "IPTraffic object with nonzero packet id.\n" );
+
+    netcap_pkt_action_raze( pkt, NF_DROP );
 
     return;
 }

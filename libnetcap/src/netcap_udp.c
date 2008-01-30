@@ -347,9 +347,9 @@ int  netcap_udp_call_hooks (netcap_pkt_t* pkt, void* arg)
             netcap_pkt_action_raze( pkt, NF_DROP );
             full_pkt = NULL;
         } else if (mailbox_put(&session->cli_mb,(void*)pkt)<0) {
-	    netcap_pkt_action_raze( pkt, NF_DROP );
-	    perrlog("mailbox_put");
-	    full_pkt = NULL;
+            netcap_pkt_action_raze( pkt, NF_DROP );
+            perrlog("mailbox_put");
+            full_pkt = NULL;
         }
         
         /* Caching order is not significant since the other thread/session doesn't exist yet */
@@ -811,7 +811,7 @@ static int _insert_first_pkt( netcap_session_t* session, netcap_pkt_t* pkt )
         return errlog( ERR_CRITICAL, "UDP SESSION: First packet already dropped.\n" );
     }
 
-    //pkt->packet_id = 0;
+    pkt->packet_id = 0;
 
     return 0;
 }
