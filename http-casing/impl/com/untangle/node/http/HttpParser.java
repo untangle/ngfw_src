@@ -22,6 +22,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -507,10 +508,17 @@ public class HttpParser extends AbstractParser
     public ParseResult parseEnd(ByteBuffer b) throws ParseException
     {
         if (b.hasRemaining()) {
-            // I think we want to release in most circumstances
-            throw new ParseException("in state: " + state
-                                     + " data trapped in read buffer: "
-                                     + b.remaining());
+            switch (state) {
+            case ACCUMULATE_HEADER_STATE:
+                b.flip();
+                List l = Collections.singletonList(header(b));
+                return new ParseResult(l, null);
+            default:
+                // I think we want to release in most circumstances
+                throw new ParseException("in state: " + state
+                                         + " data trapped in read buffer: "
+                                         + b.remaining());
+            }
         }
 
         // we should implement this to make sure end markers get sent always
