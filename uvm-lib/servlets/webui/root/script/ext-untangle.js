@@ -108,12 +108,22 @@ Ext.untangle.Node = Ext.extend(Ext.Component, {
         
         updateBlingers: function () {
         	if(this.blingers!=null) {
+        		if(this.powerOn) {
+	        		for(var i=0;i<this.blingers.length;i++) {
+	        			Ext.getCmp(this.blingers[i].id).update(this.stats);
+	        		}
+	        	} else {
+	        		this.resetBlingers();
+	        	}
+        	}
+		},
+		resetBlingers: function () {
+        	if(this.blingers!=null) {
         		for(var i=0;i<this.blingers.length;i++) {
-        			Ext.getCmp(this.blingers[i].id).update(this.stats);
+        			Ext.getCmp(this.blingers[i].id).reset();
         		}
         	}
         },
-
         onPowerClick: function() {
         	this.setPowerOn(!this.powerOn);
         	this.setState("Attention");
@@ -130,6 +140,9 @@ Ext.untangle.Node = Ext.extend(Ext.Component, {
 						Ext.MessageBox.alert('Failed', jsonResult.msg);
 					} else {
 						cmp.setState(cmp.powerOn?"On":"Off");
+					}
+					if(!cmp.powerOn) {
+						cmp.resetBlingers();
 					}
 				},
 				failure: function ( result, request) { 
@@ -243,9 +256,10 @@ Ext.untangle.Node = Ext.extend(Ext.Component, {
         		for(var i=0;i<this.blingers.length;i++) {
         			var blingerData=this.blingers[i];
         			blingerData.parentId=this.id;
+        			blingerData.id="blinger_"+this.id+"_"+i;
        				eval('var blinger=new Ext.untangle.'+blingerData.type+'(blingerData);');
        				blinger.render('nodeBlingers_'+this.id);
-        			this.blingers[i].id=blinger.id;
+        			//this.blingers[i].id=blinger.id;
         			
         		}
         	}
@@ -468,8 +482,8 @@ Ext.ComponentMgr.registerType('untangleNode', Ext.untangle.Node);
 Ext.untangle.ActivityBlinger = Ext.extend(Ext.Component, {
         parentId: null,
         bars: null,
-        lastValues: [],
-        decays:[],
+        lastValues: null,
+        decays:null,
         onRender: function (container, position) {
 	        var el= document.createElement("div");
 	        el.className="activityBlinger";
@@ -478,18 +492,19 @@ Ext.untangle.ActivityBlinger = Ext.extend(Ext.Component, {
         	this.id=Ext.id(this);
 			var templateHTML=Ext.untangle.ActivityBlinger.template.applyTemplate({'id':this.id});
 			el.innerHTML=templateHTML;
+			this.lastValues=[];
+			this.decays=[];
         	if(this.bars!=null) {
         		var out=[];
-        		var out1=[];
         		for(var i=0;i<this.bars.length;i++) {
         			var bar=this.bars[i];
         			var top=3+i*15;
-        			this.lastValues.push(0);
+        			this.lastValues.push(null);
         			this.decays.push(0);
         			out.push('<div class="blingerText activityBlingerText" style="top:'+top+'px;">'+bar+'</div>');
-        			out.push('<div class="activityBlingerBar" style="top:'+top+'px;width:0px;" id="activityBar_'+this.id+'_'+i+'"></div>');
+        			out.push('<div class="activityBlingerBar" style="top:'+top+'px;width:0px;display:none;" id="activityBar_'+this.id+'_'+i+'"></div>');
         		}
-        		document.getElementById("blingerBoxLabels_"+this.id).innerHTML=out.join("");
+        		document.getElementById("blingerBox_"+this.id).innerHTML=out.join("");
         	}
         },
         
@@ -500,22 +515,30 @@ Ext.untangle.ActivityBlinger = Ext.extend(Ext.Component, {
         		var newValue=stats.counters[6+i];
         		this.decays[i]=Ext.untangle.ActivityBlinger.decayValue(newValue, this.lastValues[i],this.decays[i]);
         		this.lastValues[i]=newValue;
-        		var barPixwlWidth=Math.floor(this.decays[i]*0.6);
+        		var barPixelWidth=Math.floor(this.decays[i]*0.6);
         		var barDiv=document.getElementById('activityBar_'+this.id+'_'+i);
-        		barDiv.style.width=barPixwlWidth+"px";
+        		barDiv.style.width=barPixelWidth+"px";
+        		barDiv.style.display=(barPixelWidth==0)?"none":"";
         	}
+        },
+        reset: function() {
+       		for(var i=0;i<this.bars.length;i++) {
+       			this.lastValues[i]=null;
+       			this.decays[i]=0;
+       			var barDiv=document.getElementById('activityBar_'+this.id+'_'+i);
+       			barDiv.style.width="0px";
+       			barDiv.style.display="none";
+       		}
         }
         
 });
 Ext.untangle.ActivityBlinger.template = new Ext.Template(
 '<div class="blingerName">activity</div>',
-'<div class="blingerBox" style="width:60px;">',
-'<div id="blingerBoxValues_{id}"></div>',
-'<div id="blingerBoxLabels_{id}"></div>',
+'<div class="blingerBox" id="blingerBox_{id}" style="width:60px;">',
 '</div>');
-Ext.untangle.ActivityBlinger.decayFactor=Math.pow(0.9,Ext.untangle.BlingerManager.updateTime/1000);
+Ext.untangle.ActivityBlinger.decayFactor=Math.pow(0.94,Ext.untangle.BlingerManager.updateTime/1000);
 Ext.untangle.ActivityBlinger.decayValue = function(newValue, lastValue, decay) {
-	if(newValue!=lastValue) {
+	if(lastValue!=null && newValue!=lastValue) {
 		decay=98;
 	} else {
 		decay=decay*Ext.untangle.ActivityBlinger.decayFactor;
@@ -525,10 +548,16 @@ Ext.untangle.ActivityBlinger.decayValue = function(newValue, lastValue, decay) {
 Ext.ComponentMgr.registerType('untangleActivityBlinger', Ext.untangle.ActivityBlinger);
 
 Ext.untangle.SystemBlinger = Ext.extend(Ext.Component, {
-        parentId: null,
-        infos: null,
+		parentId: null,
+		data: null,
+		byteCountCurrent: null,
+		byteCountLast: null,
+		sessionCountCurrent: null,
+		sessionCountTotal: null,
+		sessionRequestLast: null,
+		sessionRequestTotal: null,
+		
         onRender: function (container, position) {
-	       /*
 	        var el= document.createElement("div");
 	        el.className="systemBlinger";
 	        container.dom.insertBefore(el, position);
@@ -536,26 +565,75 @@ Ext.untangle.SystemBlinger = Ext.extend(Ext.Component, {
         	this.id=Ext.id(this);
 			var templateHTML=Ext.untangle.SystemBlinger.template.applyTemplate({'id':this.id});
 			el.innerHTML=templateHTML;
-        	if(this.bars!=null) {
+			this.byteCountCurrent=0;
+			this.byteCountLast=0;
+			this.sessionCountCurrent=0;
+			this.sessionCountTotal=0;
+			this.sessionRequestLast=0;
+			this.sessionRequestTotal=0;
+			
+			this.data=[];
+			this.data.push({"name":"Current Session Count:","value":"&nbsp;"});
+			this.data.push({"name":"ACC:","value":"&nbsp;"});
+			this.data.push({"name":"REQ:","value":"&nbsp;"});
+			this.data.push({"name":"Data rate:","value":"&nbsp;"});
+        	if(this.data!=null) {
         		var out=[];
-        		for(var i=0;i<this.bars.length;i++) {
-        			var bar=this.bars[i];
+        		for(var i=0;i<this.data.length;i++) {
+        			var dat=this.data[i];
         			var top=3+i*15;
-        			out.push('<div class="blingerText activityBlingerText" style="top:'+top+'px;">'+bar.name+'</div>');
+        			out.push('<div class="blingerText systemBlingerName" style="top:'+top+'px;" id="systemName_'+this.id+'_'+i+'">'+dat.name+'</div>');
+        			out.push('<div class="blingerText systemBlingerValue" style="top:'+top+'px;" id="systemValue_'+this.id+'_'+i+'">'+dat.value+'</div>');
         		}
-        		document.getElementById("blingerBoxLabels_"+this.id).innerHTML=out.join("");
+        		document.getElementById("blingerBox_"+this.id).innerHTML=out.join("");
         	}
-        	*/
         },
         
         update: function(stats) {
+        	// UPDATE COUNTS
+        	this.sessionCountCurrent=stats.tcpSessionCount+stats.udpSessionCount;
+        	this.sessionCountTotal=stats.tcpSessionTotal+stats.udpSessionTotal;
+        	this.sessionRequestTotal=stats.tcpSessionRequestTotal+stats.udpSessionRequestTotal;
+            this.byteCountCurrent = stats.c2tBytes + stats.s2tBytes;
+            // (RESET COUNTS IF NECESSARY)
+            if( (this.byteCountLast == 0) || (this.byteCountLast > this.byteCountCurrent) )
+                this.byteCountLast = this.byteCountCurrent;
+            if( (this.sessionRequestLast == 0) || (this.sessionRequestLast > this.sessionRequestTotal) )
+                this.sessionRequestLast = this.sessionRequestTotal;
+        	var acc=this.sessionCountTotal;
+        	var req=this.sessionRequestTotal;
+        	var dataRate=(this.byteCountCurrent - this.byteCountLast)/Ext.untangle.BlingerManager.updateTime;
+        	this.data[0].value=this.sessionCountCurrent;
+        	this.data[1].value=acc;
+        	this.data[2].value=req;
+        	this.data[3].value = dataRate.toFixed(2)+"/KBPs";
+        	if(this.data!=null) {
+        		for(var i=0;i<this.data.length;i++) {
+        			var valueDiv=document.getElementById('systemValue_'+this.id+'_'+i);
+        			valueDiv.innerHTML=this.data[i].value;
+        		}
+        	}
+        },
+        reset: function() {
+			this.byteCountCurrent=0;
+			this.byteCountLast=0;
+			this.sessionCountCurrent=0;
+			this.sessionCountTotal=0;
+			this.sessionRequestLast=0;
+			this.sessionRequestTotal=0;
+        	
+        	if(this.data!=null) {
+        		for(var i=0;i<this.data.length;i++) {
+        			this.data[i].value="&nbsp;";
+        			var valueDiv=document.getElementById('systemValue_'+this.id+'_'+i);
+        			valueDiv.innerHTML=this.data[i].value;
+        		}
+        	}
         }
 });
 Ext.untangle.SystemBlinger.template = new Ext.Template(
 '<div class="blingerName">system</div>',
-'<div class="blingerBox" style="width:60px;">',
-'<div id="blingerBoxValues_{id}"></div>',
-'<div id="blingerBoxLabels_{id}"></div>',
+'<div class="systemBlingerBox" id="blingerBox_{id}" style="width:100%">',
 '</div>');
 Ext.ComponentMgr.registerType('untangleSystemBlinger', Ext.untangle.SystemBlinger);
 

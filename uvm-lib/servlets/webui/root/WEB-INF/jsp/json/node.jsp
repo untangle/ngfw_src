@@ -12,6 +12,6 @@
 	  'runState':'<%= node.node().getRunState() %>','image':'rack.do?action=getImage&name=${node.mackageDesc.name}',
 	  'helpLink':'<uvm:help source="${node.nodeDesc.displayName}"/>',
 	  'webContext':'protofilter',
-	  'blingers':[{'type':'ActivityBlinger','bars':['SCAN','BLOCK','PASS','']},{'type':'SystemBlinger'}]}
+	  'blingers':[{'type':'ActivityBlinger','bars':['ACT 1','ACT 2','ACT 3','ACT 4']},{'type':'SystemBlinger'}]}
 }
 

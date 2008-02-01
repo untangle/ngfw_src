@@ -111,7 +111,7 @@ div.nodeBlingers {
 	/*border:1px solid green;*/
 	top:0px;
 	right:90px;
-	width:250px;
+	width:330px;
 	height:82px;
 }
 .nodeHelpIcon {
@@ -221,7 +221,6 @@ div.blingerBox {
 	border-right:2px solid #FFFFFF;
 	background-color: #000000;
 	height:64px;
-
 }
 div.blingerText {
 	font-family: "Arial", sans-serif;
@@ -240,7 +239,7 @@ div.blingerName {
 div.activityBlinger {
 	position:absolute;
 	top:0px;
-	left:2px;
+	left:0px;
 	width:65px;
 }
 div.activityBlingerText {
@@ -251,11 +250,51 @@ div.activityBlingerText {
 }
 div.activityBlingerBar {
 	position:absolute;
-	border:1px solid #6666FF;
+	border-top:1px solid #6666FF;
+	border-right:1px solid #6666FF;
+	border-bottom:1px solid #6666FF;
+	border-left:0px solid #333380;
 	background-color: #333380;
 	left:0px;
 	height:10px;
 	z-index: 14;
+}
+
+div.systemBlinger {
+	position:absolute;
+	top:0px;
+	left:110px;
+	width:215px;
+}
+
+div.systemBlingerBox {
+	position:absolute;
+	top:15px;
+	left:0px;
+	border-top:2px solid #969696;
+	border-left:0px solid #FFFFFF;
+	border-bottom:0px solid #FFFFFF;
+	border-right:2px solid #969696;
+	background-color: transparent;
+	height:64px;
+}
+div.systemBlingerName {
+	position:absolute;
+	left:2px;
+	text-align: left;
+	color: #969696;
+	width: 140px;
+	font-size: 10px;
+}
+div.systemBlingerValue {
+	position:absolute;
+	right:2px;
+	text-align: right;
+	background-color: #000000;
+	color: #28688B;
+	width: 75px;
+	font-size: 10px;
+	padding-right:1px 
 }
 div.sessionBlinger {
 	position:absolute;
