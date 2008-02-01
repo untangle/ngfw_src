@@ -1,0 +1,193 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" >
+<head>
+    <title>Untangle rack - Dojo model</title>
+    
+    <style type="text/css">
+        @import "dojo-release-1.0.2/dijit/themes/tundra/tundra.css";
+        @import "dojo-release-1.0.2/dojo/resources/dojo.css";
+        @import "untangle.css";
+    </style>
+<style type="text/css">
+html, body, div, dl, dt, dd, ul, ol, li, h1, h2, h3, h4, h5, h6, pre, form, fieldset, input, p, blockquote, th, td {
+	margin:0pt;
+	padding:0pt;
+}
+                
+.tundra .dijitTab {
+	font-size:12px;
+	margin-right: 1px;
+}
+.tundra .dijitButtonNode {
+	padding: 0px;
+}
+.nodeSettingsContent {
+	position:relative;
+	border:1px solid green;
+	min-height:80px;
+	margin-top:8px;
+	margin-left:14px;
+	margin-right:14px;
+	margin-bottom: 66px;
+
+}	
+.nodeSettings {
+	position:relative;
+	background-color: transparent;
+	background-image:  url(images/LightGreyBackground1600x100.png);
+	background-repeat: repeat-y;
+	border:1px solid rgb(128,127,127);
+	width:594px;
+	left:46px;
+	margin-bottom: 26px;
+}
+</style>
+    
+    <script type="text/javascript" src="dojo-release-1.0.2/dojo/dojo.js" djConfig="parseOnLoad: true"></script>
+    <script type="text/javascript" src="script/graphics.js"></script>
+<script type="text/javascript">
+	dojo.require("dijit.layout.LayoutContainer");
+	dojo.require("dijit.layout.TabContainer");
+	dojo.require("dijit.layout.ContentPane");
+	dojo.require("untangle.Node");
+	dojo.require("untangle.Button");
+
+</script>
+
+<script type="text/javascript">
+	var _isExt=false;
+	var tools= null;
+	var nodes= null;
+	
+	MainPage = function() {}
+	MainPage.loadTools = function() {
+		dojo.xhrGet({
+					url: "requests/tools.json", 
+				    handleAs:'json',
+					preventCache: true,
+					load: function(response, ioArgs){
+						tools=response;
+						MainPage.buildTools();
+						return response; //must return a value here or the parent test deferred fails.
+					},
+					error: function(response, ioArgs) {
+						alert(ioArgs.xhr.status)
+						return response;
+					}
+				});
+	}
+	MainPage.loadNodes = function() {
+		dojo.xhrGet({
+					url: "requests/nodes.json", 
+				    handleAs:'json',
+					preventCache: true,
+					load: function(response, ioArgs){
+						nodes=response.nodes;
+						MainPage.buildRacks();
+						return response; //must return a value here or the parent test deferred fails.
+					},
+					error: function(response, ioArgs) {
+						alert(ioArgs.xhr.status)
+						return response;
+					}
+				});
+	}
+	MainPage.buildTools = function() {
+		MainPage.buildLibrary();
+		MainPage.buildMyApps();
+		MainPage.buildConfig();
+	}
+	
+	MainPage.buildLibrary = function() {
+  		var out=[];
+  		for(var i=0;i<tools.library.length;i++) {
+  			var item=tools.library[i];
+  			out.push('<div dojoType="untangle.Button" label="'+item.label+'" imageSrc="'+item.image+'" class="toolboxButton libraryButton" onClick="MainPage.clickToolsButton(tools.library['+i+'])" '+(item.disabled=='true'?'disabled':'')+'></div>');
+  		}
+  		document.getElementById('toolsLibrary').innerHTML=out.join('');
+  		dojo.parser.parse(document.getElementById('toolsLibrary'));
+	}
+	MainPage.clickToolsButton = function(item) {
+		if(item!=null && item.action!=null) {
+			var action=item.action;
+			if(item.action.url!=null) {
+				window.open(item.action.url);
+			} else if(item.action.method!=null) {
+				eval(item.action.method);
+			}
+		}
+	}
+	
+	MainPage.todo=function() {
+		alert("TODO: implement this.")
+	}
+	
+	MainPage.buildMyApps = function() {
+  		var out=[];
+  		for(var i=0;i<tools.myApps.length;i++) {
+  			var item=tools.myApps[i];
+  			out.push('<div dojoType="untangle.Button" label="'+item.label+'" imageSrc="'+item.image+'" class="toolboxButton libraryButton" onClick="MainPage.clickToolsButton(tools.myApps['+i+'])" '+(item.disabled=='true'?'disabled':'')+'></div>');
+  		}
+  		document.getElementById('toolsMyApps').innerHTML=out.join('');
+  		dojo.parser.parse(document.getElementById('toolsMyApps'));
+	}
+	
+	MainPage.buildConfig = function() {
+  		var out=[];
+  		for(var i=0;i<tools.config.length;i++) {
+  			var item=tools.config[i];
+  			out.push('<div dojoType="untangle.Button" label="'+item.label+'" imageSrc="'+item.image+'" class="toolboxButton configButton" onClick="MainPage.clickToolsButton(tools.config['+i+'])" '+(item.disabled=='true'?'disabled':'')+'></div>');
+  		}
+  		document.getElementById('toolsConfig').innerHTML=out.join('');
+  		dojo.parser.parse(document.getElementById('toolsConfig'));
+	}
+	
+	MainPage.buildRacks = function () {
+		var out=[];
+		for(var i=0;i<nodes.length;i++) {
+			var node=nodes[i];
+			var node=new untangle.Node(node,dojo.doc.createElement('div'));
+			document.getElementById("rack_list").appendChild(node.domNode)
+			node.startup();
+		}
+	}
+	
+	function init() {
+		MainPage.loadTools();
+		MainPage.loadNodes();
+	}
+
+	dojo.addOnLoad(init);
+</script>
+</head>
+<body class="tundra">
+<div id="container">
+	<div id="contentleft">
+		<div id="logo"><img src="images/Logo150x96.gif"/></div>
+		<div id="tabs">
+			<div dojoType="dijit.layout.TabContainer" style="width:200px;height:300px;">
+				<div dojoType="dijit.layout.ContentPane" title="Library" style="padding:1px;display:none;">
+				    <div style="margin-left:15px;font-size: 11px;text-align:left;">Click to Learn More</div>
+				    <div id="toolsLibrary"></div>
+				</div>
+				<div dojoType="dijit.layout.ContentPane" title="My Apps" style="padding:1px; display:none;">
+				    <div style="margin-left:15px;font-size: 11px;text-align:left;">Click to Install into Rack</div>
+				    <div id="toolsMyApps"></div>
+				</div>
+				<div dojoType="dijit.layout.ContentPane" title="Config" style="padding:1px; display:none;">
+                	<div style="margin-left:15px;font-size: 11px;text-align:left;">Click to Configure</div>
+                	<div id="toolsConfig"></div>
+				</div>
+			</div>
+		</div>
+ 		<div id="help"><input type="button" dojoType="dijit.form.Button" iconClass="mainHelpIcon" label="Help"/></div>
+	</div>
+	<div id="racks">
+		<div id="leftBorder"></div>
+		<div id="rightBorder"></div>
+		<div id="rack_list"></div>
+	</div>
+</div>
+
+</body>
+</html>

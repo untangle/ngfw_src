@@ -1,0 +1,352 @@
+body {
+	text-align:center;
+}
+
+#container {
+background-color:#FFFFFF;
+margin:auto;
+min-width:600px;
+text-align:left;
+width:962px;
+}
+#contentleft {background:transparent url(images/MainBackgroundLeft_222x100.png)  repeat-y;
+	width:222px; float:left; text-align:center; min-height:700px;height:100%;}
+#racks {
+	position:relative;
+	background-color: transparent;
+	background-image: url(images/MainBackgroundRight_1398x100.png);
+	background-repeat: repeat-y;
+	background-position:left;
+	width:740px; float:right;min-height:700px;height:100%;
+}
+#racks #leftBorder{
+	float:left;
+	background-color: transparent;
+	background-image:  url(images/pipeline/LeftRack59x100.png);
+	background-repeat: repeat-y;
+	background-position:left;
+	width:59px; min-height:700px; height:100%;margin-left: 11px;
+}
+#racks #rightBorder{
+	float:right;
+	margin-right: 11px;
+	background-color: transparent;
+	background-image:  url(images/pipeline/RightRack59x100.png);
+	background-repeat: repeat-y;
+	background-position:right;
+	width:59px; min-height:700px;height:100%;
+}
+#logo {margin-top: 35px;margin-bottom: 35px;}
+#tabs {width:201px; margin-left: auto; margin-right: auto;margin-bottom: 14px;}
+.mainHelpIcon {background-image:url(images/IconHelp36x36.png) ;background-repeat:no-repeat;width:36px; height:36px;}
+#help {width:87px; margin-left: auto; margin-right: auto;margin-bottom: 10px;}
+
+#rack_list {
+	position:absolute;
+	top: 54px;
+	left: 26px;
+	background-color: transparent;
+	background-image:  url(images/PlainSeparator688x50.png);
+	background-repeat: no-repeat;
+	width:690px;
+	height:50px;
+}
+#rack_nodes {
+	position:absolute;
+	top: 104px;
+	left: 26px;
+}
+div.rackNode {
+	position:relative;
+	background-color: transparent;
+	background-image:  url(images/node/NodeBackground688x100.png);
+	background-repeat: no-repeat;
+	width:690px;
+	height:101px;
+}
+
+#rack_select {
+	position:absolute;
+	top:12px;
+	left:90px;
+	background-color:#AFAFAF;
+	font-family: verdana, sans-serif;
+	font-size:18px;
+	color: #7C7B7B;
+}
+
+#nodes_separator_text {
+	position:relative;
+	left: 90px;
+	top: 12px;
+	font-family: verdana, sans-serif;
+	font-size:19px;
+	color: #7C7B7B;
+}
+#nodes_separator {
+	position:relative;
+	background-color: transparent;
+	background-image:  url(images/PlainSeparator688x50.png);
+	background-repeat: no-repeat;
+	width:690px;
+	height:50px;
+}
+.nodeImage {
+	position:absolute;
+	top:8px;
+	left:54px;
+}
+div.nodeLabel {
+	position:absolute;
+	top: 19px;
+	left: 108px;
+	font-family: verdana, sans-serif;
+	font-size:18px;
+	/*font-weight:bold;*/
+	color: #7C7B7B;
+}
+
+div.nodeBlingers {
+	position:absolute;
+	/*border:1px solid green;*/
+	top:0px;
+	right:90px;
+	width:250px;
+	height:82px;
+}
+.nodeHelpIcon {
+	background:url(images/node/IconHelp28x28.png) no-repeat scroll -4px -4px !important; 
+	width:20px;
+	height:19px;
+}
+
+div.nodeStateIcon {
+	position:absolute;
+	top:20px;
+	right:54px;
+}
+div.nodePowerIcon {
+	position:absolute;
+	top:54px;
+	right:54px;
+}
+div.nodePowerOnHint {
+	position:absolute;
+	top:80px;
+	right:64px;
+}
+div.nodeSettingsButton {
+	position:absolute;
+	top:56px;
+	left:50px;
+	/*width:66px;*/
+}
+div.nodeHelpButton {
+	position:absolute;
+	top:56px;
+	left:182px;
+	width:120px;
+}
+.nodeSettingsIcon {
+	background:url(images/node/IconControlsClosed28x28.png) no-repeat scroll -5px -6px !important;  
+	width:18px;
+	height:16px;
+}
+div.nodeSettingsHideButton {
+	position:absolute;
+	left:150px;
+	bottom:17px;
+}
+.nodeSettingsHideIcon {
+	background:url(images/node/IconControlsOpen28x28.png) no-repeat scroll -5px -6px !important; 
+	width:18px;
+	height:16px;
+}
+div.nodeSettings {
+	position:relative;
+	background-color: transparent;
+	background-image:  url(images/LightGreyBackground1600x100.png);
+	background-repeat: repeat-y;
+	border:1px solid rgb(128,127,127);
+	width:100%;
+	height:100%;
+}
+div.nodeRemoveButton {
+	position:absolute;
+	left:10px;
+	bottom:17px;
+}
+.nodeRemoveIcon {
+	background:url(images/node/IconRemove_16x16.png) no-repeat !important; 
+	width:16px;
+	height:16px;
+}
+div.nodeCancelButton {
+	position:absolute;
+	right:93px;
+	bottom:17px;
+}
+.cancelIcon {
+	background:url(images/node/IconCancel_16x16.png) no-repeat !important; 
+	width:16px;
+	height:16px;
+}
+div.nodeSaveButton {
+	position:absolute;
+	right:10px;
+	bottom:17px;
+}
+.saveIcon {
+	background:url(images/node/IconSave_23x16.png) no-repeat !important; 
+	width:23px;
+	height:16px;
+}
+div.nodeSettingsContent {
+	position:relative;
+	/*border:1px solid green;*/
+	/*min-height:80px;*/
+	margin-top:8px;
+	margin-left:14px;
+	margin-right:14px;
+	margin-bottom: 66px;
+
+}
+div.blingerBox {
+	position:absolute;
+	top:15px;
+	left:0px;
+	border-top:2px solid #969696;
+	border-left:3px solid #696969;
+	border-bottom:2px solid #FFFFFF;
+	border-right:2px solid #FFFFFF;
+	background-color: #000000;
+	height:64px;
+
+}
+div.blingerText {
+	font-family: "Arial", sans-serif;
+	font-size: 9px;
+	color: #BEBEBE;
+}
+div.blingerName {
+	position:absolute;
+	top:1px;
+	right:0px;
+	font-family: "times", sans-serif;
+	font-size: 11px;
+	color: #969696;
+}
+
+div.activityBlinger {
+	position:absolute;
+	top:0px;
+	left:2px;
+	width:65px;
+}
+div.activityBlingerText {
+	position:absolute;
+	right:3px;
+	text-align: right;
+	z-index: 15;
+}
+div.activityBlingerBar {
+	position:absolute;
+	border:1px solid #6666FF;
+	background-color: #333380;
+	left:0px;
+	height:10px;
+	z-index: 14;
+}
+div.sessionBlinger {
+	position:absolute;
+	top:0px;
+	left:75px;
+	width:85px;
+}
+div.dataRateBlinger {
+	position:absolute;
+	top:0px;
+	left:168px;
+	width:85px;
+
+}
+div.blingerVerticalAxis {
+	position:absolute;
+	border-right:1px solid #808080;
+	left:0px;
+	top:4px;
+	height:56px;
+	width:15px;
+}
+div.blingerGraphTopText {
+	position:absolute;
+	top:1px;
+	right:3px;
+	text-align: right;
+	z-index: 99;
+
+}
+div.blingerGraphBottomText {
+	position:absolute;
+	bottom:1px;
+	right:3px;
+	text-align: right;
+	z-index: 9;
+}
+div.pixel {
+	position:absolute;
+	width:1px;
+	height:1px;
+}
+div.toolboxButton {
+	margin-left: auto;
+	margin-right: auto;
+	margin-bottom: 5px;
+}
+div.libraryButton {
+	width:161px;
+	height:57px;
+}
+div.configButton {
+	width:161px;
+	height:45px;
+}
+
+
+div.untangleButton {
+	cursor: pointer;
+	background-color: #E9E9E9;
+	border: 1px solid #9B9B9B;
+}
+div.untangleButtonHover {
+	border-color:#366dba;
+	color:#366dba;
+	background-color:#f1f6fc;
+}
+div.untangleButtonInvalid {
+	border: 1px solid green;
+}
+
+button.add {
+    background-image:url(images/add.gif) !important;
+}
+button.remove {
+    background-image:url(images/delete.gif) !important;
+}
+button.iconRefresh {
+    background-image:url(images/IconRefresh_16x16.png) !important;
+}
+div.editRow {
+	background-image:url(images/editRow.gif);
+	background-position:center;
+	background-repeat:no-repeat;
+	width: 100%;
+	cursor: pointer;
+}
+div.removeRow {
+	background-image:url(images/removeRow.gif);
+	background-position:center;
+	background-repeat:no-repeat;
+	width: 100%;
+	cursor: pointer;
+}
