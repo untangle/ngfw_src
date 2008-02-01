@@ -372,7 +372,7 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
                 }
             };
 
-        if (asm.loadInsecureApp("/protofilter", "protofilter", v)) {
+        if (asm.loadInsecureApp("/protofilter", "protofilter"/*, v*/)) {
             logger.debug("Deployed ProtoFilter WebApp");
         } else {
             logger.error("Unable to deploy ProtoFilter WebApp");
