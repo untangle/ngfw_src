@@ -131,7 +131,7 @@ getLicenseKey() {
     @UVM_HOME@/bin/utactivate
     @UVM_HOME@/bin/utregister # register under new key
   else
-    echo "$NAME curl call for license key succeeded (RC=$?)" >> $UVM_WRAPPER_LOG    
+    echo "$NAME curl call for license key failed (RC=$?)" >> $UVM_WRAPPER_LOG    
   fi
 }
 
