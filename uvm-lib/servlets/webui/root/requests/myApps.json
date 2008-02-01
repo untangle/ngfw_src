@@ -1,9 +1,0 @@
-{'success':true,'msg':null,'data':
- {'myApps':[
-	{'name':'phish','displayName':'Phish Blocker','image':'images/node/phish/IconDesc42x42.png','disabled':'true','action':{'method':'MainPage.todo()'}},
-	{'name':'webfilter','displayName':'Web Filter','image':'images/node/webfilter/IconDesc42x42.png','disabled':'true','action':{'method':'MainPage.todo()'}},
-	{'name':'intrusionPrevention','displayName':'Intrusion Prevention','image':'images/node/ips/IconDesc42x42.png','action':{'method':'MainPage.todo()'}},
-	{'name':'protocolControl','displayName':'Protocol Control','image':'images/node/protofilter/IconDesc42x42.png','action':{'method':'MainPage.todo()'}},
-	{'name':'untangleReports','displayName':'Untangle Reports','image':'images/node/reporting/IconDesc42x42.png','action':{'method':'MainPage.todo()'}}
- ]}
-}

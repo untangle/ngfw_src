@@ -1,7 +1,0 @@
-{'success':true,'msg':null,'data':
- {'nodes':[
-	{'id':'phish1','tid':'phish1','name':'phish','displayName':'Phish Blocker', 'viewPosition':0,'recType':'1','isService':false,'powerOn':'true','image':'images/node/phish/IconDesc42x42.png','helpLink':'http://www.untangle.com/docs/get.php?version=5.0&source=web_filter&focus=null','blingers':[{'type':'ActivityBlinger','bars':[{'code':'pass','name':'PASS'},{'code':'block','name':'BLOCK'},{'code':'mark','name':'MARK'},{'code':'quarant','name':'QUARANT'}]},{'type':'SessionsBlinger'},{'type':'DataRateBlinger'}],'settings':{'url':'nodes/phish.html'}},
-	{'id':'webfilter1','tid':'webfilter1','name':'webfilter','displayName':'Web Filter','viewPosition':1,'recType':'1','isService':false,'powerOn':'false', 'image':'images/node/webfilter/IconDesc42x42.png','helpLink':'http://www.untangle.com/docs/get.php?version=5.0&source=web_filter&focus=null','blingers':[{'type':'ActivityBlinger','bars':[{'code':'scan','name':'SCAN'},{'code':'block','name':'BLOCK'},{'code':'pass','name':'PASS'}]},{'type':'SessionsBlinger'},{'type':'DataRateBlinger'}],'settings':{'url':'nodes/webfilter.html'}}
-
- ]}
-}
