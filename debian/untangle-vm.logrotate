@@ -30,20 +30,13 @@ notifempty
 copytruncate
 }
 
-/var/log/uvm/gc.log {
-rotate 9
-size 500k
-compress
-notifempty
-copytruncate
-}
-
 /var/log/uvm/iptables.log {
 rotate 9
 size 500k
 compress
 notifempty
 copytruncate
+missingok
 }
 
 /var/log/uvm/report.log {
@@ -52,4 +45,5 @@ size 500k
 compress
 notifempty
 copytruncate
+missingok
 }
