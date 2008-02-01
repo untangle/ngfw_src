@@ -25,4 +25,15 @@
             <description>The sub component we need help for</description>           
         </attribute>
     </tag>
+    <tag>
+        <name>web-context</name>
+        <tag-class>com.untangle.uvm.webui.tags.WebContextTag</tag-class>
+        <description>Gets web context for a node</description>
+        <attribute> 
+            <name>node</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue> 
+            <description>The node name we need the web context for</description>           
+        </attribute>
+    </tag>
 </taglib>
