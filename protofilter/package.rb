@@ -16,4 +16,12 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
 #
 
+protofilter = BuildEnv::SRC['untangle-node-protofilter']
+
 NodeBuilder.makeNode(BuildEnv::SRC, 'untangle-node-protofilter', 'protofilter')
+
+deps = [protofilter['gui']]
+
+ServletBuilder.new(protofilter, 'com.untangle.uvm.webui.protofilter',
+                   "./protofilter/webui/protofilter", [],
+                   deps, [], [BuildEnv::SERVLET_COMMON])
