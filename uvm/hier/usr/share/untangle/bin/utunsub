@@ -6,7 +6,7 @@ if [ $# -lt 1 ] ; then
 fi
 
 FAILED=0
-/usr/bin/wget -O /dev/null "https://poptrack.untangle.com/register/unsub.php?box_id=`cat /usr/share/untangle/activation.key`&filename=\"$1\""  &> /dev/null
+/usr/bin/curl --max-time 30 -o /dev/null "https://poptrack.untangle.com/register/unsub.php?box_id=`cat /usr/share/untangle/activation.key`&filename=\"$1\""  &> /dev/null
 if [ $? -ne 0 ] ; then FAILED=1 ; fi
 
 if [ $FAILED -ne 0 ] ; then

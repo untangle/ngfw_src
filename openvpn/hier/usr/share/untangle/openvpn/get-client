@@ -72,10 +72,10 @@ copyFromUsb()
 
 downloadClient()
 {
-    wget --timeout ${DOWNLOAD_TIMEOUT} \
-        --tries ${DOWNLOAD_RETRIES} \
+    curl -k --max-time ${DOWNLOAD_TIMEOUT} \
+        --retry ${DOWNLOAD_RETRIES} -o ${destination} \
         "https://${serverAddress}/openvpn/config.zip?key=${distributionKey}" \
-        -O ${destination} || exit ${DOWNLOAD_ERROR}
+        || exit ${DOWNLOAD_ERROR}
 }
 
 installClient()

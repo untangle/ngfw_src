@@ -54,9 +54,6 @@ CLI_SERVER_HOME=/usr/share/untangle-cli-server/src
 
 # activation stuff...
 UNTANGLE_HARDWARE=@UVM_HOME@/.untanglehw
-REGISTRATION_DONE_FILE=@UVM_HOME@/.regdone
-REGISTRATION_INFO_FILE=@UVM_HOME@/registration.info
-REGISTRATION_URL=https://poptrack.untangle.com/register/custreg.php
 ACTIVATION_KEY_FILE=@UVM_HOME@/activation.key
 ACTIVATION_KEY_FILE_TMP=${ACTIVATION_KEY_FILE}.tmp
 TMP_ARCHIVE=@PREFIX@/tmp/activation.tar

@@ -1123,7 +1123,7 @@ Description: Untangle Server Thirdparty Libraries
 
 Package: untangle-vm
 Architecture: all
-Depends: sun-java5-jre | sun-java6-jre, untangle-libuvm, untangle-libuvmcore, untangle-libuvmthirdparty, sudo, iptables (>= 1.3.6), untangle-libnfnetlink0, db4.2-util, untangle-ujac2pdf, at, ebtables, mime-support, untangle-nsis-addons, dnsmasq, pppoe, bridge-utils, iputils-ping, curl, sg3-utils, pciutils, libdbd-pg-ruby, ruby, postgresql-client | postgresql-client-7.4 | postgresql-client-8.1 | postgresql-client-8.2, postgresql | postgresql-7.4 | postgresql-8.1 | postgresql-8.2, untangle-linux-image, mail-transport-agent, jruby1.0, libgettext-ruby, ethtool, net-tools, untangle-net-alpaca
+Depends: sun-java5-jre | sun-java6-jre, untangle-libuvm, untangle-libuvmcore, untangle-libuvmthirdparty, sudo, iptables (>= 1.3.6), untangle-libnfnetlink0, db4.2-util, untangle-ujac2pdf, at, ebtables, mime-support, untangle-nsis-addons, dnsmasq, pppoe, bridge-utils, iputils-ping, curl, wget, sg3-utils, pciutils, libdbd-pg-ruby, ruby, postgresql-client | postgresql-client-7.4 | postgresql-client-8.1 | postgresql-client-8.2, postgresql | postgresql-7.4 | postgresql-8.1 | postgresql-8.2, untangle-linux-image, mail-transport-agent, jruby1.0, libgettext-ruby, ethtool, net-tools, untangle-net-alpaca
 Recommends: untangle-postgresql-config, untangle-gateway-light
 Provides: mvvm
 Conflicts: mvvm, untangle-restore-tools (< 5.1)
