@@ -42,7 +42,7 @@ else
   # This next will fail if testing on development machines, which is "a good thing"
   echo "Installing sources list"
   KEY=`cat $ACTIVATION_KEY_FILE`
-  if  [ grep -q "$KEY" $SOURCES_LIST ] ; then # already taken care of
+  if [ -f "$SOURCES_LIST" ] && grep -q "$KEY" $SOURCES_LIST ; then # already taken care of
     true
   else # dump the right source in the right place :)
     touch $SOURCES_LIST # so that we don't fail next line because of noclobber
