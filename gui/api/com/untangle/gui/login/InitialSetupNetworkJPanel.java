@@ -199,6 +199,9 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
                     throw new Exception();
 
                 hostname = HostName.parseStrict( hostnameString );
+
+                /* Hostname must be qualified */
+                if ( !hostname.isQualified()) throw new Exception();
             }
             catch(Exception e){
                 hostnameJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
