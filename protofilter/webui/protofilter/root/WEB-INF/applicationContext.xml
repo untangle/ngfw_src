@@ -24,7 +24,7 @@
     <bean id="remoteUvmContextManager" class="com.untangle.uvm.webui.service.impl.RemoteUvmContextManager"
     		destroy-method="destroy">
     	<property name="timeout" value="${uvm.context.timeout}"/>
-    	<property name="loginType" value="${uvm.context.loginType}"/> <!-- interactive | system -->
+    	<property name="loginType" value="${uvm.context.loginType}"/> <!-- local | interactive | system -->
     	
     	<!-- the next properties are needed only for interactive login -->
     	<property name="host" value="${uvm.context.host}"/>

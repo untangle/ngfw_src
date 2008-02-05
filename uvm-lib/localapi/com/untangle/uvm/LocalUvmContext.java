@@ -37,6 +37,7 @@ import java.io.File;
 import java.io.IOException;
 
 import com.untangle.uvm.addrbook.RemoteAddressBook;
+import com.untangle.uvm.client.RemoteUvmContext;
 import com.untangle.uvm.license.LocalLicenseManager;
 import com.untangle.uvm.license.RemoteLicenseManager;
 import com.untangle.uvm.localapi.LocalIntfManager;
@@ -307,6 +308,12 @@ public interface LocalUvmContext
 
     void waitForStartup();
 
+    /**
+     * Get the remote context.
+     *
+     * @return the RemoteUvmContext.
+     */
+    RemoteUvmContext remoteContext();
 
     /**
      * Get the ADPhoneBookAssistant singleton for this instance

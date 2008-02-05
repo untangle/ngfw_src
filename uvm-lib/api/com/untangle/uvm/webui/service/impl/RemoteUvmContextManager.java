@@ -5,6 +5,7 @@ import javax.security.auth.login.FailedLoginException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.client.LoginExpiredException;
 import com.untangle.uvm.client.RemoteUvmContext;
 import com.untangle.uvm.client.RemoteUvmContextFactory;
@@ -16,6 +17,7 @@ import com.untangle.uvm.toolbox.RemoteToolboxManager;
 public class RemoteUvmContextManager {
 	protected final Log logger = LogFactory.getLog(getClass());
     protected final int DEFAULT_TIMEOUT = 60000000;
+    protected final String TYPE_LOGIN_LOCAL = "local";
     protected final String TYPE_LOGIN_SYSTEM = "system";
     protected final String TYPE_LOGIN_INTERACTIVE = "interactive";
     
@@ -23,7 +25,7 @@ public class RemoteUvmContextManager {
     private RemoteUvmContext remoteUvmContext = null;
     
     private int timeout = DEFAULT_TIMEOUT;
-	private String loginType = TYPE_LOGIN_SYSTEM;
+	private String loginType = TYPE_LOGIN_LOCAL;
 	private String host = null;
 	private int port = 0;
 	private String username = null;
@@ -65,7 +67,9 @@ public class RemoteUvmContextManager {
 		}
 		
 	    // login
-		if (TYPE_LOGIN_SYSTEM.equals(loginType)){
+		if (TYPE_LOGIN_LOCAL.equals(loginType)) {
+			remoteUvmContext = LocalUvmContextFactory.context().remoteContext();
+		} else if (TYPE_LOGIN_SYSTEM.equals(loginType)){
 			remoteUvmContext = factory.systemLogin(timeout);
 		} else {
 			//interactive login
