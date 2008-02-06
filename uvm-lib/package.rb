@@ -59,7 +59,7 @@ ServletBuilder.new(uvm_lib, 'com.untangle.uvm.alpaca.jsp',
                    "./uvm-lib/servlets/alpaca")
 
 ServletBuilder.new(uvm_lib, "com.untangle.uvm.webui",
-                   "./uvm-lib/servlets/webui")
+                   "./uvm-lib/servlets/webui", deps)
                    
 # wmi installer
 ServletBuilder.new(uvm_lib, "com.untangle.uvm.user.servlet",
