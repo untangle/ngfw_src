@@ -899,7 +899,7 @@ public class UvmContextImpl extends UvmContextBase
         return tomcatManager;
     }
 
-    RemoteUvmContext remoteContext()
+    public RemoteUvmContext remoteContext()
     {
         return remoteContext;
     }
