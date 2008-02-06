@@ -233,8 +233,9 @@ class CustomPolicyTableModel extends MSortedTableModel<PolicyCompoundSettings>{
             catch(Exception e){ throw new Exception("Invalid \"start time\" in row: " + rowIndex); }
             try{ newElem.setEndTime( dateFormat.parse((String)rowVector.elementAt(14)) ); }
             catch(Exception e){ throw new Exception("Invalid \"end time\" in row: " + rowIndex); }
-            if( newElem.getStartTime().compareTo(newElem.getEndTime()) > 0 )
-                throw new Exception("The start time cannot be later than the end time in row: " + rowIndex);
+            // This now works, so it is allowable.
+            // if( newElem.getStartTime().compareTo(newElem.getEndTime()) > 0 )
+            // throw new Exception("The start time cannot be later than the end time in row: " + rowIndex);
             try{ newElem.setDayOfWeek( dmf.parse((String)rowVector.elementAt(15)) ); }
             catch(Exception e){ throw new Exception("Invalid \"days\" in row: " + rowIndex); }
             newElem.setDescription( (String) rowVector.elementAt(16) );

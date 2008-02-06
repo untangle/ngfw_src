@@ -176,26 +176,24 @@ public class UserPolicyRule extends PolicyRule
         int starthour = start.get(Calendar.HOUR_OF_DAY);
         int endhour = end.get(Calendar.HOUR_OF_DAY);
 
-        boolean outsideDuration =
+        boolean beforeStart =
             // Check the start
             (nowhour < starthour ||
              (nowhour == starthour && now.get(Calendar.MINUTE) < start.get(Calendar.MINUTE)));
-        outsideDuration = outsideDuration ^ invertDuration;
 
         // Check the end.
-        if (!outsideDuration) {
-            outsideDuration =
-                (nowhour > endhour ||
-                 (nowhour == endhour && now.get(Calendar.MINUTE) > end.get(Calendar.MINUTE)));
-        }
-        outsideDuration = outsideDuration ^ invertDuration;
+        boolean afterEnd =
+            (nowhour > endhour ||
+             (nowhour == endhour && now.get(Calendar.MINUTE) > end.get(Calendar.MINUTE)));
 
-        if (!outsideDuration) {
+        boolean reject = (beforeStart || afterEnd) ^ invertDuration;
+
+        if (!reject) {
             Date dnow = now.getTime();
-            outsideDuration = !dayOfWeek.isMatch(dnow);
+            reject = !dayOfWeek.isMatch(dnow);
         }
 
-        boolean durationTest = invertEntireDuration ? outsideDuration : !outsideDuration;
+        boolean durationTest = invertEntireDuration ? reject : !reject;
 
         return durationTest
             && user.isMatch(sd.user());
