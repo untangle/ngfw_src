@@ -749,6 +749,7 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
     }
 
     private Tid newTid(Policy policy, String nodeName)
+        throws DeployException
     {
         final Tid tid;
         synchronized (nodeManagerState) {
@@ -766,7 +767,11 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
 
                 public Object getResult() { return null; }
             };
-        LocalUvmContextFactory.context().runTransaction(tw);
+        if (!LocalUvmContextFactory.context().runTransaction(tw))
+            // We cannot return the new tid if updating the database failed,
+            // as that would break the invariant of multiple nodes not having
+            // the same tid.
+            throw new DeployException("Unable to allocate new tid");
 
         return tid;
     }
