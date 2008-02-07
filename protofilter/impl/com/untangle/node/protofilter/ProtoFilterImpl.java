@@ -23,9 +23,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.TreeMap;
 
-import com.untangle.uvm.LocalAppServerManager;
-import com.untangle.uvm.LocalUvmContext;
-import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.EventLoggerFactory;
 import com.untangle.uvm.logging.EventManager;
@@ -38,10 +35,7 @@ import com.untangle.uvm.vnet.SoloPipeSpec;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.NodeException;
 import com.untangle.uvm.node.NodeStartException;
-import com.untangle.uvm.util.OutsideValve;
 import com.untangle.uvm.util.TransactionWork;
-
-import org.apache.catalina.Valve;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -60,8 +54,6 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
     private final Logger logger = Logger.getLogger(ProtoFilterImpl.class);
 
     private ProtoFilterSettings cachedSettings = null;
-    
-    private static int deployCount = 0;
 
     // constructors -----------------------------------------------------------
 
@@ -160,16 +152,8 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
         getNodeContext().runTransaction(tw);
 
         updateToCurrent();
-        
-        deployWebAppIfRequired(logger);
     }
 
-    @Override
-    protected void postDestroy()
-    {
-        unDeployWebAppIfRequired(logger);
-    }
-    
     protected void preStart() throws NodeStartException
     {
         try {
@@ -336,64 +320,6 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
         eventLogger.log(se);
     }
 
-    // TODO we should have deploy/undeploy methods in a superclass
-    private static synchronized void deployWebAppIfRequired(Logger logger)
-    {
-        if (0 != deployCount++) {
-            return;
-        }
-
-        LocalUvmContext mctx = LocalUvmContextFactory.context();
-        LocalAppServerManager asm = mctx.appServerManager();
-
-        Valve v = new OutsideValve()
-            {
-                protected boolean isInsecureAccessAllowed()
-                {
-                    return true;
-                }
-
-                /* Unified way to determine which parameter to check */
-                protected boolean isOutsideAccessAllowed()
-                {
-                    return false;
-                }
-
-                /* Unified way to determine which parameter to check */
-                protected String outsideErrorMessage()
-                {
-                    return "off-site access";
-                }
-
-                /* Unified way to determine which parameter to check */
-                protected String httpErrorMessage()
-                {
-                    return "standard access";
-                }
-            };
-
-        if (asm.loadInsecureApp("/protofilter", "protofilter"/*, v*/)) {
-            logger.debug("Deployed ProtoFilter WebApp");
-        } else {
-            logger.error("Unable to deploy ProtoFilter WebApp");
-        }
-    }
-
-    private static synchronized void unDeployWebAppIfRequired(Logger logger) {
-        if (0 != --deployCount) {
-            return;
-        }
-
-        LocalUvmContext mctx = LocalUvmContextFactory.context();
-        LocalAppServerManager asm = mctx.appServerManager();
-
-        if (asm.unloadWebApp("/protofilter")) {
-            logger.debug("Unloaded ProtoFilter WebApp");
-        } else {
-            logger.warn("Unable to unload ProtoFilter WebApp");
-        }
-    }
-    
     // XXX soon to be deprecated ----------------------------------------------
 
     public Object getSettings()
