@@ -24,6 +24,8 @@ import java.lang.reflect.Method;
 import org.jabsorb.JSONRPCBridge;
 import org.jabsorb.callback.CallbackController;
 
+import com.untangle.uvm.toolbox.MackageDesc;
+
 public class UtCallbackController extends CallbackController
 {
     private final JSONRPCBridge bridge;
@@ -44,7 +46,7 @@ public class UtCallbackController extends CallbackController
                                    Method method, Object result)
         throws Exception
     {
-        if (!(result instanceof Serializable)) {
+        if (!(result instanceof Serializable) || (result instanceof MackageDesc)) {
             bridge.registerCallableReference(result.getClass());
         }
     }

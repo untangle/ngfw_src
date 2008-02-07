@@ -30,8 +30,6 @@ MainPage = {
 	library: null,
 	myApps: null,
 	config: null,
-	currentRack: null,
-	virtuaRacks: null,
 	nodes: null,
 	rackUrl: "rack.do",
 	viewport: null,
@@ -162,15 +160,53 @@ MainPage = {
 			if(exception) { alert(exception.message); }
 				rpc.policies=result;
 			//MainPage.virtualRacks=jsonResult.data;
-			MainPage.buildVirtualRacks();
+			MainPage.buildPolicies();
 		});
 	},
 
 	loadNodes: function() {
 		Ext.untangle.BlingerManager.stop();
+		rpc.policyTids=rpc.nodeManager.nodeInstancesVisible(rpc.currentPolicy).list;
+		rpc.commonTids=rpc.nodeManager.nodeInstancesVisible(null).list;
+		rpc.nodeContexts=[];
+		for(var i=0;i<rpc.policyTids.length;i++) {
+			var nodeContext=rpc.nodeManager.nodeContext(rpc.policyTids[i]);
+			rpc.nodeContexts.push(nodeContext);
+		}
+		for(var i=0;i<rpc.commonTids.length;i++) {
+			var nodeContext=rpc.nodeManager.nodeContext(rpc.commonTids[i]);
+			rpc.nodeContexts.push(nodeContext);
+		}
+		MainPage.nodes=[];
+		for(var i=0;i<rpc.nodeContexts.length;i++) {
+			var nodeContext=rpc.nodeContexts[i];
+			var node={};
+			node.id=node.tid=nodeContext.getTid().id;
+			var nodeDesc=nodeContext.getNodeDesc();
+			var mackageDesc=nodeContext.getMackageDesc();
+			node.name=nodeDesc.name;
+			node.displayName=nodeDesc.displayName;
+			node.viewPosition=mackageDesc.viewPosition;
+			node.rackType=mackageDesc.rackType;
+			node.isService=mackageDesc.service;
+			node.isUtil=mackageDesc.util;
+			node.isSecurity=mackageDesc.security;
+			node.isCore=mackageDesc.core;
+			//node.runState=mackageDesc.getRunState();
+			node.runState="RUNNING";
+			
+			//node.image='image?name='+node.name;
+			node.image='rack.do?action=getImage&name='+node.name;
+			node.helpLink='';
+			node.blingers=eval([{'type':'ActivityBlinger','bars':['ACT 1','ACT 2','ACT 3','ACT 4']},{'type':'SystemBlinger'}])
+			MainPage.nodes.push(node);
+		}
+		MainPage.buildNodes();
+		Ext.untangle.BlingerManager.start();
+		/*
 		Ext.Ajax.request({
 			url: this.rackUrl,
-			params :{'action':'getNodes', 'rackName':this.currentRack.name},
+			params :{'action':'getNodes', 'rackName':rpc.currentPolicy.name},
 			method: 'GET',
 			success: function ( result, request) { 
 				var jsonResult=Ext.util.JSON.decode(result.responseText);
@@ -186,7 +222,8 @@ MainPage = {
 			failure: function ( result, request) { 
 				Ext.MessageBox.alert('Failed', 'Successfully posted form: '+result.date); 
 			} 
-		});				
+		});
+		*/				
 	},
 	
 	buildTabs: function () {
@@ -208,7 +245,7 @@ MainPage = {
 			Ext.getCmp('myAppButton_'+item.name).disable();
 			Ext.Ajax.request({
 				url: this.rackUrl,
-				params :{'action':'addToRack','rackName':this.currentRack.name,'installName':item.name},
+				params :{'action':'addToRack','rackName':rpc.currentPolicy.name,'installName':item.name},
 				method: 'GET',
 				success: function ( result, request) { 
 					var jsonResult=Ext.util.JSON.decode(result.responseText);
@@ -388,13 +425,14 @@ MainPage = {
 		}
 	},
 	
-	buildVirtualRacks: function () {
+	buildPolicies: function () {
 		var out=[];
-		out.push('<select id="rack_select" onchange="MainPage.changeVirtualRack()">');
+		out.push('<select id="rack_select" onchange="MainPage.changePolicy()">');
 		for(var i=0;i<rpc.policies.length;i++) {
 			var selVirtualRack=rpc.policies[i].default==true?"selected":"";
+			
 			if(rpc.policies[i].default==true) {
-				this.currentRack=rpc.policies[i];
+				rpc.currentPolicy=rpc.policies[i];
 			}
 			out.push('<option value="'+rpc.policies[i].id+'" '+selVirtualRack+'>'+rpc.policies[i].name+'</option>');
 		}
@@ -410,10 +448,10 @@ MainPage = {
 		this.loadNodes();
 	},
 	
-	changeVirtualRack: function () {
+	changePolicy: function () {
 		var rack_select=document.getElementById('rack_select');
 		if(rack_select.selectedIndex>=0) {
-			this.currentRack=rpc.policies[rack_select.selectedIndex];
+			rpc.currentPolicy=rpc.policies[rack_select.selectedIndex];
 			alert("TODO: Change Virtual Rack");
 			this.loadNodes();
 		}
