@@ -9,17 +9,38 @@
         @import "ext-2.0.1/resources/css/ext-all.css";
         @import "untangle.css";
     </style>
-<!--
 	<script type="text/javascript" src="ext-2.0.1/source/core/Ext.js"></script>
 	<script type="text/javascript" src="ext-2.0.1/source/adapter/ext-base.js"></script>
 	<script type="text/javascript" src="ext-2.0.1/ext-all-debug.js"></script>
--->
-	<!-- script type="text/javascript" src="ext-2.0.1/adapter/jquery/jquery.js"></script-->
+<!--
 	<script type="text/javascript" src="ext-2.0.1/adapter/ext/ext-base.js"></script>
 	<script type="text/javascript" src="ext-2.0.1/ext-all.js"></script>
-    <script type="text/javascript" src="script/graphics.js"></script>
+-->
+	<script type="text/javascript" src="jsonrpc/jsonrpc-min.js" ></script>
+
     <script type="text/javascript" src="script/ext-untangle.js"></script>
+	<!-- TODO this should come dynamic -->
+    <script type="text/javascript" src="script/protofilter.js"></script>
+    
 <script type="text/javascript">
+
+jsonrpc = new JSONRpcClient("/webui/JSON-RPC");
+
+// Call a Java method on the server
+var result = jsonrpc.RemoteUvmContext.getActivationKey();
+document.write("your activation key is" + result + "<br />");
+
+
+var nm = jsonrpc.RemoteUvmContext.nodeManager();
+//document.write("nodeManager is" + nm.javaClass);
+//var nc = jsonrpc.RemoteUvmContext.nodeManager.nodeContext(1);
+//document.write("nodeContext 1 is " + nc.javaClass);
+var a=jsonrpc.RemoteUvmContext.nodeManager().nodeInstances('untangle-node-protofilter')
+var nc=nm.nodeContext(a.list[0])
+var n=nc.node()
+var s=n.getProtoFilterSettings()
+var pl = s.patterns.list.length;
+
 MainPage = {
 	tabs: null,
 	library: null,
@@ -29,7 +50,37 @@ MainPage = {
 	virtuaRacks: null,
 	nodes: null,
 	rackUrl: "rack.do",
+	viewport: null,
 	init: function() {
+		//MainPage.jsonrpc = new JSONRpcClient("/webui/JSON-RPC");
+		//MainPage.nodeManager = MainPage.jsonrpc.RemoteUvmContext.nodeManager();
+	
+		MainPage.buildTabs();
+		MainPage.viewport = new Ext.Viewport({
+            layout:'border',
+            items:[
+                {
+                    region:'west',
+                    id: 'west',
+                    contentEl: 'contentleft',
+                    width: 222,
+                    border: false
+                 },{
+                    region:'center',
+                    id: 'center',
+					contentEl: 'contentright',                    
+                    border: false,
+                    cls: 'contentright',
+                    bodyStyle: 'background-color: transparent;',
+                    autoScroll: true
+                }
+             ]
+        });
+        /*
+        MainPage.viewport.items.items[0].on('resize', new function() {
+        	MainPage.tabs.setHeight(MainPage.viewport.items.items[0].getEl().getHeight()-200);
+        }, MainPage.viewport);
+        */
 		new Ext.untangle.Button({
 			'height': '46px',
 			'width': '86px',
@@ -41,7 +92,6 @@ MainPage = {
 				},
 	        'imageSrc': 'images/IconHelp36x36.png'
 		});
-		MainPage.buildTabs();
 		MainPage.loadTools();
 		MainPage.loadVirtualRacks();
 	},
@@ -399,8 +449,6 @@ MainPage = {
 
 Ext.onReady(MainPage.init);
 </script>
-<!-- Just for test -->
-<!--  %@ include file="/nodes/untangle-node-protofilter.js" %-->
 </head>
 <body>
 <div id="scripts_container" style="display: none;"></div>
@@ -421,17 +469,18 @@ Ext.onReady(MainPage.init);
                	<div style="margin-left:15px;font-size: 11px;text-align:left;">Click to Configure</div>
                	<div id="toolsConfig"></div>
 			</div>
-		
  		<div id="help"></div>
 	</div>
-	<div id="racks">
-		<div id="leftBorder"></div>
-		<div id="rightBorder"></div>
-		<div id="rack_list"></div>
-		<div id="rack_nodes">
-		<div id="security_nodes"></div>
-		<div id="nodes_separator" style="display:none;"><div id="nodes_separator_text"></div></div>
-		<div id="other_nodes"></div>
+	<div id="contentright">
+		<div id="racks">
+			<div id="leftBorder"></div>
+			<div id="rightBorder"></div>
+			<div id="rack_list"></div>
+			<div id="rack_nodes">
+			<div id="security_nodes"></div>
+			<div id="nodes_separator" style="display:none;"><div id="nodes_separator_text"></div></div>
+			<div id="other_nodes"></div>
+			</div>
 		</div>
 	</div>
 	<div id="test" style="display: none;"></div>

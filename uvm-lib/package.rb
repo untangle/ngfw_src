@@ -58,12 +58,21 @@ ServletBuilder.new(uvm_lib, 'com.untangle.uvm.reports.jsp',
 ServletBuilder.new(uvm_lib, 'com.untangle.uvm.alpaca.jsp',
                    "./uvm-lib/servlets/alpaca")
 
-ServletBuilder.new(uvm_lib, "com.untangle.uvm.webui",
-                   "./uvm-lib/servlets/webui")
-                   
 # wmi installer
 ServletBuilder.new(uvm_lib, "com.untangle.uvm.user.servlet",
                    "uvm-lib/servlets/wmi", [])
+
+deps = %w(
+           slf4j-1.4.3/slf4j-log4j12-1.4.3.jar
+           slf4j-1.4.3/slf4j-api-1.4.3.jar
+         ).map { |f| Jars.downloadTarget(f) }
+deps << ThirdpartyJar.get('../pkgs/jabsorb-1.2.2/jabsorb-1.2.2.jar');
+
+ms = [ MoveSpec.new("../pkgs/jabsorb-1.2.2/webapps/jsonrpc", 'jsonrpc*.js', './jsonrpc') ]
+
+ServletBuilder.new(uvm_lib, "com.untangle.uvm.webui",
+                   "./uvm-lib/servlets/webui", deps, [], ms)
+                   
 
 # Ajax Tk
 deps = FileList["#{BuildEnv::DOWNLOADS}/Ajax/jars/*jar"].exclude(/.*servlet-api.jar/).map { |n| ThirdpartyJar.get(n) }
