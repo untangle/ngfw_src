@@ -199,7 +199,7 @@ int _netcap_tcp_callback_cli_complete( netcap_session_t* netcap_sess, netcap_cal
         if (msg->type != TCP_MSG_ACCEPT || !msg->fd) {
             if (msg->type == TCP_MSG_SYN && msg->pkt) {
                 debug(8,"TCP: (%10u) DUP syn message, passing\n",netcap_sess->session_id);
-		netcap_virtual_interface_send_pkt( msg->pkt );
+                netcap_virtual_interface_send_pkt( msg->pkt );
                 netcap_pkt_action_raze( msg->pkt, NF_DROP );
                 msg->pkt = NULL;
             } else {

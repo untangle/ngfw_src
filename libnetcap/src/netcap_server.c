@@ -267,7 +267,7 @@ int  netcap_server (void)
                     return 0;
                 break;
             case POLL_TCP_INCOMING:
-	      debug(10, "FLAG! calling _handle_tcp_incoming\n");
+                debug(10, "FLAG! calling _handle_tcp_incoming\n");
                 _handle_tcp_incoming(info, events[i].events, events[i].data.fd );
                 break;
             case POLL_UDP_INCOMING:
@@ -633,9 +633,16 @@ static int  _handle_nfqueue (epoll_info_t* info, int revents)
     _server_unlock();
 
     if ( ret < 0 ) {
-        /* !!!! XXXX may have to also free the buffer, this is difficult because the buffer
-         * may be set in the packet, probably have to unset it first. !!!!!!! */        
+        /* Do not free either buffer in pkt_raze */
+        pkt->buffer = NULL;
+        pkt->data = NULL;
+        
+        free( buf );
+        buf = NULL;
+
         if ( pkt != NULL ) netcap_pkt_raze( pkt );
+        pkt = NULL;
+
         return errlog( ERR_CRITICAL, "_critical_section\n" );
     }
     
@@ -650,7 +657,7 @@ static int  _handle_nfqueue (epoll_info_t* info, int revents)
         return netcap_udp_call_hooks( pkt, NULL );
         
     default:
-        /* XXXXXXXX need to raze the packet */
+        netcap_pkt_action_raze( pkt, NF_DROP );
         return errlog(ERR_CRITICAL,"Unknown protocol  %d from QUEUE\n", pkt->proto );        
     }
 
