@@ -16,11 +16,15 @@
 	<script type="text/javascript" src="ext-2.0.1/adapter/ext/ext-base.js"></script>
 	<script type="text/javascript" src="ext-2.0.1/ext-all.js"></script>
 -->
+	<script type="text/javascript" src="jsonrpc/jsonrpc-min.js"></script>
+	<script type="text/javascript" src="script/uvmrpc.js"></script>
 
     <script type="text/javascript" src="script/ext-untangle.js"></script>
     <!-- script type="text/javascript" src="script/protofilter.js"></script-->
     
 <script type="text/javascript">
+
+
 MainPage = {
 	tabs: null,
 	library: null,
