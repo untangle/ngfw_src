@@ -195,8 +195,7 @@ MainPage = {
 			//node.runState=mackageDesc.getRunState();
 			node.runState="RUNNING";
 			
-			//node.image='image?name='+node.name;
-			node.image='rack.do?action=getImage&name='+node.name;
+			node.image='image?name='+node.name;
 			node.helpLink='';
 			node.blingers=eval([{'type':'ActivityBlinger','bars':['ACT 1','ACT 2','ACT 3','ACT 4']},{'type':'SystemBlinger'}])
 			MainPage.nodes.push(node);

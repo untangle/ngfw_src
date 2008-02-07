@@ -2,6 +2,5 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN" "http://www.springframework.org/dtd/spring-beans-2.0.dtd">
 
 <beans>
-  <bean name="image" class="com.untangle.uvm.webui.view.ImageView"/>
   <bean name="json" class="com.untangle.uvm.webui.view.JSONView"/>
 </beans>
