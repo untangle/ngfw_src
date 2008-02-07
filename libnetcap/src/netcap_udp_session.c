@@ -32,9 +32,6 @@
 #include "netcap_session.h"
 #include "netcap_sesstable.h"
 
-/* 30 second timeout for the initial conntrack entry */
-#define UDP_SESSION_TIMEOUT  30
-
 /* callback for a UDP session */
 static int _callback    ( netcap_session_t* netcap_sess, netcap_callback_action_t action, 
                           netcap_callback_flag_t flags );
