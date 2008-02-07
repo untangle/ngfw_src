@@ -158,23 +158,12 @@ MainPage = {
 	},
 	
 	loadVirtualRacks: function() {
-		Ext.Ajax.request({
-			url: this.rackUrl,
-			params :{'action':'getVirtualRacks'},
-			method: 'GET',
-			success: function ( result, request) { 
-				var jsonResult=Ext.util.JSON.decode(result.responseText);
-				if(jsonResult.success!=true) {
-					Ext.MessageBox.alert('Failed', jsonResult.msg); 
-				} else { 
-					MainPage.virtualRacks=jsonResult.data;
-					MainPage.buildVirtualRacks();
-				}
-			},
-			failure: function ( result, request) { 
-				Ext.MessageBox.alert('Failed', 'Successfully posted form: '+result.date); 
-			} 
-		});				
+		rpc.policyManager.getPolicies( function (result, exception) {
+			if(exception) { alert(exception.message); }
+				rpc.policies=result;
+			//MainPage.virtualRacks=jsonResult.data;
+			MainPage.buildVirtualRacks();
+		});
 	},
 
 	loadNodes: function() {
@@ -402,12 +391,12 @@ MainPage = {
 	buildVirtualRacks: function () {
 		var out=[];
 		out.push('<select id="rack_select" onchange="MainPage.changeVirtualRack()">');
-		for(var i=0;i<this.virtualRacks.length;i++) {
-			var selVirtualRack=this.virtualRacks[i].isDefault==true?"selected":"";
-			if(this.virtualRacks[i].isDefault==true) {
-				this.currentRack=this.virtualRacks[i];
+		for(var i=0;i<rpc.policies.length;i++) {
+			var selVirtualRack=rpc.policies[i].default==true?"selected":"";
+			if(rpc.policies[i].default==true) {
+				this.currentRack=rpc.policies[i];
 			}
-			out.push('<option value="'+this.virtualRacks[i].id+'" '+selVirtualRack+'>'+this.virtualRacks[i].name+'</option>');
+			out.push('<option value="'+rpc.policies[i].id+'" '+selVirtualRack+'>'+rpc.policies[i].name+'</option>');
 		}
 		//out.push('<option value="">Show Policy Manager</option>');
 		out.push('</select>');
@@ -424,7 +413,7 @@ MainPage = {
 	changeVirtualRack: function () {
 		var rack_select=document.getElementById('rack_select');
 		if(rack_select.selectedIndex>=0) {
-			this.currentRack=this.virtualRacks[rack_select.selectedIndex];
+			this.currentRack=rpc.policies[rack_select.selectedIndex];
 			alert("TODO: Change Virtual Rack");
 			this.loadNodes();
 		}
