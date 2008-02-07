@@ -16,31 +16,11 @@
 	<script type="text/javascript" src="ext-2.0.1/adapter/ext/ext-base.js"></script>
 	<script type="text/javascript" src="ext-2.0.1/ext-all.js"></script>
 -->
-	<script type="text/javascript" src="jsonrpc/jsonrpc-min.js" ></script>
 
     <script type="text/javascript" src="script/ext-untangle.js"></script>
-	<!-- TODO this should come dynamic -->
-    <script type="text/javascript" src="script/protofilter.js"></script>
+    <!-- script type="text/javascript" src="script/protofilter.js"></script-->
     
 <script type="text/javascript">
-
-jsonrpc = new JSONRpcClient("/webui/JSON-RPC");
-
-// Call a Java method on the server
-var result = jsonrpc.RemoteUvmContext.getActivationKey();
-document.write("your activation key is" + result + "<br />");
-
-
-var nm = jsonrpc.RemoteUvmContext.nodeManager();
-//document.write("nodeManager is" + nm.javaClass);
-//var nc = jsonrpc.RemoteUvmContext.nodeManager.nodeContext(1);
-//document.write("nodeContext 1 is " + nc.javaClass);
-var a=jsonrpc.RemoteUvmContext.nodeManager().nodeInstances('untangle-node-protofilter')
-var nc=nm.nodeContext(a.list[0])
-var n=nc.node()
-var s=n.getProtoFilterSettings()
-var pl = s.patterns.list.length;
-
 MainPage = {
 	tabs: null,
 	library: null,
@@ -52,9 +32,6 @@ MainPage = {
 	rackUrl: "rack.do",
 	viewport: null,
 	init: function() {
-		//MainPage.jsonrpc = new JSONRpcClient("/webui/JSON-RPC");
-		//MainPage.nodeManager = MainPage.jsonrpc.RemoteUvmContext.nodeManager();
-	
 		MainPage.buildTabs();
 		MainPage.viewport = new Ext.Viewport({
             layout:'border',
@@ -76,10 +53,13 @@ MainPage = {
                 }
              ]
         });
-        /*
-        MainPage.viewport.items.items[0].on('resize', new function() {
-        	MainPage.tabs.setHeight(MainPage.viewport.items.items[0].getEl().getHeight()-200);
-        }, MainPage.viewport);
+        Ext.getCmp("west").on("resize", function() {
+        	var newSize=Math.max(this.getEl().getHeight()-250,100);
+       		MainPage.tabs.setHeight(newSize);
+        });
+        Ext.getCmp("west").fireEvent("resize");
+        /*  
+        MainPage.viewport.on('resize', , MainPage.viewport);
         */
 		new Ext.untangle.Button({
 			'height': '46px',

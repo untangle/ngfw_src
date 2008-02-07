@@ -101,14 +101,6 @@ Ext.untangle.ProtocolControlSettings = Ext.extend(Ext.untangle.Settings, {
     gridEventLog: null,
     rowEditPL: null,
     onRender: function(container, position) {
-    	// TODO cache Tid or NodeContext; see Arron comment
-		jsonrpc = new JSONRpcClient("/webui/JSON-RPC");
-		var nm = jsonrpc.RemoteUvmContext.nodeManager();
-		var a=jsonrpc.RemoteUvmContext.nodeManager().nodeInstances('untangle-node-protofilter')
-		var nc=nm.nodeContext(a.list[0])
-		var n=nc.node()
-		var s=n.getProtoFilterSettings()
-    
     	//alert("Render protocol control");
     	var el= document.createElement("div");
 	    container.dom.insertBefore(el, position);
@@ -168,22 +160,25 @@ Ext.untangle.ProtocolControlSettings = Ext.extend(Ext.untangle.Settings, {
 	    // by default columns are sortable
 	    cmPL.defaultSortable = false;
 		
-		var editButtonsTemplate=new Ext.Template(
-		'TODO: implement edit dialog.','<div id="abcd">abcd</div>',
-		'<div class="editHelpButton" id="editHelpButton_{grid}">aaa</div>',
-		'<div class="editCancelButton" id="editCancelButton_{grid}">bbb</div>',
-		'<div class="editUpdateButton" id="editUpdateButton_{grid}">ccc</div>'
+		var editPLTemplate=new Ext.Template(
+		'<div class="inputLine"><span class="label">Category:</span><span class="formw"><input type="text" id="field_category_pl_{tid}" size="30"/></span></div>',
+		'<div class="inputLine"><span class="label">Protocol:</span><span class="formw"><input type="text" id="field_protocol_pl_{tid}" size="30"/></span></div>',
+		'<div class="inputLine"><span class="label">Block:</span><span class="formw"><input type="checkbox" id="field_blocked_pl_{tid}" /></span></div>',
+		'<div class="inputLine"><span class="label">Log:</span><span class="formw"><input type="checkbox" id="field_log_pl_{tid}" /></span></div>',
+		'<div class="inputLine"><span class="label">Description:</span><span class="formw"><input type="text" id="field_description_pl_{tid}" size="30"/></span></div>',
+		'<div class="inputLine"><span class="label">Signature:</span><span class="formw"><input type="text" id="field_signature_pl_{tid}" size="30"/></span></div>'
 		);
-		var winHTML=editButtonsTemplate.applyTemplate({'grid':"PL"+this.tid})
+		var winHTML=editPLTemplate.applyTemplate({'tid':this.tid})
 		this.rowEditPLWin=new Ext.Window({
                 id: 'rowEditPLWin_'+this.tid,
+                parentId: this.getId(),
                 tid: this.tid,
                 layout:'fit',
                 modal:true,
-                title:'Settings Window',
+                title:'Edit',
                 closeAction:'hide',
                 autoCreate:true,                
-                width:700,
+                width:400,
                 height:300,
                 draggable:false,
                 resizable:false,
@@ -191,50 +186,52 @@ Ext.untangle.ProtocolControlSettings = Ext.extend(Ext.untangle.Settings, {
 			        html: winHTML,
 			        border: false,
 			        deferredRender:false,
-					listeners: {
-			       		
-			        	
-			       }
+			        cls: 'windowBackground',
+			        bodyStyle: 'background-color: transparent;'
 			    },
 			    buttons: [
 			    	{
-						'parentId':this.id,
+						'parentId':this.getId(),
 				        'iconCls': 'helpIcon',
 				        'text': 'Help',
 				        'handler': function() {alert("TODO: Implement Help Page")}
 			        },
 			    	{
-						'parentId':this.id,
+						'parentId':this.getId(),
 				        'iconCls': 'saveIcon',
 				        'text': 'Update',
 				        'handler': function() {Ext.getCmp(this.parentId).rowEditPLWin.hide()}
 			        },
 			    	{
-						'parentId':this.id,
+						'parentId':this.getId(),
 				        'iconCls': 'cancelIcon',
 				        'text': 'Cancel',
 				        'handler': function() {Ext.getCmp(this.parentId).rowEditPLWin.hide()}
 			        }
 			    ],
 				listeners: {
-						'show': {
-			       			fn: function() {
-			       				//alert(this.tid);
-						    },
-						    scope: this.rowEditPLWin
-			        	},		
 		       		'show': {
 		       			fn: function() {
-		       				//alert("show");
-			        		this.setPosition(100,1);
+		       				var gridPL=Ext.getCmp(this.parentId).gridPL;
+		       				var objPosition=gridPL.getPosition();
+			        		this.setPosition(objPosition);
+		       				//var objSize=gridPL.getSize();
+			        		//this.setSize(objSize);
+			        		
 					    },
 					    scope: this.rowEditPLWin
 		        	}
-		       }			  
+		       },
+		       initContent: function() {
+		       		
+		       },
+		       
+		       
 			   
         });
 		this.rowEditPLWin.render('container');
-        //alert(document.getElementById("editCancelButton_PL36").innerHTML());
+		this.rowEditPLWin.initContent();
+		
 		// create the Grid
 	    this.gridPL = new Ext.grid.EditorGridPanel({
 	        store: this.storePL,
@@ -243,7 +240,7 @@ Ext.untangle.ProtocolControlSettings = Ext.extend(Ext.untangle.Settings, {
 		            text:'Add',
 		            tooltip:'Add New Row',
 		            iconCls:'add',
-		            parentId:this.id,
+		            parentId:this.getId(),
 		            handler: function() {
 		            	var cmp=Ext.getCmp(this.parentId);
 		            	var rec=new Ext.data.Record({"category":"","protocol":"","blocked":false,"log":false,"description":"","signature":""});
@@ -293,7 +290,7 @@ Ext.untangle.ProtocolControlSettings = Ext.extend(Ext.untangle.Settings, {
 		            text:'Refresh',
 		            tooltip:'Refresh',
 		            iconCls:'iconRefresh',
-		            parentId:this.id,
+		            parentId:this.getId(),
 		            handler: function() {
 		            	Ext.getCmp(this.parentId).refreshEventLog();	            	
 		            }
@@ -384,7 +381,7 @@ Ext.untangle.ProtocolControlSettings = Ext.extend(Ext.untangle.Settings, {
 	        url: Ext.untangle.ProtocolControlSettings.nodeUrl,
 	        params: {'action':'saveProtocolList','nodeName':this.name,'nodeId':this.tid,'data':saveDataJson},
 			method: 'POST',
-			parentId:this.id,
+			parentId:this.getId(),
 			success: function ( result, request) {
 				var cmp=Ext.getCmp(request.parentId);
 				cmp.gridPL.enable();

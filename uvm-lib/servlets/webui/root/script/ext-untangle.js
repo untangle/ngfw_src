@@ -96,14 +96,14 @@ Ext.untangle.Node = Ext.extend(Ext.Component, {
         setState: function(state) {
         	this.state=state;
         	var iconSrc="images/node/Icon"+this.state+"State28x28.png";
-        	document.getElementById('nodeStateIconImg_'+this.id).src=iconSrc;
+        	document.getElementById('nodeStateIconImg_'+this.getId()).src=iconSrc;
         },
         
         setPowerOn: function(powerOn) {
         	this.powerOn=powerOn;
         	var iconSrc="images/node/IconPower"+(powerOn?"On":"Off")+"State28x28.png";
-        	document.getElementById('nodePowerIconImg_'+this.id).src=iconSrc;
-        	document.getElementById('nodePowerOnHint_'+this.id).style.display=this.powerOn?"none":"";
+        	document.getElementById('nodePowerIconImg_'+this.getId()).src=iconSrc;
+        	document.getElementById('nodePowerOnHint_'+this.getId()).style.display=this.powerOn?"none":"";
         },
         
         updateBlingers: function () {
@@ -131,7 +131,7 @@ Ext.untangle.Node = Ext.extend(Ext.Component, {
 		        url: MainPage.rackUrl,
 		        params:{'action':this.powerOn?"startNode":"stopNode",'nodeName':this.name,'nodeId':this.tid},
 				method: 'POST',
-				'parentId':this.id,
+				'parentId':this.getId(),
 				success: function ( result, request) {
 					var cmp=Ext.getCmp(request.parentId);
 					var jsonResult=Ext.util.JSON.decode(result.responseText);
@@ -159,7 +159,10 @@ Ext.untangle.Node = Ext.extend(Ext.Component, {
         
         onSettingsClick: function() {
         	this.settingsWin.show();
-        	this.settingsWin.setPosition(document.getElementById('racks').offsetLeft,1);
+        	this.settingsWin.setPosition(222,0);
+        	var objSize=MainPage.viewport.getSize();
+        	objSize.width=objSize.width-222;
+        	this.settingsWin.setSize(objSize);
         	this.loadSettings();
         },
         
@@ -173,7 +176,7 @@ Ext.untangle.Node = Ext.extend(Ext.Component, {
         	}
        		if(this.settingsClassName!=null) {
         		eval('this.settings=new '+this.settingsClassName+'({\'tid\':this.tid,\'name\':this.name});');
-        		this.settings.render('settings_'+this.id);
+        		this.settings.render('settings_'+this.getId());
         		this.settings.loadData();
         	} else {
         		alert("Error: There is no settings class for the node '"+this.name+"'");
@@ -184,7 +187,7 @@ Ext.untangle.Node = Ext.extend(Ext.Component, {
         loadSettings: function(force) {
         	this.settingsClassName=Ext.untangle.Settings.getClassName(this.name);
         	if(!this.settingsClassName) {
-	        	Ext.untangle.Settings.loadNodeScript(this.webContext, this.id, function(cmpId) {
+	        	Ext.untangle.Settings.loadNodeScript(this.webContext, this.getId(), function(cmpId) {
 	        		var cmp=Ext.getCmp(cmpId);
 	        		cmp.settingsClassName=Ext.untangle.Settings.getClassName(cmp.name);
 	        		cmp.initSettings(force);
@@ -207,7 +210,7 @@ Ext.untangle.Node = Ext.extend(Ext.Component, {
 				url: MainPage.rackUrl,
 				params: {'action':'removeFromRack','nodeId':this.tid,'installName':this.name},
 				method: 'GET',
-				parentId: this.id,
+				parentId: this.getId(),
 				success: function ( result, request) { 
 					var jsonResult=Ext.util.JSON.decode(result.responseText);
 					if(jsonResult.success!=true) {
@@ -252,13 +255,13 @@ Ext.untangle.Node = Ext.extend(Ext.Component, {
         
         initBlingers: function () {
         	if(this.blingers!=null) {
-        		var nodeBlingers=document.getElementById('nodeBlingers_'+this.id);
+        		var nodeBlingers=document.getElementById('nodeBlingers_'+this.getId());
         		for(var i=0;i<this.blingers.length;i++) {
         			var blingerData=this.blingers[i];
-        			blingerData.parentId=this.id;
-        			blingerData.id="blinger_"+this.id+"_"+i;
+        			blingerData.parentId=this.getId();
+        			blingerData.id="blinger_"+this.getId()+"_"+i;
        				eval('var blinger=new Ext.untangle.'+blingerData.type+'(blingerData);');
-       				blinger.render('nodeBlingers_'+this.id);
+       				blinger.render('nodeBlingers_'+this.getId());
         			//this.blingers[i].id=blinger.id;
         			
         		}
@@ -271,7 +274,7 @@ Ext.untangle.Node = Ext.extend(Ext.Component, {
 	        el.setAttribute('viewPosition',this.viewPosition);
 	        container.dom.insertBefore(el, position);
         	this.el = Ext.get(el);
-
+        	this.el.addClass("rackNode");
         	this.on('beforedestroy', function() {
         		if(this.settingsWin) {
         			this.settingsWin.destroy();
@@ -282,15 +285,16 @@ Ext.untangle.Node = Ext.extend(Ext.Component, {
         			this.settings=null;
         		}
         	},this);
-        	var templateHTML=Ext.untangle.Node.template.applyTemplate({'id':this.id,'image':this.image,'displayName':this.displayName});
+        	var templateHTML=Ext.untangle.Node.template.applyTemplate({'id':this.getId(),'image':this.image,'displayName':this.displayName});
 	        this.getEl().insertHtml("afterBegin",templateHTML);
        
-		    var settingsHTML=Ext.untangle.Node.templateSettings.applyTemplate({'id':this.id});
-		    //
+		    var settingsHTML=Ext.untangle.Node.templateSettings.applyTemplate({'id':this.getId()});
+		    var settingsButtonsHTML=Ext.untangle.Node.templateSettingsButtons.applyTemplate({'id':this.getId()});
+		    settingsButtonsHTML=
 		    //alert(settingsHTML);
 		    this.settingsWin=new Ext.Window({
-                id: 'settingsWin_'+this.id,
-                layout:'fit',
+                id: 'settingsWin_'+this.getId(),
+                layout:'border',
                 modal:true,
                 title:'Settings Window',
                 closeAction:'hide',
@@ -299,17 +303,31 @@ Ext.untangle.Node = Ext.extend(Ext.Component, {
                 height:690,
                 draggable:false,
                 resizable:false,
-	            items: {
+	            items: [{
+			        region:"center",
 			        html: settingsHTML,
-			        border: false
-			    }
+			        border: false,
+			        autoScroll: true,
+			        cls: 'windowBackground',
+			        bodyStyle: 'background-color: transparent;'
+			    	}, 
+			    	{
+			    	region: "south",
+			    	html: settingsButtonsHTML,
+			        border: false,
+			        height:40,
+			        cls: 'windowBackground',
+			        bodyStyle: 'background-color: transparent;'
+			    	}
+			    ]
             });
 			this.settingsWin.render('container');
+			//this.settingsWin.on("resize", function() {alert(123)},this.settingsWin);
 
-			Ext.get('nodePowerIconImg_'+this.id).on('click', this.onPowerClick, this);
+			Ext.get('nodePowerIconImg_'+this.getId()).on('click', this.onPowerClick, this);
 			var tip = new Ext.ToolTip({
 			  html:Ext.untangle.Node.statusTip,
-			  target: 'nodeStateIconImg_'+this.id,
+			  target: 'nodeStateIconImg_'+this.getId(),
 			  autoWidth: true,
 			  autoHeight: true,
 			  showDelay: 0,
@@ -318,7 +336,7 @@ Ext.untangle.Node = Ext.extend(Ext.Component, {
 			});
 			var tip = new Ext.ToolTip({
 			  html:Ext.untangle.Node.powerTip,
-			  target: 'nodePowerIconImg_'+this.id,
+			  target: 'nodePowerIconImg_'+this.getId(),
 			  autoWidth: true,
 			  autoHeight: true,
 			  showDelay: 0,
@@ -326,46 +344,37 @@ Ext.untangle.Node = Ext.extend(Ext.Component, {
 			  hideDelay: 0
 			});
 			new Ext.Button({
-				'parentId':this.id,
+				'parentId':this.getId(),
 		        'iconCls': 'nodeSettingsIcon',
-				'renderTo':'nodeSettingsButton_'+this.id,
+				'renderTo':'nodeSettingsButton_'+this.getId(),
 		        'text': 'Show Settings',
 		        'handler': function() {Ext.getCmp(this.parentId).onSettingsClick()}
 	        });
 			new Ext.Button({
-				'parentId':this.id,
-		        'iconCls': 'nodeHelpIcon',
-				'renderTo':'nodeHelpButton_'+this.id,
+				'parentId':this.getId(),
+		        'iconCls': 'helpIcon',
+				'renderTo':'nodeHelpButton_'+this.getId(),
 		        'text': 'Help',
 		        'handler': function() {Ext.getCmp(this.parentId).onHelpClick()}
 	        });
 			new Ext.Button({
-				'parentId':this.id,
+				'parentId':this.getId(),
 				'iconCls': 'nodeRemoveIcon',
-				'renderTo':'nodeRemoveButton_'+this.id,
+				'renderTo':'nodeRemoveButton_'+this.getId(),
 		        'text': 'Remove',
 		        'handler': function() {Ext.getCmp(this.parentId).onRemoveClick()}
 	        });
-	        /*
 			new Ext.Button({
-				'parentId':this.id,
-				'iconCls': 'nodeSettingsHideIcon',
-				'renderTo':'nodeSettingsHideButton_'+this.id,
-		        'text': 'Hide Settings',
-		        'handler': function() {Ext.getCmp(this.parentId).settingsWin.hide();}
-	        });
-	        */
-			new Ext.Button({
-				'parentId':this.id,
+				'parentId':this.getId(),
 		        'iconCls': 'cancelIcon',
-				'renderTo':'nodeCancelButton_'+this.id,
+				'renderTo':'nodeCancelButton_'+this.getId(),
 		        'text': 'Cancel',
 		        'handler': function() {Ext.getCmp(this.parentId).onCancelClick()}
 	        });
 			new Ext.Button({
-				'parentId':this.id,
+				'parentId':this.getId(),
 		        'iconCls': 'saveIcon',
-				'renderTo':'nodeSaveButton_'+this.id,
+				'renderTo':'nodeSaveButton_'+this.getId(),
 		        'text': 'Save',
 		        'handler': function() {Ext.getCmp(this.parentId).onSaveClick()}
 	        });
@@ -380,7 +389,7 @@ Ext.untangle.Node.getCmp=function(nodeId) {
 }
 
 Ext.untangle.BlingerManager = {
-	updateTime: 3000, //update interval in millisecond
+	updateTime: 30000, //update interval in millisecond
 	started: false,
 	intervalId: null,
 	cycleCompleted:true,
@@ -456,24 +465,22 @@ Ext.untangle.Node.statusTip=['<div style="text-align: left;">',
 '<b>Clear</b> indicates that the product is "off", and may be turned "on" by the user.</div>'].join('');
 Ext.untangle.Node.powerTip='The <B>Power Button</B> allows you to turn a product "on" and "off".';
 Ext.untangle.Node.template = new Ext.Template(
-'<div class="rackNode"><div class="nodeImage"><img src="{image}"/></div>',
+'<div class="nodeImage"><img src="{image}"/></div>',
 '<div class="nodeLabel">{displayName}</div><div class="nodeBlingers" id="nodeBlingers_{id}"></div>',
 '<div class="nodeStateIcon"><img id="nodeStateIconImg_{id}" src=""></div>',
 '<div class="nodePowerIcon"><img id="nodePowerIconImg_{id}" src=""></div>',
 '<div id="nodePowerOnHint_{id}" class="nodePowerOnHint"><img src="images/node/IconPowerOnHint100.png"></div>',
 '<div class="nodeSettingsButton" id="nodeSettingsButton_{id}"></div>',
-'<div class="nodeHelpButton" id="nodeHelpButton_{id}"></div>',
-'</div>'
+'<div class="nodeHelpButton" id="nodeHelpButton_{id}"></div>'
 );
 
 Ext.untangle.Node.templateSettings=new Ext.Template(
-'<div id="nodeSettings_{id}" class="nodeSettings">',
-'<div class="nodeSettingsContent" id="settings_{id}"></div>',
+'<div class="nodeSettingsContent" id="settings_{id}"></div>'
+);
+Ext.untangle.Node.templateSettingsButtons=new Ext.Template(
 '<div class="nodeRemoveButton" id="nodeRemoveButton_{id}"></div>',
-'<div class="nodeSettingsHideButton" id="nodeSettingsHideButton_{id}"></div>',
 '<div class="nodeCancelButton" id="nodeCancelButton_{id}"></div>',
-'<div class="nodeSaveButton" id="nodeSaveButton_{id}"></div>',
-'</div>'
+'<div class="nodeSaveButton" id="nodeSaveButton_{id}"></div>'
 );
 
 Ext.ComponentMgr.registerType('untangleNode', Ext.untangle.Node);
@@ -490,7 +497,7 @@ Ext.untangle.ActivityBlinger = Ext.extend(Ext.Component, {
 	        container.dom.insertBefore(el, position);
         	this.el = Ext.get(el);
         	this.id=Ext.id(this);
-			var templateHTML=Ext.untangle.ActivityBlinger.template.applyTemplate({'id':this.id});
+			var templateHTML=Ext.untangle.ActivityBlinger.template.applyTemplate({'id':this.getId()});
 			el.innerHTML=templateHTML;
 			this.lastValues=[];
 			this.decays=[];
@@ -502,9 +509,9 @@ Ext.untangle.ActivityBlinger = Ext.extend(Ext.Component, {
         			this.lastValues.push(null);
         			this.decays.push(0);
         			out.push('<div class="blingerText activityBlingerText" style="top:'+top+'px;">'+bar+'</div>');
-        			out.push('<div class="activityBlingerBar" style="top:'+top+'px;width:0px;display:none;" id="activityBar_'+this.id+'_'+i+'"></div>');
+        			out.push('<div class="activityBlingerBar" style="top:'+top+'px;width:0px;display:none;" id="activityBar_'+this.getId()+'_'+i+'"></div>');
         		}
-        		document.getElementById("blingerBox_"+this.id).innerHTML=out.join("");
+        		document.getElementById("blingerBox_"+this.getId()).innerHTML=out.join("");
         	}
         },
         
@@ -516,7 +523,7 @@ Ext.untangle.ActivityBlinger = Ext.extend(Ext.Component, {
         		this.decays[i]=Ext.untangle.ActivityBlinger.decayValue(newValue, this.lastValues[i],this.decays[i]);
         		this.lastValues[i]=newValue;
         		var barPixelWidth=Math.floor(this.decays[i]*0.6);
-        		var barDiv=document.getElementById('activityBar_'+this.id+'_'+i);
+        		var barDiv=document.getElementById('activityBar_'+this.getId()+'_'+i);
         		barDiv.style.width=barPixelWidth+"px";
         		barDiv.style.display=(barPixelWidth==0)?"none":"";
         	}
@@ -525,7 +532,7 @@ Ext.untangle.ActivityBlinger = Ext.extend(Ext.Component, {
        		for(var i=0;i<this.bars.length;i++) {
        			this.lastValues[i]=null;
        			this.decays[i]=0;
-       			var barDiv=document.getElementById('activityBar_'+this.id+'_'+i);
+       			var barDiv=document.getElementById('activityBar_'+this.getId()+'_'+i);
        			barDiv.style.width="0px";
        			barDiv.style.display="none";
        		}
@@ -563,7 +570,7 @@ Ext.untangle.SystemBlinger = Ext.extend(Ext.Component, {
 	        container.dom.insertBefore(el, position);
         	this.el = Ext.get(el);
         	this.id=Ext.id(this);
-			var templateHTML=Ext.untangle.SystemBlinger.template.applyTemplate({'id':this.id});
+			var templateHTML=Ext.untangle.SystemBlinger.template.applyTemplate({'id':this.getId()});
 			el.innerHTML=templateHTML;
 			this.byteCountCurrent=0;
 			this.byteCountLast=0;
@@ -582,10 +589,10 @@ Ext.untangle.SystemBlinger = Ext.extend(Ext.Component, {
         		for(var i=0;i<this.data.length;i++) {
         			var dat=this.data[i];
         			var top=3+i*15;
-        			out.push('<div class="blingerText systemBlingerName" style="top:'+top+'px;" id="systemName_'+this.id+'_'+i+'">'+dat.name+'</div>');
-        			out.push('<div class="blingerText systemBlingerValue" style="top:'+top+'px;" id="systemValue_'+this.id+'_'+i+'">'+dat.value+'</div>');
+        			out.push('<div class="blingerText systemBlingerName" style="top:'+top+'px;" id="systemName_'+this.getId()+'_'+i+'">'+dat.name+'</div>');
+        			out.push('<div class="blingerText systemBlingerValue" style="top:'+top+'px;" id="systemValue_'+this.getId()+'_'+i+'">'+dat.value+'</div>');
         		}
-        		document.getElementById("blingerBox_"+this.id).innerHTML=out.join("");
+        		document.getElementById("blingerBox_"+this.getId()).innerHTML=out.join("");
         	}
         },
         
@@ -609,7 +616,7 @@ Ext.untangle.SystemBlinger = Ext.extend(Ext.Component, {
         	this.data[3].value = dataRate.toFixed(2)+"/KBPs";
         	if(this.data!=null) {
         		for(var i=0;i<this.data.length;i++) {
-        			var valueDiv=document.getElementById('systemValue_'+this.id+'_'+i);
+        			var valueDiv=document.getElementById('systemValue_'+this.getId()+'_'+i);
         			valueDiv.innerHTML=this.data[i].value;
         		}
         	}
@@ -625,7 +632,7 @@ Ext.untangle.SystemBlinger = Ext.extend(Ext.Component, {
         	if(this.data!=null) {
         		for(var i=0;i<this.data.length;i++) {
         			this.data[i].value="&nbsp;";
-        			var valueDiv=document.getElementById('systemValue_'+this.id+'_'+i);
+        			var valueDiv=document.getElementById('systemValue_'+this.getId()+'_'+i);
         			valueDiv.innerHTML=this.data[i].value;
         		}
         	}
@@ -638,230 +645,6 @@ Ext.untangle.SystemBlinger.template = new Ext.Template(
 Ext.ComponentMgr.registerType('untangleSystemBlinger', Ext.untangle.SystemBlinger);
 
 
-/*
-Ext.untangle.SessionsBlinger = Ext.extend(Ext.Component, {
-        _stackLength1: 60,
-        _history1: null,
-        _stackLength2: 60,
-        _history2: null,
-        _color1: "#8080FF",
-        _color2: "#804080",
-        onRender: function (container, position) {
-	        if(!this.template){
-	            this.template = Ext.untangle.SessionsBlinger.template;
-	        }
-	        var el= document.createElement("div");
-	        el.className="activityBlinger";
-	        container.dom.insertBefore(el, position);
-        	this.el = Ext.get(el);
-        	this.id=Ext.id(this);
-			var templateHTML=this.template.applyTemplate({'id':this.id});
-			el.innerHTML=templateHTML;
-
-        	this._history1=[];
-        	for(var i=0;i<this._stackLength1;i++) {
-        		this._history1.push(0);
-        	}
-        	this._history2=[];
-        	for(var i=0;i<this._stackLength2;i++) {
-        		this._history2.push(0);
-        	}
-        },
-        _lastValue1: 0,
-        _lastValue2: 0,
-        _randomValue1: function () {
-        	var prob=Math.floor(Math.random()*100);
-        	var genVal=0;
-        	if(this._lastValue1!=0) {
-        		if(prob<15) {
-        			genVal=0;
-        		} else if(prob<75) {
-        			genVal=this._lastValue1;
-        		} else {
-        			genVal=Math.floor(Math.random()*1000)*3/1000;
-        		}
-        	} else {
-	        	if(prob<83) {
-	        		genVal=0;
-	        	} else {
-	        		genVal=Math.floor(Math.random()*1000)*3/1000;
-	        	}
-        	} 
-        	this._lastValue1=genVal;
-        	return genVal;
-        },
-        _randomValue2: function () {
-        	var prob=Math.floor(Math.random()*100);
-        	var genVal=0;
-        	if(this._lastValue2!=0) {
-        		if(prob<15) {
-        			genVal=0;
-        		} else if(prob<75) {
-        			genVal=this._lastValue1;
-        		} else {
-        			genVal=Math.floor(Math.random()*1000)*3/1000;
-        		}
-        	} else {
-	        	if(prob<83) {
-	        		genVal=0;
-	        	} else {
-	        		genVal=Math.floor(Math.random()*1000)*3/1000;
-	        	}
-        	
-        	} 
-        	this._lastValue2=genVal;
-        	return genVal;
-        },
-        update: function() {
-
-        	var val1=this._randomValue1();
-        	var val2=this._randomValue2();
-        	document.getElementById("topText_"+this.id).innerHTML=val1+" K ACC";
-        	document.getElementById("bottomText_"+this.id).innerHTML=val2+" K ACC";
-        	document.getElementById("verticalAxis_"+this.id).innerHTML='<div class="blingerText" style="position:absolute;top:-4px;right:-1px;height:11px;color:#808080;">1 -</div>'+'<div class="blingerText" style="position:absolute;bottom:-1px;right:-1px;height:11px;color:#808080;">0 -</div>';
-        	//return;
-
-        	//var t0 = (new Date()).getTime();
-        	this._history1.splice(0,1);
-        	this._history1.push(val1);
-        	document.getElementById("blingerBoxValues1_"+this.id).innerHTML="";
-        	var out=[];
-        	
-        	for(var i=0;i<this._stackLength1-1;i++) {
-        		var y1=Math.floor(this._history1[i]*11)+6;
-        		var x1=i+15;
-        		var y2=Math.floor(this._history1[i+1]*11)+6;
-        		var x2=i+16;
-        		if(Math.abs(y1-y2)>=2){
-        			out.push(Graphics.drawLine(x1, y1, x2, y2,this._color1));
-        		} else {
-        			out.push(Graphics.setPixel(x1,y1,1,1,this._color1));
-        		}
-        		
-        	}
-        	document.getElementById("blingerBoxValues1_"+this.id).innerHTML=out.join('');
-			out=null;
-
-        	this._history2.splice(0,1);
-        	this._history2.push(val2);
-        	document.getElementById("blingerBoxValues2_"+this.id).innerHTML="";
-        	out=[];
-        	
-        	for(var i=0;i<this._stackLength2-1;i++) {
-        		var y1=50-Math.floor((this._history2[i])*11)+6;
-        		var x1=i+15;
-        		var y2=50-Math.floor(this._history2[i+1]*11)+6;
-        		var x2=i+16;
-        		if(Math.abs(y1-y2)>=2){
-        			out.push(Graphics.drawLine(x1, y1, x2, y2,this._color2));
-        		} else {
-        			out.push(Graphics.setPixel(x1,y1,1,1,this._color2));
-        		}
-        	}
-        	document.getElementById("blingerBoxValues2_"+this.id).innerHTML=out.join('');
-        	out=null;
-        	//var t1 = (new Date()).getTime();
-        }
-});
-
-
-Ext.untangle.SessionsBlinger.template = new Ext.Template(
-'<div class="sessionBlinger"><div class="blingerName">sessions</div>',
-'<div class="blingerBox" style="width:80px;">',
-'<div class="blingerVerticalAxis" id="verticalAxis_{id}"></div>',
-'<div class="blingerText blingerGraphTopText" id="topText_{id}"></div>',
-'<div class="blingerText blingerGraphBottomText" id="bottomText_{id}"></div>',
-'<div id="blingerBoxValues1_{id}"></div>',
-'<div id="blingerBoxValues2_{id}"></div>',
-'</div></div>');
-
-Ext.ComponentMgr.registerType('untangleSessionsBlinger', Ext.untangle.SessionsBlinger);
-
-
-
-Ext.untangle.DataRateBlinger = Ext.extend(Ext.Component, {
-        _stackLength: 60,
-        _history: null,
-        color: "#8080FF",
-        onRender: function (container, position) {
-	        if(!this.template){
-	            this.template = Ext.untangle.DataRateBlinger.template;
-	        }
-	        var el= document.createElement("div");
-	        el.className="activityBlinger";
-	        container.dom.insertBefore(el, position);
-        	this.el = Ext.get(el);
-        	this.id=Ext.id(this);
-			var templateHTML=this.template.applyTemplate({'id':this.id});
-			el.innerHTML=templateHTML;
-
-        	
-        	this._history=[];
-        	for(var i=0;i<this._stackLength;i++) {
-        		this._history.push(0);
-        	}
-        },
-        _lastValue: 0,
-        _randomValue: function () {
-        	var prob=Math.floor(Math.random()*100);
-        	var genVal=0;
-        	if(this._lastValue!=0) {
-        		if(prob<15) {
-        			genVal=0;
-        		} else if(prob<75) {
-        			genVal=this._lastValue;
-        		} else {
-        			genVal=Math.floor(Math.random()*1000)*5/1000;
-        		}
-        	} else {
-	        	if(prob<83) {
-	        		genVal=0;
-	        	} else {
-	        		genVal=Math.floor(Math.random()*1000)*5/1000;
-	        	}
-        	
-        	} 
-        	this._lastValue=genVal;
-        	return genVal;
-        },
-        update: function() {
-        	var val1=this._randomValue();
-        	//var t0 = (new Date()).getTime();
-        	document.getElementById("verticalAxis_"+this.id).innerHTML='<div class="blingerText" style="position:absolute;bottom:0px;right:-1px;height:11px;color:#808080;">0 -</div>'
-        	this._history.splice(0,1);
-        	this._history.push(val1);
-        	document.getElementById("topText_"+this.id).innerHTML=val1+" GB";
-        	
-        	document.getElementById("blingerBoxValues_"+this.id).innerHTML="";
-        	var out=[];
-        	
-        	for(var i=0;i<this._stackLength-1;i++) {
-        		var y1=50-Math.floor(this._history[i]*11)+5;
-        		var x1=i+15;
-        		var y2=50-Math.floor(this._history[i+1]*11)+5;
-        		var x2=i+16;
-        		if(Math.abs(y1-y2)>=2){
-        			out.push(Graphics.drawLine(x1, y1, x2, y2,this.color));
-        		} else {
-        			out.push(Graphics.setPixel(x1,y1,1,1,this.color));
-        		}
-        	}
-        	document.getElementById("blingerBoxValues_"+this.id).innerHTML=out.join('');
-        	out=null;
-        	//var t1 = (new Date()).getTime();
-        }
-});
-Ext.untangle.DataRateBlinger.template = new Ext.Template(
-'<div class="dataRateBlinger"><div class="blingerName">data rate (KBps)</div>',
-'<div class="blingerBox" style="width:80px;">',
-'<div class="blingerVerticalAxis" id="verticalAxis_{id}"></div>',
-'<div class="blingerText blingerGraphTopText" id="topText_{id}"></div>',
-'<div id="blingerBoxValues_{id}"></div>',
-'</div></div>');
-
-Ext.ComponentMgr.registerType('untangleDataRateBlinger', Ext.untangle.DataRateBlinger);
-*/
-
 //setting object
 Ext.untangle.Settings = Ext.extend(Ext.Component, {
 	'i18n':{}	
@@ -870,7 +653,8 @@ Ext.untangle.Settings._nodeScripts={};
 Ext.untangle._hasResource={}
 Ext.untangle.Settings.loadNodeScript=function(webContext,cmpId,callbackFn) {
 	//MainPage.loadScript('nodes/'+name+'.js',scope,callbackFn);
-	MainPage.loadScript('/'+webContext+'/script/settings.js',function() {callbackFn(cmpId)})
+	// TODO get dynamic script for node
+	MainPage.loadScript('script/protofilter.js',function() {callbackFn(cmpId)})
 	//jQuery.getScript('nodes/'+name+'.js?_dc='+(new Date()).getTime(),function() {callbackFn(cmpId)});
 }
 Ext.untangle.Settings._classNames={};
