@@ -388,6 +388,36 @@ Ext.untangle.Node.getCmp=function(nodeId) {
 	return Ext.getCmp(nodeId);
 }
 
+
+
+Ext.untangle.Node.statusTip=['<div style="text-align: left;">',
+'The <B>Status Indicator</B> shows the current operating condition of a particular software product.<BR>',
+'<font color="#00FF00"><b>Green</b></font> indicates that the product is "on" and operating normally.<BR>',
+'<font color="#FF0000"><b>Red</b></font> indicates that the product is "on", but that an abnormal condition has occurred.<BR>',
+'<font color="#FFFF00"><b>Yellow</b></font> indicates that the product is saving or refreshing settings.<BR>',
+'<b>Clear</b> indicates that the product is "off", and may be turned "on" by the user.</div>'].join('');
+Ext.untangle.Node.powerTip='The <B>Power Button</B> allows you to turn a product "on" and "off".';
+Ext.untangle.Node.template = new Ext.Template(
+'<div class="nodeImage"><img src="{image}"/></div>',
+'<div class="nodeLabel">{displayName}</div><div class="nodeBlingers" id="nodeBlingers_{id}"></div>',
+'<div class="nodeStateIcon"><img id="nodeStateIconImg_{id}" src=""></div>',
+'<div class="nodePowerIcon"><img id="nodePowerIconImg_{id}" src=""></div>',
+'<div id="nodePowerOnHint_{id}" class="nodePowerOnHint"><img src="images/node/IconPowerOnHint100.png"></div>',
+'<div class="nodeSettingsButton" id="nodeSettingsButton_{id}"></div>',
+'<div class="nodeHelpButton" id="nodeHelpButton_{id}"></div>'
+);
+
+Ext.untangle.Node.templateSettings=new Ext.Template(
+'<div class="nodeSettingsContent" id="settings_{id}"></div>'
+);
+Ext.untangle.Node.templateSettingsButtons=new Ext.Template(
+'<div class="nodeRemoveButton" id="nodeRemoveButton_{id}"></div>',
+'<div class="nodeCancelButton" id="nodeCancelButton_{id}"></div>',
+'<div class="nodeSaveButton" id="nodeSaveButton_{id}"></div>'
+);
+
+Ext.ComponentMgr.registerType('untangleNode', Ext.untangle.Node);
+
 Ext.untangle.BlingerManager = {
 	updateTime: 30000, //update interval in millisecond
 	started: false,
@@ -456,35 +486,6 @@ Ext.untangle.BlingerManager = {
 		}	
 	}
 }
-
-Ext.untangle.Node.statusTip=['<div style="text-align: left;">',
-'The <B>Status Indicator</B> shows the current operating condition of a particular software product.<BR>',
-'<font color="#00FF00"><b>Green</b></font> indicates that the product is "on" and operating normally.<BR>',
-'<font color="#FF0000"><b>Red</b></font> indicates that the product is "on", but that an abnormal condition has occurred.<BR>',
-'<font color="#FFFF00"><b>Yellow</b></font> indicates that the product is saving or refreshing settings.<BR>',
-'<b>Clear</b> indicates that the product is "off", and may be turned "on" by the user.</div>'].join('');
-Ext.untangle.Node.powerTip='The <B>Power Button</B> allows you to turn a product "on" and "off".';
-Ext.untangle.Node.template = new Ext.Template(
-'<div class="nodeImage"><img src="{image}"/></div>',
-'<div class="nodeLabel">{displayName}</div><div class="nodeBlingers" id="nodeBlingers_{id}"></div>',
-'<div class="nodeStateIcon"><img id="nodeStateIconImg_{id}" src=""></div>',
-'<div class="nodePowerIcon"><img id="nodePowerIconImg_{id}" src=""></div>',
-'<div id="nodePowerOnHint_{id}" class="nodePowerOnHint"><img src="images/node/IconPowerOnHint100.png"></div>',
-'<div class="nodeSettingsButton" id="nodeSettingsButton_{id}"></div>',
-'<div class="nodeHelpButton" id="nodeHelpButton_{id}"></div>'
-);
-
-Ext.untangle.Node.templateSettings=new Ext.Template(
-'<div class="nodeSettingsContent" id="settings_{id}"></div>'
-);
-Ext.untangle.Node.templateSettingsButtons=new Ext.Template(
-'<div class="nodeRemoveButton" id="nodeRemoveButton_{id}"></div>',
-'<div class="nodeCancelButton" id="nodeCancelButton_{id}"></div>',
-'<div class="nodeSaveButton" id="nodeSaveButton_{id}"></div>'
-);
-
-Ext.ComponentMgr.registerType('untangleNode', Ext.untangle.Node);
-
 
 Ext.untangle.ActivityBlinger = Ext.extend(Ext.Component, {
         parentId: null,
