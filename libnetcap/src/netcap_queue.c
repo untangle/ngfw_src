@@ -330,25 +330,28 @@ static int _nf_callback( struct nfq_q_handle *qh, struct nfgenmsg *nfmsg, struct
 
     if ( data_len < ntohs( ip_header->tot_len )) return errlogcons();
 
-    debug(10, "FLAG: Try to get the conntrack information\n");
-    if ( _nfq_get_conntrack( nfa, pkt ) < 0 ) {
-        netcap_set_verdict(pkt->packet_id, NF_DROP, NULL, 0);
-        pkt->packet_id = 0;
-        return errlog( ERR_WARNING, "DROPPING PACKET because it has no conntrack info.\n" );
-    }
+    if (ip_header->protocol == IPPROTO_ICMP) { 
+        debug(10, "not looking up conntrack for ICMP packet\n");
+    }else{
+	debug(10, "FLAG: Try to get the conntrack information\n");
+	if ( _nfq_get_conntrack( nfa, pkt ) < 0 ) {
+	  netcap_set_verdict(pkt->packet_id, NF_DROP, NULL, 0);
+	  pkt->packet_id = 0;
+	  return errlog( ERR_WARNING, "DROPPING PACKET because it has no conntrack info.\n" );
+	}
 
-    debug( 10, "Conntrack original info: %s:%d -> %s:%d\n",
-           unet_next_inet_ntoa( pkt->nat_info.original.src_address ), 
-           ntohs( pkt->nat_info.original.src_protocol_id ),
-           unet_next_inet_ntoa( pkt->nat_info.original.dst_address ), 
-           ntohs( pkt->nat_info.original.dst_protocol_id ));
+	debug( 10, "Conntrack original info: %s:%d -> %s:%d\n",
+	       unet_next_inet_ntoa( pkt->nat_info.original.src_address ), 
+	       ntohs( pkt->nat_info.original.src_protocol_id ),
+	       unet_next_inet_ntoa( pkt->nat_info.original.dst_address ), 
+	       ntohs( pkt->nat_info.original.dst_protocol_id ));
     
-    debug( 10, "Conntrack reply info: %s:%d -> %s:%d\n",
-           unet_next_inet_ntoa( pkt->nat_info.reply.src_address ), 
-           ntohs( pkt->nat_info.reply.src_protocol_id ),
-           unet_next_inet_ntoa( pkt->nat_info.reply.dst_address ), 
-           ntohs( pkt->nat_info.reply.dst_protocol_id ));
-
+	debug( 10, "Conntrack reply info: %s:%d -> %s:%d\n",
+	       unet_next_inet_ntoa( pkt->nat_info.reply.src_address ), 
+	       ntohs( pkt->nat_info.reply.src_protocol_id ),
+	       unet_next_inet_ntoa( pkt->nat_info.reply.dst_address ), 
+	       ntohs( pkt->nat_info.reply.dst_protocol_id ));
+    } 
     /**
      * if we are not ICMP, undo any NATing.
      */
@@ -483,15 +486,20 @@ static int _nf_callback( struct nfq_q_handle *qh, struct nfgenmsg *nfmsg, struct
 
     /* First lookup the physdev_out */
     /* if that fails, check the out_dev */
-    u_int32_t out_dev = nfq_get_physoutdev( nfa );
-    if ( out_dev == 0 ) out_dev = nfq_get_outdev( nfa );
-    if ( out_dev == 0 ) {
-        errlog( ERR_WARNING, "Unable to determine the destination interface with nfq_get_physoutdev\n");
-    }
-
-    if (( pkt->dst_intf = netcap_interface_index_to_intf( out_dev )) == 0 ) {
-        /* This occurs when the interface is a bridge */
-        pkt->dst_intf = NC_INTF_UNK;
+    u_int32_t out_dev = 0;
+    if (ip_header->protocol == IPPROTO_ICMP) { 
+        debug(10, "ICMP packets dont have outdev info\n");
+	pkt->dst_intf = NC_INTF_UNK;
+    }else{
+        out_dev = nfq_get_physoutdev( nfa );
+	if ( out_dev == 0 ) out_dev = nfq_get_outdev( nfa );
+	if ( out_dev == 0 ) {
+	  errlog( ERR_WARNING, "Unable to determine the destination interface with nfq_get_physoutdev\n");
+	}
+	if (( pkt->dst_intf = netcap_interface_index_to_intf( out_dev )) == 0 ) {
+	  /* This occurs when the interface is a bridge */
+	  pkt->dst_intf = NC_INTF_UNK;
+	}
     }
 
     debug( 10, "NFQUEUE Output device %d\n", pkt->dst_intf );
