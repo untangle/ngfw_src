@@ -60,7 +60,7 @@ public class ProtoFilterSettings implements java.io.Serializable
     /**
      * Hibernate constructor.
      */
-    private ProtoFilterSettings() {}
+    public ProtoFilterSettings() {}
 
     /**
      * Real constructor
