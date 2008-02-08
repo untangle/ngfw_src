@@ -171,17 +171,19 @@ MainPage = {
 		rpc.nodeContexts=[];
 		for(var i=0;i<rpc.policyTids.length;i++) {
 			var nodeContext=rpc.nodeManager.nodeContext(rpc.policyTids[i]);
+			nodeContext.tid=rpc.policyTids[i];
 			rpc.nodeContexts.push(nodeContext);
 		}
 		for(var i=0;i<rpc.commonTids.length;i++) {
 			var nodeContext=rpc.nodeManager.nodeContext(rpc.commonTids[i]);
+			nodeContext.tid=rpc.commonTids[i];
 			rpc.nodeContexts.push(nodeContext);
 		}
 		MainPage.nodes=[];
 		for(var i=0;i<rpc.nodeContexts.length;i++) {
 			var nodeContext=rpc.nodeContexts[i];
 			var node={};
-			node.id=node.tid=nodeContext.getTid().id;
+			node.id=node.tid=nodeContext.tid.id;
 			var nodeDesc=nodeContext.getNodeDesc();
 			var mackageDesc=nodeContext.getMackageDesc();
 			node.name=nodeDesc.name;
