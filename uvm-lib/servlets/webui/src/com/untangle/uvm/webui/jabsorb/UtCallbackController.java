@@ -46,7 +46,7 @@ public class UtCallbackController extends CallbackController
                                    Method method, Object result)
         throws Exception
     {
-        if (!(result instanceof Serializable) || (result instanceof MackageDesc)) {
+        if (!(result instanceof Serializable)) {
             bridge.registerCallableReference(result.getClass());
         }
     }

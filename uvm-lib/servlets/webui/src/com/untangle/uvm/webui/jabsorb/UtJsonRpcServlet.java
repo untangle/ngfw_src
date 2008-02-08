@@ -58,6 +58,12 @@ public class UtJsonRpcServlet extends JSONRPCServlet
         if (null == b) {
             b = new JSONRPCBridge();
             s.setAttribute(BRIDGE_ATTRIBUTE, b);
+            
+            try {
+                b.registerSerializer(new EnumSerializer());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 
             b.setCallbackController(new UtCallbackController(b));
             System.out.println(b.getCallbackController());
