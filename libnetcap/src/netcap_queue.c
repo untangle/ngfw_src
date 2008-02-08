@@ -120,7 +120,9 @@ int  netcap_queue_init (void)
         if (( _queue.nfq_h = nfq_open()) == NULL ) return perrlog( "nfq_open" );
         
         /* Unbind any existing queue handlers */
-        if ( nfq_unbind_pf( _queue.nfq_h, PF_INET ) < 0 ) return perrlog( "nfq_unbind_pf" );
+        /* In > 2.6.22, EINVAL is returned if the queue handler isn't register.  So
+           we just ignore it. */
+        if ( nfq_unbind_pf( _queue.nfq_h, PF_INET ) < 0 && errno != EINVAL ) return perrlog( "nfq_unbind_pf" );
         
         /* Bind queue */
         if ( nfq_bind_pf( _queue.nfq_h, PF_INET ) < 0 ) return perrlog( "nfq_bind_pf" );

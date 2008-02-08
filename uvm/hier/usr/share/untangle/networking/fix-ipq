@@ -13,11 +13,6 @@ echo "unbinding nf_queue"
     exit -1
 }
 
-sudo modprobe ip_queue || {
-    echo "Unable to reload ip_queue module."
-    exit -1
-}
-
 true
 
 
