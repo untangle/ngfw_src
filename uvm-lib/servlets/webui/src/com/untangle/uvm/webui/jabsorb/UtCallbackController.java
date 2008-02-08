@@ -46,7 +46,7 @@ public class UtCallbackController extends CallbackController
                                    Method method, Object result)
         throws Exception
     {
-        if (!(result instanceof Serializable)) {
+        if (result!= null && !(result instanceof Serializable)) {
             bridge.registerCallableReference(result.getClass());
         }
     }
