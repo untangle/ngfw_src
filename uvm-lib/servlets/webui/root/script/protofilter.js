@@ -121,7 +121,7 @@ Ext.untangle.ProtocolControlSettings = Ext.extend(Ext.untangle.Settings, {
 	           {name: 'blocked'},
 	           {name: 'log'},
 	           {name: 'description'},
-	           {name: 'signature'},
+	           {name: 'definition'},
 	        ]
 	    });
     	
@@ -171,7 +171,7 @@ Ext.untangle.ProtocolControlSettings = Ext.extend(Ext.untangle.Settings, {
 	          {id:'description',header: "description", width: 120, dataIndex: 'description',
 		          editor: new Ext.form.TextField({allowBlank: false})
 	          },
-	          {id:'signature',header: "signature", width: 120, dataIndex: 'signature',
+	          {id:'definition',header: "signature", width: 120, dataIndex: 'definition',
 		          editor: new Ext.form.TextField({allowBlank: false})
 	          },
 	          editColumn,
@@ -187,7 +187,7 @@ Ext.untangle.ProtocolControlSettings = Ext.extend(Ext.untangle.Settings, {
 		'<div class="inputLine"><span class="label">Block:</span><span class="formw"><input type="checkbox" id="field_blocked_pl_{tid}" /></span></div>',
 		'<div class="inputLine"><span class="label">Log:</span><span class="formw"><input type="checkbox" id="field_log_pl_{tid}" /></span></div>',
 		'<div class="inputLine"><span class="label">Description:</span><span class="formw"><input type="text" id="field_description_pl_{tid}" size="30"/></span></div>',
-		'<div class="inputLine"><span class="label">Signature:</span><span class="formw"><input type="text" id="field_signature_pl_{tid}" size="30"/></span></div>'
+		'<div class="inputLine"><span class="label">Signature:</span><span class="formw"><input type="text" id="field_definition_pl_{tid}" size="30"/></span></div>'
 		);
 		var winHTML=editPLTemplate.applyTemplate({'tid':this.tid})
 		this.rowEditPLWin=new Ext.Window({
@@ -264,7 +264,8 @@ Ext.untangle.ProtocolControlSettings = Ext.extend(Ext.untangle.Settings, {
 		            parentId:this.getId(),
 		            handler: function() {
 		            	var cmp=Ext.getCmp(this.parentId);
-		            	var rec=new Ext.data.Record({"category":"","protocol":"","blocked":false,"log":false,"description":"","signature":""});
+		            	var rec=new Ext.data.Record({"javaClass":"com.untangle.node.protofilter.ProtoFilterPattern","category":"","protocol":"","blocked":false,"log":false,"description":"","definition":""});
+//{"log":false,"protocol":"",,"alert":false,"blocked":false,"category":"","definition":"","description":"","readOnly":true,"metavizeId":0,"quality":"Bad"}		            	
 						cmp.gridPL.stopEditing();
 						cmp.gridPL.getStore().insert(0, [rec]);
 						cmp.gridPL.startEditing(0, 0);		            	
@@ -408,7 +409,7 @@ Ext.untangle.ProtocolControlSettings = Ext.extend(Ext.untangle.Settings, {
     },
     
     loadPL: function() {
-    	this.gridPL.getStore().loadData(this.rpc.patterns.list);
+    	this.gridPL.getStore().loadData(this.rpc.settings.patterns.list);
     	
     },
     
@@ -424,11 +425,26 @@ Ext.untangle.ProtocolControlSettings = Ext.extend(Ext.untangle.Settings, {
     	this.gridPL.disable();
     	this.gridPL.getStore().commitChanges();
     	var recordsPL=this.gridPL.getStore().getRange();
-    	var saveData=[];
+    	var patterns=[];
     	for(var i=0;i<recordsPL.length;i++) {
-    		saveData.push(recordsPL[i].data);
+    		var pattern=recordsPL[i].data;
+    		pattern.javaClass="com.untangle.node.protofilter.ProtoFilterPattern";
+    		patterns.push(pattern);
     	}
-    	var saveDataJson=Ext.util.JSON.encode(saveData);
+    	//var patternsJson=Ext.util.JSON.encode(patterns);
+    	//this.rpc.settings.patterns=patterns;
+    	this.rpc.node.setProtoFilterSettings(this.rpc.settings);
+		/*
+		this.rpc.settings.setPatterns(function (result, exception) {
+			if(exception) {alert(exception.message); return;}
+			//var cmpId=result.tid.id
+			//var cmpSettings=Ext.getCmp(cmpId).settings;
+			//cmpSettings.rpc.settings=result;
+			//cmpSettings.loadPL();
+		},patterns);
+    	*/
+    	this.gridPL.enable(); 
+    	/*
 		Ext.Ajax.request({
 	        url: Ext.untangle.ProtocolControlSettings.nodeUrl,
 	        params: {'action':'saveProtocolList','nodeName':this.name,'nodeId':this.tid,'data':saveDataJson},
@@ -449,7 +465,8 @@ Ext.untangle.ProtocolControlSettings = Ext.extend(Ext.untangle.Settings, {
 				var cmp=Ext.getCmp(request.parentId);
 				cmp.gridPL.enable(); 
 			} 
-		});	
+		});
+		*/	
     },
     
 	loadData: function() {
@@ -458,7 +475,7 @@ Ext.untangle.ProtocolControlSettings = Ext.extend(Ext.untangle.Settings, {
 			//this.abcd=result;
 			var cmpId=result.tid.id
 			var cmpSettings=Ext.getCmp(cmpId).settings;
-			cmpSettings.rpc.patterns=result.patterns;
+			cmpSettings.rpc.settings=result;
 			cmpSettings.loadPL();
 		});
 		
@@ -468,7 +485,7 @@ Ext.untangle.ProtocolControlSettings = Ext.extend(Ext.untangle.Settings, {
 		this.savePL();
 	}
 });
-Ext.untangle.ProtocolControlSettings.nodeUrl="/protofilter/node.do";
+//Ext.untangle.ProtocolControlSettings.nodeUrl="/protofilter/node.do";
 Ext.untangle.Settings.registerClassName('untangle-node-protofilter','Ext.untangle.ProtocolControlSettings')
 Ext.reg('untangleProtocolControlSettings', Ext.untangle.ProtocolControlSettings);
 }
