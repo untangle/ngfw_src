@@ -41,7 +41,7 @@ public class ImageServlet extends HttpServlet {
 		// TODO cache uvm in session
         RemoteUvmContext uvm = LocalUvmContextFactory.context().remoteContext();
         
-        return uvm.toolboxManager().mackageDesc(name).getDescIcon();
+        return uvm.toolboxManager().mackageDesc(name).descIcon();
     }
 	
 }

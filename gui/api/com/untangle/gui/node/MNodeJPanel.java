@@ -168,7 +168,7 @@ public class MNodeJPanel extends javax.swing.JPanel {
         try{
             name = nodeDesc.getName();
             name = name.substring(0, name.indexOf('-'));
-            descriptionIconJLabel.setIcon(new ImageIcon(mackageDesc.getDescIcon()));
+            descriptionIconJLabel.setIcon(new ImageIcon(mackageDesc.descIcon()));
         }
         catch(Exception e){ Util.handleExceptionNoRestart("Error adding icon: " + name , e); }
 

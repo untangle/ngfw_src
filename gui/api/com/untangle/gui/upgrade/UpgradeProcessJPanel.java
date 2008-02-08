@@ -141,7 +141,7 @@ public class UpgradeProcessJPanel extends JPanel
                     tempRow.add( MSortedTableModel.ROW_SAVED  );
                     tempRow.add( rowIndex );
 
-                    byte[] descIcon = mackageDesc.getDescIcon();
+                    byte[] descIcon = mackageDesc.descIcon();
 
                     if( descIcon != null) {
                         tempRow.add( new ImageIcon(descIcon) );

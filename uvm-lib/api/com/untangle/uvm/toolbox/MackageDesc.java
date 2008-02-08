@@ -275,7 +275,7 @@ public class MackageDesc implements Serializable
         return installedSize;
     }
 
-    public byte[] getDescIcon()
+    public byte[] descIcon()
     {
         byte[] retVal = null;
 

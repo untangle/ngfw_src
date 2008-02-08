@@ -96,8 +96,8 @@ public class MNodeJButton extends JButton {
 
         // DESC ICON
         descriptionIconJLabel = new JLabel();
-        if( mackageDesc.getDescIcon() != null )
-            descriptionIconJLabel.setIcon( new javax.swing.ImageIcon(mackageDesc.getDescIcon()) );
+        if( mackageDesc.descIcon() != null )
+            descriptionIconJLabel.setIcon( new javax.swing.ImageIcon(mackageDesc.descIcon()) );
         else
             descriptionIconJLabel.setIcon( new ImageIcon(getClass().getResource("/com/untangle/gui/node/IconDescUnknown42x42.png")) );
         //descriptionIconJLabel.setDisabledIcon(this.descIcon);

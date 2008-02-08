@@ -196,7 +196,7 @@ public class MainRackController extends MultiActionController {
 	public ModelAndView getImage(HttpServletRequest request, HttpServletResponse response) {
 		logger.debug("Displaying Image");
 		String name = request.getParameter("name");
-		byte[] imageData = getMainRackService().getMackageDesc(name).getDescIcon();
+		byte[] imageData = getMainRackService().getMackageDesc(name).descIcon();
 		
 	    return new ModelAndView("image", "imageData", imageData);
 	}
