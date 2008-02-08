@@ -385,7 +385,7 @@ Ext.untangle.ProtocolControlSettings = Ext.extend(Ext.untangle.Settings, {
     	var tabs = new Ext.TabPanel({
 	        renderTo: this.getEl().id,
 	        width: 690,
-	        height: 580,
+	        height: 400,
 	        activeTab: 0,
 	        frame: true,
 	        deferredRender: false,
