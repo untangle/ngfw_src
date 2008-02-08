@@ -158,8 +158,7 @@ MainPage = {
 	loadVirtualRacks: function() {
 		rpc.policyManager.getPolicies( function (result, exception) {
 			if(exception) { alert(exception.message); }
-				rpc.policies=result;
-			//MainPage.virtualRacks=jsonResult.data;
+			rpc.policies=result;
 			MainPage.buildPolicies();
 		});
 	},
@@ -194,8 +193,8 @@ MainPage = {
 			node.isUtil=mackageDesc.util;
 			node.isSecurity=mackageDesc.security;
 			node.isCore=mackageDesc.core;
-			//node.runState=mackageDesc.getRunState();
-			node.runState="RUNNING";
+			node.runState=nodeContext.node().getRunState();
+			//node.runState="RUNNING";
 			
 			node.image='image?name='+node.name;
 			node.helpLink='';
