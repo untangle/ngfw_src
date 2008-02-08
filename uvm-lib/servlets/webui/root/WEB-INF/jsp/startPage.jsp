@@ -181,6 +181,7 @@ MainPage = {
 		node.isUtil=node.nodeContext.mackageDesc.util;
 		node.isSecurity=node.nodeContext.mackageDesc.security;
 		node.isCore=node.nodeContext.mackageDesc.core;
+		node.runState=node.nodeContext.node.runState;
 
 		node.image='image?name='+node.name;
 		node.helpLink='';
