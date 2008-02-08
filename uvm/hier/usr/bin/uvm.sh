@@ -326,10 +326,10 @@ while true; do
 	    if [ $counter -gt 60 ] ; then # fire up the other nannies
 	        if dpkg -l untangle-spamassassin-update | grep -q ii ; then # we're managing spamassassin
 	            [ `tail -n 50 /var/log/mail.info | grep -c "$SPAMASSASSIN_LOG_ERROR"` -gt 2 ] && restartService spamassassin $SPAMASSASSIN_PID_FILE "non-functional" stopFirst
-	            $BANNER_NANNY $SPAMASSASSIN_PORT $TIMEOUT || restartService spamassassin $SPAMASSASSIN_PID_FILE "hung" stopFirst
+	            $BANNER_NANNY $SPAMASSASSIN_PORT $TIMEOUT | grep -q success || restartService spamassassin $SPAMASSASSIN_PID_FILE "hung" stopFirst
 	        fi
 	        if dpkg -l untangle-clamav-config | grep -q -E '^ii' ; then # we're managing clamav
-                    $BANNER_NANNY $CLAMD_PORT $TIMEOUT || restartService clamav-daemon $CLAMD_PID_FILE "hung" stopFirst
+                    $BANNER_NANNY $CLAMD_PORT $TIMEOUT | grep -q success || restartService clamav-daemon $CLAMD_PID_FILE "hung" stopFirst
 	        fi
 	        if dpkg -l untangle-support-agent | grep -q ii ; then # support-agent is supposed to run
 	            if [ -f "$SUPPORT_AGENT_PID_FILE" ] && ps `cat $SUPPORT_AGENT_PID_FILE` > /dev/null ; then # it runs
@@ -343,23 +343,6 @@ while true; do
 
         fi
 
-	if [ $counter -gt 60 ] ; then # fire up the other nannies
-	  if dpkg -l untangle-spamassassin-update | grep -q ii ; then # we're managing spamassassin
-	      [ `tail -n 50 /var/log/mail.info | grep -c "$SPAMASSASSIN_LOG_ERROR"` -gt 2 ] && restartService spamassassin $SPAMASSASSIN_PID_FILE "non-functional" stopFirst
-	      $BANNER_NANNY $SPAMASSASSIN_PORT $TIMEOUT | grep -q success || restartService spamassassin $SPAMASSASSIN_PID_FILE "hung" stopFirst
-	  fi
-	  if dpkg -l untangle-clamav-config | grep -q -E '^ii' ; then # we're managing clamav
-              $BANNER_NANNY $CLAMD_PORT $TIMEOUT | grep -q success || restartService clamav-daemon $CLAMD_PID_FILE "hung" stopFirst
-	  fi
-	  if dpkg -l untangle-support-agent | grep -q ii ; then # support-agent is supposed to run
-	      if [ -f "$SUPPORT_AGENT_PID_FILE" ] && ps `cat $SUPPORT_AGENT_PID_FILE` > /dev/null ; then # it runs
-	          if [ $(ps -o %cpu= `cat $SUPPORT_AGENT_PID_FILE` | perl -pe 's/\..*//') -gt $SUPPORT_AGENT_MAX_ALLOWED_CPU ] ; then
-		      restartService untangle-support-agent $SUPPORT_AGENT_PID_FILE "spinning" stopFirst
-	          fi
-	      fi
-	  fi
-	  counter=0
-	fi
     done
 
 # Clean up the zombie.  Risky? XXX
