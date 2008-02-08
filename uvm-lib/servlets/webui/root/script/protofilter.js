@@ -96,6 +96,7 @@ Ext.grid.RemoveColumn.prototype ={
 };
 
 Ext.untangle.ProtocolControlSettings = Ext.extend(Ext.untangle.Settings, {
+    tabs: null,
     storePL: null,
     gridPL: null,
     gridEventLog: null,
@@ -264,7 +265,7 @@ Ext.untangle.ProtocolControlSettings = Ext.extend(Ext.untangle.Settings, {
 		            parentId:this.getId(),
 		            handler: function() {
 		            	var cmp=Ext.getCmp(this.parentId);
-		            	var rec=new Ext.data.Record({"javaClass":"com.untangle.node.protofilter.ProtoFilterPattern","category":"","protocol":"","blocked":false,"log":false,"description":"","definition":""});
+		            	var rec=new Ext.data.Record({"category":"","protocol":"","blocked":false,"log":false,"description":"","definition":""});
 //{"log":false,"protocol":"",,"alert":false,"blocked":false,"category":"","definition":"","description":"","readOnly":true,"metavizeId":0,"quality":"Bad"}		            	
 						cmp.gridPL.stopEditing();
 						cmp.gridPL.getStore().insert(0, [rec]);
@@ -383,7 +384,7 @@ Ext.untangle.ProtocolControlSettings = Ext.extend(Ext.untangle.Settings, {
 	       }
 		});
     	
-    	var tabs = new Ext.TabPanel({
+    	this.tabs = new Ext.TabPanel({
 	        renderTo: this.getEl().id,
 	        width: 690,
 	        height: 400,
@@ -422,17 +423,17 @@ Ext.untangle.ProtocolControlSettings = Ext.extend(Ext.untangle.Settings, {
     },
     
     savePL: function() {
-    	this.gridPL.disable();
+    	this.tabs.disable();
     	this.gridPL.getStore().commitChanges();
     	var recordsPL=this.gridPL.getStore().getRange();
-    	var patterns=[];
+    	var patternsList=[];
     	for(var i=0;i<recordsPL.length;i++) {
     		var pattern=recordsPL[i].data;
     		pattern.javaClass="com.untangle.node.protofilter.ProtoFilterPattern";
-    		patterns.push(pattern);
+    		patternsList.push(pattern);
     	}
     	//var patternsJson=Ext.util.JSON.encode(patterns);
-    	//this.rpc.settings.patterns=patterns;
+    	this.rpc.settings.patterns.list=patternsList;
     	this.rpc.settings.patterns.javaClass="java.util.ArrayList";
     	this.rpc.node.setProtoFilterSettings(this.rpc.settings);
 		/*
@@ -444,7 +445,7 @@ Ext.untangle.ProtocolControlSettings = Ext.extend(Ext.untangle.Settings, {
 			//cmpSettings.loadPL();
 		},patterns);
     	*/
-    	this.gridPL.enable(); 
+    	this.tabs.enable(); 
     	/*
 		Ext.Ajax.request({
 	        url: Ext.untangle.ProtocolControlSettings.nodeUrl,

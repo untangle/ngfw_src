@@ -127,6 +127,22 @@ Ext.untangle.Node = Ext.extend(Ext.Component, {
         onPowerClick: function() {
         	this.setPowerOn(!this.powerOn);
         	this.setState("Attention");
+/*
+        	if(this.powerOn) {
+				this.rpc.node.getProtoFilterSettings(function (result, exception) {
+					if(exception) {alert(exception.message); return;}
+					//this.abcd=result;
+					var cmpId=result.tid.id
+					var cmpSettings=Ext.getCmp(cmpId).settings;
+					cmpSettings.rpc.settings=result;
+					cmpSettings.loadPL();
+				});
+        	
+        	} else {
+        	
+        	}
+*/        	
+        	
 			Ext.Ajax.request({
 		        url: MainPage.rackUrl,
 		        params:{'action':this.powerOn?"startNode":"stopNode",'nodeName':this.name,'nodeId':this.tid},

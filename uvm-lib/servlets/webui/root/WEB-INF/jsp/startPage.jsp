@@ -162,44 +162,46 @@ MainPage = {
 			MainPage.buildPolicies();
 		});
 	},
+	createNode: function (Tid) {
+		var node={};
+		node.nodeContext=rpc.nodeManager.nodeContext(Tid);
+		node.nodeContext.tid=Tid;
+		node.nodeContext.node=node.nodeContext.node();
+		node.nodeContext.node.runState=node.nodeContext.node.getRunState();
+		node.nodeContext.nodeDesc=node.nodeContext.getNodeDesc();
+		node.nodeContext.mackageDesc=node.nodeContext.getMackageDesc();
+		
+		//shortcut properties
+		node.id=node.tid=node.nodeContext.tid.id;
+		node.name=node.nodeContext.nodeDesc.name;
+		node.displayName=node.nodeContext.nodeDesc.displayName;
+		node.viewPosition=node.nodeContext.mackageDesc.viewPosition;
+		node.rackType=node.nodeContext.mackageDesc.rackType;
+		node.isService=node.nodeContext.mackageDesc.service;
+		node.isUtil=node.nodeContext.mackageDesc.util;
+		node.isSecurity=node.nodeContext.mackageDesc.security;
+		node.isCore=node.nodeContext.mackageDesc.core;
 
+		node.image='image?name='+node.name;
+		node.helpLink='';
+		node.blingers=eval([{'type':'ActivityBlinger','bars':['ACT 1','ACT 2','ACT 3','ACT 4']},{'type':'SystemBlinger'}]);
+		return node;
+	},
 	loadNodes: function() {
 		Ext.untangle.BlingerManager.stop();
 		rpc.policyTids=rpc.nodeManager.nodeInstancesVisible(rpc.currentPolicy).list;
 		rpc.commonTids=rpc.nodeManager.nodeInstancesVisible(null).list;
-		rpc.nodeContexts=[];
+		rpc.tids=[];
 		for(var i=0;i<rpc.policyTids.length;i++) {
-			var nodeContext=rpc.nodeManager.nodeContext(rpc.policyTids[i]);
-			nodeContext.tid=rpc.policyTids[i];
-			rpc.nodeContexts.push(nodeContext);
+			rpc.tids.push(rpc.policyTids[i]);
 		}
 		for(var i=0;i<rpc.commonTids.length;i++) {
-			var nodeContext=rpc.nodeManager.nodeContext(rpc.commonTids[i]);
-			nodeContext.tid=rpc.commonTids[i];
-			rpc.nodeContexts.push(nodeContext);
+			rpc.tids.push(rpc.commonTids[i]);
 		}
+
 		MainPage.nodes=[];
-		for(var i=0;i<rpc.nodeContexts.length;i++) {
-			var nodeContext=rpc.nodeContexts[i];
-			var node={};
-			node.id=node.tid=nodeContext.tid.id;
-			var nodeDesc=nodeContext.getNodeDesc();
-			var mackageDesc=nodeContext.getMackageDesc();
-			node.name=nodeDesc.name;
-			node.displayName=nodeDesc.displayName;
-			node.viewPosition=mackageDesc.viewPosition;
-			node.rackType=mackageDesc.rackType;
-			node.isService=mackageDesc.service;
-			node.isUtil=mackageDesc.util;
-			node.isSecurity=mackageDesc.security;
-			node.isCore=mackageDesc.core;
-			node.runState=nodeContext.node().getRunState();
-			//node.runState="RUNNING";
-			
-			node.image='image?name='+node.name;
-			node.helpLink='';
-			node.blingers=eval([{'type':'ActivityBlinger','bars':['ACT 1','ACT 2','ACT 3','ACT 4']},{'type':'SystemBlinger'}])
-			MainPage.nodes.push(node);
+		for(var i=0;i<rpc.tids.length;i++) {
+			MainPage.nodes.push(this.createNode(rpc.tids[i]));
 		}
 		MainPage.buildNodes();
 		Ext.untangle.BlingerManager.start();
