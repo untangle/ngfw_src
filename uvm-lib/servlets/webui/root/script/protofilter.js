@@ -433,6 +433,7 @@ Ext.untangle.ProtocolControlSettings = Ext.extend(Ext.untangle.Settings, {
     	}
     	//var patternsJson=Ext.util.JSON.encode(patterns);
     	//this.rpc.settings.patterns=patterns;
+    	this.rpc.settings.patterns.javaClass="java.util.ArrayList";
     	this.rpc.node.setProtoFilterSettings(this.rpc.settings);
 		/*
 		this.rpc.settings.setPatterns(function (result, exception) {
