@@ -69,7 +69,7 @@ public class PopReply implements Token
     private final static String ANYOK = OKLWSP + "*.*?" + EOLINE;
 
     private final static String PEOLINE = EOLINE + "$"; /* protocol EOLINE */
-    private final static String OKSIMPLE = OKLWSP + "*" + PEOLINE;
+    private final static String OKSIMPLE = OKLWSP + "*[^0-9]?.*" + PEOLINE;
 
     private final static Pattern DIGVALP = Pattern.compile(DIGVAL);
     private final static Pattern SZVALP = Pattern.compile(SZVAL, Pattern.CASE_INSENSITIVE);
