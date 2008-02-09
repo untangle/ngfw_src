@@ -37,8 +37,8 @@ restore_packages()
     apt-get update >> /var/log/uvm/apt.log 2>&1
     apt-get dist-upgrade $UPGD_OPTS >> /var/log/uvm/apt.log 2>&1
     /etc/init.d/untangle-vm stop
-    cat $instfile | cut -d' ' -f1 | grep -- '-storeitem$' \
-        | xargs apt-get install $INST_OPTS >> /var/log/uvm/apt.log 2>&1
+    cat $instfile | cut -d' ' -f1 | \
+      xargs apt-get install $INST_OPTS >> /var/log/uvm/apt.log 2>&1
 }
 
 
