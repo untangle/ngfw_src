@@ -714,7 +714,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                 try{
                     if(mNodeJButton == null){
                         MOneButtonJDialog.factory(Util.getMMainJFrame(), "",
-                                                  "A problem occurred while purchasing:<br>"
+                                                  "A problem occurred while downloading:<br>"
                                                   + req.getMackageDesc().getName()
                                                   + "<br>Please try again.",
                                                   req.getMackageDesc().getName() + " Warning", "");
@@ -733,7 +733,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                 }
                 catch (Exception e) {
                     e.printStackTrace();
-                    Util.handleExceptionNoRestart("Error purchasing", e);
+                    Util.handleExceptionNoRestart("Error downloading", e);
                     mNodeJButton.setFailedProcureView();
                 }
             }
@@ -1003,15 +1003,15 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                 e.printStackTrace();
                 if( !isInterrupted() ){
                     try{
-                        Util.handleExceptionWithRestart("Error purchasing: " +  mNodeJButton.getName(),  e);
+                        Util.handleExceptionWithRestart("Error downloading: " +  mNodeJButton.getName(),  e);
                     }
                     catch(Exception f){
-                        Util.handleExceptionNoRestart("Error purchasing:", f);
+                        Util.handleExceptionNoRestart("Error downloading:", f);
                         mNodeJButton.setFailedProcureView();
                         final MNodeJButton finalJButton3 = mNodeJButton;
                         SwingUtilities.invokeLater( new Runnable(){ public void run(){
                             MOneButtonJDialog.factory(Util.getMMainJFrame(), "",
-                                                      "A problem occurred while purchasing:<br>"
+                                                      "A problem occurred while downloading:<br>"
                                                       + finalJButton3.getDisplayName()
                                                       + "<br>Please try again or contact Untangle Support for assistance.",
                                                       finalJButton3.getDisplayName() + " Warning", "");
