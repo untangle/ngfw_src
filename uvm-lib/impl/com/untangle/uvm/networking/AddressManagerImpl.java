@@ -180,9 +180,8 @@ class AddressManagerImpl implements LocalAddressManager
             logger.debug( "New Address Settings:\n" + this.addressSettings );
         }
 
-        /* xxx not sure if it should call the listeners here, most of
-         * them are concerned with the hostname, so i don't think
-         * so. */
+        /* Call the listeners */
+        callListeners( this.addressSettings );
     }
 
     /* Register a listener to be called whenever there are changes to the hostname/address */
