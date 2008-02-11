@@ -96,6 +96,7 @@ Ext.grid.RemoveColumn.prototype ={
 };
 
 Ext.untangle.ProtocolControlSettings = Ext.extend(Ext.untangle.Settings, {
+    node:null,
     tabs: null,
     storePL: null,
     gridPL: null,
@@ -108,12 +109,13 @@ Ext.untangle.ProtocolControlSettings = Ext.extend(Ext.untangle.Settings, {
 	    container.dom.insertBefore(el, position);
         this.el = Ext.get(el);
     	this.rpc={};
-    	
-    	var a = rpc.nodeManager.nodeInstances('untangle-node-protofilter')
-		var nc = rpc.nodeManager.nodeContext(a.list[0])
-		this.rpc.node = nc.node();
-		this.rpc.eventManager=this.rpc.node.getEventManager();
-		
+    	this.rpc.repository={};
+    	Ext.untangle.ProtocolControlSettings.instanceId=this.getId();
+    	if(this.node.nodeContext.node.eventManager==null) {
+			this.node.nodeContext.node.eventManager=this.node.nodeContext.node.getEventManager();
+		}
+		this.rpc.node = this.node.nodeContext.node;
+		this.rpc.eventManager=this.node.nodeContext.node.eventManager;
 	    // create the data store
 	    this.storePL = new Ext.data.JsonStore({
 	        fields: [
@@ -125,25 +127,6 @@ Ext.untangle.ProtocolControlSettings = Ext.extend(Ext.untangle.Settings, {
 	           {name: 'definition'},
 	        ]
 	    });
-    	
-    	
-	    /*
-	    this.storePL = new Ext.data.JsonStore({
-	        url: Ext.untangle.ProtocolControlSettings.nodeUrl,
-	        disableCaching: true,
-	        baseParams: {'action':'loadProtocolList','nodeName':this.name,'nodeId':this.tid},
-	        root: 'data',
-	        fields: [
-	           {name: 'category'},
-	           {name: 'protocol'},
-	           {name: 'blocked'},
-	           {name: 'log'},
-	           {name: 'description'},
-	           {name: 'signature'},
-	        ]
-	    });
-	    */
-	    
 	    // the column model has information about grid columns
 	    // dataIndex maps the column to the specific data field in
 	    // the data store (created below)
@@ -266,7 +249,6 @@ Ext.untangle.ProtocolControlSettings = Ext.extend(Ext.untangle.Settings, {
 		            handler: function() {
 		            	var cmp=Ext.getCmp(this.parentId);
 		            	var rec=new Ext.data.Record({"category":"","protocol":"","blocked":false,"log":false,"description":"","definition":""});
-//{"log":false,"protocol":"",,"alert":false,"blocked":false,"category":"","definition":"","description":"","readOnly":true,"metavizeId":0,"quality":"Bad"}		            	
 						cmp.gridPL.stopEditing();
 						cmp.gridPL.getStore().insert(0, [rec]);
 						cmp.gridPL.startEditing(0, 0);		            	
@@ -283,39 +265,26 @@ Ext.untangle.ProtocolControlSettings = Ext.extend(Ext.untangle.Settings, {
     	this.gridEventLog = new Ext.grid.GridPanel({
 			store: new Ext.data.JsonStore({
 		        fields: [
-		           {name: 'timestamp'},
-		           {name: 'action'},
-		           {name: 'client'},
-		           {name: 'request'},
-		           {name: 'reason'},
+		           {name: 'timeStamp'},
+		           {name: 'blocked'},
+		           {name: 'pipelineEndpoints'},
+		           {name: 'protocol'},
+		           {name: 'blocked'},
 		           {name: 'server'}
 		        ]
 	    	}),
 
-			/*
-			new Ext.data.JsonStore({
-		        url: Ext.untangle.ProtocolControlSettings.nodeUrl,
-		        disableCaching: true,
-		        autoLoad: false,
-		        baseParams: {'action':'loadEvents','nodeName':this.name,'nodeId':this.tid},
-		        root: 'data',
-		        fields: [
-		           {name: 'timestamp'},
-		           {name: 'action'},
-		           {name: 'client'},
-		           {name: 'request'},
-		           {name: 'reason'},
-		           {name: 'server'}
-		        ]
-	    	}),
-	    	*/
 			columns: [
-			    {header: "timestamp", width: 120, sortable: true, dataIndex: 'timestamp'},
-			    {header: "action", width: 70, sortable: true, dataIndex: 'action'},
-			    {header: "client", width: 120, sortable: true, dataIndex: 'client'},
-			    {header: "request", width: 120, sortable: true, dataIndex: 'request'},
-			    {header: "reason for action", width: 120, sortable: true, dataIndex: 'reason'},
-			    {header: "server", width: 120, sortable: true, dataIndex: 'server'}
+			    {header: "timestamp", width: 120, sortable: true, dataIndex: 'timeStamp', renderer: function(value) {
+			    	var date=new Date();
+			    	date.setTime(value.time);
+			    	return date.toLocaleString();
+			    }},
+			    {header: "action", width: 70, sortable: true, dataIndex: 'blocked', renderer: function(value) {return value?"blocked" : "passed"}},
+			    {header: "client", width: 120, sortable: true, dataIndex: 'pipelineEndpoints', renderer: function(value) {return value==null?"" : value.CClientAddr.hostAddress+":"+value.CClientPort}},
+			    {header: "request", width: 120, sortable: true, dataIndex: 'protocol'},
+			    {header: "reason for action", width: 120, sortable: true, dataIndex: 'blocked', renderer: function(value) {return value?"blocked in block list" : "not blocked in block list"}},
+			    {header: "server", width: 120, sortable: true, dataIndex: 'pipelineEndpoints', renderer: function(value) {return value==null?"" : value.SServerAddr.hostAddress+":"+value.SServerPort}}
 			],
 			//sm: new Ext.grid.RowSelectionModel({singleSelect:true}),
 			title: 'Event Log',
@@ -334,50 +303,25 @@ Ext.untangle.ProtocolControlSettings = Ext.extend(Ext.untangle.Settings, {
 		    listeners: {
 	       		'render': {
 	       			fn: function() {
-	       			
-	       				this.rpc.repositoryDescs=this.rpc.eventManager.getRepositoryDescs();
-						var out=[];
-						out.push('<select id="selectReposytoryDescEventLog_'+this.tid+'">');
-						var repList=this.rpc.repositoryDescs.list;
-						for(var i=0;i<repList.length;i++) {
-							var repDesc=repList[i];
-							var selOpt=(i==0)?"selected":"";
-							out.push('<option value="'+repDesc.name+'" '+selOpt+'>'+repDesc.name+'</option>');
-						}
-						out.push('</select>');
-			    		
-			    		var boxReposytoryDescEventLog=document.getElementById('boxReposytoryDescEventLog_'+this.tid);
-			    		boxReposytoryDescEventLog.innerHTML=out.join("");
-
-						/*
-	       				Ext.Ajax.request({
-					        url: Ext.untangle.ProtocolControlSettings.nodeUrl,
-					        params: {'action':'loadRepositoryDescs','nodeName':this.name,'nodeId':this.tid},
-							disableCaching: true,
-							nodeId: this.tid,
-							success: function ( result, request) {
-								var jsonResult=Ext.util.JSON.decode(result.responseText);
-								if(jsonResult.success!=true) {
-									Ext.MessageBox.alert('Failed', jsonResult.msg); 
-								} else {
-									var out=[];
-									out.push('<select id="selectReposytoryDescEventLog_'+request.nodeId+'">');
-									for(var i=0;i<jsonResult.data.length;i++) {
-										var selOpt=(i==0)?"selected":"";
-										
-										out.push('<option value="'+jsonResult.data[i].name+'" '+selOpt+'>'+jsonResult.data[i].displayName+'</option>');
-									}
-									out.push('</select>');
-						    		
-						    		var boxReposytoryDescEventLog=document.getElementById('boxReposytoryDescEventLog_'+request.nodeId);
-						    		boxReposytoryDescEventLog.innerHTML=out.join("");
+	       				this.rpc.eventManager.getRepositoryDescs(function (result, exception) {
+							if(exception) {alert(exception.message); return;}
+							var cmp=Ext.untangle.ProtocolControlSettings.getInstanceCmp();
+							if(cmp!=null) {
+								cmp.rpc.repositoryDescs=result;
+								var out=[];
+								out.push('<select id="selectReposytoryDescEventLog_'+cmp.tid+'">');
+								var repList=cmp.rpc.repositoryDescs.list;
+								for(var i=0;i<repList.length;i++) {
+									var repDesc=repList[i];
+									var selOpt=(i==0)?"selected":"";
+									out.push('<option value="'+repDesc.name+'" '+selOpt+'>'+repDesc.name+'</option>');
 								}
-							},
-							failure: function ( result, request) { 
-								Ext.MessageBox.alert('Failed', 'Successfully posted form: '+result.date);
-							} 
+								out.push('</select>');
+					    		
+					    		var boxReposytoryDescEventLog=document.getElementById('boxReposytoryDescEventLog_'+cmp.tid);
+					    		boxReposytoryDescEventLog.innerHTML=out.join("");
+							}
 						});
-						*/	
 				    },
 				    scope: this
 	        	}
@@ -417,8 +361,18 @@ Ext.untangle.ProtocolControlSettings = Ext.extend(Ext.untangle.Settings, {
     refreshEventLog: function() {
     	var selRepository=this.getSelectedEventLogRepository();
     	if(selRepository!=null) {
-    		var events=this.rpc.eventManager.getRepository(selRepository).getEvents()
-    		this.gridEventLog.getStore().loadData(events.list);
+    		if(this.rpc.repository[selRepository]==null) {
+    			this.rpc.repository[selRepository]=this.rpc.eventManager.getRepository(selRepository);
+    		}
+    		this.rpc.repository[selRepository].getEvents(function (result, exception) {
+				if(exception) {alert(exception.message); return;}
+				var events = result;
+				aaa=result;
+				var cmp=Ext.untangle.ProtocolControlSettings.getInstanceCmp();
+				if(cmp!=null) {
+					cmp.gridEventLog.getStore().loadData(events.list);
+				}
+			});
     	}
     },
     
@@ -432,53 +386,25 @@ Ext.untangle.ProtocolControlSettings = Ext.extend(Ext.untangle.Settings, {
     		pattern.javaClass="com.untangle.node.protofilter.ProtoFilterPattern";
     		patternsList.push(pattern);
     	}
-    	//var patternsJson=Ext.util.JSON.encode(patterns);
     	this.rpc.settings.patterns.list=patternsList;
     	this.rpc.settings.patterns.javaClass="java.util.ArrayList";
-    	this.rpc.node.setProtoFilterSettings(this.rpc.settings);
-		/*
-		this.rpc.settings.setPatterns(function (result, exception) {
+    	this.rpc.node.setProtoFilterSettings(function (result, exception) {
 			if(exception) {alert(exception.message); return;}
-			//var cmpId=result.tid.id
-			//var cmpSettings=Ext.getCmp(cmpId).settings;
-			//cmpSettings.rpc.settings=result;
-			//cmpSettings.loadPL();
-		},patterns);
-    	*/
-    	this.tabs.enable(); 
-    	/*
-		Ext.Ajax.request({
-	        url: Ext.untangle.ProtocolControlSettings.nodeUrl,
-	        params: {'action':'saveProtocolList','nodeName':this.name,'nodeId':this.tid,'data':saveDataJson},
-			method: 'POST',
-			parentId:this.getId(),
-			success: function ( result, request) {
-				var cmp=Ext.getCmp(request.parentId);
-				cmp.gridPL.enable();
-				var jsonResult=Ext.util.JSON.decode(result.responseText);
-				if(jsonResult.success!=true) {
-					Ext.MessageBox.alert('Failed', jsonResult.msg); 
-				} else {
-					//alert("Succes Save Protocol List");
-				}
-			},
-			failure: function ( result, request) { 
-				Ext.MessageBox.alert('Failed', 'Successfully posted form: '+result.date);
-				var cmp=Ext.getCmp(request.parentId);
-				cmp.gridPL.enable(); 
-			} 
-		});
-		*/	
+			var cmp=Ext.untangle.ProtocolControlSettings.getInstanceCmp();
+			if(cmp!=null) {
+				cmp.tabs.enable();
+			}
+		}, this.rpc.settings);
     },
     
 	loadData: function() {
 		this.rpc.node.getProtoFilterSettings(function (result, exception) {
 			if(exception) {alert(exception.message); return;}
-			//this.abcd=result;
-			var cmpId=result.tid.id
-			var cmpSettings=Ext.getCmp(cmpId).settings;
-			cmpSettings.rpc.settings=result;
-			cmpSettings.loadPL();
+			var cmp=Ext.untangle.ProtocolControlSettings.getInstanceCmp();
+			if(cmp!=null) {
+				cmp.rpc.settings=result;
+				cmp.loadPL();
+			}
 		});
 		
 	},
@@ -487,7 +413,14 @@ Ext.untangle.ProtocolControlSettings = Ext.extend(Ext.untangle.Settings, {
 		this.savePL();
 	}
 });
-//Ext.untangle.ProtocolControlSettings.nodeUrl="/protofilter/node.do";
+Ext.untangle.ProtocolControlSettings.instanceId=null;
+Ext.untangle.ProtocolControlSettings.getInstanceCmp =function() {
+	var cmp=null;
+	if(Ext.untangle.ProtocolControlSettings.instanceId!=null) {
+		cmp=Ext.getCmp(Ext.untangle.ProtocolControlSettings.instanceId);
+	}
+	return cmp;
+};
 Ext.untangle.Settings.registerClassName('untangle-node-protofilter','Ext.untangle.ProtocolControlSettings')
 Ext.reg('untangleProtocolControlSettings', Ext.untangle.ProtocolControlSettings);
 }

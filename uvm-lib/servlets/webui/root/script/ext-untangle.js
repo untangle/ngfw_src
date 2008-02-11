@@ -185,7 +185,7 @@ Ext.untangle.Node = Ext.extend(Ext.Component, {
         		this.settings=null;
         	}
        		if(this.settingsClassName!=null) {
-        		eval('this.settings=new '+this.settingsClassName+'({\'tid\':this.tid,\'name\':this.name});');
+        		eval('this.settings=new '+this.settingsClassName+'({\'node\':this,\'tid\':this.tid,\'name\':this.name});');
         		this.settings.render('settings_'+this.getId());
         		this.settings.loadData();
         	} else {
