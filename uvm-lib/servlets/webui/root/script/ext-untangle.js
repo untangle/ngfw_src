@@ -189,7 +189,8 @@ Ext.untangle.Node = Ext.extend(Ext.Component, {
         		this.settings.render('settings_'+this.getId());
         		this.settings.loadData();
         	} else {
-        		alert("Error: There is no settings class for the node '"+this.name+"'");
+        		var settingsContent=document.getElementById('settings_'+this.getId());
+        		settingsContent.innerHTML="Error: There is no settings class for the node '"+this.name+"'.";
         	}
         	
         },
@@ -208,6 +209,9 @@ Ext.untangle.Node = Ext.extend(Ext.Component, {
         },
         
         onRemoveClick: function() {
+        	if(MainPage.removeNodeCmpId!=null) {
+        		return;
+        	}
         	var message="Warning:\n"+this.displayName+"is about to be removed from the rack.\nIts settings will be lost and it will stop processing netwotk traffic.\n\nWould you like to continue removing?" 
         	if(!confirm(message)) {
         		return;
@@ -216,39 +220,36 @@ Ext.untangle.Node = Ext.extend(Ext.Component, {
         		this.settingsWin.hide();
         	}
         	this.setState("Attention");
-			Ext.Ajax.request({
-				url: MainPage.rackUrl,
-				params: {'action':'removeFromRack','nodeId':this.tid,'installName':this.name},
-				method: 'GET',
-				parentId: this.getId(),
-				success: function ( result, request) { 
-					var jsonResult=Ext.util.JSON.decode(result.responseText);
-					if(jsonResult.success!=true) {
-						Ext.MessageBox.alert('Failed', jsonResult.msg); 
-					} else {
-						//alert("Rack instaled: TODO: refresh rack node list, enable button in myApps");
-						//Ext.getCmp(request.parentId).settingsWin.hide()
-						var cmp=Ext.getCmp(request.parentId);
+        	MainPage.removeNodeCmpId=this.getId();
+        	rpc.nodeManager.destroy(function (result, exception) {
+				if(exception) { alert(exception.message); 
+					MainPage.removeNodeCmpId=null;
+					return;
+				}
+				try {
+					var cmp=Ext.getCmp(MainPage.removeNodeCmpId);
+					if(cmp) {
+						var nodeName=cmp.name;
 						cmp.destroy();
 						cmp=null;
-						var myAppButtonCmp=Ext.getCmp('myAppButton_'+request.params.installName);
+						var myAppButtonCmp=Ext.getCmp('myAppButton_'+nodeName);
 						if(myAppButtonCmp!=null) {
 							myAppButtonCmp.enable();
 						}
 						for(var i=0;i<MainPage.nodes.length;i++) {
-							if(request.params.installName==MainPage.nodes[i].name) {
+							if(nodeName==MainPage.nodes[i].name) {
 								MainPage.nodes.splice(i,1);
 								break;
 							} 
 						}
 						MainPage.updateSeparator();
 					}
-				},
-				failure: function ( result, request) { 
-					
-					Ext.MessageBox.alert('Failed', 'Successfully posted form: '+result.date); 
-				} 
-			});	
+					MainPage.removeNodeCmpId=null;
+				} catch (err) {
+					MainPage.removeNodeCmpId=null;
+					throw err;
+				}
+			}, this.nodeContext.tid);
         },
         
         onSaveClick: function() {
@@ -467,20 +468,45 @@ Ext.untangle.BlingerManager = {
 		}
 		return activeNodes;
 	},
-	
+	hasActiveNodes: function() {
+		for(var i=0;i<MainPage.nodes.length;i++) {
+			if(MainPage.nodes[i].runState=="RUNNING") {
+				return true;
+			}
+		}
+		return false;
+	},
 	getNodesStats: function() {
 		if(!this.cycleCompleted) {
 			return;
 		}
-		var activeNodes=this.getActiveNodes_old();
-		if(activeNodes.length>0) {
+		if(this.hasActiveNodes()) {
 			this.cycleCompleted=false;
-			/*
-			for(var i=0;i<activeNodes.length;i++) {
+			rpc.nodeManager.allNodeStats(function (result, exception) {
+				if(exception) { alert(exception.message);
+					Ext.untangle.BlingerManager.cycleCompleted=true;
+					return;
+				}
+				try {
+					var allNodeStats=result;
+					/*
+					for(var i=0;i<jsonResult.data.length;i++) {
+						var nodeStats=jsonResult.data[i];
+						var nodeCmp=Ext.untangle.Node.getCmp(nodeStats.nodeId);
+						if(nodeCmp) {
+							nodeCmp.stats=nodeStats.stats;
+							nodeCmp.updateBlingers()
+						}
+					} 
+					*/
+					Ext.untangle.BlingerManager.cycleCompleted=true;
+				  } catch(err) {
+					Ext.untangle.BlingerManager.cycleCompleted=true;
+					throw err;
+				  }
 				
-			}
-			*/
-			
+			});
+			/*
 			Ext.Ajax.request({
 		        url: MainPage.rackUrl,
 		        params:{"action":"nodesStats", "nodes": Ext.encode(activeNodes)},
@@ -511,6 +537,7 @@ Ext.untangle.BlingerManager = {
 					Ext.untangle.BlingerManager.cycleCompleted=true; 
 				} 
 			});
+			*/
 		}	
 	}
 }

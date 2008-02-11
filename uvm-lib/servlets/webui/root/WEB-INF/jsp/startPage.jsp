@@ -110,28 +110,19 @@ MainPage = {
 				MainPage.buildLibrary();
 			}
 		});
-		/*
-		Ext.Ajax.request({
-			url: this.rackUrl,
-			params :{'action':'getStoreItems'},
-			method: 'GET',
-			success: function ( result, request) { 
-				var jsonResult=Ext.util.JSON.decode(result.responseText);
-				if(jsonResult.success!=true) {
-					Ext.MessageBox.alert('Failed', jsonResult.msg); 
-				} else { 
-					MainPage.library=jsonResult.data;
-					MainPage.buildLibrary();
-				}
-			},
-			failure: function ( result, request) { 
-				Ext.MessageBox.alert('Failed', 'Successfully posted form: '+result.date); 
-			} 
-		});
-		*/	
 	},
 	
 	loadMyApps: function() {
+		if(MainPage.myApps!=null) {
+			for(var i=0;i<MainPage.myApps.length;i++) {
+				var cmp=Ext.getCmp('myAppButton_'+this.myApps[i].name);
+				if(cmp!=null) {
+					cmp.destroy()
+					cmp=null;
+				}
+			}
+			MainPage.myApps=null;
+		}
 		rpc.toolboxManager.installedVisible(function (result, exception) {
 			if(exception) { alert(exception.message); return;}
 			var installedVisibleMD=result;
@@ -153,30 +144,11 @@ MainPage = {
 			MainPage.config = result;
 			MainPage.buildConfig();
 		});
-		/*
-		Ext.Ajax.request({
-			url: this.rackUrl,
-			params :{'action':'getConfigItems'},
-			method: 'GET',
-			success: function ( result, request) { 
-				var jsonResult=Ext.util.JSON.decode(result.responseText);
-				if(jsonResult.success!=true) {
-					Ext.MessageBox.alert('Failed', jsonResult.msg); 
-				} else { 
-					MainPage.config=jsonResult.data;
-					MainPage.buildConfig();
-				}
-			},
-			failure: function ( result, request) { 
-				Ext.MessageBox.alert('Failed', 'Successfully posted form: '+result.date); 
-			} 
-		});
-		*/	
 	},
 	
 	loadVirtualRacks: function() {
 		rpc.policyManager.getPolicies( function (result, exception) {
-			if(exception) { alert(exception.message); }
+			if(exception) { alert(exception.message); return; }
 			rpc.policies=result;
 			MainPage.buildPolicies();
 		});
@@ -209,6 +181,7 @@ MainPage = {
 	},
 	loadNodes: function() {
 		Ext.untangle.BlingerManager.stop();
+		MainPage.destoyNodes();
 		rpc.policyTids=rpc.nodeManager.nodeInstancesVisible(rpc.currentPolicy).list;
 		rpc.commonTids=rpc.nodeManager.nodeInstancesVisible(null).list;
 		rpc.tids=[];
@@ -218,34 +191,13 @@ MainPage = {
 		for(var i=0;i<rpc.commonTids.length;i++) {
 			rpc.tids.push(rpc.commonTids[i]);
 		}
-
 		MainPage.nodes=[];
 		for(var i=0;i<rpc.tids.length;i++) {
-			MainPage.nodes.push(this.createNode(rpc.tids[i]));
+			var node=this.createNode(rpc.tids[i])
+			MainPage.nodes.push(node);
 		}
 		MainPage.buildNodes();
 		Ext.untangle.BlingerManager.start();
-		/*
-		Ext.Ajax.request({
-			url: this.rackUrl,
-			params :{'action':'getNodes', 'rackName':rpc.currentPolicy.name},
-			method: 'GET',
-			success: function ( result, request) { 
-				var jsonResult=Ext.util.JSON.decode(result.responseText);
-				if(jsonResult.success!=true) {
-					Ext.MessageBox.alert('Failed', jsonResult.msg); 
-				} else {
-					MainPage.destoyNodes();
-					MainPage.nodes=jsonResult.data;
-					MainPage.buildNodes();
-					Ext.untangle.BlingerManager.start();
-				}
-			},
-			failure: function ( result, request) { 
-				Ext.MessageBox.alert('Failed', 'Successfully posted form: '+result.date); 
-			} 
-		});
-		*/				
 	},
 	
 	buildTabs: function () {
@@ -265,47 +217,31 @@ MainPage = {
 	clickMyApps: function(item) {
 		if(item!=null) {
 			Ext.getCmp('myAppButton_'+item.name).disable();
-			Ext.Ajax.request({
-				url: this.rackUrl,
-				params :{'action':'addToRack','rackName':rpc.currentPolicy.name,'installName':item.name},
-				method: 'GET',
-				success: function ( result, request) { 
-					var jsonResult=Ext.util.JSON.decode(result.responseText);
-					if(jsonResult.success!=true) {
-						Ext.getCmp('myAppButton_'+item.name).enable();						
-						Ext.MessageBox.alert('Failed', jsonResult.msg); 
-					} else {
-						var node=jsonResult.data;
-						MainPage.nodes.push(node);
-						MainPage.addNode(node);
-						MainPage.updateSeparator();
-					}
-				},
-				failure: function ( result, request) { 
-					Ext.MessageBox.alert('Failed', 'Successfully posted form: '+result.date); 
-				} 
-			});	
+			var policy=null;
+			if (!item.service && !item.util && !item.core) {
+        		policy = rpc.currentPolicy;
+        	}
+			rpc.nodeManager.instantiate(function (result, exception) {
+				if(exception) { alert(exception.message); return;}
+				var tid = result;
+				rpc.tids.push(tid);
+				var node=MainPage.createNode(tid)
+				MainPage.nodes.push(node);
+				MainPage.addNode(node);
+				MainPage.updateSeparator();
+			}, item.name, policy);
 		}
 	},
 
 	clickLibrary: function(item) {
 		if(item!=null) {
-			Ext.Ajax.request({
-				url: this.rackUrl,
-				params :{'action':'purchase','installName':item.name},
-				method: 'GET',
-				success: function ( result, request) { 
-					var jsonResult=Ext.util.JSON.decode(result.responseText);
-					if(jsonResult.success!=true) {
-						Ext.MessageBox.alert('Failed', jsonResult.msg); 
-					} else { 
-						alert("Purchase: TODO: add to myApps buttons, remove from library");
-					}
-				},
-				failure: function ( result, request) { 
-					Ext.MessageBox.alert('Failed', 'Successfully posted form: '+result.date); 
-				} 
-			});	
+			Ext.getCmp('libraryButton_'+item.name).disable();
+			rpc.nodeManager.install(function (result, exception) {
+				if(exception) { alert(exception.message); return;}
+				MainPage.loadMyApps();
+				alert("Purchase: TODO: add to myApps buttons, remove from library");
+
+			}, item.name);
 		}
 	},
 	
@@ -333,6 +269,7 @@ MainPage = {
 	  		for(var i=0;i<this.library.length;i++) {
 	  			var item=this.library[i];
 	  			new Ext.untangle.Button({
+	  				'id':'libraryButton_'+item.name,
 					'libraryIndex':i,
 					'height':'50px',
 					'renderTo':'toolsLibrary',
