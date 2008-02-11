@@ -15,13 +15,17 @@
 	<script type="text/javascript" src="ext-2.0.1/ext-all.js"></script>
 -->
 	<script type="text/javascript" src="jsonrpc/jsonrpc.js"></script>
-	<script type="text/javascript" src="script/uvmrpc.js"></script>
 
     <script type="text/javascript" src="script/ext-untangle.js"></script>
-    <script type="text/javascript" src="script/protofilter.js"></script>
+    <!-- script type="text/javascript" src="script/protofilter.js"></script -->
     
 <script type="text/javascript">
-
+rpc = {}
+//TODO: do all rpc requests asyncronous
+rpc.jsonrpc = new JSONRpcClient("/webui/JSON-RPC");
+rpc.nodeManager = rpc.jsonrpc.RemoteUvmContext.nodeManager();
+rpc.policyManager=rpc.jsonrpc.RemoteUvmContext.policyManager();
+rpc.toolboxManager=rpc.jsonrpc.RemoteUvmContext.toolboxManager();
 
 MainPage = {
 	tabs: null,

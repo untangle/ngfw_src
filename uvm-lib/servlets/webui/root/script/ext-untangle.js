@@ -433,7 +433,7 @@ Ext.untangle.Node.templateSettingsButtons=new Ext.Template(
 Ext.ComponentMgr.registerType('untangleNode', Ext.untangle.Node);
 
 Ext.untangle.BlingerManager = {
-	updateTime: 30000, //update interval in millisecond
+	updateTime: 5000, //update interval in millisecond
 	started: false,
 	intervalId: null,
 	cycleCompleted:true,
@@ -489,16 +489,15 @@ Ext.untangle.BlingerManager = {
 				}
 				try {
 					var allNodeStats=result;
-					/*
-					for(var i=0;i<jsonResult.data.length;i++) {
-						var nodeStats=jsonResult.data[i];
-						var nodeCmp=Ext.untangle.Node.getCmp(nodeStats.nodeId);
-						if(nodeCmp) {
-							nodeCmp.stats=nodeStats.stats;
-							nodeCmp.updateBlingers()
+					for(var i=0;i<MainPage.nodes.length;i++) {
+						if(MainPage.nodes[i].runState=="RUNNING") {
+							var nodeCmp=Ext.untangle.Node.getCmp(MainPage.nodes[i].tid);
+							if(nodeCmp) {
+								nodeCmp.stats=allNodeStats.map[MainPage.nodes[i].tid];
+								nodeCmp.updateBlingers();
+							}
 						}
-					} 
-					*/
+					}
 					Ext.untangle.BlingerManager.cycleCompleted=true;
 				  } catch(err) {
 					Ext.untangle.BlingerManager.cycleCompleted=true;
@@ -506,38 +505,6 @@ Ext.untangle.BlingerManager = {
 				  }
 				
 			});
-			/*
-			Ext.Ajax.request({
-		        url: MainPage.rackUrl,
-		        params:{"action":"nodesStats", "nodes": Ext.encode(activeNodes)},
-				method: 'POST',
-				success: function ( result, request) {
-				  try {
-					var jsonResult=Ext.util.JSON.decode(result.responseText);
-					if(jsonResult.success!=true) {
-						Ext.MessageBox.alert('Failed', jsonResult.msg);
-					} else {
-						for(var i=0;i<jsonResult.data.length;i++) {
-							var nodeStats=jsonResult.data[i];
-							var nodeCmp=Ext.untangle.Node.getCmp(nodeStats.nodeId);
-							if(nodeCmp) {
-								nodeCmp.stats=nodeStats.stats;
-								nodeCmp.updateBlingers()
-							}
-						} 
-					}
-					Ext.untangle.BlingerManager.cycleCompleted=true;
-				  } catch(err) {
-					Ext.untangle.BlingerManager.cycleCompleted=true;
-					throw err;
-				  }				
-				},
-				failure: function ( result, request) {
-					Ext.MessageBox.alert('Failed', 'Successfully posted form: '+result.date);
-					Ext.untangle.BlingerManager.cycleCompleted=true; 
-				} 
-			});
-			*/
 		}	
 	}
 }
