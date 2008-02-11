@@ -6,19 +6,15 @@
          xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee 
          http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd" >
 
-  <listener>
-    <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
-  </listener>
-  
   <servlet>
-    <servlet-name>webui</servlet-name>
-    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+    <servlet-name>StartPageServlet</servlet-name>
+    <servlet-class>com.untangle.uvm.webui.servlet.StartPageServlet</servlet-class>
     <load-on-startup>1</load-on-startup>
   </servlet>
 
   <servlet-mapping>
-    <servlet-name>webui</servlet-name>
-    <url-pattern>*.do</url-pattern>
+    <servlet-name>StartPageServlet</servlet-name>
+    <url-pattern>/startPage.do</url-pattern>
   </servlet-mapping>
 
 
@@ -52,19 +48,4 @@
     </welcome-file>
   </welcome-file-list>
 
-  <jsp-config>  
-    <!-- taglib>
-      <taglib-uri>/spring</taglib-uri>
-      <taglib-location>/WEB-INF/tld/spring-form.tld</taglib-location>
-    </taglib-->
-    <taglib>
-      <taglib-uri>/spring</taglib-uri>
-      <taglib-location>/WEB-INF/tld/spring.tld</taglib-location>
-    </taglib>
-    <taglib>
-      <taglib-uri>/uvm</taglib-uri>
-      <taglib-location>/WEB-INF/tld/uvm.tld</taglib-location>
-    </taglib>
-  </jsp-config>
-  
 </web-app>
