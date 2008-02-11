@@ -302,10 +302,10 @@ class OpenVpnMonitor implements Runnable
     NodeStats updateStats( NodeStats stats )
     {
         BufferedReader in = null;
-        long rxBytes  = stats.t2sBytes();
-        long rxChunks = stats.t2sChunks();
-        long txBytes  = stats.s2tBytes();
-        long txChunks = stats.s2tChunks();
+        long rxBytes  = stats.getT2sBytes();
+        long rxChunks = stats.getT2sChunks();
+        long txBytes  = stats.getS2tBytes();
+        long txChunks = stats.getS2tChunks();
 
         try {
             /* Read in the whole file */
@@ -340,10 +340,10 @@ class OpenVpnMonitor implements Runnable
             if ( in != null ) try { in.close(); } catch ( Exception e ) { /* IGNORED */ }
         }
 
-        stats.t2sBytes(  rxBytes );  stats.c2tBytes(  rxBytes );
-        stats.t2sChunks( rxChunks ); stats.c2tChunks( rxChunks );
-        stats.t2cBytes(  txBytes );  stats.s2tBytes(  txBytes );
-        stats.t2cChunks( txChunks ); stats.s2tChunks( txChunks );
+        stats.setT2sBytes(  rxBytes );  stats.setC2tBytes(  rxBytes );
+        stats.setT2sChunks( rxChunks ); stats.setC2tChunks( rxChunks );
+        stats.setT2cBytes(  txBytes );  stats.setS2tBytes(  txBytes );
+        stats.setT2cChunks( txChunks ); stats.setS2tChunks( txChunks );
 
         return stats;
     }

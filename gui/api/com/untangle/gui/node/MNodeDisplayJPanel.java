@@ -500,10 +500,10 @@ public class MNodeDisplayJPanel extends javax.swing.JPanel implements Shutdownab
             if(currentStats == null)
                 return;
             // UPDATE COUNTS
-            sessionCountCurrent = currentStats.tcpSessionCount() + currentStats.udpSessionCount();
-            sessionCountTotal = currentStats.tcpSessionTotal() + currentStats.udpSessionTotal();
-            sessionRequestTotal = currentStats.tcpSessionRequestTotal() + currentStats.udpSessionRequestTotal();
-            byteCountCurrent = currentStats.c2tBytes() + currentStats.s2tBytes();
+            sessionCountCurrent = currentStats.getTcpSessionCount() + currentStats.getUdpSessionCount();
+            sessionCountTotal = currentStats.getTcpSessionTotal() + currentStats.getUdpSessionTotal();
+            sessionRequestTotal = currentStats.getTcpSessionRequestTotal() + currentStats.getUdpSessionRequestTotal();
+            byteCountCurrent = currentStats.getC2tBytes() + currentStats.getS2tBytes();
             // (RESET COUNTS IF NECESSARY)
             if( (byteCountLast == 0) || (byteCountLast > byteCountCurrent) )
                 byteCountLast = byteCountCurrent;

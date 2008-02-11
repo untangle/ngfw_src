@@ -85,7 +85,7 @@ public class NodeStats implements Serializable
      *
      * @return an <code>int</code> giving the number of live TCP sessions
      */
-    public int tcpSessionCount() {
+    public int getTcpSessionCount() {
         return tcpSessionCount;
     }
 
@@ -94,7 +94,7 @@ public class NodeStats implements Serializable
      *
      * @return an <code>int</code> giving the number of live UDP sessions
      */
-    public int udpSessionCount() {
+    public int getUdpSessionCount() {
         return udpSessionCount;
     }
 
@@ -104,7 +104,7 @@ public class NodeStats implements Serializable
      *
      * @return an <code>int</code> giving the total number of TCP sessions created since start
      */
-    public int tcpSessionTotal() {
+    public int getTcpSessionTotal() {
         return tcpSessionTotal;
     }
 
@@ -114,7 +114,7 @@ public class NodeStats implements Serializable
      *
      * @return an <code>int</code> giving the total number of UDP sessions created since start
      */
-    public int udpSessionTotal() {
+    public int getUdpSessionTotal() {
         return udpSessionTotal;
     }
 
@@ -124,7 +124,7 @@ public class NodeStats implements Serializable
      *
      * @return an <code>int</code> giving the total number of new TCP sessions requested since start
      */
-    public int tcpSessionRequestTotal() {
+    public int getTcpSessionRequestTotal() {
         return tcpSessionRequestTotal;
     }
 
@@ -134,7 +134,7 @@ public class NodeStats implements Serializable
      *
      * @return an <code>int</code> giving the total number of new UDP sessions requested since start
      */
-    public int udpSessionRequestTotal() {
+    public int getUdpSessionRequestTotal() {
         return udpSessionRequestTotal;
     }
 
@@ -145,11 +145,11 @@ public class NodeStats implements Serializable
      *
      * @return a <code>long</code> giving the number of bytes transferred from the client to the node.
      */
-    public long c2tBytes() {
+    public long getC2tBytes() {
         return c2tBytes;
     }
 
-    public void c2tBytes(long c2tBytes) {
+    public void setC2tBytes(long c2tBytes) {
         this.c2tBytes = c2tBytes;
     }
 
@@ -159,11 +159,11 @@ public class NodeStats implements Serializable
      *
      * @return a <code>long</code> giving the number of bytes transferred from the node to the server.
      */
-    public long t2sBytes() {
+    public long getT2sBytes() {
         return t2sBytes;
     }
 
-    public void t2sBytes(long t2sBytes) {
+    public void setT2sBytes(long t2sBytes) {
         this.t2sBytes = t2sBytes;
     }
 
@@ -173,11 +173,11 @@ public class NodeStats implements Serializable
      *
      * @return a <code>long</code> giving the number of bytes transferred from the server to the node.
      */
-    public long s2tBytes() {
+    public long getS2tBytes() {
         return s2tBytes;
     }
 
-    public void s2tBytes(long s2tBytes) {
+    public void setS2tBytes(long s2tBytes) {
         this.s2tBytes = s2tBytes;
     }
 
@@ -187,44 +187,44 @@ public class NodeStats implements Serializable
      *
      * @return a <code>long</code> giving the number of bytes transferred from the node to the client.
      */
-    public long t2cBytes() {
+    public long getT2cBytes() {
         return t2cBytes;
     }
 
-    public void t2cBytes(long t2cBytes) {
+    public void setT2cBytes(long t2cBytes) {
         this.t2cBytes = t2cBytes;
     }
 
     // Chunks for tcp, packets for udp (icmp)
-    public long c2tChunks() {
+    public long getC2tChunks() {
         return c2tChunks;
     }
 
-    public void c2tChunks(long c2tChunks) {
+    public void setC2tChunks(long c2tChunks) {
         this.c2tChunks = c2tChunks;
     }
 
-    public long t2sChunks() {
+    public long getT2sChunks() {
         return t2sChunks;
     }
 
-    public void t2sChunks(long t2sChunks) {
+    public void setT2sChunks(long t2sChunks) {
         this.t2sChunks = t2sChunks;
     }
 
-    public long s2tChunks() {
+    public long getS2tChunks() {
         return s2tChunks;
     }
 
-    public void s2tChunks(long s2tChunks) {
+    public void setS2tChunks(long s2tChunks) {
         this.s2tChunks = s2tChunks;
     }
 
-    public long t2cChunks() {
+    public long getT2cChunks() {
         return t2cChunks;
     }
 
-    public void t2cChunks(long t2cChunks) {
+    public void setT2cChunks(long t2cChunks) {
         this.t2cChunks = t2cChunks;
     }
 
@@ -235,7 +235,7 @@ public class NodeStats implements Serializable
      *
      * @return a <code>Date</code> giving the time of the node's start
      */
-    public Date startDate() {
+    public Date getStartDate() {
         return startDate;
     }
 
@@ -245,7 +245,7 @@ public class NodeStats implements Serializable
      *
      * @return a <code>Date</code> giving the time of the node's last configuration change
      */
-    public Date lastConfigureDate() {
+    public Date getLastConfigureDate() {
         return lastConfigureDate;
     }
 
@@ -256,7 +256,7 @@ public class NodeStats implements Serializable
      *
      * @return a <code>Date</code> giving the time of the last activity on this session
      */
-    public Date lastActivityDate() {
+    public Date getLastActivityDate() {
         return lastActivityDate;
     }
 
@@ -279,4 +279,8 @@ public class NodeStats implements Serializable
             return counters[i] += delta;
         }
     }
+
+	public long[] getCounters() {
+		return counters;
+	}
 }

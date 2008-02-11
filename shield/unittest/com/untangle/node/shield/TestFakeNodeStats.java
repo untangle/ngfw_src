@@ -54,27 +54,27 @@ public class TestFakeNodeStats extends TestCase {
 
     public void test01() {
         // Before update, all zero.
-        assertEquals(stats.c2tBytes(), 0);
-        assertEquals(stats.s2tBytes(), 0);
-        assertEquals(stats.t2cBytes(), 0);
-        assertEquals(stats.t2sBytes(), 0);
-        assertEquals(stats.c2tChunks(), 0);
-        assertEquals(stats.s2tChunks(), 0);
-        assertEquals(stats.t2cChunks(), 0);
-        assertEquals(stats.t2sChunks(), 0);
+        assertEquals(stats.getC2tBytes(), 0);
+        assertEquals(stats.getS2tBytes(), 0);
+        assertEquals(stats.getT2cBytes(), 0);
+        assertEquals(stats.getT2sBytes(), 0);
+        assertEquals(stats.getC2tChunks(), 0);
+        assertEquals(stats.getS2tChunks(), 0);
+        assertEquals(stats.getT2cChunks(), 0);
+        assertEquals(stats.getT2sChunks(), 0);
 
         FakeNodeStats.update(stats);
 
         // After update, at least eth0 > 0
-        assertTrue(stats.s2tBytes() > 0);
-        assertTrue(stats.t2sBytes() > 0);
-        assertTrue(stats.s2tChunks() > 0);
-        assertTrue(stats.t2sChunks() > 0);
+        assertTrue(stats.getS2tBytes() > 0);
+        assertTrue(stats.getT2sBytes() > 0);
+        assertTrue(stats.getS2tChunks() > 0);
+        assertTrue(stats.getT2sChunks() > 0);
 
-        System.out.println("Inside bytes: " + stats.c2tBytes() + ", " + stats.t2cBytes());
-        System.out.println("Outside bytes: " + stats.s2tBytes() + ", " + stats.t2sBytes());
-        System.out.println("Inside chunks: " + stats.c2tChunks() + ", " + stats.t2cChunks());
-        System.out.println("Outside chunks: " + stats.s2tChunks() + ", " + stats.t2sChunks());
+        System.out.println("Inside bytes: " + stats.getC2tBytes() + ", " + stats.getT2cBytes());
+        System.out.println("Outside bytes: " + stats.getS2tBytes() + ", " + stats.getT2sBytes());
+        System.out.println("Inside chunks: " + stats.getC2tChunks() + ", " + stats.getT2cChunks());
+        System.out.println("Outside chunks: " + stats.getS2tChunks() + ", " + stats.getT2sChunks());
     }
 
     /**

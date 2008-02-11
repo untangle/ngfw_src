@@ -129,15 +129,15 @@ class FakeNodeStats {
             rdr.close();
 
             /* Check for overflow */
-            long l = incrementCount( stats.c2tBytes(),  totRxBytes );
-            stats.t2sBytes(l); stats.c2tBytes(l);
-            l = incrementCount( stats.c2tChunks(), totRxChunks );
-            stats.t2sChunks(l); stats.c2tChunks(l);
+            long l = incrementCount( stats.getC2tBytes(),  totRxBytes );
+            stats.setT2sBytes(l); stats.setC2tBytes(l);
+            l = incrementCount( stats.getC2tChunks(), totRxChunks );
+            stats.setT2sChunks(l); stats.setC2tChunks(l);
 
-            l = incrementCount( stats.s2tBytes(),  totTxBytes );
-            stats.t2cBytes(l); stats.s2tBytes(l);
-            l = incrementCount( stats.s2tChunks(), totTxChunks );
-            stats.t2cChunks(l); stats.s2tChunks(l);
+            l = incrementCount( stats.getS2tBytes(),  totTxBytes );
+            stats.setT2cBytes(l); stats.setS2tBytes(l);
+            l = incrementCount( stats.getS2tChunks(), totTxChunks );
+            stats.setT2cChunks(l); stats.setS2tChunks(l);
         } catch (FileNotFoundException x) {
             logger.warn("Cannot open " + PATH_PROCNET_DEV + "(" + x.getMessage() +
                         "), no stats available");
