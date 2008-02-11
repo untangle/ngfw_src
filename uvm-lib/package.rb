@@ -65,6 +65,8 @@ ServletBuilder.new(uvm_lib, "com.untangle.uvm.user.servlet",
 deps = %w(
            slf4j-1.4.3/slf4j-log4j12-1.4.3.jar
            slf4j-1.4.3/slf4j-api-1.4.3.jar
+           Ajax/jars/jstl.jar 
+           Ajax/jars/standard.jar 
          ).map { |f| Jars.downloadTarget(f) }
 deps << ThirdpartyJar.get('../pkgs/jabsorb-1.2.2/jabsorb-1.2.2.jar');
 

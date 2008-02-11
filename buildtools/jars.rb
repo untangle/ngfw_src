@@ -103,15 +103,6 @@ class Jars
   ## Reporting Jars
   Jasper     = [ Jars.downloadTarget('jasperreports-1.1.1/dist/jasperreports-1.1.1.jar') ]
 
-  ## Web-UI/Spring/JSON Jars
-  WebUi     = %w(   spring-framework-2.5-with-dependencies/spring-framework-2.5/dist/spring.jar
-                    spring-framework-2.5-with-dependencies/spring-framework-2.5/dist/modules/spring-webmvc.jar
-                    spring-framework-2.5-with-dependencies/spring-framework-2.5/lib/jakarta-commons/commons-logging.jar                    
-                    spring-framework-2.5-with-dependencies/spring-framework-2.5/lib/j2ee/jstl.jar
-                    spring-framework-2.5-with-dependencies/spring-framework-2.5/lib/jakarta-taglibs/standard.jar
-                    json-org/json-org.jar
-                  ).map { |f| Jars.downloadTarget(f) }
-                  
   ## Miscellaneous Jars
   JavaMail   = [ Jars.downloadTarget('javamail-1.3.3_01/mail.jar') ]
   Jcifs      = [ Jars.downloadTarget('jcifs_1.2.9/jcifs-1.2.9.jar') ]
@@ -142,7 +133,7 @@ class Jars
   Base       = Jars.makeGroup(Log4j, Hibernate, HibernateAnnotations, Postgres,
                               Activation, Jcifs, C3p0, Ant, JavaMailApi,
                               GetText, JavaMail, TomcatEmb, Velocity, WBEM, JRuby,
-                              Bdb, HttpClient, HtmlParser, VncViewer, XmlRpc, WebUi)
+                              Bdb, HttpClient, HtmlParser, VncViewer, XmlRpc)
  
   # Jars for compiling the GUI, and GUI node components
   Gui        = Jars.makeGroup(Alloy, JFreeChartGui, Netbeans, Jnlp)
