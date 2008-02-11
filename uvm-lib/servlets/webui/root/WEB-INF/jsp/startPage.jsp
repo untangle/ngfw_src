@@ -96,6 +96,23 @@ MainPage = {
 	},
 	
 	loadLibarary: function() {
+		rpc.toolboxManager.uninstalled(function (result, exception) {
+			if(exception) { alert(exception.message); return;}
+			var uninstalledMD=result;
+			if(uninstalledMD==null) {
+				MainPage.library=null;
+			} else {
+				MainPage.library=[];
+				for(var i=0;i<uninstalledMD.length;i++) {
+					var md=uninstalledMD[i];
+					if(md.type=="LIB_ITEM" && md.viewPositio>=0) {
+						MainPage.library.push(md);
+					}
+				}
+				MainPage.buildLibrary();
+			}
+		});
+		/*
 		Ext.Ajax.request({
 			url: this.rackUrl,
 			params :{'action':'getStoreItems'},
@@ -112,27 +129,24 @@ MainPage = {
 			failure: function ( result, request) { 
 				Ext.MessageBox.alert('Failed', 'Successfully posted form: '+result.date); 
 			} 
-		});	
+		});
+		*/	
 	},
 	
 	loadMyApps: function() {
-		Ext.Ajax.request({
-			url: this.rackUrl,
-			params :{'action':'getToolboxItems'},
-			method: 'GET',
-			success: function ( result, request) { 
-				var jsonResult=Ext.util.JSON.decode(result.responseText);
-				if(jsonResult.success!=true) {
-					Ext.MessageBox.alert('Failed', jsonResult.msg); 
-				} else { 
-					MainPage.myApps=jsonResult.data;
-					MainPage.buildMyApps();
+		rpc.toolboxManager.installedVisible(function (result, exception) {
+			if(exception) { alert(exception.message); return;}
+			var installedVisibleMD=result;
+			MainPage.myApps=[];
+			for(var i=0;i<installedVisibleMD.length;i++) {
+				var md=installedVisibleMD[i];
+				if(md.type=="NODE" && (md.core || md.security)) {
+					MainPage.myApps.push(md);
 				}
-			},
-			failure: function ( result, request) { 
-				Ext.MessageBox.alert('Failed', 'Successfully posted form: '+result.date); 
-			} 
-		});	
+			}
+			MainPage.buildMyApps();
+			MainPage.updateMyAppsButtons();
+		});
 	},
 	
 	loadConfig: function() {
@@ -310,19 +324,20 @@ MainPage = {
 	
 	buildLibrary: function() {
   		var out=[];
-  		for(var i=0;i<this.library.length;i++) {
-  			var item=this.library[i];
-  			new Ext.untangle.Button({
-				'libraryIndex':i,
-				'height':'50px',
-				'renderTo':'toolsLibrary',
-				'cls':'toolboxButton',
-		        'text': item.displayName,
-		        'handler': function() {MainPage.clickLibrary(MainPage.library[this.libraryIndex])},
-		        'imageSrc': item.image
-	        });
-  			
-  		}
+  		if(this.library!=null) {
+	  		for(var i=0;i<this.library.length;i++) {
+	  			var item=this.library[i];
+	  			new Ext.untangle.Button({
+					'libraryIndex':i,
+					'height':'50px',
+					'renderTo':'toolsLibrary',
+					'cls':'toolboxButton',
+			        'text': item.displayName,
+			        'handler': function() {MainPage.clickLibrary(MainPage.library[this.libraryIndex])},
+			        'imageSrc': item.image
+		        });
+	  		}
+	  	}
 	},
 
 	buildMyApps: function() {
@@ -337,7 +352,7 @@ MainPage = {
 				'cls':'toolboxButton',
 		        'text': item.displayName,
 		        'handler': function() {MainPage.clickMyApps(MainPage.myApps[this.myAppIndex])},
-		        'imageSrc': item.image,
+		        'imageSrc': 'image?name='+ item.name,
 		        'disabled':true
 	        });
   		}
@@ -402,7 +417,10 @@ MainPage = {
 		var place=node.isSecurity?'security_nodes':'other_nodes';
 		var position=this.getNodePosition(place,node.viewPosition);
 		nodeWidget.render(place,position);
-		Ext.getCmp('myAppButton_'+node.name).disable();
+		var cmp=Ext.getCmp('myAppButton_'+node.name);
+		if(cmp!=null) {
+			Ext.getCmp('myAppButton_'+node.name).disable();
+		}
 	},
 	
 	updateSeparator: function() {
@@ -420,11 +438,14 @@ MainPage = {
 	},
 	
 	updateMyAppsButtons: function() {
-		for(var i=0;i<this.myApps.length;i++) {
-			Ext.getCmp('myAppButton_'+this.myApps[i].name).enable();
-		}
-		for(var i=0;i<this.nodes.length;i++) {
-			Ext.getCmp('myAppButton_'+this.nodes[i].name).disable();
+		if(this.myApps!=null && this.nodes!=null) {
+			for(var i=0;i<this.myApps.length;i++) {
+				Ext.getCmp('myAppButton_'+this.myApps[i].name).enable();
+			}
+			
+			for(var i=0;i<this.nodes.length;i++) {
+				Ext.getCmp('myAppButton_'+this.nodes[i].name).disable();
+			}
 		}
 	},
 	

@@ -3,6 +3,7 @@ rpc = {}
 rpc.jsonrpc = new JSONRpcClient("/webui/JSON-RPC");
 rpc.nodeManager = rpc.jsonrpc.RemoteUvmContext.nodeManager();
 rpc.policyManager=rpc.jsonrpc.RemoteUvmContext.policyManager();
+rpc.toolboxManager=rpc.jsonrpc.RemoteUvmContext.toolboxManager();
 /*
 var a = rpc.nodeManager.nodeInstances('untangle-node-protofilter')
 var nc = rpc.nodeManager.nodeContext(a.list[0])

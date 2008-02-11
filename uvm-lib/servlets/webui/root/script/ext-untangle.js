@@ -231,7 +231,10 @@ Ext.untangle.Node = Ext.extend(Ext.Component, {
 						var cmp=Ext.getCmp(request.parentId);
 						cmp.destroy();
 						cmp=null;
-						Ext.getCmp('myAppButton_'+request.params.installName).enable();
+						var myAppButtonCmp=Ext.getCmp('myAppButton_'+request.params.installName);
+						if(myAppButtonCmp!=null) {
+							myAppButtonCmp.enable();
+						}
 						for(var i=0;i<MainPage.nodes.length;i++) {
 							if(request.params.installName==MainPage.nodes[i].name) {
 								MainPage.nodes.splice(i,1);
@@ -446,11 +449,20 @@ Ext.untangle.BlingerManager = {
 		this.cycleCompleted=true;
 	},
 	
-	getActiveNodes: function() {
+	getActiveNodes_old: function() {
 		var activeNodes=[];
 		for(var i=0;i<MainPage.nodes.length;i++) {
 			if(true) {
 				activeNodes.push({"nodeId":MainPage.nodes[i].tid,"nodeName":MainPage.nodes[i].name});
+			}
+		}
+		return activeNodes;
+	},
+	getActiveNodes: function() {
+		var activeNodes=[];
+		for(var i=0;i<MainPage.nodes.length;i++) {
+			if(MainPage.nodes[i].runState=="RUNNING") {
+				activeNodes.push(MainPage.nodes[i]);
 			}
 		}
 		return activeNodes;
@@ -460,9 +472,15 @@ Ext.untangle.BlingerManager = {
 		if(!this.cycleCompleted) {
 			return;
 		}
-		var activeNodes=this.getActiveNodes();
+		var activeNodes=this.getActiveNodes_old();
 		if(activeNodes.length>0) {
 			this.cycleCompleted=false;
+			/*
+			for(var i=0;i<activeNodes.length;i++) {
+				
+			}
+			*/
+			
 			Ext.Ajax.request({
 		        url: MainPage.rackUrl,
 		        params:{"action":"nodesStats", "nodes": Ext.encode(activeNodes)},
