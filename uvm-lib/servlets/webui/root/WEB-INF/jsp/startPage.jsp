@@ -150,6 +150,12 @@ MainPage = {
 	},
 	
 	loadConfig: function() {
+		rpc.toolboxManager.getConfigItems(function (result, exception) {
+			if(exception) { alert(exception.message); return;}
+			MainPage.config = result;
+			MainPage.buildConfig();
+		});
+		/*
 		Ext.Ajax.request({
 			url: this.rackUrl,
 			params :{'action':'getConfigItems'},
@@ -166,7 +172,8 @@ MainPage = {
 			failure: function ( result, request) { 
 				Ext.MessageBox.alert('Failed', 'Successfully posted form: '+result.date); 
 			} 
-		});	
+		});
+		*/	
 	},
 	
 	loadVirtualRacks: function() {

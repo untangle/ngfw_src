@@ -188,4 +188,11 @@ public interface RemoteToolboxManager
     List<String> getWebstartResources();
 
     boolean hasPremiumSubscription();
+    
+    /**
+     * All config items.
+     *
+     * @return an array of <code>ConfigItem</code>s.
+     */
+    ConfigItem[] getConfigItems();
 }

@@ -47,6 +47,7 @@ import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.NodeException;
 import com.untangle.uvm.security.LoginSession;
 import com.untangle.uvm.security.Tid;
+import com.untangle.uvm.toolbox.ConfigItem;
 import com.untangle.uvm.toolbox.DownloadComplete;
 import com.untangle.uvm.toolbox.DownloadProgress;
 import com.untangle.uvm.toolbox.DownloadSummary;
@@ -552,6 +553,24 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
         }
 
         return false;
+    }
+    
+    /**
+     * All config items.
+     *
+     * @return an array of <code>ConfigItem</code>s.
+     */
+    public ConfigItem[] getConfigItems(){
+    	return new ConfigItem[]{
+    			new ConfigItem("networking", "Networking", 1, "images/tools/config/IconConfigNetwork36x36.png"),
+    			new ConfigItem("remoteAdmin", "Remote Admin", 2, "images/tools/config/IconConfigAdmin36x36.png"),
+    			new ConfigItem("email", "Email", 3, "images/tools/config/IconConfigEmail36x36.png"),
+    			new ConfigItem("userDirectory", "User Directory", 4, "images/tools/config/IconConfigDirectory36x36.png"),
+    			new ConfigItem("backupRestore", "Backup/Restore", 5, "images/tools/config/IconConfigBackup36x36.png"),
+    			new ConfigItem("support", "Support", 6, "images/tools/config/IconConfigSupport36x36.png"),
+    			new ConfigItem("upgrade", "Upgrade", 7, "images/tools/config/IconConfigUpgrade36x36.png"),
+    			new ConfigItem("setupInfo", "Setup Info", 8, "images/tools/config/IconConfigSetup36x36.png")
+    	};
     }
 
     // package private methods ------------------------------------------------
