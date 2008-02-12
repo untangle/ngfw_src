@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" >
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <title>Untangle rack - ext model</title>
+    <title>Untangle rack - Prototype 4</title>
     
     <style type="text/css">
         @import "ext-2.0.1/resources/css/ext-all.css";
@@ -17,7 +17,8 @@
 	<script type="text/javascript" src="jsonrpc/jsonrpc.js"></script>
 
     <script type="text/javascript" src="script/ext-untangle.js"></script>
-    <!-- script type="text/javascript" src="script/protofilter.js"></script -->
+    <!-- script type="text/javascript" src="script/untangle-node-protofilter/settings.js"></script -->
+    <script language="javascript" type="text/javascript"  src="firebug/firebug.js"></script>
     
 <script type="text/javascript">
 rpc = {}
@@ -399,9 +400,11 @@ MainPage = {
 		var out=[];
 		out.push('<select id="rack_select" onchange="MainPage.changePolicy()">');
 		for(var i=0;i<rpc.policies.length;i++) {
-			var selVirtualRack=rpc.policies[i].default==true?"selected":"";
+			//rpc.policies[i].isDefault=rpc.policies[i]["default"];
+			//delete rpc.policies[i]["default"];
+			var selVirtualRack=true;rpc.policies[i]["default"]==true?"selected":"";
 			
-			if(rpc.policies[i].default==true) {
+			if(rpc.policies[i]["default"]==true) {
 				rpc.currentPolicy=rpc.policies[i];
 			}
 			out.push('<option value="'+rpc.policies[i].id+'" '+selVirtualRack+'>'+rpc.policies[i].name+'</option>');

@@ -229,10 +229,7 @@ Ext.untangle.ProtocolControlSettings = Ext.extend(Ext.untangle.Settings, {
 		       },
 		       initContent: function() {
 		       		
-		       },
-		       
-		       
-			   
+		       }
         });
 		this.rowEditPLWin.render('container');
 		this.rowEditPLWin.initContent();
