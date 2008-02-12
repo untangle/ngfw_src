@@ -55,6 +55,7 @@ Ext.grid.EditColumn.prototype ={
            var index = this.grid.getView().findRowIndex(t);
            var record = this.grid.store.getAt(index);
             //populate row editor
+           this.grid.rowEditor.populate(record,index);
            this.grid.rowEditor.show();
         }
     },
@@ -166,74 +167,96 @@ Ext.untangle.ProtocolControlSettings = Ext.extend(Ext.untangle.Settings, {
 	    cmPL.defaultSortable = false;
 		
 		var editPLTemplate=new Ext.Template(
-		'<div class="inputLine"><span class="label">Category:</span><span class="formw"><input type="text" id="field_category_pl_{tid}" size="30"/></span></div>',
-		'<div class="inputLine"><span class="label">Protocol:</span><span class="formw"><input type="text" id="field_protocol_pl_{tid}" size="30"/></span></div>',
+		'<div class="inputLine"><span class="label">Category:</span><span class="formw"><input type="text" id="field_category_pl_{tid}" style="width:200px;"/></span></div>',
+		'<div class="inputLine"><span class="label">Protocol:</span><span class="formw"><input type="text" id="field_protocol_pl_{tid}" style="width:200px;"/></span></div>',
 		'<div class="inputLine"><span class="label">Block:</span><span class="formw"><input type="checkbox" id="field_blocked_pl_{tid}" /></span></div>',
 		'<div class="inputLine"><span class="label">Log:</span><span class="formw"><input type="checkbox" id="field_log_pl_{tid}" /></span></div>',
-		'<div class="inputLine"><span class="label">Description:</span><span class="formw"><input type="text" id="field_description_pl_{tid}" size="30"/></span></div>',
-		'<div class="inputLine"><span class="label">Signature:</span><span class="formw"><input type="text" id="field_definition_pl_{tid}" size="30"/></span></div>');
+		'<div class="inputLine"><span class="label">Description:</span><span class="formw"><textarea type="text" id="field_description_pl_{tid}" style="width:200px;height:60px;"></textarea></span></div>',
+		'<div class="inputLine"><span class="label">Signature:</span><span class="formw"><textarea type="text" id="field_definition_pl_{tid}" style="width:200px;height:60px;"></textarea></span></div>');
 		var winHTML=editPLTemplate.applyTemplate({'tid':this.tid});
 		this.rowEditPLWin=new Ext.Window({
-                id: 'rowEditPLWin_'+this.tid,
-                parentId: this.getId(),
-                tid: this.tid,
-                layout:'fit',
-                modal:true,
-                title:'Edit',
-                closeAction:'hide',
-                autoCreate:true,                
-                width:400,
-                height:300,
-                draggable:false,
-                resizable:false,
-	            items: {
-			        html: winHTML,
-			        border: false,
-			        deferredRender:false,
-			        cls: 'windowBackground',
-			        bodyStyle: 'background-color: transparent;'
-			    },
-			    buttons: [
-			    	{
-						'parentId':this.getId(),
-				        'iconCls': 'helpIcon',
-				        'text': 'Help',
-				        'handler': function() {alert("TODO: Implement Help Page");}
-			        },
-			    	{
-						'parentId':this.getId(),
-				        'iconCls': 'saveIcon',
-				        'text': 'Update',
-				        'handler': function() {Ext.getCmp(this.parentId).rowEditPLWin.hide();}
-			        },
-			    	{
-						'parentId':this.getId(),
-				        'iconCls': 'cancelIcon',
-				        'text': 'Cancel',
-				        'handler': function() {Ext.getCmp(this.parentId).rowEditPLWin.hide();}
-			        }
-			    ],
-				listeners: {
-		       		'show': {
-		       			fn: function() {
-		       				var gridPL=Ext.getCmp(this.parentId).gridPL;
-		       				var objPosition=gridPL.getPosition();
-			        		this.setPosition(objPosition);
-		       				//var objSize=gridPL.getSize();
-			        		//this.setSize(objSize);
-			        		
-					    },
-					    scope: this.rowEditPLWin
-		        	}
-		       },
-		       initContent: function() {
-		       		
-		       }
-        });
+			id: 'rowEditPLWin_'+this.tid,
+			parentId: this.getId(),
+			tid: this.tid,
+			rowIndex: null,
+			layout: 'fit',
+			modal: true,
+			title: 'Edit',
+			closeAction: 'hide',
+			autoCreate: true,                
+			width: 400,
+			height: 300,
+			draggable: false,
+			resizable: false,
+			items: {
+				html: winHTML,
+				border: false,
+				deferredRender:false,
+				cls: 'windowBackground',
+				bodyStyle: 'background-color: transparent;'
+			},
+			buttons: [
+			{
+				'parentId':this.getId(),
+				'iconCls': 'helpIcon',
+				'text': 'Help',
+				'handler': function() {alert("TODO: Implement Help Page");}
+			},
+			{
+				'parentId':this.getId(),
+				'iconCls': 'saveIcon',
+				'text': 'Update',
+				'handler': function() {Ext.getCmp(this.parentId).rowEditPLWin.saveData();}
+			},
+			{
+			'parentId':this.getId(),
+			'iconCls': 'cancelIcon',
+			'text': 'Cancel',
+			'handler': function() {Ext.getCmp(this.parentId).rowEditPLWin.hide();}
+			}
+			],
+			listeners: {
+				'show': {
+					fn: function() {
+						var gridPL=Ext.getCmp(this.parentId).gridPL;
+						var objPosition=gridPL.getPosition();
+						this.setPosition(objPosition);
+						//var objSize=gridPL.getSize();
+						//this.setSize(objSize);
+					},
+					scope: this.rowEditPLWin
+				}
+			},
+			initContent: function() {
+					
+			},
+			populate: function(record,rowIndex) {
+				this.rowIndex=rowIndex;
+				document.getElementById("field_category_pl_"+this.tid).value=record.data.category;
+				document.getElementById("field_protocol_pl_"+this.tid).value=record.data.protocol;
+				document.getElementById("field_blocked_pl_"+this.tid).checked=record.data.blocked;
+				document.getElementById("field_log_pl_"+this.tid).checked=record.data.log;
+				document.getElementById("field_description_pl_"+this.tid).value=record.data.description;
+				document.getElementById("field_definition_pl_"+this.tid).value=record.data.definition;
+			},
+			saveData: function() {
+				if(this.rowIndex!==null) {
+					var cmp=Ext.getCmp(this.parentId);
+					var rec=cmp.gridPL.getStore().getAt(this.rowIndex);
+					rec.set("category", document.getElementById("field_category_pl_"+this.tid).value);
+					rec.set("protocol", document.getElementById("field_protocol_pl_"+this.tid).value);
+					rec.set("blocked", document.getElementById("field_blocked_pl_"+this.tid).checked);
+					rec.set("log", document.getElementById("field_log_pl_"+this.tid).checked);
+					rec.set("description", document.getElementById("field_description_pl_"+this.tid).value);
+					rec.set("definition", document.getElementById("field_definition_pl_"+this.tid).value);
+				}
+				this.hide();
+			}
+		});
 		this.rowEditPLWin.render('container');
 		this.rowEditPLWin.initContent();
 		
-		// create the Grid
+		// create the Protocol list Grid
 	    this.gridPL = new Ext.grid.EditorGridPanel({
 	        store: this.storePL,
 	        cm: cmPL,
@@ -245,19 +268,21 @@ Ext.untangle.ProtocolControlSettings = Ext.extend(Ext.untangle.Settings, {
 		            handler: function() {
 		            	var cmp=Ext.getCmp(this.parentId);
 		            	var rec=new Ext.data.Record({"category":"","protocol":"","blocked":false,"log":false,"description":"","definition":""});
-						cmp.gridPL.stopEditing();
 						cmp.gridPL.getStore().insert(0, [rec]);
-						cmp.gridPL.startEditing(0, 0);		            	
+						cmp.gridPL.rowEditor.populate(rec,0);
+           				cmp.gridPL.rowEditor.show();		            	
 		            }
 		        }],
 	        stripeRows: true,
 	        plugins:[blockedColumn,logColumn,editColumn,removeColumn],
 	        autoExpandColumn: 'category',
-	        clicksToEdit:1,
-	        rowEditor:this.rowEditPLWin,
-	        title:'Protocol List'
+	        clicksToEdit: 1,
+	        rowEditor: this.rowEditPLWin,
+	        title: 'Protocol List'
 	    });
 		
+		
+		// Event Log grid
     	this.gridEventLog = new Ext.grid.GridPanel({
 			store: new Ext.data.JsonStore({
 		        fields: [
@@ -269,7 +294,6 @@ Ext.untangle.ProtocolControlSettings = Ext.extend(Ext.untangle.Settings, {
 		           {name: 'server'}
 		        ]
 	    	}),
-
 			columns: [
 			    {header: "timestamp", width: 120, sortable: true, dataIndex: 'timeStamp', renderer: function(value) {
 			    	var date=new Date();
@@ -361,7 +385,6 @@ Ext.untangle.ProtocolControlSettings = Ext.extend(Ext.untangle.Settings, {
     		this.rpc.repository[selRepository].getEvents(function (result, exception) {
 				if(exception) {alert(exception.message); return;}
 				var events = result;
-				aaa=result;
 				var cmp=Ext.untangle.ProtocolControlSettings.getInstanceCmp();
 				if(cmp!==null) {
 					cmp.gridEventLog.getStore().loadData(events.list);
