@@ -52,6 +52,7 @@ ensure
     else
       puts "success"
     end
+    STDOUT.flush()
     Process.exit!(rc)
   rescue Exception => e
     f.write(Time.now.strftime("%Y %m %d %H:%M:%S") + " | whut! | #{e.class} | #{e.message} | #{e.backtrace.inspect}\n")
