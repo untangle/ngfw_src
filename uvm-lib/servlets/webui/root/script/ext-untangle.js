@@ -106,7 +106,7 @@ Ext.untangle.Node = Ext.extend(Ext.Component, {
         
         updateBlingers: function () {
         	if(this.blingers!==null) {
-        		if(this.powerOn) {
+        		if(this.powerOn && this.stats) {
 	        		for(var i=0;i<this.blingers.length;i++) {
 	        			Ext.getCmp(this.blingers[i].id).update(this.stats);
 	        		}
@@ -446,24 +446,6 @@ Ext.untangle.BlingerManager = {
 		this.cycleCompleted=true;
 	},
 	
-	getActiveNodes_old: function() {
-		var activeNodes=[];
-		for(var i=0;i<MainPage.nodes.length;i++) {
-			if(true) {
-				activeNodes.push({"nodeId":MainPage.nodes[i].tid,"nodeName":MainPage.nodes[i].name});
-			}
-		}
-		return activeNodes;
-	},
-	getActiveNodes: function() {
-		var activeNodes=[];
-		for(var i=0;i<MainPage.nodes.length;i++) {
-			if(MainPage.nodes[i].runState=="RUNNING") {
-				activeNodes.push(MainPage.nodes[i]);
-			}
-		}
-		return activeNodes;
-	},
 	hasActiveNodes: function() {
 		for(var i=0;i<MainPage.nodes.length;i++) {
 			if(MainPage.nodes[i].runState=="RUNNING") {
