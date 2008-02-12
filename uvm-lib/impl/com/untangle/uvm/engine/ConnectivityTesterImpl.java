@@ -39,7 +39,7 @@ class RemoteConnectivityTesterImpl implements RemoteConnectivityTester
     private static final String BRIDGE_WAIT_SCRIPT = BUNNICULA_BASE + "/networking/bridge-wait";
 
     /* Name of the host to lookup */
-    private static final String TEST_HOSTNAME_BASE    = "release";
+    private static final String TEST_HOSTNAME_BASE    = "updates";
     private static final String TEST_HOSTNAME_DOMAIN  = "untangle.com";
 
     /* Backup IP address to use if DNS fails */
@@ -65,7 +65,7 @@ class RemoteConnectivityTesterImpl implements RemoteConnectivityTester
 
     private static RemoteConnectivityTesterImpl INSTANCE = new RemoteConnectivityTesterImpl();
 
-    /* Address of release */
+    /* Address of updates */
     private InetAddress address;
 
     /**
@@ -132,7 +132,7 @@ class RemoteConnectivityTesterImpl implements RemoteConnectivityTester
             isWorking=false;
         }
 
-        /* Now run the dns test just to get the address of release */
+        /* Now run the dns test just to get the address of updates */
         DnsLookup dnsLookup = new DnsLookup();
         Thread test = new Thread( dnsLookup );
 
@@ -199,7 +199,7 @@ class RemoteConnectivityTesterImpl implements RemoteConnectivityTester
     }
 
     /* This isn't a test, it is just a method used to lookup the address
-     * of release.untangle.com with a timeout.  The real test is now executed by
+     * of updates.untangle.com with a timeout.  The real test is now executed by
      * the script.  For the original test, look at subversion R2828 */
     class DnsLookup implements Runnable
     {
