@@ -111,7 +111,7 @@ Ext.untangle.ProtocolControlSettings = Ext.extend(Ext.untangle.Settings, {
     	this.rpc={};
     	this.rpc.repository={};
     	Ext.untangle.ProtocolControlSettings.instanceId=this.getId();
-    	if(this.node.nodeContext.node.eventManager==null) {
+    	if(this.node.nodeContext.node.eventManager===undefined) {
 			this.node.nodeContext.node.eventManager=this.node.nodeContext.node.getEventManager();
 		}
 		this.rpc.node = this.node.nodeContext.node;
@@ -124,7 +124,7 @@ Ext.untangle.ProtocolControlSettings = Ext.extend(Ext.untangle.Settings, {
 	           {name: 'blocked'},
 	           {name: 'log'},
 	           {name: 'description'},
-	           {name: 'definition'},
+	           {name: 'definition'}
 	        ]
 	    });
 	    // the column model has information about grid columns
@@ -171,9 +171,8 @@ Ext.untangle.ProtocolControlSettings = Ext.extend(Ext.untangle.Settings, {
 		'<div class="inputLine"><span class="label">Block:</span><span class="formw"><input type="checkbox" id="field_blocked_pl_{tid}" /></span></div>',
 		'<div class="inputLine"><span class="label">Log:</span><span class="formw"><input type="checkbox" id="field_log_pl_{tid}" /></span></div>',
 		'<div class="inputLine"><span class="label">Description:</span><span class="formw"><input type="text" id="field_description_pl_{tid}" size="30"/></span></div>',
-		'<div class="inputLine"><span class="label">Signature:</span><span class="formw"><input type="text" id="field_definition_pl_{tid}" size="30"/></span></div>'
-		);
-		var winHTML=editPLTemplate.applyTemplate({'tid':this.tid})
+		'<div class="inputLine"><span class="label">Signature:</span><span class="formw"><input type="text" id="field_definition_pl_{tid}" size="30"/></span></div>');
+		var winHTML=editPLTemplate.applyTemplate({'tid':this.tid});
 		this.rowEditPLWin=new Ext.Window({
                 id: 'rowEditPLWin_'+this.tid,
                 parentId: this.getId(),
@@ -199,19 +198,19 @@ Ext.untangle.ProtocolControlSettings = Ext.extend(Ext.untangle.Settings, {
 						'parentId':this.getId(),
 				        'iconCls': 'helpIcon',
 				        'text': 'Help',
-				        'handler': function() {alert("TODO: Implement Help Page")}
+				        'handler': function() {alert("TODO: Implement Help Page");}
 			        },
 			    	{
 						'parentId':this.getId(),
 				        'iconCls': 'saveIcon',
 				        'text': 'Update',
-				        'handler': function() {Ext.getCmp(this.parentId).rowEditPLWin.hide()}
+				        'handler': function() {Ext.getCmp(this.parentId).rowEditPLWin.hide();}
 			        },
 			    	{
 						'parentId':this.getId(),
 				        'iconCls': 'cancelIcon',
 				        'text': 'Cancel',
-				        'handler': function() {Ext.getCmp(this.parentId).rowEditPLWin.hide()}
+				        'handler': function() {Ext.getCmp(this.parentId).rowEditPLWin.hide();}
 			        }
 			    ],
 				listeners: {
@@ -277,11 +276,11 @@ Ext.untangle.ProtocolControlSettings = Ext.extend(Ext.untangle.Settings, {
 			    	date.setTime(value.time);
 			    	return date.toLocaleString();
 			    }},
-			    {header: "action", width: 70, sortable: true, dataIndex: 'blocked', renderer: function(value) {return value?"blocked" : "passed"}},
-			    {header: "client", width: 120, sortable: true, dataIndex: 'pipelineEndpoints', renderer: function(value) {return value==null?"" : value.CClientAddr.hostAddress+":"+value.CClientPort}},
+			    {header: "action", width: 70, sortable: true, dataIndex: 'blocked', renderer: function(value) {return value?"blocked" : "passed";}},
+			    {header: "client", width: 120, sortable: true, dataIndex: 'pipelineEndpoints', renderer: function(value) {return value===null?"" : value.CClientAddr.hostAddress+":"+value.CClientPort;}},
 			    {header: "request", width: 120, sortable: true, dataIndex: 'protocol'},
-			    {header: "reason for action", width: 120, sortable: true, dataIndex: 'blocked', renderer: function(value) {return value?"blocked in block list" : "not blocked in block list"}},
-			    {header: "server", width: 120, sortable: true, dataIndex: 'pipelineEndpoints', renderer: function(value) {return value==null?"" : value.SServerAddr.hostAddress+":"+value.SServerPort}}
+			    {header: "reason for action", width: 120, sortable: true, dataIndex: 'blocked', renderer: function(value) {return value?"blocked in block list" : "not blocked in block list";}},
+			    {header: "server", width: 120, sortable: true, dataIndex: 'pipelineEndpoints', renderer: function(value) {return value===null?"" : value.SServerAddr.hostAddress+":"+value.SServerPort;}}
 			],
 			//sm: new Ext.grid.RowSelectionModel({singleSelect:true}),
 			title: 'Event Log',
@@ -303,14 +302,14 @@ Ext.untangle.ProtocolControlSettings = Ext.extend(Ext.untangle.Settings, {
 	       				this.rpc.eventManager.getRepositoryDescs(function (result, exception) {
 							if(exception) {alert(exception.message); return;}
 							var cmp=Ext.untangle.ProtocolControlSettings.getInstanceCmp();
-							if(cmp!=null) {
+							if(cmp!==null) {
 								cmp.rpc.repositoryDescs=result;
 								var out=[];
 								out.push('<select id="selectReposytoryDescEventLog_'+cmp.tid+'">');
 								var repList=cmp.rpc.repositoryDescs.list;
 								for(var i=0;i<repList.length;i++) {
 									var repDesc=repList[i];
-									var selOpt=(i==0)?"selected":"";
+									var selOpt=(i===0)?"selected":"";
 									out.push('<option value="'+repDesc.name+'" '+selOpt+'>'+repDesc.name+'</option>');
 								}
 								out.push('</select>');
@@ -337,14 +336,12 @@ Ext.untangle.ProtocolControlSettings = Ext.extend(Ext.untangle.Settings, {
 	            this.gridEventLog
 	        ]
 	    });
-	    
-	    ;
     },
     
     getSelectedEventLogRepository: function () {
     	var selObj=document.getElementById('selectReposytoryDescEventLog_'+this.tid);
     	var result=null;
-    	if(selObj!=null && selObj.selectedIndex>=0) {
+    	if(selObj!==null && selObj.selectedIndex>=0) {
     		result = selObj.options[selObj.selectedIndex].value;
     	}
 		return result;
@@ -357,8 +354,8 @@ Ext.untangle.ProtocolControlSettings = Ext.extend(Ext.untangle.Settings, {
     
     refreshEventLog: function() {
     	var selRepository=this.getSelectedEventLogRepository();
-    	if(selRepository!=null) {
-    		if(this.rpc.repository[selRepository]==null) {
+    	if(selRepository!==null) {
+    		if(this.rpc.repository[selRepository] === undefined) {
     			this.rpc.repository[selRepository]=this.rpc.eventManager.getRepository(selRepository);
     		}
     		this.rpc.repository[selRepository].getEvents(function (result, exception) {
@@ -366,7 +363,7 @@ Ext.untangle.ProtocolControlSettings = Ext.extend(Ext.untangle.Settings, {
 				var events = result;
 				aaa=result;
 				var cmp=Ext.untangle.ProtocolControlSettings.getInstanceCmp();
-				if(cmp!=null) {
+				if(cmp!==null) {
 					cmp.gridEventLog.getStore().loadData(events.list);
 				}
 			});
@@ -388,7 +385,7 @@ Ext.untangle.ProtocolControlSettings = Ext.extend(Ext.untangle.Settings, {
     	this.rpc.node.setProtoFilterSettings(function (result, exception) {
 			if(exception) {alert(exception.message); return;}
 			var cmp=Ext.untangle.ProtocolControlSettings.getInstanceCmp();
-			if(cmp!=null) {
+			if(cmp!==null) {
 				cmp.tabs.enable();
 			}
 		}, this.rpc.settings);
@@ -398,7 +395,7 @@ Ext.untangle.ProtocolControlSettings = Ext.extend(Ext.untangle.Settings, {
 		this.rpc.node.getProtoFilterSettings(function (result, exception) {
 			if(exception) {alert(exception.message); return;}
 			var cmp=Ext.untangle.ProtocolControlSettings.getInstanceCmp();
-			if(cmp!=null) {
+			if(cmp!==null) {
 				cmp.rpc.settings=result;
 				cmp.loadPL();
 			}
@@ -413,12 +410,12 @@ Ext.untangle.ProtocolControlSettings = Ext.extend(Ext.untangle.Settings, {
 Ext.untangle.ProtocolControlSettings.instanceId=null;
 Ext.untangle.ProtocolControlSettings.getInstanceCmp =function() {
 	var cmp=null;
-	if(Ext.untangle.ProtocolControlSettings.instanceId!=null) {
+	if(Ext.untangle.ProtocolControlSettings.instanceId!==null) {
 		cmp=Ext.getCmp(Ext.untangle.ProtocolControlSettings.instanceId);
 	}
 	return cmp;
 };
-Ext.untangle.Settings.registerClassName('untangle-node-protofilter','Ext.untangle.ProtocolControlSettings')
+Ext.untangle.Settings.registerClassName('untangle-node-protofilter','Ext.untangle.ProtocolControlSettings');
 Ext.reg('untangleProtocolControlSettings', Ext.untangle.ProtocolControlSettings);
 }
 //</script>

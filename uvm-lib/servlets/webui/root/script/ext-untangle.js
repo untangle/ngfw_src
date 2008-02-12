@@ -14,8 +14,7 @@ Ext.untangle.Button = Ext.extend(Ext.Component, {
         this.addEvents(
             "click",
             'mouseover',
-            'mouseout'
-        );
+            'mouseout');
     },
     // private
     onRender : function(container, position) {
@@ -32,7 +31,7 @@ Ext.untangle.Button = Ext.extend(Ext.Component, {
         if(this.cls){
             this.el.addClass(this.cls);
         }
-        this.el.on(this.clickEvent, this.onClick, this)
+        this.el.on(this.clickEvent, this.onClick, this);
         this.el.on("mouseover", this.onMouseOver, this);
         this.el.on("mouseout", this.onMouseOut, this);
         //Ext.untangle.Button.superclass.onRender.call(this,container, position);
@@ -53,7 +52,7 @@ Ext.untangle.Button = Ext.extend(Ext.Component, {
         if(e){
             e.preventDefault();
         }
-        if(e.button != 0){
+        if(e.button !== 0){
             return;
         }
         if(!this.disabled){
@@ -68,8 +67,7 @@ Ext.untangle.Button.template = new Ext.Template(
 '<table border="0" width="{width}" height="{height}"><tr>',
 '<td width="1%" style="text-align: left;vertical-align: middle;"><img src="{imageSrc}" style="vertical-align: middle;"/></td>',
 '<td style="text-align: left;vertical-align: middle;padding-left:5px;font-size: 14px;">{text}</td>',
-'</tr></table>'
-);
+'</tr></table>');
 Ext.ComponentMgr.registerType('untangleButton', Ext.untangle.Button);
 
 
@@ -107,7 +105,7 @@ Ext.untangle.Node = Ext.extend(Ext.Component, {
         },
         
         updateBlingers: function () {
-        	if(this.blingers!=null) {
+        	if(this.blingers!==null) {
         		if(this.powerOn) {
 	        		for(var i=0;i<this.blingers.length;i++) {
 	        			Ext.getCmp(this.blingers[i].id).update(this.stats);
@@ -118,7 +116,7 @@ Ext.untangle.Node = Ext.extend(Ext.Component, {
         	}
 		},
 		resetBlingers: function () {
-        	if(this.blingers!=null) {
+        	if(this.blingers!==null) {
         		for(var i=0;i<this.blingers.length;i++) {
         			Ext.getCmp(this.blingers[i].id).reset();
         		}
@@ -144,7 +142,7 @@ Ext.untangle.Node = Ext.extend(Ext.Component, {
 				success: function ( result, request) {
 					var cmp=Ext.getCmp(request.parentId);
 					var jsonResult=Ext.util.JSON.decode(result.responseText);
-					if(jsonResult.success!=true) {
+					if(jsonResult.success!==true) {
 						cmp.setState("Attention");
 						Ext.MessageBox.alert('Failed', jsonResult.msg);
 					} else {
@@ -162,7 +160,7 @@ Ext.untangle.Node = Ext.extend(Ext.Component, {
         },
 
         onHelpClick: function () {
-        	if(this.helpLink!=null && this.helpLink.length>0) {
+        	if(this.helpLink!==null && this.helpLink.length>0) {
         		window.open(this.helpLink);
         	}
         },
@@ -184,7 +182,7 @@ Ext.untangle.Node = Ext.extend(Ext.Component, {
         		this.settings.destroy();
         		this.settings=null;
         	}
-       		if(this.settingsClassName!=null) {
+       		if(this.settingsClassName!==null) {
         		eval('this.settings=new '+this.settingsClassName+'({\'node\':this,\'tid\':this.tid,\'name\':this.name});');
         		this.settings.render('settings_'+this.getId());
         		this.settings.loadData();
@@ -209,10 +207,10 @@ Ext.untangle.Node = Ext.extend(Ext.Component, {
         },
         
         onRemoveClick: function() {
-        	if(MainPage.removeNodeCmpId!=null) {
+        	if(MainPage.removeNodeCmpId!==null) {
         		return;
         	}
-        	var message="Warning:\n"+this.displayName+"is about to be removed from the rack.\nIts settings will be lost and it will stop processing netwotk traffic.\n\nWould you like to continue removing?" 
+        	var message="Warning:\n"+this.displayName+"is about to be removed from the rack.\nIts settings will be lost and it will stop processing netwotk traffic.\n\nWould you like to continue removing?"; 
         	if(!confirm(message)) {
         		return;
         	}
@@ -233,7 +231,7 @@ Ext.untangle.Node = Ext.extend(Ext.Component, {
 						cmp.destroy();
 						cmp=null;
 						var myAppButtonCmp=Ext.getCmp('myAppButton_'+nodeName);
-						if(myAppButtonCmp!=null) {
+						if(myAppButtonCmp!==null) {
 							myAppButtonCmp.enable();
 						}
 						for(var i=0;i<MainPage.nodes.length;i++) {
@@ -268,7 +266,7 @@ Ext.untangle.Node = Ext.extend(Ext.Component, {
         },
         
         initBlingers: function () {
-        	if(this.blingers!=null) {
+        	if(this.blingers!==null) {
         		var nodeBlingers=document.getElementById('nodeBlingers_'+this.getId());
         		for(var i=0;i<this.blingers.length;i++) {
         			var blingerData=this.blingers[i];
@@ -339,7 +337,8 @@ Ext.untangle.Node = Ext.extend(Ext.Component, {
 			//this.settingsWin.on("resize", function() {alert(123)},this.settingsWin);
 
 			Ext.get('nodePowerIconImg_'+this.getId()).on('click', this.onPowerClick, this);
-			var tip = new Ext.ToolTip({
+			var cmp=null;
+			cmp=new Ext.ToolTip({
 			  html:Ext.untangle.Node.statusTip,
 			  target: 'nodeStateIconImg_'+this.getId(),
 			  autoWidth: true,
@@ -348,7 +347,7 @@ Ext.untangle.Node = Ext.extend(Ext.Component, {
 			  dismissDelay: 0,
 			  hideDelay: 0
 			});
-			var tip = new Ext.ToolTip({
+			cmp=new Ext.ToolTip({
 			  html:Ext.untangle.Node.powerTip,
 			  target: 'nodePowerIconImg_'+this.getId(),
 			  autoWidth: true,
@@ -357,50 +356,50 @@ Ext.untangle.Node = Ext.extend(Ext.Component, {
 			  dismissDelay: 0,
 			  hideDelay: 0
 			});
-			new Ext.Button({
+			cmp=new Ext.Button({
 				'parentId':this.getId(),
 		        'iconCls': 'nodeSettingsIcon',
 				'renderTo':'nodeSettingsButton_'+this.getId(),
 		        'text': 'Show Settings',
-		        'handler': function() {Ext.getCmp(this.parentId).onSettingsClick()}
+		        'handler': function() {Ext.getCmp(this.parentId).onSettingsClick();}
 	        });
-			new Ext.Button({
+			cmp=new Ext.Button({
 				'parentId':this.getId(),
 		        'iconCls': 'helpIcon',
 				'renderTo':'nodeHelpButton_'+this.getId(),
 		        'text': 'Help',
-		        'handler': function() {Ext.getCmp(this.parentId).onHelpClick()}
+		        'handler': function() {Ext.getCmp(this.parentId).onHelpClick();}
 	        });
-			new Ext.Button({
+			cmp=new Ext.Button({
 				'parentId':this.getId(),
 				'iconCls': 'nodeRemoveIcon',
 				'renderTo':'nodeRemoveButton_'+this.getId(),
 		        'text': 'Remove',
-		        'handler': function() {Ext.getCmp(this.parentId).onRemoveClick()}
+		        'handler': function() {Ext.getCmp(this.parentId).onRemoveClick();}
 	        });
-			new Ext.Button({
+			cmp=new Ext.Button({
 				'parentId':this.getId(),
 		        'iconCls': 'cancelIcon',
 				'renderTo':'nodeCancelButton_'+this.getId(),
 		        'text': 'Cancel',
-		        'handler': function() {Ext.getCmp(this.parentId).onCancelClick()}
+		        'handler': function() {Ext.getCmp(this.parentId).onCancelClick();}
 	        });
-			new Ext.Button({
+			cmp=new Ext.Button({
 				'parentId':this.getId(),
 		        'iconCls': 'saveIcon',
 				'renderTo':'nodeSaveButton_'+this.getId(),
 		        'text': 'Save',
-		        'handler': function() {Ext.getCmp(this.parentId).onSaveClick()}
+		        'handler': function() {Ext.getCmp(this.parentId).onSaveClick();}
 	        });
-	        this.setPowerOn(this.runState=="RUNNING")
-	        this.setState((this.runState=="RUNNING")?"On":"Off")
+	        this.setPowerOn(this.runState=="RUNNING");
+	        this.setState((this.runState=="RUNNING")?"On":"Off");
         	this.initBlingers();
         }
 });
 
 Ext.untangle.Node.getCmp=function(nodeId) {
 	return Ext.getCmp(nodeId);
-}
+};
 
 
 
@@ -418,17 +417,14 @@ Ext.untangle.Node.template = new Ext.Template(
 '<div class="nodePowerIcon"><img id="nodePowerIconImg_{id}" src=""></div>',
 '<div id="nodePowerOnHint_{id}" class="nodePowerOnHint"><img src="images/node/IconPowerOnHint100.png"></div>',
 '<div class="nodeSettingsButton" id="nodeSettingsButton_{id}"></div>',
-'<div class="nodeHelpButton" id="nodeHelpButton_{id}"></div>'
-);
+'<div class="nodeHelpButton" id="nodeHelpButton_{id}"></div>');
 
 Ext.untangle.Node.templateSettings=new Ext.Template(
-'<div class="nodeSettingsContent" id="settings_{id}"></div>'
-);
+'<div class="nodeSettingsContent" id="settings_{id}"></div>');
 Ext.untangle.Node.templateSettingsButtons=new Ext.Template(
 '<div class="nodeRemoveButton" id="nodeRemoveButton_{id}"></div>',
 '<div class="nodeCancelButton" id="nodeCancelButton_{id}"></div>',
-'<div class="nodeSaveButton" id="nodeSaveButton_{id}"></div>'
-);
+'<div class="nodeSaveButton" id="nodeSaveButton_{id}"></div>');
 
 Ext.ComponentMgr.registerType('untangleNode', Ext.untangle.Node);
 
@@ -444,7 +440,7 @@ Ext.untangle.BlingerManager = {
 	},
 	
 	stop: function() {
-		if(this.intervalId!=null) {
+		if(this.intervalId!==null) {
 			window.clearInterval(this.intervalId);
 		}
 		this.cycleCompleted=true;
@@ -507,7 +503,7 @@ Ext.untangle.BlingerManager = {
 			});
 		}	
 	}
-}
+};
 
 Ext.untangle.ActivityBlinger = Ext.extend(Ext.Component, {
         parentId: null,
@@ -524,7 +520,7 @@ Ext.untangle.ActivityBlinger = Ext.extend(Ext.Component, {
 			el.innerHTML=templateHTML;
 			this.lastValues=[];
 			this.decays=[];
-        	if(this.bars!=null) {
+        	if(this.bars!==null) {
         		var out=[];
         		for(var i=0;i<this.bars.length;i++) {
         			var bar=this.bars[i];
@@ -548,7 +544,7 @@ Ext.untangle.ActivityBlinger = Ext.extend(Ext.Component, {
         		var barPixelWidth=Math.floor(this.decays[i]*0.6);
         		var barDiv=document.getElementById('activityBar_'+this.getId()+'_'+i);
         		barDiv.style.width=barPixelWidth+"px";
-        		barDiv.style.display=(barPixelWidth==0)?"none":"";
+        		barDiv.style.display=(barPixelWidth===0)?"none":"";
         	}
         },
         reset: function() {
@@ -568,13 +564,13 @@ Ext.untangle.ActivityBlinger.template = new Ext.Template(
 '</div>');
 Ext.untangle.ActivityBlinger.decayFactor=Math.pow(0.94,Ext.untangle.BlingerManager.updateTime/1000);
 Ext.untangle.ActivityBlinger.decayValue = function(newValue, lastValue, decay) {
-	if(lastValue!=null && newValue!=lastValue) {
+	if(lastValue!==null && newValue!=lastValue) {
 		decay=98;
 	} else {
 		decay=decay*Ext.untangle.ActivityBlinger.decayFactor;
 	}
 	return decay;
-}
+};
 Ext.ComponentMgr.registerType('untangleActivityBlinger', Ext.untangle.ActivityBlinger);
 
 Ext.untangle.SystemBlinger = Ext.extend(Ext.Component, {
@@ -607,7 +603,7 @@ Ext.untangle.SystemBlinger = Ext.extend(Ext.Component, {
 			this.data.push({"name":"ACC:","value":"&nbsp;"});
 			this.data.push({"name":"REQ:","value":"&nbsp;"});
 			this.data.push({"name":"Data rate:","value":"&nbsp;"});
-        	if(this.data!=null) {
+        	if(this.data!==null) {
         		var out=[];
         		for(var i=0;i<this.data.length;i++) {
         			var dat=this.data[i];
@@ -626,10 +622,12 @@ Ext.untangle.SystemBlinger = Ext.extend(Ext.Component, {
         	this.sessionRequestTotal=stats.tcpSessionRequestTotal+stats.udpSessionRequestTotal;
             this.byteCountCurrent = stats.c2tBytes + stats.s2tBytes;
             // (RESET COUNTS IF NECESSARY)
-            if( (this.byteCountLast == 0) || (this.byteCountLast > this.byteCountCurrent) )
+            if( (this.byteCountLast === 0) || (this.byteCountLast > this.byteCountCurrent) ) {
                 this.byteCountLast = this.byteCountCurrent;
-            if( (this.sessionRequestLast == 0) || (this.sessionRequestLast > this.sessionRequestTotal) )
+            }
+            if( (this.sessionRequestLast === 0) || (this.sessionRequestLast > this.sessionRequestTotal) ) {
                 this.sessionRequestLast = this.sessionRequestTotal;
+            }
         	var acc=this.sessionCountTotal;
         	var req=this.sessionRequestTotal;
         	var dataRate=(this.byteCountCurrent - this.byteCountLast)/Ext.untangle.BlingerManager.updateTime;
@@ -637,7 +635,7 @@ Ext.untangle.SystemBlinger = Ext.extend(Ext.Component, {
         	this.data[1].value=acc;
         	this.data[2].value=req;
         	this.data[3].value = dataRate.toFixed(2)+"/KBPs";
-        	if(this.data!=null) {
+        	if(this.data!==null) {
         		for(var i=0;i<this.data.length;i++) {
         			var valueDiv=document.getElementById('systemValue_'+this.getId()+'_'+i);
         			valueDiv.innerHTML=this.data[i].value;
@@ -652,7 +650,7 @@ Ext.untangle.SystemBlinger = Ext.extend(Ext.Component, {
 			this.sessionRequestLast=0;
 			this.sessionRequestTotal=0;
         	
-        	if(this.data!=null) {
+        	if(this.data!==null) {
         		for(var i=0;i<this.data.length;i++) {
         			this.data[i].value="&nbsp;";
         			var valueDiv=document.getElementById('systemValue_'+this.getId()+'_'+i);
@@ -673,21 +671,21 @@ Ext.untangle.Settings = Ext.extend(Ext.Component, {
 	'i18n':{}	
 });
 Ext.untangle.Settings._nodeScripts={};
-Ext.untangle._hasResource={}
+Ext.untangle._hasResource={};
 Ext.untangle.Settings.loadNodeScript=function(nodeName,cmpId,callbackFn) {
-	//MainPage.loadScript('nodes/'+name+'.js',scope,callbackFn);
-	MainPage.loadScript('script/'+nodeName+'/settings.js',function() {callbackFn(cmpId)})
+	MainPage.loadScript('script/'+nodeName+'/settings.js',function() {callbackFn(cmpId);});
 	//jQuery.getScript('nodes/'+name+'.js?_dc='+(new Date()).getTime(),function() {callbackFn(cmpId)});
-}
+};
 Ext.untangle.Settings._classNames={};
 Ext.untangle.Settings.getClassName=function(name) {
-	return Ext.untangle.Settings._classNames[name];
-}
+	var className=Ext.untangle.Settings._classNames[name];
+	return className===undefined?null:className;
+};
 Ext.untangle.Settings.hasClassName=function(name) {
-	return Ext.untangle.Settings._classNames[name]!=null;
-}
+	return Ext.untangle.Settings._classNames[name]!==undefined;
+};
 Ext.untangle.Settings.registerClassName=function(name,className) {
 	Ext.untangle.Settings._classNames[name]=className;
-}
+};
 
 Ext.ComponentMgr.registerType('untangleSettings', Ext.untangle.Settings);

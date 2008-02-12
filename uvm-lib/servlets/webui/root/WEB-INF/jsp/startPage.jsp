@@ -17,11 +17,11 @@
 	<script type="text/javascript" src="jsonrpc/jsonrpc.js"></script>
 
     <script type="text/javascript" src="script/ext-untangle.js"></script>
-    <!-- script type="text/javascript" src="script/untangle-node-protofilter/settings.js"></script -->
-    <script language="javascript" type="text/javascript"  src="firebug/firebug.js"></script>
+    <script type="text/javascript" src="script/untangle-node-protofilter/settings.js"></script>
+    <script type="text/javascript"  src="firebug/firebug.js"></script>
     
 <script type="text/javascript">
-rpc = {}
+rpc = {};
 //TODO: do all rpc requests asyncronous
 rpc.jsonrpc = new JSONRpcClient("/webui/JSON-RPC");
 rpc.nodeManager = rpc.jsonrpc.RemoteUvmContext.nodeManager();
@@ -36,6 +36,7 @@ MainPage = {
 	nodes: null,
 	rackUrl: "rack.do",
 	viewport: null,
+	removeNodeCmpId: null,
 	init: function() {
 		MainPage.buildTabs();
 		MainPage.viewport = new Ext.Viewport({
@@ -66,13 +67,13 @@ MainPage = {
         /*  
         MainPage.viewport.on('resize', , MainPage.viewport);
         */
-		new Ext.untangle.Button({
+		var buttonCmp=new Ext.untangle.Button({
 			'height': '46px',
 			'width': '86px',
 			'renderTo': 'help',
 	        'text': 'Help',
 	        'handler': function() {	  
-	        		var rackBaseHelpLink = '<uvm:help source="rack"/>'
+	        		var rackBaseHelpLink = '<uvm:help source="rack"/>';
 	        		window.open(rackBaseHelpLink);
 				},
 	        'imageSrc': 'images/IconHelp36x36.png'
@@ -102,13 +103,13 @@ MainPage = {
 		rpc.toolboxManager.uninstalled(function (result, exception) {
 			if(exception) { alert(exception.message); return;}
 			var uninstalledMD=result;
-			if(uninstalledMD==null) {
+			if(uninstalledMD===null) {
 				MainPage.library=null;
 			} else {
 				MainPage.library=[];
 				for(var i=0;i<uninstalledMD.length;i++) {
 					var md=uninstalledMD[i];
-					if(md.type=="LIB_ITEM" && md.viewPositio>=0) {
+					if(md.type=="LIB_ITEM" && md.viewPosition>=0) {
 						MainPage.library.push(md);
 					}
 				}
@@ -118,11 +119,11 @@ MainPage = {
 	},
 	
 	loadMyApps: function() {
-		if(MainPage.myApps!=null) {
+		if(MainPage.myApps!==null) {
 			for(var i=0;i<MainPage.myApps.length;i++) {
 				var cmp=Ext.getCmp('myAppButton_'+this.myApps[i].name);
-				if(cmp!=null) {
-					cmp.destroy()
+				if(cmp!==null) {
+					cmp.destroy();
 					cmp=null;
 				}
 			}
@@ -190,15 +191,16 @@ MainPage = {
 		rpc.policyTids=rpc.nodeManager.nodeInstancesVisible(rpc.currentPolicy).list;
 		rpc.commonTids=rpc.nodeManager.nodeInstancesVisible(null).list;
 		rpc.tids=[];
-		for(var i=0;i<rpc.policyTids.length;i++) {
+		var i=null;
+		for(i=0;i<rpc.policyTids.length;i++) {
 			rpc.tids.push(rpc.policyTids[i]);
 		}
-		for(var i=0;i<rpc.commonTids.length;i++) {
+		for(i=0;i<rpc.commonTids.length;i++) {
 			rpc.tids.push(rpc.commonTids[i]);
 		}
 		MainPage.nodes=[];
-		for(var i=0;i<rpc.tids.length;i++) {
-			var node=this.createNode(rpc.tids[i])
+		for(i=0;i<rpc.tids.length;i++) {
+			var node=this.createNode(rpc.tids[i]);
 			MainPage.nodes.push(node);
 		}
 		MainPage.buildNodes();
@@ -220,7 +222,7 @@ MainPage = {
 	},
 	
 	clickMyApps: function(item) {
-		if(item!=null) {
+		if(item!==null) {
 			Ext.getCmp('myAppButton_'+item.name).disable();
 			var policy=null;
 			if (!item.service && !item.util && !item.core) {
@@ -230,7 +232,7 @@ MainPage = {
 				if(exception) { alert(exception.message); return;}
 				var tid = result;
 				rpc.tids.push(tid);
-				var node=MainPage.createNode(tid)
+				var node=MainPage.createNode(tid);
 				MainPage.nodes.push(node);
 				MainPage.addNode(node);
 				MainPage.updateSeparator();
@@ -239,7 +241,7 @@ MainPage = {
 	},
 
 	clickLibrary: function(item) {
-		if(item!=null) {
+		if(item!==null) {
 			Ext.getCmp('libraryButton_'+item.name).disable();
 			rpc.nodeManager.install(function (result, exception) {
 				if(exception) { alert(exception.message); return;}
@@ -251,13 +253,13 @@ MainPage = {
 	},
 	
 	clickConfig: function(item) {
-		if(item!=null && item.action!=null) {
+		if(item!==null && item.action!==null) {
 			alert("TODO: implement config "+item.name);
 			/*
 			var action=item.action;
-			if(item.action.url!=null) {
+			if(item.action.url!==null) {
 				window.open(item.action.url);
-			} else if(item.action.method!=null) {
+			} else if(item.action.method!==null) {
 				eval(item.action.method);
 			}
 			*/
@@ -265,22 +267,22 @@ MainPage = {
 	},
 	
 	todo: function() {
-		alert("TODO: implement this.")
+		alert("TODO: implement this.");
 	},
 	
 	buildLibrary: function() {
   		var out=[];
-  		if(this.library!=null) {
+  		if(this.library!==null) {
 	  		for(var i=0;i<this.library.length;i++) {
 	  			var item=this.library[i];
-	  			new Ext.untangle.Button({
+	  			var buttonCmp=new Ext.untangle.Button({
 	  				'id':'libraryButton_'+item.name,
 					'libraryIndex':i,
 					'height':'50px',
 					'renderTo':'toolsLibrary',
 					'cls':'toolboxButton',
 			        'text': item.displayName,
-			        'handler': function() {MainPage.clickLibrary(MainPage.library[this.libraryIndex])},
+			        'handler': function() {MainPage.clickLibrary(MainPage.library[this.libraryIndex]);},
 			        'imageSrc': item.image
 		        });
 	  		}
@@ -291,14 +293,14 @@ MainPage = {
   		var out=[];
   		for(var i=0;i<this.myApps.length;i++) {
   			var item=this.myApps[i];
-  			new Ext.untangle.Button({
+  			var buttonCmp=new Ext.untangle.Button({
   				'id':'myAppButton_'+item.name,
 				'myAppIndex':i,
 				'height':'50px',
 				'renderTo':'toolsMyApps',
 				'cls':'toolboxButton',
 		        'text': item.displayName,
-		        'handler': function() {MainPage.clickMyApps(MainPage.myApps[this.myAppIndex])},
+		        'handler': function() {MainPage.clickMyApps(MainPage.myApps[this.myAppIndex]);},
 		        'imageSrc': 'image?name='+ item.name,
 		        'disabled':true
 	        });
@@ -309,20 +311,20 @@ MainPage = {
   		var out=[];
   		for(var i=0;i<this.config.length;i++) {
   			var item=this.config[i];
-  			new Ext.untangle.Button({
+  			var buttonCmp=new Ext.untangle.Button({
 				'configIndex':i,
 				'height':'42px',
 				'renderTo':'toolsConfig',
 				'cls':'toolboxButton',
 		        'text': item.displayName,
-		        'handler': function() {MainPage.clickConfig(MainPage.config[this.configIndex])},
+		        'handler': function() {MainPage.clickConfig(MainPage.config[this.configIndex]);},
 		        'imageSrc': item.image
 	        });
   		}
 	},
 	
 	destoyNodes: function () {
-		if(this.nodes!=null) {
+		if(this.nodes!==null) {
 			for(var i=0;i<this.nodes.length;i++) {
 				var node=this.nodes[i];
 				var cmp=Ext.getCmp(this.nodes[i].id);
@@ -365,7 +367,7 @@ MainPage = {
 		var position=this.getNodePosition(place,node.viewPosition);
 		nodeWidget.render(place,position);
 		var cmp=Ext.getCmp('myAppButton_'+node.name);
-		if(cmp!=null) {
+		if(cmp!==null) {
 			Ext.getCmp('myAppButton_'+node.name).disable();
 		}
 	},
@@ -385,12 +387,12 @@ MainPage = {
 	},
 	
 	updateMyAppsButtons: function() {
-		if(this.myApps!=null && this.nodes!=null) {
-			for(var i=0;i<this.myApps.length;i++) {
+		if(this.myApps!==null && this.nodes!==null) {
+			var i=null;
+			for(i=0;i<this.myApps.length;i++) {
 				Ext.getCmp('myAppButton_'+this.myApps[i].name).enable();
 			}
-			
-			for(var i=0;i<this.nodes.length;i++) {
+			for(i=0;i<this.nodes.length;i++) {
 				Ext.getCmp('myAppButton_'+this.nodes[i].name).disable();
 			}
 		}
@@ -400,23 +402,20 @@ MainPage = {
 		var out=[];
 		out.push('<select id="rack_select" onchange="MainPage.changePolicy()">');
 		for(var i=0;i<rpc.policies.length;i++) {
-			//rpc.policies[i].isDefault=rpc.policies[i]["default"];
-			//delete rpc.policies[i]["default"];
-			var selVirtualRack=true;rpc.policies[i]["default"]==true?"selected":"";
+			var selVirtualRack=rpc.policies[i]["default"]===true?"selected":"";
 			
-			if(rpc.policies[i]["default"]==true) {
+			if(rpc.policies[i]["default"]===true) {
 				rpc.currentPolicy=rpc.policies[i];
 			}
-			out.push('<option value="'+rpc.policies[i].id+'" '+selVirtualRack+'>'+rpc.policies[i].name+'</option>');
+			out.push('<option value="'+rpc.policies[i].id+'" '+selVirtualRack+'>'+rpc.policies[i].name+'<\/option>');
 		}
-		//out.push('<option value="">Show Policy Manager</option>');
-		out.push('</select>');
-		out.push('<div id="rack_policy_button" style="position:absolute;top:15px;left:500px;"></div>');
+		out.push('<\/select>');
+		out.push('<div id="rack_policy_button" style="position:absolute;top:15px;left:500px;"><\/div>');
 		document.getElementById('rack_list').innerHTML=out.join('');
-		new Ext.Button({
+		var buttonCmp = new Ext.Button({
 			'renderTo':'rack_policy_button',
 	        'text': 'Show Policy Manager',
-	        'handler': function() {alert("TODO:Show Policy Manager")}
+	        'handler': function() {alert("TODO:Show Policy Manager");}
         });
 		this.loadNodes();
 	},
@@ -429,7 +428,7 @@ MainPage = {
 			this.loadNodes();
 		}
 	}
-}	
+};	
 
 Ext.onReady(MainPage.init);
 </script>
