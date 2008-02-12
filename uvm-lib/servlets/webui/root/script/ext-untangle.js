@@ -84,7 +84,6 @@ Ext.untangle.Node = Ext.extend(Ext.Component, {
         state: "", // On, Off, Attention, Stopped
         powerOn: false,
         runState: '', // RUNNING, INITIALIZED
-        helpLink: "",
         webContext: "",
         viewPosition: "",
         settings: null,
@@ -160,8 +159,9 @@ Ext.untangle.Node = Ext.extend(Ext.Component, {
         },
 
         onHelpClick: function () {
-        	if(this.helpLink!==null && this.helpLink.length>0) {
-        		window.open(this.helpLink);
+        	var helpLink=MainPage.getHelpLink(this.displayName);
+        	if(helpLink!==null && helpLink.length>0) {
+        		window.open(helpLink);
         	}
         },
         

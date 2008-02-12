@@ -27,6 +27,7 @@ rpc.jsonrpc = new JSONRpcClient("/webui/JSON-RPC");
 rpc.nodeManager = rpc.jsonrpc.RemoteUvmContext.nodeManager();
 rpc.policyManager=rpc.jsonrpc.RemoteUvmContext.policyManager();
 rpc.toolboxManager=rpc.jsonrpc.RemoteUvmContext.toolboxManager();
+rpc.version=rpc.jsonrpc.RemoteUvmContext.version();
 
 MainPage = {
 	tabs: null,
@@ -73,8 +74,8 @@ MainPage = {
 			'renderTo': 'help',
 	        'text': 'Help',
 	        'handler': function() {	  
-	        		var rackBaseHelpLink = '<uvm:help source="rack"/>';
-	        		window.open(rackBaseHelpLink);
+				var rackBaseHelpLink = MainPage.getHelpLink("rack");
+				window.open(rackBaseHelpLink);
 				},
 	        'imageSrc': 'images/IconHelp36x36.png'
 		});
@@ -92,7 +93,18 @@ MainPage = {
 			'nocache':false
 		});
 	},
-	
+	getHelpLink: function(source,focus) {
+		var baseLink="http://www.untangle.com/docs/get.php?";
+		if(source) {
+			source=source.toLowerCase().replace(" ","_");
+		}
+		var helpLink=baseLink+"version="+rpc.version+"&source="+source;
+		if(focus) {
+			focus=focus.toLowerCase().replace(" ","_");
+			helpLink+="&focus="+focus;
+		}
+		return helpLink;
+	},
 	loadTools: function() {
 		this.loadLibarary();
 		this.loadMyApps();
@@ -181,7 +193,6 @@ MainPage = {
 		node.runState=node.nodeContext.node.runState;
 
 		node.image='image?name='+node.name;
-		node.helpLink='';
 		node.blingers=eval([{'type':'ActivityBlinger','bars':['ACT 1','ACT 2','ACT 3','ACT 4']},{'type':'SystemBlinger'}]);
 		return node;
 	},
