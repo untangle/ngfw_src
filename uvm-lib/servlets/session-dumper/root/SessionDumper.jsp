@@ -45,39 +45,39 @@
       <TR>
       <TD>Start
 <%
-      buf = new StringBuffer(); atdf.format(tstats.startDate(), buf, null);
+      buf = new StringBuffer(); atdf.format(tstats.getStartDate(), buf, null);
 %>
       <TD><%= buf.toString() %>
       <TR>
       <TD>Last Configure
 <%
-      buf = new StringBuffer(); atdf.format(tstats.lastConfigureDate(), buf, null);
+      buf = new StringBuffer(); atdf.format(tstats.getLastConfigureDate(), buf, null);
 %>
       <TD><%= buf.toString() %>
       <TR>
       <TD>Last Activity
 <%
-      buf = new StringBuffer(); atdf.format(tstats.lastActivityDate(), buf, null);
+      buf = new StringBuffer(); atdf.format(tstats.getLastActivityDate(), buf, null);
 %>
       <TD><%= buf.toString() %>
       <TR>
       <TD>Live TCP Sessions
-      <TD><%= tstats.tcpSessionCount() %>
+      <TD><%= tstats.getTcpSessionCount() %>
       <TR>
       <TD>Live UDP Sessions
-      <TD><%= tstats.udpSessionCount() %>
+      <TD><%= tstats.getUdpSessionCount() %>
       <TR>
       <TD>Total TCP Sessions
-      <TD><%= tstats.tcpSessionTotal() %>
+      <TD><%= tstats.getTcpSessionTotal() %>
       <TR>
       <TD>Total UDP Sessions
-      <TD><%= tstats.udpSessionTotal() %>
+      <TD><%= tstats.getUdpSessionTotal() %>
       <TR>
       <TD>Total TCP Session Requests
-      <TD><%= tstats.tcpSessionRequestTotal() %>
+      <TD><%= tstats.getTcpSessionRequestTotal() %>
       <TR>
       <TD>Total UDP Session Requests
-      <TD><%= tstats.udpSessionRequestTotal() %>
+      <TD><%= tstats.getUdpSessionRequestTotal() %>
       <TR>
       </TABLE>
       <BR>
