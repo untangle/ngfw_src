@@ -198,7 +198,7 @@ Ext.untangle.Node = Ext.extend(Ext.Component, {
         loadSettings: function(force) {
         	this.settingsClassName=Ext.untangle.Settings.getClassName(this.name);
         	if(!this.settingsClassName) {
-	        	Ext.untangle.Settings.loadNodeScript(this.webContext, this.getId(), function(cmpId) {
+	        	Ext.untangle.Settings.loadNodeScript(this.name, this.getId(), function(cmpId) {
 	        		var cmp=Ext.getCmp(cmpId);
 	        		cmp.settingsClassName=Ext.untangle.Settings.getClassName(cmp.name);
 	        		cmp.initSettings(force);
@@ -674,10 +674,9 @@ Ext.untangle.Settings = Ext.extend(Ext.Component, {
 });
 Ext.untangle.Settings._nodeScripts={};
 Ext.untangle._hasResource={}
-Ext.untangle.Settings.loadNodeScript=function(webContext,cmpId,callbackFn) {
+Ext.untangle.Settings.loadNodeScript=function(nodeName,cmpId,callbackFn) {
 	//MainPage.loadScript('nodes/'+name+'.js',scope,callbackFn);
-	// TODO get dynamic script for node
-	MainPage.loadScript('script/protofilter.js',function() {callbackFn(cmpId)})
+	MainPage.loadScript('script/'+nodeName+'/settings.js',function() {callbackFn(cmpId)})
 	//jQuery.getScript('nodes/'+name+'.js?_dc='+(new Date()).getTime(),function() {callbackFn(cmpId)});
 }
 Ext.untangle.Settings._classNames={};
