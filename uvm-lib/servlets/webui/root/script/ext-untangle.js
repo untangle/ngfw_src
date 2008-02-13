@@ -122,6 +122,10 @@ Ext.untangle.Node = Ext.extend(Ext.Component, {
         	}
         },
         onPowerClick: function() {
+	    	if(this.nodeContext===undefined) {
+				this.nodeContext=this.nodeContext();
+				this.nodeContext.node=this.nodeContext.node();
+			}
         	this.setPowerOn(!this.powerOn);
         	this.setState("Attention");
         	if(this.powerOn) {
