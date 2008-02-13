@@ -267,6 +267,17 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
         return result;
     }
 
+    public Map<Tid, NodeState> allNodeStates()
+    {
+        HashMap<Tid, NodeState> result = new HashMap<Tid, NodeState>();
+        for (Iterator<Tid> iter = tids.keySet().iterator(); iter.hasNext();) {
+            Tid tid = iter.next();
+            NodeContextImpl tci = tids.get(tid);
+            result.put(tid, tci.getRunState());
+        }
+        return result;
+    }
+    
     // Manager lifetime -------------------------------------------------------
 
     void init()

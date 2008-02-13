@@ -157,4 +157,11 @@ public interface RemoteNodeManager
      * nodes in RUNNING state.
      */
     Map<Tid, NodeStats> allNodeStats();
+    
+    /**
+     * Get the runtime state for all nodes in one call.
+     *
+     * @return a <code>Map</code> from Tid to NodeState for all nodes
+     */
+    Map<Tid, NodeState> allNodeStates();
 }
