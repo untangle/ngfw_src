@@ -7,7 +7,7 @@
         @import "ext-2.0.1/resources/css/ext-all.css";
         @import "untangle.css";
     </style>
-<!--     
+<!--
 	<script type="text/javascript" src="ext-2.0.1/source/core/Ext.js"></script>
 	<script type="text/javascript" src="ext-2.0.1/source/adapter/ext-base.js"></script>
 	<script type="text/javascript" src="ext-2.0.1/ext-all-debug.js"></script>
@@ -80,7 +80,7 @@ MainPage = {
 	        'imageSrc': 'images/IconHelp36x36.png'
 		});
 		MainPage.loadTools();
-		MainPage.loadVirtualRacks();
+		MainPage.loadPolicies();
 	},
 	
 	loadScript: function(url,callbackFn) {
@@ -164,7 +164,7 @@ MainPage = {
 		});
 	},
 	
-	loadVirtualRacks: function() {
+	loadPolicies: function() {
 		rpc.policyManager.getPolicies( function (result, exception) {
 			if(exception) { alert(exception.message); return; }
 			rpc.policies=result;

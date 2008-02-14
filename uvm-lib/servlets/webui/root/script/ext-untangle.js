@@ -236,7 +236,7 @@ Ext.untangle.Node = Ext.extend(Ext.Component, {
 					MainPage.removeNodeCmpId=null;
 					throw err;
 				}
-			}, this.nodeContext.tid);
+			}, this.Tid);
         },
         
         onSaveClick: function() {
