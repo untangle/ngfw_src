@@ -9,7 +9,7 @@ MAX_TRIES=3
 ############
 # functions
 gotJob() {
-  if ps -p $1 ; then # job still running
+  if ps -p $1 > /dev/null ; then # job still running
     return 0 
   else # not running anymore
     wait $1 # wait on it first anyway
@@ -17,9 +17,13 @@ gotJob() {
   fi
 }
 
-testBanner() { echo $BANNER_MSG | nc localhost $1 }
+testBanner() { 
+  echo $BANNER_MSG | nc localhost $1
+}
 
-log() { echo "*** `date -Iseconds` $1" >> $LOGFILE }
+log() {
+  echo "*** `date -Iseconds` $1" >> $LOGFILE
+}
 
 ##########
 # main
@@ -57,4 +61,3 @@ while [ $failures -lt $MAX_TRIES ] ; do
 done
 
 exit 1 # we failed $MAX_TRIES in a row, exit with RC=1
-
