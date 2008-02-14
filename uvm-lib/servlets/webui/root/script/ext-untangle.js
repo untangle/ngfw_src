@@ -660,3 +660,26 @@ Ext.untangle.Settings.registerClassName=function(name,className) {
 };
 
 Ext.ComponentMgr.registerType('untangleSettings', Ext.untangle.Settings);
+
+var testCallBack = function(divid, result, exception) {
+    console.log('Called with id: '+divid+' result: '+result+' exception: '+exception);
+    //alert('Called with id: '+id+' result: '+result+' exception: '+exception);
+}
+    
+var callBackWithObject = function() { //id, function, args_to_function...
+    console.log('got here');
+    var functionToCall = arguments[0];
+    console.log('functioToCall '+functionToCall);
+    var divid = arguments[2];
+    console.log('divid '+divid);
+    var callBackFunction = arguments[1];
+    console.log('callBackFunction '+callBackFunction);
+    var args = 'bob'
+    //var args = arguments.slice(3, arguments.length);
+    //console.log('json: '+functionToCall+' callBackFunction: '+callBackFunction+' divid: '+divid+' args: '+args);
+    var callBackFunctionPlusArg = function(result, exception) {
+	callBackFunction(divid, result, exception);
+    }
+    functionToCall(callBackFunctionPlusArg);
+}
+//Call like: callBackWithObject(rpc.jsonrpc.RemoteUvmContext.version, testCallBack, 'cool');
