@@ -45,11 +45,23 @@ module Rake
       false
     end
 
-    def execute
-      super
-      ## After the task has executed, set the stamp hash,
-      ## If execute fails, then the timestamp will not be set
-      Rake::StampHash.instance.set(name)
+    # Yo rake peeps: changing method signatures between
+    # version 0.7 and 0.8 ain't kewl.
+    rake_package_version = `dpkg -l rake | tail -1 | awk '{print $3}'`
+    if rake_package_version.to_f >= 0.8
+      def execute(task_args)
+        super(task_args)
+        ## After the task has executed, set the stamp hash,
+        ## If execute fails, then the timestamp will not be set
+        Rake::StampHash.instance.set(name)
+      end
+    else
+      def execute
+        super
+        ## After the task has executed, set the stamp hash,
+        ## If execute fails, then the timestamp will not be set
+        Rake::StampHash.instance.set(name)
+      end
     end
 
     private
