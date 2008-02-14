@@ -7,19 +7,19 @@
         @import "ext-2.0.1/resources/css/ext-all.css";
         @import "untangle.css";
     </style>
+<!--     
 	<script type="text/javascript" src="ext-2.0.1/source/core/Ext.js"></script>
 	<script type="text/javascript" src="ext-2.0.1/source/adapter/ext-base.js"></script>
 	<script type="text/javascript" src="ext-2.0.1/ext-all-debug.js"></script>
-<!--
+	<script type="text/javascript" src="jsonrpc/jsonrpc.js"></script>
+    <script type="text/javascript"  src="firebug/firebug.js"></script>
+    <script type="text/javascript" src="script/untangle-node-protofilter/settings.js"></script>
+-->	
 	<script type="text/javascript" src="ext-2.0.1/adapter/ext/ext-base.js"></script>
 	<script type="text/javascript" src="ext-2.0.1/ext-all.js"></script>
--->
-	<script type="text/javascript" src="jsonrpc/jsonrpc.js"></script>
+	<script type="text/javascript" src="jsonrpc/jsonrpc-min.js"></script>
 
     <script type="text/javascript" src="script/ext-untangle.js"></script>
-    <script type="text/javascript" src="script/untangle-node-protofilter/settings.js"></script>
-    <script type="text/javascript"  src="firebug/firebug.js"></script>
-    
 <script type="text/javascript">
 rpc = {};
 //TODO: do all rpc requests asyncronous
@@ -171,28 +171,36 @@ MainPage = {
 			MainPage.buildPolicies();
 		});
 	},
+	getNodeMackageDesc: function(Tid) {
+		var i;
+		if(MainPage.myApps!==null) {
+			for(i=0;i<MainPage.myApps.length;i++) {
+				if(MainPage.myApps[i].name==Tid.nodeName) {
+					return MainPage.myApps[i];
+				}
+			}
+		}
+		return null;
+		
+	},
 	createNode: function (Tid) {
 		var node={};
-		node.nodeContext=rpc.nodeManager.nodeContext(Tid);
-		node.nodeContext.tid=Tid;
-		node.nodeContext.node=node.nodeContext.node();
-		node.nodeContext.node.runState=node.nodeContext.node.getRunState();
-		node.nodeContext.nodeDesc=node.nodeContext.getNodeDesc();
-		node.nodeContext.mackageDesc=node.nodeContext.getMackageDesc();
-		
-		//shortcut properties
-		node.id=node.tid=node.nodeContext.tid.id;
-		node.name=node.nodeContext.nodeDesc.name;
-		node.displayName=node.nodeContext.nodeDesc.displayName;
-		node.viewPosition=node.nodeContext.mackageDesc.viewPosition;
-		node.rackType=node.nodeContext.mackageDesc.rackType;
-		node.isService=node.nodeContext.mackageDesc.service;
-		node.isUtil=node.nodeContext.mackageDesc.util;
-		node.isSecurity=node.nodeContext.mackageDesc.security;
-		node.isCore=node.nodeContext.mackageDesc.core;
-		node.runState=node.nodeContext.node.runState;
-
-		node.image='image?name='+node.name;
+		node.id=node.tid=Tid.id;
+		node.Tid=Tid;
+		var md=this.getNodeMackageDesc(Tid);
+		if(md!==null) {
+			node.md=md;
+			
+			node.name=md.name;
+			node.displayName=md.displayName;
+			node.viewPosition=md.viewPosition;
+			node.rackType=md.rackType;
+			node.isService=md.service;
+			node.isUtil=md.util;
+			node.isSecurity=md.security;
+			node.isCore=md.core;
+			node.image='image?name='+node.name;
+		}
 		node.blingers=eval([{'type':'ActivityBlinger','bars':['ACT 1','ACT 2','ACT 3','ACT 4']},{'type':'SystemBlinger'}]);
 		return node;
 	},
@@ -214,10 +222,30 @@ MainPage = {
 			var node=this.createNode(rpc.tids[i]);
 			MainPage.nodes.push(node);
 		}
-		MainPage.buildNodes();
-		Ext.untangle.BlingerManager.start();
+		for(var i=0;i<MainPage.nodes.length;i++) {
+			var node=MainPage.nodes[i];
+			this.addNode(node);
+		}
+		this.updateSeparator();
+		this.updateMyAppsButtons();
+		this.loadNodesRunStates();
+		
 	},
-	
+	loadNodesRunStates: function() {
+		rpc.nodeManager.allNodeStates(function (result, exception) {
+			if(exception) { alert(exception.message);
+				return;
+			}
+			var allNodeStates=result;
+			for(var i=0;i<MainPage.nodes.length;i++) {
+				var nodeCmp=Ext.untangle.Node.getCmp(MainPage.nodes[i].tid);
+				if(nodeCmp) {
+					nodeCmp.updateRunState(allNodeStates.map[MainPage.nodes[i].tid]);
+				}
+			}
+			Ext.untangle.BlingerManager.start();
+		});
+	},
 	buildTabs: function () {
 		this.tabs = new Ext.TabPanel({
 		    renderTo: 'tabs',
@@ -345,16 +373,6 @@ MainPage = {
 				}
 			}
 		}
-	},
-	
-	buildNodes: function () {
-		var hasServices=false;
-		for(var i=0;i<this.nodes.length;i++) {
-			var node=this.nodes[i];
-			this.addNode(node);
-		}
-		this.updateSeparator();
-		this.updateMyAppsButtons();
 	},
 	
 	getNodePosition: function(place, viewPosition) {

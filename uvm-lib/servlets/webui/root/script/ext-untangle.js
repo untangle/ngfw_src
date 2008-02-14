@@ -83,13 +83,15 @@ Ext.untangle.Node = Ext.extend(Ext.Component, {
         image: "",
         state: "", // On, Off, Attention, Stopped
         powerOn: false,
-        runState: '', // RUNNING, INITIALIZED
+        runState: "INITIALIZED", // RUNNING, INITIALIZED
         webContext: "",
         viewPosition: "",
         settings: null,
         settingsClassName: null,
         stats: null, //last blinger data received
-        
+        isRunning: function() {
+        	return (this.runState=="RUNNING")
+        },
         setState: function(state) {
         	this.state=state;
         	var iconSrc="images/node/Icon"+this.state+"State28x28.png";
@@ -102,7 +104,12 @@ Ext.untangle.Node = Ext.extend(Ext.Component, {
         	document.getElementById('nodePowerIconImg_'+this.getId()).src=iconSrc;
         	document.getElementById('nodePowerOnHint_'+this.getId()).style.display=this.powerOn?"none":"";
         },
-        
+        updateRunState: function(runState) {
+        	this.runState=runState;
+        	var isRunning=this.isRunning();
+        	this.setPowerOn(isRunning);
+			this.setState(isRunning?"On":"Off");
+        },
         updateBlingers: function () {
         	if(this.blingers!==null) {
         		if(this.powerOn && this.stats) {
@@ -123,43 +130,21 @@ Ext.untangle.Node = Ext.extend(Ext.Component, {
         },
         onPowerClick: function() {
 	    	if(this.nodeContext===undefined) {
-				this.nodeContext=this.nodeContext();
+				this.nodeContext=rpc.nodeManager.nodeContext(this.Tid);
 				this.nodeContext.node=this.nodeContext.node();
 			}
         	this.setPowerOn(!this.powerOn);
         	this.setState("Attention");
         	if(this.powerOn) {
 				this.nodeContext.node.start();
+				this.runState="RUNNING";
 				this.setState("On");
         	} else {
 				this.nodeContext.node.stop();
+				this.runState="INITIALIZED";
 				this.setState("Off");
 				this.resetBlingers();
         	}
-        	/*
-			Ext.Ajax.request({
-		        url: MainPage.rackUrl,
-		        params:{'action':this.powerOn?"startNode":"stopNode",'nodeName':this.name,'nodeId':this.tid},
-				method: 'POST',
-				'parentId':this.getId(),
-				success: function ( result, request) {
-					var cmp=Ext.getCmp(request.parentId);
-					var jsonResult=Ext.util.JSON.decode(result.responseText);
-					if(jsonResult.success!==true) {
-						cmp.setState("Attention");
-						Ext.MessageBox.alert('Failed', jsonResult.msg);
-					} else {
-						cmp.setState(cmp.powerOn?"On":"Off");
-					}
-					if(!cmp.powerOn) {
-						cmp.resetBlingers();
-					}
-				},
-				failure: function ( result, request) { 
-					Ext.MessageBox.alert('Failed', 'Successfully posted form: '+result.date); 
-				} 
-			});
-			*/	
         },
 
         onHelpClick: function () {
@@ -232,7 +217,7 @@ Ext.untangle.Node = Ext.extend(Ext.Component, {
 					var cmp=Ext.getCmp(MainPage.removeNodeCmpId);
 					if(cmp) {
 						var nodeName=cmp.name;
-						cmp.destroy();
+						Ext.destroy(cmp);
 						cmp=null;
 						var myAppButtonCmp=Ext.getCmp('myAppButton_'+nodeName);
 						if(myAppButtonCmp!==null) {
@@ -395,8 +380,7 @@ Ext.untangle.Node = Ext.extend(Ext.Component, {
 		        'text': 'Save',
 		        'handler': function() {Ext.getCmp(this.parentId).onSaveClick();}
 	        });
-	        this.setPowerOn(this.runState=="RUNNING");
-	        this.setState((this.runState=="RUNNING")?"On":"Off");
+	        this.updateRunState(this.runState);
         	this.initBlingers();
         }
 });
@@ -432,6 +416,7 @@ Ext.untangle.Node.templateSettingsButtons=new Ext.Template(
 
 Ext.ComponentMgr.registerType('untangleNode', Ext.untangle.Node);
 
+
 Ext.untangle.BlingerManager = {
 	updateTime: 5000, //update interval in millisecond
 	started: false,
@@ -441,6 +426,7 @@ Ext.untangle.BlingerManager = {
 	start: function() {
 		this.stop();
 		this.intervalId=window.setInterval("Ext.untangle.BlingerManager.getNodesStats()",this.updateTime);
+		this.started=true;
 	},
 	
 	stop: function() {
@@ -448,11 +434,13 @@ Ext.untangle.BlingerManager = {
 			window.clearInterval(this.intervalId);
 		}
 		this.cycleCompleted=true;
+		this.started=false;
 	},
 	
 	hasActiveNodes: function() {
 		for(var i=0;i<MainPage.nodes.length;i++) {
-			if(MainPage.nodes[i].runState=="RUNNING") {
+			var nodeCmp=Ext.untangle.Node.getCmp(MainPage.nodes[i].tid);
+			if(nodeCmp && nodeCmp.isRunning()) {
 				return true;
 			}
 		}
@@ -472,12 +460,10 @@ Ext.untangle.BlingerManager = {
 				try {
 					var allNodeStats=result;
 					for(var i=0;i<MainPage.nodes.length;i++) {
-						if(MainPage.nodes[i].runState=="RUNNING") {
-							var nodeCmp=Ext.untangle.Node.getCmp(MainPage.nodes[i].tid);
-							if(nodeCmp) {
-								nodeCmp.stats=allNodeStats.map[MainPage.nodes[i].tid];
-								nodeCmp.updateBlingers();
-							}
+						var nodeCmp=Ext.untangle.Node.getCmp(MainPage.nodes[i].tid);
+						if(nodeCmp && nodeCmp.isRunning()) {
+							nodeCmp.stats=allNodeStats.map[MainPage.nodes[i].tid];
+							nodeCmp.updateBlingers();
 						}
 					}
 					Ext.untangle.BlingerManager.cycleCompleted=true;
@@ -485,7 +471,6 @@ Ext.untangle.BlingerManager = {
 					Ext.untangle.BlingerManager.cycleCompleted=true;
 					throw err;
 				  }
-				
 			});
 		}	
 	}
