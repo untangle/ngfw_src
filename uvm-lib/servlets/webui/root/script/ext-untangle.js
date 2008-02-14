@@ -401,8 +401,8 @@ Ext.untangle.Node.powerTip='The <B>Power Button</B> allows you to turn a product
 Ext.untangle.Node.template = new Ext.Template(
 '<div class="nodeImage"><img src="{image}"/></div>',
 '<div class="nodeLabel">{displayName}</div><div class="nodeBlingers" id="nodeBlingers_{id}"></div>',
-'<div class="nodeStateIcon"><img id="nodeStateIconImg_{id}" src=""></div>',
-'<div class="nodePowerIcon"><img id="nodePowerIconImg_{id}" src=""></div>',
+'<div class="nodeStateIcon"><img id="nodeStateIconImg_{id}" src="images/node/IconOffState28x28.png"></div>',
+'<div class="nodePowerIcon"><img id="nodePowerIconImg_{id}" src="images/node/IconPowerOffState28x28.png"></div>',
 '<div id="nodePowerOnHint_{id}" class="nodePowerOnHint"><img src="images/node/IconPowerOnHint100.png"></div>',
 '<div class="nodeSettingsButton" id="nodeSettingsButton_{id}"></div>',
 '<div class="nodeHelpButton" id="nodeHelpButton_{id}"></div>');
