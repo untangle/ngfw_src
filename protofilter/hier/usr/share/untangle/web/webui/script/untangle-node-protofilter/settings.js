@@ -113,7 +113,7 @@ Ext.untangle.ProtocolControlSettings = Ext.extend(Ext.untangle.Settings, {
     	this.rpc.repository={};
     	Ext.untangle.ProtocolControlSettings.instanceId=this.getId();
     	if(this.node.nodeContext===undefined) {
-			this.node.nodeContext=this.node.nodeContext();
+    		this.node.nodeContext=rpc.nodeManager.nodeContext(this.node.Tid);
 			this.node.nodeContext.node=this.node.nodeContext.node();
 		}
     	if(this.node.nodeContext.node.eventManager===undefined) {
