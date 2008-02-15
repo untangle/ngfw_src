@@ -24,8 +24,10 @@ import org.xnap.commons.i18n.I18nFactory;
  */
 public class I18NServlet extends HttpServlet {
 	
-	/** image content type */
+	/** json content type */
 	private static final String JSON_CONTENT_TYPE = "application/json";
+	/** character encoding */
+	private static final String CHARACTER_ENCODING = "utf-8";
 
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
@@ -39,6 +41,7 @@ public class I18NServlet extends HttpServlet {
         
         // Write content type and also length (determined via byte array).
         resp.setContentType(JSON_CONTENT_TYPE);
+        resp.setCharacterEncoding(CHARACTER_ENCODING);
         
 		try {
 	        JSONObject json = createJSON( map );
