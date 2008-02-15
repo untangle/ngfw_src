@@ -61,8 +61,10 @@ import com.untangle.uvm.toolbox.MackageUninstallException;
 import com.untangle.uvm.toolbox.MackageUpdateExtraName;
 import com.untangle.uvm.toolbox.ProgressVisitor;
 import com.untangle.uvm.toolbox.RemoteToolboxManager;
+import com.untangle.uvm.toolbox.RemoteUpstreamManager;
 import com.untangle.uvm.toolbox.ToolboxMessage;
 import com.untangle.uvm.toolbox.UpgradeSettings;
+import com.untangle.uvm.toolbox.UpstreamService;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.NodeBase;
 import org.apache.log4j.Logger;
@@ -516,6 +518,10 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
                         Random rand = new Random();
                         Period period = new Period(23, 30, true);
                         us = new UpgradeSettings(period);
+                        UpstreamService upgradeSvc =
+                            LocalUvmContextFactory.context().upstreamManager().getService(RemoteUpstreamManager.AUTO_UPGRADE_SERVICE_NAME);
+                        if (upgradeSvc != null)
+                            us.setAutoUpgrade(upgradeSvc.enabled());
                         s.save(us);
                     }
                     return true;
