@@ -40,11 +40,6 @@ MainPage = {
 	viewport: null,
 	removeNodeCmpId: null,
 	init: function() {
-			//va map=rpc.toolboxManager=rpc.jsonrpc.RemoteUvmContext.toolboxManager().map;
-			//TODO :i18n add map
-			//for(var prop in map) {
-			//	i18n[prop]=map[prop];
-			//}
 			Ext.Ajax.request({
 		        url: "i18n",
 		        //params:{'action':this.powerOn?"startNode":"stopNode",'nodeName':this.name,'nodeId':this.tid},
@@ -60,6 +55,8 @@ MainPage = {
 			});
 	},
 	postinit: function() {
+		//TODO remove this...
+		document.getElementById("test1").innerHTML = i18n.sprintf(i18n._('%s and %s'), "cucu", "bau");
 		MainPage.buildTabs();
 		MainPage.viewport = new Ext.Viewport({
             layout:'border',
@@ -492,6 +489,7 @@ Ext.onReady(MainPage.init);
 		</div>
 			<div id="tabLibrary" class="x-hide-display">
 			    <div style="margin-left:15px;font-size: 11px;text-align:left;">Click to Learn More</div>
+			    <div id="test1">aaa</div>
 			    <div id="toolsLibrary"></div>
 			</div>
 			<div id="tabMyApps" class="x-hide-display">

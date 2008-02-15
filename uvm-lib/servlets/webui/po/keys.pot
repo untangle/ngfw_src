@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-02-15 13:27+0200\n"
+"POT-Creation-Date: 2008-02-15 17:43+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,10 +16,15 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../root/WEB-INF/jsp/startPage.jsp:96
+#: ../root/WEB-INF/jsp/startPage.jsp:96 ../root/WEB-INF/jsp/startPage.jsp:92
 msgid "Help"
 msgstr ""
 
 #: ../root/script/ext-untangle.js:352
 msgid "Show Settings"
+msgstr ""
+
+#: ../root/WEB-INF/jsp/startPage.jsp:58
+#, python-format
+msgid "%s and %s"
 msgstr ""
