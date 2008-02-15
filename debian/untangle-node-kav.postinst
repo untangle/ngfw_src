@@ -1,6 +1,9 @@
 #! /bin/bash
 # This file automatically created - do not modify
 
+## Expand the license files
+sh /usr/share/untangle/bin/ukav-dev || true
+
 /usr/bin/mcli -t 30 register untangle-node-kav 2>/dev/null || true
 
 # touch so the java client will know there is a newer version and throw out cache
