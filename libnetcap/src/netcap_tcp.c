@@ -217,7 +217,7 @@ int  netcap_tcp_syn_hook ( netcap_pkt_t* syn )
                    unet_next_inet_ntoa ( syn->src.host.s_addr ), syn->src.port,
                    unet_next_inet_ntoa ( syn->dst.host.s_addr ), syn->dst.port );
         }
-        return netcap_pkt_action_raze( syn, NF_DROP );
+        return netcap_pkt_action_raze( syn, NF_ACCEPT );
         
     case NC_SHIELD_RESET:
         if ( _netcap_tcp_cli_send_reset( syn ) < 0 ) {
