@@ -42,6 +42,16 @@
     <url-pattern>/image</url-pattern>
   </servlet-mapping>
   
+  <servlet>
+    <servlet-name>I18NServlet</servlet-name>
+    <servlet-class>com.untangle.uvm.webui.servlet.I18NServlet</servlet-class>
+  </servlet>
+  
+  <servlet-mapping>
+    <servlet-name>I18NServlet</servlet-name>
+    <url-pattern>/i18n</url-pattern>
+  </servlet-mapping>
+  
   <welcome-file-list>
     <welcome-file>
       index.jsp

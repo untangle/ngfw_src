@@ -17,6 +17,7 @@
 -->	
 	<script type="text/javascript" src="ext-2.0.1/adapter/ext/ext-base.js"></script>
 	<script type="text/javascript" src="ext-2.0.1/ext-all.js"></script>
+	<script type="text/javascript" src="script/i18n.js"></script>
 	<script type="text/javascript" src="jsonrpc/jsonrpc-min.js"></script>
 
     <script type="text/javascript" src="script/ext-untangle.js"></script>
@@ -39,6 +40,26 @@ MainPage = {
 	viewport: null,
 	removeNodeCmpId: null,
 	init: function() {
+			//va map=rpc.toolboxManager=rpc.jsonrpc.RemoteUvmContext.toolboxManager().map;
+			//TODO :i18n add map
+			//for(var prop in map) {
+			//	i18n[prop]=map[prop];
+			//}
+			Ext.Ajax.request({
+		        url: "i18n",
+		        //params:{'action':this.powerOn?"startNode":"stopNode",'nodeName':this.name,'nodeId':this.tid},
+				method: 'GET',
+				success: function ( result, request) {
+					var jsonResult=Ext.util.JSON.decode(result.responseText);
+					i18n.map = jsonResult;
+					MainPage.postinit()
+				},
+				failure: function ( result, request) { 
+					Ext.MessageBox.alert('Failed', 'Successfully posted form: '+result.date); 
+				} 
+			});
+	},
+	postinit: function() {
 		MainPage.buildTabs();
 		MainPage.viewport = new Ext.Viewport({
             layout:'border',
@@ -72,7 +93,7 @@ MainPage = {
 			'height': '46px',
 			'width': '86px',
 			'renderTo': 'help',
-	        'text': 'Help',
+	        'text': i18n._('Help'),
 	        'handler': function() {	  
 				var rackBaseHelpLink = MainPage.getHelpLink("rack");
 				window.open(rackBaseHelpLink);

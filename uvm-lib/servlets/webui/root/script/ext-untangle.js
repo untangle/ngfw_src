@@ -349,7 +349,7 @@ Ext.untangle.Node = Ext.extend(Ext.Component, {
 				'parentId':this.getId(),
 		        'iconCls': 'nodeSettingsIcon',
 				'renderTo':'nodeSettingsButton_'+this.getId(),
-		        'text': 'Show Settings',
+		        'text': i18n._('Show Settings'),
 		        'handler': function() {Ext.getCmp(this.parentId).onSettingsClick();}
 	        });
 			cmp=new Ext.Button({
