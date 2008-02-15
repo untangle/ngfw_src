@@ -55,7 +55,7 @@ MainPage = {
 					MainPage.postinit()
 				},
 				failure: function ( result, request) { 
-					Ext.MessageBox.alert('Failed', 'Successfully posted form: '+result.date); 
+					Ext.MessageBox.alert("Failed", 'Successfully posted form: '+result.date); 
 				} 
 			});
 	},
@@ -134,7 +134,7 @@ MainPage = {
 	
 	loadLibarary: function() {
 		rpc.toolboxManager.uninstalled(function (result, exception) {
-			if(exception) { alert(exception.message); return;}
+			if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
 			var uninstalledMD=result;
 			if(uninstalledMD===null) {
 				MainPage.library=null;
@@ -163,7 +163,7 @@ MainPage = {
 			MainPage.myApps=null;
 		}
 		rpc.toolboxManager.installedVisible(function (result, exception) {
-			if(exception) { alert(exception.message); return;}
+			if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
 			var installedVisibleMD=result;
 			MainPage.myApps=[];
 			for(var i=0;i<installedVisibleMD.length;i++) {
@@ -179,7 +179,7 @@ MainPage = {
 	
 	loadConfig: function() {
 		rpc.toolboxManager.getConfigItems(function (result, exception) {
-			if(exception) { alert(exception.message); return;}
+			if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
 			MainPage.config = result;
 			MainPage.buildConfig();
 		});
@@ -187,7 +187,7 @@ MainPage = {
 	
 	loadPolicies: function() {
 		rpc.policyManager.getPolicies( function (result, exception) {
-			if(exception) { alert(exception.message); return; }
+			if(exception) { Ext.MessageBox.alert("Failed",exception.message); return; }
 			rpc.policies=result;
 			MainPage.buildPolicies();
 		});
@@ -254,7 +254,7 @@ MainPage = {
 	},
 	loadNodesRunStates: function() {
 		rpc.nodeManager.allNodeStates(function (result, exception) {
-			if(exception) { alert(exception.message);
+			if(exception) { Ext.MessageBox.alert("Failed",exception.message);
 				return;
 			}
 			var allNodeStates=result;
@@ -289,7 +289,7 @@ MainPage = {
         		policy = rpc.currentPolicy;
         	}
 			rpc.nodeManager.instantiate(function (result, exception) {
-				if(exception) { alert(exception.message); return;}
+				if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
 				var tid = result;
 				rpc.tids.push(tid);
 				var node=MainPage.createNode(tid);
@@ -304,9 +304,9 @@ MainPage = {
 		if(item!==null) {
 			Ext.getCmp('libraryButton_'+item.name).disable();
 			rpc.nodeManager.install(function (result, exception) {
-				if(exception) { alert(exception.message); return;}
+				if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
 				MainPage.loadMyApps();
-				alert("Purchase: TODO: add to myApps buttons, remove from library");
+				Ext.MessageBox.alert("TODO","Purchase: add to myApps buttons, remove from library");
 
 			}, item.name);
 		}
@@ -314,7 +314,7 @@ MainPage = {
 	
 	clickConfig: function(item) {
 		if(item!==null && item.action!==null) {
-			alert("TODO: implement config "+item.name);
+			Ext.MessageBox.alert("Failed","TODO: implement config "+item.name);
 			/*
 			var action=item.action;
 			if(item.action.url!==null) {
@@ -327,7 +327,7 @@ MainPage = {
 	},
 	
 	todo: function() {
-		alert("TODO: implement this.");
+		Ext.MessageBox.alert("Failed","TODO: implement this.");
 	},
 	
 	buildLibrary: function() {
@@ -465,7 +465,7 @@ MainPage = {
 		var buttonCmp = new Ext.Button({
 			'renderTo':'rack_policy_button',
 	        'text': 'Show Policy Manager',
-	        'handler': function() {alert("TODO:Show Policy Manager");}
+	        'handler': function() {Ext.MessageBox.alert("Failed","TODO:Show Policy Manager");}
         });
 		this.loadNodes();
 	},
@@ -474,7 +474,7 @@ MainPage = {
 		var rack_select=document.getElementById('rack_select');
 		if(rack_select.selectedIndex>=0) {
 			rpc.currentPolicy=rpc.policies[rack_select.selectedIndex];
-			alert("TODO: Change Virtual Rack");
+			Ext.MessageBox.alert("TODO","Change Virtual Rack");
 			this.loadNodes();
 		}
 	}

@@ -83,11 +83,9 @@ Ext.grid.RemoveColumn.prototype ={
     onMouseDown: function(e, t){
         if(t.className && t.className.indexOf('removeRow') != -1){
             e.stopEvent();
-            
             var index = this.grid.getView().findRowIndex(t);
             var record = this.grid.store.getAt(index);
             this.grid.store.remove(record);
-            //alert("Delete row:"+index+"\n"+record.data);
         }
     },
 
@@ -105,7 +103,6 @@ Ext.untangle.ProtocolControlSettings = Ext.extend(Ext.untangle.Settings, {
     rowEditPL: null,
     rpc: null,
     onRender: function(container, position) {
-    	//alert("Render protocol control");
     	var el= document.createElement("div");
 	    container.dom.insertBefore(el, position);
         this.el = Ext.get(el);
@@ -204,7 +201,7 @@ Ext.untangle.ProtocolControlSettings = Ext.extend(Ext.untangle.Settings, {
 				'parentId':this.getId(),
 				'iconCls': 'helpIcon',
 				'text': 'Help',
-				'handler': function() {alert("TODO: Implement Help Page");}
+				'handler': function() {Ext.MessageBox.alert("TODO","Implement Help Page");}
 			},
 			{
 				'parentId':this.getId(),
@@ -328,7 +325,7 @@ Ext.untangle.ProtocolControlSettings = Ext.extend(Ext.untangle.Settings, {
 	       		'render': {
 	       			fn: function() {
 	       				this.rpc.eventManager.getRepositoryDescs(function (result, exception) {
-							if(exception) {alert(exception.message); return;}
+							if(exception) {Ext.MessageBox.alert("Failed",exception.message); return;}
 							var cmp=Ext.untangle.ProtocolControlSettings.getInstanceCmp();
 							if(cmp!==null) {
 								cmp.rpc.repositoryDescs=result;
@@ -387,7 +384,7 @@ Ext.untangle.ProtocolControlSettings = Ext.extend(Ext.untangle.Settings, {
     			this.rpc.repository[selRepository]=this.rpc.eventManager.getRepository(selRepository);
     		}
     		this.rpc.repository[selRepository].getEvents(function (result, exception) {
-				if(exception) {alert(exception.message); return;}
+				if(exception) {Ext.MessageBox.alert("Failed",exception.message); return;}
 				var events = result;
 				var cmp=Ext.untangle.ProtocolControlSettings.getInstanceCmp();
 				if(cmp!==null) {
@@ -410,7 +407,7 @@ Ext.untangle.ProtocolControlSettings = Ext.extend(Ext.untangle.Settings, {
     	this.rpc.settings.patterns.list=patternsList;
     	this.rpc.settings.patterns.javaClass="java.util.ArrayList";
     	this.rpc.node.setProtoFilterSettings(function (result, exception) {
-			if(exception) {alert(exception.message); return;}
+			if(exception) {Ext.MessageBox.alert("Failed",exception.message); return;}
 			var cmp=Ext.untangle.ProtocolControlSettings.getInstanceCmp();
 			if(cmp!==null) {
 				cmp.tabs.enable();
@@ -420,7 +417,7 @@ Ext.untangle.ProtocolControlSettings = Ext.extend(Ext.untangle.Settings, {
     
 	loadData: function() {
 		this.rpc.node.getProtoFilterSettings(function (result, exception) {
-			if(exception) {alert(exception.message); return;}
+			if(exception) {Ext.MessageBox.alert("Failed",exception.message); return;}
 			var cmp=Ext.untangle.ProtocolControlSettings.getInstanceCmp();
 			if(cmp!==null) {
 				cmp.rpc.settings=result;

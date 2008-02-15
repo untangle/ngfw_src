@@ -209,7 +209,7 @@ Ext.untangle.Node = Ext.extend(Ext.Component, {
         	this.setState("Attention");
         	MainPage.removeNodeCmpId=this.getId();
         	rpc.nodeManager.destroy(function (result, exception) {
-				if(exception) { alert(exception.message); 
+				if(exception) { Ext.MessageBox.alert("Failed",exception.message); 
 					MainPage.removeNodeCmpId=null;
 					return;
 				}
@@ -240,7 +240,6 @@ Ext.untangle.Node = Ext.extend(Ext.Component, {
         },
         
         onSaveClick: function() {
-        	//alert("Save Settings");
         	if(this.settings) {
         		this.settings.save();
         	}
@@ -292,7 +291,7 @@ Ext.untangle.Node = Ext.extend(Ext.Component, {
 		    var settingsHTML=Ext.untangle.Node.templateSettings.applyTemplate({'id':this.getId()});
 		    var settingsButtonsHTML=Ext.untangle.Node.templateSettingsButtons.applyTemplate({'id':this.getId()});
 		    settingsButtonsHTML=
-		    //alert(settingsHTML);
+		    //Ext.MessageBox.alert("Failed",settingsHTML);
 		    this.settingsWin=new Ext.Window({
                 id: 'settingsWin_'+this.getId(),
                 layout:'border',
@@ -323,7 +322,7 @@ Ext.untangle.Node = Ext.extend(Ext.Component, {
 			    ]
             });
 			this.settingsWin.render('container');
-			//this.settingsWin.on("resize", function() {alert(123)},this.settingsWin);
+			//this.settingsWin.on("resize", function() {Ext.MessageBox.alert("Resize",123);},this.settingsWin);
 
 			Ext.get('nodePowerIconImg_'+this.getId()).on('click', this.onPowerClick, this);
 			var cmp=null;
@@ -453,8 +452,10 @@ Ext.untangle.BlingerManager = {
 		if(this.hasActiveNodes()) {
 			this.cycleCompleted=false;
 			rpc.nodeManager.allNodeStats(function (result, exception) {
-				if(exception) { alert(exception.message);
-					Ext.untangle.BlingerManager.cycleCompleted=true;
+				if(exception) { 
+					Ext.MessageBox.alert("Failed",exception.message, function() {
+						Ext.untangle.BlingerManager.cycleCompleted=true;
+					});
 					return;
 				}
 				try {
@@ -663,7 +664,7 @@ Ext.ComponentMgr.registerType('untangleSettings', Ext.untangle.Settings);
 
 var testCallBack = function(divid, result, exception) {
     console.log('Called with id: '+divid+' result: '+result+' exception: '+exception);
-    //alert('Called with id: '+id+' result: '+result+' exception: '+exception);
+    //Ext.MessageBox.alert("TEST",'Called with id: '+id+' result: '+result+' exception: '+exception);
 }
     
 var callBackWithObject = function() { //id, function, args_to_function...
