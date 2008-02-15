@@ -23,9 +23,8 @@ PROPERTY_DHCP_DNS_SERVERS="com.untangle.networking.dhcp-dns-servers"
 ## This returns a string of the form:
 ## [:::<interface-name>[;<ip-address>/<netmask-cidr>]*]*
 network_configuration()
-{
-    ip addr show \
-        | awk '/^[0-9]/ { interface = $2 ; sub( ":$", "", interface ) ; printf ":::%s", interface } ; /^ *inet.*brd/ { printf ";%s", $2 } END { printf "\n"  }'
+{                   
+ ip addr show | awk '/^[0-9]/ { interface = $2 ; sub( ":$", "", interface ) ; printf ":::%s", interface } ; /^ *inet.*brd.*scope global/ { printf ";%s", $2 } ; /^ *inet.*peer.*scope global/ { printf ";%s/32", $2 } ;  END { printf "\n" }'
 }
 
 ## This returns a string of the form:
