@@ -284,19 +284,33 @@ class NodeContextImpl implements NodeContext
 
     public InputStream getResourceAsStream(String res)
     {
+        return getResourceAsStreamInt(res, getMackageDesc());
+    }
+    
+    private InputStream getResourceAsStreamInt(String res, MackageDesc mackageDesc)
+    {
         try {
-            URL url = new URL(toolboxManager.getResourceDir(getMackageDesc()),
-                              res);
+            URL url = new URL(toolboxManager.getResourceDir(mackageDesc), res);
             File f = new File(url.toURI());
             return new FileInputStream(f);
         } catch (MalformedURLException exn) {
-            logger.warn("could not not be found: " + res, exn);
+            logger.warn("resource not found, malformed url: " + res, exn);
             return null;
         } catch (URISyntaxException exn) {
-            logger.warn("could not not be found: " + res, exn);
+            logger.warn("resource not found, uri syntax: " + res, exn);
             return null;
         } catch (FileNotFoundException exn) {
-            logger.warn("could not not be found: " + res, exn);
+            // bug3699: Try the parent.
+            String baseNodeName = nodeDesc.getNodeBase();
+            if (baseNodeName != null) {
+                MackageDesc baseDesc = toolboxManager.mackageDesc(baseNodeName);
+                if (baseDesc == null) {
+                    logger.warn("resource not found, base missing: " + baseNodeName);
+                    return null;
+                }
+                return getResourceAsStreamInt(res, baseDesc);
+            }
+            logger.warn("resource not found: " + res, exn);
             return null;
         }
     }
