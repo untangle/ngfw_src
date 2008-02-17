@@ -19,12 +19,55 @@ PROPERTY_DNS_EN="com.untangle.networking.dns-enabled"
 PROPERTY_DNS_LOCAL_DOMAIN="com.untangle.networking.dns-local-domain"
 PROPERTY_DHCP_DNS_SERVERS="com.untangle.networking.dhcp-dns-servers"
 
+## Used to global ppp configuration together with the interface.
+pppoe_interface()
+{
+    test -f /etc/network/interfaces || return
+    
+    ## Grab the provider.
+    local t_provider=`awk '/ppp0/ { is_ppp = true }; /^[\t ]*provider/ { sub( /^[\t ]*provider[\t ]*/, "" ) ; if ( is_ppp == true ) print }' /etc/network/interfaces`
+
+    ## check if there is actually a provider
+    test -z "${t_provider}" && return
+    
+    ## Now grab the interface that is linked to this provider.
+    t_provider="/etc/ppp/peers/${t_provider}"
+    test -f ${t_provider} || return
+
+    ## Now print out the name of the interface that is used
+    awk '/^[ \t]*plugin rp-pppoe.so/ { sub( /[ \t]*plugin rp-pppoe.so/, "" ); print }' ${t_provider}
+}
+
+pppoe_awk_script()
+{
+    cat <<'EOF'
+/^[0-9]/ { interface = $2 ; sub( ":$", "", interface ) ; printf ":::%s", interface ; if ( interface == "ppp0" ) printf "%s", aliases ; has_pppoe = "true" } ;
+/^ *inet.*brd.*scope global/ { printf ";%s", $2 } ;
+/^ *inet.*peer.*scope global/ { printf ";%s/31", $2 } ;
+END { if ( has_pppoe == "false" ) printf ":::ppp0%s", aliases ; printf "\n"  }
+EOF
+}
 
 ## This returns a string of the form:
 ## [:::<interface-name>[;<ip-address>/<netmask-cidr>]*]*
 network_configuration()
 {                   
- ip addr show | awk '/^[0-9]/ { interface = $2 ; sub( ":$", "", interface ) ; printf ":::%s", interface } ; /^ *inet.*brd.*scope global/ { printf ";%s", $2 } ; /^ *inet.*peer.*scope global/ { printf ";%s/32", $2 } ;  END { printf "\n" }'
+    ## Determine if this needs to glob together the configuration for another interface.
+    local t_pppoe
+
+    ## Not sure why, but t_pppoe=`pppoe_interface` syntax doesn't work here.
+    t_pppoe=`pppoe_interface`
+    
+    if [ -z "${t_pppoe}" ]; then
+        ip addr show | awk '/^[0-9]/ { interface = $2 ; sub( ":$", "", interface ) ; printf ":::%s", interface } ; /^ *inet.*brd.*scope global/ { printf ";%s", $2 } ;  END { printf "\n"  }' 
+    else
+        ## Grab any additional aliases for the PPPoE interface
+        local t_aliases=`ip addr show ${t_pppoe} 2>/dev/null | awk '/^ *inet.*brd.*scope global/ { printf ";%s", $2 }'`
+        
+        ## Dump the list of interfaces the same way, but this time (script is just too long
+        ## to put in on the command line, and it is too annoying to create a separate file.
+        ip addr show | awk --assign has_pppoe=false --assign aliases="${t_aliases}" "`pppoe_awk_script`"
+    fi
 }
 
 ## This returns a string of the form:
