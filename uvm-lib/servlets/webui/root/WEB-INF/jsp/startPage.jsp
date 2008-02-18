@@ -29,6 +29,8 @@ rpc.nodeManager = rpc.jsonrpc.RemoteUvmContext.nodeManager();
 rpc.policyManager=rpc.jsonrpc.RemoteUvmContext.policyManager();
 rpc.toolboxManager=rpc.jsonrpc.RemoteUvmContext.toolboxManager();
 rpc.version=rpc.jsonrpc.RemoteUvmContext.version();
+i18n=null;
+node_i18n_instances={};
 
 MainPage = {
 	tabs: null,
@@ -36,21 +38,20 @@ MainPage = {
 	myApps: null,
 	config: null,
 	nodes: null,
-	rackUrl: "rack.do",
 	viewport: null,
 	removeNodeCmpId: null,
+	
 	init: function() {
 			Ext.Ajax.request({
 		        url: "i18n",
-		        //params:{'action':this.powerOn?"startNode":"stopNode",'nodeName':this.name,'nodeId':this.tid},
 				method: 'GET',
 				success: function ( result, request) {
 					var jsonResult=Ext.util.JSON.decode(result.responseText);
-					i18n.map = jsonResult;
+					i18n =new I18N(jsonResult);
 					MainPage.postinit()
 				},
 				failure: function ( result, request) { 
-					Ext.MessageBox.alert("Failed", 'Successfully posted form: '+result.date); 
+					Ext.MessageBox.alert("Failed", 'Failed loading I18N translations for main rack'); 
 				} 
 			});
 	},

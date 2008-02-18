@@ -95,6 +95,7 @@ Ext.grid.RemoveColumn.prototype ={
 };
 
 Ext.untangle.ProtocolControlSettings = Ext.extend(Ext.untangle.Settings, {
+    i18n: null,
     node:null,
     tabs: null,
     storePL: null,
@@ -106,18 +107,16 @@ Ext.untangle.ProtocolControlSettings = Ext.extend(Ext.untangle.Settings, {
     	var el= document.createElement("div");
 	    container.dom.insertBefore(el, position);
         this.el = Ext.get(el);
+    	this.i18n=node_i18n_instances[this.name];
     	this.rpc={};
     	this.rpc.repository={};
-    	Ext.untangle.ProtocolControlSettings.instanceId=this.getId();
-    	if(this.node.nodeContext===undefined) {
-    		this.node.nodeContext=rpc.nodeManager.nodeContext(this.node.Tid);
-			this.node.nodeContext.node=this.node.nodeContext.node();
-		}
+    	Ext.untangle.ProtocolControlSettings.instanceId=this.getId();    	
     	if(this.node.nodeContext.node.eventManager===undefined) {
 			this.node.nodeContext.node.eventManager=this.node.nodeContext.node.getEventManager();
 		}
 		this.rpc.node = this.node.nodeContext.node;
 		this.rpc.eventManager=this.node.nodeContext.node.eventManager;
+		
 	    // create the data store
 	    this.storePL = new Ext.data.JsonStore({
 	        fields: [
@@ -134,30 +133,30 @@ Ext.untangle.ProtocolControlSettings = Ext.extend(Ext.untangle.Settings, {
 	    // the data store (created below)
 	    
 	    var blockedColumn = new Ext.grid.CheckColumn({
-	       header: "<b>block</b>", width: 40, dataIndex: 'blocked', fixed:true
+	       header: "<b>"+this.i18n._("block")+"</b>", width: 40, dataIndex: 'blocked', fixed:true
 	    });
 	    var logColumn = new Ext.grid.CheckColumn({
-	       header: "<b>log</b>", width: 35, dataIndex: 'log', fixed:true
+	       header: "<b>"+this.i18n._("log")+"</b>", width: 35, dataIndex: 'log', fixed:true
 	    });
 	    var editColumn=new Ext.grid.EditColumn({
-	    	header: "Edit", width: 35, fixed:true, dataIndex: null
+	    	header: this.i18n._("Edit"), width: 35, fixed:true, dataIndex: null
 	    });
 	    var removeColumn=new Ext.grid.RemoveColumn({
-	    	header: "Delete", width: 40, fixed:true, dataIndex: null
+	    	header: this.i18n._("Delete"), width: 40, fixed:true, dataIndex: null
 	    });
 	    var cmPL = new Ext.grid.ColumnModel([
-	          {id:'category',header: "category", width: 140,  dataIndex: 'category',
+	          {id:'category',header: this.i18n._("category"), width: 140,  dataIndex: 'category',
 		          editor: new Ext.form.TextField({allowBlank: false})
 	          },
-	          {id:'protocol',header: "protocol", width: 100, dataIndex: 'protocol',
+	          {id:'protocol',header: this.i18n._("protocol"), width: 100, dataIndex: 'protocol',
 		          editor: new Ext.form.TextField({allowBlank: false})
 	          },
 	          blockedColumn,
 	          logColumn,
-	          {id:'description',header: "description", width: 120, dataIndex: 'description',
+	          {id:'description',header: this.i18n._("description"), width: 120, dataIndex: 'description',
 		          editor: new Ext.form.TextField({allowBlank: false})
 	          },
-	          {id:'definition',header: "signature", width: 120, dataIndex: 'definition',
+	          {id:'definition',header: this.i18n._("signature"), width: 120, dataIndex: 'definition',
 		          editor: new Ext.form.TextField({allowBlank: false})
 	          },
 	          editColumn,

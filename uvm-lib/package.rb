@@ -72,7 +72,7 @@ deps << ThirdpartyJar.get('../pkgs/jabsorb-1.2.2/jabsorb-1.2.2.jar');
 
 ms = [ MoveSpec.new("../pkgs/jabsorb-1.2.2/webapps/jsonrpc", 'jsonrpc*.js', './jsonrpc') ]
 
-ServletBuilder.new(uvm_lib, "com.untangle.uvm.webui",
+ServletBuilder.new(uvm_lib, "com.untangle.uvm.webui.servlet",
                    "./uvm-lib/servlets/webui", deps, [], ms)
                    
 

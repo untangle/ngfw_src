@@ -162,8 +162,33 @@ Ext.untangle.Node = Ext.extend(Ext.Component, {
         	this.settingsWin.setSize(objSize);
         	this.loadSettings();
         },
-        
         initSettings: function(force) {
+	    	if(this.nodeContext===undefined) {
+	    		this.nodeContext=rpc.nodeManager.nodeContext(this.Tid);
+				this.nodeContext.node=this.nodeContext.node();
+				this.nodeContext.nodeDesc=this.nodeContext.getNodeDesc();
+			}
+			Ext.Ajax.request({
+		        url: "i18n",
+		        params:{'nodeClassName':this.nodeContext.nodeDesc.className},
+				method: 'GET',
+				parentId: this.getId(),
+				success: function ( result, request) {
+					var jsonResult=Ext.util.JSON.decode(result.responseText);
+					var cmp=Ext.getCmp(request.parentId);
+					//Todo: make class
+					//var node_i18nObj=node_i18n;
+					//node_i18nObj.map=jsonResult;
+					node_i18n_instances[cmp.name]=new I18N_Node(i18n, jsonResult);
+					cmp.postInitSettings()
+				},
+				failure: function ( result, request) { 
+					Ext.MessageBox.alert("Failed", 'Failed loading I18N translations for this node' ); 
+				}
+			});
+			
+        },
+        postInitSettings: function(force) {
         	if(this.settings) {
         		if(!force) {
         			return;

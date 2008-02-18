@@ -1,0 +1,49 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR Untangle, Inc.
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2008-02-18 15:40+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../web/webui/script/untangle-node-protofilter/settings.js:138
+msgid "block"
+msgstr ""
+
+#: ../web/webui/script/untangle-node-protofilter/settings.js:141
+msgid "log"
+msgstr ""
+
+#: ../web/webui/script/untangle-node-protofilter/settings.js:144
+msgid "Edit"
+msgstr ""
+
+#: ../web/webui/script/untangle-node-protofilter/settings.js:147
+msgid "Delete"
+msgstr ""
+
+#: ../web/webui/script/untangle-node-protofilter/settings.js:150
+msgid "category"
+msgstr ""
+
+#: ../web/webui/script/untangle-node-protofilter/settings.js:153
+msgid "protocol"
+msgstr ""
+
+#: ../web/webui/script/untangle-node-protofilter/settings.js:158
+msgid "description"
+msgstr ""
+
+#: ../web/webui/script/untangle-node-protofilter/settings.js:161
+msgid "signature"
+msgstr ""

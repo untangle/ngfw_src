@@ -30,8 +30,13 @@ public class I18NServlet extends HttpServlet {
 
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
+		
+		String nodeClassName = req.getParameter("nodeClassName");
+		if (nodeClassName == null) { // i18n for main rack
+			nodeClassName = getClass().getName();
+		}
 
-		I18n i18n = I18nFactory.getI18n(getClass(), /*"com.untangle.uvm.webui.Messages",*/ req.getLocale()/*, I18nFactory.FALLBACK*/);
+		I18n i18n = I18nFactory.getI18n(nodeClassName, "Messages", Thread.currentThread().getContextClassLoader(), req.getLocale(), I18nFactory.FALLBACK);
         Map<String, String> map = new HashMap<String, String>();
 		for (Enumeration<String> enumeration = i18n.getResources().getKeys(); enumeration.hasMoreElements();) {
 			String key = enumeration.nextElement(); 
