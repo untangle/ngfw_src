@@ -1,21 +1,3 @@
 #! /bin/bash
 
-## Log all output to the UVM logging
-exec >> @UVM_LOG@/iptables.log 2>&1
-
-# These variables are for the use of the scripts run by run-parts
-# PPP_IFACE="$1"
-# PPP_TTY="$2"
-# PPP_SPEED="$3"
-# PPP_LOCAL="$4"
-# PPP_REMOTE="$5"
-# PPP_IPPARAM="$6"
-
-
-## Run mcli update address
-echo "[DEBUG] `date` running mcli update address, reason pppoe"
-@USR_BIN@/mcli updateAddress
-
-
-sed -i -e '/127.0.0.1/d' -e '1inameserver 127.0.0.1' /etc/resolv.conf
-
+## This file is disabled.
