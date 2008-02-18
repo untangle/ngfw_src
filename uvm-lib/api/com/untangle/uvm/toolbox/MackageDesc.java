@@ -205,7 +205,12 @@ public class MackageDesc implements Serializable
         // website
         website = m.get("website");
 
-        jarPrefix = m.get("untangle-jar-prefix");
+        // Remove jarPrefix from control file since it's always the same as the
+        // package name.
+        if (Type.NODE == type || Type.CASING == type || Type.BASE == type)
+            jarPrefix = name;
+        else
+            jarPrefix = null;
 
         this.installedVersion = installedVersion;
     }
