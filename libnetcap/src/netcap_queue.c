@@ -334,25 +334,25 @@ static int _nf_callback( struct nfq_q_handle *qh, struct nfgenmsg *nfmsg, struct
 
     if (ip_header->protocol == IPPROTO_ICMP) { 
         debug(10, "not looking up conntrack for ICMP packet\n");
-    }else{
-	debug(10, "FLAG: Try to get the conntrack information\n");
-	if ( _nfq_get_conntrack( nfa, pkt ) < 0 ) {
-	  netcap_set_verdict(pkt->packet_id, NF_DROP, NULL, 0);
-	  pkt->packet_id = 0;
-	  return errlog( ERR_WARNING, "DROPPING PACKET because it has no conntrack info.\n" );
-	}
+    } else {
+        debug(10, "FLAG: Try to get the conntrack information\n");
+        if ( _nfq_get_conntrack( nfa, pkt ) < 0 ) {
+            netcap_set_verdict(pkt->packet_id, NF_DROP, NULL, 0);
+            pkt->packet_id = 0;
+            return errlog( ERR_WARNING, "DROPPING PACKET because it has no conntrack info.\n" );
+        }
 
-	debug( 10, "Conntrack original info: %s:%d -> %s:%d\n",
-	       unet_next_inet_ntoa( pkt->nat_info.original.src_address ), 
-	       ntohs( pkt->nat_info.original.src_protocol_id ),
-	       unet_next_inet_ntoa( pkt->nat_info.original.dst_address ), 
-	       ntohs( pkt->nat_info.original.dst_protocol_id ));
+        debug( 10, "Conntrack original info: %s:%d -> %s:%d\n",
+               unet_next_inet_ntoa( pkt->nat_info.original.src_address ), 
+               ntohs( pkt->nat_info.original.src_protocol_id ),
+               unet_next_inet_ntoa( pkt->nat_info.original.dst_address ), 
+               ntohs( pkt->nat_info.original.dst_protocol_id ));
     
-	debug( 10, "Conntrack reply info: %s:%d -> %s:%d\n",
-	       unet_next_inet_ntoa( pkt->nat_info.reply.src_address ), 
-	       ntohs( pkt->nat_info.reply.src_protocol_id ),
-	       unet_next_inet_ntoa( pkt->nat_info.reply.dst_address ), 
-	       ntohs( pkt->nat_info.reply.dst_protocol_id ));
+        debug( 10, "Conntrack reply info: %s:%d -> %s:%d\n",
+               unet_next_inet_ntoa( pkt->nat_info.reply.src_address ), 
+               ntohs( pkt->nat_info.reply.src_protocol_id ),
+               unet_next_inet_ntoa( pkt->nat_info.reply.dst_address ), 
+               ntohs( pkt->nat_info.reply.dst_protocol_id ));
     } 
     /**
      * if we are not ICMP, undo any NATing.
@@ -360,7 +360,7 @@ static int _nf_callback( struct nfq_q_handle *qh, struct nfgenmsg *nfmsg, struct
     if (ip_header->protocol == IPPROTO_ICMP) { 
         debug(10, "caught ICMP packet\n");
     } else if (( ip_header->saddr == pkt->nat_info.reply.dst_address ) &&
-	       ( ip_header->daddr == pkt->nat_info.reply.src_address )) {
+               ( ip_header->daddr == pkt->nat_info.reply.src_address )) {
         /* This is a packet from the original side that has been NATd */
         debug( 10, "QUEUE: Packet from client post NAT.\n");
         ip_header->saddr = pkt->nat_info.original.src_address;

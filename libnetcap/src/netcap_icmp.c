@@ -380,10 +380,8 @@ int  netcap_icmp_call_hook( netcap_pkt_t* pkt )
     if ( pkt == NULL ) return errlogargs();
 
     if ( pkt->data == NULL ) return errlogargs();
-
     
-    int critical_section(void)
-    {
+    int critical_section(void) {
         int ret = -1;
         u_char* full_pkt;
         int full_pkt_len;
@@ -428,7 +426,7 @@ int  netcap_icmp_call_hook( netcap_pkt_t* pkt )
 
         case _FIND_ERROR:
         default:
-	  {
+        {
             int icmp_type = -1;
             int icmp_code = -1;
             struct icmp *packet = (struct icmp*)pkt->data;
@@ -436,22 +434,22 @@ int  netcap_icmp_call_hook( netcap_pkt_t* pkt )
                 icmp_type = packet->icmp_type;
                 icmp_code = packet->icmp_code;
             }
-
+            
             ret = errlog ( ERR_CRITICAL, "_icmp_find_session (%s:%d -> %s:%d), type %d code %d\n",
                            unet_next_inet_ntoa ( pkt->src.host.s_addr ), pkt->src.port, 
                            unet_next_inet_ntoa ( pkt->dst.host.s_addr ), pkt->dst.port,
                            icmp_type, icmp_code );
-	  }
-	}
+        }
+        }
 
-	/* Drop the packet, but hold onto the data. */
-	debug( 10, "ICMP: Dropping packet (%#10x) and passing data\n", pkt->packet_id );
+        /* Drop the packet, but hold onto the data. */
+        debug( 10, "ICMP: Dropping packet (%#10x) and passing data\n", pkt->packet_id );
         if ( pkt->packet_id != 0 && netcap_set_verdict( pkt->packet_id, NF_DROP, NULL, 0 ) < 0 ) {
             ret = errlog( ERR_CRITICAL, "netcap_set_verdict\n" );
         }
         /* Clear out the packet id */
         pkt->packet_id = 0;
-	return ret;
+        return ret;
     }
     ret = critical_section();
     if ( ret < 0 ) {
@@ -684,7 +682,7 @@ static int  _netcap_icmp_send( char *data, int data_len, netcap_pkt_t* pkt, int 
     /* if the caller uses the force flag, then override the default bits of the mark */
     if ( pkt->is_marked == IS_MARKED_FORCE_FLAG ) nfmark = pkt->nfmark;
 
-    if ( pkt->dst_intf != NC_INTF_UNK ) errlog(ERR_CRITICAL,"NC_INTF_UNK Unsupported (IP_DEVICE)\n");
+    if ( pkt->dst_intf != NC_INTF_UNK ) debug( 1, "NETCAP_ICMP: !NC_INTF_UNK Unsupported (IP_DEVICE)\n" );
 
     /* Setup the destination */
     memset(&dst, 0, sizeof(dst));
@@ -841,20 +839,20 @@ static _find_t _icmp_find_session( netcap_pkt_t* pkt, netcap_session_t** netcap_
         case ICMP_ECHOREPLY:
             /* fallthrough */
         case ICMP_ECHO:
-	    if ( _shield_check_reputation( pkt, &pkt->src.host, pkt->src_intf ) < 0 ) {
-	        ret = _FIND_DROP;
-	        break;
-	    }
+            if ( _shield_check_reputation( pkt, &pkt->src.host, pkt->src_intf ) < 0 ) {
+                ret = _FIND_DROP;
+                break;
+            }
 
-	    /* Let the shield know about the request */
-	    if ( netcap_shield_rep_add_request( &pkt->src.host ) < 0 ) {
-	        errlog ( ERR_CRITICAL, "netcap_shield_rep_add_request\n" );
-	    }
+            /* Let the shield know about the request */
+            if ( netcap_shield_rep_add_request( &pkt->src.host ) < 0 ) {
+                errlog ( ERR_CRITICAL, "netcap_shield_rep_add_request\n" );
+            }
 
-	    if ( netcap_shield_rep_add_chunk( &pkt->src.host, IPPROTO_ICMP, pkt->data_len ) < 0 ) {
-	        errlog( ERR_CRITICAL, "netcap_shield_rep_add_chunk" );
-	    }
-	    return _FIND_ACCEPT;
+            if ( netcap_shield_rep_add_chunk( &pkt->src.host, IPPROTO_ICMP, pkt->data_len ) < 0 ) {
+                errlog( ERR_CRITICAL, "netcap_shield_rep_add_chunk" );
+            }
+            return _FIND_ACCEPT;
 
         case ICMP_REDIRECT:
         case ICMP_SOURCE_QUENCH:
