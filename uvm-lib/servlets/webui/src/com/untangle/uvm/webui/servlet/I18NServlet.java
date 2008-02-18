@@ -3,7 +3,6 @@ package com.untangle.uvm.webui.servlet;
 import java.io.IOException;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.ServletException;
@@ -32,7 +31,7 @@ public class I18NServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 
-		I18n i18n = I18nFactory.getI18n(getClass(), "com.untangle.uvm.webui.Messages", req.getLocale(), I18nFactory.FALLBACK);
+		I18n i18n = I18nFactory.getI18n(getClass(), /*"com.untangle.uvm.webui.Messages",*/ req.getLocale()/*, I18nFactory.FALLBACK*/);
         Map<String, String> map = new HashMap<String, String>();
 		for (Enumeration<String> enumeration = i18n.getResources().getKeys(); enumeration.hasMoreElements();) {
 			String key = enumeration.nextElement(); 
