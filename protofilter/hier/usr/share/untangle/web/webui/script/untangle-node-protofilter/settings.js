@@ -296,9 +296,10 @@ Ext.untangle.ProtocolControlSettings = Ext.extend(Ext.untangle.Settings, {
 	    	}),
 			columns: [
 			    {header: "timestamp", width: 120, sortable: true, dataIndex: 'timeStamp', renderer: function(value) {
-			    	var date=new Date();
-			    	date.setTime(value.time);
-			    	return date.toLocaleString();
+			    	//var date=new Date();
+			    	//date.setTime(value.time);
+			    	//return date.toLocaleString();
+			    	return i18n.timestampFormat(value);
 			    }},
 			    {header: "action", width: 70, sortable: true, dataIndex: 'blocked', renderer: function(value) {return value?"blocked" : "passed";}},
 			    {header: "client", width: 120, sortable: true, dataIndex: 'pipelineEndpoints', renderer: function(value) {return value===null?"" : value.CClientAddr.hostAddress+":"+value.CClientPort;}},

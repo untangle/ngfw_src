@@ -16,6 +16,18 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=0; null;\n"
 
+msgid "decimal_sep"
+msgstr ","
+
+msgid "thousand_sep"
+msgstr "."
+
+msgid "date_fmt"
+msgstr "d-m-Y"
+
+msgid "timestamp_fmt"
+msgstr "d-m-Y G:i:s"
+
 #: ../root/WEB-INF/jsp/startPage.jsp:96 ../root/WEB-INF/jsp/startPage.jsp:92
 msgid "Help"
 msgstr "Ajutor"

@@ -16,6 +16,18 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
+msgid "decimal_sep"
+msgstr "."
+
+msgid "thousand_sep"
+msgstr ","
+
+msgid "date_fmt"
+msgstr "m/d/y"
+
+msgid "timestamp_fmt"
+msgstr "Y-m-d g:i:s a"
+
 #: ../root/WEB-INF/jsp/startPage.jsp:96 ../root/WEB-INF/jsp/startPage.jsp:92
 msgid "Help"
 msgstr ""
@@ -28,3 +40,4 @@ msgstr ""
 #, python-format
 msgid "%s and %s"
 msgstr ""
+
