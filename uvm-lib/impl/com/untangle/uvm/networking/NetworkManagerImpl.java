@@ -112,8 +112,6 @@ public class NetworkManagerImpl implements LocalNetworkManager
     /* Flag to indicate when the UVM has been shutdown */
     private boolean isShutdown = false;
 
- 
-
     private NetworkManagerImpl()
     {
         this.ruleManager = RuleManager.getInstance();
@@ -517,8 +515,17 @@ public class NetworkManagerImpl implements LocalNetworkManager
 
         /* ignore everything on the external interface */
         if ( argonIntf == IntfConstants.EXTERNAL_INTF ) return null;
+        
+        /* Retrieve the network settings */
+        NetworkSpacesInternalSettings settings = this.networkSettings;
 
-        return internalAddress;
+        if ( settings == null ) return null;
+
+        NetworkSpaceInternal local = settings.getNetworkSpace( argonIntf );
+        
+        if ( local == null ) return null;
+
+        return local.getPrimaryAddress();
     }
 
     /* Update all of the iptables rules and the inside address database */
