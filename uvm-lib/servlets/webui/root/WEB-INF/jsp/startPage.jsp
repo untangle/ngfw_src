@@ -12,7 +12,7 @@
 	<script type="text/javascript" src="ext-2.0.1/source/adapter/ext-base.js"></script>
 	<script type="text/javascript" src="ext-2.0.1/ext-all-debug.js"></script>
 	<script type="text/javascript" src="jsonrpc/jsonrpc.js"></script>
-    <script type="text/javascript"  src="firebug/firebug.js"></script>
+    <script type="text/javascript" src="firebug/firebug.js"></script>
     <script type="text/javascript" src="script/untangle-node-protofilter/settings.js"></script>
 -->	
 	<script type="text/javascript" src="ext-2.0.1/adapter/ext/ext-base.js"></script>
@@ -23,12 +23,20 @@
     <script type="text/javascript" src="script/ext-untangle.js"></script>
 <script type="text/javascript">
 rpc = {};
-//TODO: do all rpc requests asyncronous
-rpc.jsonrpc = new JSONRpcClient("/webui/JSON-RPC");
-rpc.nodeManager = rpc.jsonrpc.RemoteUvmContext.nodeManager();
-rpc.policyManager=rpc.jsonrpc.RemoteUvmContext.policyManager();
-rpc.toolboxManager=rpc.jsonrpc.RemoteUvmContext.toolboxManager();
-rpc.version=rpc.jsonrpc.RemoteUvmContext.version();
+rpc.callBackWithObject = function() {
+    var functionToCall = arguments[0];
+    var callBackObj = arguments[1];
+    var callBackFunction = arguments[2];
+    var args=[];
+    var callBackFunctionPlusArg = function(result, exception) {
+		callBackFunction(result, exception, callBackObj);
+    };
+    args.push(callBackFunctionPlusArg);
+    for(var i=3;i<arguments.length;i++) {
+    	args.push(arguments[i]);
+    }
+    functionToCall.apply(null,args);
+}
 i18n=null;
 node_i18n_instances={};
 
@@ -40,15 +48,38 @@ MainPage = {
 	nodes: null,
 	viewport: null,
 	removeNodeCmpId: null,
-	
+	initSemaphore: null,
+	policySemaphore: null,
 	init: function() {
+			MainPage.initSemaphore=5;
+			rpc.jsonrpc = new JSONRpcClient("/webui/JSON-RPC");
+			rpc.jsonrpc.RemoteUvmContext.nodeManager(function (result, exception) {
+				if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
+				rpc.nodeManager=result;
+				MainPage.postinit();
+			});
+			rpc.jsonrpc.RemoteUvmContext.policyManager(function (result, exception) {
+				if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
+				rpc.policyManager=result;
+				MainPage.postinit();
+			});
+			rpc.jsonrpc.RemoteUvmContext.toolboxManager(function (result, exception) {
+				if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
+				rpc.toolboxManager=result;
+				MainPage.postinit();
+			});
+			rpc.jsonrpc.RemoteUvmContext.version(function (result, exception) {
+				if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
+				rpc.version=result;
+				MainPage.postinit();
+			});
 			Ext.Ajax.request({
 		        url: "i18n",
 				method: 'GET',
 				success: function ( result, request) {
 					var jsonResult=Ext.util.JSON.decode(result.responseText);
 					i18n =new I18N(jsonResult);
-					MainPage.postinit()
+					MainPage.postinit();
 				},
 				failure: function ( result, request) { 
 					Ext.MessageBox.alert("Failed", 'Failed loading I18N translations for main rack'); 
@@ -56,8 +87,11 @@ MainPage = {
 			});
 	},
 	postinit: function() {
-		//TODO remove this...
-		document.getElementById("test1").innerHTML = i18n.sprintf(i18n._('%s and %s'), "cucu", "bau");
+		MainPage.initSemaphore--;
+		if(MainPage.initSemaphore!==0) {
+			return;
+		}
+		//document.getElementById("test1").innerHTML = i18n.sprintf(i18n._('%s and %s'), "cucu", "bau");
 		MainPage.buildTabs();
 		MainPage.viewport = new Ext.Viewport({
             layout:'border',
@@ -84,9 +118,6 @@ MainPage = {
        		MainPage.tabs.setHeight(newSize);
         });
         Ext.getCmp("west").fireEvent("resize");
-        /*  
-        MainPage.viewport.on('resize', , MainPage.viewport);
-        */
 		var buttonCmp=new Ext.untangle.Button({
 			'height': '46px',
 			'width': '86px',
@@ -224,10 +255,29 @@ MainPage = {
 		return node;
 	},
 	loadNodes: function() {
+		MainPage.policySemaphore=2;
+		rpc.nodeManager.nodeInstancesVisible(function (result, exception) {
+			if(exception) { Ext.MessageBox.alert("Failed",exception.message);
+				return;
+			}
+			rpc.policyTids=result.list;
+			MainPage.loadNodesCallback();
+		}, rpc.currentPolicy);
+		rpc.nodeManager.nodeInstancesVisible(function (result, exception) {
+			if(exception) { Ext.MessageBox.alert("Failed",exception.message);
+				return;
+			}
+			rpc.commonTids=result.list;
+			MainPage.loadNodesCallback();
+		}, null);
+	},
+	loadNodesCallback: function() {
+		MainPage.policySemaphore--;
+		if(MainPage.policySemaphore!==0) {
+			return;
+		}
 		Ext.untangle.BlingerManager.stop();
 		MainPage.destoyNodes();
-		rpc.policyTids=rpc.nodeManager.nodeInstancesVisible(rpc.currentPolicy).list;
-		rpc.commonTids=rpc.nodeManager.nodeInstancesVisible(null).list;
 		rpc.tids=[];
 		var i=null;
 		for(i=0;i<rpc.policyTids.length;i++) {
@@ -490,7 +540,7 @@ Ext.onReady(MainPage.init);
 		</div>
 			<div id="tabLibrary" class="x-hide-display">
 			    <div style="margin-left:15px;font-size: 11px;text-align:left;">Click to Learn More</div>
-			    <div id="test1">aaa</div>
+			    <!--  div id="test1"></div-->
 			    <div id="toolsLibrary"></div>
 			</div>
 			<div id="tabMyApps" class="x-hide-display">
