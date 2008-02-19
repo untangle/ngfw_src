@@ -525,7 +525,15 @@ public class NetworkManagerImpl implements LocalNetworkManager
         
         if ( local == null ) return null;
 
-        return local.getPrimaryAddress();
+        IPNetwork network = local.getPrimaryAddress();
+
+        if ( network == null ) return null;
+
+        IPaddr address = network.getNetwork();
+
+        if ( address == null ) return null;
+
+        return address.getAddr();
     }
 
     /* Update all of the iptables rules and the inside address database */
