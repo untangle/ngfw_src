@@ -1,0 +1,507 @@
+rpc = {};
+rpc.callBackWithObject = function() {
+    var functionToCall = arguments[0];
+    var callBackObj = arguments[1];
+    var callBackFunction = arguments[2];
+    var args=[];
+    var callBackFunctionPlusArg = function(result, exception) {
+		callBackFunction(result, exception, callBackObj);
+    };
+    args.push(callBackFunctionPlusArg);
+    for(var i=3;i<arguments.length;i++) {
+    	args.push(arguments[i]);
+    }
+    functionToCall.apply(null,args);
+}
+i18n=null;
+node_i18n_instances={};
+
+MainPage = {
+	tabs: null,
+	library: null,
+	myApps: null,
+	config: null,
+	nodes: null,
+	viewport: null,
+	removeNodeCmpId: null,
+	initSemaphore: null,
+	policySemaphore: null,
+	version: null,
+	init: function() {
+			MainPage.initSemaphore=5;
+			rpc.jsonrpc = new JSONRpcClient("/webui/JSON-RPC");
+			rpc.jsonrpc.RemoteUvmContext.nodeManager(function (result, exception) {
+				if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
+				rpc.nodeManager=result;
+				MainPage.postinit();
+			});
+			rpc.jsonrpc.RemoteUvmContext.policyManager(function (result, exception) {
+				if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
+				rpc.policyManager=result;
+				MainPage.postinit();
+			});
+			rpc.jsonrpc.RemoteUvmContext.toolboxManager(function (result, exception) {
+				if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
+				rpc.toolboxManager=result;
+				MainPage.postinit();
+			});
+			rpc.jsonrpc.RemoteUvmContext.version(function (result, exception) {
+				if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
+				rpc.version=result;
+				MainPage.postinit();
+			});
+			Ext.Ajax.request({
+		        url: "i18n",
+				method: 'GET',
+				success: function ( result, request) {
+					var jsonResult=Ext.util.JSON.decode(result.responseText);
+					i18n =new I18N(jsonResult);
+					MainPage.postinit();
+				},
+				failure: function ( result, request) { 
+					Ext.MessageBox.alert("Failed", 'Failed loading I18N translations for main rack'); 
+				} 
+			});
+	},
+	postinit: function() {
+		MainPage.initSemaphore--;
+		if(MainPage.initSemaphore!==0) {
+			return;
+		}
+		//document.getElementById("test1").innerHTML = i18n.sprintf(i18n._('%s and %s'), "cucu", "bau");
+		MainPage.buildTabs();
+		MainPage.viewport = new Ext.Viewport({
+            layout:'border',
+            items:[
+                {
+                    region:'west',
+                    id: 'west',
+                    contentEl: 'contentleft',
+                    width: 222,
+                    border: false
+                 },{
+                    region:'center',
+                    id: 'center',
+					contentEl: 'contentright',                    
+                    border: false,
+                    cls: 'contentright',
+                    bodyStyle: 'background-color: transparent;',
+                    autoScroll: true
+                }
+             ]
+        });
+        Ext.getCmp("west").on("resize", function() {
+        	var newSize=Math.max(this.getEl().getHeight()-250,100);
+       		MainPage.tabs.setHeight(newSize);
+        });
+        Ext.getCmp("west").fireEvent("resize");
+		var buttonCmp=new Ext.untangle.Button({
+			'height': '46px',
+			'width': '86px',
+			'renderTo': 'help',
+	        'text': i18n._('Help'),
+	        'handler': function() {	  
+				var rackBaseHelpLink = MainPage.getHelpLink("rack");
+				window.open(rackBaseHelpLink);
+				},
+	        'imageSrc': 'images/IconHelp36x36.png?'+MainPage.version
+		});
+		MainPage.loadTools();
+		MainPage.loadPolicies();
+	},
+	
+	loadScript: function(url,callbackFn) {
+		Ext.get('scripts_container').load({
+			'url':url,
+			'text':"loading...",
+			'discardUrl':true,
+			'callback': callbackFn,
+			'scripts':true,
+			'nocache':false,
+			disableCaching: false
+		});
+	},
+	getHelpLink: function(source,focus) {
+		var baseLink="http://www.untangle.com/docs/get.php?";
+		if(source) {
+			source=source.toLowerCase().replace(" ","_");
+		}
+		var helpLink=baseLink+"version="+rpc.version+"&source="+source;
+		if(focus) {
+			focus=focus.toLowerCase().replace(" ","_");
+			helpLink+="&focus="+focus;
+		}
+		return helpLink;
+	},
+	loadTools: function() {
+		this.loadLibarary();
+		this.loadMyApps();
+		this.loadConfig();
+	},
+	
+	loadLibarary: function() {
+		rpc.toolboxManager.uninstalled(function (result, exception) {
+			if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
+			var uninstalledMD=result;
+			if(uninstalledMD===null) {
+				MainPage.library=null;
+			} else {
+				MainPage.library=[];
+				for(var i=0;i<uninstalledMD.length;i++) {
+					var md=uninstalledMD[i];
+					if(md.type=="LIB_ITEM" && md.viewPosition>=0) {
+						MainPage.library.push(md);
+					}
+				}
+				MainPage.buildLibrary();
+			}
+		});
+	},
+	
+	loadMyApps: function() {
+		if(MainPage.myApps!==null) {
+			for(var i=0;i<MainPage.myApps.length;i++) {
+				var cmp=Ext.getCmp('myAppButton_'+this.myApps[i].name);
+				if(cmp!==null) {
+					cmp.destroy();
+					cmp=null;
+				}
+			}
+			MainPage.myApps=null;
+		}
+		rpc.toolboxManager.installedVisible(function (result, exception) {
+			if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
+			var installedVisibleMD=result;
+			MainPage.myApps=[];
+			for(var i=0;i<installedVisibleMD.length;i++) {
+				var md=installedVisibleMD[i];
+				if(md.type=="NODE" && (md.core || md.security)) {
+					MainPage.myApps.push(md);
+				}
+			}
+			MainPage.buildMyApps();
+			MainPage.updateMyAppsButtons();
+		});
+	},
+	
+	loadConfig: function() {
+		rpc.toolboxManager.getConfigItems(function (result, exception) {
+			if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
+			MainPage.config = result;
+			MainPage.buildConfig();
+		});
+	},
+	
+	loadPolicies: function() {
+		rpc.policyManager.getPolicies( function (result, exception) {
+			if(exception) { Ext.MessageBox.alert("Failed",exception.message); return; }
+			rpc.policies=result;
+			MainPage.buildPolicies();
+		});
+	},
+	getNodeMackageDesc: function(Tid) {
+		var i;
+		if(MainPage.myApps!==null) {
+			for(i=0;i<MainPage.myApps.length;i++) {
+				if(MainPage.myApps[i].name==Tid.nodeName) {
+					return MainPage.myApps[i];
+				}
+			}
+		}
+		return null;
+		
+	},
+	createNode: function (Tid) {
+		var node={};
+		node.id=node.tid=Tid.id;
+		node.Tid=Tid;
+		var md=this.getNodeMackageDesc(Tid);
+		if(md!==null) {
+			node.md=md;
+			
+			node.name=md.name;
+			node.displayName=md.displayName;
+			node.viewPosition=md.viewPosition;
+			node.rackType=md.rackType;
+			node.isService=md.service;
+			node.isUtil=md.util;
+			node.isSecurity=md.security;
+			node.isCore=md.core;
+			node.image='image?name='+node.name+"&"+MainPage.version;
+		}
+		node.blingers=eval([{'type':'ActivityBlinger','bars':['ACT 1','ACT 2','ACT 3','ACT 4']},{'type':'SystemBlinger'}]);
+		return node;
+	},
+	loadNodes: function() {
+		MainPage.policySemaphore=2;
+		rpc.nodeManager.nodeInstancesVisible(function (result, exception) {
+			if(exception) { Ext.MessageBox.alert("Failed",exception.message);
+				return;
+			}
+			rpc.policyTids=result.list;
+			MainPage.loadNodesCallback();
+		}, rpc.currentPolicy);
+		rpc.nodeManager.nodeInstancesVisible(function (result, exception) {
+			if(exception) { Ext.MessageBox.alert("Failed",exception.message);
+				return;
+			}
+			rpc.commonTids=result.list;
+			MainPage.loadNodesCallback();
+		}, null);
+	},
+	loadNodesCallback: function() {
+		MainPage.policySemaphore--;
+		if(MainPage.policySemaphore!==0) {
+			return;
+		}
+		Ext.untangle.BlingerManager.stop();
+		MainPage.destoyNodes();
+		rpc.tids=[];
+		var i=null;
+		for(i=0;i<rpc.policyTids.length;i++) {
+			rpc.tids.push(rpc.policyTids[i]);
+		}
+		for(i=0;i<rpc.commonTids.length;i++) {
+			rpc.tids.push(rpc.commonTids[i]);
+		}
+		MainPage.nodes=[];
+		for(i=0;i<rpc.tids.length;i++) {
+			var node=this.createNode(rpc.tids[i]);
+			MainPage.nodes.push(node);
+		}
+		for(var i=0;i<MainPage.nodes.length;i++) {
+			var node=MainPage.nodes[i];
+			this.addNode(node);
+		}
+		this.updateSeparator();
+		this.updateMyAppsButtons();
+		this.loadNodesRunStates();
+		
+	},
+	loadNodesRunStates: function() {
+		rpc.nodeManager.allNodeStates(function (result, exception) {
+			if(exception) { Ext.MessageBox.alert("Failed",exception.message);
+				return;
+			}
+			var allNodeStates=result;
+			for(var i=0;i<MainPage.nodes.length;i++) {
+				var nodeCmp=Ext.untangle.Node.getCmp(MainPage.nodes[i].tid);
+				if(nodeCmp) {
+					nodeCmp.updateRunState(allNodeStates.map[MainPage.nodes[i].tid]);
+				}
+			}
+			Ext.untangle.BlingerManager.start();
+		});
+	},
+	buildTabs: function () {
+		this.tabs = new Ext.TabPanel({
+		    renderTo: 'tabs',
+		    'activeTab': 0,
+		    'height':400,
+		    'defaults':{autoScroll: true},
+		    'items':[
+		        {'contentEl':'tabLibrary', 'title':'Library'},
+		        {'contentEl':'tabMyApps', 'title':'My Apps'},
+		        {'contentEl':'tabConfig', 'title':'Config'}
+		    ]
+		});
+	},
+	
+	clickMyApps: function(item) {
+		if(item!==null) {
+			Ext.getCmp('myAppButton_'+item.name).disable();
+			var policy=null;
+			if (!item.service && !item.util && !item.core) {
+        		policy = rpc.currentPolicy;
+        	}
+			rpc.nodeManager.instantiate(function (result, exception) {
+				if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
+				var tid = result;
+				rpc.tids.push(tid);
+				var node=MainPage.createNode(tid);
+				MainPage.nodes.push(node);
+				MainPage.addNode(node);
+				MainPage.updateSeparator();
+			}, item.name, policy);
+		}
+	},
+
+	clickLibrary: function(item) {
+		if(item!==null) {
+			Ext.getCmp('libraryButton_'+item.name).disable();
+			rpc.nodeManager.install(function (result, exception) {
+				if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
+				MainPage.loadMyApps();
+				Ext.MessageBox.alert("TODO","Purchase: add to myApps buttons, remove from library");
+
+			}, item.name);
+		}
+	},
+	
+	clickConfig: function(item) {
+		if(item!==null && item.action!==null) {
+			Ext.MessageBox.alert("Failed","TODO: implement config "+item.name);
+			/*
+			var action=item.action;
+			if(item.action.url!==null) {
+				window.open(item.action.url);
+			} else if(item.action.method!==null) {
+				eval(item.action.method);
+			}
+			*/
+		}
+	},
+	
+	todo: function() {
+		Ext.MessageBox.alert("Failed","TODO: implement this.");
+	},
+	
+	buildLibrary: function() {
+  		var out=[];
+  		if(this.library!==null) {
+	  		for(var i=0;i<this.library.length;i++) {
+	  			var item=this.library[i];
+	  			var buttonCmp=new Ext.untangle.Button({
+	  				'id':'libraryButton_'+item.name,
+					'libraryIndex':i,
+					'height':'50px',
+					'renderTo':'toolsLibrary',
+					'cls':'toolboxButton',
+			        'text': item.displayName,
+			        'handler': function() {MainPage.clickLibrary(MainPage.library[this.libraryIndex]);},
+			        'imageSrc': item.image
+		        });
+	  		}
+	  	}
+	},
+
+	buildMyApps: function() {
+  		var out=[];
+  		for(var i=0;i<this.myApps.length;i++) {
+  			var item=this.myApps[i];
+  			var buttonCmp=new Ext.untangle.Button({
+  				'id':'myAppButton_'+item.name,
+				'myAppIndex':i,
+				'height':'50px',
+				'renderTo':'toolsMyApps',
+				'cls':'toolboxButton',
+		        'text': item.displayName,
+		        'handler': function() {MainPage.clickMyApps(MainPage.myApps[this.myAppIndex]);},
+		        'imageSrc': 'image?name='+ item.name+"&"+MainPage.version,
+		        'disabled':true
+	        });
+  		}
+	},
+	
+	buildConfig: function() {
+  		var out=[];
+  		for(var i=0;i<this.config.length;i++) {
+  			var item=this.config[i];
+  			var buttonCmp=new Ext.untangle.Button({
+				'configIndex':i,
+				'height':'42px',
+				'renderTo':'toolsConfig',
+				'cls':'toolboxButton',
+		        'text': item.displayName,
+		        'handler': function() {MainPage.clickConfig(MainPage.config[this.configIndex]);},
+		        'imageSrc': item.image
+	        });
+  		}
+	},
+	
+	destoyNodes: function () {
+		if(this.nodes!==null) {
+			for(var i=0;i<this.nodes.length;i++) {
+				var node=this.nodes[i];
+				var cmp=Ext.getCmp(this.nodes[i].id);
+				if(cmp) {
+					cmp.destroy();
+					cmp=null;
+				}
+			}
+		}
+	},
+	
+	getNodePosition: function(place, viewPosition) {
+		var placeEl=document.getElementById(place);
+		var position=0;
+		if(placeEl.hasChildNodes()) {
+			for(var i=0;i<placeEl.childNodes.length;i++) {
+				if(placeEl.childNodes[i].getAttribute('viewPosition')-viewPosition<0) {
+					position=i+1;
+				} else {
+					break;
+				}
+			}
+		}
+		return position;
+	},
+	
+	addNode: function (node) {
+		var nodeWidget=new Ext.untangle.Node(node);
+		var place=node.isSecurity?'security_nodes':'other_nodes';
+		var position=this.getNodePosition(place,node.viewPosition);
+		nodeWidget.render(place,position);
+		var cmp=Ext.getCmp('myAppButton_'+node.name);
+		if(cmp!==null) {
+			Ext.getCmp('myAppButton_'+node.name).disable();
+		}
+	},
+	
+	updateSeparator: function() {
+		var hasUtilOrService=false;
+		var hasCore=false;
+		for(var i=0;i<this.nodes.length;i++) {
+			if(this.nodes[i].isUtil || this.nodes[i].isService) {
+				hasUtilOrService=true;
+			} else if(this.nodes[i].isCore) {
+				hasCore=true;
+			}
+		}
+		document.getElementById("nodes_separator_text").innerHTML=hasUtilOrService?"Services & Utilities":hasCore?"Services":"";
+		document.getElementById("nodes_separator").style.display=hasUtilOrService || hasCore?"":"none";
+	},
+	
+	updateMyAppsButtons: function() {
+		if(this.myApps!==null && this.nodes!==null) {
+			var i=null;
+			for(i=0;i<this.myApps.length;i++) {
+				Ext.getCmp('myAppButton_'+this.myApps[i].name).enable();
+			}
+			for(i=0;i<this.nodes.length;i++) {
+				Ext.getCmp('myAppButton_'+this.nodes[i].name).disable();
+			}
+		}
+	},
+	
+	buildPolicies: function () {
+		var out=[];
+		out.push('<select id="rack_select" onchange="MainPage.changePolicy()">');
+		for(var i=0;i<rpc.policies.length;i++) {
+			var selVirtualRack=rpc.policies[i]["default"]===true?"selected":"";
+			
+			if(rpc.policies[i]["default"]===true) {
+				rpc.currentPolicy=rpc.policies[i];
+			}
+			out.push('<option value="'+rpc.policies[i].id+'" '+selVirtualRack+'>'+rpc.policies[i].name+'<\/option>');
+		}
+		out.push('<\/select>');
+		out.push('<div id="rack_policy_button" style="position:absolute;top:15px;left:500px;"><\/div>');
+		document.getElementById('rack_list').innerHTML=out.join('');
+		var buttonCmp = new Ext.Button({
+			'renderTo':'rack_policy_button',
+	        'text': 'Show Policy Manager',
+	        'handler': function() {Ext.MessageBox.alert("Failed","TODO:Show Policy Manager");}
+        });
+		this.loadNodes();
+	},
+	
+	changePolicy: function () {
+		var rack_select=document.getElementById('rack_select');
+		if(rack_select.selectedIndex>=0) {
+			rpc.currentPolicy=rpc.policies[rack_select.selectedIndex];
+			Ext.MessageBox.alert("TODO","Change Virtual Rack");
+			this.loadNodes();
+		}
+	}
+};	

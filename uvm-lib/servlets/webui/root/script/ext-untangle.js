@@ -94,13 +94,13 @@ Ext.untangle.Node = Ext.extend(Ext.Component, {
         },
         setState: function(state) {
         	this.state=state;
-        	var iconSrc="images/node/Icon"+this.state+"State28x28.png";
+        	var iconSrc="images/node/Icon"+this.state+"State28x28.png?"+MainPage.version;
         	document.getElementById('nodeStateIconImg_'+this.getId()).src=iconSrc;
         },
         
         setPowerOn: function(powerOn) {
         	this.powerOn=powerOn;
-        	var iconSrc="images/node/IconPower"+(powerOn?"On":"Off")+"State28x28.png";
+        	var iconSrc="images/node/IconPower"+(powerOn?"On":"Off")+"State28x28.png?"+MainPage.version;
         	document.getElementById('nodePowerIconImg_'+this.getId()).src=iconSrc;
         	document.getElementById('nodePowerOnHint_'+this.getId()).style.display=this.powerOn?"none":"";
         },
@@ -429,9 +429,9 @@ Ext.untangle.Node.powerTip='The <B>Power Button</B> allows you to turn a product
 Ext.untangle.Node.template = new Ext.Template(
 '<div class="nodeImage"><img src="{image}"/></div>',
 '<div class="nodeLabel">{displayName}</div><div class="nodeBlingers" id="nodeBlingers_{id}"></div>',
-'<div class="nodeStateIcon"><img id="nodeStateIconImg_{id}" src="images/node/IconOffState28x28.png"></div>',
-'<div class="nodePowerIcon"><img id="nodePowerIconImg_{id}" src="images/node/IconPowerOffState28x28.png"></div>',
-'<div id="nodePowerOnHint_{id}" class="nodePowerOnHint"><img src="images/node/IconPowerOnHint100.png"></div>',
+'<div class="nodeStateIcon"><img id="nodeStateIconImg_{id}" src="images/node/IconOffState28x28.png?'+MainPage.version+'"></div>',
+'<div class="nodePowerIcon"><img id="nodePowerIconImg_{id}" src="images/node/IconPowerOffState28x28.png?'+MainPage.version+'"></div>',
+'<div id="nodePowerOnHint_{id}" class="nodePowerOnHint"><img src="images/node/IconPowerOnHint100.png?'+MainPage.version+'"></div>',
 '<div class="nodeSettingsButton" id="nodeSettingsButton_{id}"></div>',
 '<div class="nodeHelpButton" id="nodeHelpButton_{id}"></div>');
 
@@ -674,8 +674,7 @@ Ext.untangle.Settings = Ext.extend(Ext.Component, {
 Ext.untangle.Settings._nodeScripts={};
 Ext.untangle._hasResource={};
 Ext.untangle.Settings.loadNodeScript=function(nodeName,cmpId,callbackFn) {
-	MainPage.loadScript('script/'+nodeName+'/settings.js',function() {callbackFn(cmpId);});
-	//jQuery.getScript('nodes/'+name+'.js?_dc='+(new Date()).getTime(),function() {callbackFn(cmpId)});
+	MainPage.loadScript('script/'+nodeName+'/settings.js?'+MainPage.version,function() {callbackFn(cmpId);});
 };
 Ext.untangle.Settings._classNames={};
 Ext.untangle.Settings.getClassName=function(name) {
