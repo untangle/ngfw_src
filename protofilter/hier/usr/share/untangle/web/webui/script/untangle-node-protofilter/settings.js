@@ -167,12 +167,12 @@ Ext.untangle.ProtocolControlSettings = Ext.extend(Ext.untangle.Settings, {
 	    cmPL.defaultSortable = false;
 		
 		var editPLTemplate=new Ext.Template(
-		'<div class="inputLine"><span class="label">Category:</span><span class="formw"><input type="text" id="field_category_pl_{tid}" style="width:200px;"/></span></div>',
-		'<div class="inputLine"><span class="label">Protocol:</span><span class="formw"><input type="text" id="field_protocol_pl_{tid}" style="width:200px;"/></span></div>',
-		'<div class="inputLine"><span class="label">Block:</span><span class="formw"><input type="checkbox" id="field_blocked_pl_{tid}" /></span></div>',
-		'<div class="inputLine"><span class="label">Log:</span><span class="formw"><input type="checkbox" id="field_log_pl_{tid}" /></span></div>',
-		'<div class="inputLine"><span class="label">Description:</span><span class="formw"><textarea type="text" id="field_description_pl_{tid}" style="width:200px;height:60px;"></textarea></span></div>',
-		'<div class="inputLine"><span class="label">Signature:</span><span class="formw"><textarea type="text" id="field_definition_pl_{tid}" style="width:200px;height:60px;"></textarea></span></div>');
+		'<div class="inputLine"><span class="label">'+this.i18n._("Category")+':</span><span class="formw"><input type="text" id="field_category_pl_{tid}" style="width:200px;"/></span></div>',
+		'<div class="inputLine"><span class="label">'+this.i18n._("Protocol")+':</span><span class="formw"><input type="text" id="field_protocol_pl_{tid}" style="width:200px;"/></span></div>',
+		'<div class="inputLine"><span class="label">'+this.i18n._("Block")+':</span><span class="formw"><input type="checkbox" id="field_blocked_pl_{tid}" /></span></div>',
+		'<div class="inputLine"><span class="label">'+this.i18n._("Log")+':</span><span class="formw"><input type="checkbox" id="field_log_pl_{tid}" /></span></div>',
+		'<div class="inputLine"><span class="label">'+this.i18n._("Description")+':</span><span class="formw"><textarea type="text" id="field_description_pl_{tid}" style="width:200px;height:60px;"></textarea></span></div>',
+		'<div class="inputLine"><span class="label">'+this.i18n._("Signature")+':</span><span class="formw"><textarea type="text" id="field_definition_pl_{tid}" style="width:200px;height:60px;"></textarea></span></div>');
 		var winHTML=editPLTemplate.applyTemplate({'tid':this.tid});
 		this.rowEditPLWin=new Ext.Window({
 			id: 'rowEditPLWin_'+this.tid,
@@ -181,7 +181,7 @@ Ext.untangle.ProtocolControlSettings = Ext.extend(Ext.untangle.Settings, {
 			rowIndex: null,
 			layout: 'fit',
 			modal: true,
-			title: 'Edit',
+			title: this.i18n._('Edit'),
 			closeAction: 'hide',
 			autoCreate: true,                
 			width: 400,
@@ -199,19 +199,19 @@ Ext.untangle.ProtocolControlSettings = Ext.extend(Ext.untangle.Settings, {
 			{
 				'parentId':this.getId(),
 				'iconCls': 'helpIcon',
-				'text': 'Help',
+				'text': this.i18n._('Help'),
 				'handler': function() {Ext.MessageBox.alert("TODO","Implement Help Page");}
 			},
 			{
 				'parentId':this.getId(),
 				'iconCls': 'saveIcon',
-				'text': 'Update',
+				'text': this.i18n._('Update'),
 				'handler': function() {Ext.getCmp(this.parentId).rowEditPLWin.saveData();}
 			},
 			{
 			'parentId':this.getId(),
 			'iconCls': 'cancelIcon',
-			'text': 'Cancel',
+			'text': this.i18n._('Cancel'),
 			'handler': function() {Ext.getCmp(this.parentId).rowEditPLWin.hide();}
 			}
 			],
@@ -261,8 +261,8 @@ Ext.untangle.ProtocolControlSettings = Ext.extend(Ext.untangle.Settings, {
 	        store: this.storePL,
 	        cm: cmPL,
 	        tbar:[{
-		            text:'Add',
-		            tooltip:'Add New Row',
+		            text: this.i18n._('Add'),
+		            tooltip:this.i18n._('Add New Row'),
 		            iconCls:'add',
 		            parentId:this.getId(),
 		            handler: function() {
@@ -278,7 +278,7 @@ Ext.untangle.ProtocolControlSettings = Ext.extend(Ext.untangle.Settings, {
 	        autoExpandColumn: 'category',
 	        clicksToEdit: 1,
 	        rowEditor: this.rowEditPLWin,
-	        title: 'Protocol List'
+	        title: this.i18n._('Protocol List')
 	    });
 		
 		
@@ -295,26 +295,26 @@ Ext.untangle.ProtocolControlSettings = Ext.extend(Ext.untangle.Settings, {
 		        ]
 	    	}),
 			columns: [
-			    {header: "timestamp", width: 120, sortable: true, dataIndex: 'timeStamp', renderer: function(value) {
-			    	//var date=new Date();
-			    	//date.setTime(value.time);
-			    	//return date.toLocaleString();
+			    {header: this.i18n._("timestamp"), width: 120, sortable: true, dataIndex: 'timeStamp', renderer: function(value) {
 			    	return i18n.timestampFormat(value);
 			    }},
-			    {header: "action", width: 70, sortable: true, dataIndex: 'blocked', renderer: function(value) {return value?"blocked" : "passed";}},
-			    {header: "client", width: 120, sortable: true, dataIndex: 'pipelineEndpoints', renderer: function(value) {return value===null?"" : value.CClientAddr.hostAddress+":"+value.CClientPort;}},
-			    {header: "request", width: 120, sortable: true, dataIndex: 'protocol'},
-			    {header: "reason for action", width: 120, sortable: true, dataIndex: 'blocked', renderer: function(value) {return value?"blocked in block list" : "not blocked in block list";}},
-			    {header: "server", width: 120, sortable: true, dataIndex: 'pipelineEndpoints', renderer: function(value) {return value===null?"" : value.SServerAddr.hostAddress+":"+value.SServerPort;}}
+			    {header: this.i18n._("action"), width: 70, sortable: true, dataIndex: 'blocked', renderer: function(value) {
+			    		return value?Ext.untangle.ProtocolControlSettings.getI18N()._("blocked"):Ext.untangle.ProtocolControlSettings.getI18N()._("passed");
+			    	}
+			    },
+			    {header: this.i18n._("client"), width: 120, sortable: true, dataIndex: 'pipelineEndpoints', renderer: function(value) {return value===null?"" : value.CClientAddr.hostAddress+":"+value.CClientPort;}},
+			    {header: this.i18n._("request"), width: 120, sortable: true, dataIndex: 'protocol'},
+			    {header: this.i18n._("reason for action"), width: 120, sortable: true, dataIndex: 'blocked', renderer: function(value) {return value?Ext.untangle.ProtocolControlSettings.getI18N()._("blocked in block list"):Ext.untangle.ProtocolControlSettings.getI18N()._("not blocked in block list");}},
+			    {header: this.i18n._("server"), width: 120, sortable: true, dataIndex: 'pipelineEndpoints', renderer: function(value) {return value===null?"" : value.SServerAddr.hostAddress+":"+value.SServerPort;}}
 			],
 			//sm: new Ext.grid.RowSelectionModel({singleSelect:true}),
-			title: 'Event Log',
+			title: this.i18n._('Event Log'),
 			bbar: 
 				[{ xtype:'tbtext',
 				   text:'<span id="boxReposytoryDescEventLog_'+this.tid+'"></span>'},
 				 {xtype:'tbbutton',
-		            text:'Refresh',
-		            tooltip:'Refresh',
+		            text:this.i18n._('Refresh'),
+		            tooltip:this.i18n._('Refresh'),
 		            iconCls:'iconRefresh',
 		            parentId:this.getId(),
 		            handler: function() {
@@ -335,7 +335,7 @@ Ext.untangle.ProtocolControlSettings = Ext.extend(Ext.untangle.Settings, {
 								for(var i=0;i<repList.length;i++) {
 									var repDesc=repList[i];
 									var selOpt=(i===0)?"selected":"";
-									out.push('<option value="'+repDesc.name+'" '+selOpt+'>'+repDesc.name+'</option>');
+									out.push('<option value="'+repDesc.name+'" '+selOpt+'>'+cmp.i18n._(repDesc.name)+'</option>');
 								}
 								out.push('</select>');
 					    		
@@ -374,7 +374,6 @@ Ext.untangle.ProtocolControlSettings = Ext.extend(Ext.untangle.Settings, {
     
     loadPL: function() {
     	this.gridPL.getStore().loadData(this.rpc.settings.patterns.list);
-    	
     },
     
     refreshEventLog: function() {
@@ -421,6 +420,13 @@ Ext.untangle.ProtocolControlSettings = Ext.extend(Ext.untangle.Settings, {
 			var cmp=Ext.untangle.ProtocolControlSettings.getInstanceCmp();
 			if(cmp!==null) {
 				cmp.rpc.settings=result;
+		    	var pl=cmp.rpc.settings.patterns.list;
+		    	for(var i=0;i<pl.length;i++) {
+		    		var pattern=pl[i];
+		    		pattern["category"]=cmp.i18n._(pattern["category"]);
+		    		pattern["description"]=cmp.i18n._(pattern["description"]);
+		    	}
+				
 				cmp.loadPL();
 			}
 		});
@@ -439,6 +445,9 @@ Ext.untangle.ProtocolControlSettings.getInstanceCmp =function() {
 	}
 	return cmp;
 };
+Ext.untangle.ProtocolControlSettings.getI18N= function() {
+	return node_i18n_instances['untangle-node-protofilter'];
+}
 Ext.untangle.Settings.registerClassName('untangle-node-protofilter','Ext.untangle.ProtocolControlSettings');
 Ext.reg('untangleProtocolControlSettings', Ext.untangle.ProtocolControlSettings);
 }
