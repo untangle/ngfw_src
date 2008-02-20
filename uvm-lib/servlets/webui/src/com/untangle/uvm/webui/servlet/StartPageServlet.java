@@ -17,7 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 public class StartPageServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
-		
+	  req.setAttribute("version", getServletConfig().getInitParameter("version"));
       String url="/WEB-INF/jsp/startPage.jsp";
       ServletContext sc = getServletContext();
       RequestDispatcher rd = sc.getRequestDispatcher(url);

@@ -15,7 +15,7 @@
     <script type="text/javascript" src="firebug/firebug.js"></script>
     <script type="text/javascript" src="script/untangle-node-protofilter/settings.js"></script>
 -->	
-	<script type="text/javascript" src="ext-2.0.1/adapter/ext/ext-base.js"></script>
+	<script type="text/javascript" src="ext-2.0.1/adapter/ext/ext-base.js?${version}"></script>
 	<script type="text/javascript" src="ext-2.0.1/ext-all.js"></script>
 	<script type="text/javascript" src="script/i18n.js"></script>
 	<script type="text/javascript" src="jsonrpc/jsonrpc-min.js"></script>

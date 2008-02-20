@@ -27,6 +27,10 @@
   <servlet>
     <servlet-name>StartPageServlet</servlet-name>
     <servlet-class>com.untangle.uvm.webui.servlet.StartPageServlet</servlet-class>
+    <init-param>
+      <param-name>version</param-name>
+      <param-value>5</param-value>
+    </init-param>
     <load-on-startup>1</load-on-startup>
   </servlet>
 
