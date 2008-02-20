@@ -2,13 +2,12 @@
 # Copyright (C) YEAR Untangle, Inc.
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
-#, fuzzy
+# 
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-02-15 17:43+0200\n"
+"POT-Creation-Date: 2008-02-20 17:16+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,34 +17,218 @@ msgstr ""
 "Plural-Forms: nplurals=0; null;\n"
 
 #: ../web/webui/script/untangle-node-protofilter/settings.js:138
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:136
 msgid "block"
 msgstr "blocheaza"
 
 #: ../web/webui/script/untangle-node-protofilter/settings.js:141
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:139
 msgid "log"
 msgstr "log"
 
 #: ../web/webui/script/untangle-node-protofilter/settings.js:144
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:142
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:184
 msgid "Edit"
 msgstr "Editeaza"
 
 #: ../web/webui/script/untangle-node-protofilter/settings.js:147
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:145
 msgid "Delete"
 msgstr "Sterge"
 
 #: ../web/webui/script/untangle-node-protofilter/settings.js:150
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:148
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:426
 msgid "category"
 msgstr "categorie"
 
 #: ../web/webui/script/untangle-node-protofilter/settings.js:153
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:151
 msgid "protocol"
 msgstr "protocol"
 
 #: ../web/webui/script/untangle-node-protofilter/settings.js:158
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:156
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:427
 msgid "description"
 msgstr "descriere"
 
 #: ../web/webui/script/untangle-node-protofilter/settings.js:161
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:159
 msgid "signature"
 msgstr "signatura"
 
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:170
+msgid "Category"
+msgstr "categorie"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:171
+msgid "Protocol"
+msgstr "protocol"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:172
+msgid "Block"
+msgstr "blocheaza"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:173
+msgid "Log"
+msgstr "log"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:174
+msgid "Description"
+msgstr "descriere"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:175
+msgid "Signature"
+msgstr "signatura"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:202
+msgid "Help"
+msgstr "Ajutor"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:208
+msgid "Update"
+msgstr "Updateaza"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:214
+msgid "Cancel"
+msgstr "Anuleaza"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:264
+msgid "Add"
+msgstr "Adauga"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:265
+msgid "Add New Row"
+msgstr "Adauga rand nou"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:281
+msgid "Protocol List"
+msgstr "Protocoale"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:298
+msgid "timestamp"
+msgstr "timp"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:301
+msgid "action"
+msgstr "actiune"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:302
+msgid "blocked"
+msgstr "blocat"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:302
+msgid "passed"
+msgstr "permis"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:305
+msgid "client"
+msgstr "client"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:306
+msgid "request"
+msgstr "cerere"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:307
+msgid "reason for action"
+msgstr "motivul actiunii"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:307
+msgid "blocked in block list"
+msgstr "blocat"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:307
+msgid "not blocked in block list"
+msgstr "neblocat"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:308
+msgid "server"
+msgstr "server"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:311
+msgid "Event Log"
+msgstr "Log Evenimente"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:316
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:317
+msgid "Refresh"
+msgstr "Improspateaza"
+
+#: database data - repository
+msgid "Protocol Events"
+msgstr "Evenimente de protocol"
+
+msgid "Blocked Protocol Events"
+msgstr "Evenimente de protocol blocate"
+
+#: database data - category
+msgid "Email"
+msgstr "Posta electronica"
+
+msgid "File Transfer"
+msgstr "Transfer de fisiere"
+
+msgid "Instant   Messenger"
+msgstr "Mesaje instant"
+
+msgid "Instant Messenger"
+msgstr "Mesaje instant"
+
+msgid "Internet News"
+msgstr "Stiri online"
+
+msgid "Music"
+msgstr "Muzica"
+
+msgid "Networking"
+msgstr "Retelistica"
+
+msgid "Peer   to Peer"
+msgstr "P2P"
+
+msgid "Peer to   Peer"
+msgstr "P2P"
+
+msgid "Peer to Peer"
+msgstr "P2P"
+
+msgid "Printing"
+msgstr "P2P"
+
+msgid "Remote Deskop"
+msgstr "(ro)Remote Deskop"
+
+msgid "Remote Desktop"
+msgstr "(ro)Remote Deskop"
+
+msgid "Software   Development"
+msgstr "Dezvolare de soft"
+
+msgid "Software Development"
+msgstr "Dezvolare de soft"
+
+msgid "Streaming   Video"
+msgstr "(ro)Streaming Video"
+
+msgid "Streaming Video"
+msgstr "(ro)Streaming Video"
+
+msgid "System Administration"
+msgstr "Administrare de sistem"
+
+msgid "Video   Game"
+msgstr "Joc video"
+
+msgid "Video Game"
+msgstr "Joc video"
+
+msgid "Voice over IP"
+msgstr "Voce peste IP"
+
+msgid "Web"
+msgstr "Web"
+
+msgid "Worm"
+msgstr "Vierme"

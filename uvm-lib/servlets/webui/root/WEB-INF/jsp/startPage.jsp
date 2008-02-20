@@ -35,7 +35,8 @@
 		</div>
 			<div id="tabLibrary" class="x-hide-display">
 			    <div style="margin-left:15px;font-size: 11px;text-align:left;">Click to Learn More</div>
-			    <!--  div id="test1"></div-->
+			    <div id="test1"></div>
+			    <div id="test2"></div>
 			    <div id="toolsLibrary"></div>
 			</div>
 			<div id="tabMyApps" class="x-hide-display">

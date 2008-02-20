@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-02-15 17:43+0200\n"
+"POT-Creation-Date: 2008-02-20 17:03+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -29,6 +29,7 @@ msgid "timestamp_fmt"
 msgstr "d-m-Y G:i:s"
 
 #: ../root/WEB-INF/jsp/startPage.jsp:96 ../root/WEB-INF/jsp/startPage.jsp:92
+#: ../root/script/untangle.js:103
 msgid "Help"
 msgstr "Ajutor"
 
@@ -36,7 +37,11 @@ msgstr "Ajutor"
 msgid "Show Settings"
 msgstr "Afişează Setările"
 
-#: ../root/WEB-INF/jsp/startPage.jsp:58
+#: ../root/WEB-INF/jsp/startPage.jsp:58 ../root/script/untangle.js:71
 #, python-format
 msgid "%s and %s"
 msgstr "%s şi %s"
+
+#: ../root/script/untangle.js:72
+msgid "On the i18n part, we'd like to have development"
+msgstr "Õn Õn thé thé i18n i18n part, part, wé’d wé’d liké liké tÕ to havé havé dévélÕpmént dévélopmént"

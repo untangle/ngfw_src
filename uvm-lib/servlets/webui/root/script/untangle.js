@@ -68,7 +68,8 @@ MainPage = {
 		if(MainPage.initSemaphore!==0) {
 			return;
 		}
-		//document.getElementById("test1").innerHTML = i18n.sprintf(i18n._('%s and %s'), "cucu", "bau");
+		document.getElementById("test1").innerHTML = i18n.sprintf(i18n._('%s and %s'), "cucu", "bau");
+		document.getElementById("test2").innerHTML = i18n._('On the i18n part, we\'d like to have development');
 		MainPage.buildTabs();
 		MainPage.viewport = new Ext.Viewport({
             layout:'border',
