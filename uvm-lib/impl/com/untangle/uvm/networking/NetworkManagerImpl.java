@@ -513,8 +513,8 @@ public class NetworkManagerImpl implements LocalNetworkManager
     {
         byte argonIntf = session.clientIntf();
 
-        /* ignore everything on the external interface */
-        if ( argonIntf == IntfConstants.EXTERNAL_INTF ) return null;
+        /* ignore everything on the external or dmz interface */
+        if ( argonIntf == IntfConstants.EXTERNAL_INTF || argonIntf == IntfConstants.DMZ_INTF ) return null;
         
         /* Retrieve the network settings */
         NetworkSpacesInternalSettings settings = this.networkSettings;
