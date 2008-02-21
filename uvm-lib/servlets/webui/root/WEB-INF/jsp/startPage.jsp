@@ -17,13 +17,17 @@
 -->	
 	<script type="text/javascript" src="ext-2.0.1/adapter/ext/ext-base.js?${version}"></script>
 	<script type="text/javascript" src="ext-2.0.1/ext-all.js?${version}"></script>
-	<script type="text/javascript" src="script/i18n.js?${version}"></script>
 	<script type="text/javascript" src="jsonrpc/jsonrpc-min.js?${version}"></script>
-    <script type="text/javascript" src="script/untangle.js?${version}"></script>
-    <script type="text/javascript" src="script/ext-untangle.js?${version}"></script>
+    <script type="text/javascript" src="script/untangle-main.js?${version}"></script>
+	<script type="text/javascript" src="script/untangle-i18n.js?${version}"></script>
+    <script type="text/javascript" src="script/untangle-ext.js?${version}"></script>
 	<script type="text/javascript">
-		MainPage.version='${version}';
-		Ext.onReady(MainPage.init);
+		function init() {
+			main=new Untangle.Main();
+			main.version='${version}';
+			main.init();
+		}
+		Ext.onReady(init);
 	</script>
 </head>
 <body>

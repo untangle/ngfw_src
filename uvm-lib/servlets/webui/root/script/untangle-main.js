@@ -1,22 +1,12 @@
-rpc = {};
-rpc.callBackWithObject = function() {
-    var functionToCall = arguments[0];
-    var callBackObj = arguments[1];
-    var callBackFunction = arguments[2];
-    var args=[];
-    var callBackFunctionPlusArg = function(result, exception) {
-		callBackFunction(result, exception, callBackObj);
-    };
-    args.push(callBackFunctionPlusArg);
-    for(var i=3;i<arguments.length;i++) {
-    	args.push(arguments[i]);
-    }
-    functionToCall.apply(null,args);
-}
-i18n=null;
-node_i18n_instances={};
+Ext.namespace('Untangle');
+//Global Variables
+var main=null; 
+var i18n=null;
+var rpc=null;
 
-MainPage = {
+Untangle.Main=function() {
+}
+Untangle.Main.prototype = {
 	tabs: null,
 	library: null,
 	myApps: null,
@@ -28,35 +18,36 @@ MainPage = {
 	policySemaphore: null,
 	version: null,
 	init: function() {
-			MainPage.initSemaphore=5;
+			main.initSemaphore=5;
+			rpc = new Untangle.RPC();
 			rpc.jsonrpc = new JSONRpcClient("/webui/JSON-RPC");
 			rpc.jsonrpc.RemoteUvmContext.nodeManager(function (result, exception) {
 				if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
 				rpc.nodeManager=result;
-				MainPage.postinit();
+				main.postinit();
 			});
 			rpc.jsonrpc.RemoteUvmContext.policyManager(function (result, exception) {
 				if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
 				rpc.policyManager=result;
-				MainPage.postinit();
+				main.postinit();
 			});
 			rpc.jsonrpc.RemoteUvmContext.toolboxManager(function (result, exception) {
 				if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
 				rpc.toolboxManager=result;
-				MainPage.postinit();
+				main.postinit();
 			});
 			rpc.jsonrpc.RemoteUvmContext.version(function (result, exception) {
 				if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
 				rpc.version=result;
-				MainPage.postinit();
+				main.postinit();
 			});
 			Ext.Ajax.request({
 		        url: "i18n",
 				method: 'GET',
 				success: function ( result, request) {
 					var jsonResult=Ext.util.JSON.decode(result.responseText);
-					i18n =new I18N(jsonResult);
-					MainPage.postinit();
+					i18n =new Untangle.I18N(jsonResult);
+					main.postinit();
 				},
 				failure: function ( result, request) { 
 					Ext.MessageBox.alert("Failed", 'Failed loading I18N translations for main rack'); 
@@ -64,14 +55,14 @@ MainPage = {
 			});
 	},
 	postinit: function() {
-		MainPage.initSemaphore--;
-		if(MainPage.initSemaphore!==0) {
+		main.initSemaphore--;
+		if(main.initSemaphore!==0) {
 			return;
 		}
 		document.getElementById("test1").innerHTML = i18n.sprintf(i18n._('%s and %s'), "cucu", "bau");
 		document.getElementById("test2").innerHTML = i18n._('On the i18n part, we\'d like to have development');
-		MainPage.buildTabs();
-		MainPage.viewport = new Ext.Viewport({
+		main.buildTabs();
+		main.viewport = new Ext.Viewport({
             layout:'border',
             items:[
                 {
@@ -93,22 +84,22 @@ MainPage = {
         });
         Ext.getCmp("west").on("resize", function() {
         	var newSize=Math.max(this.getEl().getHeight()-250,100);
-       		MainPage.tabs.setHeight(newSize);
+       		main.tabs.setHeight(newSize);
         });
         Ext.getCmp("west").fireEvent("resize");
-		var buttonCmp=new Ext.untangle.Button({
+		var buttonCmp=new Untangle.Button({
 			'height': '46px',
 			'width': '86px',
 			'renderTo': 'help',
 	        'text': i18n._('Help'),
 	        'handler': function() {	  
-				var rackBaseHelpLink = MainPage.getHelpLink("rack");
+				var rackBaseHelpLink = main.getHelpLink("rack");
 				window.open(rackBaseHelpLink);
 				},
-	        'imageSrc': 'images/IconHelp36x36.png?'+MainPage.version
+	        'imageSrc': 'images/IconHelp36x36.png?'+main.version
 		});
-		MainPage.loadTools();
-		MainPage.loadPolicies();
+		main.loadTools();
+		main.loadPolicies();
 	},
 	
 	loadScript: function(url,callbackFn) {
@@ -145,51 +136,51 @@ MainPage = {
 			if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
 			var uninstalledMD=result;
 			if(uninstalledMD===null) {
-				MainPage.library=null;
+				main.library=null;
 			} else {
-				MainPage.library=[];
+				main.library=[];
 				for(var i=0;i<uninstalledMD.length;i++) {
 					var md=uninstalledMD[i];
 					if(md.type=="LIB_ITEM" && md.viewPosition>=0) {
-						MainPage.library.push(md);
+						main.library.push(md);
 					}
 				}
-				MainPage.buildLibrary();
+				main.buildLibrary();
 			}
 		});
 	},
 	
 	loadMyApps: function() {
-		if(MainPage.myApps!==null) {
-			for(var i=0;i<MainPage.myApps.length;i++) {
+		if(main.myApps!==null) {
+			for(var i=0;i<main.myApps.length;i++) {
 				var cmp=Ext.getCmp('myAppButton_'+this.myApps[i].name);
 				if(cmp!==null) {
 					cmp.destroy();
 					cmp=null;
 				}
 			}
-			MainPage.myApps=null;
+			main.myApps=null;
 		}
 		rpc.toolboxManager.installedVisible(function (result, exception) {
 			if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
 			var installedVisibleMD=result;
-			MainPage.myApps=[];
+			main.myApps=[];
 			for(var i=0;i<installedVisibleMD.length;i++) {
 				var md=installedVisibleMD[i];
 				if(md.type=="NODE" && (md.core || md.security)) {
-					MainPage.myApps.push(md);
+					main.myApps.push(md);
 				}
 			}
-			MainPage.buildMyApps();
-			MainPage.updateMyAppsButtons();
+			main.buildMyApps();
+			main.updateMyAppsButtons();
 		});
 	},
 	
 	loadConfig: function() {
 		rpc.toolboxManager.getConfigItems(function (result, exception) {
 			if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
-			MainPage.config = result;
-			MainPage.buildConfig();
+			main.config = result;
+			main.buildConfig();
 		});
 	},
 	
@@ -197,15 +188,15 @@ MainPage = {
 		rpc.policyManager.getPolicies( function (result, exception) {
 			if(exception) { Ext.MessageBox.alert("Failed",exception.message); return; }
 			rpc.policies=result;
-			MainPage.buildPolicies();
+			main.buildPolicies();
 		});
 	},
 	getNodeMackageDesc: function(Tid) {
 		var i;
-		if(MainPage.myApps!==null) {
-			for(i=0;i<MainPage.myApps.length;i++) {
-				if(MainPage.myApps[i].name==Tid.nodeName) {
-					return MainPage.myApps[i];
+		if(main.myApps!==null) {
+			for(i=0;i<main.myApps.length;i++) {
+				if(main.myApps[i].name==Tid.nodeName) {
+					return main.myApps[i];
 				}
 			}
 		}
@@ -228,35 +219,35 @@ MainPage = {
 			node.isUtil=md.util;
 			node.isSecurity=md.security;
 			node.isCore=md.core;
-			node.image='image?name='+node.name+"&"+MainPage.version;
+			node.image='image?name='+node.name+"&"+main.version;
 		}
 		node.blingers=eval([{'type':'ActivityBlinger','bars':['ACT 1','ACT 2','ACT 3','ACT 4']},{'type':'SystemBlinger'}]);
 		return node;
 	},
 	loadNodes: function() {
-		MainPage.policySemaphore=2;
+		main.policySemaphore=2;
 		rpc.nodeManager.nodeInstancesVisible(function (result, exception) {
 			if(exception) { Ext.MessageBox.alert("Failed",exception.message);
 				return;
 			}
 			rpc.policyTids=result.list;
-			MainPage.loadNodesCallback();
+			main.loadNodesCallback();
 		}, rpc.currentPolicy);
 		rpc.nodeManager.nodeInstancesVisible(function (result, exception) {
 			if(exception) { Ext.MessageBox.alert("Failed",exception.message);
 				return;
 			}
 			rpc.commonTids=result.list;
-			MainPage.loadNodesCallback();
+			main.loadNodesCallback();
 		}, null);
 	},
 	loadNodesCallback: function() {
-		MainPage.policySemaphore--;
-		if(MainPage.policySemaphore!==0) {
+		main.policySemaphore--;
+		if(main.policySemaphore!==0) {
 			return;
 		}
-		Ext.untangle.BlingerManager.stop();
-		MainPage.destoyNodes();
+		Untangle.BlingerManager.stop();
+		main.destoyNodes();
 		rpc.tids=[];
 		var i=null;
 		for(i=0;i<rpc.policyTids.length;i++) {
@@ -265,13 +256,13 @@ MainPage = {
 		for(i=0;i<rpc.commonTids.length;i++) {
 			rpc.tids.push(rpc.commonTids[i]);
 		}
-		MainPage.nodes=[];
+		main.nodes=[];
 		for(i=0;i<rpc.tids.length;i++) {
 			var node=this.createNode(rpc.tids[i]);
-			MainPage.nodes.push(node);
+			main.nodes.push(node);
 		}
-		for(var i=0;i<MainPage.nodes.length;i++) {
-			var node=MainPage.nodes[i];
+		for(var i=0;i<main.nodes.length;i++) {
+			var node=main.nodes[i];
 			this.addNode(node);
 		}
 		this.updateSeparator();
@@ -285,13 +276,13 @@ MainPage = {
 				return;
 			}
 			var allNodeStates=result;
-			for(var i=0;i<MainPage.nodes.length;i++) {
-				var nodeCmp=Ext.untangle.Node.getCmp(MainPage.nodes[i].tid);
+			for(var i=0;i<main.nodes.length;i++) {
+				var nodeCmp=Untangle.Node.getCmp(main.nodes[i].tid);
 				if(nodeCmp) {
-					nodeCmp.updateRunState(allNodeStates.map[MainPage.nodes[i].tid]);
+					nodeCmp.updateRunState(allNodeStates.map[main.nodes[i].tid]);
 				}
 			}
-			Ext.untangle.BlingerManager.start();
+			Untangle.BlingerManager.start();
 		});
 	},
 	buildTabs: function () {
@@ -319,10 +310,10 @@ MainPage = {
 				if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
 				var tid = result;
 				rpc.tids.push(tid);
-				var node=MainPage.createNode(tid);
-				MainPage.nodes.push(node);
-				MainPage.addNode(node);
-				MainPage.updateSeparator();
+				var node=main.createNode(tid);
+				main.nodes.push(node);
+				main.addNode(node);
+				main.updateSeparator();
 			}, item.name, policy);
 		}
 	},
@@ -332,7 +323,7 @@ MainPage = {
 			Ext.getCmp('libraryButton_'+item.name).disable();
 			rpc.nodeManager.install(function (result, exception) {
 				if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
-				MainPage.loadMyApps();
+				main.loadMyApps();
 				Ext.MessageBox.alert("TODO","Purchase: add to myApps buttons, remove from library");
 
 			}, item.name);
@@ -362,14 +353,14 @@ MainPage = {
   		if(this.library!==null) {
 	  		for(var i=0;i<this.library.length;i++) {
 	  			var item=this.library[i];
-	  			var buttonCmp=new Ext.untangle.Button({
+	  			var buttonCmp=new Untangle.Button({
 	  				'id':'libraryButton_'+item.name,
 					'libraryIndex':i,
 					'height':'50px',
 					'renderTo':'toolsLibrary',
 					'cls':'toolboxButton',
 			        'text': item.displayName,
-			        'handler': function() {MainPage.clickLibrary(MainPage.library[this.libraryIndex]);},
+			        'handler': function() {main.clickLibrary(main.library[this.libraryIndex]);},
 			        'imageSrc': item.image
 		        });
 	  		}
@@ -380,15 +371,15 @@ MainPage = {
   		var out=[];
   		for(var i=0;i<this.myApps.length;i++) {
   			var item=this.myApps[i];
-  			var buttonCmp=new Ext.untangle.Button({
+  			var buttonCmp=new Untangle.Button({
   				'id':'myAppButton_'+item.name,
 				'myAppIndex':i,
 				'height':'50px',
 				'renderTo':'toolsMyApps',
 				'cls':'toolboxButton',
 		        'text': item.displayName,
-		        'handler': function() {MainPage.clickMyApps(MainPage.myApps[this.myAppIndex]);},
-		        'imageSrc': 'image?name='+ item.name+"&"+MainPage.version,
+		        'handler': function() {main.clickMyApps(main.myApps[this.myAppIndex]);},
+		        'imageSrc': 'image?name='+ item.name+"&"+main.version,
 		        'disabled':true
 	        });
   		}
@@ -398,13 +389,13 @@ MainPage = {
   		var out=[];
   		for(var i=0;i<this.config.length;i++) {
   			var item=this.config[i];
-  			var buttonCmp=new Ext.untangle.Button({
+  			var buttonCmp=new Untangle.Button({
 				'configIndex':i,
 				'height':'42px',
 				'renderTo':'toolsConfig',
 				'cls':'toolboxButton',
 		        'text': item.displayName,
-		        'handler': function() {MainPage.clickConfig(MainPage.config[this.configIndex]);},
+		        'handler': function() {main.clickConfig(main.config[this.configIndex]);},
 		        'imageSrc': item.image
 	        });
   		}
@@ -439,7 +430,7 @@ MainPage = {
 	},
 	
 	addNode: function (node) {
-		var nodeWidget=new Ext.untangle.Node(node);
+		var nodeWidget=new Untangle.Node(node);
 		var place=node.isSecurity?'security_nodes':'other_nodes';
 		var position=this.getNodePosition(place,node.viewPosition);
 		nodeWidget.render(place,position);
@@ -477,7 +468,7 @@ MainPage = {
 	
 	buildPolicies: function () {
 		var out=[];
-		out.push('<select id="rack_select" onchange="MainPage.changePolicy()">');
+		out.push('<select id="rack_select" onchange="main.changePolicy()">');
 		for(var i=0;i<rpc.policies.length;i++) {
 			var selVirtualRack=rpc.policies[i]["default"]===true?"selected":"";
 			

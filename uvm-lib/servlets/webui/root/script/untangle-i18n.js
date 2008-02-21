@@ -1,4 +1,6 @@
-I18N= function(map){    
+Untangle.i18nNodeInstances={};
+
+Untangle.I18N= function(map){    
 	this.map=map;
 	
 	if (typeof(this.map) == null) {
@@ -18,7 +20,7 @@ I18N= function(map){
 	}
 	
 }
-I18N.prototype = {
+Untangle.I18N.prototype = {
 	_: function (s) {
 		if (typeof(this.map)!== null && this.map[s]) {
 			return this.map[s];
@@ -73,11 +75,11 @@ I18N.prototype = {
 };
 
 // TODO make this to extend I18N
-I18N_Node = function(globalI18N,nodeMap) {
+Untangle.I18N_Node = function(globalI18N,nodeMap) {
 	this.globalI18N=globalI18N;
 	this.nodeMap=nodeMap;
 };
-I18N_Node.prototype = { 
+Untangle.I18N_Node.prototype = { 
 	// try to find a traslation in this node, then in the main rack translations
 	_: function (s) {
 		if (typeof(this.nodeMap)!== null && this.nodeMap[s]) {

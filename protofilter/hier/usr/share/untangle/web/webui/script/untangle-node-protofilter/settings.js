@@ -1,100 +1,8 @@
 //<script type="text/javascript">
-if(!Ext.untangle._hasResource["Ext.untangle.ProtocolControlSettings"]) {
-Ext.untangle._hasResource["Ext.untangle.ProtocolControlSettings"]=true;
+if(!Untangle._hasResource["Untangle.Protofilter"]) {
+Untangle._hasResource["Untangle.Protofilter"]=true;
 
-Ext.grid.CheckColumn = function(config){
-    Ext.apply(this, config);
-    if(!this.id){
-        this.id = Ext.id();
-    }
-    this.renderer = this.renderer.createDelegate(this);
-};
-
-Ext.grid.CheckColumn.prototype ={
-    init: function(grid){
-        this.grid = grid;
-        this.grid.on('render', function(){
-            var view = this.grid.getView();
-            view.mainBody.on('mousedown', this.onMouseDown, this);
-        }, this);
-    },
-
-    onMouseDown: function(e, t){
-        if(t.className && t.className.indexOf('x-grid3-cc-'+this.id) != -1){
-            e.stopEvent();
-            var index = this.grid.getView().findRowIndex(t);
-            var record = this.grid.store.getAt(index);
-            record.set(this.dataIndex, !record.data[this.dataIndex]);
-        }
-    },
-
-    renderer: function(value, metadata, record){
-        metadata.css += ' x-grid3-check-col-td'; 
-        return '<div class="x-grid3-check-col'+(value?'-on':'')+' x-grid3-cc-'+this.id+'">&#160;</div>';
-    }
-};
-Ext.grid.EditColumn = function(config){
-    Ext.apply(this, config);
-    if(!this.id){
-        this.id = Ext.id();
-    }
-    this.renderer = this.renderer.createDelegate(this);
-};
-Ext.grid.EditColumn.prototype ={
-    init: function(grid){
-        this.grid = grid;
-        this.grid.on('render', function(){
-            var view = this.grid.getView();
-            view.mainBody.on('mousedown', this.onMouseDown, this);
-        }, this);
-    },
-
-    onMouseDown: function(e, t){
-        if(t.className && t.className.indexOf('editRow') != -1){
-            e.stopEvent();
-           var index = this.grid.getView().findRowIndex(t);
-           var record = this.grid.store.getAt(index);
-            //populate row editor
-           this.grid.rowEditor.populate(record,index);
-           this.grid.rowEditor.show();
-        }
-    },
-
-    renderer: function(value, metadata, record){
-        return '<div class="editRow">&nbsp;</div>';
-    }
-};
-Ext.grid.RemoveColumn = function(config){
-    Ext.apply(this, config);
-    if(!this.id){
-        this.id = Ext.id();
-    }
-    this.renderer = this.renderer.createDelegate(this);
-};
-Ext.grid.RemoveColumn.prototype ={
-    init: function(grid){
-        this.grid = grid;
-        this.grid.on('render', function(){
-            var view = this.grid.getView();
-            view.mainBody.on('mousedown', this.onMouseDown, this);
-        }, this);
-    },
-
-    onMouseDown: function(e, t){
-        if(t.className && t.className.indexOf('removeRow') != -1){
-            e.stopEvent();
-            var index = this.grid.getView().findRowIndex(t);
-            var record = this.grid.store.getAt(index);
-            this.grid.store.remove(record);
-        }
-    },
-
-    renderer: function(value, metadata, record){
-        return '<div class="removeRow">&nbsp;</div>';
-    }
-};
-
-Ext.untangle.ProtocolControlSettings = Ext.extend(Ext.untangle.Settings, {
+Untangle.Protofilter = Ext.extend(Untangle.Settings, {
     i18n: null,
     node:null,
     tabs: null,
@@ -107,10 +15,10 @@ Ext.untangle.ProtocolControlSettings = Ext.extend(Ext.untangle.Settings, {
     	var el= document.createElement("div");
 	    container.dom.insertBefore(el, position);
         this.el = Ext.get(el);
-    	this.i18n=node_i18n_instances[this.name];
+    	this.i18n=Untangle.i18nNodeInstances[this.name];
     	this.rpc={};
     	this.rpc.repository={};
-    	Ext.untangle.ProtocolControlSettings.instanceId=this.getId();    	
+    	Untangle.Protofilter.instanceId=this.getId();    	
     	if(this.node.nodeContext.node.eventManager===undefined) {
 			this.node.nodeContext.node.eventManager=this.node.nodeContext.node.getEventManager();
 		}
@@ -299,12 +207,12 @@ Ext.untangle.ProtocolControlSettings = Ext.extend(Ext.untangle.Settings, {
 			    	return i18n.timestampFormat(value);
 			    }},
 			    {header: this.i18n._("action"), width: 70, sortable: true, dataIndex: 'blocked', renderer: function(value) {
-			    		return value?Ext.untangle.ProtocolControlSettings.getI18N()._("blocked"):Ext.untangle.ProtocolControlSettings.getI18N()._("passed");
+			    		return value?Untangle.Protofilter.getI18N()._("blocked"):Untangle.Protofilter.getI18N()._("passed");
 			    	}
 			    },
 			    {header: this.i18n._("client"), width: 120, sortable: true, dataIndex: 'pipelineEndpoints', renderer: function(value) {return value===null?"" : value.CClientAddr.hostAddress+":"+value.CClientPort;}},
 			    {header: this.i18n._("request"), width: 120, sortable: true, dataIndex: 'protocol'},
-			    {header: this.i18n._("reason for action"), width: 120, sortable: true, dataIndex: 'blocked', renderer: function(value) {return value?Ext.untangle.ProtocolControlSettings.getI18N()._("blocked in block list"):Ext.untangle.ProtocolControlSettings.getI18N()._("not blocked in block list");}},
+			    {header: this.i18n._("reason for action"), width: 120, sortable: true, dataIndex: 'blocked', renderer: function(value) {return value?Untangle.Protofilter.getI18N()._("blocked in block list"):Untangle.Protofilter.getI18N()._("not blocked in block list");}},
 			    {header: this.i18n._("server"), width: 120, sortable: true, dataIndex: 'pipelineEndpoints', renderer: function(value) {return value===null?"" : value.SServerAddr.hostAddress+":"+value.SServerPort;}}
 			],
 			//sm: new Ext.grid.RowSelectionModel({singleSelect:true}),
@@ -326,7 +234,7 @@ Ext.untangle.ProtocolControlSettings = Ext.extend(Ext.untangle.Settings, {
 	       			fn: function() {
 	       				this.rpc.eventManager.getRepositoryDescs(function (result, exception) {
 							if(exception) {Ext.MessageBox.alert("Failed",exception.message); return;}
-							var cmp=Ext.untangle.ProtocolControlSettings.getInstanceCmp();
+							var cmp=Untangle.Protofilter.getInstanceCmp();
 							if(cmp!==null) {
 								cmp.rpc.repositoryDescs=result;
 								var out=[];
@@ -385,7 +293,7 @@ Ext.untangle.ProtocolControlSettings = Ext.extend(Ext.untangle.Settings, {
     		this.rpc.repository[selRepository].getEvents(function (result, exception) {
 				if(exception) {Ext.MessageBox.alert("Failed",exception.message); return;}
 				var events = result;
-				var cmp=Ext.untangle.ProtocolControlSettings.getInstanceCmp();
+				var cmp=Untangle.Protofilter.getInstanceCmp();
 				if(cmp!==null) {
 					cmp.gridEventLog.getStore().loadData(events.list);
 				}
@@ -407,7 +315,7 @@ Ext.untangle.ProtocolControlSettings = Ext.extend(Ext.untangle.Settings, {
     	this.rpc.settings.patterns.javaClass="java.util.ArrayList";
     	this.rpc.node.setProtoFilterSettings(function (result, exception) {
 			if(exception) {Ext.MessageBox.alert("Failed",exception.message); return;}
-			var cmp=Ext.untangle.ProtocolControlSettings.getInstanceCmp();
+			var cmp=Untangle.Protofilter.getInstanceCmp();
 			if(cmp!==null) {
 				cmp.tabs.enable();
 			}
@@ -417,7 +325,7 @@ Ext.untangle.ProtocolControlSettings = Ext.extend(Ext.untangle.Settings, {
 	loadData: function() {
 		this.rpc.node.getProtoFilterSettings(function (result, exception) {
 			if(exception) {Ext.MessageBox.alert("Failed",exception.message); return;}
-			var cmp=Ext.untangle.ProtocolControlSettings.getInstanceCmp();
+			var cmp=Untangle.Protofilter.getInstanceCmp();
 			if(cmp!==null) {
 				cmp.rpc.settings=result;
 		    	var pl=cmp.rpc.settings.patterns.list;
@@ -437,18 +345,18 @@ Ext.untangle.ProtocolControlSettings = Ext.extend(Ext.untangle.Settings, {
 		this.savePL();
 	}
 });
-Ext.untangle.ProtocolControlSettings.instanceId=null;
-Ext.untangle.ProtocolControlSettings.getInstanceCmp =function() {
+Untangle.Protofilter.instanceId=null;
+Untangle.Protofilter.getInstanceCmp =function() {
 	var cmp=null;
-	if(Ext.untangle.ProtocolControlSettings.instanceId!==null) {
-		cmp=Ext.getCmp(Ext.untangle.ProtocolControlSettings.instanceId);
+	if(Untangle.Protofilter.instanceId!==null) {
+		cmp=Ext.getCmp(Untangle.Protofilter.instanceId);
 	}
 	return cmp;
 };
-Ext.untangle.ProtocolControlSettings.getI18N= function() {
-	return node_i18n_instances['untangle-node-protofilter'];
+Untangle.Protofilter.getI18N= function() {
+	return Untangle.i18nNodeInstances['untangle-node-protofilter'];
 }
-Ext.untangle.Settings.registerClassName('untangle-node-protofilter','Ext.untangle.ProtocolControlSettings');
-Ext.reg('untangleProtocolControlSettings', Ext.untangle.ProtocolControlSettings);
+Untangle.Settings.registerClassName('untangle-node-protofilter','Untangle.Protofilter');
+Ext.reg('untangleProtofilter', Untangle.Protofilter);
 }
 //</script>
