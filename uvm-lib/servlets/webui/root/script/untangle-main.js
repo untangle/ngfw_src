@@ -1,4 +1,5 @@
 Ext.namespace('Untangle');
+Ext.BLANK_IMAGE_URL = 'ext-2.0.1/resources/images/default/s.gif';
 //Global Variables
 var main=null; 
 var i18n=null;
