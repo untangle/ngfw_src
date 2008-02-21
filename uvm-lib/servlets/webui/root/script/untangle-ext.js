@@ -796,3 +796,45 @@ Ext.grid.RemoveColumn.prototype ={
         return '<div class="removeRow">&nbsp;</div>';
     }
 };
+/*
+Untangle.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
+	parentId: null,
+	
+	title: 'Event Log',
+	bbar: 
+		[{ xtype:'tbtext',
+		   text:'<span id="boxReposytoryDescEventLog_'+parent.tid+'"></span>'},
+		 {xtype:'tbbutton',
+            text:'Refresh',
+            tooltip:'Refresh',
+            iconCls:'iconRefresh',
+            parentId:this.parent.getId(),
+            handler: function() {
+            	Ext.getCmp(this.parentId).refreshEventLog();	            	
+            }
+        }],
+    listeners: {
+		'render': {
+			fn: function() {
+    			this.parent.rpc.eventManager.getRepositoryDescs(function (result, exception) {
+					if(exception) {Ext.MessageBox.alert("Failed",exception.message); return;}
+					this.parent.rpc.repositoryDescs=result;
+					var out=[];
+					out.push('<select id="selectReposytoryDescEventLog_'+this.parent.tid+'">');
+					var repList=this.parent.rpc.repositoryDescs.list;
+					for(var i=0;i<repList.length;i++) {
+						var repDesc=repList[i];
+						var selOpt=(i===0)?"selected":"";
+						out.push('<option value="'+repDesc.name+'" '+selOpt+'>'+this.parent.i18n._(repDesc.name)+'</option>');
+					}
+					out.push('</select>');
+		    		
+		    		var boxReposytoryDescEventLog=document.getElementById('boxReposytoryDescEventLog_'+cmp.tid);
+		    		boxReposytoryDescEventLog.innerHTML=out.join("");
+				});
+		    },
+		    scope: self
+		}
+	}
+});
+*/

@@ -191,6 +191,35 @@ Untangle.Protofilter = Ext.extend(Untangle.Settings, {
 		
 		
 		// Event Log grid
+/*		
+		//TODO: make reusable Event Log Grid Panel
+		this.gridEventLog= new Untangle.GridEventLog({
+			parent: this,
+			store: new Ext.data.JsonStore({
+		        fields: [
+		           {name: 'timeStamp'},
+		           {name: 'blocked'},
+		           {name: 'pipelineEndpoints'},
+		           {name: 'protocol'},
+		           {name: 'blocked'},
+		           {name: 'server'}
+		        ]
+	    	}),
+			columns: [
+			    {header: this.i18n._("timestamp"), width: 120, sortable: true, dataIndex: 'timeStamp', renderer: function(value) {
+			    	return i18n.timestampFormat(value);
+			    }},
+			    {header: this.i18n._("action"), width: 70, sortable: true, dataIndex: 'blocked', renderer: function(value) {
+			    		return value?Untangle.Protofilter.getI18N()._("blocked"):Untangle.Protofilter.getI18N()._("passed");
+			    	}
+			    },
+			    {header: this.i18n._("client"), width: 120, sortable: true, dataIndex: 'pipelineEndpoints', renderer: function(value) {return value===null?"" : value.CClientAddr.hostAddress+":"+value.CClientPort;}},
+			    {header: this.i18n._("request"), width: 120, sortable: true, dataIndex: 'protocol'},
+			    {header: this.i18n._("reason for action"), width: 120, sortable: true, dataIndex: 'blocked', renderer: function(value) {return value?Untangle.Protofilter.getI18N()._("blocked in block list"):Untangle.Protofilter.getI18N()._("not blocked in block list");}},
+			    {header: this.i18n._("server"), width: 120, sortable: true, dataIndex: 'pipelineEndpoints', renderer: function(value) {return value===null?"" : value.SServerAddr.hostAddress+":"+value.SServerPort;}}
+			]
+		});
+*/
     	this.gridEventLog = new Ext.grid.GridPanel({
 			store: new Ext.data.JsonStore({
 		        fields: [
@@ -226,13 +255,13 @@ Untangle.Protofilter = Ext.extend(Untangle.Settings, {
 		            iconCls:'iconRefresh',
 		            parentId:this.getId(),
 		            handler: function() {
-		            	Ext.getCmp(this.parentId).refreshEventLog();	            	
+		            	Ext.getCmp(this.parentId).gridEventLog.refreshEventLog();	            	
 		            }
 		        }],
-		    listeners: {
-	       		'render': {
-	       			fn: function() {
-	       				this.rpc.eventManager.getRepositoryDescs(function (result, exception) {
+			listeners: {
+				'render': {
+					fn: function() {
+						this.rpc.eventManager.getRepositoryDescs(function (result, exception) {
 							if(exception) {Ext.MessageBox.alert("Failed",exception.message); return;}
 							var cmp=Untangle.Protofilter.getInstanceCmp();
 							if(cmp!==null) {
@@ -246,17 +275,41 @@ Untangle.Protofilter = Ext.extend(Untangle.Settings, {
 									out.push('<option value="'+repDesc.name+'" '+selOpt+'>'+cmp.i18n._(repDesc.name)+'</option>');
 								}
 								out.push('</select>');
-					    		
-					    		var boxReposytoryDescEventLog=document.getElementById('boxReposytoryDescEventLog_'+cmp.tid);
-					    		boxReposytoryDescEventLog.innerHTML=out.join("");
+								var boxReposytoryDescEventLog=document.getElementById('boxReposytoryDescEventLog_'+cmp.tid);
+								boxReposytoryDescEventLog.innerHTML=out.join("");
 							}
 						});
-				    },
-				    scope: this
-	        	}
-	       }
+					},
+					scope: this
+				}
+			},
+		    getSelectedEventLogRepository: function () {
+		    	var cmp=Untangle.Protofilter.getInstanceCmp();
+		    	var selObj=document.getElementById('selectReposytoryDescEventLog_'+cmp.tid);
+		    	var result=null;
+		    	if(selObj!==null && selObj.selectedIndex>=0) {
+		    		result = selObj.options[selObj.selectedIndex].value;
+		    	}
+				return result;
+		    },
+			refreshEventLog: function() {
+				var cmp=Untangle.Protofilter.getInstanceCmp();
+				var selRepository=this.getSelectedEventLogRepository();
+				if(selRepository!==null) {
+					if(cmp.rpc.repository[selRepository] === undefined) {
+						cmp.rpc.repository[selRepository]=cmp.rpc.eventManager.getRepository(selRepository);
+					}
+					cmp.rpc.repository[selRepository].getEvents(function (result, exception) {
+						if(exception) {Ext.MessageBox.alert("Failed",exception.message); return;}
+						var events = result;
+						var cmp=Untangle.Protofilter.getInstanceCmp();
+						if(cmp!==null) {
+							cmp.gridEventLog.getStore().loadData(events.list);
+						}
+					});
+				}
+			}
 		});
-    	
     	this.tabs = new Ext.TabPanel({
 	        renderTo: this.getEl().id,
 	        width: 690,
@@ -271,35 +324,11 @@ Untangle.Protofilter = Ext.extend(Untangle.Settings, {
 	    });
     },
     
-    getSelectedEventLogRepository: function () {
-    	var selObj=document.getElementById('selectReposytoryDescEventLog_'+this.tid);
-    	var result=null;
-    	if(selObj!==null && selObj.selectedIndex>=0) {
-    		result = selObj.options[selObj.selectedIndex].value;
-    	}
-		return result;
-    },
     
     loadPL: function() {
     	this.gridPL.getStore().loadData(this.rpc.settings.patterns.list);
     },
     
-    refreshEventLog: function() {
-    	var selRepository=this.getSelectedEventLogRepository();
-    	if(selRepository!==null) {
-    		if(this.rpc.repository[selRepository] === undefined) {
-    			this.rpc.repository[selRepository]=this.rpc.eventManager.getRepository(selRepository);
-    		}
-    		this.rpc.repository[selRepository].getEvents(function (result, exception) {
-				if(exception) {Ext.MessageBox.alert("Failed",exception.message); return;}
-				var events = result;
-				var cmp=Untangle.Protofilter.getInstanceCmp();
-				if(cmp!==null) {
-					cmp.gridEventLog.getStore().loadData(events.list);
-				}
-			});
-    	}
-    },
     
     savePL: function() {
     	this.tabs.disable();
