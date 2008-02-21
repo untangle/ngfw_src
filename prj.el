@@ -1,6 +1,5 @@
 ;; project file for jdee
 ;; $Id$
-
 ;; Aaron Read <amread@untangle.com>
 
 (jde-project-file-version "1.0")
