@@ -49,7 +49,10 @@ while [ $failures -lt $MAX_TRIES ] ; do
     #   2. connection succeeded, and we got a banner back -> service is
     #      working fine.
     # So in both cases we want to exit with RC=0.
-    gotJob $pid || exit 0
+    if ! gotJob $pid ; then
+      echo success
+      exit 0 
+    fi 
   done
 
   # we made it here, so the test timed out; let's kill the test if

@@ -326,10 +326,17 @@ while true; do
 	    if [ $counter -gt 60 ] ; then # fire up the other nannies
 	        if dpkg -l untangle-spamassassin-update | grep -q ii ; then # we're managing spamassassin
 	            [ `tail -n 50 /var/log/mail.info | grep -c "$SPAMASSASSIN_LOG_ERROR"` -gt 2 ] && restartService spamassassin $SPAMASSASSIN_PID_FILE "non-functional" stopFirst
-	            $BANNER_NANNY $SPAMASSASSIN_PORT $TIMEOUT || restartService spamassassin $SPAMASSASSIN_PID_FILE "hung" stopFirst
-	        fi
+                    date -Iseconds
+                    case "`$BANNER_NANNY $SPAMASSASSIN_PORT $TIMEOUT`" in
+                      *success*) true ;;
+                      *) restartService spamassassin $SPAMASSASSIN_PID_FILE "hung" stopFirst ;;
+                    esac
+                fi
 	        if dpkg -l untangle-clamav-config | grep -q -E '^ii' ; then # we're managing clamav
-                    $BANNER_NANNY $CLAMD_PORT $TIMEOUT || restartService clamav-daemon $CLAMD_PID_FILE "hung" stopFirst
+                  case "`$BANNER_NANNY $CLAMD_PORT $TIMEOUT`" in
+                    *success*) true ;;
+                    *) restartService clamav-daemon $CLAMD_PID_FILE "hung" stopFirst ;;
+                  esac
 	        fi
 	        if dpkg -l untangle-support-agent | grep -q ii ; then # support-agent is supposed to run
 	            if [ -f "$SUPPORT_AGENT_PID_FILE" ] && ps `cat $SUPPORT_AGENT_PID_FILE` > /dev/null ; then # it runs
