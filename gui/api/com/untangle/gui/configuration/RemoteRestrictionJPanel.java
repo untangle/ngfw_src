@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -41,8 +41,8 @@ import com.untangle.gui.util.*;
 import com.untangle.uvm.*;
 import com.untangle.uvm.networking.AccessSettings;
 import com.untangle.uvm.networking.AddressSettings;
-import com.untangle.uvm.security.*;
 import com.untangle.uvm.node.*;
+import com.untangle.uvm.security.*;
 
 public class RemoteRestrictionJPanel extends javax.swing.JPanel
     implements Savable<RemoteCompoundSettings>, Refreshable<RemoteCompoundSettings> {
@@ -129,6 +129,7 @@ public class RemoteRestrictionJPanel extends javax.swing.JPanel
             accessSettings.setIsOutsideReportingEnabled(isOutsideReportingEnabled);
             accessSettings.setIsOutsideQuarantineEnabled(isOutsideQuarantineEnabled);
             addressSettings.setHttpsPort( httpsPort );
+            addressSettings.setIsHostNamePublic(resolvesPubliclyJCheckBox.isSelected());
             accessSettings.setIsOutsideAccessRestricted( isOutsideAccessRestricted );
             if( isOutsideAccessRestricted ){
                 accessSettings.setOutsideNetwork( outsideNetwork );
@@ -163,6 +164,10 @@ public class RemoteRestrictionJPanel extends javax.swing.JPanel
         ((JSpinner.DefaultEditor)externalAccessPortJSpinner.getEditor()).getTextField().setBackground(Color.WHITE);
         Util.addSettingChangeListener(settingsChangedListener, this, externalAccessPortJSpinner);
 
+        // Hostname resolves publicly
+        resolvesPubliclyJCheckBox.setSelected(addressSettings.getIsHostNamePublic());
+        Util.addSettingChangeListener(settingsChangedListener, this, resolvesPubliclyJCheckBox);
+
         // OUTSIDE ACCESS IP RESTRICTED /////
         boolean isOutsideAccessRestricted = accessSettings.getIsOutsideAccessRestricted();
         if( isOutsideAccessRestricted )
@@ -195,7 +200,8 @@ public class RemoteRestrictionJPanel extends javax.swing.JPanel
     }
 
 
-    private void initComponents() {//GEN-BEGIN:initComponents
+    // <editor-fold defaultstate="collapsed" desc=" Generated Code ">//GEN-BEGIN:initComponents
+    private void initComponents() {
         java.awt.GridBagConstraints gridBagConstraints;
 
         dhcpButtonGroup = new javax.swing.ButtonGroup();
@@ -205,6 +211,10 @@ public class RemoteRestrictionJPanel extends javax.swing.JPanel
         restrictAdminButtonGroup = new javax.swing.ButtonGroup();
         sshButtonGroup = new javax.swing.ButtonGroup();
         externalRemoteJPanel = new javax.swing.JPanel();
+        restrictJPanel1 = new javax.swing.JPanel();
+        restrictIPJPanel2 = new javax.swing.JPanel();
+        resolvesPubliclyJCheckBox = new javax.swing.JCheckBox();
+        jSeparator5 = new javax.swing.JSeparator();
         restrictJPanel = new javax.swing.JPanel();
         restrictIPJPanel1 = new javax.swing.JPanel();
         restrictAdminJCheckBox = new javax.swing.JCheckBox();
@@ -234,7 +244,47 @@ public class RemoteRestrictionJPanel extends javax.swing.JPanel
         setPreferredSize(new java.awt.Dimension(550, 416));
         externalRemoteJPanel.setLayout(new java.awt.GridBagLayout());
 
-        externalRemoteJPanel.setBorder(new javax.swing.border.TitledBorder(null, "Outside Access", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
+        externalRemoteJPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Outside Access", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
+        restrictJPanel1.setLayout(new java.awt.GridBagLayout());
+
+        restrictIPJPanel2.setLayout(new java.awt.GridBagLayout());
+
+        resolvesPubliclyJCheckBox.setFont(new java.awt.Font("Dialog", 0, 12));
+        resolvesPubliclyJCheckBox.setText("Untangle Server hostname resolves publicly");
+        resolvesPubliclyJCheckBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                resolvesPubliclyJCheckBoxActionPerformed(evt);
+            }
+        });
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        restrictIPJPanel2.add(resolvesPubliclyJCheckBox, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 50, 0, 0);
+        restrictJPanel1.add(restrictIPJPanel2, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 0, 5, 0);
+        externalRemoteJPanel.add(restrictJPanel1, gridBagConstraints);
+
+        jSeparator5.setForeground(new java.awt.Color(200, 200, 200));
+        jSeparator5.setPreferredSize(new java.awt.Dimension(0, 1));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        externalRemoteJPanel.add(jSeparator5, gridBagConstraints);
+
         restrictJPanel.setLayout(new java.awt.GridBagLayout());
 
         restrictIPJPanel1.setLayout(new java.awt.GridBagLayout());
@@ -242,10 +292,10 @@ public class RemoteRestrictionJPanel extends javax.swing.JPanel
         restrictAdminJCheckBox.setFont(new java.awt.Font("Dialog", 0, 12));
         restrictAdminJCheckBox.setText("Enable Outside Administration");
         restrictAdminJCheckBox.addActionListener(new java.awt.event.ActionListener() {
-                public void actionPerformed(java.awt.event.ActionEvent evt) {
-                    restrictAdminJCheckBoxActionPerformed(evt);
-                }
-            });
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                restrictAdminJCheckBoxActionPerformed(evt);
+            }
+        });
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
@@ -256,10 +306,10 @@ public class RemoteRestrictionJPanel extends javax.swing.JPanel
         restrictReportingJCheckBox.setFont(new java.awt.Font("Dialog", 0, 12));
         restrictReportingJCheckBox.setText("Enable Outside Report Viewing");
         restrictReportingJCheckBox.addActionListener(new java.awt.event.ActionListener() {
-                public void actionPerformed(java.awt.event.ActionEvent evt) {
-                    restrictReportingJCheckBoxActionPerformed(evt);
-                }
-            });
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                restrictReportingJCheckBoxActionPerformed(evt);
+            }
+        });
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
@@ -270,10 +320,10 @@ public class RemoteRestrictionJPanel extends javax.swing.JPanel
         restrictQuarantineJCheckBox.setFont(new java.awt.Font("Dialog", 0, 12));
         restrictQuarantineJCheckBox.setText("Enable Outside Quarantine Access");
         restrictQuarantineJCheckBox.addActionListener(new java.awt.event.ActionListener() {
-                public void actionPerformed(java.awt.event.ActionEvent evt) {
-                    restrictQuarantineJCheckBoxActionPerformed(evt);
-                }
-            });
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                restrictQuarantineJCheckBoxActionPerformed(evt);
+            }
+        });
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
@@ -307,7 +357,7 @@ public class RemoteRestrictionJPanel extends javax.swing.JPanel
         externalAccessPortJLabel.setText("Outside Https Port:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 3;
+        gridBagConstraints.gridy = 4;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(10, 50, 10, 0);
         externalRemoteJPanel.add(externalAccessPortJLabel, gridBagConstraints);
@@ -318,7 +368,7 @@ public class RemoteRestrictionJPanel extends javax.swing.JPanel
         externalAccessPortJSpinner.setPreferredSize(new java.awt.Dimension(100, 20));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 3;
+        gridBagConstraints.gridy = 4;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(10, 163, 10, 0);
         externalRemoteJPanel.add(externalAccessPortJSpinner, gridBagConstraints);
@@ -422,7 +472,7 @@ public class RemoteRestrictionJPanel extends javax.swing.JPanel
 
         internalRemoteJPanel.setLayout(new java.awt.GridBagLayout());
 
-        internalRemoteJPanel.setBorder(new javax.swing.border.TitledBorder(null, "Internal Remote Administration", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
+        internalRemoteJPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Internal Remote Administration", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
         internalAdminButtonGroup.add(internalAdminEnabledRadioButton);
         internalAdminEnabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
         internalAdminEnabledRadioButton.setText("<html><b>Allow</b> Remote Administration inside the local network, via http.<br>(This is the default setting.)</html>");
@@ -459,7 +509,11 @@ public class RemoteRestrictionJPanel extends javax.swing.JPanel
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 10);
         add(internalRemoteJPanel, gridBagConstraints);
 
-    }//GEN-END:initComponents
+    }// </editor-fold>//GEN-END:initComponents
+
+    private void resolvesPubliclyJCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resolvesPubliclyJCheckBoxActionPerformed
+// TODO add your handling code here:
+    }//GEN-LAST:event_resolvesPubliclyJCheckBoxActionPerformed
 
     private void restrictAdminJCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_restrictAdminJCheckBoxActionPerformed
 
@@ -510,13 +564,17 @@ public class RemoteRestrictionJPanel extends javax.swing.JPanel
     private javax.swing.JLabel jLabel6;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator4;
+    private javax.swing.JSeparator jSeparator5;
+    private javax.swing.JCheckBox resolvesPubliclyJCheckBox;
     private javax.swing.ButtonGroup restrictAdminButtonGroup;
     private javax.swing.JCheckBox restrictAdminJCheckBox;
     private javax.swing.JPanel restrictIPJPanel;
     private javax.swing.JPanel restrictIPJPanel1;
+    private javax.swing.JPanel restrictIPJPanel2;
     private javax.swing.JLabel restrictIPaddrJLabel;
     public javax.swing.JTextField restrictIPaddrJTextField;
     private javax.swing.JPanel restrictJPanel;
+    private javax.swing.JPanel restrictJPanel1;
     private javax.swing.JLabel restrictNetmaskJLabel;
     public javax.swing.JTextField restrictNetmaskJTextField;
     private javax.swing.JCheckBox restrictQuarantineJCheckBox;
