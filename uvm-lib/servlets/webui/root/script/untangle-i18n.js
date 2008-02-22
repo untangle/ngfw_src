@@ -1,28 +1,29 @@
 Untangle.i18nNodeInstances={};
 
-Untangle.I18N= function(map){    
-	this.map=map;
+Untangle.I18N=Ext.extend(Ext.Component, {
+	map: null,
 	
-	if (typeof(this.map) == null) {
-		this.map = {};
-	}
-	if (!this.map['decimal_sep']) {
-		this.map['decimal_sep'] = '.';
-	}
-	if (!this.map['thousand_sep']) {
-		this.map['thousand_sep'] = ',';
-	}
-	if (!this.map['date_fmt']) {
-		this.map['date_fmt'] = 'm/d/y';
-	}
-	if (!this.map['timestamp_fmt']) {
-		this.map['timestamp_fmt'] = 'Y-m-d g:i:s a';
-	}
-	
-}
-Untangle.I18N.prototype = {
+    initComponent: function(){
+        Untangle.I18N.superclass.initComponent.call(this);
+		if (this.map == null) {
+			this.map = {};
+		}
+		if (!this.map['decimal_sep']) {
+			this.map['decimal_sep'] = '.';
+		}
+		if (!this.map['thousand_sep']) {
+			this.map['thousand_sep'] = ',';
+		}
+		if (!this.map['date_fmt']) {
+			this.map['date_fmt'] = 'm/d/y';
+		}
+		if (!this.map['timestamp_fmt']) {
+			this.map['timestamp_fmt'] = 'Y-m-d g:i:s a';
+		}
+    },
+
 	_: function (s) {
-		if (typeof(this.map)!== null && this.map[s]) {
+		if (this.map!== null && this.map[s]) {
 			return this.map[s];
 		}
 		return s;
@@ -71,39 +72,18 @@ Untangle.I18N.prototype = {
     	date.setTime(v.time);
     	return Ext.util.Format.date(date, this.map['timestamp_fmt']);
     }
-    		
-};
 
-// TODO make this to extend I18N
-Untangle.I18N_Node = function(globalI18N,nodeMap) {
-	this.globalI18N=globalI18N;
-	this.nodeMap=nodeMap;
-};
-Untangle.I18N_Node.prototype = { 
-	// try to find a traslation in this node, then in the main rack translations
+});
+
+Untangle.NodeI18N=Ext.extend(Untangle.I18N, {
+	nodeMap: null,
 	_: function (s) {
-		if (typeof(this.nodeMap)!== null && this.nodeMap[s]) {
+		if (this.nodeMap!== null && this.nodeMap[s]) {
 			return this.nodeMap[s];
 		}
-		return this.globalI18N._(s);
-	},
-	
-	// TODO: try to reuse the i18n functions
-	pluralise:  function (s, p, n) {
-		if (n != 1) return this._(p);
-		return this._(s);
-	},
-	
-	sprintf: function (s) {
-		return this.globalI18N.sprintf(s);
-	},
-		
-    dateFormat: function(v) {
-    	return this.globalI18N.dateFormat(v);
-    },
-    
-    timestampFormat: function(v) {
-    	return this.globalI18N.timestampFormat(v);
-    }
-};
-
+		if (this.map!== null && this.map[s]) {
+			return this.map[s];
+		}
+		return s;
+	}
+});

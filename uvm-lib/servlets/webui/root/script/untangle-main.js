@@ -47,7 +47,7 @@ Untangle.Main.prototype = {
 				method: 'GET',
 				success: function ( result, request) {
 					var jsonResult=Ext.util.JSON.decode(result.responseText);
-					i18n =new Untangle.I18N(jsonResult);
+					i18n =new Untangle.I18N({"map":jsonResult});
 					main.postinit();
 				},
 				failure: function ( result, request) { 

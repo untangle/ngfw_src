@@ -197,7 +197,7 @@ Untangle.Node = Ext.extend(Ext.Component, {
 				success: function ( result, request) {
 					var jsonResult=Ext.util.JSON.decode(result.responseText);
 					var cmp=Ext.getCmp(request.parentId);
-					Untangle.i18nNodeInstances[cmp.name]=new Untangle.I18N_Node(i18n, jsonResult);
+					Untangle.i18nNodeInstances[cmp.name]=new Untangle.NodeI18N({"map":i18n.map, "nodeMap":jsonResult});
 					cmp.postInitSettings()
 				},
 				failure: function ( result, request) { 
