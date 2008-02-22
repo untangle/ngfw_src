@@ -392,7 +392,7 @@ Untangle.Node = Ext.extend(Ext.Component, {
 		        'iconCls': 'nodeSettingsIcon',
 				'renderTo':'nodeSettingsButton_'+this.getId(),
 		        'text': i18n._('Show Settings'),
-		        'handler': function() {Ext.getCmp(this.parentId).onSettingsClick();}
+		        'handler': function() {this.onSettingsClick();}.createDelegate(this)
 	        });
 			cmp=new Ext.Button({
 				'parentId':this.getId(),
@@ -796,45 +796,68 @@ Ext.grid.RemoveColumn.prototype ={
         return '<div class="removeRow">&nbsp;</div>';
     }
 };
-/*
 Untangle.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
-	parentId: null,
-	
-	title: 'Event Log',
-	bbar: 
-		[{ xtype:'tbtext',
-		   text:'<span id="boxReposytoryDescEventLog_'+parent.tid+'"></span>'},
-		 {xtype:'tbbutton',
-            text:'Refresh',
-            tooltip:'Refresh',
-            iconCls:'iconRefresh',
-            parentId:this.parent.getId(),
-            handler: function() {
-            	Ext.getCmp(this.parentId).refreshEventLog();	            	
-            }
-        }],
-    listeners: {
-		'render': {
-			fn: function() {
-    			this.parent.rpc.eventManager.getRepositoryDescs(function (result, exception) {
-					if(exception) {Ext.MessageBox.alert("Failed",exception.message); return;}
-					this.parent.rpc.repositoryDescs=result;
-					var out=[];
-					out.push('<select id="selectReposytoryDescEventLog_'+this.parent.tid+'">');
-					var repList=this.parent.rpc.repositoryDescs.list;
-					for(var i=0;i<repList.length;i++) {
-						var repDesc=repList[i];
-						var selOpt=(i===0)?"selected":"";
-						out.push('<option value="'+repDesc.name+'" '+selOpt+'>'+this.parent.i18n._(repDesc.name)+'</option>');
-					}
-					out.push('</select>');
-		    		
-		    		var boxReposytoryDescEventLog=document.getElementById('boxReposytoryDescEventLog_'+cmp.tid);
-		    		boxReposytoryDescEventLog.innerHTML=out.join("");
-				});
-		    },
-		    scope: self
+	settingsCmp: null,
+	initComponent: function(){
+    	if(this.title==null) {
+    		this.title=this.settingsCmp.i18n._('Event Log');
+    	}
+        this.bbar=	[{
+        				xtype:'tbtext',
+						text:'<span id="boxRepository_'+this.getId()+'_'+this.settingsCmp.tid+'"></span>'},
+					{
+						xtype: 'tbbutton',
+			            text: this.settingsCmp.i18n._('Refresh'),
+			            tooltip: this.settingsCmp.i18n._('Refresh'),
+						iconCls: 'iconRefresh',
+						parentId: this.settingsCmp.getId(),
+						handler: function() {
+							this.refreshList();	            	
+						}.createDelegate(this)
+					}];
+        Untangle.GridEventLog.superclass.initComponent.call(this);
+	},
+	onRender : function(container, position) {
+		Untangle.GridEventLog.superclass.onRender.call(this,container, position);
+		this.settingsCmp.rpc.eventManager.getRepositoryDescs(function (result, exception) {
+			if(exception) {Ext.MessageBox.alert("Failed",exception.message); return;}
+			if(this.settingsCm!==null) {
+				this.settingsCmp.rpc.repositoryDescs=result;
+				var out=[];
+				out.push('<select id="selectRepository_'+this.getId()+'_'+this.settingsCmp.tid+'">');
+				var repList=this.settingsCmp.rpc.repositoryDescs.list;
+				for(var i=0;i<repList.length;i++) {
+					var repDesc=repList[i];
+					var selOpt=(i===0)?"selected":"";
+					out.push('<option value="'+repDesc.name+'" '+selOpt+'>'+this.settingsCmp.i18n._(repDesc.name)+'</option>');
+				}
+				out.push('</select>');
+				var boxReposytoryDescEventLog=document.getElementById('boxRepository_'+this.getId()+'_'+this.settingsCmp.tid);
+				boxReposytoryDescEventLog.innerHTML=out.join("");
+			}
+		}.createDelegate(this));
+	},
+    getSelectedRepository: function () {
+    	var selObj=document.getElementById('selectRepository_'+this.getId()+'_'+this.settingsCmp.tid);
+    	var result=null;
+    	if(selObj!==null && selObj.selectedIndex>=0) {
+    		result = selObj.options[selObj.selectedIndex].value;
+    	}
+		return result;
+    },
+	refreshList: function() {
+		var selRepository=this.getSelectedRepository();
+		if(selRepository!==null) {
+			if(this.settingsCmp.rpc.repository[selRepository] === undefined) {
+				this.settingsCmp.rpc.repository[selRepository]=this.settingsCmp.rpc.eventManager.getRepository(selRepository);
+			}
+			this.settingsCmp.rpc.repository[selRepository].getEvents(function (result, exception) {
+				if(exception) {Ext.MessageBox.alert("Failed",exception.message); return;}
+				var events = result;
+				if(this.settingsCmp!==null) {
+					this.getStore().loadData(events.list);
+				}
+			}.createDelegate(this));
 		}
 	}
 });
-*/
