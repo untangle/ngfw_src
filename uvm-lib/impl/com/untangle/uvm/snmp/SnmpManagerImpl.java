@@ -200,7 +200,7 @@ public class SnmpManagerImpl
             //snmpd_config.append("view mib2 included  .iso.org.dod.internet.mgmt.mib-2").append(EOL);
 	    //snmpd_config.append("view mib2 included  .iso.org.dod.internet.private.1.30054").append(EOL);
             //snmpd_config.append("access MyROGroup \"\" any noauth exact mib2 none none").append(EOL);
-	    snmpd_config.append("view mib2 included  .iso");
+	    snmpd_config.append("view mib2 included  .iso").append(EOL);
 	    snmpd_config.append("access MyROGroup \"\" any noauth exact mib2 none none");
         }
         else {
