@@ -49,7 +49,6 @@ import com.untangle.uvm.node.*;
 import com.untangle.uvm.node.firewall.user.UserMatcherConstants;
 import com.untangle.uvm.security.*;
 import com.untangle.uvm.snmp.*;
-import com.untangle.uvm.user.WMISettings;
 
 public class DirectoryRemoteADJPanel extends javax.swing.JPanel
     implements Savable<DirectoryCompoundSettings>, Refreshable<DirectoryCompoundSettings>, Changeable {
@@ -170,12 +169,7 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
     private String passwordCurrent;
     private String domainCurrent;
     private String orgCurrent;
-    private boolean serverEnabledCurrent;
     private String serverAddressCurrent;
-    private String serverURLCurrent;
-    private boolean domainEnabledCurrent;
-    private String domainLoginCurrent;
-    private String domainPasswordCurrent;
 
     public void doRefresh(DirectoryCompoundSettings directoryCompoundSettings){
         RepositorySettings repositorySettings = directoryCompoundSettings.getAddressBookSettings().getADRepositorySettings();
@@ -227,20 +221,6 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
         orgJTextField.setText( orgCurrent );
         orgJTextField.setBackground( Color.WHITE );
         Util.addSettingChangeListener(settingsChangedListener, this, orgJTextField);
-
-        // SERVER ENABLED
-        serverEnabledCurrent = directoryCompoundSettings.getWMISettings().getIsEnabled();
-
-        // DOMAIN LOGIN & PASSWORD
-        domainLoginCurrent = directoryCompoundSettings.getWMISettings().getUsername();
-        domainPasswordCurrent = directoryCompoundSettings.getWMISettings().getPassword();
-        if( (domainLoginCurrent.equals(loginCurrent))&&(domainPasswordCurrent.equals(passwordCurrent)) )
-            domainEnabledCurrent = false;
-        else
-            domainEnabledCurrent = true;
-
-        // SERVER URL
-        serverURLCurrent = directoryCompoundSettings.getWMISettings().getUrl();
     }
 
 

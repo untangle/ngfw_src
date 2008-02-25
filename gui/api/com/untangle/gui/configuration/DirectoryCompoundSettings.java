@@ -40,7 +40,6 @@ import javax.swing.JPanel;
 import com.untangle.gui.node.CompoundSettings;
 import com.untangle.gui.util.Util;
 import com.untangle.uvm.addrbook.*;
-import com.untangle.uvm.user.WMISettings;
 import org.apache.log4j.Logger;
 
 
@@ -66,11 +65,6 @@ public class DirectoryCompoundSettings implements CompoundSettings {
     public List<UserEntry> getLocalUserList(){ return localUserList; }
     public void setLocalUserList(List<UserEntry> inUserEntryList){ localUserList = inUserEntryList; }
 
-    // WMI Settings
-    private WMISettings wmiSettings;
-    public WMISettings getWMISettings(){ return wmiSettings; }
-    public void setWMISettings(WMISettings inWmiSettings){ wmiSettings = inWmiSettings; }
-
     // JPanels
     private JPanel localJPanel;
     public JPanel getLocalJPanel(){ return localJPanel; }
@@ -81,14 +75,12 @@ public class DirectoryCompoundSettings implements CompoundSettings {
         addressBookSettings.setAddressBookConfiguration(addressBookConfiguration);
         Util.getAddressBook().setAddressBookSettings(addressBookSettings);
         Util.getAddressBook().setLocalUserEntries(localUserList);
-        Util.getPhoneBook().setWMISettings(wmiSettings);
     }
 
     public void refresh() throws Exception {
         addressBookSettings = Util.getAddressBook().getAddressBookSettings();
         addressBookConfiguration = addressBookSettings.getAddressBookConfiguration();
         localUserList = Util.getAddressBook().getLocalUserEntries();
-        wmiSettings = Util.getPhoneBook().getWMISettings();
 
         if (localJPanel==null) {
             try {

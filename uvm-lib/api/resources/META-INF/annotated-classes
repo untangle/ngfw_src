@@ -33,4 +33,3 @@ com.untangle.uvm.node.MimeTypeRule
 com.untangle.uvm.node.PipelineEndpoints
 com.untangle.uvm.node.StringRule
 com.untangle.uvm.node.NodePreferences
-com.untangle.uvm.user.WMISettings
