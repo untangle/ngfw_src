@@ -239,9 +239,9 @@ public class RemoteRestrictionJPanel extends javax.swing.JPanel
 
         setLayout(new java.awt.GridBagLayout());
 
-        setMaximumSize(new java.awt.Dimension(550, 416));
-        setMinimumSize(new java.awt.Dimension(550, 416));
-        setPreferredSize(new java.awt.Dimension(550, 416));
+        setMaximumSize(new java.awt.Dimension(550, 450));
+        setMinimumSize(new java.awt.Dimension(550, 450));
+        setPreferredSize(new java.awt.Dimension(550, 450));
         externalRemoteJPanel.setLayout(new java.awt.GridBagLayout());
 
         externalRemoteJPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Outside Access", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
