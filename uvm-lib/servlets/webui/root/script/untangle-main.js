@@ -14,7 +14,6 @@ Untangle.Main.prototype = {
 	config: null,
 	nodes: null,
 	viewport: null,
-	removeNodeCmpId: null,
 	initSemaphore: null,
 	policySemaphore: null,
 	version: null,

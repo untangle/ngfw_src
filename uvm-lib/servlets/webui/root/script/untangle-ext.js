@@ -152,18 +152,18 @@ Untangle.Node = Ext.extend(Ext.Component, {
         	this.setPowerOn(!this.powerOn);
         	this.setState("Attention");
         	if(this.powerOn) {
-        		rpc.callBackWithObject(this.nodeContext.node.start,this.getId(),function (result, exception, callBackObj) {
-        			var cmp=Ext.getCmp(callBackObj);
-        			cmp.runState="RUNNING";
-					cmp.setState("On");
-        		});
+        		this.nodeContext.node.start(function (result, exception) {
+        			this.runState="RUNNING";
+					this.setState("On");
+					if(exception) {Ext.MessageBox.alert("Failed",exception.message); return;}
+        		}.createDelegate(this));
         	} else {
-        		rpc.callBackWithObject(this.nodeContext.node.stop,this.getId(),function (result, exception, callBackObj) {
-        			var cmp=Ext.getCmp(callBackObj);
-					cmp.runState="INITIALIZED";
-					cmp.setState("Off");
-					cmp.resetBlingers();
-        		});
+        		this.nodeContext.node.stop(function (result, exception) {
+					this.runState="INITIALIZED";
+					this.setState("Off");
+					this.resetBlingers();
+					if(exception) {Ext.MessageBox.alert("Failed",exception.message); return;}
+        		}.createDelegate(this));
         	}
         },
 
@@ -239,9 +239,6 @@ Untangle.Node = Ext.extend(Ext.Component, {
         },
         
         onRemoveClick: function() {
-        	if(main.removeNodeCmpId!==null) {
-        		return;
-        	}
         	var message="Warning:\n"+this.displayName+"is about to be removed from the rack.\nIts settings will be lost and it will stop processing netwotk traffic.\n\nWould you like to continue removing?"; 
         	if(!confirm(message)) {
         		return;
@@ -250,36 +247,28 @@ Untangle.Node = Ext.extend(Ext.Component, {
         		this.settingsWin.hide();
         	}
         	this.setState("Attention");
-        	main.removeNodeCmpId=this.getId();
         	rpc.nodeManager.destroy(function (result, exception) {
 				if(exception) { Ext.MessageBox.alert("Failed",exception.message); 
-					main.removeNodeCmpId=null;
 					return;
 				}
-				try {
-					var cmp=Ext.getCmp(main.removeNodeCmpId);
-					if(cmp) {
-						var nodeName=cmp.name;
-						Ext.destroy(cmp);
-						cmp=null;
-						var myAppButtonCmp=Ext.getCmp('myAppButton_'+nodeName);
-						if(myAppButtonCmp!==null) {
-							myAppButtonCmp.enable();
-						}
-						for(var i=0;i<main.nodes.length;i++) {
-							if(nodeName==main.nodes[i].name) {
-								main.nodes.splice(i,1);
-								break;
-							} 
-						}
-						main.updateSeparator();
+				if(this) {
+					var nodeName=this.name;
+					var cmp=this;
+					Ext.destroy(cmp);
+					cmp=null;
+					var myAppButtonCmp=Ext.getCmp('myAppButton_'+nodeName);
+					if(myAppButtonCmp!==null) {
+						myAppButtonCmp.enable();
 					}
-					main.removeNodeCmpId=null;
-				} catch (err) {
-					main.removeNodeCmpId=null;
-					throw err;
+					for(var i=0;i<main.nodes.length;i++) {
+						if(nodeName==main.nodes[i].name) {
+							main.nodes.splice(i,1);
+							break;
+						} 
+					}
+					main.updateSeparator();
 				}
-			}, this.Tid);
+			}.createDelegate(this), this.Tid);
         },
         
         onSaveClick: function() {
