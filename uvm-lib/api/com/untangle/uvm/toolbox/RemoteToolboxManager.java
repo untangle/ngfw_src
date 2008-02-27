@@ -33,7 +33,6 @@
 
 package com.untangle.uvm.toolbox;
 
-import java.net.URL;
 import java.util.List;
 
 import com.untangle.uvm.alerts.MessageQueue;
@@ -189,10 +188,4 @@ public interface RemoteToolboxManager
 
     boolean hasPremiumSubscription();
     
-    /**
-     * All config items.
-     *
-     * @return an array of <code>ConfigItem</code>s.
-     */
-    ConfigItem[] getConfigItems();
 }

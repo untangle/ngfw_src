@@ -18,7 +18,7 @@ Untangle.Main.prototype = {
 	policySemaphore: null,
 	version: null,
 	init: function() {
-			main.initSemaphore=5;
+			main.initSemaphore=6;
 			rpc = new Untangle.RPC();
 			rpc.jsonrpc = new JSONRpcClient("/webui/JSON-RPC");
 			rpc.jsonrpc.RemoteUvmContext.nodeManager(function (result, exception) {
@@ -36,11 +36,17 @@ Untangle.Main.prototype = {
 				rpc.toolboxManager=result;
 				main.postinit();
 			});
+			rpc.jsonrpc.RemoteUvmContext.adminManager(function (result, exception) {
+				if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
+				rpc.adminManager=result;
+				main.postinit();
+			});
 			rpc.jsonrpc.RemoteUvmContext.version(function (result, exception) {
 				if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
 				rpc.version=result;
 				main.postinit();
 			});
+			
 			Ext.Ajax.request({
 		        url: "i18n",
 				method: 'GET',
@@ -177,11 +183,24 @@ Untangle.Main.prototype = {
 	},
 	
 	loadConfig: function() {
+	/*
 		rpc.toolboxManager.getConfigItems(function (result, exception) {
 			if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
 			main.config = result;
 			main.buildConfig();
 		});
+	*/
+		
+		main.config = 
+			[{"name":"networking","displayName":"Networking","image":"images/tools/config/IconConfigNetwork36x36.png"},
+			{"name":"remoteAdmin","displayName":"Remote Admin","image":"images/tools/config/IconConfigAdmin36x36.png"},
+			{"name":"email","displayName":"Email","image":"images/tools/config/IconConfigEmail36x36.png"},
+			{"name":"userDirectory","displayName":"User Directory","image":"images/tools/config/IconConfigDirectory36x36.png"},
+			{"name":"backupRestore","displayName":"Backup/Restore","image":"images/tools/config/IconConfigBackup36x36.png"},
+			{"name":"support","displayName":"Support","image":"images/tools/config/IconConfigSupport36x36.png"},
+			{"name":"upgrade","displayName":"Upgrade","image":"images/tools/config/IconConfigUpgrade36x36.png"},
+			{"name":"setupInfo","displayName":"Setup Info","image":"images/tools/config/IconConfigSetup36x36.png"}];		
+		main.buildConfig();	
 	},
 	
 	loadPolicies: function() {
@@ -331,17 +350,29 @@ Untangle.Main.prototype = {
 	},
 	
 	clickConfig: function(item) {
+		switch(item.name){
+			case "networking":
+				rpc.adminManager.generateAuthNonce(function (result, exception) {
+					if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
+					var url = "/alpaca/?" + result;
+					window.open(url);					
+				});
+				break;    
+			default:
+				Ext.MessageBox.alert("Failed","TODO: implement config "+item.name);
+		}
+	
+		/*
 		if(item!==null && item.action!==null) {
 			Ext.MessageBox.alert("Failed","TODO: implement config "+item.name);
-			/*
 			var action=item.action;
 			if(item.action.url!==null) {
 				window.open(item.action.url);
 			} else if(item.action.method!==null) {
 				eval(item.action.method);
 			}
-			*/
 		}
+		*/
 	},
 	
 	todo: function() {

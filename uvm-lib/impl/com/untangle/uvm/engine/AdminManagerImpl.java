@@ -23,6 +23,9 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.security.Principal;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.TimeZone;
@@ -36,6 +39,7 @@ import com.untangle.uvm.security.LoginSession;
 import com.untangle.uvm.security.RegistrationInfo;
 import com.untangle.uvm.security.RemoteAdminManager;
 import com.untangle.uvm.security.User;
+import com.untangle.uvm.security.UvmPrincipal;
 import com.untangle.uvm.snmp.SnmpManager;
 import com.untangle.uvm.snmp.SnmpManagerImpl;
 import com.untangle.uvm.util.FormUtil;
@@ -269,12 +273,20 @@ class RemoteAdminManagerImpl implements RemoteAdminManager
     public String generateAuthNonce() {
         HttpInvokerImpl invoker = HttpInvokerImpl.invoker();
         LoginSession ls = invoker.getActiveLogin();
-        if (ls == null)
-            throw new IllegalStateException("generateAuthNonce called from backend");
         TomcatManager tm = uvmContext.tomcatManager();
+        if (ls == null){
+        	//throw new IllegalStateException("generateAuthNonce called from backend");
+        	logger.warn("generateAuthNonce called from backend");
+            try {
+				return tm.generateAuthNonce(InetAddress.getByName("192.0.2.1"), new UvmPrincipal("admin", false));
+			} catch (UnknownHostException e) {
+	        	logger.warn("unable to create nonce", e);
+				return null;
+			}
+        }
         logger.info("Generating auth nonce for " + ls.getClientAddr() + " " + ls.getUvmPrincipal());
         return tm.generateAuthNonce(ls.getClientAddr(), ls.getUvmPrincipal());
-    }
+   }
 
     public String getAlpacaNonce()
     {
