@@ -322,7 +322,6 @@ Untangle.Node = Ext.extend(Ext.Component, {
        
 		    var settingsHTML=Untangle.Node.templateSettings.applyTemplate({'id':this.getId()});
 		    var settingsButtonsHTML=Untangle.Node.templateSettingsButtons.applyTemplate({'id':this.getId()});
-		    settingsButtonsHTML=
 		    //Ext.MessageBox.alert("Failed",settingsHTML);
 		    this.settingsWin=new Ext.Window({
                 id: 'settingsWin_'+this.getId(),
