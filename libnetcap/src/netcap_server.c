@@ -632,15 +632,20 @@ static int  _handle_nfqueue (epoll_info_t* info, int revents)
     
     _server_unlock();
 
-    if ( ret < 0 ) {
-        /* Do not free either buffer in pkt_raze */
-        pkt->buffer = NULL;
-        pkt->data = NULL;
+    if (( ret < 0 ) || ( pkt == NULL )) {
+        if ( pkt != NULL ) {
+            /* Do not free either buffer in pkt_raze */
+            pkt->buffer = NULL;
+            pkt->data = NULL;
+            
+            netcap_pkt_raze( pkt );
+        }
         
-        free( buf );
-        buf = NULL;
+        if ( buf != NULL ) {
+            free( buf );
+            buf = NULL;
+        }
 
-        if ( pkt != NULL ) netcap_pkt_raze( pkt );
         pkt = NULL;
 
         return errlog( ERR_CRITICAL, "_critical_section\n" );
