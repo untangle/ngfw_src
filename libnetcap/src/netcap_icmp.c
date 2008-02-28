@@ -413,7 +413,7 @@ int  netcap_icmp_call_hook( netcap_pkt_t* pkt )
             netcap_pkt_action_raze( pkt, NF_DROP );
             pkt = NULL;
             ret = 0;
-            break;
+            return 0;
 
         case _FIND_ACCEPT:
             debug( 10, "ICMP: Accepting packet\n" );
@@ -443,14 +443,17 @@ int  netcap_icmp_call_hook( netcap_pkt_t* pkt )
         }
 
         /* Drop the packet, but hold onto the data. */
-        debug( 10, "ICMP: Dropping packet (%#10x) and passing data\n", pkt->packet_id );
-        if ( pkt->packet_id != 0 && netcap_set_verdict( pkt->packet_id, NF_DROP, NULL, 0 ) < 0 ) {
-            ret = errlog( ERR_CRITICAL, "netcap_set_verdict\n" );
+        if ( pkt != NULL ) {
+            debug( 10, "ICMP: Dropping packet (%#10x) and passing data\n", pkt->packet_id );
+            if ( pkt->packet_id != 0 && netcap_set_verdict( pkt->packet_id, NF_DROP, NULL, 0 ) < 0 ) {
+                ret = errlog( ERR_CRITICAL, "netcap_set_verdict\n" );
+            }
+            /* Clear out the packet id */
+            pkt->packet_id = 0;
         }
-        /* Clear out the packet id */
-        pkt->packet_id = 0;
         return ret;
     }
+
     ret = critical_section();
     if ( ret < 0 ) {
         if ( pkt != NULL ) {
@@ -867,9 +870,9 @@ static _find_t _icmp_find_session( netcap_pkt_t* pkt, netcap_session_t** netcap_
              * Otherwise, this packet has no business being here, hence it is dropped
              */
             if (( session = _icmp_get_error_session( pkt, &mb )) == NULL ) {
-	        //if we failed to find it assume its for a session we are not 
-	        // watching.
-	        debug(10,"Could not find an ICMP session for %d\n",pkt->packet_id);
+                //if we failed to find it assume its for a session we are not 
+                // watching.
+                debug(10,"Could not find an ICMP session for %d\n",pkt->packet_id);
                 ret = _FIND_ACCEPT;
                 break;
             }
@@ -918,7 +921,7 @@ static _find_t _icmp_find_session( netcap_pkt_t* pkt, netcap_session_t** netcap_
             ret = _FIND_DROP;
             break;
         }
-	return ret;
+        return ret;
     }
     SESSTABLE_WRLOCK();
     ret = critical_section();
