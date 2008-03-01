@@ -78,7 +78,7 @@ public class SpywareSettings implements Serializable
     private int activeXVersion = -1;
     private int cookieVersion = -1;
 
-    // constructors -----------------------------------------------------------
+    // constructors -------------------------------------------------------
 
     public SpywareSettings() { }
 
@@ -87,7 +87,7 @@ public class SpywareSettings implements Serializable
         this.tid = tid;
     }
 
-    // accessors --------------------------------------------------------------
+    // accessors ----------------------------------------------------------
 
     @Id
     @Column(name="settings_id")
@@ -354,7 +354,7 @@ public class SpywareSettings implements Serializable
         this.domainWhitelist = domainWhitelist;
     }
 
-    // NOT FOR THE GUI! XXX move to another class -----------------------------
+    // NOT FOR THE GUI! XXX move to another class -------------------------
 
     /**
      * Current version of subnet list.

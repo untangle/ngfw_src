@@ -60,6 +60,7 @@ import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.StringRule;
 import com.untangle.uvm.toolbox.RemoteToolboxManager;
 import com.untangle.uvm.util.OutsideValve;
+import com.untangle.uvm.util.QueryUtil;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.AbstractNode;
 import com.untangle.uvm.vnet.Affinity;
@@ -135,7 +136,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
 
     final SpywareStatisticManager statisticManager;
 
-    // constructors -----------------------------------------------------------
+    // constructors -------------------------------------------------------
 
     public SpywareImpl()
     {
@@ -183,6 +184,33 @@ public class SpywareImpl extends AbstractNode implements Spyware
     }
 
     // SpywareNode methods -----------------------------------------------
+
+    public List<StringRule> getActiveXRules(final int start,
+                                            final int limit,
+                                            final String... sortColumns)
+    {
+        TransactionWork<List<StringRule>> tw = new TransactionWork<List<StringRule>>()
+            {
+                private List<StringRule> result;
+
+                public boolean doWork(Session s)
+                {
+                    Query q = s.createQuery("select s.activeXRules from SpywareSettings s where s.tid = :tid " + QueryUtil.toOrderByClause(sortColumns));
+                    q.setParameter("tid", getTid());
+                    q.setFirstResult(start);
+                    q.setMaxResults(limit);
+                    result = q.list();
+
+                    return true;
+                }
+
+                public List<StringRule> getResult() { return result; }
+            };
+        getNodeContext().runTransaction(tw);
+
+        return tw.getResult();
+    }
+
 
     public SpywareSettings getSpywareSettings()
     {

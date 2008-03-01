@@ -18,15 +18,20 @@
 
 package com.untangle.node.spyware;
 
+import java.util.List;
+
+import com.untangle.node.http.UserWhitelistMode;
 import com.untangle.uvm.logging.EventManager;
 import com.untangle.uvm.node.Node;
-import com.untangle.node.http.UserWhitelistMode;
+import com.untangle.uvm.node.StringRule;
 
 public interface Spyware extends Node
 {
     static final int SCAN = Node.GENERIC_0_COUNTER;
     static final int BLOCK = Node.GENERIC_1_COUNTER;
     static final int PASS = Node.GENERIC_2_COUNTER;
+
+    List<StringRule> getActiveXRules(int start, int limit, String... sortColumns);
 
     SpywareSettings getSpywareSettings();
     void setSpywareSettings(SpywareSettings settings);
