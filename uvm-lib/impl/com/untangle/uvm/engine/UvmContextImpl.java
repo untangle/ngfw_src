@@ -659,6 +659,10 @@ public class UvmContextImpl extends UvmContextBase
 
         upstreamManager = RemoteUpstreamManagerImpl.upstreamManager();
 
+        // Now that upstreamManager is alive, we can get the upgrade settings and
+        // start the cron job
+        toolboxManager.start();
+
         mPipeManager = MPipeManagerImpl.manager();
         pipelineFoundry = PipelineFoundryImpl.foundry();
 
