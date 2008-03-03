@@ -98,7 +98,7 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
     }
 
     private final Map<String, MackageState> mackageState;
-    private final CronJob cronJob;
+    private CronJob cronJob;
     private final UpdateTask updateTask = new UpdateTask();
     private final Map<Long, AptLogTail> tails = new HashMap<Long, AptLogTail>();
     private final Map<LoginSession, MessageQueueImpl<ToolboxMessage>> messageQueues
@@ -117,11 +117,6 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
     {
         mackageState = loadMackageState();
 
-        UpgradeSettings us = getUpgradeSettings();
-        Period p = us.getPeriod();
-
-        cronJob = LocalUvmContextFactory.context().makeCronJob(p, updateTask);
-
         refreshLists();
     }
 
@@ -135,10 +130,19 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
         return TOOLBOX_MANAGER;
     }
 
+    void start()
+    {
+        UpgradeSettings us = getUpgradeSettings();
+        Period p = us.getPeriod();
+
+        cronJob = LocalUvmContextFactory.context().makeCronJob(p, updateTask);
+    }
+
     void destroy()
     {
         logger.info("RemoteToolboxManager destroyed");
-        cronJob.cancel();
+        if (cronJob != null)
+            cronJob.cancel();
     }
 
     // RemoteToolboxManager implementation ------------------------------------
