@@ -1,5 +1,5 @@
 Ext.namespace('Untangle');
-Ext.BLANK_IMAGE_URL = 'ext-2.0.1/resources/images/default/s.gif';
+Ext.BLANK_IMAGE_URL = 'ext/resources/images/default/s.gif';
 //Global Variables
 var main=null; 
 var i18n=null;
@@ -357,33 +357,37 @@ Untangle.Main.prototype = {
 					if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
 					var alpacaUrl = "/alpaca/?" + result;
 					//window.open(url);
-				    main.networkingWin=new Ext.Window({
-		                id: 'networkingWin',
-		                layout:'border',
-		                modal:true,
-		                title:'Networking',
-		                closeAction:'hide',
-		                autoCreate:true,          
-		                width:740,
-		                height:690,
-		                draggable:false,
-		                resizable:false,
-			            items: [{
-					        region:"center",
-					        html: '<iframe width="100%" height="100%" src="'+alpacaUrl+'">',
-					        border: false,
-					        //autoScroll: true,
-					        //cls: 'windowBackground',
-					        //bodyStyle: 'background-color: transparent;'
-					    	}
-					    ]
-		            });
-					main.networkingWin.render('container');
+					if(main.networkingWin==null) {
+					    main.networkingWin=new Ext.Window({
+			                id: 'networkingWin',
+			                layout:'border',
+			                modal:true,
+			                title:'Networking',
+			                closeAction:'hide',
+			                autoCreate:true,          
+			                width:740,
+			                height:690,
+			                draggable:false,
+			                resizable:false,
+				            items: [{
+						        region:"center",
+						        html: '<iframe id="networkingWin_iframe" name ="networkingWin_iframe" width="100%" height="100%">',
+						        border: false,
+						        //autoScroll: true,
+						        //cls: 'windowBackground',
+						        //bodyStyle: 'background-color: transparent;'
+						    	}
+						    ]
+			            });
+						main.networkingWin.render('container');
+					};
 		        	main.networkingWin.show();
 		        	main.networkingWin.setPosition(222,0);
 		        	var objSize=main.viewport.getSize();
 		        	objSize.width=objSize.width-222;
 		        	main.networkingWin.setSize(objSize);
+		        	//document.getElementById("networkingWin_iframe").src=alpacaUrl;
+		        	window.frames["networkingWin_iframe"].location.href=alpacaUrl;
 					
 									
 				});

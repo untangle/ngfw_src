@@ -4,19 +4,22 @@
     <title>Untangle rack - Prototype 5</title>
     
     <style type="text/css">
-        @import "ext-2.0.1/resources/css/ext-all.css?${version}";
-        @import "untangle.css?${version}";
+        @import "ext/resources/css/ext-all.css?${version}";
+		@import "skins/default/css/ext-skin.css?${version}";
+		@import "skins/default/css/skin.css?${version}";
     </style>
 <!--
-	<script type="text/javascript" src="ext-2.0.1/source/core/Ext.js?${version}"></script>
-	<script type="text/javascript" src="ext-2.0.1/source/adapter/ext-base.js?${version}"></script>
-	<script type="text/javascript" src="ext-2.0.1/ext-all-debug.js?${version}"></script>
+	<script type="text/javascript" src="ext/source/core/Ext.js?${version}"></script>
+	<script type="text/javascript" src="ext/source/adapter/ext-base.js?${version}"></script>
+	<script type="text/javascript" src="ext/ext-all-debug.js?${version}"></script>
 	<script type="text/javascript" src="jsonrpc/jsonrpc.js?${version}"></script>
     <script type="text/javascript" src="firebug/firebug.js?${version}"></script>
     <script type="text/javascript" src="script/untangle-node-protofilter/settings.js?${version}"></script>
+        "untangle . css?${version}";
+
 -->	
-	<script type="text/javascript" src="ext-2.0.1/adapter/ext/ext-base.js?${version}"></script>
-	<script type="text/javascript" src="ext-2.0.1/ext-all.js?${version}"></script>
+	<script type="text/javascript" src="ext/adapter/ext/ext-base.js?${version}"></script>
+	<script type="text/javascript" src="ext/ext-all.js?${version}"></script>
 	<script type="text/javascript" src="jsonrpc/jsonrpc-min.js?${version}"></script>
     <script type="text/javascript" src="script/untangle-main.js?${version}"></script>
 	<script type="text/javascript" src="script/untangle-i18n.js?${version}"></script>
