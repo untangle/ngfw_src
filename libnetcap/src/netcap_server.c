@@ -122,13 +122,11 @@ static struct {
         int count;
     } tcp;
     
-    int udp_divert_sock;
 } _server = {
     .tcp = {
         .sock_array = NULL,
         .count      = -1
     },
-    .udp_divert_sock = -1
 };
 
 int  netcap_server_init (void)
@@ -165,15 +163,6 @@ int  netcap_server_init (void)
             return perrlog( "_epoll_info_add" );
         }
     }
-
-    /* Add the UDP Divert port to EPOLL */
-    if (( _server.udp_divert_sock = netcap_udp_divert_sock()) < 0 ) {
-        return errlog( ERR_CRITICAL, "netcap_udp_divert_port\n" );
-    }
-    
-    if ( _epoll_info_add( _server.udp_divert_sock, EPOLL_INPUT_SET, POLL_UDP_INCOMING, NULL ) < 0 ) {
-        return perrlog("_epoll_info_add");
-    }
     
     return 0;
 }
@@ -197,11 +186,7 @@ int  netcap_server_shutdown (void)
         perrlog("_epoll_info_del_fd");
     if (_epoll_info_del_fd(netcap_nfqueue_get_sock())<0) 
         perrlog("_epoll_info_del_fd");
-    
-    if (( _server.udp_divert_sock > 0 ) && ( _epoll_info_del_fd( _server.udp_divert_sock ) < 0 )) {
-        perrlog("_epoll_info_del_fd");
-    }
-    
+        
     if (( _server.tcp.count > 0 ) && ( _server.tcp.sock_array != NULL )) {
         int c;
         

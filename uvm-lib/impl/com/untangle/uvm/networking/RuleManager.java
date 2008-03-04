@@ -48,7 +48,6 @@ import static com.untangle.uvm.networking.NetworkManagerImpl.BUNNICULA_CONF;
 
 public class RuleManager
 {
-    private static final String UDP_DIVERT_PORT_FLAG         = "UDP_DIVERT_PORT";
     private static final String TCP_REDIRECT_PORT_FLAG       = "TCP_REDIRECT_PORTS";
     private static final String ANTISUBSCRIBE_LOCAL_IN_FLAG  = "ANTISUBSCRIBE_LOCAL_INSIDE";
     private static final String ANTISUBSCRIBE_LOCAL_OUT_FLAG = "ANTISUBSCRIBE_LOCAL_OUTSIDE";
@@ -58,7 +57,6 @@ public class RuleManager
 
     /* This is the default port range, rarely do these ever vary */
     private static final PortRange DEFAULT_TCP_PORT_RANGE = new PortRange( 9500, 9627 );
-    private static final int DEFAULT_DIVERT_PORT = 9500;
 
     private static RuleManager INSTANCE = null;
 
@@ -116,15 +114,12 @@ public class RuleManager
         Netcap netcap = Netcap.getInstance();
             
         PortRange tcp = DEFAULT_TCP_PORT_RANGE;
-        int divertPort = DEFAULT_DIVERT_PORT;
 
         try {
             tcp = netcap.tcpRedirectPortRange();
-            divertPort = netcap.udpDivertPort();
         } catch ( Exception e ) {
-            logger.error( "unable to determine the TCP or UDP redirect ports, using default", e );
+            logger.error( "unable to determine the TCP redirect ports, using default", e );
             tcp = DEFAULT_TCP_PORT_RANGE;
-            divertPort = DEFAULT_DIVERT_PORT;
         }
         
         scriptWriter.appendVariable( TCP_REDIRECT_PORT_FLAG, tcp.low() + "-" + tcp.high());

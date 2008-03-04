@@ -77,20 +77,6 @@ public final class Netcap {
         return portRange;
     }
     
-    /* Get the Divert port */
-    public int udpDivertPort() throws JNetcapException
-    {
-        int divertPort = 0;
-
-        try {
-            divertPort = cUdpDivertPort();
-        } catch ( Exception e ) {
-            throw new JNetcapException( e );
-        }
-                
-        return divertPort;
-    }
-
     /**
      * A common place for processing netcap errors
      * @param msg - The message associated with the error.
@@ -411,12 +397,6 @@ public final class Netcap {
      */
     private native int[] cTcpRedirectPorts();
     
-
-    /**
-     * Function to retrieve the UDP divert port 
-     */
-    private native int cUdpDivertPort();
-
     /**
      * Function to configure the netcap interface array 
      */
