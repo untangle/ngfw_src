@@ -105,31 +105,28 @@ Untangle.Protofilter = Ext.extend(Untangle.Settings, {
 			},
 			buttons: [
 			{
-				'parentId':this.getId(),
 				'iconCls': 'helpIcon',
 				'text': this.i18n._('Help'),
-				'handler': function() {Ext.MessageBox.alert("TODO","Implement Help Page");}
+				'handler': function() {Ext.MessageBox.alert("TODO","Implement Help Page");}.createDelegate(this)
 			},
 			{
-				'parentId':this.getId(),
+				'iconCls': 'cancelIcon',
+				'text': this.i18n._('Cancel'),
+				'handler': function() {this.rowEditPLWin.hide();}.createDelegate(this)
+			},
+			{
 				'iconCls': 'saveIcon',
 				'text': this.i18n._('Update'),
-				'handler': function() {Ext.getCmp(this.parentId).rowEditPLWin.saveData();}
-			},
-			{
-			'parentId':this.getId(),
-			'iconCls': 'cancelIcon',
-			'text': this.i18n._('Cancel'),
-			'handler': function() {Ext.getCmp(this.parentId).rowEditPLWin.hide();}
+				'handler': function() {this.rowEditPLWin.saveData();}.createDelegate(this)
 			}
 			],
 			listeners: {
 				'show': {
 					fn: function() {
-						var gridPL=Ext.getCmp(this.parentId).gridPL;
-						var objPosition=gridPL.getPosition();
+						var grid=Ext.getCmp(this.parentId).gridPL;
+						var objPosition=grid.getPosition();
 						this.setPosition(objPosition);
-						//var objSize=gridPL.getSize();
+						//var objSize=grid.getSize();
 						//this.setSize(objSize);
 					},
 					scope: this.rowEditPLWin
@@ -240,14 +237,14 @@ Untangle.Protofilter = Ext.extend(Untangle.Settings, {
     savePL: function() {
     	this.tabs.disable();
     	this.gridPL.getStore().commitChanges();
-    	var recordsPL=this.gridPL.getStore().getRange();
-    	var patternsList=[];
-    	for(var i=0;i<recordsPL.length;i++) {
-    		var pattern=recordsPL[i].data;
+    	var records=this.gridPL.getStore().getRange();
+    	var list=[];
+    	for(var i=0;i<records.length;i++) {
+    		var pattern=records[i].data;
     		pattern.javaClass="com.untangle.node.protofilter.ProtoFilterPattern";
-    		patternsList.push(pattern);
+    		list.push(pattern);
     	}
-    	this.rpc.settings.patterns.list=patternsList;
+    	this.rpc.settings.patterns.list=list;
     	this.rpc.settings.patterns.javaClass="java.util.ArrayList";
     	this.rpc.node.setProtoFilterSettings(function (result, exception) {
 			if(exception) {Ext.MessageBox.alert("Failed",exception.message); return;}

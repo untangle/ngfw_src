@@ -24,6 +24,8 @@
     <script type="text/javascript" src="script/untangle-main.js?${version}"></script>
 	<script type="text/javascript" src="script/untangle-i18n.js?${version}"></script>
     <script type="text/javascript" src="script/untangle-ext.js?${version}"></script>
+    <script type="text/javascript" src="script/untangle-node-protofilter/settings.js?${version}"></script>
+    <script type="text/javascript" src="script/untangle-node-spyware/settings.js?${version}"></script>
 	<script type="text/javascript">
 		function init() {
 			main=new Untangle.Main();

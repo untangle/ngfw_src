@@ -34,11 +34,7 @@ Untangle.Button = Ext.extend(Ext.Component, {
     },
     // private
     onRender : function(container, position) {
-        if(!this.template){
-            this.template = Untangle.Button.template;
-        }
-       
-        var templateHTML=this.template.applyTemplate({'width':this.width, 'height':this.height, 'imageSrc':this.imageSrc, 'text':this.text});
+        var templateHTML=Untangle.Button.template.applyTemplate({'width':this.width, 'height':this.height, 'imageSrc':this.imageSrc, 'text':this.text});
         var el= document.createElement("div");
         container.dom.insertBefore(el, position);
         el.className="untangleButton";
@@ -376,39 +372,34 @@ Untangle.Node = Ext.extend(Ext.Component, {
 			  hideDelay: 0
 			});
 			cmp=new Ext.Button({
-				'parentId':this.getId(),
 		        'iconCls': 'nodeSettingsIcon',
 				'renderTo':'nodeSettingsButton_'+this.getId(),
 		        'text': i18n._('Show Settings'),
 		        'handler': function() {this.onSettingsClick();}.createDelegate(this)
 	        });
 			cmp=new Ext.Button({
-				'parentId':this.getId(),
 		        'iconCls': 'helpIcon',
 				'renderTo':'nodeHelpButton_'+this.getId(),
 		        'text': 'Help',
-		        'handler': function() {Ext.getCmp(this.parentId).onHelpClick();}
+		        'handler': function() {this.onHelpClick();}.createDelegate(this)
 	        });
 			cmp=new Ext.Button({
-				'parentId':this.getId(),
 				'iconCls': 'nodeRemoveIcon',
 				'renderTo':'nodeRemoveButton_'+this.getId(),
 		        'text': 'Remove',
-		        'handler': function() {Ext.getCmp(this.parentId).onRemoveClick();}
+		        'handler': function() {this.onRemoveClick();}.createDelegate(this)
 	        });
 			cmp=new Ext.Button({
-				'parentId':this.getId(),
 		        'iconCls': 'cancelIcon',
 				'renderTo':'nodeCancelButton_'+this.getId(),
 		        'text': 'Cancel',
-		        'handler': function() {Ext.getCmp(this.parentId).onCancelClick();}
+		        'handler': function() {this.onCancelClick();}.createDelegate(this)
 	        });
 			cmp=new Ext.Button({
-				'parentId':this.getId(),
 		        'iconCls': 'saveIcon',
 				'renderTo':'nodeSaveButton_'+this.getId(),
 		        'text': 'Save',
-		        'handler': function() {Ext.getCmp(this.parentId).onSaveClick();}
+		        'handler': function() {this.onSaveClick();}.createDelegate(this)
 	        });
 	        this.updateRunState(this.runState);
         	this.initBlingers();
@@ -798,7 +789,6 @@ Untangle.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
 			            text: this.settingsCmp.i18n._('Refresh'),
 			            tooltip: this.settingsCmp.i18n._('Refresh'),
 						iconCls: 'iconRefresh',
-						parentId: this.settingsCmp.getId(),
 						handler: function() {
 							this.refreshList();	            	
 						}.createDelegate(this)
@@ -809,7 +799,7 @@ Untangle.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
 		Untangle.GridEventLog.superclass.onRender.call(this,container, position);
 		this.settingsCmp.rpc.eventManager.getRepositoryDescs(function (result, exception) {
 			if(exception) {Ext.MessageBox.alert("Failed",exception.message); return;}
-			if(this.settingsCm!==null) {
+			if(this.settingsCmp) {
 				this.settingsCmp.rpc.repositoryDescs=result;
 				var out=[];
 				out.push('<select id="selectRepository_'+this.getId()+'_'+this.settingsCmp.tid+'">');
