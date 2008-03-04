@@ -2,7 +2,7 @@
 <head>
    
     <style type="text/css">
-        @import "/webui/ext-2.0/resources/css/ext-all.css";
+        @import "/webui/ext/resources/css/ext-all.css";
         @import "/webui/untangle.css";
     </style>
 <!--
@@ -10,17 +10,17 @@
 	<script type="text/javascript" src="/webui/ext-2.0/source/adapter/ext-base.js"></script>
 	<script type="text/javascript" src="/webui/ext-2.0/ext-all-debug.js"></script>
 -->
-	<script type="text/javascript" src="/webui/ext-2.0/adapter/ext/ext-base.js"></script>
+	<script type="text/javascript" src="/webui/ext/adapter/ext/ext-base.js"></script>
 
-	<script type="text/javascript" src="/webui/ext-2.0/ext-all.js"></script>
-    <script type="text/javascript" src="/webui/ext-2.0/script/graphics.js"></script>
-    <script type="text/javascript" src="/webui/ext-2.0/script/ext-untangle.js"></script>
-<script src="/jabsorb/jsonrpc-min.js" type="text/javascript"></script>
+	<script type="text/javascript" src="/webui/ext/ext-all.js"></script>
+    <script type="text/javascript" src="/webui/ext/script/graphics.js"></script>
+    <script type="text/javascript" src="/webui/ext/script/ext-untangle.js"></script>
+<script src="/webui/jsonrpc/jsonrpc-min.js" type="text/javascript"></script>
 </head>
 <body>
 <div id="editor-grid"></div>
 <script type="text/javascript">
-jsonrpc = new JSONRpcClient("/jabsorb/JSON-RPC");
+jsonrpc = new JSONRpcClient("/webui/JSON-RPC");
 
 // Call a Java method on the server
 var result = jsonrpc.RemoteUvmContext.getActivationKey();
