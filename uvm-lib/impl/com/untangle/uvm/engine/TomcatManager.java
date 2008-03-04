@@ -83,8 +83,9 @@ class TomcatManager
     private Connector defaultHTTPConnector;
     private Connector localHTTPConnector;
     private Connector defaultHTTPSConnector;
+    private Connector localHTTPSConnector; /* https localhost on 443. */
     private Connector internalOpenHTTPSConnector; /* Sessions on this port are unrestricted */
-    private Connector externalHTTPSConnector;
+    private Connector externalHTTPSConnector; /* This isn't used anymore now that we use a redirect */
 
     // constructors -----------------------------------------------------------
 
@@ -171,6 +172,20 @@ class TomcatManager
                 destroyConnector(defaultHTTPSConnector, "Default HTTPS");
                 defaultHTTPSConnector = createConnector(port, true);
                 startConnector(defaultHTTPSConnector, "Default HTTPS");
+            }
+
+            if (null != internalOpenHTTPSConnector) {
+                port = internalOpenHTTPSConnector.getPort();
+                destroyConnector(internalOpenHTTPSConnector, "Internal HTTPS");
+                internalOpenHTTPSConnector = createConnector(port, true);
+                startConnector(internalOpenHTTPSConnector, "Internal HTTPS");
+            }
+
+            if (null != localHTTPSConnector) {
+                port = localHTTPSConnector.getPort();
+                destroyConnector(localHTTPSConnector, "Local HTTPS");
+                localHTTPSConnector = createConnector(port, true, this.localhost);
+                startConnector(localHTTPSConnector, "Local HTTPS");
             }
         }
     }
@@ -349,7 +364,9 @@ class TomcatManager
             defaultHTTPConnector = createConnector(internalHTTPPort, false);
             localHTTPConnector = createConnector(internalHTTPPort, false,this.localhost);
             defaultHTTPSConnector = createConnector(internalHTTPSPort, true);
+            localHTTPSConnector = createConnector(internalHTTPSPort, true, this.localhost);
             internalOpenHTTPSConnector = createConnector(internalOpenHTTPSPort, true);
+
 
             /* Start the outside https server */
             if (externalHTTPSPort != internalHTTPSPort) {
