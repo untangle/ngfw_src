@@ -111,7 +111,7 @@ public abstract class Rule implements Serializable
     @Id
     @Column(name="rule_id")
     @GeneratedValue
-    protected Long getId()
+    public Long getId()
     {
         return id;
     }

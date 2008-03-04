@@ -22,6 +22,7 @@ import java.util.List;
 
 import com.untangle.node.http.UserWhitelistMode;
 import com.untangle.uvm.logging.EventManager;
+import com.untangle.uvm.node.IPMaddrRule;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.StringRule;
 
@@ -32,9 +33,22 @@ public interface Spyware extends Node
     static final int PASS = Node.GENERIC_2_COUNTER;
 
     List<StringRule> getActiveXRules(int start, int limit, String... sortColumns);
-
+    void updateActiveXRules(List<Long> deleted, List<StringRule> added, List<StringRule> modified);
+    
+    List<StringRule> getCookieRules(int start, int limit, String... sortColumns);
+    void updateCookieRules(List<Long> deleted, List<StringRule> added, List<StringRule> modified);
+    
+    List<IPMaddrRule> getSubnetRules(int start, int limit, String... sortColumns);
+    void updateSubnetRules(List<Long> deleted, List<IPMaddrRule> added, List<IPMaddrRule> modified);
+    
+    List<StringRule> getDomainWhitelist(int start, int limit, String... sortColumns);
+    void updateDomainWhitelist(List<Long> deleted, List<StringRule> added, List<StringRule> modified);
+    
     SpywareSettings getSpywareSettings();
     void setSpywareSettings(SpywareSettings settings);
+    
+    SpywareBaseSettings getSpywareBaseSettings();
+    void setSpywareBaseSettings(SpywareBaseSettings baseSettings);
 
     SpywareBlockDetails getBlockDetails(String nonce);
     boolean unblockSite(String nonce, boolean global);

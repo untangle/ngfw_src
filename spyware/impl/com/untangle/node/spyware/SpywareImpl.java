@@ -38,6 +38,14 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 
+import org.apache.catalina.Valve;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpMethod;
+import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.log4j.Logger;
+import org.hibernate.Query;
+import org.hibernate.Session;
+
 import com.sleepycat.je.DatabaseException;
 import com.untangle.node.http.UserWhitelistMode;
 import com.untangle.node.token.Header;
@@ -57,6 +65,7 @@ import com.untangle.uvm.logging.SimpleEventFilter;
 import com.untangle.uvm.node.IPMaddr;
 import com.untangle.uvm.node.IPMaddrRule;
 import com.untangle.uvm.node.NodeContext;
+import com.untangle.uvm.node.Rule;
 import com.untangle.uvm.node.StringRule;
 import com.untangle.uvm.toolbox.RemoteToolboxManager;
 import com.untangle.uvm.util.OutsideValve;
@@ -68,13 +77,6 @@ import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.vnet.SoloPipeSpec;
 import com.untangle.uvm.vnet.TCPSession;
-import org.apache.catalina.Valve;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.log4j.Logger;
-import org.hibernate.Query;
-import org.hibernate.Session;
 
 public class SpywareImpl extends AbstractNode implements Spyware
 {
@@ -184,7 +186,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
     }
 
     // SpywareNode methods -----------------------------------------------
-
+/*
     public List<StringRule> getActiveXRules(final int start,
                                             final int limit,
                                             final String... sortColumns)
@@ -210,9 +212,81 @@ public class SpywareImpl extends AbstractNode implements Spyware
 
         return tw.getResult();
     }
+*/
 
-
-    public SpywareSettings getSpywareSettings()
+    public List<StringRule> getActiveXRules(final int start, final int limit,
+			final String... sortColumns) {
+		return getRules(
+				"select s.activeXRules from SpywareSettings s where s.tid = :tid ",
+				start, limit, sortColumns);
+	}
+    
+	public void updateActiveXRules(List<Long> deleted, List<StringRule> added,
+			List<StringRule> modified) {
+		
+		updateRules(getSpywareSettings().getActiveXRules(), deleted, added, modified);		
+	}
+	
+    public List<StringRule> getCookieRules(int start, int limit,
+    		String... sortColumns) {
+		return getRules(
+				"select s.cookieRules from SpywareSettings s where s.tid = :tid ",
+				start, limit, sortColumns);
+    }
+    
+	public void updateCookieRules(List<Long> deleted, List<StringRule> added,
+			List<StringRule> modified) {
+		
+		updateRules(getSpywareSettings().getCookieRules(), deleted, added, modified);		
+	}
+	
+    public List<IPMaddrRule> getSubnetRules(int start, int limit,
+    		String... sortColumns) {
+		return getRules(
+				"select s.subnetRules from SpywareSettings s where s.tid = :tid ",
+				start, limit, sortColumns);
+    }
+    
+	public void updateSubnetRules(List<Long> deleted, List<IPMaddrRule> added,
+			List<IPMaddrRule> modified) {
+		
+		List<IPMaddrRule> subnetRules = getSpywareSettings().getSubnetRules();		
+		updateRules(subnetRules, deleted, added, modified);		
+	}
+	
+    public List<StringRule> getDomainWhitelist(int start, int limit,
+    		String... sortColumns) {
+		return getRules(
+				"select s.domainWhitelist from SpywareSettings s where s.tid = :tid ",
+				start, limit, sortColumns);
+    }
+    
+	public void updateDomainWhitelist(List<Long> deleted, List<StringRule> added,
+			List<StringRule> modified) {
+		
+		List<StringRule> domainWhitelist = getSpywareSettings().getDomainWhitelist();		
+		updateRules(domainWhitelist, deleted, added, modified);		
+	}
+	
+    public SpywareBaseSettings getSpywareBaseSettings() {
+    	return new SpywareBaseSettings(getSpywareSettings());    	
+    }
+    
+	public void setSpywareBaseSettings(SpywareBaseSettings baseSettings) {
+        getSpywareSettings().setUserWhitelistMode(baseSettings.getUserWhitelistMode());
+        getSpywareSettings().setActiveXEnabled(baseSettings.isActiveXEnabled());
+        getSpywareSettings().setCookieBlockerEnabled(baseSettings.isCookieBlockerEnabled());
+        getSpywareSettings().setSpywareEnabled(baseSettings.isSpywareEnabled());
+        getSpywareSettings().setBlockAllActiveX(baseSettings.isBlockAllActiveX());
+        getSpywareSettings().setUrlBlacklistEnabled(baseSettings.isUrlBlacklistEnabled());
+        getSpywareSettings().setActiveXDetails(baseSettings.getActiveXDetails());
+        getSpywareSettings().setCookieBlockerDetails(baseSettings.getCookieBlockerDetails());
+        getSpywareSettings().setSpywareDetails(baseSettings.getSpywareDetails());
+        getSpywareSettings().setBlockAllActiveXDetails(baseSettings.getBlockAllActiveXDetails());
+        getSpywareSettings().setUrlBlacklistDetails(baseSettings.getUrlBlacklistDetails());
+	}
+	
+	public SpywareSettings getSpywareSettings()
     {
         if( settings == null )
             logger.error("Settings not yet initialized. State: " + getNodeContext().getRunState() );
@@ -471,6 +545,64 @@ public class SpywareImpl extends AbstractNode implements Spyware
 
     // private methods --------------------------------------------------------
 
+    // TODO we should have this into a util class
+    private List getRules(final String queryString, final int start,
+			final int limit, final String... sortColumns) {
+		TransactionWork<List> tw = new TransactionWork<List>() {
+			private List result;
+
+			public boolean doWork(Session s) {
+				Query q = s.createQuery(queryString
+						+ QueryUtil.toOrderByClause(sortColumns));
+				q.setParameter("tid", getTid());
+				q.setFirstResult(start);
+				q.setMaxResults(limit);
+				result = q.list();
+
+				return true;
+			}
+
+			public List getResult() {
+				return result;
+			}
+		};
+		getNodeContext().runTransaction(tw);
+
+		return tw.getResult();
+	}
+    
+    // TODO we should have this into a util class
+	private void updateRules(List rules, List<Long> deleted, List added,
+			List modified) {
+		
+		for (Iterator iterator = rules.iterator(); iterator.hasNext();) {
+			Rule rule = (Rule)iterator.next();
+			if (deleted.contains(rule.getId()) ||
+					isModified(rule, modified)){
+				iterator.remove();
+			}
+		}
+		for (int i = 0; i < modified.size(); i++) {
+			rules.add(modified.get(i));
+		}
+		for (int i = 0; i < added.size(); i++) {
+			rules.add(added.get(i));
+		}
+		
+		//persist the new rules
+		setSpywareSettings(getSpywareSettings());		
+	}
+	
+    private boolean isModified(Rule rule, List modified) {
+    	for (Iterator iterator = modified.iterator(); iterator.hasNext();) {
+    		Rule currentRule = (Rule)iterator.next();
+			if(currentRule.getId().equals(rule.getId())){
+				return true;
+			}
+		}
+		return false;
+	}
+    
     private boolean findMatch(Set<String> rules, String domain)
     {
         for (String d = domain; null != d; d = nextHost(d)) {
