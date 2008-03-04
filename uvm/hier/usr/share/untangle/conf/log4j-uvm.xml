@@ -107,6 +107,10 @@
     <priority value="INFO"/>
   </category>
 
+  <category name="com.untangle.node.rsa.proxy">
+    <priority value="INFO"/>
+  </category>
+
   <!-- ============================================== -->
   <!-- The Root Category                              -->
   <!-- ============================================== -->
