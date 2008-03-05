@@ -22,33 +22,29 @@
 class NodeBuilder
 
   def NodeBuilder.makeNode(buildEnv, name, location, depsImpl = [],
-                           depsGui = [], depsLocalApi = [],
-                           baseHash = {})
-    makePackage(buildEnv, name, location, depsImpl, depsGui,
-                depsLocalApi, baseHash)
+                           depsLocalApi = [], baseHash = {})
+    makePackage(buildEnv, name, location, depsImpl, depsLocalApi, baseHash)
   end
 
-  def NodeBuilder.makeCasing(buildEnv, name, location, depsImpl = [], depsGui = [],
+  def NodeBuilder.makeCasing(buildEnv, name, location, depsImpl = [],
                              depsLocalApi = [], baseHash = {})
-    makePackage(buildEnv, name, location, depsImpl, depsGui, depsLocalApi,
+    makePackage(buildEnv, name, location, depsImpl, depsLocalApi,
                 baseHash)
   end
 
-  def NodeBuilder.makeBase(buildEnv, name, location, depsImpl = [], depsGui = [],
+  def NodeBuilder.makeBase(buildEnv, name, location, depsImpl = [],
                            depsLocalApi = [], baseHash = {})
-    makePackage(buildEnv, name, location, depsImpl, depsGui, depsLocalApi,
+    makePackage(buildEnv, name, location, depsImpl, depsLocalApi,
                 baseHash)
   end
 
   private
   ## Create the necessary packages and targets to build a node
   def NodeBuilder.makePackage(buildEnv, name, location, depsImpl = [],
-                              depsGui = [], depsLocalApi = [],
-                              baseHash = {})
+                              depsLocalApi = [], baseHash = {})
     home = buildEnv.home
 
     uvm_lib = BuildEnv::SRC['untangle-libuvm']
-    gui  = BuildEnv::SRC['untangle-client']
     dirName = location
     node = buildEnv["#{name}"]
     buildEnv.installTarget.register_dependency(node)
@@ -94,7 +90,7 @@ class NodeBuilder
                                       directories )
 
     jt = JarTarget.build_target(node, deps, "impl", directories)
-    
+
     po_dir = "#{home}/#{dirName}/po"
     pkgname = "com.untangle.node.#{dirName}"
     if File.exist? po_dir
@@ -106,24 +102,6 @@ class NodeBuilder
     end
 
     buildEnv.installTarget.install_jars(jt, "#{node.distDirectory}/usr/share/untangle/toolbox", nil, false, true)
-
-    ## Only create the GUI api if there are files for the GUI
-    if (FileList["#{home}/#{dirName}/gui/**/*.java"].length > 0)
-      deps  = baseJarsGui + depsGui
-      baseHash.each_value do |pkg|
-        if pkg.hasTarget?('gui')
-          deps << pkg['gui']
-        end
-      end
-
-      jt = JarTarget.build_target(node, deps, 'gui',
-                                 ["#{home}/#{dirName}/api",
-                                   "#{home}/#{dirName}/gui",
-                                   "#{home}/#{dirName}/fake"])
-                                   
-      buildEnv.installTarget.install_jars(jt, "#{node.distDirectory}/usr/share/untangle/web/webstart",
-                                         nil, true)
-    end
 
     hierFiles = FileList["#{home}/#{dirName}/hier/**/*"]
     if (0 < hierFiles.length)
@@ -144,11 +122,5 @@ class NodeBuilder
   def NodeBuilder.baseJarsLocalApi
     ## See no reason to use a different set of jars
     baseJarsImpl
-  end
-
-  ## Helper to retrieve the standard dependencies for a GUI jar
-  def NodeBuilder.baseJarsGui
-    Jars::Base + Jars::Gui + Jars::TomcatEmb +
-      [BuildEnv::SRC['untangle-libuvm']['api'], BuildEnv::SRC['untangle-client']['api']]
   end
 end

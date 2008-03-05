@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -34,22 +34,18 @@ public interface Spyware extends Node
 
     List<StringRule> getActiveXRules(int start, int limit, String... sortColumns);
     void updateActiveXRules(List<Long> deleted, List<StringRule> added, List<StringRule> modified);
-    
+
     List<StringRule> getCookieRules(int start, int limit, String... sortColumns);
     void updateCookieRules(List<Long> deleted, List<StringRule> added, List<StringRule> modified);
-    
+
     List<IPMaddrRule> getSubnetRules(int start, int limit, String... sortColumns);
     void updateSubnetRules(List<Long> deleted, List<IPMaddrRule> added, List<IPMaddrRule> modified);
-    
+
     List<StringRule> getDomainWhitelist(int start, int limit, String... sortColumns);
     void updateDomainWhitelist(List<Long> deleted, List<StringRule> added, List<StringRule> modified);
-    
-    SpywareSettings getSpywareSettings();
-    void setSpywareSettings(SpywareSettings settings);
-    
-    SpywareBaseSettings getSpywareBaseSettings();
-    void setSpywareBaseSettings(SpywareBaseSettings baseSettings);
 
+    SpywareBaseSettings getBaseSettings();
+    void setBaseSettings(SpywareBaseSettings baseSettings);
     SpywareBlockDetails getBlockDetails(String nonce);
     boolean unblockSite(String nonce, boolean global);
 

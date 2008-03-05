@@ -19,10 +19,11 @@
 package com.untangle.node.spyware;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -57,21 +58,13 @@ public class SpywareSettings implements Serializable
 
     private Long id;
     private Tid tid;
-    private UserWhitelistMode userWhitelistMode = UserWhitelistMode.USER_ONLY;
-    private boolean activeXEnabled = true;
-    private boolean cookieBlockerEnabled = true;
-    private boolean spywareEnabled = true;
-    private boolean blockAllActiveX = false;
-    private boolean urlBlacklistEnabled = true;
-    private String activeXDetails ="no description";
-    private String cookieBlockerDetails = "no description";
-    private String spywareDetails = "no description";
-    private String blockAllActiveXDetails = "no description";
-    private String urlBlacklistDetails = "no description";
-    private List<StringRule> activeXRules;
-    private List<StringRule> cookieRules;
-    private List<IPMaddrRule> subnetRules;
-    private List<StringRule> domainWhitelist = new ArrayList<StringRule>();
+
+    private SpywareBaseSettings baseSettings = new SpywareBaseSettings();
+
+    private Set<StringRule> activeXRules;
+    private Set<StringRule> cookieRules;
+    private Set<IPMaddrRule> subnetRules;
+    private Set<StringRule> domainWhitelist = new HashSet<StringRule>();
 
     // not for the GUI! XXX move to a private class
     private int accessVersion = -1;
@@ -102,6 +95,24 @@ public class SpywareSettings implements Serializable
         this.id = id;
     }
 
+    @Embedded
+    public SpywareBaseSettings getBaseSettings()
+    {
+        if (null != baseSettings) {
+            baseSettings.setActiveXRulesLength(null == activeXRules ? 0 : activeXRules.size());
+            baseSettings.setCookieRulesLength(null == cookieRules ? 0 : cookieRules.size());
+            baseSettings.setSubnetRulesLength(null == subnetRules ? 0 : subnetRules.size());
+            baseSettings.setDomainWhitelistLength(null == domainWhitelist ? 0 : domainWhitelist.size());
+        }
+
+        return baseSettings;
+    }
+
+    public void setBaseSettings(SpywareBaseSettings baseSettings)
+    {
+        this.baseSettings = baseSettings;
+    }
+
     /**
      * Node id for these settings.
      *
@@ -119,157 +130,10 @@ public class SpywareSettings implements Serializable
         this.tid = tid;
     }
 
-    @Enumerated(EnumType.STRING)
-    @Column(name="user_whitelist_mode", nullable=false)
-    public UserWhitelistMode getUserWhitelistMode()
-    {
-        return userWhitelistMode;
-    }
-
-    public void setUserWhitelistMode(UserWhitelistMode userWhitelistMode)
-    {
-        this.userWhitelistMode = userWhitelistMode;
-    }
-
-    /**
-     * ActiveX scanner enabled.
-     *
-     * @return true if active.
-     */
-    @Column(name="activex_enabled", nullable=false)
-    public boolean getActiveXEnabled()
-    {
-        return activeXEnabled;
-    }
-
-    public void setActiveXEnabled(boolean activeXEnabled)
-    {
-        this.activeXEnabled = activeXEnabled;
-    }
-
-    /**
-     * Cookie blocker enabled.
-     *
-     * @return true if cookie is enabled.
-     */
-    @Column(name="cookie_enabled", nullable=false)
-    public boolean getCookieBlockerEnabled()
-    {
-        return cookieBlockerEnabled;
-    }
-
-    public void setCookieBlockerEnabled(boolean cookieBlockerEnabled)
-    {
-        this.cookieBlockerEnabled = cookieBlockerEnabled;
-    }
-
-    /**
-     * Spyware enabled.
-     *
-     * @return true if spyware checking enabled.
-     */
-    @Column(name="spyware_enabled", nullable=false)
-    public boolean getSpywareEnabled()
-    {
-        return spywareEnabled;
-    }
-
-    public void setSpywareEnabled(boolean spywareEnabled)
-    {
-        this.spywareEnabled = spywareEnabled;
-    }
-
-    /**
-     * All ActiveX blocked.
-     *
-     * @return true if all ActiveX should be blocked.
-     */
-    @Column(name="block_all_activex", nullable=false)
-    public boolean getBlockAllActiveX()
-    {
-        return blockAllActiveX;
-    }
-
-    public void setBlockAllActiveX(boolean blockAllActiveX)
-    {
-        this.blockAllActiveX = blockAllActiveX;
-    }
-
-    /**
-     * Enables the URL blacklist.
-     *
-     * @return true if blacklist enabled, false otherwise.
-     */
-    @Column(name="url_blacklist_enabled", nullable=false)
-    public boolean getUrlBlacklistEnabled()
-    {
-        return urlBlacklistEnabled;
-    }
-
-    public void setUrlBlacklistEnabled(boolean urlBlacklistEnabled)
-    {
-        this.urlBlacklistEnabled = urlBlacklistEnabled;
-    }
-
-    @Column(name="activex_details")
-    public String getActiveXDetails()
-    {
-        return activeXDetails;
-    }
-
-    public void setActiveXDetails(String activeXDetails)
-    {
-        this.activeXDetails = activeXDetails;
-    }
-
-    @Column(name="cookie_details")
-    public String getCookieBlockerDetails()
-    {
-        return cookieBlockerDetails;
-    }
-
-    public void setCookieBlockerDetails(String cookieBlockerDetails)
-    {
-        this.cookieBlockerDetails = cookieBlockerDetails;
-    }
-
-    @Column(name="spyware_details")
-    public String getSpywareDetails()
-    {
-        return spywareDetails;
-    }
-
-    public void setSpywareDetails(String spywareDetails)
-    {
-        this.spywareDetails = spywareDetails;
-    }
-
-    @Column(name="block_all_activex_details")
-    public String getBlockAllActiveXDetails()
-    {
-        return blockAllActiveXDetails;
-    }
-
-    public void setBlockAllActiveXDetails(String blockAllActiveXDetails)
-    {
-        this.blockAllActiveXDetails = blockAllActiveXDetails;
-    }
-
-    @Column(name="url_blacklist_details")
-    public String getUrlBlacklistDetails()
-    {
-        return urlBlacklistDetails;
-    }
-
-    public void setUrlBlacklistDetails(String urlBlacklistDetails)
-    {
-        this.urlBlacklistDetails = urlBlacklistDetails;
-    }
-
     /**
      * ActiveX rules.
      *
-     * @return the list of ActiveXRules
+     * @return the set of ActiveXRules
      */
     @OneToMany(fetch=FetchType.EAGER)
     @Cascade({ org.hibernate.annotations.CascadeType.ALL,
@@ -277,13 +141,12 @@ public class SpywareSettings implements Serializable
     @JoinTable(name="n_spyware_ar",
                joinColumns=@JoinColumn(name="settings_id"),
                inverseJoinColumns=@JoinColumn(name="rule_id"))
-    @IndexColumn(name="position")
-    public List<StringRule> getActiveXRules()
+    public Set<StringRule> getActiveXRules()
     {
-        return UvmUtil.eliminateNulls(activeXRules);
+        return activeXRules;
     }
 
-    public void setActiveXRules(List<StringRule> activeXRules)
+    public void setActiveXRules(Set<StringRule> activeXRules)
     {
         this.activeXRules = activeXRules;
     }
@@ -291,7 +154,7 @@ public class SpywareSettings implements Serializable
     /**
      * Cookie rules.
      *
-     * @return the list of CookieRules.
+     * @return the set of CookieRules.
      */
     @OneToMany(fetch=FetchType.EAGER)
     @Cascade({ org.hibernate.annotations.CascadeType.ALL,
@@ -299,13 +162,12 @@ public class SpywareSettings implements Serializable
     @JoinTable(name="n_spyware_cr",
                joinColumns=@JoinColumn(name="settings_id"),
                inverseJoinColumns=@JoinColumn(name="rule_id"))
-    @IndexColumn(name="position")
-    public List<StringRule> getCookieRules()
+    public Set<StringRule> getCookieRules()
     {
-        return UvmUtil.eliminateNulls(cookieRules);
+        return cookieRules;
     }
 
-    public void setCookieRules(List<StringRule> cookieRules)
+    public void setCookieRules(Set<StringRule> cookieRules)
     {
         this.cookieRules = cookieRules;
     }
@@ -313,7 +175,7 @@ public class SpywareSettings implements Serializable
     /**
      * IPMaddr rules.
      *
-     * @return the list of Subnet Rules.
+     * @return the set of Subnet Rules.
      */
     @OneToMany(fetch=FetchType.EAGER)
     @Cascade({ org.hibernate.annotations.CascadeType.ALL,
@@ -321,13 +183,12 @@ public class SpywareSettings implements Serializable
     @JoinTable(name="n_spyware_sr",
                joinColumns=@JoinColumn(name="settings_id"),
                inverseJoinColumns=@JoinColumn(name="rule_id"))
-    @IndexColumn(name="position")
-    public List<IPMaddrRule> getSubnetRules()
+    public Set<IPMaddrRule> getSubnetRules()
     {
-        return UvmUtil.eliminateNulls(subnetRules);
+        return subnetRules;
     }
 
-    public void setSubnetRules(List<IPMaddrRule> subnetRules)
+    public void setSubnetRules(Set<IPMaddrRule> subnetRules)
     {
         this.subnetRules = subnetRules;
     }
@@ -335,7 +196,7 @@ public class SpywareSettings implements Serializable
     /**
      * Domains not subject to blacklist checking.
      *
-     * @return the list of passed domains.
+     * @return the set of passed domains.
      */
     @OneToMany(fetch=FetchType.EAGER)
     @Cascade({ org.hibernate.annotations.CascadeType.ALL,
@@ -343,18 +204,17 @@ public class SpywareSettings implements Serializable
     @JoinTable(name="n_spyware_wl",
                joinColumns=@JoinColumn(name="settings_id"),
                inverseJoinColumns=@JoinColumn(name="rule_id"))
-    @IndexColumn(name="position")
-    public List<StringRule> getDomainWhitelist()
+    public Set<StringRule> getDomainWhitelist()
     {
-        return UvmUtil.eliminateNulls(domainWhitelist);
+        return domainWhitelist;
     }
 
-    public void setDomainWhitelist(List<StringRule> domainWhitelist)
+    public void setDomainWhitelist(Set<StringRule> domainWhitelist)
     {
         this.domainWhitelist = domainWhitelist;
     }
 
-    // NOT FOR THE GUI! XXX move to another class -------------------------
+    // NOT FOR THE GUI! XXX move to another class -----------------------------
 
     /**
      * Current version of subnet list.

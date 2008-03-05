@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -29,8 +29,6 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.untangle.uvm.vnet.TCPSession;
-import com.untangle.uvm.node.StringRule;
 import com.untangle.node.http.HttpStateMachine;
 import com.untangle.node.http.RequestLineToken;
 import com.untangle.node.http.StatusLine;
@@ -38,6 +36,8 @@ import com.untangle.node.token.Chunk;
 import com.untangle.node.token.Header;
 import com.untangle.node.token.Token;
 import com.untangle.node.util.AsciiCharBuffer;
+import com.untangle.uvm.node.StringRule;
+import com.untangle.uvm.vnet.TCPSession;
 import org.apache.log4j.Logger;
 
 
@@ -390,7 +390,7 @@ public class SpywareHttpHandler extends HttpStateMachine
             int cs = m.start();
             int ce = m.end();
 
-            boolean block = node.getSpywareSettings().getBlockAllActiveX();
+            boolean block = node.getSpywareSettings().getBaseSettings().getBlockAllActiveX();
             String ident = null;
             if (!block) {
                 String clsid = m.group(1);

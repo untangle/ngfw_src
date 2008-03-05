@@ -1,6 +1,6 @@
 # -*-ruby-*-
 # $HeadURL$
-# Copyright (c) 2003-2007 Untangle, Inc. 
+# Copyright (c) 2003-2007 Untangle, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License, version 2,
@@ -17,11 +17,9 @@
 #
 
 implDeps = []
-guiDeps = []
 
 %w(untangle-casing-mail untangle-casing-ftp untangle-casing-http).each do |c|
   implDeps << BuildEnv::SRC[c]['localapi']
-  guiDeps << BuildEnv::SRC[c]['gui']
 end
 
-NodeBuilder.makeBase(BuildEnv::SRC, 'untangle-base-clam', 'clam-base', implDeps, guiDeps)
+NodeBuilder.makeBase(BuildEnv::SRC, 'untangle-base-clam', 'clam-base', implDeps)

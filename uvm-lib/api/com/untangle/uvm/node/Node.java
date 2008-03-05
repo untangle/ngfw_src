@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -126,9 +126,4 @@ public interface Node
      * <code>RUNNING</code> state
      */
     NodeStats getStats() throws IllegalStateException;
-
-    // XXX future deprecated methods ------------------------------------------
-
-    Object getSettings();
-    void setSettings(Object settings) throws Exception;
 }

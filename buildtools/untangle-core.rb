@@ -32,7 +32,6 @@ require "#{SRC_HOME}/jvector/package.rb"
 require "#{SRC_HOME}/nfutil/package.rb"
 require "#{SRC_HOME}/uvm/package.rb"
 require "#{SRC_HOME}/uvm-lib/package.rb"
-require "#{SRC_HOME}/gui/package.rb"
 
 require "#{SRC_HOME}/test/package.rb"
 require "#{SRC_HOME}/reporting/package.rb"

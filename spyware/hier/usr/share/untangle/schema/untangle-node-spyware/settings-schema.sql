@@ -44,29 +44,26 @@ CREATE TABLE settings.n_spyware_settings (
 CREATE TABLE settings.n_spyware_cr (
     settings_id int8 NOT NULL,
     rule_id int8 NOT NULL,
-    position int4 NOT NULL,
-    PRIMARY KEY (settings_id, position));
+    position int4);
 
 -- com.untangle.tran.spyware.SpywareSettings.activeXRules
 CREATE TABLE settings.n_spyware_ar (
     settings_id int8 NOT NULL,
     rule_id int8 NOT NULL,
-    position int4 NOT NULL,
-    PRIMARY KEY (settings_id, position));
+    position int4);
 
 -- com.untangle.tran.spyware.SpywareSettings.subnetRules
 CREATE TABLE settings.n_spyware_sr (
     settings_id int8 NOT NULL,
     rule_id int8 NOT NULL,
-    position int4 NOT NULL,
-    PRIMARY KEY (settings_id, position));
+    position int4);
+
 
 -- com.untangle.tran.spyware.SpywareSettings.domainWhitelist
 CREATE TABLE settings.n_spyware_wl (
     settings_id int8 NOT NULL,
     rule_id int8 NOT NULL,
-    position int4 NOT NULL,
-    PRIMARY KEY (settings_id, position));
+    position int4);
 
 ----------------
 -- constraints |

@@ -188,8 +188,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
 
     public List<StringRule> getActiveXRules(final int start, final int limit,
                                             final String... sortColumns) {
-        return getRules(
-                        "select s.activeXRules from SpywareSettings s where s.tid = :tid ",
+        return getRules("select s.activeXRules from SpywareSettings s where s.tid = :tid ",
                         start, limit, sortColumns);
     }
 
@@ -201,8 +200,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
 
     public List<StringRule> getCookieRules(int start, int limit,
                                            String... sortColumns) {
-        return getRules(
-                        "select s.cookieRules from SpywareSettings s where s.tid = :tid ",
+        return getRules("select s.cookieRules from SpywareSettings s where s.tid = :tid ",
                         start, limit, sortColumns);
     }
 
@@ -214,54 +212,46 @@ public class SpywareImpl extends AbstractNode implements Spyware
 
     public List<IPMaddrRule> getSubnetRules(int start, int limit,
                                             String... sortColumns) {
-        return getRules(
-                        "select s.subnetRules from SpywareSettings s where s.tid = :tid ",
+        return getRules("select s.subnetRules from SpywareSettings s where s.tid = :tid ",
                         start, limit, sortColumns);
     }
 
     public void updateSubnetRules(List<Long> deleted, List<IPMaddrRule> added,
                                   List<IPMaddrRule> modified) {
 
-        List<IPMaddrRule> subnetRules = getSpywareSettings().getSubnetRules();
+        Set<IPMaddrRule> subnetRules = getSpywareSettings().getSubnetRules();
         updateRules(subnetRules, deleted, added, modified);
     }
 
     public List<StringRule> getDomainWhitelist(int start, int limit,
                                                String... sortColumns) {
-        return getRules(
-                        "select s.domainWhitelist from SpywareSettings s where s.tid = :tid ",
+        return getRules("select s.domainWhitelist from SpywareSettings s where s.tid = :tid ",
                         start, limit, sortColumns);
     }
 
     public void updateDomainWhitelist(List<Long> deleted, List<StringRule> added,
                                       List<StringRule> modified) {
 
-        List<StringRule> domainWhitelist = getSpywareSettings().getDomainWhitelist();
+        Set<StringRule> domainWhitelist = getSpywareSettings().getDomainWhitelist();
         updateRules(domainWhitelist, deleted, added, modified);
     }
 
-    public SpywareBaseSettings getSpywareBaseSettings() {
-        return new SpywareBaseSettings(getSpywareSettings());
+    public SpywareBaseSettings getBaseSettings()
+    {
+        return settings.getBaseSettings();
     }
 
-    public void setSpywareBaseSettings(SpywareBaseSettings baseSettings) {
-        getSpywareSettings().setUserWhitelistMode(baseSettings.getUserWhitelistMode());
-        getSpywareSettings().setActiveXEnabled(baseSettings.isActiveXEnabled());
-        getSpywareSettings().setCookieBlockerEnabled(baseSettings.isCookieBlockerEnabled());
-        getSpywareSettings().setSpywareEnabled(baseSettings.isSpywareEnabled());
-        getSpywareSettings().setBlockAllActiveX(baseSettings.isBlockAllActiveX());
-        getSpywareSettings().setUrlBlacklistEnabled(baseSettings.isUrlBlacklistEnabled());
-        getSpywareSettings().setActiveXDetails(baseSettings.getActiveXDetails());
-        getSpywareSettings().setCookieBlockerDetails(baseSettings.getCookieBlockerDetails());
-        getSpywareSettings().setSpywareDetails(baseSettings.getSpywareDetails());
-        getSpywareSettings().setBlockAllActiveXDetails(baseSettings.getBlockAllActiveXDetails());
-        getSpywareSettings().setUrlBlacklistDetails(baseSettings.getUrlBlacklistDetails());
+    public void setBaseSettings(SpywareBaseSettings baseSettings)
+    {
+        settings.setBaseSettings(baseSettings);
     }
 
     public SpywareSettings getSpywareSettings()
     {
-        if( settings == null )
-            logger.error("Settings not yet initialized. State: " + getNodeContext().getRunState() );
+        if (null == settings) {
+            logger.error("Settings not yet initialized. State: "
+                         + getNodeContext().getRunState());
+        }
         return settings;
     }
 
@@ -285,7 +275,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
 
     public UserWhitelistMode getUserWhitelistMode()
     {
-        return settings.getUserWhitelistMode();
+        return settings.getBaseSettings().getUserWhitelistMode();
     }
 
     public SpywareBlockDetails getBlockDetails(String nonce)
@@ -297,7 +287,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
     {
         SpywareBlockDetails bd = replacementGenerator.removeNonce(nonce);
 
-        switch (settings.getUserWhitelistMode()) {
+        switch (settings.getBaseSettings().getUserWhitelistMode()) {
         case NONE:
             logger.debug("attempting to unblock in UserWhitelistMode.NONE");
             return false;
@@ -310,7 +300,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
             // its all good
             break;
         default:
-            logger.error("missing case: " + settings.getUserWhitelistMode());
+            logger.error("missing case: " + settings.getBaseSettings().getUserWhitelistMode());
             break;
         }
 
@@ -446,7 +436,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
 
     boolean isBlacklistDomain(String domain, URI uri)
     {
-        if (!settings.getUrlBlacklistEnabled()) {
+        if (!settings.getBaseSettings().getUrlBlacklistEnabled()) {
             return false;
         }
 
@@ -491,7 +481,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
         domain = domain.startsWith(".") && 1 < domain.length()
             ? domain.substring(1) : domain;
 
-        if (null == cookieRules && !settings.getCookieBlockerEnabled()) {
+        if (null == cookieRules && !settings.getBaseSettings().getCookieBlockerEnabled()) {
             return false;
         }
 
@@ -544,25 +534,32 @@ public class SpywareImpl extends AbstractNode implements Spyware
     }
 
     // TODO we should have this into a util class
-    private void updateRules(List rules, List<Long> deleted, List added,
-                             List modified) {
+    private void updateRules(final Set rules, final List<Long> deleted,
+                             final List added, final List modified)
+    {
+        TransactionWork tw = new TransactionWork()
+            {
+                public boolean doWork(Session s)
+                {
+                    for (Iterator i = rules.iterator(); i.hasNext();) {
+                        Rule rule = (Rule)i.next();
+                        if (deleted.contains(rule.getId())
+                            || isModified(rule, modified)) {
+                            i.remove();
+                        }
+                    }
 
-        for (Iterator iterator = rules.iterator(); iterator.hasNext();) {
-            Rule rule = (Rule)iterator.next();
-            if (deleted.contains(rule.getId()) ||
-                isModified(rule, modified)){
-                iterator.remove();
-            }
-        }
-        for (int i = 0; i < modified.size(); i++) {
-            rules.add(modified.get(i));
-        }
-        for (int i = 0; i < added.size(); i++) {
-            rules.add(added.get(i));
-        }
+                    rules.addAll(modified);
+                    rules.addAll(added);
 
-        //persist the new rules
-        setSpywareSettings(getSpywareSettings());
+                    s.merge(settings);
+
+                    return true;
+                }
+
+                public Object getResult() { return null; }
+            };
+        getNodeContext().runTransaction(tw);
     }
 
     private boolean isModified(Rule rule, List modified) {
@@ -604,7 +601,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
         int ver = settings.getActiveXVersion();
 
         if (0 > ver || null == settings.getActiveXRules()) {
-            List l = settings.getActiveXRules();
+            Set l = settings.getActiveXRules();
             if (null != l) {
                 l.clear();
             }
@@ -624,9 +621,9 @@ public class SpywareImpl extends AbstractNode implements Spyware
     private void updateActiveX(SpywareSettings settings, Set<String> add,
                                Set<String> remove)
     {
-        List<StringRule> rules = (List<StringRule>)settings.getActiveXRules();
+        Set<StringRule> rules = (Set<StringRule>)settings.getActiveXRules();
         if (null == rules) {
-            rules = new LinkedList<StringRule>();
+            rules = new HashSet<StringRule>();
             settings.setActiveXRules(rules);
         }
 
@@ -656,7 +653,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
         int ver = settings.getCookieVersion();
 
         if (0 > ver || null == settings.getCookieRules()) {
-            List l = settings.getCookieRules();
+            Set l = settings.getCookieRules();
             if (null != l) {
                 l.clear();
             }
@@ -676,9 +673,9 @@ public class SpywareImpl extends AbstractNode implements Spyware
     private void updateCookie(SpywareSettings settings, Set<String> add,
                               Set<String> remove)
     {
-        List<StringRule> rules = (List<StringRule>)settings.getCookieRules();
+        Set<StringRule> rules = (Set<StringRule>)settings.getCookieRules();
         if (null == rules) {
-            rules = new LinkedList<StringRule>();
+            rules = new HashSet<StringRule>();
             settings.setCookieRules(rules);
         }
 
@@ -710,7 +707,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
         int ver = settings.getSubnetVersion();
 
         if (0 > ver || null == settings.getSubnetRules()) {
-            List l = settings.getSubnetRules();
+            Set l = settings.getSubnetRules();
             if (null != l) {
                 l.clear();
             }
@@ -739,9 +736,9 @@ public class SpywareImpl extends AbstractNode implements Spyware
             }
         }
 
-        List<IPMaddrRule> rules = (List<IPMaddrRule>)settings.getSubnetRules();
+        Set<IPMaddrRule> rules = (Set<IPMaddrRule>)settings.getSubnetRules();
         if (null == rules) {
-            rules = new LinkedList<IPMaddrRule>();
+            rules = new HashSet<IPMaddrRule>();
             settings.setSubnetRules(rules);
         }
 
@@ -916,11 +913,11 @@ public class SpywareImpl extends AbstractNode implements Spyware
     private void reconfigure()
     {
         logger.info("Reconfigure.");
-        if (this.settings.getSpywareEnabled()) {
+        if (this.settings.getBaseSettings().getSpywareEnabled()) {
             streamHandler.subnetList(this.settings.getSubnetRules());
         }
 
-        List<StringRule> l = (List<StringRule>)settings.getActiveXRules();
+        Set<StringRule> l = (Set<StringRule>)settings.getActiveXRules();
         if (null != l) {
             Map<String, StringRule> s = new HashMap<String, StringRule>();
             for (StringRule sr : l) {
@@ -931,7 +928,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
             activeXRules = null;
         }
 
-        l = (List<StringRule>)settings.getCookieRules();
+        l = (Set<StringRule>)settings.getCookieRules();
         if (null != l) {
             Map<String, StringRule> s = new HashMap<String, StringRule>();
             for (StringRule sr : l) {
@@ -943,7 +940,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
         }
 
         Set<String> s = new HashSet<String>();
-        l = (List<StringRule>)settings.getDomainWhitelist();
+        l = (Set<StringRule>)settings.getDomainWhitelist();
         for (StringRule sr : l) {
             if (sr.isLive()) {
                 String str = normalizeDomain(sr.getString());
@@ -997,17 +994,5 @@ public class SpywareImpl extends AbstractNode implements Spyware
         }
 
         return l;
-    }
-
-    // XXX soon to be deprecated ----------------------------------------------
-
-    public Object getSettings()
-    {
-        return getSpywareSettings();
-    }
-
-    public void setSettings(Object settings)
-    {
-        setSpywareSettings((SpywareSettings)settings);
     }
 }

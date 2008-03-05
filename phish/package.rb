@@ -1,6 +1,6 @@
 # -*-ruby-*-
 # $HeadURL$
-# Copyright (c) 2003-2007 Untangle, Inc. 
+# Copyright (c) 2003-2007 Untangle, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License, version 2,
@@ -23,11 +23,10 @@ clam = BuildEnv::SRC['untangle-base-clam']
 phish = BuildEnv::SRC['untangle-node-phish']
 
 NodeBuilder.makeNode(BuildEnv::SRC, 'untangle-node-phish', 'phish',
-                     [mail['localapi'], http['localapi']], 
-                     [mail['gui'], http['gui'] ], [],
-                     { 'spam-base' => spam, 'clam-base' => clam })
+                     [mail['localapi'], http['localapi']],
+                     [], { 'spam-base' => spam, 'clam-base' => clam })
 
-deps = [http['gui'], phish['gui'], spam['gui']]
+deps = [http['localapi'], phish['impl'], spam['impl']]
 
 ServletBuilder.new(phish, 'com.untangle.node.phish.jsp',
                    "./phish/servlets/idblocker", [],

@@ -1,6 +1,40 @@
+/*
+ * $HeadURL: svn://chef/branch/prod/web-ui/work/src/spyware/api/com/untangle/node/spyware/SpywareSettings.java $
+ * Copyright (c) 2003-2007 Untangle, Inc.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License, version 2,
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful, but
+ * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
+ * NONINFRINGEMENT.  See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
+
 package com.untangle.node.spyware;
 
 import java.io.Serializable;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.untangle.node.http.UserWhitelistMode;
 import com.untangle.uvm.security.Tid;
@@ -11,138 +45,216 @@ import com.untangle.uvm.security.Tid;
  * @author <a href="mailto:cmatei@untangle.com">Catalin Matei</a>
  * @version 1.0
  */
-public class SpywareBaseSettings implements Serializable {
-    private Tid tid;
-    private UserWhitelistMode userWhitelistMode;
-    private boolean activeXEnabled;
-    private boolean cookieBlockerEnabled;
-    private boolean spywareEnabled;
-    private boolean blockAllActiveX;
+@Embeddable
+public class SpywareBaseSettings implements Serializable
+{
+    private UserWhitelistMode userWhitelistMode = UserWhitelistMode.USER_ONLY;
+    private boolean activeXEnabled = true;
+    private boolean cookieBlockerEnabled = true;
+    private boolean spywareEnabled = true;
+    private boolean blockAllActiveX = false;
     private boolean urlBlacklistEnabled = true;
     private String activeXDetails ="no description";
     private String cookieBlockerDetails = "no description";
     private String spywareDetails = "no description";
     private String blockAllActiveXDetails = "no description";
     private String urlBlacklistDetails = "no description";
+
     private int activeXRulesLength;
     private int cookieRulesLength;
     private int subnetRulesLength;
     private int domainWhitelistLength;
-    
-    public SpywareBaseSettings(SpywareSettings settings) {
-    	this.tid = settings.getTid();
-        this.userWhitelistMode = settings.getUserWhitelistMode();
-        this.activeXEnabled = settings.getActiveXEnabled();
-        this.cookieBlockerEnabled = settings.getCookieBlockerEnabled();
-        this.spywareEnabled = settings.getSpywareEnabled();
-        this.blockAllActiveX = settings.getBlockAllActiveX();
-        this.urlBlacklistEnabled  = settings.getUrlBlacklistEnabled();
-        this.activeXDetails = settings.getActiveXDetails();
-        this.cookieBlockerDetails = settings.getCookieBlockerDetails();
-        this.spywareDetails = settings.getSpywareDetails();
-        this.blockAllActiveXDetails = settings.getBlockAllActiveXDetails();
-        this.urlBlacklistDetails = settings.getUrlBlacklistDetails();
-        this.activeXRulesLength = settings.getActiveXRules().size();
-        this.cookieRulesLength = settings.getCookieRules().size();
-        this.subnetRulesLength = settings.getSubnetRules().size();
-        this.domainWhitelistLength = settings.getDomainWhitelist().size();
-	}
-        
-	public Tid getTid() {
-		return tid;
-	}
-	public void setTid(Tid tid) {
-		this.tid = tid;
-	}
-	public UserWhitelistMode getUserWhitelistMode() {
-		return userWhitelistMode;
-	}
-	public void setUserWhitelistMode(UserWhitelistMode userWhitelistMode) {
-		this.userWhitelistMode = userWhitelistMode;
-	}
-	public boolean isActiveXEnabled() {
-		return activeXEnabled;
-	}
-	public void setActiveXEnabled(boolean activeXEnabled) {
-		this.activeXEnabled = activeXEnabled;
-	}
-	public boolean isCookieBlockerEnabled() {
-		return cookieBlockerEnabled;
-	}
-	public void setCookieBlockerEnabled(boolean cookieBlockerEnabled) {
-		this.cookieBlockerEnabled = cookieBlockerEnabled;
-	}
-	public boolean isSpywareEnabled() {
-		return spywareEnabled;
-	}
-	public void setSpywareEnabled(boolean spywareEnabled) {
-		this.spywareEnabled = spywareEnabled;
-	}
-	public boolean isBlockAllActiveX() {
-		return blockAllActiveX;
-	}
-	public void setBlockAllActiveX(boolean blockAllActiveX) {
-		this.blockAllActiveX = blockAllActiveX;
-	}
-	public boolean isUrlBlacklistEnabled() {
-		return urlBlacklistEnabled;
-	}
-	public void setUrlBlacklistEnabled(boolean urlBlacklistEnabled) {
-		this.urlBlacklistEnabled = urlBlacklistEnabled;
-	}
-	public String getActiveXDetails() {
-		return activeXDetails;
-	}
-	public void setActiveXDetails(String activeXDetails) {
-		this.activeXDetails = activeXDetails;
-	}
-	public String getCookieBlockerDetails() {
-		return cookieBlockerDetails;
-	}
-	public void setCookieBlockerDetails(String cookieBlockerDetails) {
-		this.cookieBlockerDetails = cookieBlockerDetails;
-	}
-	public String getSpywareDetails() {
-		return spywareDetails;
-	}
-	public void setSpywareDetails(String spywareDetails) {
-		this.spywareDetails = spywareDetails;
-	}
-	public String getBlockAllActiveXDetails() {
-		return blockAllActiveXDetails;
-	}
-	public void setBlockAllActiveXDetails(String blockAllActiveXDetails) {
-		this.blockAllActiveXDetails = blockAllActiveXDetails;
-	}
-	public String getUrlBlacklistDetails() {
-		return urlBlacklistDetails;
-	}
-	public void setUrlBlacklistDetails(String urlBlacklistDetails) {
-		this.urlBlacklistDetails = urlBlacklistDetails;
-	}
-	public int getActiveXRulesLength() {
-		return activeXRulesLength;
-	}
-	public void setActiveXRulesLength(int activeXRulesLength) {
-		this.activeXRulesLength = activeXRulesLength;
-	}
-	public int getCookieRulesLength() {
-		return cookieRulesLength;
-	}
-	public void setCookieRulesLength(int cookieRulesLength) {
-		this.cookieRulesLength = cookieRulesLength;
-	}
-	public int getSubnetRulesLength() {
-		return subnetRulesLength;
-	}
-	public void setSubnetRulesLength(int subnetRulesLength) {
-		this.subnetRulesLength = subnetRulesLength;
-	}
-	public int getDomainWhitelistLength() {
-		return domainWhitelistLength;
-	}
-	public void setDomainWhitelistLength(int domainWhitelistLength) {
-		this.domainWhitelistLength = domainWhitelistLength;
-	}
 
+    public SpywareBaseSettings() { }
+
+    @Enumerated(EnumType.STRING)
+    @Column(name="user_whitelist_mode", nullable=false)
+    public UserWhitelistMode getUserWhitelistMode()
+    {
+        return userWhitelistMode;
+    }
+
+    public void setUserWhitelistMode(UserWhitelistMode userWhitelistMode)
+    {
+        this.userWhitelistMode = userWhitelistMode;
+    }
+
+    /**
+     * ActiveX scanner enabled.
+     *
+     * @return true if active.
+     */
+    @Column(name="activex_enabled", nullable=false)
+    public boolean getActiveXEnabled()
+    {
+        return activeXEnabled;
+    }
+
+    public void setActiveXEnabled(boolean activeXEnabled)
+    {
+        this.activeXEnabled = activeXEnabled;
+    }
+
+    /**
+     * Cookie blocker enabled.
+     *
+     * @return true if cookie is enabled.
+     */
+    @Column(name="cookie_enabled", nullable=false)
+    public boolean getCookieBlockerEnabled()
+    {
+        return cookieBlockerEnabled;
+    }
+
+    public void setCookieBlockerEnabled(boolean cookieBlockerEnabled)
+    {
+        this.cookieBlockerEnabled = cookieBlockerEnabled;
+    }
+
+    /**
+     * Spyware enabled.
+     *
+     * @return true if spyware checking enabled.
+     */
+    @Column(name="spyware_enabled", nullable=false)
+    public boolean getSpywareEnabled()
+    {
+        return spywareEnabled;
+    }
+
+    public void setSpywareEnabled(boolean spywareEnabled)
+    {
+        this.spywareEnabled = spywareEnabled;
+    }
+
+    /**
+     * All ActiveX blocked.
+     *
+     * @return true if all ActiveX should be blocked.
+     */
+    @Column(name="block_all_activex", nullable=false)
+    public boolean getBlockAllActiveX()
+    {
+        return blockAllActiveX;
+    }
+
+    public void setBlockAllActiveX(boolean blockAllActiveX)
+    {
+        this.blockAllActiveX = blockAllActiveX;
+    }
+
+    /**
+     * Enables the URL blacklist.
+     *
+     * @return true if blacklist enabled, false otherwise.
+     */
+    @Column(name="url_blacklist_enabled", nullable=false)
+    public boolean getUrlBlacklistEnabled()
+    {
+        return urlBlacklistEnabled;
+    }
+
+    public void setUrlBlacklistEnabled(boolean urlBlacklistEnabled)
+    {
+        this.urlBlacklistEnabled = urlBlacklistEnabled;
+    }
+
+    @Column(name="activex_details")
+    public String getActiveXDetails()
+    {
+        return activeXDetails;
+    }
+
+    public void setActiveXDetails(String activeXDetails)
+    {
+        this.activeXDetails = activeXDetails;
+    }
+
+    @Column(name="cookie_details")
+    public String getCookieBlockerDetails()
+    {
+        return cookieBlockerDetails;
+    }
+
+    public void setCookieBlockerDetails(String cookieBlockerDetails)
+    {
+        this.cookieBlockerDetails = cookieBlockerDetails;
+    }
+
+    @Column(name="spyware_details")
+    public String getSpywareDetails()
+    {
+        return spywareDetails;
+    }
+
+    public void setSpywareDetails(String spywareDetails)
+    {
+        this.spywareDetails = spywareDetails;
+    }
+
+    @Column(name="block_all_activex_details")
+    public String getBlockAllActiveXDetails()
+    {
+        return blockAllActiveXDetails;
+    }
+
+    public void setBlockAllActiveXDetails(String blockAllActiveXDetails)
+    {
+        this.blockAllActiveXDetails = blockAllActiveXDetails;
+    }
+
+    @Column(name="url_blacklist_details")
+    public String getUrlBlacklistDetails()
+    {
+        return urlBlacklistDetails;
+    }
+
+    public void setUrlBlacklistDetails(String urlBlacklistDetails)
+    {
+        this.urlBlacklistDetails = urlBlacklistDetails;
+    }
+
+    @Transient
+    public int getActiveXRulesLength()
+    {
+        return this.activeXRulesLength;
+    }
+
+    public void setActiveXRulesLength(int activeXRulesLength)
+    {
+        this.activeXRulesLength = activeXRulesLength;
+    }
+
+    @Transient
+    public int getCookieRulesLength()
+    {
+        return this.cookieRulesLength;
+    }
+
+    public void setCookieRulesLength(int cookieRulesLength)
+    {
+        this.cookieRulesLength = cookieRulesLength;
+    }
+
+    @Transient
+    public int getSubnetRulesLength()
+    {
+        return this.subnetRulesLength;
+    }
+
+    public void setSubnetRulesLength(int subnetRulesLength)
+    {
+        this.subnetRulesLength = subnetRulesLength;
+    }
+
+    @Transient
+    public int getDomainWhitelistLength()
+    {
+        return this.domainWhitelistLength;
+    }
+
+    public void setDomainWhitelistLength(int domainWhitelistLength)
+    {
+        this.domainWhitelistLength = domainWhitelistLength;
+    }
 }
