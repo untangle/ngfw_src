@@ -66,8 +66,6 @@ Untangle.Main.prototype = {
 		if(main.initSemaphore!==0) {
 			return;
 		}
-		document.getElementById("test1").innerHTML = i18n.sprintf(i18n._('%s and %s'), "cucu", "bau");
-		document.getElementById("test2").innerHTML = i18n._('On the i18n part, we\'d like to have development');
 		main.buildTabs();
 		main.viewport = new Ext.Viewport({
             layout:'border',
@@ -133,12 +131,12 @@ Untangle.Main.prototype = {
 		return helpLink;
 	},
 	loadTools: function() {
-		this.loadLibarary();
+		this.loadLibrary();
 		this.loadMyApps();
 		this.loadConfig();
 	},
 	
-	loadLibarary: function() {
+	loadLibrary: function() {
 		rpc.toolboxManager.uninstalled(function (result, exception) {
 			if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
 			var uninstalledMD=result;
@@ -341,7 +339,7 @@ Untangle.Main.prototype = {
 	clickLibrary: function(item) {
 		if(item!==null) {
 			Ext.getCmp('libraryButton_'+item.name).disable();
-			rpc.nodeManager.install(function (result, exception) {
+			rpc.toolboxManager.install(function (result, exception) {
 				if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
 				main.loadMyApps();
 				Ext.MessageBox.alert("TODO","Purchase: add to myApps buttons, remove from library");
@@ -426,7 +424,7 @@ Untangle.Main.prototype = {
 					'cls':'toolboxButton',
 			        'text': item.displayName,
 			        'handler': function() {main.clickLibrary(main.library[this.libraryIndex]);},
-			        'imageSrc': item.image
+			        'imageSrc': 'image?name='+ item.name+"&"+main.version
 		        });
 	  		}
 	  	}
