@@ -172,7 +172,7 @@ Untangle.Main.prototype = {
 			main.myApps=[];
 			for(var i=0;i<installedVisibleMD.length;i++) {
 				var md=installedVisibleMD[i];
-				if(md.type=="NODE" && (md.core || md.security)) {
+				if(md.type=="NODE" && (md.core || md.security) && md.name!="untangle-node-router") {
 					main.myApps.push(md);
 				}
 			}
@@ -276,6 +276,9 @@ Untangle.Main.prototype = {
 		}
 		main.nodes=[];
 		for(i=0;i<rpc.tids.length;i++) {
+			if(rpc.tids[i].nodeName=="untangle-node-router") {
+				continue;
+			}
 			var node=this.createNode(rpc.tids[i]);
 			main.nodes.push(node);
 		}
