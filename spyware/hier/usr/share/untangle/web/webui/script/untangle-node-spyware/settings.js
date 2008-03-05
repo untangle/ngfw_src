@@ -35,26 +35,36 @@ Untangle.Spyware = Ext.extend(Untangle.Settings, {
 '<div>Spyware Blocker signatures were last updated: <div id="last_update_signatures_{id}"></div></div>');
 		this.panelBlockLists=new Ext.Panel({
 			title:this.i18n._("Block Lists"),
-			html: panelBlockListsTemplate.applyTemplate({id:this.getId()})
+			html: panelBlockListsTemplate.applyTemplate({id:this.getId()}),
+			onRender:  function(container, position) {
+				Ext.Panel.superclass.onRender.call(this,container, position);
+				var cmp=null;
+				/*
+				cmp=new Ext.Button({
+					'renderTo':'cookies_button_'+this.getId(),
+				       'text': i18n._('manage list'),
+				       'handler': function() {this.onManageCookiesList();}.createDelegate(this)
+				      });
+				cmp=new Ext.Button({
+					'renderTo':'activex_button_'+this.getId(),
+				       'text': i18n._('manage list'),
+				       'handler': function() {this.onManageActiveXList();}.createDelegate(this)
+				      });
+				cmp=new Ext.Button({
+					'renderTo':'traffic_button_'+this.getId(),
+				       'text': i18n._('manage list'),
+				       'handler': function() {this.onManageTrafficList();}.createDelegate(this)
+				      });
+				 */
+			}/*,
+			listeners: {
+				'render': {
+					fn: function() {
+					},
+					scope: this
+				}
+			},*/
 		});
-		var cmp=null;
-		/*
-		cmp=new Ext.Button({
-			'renderTo':'cookies_button_'+this.getId(),
-	        'text': i18n._('manage list'),
-	        'handler': function() {this.onManageCookiesList();}.createDelegate(this)
-        });
-		cmp=new Ext.Button({
-			'renderTo':'activex_button_'+this.getId(),
-	        'text': i18n._('manage list'),
-	        'handler': function() {this.onManageActiveXList();}.createDelegate(this)
-        });
-		cmp=new Ext.Button({
-			'renderTo':'traffic_button_'+this.getId(),
-	        'text': i18n._('manage list'),
-	        'handler': function() {this.onManageTrafficList();}.createDelegate(this)
-        });
-		*/
 		
 		
 		//--- Pass List ----------------------
@@ -186,7 +196,7 @@ Untangle.Spyware = Ext.extend(Untangle.Settings, {
 		            	var rec=new Ext.data.Record({"category":"","protocol":"","blocked":false,"log":false,"description":"","definition":""});
 						cmp.gridPassList.getStore().insert(0, [rec]);
 						cmp.gridPassList.rowEditor.populate(rec,0);
-           				cmp.gridPassList.rowEditor.show();		            	
+           				cmp.gridPassList.rowEditor.show();            	
 		            }
 		        }],
 	        stripeRows: true,
@@ -231,6 +241,7 @@ Untangle.Spyware = Ext.extend(Untangle.Settings, {
 	        width: 690,
 	        height: 400,
 	        activeTab: 0,
+	        resizeTabs: true,
 	        frame: true,
 	        deferredRender: false,
 	        items: [

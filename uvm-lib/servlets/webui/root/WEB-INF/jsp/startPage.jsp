@@ -5,6 +5,7 @@
     
     <style type="text/css">
         @import "ext/resources/css/ext-all.css?${version}";
+		@import "css/main.css?${version}";
 		@import "skins/default/css/ext-skin.css?${version}";
 		@import "skins/default/css/skin.css?${version}";
     </style>
@@ -17,13 +18,19 @@
     <script type="text/javascript" src="script/untangle-node-protofilter/settings.js?${version}"></script>
         "untangle . css?${version}";
 
--->	
+
 	<script type="text/javascript" src="ext/adapter/ext/ext-base.js?${version}"></script>
 	<script type="text/javascript" src="ext/ext-all.js?${version}"></script>
+-->	
+	<script type="text/javascript" src="ext/source/core/Ext.js?${version}"></script>
+	<script type="text/javascript" src="ext/source/adapter/ext-base.js?${version}"></script>
+	<script type="text/javascript" src="ext/ext-all-debug.js?${version}"></script>
+
+	
 	<script type="text/javascript" src="jsonrpc/jsonrpc-min.js?${version}"></script>
-    <script type="text/javascript" src="script/untangle-main.js?${version}"></script>
-	<script type="text/javascript" src="script/untangle-i18n.js?${version}"></script>
-    <script type="text/javascript" src="script/untangle-ext.js?${version}"></script>
+    <script type="text/javascript" src="script/main.js?${version}"></script>
+	<script type="text/javascript" src="script/i18n.js?${version}"></script>
+    <script type="text/javascript" src="script/components.js?${version}"></script>
     <script type="text/javascript" src="script/untangle-node-protofilter/settings.js?${version}"></script>
     <script type="text/javascript" src="script/untangle-node-spyware/settings.js?${version}"></script>
 	<script type="text/javascript">

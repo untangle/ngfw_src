@@ -3,30 +3,18 @@ if(!Untangle._hasResource["Untangle.Protofilter"]) {
 Untangle._hasResource["Untangle.Protofilter"]=true;
 
 Untangle.Protofilter = Ext.extend(Untangle.Settings, {
-    i18n: null,
-    node:null,
-    tabs: null,
-    storePL: null,
-    gridPL: null,
+    gridProtocolList: null,
     gridEventLog: null,
-    rowEditPL: null,
-    rpc: null,
     onRender: function(container, position) {
-    	var el= document.createElement("div");
-	    container.dom.insertBefore(el, position);
-        this.el = Ext.get(el);
-    	this.i18n=Untangle.i18nNodeInstances[this.name];
-    	this.rpc={};
-    	this.rpc.repository={};
-    	Untangle.Protofilter.instanceId=this.getId();    	
-    	if(this.node.nodeContext.node.eventManager===undefined) {
-			this.node.nodeContext.node.eventManager=this.node.nodeContext.node.getEventManager();
-		}
-		this.rpc.node = this.node.nodeContext.node;
-		this.rpc.eventManager=this.node.nodeContext.node.eventManager;
-		
+    	Untangle.Protofilter.superclass.onRender.call(this,container, position);
+		this.buildProtocolList();
+		this.buildEventLog();
+		this.buldTabPanel([this.gridProtocolList,this.gridEventLog])
+    },
+    
+    buildProtocolList: function() {
 	    // create the data store
-	    this.storePL = new Ext.data.JsonStore({
+	    var store = new Ext.data.JsonStore({
 	        fields: [
 	           {name: 'category'},
 	           {name: 'protocol'},
@@ -37,8 +25,7 @@ Untangle.Protofilter = Ext.extend(Untangle.Settings, {
 	        ]
 	    });
 	    // the column model has information about grid columns
-	    // dataIndex maps the column to the specific data field in
-	    // the data store (created below)
+	    // dataIndex maps the column to the specific data field in the data store (created below)
 	    
 	    var blockedColumn = new Ext.grid.CheckColumn({
 	       header: "<b>"+this.i18n._("block")+"</b>", width: 40, dataIndex: 'blocked', fixed:true
@@ -52,7 +39,7 @@ Untangle.Protofilter = Ext.extend(Untangle.Settings, {
 	    var removeColumn=new Ext.grid.RemoveColumn({
 	    	header: this.i18n._("Delete"), width: 40, fixed:true, dataIndex: null
 	    });
-	    var cmPL = new Ext.grid.ColumnModel([
+	    var columnModel = new Ext.grid.ColumnModel([
 	          {id:'category',header: this.i18n._("category"), width: 140,  dataIndex: 'category',
 		          editor: new Ext.form.TextField({allowBlank: false})
 	          },
@@ -72,22 +59,26 @@ Untangle.Protofilter = Ext.extend(Untangle.Settings, {
 		]);
 	
 	    // by default columns are sortable
-	    cmPL.defaultSortable = false;
+	    columnModel.defaultSortable = false;
 		
-		var editPLTemplate=new Ext.Template(
+		var contentTemplate=new Ext.Template(
 		'<div class="inputLine"><span class="label">'+this.i18n._("Category")+':</span><span class="formw"><input type="text" id="field_category_pl_{tid}" style="width:200px;"/></span></div>',
 		'<div class="inputLine"><span class="label">'+this.i18n._("Protocol")+':</span><span class="formw"><input type="text" id="field_protocol_pl_{tid}" style="width:200px;"/></span></div>',
 		'<div class="inputLine"><span class="label">'+this.i18n._("Block")+':</span><span class="formw"><input type="checkbox" id="field_blocked_pl_{tid}" /></span></div>',
 		'<div class="inputLine"><span class="label">'+this.i18n._("Log")+':</span><span class="formw"><input type="checkbox" id="field_log_pl_{tid}" /></span></div>',
 		'<div class="inputLine"><span class="label">'+this.i18n._("Description")+':</span><span class="formw"><textarea type="text" id="field_description_pl_{tid}" style="width:200px;height:60px;"></textarea></span></div>',
 		'<div class="inputLine"><span class="label">'+this.i18n._("Signature")+':</span><span class="formw"><textarea type="text" id="field_definition_pl_{tid}" style="width:200px;height:60px;"></textarea></span></div>');
-		var winHTML=editPLTemplate.applyTemplate({'tid':this.tid});
-		this.rowEditPLWin=new Ext.Window({
-			id: 'rowEditPLWin_'+this.tid,
+		var buttonsTemplate=new Ext.Template(
+		'<div class="rowEditorHelp" id="winRowEditProtocolList_help_{tid}"></div>',
+		'<div class="rowEditorCancel" id="winRowEditProtocolList_cancel_{tid}"></div>',
+		'<div class="rowEditorUpdate" id="winRowEditProtocolList_update_{tid}"></div>');
+
+		var rowEditor=new Ext.Window({
+			id: 'winRowEditProtocolList_'+this.tid,
 			parentId: this.getId(),
 			tid: this.tid,
 			rowIndex: null,
-			layout: 'fit',
+			layout:'border',
 			modal: true,
 			title: this.i18n._('Edit'),
 			closeAction: 'hide',
@@ -96,44 +87,55 @@ Untangle.Protofilter = Ext.extend(Untangle.Settings, {
 			height: 300,
 			draggable: false,
 			resizable: false,
-			items: {
-				html: winHTML,
+			items: [{
+				region:"center",
+				html: contentTemplate.applyTemplate({'tid':this.tid}),
 				border: false,
-				deferredRender:false,
+				autoScroll: true,
 				cls: 'windowBackground',
 				bodyStyle: 'background-color: transparent;'
-			},
-			buttons: [
-			{
-				'iconCls': 'helpIcon',
-				'text': this.i18n._('Help'),
-				'handler': function() {Ext.MessageBox.alert("TODO","Implement Help Page");}.createDelegate(this)
-			},
-			{
-				'iconCls': 'cancelIcon',
-				'text': this.i18n._('Cancel'),
-				'handler': function() {this.rowEditPLWin.hide();}.createDelegate(this)
-			},
-			{
-				'iconCls': 'saveIcon',
-				'text': this.i18n._('Update'),
-				'handler': function() {this.rowEditPLWin.saveData();}.createDelegate(this)
-			}
-			],
+			}, 
+	    	{
+		    	region: "south",
+		    	html: buttonsTemplate.applyTemplate({'tid':this.tid}),
+		        border: false,
+		        height:40,
+		        cls: 'windowBackground',
+		        bodyStyle: 'background-color: transparent;'
+	    	}],
 			listeners: {
 				'show': {
 					fn: function() {
-						var grid=Ext.getCmp(this.parentId).gridPL;
+						var grid=this.gridProtocolList;
 						var objPosition=grid.getPosition();
-						this.setPosition(objPosition);
+						this.gridProtocolList.rowEditor.setPosition(objPosition);
 						//var objSize=grid.getSize();
-						//this.setSize(objSize);
+						//this.gridProtocolList.rowEditor.setSize(objSize);
 					},
-					scope: this.rowEditPLWin
+					scope: this
 				}
 			},
 			initContent: function() {
-					
+				var parentCmp=Ext.getCmp(this.parentId);
+				var cmp=null;
+				cmp=new Ext.Button({
+					'renderTo':'winRowEditProtocolList_help_'+parentCmp.tid,
+					'iconCls': 'helpIcon',
+					'text': parentCmp.i18n._('Help'),
+					'handler': function() {Ext.MessageBox.alert("TODO","Implement Help Page");}.createDelegate(this)
+				});
+				cmp=new Ext.Button({
+					'renderTo':'winRowEditProtocolList_cancel_'+parentCmp.tid,
+					'iconCls': 'cancelIcon',
+					'text': parentCmp.i18n._('Cancel'),
+					'handler': function() {this.hide();}.createDelegate(this)
+				});
+				cmp=new Ext.Button({
+					'renderTo':'winRowEditProtocolList_update_'+parentCmp.tid,
+					'iconCls': 'saveIcon',
+					'text': parentCmp.i18n._('Update'),
+					'handler': function() {this.updateData();}.createDelegate(this)
+				});
 			},
 			populate: function(record,rowIndex) {
 				this.rowIndex=rowIndex;
@@ -144,10 +146,10 @@ Untangle.Protofilter = Ext.extend(Untangle.Settings, {
 				document.getElementById("field_description_pl_"+this.tid).value=record.data.description;
 				document.getElementById("field_definition_pl_"+this.tid).value=record.data.definition;
 			},
-			saveData: function() {
+			updateData: function() {
 				if(this.rowIndex!==null) {
 					var cmp=Ext.getCmp(this.parentId);
-					var rec=cmp.gridPL.getStore().getAt(this.rowIndex);
+					var rec=cmp.gridProtocolList.getStore().getAt(this.rowIndex);
 					rec.set("category", document.getElementById("field_category_pl_"+this.tid).value);
 					rec.set("protocol", document.getElementById("field_protocol_pl_"+this.tid).value);
 					rec.set("blocked", document.getElementById("field_blocked_pl_"+this.tid).checked);
@@ -158,13 +160,13 @@ Untangle.Protofilter = Ext.extend(Untangle.Settings, {
 				this.hide();
 			}
 		});
-		this.rowEditPLWin.render('container');
-		this.rowEditPLWin.initContent();
+		rowEditor.render('container');
+		rowEditor.initContent();
 		
 		// create the Protocol list Grid
-	    this.gridPL = new Ext.grid.EditorGridPanel({
-	        store: this.storePL,
-	        cm: cmPL,
+	    this.gridProtocolList = new Ext.grid.EditorGridPanel({
+	        store: store,
+	        cm: columnModel,
 	        tbar:[{
 		            text: this.i18n._('Add'),
 		            tooltip:this.i18n._('Add New Row'),
@@ -173,20 +175,20 @@ Untangle.Protofilter = Ext.extend(Untangle.Settings, {
 		            handler: function() {
 		            	var cmp=Ext.getCmp(this.parentId);
 		            	var rec=new Ext.data.Record({"category":"","protocol":"","blocked":false,"log":false,"description":"","definition":""});
-						cmp.gridPL.getStore().insert(0, [rec]);
-						cmp.gridPL.rowEditor.populate(rec,0);
-           				cmp.gridPL.rowEditor.show();		            	
+						cmp.gridProtocolList.getStore().insert(0, [rec]);
+						cmp.gridProtocolList.rowEditor.populate(rec,0);
+           				cmp.gridProtocolList.rowEditor.show();		            	
 		            }
 		        }],
 	        stripeRows: true,
 	        plugins:[blockedColumn,logColumn,editColumn,removeColumn],
 	        autoExpandColumn: 'category',
 	        clicksToEdit: 1,
-	        rowEditor: this.rowEditPLWin,
+	        rowEditor: rowEditor,
 	        title: this.i18n._('Protocol List')
 	    });
-		
-		
+    },
+    buildEventLog: function() {
 		// Event Log grid
 		this.gridEventLog=new Untangle.GridEventLog({
 			settingsCmp: this,
@@ -213,31 +215,17 @@ Untangle.Protofilter = Ext.extend(Untangle.Settings, {
 			    {header: this.i18n._("reason for action"), width: 120, sortable: true, dataIndex: 'blocked', renderer: function(value) {return value?Untangle.Protofilter.getI18N()._("blocked in block list"):Untangle.Protofilter.getI18N()._("not blocked in block list");}},
 			    {header: this.i18n._("server"), width: 120, sortable: true, dataIndex: 'pipelineEndpoints', renderer: function(value) {return value===null?"" : value.SServerAddr.hostAddress+":"+value.SServerPort;}}
 			]
-		})
-    	this.tabs = new Ext.TabPanel({
-	        renderTo: this.getEl().id,
-	        width: 690,
-	        height: 400,
-	        activeTab: 0,
-	        frame: true,
-	        deferredRender: false,
-	        items: [
-	            this.gridPL,
-	            this.gridEventLog
-	        ]
-	    });
+		});
+    },
+    loadProtocolList: function() {
+    	this.gridProtocolList.getStore().loadData(this.rpc.settings.patterns.list);
     },
     
     
-    loadPL: function() {
-    	this.gridPL.getStore().loadData(this.rpc.settings.patterns.list);
-    },
-    
-    
-    savePL: function() {
+    saveProtocolList: function() {
     	this.tabs.disable();
-    	this.gridPL.getStore().commitChanges();
-    	var records=this.gridPL.getStore().getRange();
+    	this.gridProtocolList.getStore().commitChanges();
+    	var records=this.gridProtocolList.getStore().getRange();
     	var list=[];
     	for(var i=0;i<records.length;i++) {
     		var pattern=records[i].data;
@@ -265,14 +253,14 @@ Untangle.Protofilter = Ext.extend(Untangle.Settings, {
 		    		pattern["category"]=this.i18n._(pattern["category"]);
 		    		pattern["description"]=this.i18n._(pattern["description"]);
 		    	}
-				this.loadPL();
+				this.loadProtocolList();
 			}
 		}.createDelegate(this));
 		
 	},
 	
 	save: function() {
-		this.savePL();
+		this.saveProtocolList();
 	}
 });
 Untangle.Protofilter.instanceId=null;

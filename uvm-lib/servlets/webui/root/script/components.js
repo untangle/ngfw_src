@@ -325,7 +325,7 @@ Untangle.Node = Ext.extend(Ext.Component, {
                 modal:true,
                 title:'Settings Window',
                 closeAction:'hide',
-                autoCreate:true,                
+                autoCreate:true,
                 width:740,
                 height:690,
                 draggable:false,
@@ -662,7 +662,35 @@ Ext.ComponentMgr.registerType('untangleSystemBlinger', Untangle.SystemBlinger);
 
 //setting object
 Untangle.Settings = Ext.extend(Ext.Component, {
-	'i18n':{}	
+    i18n: null,
+    node:null,
+    tabs: null,
+    rpc: null,
+	onRender: function(container, position) {
+	    var el= document.createElement("div");
+	    container.dom.insertBefore(el, position);
+        this.el = Ext.get(el);
+    	this.i18n=Untangle.i18nNodeInstances[this.name];
+    	this.rpc={};
+    	this.rpc.repository={};
+    	Untangle.Protofilter.instanceId=this.getId();    	
+    	if(this.node.nodeContext.node.eventManager===undefined) {
+			this.node.nodeContext.node.eventManager=this.node.nodeContext.node.getEventManager();
+		}
+		this.rpc.node = this.node.nodeContext.node;
+		this.rpc.eventManager=this.node.nodeContext.node.eventManager;
+	},
+	buldTabPanel: function(itemsArray) {
+		this.tabs = new Ext.TabPanel({
+	        renderTo: this.getEl().id,
+	        width: 690,
+	        height: 400,
+	        activeTab: 0,
+	        frame: true,
+	        //deferredRender: false,
+	        items: itemsArray
+	    });
+	}
 });
 Untangle.Settings._nodeScripts={};
 Untangle._hasResource={};
@@ -777,10 +805,17 @@ Ext.grid.RemoveColumn.prototype ={
 };
 Untangle.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
 	settingsCmp: null,
+	hasRepositories: true,
+	repositoryDescsFn: null,
+	enableHdMenu: false,
 	initComponent: function(){
     	if(this.title==null) {
     		this.title=this.settingsCmp.i18n._('Event Log');
     	}
+    	if(this.repositoryDescsFn==null) {
+    		this.repositoryDescsFn=this.settingsCmp.rpc.eventManager.getRepositoryDescs;
+    	}
+    	
         this.bbar=	[{
         				xtype:'tbtext',
 						text:'<span id="boxRepository_'+this.getId()+'_'+this.settingsCmp.tid+'"></span>'},
@@ -789,15 +824,13 @@ Untangle.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
 			            text: this.settingsCmp.i18n._('Refresh'),
 			            tooltip: this.settingsCmp.i18n._('Refresh'),
 						iconCls: 'iconRefresh',
-						handler: function() {
-							this.refreshList();	            	
-						}.createDelegate(this)
+						handler: function() {this.refreshList();}.createDelegate(this)
 					}];
         Untangle.GridEventLog.superclass.initComponent.call(this);
 	},
 	onRender : function(container, position) {
 		Untangle.GridEventLog.superclass.onRender.call(this,container, position);
-		this.settingsCmp.rpc.eventManager.getRepositoryDescs(function (result, exception) {
+		this.repositoryDescsFn(function (result, exception) {
 			if(exception) {Ext.MessageBox.alert("Failed",exception.message); return;}
 			if(this.settingsCmp) {
 				this.settingsCmp.rpc.repositoryDescs=result;
@@ -810,8 +843,8 @@ Untangle.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
 					out.push('<option value="'+repDesc.name+'" '+selOpt+'>'+this.settingsCmp.i18n._(repDesc.name)+'</option>');
 				}
 				out.push('</select>');
-				var boxReposytoryDescEventLog=document.getElementById('boxRepository_'+this.getId()+'_'+this.settingsCmp.tid);
-				boxReposytoryDescEventLog.innerHTML=out.join("");
+				var boxRepositoryDescEventLog=document.getElementById('boxRepository_'+this.getId()+'_'+this.settingsCmp.tid);
+				boxRepositoryDescEventLog.innerHTML=out.join("");
 			}
 		}.createDelegate(this));
 	},

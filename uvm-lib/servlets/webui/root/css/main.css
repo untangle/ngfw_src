@@ -1,11 +1,11 @@
 #contentleft {
 	padding-top:35px;
-	background:transparent url(images/MainBackgroundLeft_222x100.png)  repeat-y !important;
+	background:transparent url(../images/MainBackgroundLeft_222x100.png)  repeat-y !important;
 	text-align:center;
 	height:100%;
 }
 .contentright {
-	background: transparent url(images/MainBackgroundRight_1398x100.png) repeat-y !important;
+	background: transparent url(../images/MainBackgroundRight_1398x100.png) repeat-y !important;
 }
 #racks {
 	position:relative;
@@ -20,7 +20,7 @@
 	left:0px;
 	height:100%;
 	width:59px;
-	background: transparent url(images/pipeline/LeftRack59x100.png) repeat-y;
+	background: transparent url(../images/pipeline/LeftRack59x100.png) repeat-y;
 	background-position:top left;
 }
 #racks #rightBorder{
@@ -29,7 +29,7 @@
 	right:0px;
 	height:100%;
 	width:59px;
-	background: transparent url(images/pipeline/RightRack59x100.png) repeat-y;
+	background: transparent url(../images/pipeline/RightRack59x100.png) repeat-y;
 	background-position:top right;
 }
 #logo {
@@ -53,7 +53,7 @@
 	top: 54px;
 	left: 15px;
 	background-color: transparent;
-	background-image: url(images/PlainSeparator688x50.png);
+	background-image: url(../images/PlainSeparator688x50.png);
 	background-repeat: no-repeat;
 	width:690px;
 	height:50px;
@@ -67,7 +67,7 @@
 div.rackNode {
 	position:relative;
 	background-color: transparent;
-	background-image:  url(images/node/NodeBackground688x100.png);
+	background-image:  url(../images/node/NodeBackground688x100.png);
 	background-repeat: no-repeat;
 	width:690px;
 	height:101px;
@@ -93,7 +93,7 @@ div.rackNode {
 #nodes_separator {
 	position:relative;
 	background-color: transparent;
-	background-image:  url(images/PlainSeparator688x50.png);
+	background-image:  url(../images/PlainSeparator688x50.png);
 	background-repeat: no-repeat;
 	width:690px;
 	height:50px;
@@ -120,7 +120,7 @@ div.nodeBlingers {
 	height:82px;
 }
 .helpIcon {
-	background:url(images/node/IconHelp28x28.png) no-repeat scroll -4px -4px !important; 
+	background:url(../images/node/IconHelp28x28.png) no-repeat scroll -4px -4px !important; 
 	width:20px;
 	height:19px;
 }
@@ -152,12 +152,12 @@ div.nodeHelpButton {
 	width:120px;
 }
 .nodeSettingsIcon {
-	background:url(images/node/IconControlsClosed28x28.png) no-repeat scroll -5px -6px !important;  
+	background:url(../images/node/IconControlsClosed28x28.png) no-repeat scroll -5px -6px !important;  
 	width:18px;
 	height:16px;
 }
 div.windowBackground {
-	background: transparent url(images/LightGreyBackground1600x100.png) repeat-y;
+	background: transparent url(../images/LightGreyBackground1600x100.png) repeat-y;
 /*
 	border:1px solid rgb(128,127,127);
 	width:100%;
@@ -170,7 +170,7 @@ div.nodeRemoveButton {
 	bottom:14px;
 }
 .nodeRemoveIcon {
-	background:url(images/node/IconRemove_16x16.png) no-repeat !important; 
+	background:url(../images/node/IconRemove_16x16.png) no-repeat !important; 
 	width:16px;
 	height:16px;
 }
@@ -180,7 +180,7 @@ div.nodeCancelButton {
 	bottom:14px;
 }
 .cancelIcon {
-	background:url(images/node/IconCancel_16x16.png) no-repeat !important; 
+	background:url(../images/node/IconCancel_16x16.png) no-repeat !important; 
 	width:16px;
 	height:16px;
 }
@@ -190,7 +190,7 @@ div.nodeSaveButton {
 	bottom:14px;
 }
 .saveIcon {
-	background:url(images/node/IconSave_23x16.png) no-repeat !important; 
+	background:url(../images/node/IconSave_23x16.png) no-repeat !important; 
 	width:23px;
 	height:16px;
 }
@@ -317,23 +317,23 @@ div.untangleButtonInvalid {
 	border: 1px solid green;
 }
 button.add {
-    background-image:url(images/add.gif) !important;
+    background-image:url(../images/add.gif) !important;
 }
 button.remove {
-    background-image:url(images/delete.gif) !important;
+    background-image:url(../images/delete.gif) !important;
 }
 button.iconRefresh {
-    background-image:url(images/IconRefresh_16x16.png) !important;
+    background-image:url(../images/IconRefresh_16x16.png) !important;
 }
 div.editRow {
-	background-image:url(images/editRow.gif);
+	background-image:url(../images/editRow.gif);
 	background-position:center;
 	background-repeat:no-repeat;
 	width: 100%;
 	cursor: pointer;
 }
 div.removeRow {
-	background-image:url(images/removeRow.gif);
+	background-image:url(../images/removeRow.gif);
 	background-position:center;
 	background-repeat:no-repeat;
 	width: 100%;
@@ -359,3 +359,18 @@ div.inputLine span.formw {
   width: 235px;
   text-align: left;
 } 
+div.rowEditorHelp {
+	position:absolute;
+	left:10px;
+	bottom:5px;
+}
+div.rowEditorCancel {
+	position:absolute;
+	right:100px;
+	bottom:5px;
+}
+div.rowEditorUpdate {
+	position:absolute;
+	right:10px;
+	bottom:5px;
+}
