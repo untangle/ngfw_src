@@ -175,6 +175,8 @@ class DhcpMonitor implements Runnable
                 logger.error( "interrupted while stopping", e );
             }
             thread = null;
+        } else {
+            logger.debug( "Monitor is already stopped." );
         }
     }
 

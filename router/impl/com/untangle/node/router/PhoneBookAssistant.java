@@ -99,6 +99,11 @@ class PhoneBookAssistant implements Assistant
     {
         Map<InetAddress,HostName> newMap = null;
 
+        if ( servicesSettings == null ) {
+            logger.info( "Ignorning null services settings" );
+            return;
+        }
+
         if ( servicesSettings.getIsDnsEnabled()) {
             /* If dns is disabled, then the dns addresses don't really matter */
             newMap = Collections.emptyMap();
