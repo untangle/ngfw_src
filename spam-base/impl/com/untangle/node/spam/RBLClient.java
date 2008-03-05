@@ -110,7 +110,7 @@ public final class RBLClient implements Runnable {
         Boolean isBlacklisted = Boolean.FALSE;
 
         try {
-            InetAddress hostIPAddr = InetAddress.getByName(cContext.getInvertedIPAddr() + "." + cContext.getHostname());
+            InetAddress hostIPAddr = InetAddress.getByName(cContext.getInvertedIPAddr() + "." + cContext.getHostname() + ".");
             if (null != hostIPAddr) {
                 logger.debug(dbgName + ", received confirmation that IP is on blacklist");
                 isBlacklisted = Boolean.TRUE;

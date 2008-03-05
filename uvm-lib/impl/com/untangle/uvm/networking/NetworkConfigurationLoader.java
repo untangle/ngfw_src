@@ -490,7 +490,7 @@ class NetworkConfigurationLoader
         }
     }
 
-    private void loadSupportFlag( AccessSettings access )
+    public void loadSupportFlag( AccessSettings access )
     {
         boolean enabled = false;
         UpstreamService supportSvc =

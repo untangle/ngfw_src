@@ -27,8 +27,9 @@ slapd           NONE
 # No package since owning it is not optional
 openvpn		NONE
 
-# No package since we just call the builtin apt stuff
-auto-upgrade    NONE
+# Presence of untangle-system-config gives us initial value of auto-upgrade
+# but does not affect it after initialization.
+auto-upgrade    untangle-system-config
 
 # Alpaca related below here
 dhclient        untangle-dhclient-config

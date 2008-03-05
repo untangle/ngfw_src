@@ -82,11 +82,22 @@ class AddressManagerImpl implements LocalAddressManager
     /* Use this to modify the address settings without modifying the network settings */
     public void setSettings( AddressSettings settings )
     {
-        setSettings( settings, false );
+        setSettings( settings, false, false );
+    }
+
+    public void setSettings( AddressSettings settings, boolean forceSave )
+    {
+        setSettings( settings, forceSave, false );
+    }
+
+    void setWizardSettings( AddressSettings settings )
+    {
+        setSettings( settings, true, true );
     }
 
     /* Use this to modify the address settings without modifying the network settings */
-    public void setSettings( AddressSettings settings, boolean forceSave )
+    /* @param updateSuffix Set to true to also update the search domain. */
+    public void setSettings( AddressSettings settings, boolean forceSave, boolean updateSuffix )
     {
         /* should validate settings */
         if ( !forceSave && settings.isClean()) logger.debug( "settings are clean, leaving alone." );
@@ -113,7 +124,7 @@ class AddressManagerImpl implements LocalAddressManager
         }
         
         /* Save the hostname */
-        setHostName( this.addressSettings );
+        setHostName( this.addressSettings, updateSuffix );
     }
 
     /* ---------------------- PACKAGE ---------------------- */
@@ -169,9 +180,8 @@ class AddressManagerImpl implements LocalAddressManager
             logger.debug( "New Address Settings:\n" + this.addressSettings );
         }
 
-        /* xxx not sure if it should call the listeners here, most of
-         * them are concerned with the hostname, so i don't think
-         * so. */
+        /* Call the listeners */
+        callListeners( this.addressSettings );
     }
 
     /* Register a listener to be called whenever there are changes to the hostname/address */
@@ -308,7 +318,7 @@ class AddressManagerImpl implements LocalAddressManager
 
     }
 
-    private void setHostName( AddressSettingsInternal address )
+    private void setHostName( AddressSettingsInternal address, boolean updateSuffix )
     {
         if ( !NetworkManagerImpl.getInstance().getSaveSettings()) {
             logger.warn( "not saving hostname settings as requested." );
@@ -325,7 +335,7 @@ class AddressManagerImpl implements LocalAddressManager
             /* This will save the hostname but not commit it to the O/S, have to commit it
              * when there is no locks. */
             XMLRPCUtil.getInstance().callAlpaca( XMLRPCUtil.CONTROLLER_UVM, "save_hostname", null,
-                                                 address.getHostName().toString());
+                                                 address.getHostName().toString(), updateSuffix );
         } catch ( Exception e ) {
             logger.warn( "Unable to save the hostname", e );
         }

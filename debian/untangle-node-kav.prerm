@@ -1,6 +1,0 @@
-#! /bin/bash
-# This file automatically created - do not modify
-
-/usr/bin/mcli -t 30 unregister untangle-node-kav 2>/dev/null || true
-
-exit 0

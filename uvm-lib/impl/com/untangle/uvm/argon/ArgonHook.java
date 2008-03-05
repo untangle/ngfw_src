@@ -121,8 +121,9 @@ abstract class ArgonHook implements Runnable
 
 	    //we dont want to watch internal traffic that is redirected back to the internal network
 	    if (serverIntf == clientIntf){
-		liberate();
-		return;
+                liberate();
+                raze();
+                return;
 	    }
 
             clientSide = new NetcapIPSessionDescImpl( sessionGlobalState, true );

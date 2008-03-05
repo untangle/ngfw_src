@@ -4,8 +4,10 @@ set -e
 
 . @PREFIX@/etc/default/untangle-vm
 
+REGISTRATION_DONE_FILE=@UVM_HOME@/.regdone
+REGISTRATION_INFO_FILE=@UVM_HOME@/registration.info
+
 /bin/rm -f "$REGISTRATION_DONE_FILE"
-/bin/rm -f "$NEWPWFILE"
 
 # this is unelegant, but as of now the registration info is written
 # during the setup wizard, yet it doesn't have the actual key at that
@@ -13,7 +15,7 @@ set -e
 ACTIVATION_KEY=`cat $ACTIVATION_KEY_FILE`
 perl -i -npe "s/$FAKE_KEY/$ACTIVATION_KEY/" $REGISTRATION_INFO_FILE
 
-/usr/bin/wget --timeout=30 --output-document="/dev/null" --tries=1 --post-file="$REGISTRATION_INFO_FILE" "$REGISTRATION_URL"
+/usr/bin/curl --max-time 30 -o /dev/null -d "`cat $REGISTRATION_INFO_FILE`" "https://poptrack.untangle.com/register/custreg.php"
 if [ "$?" -eq "0" ]; then
     /bin/touch "$REGISTRATION_DONE_FILE"
 fi

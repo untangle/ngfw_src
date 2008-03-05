@@ -56,7 +56,7 @@ public class ProtocolMatcherFactory
 
     /* This is the enumeration of all of the available matchers */
     private static final String[] ENUMERATION = {
-        MARKER_TCP_AND_UDP, MARKER_UDP, MARKER_TCP, MARKER_PING, MARKER_ANY
+        MARKER_TCP_AND_UDP, MARKER_UDP, MARKER_TCP, MARKER_ANY
     };
 
     private ProtocolMatcherFactory()

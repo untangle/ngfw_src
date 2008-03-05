@@ -104,7 +104,7 @@ public class RouterImpl extends AbstractNode implements Router
         /* Have to figure out pipeline ordering, this should always next
          * to towards the outside */
         natPipeSpec = new SoloPipeSpec
-            ("nat", this, this.handler, Fitting.OCTET_STREAM, Affinity.CLIENT,
+            ("nat", this, this.handler, Fitting.OCTET_STREAM, Affinity.SERVER,
              SoloPipeSpec.MAX_STRENGTH - 1);
 
         /* This subscription has to evaluate after NAT */
@@ -267,12 +267,10 @@ public class RouterImpl extends AbstractNode implements Router
         /* no longer at startup. */
         this.startupType = StartupType.DISABLED;
 
-        ServicesInternalSettings servicesSettings = getNetworkManager().getServicesInternalSettings();
-        if ( servicesSettings == null ) {
-            logger.warn( "getServicesSettings workaround" );
-        } else {
-            configureDhcpMonitor( servicesSettings.getIsDhcpEnabled());
-            this.assistant.configure( servicesSettings );
+        try {
+            networkSettingsEvent();
+        } catch ( Exception e ) {
+            logger.warn( "Error in network update.", e );
         }
 
         statisticManager.start();
@@ -306,7 +304,7 @@ public class RouterImpl extends AbstractNode implements Router
         LocalUvmContextFactory.context().localPhoneBook().unregisterAssistant( this.assistant );
     }
 
-    public void networkSettingsEvent( ) throws NodeException
+    public void networkSettingsEvent() throws NodeException
     {
         logger.info("networkSettingsEvent");
 
@@ -314,9 +312,19 @@ public class RouterImpl extends AbstractNode implements Router
         LocalNetworkManager nm = getNetworkManager();
         ServicesInternalSettings servicesSettings = nm.getServicesInternalSettings();
 
-        if ( getRunState() == NodeState.RUNNING ) {
-            logger.warn( "How should we handle the DhcpMonitor" );
+        /* Default to it is disabled */
+        boolean isDhcpEnabled = false;
+
+        if ( servicesSettings == null ) {
+            logger.info( "null servicesSettings, defaulting isDhcpEnabled to false." );
+        } else {
+            isDhcpEnabled = servicesSettings.getIsDhcpEnabled();
         }
+
+        logger.debug( "isDhcpEnabled: " + isDhcpEnabled );
+
+        if ( isDhcpEnabled ) dhcpMonitor.start();
+        else dhcpMonitor.stop();
 
         this.assistant.configure( servicesSettings );
     }
@@ -357,12 +365,6 @@ public class RouterImpl extends AbstractNode implements Router
     public void setSettings(Object settings) throws Exception
     {
         setRouterSettings((RouterCommonSettings)settings);
-    }
-
-    private void configureDhcpMonitor( boolean isDhcpEnabled )
-    {
-        if ( isDhcpEnabled ) dhcpMonitor.start();
-        else dhcpMonitor.stop();
     }
 
     private LocalNetworkManager getNetworkManager()

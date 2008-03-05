@@ -1,7 +1,0 @@
-reports/RouterMaster.jasper:Router--Summary:Summary
-reports/RouterRedirectDetail.jasper:Router--Redirect_Events:Redirect Events
-reports/RouterDmzDetail.jasper:Router--DMZ_Events:DMZ Host Events
-reports/RouterDhcpDetail.jasper:Router--DHCP_Events:DHCP Events
-com.untangle.node.router.reports.RouterSummarizer:summarizer:Summarizer
-com.untangle.node.router.reports.SummaryGraph:summaryGraph:Router--Summary_Graph
-reportTitlePrefix:parameter:none

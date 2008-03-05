@@ -29,18 +29,6 @@ public class RemotePhoneBookImpl implements RemotePhoneBook
         this.local = local;
     }
                          
-    /* retrieve the WMI settings */
-    public WMISettings getWMISettings()
-    {
-        return local.getWMISettings();
-    }
-    
-    /* set the WMI settings */
-    public void setWMISettings( WMISettings settings ) throws ValidateException
-    {
-        local.setWMISettings( settings );
-    }
-
     public String productIdentifier()
     {
         return local.productIdentifier();

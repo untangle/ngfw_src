@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc.
+ * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -27,8 +27,8 @@ import javax.swing.table.*;
 import com.untangle.gui.node.*;
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.editTable.*;
-import com.untangle.node.ips.*;
 import com.untangle.uvm.node.*;
+import com.untangle.node.ips.*;
 
 public class IPSConfigJPanel extends MEditTableJPanel{
 
@@ -65,13 +65,13 @@ class IPSTableModel extends MSortedTableModel<Object>{
     public TableColumnModel getTableColumnModel(){
 
         DefaultTableColumnModel tableColumnModel = new DefaultTableColumnModel();
-        //                                 #   min    rsz    edit   remv   desc   typ            def
+        //                                 #  min    rsz    edit   remv   desc   typ            def
         addTableColumn( tableColumnModel,  0,  C0_MW,  false, false, true, false, String.class,  null, sc.TITLE_STATUS );
         addTableColumn( tableColumnModel,  1,  C1_MW,  false, false, true,  false, Integer.class, null, sc.TITLE_INDEX );
         addTableColumn( tableColumnModel,  2,  C2_MW,  true,  true,  false, false, String.class,  sc.EMPTY_CATEGORY, sc.TITLE_CATEGORY );
         addTableColumn( tableColumnModel,  3,  C3_MW,  false, true,  false, false, Boolean.class, "false", sc.bold("block"));
         addTableColumn( tableColumnModel,  4,  C4_MW,  false, true,  false, false, Boolean.class, "false", sc.bold("log"));
-        addTableColumn( tableColumnModel,  5,  C5_MW,  true,  true, false, true,  String.class,  sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION );
+        addTableColumn( tableColumnModel,  5,  C5_MW,  true,  false, false, true,  String.class,  sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION );
         addTableColumn( tableColumnModel,  6,  C6_MW,  false,  true,  false, false, UrlButtonRunnable.class,  "false", "info URL");
         addTableColumn( tableColumnModel,  7,  C7_MW,  false, false, false, false, Integer.class, "0", "SID" );
         addTableColumn( tableColumnModel,  8,  C8_MW, true,  true,  false, false, String.class,  sc.empty("no signature"), "signature");

@@ -283,7 +283,7 @@ int netcap_shield_init    ( void )
 
     /* Zero out the ignore array */
     bzero( _shield.ignore_array, sizeof( _shield.ignore_array ));
-       
+    bzero(&rep.lru_node, sizeof(netcap_lru_node_t));
 
 #ifdef _TRIE_DEBUG_PRINT
     if ( list_init( &_shield.ip_list, 0 ) < 0 ) {

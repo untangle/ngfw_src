@@ -112,8 +112,6 @@ public class NetworkManagerImpl implements LocalNetworkManager
     /* Flag to indicate when the UVM has been shutdown */
     private boolean isShutdown = false;
 
- 
-
     private NetworkManagerImpl()
     {
         this.ruleManager = RuleManager.getInstance();
@@ -334,7 +332,7 @@ public class NetworkManagerImpl implements LocalNetworkManager
     public void setSetupSettings( AddressSettings address, BasicNetworkSettings basic )
         throws NetworkException, ValidateException
     {
-        this.addressManager.setSettings( address );
+        this.addressManager.setWizardSettings( address );
 
         /* Send the call onto the alpaca */
         PPPoEConnectionRule pppoe = basic.getPPPoESettings();
@@ -515,10 +513,27 @@ public class NetworkManagerImpl implements LocalNetworkManager
     {
         byte argonIntf = session.clientIntf();
 
-        /* ignore everything on the external or DMZ interface */
+        /* ignore everything on the external or dmz interface */
         if ( argonIntf == IntfConstants.EXTERNAL_INTF || argonIntf == IntfConstants.DMZ_INTF ) return null;
+        
+        /* Retrieve the network settings */
+        NetworkSpacesInternalSettings settings = this.networkSettings;
 
-        return internalAddress;
+        if ( settings == null ) return null;
+
+        NetworkSpaceInternal local = settings.getNetworkSpace( argonIntf );
+        
+        if ( local == null ) return null;
+
+        IPNetwork network = local.getPrimaryAddress();
+
+        if ( network == null ) return null;
+
+        IPaddr address = network.getNetwork();
+
+        if ( address == null ) return null;
+
+        return address.getAddr();
     }
 
     /* Update all of the iptables rules and the inside address database */

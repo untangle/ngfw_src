@@ -22,7 +22,7 @@ memStart=0
 memPrev=0
 
 function getPid {
-    cat /proc/net/ip_queue | grep 'Peer PID' | awk '{ print $4 }'
+    cat /proc/net/netfilter/nfnetlink_queue | awk '{ print $2 }'
 }
 
 lastPid=0

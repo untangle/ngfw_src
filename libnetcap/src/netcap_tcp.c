@@ -311,7 +311,7 @@ int        netcap_tcp_msg_free    ( tcp_msg_t* msg )
 int        netcap_tcp_msg_destroy ( tcp_msg_t* msg )
 {
     if ( msg == NULL ) return errlogargs();
-    if ( msg->pkt != NULL ) netcap_pkt_raze( msg->pkt );
+    if ( msg->pkt != NULL ) netcap_pkt_action_raze( msg->pkt, NF_DROP );
     if (( msg->fd > 0 ) && ( close( msg->fd  ) < 0 )) perrlog( "close" );
     return 0;
 }

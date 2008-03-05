@@ -668,23 +668,6 @@ JNIEXPORT jintArray JNICALL JF_Netcap( cTcpRedirectPorts )
 
 /*
  * Class:     com_untangle_jnetcap_Netcap
- * Method:    cUdpDivertPort
- * Signature: ()I;
- */
-JNIEXPORT jint JNICALL JF_Netcap( cUdpDivertPort )
-    ( JNIEnv* env, jobject _this )
-{
-    int port = -1;
-
-    if (( port = netcap_udp_divert_port()) < 0 ) {
-        return jmvutil_error( JMVUTIL_ERROR_STT, ERR_CRITICAL, "netcap_udp_divert_port\n" );
-    }
-
-    return port;
-}
-
-/*
- * Class:     com_untangle_jnetcap_Netcap
  * Method:    cConfigureInterfaceArray
  * Signature: ([Ljava/lang/String;)V
  */

@@ -76,6 +76,7 @@ class MailSenderImpl implements MailSender
 
     // JavaMail constants
     private static final String MAIL_HOST_PROP = "mail.host";
+    private static final String MAIL_SMTP_LOCALHOST_PROP = "mail.smtp.localhost";
     private static final String MAIL_ENVELOPE_FROM_PROP = "mail.smtp.from";
     private static final String MAIL_FROM_PROP = "mail.from";
     private static final String MAIL_TRANSPORT_PROTO_PROP = "mail.transport.protocol";
@@ -376,6 +377,9 @@ class MailSenderImpl implements MailSender
         File exim_dir = new File(EXIM_CONF_DIR);
         if (exim_dir.isDirectory()) {
             commonProps.put(MAIL_HOST_PROP, "localhost");
+            // Sometimes Java can't find our name, and exim allows connections
+            // from localhost so just hardwire it.
+            commonProps.put(MAIL_SMTP_LOCALHOST_PROP, "localhost");
         } else if ( !mailSettings.isUseMxRecords() ) {
             commonProps.put(MAIL_HOST_PROP, mailSettings.getSmtpHost());
         }

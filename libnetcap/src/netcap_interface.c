@@ -492,14 +492,22 @@ int netcap_interface_dst_intf       ( netcap_session_t* session )
                session->session_id, session->srv.intf );
         return 0;
     }
-    
-    if ( netcap_arp_dst_intf( &session->srv.intf, session->cli.intf, &session->srv.cli.host, 
-                              &session->srv.srv.host ) < 0 ) {
+
+    /* Need to determine the redirected destination interface, not the
+     * original destination interface */
+    /* From the reply, the source is where this session is heading, and the destination is
+     * where it is coming from, the source is unused in this function, so it doesn't really
+     * matter. */
+    struct in_addr dst = { .s_addr = session->nat_info.reply.src_address };
+    struct in_addr src = { .s_addr = session->nat_info.reply.dst_address };
+
+    if ( netcap_arp_dst_intf( &session->srv.intf, session->cli.intf, &src, &dst ) < 0 ) {
         return errlog( ERR_CRITICAL, "netcap_arp_dst_intf\n" );
     }
     
-    debug( 10, "INTERFACE: (%10u) Session is going out %d\n", 
-           session->session_id, session->srv.intf );
+    debug( 10, "INTERFACE: (%10u) Session (%s -> %s) is going out %d\n", 
+           session->session_id, unet_next_inet_ntoa( src.s_addr ), unet_next_inet_ntoa( dst.s_addr ), 
+           session->srv.intf );
 
     return 0;
 }

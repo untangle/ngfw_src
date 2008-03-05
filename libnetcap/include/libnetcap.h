@@ -40,8 +40,6 @@
 
 #define NC_INTF_MAX NC_INTF_LOOPBACK
 
-
-
 typedef enum {
     ACTION_NULL=0,
     CLI_COMPLETE,
@@ -519,11 +517,9 @@ int netcap_interface_get_data       ( char* name, netcap_intf_address_data_t* da
 int netcap_interface_get_netmask    ( char* interface_name, struct in_addr* netmask );
 
 /**
- * Query information about the redirect and divert ports
+ * Query information about the redirect ports.
  */
 int netcap_tcp_redirect_ports( int* port_low, int* port_high );
-int netcap_udp_divert_port   ( void );
-
 
 /**
  * Session table management

@@ -197,9 +197,11 @@ public class SnmpManagerImpl
             snmpd_config.append("group MyROGroup v1 local").append(EOL);
             snmpd_config.append("group MyROGroup v2c local").append(EOL);
             snmpd_config.append("group MyROGroup usm local").append(EOL);
-            snmpd_config.append("view mib2 included  .iso.org.dod.internet.mgmt.mib-2").append(EOL);
-	    snmpd_config.append("view mib2 included  .iso.org.dod.internet.private.1.30054").append(EOL);
-            snmpd_config.append("access MyROGroup \"\" any noauth exact mib2 none none").append(EOL);
+            //snmpd_config.append("view mib2 included  .iso.org.dod.internet.mgmt.mib-2").append(EOL);
+	    //snmpd_config.append("view mib2 included  .iso.org.dod.internet.private.1.30054").append(EOL);
+            //snmpd_config.append("access MyROGroup \"\" any noauth exact mib2 none none").append(EOL);
+	    snmpd_config.append("view mib2 included  .iso").append(EOL);
+	    snmpd_config.append("access MyROGroup \"\" any noauth exact mib2 none none");
         }
         else {
             snmpd_config.append("# No one has access (no community string)").append(EOL);

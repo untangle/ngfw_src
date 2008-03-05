@@ -89,8 +89,8 @@ class Jars
 
   ## XmlRpc Jars
   XmlRpc     = [ Jars.downloadTarget('xmlrpc-3.1/lib/xmlrpc-client-3.1.jar'),
-    	         Jars.downloadTarget('xmlrpc-3.1/lib/xmlrpc-common-3.1.jar'),
-		 Jars.downloadTarget('xmlrpc-3.1/lib/ws-commons-util-1.0.2.jar') ]
+                 Jars.downloadTarget('xmlrpc-3.1/lib/xmlrpc-common-3.1.jar'),
+         Jars.downloadTarget('xmlrpc-3.1/lib/ws-commons-util-1.0.2.jar') ]
   ## WBEM Jars
   WBEM       = [ Jars.downloadTarget('wbemservices-1.0.2.src/dist/wbemservices/lib/wbem.jar') ]
 
@@ -115,6 +115,9 @@ class Jars
 
   Jnlp       = [ ThirdpartyJar.get("#{BuildEnv::JAVA_HOME}/sample/jnlp/servlet/jnlp.jar") ]
 
+  # properJavaRDP Jars
+  ProperJavaRDP = [ 'properJavaRDP-1.1.jar', 'java-getopt-1.0.12.jar' ].map { |f| Jars.downloadTarget(f) }
+
   ## Jars required to run/compile unit tests
   Junit      = [ Jars.downloadTarget('junit4.1/junit-4.1.jar') ]
   Bdb        = [ Jars.downloadTarget('je-3.2.13/lib/je-3.2.13.jar') ]
@@ -122,6 +125,7 @@ class Jars
   HttpClient = %w( commons-httpclient-3.0/commons-httpclient-3.0.jar
                    commons-codec-1.3/commons-codec-1.3.jar
                    commons-fileupload-1.1/commons-fileupload-1.1.jar
+                   commons-io-1.1/commons-io-1.1.jar
                  ).map { |n| Jars.downloadTarget(n) }
 
   HtmlParser = [ Jars.downloadTarget('htmlparser1_6_20060319/htmlparser1_6/lib/htmlparser.jar') ]
@@ -134,7 +138,7 @@ class Jars
                               Activation, Jcifs, C3p0, Ant, JavaMailApi,
                               GetText, JavaMail, TomcatEmb, Velocity, WBEM, JRuby,
                               Bdb, HttpClient, HtmlParser, VncViewer, XmlRpc)
- 
+
   # Jars for compiling the GUI, and GUI node components
   Gui        = Jars.makeGroup(Alloy, JFreeChartGui, Netbeans, Jnlp)
 

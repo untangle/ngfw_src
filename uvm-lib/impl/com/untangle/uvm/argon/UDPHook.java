@@ -72,8 +72,9 @@ public class UDPHook implements NetcapHook
 
     private class UDPArgonHook extends ArgonHook
     {
-        /** Default thirty second timeout for UDP sessions **/
-        protected static final int TIMEOUT = 30 * 1000;
+        /** Default 70 second timeout for UDP sessions this fixes VOIP
+         * which defaults to a 60 second timeout. **/
+        protected static final int TIMEOUT = 70 * 1000;
 
         protected final NetcapUDPSession netcapUDPSession;
 

@@ -54,15 +54,9 @@
 
 static struct {
     int send_sock;
-    int divert_port;
-    int divert_sock;
 } _udp = {
     .send_sock   = -1,
-    .divert_port = -1,
-    .divert_sock = -1
 };
-
-static int _divert_port_open( void );
 
 static int _netcap_udp_sendto(int sock, void* buf, size_t len, int flags, netcap_pkt_t* pkt);
 
@@ -111,13 +105,6 @@ int  netcap_udp_init ()
         return perrlog ( "setsockopt" );
     }
 
-    /**
-     * Setup the divert socket
-     */
-    if ( _divert_port_open() < 0 ) {
-        return errlog( ERR_CRITICAL, "_divert_port_open\n" );
-    }
-
     return 0;
 }
 
@@ -125,8 +112,6 @@ int  netcap_udp_cleanup()
 {
     if ( _udp.send_sock > 0 && ( close( _udp.send_sock ) < 0 )) perrlog("close");
     
-    if (( _udp.divert_sock > 0 ) && ( close( _udp.divert_sock ) < 0 )) perrlog( "close" );
-
     return 0;
 }
 
@@ -347,9 +332,9 @@ int  netcap_udp_call_hooks (netcap_pkt_t* pkt, void* arg)
             netcap_pkt_action_raze( pkt, NF_DROP );
             full_pkt = NULL;
         } else if (mailbox_put(&session->cli_mb,(void*)pkt)<0) {
-	    netcap_pkt_action_raze( pkt, NF_DROP );
-	    perrlog("mailbox_put");
-	    full_pkt = NULL;
+            netcap_pkt_action_raze( pkt, NF_DROP );
+            perrlog("mailbox_put");
+            full_pkt = NULL;
         }
         
         /* Caching order is not significant since the other thread/session doesn't exist yet */
@@ -492,57 +477,6 @@ void netcap_udp_null_hook (netcap_session_t* netcap_sess, void *arg)
     
     netcap_udp_cleanup_hook( netcap_sess, arg );    
 }
-
-int netcap_udp_divert_sock( void )
-{
-    if (( _udp.divert_port < 0 ) || ( _udp.divert_sock < 0 )) {
-        return errlog( ERR_CRITICAL, "Unitialized UDP divert port or socket\n" );
-    }
-    
-    return _udp.divert_sock;
-}
-
-int netcap_udp_divert_port( void )
-{
-    if ( _udp.divert_port < 0 ) return errlog( ERR_CRITICAL, "Uninitialized UDP divert port\n" );
-    
-    return _udp.divert_port;
-}
-
-static int _divert_port_open( void )
-{
-    int one  = 1;
-    int sock = -1;
-    u_short port = -1;
-    
-    _udp.divert_sock = -1;
-    _udp.divert_port = -1;
-    
-    if ( unet_startlisten_on_anyport_udp( &port, &sock ) < 0 ) {
-        return perrlog("unet_startlisten_on_anyport_udp");
-    }
-    
-    /* set all the options (XXX Should an error here cause a failure) */
-    if ( setsockopt( sock, SOL_IP,     IP_PKTINFO,    &one, sizeof(one)) < 0 )
-        perrlog( "setsockopt" );
-    if ( setsockopt( sock, SOL_SOCKET, SO_BROADCAST,  &one, sizeof(one)) < 0 )
-        perrlog( "setsockopt" );
-    if ( setsockopt( sock, SOL_IP,     IP_RECVTOS,    &one, sizeof(one)) < 0 )
-        perrlog( "setsockopt" );
-    if ( setsockopt( sock, SOL_IP,     IP_RECVTTL,    &one, sizeof(one)) < 0 )
-        perrlog( "setsockopt" );
-    if ( setsockopt( sock, SOL_IP,     IP_RETOPTS,    &one, sizeof(one)) < 0 )
-        perrlog( "setsockopt" );
-    if ( setsockopt( sock, SOL_UDP,    UDP_RECVDHDR,  &one, sizeof(one)) < 0 )
-        perrlog( "setsockopt" );
-    if ( setsockopt( sock, SOL_IP,     IP_RECVNFMARK, &one, sizeof(one)) < 0 )
-        perrlog( "setsockopt" );
-    
-    _udp.divert_sock = sock;
-    _udp.divert_port = port;
-    return 0;
-}
-
 
 static int _netcap_udp_sendto (int sock, void* data, size_t data_len, int flags, netcap_pkt_t* pkt)
 {
@@ -811,7 +745,7 @@ static int _insert_first_pkt( netcap_session_t* session, netcap_pkt_t* pkt )
         return errlog( ERR_CRITICAL, "UDP SESSION: First packet already dropped.\n" );
     }
 
-    //pkt->packet_id = 0;
+    pkt->packet_id = 0;
 
     return 0;
 }

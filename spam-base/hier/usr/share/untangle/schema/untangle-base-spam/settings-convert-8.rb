@@ -3,13 +3,13 @@ def update_schema()
 
   sql_helper.rename_column('settings.n_spam_settings', 'smtp_inbound',
                            'smtp_config')
-  sql_helper.rename_column('settings.n_spam_settings', 'pop_outbound',
+  sql_helper.rename_column('settings.n_spam_settings', 'pop_inbound',
                            'pop_config')
-  sql_helper.rename_column('settings.n_spam_settings', 'imap_outbound',
+  sql_helper.rename_column('settings.n_spam_settings', 'imap_inbound',
                            'imap_config')
 
   sql_helper.remove_columns('settings.n_spam_settings',
-                            [ 'smtp_outbound', 'pop_inbound', 'imap_inbound' ])
+                            [ 'smtp_outbound', 'pop_outbound', 'imap_outbound' ])
 
   schema_rewrite = [
    'DELETE FROM n_spam_smtp_config

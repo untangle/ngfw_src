@@ -38,13 +38,13 @@ else
 fi
 
 # nanny stuff
-BANNER_NANNY=@PREFIX@/usr/share/untangle/bin/banner-nanny.rb
+BANNER_NANNY=@PREFIX@/usr/share/untangle/bin/banner-nanny.sh
 TIMEOUT=8 # in seconds
 SPAMASSASSIN_PORT=783
 SPAMASSASSIN_PID_FILE=/var/run/spamd.pid
 CLAMD_PORT=3310
 CLAMD_PID_FILE=/var/run/clamav/clamd.pid
-SPAMASSASSIN_LOG_ERROR="bayes: cannot open bayes databases /home/spamc/.spamassassin/bayes_* R/W: lock failed: Interrupted system call"
+SPAMASSASSIN_LOG_ERROR="bayes: cannot open bayes databases /home/spamc/.spamassassin/bayes_\* R/W: lock failed: Interrupted system call"
 SUPPORT_AGENT_MAX_ALLOWED_CPU=30
 SUPPORT_AGENT_PID_FILE=/var/run/rbot.pid
 
@@ -54,9 +54,6 @@ CLI_SERVER_HOME=/usr/share/untangle-cli-server/src
 
 # activation stuff...
 UNTANGLE_HARDWARE=@UVM_HOME@/.untanglehw
-REGISTRATION_DONE_FILE=@UVM_HOME@/.regdone
-REGISTRATION_INFO_FILE=@UVM_HOME@/registration.info
-REGISTRATION_URL=https://poptrack.untangle.com/register/custreg.php
 ACTIVATION_KEY_FILE=@UVM_HOME@/activation.key
 ACTIVATION_KEY_FILE_TMP=${ACTIVATION_KEY_FILE}.tmp
 TMP_ARCHIVE=@PREFIX@/tmp/activation.tar

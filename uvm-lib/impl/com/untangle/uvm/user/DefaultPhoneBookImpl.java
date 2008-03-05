@@ -34,19 +34,6 @@ class DefaultPhoneBookImpl implements LocalPhoneBook
 
     /* ----------------- Public ----------------- */
 
-    /* retrieve the WMI settings */
-    public WMISettings getWMISettings()
-    {
-        logger.warn( "using invalid WMI settings" );
-        return new WMISettings();
-    }
-
-    /* set the WMI settings */
-    public void setWMISettings( WMISettings settings ) throws ValidateException
-    {
-        logger.warn( "ignoring save settings." );
-    }
-
     /* Lookup the corresponding user user information object user the address */
     public UserInfo lookup( InetAddress address )
     {

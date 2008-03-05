@@ -112,6 +112,8 @@ class AccessManagerImpl implements LocalAccessManager
             
             setSettings( NetworkConfigurationLoader.getInstance().loadAccessSettings(), true );
         } else {
+            // Need to ignore now obsolete db setting of support flag
+            NetworkConfigurationLoader.getInstance().loadSupportFlag(settings);
             this.accessSettings = AccessSettingsInternal.makeInstance( settings );
         }
     }

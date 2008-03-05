@@ -30,7 +30,6 @@
 #include <mvutil/debug.h>
 #include <mvutil/list.h>
 #include <mvutil/unet.h>
-
 #include "libnetcap.h"
 #include "netcap_hook.h"
 #include "netcap_queue.h"
@@ -304,6 +303,12 @@ static int _icmp_get_mailbox( netcap_pkt_t* pkt, netcap_session_t* session,
  * Put a packet into the mailbox for a session */
 static int _icmp_put_mailbox( mailbox_t* mb, netcap_pkt_t* pkt )
 {
+    if ( netcap_set_verdict( pkt->packet_id, NF_DROP, NULL, 0 ) < 0 ) {
+      pkt->packet_id = 0;
+      return errlog( ERR_CRITICAL, "netcap_set_verdict\n" );
+    }
+    pkt->packet_id = 0;
+
     if ( mailbox_size( mb ) > MAX_MB_SIZE ) {
         return errlog( ERR_WARNING, "ICMP: Mailbox Full - Dropping Packet (from %s)\n", 
                        inet_ntoa( pkt->src.host ));
@@ -375,12 +380,10 @@ int  netcap_icmp_call_hook( netcap_pkt_t* pkt )
     if ( pkt == NULL ) return errlogargs();
 
     if ( pkt->data == NULL ) return errlogargs();
-
     
-    int critical_section(void)
-    {
+    int critical_section(void) {
         int ret = -1;
-	u_char* full_pkt;
+        u_char* full_pkt;
         int full_pkt_len;
 
         if ( _icmp_fix_packet( pkt, &full_pkt, &full_pkt_len ) < 0 ) {
@@ -407,14 +410,15 @@ int  netcap_icmp_call_hook( netcap_pkt_t* pkt )
 
         case _FIND_DROP:
             debug( 10, "ICMP: Dropping packet\n" );
-            netcap_pkt_raze( pkt );
+            netcap_pkt_action_raze( pkt, NF_DROP );
             pkt = NULL;
             ret = 0;
-            break;
+            return 0;
 
         case _FIND_ACCEPT:
             debug( 10, "ICMP: Accepting packet\n" );
-	    netcap_set_verdict_mark(pkt->packet_id, NF_REPEAT, NULL, 0, 1, MARK_DUPE|MARK_ANTISUB);
+            netcap_set_verdict_mark(pkt->packet_id, NF_REPEAT, NULL, 0, 1, MARK_DUPE|MARK_ANTISUB);
+            pkt->packet_id = 0;
             netcap_pkt_raze( pkt );
             pkt = NULL;
             ret = 0;
@@ -422,7 +426,7 @@ int  netcap_icmp_call_hook( netcap_pkt_t* pkt )
 
         case _FIND_ERROR:
         default:
-	  {
+        {
             int icmp_type = -1;
             int icmp_code = -1;
             struct icmp *packet = (struct icmp*)pkt->data;
@@ -430,23 +434,26 @@ int  netcap_icmp_call_hook( netcap_pkt_t* pkt )
                 icmp_type = packet->icmp_type;
                 icmp_code = packet->icmp_code;
             }
-
+            
             ret = errlog ( ERR_CRITICAL, "_icmp_find_session (%s:%d -> %s:%d), type %d code %d\n",
                            unet_next_inet_ntoa ( pkt->src.host.s_addr ), pkt->src.port, 
                            unet_next_inet_ntoa ( pkt->dst.host.s_addr ), pkt->dst.port,
                            icmp_type, icmp_code );
-	  }
-	}
-
-	/* Drop the packet, but hold onto the data. */
-	debug( 10, "ICMP: Dropping packet (%#10x) and passing data\n", pkt->packet_id );
-        if ( netcap_set_verdict( pkt->packet_id, NF_DROP, NULL, 0 ) < 0 ) {
-            ret = errlog( ERR_CRITICAL, "netcap_set_verdict\n" );
         }
-        /* Clear out the packet id */
-        pkt->packet_id = 0;
-	return ret;
+        }
+
+        /* Drop the packet, but hold onto the data. */
+        if ( pkt != NULL ) {
+            debug( 10, "ICMP: Dropping packet (%#10x) and passing data\n", pkt->packet_id );
+            if ( pkt->packet_id != 0 && netcap_set_verdict( pkt->packet_id, NF_DROP, NULL, 0 ) < 0 ) {
+                ret = errlog( ERR_CRITICAL, "netcap_set_verdict\n" );
+            }
+            /* Clear out the packet id */
+            pkt->packet_id = 0;
+        }
+        return ret;
     }
+
     ret = critical_section();
     if ( ret < 0 ) {
         if ( pkt != NULL ) {
@@ -678,7 +685,7 @@ static int  _netcap_icmp_send( char *data, int data_len, netcap_pkt_t* pkt, int 
     /* if the caller uses the force flag, then override the default bits of the mark */
     if ( pkt->is_marked == IS_MARKED_FORCE_FLAG ) nfmark = pkt->nfmark;
 
-    if ( pkt->dst_intf != NC_INTF_UNK ) errlog(ERR_CRITICAL,"NC_INTF_UNK Unsupported (IP_DEVICE)\n");
+    if ( pkt->dst_intf != NC_INTF_UNK ) debug( 1, "NETCAP_ICMP: !NC_INTF_UNK Unsupported (IP_DEVICE)\n" );
 
     /* Setup the destination */
     memset(&dst, 0, sizeof(dst));
@@ -835,96 +842,21 @@ static _find_t _icmp_find_session( netcap_pkt_t* pkt, netcap_session_t** netcap_
         case ICMP_ECHOREPLY:
             /* fallthrough */
         case ICMP_ECHO:
-	    if ( _shield_check_reputation( pkt, &pkt->src.host, pkt->src_intf ) < 0 ) {
-	        ret = _FIND_DROP;
-	        break;
-	    }
-
-	    /* Let the shield know about the request */
-	    if ( netcap_shield_rep_add_request( &pkt->src.host ) < 0 ) {
-	        errlog ( ERR_CRITICAL, "netcap_shield_rep_add_request\n" );
-	    }
-
-	    if ( netcap_shield_rep_add_chunk( &pkt->src.host, IPPROTO_ICMP, pkt->data_len ) < 0 ) {
-	        errlog( ERR_CRITICAL, "netcap_shield_rep_add_chunk" );
-	    }
-	    return _FIND_ACCEPT;
-#if 0	  
-            if (( session = _icmp_get_tuple( pkt )) == NULL ) {
-                /* Check if this sessions should be allowed */
-                if ( _shield_check_reputation( pkt, &pkt->src.host, pkt->src_intf ) < 0 ) {
-                    ret = _FIND_DROP;
-                    break;
-                }
-
-                /* Let the shield know about the request */
-                if ( netcap_shield_rep_add_request( &pkt->src.host ) < 0 ) {
-                    errlog ( ERR_CRITICAL, "netcap_shield_rep_add_request\n" );
-                }
-
-                if ( netcap_shield_rep_add_chunk( &pkt->src.host, IPPROTO_ICMP, pkt->data_len ) < 0 ) {
-                    errlog( ERR_CRITICAL, "netcap_shield_rep_add_chunk" );
-                }
-
-                if (( session = _icmp_create_session( pkt )) == NULL ) {
-                    ret = errlog( ERR_CRITICAL, "_icmp_create_session\n" );
-                    break;
-                }
-                
-                /* Let the shield know about the new session */
-                if ( netcap_shield_rep_add_session( &pkt->src.host ) < 0 ) {
-                    errlog ( ERR_CRITICAL, "netcap_shield_rep_add_session\n" );
-                }                
-                
-                /* Drop the packet into the client mailbox */
-                mb = &session->cli_mb;
-
-                /* Drop the packet into the client ICMP mailbox */
-                icmp_mb = &session->icmp_cli_mb;
-                
-                /* Indicate that a new session was created */
-                *netcap_sess = session;
-            } else {
-                /* Add this chunk against the client reputation */
-                if ( netcap_shield_rep_add_chunk( &session->cli.cli.host, IPPROTO_ICMP, pkt->data_len ) < 0 ) {
-                    errlog( ERR_CRITICAL, "netcap_shield_rep_add_chunk\n" );
-                }
-
-                /* Check if this sessions should be allowed */
-                if ( _shield_check_reputation( pkt, &session->cli.cli.host, session->cli.intf ) < 0 ) {
-                    ret = _FIND_DROP;
-                    break;
-                }
-
-                if (( ret = _icmp_get_mailbox( pkt, session, &mb, &icmp_mb )) < 0 ) {
-                    ret = errlog( ERR_CRITICAL, "_icmp_get_mailbox\n" );
-                    break;
-                } else if ( ret == _FIND_DROP ) {
-                    /* Unable to find the mailbox, but drop the packet silently( it is not an error) */
-                    break;
-                }
-                /* Indicate that a new session was not created */
-                *netcap_sess = NULL;
-            }
-            
-            /* Must cache the packet before putting the packet into the mailbox,
-             * otherwise the session thread can pull the data from underneath the thread
-             */
-
-            if ( _cache_packet( full_pkt, full_pkt_len, icmp_mb ) < 0 ) {
-                ret = errlog( ERR_CRITICAL, "_cache_packet\n" );
-            }
-            
-            /* Put the packet into the mailbox */
-            if ( _icmp_put_mailbox( mb, pkt ) < 0 ) {
-                ret = errlog( ERR_CRITICAL, "_icmp_put_mailbox\n" );
+            if ( _shield_check_reputation( pkt, &pkt->src.host, pkt->src_intf ) < 0 ) {
+                ret = _FIND_DROP;
                 break;
             }
-            
-            /* Set the return code */
-            ret = ( *netcap_sess == NULL ) ? _FIND_EXIST : _FIND_NEW;
-            break;
-#endif            
+
+            /* Let the shield know about the request */
+            if ( netcap_shield_rep_add_request( &pkt->src.host ) < 0 ) {
+                errlog ( ERR_CRITICAL, "netcap_shield_rep_add_request\n" );
+            }
+
+            if ( netcap_shield_rep_add_chunk( &pkt->src.host, IPPROTO_ICMP, pkt->data_len ) < 0 ) {
+                errlog( ERR_CRITICAL, "netcap_shield_rep_add_chunk" );
+            }
+            return _FIND_ACCEPT;
+
         case ICMP_REDIRECT:
         case ICMP_SOURCE_QUENCH:
         case ICMP_TIME_EXCEEDED:
@@ -938,9 +870,9 @@ static _find_t _icmp_find_session( netcap_pkt_t* pkt, netcap_session_t** netcap_
              * Otherwise, this packet has no business being here, hence it is dropped
              */
             if (( session = _icmp_get_error_session( pkt, &mb )) == NULL ) {
-	        //if we failed to find it assume its for a session we are not 
-	        // watching.
-	        debug(10,"Could not find an ICMP session for %d\n",pkt->packet_id);
+                //if we failed to find it assume its for a session we are not 
+                // watching.
+                debug(10,"Could not find an ICMP session for %d\n",pkt->packet_id);
                 ret = _FIND_ACCEPT;
                 break;
             }
@@ -961,7 +893,7 @@ static _find_t _icmp_find_session( netcap_pkt_t* pkt, netcap_session_t** netcap_
                 break;
             }
             
-            /* Put the packet into the mailbox */
+            /* Put the packet into the mailbox and drop the packet */
             if ( _icmp_put_mailbox( mb, pkt ) < 0 ) {
                 ret = errlog( ERR_CRITICAL, "_icmp_put_mailbox\n" );
                 break;
@@ -989,7 +921,7 @@ static _find_t _icmp_find_session( netcap_pkt_t* pkt, netcap_session_t** netcap_
             ret = _FIND_DROP;
             break;
         }
-	return ret;
+        return ret;
     }
     SESSTABLE_WRLOCK();
     ret = critical_section();

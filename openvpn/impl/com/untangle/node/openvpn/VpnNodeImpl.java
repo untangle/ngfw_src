@@ -42,6 +42,7 @@ import com.untangle.uvm.node.UnconfiguredException;
 import com.untangle.uvm.node.ValidateException;
 import com.untangle.uvm.node.script.ScriptRunner;
 import com.untangle.uvm.util.TransactionWork;
+import com.untangle.uvm.util.XMLRPCUtil;
 import com.untangle.uvm.vnet.AbstractNode;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
@@ -178,6 +179,16 @@ public class VpnNodeImpl extends AbstractNode
                     this.openVpnCaretaker.start();
                 } else {
                     this.openVpnMonitor.enable();
+                }
+
+                try {
+                    /* XXX Update the iptables rules, this should be a call in the network manager XXX */
+                    XMLRPCUtil.NullAsyncCallback callback = new XMLRPCUtil.NullAsyncCallback( this.logger );
+                    /* Make an asynchronous request */
+                    XMLRPCUtil.getInstance().callAlpaca( XMLRPCUtil.CONTROLLER_UVM, "generate_rules",
+                                                         callback );
+                } catch ( Exception e ) {
+                    logger.error( "Error while generating iptables rules", e );
                 }
             }
 
