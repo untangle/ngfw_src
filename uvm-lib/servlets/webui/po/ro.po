@@ -36,12 +36,3 @@ msgstr "Ajutor"
 #: ../root/script/ext-untangle.js:352
 msgid "Show Settings"
 msgstr "Afişează Setările"
-
-#: ../root/WEB-INF/jsp/startPage.jsp:58 ../root/script/untangle.js:71
-#, python-format
-msgid "%s and %s"
-msgstr "%s şi %s"
-
-#: ../root/script/untangle.js:72
-msgid "On the i18n part, we'd like to have development"
-msgstr "Õn Õn thé thé i18n i18n part, part, wé’d wé’d liké liké tÕ to havé havé dévélÕpmént dévélopmént"

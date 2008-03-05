@@ -36,12 +36,3 @@ msgstr ""
 #: ../root/script/ext-untangle.js:352
 msgid "Show Settings"
 msgstr ""
-
-#: ../root/WEB-INF/jsp/startPage.jsp:58 ../root/script/untangle.js:71
-#, python-format
-msgid "%s and %s"
-msgstr ""
-
-#: ../root/script/untangle.js:72
-msgid "On the i18n part, we'd like to have development"
-msgstr ""
