@@ -818,7 +818,7 @@ Untangle.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
     	
         this.bbar=	[{
         				xtype:'tbtext',
-						text:'<span id="boxRepository_'+this.getId()+'_'+this.settingsCmp.tid+'"></span>'},
+						text:'<span id="boxRepository_'+this.getId()+'_'+this.settingsCmp.node.tid+'"></span>'},
 					{
 						xtype: 'tbbutton',
 			            text: this.settingsCmp.i18n._('Refresh'),
@@ -835,7 +835,7 @@ Untangle.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
 			if(this.settingsCmp) {
 				this.settingsCmp.rpc.repositoryDescs=result;
 				var out=[];
-				out.push('<select id="selectRepository_'+this.getId()+'_'+this.settingsCmp.tid+'">');
+				out.push('<select id="selectRepository_'+this.getId()+'_'+this.settingsCmp.node.tid+'">');
 				var repList=this.settingsCmp.rpc.repositoryDescs.list;
 				for(var i=0;i<repList.length;i++) {
 					var repDesc=repList[i];
@@ -843,13 +843,13 @@ Untangle.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
 					out.push('<option value="'+repDesc.name+'" '+selOpt+'>'+this.settingsCmp.i18n._(repDesc.name)+'</option>');
 				}
 				out.push('</select>');
-				var boxRepositoryDescEventLog=document.getElementById('boxRepository_'+this.getId()+'_'+this.settingsCmp.tid);
+				var boxRepositoryDescEventLog=document.getElementById('boxRepository_'+this.getId()+'_'+this.settingsCmp.node.tid);
 				boxRepositoryDescEventLog.innerHTML=out.join("");
 			}
 		}.createDelegate(this));
 	},
     getSelectedRepository: function () {
-    	var selObj=document.getElementById('selectRepository_'+this.getId()+'_'+this.settingsCmp.tid);
+    	var selObj=document.getElementById('selectRepository_'+this.getId()+'_'+this.settingsCmp.node.tid);
     	var result=null;
     	if(selObj!==null && selObj.selectedIndex>=0) {
     		result = selObj.options[selObj.selectedIndex].value;
@@ -872,3 +872,152 @@ Untangle.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
 		}
 	}
 });
+
+Untangle.RowEditorWindow = Ext.extend(Ext.Window, {
+	key: null,
+	settingsCmp: null,
+	grid: null,
+	inputLines: null,
+	contentTemplate: null,
+	title: null,
+	
+	rowIndex: null,
+	closeAction: 'hide',
+	autoCreate: true,                
+	layout:'border',
+	modal: true,
+	width: 400,
+	height: 300,
+	draggable: false,
+	resizable: false,
+	initContent: function() {
+		var cmp=null;
+		cmp=new Ext.Button({
+			'renderTo':'rowEditor_help_'+this.settingsCmp.node.tid+'_'+this.key,
+			'iconCls': 'helpIcon',
+			'text': this.settingsCmp.i18n._('Help'),
+			'handler': function() {Ext.MessageBox.alert("TODO","Implement Help Page");}.createDelegate(this)
+		});
+		cmp=new Ext.Button({
+			'renderTo':'rowEditor_cancel_'+this.settingsCmp.node.tid+'_'+this.key,
+			'iconCls': 'cancelIcon',
+			'text': this.settingsCmp.i18n._('Cancel'),
+			'handler': function() {this.hide();}.createDelegate(this)
+		});
+		cmp=new Ext.Button({
+			'renderTo':'rowEditor_update_'+this.settingsCmp.node.tid+'_'+this.key,
+			'iconCls': 'saveIcon',
+			'text': this.settingsCmp.i18n._('Update'),
+			'handler': function() {this.updateData();}.createDelegate(this)
+		});
+	},
+	listeners: {
+		'show': {
+			fn: function(cmp) {
+				var objPosition=cmp.grid.getPosition();
+				cmp.setPosition(objPosition);
+				//var objSize=grid.getSize();
+				//this.gridProtocolList.rowEditor.setSize(objSize);
+			}
+		}
+	},
+	
+	populate: function(record,rowIndex) {
+		this.rowIndex=rowIndex;
+		if(this.inputLines) {
+    		for(var i=0;i<this.inputLines.length;i++) {
+    			var inputLine=this.inputLines[i];
+    			switch(inputLine.type) {
+    				case "text":
+    				case "textarea":
+    					document.getElementById('field_'+this.settingsCmp.node.tid+'_'+this.key+'_'+inputLine.name).value=record.data[inputLine.name];
+    					break;
+    				case "checkbox":
+    					document.getElementById('field_'+this.settingsCmp.node.tid+'_'+this.key+'_'+inputLine.name).checked=record.data[inputLine.name];
+    					break;
+    			}
+			}
+		}
+	},
+	updateData: function() {
+		if(this.rowIndex!==null) {
+			var rec=this.grid.getStore().getAt(this.rowIndex);
+			if(this.inputLines) {
+	    		for(var i=0;i<this.inputLines.length;i++) {
+	    			var inputLine=this.inputLines[i];
+	    			switch(inputLine.type) {
+	    				case "text":
+	    				case "textarea":
+	    					rec.set(inputLine.name, document.getElementById('field_'+this.settingsCmp.node.tid+'_'+this.key+'_'+inputLine.name).value);
+	    					break;
+	    				case "checkbox":
+	    					rec.set(inputLine.name, document.getElementById('field_'+this.settingsCmp.node.tid+'_'+this.key+'_'+inputLine.name).checked);
+	    					break;
+	    			}
+				}			
+			}
+		}
+		this.hide();
+	},
+
+	initComponent: function() {
+    	if(this.title==null) {
+    		this.title=this.settingsCmp.i18n._('Edit');
+    	}
+    	var contentTemplate=null;
+    	if(this.inputLines) {
+    		var contentArr=[];
+    		for(var i=0;i<this.inputLines.length;i++) {
+    			var inputLine=this.inputLines[i];
+    			switch(inputLine.type) {
+    				case "text":
+    					if(inputLine.style==null) {
+    						inputLine.style="width:200px;"
+    					}
+    					contentArr.push('<div class="inputLine"><span class="label">'+inputLine.label+':</span><span class="formw"><input type="text" id="field_{tid}_{key}_'+inputLine.name+'" style="'+inputLine.style+'"/></span></div>')
+    					break;
+    				case "checkbox":
+    					contentArr.push('<div class="inputLine"><span class="label">'+inputLine.label+':</span><span class="formw"><input type="checkbox" id="field_{tid}_{key}_'+inputLine.name+'"/></span></div>')
+    					break;
+    				case "textarea":
+    					if(inputLine.style==null) {
+    						inputLine.style="width:200px;height:60px;"
+    					}
+    					contentArr.push('<div class="inputLine"><span class="label">'+inputLine.label+':</span><span class="formw"><textarea type="text" id="field_{tid}_{key}_'+inputLine.name+'" style="'+inputLine.style+'"></textarea></span></div>')
+    					break;
+    			}
+    		}
+    		contentTemplate=new Ext.Template(contentArr);
+    	} else {
+    		contentTemplate=this.contentTemplate;
+    	}
+    	
+    	
+    	this.items= [{
+				region:"center",
+				html: contentTemplate.applyTemplate({'tid':this.settingsCmp.node.tid, 'key':this.key}),
+				border: false,
+				autoScroll: true,
+				cls: 'windowBackground',
+				bodyStyle: 'background-color: transparent;'
+			}, 
+	    	{
+		    	region: "south",
+		    	html: Untangle.RowEditorWindow.template.applyTemplate({'tid':this.settingsCmp.node.tid, 'key':this.key}),
+		        border: false,
+		        height:40,
+		        cls: 'windowBackground',
+		        bodyStyle: 'background-color: transparent;'
+	    	}];
+        Untangle.RowEditorWindow.superclass.initComponent.call(this);
+
+    },
+    onRender: function(container, position) {
+    	Untangle.RowEditorWindow.superclass.onRender.call(this,container, position);
+    }
+	
+});
+Untangle.RowEditorWindow.template=new Ext.Template(
+'<div class="rowEditorHelp" id="rowEditor_help_{tid}_{key}"></div>',
+'<div class="rowEditorCancel" id="rowEditor_cancel_{tid}_{key}"></div>',
+'<div class="rowEditorUpdate" id="rowEditor_update_{tid}_{key}"></div>');
