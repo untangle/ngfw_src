@@ -116,7 +116,7 @@ class Jars
   Jnlp       = [ ThirdpartyJar.get("#{BuildEnv::JAVA_HOME}/sample/jnlp/servlet/jnlp.jar") ]
 
   # properJavaRDP Jars
-  ProperJavaRDP = [ 'properJavaRDP-1.1.jar', 'java-getopt-1.0.12.jar' ]
+  ProperJavaRDP = [ 'properJavaRDP-1.1.jar', 'java-getopt-1.0.12.jar' ].map { |f| Jars.downloadTarget(f) }
 
   ## Jars required to run/compile unit tests
   Junit      = [ Jars.downloadTarget('junit4.1/junit-4.1.jar') ]
