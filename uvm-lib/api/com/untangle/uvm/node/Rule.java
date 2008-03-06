@@ -65,7 +65,7 @@ public abstract class Rule implements Serializable
 
     // constructors -----------------------------------------------------------
 
-    public Rule() { }
+	public Rule() { }
 
     public Rule(boolean live)
     {
@@ -106,6 +106,7 @@ public abstract class Rule implements Serializable
         this.live = live;
     }
 
+    
     // accessors --------------------------------------------------------------
 
     @Id
@@ -210,5 +211,15 @@ public abstract class Rule implements Serializable
     {
         this.log = log;
     }
+
+    
+    public void updateRule(Rule rule) {
+		this.name = rule.name;
+		this.category = rule.category;
+		this.description = rule.description;
+		this.live = rule.live;
+		this.alert = rule.alert;
+		this.log = rule.log;
+	}
 
 }

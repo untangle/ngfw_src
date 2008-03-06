@@ -192,10 +192,10 @@ public class SpywareImpl extends AbstractNode implements Spyware
                         start, limit, sortColumns);
     }
 
-    public void updateActiveXRules(List<Long> deleted, List<StringRule> added,
+    public void updateActiveXRules(List<Long> added, List<StringRule> deleted,
                                    List<StringRule> modified) {
 
-        updateRules(getSpywareSettings().getActiveXRules(), deleted, added, modified);
+        updateRules(getSpywareSettings().getActiveXRules(), added, deleted, modified);
     }
 
     public List<StringRule> getCookieRules(int start, int limit,
@@ -204,10 +204,10 @@ public class SpywareImpl extends AbstractNode implements Spyware
                         start, limit, sortColumns);
     }
 
-    public void updateCookieRules(List<Long> deleted, List<StringRule> added,
+    public void updateCookieRules(List<Long> added, List<StringRule> deleted,
                                   List<StringRule> modified) {
 
-        updateRules(getSpywareSettings().getCookieRules(), deleted, added, modified);
+        updateRules(getSpywareSettings().getCookieRules(), added, deleted, modified);
     }
 
     public List<IPMaddrRule> getSubnetRules(int start, int limit,
@@ -216,11 +216,11 @@ public class SpywareImpl extends AbstractNode implements Spyware
                         start, limit, sortColumns);
     }
 
-    public void updateSubnetRules(List<Long> deleted, List<IPMaddrRule> added,
+    public void updateSubnetRules(List<Long> added, List<IPMaddrRule> deleted,
                                   List<IPMaddrRule> modified) {
 
         Set<IPMaddrRule> subnetRules = getSpywareSettings().getSubnetRules();
-        updateRules(subnetRules, deleted, added, modified);
+        updateRules(subnetRules, added, deleted, modified);
     }
 
     public List<StringRule> getDomainWhitelist(int start, int limit,
@@ -229,11 +229,11 @@ public class SpywareImpl extends AbstractNode implements Spyware
                         start, limit, sortColumns);
     }
 
-    public void updateDomainWhitelist(List<Long> deleted, List<StringRule> added,
+    public void updateDomainWhitelist(List<Long> added, List<StringRule> deleted,
                                       List<StringRule> modified) {
 
         Set<StringRule> domainWhitelist = getSpywareSettings().getDomainWhitelist();
-        updateRules(domainWhitelist, deleted, added, modified);
+        updateRules(domainWhitelist, added, deleted, modified);
     }
 
     public SpywareBaseSettings getBaseSettings()
@@ -504,6 +504,24 @@ public class SpywareImpl extends AbstractNode implements Spyware
     {
         eventLogger.log(se);
     }
+    
+    // wrapper method to update all settings once
+    // TODO can we find a better place for this ugly method?
+    public void updateAll(SpywareBaseSettings baseSettings, 
+    		List[] activeXRules, List[] cookieRules,
+    		List[] subnetRules, List[] domainWhitelist) {
+    	
+    	if (baseSettings != null) {
+        	setBaseSettings(baseSettings);
+    	}
+		updateActiveXRules(activeXRules[0], activeXRules[1], activeXRules[2]);
+		updateCookieRules(cookieRules[0], cookieRules[1], cookieRules[2]);
+		updateSubnetRules(subnetRules[0], subnetRules[1], subnetRules[2]);
+		updateDomainWhitelist(domainWhitelist[0], domainWhitelist[1], domainWhitelist[2]);
+		
+		reconfigure();
+	}
+    
 
     // private methods --------------------------------------------------------
 
@@ -534,8 +552,8 @@ public class SpywareImpl extends AbstractNode implements Spyware
     }
 
     // TODO we should have this into a util class
-    private void updateRules(final Set rules, final List<Long> deleted,
-                             final List added, final List modified)
+    private void updateRules(final Set rules, final List<Long> added,
+                             final List deleted, final List modified)
     {
         TransactionWork tw = new TransactionWork()
             {
@@ -543,14 +561,17 @@ public class SpywareImpl extends AbstractNode implements Spyware
                 {
                     for (Iterator i = rules.iterator(); i.hasNext();) {
                         Rule rule = (Rule)i.next();
-                        if (deleted.contains(rule.getId())
-                            || isModified(rule, modified)) {
+                        Rule mRule = null;
+                        if (deleted != null && deleted.contains(rule.getId())) {
                             i.remove();
+                        } else if (modified != null && (mRule = modifiedRule(rule, modified)) != null ) {
+                        	rule.updateRule(mRule);
                         }
                     }
-
-                    rules.addAll(modified);
-                    rules.addAll(added);
+                    
+                    if (added != null) {
+                    	rules.addAll(added);
+                    }
 
                     s.merge(settings);
 
@@ -562,14 +583,14 @@ public class SpywareImpl extends AbstractNode implements Spyware
         getNodeContext().runTransaction(tw);
     }
 
-    private boolean isModified(Rule rule, List modified) {
+    private Rule modifiedRule(Rule rule, List modified) {
         for (Iterator iterator = modified.iterator(); iterator.hasNext();) {
             Rule currentRule = (Rule)iterator.next();
             if(currentRule.getId().equals(rule.getId())){
-                return true;
+                return currentRule;
             }
         }
-        return false;
+        return null;
     }
 
     private boolean findMatch(Set<String> rules, String domain)

@@ -21,12 +21,10 @@ package com.untangle.node.spyware;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
-import javax.persistence.CascadeType;
+
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -36,13 +34,11 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import com.untangle.node.http.UserWhitelistMode;
-import com.untangle.node.util.UvmUtil;
+import org.hibernate.annotations.Cascade;
+
 import com.untangle.uvm.node.IPMaddrRule;
 import com.untangle.uvm.node.StringRule;
 import com.untangle.uvm.security.Tid;
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.IndexColumn;
 
 /**
  * Settings for the Spyware node.

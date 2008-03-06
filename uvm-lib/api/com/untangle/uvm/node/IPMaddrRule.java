@@ -33,7 +33,6 @@
 
 package com.untangle.uvm.node;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
@@ -100,4 +99,13 @@ public class IPMaddrRule extends Rule
     {
         return ipMaddr.hashCode();
     }
+    
+    @Override
+    public void updateRule(Rule rule) {
+    	super.updateRule(rule);
+    	if (rule instanceof IPMaddrRule) {
+    		IPMaddrRule ipMaddrRule = (IPMaddrRule) rule;
+			this.ipMaddr = ipMaddrRule.ipMaddr;
+		}
+    }    
 }

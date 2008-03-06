@@ -33,16 +33,16 @@ public interface Spyware extends Node
     static final int PASS = Node.GENERIC_2_COUNTER;
 
     List<StringRule> getActiveXRules(int start, int limit, String... sortColumns);
-    void updateActiveXRules(List<Long> deleted, List<StringRule> added, List<StringRule> modified);
+    void updateActiveXRules(List<Long> added, List<StringRule> deleted, List<StringRule> modified);
 
     List<StringRule> getCookieRules(int start, int limit, String... sortColumns);
-    void updateCookieRules(List<Long> deleted, List<StringRule> added, List<StringRule> modified);
+    void updateCookieRules(List<Long> added, List<StringRule> deleted, List<StringRule> modified);
 
     List<IPMaddrRule> getSubnetRules(int start, int limit, String... sortColumns);
-    void updateSubnetRules(List<Long> deleted, List<IPMaddrRule> added, List<IPMaddrRule> modified);
+    void updateSubnetRules(List<Long> added, List<IPMaddrRule> deleted, List<IPMaddrRule> modified);
 
     List<StringRule> getDomainWhitelist(int start, int limit, String... sortColumns);
-    void updateDomainWhitelist(List<Long> deleted, List<StringRule> added, List<StringRule> modified);
+    void updateDomainWhitelist(List<Long> added, List<StringRule> deleted, List<StringRule> modified);
 
     SpywareBaseSettings getBaseSettings();
     void setBaseSettings(SpywareBaseSettings baseSettings);
@@ -52,4 +52,5 @@ public interface Spyware extends Node
     UserWhitelistMode getUserWhitelistMode();
 
     EventManager<SpywareEvent> getEventManager();
+    
 }

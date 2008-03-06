@@ -33,7 +33,6 @@
 
 package com.untangle.uvm.node;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
@@ -75,7 +74,7 @@ public class StringRule extends Rule
         super(name, category, live);
         this.string = string;
     }
-
+        
     // accessors --------------------------------------------------------------
 
     /**
@@ -112,4 +111,13 @@ public class StringRule extends Rule
     {
         return string.hashCode();
     }
+    
+    @Override
+    public void updateRule(Rule rule) {
+    	super.updateRule(rule);
+    	if (rule instanceof StringRule) {
+			StringRule stringRule = (StringRule) rule;
+			this.string = stringRule.string;
+		}
+    }    
 }
