@@ -354,7 +354,7 @@ Untangle.Node = Ext.extend(Ext.Component, {
 			Ext.get('nodePowerIconImg_'+this.getId()).on('click', this.onPowerClick, this);
 			var cmp=null;
 			cmp=new Ext.ToolTip({
-			  html:Untangle.Node.statusTip,
+			  html: Untangle.Node.statusTip,
 			  target: 'nodeStateIconImg_'+this.getId(),
 			  autoWidth: true,
 			  autoHeight: true,
@@ -363,7 +363,7 @@ Untangle.Node = Ext.extend(Ext.Component, {
 			  hideDelay: 0
 			});
 			cmp=new Ext.ToolTip({
-			  html:Untangle.Node.powerTip,
+			  html: Untangle.Node.powerTip,
 			  target: 'nodePowerIconImg_'+this.getId(),
 			  autoWidth: true,
 			  autoHeight: true,
@@ -1014,7 +1014,12 @@ Untangle.RowEditorWindow = Ext.extend(Ext.Window, {
     },
     onRender: function(container, position) {
     	Untangle.RowEditorWindow.superclass.onRender.call(this,container, position);
+    },
+    afterRender: function() {
+    	Untangle.RowEditorWindow.superclass.afterRender.call(this);
+    	//this.initContent();
     }
+    
 	
 });
 Untangle.RowEditorWindow.template=new Ext.Template(
