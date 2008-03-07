@@ -49,9 +49,11 @@ static int _disable_rp_filter( void );
 /**
  * This will open a tun device and set the name to name
  */
-int netcap_virtual_interface_init( char* name )
+int netcap_virtual_interface_init( char *name, char *tun_addr )
 {
     struct ifreq ifr;
+    struct sockaddr_in addr;
+    struct in_addr tmp;
     int fd;
 
     debug(10, "FLAG  netcap_virtual_interface_init\n");
@@ -70,7 +72,17 @@ int netcap_virtual_interface_init( char* name )
             
         /* same ioctl but on a the temporary socket "fd" */
         if ( ioctl( fd, SIOCGIFFLAGS, &ifr ) < 0 ) return perrlog( "ioctl [SIOCGIFFLAGS]" );
-        
+
+	/* set the IP address on the virtual interface, this in required on kernel <=2.6.16 */
+        memset( &addr, 0, sizeof(addr) );
+	inet_aton(tun_addr, &tmp);
+	addr.sin_addr.s_addr = tmp.s_addr;
+	addr.sin_family = AF_INET;
+	memcpy( &ifr.ifr_addr, &addr, sizeof(struct sockaddr) );
+
+	if ( ioctl( fd, SIOCSIFADDR, &ifr) < 0 )  return perrlog( "ioctl [SIOCSIFFLAGS]" );
+
+	/* bring the interface up */
         ifr.ifr_flags |= IFF_UP;
         ifr.ifr_flags |= IFF_RUNNING;
         debug( 2, "Bringing up the tun interface: %s, %#010x\n", tun_dev.name, ifr.ifr_flags );
