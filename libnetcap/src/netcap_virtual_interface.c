@@ -44,16 +44,13 @@ static netcap_virtual_interface_t tun_dev =
     .fd = 0
 };
 
-static int _disable_rp_filter( void );
 
 /**
  * This will open a tun device and set the name to name
  */
-int netcap_virtual_interface_init( char *name, char *tun_addr )
+int netcap_virtual_interface_init( char *name )
 {
     struct ifreq ifr;
-    struct sockaddr_in addr;
-    struct in_addr tmp;
     int fd;
 
     debug(10, "FLAG  netcap_virtual_interface_init\n");
@@ -73,23 +70,12 @@ int netcap_virtual_interface_init( char *name, char *tun_addr )
         /* same ioctl but on a the temporary socket "fd" */
         if ( ioctl( fd, SIOCGIFFLAGS, &ifr ) < 0 ) return perrlog( "ioctl [SIOCGIFFLAGS]" );
 
-	/* set the IP address on the virtual interface, this in required on kernel <=2.6.16 */
-        memset( &addr, 0, sizeof(addr) );
-	inet_aton(tun_addr, &tmp);
-	addr.sin_addr.s_addr = tmp.s_addr;
-	addr.sin_family = AF_INET;
-	memcpy( &ifr.ifr_addr, &addr, sizeof(struct sockaddr) );
-
-	if ( ioctl( fd, SIOCSIFADDR, &ifr) < 0 )  return perrlog( "ioctl [SIOCSIFFLAGS]" );
-
 	/* bring the interface up */
         ifr.ifr_flags |= IFF_UP;
         ifr.ifr_flags |= IFF_RUNNING;
         debug( 2, "Bringing up the tun interface: %s, %#010x\n", tun_dev.name, ifr.ifr_flags );
         
         if ( ioctl( fd, SIOCSIFFLAGS, &ifr ) < 0 ) return perrlog( "ioctl [SIOCSIFFLAGS]" );
-
-        if ( _disable_rp_filter() < 0 ) return errlog( ERR_CRITICAL, "_disable_rp_filter\n" );
 
         return 0;
     }
@@ -190,29 +176,4 @@ void netcap_virtual_interface_destroy( void )
     tun_dev.fd = 0;
 }
 
-static int _disable_rp_filter( void )
-{
-    int fd;
-    char zero[]= "0\n";
-    char file_name[128];
 
-    snprintf( file_name, sizeof( file_name ), TUN_DEVICE_RP_FILTER_FORMAT, tun_dev.name );
-
-    debug( 4, "UTUN: turning off rp_filter: %s\n", file_name );
-    
-    /* turn off rb_filter so the virtual interface will not attempt to block "spoofed packets" */
-    if(( fd = open( file_name, O_RDWR|O_CREAT)) <= 0 ) {
-        return errlog( ERR_CRITICAL, "opening %s:%s\n", file_name, strerror( errno ));
-    }
-    
-    if( write( fd, zero, sizeof( zero )) < 1 ) {
-        close( fd );
-        return errlog( ERR_CRITICAL, "writing to %s:%s\n", file_name, strerror( errno ));
-    }
-    
-    if ( close( fd ) != 0 ) {
-        return errlog( ERR_CRITICAL, "closing %s:%s\n", file_name, strerror( errno ));
-    }
-
-    return 0;
-}

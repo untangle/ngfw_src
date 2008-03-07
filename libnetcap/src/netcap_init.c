@@ -44,7 +44,6 @@
 #include "netcap_virtual_interface.h"
 
 #define NETCAP_TUN_DEVICE_NAME "utun"
-#define NETCAP_TUN_DEVICE_ADDRESS "192.0.2.43"
 
 
 enum {
@@ -124,7 +123,7 @@ static int _netcap_init( int shield_enable )
         return perrlog("netcap_shield_init");
     if (netcap_nfconntrack_init()<0)
         return errlog( ERR_CRITICAL, "netcap_nfconntrack_init\n" );
-    if (netcap_virtual_interface_init( NETCAP_TUN_DEVICE_NAME, NETCAP_TUN_DEVICE_ADDRESS ) < 0)
+    if (netcap_virtual_interface_init( NETCAP_TUN_DEVICE_NAME ) < 0 )
         return errlog( ERR_CRITICAL, "netcap_virtual_interface_init\n" );
     
     debug(1,"NETCAP %s Initialized\n",netcap_version());
