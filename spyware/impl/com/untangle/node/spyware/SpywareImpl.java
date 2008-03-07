@@ -192,7 +192,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
                         start, limit, sortColumns);
     }
 
-    public void updateActiveXRules(List<Long> added, List<StringRule> deleted,
+    public void updateActiveXRules(List<StringRule> added, List<Long> deleted,
                                    List<StringRule> modified) {
 
         updateRules(getSpywareSettings().getActiveXRules(), added, deleted, modified);
@@ -204,7 +204,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
                         start, limit, sortColumns);
     }
 
-    public void updateCookieRules(List<Long> added, List<StringRule> deleted,
+    public void updateCookieRules(List<StringRule> added, List<Long> deleted,
                                   List<StringRule> modified) {
 
         updateRules(getSpywareSettings().getCookieRules(), added, deleted, modified);
@@ -216,11 +216,10 @@ public class SpywareImpl extends AbstractNode implements Spyware
                         start, limit, sortColumns);
     }
 
-    public void updateSubnetRules(List<Long> added, List<IPMaddrRule> deleted,
+    public void updateSubnetRules(List<IPMaddrRule> added, List<Long> deleted,
                                   List<IPMaddrRule> modified) {
 
-        Set<IPMaddrRule> subnetRules = getSpywareSettings().getSubnetRules();
-        updateRules(subnetRules, added, deleted, modified);
+        updateRules(getSpywareSettings().getSubnetRules(), added, deleted, modified);
     }
 
     public List<StringRule> getDomainWhitelist(int start, int limit,
@@ -229,11 +228,10 @@ public class SpywareImpl extends AbstractNode implements Spyware
                         start, limit, sortColumns);
     }
 
-    public void updateDomainWhitelist(List<Long> added, List<StringRule> deleted,
+    public void updateDomainWhitelist(List<StringRule> added, List<Long> deleted,
                                       List<StringRule> modified) {
 
-        Set<StringRule> domainWhitelist = getSpywareSettings().getDomainWhitelist();
-        updateRules(domainWhitelist, added, deleted, modified);
+        updateRules(getSpywareSettings().getDomainWhitelist(), added, deleted, modified);
     }
 
     public SpywareBaseSettings getBaseSettings()
@@ -552,8 +550,8 @@ public class SpywareImpl extends AbstractNode implements Spyware
     }
 
     // TODO we should have this into a util class
-    private void updateRules(final Set rules, final List<Long> added,
-                             final List deleted, final List modified)
+    private void updateRules(final Set rules, final List added,
+                             final List<Long> deleted, final List modified)
     {
         TransactionWork tw = new TransactionWork()
             {
