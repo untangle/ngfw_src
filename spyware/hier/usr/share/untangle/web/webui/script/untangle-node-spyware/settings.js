@@ -15,11 +15,11 @@ Untangle.Spyware = Ext.extend(Untangle.Settings, {
     },
     builBlockLists: function () {
 		var template=new Ext.Template(
-'<div>Web</div><hr/><div><input type="checkbox" id="web_checkbox_{key}" /> Block Spyware & Ad URLs</div>',
-'<div>Cookies</div><hr/><div><input type="checkbox" id="cookies_checkbox_{key}" /> Block Tracking & Ad Cookies <div id="cookies_button_{key}"></div></div>',
-'<div>ActiveX</div><hr/><div><input type="checkbox" id="activex_checkbox_{key}" /> Block Malware ActiveX Installs <div id="activex_button_{key}"></div></div>',
-'<div>Traffic</div><hr/><div><input type="checkbox" id="traffic_checkbox_{key}" /> Monitor Suspicious Traffic <div id="traffic_button_{key}"></div></div>',
-'<div>Spyware Blocker signatures were last updated: <div id="last_update_signatures_{key}"></div></div>');
+'<div> Web</div><hr/><div><input type="checkbox" id="web_checkbox_{key}" /> Block Spyware & Ad URLs</div>',
+'<div> Cookies</div><hr/><div><input type="checkbox" id="cookies_checkbox_{key}" /> Block Tracking & Ad Cookies <span id="cookies_button_{key}"></span></div>',
+'<div> ActiveX</div><hr/><div><input type="checkbox" id="activex_checkbox_{key}" /> Block Malware ActiveX Installs <span id="activex_button_{key}"></span></div>',
+'<div> Traffic</div><hr/><div><input type="checkbox" id="traffic_checkbox_{key}" /> Monitor Suspicious Traffic <span id="traffic_button_{key}"></span></div>',
+'<div> Spyware Blocker signatures were last updated: <span id="last_update_signatures_{key}"></span></div>');
 		this.panelBlockLists=new Ext.Panel({
 			title: this.i18n._("Block Lists"),
 			key: "blockLists_"+this.getId(),
@@ -58,54 +58,53 @@ Untangle.Spyware = Ext.extend(Untangle.Settings, {
     	alert("TODO");
     },
     
+    
     buildPassList: function() {
 	    // create the data store
-	    var store = new Ext.data.JsonStore({
-	        fields: [
-	           {name: 'category'},
-	           {name: 'protocol'},
-	           {name: 'blocked'},
-	           {name: 'log'},
-	           {name: 'description'},
-	           {name: 'definition'}
-	        ]
-	    });
+	    var proxy = new Untangle.RpcProxy(this.rpc.node.getCookieRules);
+	    var store = new Ext.data.Store({
+	        proxy: proxy,
+	        reader: new Ext.data.JsonReader({
+	        	root: 'list',
+	            //id: 'string',
+		        fields: [
+		           {name: 'string'},
+		           {name: 'category'},
+		           {name: 'log'},
+		           {name: 'description'}
+		        ]
+			}),
+			remoteSort: true
+        });
+
 	    // the column model has information about grid columns
 	    // dataIndex maps the column to the specific data field in the data store (created below)
 	    
-	    var blockedColumn = new Ext.grid.CheckColumn({
-	       header: "<b>"+this.i18n._("block")+"</b>", width: 40, dataIndex: 'blocked', fixed:true
-	    });
 	    var logColumn = new Ext.grid.CheckColumn({
 	       header: "<b>"+this.i18n._("log")+"</b>", width: 35, dataIndex: 'log', fixed:true
 	    });
 	    var editColumn=new Ext.grid.EditColumn({
-	    	header: this.i18n._("Edit"), width: 35, fixed:true, dataIndex: null
+	    	header: this.i18n._("Edit"), width: 35, fixed:true, sortable: false, dataIndex: null
 	    });
 	    var removeColumn=new Ext.grid.RemoveColumn({
-	    	header: this.i18n._("Delete"), width: 40, fixed:true, dataIndex: null
+	    	header: this.i18n._("Delete"), width: 40, fixed:true, sortable: false, dataIndex: null
 	    });
 	    var columnModel = new Ext.grid.ColumnModel([
+	          {id:'string',header: this.i18n._("string"), width: 140,  dataIndex: 'string',
+		          editor: new Ext.form.TextField({allowBlank: false})
+	          },
 	          {id:'category',header: this.i18n._("category"), width: 140,  dataIndex: 'category',
 		          editor: new Ext.form.TextField({allowBlank: false})
 	          },
-	          {id:'protocol',header: this.i18n._("protocol"), width: 100, dataIndex: 'protocol',
-		          editor: new Ext.form.TextField({allowBlank: false})
-	          },
-	          blockedColumn,
 	          logColumn,
 	          {id:'description',header: this.i18n._("description"), width: 120, dataIndex: 'description',
-		          editor: new Ext.form.TextField({allowBlank: false})
-	          },
-	          {id:'definition',header: this.i18n._("signature"), width: 120, dataIndex: 'definition',
 		          editor: new Ext.form.TextField({allowBlank: false})
 	          },
 	          editColumn,
 	          removeColumn
 		]);
 	
-	    // by default columns are sortable
-	    columnModel.defaultSortable = false;
+	    columnModel.defaultSortable = true;
 		
 		// create the Grid
 	    this.gridPassList = new Ext.grid.EditorGridPanel({
@@ -118,33 +117,25 @@ Untangle.Spyware = Ext.extend(Untangle.Settings, {
 		            parentId:this.getId(),
 		            handler: function() {
 		            	var cmp=Ext.getCmp(this.parentId);
-		            	var rec=new Ext.data.Record({"category":"","protocol":"","blocked":false,"log":false,"description":"","definition":""});
+		            	var rec=new Ext.data.Record({"string":"","category":"","log":false,"description":""});
 						cmp.gridPassList.getStore().insert(0, [rec]);
 						cmp.gridPassList.rowEditor.populate(rec,0);
            				cmp.gridPassList.rowEditor.show();		            	
 		            }
-		        }],
-		        /*
+			}],
 			bbar: new Ext.PagingToolbar({
-	            pageSize: 25,
+	            pageSize: 20,
 	            store: store,
 	            displayInfo: true,
 	            displayMsg: 'Displaying topics {0} - {1} of {2}',
-	            emptyMsg: "No topics to display",
-	            items:[
-	                '-', {
-	                pressed: true,
-	                enableToggle:true,
-	                text: 'Show Preview',
-	                cls: 'x-btn-text-icon details',
-	                toggleHandler: toggleDetails
-	            }]
-	        }),*/     
+	            emptyMsg: "No topics to display"
+	        }),    
 	        stripeRows: true,
-	        plugins:[blockedColumn,logColumn,editColumn,removeColumn],
-	        autoExpandColumn: 'category',
+	        plugins:[logColumn,editColumn,removeColumn],
+	        autoExpandColumn: 'string',
 	        clicksToEdit: 1,
 	        title: this.i18n._('Pass List'),
+	        enableHdMenu: false
 	    });
 	    // create the row editor
 	    this.gridPassList.rowEditor=new Untangle.RowEditorWindow({
@@ -154,12 +145,10 @@ Untangle.Spyware = Ext.extend(Untangle.Settings, {
 			settingsCmp: this,
 			grid: this.gridPassList,
 			inputLines: [
+				{name:"string", label: this.i18n._("String"), type:"text", style:"width:200px;"},
 				{name:"category", label: this.i18n._("Category"), type:"text", style:"width:200px;"},
-				{name:"protocol", label: this.i18n._("Protocol"), type:"text", style:"width:200px;"},
-				{name:"blocked", label: this.i18n._("Block"), type:"checkbox"},
 				{name:"log", label: this.i18n._("Log"), type:"checkbox"},
 				{name:"description", label: this.i18n._("Description"), type:"textarea", style:"width:200px;height:60px;"},
-				{name:"definition", label: this.i18n._("Signature"), type:"textarea", style:"width:200px;height:60px;"}
 			]
 		});
 		this.gridPassList.rowEditor.render('container');
@@ -199,7 +188,7 @@ Untangle.Spyware = Ext.extend(Untangle.Settings, {
 		});
     },
     loadPassList: function() {
-    	this.gridPassList.getStore().loadData(this.rpc.passList);
+    	this.gridPassList.getStore().load(this.rpc.passList);
     },
     
     
@@ -222,18 +211,22 @@ Untangle.Spyware = Ext.extend(Untangle.Settings, {
 			}
 		}.createDelegate(this), this.rpc.settings);
     },
-    
+
 	loadData: function() {
 		this.rpc.node.getBaseSettings(function (result, exception) {
 			if(exception) {Ext.MessageBox.alert("Failed",exception.message); return;}
 			this.rpc.settings=result;
-			this.loadPassList();
-			this.rpc.node.getDomainWhitelist(function (result, exception) {
+			this.gridPassList.getStore().proxy.setTotalRecords(this.rpc.settings.cookieRulesLength);
+			/*
+			this.rpc.node.getCookieRules(function (result, exception) {
 				if(exception) {Ext.MessageBox.alert("Failed",exception.message); return;}
+				result.totalCount=100;
 				this.rpc.passList=result;
+				
 				this.loadPassList();
 				
-			}.createDelegate(this),0,100,[]);
+			}.createDelegate(this),0,18,[]);
+			*/
 		}.createDelegate(this));
 	},
 	

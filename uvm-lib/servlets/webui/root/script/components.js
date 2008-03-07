@@ -673,7 +673,6 @@ Untangle.Settings = Ext.extend(Ext.Component, {
     	this.i18n=Untangle.i18nNodeInstances[this.name];
     	this.rpc={};
     	this.rpc.repository={};
-    	Untangle.Protofilter.instanceId=this.getId();    	
     	if(this.node.nodeContext.node.eventManager===undefined) {
 			this.node.nodeContext.node.eventManager=this.node.nodeContext.node.getEventManager();
 		}
@@ -690,7 +689,17 @@ Untangle.Settings = Ext.extend(Ext.Component, {
 	        //deferredRender: false,
 	        items: itemsArray
 	    });
+	},
+	getRpcNode: function() {
+		return this.node.nodeContext.node;
+	},
+	getEventManager: function () {
+		if(this.node.nodeContext.node.eventManager===undefined) {
+			this.node.nodeContext.node.eventManager=this.node.nodeContext.node.getEventManager();
+		}
+		return this.node.nodeContext.node.eventManager;
 	}
+	
 });
 Untangle.Settings._nodeScripts={};
 Untangle._hasResource={};
@@ -1026,3 +1035,85 @@ Untangle.RowEditorWindow.template=new Ext.Template(
 '<div class="rowEditorHelp" id="rowEditor_help_{tid}_{key}"></div>',
 '<div class="rowEditorCancel" id="rowEditor_cancel_{tid}_{key}"></div>',
 '<div class="rowEditorUpdate" id="rowEditor_update_{tid}_{key}"></div>');
+/*
+Untangle.RightWindow = Ext.extend(Ext.Window, {
+	layout:'border',
+	modal:true,
+	title:'Window',
+	closeAction:'hide',
+	autoCreate:true,
+	width:740,
+	height:690,
+	draggable:false,
+	resizable:false,
+	initComponent: function() {
+    	if(this.title==null) {
+    		this.title='';
+    	}
+		items: [{
+			region:"center",
+			html: Untangle.RightWindow.template.applyTemplate({'id':this.getId()}),,
+			border: false,
+			autoScroll: true,
+			cls: 'windowBackground',
+			bodyStyle: 'background-color: transparent;'
+		}, 
+		{
+			region: "south",
+			html: settingsButtonsHTML,
+			border: false,
+			height:40,
+			cls: 'windowBackground',
+			bodyStyle: 'background-color: transparent;'
+		}]
+        Untangle.RightWindow.superclass.initComponent.call(this);
+
+    },
+
+});
+Untangle.RightWindow.template = new Ext.Template(
+'<div class="nodeSettingsContent" id="windowContent_{id}"></div>');
+*/
+
+Untangle.RpcProxy = function(rpcFn){
+    Untangle.RpcProxy.superclass.constructor.call(this);
+    this.rpcFn = rpcFn;
+};
+
+Ext.extend(Untangle.RpcProxy, Ext.data.DataProxy, {
+	setTotalRecords: function(totalRecords) {
+		this.totalRecords=totalRecords;
+	},
+    load : function(params, reader, callback, scope, arg) {
+    	var obj={}
+    	obj.params=params;
+    	obj.reader=reader;
+    	obj.callback=callback;
+    	obj.scope=scope;
+    	obj.arg=arg;
+    	obj.totalRecords=this.totalRecords;
+    	var sortColumns=[];
+    	if(params.sort) {
+    		sortColumns.push((params.dir=="ASC"?"+":"-")+params.sort)
+    	}
+    	this.rpcFn(function (result, exception) {
+			if(exception) {
+				Ext.MessageBox.alert("Failed",exception.message); 
+				this.callback.call(this.scope, null, this.arg, false);
+				return;
+			}
+			var res=null;
+			try {
+	            res=this.reader.readRecords(result);
+	            if(this.totalRecords) {
+					res.totalRecords=this.totalRecords;
+				}
+				this.callback.call(this.scope, res, this.arg, true);
+	        }catch(e){
+	            this.callback.call(this.scope, null, this.arg, false);
+	            return;
+	        }
+		}.createDelegate(obj), params.start, params.limit,sortColumns);
+	}
+
+});
