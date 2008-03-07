@@ -53,4 +53,10 @@ public interface Spyware extends Node
 
     EventManager<SpywareEvent> getEventManager();
     
+    // wrapper method to update all settings once
+    // TODO can we find a better place for this ugly method?
+    public void updateAll(SpywareBaseSettings baseSettings, 
+    		List[] activeXRules, List[] cookieRules,
+    		List[] subnetRules, List[] domainWhitelist);
+    
 }
