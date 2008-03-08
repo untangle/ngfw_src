@@ -17,28 +17,32 @@
  */
 package com.untangle.node.protofilter;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.TreeMap;
+
+import org.apache.log4j.Logger;
+import org.hibernate.Query;
+import org.hibernate.Session;
 
 import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.EventLoggerFactory;
 import com.untangle.uvm.logging.EventManager;
 import com.untangle.uvm.logging.SimpleEventFilter;
+import com.untangle.uvm.node.NodeContext;
+import com.untangle.uvm.node.NodeException;
+import com.untangle.uvm.node.NodeStartException;
+import com.untangle.uvm.node.Rule;
+import com.untangle.uvm.util.QueryUtil;
+import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.AbstractNode;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.vnet.SoloPipeSpec;
-import com.untangle.uvm.node.NodeContext;
-import com.untangle.uvm.node.NodeException;
-import com.untangle.uvm.node.NodeStartException;
-import com.untangle.uvm.util.TransactionWork;
-import org.apache.log4j.Logger;
-import org.hibernate.Query;
-import org.hibernate.Session;
 
 public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
 {
@@ -99,6 +103,28 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
             logger.error("Could not save ProtoFilter settings", exn);
         }
     }
+    
+    public ProtoFilterBaseSettings getBaseSettings() {
+        return cachedSettings.getBaseSettings();
+    }
+
+    public void setBaseSettings(ProtoFilterBaseSettings baseSettings) {
+        cachedSettings.setBaseSettings(baseSettings);
+    }
+    
+    public List<ProtoFilterPattern> getPatterns(final int start,
+			final int limit, final String... sortColumns) {
+		return getPatterns(
+				"select hbs.patterns from ProtoFilterSettings hbs where hbs.tid = :tid ",
+				start, limit, sortColumns);
+	}
+
+	public void updatePatterns(List<ProtoFilterPattern> added,
+			List<Long> deleted, List<ProtoFilterPattern> modified) {
+
+		updatePatterns(getProtoFilterSettings().getPatterns(), added, deleted,
+				modified);
+	}
 
     public EventManager<ProtoFilterLogEvent> getEventManager()
     {
@@ -124,7 +150,7 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
         logger.info("INIT: Importing patterns...");
         TreeMap factoryPatterns = LoadPatterns.getPatterns(); /* Global List of Patterns */
         // Turn on the Instant Messenger ones so it does something by default:
-        ArrayList pats = new ArrayList(factoryPatterns.values());
+        Set pats = new HashSet(factoryPatterns.values());
         for (Object pat : pats) {
             ProtoFilterPattern pfp = (ProtoFilterPattern)pat;
             if (pfp.getCategory().equalsIgnoreCase("Instant Messenger"))
@@ -165,7 +191,7 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
 
     private void reconfigure() throws NodeException
     {
-        ArrayList enabledPatternsList = new ArrayList();
+        Set enabledPatternsSet = new HashSet();
 
         logger.info("Reconfigure()");
 
@@ -173,7 +199,7 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
             throw new NodeException("Failed to get ProtoFilter settings: " + cachedSettings);
         }
 
-        List curPatterns = cachedSettings.getPatterns();
+        Set curPatterns = cachedSettings.getPatterns();
         if (curPatterns == null)
             logger.error("NULL pattern list. Continuing anyway...");
         else {
@@ -182,12 +208,12 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
 
                 if ( pat.getLog() || pat.getAlert() || pat.isBlocked() ) {
                     logger.info("Matching on pattern \"" + pat.getProtocol() + "\"");
-                    enabledPatternsList.add(pat);
+                    enabledPatternsSet.add(pat);
                 }
             }
         }
 
-        handler.patternList(enabledPatternsList);
+        handler.patternSet(enabledPatternsSet);
         handler.byteLimit(cachedSettings.getByteLimit());
         handler.chunkLimit(cachedSettings.getChunkLimit());
         handler.unknownString(cachedSettings.getUnknownString());
@@ -204,7 +230,7 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
 
         boolean    madeChange = false;
         TreeMap    factoryPatterns = LoadPatterns.getPatterns(); /* Global List of Patterns */
-        List       curPatterns = cachedSettings.getPatterns(); /* Current list of Patterns */
+        Set        curPatterns = cachedSettings.getPatterns(); /* Current list of Patterns */
 
         /*
          * Look for updates
@@ -303,12 +329,12 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
                 if (!added)
                     allPatterns.add(factoryPat);
             }
-            curPatterns = new ArrayList(allPatterns);
+            curPatterns = new HashSet(allPatterns);
         }
 
         if (madeChange) {
             logger.info("UPDATE: Saving new patterns list, size " + curPatterns.size());
-            cachedSettings.setPatterns(new ArrayList(curPatterns));
+            cachedSettings.setPatterns(curPatterns);
             setProtoFilterSettings(cachedSettings);
         }
 
@@ -320,15 +346,69 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
         eventLogger.log(se);
     }
 
-    // XXX soon to be deprecated ----------------------------------------------
+    private List getPatterns(final String queryString, final int start,
+                          final int limit, final String... sortColumns) {
+        TransactionWork<List> tw = new TransactionWork<List>() {
+            private List result;
 
-    public Object getSettings()
-    {
-        return getProtoFilterSettings();
+            public boolean doWork(Session s) {
+                Query q = s.createQuery(queryString
+                                        + QueryUtil.toOrderByClause(sortColumns));
+                q.setParameter("tid", getTid());
+                q.setFirstResult(start);
+                q.setMaxResults(limit);
+                result = q.list();
+
+                return true;
+            }
+
+            public List getResult() {
+                return result;
+            }
+        };
+        getNodeContext().runTransaction(tw);
+
+        return tw.getResult();
     }
 
-    public void setSettings(Object settings)
+    private void updatePatterns(final Set<ProtoFilterPattern> patterns, final List<ProtoFilterPattern> added,
+                             final List<Long> deleted, final List<ProtoFilterPattern> modified)
     {
-        setProtoFilterSettings((ProtoFilterSettings)settings);
+        TransactionWork tw = new TransactionWork()
+            {
+                public boolean doWork(Session s)
+                {
+                    for (Iterator<ProtoFilterPattern> i = patterns.iterator(); i.hasNext();) {
+                    	ProtoFilterPattern pattern = i.next();
+                    	ProtoFilterPattern mPattern = null;
+                        if (deleted != null && deleted.contains(pattern.getId())) {
+                            i.remove();
+                        } else if (modified != null && (mPattern = modified(pattern, modified)) != null ) {
+                        	pattern.updateRule(mPattern);
+                        }
+                    }
+                    
+                    if (added != null) {
+                    	patterns.addAll(added);
+                    }
+
+                    s.merge(cachedSettings);
+
+                    return true;
+                }
+
+                public Object getResult() { return null; }
+            };
+        getNodeContext().runTransaction(tw);
+    }
+
+    private ProtoFilterPattern modified(ProtoFilterPattern pattern, List modified) {
+        for (Iterator<ProtoFilterPattern> iterator = modified.iterator(); iterator.hasNext();) {
+            ProtoFilterPattern currentPattern = iterator.next();
+            if(currentPattern.getId().equals(pattern.getId())){
+                return currentPattern;
+            }
+        }
+        return null;
     }
 }

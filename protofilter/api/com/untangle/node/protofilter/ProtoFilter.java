@@ -17,12 +17,18 @@
  */
 package com.untangle.node.protofilter;
 
+import java.util.List;
+
 import com.untangle.uvm.logging.EventManager;
 import com.untangle.uvm.node.Node;
 
 public interface ProtoFilter extends Node
 {
-    ProtoFilterSettings getProtoFilterSettings();
-    void setProtoFilterSettings(ProtoFilterSettings settings);
+    ProtoFilterBaseSettings getBaseSettings();
+    void setBaseSettings(ProtoFilterBaseSettings baseSettings);
+
+    List<ProtoFilterPattern> getPatterns(int start, int limit, String... sortColumns);
+    void updatePatterns(List<ProtoFilterPattern> added, List<Long> deleted, List<ProtoFilterPattern> modified);
+    
     EventManager<ProtoFilterLogEvent> getEventManager();
 }

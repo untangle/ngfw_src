@@ -18,16 +18,28 @@
 
 package com.untangle.node.protofilter;
 
-import java.nio.*;
-import java.util.ArrayList;
+import java.nio.ByteBuffer;
+import java.util.Iterator;
+import java.util.Set;
 import java.util.regex.Pattern;
 
-import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.vnet.*;
-import com.untangle.uvm.vnet.event.*;
-import com.untangle.uvm.node.Node;
-import com.untangle.node.util.AsciiCharBuffer;
 import org.apache.log4j.Logger;
+
+import com.untangle.node.util.AsciiCharBuffer;
+import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.node.Node;
+import com.untangle.uvm.vnet.AbstractEventHandler;
+import com.untangle.uvm.vnet.IPSession;
+import com.untangle.uvm.vnet.MPipeException;
+import com.untangle.uvm.vnet.Pipeline;
+import com.untangle.uvm.vnet.TCPSession;
+import com.untangle.uvm.vnet.UDPSession;
+import com.untangle.uvm.vnet.event.IPDataEvent;
+import com.untangle.uvm.vnet.event.IPDataResult;
+import com.untangle.uvm.vnet.event.TCPChunkEvent;
+import com.untangle.uvm.vnet.event.TCPSessionEvent;
+import com.untangle.uvm.vnet.event.UDPPacketEvent;
+import com.untangle.uvm.vnet.event.UDPSessionEvent;
 
 public class EventHandler extends AbstractEventHandler
 {
@@ -38,7 +50,7 @@ public class EventHandler extends AbstractEventHandler
     static final int BLOCK_COUNTER  = Node.GENERIC_2_COUNTER;
 
     // These are all set at preStart() time by reconfigure()
-    private ArrayList  _patternList;
+    private Set        _patternSet;
     private int        _byteLimit;
     private int        _chunkLimit;
     private String     _unknownString;
@@ -123,9 +135,9 @@ public class EventHandler extends AbstractEventHandler
         sess.sendClientPacket(packet, e.header());
     }
 
-    public void patternList (ArrayList patternList)
+    public void patternSet (Set patternSet)
     {
-        _patternList = patternList;
+        _patternSet = patternSet;
     }
 
     public void chunkLimit (int chunkLimit)
@@ -295,13 +307,13 @@ public class EventHandler extends AbstractEventHandler
         AsciiCharBuffer buffer = server ? sessInfo.serverBuffer : sessInfo.clientBuffer;
         AsciiCharBuffer toScan = buffer.asReadOnlyBuffer();
         toScan.flip();
-
-        for (int i = 0; i < _patternList.size(); i++) {
-            ProtoFilterPattern elem = (ProtoFilterPattern)_patternList.get(i);
+        
+        for (Iterator iterator = _patternSet.iterator(); iterator.hasNext();) {
+			ProtoFilterPattern elem = (ProtoFilterPattern) iterator.next();
             Pattern pat = PatternFactory.createRegExPattern(elem.getDefinition());
             if (pat != null && pat.matcher(toScan).find())
                 return elem; /* XXX - can match multiple patterns */
-        }
+		}
 
         return null;
     }
