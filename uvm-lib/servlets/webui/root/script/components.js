@@ -1115,5 +1115,89 @@ Ext.extend(Untangle.RpcProxy, Ext.data.DataProxy, {
 	        }
 		}.createDelegate(obj), params.start, params.limit,sortColumns);
 	}
+});
 
+Untangle.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
+	rowsPerPage: 20,
+	minPaginateCount: 60,
+	totalRows: null,
+	settingsCmp: null,
+	key: null,
+	proxyRpcFn: null,
+	fields: null,
+	hasAddButton: true,
+	emptyRow: null,
+	rowEditorInputLines: null,
+	forcePaginate: false,
+	
+	stripeRows: true,
+	clicksToEdit: 1,
+	enableHdMenu: false,
+	loadFirstPage: function() {
+		if(!this.forcePaginate && this.totalRows<this.minPaginateCount) {
+			this.getStore().proxy.load();
+		} else {
+			this.getStore().proxy.load();
+		}
+	},
+	setTotalRows: function(totalRows) {
+		this.totalRows=totalRows;
+		if(!this.forcePaginate && this.totalRows<this.minPaginateCount) {
+			this.getBottomToolbar().disable();
+			this.getBottomToolbar().hide();
+		} else {
+			this.getBottomToolbar().enable();
+			this.getBottomToolbar().show();
+		}
+	},
+	initComponent: function() {
+	    this.store = new Ext.data.Store({
+	        proxy: new Untangle.RpcProxy(this.proxyRpcFn),
+	        reader: new Ext.data.JsonReader({
+	        	root: 'list',
+		        fields: this.fields
+			}),
+			remoteSort: true
+        });
+		this.bbar= new Ext.PagingToolbar({
+			pageSize: 20,
+			store: this.store,
+			displayInfo: true,
+			displayMsg: 'Displaying topics {0} - {1} of {2}',
+			emptyMsg: "No topics to display"
+		});
+		if(this.rowEditorInputLines!=null) {
+			this.rowEditor=new Untangle.RowEditorWindow({
+				width: 400,
+				height: 300,
+				key: this.key,
+				settingsCmp: this.settingsCmp,
+				grid: this,
+				inputLines: this.rowEditorInputLines
+			});
+			this.rowEditor.render('container');
+			this.rowEditor.initContent(); // TODO: do this on render.
+		}
+		if(this.hasAddButton) {
+			this.tbar=[{
+				text: this.settingsCmp.i18n._('Add'),
+				tooltip:this.settingsCmp.i18n._('Add New Row'),
+				iconCls:'add',
+				parentId:this.getId(),
+				handler: function() {
+					var cmp=Ext.getCmp(this.parentId);
+					var rec=new Ext.data.Record(this.emptyRow);
+					this.stopEditing();
+					this.getStore().insert(0, [rec]);
+					if(this.rowEditor) {
+						this.rowEditor.populate(rec,0);
+						this.rowEditor.show();
+					} else {
+						this.startEditing(0, 0);
+					}   	
+		        }.createDelegate(this)
+			}];
+		}
+		Untangle.EditorGrid.superclass.initComponent.call(this);
+	}
 });

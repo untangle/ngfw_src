@@ -60,23 +60,7 @@ Untangle.Spyware = Ext.extend(Untangle.Settings, {
     
     
     buildPassList: function() {
-	    // create the data store
-	    var proxy = new Untangle.RpcProxy(this.rpc.node.getCookieRules);
-	    var store = new Ext.data.Store({
-	        proxy: proxy,
-	        reader: new Ext.data.JsonReader({
-	        	root: 'list',
-	            //id: 'string',
-		        fields: [
-		           {name: 'string'},
-		           {name: 'category'},
-		           {name: 'log'},
-		           {name: 'description'}
-		        ]
-			}),
-			remoteSort: true
-        });
-
+    
 	    // the column model has information about grid columns
 	    // dataIndex maps the column to the specific data field in the data store (created below)
 	    
@@ -103,56 +87,29 @@ Untangle.Spyware = Ext.extend(Untangle.Settings, {
 	          editColumn,
 	          removeColumn
 		]);
-	
 	    columnModel.defaultSortable = true;
-		
-		// create the Grid
-	    this.gridPassList = new Ext.grid.EditorGridPanel({
-	        store: store,
-	        cm: columnModel,
-	        tbar:[{
-		            text: this.i18n._('Add'),
-		            tooltip:this.i18n._('Add New Row'),
-		            iconCls:'add',
-		            parentId:this.getId(),
-		            handler: function() {
-		            	var cmp=Ext.getCmp(this.parentId);
-		            	var rec=new Ext.data.Record({"string":"","category":"","log":false,"description":""});
-						cmp.gridPassList.getStore().insert(0, [rec]);
-						cmp.gridPassList.rowEditor.populate(rec,0);
-           				cmp.gridPassList.rowEditor.show();		            	
-		            }
-			}],
-			bbar: new Ext.PagingToolbar({
-	            pageSize: 20,
-	            store: store,
-	            displayInfo: true,
-	            displayMsg: 'Displaying topics {0} - {1} of {2}',
-	            emptyMsg: "No topics to display"
-	        }),    
-	        stripeRows: true,
-	        plugins:[logColumn,editColumn,removeColumn],
-	        autoExpandColumn: 'string',
-	        clicksToEdit: 1,
-	        title: this.i18n._('Pass List'),
-	        enableHdMenu: false
-	    });
-	    // create the row editor
-	    this.gridPassList.rowEditor=new Untangle.RowEditorWindow({
-			width: 400,
-			height: 300,
-			key: "protocolList",
-			settingsCmp: this,
-			grid: this.gridPassList,
-			inputLines: [
+
+    	this.gridPassList=new Untangle.EditorGrid({
+    		settingsCmp: this,
+    		key: "protocolList",
+    		emptyRow: {"string":"","category":"","log":false,"description":""},
+    		title: this.i18n._('Pass List'),
+    		proxyRpcFn: this.rpc.node.getCookieRules,
+			fields: [
+				{name: 'string'},
+				{name: 'category'},
+				{name: 'log'},
+				{name: 'description'}
+			],
+			cm: columnModel,
+			plugins: [logColumn,editColumn,removeColumn],
+			rowEditorInputLines: [
 				{name:"string", label: this.i18n._("String"), type:"text", style:"width:200px;"},
 				{name:"category", label: this.i18n._("Category"), type:"text", style:"width:200px;"},
 				{name:"log", label: this.i18n._("Log"), type:"checkbox"},
-				{name:"description", label: this.i18n._("Description"), type:"textarea", style:"width:200px;height:60px;"},
+				{name:"description", label: this.i18n._("Description"), type:"textarea", style:"width:200px;height:60px;"}
 			]
-		});
-		this.gridPassList.rowEditor.render('container');
-		this.gridPassList.rowEditor.initContent(); // TODO: do this on render.
+    	});
     },
     
     buildEventLog: function() {
@@ -188,7 +145,7 @@ Untangle.Spyware = Ext.extend(Untangle.Settings, {
 		});
     },
     loadPassList: function() {
-    	this.gridPassList.getStore().load(this.rpc.passList);
+    	//this.gridPassList.getStore().load(this.rpc.passList);
     },
     
     
