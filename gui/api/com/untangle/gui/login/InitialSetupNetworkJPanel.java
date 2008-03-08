@@ -63,7 +63,7 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
         initComponents();
         setDhcpEnabledDependency(dhcpEnabledRadioButton.isSelected());
         setPPPOEEnabledDependency(pppoeEnabledJRadioButton.isSelected());
-        hostnameJTextField.setText( "untangle" + "." + MailSender.DEFAULT_LOCAL_DOMAIN );
+        hostnameJTextField.setText( "unknown.example.com" );
 
         Util.addFocusHighlight(hostnameJTextField);
         Util.addFocusHighlight(dhcpIPaddrJTextField);
@@ -76,6 +76,9 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
     }
 
     public void initialFocus(){
+        HostName host = Util.getNetworkManager().getHostname();
+        String hoststr = host != null ? host.toString() : "null.example.com";
+        hostnameJTextField.setText( hoststr );
         hostnameJTextField.requestFocus();
     }
 
@@ -200,8 +203,8 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
 
                 hostname = HostName.parseStrict( hostnameString );
 
-                /* Hostname must be qualified */
-                if ( !hostname.isQualified()) throw new Exception();
+                // bug 3107, 3651: allow unqualified host names
+                // if ( !hostname.isQualified()) throw new Exception();
             }
             catch(Exception e){
                 hostnameJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
