@@ -154,7 +154,18 @@ class MailSenderImpl implements MailSender
                     if (null == mailSettings) {
                         logger.info("Creating initial default mail settings");
                         mailSettings = new MailSettings();
-                        mailSettings.setFromAddress(MailSender.DEFAULT_FROM_ADDRESS);
+                        String fromSender = MailSender.DEFAULT_SENDER;
+                        String fromHostname = "unknown.example.com";
+                        try {
+                            String getMailnameCmd[] = { "/bin/cat", "/etc/mailname" };
+                            Process proc = LocalUvmContextFactory.context().exec(getMailnameCmd);
+                            BufferedReader input = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+                            fromHostname = input.readLine();
+                            proc.destroy();
+                        } catch (java.io.IOException e) {
+                            logger.error("Unable to get mailname", e );
+                        }
+                        mailSettings.setFromAddress(fromSender + "@" + fromHostname);
                         s.save(mailSettings);
                     }
                     return true;
