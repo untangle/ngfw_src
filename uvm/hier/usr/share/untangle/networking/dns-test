@@ -8,7 +8,7 @@ DNS_TEST_FAIL=-1
 DNS_TEST_PASS=0
 
 
-TEST_HOSTNAME_BASE="release"
+TEST_HOSTNAME_BASE="updates"
 TEST_DOMAIN="untangle.com"
 
 DNS_SERVER=$1
@@ -18,7 +18,7 @@ if [ -z "${DNS_SERVER}" ]; then
     exit ${DNS_TEST_FAIL}
 fi
 
-function lookup() {
+lookup() {
     local address=$1
     local server=$2
 
