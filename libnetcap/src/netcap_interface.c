@@ -60,10 +60,6 @@
 #define SYSFS_BRIDGE_ATTR        "bridge"
 #endif
 
-#ifndef SYSFS_BRIDGE_FDB
-#define SYSFS_BRIDGE_FDB         "brforward"
-#endif
-
 #ifndef SYSFS_BRIDGE_PORT_SUBDIR
 #define SYSFS_BRIDGE_PORT_SUBDIR "brif"
 #endif
@@ -73,14 +69,6 @@
 #endif
 
 #define SYSFS_CLASS_NET_DIR  "/sys/class/net"
-
-#ifndef SYSFS_BRIDGE_PORT_ATTR
-#define SYSFS_BRIDGE_PORT_ATTR  "brport"
-#endif
-
-#ifndef SYSFS_BRIDGE_PORT_LINK
-#define SYSFS_BRIDGE_PORT_LINK  "bridge"
-#endif
 
 #define SYSFS_ATTRIBUTE_INDEX  "ifindex"
 
@@ -647,8 +635,8 @@ static int _update_bridge_devices( netcap_intf_db_t* db )
 
         /* Check if this is a bridge using sysfs, it is a bridge if
          * /sys/class/net/<ifname>/bridge exist. */
-        snprintf( sysfs_bridge_path, sizeof( sysfs_bridge_path ), "%s/%s/bridge", SYSFS_CLASS_NET_DIR,
-                  intf_info->name.s );
+        snprintf( sysfs_bridge_path, sizeof( sysfs_bridge_path ), "%s/%s/%s", SYSFS_CLASS_NET_DIR,
+                  intf_info->name.s, SYSFS_BRIDGE_ATTR );
 
         if ( stat( sysfs_bridge_path, &file_stat_buf ) < 0 ) {
             if ( errno == ENOENT ) {
@@ -783,7 +771,9 @@ static int _get_interface_list       ( _intf_index_name_t* intf_array, int size 
             /* Ignore the . and .. directories */
             if (( strncmp( dir_entry->d_name, ".", sizeof( "." ) + 1 ) == 0 ) ||
                 ( strncmp( dir_entry->d_name, "..", sizeof( ".." ) + 1 ) == 0 ) ||
-                ( dir_entry->d_type != DT_DIR ) || 
+                // For new sysfs, entries are links not directories.  Since there really can't
+                // be any files in this directory, just removed the check. (bug3883)
+                // ( dir_entry->d_type != DT_DIR ) || 
                 ( _is_ignore_interface( dir_entry->d_name ) == 1 )) {
                 continue;
             }
