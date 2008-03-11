@@ -686,7 +686,7 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
         externalRemoteJPanel.add(jSeparator5, gridBagConstraints);
 
         jButton2.setFont(new java.awt.Font("Dialog", 0, 12));
-        jButton2.setText("AD Lookup Script");
+        jButton2.setText("AD Login Script");
         jButton2.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 openAdPage(evt);
