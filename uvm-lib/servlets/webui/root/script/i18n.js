@@ -1,10 +1,10 @@
-Untangle.i18nNodeInstances={};
+Ung.i18nNodeInstances={};
 
-Untangle.I18N=Ext.extend(Ext.Component, {
+Ung.I18N=Ext.extend(Ext.Component, {
 	map: null,
 	
     initComponent: function(){
-        Untangle.I18N.superclass.initComponent.call(this);
+        Ung.I18N.superclass.initComponent.call(this);
 		if (this.map == null) {
 			this.map = {};
 		}
@@ -75,7 +75,7 @@ Untangle.I18N=Ext.extend(Ext.Component, {
 
 });
 
-Untangle.NodeI18N=Ext.extend(Untangle.I18N, {
+Ung.NodeI18N=Ext.extend(Ung.I18N, {
 	nodeMap: null,
 	_: function (s) {
 		if (this.nodeMap!== null && this.nodeMap[s]) {

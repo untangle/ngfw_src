@@ -1,13 +1,13 @@
-Ext.namespace('Untangle');
+Ext.namespace('Ung');
 Ext.BLANK_IMAGE_URL = 'ext/resources/images/default/s.gif';
 //Global Variables
 var main=null; 
 var i18n=null;
 var rpc=null;
 
-Untangle.Main=function() {
+Ung.Main=function() {
 }
-Untangle.Main.prototype = {
+Ung.Main.prototype = {
 	tabs: null,
 	library: null,
 	myApps: null,
@@ -20,7 +20,7 @@ Untangle.Main.prototype = {
 	networkingWin: null,
 	init: function() {
 			main.initSemaphore=6;
-			rpc = new Untangle.RPC();
+			rpc = new Ung.RPC();
 			rpc.jsonrpc = new JSONRpcClient("/webui/JSON-RPC");
 			rpc.jsonrpc.RemoteUvmContext.nodeManager(function (result, exception) {
 				if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
@@ -53,7 +53,7 @@ Untangle.Main.prototype = {
 				method: 'GET',
 				success: function ( result, request) {
 					var jsonResult=Ext.util.JSON.decode(result.responseText);
-					i18n =new Untangle.I18N({"map":jsonResult});
+					i18n =new Ung.I18N({"map":jsonResult});
 					main.postinit();
 				},
 				failure: function ( result, request) { 
@@ -92,7 +92,7 @@ Untangle.Main.prototype = {
        		main.tabs.setHeight(newSize);
         });
         Ext.getCmp("west").fireEvent("resize");
-		var buttonCmp=new Untangle.Button({
+		var buttonCmp=new Ung.Button({
 			'height': '46px',
 			'width': '86px',
 			'renderTo': 'help',
@@ -264,7 +264,7 @@ Untangle.Main.prototype = {
 		if(main.policySemaphore!==0) {
 			return;
 		}
-		Untangle.BlingerManager.stop();
+		Ung.BlingerManager.stop();
 		main.destoyNodes();
 		rpc.tids=[];
 		var i=null;
@@ -298,12 +298,12 @@ Untangle.Main.prototype = {
 			}
 			var allNodeStates=result;
 			for(var i=0;i<main.nodes.length;i++) {
-				var nodeCmp=Untangle.Node.getCmp(main.nodes[i].tid);
+				var nodeCmp=Ung.Node.getCmp(main.nodes[i].tid);
 				if(nodeCmp) {
 					nodeCmp.updateRunState(allNodeStates.map[main.nodes[i].tid]);
 				}
 			}
-			Untangle.BlingerManager.start();
+			Ung.BlingerManager.start();
 		});
 	},
 	buildTabs: function () {
@@ -419,7 +419,7 @@ Untangle.Main.prototype = {
   		if(this.library!==null) {
 	  		for(var i=0;i<this.library.length;i++) {
 	  			var item=this.library[i];
-	  			var buttonCmp=new Untangle.Button({
+	  			var buttonCmp=new Ung.Button({
 	  				'id':'libraryButton_'+item.name,
 					'libraryIndex':i,
 					'height':'50px',
@@ -437,7 +437,7 @@ Untangle.Main.prototype = {
   		var out=[];
   		for(var i=0;i<this.myApps.length;i++) {
   			var item=this.myApps[i];
-  			var buttonCmp=new Untangle.Button({
+  			var buttonCmp=new Ung.Button({
   				'id':'myAppButton_'+item.name,
 				'myAppIndex':i,
 				'height':'50px',
@@ -455,7 +455,7 @@ Untangle.Main.prototype = {
   		var out=[];
   		for(var i=0;i<this.config.length;i++) {
   			var item=this.config[i];
-  			var buttonCmp=new Untangle.Button({
+  			var buttonCmp=new Ung.Button({
 				'configIndex':i,
 				'height':'42px',
 				'renderTo':'toolsConfig',
@@ -496,7 +496,7 @@ Untangle.Main.prototype = {
 	},
 	
 	addNode: function (node) {
-		var nodeWidget=new Untangle.Node(node);
+		var nodeWidget=new Ung.Node(node);
 		var place=node.isSecurity?'security_nodes':'other_nodes';
 		var position=this.getNodePosition(place,node.viewPosition);
 		nodeWidget.render(place,position);

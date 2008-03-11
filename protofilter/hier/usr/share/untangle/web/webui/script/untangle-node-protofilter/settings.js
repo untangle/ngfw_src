@@ -1,12 +1,12 @@
 //<script type="text/javascript">
-if(!Untangle._hasResource["Untangle.Protofilter"]) {
-Untangle._hasResource["Untangle.Protofilter"]=true;
+if(!Ung._hasResource["Ung.Protofilter"]) {
+Ung._hasResource["Ung.Protofilter"]=true;
 
-Untangle.Protofilter = Ext.extend(Untangle.Settings, {
+Ung.Protofilter = Ext.extend(Ung.Settings, {
     gridProtocolList: null,
     gridEventLog: null,
     onRender: function(container, position) {
-    	Untangle.Protofilter.superclass.onRender.call(this,container, position);
+    	Ung.Protofilter.superclass.onRender.call(this,container, position);
 		this.buildProtocolList();
 		this.buildEventLog();
 		this.buldTabPanel([this.gridProtocolList,this.gridEventLog]);
@@ -85,7 +85,7 @@ Untangle.Protofilter = Ext.extend(Untangle.Settings, {
 	        title: this.i18n._('Protocol List'),
 	    });
 	    // create the row editor
-	    this.gridProtocolList.rowEditor=new Untangle.RowEditorWindow({
+	    this.gridProtocolList.rowEditor=new Ung.RowEditorWindow({
 			width: 400,
 			height: 300,
 			key: "protocolList",
@@ -106,7 +106,7 @@ Untangle.Protofilter = Ext.extend(Untangle.Settings, {
     
     buildEventLog: function() {
 		// Event Log grid
-		this.gridEventLog=new Untangle.GridEventLog({
+		this.gridEventLog=new Ung.GridEventLog({
 			settingsCmp: this,
 			store: new Ext.data.JsonStore({
 		        fields: [
@@ -182,7 +182,7 @@ Untangle.Protofilter = Ext.extend(Untangle.Settings, {
 		this.saveProtocolList();
 	}
 });
-Untangle.Settings.registerClassName('untangle-node-protofilter','Untangle.Protofilter');
-Ext.reg('untangleProtofilter', Untangle.Protofilter);
+Ung.Settings.registerClassName('untangle-node-protofilter','Ung.Protofilter');
+Ext.reg('utgProtofilter', Ung.Protofilter);
 }
 //</script>

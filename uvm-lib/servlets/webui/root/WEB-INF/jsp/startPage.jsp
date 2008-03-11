@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <title>Untangle rack - Prototype 5</title>
+    <title>UNG</title>
     
     <style type="text/css">
         @import "ext/resources/css/ext-all.css?${version}";
@@ -16,7 +16,6 @@
 	<script type="text/javascript" src="jsonrpc/jsonrpc.js?${version}"></script>
     <script type="text/javascript" src="firebug/firebug.js?${version}"></script>
     <script type="text/javascript" src="script/untangle-node-protofilter/settings.js?${version}"></script>
-        "untangle . css?${version}";
 
 
 	<script type="text/javascript" src="ext/adapter/ext/ext-base.js?${version}"></script>
@@ -35,7 +34,7 @@
     <script type="text/javascript" src="script/untangle-node-spyware/settings.js?${version}"></script>
 	<script type="text/javascript">
 		function init() {
-			main=new Untangle.Main();
+			main=new Ung.Main();
 			main.version='${version}';
 			main.init();
 		}

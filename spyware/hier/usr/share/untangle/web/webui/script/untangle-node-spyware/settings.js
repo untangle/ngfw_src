@@ -1,13 +1,13 @@
 //<script type="text/javascript">
-if(!Untangle._hasResource["Untangle.Spyware"]) {
-Untangle._hasResource["Untangle.Spyware"]=true;
+if(!Ung._hasResource["Ung.Spyware"]) {
+Ung._hasResource["Ung.Spyware"]=true;
 
-Untangle.Spyware = Ext.extend(Untangle.Settings, {
+Ung.Spyware = Ext.extend(Ung.Settings, {
 	panelBlockLists: null,
     gridPassList: null,
     gridEventLog: null,
     onRender: function(container, position) {
-    	Untangle.Spyware.superclass.onRender.call(this,container, position);
+    	Ung.Spyware.superclass.onRender.call(this,container, position);
 		this.builBlockLists();
 		this.buildPassList();
 		this.buildEventLog();
@@ -89,7 +89,7 @@ Untangle.Spyware = Ext.extend(Untangle.Settings, {
 		]);
 	    columnModel.defaultSortable = true;
 
-    	this.gridPassList=new Untangle.EditorGrid({
+    	this.gridPassList=new Ung.EditorGrid({
     		settingsCmp: this,
     		key: "protocolList",
     		emptyRow: {"string":"","category":"","log":false,"description":""},
@@ -114,7 +114,7 @@ Untangle.Spyware = Ext.extend(Untangle.Settings, {
     
     buildEventLog: function() {
 		// Event Log grid
-		this.gridEventLog=new Untangle.GridEventLog({
+		this.gridEventLog=new Ung.GridEventLog({
 			settingsCmp: this,
 			store: new Ext.data.JsonStore({
 		        fields: [
@@ -174,16 +174,7 @@ Untangle.Spyware = Ext.extend(Untangle.Settings, {
 			if(exception) {Ext.MessageBox.alert("Failed",exception.message); return;}
 			this.rpc.settings=result;
 			this.gridPassList.getStore().proxy.setTotalRecords(this.rpc.settings.cookieRulesLength);
-			/*
-			this.rpc.node.getCookieRules(function (result, exception) {
-				if(exception) {Ext.MessageBox.alert("Failed",exception.message); return;}
-				result.totalCount=100;
-				this.rpc.passList=result;
-				
-				this.loadPassList();
-				
-			}.createDelegate(this),0,18,[]);
-			*/
+			this.gridPassList.initialLoad();
 		}.createDelegate(this));
 	},
 	
@@ -191,7 +182,7 @@ Untangle.Spyware = Ext.extend(Untangle.Settings, {
 		this.savePassList();
 	}
 });
-Untangle.Settings.registerClassName('untangle-node-spyware','Untangle.Spyware');
-Ext.reg('untangleSpyware', Untangle.Spyware);
+Ung.Settings.registerClassName('untangle-node-spyware','Ung.Spyware');
+Ext.reg('utgSpyware', Ung.Spyware);
 }
 //</script>

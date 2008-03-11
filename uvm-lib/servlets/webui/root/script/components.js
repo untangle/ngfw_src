@@ -1,5 +1,5 @@
-Untangle.RPC=function(){}
-Untangle.RPC.prototype = {
+Ung.RPC=function(){}
+Ung.RPC.prototype = {
 	callBackWithObject: function() {
 		var functionToCall = arguments[0];
 		var callBackObj = arguments[1];
@@ -16,7 +16,7 @@ Untangle.RPC.prototype = {
 	}
 }
 
-Untangle.Button = Ext.extend(Ext.Component, {
+Ung.Button = Ext.extend(Ext.Component, {
     'hidden' : false,
     'width':'100%',
     'height':'100%',
@@ -26,7 +26,7 @@ Untangle.Button = Ext.extend(Ext.Component, {
     'clickEvent' : 'click',
 	'cls':'',
     initComponent: function(){
-        Untangle.Button.superclass.initComponent.call(this);
+        Ung.Button.superclass.initComponent.call(this);
         this.addEvents(
             "click",
             'mouseover',
@@ -34,10 +34,10 @@ Untangle.Button = Ext.extend(Ext.Component, {
     },
     // private
     onRender : function(container, position) {
-        var templateHTML=Untangle.Button.template.applyTemplate({'width':this.width, 'height':this.height, 'imageSrc':this.imageSrc, 'text':this.text});
+        var templateHTML=Ung.Button.template.applyTemplate({'width':this.width, 'height':this.height, 'imageSrc':this.imageSrc, 'text':this.text});
         var el= document.createElement("div");
         container.dom.insertBefore(el, position);
-        el.className="untangleButton";
+        el.className="utgButton";
         el.innerHTML=templateHTML;
         this.el = Ext.get(el);
         if(this.cls){
@@ -46,18 +46,18 @@ Untangle.Button = Ext.extend(Ext.Component, {
         this.el.on(this.clickEvent, this.onClick, this);
         this.el.on("mouseover", this.onMouseOver, this);
         this.el.on("mouseout", this.onMouseOut, this);
-        //Untangle.Button.superclass.onRender.call(this,container, position);
+        //Ung.Button.superclass.onRender.call(this,container, position);
     },
     // private
     onMouseOver: function(e){
         if(!this.disabled){
-                this.el.addClass("untangleButtonHover");
+                this.el.addClass("utgButtonHover");
                 this.fireEvent('mouseover', this, e);
         }
     },
     // private
     onMouseOut: function(e){
-        this.el.removeClass("untangleButtonHover");
+        this.el.removeClass("utgButtonHover");
         this.fireEvent('mouseout', this, e);
     },
     onClick: function(e){
@@ -75,17 +75,17 @@ Untangle.Button = Ext.extend(Ext.Component, {
         }
     }
 });
-Untangle.Button.template = new Ext.Template(
+Ung.Button.template = new Ext.Template(
 '<table border="0" width="{width}" height="{height}"><tr>',
 '<td width="1%" style="text-align: left;vertical-align: middle;"><img src="{imageSrc}" style="vertical-align: middle;"/></td>',
 '<td style="text-align: left;vertical-align: middle;padding-left:5px;font-size: 14px;">{text}</td>',
 '</tr></table>');
-Ext.ComponentMgr.registerType('untangleButton', Untangle.Button);
+Ext.ComponentMgr.registerType('utgButton', Ung.Button);
 
 
-Untangle.Node = Ext.extend(Ext.Component, {
+Ung.Node = Ext.extend(Ext.Component, {
 	    initComponent : function(){
-	        Untangle.Node.superclass.initComponent.call(this);
+	        Ung.Node.superclass.initComponent.call(this);
 	    },
 	    hidden: false,
 	    disabled: false,
@@ -193,7 +193,7 @@ Untangle.Node = Ext.extend(Ext.Component, {
 				success: function ( result, request) {
 					var jsonResult=Ext.util.JSON.decode(result.responseText);
 					var cmp=Ext.getCmp(request.parentId);
-					Untangle.i18nNodeInstances[cmp.name]=new Untangle.NodeI18N({"map":i18n.map, "nodeMap":jsonResult});
+					Ung.i18nNodeInstances[cmp.name]=new Ung.NodeI18N({"map":i18n.map, "nodeMap":jsonResult});
 					cmp.postInitSettings()
 				},
 				failure: function ( result, request) { 
@@ -222,11 +222,11 @@ Untangle.Node = Ext.extend(Ext.Component, {
         },
         
         loadSettings: function(force) {
-        	this.settingsClassName=Untangle.Settings.getClassName(this.name);
+        	this.settingsClassName=Ung.Settings.getClassName(this.name);
         	if(!this.settingsClassName) {
-	        	Untangle.Settings.loadNodeScript(this.name, this.getId(), function(cmpId) {
+	        	Ung.Settings.loadNodeScript(this.name, this.getId(), function(cmpId) {
 	        		var cmp=Ext.getCmp(cmpId);
-	        		cmp.settingsClassName=Untangle.Settings.getClassName(cmp.name);
+	        		cmp.settingsClassName=Ung.Settings.getClassName(cmp.name);
 	        		cmp.initSettings(force);
 	        	});
 	        } else {
@@ -288,7 +288,7 @@ Untangle.Node = Ext.extend(Ext.Component, {
         			var blingerData=this.blingers[i];
         			blingerData.parentId=this.getId();
         			blingerData.id="blinger_"+this.getId()+"_"+i;
-       				eval('var blinger=new Untangle.'+blingerData.type+'(blingerData);');
+       				eval('var blinger=new Ung.'+blingerData.type+'(blingerData);');
        				blinger.render('nodeBlingers_'+this.getId());
         			//this.blingers[i].id=blinger.id;
         			
@@ -297,7 +297,7 @@ Untangle.Node = Ext.extend(Ext.Component, {
         },
         
         onRender: function(container, position) {
-        	//Untangle.Node.superclass.onRender.call(this, ct, position);
+        	//Ung.Node.superclass.onRender.call(this, ct, position);
 	        var el= document.createElement("div");
 	        el.setAttribute('viewPosition',this.viewPosition);
 	        container.dom.insertBefore(el, position);
@@ -313,11 +313,11 @@ Untangle.Node = Ext.extend(Ext.Component, {
         			this.settings=null;
         		}
         	},this);
-        	var templateHTML=Untangle.Node.template.applyTemplate({'id':this.getId(),'image':this.image,'displayName':this.displayName,'version':main.version});
+        	var templateHTML=Ung.Node.template.applyTemplate({'id':this.getId(),'image':this.image,'displayName':this.displayName,'version':main.version});
 	        this.getEl().insertHtml("afterBegin",templateHTML);
        
-		    var settingsHTML=Untangle.Node.templateSettings.applyTemplate({'id':this.getId()});
-		    var settingsButtonsHTML=Untangle.Node.templateSettingsButtons.applyTemplate({'id':this.getId()});
+		    var settingsHTML=Ung.Node.templateSettings.applyTemplate({'id':this.getId()});
+		    var settingsButtonsHTML=Ung.Node.templateSettingsButtons.applyTemplate({'id':this.getId()});
 		    //Ext.MessageBox.alert("Failed",settingsHTML);
 		    this.settingsWin=new Ext.Window({
                 id: 'settingsWin_'+this.getId(),
@@ -354,7 +354,7 @@ Untangle.Node = Ext.extend(Ext.Component, {
 			Ext.get('nodePowerIconImg_'+this.getId()).on('click', this.onPowerClick, this);
 			var cmp=null;
 			cmp=new Ext.ToolTip({
-			  html: Untangle.Node.statusTip,
+			  html: Ung.Node.statusTip,
 			  target: 'nodeStateIconImg_'+this.getId(),
 			  autoWidth: true,
 			  autoHeight: true,
@@ -363,7 +363,7 @@ Untangle.Node = Ext.extend(Ext.Component, {
 			  hideDelay: 0
 			});
 			cmp=new Ext.ToolTip({
-			  html: Untangle.Node.powerTip,
+			  html: Ung.Node.powerTip,
 			  target: 'nodePowerIconImg_'+this.getId(),
 			  autoWidth: true,
 			  autoHeight: true,
@@ -406,20 +406,20 @@ Untangle.Node = Ext.extend(Ext.Component, {
         }
 });
 
-Untangle.Node.getCmp=function(nodeId) {
+Ung.Node.getCmp=function(nodeId) {
 	return Ext.getCmp(nodeId);
 };
 
 
 
-Untangle.Node.statusTip=['<div style="text-align: left;">',
+Ung.Node.statusTip=['<div style="text-align: left;">',
 'The <B>Status Indicator</B> shows the current operating condition of a particular software product.<BR>',
 '<font color="#00FF00"><b>Green</b></font> indicates that the product is "on" and operating normally.<BR>',
 '<font color="#FF0000"><b>Red</b></font> indicates that the product is "on", but that an abnormal condition has occurred.<BR>',
 '<font color="#FFFF00"><b>Yellow</b></font> indicates that the product is saving or refreshing settings.<BR>',
 '<b>Clear</b> indicates that the product is "off", and may be turned "on" by the user.</div>'].join('');
-Untangle.Node.powerTip='The <B>Power Button</B> allows you to turn a product "on" and "off".';
-Untangle.Node.template = new Ext.Template(
+Ung.Node.powerTip='The <B>Power Button</B> allows you to turn a product "on" and "off".';
+Ung.Node.template = new Ext.Template(
 '<div class="nodeImage"><img src="{image}"/></div>',
 '<div class="nodeLabel">{displayName}</div><div class="nodeBlingers" id="nodeBlingers_{id}"></div>',
 '<div class="nodeStateIcon"><img id="nodeStateIconImg_{id}" src="images/node/IconOffState28x28.png?{version}"></div>',
@@ -428,17 +428,17 @@ Untangle.Node.template = new Ext.Template(
 '<div class="nodeSettingsButton" id="nodeSettingsButton_{id}"></div>',
 '<div class="nodeHelpButton" id="nodeHelpButton_{id}"></div>');
 
-Untangle.Node.templateSettings=new Ext.Template(
+Ung.Node.templateSettings=new Ext.Template(
 '<div class="nodeSettingsContent" id="settings_{id}"></div>');
-Untangle.Node.templateSettingsButtons=new Ext.Template(
+Ung.Node.templateSettingsButtons=new Ext.Template(
 '<div class="nodeRemoveButton" id="nodeRemoveButton_{id}"></div>',
 '<div class="nodeCancelButton" id="nodeCancelButton_{id}"></div>',
 '<div class="nodeSaveButton" id="nodeSaveButton_{id}"></div>');
 
-Ext.ComponentMgr.registerType('untangleNode', Untangle.Node);
+Ext.ComponentMgr.registerType('utgNode', Ung.Node);
 
 
-Untangle.BlingerManager = {
+Ung.BlingerManager = {
 	updateTime: 5000, //update interval in millisecond
 	started: false,
 	intervalId: null,
@@ -446,7 +446,7 @@ Untangle.BlingerManager = {
 	
 	start: function() {
 		this.stop();
-		this.intervalId=window.setInterval("Untangle.BlingerManager.getNodesStats()",this.updateTime);
+		this.intervalId=window.setInterval("Ung.BlingerManager.getNodesStats()",this.updateTime);
 		this.started=true;
 	},
 	
@@ -460,7 +460,7 @@ Untangle.BlingerManager = {
 	
 	hasActiveNodes: function() {
 		for(var i=0;i<main.nodes.length;i++) {
-			var nodeCmp=Untangle.Node.getCmp(main.nodes[i].tid);
+			var nodeCmp=Ung.Node.getCmp(main.nodes[i].tid);
 			if(nodeCmp && nodeCmp.isRunning()) {
 				return true;
 			}
@@ -476,22 +476,22 @@ Untangle.BlingerManager = {
 			rpc.nodeManager.allNodeStats(function (result, exception) {
 				if(exception) { 
 					Ext.MessageBox.alert("Failed",exception.message, function() {
-						Untangle.BlingerManager.cycleCompleted=true;
+						Ung.BlingerManager.cycleCompleted=true;
 					});
 					return;
 				}
 				try {
 					var allNodeStats=result;
 					for(var i=0;i<main.nodes.length;i++) {
-						var nodeCmp=Untangle.Node.getCmp(main.nodes[i].tid);
+						var nodeCmp=Ung.Node.getCmp(main.nodes[i].tid);
 						if(nodeCmp && nodeCmp.isRunning()) {
 							nodeCmp.stats=allNodeStats.map[main.nodes[i].tid];
 							nodeCmp.updateBlingers();
 						}
 					}
-					Untangle.BlingerManager.cycleCompleted=true;
+					Ung.BlingerManager.cycleCompleted=true;
 				  } catch(err) {
-					Untangle.BlingerManager.cycleCompleted=true;
+					Ung.BlingerManager.cycleCompleted=true;
 					throw err;
 				  }
 			});
@@ -499,7 +499,7 @@ Untangle.BlingerManager = {
 	}
 };
 
-Untangle.ActivityBlinger = Ext.extend(Ext.Component, {
+Ung.ActivityBlinger = Ext.extend(Ext.Component, {
         parentId: null,
         bars: null,
         lastValues: null,
@@ -510,7 +510,7 @@ Untangle.ActivityBlinger = Ext.extend(Ext.Component, {
 	        container.dom.insertBefore(el, position);
         	this.el = Ext.get(el);
         	this.id=Ext.id(this);
-			var templateHTML=Untangle.ActivityBlinger.template.applyTemplate({'id':this.getId()});
+			var templateHTML=Ung.ActivityBlinger.template.applyTemplate({'id':this.getId()});
 			el.innerHTML=templateHTML;
 			this.lastValues=[];
 			this.decays=[];
@@ -533,7 +533,7 @@ Untangle.ActivityBlinger = Ext.extend(Ext.Component, {
         		var top=3+i*15;
         		var bar=this.bars[i];
         		var newValue=stats.counters[6+i];
-        		this.decays[i]=Untangle.ActivityBlinger.decayValue(newValue, this.lastValues[i],this.decays[i]);
+        		this.decays[i]=Ung.ActivityBlinger.decayValue(newValue, this.lastValues[i],this.decays[i]);
         		this.lastValues[i]=newValue;
         		var barPixelWidth=Math.floor(this.decays[i]*0.6);
         		var barDiv=document.getElementById('activityBar_'+this.getId()+'_'+i);
@@ -552,22 +552,22 @@ Untangle.ActivityBlinger = Ext.extend(Ext.Component, {
         }
         
 });
-Untangle.ActivityBlinger.template = new Ext.Template(
+Ung.ActivityBlinger.template = new Ext.Template(
 '<div class="blingerName">activity</div>',
 '<div class="blingerBox" id="blingerBox_{id}" style="width:60px;">',
 '</div>');
-Untangle.ActivityBlinger.decayFactor=Math.pow(0.94,Untangle.BlingerManager.updateTime/1000);
-Untangle.ActivityBlinger.decayValue = function(newValue, lastValue, decay) {
+Ung.ActivityBlinger.decayFactor=Math.pow(0.94,Ung.BlingerManager.updateTime/1000);
+Ung.ActivityBlinger.decayValue = function(newValue, lastValue, decay) {
 	if(lastValue!==null && newValue!=lastValue) {
 		decay=98;
 	} else {
-		decay=decay*Untangle.ActivityBlinger.decayFactor;
+		decay=decay*Ung.ActivityBlinger.decayFactor;
 	}
 	return decay;
 };
-Ext.ComponentMgr.registerType('untangleActivityBlinger', Untangle.ActivityBlinger);
+Ext.ComponentMgr.registerType('utgActivityBlinger', Ung.ActivityBlinger);
 
-Untangle.SystemBlinger = Ext.extend(Ext.Component, {
+Ung.SystemBlinger = Ext.extend(Ext.Component, {
 		parentId: null,
 		data: null,
 		byteCountCurrent: null,
@@ -583,7 +583,7 @@ Untangle.SystemBlinger = Ext.extend(Ext.Component, {
 	        container.dom.insertBefore(el, position);
         	this.el = Ext.get(el);
         	this.id=Ext.id(this);
-			var templateHTML=Untangle.SystemBlinger.template.applyTemplate({'id':this.getId()});
+			var templateHTML=Ung.SystemBlinger.template.applyTemplate({'id':this.getId()});
 			el.innerHTML=templateHTML;
 			this.byteCountCurrent=0;
 			this.byteCountLast=0;
@@ -624,7 +624,7 @@ Untangle.SystemBlinger = Ext.extend(Ext.Component, {
             }
         	var acc=this.sessionCountTotal;
         	var req=this.sessionRequestTotal;
-        	var dataRate=(this.byteCountCurrent - this.byteCountLast)/Untangle.BlingerManager.updateTime;
+        	var dataRate=(this.byteCountCurrent - this.byteCountLast)/Ung.BlingerManager.updateTime;
         	this.data[0].value=this.sessionCountCurrent;
         	this.data[1].value=acc;
         	this.data[2].value=req;
@@ -653,15 +653,15 @@ Untangle.SystemBlinger = Ext.extend(Ext.Component, {
         	}
         }
 });
-Untangle.SystemBlinger.template = new Ext.Template(
+Ung.SystemBlinger.template = new Ext.Template(
 '<div class="blingerName">system</div>',
 '<div class="systemBlingerBox" id="blingerBox_{id}" style="width:100%">',
 '</div>');
-Ext.ComponentMgr.registerType('untangleSystemBlinger', Untangle.SystemBlinger);
+Ext.ComponentMgr.registerType('utgSystemBlinger', Ung.SystemBlinger);
 
 
 //setting object
-Untangle.Settings = Ext.extend(Ext.Component, {
+Ung.Settings = Ext.extend(Ext.Component, {
     i18n: null,
     node:null,
     tabs: null,
@@ -670,7 +670,7 @@ Untangle.Settings = Ext.extend(Ext.Component, {
 	    var el= document.createElement("div");
 	    container.dom.insertBefore(el, position);
         this.el = Ext.get(el);
-    	this.i18n=Untangle.i18nNodeInstances[this.name];
+    	this.i18n=Ung.i18nNodeInstances[this.name];
     	this.rpc={};
     	this.rpc.repository={};
     	if(this.node.nodeContext.node.eventManager===undefined) {
@@ -701,24 +701,24 @@ Untangle.Settings = Ext.extend(Ext.Component, {
 	}
 	
 });
-Untangle.Settings._nodeScripts={};
-Untangle._hasResource={};
-Untangle.Settings.loadNodeScript=function(nodeName,cmpId,callbackFn) {
+Ung.Settings._nodeScripts={};
+Ung._hasResource={};
+Ung.Settings.loadNodeScript=function(nodeName,cmpId,callbackFn) {
 	main.loadScript('script/'+nodeName+'/settings.js?'+main.version,function() {callbackFn(cmpId);});
 };
-Untangle.Settings._classNames={};
-Untangle.Settings.getClassName=function(name) {
-	var className=Untangle.Settings._classNames[name];
+Ung.Settings._classNames={};
+Ung.Settings.getClassName=function(name) {
+	var className=Ung.Settings._classNames[name];
 	return className===undefined?null:className;
 };
-Untangle.Settings.hasClassName=function(name) {
-	return Untangle.Settings._classNames[name]!==undefined;
+Ung.Settings.hasClassName=function(name) {
+	return Ung.Settings._classNames[name]!==undefined;
 };
-Untangle.Settings.registerClassName=function(name,className) {
-	Untangle.Settings._classNames[name]=className;
+Ung.Settings.registerClassName=function(name,className) {
+	Ung.Settings._classNames[name]=className;
 };
 
-Ext.ComponentMgr.registerType('untangleSettings', Untangle.Settings);
+Ext.ComponentMgr.registerType('utgSettings', Ung.Settings);
 
 
 Ext.grid.CheckColumn = function(config){
@@ -812,7 +812,7 @@ Ext.grid.RemoveColumn.prototype ={
         return '<div class="removeRow">&nbsp;</div>';
     }
 };
-Untangle.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
+Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
 	settingsCmp: null,
 	hasRepositories: true,
 	repositoryDescsFn: null,
@@ -835,10 +835,10 @@ Untangle.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
 						iconCls: 'iconRefresh',
 						handler: function() {this.refreshList();}.createDelegate(this)
 					}];
-        Untangle.GridEventLog.superclass.initComponent.call(this);
+        Ung.GridEventLog.superclass.initComponent.call(this);
 	},
 	onRender : function(container, position) {
-		Untangle.GridEventLog.superclass.onRender.call(this,container, position);
+		Ung.GridEventLog.superclass.onRender.call(this,container, position);
 		this.repositoryDescsFn(function (result, exception) {
 			if(exception) {Ext.MessageBox.alert("Failed",exception.message); return;}
 			if(this.settingsCmp) {
@@ -882,7 +882,7 @@ Untangle.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
 	}
 });
 
-Untangle.RowEditorWindow = Ext.extend(Ext.Window, {
+Ung.RowEditorWindow = Ext.extend(Ext.Window, {
 	key: null,
 	settingsCmp: null,
 	grid: null,
@@ -1012,31 +1012,31 @@ Untangle.RowEditorWindow = Ext.extend(Ext.Window, {
 			}, 
 	    	{
 		    	region: "south",
-		    	html: Untangle.RowEditorWindow.template.applyTemplate({'tid':this.settingsCmp.node.tid, 'key':this.key}),
+		    	html: Ung.RowEditorWindow.template.applyTemplate({'tid':this.settingsCmp.node.tid, 'key':this.key}),
 		        border: false,
 		        height:40,
 		        cls: 'windowBackground',
 		        bodyStyle: 'background-color: transparent;'
 	    	}];
-        Untangle.RowEditorWindow.superclass.initComponent.call(this);
+        Ung.RowEditorWindow.superclass.initComponent.call(this);
 
     },
     onRender: function(container, position) {
-    	Untangle.RowEditorWindow.superclass.onRender.call(this,container, position);
+    	Ung.RowEditorWindow.superclass.onRender.call(this,container, position);
     },
     afterRender: function() {
-    	Untangle.RowEditorWindow.superclass.afterRender.call(this);
+    	Ung.RowEditorWindow.superclass.afterRender.call(this);
     	//this.initContent();
     }
     
 	
 });
-Untangle.RowEditorWindow.template=new Ext.Template(
+Ung.RowEditorWindow.template=new Ext.Template(
 '<div class="rowEditorHelp" id="rowEditor_help_{tid}_{key}"></div>',
 '<div class="rowEditorCancel" id="rowEditor_cancel_{tid}_{key}"></div>',
 '<div class="rowEditorUpdate" id="rowEditor_update_{tid}_{key}"></div>');
 /*
-Untangle.RightWindow = Ext.extend(Ext.Window, {
+Ung.RightWindow = Ext.extend(Ext.Window, {
 	layout:'border',
 	modal:true,
 	title:'Window',
@@ -1052,7 +1052,7 @@ Untangle.RightWindow = Ext.extend(Ext.Window, {
     	}
 		items: [{
 			region:"center",
-			html: Untangle.RightWindow.template.applyTemplate({'id':this.getId()}),,
+			html: Ung.RightWindow.template.applyTemplate({'id':this.getId()}),,
 			border: false,
 			autoScroll: true,
 			cls: 'windowBackground',
@@ -1066,21 +1066,21 @@ Untangle.RightWindow = Ext.extend(Ext.Window, {
 			cls: 'windowBackground',
 			bodyStyle: 'background-color: transparent;'
 		}]
-        Untangle.RightWindow.superclass.initComponent.call(this);
+        Ung.RightWindow.superclass.initComponent.call(this);
 
     },
 
 });
-Untangle.RightWindow.template = new Ext.Template(
+Ung.RightWindow.template = new Ext.Template(
 '<div class="nodeSettingsContent" id="windowContent_{id}"></div>');
 */
 
-Untangle.RpcProxy = function(rpcFn){
-    Untangle.RpcProxy.superclass.constructor.call(this);
+Ung.RpcProxy = function(rpcFn){
+    Ung.RpcProxy.superclass.constructor.call(this);
     this.rpcFn = rpcFn;
 };
 
-Ext.extend(Untangle.RpcProxy, Ext.data.DataProxy, {
+Ext.extend(Ung.RpcProxy, Ext.data.DataProxy, {
 	setTotalRecords: function(totalRecords) {
 		this.totalRecords=totalRecords;
 	},
@@ -1113,11 +1113,11 @@ Ext.extend(Untangle.RpcProxy, Ext.data.DataProxy, {
 	            this.callback.call(this.scope, null, this.arg, false);
 	            return;
 	        }
-		}.createDelegate(obj), params.start, params.limit,sortColumns);
+		}.createDelegate(obj), params.start?params.start:0, params.limit?(params.limit+1):this.totalRecords!=null?this.totalRecords:2147483647, sortColumns);
 	}
 });
 
-Untangle.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
+Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 	rowsPerPage: 20,
 	minPaginateCount: 60,
 	totalRows: null,
@@ -1133,12 +1133,8 @@ Untangle.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 	stripeRows: true,
 	clicksToEdit: 1,
 	enableHdMenu: false,
-	loadFirstPage: function() {
-		if(!this.forcePaginate && this.totalRows<this.minPaginateCount) {
-			this.getStore().proxy.load();
-		} else {
-			this.getStore().proxy.load();
-		}
+	initialLoad: function() {
+			this.getStore().load();
 	},
 	setTotalRows: function(totalRows) {
 		this.totalRows=totalRows;
@@ -1152,7 +1148,7 @@ Untangle.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 	},
 	initComponent: function() {
 	    this.store = new Ext.data.Store({
-	        proxy: new Untangle.RpcProxy(this.proxyRpcFn),
+	        proxy: new Ung.RpcProxy(this.proxyRpcFn),
 	        reader: new Ext.data.JsonReader({
 	        	root: 'list',
 		        fields: this.fields
@@ -1167,7 +1163,7 @@ Untangle.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			emptyMsg: "No topics to display"
 		});
 		if(this.rowEditorInputLines!=null) {
-			this.rowEditor=new Untangle.RowEditorWindow({
+			this.rowEditor=new Ung.RowEditorWindow({
 				width: 400,
 				height: 300,
 				key: this.key,
@@ -1198,6 +1194,6 @@ Untangle.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		        }.createDelegate(this)
 			}];
 		}
-		Untangle.EditorGrid.superclass.initComponent.call(this);
+		Ung.EditorGrid.superclass.initComponent.call(this);
 	}
 });

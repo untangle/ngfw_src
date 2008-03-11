@@ -303,17 +303,17 @@ div.configButton {
 	width:161px;
 	height:45px;
 }
-div.untangleButton {
+div.utgButton {
 	cursor: pointer;
 	background-color: #E9E9E9;
 	border: 1px solid #9B9B9B;
 }
-div.untangleButtonHover {
+div.utgButtonHover {
 	border-color:#366dba;
 	color:#366dba;
 	background-color:#f1f6fc;
 }
-div.untangleButtonInvalid {
+div.utgButtonInvalid {
 	border: 1px solid green;
 }
 button.add {
