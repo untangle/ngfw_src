@@ -37,7 +37,7 @@ class InterfaceTester
 
     /* Script to run whenever the interfaces should be reconfigured */
     private static final String INTERFACE_STATUS_SCRIPT =
-        NetworkManagerImpl.BUNNICULA_BASE + "/networking/get-interface-status";
+        NetworkManagerImpl.ALPACA_SCRIPT + "/get-interface-status";
 
 
     /* The Flag is the value returned by the script, they are separated so the script
