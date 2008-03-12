@@ -54,7 +54,7 @@ class AptLogTail implements Runnable
     private final Logger logger = Logger.getLogger(getClass());
 
     static {
-        FETCH_PATTERN = Pattern.compile("'(http://.*)' (.*\\.deb) ([0-9]+) (MD5Sum:)?([0-9a-z]+)");
+        FETCH_PATTERN = Pattern.compile("'(http://.*)' (.*\\.deb) ([0-9]+) (MD5Sum:|SHA1:|SHA256:)?([0-9a-z]+)");
         DOWNLOAD_PATTERN = Pattern.compile("( *[0-9]+)K[ .]+([0-9]+)% *([0-9]+\\.[0-9]+ .*/s)");
     }
 
