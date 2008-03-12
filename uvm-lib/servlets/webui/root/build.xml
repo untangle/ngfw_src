@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+
+<project name="scripts" basedir="." default="deployCurrent">
+    <property file="build.properties"/>
+
+    <property name="src.dir" value="src"/>
+    <property name="src.common.dir" value="../uvm-lib/api"/>
+	<property name="test.dir" value="test"/>
+    <property name="web.dir" value="root"/>		
+	<property name="lib.dir" value="../lib"/>		
+    <property name="build.dir" value="${web.dir}/WEB-INF/classes"/>
+    <property name="name" value="webui"/>
+
+    <target name="deployCurrent"  description="Deploy application">
+        <copy todir="${deploy.path}/script"  preservelastmodified="true" verbose="true">
+        	<fileset dir="./script/">
+                <include name="*.*"/>
+            </fileset>
+        	<fileset dir="./../../../../spyware/hier/usr/share/untangle/web/webui/script/">
+				<include name="**/*.*"/>
+        	</fileset>
+        	<fileset dir="./../../../../protofilter/hier/usr/share/untangle/web/webui/script/">
+				<include name="**/*.*"/>
+        	</fileset>
+        </copy>
+    </target>
+	
+
+<!-- End Tomcat tasks -->
+	
+</project>

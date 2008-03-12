@@ -679,7 +679,7 @@ Ung.Settings = Ext.extend(Ext.Component, {
 		this.rpc.node = this.node.nodeContext.node;
 		this.rpc.eventManager=this.node.nodeContext.node.eventManager;
 	},
-	buldTabPanel: function(itemsArray) {
+	buildTabPanel: function(itemsArray) {
 		this.tabs = new Ext.TabPanel({
 	        renderTo: this.getEl().id,
 	        width: 690,
@@ -698,7 +698,11 @@ Ung.Settings = Ext.extend(Ext.Component, {
 			this.node.nodeContext.node.eventManager=this.node.nodeContext.node.getEventManager();
 		}
 		return this.node.nodeContext.node.eventManager;
-	}
+	},
+	beforeDestroy : function(){
+        Ext.destroy(this.tabs);
+        Ung.Settings.superclass.beforeDestroy.call(this);
+    }
 	
 });
 Ung.Settings._nodeScripts={};
@@ -757,6 +761,21 @@ Ext.grid.EditColumn = function(config){
     if(!this.id){
         this.id = Ext.id();
     }
+    if(!this.header) {
+        this.header = i18n._("Edit");
+    }
+    if(!this.width) {
+        this.width = 35;
+    }
+    if(this.fixed==null) {
+        this.fixed = true;
+    }
+    if(this.sortable==null) {
+        this.sortable = true;
+    }
+    if(!this.dataIndex) {
+        this.dataIndex = null;
+    }
     this.renderer = this.renderer.createDelegate(this);
 };
 Ext.grid.EditColumn.prototype ={
@@ -787,6 +806,24 @@ Ext.grid.RemoveColumn = function(config){
     Ext.apply(this, config);
     if(!this.id){
         this.id = Ext.id();
+    }
+    if(!this.id){
+        this.id = Ext.id();
+    }
+    if(!this.header) {
+        this.header = i18n._("Delete");
+    }
+    if(!this.width) {
+        this.width = 35;
+    }
+    if(this.fixed==null) {
+        this.fixed = true;
+    }
+    if(this.sortable==null) {
+        this.sortable = true;
+    }
+    if(!this.dataIndex) {
+        this.dataIndex = null;
     }
     this.renderer = this.renderer.createDelegate(this);
 };
@@ -920,17 +957,13 @@ Ung.RowEditorWindow = Ext.extend(Ext.Window, {
 			'handler': function() {this.updateData();}.createDelegate(this)
 		});
 	},
-	listeners: {
-		'show': {
-			fn: function(cmp) {
-				var objPosition=cmp.grid.getPosition();
-				cmp.setPosition(objPosition);
-				//var objSize=grid.getSize();
-				//this.gridProtocolList.rowEditor.setSize(objSize);
-			}
-		}
-	},
-	
+    show: function() {
+    	Ung.Window.superclass.show.call(this);
+		var objPosition=this.grid.getPosition();
+		this.setPosition(objPosition);
+		//var objSize=this.grid.getSize();
+		//this.setSize(objSize);		
+    },
 	populate: function(record,rowIndex) {
 		this.rowIndex=rowIndex;
 		if(this.inputLines) {
@@ -1026,7 +1059,7 @@ Ung.RowEditorWindow = Ext.extend(Ext.Window, {
     },
     afterRender: function() {
     	Ung.RowEditorWindow.superclass.afterRender.call(this);
-    	//this.initContent();
+    	this.initContent.defer(1,this);
     }
     
 	
@@ -1035,45 +1068,95 @@ Ung.RowEditorWindow.template=new Ext.Template(
 '<div class="rowEditorHelp" id="rowEditor_help_{tid}_{key}"></div>',
 '<div class="rowEditorCancel" id="rowEditor_cancel_{tid}_{key}"></div>',
 '<div class="rowEditorUpdate" id="rowEditor_update_{tid}_{key}"></div>');
-/*
-Ung.RightWindow = Ext.extend(Ext.Window, {
+
+Ung.Window = Ext.extend(Ext.Window, {
 	layout:'border',
 	modal:true,
-	title:'Window',
+	renderTo:'container',
+	title:null,
+	southItemHTML: null,
 	closeAction:'hide',
-	autoCreate:true,
 	width:740,
 	height:690,
 	draggable:false,
 	resizable:false,
+	getContentEl: function() {
+		return document.getElementById("window_content_"+this.getId());
+	},
+	getContentHeight: function() {
+		return this.items.get(0).getEl().getHeight(true);
+	},
 	initComponent: function() {
     	if(this.title==null) {
     		this.title='';
     	}
-		items: [{
-			region:"center",
-			html: Ung.RightWindow.template.applyTemplate({'id':this.getId()}),,
+		this.items= [{
+			region: "center",
+			html: '<div id="window_content_'+this.getId()+'"></div>',
 			border: false,
 			autoScroll: true,
 			cls: 'windowBackground',
 			bodyStyle: 'background-color: transparent;'
-		}, 
-		{
-			region: "south",
-			html: settingsButtonsHTML,
-			border: false,
-			height:40,
-			cls: 'windowBackground',
-			bodyStyle: 'background-color: transparent;'
-		}]
-        Ung.RightWindow.superclass.initComponent.call(this);
-
+		}];
+		if(this.southItemHTML) { 
+			this.items.push(
+			{
+				region: "south",
+				html: this.southItemHTML,
+				border: false,
+				height:40,
+				cls: 'windowBackground',
+				bodyStyle: 'background-color: transparent;'
+			});
+		}
+        Ung.Window.superclass.initComponent.call(this);
     },
-
+    show: function() {
+    	Ung.Window.superclass.show.call(this);
+		this.setPosition(222,0);
+		var objSize=main.viewport.getSize();
+        objSize.width=objSize.width-222;
+        this.setSize(objSize);
+    }
+	
 });
-Ung.RightWindow.template = new Ext.Template(
-'<div class="nodeSettingsContent" id="windowContent_{id}"></div>');
-*/
+
+Ung.UpdateWindow = Ext.extend(Ung.Window, {
+	initComponent: function() {
+		this.southItemHTML=Ung.UpdateWindow.template.applyTemplate({key:this.key, id:this.parentId});
+		Ung.UpdateWindow.superclass.initComponent.call(this);
+	},
+	afterRender: function() {
+		Ung.UpdateWindow.superclass.afterRender.call(this);
+		this.initContent.defer(1, this);
+	},
+	initContent: function() {
+		var cmp=null;
+		cmp=new Ext.Button({
+			'renderTo':'button_help_'+this.key+'_'+this.parentId,
+			'iconCls': 'helpIcon',
+			'text': i18n._('Help'),
+			'handler': function() {Ext.MessageBox.alert("TODO","Implement Help Page");}.createDelegate(this)
+		});
+		cmp=new Ext.Button({
+			'renderTo':'button_cancel_'+this.key+'_'+this.parentId,
+			'iconCls': 'cancelIcon',
+			'text': i18n._('Cancel'),
+			'handler': function() {this.hide();}.createDelegate(this)
+		});
+		cmp=new Ext.Button({
+			'renderTo':'button_update_'+this.key+'_'+this.parentId,
+			'iconCls': 'saveIcon',
+			'text': i18n._('Update'),
+			'handler': function() {this.updateData();}.createDelegate(this)
+		});
+	}
+	
+});
+Ung.UpdateWindow.template=new Ext.Template(
+'<div class="rowEditorHelp" id="button_help_{key}_{id}"></div>',
+'<div class="rowEditorCancel" id="button_cancel_{key}_{id}"></div>',
+'<div class="rowEditorUpdate" id="button_update_{key}_{id}"></div>');
 
 Ung.RpcProxy = function(rpcFn){
     Ung.RpcProxy.superclass.constructor.call(this);
@@ -1113,7 +1196,7 @@ Ext.extend(Ung.RpcProxy, Ext.data.DataProxy, {
 	            this.callback.call(this.scope, null, this.arg, false);
 	            return;
 	        }
-		}.createDelegate(obj), params.start?params.start:0, params.limit?(params.limit+1):this.totalRecords!=null?this.totalRecords:2147483647, sortColumns);
+		}.createDelegate(obj), params.start?params.start:0, params.limit?params.limit:this.totalRecords!=null?this.totalRecords:2147483647, sortColumns);
 	}
 });
 
@@ -1172,7 +1255,6 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 				inputLines: this.rowEditorInputLines
 			});
 			this.rowEditor.render('container');
-			this.rowEditor.initContent(); // TODO: do this on render.
 		}
 		if(this.hasAddButton) {
 			this.tbar=[{

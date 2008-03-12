@@ -9,7 +9,7 @@ Ung.Protofilter = Ext.extend(Ung.Settings, {
     	Ung.Protofilter.superclass.onRender.call(this,container, position);
 		this.buildProtocolList();
 		this.buildEventLog();
-		this.buldTabPanel([this.gridProtocolList,this.gridEventLog]);
+		this.bulidTabPanel([this.gridProtocolList,this.gridEventLog]);
     },
     
     buildProtocolList: function() {
@@ -33,12 +33,8 @@ Ung.Protofilter = Ext.extend(Ung.Settings, {
 	    var logColumn = new Ext.grid.CheckColumn({
 	       header: "<b>"+this.i18n._("log")+"</b>", width: 35, dataIndex: 'log', fixed:true
 	    });
-	    var editColumn=new Ext.grid.EditColumn({
-	    	header: this.i18n._("Edit"), width: 35, fixed:true, dataIndex: null
-	    });
-	    var removeColumn=new Ext.grid.RemoveColumn({
-	    	header: this.i18n._("Delete"), width: 40, fixed:true, dataIndex: null
-	    });
+	    var editColumn=new Ext.grid.EditColumn();
+	    var removeColumn=new Ext.grid.RemoveColumn();
 	    var columnModel = new Ext.grid.ColumnModel([
 	          {id:'category',header: this.i18n._("category"), width: 140,  dataIndex: 'category',
 		          editor: new Ext.form.TextField({allowBlank: false})
