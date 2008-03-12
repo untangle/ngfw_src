@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -36,7 +36,7 @@ package com.untangle.node.mail.papi.smtp;
 import static com.untangle.node.util.Rfc822Util.*;
 import static com.untangle.node.util.Ascii.*;
 
-
+import com.untangle.node.mail.papi.FatalMailParseException;
 import com.untangle.node.mime.*;
 import com.untangle.node.token.ParseException;
 
@@ -61,7 +61,7 @@ public class MAILCommand
      *        must be a parsable address or blank.
      */
     public MAILCommand(String cmd,
-                       String argStr) throws ParseException {
+                       String argStr) throws ParseException, FatalMailParseException {
 
         super(CommandType.MAIL, cmd, argStr);
 

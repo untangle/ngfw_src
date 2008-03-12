@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -25,10 +25,10 @@ import java.nio.ByteBuffer;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.untangle.uvm.vnet.TCPSession;
 import com.untangle.node.mail.papi.AddressKind;
 import com.untangle.node.mail.papi.BeginMIMEToken;
 import com.untangle.node.mail.papi.ContinuedMIMEToken;
+import com.untangle.node.mail.papi.FatalMailParseException;
 import com.untangle.node.mail.papi.MIMEAccumulator;
 import com.untangle.node.mail.papi.MessageBoundaryScanner;
 import com.untangle.node.mail.papi.MessageInfo;
@@ -47,6 +47,7 @@ import com.untangle.node.token.ParseResult;
 import com.untangle.node.token.PassThruToken;
 import com.untangle.node.token.Token;
 import com.untangle.node.util.ASCIIUtil;
+import com.untangle.uvm.vnet.TCPSession;
 import org.apache.log4j.Logger;
 
 
@@ -88,7 +89,7 @@ class SmtpClientParser
 
 
     @Override
-    protected ParseResult doParse(ByteBuffer buf) {
+    protected ParseResult doParse(ByteBuffer buf) throws FatalMailParseException {
 
         //===============================================
         // This method is very procedural, to make
@@ -157,8 +158,7 @@ class SmtpClientParser
                     Command cmd = null;
                     try {
                         cmd = CommandParser.parse(buf);
-                    }
-                    catch(ParseException pe) {
+                    } catch(ParseException pe) {
                         //Duplicate the bad buffer
                         dup.limit(findCrLf(dup) + 2);
                         ByteBuffer badBuf = ByteBuffer.allocate(dup.remaining());

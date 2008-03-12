@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -37,6 +37,7 @@ import static com.untangle.node.util.Rfc822Util.*;
 import static com.untangle.node.util.Ascii.*;
 
 
+import com.untangle.node.mail.papi.FatalMailParseException;
 import com.untangle.node.mime.*;
 import com.untangle.node.token.ParseException;
 
@@ -103,7 +104,7 @@ public abstract class CommandWithEmailAddress
      * the "TO" or "FROM"
      */
     protected void assignFromWire(String str)
-        throws ParseException {
+        throws ParseException, FatalMailParseException {
         EmailAddressAndExtra ewe = parseAddressAndExtra(str);
         setAddress(ewe.addr);
         setEsmtpExtra(ewe.extra);
@@ -114,7 +115,7 @@ public abstract class CommandWithEmailAddress
      * and any extra ESMTP junk at the end
      */
     protected static EmailAddressAndExtra parseAddressAndExtra(String str)
-        throws ParseException {
+        throws ParseException, FatalMailParseException {
         if(str == null) {
             return new EmailAddressAndExtra(EmailAddress.NULL_ADDRESS, null);
         }
@@ -156,7 +157,7 @@ public abstract class CommandWithEmailAddress
      * Will never return null.
      */
     private static EmailAddress parseAddress(String str)
-        throws ParseException {
+        throws FatalMailParseException {
         if(str == null) {
             return EmailAddress.NULL_ADDRESS;
         }
@@ -168,7 +169,7 @@ public abstract class CommandWithEmailAddress
             return EmailAddress.parse(str);
         }
         catch(BadEmailAddressFormatException ex) {
-            throw new ParseException(ex);
+            throw new FatalMailParseException("could not parse email address: " + str, ex);
         }
     }
 
