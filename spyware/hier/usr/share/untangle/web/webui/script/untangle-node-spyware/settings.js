@@ -10,7 +10,6 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
     gridEventLog: null,
     onRender: function(container, position) {
     	Ung.Spyware.superclass.onRender.call(this,container, position);
-    	this.getBaseSettings();
 		this.buildBlockLists();
 		this.buildPassList();
 		this.buildEventLog();

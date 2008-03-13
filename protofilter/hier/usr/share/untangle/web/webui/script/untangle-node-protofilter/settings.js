@@ -14,20 +14,6 @@ Ung.Protofilter = Ext.extend(Ung.Settings, {
     },
     
     buildProtocolList: function() {
-	    // create the data store
-	    var store = new Ext.data.JsonStore({
-	        fields: [
-	           {name: 'category'},
-	           {name: 'protocol'},
-	           {name: 'blocked'},
-	           {name: 'log'},
-	           {name: 'description'},
-	           {name: 'definition'}
-	        ]
-	    });
-	    // the column model has information about grid columns
-	    // dataIndex maps the column to the specific data field in the data store (created below)
-	    
 	    var blockedColumn = new Ext.grid.CheckColumn({
 	       header: "<b>"+this.i18n._("block")+"</b>", width: 40, dataIndex: 'blocked', fixed:true
 	    });
@@ -54,41 +40,25 @@ Ung.Protofilter = Ext.extend(Ung.Settings, {
 	          editColumn,
 	          removeColumn
 		]);
-	
-	    // by default columns are sortable
-	    columnModel.defaultSortable = false;
+	    columnModel.defaultSortable = true;
 		
-		// create the Grid
-	    this.gridProtocolList = new Ext.grid.EditorGridPanel({
-	        store: store,
-	        cm: columnModel,
-	        tbar:[{
-		            text: this.i18n._('Add'),
-		            tooltip:this.i18n._('Add New Row'),
-		            iconCls:'add',
-		            parentId:this.getId(),
-		            handler: function() {
-		            	var cmp=Ext.getCmp(this.parentId);
-		            	var rec=new Ext.data.Record({"category":"","protocol":"","blocked":false,"log":false,"description":"","definition":""});
-						cmp.gridProtocolList.getStore().insert(0, [rec]);
-						cmp.gridProtocolList.rowEditor.populate(rec,0);
-           				cmp.gridProtocolList.rowEditor.show();		            	
-		            }
-		        }],
-	        stripeRows: true,
-	        plugins:[blockedColumn,logColumn,editColumn,removeColumn],
-	        autoExpandColumn: 'category',
-	        clicksToEdit: 1,
-	        title: this.i18n._('Protocol List'),
-	    });
-	    // create the row editor
-	    this.gridProtocolList.rowEditor=new Ung.RowEditorWindow({
-			width: 400,
-			height: 300,
-			key: "protocolList",
-			settingsCmp: this,
-			grid: this.gridProtocolList,
-			inputLines: [
+    	this.gridProtocolList=new Ung.EditorGrid({
+    		settingsCmp: this,
+    		emptyRow: {"category":"","protocol":"","blocked":false,"log":false,"description":"","definition":""},
+    		title: this.i18n._('Protocol List'),
+    		autoExpandColumn: 'category',
+    		proxyRpcFn: this.rpc.node.getPatterns,
+			fields: [
+	           {name: 'category'},
+	           {name: 'protocol'},
+	           {name: 'blocked'},
+	           {name: 'log'},
+	           {name: 'description'},
+	           {name: 'definition'}
+			],
+			cm: columnModel,
+			plugins: [blockedColumn,logColumn,editColumn,removeColumn],
+			rowEditorInputLines: [
 				{name:"category", label: this.i18n._("Category"), type:"text", style:"width:200px;"},
 				{name:"protocol", label: this.i18n._("Protocol"), type:"text", style:"width:200px;"},
 				{name:"blocked", label: this.i18n._("Block"), type:"checkbox"},
@@ -96,9 +66,9 @@ Ung.Protofilter = Ext.extend(Ung.Settings, {
 				{name:"description", label: this.i18n._("Description"), type:"textarea", style:"width:200px;height:60px;"},
 				{name:"definition", label: this.i18n._("Signature"), type:"textarea", style:"width:200px;height:60px;"}
 			]
-		});
-		this.gridProtocolList.rowEditor.render('container');
-		this.gridProtocolList.rowEditor.initContent(); // TODO: do this on render.
+    	});
+    	this.gridProtocolList.getStore().proxy.setTotalRecords(this.getBaseSettings().patternsLength);
+    	this.gridProtocolList.initialLoad();
     },
     
     buildEventLog: function() {
@@ -159,6 +129,7 @@ Ung.Protofilter = Ext.extend(Ung.Settings, {
     },
     
 	loadData: function() {
+		/*
 		this.rpc.node.getProtoFilterSettings(function (result, exception) {
 			if(exception) {Ext.MessageBox.alert("Failed",exception.message); return;}
 			if(this!==null) {
@@ -172,10 +143,11 @@ Ung.Protofilter = Ext.extend(Ung.Settings, {
 				this.loadProtocolList();
 			}
 		}.createDelegate(this));
+		*/
 	},
 	
 	save: function() {
-		this.saveProtocolList();
+		//this.saveProtocolList();
 	}
 });
 }

@@ -664,15 +664,20 @@ Ung.Settings = Ext.extend(Ext.Component, {
 	        height: 400,
 	        activeTab: 0,
 	        frame: true,
+	        parentId: this.getId(),
 	        items: itemsArray,
-		    show: function() {
-		    	Ext.TabPanel.prototype.show.call(this);
-				//todo: set size
-				var objSize=main.viewport.getSize();
-				objSize.width=objSize.width-400;
-				objSize.height=objSize.height-400;
-				this.setSize(objSize);
-		    }
+		    listeners: {
+		    	"render": {
+		    		fn: function() {
+		    			var settingsCmp=Ext.getCmp(this.parentId);
+						var objSize=settingsCmp.node.settingsWin.items.get(0).getEl().getSize(true);
+						objSize.width=objSize.width-24;
+						objSize.height=objSize.height-17;
+						this.setSize(objSize);
+					}
+				}
+			}
+				   
 	    });
 	},
 	getRpcNode: function() {
