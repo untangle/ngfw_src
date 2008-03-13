@@ -31,4 +31,9 @@ public interface ProtoFilter extends Node
     void updatePatterns(List<ProtoFilterPattern> added, List<Long> deleted, List<ProtoFilterPattern> modified);
     
     EventManager<ProtoFilterLogEvent> getEventManager();
+    
+    // wrapper method to update all settings once
+    // TODO can we find a better place for this ugly method?
+    public void updateAll(List[] patternsChanges);
+    
 }
