@@ -512,10 +512,18 @@ public class SpywareImpl extends AbstractNode implements Spyware
     	if (baseSettings != null) {
         	setBaseSettings(baseSettings);
     	}
-		updateActiveXRules(activeXRules[0], activeXRules[1], activeXRules[2]);
-		updateCookieRules(cookieRules[0], cookieRules[1], cookieRules[2]);
-		updateSubnetRules(subnetRules[0], subnetRules[1], subnetRules[2]);
-		updateDomainWhitelist(domainWhitelist[0], domainWhitelist[1], domainWhitelist[2]);
+    	if (activeXRules != null && activeXRules.length >= 3) {
+    		updateActiveXRules(activeXRules[0], activeXRules[1], activeXRules[2]);
+    	}
+    	if (cookieRules != null && cookieRules.length >= 3) {
+    		updateCookieRules(cookieRules[0], cookieRules[1], cookieRules[2]);
+    	}
+    	if (subnetRules != null && subnetRules.length >= 3) {
+    		updateSubnetRules(subnetRules[0], subnetRules[1], subnetRules[2]);
+    	}
+    	if (domainWhitelist != null && domainWhitelist.length >= 3) {
+    		updateDomainWhitelist(domainWhitelist[0], domainWhitelist[1], domainWhitelist[2]);
+    	}
 		
 		reconfigure();
 	}

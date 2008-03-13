@@ -128,8 +128,9 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
     // wrapper method to update all settings once
     // TODO can we find a better place for this ugly method?
     public void updateAll(List[] patternsChanges) {
-    	
-		updatePatterns(patternsChanges[0], patternsChanges[1], patternsChanges[2]);
+    	if (patternsChanges != null && patternsChanges.length >= 3) {
+    		updatePatterns(patternsChanges[0], patternsChanges[1], patternsChanges[2]);
+    	}
 		
         try {
             reconfigure();
