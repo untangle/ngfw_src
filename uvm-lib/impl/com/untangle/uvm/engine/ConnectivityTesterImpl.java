@@ -27,6 +27,8 @@ import java.util.Random;
 import com.untangle.uvm.RemoteConnectivityTester;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.networking.BasicNetworkSettings;
+import com.untangle.uvm.networking.ConnectionStatus;
+import com.untangle.uvm.node.script.ScriptException;
 import com.untangle.uvm.node.script.ScriptRunner;
 import org.apache.log4j.Logger;
 
@@ -121,15 +123,20 @@ class RemoteConnectivityTesterImpl implements RemoteConnectivityTester
         boolean isWorking = false;
         /* Run the DNS script first, this will indicate whether or not DNS is working */
         try {
-            String script = "sh " + DNS_TEST_SCRIPT + " " + dnsPrimaryServer.getHostAddress();
-            if ( null != dnsSecondaryServer ) script = script + " " + dnsSecondaryServer.getHostAddress();
+            String primaryServer = dnsPrimaryServer.getHostAddress();
+            String secondaryServer = "";
+            if ( dnsSecondaryServer != null ) secondaryServer = dnsSecondaryServer.getHostAddress();
 
-            Process p = LocalUvmContextFactory.context().exec( script );
-
-            if ( p.waitFor() == DNS_TEST_PASS ) isWorking=true;
+            /* This should throw an exception if it isn't working. */
+            ScriptRunner.getInstance().exec( DNS_TEST_SCRIPT, primaryServer, secondaryServer );
+            
+            isWorking = true;
+        } catch ( ScriptException e ) {
+            logger.info( "DNS is not working" );
+            isWorking = false;
         } catch( Exception e ) {
             logger.error( "Error testing dns", e );
-            isWorking=false;
+            isWorking = false;
         }
 
         /* Now run the dns test just to get the address of updates */
@@ -250,41 +257,3 @@ class RemoteConnectivityTesterImpl implements RemoteConnectivityTester
     }
 }
 
-class ConnectionStatus implements RemoteConnectivityTester.Status
-{
-    private static final ConnectionStatus DNS_AND_TCP = new ConnectionStatus( true, true );
-    private static final ConnectionStatus DNS         = new ConnectionStatus( true, false );
-    private static final ConnectionStatus TCP         = new ConnectionStatus( false, true );
-    private static final ConnectionStatus NOTHING     = new ConnectionStatus( false, false );
-
-    private final boolean isDnsWorking;
-    private final boolean isTcpWorking;
-
-    ConnectionStatus( boolean isDnsWorking, boolean isTcpWorking )
-    {
-        this.isDnsWorking = isDnsWorking;
-        this.isTcpWorking = isTcpWorking;
-    }
-
-    public boolean isTcpWorking()
-    {
-        return this.isTcpWorking;
-    }
-
-    public boolean isDnsWorking()
-    {
-        return this.isDnsWorking;
-    }
-
-    static ConnectionStatus makeConnectionStatus( boolean isDnsWorking, boolean isTcpWorking )
-    {
-        if ( isDnsWorking && isTcpWorking ) {
-            return DNS_AND_TCP;
-        } else if ( isDnsWorking ) {
-            return DNS;
-        } else if ( isTcpWorking ) {
-            return TCP;
-        }
-        return NOTHING;
-    }
-}

@@ -1,10 +1,10 @@
-#! /bin/bash
+#! /bin/dash
 
 exec >> @UVM_LOG@/iptables.log 2>&1
 
 DNS_TRIES=7
 DNS_TIMEOUT=2
-DNS_TEST_FAIL=-1
+DNS_TEST_FAIL=255
 DNS_TEST_PASS=0
 
 

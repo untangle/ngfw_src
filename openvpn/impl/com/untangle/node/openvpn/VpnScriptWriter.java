@@ -21,7 +21,7 @@ import com.untangle.uvm.node.script.ScriptWriter;
 import org.apache.log4j.Logger;
 
 import static com.untangle.uvm.node.script.ScriptWriter.COMMENT;
-import static com.untangle.uvm.node.script.ScriptWriter.METAVIZE_HEADER;
+import static com.untangle.uvm.node.script.ScriptWriter.UNTANGLE_HEADER;
 
 
 class VpnScriptWriter extends ScriptWriter
@@ -29,7 +29,7 @@ class VpnScriptWriter extends ScriptWriter
     private final Logger logger = Logger.getLogger(getClass());
 
     private static final String OPENVPN_HEADER =
-        COMMENT + METAVIZE_HEADER + "\n" +
+        COMMENT + UNTANGLE_HEADER + "\n" +
         COMMENT + " OpenVPN(v2.0) configuration script\n\n";
 
     VpnScriptWriter()
