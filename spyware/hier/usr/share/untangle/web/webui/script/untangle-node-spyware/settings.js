@@ -1,6 +1,7 @@
 //<script type="text/javascript">
-if(!Ung._hasResource["Ung.Spyware"]) {
-Ung._hasResource["Ung.Spyware"]=true;
+if(!Ung.hasResource["Ung.Spyware"]) {
+Ung.hasResource["Ung.Spyware"]=true;
+Ung.Settings.registerClassName('untangle-node-spyware',"Ung.Spyware");
 
 Ung.Spyware = Ext.extend(Ung.Settings, {
 	gridCookiesList: null,
@@ -9,49 +10,47 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
     gridEventLog: null,
     onRender: function(container, position) {
     	Ung.Spyware.superclass.onRender.call(this,container, position);
-    	this.rpc.node.getBaseSettings(function (result, exception) {
-			if(exception) {Ext.MessageBox.alert("Failed",exception.message); return;}
-			this.rpc.settings=result;
-			
-			this.buildBlockLists();
-			this.buildPassList();
-			this.buildEventLog();
-			this.buildTabPanel([this.panelBlockLists,this.gridPassList,this.gridEventLog]);
-		}.createDelegate(this));
+    	this.getBaseSettings();
+		this.buildBlockLists();
+		this.buildPassList();
+		this.buildEventLog();
+		this.buildTabPanel([this.panelBlockLists,this.gridPassList,this.gridEventLog]);
     },
     
     buildBlockLists: function () {
-		var template=new Ext.Template(
-'<div> Web</div><hr/><div><input type="checkbox" id="web_checkbox_{key}" /> Block Spyware & Ad URLs</div>',
-'<div> Cookies</div><hr/><div><input type="checkbox" id="cookies_checkbox_{key}" /> Block Tracking & Ad Cookies <span id="cookies_button_{key}"></span></div>',
-'<div> ActiveX</div><hr/><div><input type="checkbox" id="activex_checkbox_{key}" /> Block Malware ActiveX Installs <span id="activex_button_{key}"></span></div>',
-'<div> Traffic</div><hr/><div><input type="checkbox" id="traffic_checkbox_{key}" /> Monitor Suspicious Traffic <span id="traffic_button_{key}"></span></div>',
-'<div> Spyware Blocker signatures were last updated: <span id="last_update_signatures_{key}"></span></div>');
 		this.panelBlockLists=new Ext.Panel({
 			winCookiesList: null,
 			winActiveXList: null,
 			winSubnetList: null,
-			subCmps: null,
+			subCmps: [],
 			title: this.i18n._("Block Lists"),
-			key: "blockLists_"+this.getId(),
 			parentId: this.getId(),
-			html: template.applyTemplate({key: "blockLists_"+this.getId()}),
+			initComponent: function() {
+				var template=new Ext.Template(
+'<div> Web</div><hr/><div><input type="checkbox" id="web_checkbox_{id}" /> Block Spyware & Ad URLs</div>',
+'<div> Cookies</div><hr/><div><input type="checkbox" id="cookies_checkbox_{id}" /> Block Tracking & Ad Cookies <span id="cookies_button_{id}"></span></div>',
+'<div> ActiveX</div><hr/><div><input type="checkbox" id="activex_checkbox_{id}" /> Block Malware ActiveX Installs <span id="activex_button_{id}"></span></div>',
+'<div> Traffic</div><hr/><div><input type="checkbox" id="traffic_checkbox_{id}" /> Monitor Suspicious Traffic <span id="traffic_button_{id}"></span></div>',
+'<div> Spyware Blocker signatures were last updated: <span id="last_update_signatures_{id}"></span></div>');
+				this.html=template.applyTemplate({id: this.getId()}),
+				Ext.Panel.prototype.initComponent.call(this);
+			},
+			
 			afterRender: function() {
 				Ext.Panel.prototype.afterRender.call(this);
 				
-				this.subCmps=[];
 				this.subCmps.push(new Ext.Button({
-					'renderTo':'cookies_button_'+this.key,
+					'renderTo':'cookies_button_'+this.id,
 					'text': i18n._('manage list'),
 					'handler': function() {this.onManageCookiesList();}.createDelegate(this)
 				}));
 				this.subCmps.push(new Ext.Button({
-					'renderTo':'activex_button_'+this.key,
+					'renderTo':'activex_button_'+this.id,
 					'text': i18n._('manage list'),
 					'handler': function() {this.onManageActiveXList();}.createDelegate(this)
 				}));
 				this.subCmps.push(new Ext.Button({
-					'renderTo':'traffic_button_'+this.key,
+					'renderTo':'traffic_button_'+this.id,
 					'text': i18n._('manage list'),
 					'handler': function() {this.onManageTrafficList();}.createDelegate(this)
 				}));
@@ -61,7 +60,6 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
 		    	if(!this.winCookiesList) {
 		    		this.winCookiesList=new Ung.UpdateWindow({
 		    			parentId: this.getId(),
-		    			key: "cookiesList",
 		    			listeners: {
 		    				'show':{
 						        fn: function() {
@@ -73,8 +71,6 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
 						    }
 		    			}
 		    		});
-		    		//this.panelBlockListswinCookiesList.render();
-		    		//this.panelBlockLists.winCookiesList.initalize();
 			    	if(!settingsCmp.gridCookiesList) {
 			    		settingsCmp.buildCookiesList();
 			    	}
@@ -95,20 +91,14 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
 		            this.winActiveXList,
 		            this.winSubnetList
 		        );
-		        if(this.subCmps) {
-		        	Ext.each(this.subCmps,Ext.destroy);
-		        }
+	        	Ext.each(this.subCmps,Ext.destroy);
 		        Ext.Panel.superclass.beforeDestroy.call(this);
 		    }
 		});
     
     },
-    
+    // Cookies List
     buildCookiesList: function() {
-    
-	    // the column model has information about grid columns
-	    // dataIndex maps the column to the specific data field in the data store (created below)
-	    
 	    var logColumn = new Ext.grid.CheckColumn({
 	       header: "<b>"+this.i18n._("log")+"</b>", width: 35, dataIndex: 'log', fixed:true
 	    });
@@ -132,7 +122,6 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
 
     	this.gridCookiesList=new Ung.EditorGrid({
     		settingsCmp: this,
-    		key: "cookiesList",
     		emptyRow: {"string":"","category":"","log":false,"description":""},
     		title: this.i18n._('Cookies List'),
     		proxyRpcFn: this.rpc.node.getCookieRules,
@@ -152,9 +141,10 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
 			]
     	});
     	this.gridCookiesList.render(this.panelBlockLists.winCookiesList.getContentEl());
-    	this.gridCookiesList.getStore().proxy.setTotalRecords(this.rpc.settings.cookieRulesLength);
+    	this.gridCookiesList.getStore().proxy.setTotalRecords(this.getBaseSettings().cookieRulesLength);
     	this.gridCookiesList.initialLoad();
     },
+    // Pass List
     buildPassList: function() {
 	    var passColumn = new Ext.grid.CheckColumn({
 	       header: "<b>"+this.i18n._("pass")+"</b>", width: 35, dataIndex: 'live', fixed:true
@@ -176,7 +166,6 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
 
     	this.gridPassList=new Ung.EditorGrid({
     		settingsCmp: this,
-    		key: "passList",
     		emptyRow: {"string":"","live":false,"description":""},
     		title: this.i18n._('Pass List'),
     		proxyRpcFn: this.rpc.node.getDomainWhitelist,
@@ -194,9 +183,9 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
 				{name:"description", label: this.i18n._("Description"), type:"textarea", style:"width:200px;height:60px;"}
 			]
     	});
-    	this.gridPassList.getStore().proxy.setTotalRecords(this.rpc.settings.domainWhitelistLength);
+    	this.gridPassList.getStore().proxy.setTotalRecords(this.getBaseSettings().domainWhitelistLength);
     },
-    
+    // Event Log
     buildEventLog: function() {
 		// Event Log grid
 		this.gridEventLog=new Ung.GridEventLog({
@@ -230,7 +219,6 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
 		});
     },
     
-    
     savePassList: function() {
     	this.tabs.disable();
     	this.gridPassList.getStore().commitChanges();
@@ -250,16 +238,9 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
 			}
 		}.createDelegate(this), this.rpc.settings);
     },
-
-	loadData: function() {
-		
-	},
-	
 	save: function() {
 		this.savePassList();
 	}
 });
-Ung.Settings.registerClassName('untangle-node-spyware','Ung.Spyware');
-Ext.reg('utgSpyware', Ung.Spyware);
 }
 //</script>

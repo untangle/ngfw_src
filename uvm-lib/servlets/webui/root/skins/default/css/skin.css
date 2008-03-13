@@ -358,4 +358,19 @@ div.inputLine span.formw {
   float: right;
   width: 235px;
   text-align: left;
-} 
+}
+div.buttonHelpPos {
+	position:absolute;
+	left:10px;
+	bottom:5px;
+}
+div.buttonCancelPos {
+	position:absolute;
+	right:100px;
+	bottom:5px;
+}
+div.buttonUpdatePos {
+	position:absolute;
+	right:10px;
+	bottom:5px;
+}

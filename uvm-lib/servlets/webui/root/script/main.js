@@ -19,47 +19,47 @@ Ung.Main.prototype = {
 	version: null,
 	networkingWin: null,
 	init: function() {
-			main.initSemaphore=6;
-			rpc = new Ung.RPC();
-			rpc.jsonrpc = new JSONRpcClient("/webui/JSON-RPC");
-			rpc.jsonrpc.RemoteUvmContext.nodeManager(function (result, exception) {
-				if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
-				rpc.nodeManager=result;
-				main.postinit();
-			});
-			rpc.jsonrpc.RemoteUvmContext.policyManager(function (result, exception) {
-				if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
-				rpc.policyManager=result;
-				main.postinit();
-			});
-			rpc.jsonrpc.RemoteUvmContext.toolboxManager(function (result, exception) {
-				if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
-				rpc.toolboxManager=result;
-				main.postinit();
-			});
-			rpc.jsonrpc.RemoteUvmContext.adminManager(function (result, exception) {
-				if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
-				rpc.adminManager=result;
-				main.postinit();
-			});
-			rpc.jsonrpc.RemoteUvmContext.version(function (result, exception) {
-				if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
-				rpc.version=result;
-				main.postinit();
-			});
+		main.initSemaphore=6;
+		rpc = new Ung.RPC();
+		rpc.jsonrpc = new JSONRpcClient("/webui/JSON-RPC");
+		rpc.jsonrpc.RemoteUvmContext.nodeManager(function (result, exception) {
+			if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
+			rpc.nodeManager=result;
+			main.postinit();
+		});
+		rpc.jsonrpc.RemoteUvmContext.policyManager(function (result, exception) {
+			if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
+			rpc.policyManager=result;
+			main.postinit();
+		});
+		rpc.jsonrpc.RemoteUvmContext.toolboxManager(function (result, exception) {
+			if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
+			rpc.toolboxManager=result;
+			main.postinit();
+		});
+		rpc.jsonrpc.RemoteUvmContext.adminManager(function (result, exception) {
+			if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
+			rpc.adminManager=result;
+			main.postinit();
+		});
+		rpc.jsonrpc.RemoteUvmContext.version(function (result, exception) {
+			if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
+			rpc.version=result;
+			main.postinit();
+		});
 			
-			Ext.Ajax.request({
-		        url: "i18n",
-				method: 'GET',
-				success: function ( result, request) {
-					var jsonResult=Ext.util.JSON.decode(result.responseText);
-					i18n =new Ung.I18N({"map":jsonResult});
-					main.postinit();
-				},
-				failure: function ( result, request) { 
-					Ext.MessageBox.alert("Failed", 'Failed loading I18N translations for main rack'); 
-				} 
-			});
+		Ext.Ajax.request({
+	        url: "i18n",
+			method: 'GET',
+			success: function ( result, request) {
+				var jsonResult=Ext.util.JSON.decode(result.responseText);
+				i18n =new Ung.I18N({"map":jsonResult});
+				main.postinit();
+			},
+			failure: function ( result, request) { 
+				Ext.MessageBox.alert("Failed", 'Failed loading I18N translations for main rack'); 
+			} 
+		});
 	},
 	postinit: function() {
 		main.initSemaphore--;
@@ -182,14 +182,6 @@ Ung.Main.prototype = {
 	},
 	
 	loadConfig: function() {
-	/*
-		rpc.toolboxManager.getConfigItems(function (result, exception) {
-			if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
-			main.config = result;
-			main.buildConfig();
-		});
-	*/
-		
 		main.config = 
 			[{"name":"networking","displayName":"Networking","image":"images/tools/config/IconConfigNetwork36x36.png"},
 			{"name":"remoteAdmin","displayName":"Remote Admin","image":"images/tools/config/IconConfigAdmin36x36.png"},
@@ -219,7 +211,6 @@ Ung.Main.prototype = {
 			}
 		}
 		return null;
-		
 	},
 	createNode: function (Tid) {
 		var node={};
@@ -389,12 +380,11 @@ Ung.Main.prototype = {
 		        	main.networkingWin.setSize(objSize);
 		        	//document.getElementById("networkingWin_iframe").src=alpacaUrl;
 		        	window.frames["networkingWin_iframe"].location.href=alpacaUrl;
-					
-									
 				});
-				break;    
+				break;
 			default:
 				Ext.MessageBox.alert("Failed","TODO: implement config "+item.name);
+				break;
 		}
 	
 		/*

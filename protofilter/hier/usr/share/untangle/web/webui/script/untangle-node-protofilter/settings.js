@@ -1,6 +1,7 @@
 //<script type="text/javascript">
-if(!Ung._hasResource["Ung.Protofilter"]) {
-Ung._hasResource["Ung.Protofilter"]=true;
+if(!Ung.hasResource["Ung.Protofilter"]) {
+Ung.hasResource["Ung.Protofilter"]=true;
+Ung.Settings.registerClassName('untangle-node-protofilter','Ung.Protofilter');
 
 Ung.Protofilter = Ext.extend(Ung.Settings, {
     gridProtocolList: null,
@@ -9,7 +10,7 @@ Ung.Protofilter = Ext.extend(Ung.Settings, {
     	Ung.Protofilter.superclass.onRender.call(this,container, position);
 		this.buildProtocolList();
 		this.buildEventLog();
-		this.bulidTabPanel([this.gridProtocolList,this.gridEventLog]);
+		this.buildTabPanel([this.gridProtocolList,this.gridEventLog]);
     },
     
     buildProtocolList: function() {
@@ -171,14 +172,11 @@ Ung.Protofilter = Ext.extend(Ung.Settings, {
 				this.loadProtocolList();
 			}
 		}.createDelegate(this));
-		
 	},
 	
 	save: function() {
 		this.saveProtocolList();
 	}
 });
-Ung.Settings.registerClassName('untangle-node-protofilter','Ung.Protofilter');
-Ext.reg('utgProtofilter', Ung.Protofilter);
 }
 //</script>
