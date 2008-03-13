@@ -119,7 +119,7 @@ testInstall()
     done
     
     ## Stop the server
-    sh ${SCRIPT_DIR}/stop-openvpn
+    bash ${SCRIPT_DIR}/stop-openvpn
 
     if [ -z "${t_success}" ]; then
         echo "Unable to start server"
@@ -132,7 +132,7 @@ testInstall()
 completeInstall()
 {
     ## Modify the startup script to run a command to update the route after startup
-    sed  -i -e "\$ a route-up \"sh ${SCRIPT_DIR}/route-up\"" ${OPENVPN_CONF_DIR}/client.conf    
+    sed  -i -e "\$ a route-up \"bash ${SCRIPT_DIR}/route-up\"" ${OPENVPN_CONF_DIR}/client.conf    
 }
 
 if [ "${getFromUsb}x" = "truex" ]; then 

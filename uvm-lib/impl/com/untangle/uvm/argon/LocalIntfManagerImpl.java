@@ -151,29 +151,10 @@ class LocalIntfManagerImpl implements LocalIntfManager
         return this.intfConverter.getIntfList();
     }
 
-    /* This is a list of non-physical interfaces (everything except for internal, external and dmz).
-     * This list would contain interfaces like VPN. */
-    public List<ArgonInterface> getCustomIntfList()
-    {
-        return this.intfConverter.getCustomIntfList();
-    }
-
     /* Return an array of the argon interfaces */
     public byte[] getArgonIntfArray()
     {
         return this.intfConverter.getArgonIntfArray();
-    }
-
-    /* Register a secondary interface, this is an interface that replaces another interface,
-     * EG. if ETH0 -> PPP0, PPP0 is the secondary interface and ETH0 is the primary interface */
-    public synchronized void registerSecondaryIntf(String name, byte argon) throws ArgonException
-    {
-        ArgonInterfaceConverter prevIntfConverter = this.intfConverter;
-
-        logger.debug("Registering the secondary interface: [" + argon + ":" + name +"]");
-        ArgonInterface intf = this.intfConverter.getIntfByArgon(argon);
-        this.intfConverter = this.intfConverter.registerIntf(intf.makeNewSecondaryIntf(name));
-        notifyDependents(prevIntfConverter);
     }
 
     /* Unregister a custom interface or DMZ. */
@@ -183,31 +164,6 @@ class LocalIntfManagerImpl implements LocalIntfManager
         this.intfConverter = this.intfConverter.unregisterIntf(argon);
 
         notifyDependents(prevIntfConverter);
-    }
-
-    /* Unregister an individual secondary interface */
-    public synchronized void unregisterSecondaryIntf(byte argon) throws ArgonException
-    {
-        ArgonInterfaceConverter prevIntfConverter = this.intfConverter;
-
-        logger.debug("Unregistering the secondary interface: [" + argon + "]");
-        ArgonInterface intf = this.intfConverter.getIntfByArgon(argon);
-        this.intfConverter = this.intfConverter.registerIntf(intf.makeNewSecondaryIntf(null));
-        notifyDependents(prevIntfConverter);
-    }
-
-    /* This resets all of the secondary interfaces to their physical interfaces */
-    public synchronized void resetSecondaryIntfs()
-    {
-        ArgonInterfaceConverter prevIntfConverter = this.intfConverter;
-
-        logger.debug("Unregistering all secondary interfaces.");
-        try {
-            this.intfConverter = this.intfConverter.resetSecondaryIntfs();
-            notifyDependents(prevIntfConverter);
-        } catch (ArgonException e) {
-            logger.error("Error while resetting the secondary interfaces continuing.", e);
-        }
     }
 
     /* Retrieve the current interface enumeration */

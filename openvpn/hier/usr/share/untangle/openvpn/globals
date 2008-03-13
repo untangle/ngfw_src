@@ -90,7 +90,8 @@ saveToUsbKey()
     true
 }
 
-removeSpaces() {
+removeSpaces()
+{
     ## don't know why but this works, and just 'echo ${*// /_}' doesn't.
     local val="$*"
     echo ${val// /_}

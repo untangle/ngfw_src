@@ -119,17 +119,6 @@ final class ArgonInterfaceConverter
         return this.intfList;
     }
 
-    /* This is a list of non-physical interfaces (everything except for internal, external and dmz ).
-     * This list would contain interfaces like VPN. */
-    List<ArgonInterface> getCustomIntfList()
-    {
-        List list = new LinkedList<ArgonInterface>( this.intfList );
-        list.remove( getInternal());
-        list.remove( getExternal());
-        list.remove( getDmz());
-        return list;
-    }
-
     /* Return an array of the argon interfaces */
     byte[] getArgonIntfArray()
     {
@@ -207,16 +196,6 @@ final class ArgonInterfaceConverter
         if ( !newIntfList.remove( intf )) {
             logger.warn( "Error de-registering the interface [" + argonIntf + "] continuing" );
         }
-
-        return makeInstance( newIntfList );
-    }
-
-    /** Reset all of the secondary interfaces to null */
-    ArgonInterfaceConverter resetSecondaryIntfs() throws ArgonException
-    {
-        List<ArgonInterface> newIntfList = new LinkedList<ArgonInterface>();
-
-        for ( ArgonInterface intf : intfList ) newIntfList.add( intf.makeNewSecondaryIntf( null ));
 
         return makeInstance( newIntfList );
     }
