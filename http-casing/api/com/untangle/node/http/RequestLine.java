@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -37,6 +37,8 @@ import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+import java.sql.Timestamp;
+import java.util.Date;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -47,6 +49,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import com.untangle.uvm.node.PipelineEndpoints;
@@ -60,133 +64,160 @@ import org.hibernate.annotations.Type;
  */
 @Entity
 @org.hibernate.annotations.Entity(mutable=false)
-    @Table(name="n_http_req_line", schema="events")
-    public class RequestLine implements Serializable
+@Table(name="n_http_req_line", schema="events")
+public class RequestLine implements Serializable
+{
+    private static final long serialVersionUID = -2183950932382112727L;
+
+    private Long id;
+    private HttpMethod method;
+    private URI requestUri;
+    private PipelineEndpoints pipelineEndpoints;
+    private HttpRequestEvent httpRequestEvent; // Filled in after creation time.
+    private Date timeStamp = new Date();
+
+    // constructors --------------------------------------------------------------
+
+    public RequestLine() { }
+
+    public RequestLine(PipelineEndpoints pe, HttpMethod method, URI requestUri)
     {
-        private static final long serialVersionUID = -2183950932382112727L;
+        this.pipelineEndpoints = pe;
+        this.method = method;
+        this.requestUri = requestUri;
+    }
 
-        private Long id;
-        private HttpMethod method;
-        private URI requestUri;
-        private PipelineEndpoints pipelineEndpoints;
-        private HttpRequestEvent httpRequestEvent; // Filled in after creation time.
+    // business methods ----------------------------------------------------------
 
-        // constructors -----------------------------------------------------------
+    @Transient
+    public URL getUrl()
+    {
+        // XXX this shouldn't happen in practice
+        String host = null == httpRequestEvent ? ""
+            : httpRequestEvent.getHost();
 
-        public RequestLine() { }
-
-        public RequestLine(PipelineEndpoints pe, HttpMethod method, URI requestUri)
-        {
-            this.pipelineEndpoints = pe;
-            this.method = method;
-            this.requestUri = requestUri;
+        URL url;
+        try {
+            url = new URL("http", host, getRequestUri().toString());
+        } catch (MalformedURLException exn) {
+            throw new RuntimeException(exn); // should never happen
         }
 
-        // business methods -------------------------------------------------------
+        return url;
+    }
 
-        @Transient
-        public URL getUrl()
-        {
-            // XXX this shouldn't happen in practice
-            String host = null == httpRequestEvent ? ""
-                : httpRequestEvent.getHost();
+    // accessors -----------------------------------------------------------------
 
-            URL url;
-            try {
-                url = new URL("http", host, getRequestUri().toString());
-            } catch (MalformedURLException exn) {
-                throw new RuntimeException(exn); // should never happen
-            }
+    @Id
+    @Column(name="request_id")
+    @GeneratedValue
+    private Long getId()
+    {
+        return id;
+    }
 
-            return url;
-        }
+    private void setId(Long id)
+    {
+        this.id = id;
+    }
 
-        // accessors --------------------------------------------------------------
+    /**
+     * Get the PipelineEndpoints.
+     *
+     * @return the PipelineEndpoints.
+     */
+    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinColumn(name="pl_endp_id", nullable=false)
+    public PipelineEndpoints getPipelineEndpoints()
+    {
+        return pipelineEndpoints;
+    }
 
-        @Id
-        @Column(name="request_id")
-        @GeneratedValue
-        private Long getId()
-        {
-            return id;
-        }
+    public void setPipelineEndpoints(PipelineEndpoints pipelineEndpoints)
+    {
+        this.pipelineEndpoints = pipelineEndpoints;
+    }
 
-        private void setId(Long id)
-        {
-            this.id = id;
-        }
+    /**
+     * Request method.
+     *
+     * @return the request method.
+     */
+    @Type(type="com.untangle.node.http.HttpMethodUserType")
+    public HttpMethod getMethod()
+    {
+        return method;
+    }
 
-        /**
-         * Get the PipelineEndpoints.
-         *
-         * @return the PipelineEndpoints.
-         */
-        @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
-        @JoinColumn(name="pl_endp_id", nullable=false)
-        public PipelineEndpoints getPipelineEndpoints()
-        {
-            return pipelineEndpoints;
-        }
+    public void setMethod(HttpMethod method)
+    {
+        this.method = method;
+    }
 
-        public void setPipelineEndpoints(PipelineEndpoints pipelineEndpoints)
-        {
-            this.pipelineEndpoints = pipelineEndpoints;
-        }
+    /**
+     * Request URI.
+     *
+     * @return the request URI.
+     */
+    @Column(name="uri")
+    @Type(type="com.untangle.uvm.type.UriUserType")
+    public URI getRequestUri()
+    {
+        return requestUri;
+    }
 
-        /**
-         * Request method.
-         *
-         * @return the request method.
-         */
-        @Type(type="com.untangle.node.http.HttpMethodUserType")
-        public HttpMethod getMethod()
-        {
-            return method;
-        }
+    public void setRequestUri(URI requestUri)
+    {
+        this.requestUri = requestUri;
+    }
 
-        public void setMethod(HttpMethod method)
-        {
-            this.method = method;
-        }
+    /**
+     * Time the event was logged, as filled in by logger.
+     *
+     * @return time logged.
+     */
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="time_stamp")
+    public Date getTimeStamp()
+    {
+        return timeStamp;
+    }
 
-        /**
-         * Request URI.
-         *
-         * @return the request URI.
-         */
-        @Column(name="uri")
-        @Type(type="com.untangle.uvm.type.UriUserType")
-        public URI getRequestUri()
-        {
-            return requestUri;
-        }
-
-        public void setRequestUri(URI requestUri)
-        {
-            this.requestUri = requestUri;
-        }
-
-        /**
-         * The HttpRequestEvent that logged this item.
-         *
-         * @return the HttpRequestEvent.
-         */
-        @OneToOne(mappedBy="requestLine")
-        public HttpRequestEvent getHttpRequestEvent()
-        {
-            return httpRequestEvent;
-        }
-
-        public void setHttpRequestEvent(HttpRequestEvent httpRequestEvent)
-        {
-            this.httpRequestEvent = httpRequestEvent;
-        }
-
-        // Object methods ---------------------------------------------------------
-
-        public String toString()
-        {
-            return "RequestLine id: " + id + " length: "
-                + requestUri.toString().length() + " (" + super.toString() + ")";
+    /**
+     * Don't make Aaron angry!  This should only be set by the event
+     * logging system unless you're doing tricky things (with Aaron's
+     * approval).
+     */
+    public void setTimeStamp(Date timeStamp)
+    {
+        if (timeStamp instanceof Timestamp) {
+            this.timeStamp = new Date(timeStamp.getTime());
+        } else {
+            this.timeStamp = timeStamp;
         }
     }
+
+    /**
+     * The HttpRequestEvent that logged this item.
+     *
+     * @return the HttpRequestEvent.
+     */
+    @OneToOne(mappedBy="requestLine")
+    public HttpRequestEvent getHttpRequestEvent()
+    {
+        return httpRequestEvent;
+    }
+
+    public void setHttpRequestEvent(HttpRequestEvent httpRequestEvent)
+    {
+        this.httpRequestEvent = httpRequestEvent;
+    }
+
+    // Object methods ------------------------------------------------------------
+
+    public String toString()
+    {
+        return "RequestLine id: " + id + " length: "
+            + requestUri.toString().length() + " (" + super.toString() + ")";
+    }
+}
