@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -38,6 +38,7 @@ import static com.untangle.node.util.Ascii.*;
 
 import java.nio.ByteBuffer;
 
+import com.untangle.node.mail.papi.FatalMailParseException;
 import com.untangle.node.token.ParseException;
 
 /**
@@ -53,7 +54,7 @@ public class CommandParser {
      * we wish parsed.
      */
     public static Command parse(ByteBuffer buf)
-        throws ParseException {
+        throws ParseException, FatalMailParseException {
 
         //TODO bscott Shouldn't the command token always
         //     be 4 in length?  Should we make this some type

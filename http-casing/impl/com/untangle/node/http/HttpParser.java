@@ -748,7 +748,9 @@ public class HttpParser extends AbstractParser
             } else {
                 logger.warn("don't know transfer-encoding: " + value);
             }
-        } else if (key.equalsIgnoreCase("content-length")) {
+        } else if (key.equalsIgnoreCase("content-length")
+                   && transferEncoding != CHUNKED_ENCODING) {
+
             if (logger.isDebugEnabled()) {
                 logger.debug(sessStr + "using content length encoding");
             }

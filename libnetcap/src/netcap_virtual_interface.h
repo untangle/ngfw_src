@@ -16,7 +16,7 @@
 #include "libnetcap.h"
 
 /* This initialises the tun interface */
-int netcap_virtual_interface_init( char* name );
+int netcap_virtual_interface_init( char *name );
 
 /* Send pkt out the virtual interface */
 int netcap_virtual_interface_send_pkt( netcap_pkt_t* pkt );

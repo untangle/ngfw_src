@@ -67,6 +67,8 @@ public class NetworkManagerImpl implements LocalNetworkManager
     static final String BUNNICULA_BASE = System.getProperty( "bunnicula.home" );
     static final String BUNNICULA_CONF = System.getProperty( "bunnicula.conf.dir" );
 
+    static final String ALPACA_SCRIPT = "/usr/share/untangle-net-alpaca/scripts/";
+
     /* Script to run after reconfiguration (from NetworkSettings Listener) */
     private static final String AFTER_RECONFIGURE_SCRIPT = BUNNICULA_BASE + "/networking/after-reconfigure";
 

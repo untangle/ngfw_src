@@ -27,7 +27,7 @@ import com.untangle.uvm.node.script.ScriptWriter;
 import org.apache.log4j.Logger;
 
 import static com.untangle.uvm.node.script.ScriptWriter.COMMENT;
-import static com.untangle.uvm.node.script.ScriptWriter.METAVIZE_HEADER;
+import static com.untangle.uvm.node.script.ScriptWriter.UNTANGLE_HEADER;
 
 class ResolvScriptWriter extends ScriptWriter
 {
@@ -38,7 +38,7 @@ class ResolvScriptWriter extends ScriptWriter
     static final String NS_PARAM = "nameserver";
 
     private static final String RESOLV_HEADER =
-        COMMENT + METAVIZE_HEADER +
+        COMMENT + UNTANGLE_HEADER +
         COMMENT + " name resolution settings.\n";
 
     private final NetworkSpacesInternalSettings settings;

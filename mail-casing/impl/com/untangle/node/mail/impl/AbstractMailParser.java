@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -20,14 +20,15 @@ package com.untangle.node.mail.impl;
 
 import java.nio.ByteBuffer;
 
-import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.vnet.Pipeline;
-import com.untangle.uvm.vnet.TCPSession;
+import com.untangle.node.mail.papi.FatalMailParseException;
 import com.untangle.node.token.AbstractParser;
 import com.untangle.node.token.Chunk;
 import com.untangle.node.token.ParseException;
 import com.untangle.node.token.ParseResult;
 import com.untangle.node.token.TokenStreamer;
+import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.vnet.Pipeline;
+import com.untangle.uvm.vnet.TCPSession;
 import org.apache.log4j.Logger;
 
 /**
@@ -113,31 +114,37 @@ public abstract class AbstractMailParser
                        (isClientSide()?"client":"server") + ") handleFinalized()");
     }
 
-    public final ParseResult parse(ByteBuffer buf) {
+    public final ParseResult parse(ByteBuffer buf) throws ParseException {
 
-        if(m_trace) {
-            ByteBuffer dup = buf.duplicate();
-            ParseResult ret = isPassthru()?
-                new ParseResult(new Chunk(buf)):
-                doParse(buf);
-            if(ret != null) {
-                ByteBuffer readBuf = ret.getReadBuffer();
-                if(readBuf != null && readBuf.position() > 0) {
-                    if(readBuf.position() >= dup.remaining()) {
-                        //The subclass pushed-back the whole buffer
-                        dup = ByteBuffer.allocate(0);
-                    }
-                    else {
-                        dup.limit(dup.limit()-readBuf.position());
+        try {
+            if(m_trace) {
+                ByteBuffer dup = buf.duplicate();
+                ParseResult ret = isPassthru()?
+                    new ParseResult(new Chunk(buf)):
+                    doParse(buf);
+                if(ret != null) {
+                    ByteBuffer readBuf = ret.getReadBuffer();
+                    if(readBuf != null && readBuf.position() > 0) {
+                        if(readBuf.position() >= dup.remaining()) {
+                            //The subclass pushed-back the whole buffer
+                            dup = ByteBuffer.allocate(0);
+                        }
+                        else {
+                            dup.limit(dup.limit()-readBuf.position());
+                        }
                     }
                 }
+                getParentCasing().traceParse(dup);
+                return ret;
             }
-            getParentCasing().traceParse(dup);
-            return ret;
+            return isPassthru()?
+                new ParseResult(new Chunk(buf)):
+                doParse(buf);
+        } catch (FatalMailParseException exn) {
+            getSession().shutdownClient();
+            getSession().shutdownServer();
+            return new ParseResult();
         }
-        return isPassthru()?
-            new ParseResult(new Chunk(buf)):
-            doParse(buf);
     }
 
     /**
@@ -147,7 +154,8 @@ public abstract class AbstractMailParser
      * Note that if the casing is {@link #isPassthru in passthru}
      * then this method will not be called.
      */
-    protected abstract ParseResult doParse(ByteBuffer buf);
+    protected abstract ParseResult doParse(ByteBuffer buf)
+        throws FatalMailParseException;
 
     public final ParseResult parseEnd(ByteBuffer buf)
         throws ParseException {

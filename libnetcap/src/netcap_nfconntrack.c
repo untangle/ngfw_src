@@ -395,7 +395,7 @@ int netcap_nfconntrack_del_entry_tuple( netcap_nfconntrack_ipv4_tuple_t* tuple,
     }
     ret = _critical_section();
     if ( pthread_mutex_unlock( &_netcap_nfconntrack.mutex ) < 0 ) {
-        return perrlog( "pthread_mutex_lock" );
+        return perrlog( "pthread_mutex_unlock" );
     }
     if ( ct != NULL ) nfct_destroy( ct );
 

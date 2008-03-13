@@ -81,6 +81,7 @@ public class BlockJPanel extends MEditTableJPanel{
         public TableColumnModel getTableColumnModel(){
             IntfMatcherFactory imf = IntfMatcherFactory.getInstance();
             IntfEnum intfEnum = Util.getIntfManager().getIntfEnum();
+            imf.updateEnumeration(intfEnum);
 
             UtComboBoxModel sIfaceModel = super.generateComboBoxModel( imf.getEnumeration(), imf.getDefault() );
             sIfaceModel.insertElementAt(new UtComboBoxRenderer.Separator(), 1);
