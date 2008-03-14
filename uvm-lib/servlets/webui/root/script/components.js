@@ -1140,10 +1140,8 @@ Ext.grid.DeleteColumn.prototype ={
             e.stopEvent();
             var index = this.grid.getView().findRowIndex(t);
             var record = this.grid.store.getAt(index);
-            this.grid.deleteRecord(record);
-            this.grid.getView().refreshRow(record);
-            //this.grid.store.remove(record);
-            this.grid.getView().addRowClass(index, "grid-row-deleted");
+            this.grid.updateChangedData(record,"deleted");
+            //this.grid.getView().addRowClass(index, "grid-row-deleted");
         }
     },
 
@@ -1185,7 +1183,7 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			} else {
 				var d=this.grid.changedData[id];
 				if(d) {
-					if(d=="deleted") {
+					if(d.op=="deleted") {
 						return "grid-row-deleted";
 					} else {
 						return "grid-row-modified";
@@ -1200,33 +1198,37 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 	initialLoad: function() {
 		this.getStore().load();
 	},
-	deleteRecord: function (record) {
-            //var index = this.grid.getView().findRowIndex(t);
-            //var record = this.grid.store.getAt(index);
-            //this.grid.store.remove(record);
-		var id=record.get("id");
-		if(id!=null && id>0) {
-			this.changedData[id]="deleted";
-		}
-	},
-	modifyRecord: function (record) {
-		var id=record.get("id");
-		if(id!=null) {
-			this.changedData[id]=record;
-		}
-	},
-	addRecord: function (record) {
-		var id=record.get("id");
-		this.changedData[id]=record;
-		/*
-		var rec=new Ext.data.Record(this.emptyRow);
-		this.getStore().insert(0, [rec]);
-		var row = this.getView().findRowIndex(this.getView().getRow(0));
-		this.getView().addRowClass(row, "grid-row-added");
-		*/
-	},
 	updateFromChangedData: function(store, records, options) {
 		//records.push(records[0]);
+	},
+	updateChangedData: function( record, currentOp) {
+		var id=record.get("id");
+		var cd=this.changedData[id];
+		if(cd==null) {
+			this.changedData[id]={op: currentOp, rec: record, pageStart: this.store.getPageStart()};
+			if("deleted"==currentOp) {
+				var index=this.store.indexOf(record);
+				this.getView().refreshRow(record);
+			}
+		} else {
+			if("deleted"==currentOp) {
+				if("added"==cd.op) {
+					this.grid.store.remove(record);
+					this.changedData[id]=null;
+					delete this.changedData[id];
+				} else {
+					this.changedData[id]={op: currentOp, rec: record, pageStart: this.store.getPageStart()};
+					this.getView().refreshRow(record);
+				}
+			} else {
+				if("added"==cd.op) {
+					this.changedData[id].rec=record;
+				} else {
+					this.changedData[id]={op: currentOp, rec: record, pageStart: this.store.getPageStart()};
+				}
+			}
+		}
+		
 	},
 	setTotalRows: function(totalRows) {
 		this.totalRows=totalRows;
@@ -1270,16 +1272,22 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 				Ext.data.Store.prototype.initComponent.call(this);
 			},
 			*/
-			
+			getPageStart: function () {
+				if(this.lastOptions && this.lastOptions.params) {
+					return this.lastOptions.params.start
+				} else {
+					return null;
+				}
+			},
 			listeners: {
 				"update": {
 					fn: function(store, record, operation ) {
-						this.modifyRecord(record);
+						this.updateChangedData(record,"modified");
 					}.createDelegate(this)
 				},
 				"load": {
 					fn: function(store, records, options ) {
-						this.updateFromChangedData(store, records, options);
+						this.updateFromChangedData(records, options);
 					}.createDelegate(this)
 				}
 			}
@@ -1307,11 +1315,10 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 				handler: function() {
 					var record=new Ext.data.Record(this.emptyRow);
 					record.set("id",this.genAddedId());
-					this.addRecord(record);
 					this.stopEditing();
 					this.getStore().insert(0, [record]);
+					this.updateChangedData(record,"added");
 					var row = this.getView().findRowIndex(this.getView().getRow(0));
-		            //this.getView().addRowClass(row, "grid-row-added");
 					if(this.rowEditor) {
 						this.rowEditor.populate(record,0);
 						this.rowEditor.show();
@@ -1329,7 +1336,7 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		var modified=[];
 		for(id in this.changedData) {
 			var rec=this.changedData[id]
-			if("deleted"==rec) {
+			if("deleted"==rec.op) {
 				if(id>0) {
 					var recData={"id":id,"javaClass":this.recordJavaClass};
 					deleted.push(recData);
