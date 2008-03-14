@@ -66,7 +66,7 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
 						        fn: function() {
 						        	var panelCmp= Ext.getCmp(this.parentId);
 						        	var settingsCmp=Ext.getCmp(panelCmp.parentId);
-						        	this.initialChangedData=settingsCmp.gridCookiesList.changedData;
+						        	this.initialChangedData=Ext.encode(settingsCmp.gridCookiesList.changedData);
 						        	settingsCmp.gridCookiesList.setHeight(this.getContentHeight());
 						        },
 						        delay:1
@@ -75,7 +75,8 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
 		    			cancelAction: function () {
 		    				var panelCmp= Ext.getCmp(this.parentId);
 						    var settingsCmp=Ext.getCmp(panelCmp.parentId);
-		    				settingsCmp.gridCookiesList.changedData=this.initialChangedData;
+		    				settingsCmp.gridCookiesList.changedData=Ext.decode(this.initialChangedData);
+		    				settingsCmp.gridCookiesList.getView().refresh();
 		    				this.hide();
 		    			},
 		    			updateAction: function () {
