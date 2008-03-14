@@ -84,7 +84,7 @@ public class ProtoFilterPattern implements Serializable
     @Id
     @Column(name="rule_id")
     @GeneratedValue
-    protected Long getId() { return id; }
+    public Long getId() { return id; }
     protected void setId(Long id) { this.id = id; }
 
     /**

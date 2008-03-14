@@ -21,6 +21,7 @@ import java.util.List;
 
 import com.untangle.uvm.logging.EventManager;
 import com.untangle.uvm.node.Node;
+import com.untangle.uvm.node.NodeException;
 
 public interface ProtoFilter extends Node
 {
@@ -30,10 +31,20 @@ public interface ProtoFilter extends Node
     List<ProtoFilterPattern> getPatterns(int start, int limit, String... sortColumns);
     void updatePatterns(List<ProtoFilterPattern> added, List<Long> deleted, List<ProtoFilterPattern> modified);
     
-    EventManager<ProtoFilterLogEvent> getEventManager();
+    /**
+     * Update all settings once
+     */
+    void updateAll(List[] patternsChanges);
     
-    // wrapper method to update all settings once
-    // TODO can we find a better place for this ugly method?
-    public void updateAll(List[] patternsChanges);
+    /**
+     * Reconfigure node. This method should be called after some settings are updated
+     * in order to reconfigure the node accordingly.
+     *
+     * @throws NodeException if an exception occurs when reconfiguring.
+     */
+	void reconfigure() throws NodeException;
+
+    
+    EventManager<ProtoFilterLogEvent> getEventManager();
     
 }

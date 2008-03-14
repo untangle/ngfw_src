@@ -107,8 +107,19 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
         return cachedSettings.getBaseSettings();
     }
 
-    public void setBaseSettings(ProtoFilterBaseSettings baseSettings) {
-        cachedSettings.setBaseSettings(baseSettings);
+    public void setBaseSettings(final ProtoFilterBaseSettings baseSettings) {
+        TransactionWork tw = new TransactionWork() {
+			public boolean doWork(Session s) {
+		        cachedSettings.setBaseSettings(baseSettings);
+				s.merge(cachedSettings);
+				return true;
+			}
+
+			public Object getResult() {
+				return null;
+			}
+		};
+		getNodeContext().runTransaction(tw);
     }
     
     public List<ProtoFilterPattern> getPatterns(final int start,
@@ -125,8 +136,10 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
 				modified);
 	}
 
-    // wrapper method to update all settings once
-    // TODO can we find a better place for this ugly method?
+	/*
+	 * For this node, updateAll means update only the patterns and then reconfigure the node
+	 * @see com.untangle.node.protofilter.ProtoFilter#updateAll(java.util.List[])
+	 */
     public void updateAll(List[] patternsChanges) {
     	if (patternsChanges != null && patternsChanges.length >= 3) {
     		updatePatterns(patternsChanges[0], patternsChanges[1], patternsChanges[2]);
@@ -203,7 +216,7 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
         }
     }
 
-    private void reconfigure() throws NodeException
+    public void reconfigure() throws NodeException
     {
         Set enabledPatternsSet = new HashSet();
 
