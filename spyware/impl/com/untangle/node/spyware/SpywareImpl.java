@@ -239,9 +239,20 @@ public class SpywareImpl extends AbstractNode implements Spyware
         return settings.getBaseSettings();
     }
 
-    public void setBaseSettings(SpywareBaseSettings baseSettings)
+    public void setBaseSettings(final SpywareBaseSettings baseSettings)
     {
-        settings.setBaseSettings(baseSettings);
+        TransactionWork tw = new TransactionWork() {
+			public boolean doWork(Session s) {
+		        settings.setBaseSettings(baseSettings);
+				s.merge(settings);
+				return true;
+			}
+
+			public Object getResult() {
+				return null;
+			}
+		};
+		getNodeContext().runTransaction(tw);
     }
 
     public SpywareSettings getSpywareSettings()
@@ -503,27 +514,40 @@ public class SpywareImpl extends AbstractNode implements Spyware
         eventLogger.log(se);
     }
     
-    // wrapper method to update all settings once
-    // TODO can we find a better place for this ugly method?
-    public void updateAll(SpywareBaseSettings baseSettings, 
-    		List[] activeXRules, List[] cookieRules,
-    		List[] subnetRules, List[] domainWhitelist) {
+    public void updateAll(final SpywareBaseSettings baseSettings, 
+    		final List[] activeXRules, final List[] cookieRules,
+    		final List[] subnetRules, final List[] domainWhitelist) {
+
+        TransactionWork tw = new TransactionWork() {
+			public boolean doWork(Session s) {
+		    	if (baseSettings != null) {
+			        settings.setBaseSettings(baseSettings);
+		    	}
+		    	if (activeXRules != null && activeXRules.length >= 3) {
+		    		updateCachedRules(getSpywareSettings().getActiveXRules(), activeXRules[0], activeXRules[1], activeXRules[2]);
+		    	}
+		    	if (cookieRules != null && cookieRules.length >= 3) {
+		    		updateCachedRules(getSpywareSettings().getCookieRules(), cookieRules[0], cookieRules[1], cookieRules[2]);
+		    	}
+		    	if (subnetRules != null && subnetRules.length >= 3) {
+		    		updateCachedRules(getSpywareSettings().getSubnetRules(), subnetRules[0], subnetRules[1], subnetRules[2]);
+		    	}
+		    	if (domainWhitelist != null && domainWhitelist.length >= 3) {
+		    		updateCachedRules(getSpywareSettings().getDomainWhitelist(), domainWhitelist[0], domainWhitelist[1], domainWhitelist[2]);
+		    	}
+
+				s.merge(settings);
+
+				return true;
+			}
+
+			public Object getResult() {
+				return null;
+			}
+		};
+		getNodeContext().runTransaction(tw);
     	
-    	if (baseSettings != null) {
-        	setBaseSettings(baseSettings);
-    	}
-    	if (activeXRules != null && activeXRules.length >= 3) {
-    		updateActiveXRules(activeXRules[0], activeXRules[1], activeXRules[2]);
-    	}
-    	if (cookieRules != null && cookieRules.length >= 3) {
-    		updateCookieRules(cookieRules[0], cookieRules[1], cookieRules[2]);
-    	}
-    	if (subnetRules != null && subnetRules.length >= 3) {
-    		updateSubnetRules(subnetRules[0], subnetRules[1], subnetRules[2]);
-    	}
-    	if (domainWhitelist != null && domainWhitelist.length >= 3) {
-    		updateDomainWhitelist(domainWhitelist[0], domainWhitelist[1], domainWhitelist[2]);
-    	}
+    	
 		
 		reconfigure();
 	}
@@ -565,29 +589,37 @@ public class SpywareImpl extends AbstractNode implements Spyware
             {
                 public boolean doWork(Session s)
                 {
-                    for (Iterator i = rules.iterator(); i.hasNext();) {
-                        Rule rule = (Rule)i.next();
-                        Rule mRule = null;
-                        if (deleted != null && deleted.contains(rule.getId())) {
-                            i.remove();
-                        } else if (modified != null && (mRule = modifiedRule(rule, modified)) != null ) {
-                        	rule.updateRule(mRule);
-                        }
-                    }
-                    
-                    if (added != null) {
-                    	rules.addAll(added);
-                    }
+                    updateCachedRules(rules, added, deleted, modified);
 
                     s.merge(settings);
 
                     return true;
                 }
 
+
                 public Object getResult() { return null; }
             };
         getNodeContext().runTransaction(tw);
     }
+    
+
+	private void updateCachedRules(final Set rules, final List added,
+			final List<Long> deleted, final List modified) {
+		for (Iterator i = rules.iterator(); i.hasNext();) {
+			Rule rule = (Rule) i.next();
+			Rule mRule = null;
+			if (deleted != null && deleted.contains(rule.getId())) {
+				i.remove();
+			} else if (modified != null
+					&& (mRule = modifiedRule(rule, modified)) != null) {
+				rule.updateRule(mRule);
+			}
+		}
+
+		if (added != null) {
+			rules.addAll(added);
+		}
+	}
 
     private Rule modifiedRule(Rule rule, List modified) {
         for (Iterator iterator = modified.iterator(); iterator.hasNext();) {
@@ -936,8 +968,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
         }
     }
 
-    // XXX avoid
-    private void reconfigure()
+    public void reconfigure()
     {
         logger.info("Reconfigure.");
         if (this.settings.getBaseSettings().getSpywareEnabled()) {

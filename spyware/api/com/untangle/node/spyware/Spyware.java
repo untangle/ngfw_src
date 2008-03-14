@@ -50,13 +50,21 @@ public interface Spyware extends Node
     boolean unblockSite(String nonce, boolean global);
 
     UserWhitelistMode getUserWhitelistMode();
-
-    EventManager<SpywareEvent> getEventManager();
     
-    // wrapper method to update all settings once
-    // TODO can we find a better place for this ugly method?
-    public void updateAll(SpywareBaseSettings baseSettings, 
+    /**
+     * Update all settings once, in a single transaction
+     */
+    void updateAll(SpywareBaseSettings baseSettings, 
     		List[] activeXRules, List[] cookieRules,
     		List[] subnetRules, List[] domainWhitelist);
+
+    /**
+     * Reconfigure node. This method should be called after some settings are updated
+     * in order to reconfigure the node accordingly.
+     */
+    void reconfigure();
+    
+    EventManager<SpywareEvent> getEventManager();
+    
     
 }
