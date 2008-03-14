@@ -104,32 +104,14 @@ Ung.Protofilter = Ext.extend(Ung.Settings, {
 		});
     },
     
-    saveProtocolList: function() {
-    	/*
-    	this.tabs.disable();
-    	this.gridProtocolList.getStore().commitChanges();
-    	var records=this.gridProtocolList.getStore().getRange();
-    	var list=[];
-    	for(var i=0;i<records.length;i++) {
-    		var pattern=records[i].data;
-    		pattern.javaClass="com.untangle.node.protofilter.ProtoFilterPattern";
-    		list.push(pattern);
-    	}
-    	this.rpc.settings.patterns.list=list;
-    	this.rpc.settings.patterns.javaClass="java.util.ArrayList";
-    	this.rpc.node.setProtoFilterSettings(function (result, exception) {
-			if(exception) {Ext.MessageBox.alert("Failed",exception.message); return;}
-			if(this!==null) {
-				this.tabs.enable();
-			}
-		}.createDelegate(this), this.rpc.settings);
-		*/
-    },
 	save: function() {
+		this.tabs.disable();
 		this.getRpcNode().updateAll(function (result, exception) {
+			this.tabs.enable();
 			if(exception) {Ext.MessageBox.alert("Failed",exception.message); return;}
+			this.node.onCancelClick();
 			
-		}.createCallback(this),this.gridProtocolList.getSaveList());
+		}.createDelegate(this),this.gridProtocolList.getSaveList());
 	}
 });
 }

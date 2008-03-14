@@ -4,7 +4,9 @@ Ung.hasResource["Ung.Spyware"]=true;
 Ung.Settings.registerClassName('untangle-node-spyware',"Ung.Spyware");
 
 Ung.Spyware = Ext.extend(Ung.Settings, {
+	gridActiveXList: null,
 	gridCookiesList: null,
+	gridSubnetList: null,
 	panelBlockLists: null,
     gridPassList: null,
     gridEventLog: null,
@@ -64,10 +66,20 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
 						        fn: function() {
 						        	var panelCmp= Ext.getCmp(this.parentId);
 						        	var settingsCmp=Ext.getCmp(panelCmp.parentId);
+						        	this.initialChangedData=settingsCmp.gridCookiesList.changedData;
 						        	settingsCmp.gridCookiesList.setHeight(this.getContentHeight());
 						        },
 						        delay:1
 						    }
+		    			},
+		    			cancelAction: function () {
+		    				var panelCmp= Ext.getCmp(this.parentId);
+						    var settingsCmp=Ext.getCmp(panelCmp.parentId);
+		    				settingsCmp.gridCookiesList.changedData=this.initialChangedData;
+		    				this.hide();
+		    			},
+		    			updateAction: function () {
+		    				this.hide();
 		    			}
 		    		});
 			    	if(!settingsCmp.gridCookiesList) {
@@ -91,7 +103,7 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
 		            this.winSubnetList
 		        );
 	        	Ext.each(this.subCmps,Ext.destroy);
-		        Ext.Panel.superclass.beforeDestroy.call(this);
+		        Ext.Panel.prototype.beforeDestroy.call(this);
 		    }
 		});
     
@@ -210,31 +222,21 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
 			]
 		});
     },
-    
-    savePassList: function() {
-    	/*
-    	this.tabs.disable();
-    	this.gridPassList.getStore().commitChanges();
-    	var records=this.gridPassList.getStore().getRange();
-    	var list=[];
-    	for(var i=0;i<records.length;i++) {
-    		var pattern=records[i].data;
-    		pattern.javaClass="com.untangle.node.spyware.ProtoFilterPattern";
-    		list.push(pattern);
-    	}
-    	this.rpc.settings.patterns.list=list;
-    	this.rpc.settings.patterns.javaClass="java.util.ArrayList";
-    	this.rpc.node.setProtoFilterSettings(function (result, exception) {
-			if(exception) {Ext.MessageBox.alert("Failed",exception.message); return;}
-			if(this!==null) {
-				this.tabs.enable();
-			}
-		}.createDelegate(this), this.rpc.settings);
-		*/
-    },
 	save: function() {
-		//this.savePassList();
+		this.tabs.disable();
+		this.getRpcNode().updateAll(function (result, exception) {
+			this.tabs.enable();
+			if(exception) {Ext.MessageBox.alert("Failed",exception.message); return;}
+			this.node.onCancelClick();
+			
+		}.createDelegate(this),
+			this.getBaseSettings(),
+			this.gridActiveXList?this.gridActiveXList.getSaveList():null,
+			this.gridCookiesList?this.gridCookiesList.getSaveList():null,
+			this.gridSubnetList?this.gridSubnetList.getSaveList():null,
+			this.gridPassList.getSaveList() );
 	}
+
 });
 }
 //</script>

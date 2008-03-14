@@ -167,32 +167,33 @@ Ung.Node = Ext.extend(Ext.Component, {
 			this.nodeContext.node=this.nodeContext.node();
 			this.nodeContext.nodeDesc=this.nodeContext.getNodeDesc();
 		}
-		Ext.Ajax.request({
-	        url: "i18n",
-	        params:{'nodeClassName':this.nodeContext.nodeDesc.className, 'version':main.version},
-			method: 'GET',
-			parentId: this.getId(),
-			disableCaching: false,
-			success: function ( result, request) {
-				var jsonResult=Ext.util.JSON.decode(result.responseText);
-				var cmp=Ext.getCmp(request.parentId);
-				Ung.i18nNodeInstances[cmp.name]=new Ung.NodeI18N({"map":i18n.map, "nodeMap":jsonResult});
-				cmp.postInitSettings()
-			},
-			failure: function ( result, request) { 
-				Ext.MessageBox.alert("Failed", 'Failed loading I18N translations for this node' ); 
-			}
-		});
+		if(!Ung.i18nNodeInstances[this.name]) {
+			Ext.Ajax.request({
+		        url: "i18n",
+		        params:{'nodeClassName':this.nodeContext.nodeDesc.className, 'version':main.version},
+				method: 'GET',
+				parentId: this.getId(),
+				disableCaching: false,
+				success: function ( result, request) {
+					var jsonResult=Ext.util.JSON.decode(result.responseText);
+					var cmp=Ext.getCmp(request.parentId);
+					Ung.i18nNodeInstances[cmp.name]=new Ung.NodeI18N({"map":i18n.map, "nodeMap":jsonResult});
+					cmp.postInitSettings()
+				},
+				failure: function ( result, request) { 
+					Ext.MessageBox.alert("Failed", 'Failed loading I18N translations for this node' ); 
+				}
+			});
+		} else {
+			this.postInitSettings();
+		}
 	},
-	postInitSettings: function(force) {
+	postInitSettings: function() {
        	if(this.settings) {
-       		if(!force) {
-       			return;
-       		}
        		this.settings.destroy();
        		this.settings=null;
        	}
-      		if(this.settingsClassName!==null) {
+      	if(this.settingsClassName!==null) {
        		eval('this.settings=new '+this.settingsClassName+'({\'node\':this,\'tid\':this.tid,\'name\':this.name});');
        		this.settings.render('settings_'+this.getId());
        		this.settings.loadData();
@@ -202,16 +203,16 @@ Ung.Node = Ext.extend(Ext.Component, {
        	}
 	},
 	
-	loadSettings: function(force) {
+	loadSettings: function() {
         	this.settingsClassName=Ung.Settings.getClassName(this.name);
         	if(!this.settingsClassName) {
 	        	Ung.Settings.loadNodeScript(this.name, this.getId(), function(cmpId) {
 	        		var cmp=Ext.getCmp(cmpId);
 	        		cmp.settingsClassName=Ung.Settings.getClassName(cmp.name);
-	        		cmp.initSettings(force);
+	        		cmp.initSettings();
 	        	});
 	        } else {
-	        	this.initSettings(force);
+	        	this.initSettings();
 	        }
 	},
 	
@@ -221,7 +222,7 @@ Ung.Node = Ext.extend(Ext.Component, {
        		return;
        	}
        	if(this.settingsWin) {
-       		this.settingsWin.hide();
+       		this.settingsWin.cancelAction();
        	}
        	this.setState("Attention");
        	rpc.nodeManager.destroy(function (result, exception) {
@@ -255,11 +256,7 @@ Ung.Node = Ext.extend(Ext.Component, {
 	},
 	
 	onCancelClick: function() {
-        if(this.settings) {
-        	this.settings.destroy();
-        	this.settings=null;
-       	}
-       	this.settingsWin.hide();
+       	this.settingsWin.cancelAction();
 	},
 	
 	initBlingers: function () {
@@ -276,7 +273,13 @@ Ung.Node = Ext.extend(Ext.Component, {
        		}
        	}
 	},
-	
+	beforeDestroy : function(){
+		Ext.destroy(
+			this.settingsWin,
+			this.settings
+		);
+        Ung.Node.superclass.beforeDestroy.call(this);
+    },
 	onRender: function(container, position) {
        	//Ung.Node.superclass.onRender.call(this, ct, position);
         var el= document.createElement("div");
@@ -284,16 +287,6 @@ Ung.Node = Ext.extend(Ext.Component, {
         container.dom.insertBefore(el, position);
        	this.el = Ext.get(el);
        	this.el.addClass("rackNode");
-       	this.on('beforedestroy', function() {
-       		if(this.settingsWin) {
-       			this.settingsWin.destroy();
-       			this.settingsWin=null;
-       		}
-       		if(this.settings) {
-       			this.settings.destroy();
-       			this.settings=null;
-       		}
-       	},this);
        	var templateHTML=Ung.Node.template.applyTemplate({'id':this.getId(),'image':this.image,'displayName':this.displayName,'version':main.version});
         this.getEl().insertHtml("afterBegin",templateHTML);
       
@@ -301,17 +294,17 @@ Ung.Node = Ext.extend(Ext.Component, {
 	    var settingsButtonsHTML=Ung.Node.templateSettingsButtons.applyTemplate({'id':this.getId()});
 	    //Ext.MessageBox.alert("Failed",settingsHTML);
 	    this.settingsWin=new Ext.Window({
-               id: 'settingsWin_'+this.getId(),
-               layout:'border',
-               modal:true,
-               title:'Settings Window',
-               closeAction:'hide',
-               autoCreate:true,
-               width:740,
-               height:690,
-               draggable:false,
-               resizable:false,
-            items: [{
+			id: 'settingsWin_'+this.getId(),
+			layout:'border',
+			modal:true,
+			title:'Settings Window',
+			closeAction:'cancelAction',
+			autoCreate:true,
+			width:740,
+			height:690,
+			draggable:false,
+			resizable:false,
+			items: [{
 		        region:"center",
 		        html: settingsHTML,
 		        border: false,
@@ -327,7 +320,11 @@ Ung.Node = Ext.extend(Ext.Component, {
 		        cls: 'windowBackground',
 		        bodyStyle: 'background-color: transparent;'
 		    	}
-		    ]
+			],
+			cancelAction: function() {
+				Ext.destroy(this.settings);
+				this.settingsWin.hide();
+			}.createDelegate(this)
            });
 		this.settingsWin.render('container');
 
@@ -641,14 +638,13 @@ Ext.ComponentMgr.registerType('utgSystemBlinger', Ung.SystemBlinger);
 //setting object
 Ung.Settings = Ext.extend(Ext.Component, {
     i18n: null,
-    node:null,
+    node: null,
+    autoEl: 'div',
     tabs: null,
     rpc: {},
-	onRender: function(container, position) {
-	    var el= document.createElement("div");
-	    container.dom.insertBefore(el, position);
-        this.el = Ext.get(el);
+	initComponent: function(container, position) {
     	this.i18n=Ung.i18nNodeInstances[this.name];
+    	Ung.Settings.superclass.initComponent.call(this);
 	},
 	buildTabPanel: function(itemsArray) {
 		this.tabs = new Ext.TabPanel({
@@ -1335,14 +1331,14 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		var deleted=[];
 		var modified=[];
 		for(id in this.changedData) {
-			var rec=this.changedData[id]
-			if("deleted"==rec.op) {
+			var cd=this.changedData[id]
+			if("deleted"==cd.op) {
 				if(id>0) {
 					var recData={"id":id,"javaClass":this.recordJavaClass};
 					deleted.push(recData);
 				}
 			} else {
-				var recData=rec.data;
+				var recData=cd.rec.data;
 				recData["javaClass"]=this.recordJavaClass;
 				if(id<0) {
 					recData["id"]=""; //ok?
