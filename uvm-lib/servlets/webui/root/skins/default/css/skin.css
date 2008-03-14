@@ -332,8 +332,8 @@ div.editRow {
 	width: 100%;
 	cursor: pointer;
 }
-div.removeRow {
-	background-image:url(../images/removeRow.gif);
+div.deleteRow {
+	background-image:url(../images/deleteRow.gif);
 	background-position:center;
 	background-repeat:no-repeat;
 	width: 100%;
@@ -373,4 +373,13 @@ div.buttonUpdatePos {
 	position:absolute;
 	right:10px;
 	bottom:5px;
+}
+.grid-row-deleted {
+	background-color: #FF5151;
+}
+.grid-row-added {
+	background-color: #21FF3A;
+}
+.grid-row-modified {
+	background-color: #FFB364;
 }

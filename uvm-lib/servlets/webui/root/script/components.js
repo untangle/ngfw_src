@@ -643,19 +643,12 @@ Ung.Settings = Ext.extend(Ext.Component, {
     i18n: null,
     node:null,
     tabs: null,
-    rpc: null,
+    rpc: {},
 	onRender: function(container, position) {
 	    var el= document.createElement("div");
 	    container.dom.insertBefore(el, position);
         this.el = Ext.get(el);
     	this.i18n=Ung.i18nNodeInstances[this.name];
-    	this.rpc={};
-    	this.rpc.repository={};
-    	if(this.node.nodeContext.node.eventManager===undefined) {
-			this.node.nodeContext.node.eventManager=this.node.nodeContext.node.getEventManager();
-		}
-		this.rpc.node = this.node.nodeContext.node;
-		this.rpc.eventManager=this.node.nodeContext.node.eventManager;
 	},
 	buildTabPanel: function(itemsArray) {
 		this.tabs = new Ext.TabPanel({
@@ -677,15 +670,14 @@ Ung.Settings = Ext.extend(Ext.Component, {
 					}
 				}
 			}
-				   
 	    });
 	},
 	getRpcNode: function() {
 		return this.node.nodeContext.node;
 	},
-	getBaseSettings: function() {
-		if(this.rpc.baseSettings===undefined) {
-			this.rpc.baseSettings=this.rpc.node.getBaseSettings();
+	getBaseSettings: function(forceReload) {
+		if(forceReload || this.rpc.baseSettings===undefined) {
+			this.rpc.baseSettings=this.getRpcNode().getBaseSettings();
 		}
 		return this.rpc.baseSettings;
 	},
@@ -722,143 +714,19 @@ Ung.Settings.registerClassName=function(name,className) {
 	Ung.Settings._classNames[name]=className;
 };
 
-Ext.grid.CheckColumn = function(config){
-    Ext.apply(this, config);
-    if(!this.id){
-        this.id = Ext.id();
-    }
-    this.renderer = this.renderer.createDelegate(this);
-};
-
-Ext.grid.CheckColumn.prototype ={
-    init: function(grid){
-        this.grid = grid;
-        this.grid.on('render', function(){
-            var view = this.grid.getView();
-            view.mainBody.on('mousedown', this.onMouseDown, this);
-        }, this);
-    },
-
-    onMouseDown: function(e, t){
-        if(t.className && t.className.indexOf('x-grid3-cc-'+this.id) != -1){
-            e.stopEvent();
-            var index = this.grid.getView().findRowIndex(t);
-            var record = this.grid.store.getAt(index);
-            record.set(this.dataIndex, !record.data[this.dataIndex]);
-        }
-    },
-
-    renderer: function(value, metadata, record){
-        metadata.css += ' x-grid3-check-col-td'; 
-        return '<div class="x-grid3-check-col'+(value?'-on':'')+' x-grid3-cc-'+this.id+'">&#160;</div>';
-    }
-};
-Ext.grid.EditColumn = function(config){
-    Ext.apply(this, config);
-    if(!this.id){
-        this.id = Ext.id();
-    }
-    if(!this.header) {
-        this.header = i18n._("Edit");
-    }
-    if(!this.width) {
-        this.width = 35;
-    }
-    if(this.fixed==null) {
-        this.fixed = true;
-    }
-    if(this.sortable==null) {
-        this.sortable = true;
-    }
-    if(!this.dataIndex) {
-        this.dataIndex = null;
-    }
-    this.renderer = this.renderer.createDelegate(this);
-};
-Ext.grid.EditColumn.prototype ={
-    init: function(grid){
-        this.grid = grid;
-        this.grid.on('render', function(){
-            var view = this.grid.getView();
-            view.mainBody.on('mousedown', this.onMouseDown, this);
-        }, this);
-    },
-
-    onMouseDown: function(e, t){
-        if(t.className && t.className.indexOf('editRow') != -1){
-            e.stopEvent();
-           var index = this.grid.getView().findRowIndex(t);
-           var record = this.grid.store.getAt(index);
-            //populate row editor
-           this.grid.rowEditor.populate(record,index);
-           this.grid.rowEditor.show();
-        }
-    },
-
-    renderer: function(value, metadata, record){
-        return '<div class="editRow">&nbsp;</div>';
-    }
-};
-Ext.grid.RemoveColumn = function(config){
-    Ext.apply(this, config);
-    if(!this.id){
-        this.id = Ext.id();
-    }
-    if(!this.id){
-        this.id = Ext.id();
-    }
-    if(!this.header) {
-        this.header = i18n._("Delete");
-    }
-    if(!this.width) {
-        this.width = 35;
-    }
-    if(this.fixed==null) {
-        this.fixed = true;
-    }
-    if(this.sortable==null) {
-        this.sortable = true;
-    }
-    if(!this.dataIndex) {
-        this.dataIndex = null;
-    }
-    this.renderer = this.renderer.createDelegate(this);
-};
-Ext.grid.RemoveColumn.prototype ={
-    init: function(grid){
-        this.grid = grid;
-        this.grid.on('render', function(){
-            var view = this.grid.getView();
-            view.mainBody.on('mousedown', this.onMouseDown, this);
-        }, this);
-    },
-
-    onMouseDown: function(e, t){
-        if(t.className && t.className.indexOf('removeRow') != -1){
-            e.stopEvent();
-            var index = this.grid.getView().findRowIndex(t);
-            var record = this.grid.store.getAt(index);
-            this.grid.store.remove(record);
-        }
-    },
-
-    renderer: function(value, metadata, record){
-        return '<div class="removeRow">&nbsp;</div>';
-    }
-};
 Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
 	settingsCmp: null,
 	hasRepositories: true,
-	repositoryDescsFn: null,
+	eventManagerFn: null,
 	enableHdMenu: false,
 	initComponent: function(){
     	if(this.title==null) {
     		this.title=i18n._('Event Log');
     	}
-    	if(this.repositoryDescsFn==null) {
-    		this.repositoryDescsFn=this.settingsCmp.rpc.eventManager.getRepositoryDescs;
+    	if(this.eventManagerFn==null) {
+    		this.eventManagerFn=this.settingsCmp.getEventManager();
     	}
-    	
+    	this.settingsCmp.rpc.repository={};
         this.bbar=	[{
         				xtype:'tbtext',
 						text:'<span id="boxRepository_'+this.getId()+'_'+this.settingsCmp.node.tid+'"></span>'},
@@ -873,7 +741,7 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
 	},
 	onRender : function(container, position) {
 		Ung.GridEventLog.superclass.onRender.call(this,container, position);
-		this.repositoryDescsFn(function (result, exception) {
+		this.eventManagerFn.getRepositoryDescs(function (result, exception) {
 			if(exception) {Ext.MessageBox.alert("Failed",exception.message); return;}
 			if(this.settingsCmp) {
 				this.settingsCmp.rpc.repositoryDescs=result;
@@ -903,7 +771,7 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
 		var selRepository=this.getSelectedRepository();
 		if(selRepository!==null) {
 			if(this.settingsCmp.rpc.repository[selRepository] === undefined) {
-				this.settingsCmp.rpc.repository[selRepository]=this.settingsCmp.rpc.eventManager.getRepository(selRepository);
+				this.settingsCmp.rpc.repository[selRepository]=this.eventManagerFn.getRepository(selRepository);
 			}
 			this.settingsCmp.rpc.repository[selRepository].getEvents(function (result, exception) {
 				if(exception) {Ext.MessageBox.alert("Failed",exception.message); return;}
@@ -1083,10 +951,10 @@ Ung.RowEditorWindow = Ext.extend(Ung.UpdateWindow, {
     			switch(inputLine.type) {
     				case "text":
     				case "textarea":
-    					document.getElementById('field_'+this.getId()+'_'+inputLine.name).value=record.data[inputLine.name];
+    					document.getElementById('field_'+this.getId()+'_'+inputLine.name).value=record.get(inputLine.name);
     					break;
     				case "checkbox":
-    					document.getElementById('field_'+this.getId()+'_'+inputLine.name).checked=record.data[inputLine.name];
+    					document.getElementById('field_'+this.getId()+'_'+inputLine.name).checked=record.get(inputLine.name);
     					break;
     			}
 			}
@@ -1156,6 +1024,133 @@ Ext.extend(Ung.RpcProxy, Ext.data.DataProxy, {
 		}.createDelegate(obj), params.start?params.start:0, params.limit?params.limit:this.totalRecords!=null?this.totalRecords:2147483647, sortColumns);
 	}
 });
+Ext.grid.CheckColumn = function(config){
+    Ext.apply(this, config);
+    if(!this.id){
+        this.id = Ext.id();
+    }
+    this.renderer = this.renderer.createDelegate(this);
+};
+
+Ext.grid.CheckColumn.prototype ={
+    init: function(grid){
+        this.grid = grid;
+        this.grid.on('render', function(){
+            var view = this.grid.getView();
+            view.mainBody.on('mousedown', this.onMouseDown, this);
+        }, this);
+    },
+
+    onMouseDown: function(e, t){
+        if(t.className && t.className.indexOf('x-grid3-cc-'+this.id) != -1){
+            e.stopEvent();
+            var index = this.grid.getView().findRowIndex(t);
+            var record = this.grid.store.getAt(index);
+            record.set(this.dataIndex, !record.data[this.dataIndex]);
+        }
+    },
+
+    renderer: function(value, metadata, record){
+        metadata.css += ' x-grid3-check-col-td'; 
+        return '<div class="x-grid3-check-col'+(value?'-on':'')+' x-grid3-cc-'+this.id+'">&#160;</div>';
+    }
+};
+Ext.grid.EditColumn = function(config){
+    Ext.apply(this, config);
+    if(!this.id){
+        this.id = Ext.id();
+    }
+    if(!this.header) {
+        this.header = i18n._("Edit");
+    }
+    if(!this.width) {
+        this.width = 35;
+    }
+    if(this.fixed==null) {
+        this.fixed = true;
+    }
+    if(this.sortable==null) {
+        this.sortable = true;
+    }
+    if(!this.dataIndex) {
+        this.dataIndex = null;
+    }
+    this.renderer = this.renderer.createDelegate(this);
+};
+Ext.grid.EditColumn.prototype ={
+    init: function(grid){
+        this.grid = grid;
+        this.grid.on('render', function(){
+            var view = this.grid.getView();
+            view.mainBody.on('mousedown', this.onMouseDown, this);
+        }, this);
+    },
+
+    onMouseDown: function(e, t){
+        if(t.className && t.className.indexOf('editRow') != -1){
+            e.stopEvent();
+           var index = this.grid.getView().findRowIndex(t);
+           var record = this.grid.store.getAt(index);
+            //populate row editor
+           this.grid.rowEditor.populate(record,index);
+           this.grid.rowEditor.show();
+        }
+    },
+
+    renderer: function(value, metadata, record){
+        return '<div class="editRow">&nbsp;</div>';
+    }
+};
+Ext.grid.DeleteColumn = function(config){
+    Ext.apply(this, config);
+    if(!this.id){
+        this.id = Ext.id();
+    }
+    if(!this.id){
+        this.id = Ext.id();
+    }
+    if(!this.header) {
+        this.header = i18n._("Delete");
+    }
+    if(!this.width) {
+        this.width = 35;
+    }
+    if(this.fixed==null) {
+        this.fixed = true;
+    }
+    if(this.sortable==null) {
+        this.sortable = true;
+    }
+    if(!this.dataIndex) {
+        this.dataIndex = null;
+    }
+    this.renderer = this.renderer.createDelegate(this);
+};
+Ext.grid.DeleteColumn.prototype ={
+    init: function(grid){
+        this.grid = grid;
+        this.grid.on('render', function(){
+            var view = this.grid.getView();
+            view.mainBody.on('mousedown', this.onMouseDown, this);
+        }, this);
+    },
+
+    onMouseDown: function(e, t){
+        if(t.className && t.className.indexOf('deleteRow') != -1){
+            e.stopEvent();
+            var index = this.grid.getView().findRowIndex(t);
+            var record = this.grid.store.getAt(index);
+            this.grid.deleteRecord(record);
+            this.grid.getView().refreshRow(record);
+            //this.grid.store.remove(record);
+            this.grid.getView().addRowClass(index, "grid-row-deleted");
+        }
+    },
+
+    renderer: function(value, metadata, record){
+        return '<div class="deleteRow">&nbsp;</div>';
+    }
+};
 
 Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 	rowsPerPage: 20,
@@ -1164,16 +1159,74 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 	settingsCmp: null,
 	proxyRpcFn: null,
 	fields: null,
-	hasAddButton: true,
+	hasAdd: true,
+	hasEdit: true,
+	hasDelete: true,
 	emptyRow: null,
 	rowEditorInputLines: null,
+	sortField: null,
 	forcePaginate: false,
-	
+	recordJavaClass: null,
+	changedData: null,
 	stripeRows: true,
 	clicksToEdit: 1,
 	enableHdMenu: false,
+	addedId:0,
+	genAddedId: function () {
+		this.addedId--;
+		return this.addedId;
+	},
+	afterRender: function() {
+		Ung.EditorGrid.superclass.afterRender.call(this);
+		this.getView().getRowClass=function(record,index,rowParams,store) {
+			var id=record.get("id");
+			if(id==null || id<0) {
+				return "grid-row-added";
+			} else {
+				var d=this.grid.changedData[id];
+				if(d) {
+					if(d=="deleted") {
+						return "grid-row-deleted";
+					} else {
+						return "grid-row-modified";
+					}
+				}
+			}
+			return "";
+		}
+		this.initialLoad.defer(1, this);
+	},
+	
 	initialLoad: function() {
-			this.getStore().load();
+		this.getStore().load();
+	},
+	deleteRecord: function (record) {
+            //var index = this.grid.getView().findRowIndex(t);
+            //var record = this.grid.store.getAt(index);
+            //this.grid.store.remove(record);
+		var id=record.get("id");
+		if(id!=null && id>0) {
+			this.changedData[id]="deleted";
+		}
+	},
+	modifyRecord: function (record) {
+		var id=record.get("id");
+		if(id!=null) {
+			this.changedData[id]=record;
+		}
+	},
+	addRecord: function (record) {
+		var id=record.get("id");
+		this.changedData[id]=record;
+		/*
+		var rec=new Ext.data.Record(this.emptyRow);
+		this.getStore().insert(0, [rec]);
+		var row = this.getView().findRowIndex(this.getView().getRow(0));
+		this.getView().addRowClass(row, "grid-row-added");
+		*/
+	},
+	updateFromChangedData: function(store, records, options) {
+		//records.push(records[0]);
 	},
 	setTotalRows: function(totalRows) {
 		this.totalRows=totalRows;
@@ -1186,13 +1239,50 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		}
 	},
 	initComponent: function() {
+	    this.changedData={};
+	    if(this.hasEdit) {
+	    	var editColumn=new Ext.grid.EditColumn();
+	    	if(!this.plugins) {
+	    		this.plugins=[];
+	    	}
+	    	this.plugins.push(editColumn);
+	    	this.columns.push(editColumn);
+	    }
+	    if(this.hasDelete) {
+	    	var deleteColumn=new Ext.grid.DeleteColumn();
+	    	if(!this.plugins) {
+	    		this.plugins=[];
+	    	}
+	    	this.plugins.push(deleteColumn);
+	    	this.columns.push(deleteColumn);
+	    }
 	    this.store = new Ext.data.Store({
 	        proxy: new Ung.RpcProxy(this.proxyRpcFn),
+	        sortInfo: this.sortField?{field: this.sortField, direction: "ASC"}:null,
 	        reader: new Ext.data.JsonReader({
 	        	root: 'list',
 		        fields: this.fields
 			}),
-			remoteSort: true
+			
+			remoteSort: true,
+			/*
+			initComponent: function() {
+				Ext.data.Store.prototype.initComponent.call(this);
+			},
+			*/
+			
+			listeners: {
+				"update": {
+					fn: function(store, record, operation ) {
+						this.modifyRecord(record);
+					}.createDelegate(this)
+				},
+				"load": {
+					fn: function(store, records, options ) {
+						this.updateFromChangedData(store, records, options);
+					}.createDelegate(this)
+				}
+			}
         });
 		this.bbar= new Ext.PagingToolbar({
 			pageSize: 20,
@@ -1208,26 +1298,58 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			});
 			this.rowEditor.render('container');
 		}
-		if(this.hasAddButton) {
+		if(this.hasAdd) {
 			this.tbar=[{
 				text: i18n._('Add'),
 				tooltip: i18n._('Add New Row'),
 				iconCls: 'add',
 				parentId:this.getId(),
 				handler: function() {
-					var cmp=Ext.getCmp(this.parentId);
-					var rec=new Ext.data.Record(this.emptyRow);
+					var record=new Ext.data.Record(this.emptyRow);
+					record.set("id",this.genAddedId());
+					this.addRecord(record);
 					this.stopEditing();
-					this.getStore().insert(0, [rec]);
+					this.getStore().insert(0, [record]);
+					var row = this.getView().findRowIndex(this.getView().getRow(0));
+		            //this.getView().addRowClass(row, "grid-row-added");
 					if(this.rowEditor) {
-						this.rowEditor.populate(rec,0);
+						this.rowEditor.populate(record,0);
 						this.rowEditor.show();
 					} else {
 						this.startEditing(0, 0);
-					}   	
+					}
 		        }.createDelegate(this)
 			}];
 		}
 		Ung.EditorGrid.superclass.initComponent.call(this);
+	},
+	getSaveList: function() {
+		var added=[];
+		var deleted=[];
+		var modified=[];
+		for(id in this.changedData) {
+			var rec=this.changedData[id]
+			if("deleted"==rec) {
+				if(id>0) {
+					var recData={"id":id,"javaClass":this.recordJavaClass};
+					deleted.push(recData);
+				}
+			} else {
+				var recData=rec.data;
+				recData["javaClass"]=this.recordJavaClass;
+				if(id<0) {
+					recData["id"]=""; //ok?
+					added.push(recData);
+				} else {
+					modified.push(recData);
+				}
+			}
+		}
+		return [{list: added,"javaClass":"java.util.ArrayList"}, {list: deleted,"javaClass":"java.util.ArrayList"}, {list: modified,"javaClass":"java.util.ArrayList"}];
+		/* //for test
+		return [null, null,
+		{"list":[{"log":false,"protocol":"IMAP11","javaClass":"com.untangle.node.protofilter.ProtoFilterPattern","alert":false,"blocked":false,"category":"Email11","definition":"^(\\* ok|a[0-9]+ noop)","description":" Internet111 Message Access Protocol (A common e-mail protocol)","readOnly":true,"metavizeId":0,"id":71447,"quality":"Bad"}], "javaClass": "java.util.ArrayList"}
+		];
+		*/
 	}
 });

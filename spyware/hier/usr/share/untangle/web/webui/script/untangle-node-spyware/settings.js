@@ -101,9 +101,7 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
 	    var logColumn = new Ext.grid.CheckColumn({
 	       header: "<b>"+this.i18n._("log")+"</b>", width: 35, dataIndex: 'log', fixed:true
 	    });
-	    var editColumn=new Ext.grid.EditColumn();
-	    var removeColumn=new Ext.grid.RemoveColumn();
-	    var columnModel = new Ext.grid.ColumnModel([
+	    var columns = [
 	          {id:'string',header: this.i18n._("string"), width: 140,  dataIndex: 'string',
 		          editor: new Ext.form.TextField({allowBlank: false})
 	          },
@@ -113,25 +111,25 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
 	          logColumn,
 	          {id:'description',header: this.i18n._("description"), width: 120, dataIndex: 'description',
 		          editor: new Ext.form.TextField({allowBlank: false})
-	          },
-	          editColumn,
-	          removeColumn
-		]);
-	    columnModel.defaultSortable = true;
+	          }
+		];
+	    //columnModel.defaultSortable = true;
 
     	this.gridCookiesList=new Ung.EditorGrid({
     		settingsCmp: this,
     		emptyRow: {"string":"","category":"","log":false,"description":""},
     		title: this.i18n._('Cookies List'),
-    		proxyRpcFn: this.rpc.node.getCookieRules,
+    		recordJavaClass: "com.untangle.uvm.node.StringRule",
+    		proxyRpcFn: this.getRpcNode().getCookieRules,
 			fields: [
+				{name: 'id'},
 				{name: 'string'},
 				{name: 'category'},
 				{name: 'log'},
 				{name: 'description'}
 			],
-			cm: columnModel,
-			plugins: [logColumn,editColumn,removeColumn],
+			columns: columns,
+			plugins: [logColumn],
 			rowEditorInputLines: [
 				{name:"string", label: this.i18n._("String"), type:"text", style:"width:200px;"},
 				{name:"category", label: this.i18n._("Category"), type:"text", style:"width:200px;"},
@@ -141,41 +139,36 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
     	});
     	this.gridCookiesList.render(this.panelBlockLists.winCookiesList.getContentEl());
     	this.gridCookiesList.getStore().proxy.setTotalRecords(this.getBaseSettings().cookieRulesLength);
-    	this.gridCookiesList.initialLoad();
     },
     // Pass List
     buildPassList: function() {
 	    var passColumn = new Ext.grid.CheckColumn({
 	       header: "<b>"+this.i18n._("pass")+"</b>", width: 35, dataIndex: 'live', fixed:true
 	    });
-	    var editColumn=new Ext.grid.EditColumn();
-	    var removeColumn=new Ext.grid.RemoveColumn();
-	    var columnModel = new Ext.grid.ColumnModel([
+	    var columns = [
 	          {id:'site',header: this.i18n._("site"), width: 140,  dataIndex: 'string',
 		          editor: new Ext.form.TextField({allowBlank: false})
 	          },
 	          passColumn,
 	          {id:'description',header: this.i18n._("description"), width: 120, dataIndex: 'description',
 		          editor: new Ext.form.TextField({allowBlank: false})
-	          },
-	          editColumn,
-	          removeColumn
-		]);
-	    columnModel.defaultSortable = true;
+	          }
+		];
+	    //columnModel.defaultSortable = true;
 
     	this.gridPassList=new Ung.EditorGrid({
     		settingsCmp: this,
     		emptyRow: {"string":"","live":false,"description":""},
     		title: this.i18n._('Pass List'),
-    		proxyRpcFn: this.rpc.node.getDomainWhitelist,
+    		proxyRpcFn: this.getRpcNode().getDomainWhitelist,
 			fields: [
 				{name: 'id'},
 				{name: 'string'},
 				{name: 'live'},
 				{name: 'description'}
 			],
-			cm: columnModel,
-			plugins: [passColumn,editColumn,removeColumn],
+			columns: columns,
+			plugins: [passColumn],
 			rowEditorInputLines: [
 				{name:"string", label: this.i18n._("Site"), type:"text", style:"width:200px;"},
 				{name:"live", label: this.i18n._("Pass"), type:"checkbox"},
@@ -219,6 +212,7 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
     },
     
     savePassList: function() {
+    	/*
     	this.tabs.disable();
     	this.gridPassList.getStore().commitChanges();
     	var records=this.gridPassList.getStore().getRange();
@@ -236,9 +230,10 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
 				this.tabs.enable();
 			}
 		}.createDelegate(this), this.rpc.settings);
+		*/
     },
 	save: function() {
-		this.savePassList();
+		//this.savePassList();
 	}
 });
 }

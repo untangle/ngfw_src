@@ -15,40 +15,39 @@ Ung.Protofilter = Ext.extend(Ung.Settings, {
     
     buildProtocolList: function() {
 	    var blockedColumn = new Ext.grid.CheckColumn({
-	       header: "<b>"+this.i18n._("block")+"</b>", width: 40, dataIndex: 'blocked', fixed:true
+	       header: "<b>"+this.i18n._("block")+"</b>", width: 40, dataIndex: 'blocked', sortable: true, fixed:true
 	    });
 	    var logColumn = new Ext.grid.CheckColumn({
-	       header: "<b>"+this.i18n._("log")+"</b>", width: 35, dataIndex: 'log', fixed:true
+	       header: "<b>"+this.i18n._("log")+"</b>", width: 35, dataIndex: 'log', sortable: true, fixed:true
 	    });
-	    var editColumn=new Ext.grid.EditColumn();
-	    var removeColumn=new Ext.grid.RemoveColumn();
-	    var columnModel = new Ext.grid.ColumnModel([
-	          {id:'category',header: this.i18n._("category"), width: 140,  dataIndex: 'category',
+	    var columns = [
+	          {id:'id', dataIndex: 'id', hidden: true },
+	          {id:'category',header: this.i18n._("category"), width: 140, sortable: true,  dataIndex: 'category',
 		          editor: new Ext.form.TextField({allowBlank: false})
 	          },
-	          {id:'protocol',header: this.i18n._("protocol"), width: 100, dataIndex: 'protocol',
+	          {id:'protocol',header: this.i18n._("protocol"), width: 100, sortable: true, dataIndex: 'protocol',
 		          editor: new Ext.form.TextField({allowBlank: false})
 	          },
 	          blockedColumn,
 	          logColumn,
-	          {id:'description',header: this.i18n._("description"), width: 120, dataIndex: 'description',
+	          {id:'description',header: this.i18n._("description"), width: 120, sortable: true, dataIndex: 'description',
 		          editor: new Ext.form.TextField({allowBlank: false})
 	          },
-	          {id:'definition',header: this.i18n._("signature"), width: 120, dataIndex: 'definition',
+	          {id:'definition',header: this.i18n._("signature"), width: 120, sortable: true, dataIndex: 'definition',
 		          editor: new Ext.form.TextField({allowBlank: false})
-	          },
-	          editColumn,
-	          removeColumn
-		]);
-	    columnModel.defaultSortable = true;
+	          }
+		];
+	    
 		
     	this.gridProtocolList=new Ung.EditorGrid({
     		settingsCmp: this,
     		emptyRow: {"category":"","protocol":"","blocked":false,"log":false,"description":"","definition":""},
     		title: this.i18n._('Protocol List'),
     		autoExpandColumn: 'category',
-    		proxyRpcFn: this.rpc.node.getPatterns,
+    		recordJavaClass: "com.untangle.node.protofilter.ProtoFilterPattern",
+    		proxyRpcFn: this.getRpcNode().getPatterns,
 			fields: [
+	           {name: 'id'},
 	           {name: 'category'},
 	           {name: 'protocol'},
 	           {name: 'blocked'},
@@ -56,8 +55,9 @@ Ung.Protofilter = Ext.extend(Ung.Settings, {
 	           {name: 'description'},
 	           {name: 'definition'}
 			],
-			cm: columnModel,
-			plugins: [blockedColumn,logColumn,editColumn,removeColumn],
+			sortField: 'category',
+			columns: columns,
+			plugins: [blockedColumn,logColumn],
 			rowEditorInputLines: [
 				{name:"category", label: this.i18n._("Category"), type:"text", style:"width:200px;"},
 				{name:"protocol", label: this.i18n._("Protocol"), type:"text", style:"width:200px;"},
@@ -67,8 +67,8 @@ Ung.Protofilter = Ext.extend(Ung.Settings, {
 				{name:"definition", label: this.i18n._("Signature"), type:"textarea", style:"width:200px;height:60px;"}
 			]
     	});
+    	//columnModel.defaultSortable = true; TODO
     	this.gridProtocolList.getStore().proxy.setTotalRecords(this.getBaseSettings().patternsLength);
-    	this.gridProtocolList.initialLoad();
     },
     
     buildEventLog: function() {
@@ -103,12 +103,9 @@ Ung.Protofilter = Ext.extend(Ung.Settings, {
 			]
 		});
     },
-    loadProtocolList: function() {
-    	this.gridProtocolList.getStore().loadData(this.rpc.settings.patterns.list);
-    },
-    
     
     saveProtocolList: function() {
+    	/*
     	this.tabs.disable();
     	this.gridProtocolList.getStore().commitChanges();
     	var records=this.gridProtocolList.getStore().getRange();
@@ -126,28 +123,13 @@ Ung.Protofilter = Ext.extend(Ung.Settings, {
 				this.tabs.enable();
 			}
 		}.createDelegate(this), this.rpc.settings);
-    },
-    
-	loadData: function() {
-		/*
-		this.rpc.node.getProtoFilterSettings(function (result, exception) {
-			if(exception) {Ext.MessageBox.alert("Failed",exception.message); return;}
-			if(this!==null) {
-				this.rpc.settings=result;
-		    	var pl=this.rpc.settings.patterns.list;
-		    	for(var i=0;i<pl.length;i++) {
-		    		var pattern=pl[i];
-		    		pattern["category"]=this.i18n._(pattern["category"]);
-		    		pattern["description"]=this.i18n._(pattern["description"]);
-		    	}
-				this.loadProtocolList();
-			}
-		}.createDelegate(this));
 		*/
-	},
-	
+    },
 	save: function() {
-		//this.saveProtocolList();
+		this.getRpcNode().updateAll(function (result, exception) {
+			if(exception) {Ext.MessageBox.alert("Failed",exception.message); return;}
+			
+		}.createCallback(this),this.gridProtocolList.getSaveList());
 	}
 });
 }
