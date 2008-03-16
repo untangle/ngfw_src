@@ -48,6 +48,14 @@ static __inline__ int _check_index    ( int index )
 
 static int  _add_data( netcap_intf_info_t* intf_info, netcap_intf_address_data_t* data );
 
+
+/**
+ * Check if it is safe to ignore an interface that doesn't have any configuration data.
+ * @param intf_name Name of the interface to test.
+ * @return 1 if the interface can be safely ignored, 0 otherwise.
+ */
+static int _is_ignore_interface( netcap_intf_string_t* intf_name );
+
 netcap_intf_db_t* netcap_intf_db_malloc  ( void )
 {
     netcap_intf_db_t* db;
@@ -206,11 +214,9 @@ int               netcap_intf_db_configure_intf( netcap_intf_db_t* db, netcap_in
              * interface is not setup yet.  (VPN transform doesn't start until after
              * the first initialization) */
             /* It is safe to ignore these interfaces. */
-            if (( strncmp( "tun0", (const char*)intf_name, sizeof( netcap_intf_string_t )) == 0 ) ||
-                ( strncmp( "dummy0", (const char*)intf_name, sizeof( netcap_intf_string_t )) == 0 ) ||
-                ( strncmp( "utun", (const char*)intf_name, sizeof( netcap_intf_string_t )) == 0 )) continue;
+            if ( _is_ignore_interface( intf_name ) == 1 ) continue;
 
-            errlog( ERR_WARNING, "Ignoring unkown interface '%s' at index %d.\n", intf_name->s, c );
+            errlog( ERR_WARNING, "Ignoring unknown interface '%s' at index %d.\n", intf_name->s, c );
             errlog( ERR_WARNING, "Interfaces may be configured incorrectly.\n" );
             continue;
         }
@@ -275,9 +281,7 @@ netcap_intf_info_t* netcap_intf_db_name_to_info  ( netcap_intf_db_t* db, netcap_
     }
     
     if (( intf_info = ht_lookup( &db->name_to_info, name )) == NULL || !intf_info->is_valid ) {
-        if (( strncmp( "tun0", (const char*)name, sizeof( netcap_intf_string_t )) == 0 ) ||
-            ( strncmp( "dummy0", (const char*)name, sizeof( netcap_intf_string_t )) == 0 ) ||
-            ( strncmp( "utun", (const char*)name, sizeof( netcap_intf_string_t )) == 0 )) return NULL;
+        if ( _is_ignore_interface( name ) == 1 ) return NULL;
 
         return errlog_null( ERR_CRITICAL, "Nothing is known about '%s'\n", name );
     }
@@ -370,6 +374,20 @@ static int  _add_data( netcap_intf_info_t* intf_info, netcap_intf_address_data_t
     }
     
     memcpy( &intf_info->data[intf_info->data_count++], data, sizeof( *data ));
+    return 0;
+}
+
+/** Return 1 if the interface should be ignored if nothing is known
+ * about it */
+static int _is_ignore_interface( netcap_intf_string_t* intf_name )
+{
+    const char* name = (const char*)intf_name;
+    /* For nointerface it could be nointerface1 or nointerface1 (minus 1 null termination) */
+    if (( strncmp( "tun0", name, sizeof( netcap_intf_string_t )) == 0 ) ||
+        ( strncmp( "dummy0", name, sizeof( netcap_intf_string_t )) == 0 ) ||
+        ( strncmp( "utun", name, sizeof( netcap_intf_string_t )) == 0 ) ||
+        ( strncmp( "nointerface", name, sizeof( "nointerface" ) - 1 ) == 0 )) return 1;
+
     return 0;
 }
 
