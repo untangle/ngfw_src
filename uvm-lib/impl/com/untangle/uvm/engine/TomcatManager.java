@@ -53,6 +53,12 @@ class TomcatManager
     private static final long REBIND_SLEEP_TIME = 1 * 1000; // 1 second
     private static final int NUM_REBIND_RETRIES = 5; //  10 seconds
 
+    // Connector threadpool parameters.  Set down from default to save
+    // memory since we aren't primarily a web server.
+    private static final String MIN_SPARE_THREADS = "1";
+    private static final String MAX_SPARE_THREADS = "3";
+    private static final String MAX_THREADS = "50";
+
     private static final String STANDARD_WELCOME = "webstart";
 
     private final InetAddress bindAddress;
@@ -634,6 +640,9 @@ class TomcatManager
     {
         Connector ret = emb
             .createConnector(address, port, secure);
+        ret.setProperty("minSpareThreads", MIN_SPARE_THREADS);
+        ret.setProperty("maxSpareThreads", MAX_SPARE_THREADS);
+        ret.setProperty("maxThreads", MAX_THREADS);
 
         if (secure) {
             Http11BaseProtocol ph = (Http11BaseProtocol)ret.getProtocolHandler();
