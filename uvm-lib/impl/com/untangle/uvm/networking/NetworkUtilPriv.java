@@ -83,7 +83,12 @@ class NetworkUtilPriv extends NetworkUtil
     {
         BasicNetworkSettings basic = new BasicNetworkSettings();
 
-        NetworkSpaceInternal primary = settings.getNetworkSpaceList().get( 0 );
+        NetworkSpaceInternal primary = settings.getNetworkSpace( IntfConstants.EXTERNAL_INTF );
+
+        if ( primary == null ) {
+            logger.warn( "The external interface doesn't have a network space, using first network space." );
+            primary = settings.getNetworkSpaceList().get( 0 );
+        }
         
         basic.isDhcpEnabled( false );
         IPNetwork primaryNetwork = primary.getPrimaryAddress();
