@@ -47,6 +47,10 @@ reapChildHarder() {
     flushIptables ; exit
 }
 
+getVirtualMemUsage() {
+  cat /proc/$1/status | awk '/VmSize/ {print $2}'
+}
+
 reapChild() {
     echo "$NAME: shutting down bunnicula " >> $UVM_WRAPPER_LOG
     kill -3 $pid
@@ -258,7 +262,7 @@ needToRestart() {
     # extra nightime checks
     if [ `date +%H` -eq 1 ]; then
         # VSZ greater than 1.1 gigs reboot
-        VIRT="`cat /proc/$pid/status | grep VmSize | awk '{print $2}'`"
+        VIRT="`getVirtualMemUsage $pid`"
         if [ $VIRT -gt $MAX_VIRTUAL_SIZE ] ; then
             echo "*** Virt Size too high ($VIRT) on `date` in `pwd` ***" >> $UVM_WRAPPER_LOG
             return 0;
@@ -337,6 +341,11 @@ while true; do
                     *success*) true ;;
                     *) restartService clamav-daemon $CLAMD_PID_FILE "hung" stopFirst ;;
                   esac
+		  # memory-management
+		  VIRT="`getVirtualMemUsage $CLAMD_PID_FILE`"
+		  if [ $VIRT -gt $CLAMD_MAX_VIRTUAL_SIZE ] ; then
+		    echo restartService clamav-daemon $CLAMD_PID_FILE "memory-hogging ($VIRT)" stopFirst
+		  fi
 	        fi
 	        if dpkg -l untangle-support-agent | grep -q ii ; then # support-agent is supposed to run
 	            if [ -f "$SUPPORT_AGENT_PID_FILE" ] && ps `cat $SUPPORT_AGENT_PID_FILE` > /dev/null ; then # it runs

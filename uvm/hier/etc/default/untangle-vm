@@ -44,6 +44,7 @@ SPAMASSASSIN_PORT=783
 SPAMASSASSIN_PID_FILE=/var/run/spamd.pid
 CLAMD_PORT=3310
 CLAMD_PID_FILE=/var/run/clamav/clamd.pid
+CLAMD_MAX_VIRTUAL_SIZE=100000
 SPAMASSASSIN_LOG_ERROR="bayes: cannot open bayes databases /home/spamc/.spamassassin/bayes_\* R/W: lock failed: Interrupted system call"
 SUPPORT_AGENT_MAX_ALLOWED_CPU=30
 SUPPORT_AGENT_PID_FILE=/var/run/rbot.pid
@@ -77,7 +78,7 @@ case `head -1 $ETC_ISSUE | awk "{ print \\$$i }"` in
   # FIMXE !!!
   *) REPOSITORY=etch SOURCES_LIST=${SOURCES_LIST_NEW} ;;
 esac
-DEFAULT_UNTANGLE_SOURCE="deb http://${KEY_TEMPLATE}:metavize@updates.untangle.com/public/${REPOSITORY} stable main premium upstream\ndeb http://${KEY_TEMPLATE}:metavize@updates.untangle.com/public/${REPOSITORY} thunderbird main premium upstream"
+DEFAULT_UNTANGLE_SOURCE="deb http://${KEY_TEMPLATE}:metavize@updates.untangle.com/public/${REPOSITORY} stable main premium upstream\ndeb http://${KEY_TEMPLATE}:metavize@updates.untangle.com/public/${REPOSITORY} durango main premium upstream"
 
 ## For testing uncomment if you want to generate /etc/network/interfaces files.
 # UVM_ENABLE_NETWORK_CFG="anything"
