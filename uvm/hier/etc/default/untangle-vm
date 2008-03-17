@@ -148,10 +148,11 @@ UVM_ARGS="${UVM_ARGS} -Dcom.untangle.uvm.memmonitor.enabled=true"
 #
 # JAVA options
 #
+DEFAULT_JAVA_HOME=@DEFAULT_JAVA5_HOME@
+[ -d @DEFAULT_JAVA6_HOME@ ] && DEFAULT_JAVA_HOME=@DEFAULT_JAVA6_HOME@
 
 # NOTE: this setting is required
-# JAVA_HOME=/usr/lib/j2se/1.4/jre
-JAVA_HOME=${JAVA_HOME:-@DEFAULT_JAVA_HOME@}
+JAVA_HOME=${JAVA_HOME:-${DEFAULT_JAVA_HOME}}
 export JAVA_HOME
 
 PATH=${JAVA_HOME}/bin:${PATH}
