@@ -6,24 +6,6 @@
          xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee 
          http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd" >
 
-  <filter>
-    <filter-name>Compress</filter-name>
-    <filter-class>com.untangle.uvm.webui.filter.GZIPFilter</filter-class>
-  </filter>
-
-  <filter-mapping>
-    <filter-name>Compress</filter-name>
-    <url-pattern>*.js</url-pattern>
-  </filter-mapping>
-  <filter-mapping>
-    <filter-name>Compress</filter-name>
-    <url-pattern>*.css</url-pattern>
-  </filter-mapping>
-  <filter-mapping>
-    <filter-name>Compress</filter-name>
-    <url-pattern>/startPage.do</url-pattern>
-  </filter-mapping>
-    
   <servlet>
     <servlet-name>StartPageServlet</servlet-name>
     <servlet-class>com.untangle.uvm.webui.servlet.StartPageServlet</servlet-class>

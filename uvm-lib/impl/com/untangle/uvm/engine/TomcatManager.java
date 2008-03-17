@@ -637,12 +637,18 @@ class TomcatManager
         Connector ret = emb
             .createConnector(address, port, secure);
 
+        // enable compression
+        Http11BaseProtocol ph = (Http11BaseProtocol)ret.getProtocolHandler();
+        ph.setCompression("on");
+        ph.setCompressableMimeType("text/javascript,text/css");
+        ph.setCompressionMinSize(200);
+        
         if (secure) {
-            Http11BaseProtocol ph = (Http11BaseProtocol)ret.getProtocolHandler();
             ph.setKeystore(this.keystoreFile);
             ph.setKeypass(this.keystorePass);
             ph.setKeyAlias(this.keyAlias);
         }
+        
 
         emb.addConnector(ret);
         return ret;
