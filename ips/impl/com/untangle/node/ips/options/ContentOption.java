@@ -54,8 +54,6 @@ public class ContentOption extends IPSOption {
 
     private byte[] bytePattern;
     private String stringPattern;
-    private ByteBuffer binaryBuffer = ByteBuffer.allocate(2048);
-
     private boolean hasBinaryData = false;
     private boolean withinFlag = false;
     private boolean distanceFlag = false;
@@ -67,7 +65,8 @@ public class ContentOption extends IPSOption {
             stringPattern = params;
         }
         else {
-            buildBytePattern(params, index);
+            ByteBuffer binaryBuffer = ByteBuffer.allocate(2048);
+            buildBytePattern(binaryBuffer, params, index);
             bytePattern = new byte[binaryBuffer.position()];
             binaryBuffer.flip();
             binaryBuffer.get(bytePattern);
@@ -185,31 +184,31 @@ public class ContentOption extends IPSOption {
      * the bytes of the string onto the byte buffer.
      */
 
-    private void buildBytePattern(String params, int index) {
+    private void buildBytePattern(ByteBuffer binaryBuffer, String params, int index) {
         if(index == 0) {
             index = params.indexOf('|', 1);
             String bytes = params.substring(1,index);
             bytes = bytes.replaceAll(" ", "");
-            parseBinaryPattern(bytes);
+            parseBinaryPattern(binaryBuffer, bytes);
             String substring = params.substring(index+1);
             index = substring.indexOf('|') ;
 
             if(substring.length() > 0)
-                buildBytePattern(substring, index);
+                buildBytePattern(binaryBuffer, substring, index);
         }
         else {
             if(index < 0)
                 index = params.length();
-            parseASCIIPattern(params.substring(0,index));
+            parseASCIIPattern(binaryBuffer, params.substring(0,index));
             String substring = params.substring(index);
             index = 0;
 
             if(substring.length() > 0)
-                buildBytePattern(substring, index);
+                buildBytePattern(binaryBuffer, substring, index);
         }
     }
 
-    private void parseASCIIPattern(String params) {
+    private void parseASCIIPattern(ByteBuffer binaryBuffer, String params) {
         if(params.length() > binaryBuffer.remaining()) {
             logger.warn("Very large ASCII pattern");
             return;
@@ -217,7 +216,7 @@ public class ContentOption extends IPSOption {
         binaryBuffer.put(params.getBytes());
     }
 
-    private void parseBinaryPattern(String bytes) {
+    private void parseBinaryPattern(ByteBuffer binaryBuffer, String bytes) {
         if(bytes.length()%2 != 0 || bytes.length() > binaryBuffer.remaining()) {
             logger.warn("Very large binary pattern"); //throw error XXX
             return;
