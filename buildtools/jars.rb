@@ -101,7 +101,7 @@ class Jars
   Netbeans   = [ Jars.downloadTarget('netbeans-3.5/netbeans-3.5.jar') ]
 
   ## Reporting Jars
-  Jasper     = [ Jars.downloadTarget('jasperreports-2.0.5/dist/jasperreports-2.0.5.jar') ]
+  Jasper     = [ Jars.downloadTarget('jasperreports-1.1.1/dist/jasperreports-1.1.1.jar') ]
 
   ## Miscellaneous Jars
   JavaMail   = [ Jars.downloadTarget('javamail-1.3.3_01/mail.jar') ]
