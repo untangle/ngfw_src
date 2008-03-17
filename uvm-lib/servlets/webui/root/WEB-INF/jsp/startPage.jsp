@@ -4,38 +4,38 @@
     <title>UNG</title>
     
     <style type="text/css">
-        @import "ext/resources/css/ext-all.css?${version}";
-		@import "css/main.css?${version}";
-		@import "skins/default/css/ext-skin.css?${version}";
-		@import "skins/default/css/skin.css?${version}";
+        @import "ext/resources/css/ext-all.css";
+		@import "css/main.css";
+		@import "skins/default/css/ext-skin.css";
+		@import "skins/default/css/skin.css";
     </style>
 <!--
-	<script type="text/javascript" src="ext/source/core/Ext.js?${version}"></script>
-	<script type="text/javascript" src="ext/source/adapter/ext-base.js?${version}"></script>
-	<script type="text/javascript" src="ext/ext-all-debug.js?${version}"></script>
-	<script type="text/javascript" src="jsonrpc/jsonrpc.js?${version}"></script>
-    <script type="text/javascript" src="firebug/firebug.js?${version}"></script>
-    <script type="text/javascript" src="script/untangle-node-protofilter/settings.js?${version}"></script>
+	<script type="text/javascript" src="ext/source/core/Ext.js"></script>
+	<script type="text/javascript" src="ext/source/adapter/ext-base.js"></script>
+	<script type="text/javascript" src="ext/ext-all-debug.js"></script>
+	<script type="text/javascript" src="jsonrpc/jsonrpc.js"></script>
+    <script type="text/javascript" src="firebug/firebug.js"></script>
+    <script type="text/javascript" src="script/untangle-node-protofilter/settings.js"></script>
 
 
-	<script type="text/javascript" src="ext/adapter/ext/ext-base.js?${version}"></script>
-	<script type="text/javascript" src="ext/ext-all.js?${version}"></script>
+	<script type="text/javascript" src="ext/adapter/ext/ext-base.js"></script>
+	<script type="text/javascript" src="ext/ext-all.js"></script>
 -->	
-	<script type="text/javascript" src="ext/source/core/Ext.js?${version}"></script>
-	<script type="text/javascript" src="ext/source/adapter/ext-base.js?${version}"></script>
-	<script type="text/javascript" src="ext/ext-all-debug.js?${version}"></script>
+	<script type="text/javascript" src="ext/source/core/Ext.js"></script>
+	<script type="text/javascript" src="ext/source/adapter/ext-base.js"></script>
+	<script type="text/javascript" src="ext/ext-all-debug.js"></script>
 
 	
-	<script type="text/javascript" src="jsonrpc/jsonrpc-min.js?${version}"></script>
-    <script type="text/javascript" src="script/main.js?${version}"></script>
-	<script type="text/javascript" src="script/i18n.js?${version}"></script>
-    <script type="text/javascript" src="script/components.js?${version}"></script>
-    <script type="text/javascript" src="script/untangle-node-protofilter/settings.js?${version}"></script>
-    <script type="text/javascript" src="script/untangle-node-spyware/settings.js?${version}"></script>
+	<script type="text/javascript" src="jsonrpc/jsonrpc-min.js"></script>
+    <script type="text/javascript" src="script/main.js"></script>
+	<script type="text/javascript" src="script/i18n.js"></script>
+    <script type="text/javascript" src="script/components.js"></script>
+    <script type="text/javascript" src="script/untangle-node-protofilter/settings.js"></script>
+    <script type="text/javascript" src="script/untangle-node-spyware/settings.js"></script>
 	<script type="text/javascript">
 		function init() {
 			main=new Ung.Main();
-			main.version='${version}';
+			//main.version='${version}';
 			main.init();
 		}
 		Ext.onReady(init);
@@ -45,7 +45,7 @@
 <div id="scripts_container" style="display: none;"></div>
 <div id="container">
 	<div id="contentleft">
-		<div id="logo"><img src="images/Logo150x96.gif?${version}"/></div>
+		<div id="logo"><img src="images/Logo150x96.gif"/></div>
 		<div id="tabs">
 		</div>
 			<div id="tabLibrary" class="x-hide-display">

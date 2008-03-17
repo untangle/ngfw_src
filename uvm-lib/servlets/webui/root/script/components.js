@@ -90,12 +90,12 @@ Ung.Node = Ext.extend(Ext.Component, {
 	},
 	setState: function(state) {
 		this.state=state;
-		var iconSrc="images/node/Icon"+this.state+"State28x28.png?"+main.version;
+		var iconSrc="images/node/Icon"+this.state+"State28x28.png";
 		document.getElementById('nodeStateIconImg_'+this.getId()).src=iconSrc;
 	},
 	setPowerOn: function(powerOn) {
 		this.powerOn=powerOn;
-		var iconSrc="images/node/IconPower"+(powerOn?"On":"Off")+"State28x28.png?"+main.version;
+		var iconSrc="images/node/IconPower"+(powerOn?"On":"Off")+"State28x28.png";
 		document.getElementById('nodePowerIconImg_'+this.getId()).src=iconSrc;
 		document.getElementById('nodePowerOnHint_'+this.getId()).style.display=this.powerOn?"none":"";
 	},
@@ -170,7 +170,7 @@ Ung.Node = Ext.extend(Ext.Component, {
 		if(!Ung.i18nNodeInstances[this.name]) {
 			Ext.Ajax.request({
 		        url: "i18n",
-		        params:{'nodeClassName':this.nodeContext.nodeDesc.className, 'version':main.version},
+		        params:{'nodeClassName':this.nodeContext.nodeDesc.className},
 				method: 'GET',
 				parentId: this.getId(),
 				disableCaching: false,
@@ -287,7 +287,7 @@ Ung.Node = Ext.extend(Ext.Component, {
         container.dom.insertBefore(el, position);
        	this.el = Ext.get(el);
        	this.el.addClass("rackNode");
-       	var templateHTML=Ung.Node.template.applyTemplate({'id':this.getId(),'image':this.image,'displayName':this.displayName,'version':main.version});
+       	var templateHTML=Ung.Node.template.applyTemplate({'id':this.getId(),'image':this.image,'displayName':this.displayName});
         this.getEl().insertHtml("afterBegin",templateHTML);
       
 	    var settingsHTML=Ung.Node.templateSettings.applyTemplate({'id':this.getId()});
@@ -399,9 +399,9 @@ Ung.Node.powerTip='The <B>Power Button</B> allows you to turn a product "on" and
 Ung.Node.template = new Ext.Template(
 '<div class="nodeImage"><img src="{image}"/></div>',
 '<div class="nodeLabel">{displayName}</div><div class="nodeBlingers" id="nodeBlingers_{id}"></div>',
-'<div class="nodeStateIcon"><img id="nodeStateIconImg_{id}" src="images/node/IconOffState28x28.png?{version}"></div>',
-'<div class="nodePowerIcon"><img id="nodePowerIconImg_{id}" src="images/node/IconPowerOffState28x28.png?{version}"></div>',
-'<div id="nodePowerOnHint_{id}" class="nodePowerOnHint"><img src="images/node/IconPowerOnHint100.png?{version}"></div>',
+'<div class="nodeStateIcon"><img id="nodeStateIconImg_{id}" src="images/node/IconOffState28x28.png"></div>',
+'<div class="nodePowerIcon"><img id="nodePowerIconImg_{id}" src="images/node/IconPowerOffState28x28.png"></div>',
+'<div id="nodePowerOnHint_{id}" class="nodePowerOnHint"><img src="images/node/IconPowerOnHint100.png"></div>',
 '<div class="nodeSettingsButton" id="nodeSettingsButton_{id}"></div>',
 '<div class="nodeHelpButton" id="nodeHelpButton_{id}"></div>');
 
@@ -696,7 +696,7 @@ Ung.Settings = Ext.extend(Ext.Component, {
 });
 Ung.Settings._nodeScripts={};
 Ung.Settings.loadNodeScript=function(nodeName,cmpId,callbackFn) {
-	main.loadScript('script/'+nodeName+'/settings.js?'+main.version,function() {callbackFn(cmpId);});
+	main.loadScript('script/'+nodeName+'/settings.js',function() {callbackFn(cmpId);});
 };
 Ung.Settings._classNames={};
 Ung.Settings.getClassName=function(name) {

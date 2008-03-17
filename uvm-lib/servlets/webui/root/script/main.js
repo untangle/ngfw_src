@@ -101,7 +101,7 @@ Ung.Main.prototype = {
 				var rackBaseHelpLink = main.getHelpLink("rack");
 				window.open(rackBaseHelpLink);
 				},
-	        'imageSrc': 'images/IconHelp36x36.png?'+main.version
+	        'imageSrc': 'images/IconHelp36x36.png'
 		});
 		main.loadTools();
 		main.loadPolicies();
@@ -228,7 +228,7 @@ Ung.Main.prototype = {
 			node.isUtil=md.util;
 			node.isSecurity=md.security;
 			node.isCore=md.core;
-			node.image='image?name='+node.name+"&"+main.version;
+			node.image='image?name='+node.name;
 		}
 		node.blingers=eval([{'type':'ActivityBlinger','bars':['ACT 1','ACT 2','ACT 3','ACT 4']},{'type':'SystemBlinger'}]);
 		return node;
@@ -417,7 +417,7 @@ Ung.Main.prototype = {
 					'cls':'toolboxButton',
 			        'text': item.displayName,
 			        'handler': function() {main.clickLibrary(main.library[this.libraryIndex]);},
-			        'imageSrc': 'image?name='+ item.name+"&"+main.version
+			        'imageSrc': 'image?name='+ item.name
 		        });
 	  		}
 	  	}
@@ -435,7 +435,7 @@ Ung.Main.prototype = {
 				'cls':'toolboxButton',
 		        'text': item.displayName,
 		        'handler': function() {main.clickMyApps(main.myApps[this.myAppIndex]);},
-		        'imageSrc': 'image?name='+ item.name+"&"+main.version,
+		        'imageSrc': 'image?name='+ item.name,
 		        'disabled':true
 	        });
   		}

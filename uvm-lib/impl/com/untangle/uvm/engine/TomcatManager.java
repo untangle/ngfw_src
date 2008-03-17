@@ -23,12 +23,9 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.untangle.uvm.util.AdministrationOutsideAccessValve;
-import com.untangle.uvm.util.ReportingOutsideAccessValve;
 import org.apache.catalina.Container;
 import org.apache.catalina.Context;
 import org.apache.catalina.Engine;
-import org.apache.catalina.Host;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.Pipeline;
 import org.apache.catalina.Realm;
@@ -42,6 +39,9 @@ import org.apache.catalina.session.StandardManager;
 import org.apache.catalina.startup.Embedded;
 import org.apache.coyote.http11.Http11BaseProtocol;
 import org.apache.log4j.Logger;
+
+import com.untangle.uvm.util.AdministrationOutsideAccessValve;
+import com.untangle.uvm.util.ReportingOutsideAccessValve;
 
 /**
  * Wrapper around the Tomcat server embedded within the UVM.
@@ -569,6 +569,8 @@ class TomcatManager
             StandardManager mgr = new StandardManager();
             mgr.setPathname(null); /* disable session persistence */
             ctx.setManager(mgr);
+            
+            ctx.setResources(new StrongETagDirContext());
 
             /* This should be the first valve */
             if (null != options.valve) ctx.addValve(options.valve);
