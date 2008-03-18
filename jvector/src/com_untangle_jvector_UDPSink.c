@@ -230,7 +230,7 @@ static int _accept_packet( char* data, int data_len, netcap_pkt_t* pkt )
         return 0;
     }
 
-    if (( ip_header = calloc( 1, ip_len )) == NULL ) {
+    if (( ip_header = malloc( ip_len )) == NULL ) {
         return errlog( ERR_CRITICAL, "UDP SESSION: malloc.\n" );
     }
     int ret = 0;

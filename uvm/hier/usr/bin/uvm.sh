@@ -90,6 +90,19 @@ ok, status = client.call( "generate_rules" )
 EOF
 }
 
+raiseFdLimit() {
+    ulimit -n 2000
+    ulimit -n 4000
+    ulimit -n 8000
+    ulimit -n 16000
+    ulimit -n 32000
+    ulimit -n 64000
+    ulimit -n 128000
+    ulimit -n 256000
+    ulimit -n 512000
+    ulimit -n 1024000
+}
+
 getLicenseKey() {
   # the wizard has not run yet, exit right away
   [[ ! -f $ACTIVATION_KEY_FILE ]] && return
@@ -275,6 +288,7 @@ while true; do
     echo $UVM_LAUNCH >> $UVM_WRAPPER_LOG
     echo "============================" >> $UVM_WRAPPER_LOG
 
+    raiseFdLimit
     flushIptables
 
     $UVM_LAUNCH $* >>$UVM_CONSOLE_LOG 2>&1 &

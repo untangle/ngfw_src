@@ -1,9 +1,3 @@
-untangle-vm (5.1.1~svn20080316r15262trunk+jdi20080316T224040-1gutsy) jdi; urgency=low
-
-  * auto build
-
- -- John Irwin <jdi@untangle.com>  Sun, 16 Mar 2008 22:40:40 -0700
-
 untangle-vm (5.0.1-1) mustang-1; urgency=low
 
   * auto build
