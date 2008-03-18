@@ -353,6 +353,18 @@ public class UvmContextImpl extends UvmContextBase
             synchronized (this) {
                 EnvironmentConfig envCfg = new EnvironmentConfig();
                 envCfg.setAllowCreate(true);
+                
+                Integer maxMegs = Integer.getInteger("je.maxMemory");
+                int maxMem;
+                if (maxMegs == null) {
+                    maxMem = 16 * 1024 * 1024;
+                    logger.warn("No je.maxMemory property, using 16MB");
+                } else {
+                    maxMem = maxMegs * 1024 * 1024;
+                    logger.info("Setting max bdb memory to " + maxMegs + "MB");
+                }
+                envCfg.setCacheSize(maxMem);
+
                 File dbHome = new File(BDB_HOME);
 
                 int tries = 0;
