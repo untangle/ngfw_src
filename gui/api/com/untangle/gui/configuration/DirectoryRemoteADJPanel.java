@@ -315,19 +315,19 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
         testJLabel = new javax.swing.JLabel();
         adTestJButton = new javax.swing.JButton();
         jSeparator4 = new javax.swing.JSeparator();
+        jButton2 = new javax.swing.JButton();
+        jSeparator5 = new javax.swing.JSeparator();
         jPanel1 = new javax.swing.JPanel();
         jButton1 = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         jList1 = new javax.swing.JList();
-        jSeparator5 = new javax.swing.JSeparator();
         jPanel2 = new javax.swing.JPanel();
-        jButton2 = new javax.swing.JButton();
 
         setLayout(new java.awt.GridBagLayout());
 
-        setMaximumSize(new java.awt.Dimension(563, 687));
-        setMinimumSize(new java.awt.Dimension(563, 687));
-        setPreferredSize(new java.awt.Dimension(563, 687));
+        setMaximumSize(new java.awt.Dimension(563, 700));
+        setMinimumSize(new java.awt.Dimension(563, 700));
+        setPreferredSize(new java.awt.Dimension(563, 700));
         externalRemoteJPanel.setLayout(new java.awt.GridBagLayout());
 
         externalRemoteJPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Active Directory (AD) Server", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
@@ -612,6 +612,25 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         enableRemoteJPanel.add(jSeparator4, gridBagConstraints);
 
+        jButton2.setFont(new java.awt.Font("Dialog", 0, 12));
+        jButton2.setText("AD Login Script");
+        jButton2.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                openAdPage(evt);
+            }
+        });
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.insets = new java.awt.Insets(5, 0, 5, 0);
+        enableRemoteJPanel.add(jButton2, gridBagConstraints);
+
+        jSeparator5.setForeground(new java.awt.Color(200, 200, 200));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        enableRemoteJPanel.add(jSeparator5, gridBagConstraints);
+
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
@@ -659,22 +678,6 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
         gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
         externalRemoteJPanel.add(jPanel1, gridBagConstraints);
 
-        jSeparator5.setForeground(new java.awt.Color(200, 200, 200));
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        externalRemoteJPanel.add(jSeparator5, gridBagConstraints);
-
-        jButton2.setFont(new java.awt.Font("Dialog", 0, 12));
-        jButton2.setText("AD Login Script");
-        jButton2.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                openAdPage(evt);
-            }
-        });
-
-        jPanel2.add(jButton2);
-
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         externalRemoteJPanel.add(jPanel2, gridBagConstraints);
@@ -682,10 +685,12 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.ipadx = 10;
+        gridBagConstraints.ipady = 10;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 10);
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
         add(externalRemoteJPanel, gridBagConstraints);
 
     }// </editor-fold>//GEN-END:initComponents
