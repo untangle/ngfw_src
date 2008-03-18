@@ -36,8 +36,8 @@ package com.untangle.node.http;
 public enum UserWhitelistMode
 {
     NONE("None"),
-    USER_ONLY("User Only"),
-    USER_AND_GLOBAL("User and Global");
+    USER_ONLY("Temporary"),
+    USER_AND_GLOBAL("Permanent and Global");
 
     private final String string;
 
