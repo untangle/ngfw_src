@@ -60,7 +60,7 @@ procset /proc/sys/net/ipv4/tcp_syncookies 1
 procset /proc/sys/net/ipv4/netfilter/ip_conntrack_tcp_timeout_time_wait 30
 
 # remove tomcat persisted sessions
-find @PREFIX@ -name SESSIONS.ser -exec rm -f '{}' ';'
+[ -d @UVM_HOME@/work ] && find @UVM_HOME@/work -name SESSIONS.ser -exec rm -f '{}' ';'
 
 # make self-signed certificate
 # XXX this certificate could perhaps be more filled out with info
@@ -118,8 +118,8 @@ if [ "x$PROFILE_UVM_YJP" = "xyes" ] ; then
     JAVA_OPTS="-agentlib:yjpagent $JAVA_OPTS"
 fi
 
-fdlimit=1
-for i in `seq 21` ; do
+fdlimit=1024
+for i in `seq 11` ; do
     ulimit -n $fdlimit;
     fdlimit=$(($fdlimit*2));
 done

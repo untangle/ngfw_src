@@ -160,16 +160,19 @@ public class InitialSetupContactJPanel extends MWizardPageJPanel {
                 // KEY, IF NOT UNTANGLE APPLIANCE
                 if(!Util.isUntangleAppliance()){
                     URL url = Util.getServerCodeBase();
-                    boolean isActivated = com.untangle.uvm.client.RemoteUvmContextFactory.factory().isActivated( url.getHost(),
-                                                                                                                   url.getPort(),
-                                                                                                                   0,
-                                                                                                                   Util.isSecureViaHttps() );
+                    boolean isActivated = com.untangle.uvm.client.RemoteUvmContextFactory.factory().
+                        isActivated( url.getHost(),
+                                     url.getPort(),
+                                     0,
+                                     Util.isSecureViaHttps() );
                     if( !isActivated ){
-                        RemoteUvmContext uvmContext = RemoteUvmContextFactory.factory().activationLogin( url.getHost(), url.getPort(),
-                                                                                                            "0000-0000-0000-0000",
-                                                                                                            0,
-                                                                                                            Util.getClassLoader(),
-                                                                                                            Util.isSecureViaHttps() );
+                        RemoteUvmContext uvmContext = RemoteUvmContextFactory.factory().
+                            activationLogin( url.getHost(), url.getPort(),
+                                             "0000-0000-0000-0000",
+                                             0,
+                                             Util.getClassLoader(),
+                                             Util.isSecureViaHttps() );
+                        System.out.println("activationLogin: " + uvmContext);
                         Util.setUvmContext(uvmContext);
                         KeepAliveThread keepAliveThread = new KeepAliveThread(uvmContext);
                         InitialSetupWizard.setKeepAliveThread(keepAliveThread);

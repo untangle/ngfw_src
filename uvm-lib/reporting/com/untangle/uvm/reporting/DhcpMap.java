@@ -110,6 +110,8 @@ public class DhcpMap
         "             ) AS addrs " +
         "        JOIN u_ipmaddr_dir_entries entry JOIN u_ipmaddr_rule rule USING (rule_id) " +
         "        ON rule.ipmaddr >>= addr " +
+        "        JOIN n_reporting_settings setting ON entry.ipmaddr_dir_id = setting.network_directory " + 
+        "        JOIN u_node_persistent_state node USING (tid) " +
         "        WHERE NOT addr ISNULL " +
         "        GROUP BY addr) AS pos_idxs " +
         " LEFT OUTER JOIN u_ipmaddr_dir_entries entry JOIN u_ipmaddr_rule rule USING (rule_id) " +
