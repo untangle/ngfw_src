@@ -35,19 +35,21 @@ package com.untangle.node.http;
 
 public enum UserWhitelistMode
 {
-    NONE("None"),
-    USER_ONLY("User Only"),
-    USER_AND_GLOBAL("User and Global");
+	//TODO remove dead code if everything works fine; the "string" should be defined in UI not API
+	
+    NONE/*("None")*/,
+    USER_ONLY/*("User Only")*/,
+    USER_AND_GLOBAL/*("User and Global")*/;
 
-    private final String string;
-
-    private UserWhitelistMode(String string)
-    {
-        this.string = string;
-    }
-
-    public String toString()
-    {
-        return string;
-    }
+//    private final String string;
+//
+//    private UserWhitelistMode(String string)
+//    {
+//        this.string = string;
+//    }
+//
+//    public String toString()
+//    {
+//        return string;
+//    }
 }
