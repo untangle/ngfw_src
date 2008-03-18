@@ -21,16 +21,18 @@ package com.untangle.node.shield;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.Type;
+
 import com.untangle.uvm.node.IPaddr;
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.Rule;
 import com.untangle.uvm.shield.ShieldNodeSettings;
-import org.hibernate.annotations.Type;
 
 
 /**
@@ -193,6 +195,17 @@ public class ShieldNodeRule extends Rule implements ShieldNodeSettings
         return DIVIDER_ENUMERATION[0];
     }
 
+    @Override
+    public void updateRule(Rule rule) {
+    	super.updateRule(rule);
+    	if (rule instanceof ShieldNodeRule) {
+			ShieldNodeRule shieldNodeRule = (ShieldNodeRule) rule;
+	        this.address = shieldNodeRule.address;
+	        this.netmask = shieldNodeRule.netmask;
+	        this.divider = shieldNodeRule.divider;
+		}
+    }
+    
     static
     {
         DIVIDER_ENUMERATION = new String[] {

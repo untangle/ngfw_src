@@ -25,6 +25,7 @@ import java.net.UnknownHostException;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 
@@ -95,7 +96,7 @@ class LocalShieldManagerImpl implements LocalShieldManager
     }
 
     /* Update the shield node settings */
-    public void setShieldNodeSettings( List<ShieldNodeSettings> shieldNodeSettingsList ) 
+    public void setShieldNodeSettings( Set<ShieldNodeSettings> shieldNodeSettings ) 
         throws ArgonException
     {
         /* Do nothing if the shield is not enabled */
@@ -107,7 +108,7 @@ class LocalShieldManagerImpl implements LocalShieldManager
         List <com.untangle.jnetcap.ShieldNodeSettings> settingsList = 
             new LinkedList<com.untangle.jnetcap.ShieldNodeSettings>();
 
-        for ( ShieldNodeSettings settings : shieldNodeSettingsList ) {
+        for ( ShieldNodeSettings settings : shieldNodeSettings ) {
             InetAddress netmask;
             try {
                 byte full = (byte)255;

@@ -119,8 +119,9 @@ public class ProtoFilterSettings implements java.io.Serializable
 	}
 
 	public void setBaseSettings(ProtoFilterBaseSettings baseSettings) {
-		if (baseSettings != null) {
-			this.baseSettings = baseSettings;
+		if (null == baseSettings) {
+			baseSettings = new ProtoFilterBaseSettings();
 		}
+		this.baseSettings = baseSettings;
 	}
 }

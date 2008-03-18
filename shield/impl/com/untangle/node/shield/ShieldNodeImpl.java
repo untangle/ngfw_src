@@ -24,22 +24,26 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
+
+import org.apache.log4j.Logger;
+import org.hibernate.Query;
+import org.hibernate.Session;
 
 import com.untangle.uvm.IntfEnum;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.localapi.LocalShieldManager;
-import com.untangle.uvm.shield.ShieldNodeSettings;
-import com.untangle.uvm.vnet.AbstractNode;
-import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.node.NodeStartException;
 import com.untangle.uvm.node.NodeState;
 import com.untangle.uvm.node.NodeStats;
 import com.untangle.uvm.node.NodeStopException;
+import com.untangle.uvm.shield.ShieldNodeSettings;
+import com.untangle.uvm.util.QueryUtil;
 import com.untangle.uvm.util.TransactionWork;
-import org.apache.log4j.Logger;
-import org.hibernate.Query;
-import org.hibernate.Session;
+import com.untangle.uvm.vnet.AbstractNode;
+import com.untangle.uvm.vnet.PipeSpec;
 
 public class ShieldNodeImpl extends AbstractNode
     implements ShieldNode
@@ -59,7 +63,7 @@ public class ShieldNodeImpl extends AbstractNode
 
     private final Logger logger = Logger.getLogger(ShieldNodeImpl.class);
 
-    private final List<ShieldNodeSettings> emptyList = Collections.emptyList();
+    private final Set<ShieldNodeSettings> emptySet = Collections.emptySet();
 
     private final PipeSpec pipeSpec[] = new PipeSpec[0];
 
@@ -89,7 +93,7 @@ public class ShieldNodeImpl extends AbstractNode
             LocalShieldManager lsm = LocalUvmContextFactory.context().localShieldManager();
 
             try {
-                lsm.setShieldNodeSettings( this.settings.getShieldNodeRuleList());
+                lsm.setShieldNodeSettings( this.settings.getShieldNodeRules());
             } catch ( Exception e ) {
                 logger.error( "Error setting shield node rules", e );
             }
@@ -198,7 +202,7 @@ public class ShieldNodeImpl extends AbstractNode
         LocalShieldManager lsm = LocalUvmContextFactory.context().localShieldManager();
 
         try {
-            lsm.setShieldNodeSettings( this.settings.getShieldNodeRuleList());
+            lsm.setShieldNodeSettings( this.settings.getShieldNodeRules());
         } catch ( Exception e ) {
             throw new NodeStartException( e );
         }
@@ -210,7 +214,7 @@ public class ShieldNodeImpl extends AbstractNode
 
         try {
             /* Deconfigure all of the nodes */
-            lsm.setShieldNodeSettings( this.emptyList );
+            lsm.setShieldNodeSettings( this.emptySet );
         } catch ( Exception e ) {
             throw new NodeStopException( e );
         }
@@ -228,15 +232,120 @@ public class ShieldNodeImpl extends AbstractNode
         }
     }
 
-    // XXX soon to be deprecated ----------------------------------------------
+	public ShieldBaseSettings getBaseSettings() {
+		return settings.getBaseSettings();
+	}
 
-    public Object getSettings()
-    {
-        return getShieldSettings();
-    }
+	public void setBaseSettings(final ShieldBaseSettings baseSettings) {
+        TransactionWork tw = new TransactionWork() {
+			public boolean doWork(Session s) {
+		        settings.setBaseSettings(baseSettings);
+				s.merge(settings);
+				return true;
+			}
 
-    public void setSettings(Object settings)
-    {
-        setShieldSettings((ShieldSettings)settings);
-    }
+			public Object getResult() {
+				return null;
+			}
+		};
+		getNodeContext().runTransaction(tw);
+	}
+
+	public List<ShieldNodeRule> getShieldNodeRules(int start, int limit,
+			String... sortColumns) {
+		return getRules(
+				"select ts.shieldNodeRules from ShieldSettings ts where ts.tid = :tid ",
+				start, limit, sortColumns);
+	}
+
+	public void updateShieldNodeRules(List<ShieldNodeRule> added,
+			List<Long> deleted, List<ShieldNodeRule> modified) {
+		
+		updateRules(getShieldSettings().getShieldNodeRules(), added, deleted,
+				modified);
+		
+	}
+	
+	/*
+	 * For this node, updateAll means update only the rules
+	 * @see com.untangle.node.shield.ShieldNode#updateAll(java.util.List[])
+	 */
+    public void updateAll(List[] shieldNodeRulesChanges) {
+    	if (shieldNodeRulesChanges != null && shieldNodeRulesChanges.length >= 3) {
+    		updateShieldNodeRules(shieldNodeRulesChanges[0], shieldNodeRulesChanges[1], shieldNodeRulesChanges[2]);
+    	}
+	}
+
+    private List getRules(final String queryString, final int start,
+			final int limit, final String... sortColumns) {
+		TransactionWork<List> tw = new TransactionWork<List>() {
+			private List result;
+
+			public boolean doWork(Session s) {
+				Query q = s.createQuery(queryString
+						+ QueryUtil.toOrderByClause(sortColumns));
+				q.setParameter("tid", getTid());
+				q.setFirstResult(start);
+				q.setMaxResults(limit);
+				result = q.list();
+
+				return true;
+			}
+
+			public List getResult() {
+				return result;
+			}
+		};
+		getNodeContext().runTransaction(tw);
+
+		return tw.getResult();
+	}
+    
+    private void updateRules(final Set<ShieldNodeRule> rules,
+			final List<ShieldNodeRule> added, final List<Long> deleted,
+			final List<ShieldNodeRule> modified) {
+    	
+		TransactionWork tw = new TransactionWork() {
+			public boolean doWork(Session s) {
+				for (Iterator<ShieldNodeRule> i = rules.iterator(); i
+						.hasNext();) {
+					ShieldNodeRule rule = i.next();
+					ShieldNodeRule mRule = null;
+					if (deleted != null && deleted.contains(rule.getId())) {
+						i.remove();
+					} else if (modified != null
+							&& (mRule = modified(rule, modified)) != null) {
+						rule.updateRule(mRule);
+					}
+				}
+
+				if (added != null) {
+					rules.addAll(added);
+				}
+
+				s.merge(settings);
+
+				return true;
+			}
+
+			public Object getResult() {
+				return null;
+			}
+		};
+		getNodeContext().runTransaction(tw);
+	}
+
+	private ShieldNodeRule modified(ShieldNodeRule rule,
+			List modified) {
+		for (Iterator<ShieldNodeRule> iterator = modified.iterator(); iterator
+				.hasNext();) {
+			ShieldNodeRule currentRule = iterator.next();
+			if (currentRule.getId().equals(rule.getId())) {
+				return currentRule;
+			}
+		}
+		return null;
+	}
+    
+    
 }

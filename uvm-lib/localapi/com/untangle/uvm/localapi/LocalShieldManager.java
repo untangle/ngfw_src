@@ -33,7 +33,7 @@
 
 package com.untangle.uvm.localapi;
 
-import java.util.List;
+import java.util.Set;
 
 import com.untangle.uvm.ArgonException;
 import com.untangle.uvm.node.RemoteShieldManager;
@@ -48,7 +48,7 @@ public interface LocalShieldManager extends RemoteShieldManager
     public void setShieldConfigurationFile( String file );
 
     /* Set the shield node rules */
-    public void setShieldNodeSettings( List<ShieldNodeSettings> shieldNodeSettingsList ) 
+    public void setShieldNodeSettings( Set<ShieldNodeSettings> shieldNodeSettings ) 
         throws ArgonException;
 }
 
