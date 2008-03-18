@@ -120,7 +120,7 @@ class Jars
 
   ## Jars required to run/compile unit tests
   Junit      = [ Jars.downloadTarget('junit4.1/junit-4.1.jar') ]
-  Bdb        = [ Jars.downloadTarget('je-3.2.13/lib/je-3.2.13.jar') ]
+  Bdb        = [ Jars.downloadTarget('je-3.2.74/lib/je-3.2.74.jar') ]
 
   HttpClient = %w( commons-httpclient-3.0/commons-httpclient-3.0.jar
                    commons-codec-1.3/commons-codec-1.3.jar

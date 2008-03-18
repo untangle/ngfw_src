@@ -36,6 +36,7 @@ package com.untangle.uvm;
 import java.io.File;
 import java.io.IOException;
 
+import com.sleepycat.je.Environment;
 import com.untangle.uvm.addrbook.RemoteAddressBook;
 import com.untangle.uvm.license.LocalLicenseManager;
 import com.untangle.uvm.license.RemoteLicenseManager;
@@ -52,9 +53,9 @@ import com.untangle.uvm.portal.BasePortalManager;
 import com.untangle.uvm.security.RemoteAdminManager;
 import com.untangle.uvm.toolbox.RemoteToolboxManager;
 import com.untangle.uvm.toolbox.RemoteUpstreamManager;
+import com.untangle.uvm.user.ADPhoneBookAssistant;
 import com.untangle.uvm.user.LocalPhoneBook;
 import com.untangle.uvm.user.RemotePhoneBook;
-import com.untangle.uvm.user.ADPhoneBookAssistant;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.MPipeManager;
 import com.untangle.uvm.vnet.PipelineFoundry;
@@ -98,7 +99,7 @@ public interface LocalUvmContext
 
     SyslogManager syslogManager();
 
-    
+
     /**
      * Get the <code>UpstreamManager</code> singleton.
      * This provides registration & control of upstream
@@ -373,4 +374,6 @@ public interface LocalUvmContext
      * work right.
      */
     void loadLibrary(String libname);
+
+    Environment getBdbEnvironment();
 }

@@ -66,8 +66,6 @@ class Blacklist
         }
     }
 
-    private static final File DB_HOME = new File(System.getProperty("bunnicula.db.dir"), "webfilter");
-
     private static final File INIT_HOME = new File("/usr/share/untangle-webfilter-init/");
 
     private final Logger logger = Logger.getLogger(Blacklist.class);
@@ -117,7 +115,7 @@ class Blacklist
                 String dbName = "ubl-" + catName + "-dom";
 
                 try {
-                    UrlList ul = new PrefixUrlList(DB_HOME, BLACKLIST_HOME,
+                    UrlList ul = new PrefixUrlList(BLACKLIST_HOME, "webfilter",
                                                    dbName, m,
                                                    new File(INIT_HOME, dbName));
                     urlDatabase.addBlacklist(dbName, ul);
@@ -131,7 +129,7 @@ class Blacklist
             if (cat.getBlockUrls()) {
                 String dbName = "ubl-" + catName + "-url";
                 try {
-                    UrlList ul = new PrefixUrlList(DB_HOME, BLACKLIST_HOME,
+                    UrlList ul = new PrefixUrlList(BLACKLIST_HOME, "webfilter",
                                                    dbName, m,
                                                    new File(INIT_HOME, dbName));
                     urlDatabase.addBlacklist(dbName, ul);
