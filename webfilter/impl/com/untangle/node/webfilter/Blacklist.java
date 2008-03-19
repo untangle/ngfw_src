@@ -33,6 +33,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
+
 import com.sleepycat.je.DatabaseException;
 import com.untangle.node.http.RequestLineToken;
 import com.untangle.node.token.Header;
@@ -47,7 +49,6 @@ import com.untangle.uvm.node.MimeType;
 import com.untangle.uvm.node.MimeTypeRule;
 import com.untangle.uvm.node.StringRule;
 import com.untangle.uvm.toolbox.RemoteToolboxManager;
-import org.apache.log4j.Logger;
 
 /**
  * Does blacklist lookups in the database.
@@ -333,7 +334,7 @@ class Blacklist
         StringRule stringRule = null;
         Reason reason = null;
 
-        if (settings.getFascistMode()) {
+        if (settings.getBaseSettings().getFascistMode()) {
             String c = "All Web Content";
             Reason r = Reason.BLOCK_ALL;
             WebFilterEvent hbe = new WebFilterEvent
@@ -428,7 +429,7 @@ class Blacklist
     }
 
     private StringRule findCategory(CharSequence[] strs, String val,
-                                    List<StringRule> rules)
+                                    Set<StringRule> rules)
     {
         int i = findMatch(strs, val);
         return 0 > i ? null : lookupCategory(strs[i], rules);
@@ -471,7 +472,7 @@ class Blacklist
     }
 
     private StringRule lookupCategory(CharSequence match,
-                                      List<StringRule> rules)
+                                      Set<StringRule> rules)
 
     {
         for (StringRule rule : rules) {
@@ -510,7 +511,7 @@ class Blacklist
         }
     }
 
-    private String[] makeCustomList(List<StringRule> rules)
+    private String[] makeCustomList(Set<StringRule> rules)
     {
         List<String> strings = new ArrayList<String>(rules.size());
         for (StringRule rule : rules) {

@@ -19,8 +19,15 @@
 package com.untangle.node.webfilter;
 
 import java.net.InetAddress;
-import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
+
+import org.apache.catalina.Valve;
+import org.apache.log4j.Logger;
+import org.hibernate.Query;
+import org.hibernate.Session;
 
 import com.untangle.node.http.UserWhitelistMode;
 import com.untangle.node.token.Header;
@@ -34,11 +41,14 @@ import com.untangle.uvm.logging.EventLoggerFactory;
 import com.untangle.uvm.logging.EventManager;
 import com.untangle.uvm.logging.ListEventFilter;
 import com.untangle.uvm.logging.SimpleEventFilter;
+import com.untangle.uvm.node.IPMaddrRule;
 import com.untangle.uvm.node.MimeType;
 import com.untangle.uvm.node.MimeTypeRule;
 import com.untangle.uvm.node.NodeContext;
+import com.untangle.uvm.node.Rule;
 import com.untangle.uvm.node.StringRule;
 import com.untangle.uvm.util.OutsideValve;
+import com.untangle.uvm.util.QueryUtil;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.AbstractNode;
 import com.untangle.uvm.vnet.Affinity;
@@ -46,10 +56,6 @@ import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.vnet.SoloPipeSpec;
 import com.untangle.uvm.vnet.TCPSession;
-import org.apache.catalina.Valve;
-import org.apache.log4j.Logger;
-import org.hibernate.Query;
-import org.hibernate.Session;
 
 /**
  * Implementation of the Web Filter.
@@ -129,7 +135,7 @@ public class WebFilterImpl extends AbstractNode implements WebFilter
 
     public UserWhitelistMode getUserWhitelistMode()
     {
-        return settings.getUserWhitelistMode();
+        return settings.getBaseSettings().getUserWhitelistMode();
     }
 
     public WebFilterBlockDetails getDetails(String nonce)
@@ -142,7 +148,7 @@ public class WebFilterImpl extends AbstractNode implements WebFilter
     {
         WebFilterBlockDetails bd = replacementGenerator.removeNonce(nonce);
 
-        switch (settings.getUserWhitelistMode()) {
+        switch (settings.getBaseSettings().getUserWhitelistMode()) {
         case NONE:
             logger.debug("attempting to unblock in UserWhitelistMode.NONE");
             return false;
@@ -155,7 +161,7 @@ public class WebFilterImpl extends AbstractNode implements WebFilter
             // its all good
             break;
         default:
-            logger.error("missing case: " + settings.getUserWhitelistMode());
+            logger.error("missing case: " + settings.getBaseSettings().getUserWhitelistMode());
             break;
         }
 
@@ -192,6 +198,155 @@ public class WebFilterImpl extends AbstractNode implements WebFilter
             }
         }
     }
+    
+    /**
+     * Causes the blacklist to populate its arrays.
+     */
+    public void reconfigure()
+    {
+        LocalUvmContextFactory.context().newThread(new Runnable() {
+                public void run() {
+                    blacklist.reconfigure();
+                }
+            }).start();
+    }    
+    
+	public WebFilterBaseSettings getBaseSettings() {
+		return settings.getBaseSettings();
+	}
+
+	public void setBaseSettings(final WebFilterBaseSettings baseSettings) {
+        TransactionWork tw = new TransactionWork() {
+			public boolean doWork(Session s) {
+		        settings.setBaseSettings(baseSettings);
+				s.merge(settings);
+				return true;
+			}
+
+			public Object getResult() {
+				return null;
+			}
+		};
+		getNodeContext().runTransaction(tw);
+	}
+
+	public List<BlacklistCategory> getBlacklistCategories(int start, int limit,
+			String... sortColumns) {
+        return getRules(
+				"select hbs.blacklistCategories from WebFilterSettings hbs where hbs.tid = :tid ",
+				start, limit, sortColumns);
+	}
+
+	public List<StringRule> getBlockedExtensions(int start, int limit,
+			String... sortColumns) {
+        return getRules(
+				"select hbs.blockedExtensions from WebFilterSettings hbs where hbs.tid = :tid ",
+				start, limit, sortColumns);
+	}
+
+	public List<MimeTypeRule> getBlockedMimeTypes(int start, int limit,
+			String... sortColumns) {
+        return getRules(
+				"select hbs.blockedMimeTypes from WebFilterSettings hbs where hbs.tid = :tid ",
+				start, limit, sortColumns);
+	}
+
+	public List<StringRule> getBlockedUrls(int start, int limit,
+			String... sortColumns) {
+        return getRules(
+				"select hbs.blockedUrls from WebFilterSettings hbs where hbs.tid = :tid ",
+				start, limit, sortColumns);
+	}
+
+	public List<IPMaddrRule> getPassedClients(int start, int limit,
+			String... sortColumns) {
+        return getRules(
+				"select hbs.passedClients from WebFilterSettings hbs where hbs.tid = :tid ",
+				start, limit, sortColumns);
+	}
+
+	public List<StringRule> getPassedUrls(int start, int limit,
+			String... sortColumns) {
+        return getRules(
+				"select hbs.passedUrls from WebFilterSettings hbs where hbs.tid = :tid ",
+				start, limit, sortColumns);
+	}
+
+	public void updateBlacklistCategories(List<BlacklistCategory> added,
+			List<Long> deleted, List<BlacklistCategory> modified) {
+        updateCategories(getWebFilterSettings().getBlacklistCategories(), added, deleted, modified);
+	}
+
+	public void updateBlockedExtensions(List<StringRule> added,
+			List<Long> deleted, List<StringRule> modified) {
+		updateRules(getWebFilterSettings().getBlockedExtensions(), added,
+				deleted, modified);
+	}
+
+	public void updateBlockedMimeTypes(List<MimeTypeRule> added,
+			List<Long> deleted, List<MimeTypeRule> modified) {
+        updateRules(getWebFilterSettings().getBlockedMimeTypes(), added, deleted, modified);
+	}
+
+	public void updateBlockedUrls(List<StringRule> added, List<Long> deleted,
+			List<StringRule> modified) {
+        updateRules(getWebFilterSettings().getBlockedUrls(), added, deleted, modified);
+	}
+
+	public void updatePassedClients(List<IPMaddrRule> added,
+			List<Long> deleted, List<IPMaddrRule> modified) {
+        updateRules(getWebFilterSettings().getPassedClients(), added, deleted, modified);
+	}
+
+	public void updatePassedUrls(List<StringRule> added, List<Long> deleted,
+			List<StringRule> modified) {
+        updateRules(getWebFilterSettings().getPassedUrls(), added, deleted, modified);
+	}
+    
+	public void updateAll(final WebFilterBaseSettings baseSettings,
+			final List[] passedClients, final List[] passedUrls, final List[] blockedUrls,
+			final List[] blockedMimeTypes, final List[] blockedExtensions,
+			final List[] blacklistCategories) {
+		
+        TransactionWork tw = new TransactionWork() {
+			public boolean doWork(Session s) {
+		    	if (baseSettings != null) {
+			        settings.setBaseSettings(baseSettings);
+		    	}
+		    	if (passedClients != null && passedClients.length >= 3) {
+		    		updateCachedRules(getWebFilterSettings().getPassedClients(), passedClients[0], passedClients[1], passedClients[2]);
+		    	}
+		    	if (passedUrls != null && passedUrls.length >= 3) {
+		    		updateCachedRules(getWebFilterSettings().getPassedUrls(), passedUrls[0], passedUrls[1], passedUrls[2]);
+		    	}
+		    	if (blockedUrls != null && blockedUrls.length >= 3) {
+		    		updateCachedRules(getWebFilterSettings().getBlockedUrls(), blockedUrls[0], blockedUrls[1], blockedUrls[2]);
+		    	}
+		    	if (blockedMimeTypes != null && blockedMimeTypes.length >= 3) {
+		    		updateCachedRules(getWebFilterSettings().getBlockedMimeTypes(), blockedMimeTypes[0], blockedMimeTypes[1], blockedMimeTypes[2]);
+		    	}
+		    	if (blockedExtensions != null && blockedExtensions.length >= 3) {
+		    		updateCachedRules(getWebFilterSettings().getBlockedExtensions(), blockedExtensions[0], blockedExtensions[1], blockedExtensions[2]);
+		    	}		    	
+		    	if (blacklistCategories != null && blacklistCategories.length >= 3) {
+		    		updateCachedCategories(getWebFilterSettings().getBlacklistCategories(), blacklistCategories[0], blacklistCategories[1], blacklistCategories[2]);
+		    	}
+
+				s.merge(settings);
+
+				return true;
+			}
+
+			public Object getResult() {
+				return null;
+			}
+		};
+		getNodeContext().runTransaction(tw);
+    	
+    	
+		
+		reconfigure();
+	}
 
     // Node methods ------------------------------------------------------
 
@@ -209,7 +364,7 @@ public class WebFilterImpl extends AbstractNode implements WebFilter
 
         WebFilterSettings settings = new WebFilterSettings(getTid());
 
-        List s = new ArrayList();
+        Set s = new HashSet<StringRule>();
 
         // this third column is more of a description than a category, the way the client is using it
         // the second column is being used as the "category"
@@ -236,7 +391,7 @@ public class WebFilterImpl extends AbstractNode implements WebFilter
 
         settings.setBlockedExtensions(s);
 
-        s = new ArrayList();
+        s = new HashSet<MimeTypeRule>();
         s.add(new MimeTypeRule(new MimeType("application/octet-stream"), "unspecified data", "byte stream", false));
 
         s.add(new MimeTypeRule(new MimeType("application/x-msdownload"), "Microsoft download", "executable", false));
@@ -454,24 +609,12 @@ public class WebFilterImpl extends AbstractNode implements WebFilter
 
     // private methods --------------------------------------------------------
 
-    /**
-     * Causes the blacklist to populate its arrays.
-     */
-    private void reconfigure()
-    {
-        LocalUvmContextFactory.context().newThread(new Runnable() {
-                public void run() {
-                    blacklist.reconfigure();
-                }
-            }).start();
-    }
-
     // This is broken out since we added categories in 3.1, and since
     // the list can't be modified by the user it's quite safe to do
     // this here.
     private void updateToCurrentCategories(WebFilterSettings settings)
     {
-        List curCategories = settings.getBlacklistCategories();
+        Set curCategories = settings.getBlacklistCategories();
 
         if (curCategories.size() == 0) {
             /*
@@ -584,16 +727,122 @@ public class WebFilterImpl extends AbstractNode implements WebFilter
             logger.warn("Unable to unload WebFilter WebApp");
         }
     }
+    
+    private List getRules(final String queryString, final int start,
+			final int limit, final String... sortColumns) {
+		TransactionWork<List> tw = new TransactionWork<List>() {
+			private List result;
 
-    // XXX soon to be deprecated ----------------------------------------------
+			public boolean doWork(Session s) {
+				Query q = s.createQuery(queryString
+						+ QueryUtil.toOrderByClause(sortColumns));
+				q.setParameter("tid", getTid());
+				q.setFirstResult(start);
+				q.setMaxResults(limit);
+				result = q.list();
 
-    public Object getSettings()
-    {
-        return getWebFilterSettings();
-    }
+				return true;
+			}
 
-    public void setSettings(Object settings)
-    {
-        setWebFilterSettings((WebFilterSettings)settings);
-    }
+			public List getResult() {
+				return result;
+			}
+		};
+		getNodeContext().runTransaction(tw);
+
+		return tw.getResult();
+	}
+    
+    private void updateRules(final Set rules, final List added,
+			final List<Long> deleted, final List modified) {
+		TransactionWork tw = new TransactionWork() {
+			public boolean doWork(Session s) {
+				updateCachedRules(rules, added, deleted, modified);
+
+				s.merge(settings);
+
+				return true;
+			}
+
+			public Object getResult() {
+				return null;
+			}
+		};
+		getNodeContext().runTransaction(tw);
+	}
+
+	private void updateCachedRules(final Set rules, final List added,
+			final List<Long> deleted, final List modified) {
+		for (Iterator i = rules.iterator(); i.hasNext();) {
+			Rule rule = (Rule) i.next();
+			Rule mRule = null;
+			if (deleted != null && deleted.contains(rule.getId())) {
+				i.remove();
+			} else if (modified != null
+					&& (mRule = modifiedRule(rule, modified)) != null) {
+				rule.update(mRule);
+			}
+		}
+
+		if (added != null) {
+			rules.addAll(added);
+		}
+	}
+
+	private Rule modifiedRule(Rule rule, List modified) {
+		for (Iterator iterator = modified.iterator(); iterator.hasNext();) {
+			Rule currentRule = (Rule) iterator.next();
+			if (currentRule.getId().equals(rule.getId())) {
+				return currentRule;
+			}
+		}
+		return null;
+	}
+    
+    private void updateCategories(final Set categories, final List added,
+			final List<Long> deleted, final List modified) {
+		TransactionWork tw = new TransactionWork() {
+			public boolean doWork(Session s) {
+				updateCachedCategories(categories, added, deleted, modified);
+
+				s.merge(settings);
+
+				return true;
+			}
+
+			public Object getResult() {
+				return null;
+			}
+		};
+		getNodeContext().runTransaction(tw);
+	}
+    
+	private void updateCachedCategories(final Set categories, final List added,
+			final List<Long> deleted, final List modified) {
+		for (Iterator i = categories.iterator(); i.hasNext();) {
+			BlacklistCategory category = (BlacklistCategory) i.next();
+			BlacklistCategory mCategory = null;
+			if (deleted != null && deleted.contains(category.getId())) {
+				i.remove();
+			} else if (modified != null
+					&& (mCategory = modifiedCategory(category, modified)) != null) {
+				category.update(mCategory);
+			}
+		}
+
+		if (added != null) {
+			categories.addAll(added);
+		}
+	}
+
+	private BlacklistCategory modifiedCategory(BlacklistCategory category, List modified) {
+		for (Iterator iterator = modified.iterator(); iterator.hasNext();) {
+			BlacklistCategory currentCategory = (BlacklistCategory) iterator.next();
+			if (currentCategory.getId().equals(category.getId())) {
+				return currentCategory;
+			}
+		}
+		return null;
+	}
+
 }
