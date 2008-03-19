@@ -27,8 +27,7 @@ CREATE TABLE settings.n_webfilter_template (
 CREATE TABLE settings.n_webfilter_passed_urls (
     setting_id int8 NOT NULL,
     rule_id int8 NOT NULL,
-    position int4 NOT NULL,
-    PRIMARY KEY (setting_id, position));
+    position int4);
 
 -- com.untangle.tran.httpblocker.HttpBlockerSettings
 CREATE TABLE settings.n_webfilter_settings (
@@ -44,29 +43,25 @@ CREATE TABLE settings.n_webfilter_settings (
 CREATE TABLE settings.n_webfilter_extensions (
     setting_id int8 NOT NULL,
     rule_id int8 NOT NULL,
-    position int4 NOT NULL,
-    PRIMARY KEY (setting_id, position));
+    position int4);
 
 -- com.untangle.tran.httpblocker.HttpBlockerSettings.blockedMimeTypes
 CREATE TABLE settings.n_webfilter_mime_types (
     setting_id int8 NOT NULL,
     rule_id int8 NOT NULL,
-    position int4 NOT NULL,
-    PRIMARY KEY (setting_id, position));
+    position int4);
 
 -- com.untangle.tran.httpblocker.HttpBlockerSettings.passedClients
 CREATE TABLE settings.n_webfilter_passed_clients (
     setting_id int8 NOT NULL,
     rule_id int8 NOT NULL,
-    position int4 NOT NULL,
-    PRIMARY KEY (setting_id, position));
+    position int4);
 
 -- com.untangle.tran.httpblocker.HttpBlockerSettings.blockedUrls
 CREATE TABLE settings.n_webfilter_blocked_urls (
     setting_id int8 NOT NULL,
     rule_id int8 NOT NULL,
-    position int4 NOT NULL,
-    PRIMARY KEY (setting_id, position));
+    position int4);
 
 -- com.untangle.tran.httpblocker.BlacklistCategory
 CREATE TABLE settings.n_webfilter_blcat (
