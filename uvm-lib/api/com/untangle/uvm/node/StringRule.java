@@ -113,8 +113,8 @@ public class StringRule extends Rule
     }
     
     @Override
-    public void updateRule(Rule rule) {
-    	super.updateRule(rule);
+    public void update(Rule rule) {
+    	super.update(rule);
     	if (rule instanceof StringRule) {
 			StringRule stringRule = (StringRule) rule;
 			this.string = stringRule.string;

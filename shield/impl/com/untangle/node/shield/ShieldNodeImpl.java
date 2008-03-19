@@ -315,7 +315,7 @@ public class ShieldNodeImpl extends AbstractNode
 						i.remove();
 					} else if (modified != null
 							&& (mRule = modified(rule, modified)) != null) {
-						rule.updateRule(mRule);
+						rule.update(mRule);
 					}
 				}
 

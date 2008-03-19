@@ -612,7 +612,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
 				i.remove();
 			} else if (modified != null
 					&& (mRule = modifiedRule(rule, modified)) != null) {
-				rule.updateRule(mRule);
+				rule.update(mRule);
 			}
 		}
 

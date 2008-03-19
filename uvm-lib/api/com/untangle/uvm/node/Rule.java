@@ -213,7 +213,7 @@ public abstract class Rule implements Serializable
     }
 
     
-    public void updateRule(Rule rule) {
+    public void update(Rule rule) {
 		this.name = rule.name;
 		this.category = rule.category;
 		this.description = rule.description;

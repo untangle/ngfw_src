@@ -101,8 +101,8 @@ public class IPMaddrRule extends Rule
     }
     
     @Override
-    public void updateRule(Rule rule) {
-    	super.updateRule(rule);
+    public void update(Rule rule) {
+    	super.update(rule);
     	if (rule instanceof IPMaddrRule) {
     		IPMaddrRule ipMaddrRule = (IPMaddrRule) rule;
 			this.ipMaddr = ipMaddrRule.ipMaddr;

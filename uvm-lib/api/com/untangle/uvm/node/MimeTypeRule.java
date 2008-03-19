@@ -118,4 +118,14 @@ public class MimeTypeRule extends Rule
     {
         return mimeType.hashCode();
     }
+    
+    @Override
+    public void update(Rule rule) {
+    	super.update(rule);
+    	if (rule instanceof MimeTypeRule) {
+    		MimeTypeRule mimeTypeRule = (MimeTypeRule) rule;
+			this.mimeType = mimeTypeRule.mimeType;
+		}
+    }    
+    
 }

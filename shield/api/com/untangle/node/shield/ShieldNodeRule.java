@@ -196,8 +196,8 @@ public class ShieldNodeRule extends Rule implements ShieldNodeSettings
     }
 
     @Override
-    public void updateRule(Rule rule) {
-    	super.updateRule(rule);
+    public void update(Rule rule) {
+    	super.update(rule);
     	if (rule instanceof ShieldNodeRule) {
 			ShieldNodeRule shieldNodeRule = (ShieldNodeRule) rule;
 	        this.address = shieldNodeRule.address;
