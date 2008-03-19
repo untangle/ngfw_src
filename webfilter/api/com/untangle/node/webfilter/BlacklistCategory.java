@@ -31,6 +31,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import com.untangle.uvm.node.Rule;
+
 /**
  * Settings for a Blacklist category.
  *
@@ -67,12 +69,12 @@ public class BlacklistCategory implements Serializable
     @Id
     @Column(name="category_id")
     @GeneratedValue
-    private Long getId()
+    public Long getId()
     {
         return id;
     }
 
-    private void setId(Long id)
+    public void setId(Long id)
     {
         this.id = id;
     }
@@ -186,4 +188,15 @@ public class BlacklistCategory implements Serializable
     {
         this.logOnly = logOnly;
     }
+    
+    public void update(BlacklistCategory blacklistCategory) {
+        this.name = blacklistCategory.name;
+        this.displayName = blacklistCategory.displayName;
+        this.description = blacklistCategory.description;
+        this.blockDomains = blacklistCategory.blockDomains;
+        this.blockUrls = blacklistCategory.blockUrls;
+        this.blockExpressions = blacklistCategory.blockExpressions;
+        this.logOnly = blacklistCategory.logOnly;
+	}
+    
 }

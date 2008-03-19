@@ -18,9 +18,14 @@
 
 package com.untangle.node.webfilter;
 
+import java.util.List;
+
 import com.untangle.node.http.UserWhitelistMode;
 import com.untangle.uvm.logging.EventManager;
+import com.untangle.uvm.node.IPMaddrRule;
+import com.untangle.uvm.node.MimeTypeRule;
 import com.untangle.uvm.node.Node;
+import com.untangle.uvm.node.StringRule;
 
 /**
  * Interface the the WebFilter Node.
@@ -30,8 +35,41 @@ import com.untangle.uvm.node.Node;
  */
 public interface WebFilter extends Node
 {
-    WebFilterSettings getWebFilterSettings();
-    void setWebFilterSettings(WebFilterSettings settings);
+    WebFilterBaseSettings getBaseSettings();
+    void setBaseSettings(WebFilterBaseSettings baseSettings);
+    
+    List<IPMaddrRule> getPassedClients(int start, int limit, String... sortColumns);
+    void updatePassedClients(List<IPMaddrRule> added, List<Long> deleted, List<IPMaddrRule> modified);
+    
+    List<StringRule> getPassedUrls(int start, int limit, String... sortColumns);
+    void updatePassedUrls(List<StringRule> added, List<Long> deleted, List<StringRule> modified);
+    
+    List<StringRule> getBlockedUrls(int start, int limit, String... sortColumns);
+    void updateBlockedUrls(List<StringRule> added, List<Long> deleted, List<StringRule> modified);
+    
+    List<MimeTypeRule> getBlockedMimeTypes(int start, int limit, String... sortColumns);
+    void updateBlockedMimeTypes(List<MimeTypeRule> added, List<Long> deleted, List<MimeTypeRule> modified);
+    
+    List<StringRule> getBlockedExtensions(int start, int limit, String... sortColumns);
+    void updateBlockedExtensions(List<StringRule> added, List<Long> deleted, List<StringRule> modified);
+    
+    List<BlacklistCategory> getBlacklistCategories(int start, int limit, String... sortColumns);
+    void updateBlacklistCategories(List<BlacklistCategory> added, List<Long> deleted, List<BlacklistCategory> modified);
+    
+    /**
+     * Update all settings once, in a single transaction
+     */
+    void updateAll(WebFilterBaseSettings baseSettings, 
+    		List[] passedClients, List[] passedUrls,
+    		List[] blockedUrls, List[] blockedMimeTypes,
+    		List[] blockedExtensions, List[] blacklistCategories);
+
+    /**
+     * Reconfigure node. This method should be called after some settings are updated
+     * in order to reconfigure the node accordingly.
+     */
+    void reconfigure();
+    
     WebFilterBlockDetails getDetails(String nonce);
     boolean unblockSite(String nonce, boolean global);
 
