@@ -1326,6 +1326,7 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		}
 		Ung.EditorGrid.superclass.initComponent.call(this);
 	},
+	
 	getSaveList: function() {
 		var added=[];
 		var deleted=[];
