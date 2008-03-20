@@ -1335,8 +1335,7 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			var cd=this.changedData[id]
 			if("deleted"==cd.op) {
 				if(id>0) {
-					var recData={"id":id,"javaClass":this.recordJavaClass};
-					deleted.push(recData);
+					deleted.push(parseInt(id));
 				}
 			} else {
 				var recData=cd.rec.data;
@@ -1350,10 +1349,5 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			}
 		}
 		return [{list: added,"javaClass":"java.util.ArrayList"}, {list: deleted,"javaClass":"java.util.ArrayList"}, {list: modified,"javaClass":"java.util.ArrayList"}];
-		/* //for test
-		return [null, null,
-		{"list":[{"log":false,"protocol":"IMAP11","javaClass":"com.untangle.node.protofilter.ProtoFilterPattern","alert":false,"blocked":false,"category":"Email11","definition":"^(\\* ok|a[0-9]+ noop)","description":" Internet111 Message Access Protocol (A common e-mail protocol)","readOnly":true,"metavizeId":0,"id":71447,"quality":"Bad"}], "javaClass": "java.util.ArrayList"}
-		];
-		*/
 	}
 });
