@@ -1196,12 +1196,33 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 	},
 	updateFromChangedData: function(store, records, options) {
 		//records.push(records[0]);
+		var pageStart=this.store.getPageStart();
+		for(id in this.changedData) {
+			var cd=this.changedData[id];
+			if(pageStart==cd.pageStart) {
+				if("added"==cd.op) {
+					var record=new Ext.data.Record(cd.recData);
+					this.store.insert(0,[record]);
+				} else if("modified"==cd.op) {
+					var recIndex=this.store.find("id",id);
+					if(recIndex) {
+						var rec=this.store.getAt(recIndex);
+						rec.data=cd.recData;
+						rec.commit();
+						//var rec=this.store.getAt(recIndex);
+						//this.store.remove(recIndex,rec);
+						//this.store.insert(recIndex,cd.rec);
+						
+					}
+				}
+			}
+		}
 	},
 	updateChangedData: function( record, currentOp) {
 		var id=record.get("id");
 		var cd=this.changedData[id];
 		if(cd==null) {
-			this.changedData[id]={op: currentOp, rec: record, pageStart: this.store.getPageStart()};
+			this.changedData[id]={op: currentOp, recData: record.data, pageStart: this.store.getPageStart()};
 			if("deleted"==currentOp) {
 				var index=this.store.indexOf(record);
 				this.getView().refreshRow(record);
@@ -1209,18 +1230,18 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		} else {
 			if("deleted"==currentOp) {
 				if("added"==cd.op) {
-					this.grid.store.remove(record);
+					this.store.remove(record);
 					this.changedData[id]=null;
 					delete this.changedData[id];
 				} else {
-					this.changedData[id]={op: currentOp, rec: record, pageStart: this.store.getPageStart()};
+					this.changedData[id]={op: currentOp, recData: record.data, pageStart: this.store.getPageStart()};
 					this.getView().refreshRow(record);
 				}
 			} else {
 				if("added"==cd.op) {
-					this.changedData[id].rec=record;
+					this.changedData[id].recData=record.data;
 				} else {
-					this.changedData[id]={op: currentOp, rec: record, pageStart: this.store.getPageStart()};
+					this.changedData[id]={op: currentOp, recData: record.data, pageStart: this.store.getPageStart()};
 				}
 			}
 		}
@@ -1272,7 +1293,7 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 				if(this.lastOptions && this.lastOptions.params) {
 					return this.lastOptions.params.start
 				} else {
-					return null;
+					return 0;
 				}
 			},
 			listeners: {
@@ -1309,7 +1330,7 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 				iconCls: 'add',
 				parentId:this.getId(),
 				handler: function() {
-					var record=new Ext.data.Record(this.emptyRow);
+					var record=new Ext.data.Record(Ext.decode(Ext.encode(this.emptyRow)));
 					record.set("id",this.genAddedId());
 					this.stopEditing();
 					this.getStore().insert(0, [record]);
@@ -1338,13 +1359,12 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 					deleted.push(parseInt(id));
 				}
 			} else {
-				var recData=cd.rec.data;
-				recData["javaClass"]=this.recordJavaClass;
+				cd.recData["javaClass"]=this.recordJavaClass;
 				if(id<0) {
-					recData["id"]=""; //ok?
-					added.push(recData);
+					cd.recData["id"]=""; //ok?
+					added.push(cd.recData);
 				} else {
-					modified.push(recData);
+					modified.push(cd.recData);
 				}
 			}
 		}
