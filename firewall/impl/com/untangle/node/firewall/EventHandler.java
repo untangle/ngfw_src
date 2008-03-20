@@ -21,6 +21,7 @@ package com.untangle.node.firewall;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.net.InetAddress;
 
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
@@ -78,6 +79,18 @@ class EventHandler extends AbstractEventHandler
     private void handleNewSessionRequest(IPNewSessionRequest request,
                                          Protocol protocol)
     {
+	InetAddress origClientAddr = request.clientAddr();
+	InetAddress newClientAddr = request.getNatFromHost();
+	InetAddress origServerAddr = request.serverAddr();
+	InetAddress newServerAddr = request.getNatToHost();
+	int origClientPort = request.clientPort();
+	int newClientPort  = request.getNatFromPort();
+	int origServerPort = request.serverPort();
+	int newServerPort  = request.getNatToPort();
+
+	byte clientIntf = request.clientIntf();
+        byte serverIntf = request.serverIntf();
+
         /* By default, do whatever the first rule is */
         boolean reject    = !isDefaultAccept;
         FirewallRule rule = null;
@@ -89,7 +102,9 @@ class EventHandler extends AbstractEventHandler
         for (Iterator<FirewallMatcher> iter = firewallRuleList.iterator() ; iter.hasNext() ;) {
             FirewallMatcher matcher = iter.next();
 
-            if (matcher.isMatch(request, protocol, c)) {
+            if (matcher.isMatch(protocol, clientIntf, serverIntf, 
+				origClientAddr, newServerAddr, 
+				origClientPort, newServerPort, c)) {
                 reject = matcher.isTrafficBlocker();
 
                 if (isQuickExit) {
