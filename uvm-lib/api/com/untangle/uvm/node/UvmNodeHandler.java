@@ -57,6 +57,7 @@ public class UvmNodeHandler extends DefaultHandler
 
     private final List<String> parents = new LinkedList<String>();
     private final List<String> exports = new LinkedList<String>();
+    private final List<String> uvmResources = new LinkedList<String>();
 
     private String name = null;
     private String className = null;
@@ -67,6 +68,7 @@ public class UvmNodeHandler extends DefaultHandler
 
     private StringBuilder parentBuilder;
     private StringBuilder exportBuilder;
+    private StringBuilder uvmResourceBuilder;
 
     public UvmNodeHandler(MackageDesc mackageDesc)
     {
@@ -78,7 +80,7 @@ public class UvmNodeHandler extends DefaultHandler
     public NodeDesc getNodeDesc(Tid tid)
     {
         return new NodeDesc(tid, name, className, guiClassName,
-                                 nodeBase, exports, parents,
+                                 nodeBase, exports, parents, uvmResources,
                                  singleInstance, displayName);
     }
 
@@ -95,6 +97,8 @@ public class UvmNodeHandler extends DefaultHandler
             parentBuilder = new StringBuilder();
         } else if (qName.equals("export")) {
             exportBuilder = new StringBuilder();
+        } else if (qName.equals("uvm-resource")) {
+            uvmResourceBuilder = new StringBuilder();
         } else if (qName.equals("uvm-node")) {
         } else {
             logger.warn("ignoring unknown element: " + qName);
@@ -110,6 +114,9 @@ public class UvmNodeHandler extends DefaultHandler
         } else if (qName.equals("export")) {
             exports.add(exportBuilder.toString());
             exportBuilder = null;
+        } else if (qName.equals("uvm-resource")) {
+            uvmResources.add(uvmResourceBuilder.toString());
+            uvmResourceBuilder = null;
         }
     }
 
@@ -120,6 +127,8 @@ public class UvmNodeHandler extends DefaultHandler
             parentBuilder.append(ch, start, length);
         } else if (null != exportBuilder) {
             exportBuilder.append(ch, start, length);
+        } else if (null != uvmResourceBuilder) {
+            uvmResourceBuilder.append(ch, start, length);
         }
     }
 

@@ -1398,7 +1398,10 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                 if (!nodeDesc.getName().equals("untangle-node-router")) {
                     // CONSTRUCT AND ADD THE APPLIANCE
                     MNodeJPanel mNodeJPanel = MNodeJPanel.instantiate(nodeContext,nodeDesc,policy);
-                    addToRack(policy,mNodeJPanel,false);
+
+                    if (mNodeJPanel!=null) {
+                        addToRack(policy,mNodeJPanel,false);
+                    }
                 }
             }
             catch(Exception e){

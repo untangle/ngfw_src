@@ -93,7 +93,11 @@ public class MNodeJPanel extends javax.swing.JPanel {
     protected void removeShutdownable(String shutdownableKey){ shutdownableMap.remove(shutdownableKey); }
 
     public static MNodeJPanel instantiate(NodeContext nodeContext, NodeDesc nodeDesc, Policy policy) throws Exception {
-        Class guiClass = Util.getClassLoader().mLoadClass( nodeDesc.getGuiClassName() );
+        String className = nodeDesc.getGuiClassName();
+        if (className == null) return null;
+
+        Class guiClass = Util.getClassLoader().mLoadClass(className);
+
         Constructor guiConstructor = guiClass.getConstructor( new Class[]{NodeContext.class, NodeDesc.class} );
         MNodeJPanel mNodeJPanel = (MNodeJPanel) guiConstructor.newInstance(new Object[]{nodeContext, nodeDesc});
         mNodeJPanel.setPolicy(policy);

@@ -19,11 +19,17 @@
 package com.untangle.uvm.engine;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+
 import javax.naming.NameAlreadyBoundException;
 import javax.naming.NameNotFoundException;
 import javax.naming.ServiceUnavailableException;
 
+import org.hibernate.Query;
+import org.hibernate.Session;
+
+import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.addrbook.AddressBookConfiguration;
 import com.untangle.uvm.addrbook.AddressBookSettings;
 import com.untangle.uvm.addrbook.NoSuchEmailException;
@@ -31,7 +37,10 @@ import com.untangle.uvm.addrbook.RemoteAddressBook;
 import com.untangle.uvm.addrbook.RepositorySettings;
 import com.untangle.uvm.addrbook.RepositoryType;
 import com.untangle.uvm.addrbook.UserEntry;
+
 import com.untangle.uvm.license.ProductIdentifier;
+
+import com.untangle.uvm.util.TransactionWork;
 import org.apache.log4j.Logger;
 
 
@@ -42,22 +51,51 @@ import org.apache.log4j.Logger;
  */
 class DefaultAddressBookImpl implements RemoteAddressBook {
 
-    private static final ABStatus status = new ABStatus();
+    private static final ABStatus STATUS_NOT_WORKING = new ABStatus( false, "unconfigured" );
+    
+    private AddressBookSettings m_settings;
+    private LocalLdapAdapter m_localAdapter;
 
     private final Logger m_logger =
         Logger.getLogger(getClass());
 
     DefaultAddressBookImpl() {
+        TransactionWork<AddressBookSettings> work = new TransactionWork<AddressBookSettings>() {
+            private AddressBookSettings settings;
+            
+            public boolean doWork(org.hibernate.Session s) {
+                Query q = s.createQuery("from AddressBookSettings");
+                settings = (AddressBookSettings)q.uniqueResult();
+
+                if(settings == null) {
+                    m_logger.info("creating new AddressBookSettings");
+                    settings = new AddressBookSettings();
+                    settings.setAddressBookConfiguration(AddressBookConfiguration.LOCAL_ONLY);
+                    settings.setADRepositorySettings(new RepositorySettings("Administrator",
+                                                                            "mypassword",
+                                                                            "mydomain",
+                                                                            "ad_server",
+                                                                            389));
+                    s.save(settings);
+                }
+                return true;
+            }
+
+            public AddressBookSettings getResult() { return settings; }
+        };
+        
+        LocalUvmContextFactory.context().runTransaction(work);
+
+        m_settings =  work.getResult();
+
+        //We create the local adapter regardless
+        m_localAdapter = new LocalLdapAdapter();
     }
 
     //====================================================
     // See doc on com.untangle.uvm.addrbook.AddressBook
     //====================================================
     public AddressBookSettings getAddressBookSettings() {
-        m_logger.info("getting invalid settings");
-        AddressBookSettings m_settings = new AddressBookSettings();
-        m_settings.setAddressBookConfiguration(AddressBookConfiguration.NOT_CONFIGURED);
-        m_settings.setADRepositorySettings(new RepositorySettings());
         return m_settings;
     }
 
@@ -65,7 +103,20 @@ class DefaultAddressBookImpl implements RemoteAddressBook {
     // See doc on com.untangle.uvm.addrbook.AddressBook
     //====================================================
     public void setAddressBookSettings(final AddressBookSettings newSettings) {
-        m_logger.info("ignoring save settings");
+        m_settings = newSettings;
+
+        //Hibernate stuff
+        TransactionWork tw = new TransactionWork()
+            {
+                public boolean doWork(Session s)
+                {
+                    s.saveOrUpdate(m_settings);
+                    return true;
+                }
+
+                public Object getResult() { return null; }
+            };
+        LocalUvmContextFactory.context().runTransaction(tw);
     }
 
 
@@ -74,20 +125,38 @@ class DefaultAddressBookImpl implements RemoteAddressBook {
     //====================================================
     public boolean authenticate(String uid, String pwd)
         throws ServiceUnavailableException {
-        m_logger.info("ignoring authenticate.");
-        return false;
+        m_logger.info("authenticating against local directory.");
+
+        return isNotConfigured() ? false : m_localAdapter.authenticate(uid, pwd);
     }
 
     private static class ABStatus implements RemoteAddressBook.Status {
-        public boolean isLocalWorking() { return false; }
+        private final boolean isLocalWorking;
+        private final String localDetail;
+
+        private ABStatus(boolean isLocalWorking, String localDetail)
+        {
+            this.isLocalWorking = isLocalWorking;
+            this.localDetail = localDetail;
+        }
+
+        public boolean isLocalWorking() { return this.isLocalWorking; }
         public boolean isADWorking() { return false; }
-        public String localDetail() { return "unconfigured"; }
+        public String localDetail() { return localDetail; }
         public String adDetail() { return "unconfigured"; }
     }
 
     public Status getStatus() {
-        m_logger.info("ignoring get status.");
-        return this.status;
+        if (m_settings.getAddressBookConfiguration() == AddressBookConfiguration.NOT_CONFIGURED) {
+            return STATUS_NOT_WORKING;
+        }
+        
+        try {
+            List<UserEntry> localRet = m_localAdapter.listAll();
+            return new ABStatus(true, "working, " + localRet.size() + " users found");
+        } catch (Exception x) {
+            return new ABStatus(false, x.getMessage());
+        }
     }
 
 
@@ -97,8 +166,8 @@ class DefaultAddressBookImpl implements RemoteAddressBook {
     public boolean authenticateByEmail(String email, String pwd)
         throws ServiceUnavailableException, NoSuchEmailException {
 
-        m_logger.info("ignoring authenticate by email.");
-        return false;
+        m_logger.info("authenticate against the local repository.");
+        return isNotConfigured() ? false : m_localAdapter.authenticateByEmail(email, pwd);
     }
 
 
@@ -108,7 +177,23 @@ class DefaultAddressBookImpl implements RemoteAddressBook {
     //====================================================
     public RepositoryType containsEmail(String address, RepositoryType searchIn)
         throws ServiceUnavailableException {
-        m_logger.info("ignoring contains email.");
+        m_logger.info("containsEmail in default address book.");
+
+        switch(searchIn) {
+            //---------------------------------------
+        case LOCAL_DIRECTORY:
+            if (!isNotConfigured())
+                return m_localAdapter.getEntryByEmail(address) == null ?
+                    RepositoryType.NONE : RepositoryType.LOCAL_DIRECTORY;
+
+        case MS_ACTIVE_DIRECTORY:
+            // fallthrough
+            //---------------------------------------
+        case NONE:
+        default:
+            break;
+        }
+
         return RepositoryType.NONE;
     }
 
@@ -119,8 +204,36 @@ class DefaultAddressBookImpl implements RemoteAddressBook {
     //====================================================
     public RepositoryType containsEmail(String address)
         throws ServiceUnavailableException {
-        m_logger.info("ignoring contains email.");
-        return RepositoryType.NONE;
+        m_logger.info("containsEmail <" + address + ">.");
+
+        return isNotConfigured()?
+                RepositoryType.NONE:
+                m_localAdapter.getEntryByEmail(address) == null?
+                RepositoryType.NONE:RepositoryType.LOCAL_DIRECTORY;
+    }
+
+    //====================================================
+    // See doc on com.untangle.uvm.addrbook.AddressBook
+    //====================================================
+    public RepositoryType containsUid(String uid, RepositoryType searchIn)
+        throws ServiceUnavailableException {
+        m_logger.info("containsUid <" + uid + ">.");
+
+        switch(searchIn) {
+            //---------------------------------------
+        case LOCAL_DIRECTORY:
+            return isNotConfigured()?
+                RepositoryType.NONE:
+                m_localAdapter.containsUser(uid)?
+                RepositoryType.LOCAL_DIRECTORY:RepositoryType.NONE;
+
+        case MS_ACTIVE_DIRECTORY:
+            // fallthrough
+            //---------------------------------------
+        case NONE:
+        default:
+            return RepositoryType.NONE;
+        }
     }
 
     //====================================================
@@ -128,29 +241,26 @@ class DefaultAddressBookImpl implements RemoteAddressBook {
     //====================================================
     public RepositoryType containsUid(String uid)
         throws ServiceUnavailableException {
-        m_logger.info("ignoring contains uid.");
-        return RepositoryType.NONE;
+        m_logger.info("containsUid <" + uid + ">.");
+
+        return isNotConfigured()?
+            RepositoryType.NONE:
+            m_localAdapter.containsUser(uid)?
+            RepositoryType.LOCAL_DIRECTORY:RepositoryType.NONE;
     }
-
-
-
-    //====================================================
-    // See doc on com.untangle.uvm.addrbook.AddressBook
-    //====================================================
-    public RepositoryType containsUid(String uid, RepositoryType searchIn)
-        throws ServiceUnavailableException {
-        m_logger.info("ignoring contains uid.");
-        return RepositoryType.NONE;
-    }
-
 
     //====================================================
     // See doc on com.untangle.uvm.addrbook.AddressBook
     //====================================================
     public List<UserEntry> getLocalUserEntries()
         throws ServiceUnavailableException {
-        m_logger.info("ignoring contains getLocalUserEntries.");
-        return new ArrayList<UserEntry>();
+        m_logger.info("getLocalUserEntries local.");
+
+        if(isNotConfigured()) {
+            return new ArrayList<UserEntry>();
+        } else {
+            return m_localAdapter.listAll();
+        }
     }
 
 
@@ -159,7 +269,32 @@ class DefaultAddressBookImpl implements RemoteAddressBook {
     //====================================================
     public void setLocalUserEntries(List<UserEntry> userEntries)
         throws ServiceUnavailableException, NameNotFoundException, NameAlreadyBoundException {
-        m_logger.info("ignoring contains setLocalUserEntries.");
+        // compute the add/delete/keep lists
+        HashMap<UserEntry,UserEntry> currentEntries = new HashMap<UserEntry,UserEntry>();
+        for( UserEntry userEntry : getLocalUserEntries() )
+            currentEntries.put(userEntry,userEntry);
+        List<UserEntry> keepList = new ArrayList<UserEntry>();
+        List<UserEntry> addList = new ArrayList<UserEntry>();
+        for( UserEntry userEntry : userEntries ){
+            UserEntry foundEntry = currentEntries.remove(userEntry);
+            if( foundEntry != null )
+                keepList.add(userEntry);
+            else
+                addList.add(userEntry);
+        }
+        // perform the add/removes
+        for( UserEntry userEntry : keepList ){
+            updateLocalEntry(userEntry);
+            if (!UserEntry.UNCHANGED_PASSWORD.equals(userEntry.getPassword()))
+                updateLocalPassword(userEntry.getUID(), userEntry.getPassword());
+        }
+        for( UserEntry userEntry : currentEntries.keySet())
+            deleteLocalEntry(userEntry.getUID());
+        for( UserEntry userEntry : addList ){
+            String password = userEntry.getPassword();
+            userEntry.setPassword(null);
+            createLocalEntry(userEntry,password);
+        }
     }
 
 
@@ -168,8 +303,11 @@ class DefaultAddressBookImpl implements RemoteAddressBook {
     //====================================================
     public List<UserEntry> getUserEntries()
         throws ServiceUnavailableException {
-        m_logger.info("ignoring getUserEntries");
-        return new ArrayList<UserEntry>();
+        m_logger.info("getUserEntries");
+        
+        return isNotConfigured()?
+            new ArrayList<UserEntry>():
+            m_localAdapter.listAll();
     }
 
 
@@ -179,7 +317,24 @@ class DefaultAddressBookImpl implements RemoteAddressBook {
     //====================================================
     public List<UserEntry> getUserEntries(RepositoryType searchIn)
         throws ServiceUnavailableException {
-        m_logger.info("ignoring getUserEntries");
+        m_logger.info("getUserEntries <" + searchIn + ">");
+
+        switch(searchIn) {
+            //---------------------------------------
+        case LOCAL_DIRECTORY:
+            return isNotConfigured()?
+                new ArrayList<UserEntry>():
+                m_localAdapter.listAll();
+
+            //---------------------------------------
+        case MS_ACTIVE_DIRECTORY:
+            // fallthrough
+            //---------------------------------------
+        case NONE:
+        default:
+            break;
+        }
+
         return new ArrayList<UserEntry>();
     }
 
@@ -190,8 +345,10 @@ class DefaultAddressBookImpl implements RemoteAddressBook {
     //====================================================
     public UserEntry getEntry(String uid)
         throws ServiceUnavailableException {
-        m_logger.info("ignoring getEntry");
-        return null;
+        m_logger.info("getEntry <" + uid + ">");
+
+        return isNotConfigured()?
+            null : m_localAdapter.getEntry(uid);
     }
 
 
@@ -201,7 +358,22 @@ class DefaultAddressBookImpl implements RemoteAddressBook {
     //====================================================
     public UserEntry getEntry(String uid, RepositoryType searchIn)
         throws ServiceUnavailableException {
-        m_logger.info("ignoring getEntry");
+        m_logger.info("getEntry <" + uid + ">");
+
+        switch(searchIn) {
+            //---------------------------------------
+        case LOCAL_DIRECTORY:
+            if(!isNotConfigured()) {
+                return m_localAdapter.getEntry(uid);
+            }
+            //---------------------------------------
+        case MS_ACTIVE_DIRECTORY:
+            // fallthrough
+            //---------------------------------------
+        case NONE:
+        default:
+            break;
+        }
         return null;
     }
 
@@ -210,7 +382,11 @@ class DefaultAddressBookImpl implements RemoteAddressBook {
     //====================================================
     public UserEntry getEntryByEmail(String email)
         throws ServiceUnavailableException {
-        m_logger.info("ignoring getEntryByEmail");
+        m_logger.info("getEntryByEmail <" + email + ">" );
+
+        if(!isNotConfigured()) {
+            return m_localAdapter.getEntryByEmail(email);
+        }
         return null;
     }
 
@@ -221,7 +397,23 @@ class DefaultAddressBookImpl implements RemoteAddressBook {
     //====================================================
     public UserEntry getEntryByEmail(String email, RepositoryType searchIn)
         throws ServiceUnavailableException {
-        m_logger.info("ignoring getEntryByEmail");
+        m_logger.info("getEntryByEmail <" + email + "," + searchIn + ">" );
+
+        switch(searchIn) {
+            //---------------------------------------
+        case LOCAL_DIRECTORY:
+            if(!isNotConfigured()) {
+                return m_localAdapter.getEntryByEmail(email);
+            }
+            break;
+
+            //---------------------------------------
+        case MS_ACTIVE_DIRECTORY:
+            //---------------------------------------
+        case NONE:
+        default:
+            break;
+        }
         return null;
     }
 
@@ -232,7 +424,7 @@ class DefaultAddressBookImpl implements RemoteAddressBook {
     //====================================================
     public void createLocalEntry(UserEntry newEntry, String password)
         throws NameAlreadyBoundException, ServiceUnavailableException {
-        m_logger.info("ignoring createLocalEntry");
+        m_localAdapter.createUserEntry(newEntry, password);
     }
 
 
@@ -242,8 +434,7 @@ class DefaultAddressBookImpl implements RemoteAddressBook {
     //====================================================
     public boolean deleteLocalEntry(String entryUid)
         throws ServiceUnavailableException {
-        m_logger.info("ignoring deleteLocalEntry");
-        return false;
+        return m_localAdapter.deleteUserEntry(entryUid);
     }
 
 
@@ -253,7 +444,7 @@ class DefaultAddressBookImpl implements RemoteAddressBook {
     //====================================================
     public void updateLocalEntry(UserEntry changedEntry)
         throws ServiceUnavailableException, NameNotFoundException {
-        m_logger.info("ignoring updateLocalEntry");
+        m_localAdapter.modifyUserEntry(changedEntry, null);
     }
 
 
@@ -263,12 +454,17 @@ class DefaultAddressBookImpl implements RemoteAddressBook {
     //====================================================
     public void updateLocalPassword(String uid, String newPassword)
         throws ServiceUnavailableException, NameNotFoundException {
-        m_logger.info("ignoring updateLocalPassword");
+        m_localAdapter.changePassword(uid, newPassword);
     }
 
     public String productIdentifier()
     {
         return ProductIdentifier.ADDRESS_BOOK;
+    }
+
+    private boolean isNotConfigured() {
+        return m_settings.getAddressBookConfiguration() ==
+            AddressBookConfiguration.NOT_CONFIGURED;
     }
 }
 

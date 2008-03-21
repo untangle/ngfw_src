@@ -18,6 +18,8 @@
 
 package com.untangle.uvm.engine;
 
+import java.lang.reflect.Constructor;
+
 import com.untangle.node.util.UtLogger;
 import com.untangle.uvm.addrbook.RemoteAddressBook;
 
@@ -62,10 +64,14 @@ class AddressBookFactory
             className = PREMIUM_ADDRESSBOOK_IMPL;
         }
         try {
-            this.premium = (PremiumAddressBook)Class.forName(className).newInstance();
+            Constructor<PremiumAddressBook> constructor = 
+                (Constructor<PremiumAddressBook>)Class.forName( className ).
+                getDeclaredConstructor(DefaultAddressBookImpl.class);
+
+            this.premium = constructor.newInstance( this.limited );
             this.remote = new RemoteAddressBookAdaptor(this.premium);
         } catch ( Exception e ) {
-            logger.info( "Could not load premium AddressBook: " + className, e );
+            logger.warn( "Could not load premium AddressBook: " + className, e );
             this.premium = null;
             this.remote = new RemoteAddressBookAdaptor(this.limited);
         }
