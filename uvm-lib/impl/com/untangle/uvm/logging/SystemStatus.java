@@ -67,12 +67,11 @@ public class SystemStatus
     private static final String SPACER = "========================================================\n";
     private static final String RETCHAR = "\r\n";
 
-    public String staticConf = null;
+    private volatile String staticConf = "";
+    private volatile boolean staticConfFinal = false;
 
     public SystemStatus()
     {
-        staticConf = _buildStaticConf();
-
         if (JITTER_THREAD) {
             jitter = new JitterThread(JITTER_THREAD_FREQ);
             Thread newThread = new Thread(jitter, "Jitter Thread");
@@ -93,7 +92,7 @@ public class SystemStatus
     public void test()
     {
         SystemStatus stat = new SystemStatus();
-        System.out.print(stat.staticConf);
+        System.out.print(stat.getStaticConf());
         String dynamicStat = _buildDynamicStat();
         System.out.print(dynamicStat);
 
@@ -106,23 +105,37 @@ public class SystemStatus
         String uvm = _buildUVMStat();
         StringBuilder sb = new StringBuilder();
 
-        sb.append(staticConf);
+        sb.append(getStaticConf());
         sb.append(dyn);
         sb.append(uvm);
 
         return sb.toString();
     }
 
+    public String getStaticConf()
+    {
+        if (!staticConfFinal) {
+            synchronized (this) {
+                if (!staticConfFinal) {
+                    buildStaticConf();
+                }
+            }
+        }
 
-    private String _buildStaticConf ()
+        return staticConf;
+    }
+
+
+    private void buildStaticConf ()
     {
         StringBuilder sb = new StringBuilder();
         String line;
         Process proc;
         BufferedReader input;
         int i = 0;
+        boolean hasActivationKey = false;
         try {
-            appendActivationKey(sb);            
+            hasActivationKey = appendActivationKey(sb);
             /**
              * Uname info
              */
@@ -158,10 +171,11 @@ public class SystemStatus
         }
         catch (Exception e) {
             logger.error("Exception: ", e);
-            return null;
+            hasActivationKey = false;
         }
 
-        return sb.toString();
+        staticConf = sb.toString();
+        staticConfFinal = hasActivationKey;
     }
 
     private String _buildDynamicStat ()
@@ -352,18 +366,24 @@ public class SystemStatus
     /**
      * Append the first half of the activation key
      */
-    private void appendActivationKey(StringBuilder sb)
+    private boolean appendActivationKey(StringBuilder sb)
     {
+        boolean result;
+
         sb.append(SPACER);
         String key = LocalUvmContextFactory.context().getActivationKey();
         if ((key==null) || (key.length()==0)) {
             key = "unset";
+            result = false;
         } else {
             /* get at most half of the key */
             key = key.substring(0,Math.min(key.length()/2,DEFAULT_HALF_KEY_LENGTH));
+            result = true;
         }
 
         sb.append("activation key: " + key + "\n");
+
+        return result;
     }
 
     private String _buildUVMStat ()

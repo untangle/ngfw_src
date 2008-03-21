@@ -47,6 +47,10 @@ reapChildHarder() {
     flushIptables ; exit
 }
 
+getVirtualMemUsage() {
+  cat /proc/$1/status | awk '/VmSize/ {print $2}'
+}
+
 reapChild() {
     echo "$NAME: shutting down bunnicula " >> $UVM_WRAPPER_LOG
     kill -3 $pid
@@ -84,19 +88,6 @@ require "xmlrpc/client"
 client = XMLRPC::Client.new( "localhost", "/alpaca/uvm/api?argyle=${t_nonce}", 3000 )
 ok, status = client.call( "generate_rules" )
 EOF
-}
-
-raiseFdLimit() {
-    ulimit -n 2000
-    ulimit -n 4000
-    ulimit -n 8000
-    ulimit -n 16000
-    ulimit -n 32000
-    ulimit -n 64000
-    ulimit -n 128000
-    ulimit -n 256000
-    ulimit -n 512000
-    ulimit -n 1024000
 }
 
 getLicenseKey() {
@@ -258,7 +249,7 @@ needToRestart() {
     # extra nightime checks
     if [ `date +%H` -eq 1 ]; then
         # VSZ greater than 1.1 gigs reboot
-        VIRT="`cat /proc/$pid/status | grep VmSize | awk '{print $2}'`"
+        VIRT="`getVirtualMemUsage $pid`"
         if [ $VIRT -gt $MAX_VIRTUAL_SIZE ] ; then
             echo "*** Virt Size too high ($VIRT) on `date` in `pwd` ***" >> $UVM_WRAPPER_LOG
             return 0;
@@ -284,7 +275,6 @@ while true; do
     echo $UVM_LAUNCH >> $UVM_WRAPPER_LOG
     echo "============================" >> $UVM_WRAPPER_LOG
 
-    raiseFdLimit
     flushIptables
 
     $UVM_LAUNCH $* >>$UVM_CONSOLE_LOG 2>&1 &
@@ -337,6 +327,11 @@ while true; do
                     *success*) true ;;
                     *) restartService clamav-daemon $CLAMD_PID_FILE "hung" stopFirst ;;
                   esac
+		  # memory-management
+		  VIRT="`getVirtualMemUsage $CLAMD_PID_FILE`"
+		  if [ $VIRT -gt $CLAMD_MAX_VIRTUAL_SIZE ] ; then
+		    echo restartService clamav-daemon $CLAMD_PID_FILE "memory-hogging ($VIRT)" stopFirst
+		  fi
 	        fi
 	        if dpkg -l untangle-support-agent | grep -q ii ; then # support-agent is supposed to run
 	            if [ -f "$SUPPORT_AGENT_PID_FILE" ] && ps `cat $SUPPORT_AGENT_PID_FILE` > /dev/null ; then # it runs

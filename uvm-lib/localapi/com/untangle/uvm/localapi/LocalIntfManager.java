@@ -71,31 +71,11 @@ public interface LocalIntfManager
 
     List<ArgonInterface> getIntfList();
 
-    /*
-     * This is a list of non-physical interfaces (everything except
-     * for internal, external and dmz ).  This list would contain
-     * interfaces like VPN.
-     */
-    List<ArgonInterface> getCustomIntfList();
-
     /* Return an array of the argon interfaces */
     byte[] getArgonIntfArray();
 
-    /*
-     * Register a secondary interface, this is an interface that
-     * replaces another interface, EG. if ETH0 -> PPP0, PPP0 is the
-     * secondary interface and ETH0 is the primary interface.
-     */
-    void registerSecondaryIntf( String name, byte argon ) throws ArgonException;
-
     /* Unregister a custom interface or DMZ. */
     void unregisterIntf( byte argon ) throws ArgonException;
-
-    /* Unregister a secondary interface */
-    void unregisterSecondaryIntf( byte argon ) throws ArgonException;
-
-    /* This clears all of the secondary interfaces  */
-    void resetSecondaryIntfs();
 
    /* Retrieve the current interface enumeration */
     public IntfEnum getIntfEnum();

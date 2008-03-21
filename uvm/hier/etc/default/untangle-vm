@@ -44,6 +44,7 @@ SPAMASSASSIN_PORT=783
 SPAMASSASSIN_PID_FILE=/var/run/spamd.pid
 CLAMD_PORT=3310
 CLAMD_PID_FILE=/var/run/clamav/clamd.pid
+CLAMD_MAX_VIRTUAL_SIZE=100000
 SPAMASSASSIN_LOG_ERROR="bayes: cannot open bayes databases /home/spamc/.spamassassin/bayes_\* R/W: lock failed: Interrupted system call"
 SUPPORT_AGENT_MAX_ALLOWED_CPU=30
 SUPPORT_AGENT_PID_FILE=/var/run/rbot.pid
@@ -77,7 +78,7 @@ case `head -1 $ETC_ISSUE | awk "{ print \\$$i }"` in
   # FIMXE !!!
   *) REPOSITORY=etch SOURCES_LIST=${SOURCES_LIST_NEW} ;;
 esac
-DEFAULT_UNTANGLE_SOURCE="deb http://${KEY_TEMPLATE}:metavize@updates.untangle.com/public/${REPOSITORY} stable main premium upstream\ndeb http://${KEY_TEMPLATE}:metavize@updates.untangle.com/public/${REPOSITORY} thunderbird main premium upstream"
+DEFAULT_UNTANGLE_SOURCE="deb http://${KEY_TEMPLATE}:metavize@updates.untangle.com/public/${REPOSITORY} stable main premium upstream\ndeb http://${KEY_TEMPLATE}:metavize@updates.untangle.com/public/${REPOSITORY} durango main premium upstream"
 
 ## For testing uncomment if you want to generate /etc/network/interfaces files.
 # UVM_ENABLE_NETWORK_CFG="anything"
@@ -148,10 +149,11 @@ UVM_ARGS="${UVM_ARGS} -Dcom.untangle.uvm.memmonitor.enabled=true"
 #
 # JAVA options
 #
+DEFAULT_JAVA_HOME=@DEFAULT_JAVA5_HOME@
+[ -d @DEFAULT_JAVA6_HOME@ ] && DEFAULT_JAVA_HOME=@DEFAULT_JAVA6_HOME@
 
 # NOTE: this setting is required
-# JAVA_HOME=/usr/lib/j2se/1.4/jre
-JAVA_HOME=${JAVA_HOME:-@DEFAULT_JAVA_HOME@}
+JAVA_HOME=${JAVA_HOME:-${DEFAULT_JAVA_HOME}}
 export JAVA_HOME
 
 PATH=${JAVA_HOME}/bin:${PATH}
@@ -162,15 +164,15 @@ MEM=$(awk '/MemTotal/ { print $2 }' < /proc/meminfo)
 if [ $MEM -gt 1900000 ] ; then
   MAX_HEAP_SIZE=640m
   MAX_VIRTUAL_SIZE=1500000
-  MAX_UCB_DB_MEG=40
+  MAX_UCB_DB_MEG=80
 elif [ $MEM -gt 900000 ] ; then
   MAX_HEAP_SIZE=320m
   MAX_VIRTUAL_SIZE=950000
-  MAX_UCB_DB_MEG=16
+  MAX_UCB_DB_MEG=32
 else
   MAX_HEAP_SIZE=220m
   MAX_VIRTUAL_SIZE=800000
-  MAX_UCB_DB_MEG=8
+  MAX_UCB_DB_MEG=20
 fi
 
 ## Limit Berkeley DB caching to 5% of java heap

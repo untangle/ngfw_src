@@ -46,17 +46,15 @@ public class SpamMessageAction implements Serializable
 
     private static final Map INSTANCES = new HashMap();
 
-    public static char PASS_KEY = 'P';
-    public static char MARK_KEY = 'M';
-    public static char SAFELIST_KEY = 'S'; // special pass case
-    public static char OVERSIZE_KEY = 'Z'; // special pass case
+    public static final char PASS_KEY = 'P';
+    public static final char MARK_KEY = 'M';
+    public static final char SAFELIST_KEY = 'S'; // special pass case
+    public static final char OVERSIZE_KEY = 'Z'; // special pass case
 
     public static final SpamMessageAction PASS = new SpamMessageAction(PASS_KEY, "pass message");
     public static final SpamMessageAction MARK = new SpamMessageAction(MARK_KEY, "mark message");
-    // for now, label safelist and oversize messages as pass messages
-    // until someone requests more detail
-    public static final SpamMessageAction SAFELIST = new SpamMessageAction(SAFELIST_KEY, "pass message");
-    public static final SpamMessageAction OVERSIZE = new SpamMessageAction(OVERSIZE_KEY, "pass message");
+    public static final SpamMessageAction SAFELIST = new SpamMessageAction(SAFELIST_KEY, "safelist message");
+    public static final SpamMessageAction OVERSIZE = new SpamMessageAction(OVERSIZE_KEY, "oversize message");
 
     // do not include SAFELIST or OVERSIZE in INSTANCES map
     // because GUI will display them as setting actions

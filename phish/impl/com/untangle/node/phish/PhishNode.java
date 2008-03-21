@@ -439,9 +439,8 @@ public class PhishNode extends SpamImpl implements Phish
     {
         urlDatabase = new UrlDatabase();
 
-        File dbHome = new File(System.getProperty("bunnicula.db.dir"), "phish");
         try {
-            UrlList ul = new PrefixUrlList(dbHome, URL_BASE, "goog-black-url");
+            UrlList ul = new PrefixUrlList(URL_BASE, "phish", "goog-black-url");
             urlDatabase.addBlacklist("goog-black-url", ul);
         } catch (DatabaseException exn) {
             logger.warn("could not open database", exn);
@@ -450,7 +449,7 @@ public class PhishNode extends SpamImpl implements Phish
         }
 
         try {
-            UrlList ul = new EncryptedUrlList(dbHome, URL_BASE, "goog-black-enchash");
+            UrlList ul = new EncryptedUrlList(URL_BASE, "phish", "goog-black-enchash");
             urlDatabase.addBlacklist("goog-black-enchash", ul);
         } catch (DatabaseException exn) {
             logger.warn("could not open database", exn);

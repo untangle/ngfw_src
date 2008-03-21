@@ -22,14 +22,17 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.lang.reflect.Method;
-import java.util.StringTokenizer;
 import java.util.ArrayList;
 import java.util.List;
-import java.lang.reflect.InvocationTargetException;
+import java.util.StringTokenizer;
 
+import com.sleepycat.je.DatabaseException;
+import com.sleepycat.je.Environment;
+import com.sleepycat.je.EnvironmentConfig;
 import com.untangle.uvm.CronJob;
 import com.untangle.uvm.LocalBrandingManager;
 import com.untangle.uvm.LocalUvmContext;
@@ -41,6 +44,7 @@ import com.untangle.uvm.addrbook.RemoteAddressBook;
 import com.untangle.uvm.argon.Argon;
 import com.untangle.uvm.argon.ArgonManagerImpl;
 import com.untangle.uvm.client.RemoteUvmContext;
+import com.untangle.uvm.engine.ADPhoneBookAssistantManager;
 import com.untangle.uvm.license.LicenseManagerFactory;
 import com.untangle.uvm.license.LocalLicenseManager;
 import com.untangle.uvm.license.RemoteLicenseManager;
@@ -63,11 +67,10 @@ import com.untangle.uvm.policy.RemotePolicyManager;
 import com.untangle.uvm.portal.BasePortalManager;
 import com.untangle.uvm.toolbox.RemoteToolboxManager;
 import com.untangle.uvm.toolbox.RemoteUpstreamManager;
+import com.untangle.uvm.user.ADPhoneBookAssistant;
 import com.untangle.uvm.user.LocalPhoneBook;
 import com.untangle.uvm.user.PhoneBookFactory;
 import com.untangle.uvm.user.RemotePhoneBook;
-import com.untangle.uvm.user.ADPhoneBookAssistant;
-import com.untangle.uvm.engine.ADPhoneBookAssistantManager;
 import com.untangle.uvm.util.TransactionRunner;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.MPipeManager;
@@ -87,6 +90,7 @@ public class UvmContextImpl extends UvmContextBase
     private static final UvmContextImpl CONTEXT = new UvmContextImpl();
 
     private static final String REBOOT_SCRIPT = "/sbin/reboot";
+    private static final String BDB_HOME = System.getProperty("bunnicula.db.dir");
 
     private static final String ACTIVATE_SCRIPT;
     private static final String ACTIVATION_KEY_FILE;
@@ -144,6 +148,8 @@ public class UvmContextImpl extends UvmContextBase
     private CliServerManager cliServerManager;
 
     private ADPhoneBookAssistant adPhoneBookAssistant;
+
+    private Environment bdbEnvironment;
 
     private volatile SessionFactory sessionFactory;
     private volatile TransactionRunner transactionRunner;
@@ -213,11 +219,6 @@ public class UvmContextImpl extends UvmContextBase
         return appServerManager;
     }
 
-    RemoteAppServerManagerAdaptor remoteAppServerManager()
-    {
-        return remoteAppServerManager;
-    }
-
     public RemoteToolboxManagerImpl toolboxManager()
     {
         return toolboxManager;
@@ -278,11 +279,6 @@ public class UvmContextImpl extends UvmContextBase
         return pingManager;
     }
 
-    RemoteNetworkManagerAdaptor remoteNetworkManager()
-    {
-        return remoteNetworkManager;
-    }
-
     public RemoteReportingManagerImpl reportingManager()
     {
         return reportingManager;
@@ -298,23 +294,6 @@ public class UvmContextImpl extends UvmContextBase
         return argonManager;
     }
 
-    RemoteIntfManager remoteIntfManager()
-    {
-        /* This doesn't have to be synchronized, because it doesn't
-         * matter if two are created */
-        if (remoteIntfManager == null) {
-            // Create the remote interface manager
-            LocalIntfManager lim = argonManager.getIntfManager();
-            if (null == lim) {
-                logger.warn("ArgonManager.getIntfManager() is not initialized");
-                return null;
-            }
-            remoteIntfManager = new RemoteIntfManagerImpl(lim);
-        }
-
-        return remoteIntfManager;
-    }
-
     public LocalIntfManager localIntfManager()
     {
         return argonManager.getIntfManager();
@@ -323,11 +302,6 @@ public class UvmContextImpl extends UvmContextBase
     public LocalShieldManager localShieldManager()
     {
         return localShieldManager;
-    }
-
-    RemoteShieldManager remoteShieldManager()
-    {
-        return this.remoteShieldManager;
     }
 
     public RemoteLicenseManager remoteLicenseManager()
@@ -339,7 +313,6 @@ public class UvmContextImpl extends UvmContextBase
     {
         return this.licenseManagerFactory.getLocalLicenseManager();
     }
-
 
     public MPipeManagerImpl mPipeManager()
     {
@@ -374,13 +347,49 @@ public class UvmContextImpl extends UvmContextBase
         return adPhoneBookAssistant;
     }
 
+    public Environment getBdbEnvironment()
+    {
+        if (null == bdbEnvironment) {
+            synchronized (this) {
+                EnvironmentConfig envCfg = new EnvironmentConfig();
+                envCfg.setAllowCreate(true);
+                
+                Integer maxMegs = Integer.getInteger("je.maxMemory");
+                int maxMem;
+                if (maxMegs == null) {
+                    maxMem = 16 * 1024 * 1024;
+                    logger.warn("No je.maxMemory property, using 16MB");
+                } else {
+                    maxMem = maxMegs * 1024 * 1024;
+                    logger.info("Setting max bdb memory to " + maxMegs + "MB");
+                }
+                envCfg.setCacheSize(maxMem);
+
+                File dbHome = new File(BDB_HOME);
+
+                int tries = 0;
+                while (null == bdbEnvironment && 3 > tries++) {
+                    try {
+                        bdbEnvironment = new Environment(dbHome, envCfg);
+                    } catch (DatabaseException exn) {
+                        logger.warn("couldn't load environment, try: " + tries, exn);
+                        for (File f : dbHome.listFiles()) {
+                            boolean deleted = f.delete();
+                        }
+                    }
+                }
+            }
+        }
+
+        return bdbEnvironment;
+    }
+
     // service methods --------------------------------------------------------
 
     public boolean runTransaction(TransactionWork tw)
     {
         return transactionRunner.runTransaction(tw);
     }
-
 
     /* For autonumbering anonymous threads. */
     private static class ThreadNumber {
@@ -624,7 +633,7 @@ public class UvmContextImpl extends UvmContextBase
         System.loadLibrary(libname);
     }
 
-    // UvmContextBase methods ------------------------------------------------
+    // UvmContextBase methods --------------------------------------------------
 
     @Override
     protected void init()
@@ -718,7 +727,7 @@ public class UvmContextImpl extends UvmContextBase
             this.heapMonitor.start();
         }
 
-	adPhoneBookAssistant = ADPhoneBookAssistantManager.getADPhoneBookAssistant();
+    adPhoneBookAssistant = ADPhoneBookAssistantManager.getADPhoneBookAssistant();
 
         /* initalize everything and start it up */
         phoneBookFactory.init();
@@ -873,6 +882,38 @@ public class UvmContextImpl extends UvmContextBase
 
     // package protected methods ----------------------------------------------
 
+    RemoteAppServerManagerAdaptor remoteAppServerManager()
+    {
+        return remoteAppServerManager;
+    }
+
+    RemoteNetworkManagerAdaptor remoteNetworkManager()
+    {
+        return remoteNetworkManager;
+    }
+
+    RemoteIntfManager remoteIntfManager()
+    {
+        /* This doesn't have to be synchronized, because it doesn't
+         * matter if two are created */
+        if (remoteIntfManager == null) {
+            // Create the remote interface manager
+            LocalIntfManager lim = argonManager.getIntfManager();
+            if (null == lim) {
+                logger.warn("ArgonManager.getIntfManager() is not initialized");
+                return null;
+            }
+            remoteIntfManager = new RemoteIntfManagerImpl(lim);
+        }
+
+        return remoteIntfManager;
+    }
+
+    RemoteShieldManager remoteShieldManager()
+    {
+        return this.remoteShieldManager;
+    }
+
     boolean refreshToolbox()
     {
         boolean result = main.refreshToolbox();
@@ -991,51 +1032,21 @@ public class UvmContextImpl extends UvmContextBase
             this.serverThread = new Thread(null, this, "UTCliServerThread", 1000000);
         }
 
-        // Computes classpath for new classloader to be created to contain cli server.
-        // Needs jruby stuff, uvm api, and node apis.
+        // Computes classpath for new classloader to be created to
+        // contain cli server.  Needs jruby stuff, uvm api, and node
+        // apis.
         private URL[] getClasspath()
         {
             List<URL> urls = new ArrayList();
-                /*
-            try {
-                File jrubyLib = new File(System.getProperty("jruby.lib"));
-                for (File f : jrubyLib.listFiles(
-                                                 new FilenameFilter() {
-                                                     public boolean accept(File dir, String name) {
-                                                         return (name.endsWith(".jar"));
-                                                     }
-                                                 })) {
-                    urls.add(new URL("file://" + f));
-                }
-
-                String bunniculaLib = System.getProperty("bunnicula.lib.dir");
-                urls.add(new URL("file://" + bunniculaLib + "/untangle-libuvm-api/"));
-
-                String bunniculaWebstart = System.getProperty("bunnicula.web.dir") + "/webstart";
-                File webstartDir = new File(bunniculaWebstart);
-                for (File f : webstartDir.listFiles(
-                                                    new FilenameFilter() {
-                                                        public boolean accept(File dir, String name) {
-                                                            return (name.endsWith("-gui.jar")
-                                                                    && name.startsWith("untangle"));
-                                                        }
-                                                    })) {
-                    urls.add(new URL("file://" + f));
-                }
-            } catch (MalformedURLException x) {
-                // Can't really happen
-                logger.fatal("Unable to find classpath for cli server", x);
-            }
-
-                */
             for (URL url : urls) {
-                System.out.println("cli cp: " + url);
+                logger.info("cli cp: " + url);
             }
 
             return urls.toArray(new URL[urls.size()]);
         }
 
-        // Creates a new classloader every time to allow best potential growth prevention.
+        // Creates a new classloader every time to allow best
+        // potential growth prevention.
         public void run() {
             String[] jrubyArgs = new String[] { cliServerHome + "/server.rb" };
             ClassLoader oldCl = Thread.currentThread().getContextClassLoader();
@@ -1043,7 +1054,7 @@ public class UvmContextImpl extends UvmContextBase
             URLClassLoader clicl = new URLClassLoader(cp, oldCl);
             logger.info("starting cli server");
                 try {
-                    // Entering CLI ClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                    // Entering CLI ClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                     Thread.currentThread().setContextClassLoader(clicl);
 
                     Object main;
@@ -1066,12 +1077,12 @@ public class UvmContextImpl extends UvmContextBase
                         try {
                             int result = (Integer) runner.invoke(main, new Object[] { jrubyArgs });
                             logger.error("cli server unexpectedly exited with status " + result);
-		        } catch (InvocationTargetException x) {
+                } catch (InvocationTargetException x) {
                             Throwable cause = x.getTargetException();
-                            if ((cause != null) && (cause instanceof java.lang.AssertionError) && 
-				cause.getMessage().contains("InterruptedException"))
-                            	logger.info("cli server: exiting on interrupt.");
-			    else
+                            if ((cause != null) && (cause instanceof java.lang.AssertionError) &&
+                cause.getMessage().contains("InterruptedException"))
+                                logger.info("cli server: exiting on interrupt.");
+                else
                                 logger.error("cli server: ", x);
                         } catch (Exception x) {
                             logger.error("cli server: ", x);
@@ -1081,12 +1092,12 @@ public class UvmContextImpl extends UvmContextBase
                     }
                 } finally {
                     Thread.currentThread().setContextClassLoader(oldCl);
-                    // restored classloader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                    // restored classloader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                 }
         }
 
         void init() {
-	    keepRunning = true;
+        keepRunning = true;
             serverThread.start();
         }
 
@@ -1125,13 +1136,13 @@ public class UvmContextImpl extends UvmContextBase
     public void restartCliServer()
     {
         if (cliServerManager != null)
-	    cliServerManager.doRefresh();
+        cliServerManager.doRefresh();
     }
 
     public void stopCliServer()
     {
         if (cliServerManager != null)
-	    cliServerManager.doStop();
+        cliServerManager.doStop();
     }
 
     // static initializer -----------------------------------------------------

@@ -42,7 +42,7 @@ if [ "x${md5hash}" != "x${verify}" ]; then
   exit 0
 fi
 
-echo "${script}" | sh /dev/stdin ${t_prefix} || true
+echo "${script}" | bash /dev/stdin ${t_prefix} || true
 
 if [ -f ${t_destination} ]; then
     rm -f ${t_generator}

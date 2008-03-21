@@ -92,7 +92,6 @@ public class SpywareImpl extends AbstractNode implements Spyware
     private static final String SUBNET_DIFF_BASE
         = "com/untangle/node/spyware/subnet-diff-";
 
-    private static final File DB_HOME = new File(System.getProperty("bunnicula.db.dir"), "spyware");
     private static final URL BLACKLIST_HOME;
 
     private static final int HTTP = 0;
@@ -155,7 +154,8 @@ public class SpywareImpl extends AbstractNode implements Spyware
             if (list.startsWith("spyware-")
                 && (list.endsWith("dom") || list.endsWith("url"))) {
                 try {
-                    UrlList l = new PrefixUrlList(DB_HOME, BLACKLIST_HOME, list, m, null);
+                    UrlList l = new PrefixUrlList(BLACKLIST_HOME, "spyware",
+                                                  list, m, null);
                     urlDatabase.addBlacklist(list, l);
                     urlDatabase.updateAll(true);
                 } catch (IOException exn) {

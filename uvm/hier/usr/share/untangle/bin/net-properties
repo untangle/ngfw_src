@@ -88,12 +88,12 @@ bridge_configuration()
     t_pppoe=$1
 
     if [ -z "${t_pppoe}" ]; then
-        find /sys/class/net/ -path '*/brif/*' \
+        find /sys/class/net/ -follow -maxdepth 3 -path '*/brif/*' 2>/dev/null \
             | sort \
             | awk '{ split( $0, path, "/" ) ; if ( path[5] != bridge ) { bridge = path[5] ; printf ":::%s", bridge } ; printf ";%s", path[7] } END { printf "\n" }'
     else
         ## Append ppp0 to whatever the ppp0 interface is.
-        find /sys/class/net/ -path '*/brif/*' \
+        find /sys/class/net/ -follow -maxdepth 3 -path '*/brif/*' 2>/dev/null \
             | sort \
             | awk --assign pppoe_interface=${t_pppoe} '{ split( $0, path, "/" ) ; if ( path[5] != bridge ) { bridge = path[5] ; printf ":::%s", bridge; if ( bridge == pppoe_interface ) printf ";ppp0" } ; printf ";%s", path[7] } END { printf "\n" }'
     fi

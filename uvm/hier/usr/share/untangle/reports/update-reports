@@ -53,7 +53,7 @@ function generateEmail()
         REPORT_TYPE=${t_reportType} \
             REPORT_BASE=$REPORT_DIR/current \
             SHOW_DETAILED_REPORTS=${t_isDetailed} \
-            sh @UVM_HOME@/reports/generate-pdf `getFileName ${t_reportType} ${t_isDetailed} pdf`
+            bash @UVM_HOME@/reports/generate-pdf `getFileName ${t_reportType} ${t_isDetailed} pdf`
     done
 }
 

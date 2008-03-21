@@ -56,9 +56,9 @@ import com.sleepycat.je.DatabaseConfig;
 import com.sleepycat.je.DatabaseEntry;
 import com.sleepycat.je.DatabaseException;
 import com.sleepycat.je.Environment;
-import com.sleepycat.je.EnvironmentConfig;
 import com.sleepycat.je.LockMode;
 import com.sleepycat.je.OperationStatus;
+import com.untangle.uvm.LocalUvmContextFactory;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
@@ -96,7 +96,7 @@ public abstract class UrlList
 
     // constructors ----------------------------------------------------------
 
-    public UrlList(File dbHome, URL baseUrl, String dbName,
+    public UrlList(URL baseUrl, String owner, String dbName,
                    Map<String, String> extraParams,
                    File initFile)
         throws DatabaseException
@@ -105,30 +105,15 @@ public abstract class UrlList
         this.dbName = dbName;
         this.initFile = initFile;
 
-        dbLock = new File(dbHome, dbName).getAbsolutePath().intern();
-
-        EnvironmentConfig envCfg = new EnvironmentConfig();
-        envCfg.setAllowCreate(true);
+        dbLock = dbName.intern();
 
         int tries = 0;
-        Environment dbEnv = null;
-        synchronized (DB_LOCKS) {
-            while (null == dbEnv && 3 > tries++) {
-                try {
-                    dbEnv = new Environment(dbHome, envCfg);
-                } catch (DatabaseException exn) {
-                    logger.warn("couldn't load environment, try: " + tries, exn);
-                    for (File f : dbHome.listFiles()) {
-                        boolean deleted = f.delete();
-                    }
-                }
-            }
-        }
+        Environment dbEnv = LocalUvmContextFactory.context().getBdbEnvironment();
 
         // Open the database. Create it if it does not already exist.
         DatabaseConfig dbCfg = new DatabaseConfig();
         dbCfg.setAllowCreate(true);
-        db = dbEnv.openDatabase(null, dbName, dbCfg);
+        db = dbEnv.openDatabase(null, owner + "/" + dbName, dbCfg);
 
         StringBuilder sb = new StringBuilder();
         if (null != extraParams) {

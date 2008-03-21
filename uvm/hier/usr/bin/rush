@@ -12,4 +12,10 @@ fi
 
 export CLASSPATH
 
-jruby @PREFIX@/usr/lib/jruby-ut0.9/lib/ruby/1.8/rush.rb $OPTS "$@"
+if [ -x /usr/bin/jruby1.1 ] ;
+  JRUBY=jruby1.1
+else
+  JRUBY=jruby1.0
+fi
+
+$JRUBY @PREFIX@/usr/lib/jruby-ut0.9/lib/ruby/1.8/rush.rb $OPTS "$@"

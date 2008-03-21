@@ -73,17 +73,17 @@ public class EncryptedUrlList extends UrlList
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    public EncryptedUrlList(File dbHome, URL databaseUrl, String dbName)
+    public EncryptedUrlList(URL databaseUrl, String owner, String dbName)
         throws DatabaseException, IOException
     {
-        super(dbHome, databaseUrl, dbName, null, null);
+        super(databaseUrl, owner, dbName, null, null);
     }
 
-    public EncryptedUrlList(File dbHome, URL databaseUrl, String dbName,
+    public EncryptedUrlList(URL databaseUrl, String owner, String dbName,
                             Map<String, String> extraParams, File initFile)
         throws DatabaseException, IOException
     {
-        super(dbHome, databaseUrl, dbName, extraParams, initFile);
+        super(databaseUrl, owner, dbName, extraParams, initFile);
     }
 
     // UrlList methods --------------------------------------------------------

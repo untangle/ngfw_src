@@ -63,17 +63,17 @@ public class PrefixUrlList extends UrlList
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    public PrefixUrlList(File dbHome, URL databaseUrl, String dbName)
+    public PrefixUrlList(URL databaseUrl, String owner, String dbName)
         throws DatabaseException, IOException
     {
-        super(dbHome, databaseUrl, dbName, null, null);
+        super(databaseUrl, owner, dbName, null, null);
     }
 
-    public PrefixUrlList(File dbHome, URL databaseUrl, String dbName,
+    public PrefixUrlList(URL databaseUrl, String owner, String dbName,
                          Map<String, String> extraParams, File initFile)
         throws DatabaseException, IOException
     {
-        super(dbHome, databaseUrl, dbName, extraParams, initFile);
+        super(databaseUrl, owner, dbName, extraParams, initFile);
     }
 
     // UrlList methods -------------------------------------------------------

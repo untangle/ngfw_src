@@ -80,13 +80,6 @@ class NetworkConfigurationLoader
 {
     /* Singleton */
     private static final NetworkConfigurationLoader INSTANCE = new NetworkConfigurationLoader();
-    private static final String IP_CFG_FILE       = "/etc/network/interfaces";
-    private static final String NS_CFG_FILE       = "/etc/resolv.conf";
-
-    private static final String DHCP_RENEW_SCRIPT  = BUNNICULA_BASE + "/networking/dhcp-renew";
-
-    private static final String DHCP_TEST_SCRIPT  = BUNNICULA_BASE + "/networking/dhcp-check";
-    private static final int    DHCP_ENABLED_CODE = 1;
 
     private static final String FLAG_EXCEPTION    = "UVM_IS_EXCEPTION_REPORTING_EN";
     
@@ -168,100 +161,12 @@ class NetworkConfigurationLoader
         settings.isClean( false );
     }
 
-
-    BasicNetworkSettings loadBasicNetworkSettings() throws NetworkException
-    {
-        BasicNetworkSettings basic = new BasicNetworkSettings();
-        loadBasicNetworkSettings( basic );
-        return basic;
-    }
-
-    void loadBasicNetworkSettings( BasicNetworkSettings basic ) throws NetworkException
-    {
-        loadDhcp( basic );
-        loadDnsServers( basic );
-
-        Netcap netcap = Netcap.getInstance();
-
-        String external;
-
-        external = LocalUvmContextFactory.context().localIntfManager().getExternal().getName();
-
-        netcap.updateAddress();
-
-        List<InterfaceData> externalIntfDataList;
-
-        try {
-            externalIntfDataList = netcap.getInterfaceData( external );
-        } catch ( Exception e ) {
-            logger.warn( "Exception retrieving external interface data, setting to an empty list" );
-            externalIntfDataList = EMPTY_INTF_DATA_LIST;
-        }
-
-        if ( externalIntfDataList == null ) externalIntfDataList = EMPTY_INTF_DATA_LIST;
-
-        basic.host( NetworkUtil.EMPTY_IPADDR );
-        basic.netmask( NetworkUtil.EMPTY_IPADDR );
-
-        List<InterfaceAlias> interfaceAliasList = new LinkedList<InterfaceAlias>();
-
-        boolean isFirst = true;
-        for ( InterfaceData data : externalIntfDataList ) {
-            if ( isFirst ) {
-                basic.host( new IPaddr((Inet4Address)data.getAddress()));
-                basic.netmask( new IPaddr((Inet4Address)data.getNetmask()));
-            } else {
-                /* XXX Broadcast address is presently not used */
-                interfaceAliasList.add( new InterfaceAlias( data.getAddress(), data.getNetmask(), null ));
-            }
-
-            isFirst = false;
-        }
-
-        basic.setAliasList( interfaceAliasList );
-
-        Inet4Address gateway = (Inet4Address)Netcap.getGateway();
-        if ( gateway == null ) basic.gateway( NetworkUtil.EMPTY_IPADDR );
-        else                   basic.gateway( new IPaddr( gateway ));
-    }
-
     static NetworkConfigurationLoader getInstance()
     {
         return INSTANCE;
     }
     
     /************************ PRIVATE **********************/
-    private void loadDhcp( BasicNetworkSettings basic )
-    {
-        boolean isDhcpEnabled;
-        try {
-            int code = 0;
-            Process p = Runtime.getRuntime().exec( "sh " + DHCP_TEST_SCRIPT  );
-            code = p.waitFor();
-
-            isDhcpEnabled = ( code == DHCP_ENABLED_CODE );
-        } catch ( Exception e ) {
-            logger.warn( "Error testing DHCP address, continuing with false.", e );
-            isDhcpEnabled = false;
-        }
-
-        basic.isDhcpEnabled( isDhcpEnabled );
-    }
-
-    private void loadDnsServers( BasicNetworkSettings basic )
-    {
-        List<IPaddr> dnsServers = NetworkUtilPriv.getPrivInstance().getDnsServers();
-
-        if ( dnsServers.size() >= 2 ) {
-            basic.dns1( dnsServers.get( 0 ));
-            basic.dns2( dnsServers.get( 1 ));
-        } else if ( dnsServers.size() == 1 ) {
-            basic.dns1( dnsServers.get( 0 ));
-        } else {
-            logger.warn( "There are presently no DNS servers" );
-        }
-    }
-
     private void loadHostName( AddressSettings address )
     {
         HostName hostname = NetworkUtilPriv.getPrivInstance().loadHostname();

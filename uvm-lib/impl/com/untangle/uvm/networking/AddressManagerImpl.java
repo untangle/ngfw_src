@@ -223,8 +223,10 @@ class AddressManagerImpl implements LocalAddressManager
             /* no public address, use the primary address, and the hostname */
             HostName name = settings.getHostName();
             
-            /* If a hostname is available, then use the hostname */
-            if (( name != null ) && !name.isEmpty()) address = new HostAddress( primaryAddress, name );
+            /* If a hostname is available, and qualified, then use the hostname */
+            if (( name != null ) && !name.isEmpty() && name.isQualified()) {
+                address = new HostAddress( primaryAddress, name );
+            }
         }
 
         /* If none of the other condititions have been met, just use the primary address */
