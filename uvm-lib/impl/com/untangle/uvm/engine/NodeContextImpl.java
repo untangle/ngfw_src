@@ -152,6 +152,11 @@ class NodeContextImpl implements NodeContext
             parentCtxs.add(startParent(parent, tid.getPolicy()));
         }
 
+        UvmContextImpl uctx = UvmContextImpl.getInstance();
+        for (String uvmResource : nodeDesc.getUvmResources()) {
+            uctx.loadUvmResource(uvmResource);
+        }
+
         final LocalUvmContext mctx = LocalUvmContextFactory.context();
         try {
             nodeManager.registerThreadContext(this);

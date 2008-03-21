@@ -297,6 +297,12 @@ SQL
   end
 end
 
+def pre52_hacks(dbh)
+  ps = dbh.execute(<<SQL)
+DELETE FROM settings.split_schema_ver WHERE component = 'rupuvm';
+SQL
+end
+
 def setup_schema(dbh)
   unless dbh.select_one('select current_schemas(false)')[0].any? { |e| 'settings' == e }
     dbh.do('CREATE SCHEMA settings')
@@ -336,6 +342,7 @@ begin
 
   setup_schema(dbh)
   pre50_hacks(dbh)
+  pre52_hacks(dbh)
 
   latest_version = get_latest_version(SCHEMA_DIR, TYPE)
   inst_version = get_inst_version(dbh, COMPONENT, TYPE)

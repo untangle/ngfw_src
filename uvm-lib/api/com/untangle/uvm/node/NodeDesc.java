@@ -60,6 +60,7 @@ public class NodeDesc implements Serializable
 
     private final List<String> exports;
     private final List<String> parents;
+    private final List<String> uvmResources;
     private final boolean singleInstance;
 
     private final String displayName;
@@ -71,7 +72,7 @@ public class NodeDesc implements Serializable
 
     public NodeDesc(Tid tid, String name, String className,
                          String guiClassName, String nodeBase,
-                         List<String> exports, List<String> parents,
+                         List<String> exports, List<String> parents, List<String> uvmResources, 
                          boolean singleInstance, String displayName)
     {
         this.tid = tid;
@@ -83,6 +84,8 @@ public class NodeDesc implements Serializable
         this.exports = Collections.unmodifiableList(l);
         l = null == parents ? new LinkedList<String>() : parents;
         this.parents = Collections.unmodifiableList(l);
+        l = null == uvmResources ? new LinkedList<String>() : uvmResources;
+        this.uvmResources = Collections.unmodifiableList(l);
         this.singleInstance = singleInstance;
         this.displayName = displayName;
         syslogName = displayName.replaceAll("\\p{Space}", "_");
@@ -138,6 +141,16 @@ public class NodeDesc implements Serializable
     public List<String> getParents()
     {
         return parents;
+    }
+
+    /**
+     * A list of uvm resources, resources to be loaded into the UVM Class Path.
+     *
+     * @return The list of UVM resources.
+     */
+    public List<String> getUvmResources()
+    {
+        return uvmResources;
     }
 
     /**

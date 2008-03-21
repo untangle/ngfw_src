@@ -92,6 +92,13 @@ class UvmClassLoader extends URLClassLoader
         return r;
     }
 
+    boolean loadUvmResource(String name)
+    {
+        String bunniculaLib = System.getProperty("bunnicula.lib.dir");
+
+        return addFile(bunniculaLib + "/" + name + "/");
+    }
+
     // private methods --------------------------------------------------------
 
     private boolean addFile(File f)

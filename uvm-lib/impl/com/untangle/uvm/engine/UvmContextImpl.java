@@ -949,6 +949,11 @@ public class UvmContextImpl extends UvmContextBase
         return remoteContext;
     }
 
+    boolean loadUvmResource(String name)
+    {
+        return main.loadUvmResource(name);
+    }
+
     public String getActivationKey()
     {
         try {
@@ -988,7 +993,7 @@ public class UvmContextImpl extends UvmContextBase
 
     private boolean loadRup(boolean refreshManagers)
     {
-        if (main.loadRup()) {
+        if (main.loadRup() || true) {
             main.schemaUtil().initSchema("settings", "rupuvm");
             loggingManager.initSchema("rupuvm");
             refreshSessionFactory();

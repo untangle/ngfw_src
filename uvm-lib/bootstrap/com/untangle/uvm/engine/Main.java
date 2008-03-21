@@ -131,6 +131,11 @@ public class Main
         return mcl.loadRup();
     }
 
+    public boolean loadUvmResource(String name)
+    {
+        return mcl.loadUvmResource(name);
+    }
+
     // private methods --------------------------------------------------------
 
     private void init() throws Exception
