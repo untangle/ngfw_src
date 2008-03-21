@@ -1232,8 +1232,8 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			for(i in cmConfig) {
 				cmConfig[i].sortable=false;
 			}
+			this.getColumnModel().setConfig(cmConfig);
 		}
-		this.getColumnModel().setConfig(cmConfig);
 		var id=record.get("id");
 		var cd=this.changedData[id];
 		if(cd==null) {
