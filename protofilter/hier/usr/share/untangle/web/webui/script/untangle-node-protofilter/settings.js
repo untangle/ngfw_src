@@ -41,6 +41,7 @@ Ung.Protofilter = Ext.extend(Ung.Settings, {
 		
     	this.gridProtocolList=new Ung.EditorGrid({
     		settingsCmp: this,
+    		totalRecords: this.getBaseSettings().patternsLength,
     		emptyRow: {"category":"","protocol":"","blocked":false,"log":false,"description":"","definition":""},
     		title: this.i18n._('Protocol List'),
     		autoExpandColumn: 'category',
@@ -57,6 +58,7 @@ Ung.Protofilter = Ext.extend(Ung.Settings, {
 			],
 			sortField: 'category',
 			columns: columns,
+			defaultSortable:true,
 			plugins: [blockedColumn,logColumn],
 			rowEditorInputLines: [
 				{name:"category", label: this.i18n._("Category"), type:"text", style:"width:200px;"},
@@ -67,8 +69,6 @@ Ung.Protofilter = Ext.extend(Ung.Settings, {
 				{name:"definition", label: this.i18n._("Signature"), type:"textarea", style:"width:200px;height:60px;"}
 			]
     	});
-    	//columnModel.defaultSortable = true; TODO
-    	this.gridProtocolList.getStore().proxy.setTotalRecords(this.getBaseSettings().patternsLength);
     },
     
     buildEventLog: function() {

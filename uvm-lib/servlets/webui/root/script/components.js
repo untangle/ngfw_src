@@ -124,10 +124,7 @@ Ung.Node = Ext.extend(Ext.Component, {
        	}
 	},
 	onPowerClick: function() {
-    	if(this.nodeContext===undefined) {
-			this.nodeContext=rpc.nodeManager.nodeContext(this.Tid);
-			this.nodeContext.node=this.nodeContext.node();
-		}
+    	this.loadNodeContext();
        	this.setPowerOn(!this.powerOn);
        	this.setState("Attention");
        	if(this.powerOn) {
@@ -161,12 +158,15 @@ Ung.Node = Ext.extend(Ext.Component, {
        	this.settingsWin.setSize(objSize);
        	this.loadSettings();
 	},
-	initSettings: function(force) {
-    	if(this.nodeContext===undefined) {
+	loadNodeContext: function() {
+		if(this.nodeContext===undefined) {
     		this.nodeContext=rpc.nodeManager.nodeContext(this.Tid);
 			this.nodeContext.node=this.nodeContext.node();
 			this.nodeContext.nodeDesc=this.nodeContext.getNodeDesc();
 		}
+	},
+	initSettings: function(force) {
+    	this.loadNodeContext();
 		if(!Ung.i18nNodeInstances[this.name]) {
 			Ext.Ajax.request({
 		        url: "i18n",
@@ -323,6 +323,7 @@ Ung.Node = Ext.extend(Ext.Component, {
 			],
 			cancelAction: function() {
 				Ext.destroy(this.settings);
+				this.settings=null;
 				this.settingsWin.hide();
 			}.createDelegate(this)
            });
@@ -475,56 +476,56 @@ Ung.BlingerManager = {
 };
 
 Ung.ActivityBlinger = Ext.extend(Ext.Component, {
-        parentId: null,
-        bars: null,
-        lastValues: null,
-        decays:null,
-        onRender: function (container, position) {
-	        var el= document.createElement("div");
-	        el.className="activityBlinger";
-	        container.dom.insertBefore(el, position);
-        	this.el = Ext.get(el);
-        	this.id=Ext.id(this);
-			var templateHTML=Ung.ActivityBlinger.template.applyTemplate({'id':this.getId()});
-			el.innerHTML=templateHTML;
-			this.lastValues=[];
-			this.decays=[];
-        	if(this.bars!==null) {
-        		var out=[];
-        		for(var i=0;i<this.bars.length;i++) {
-        			var bar=this.bars[i];
-        			var top=3+i*15;
-        			this.lastValues.push(null);
-        			this.decays.push(0);
-        			out.push('<div class="blingerText activityBlingerText" style="top:'+top+'px;">'+bar+'</div>');
-        			out.push('<div class="activityBlingerBar" style="top:'+top+'px;width:0px;display:none;" id="activityBar_'+this.getId()+'_'+i+'"></div>');
-        		}
-        		document.getElementById("blingerBox_"+this.getId()).innerHTML=out.join("");
-        	}
-        },
+	parentId: null,
+	bars: null,
+	lastValues: null,
+	decays:null,
+	onRender: function (container, position) {
+		var el= document.createElement("div");
+		el.className="activityBlinger";
+		container.dom.insertBefore(el, position);
+		this.el = Ext.get(el);
+		this.id=Ext.id(this);
+		var templateHTML=Ung.ActivityBlinger.template.applyTemplate({'id':this.getId()});
+		el.innerHTML=templateHTML;
+		this.lastValues=[];
+		this.decays=[];
+     	if(this.bars!==null) {
+     		var out=[];
+     		for(var i=0;i<this.bars.length;i++) {
+     			var bar=this.bars[i];
+     			var top=3+i*15;
+     			this.lastValues.push(null);
+     			this.decays.push(0);
+     			out.push('<div class="blingerText activityBlingerText" style="top:'+top+'px;">'+bar+'</div>');
+     			out.push('<div class="activityBlingerBar" style="top:'+top+'px;width:0px;display:none;" id="activityBar_'+this.getId()+'_'+i+'"></div>');
+     		}
+     		document.getElementById("blingerBox_"+this.getId()).innerHTML=out.join("");
+     	}
+	},
         
-        update: function(stats) {
-        	for(var i=0;i<this.bars.length;i++) {
-        		var top=3+i*15;
-        		var bar=this.bars[i];
-        		var newValue=stats.counters[6+i];
-        		this.decays[i]=Ung.ActivityBlinger.decayValue(newValue, this.lastValues[i],this.decays[i]);
-        		this.lastValues[i]=newValue;
-        		var barPixelWidth=Math.floor(this.decays[i]*0.6);
-        		var barDiv=document.getElementById('activityBar_'+this.getId()+'_'+i);
-        		barDiv.style.width=barPixelWidth+"px";
-        		barDiv.style.display=(barPixelWidth===0)?"none":"";
-        	}
-        },
-        reset: function() {
-       		for(var i=0;i<this.bars.length;i++) {
-       			this.lastValues[i]=null;
-       			this.decays[i]=0;
-       			var barDiv=document.getElementById('activityBar_'+this.getId()+'_'+i);
-       			barDiv.style.width="0px";
-       			barDiv.style.display="none";
-       		}
-        }
+	update: function(stats) {
+		for(var i=0;i<this.bars.length;i++) {
+			var top=3+i*15;
+			var bar=this.bars[i];
+			var newValue=stats.counters[6+i];
+			this.decays[i]=Ung.ActivityBlinger.decayValue(newValue, this.lastValues[i],this.decays[i]);
+			this.lastValues[i]=newValue;
+			var barPixelWidth=Math.floor(this.decays[i]*0.6);
+			var barDiv=document.getElementById('activityBar_'+this.getId()+'_'+i);
+			barDiv.style.width=barPixelWidth+"px";
+			barDiv.style.display=(barPixelWidth===0)?"none":"";
+		}
+	},
+	reset: function() {
+		for(var i=0;i<this.bars.length;i++) {
+			this.lastValues[i]=null;
+			this.decays[i]=0;
+			var barDiv=document.getElementById('activityBar_'+this.getId()+'_'+i);
+			barDiv.style.width="0px";
+			barDiv.style.display="none";
+		}
+	}
         
 });
 Ung.ActivityBlinger.template = new Ext.Template(
@@ -543,16 +544,16 @@ Ung.ActivityBlinger.decayValue = function(newValue, lastValue, decay) {
 Ext.ComponentMgr.registerType('utgActivityBlinger', Ung.ActivityBlinger);
 
 Ung.SystemBlinger = Ext.extend(Ext.Component, {
-		parentId: null,
-		data: null,
-		byteCountCurrent: null,
-		byteCountLast: null,
-		sessionCountCurrent: null,
-		sessionCountTotal: null,
-		sessionRequestLast: null,
-		sessionRequestTotal: null,
-		
-        onRender: function (container, position) {
+	parentId: null,
+	data: null,
+	byteCountCurrent: null,
+	byteCountLast: null,
+	sessionCountCurrent: null,
+	sessionCountTotal: null,
+	sessionRequestLast: null,
+	sessionRequestTotal: null,
+	
+	onRender: function (container, position) {
 	        var el= document.createElement("div");
 	        el.className="systemBlinger";
 	        container.dom.insertBefore(el, position);
@@ -582,9 +583,9 @@ Ung.SystemBlinger = Ext.extend(Ext.Component, {
         		}
         		document.getElementById("blingerBox_"+this.getId()).innerHTML=out.join("");
         	}
-        },
-        
-        update: function(stats) {
+	},
+	
+	update: function(stats) {
         	// UPDATE COUNTS
         	this.sessionCountCurrent=stats.tcpSessionCount+stats.udpSessionCount;
         	this.sessionCountTotal=stats.tcpSessionTotal+stats.udpSessionTotal;
@@ -610,8 +611,8 @@ Ung.SystemBlinger = Ext.extend(Ext.Component, {
         			valueDiv.innerHTML=this.data[i].value;
         		}
         	}
-        },
-        reset: function() {
+	},
+	reset: function() {
 			this.byteCountCurrent=0;
 			this.byteCountLast=0;
 			this.sessionCountCurrent=0;
@@ -626,7 +627,7 @@ Ung.SystemBlinger = Ext.extend(Ext.Component, {
         			valueDiv.innerHTML=this.data[i].value;
         		}
         	}
-        }
+	}
 });
 Ung.SystemBlinger.template = new Ext.Template(
 '<div class="blingerName">system</div>',
@@ -639,10 +640,11 @@ Ext.ComponentMgr.registerType('utgSystemBlinger', Ung.SystemBlinger);
 Ung.Settings = Ext.extend(Ext.Component, {
     i18n: null,
     node: null,
-    autoEl: 'div',
     tabs: null,
-    rpc: {},
+    rpc: null,
+    autoEl: 'div',
 	initComponent: function(container, position) {
+		this.rpc={};
     	this.i18n=Ung.i18nNodeInstances[this.name];
     	Ung.Settings.superclass.initComponent.call(this);
 	},
@@ -791,7 +793,7 @@ Ung.Window = Ext.extend(Ext.Window, {
 	closeAction:'hide',
 	draggable:false,
 	resizable:false,
-	subCmps: [],
+	subCmps: null,
 	sizeToRack: true,
 	getContentEl: function() {
 		return document.getElementById("window_content_"+this.getId());
@@ -800,6 +802,7 @@ Ung.Window = Ext.extend(Ext.Window, {
 		return this.items.get(0).getEl().getHeight(true);
 	},
 	initComponent: function() {
+		this.subCmps=[];
 		if(!this.contentHtml) {
 			this.contentHtml="";
 		}
@@ -1147,9 +1150,9 @@ Ext.grid.DeleteColumn.prototype ={
 };
 
 Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
-	rowsPerPage: 20,
+	recordsPerPage: 20,
 	minPaginateCount: 60,
-	totalRows: null,
+	totalRecords: null,
 	settingsCmp: null,
 	proxyRpcFn: null,
 	fields: null,
@@ -1166,10 +1169,102 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 	clicksToEdit: 1,
 	enableHdMenu: false,
 	addedId:0,
+	
+	initComponent: function() {
+	    this.changedData={};
+	    if(this.hasEdit) {
+	    	var editColumn=new Ext.grid.EditColumn();
+	    	if(!this.plugins) {
+	    		this.plugins=[];
+	    	}
+	    	this.plugins.push(editColumn);
+	    	this.columns.push(editColumn);
+	    }
+	    if(this.hasDelete) {
+	    	var deleteColumn=new Ext.grid.DeleteColumn();
+	    	if(!this.plugins) {
+	    		this.plugins=[];
+	    	}
+	    	this.plugins.push(deleteColumn);
+	    	this.columns.push(deleteColumn);
+	    }
+	    this.store = new Ext.data.Store({
+	        proxy: new Ung.RpcProxy(this.proxyRpcFn),
+	        sortInfo: this.sortField?{field: this.sortField, direction: "ASC"}:null,
+	        reader: new Ext.data.JsonReader({
+	        	root: 'list',
+		        fields: this.fields
+			}),
+			
+			remoteSort: true,
+			getPageStart: function () {
+				if(this.lastOptions && this.lastOptions.params) {
+					return this.lastOptions.params.start
+				} else {
+					return 0;
+				}
+			},
+			listeners: {
+				"update": {
+					fn: function(store, record, operation ) {
+						this.updateChangedData(record,"modified");
+					}.createDelegate(this)
+				},
+				"load": {
+					fn: function(store, records, options ) {
+						this.updateFromChangedData(records, options);
+					}.createDelegate(this)
+				}
+			}
+        });
+		this.bbar= new Ext.PagingToolbar({
+			pageSize: this.recordsPerPage,
+			store: this.store,
+			displayInfo: true,
+			displayMsg: 'Displaying topics {0} - {1} of {2}',
+			//cls: "x-hide-display",
+			emptyMsg: "No topics to display"
+		});
+		if(this.rowEditorInputLines!=null) {
+			this.rowEditor=new Ung.RowEditorWindow({
+				grid: this,
+				inputLines: this.rowEditorInputLines
+			});
+			this.rowEditor.render('container');
+		}
+		if(this.hasAdd) {
+			this.tbar=[{
+				text: i18n._('Add'),
+				tooltip: i18n._('Add New Row'),
+				iconCls: 'add',
+				parentId:this.getId(),
+				handler: function() {
+					var record=new Ext.data.Record(Ext.decode(Ext.encode(this.emptyRow)));
+					record.set("id",this.genAddedId());
+					this.stopEditing();
+					this.getStore().insert(0, [record]);
+					this.updateChangedData(record,"added");
+					var row = this.getView().findRowIndex(this.getView().getRow(0));
+					if(this.rowEditor) {
+						this.rowEditor.populate(record,0);
+						this.rowEditor.show();
+					} else {
+						this.startEditing(0, 0);
+					}
+		        }.createDelegate(this)
+			}];
+		}
+		Ung.EditorGrid.superclass.initComponent.call(this);
+	},
+
 	genAddedId: function () {
 		this.addedId--;
 		return this.addedId;
 	},
+	isPaginated: function() {
+		return this.forcePaginate || (this.totalRecords!=null && this.totalRecords>=this.minPaginateCount)
+	},
+	
 	afterRender: function() {
 		Ung.EditorGrid.superclass.afterRender.call(this);
 		this.getView().getRowClass=function(record,index,rowParams,store) {
@@ -1192,7 +1287,13 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 	},
 	
 	initialLoad: function() {
-		this.getStore().load();
+		this.setTotalRecords(this.totalRecords);
+		if(!this.isPaginated()) {
+			this.getStore().load();
+		} else {
+			this.getStore().load({params:{start: 0, limit: this.recordsPerPage}});
+		}
+		
 	},
 	updateFromChangedData: function(store, records, options) {
 		//records.push(records[0]);
@@ -1262,105 +1363,19 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		}
 		
 	},
-	setTotalRows: function(totalRows) {
-		this.totalRows=totalRows;
-		if(!this.forcePaginate && this.totalRows<this.minPaginateCount) {
-			this.getBottomToolbar().disable();
-			this.getBottomToolbar().hide();
-		} else {
-			this.getBottomToolbar().enable();
+	setTotalRecords: function(totalRecords) {
+		this.totalRecords=totalRecords;
+		if(this.totalRecords!=null) {
+			this.getStore().proxy.setTotalRecords(this.totalRecords);
+		}
+		if(this.isPaginated()) {
 			this.getBottomToolbar().show();
+			this.getBottomToolbar().enable();
+		} else {
+			this.getBottomToolbar().hide();
+			this.getBottomToolbar().disable();
 		}
-	},
-	initComponent: function() {
-	    this.changedData={};
-	    if(this.hasEdit) {
-	    	var editColumn=new Ext.grid.EditColumn();
-	    	if(!this.plugins) {
-	    		this.plugins=[];
-	    	}
-	    	this.plugins.push(editColumn);
-	    	this.columns.push(editColumn);
-	    }
-	    if(this.hasDelete) {
-	    	var deleteColumn=new Ext.grid.DeleteColumn();
-	    	if(!this.plugins) {
-	    		this.plugins=[];
-	    	}
-	    	this.plugins.push(deleteColumn);
-	    	this.columns.push(deleteColumn);
-	    }
-	    this.store = new Ext.data.Store({
-	        proxy: new Ung.RpcProxy(this.proxyRpcFn),
-	        sortInfo: this.sortField?{field: this.sortField, direction: "ASC"}:null,
-	        reader: new Ext.data.JsonReader({
-	        	root: 'list',
-		        fields: this.fields
-			}),
-			
-			remoteSort: true,
-			/*
-			initComponent: function() {
-				Ext.data.Store.prototype.initComponent.call(this);
-			},
-			*/
-			getPageStart: function () {
-				if(this.lastOptions && this.lastOptions.params) {
-					return this.lastOptions.params.start
-				} else {
-					return 0;
-				}
-			},
-			listeners: {
-				"update": {
-					fn: function(store, record, operation ) {
-						this.updateChangedData(record,"modified");
-					}.createDelegate(this)
-				},
-				"load": {
-					fn: function(store, records, options ) {
-						this.updateFromChangedData(records, options);
-					}.createDelegate(this)
-				}
-			}
-        });
-		this.bbar= new Ext.PagingToolbar({
-			pageSize: 20,
-			store: this.store,
-			displayInfo: true,
-			displayMsg: 'Displaying topics {0} - {1} of {2}',
-			emptyMsg: "No topics to display"
-		});
-		if(this.rowEditorInputLines!=null) {
-			this.rowEditor=new Ung.RowEditorWindow({
-				grid: this,
-				inputLines: this.rowEditorInputLines
-			});
-			this.rowEditor.render('container');
-		}
-		if(this.hasAdd) {
-			this.tbar=[{
-				text: i18n._('Add'),
-				tooltip: i18n._('Add New Row'),
-				iconCls: 'add',
-				parentId:this.getId(),
-				handler: function() {
-					var record=new Ext.data.Record(Ext.decode(Ext.encode(this.emptyRow)));
-					record.set("id",this.genAddedId());
-					this.stopEditing();
-					this.getStore().insert(0, [record]);
-					this.updateChangedData(record,"added");
-					var row = this.getView().findRowIndex(this.getView().getRow(0));
-					if(this.rowEditor) {
-						this.rowEditor.populate(record,0);
-						this.rowEditor.show();
-					} else {
-						this.startEditing(0, 0);
-					}
-		        }.createDelegate(this)
-			}];
-		}
-		Ung.EditorGrid.superclass.initComponent.call(this);
+		this.getBottomToolbar().syncSize();
 	},
 	
 	getSaveList: function() {
@@ -1382,6 +1397,9 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 					modified.push(cd.recData);
 				}
 			}
+		}
+		if(deleted.length>0) {
+			deleted.splice(0,0,"java.lang.Long");
 		}
 		return [{list: added,"javaClass":"java.util.ArrayList"}, {list: deleted,"javaClass":"java.util.ArrayList"}, {list: modified,"javaClass":"java.util.ArrayList"}];
 	}
