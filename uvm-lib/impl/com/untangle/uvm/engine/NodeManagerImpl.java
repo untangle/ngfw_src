@@ -421,9 +421,7 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
         logger.info("time to restart nodes: " + (t1 - t0));
 
         try {
-            ensureRouterStarted();
-        } catch (MackageInstallException exn) {
-            logger.warn("could not install router", exn);
+            startAutoStart();
         } catch (DeployException exn) {
             logger.warn("could not instantiate router", exn);
         } catch (NodeStartException exn) {
@@ -432,46 +430,38 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
     }
 
     private void startAutoStart()
+        throws DeployException, NodeStartException
     {
-//         List<MackageDesc> mds = LocalUvmContextFactory.context()
-//             .toolboxManager().getInstalledAndAutoStart();
+        RemoteToolboxManagerImpl tbm = (RemoteToolboxManagerImpl)LocalUvmContextFactory.context().toolboxManager();
+        List<MackageDesc> mds = tbm.getInstalledAndAutoStart();
+        for (MackageDesc md : mds) {
+            List<Tid> l = nodeInstances(md.getName());
 
-    }
+            Tid t;
 
-    private void ensureRouterStarted()
-        throws MackageInstallException, DeployException, NodeStartException
-    {
-        Tid t = null;
-
-        List<Tid> l = nodeInstances("untangle-node-router");
-
-        if (0 == l.size()) {
-            RemoteToolboxManager tbm = LocalUvmContextFactory
-                .context().toolboxManager();
-            if (!tbm.isInstalled("untangle-node-router")) {
-                tbm.installSynchronously("untangle-node-router");
+            if (0 == l.size()) {
+                t = instantiate(md.getName());
+            } else {
+                t = l.get(0);
             }
-            t = instantiate("untangle-node-router");
-        } else {
-            t = l.get(0);
-        }
 
-        NodeContext nc = nodeContext(t);
-        if (null == nc) {
-            logger.warn("No node context for router tid: " + t);
-        } else {
-            Node n = nc.node();
-            NodeState ns = n.getRunState();
-            switch (ns) {
-            case INITIALIZED:
-                n.start();
-                break;
-            case RUNNING:
-                // nothing left to do.
-                break;
-            default:
-                logger.warn("router unexpected state: " + ns);
-                break;
+            NodeContext nc = nodeContext(t);
+            if (null == nc) {
+                logger.warn("No node context for router tid: " + t);
+            } else {
+                Node n = nc.node();
+                NodeState ns = n.getRunState();
+                switch (ns) {
+                case INITIALIZED:
+                    n.start();
+                    break;
+                case RUNNING:
+                    // nothing left to do.
+                    break;
+                default:
+                    logger.warn(md.getName() + " unexpected state: " + ns);
+                    break;
+                }
             }
         }
     }
