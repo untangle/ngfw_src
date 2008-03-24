@@ -42,5 +42,5 @@ public class ProductIdentifier
     public static final String CONFIGURATION_BACKUP = "untangle-configuration-backup";
     public static final String DUAL_VIRUS_BLOCKER = "untangle-dual-virus-blocker";
     public static final String KASPERSKY_AV = "untangle-kaspersky-virus-blocker";
-    public static final String PC_REMOTE = "untangle-remote-access-rsa";
+    public static final String PC_REMOTE = "untangle-pcremote";
 }
