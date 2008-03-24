@@ -14,13 +14,10 @@ package com.untangle.node.license;
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.UvmException;
-
 import com.untangle.uvm.node.NodeStartException;
 import com.untangle.uvm.node.NodeStopException;
-
 import com.untangle.uvm.vnet.AbstractNode;
 import com.untangle.uvm.vnet.PipeSpec;
-
 import org.apache.log4j.Logger;
 
 public class LicenseManagerNode extends AbstractNode
@@ -31,7 +28,7 @@ public class LicenseManagerNode extends AbstractNode
     public LicenseManagerNode()
     {
     }
-    
+
     @Override
     protected void preStop() throws NodeStopException
     {
@@ -43,8 +40,6 @@ public class LicenseManagerNode extends AbstractNode
     protected void postStart() throws NodeStartException
     {
         logger.debug("postStart()");
-        
-        LocalUvmContextFactory.context().loadRup();
 
         /* Reload the licenses */
         try {
@@ -61,7 +56,7 @@ public class LicenseManagerNode extends AbstractNode
     }
 
     public Object getSettings()
-    { 
+    {
         /* These are controlled using the methods in the uvm class */
         return null;
     }
