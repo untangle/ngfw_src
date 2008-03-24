@@ -431,6 +431,13 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
         }
     }
 
+    private void startAutoStart()
+    {
+//         List<MackageDesc> mds = LocalUvmContextFactory.context()
+//             .toolboxManager().getInstalledAndAutoStart();
+
+    }
+
     private void ensureRouterStarted()
         throws MackageInstallException, DeployException, NodeStartException
     {

@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -31,13 +31,13 @@ import javax.naming.ServiceUnavailableException;
 
 import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.EventLoggerFactory;
+import com.untangle.uvm.node.Node;
+import com.untangle.uvm.node.NodeContext;
+import com.untangle.uvm.node.NodeStats;
 import com.untangle.uvm.portal.Application;
 import com.untangle.uvm.portal.BasePortalManager;
 import com.untangle.uvm.security.LoginFailureReason;
 import com.untangle.uvm.security.LogoutReason;
-import com.untangle.uvm.node.Node;
-import com.untangle.uvm.node.NodeContext;
-import com.untangle.uvm.node.NodeStats;
 import com.untangle.uvm.util.TransactionWork;
 import jcifs.smb.NtlmPasswordAuthentication;
 import org.apache.catalina.Realm;
@@ -68,7 +68,6 @@ class DefaultPortalManager implements BasePortalManager
     }
 
     // public methods ---------------------------------------------------------
-
 
     // BasePortalManager methods ---------------------------------------------
 

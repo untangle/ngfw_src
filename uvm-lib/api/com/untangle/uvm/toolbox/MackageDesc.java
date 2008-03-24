@@ -88,6 +88,7 @@ public class MackageDesc implements Serializable
     private final byte[] descIcon;
     private final int viewPosition;
     private final int rackType;
+    private final boolean autoStart;
     private final boolean isBundle;
     private final boolean isService;
     private final boolean isUtil;
@@ -104,7 +105,7 @@ public class MackageDesc implements Serializable
         // XXX hack, use Mackage field instead.
         name = m.get("package");
         // XXX hack
-        
+
         String ut = m.get("untangle-type");
         Type untangleType = Type.UNKNOWN;
         if (null != ut) {
@@ -115,7 +116,7 @@ public class MackageDesc implements Serializable
                 untangleType = Type.UNKNOWN;
             }
         }
-        
+
         type = untangleType;
 
         displayName = m.get("display-name");
@@ -139,6 +140,10 @@ public class MackageDesc implements Serializable
         if (isBundle) {
             rt = RACK_TYPE_BUNDLE;
         }
+
+        // autostart or not
+        v = m.get("auto-start");
+        autoStart = (v != null && Boolean.parseBoolean(v));
 
         // service or not
         if (Type.CASING == type) {
@@ -315,6 +320,11 @@ public class MackageDesc implements Serializable
     public boolean isCore()
     {
         return isCore;
+    }
+
+    public boolean isAutoStart()
+    {
+        return autoStart;
     }
 
     public boolean isBundle()

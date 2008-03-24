@@ -582,6 +582,19 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
         return null == ms ? true : ms.isEnabled();
     }
 
+    List<MackageDesc> getInstalledAndAutoStart()
+    {
+        List<MackageDesc> mds = new ArrayList<MackageDesc>();
+
+        for (MackageDesc md : installed()) {
+            if (md.isAutoStart()) {
+                mds.add(md);
+            }
+        }
+
+        return mds;
+    }
+
     // private classes --------------------------------------------------------
 
     private class UpdateTask implements Runnable

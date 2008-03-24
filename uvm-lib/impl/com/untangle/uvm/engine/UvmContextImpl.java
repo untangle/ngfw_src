@@ -353,7 +353,7 @@ public class UvmContextImpl extends UvmContextBase
             synchronized (this) {
                 EnvironmentConfig envCfg = new EnvironmentConfig();
                 envCfg.setAllowCreate(true);
-                
+
                 Integer maxMegs = Integer.getInteger("je.maxMemory");
                 int maxMem;
                 if (maxMegs == null) {
@@ -994,8 +994,6 @@ public class UvmContextImpl extends UvmContextBase
     private boolean loadRup(boolean refreshManagers)
     {
         if (main.loadRup() || true) {
-            main.schemaUtil().initSchema("settings", "rupuvm");
-            loggingManager.initSchema("rupuvm");
             refreshSessionFactory();
 
             if (refreshManagers) {

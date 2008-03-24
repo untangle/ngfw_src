@@ -153,8 +153,12 @@ class NodeContextImpl implements NodeContext
         }
 
         UvmContextImpl uctx = UvmContextImpl.getInstance();
-        for (String uvmResource : nodeDesc.getUvmResources()) {
+        List<String> urs = nodeDesc.getUvmResources();
+        for (String uvmResource : urs) {
             uctx.loadUvmResource(uvmResource);
+        }
+        if (0 < urs.size()) {
+            uctx.loadRup();
         }
 
         final LocalUvmContext mctx = LocalUvmContextFactory.context();
@@ -292,7 +296,7 @@ class NodeContextImpl implements NodeContext
         String baseNodeName = nodeDesc.getNodeBase();
         return getResourceAsStreamInt(res, getMackageDesc(), baseNodeName);
     }
-    
+
     private InputStream getResourceAsStreamInt(String res, MackageDesc mackageDesc, String baseNodeName)
     {
         try {
