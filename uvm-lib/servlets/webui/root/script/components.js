@@ -1398,9 +1398,6 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 				}
 			}
 		}
-		if(deleted.length>0) {
-			deleted.splice(0,0,"java.lang.Long");
-		}
 		return [{list: added,"javaClass":"java.util.ArrayList"}, {list: deleted,"javaClass":"java.util.ArrayList"}, {list: modified,"javaClass":"java.util.ArrayList"}];
 	}
 });
