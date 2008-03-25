@@ -254,6 +254,9 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
                 {
                     try {
                         execMkg("install " + name, alt.getKey());
+                        NodeManagerImpl tm = (NodeManagerImpl)LocalUvmContextFactory
+                            .context().nodeManager();
+                        tm.startAutoStart();
                     } catch (MackageException exn) {
                         logger.warn("install failed", exn);
                     }
@@ -342,6 +345,9 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
                 {
                     try {
                         execMkg("upgrade", alt.getKey());
+                        NodeManagerImpl tm = (NodeManagerImpl)LocalUvmContextFactory
+                            .context().nodeManager();
+                        tm.startAutoStart();
                     } catch (MackageException exn) {
                         logger.warn("could not upgrade", exn);
                     }

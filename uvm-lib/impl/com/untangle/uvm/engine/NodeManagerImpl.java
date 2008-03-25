@@ -384,6 +384,52 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
         }
     }
 
+    void startAutoStart()
+    {
+        RemoteToolboxManagerImpl tbm = (RemoteToolboxManagerImpl)LocalUvmContextFactory.context().toolboxManager();
+        List<MackageDesc> mds = tbm.getInstalledAndAutoStart();
+        for (MackageDesc md : mds) {
+            List<Tid> l = nodeInstances(md.getName());
+
+            Tid t;
+
+            if (0 == l.size()) {
+                try {
+                    t = instantiate(md.getName());
+                } catch (DeployException exn) {
+                    logger.warn("could not deploy: " + md.getName(), exn);
+                    continue;
+                }
+            } else {
+                t = l.get(0);
+            }
+
+            NodeContext nc = nodeContext(t);
+            if (null == nc) {
+                logger.warn("No node context for router tid: " + t);
+            } else {
+                Node n = nc.node();
+                NodeState ns = n.getRunState();
+                switch (ns) {
+                case INITIALIZED:
+                    try {
+                        n.start();
+                    } catch (NodeStartException exn) {
+                        logger.warn("could not load: " + md.getName(), exn);
+                        continue;
+                    }
+                    break;
+                case RUNNING:
+                    // nothing left to do.
+                    break;
+                default:
+                    logger.warn(md.getName() + " unexpected state: " + ns);
+                    break;
+                }
+            }
+        }
+    }
+
     // private methods --------------------------------------------------------
 
     private void restartUnloaded()
@@ -420,50 +466,7 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
         long t1 = System.currentTimeMillis();
         logger.info("time to restart nodes: " + (t1 - t0));
 
-        try {
-            startAutoStart();
-        } catch (DeployException exn) {
-            logger.warn("could not instantiate router", exn);
-        } catch (NodeStartException exn) {
-            logger.warn("could not start router", exn);
-        }
-    }
-
-    private void startAutoStart()
-        throws DeployException, NodeStartException
-    {
-        RemoteToolboxManagerImpl tbm = (RemoteToolboxManagerImpl)LocalUvmContextFactory.context().toolboxManager();
-        List<MackageDesc> mds = tbm.getInstalledAndAutoStart();
-        for (MackageDesc md : mds) {
-            List<Tid> l = nodeInstances(md.getName());
-
-            Tid t;
-
-            if (0 == l.size()) {
-                t = instantiate(md.getName());
-            } else {
-                t = l.get(0);
-            }
-
-            NodeContext nc = nodeContext(t);
-            if (null == nc) {
-                logger.warn("No node context for router tid: " + t);
-            } else {
-                Node n = nc.node();
-                NodeState ns = n.getRunState();
-                switch (ns) {
-                case INITIALIZED:
-                    n.start();
-                    break;
-                case RUNNING:
-                    // nothing left to do.
-                    break;
-                default:
-                    logger.warn(md.getName() + " unexpected state: " + ns);
-                    break;
-                }
-            }
-        }
+        startAutoStart();
     }
 
     private static int startThreadNum = 0;
