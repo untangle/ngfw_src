@@ -714,7 +714,7 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
         InputStream is = new URLClassLoader(urls)
             .getResourceAsStream(DESC_PATH);
         if (null == is) {
-            throw new DeployException(DESC_PATH + " not found");
+            throw new DeployException(mackageDesc.getName() + " desc " + DESC_PATH + " not found");
         }
 
         UvmNodeHandler mth = new UvmNodeHandler(mackageDesc);
