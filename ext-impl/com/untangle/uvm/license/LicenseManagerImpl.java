@@ -64,6 +64,7 @@ public class LicenseManagerImpl implements LicenseManager
     
     /* These are the various license types */
     private static enum LicenseType {
+        TRIAL14( "14 Day Trial", 1000l * 60 * 60 * 24 * 15 + 278 ),
         TRIAL( "30 Day Trial", 1000l * 60 * 60 * 24 * 31 + 539 ),
         SUBSCRIPTION( "Subscription", 1000l * 60 * 60 * 24 * 365 * 2 + 344 ),
         DEVELOPMENT( "Untangle Development", 1000l * 60 * 60 * 24 * 60 + 960 );
@@ -320,7 +321,8 @@ public class LicenseManagerImpl implements LicenseManager
 
             String timeLeft = timeRemaining( now, expiration );
 
-            if ( l.getType().equals( LicenseType.TRIAL.getName() )) {
+            if ( l.getType().equals( LicenseType.TRIAL.getName() ) || 
+		 l.getType().equals( LicenseType.TRIAL14.getName() )) {
                 extraName = "Trial (" + timeLeft + ")";
             } else if ( now > expiration ) {
                 /* this should never happen */
@@ -424,7 +426,7 @@ public class LicenseManagerImpl implements LicenseManager
         long duration = license.getEnd() - license.getStart();
 
         switch ( licenseType ) {
-        case TRIAL:
+        case TRIAL: case TRIAL14:
             /* special case for the old license key duration */
             if ( duration == OLD_TRIAL_KEY_DURATION ) break;
             /* fallthrough */            
@@ -517,14 +519,14 @@ public class LicenseManagerImpl implements LicenseManager
         String timeLeft = timeRemaining( System.currentTimeMillis(), end );
         String type = license.getType();
         return new LicenseStatus( true, identifier, license.getType(), new Date( end ), timeLeft,
-                                  type.equals( LicenseType.TRIAL.getName()));
+                                  type.equals( LicenseType.TRIAL14.getName()) || type.equals( LicenseType.TRIAL.getName()));
     }
 
     private void scheduleAndWait()
     {        
         /* update all of the licenses for products, run all of them in
          * the timer task to avoid synchronization issues. */
-        if ( !this.pulse.beat( 2000 )) {
+        if ( !this.pulse.beat( 4000 )) {
             logger.debug( "unable to wait for the license task to complete." );
         }
     }
@@ -589,6 +591,7 @@ public class LicenseManagerImpl implements LicenseManager
     static {
         /* Add the license to the map */
         LICENSE_MAP.put( LicenseType.TRIAL.getName(), LicenseType.TRIAL );
+        LICENSE_MAP.put( LicenseType.TRIAL14.getName(), LicenseType.TRIAL14 );
         LICENSE_MAP.put( LicenseType.SUBSCRIPTION.getName(), LicenseType.SUBSCRIPTION );
         LICENSE_MAP.put( LicenseType.DEVELOPMENT.getName(), LicenseType.DEVELOPMENT );
 
