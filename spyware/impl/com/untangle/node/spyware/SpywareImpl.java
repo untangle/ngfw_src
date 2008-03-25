@@ -19,7 +19,6 @@
 package com.untangle.node.spyware;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -67,6 +66,7 @@ import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.Rule;
 import com.untangle.uvm.node.StringRule;
 import com.untangle.uvm.toolbox.RemoteToolboxManager;
+import com.untangle.uvm.util.ListUtil;
 import com.untangle.uvm.util.OutsideValve;
 import com.untangle.uvm.util.QueryUtil;
 import com.untangle.uvm.util.TransactionWork;
@@ -608,7 +608,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
 		for (Iterator i = rules.iterator(); i.hasNext();) {
 			Rule rule = (Rule) i.next();
 			Rule mRule = null;
-			if (deleted != null && deleted.contains(rule.getId())) {
+			if (deleted != null && ListUtil.contains(deleted, rule.getId())) {
 				i.remove();
 			} else if (modified != null
 					&& (mRule = modifiedRule(rule, modified)) != null) {

@@ -40,6 +40,7 @@ import com.untangle.uvm.node.NodeState;
 import com.untangle.uvm.node.NodeStats;
 import com.untangle.uvm.node.NodeStopException;
 import com.untangle.uvm.shield.ShieldNodeSettings;
+import com.untangle.uvm.util.ListUtil;
 import com.untangle.uvm.util.QueryUtil;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.AbstractNode;
@@ -311,7 +312,7 @@ public class ShieldNodeImpl extends AbstractNode
 						.hasNext();) {
 					ShieldNodeRule rule = i.next();
 					ShieldNodeRule mRule = null;
-					if (deleted != null && deleted.contains(rule.getId())) {
+					if (deleted != null && ListUtil.contains(deleted, rule.getId())) {
 						i.remove();
 					} else if (modified != null
 							&& (mRule = modified(rule, modified)) != null) {

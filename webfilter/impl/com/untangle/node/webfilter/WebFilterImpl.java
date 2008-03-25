@@ -47,6 +47,7 @@ import com.untangle.uvm.node.MimeTypeRule;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.Rule;
 import com.untangle.uvm.node.StringRule;
+import com.untangle.uvm.util.ListUtil;
 import com.untangle.uvm.util.OutsideValve;
 import com.untangle.uvm.util.QueryUtil;
 import com.untangle.uvm.util.TransactionWork;
@@ -776,7 +777,7 @@ public class WebFilterImpl extends AbstractNode implements WebFilter
 		for (Iterator i = rules.iterator(); i.hasNext();) {
 			Rule rule = (Rule) i.next();
 			Rule mRule = null;
-			if (deleted != null && deleted.contains(rule.getId())) {
+			if (deleted != null && ListUtil.contains(deleted, rule.getId())) {
 				i.remove();
 			} else if (modified != null
 					&& (mRule = modifiedRule(rule, modified)) != null) {
@@ -822,7 +823,7 @@ public class WebFilterImpl extends AbstractNode implements WebFilter
 		for (Iterator i = categories.iterator(); i.hasNext();) {
 			BlacklistCategory category = (BlacklistCategory) i.next();
 			BlacklistCategory mCategory = null;
-			if (deleted != null && deleted.contains(category.getId())) {
+			if (deleted != null && ListUtil.contains(deleted, category.getId())) {
 				i.remove();
 			} else if (modified != null
 					&& (mCategory = modifiedCategory(category, modified)) != null) {

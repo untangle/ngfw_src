@@ -35,6 +35,7 @@ import com.untangle.uvm.logging.SimpleEventFilter;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.NodeException;
 import com.untangle.uvm.node.NodeStartException;
+import com.untangle.uvm.util.ListUtil;
 import com.untangle.uvm.util.QueryUtil;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.AbstractNode;
@@ -408,7 +409,7 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
                     for (Iterator<ProtoFilterPattern> i = patterns.iterator(); i.hasNext();) {
                     	ProtoFilterPattern pattern = i.next();
                     	ProtoFilterPattern mPattern = null;
-                        if (deleted != null && deleted.contains(pattern.getId())) {
+                        if (deleted != null && ListUtil.contains(deleted, pattern.getId())) {
                             i.remove();
                         } else if (modified != null && (mPattern = modified(pattern, modified)) != null ) {
                         	pattern.updateRule(mPattern);
@@ -438,4 +439,5 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
         }
         return null;
     }
+    
 }

@@ -19,25 +19,14 @@
 package com.untangle.node.spyware;
 
 import java.io.Serializable;
-import javax.persistence.CascadeType;
+
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import com.untangle.node.http.UserWhitelistMode;
-import com.untangle.uvm.security.Tid;
 
 /**
  * Base Settings for the Spyware node.
