@@ -277,15 +277,6 @@ public class FirewallImpl extends AbstractNode implements Firewall
             tmp.setDescription("Accept and log all traffic to the range 1.2.3.1 - 1.2.3.10 from ports 1000-5000");
             firewallList.add(tmp);
 
-            tmp = new FirewallRule(false, prmf.getPingMatcher(),
-                                   any, any,
-                                   ipmf.getAllMatcher(), ipmf.parse("1.2.3.1"),
-                                   pmf.getPingMatcher(), pmf.getPingMatcher(),
-                                   false);
-            tmp.setDescription("Accept PINGs to 1.2.3.1.  Note: the source and destination ports are ignored.");
-            firewallList.add(tmp);
-
-
             for (Iterator<FirewallRule> iter = firewallList.iterator() ; iter.hasNext() ;) {
                 iter.next().setCategory("[Sample]");
             }
