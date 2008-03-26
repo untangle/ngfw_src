@@ -305,12 +305,12 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
     		totalRecords: this.getBaseSettings().subnetRulesLength,
     		emptyRow: {"ipMaddr":"","category":"","log":false,"description":""},
     		title: this.i18n._('Subnet List'),
-    		recordJavaClass: "com.untangle.uvm.node.StringRule",
+    		recordJavaClass: "com.untangle.uvm.node.IPMaddrRule",
     		proxyRpcFn: this.getRpcNode().getSubnetRules,
 			fields: [
 				{name: 'id'},
 				{name: 'name'},
-				{name: 'ipMaddr', convert: function(v){ return v==null?null:v.addr;}},
+				{name: 'ipMaddr'},
 				{name: 'log'}
 			],
 			columns: columns,
