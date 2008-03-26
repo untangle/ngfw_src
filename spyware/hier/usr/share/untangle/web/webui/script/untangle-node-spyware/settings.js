@@ -223,7 +223,7 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
 	          {id:'string',header: this.i18n._("identification"), width: 140,  dataIndex: 'string',
 		          editor: new Ext.form.TextField({allowBlank: false})
 	          },
-	          liveColumn,
+	          liveColumn
 		];
 	    //columnModel.defaultSortable = true;
 
@@ -303,7 +303,7 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
     	this.gridSubnetList=new Ung.EditorGrid({
     		settingsCmp: this,
     		totalRecords: this.getBaseSettings().subnetRulesLength,
-    		emptyRow: {"ipMaddr":"","category":"","log":false,"description":""},
+    		emptyRow: {"ipMaddr":"1.2.3.4/5","name":"[no name]","log":true, description:"["+this.getBaseSettings().spywareDetails+"]"},
     		title: this.i18n._('Subnet List'),
     		recordJavaClass: "com.untangle.uvm.node.IPMaddrRule",
     		proxyRpcFn: this.getRpcNode().getSubnetRules,
@@ -311,15 +311,16 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
 				{name: 'id'},
 				{name: 'name'},
 				{name: 'ipMaddr'},
-				{name: 'log'}
+				{name: 'log'},
+				{name: 'description'}
 			],
 			columns: columns,
 			plugins: [logColumn],
 			rowEditorInputLines: [
 				{name:"name", label: this.i18n._("Name"), type:"text", style:"width:200px;"},
 				{name:"ipMaddr", label: this.i18n._("ipMaddr"), type:"text", style:"width:200px;"},
-				{name:"log", label: this.i18n._("Log"), type:"checkbox"},
-			],
+				{name:"log", label: this.i18n._("Log"), type:"checkbox"}
+			]
 			/*
 			preEditValue : function(r, field){
 				if(field=="ipMaddr") {

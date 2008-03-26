@@ -364,10 +364,7 @@ Ung.Main.prototype = {
 				            items: [{
 						        region:"center",
 						        html: '<iframe id="networkingWin_iframe" name ="networkingWin_iframe" width="100%" height="100%">',
-						        border: false,
-						        //autoScroll: true,
-						        //cls: 'windowBackground',
-						        //bodyStyle: 'background-color: transparent;'
+						        border: false
 						    	}
 						    ]
 			            });

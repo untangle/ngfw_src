@@ -40,7 +40,7 @@
 		}
 		Ext.onReady(init);
 	</script>
-</head>
+ </head>
 <body>
 <div id="scripts_container" style="display: none;"></div>
 <div id="container">

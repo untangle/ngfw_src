@@ -23,6 +23,11 @@
 				<include name="**/*.*"/>
         	</fileset>
         </copy>
+        <copy todir="${deploy.path}/WEB-INF/jsp"  preservelastmodified="true" verbose="true">
+        	<fileset dir="./WEB-INF/jsp/">
+                <include name="*.*"/>
+            </fileset>
+        </copy>
     </target>
 	
 
