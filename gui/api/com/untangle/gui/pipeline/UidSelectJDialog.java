@@ -169,7 +169,7 @@ public class UidSelectJDialog extends javax.swing.JDialog implements java.awt.ev
         else{
             for(String s : uidList){
                 for(UserEntryWrapper u : uidVector){
-                    if(s.equals(u.getUID())){
+                    if(s.toLowerCase().equals(u.getUID().toLowerCase())){
                         u.setSelected(true);
                     }
 
@@ -517,7 +517,7 @@ public class UidSelectJDialog extends javax.swing.JDialog implements java.awt.ev
         }
         public String getUID(){
             if(userEntry!=null)
-                return userEntry.getUID();
+                return userEntry.getUID().toLowerCase();
             else
                 return ANY_USER;
         }
@@ -530,8 +530,11 @@ public class UidSelectJDialog extends javax.swing.JDialog implements java.awt.ev
                 return false;
             else if(userEntry==null)
                 return false;
-            UserEntry other = ((UserEntryWrapper) obj).getUserEntry();
-            return getUserEntry().equals(other);
+            UserEntryWrapper other = (UserEntryWrapper) obj;
+            if ( compareTo(other) == 0 ) {
+                return true;
+            }
+            return false;
         }
 
         public int compareTo(UserEntryWrapper userEntryWrapper){
@@ -546,7 +549,7 @@ public class UidSelectJDialog extends javax.swing.JDialog implements java.awt.ev
                 return 1;
             default:
             case 0 :
-                return userEntry.getUID().compareTo(userEntryWrapper.userEntry.getUID());
+                return userEntry.getUID().toLowerCase().compareTo(userEntryWrapper.userEntry.getUID().toLowerCase());
             }
         }
     }
