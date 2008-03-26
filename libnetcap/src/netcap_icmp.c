@@ -70,26 +70,9 @@ typedef enum
     _FIND_ACCEPT= 4
 } _find_t;
 
-/* Duplicated functionality from netcap_udp.c */
-static int _cache_packet( u_char* full_pkt, int full_pkt_len, mailbox_t* icmp_mb );
-
 static int _restore_cached_msg( mailbox_t* mb, netcap_icmp_msg_t* msg );
 
 static int _shield_check_reputation( netcap_pkt_t* pkt, struct in_addr* ip, netcap_intf_t intf );
-
-/** 
- * Retrieve an ICMP session using the packet as the key 
- */
-static netcap_session_t* _icmp_get_tuple( netcap_pkt_t* pkt )
-{    
-    /* pkt->data has already been tested for size and validity */
-    int id = ntohs( ((struct icmphdr*)pkt->data)->un.echo.id );
-    
-    /* The ID is treated as the sequence number, this way each ICMP message is distinguishable */
-    return netcap_nc_sesstable_get_tuple( !NC_SESSTABLE_LOCK, IPPROTO_ICMP,
-                                          pkt->src.host.s_addr, pkt->dst.host.s_addr,
-                                          0, 0, id );
-}
 
 /**
  * Retrieve a UDP or TCP session using the information from an error message as the key
@@ -225,78 +208,6 @@ static netcap_session_t* _icmp_get_error_session( netcap_pkt_t* pkt, mailbox_t**
     }
     
     return netcap_sess;
-}
-
-static netcap_session_t* _icmp_create_session( netcap_pkt_t* pkt )
-{
-    netcap_session_t* session;
-    u_short icmp_client_id = 0;
-    
-    icmp_client_id = ntohs(((struct icmphdr*)pkt->data)->un.echo.id );
-
-    debug( 10, "ICMP: Creating a new session for %s -> %s\n",
-           unet_next_inet_ntoa( pkt->src.host.s_addr ), unet_next_inet_ntoa( pkt->dst.host.s_addr ));
-    
-    /* XXXXXX DO SHIELD STUFF */
-    
-    /* XXX is it safe to just use udp sessions */
-    session = netcap_udp_session_create( pkt );
-
-    /* pkt->data has already been tested for size and validity */    
-    if ( netcap_nc_sesstable_add_tuple( !NC_SESSTABLE_LOCK, session, IPPROTO_ICMP,
-                                        pkt->src.host.s_addr, pkt->dst.host.s_addr,
-                                        0, 0, icmp_client_id ) < 0 ) {
-        netcap_udp_session_raze( !NC_SESSTABLE_LOCK, session );
-        return errlog_null( ERR_CRITICAL, "netcap_nc_sesstable_add_tuple\n" );
-    }
-    
-    /* Insert the session ID */
-    if ( netcap_nc_sesstable_add ( !NC_SESSTABLE_LOCK, session )) {
-        netcap_udp_session_raze( !NC_SESSTABLE_LOCK, session );
-        return errlog_null( ERR_CRITICAL, "netcap_nc_sesstable_add\n" );
-    }
-
-    /* Update the ICMP client session identifier */
-    session->icmp.client_id = icmp_client_id;
-    session->icmp.server_id = icmp_client_id;
-
-    return session;
-}
-
-/**
- * Determine which mailbox a packet should go into */
-static int _icmp_get_mailbox( netcap_pkt_t* pkt, netcap_session_t* session,
-                                         mailbox_t** mb, mailbox_t** icmp_mb )
-{
-    *mb      = NULL;
-    *icmp_mb = NULL;
-    netcap_intf_t intf = -1;
-
-    // Figure out the correct mailbox
-    if ( pkt->src.host.s_addr == session->cli.cli.host.s_addr ) {
-        debug( 10, "ICMP: Client mailbox\n" );
-        *mb      = &session->cli_mb;
-        *icmp_mb = &session->icmp_cli_mb;
-        intf = session->cli.intf;
-    } else if ( pkt->src.host.s_addr == session->srv.srv.host.s_addr ) {
-        debug( 10, "ICMP: Server mailbox\n" );
-        *mb = &session->srv_mb;
-        *icmp_mb = &session->icmp_srv_mb;
-        intf = session->srv.intf;
-    } else {
-        return errlog( ERR_CRITICAL, "Cannot determine correct mailbox: pkt %s, cli %s, srv %s\n",
-                       unet_next_inet_ntoa( pkt->src.host.s_addr ), 
-                       unet_next_inet_ntoa( session->cli.cli.host.s_addr ),
-                       unet_next_inet_ntoa( session->srv.srv.host.s_addr ));
-    }
-    
-    if ( pkt->src_intf != intf ) {
-        debug( 5, "ICMP: Packet from the incorrect interface expected %d actual %d\n",
-               intf, pkt->src_intf );
-        return _FIND_DROP;
-    }
-    
-    return 0;
 }
 
 /**
@@ -469,7 +380,7 @@ int  netcap_icmp_send( char *data, int data_len, netcap_pkt_t* pkt )
 }
 
 int  netcap_icmp_update_pkt( char* data, int data_len, int data_lim,
-                              int icmp_type, int icmp_code, int id, mailbox_t* icmp_mb )
+                             int icmp_type, int icmp_code, int id, mailbox_t* icmp_mb )
 {
     /* Length of the data that is copied in */
     int len;
@@ -480,6 +391,7 @@ int  netcap_icmp_update_pkt( char* data, int data_len, int data_lim,
     struct icmp*   icmp_header;
     netcap_icmp_msg_t* msg;
     char* reply_data;
+    int mb_size = 0;
 
     if ( data == NULL || icmp_mb == NULL )
         return errlogargs();
@@ -542,7 +454,15 @@ int  netcap_icmp_update_pkt( char* data, int data_len, int data_lim,
         if ( data_lim < ICMP_ADVLENMIN ) {
             return errlog( ERR_WARNING, "Not enough room, %d < %d\n", data_lim, ICMP_ADVLENMIN );
         }
-        
+                
+        if (( mb_size = mailbox_size( icmp_mb )) < 0 ) return errlog( ERR_WARNING, "ICMP: mailbox_size\n" );
+
+        /* This will happen if the client sends an ICMP error packet before the server has sent anything. */
+        if ( mb_size < 1 ) {
+            errlog( ERR_WARNING, "ICMP: No packet available to update ICMP message.\n" );
+            return 0;
+        }
+
         if (( msg = mailbox_timed_get( icmp_mb, 1 )) == NULL ) {
             return errlog( ERR_CRITICAL, "mailbox_timed_get\n" );
         }
@@ -833,7 +753,6 @@ static _find_t _icmp_find_session( netcap_pkt_t* pkt, netcap_session_t** netcap_
 
     netcap_session_t* session;
     mailbox_t* mb      = NULL;
-    mailbox_t* icmp_mb = NULL;
     
     int critical_section(void) {
         int ret = -1;
@@ -951,35 +870,6 @@ static int _restore_cached_msg( mailbox_t* mb, netcap_icmp_msg_t* msg )
     } else {
         debug( 10, "ICMP: Dropping cached msg\n" );
         netcap_icmp_msg_raze( msg );
-    }
-    
-    return 0;
-}
-
-static int _cache_packet( u_char* full_pkt, int full_pkt_len, mailbox_t* icmp_mb )
-{
-    netcap_icmp_msg_t* msg;
-    netcap_icmp_msg_t* old_msg;
-    int c;
-
-    if ( full_pkt == NULL )
-        return 0;
-    
-    if (( msg = netcap_icmp_msg_create( full_pkt, full_pkt_len )) == NULL ) {
-        return errlog( ERR_CRITICAL, "netcap_icmp_msg_create\n" );
-    }
-
-    /* Try to fetch some packages out */
-    for ( c = 0 ; c < _ICMP_CACHE_CLEANUP_MAX ; c++ ) {
-        if (( old_msg = mailbox_try_get( icmp_mb )) != NULL ) {
-            debug( 10, "ICMP: Removing cached ICMP message\n" );
-            if ( netcap_icmp_msg_raze( old_msg ) < 0 ) errlog( ERR_CRITICAL, "netcap_icmp_msg_raze\n" );
-        }
-    }
-    
-    if ( mailbox_put( icmp_mb, (void*)msg ) < 0 ) {
-        netcap_icmp_msg_raze( msg );
-        return perrlog( "mailbox_put\n" );
     }
     
     return 0;
