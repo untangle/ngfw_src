@@ -384,10 +384,13 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
         }
     }
 
-    void startAutoStart()
+    void startAutoStart(MackageDesc extraPkg)
     {
         RemoteToolboxManagerImpl tbm = (RemoteToolboxManagerImpl)LocalUvmContextFactory.context().toolboxManager();
         List<MackageDesc> mds = tbm.getInstalledAndAutoStart();
+        if (null != extraPkg && extraPkg.isAutoStart()) {
+            mds.add(extraPkg);
+        }
         for (MackageDesc md : mds) {
             List<Tid> l = nodeInstances(md.getName());
 
@@ -466,7 +469,7 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
         long t1 = System.currentTimeMillis();
         logger.info("time to restart nodes: " + (t1 - t0));
 
-        startAutoStart();
+        startAutoStart(null);
     }
 
     private static int startThreadNum = 0;

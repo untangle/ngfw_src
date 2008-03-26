@@ -472,7 +472,7 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
         NodeManagerImpl tm = (NodeManagerImpl)LocalUvmContextFactory
             .context().nodeManager();
         tm.restart(pkgName);
-        tm.startAutoStart();
+        tm.startAutoStart(mackageDesc(pkgName));
     }
 
     // unregisters a mackage and unloads all instances
