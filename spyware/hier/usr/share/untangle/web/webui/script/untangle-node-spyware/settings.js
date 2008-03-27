@@ -418,8 +418,8 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
 			
 		}.createDelegate(this),
 			this.getBaseSettings(),
-			this.gridCookiesList?this.gridCookiesList.getSaveList():null,
 			this.gridActiveXList?this.gridActiveXList.getSaveList():null,
+			this.gridCookiesList?this.gridCookiesList.getSaveList():null,
 			this.gridSubnetList?this.gridSubnetList.getSaveList():null,
 			this.gridPassList.getSaveList() );
 	}
