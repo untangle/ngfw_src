@@ -270,8 +270,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
             {
                 public boolean doWork(Session s)
                 {
-                    s.merge(settings);
-                    SpywareImpl.this.settings = settings;
+                	SpywareImpl.this.settings = (SpywareSettings)s.merge(settings);
                     return true;
                 }
 
@@ -536,7 +535,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
 		    		updateCachedRules(getSpywareSettings().getDomainWhitelist(), domainWhitelist[0], domainWhitelist[1], domainWhitelist[2]);
 		    	}
 
-				s.merge(settings);
+				settings = (SpywareSettings)s.merge(settings);
 
 				return true;
 			}
@@ -591,7 +590,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
                 {
                     updateCachedRules(rules, added, deleted, modified);
 
-                    s.merge(settings);
+                    settings = (SpywareSettings)s.merge(settings);
 
                     return true;
                 }

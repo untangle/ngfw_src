@@ -81,8 +81,7 @@ public class ShieldNodeImpl extends AbstractNode
             {
                 public boolean doWork(Session s)
                 {
-                    s.merge(settings);
-                    ShieldNodeImpl.this.settings = settings;
+                	ShieldNodeImpl.this.settings = (ShieldSettings)s.merge(settings);
                     return true;
                 }
 
@@ -324,7 +323,7 @@ public class ShieldNodeImpl extends AbstractNode
 					rules.addAll(added);
 				}
 
-				s.merge(settings);
+				settings = (ShieldSettings)s.merge(settings);
 
 				return true;
 			}

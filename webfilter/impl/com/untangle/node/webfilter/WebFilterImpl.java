@@ -333,7 +333,7 @@ public class WebFilterImpl extends AbstractNode implements WebFilter
 		    		updateCachedCategories(getWebFilterSettings().getBlacklistCategories(), blacklistCategories[0], blacklistCategories[1], blacklistCategories[2]);
 		    	}
 
-				s.merge(settings);
+				settings = (WebFilterSettings)s.merge(settings);
 
 				return true;
 			}
@@ -760,7 +760,7 @@ public class WebFilterImpl extends AbstractNode implements WebFilter
 			public boolean doWork(Session s) {
 				updateCachedRules(rules, added, deleted, modified);
 
-				s.merge(settings);
+				settings = (WebFilterSettings)s.merge(settings);
 
 				return true;
 			}
@@ -806,7 +806,7 @@ public class WebFilterImpl extends AbstractNode implements WebFilter
 			public boolean doWork(Session s) {
 				updateCachedCategories(categories, added, deleted, modified);
 
-				s.merge(settings);
+				settings = (WebFilterSettings)s.merge(settings);
 
 				return true;
 			}

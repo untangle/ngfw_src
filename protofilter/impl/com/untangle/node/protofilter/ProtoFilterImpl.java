@@ -87,8 +87,7 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
             {
                 public boolean doWork(Session s)
                 {
-                    s.merge(settings);
-                    ProtoFilterImpl.this.cachedSettings = settings;
+                	ProtoFilterImpl.this.cachedSettings = (ProtoFilterSettings)s.merge(settings);
                     return true;
                 }
 
@@ -420,7 +419,7 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
                     	patterns.addAll(added);
                     }
 
-                    s.merge(cachedSettings);
+                    cachedSettings = (ProtoFilterSettings)s.merge(cachedSettings);
 
                     return true;
                 }
