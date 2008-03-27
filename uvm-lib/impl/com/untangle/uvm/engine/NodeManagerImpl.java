@@ -401,7 +401,6 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
         }
         for (MackageDesc md : mds) {
             List<Tid> l = nodeInstances(md.getName());
-            logger.info("FOR: " + md.getName() + " FOUND: " + l);
 
             Tid t = null;
 
@@ -470,7 +469,10 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
             logger.info("loadable in this pass: " + startQueue);
             if (0 == startQueue.size()) {
                 logger.info("not all parents loaded, proceeding");
-                startUnloaded(unloaded, tDescs, loadedParents);
+                for (NodePersistentState n : unloaded) {
+                    List<NodePersistentState> l = Collections.singletonList(n);
+                    startUnloaded(l, tDescs, loadedParents);
+                }
                 break;
             }
 
