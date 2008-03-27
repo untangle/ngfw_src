@@ -387,17 +387,27 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
     void startAutoStart(MackageDesc extraPkg)
     {
         RemoteToolboxManagerImpl tbm = (RemoteToolboxManagerImpl)LocalUvmContextFactory.context().toolboxManager();
-        List<MackageDesc> mds = tbm.getInstalledAndAutoStart();
+
+        List<MackageDesc> mds = new ArrayList<MackageDesc>();
+
+        for (MackageDesc md : tbm.installed()) {
+            if (md.isAutoStart()) {
+                mds.add(md);
+            }
+        }
+
         if (null != extraPkg && extraPkg.isAutoStart()) {
             mds.add(extraPkg);
         }
         for (MackageDesc md : mds) {
             List<Tid> l = nodeInstances(md.getName());
+            logger.info("FOR: " + md.getName() + " FOUND: " + l);
 
-            Tid t;
+            Tid t = null;
 
             if (0 == l.size()) {
                 try {
+                    logger.info("instantiating new: " + md.getName());
                     t = instantiate(md.getName());
                 } catch (DeployException exn) {
                     logger.warn("could not deploy: " + md.getName(), exn);
@@ -457,6 +467,7 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
             List<NodePersistentState> startQueue = getLoadable(unloaded,
                                                                tDescs,
                                                                loadedParents);
+            logger.info("loadable in this pass: " + startQueue);
             if (0 == startQueue.size()) {
                 logger.info("not all parents loaded, proceeding");
                 startUnloaded(unloaded, tDescs, loadedParents);
