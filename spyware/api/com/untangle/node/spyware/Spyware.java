@@ -25,6 +25,7 @@ import com.untangle.uvm.logging.EventManager;
 import com.untangle.uvm.node.IPMaddrRule;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.StringRule;
+import com.untangle.uvm.node.Validator;
 
 public interface Spyware extends Node
 {
@@ -57,7 +58,7 @@ public interface Spyware extends Node
     void updateAll(SpywareBaseSettings baseSettings, 
     		List[] activeXRules, List[] cookieRules,
     		List[] subnetRules, List[] domainWhitelist);
-
+    
     /**
      * Reconfigure node. This method should be called after some settings are updated
      * in order to reconfigure the node accordingly.
@@ -65,6 +66,8 @@ public interface Spyware extends Node
     void reconfigure();
     
     EventManager<SpywareEvent> getEventManager();
+    
+    Validator getValidator();
     
     
 }
