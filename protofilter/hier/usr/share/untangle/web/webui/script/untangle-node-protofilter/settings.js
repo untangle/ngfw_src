@@ -12,32 +12,14 @@ Ung.Protofilter = Ext.extend(Ung.Settings, {
 		this.buildEventLog();
 		this.buildTabPanel([this.gridProtocolList,this.gridEventLog]);
     },
-    
+    // Protocol list grid
     buildProtocolList: function() {
 	    var blockedColumn = new Ext.grid.CheckColumn({
-	       header: "<b>"+this.i18n._("block")+"</b>", width: 40, dataIndex: 'blocked', sortable: true, fixed:true
+	       header: "<b>"+this.i18n._("block")+"</b>", width: 40, dataIndex: 'blocked', fixed:true
 	    });
 	    var logColumn = new Ext.grid.CheckColumn({
-	       header: "<b>"+this.i18n._("log")+"</b>", width: 35, dataIndex: 'log', sortable: true, fixed:true
+	       header: "<b>"+this.i18n._("log")+"</b>", width: 35, dataIndex: 'log', fixed:true
 	    });
-	    var columns = [
-	          {id:'id', dataIndex: 'id', hidden: true },
-	          {id:'category',header: this.i18n._("category"), width: 140, sortable: true,  dataIndex: 'category',
-		          editor: new Ext.form.TextField({allowBlank: false})
-	          },
-	          {id:'protocol',header: this.i18n._("protocol"), width: 100, sortable: true, dataIndex: 'protocol',
-		          editor: new Ext.form.TextField({allowBlank: false})
-	          },
-	          blockedColumn,
-	          logColumn,
-	          {id:'description',header: this.i18n._("description"), width: 120, sortable: true, dataIndex: 'description',
-		          editor: new Ext.form.TextField({allowBlank: false})
-	          },
-	          {id:'definition',header: this.i18n._("signature"), width: 120, sortable: true, dataIndex: 'definition',
-		          editor: new Ext.form.TextField({allowBlank: false})
-	          }
-		];
-	    
 		
     	this.gridProtocolList=new Ung.EditorGrid({
     		settingsCmp: this,
@@ -56,9 +38,23 @@ Ung.Protofilter = Ext.extend(Ung.Settings, {
 	           {name: 'description'},
 	           {name: 'definition'}
 			],
+			columns: [
+				{id:'id', dataIndex: 'id', hidden: true },
+				{id:'category',header: this.i18n._("category"), width: 140, dataIndex: 'category',
+				 editor: new Ext.form.TextField({allowBlank: false})
+				},
+				{id:'protocol',header: this.i18n._("protocol"), width: 100, dataIndex: 'protocol',
+				 editor: new Ext.form.TextField({allowBlank: false})
+				},
+				blockedColumn,
+				logColumn,
+				{id:'description',header: this.i18n._("description"), width: 120, dataIndex: 'description',
+				 editor: new Ext.form.TextField({allowBlank: false})},
+				{id:'definition',header: this.i18n._("signature"), width: 120, dataIndex: 'definition',
+				 editor: new Ext.form.TextField({allowBlank: false})}
+			],
 			sortField: 'category',
-			columns: columns,
-			defaultSortable:true,
+			columnsDefaultSortable: true,
 			plugins: [blockedColumn,logColumn],
 			rowEditorInputLines: [
 				{name:"category", label: this.i18n._("Category"), type:"text", style:"width:200px;"},
@@ -84,7 +80,6 @@ Ung.Protofilter = Ext.extend(Ung.Settings, {
 			this.tabs.enable();
 			if(exception) {Ext.MessageBox.alert("Failed",exception.message); return;}
 			this.node.onCancelClick();
-			
 		}.createDelegate(this),this.gridProtocolList.getSaveList());
 	}
 });

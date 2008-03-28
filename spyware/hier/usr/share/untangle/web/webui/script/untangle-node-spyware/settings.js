@@ -219,13 +219,6 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
 	    var liveColumn = new Ext.grid.CheckColumn({
 	       header: "<b>"+this.i18n._("block")+"</b>", width: 35, dataIndex: 'live', fixed:true
 	    });
-	    var columns = [
-	          {id:'string',header: this.i18n._("identification"), width: 140,  dataIndex: 'string',
-		          editor: new Ext.form.TextField({allowBlank: false})
-	          },
-	          liveColumn
-		];
-	    //columnModel.defaultSortable = true;
 
     	this.gridCookiesList=new Ung.EditorGrid({
     		settingsCmp: this,
@@ -240,7 +233,13 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
 				{name: 'live'},
 				{name: 'description'}
 			],
-			columns: columns,
+			columns: [
+	          {id:'string',header: this.i18n._("identification"), width: 140,  dataIndex: 'string',
+		          editor: new Ext.form.TextField({allowBlank: false})},
+	          liveColumn
+			],
+			sortField: 'string',
+			columnsDefaultSortable: true,
 			autoExpandColumn: 'string',
 			plugins: [liveColumn],
 			rowEditorInputLines: [
@@ -255,13 +254,6 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
 	    var liveColumn = new Ext.grid.CheckColumn({
 	       header: "<b>"+this.i18n._("block")+"</b>", width: 35, dataIndex: 'live', fixed:true
 	    });
-	    var columns = [
-	          {id:'string',header: this.i18n._("identification"), width: 140,  dataIndex: 'string',
-		          editor: new Ext.form.TextField({allowBlank: false})
-	          },
-	          liveColumn,
-		];
-	    //columnModel.defaultSortable = true;
 
     	this.gridActiveXList=new Ung.EditorGrid({
     		settingsCmp: this,
@@ -276,7 +268,13 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
 				{name: 'live'},
 				{name: 'description'}
 			],
-			columns: columns,
+			columns: [
+	          {id:'string',header: this.i18n._("identification"), width: 140,  dataIndex: 'string',
+		          editor: new Ext.form.TextField({allowBlank: false})},
+	          liveColumn
+			],
+			sortField: 'string',
+			columnsDefaultSortable: true,
 			autoExpandColumn: 'string',
 			plugins: [liveColumn],
 			rowEditorInputLines: [
@@ -291,16 +289,6 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
 	    var logColumn = new Ext.grid.CheckColumn({
 	       header: "<b>"+this.i18n._("log")+"</b>", width: 35, dataIndex: 'log', fixed:true
 	    });
-	    var columns = [
-	          {id:'name',header: this.i18n._("name"), width: 140,  dataIndex: 'name',
-		          editor: new Ext.form.TextField({allowBlank: false})
-	          },
-	          {id:'ipMaddr',header: this.i18n._("subnet"), width: 140,  dataIndex: 'ipMaddr', /*renderer: function(value) {return value===null?"" : value.addr},*/
-		          editor: new Ext.form.TextField({allowBlank: false})
-	          },
-	          logColumn
-		];
-	    //columnModel.defaultSortable = true;
 
     	this.gridSubnetList=new Ung.EditorGrid({
     		settingsCmp: this,
@@ -316,7 +304,16 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
 				{name: 'log'},
 				{name: 'description'}
 			],
-			columns: columns,
+			columns: [
+				{id:'name',header: this.i18n._("name"), width: 140,  dataIndex: 'name',
+				 editor: new Ext.form.TextField({allowBlank: false})},
+				{id:'ipMaddr',header: this.i18n._("subnet"), width: 140,  dataIndex: 'ipMaddr',
+				 editor: new Ext.form.TextField({allowBlank: false})},
+				logColumn
+			],
+			sortField: 'name',
+			columnsDefaultSortable: true,
+			autoExpandColumn: 'ipMaddr',
 			plugins: [logColumn],
 			rowEditorInputLines: [
 				{name:"name", label: this.i18n._("Name"), type:"text", style:"width:200px;"},
@@ -346,21 +343,11 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
 	    var passColumn = new Ext.grid.CheckColumn({
 	       header: "<b>"+this.i18n._("pass")+"</b>", width: 35, dataIndex: 'live', fixed:true
 	    });
-	    var columns = [
-	          {id:'site',header: this.i18n._("site"), width: 140,  dataIndex: 'string',
-		          editor: new Ext.form.TextField({allowBlank: false})
-	          },
-	          passColumn,
-	          {id:'description',header: this.i18n._("description"), width: 120, dataIndex: 'description',
-		          editor: new Ext.form.TextField({allowBlank: false})
-	          }
-		];
-	    //columnModel.defaultSortable = true;
 
     	this.gridPassList=new Ung.EditorGrid({
     		settingsCmp: this,
     		totalRecords:this.getBaseSettings().domainWhitelistLength,
-    		emptyRow: {"string":"","live":true,"category":"no category","description":"[no description]"},
+    		emptyRow: {"string":"","live":true,"category":"[no category]","description":"[no description]"},
     		title: this.i18n._('Pass List'),
     		proxyRpcFn: this.getRpcNode().getDomainWhitelist,
 			fields: [
@@ -370,7 +357,16 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
 				{name: 'category'},
 				{name: 'description'}
 			],
-			columns: columns,
+			columns: [
+				{id:'string',header: this.i18n._("site"), width: 140,  dataIndex: 'string',
+				 editor: new Ext.form.TextField({allowBlank: false})},
+				passColumn,
+				{id:'description',header: this.i18n._("description"), width: 120, dataIndex: 'description',
+				 editor: new Ext.form.TextField({allowBlank: false})}
+			],
+			sortField: 'string',
+			columnsDefaultSortable: true,
+			autoExpandColumn: 'string',
 			plugins: [passColumn],
 			rowEditorInputLines: [
 				{name:"string", label: this.i18n._("Site"), type:"text", style:"width:200px;"},
@@ -381,12 +377,13 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
     },
     // Event Log
     buildEventLog: function() {
-		// Event Log grid
 		this.gridEventLog=new Ung.GridEventLog({
 			settingsCmp: this,
 			predefinedType: "TYPE1"
 		});
     },
+    
+    //save function
 	save: function() {
 		this.tabs.disable();
 		this.getRpcNode().updateAll(function (result, exception) {

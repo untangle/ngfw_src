@@ -762,6 +762,9 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
     	if(this.title==null) {
     		this.title=i18n._('Event Log');
     	}
+    	if(this.autoExpandColumn==null) {
+    		this.autoExpandColumn="timestamp";
+    	}
     	if(this.predefinedType!=null) {
     		this.fields=this.getPredefinedFields(this.predefinedType);
     		this.columns=this.getPredefinedColumns(this.predefinedType);
@@ -1273,6 +1276,7 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 	emptyRow: null,
 	rowEditorInputLines: null,
 	sortField: null,
+	columnsDefaultSortable: null,
 	forcePaginate: false,
 	recordJavaClass: null,
 	changedData: null,
@@ -1366,6 +1370,9 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			}];
 		}
 		Ung.EditorGrid.superclass.initComponent.call(this);
+		if(this.columnsDefaultSortable!==null) {
+			this.getColumnModel().defaultSortable=this.columnsDefaultSortable;
+		}
 	},
 
 	genAddedId: function () {
