@@ -350,6 +350,7 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
     		emptyRow: {"string":"","live":true,"category":"[no category]","description":"[no description]"},
     		title: this.i18n._('Pass List'),
     		proxyRpcFn: this.getRpcNode().getDomainWhitelist,
+    		recordJavaClass: "com.untangle.uvm.node.StringRule",
 			fields: [
 				{name: 'id'},
 				{name: 'string'},
