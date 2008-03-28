@@ -106,8 +106,8 @@ Ung.Main.prototype = {
 		main.loadTools();
 		main.loadPolicies();
 	},
-	
-	loadScript: function(url,callbackFn) {
+	/*
+	loadScriptExt: function(url,callbackFn) {
 		Ext.get('scripts_container').load({
 			'url':url,
 			'text':"loading...",
@@ -117,6 +117,34 @@ Ung.Main.prototype = {
 			'nocache':false,
 			disableCaching: false
 		});
+	},
+	loadScriptSol1: function(sScriptSrc, oCallback) {
+		var oHead = document.getElementById('head')[0];
+		var oScript = document.createElement('script');
+		oScript.type = 'text/javascript';
+		oScript.src = sScriptSrc;
+		// most browsers
+		oScript.onload = oCallback;
+		// IE 6 & 7
+		oScript.onreadystatechange = function() {
+			if (this.readyState == 'complete') {
+				oCallback();
+			}
+		}
+		oHead.appendChild(oScript);
+	},*/
+	loadScript: function(sScriptSrc, oCallback) {
+		if(window.XMLHttpRequest)
+			var req = new XMLHttpRequest();
+		else
+			var req = new ActiveXObject("Microsoft.XMLHTTP");
+		req.open("GET",sScriptSrc,false);
+		req.send(null);
+		if( window.execScript)
+			window.execScript(req.responseText);
+		else
+			window.eval(req.responseText);
+		oCallback.call(this);
 	},
 	getHelpLink: function(source,focus) {
 		var baseLink="http://www.untangle.com/docs/get.php?";

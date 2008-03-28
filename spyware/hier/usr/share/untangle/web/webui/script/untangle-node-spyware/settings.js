@@ -1,4 +1,3 @@
-//<script type="text/javascript">
 if(!Ung.hasResource["Ung.Spyware"]) {
 Ung.hasResource["Ung.Spyware"]=true;
 Ung.Settings.registerClassName('untangle-node-spyware',"Ung.Spyware");
@@ -431,4 +430,3 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
 	}
 });
 }
-//</script>

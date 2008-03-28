@@ -1,4 +1,3 @@
-//<script type="text/javascript">
 if(!Ung.hasResource["Ung.Protofilter"]) {
 Ung.hasResource["Ung.Protofilter"]=true;
 Ung.Settings.registerClassName('untangle-node-protofilter','Ung.Protofilter');
@@ -84,4 +83,3 @@ Ung.Protofilter = Ext.extend(Ung.Settings, {
 	}
 });
 }
-//</script>

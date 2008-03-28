@@ -786,8 +786,7 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
 	        reader: new Ext.data.JsonReader({
 	        	totalProperty: "totalRecords",
 	        	root: 'list',
-		        fields: this.fields,
-		        
+		        fields: this.fields
 			})
         });
 
