@@ -336,7 +336,6 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
 			*/
     	});
     	this.gridSubnetList.render(this.panelBlockLists.winSubnetList.getContentEl());
-    	aaa=this.gridSubnetList;
     },
     // Pass List
     buildPassList: function() {
@@ -384,20 +383,51 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
 		});
     },
     
+    validate: function(callback) {
+		var ipMaddrList=[];
+		var subnetSaveList=this.gridSubnetList?this.gridSubnetList.getSaveList():null;
+		if(subnetSaveList!=null) {
+			for(var i=0;i<subnetSaveList[0].list.length;i++) {
+				ipMaddrList.push(subnetSaveList[0].list[i]["ipMaddr"]);
+			}
+			for(var i=0;i<subnetSaveList[2].list.length;i++) {
+				ipMaddrList.push(subnetSaveList[2].list[i]["ipMaddr"]);
+			}
+			if(ipMaddrList.length>0) {
+				this.getValidator().validate(function (result, exception) {
+					if(exception) {Ext.MessageBox.alert("Failed",exception.message); return;}
+					if(!result.valid) {
+						this.panelBlockLists.onManageSubnetList();
+						this.gridSubnetList.focusFirstChangedDataByFieldValue("ipMaddr",result.cause);
+						Ext.MessageBox.alert("Validation failed",result.message+": "+result.cause);
+						return;
+					} else {
+						callback.call(this);
+					}
+					
+				}.createDelegate(this),{list: ipMaddrList,"javaClass":"java.util.ArrayList"});
+			}
+		}
+		if(ipMaddrList.length==0) {
+			callback.call(this);
+		}
+    },
     // save function
 	save: function() {
-		this.tabs.disable();
-		this.getRpcNode().updateAll(function (result, exception) {
-			this.tabs.enable();
-			if(exception) {Ext.MessageBox.alert("Failed",exception.message); return;}
-			this.node.onCancelClick();
-			
-		}.createDelegate(this),
-			this.getBaseSettings(),
-			this.gridActiveXList?this.gridActiveXList.getSaveList():null,
-			this.gridCookiesList?this.gridCookiesList.getSaveList():null,
-			this.gridSubnetList?this.gridSubnetList.getSaveList():null,
-			this.gridPassList.getSaveList() );
+		this.validate( function() {	
+			this.tabs.disable();
+			this.getRpcNode().updateAll(function (result, exception) {
+				this.tabs.enable();
+				if(exception) {Ext.MessageBox.alert("Failed",exception.message); return;}
+				this.node.onCancelClick();
+				
+			}.createDelegate(this),
+				this.getBaseSettings(),
+				this.gridActiveXList?this.gridActiveXList.getSaveList():null,
+				this.gridCookiesList?this.gridCookiesList.getSaveList():null,
+				this.gridSubnetList?this.gridSubnetList.getSaveList():null,
+				this.gridPassList.getSaveList() );
+		});
 	}
 });
 }

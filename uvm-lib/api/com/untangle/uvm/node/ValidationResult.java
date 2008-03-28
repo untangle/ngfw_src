@@ -32,13 +32,15 @@
  */
 package com.untangle.uvm.node;
 
+import java.io.Serializable;
+
 /**
  * The result from a call to Validator.validate
  *
  * @author <a href="mailto:cmatei@untangle.com">Catalin Matei</a>
  * @version 1.0
  */
-public class ValidationResult {
+public class ValidationResult implements Serializable {
     private boolean valid;
     private String message;
     private Object cause;

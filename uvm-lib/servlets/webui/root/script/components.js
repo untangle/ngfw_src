@@ -679,6 +679,12 @@ Ung.Settings = Ext.extend(Ext.Component, {
 		}
 		return this.rpc.baseSettings;
 	},
+	getValidator: function() {
+		if(this.rpc.validator===undefined) {
+			this.rpc.validator=this.getRpcNode().getValidator();
+		}
+		return this.rpc.validator;
+	},
 	getEventManager: function () {
 		if(this.node.nodeContext.node.eventManager===undefined) {
 			this.node.nodeContext.node.eventManager=this.node.nodeContext.node.getEventManager();
@@ -1406,12 +1412,14 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 	
 	initialLoad: function() {
 		this.setTotalRecords(this.totalRecords);
+		this.loadPage(0);
+	},
+	loadPage: function(pageStart,callback, scope, arg) {
 		if(!this.isPaginated()) {
-			this.getStore().load();
+			this.getStore().load({callback:callback, scope:scope, arg: arg});
 		} else {
-			this.getStore().load({params:{start: 0, limit: this.recordsPerPage}});
+			this.getStore().load({params:{start: pageStart, limit: this.recordsPerPage}, callback:callback, scope:scope, arg: arg});
 		}
-		
 	},
 	updateFromChangedData: function(store, records, options) {
 		var pageStart=this.store.getPageStart();
@@ -1489,7 +1497,33 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		}
 		this.getBottomToolbar().syncSize();
 	},
+	findFirstChangedDataByFieldValue: function(field,value) {
+		for(id in this.changedData) {
+			var cd=this.changedData[id];
+			if(cd.op!="deleted" && cd.recData[field]==value) {
+				return cd;
+				break;
+			}
+		}
+		return null;
+	},
 	
+	focusChangedDataField: function(cd, field) {
+		var recIndex=this.store.find("id",cd.recData["id"]);
+		if(recIndex>=0) {
+			this.getView().focusRow(recIndex);
+		}
+	},
+	focusFirstChangedDataByFieldValue: function(field,value) {
+		var cd=this.findFirstChangedDataByFieldValue("ipMaddr",value)
+		if(cd!=null) {
+			this.loadPage(cd.pageStart, function(r, options,success) {
+				if(success) {
+					this.focusChangedDataField(options.arg,"ipMaddr");
+				}
+			}.createDelegate(this), this, cd);
+		} 
+	},
 	getSaveList: function() {
 		var added=[];
 		var deleted=[];
@@ -1503,7 +1537,6 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			} else {
 				cd.recData["javaClass"]=this.recordJavaClass;
 				if(id<0) {
-					cd.recData["id"]=""; //ok?
 					added.push(cd.recData);
 				} else {
 					modified.push(cd.recData);
