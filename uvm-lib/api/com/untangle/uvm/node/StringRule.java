@@ -97,20 +97,20 @@ public class StringRule extends Rule
 
     // Object methods ---------------------------------------------------------
 
-    public boolean equals(Object o)
-    {
-        if (!(o instanceof StringRule)) {
-            return false;
-        }
-
-        StringRule sr = (StringRule)o;
-        return string.equals(sr.string);
-    }
-
-    public int hashCode()
-    {
-        return string.hashCode();
-    }
+//    public boolean equals(Object o)
+//    {
+//        if (!(o instanceof StringRule)) {
+//            return false;
+//        }
+//
+//        StringRule sr = (StringRule)o;
+//        return string.equals(sr.string);
+//    }
+//
+//    public int hashCode()
+//    {
+//        return string.hashCode();
+//    }
     
     @Override
     public void update(Rule rule) {

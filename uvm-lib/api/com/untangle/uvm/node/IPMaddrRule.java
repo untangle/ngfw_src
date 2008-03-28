@@ -85,20 +85,20 @@ public class IPMaddrRule extends Rule
 
     // Object methods ---------------------------------------------------------
 
-    public boolean equals(Object o)
-    {
-        if (!(o instanceof IPMaddrRule)) {
-            return false;
-        }
-
-        IPMaddrRule ir = (IPMaddrRule)o;
-        return ipMaddr.equals(ir.ipMaddr);
-    }
-
-    public int hashCode()
-    {
-        return ipMaddr.hashCode();
-    }
+//    public boolean equals(Object o)
+//    {
+//        if (!(o instanceof IPMaddrRule)) {
+//            return false;
+//        }
+//
+//        IPMaddrRule ir = (IPMaddrRule)o;
+//        return ipMaddr.equals(ir.ipMaddr);
+//    }
+//
+//    public int hashCode()
+//    {
+//        return ipMaddr.hashCode();
+//    }
     
     @Override
     public void update(Rule rule) {
