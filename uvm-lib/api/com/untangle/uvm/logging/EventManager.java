@@ -47,4 +47,5 @@ public interface EventManager<E extends LogEvent>
     List<RepositoryDesc> getRepositoryDescs();
     EventRepository<E> getRepository(String filterName);
     List<EventRepository<E>> getRepositories();
+    void log(E e);
 }
