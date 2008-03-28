@@ -42,7 +42,7 @@ Ung.Protofilter = Ext.extend(Ung.Settings, {
     	this.gridProtocolList=new Ung.EditorGrid({
     		settingsCmp: this,
     		totalRecords: this.getBaseSettings().patternsLength,
-    		emptyRow: {"category":"","protocol":"","blocked":false,"log":false,"description":"","definition":""},
+    		emptyRow: {"category":"[no category]","protocol":"[no protocol]","blocked":false,"log":false,"description":"[no description]","definition":"[no signature]"},
     		title: this.i18n._('Protocol List'),
     		autoExpandColumn: 'category',
     		recordJavaClass: "com.untangle.node.protofilter.ProtoFilterPattern",
@@ -72,35 +72,9 @@ Ung.Protofilter = Ext.extend(Ung.Settings, {
     },
     
     buildEventLog: function() {
-		// Event Log grid
 		this.gridEventLog=new Ung.GridEventLog({
 			settingsCmp: this,
-			store: new Ext.data.JsonStore({
-		        fields: [
-		           {name: 'timeStamp'},
-		           {name: 'blocked'},
-		           {name: 'pipelineEndpoints'},
-		           {name: 'protocol'},
-		           {name: 'blocked'},
-		           {name: 'server'}
-		        ]
-	    	}),
-			columns: [
-			    {header: this.i18n._("timestamp"), width: 120, sortable: true, dataIndex: 'timeStamp', renderer: function(value) {
-			    	return i18n.timestampFormat(value);
-			    }},
-			    {header: this.i18n._("action"), width: 70, sortable: true, dataIndex: 'blocked', renderer: function(value) {
-			    		return value?this.i18n._("blocked"):this.i18n._("passed");
-			    	}.createDelegate(this)
-			    },
-			    {header: this.i18n._("client"), width: 120, sortable: true, dataIndex: 'pipelineEndpoints', renderer: function(value) {return value===null?"" : value.CClientAddr.hostAddress+":"+value.CClientPort;}},
-			    {header: this.i18n._("request"), width: 120, sortable: true, dataIndex: 'protocol'},
-			    {header: this.i18n._("reason for action"), width: 120, sortable: true, dataIndex: 'blocked', renderer: function(value) {
-			    		return value?this.i18n._("blocked in block list"):this.i18n._("not blocked in block list");
-			    	}.createDelegate(this)
-			    },
-			    {header: this.i18n._("server"), width: 120, sortable: true, dataIndex: 'pipelineEndpoints', renderer: function(value) {return value===null?"" : value.SServerAddr.hostAddress+":"+value.SServerPort;}}
-			]
+			predefinedType: "TYPE1"
 		});
     },
     

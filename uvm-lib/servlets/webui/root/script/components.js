@@ -717,24 +717,85 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
 	hasRepositories: true,
 	eventManagerFn: null,
 	enableHdMenu: false,
+	recordsPerPage: 20,
+	getPredefinedFields: function(type) {
+		var fields=null;
+		switch(type) {
+			case "TYPE1":
+				fields=[
+					{name: 'timeStamp'},
+					{name: 'blocked'},
+					{name: 'pipelineEndpoints'},
+					{name: 'protocol'},
+					{name: 'blocked'},
+					{name: 'server'}
+				];
+				break;
+		}
+		return fields;
+	},
+	getPredefinedColumns: function(type) {
+		var columns=null;
+		switch(type) {
+			case "TYPE1":
+				columns = [
+					{header: i18n._("timestamp"), width: 120, sortable: true, dataIndex: 'timeStamp', renderer: function(value) {
+				    	return i18n.timestampFormat(value);
+				    }},
+				    {header: i18n._("action"), width: 70, sortable: true, dataIndex: 'blocked', renderer: function(value) {
+				    		return value?i18n._("blocked"):i18n._("passed");
+				    	}.createDelegate(this)
+				    },
+				    {header: i18n._("client"), width: 120, sortable: true, dataIndex: 'pipelineEndpoints', renderer: function(value) {return value===null?"" : value.CClientAddr.hostAddress+":"+value.CClientPort;}},
+				    {header: i18n._("request"), width: 120, sortable: true, dataIndex: 'protocol'},
+				    {header: i18n._("reason for action"), width: 120, sortable: true, dataIndex: 'blocked', renderer: function(value) {
+				    		return value?i18n._("blocked in block list"):i18n._("not blocked in block list");
+				    	}.createDelegate(this)
+				    },
+				    {header: i18n._("server"), width: 120, sortable: true, dataIndex: 'pipelineEndpoints', renderer: function(value) {return value===null?"" : value.SServerAddr.hostAddress+":"+value.SServerPort;}}
+			    ];
+				break;
+		}
+		return columns;
+	},
 	initComponent: function(){
     	if(this.title==null) {
     		this.title=i18n._('Event Log');
+    	}
+    	if(this.predefinedType!=null) {
+    		this.fields=this.getPredefinedFields(this.predefinedType);
+    		this.columns=this.getPredefinedColumns(this.predefinedType);
     	}
     	if(this.eventManagerFn==null) {
     		this.eventManagerFn=this.settingsCmp.getEventManager();
     	}
     	this.settingsCmp.rpc.repository={};
-        this.bbar=	[{
-        				xtype:'tbtext',
-						text:'<span id="boxRepository_'+this.getId()+'_'+this.settingsCmp.node.tid+'"></span>'},
-					{
-						xtype: 'tbbutton',
+	    this.store = new Ext.data.Store({
+	        proxy: new Ung.MemoryProxy({root: 'list'}),
+	        sortInfo: this.sortField?{field: this.sortField, direction: "ASC"}:null,
+	        remoteSort: true,
+	        reader: new Ext.data.JsonReader({
+	        	totalProperty: "totalRecords",
+	        	root: 'list',
+		        fields: this.fields,
+		        
+			})
+        });
+
+        this.bbar=	[{xtype:'tbtext',text:'<span id="boxRepository_'+this.getId()+'_'+this.settingsCmp.node.tid+'"></span>'},
+					 {	xtype: 'tbbutton',
 			            text: i18n._('Refresh'),
 			            tooltip: i18n._('Refresh'),
 						iconCls: 'iconRefresh',
 						handler: function() {this.refreshList();}.createDelegate(this)
-					}];
+					},
+					new Ext.PagingToolbar({
+						pageSize: this.recordsPerPage,
+						store: this.store//,
+						//displayInfo: true,
+						//displayMsg: 'Displaying topics {0} - {1} of {2}',
+						//emptyMsg: "No topics to display"
+					})];
         Ung.GridEventLog.superclass.initComponent.call(this);
 	},
 	onRender : function(container, position) {
@@ -744,7 +805,7 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
 			if(this.settingsCmp) {
 				this.settingsCmp.rpc.repositoryDescs=result;
 				var out=[];
-				out.push('<select id="selectRepository_'+this.getId()+'_'+this.settingsCmp.node.tid+'">');
+				out.push('<select id="selectRepository_'+this.getId()+'_'+this.settingsCmp.node.tid+'" class="height:11px; font-size:9px;">');
 				var repList=this.settingsCmp.rpc.repositoryDescs.list;
 				for(var i=0;i<repList.length;i++) {
 					var repDesc=repList[i];
@@ -775,7 +836,8 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
 				if(exception) {Ext.MessageBox.alert("Failed",exception.message); return;}
 				var events = result;
 				if(this.settingsCmp!==null) {
-					this.getStore().loadData(events.list);
+					this.getStore().proxy.data=events;
+					this.getStore().load({params:{start: 0, limit: this.recordsPerPage}});
 				}
 			}.createDelegate(this));
 		}
@@ -992,7 +1054,7 @@ Ext.extend(Ung.RpcProxy, Ext.data.DataProxy, {
 		this.totalRecords=totalRecords;
 	},
     load : function(params, reader, callback, scope, arg) {
-    	var obj={}
+    	var obj={};
     	obj.params=params;
     	obj.reader=reader;
     	obj.callback=callback;
@@ -1022,6 +1084,55 @@ Ext.extend(Ung.RpcProxy, Ext.data.DataProxy, {
 	        }
 		}.createDelegate(obj), params.start?params.start:0, params.limit?params.limit:this.totalRecords!=null?this.totalRecords:2147483647, sortColumns);
 	}
+});
+
+//Memory Proxy
+
+Ung.MemoryProxy = function(config){
+    Ext.apply(this, config);
+    Ung.MemoryProxy.superclass.constructor.call(this);
+};
+
+Ext.extend(Ung.MemoryProxy, Ext.data.DataProxy, {
+	root: null,
+	data: null,
+    load : function(params, reader, callback, scope, arg){
+        params = params || {};
+        var result;
+        try {
+        	var readerData={};
+            if(this.data!=null) {
+            	var list= (this.root!=null)?this.data[this.root]:this.data;
+            	var totalRecords=list.length;
+            	var pageList=null;
+            	if(params.sort!=null) {
+            		list.sort(function(obj1, obj2) {
+            			var v1=obj1[params.sort];
+            			var v2=obj2[params.sort];
+            			var ret=params.dir=="ASC"?-1:1;
+            			return v1==v2?0:(v1<v2)?ret:-ret;
+            		});
+            	}
+            	if(params.start!=null && params.limit!=null && list!=null) {
+            		pageList=list.slice(params.start,params.start+params.limit);
+            	} else {
+            		pageList=list;
+            	}
+            	if(this.root==null) {
+            		readerData=pageList;
+            	} else {
+            		readerData[this.root]=pageList;
+            		readerData.totalRecords=totalRecords;
+            	}
+            }
+            result = reader.readRecords(readerData);
+        }catch(e){
+            this.fireEvent("loadexception", this, arg, null, e);
+            callback.call(scope, null, arg, false);
+            return;
+        }
+        callback.call(scope, result, arg, true);
+    }
 });
 Ext.grid.CheckColumn = function(config){
     Ext.apply(this, config);
@@ -1192,6 +1303,7 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 	        proxy: new Ung.RpcProxy(this.proxyRpcFn),
 	        sortInfo: this.sortField?{field: this.sortField, direction: "ASC"}:null,
 	        reader: new Ext.data.JsonReader({
+	        	totalProperty: "totalRecords",
 	        	root: 'list',
 		        fields: this.fields
 			}),
@@ -1222,7 +1334,6 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			store: this.store,
 			displayInfo: true,
 			displayMsg: 'Displaying topics {0} - {1} of {2}',
-			//cls: "x-hide-display",
 			emptyMsg: "No topics to display"
 		});
 		if(this.rowEditorInputLines!=null) {
@@ -1296,7 +1407,6 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		
 	},
 	updateFromChangedData: function(store, records, options) {
-		//records.push(records[0]);
 		var pageStart=this.store.getPageStart();
 		for(id in this.changedData) {
 			var cd=this.changedData[id];
@@ -1310,10 +1420,6 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 						var rec=this.store.getAt(recIndex);
 						rec.data=cd.recData;
 						rec.commit();
-						//var rec=this.store.getAt(recIndex);
-						//this.store.remove(recIndex,rec);
-						//this.store.insert(recIndex,cd.rec);
-						
 					}
 				}
 			}

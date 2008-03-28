@@ -71,11 +71,11 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
 				}));
 				var baseSettings=Ext.getCmp(this.parentId).getBaseSettings();
 				document.getElementById("last_update_signatures_"+this.getId()).innerHTML="TODO: need api value";
-				document.getElementById("web_checkbox_"+this.getId()).checked=baseSettings.spywareEnabled;
+				document.getElementById("web_checkbox_"+this.getId()).checked=baseSettings.urlBlacklistEnabled;
 				document.getElementById("cookies_checkbox_"+this.getId()).checked=baseSettings.cookieBlockerEnabled;
 				document.getElementById("activex_checkbox_"+this.getId()).checked=baseSettings.activeXEnabled;
 				document.getElementById("block_all_activex_checkbox_"+this.getId()).checked=baseSettings.blockAllActiveX;
-				document.getElementById("subnet_checkbox_"+this.getId()).checked=baseSettings.urlBlacklistEnabled;
+				document.getElementById("subnet_checkbox_"+this.getId()).checked=baseSettings.spywareEnabled;
 				var selObj=document.getElementById("user_bypass_"+this.getId());
 				for(var i=0;i<selObj.options.length;i++) {
 					if(selObj.options[i].value==baseSettings.userWhitelistMode) {
@@ -85,7 +85,7 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
 				}
 			},
 			onChangeSpyware: function(checkObj) {
-				Ext.getCmp(this.parentId).getBaseSettings().spywareEnabled=checkObj.checked;
+				Ext.getCmp(this.parentId).getBaseSettings().urlBlacklistEnabled=checkObj.checked;
 			},
 			onChangeCookies: function(checkObj) {
 				Ext.getCmp(this.parentId).getBaseSettings().cookieBlockerEnabled=checkObj.checked;
@@ -94,7 +94,7 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
 				Ext.getCmp(this.parentId).getBaseSettings().activeXEnabled=checkObj.checked;
 			},
 			onChangeSubnet: function(checkObj) {
-				Ext.getCmp(this.parentId).getBaseSettings().urlBlacklistEnabled=checkObj.checked;
+				Ext.getCmp(this.parentId).getBaseSettings().spywareEnabled=checkObj.checked;
 			},
 			onChangeBlockAllActiveX: function(checkObj) {
 				Ext.getCmp(this.parentId).getBaseSettings().blockAllActiveX=checkObj.checked;
@@ -230,7 +230,7 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
     	this.gridCookiesList=new Ung.EditorGrid({
     		settingsCmp: this,
     		totalRecords: this.getBaseSettings().cookieRulesLength,
-    		emptyRow: {"string":"","live":true},
+    		emptyRow: {"string":"[no identification]","live":true,"description":"[no description]"},
     		title: this.i18n._('Cookies List'),
     		recordJavaClass: "com.untangle.uvm.node.StringRule",
     		proxyRpcFn: this.getRpcNode().getCookieRules,
@@ -238,6 +238,7 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
 				{name: 'id'},
 				{name: 'string'},
 				{name: 'live'},
+				{name: 'description'}
 			],
 			columns: columns,
 			autoExpandColumn: 'string',
@@ -265,7 +266,7 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
     	this.gridActiveXList=new Ung.EditorGrid({
     		settingsCmp: this,
     		totalRecords: this.getBaseSettings().activeXRulesLength,
-    		emptyRow: {"string":"","live":true},
+    		emptyRow: {"string":"[no identification]","live":true,"description":"[no description]"},
     		title: this.i18n._('ActiveX List'),
     		recordJavaClass: "com.untangle.uvm.node.StringRule",
     		proxyRpcFn: this.getRpcNode().getActiveXRules,
@@ -273,6 +274,7 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
 				{name: 'id'},
 				{name: 'string'},
 				{name: 'live'},
+				{name: 'description'}
 			],
 			columns: columns,
 			autoExpandColumn: 'string',
@@ -303,7 +305,7 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
     	this.gridSubnetList=new Ung.EditorGrid({
     		settingsCmp: this,
     		totalRecords: this.getBaseSettings().subnetRulesLength,
-    		emptyRow: {"ipMaddr":"1.2.3.4/5","name":"[no name]","log":true, description:"["+this.getBaseSettings().spywareDetails+"]"},
+    		emptyRow: {"ipMaddr":"1.2.3.4/5","name":"[no name]","log":true, description: "[no description]"},
     		title: this.i18n._('Subnet List'),
     		recordJavaClass: "com.untangle.uvm.node.IPMaddrRule",
     		proxyRpcFn: this.getRpcNode().getSubnetRules,
@@ -358,13 +360,14 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
     	this.gridPassList=new Ung.EditorGrid({
     		settingsCmp: this,
     		totalRecords:this.getBaseSettings().domainWhitelistLength,
-    		emptyRow: {"string":"","live":false,"description":""},
+    		emptyRow: {"string":"","live":true,"category":"no category","description":"[no description]"},
     		title: this.i18n._('Pass List'),
     		proxyRpcFn: this.getRpcNode().getDomainWhitelist,
 			fields: [
 				{name: 'id'},
 				{name: 'string'},
 				{name: 'live'},
+				{name: 'category'},
 				{name: 'description'}
 			],
 			columns: columns,
@@ -381,32 +384,7 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
 		// Event Log grid
 		this.gridEventLog=new Ung.GridEventLog({
 			settingsCmp: this,
-			store: new Ext.data.JsonStore({
-		        fields: [
-		           {name: 'timeStamp'},
-		           {name: 'blocked'},
-		           {name: 'pipelineEndpoints'},
-		           {name: 'protocol'},
-		           {name: 'blocked'},
-		           {name: 'server'}
-		        ]
-	    	}),
-			columns: [
-			    {header: this.i18n._("timestamp"), width: 120, sortable: true, dataIndex: 'timeStamp', renderer: function(value) {
-			    	return i18n.timestampFormat(value);
-			    }},
-			    {header: this.i18n._("action"), width: 70, sortable: true, dataIndex: 'blocked', renderer: function(value) {
-			    		return value?this.i18n._("blocked"):this.i18n._("passed");
-			    	}.createDelegate(this)
-			    },
-			    {header: this.i18n._("client"), width: 120, sortable: true, dataIndex: 'pipelineEndpoints', renderer: function(value) {return value===null?"" : value.CClientAddr.hostAddress+":"+value.CClientPort;}},
-			    {header: this.i18n._("request"), width: 120, sortable: true, dataIndex: 'protocol'},
-			    {header: this.i18n._("reason for action"), width: 120, sortable: true, dataIndex: 'blocked', renderer: function(value) {
-			    		return value?this.i18n._("blocked in block list"):this.i18n._("not blocked in block list");
-			    	}.createDelegate(this)
-			    },
-			    {header: this.i18n._("server"), width: 120, sortable: true, dataIndex: 'pipelineEndpoints', renderer: function(value) {return value===null?"" : value.SServerAddr.hostAddress+":"+value.SServerPort;}}
-			]
+			predefinedType: "TYPE1"
 		});
     },
 	save: function() {
