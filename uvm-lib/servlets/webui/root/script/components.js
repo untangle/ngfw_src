@@ -1142,6 +1142,9 @@ Ext.grid.CheckColumn = function(config){
     if(!this.id){
         this.id = Ext.id();
     }
+    if(!this.width) {
+        this.width = 40;
+    }
     this.renderer = this.renderer.createDelegate(this);
 };
 
@@ -1183,7 +1186,7 @@ Ext.grid.EditColumn = function(config){
         this.fixed = true;
     }
     if(this.sortable==null) {
-        this.sortable = true;
+        this.sortable = false;
     }
     if(!this.dataIndex) {
         this.dataIndex = null;
@@ -1219,20 +1222,17 @@ Ext.grid.DeleteColumn = function(config){
     if(!this.id){
         this.id = Ext.id();
     }
-    if(!this.id){
-        this.id = Ext.id();
-    }
     if(!this.header) {
         this.header = i18n._("Delete");
     }
     if(!this.width) {
-        this.width = 35;
+        this.width = 39;
     }
     if(this.fixed==null) {
         this.fixed = true;
     }
     if(this.sortable==null) {
-        this.sortable = true;
+        this.sortable = false;
     }
     if(!this.dataIndex) {
         this.dataIndex = null;
@@ -1446,7 +1446,6 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			for(i in cmConfig) {
 				cmConfig[i].sortable=false;
 			}
-			//this.getColumnModel().setConfig(cmConfig); //TODO: why this does not work
 		}
 		var id=record.get("id");
 		var cd=this.changedData[id];

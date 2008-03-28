@@ -15,10 +15,10 @@ Ung.Protofilter = Ext.extend(Ung.Settings, {
     // Protocol list grid
     buildProtocolList: function() {
 	    var blockedColumn = new Ext.grid.CheckColumn({
-	       header: "<b>"+this.i18n._("block")+"</b>", width: 40, dataIndex: 'blocked', fixed:true
+	       header: "<b>"+this.i18n._("block")+"</b>", dataIndex: 'blocked', fixed:true
 	    });
 	    var logColumn = new Ext.grid.CheckColumn({
-	       header: "<b>"+this.i18n._("log")+"</b>", width: 35, dataIndex: 'log', fixed:true
+	       header: "<b>"+this.i18n._("log")+"</b>", dataIndex: 'log', fixed:true
 	    });
 		
     	this.gridProtocolList=new Ung.EditorGrid({
@@ -66,14 +66,14 @@ Ung.Protofilter = Ext.extend(Ung.Settings, {
 			]
     	});
     },
-    
+    // Event Log
     buildEventLog: function() {
 		this.gridEventLog=new Ung.GridEventLog({
 			settingsCmp: this,
 			predefinedType: "TYPE1"
 		});
     },
-    
+    // save function
 	save: function() {
 		this.tabs.disable();
 		this.getRpcNode().updateAll(function (result, exception) {

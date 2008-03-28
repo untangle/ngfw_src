@@ -17,7 +17,7 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
 		this.buildEventLog();
 		this.buildTabPanel([this.panelBlockLists,this.gridPassList,this.gridEventLog]);
     },
-    
+    // Block lists panel
     buildBlockLists: function () {
 		this.panelBlockLists=new Ext.Panel({
 			winCookiesList: null,
@@ -217,7 +217,7 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
     // Cookies List
     buildCookiesList: function() {
 	    var liveColumn = new Ext.grid.CheckColumn({
-	       header: "<b>"+this.i18n._("block")+"</b>", width: 35, dataIndex: 'live', fixed:true
+	       header: "<b>"+this.i18n._("block")+"</b>", dataIndex: 'live', fixed:true
 	    });
 
     	this.gridCookiesList=new Ung.EditorGrid({
@@ -252,7 +252,7 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
     // ActiveX List
     buildActiveXList: function() {
 	    var liveColumn = new Ext.grid.CheckColumn({
-	       header: "<b>"+this.i18n._("block")+"</b>", width: 35, dataIndex: 'live', fixed:true
+	       header: "<b>"+this.i18n._("block")+"</b>", dataIndex: 'live', fixed:true
 	    });
 
     	this.gridActiveXList=new Ung.EditorGrid({
@@ -287,7 +287,7 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
     // Subnet List
     buildSubnetList: function() {
 	    var logColumn = new Ext.grid.CheckColumn({
-	       header: "<b>"+this.i18n._("log")+"</b>", width: 35, dataIndex: 'log', fixed:true
+	       header: "<b>"+this.i18n._("log")+"</b>", dataIndex: 'log', fixed:true
 	    });
 
     	this.gridSubnetList=new Ung.EditorGrid({
@@ -305,15 +305,15 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
 				{name: 'description'}
 			],
 			columns: [
-				{id:'name',header: this.i18n._("name"), width: 140,  dataIndex: 'name',
+				{id:'name',header: this.i18n._("name"), width: 150,  dataIndex: 'name',
 				 editor: new Ext.form.TextField({allowBlank: false})},
-				{id:'ipMaddr',header: this.i18n._("subnet"), width: 140,  dataIndex: 'ipMaddr',
+				{id:'ipMaddr',header: this.i18n._("subnet"), width: 200,  dataIndex: 'ipMaddr',
 				 editor: new Ext.form.TextField({allowBlank: false})},
 				logColumn
 			],
 			sortField: 'name',
 			columnsDefaultSortable: true,
-			autoExpandColumn: 'ipMaddr',
+			autoExpandColumn: 'name',
 			plugins: [logColumn],
 			rowEditorInputLines: [
 				{name:"name", label: this.i18n._("Name"), type:"text", style:"width:200px;"},
@@ -341,7 +341,7 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
     // Pass List
     buildPassList: function() {
 	    var passColumn = new Ext.grid.CheckColumn({
-	       header: "<b>"+this.i18n._("pass")+"</b>", width: 35, dataIndex: 'live', fixed:true
+	       header: "<b>"+this.i18n._("pass")+"</b>", dataIndex: 'live', fixed:true
 	    });
 
     	this.gridPassList=new Ung.EditorGrid({
@@ -383,7 +383,7 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
 		});
     },
     
-    //save function
+    // save function
 	save: function() {
 		this.tabs.disable();
 		this.getRpcNode().updateAll(function (result, exception) {
@@ -398,7 +398,6 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
 			this.gridSubnetList?this.gridSubnetList.getSaveList():null,
 			this.gridPassList.getSaveList() );
 	}
-
 });
 }
 //</script>
