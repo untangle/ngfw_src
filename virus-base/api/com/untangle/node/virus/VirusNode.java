@@ -33,8 +33,12 @@
 
 package com.untangle.node.virus;
 
+import java.util.List;
+
 import com.untangle.uvm.logging.EventManager;
+import com.untangle.uvm.node.MimeTypeRule;
 import com.untangle.uvm.node.Node;
+import com.untangle.uvm.node.StringRule;
 
 /**
  * Interface to the Virus Node.
@@ -44,7 +48,26 @@ import com.untangle.uvm.node.Node;
  */
 public interface VirusNode extends Node
 {
-    void setVirusSettings(VirusSettings virusSettings);
-    VirusSettings getVirusSettings();
+    void setBaseSettings(VirusBaseSettings virusBaseSettings);
+    VirusBaseSettings getBaseSettings();
+    
+    List<MimeTypeRule> getHttpMimeTypes(int start, int limit, String... sortColumns);
+    void updateHttpMimeTypes(List<MimeTypeRule> added, List<Long> deleted, List<MimeTypeRule> modified);
+    
+    List<StringRule> getExtensions(int start, int limit, String... sortColumns);
+    void updateExtensions(List<StringRule> added, List<Long> deleted, List<StringRule> modified);
+    
+    /**
+     * Update all settings once, in a single transaction
+     */
+    void updateAll(VirusBaseSettings baseSettings, 
+    		List[] httpMimeTypes, List[] extensions);
+    
+    /**
+     * Reconfigure node. This method should be called after some settings are updated
+     * in order to reconfigure the node accordingly.
+     */
+    void reconfigure();
+    
     EventManager<VirusEvent> getEventManager();
 }

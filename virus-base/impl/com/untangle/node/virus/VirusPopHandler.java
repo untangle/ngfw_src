@@ -70,7 +70,7 @@ public class VirusPopHandler extends PopStateMachine
         VirusPOPConfig zConfig;
         WrappedMessageGenerator zWMGenerator;
 
-        zConfig = node.getVirusSettings().getPopConfig();
+        zConfig = node.getVirusSettings().getBaseSettings().getPopConfig();
         zWMGenerator = zConfig.getMessageGenerator();
         lTimeout = zMTSettings.getPopTimeout();
 

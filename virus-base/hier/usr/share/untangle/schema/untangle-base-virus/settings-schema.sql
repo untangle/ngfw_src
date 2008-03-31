@@ -39,8 +39,7 @@ CREATE TABLE settings.n_virus_settings (
 CREATE TABLE settings.n_virus_vs_ext (
     settings_id int8 NOT NULL,
     rule_id int8 NOT NULL,
-    position int4 NOT NULL,
-    PRIMARY KEY (settings_id, position));
+    position int4);
 
 CREATE TABLE settings.n_virus_config (
     config_id int8 NOT NULL,
@@ -75,8 +74,7 @@ CREATE TABLE settings.n_virus_imap_config (
 CREATE TABLE settings.n_virus_vs_mt (
     settings_id int8 NOT NULL,
     rule_id int8 NOT NULL,
-    position int4 NOT NULL,
-    PRIMARY KEY (settings_id, position));
+    position int4);
 
 ----------------
 -- constraints |

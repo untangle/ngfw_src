@@ -51,7 +51,7 @@ public final class VirusImapFactory
 
     public TokenHandler tokenHandler(TCPSession session) {
 
-        VirusIMAPConfig virusConfig = m_virusImpl.getVirusSettings().getImapConfig();
+        VirusIMAPConfig virusConfig = m_virusImpl.getVirusSettings().getBaseSettings().getImapConfig();
 
         if(!virusConfig.getScan()) {
             m_logger.debug("Scanning disabled.  Return passthrough token handler");

@@ -20,10 +20,14 @@ package com.untangle.node.virus;
 
 import static com.untangle.node.util.Ascii.CRLF;
 
-import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+
+import org.apache.log4j.Logger;
+import org.hibernate.Query;
+import org.hibernate.Session;
 
 import com.untangle.node.mail.papi.smtp.SMTPNotifyAction;
 import com.untangle.node.token.TokenAdaptor;
@@ -37,21 +41,20 @@ import com.untangle.uvm.node.MimeType;
 import com.untangle.uvm.node.MimeTypeRule;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeContext;
+import com.untangle.uvm.node.Rule;
 import com.untangle.uvm.node.StringRule;
 import com.untangle.uvm.policy.Policy;
+import com.untangle.uvm.util.ListUtil;
+import com.untangle.uvm.util.QueryUtil;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.AbstractNode;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
-import com.untangle.uvm.vnet.IPSessionDesc;
 import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.vnet.PipelineFoundry;
 import com.untangle.uvm.vnet.Protocol;
 import com.untangle.uvm.vnet.SoloPipeSpec;
 import com.untangle.uvm.vnet.Subscription;
-import org.apache.log4j.Logger;
-import org.hibernate.Query;
-import org.hibernate.Session;
 
 /**
  * Virus Node.
@@ -194,11 +197,32 @@ public abstract class VirusNodeImpl extends AbstractNode
     }
 
     // VirusNode methods -------------------------------------------------
+    
+    public VirusBaseSettings getBaseSettings()
+    {
+        return settings.getBaseSettings();
+    }
+
+    public void setBaseSettings(final VirusBaseSettings baseSettings)
+    {
+        TransactionWork tw = new TransactionWork() {
+			public boolean doWork(Session s) {
+		        settings.setBaseSettings(baseSettings);
+				s.merge(settings);
+				return true;
+			}
+
+			public Object getResult() {
+				return null;
+			}
+		};
+		getNodeContext().runTransaction(tw);
+    }
 
     public void setVirusSettings(final VirusSettings settings)
     {
         //TEMP hack - bscott
-        ensureTemplateSettings(settings);
+        ensureTemplateSettings(settings.getBaseSettings());
 
         TransactionWork tw = new TransactionWork()
             {
@@ -207,7 +231,7 @@ public abstract class VirusNodeImpl extends AbstractNode
                     s.merge(settings);
                     VirusNodeImpl.this.settings = settings;
 
-                    virusReconfigure();
+                    reconfigure();
 
                     return true;
                 }
@@ -224,7 +248,61 @@ public abstract class VirusNodeImpl extends AbstractNode
             logger.error("Settings not yet initialized. State: " + getNodeContext().getRunState() );
         return settings;
     }
+    
+    public List<MimeTypeRule> getHttpMimeTypes(final int start, final int limit, final String... sortColumns) {
+		return getRules(
+				"select vs.httpMimeTypes from VirusSettings vs where vs.tid = :tid ",
+				start, limit, sortColumns);
+	}
 
+	public void updateHttpMimeTypes(List<MimeTypeRule> added, List<Long> deleted, List<MimeTypeRule> modified) {
+
+		updateRules(getHttpMimeTypes(), added, deleted, modified);
+	}
+
+    public List<StringRule> getExtensions(final int start, final int limit, final String... sortColumns) {
+		return getRules(
+				"select vs.extensions from VirusSettings vs where vs.tid = :tid ",
+				start, limit, sortColumns);
+	}
+
+	public void updateExtensions(List<StringRule> added, List<Long> deleted, List<StringRule> modified) {
+
+		updateRules(getExtensions(), added, deleted, modified);
+	}
+	
+    public void updateAll(final VirusBaseSettings baseSettings, 
+    		final List[] httpMimeTypes, final List[] extensions) {
+
+        TransactionWork tw = new TransactionWork() {
+			public boolean doWork(Session s) {
+		    	if (baseSettings != null) {
+			        settings.setBaseSettings(baseSettings);
+		    	}
+		    	if (httpMimeTypes != null && httpMimeTypes.length >= 3) {
+		    		updateCachedRules(getHttpMimeTypes(), httpMimeTypes[0], httpMimeTypes[1], httpMimeTypes[2]);
+		    	}
+		    	if (extensions != null && extensions.length >= 3) {
+		    		updateCachedRules(getExtensions(), extensions[0], extensions[1], extensions[2]);
+		    	}
+
+				settings = (VirusSettings)s.merge(settings);
+
+				return true;
+			}
+
+			public Object getResult() {
+				return null;
+			}
+		};
+		getNodeContext().runTransaction(tw);
+    	
+    	
+		
+		reconfigure();
+	}
+	
+	
     public EventManager<VirusEvent> getEventManager()
     {
         return eventLogger;
@@ -257,7 +335,7 @@ public abstract class VirusNodeImpl extends AbstractNode
         return result;
     }
 
-    private void virusReconfigure()
+    public void reconfigure()
     {
         // FTP
         Set subscriptions = new HashSet();
@@ -269,7 +347,7 @@ public abstract class VirusNodeImpl extends AbstractNode
 
         // HTTP
         subscriptions = new HashSet();
-        if (settings.getHttpConfig().getScan()) {
+        if (settings.getBaseSettings().getHttpConfig().getScan()) {
             Subscription subscription = new Subscription(Protocol.TCP);
             subscriptions.add(subscription);
         }
@@ -311,7 +389,7 @@ public abstract class VirusNodeImpl extends AbstractNode
      * Once we move these to the database,
      * this method is obsolete.
      */
-    private void ensureTemplateSettings(VirusSettings vs) {
+    private void ensureTemplateSettings(VirusBaseSettings vs) {
         vs.getImapConfig().setSubjectWrapperTemplate(MOD_SUB_TEMPLATE);
         vs.getImapConfig().setBodyWrapperTemplate(MOD_BODY_TEMPLATE);
         vs.getImapConfig().setBodyWrapperTemplate(MOD_BODY_TEMPLATE);
@@ -329,10 +407,11 @@ public abstract class VirusNodeImpl extends AbstractNode
     public void initializeSettings()
     {
         VirusSettings vs = new VirusSettings(getTid());
-        vs.setHttpConfig(new VirusConfig(true, true, "Scan HTTP files"));
-        vs.setFtpConfig(new VirusConfig(true, true, "Scan FTP files" ));
+        VirusBaseSettings baseSettings = vs.getBaseSettings();
+        baseSettings.setHttpConfig(new VirusConfig(true, true, "Scan HTTP files"));
+        baseSettings.setFtpConfig(new VirusConfig(true, true, "Scan FTP files" ));
 
-        vs.setSmtpConfig(new VirusSMTPConfig(true,
+        baseSettings.setSmtpConfig(new VirusSMTPConfig(true,
                                              SMTPVirusMessageAction.REMOVE,
                                              SMTPNotifyAction.NEITHER,
                                              "Scan SMTP e-mail",
@@ -341,13 +420,13 @@ public abstract class VirusNodeImpl extends AbstractNode
                                              NOTIFY_SUB_TEMPLATE,
                                              NOTIFY_BODY_TEMPLATE));
 
-        vs.setPopConfig(new VirusPOPConfig(true,
+        baseSettings.setPopConfig(new VirusPOPConfig(true,
                                            VirusMessageAction.REMOVE,
                                            "Scan POP e-mail",
                                            MOD_SUB_TEMPLATE,
                                            MOD_BODY_TEMPLATE));
 
-        vs.setImapConfig(new VirusIMAPConfig(true,
+        baseSettings.setImapConfig(new VirusIMAPConfig(true,
                                              VirusMessageAction.REMOVE,
                                              "Scan IMAP e-mail",
                                              MOD_SUB_TEMPLATE,
@@ -361,7 +440,7 @@ public abstract class VirusNodeImpl extends AbstractNode
 
     private void initMimeTypes(VirusSettings vs)
     {
-        List s = new ArrayList();
+        Set s = new HashSet<MimeTypeRule>();
         s.add(new MimeTypeRule(new MimeType("message/*"), "messages", "misc", true));
 
         vs.setHttpMimeTypes(s);
@@ -369,8 +448,7 @@ public abstract class VirusNodeImpl extends AbstractNode
 
     private void initFileExtensions(VirusSettings vs)
     {
-        List s = new ArrayList();
-        s = new ArrayList();
+        Set s = new HashSet<StringRule>();
         /* XXX Need a description here */
         // Note that category is unused in the UI
         s.add(new StringRule("exe", "executable", "download" , true));
@@ -432,7 +510,7 @@ public abstract class VirusNodeImpl extends AbstractNode
                         initFileExtensions(settings);
                         changed = true;
                     }
-                    ensureTemplateSettings(settings);
+                    ensureTemplateSettings(settings.getBaseSettings());
                     if (changed) {
                         s.merge(settings);
                     }
@@ -447,14 +525,14 @@ public abstract class VirusNodeImpl extends AbstractNode
 
     protected void preStart()
     {
-        virusReconfigure();
+        reconfigure();
     }
 
     protected void postStart()
     {
         shutdownMatchingSessions();
     }
-
+    
     // package protected methods ----------------------------------------------
 
     VirusScanner getScanner()
@@ -464,44 +542,32 @@ public abstract class VirusNodeImpl extends AbstractNode
 
     int getTricklePercent()
     {
-        return settings.getTricklePercent();
+        return settings.getBaseSettings().getTricklePercent();
     }
 
-    List getExtensions()
+    Set getExtensions()
     {
         return settings.getExtensions();
     }
 
-    List getHttpMimeTypes()
+    Set getHttpMimeTypes()
     {
         return settings.getHttpMimeTypes();
     }
 
     boolean getFtpDisableResume()
     {
-        return settings.getFtpDisableResume();
+        return settings.getBaseSettings().getFtpDisableResume();
     }
 
     boolean getHttpDisableResume()
     {
-        return settings.getHttpDisableResume();
+        return settings.getBaseSettings().getHttpDisableResume();
     }
 
     void log(VirusEvent evt)
     {
         eventLogger.log(evt);
-    }
-
-    // XXX soon to be deprecated ----------------------------------------------
-
-    public Object getSettings()
-    {
-        return getVirusSettings();
-    }
-
-    public void setSettings(Object settings)
-    {
-        setVirusSettings((VirusSettings)settings);
     }
 
     protected SessionMatcher sessionMatcher()
@@ -534,4 +600,83 @@ public abstract class VirusNodeImpl extends AbstractNode
     public void incrementRemoveCounter() {
         incrementCount(Node.GENERIC_3_COUNTER);
     }
+    
+    // private methods --------------------------------------------------------
+
+    // TODO we should have this into a util class
+    private List getRules(final String queryString, final int start,
+                          final int limit, final String... sortColumns) {
+        TransactionWork<List> tw = new TransactionWork<List>() {
+            private List result;
+
+            public boolean doWork(Session s) {
+                Query q = s.createQuery(queryString
+                                        + QueryUtil.toOrderByClause(sortColumns));
+                q.setParameter("tid", getTid());
+                q.setFirstResult(start);
+                q.setMaxResults(limit);
+                result = q.list();
+
+                return true;
+            }
+
+            public List getResult() {
+                return result;
+            }
+        };
+        getNodeContext().runTransaction(tw);
+
+        return tw.getResult();
+    }
+
+    // TODO we should have this into a util class
+    private void updateRules(final Set rules, final List added,
+                             final List<Long> deleted, final List modified)
+    {
+        TransactionWork tw = new TransactionWork()
+            {
+                public boolean doWork(Session s)
+                {
+                    updateCachedRules(rules, added, deleted, modified);
+
+                    settings = (VirusSettings)s.merge(settings);
+
+                    return true;
+                }
+
+
+                public Object getResult() { return null; }
+            };
+        getNodeContext().runTransaction(tw);
+    }
+    
+
+	private void updateCachedRules(final Set rules, final List added,
+			final List<Long> deleted, final List modified) {
+		for (Iterator i = rules.iterator(); i.hasNext();) {
+			Rule rule = (Rule) i.next();
+			Rule mRule = null;
+			if (deleted != null && ListUtil.contains(deleted, rule.getId())) {
+				i.remove();
+			} else if (modified != null
+					&& (mRule = modifiedRule(rule, modified)) != null) {
+				rule.update(mRule);
+			}
+		}
+
+		if (added != null) {
+			rules.addAll(added);
+		}
+	}
+
+    private Rule modifiedRule(Rule rule, List modified) {
+        for (Iterator iterator = modified.iterator(); iterator.hasNext();) {
+            Rule currentRule = (Rule)iterator.next();
+            if(currentRule.getId().equals(rule.getId())){
+                return currentRule;
+            }
+        }
+        return null;
+    }
+    
 }

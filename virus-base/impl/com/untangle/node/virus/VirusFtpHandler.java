@@ -77,9 +77,9 @@ class VirusFtpHandler extends FtpStateMachine
 
         this.node = node;
 
-        VirusSettings vs = node.getVirusSettings();
+        VirusBaseSettings vbs = node.getVirusSettings().getBaseSettings();
 
-        scan = vs.getFtpConfig().getScan();
+        scan = vbs.getFtpConfig().getScan();
 
         m_fileFactory = new TempFileFactory(getPipeline());
     }
