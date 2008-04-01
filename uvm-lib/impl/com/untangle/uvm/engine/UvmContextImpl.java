@@ -351,30 +351,32 @@ public class UvmContextImpl extends UvmContextBase
     {
         if (null == bdbEnvironment) {
             synchronized (this) {
-                EnvironmentConfig envCfg = new EnvironmentConfig();
-                envCfg.setAllowCreate(true);
+                if (null == bdbEnvironment) {
+                    EnvironmentConfig envCfg = new EnvironmentConfig();
+                    envCfg.setAllowCreate(true);
 
-                Integer maxMegs = Integer.getInteger("je.maxMemory");
-                int maxMem;
-                if (maxMegs == null) {
-                    maxMem = 16 * 1024 * 1024;
-                    logger.warn("No je.maxMemory property, using 16MB");
-                } else {
-                    maxMem = maxMegs * 1024 * 1024;
-                    logger.info("Setting max bdb memory to " + maxMegs + "MB");
-                }
-                envCfg.setCacheSize(maxMem);
+                    Integer maxMegs = Integer.getInteger("je.maxMemory");
+                    int maxMem;
+                    if (maxMegs == null) {
+                        maxMem = 16 * 1024 * 1024;
+                        logger.warn("No je.maxMemory property, using 16MB");
+                    } else {
+                        maxMem = maxMegs * 1024 * 1024;
+                        logger.info("Setting max bdb memory to " + maxMegs + "MB");
+                    }
+                    envCfg.setCacheSize(maxMem);
 
-                File dbHome = new File(BDB_HOME);
+                    File dbHome = new File(BDB_HOME);
 
-                int tries = 0;
-                while (null == bdbEnvironment && 3 > tries++) {
-                    try {
-                        bdbEnvironment = new Environment(dbHome, envCfg);
-                    } catch (DatabaseException exn) {
-                        logger.warn("couldn't load environment, try: " + tries, exn);
-                        for (File f : dbHome.listFiles()) {
-                            boolean deleted = f.delete();
+                    int tries = 0;
+                    while (null == bdbEnvironment && 3 > tries++) {
+                        try {
+                            bdbEnvironment = new Environment(dbHome, envCfg);
+                        } catch (DatabaseException exn) {
+                            logger.warn("couldn't load environment, try: " + tries, exn);
+                            for (File f : dbHome.listFiles()) {
+                                boolean deleted = f.delete();
+                            }
                         }
                     }
                 }
