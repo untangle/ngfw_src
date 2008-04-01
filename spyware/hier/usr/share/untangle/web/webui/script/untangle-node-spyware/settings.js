@@ -9,11 +9,16 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
 	panelBlockLists: null,
     gridPassList: null,
     gridEventLog: null,
+    //called when the component is rendered
     onRender: function(container, position) {
+    	//call superclass renderer first
     	Ung.Spyware.superclass.onRender.call(this,container, position);
+		
+		//build the 3 tabs
 		this.buildBlockLists();
 		this.buildPassList();
 		this.buildEventLog();
+		//builds a tab panel with the 3 panels
 		this.buildTabPanel([this.panelBlockLists,this.gridPassList,this.gridEventLog]);
     },
     // Block lists panel
@@ -28,24 +33,24 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
 			initComponent: function() {
 				var settingsCmp=Ext.getCmp(this.parentId);
 				var template=new Ext.Template(
-'<div style="margin:20px 5px 0px 5px;">'+settingsCmp.i18n._('Web')+'<hr/>',
-	'<div style="clear: both; margin-top: 10px; height:20px;"><input type="checkbox" id="web_checkbox_{id}" onchange="Ext.getCmp(\''+this.getId()+'\').onChangeSpyware(this)"/>&nbsp;&nbsp;&nbsp;'+settingsCmp.i18n._('Block Spyware & Ad URLs')+'</div>',
-	'<div style="clear: both; margin-top: 0px; height:25px;">'+settingsCmp.i18n._('User Bypass')+':&nbsp;&nbsp;&nbsp;',
+'<div style="margin:20px 5px 0px 5px;">'+settingsCmp.i18n._("Web")+'<hr/>',
+	'<div style="clear: both; margin-top: 10px; height:20px;"><input type="checkbox" id="web_checkbox_{id}" onchange="Ext.getCmp(\''+this.getId()+'\').onChangeSpyware(this)"/>&nbsp;&nbsp;&nbsp;'+settingsCmp.i18n._("Block Spyware & Ad URLs")+'</div>',
+	'<div style="clear: both; margin-top: 0px; height:25px;">'+settingsCmp.i18n._("User Bypass")+':&nbsp;&nbsp;&nbsp;',
 	'<select id="user_bypass_{id}" onchange="Ext.getCmp(\''+this.getId()+'\').onChangeUserBypass(this)">',
-		'<option value="NONE">'+settingsCmp.i18n._('None')+'</option>',
-		'<option value="USER_ONLY">'+settingsCmp.i18n._('Temporary')+'</option>',
-		'<option value="USER_AND_GLOBAL">'+settingsCmp.i18n._('Permanent and Global')+'</option>',
+		'<option value="NONE">'+settingsCmp.i18n._("None")+'</option>',
+		'<option value="USER_ONLY">'+settingsCmp.i18n._("Temporary")+'</option>',
+		'<option value="USER_AND_GLOBAL">'+settingsCmp.i18n._("Permanent and Global")+'</option>',
 	'</select></div>',
 '</div>',
-'<div style="margin:20px 5px 0px 5px;">'+settingsCmp.i18n._('Cookies')+'<hr/>',
-	'<div style="clear: both; margin-top: 10px; width:400px;height:20px;"><div style="float:left;width:300px;"><input type="checkbox" id="cookies_checkbox_{id}" onchange="Ext.getCmp(\''+this.getId()+'\').onChangeCookies(this)"/>&nbsp;&nbsp;&nbsp;'+settingsCmp.i18n._('Block Tracking & Ad Cookies')+'</div><div id="cookies_button_{id}" style="float:right;"></div></div></div>',
-'<div style="margin:20px 5px 0px 5px;">'+settingsCmp.i18n._('ActiveX')+'<hr/>',
-	'<div style="clear: both; margin-top: 10px; width:400px;height:20px;"><div style="float:left;width:300px;"><input type="checkbox" id="activex_checkbox_{id}" onchange="Ext.getCmp(\''+this.getId()+'\').onChangeActiveX(this)"/>&nbsp;&nbsp;&nbsp;'+settingsCmp.i18n._('Block Malware ActiveX Installs')+'</div><div id="activex_button_{id}" style="float:right;"></div></div>',
-	'<div style="clear: both; margin-top: 0px; width:400px;height:20px;"><div style="float:left;width:300px;"><input type="checkbox" id="block_all_activex_checkbox_{id}" onchange="Ext.getCmp(\''+this.getId()+'\').onChangeBlockAllActiveX(this)"/>&nbsp;&nbsp;&nbsp;'+settingsCmp.i18n._('Block All ActiveX')+'</div></div>',
+'<div style="margin:20px 5px 0px 5px;">'+settingsCmp.i18n._("Cookies")+'<hr/>',
+	'<div style="clear: both; margin-top: 10px; width:400px;height:20px;"><div style="float:left;width:300px;"><input type="checkbox" id="cookies_checkbox_{id}" onchange="Ext.getCmp(\''+this.getId()+'\').onChangeCookies(this)"/>&nbsp;&nbsp;&nbsp;'+settingsCmp.i18n._("Block Tracking & Ad Cookies")+'</div><div id="cookies_button_{id}" style="float:right;"></div></div></div>',
+'<div style="margin:20px 5px 0px 5px;">'+settingsCmp.i18n._("ActiveX")+'<hr/>',
+	'<div style="clear: both; margin-top: 10px; width:400px;height:20px;"><div style="float:left;width:300px;"><input type="checkbox" id="activex_checkbox_{id}" onchange="Ext.getCmp(\''+this.getId()+'\').onChangeActiveX(this)"/>&nbsp;&nbsp;&nbsp;'+settingsCmp.i18n._("Block Malware ActiveX Installs")+'</div><div id="activex_button_{id}" style="float:right;"></div></div>',
+	'<div style="clear: both; margin-top: 0px; width:400px;height:20px;"><div style="float:left;width:300px;"><input type="checkbox" id="block_all_activex_checkbox_{id}" onchange="Ext.getCmp(\''+this.getId()+'\').onChangeBlockAllActiveX(this)"/>&nbsp;&nbsp;&nbsp;'+settingsCmp.i18n._("Block All ActiveX")+'</div></div>',
 '</div>',
-'<div style="margin:20px 5px 0px 5px;">'+settingsCmp.i18n._('Traffic')+'<hr/>',
-	'<div style="clear: both; margin-top: 10px; width:400px;height:20px;"><div style="float:left;width:300px;"><input type="checkbox" id="subnet_checkbox_{id}" onchange="Ext.getCmp(\''+this.getId()+'\').onChangeSubnet(this)"/>&nbsp;&nbsp;&nbsp;'+settingsCmp.i18n._('Monitor Suspicious Traffic')+'</div><div id="subnet_button_{id}" style="float:right;"></div></div></div>',
-'<div style="margin:20px 5px 0px 5px; font-size:smaller;">'+settingsCmp.i18n._('Spyware Blocker signatures were last updated:')+' <span id="last_update_signatures_{id}"></span></div>');
+'<div style="margin:20px 5px 0px 5px;">'+settingsCmp.i18n._("Traffic")+'<hr/>',
+	'<div style="clear: both; margin-top: 10px; width:400px;height:20px;"><div style="float:left;width:300px;"><input type="checkbox" id="subnet_checkbox_{id}" onchange="Ext.getCmp(\''+this.getId()+'\').onChangeSubnet(this)"/>&nbsp;&nbsp;&nbsp;'+settingsCmp.i18n._("Monitor Suspicious Traffic")+'</div><div id="subnet_button_{id}" style="float:right;"></div></div></div>',
+'<div style="margin:20px 5px 0px 5px; font-size:smaller;">'+settingsCmp.i18n._("Spyware Blocker signatures were last updated:")+' <span id="last_update_signatures_{id}"></span></div>');
 				this.html=template.applyTemplate({id: this.getId()}),
 				Ext.Panel.prototype.initComponent.call(this);
 			},
@@ -55,17 +60,17 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
 				
 				this.subCmps.push(new Ext.Button({
 					'renderTo':'cookies_button_'+this.id,
-					'text': i18n._('manage list'),
+					'text': i18n._("manage list"),
 					'handler': function() {this.onManageCookiesList();}.createDelegate(this)
 				}));
 				this.subCmps.push(new Ext.Button({
 					'renderTo':'activex_button_'+this.id,
-					'text': i18n._('manage list'),
+					'text': i18n._("manage list"),
 					'handler': function() {this.onManageActiveXList();}.createDelegate(this)
 				}));
 				this.subCmps.push(new Ext.Button({
 					'renderTo':'subnet_button_'+this.id,
-					'text': i18n._('manage list'),
+					'text': i18n._("manage list"),
 					'handler': function() {this.onManageSubnetList();}.createDelegate(this)
 				}));
 				var baseSettings=Ext.getCmp(this.parentId).getBaseSettings();
@@ -114,7 +119,7 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
 						        	this.initialChangedData=Ext.encode(settingsCmp.gridCookiesList.changedData);
 						        	settingsCmp.gridCookiesList.setHeight(this.getContentHeight());
 						        },
-						        delay:1
+						        delay: 1
 						    }
 		    			},
 		    			cancelAction: function () {
@@ -147,7 +152,7 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
 						        	this.initialChangedData=Ext.encode(settingsCmp.gridActiveXList.changedData);
 						        	settingsCmp.gridActiveXList.setHeight(this.getContentHeight());
 						        },
-						        delay:1
+						        delay: 1
 						    }
 		    			},
 		    			cancelAction: function () {
@@ -180,7 +185,7 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
 						        	this.initialChangedData=Ext.encode(settingsCmp.gridSubnetList.changedData);
 						        	settingsCmp.gridSubnetList.setHeight(this.getContentHeight());
 						        },
-						        delay:1
+						        delay: 1
 						    }
 		    			},
 		    			cancelAction: function () {
@@ -222,15 +227,15 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
     	this.gridCookiesList=new Ung.EditorGrid({
     		settingsCmp: this,
     		totalRecords: this.getBaseSettings().cookieRulesLength,
-    		emptyRow: {"string":"[no identification]","live":true,"description":"[no description]"},
-    		title: this.i18n._('Cookies List'),
+    		emptyRow: {"string":this.i18n._("[no identification]"),"live":true,"description":i18n._("[no description]")},
+    		title: this.i18n._("Cookies List"),
     		recordJavaClass: "com.untangle.uvm.node.StringRule",
     		proxyRpcFn: this.getRpcNode().getCookieRules,
 			fields: [
 				{name: 'id'},
 				{name: 'string'},
 				{name: 'live'},
-				{name: 'description'}
+				{name: 'description', convert: function(v){ return this.i18n._(v)}.createDelegate(this)}
 			],
 			columns: [
 	          {id:'string',header: this.i18n._("identification"), width: 140,  dataIndex: 'string',
@@ -257,15 +262,15 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
     	this.gridActiveXList=new Ung.EditorGrid({
     		settingsCmp: this,
     		totalRecords: this.getBaseSettings().activeXRulesLength,
-    		emptyRow: {"string":"[no identification]","live":true,"description":"[no description]"},
-    		title: this.i18n._('ActiveX List'),
+    		emptyRow: {"string":this.i18n._("[no identification]"),"live":true,"description":i18n._("[no description]")},
+    		title: this.i18n._("ActiveX List"),
     		recordJavaClass: "com.untangle.uvm.node.StringRule",
     		proxyRpcFn: this.getRpcNode().getActiveXRules,
 			fields: [
 				{name: 'id'},
 				{name: 'string'},
 				{name: 'live'},
-				{name: 'description'}
+				{name: 'description', convert: function(v){ return this.i18n._(v)}.createDelegate(this)}
 			],
 			columns: [
 	          {id:'string',header: this.i18n._("identification"), width: 140,  dataIndex: 'string',
@@ -292,8 +297,8 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
     	this.gridSubnetList=new Ung.EditorGrid({
     		settingsCmp: this,
     		totalRecords: this.getBaseSettings().subnetRulesLength,
-    		emptyRow: {"ipMaddr":"1.2.3.4/5","name":"[no name]","log":true, description: "[no description]"},
-    		title: this.i18n._('Subnet List'),
+    		emptyRow: {"ipMaddr":"1.2.3.4/5","name":i18n._("[no name]"),"log":true, description: i18n._("[no description]")},
+    		title: this.i18n._("Subnet List"),
     		recordJavaClass: "com.untangle.uvm.node.IPMaddrRule",
     		proxyRpcFn: this.getRpcNode().getSubnetRules,
 			fields: [
@@ -301,7 +306,7 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
 				{name: 'name'},
 				{name: 'ipMaddr'},
 				{name: 'log'},
-				{name: 'description'}
+				{name: 'description', convert: function(v){ return this.i18n._(v)}.createDelegate(this)}
 			],
 			columns: [
 				{id:'name',header: this.i18n._("name"), width: 150,  dataIndex: 'name',
@@ -345,8 +350,8 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
     	this.gridPassList=new Ung.EditorGrid({
     		settingsCmp: this,
     		totalRecords:this.getBaseSettings().domainWhitelistLength,
-    		emptyRow: {"string":"","live":true,"category":"[no category]","description":"[no description]"},
-    		title: this.i18n._('Pass List'),
+    		emptyRow: {"string":"","live":true,"category":i18n._("[no category]"),"description":i18n._("[no description]")},
+    		title: this.i18n._("Pass List"),
     		proxyRpcFn: this.getRpcNode().getDomainWhitelist,
     		recordJavaClass: "com.untangle.uvm.node.StringRule",
 			fields: [
@@ -354,7 +359,7 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
 				{name: 'string'},
 				{name: 'live'},
 				{name: 'category'},
-				{name: 'description'}
+				{name: 'description', convert: function(v){ return this.i18n._(v)}.createDelegate(this)}
 			],
 			columns: [
 				{id:'string',header: this.i18n._("site"), width: 140,  dataIndex: 'string',
@@ -378,11 +383,14 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
     buildEventLog: function() {
 		this.gridEventLog=new Ung.GridEventLog({
 			settingsCmp: this,
+			//This is a predefined event log, so there is no need to specify the fields and columns
 			predefinedType: "TYPE1"
 		});
     },
     
+    //validation function
     validate: function(callback) {
+    	//ipMaddr list must be validated server side
 		var ipMaddrList=[];
 		var subnetSaveList=this.gridSubnetList?this.gridSubnetList.getSaveList():null;
 		if(subnetSaveList!=null) {
@@ -394,11 +402,11 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
 			}
 			if(ipMaddrList.length>0) {
 				this.getValidator().validate(function (result, exception) {
-					if(exception) {Ext.MessageBox.alert("Failed",exception.message); return;}
+					if(exception) {Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}
 					if(!result.valid) {
 						this.panelBlockLists.onManageSubnetList();
 						this.gridSubnetList.focusFirstChangedDataByFieldValue("ipMaddr",result.cause);
-						Ext.MessageBox.alert("Validation failed",result.message+": "+result.cause);
+						Ext.MessageBox.alert(this.i18n._("Validation failed"),this.i18n._(result.message)+": "+result.cause);
 						return;
 					} else {
 						callback.call(this);
@@ -413,13 +421,16 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
     },
     // save function
 	save: function() {
-		this.validate( function() {	
+		//validate first
+		this.validate( function() {
+			//disable tabs during save
 			this.tabs.disable();
 			this.getRpcNode().updateAll(function (result, exception) {
+				//re-enable tabs
 				this.tabs.enable();
-				if(exception) {Ext.MessageBox.alert("Failed",exception.message); return;}
+				if(exception) {Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}
+				//exit settings screen
 				this.node.onCancelClick();
-				
 			}.createDelegate(this),
 				this.getBaseSettings(),
 				this.gridActiveXList?this.gridActiveXList.getSaveList():null,
