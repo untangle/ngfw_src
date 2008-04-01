@@ -1,5 +1,7 @@
+//resources map
 Ung.hasResource={};
-Ung.RPC= function (){};
+
+//Button component class
 Ung.Button = Ext.extend(Ext.Component, {
     hidden: false,
     width:'100%',
@@ -12,7 +14,7 @@ Ung.Button = Ext.extend(Ext.Component, {
     initComponent: function(){
         Ung.Button.superclass.initComponent.call(this);
         this.addEvents(
-            "click",
+            'click',
             'mouseover',
             'mouseout');
     },
@@ -66,7 +68,7 @@ Ung.Button.template = new Ext.Template(
 '</tr></table>');
 Ext.ComponentMgr.registerType('utgButton', Ung.Button);
 
-
+//Node Class
 Ung.Node = Ext.extend(Ext.Component, {
 	initComponent : function(){
 	    Ung.Node.superclass.initComponent.call(this);
@@ -131,14 +133,14 @@ Ung.Node = Ext.extend(Ext.Component, {
        		this.nodeContext.node.start(function (result, exception) {
        			this.runState="RUNNING";
 				this.setState("On");
-				if(exception) {Ext.MessageBox.alert("Failed",exception.message); return;}
+				if(exception) {Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}
        		}.createDelegate(this));
        	} else {
        		this.nodeContext.node.stop(function (result, exception) {
 				this.runState="INITIALIZED";
 				this.setState("Off");
 				this.resetBlingers();
-				if(exception) {Ext.MessageBox.alert("Failed",exception.message); return;}
+				if(exception) {Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}
        		}.createDelegate(this));
        	}
 	},
@@ -181,7 +183,7 @@ Ung.Node = Ext.extend(Ext.Component, {
 					cmp.postInitSettings()
 				},
 				failure: function ( result, request) { 
-					Ext.MessageBox.alert("Failed", 'Failed loading I18N translations for this node' ); 
+					Ext.MessageBox.alert(i18n._("Failed"), i18n._("Failed loading I18N translations for this node") ); 
 				}
 			});
 		} else {
@@ -196,7 +198,6 @@ Ung.Node = Ext.extend(Ext.Component, {
       	if(this.settingsClassName!==null) {
        		eval('this.settings=new '+this.settingsClassName+'({\'node\':this,\'tid\':this.tid,\'name\':this.name});');
        		this.settings.render('settings_'+this.getId());
-       		this.settings.loadData();
        	} else {
        		var settingsContent=document.getElementById('settings_'+this.getId());
        		settingsContent.innerHTML="Error: There is no settings class for the node '"+this.name+"'.";
@@ -226,7 +227,7 @@ Ung.Node = Ext.extend(Ext.Component, {
        	}
        	this.setState("Attention");
        	rpc.nodeManager.destroy(function (result, exception) {
-			if(exception) { Ext.MessageBox.alert("Failed",exception.message); 
+			if(exception) { Ext.MessageBox.alert(i18n._("Failed"),exception.message); 
 				return;
 			}
 			if(this) {
@@ -292,7 +293,7 @@ Ung.Node = Ext.extend(Ext.Component, {
       
 	    var settingsHTML=Ung.Node.templateSettings.applyTemplate({'id':this.getId()});
 	    var settingsButtonsHTML=Ung.Node.templateSettingsButtons.applyTemplate({'id':this.getId()});
-	    //Ext.MessageBox.alert("Failed",settingsHTML);
+	    //Ext.MessageBox.alert(i18n._("Failed"),settingsHTML);
 	    this.settingsWin=new Ext.Window({
 			id: 'settingsWin_'+this.getId(),
 			layout:'border',
@@ -332,7 +333,7 @@ Ung.Node = Ext.extend(Ext.Component, {
 		Ext.get('nodePowerIconImg_'+this.getId()).on('click', this.onPowerClick, this);
 		var cmp=null;
 		cmp=new Ext.ToolTip({
-		  html: Ung.Node.statusTip,
+		  html: Ung.Node.getStatusTip(),
 		  target: 'nodeStateIconImg_'+this.getId(),
 		  autoWidth: true,
 		  autoHeight: true,
@@ -341,7 +342,7 @@ Ung.Node = Ext.extend(Ext.Component, {
 		  hideDelay: 0
 		});
 		cmp=new Ext.ToolTip({
-		  html: Ung.Node.powerTip,
+		  html: Ung.Node.getPowerTip(),
 		  target: 'nodePowerIconImg_'+this.getId(),
 		  autoWidth: true,
 		  autoHeight: true,
@@ -350,53 +351,55 @@ Ung.Node = Ext.extend(Ext.Component, {
 		  hideDelay: 0
 		});
 		cmp=new Ext.Button({
-	        'iconCls': 'nodeSettingsIcon',
-			'renderTo':'nodeSettingsButton_'+this.getId(),
-	        'text': i18n._('Show Settings'),
-	        'handler': function() {this.onSettingsClick();}.createDelegate(this)
+	        iconCls: 'nodeSettingsIcon',
+			renderTo: 'nodeSettingsButton_'+this.getId(),
+	        text: i18n._('Show Settings'),
+	        handler: function() {this.onSettingsClick();}.createDelegate(this)
         });
 		cmp=new Ext.Button({
-	        'iconCls': 'helpIcon',
-			'renderTo':'nodeHelpButton_'+this.getId(),
-	        'text': 'Help',
-	        'handler': function() {this.onHelpClick();}.createDelegate(this)
+	        iconCls: 'helpIcon',
+			renderTo: 'nodeHelpButton_'+this.getId(),
+	        text: i18n._('Help'),
+	        handler: function() {this.onHelpClick();}.createDelegate(this)
         });
 		cmp=new Ext.Button({
-			'iconCls': 'nodeRemoveIcon',
-			'renderTo':'nodeRemoveButton_'+this.getId(),
-	        'text': 'Remove',
-	        'handler': function() {this.onRemoveClick();}.createDelegate(this)
+			iconCls: 'nodeRemoveIcon',
+			renderTo: 'nodeRemoveButton_'+this.getId(),
+	        text: i18n._('Remove'),
+	        handler: function() {this.onRemoveClick();}.createDelegate(this)
         });
 		cmp=new Ext.Button({
-	        'iconCls': 'cancelIcon',
-			'renderTo':'nodeCancelButton_'+this.getId(),
-	        'text': 'Cancel',
-	        'handler': function() {this.onCancelClick();}.createDelegate(this)
+	        iconCls: 'cancelIcon',
+			renderTo: 'nodeCancelButton_'+this.getId(),
+	        text: i18n._('Cancel'),
+	        handler: function() {this.onCancelClick();}.createDelegate(this)
         });
 		cmp=new Ext.Button({
-	        'iconCls': 'saveIcon',
-			'renderTo':'nodeSaveButton_'+this.getId(),
-	        'text': 'Save',
-	        'handler': function() {this.onSaveClick();}.createDelegate(this)
+	        iconCls: 'saveIcon',
+			renderTo: 'nodeSaveButton_'+this.getId(),
+	        text: i18n._('Save'),
+	        handler: function() {this.onSaveClick();}.createDelegate(this)
         });
         this.updateRunState(this.runState);
        	this.initBlingers();
 	}
 });
-
+// Get node component by nodeId
 Ung.Node.getCmp=function(nodeId) {
 	return Ext.getCmp(nodeId);
 };
 
-
-
-Ung.Node.statusTip=['<div style="text-align: left;">',
-'The <B>Status Indicator</B> shows the current operating condition of a particular software product.<BR>',
-'<font color="#00FF00"><b>Green</b></font> indicates that the product is "on" and operating normally.<BR>',
-'<font color="#FF0000"><b>Red</b></font> indicates that the product is "on", but that an abnormal condition has occurred.<BR>',
-'<font color="#FFFF00"><b>Yellow</b></font> indicates that the product is saving or refreshing settings.<BR>',
-'<b>Clear</b> indicates that the product is "off", and may be turned "on" by the user.</div>'].join('');
-Ung.Node.powerTip='The <B>Power Button</B> allows you to turn a product "on" and "off".';
+Ung.Node.getStatusTip=function() {
+	return ['<div style="text-align: left;">',
+	i18n._("The <B>Status Indicator</B> shows the current operating condition of a particular software product."),'<BR>',
+	'<font color="#00FF00"><b>'+i18n._("Green")+'</b></font> '+i18n._('indicates that the product is "on" and operating normally.'),'<BR>',
+	'<font color="#FF0000"><b>'+i18n._("Red")+'</b></font> '+i18n._('indicates that the product is "on", but that an abnormal condition has occurred.'),'<BR>',
+	'<font color="#FFFF00"><b>'+i18n._("Yellow")+'</b></font> '+i18n._('indicates that the product is saving or refreshing settings.'),'<BR>',
+	'<b>'+i18n._("Clear")+'</b> '+i18n._('indicates that the product is "off", and may be turned "on" by the user.'),'</div>'].join('');
+}
+Ung.Node.getPowerTip= function() {
+	return i18n._('The <B>Power Button</B> allows you to turn a product "on" and "off".');
+};
 Ung.Node.template = new Ext.Template(
 '<div class="nodeImage"><img src="{image}"/></div>',
 '<div class="nodeLabel">{displayName}</div><div class="nodeBlingers" id="nodeBlingers_{id}"></div>',
@@ -413,9 +416,10 @@ Ung.Node.templateSettingsButtons=new Ext.Template(
 '<div class="nodeCancelButton" id="nodeCancelButton_{id}"></div>',
 '<div class="nodeSaveButton" id="nodeSaveButton_{id}"></div>');
 
-
+//Blinger Manager object
 Ung.BlingerManager = {
-	updateTime: 5000, //update interval in millisecond
+	//update interval in millisecond
+	updateTime: 5000,
 	started: false,
 	intervalId: null,
 	cycleCompleted:true,
@@ -451,7 +455,7 @@ Ung.BlingerManager = {
 			this.cycleCompleted=false;
 			rpc.nodeManager.allNodeStats(function (result, exception) {
 				if(exception) { 
-					Ext.MessageBox.alert("Failed",exception.message, function() {
+					Ext.MessageBox.alert(i18n._("Failed"),exception.message, function() {
 						Ung.BlingerManager.cycleCompleted=true;
 					});
 					return;
@@ -475,6 +479,7 @@ Ung.BlingerManager = {
 	}
 };
 
+//Activity Blinger Class
 Ung.ActivityBlinger = Ext.extend(Ext.Component, {
 	parentId: null,
 	bars: null,
@@ -486,7 +491,7 @@ Ung.ActivityBlinger = Ext.extend(Ext.Component, {
 		container.dom.insertBefore(el, position);
 		this.el = Ext.get(el);
 		this.id=Ext.id(this);
-		var templateHTML=Ung.ActivityBlinger.template.applyTemplate({'id':this.getId()});
+		var templateHTML=Ung.ActivityBlinger.template.applyTemplate({'id':this.getId(),'blingerName':i18n._("activity")});
 		el.innerHTML=templateHTML;
 		this.lastValues=[];
 		this.decays=[];
@@ -497,7 +502,7 @@ Ung.ActivityBlinger = Ext.extend(Ext.Component, {
      			var top=3+i*15;
      			this.lastValues.push(null);
      			this.decays.push(0);
-     			out.push('<div class="blingerText activityBlingerText" style="top:'+top+'px;">'+bar+'</div>');
+     			out.push('<div class="blingerText activityBlingerText" style="top:'+top+'px;">'+i18n._(bar)+'</div>');
      			out.push('<div class="activityBlingerBar" style="top:'+top+'px;width:0px;display:none;" id="activityBar_'+this.getId()+'_'+i+'"></div>');
      		}
      		document.getElementById("blingerBox_"+this.getId()).innerHTML=out.join("");
@@ -529,7 +534,7 @@ Ung.ActivityBlinger = Ext.extend(Ext.Component, {
         
 });
 Ung.ActivityBlinger.template = new Ext.Template(
-'<div class="blingerName">activity</div>',
+'<div class="blingerName">{blingerName}</div>',
 '<div class="blingerBox" id="blingerBox_{id}" style="width:60px;">',
 '</div>');
 Ung.ActivityBlinger.decayFactor=Math.pow(0.94,Ung.BlingerManager.updateTime/1000);
@@ -543,6 +548,7 @@ Ung.ActivityBlinger.decayValue = function(newValue, lastValue, decay) {
 };
 Ext.ComponentMgr.registerType('utgActivityBlinger', Ung.ActivityBlinger);
 
+//System Blinger Class
 Ung.SystemBlinger = Ext.extend(Ext.Component, {
 	parentId: null,
 	data: null,
@@ -559,7 +565,7 @@ Ung.SystemBlinger = Ext.extend(Ext.Component, {
 	        container.dom.insertBefore(el, position);
         	this.el = Ext.get(el);
         	this.id=Ext.id(this);
-			var templateHTML=Ung.SystemBlinger.template.applyTemplate({'id':this.getId()});
+			var templateHTML=Ung.SystemBlinger.template.applyTemplate({'id':this.getId(),'blingerName':i18n._("system")});
 			el.innerHTML=templateHTML;
 			this.byteCountCurrent=0;
 			this.byteCountLast=0;
@@ -569,10 +575,10 @@ Ung.SystemBlinger = Ext.extend(Ext.Component, {
 			this.sessionRequestTotal=0;
 			
 			this.data=[];
-			this.data.push({"name":"Current Session Count:","value":"&nbsp;"});
-			this.data.push({"name":"ACC:","value":"&nbsp;"});
-			this.data.push({"name":"REQ:","value":"&nbsp;"});
-			this.data.push({"name":"Data rate:","value":"&nbsp;"});
+			this.data.push({"name":i18n._("Current Session Count:"),"value":"&nbsp;"});
+			this.data.push({"name":i18n._("ACC:"),"value":"&nbsp;"});
+			this.data.push({"name":i18n._("REQ:"),"value":"&nbsp;"});
+			this.data.push({"name":i18n._("Data rate:"),"value":"&nbsp;"});
         	if(this.data!==null) {
         		var out=[];
         		for(var i=0;i<this.data.length;i++) {
@@ -630,24 +636,30 @@ Ung.SystemBlinger = Ext.extend(Ext.Component, {
 	}
 });
 Ung.SystemBlinger.template = new Ext.Template(
-'<div class="blingerName">system</div>',
+'<div class="blingerName">{blingerName}</div>',
 '<div class="systemBlingerBox" id="blingerBox_{id}" style="width:100%">',
 '</div>');
 Ext.ComponentMgr.registerType('utgSystemBlinger', Ung.SystemBlinger);
 
 
-//setting object
+
+//Setting base class
 Ung.Settings = Ext.extend(Ext.Component, {
+    // node i18n
     i18n: null,
+    // node object
     node: null,
+    // settings tabs (if the settings has tabs layout)
     tabs: null,
-    rpc: null,
+    // holds the json rpc results for the settings class like baseSettings object, repository, repositoryDesc
+    rpc: null, 
     autoEl: 'div',
 	initComponent: function(container, position) {
 		this.rpc={};
     	this.i18n=Ung.i18nNodeInstances[this.name];
     	Ung.Settings.superclass.initComponent.call(this);
 	},
+    // build Tab panel from an array of tab items
 	buildTabPanel: function(itemsArray) {
 		this.tabs = new Ext.TabPanel({
 	        renderTo: this.getEl().id,
@@ -670,21 +682,25 @@ Ung.Settings = Ext.extend(Ext.Component, {
 			}
 	    });
 	},
+    // get nodeContext.node object
 	getRpcNode: function() {
 		return this.node.nodeContext.node;
 	},
+    // get base settings object
 	getBaseSettings: function(forceReload) {
 		if(forceReload || this.rpc.baseSettings===undefined) {
 			this.rpc.baseSettings=this.getRpcNode().getBaseSettings();
 		}
 		return this.rpc.baseSettings;
 	},
+    // get Validator object
 	getValidator: function() {
-		if(this.rpc.validator===undefined) {
-			this.rpc.validator=this.getRpcNode().getValidator();
+		if(this.node.nodeContext.node===undefined) {
+			this.node.nodeContext.node.validator=this.getRpcNode().getValidator();
 		}
-		return this.rpc.validator;
+		return this.node.nodeContext.node.validator;
 	},
+    // get eventManager object
 	getEventManager: function () {
 		if(this.node.nodeContext.node.eventManager===undefined) {
 			this.node.nodeContext.node.eventManager=this.node.nodeContext.node.getEventManager();
@@ -695,35 +711,51 @@ Ung.Settings = Ext.extend(Ext.Component, {
         Ext.destroy(this.tabs);
         Ung.Settings.superclass.beforeDestroy.call(this);
     },
-    //to override
-    loadData: function() {
-	},
-    //to override
+    // All settings classes mut override the save method
 	save: function() {
 	}
 });
 Ung.Settings._nodeScripts={};
+
+// Dynamically loads javascript file for a node
 Ung.Settings.loadNodeScript=function(nodeName,cmpId,callbackFn) {
 	main.loadScript('script/'+nodeName+'/settings.js',function() {callbackFn(cmpId);});
 };
 Ung.Settings._classNames={};
+
+// Static function get the settings class name for a node
 Ung.Settings.getClassName=function(name) {
 	var className=Ung.Settings._classNames[name];
 	return className===undefined?null:className;
 };
-Ung.Settings.hasClassName=function(name) {
-	return Ung.Settings._classNames[name]!==undefined;
-};
+// Static function to register a settings class name for a node
 Ung.Settings.registerClassName=function(name,className) {
 	Ung.Settings._classNames[name]=className;
 };
 
+
+
+//Event Log class
 Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
+	// the settings component
 	settingsCmp: null,
+	//if the event log has more than one repositories that can be selected
 	hasRepositories: true,
+	//Event manager rpc function to call
+	// default is getEventManager() from settingsCmp
 	eventManagerFn: null,
-	enableHdMenu: false,
+	//Records per page
 	recordsPerPage: 20,
+	// fields for the Store
+	fields:null,
+	// columns for the column model
+	columns:null,
+	enableHdMenu: false,
+	//Predefined event log type. means the fileds and columns are predefined.
+	//This was introduced for the speed of development. 
+	// TYPE1: timeStamp, blocked, pipelineEndpoints, protocol, blocked, server
+	predefinedType: null,
+	//get the fields for a predefined type 
 	getPredefinedFields: function(type) {
 		var fields=null;
 		switch(type) {
@@ -740,6 +772,7 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
 		}
 		return fields;
 	},
+	//get the columns for a predefined type
 	getPredefinedColumns: function(type) {
 		var columns=null;
 		switch(type) {
@@ -764,6 +797,7 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
 		}
 		return columns;
 	},
+	//initComponent
 	initComponent: function(){
     	if(this.title==null) {
     		this.title=i18n._('Event Log');
@@ -799,17 +833,14 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
 					},
 					new Ext.PagingToolbar({
 						pageSize: this.recordsPerPage,
-						store: this.store//,
-						//displayInfo: true,
-						//displayMsg: 'Displaying topics {0} - {1} of {2}',
-						//emptyMsg: "No topics to display"
+						store: this.store
 					})];
         Ung.GridEventLog.superclass.initComponent.call(this);
 	},
 	onRender : function(container, position) {
 		Ung.GridEventLog.superclass.onRender.call(this,container, position);
 		this.eventManagerFn.getRepositoryDescs(function (result, exception) {
-			if(exception) {Ext.MessageBox.alert("Failed",exception.message); return;}
+			if(exception) {Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}
 			if(this.settingsCmp) {
 				this.settingsCmp.rpc.repositoryDescs=result;
 				var out=[];
@@ -826,6 +857,7 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
 			}
 		}.createDelegate(this));
 	},
+	//get selected repository
     getSelectedRepository: function () {
     	var selObj=document.getElementById('selectRepository_'+this.getId()+'_'+this.settingsCmp.node.tid);
     	var result=null;
@@ -834,6 +866,7 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
     	}
 		return result;
     },
+    //Refresh the events list
 	refreshList: function() {
 		var selRepository=this.getSelectedRepository();
 		if(selRepository!==null) {
@@ -841,7 +874,7 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
 				this.settingsCmp.rpc.repository[selRepository]=this.eventManagerFn.getRepository(selRepository);
 			}
 			this.settingsCmp.rpc.repository[selRepository].getEvents(function (result, exception) {
-				if(exception) {Ext.MessageBox.alert("Failed",exception.message); return;}
+				if(exception) {Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}
 				var events = result;
 				if(this.settingsCmp!==null) {
 					this.getStore().proxy.data=events;
@@ -852,22 +885,31 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
 	}
 });
 
-
+//Standard Ung window
+// has 2 sections: content and buttons
 Ung.Window = Ext.extend(Ext.Window, {
 	layout:'border',
 	modal:true,
 	renderTo:'container',
+	//window title
 	title:null,
+	// content html
 	contentHtml: null,
+	// buttons html
 	buttonsHtml: null,
+	// function called by close action
 	closeAction:'hide',
 	draggable:false,
 	resizable:false,
+	//sub componetns - used by destroy function
 	subCmps: null,
+	// size to rack right side on show
 	sizeToRack: true,
+	// get the content element
 	getContentEl: function() {
 		return document.getElementById("window_content_"+this.getId());
 	},
+	// get the content element height
 	getContentHeight: function() {
 		return this.items.get(0).getEl().getHeight(true);
 	},
@@ -901,6 +943,7 @@ Ung.Window = Ext.extend(Ext.Window, {
 		Ext.each(this.subCmps,Ext.destroy);
 		Ung.Window.superclass.beforeDestroy.call(this);
 	},
+	//on show position and size
     show: function() {
     	Ung.Window.superclass.show.call(this);
 		if(this.sizeToRack) {
@@ -916,6 +959,9 @@ Ung.Window.buttonsTemplate=new Ext.Template(
 '<div class="buttonCancelPos" id="button_cancel_{id}"></div>',
 '<div class="buttonUpdatePos" id="button_update_{id}"></div>');
 
+
+//update window
+// has the content and 3 standard buttons: help, cancel, Update
 Ung.UpdateWindow = Ext.extend(Ung.Window, {
 	closeAction:'cancelAction',
 	initComponent: function() {
@@ -928,43 +974,51 @@ Ung.UpdateWindow = Ext.extend(Ung.Window, {
 	},
 	initButtons: function() {
 		this.subCmps.push(new Ext.Button({
-			'renderTo':'button_help_'+this.getId(),
-			'iconCls': 'helpIcon',
-			'text': i18n._('Help'),
-			'handler': function() {this.helpAction();}.createDelegate(this)
+			renderTo: 'button_help_'+this.getId(),
+			iconCls: 'helpIcon',
+			text: i18n._('Help'),
+			handler: function() {this.helpAction();}.createDelegate(this)
 		}));
 		this.subCmps.push(new Ext.Button({
-			'renderTo':'button_cancel_'+this.getId(),
-			'iconCls': 'cancelIcon',
-			'text': i18n._('Cancel'),
-			'handler': function() {this.cancelAction();}.createDelegate(this)
+			renderTo: 'button_cancel_'+this.getId(),
+			iconCls: 'cancelIcon',
+			text: i18n._('Cancel'),
+			handler: function() {this.cancelAction();}.createDelegate(this)
 		}));
 		this.subCmps.push(new Ext.Button({
-			'renderTo':'button_update_'+this.getId(),
-			'iconCls': 'saveIcon',
-			'text': i18n._('Update'),
-			'handler': function() {this.updateAction();}.createDelegate(this)
+			renderTo: 'button_update_'+this.getId(),
+			iconCls: 'saveIcon',
+			text: i18n._('Update'),
+			handler: function() {this.updateAction();}.createDelegate(this)
 		}));
 	},
+	// the help method
 	//to override
 	helpAction: function() {
 		main.todo();
 	},
+	// the cancel action
 	//to override
 	cancelAction: function() {
 		this.hide();
 	},
+	// the update actions
 	//to override
 	updateAction: function() {
 	}
 });
-
+// Row editor window used by editor grid
 Ung.RowEditorWindow = Ext.extend(Ung.UpdateWindow, {
+	// the editor grid
 	grid: null,
+	// input lines for standard input lines (text, checkbox, textarea, ..)
 	inputLines: null,
+	// content template must be defied for row editors with non standard input lines
 	contentTemplate: null,
+	// the row Index of the curent edit
 	rowIndex: null,
 	sizeToRack: false,
+	//size to grid on show
 	sizeToGrid: false,
 	initComponent: function() {
 		if(!this.height && !this.width) {
@@ -974,6 +1028,8 @@ Ung.RowEditorWindow = Ext.extend(Ung.UpdateWindow, {
     		this.title=i18n._('Edit');
     	}
     	var contentTemplate=null;
+    	//TODO: define comportament for select boxes
+    	//TODO: can define custom input lines?
     	if(this.inputLines) {
     		var contentArr=[];
     		for(var i=0;i<this.inputLines.length;i++) {
@@ -1012,6 +1068,7 @@ Ung.RowEditorWindow = Ext.extend(Ung.UpdateWindow, {
 			this.setSize(objSize);
 		}
     },
+    // populate is called whent a record is edited, tot populate the edit window
 	populate: function(record,rowIndex) {
 		this.rowIndex=rowIndex;
 		if(this.inputLines) {
@@ -1029,6 +1086,7 @@ Ung.RowEditorWindow = Ext.extend(Ung.UpdateWindow, {
 			}
 		}
 	},
+	// updateAction is called to update the record after the edit
 	updateAction: function() {
 		if(this.rowIndex!==null) {
 			var rec=this.grid.getStore().getAt(this.rowIndex);
@@ -1052,15 +1110,18 @@ Ung.RowEditorWindow = Ext.extend(Ung.UpdateWindow, {
 });
 
 //RpcProxy
+// uses json rpc to get the information from the server
 Ung.RpcProxy = function(rpcFn){
     Ung.RpcProxy.superclass.constructor.call(this);
     this.rpcFn = rpcFn;
 };
 
 Ext.extend(Ung.RpcProxy, Ext.data.DataProxy, {
+	//sets the total number of records
 	setTotalRecords: function(totalRecords) {
 		this.totalRecords=totalRecords;
 	},
+	//load function for Proxy class
     load : function(params, reader, callback, scope, arg) {
     	var obj={};
     	obj.params=params;
@@ -1075,7 +1136,7 @@ Ext.extend(Ung.RpcProxy, Ext.data.DataProxy, {
     	}
     	this.rpcFn(function (result, exception) {
 			if(exception) {
-				Ext.MessageBox.alert("Failed",exception.message); 
+				Ext.MessageBox.alert(i18n._("Failed"),exception.message); 
 				this.callback.call(this.scope, null, this.arg, false);
 				return;
 			}
@@ -1095,15 +1156,19 @@ Ext.extend(Ung.RpcProxy, Ext.data.DataProxy, {
 });
 
 //Memory Proxy
-
+// holds all the data and returns only the page data
+// is used by Event Log store
 Ung.MemoryProxy = function(config){
     Ext.apply(this, config);
     Ung.MemoryProxy.superclass.constructor.call(this);
 };
 
 Ext.extend(Ung.MemoryProxy, Ext.data.DataProxy, {
+	//the root property
 	root: null,
+	// the data
 	data: null,
+	//load function for Proxy class
     load : function(params, reader, callback, scope, arg){
         params = params || {};
         var result;
@@ -1142,6 +1207,8 @@ Ext.extend(Ung.MemoryProxy, Ext.data.DataProxy, {
         callback.call(scope, result, arg, true);
     }
 });
+
+// Grid check column
 Ext.grid.CheckColumn = function(config){
     Ext.apply(this, config);
     if(!this.id){
@@ -1176,6 +1243,7 @@ Ext.grid.CheckColumn.prototype ={
         return '<div class="x-grid3-check-col'+(value?'-on':'')+' x-grid3-cc-'+this.id+'">&#160;</div>';
     }
 };
+// Grid edit column
 Ext.grid.EditColumn = function(config){
     Ext.apply(this, config);
     if(!this.id){
@@ -1222,6 +1290,7 @@ Ext.grid.EditColumn.prototype ={
         return '<div class="editRow">&nbsp;</div>';
     }
 };
+// Grid delete column
 Ext.grid.DeleteColumn = function(config){
     Ext.apply(this, config);
     if(!this.id){
@@ -1268,22 +1337,41 @@ Ext.grid.DeleteColumn.prototype ={
     }
 };
 
+
+//Editor Grid class
 Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
+	// record per page
 	recordsPerPage: 20,
+	// the minimum number of records for pagination
 	minPaginateCount: 60,
+	// the total number of records
 	totalRecords: null,
+	// settings component
 	settingsCmp: null,
+	//proxy Json Rpc function to populate the Store
 	proxyRpcFn: null,
+	// the list of fields used to by the Store
 	fields: null,
+	// has Add button
 	hasAdd: true,
+	// has Edit buton on each record
 	hasEdit: true,
+	// has Delete buton on each record
 	hasDelete: true,
+	// the default Empty record for a new row
 	emptyRow: null,
+	// input lines used by the row editor
 	rowEditorInputLines: null,
+	// the default sort field
 	sortField: null,
+	// the columns are sortable by default, if sortable is not specified
 	columnsDefaultSortable: null,
+	// force paginate, even if the totalRecords is smaller than minPaginateCount
 	forcePaginate: false,
+	// javaClass of the record, used in save function to create correct json-rpc object
 	recordJavaClass: null,
+	// the map of changed data in the grid
+	// used by rendering functions and by save
 	changedData: null,
 	stripeRows: true,
 	clicksToEdit: 1,
@@ -1384,6 +1472,7 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		this.addedId--;
 		return this.addedId;
 	},
+	// is grid paginated
 	isPaginated: function() {
 		return this.forcePaginate || (this.totalRecords!=null && this.totalRecords>=this.minPaginateCount)
 	},
@@ -1408,11 +1497,12 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		}
 		this.initialLoad.defer(1, this);
 	},
-	
+	//load first page initialy
 	initialLoad: function() {
 		this.setTotalRecords(this.totalRecords);
 		this.loadPage(0);
 	},
+	// load a page
 	loadPage: function(pageStart,callback, scope, arg) {
 		if(!this.isPaginated()) {
 			this.getStore().load({callback:callback, scope:scope, arg: arg});
@@ -1420,6 +1510,7 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			this.getStore().load({params:{start: pageStart, limit: this.recordsPerPage}, callback:callback, scope:scope, arg: arg});
 		}
 	},
+	//when a page is rendered load the changedData for it
 	updateFromChangedData: function(store, records, options) {
 		var pageStart=this.store.getPageStart();
 		for(id in this.changedData) {
@@ -1439,6 +1530,7 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			}
 		}
 	},
+	//Test if there are changed data
 	hasChangedData: function () {
 		var hasChangedData=false;
 		for(id in this.changedData) {
@@ -1447,6 +1539,7 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		}
 		return hasChangedData;
 	},
+	//Update Changed data after an operation (modifyed, deleted, added)
 	updateChangedData: function( record, currentOp) {
 		if(!this.hasChangedData()) {
 			var cmConfig=this.getColumnModel().config;
@@ -1482,6 +1575,7 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		}
 		
 	},
+	//Set the total number of records
 	setTotalRecords: function(totalRecords) {
 		this.totalRecords=totalRecords;
 		if(this.totalRecords!=null) {
@@ -1513,6 +1607,8 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			this.getView().focusRow(recIndex);
 		}
 	},
+	//focus the first changed row matching a field value
+	//used by validation functions
 	focusFirstChangedDataByFieldValue: function(field,value) {
 		var cd=this.findFirstChangedDataByFieldValue("ipMaddr",value)
 		if(cd!=null) {
@@ -1523,6 +1619,7 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			}.createDelegate(this), this, cd);
 		} 
 	},
+	//Get the save list from the changed data
 	getSaveList: function() {
 		var added=[];
 		var deleted=[];
@@ -1543,5 +1640,11 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			}
 		}
 		return [{list: added,"javaClass":"java.util.ArrayList"}, {list: deleted,"javaClass":"java.util.ArrayList"}, {list: modified,"javaClass":"java.util.ArrayList"}];
+	},
+	//Get the entire list
+	// for the unpaginated grids, that send all the records on save
+	getFullSaveList: function() {
+		//TODO: implement this
 	}
+
 });
