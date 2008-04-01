@@ -86,14 +86,14 @@ class RemoteUpstreamManagerImpl implements RemoteUpstreamManager
                 } else if (namepack.length == 1) {
                     // No package
                     sname = namepack[0];
-                    logger.info("Adding new always enabled upstream service: " + sname);
+                    logger.debug("Adding new always enabled upstream service: " + sname);
                     serv = new UpstreamService(sname, true, null);
                 } else if (namepack.length == 2 || namepack[2].charAt(0) == '#') {
                     enabled = false;
                     sname = namepack[0];
                     spack = namepack[1];
                     if (spack.equals(NO_PACKAGE)) {
-                        logger.info("Adding new always enabled upstream service: " + sname);
+                        logger.debug("Adding new always enabled upstream service: " + sname);
                         serv = new UpstreamService(sname, true, null);
                     } else {
                         for (MackageDesc md : installed) {
@@ -103,9 +103,9 @@ class RemoteUpstreamManagerImpl implements RemoteUpstreamManager
                                 break;
                             }
                         }
-                        logger.info("Adding new upstream service: " + sname +
-                                    " conditional on " + spack + ", currently " +
-                                    (enabled ? "enabled" : "disabled"));
+                        logger.debug("Adding new upstream service: " + sname +
+                                     " conditional on " + spack + ", currently " +
+                                     (enabled ? "enabled" : "disabled"));
                         serv = new UpstreamService(sname, enabled, spack);
                     }
                 } else {
