@@ -37,7 +37,6 @@
 	<script type="text/javascript">
 		function init() {
 			main=new Ung.Main();
-			//main.version='${version}';
 			main.init();
 		}
 		Ext.onReady(init);
