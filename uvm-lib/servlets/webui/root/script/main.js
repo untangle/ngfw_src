@@ -1,10 +1,16 @@
 Ext.namespace('Ung');
+//The location of the blank pixel image
 Ext.BLANK_IMAGE_URL = 'ext/resources/images/default/s.gif';
 //Global Variables
+//the main object instance
 var main=null; 
+//the main internationalization object
 var i18n=null;
+//the main json rpc object
 var rpc=null;
 
+
+//Main object class
 Ung.Main=function() {
 }
 Ung.Main.prototype = {
@@ -13,41 +19,50 @@ Ung.Main.prototype = {
 	myApps: null,
 	config: null,
 	nodes: null,
+	//the Ext.Viewport object for the application 
 	viewport: null,
 	initSemaphore: null,
 	policySemaphore: null,
+	//the application build version
 	version: null,
 	networkingWin: null,
+	//init function
 	init: function() {
-		main.initSemaphore=6;
-		rpc = new Ung.RPC();
+		this.initSemaphore=6;
+		rpc = {};
+		//get JSONRpcClient
 		rpc.jsonrpc = new JSONRpcClient("/webui/JSON-RPC");
+		//get node manager
 		rpc.jsonrpc.RemoteUvmContext.nodeManager(function (result, exception) {
-			if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
+			if(exception) { Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}
 			rpc.nodeManager=result;
-			main.postinit();
-		});
+			this.postinit();
+		}.createDelegate(this));
+		// get policy manager
 		rpc.jsonrpc.RemoteUvmContext.policyManager(function (result, exception) {
-			if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
+			if(exception) { Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}
 			rpc.policyManager=result;
-			main.postinit();
-		});
+			this.postinit();
+		}.createDelegate(this));
+		//get toolbox manager
 		rpc.jsonrpc.RemoteUvmContext.toolboxManager(function (result, exception) {
-			if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
+			if(exception) { Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}
 			rpc.toolboxManager=result;
-			main.postinit();
-		});
+			this.postinit();
+		}.createDelegate(this));
+		// get admin manager
 		rpc.jsonrpc.RemoteUvmContext.adminManager(function (result, exception) {
-			if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
+			if(exception) { Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}
 			rpc.adminManager=result;
-			main.postinit();
-		});
+			this.postinit();
+		}.createDelegate(this));
+		//get version
 		rpc.jsonrpc.RemoteUvmContext.version(function (result, exception) {
-			if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
+			if(exception) { Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}
 			rpc.version=result;
-			main.postinit();
-		});
-			
+			this.postinit();
+		}.createDelegate(this));
+		//get i18n
 		Ext.Ajax.request({
 	        url: "i18n",
 			method: 'GET',
@@ -57,17 +72,18 @@ Ung.Main.prototype = {
 				main.postinit();
 			},
 			failure: function ( result, request) { 
-				Ext.MessageBox.alert("Failed", 'Failed loading I18N translations for main rack'); 
+				Ext.MessageBox.alert(i18n._("Failed"), i18n._('Failed loading I18N translations for main rack')); 
 			} 
 		});
 	},
 	postinit: function() {
-		main.initSemaphore--;
-		if(main.initSemaphore!==0) {
+		this.initSemaphore--;
+		if(this.initSemaphore!==0) {
 			return;
 		}
-		main.buildTabs();
-		main.viewport = new Ext.Viewport({
+		this.buildTabs();
+		// initialize viewport object
+		this.viewport = new Ext.Viewport({
             layout:'border',
             items:[
                 {
@@ -103,14 +119,14 @@ Ung.Main.prototype = {
 				},
 	        'imageSrc': 'images/IconHelp36x36.png'
 		});
-		main.loadTools();
-		main.loadPolicies();
+		this.loadTools();
+		this.loadPolicies();
 	},
 	/*
 	loadScriptExt: function(url,callbackFn) {
 		Ext.get('scripts_container').load({
 			'url':url,
-			'text':"loading...",
+			'text':i18n._("loading")+"...",
 			'discardUrl':true,
 			'callback': callbackFn,
 			'scripts':true,
@@ -133,6 +149,7 @@ Ung.Main.prototype = {
 		}
 		oHead.appendChild(oScript);
 	},*/
+	//Load script file
 	loadScript: function(sScriptSrc, oCallback) {
 		if(window.XMLHttpRequest)
 			var req = new XMLHttpRequest();
@@ -146,6 +163,7 @@ Ung.Main.prototype = {
 			window.eval(req.responseText);
 		oCallback.call(this);
 	},
+	//get help link
 	getHelpLink: function(source,focus) {
 		var baseLink="http://www.untangle.com/docs/get.php?";
 		if(source) {
@@ -166,51 +184,51 @@ Ung.Main.prototype = {
 	
 	loadLibrary: function() {
 		rpc.toolboxManager.uninstalled(function (result, exception) {
-			if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
+			if(exception) { Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}
 			var uninstalledMD=result;
 			if(uninstalledMD===null) {
-				main.library=null;
+				this.library=null;
 			} else {
-				main.library=[];
+				this.library=[];
 				for(var i=0;i<uninstalledMD.length;i++) {
 					var md=uninstalledMD[i];
 					if(md.type=="LIB_ITEM" && md.viewPosition>=0) {
-						main.library.push(md);
+						this.library.push(md);
 					}
 				}
-				main.buildLibrary();
+				this.buildLibrary();
 			}
-		});
+		}.createDelegate(this));
 	},
 	
 	loadMyApps: function() {
-		if(main.myApps!==null) {
-			for(var i=0;i<main.myApps.length;i++) {
+		if(this.myApps!==null) {
+			for(var i=0;i<this.myApps.length;i++) {
 				var cmp=Ext.getCmp('myAppButton_'+this.myApps[i].name);
 				if(cmp!==null) {
 					cmp.destroy();
 					cmp=null;
 				}
 			}
-			main.myApps=null;
+			this.myApps=null;
 		}
 		rpc.toolboxManager.installedVisible(function (result, exception) {
-			if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
+			if(exception) { Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}
 			var installedVisibleMD=result;
-			main.myApps=[];
+			this.myApps=[];
 			for(var i=0;i<installedVisibleMD.length;i++) {
 				var md=installedVisibleMD[i];
 				if(md.type=="NODE" && (md.core || md.security) && md.name!="untangle-node-router") {
-					main.myApps.push(md);
+					this.myApps.push(md);
 				}
 			}
-			main.buildMyApps();
-			main.updateMyAppsButtons();
-		});
+			this.buildMyApps();
+			this.updateMyAppsButtons();
+		}.createDelegate(this));
 	},
 	
 	loadConfig: function() {
-		main.config = 
+		this.config = 
 			[{"name":"networking","displayName":"Networking","image":"images/tools/config/IconConfigNetwork36x36.png"},
 			{"name":"remoteAdmin","displayName":"Remote Admin","image":"images/tools/config/IconConfigAdmin36x36.png"},
 			{"name":"email","displayName":"Email","image":"images/tools/config/IconConfigEmail36x36.png"},
@@ -219,22 +237,22 @@ Ung.Main.prototype = {
 			{"name":"support","displayName":"Support","image":"images/tools/config/IconConfigSupport36x36.png"},
 			{"name":"upgrade","displayName":"Upgrade","image":"images/tools/config/IconConfigUpgrade36x36.png"},
 			{"name":"setupInfo","displayName":"Setup Info","image":"images/tools/config/IconConfigSetup36x36.png"}];		
-		main.buildConfig();	
+		this.buildConfig();	
 	},
-	
+	//load policies list
 	loadPolicies: function() {
 		rpc.policyManager.getPolicies( function (result, exception) {
-			if(exception) { Ext.MessageBox.alert("Failed",exception.message); return; }
+			if(exception) { Ext.MessageBox.alert(i18n._("Failed"),exception.message); return; }
 			rpc.policies=result;
-			main.buildPolicies();
-		});
+			this.buildPolicies();
+		}.createDelegate(this));
 	},
 	getNodeMackageDesc: function(Tid) {
 		var i;
-		if(main.myApps!==null) {
-			for(i=0;i<main.myApps.length;i++) {
-				if(main.myApps[i].name==Tid.nodeName) {
-					return main.myApps[i];
+		if(this.myApps!==null) {
+			for(i=0;i<this.myApps.length;i++) {
+				if(this.myApps[i].name==Tid.nodeName) {
+					return this.myApps[i];
 				}
 			}
 		}
@@ -261,30 +279,31 @@ Ung.Main.prototype = {
 		node.blingers=eval([{'type':'ActivityBlinger','bars':['ACT 1','ACT 2','ACT 3','ACT 4']},{'type':'SystemBlinger'}]);
 		return node;
 	},
+	//load the list of nodes for the current policy
 	loadNodes: function() {
-		main.policySemaphore=2;
+		this.policySemaphore=2;
 		rpc.nodeManager.nodeInstancesVisible(function (result, exception) {
-			if(exception) { Ext.MessageBox.alert("Failed",exception.message);
+			if(exception) { Ext.MessageBox.alert(i18n._("Failed"),exception.message);
 				return;
 			}
 			rpc.policyTids=result.list;
-			main.loadNodesCallback();
-		}, rpc.currentPolicy);
+			this.loadNodesCallback();
+		}.createDelegate(this), rpc.currentPolicy);
 		rpc.nodeManager.nodeInstancesVisible(function (result, exception) {
-			if(exception) { Ext.MessageBox.alert("Failed",exception.message);
+			if(exception) { Ext.MessageBox.alert(i18n._("Failed"),exception.message);
 				return;
 			}
 			rpc.commonTids=result.list;
-			main.loadNodesCallback();
-		}, null);
+			this.loadNodesCallback();
+		}.createDelegate(this), null);
 	},
 	loadNodesCallback: function() {
-		main.policySemaphore--;
-		if(main.policySemaphore!==0) {
+		this.policySemaphore--;
+		if(this.policySemaphore!==0) {
 			return;
 		}
 		Ung.BlingerManager.stop();
-		main.destoyNodes();
+		this.destoyNodes();
 		rpc.tids=[];
 		var i=null;
 		for(i=0;i<rpc.policyTids.length;i++) {
@@ -293,16 +312,16 @@ Ung.Main.prototype = {
 		for(i=0;i<rpc.commonTids.length;i++) {
 			rpc.tids.push(rpc.commonTids[i]);
 		}
-		main.nodes=[];
+		this.nodes=[];
 		for(i=0;i<rpc.tids.length;i++) {
 			if(rpc.tids[i].nodeName=="untangle-node-router") {
 				continue;
 			}
 			var node=this.createNode(rpc.tids[i]);
-			main.nodes.push(node);
+			this.nodes.push(node);
 		}
-		for(var i=0;i<main.nodes.length;i++) {
-			var node=main.nodes[i];
+		for(var i=0;i<this.nodes.length;i++) {
+			var node=this.nodes[i];
 			this.addNode(node);
 		}
 		this.updateSeparator();
@@ -312,18 +331,18 @@ Ung.Main.prototype = {
 	},
 	loadNodesRunStates: function() {
 		rpc.nodeManager.allNodeStates(function (result, exception) {
-			if(exception) { Ext.MessageBox.alert("Failed",exception.message);
+			if(exception) { Ext.MessageBox.alert(i18n._("Failed"),exception.message);
 				return;
 			}
 			var allNodeStates=result;
-			for(var i=0;i<main.nodes.length;i++) {
-				var nodeCmp=Ung.Node.getCmp(main.nodes[i].tid);
+			for(var i=0;i<this.nodes.length;i++) {
+				var nodeCmp=Ung.Node.getCmp(this.nodes[i].tid);
 				if(nodeCmp) {
-					nodeCmp.updateRunState(allNodeStates.map[main.nodes[i].tid]);
+					nodeCmp.updateRunState(allNodeStates.map[this.nodes[i].tid]);
 				}
 			}
 			Ung.BlingerManager.start();
-		});
+		}.createDelegate(this));
 	},
 	buildTabs: function () {
 		this.tabs = new Ext.TabPanel({
@@ -347,14 +366,14 @@ Ung.Main.prototype = {
         		policy = rpc.currentPolicy;
         	}
 			rpc.nodeManager.instantiate(function (result, exception) {
-				if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
+				if(exception) { Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}
 				var tid = result;
 				rpc.tids.push(tid);
-				var node=main.createNode(tid);
-				main.nodes.push(node);
-				main.addNode(node);
-				main.updateSeparator();
-			}, item.name, policy);
+				var node=this.createNode(tid);
+				this.nodes.push(node);
+				this.addNode(node);
+				this.updateSeparator();
+			}.createDelegate(this), item.name, policy);
 		}
 	},
 
@@ -362,11 +381,11 @@ Ung.Main.prototype = {
 		if(item!==null) {
 			Ext.getCmp('libraryButton_'+item.name).disable();
 			rpc.toolboxManager.install(function (result, exception) {
-				if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
-				main.loadMyApps();
+				if(exception) { Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}
+				this.loadMyApps();
 				Ext.MessageBox.alert("TODO","Purchase: add to myApps buttons, remove from library");
 
-			}, item.name);
+			}.createDelegate(this), item.name);
 		}
 	},
 	
@@ -374,11 +393,11 @@ Ung.Main.prototype = {
 		switch(item.name){
 			case "networking":
 				rpc.adminManager.generateAuthNonce(function (result, exception) {
-					if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
+					if(exception) { Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}
 					var alpacaUrl = "/alpaca/?" + result;
 					//window.open(url);
-					if(main.networkingWin==null) {
-					    main.networkingWin=new Ext.Window({
+					if(this.networkingWin==null) {
+					    this.networkingWin=new Ext.Window({
 			                id: 'networkingWin',
 			                layout:'border',
 			                modal:true,
@@ -396,25 +415,25 @@ Ung.Main.prototype = {
 						    	}
 						    ]
 			            });
-						main.networkingWin.render('container');
+						this.networkingWin.render('container');
 					};
-		        	main.networkingWin.show();
-		        	main.networkingWin.setPosition(222,0);
-		        	var objSize=main.viewport.getSize();
+		        	this.networkingWin.show();
+		        	this.networkingWin.setPosition(222,0);
+		        	var objSize=this.viewport.getSize();
 		        	objSize.width=objSize.width-222;
-		        	main.networkingWin.setSize(objSize);
+		        	this.networkingWin.setSize(objSize);
 		        	//document.getElementById("networkingWin_iframe").src=alpacaUrl;
 		        	window.frames["networkingWin_iframe"].location.href=alpacaUrl;
-				});
+				}.createDelegate(this));
 				break;
 			default:
-				Ext.MessageBox.alert("Failed","TODO: implement config "+item.name);
+				Ext.MessageBox.alert(i18n._("Failed"),"TODO: implement config "+item.name);
 				break;
 		}
 	
 		/*
 		if(item!==null && item.action!==null) {
-			Ext.MessageBox.alert("Failed","TODO: implement config "+item.name);
+			Ext.MessageBox.alert(i18n._("Failed"),"TODO: implement config "+item.name);
 			var action=item.action;
 			if(item.action.url!==null) {
 				window.open(item.action.url);
@@ -426,7 +445,7 @@ Ung.Main.prototype = {
 	},
 	
 	todo: function() {
-		Ext.MessageBox.alert("Failed","TODO: implement this.");
+		Ext.MessageBox.alert(i18n._("Failed"),"TODO: implement this.");
 	},
 	
 	buildLibrary: function() {
@@ -440,7 +459,7 @@ Ung.Main.prototype = {
 					'height':'50px',
 					'renderTo':'toolsLibrary',
 					'cls':'toolboxButton',
-			        'text': item.displayName,
+			        'text': i18n._(item.displayName),
 			        'handler': function() {main.clickLibrary(main.library[this.libraryIndex]);},
 			        'imageSrc': 'image?name='+ item.name
 		        });
@@ -458,7 +477,7 @@ Ung.Main.prototype = {
 				'height':'50px',
 				'renderTo':'toolsMyApps',
 				'cls':'toolboxButton',
-		        'text': item.displayName,
+		        'text': i18n._(item.displayName),
 		        'handler': function() {main.clickMyApps(main.myApps[this.myAppIndex]);},
 		        'imageSrc': 'image?name='+ item.name,
 		        'disabled':true
@@ -475,7 +494,7 @@ Ung.Main.prototype = {
 				'height':'42px',
 				'renderTo':'toolsConfig',
 				'cls':'toolboxButton',
-		        'text': item.displayName,
+		        'text': i18n._(item.displayName),
 		        'handler': function() {main.clickConfig(main.config[this.configIndex]);},
 		        'imageSrc': item.image
 	        });
@@ -531,7 +550,7 @@ Ung.Main.prototype = {
 				hasCore=true;
 			}
 		}
-		document.getElementById("nodes_separator_text").innerHTML=hasUtilOrService?"Services & Utilities":hasCore?"Services":"";
+		document.getElementById("nodes_separator_text").innerHTML=hasUtilOrService?i18n._("Services & Utilities"):hasCore?i18n._("Services"):"";
 		document.getElementById("nodes_separator").style.display=hasUtilOrService || hasCore?"":"none";
 	},
 	
@@ -546,7 +565,7 @@ Ung.Main.prototype = {
 			}
 		}
 	},
-	
+	//build policies select box
 	buildPolicies: function () {
 		var out=[];
 		out.push('<select id="rack_select" onchange="main.changePolicy()">');
@@ -556,19 +575,19 @@ Ung.Main.prototype = {
 			if(rpc.policies[i]["default"]===true) {
 				rpc.currentPolicy=rpc.policies[i];
 			}
-			out.push('<option value="'+rpc.policies[i].id+'" '+selVirtualRack+'>'+rpc.policies[i].name+'<\/option>');
+			out.push('<option value="'+rpc.policies[i].id+'" '+selVirtualRack+'>'+i18n._(rpc.policies[i].name)+'<\/option>');
 		}
 		out.push('<\/select>');
 		out.push('<div id="rack_policy_button" style="position:absolute;top:15px;left:500px;"><\/div>');
 		document.getElementById('rack_list').innerHTML=out.join('');
 		var buttonCmp = new Ext.Button({
 			'renderTo':'rack_policy_button',
-	        'text': 'Show Policy Manager',
-	        'handler': function() {Ext.MessageBox.alert("Failed","TODO:Show Policy Manager");}
+	        'text': i18n._('Show Policy Manager'),
+	        'handler': function() {Ext.MessageBox.alert(i18n._("Failed"),"TODO:Show Policy Manager");}
         });
 		this.loadNodes();
 	},
-	
+	// change current policy
 	changePolicy: function () {
 		var rack_select=document.getElementById('rack_select');
 		if(rack_select.selectedIndex>=0) {
