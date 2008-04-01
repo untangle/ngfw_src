@@ -229,14 +229,14 @@ Ung.Main.prototype = {
 	
 	loadConfig: function() {
 		this.config = 
-			[{"name":"networking","displayName":"Networking","image":"images/tools/config/IconConfigNetwork36x36.png"},
-			{"name":"remoteAdmin","displayName":"Remote Admin","image":"images/tools/config/IconConfigAdmin36x36.png"},
-			{"name":"email","displayName":"Email","image":"images/tools/config/IconConfigEmail36x36.png"},
-			{"name":"userDirectory","displayName":"User Directory","image":"images/tools/config/IconConfigDirectory36x36.png"},
-			{"name":"backupRestore","displayName":"Backup/Restore","image":"images/tools/config/IconConfigBackup36x36.png"},
-			{"name":"support","displayName":"Support","image":"images/tools/config/IconConfigSupport36x36.png"},
-			{"name":"upgrade","displayName":"Upgrade","image":"images/tools/config/IconConfigUpgrade36x36.png"},
-			{"name":"setupInfo","displayName":"Setup Info","image":"images/tools/config/IconConfigSetup36x36.png"}];		
+			[{"name":"networking","displayName":i18n._("Networking"),"image":"images/tools/config/IconConfigNetwork36x36.png"},
+			{"name":"remoteAdmin","displayName":i18n._("Remote Admin"),"image":"images/tools/config/IconConfigAdmin36x36.png"},
+			{"name":"email","displayName":i18n._("Email"),"image":"images/tools/config/IconConfigEmail36x36.png"},
+			{"name":"userDirectory","displayName":i18n._("User Directory"),"image":"images/tools/config/IconConfigDirectory36x36.png"},
+			{"name":"backupRestore","displayName":i18n._("Backup/Restore"),"image":"images/tools/config/IconConfigBackup36x36.png"},
+			{"name":"support","displayName":i18n._("Support"),"image":"images/tools/config/IconConfigSupport36x36.png"},
+			{"name":"upgrade","displayName":i18n._("Upgrade"),"image":"images/tools/config/IconConfigUpgrade36x36.png"},
+			{"name":"setupInfo","displayName":i18n._("Setup Info"),"image":"images/tools/config/IconConfigSetup36x36.png"}];		
 		this.buildConfig();	
 	},
 	//load policies list
@@ -494,7 +494,7 @@ Ung.Main.prototype = {
 				'height':'42px',
 				'renderTo':'toolsConfig',
 				'cls':'toolboxButton',
-		        'text': i18n._(item.displayName),
+		        'text': item.displayName,
 		        'handler': function() {main.clickConfig(main.config[this.configIndex]);},
 		        'imageSrc': item.image
 	        });
