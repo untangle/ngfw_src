@@ -654,8 +654,10 @@ Ung.Settings = Ext.extend(Ext.Component, {
     // holds the json rpc results for the settings class like baseSettings object, repository, repositoryDesc
     rpc: null, 
     autoEl: 'div',
+    //called when the component is initialized
 	initComponent: function(container, position) {
 		this.rpc={};
+		//initializes the node i18n instance
     	this.i18n=Ung.i18nNodeInstances[this.name];
     	Ung.Settings.superclass.initComponent.call(this);
 	},
@@ -711,7 +713,7 @@ Ung.Settings = Ext.extend(Ext.Component, {
         Ext.destroy(this.tabs);
         Ung.Settings.superclass.beforeDestroy.call(this);
     },
-    // All settings classes mut override the save method
+    // All settings classes must override the save method
 	save: function() {
 	}
 });
@@ -797,7 +799,7 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
 		}
 		return columns;
 	},
-	//initComponent
+	//called when the component is initialized
 	initComponent: function(){
     	if(this.title==null) {
     		this.title=i18n._('Event Log');
@@ -837,6 +839,7 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
 					})];
         Ung.GridEventLog.superclass.initComponent.call(this);
 	},
+	//called when the component is rendered
 	onRender : function(container, position) {
 		Ung.GridEventLog.superclass.onRender.call(this,container, position);
 		this.eventManagerFn.getRepositoryDescs(function (result, exception) {
