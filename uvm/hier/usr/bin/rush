@@ -12,7 +12,7 @@ fi
 
 export CLASSPATH
 
-if [ -x /usr/bin/jruby1.1 ] ;
+if [ -x /usr/bin/jruby1.1 ]; then
   JRUBY=jruby1.1
 else
   JRUBY=jruby1.0

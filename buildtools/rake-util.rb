@@ -267,8 +267,6 @@ class JavaCompiler
       JavaCompiler.selfSignedCert(ks, a, pw) if not File.file?(ks)
     end
 
-    puts "ks: #{ks}, alias: #{a}, pw: #{pw}"
-
     raise "JarSigner failed" unless
       Kernel.system(JarSignerCommand, '-keystore', ks, '-storepass', pw, jar, a)
   end

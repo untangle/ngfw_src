@@ -472,6 +472,7 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
         NodeManagerImpl tm = (NodeManagerImpl)LocalUvmContextFactory
             .context().nodeManager();
         tm.restart(pkgName);
+        tm.startAutoStart(mackageDesc(pkgName));
     }
 
     // unregisters a mackage and unloads all instances
@@ -580,6 +581,19 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
     {
         MackageState ms = mackageState.get(mackageName);
         return null == ms ? true : ms.isEnabled();
+    }
+
+    List<MackageDesc> getInstalledAndAutoStart()
+    {
+        List<MackageDesc> mds = new ArrayList<MackageDesc>();
+
+        for (MackageDesc md : installed()) {
+            if (md.isAutoStart()) {
+                mds.add(md);
+            }
+        }
+
+        return mds;
     }
 
     // private classes --------------------------------------------------------

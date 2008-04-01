@@ -109,7 +109,15 @@ public class UDPSink extends Sink
                 /* This fixes the address and ports for an error packet */
                 try {
                     /* Update to the new length */
-                    icmpCrumb.limit( icmpCrumb.updatePacket( icmpId, icmpMailbox ));
+                    int limit = icmpCrumb.updatePacket( icmpId, icmpMailbox );
+                    /* This is for cases where the ICMP packet itself is not valid.  If
+                     * there is an error, an exception is thrown. */
+                    if ( limit <= 0 ) {
+                        Vector.logWarn( "Dropping invalid ICMP Crumb. " );
+                        return Vector.ACTION_DEQUEUE;
+                    }
+
+                    icmpCrumb.limit( limit );
                 } catch( Exception e ) {
                     Vector.logWarn( "Unable to fix ICMP Crumb: " + e );
                     return Vector.ACTION_DEQUEUE;

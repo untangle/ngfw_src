@@ -136,6 +136,8 @@ public class SystemStatus
         boolean hasActivationKey = false;
         try {
             hasActivationKey = appendActivationKey(sb);
+            String version = LocalUvmContextFactory.context().getFullVersion();
+            sb.append("full version: " + version + "\n");
             /**
              * Uname info
              */

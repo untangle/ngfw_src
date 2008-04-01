@@ -212,6 +212,15 @@ int  netcap_tcp_syn_hook ( netcap_pkt_t* syn )
         break;
 
     case NC_SHIELD_LIMITED:
+        /* Partial fix for bug #3946. */
+        if ( response.if_print ) {
+            debug( 4, "TCP: Limited session, accepting session, opaque mode doesn't work: %s:%d -> %s:%d\n",
+                   unet_next_inet_ntoa ( syn->src.host.s_addr ), syn->src.port,
+                   unet_next_inet_ntoa ( syn->dst.host.s_addr ), syn->dst.port );
+        }
+        
+        break;            
+        
         if ( response.if_print ) {
             debug( 4, "TCP: Session in opaque mode: %s:%d -> %s:%d\n", 
                    unet_next_inet_ntoa ( syn->src.host.s_addr ), syn->src.port,

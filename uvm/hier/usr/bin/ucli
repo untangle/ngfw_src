@@ -4,8 +4,8 @@ set -e
 
 source @PREFIX@/etc/default/untangle-vm
 
-CLASSPATH="@UVM_LIB@/untangle-professional-core-api/:@UVM_LIB@/untangle-libuvm-api/:@THIRDPARTY_UVM_LIB@/hibernate3.jar:@THIRDPARTY_UVM_LIB@/log4j-1.2.14.jar"
-for f in @THIRDPARTY_REPORTS_LIB@/*jar ; do
+CLASSPATH="@UVM_LIB@/untangle-libuvm-api/:@THIRDPARTY_UVM_LIB@/hibernate3.jar:@THIRDPARTY_UVM_LIB@/log4j-1.2.14.jar"
+for f in @THIRDPARTY_REPORTS_LIB@/*jar @UVM_LIB@/*-ext-api ; do
     CLASSPATH="$CLASSPATH:$f"
 done
 

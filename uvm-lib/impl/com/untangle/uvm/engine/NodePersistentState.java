@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -180,5 +180,10 @@ class NodePersistentState
     void setTargetState(NodeState targetState)
     {
         this.targetState = targetState;
+    }
+
+    public String toString()
+    {
+        return "NodePersistentState (" + name + " targetState: " + targetState + ")";
     }
 }

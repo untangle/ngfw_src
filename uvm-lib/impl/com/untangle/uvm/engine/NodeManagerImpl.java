@@ -395,6 +395,64 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
         }
     }
 
+    void startAutoStart(MackageDesc extraPkg)
+    {
+        RemoteToolboxManagerImpl tbm = (RemoteToolboxManagerImpl)LocalUvmContextFactory.context().toolboxManager();
+
+        List<MackageDesc> mds = new ArrayList<MackageDesc>();
+
+        for (MackageDesc md : tbm.installed()) {
+            if (md.isAutoStart()) {
+                mds.add(md);
+            }
+        }
+
+        if (null != extraPkg && extraPkg.isAutoStart()) {
+            mds.add(extraPkg);
+        }
+        for (MackageDesc md : mds) {
+            List<Tid> l = nodeInstances(md.getName());
+
+            Tid t = null;
+
+            if (0 == l.size()) {
+                try {
+                    logger.info("instantiating new: " + md.getName());
+                    t = instantiate(md.getName());
+                } catch (DeployException exn) {
+                    logger.warn("could not deploy: " + md.getName(), exn);
+                    continue;
+                }
+            } else {
+                t = l.get(0);
+            }
+
+            NodeContext nc = nodeContext(t);
+            if (null == nc) {
+                logger.warn("No node context for router tid: " + t);
+            } else {
+                Node n = nc.node();
+                NodeState ns = n.getRunState();
+                switch (ns) {
+                case INITIALIZED:
+                    try {
+                        n.start();
+                    } catch (NodeStartException exn) {
+                        logger.warn("could not load: " + md.getName(), exn);
+                        continue;
+                    }
+                    break;
+                case RUNNING:
+                    // nothing left to do.
+                    break;
+                default:
+                    logger.warn(md.getName() + " unexpected state: " + ns);
+                    break;
+                }
+            }
+        }
+    }
+
     // private methods --------------------------------------------------------
 
     private void restartUnloaded()
@@ -419,9 +477,13 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
             List<NodePersistentState> startQueue = getLoadable(unloaded,
                                                                tDescs,
                                                                loadedParents);
+            logger.info("loadable in this pass: " + startQueue);
             if (0 == startQueue.size()) {
                 logger.info("not all parents loaded, proceeding");
-                startUnloaded(unloaded, tDescs, loadedParents);
+                for (NodePersistentState n : unloaded) {
+                    List<NodePersistentState> l = Collections.singletonList(n);
+                    startUnloaded(l, tDescs, loadedParents);
+                }
                 break;
             }
 
@@ -431,53 +493,7 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
         long t1 = System.currentTimeMillis();
         logger.info("time to restart nodes: " + (t1 - t0));
 
-        try {
-            ensureRouterStarted();
-        } catch (MackageInstallException exn) {
-            logger.warn("could not install router", exn);
-        } catch (DeployException exn) {
-            logger.warn("could not instantiate router", exn);
-        } catch (NodeStartException exn) {
-            logger.warn("could not start router", exn);
-        }
-    }
-
-    private void ensureRouterStarted()
-        throws MackageInstallException, DeployException, NodeStartException
-    {
-        Tid t = null;
-
-        List<Tid> l = nodeInstances("untangle-node-router");
-
-        if (0 == l.size()) {
-            RemoteToolboxManager tbm = LocalUvmContextFactory
-                .context().toolboxManager();
-            if (!tbm.isInstalled("untangle-node-router")) {
-                tbm.installSynchronously("untangle-node-router");
-            }
-            t = instantiate("untangle-node-router");
-        } else {
-            t = l.get(0);
-        }
-
-        NodeContext nc = nodeContext(t);
-        if (null == nc) {
-            logger.warn("No node context for router tid: " + t);
-        } else {
-            Node n = nc.node();
-            NodeState ns = n.getRunState();
-            switch (ns) {
-            case INITIALIZED:
-                n.start();
-                break;
-            case RUNNING:
-                // nothing left to do.
-                break;
-            default:
-                logger.warn("router unexpected state: " + ns);
-                break;
-            }
-        }
+        startAutoStart(null);
     }
 
     private static int startThreadNum = 0;
@@ -725,7 +741,7 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
         InputStream is = new URLClassLoader(urls)
             .getResourceAsStream(DESC_PATH);
         if (null == is) {
-            throw new DeployException(DESC_PATH + " not found");
+            throw new DeployException(mackageDesc.getName() + " desc " + DESC_PATH + " not found");
         }
 
         UvmNodeHandler mth = new UvmNodeHandler(mackageDesc);

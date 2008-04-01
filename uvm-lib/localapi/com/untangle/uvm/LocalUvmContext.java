@@ -375,6 +375,11 @@ public interface LocalUvmContext
      */
     boolean loadRup();
 
+    /**
+     * Attempts to load the premium portal manager.
+     */
+    void loadPortalManager();
+
     /*
      * Loads a shared library (.so) into the UVM classloader.  This
      * is so a node dosen't load it into its own, which doesn't

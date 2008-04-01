@@ -351,30 +351,32 @@ public class UvmContextImpl extends UvmContextBase
     {
         if (null == bdbEnvironment) {
             synchronized (this) {
-                EnvironmentConfig envCfg = new EnvironmentConfig();
-                envCfg.setAllowCreate(true);
-                
-                Integer maxMegs = Integer.getInteger("je.maxMemory");
-                int maxMem;
-                if (maxMegs == null) {
-                    maxMem = 16 * 1024 * 1024;
-                    logger.warn("No je.maxMemory property, using 16MB");
-                } else {
-                    maxMem = maxMegs * 1024 * 1024;
-                    logger.info("Setting max bdb memory to " + maxMegs + "MB");
-                }
-                envCfg.setCacheSize(maxMem);
+                if (null == bdbEnvironment) {
+                    EnvironmentConfig envCfg = new EnvironmentConfig();
+                    envCfg.setAllowCreate(true);
 
-                File dbHome = new File(BDB_HOME);
+                    Integer maxMegs = Integer.getInteger("je.maxMemory");
+                    int maxMem;
+                    if (maxMegs == null) {
+                        maxMem = 16 * 1024 * 1024;
+                        logger.warn("No je.maxMemory property, using 16MB");
+                    } else {
+                        maxMem = maxMegs * 1024 * 1024;
+                        logger.info("Setting max bdb memory to " + maxMegs + "MB");
+                    }
+                    envCfg.setCacheSize(maxMem);
 
-                int tries = 0;
-                while (null == bdbEnvironment && 3 > tries++) {
-                    try {
-                        bdbEnvironment = new Environment(dbHome, envCfg);
-                    } catch (DatabaseException exn) {
-                        logger.warn("couldn't load environment, try: " + tries, exn);
-                        for (File f : dbHome.listFiles()) {
-                            boolean deleted = f.delete();
+                    File dbHome = new File(BDB_HOME);
+
+                    int tries = 0;
+                    while (null == bdbEnvironment && 3 > tries++) {
+                        try {
+                            bdbEnvironment = new Environment(dbHome, envCfg);
+                        } catch (DatabaseException exn) {
+                            logger.warn("couldn't load environment, try: " + tries, exn);
+                            for (File f : dbHome.listFiles()) {
+                                boolean deleted = f.delete();
+                            }
                         }
                     }
                 }
@@ -555,6 +557,24 @@ public class UvmContextImpl extends UvmContextBase
         return loadRup(true);
     }
 
+    public void loadPortalManager()
+    {
+        // Fire up the portal manager.
+        String bpmClass = System.getProperty("uvm.portal.manager");
+        if (null == bpmClass) {
+            bpmClass = "com.untangle.uvm.engine.RupPortalManager";
+        }
+        BasePortalManager bpm = null;
+        try {
+            bpm = (BasePortalManager)Class.forName(bpmClass).newInstance();
+        } catch (Exception exn) {
+            logger.info("could not load PortalManager: " + bpmClass);
+        }
+
+        this.portalManager = null == bpm ? new DefaultPortalManager() : bpm;
+        logger.info("using PortalManager: " + this.portalManager.getClass());
+    }
+
     public boolean isActivated() {
         // This is ez since we aren't concerned about local box
         // security -- the key is ultimately checked on the release
@@ -691,7 +711,7 @@ public class UvmContextImpl extends UvmContextBase
 
         phoneBookFactory = PhoneBookFactory.makeInstance();
 
-        portalManager = findPortalManager();
+        loadPortalManager();
 
         // start nodes:
         nodeManager = new NodeManagerImpl(repositorySelector);
@@ -970,32 +990,9 @@ public class UvmContextImpl extends UvmContextBase
 
     // private methods --------------------------------------------------------
 
-    private BasePortalManager findPortalManager()
-    {
-        // Fire up the portal manager.
-        String bpmClass = System.getProperty("uvm.portal.manager");
-        if (null == bpmClass) {
-            bpmClass = "com.untangle.uvm.engine.RupPortalManager";
-        }
-        BasePortalManager bpm = null;
-        try {
-            bpm = (BasePortalManager)Class.forName(bpmClass).newInstance();
-        } catch (Exception exn) {
-            logger.info("could not load PortalManager: " + bpmClass);
-            logger.debug("unable to load PortalManager: " + bpmClass, exn);
-        }
-
-        BasePortalManager pm = null == bpm ? new DefaultPortalManager() : bpm;
-        logger.info("using PortalManager: " + pm.getClass());
-
-        return pm;
-    }
-
     private boolean loadRup(boolean refreshManagers)
     {
         if (main.loadRup() || true) {
-            main.schemaUtil().initSchema("settings", "rupuvm");
-            loggingManager.initSchema("rupuvm");
             refreshSessionFactory();
 
             if (refreshManagers) {
@@ -1003,7 +1000,6 @@ public class UvmContextImpl extends UvmContextBase
                 policyManagerFactory.refresh();
                 addressBookFactory.refresh();
                 phoneBookFactory.refresh();
-                portalManager = findPortalManager();
                 adPhoneBookAssistant = ADPhoneBookAssistantManager.getADPhoneBookAssistant();
             }
 
