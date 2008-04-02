@@ -147,7 +147,7 @@ msgid "Name"
 msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:324
-msgid "ipMaddr"
+msgid "Subnet"
 msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:325

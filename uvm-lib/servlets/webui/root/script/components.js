@@ -218,7 +218,7 @@ Ung.Node = Ext.extend(Ext.Component, {
 	},
 	
 	onRemoveClick: function() {
-       	var message="Warning:\n"+this.displayName+"is about to be removed from the rack.\nIts settings will be lost and it will stop processing netwotk traffic.\n\nWould you like to continue removing?"; 
+       	var message="Warning:\n"+i18n._(this.displayName)+" is about to be removed from the rack.\nIts settings will be lost and it will stop processing netwotk traffic.\n\nWould you like to continue removing?"; 
        	if(!confirm(message)) {
        		return;
        	}
@@ -288,7 +288,7 @@ Ung.Node = Ext.extend(Ext.Component, {
         container.dom.insertBefore(el, position);
        	this.el = Ext.get(el);
        	this.el.addClass("rackNode");
-       	var templateHTML=Ung.Node.template.applyTemplate({'id':this.getId(),'image':this.image,'displayName':this.displayName});
+       	var templateHTML=Ung.Node.template.applyTemplate({'id':this.getId(),'image':this.image,'displayName':i18n._(this.displayName)});
         this.getEl().insertHtml("afterBegin",templateHTML);
       
 	    var settingsHTML=Ung.Node.templateSettings.applyTemplate({'id':this.getId()});
