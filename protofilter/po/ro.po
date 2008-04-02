@@ -540,3 +540,11 @@ msgstr "Web"
 msgid "Worm"
 msgstr "Vierme"
 
+#: Event Log repository name
+msgid "Protocol Events"
+msgstr "Evenimente Protocoale"
+
+#: Event Log repository name
+msgid "Blocked Protocol Events"
+msgstr "Evenimente Protocoale Blocate"
+

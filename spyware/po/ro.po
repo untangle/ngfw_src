@@ -196,3 +196,26 @@ msgstr "Eşuat"
 msgid "Validation failed"
 msgstr "Validare Eşuată"
 
+#: Event Log repository name
+msgid "All Events"
+msgstr "Toate evenimentele"
+
+#: Event Log repository name
+msgid "Blocked Events"
+msgstr "Evenimente Blocate"
+
+#: Event Log repository name
+msgid "Access Events"
+msgstr "Evenimente Acces"
+
+#: Event Log repository name
+msgid "ActiveX Events"
+msgstr "Evenimente ActiveX"
+
+#: Event Log repository name
+msgid "Blacklist Events"
+msgstr "Evenimente Blacklist"
+
+#: Event Log repository name
+msgid "Cookie Events"
+msgstr "Evenimente Cookie"

@@ -83,3 +83,11 @@ msgstr ""
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:96
 msgid "Failed"
 msgstr ""
+
+#: Event Log repository name
+msgid "Protocol Events"
+msgstr ""
+
+#: Event Log repository name
+msgid "Blocked Protocol Events"
+msgstr ""

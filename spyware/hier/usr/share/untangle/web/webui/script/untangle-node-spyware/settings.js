@@ -57,20 +57,20 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
 			
 			afterRender: function() {
 				Ext.Panel.prototype.afterRender.call(this);
-				
+				var settingsCmp= Ext.getCmp(this.parentId);
 				this.subCmps.push(new Ext.Button({
 					'renderTo':'cookies_button_'+this.id,
-					'text': this.i18n._("manage list"),
+					'text': settingsCmp.i18n._("manage list"),
 					'handler': function() {this.onManageCookiesList();}.createDelegate(this)
 				}));
 				this.subCmps.push(new Ext.Button({
 					'renderTo':'activex_button_'+this.id,
-					'text': this.i18n._("manage list"),
+					'text': settingsCmp.i18n._("manage list"),
 					'handler': function() {this.onManageActiveXList();}.createDelegate(this)
 				}));
 				this.subCmps.push(new Ext.Button({
 					'renderTo':'subnet_button_'+this.id,
-					'text': this.i18n._("manage list"),
+					'text': settingsCmp.i18n._("manage list"),
 					'handler': function() {this.onManageSubnetList();}.createDelegate(this)
 				}));
 				var baseSettings=Ext.getCmp(this.parentId).getBaseSettings();

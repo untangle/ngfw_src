@@ -194,3 +194,28 @@ msgstr ""
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:409
 msgid "Validation failed"
 msgstr ""
+
+
+#: Event Log repository name
+msgid "All Events"
+msgstr ""
+
+#: Event Log repository name
+msgid "Blocked Events"
+msgstr ""
+
+#: Event Log repository name
+msgid "Access Events"
+msgstr ""
+
+#: Event Log repository name
+msgid "ActiveX Events"
+msgstr ""
+
+#: Event Log repository name
+msgid "Blacklist Events"
+msgstr ""
+
+#: Event Log repository name
+msgid "Cookie Events"
+msgstr ""
