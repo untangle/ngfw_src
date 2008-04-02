@@ -36,7 +36,7 @@ module DbParser
            sth = dbh.execute("SELECT DISTINCT #{column} FROM #{table['name']}")
            sth.fetch do |row|
 #             ary << [row[0].strip, "database data:#{table['name']}.#{column}"] if !row[0].nil?
-             ary << [row[0], "database data:#{table['name']}.#{column}"]
+             ary << [row[0], "database data: #{table['name']}.#{column}"]
            end
            sth.finish
         end

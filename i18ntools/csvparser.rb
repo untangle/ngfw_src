@@ -20,7 +20,7 @@ module CSVParser
   # 
   def parse(file, ary)
     CSV.open(file, "r") do |row|
-      row.each { |elem| ary << [elem.strip, "csv data:#{file}"] if !elem.nil?}
+      row.each { |elem| ary << [elem.strip, "csv data: #{file}"] if !elem.nil?}
     end
 
     ary
