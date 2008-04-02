@@ -54,6 +54,11 @@ public class PhoneBookFactory
     public void refresh()
     {
         if ( this.premium != null ) {
+            try {
+                this.premium.init();
+            } catch ( Exception e ) {
+                logger.info( "premium init failed", e );
+            }
             logger.debug( "Already loaded the premium offering" );
             return;
         }
@@ -65,6 +70,7 @@ public class PhoneBookFactory
         try {
             this.premium = (PremiumPhoneBook)Class.forName( className ).newInstance();
             this.remote = new RemotePhoneBookImpl( this.premium );
+            this.premium.init();
         } catch ( Exception e ) {
             logger.info( "Could not load LocalPhoneBook: " + className, e );
             this.premium = null;
