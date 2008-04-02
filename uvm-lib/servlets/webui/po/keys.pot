@@ -28,11 +28,234 @@ msgstr "m/d/y"
 msgid "timestamp_fmt"
 msgstr "Y-m-d g:i:s a"
 
-#: ../root/WEB-INF/jsp/startPage.jsp:96 ../root/WEB-INF/jsp/startPage.jsp:92
-#: ../root/script/untangle.js:103
+#: ../root/script/main.js:37 ../root/script/main.js:43
+#: ../root/script/main.js:49 ../root/script/main.js:55
+#: ../root/script/main.js:61 ../root/script/main.js:75
+#: ../root/script/main.js:187 ../root/script/main.js:216
+#: ../root/script/main.js:245 ../root/script/main.js:286
+#: ../root/script/main.js:293 ../root/script/main.js:334
+#: ../root/script/main.js:369 ../root/script/main.js:384
+#: ../root/script/main.js:396 ../root/script/main.js:430
+#: ../root/script/main.js:436 ../root/script/main.js:448
+#: ../root/script/main.js:586 ../root/script/components.js:136
+#: ../root/script/components.js:143 ../root/script/components.js:186
+#: ../root/script/components.js:230 ../root/script/components.js:296
+#: ../root/script/components.js:458 ../root/script/components.js:846
+#: ../root/script/components.js:880 ../root/script/components.js:1142
+msgid "Failed"
+msgstr ""
+
+#: ../root/script/main.js:75
+msgid "Failed loading I18N translations for main rack"
+msgstr ""
+
+#: ../root/script/main.js:115 ../root/script/components.js:362
+#: ../root/script/components.js:982
 msgid "Help"
 msgstr ""
 
-#: ../root/script/ext-untangle.js:352
+#: ../root/script/main.js:129
+msgid "loading"
+msgstr ""
+
+#: ../root/script/main.js:232
+msgid "Networking"
+msgstr ""
+
+#: ../root/script/main.js:233
+msgid "Remote Admin"
+msgstr ""
+
+#: ../root/script/main.js:234
+msgid "Email"
+msgstr ""
+
+#: ../root/script/main.js:235
+msgid "User Directory"
+msgstr ""
+
+#: ../root/script/main.js:236
+msgid "Backup/Restore"
+msgstr ""
+
+#: ../root/script/main.js:237
+msgid "Support"
+msgstr ""
+
+#: ../root/script/main.js:238
+msgid "Upgrade"
+msgstr ""
+
+#: ../root/script/main.js:239
+msgid "Setup Info"
+msgstr ""
+
+#: ../root/script/main.js:553
+msgid "Services & Utilities"
+msgstr ""
+
+#: ../root/script/main.js:553
+msgid "Services"
+msgstr ""
+
+#: ../root/script/main.js:585
+msgid "Show Policy Manager"
+msgstr ""
+
+#: ../root/script/components.js:186
+msgid "Failed loading I18N translations for this node"
+msgstr ""
+
+#: ../root/script/components.js:356
 msgid "Show Settings"
+msgstr ""
+
+#: ../root/script/components.js:368
+msgid "Remove"
+msgstr ""
+
+#: ../root/script/components.js:374 ../root/script/components.js:988
+msgid "Cancel"
+msgstr ""
+
+#: ../root/script/components.js:380
+msgid "Save"
+msgstr ""
+
+#: ../root/script/components.js:394
+msgid ""
+"The <B>Status Indicator</B> shows the current operating condition of a "
+"particular software product."
+msgstr ""
+
+#: ../root/script/components.js:395
+msgid "Green"
+msgstr ""
+
+#: ../root/script/components.js:395
+msgid "indicates that the product is \"on\" and operating normally."
+msgstr ""
+
+#: ../root/script/components.js:396
+msgid "Red"
+msgstr ""
+
+#: ../root/script/components.js:396
+msgid ""
+"indicates that the product is \"on\", but that an abnormal condition has "
+"occurred."
+msgstr ""
+
+#: ../root/script/components.js:397
+msgid "Yellow"
+msgstr ""
+
+#: ../root/script/components.js:397
+msgid "indicates that the product is saving or refreshing settings."
+msgstr ""
+
+#: ../root/script/components.js:398
+msgid "Clear"
+msgstr ""
+
+#: ../root/script/components.js:398
+msgid ""
+"indicates that the product is \"off\", and may be turned \"on\" by the user."
+msgstr ""
+
+#: ../root/script/components.js:401
+msgid ""
+"The <B>Power Button</B> allows you to turn a product \"on\" and \"off\"."
+msgstr ""
+
+#: ../root/script/components.js:494
+msgid "activity"
+msgstr ""
+
+#: ../root/script/components.js:568
+msgid "system"
+msgstr ""
+
+#: ../root/script/components.js:578
+msgid "Current Session Count:"
+msgstr ""
+
+#: ../root/script/components.js:579
+msgid "ACC:"
+msgstr ""
+
+#: ../root/script/components.js:580
+msgid "REQ:"
+msgstr ""
+
+#: ../root/script/components.js:581
+msgid "Data rate:"
+msgstr ""
+
+#: ../root/script/components.js:783
+msgid "timestamp"
+msgstr ""
+
+#: ../root/script/components.js:786
+msgid "action"
+msgstr ""
+
+#: ../root/script/components.js:787
+msgid "blocked"
+msgstr ""
+
+#: ../root/script/components.js:787
+msgid "passed"
+msgstr ""
+
+#: ../root/script/components.js:790
+msgid "client"
+msgstr ""
+
+#: ../root/script/components.js:791
+msgid "request"
+msgstr ""
+
+#: ../root/script/components.js:792
+msgid "reason for action"
+msgstr ""
+
+#: ../root/script/components.js:793
+msgid "blocked in block list"
+msgstr ""
+
+#: ../root/script/components.js:793
+msgid "not blocked in block list"
+msgstr ""
+
+#: ../root/script/components.js:796
+msgid "server"
+msgstr ""
+
+#: ../root/script/components.js:805
+msgid "Event Log"
+msgstr ""
+
+#: ../root/script/components.js:831 ../root/script/components.js:832
+msgid "Refresh"
+msgstr ""
+
+#: ../root/script/components.js:994
+msgid "Update"
+msgstr ""
+
+#: ../root/script/components.js:1031 ../root/script/components.js:1256
+msgid "Edit"
+msgstr ""
+
+#: ../root/script/components.js:1303
+msgid "Delete"
+msgstr ""
+
+#: ../root/script/components.js:1448
+msgid "Add"
+msgstr ""
+
+#: ../root/script/components.js:1449
+msgid "Add New Row"
 msgstr ""
