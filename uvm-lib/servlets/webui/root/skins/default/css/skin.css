@@ -4,7 +4,7 @@
 	text-align:center;
 	height:100%;
 }
-.contentright {
+#contentright {
 	background: transparent url(../images/MainBackgroundRight_1398x100.png) repeat-y !important;
 }
 #racks {
