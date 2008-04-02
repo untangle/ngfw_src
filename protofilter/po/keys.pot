@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-02-20 17:16+0200\n"
+"POT-Creation-Date: 2008-04-02 12:53+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,219 +16,70 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../web/webui/script/untangle-node-protofilter/settings.js:138
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:136
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:22
 msgid "block"
 msgstr ""
 
-#: ../web/webui/script/untangle-node-protofilter/settings.js:141
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:139
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:26
 msgid "log"
 msgstr ""
 
-#: ../web/webui/script/untangle-node-protofilter/settings.js:144
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:142
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:184
-msgid "Edit"
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:33
+msgid "[no category]"
 msgstr ""
 
-#: ../web/webui/script/untangle-node-protofilter/settings.js:147
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:145
-msgid "Delete"
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:33
+msgid "[no protocol]"
 msgstr ""
 
-#: ../web/webui/script/untangle-node-protofilter/settings.js:150
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:148
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:426
-msgid "category"
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:33
+msgid "[no description]"
 msgstr ""
 
-#: ../web/webui/script/untangle-node-protofilter/settings.js:153
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:151
-msgid "protocol"
-msgstr ""
-
-#: ../web/webui/script/untangle-node-protofilter/settings.js:158
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:156
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:427
-msgid "description"
-msgstr ""
-
-#: ../web/webui/script/untangle-node-protofilter/settings.js:161
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:159
-msgid "signature"
-msgstr ""
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:170
-msgid "Category"
-msgstr ""
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:171
-msgid "Protocol"
-msgstr ""
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:172
-msgid "Block"
-msgstr ""
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:173
-msgid "Log"
-msgstr ""
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:174
-msgid "Description"
-msgstr ""
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:175
-msgid "Signature"
-msgstr ""
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:202
-msgid "Help"
-msgstr ""
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:208
-msgid "Update"
-msgstr ""
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:214
-msgid "Cancel"
-msgstr ""
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:264
-msgid "Add"
-msgstr ""
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:265
-msgid "Add New Row"
-msgstr ""
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:281
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:34
 msgid "Protocol List"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:298
-msgid "timestamp"
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:55
+msgid "category"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:301
-msgid "action"
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:58
+msgid "protocol"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:302
-msgid "blocked"
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:62
+msgid "description"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:302
-msgid "passed"
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:64
+msgid "signature"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:305
-msgid "client"
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:72
+msgid "Category"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:306
-msgid "request"
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:73
+msgid "Protocol"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:307
-msgid "reason for action"
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:74
+msgid "Block"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:307
-msgid "blocked in block list"
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:75
+msgid "Log"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:307
-msgid "not blocked in block list"
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:76
+msgid "Description"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:308
-msgid "server"
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:77
+msgid "Signature"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:311
-msgid "Event Log"
-msgstr ""
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:316
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:317
-msgid "Refresh"
-msgstr ""
-
-#: database data - repository
-msgid "Protocol Events"
-msgstr ""
-
-msgid "Blocked Protocol Events"
-msgstr ""
-
-#: database data - category
-msgid "Email"
-msgstr ""
-
-msgid "File Transfer"
-msgstr ""
-
-msgid "Instant   Messenger"
-msgstr ""
-
-msgid "Instant Messenger"
-msgstr ""
-
-msgid "Internet News"
-msgstr ""
-
-msgid "Music"
-msgstr ""
-
-msgid "Networking"
-msgstr ""
-
-msgid "Peer   to Peer"
-msgstr ""
-
-msgid "Peer to   Peer"
-msgstr ""
-
-msgid "Peer to Peer"
-msgstr ""
-
-msgid "Printing"
-msgstr ""
-
-msgid "Remote Deskop"
-msgstr ""
-
-msgid "Remote Desktop"
-msgstr ""
-
-msgid "Software   Development"
-msgstr ""
-
-msgid "Software Development"
-msgstr ""
-
-msgid "Streaming   Video"
-msgstr ""
-
-msgid "Streaming Video"
-msgstr ""
-
-msgid "System Administration"
-msgstr ""
-
-msgid "Video   Game"
-msgstr ""
-
-msgid "Video Game"
-msgstr ""
-
-msgid "Voice over IP"
-msgstr ""
-
-msgid "Web"
-msgstr ""
-
-msgid "Worm"
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:96
+msgid "Failed"
 msgstr ""
