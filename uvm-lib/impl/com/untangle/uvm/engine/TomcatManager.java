@@ -57,7 +57,7 @@ class TomcatManager
     // memory since we aren't primarily a web server.
     private static final String MIN_SPARE_THREADS = "1";
     private static final String MAX_SPARE_THREADS = "3";
-    private static final String MAX_THREADS = "50";
+    private static final String MAX_THREADS = "100";
 
     private static final String STANDARD_WELCOME = "webstart";
 
