@@ -47,15 +47,8 @@ public class SMTPSpamMessageActionUserType implements UserType
             char actionKey = s.charAt(0);
             Object smAction = SMTPSpamMessageAction.getInstance(actionKey);
             if (null == smAction) {
-                // these actions are not in the instances map
-                // - for an explanation, see SMTPSpamMessageAction
-                if (SMTPSpamMessageAction.SAFELIST_KEY == actionKey) {
-                    smAction = (Object) SMTPSpamMessageAction.SAFELIST;
-                } else if (SMTPSpamMessageAction.OVERSIZE_KEY == actionKey) {
-                    smAction = (Object) SMTPSpamMessageAction.OVERSIZE;
-                } else { // need to add new action -> default to PASS for now
-                    smAction = (Object) SMTPSpamMessageAction.PASS;
-                }
+                // need to add new action -> default to PASS for now
+                smAction = (Object) SMTPSpamMessageAction.PASS;
             }
             return smAction;
         }

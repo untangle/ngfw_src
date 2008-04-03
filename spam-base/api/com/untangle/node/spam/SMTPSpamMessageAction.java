@@ -34,8 +34,10 @@
 package com.untangle.node.spam;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 // XXX convert to enum when we dump XDoclet
@@ -57,25 +59,24 @@ public class SMTPSpamMessageAction implements Serializable
     public static final SMTPSpamMessageAction MARK = new SMTPSpamMessageAction(MARK_KEY, "mark message");
     public static final SMTPSpamMessageAction BLOCK = new SMTPSpamMessageAction(BLOCK_KEY, "block message");
     public static final SMTPSpamMessageAction QUARANTINE = new SMTPSpamMessageAction(QUARANTINE_KEY, "quarantine message");
-    public static final SMTPSpamMessageAction SAFELIST = new SMTPSpamMessageAction(SAFELIST_KEY, "safelist message");
-    public static final SMTPSpamMessageAction OVERSIZE = new SMTPSpamMessageAction(OVERSIZE_KEY, "oversize message");
-
-    // do not include SAFELIST or OVERSIZE in INSTANCES map
-    // because GUI will display them as setting actions
-    static {
-        INSTANCES.put(PASS.getKey(), PASS);
-        INSTANCES.put(MARK.getKey(), MARK);
-        INSTANCES.put(BLOCK.getKey(), BLOCK);
-        INSTANCES.put(QUARANTINE.getKey(), QUARANTINE);
-    }
+    public static final SMTPSpamMessageAction SAFELIST = new SMTPSpamMessageAction(SAFELIST_KEY, "safelist message", false);
+    public static final SMTPSpamMessageAction OVERSIZE = new SMTPSpamMessageAction(OVERSIZE_KEY, "oversize message", false);
 
     private String name;
     private char key;
+    private boolean uiSelectable;
 
     private SMTPSpamMessageAction(char key, String name)
     {
+        this(key, name, true);
+    }
+
+    private SMTPSpamMessageAction(char key, String name, boolean uiSelectable)
+    {
         this.key = key;
         this.name = name;
+        this.uiSelectable = uiSelectable;
+        INSTANCES.put(key, this);
     }
 
     public static SMTPSpamMessageAction getInstance(char key)
@@ -116,15 +117,18 @@ public class SMTPSpamMessageAction implements Serializable
         return getInstance(key);
     }
 
+    private static SMTPSpamMessageAction[] arproto = new SMTPSpamMessageAction[0];
+
+    // UI gets selectable values here
     public static SMTPSpamMessageAction[] getValues()
     {
-        SMTPSpamMessageAction[] azMsgAction = new SMTPSpamMessageAction[INSTANCES.size()];
-        Iterator iter = INSTANCES.keySet().iterator();
-        SMTPSpamMessageAction zMsgAction;
-        for (int i = 0; true == iter.hasNext(); i++) {
-            zMsgAction = (SMTPSpamMessageAction)INSTANCES.get(iter.next());
-            azMsgAction[i] = zMsgAction;
+        List azMsgAction = new ArrayList();
+        for (Iterator iter = INSTANCES.keySet().iterator(); iter.hasNext();) {
+            SMTPSpamMessageAction zMsgAction = (SMTPSpamMessageAction)INSTANCES.get(iter.next());
+            if (!zMsgAction.uiSelectable)
+                continue;
+            azMsgAction.add(zMsgAction);
         }
-        return azMsgAction;
+        return (SMTPSpamMessageAction[]) azMsgAction.toArray(arproto);
     }
 }

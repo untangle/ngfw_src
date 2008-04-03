@@ -58,10 +58,6 @@
   <!-- Categories                                     -->
   <!-- ============================================== -->
 
-  <category name="com.mchange">
-    <priority value="INFO"/>
-  </category>
-
   <category name="org.apache.catalina">
     <priority value="WARN"/>
   </category>
@@ -82,17 +78,17 @@
     <priority value="WARN"/>
   </category>
 
-  <!-- normal level for engine is INFO -->
-  <category name="com.untangle.uvm.engine">
-    <priority value="INFO"/>
-  </category>
-
   <category name="com.untangle.uvm.logging">
     <priority value="WARN"/>
   </category>
 
+  <!-- normal level for engine and following is INFO -->
+  <category name="com.untangle.uvm.engine">
+    <priority value="INFO"/>
+  </category>
+
   <category name="com.untangle.uvm.policy">
-    <priority value="WARN"/>
+    <priority value="INFO"/>
   </category>
 
   <category name="com.untangle.node.util">
@@ -110,6 +106,11 @@
   <category name="com.untangle.node.rsa.proxy">
     <priority value="INFO"/>
   </category>
+
+  <category name="com.mchange">
+    <priority value="INFO"/>
+  </category>
+
 
   <!-- ============================================== -->
   <!-- The Root Category                              -->
