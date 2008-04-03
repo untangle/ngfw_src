@@ -46,7 +46,7 @@
 <div id="scripts_container" style="display: none;"></div>
 <div id="container">
 	<div id="contentleft">
-		<div id="logo"><img src="images/Logo150x96.gif"/></div>
+		<div id="logo"><img src="images/logo.png"/></div>
 		<div id="tabs">
 		</div>
 			<div id="tabLibrary" class="x-hide-display">

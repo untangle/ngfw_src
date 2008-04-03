@@ -1,18 +1,18 @@
 #contentleft {
 	padding-top:35px;
-	background:transparent url(../images/MainBackgroundLeft_222x100.png)  repeat-y !important;
+	background:transparent url(../images/main/background_left.png)  no-repeat !important;
 	text-align:center;
 	height:100%;
 }
 #contentright {
-	background: transparent url(../images/MainBackgroundRight_1398x100.png) repeat-y !important;
+	background: transparent url(../images/main/background_right.png) repeat !important;
 }
 #racks {
 	position:relative;
 	margin:auto;
-	width:718px;
+	width:790px;
 	height:100%;
-	padding-bottom: 54px;	
+	/*padding-bottom: 54px;*/
 }
 #racks #leftBorder{
 	position:absolute;
@@ -20,8 +20,8 @@
 	left:0px;
 	height:100%;
 	width:59px;
-	background: transparent url(../images/pipeline/LeftRack59x100.png) repeat-y;
-	background-position:top left;
+	background: transparent url(../images/pipeline/LeftRack59x100.png) repeat-y top left;
+	/*background-position: top left;*/
 }
 #racks #rightBorder{
 	position:absolute;
@@ -29,8 +29,8 @@
 	right:0px;
 	height:100%;
 	width:59px;
-	background: transparent url(../images/pipeline/RightRack59x100.png) repeat-y;
-	background-position:top right;
+	background: transparent url(../images/pipeline/RightRack59x100.png) repeat-y top right;
+	/*background-position:top right;*/
 }
 #logo {
 	position:relative;
@@ -50,27 +50,21 @@
 }
 #rack_list {
 	position:relative;
-	top: 54px;
-	left: 15px;
-	background-color: transparent;
-	background-image: url(../images/PlainSeparator688x50.png);
-	background-repeat: no-repeat;
-	width:690px;
+	/*top: 54px;*/
+	background:transparent url(../images/main/background_rack_list.png) no-repeat;
+	width:789px;
 	height:50px;
 }
 #rack_nodes {
 	position:relative;
-	top:54px;
-	left:15px;
-	width:690px;
+	/*top:54px;*/
+	width:790px;
 }
 div.rackNode {
 	position:relative;
-	background-color: transparent;
-	background-image:  url(../images/node/NodeBackground688x100.png);
-	background-repeat: no-repeat;
-	width:690px;
-	height:101px;
+	background: transparent url(../images/main/background_node.png) no-repeat;
+	width:790px;
+	height:119px;
 }
 #rack_select {
 	position:relative;
@@ -92,10 +86,8 @@ div.rackNode {
 }
 #nodes_separator {
 	position:relative;
-	background-color: transparent;
-	background-image:  url(../images/PlainSeparator688x50.png);
-	background-repeat: no-repeat;
-	width:690px;
+	background: transparent url(../images/main/background_separator.png) no-repeat;
+	width:789px;
 	height:50px;
 }
 .nodeImage {
@@ -119,10 +111,8 @@ div.nodeBlingers {
 	width:310px;
 	height:82px;
 }
-.helpIcon {
-	background:url(../images/node/IconHelp28x28.png) no-repeat scroll -4px -4px !important; 
-	width:20px;
-	height:19px;
+button.iconHelp {
+	background:transparent url(../images/main/icon_help.png) no-repeat !important; 
 }
 div.nodeStateIcon {
 	position:absolute;
@@ -152,7 +142,7 @@ div.nodeHelpButton {
 	width:120px;
 }
 .nodeSettingsIcon {
-	background:url(../images/node/IconControlsClosed28x28.png) no-repeat scroll -5px -6px !important;  
+	background:transparent url(../images/node/IconControlsClosed28x28.png) no-repeat scroll -5px -6px !important;  
 	width:18px;
 	height:16px;
 }
@@ -170,7 +160,7 @@ div.nodeRemoveButton {
 	bottom:14px;
 }
 .nodeRemoveIcon {
-	background:url(../images/node/IconRemove_16x16.png) no-repeat !important; 
+	background:transparent url(../images/node/IconRemove_16x16.png) no-repeat !important; 
 	width:16px;
 	height:16px;
 }
@@ -180,7 +170,7 @@ div.nodeCancelButton {
 	bottom:14px;
 }
 .cancelIcon {
-	background:url(../images/node/IconCancel_16x16.png) no-repeat !important; 
+	background:transparent url(../images/node/IconCancel_16x16.png) no-repeat !important; 
 	width:16px;
 	height:16px;
 }
@@ -190,7 +180,7 @@ div.nodeSaveButton {
 	bottom:14px;
 }
 .saveIcon {
-	background:url(../images/node/IconSave_23x16.png) no-repeat !important; 
+	background:transparent url(../images/node/IconSave_23x16.png) no-repeat !important; 
 	width:23px;
 	height:16px;
 }
@@ -316,28 +306,21 @@ div.utgButtonHover {
 div.utgButtonInvalid {
 	border: 1px solid green;
 }
-button.add {
-    background-image:url(../images/add.gif) !important;
+button.iconAddRow {
+    background: transparent url(../images/main/icon_add_row.gif) no-repeat !important;
 }
-button.remove {
-    background-image:url(../images/delete.gif) !important;
+div.iconEditRow {
+	background:transparent url(../images/main/icon_edit_row.gif) no-repeat center;
+	width: 100%;
+	cursor: pointer;
+}
+div.iconDeleteRow {
+	background:transparent url(../images/main/icon_delete_row.gif) no-repeat center;
+	width: 100%;
+	cursor: pointer;
 }
 button.iconRefresh {
-    background-image:url(../images/IconRefresh_16x16.png) !important;
-}
-div.editRow {
-	background-image:url(../images/editRow.gif);
-	background-position:center;
-	background-repeat:no-repeat;
-	width: 100%;
-	cursor: pointer;
-}
-div.deleteRow {
-	background-image:url(../images/deleteRow.gif);
-	background-position:center;
-	background-repeat:no-repeat;
-	width: 100%;
-	cursor: pointer;
+    background: transparent url(../images/main/icon_refresh.png) no-repeat !important;
 }
 .fieldLabel {
 	width: 100px;
@@ -383,3 +366,45 @@ div.buttonUpdatePos {
 .grid-row-modified {
 	background-color: #FFB364;
 }
+
+div.iconConfigNetwork {
+	background: transparent url(../images/main/config/icon_config_network.png) no-repeat !important; 
+	width:36px;
+	height:36px;
+}
+div.iconConfigAdmin {
+	background: transparent url(../images/main/config/icon_config_admin.png) no-repeat !important; 
+	width:36px;
+	height:36px;
+}
+div.iconConfigEmail {
+	background: transparent url(../images/main/config/icon_config_email.png) no-repeat !important; 
+	width:36px;
+	height:36px;
+}
+div.iconConfigDirectory {
+	background: transparent url(../images/main/config/icon_config_directory.png) no-repeat !important; 
+	width:36px;
+	height:36px;
+}
+div.iconConfigBackup {
+	background: transparent url(../images/main/config/icon_config_backup.png) no-repeat !important; 
+	width:36px;
+	height:36px;
+}
+div.iconConfigSupport {
+	background: transparent url(../images/main/config/icon_config_support.png) no-repeat !important; 
+	width:36px;
+	height:36px;
+}
+div.iconConfigUpgrade {
+	background: transparent url(../images/main/config/icon_config_upgrade.png) no-repeat !important; 
+	width:36px;
+	height:36px;
+}
+div.iconConfigSetup {
+	background: transparent url(../images/main/config/icon_config_setup.png) no-repeat !important; 
+	width:36px;
+	height:36px;
+}
+

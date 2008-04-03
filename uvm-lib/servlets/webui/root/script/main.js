@@ -90,7 +90,7 @@ Ung.Main.prototype = {
                     region:'west',
                     id: 'west',
                     contentEl: 'contentleft',
-                    width: 222,
+                    width: 220,
                     border: false
                  },{
                     region:'center',
@@ -117,7 +117,7 @@ Ung.Main.prototype = {
 				var rackBaseHelpLink = main.getHelpLink("rack");
 				window.open(rackBaseHelpLink);
 				},
-	        'imageSrc': 'images/IconHelp36x36.png'
+	        'iconSrc': 'images/IconHelp36x36.png'
 		});
 		this.loadTools();
 		this.loadPolicies();
@@ -229,14 +229,14 @@ Ung.Main.prototype = {
 	
 	loadConfig: function() {
 		this.config = 
-			[{"name":"networking","displayName":i18n._("Networking"),"image":"images/tools/config/IconConfigNetwork36x36.png"},
-			{"name":"remoteAdmin","displayName":i18n._("Remote Admin"),"image":"images/tools/config/IconConfigAdmin36x36.png"},
-			{"name":"email","displayName":i18n._("Email"),"image":"images/tools/config/IconConfigEmail36x36.png"},
-			{"name":"userDirectory","displayName":i18n._("User Directory"),"image":"images/tools/config/IconConfigDirectory36x36.png"},
-			{"name":"backupRestore","displayName":i18n._("Backup/Restore"),"image":"images/tools/config/IconConfigBackup36x36.png"},
-			{"name":"support","displayName":i18n._("Support"),"image":"images/tools/config/IconConfigSupport36x36.png"},
-			{"name":"upgrade","displayName":i18n._("Upgrade"),"image":"images/tools/config/IconConfigUpgrade36x36.png"},
-			{"name":"setupInfo","displayName":i18n._("Setup Info"),"image":"images/tools/config/IconConfigSetup36x36.png"}];		
+			[{"name":"networking","displayName":i18n._("Networking"),"iconCls":"iconConfigNetwork"},
+			{"name":"remoteAdmin","displayName":i18n._("Remote Admin"),"iconCls":"iconConfigAdmin"},
+			{"name":"email","displayName":i18n._("Email"),"iconCls":"iconConfigEmail"},
+			{"name":"userDirectory","displayName":i18n._("User Directory"),"iconCls":"iconConfigDirectory"},
+			{"name":"backupRestore","displayName":i18n._("Backup/Restore"),"iconCls":"iconConfigBackup"},
+			{"name":"support","displayName":i18n._("Support"),"iconCls":"iconConfigSupport"},
+			{"name":"upgrade","displayName":i18n._("Upgrade"),"iconCls":"iconConfigUpgrade"},
+			{"name":"setupInfo","displayName":i18n._("Setup Info"),"iconCls":"iconConfigSetup"}];		
 		this.buildConfig();	
 	},
 	//load policies list
@@ -418,9 +418,9 @@ Ung.Main.prototype = {
 						this.networkingWin.render('container');
 					};
 		        	this.networkingWin.show();
-		        	this.networkingWin.setPosition(222,0);
+		        	this.networkingWin.setPosition(220,0);
 		        	var objSize=this.viewport.getSize();
-		        	objSize.width=objSize.width-222;
+		        	objSize.width=objSize.width-220;
 		        	this.networkingWin.setSize(objSize);
 		        	//document.getElementById("networkingWin_iframe").src=alpacaUrl;
 		        	window.frames["networkingWin_iframe"].location.href=alpacaUrl;
@@ -461,7 +461,7 @@ Ung.Main.prototype = {
 					'cls':'toolboxButton',
 			        'text': i18n._(item.displayName),
 			        'handler': function() {main.clickLibrary(main.library[this.libraryIndex]);},
-			        'imageSrc': 'image?name='+ item.name
+			        'iconSrc': 'image?name='+ item.name
 		        });
 	  		}
 	  	}
@@ -479,7 +479,7 @@ Ung.Main.prototype = {
 				'cls':'toolboxButton',
 		        'text': i18n._(item.displayName),
 		        'handler': function() {main.clickMyApps(main.myApps[this.myAppIndex]);},
-		        'imageSrc': 'image?name='+ item.name,
+		        'iconSrc': 'image?name='+ item.name,
 		        'disabled':true
 	        });
   		}
@@ -496,7 +496,7 @@ Ung.Main.prototype = {
 				'cls':'toolboxButton',
 		        'text': item.displayName,
 		        'handler': function() {main.clickConfig(main.config[this.configIndex]);},
-		        'imageSrc': item.image
+		        'iconCls': item.iconCls
 	        });
   		}
 	},

@@ -8,7 +8,8 @@ Ung.Button = Ext.extend(Ext.Component, {
     height:'100%',
     disabled: false,
     text: '',
-    iconSrc: '',
+    iconSrc: null,
+    iconCls: null,
     clickEvent : 'click',
 	cls: '',
     initComponent: function(){
@@ -20,7 +21,13 @@ Ung.Button = Ext.extend(Ext.Component, {
     },
     // private
     onRender : function(container, position) {
-        var templateHTML=Ung.Button.template.applyTemplate({'width':this.width, 'height':this.height, 'imageSrc':this.imageSrc, 'text':this.text});
+    	var imageHtml=null;
+    	if(this.iconSrc!=null) {
+    		imageHtml='<img src="'+this.iconSrc+'" style="vertical-align: middle;"/>';
+    	} else {
+    		imageHtml='<div class="'+this.iconCls+'"></div>';
+    	}
+        var templateHTML=Ung.Button.template.applyTemplate({'width':this.width, 'height':this.height, 'imageHtml':imageHtml, 'text':this.text});
         var el= document.createElement("div");
         container.dom.insertBefore(el, position);
         el.className="utgButton";
@@ -63,7 +70,7 @@ Ung.Button = Ext.extend(Ext.Component, {
 });
 Ung.Button.template = new Ext.Template(
 '<table border="0" width="{width}" height="{height}"><tr>',
-'<td width="1%" style="text-align: left;vertical-align: middle;"><img src="{imageSrc}" style="vertical-align: middle;"/></td>',
+'<td width="1%" style="text-align: left;vertical-align: middle;">{imageHtml}</td>',
 '<td style="text-align: left;vertical-align: middle;padding-left:5px;font-size: 14px;">{text}</td>',
 '</tr></table>');
 Ext.ComponentMgr.registerType('utgButton', Ung.Button);
@@ -154,9 +161,9 @@ Ung.Node = Ext.extend(Ext.Component, {
         
 	onSettingsClick: function() {
        	this.settingsWin.show();
-       	this.settingsWin.setPosition(222,0);
+       	this.settingsWin.setPosition(220,0);
        	var objSize=main.viewport.getSize();
-       	objSize.width=objSize.width-222;
+       	objSize.width=objSize.width-220;
        	this.settingsWin.setSize(objSize);
        	this.loadSettings();
 	},
@@ -357,7 +364,7 @@ Ung.Node = Ext.extend(Ext.Component, {
 	        handler: function() {this.onSettingsClick();}.createDelegate(this)
         });
 		cmp=new Ext.Button({
-	        iconCls: 'helpIcon',
+	        iconCls: 'iconHelp',
 			renderTo: 'nodeHelpButton_'+this.getId(),
 	        text: i18n._('Help'),
 	        handler: function() {this.onHelpClick();}.createDelegate(this)
@@ -950,9 +957,9 @@ Ung.Window = Ext.extend(Ext.Window, {
     show: function() {
     	Ung.Window.superclass.show.call(this);
 		if(this.sizeToRack) {
-			this.setPosition(222,0);
+			this.setPosition(220,0);
 			var objSize=main.viewport.getSize();
-			objSize.width=objSize.width-222;
+			objSize.width=objSize.width-220;
 			this.setSize(objSize);
 		}
     }
@@ -978,7 +985,7 @@ Ung.UpdateWindow = Ext.extend(Ung.Window, {
 	initButtons: function() {
 		this.subCmps.push(new Ext.Button({
 			renderTo: 'button_help_'+this.getId(),
-			iconCls: 'helpIcon',
+			iconCls: 'iconHelp',
 			text: i18n._('Help'),
 			handler: function() {this.helpAction();}.createDelegate(this)
 		}));
@@ -1279,7 +1286,7 @@ Ext.grid.EditColumn.prototype ={
     },
 
     onMouseDown: function(e, t){
-        if(t.className && t.className.indexOf('editRow') != -1){
+        if(t.className && t.className.indexOf('iconEditRow') != -1){
             e.stopEvent();
            var index = this.grid.getView().findRowIndex(t);
            var record = this.grid.store.getAt(index);
@@ -1290,7 +1297,7 @@ Ext.grid.EditColumn.prototype ={
     },
 
     renderer: function(value, metadata, record){
-        return '<div class="editRow">&nbsp;</div>';
+        return '<div class="iconEditRow">&nbsp;</div>';
     }
 };
 // Grid delete column
@@ -1326,7 +1333,7 @@ Ext.grid.DeleteColumn.prototype ={
     },
 
     onMouseDown: function(e, t){
-        if(t.className && t.className.indexOf('deleteRow') != -1){
+        if(t.className && t.className.indexOf('iconDeleteRow') != -1){
             e.stopEvent();
             var index = this.grid.getView().findRowIndex(t);
             var record = this.grid.store.getAt(index);
@@ -1336,7 +1343,7 @@ Ext.grid.DeleteColumn.prototype ={
     },
 
     renderer: function(value, metadata, record){
-        return '<div class="deleteRow">&nbsp;</div>';
+        return '<div class="iconDeleteRow">&nbsp;</div>';
     }
 };
 
@@ -1447,7 +1454,7 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			this.tbar=[{
 				text: i18n._('Add'),
 				tooltip: i18n._('Add New Row'),
-				iconCls: 'add',
+				iconCls: 'iconAddRow',
 				parentId:this.getId(),
 				handler: function() {
 					var record=new Ext.data.Record(Ext.decode(Ext.encode(this.emptyRow)));
