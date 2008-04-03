@@ -328,7 +328,7 @@ while true; do
                     *) restartService clamav-daemon $CLAMD_PID_FILE "hung" stopFirst ;;
                   esac
 		  # memory-management
-		  VIRT="`getVirtualMemUsage $(cat $CLAMD_PID_FILE)"
+		  VIRT="`getVirtualMemUsage $(cat $CLAMD_PID_FILE)`"
 		  if [ $VIRT -gt $CLAMD_MAX_VIRTUAL_SIZE ] ; then
 		    echo restartService clamav-daemon $CLAMD_PID_FILE "memory-hogging ($VIRT)" stopFirst
 		  fi
