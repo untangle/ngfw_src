@@ -45,7 +45,22 @@ class DevMkg
   end
 
   def installed()
-    each_pkg_list_line { |l| puts "#{l.split[1]} 10.0" if /^Package: / =~ l }
+    devs = []  
+    each_pkg_list_line { |l|
+      if /^Package: / =~ l
+        pack = l.split[1]
+        devs << pack
+        puts "#{pack} 10.0"
+      end
+    }
+    IO.popen("dpkg --get-selections 'untangle*'", 'r') do |input|
+      IO.popen("xargs dpkg-query -W", 'w') do |output|
+        input.each_line do |l|
+          s = l.split
+          output.puts(s[0]) if 'install' == s[1] and !devs.include?(s[0])
+        end
+      end
+    end
     0
   end
 
