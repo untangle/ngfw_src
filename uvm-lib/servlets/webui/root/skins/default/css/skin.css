@@ -4,33 +4,24 @@
 	text-align:center;
 	height:100%;
 }
-.contentright {
+#contentright {
+	height:100%;
+}
+.centerRegion {
 	background: transparent url(../images/main/background_right.png) repeat !important;
 }
 #racks {
 	position:relative;
 	margin:auto;
-	width:790px;
+	background: transparent url(../images/main/background_empty_rack.png) repeat-y;
+	width:789px;
 	height:100%;
-	/*padding-bottom: 54px;*/
 }
-#racks #leftBorder{
-	position:absolute;
-	top: 0px;
-	left:0px;
-	height:100%;
-	width:59px;
-	background: transparent url(../images/pipeline/LeftRack59x100.png) repeat-y top left;
-	/*background-position: top left;*/
+.racksWithSeparator {
+	background:scroll 0px 100px;
 }
-#racks #rightBorder{
-	position:absolute;
-	top: 0px;
-	right:0px;
-	height:100%;
-	width:59px;
-	background: transparent url(../images/pipeline/RightRack59x100.png) repeat-y top right;
-	/*background-position:top right;*/
+.racksWithoutSeparator {
+	background:scroll 0px 50px;
 }
 #logo {
 	position:relative;
@@ -58,12 +49,12 @@
 #rack_nodes {
 	position:relative;
 	/*top:54px;*/
-	width:790px;
+	width:789px;
 }
 div.rackNode {
 	position:relative;
 	background: transparent url(../images/main/background_node.png) no-repeat;
-	width:790px;
+	width:789px;
 	height:119px;
 }
 #rack_select {

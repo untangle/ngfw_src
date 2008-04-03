@@ -1,3 +1,22 @@
+/*
+	function changecss(theClass,element,value) {
+	//documentation for this script at http://www.shawnolson.net/a/503/
+	 var cssRules;
+	 if (document.all) {
+	  cssRules = 'rules';
+	 }
+	 else if (document.getElementById) {
+	  cssRules = 'cssRules';
+	 }
+	 for (var S = 0; S < document.styleSheets.length; S++){
+	  for (var R = 0; R < document.styleSheets[S][cssRules].length; R++) {
+	   if (document.styleSheets[S][cssRules][R].selectorText == theClass) {
+	    document.styleSheets[S][cssRules][R].style[element] = value;
+	   }
+	  }
+	 }	
+	}
+*/	
 Ext.namespace('Ung');
 //The location of the blank pixel image
 Ext.BLANK_IMAGE_URL = 'ext/resources/images/default/s.gif';
@@ -97,15 +116,25 @@ Ung.Main.prototype = {
                     id: 'center',
 					contentEl: 'contentright',                    
                     border: false,
-                    cls: 'contentright',
+                    cls: 'centerRegion',
                     bodyStyle: 'background-color: transparent;',
                     autoScroll: true
                 }
              ]
         });
         Ext.getCmp("west").on("resize", function() {
-        	var newSize=Math.max(this.getEl().getHeight()-250,100);
-       		main.tabs.setHeight(newSize);
+        	var newHeight=Math.max(this.getEl().getHeight()-250,100);
+       		main.tabs.setHeight(newHeight);
+       		/*
+       		try {
+	       		var ocupied_rack=Ext.get("ocupied_rack");
+	       		var empty_rack=Ext.get("empty_rack");
+	       		if(ocupied_rack && empty_rack) {
+		       		newHeight=Math.max(this.getEl().getHeight()-ocupied_rack.getHeight(),0);
+		       		empty_rack.setHeight(newHeight);
+		       	}
+       		} catch(e) {
+       		}*/
         });
         Ext.getCmp("west").fireEvent("resize");
 		var buttonCmp=new Ung.Button({
@@ -552,6 +581,12 @@ Ung.Main.prototype = {
 		}
 		document.getElementById("nodes_separator_text").innerHTML=hasUtilOrService?i18n._("Services & Utilities"):hasCore?i18n._("Services"):"";
 		document.getElementById("nodes_separator").style.display=hasUtilOrService || hasCore?"":"none";
+		if(hasUtilOrService || hasCore) {
+			document.getElementById("racks").style.backgroundPosition="0px 100px";
+		} else {
+			document.getElementById("racks").style.backgroundPosition="0px 50px";
+			
+		}
 	},
 	
 	updateMyAppsButtons: function() {

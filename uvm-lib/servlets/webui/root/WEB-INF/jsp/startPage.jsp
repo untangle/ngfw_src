@@ -65,13 +65,11 @@
 	</div>
 	<div id="contentright">
 		<div id="racks">
-			<div id="leftBorder"></div>
-			<div id="rightBorder"></div>
 			<div id="rack_list"></div>
 			<div id="rack_nodes">
-			<div id="security_nodes"></div>
-			<div id="nodes_separator" style="display:none;"><div id="nodes_separator_text"></div></div>
-			<div id="other_nodes"></div>
+				<div id="security_nodes"></div>
+				<div id="nodes_separator" style="display:none;"><div id="nodes_separator_text"></div></div>
+				<div id="other_nodes"></div>
 			</div>
 		</div>
 	</div>
