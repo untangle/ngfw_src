@@ -1,22 +1,3 @@
-/*
-	function changecss(theClass,element,value) {
-	//documentation for this script at http://www.shawnolson.net/a/503/
-	 var cssRules;
-	 if (document.all) {
-	  cssRules = 'rules';
-	 }
-	 else if (document.getElementById) {
-	  cssRules = 'cssRules';
-	 }
-	 for (var S = 0; S < document.styleSheets.length; S++){
-	  for (var R = 0; R < document.styleSheets[S][cssRules].length; R++) {
-	   if (document.styleSheets[S][cssRules][R].selectorText == theClass) {
-	    document.styleSheets[S][cssRules][R].style[element] = value;
-	   }
-	  }
-	 }	
-	}
-*/	
 Ext.namespace('Ung');
 //The location of the blank pixel image
 Ext.BLANK_IMAGE_URL = 'ext/resources/images/default/s.gif';
@@ -146,7 +127,7 @@ Ung.Main.prototype = {
 				var rackBaseHelpLink = main.getHelpLink("rack");
 				window.open(rackBaseHelpLink);
 				},
-	        'iconSrc': 'images/IconHelp36x36.png'
+	        'iconCls': 'iconHelp'
 		});
 		this.loadTools();
 		this.loadPolicies();
@@ -180,17 +161,23 @@ Ung.Main.prototype = {
 	},*/
 	//Load script file
 	loadScript: function(sScriptSrc, oCallback) {
-		if(window.XMLHttpRequest)
-			var req = new XMLHttpRequest();
-		else
-			var req = new ActiveXObject("Microsoft.XMLHTTP");
-		req.open("GET",sScriptSrc,false);
-		req.send(null);
-		if( window.execScript)
-			window.execScript(req.responseText);
-		else
-			window.eval(req.responseText);
+		var error=null;
+		try {
+			if(window.XMLHttpRequest)
+				var req = new XMLHttpRequest();
+			else
+				var req = new ActiveXObject("Microsoft.XMLHTTP");
+			req.open("GET",sScriptSrc,false);
+			req.send(null);
+			if( window.execScript)
+				window.execScript(req.responseText);
+			else
+				window.eval(req.responseText);
+		} catch (e) {
+			error=e;	
+		}
 		oCallback.call(this);
+		return error;
 	},
 	//get help link
 	getHelpLink: function(source,focus) {
@@ -459,18 +446,6 @@ Ung.Main.prototype = {
 				Ext.MessageBox.alert(i18n._("Failed"),"TODO: implement config "+item.name);
 				break;
 		}
-	
-		/*
-		if(item!==null && item.action!==null) {
-			Ext.MessageBox.alert(i18n._("Failed"),"TODO: implement config "+item.name);
-			var action=item.action;
-			if(item.action.url!==null) {
-				window.open(item.action.url);
-			} else if(item.action.method!==null) {
-				eval(item.action.method);
-			}
-		}
-		*/
 	},
 	
 	todo: function() {

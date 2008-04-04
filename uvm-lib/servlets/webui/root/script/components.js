@@ -99,14 +99,11 @@ Ung.Node = Ext.extend(Ext.Component, {
 	},
 	setState: function(state) {
 		this.state=state;
-		var iconSrc="images/node/Icon"+this.state+"State28x28.png";
-		document.getElementById('nodeStateIconImg_'+this.getId()).src=iconSrc;
+		document.getElementById('nodeState_'+this.getId()).className="nodeState iconState"+this.state;
 	},
 	setPowerOn: function(powerOn) {
 		this.powerOn=powerOn;
-		var iconSrc="images/node/IconPower"+(powerOn?"On":"Off")+"State28x28.png";
-		document.getElementById('nodePowerIconImg_'+this.getId()).src=iconSrc;
-		document.getElementById('nodePowerOnHint_'+this.getId()).style.display=this.powerOn?"none":"";
+		document.getElementById('nodePower_'+this.getId()).className="nodePower iconPower"+(this.powerOn?"On":"Off");
 	},
 	updateRunState: function(runState) {
 		this.runState=runState;
@@ -337,11 +334,11 @@ Ung.Node = Ext.extend(Ext.Component, {
            });
 		this.settingsWin.render('container');
 
-		Ext.get('nodePowerIconImg_'+this.getId()).on('click', this.onPowerClick, this);
+		Ext.get('nodePower_'+this.getId()).on('click', this.onPowerClick, this);
 		var cmp=null;
 		cmp=new Ext.ToolTip({
 		  html: Ung.Node.getStatusTip(),
-		  target: 'nodeStateIconImg_'+this.getId(),
+		  target: 'nodeState_'+this.getId(),
 		  autoWidth: true,
 		  autoHeight: true,
 		  showDelay: 0,
@@ -350,7 +347,7 @@ Ung.Node = Ext.extend(Ext.Component, {
 		});
 		cmp=new Ext.ToolTip({
 		  html: Ung.Node.getPowerTip(),
-		  target: 'nodePowerIconImg_'+this.getId(),
+		  target: 'nodePower_'+this.getId(),
 		  autoWidth: true,
 		  autoHeight: true,
 		  showDelay: 0,
@@ -409,10 +406,10 @@ Ung.Node.getPowerTip= function() {
 };
 Ung.Node.template = new Ext.Template(
 '<div class="nodeImage"><img src="{image}"/></div>',
-'<div class="nodeLabel">{displayName}</div><div class="nodeBlingers" id="nodeBlingers_{id}"></div>',
-'<div class="nodeStateIcon"><img id="nodeStateIconImg_{id}" src="images/node/IconOffState28x28.png"></div>',
-'<div class="nodePowerIcon"><img id="nodePowerIconImg_{id}" src="images/node/IconPowerOffState28x28.png"></div>',
-'<div id="nodePowerOnHint_{id}" class="nodePowerOnHint"><img src="images/node/IconPowerOnHint100.png"></div>',
+'<div class="nodeLabel">{displayName}</div>',
+'<div class="nodeBlingers" id="nodeBlingers_{id}"></div>',
+'<div class="nodeState" id="nodeState_{id}"></div>',
+'<div class="nodePower" id="nodePower_{id}"></div>',
 '<div class="nodeSettingsButton" id="nodeSettingsButton_{id}"></div>',
 '<div class="nodeHelpButton" id="nodeHelpButton_{id}"></div>');
 
@@ -542,7 +539,7 @@ Ung.ActivityBlinger = Ext.extend(Ext.Component, {
 });
 Ung.ActivityBlinger.template = new Ext.Template(
 '<div class="blingerName">{blingerName}</div>',
-'<div class="blingerBox" id="blingerBox_{id}" style="width:60px;">',
+'<div class="activityBlingerBox" id="blingerBox_{id}">',
 '</div>');
 Ung.ActivityBlinger.decayFactor=Math.pow(0.94,Ung.BlingerManager.updateTime/1000);
 Ung.ActivityBlinger.decayValue = function(newValue, lastValue, decay) {

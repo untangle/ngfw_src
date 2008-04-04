@@ -7,7 +7,7 @@
 #contentright {
 	height:100%;
 }
-.centerRegion {
+div.centerRegion {
 	background: transparent url(../images/main/background_right.png) repeat !important;
 }
 #racks {
@@ -17,10 +17,10 @@
 	width:789px;
 	height:100%;
 }
-.racksWithSeparator {
+div.racksWithSeparator {
 	background:scroll 0px 100px;
 }
-.racksWithoutSeparator {
+div.racksWithoutSeparator {
 	background:scroll 0px 50px;
 }
 #logo {
@@ -83,52 +83,67 @@ div.rackNode {
 }
 .nodeImage {
 	position:absolute;
-	top:8px;
+	top:12px;
 	left:50px;
 }
 div.nodeLabel {
 	position:absolute;
-	top: 19px;
+	top: 17px;
 	left: 100px;
+	height: 55px;
+	width: 230px;
 	font-family: verdana, sans-serif;
 	font-size:18px;
-	/*font-weight:bold;*/
 	color: #7C7B7B;
 }
-div.nodeBlingers {
-	position:absolute;
-	top:0px;
-	right:90px;
-	width:310px;
-	height:82px;
-}
+
 button.iconHelp {
 	background:transparent url(../images/main/icon_help.png) no-repeat !important; 
 }
-div.nodeStateIcon {
-	position:absolute;
-	top:20px;
-	right:54px;
+div.iconHelp {
+	background:transparent url(../images/main/icon_help.png) no-repeat !important;
+	height:15px;
+	width:15px;
 }
-div.nodePowerIcon {
+div.nodeState {
+	z-index: 200;
 	position:absolute;
 	top:54px;
 	right:54px;
+	height:33px;
+	width: 33px
 }
-div.nodePowerOnHint {
+div.iconStateOn {
+	background:transparent url(../images/main/icon_state_on.png) no-repeat center !important; 
+}
+div.iconStateOff {
+	background:transparent url(../images/main/icon_state_off.png) no-repeat center !important; 
+}
+div.iconStateAttention {
+	background:transparent url(../images/main/icon_state_attention.png) no-repeat center !important; 
+}
+div.nodePower {
 	position:absolute;
-	top:80px;
-	right:64px;
+	top:20px;
+	right:54px;
+	height:33px;
+	width: 33px
 }
+div.iconPowerOn {
+	background:transparent url(../images/main/icon_power_on.png) no-repeat center !important; 
+}
+div.iconPowerOff {
+	background:transparent url(../images/main/icon_power_off.png) no-repeat center !important; 
+}
+
 div.nodeSettingsButton {
 	position:absolute;
-	top:56px;
+	top:76px;
 	left:50px;
-	/*width:66px;*/
 }
 div.nodeHelpButton {
 	position:absolute;
-	top:56px;
+	top:76px;
 	left:182px;
 	width:120px;
 }
@@ -136,12 +151,7 @@ div.nodeHelpButton {
 	background:transparent url(../images/main/icon_settings.png) no-repeat !important;  
 }
 div.windowBackground {
-	background: transparent url(../images/LightGreyBackground1600x100.png) repeat-y;
-/*
-	border:1px solid rgb(128,127,127);
-	width:100%;
-	height:100%;
-*/	
+	background: transparent url(../images/main/background_grey.png) repeat;
 }
 div.nodeRemoveButton {
 	position:absolute;
@@ -181,16 +191,27 @@ div.nodeSettingsContent {
 	margin-bottom: 8px;
 
 }
-div.blingerBox {
+div.nodeBlingers {
 	position:absolute;
+	top:5px;
+	right:100px;
+	width:355px;
+	height:82px;
+}
+div.activityBlinger {
+	position:absolute;
+	top:0px;
+	left:0px;
+	height:75px;
+}
+
+div.activityBlingerBox {
+	position: relative;
 	top:15px;
 	left:0px;
-	border-top:2px solid #969696;
-	border-left:3px solid #696969;
-	border-bottom:2px solid #FFFFFF;
-	border-right:2px solid #FFFFFF;
-	background-color: #000000;
-	height:64px;
+	height:60px;
+	width:100px;
+	background: transparent url(../images/main/background_activity_blinger.png) no-repeat !important;
 }
 div.blingerText {
 	font-family: "Arial", sans-serif;
@@ -205,13 +226,6 @@ div.blingerName {
 	font-size: 11px;
 	color: #969696;
 }
-
-div.activityBlinger {
-	position:absolute;
-	top:0px;
-	left:0px;
-	width:65px;
-}
 div.activityBlingerText {
 	position:absolute;
 	right:3px;
@@ -219,12 +233,8 @@ div.activityBlingerText {
 	z-index: 15;
 }
 div.activityBlingerBar {
-	position:absolute;
-	border-top:1px solid #6666FF;
-	border-right:1px solid #6666FF;
-	border-bottom:1px solid #6666FF;
-	border-left:0px solid #333380;
-	background-color: #333380;
+	position: absolute;
+	background: transparent url(../images/main/background_activity_blinger_bar.png) repeat-x;
 	left:0px;
 	height:10px;
 	z-index: 14;
@@ -232,8 +242,8 @@ div.activityBlingerBar {
 div.systemBlinger {
 	position:absolute;
 	top:0px;
-	left:90px;
-	width:215px;
+	right:0px;
+	width:240px;
 }
 div.systemBlingerBox {
 	position:absolute;
@@ -258,11 +268,12 @@ div.systemBlingerValue {
 	position:absolute;
 	right:2px;
 	text-align: right;
-	background-color: #000000;
 	color: #28688B;
-	width: 75px;
 	font-size: 10px;
-	padding-right:1px 
+	padding-right:3px;
+	width: 102px;
+	height: 14px;
+	background: transparent url(../images/main/background_system_blinger_value.png) no-repeat !important;
 }
 div.pixel {
 	position:absolute;
