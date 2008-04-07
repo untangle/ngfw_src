@@ -199,7 +199,7 @@ BuildEnv::SRC.installTarget.install_jars(jts, "#{uvm_lib.distDirectory}/usr/shar
 thirdparty = BuildEnv::SRC['untangle-libuvmthirdparty']
 
 BuildEnv::SRC.installTarget.install_jars(Jars::Base, "#{thirdparty.distDirectory}/usr/share/java/uvm")
-
+BuildEnv::SRC.installTarget.install_jars(Jars::ProperJavaRDP, "#{thirdparty.distDirectory}/usr/share/java/uvm")
 BuildEnv::SRC.installTarget.install_jars(Jars::Reporting, "#{thirdparty.distDirectory}/usr/share/java/reports")
 
 BuildEnv::SRC.installTarget.install_dirs("#{uvm_lib.distDirectory}/usr/share/untangle/toolbox")
