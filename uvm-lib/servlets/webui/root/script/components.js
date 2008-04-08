@@ -818,7 +818,7 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
     		this.fields=this.getPredefinedFields(this.predefinedType);
     		this.columns=this.getPredefinedColumns(this.predefinedType);
     	}
-    	if(this.eventManagerFn==null) {
+    	if(this.eventManagerFn==null && this.hasRepositories == true) {
     		this.eventManagerFn=this.settingsCmp.getEventManager();
     	}
     	this.settingsCmp.rpc.repository={};
@@ -850,23 +850,25 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
 	//called when the component is rendered
 	onRender : function(container, position) {
 		Ung.GridEventLog.superclass.onRender.call(this,container, position);
-		this.eventManagerFn.getRepositoryDescs(function (result, exception) {
-			if(exception) {Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}
-			if(this.settingsCmp) {
-				this.settingsCmp.rpc.repositoryDescs=result;
-				var out=[];
-				out.push('<select id="selectRepository_'+this.getId()+'_'+this.settingsCmp.node.tid+'" class="height:11px; font-size:9px;">');
-				var repList=this.settingsCmp.rpc.repositoryDescs.list;
-				for(var i=0;i<repList.length;i++) {
-					var repDesc=repList[i];
-					var selOpt=(i===0)?"selected":"";
-					out.push('<option value="'+repDesc.name+'" '+selOpt+'>'+this.settingsCmp.i18n._(repDesc.name)+'</option>');
+		if (this.hasRepositories) {
+			this.eventManagerFn.getRepositoryDescs(function (result, exception) {
+				if(exception) {Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}
+				if(this.settingsCmp) {
+					this.settingsCmp.rpc.repositoryDescs=result;
+					var out=[];
+					out.push('<select id="selectRepository_'+this.getId()+'_'+this.settingsCmp.node.tid+'" class="height:11px; font-size:9px;">');
+					var repList=this.settingsCmp.rpc.repositoryDescs.list;
+					for(var i=0;i<repList.length;i++) {
+						var repDesc=repList[i];
+						var selOpt=(i===0)?"selected":"";
+						out.push('<option value="'+repDesc.name+'" '+selOpt+'>'+this.settingsCmp.i18n._(repDesc.name)+'</option>');
+					}
+					out.push('</select>');
+					var boxRepositoryDescEventLog=document.getElementById('boxRepository_'+this.getId()+'_'+this.settingsCmp.node.tid);
+					boxRepositoryDescEventLog.innerHTML=out.join("");
 				}
-				out.push('</select>');
-				var boxRepositoryDescEventLog=document.getElementById('boxRepository_'+this.getId()+'_'+this.settingsCmp.node.tid);
-				boxRepositoryDescEventLog.innerHTML=out.join("");
-			}
-		}.createDelegate(this));
+			}.createDelegate(this));
+		}
 	},
 	//get selected repository
     getSelectedRepository: function () {
@@ -879,19 +881,23 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
     },
     //Refresh the events list
 	refreshList: function() {
-		var selRepository=this.getSelectedRepository();
-		if(selRepository!==null) {
-			if(this.settingsCmp.rpc.repository[selRepository] === undefined) {
-				this.settingsCmp.rpc.repository[selRepository]=this.eventManagerFn.getRepository(selRepository);
-			}
-			this.settingsCmp.rpc.repository[selRepository].getEvents(function (result, exception) {
-				if(exception) {Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}
-				var events = result;
-				if(this.settingsCmp!==null) {
-					this.getStore().proxy.data=events;
-					this.getStore().load({params:{start: 0, limit: this.recordsPerPage}});
+		if (this.hasRepositories) {
+			var selRepository=this.getSelectedRepository();
+			if(selRepository!==null) {
+				if(this.settingsCmp.rpc.repository[selRepository] === undefined) {
+					this.settingsCmp.rpc.repository[selRepository]=this.eventManagerFn.getRepository(selRepository);
 				}
-			}.createDelegate(this));
+				this.settingsCmp.rpc.repository[selRepository].getEvents(function (result, exception) {
+					if(exception) {Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}
+					var events = result;
+					if(this.settingsCmp!==null) {
+						this.getStore().proxy.data=events;
+						this.getStore().load({params:{start: 0, limit: this.recordsPerPage}});
+					}
+				}.createDelegate(this));
+			}
+		} else {
+			//TODO
 		}
 	}
 });
