@@ -159,7 +159,7 @@ Ung.Main.prototype = {
 		}
 		oHead.appendChild(oScript);
 	},*/
-	//Load script file
+	//Load script file dynamically 
 	loadScript: function(sScriptSrc, oCallback) {
 		var error=null;
 		try {
@@ -292,7 +292,7 @@ Ung.Main.prototype = {
 			node.isCore=md.core;
 			node.image='image?name='+node.name;
 		}
-		node.blingers=eval([{'type':'ActivityBlinger','bars':['ACT 1','ACT 2','ACT 3','ACT 4']},{'type':'SystemBlinger'}]);
+		node.blingers=eval([{'type':'ActivityBlinger','bars':['ACTIVITY 1','ACTIVITY 2','ACTIVITY 3','ACTIVITY 4']},{'type':'SystemBlinger'}]);
 		return node;
 	},
 	//load the list of nodes for the current policy

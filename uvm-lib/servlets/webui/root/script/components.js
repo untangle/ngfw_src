@@ -520,7 +520,7 @@ Ung.ActivityBlinger = Ext.extend(Ext.Component, {
 			var newValue=stats.counters[6+i];
 			this.decays[i]=Ung.ActivityBlinger.decayValue(newValue, this.lastValues[i],this.decays[i]);
 			this.lastValues[i]=newValue;
-			var barPixelWidth=Math.floor(this.decays[i]*0.6);
+			var barPixelWidth=Math.floor(this.decays[i]);
 			var barDiv=document.getElementById('activityBar_'+this.getId()+'_'+i);
 			barDiv.style.width=barPixelWidth+"px";
 			barDiv.style.display=(barPixelWidth===0)?"none":"";
@@ -539,8 +539,7 @@ Ung.ActivityBlinger = Ext.extend(Ext.Component, {
 });
 Ung.ActivityBlinger.template = new Ext.Template(
 '<div class="blingerName">{blingerName}</div>',
-'<div class="activityBlingerBox" id="blingerBox_{id}">',
-'</div>');
+'<div class="activityBlingerBox" id="blingerBox_{id}"></div>');
 Ung.ActivityBlinger.decayFactor=Math.pow(0.94,Ung.BlingerManager.updateTime/1000);
 Ung.ActivityBlinger.decayValue = function(newValue, lastValue, decay) {
 	if(lastValue!==null && newValue!=lastValue) {
@@ -587,8 +586,8 @@ Ung.SystemBlinger = Ext.extend(Ext.Component, {
         		var out=[];
         		for(var i=0;i<this.data.length;i++) {
         			var dat=this.data[i];
-        			var top=3+i*15;
-        			out.push('<div class="blingerText systemBlingerName" style="top:'+top+'px;" id="systemName_'+this.getId()+'_'+i+'">'+dat.name+'</div>');
+        			var top=2+i*15;
+        			out.push('<div class="blingerText systemBlingerLabel" style="top:'+top+'px;" id="systemName_'+this.getId()+'_'+i+'">'+dat.name+'</div>');
         			out.push('<div class="blingerText systemBlingerValue" style="top:'+top+'px;" id="systemValue_'+this.getId()+'_'+i+'">'+dat.value+'</div>');
         		}
         		document.getElementById("blingerBox_"+this.getId()).innerHTML=out.join("");
@@ -641,8 +640,8 @@ Ung.SystemBlinger = Ext.extend(Ext.Component, {
 });
 Ung.SystemBlinger.template = new Ext.Template(
 '<div class="blingerName">{blingerName}</div>',
-'<div class="systemBlingerBox" id="blingerBox_{id}" style="width:100%">',
-'</div>');
+'<div class="systemBlingerBox" id="blingerBox_{id}"></div>',
+'<div class="systemBlingerSettings" id="systemBlingerSettings_{id}"></div>');
 Ext.ComponentMgr.registerType('utgSystemBlinger', Ung.SystemBlinger);
 
 

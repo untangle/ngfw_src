@@ -94,7 +94,7 @@ div.nodeLabel {
 	width: 230px;
 	font-family: verdana, sans-serif;
 	font-size:18px;
-	color: #7C7B7B;
+	color: #4E4C4C;
 }
 
 button.iconHelp {
@@ -158,30 +158,24 @@ div.nodeRemoveButton {
 	left:10px;
 	bottom:14px;
 }
-.nodeRemoveIcon {
+button.nodeRemoveIcon {
 	background:transparent url(../images/main/icon_remove.png) no-repeat !important; 
-	width:16px;
-	height:16px;
 }
 div.nodeCancelButton {
 	position:absolute;
 	right:93px;
 	bottom:14px;
 }
-.cancelIcon {
+button.cancelIcon {
 	background:transparent url(../images/main/icon_cancel.png) no-repeat !important; 
-	width:16px;
-	height:16px;
 }
 div.nodeSaveButton {
 	position:absolute;
 	right:10px;
 	bottom:14px;
 }
-.saveIcon {
+button.saveIcon {
 	background:transparent url(../images/main/icon_save.png) no-repeat !important; 
-	width:23px;
-	height:16px;
 }
 div.nodeSettingsContent {
 	position:relative;
@@ -193,43 +187,47 @@ div.nodeSettingsContent {
 }
 div.nodeBlingers {
 	position:absolute;
-	top:5px;
-	right:100px;
-	width:355px;
-	height:82px;
-}
-div.activityBlinger {
-	position:absolute;
-	top:0px;
-	left:0px;
-	height:75px;
-}
-
-div.activityBlingerBox {
-	position: relative;
-	top:15px;
-	left:0px;
-	height:60px;
-	width:100px;
-	background: transparent url(../images/main/background_activity_blinger.png) no-repeat !important;
+	bottom: 16px;
+	right: 100px;
+	width: 355px;
+	height: 87px;
 }
 div.blingerText {
 	font-family: "Arial", sans-serif;
 	font-size: 9px;
-	color: #BEBEBE;
+	color: #000000;
 }
 div.blingerName {
 	position:absolute;
 	top:1px;
-	right:0px;
+	right:10px;
 	font-family: "times", sans-serif;
 	font-size: 11px;
-	color: #969696;
+	color: #3F3F3F;
+}
+
+div.activityBlinger {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	width: 118px;
+	height: 82px;
+	background: transparent url(../images/main/background_activity_blinger_border.png) no-repeat scroll 0px 7px !important;
+}
+
+div.activityBlingerBox {
+	position: relative;
+	top: 15px;
+	left: 9px;
+	height:60px;
+	width:100px;
+	background: transparent url(../images/main/background_activity_blinger.png) no-repeat !important;
 }
 div.activityBlingerText {
 	position:absolute;
 	right:3px;
 	text-align: right;
+	color: #FFFFFF;
 	z-index: 15;
 }
 div.activityBlingerBar {
@@ -241,39 +239,46 @@ div.activityBlingerBar {
 }
 div.systemBlinger {
 	position:absolute;
-	top:0px;
-	right:0px;
-	width:240px;
+	top: 0px;
+	right: 0px;
+	width: 219px;
+	height: 87px;
+	background: transparent url(../images/main/background_system_blinger_border.png) no-repeat scroll 0px 7px !important;
 }
 div.systemBlingerBox {
-	position:absolute;
+	position: relative;
 	top:15px;
-	left:0px;
-	border-top:2px solid #969696;
-	border-left:0px solid #FFFFFF;
-	border-bottom:0px solid #FFFFFF;
-	border-right:2px solid #969696;
-	background-color: transparent;
-	height:64px;
+	left:5px;
+	width: 209px;
+	height:60px;
 }
-div.systemBlingerName {
+div.systemBlingerLabel {
 	position:absolute;
-	left:2px;
+	left:0px;
 	text-align: left;
-	color: #969696;
-	width: 140px;
-	font-size: 10px;
+	color: #3F3F3F;
+	width: 125px;
+	overflow: hidden;
+	white-space : nowrap;
 }
 div.systemBlingerValue {
 	position:absolute;
-	right:2px;
+	right:0px;
 	text-align: right;
-	color: #28688B;
+	color: #FFFFFF;
 	font-size: 10px;
-	padding-right:3px;
-	width: 102px;
+	padding-right:4px;
+	width: 100px;
 	height: 14px;
-	background: transparent url(../images/main/background_system_blinger_value.png) no-repeat !important;
+	background: transparent url(../images/main/background_system_blinger_value.png) no-repeat right !important;
+}
+div.systemBlingerSettings {
+	position: absolute;
+	right: 10px;
+	bottom: 0px;
+	width: 11px;
+	height: 11px;
+	background: transparent url(../images/main/icon_system_blinger_settings.png) no-repeat !important;
 }
 div.pixel {
 	position:absolute;
@@ -284,14 +289,6 @@ div.toolboxButton {
 	margin-left: auto;
 	margin-right: auto;
 	margin-bottom: 5px;
-}
-div.libraryButton {
-	width:161px;
-	height:57px;
-}
-div.configButton {
-	width:161px;
-	height:45px;
 }
 div.utgButton {
 	cursor: pointer;
