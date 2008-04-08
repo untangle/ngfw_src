@@ -91,7 +91,7 @@ msgstr "User Directory"
 
 #: ../root/script/main.js:236
 msgid "Backup/Restore"
-msgstr "Copie se siguranţă/Restaurare"
+msgstr "Copie siguranţă/Restaurare"
 
 #: ../root/script/main.js:237
 msgid "Support"
@@ -274,36 +274,36 @@ msgstr "Adaugă"
 msgid "Add New Row"
 msgstr "Adaugă Rând Nou"
 
-msgid "OpenVPN"
-msgstr "OpenVPN"
+#~ msgid "OpenVPN"
+#~ msgstr "OpenVPN"
 
-msgid "Web Filter"
-msgstr "Filtrare Web"
+#~ msgid "Web Filter"
+#~ msgstr "Filtrare Web"
 
-msgid "Spyware Blocker"
-msgstr "Protecţie Spyware"
+#~ msgid "Spyware Blocker"
+#~ msgstr "Protecţie Spyware"
 
-msgid "Attack Blocker"
-msgstr "Protecţie împotriva atacurilor"
+#~ msgid "Attack Blocker"
+#~ msgstr "Protecţie împotriva atacurilor"
 
-msgid "Virus Blocker"
-msgstr "Protecţie împotriva viruşilor"
+#~ msgid "Virus Blocker"
+#~ msgstr "Protecţie împotriva viruşilor"
 
-msgid "Protocol Control"
-msgstr "Controlul Protocoalelor"
+#~ msgid "Protocol Control"
+#~ msgstr "Controlul Protocoalelor"
 
-msgid "Spam Blocker"
-msgstr "Protecţie Spam"
+#~ msgid "Spam Blocker"
+#~ msgstr "Protecţie Spam"
 
-msgid "Firewall"
-msgstr "Firewall"
+#~ msgid "Firewall"
+#~ msgstr "Firewall"
 
-msgid "Intrusion Prevention"
-msgstr "Protecţie împotriva intruziunii"
+#~ msgid "Intrusion Prevention"
+#~ msgstr "Protecţie împotriva intruziunii"
 
-msgid "Phish Blocker"
-msgstr "Protecţie Phish"
+#~ msgid "Phish Blocker"
+#~ msgstr "Protecţie Phish"
 
-msgid "Untangle Reports"
-msgstr "Rapoarte Untangle"
+#~ msgid "Untangle Reports"
+#~ msgstr "Rapoarte Untangle"
 

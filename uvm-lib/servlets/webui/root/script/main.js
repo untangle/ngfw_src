@@ -463,7 +463,7 @@ Ung.Main.prototype = {
 					'height':'50px',
 					'renderTo':'toolsLibrary',
 					'cls':'toolboxButton',
-			        'text': i18n._(item.displayName),
+			        'text': item.displayName,
 			        'handler': function() {main.clickLibrary(main.library[this.libraryIndex]);},
 			        'iconSrc': 'image?name='+ item.name
 		        });

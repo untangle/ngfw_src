@@ -260,46 +260,35 @@ msgstr ""
 msgid "Add New Row"
 msgstr ""
 
-#: node display name
-msgid "OpenVPN"
-msgstr ""
+#~ msgid "OpenVPN"
+#~ msgstr ""
 
-#: node display name
-msgid "Web Filter"
-msgstr ""
+#~ msgid "Web Filter"
+#~ msgstr ""
 
-#: node display name
-msgid "Spyware Blocker"
-msgstr ""
+#~ msgid "Spyware Blocker"
+#~ msgstr ""
 
-#: node display name
-msgid "Attack Blocker"
-msgstr ""
+#~ msgid "Attack Blocker"
+#~ msgstr ""
 
-#: node display name
-msgid "Virus Blocker"
-msgstr ""
+#~ msgid "Virus Blocker"
+#~ msgstr ""
 
-#: node display name
-msgid "Protocol Control"
-msgstr ""
+#~ msgid "Protocol Control"
+#~ msgstr ""
 
-#: node display name
-msgid "Spam Blocker"
-msgstr ""
+#~ msgid "Spam Blocker"
+#~ msgstr ""
 
-#: node display name
-msgid "Firewall"
-msgstr ""
+#~ msgid "Firewall"
+#~ msgstr ""
 
-#: node display name
-msgid "Intrusion Prevention"
-msgstr ""
+#~ msgid "Intrusion Prevention"
+#~ msgstr ""
 
-#: node display name
-msgid "Phish Blocker"
-msgstr ""
+#~ msgid "Phish Blocker"
+#~ msgstr ""
 
-#: node display name
-msgid "Untangle Reports"
-msgstr ""
+#~ msgid "Untangle Reports"
+#~ msgstr ""
