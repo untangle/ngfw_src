@@ -43,12 +43,13 @@
 	</script>
  </head>
 <body>
+<!-- 
 <div id="scripts_container" style="display: none;"></div>
+-->
 <div id="container">
 	<div id="contentleft">
 		<div id="logo"><img src="images/logo.png"/></div>
 		<div id="tabs">
-		</div>
 			<div id="tabLibrary" class="x-hide-display">
 			    <div style="margin-left:15px;font-size: 11px;text-align:left;">Click to Learn More</div>
 			    <div id="toolsLibrary"></div>
@@ -61,19 +62,9 @@
                	<div style="margin-left:15px;font-size: 11px;text-align:left;">Click to Configure</div>
                	<div id="toolsConfig"></div>
 			</div>
+		</div>
  		<div id="help"></div>
 	</div>
-	<div id="contentright">
-		<div id="racks">
-			<div id="rack_list"></div>
-			<div id="rack_nodes">
-				<div id="security_nodes"></div>
-				<div id="nodes_separator" style="display:none;"><div id="nodes_separator_text"></div></div>
-				<div id="other_nodes"></div>
-			</div>
-		</div>
-	</div>
-	<div id="test" style="display: none;"></div>
 </div>
 </body>
 </html>

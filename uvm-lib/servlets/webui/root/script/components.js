@@ -134,13 +134,13 @@ Ung.Node = Ext.extend(Ext.Component, {
        	this.setPowerOn(!this.powerOn);
        	this.setState("Attention");
        	if(this.powerOn) {
-       		this.nodeContext.node.start(function (result, exception) {
+       		this.nodeContext.rpcNode.start(function (result, exception) {
        			this.runState="RUNNING";
 				this.setState("On");
 				if(exception) {Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}
        		}.createDelegate(this));
        	} else {
-       		this.nodeContext.node.stop(function (result, exception) {
+       		this.nodeContext.rpcNode.stop(function (result, exception) {
 				this.runState="INITIALIZED";
 				this.setState("Off");
 				this.resetBlingers();
@@ -167,7 +167,11 @@ Ung.Node = Ext.extend(Ext.Component, {
 	loadNodeContext: function() {
 		if(this.nodeContext===undefined) {
     		this.nodeContext=rpc.nodeManager.nodeContext(this.Tid);
-			this.nodeContext.node=this.nodeContext.node();
+		}
+		if(this.nodeContext.rpcNode===undefined) {
+			this.nodeContext.rpcNode=this.nodeContext.node();
+		}
+		if(this.nodeContext.nodeDesc===undefined) {
 			this.nodeContext.nodeDesc=this.nodeContext.getNodeDesc();
 		}
 	},
@@ -586,7 +590,7 @@ Ung.SystemBlinger = Ext.extend(Ext.Component, {
         		var out=[];
         		for(var i=0;i<this.data.length;i++) {
         			var dat=this.data[i];
-        			var top=2+i*15;
+        			var top=1+i*15;
         			out.push('<div class="blingerText systemBlingerLabel" style="top:'+top+'px;" id="systemName_'+this.getId()+'_'+i+'">'+dat.name+'</div>');
         			out.push('<div class="blingerText systemBlingerValue" style="top:'+top+'px;" id="systemValue_'+this.getId()+'_'+i+'">'+dat.value+'</div>');
         		}
@@ -687,9 +691,9 @@ Ung.Settings = Ext.extend(Ext.Component, {
 			}
 	    });
 	},
-    // get nodeContext.node object
+    // get nodeContext.rpcNode object
 	getRpcNode: function() {
-		return this.node.nodeContext.node;
+		return this.node.nodeContext.rpcNode;
 	},
     // get base settings object
 	getBaseSettings: function(forceReload) {
@@ -700,17 +704,17 @@ Ung.Settings = Ext.extend(Ext.Component, {
 	},
     // get Validator object
 	getValidator: function() {
-		if(this.node.nodeContext.node===undefined) {
-			this.node.nodeContext.node.validator=this.getRpcNode().getValidator();
+		if(this.node.nodeContext.rpcNode===undefined) {
+			this.node.nodeContext.rpcNode.validator=this.getRpcNode().getValidator();
 		}
-		return this.node.nodeContext.node.validator;
+		return this.node.nodeContext.rpcNode.validator;
 	},
     // get eventManager object
 	getEventManager: function () {
-		if(this.node.nodeContext.node.eventManager===undefined) {
-			this.node.nodeContext.node.eventManager=this.node.nodeContext.node.getEventManager();
+		if(this.node.nodeContext.rpcNode.eventManager===undefined) {
+			this.node.nodeContext.rpcNode.eventManager=this.node.nodeContext.rpcNode.getEventManager();
 		}
-		return this.node.nodeContext.node.eventManager;
+		return this.node.nodeContext.rpcNode.eventManager;
 	},
 	beforeDestroy : function(){
         Ext.destroy(this.tabs);
@@ -836,6 +840,7 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
 						iconCls: 'iconRefresh',
 						handler: function() {this.refreshList();}.createDelegate(this)
 					},
+					{xtype:'tbtext',text:'<div style="width:30px;"></div>'},
 					new Ext.PagingToolbar({
 						pageSize: this.recordsPerPage,
 						store: this.store
@@ -1180,30 +1185,33 @@ Ext.extend(Ung.MemoryProxy, Ext.data.DataProxy, {
         var result;
         try {
         	var readerData={};
+        	var list=null;
             if(this.data!=null) {
-            	var list= (this.root!=null)?this.data[this.root]:this.data;
-            	var totalRecords=list.length;
-            	var pageList=null;
-            	if(params.sort!=null) {
-            		list.sort(function(obj1, obj2) {
-            			var v1=obj1[params.sort];
-            			var v2=obj2[params.sort];
-            			var ret=params.dir=="ASC"?-1:1;
-            			return v1==v2?0:(v1<v2)?ret:-ret;
-            		});
-            	}
-            	if(params.start!=null && params.limit!=null && list!=null) {
-            		pageList=list.slice(params.start,params.start+params.limit);
-            	} else {
-            		pageList=list;
-            	}
-            	if(this.root==null) {
-            		readerData=pageList;
-            	} else {
-            		readerData[this.root]=pageList;
-            		readerData.totalRecords=totalRecords;
-            	}
+            	list= (this.root!=null)?this.data[this.root]:this.data;
+            } else {
+            	list=[];
             }
+           	var totalRecords=list.length;
+           	var pageList=null;
+           	if(params.sort!=null) {
+           		list.sort(function(obj1, obj2) {
+           			var v1=obj1[params.sort];
+           			var v2=obj2[params.sort];
+           			var ret=params.dir=="ASC"?-1:1;
+           			return v1==v2?0:(v1<v2)?ret:-ret;
+           		});
+           	}
+           	if(params.start!=null && params.limit!=null && list!=null) {
+           		pageList=list.slice(params.start,params.start+params.limit);
+           	} else {
+           		pageList=list;
+           	}
+           	if(this.root==null) {
+           		readerData=pageList;
+           	} else {
+           		readerData[this.root]=pageList;
+           		readerData.totalRecords=totalRecords;
+           	}
             result = reader.readRecords(readerData);
         }catch(e){
             this.fireEvent("loadexception", this, arg, null, e);

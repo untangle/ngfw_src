@@ -83,6 +83,19 @@ Ung.Main.prototype = {
 		}
 		this.buildTabs();
 		// initialize viewport object
+		var contentRightArr=[
+			'<div id="contentright">',
+				'<div id="racks">',
+					'<div id="rack_list"></div>',
+					'<div id="rack_nodes">',
+						'<div id="security_nodes"></div>',
+						'<div id="nodes_separator" style="display:none;"><div id="nodes_separator_text"></div></div>',
+						'<div id="other_nodes"></div>',
+					'</div>',
+				'</div>',
+			'</div>'];
+		
+		
 		this.viewport = new Ext.Viewport({
             layout:'border',
             items:[
@@ -95,7 +108,7 @@ Ung.Main.prototype = {
                  },{
                     region:'center',
                     id: 'center',
-					contentEl: 'contentright',                    
+					html: contentRightArr.join(""),                    
                     border: false,
                     cls: 'centerRegion',
                     bodyStyle: 'background-color: transparent;',
