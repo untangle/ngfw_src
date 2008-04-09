@@ -124,8 +124,12 @@ class UvmAuthenticator extends BasicAuthenticator
                         log.warn("Magic authentication failed");
                         return false;
                     }
+                } else {
+                    debug("realm is not UvmRealm");
                 }
-            } /* No magic cookie, fall back to the default methods */
+            } else { /* No magic cookie, fall back to the default methods */
+                debug("authStr is null, nonce not found");
+            }
         }
 
         return super.authenticate(request, response, config);
