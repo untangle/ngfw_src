@@ -210,7 +210,7 @@ class TomcatManager
 
     boolean loadSystemApp(String urlBase, String rootDir, Valve valve)
     {
-        return loadSystemApp(urlBase, rootDir, new WebAppOptions(false, valve));
+        return loadSystemApp(urlBase, rootDir, new WebAppOptions(true, valve));
     }
 
 
