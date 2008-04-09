@@ -208,6 +208,12 @@ class TomcatManager
         return loadWebApp(urlBase, rootDir, uvmRealm, uvmAuth, options);
     }
 
+    boolean loadSystemApp(String urlBase, String rootDir, Valve valve)
+    {
+        return loadSystemApp(urlBase, rootDir, new WebAppOptions(false, valve));
+    }
+
+
     boolean loadSystemApp(String urlBase, String rootDir) {
         return loadSystemApp(urlBase, rootDir, new WebAppOptions());
     }
