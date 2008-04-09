@@ -74,8 +74,44 @@ Ung.Shield = Ext.extend(Ung.Settings, {
 		this.gridEventLog=new Ung.GridEventLog({
 			settingsCmp: this,
 			hasRepositories: false,
-			//This is a predefined event log, so there is no need to specify the fields and columns
-			predefinedType: "TYPE1"
+			eventDepth: 1000,
+			
+			//the list of fields
+			fields:[
+				{name: 'createDate'},
+				{name: 'client'},
+				{name: 'clientIntf'},
+				{name: 'reputation'},
+				{name: 'limited'},
+				{name: 'dropped'},
+				{name: 'rejected'}
+			],
+			//the list of columns
+			columns: [
+				{header: this.i18n._("timestamp"), width: 120, sortable: true, dataIndex: 'createDate', renderer: function(value) {
+			    	return i18n.timestampFormat(value);
+			    }},
+			    {header: this.i18n._("source"), width: 120, sortable: true, dataIndex: 'client'},
+			    {header: this.i18n._("source")+"<br>"+this.i18n._("interface"), width: 120, sortable: true, dataIndex: 'clientIntf'},
+				{header: this.i18n._("reputation"), width: 120, sortable: true, dataIndex: 'reputation', renderer: function(value) {
+			    	return i18n.numberFormat(value);
+			    }},
+				{header: this.i18n._("limited"), width: 120, sortable: true, dataIndex: 'limited', renderer: function(value) {
+			    	return i18n.numberFormat(value);
+			    }},
+				{header: this.i18n._("dropped"), width: 120, sortable: true, dataIndex: 'dropped', renderer: function(value) {
+			    	return i18n.numberFormat(value);
+			    }},
+				{header: this.i18n._("reject"), width: 120, sortable: true, dataIndex: 'rejected', renderer: function(value) {
+			    	return i18n.numberFormat(value);
+			    }}
+		    ],
+			refreshList: function() {
+				this.settingsCmp.node.nodeContext.rpcNode.getLogs(this.refreshCallback.createDelegate(this), this.eventDepth);
+			}
+		    
+		    
+			
 		});
     },
     // save function

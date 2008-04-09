@@ -704,7 +704,7 @@ Ung.Settings = Ext.extend(Ext.Component, {
 	},
     // get Validator object
 	getValidator: function() {
-		if(this.node.nodeContext.rpcNode===undefined) {
+		if(this.node.nodeContext.rpcNode.validator===undefined) {
 			this.node.nodeContext.rpcNode.validator=this.getRpcNode().getValidator();
 		}
 		return this.node.nodeContext.rpcNode.validator;
@@ -880,6 +880,14 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
 		return result;
     },
     //Refresh the events list
+	refreshCallback: function(result, exception) {
+		if(exception) {Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}
+		var events = result;
+		if(this.settingsCmp!==null) {
+			this.getStore().proxy.data=events;
+			this.getStore().load({params:{start: 0, limit: this.recordsPerPage}});
+		}
+	},
 	refreshList: function() {
 		if (this.hasRepositories) {
 			var selRepository=this.getSelectedRepository();
@@ -887,17 +895,8 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
 				if(this.settingsCmp.rpc.repository[selRepository] === undefined) {
 					this.settingsCmp.rpc.repository[selRepository]=this.eventManagerFn.getRepository(selRepository);
 				}
-				this.settingsCmp.rpc.repository[selRepository].getEvents(function (result, exception) {
-					if(exception) {Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}
-					var events = result;
-					if(this.settingsCmp!==null) {
-						this.getStore().proxy.data=events;
-						this.getStore().load({params:{start: 0, limit: this.recordsPerPage}});
-					}
-				}.createDelegate(this));
+				this.settingsCmp.rpc.repository[selRepository].getEvents(this.refreshCallback.createDelegate(this));
 			}
-		} else {
-			//TODO
 		}
 	}
 });
