@@ -55,17 +55,23 @@ Ung.I18N=Ext.extend(Ext.Component, {
 	},
 	
 	//formats a number with local separators
-    numberFormat: function(v) {
-        v = parseInt(v,10) + '';
-        var x = v.split(this.map['decimal_sep']);
-        var x1 = x[0];
-        var x2 = x.length > 1 ? this.map['decimal_sep'] + x[1] : '';
-        var rgx = /(d+)(d{3})/;
-        while (rgx.test(x1)) {
-            x1 = x1.replace(rgx, '$1' + this.map['thousand_sep'] + '$2');
-        }
-        return x1 + x2;
-    }, 
+	numberFormat: function(v) {
+		return this.numberFormatSep(v, '.', this.map['decimal_sep'], this.map['thousand_sep']);
+	},
+	numberFormatSep: function(v, dec_sep_in, dec_sep_out, thd_sep){
+		v += '';
+		var dpos = v.indexOf(dec_sep_in);
+		var vEnd = '';
+		if (dpos != -1) {
+			vEnd = dec_sep_out + v.substring(dpos + 1, v.length);
+			v = v.substring(0, dpos);
+		}
+		var rgx = /(\d+)(\d{3})/;
+		while (rgx.test(v)) {
+			v = v.replace(rgx, '$1' + thd_sep + '$2');
+		}
+		return v + vEnd;
+	},     
     // formats a date
     dateFormat: function(v) {
     	return Ext.util.Format.date(v, this.map['date_fmt']);
