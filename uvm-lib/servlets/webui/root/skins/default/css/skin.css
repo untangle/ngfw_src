@@ -307,17 +307,17 @@ button.iconAddRow {
     background: transparent url(../images/main/icon_add_row.gif) no-repeat center left !important;
 }
 div.iconEditRow {
-	background:transparent url(../images/main/icon_edit_row.gif) no-repeat center left;
+	background:transparent url(../images/main/icon_edit_row.gif) no-repeat center center;
 	width: 100%;
 	cursor: pointer;
 }
 div.iconDeleteRow {
-	background:transparent url(../images/main/icon_delete_row.gif) no-repeat center left;
+	background:transparent url(../images/main/icon_delete_row.gif) no-repeat center center;
 	width: 100%;
 	cursor: pointer;
 }
 button.iconRefresh {
-    background: transparent url(../images/main/icon_refresh.png) no-repeat center left!important;
+    background: transparent url(../images/main/icon_refresh.png) no-repeat center left !important;
 }
 .fieldLabel {
 	width: 100px;
