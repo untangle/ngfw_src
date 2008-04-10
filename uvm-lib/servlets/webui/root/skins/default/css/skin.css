@@ -404,4 +404,6 @@ div.iconConfigSetup {
 	width:36px;
 	height:36px;
 }
-
+thead tr.x-grid3-hd-row {
+	text-align: center;
+}
