@@ -186,6 +186,17 @@ class AppServerManagerImpl implements LocalAppServerManager
         return tomcatManager.loadSystemApp(urlBase, rootDir, valve);
     }
 
+    public boolean loadGlobalApp(String urlBase, String rootDir)
+    {
+        return tomcatManager.loadGlobalApp(urlBase, rootDir);
+    }
+
+    public boolean loadGlobalApp(String urlBase, String rootDir, Valve valve)
+    {
+        return tomcatManager.loadGlobalApp(urlBase, rootDir, valve);
+    }
+
+
 
     public boolean loadInsecureApp(String urlBase, String rootDir)
     {
