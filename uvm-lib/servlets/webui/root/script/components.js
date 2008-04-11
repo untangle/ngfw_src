@@ -916,10 +916,10 @@ Ung.Window = Ext.extend(Ext.Window, {
 	subCmps: null,
 	// size to rack right side on show
 	sizeToRack: true,
-	initComponent: function() {
+    constructor: function(config) {
 		this.subCmps=[];
-        Ung.Window.superclass.initComponent.call(this);
-	},
+    	Ung.Window.superclass.constructor.apply(this, arguments);
+    },	
 	beforeDestroy : function() {
 		Ext.each(this.subCmps,Ext.destroy);
 		Ung.Window.superclass.beforeDestroy.call(this);
@@ -1039,31 +1039,32 @@ Ung.RowEditorWindow = Ext.extend(Ung.UpdateWindow, {
     		this.title=i18n._('Edit');
     	}
     	var contentTemplate=null;
-    	//TODO: define comportament for select boxes
     	//TODO: can define custom input lines?
     	if(this.inputLines) {
     		var contentArr=[];
     		for(var i=0;i<this.inputLines.length;i++) {
     			var inputLine=this.inputLines[i];
-    			switch(inputLine.type) {
-    				case "text":
-    					if(inputLine.style==null) {
-    						inputLine.style="width:200px;"
-    					}
-    					contentArr.push('<div class="inputLine"><span class="label">'+inputLine.label+':</span><span class="formw"><input type="text" id="field_{id}_'+inputLine.name+'" style="'+inputLine.style+'"/></span></div>')
-    					break;
-    				case "checkbox":
-    					contentArr.push('<div class="inputLine"><span class="label">'+inputLine.label+':</span><span class="formw"><input type="checkbox" id="field_{id}_'+inputLine.name+'"/></span></div>')
-    					break;
-    				case "textarea":
-    					if(inputLine.style==null) {
-    						inputLine.style="width:200px;height:60px;"
-    					}
-    					contentArr.push('<div class="inputLine"><span class="label">'+inputLine.label+':</span><span class="formw"><textarea type="text" id="field_{id}_'+inputLine.name+'" style="'+inputLine.style+'"></textarea></span></div>')
-    					break;
-    				case "combobox":
-    					contentArr.push('<div class="inputLine"><span class="label">'+inputLine.label+':</span><span class="formw"><div id="field_{id}_'+inputLine.name+'"></div></span></div>')
-    					break;
+    			if(inputLine.component) {
+    				this.subCmps.push(inputLine.component);
+    				contentArr.push('<div class="inputLine"><span class="label">'+inputLine.label+':</span><span class="formw"><div id="field_{id}_'+inputLine.name+'"></div></span></div>')
+    			} else {
+	    			switch(inputLine.type) {
+	    				case "text":
+	    					if(inputLine.style==null) {
+	    						inputLine.style="width:200px;"
+	    					}
+	    					contentArr.push('<div class="inputLine"><span class="label">'+inputLine.label+':</span><span class="formw"><input type="text" id="field_{id}_'+inputLine.name+'" style="'+inputLine.style+'"/></span></div>')
+	    					break;
+	    				case "checkbox":
+	    					contentArr.push('<div class="inputLine"><span class="label">'+inputLine.label+':</span><span class="formw"><input type="checkbox" id="field_{id}_'+inputLine.name+'"/></span></div>')
+	    					break;
+	    				case "textarea":
+	    					if(inputLine.style==null) {
+	    						inputLine.style="width:200px;height:60px;"
+	    					}
+	    					contentArr.push('<div class="inputLine"><span class="label">'+inputLine.label+':</span><span class="formw"><textarea type="text" id="field_{id}_'+inputLine.name+'" style="'+inputLine.style+'"></textarea></span></div>')
+	    					break;
+	    			}
     			}
     		}
     		contentTemplate=new Ext.Template(contentArr);
@@ -1080,10 +1081,8 @@ Ung.RowEditorWindow = Ext.extend(Ung.UpdateWindow, {
     initSubComponents : function(container, position) {
     	for(var i=0;i<this.inputLines.length;i++) {
     			var inputLine=this.inputLines[i];
-    			switch(inputLine.type) {
-    				case "combobox":
-    					inputLine.editor.render('field_'+this.getId()+'_'+inputLine.name);
-    					break;
+    			if(inputLine.component) {
+					inputLine.component.render('field_'+this.getId()+'_'+inputLine.name);
     			}
     		}
     },
@@ -1102,17 +1101,18 @@ Ung.RowEditorWindow = Ext.extend(Ung.UpdateWindow, {
 		if(this.inputLines) {
     		for(var i=0;i<this.inputLines.length;i++) {
     			var inputLine=this.inputLines[i];
-    			switch(inputLine.type) {
-    				case "text":
-    				case "textarea":
-    					document.getElementById('field_'+this.getId()+'_'+inputLine.name).value=record.get(inputLine.name);
-    					break;
-    				case "checkbox":
-    					document.getElementById('field_'+this.getId()+'_'+inputLine.name).checked=record.get(inputLine.name);
-    					break;
-    				case "combobox":
-    					inputLine.editor.setValue(record.get(inputLine.name));
-    					break;
+    			if(inputLine.component) {
+					inputLine.component.setValue(record.get(inputLine.name));
+    			} else {
+	    			switch(inputLine.type) {
+	    				case "text":
+	    				case "textarea":
+	    					document.getElementById('field_'+this.getId()+'_'+inputLine.name).value=record.get(inputLine.name);
+	    					break;
+	    				case "checkbox":
+	    					document.getElementById('field_'+this.getId()+'_'+inputLine.name).checked=record.get(inputLine.name);
+	    					break;
+	    			}
     			}
 			}
 		}
@@ -1124,17 +1124,18 @@ Ung.RowEditorWindow = Ext.extend(Ung.UpdateWindow, {
 			if(this.inputLines) {
 	    		for(var i=0;i<this.inputLines.length;i++) {
 	    			var inputLine=this.inputLines[i];
-	    			switch(inputLine.type) {
-	    				case "text":
-	    				case "textarea":
-	    					rec.set(inputLine.name, document.getElementById('field_'+this.getId()+'_'+inputLine.name).value);
-	    					break;
-	    				case "checkbox":
-	    					rec.set(inputLine.name, document.getElementById('field_'+this.getId()+'_'+inputLine.name).checked);
-	    					break;
-	    				case "combobox":
-	    					rec.set(inputLine.name, inputLine.editor.getValue());
-	    					break;
+	    			if(inputLine.component) {
+    					rec.set(inputLine.name, inputLine.component.getValue());
+	    			} else {
+		    			switch(inputLine.type) {
+		    				case "text":
+		    				case "textarea":
+		    					rec.set(inputLine.name, document.getElementById('field_'+this.getId()+'_'+inputLine.name).value);
+		    					break;
+		    				case "checkbox":
+		    					rec.set(inputLine.name, document.getElementById('field_'+this.getId()+'_'+inputLine.name).checked);
+		    					break;
+		    			}
 	    			}
 				}			
 			}

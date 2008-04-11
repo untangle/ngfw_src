@@ -89,20 +89,27 @@ Ung.Shield = Ext.extend(Ung.Settings, {
 			// the row input lines used by the row editor window
 			rowEditorInputLines: [
 				{name:"enable", label: this.i18n._("Enable"), type:"checkbox"},
-				{name:"address", label: this.i18n._("Address"), type:"text", style:"width:200px;"},
-				{name:"divider", label: this.i18n._("User Count"), type:"combobox", style:"width:200px;", 
-				editor: new Ext.form.ComboBox({
-					    store: new Ext.data.SimpleStore({
-							fields:['dividerValue', 'dividerName'],
-							data: deviderData
-						}),
-						displayField: 'dividerName',
-						valueField: 'dividerValue',
-					    typeAhead: true,
-					    mode: 'local',
-					    triggerAction: 'all',
-					    listClass: 'x-combo-list-small',
-					    selectOnFocus:true})},
+				{name:"address", label: this.i18n._("Address"), 
+					component: new Ext.form.TextField({
+							allowBlank: false, 
+							validator: function (fieldValue) {
+								return ipAddrMaskRe.test(fieldValue);
+							}
+					})
+				},
+				{name:"divider", label: this.i18n._("User Count"), 
+					component: new Ext.form.ComboBox({
+						    store: new Ext.data.SimpleStore({
+								fields:['dividerValue', 'dividerName'],
+								data: deviderData
+							}),
+							displayField: 'dividerName',
+							valueField: 'dividerValue',
+						    typeAhead: true,
+						    mode: 'local',
+						    triggerAction: 'all',
+						    listClass: 'x-combo-list-small',
+						    selectOnFocus:true})},
 				{name:"description", label: this.i18n._("Description"), type:"textarea", style:"width:200px;height:60px;"},
 			]
     	});
