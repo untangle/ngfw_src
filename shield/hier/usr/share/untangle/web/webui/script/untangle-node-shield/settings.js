@@ -23,12 +23,13 @@ Ung.Shield = Ext.extend(Ung.Settings, {
 	    });
 	    
 		var deviderData = [[5,5+' '+this.i18n._("users")],[25,25+' '+this.i18n._("users")],[40,50+' '+this.i18n._("users")],[75,100+' '+this.i18n._("users")],[-1,this.i18n._("unlimited")]];
+		var ipAddrMaskRe = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
 	    
     	this.gridExceptions=new Ung.EditorGrid({
     		settingsCmp: this,
     		//the total records is set from the base settings shieldNodeRulesLength field
     		totalRecords: this.getBaseSettings().shieldNodeRulesLength,
-//    		emptyRow: {"enable":true,"address":"1.2.3.4","divider":5,"description":i18n._("[no description]")},
+    		emptyRow: {"enable":true,"address":"1.2.3.4","divider":5,"description":i18n._("[no description]")},
     		title: this.i18n._("Exceptions"),
     		//the column is autoexpanded if the grid width permits
     		autoExpandColumn: 'description',
@@ -54,7 +55,7 @@ Ung.Shield = Ext.extend(Ung.Settings, {
 					editor: new Ext.form.TextField({
 						allowBlank: false, 
 						validator: function (fieldValue) {
-							return /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(fieldValue);
+							return ipAddrMaskRe.test(fieldValue);
 						}})
 				},
 				{id:'divider',header: this.i18n._("user")+"<br>"+this.i18n._("count"), width: 100, dataIndex: 'divider',
@@ -89,7 +90,19 @@ Ung.Shield = Ext.extend(Ung.Settings, {
 			rowEditorInputLines: [
 				{name:"enable", label: this.i18n._("Enable"), type:"checkbox"},
 				{name:"address", label: this.i18n._("Address"), type:"text", style:"width:200px;"},
-				{name:"divider", label: this.i18n._("User Count"), type:"text", style:"width:200px;"},
+				{name:"divider", label: this.i18n._("User Count"), type:"combobox", style:"width:200px;", 
+				editor: new Ext.form.ComboBox({
+					    store: new Ext.data.SimpleStore({
+							fields:['dividerValue', 'dividerName'],
+							data: deviderData
+						}),
+						displayField: 'dividerName',
+						valueField: 'dividerValue',
+					    typeAhead: true,
+					    mode: 'local',
+					    triggerAction: 'all',
+					    listClass: 'x-combo-list-small',
+					    selectOnFocus:true})},
 				{name:"description", label: this.i18n._("Description"), type:"textarea", style:"width:200px;height:60px;"},
 			]
     	});
