@@ -63,6 +63,7 @@ public class UtJsonRpcServlet extends JSONRPCServlet
                 b.registerSerializer(new EnumSerializer());
                 b.registerSerializer(new LazyInitializerSerializer());
                 b.registerSerializer(new IPMaddrSerializer());
+                b.registerSerializer(new IPaddrSerializer());
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
