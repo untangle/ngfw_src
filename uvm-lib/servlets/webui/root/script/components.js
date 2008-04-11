@@ -904,15 +904,10 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
 //Standard Ung window
 // has 2 sections: content and buttons
 Ung.Window = Ext.extend(Ext.Window, {
-	layout:'border',
 	modal:true,
 	renderTo:'container',
 	//window title
 	title:null,
-	// content html
-	contentHtml: null,
-	// buttons html
-	buttonsHtml: null,
 	// function called by close action
 	closeAction:'hide',
 	draggable:false,
@@ -921,38 +916,8 @@ Ung.Window = Ext.extend(Ext.Window, {
 	subCmps: null,
 	// size to rack right side on show
 	sizeToRack: true,
-	// get the content element
-	getContentEl: function() {
-		return document.getElementById("window_content_"+this.getId());
-	},
-	// get the content element height
-	getContentHeight: function() {
-		return this.items.get(0).getEl().getHeight(true);
-	},
 	initComponent: function() {
 		this.subCmps=[];
-		if(!this.contentHtml) {
-			this.contentHtml="";
-		}
-		this.items= [{
-			region: "center",
-			html: '<div id="window_content_'+this.getId()+'">'+this.contentHtml+'</div>',
-			border: false,
-			autoScroll: true,
-			cls: 'windowBackground',
-			bodyStyle: 'background-color: transparent;'
-		}];
-		if(this.buttonsHtml) { 
-			this.items.push(
-			{
-				region: "south",
-				html: this.buttonsHtml,
-				border: false,
-				height:40,
-				cls: 'windowBackground',
-				bodyStyle: 'background-color: transparent;'
-			});
-		}
         Ung.Window.superclass.initComponent.call(this);
 	},
 	beforeDestroy : function() {
@@ -979,9 +944,39 @@ Ung.Window.buttonsTemplate=new Ext.Template(
 //update window
 // has the content and 3 standard buttons: help, cancel, Update
 Ung.UpdateWindow = Ext.extend(Ung.Window, {
+	layout:'border',
+	// content html
+	contentHtml: null,
+	// buttons html
+	buttonsHtml: null,
 	closeAction:'cancelAction',
+	// get the content element
+	getContentEl: function() {
+		return document.getElementById("window_content_"+this.getId());
+	},
+	// get the content element height
+	getContentHeight: function() {
+		return this.items.get(0).getEl().getHeight(true);
+	},
 	initComponent: function() {
-		this.buttonsHtml=Ung.Window.buttonsTemplate.applyTemplate({id:this.getId()});
+		if(!this.contentHtml) {
+			this.contentHtml="";
+		}
+		this.items= [{
+			region: "center",
+			html: '<div id="window_content_'+this.getId()+'">'+this.contentHtml+'</div>',
+			border: false,
+			autoScroll: true,
+			cls: 'windowBackground',
+			bodyStyle: 'background-color: transparent;'
+		},{
+			region: "south",
+			html: Ung.Window.buttonsTemplate.applyTemplate({id:this.getId()}),
+			border: false,
+			height:40,
+			cls: 'windowBackground',
+			bodyStyle: 'background-color: transparent;'
+		}];
 		Ung.UpdateWindow.superclass.initComponent.call(this);
 	},
 	afterRender: function() {
@@ -1066,6 +1061,9 @@ Ung.RowEditorWindow = Ext.extend(Ung.UpdateWindow, {
     					}
     					contentArr.push('<div class="inputLine"><span class="label">'+inputLine.label+':</span><span class="formw"><textarea type="text" id="field_{id}_'+inputLine.name+'" style="'+inputLine.style+'"></textarea></span></div>')
     					break;
+    				case "combobox":
+    					contentArr.push('<div class="inputLine"><span class="label">'+inputLine.label+':</span><span class="formw"><div id="field_{id}_'+inputLine.name+'"></div></span></div>')
+    					break;
     			}
     		}
     		contentTemplate=new Ext.Template(contentArr);
@@ -1074,6 +1072,20 @@ Ung.RowEditorWindow = Ext.extend(Ung.UpdateWindow, {
     	}
     	this.contentHtml=contentTemplate.applyTemplate({id:this.getId()});
         Ung.RowEditorWindow.superclass.initComponent.call(this);
+    },
+    onRender : function(container, position) {
+    	Ung.RowEditorWindow.superclass.onRender.call(this, container, position);
+    	this.initSubComponents.defer(1, this);
+    },
+    initSubComponents : function(container, position) {
+    	for(var i=0;i<this.inputLines.length;i++) {
+    			var inputLine=this.inputLines[i];
+    			switch(inputLine.type) {
+    				case "combobox":
+    					inputLine.editor.render('field_'+this.getId()+'_'+inputLine.name);
+    					break;
+    			}
+    		}
     },
     show: function() {
     	Ung.UpdateWindow.superclass.show.call(this);
@@ -1098,6 +1110,9 @@ Ung.RowEditorWindow = Ext.extend(Ung.UpdateWindow, {
     				case "checkbox":
     					document.getElementById('field_'+this.getId()+'_'+inputLine.name).checked=record.get(inputLine.name);
     					break;
+    				case "combobox":
+    					inputLine.editor.setValue(record.get(inputLine.name));
+    					break;
     			}
 			}
 		}
@@ -1116,6 +1131,9 @@ Ung.RowEditorWindow = Ext.extend(Ung.UpdateWindow, {
 	    					break;
 	    				case "checkbox":
 	    					rec.set(inputLine.name, document.getElementById('field_'+this.getId()+'_'+inputLine.name).checked);
+	    					break;
+	    				case "combobox":
+	    					rec.set(inputLine.name, inputLine.editor.getValue());
 	    					break;
 	    			}
 				}			
