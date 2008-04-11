@@ -43,20 +43,15 @@ import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.networking.NetworkUtil;
 import com.untangle.uvm.networking.internal.AccessSettingsInternal;
 import com.untangle.uvm.networking.internal.AddressSettingsInternal;
-import org.apache.catalina.authenticator.*;
 import org.apache.catalina.Valve;
 import org.apache.catalina.connector.Request;
 import org.apache.catalina.connector.Response;
 import org.apache.catalina.valves.ValveBase;
 import org.apache.log4j.Logger;
 
-import javax.servlet.http.Cookie;
-
 /* the name outside valve is no longer legit, since this controls access to port 80 on the inside */
 public abstract class OutsideValve extends ValveBase
 {
-    private static final String SSO_SESSION_PARAMETER_NAME = "jsessionidsso";
-
     private static final int DEFAULT_HTTP_PORT = 80;
 
     private final Logger logger = Logger.getLogger(OutsideValve.class);
@@ -83,40 +78,10 @@ public abstract class OutsideValve extends ValveBase
             logger.debug( "The request: " + request + " passed through the valve." );
         }
 
-        // Check for the single sign on cookie
-        Cookie cookie = null;
-        String ssoVal = null;
-        Cookie cookies[] = request.getCookies();
-        if (cookies == null)
-            cookies = new Cookie[0];
-        for (int i = 0; i < cookies.length; i++) {
-            if (Constants.SINGLE_SIGN_ON_COOKIE.equals(cookies[i].getName())) {
-                cookie = cookies[i];
-                break;
-            }
-        }
-
-        if (cookie == null) {
-            // Check for the single sign on URL header
-            ssoVal = getSsoSessionId(request);
-            if (ssoVal != null) {
-                cookie = new Cookie(Constants.SINGLE_SIGN_ON_COOKIE, ssoVal);
-                cookie.setMaxAge(-1);
-                cookie.setPath("/");
-                request.addCookie(cookie);
-            }
-        }
-
-
         /* If necessary call the next valve */
         Valve nextValve = getNext();
         if ( nextValve != null ) nextValve.invoke( request, response );
     }
- 
-    protected String getSsoSessionId(Request req) {
-        return req.getParameter(SSO_SESSION_PARAMETER_NAME);
-    }
-
 
     protected AccessSettingsInternal getAccessSettings()
     {

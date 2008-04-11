@@ -31,9 +31,6 @@ import org.apache.catalina.deploy.LoginConfig;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import javax.servlet.http.Cookie;
-
-
 /**
  * BasicAuthenticator for the UVMRealm.
  *
@@ -43,8 +40,6 @@ import javax.servlet.http.Cookie;
 class UvmAuthenticator extends BasicAuthenticator
 {
     public static final String AUTH_NONCE_FIELD_NAME = "nonce";
-
-    private static final String SSO_SESSION_PARAMETER_NAME = "jsessionidsso";
 
     private static Log log = LogFactory.getLog(UvmAuthenticator.class);
 
@@ -87,31 +82,6 @@ class UvmAuthenticator extends BasicAuthenticator
                                 Response response,
                                 LoginConfig config)
         throws IOException {
-
-        // Check for the single sign on cookie
-        Cookie cookie = null;
-        String ssoVal = null;
-        Cookie cookies[] = request.getCookies();
-        if (cookies == null)
-            cookies = new Cookie[0];
-        for (int i = 0; i < cookies.length; i++) {
-            if (Constants.SINGLE_SIGN_ON_COOKIE.equals(cookies[i].getName())) {
-                cookie = cookies[i];
-                break;
-            }
-        }
-
-        if (cookie == null) {
-            // Check for the single sign on URL header
-            ssoVal = getSsoSessionId(request);
-            if (ssoVal != null) {
-                cookie = new Cookie(Constants.SINGLE_SIGN_ON_COOKIE, ssoVal);
-                cookie.setMaxAge(-1);
-                cookie.setPath("/");
-                request.addCookie(cookie);
-            }
-        }
-
         // Have we already authenticated someone?
         Principal principal = request.getUserPrincipal();
 
@@ -163,10 +133,6 @@ class UvmAuthenticator extends BasicAuthenticator
         }
 
         return super.authenticate(request, response, config);
-    }
-
-    protected String getSsoSessionId(Request req) {
-        return req.getParameter(SSO_SESSION_PARAMETER_NAME);
     }
 
     private boolean isValidPrincipal(Principal principal)
