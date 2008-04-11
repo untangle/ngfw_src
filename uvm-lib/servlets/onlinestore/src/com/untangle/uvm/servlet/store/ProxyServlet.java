@@ -41,6 +41,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.untangle.uvm.Version;
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.toolbox.MackageDesc;
@@ -244,6 +245,12 @@ public class ProxyServlet extends HttpServlet
     {
         String pi = req.getPathInfo();
         String qs = req.getQueryString();
+        if ( qs == null  || qs.length() == 0 ) {
+            qs = new String();
+            qs = "untangleFullVersion=" + Version.getFullVersion();
+        } else if ( qs.indexOf( "untangleFullVersion" ) == -1 ) {
+            qs = qs + "&untangleFullVersion=" + Version.getFullVersion();
+        }
 
         return BASE_URL + (null == pi ? "" : pi)
             + (null == qs ? "" : ("?" + qs));
