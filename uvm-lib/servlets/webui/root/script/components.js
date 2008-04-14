@@ -1039,33 +1039,15 @@ Ung.RowEditorWindow = Ext.extend(Ung.UpdateWindow, {
     		this.title=i18n._('Edit');
     	}
     	var contentTemplate=null;
-    	//TODO: can define custom input lines?
+    	// to define custom lines we have to define components which have 
+    	// "name" and "label" properties and
+    	// "getValue" and "setValue" methods
     	if(this.inputLines) {
     		var contentArr=[];
     		for(var i=0;i<this.inputLines.length;i++) {
     			var inputLine=this.inputLines[i];
-    			if(inputLine.component) {
-    				this.subCmps.push(inputLine.component);
-    				contentArr.push('<div class="inputLine"><span class="label">'+inputLine.label+':</span><span class="formw"><div id="field_{id}_'+inputLine.name+'"></div></span></div>')
-    			} else {
-	    			switch(inputLine.type) {
-	    				case "text":
-	    					if(inputLine.style==null) {
-	    						inputLine.style="width:200px;"
-	    					}
-	    					contentArr.push('<div class="inputLine"><span class="label">'+inputLine.label+':</span><span class="formw"><input type="text" id="field_{id}_'+inputLine.name+'" style="'+inputLine.style+'"/></span></div>')
-	    					break;
-	    				case "checkbox":
-	    					contentArr.push('<div class="inputLine"><span class="label">'+inputLine.label+':</span><span class="formw"><input type="checkbox" id="field_{id}_'+inputLine.name+'"/></span></div>')
-	    					break;
-	    				case "textarea":
-	    					if(inputLine.style==null) {
-	    						inputLine.style="width:200px;height:60px;"
-	    					}
-	    					contentArr.push('<div class="inputLine"><span class="label">'+inputLine.label+':</span><span class="formw"><textarea type="text" id="field_{id}_'+inputLine.name+'" style="'+inputLine.style+'"></textarea></span></div>')
-	    					break;
-	    			}
-    			}
+				this.subCmps.push(inputLine);
+				contentArr.push('<div class="inputLine"><span class="label">'+inputLine.label+':</span><span class="formw"><div id="field_{id}_'+inputLine.name+'"></div></span></div>')
     		}
     		contentTemplate=new Ext.Template(contentArr);
     	} else {
@@ -1080,11 +1062,9 @@ Ung.RowEditorWindow = Ext.extend(Ung.UpdateWindow, {
     },
     initSubComponents : function(container, position) {
     	for(var i=0;i<this.inputLines.length;i++) {
-    			var inputLine=this.inputLines[i];
-    			if(inputLine.component) {
-					inputLine.component.render('field_'+this.getId()+'_'+inputLine.name);
-    			}
-    		}
+			var inputLine=this.inputLines[i];
+			inputLine.render('field_'+this.getId()+'_'+inputLine.name);
+		}
     },
     show: function() {
     	Ung.UpdateWindow.superclass.show.call(this);
@@ -1101,19 +1081,7 @@ Ung.RowEditorWindow = Ext.extend(Ung.UpdateWindow, {
 		if(this.inputLines) {
     		for(var i=0;i<this.inputLines.length;i++) {
     			var inputLine=this.inputLines[i];
-    			if(inputLine.component) {
-					inputLine.component.setValue(record.get(inputLine.name));
-    			} else {
-	    			switch(inputLine.type) {
-	    				case "text":
-	    				case "textarea":
-	    					document.getElementById('field_'+this.getId()+'_'+inputLine.name).value=record.get(inputLine.name);
-	    					break;
-	    				case "checkbox":
-	    					document.getElementById('field_'+this.getId()+'_'+inputLine.name).checked=record.get(inputLine.name);
-	    					break;
-	    			}
-    			}
+				inputLine.setValue(record.get(inputLine.name));
 			}
 		}
 	},
@@ -1124,19 +1092,7 @@ Ung.RowEditorWindow = Ext.extend(Ung.UpdateWindow, {
 			if(this.inputLines) {
 	    		for(var i=0;i<this.inputLines.length;i++) {
 	    			var inputLine=this.inputLines[i];
-	    			if(inputLine.component) {
-    					rec.set(inputLine.name, inputLine.component.getValue());
-	    			} else {
-		    			switch(inputLine.type) {
-		    				case "text":
-		    				case "textarea":
-		    					rec.set(inputLine.name, document.getElementById('field_'+this.getId()+'_'+inputLine.name).value);
-		    					break;
-		    				case "checkbox":
-		    					rec.set(inputLine.name, document.getElementById('field_'+this.getId()+'_'+inputLine.name).checked);
-		    					break;
-		    			}
-	    			}
+					rec.set(inputLine.name, inputLine.getValue());
 				}			
 			}
 		}
