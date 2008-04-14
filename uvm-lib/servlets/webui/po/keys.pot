@@ -260,6 +260,18 @@ msgstr ""
 msgid "Add New Row"
 msgstr ""
 
+#: ../root/script/components.js:1115
+msgid "The form is not valid!"
+msgstr ""
+
+#: ../root/script/components.js:1444
+msgid "Displaying topics {0} - {1} of {2}"
+msgstr ""
+
+#: ../root/script/components.js:1446
+msgid "No topics to display"
+msgstr ""
+
 #~ msgid "OpenVPN"
 #~ msgstr ""
 

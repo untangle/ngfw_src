@@ -274,6 +274,18 @@ msgstr "Adaugă"
 msgid "Add New Row"
 msgstr "Adaugă Rând Nou"
 
+#: ../root/script/components.js:1115
+msgid "The form is not valid!"
+msgstr "Formularul conţine date invalide!"
+
+#: ../root/script/components.js:1444
+msgid "Displaying topics {0} - {1} of {2}"
+msgstr "Afişează elementele {0} - {1} din {2}"
+
+#: ../root/script/components.js:1446
+msgid "No topics to display"
+msgstr "Nici un element de afişat"
+
 #~ msgid "OpenVPN"
 #~ msgstr "OpenVPN"
 

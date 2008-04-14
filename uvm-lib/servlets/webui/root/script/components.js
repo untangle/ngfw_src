@@ -1085,18 +1085,35 @@ Ung.RowEditorWindow = Ext.extend(Ung.UpdateWindow, {
 			}
 		}
 	},
+	// check if the form is valid;
+	// this is the default functionality which can be overwritten
+	isFormValid: function() {
+		if(this.inputLines) {
+    		for(var i=0;i<this.inputLines.length;i++) {
+    			var inputLine=this.inputLines[i];
+    			if (!inputLine.isValid()) {
+    				return false;
+    			}
+			}			
+		}
+		return true;
+	},
 	// updateAction is called to update the record after the edit
 	updateAction: function() {
-		if(this.rowIndex!==null) {
-			var rec=this.grid.getStore().getAt(this.rowIndex);
-			if(this.inputLines) {
-	    		for(var i=0;i<this.inputLines.length;i++) {
-	    			var inputLine=this.inputLines[i];
-					rec.set(inputLine.name, inputLine.getValue());
-				}			
+		 if(this.isFormValid()){
+			if(this.rowIndex!==null) {
+				var rec=this.grid.getStore().getAt(this.rowIndex);
+				if(this.inputLines) {
+		    		for(var i=0;i<this.inputLines.length;i++) {
+		    			var inputLine=this.inputLines[i];
+						rec.set(inputLine.name, inputLine.getValue());
+					}			
+				}
 			}
-		}
-		this.hide();
+			this.hide();
+	    } else {
+			Ext.MessageBox.alert('Warning', i18n._("The form is not valid!"));
+	    }		
 	}
 });
 
@@ -1424,8 +1441,8 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			pageSize: this.recordsPerPage,
 			store: this.store,
 			displayInfo: true,
-			displayMsg: 'Displaying topics {0} - {1} of {2}',
-			emptyMsg: "No topics to display"
+			displayMsg: i18n._('Displaying topics {0} - {1} of {2}'),
+			emptyMsg: i18n._("No topics to display")
 		});
 		if(this.rowEditorInputLines!=null) {
 			this.rowEditor=new Ung.RowEditorWindow({
