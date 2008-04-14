@@ -96,24 +96,25 @@ Ung.Shield = Ext.extend(Ung.Settings, {
 					name: "address",
 					label: this.i18n._("Address"),
 					allowBlank: false, 
+					width: 200,
 					validator: function (fieldValue) {
 						return ipAddrMaskRe.test(fieldValue);
 					}
 				}),
 				new Ext.form.ComboBox({
-						name: "divider",
-						label: this.i18n._("User Count"),
-					    store: new Ext.data.SimpleStore({
-							fields:['dividerValue', 'dividerName'],
-							data: deviderData
-						}),
-						displayField: 'dividerName',
-						valueField: 'dividerValue',
-					    typeAhead: true,
-					    mode: 'local',
-					    triggerAction: 'all',
-					    listClass: 'x-combo-list-small',
-					    selectOnFocus:true
+					name: "divider",
+					label: this.i18n._("User Count"),
+				    store: new Ext.data.SimpleStore({
+						fields:['dividerValue', 'dividerName'],
+						data: deviderData
+					}),
+					displayField: 'dividerName',
+					valueField: 'dividerValue',
+				    typeAhead: true,
+				    mode: 'local',
+				    triggerAction: 'all',
+				    listClass: 'x-combo-list-small',
+				    selectOnFocus:true
 				}),
 				new Ext.form.TextArea({
 					name: "description",

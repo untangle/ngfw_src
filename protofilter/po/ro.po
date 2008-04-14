@@ -36,6 +36,10 @@ msgstr "[fără protocol]"
 msgid "[no description]"
 msgstr "[fără descriere]"
 
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:33
+msgid "[no signature]"
+msgstr "[fără signatură]"
+
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:34
 msgid "Protocol List"
 msgstr "Listă Protocoale"

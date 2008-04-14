@@ -30,7 +30,7 @@ Ung.Protofilter = Ext.extend(Ung.Settings, {
     		settingsCmp: this,
     		//the total records is set from the base settings patternsLength field
     		totalRecords: this.getBaseSettings().patternsLength,
-    		emptyRow: {"category":i18n._("[no category]"),"protocol":i18n._("[no protocol]"),"blocked":false,"log":false,"description":i18n._("[no description]"),"definition":"[no signature]"},
+    		emptyRow: {"category":this.i18n._("[no category]"),"protocol":this.i18n._("[no protocol]"),"blocked":false,"log":false,"description":this.i18n._("[no description]"),"definition":this.i18n._("[no signature]")},
     		title: this.i18n._("Protocol List"),
     		//the column is autoexpanded if the grid width permits
     		autoExpandColumn: 'category',
@@ -69,12 +69,38 @@ Ung.Protofilter = Ext.extend(Ung.Settings, {
 			plugins: [blockedColumn,logColumn],
 			// the row input lines used by the row editor window
 			rowEditorInputLines: [
-				{name:"category", label: this.i18n._("Category"), type:"text", style:"width:200px;"},
-				{name:"protocol", label: this.i18n._("Protocol"), type:"text", style:"width:200px;"},
-				{name:"blocked", label: this.i18n._("Block"), type:"checkbox"},
-				{name:"log", label: this.i18n._("Log"), type:"checkbox"},
-				{name:"description", label: this.i18n._("Description"), type:"textarea", style:"width:200px;height:60px;"},
-				{name:"definition", label: this.i18n._("Signature"), type:"textarea", style:"width:200px;height:60px;"}
+				new Ext.form.TextField({
+					name: "category",
+					label: this.i18n._("Category"),
+					allowBlank: false, 
+					width: 200
+				}),
+				new Ext.form.TextField({
+					name: "protocol",
+					label: this.i18n._("Protocol"),
+					allowBlank: false, 
+					width: 200
+				}),
+				new Ext.form.Checkbox({
+					name: "blocked",
+					label: this.i18n._("Block")
+				}),
+				new Ext.form.Checkbox({
+					name: "log",
+					label: this.i18n._("Log")
+				}),
+				new Ext.form.TextArea({
+					name: "description",
+					label: this.i18n._("Description"),
+					width: 200,
+					height: 60
+				}),
+				new Ext.form.TextArea({
+					name: "definition",
+					label: this.i18n._("Signature"),
+					width: 200,
+					height: 60
+				})
 			]
     	});
     },

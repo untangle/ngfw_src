@@ -227,7 +227,7 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
     	this.gridCookiesList=new Ung.EditorGrid({
     		settingsCmp: this,
     		totalRecords: this.getBaseSettings().cookieRulesLength,
-    		emptyRow: {"string":this.i18n._("[no identification]"),"live":true,"description":i18n._("[no description]")},
+    		emptyRow: {"string":this.i18n._("[no identification]"),"live":true,"description":this.i18n._("[no description]")},
     		title: this.i18n._("Cookies List"),
     		recordJavaClass: "com.untangle.uvm.node.StringRule",
     		proxyRpcFn: this.getRpcNode().getCookieRules,
@@ -247,8 +247,16 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
 			autoExpandColumn: 'string',
 			plugins: [liveColumn],
 			rowEditorInputLines: [
-				{name:"string", label: this.i18n._("Identification"), type:"text", style:"width:200px;"},
-				{name:"live", label: this.i18n._("Block"), type:"checkbox"}
+				new Ext.form.TextField({
+					name: "string",
+					label: this.i18n._("Identification"),
+					allowBlank: false, 
+					width: 200
+				}),
+				new Ext.form.Checkbox({
+					name: "live",
+					label: this.i18n._("Block")
+				})
 			]
     	});
     	this.gridCookiesList.render(this.panelBlockLists.winCookiesList.getContentEl());
@@ -262,7 +270,7 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
     	this.gridActiveXList=new Ung.EditorGrid({
     		settingsCmp: this,
     		totalRecords: this.getBaseSettings().activeXRulesLength,
-    		emptyRow: {"string":this.i18n._("[no identification]"),"live":true,"description":i18n._("[no description]")},
+    		emptyRow: {"string":this.i18n._("[no identification]"),"live":true,"description":this.i18n._("[no description]")},
     		title: this.i18n._("ActiveX List"),
     		recordJavaClass: "com.untangle.uvm.node.StringRule",
     		proxyRpcFn: this.getRpcNode().getActiveXRules,
@@ -282,8 +290,16 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
 			autoExpandColumn: 'string',
 			plugins: [liveColumn],
 			rowEditorInputLines: [
-				{name:"string", label: this.i18n._("Identification"), type:"text", style:"width:200px;"},
-				{name:"live", label: this.i18n._("Block"), type:"checkbox"}
+				new Ext.form.TextField({
+					name: "string",
+					label: this.i18n._("Identification"),
+					allowBlank: false, 
+					width: 200
+				}),
+				new Ext.form.Checkbox({
+					name: "live",
+					label: this.i18n._("Block")
+				})
 			]
     	});
     	this.gridActiveXList.render(this.panelBlockLists.winActiveXList.getContentEl());
@@ -297,7 +313,7 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
     	this.gridSubnetList=new Ung.EditorGrid({
     		settingsCmp: this,
     		totalRecords: this.getBaseSettings().subnetRulesLength,
-    		emptyRow: {"ipMaddr":"1.2.3.4/5","name":i18n._("[no name]"),"log":true, description: i18n._("[no description]")},
+    		emptyRow: {"ipMaddr":"1.2.3.4/5","name":this.i18n._("[no name]"),"log":true, description: this.i18n._("[no description]")},
     		title: this.i18n._("Subnet List"),
     		recordJavaClass: "com.untangle.uvm.node.IPMaddrRule",
     		proxyRpcFn: this.getRpcNode().getSubnetRules,
@@ -320,9 +336,22 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
 			autoExpandColumn: 'name',
 			plugins: [logColumn],
 			rowEditorInputLines: [
-				{name:"name", label: this.i18n._("Name"), type:"text", style:"width:200px;"},
-				{name:"ipMaddr", label: this.i18n._("Subnet"), type:"text", style:"width:200px;"},
-				{name:"log", label: this.i18n._("Log"), type:"checkbox"}
+				new Ext.form.TextField({
+					name: "name",
+					label: this.i18n._("Name"),
+					allowBlank: false, 
+					width: 200
+				}),
+				new Ext.form.TextField({
+					name: "ipMaddr",
+					label: this.i18n._("Subnet"),
+					allowBlank: false, 
+					width: 200
+				}),
+				new Ext.form.Checkbox({
+					name: "log",
+					label: this.i18n._("Log")
+				})
 			]
 			/*
 			preEditValue : function(r, field){
@@ -350,7 +379,7 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
     	this.gridPassList=new Ung.EditorGrid({
     		settingsCmp: this,
     		totalRecords:this.getBaseSettings().domainWhitelistLength,
-    		emptyRow: {"string":"","live":true,"category":i18n._("[no category]"),"description":i18n._("[no description]")},
+    		emptyRow: {"string":"","live":true,"category":this.i18n._("[no category]"),"description":this.i18n._("[no description]")},
     		title: this.i18n._("Pass List"),
     		proxyRpcFn: this.getRpcNode().getDomainWhitelist,
     		recordJavaClass: "com.untangle.uvm.node.StringRule",
@@ -373,9 +402,22 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
 			autoExpandColumn: 'string',
 			plugins: [passColumn],
 			rowEditorInputLines: [
-				{name:"string", label: this.i18n._("Site"), type:"text", style:"width:200px;"},
-				{name:"live", label: this.i18n._("Pass"), type:"checkbox"},
-				{name:"description", label: this.i18n._("Description"), type:"textarea", style:"width:200px;height:60px;"}
+				new Ext.form.TextField({
+					name: "string",
+					label: this.i18n._("Site"),
+					allowBlank: false, 
+					width: 200
+				}),
+				new Ext.form.Checkbox({
+					name: "live",
+					label: this.i18n._("Pass")
+				}),
+				new Ext.form.TextArea({
+					name: "description",
+					label: this.i18n._("Description"),
+					width: 200,
+					height: 60
+				})
 			]
     	});
     },
