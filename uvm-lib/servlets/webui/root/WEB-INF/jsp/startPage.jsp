@@ -5,7 +5,6 @@
     
     <style type="text/css">
         @import "ext/resources/css/ext-all.css";
-		@import "css/main.css";
 		@import "skins/default/css/ext-skin.css";
 		@import "skins/default/css/skin.css";
     </style>
@@ -15,8 +14,6 @@
 	<script type="text/javascript" src="ext/ext-all-debug.js"></script>
 	<script type="text/javascript" src="jsonrpc/jsonrpc.js"></script>
     <script type="text/javascript" src="firebug/firebug.js"></script>
-    <script type="text/javascript" src="script/untangle-node-protofilter/settings.js"></script>
-
 
 	<script type="text/javascript" src="ext/adapter/ext/ext-base.js"></script>
 	<script type="text/javascript" src="ext/ext-all.js"></script>
@@ -47,6 +44,7 @@
 <div id="scripts_container" style="display: none;"></div>
 -->
 <div id="container">
+<!-- 
 	<div id="contentleft">
 		<div id="logo"><img src="images/logo.png"/></div>
 		<div id="tabs">
@@ -65,6 +63,7 @@
 		</div>
  		<div id="help"></div>
 	</div>
+-->
 </div>
 </body>
 </html>

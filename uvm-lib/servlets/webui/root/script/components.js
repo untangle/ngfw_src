@@ -1,6 +1,79 @@
 //resources map
 Ung.hasResource={};
 
+//App Items class
+Ung.AppItem = Ext.extend(Ext.Component, {
+//    unactivatedApp: null,
+//    activatedApp: null,
+//    installedApp: null,
+//    trialApp: null,
+    
+    item: null,
+    iconSrc: null,
+    iconCls: null,
+
+    operationSemaphore: false,
+    autoEl: 'div',
+/*    
+    constructor: function(){
+    	//this.id="appItem"+this.item.name;
+        Ung.AppItem.superclass.constructor.call(this);
+    },
+*/
+    // private
+    onRender : function(container, position) {
+    	Ung.AppItem.superclass.onRender.call(this,container, position);
+    	
+    	var imageHtml=null;
+    	if(this.iconCls==null) {
+    		if(this.iconSrc==null) {
+    			this.iconSrc='image?name='+ this.item.name;
+    		}
+    		imageHtml='<img src="'+this.iconSrc+'" style="vertical-align: middle;"/>';
+    	} else {
+    		imageHtml='<div class="'+this.iconCls+'"></div>';
+    	}
+        var html=Ung.AppItem.template.applyTemplate({id: this.getId(),'imageHtml':imageHtml, 'text':this.item.displayName});
+        this.getEl().dom.innerHTML=html;
+        this.getEl().addClass("appItem");
+        if(this.item.installedVersion==null) {
+        	var buttonAEl=Ext.get("buttonA_"+this.getId());
+        	buttonAEl.addClass("iconInfo");
+        	buttonAEl.dom.innerHTML=i18n._("More Info");
+        	buttonAEl.on("click", this.linkToStoreFn,this);
+        	var buttonBEl=Ext.get("buttonB_"+this.getId());
+        	buttonBEl.setVisible(false);
+        } else {
+        	var buttonAEl=Ext.get("buttonA_"+this.getId());
+        	buttonAEl.addClass("iconArrowRight");
+        	buttonAEl.dom.innerHTML=i18n._("Install");
+        	buttonAEl.on("click", this.installNodeFn,this);
+        	var buttonBEl=Ext.get("buttonB_"+this.getId());
+        	buttonBEl.setVisible(false);
+        }
+	},
+	linkToStoreFn: function() {
+		rpc.adminManager.generateAuthNonce(function (result, exception) {
+			if(exception) { Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}
+			var url = "../library/libitem.php?name=" + this.item.name + "&" + result;
+			var iframeWin=main.getIframeWin();
+			iframeWin.show();
+			iframeWin.setTitle("");
+			window.frames["iframeWin_iframe"].location.href=url;
+			
+		}.createDelegate(this));
+	},
+	installNodeFn: function() {
+		main.installNode(this.item);
+	}
+	
+});
+Ung.AppItem.template = new Ext.Template(
+'<div class="icon">{imageHtml}</div>',
+'<div class="text">{text}</div>',
+'<div class="buttonPosB" id="buttonB_{id}"></div>',
+'<div class="buttonPosA" id="buttonA_{id}"></div>'
+);
 //Button component class
 Ung.Button = Ext.extend(Ext.Component, {
     hidden: false,
@@ -30,7 +103,7 @@ Ung.Button = Ext.extend(Ext.Component, {
         var templateHTML=Ung.Button.template.applyTemplate({'width':this.width, 'height':this.height, 'imageHtml':imageHtml, 'text':this.text});
         var el= document.createElement("div");
         container.dom.insertBefore(el, position);
-        el.className="utgButton";
+        el.className="ungButton";
         el.innerHTML=templateHTML;
         this.el = Ext.get(el);
         if(this.cls){
@@ -44,13 +117,13 @@ Ung.Button = Ext.extend(Ext.Component, {
 	// private
 	onMouseOver: function(e){
 		if(!this.disabled){
-			this.el.addClass("utgButtonHover");
+			this.el.addClass("ungButtonHover");
 			this.fireEvent('mouseover', this, e);
 		}
 	},
     // private
     onMouseOut: function(e){
-        this.el.removeClass("utgButtonHover");
+        this.el.removeClass("ungButtonHover");
         this.fireEvent('mouseout', this, e);
     },
     onClick: function(e){
@@ -73,7 +146,7 @@ Ung.Button.template = new Ext.Template(
 '<td width="1%" style="text-align: left;vertical-align: middle;">{imageHtml}</td>',
 '<td style="text-align: left;vertical-align: middle;padding-left:5px;font-size: 14px;">{text}</td>',
 '</tr></table>');
-Ext.ComponentMgr.registerType('utgButton', Ung.Button);
+Ext.ComponentMgr.registerType('ungButton', Ung.Button);
 
 //Node Class
 Ung.Node = Ext.extend(Ext.Component, {
@@ -553,7 +626,7 @@ Ung.ActivityBlinger.decayValue = function(newValue, lastValue, decay) {
 	}
 	return decay;
 };
-Ext.ComponentMgr.registerType('utgActivityBlinger', Ung.ActivityBlinger);
+Ext.ComponentMgr.registerType('ungActivityBlinger', Ung.ActivityBlinger);
 
 //System Blinger Class
 Ung.SystemBlinger = Ext.extend(Ext.Component, {
@@ -646,7 +719,7 @@ Ung.SystemBlinger.template = new Ext.Template(
 '<div class="blingerName">{blingerName}</div>',
 '<div class="systemBlingerBox" id="blingerBox_{id}"></div>',
 '<div class="systemBlingerSettings" id="systemBlingerSettings_{id}"></div>');
-Ext.ComponentMgr.registerType('utgSystemBlinger', Ung.SystemBlinger);
+Ext.ComponentMgr.registerType('ungSystemBlinger', Ung.SystemBlinger);
 
 
 

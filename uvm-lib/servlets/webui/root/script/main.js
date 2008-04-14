@@ -14,8 +14,10 @@ var rpc=null;
 Ung.Main=function() {
 }
 Ung.Main.prototype = {
-	tabs: null,
-	library: null,
+	leftTabs: null,
+	appsSemaphore: null,
+	apps: null,
+	libraryApps: null,
 	myApps: null,
 	config: null,
 	nodes: null,
@@ -26,6 +28,7 @@ Ung.Main.prototype = {
 	//the application build version
 	version: null,
 	networkingWin: null,
+	iframeWin: null,
 	//init function
 	init: function() {
 		this.initSemaphore=6;
@@ -81,8 +84,14 @@ Ung.Main.prototype = {
 		if(this.initSemaphore!==0) {
 			return;
 		}
-		this.buildTabs();
 		// initialize viewport object
+		var contentLeftArr=[
+			'<div id="contentleft">',
+				'<div id="logo"><img src="images/logo.png"/></div>',
+				'<div id="leftHorizontalRuler"></div>',
+				'<div id="leftTabs"></div>',
+		 		'<div id="help"></div>',
+			'</div>'];
 		var contentRightArr=[
 			'<div id="contentright">',
 				'<div id="racks">',
@@ -95,14 +104,13 @@ Ung.Main.prototype = {
 				'</div>',
 			'</div>'];
 		
-		
 		this.viewport = new Ext.Viewport({
             layout:'border',
             items:[
                 {
                     region:'west',
                     id: 'west',
-                    contentEl: 'contentleft',
+                    html: contentLeftArr.join(""),
                     width: 220,
                     border: false
                  },{
@@ -116,19 +124,11 @@ Ung.Main.prototype = {
                 }
              ]
         });
+		this.buildLeftTabs();
+
         Ext.getCmp("west").on("resize", function() {
         	var newHeight=Math.max(this.getEl().getHeight()-250,100);
-       		main.tabs.setHeight(newHeight);
-       		/*
-       		try {
-	       		var ocupied_rack=Ext.get("ocupied_rack");
-	       		var empty_rack=Ext.get("empty_rack");
-	       		if(ocupied_rack && empty_rack) {
-		       		newHeight=Math.max(this.getEl().getHeight()-ocupied_rack.getHeight(),0);
-		       		empty_rack.setHeight(newHeight);
-		       	}
-       		} catch(e) {
-       		}*/
+       		main.leftTabs.setHeight(newHeight);
         });
         Ext.getCmp("west").fireEvent("resize");
 		var buttonCmp=new Ung.Button({
@@ -144,6 +144,20 @@ Ung.Main.prototype = {
 		});
 		this.loadTools();
 		this.loadPolicies();
+	},
+	//build left tabs
+	buildLeftTabs: function () {
+		this.leftTabs = new Ext.TabPanel({
+		    renderTo: 'leftTabs',
+		    activeTab: 0,
+		    height: 400,
+		    deferredRender:false,
+		    defaults:{autoScroll: true},
+		    items:[
+		        {title:'Apps',html:'<div id="appsItems"></div>'},
+		        {title:'Config', html:'<div id="configItems"></div>'}
+		    ]
+		});
 	},
 	/*
 	loadScriptExt: function(url,callbackFn) {
@@ -206,31 +220,43 @@ Ung.Main.prototype = {
 		return helpLink;
 	},
 	loadTools: function() {
-		this.loadLibrary();
+		this.loadLibraryApps();
 		this.loadMyApps();
 		this.loadConfig();
 	},
-	
-	loadLibrary: function() {
+	buildApps: function() {
+		this.appsSemaphore--;
+		if(this.appsSemaphore!==0) {
+			return;
+		}
+		this.apps=this.libraryApps.concat(this.myApps);
+		var appsCmps=[];
+		for(var i=0;i<this.apps.length;i++) {
+			var item=this.apps[i];
+				
+  			 appsCmps.push(new Ung.AppItem({
+				item: item,
+				renderTo:'appsItems'
+	        }));
+		}
+	},
+	loadLibraryApps: function() {
+		this.appsSemaphore=2;
 		rpc.toolboxManager.uninstalled(function (result, exception) {
 			if(exception) { Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}
 			var uninstalledMD=result;
-			if(uninstalledMD===null) {
-				this.library=null;
-			} else {
-				this.library=[];
-				for(var i=0;i<uninstalledMD.length;i++) {
-					var md=uninstalledMD[i];
-					if(md.type=="LIB_ITEM" && md.viewPosition>=0) {
-						this.library.push(md);
-					}
+			this.libraryApps=[];
+			for(var i=0;i<uninstalledMD.length;i++) {
+				var md=uninstalledMD[i];
+				if(md.type=="NODE" && md.viewPosition>=0) {
+					this.libraryApps.push(md);
 				}
-				this.buildLibrary();
 			}
+			this.buildApps();
 		}.createDelegate(this));
 	},
-	
 	loadMyApps: function() {
+		/*
 		if(this.myApps!==null) {
 			for(var i=0;i<this.myApps.length;i++) {
 				var cmp=Ext.getCmp('myAppButton_'+this.myApps[i].name);
@@ -241,6 +267,7 @@ Ung.Main.prototype = {
 			}
 			this.myApps=null;
 		}
+		*/
 		rpc.toolboxManager.installedVisible(function (result, exception) {
 			if(exception) { Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}
 			var installedVisibleMD=result;
@@ -251,7 +278,7 @@ Ung.Main.prototype = {
 					this.myApps.push(md);
 				}
 			}
-			this.buildMyApps();
+			this.buildApps();
 			this.updateMyAppsButtons();
 		}.createDelegate(this));
 	},
@@ -356,8 +383,8 @@ Ung.Main.prototype = {
 		this.updateSeparator();
 		this.updateMyAppsButtons();
 		this.loadNodesRunStates();
-		
 	},
+	//load run states for all Nodes
 	loadNodesRunStates: function() {
 		rpc.nodeManager.allNodeStates(function (result, exception) {
 			if(exception) { Ext.MessageBox.alert(i18n._("Failed"),exception.message);
@@ -373,23 +400,11 @@ Ung.Main.prototype = {
 			Ung.BlingerManager.start();
 		}.createDelegate(this));
 	},
-	buildTabs: function () {
-		this.tabs = new Ext.TabPanel({
-		    renderTo: 'tabs',
-		    'activeTab': 0,
-		    'height':400,
-		    'defaults':{autoScroll: true},
-		    'items':[
-		        {'contentEl':'tabLibrary', 'title':'Library'},
-		        {'contentEl':'tabMyApps', 'title':'My Apps'},
-		        {'contentEl':'tabConfig', 'title':'Config'}
-		    ]
-		});
-	},
 	
-	clickMyApps: function(item) {
+	installNode: function(item) {
 		if(item!==null) {
-			Ext.getCmp('myAppButton_'+item.name).disable();
+			//var appItemCmp=Ext.getCmp('appItem'+item.name);
+			//appItemCmp.hide();
 			var policy=null;
 			if (!item.service && !item.util && !item.core) {
         		policy = rpc.currentPolicy;
@@ -405,7 +420,7 @@ Ung.Main.prototype = {
 			}.createDelegate(this), item.name, policy);
 		}
 	},
-
+/*
 	clickLibrary: function(item) {
 		if(item!==null) {
 			Ext.getCmp('libraryButton_'+item.name).disable();
@@ -417,7 +432,22 @@ Ung.Main.prototype = {
 			}.createDelegate(this), item.name);
 		}
 	},
-	
+	*/
+	getIframeWin: function() {
+		if(this.iframeWin==null) {
+			this.iframeWin=new Ung.Window({
+                id: 'iframeWin',
+                title:'',
+                layout: 'fit',
+	            items: {
+			        html: '<iframe id="iframeWin_iframe" name="iframeWin_iframe" width="100%" height="100%" />',
+		    	}
+				
+			});
+			this.iframeWin.render();
+		}
+		return this.iframeWin;
+	},
 	clickConfig: function(item) {
 		switch(item.name){
 			case "networking":
@@ -464,7 +494,7 @@ Ung.Main.prototype = {
 	todo: function() {
 		Ext.MessageBox.alert(i18n._("Failed"),"TODO: implement this.");
 	},
-	
+	/*
 	buildLibrary: function() {
   		var out=[];
   		if(this.library!==null) {
@@ -501,19 +531,19 @@ Ung.Main.prototype = {
 	        });
   		}
 	},
-	
+	*/
 	buildConfig: function() {
   		var out=[];
   		for(var i=0;i<this.config.length;i++) {
   			var item=this.config[i];
   			var buttonCmp=new Ung.Button({
-				'configIndex':i,
-				'height':'42px',
-				'renderTo':'toolsConfig',
-				'cls':'toolboxButton',
-		        'text': item.displayName,
-		        'handler': function() {main.clickConfig(main.config[this.configIndex]);},
-		        'iconCls': item.iconCls
+				configIndex: i,
+				height: '42px',
+				renderTo: 'configItems',
+				cls:'toolboxButton',
+		        text: item.displayName,
+		        handler: function() {main.clickConfig(main.config[this.configIndex]);},
+		        iconCls: item.iconCls
 	        });
   		}
 	},
@@ -551,10 +581,12 @@ Ung.Main.prototype = {
 		var place=node.isSecurity?'security_nodes':'other_nodes';
 		var position=this.getNodePosition(place,node.viewPosition);
 		nodeWidget.render(place,position);
+		/*
 		var cmp=Ext.getCmp('myAppButton_'+node.name);
-		if(cmp!==null) {
+		if(cmp!=null) {
 			Ext.getCmp('myAppButton_'+node.name).disable();
 		}
+		*/
 	},
 	
 	updateSeparator: function() {
@@ -581,10 +613,10 @@ Ung.Main.prototype = {
 		if(this.myApps!==null && this.nodes!==null) {
 			var i=null;
 			for(i=0;i<this.myApps.length;i++) {
-				Ext.getCmp('myAppButton_'+this.myApps[i].name).enable();
+				//Ext.getCmp('myAppButton_'+this.myApps[i].name).enable();
 			}
 			for(i=0;i<this.nodes.length;i++) {
-				Ext.getCmp('myAppButton_'+this.nodes[i].name).disable();
+				//Ext.getCmp('myAppButton_'+this.nodes[i].name).disable();
 			}
 		}
 	},

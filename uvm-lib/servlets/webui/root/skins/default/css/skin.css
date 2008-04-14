@@ -1,5 +1,5 @@
 #contentleft {
-	padding-top:35px;
+	padding-top:25px;
 	background:transparent url(../images/main/background_left.png)  no-repeat !important;
 	text-align:center;
 	height:100%;
@@ -25,15 +25,25 @@ div.racksWithoutSeparator {
 }
 #logo {
 	position:relative;
-	margin-bottom: 35px;
+	margin-bottom: 15px;
 }
-#tabs {
+#leftHorizontalRuler {
+	position:relative;
+	background: transparent url(../images/main/background_left_hruler.png) no-repeat center center;
+	width: 200px;
+	height: 1px;
+	left: 10px;
+	margin-bottom: 15px;
+}
+#leftTabs {
+	position:relative;
 	width:201px;
 	margin-left: auto;
 	margin-right: auto;
 	margin-bottom: 14px;
 }
 #help {
+	position:relative;
 	width:87px;
 	margin-left: auto;
 	margin-right: auto;
@@ -87,13 +97,13 @@ div.rackNode {
 	left:50px;
 }
 div.nodeLabel {
-	position:absolute;
+	position: absolute;
 	top: 17px;
 	left: 100px;
 	height: 55px;
 	width: 230px;
 	font-family: verdana, sans-serif;
-	font-size:18px;
+	font-size: 18px;
 	color: #4E4C4C;
 }
 
@@ -290,17 +300,17 @@ div.toolboxButton {
 	margin-right: auto;
 	margin-bottom: 5px;
 }
-div.utgButton {
+div.ungButton {
 	cursor: pointer;
 	background-color: #E9E9E9;
 	border: 1px solid #9B9B9B;
 }
-div.utgButtonHover {
+div.ungButtonHover {
 	border-color:#366dba;
 	color:#366dba;
 	background-color:#f1f6fc;
 }
-div.utgButtonInvalid {
+div.ungButtonInvalid {
 	border: 1px solid green;
 }
 button.iconAddRow {
@@ -406,4 +416,60 @@ div.iconConfigSetup {
 }
 thead tr.x-grid3-hd-row {
 	text-align: center;
+}
+
+div.appItem {
+	position: relative;
+	background: transparent url(../images/main/background_app_item.png) no-repeat !important;
+	width: 177px;
+	height: 53px;
+	margin-bottom: 2px;
+}
+div.appItem div.icon {
+	position: absolute;
+	top: 5px;
+	left: 5px;
+}
+div.appItem div.text {
+	position: absolute;
+	top: 6px;
+	left: 53px;
+	width: 123px;
+	height: 35px;
+	text-align: left;
+	font-size: 14px;
+}
+div.appItem div.buttonPosA {
+	position: absolute;
+	right: 5px;
+
+	top: 33px;
+	cursor: pointer;
+	height: 15px;
+	font-family: verdana, sans-serif;
+	font-size: 9px;
+	font-weight: bold;
+	color: green;
+	padding-right: 16px;
+}
+div.appItem div.buttonPosB {
+	position: absolute;
+	left: 53px;
+	top: 33px;
+	cursor: pointer;
+	height: 15px;
+	font-family: verdana, sans-serif;
+	font-size: 10px;
+	font-weight: bold;
+	color: green;
+	padding-right: 16px;
+}
+div.iconInfo {
+	background:transparent url(../images/main/icon_info.png) no-repeat center right !important;
+}
+div.iconArrowRight {
+	background:transparent url(../images/main/icon_arrow_right.png) no-repeat center right !important;
+}
+div.iconArrowDown {
+	background:transparent url(../images/main/icon_arrow_down.png) no-repeat center right !important;
 }
