@@ -9,11 +9,64 @@ Ung.Shield = Ext.extend(Ung.Settings, {
     onRender: function(container, position) {
     	//call superclass renderer first
     	Ung.Shield.superclass.onRender.call(this,container, position);
-		//builds the 2 tabs
+		//builds the 3 tabs
+		this.buildStatus();
 		this.buildExceptions();
 		this.buildEventLog();
 		//builds the tab panel with the tabs
-		this.buildTabPanel([this.gridExceptions,this.gridEventLog]);
+		this.buildTabPanel([this.statusPanel,this.gridExceptions,this.gridEventLog]);
+    },
+    // Status Panel
+    buildStatus: function() {
+//    	main.loadScript("script/extensions/Ext.ux.SlideZone.js");
+    	this.statusPanel = new Ext.Panel({
+		    title: this.i18n._('Status'),
+		    layout: "form",
+		    bodyStyle:'padding:5px 5px 0',
+			items: [{
+	            xtype:'fieldset',
+	            title: this.i18n._('Statistics'),
+	            autoHeight:true,
+	            //defaults: {width: 210},
+	            items :[
+	            	{
+						xtype:'textfield',
+						fieldLabel: this.i18n._('Status'),
+	                    name: 'status',
+	                    allowBlank:false,
+	                    value: 'active',
+	                    disabled: true
+	                },{
+						xtype:'textfield',
+						fieldLabel: this.i18n._('Level'),
+	                    name: 'level',
+	                    allowBlank:false,
+	                    value: 'normal',
+	                    disabled: true
+	                }
+//	                ,
+//					new Ext.ux.SlideZone({  
+//							type: 'vertical',
+//							size: 300, 
+//							sliderWidth: 21,
+//							sliderHeight: 15,
+//							maxValue: 100,
+//							minValue: 0,
+//							sliders: [{ 
+//										value: 40,  
+//										name: '1_1'
+//									  }]
+//					
+//					})	                
+	            ]
+			}, {
+	            xtype:'fieldset',
+	            title: this.i18n._('Note'),
+	            autoHeight:true,
+	            html: this.i18n._('Attack Blocker is a heuristic based intrusion prevention and requires no configuration. Users can modify the treatment of certain IP and/or networks on the exception tab.')	            
+			}
+			]
+    	});
     },
     // Exceptions grid
     buildExceptions: function() {

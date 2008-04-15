@@ -751,6 +751,7 @@ Ung.Settings = Ext.extend(Ext.Component, {
 	        frame: true,
 	        parentId: this.getId(),
 	        items: itemsArray,
+	        layoutOnTabChange:true,
 		    listeners: {
 		    	"render": {
 		    		fn: function() {

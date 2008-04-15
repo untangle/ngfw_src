@@ -203,7 +203,9 @@ Ung.Main.prototype = {
 		} catch (e) {
 			error=e;	
 		}
-		oCallback.call(this);
+		if(oCallback) {
+			oCallback.call(this);
+		}
 		return error;
 	},
 	//get help link
