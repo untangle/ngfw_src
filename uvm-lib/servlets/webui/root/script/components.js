@@ -1,25 +1,111 @@
 //resources map
 Ung.hasResource={};
+Ung.MoveFromStoreToToolbox=function(mackageDesc) {
+	this.downloadCheckInterval=500
+	this.mackageDesc=mackageDesc;
+	this.key=null;
+	this.install();
+}
+Ung.MoveFromStoreToToolbox.prototype= {
+	install: function () {
+		rpc.toolboxManager.install(function (result, exception) {
+			if(exception) { 
+				Ext.MessageBox.alert(i18n._("Failed"),exception.message);return;
+			}
+			this.key=result;
+			this.progress();
+		}.createDelegate(this),	this.mackageDesc.name);
+	},
+	progress: function () {
+		rpc.toolboxManager.getProgress(function (result, exception) {
+			if(exception) { 
+				Ext.MessageBox.alert(i18n._("Failed"),exception.message);return;
+			}
+			var lip=result;
+			var checkInterval=this.downloadCheckInterval;
+			var isDone=false;
+			var success=false;
+			for(var i=0;i<lip.list.length;i++) {
+				var ip=lip.list[i];
+				if(ip.javaClass.indexOf("DownloadSummary")!=-1) {
+				} else if(ip.javaClass.indexOf("DownloadProgress")!=-1) {
+				} else if(ip.javaClass.indexOf("DownloadComplete")!=-1) {
+				} else if(ip.javaClass.indexOf("InstallComplete")!=-1) {
+					isDone=true;
+					success=true;
+				} else if(ip.javaClass.indexOf("InstallTimeout")!=-1) {
+					isDone=true;
+					success=false;
+				}
+				if(isDone) {
+					break;
+				}
+			}
+			if(!isDone) {
+				this.progress.defer(this.downloadCheckInterval,this);
+			} else {
+				if(success) {
+					main.installNode(this.mackageDesc);
+				}
+				main.loadApps();
+			}
+		}.createDelegate(this),	this.key);
+		
+	}
+}
+Ung.MessageClientThread = {
+	//update interval in millisecond
+	updateTime: 2000,
+	stopped:false,
+	timeoutId: null,
+	
+	stop: function() {
+		if(this.timeoutId!==null) {
+			window.clearTimeout(this.timeoutId);
+		}
+		this.stopped=true;
+	},
+	
+	run: function() {
+		this.stopped=false;
+		rpc.toolboxManager.subscribe(function (result, exception) {
+			if(exception) { 
+				Ext.MessageBox.alert(i18n._("Failed"),exception.message);
+				return;
+			} else {
+				var toolQ=result;
+				var messages=toolQ.getMessages();
+				for(var i=0;i<messages.list.length;i++) {
+					var msg=messages.list[i];
+					if(msg.javaClass.indexOf("MackageInstallRequest")>=0) {
+						//var key=rpc.toolboxManager.install(msg.mackageDesc.name);
+						new Ung.MoveFromStoreToToolbox(msg.mackageDesc);
+					} else if(msg.javaClass.indexOf("MackageUpdateExtraName")>=0) {
+						
+					}
+				}
+				if(!this.stopped) {
+					this.timeoutId=window.setTimeout("Ung.MessageClientThread.run()", this.updateTime);
+				}
+			}
+		}.createDelegate(this));
+	}
+};
+
 
 //App Items class
 Ung.AppItem = Ext.extend(Ext.Component, {
-//    unactivatedApp: null,
-//    activatedApp: null,
-//    installedApp: null,
-//    trialApp: null,
-    
     item: null,
     iconSrc: null,
     iconCls: null,
 
     operationSemaphore: false,
     autoEl: 'div',
-/*    
-    constructor: function(){
-    	//this.id="appItem"+this.item.name;
-        Ung.AppItem.superclass.constructor.call(this);
-    },
-*/
+    constructor: function(config) {
+		this.id="appItem_"+config.item.name;
+    	Ung.AppItem.superclass.constructor.apply(this, arguments);
+    },	
+    
     // private
     onRender : function(container, position) {
     	Ung.AppItem.superclass.onRender.call(this,container, position);
@@ -55,7 +141,10 @@ Ung.AppItem = Ext.extend(Ext.Component, {
 	linkToStoreFn: function() {
 		rpc.adminManager.generateAuthNonce(function (result, exception) {
 			if(exception) { Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}
-			var url = "../library/libitem.php?name=" + this.item.name + "&" + result;
+			//XXX: hack to support libitems:
+			//replace node with libitem in library items names 
+			var libitemName=this.item.name.replace("-node-","-libitem-");
+			var url = "../library/libitem.php?name=" + libitemName + "&" + result;
 			var iframeWin=main.getIframeWin();
 			iframeWin.show();
 			iframeWin.setTitle("");
@@ -316,9 +405,9 @@ Ung.Node = Ext.extend(Ext.Component, {
 				var cmp=this;
 				Ext.destroy(cmp);
 				cmp=null;
-				var myAppButtonCmp=Ext.getCmp('myAppButton_'+nodeName);
-				if(myAppButtonCmp!==null) {
-					myAppButtonCmp.enable();
+				var appItemCmp=Ext.getCmp('appItem_'+nodeName);
+				if(appItemCmp!=null) {
+					appItemCmp.show();
 				}
 				for(var i=0;i<main.nodes.length;i++) {
 					if(nodeName==main.nodes[i].name) {

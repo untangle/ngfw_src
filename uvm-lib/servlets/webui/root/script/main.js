@@ -222,8 +222,7 @@ Ung.Main.prototype = {
 		return helpLink;
 	},
 	loadTools: function() {
-		this.loadLibraryApps();
-		this.loadMyApps();
+		this.loadApps();
 		this.loadConfig();
 	},
 	buildApps: function() {
@@ -235,15 +234,23 @@ Ung.Main.prototype = {
 		var appsCmps=[];
 		for(var i=0;i<this.apps.length;i++) {
 			var item=this.apps[i];
-				
   			 appsCmps.push(new Ung.AppItem({
 				item: item,
 				renderTo:'appsItems'
 	        }));
 		}
+		Ung.MessageClientThread.run();
 	},
-	loadLibraryApps: function() {
+	loadApps: function() {
 		this.appsSemaphore=2;
+		if(main.apps!=null) {
+			for(var i=0; i<main.apps.length; i++) {
+				var appItemCmp=Ext.getCmp('appItem_'+main.apps[i].name);
+				if(appItemCmp!=null) {
+					Ext.destroy(appItemCmp);
+				}
+			}
+		}
 		rpc.toolboxManager.uninstalled(function (result, exception) {
 			if(exception) { Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}
 			var uninstalledMD=result;
@@ -256,20 +263,7 @@ Ung.Main.prototype = {
 			}
 			this.buildApps();
 		}.createDelegate(this));
-	},
-	loadMyApps: function() {
-		/*
-		if(this.myApps!==null) {
-			for(var i=0;i<this.myApps.length;i++) {
-				var cmp=Ext.getCmp('myAppButton_'+this.myApps[i].name);
-				if(cmp!==null) {
-					cmp.destroy();
-					cmp=null;
-				}
-			}
-			this.myApps=null;
-		}
-		*/
+		
 		rpc.toolboxManager.installedVisible(function (result, exception) {
 			if(exception) { Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}
 			var installedVisibleMD=result;
@@ -405,8 +399,10 @@ Ung.Main.prototype = {
 	
 	installNode: function(item) {
 		if(item!==null) {
-			//var appItemCmp=Ext.getCmp('appItem'+item.name);
-			//appItemCmp.hide();
+			var appItemCmp=Ext.getCmp('appItem_'+item.name);
+			if(appItemCmp) {
+				appItemCmp.hide();
+			}
 			var policy=null;
 			if (!item.service && !item.util && !item.core) {
         		policy = rpc.currentPolicy;
@@ -442,10 +438,11 @@ Ung.Main.prototype = {
                 title:'',
                 layout: 'fit',
 	            items: {
-			        html: '<iframe id="iframeWin_iframe" name="iframeWin_iframe" width="100%" height="100%" />',
+			        html: '<iframe id="iframeWin_iframe" name="iframeWin_iframe" width="100%" height="100%" />'
 		    	}
 				
 			});
+			window.frames["iframeWin_iframe"].location.href="about:blank";
 			this.iframeWin.render();
 		}
 		return this.iframeWin;
@@ -583,12 +580,10 @@ Ung.Main.prototype = {
 		var place=node.isSecurity?'security_nodes':'other_nodes';
 		var position=this.getNodePosition(place,node.viewPosition);
 		nodeWidget.render(place,position);
-		/*
-		var cmp=Ext.getCmp('myAppButton_'+node.name);
+		var cmp=Ext.getCmp('appItem_'+node.name);
 		if(cmp!=null) {
-			Ext.getCmp('myAppButton_'+node.name).disable();
+			cmp.hide();
 		}
-		*/
 	},
 	
 	updateSeparator: function() {
@@ -615,10 +610,10 @@ Ung.Main.prototype = {
 		if(this.myApps!==null && this.nodes!==null) {
 			var i=null;
 			for(i=0;i<this.myApps.length;i++) {
-				//Ext.getCmp('myAppButton_'+this.myApps[i].name).enable();
+				Ext.getCmp('appItem_'+this.myApps[i].name).show();
 			}
 			for(i=0;i<this.nodes.length;i++) {
-				//Ext.getCmp('myAppButton_'+this.nodes[i].name).disable();
+				Ext.getCmp('appItem_'+this.nodes[i].name).hide();
 			}
 		}
 	},
