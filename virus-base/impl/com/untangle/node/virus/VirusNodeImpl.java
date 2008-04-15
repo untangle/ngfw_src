@@ -302,6 +302,10 @@ public abstract class VirusNodeImpl extends AbstractNode
 		reconfigure();
 	}
 	
+    public String getSigVersion()
+    {
+        return this.scanner.getSigVersion();
+    }
 	
     public EventManager<VirusEvent> getEventManager()
     {
