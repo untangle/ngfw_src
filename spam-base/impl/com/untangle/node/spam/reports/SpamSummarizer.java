@@ -158,7 +158,7 @@ public class SpamSummarizer extends BaseSummarizer {
 	smtpScanned += smtpRBLRejected;
         addEntry("Scanned emails (SMTP)", Util.trimNumber("",smtpScanned));
 	if (smtpRBLRejected > 0)
-            addEntry("&nbsp;&nbsp;&nbsp;Spam connection rejected using DSNBLs", Util.trimNumber("",smtpRBLRejected), Util.percentNumber(smtpRBLRejected, smtpScanned));
+            addEntry("&nbsp;&nbsp;&nbsp;Spam connection rejected using DNSBLs", Util.trimNumber("",smtpRBLRejected), Util.percentNumber(smtpRBLRejected, smtpScanned));
 	if (smtpQuarantined > 0)
             addEntry("&nbsp;&nbsp;&nbsp;Spam & Quarantined", Util.trimNumber("",smtpQuarantined), Util.percentNumber(smtpQuarantined, smtpScanned));
 	if (smtpBlocked > 0)

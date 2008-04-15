@@ -35,6 +35,8 @@ import org.apache.catalina.authenticator.SingleSignOn;
 import org.apache.catalina.connector.Request;
 import org.apache.catalina.connector.Response;
 
+import org.apache.log4j.Logger;
+
 class SpecialSingleSignOn extends SingleSignOn
 {
     /* This is a set of all of the context paths that use UvmPrincipal */
@@ -42,6 +44,8 @@ class SpecialSingleSignOn extends SingleSignOn
     private final Set<String> uvmContextSet;
 
     private final LocalUvmContext uvmContext;
+
+    private final Logger logger = Logger.getLogger(getClass());
 
     SpecialSingleSignOn(LocalUvmContext uvmContext, String ... contextPathArray )
     {
@@ -68,35 +72,40 @@ class SpecialSingleSignOn extends SingleSignOn
         String contextPath = request.getContextPath();
         if ( uvmContextSet.contains(contextPath)) {
             /* Ignore single sign on for this context path */
-            if ( containerLog.isDebugEnabled()) {
-                containerLog.debug( "The path: [" + contextPath + "] is ignored by single sign on" );
+            if ( logger.isDebugEnabled()) {
+                logger.debug( "The path: [" + contextPath + "] is ignored by single sign on" );
             }
 
             Valve next = getNext();
             if ( next != null ) next.invoke(request,response);
             return;
         } else {
-            if ( containerLog.isDebugEnabled()) {
-                containerLog.debug( "The path: [" + contextPath + "] uses sign on" );
+            if ( logger.isDebugEnabled()) {
+                logger.debug( "The path: [" + contextPath + "] uses sign on" );
             }
         }
         super.invoke( request, response );
 
         Principal principal = request.getUserPrincipal();
-        if (principal != null && principal instanceof BasePortalLogin) {
-            if (containerLog.isDebugEnabled())
-                containerLog.debug( "Checking liveness for " + principal.getName());
+
+        if (principal == null ) {
+             logger.debug( "No principal registered for this session." );
+        } else if (principal instanceof BasePortalLogin) {
+            if (logger.isDebugEnabled())
+                logger.debug( "Checking liveness for " + principal.getName());
             BasePortalManager pmgr = (BasePortalManager) uvmContext.portalManager();
             boolean live = pmgr.isLive(principal);
             if (!live) {
                 request.setAuthType(null);
                 request.setUserPrincipal(null);
                 String ssoId = (String) request.getNote(Constants.REQ_SSOID_NOTE);
-                if (containerLog.isDebugEnabled())
-                    containerLog.debug( "Not live, clearing sso " + ssoId);
+                if (logger.isDebugEnabled())
+                    logger.debug( "Not live, clearing sso " + ssoId);
                 if (ssoId != null)
                     deregister(ssoId);
             }
+        } else {
+            logger.debug( "non-portal principal registered for this session: " + principal + "." );
         }
     }
 
@@ -105,14 +114,24 @@ class SpecialSingleSignOn extends SingleSignOn
                             String username, String password)
     {
         /* Never register these sessions, they are bunk */
-        if (principal instanceof UvmPrincipal ) {
-            if ( containerLog.isDebugEnabled()) {
-                containerLog.debug( "Ignoring uvm principal" );
-            }
+         if (principal instanceof UvmPrincipal ) {
+             if ( logger.isDebugEnabled()) {
+                 logger.debug( "Ignoring uvm principal: " + principal + "/" + principal.getClass());
+             }
 
-            return;
+             return;
+         }
+
+        if ( logger.isDebugEnabled()) {
+            logger.debug( "registering principal: " + principal );
         }
 
         super.register(ssoId,principal,authType,username,password);
+    }
+    
+    @Override
+    public String toString()
+    {
+        return "SpecialSingleSignOn[uvm]";
     }
 }

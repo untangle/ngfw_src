@@ -31,6 +31,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 
+import com.untangle.uvm.security.GlobalPrincipal;
 import com.untangle.uvm.security.UvmPrincipal;
 import org.apache.catalina.Context;
 import org.apache.catalina.connector.Request;
@@ -50,11 +51,18 @@ class UvmRealm extends RealmBase
 {
     private final Logger logger = Logger.getLogger(getClass());
 
+    private final boolean isGlobal;
+
     private static final String userQuery
         = "SELECT password, read_only FROM u_user WHERE login = ?";
 
-    // XXX Very small memory leak here if the nonce is never used (quite rare)
-    private HashMap<String, Principal> nonces = new HashMap<String, Principal>();
+    private final NonceFactory nonceFactory;
+
+    UvmRealm(boolean isGlobal, NonceFactory nonceFactory)
+    {
+        this.isGlobal = isGlobal;
+        this.nonceFactory = nonceFactory;
+    }
 
     // public methods ---------------------------------------------------------
 
@@ -72,7 +80,7 @@ class UvmRealm extends RealmBase
             currentTime + ":MetavizeUvm94114";
         byte[] buffer = d.digest(nonceValue.getBytes());
         String nonce = new BASE64Encoder().encode(buffer);
-        nonces.put(nonce, user);
+        nonceFactory.put(nonce, user);
 
         return UvmAuthenticator.AUTH_NONCE_FIELD_NAME + "="
             + URLEncoder.encode(nonce);
@@ -81,7 +89,7 @@ class UvmRealm extends RealmBase
     // Used by servlets (reports, store)
     public Principal authenticateWithNonce(String nonce)
     {
-        Principal user = nonces.remove(nonce);
+        Principal user = nonceFactory.remove(nonce);
         if (logger.isDebugEnabled())
             logger.debug("Attempting to authenticate with nonce " + nonce + ", got user: " + user);
         return user;
@@ -131,6 +139,9 @@ class UvmRealm extends RealmBase
             }
         }
 
+        if (isGlobal && !readOnly) {
+            return new GlobalPrincipal(username);
+        }
         return new UvmPrincipal(username, readOnly);
     }
 
@@ -140,7 +151,6 @@ class UvmRealm extends RealmBase
         return null != role && role.equalsIgnoreCase("user")
             && p instanceof UvmPrincipal;
     }
-
 
     // RealmBase methods ------------------------------------------------------
 
@@ -232,6 +242,10 @@ class UvmRealm extends RealmBase
     /* Should be moved to a util, used also by UvmAuthenticator */
     private boolean isValidPrincipal( Principal principal )
     {
-        return ( null != principal && ( principal instanceof UvmPrincipal ));
+        if ( null == principal ) return false;
+        if ( principal instanceof UvmPrincipal ) return true;
+        if ( principal instanceof GlobalPrincipal ) return true;
+
+        return false;
     }
 }
