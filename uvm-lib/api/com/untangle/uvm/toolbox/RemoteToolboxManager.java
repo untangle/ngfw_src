@@ -163,6 +163,13 @@ public interface RemoteToolboxManager
     void requestInstall(String mackageName);
 
     MessageQueue<ToolboxMessage> subscribe();
+    
+    /**
+     * Get the undelivered messages for MessageQueue.
+     *
+     * @return outstanding messages.
+     */
+    List<ToolboxMessage> getToolboxMessages();
 
     /**
      * Register the deployment of a Mackage at a particular URL.

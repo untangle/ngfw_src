@@ -455,6 +455,11 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
 
         return mq;
     }
+    
+    public List<ToolboxMessage> getToolboxMessages() {
+    	return subscribe().getMessages();
+    }
+    
 
     // RemoteToolboxManagerPriv implementation --------------------------------
 

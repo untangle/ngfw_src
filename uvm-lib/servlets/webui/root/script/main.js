@@ -257,7 +257,7 @@ Ung.Main.prototype = {
 			this.libraryApps=[];
 			for(var i=0;i<uninstalledMD.length;i++) {
 				var md=uninstalledMD[i];
-				if(md.type=="NODE" && md.viewPosition>=0) {
+				if(md.type=="LIB_ITEM" && md.viewPosition>=0) {
 					this.libraryApps.push(md);
 				}
 			}

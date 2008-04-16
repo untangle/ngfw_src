@@ -68,13 +68,12 @@ Ung.MessageClientThread = {
 	
 	run: function() {
 		this.stopped=false;
-		rpc.toolboxManager.subscribe(function (result, exception) {
+		rpc.toolboxManager.getToolboxMessage(function (result, exception) {
 			if(exception) { 
 				Ext.MessageBox.alert(i18n._("Failed"),exception.message);
 				return;
 			} else {
-				var toolQ=result;
-				var messages=toolQ.getMessages();
+				var messages=result;
 				for(var i=0;i<messages.list.length;i++) {
 					var msg=messages.list[i];
 					if(msg.javaClass.indexOf("MackageInstallRequest")>=0) {
@@ -141,10 +140,7 @@ Ung.AppItem = Ext.extend(Ext.Component, {
 	linkToStoreFn: function() {
 		rpc.adminManager.generateAuthNonce(function (result, exception) {
 			if(exception) { Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}
-			//XXX: hack to support libitems:
-			//replace node with libitem in library items names 
-			var libitemName=this.item.name.replace("-node-","-libitem-");
-			var url = "../library/libitem.php?name=" + libitemName + "&" + result;
+			var url = "../library/libitem.php?name=" + this.item.name + "&" + result;
 			var iframeWin=main.getIframeWin();
 			iframeWin.show();
 			iframeWin.setTitle("");
