@@ -159,33 +159,6 @@ Ung.Main.prototype = {
 		    ]
 		});
 	},
-	/*
-	loadScriptExt: function(url,callbackFn) {
-		Ext.get('scripts_container').load({
-			'url':url,
-			'text':i18n._("loading")+"...",
-			'discardUrl':true,
-			'callback': callbackFn,
-			'scripts':true,
-			'nocache':false,
-			disableCaching: false
-		});
-	},
-	loadScriptSol1: function(sScriptSrc, oCallback) {
-		var oHead = document.getElementById('head')[0];
-		var oScript = document.createElement('script');
-		oScript.type = 'text/javascript';
-		oScript.src = sScriptSrc;
-		// most browsers
-		oScript.onload = oCallback;
-		// IE 6 & 7
-		oScript.onreadystatechange = function() {
-			if (this.readyState == 'complete') {
-				oCallback();
-			}
-		}
-		oHead.appendChild(oScript);
-	},*/
 	//Load script file dynamically 
 	loadScript: function(sScriptSrc, oCallback) {
 		var error=null;
@@ -418,19 +391,6 @@ Ung.Main.prototype = {
 			}.createDelegate(this), item.name, policy);
 		}
 	},
-/*
-	clickLibrary: function(item) {
-		if(item!==null) {
-			Ext.getCmp('libraryButton_'+item.name).disable();
-			rpc.toolboxManager.install(function (result, exception) {
-				if(exception) { Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}
-				this.loadMyApps();
-				Ext.MessageBox.alert("TODO","Purchase: add to myApps buttons, remove from library");
-
-			}.createDelegate(this), item.name);
-		}
-	},
-	*/
 	getIframeWin: function() {
 		if(this.iframeWin==null) {
 			this.iframeWin=new Ung.Window({
@@ -439,10 +399,14 @@ Ung.Main.prototype = {
                 layout: 'fit',
 	            items: {
 			        html: '<iframe id="iframeWin_iframe" name="iframeWin_iframe" width="100%" height="100%" />'
-		    	}
+		    	},
+		    	closeAction:'closeActionFn',
+		    	closeActionFn: function() {
+					this.hide();
+					window.frames["iframeWin_iframe"].location.href="about:blank";
+				}
 				
 			});
-			window.frames["iframeWin_iframe"].location.href="about:blank";
 			this.iframeWin.render();
 		}
 		return this.iframeWin;
@@ -453,35 +417,10 @@ Ung.Main.prototype = {
 				rpc.adminManager.generateAuthNonce(function (result, exception) {
 					if(exception) { Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}
 					var alpacaUrl = "/alpaca/?" + result;
-					//window.open(url);
-					if(this.networkingWin==null) {
-					    this.networkingWin=new Ext.Window({
-			                id: 'networkingWin',
-			                layout:'border',
-			                modal:true,
-			                title:'Networking',
-			                closeAction:'hide',
-			                autoCreate:true,          
-			                width:740,
-			                height:690,
-			                draggable:false,
-			                resizable:false,
-				            items: [{
-						        region:"center",
-						        html: '<iframe id="networkingWin_iframe" name ="networkingWin_iframe" width="100%" height="100%">',
-						        border: false
-						    	}
-						    ]
-			            });
-						this.networkingWin.render('container');
-					};
-		        	this.networkingWin.show();
-		        	this.networkingWin.setPosition(220,0);
-		        	var objSize=this.viewport.getSize();
-		        	objSize.width=objSize.width-220;
-		        	this.networkingWin.setSize(objSize);
-		        	//document.getElementById("networkingWin_iframe").src=alpacaUrl;
-		        	window.frames["networkingWin_iframe"].location.href=alpacaUrl;
+					var iframeWin=main.getIframeWin();
+					iframeWin.show();
+					iframeWin.setTitle("Networking");
+					window.frames["iframeWin_iframe"].location.href=alpacaUrl;
 				}.createDelegate(this));
 				break;
 			default:
@@ -493,44 +432,6 @@ Ung.Main.prototype = {
 	todo: function() {
 		Ext.MessageBox.alert(i18n._("Failed"),"TODO: implement this.");
 	},
-	/*
-	buildLibrary: function() {
-  		var out=[];
-  		if(this.library!==null) {
-	  		for(var i=0;i<this.library.length;i++) {
-	  			var item=this.library[i];
-	  			var buttonCmp=new Ung.Button({
-	  				'id':'libraryButton_'+item.name,
-					'libraryIndex':i,
-					'height':'50px',
-					'renderTo':'toolsLibrary',
-					'cls':'toolboxButton',
-			        'text': item.displayName,
-			        'handler': function() {main.clickLibrary(main.library[this.libraryIndex]);},
-			        'iconSrc': 'image?name='+ item.name
-		        });
-	  		}
-	  	}
-	},
-
-	buildMyApps: function() {
-  		var out=[];
-  		for(var i=0;i<this.myApps.length;i++) {
-  			var item=this.myApps[i];
-  			var buttonCmp=new Ung.Button({
-  				'id':'myAppButton_'+item.name,
-				'myAppIndex':i,
-				'height':'50px',
-				'renderTo':'toolsMyApps',
-				'cls':'toolboxButton',
-		        'text': i18n._(item.displayName),
-		        'handler': function() {main.clickMyApps(main.myApps[this.myAppIndex]);},
-		        'iconSrc': 'image?name='+ item.name,
-		        'disabled':true
-	        });
-  		}
-	},
-	*/
 	buildConfig: function() {
   		var out=[];
   		for(var i=0;i<this.config.length;i++) {

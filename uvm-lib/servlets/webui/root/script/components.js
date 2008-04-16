@@ -1,7 +1,13 @@
 //resources map
 Ung.hasResource={};
 Ung.MoveFromStoreToToolbox=function(mackageDesc) {
-	this.downloadCheckInterval=500
+	this.downloadCheckInterval=500;
+	this.downloadFinalPause=1000;
+	this.installCheckInterval=500
+	this.installFinalPause=1000;
+	this.installCheckTimeout=3*60*1000;
+	this.installStartTime=null;
+	
 	this.mackageDesc=mackageDesc;
 	this.key=null;
 	this.install();
@@ -13,16 +19,15 @@ Ung.MoveFromStoreToToolbox.prototype= {
 				Ext.MessageBox.alert(i18n._("Failed"),exception.message);return;
 			}
 			this.key=result;
-			this.progress();
+			this.progressDownload();
 		}.createDelegate(this),	this.mackageDesc.name);
 	},
-	progress: function () {
+	progressDownload: function () {
 		rpc.toolboxManager.getProgress(function (result, exception) {
 			if(exception) { 
 				Ext.MessageBox.alert(i18n._("Failed"),exception.message);return;
 			}
 			var lip=result;
-			var checkInterval=this.downloadCheckInterval;
 			var isDone=false;
 			var success=false;
 			for(var i=0;i<lip.list.length;i++) {
@@ -30,6 +35,8 @@ Ung.MoveFromStoreToToolbox.prototype= {
 				if(ip.javaClass.indexOf("DownloadSummary")!=-1) {
 				} else if(ip.javaClass.indexOf("DownloadProgress")!=-1) {
 				} else if(ip.javaClass.indexOf("DownloadComplete")!=-1) {
+					isDone=true;
+					success=true;
 				} else if(ip.javaClass.indexOf("InstallComplete")!=-1) {
 					isDone=true;
 					success=true;
@@ -42,15 +49,43 @@ Ung.MoveFromStoreToToolbox.prototype= {
 				}
 			}
 			if(!isDone) {
-				this.progress.defer(this.downloadCheckInterval,this);
+				this.progressDownload.defer(this.downloadCheckInterval,this);
 			} else {
+				
 				if(success) {
+					this.progressInstalled.defer(this.downloadFinalPause,this);
 					main.installNode(this.mackageDesc);
+				} else {
+		        	Ext.MessageBox.alert(i18n._("Failed"),"Error download: "+this.mackageDesc.name);
 				}
 				main.loadApps();
 			}
 		}.createDelegate(this),	this.key);
-		
+	},
+	progressInstalled: function() {
+        if(this.installStartTime==null) {
+        	installStartTime=(new Date()).getTime();
+        }
+        if(((new Date()).getTime() - this.installStartTime) < this.installCheckTimeout ){
+            rpc.toolboxManager.installed(function (result, exception) {
+				if(exception) { 
+					Ext.MessageBox.alert(i18n._("Failed"),exception.message);return;
+				}
+				var currentInstalledMackages=result;
+				var mackageInstalled = false;
+				for(var i=0;i<currentInstalledMackages.list.length;i++) {
+					if(this.mackageDesc.name==currentInstalledMackages.list[i].name) {
+						mackageInstalled = true;
+						break;
+					}
+				}
+				if(!mackageInstalled) {
+					this.progressInstalled.defer(this.installCheckInterval, this);
+				}
+            }.createDelegate(this));
+        } else {
+        	Ext.MessageBox.alert(i18n._("Failed"),"Error installing: "+this.mackageDesc.name);
+        }
 	}
 }
 Ung.MessageClientThread = {
