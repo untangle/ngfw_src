@@ -370,7 +370,7 @@ Ung.Main.prototype = {
 		}.createDelegate(this));
 	},
 	
-	installNode: function(item) {
+	installNode: function(item, targetPolicy) {
 		if(item!==null) {
 			var appItemCmp=Ext.getCmp('appItem_'+item.name);
 			if(appItemCmp) {
@@ -378,7 +378,11 @@ Ung.Main.prototype = {
 			}
 			var policy=null;
 			if (!item.service && !item.util && !item.core) {
-        		policy = rpc.currentPolicy;
+        		if(targetPolicy==null) {
+        			policy = rpc.currentPolicy;
+        		} else {
+        			policy = targetPolicy;
+        		}
         	}
 			rpc.nodeManager.instantiate(function (result, exception) {
 				if(exception) { Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}

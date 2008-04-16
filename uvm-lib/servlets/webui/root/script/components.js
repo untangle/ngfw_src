@@ -1,22 +1,79 @@
 //resources map
 Ung.hasResource={};
-Ung.MoveFromStoreToToolbox=function(mackageDesc) {
-	this.downloadCheckInterval=500;
-	this.downloadFinalPause=1000;
-	this.installCheckInterval=500
-	this.installFinalPause=1000;
-	this.installCheckTimeout=3*60*1000;
-	this.installStartTime=null;
-	
-	this.mackageDesc=mackageDesc;
-	this.key=null;
-	this.install();
-}
-Ung.MoveFromStoreToToolbox.prototype= {
+
+Ung.MoveFromStoreToToolboxThread = {
+	mackageDescQueue: [],
+	queueIsEmpty: function() {
+		return this.mackageDescQueue.length==0;
+	},
+	pushQueue: function(mackageDesc) {
+		this.mackageDescQueue.push(mackageDesc);
+	},
+	popQueue: function() {
+		return this.mackageDescQueue.shift()
+	},
+	mackageDesc: null,
+	downloadCheckInterval: 500,
+	downloadFinalPause: 1000,
+	installCheckInterval: 500,
+	installFinalPause: 1000,
+	installCheckTimeout: 3*60*1000,
+	installStartTime: null,
+	targetPolicy: null,
+	key:null,
+	process: function(mackageDesc) {
+		if(this.mackageDesc!=null) {
+			this.pushQueue(mackageDesc);
+		} else {
+			this.mackageDesc=mackageDesc;
+			this.purchase();
+		}
+	},
+	clearProcess: function() {
+		this.mackageDesc=null;
+		if(!this.queueIsEmpty()) {
+			this.process(this.popQueue());
+		}
+	},
+	purchase: function() {
+		// MAKE SURE NOT PREVIOUSLY INSTALLED AS PART OF A BUNDLE
+        rpc.toolboxManager.uninstalled(function (result, exception) {
+			if(exception) { 
+				Ext.MessageBox.alert(i18n._("Failed"),exception.message);
+				this.clearProcess();
+				return;
+			}
+			var installed = true;
+			var originalUninstalledMackages=result;
+			for(var i=0; i<originalUninstalledMackages.length; i++) {
+				if(this.mackageDesc.name==originalUninstalledMackages[i].name) {
+					installed = false;
+				}
+			}
+			if(!installed) {
+		        rpc.toolboxManager.installed(function (result, exception) {
+					if(exception) { 
+						Ext.MessageBox.alert(i18n._("Failed"),exception.message);
+						this.clearProcess();
+						return;
+					}
+					this.originalInstalledMackages =result; // the list of originaly installed nodes
+					this.install();
+		        }.createDelegate(this));
+            	
+			} else {
+				this.clearProcess();
+				return;
+			}
+		}.createDelegate(this));
+	},
 	install: function () {
+		this.targetPolicy=rpc.currentPolicy;
 		rpc.toolboxManager.install(function (result, exception) {
 			if(exception) { 
-				Ext.MessageBox.alert(i18n._("Failed"),exception.message);return;
+				Ext.MessageBox.alert(i18n._("Failed"),exception.message);
+				this.clearProcess();
+				return;
 			}
 			this.key=result;
 			this.progressDownload();
@@ -25,7 +82,9 @@ Ung.MoveFromStoreToToolbox.prototype= {
 	progressDownload: function () {
 		rpc.toolboxManager.getProgress(function (result, exception) {
 			if(exception) { 
-				Ext.MessageBox.alert(i18n._("Failed"),exception.message);return;
+				Ext.MessageBox.alert(i18n._("Failed"),exception.message);
+				this.clearProcess();
+				return;
 			}
 			var lip=result;
 			var isDone=false;
@@ -51,42 +110,87 @@ Ung.MoveFromStoreToToolbox.prototype= {
 			if(!isDone) {
 				this.progressDownload.defer(this.downloadCheckInterval,this);
 			} else {
-				
 				if(success) {
+					this.installStartTime=(new Date()).getTime();
 					this.progressInstalled.defer(this.downloadFinalPause,this);
-					main.installNode(this.mackageDesc);
 				} else {
-		        	Ext.MessageBox.alert(i18n._("Failed"),"Error download: "+this.mackageDesc.name);
+					Ext.MessageBox.alert(i18n._("Failed"),"Error download: "+this.mackageDesc.name);
+					this.clearProcess();
+					return;
 				}
-				main.loadApps();
 			}
 		}.createDelegate(this),	this.key);
 	},
 	progressInstalled: function() {
-        if(this.installStartTime==null) {
-        	installStartTime=(new Date()).getTime();
-        }
-        if(((new Date()).getTime() - this.installStartTime) < this.installCheckTimeout ){
+        //if(((new Date()).getTime() - this.installStartTime) > this.installCheckTimeout+this.downloadFinalPause ){
             rpc.toolboxManager.installed(function (result, exception) {
 				if(exception) { 
-					Ext.MessageBox.alert(i18n._("Failed"),exception.message);return;
+					Ext.MessageBox.alert(i18n._("Failed"),exception.message);
+					this.clearProcess();
+					return;
 				}
 				var currentInstalledMackages=result;
 				var mackageInstalled = false;
-				for(var i=0;i<currentInstalledMackages.list.length;i++) {
-					if(this.mackageDesc.name==currentInstalledMackages.list[i].name) {
+				for(var i=0;i<currentInstalledMackages.length;i++) {
+					if(this.mackageDesc.name==currentInstalledMackages[i].name) {
 						mackageInstalled = true;
 						break;
 					}
 				}
 				if(!mackageInstalled) {
 					this.progressInstalled.defer(this.installCheckInterval, this);
+				} else {
+					var newlyInstalledMackages=this.computeNewMackageDescs(this.originalInstalledMackages,currentInstalledMackages,false);
+					this.clearProcess();
+					this.activateNodes(newlyInstalledMackages);
 				}
             }.createDelegate(this));
+        /*
+        
         } else {
         	Ext.MessageBox.alert(i18n._("Failed"),"Error installing: "+this.mackageDesc.name);
+        	this.clearProcess();
         }
-	}
+        */
+	},
+	activateNodes: function(newlyInstalledMackages) {
+		for(var i=0;i<newlyInstalledMackages.length;i++) {
+			if(newlyInstalledMackages[i].type=="NODE") {
+				main.installNode(newlyInstalledMackages[i]);
+			}
+		}
+		main.loadApps();
+	},
+    computeNewMackageDescs: function(originalInstalledMackages, currentInstalledMackages, countExtraName) {
+        var newlyInstalledMackages = [];
+        var originalInstalledMackagesHashtable = {};
+        if(countExtraName){
+            for(var i=0;i<originalInstalledMackages.length;i++) {
+            	var mackageDesc=originalInstalledMackages[i];
+                originalInstalledMackagesHashtable[mackageDesc.name+mackageDesc.extraName]=mackageDesc.name+mackageDesc.extraName;
+            }
+            for(var i=0;i<currentInstalledMackages.length;i++) {
+            	var mackageDesc=currentInstalledMackages[i];
+                if(!originalInstalledMackagesHashtable[mackageDesc.name+mackageDesc.extraName]) {
+                    newlyInstalledMackages.push(mackageDesc);
+                }
+            }
+        }
+        else{
+            for(var i=0;i<originalInstalledMackages.length;i++) {
+            	var mackageDesc=originalInstalledMackages[i];
+                originalInstalledMackagesHashtable[mackageDesc.name]=mackageDesc.name;
+            }
+            for(var i=0;i<currentInstalledMackages.length;i++) {
+            	var mackageDesc=currentInstalledMackages[i];
+                if(!originalInstalledMackagesHashtable[mackageDesc.name]) {
+                    newlyInstalledMackages.push(mackageDesc);
+                }
+            }
+        }
+        return newlyInstalledMackages;
+    }
+	
 }
 Ung.MessageClientThread = {
 	//update interval in millisecond
@@ -103,7 +207,7 @@ Ung.MessageClientThread = {
 	
 	run: function() {
 		this.stopped=false;
-		rpc.toolboxManager.getToolboxMessage(function (result, exception) {
+		rpc.toolboxManager.getToolboxMessages(function (result, exception) {
 			if(exception) { 
 				Ext.MessageBox.alert(i18n._("Failed"),exception.message);
 				return;
@@ -112,8 +216,7 @@ Ung.MessageClientThread = {
 				for(var i=0;i<messages.list.length;i++) {
 					var msg=messages.list[i];
 					if(msg.javaClass.indexOf("MackageInstallRequest")>=0) {
-						//var key=rpc.toolboxManager.install(msg.mackageDesc.name);
-						new Ung.MoveFromStoreToToolbox(msg.mackageDesc);
+						Ung.MoveFromStoreToToolboxThread.process(msg.mackageDesc);
 					} else if(msg.javaClass.indexOf("MackageUpdateExtraName")>=0) {
 						
 					}
