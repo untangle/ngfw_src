@@ -17,7 +17,7 @@ Ung.MoveFromStoreToToolboxThread = {
 	downloadFinalPause: 1000,
 	installCheckInterval: 500,
 	installFinalPause: 1000,
-	installCheckTimeout: 3*60*1000,
+	installCheckTimeout: 3*60*1000+1000,
 	installStartTime: null,
 	targetPolicy: null,
 	key:null,
@@ -122,7 +122,8 @@ Ung.MoveFromStoreToToolboxThread = {
 		}.createDelegate(this),	this.key);
 	},
 	progressInstalled: function() {
-        //if(((new Date()).getTime() - this.installStartTime) > this.installCheckTimeout+this.downloadFinalPause ){
+		var timeDiff=(new Date()).getTime() - this.installStartTime - this.installCheckTimeout;
+        if(timeDiff<0 ){
             rpc.toolboxManager.installed(function (result, exception) {
 				if(exception) { 
 					Ext.MessageBox.alert(i18n._("Failed"),exception.message);
@@ -145,13 +146,10 @@ Ung.MoveFromStoreToToolboxThread = {
 					this.activateNodes(newlyInstalledMackages);
 				}
             }.createDelegate(this));
-        /*
-        
         } else {
         	Ext.MessageBox.alert(i18n._("Failed"),"Error installing: "+this.mackageDesc.name);
         	this.clearProcess();
         }
-        */
 	},
 	activateNodes: function(newlyInstalledMackages) {
 		for(var i=0;i<newlyInstalledMackages.length;i++) {
