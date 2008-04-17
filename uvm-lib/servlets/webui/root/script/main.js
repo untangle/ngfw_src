@@ -145,6 +145,34 @@ Ung.Main.prototype = {
 		this.loadTools();
 		this.loadPolicies();
 	},
+	uninstallApp: function(mackageDesc) {
+		rpc.nodeManager.nodeInstances(function (result, exception) {
+				if(exception) { 
+					Ext.MessageBox.alert(i18n._("Failed"),exception.message);
+					return;
+				}
+				var tids=result;
+				if(tids.length>0) {
+					Ext.MessageBox.alert(i18n._(this.name+" "+i18n._("Warning")), 
+					i18n.sprintf(i18n._("$s cannot be removed from the toolbox because it is being used by the following policy rack:<br><b>%s</b><br><br>You must remove the product from all policy racks first."), this.displayName,tids[0]. policy.name));
+					return;
+				} else {
+					rpc.toolboxManager.uninstall(function (result, exception) {
+						if(exception) { 
+							Ext.MessageBox.alert(i18n._("Failed"),exception.message);
+							return;
+						}
+						rpc.toolboxManager.unregister(function (result, exception) {
+							if(exception) { 
+								Ext.MessageBox.alert(i18n._("Failed"),exception.message);
+								return;
+							}
+							main.loadApps();
+						}.createDelegate(this), this.name);
+					}.createDelegate(this), this.name);
+				}
+		}.createDelegate(mackageDesc), mackageDesc.name);
+	},
 	//build left tabs
 	buildLeftTabs: function () {
 		this.leftTabs = new Ext.TabPanel({
@@ -230,7 +258,7 @@ Ung.Main.prototype = {
 			this.libraryApps=[];
 			for(var i=0;i<uninstalledMD.length;i++) {
 				var md=uninstalledMD[i];
-				if(md.type=="LIB_ITEM" && md.viewPosition>=0) {
+				if(md.type=="LIB_ITEM" && md.viewPosition>=0 && md.name!="untangle-libitem-router") {
 					this.libraryApps.push(md);
 				}
 			}
@@ -370,14 +398,14 @@ Ung.Main.prototype = {
 		}.createDelegate(this));
 	},
 	
-	installNode: function(item, targetPolicy) {
-		if(item!==null) {
-			var appItemCmp=Ext.getCmp('appItem_'+item.name);
+	installNode: function(mackageDesc, targetPolicy) {
+		if(mackageDesc!==null) {
+			var appItemCmp=Ext.getCmp('appItem_'+mackageDesc.name);
 			if(appItemCmp) {
 				appItemCmp.hide();
 			}
 			var policy=null;
-			if (!item.service && !item.util && !item.core) {
+			if (!mackageDesc.service && !mackageDesc.util && !mackageDesc.core) {
         		if(targetPolicy==null) {
         			policy = rpc.currentPolicy;
         		} else {
@@ -392,7 +420,7 @@ Ung.Main.prototype = {
 				this.nodes.push(node);
 				this.addNode(node);
 				this.updateSeparator();
-			}.createDelegate(this), item.name, policy);
+			}.createDelegate(this), mackageDesc.name, policy);
 		}
 	},
 	getIframeWin: function() {
@@ -415,8 +443,8 @@ Ung.Main.prototype = {
 		}
 		return this.iframeWin;
 	},
-	clickConfig: function(item) {
-		switch(item.name){
+	clickConfig: function(mackageDesc) {
+		switch(mackageDesc.name){
 			case "networking":
 				rpc.adminManager.generateAuthNonce(function (result, exception) {
 					if(exception) { Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}
@@ -428,7 +456,7 @@ Ung.Main.prototype = {
 				}.createDelegate(this));
 				break;
 			default:
-				Ext.MessageBox.alert(i18n._("Failed"),"TODO: implement config "+item.name);
+				Ext.MessageBox.alert(i18n._("Failed"),"TODO: implement config "+mackageDesc.name);
 				break;
 		}
 	},
@@ -515,10 +543,16 @@ Ung.Main.prototype = {
 		if(this.myApps!==null && this.nodes!==null) {
 			var i=null;
 			for(i=0;i<this.myApps.length;i++) {
-				Ext.getCmp('appItem_'+this.myApps[i].name).show();
+				var cmp=Ext.getCmp('appItem_'+this.myApps[i].name);
+				if(cmp) {
+					cmp.show();
+				}
 			}
 			for(i=0;i<this.nodes.length;i++) {
-				Ext.getCmp('appItem_'+this.nodes[i].name).hide();
+				var cmp=Ext.getCmp('appItem_'+this.nodes[i].name);
+				if(cmp) {
+					cmp.hide();
+				}
 			}
 		}
 	},

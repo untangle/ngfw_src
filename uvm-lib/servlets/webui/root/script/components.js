@@ -1,26 +1,40 @@
 //resources map
 Ung.hasResource={};
-
+//Thread for installing nodes from store into toolbox
 Ung.MoveFromStoreToToolboxThread = {
+	// the queue of libitems mackage description to install
+	//can install only one at a time
 	mackageDescQueue: [],
+	//check queue empty
 	queueIsEmpty: function() {
 		return this.mackageDescQueue.length==0;
 	},
+	//add to queue
 	pushQueue: function(mackageDesc) {
 		this.mackageDescQueue.push(mackageDesc);
 	},
+	//get first in queue
 	popQueue: function() {
 		return this.mackageDescQueue.shift()
 	},
+	//the currenty processed libitem mackage description
 	mackageDesc: null,
+	//interval for progress check for download
 	downloadCheckInterval: 500,
+	//time to wait after download
 	downloadFinalPause: 1000,
+	//interval for progress check for install
 	installCheckInterval: 500,
+	//time to wait after install
 	installFinalPause: 1000,
+	//timeout time for install
 	installCheckTimeout: 3*60*1000+1000,
+	//the install start time
 	installStartTime: null,
 	targetPolicy: null,
-	key:null,
+	//the install key
+	installKey:null,
+	//process an install request
 	process: function(mackageDesc) {
 		if(this.mackageDesc!=null) {
 			this.pushQueue(mackageDesc);
@@ -29,12 +43,14 @@ Ung.MoveFromStoreToToolboxThread = {
 			this.purchase();
 		}
 	},
+	//clear thread after an install is processed
 	clearProcess: function() {
 		this.mackageDesc=null;
 		if(!this.queueIsEmpty()) {
 			this.process(this.popQueue());
 		}
 	},
+	//purchase step
 	purchase: function() {
 		// MAKE SURE NOT PREVIOUSLY INSTALLED AS PART OF A BUNDLE
         rpc.toolboxManager.uninstalled(function (result, exception) {
@@ -51,6 +67,7 @@ Ung.MoveFromStoreToToolboxThread = {
 				}
 			}
 			if(!installed) {
+				//get the originaly installed mackages - for later use
 		        rpc.toolboxManager.installed(function (result, exception) {
 					if(exception) { 
 						Ext.MessageBox.alert(i18n._("Failed"),exception.message);
@@ -67,18 +84,23 @@ Ung.MoveFromStoreToToolboxThread = {
 			}
 		}.createDelegate(this));
 	},
+	//install step
 	install: function () {
+		//get the current policy
 		this.targetPolicy=rpc.currentPolicy;
+		// install libitem
 		rpc.toolboxManager.install(function (result, exception) {
 			if(exception) { 
 				Ext.MessageBox.alert(i18n._("Failed"),exception.message);
 				this.clearProcess();
 				return;
 			}
-			this.key=result;
+			//this is the instalation key used by progress checker
+			this.installKey=result;
 			this.progressDownload();
 		}.createDelegate(this),	this.mackageDesc.name);
 	},
+	//download progress checker step
 	progressDownload: function () {
 		rpc.toolboxManager.getProgress(function (result, exception) {
 			if(exception) { 
@@ -108,6 +130,7 @@ Ung.MoveFromStoreToToolboxThread = {
 				}
 			}
 			if(!isDone) {
+				//if not finished try later
 				this.progressDownload.defer(this.downloadCheckInterval,this);
 			} else {
 				if(success) {
@@ -119,11 +142,14 @@ Ung.MoveFromStoreToToolboxThread = {
 					return;
 				}
 			}
-		}.createDelegate(this),	this.key);
+		}.createDelegate(this),	this.installKey);
 	},
+	//install progress step
 	progressInstalled: function() {
 		var timeDiff=(new Date()).getTime() - this.installStartTime - this.installCheckTimeout;
+        //check if timout is reached
         if(timeDiff<0 ){
+            //check if installed
             rpc.toolboxManager.installed(function (result, exception) {
 				if(exception) { 
 					Ext.MessageBox.alert(i18n._("Failed"),exception.message);
@@ -139,8 +165,10 @@ Ung.MoveFromStoreToToolboxThread = {
 					}
 				}
 				if(!mackageInstalled) {
+					//if not installed try later
 					this.progressInstalled.defer(this.installCheckInterval, this);
 				} else {
+					//get the list of newly installed items
 					var newlyInstalledMackages=this.computeNewMackageDescs(this.originalInstalledMackages,currentInstalledMackages,false);
 					this.clearProcess();
 					this.activateNodes(newlyInstalledMackages);
@@ -151,14 +179,24 @@ Ung.MoveFromStoreToToolboxThread = {
         	this.clearProcess();
         }
 	},
+	//activate newly installed nodes
 	activateNodes: function(newlyInstalledMackages) {
+		main.loadApps();
 		for(var i=0;i<newlyInstalledMackages.length;i++) {
 			if(newlyInstalledMackages[i].type=="NODE") {
-				main.installNode(newlyInstalledMackages[i]);
+				//first a registration must be done for each node
+				rpc.toolboxManager.register(function (result, exception) {
+					if(exception) { 
+						Ext.MessageBox.alert(i18n._("Failed"),exception.message);
+						return;
+					}
+					//call install node
+					main.installNode(this);
+				}.createDelegate(newlyInstalledMackages[i]), newlyInstalledMackages[i].name);
 			}
 		}
-		main.loadApps();
 	},
+	//compute the list of new mackage descriptions
     computeNewMackageDescs: function(originalInstalledMackages, currentInstalledMackages, countExtraName) {
         var newlyInstalledMackages = [];
         var originalInstalledMackagesHashtable = {};
@@ -273,7 +311,7 @@ Ung.AppItem = Ext.extend(Ext.Component, {
         	buttonBEl.setVisible(false);
         }
 	},
-	linkToStoreFn: function() {
+	linkToStoreFn: function(e) {
 		rpc.adminManager.generateAuthNonce(function (result, exception) {
 			if(exception) { Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}
 			var url = "../library/libitem.php?name=" + this.item.name + "&" + result;
@@ -284,8 +322,13 @@ Ung.AppItem = Ext.extend(Ext.Component, {
 			
 		}.createDelegate(this));
 	},
-	installNodeFn: function() {
-		main.installNode(this.item);
+	installNodeFn: function(e) {
+		e.preventDefault();
+		if(e.shiftKey) {
+			main.uninstallApp(this.item);
+		} else {
+			main.installNode(this.item);
+		}
 	}
 	
 });
