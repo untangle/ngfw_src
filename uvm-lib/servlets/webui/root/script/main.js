@@ -257,11 +257,12 @@ Ung.Main.prototype = {
 		for(var appItemName in apps) {
 			this.apps.push(new Ung.AppItem(apps[appItemName]));
 		}
-		Ung.MessageClientThread.run();
+		Ung.MessageClientThread.start();
 	},
 	// load Apps
 	loadApps: function() {
 		this.appsSemaphore=2;
+		Ung.MessageClientThread.stop();
 		//destoy current apps components
 		if(main.apps!=null) {
 			for(var i=0; i<main.apps.length; i++) {

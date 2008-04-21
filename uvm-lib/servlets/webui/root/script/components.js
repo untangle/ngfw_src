@@ -232,37 +232,52 @@ Ung.MoveFromStoreToToolboxThread = {
     }
 	
 }
+//toolbox mesaages thread
 Ung.MessageClientThread = {
 	//update interval in millisecond
 	updateTime: 4000,
-	stopped:false,
-	timeoutId: null,
+	started: false,
+	intervalId: null,
+	cycleCompleted: true,
+
+	start: function() {
+		this.stop();
+		this.intervalId=window.setInterval("Ung.MessageClientThread.run()",this.updateTime);
+		this.started=true;
+	},
 	
 	stop: function() {
-		if(this.timeoutId!==null) {
-			window.clearTimeout(this.timeoutId);
+		if(this.intervalId!==null) {
+			window.clearInterval(this.intervalId);
 		}
-		this.stopped=true;
+		this.cycleCompleted=true;
+		this.started=false;
 	},
 	
 	run: function() {
-		this.stopped=false;
+		if(!this.cycleCompleted) {
+			return;
+		}
 		rpc.toolboxManager.getToolboxMessages(function (result, exception) {
 			if(exception) { 
 				Ext.MessageBox.alert(i18n._("Failed"),exception.message);
+				this.cycleCompleted=true;
 				return;
 			} else {
-				var messages=result;
-				for(var i=0;i<messages.list.length;i++) {
-					var msg=messages.list[i];
-					if(msg.javaClass.indexOf("MackageInstallRequest")>=0) {
-						Ung.MoveFromStoreToToolboxThread.process(msg.mackageDesc);
-					} else if(msg.javaClass.indexOf("MackageUpdateExtraName")>=0) {
-						
+				try {
+					var messages=result;
+					for(var i=0;i<messages.list.length;i++) {
+						var msg=messages.list[i];
+						if(msg.javaClass.indexOf("MackageInstallRequest")>=0) {
+							Ung.MoveFromStoreToToolboxThread.process(msg.mackageDesc);
+						} else if(msg.javaClass.indexOf("MackageUpdateExtraName")>=0) {
+							
+						}
 					}
-				}
-				if(!this.stopped) {
-					this.timeoutId=window.setTimeout("Ung.MessageClientThread.run()", this.updateTime);
+					this.cycleCompleted=true;
+				} catch(err) {
+					this.cycleCompleted=true;
+					throw err;
 				}
 			}
 		}.createDelegate(this));
@@ -890,7 +905,7 @@ Ung.BlingerManager = {
 			rpc.nodeManager.allNodeStats(function (result, exception) {
 				if(exception) { 
 					Ext.MessageBox.alert(i18n._("Failed"),exception.message, function() {
-						Ung.BlingerManager.cycleCompleted=true;
+						this.cycleCompleted=true;
 					});
 					return;
 				}
@@ -903,12 +918,12 @@ Ung.BlingerManager = {
 							nodeCmp.updateBlingers();
 						}
 					}
-					Ung.BlingerManager.cycleCompleted=true;
+					this.cycleCompleted=true;
 				  } catch(err) {
-					Ung.BlingerManager.cycleCompleted=true;
+					this.cycleCompleted=true;
 					throw err;
 				  }
-			});
+			}.createDelegate(this));
 		}	
 	}
 };
