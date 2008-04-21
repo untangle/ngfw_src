@@ -432,18 +432,20 @@ div.appItem div.icon {
 }
 div.appItem div.text {
 	position: absolute;
-	top: 6px;
+	top: 5px;
 	left: 53px;
 	width: 123px;
 	height: 35px;
 	text-align: left;
-	font-size: 14px;
+	color:#4E4C4C;
+	font-size: 12px;
+	font-weight: bold;
 }
 div.appItem div.buttonPosA {
 	position: absolute;
 	right: 5px;
 
-	top: 33px;
+	top: 34px;
 	cursor: pointer;
 	height: 15px;
 	font-family: verdana, sans-serif;
@@ -455,7 +457,7 @@ div.appItem div.buttonPosA {
 div.appItem div.buttonPosB {
 	position: absolute;
 	left: 53px;
-	top: 33px;
+	top: 34px;
 	cursor: pointer;
 	height: 15px;
 	font-family: verdana, sans-serif;

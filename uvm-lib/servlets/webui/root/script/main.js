@@ -158,12 +158,12 @@ Ung.Main.prototype = {
 					return;
 				} else {
 					rpc.toolboxManager.uninstall(function (result, exception) {
-						if(exception) { 
+						if(exception) {
 							Ext.MessageBox.alert(i18n._("Failed"),exception.message);
 							return;
 						}
 						rpc.toolboxManager.unregister(function (result, exception) {
-							if(exception) { 
+							if(exception) {
 								Ext.MessageBox.alert(i18n._("Failed"),exception.message);
 								return;
 							}
@@ -226,32 +226,50 @@ Ung.Main.prototype = {
 		this.loadApps();
 		this.loadConfig();
 	},
+	// build apps 
 	buildApps: function() {
 		this.appsSemaphore--;
 		if(this.appsSemaphore!==0) {
 			return;
 		}
-		this.apps=this.libraryApps.concat(this.myApps);
-		var appsCmps=[];
-		for(var i=0;i<this.apps.length;i++) {
-			var item=this.apps[i];
-  			 appsCmps.push(new Ung.AppItem({
-				item: item,
-				renderTo:'appsItems'
-	        }));
+		var apps={};
+		// put sore items
+		for(var i=0;i<this.libraryApps.length;i++) {
+			var item=this.libraryApps[i];
+			apps[item.name]={item:item};
+		}
+		for(var i=0;i<this.myApps.length;i++) {
+			var item=this.myApps[i];
+  			//if trial item asociate with store item button as trialItem
+  			if(item.extraName!=null && item.extraName.indexOf("Trial")!=-1) {
+  				var storeLibitemName=item.name.replace("-node-","-libitem-");
+  				if(apps[storeLibitemName]) {
+  					apps[storeLibitemName].trialItem=item;
+  				} else {
+  					apps[item.name]={item:item};
+  				}
+  			} else { //if not traial put separate button
+  				apps[item.name]={item:item};
+  			}
+		}
+		
+		this.apps=[];
+		for(var appItemName in apps) {
+			this.apps.push(new Ung.AppItem(apps[appItemName]));
 		}
 		Ung.MessageClientThread.run();
 	},
+	// load Apps
 	loadApps: function() {
 		this.appsSemaphore=2;
+		//destoy current apps components
 		if(main.apps!=null) {
 			for(var i=0; i<main.apps.length; i++) {
-				var appItemCmp=Ext.getCmp('appItem_'+main.apps[i].name);
-				if(appItemCmp!=null) {
-					Ext.destroy(appItemCmp);
-				}
+				Ext.destroy(main.apps[i]);
 			}
+			this.apps=null;
 		}
+		// get unactivated items (store items)
 		rpc.toolboxManager.uninstalled(function (result, exception) {
 			if(exception) { Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}
 			var uninstalledMD=result;
@@ -265,6 +283,7 @@ Ung.Main.prototype = {
 			this.buildApps();
 		}.createDelegate(this));
 		
+		//get activated and installed items ( installedVisible)
 		rpc.toolboxManager.installedVisible(function (result, exception) {
 			if(exception) { Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}
 			var installedVisibleMD=result;
@@ -276,7 +295,8 @@ Ung.Main.prototype = {
 				}
 			}
 			this.buildApps();
-			this.updateMyAppsButtons();
+			Ung.AppItem.updateStatesForCurrentPolicy();
+			
 		}.createDelegate(this));
 	},
 	
@@ -311,24 +331,20 @@ Ung.Main.prototype = {
 		}
 		return null;
 	},
-	createNode: function (Tid) {
+	createNode: function (Tid, md) {
 		var node={};
 		node.id=node.tid=Tid.id;
 		node.Tid=Tid;
-		var md=this.getNodeMackageDesc(Tid);
-		if(md!==null) {
-			node.md=md;
-			
-			node.name=md.name;
-			node.displayName=md.displayName;
-			node.viewPosition=md.viewPosition;
-			node.rackType=md.rackType;
-			node.isService=md.service;
-			node.isUtil=md.util;
-			node.isSecurity=md.security;
-			node.isCore=md.core;
-			node.image='image?name='+node.name;
-		}
+		node.md=md;
+		node.name=md.name;
+		node.displayName=md.displayName;
+		node.viewPosition=md.viewPosition;
+		node.rackType=md.rackType;
+		node.isService=md.service;
+		node.isUtil=md.util;
+		node.isSecurity=md.security;
+		node.isCore=md.core;
+		node.image='image?name='+node.name;
 		node.blingers=eval([{'type':'ActivityBlinger','bars':['ACTIVITY 1','ACTIVITY 2','ACTIVITY 3','ACTIVITY 4']},{'type':'SystemBlinger'}]);
 		return node;
 	},
@@ -370,15 +386,18 @@ Ung.Main.prototype = {
 			if(rpc.tids[i].nodeName=="untangle-node-router") {
 				continue;
 			}
-			var node=this.createNode(rpc.tids[i]);
-			this.nodes.push(node);
+			var md=this.getNodeMackageDesc(rpc.tids[i]);
+			if(md!=null) {
+				var node=this.createNode(rpc.tids[i], md);
+				this.nodes.push(node);
+			}
 		}
 		for(var i=0;i<this.nodes.length;i++) {
 			var node=this.nodes[i];
 			this.addNode(node);
 		}
 		this.updateSeparator();
-		this.updateMyAppsButtons();
+		Ung.AppItem.updateStatesForCurrentPolicy();
 		this.loadNodesRunStates();
 	},
 	//load run states for all Nodes
@@ -400,10 +419,7 @@ Ung.Main.prototype = {
 	
 	installNode: function(mackageDesc, targetPolicy) {
 		if(mackageDesc!==null) {
-			var appItemCmp=Ext.getCmp('appItem_'+mackageDesc.name);
-			if(appItemCmp) {
-				appItemCmp.hide();
-			}
+			Ung.AppItem.updateStateForNode(mackageDesc.name,true)
 			var policy=null;
 			if (!mackageDesc.service && !mackageDesc.util && !mackageDesc.core) {
         		if(targetPolicy==null) {
@@ -416,7 +432,11 @@ Ung.Main.prototype = {
 				if(exception) { Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}
 				var tid = result;
 				rpc.tids.push(tid);
-				var node=this.createNode(tid);
+				var md=this.getNodeMackageDesc(tid);
+				if(md==null) {
+					return;
+				}
+				var node=this.createNode(tid, md);
 				this.nodes.push(node);
 				this.addNode(node);
 				this.updateSeparator();
@@ -513,12 +533,9 @@ Ung.Main.prototype = {
 		var place=node.isSecurity?'security_nodes':'other_nodes';
 		var position=this.getNodePosition(place,node.viewPosition);
 		nodeWidget.render(place,position);
-		var cmp=Ext.getCmp('appItem_'+node.name);
-		if(cmp!=null) {
-			cmp.hide();
-		}
+		Ung.AppItem.updateStateForNode(node.name, true);
 	},
-	
+	//Show - hide Services header in the rack
 	updateSeparator: function() {
 		var hasUtilOrService=false;
 		var hasCore=false;
@@ -539,23 +556,6 @@ Ung.Main.prototype = {
 		}
 	},
 	
-	updateMyAppsButtons: function() {
-		if(this.myApps!==null && this.nodes!==null) {
-			var i=null;
-			for(i=0;i<this.myApps.length;i++) {
-				var cmp=Ext.getCmp('appItem_'+this.myApps[i].name);
-				if(cmp) {
-					cmp.show();
-				}
-			}
-			for(i=0;i<this.nodes.length;i++) {
-				var cmp=Ext.getCmp('appItem_'+this.nodes[i].name);
-				if(cmp) {
-					cmp.hide();
-				}
-			}
-		}
-	},
 	//build policies select box
 	buildPolicies: function () {
 		var out=[];
@@ -583,7 +583,6 @@ Ung.Main.prototype = {
 		var rack_select=document.getElementById('rack_select');
 		if(rack_select.selectedIndex>=0) {
 			rpc.currentPolicy=rpc.policies[rack_select.selectedIndex];
-			Ext.MessageBox.alert("TODO","Change Virtual Rack");
 			this.loadNodes();
 		}
 	}
