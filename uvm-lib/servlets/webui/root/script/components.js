@@ -1445,6 +1445,44 @@ Ung.UpdateWindow = Ext.extend(Ung.Window, {
 	updateAction: function() {
 	}
 });
+
+// Manage list popup window 
+Ung.ManageListWindow = Ext.extend(Ung.UpdateWindow, {
+	// the editor grid
+	grid: null,
+    onRender : function(container, position) {
+    	Ung.ManageListWindow.superclass.onRender.call(this, container, position);
+    	this.initSubComponents.defer(1, this);
+    },
+    initSubComponents : function(container, position) {
+    	this.grid.render(this.getContentEl());
+    },
+	listeners: {
+		'show':{
+	        fn: function() {
+	        	this.initialChangedData=Ext.encode(this.grid.changedData);
+	        	this.grid.setHeight(this.getContentHeight());
+	        },
+	        delay: 1
+	    }
+	},
+	cancelAction: function () {
+		this.grid.changedData=Ext.decode(this.initialChangedData);
+		this.grid.getView().refresh();
+		this.hide();
+	},
+	updateAction: function () {
+		this.hide();
+	},
+	beforeDestroy : function(){
+        Ext.destroy(
+            this.grid
+        );
+        Ung.ManageListWindow.prototype.beforeDestroy.call(this);
+    }
+	
+});
+
 // Row editor window used by editor grid
 Ung.RowEditorWindow = Ext.extend(Ung.UpdateWindow, {
 	// the editor grid
