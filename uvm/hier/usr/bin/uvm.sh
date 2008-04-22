@@ -330,7 +330,7 @@ while true; do
 		  # memory-management
 		  VIRT="`getVirtualMemUsage $(cat $CLAMD_PID_FILE)`"
 		  if [ $VIRT -gt $CLAMD_MAX_VIRTUAL_SIZE ] ; then
-		    echo restartService clamav-daemon $CLAMD_PID_FILE "memory-hogging ($VIRT)" stopFirst
+		    restartService clamav-daemon $CLAMD_PID_FILE "memory-hogging ($VIRT)" stopFirst
 		  fi
 	        fi
 	        if dpkg -l untangle-support-agent | grep -q ii ; then # support-agent is supposed to run
