@@ -34,6 +34,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.log4j.Logger;
+
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.security.Tid;
@@ -41,7 +43,7 @@ import com.untangle.uvm.node.IPaddr;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.node.openvpn.Constants;
 import com.untangle.node.openvpn.VpnNode;
-import org.apache.log4j.Logger;
+import com.untangle.uvm.util.ServletStreamer;
 
 class Util
 {
@@ -174,42 +176,9 @@ class Util
             return;
         }
 
-        response.setContentType( type );
-        response.setHeader( "Content-Disposition", "attachment;filename=\"" + downloadFileName + "\"" );
-        response.setHeader( "Content-Length", "" + length );
+        ServletStreamer ss = ServletStreamer.getInstance();
 
-        BufferedInputStream bis = null;
-        BufferedOutputStream bos = null;
-        OutputStream out = null;
-
-        try {
-            out = response.getOutputStream();
-            bis = new BufferedInputStream( fileData );
-            bos = new BufferedOutputStream(out);
-            byte[] buff = new byte[2048];
-            int bytesRead;
-            while( -1 != ( bytesRead = bis.read( buff, 0, buff.length ))) bos.write( buff, 0, bytesRead );
-        } catch ( Exception e ) {
-            logger.warn( "Error streaming file.", e );
-        } finally {
-            try {
-                if ( bis != null ) bis.close();
-            } catch ( Exception e ) {
-                logger.warn( "Error closing input stream [" + fileName + "]", e );
-            }
-
-            try {
-                if ( bos != null ) bos.close();
-            } catch ( Exception e ) {
-                logger.warn( "Error closing output stream [" + fileName + "]", e );
-            }
-
-            try {
-                if ( out != null ) out.close();
-            } catch ( Exception e ) {
-                logger.warn( "Error closing output stream [" + fileName + "]", e );
-            }
-        }
+        ss.stream( request, response, fileData, downloadFileName, type, length );
     }
 
     void rejectFile( HttpServletRequest request, HttpServletResponse response )

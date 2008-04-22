@@ -25,6 +25,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -80,6 +82,8 @@ import org.hibernate.Session;
 class RemoteToolboxManagerImpl implements RemoteToolboxManager
 {
     static final URL TOOLBOX_URL;
+
+    private static final String DEFAULT_LIBRARY_HOST = "library.untangle.com";
 
     private static final Object LOCK = new Object();
 
@@ -166,7 +170,13 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
 
     public boolean isInstalled(String name)
     {
-        return null != packageMap.get(name);
+        for (MackageDesc md : this.installed) {
+            if (md.getName().equals(name)) {
+                return true;
+            }
+        }
+        
+        return false;
     }
 
     public MackageDesc[] installedVisible()
@@ -430,7 +440,8 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
             logger.warn("Could not find package for: " + mackageName);
             return;
         }
-        MackageInstallRequest mir = new MackageInstallRequest(md);
+        
+        MackageInstallRequest mir = new MackageInstallRequest(md,isInstalled(mackageName));
 
         synchronized (messageQueues) {
             logger.info("requestInstall: " + mackageName);
@@ -563,6 +574,13 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
         }
 
         return false;
+    }
+
+    public String getLibraryHost()
+    {
+        String host = System.getProperty("uvm.store.host");
+        if (host == null) host = DEFAULT_LIBRARY_HOST;
+        return host;
     }
 
     // package private methods ------------------------------------------------

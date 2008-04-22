@@ -41,8 +41,13 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.Rectangle;
 import java.awt.event.*;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.*;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.LinkedHashMap;
@@ -305,8 +310,9 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
             }
             if( Util.getUpgradeCount() != 0 )
                 return;
-            String authNonce = Util.getRemoteAdminManager().generateAuthNonce();
-            URL newURL = new URL( Util.getServerCodeBase(), "../library/index.php?option=com_wizard&Itemid=92&" + authNonce);
+            String query = getLibraryQuery( "wizard" );
+            
+            URL newURL = buildURL( "/library/launcher", query );
             ((BasicService) ServiceManager.lookup("javax.jnlp.BasicService")).showDocument(newURL);
         }
         catch(Exception f){
@@ -689,6 +695,15 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
     private class StoreMessageVisitor implements ToolboxMessageVisitor {
         public void visitMackageInstallRequest(final MackageInstallRequest req) {
             synchronized(storeLock){
+                if(req.isInstalled()){
+                    MOneButtonJDialog.factory(Util.getMMainJFrame(), "",
+                                              "The package:<br>"
+                                              + req.getMackageDesc().getName()
+                                              + "<br>Is already installed.",
+                                              req.getMackageDesc().getName() + " Warning", "");
+                    return;
+                }
+
                 MackageDesc mackageDesc = req.getMackageDesc();
                 String purchasedMackageName = mackageDesc.getName();
 
@@ -1248,8 +1263,9 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
     private class StoreSettingsActionListener implements ActionListener{
         public void actionPerformed(ActionEvent e){
             try{
-                String authNonce = Util.getRemoteAdminManager().generateAuthNonce();
-                URL newURL = new URL( Util.getServerCodeBase(), "../library/index.php?option=com_content&task=view&id=31&Itemid=63&"+ authNonce);
+                String query = getLibraryQuery( "my_account" );
+                
+                URL newURL = buildURL( "/library/launcher", query );
                 ((BasicService) ServiceManager.lookup("javax.jnlp.BasicService")).showDocument(newURL);
             }
             catch(Exception f){
@@ -1860,9 +1876,10 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
             if( Util.getUpgradeCount() != 0 )
                 return;
             try{
-                String authNonce = Util.getRemoteAdminManager().generateAuthNonce();
-                URL newURL = new URL( Util.getServerCodeBase(), "../library/libitem.php?name="
-                                      + mNodeJButton.getName() + "&" + authNonce);
+                String query = getLibraryQuery( "browse" );
+                query += "&libitem=" + URLEncoder.encode( mNodeJButton.getName());
+                URL newURL = buildURL( "/library/launcher", query );
+
                 ((BasicService) ServiceManager.lookup("javax.jnlp.BasicService")).showDocument(newURL);
             }
             catch(Exception f){
@@ -1952,6 +1969,24 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
         } } );
     }
 
+    private String getLibraryQuery( String action ) throws UnsupportedEncodingException, URISyntaxException
+    {
+        URI cb = Util.getServerCodeBase().toURI();
 
+        String query = "host=" + URLEncoder.encode( cb.getHost());
+        query += "&port=" + URLEncoder.encode( String.valueOf( cb.getPort()));
+        query += "&protocol=" + URLEncoder.encode( cb.getScheme(), "utf8" );
+        query += "&action=" + URLEncoder.encode( action, "utf8" );
+        /* The nonce is already from the uvm. */
+        query += "&" + Util.getRemoteAdminManager().generateAuthNonce();
+        
+        return query;
+    }
 
+    private URL buildURL( String path, String query ) throws MalformedURLException, URISyntaxException
+    {
+        URI cb = Util.getServerCodeBase().toURI();
+        
+        return new URL( cb.getScheme() + "://" + cb.getAuthority() + "/" + path + "?" + query );
+    }
 }

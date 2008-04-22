@@ -188,4 +188,9 @@ public interface RemoteToolboxManager
     List<String> getWebstartResources();
 
     boolean hasPremiumSubscription();
+
+    /**
+     * Get the host that is serving the library.
+     */
+    String getLibraryHost();
 }

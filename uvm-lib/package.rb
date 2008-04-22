@@ -49,18 +49,15 @@ ServletBuilder.new(uvm_lib, 'com.untangle.uvm.invoker.jsp',
                    "./uvm-lib/servlets/http-invoker", [], [], [],
                    [BuildEnv::SERVLET_COMMON])
 
-ServletBuilder.new(uvm_lib, 'com.untangle.uvm.store.jsp',
-                   "./uvm-lib/servlets/onlinestore", [])
-
 ServletBuilder.new(uvm_lib, 'com.untangle.uvm.reports.jsp',
                    "./uvm-lib/servlets/reports")
 
 ServletBuilder.new(uvm_lib, 'com.untangle.uvm.alpaca.jsp',
                    "./uvm-lib/servlets/alpaca")
 
-# wmi installer
-ServletBuilder.new(uvm_lib, "com.untangle.uvm.user.servlet",
-                   "uvm-lib/servlets/wmi", [])
+# library
+ServletBuilder.new(uvm_lib, "com.untangle.uvm.installer.servlet",
+                   "uvm-lib/servlets/library", [])
 
 # Ajax Tk
 deps = FileList["#{BuildEnv::DOWNLOADS}/Ajax/jars/*jar"].exclude(/.*servlet-api.jar/).map { |n| ThirdpartyJar.get(n) }

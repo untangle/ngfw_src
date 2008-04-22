@@ -43,15 +43,22 @@ package com.untangle.uvm.toolbox;
 public class MackageInstallRequest extends ToolboxMessage
 {
     private final MackageDesc mackageDesc;
+    private final boolean isInstalled;
 
-    public MackageInstallRequest(MackageDesc mackageDesc)
+    public MackageInstallRequest(MackageDesc mackageDesc, boolean isInstalled)
     {
         this.mackageDesc = mackageDesc;
+        this.isInstalled = isInstalled;
     }
 
     public MackageDesc getMackageDesc()
     {
         return mackageDesc;
+    }
+
+    public boolean isInstalled()
+    {
+        return this.isInstalled;
     }
 
     // ToolboxMessage methods -------------------------------------------------
