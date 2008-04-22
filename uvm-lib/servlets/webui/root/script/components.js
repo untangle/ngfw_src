@@ -1493,7 +1493,7 @@ Ung.ManageListWindow = Ext.extend(Ung.UpdateWindow, {
         Ext.destroy(
             this.grid
         );
-        Ung.ManageListWindow.prototype.beforeDestroy.call(this);
+        Ung.ManageListWindow.superclass.beforeDestroy.call(this);
     }
 	
 });

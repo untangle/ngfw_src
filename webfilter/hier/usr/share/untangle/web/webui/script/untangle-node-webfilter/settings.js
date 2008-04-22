@@ -44,9 +44,8 @@ Ung.WebFilter = Ext.extend(Ung.Settings, {
 	            buttonAlign: 'left',
 	            buttons :[
 	            	{
-						text: this.i18n._("manage list")
-//						,
-//						handler: function() {this.panelPassLists.onManagePassedClients();}.createDelegate(this)
+						text: this.i18n._("manage list"),
+						handler: function() {this.panelPassLists.onManagePassedClients();}.createDelegate(this)
 	                }
 	            ]
 			}],
@@ -61,7 +60,16 @@ Ung.WebFilter = Ext.extend(Ung.Settings, {
 		    	}
 		    	this.winPassedUrls.show();
 		    },
-		    
+		    onManagePassedClients: function () {
+		    	if(!this.winPassedClients) {
+			    	var settingsCmp= Ext.getCmp(this.parentId);
+		    		settingsCmp.buildPassedClients();
+		    		this.winPassedClients=new Ung.ManageListWindow({
+		    			grid: settingsCmp.gridPassedClients
+		    		});
+		    	}
+		    	this.winPassedClients.show();
+		    },
 			beforeDestroy : function(){
 		        Ext.destroy(
 		            this.winPassedUrls,
@@ -71,7 +79,7 @@ Ung.WebFilter = Ext.extend(Ung.Settings, {
 		    }
     	});
     },
-    // Passed URLs
+    // Passed Sites
     buildPassedUrls: function() {
 	    var liveColumn = new Ext.grid.CheckColumn({
 	       header: this.i18n._("pass"), dataIndex: 'live', fixed:true
@@ -91,10 +99,10 @@ Ung.WebFilter = Ext.extend(Ung.Settings, {
 				{name: 'description', convert: function(v){ return this.i18n._(v)}.createDelegate(this)}
 			],
 			columns: [
-	          {id:'string',header: this.i18n._("site"), width: 140,  dataIndex: 'string',
+	          {id:'string',header: this.i18n._("site"), width: 200,  dataIndex: 'string',
 		          editor: new Ext.form.TextField({allowBlank: false})},
 	          liveColumn,
-	          {id:'description',header: this.i18n._("description"), width: 140,  dataIndex: 'description',
+	          {id:'description',header: this.i18n._("description"), width: 200,  dataIndex: 'description',
 		          editor: new Ext.form.TextField({allowBlank: false})},	          
 			],
 			sortField: 'string',
@@ -105,6 +113,56 @@ Ung.WebFilter = Ext.extend(Ung.Settings, {
 				new Ext.form.TextField({
 					name: "string",
 					label: this.i18n._("Site"),
+					allowBlank: false, 
+					width: 200
+				}),
+				new Ext.form.Checkbox({
+					name: "live",
+					label: this.i18n._("Pass")
+				}),
+				new Ext.form.TextArea({
+					name: "description",
+					label: this.i18n._("Description"),
+					width: 200,
+					height: 60
+				})
+			]
+    	});
+    },    
+    // Passed IP Addresses
+    buildPassedClients: function() {
+	    var liveColumn = new Ext.grid.CheckColumn({
+	       header: this.i18n._("pass"), dataIndex: 'live', fixed:true
+	    });
+
+    	this.gridPassedClients=new Ung.EditorGrid({
+    		settingsCmp: this,
+    		totalRecords: this.getBaseSettings().passedClientsLength,
+    		emptyRow: {"ipMaddr":"0.0.0.0/32","live":true,"description":this.i18n._("[no description]")},
+    		title: this.i18n._("IP addresses"),
+    		recordJavaClass: "com.untangle.uvm.node.IPMaddrRule",
+    		proxyRpcFn: this.getRpcNode().getPassedClients,
+			fields: [
+				{name: 'id'},
+				{name: 'ipMaddr'},
+				{name: 'live'},
+				{name: 'description', convert: function(v){ return this.i18n._(v)}.createDelegate(this)}
+			],
+			columns: [
+	          {id:'ipMaddr',header: this.i18n._("IP address/range"), width: 200,  dataIndex: 'ipMaddr',
+		          editor: new Ext.form.TextField({allowBlank: false})},
+	          liveColumn,
+	          {id:'description',header: this.i18n._("description"), width: 200,  dataIndex: 'description',
+		          editor: new Ext.form.TextField({allowBlank: false})},	          
+			],
+			sortField: 'ipMaddr',
+			columnsDefaultSortable: true,
+			autoExpandColumn: 'description',
+			plugins: [liveColumn],
+			rowEditorInputLines: [
+				new Ext.form.TextField({
+					name: "ipMaddr",
+					label: this.i18n._("IP address/range"),
 					allowBlank: false, 
 					width: 200
 				}),
