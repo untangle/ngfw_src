@@ -234,8 +234,9 @@ public class WebFilterImpl extends AbstractNode implements WebFilter
 	public List<BlacklistCategory> getBlacklistCategories(int start, int limit,
 			String... sortColumns) {
         return getRules(
-				"select hbs.blacklistCategories from WebFilterSettings hbs where hbs.tid = :tid ",
-				start, limit, sortColumns);
+				"select blacklistCategory from WebFilterSettings hbs " +
+				"join hbs.blacklistCategories as blacklistCategory where hbs.tid = :tid ",
+				"blacklistCategory", start, limit, sortColumns);
 	}
 
 	public List<StringRule> getBlockedExtensions(int start, int limit,
@@ -248,8 +249,9 @@ public class WebFilterImpl extends AbstractNode implements WebFilter
 	public List<MimeTypeRule> getBlockedMimeTypes(int start, int limit,
 			String... sortColumns) {
         return getRules(
-				"select hbs.blockedMimeTypes from WebFilterSettings hbs where hbs.tid = :tid ",
-				start, limit, sortColumns);
+				"select blockedMimeType from WebFilterSettings hbs " +
+				"join hbs.blockedMimeTypes as blockedMimeType where hbs.tid = :tid ",
+				"blockedMimeType", start, limit, sortColumns);
 	}
 
 	public List<StringRule> getBlockedUrls(int start, int limit,
@@ -731,12 +733,17 @@ public class WebFilterImpl extends AbstractNode implements WebFilter
     
     private List getRules(final String queryString, final int start,
 			final int limit, final String... sortColumns) {
+    	return getRules(queryString, null, start, limit, sortColumns);
+    }
+    
+    private List getRules(final String queryString, final String alias, final int start,
+			final int limit, final String... sortColumns) {
 		TransactionWork<List> tw = new TransactionWork<List>() {
 			private List result;
 
 			public boolean doWork(Session s) {
 				Query q = s.createQuery(queryString
-						+ QueryUtil.toOrderByClause(sortColumns));
+						+ QueryUtil.toOrderByClause(alias, sortColumns));
 				q.setParameter("tid", getTid());
 				q.setFirstResult(start);
 				q.setMaxResults(limit);

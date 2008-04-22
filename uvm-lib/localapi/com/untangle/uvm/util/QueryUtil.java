@@ -35,7 +35,11 @@ package com.untangle.uvm.util;
 
 public class QueryUtil
 {
-    public static String toOrderByClause(String... sortColumns)
+    public static String toOrderByClause( String... sortColumns){
+    	return toOrderByClause(null, sortColumns);
+    }
+    
+    public static String toOrderByClause(String alias, String... sortColumns)
     {
         final StringBuilder orderBy = new StringBuilder();
         if (0 < sortColumns.length) {
@@ -51,6 +55,10 @@ public class QueryUtil
                     col = col.substring(1);
                 } else {
                     dir = "ASC";
+                }
+                if (alias != null) {
+                    orderBy.append(alias);
+                    orderBy.append(".");
                 }
                 orderBy.append(col);
                 orderBy.append(" ");
