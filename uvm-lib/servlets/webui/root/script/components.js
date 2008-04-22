@@ -510,17 +510,17 @@ Ung.AppItem.updateStatesForCurrentPolicy = function() {
 	}
 };
 // update node state for the app with a node name
-Ung.AppItem.updateStateForNode = function(nodeName, state) {
+Ung.AppItem.updateStateForNode = function(nodeName, state, options) {
 	var app=Ung.AppItem.getAppForNode(nodeName);
 	if(app!=null) {
-		app.setState(state);
+		app.setState(state, options);
 	}
 }
 // update state for the app with a node name
-Ung.AppItem.updateState = function(itemName, state) {
+Ung.AppItem.updateState = function(itemName, state, options) {
 	var app=Ung.AppItem.getApp(itemName);
 	if(app!=null) {
-		app.setState(state);
+		app.setState(state, options);
 	}
 }
 //get the app item having a node name
