@@ -59,14 +59,14 @@ Ung.MoveFromStoreToToolboxThread = {
 				this.clearProcess();
 				return;
 			}
-			var installed = true;
+			var activated = true;
 			var originalUninstalledMackages=result;
 			for(var i=0; i<originalUninstalledMackages.length; i++) {
 				if(this.mackageDesc.name==originalUninstalledMackages[i].name) {
-					installed = false;
+					activated = false;
 				}
 			}
-			if(!installed) {
+			if(!activated) {
 				//get the originaly installed mackages - for later use
 		        rpc.toolboxManager.installed(function (result, exception) {
 					if(exception) { 
@@ -75,7 +75,7 @@ Ung.MoveFromStoreToToolboxThread = {
 						return;
 					}
 					this.originalInstalledMackages =result; // the list of originaly installed nodes
-					this.install();
+					this.activate();
 		        }.createDelegate(this));
             	
 			} else {
@@ -84,11 +84,12 @@ Ung.MoveFromStoreToToolboxThread = {
 			}
 		}.createDelegate(this));
 	},
-	//install step
-	install: function () {
+	//activate step
+	activate: function () {
 		//get the current policy
 		this.targetPolicy=rpc.currentPolicy;
-		// install libitem
+		Ung.AppItem.updateState(this.mackageDesc.name,"activating");
+		//activate libitem
 		rpc.toolboxManager.install(function (result, exception) {
 			if(exception) { 
 				Ext.MessageBox.alert(i18n._("Failed"),exception.message);
@@ -115,7 +116,7 @@ Ung.MoveFromStoreToToolboxThread = {
 				var ip=lip.list[i];
 				if(ip.javaClass.indexOf("DownloadSummary")!=-1) {
 				} else if(ip.javaClass.indexOf("DownloadProgress")!=-1) {
-					//TODO: show download progress bar
+					Ung.AppItem.updateState(this.mackageDesc.name,"activating_downloading",ip);
 				} else if(ip.javaClass.indexOf("DownloadComplete")!=-1) {
 					isDone=true;
 					success=true;
@@ -136,6 +137,7 @@ Ung.MoveFromStoreToToolboxThread = {
 			} else {
 				if(success) {
 					//TODO: show install progress bar
+					Ung.AppItem.updateState(this.mackageDesc.name,"activating");
 					this.installStartTime=(new Date()).getTime();
 					this.progressInstalled.defer(this.downloadFinalPause,this);
 				} else {
@@ -173,6 +175,7 @@ Ung.MoveFromStoreToToolboxThread = {
 				} else {
 					//get the list of newly installed items
 					//TODO: clear progress bar
+					Ung.AppItem.updateState(this.mackageDesc.name,"activated");
 					var newlyInstalledMackages=this.computeNewMackageDescs(this.originalInstalledMackages,currentInstalledMackages,false);
 					this.clearProcess();
 					this.activateNodes(newlyInstalledMackages);
@@ -260,8 +263,9 @@ Ung.MessageClientThread = {
 		}
 		rpc.toolboxManager.getToolboxMessages(function (result, exception) {
 			if(exception) { 
-				Ext.MessageBox.alert(i18n._("Failed"),exception.message);
-				this.cycleCompleted=true;
+				Ext.MessageBox.alert(i18n._("Failed"),exception.message, function() {
+						this.cycleCompleted=true;
+				});
 				return;
 			} else {
 				try {
@@ -294,6 +298,10 @@ Ung.AppItem = Ext.extend(Ext.Component, {
 	renderTo:'appsItems',
     operationSemaphore: false,
     autoEl: 'div',
+    state: null,
+    buttonInstall: null,
+    buttonStore: null,
+    stateEl: null,
     constructor: function(config) {
 		this.id="appItem_"+config.item.name;
     	Ung.AppItem.superclass.constructor.apply(this, arguments);
@@ -315,24 +323,20 @@ Ung.AppItem = Ext.extend(Ext.Component, {
         var html=Ung.AppItem.template.applyTemplate({id: this.getId(),'imageHtml':imageHtml, 'text':this.item.displayName});
         this.getEl().dom.innerHTML=html;
         this.getEl().addClass("appItem");
-		var buttonInstall=Ext.get("buttonInstall_"+this.getId());
-		var buttonStore=Ext.get("buttonStore_"+this.getId());
-		buttonStore.on("click", this.linkToStoreFn,this);
-		buttonInstall.on("click", this.installNodeFn,this);
+		this.buttonInstall=Ext.get("buttonInstall_"+this.getId());
+		this.buttonStore=Ext.get("buttonStore_"+this.getId());
+		this.stateEl=Ext.get("state_"+this.getId());
+		this.stateEl.setVisible(false);
+		this.buttonStore.on("click", this.linkToStoreFn,this);
+		this.buttonInstall.on("click", this.installNodeFn,this);
         if(this.item.type=="LIB_ITEM") { // Store items
-			if(this.trialItem) { // has Trial node
-				buttonStore.dom.className="buttonPosA iconInfo";
-				buttonStore.dom.innerHTML=i18n._("More Info");
-				buttonInstall.setVisible(false);
-			} else { //  Store item
-				buttonStore.dom.className="buttonPosA iconInfo";
-				buttonStore.dom.innerHTML=i18n._("More Info");
-				buttonInstall.setVisible(false);
-			}
+			this.buttonStore.dom.className="buttonPosA iconInfo";
+			this.buttonStore.dom.innerHTML=i18n._("More Info");
+			this.buttonInstall.setVisible(false);
         } else { // Node items
-        	buttonInstall.dom.className="buttonPosA iconArrowRight";
-        	buttonInstall.dom.innerHTML=i18n._("Install");
-			buttonStore.setVisible(false);
+        	this.buttonInstall.dom.className="buttonPosA iconArrowRight";
+        	this.buttonInstall.dom.innerHTML=i18n._("Install");
+			this.buttonStore.setVisible(false);
         }
 	},
 	// get the node name associated with the App, if 
@@ -354,7 +358,60 @@ Ung.AppItem = Ext.extend(Ext.Component, {
 		}
 		return md;
 	},
-	
+	setState: function(newState, options) {
+		switch(newState) {
+			case "unactivated":
+				this.displayButtonsOrState(true);
+				this.setNodeInstalledState(false);
+				break;
+			case "unactivating":
+				this.displayButtonsOrState(false);
+				this.stateEl.dom.innerHTML=i18n._("Unactivating...");
+				break;
+			case "activated":
+				this.displayButtonsOrState(true);
+				this.setNodeInstalledState(false);
+				break;
+			case "installed":
+				this.displayButtonsOrState(true);
+				this.setNodeInstalledState(true);
+				break;
+			case "installing":
+				this.displayButtonsOrState(false);
+				this.stateEl.dom.innerHTML=i18n._("Installing...");
+				break;
+			case "uninstalling":
+				this.show();
+				this.displayButtonsOrState(false);
+				this.stateEl.dom.innerHTML=i18n._("Uninstalling...");
+				break;
+			case "activating_downloading":
+				this.displayButtonsOrState(false);
+				this.stateEl.dom.innerHTML=i18n._("Downloading...");
+				break;
+			case "activating":
+				this.displayButtonsOrState(false);
+				this.stateEl.dom.innerHTML=i18n._("Activating...");
+				break;
+			case "waiting":
+				this.displayButtonsOrState(false);
+				this.stateEl.dom.innerHTML=i18n._("...");
+				break;
+		}
+		this.state=newState;
+		
+	},
+	resetState: function () {
+		
+	},
+	displayButtonsOrState: function (displayButtons) {
+		this.buttonInstall.setVisible(displayButtons);
+		this.buttonStore.setVisible(displayButtons);
+		this.stateEl.setVisible(!displayButtons);
+	},
+	clearStateCmps: function () {
+		
+	},
 	//Set the installed state of the node
 	setNodeInstalledState: function (installed) {
 		if(this.item.type=="NODE") {
@@ -364,18 +421,16 @@ Ung.AppItem = Ext.extend(Ext.Component, {
 				this.show();
 			}
 		} else if(this.trialItem) {
-			var buttonInstall=Ext.get("buttonInstall_"+this.getId());
-			var buttonStore=Ext.get("buttonStore_"+this.getId());
 			if(installed) {
-				buttonInstall.setVisible(false);
-				buttonStore.dom.className="buttonPosA iconInfo";
-				buttonStore.dom.innerHTML=i18n._("More Info");
+				this.buttonInstall.setVisible(false);
+				this.buttonStore.dom.className="buttonPosA iconInfo";
+				this.buttonStore.dom.innerHTML=i18n._("More Info");
 			} else {
-				buttonInstall.setVisible(true);
-				buttonInstall.dom.className="buttonPosA iconArrowRight";
-				buttonInstall.dom.innerHTML=i18n._("Trial install");
-				buttonStore.dom.className="buttonPosB iconArrowDown";
-				buttonStore.dom.innerHTML=i18n._("Buy");
+				this.buttonInstall.setVisible(true);
+				this.buttonInstall.dom.className="buttonPosA iconArrowRight";
+				this.buttonInstall.dom.innerHTML=i18n._("Trial install");
+				this.buttonStore.dom.className="buttonPosB iconArrowDown";
+				this.buttonStore.dom.innerHTML=i18n._("Buy");
 			}
 		}
 	},
@@ -394,7 +449,7 @@ Ung.AppItem = Ext.extend(Ext.Component, {
 	installNodeFn: function(e) {
 		e.preventDefault();
 		if(e.shiftKey) { // uninstall App
-			main.uninstallApp(this.getNodeItem());
+			main.unactivateNode(this.getNodeItem());
 		} else { // install node
 			main.installNode(this.getNodeItem());
 		}
@@ -405,7 +460,8 @@ Ung.AppItem.template = new Ext.Template(
 '<div class="icon">{imageHtml}</div>',
 '<div class="text">{text}</div>',
 '<div id="buttonInstall_{id}"></div>',
-'<div id="buttonStore_{id}"></div>'
+'<div id="buttonStore_{id}"></div>',
+'<div class="statePos" id="state_{id}"></div>'
 );
 //
 //update all app items installed states for the current Policy nodes
@@ -424,11 +480,18 @@ Ung.AppItem.updateStatesForCurrentPolicy = function() {
 		}
 	}
 };
-// update te node installed state for the app with a node name
-Ung.AppItem.updateStateForNode = function(nodeName, installed) {
+// update node state for the app with a node name
+Ung.AppItem.updateStateForNode = function(nodeName, state) {
 	var app=Ung.AppItem.getAppForNode(nodeName);
 	if(app!=null) {
-		app.setNodeInstalledState(installed);
+		app.setState(state);
+	}
+}
+// update state for the app with a node name
+Ung.AppItem.updateState = function(itemName, state) {
+	var app=Ung.AppItem.getApp(itemName);
+	if(app!=null) {
+		app.setState(state);
 	}
 }
 //get the app item having a node name
@@ -440,6 +503,13 @@ Ung.AppItem.getAppForNode = function(nodeName) {
 				return app;
 			}
 		}
+	}
+	return null;
+};
+//get the app item having a item name
+Ung.AppItem.getApp = function(itemName) {
+	if(main.apps!==null) {
+		return Ext.getCmp("appItem_"+itemName);
 	}
 	return null;
 };
@@ -677,6 +747,7 @@ Ung.Node = Ext.extend(Ext.Component, {
        		this.settingsWin.cancelAction();
        	}
        	this.setState("Attention");
+       	Ung.AppItem.updateStateForNode(this.name,"uninstalling");
        	rpc.nodeManager.destroy(function (result, exception) {
 			if(exception) { Ext.MessageBox.alert(i18n._("Failed"),exception.message); 
 				return;
@@ -693,7 +764,7 @@ Ung.Node = Ext.extend(Ext.Component, {
 					} 
 				}
 				//update AppItem button
-				Ung.AppItem.updateStateForNode(nodeName,false);
+				Ung.AppItem.updateStateForNode(nodeName,"activated");
 				main.updateSeparator();
 			}
 		}.createDelegate(this), this.Tid);

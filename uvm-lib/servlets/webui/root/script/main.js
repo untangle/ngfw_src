@@ -145,7 +145,7 @@ Ung.Main.prototype = {
 		this.loadTools();
 		this.loadPolicies();
 	},
-	uninstallApp: function(mackageDesc) {
+	unactivateNode: function(mackageDesc) {
 		rpc.nodeManager.nodeInstances(function (result, exception) {
 				if(exception) { 
 					Ext.MessageBox.alert(i18n._("Failed"),exception.message);
@@ -157,6 +157,7 @@ Ung.Main.prototype = {
 					i18n.sprintf(i18n._("$s cannot be removed from the toolbox because it is being used by the following policy rack:<br><b>%s</b><br><br>You must remove the product from all policy racks first."), this.displayName,tids[0]. policy.name));
 					return;
 				} else {
+					Ung.AppItem.updateStateForNode(this.name,"unactivating");
 					rpc.toolboxManager.uninstall(function (result, exception) {
 						if(exception) {
 							Ext.MessageBox.alert(i18n._("Failed"),exception.message);
@@ -420,7 +421,7 @@ Ung.Main.prototype = {
 	
 	installNode: function(mackageDesc, targetPolicy) {
 		if(mackageDesc!==null) {
-			Ung.AppItem.updateStateForNode(mackageDesc.name,true)
+			Ung.AppItem.updateStateForNode(mackageDesc.name, "installing")
 			var policy=null;
 			if (!mackageDesc.service && !mackageDesc.util && !mackageDesc.core) {
         		if(targetPolicy==null) {
@@ -534,7 +535,7 @@ Ung.Main.prototype = {
 		var place=node.isSecurity?'security_nodes':'other_nodes';
 		var position=this.getNodePosition(place,node.viewPosition);
 		nodeWidget.render(place,position);
-		Ung.AppItem.updateStateForNode(node.name, true);
+		Ung.AppItem.updateStateForNode(node.name, "installed");
 	},
 	//Show - hide Services header in the rack
 	updateSeparator: function() {

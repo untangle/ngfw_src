@@ -466,6 +466,17 @@ div.appItem div.buttonPosB {
 	color: green;
 	padding-right: 16px;
 }
+div.appItem div.statePos {
+	position: absolute;
+	left: 53px;
+	top: 34px;
+	cursor: pointer;
+	height: 15px;
+	font-family: verdana, sans-serif;
+	font-size: 10px;
+	font-weight: bold;
+	color: red;
+}
 div.iconInfo {
 	background:transparent url(../images/main/icon_info.png) no-repeat center right !important;
 }
