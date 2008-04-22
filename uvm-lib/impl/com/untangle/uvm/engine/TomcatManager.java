@@ -77,7 +77,9 @@ class TomcatManager
     private final String logDir;
 
     private final UvmContextImpl uvmContext;
-    private final UvmRealm uvmRealm = new UvmRealm();
+    private final NonceFactory nonceFactory = new NonceFactory();
+    private final UvmRealm uvmRealm = new UvmRealm( false, nonceFactory );
+    private final UvmRealm globalRealm = new UvmRealm( true, nonceFactory );
 
     private String keystoreFile = "conf/keystore";
     private String keystorePass = "changeit";
@@ -206,12 +208,39 @@ class TomcatManager
 
     boolean loadSystemApp(String urlBase, String rootDir, WebAppOptions options)
     {
+        /* tomcat cannot share the same authenticator across apps, you
+         * receive a LifecycleException: Security Interceptor has
+         * already been started exception. */
         UvmAuthenticator uvmAuth = new UvmAuthenticator();
         return loadWebApp(urlBase, rootDir, uvmRealm, uvmAuth, options);
     }
 
+    boolean loadSystemApp(String urlBase, String rootDir, Valve valve)
+    {
+        return loadSystemApp(urlBase, rootDir, new WebAppOptions(true, valve));
+    }
+
     boolean loadSystemApp(String urlBase, String rootDir) {
         return loadSystemApp(urlBase, rootDir, new WebAppOptions());
+    }
+
+    boolean loadGlobalApp(String urlBase, String rootDir, WebAppOptions options)
+    {
+        /* tomcat cannot share the same authenticator across apps, you
+         * receive a LifecycleException: Security Interceptor has
+         * already been started exception. */
+        UvmAuthenticator uvmAuth = new UvmAuthenticator();
+        return loadWebApp(urlBase, rootDir, globalRealm, uvmAuth, options);
+    }
+
+    boolean loadGlobalApp(String urlBase, String rootDir, Valve valve)
+    {
+        return loadGlobalApp(urlBase, rootDir, new WebAppOptions(true, valve));
+    }
+
+    boolean loadGlobalApp(String urlBase, String rootDir)
+    {
+        return loadGlobalApp(urlBase, rootDir, new WebAppOptions());
     }
 
     boolean loadInsecureApp(String urlBase, String rootDir)
@@ -323,8 +352,9 @@ class TomcatManager
             baseHost.setErrorReportValveClass("com.untangle.uvm.engine.UvmErrorReportValve");
             OurSingleSignOn ourSsoWorkaroundValve = new OurSingleSignOn();
             /* XXXXX Hackstered to get single sign on to ignore certain contexts */
-            SingleSignOn ssoValve = new SpecialSingleSignOn( uvmContext, "/session-dumper", "/webstart", "", "/reports",
-                                                             "/library" );
+            SingleSignOn ssoValve = new SpecialSingleSignOn( uvmContext, "/session-dumper", "/webstart", "",
+                                                             "/reports", "/library" );
+
             // ssoValve.setRequireReauthentication(true);
             baseHost.getPipeline().addValve(ourSsoWorkaroundValve);
             baseHost.getPipeline().addValve(ssoValve);

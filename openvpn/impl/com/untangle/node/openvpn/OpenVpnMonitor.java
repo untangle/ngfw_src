@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -38,8 +38,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.LocalUvmContext;
+import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.EventLoggerFactory;
 import com.untangle.uvm.logging.EventRepository;
@@ -682,7 +682,7 @@ class OpenVpnMonitor implements Runnable
             if(list.size() > maxLen) {
                 list = list.subList(0, maxLen);
             }
-            return list;
+            return new ArrayList<ClientConnectEvent>(list);
         }
     }
 
@@ -717,7 +717,7 @@ class OpenVpnMonitor implements Runnable
             if(openList.size() > maxLen) {
                 openList = openList.subList(0, maxLen);
             }
-            return openList;
+            return new ArrayList<ClientConnectEvent>(openList);
         }
     }
 }

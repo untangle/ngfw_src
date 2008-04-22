@@ -35,6 +35,7 @@ import com.untangle.uvm.MailSender;
 import com.untangle.uvm.MailSettings;
 import com.untangle.uvm.networking.NetworkException;
 import com.untangle.uvm.security.AdminSettings;
+import com.untangle.uvm.security.GlobalPrincipal;
 import com.untangle.uvm.security.LoginSession;
 import com.untangle.uvm.security.RegistrationInfo;
 import com.untangle.uvm.security.RemoteAdminManager;
@@ -287,6 +288,21 @@ class RemoteAdminManagerImpl implements RemoteAdminManager
         logger.info("Generating auth nonce for " + ls.getClientAddr() + " " + ls.getUvmPrincipal());
         return tm.generateAuthNonce(ls.getClientAddr(), ls.getUvmPrincipal());
    }
+
+    public String generateGlobalAuthNonce() {
+        HttpInvokerImpl invoker = HttpInvokerImpl.invoker();
+        LoginSession ls = invoker.getActiveLogin();
+        if (ls == null)
+            throw new IllegalStateException("generateGlobalAuthNonce called from backend");
+        TomcatManager tm = uvmContext.tomcatManager();
+        UvmPrincipal uvmPrincipal = ls.getUvmPrincipal();
+        logger.info("Generating global auth nonce for " + ls.getClientAddr() + " " + uvmPrincipal );
+
+        /* Create a new global login to be used for the nonce */
+        GlobalPrincipal principal = new GlobalPrincipal( uvmPrincipal.getName());
+        return tm.generateAuthNonce(ls.getClientAddr(), principal );
+    }
+
 
     public String getAlpacaNonce()
     {

@@ -190,7 +190,7 @@ class NetworkUtilPriv extends NetworkUtil
 
         List<IPaddr> dnsServerList = new LinkedList<IPaddr>();
         String dnsServers = properties.getProperty( "com.untangle.networking.dhcp-dns-servers" );
-        if ( dnsServers != null || ( dnsServers.trim().length() == 0 )) {
+        if ( dnsServers != null && ( dnsServers.trim().length() > 0 )) {
             for ( String dnsServer : dnsServers.split( "," )) {
                 IPaddr ds = parseIPaddr( dnsServer );
                 if ( ds != null ) dnsServerList.add( ds );

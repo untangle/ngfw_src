@@ -68,6 +68,13 @@ public interface LocalAppServerManager
      */
     boolean loadSystemApp(String urlBase, String rootDir);
 
+    boolean loadSystemApp(String urlBase, String rootDir, Valve valve);
+
+    boolean loadGlobalApp(String urlBase, String rootDir);
+
+    boolean loadGlobalApp(String urlBase, String rootDir, Valve valve);
+
+
     /**
      * Load a portal web app. This app will not use
      * authentication. The web app's files are already assumed to be
