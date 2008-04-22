@@ -44,7 +44,10 @@ Ung.MoveFromStoreToToolboxThread = {
 		}
 	},
 	//clear thread after an install is processed
-	clearProcess: function() {
+	clearProcess: function(success, appState) {
+		if(appState!=null) {
+			Ung.AppItem.updateState(this.mackageDesc.name, appState);
+		}
 		this.mackageDesc=null;
 		if(!this.queueIsEmpty()) {
 			this.process(this.popQueue());
@@ -56,7 +59,7 @@ Ung.MoveFromStoreToToolboxThread = {
         rpc.toolboxManager.uninstalled(function (result, exception) {
 			if(exception) { 
 				Ext.MessageBox.alert(i18n._("Failed"),exception.message);
-				this.clearProcess();
+				this.clearProcess(false);
 				return;
 			}
 			var activated = true;
@@ -71,7 +74,7 @@ Ung.MoveFromStoreToToolboxThread = {
 		        rpc.toolboxManager.installed(function (result, exception) {
 					if(exception) { 
 						Ext.MessageBox.alert(i18n._("Failed"),exception.message);
-						this.clearProcess();
+						this.clearProcess(false);
 						return;
 					}
 					this.originalInstalledMackages =result; // the list of originaly installed nodes
@@ -79,7 +82,7 @@ Ung.MoveFromStoreToToolboxThread = {
 		        }.createDelegate(this));
             	
 			} else {
-				this.clearProcess();
+				this.clearProcess(false);
 				return;
 			}
 		}.createDelegate(this));
@@ -88,12 +91,12 @@ Ung.MoveFromStoreToToolboxThread = {
 	activate: function () {
 		//get the current policy
 		this.targetPolicy=rpc.currentPolicy;
-		Ung.AppItem.updateState(this.mackageDesc.name,"activating");
+		Ung.AppItem.updateState(this.mackageDesc.name,"activating_downloading");
 		//activate libitem
 		rpc.toolboxManager.install(function (result, exception) {
 			if(exception) { 
 				Ext.MessageBox.alert(i18n._("Failed"),exception.message);
-				this.clearProcess();
+				this.clearProcess(false, "unactivated");
 				return;
 			}
 			//this is the instalation key used by progress checker
@@ -106,7 +109,7 @@ Ung.MoveFromStoreToToolboxThread = {
 		rpc.toolboxManager.getProgress(function (result, exception) {
 			if(exception) { 
 				Ext.MessageBox.alert(i18n._("Failed"),exception.message);
-				this.clearProcess();
+				this.clearProcess(false, "unactivated");
 				return;
 			}
 			var lip=result;
@@ -114,19 +117,20 @@ Ung.MoveFromStoreToToolboxThread = {
 			var success=false;
 			for(var i=0;i<lip.list.length;i++) {
 				var ip=lip.list[i];
-				if(ip.javaClass.indexOf("DownloadSummary")!=-1) {
-				} else if(ip.javaClass.indexOf("DownloadProgress")!=-1) {
-					Ung.AppItem.updateState(this.mackageDesc.name,"activating_downloading",ip);
+				if(ip.javaClass.indexOf("InstallTimeout")!=-1) {
+					isDone=true;
+					success=false;
+				}  else if(ip.javaClass.indexOf("InstallComplete")!=-1) {
+					isDone=true;
+					success=true;
 				} else if(ip.javaClass.indexOf("DownloadComplete")!=-1) {
 					isDone=true;
 					success=true;
-				} else if(ip.javaClass.indexOf("InstallComplete")!=-1) {
-					isDone=true;
-					success=true;
-				} else if(ip.javaClass.indexOf("InstallTimeout")!=-1) {
-					isDone=true;
-					success=false;
-				}
+				} else if(ip.javaClass.indexOf("DownloadProgress")!=-1) {
+					Ung.AppItem.updateState(this.mackageDesc.name,"activating_downloading",ip);
+				} else if(ip.javaClass.indexOf("DownloadSummary")!=-1) {
+				} 
+				
 				if(isDone) {
 					break;
 				}
@@ -136,13 +140,12 @@ Ung.MoveFromStoreToToolboxThread = {
 				this.progressDownload.defer(this.downloadCheckInterval,this);
 			} else {
 				if(success) {
-					//TODO: show install progress bar
 					Ung.AppItem.updateState(this.mackageDesc.name,"activating");
 					this.installStartTime=(new Date()).getTime();
 					this.progressInstalled.defer(this.downloadFinalPause,this);
 				} else {
 					Ext.MessageBox.alert(i18n._("Failed"),"Error download: "+this.mackageDesc.name);
-					this.clearProcess();
+					this.clearProcess(false, "unactivated");
 					return;
 				}
 			}
@@ -169,15 +172,13 @@ Ung.MoveFromStoreToToolboxThread = {
 					}
 				}
 				if(!mackageInstalled) {
-					//TODO: show install progress bar updated
+					Ung.AppItem.updateState(this.mackageDesc.name,"activating");
 					//if not installed try later
 					this.progressInstalled.defer(this.installCheckInterval, this);
 				} else {
 					//get the list of newly installed items
-					//TODO: clear progress bar
-					Ung.AppItem.updateState(this.mackageDesc.name,"activated");
 					var newlyInstalledMackages=this.computeNewMackageDescs(this.originalInstalledMackages,currentInstalledMackages,false);
-					this.clearProcess();
+					this.clearProcess(true,"activated");
 					this.activateNodes(newlyInstalledMackages);
 				}
             }.createDelegate(this));
@@ -238,7 +239,7 @@ Ung.MoveFromStoreToToolboxThread = {
 //toolbox mesaages thread
 Ung.MessageClientThread = {
 	//update interval in millisecond
-	updateTime: 4000,
+	updateTime: 7000,
 	started: false,
 	intervalId: null,
 	cycleCompleted: true,
@@ -261,6 +262,7 @@ Ung.MessageClientThread = {
 		if(!this.cycleCompleted) {
 			return;
 		}
+		this.cycleCompleted=false;
 		rpc.toolboxManager.getToolboxMessages(function (result, exception) {
 			if(exception) { 
 				Ext.MessageBox.alert(i18n._("Failed"),exception.message, function() {
@@ -301,7 +303,6 @@ Ung.AppItem = Ext.extend(Ext.Component, {
     state: null,
     buttonInstall: null,
     buttonStore: null,
-    stateEl: null,
     constructor: function(config) {
 		this.id="appItem_"+config.item.name;
     	Ung.AppItem.superclass.constructor.apply(this, arguments);
@@ -325,8 +326,22 @@ Ung.AppItem = Ext.extend(Ext.Component, {
         this.getEl().addClass("appItem");
 		this.buttonInstall=Ext.get("buttonInstall_"+this.getId());
 		this.buttonStore=Ext.get("buttonStore_"+this.getId());
-		this.stateEl=Ext.get("state_"+this.getId());
-		this.stateEl.setVisible(false);
+		this.progressBar=new Ext.ProgressBar({
+	        text: '',
+	        id:'progressBar_'+this.getId(),
+	        renderTo: "state_"+this.getId(),
+	        height: 17,
+	        width: 120,
+	        waitDefault: function() {
+	        	if(!this.isWaiting()) {
+	        		this.wait({
+					   interval: 100, 
+					   increment: 15
+					});
+	        	}
+	        }
+	    });
+	    this.progressBar.hide();
 		this.buttonStore.on("click", this.linkToStoreFn,this);
 		this.buttonInstall.on("click", this.installNodeFn,this);
         if(this.item.type=="LIB_ITEM") { // Store items
@@ -361,56 +376,70 @@ Ung.AppItem = Ext.extend(Ext.Component, {
 	setState: function(newState, options) {
 		switch(newState) {
 			case "unactivated":
-				this.displayButtonsOrState(true);
+				this.displayButtonsOrProgress(true);
 				this.setNodeInstalledState(false);
 				break;
 			case "unactivating":
-				this.displayButtonsOrState(false);
-				this.stateEl.dom.innerHTML=i18n._("Unactivating...");
+				this.displayButtonsOrProgress(false);
+				this.progressBar.reset();
+				this.progressBar.updateText(i18n._("Unactivating..."));
+				this.progressBar.waitDefault();
 				break;
 			case "activated":
-				this.displayButtonsOrState(true);
+				this.displayButtonsOrProgress(true);
 				this.setNodeInstalledState(false);
 				break;
 			case "installed":
-				this.displayButtonsOrState(true);
+				this.displayButtonsOrProgress(true);
 				this.setNodeInstalledState(true);
 				break;
 			case "installing":
-				this.displayButtonsOrState(false);
-				this.stateEl.dom.innerHTML=i18n._("Installing...");
+				this.displayButtonsOrProgress(false);
+				this.progressBar.updateText(i18n._("Installing..."));
+				this.progressBar.waitDefault();
 				break;
 			case "uninstalling":
 				this.show();
-				this.displayButtonsOrState(false);
-				this.stateEl.dom.innerHTML=i18n._("Uninstalling...");
+				this.displayButtonsOrProgress(false);
+				this.progressBar.updateText(i18n._("Uninstalling..."));
+				this.progressBar.waitDefault();
 				break;
 			case "activating_downloading":
-				this.displayButtonsOrState(false);
-				this.stateEl.dom.innerHTML=i18n._("Downloading...");
+				this.displayButtonsOrProgress(false);
+				if(!options) {
+					this.progressBar.reset();
+					this.progressBar.updateText(i18n._("Downloading..."));
+				} else {
+					var currentByteIncrement = options.size;
+					var currentPercentComplete = parseFloat(currentByteIndex + options.bytesDownloaded) / parseFloat(byteCountTotal);
+            		var progressIndex = parseInt(90*currentPercentComplete);
+            		progressString = i18n._("Downloading file ") + options.name +" (" + options.byteCountTotal/1000 + "KBytes @ "  + options.speed + ")";
+            		this.progressBar.updateProgress(progressIndex, progressString);
+				}
 				break;
 			case "activating":
-				this.displayButtonsOrState(false);
-				this.stateEl.dom.innerHTML=i18n._("Activating...");
+				this.displayButtonsOrProgress(false);
+				this.progressBar.updateText(i18n._("Activating..."));
+				this.progressBar.waitDefault();				
 				break;
 			case "waiting":
-				this.displayButtonsOrState(false);
-				this.stateEl.dom.innerHTML=i18n._("...");
+				this.displayButtonsOrProgress(false);
+				this.progressBar.updateText(i18n._("..."));
+				this.progressBar.waitDefault();
 				break;
 		}
 		this.state=newState;
 		
 	},
-	resetState: function () {
-		
-	},
-	displayButtonsOrState: function (displayButtons) {
+	displayButtonsOrProgress: function (displayButtons) {
 		this.buttonInstall.setVisible(displayButtons);
 		this.buttonStore.setVisible(displayButtons);
-		this.stateEl.setVisible(!displayButtons);
-	},
-	clearStateCmps: function () {
-		
+		if(displayButtons) {
+			this.progressBar.reset();
+			this.progressBar.hide()
+		} else {
+			this.progressBar.show();
+		}
 	},
 	//Set the installed state of the node
 	setNodeInstalledState: function (installed) {
