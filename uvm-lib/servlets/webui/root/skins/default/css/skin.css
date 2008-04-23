@@ -61,7 +61,7 @@ div.racksWithoutSeparator {
 	/*top:54px;*/
 	width:789px;
 }
-div.rackNode {
+div.node {
 	position:relative;
 	background: transparent url(../images/main/background_node.png) no-repeat;
 	width:789px;
@@ -96,7 +96,7 @@ div.rackNode {
 	top:12px;
 	left:50px;
 }
-div.nodeLabel {
+div.node div.nodeLabel {
 	position: absolute;
 	top: 17px;
 	left: 100px;
@@ -105,6 +105,24 @@ div.nodeLabel {
 	font-family: verdana, sans-serif;
 	font-size: 18px;
 	color: #4E4C4C;
+}
+div.node div.nodeTrialDays {
+	position: absolute;
+	top: 47px;
+	left: 105px;
+	font-family: verdana, sans-serif;
+	font-size: 10px;
+	font-weight: bold;
+	color: green;
+}
+div.node div.nodeTrial {
+	position: absolute;
+	top: 45px;
+	right: 475px;
+	font-family: verdana, sans-serif;
+	font-size: 12px;
+	font-weight: bold;
+	color: green;
 }
 
 button.iconHelp {
@@ -115,7 +133,7 @@ div.iconHelp {
 	height:15px;
 	width:15px;
 }
-div.nodeState {
+div.node div.nodeState {
 	z-index: 200;
 	position:absolute;
 	top:54px;
@@ -132,7 +150,7 @@ div.iconStateOff {
 div.iconStateAttention {
 	background:transparent url(../images/main/icon_state_attention.png) no-repeat center !important; 
 }
-div.nodePower {
+div.node div.nodePower {
 	position:absolute;
 	top:20px;
 	right:54px;
@@ -146,12 +164,12 @@ div.iconPowerOff {
 	background:transparent url(../images/main/icon_power_off.png) no-repeat center !important; 
 }
 
-div.nodeSettingsButton {
+div.node div.nodeSettingsButton {
 	position:absolute;
 	top:76px;
 	left:50px;
 }
-div.nodeHelpButton {
+div.node div.nodeHelpButton {
 	position:absolute;
 	top:76px;
 	left:182px;

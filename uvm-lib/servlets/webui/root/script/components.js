@@ -406,7 +406,7 @@ Ung.AppItem = Ext.extend(Ext.Component, {
 				break;
 			case "activating_downloading":
 				this.displayButtonsOrProgress(false);
-				if(!options) {
+				if(options==null) {
 					this.progressBar.reset();
 					this.progressBar.updateText(i18n._("Downloading..."));
 				} else {
@@ -836,8 +836,15 @@ Ung.Node = Ext.extend(Ext.Component, {
         el.setAttribute('viewPosition',this.viewPosition);
         container.dom.insertBefore(el, position);
        	this.el = Ext.get(el);
-       	this.el.addClass("rackNode");
-       	var templateHTML=Ung.Node.template.applyTemplate({'id':this.getId(),'image':this.image,'displayName':i18n._(this.displayName)});
+       	this.el.addClass("node");
+       	var trialFlag="";
+       	var trialDays="";
+       	if(this.md.extraName!=null && this.md.extraName.indexOf("Trial")!=-1) {
+       		trialFlag=i18n._("Trial");
+       		var daysRemain=parseInt(this.md.extraName.replace("Trial (",""))
+       		trialDays=i18n.sprintf(i18n._("%s days remain"),daysRemain);
+       	}
+       	var templateHTML=Ung.Node.template.applyTemplate({'id':this.getId(),'image':this.image,'displayName':i18n._(this.displayName),'trialDays':trialDays,'trialFlag':trialFlag});
         this.getEl().insertHtml("afterBegin",templateHTML);
       
 	    var settingsHTML=Ung.Node.templateSettings.applyTemplate({'id':this.getId()});
@@ -952,6 +959,8 @@ Ung.Node.getPowerTip= function() {
 Ung.Node.template = new Ext.Template(
 '<div class="nodeImage"><img src="{image}"/></div>',
 '<div class="nodeLabel">{displayName}</div>',
+'<div class="nodeTrialDays">{trialDays}</div>',
+'<div class="nodeTrial">{trialFlag}</div>',
 '<div class="nodeBlingers" id="nodeBlingers_{id}"></div>',
 '<div class="nodeState" id="nodeState_{id}"></div>',
 '<div class="nodePower" id="nodePower_{id}"></div>',
