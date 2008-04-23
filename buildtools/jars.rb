@@ -113,7 +113,8 @@ class Jars
   Velocity   = [ Jars.downloadTarget('velocity-1.4/velocity-1.4.jar') ]
   JRuby      = [ Jars.downloadTarget('jruby-complete/jruby-complete.jar') ]
 
-  Jnlp       = [ ThirdpartyJar.get("#{BuildEnv::JAVA_HOME}/sample/jnlp/servlet/jnlp.jar") ]
+  # Jnlp       = [ ThirdpartyJar.get("#{BuildEnv::JAVA_HOME}/sample/jnlp/servlet/jnlp.jar") ]
+  Jnlp       = [ Jars.downloadTarget('jnlp/jnlp.jar') ]
 
   # properJavaRDP Jars
   ProperJavaRDP = [ 'properJavaRDP-1.1/properJavaRDP-1.1.jar', 'java-getopt-1.0.12/java-getopt-1.0.12.jar' ].map { |f| Jars.downloadTarget(f) }
