@@ -133,7 +133,6 @@ Ung.WebFilter = Ext.extend(Ung.Settings, {
     		totalRecords: this.getBaseSettings().blacklistCategoriesLength,
     		hasAdd: false,
     		hasDelete: false,
-//    		emptyRow: {"displayName":"","blockDomains":true,"logOnly":true,"description":this.i18n._("[no description]")},
     		title: this.i18n._("Categories"),
     		recordJavaClass: "com.untangle.node.webfilter.BlacklistCategory",
     		proxyRpcFn: this.getRpcNode().getBlacklistCategories,
@@ -529,24 +528,60 @@ Ung.WebFilter = Ext.extend(Ung.Settings, {
 			predefinedType: "TYPE1"
 		});
     },
+    //validation function
+    validate: function(callback) {
+    	//ipMaddr list must be validated server side
+		var ipMaddrList=[];
+		var passedClientsSaveList=this.gridPassedClients?this.gridPassedClients.getSaveList():null;
+		if(passedClientsSaveList!=null) {
+			//added
+			for(var i=0;i<passedClientsSaveList[0].list.length;i++) {
+				ipMaddrList.push(passedClientsSaveList[0].list[i]["ipMaddr"]);
+			}
+			//modified
+			for(var i=0;i<passedClientsSaveList[2].list.length;i++) {
+				ipMaddrList.push(passedClientsSaveList[2].list[i]["ipMaddr"]);
+			}
+			if(ipMaddrList.length>0) {
+				this.getValidator().validate(function (result, exception) {
+					if(exception) {Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}
+					if(!result.valid) {
+						this.panelPassLists.onManagePassedClients();
+						this.gridPassedClients.focusFirstChangedDataByFieldValue("ipMaddr",result.cause);
+						Ext.MessageBox.alert(this.i18n._("Validation failed"),this.i18n._(result.message)+": "+result.cause);
+						return;
+					} else {
+						callback.call(this);
+					}
+					
+				}.createDelegate(this),{list: ipMaddrList,"javaClass":"java.util.ArrayList"});
+			}
+		}
+		if(ipMaddrList.length==0) {
+			callback.call(this);
+		}
+    },
     // save function
 	save: function() {
-		//disable tabs during save
-		this.tabs.disable();
-		this.getRpcNode().updateAll(function (result, exception) {
-			//re-enable tabs
-			this.tabs.enable();
-			if(exception) {Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}
-			//exit settings screen
-			this.node.onCancelClick();
-		}.createDelegate(this),
-				this.getBaseSettings(),
-				this.gridPassedClients?this.gridPassedClients.getSaveList():null,
-				this.gridPassedUrls?this.gridPassedUrls.getSaveList():null,
-				this.gridBlockedUrls?this.gridBlockedUrls.getSaveList():null,
-				this.gridBlockedMimeTypes?this.gridBlockedMimeTypes.getSaveList():null,
-				this.gridBlockedExtensions?this.gridBlockedExtensions.getSaveList():null,
-				this.gridBlacklistCategories?this.gridBlacklistCategories.getSaveList():null);
+		//validate first
+		this.validate( function() {
+			//disable tabs during save
+			this.tabs.disable();
+			this.getRpcNode().updateAll(function (result, exception) {
+				//re-enable tabs
+				this.tabs.enable();
+				if(exception) {Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}
+				//exit settings screen
+				this.node.onCancelClick();
+			}.createDelegate(this),
+					this.getBaseSettings(),
+					this.gridPassedClients?this.gridPassedClients.getSaveList():null,
+					this.gridPassedUrls?this.gridPassedUrls.getSaveList():null,
+					this.gridBlockedUrls?this.gridBlockedUrls.getSaveList():null,
+					this.gridBlockedMimeTypes?this.gridBlockedMimeTypes.getSaveList():null,
+					this.gridBlockedExtensions?this.gridBlockedExtensions.getSaveList():null,
+					this.gridBlacklistCategories?this.gridBlacklistCategories.getSaveList():null);
+		});
 	}
 });
 }

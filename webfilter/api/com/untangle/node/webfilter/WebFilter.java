@@ -26,6 +26,7 @@ import com.untangle.uvm.node.IPMaddrRule;
 import com.untangle.uvm.node.MimeTypeRule;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.StringRule;
+import com.untangle.uvm.node.Validator;
 
 /**
  * Interface the the WebFilter Node.
@@ -76,4 +77,6 @@ public interface WebFilter extends Node
     UserWhitelistMode getUserWhitelistMode();
 
     EventManager<WebFilterEvent> getEventManager();
+    
+    Validator getValidator();    
 }

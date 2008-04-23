@@ -47,6 +47,7 @@ import com.untangle.uvm.node.MimeTypeRule;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.Rule;
 import com.untangle.uvm.node.StringRule;
+import com.untangle.uvm.node.Validator;
 import com.untangle.uvm.util.ListUtil;
 import com.untangle.uvm.util.OutsideValve;
 import com.untangle.uvm.util.QueryUtil;
@@ -609,6 +610,10 @@ public class WebFilterImpl extends AbstractNode implements WebFilter
         return replacementGenerator.generateResponse(nonce, session,
                                                      persistent);
     }
+    
+	public Validator getValidator() {
+		return new WebFilterValidator();
+	}
 
     // private methods --------------------------------------------------------
 
