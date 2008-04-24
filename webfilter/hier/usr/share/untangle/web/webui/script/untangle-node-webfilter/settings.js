@@ -158,21 +158,21 @@ Ung.WebFilter = Ext.extend(Ung.Settings, {
 			rowEditorInputLines: [
 				new Ext.form.TextField({
 					name: "displayName",
-					label: this.i18n._("Category"),
+					fieldLabel: this.i18n._("Category"),
 					allowBlank: false, 
 					width: 200
 				}),
 				new Ext.form.Checkbox({
 					name: "blockDomains",
-					label: this.i18n._("Block")
+					fieldLabel: this.i18n._("Block")
 				}),
 				new Ext.form.Checkbox({
 					name: "logOnly",
-					label: this.i18n._("Log")
+					fieldLabel: this.i18n._("Log")
 				}),
 				new Ext.form.TextArea({
 					name: "description",
-					label: this.i18n._("Description"),
+					fieldLabel: this.i18n._("Description"),
 					width: 200,
 					height: 60
 				})
@@ -181,6 +181,24 @@ Ung.WebFilter = Ext.extend(Ung.Settings, {
     },        
     // Block Sites
     buildBlockedUrls: function() {
+		var urlValidator = function(fieldValue) {
+			if (fieldValue.indexOf("https") == 0) {
+				return this.i18n._("\"URL\" specified cannot be blocked because it uses secure http (https)");
+			}
+			if (fieldValue.indexOf("http://") == 0) {
+				fieldValue = fieldValue.substr(7);
+			}
+			if (fieldValue.indexOf("www.") == 0) {
+				fieldValue = fieldValue.substr(4);
+			}
+			if (fieldValue.indexOf("/") == fieldValue.length - 1) {
+				fieldValue = fieldValue.substring(0, fieldValue.length - 1);
+			}
+			if (fieldValue.trim().length == 0) {
+				return this.i18n._("Invalid \"URL\" specified");
+			}
+			return true;
+		}.createDelegate(this);
 	    var liveColumn = new Ext.grid.CheckColumn({
 	       header: this.i18n._("block"), dataIndex: 'live', fixed:true
 	    });
@@ -191,7 +209,7 @@ Ung.WebFilter = Ext.extend(Ung.Settings, {
     	this.gridBlockedUrls=new Ung.EditorGrid({
     		settingsCmp: this,
     		totalRecords: this.getBaseSettings().blockedUrlsLength,
-    		emptyRow: {"string":"","live":true,"log":true,"description":this.i18n._("[no description]")},
+    		emptyRow: {"string":this.i18n._("[no site]"),"live":true,"log":true,"description":this.i18n._("[no description]")},
     		title: this.i18n._("Sites"),
     		recordJavaClass: "com.untangle.uvm.node.StringRule",
     		proxyRpcFn: this.getRpcNode().getBlockedUrls,
@@ -204,7 +222,7 @@ Ung.WebFilter = Ext.extend(Ung.Settings, {
 			],
 			columns: [
 	          {id:'string',header: this.i18n._("site"), width: 200,  dataIndex: 'string',
-		          editor: new Ext.form.TextField({allowBlank: false})},
+		          editor: new Ext.form.TextField({allowBlank: false, validator: urlValidator})},
 	          liveColumn,
 	          logColumn,
 	          {id:'description',header: this.i18n._("description"), width: 200,  dataIndex: 'description',
@@ -217,21 +235,22 @@ Ung.WebFilter = Ext.extend(Ung.Settings, {
 			rowEditorInputLines: [
 				new Ext.form.TextField({
 					name: "string",
-					label: this.i18n._("Site"),
+					fieldLabel: this.i18n._("Site"),
 					allowBlank: false, 
-					width: 200
+					width: 200,
+					validator: urlValidator
 				}),
 				new Ext.form.Checkbox({
 					name: "live",
-					label: this.i18n._("Block")
+					fieldLabel: this.i18n._("Block")
 				}),
 				new Ext.form.Checkbox({
 					name: "log",
-					label: this.i18n._("Log")
+					fieldLabel: this.i18n._("Log")
 				}),
 				new Ext.form.TextArea({
 					name: "description",
-					label: this.i18n._("Description"),
+					fieldLabel: this.i18n._("Description"),
 					width: 200,
 					height: 60
 				})
@@ -276,21 +295,21 @@ Ung.WebFilter = Ext.extend(Ung.Settings, {
 			rowEditorInputLines: [
 				new Ext.form.TextField({
 					name: "string",
-					label: this.i18n._("File Type"),
+					fieldLabel: this.i18n._("File Type"),
 					allowBlank: false, 
 					width: 200
 				}),
 				new Ext.form.Checkbox({
 					name: "live",
-					label: this.i18n._("Block")
+					fieldLabel: this.i18n._("Block")
 				}),
 				new Ext.form.Checkbox({
 					name: "log",
-					label: this.i18n._("Log")
+					fieldLabel: this.i18n._("Log")
 				}),
 				new Ext.form.TextArea({
 					name: "name",
-					label: this.i18n._("Description"),
+					fieldLabel: this.i18n._("Description"),
 					width: 200,
 					height: 60
 				})
@@ -335,21 +354,21 @@ Ung.WebFilter = Ext.extend(Ung.Settings, {
 			rowEditorInputLines: [
 				new Ext.form.TextField({
 					name: "mimeType",
-					label: this.i18n._("MIME Type"),
+					fieldLabel: this.i18n._("MIME Type"),
 					allowBlank: false, 
 					width: 200
 				}),
 				new Ext.form.Checkbox({
 					name: "live",
-					label: this.i18n._("Block")
+					fieldLabel: this.i18n._("Block")
 				}),
 				new Ext.form.Checkbox({
 					name: "log",
-					label: this.i18n._("Log")
+					fieldLabel: this.i18n._("Log")
 				}),
 				new Ext.form.TextArea({
 					name: "name",
-					label: this.i18n._("Description"),
+					fieldLabel: this.i18n._("Description"),
 					width: 200,
 					height: 60
 				})
@@ -422,6 +441,25 @@ Ung.WebFilter = Ext.extend(Ung.Settings, {
     },
     // Passed Sites
     buildPassedUrls: function() {
+		var urlValidator = function(fieldValue) {
+			if (fieldValue.indexOf("https") == 0) {
+				return this.i18n._("\"URL\" specified cannot be passed because it uses secure http (https)");
+			}
+			if (fieldValue.indexOf("http://") == 0) {
+				fieldValue = fieldValue.substr(7);
+			}
+			if (fieldValue.indexOf("www.") == 0) {
+				fieldValue = fieldValue.substr(4);
+			}
+			if (fieldValue.indexOf("/") == fieldValue.length - 1) {
+				fieldValue = fieldValue.substring(0, fieldValue.length - 1);
+			}
+			if (fieldValue.trim().length == 0) {
+				return this.i18n._("Invalid \"URL\" specified");
+			}
+			return true;
+		}.createDelegate(this);
+		
 	    var liveColumn = new Ext.grid.CheckColumn({
 	       header: this.i18n._("pass"), dataIndex: 'live', fixed:true
 	    });
@@ -429,7 +467,7 @@ Ung.WebFilter = Ext.extend(Ung.Settings, {
     	this.gridPassedUrls=new Ung.EditorGrid({
     		settingsCmp: this,
     		totalRecords: this.getBaseSettings().passedUrlsLength,
-    		emptyRow: {"string":"","live":true,"description":this.i18n._("[no description]")},
+    		emptyRow: {"string":this.i18n._("[no site]"),"live":true,"description":this.i18n._("[no description]")},
     		title: this.i18n._("Sites"),
     		recordJavaClass: "com.untangle.uvm.node.StringRule",
     		proxyRpcFn: this.getRpcNode().getPassedUrls,
@@ -441,7 +479,7 @@ Ung.WebFilter = Ext.extend(Ung.Settings, {
 			],
 			columns: [
 	          {id:'string',header: this.i18n._("site"), width: 200,  dataIndex: 'string',
-		          editor: new Ext.form.TextField({allowBlank: false})},
+		          editor: new Ext.form.TextField({allowBlank: false, validator: urlValidator})},
 	          liveColumn,
 	          {id:'description',header: this.i18n._("description"), width: 200,  dataIndex: 'description',
 		          editor: new Ext.form.TextField({allowBlank: false})},	          
@@ -453,17 +491,18 @@ Ung.WebFilter = Ext.extend(Ung.Settings, {
 			rowEditorInputLines: [
 				new Ext.form.TextField({
 					name: "string",
-					label: this.i18n._("Site"),
+					fieldLabel: this.i18n._("Site"),
 					allowBlank: false, 
-					width: 200
+					width: 200,
+					validator: urlValidator
 				}),
 				new Ext.form.Checkbox({
 					name: "live",
-					label: this.i18n._("Pass")
+					fieldLabel: this.i18n._("Pass")
 				}),
 				new Ext.form.TextArea({
 					name: "description",
-					label: this.i18n._("Description"),
+					fieldLabel: this.i18n._("Description"),
 					width: 200,
 					height: 60
 				})
@@ -503,17 +542,17 @@ Ung.WebFilter = Ext.extend(Ung.Settings, {
 			rowEditorInputLines: [
 				new Ext.form.TextField({
 					name: "ipMaddr",
-					label: this.i18n._("IP address/range"),
+					fieldLabel: this.i18n._("IP address/range"),
 					allowBlank: false, 
 					width: 200
 				}),
 				new Ext.form.Checkbox({
 					name: "live",
-					label: this.i18n._("Pass")
+					fieldLabel: this.i18n._("Pass")
 				}),
 				new Ext.form.TextArea({
 					name: "description",
-					label: this.i18n._("Description"),
+					fieldLabel: this.i18n._("Description"),
 					width: 200,
 					height: 60
 				})
