@@ -849,35 +849,36 @@ Ung.Node = Ext.extend(Ext.Component, {
 	
 	// remove node
 	removeAction: function() {
-       	var message="Warning:\n"+i18n._(this.md.displayName)+" is about to be removed from the rack.\nIts settings will be lost and it will stop processing netwotk traffic.\n\nWould you like to continue removing?"; 
-       	if(!confirm(message)) {
-       		return;
-       	}
-       	if(this.settingsWin) {
-       		this.settingsWin.cancelAction();
-       	}
-       	this.setState("Attention");
-       	Ung.AppItem.updateStateForNode(this.name,"uninstalling");
-       	rpc.nodeManager.destroy(function (result, exception) {
-			if(exception) { Ext.MessageBox.alert(i18n._("Failed"),exception.message); 
-				return;
-			}
-			if(this) {
-				var nodeName=this.name;
-				var cmp=this;
-				Ext.destroy(cmp);
-				cmp=null;
-				for(var i=0;i<main.nodes.length;i++) {
-					if(nodeName==main.nodes[i].name) {
-						main.nodes.splice(i,1);
-						break;
-					} 
-				}
-				//update AppItem button
-				Ung.AppItem.updateStateForNode(nodeName,"activated");
-				main.updateSeparator();
-			}
-		}.createDelegate(this), this.Tid);
+       	var message=i18n._(this.md.displayName)+" is about to be removed from the rack.\nIts settings will be lost and it will stop processing netwotk traffic.\n\nWould you like to continue removing?"; 
+       	Ext.Msg.confirm(i18n._("Warning:"),message,function(btn, text){
+			if (btn == 'yes'){
+		       	if(this.settingsWin) {
+		       		this.settingsWin.cancelAction();
+		       	}
+		       	this.setState("Attention");
+		       	Ung.AppItem.updateStateForNode(this.name,"uninstalling");
+		       	rpc.nodeManager.destroy(function (result, exception) {
+					if(exception) { Ext.MessageBox.alert(i18n._("Failed"),exception.message); 
+						return;
+					}
+					if(this) {
+						var nodeName=this.name;
+						var cmp=this;
+						Ext.destroy(cmp);
+						cmp=null;
+						for(var i=0;i<main.nodes.length;i++) {
+							if(nodeName==main.nodes[i].name) {
+								main.nodes.splice(i,1);
+								break;
+							} 
+						}
+						//update AppItem button
+						Ung.AppItem.updateStateForNode(nodeName,"activated");
+						main.updateSeparator();
+					}
+				}.createDelegate(this), this.Tid);
+		    }
+		}.createDelegate(this));
 	},
 	// initialize blingers
 	initBlingers: function () {
