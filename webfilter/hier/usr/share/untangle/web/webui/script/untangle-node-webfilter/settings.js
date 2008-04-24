@@ -222,7 +222,7 @@ Ung.WebFilter = Ext.extend(Ung.Settings, {
 			],
 			columns: [
 	          {id:'string',header: this.i18n._("site"), width: 200,  dataIndex: 'string',
-		          editor: new Ext.form.TextField({allowBlank: false, validator: urlValidator})},
+		          editor: new Ext.form.TextField({allowBlank: false, validator: urlValidator, blankText: this.i18n._("Invalid \"URL\" specified")})},
 	          liveColumn,
 	          logColumn,
 	          {id:'description',header: this.i18n._("description"), width: 200,  dataIndex: 'description',
@@ -238,7 +238,8 @@ Ung.WebFilter = Ext.extend(Ung.Settings, {
 					fieldLabel: this.i18n._("Site"),
 					allowBlank: false, 
 					width: 200,
-					validator: urlValidator
+					validator: urlValidator,
+					blankText: this.i18n._("Invalid \"URL\" specified")
 				}),
 				new Ext.form.Checkbox({
 					name: "live",
@@ -479,7 +480,7 @@ Ung.WebFilter = Ext.extend(Ung.Settings, {
 			],
 			columns: [
 	          {id:'string',header: this.i18n._("site"), width: 200,  dataIndex: 'string',
-		          editor: new Ext.form.TextField({allowBlank: false, validator: urlValidator})},
+		          editor: new Ext.form.TextField({allowBlank: false, validator: urlValidator, blankText: this.i18n._("Invalid \"URL\" specified")})},
 	          liveColumn,
 	          {id:'description',header: this.i18n._("description"), width: 200,  dataIndex: 'description',
 		          editor: new Ext.form.TextField({allowBlank: false})},	          
@@ -494,7 +495,8 @@ Ung.WebFilter = Ext.extend(Ung.Settings, {
 					fieldLabel: this.i18n._("Site"),
 					allowBlank: false, 
 					width: 200,
-					validator: urlValidator
+					validator: urlValidator,
+					blankText: this.i18n._("Invalid \"URL\" specified")
 				}),
 				new Ext.form.Checkbox({
 					name: "live",
