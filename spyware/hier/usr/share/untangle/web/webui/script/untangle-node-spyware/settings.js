@@ -249,13 +249,13 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
 			rowEditorInputLines: [
 				new Ext.form.TextField({
 					name: "string",
-					label: this.i18n._("Identification"),
+					fieldLabel: this.i18n._("Identification"),
 					allowBlank: false, 
 					width: 200
 				}),
 				new Ext.form.Checkbox({
 					name: "live",
-					label: this.i18n._("Block")
+					fieldLabel: this.i18n._("Block")
 				})
 			]
     	});
@@ -292,13 +292,13 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
 			rowEditorInputLines: [
 				new Ext.form.TextField({
 					name: "string",
-					label: this.i18n._("Identification"),
+					fieldLabel: this.i18n._("Identification"),
 					allowBlank: false, 
 					width: 200
 				}),
 				new Ext.form.Checkbox({
 					name: "live",
-					label: this.i18n._("Block")
+					fieldLabel: this.i18n._("Block")
 				})
 			]
     	});
@@ -338,19 +338,19 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
 			rowEditorInputLines: [
 				new Ext.form.TextField({
 					name: "name",
-					label: this.i18n._("Name"),
+					fieldLabel: this.i18n._("Name"),
 					allowBlank: false, 
 					width: 200
 				}),
 				new Ext.form.TextField({
 					name: "ipMaddr",
-					label: this.i18n._("Subnet"),
+					fieldLabel: this.i18n._("Subnet"),
 					allowBlank: false, 
 					width: 200
 				}),
 				new Ext.form.Checkbox({
 					name: "log",
-					label: this.i18n._("Log")
+					fieldLabel: this.i18n._("Log")
 				})
 			]
 			/*
@@ -404,17 +404,17 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
 			rowEditorInputLines: [
 				new Ext.form.TextField({
 					name: "string",
-					label: this.i18n._("Site"),
+					fieldLabel: this.i18n._("Site"),
 					allowBlank: false, 
 					width: 200
 				}),
 				new Ext.form.Checkbox({
 					name: "live",
-					label: this.i18n._("Pass")
+					fieldLabel: this.i18n._("Pass")
 				}),
 				new Ext.form.TextArea({
 					name: "description",
-					label: this.i18n._("Description"),
+					fieldLabel: this.i18n._("Description"),
 					width: 200,
 					height: 60
 				})
