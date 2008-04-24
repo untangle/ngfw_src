@@ -1707,7 +1707,9 @@ Ung.RowEditorWindow = Ext.extend(Ung.UpdateWindow, {
 		if(this.inputLines) {
     		for(var i=0;i<this.inputLines.length;i++) {
     			var inputLine=this.inputLines[i];
+    			inputLine.suspendEvents();
 				inputLine.setValue(record.get(inputLine.name));
+    			inputLine.resumeEvents();
 			}
 		}
 	},
@@ -1865,13 +1867,15 @@ Ext.grid.CheckColumn.prototype ={
             view.mainBody.on('mousedown', this.onMouseDown, this);
         }, this);
     },
-
+	changeRecord : function(record){
+        record.set(this.dataIndex, !record.data[this.dataIndex]);
+	},
     onMouseDown: function(e, t){
         if(t.className && t.className.indexOf('x-grid3-cc-'+this.id) != -1){
             e.stopEvent();
-            var index = this.grid.getView().findRowIndex(t);
-            var record = this.grid.store.getAt(index);
-            record.set(this.dataIndex, !record.data[this.dataIndex]);
+	        var index = this.grid.getView().findRowIndex(t);
+	        var record = this.grid.store.getAt(index);
+            this.changeRecord(record);
         }
     },
 

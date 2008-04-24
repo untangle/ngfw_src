@@ -122,7 +122,13 @@ Ung.WebFilter = Ext.extend(Ung.Settings, {
     // Block Categories
     buildBlacklistCategories: function() {
 	    var liveColumn = new Ext.grid.CheckColumn({
-	       header: this.i18n._("block"), dataIndex: 'blockDomains', fixed:true
+	       header: this.i18n._("block"), dataIndex: 'blockDomains', fixed:true,
+	       changeRecord: function(record) {
+	       		Ext.grid.CheckColumn.prototype.changeRecord.call(this,record);
+	       		if (record.get(this.dataIndex)){
+	       			record.set('logOnly', true);
+	       		}
+	       }
 	    });
 	    var logColumn = new Ext.grid.CheckColumn({
 	       header: this.i18n._("log"), dataIndex: 'logOnly', fixed:true
@@ -164,7 +170,16 @@ Ung.WebFilter = Ext.extend(Ung.Settings, {
 				}),
 				new Ext.form.Checkbox({
 					name: "blockDomains",
-					fieldLabel: this.i18n._("Block")
+					fieldLabel: this.i18n._("Block"),
+					listeners: {
+						"check": {
+							fn: function(elem, checked) {
+								if (checked){
+									this.gridBlacklistCategories.rowEditor.inputLines[2].setValue(true);
+								}
+							}.createDelegate(this)
+						}
+					}
 				}),
 				new Ext.form.Checkbox({
 					name: "logOnly",
