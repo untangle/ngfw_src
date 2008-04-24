@@ -84,6 +84,9 @@ Ung.Main.prototype = {
 		if(this.initSemaphore!==0) {
 			return;
 		}
+		
+		this.initExtI18n();
+		
 		// initialize viewport object
 		var contentLeftArr=[
 			'<div id="contentleft">',
@@ -146,6 +149,10 @@ Ung.Main.prototype = {
 		});
 		this.loadTools();
 		this.loadPolicies();
+	},
+	initExtI18n: function(){
+		Ext.form.Field.prototype.invalidText=i18n._('The value in this field is invalid');
+		Ext.form.TextField.prototype.blankText=i18n._('This field is required');
 	},
 	unactivateNode: function(mackageDesc) {
 		rpc.nodeManager.nodeInstances(function (result, exception) {

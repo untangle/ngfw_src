@@ -33,6 +33,7 @@
     <script type="text/javascript" src="script/untangle-node-shield/settings.js"></script>
     <script type="text/javascript" src="script/untangle-node-webfilter/settings.js"></script>
 -->	
+    <script type="text/javascript" src="script/untangle-node-shield/settings.js"></script>
     <script type="text/javascript" src="script/untangle-node-webfilter/settings.js"></script>
 	<script type="text/javascript">
 		function init() {
