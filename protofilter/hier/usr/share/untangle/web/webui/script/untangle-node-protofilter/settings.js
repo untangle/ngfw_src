@@ -33,7 +33,7 @@ Ung.Protofilter = Ext.extend(Ung.Settings, {
     		emptyRow: {"category":this.i18n._("[no category]"),"protocol":this.i18n._("[no protocol]"),"blocked":false,"log":false,"description":this.i18n._("[no description]"),"definition":this.i18n._("[no signature]")},
     		title: this.i18n._("Protocol List"),
     		//the column is autoexpanded if the grid width permits
-    		autoExpandColumn: 'category',
+    		autoExpandColumn: 'description',
     		recordJavaClass: "com.untangle.node.protofilter.ProtoFilterPattern",
     		//this is the function used by Ung.RpcProxy to retrive data from the server
     		proxyRpcFn: this.getRpcNode().getPatterns,
@@ -52,16 +52,16 @@ Ung.Protofilter = Ext.extend(Ung.Settings, {
 			//the list of columns for the column model
 			columns: [
 				{id:'id', dataIndex: 'id', hidden: true },
-				{id:'category',header: this.i18n._("category"), width: 140, dataIndex: 'category',
+				{id:'category',header: this.i18n._("category"), width: 200, dataIndex: 'category',
 					//this is a simple text editor
 					editor: new Ext.form.TextField({allowBlank: false})},
-				{id:'protocol',header: this.i18n._("protocol"), width: 100, dataIndex: 'protocol',
+				{id:'protocol',header: this.i18n._("protocol"), width: 200, dataIndex: 'protocol',
 					editor: new Ext.form.TextField({allowBlank: false})},
 				blockedColumn,
 				logColumn,
-				{id:'description',header: this.i18n._("description"), width: 120, dataIndex: 'description',
+				{id:'description',header: this.i18n._("description"), width: 200, dataIndex: 'description',
 					editor: new Ext.form.TextField({allowBlank: false})},
-				{id:'definition',header: this.i18n._("signature"), width: 120, dataIndex: 'definition',
+				{id:'definition',header: this.i18n._("signature"), width: 200, dataIndex: 'definition',
 					editor: new Ext.form.TextField({allowBlank: false})}
 			],
 			sortField: 'category',
@@ -71,33 +71,33 @@ Ung.Protofilter = Ext.extend(Ung.Settings, {
 			rowEditorInputLines: [
 				new Ext.form.TextField({
 					name: "category",
-					label: this.i18n._("Category"),
+					fieldLabel: this.i18n._("Category"),
 					allowBlank: false, 
 					width: 200
 				}),
 				new Ext.form.TextField({
 					name: "protocol",
-					label: this.i18n._("Protocol"),
+					fieldLabel: this.i18n._("Protocol"),
 					allowBlank: false, 
 					width: 200
 				}),
 				new Ext.form.Checkbox({
 					name: "blocked",
-					label: this.i18n._("Block")
+					fieldLabel: this.i18n._("Block")
 				}),
 				new Ext.form.Checkbox({
 					name: "log",
-					label: this.i18n._("Log")
+					fieldLabel: this.i18n._("Log")
 				}),
 				new Ext.form.TextArea({
 					name: "description",
-					label: this.i18n._("Description"),
+					fieldLabel: this.i18n._("Description"),
 					width: 200,
 					height: 60
 				}),
 				new Ext.form.TextArea({
 					name: "definition",
-					label: this.i18n._("Signature"),
+					fieldLabel: this.i18n._("Signature"),
 					width: 200,
 					height: 60
 				})
