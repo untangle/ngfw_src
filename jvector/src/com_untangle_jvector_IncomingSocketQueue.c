@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -40,21 +40,21 @@
  * Method:    create
  * Signature: ()I
  */
-JNIEXPORT jint JNICALL Java_com_untangle_jvector_IncomingSocketQueue_create
+JNIEXPORT jlong JNICALL Java_com_untangle_jvector_IncomingSocketQueue_create
   (JNIEnv* env, jobject _this )
 {
     jvector_sink_t* snk;
     mvpoll_key_t*   key;
 
     if (( key = socket_queue_key_create( _this )) == NULL ) {
-        return (jint)errlog_null( ERR_CRITICAL, "socket_queue_key_create\n" );
+        return (jlong)errlog_null( ERR_CRITICAL, "socket_queue_key_create\n" );
     }
     
     if (( snk = jvector_sink_create( _this, key )) == NULL ) {
-        return (jint)errlog_null( ERR_CRITICAL, "jvector_sink_create\n" );
+        return (jlong)errlog_null( ERR_CRITICAL, "jvector_sink_create\n" );
     }
 
-    return (jint)snk;
+    return (jlong)snk;
 }
 
 /*
@@ -63,7 +63,7 @@ JNIEXPORT jint JNICALL Java_com_untangle_jvector_IncomingSocketQueue_create
  * Signature: (II)V
  */
 JNIEXPORT void JNICALL Java_com_untangle_jvector_IncomingSocketQueue_mvpollNotifyObservers
-  (JNIEnv* env, jclass _this, jint pointer, jint eventmask )
+  (JNIEnv* env, jclass _this, jlong pointer, jint eventmask )
 {
     jvector_sink_t* jv_snk = (jvector_sink_t*)pointer;
     

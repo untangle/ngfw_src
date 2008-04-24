@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -39,14 +39,14 @@
 
 #include "com_untangle_jvector_TCPSource.h"
 
-static int _source_get_fd( jint pointer );
+static int _source_get_fd( jlong pointer );
 
 /*
  * Class:     TCPSource
  * Method:    create
  * Signature: (I)I
  */
-JNIEXPORT jint JNICALL Java_com_untangle_jvector_TCPSource_create
+JNIEXPORT jlong JNICALL Java_com_untangle_jvector_TCPSource_create
   (JNIEnv *env, jobject _this, jint fd )
 {
     jvector_source_t* src;
@@ -54,18 +54,18 @@ JNIEXPORT jint JNICALL Java_com_untangle_jvector_TCPSource_create
 
     /* Set to non-blocking */
     if ( unet_blocking_disable( fd ) < 0 ) {
-        return (jint)jmvutil_error_null( JMVUTIL_ERROR_STT, ERR_CRITICAL, "unet_blocking_disable\n" );
+        return (jlong)jmvutil_error_null( JMVUTIL_ERROR_STT, ERR_CRITICAL, "unet_blocking_disable\n" );
     }
 
     if (( key = mvpoll_key_fd_create( fd )) == NULL ) {
-        return (jint)jmvutil_error_null( JMVUTIL_ERROR_STT, ERR_CRITICAL, "mvpoll_key_fd_create\n" );
+        return (jlong)jmvutil_error_null( JMVUTIL_ERROR_STT, ERR_CRITICAL, "mvpoll_key_fd_create\n" );
     }
 
     if (( src = jvector_source_create( _this, key )) == NULL ) {
-        return (jint)jmvutil_error_null( JMVUTIL_ERROR_STT, ERR_CRITICAL, "jvector_source_create\n" );
+        return (jlong)jmvutil_error_null( JMVUTIL_ERROR_STT, ERR_CRITICAL, "jvector_source_create\n" );
     }
     
-    return (jint)src;    
+    return (jlong)src;    
 }
 
 /*
@@ -74,7 +74,7 @@ JNIEXPORT jint JNICALL Java_com_untangle_jvector_TCPSource_create
  * Signature: (I[B)I
  */
 JNIEXPORT jint JNICALL Java_com_untangle_jvector_TCPSource_read
-(JNIEnv *env, jclass _this, jint pointer, jbyteArray _data )
+(JNIEnv *env, jclass _this, jlong pointer, jbyteArray _data )
 {
     jbyte* data;
     int ret = 0;
@@ -159,14 +159,14 @@ JNIEXPORT jint JNICALL Java_com_untangle_jvector_TCPSource_read
 
 /* XX May need to throw an error */
 JNIEXPORT jint JNICALL Java_com_untangle_jvector_TCPSource_shutdown
-(JNIEnv *env, jclass _this, jint pointer)
+(JNIEnv *env, jclass _this, jlong pointer)
 {
     jvector_source_t* jv_src = (jvector_source_t*)pointer;
     int fd;
     
     if ( jv_src == NULL || jv_src->key == NULL ) return errlogargs();
     
-    fd = (int)jv_src->key->data;
+    fd = jv_src->key->data.fd;
     // jv_src->key->data = (void*)-1;
     /* Do not NULL here, it is used later */
     
@@ -184,11 +184,11 @@ JNIEXPORT jint JNICALL Java_com_untangle_jvector_TCPSource_shutdown
     return 0;
 }
 
-static int _source_get_fd( jint pointer )
+static int _source_get_fd( jlong pointer )
 {
-    if ( pointer == (jint)NULL ) return errlog( ERR_CRITICAL, "Invalid pointer\n" );
+    if ( pointer == (jlong)NULL ) return errlog( ERR_CRITICAL, "Invalid pointer\n" );
     
-    return (int)((jvector_source_t*)pointer)->key->data;
+    return ((jvector_source_t*)pointer)->key->data.fd;
 }
 
 

@@ -96,6 +96,6 @@ public class UDPSource extends Source
      *
      * @param pointer - Pointer to the UDP mailbox.
      */
-    protected native int create( int pointer );
-    protected static native int shutdown( int pointer, int mailboxPointer );
+    protected native long create( long pointer );
+    protected static native int shutdown( long pointer, long mailboxPointer );
 }

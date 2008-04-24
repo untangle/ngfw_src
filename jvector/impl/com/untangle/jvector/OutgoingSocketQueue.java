@@ -315,6 +315,6 @@ public class OutgoingSocketQueue extends Source
         }
     }
 
-    private native int create();
-    private native void mvpollNotifyObservers( int pointer, int eventMask );
+    private native long create();
+    private native void mvpollNotifyObservers( long pointer, int eventMask );
 }

@@ -61,33 +61,33 @@ static int _accept_packet( char* data, int data_len, netcap_pkt_t* pkt );
  * Method:    create
  * Signature: (I)I
  */
-JNIEXPORT jint JNICALL Java_com_untangle_jvector_UDPSink_create
-( JNIEnv *env, jobject _this, jint pointer )
+JNIEXPORT jlong JNICALL Java_com_untangle_jvector_UDPSink_create
+( JNIEnv *env, jobject _this, jlong pointer )
 {
     jvector_sink_t* snk;
     mvpoll_key_t* key;
     
 
     /* XXX What is this about */
-    if (( key = malloc( sizeof( mvpoll_key_t ))) == NULL ) return (jint)errlogmalloc_null();
+    if (( key = malloc( sizeof( mvpoll_key_t ))) == NULL ) return (jlong)errlogmalloc_null();
 
-    if ( mvpoll_key_base_init( key ) < 0 ) return (jint)errlog( ERR_CRITICAL, "mvpoll_key_base_init\n" );
+    if ( mvpoll_key_base_init( key ) < 0 ) return (jlong)errlog_null( ERR_CRITICAL, "mvpoll_key_base_init\n" );
 
     key->type            = JV_UDP_KEY_TYPE;
     key->arg             = NULL;
     key->special_destroy = NULL;
-    key->data            = NULL;
+    key->data.ptr        = NULL;
     key->poll            = _poll;
     
     if (( snk = jvector_sink_create( _this, key )) == NULL ) {
-        return (jint)errlog_null( ERR_CRITICAL, "jvector_sink_create\n" );
+        return (jlong)errlog_null( ERR_CRITICAL, "jvector_sink_create\n" );
     }
     
-    return (jint)snk;    
+    return (jlong)snk;    
 }
 
 JNIEXPORT jint JNICALL Java_com_untangle_jvector_UDPSink_write
-    ( JNIEnv *env, jobject _this, jint pointer, jbyteArray _data, jint offset, jint size,
+    ( JNIEnv *env, jobject _this, jlong pointer, jbyteArray _data, jint offset, jint size,
       jint ttl, jint tos, jbyteArray options, jboolean is_udp, jlong src_address )
 {
     jbyte* data;
@@ -162,7 +162,7 @@ JNIEXPORT jint JNICALL Java_com_untangle_jvector_UDPSink_write
  * Signature: (I)I
  */
 JNIEXPORT jint JNICALL Java_com_untangle_jvector_UDPSink_shutdown
-  (JNIEnv *env, jclass _this, jint pointer)
+  (JNIEnv *env, jclass _this, jlong pointer)
 {
     /* Not much to do here */
     return 0;

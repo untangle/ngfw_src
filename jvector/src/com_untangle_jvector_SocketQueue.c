@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -52,11 +52,11 @@ static eventmask_t   _poll_wrapper (mvpoll_key_t* key)
     JNIEnv* env   = jmvutil_get_java_env();
     eventmask_t mask;
 
-    if ( sq_key == NULL || sq_key->key.data == NULL ) return errlogargs();
+    if ( sq_key == NULL || sq_key->key.data.ptr == NULL ) return errlogargs();
 
     if ( env == NULL ) return errlog( ERR_CRITICAL, "jmvutil_get_java_env" );
 
-    mask = (eventmask_t)(*env)->CallIntMethod( env, sq_key->key.data, sq_key->mid.poll );
+    mask = (eventmask_t)(*env)->CallIntMethod( env, sq_key->key.data.ptr, sq_key->mid.poll );
     
     if ( jmvutil_error_exception_clear() < 0 ) return errlog( ERR_CRITICAL, "Exception calling poll\n" );
     
@@ -97,7 +97,7 @@ int               socket_queue_key_init       ( mvpoll_key_t* key, jobject this 
     key->poll            = _poll_wrapper;
     key->special_destroy = _sq_key_destroy;
 
-    if (( key->data = (void*)(*env)->NewGlobalRef( env, this )) == NULL ) {
+    if (( key->data.ptr = (void*)(*env)->NewGlobalRef( env, this )) == NULL ) {
         return errlog( ERR_CRITICAL, "NewGlobalRef\n" );
     }
     
@@ -130,7 +130,7 @@ static int _sq_key_destroy ( mvpoll_key_t* key )
 
     if (( env = jmvutil_get_java_env()) == NULL ) return errlog( ERR_CRITICAL, "jmvutil_get_java_env\n" );
 
-    if ( key->data != NULL ) (*env)->DeleteGlobalRef( env, key->data );
+    if ( key->data.ptr != NULL ) (*env)->DeleteGlobalRef( env, key->data.ptr );
     
     return 0;
 }

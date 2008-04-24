@@ -82,7 +82,7 @@ public class TCPSource extends Source
         return shutdown( pointer );
     }
 
-    protected native int create( int fd );
+    protected native long create( int fd );
 
     /**
      * Read data from the associated filedescriptor.</p>
@@ -93,6 +93,6 @@ public class TCPSource extends Source
      * Throws an error if the file descriptor is invalid, or there is an error
      * reading data from the file descriptor
      */
-    protected static native int read( int pointer, byte[] data );
-    protected static native int shutdown( int pointer );
+    protected static native int read( long pointer, byte[] data );
+    protected static native int shutdown( long pointer );
 }

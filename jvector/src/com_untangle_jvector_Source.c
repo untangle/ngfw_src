@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -35,7 +35,7 @@
 #include "com_untangle_jvector_Source.h"
 
 JNIEXPORT void JNICALL Java_com_untangle_jvector_Source_raze
-    ( JNIEnv *env, jobject _this, jint pointer )
+    ( JNIEnv *env, jobject _this, jlong pointer )
 {
     jvector_source_t* jv_src = (jvector_source_t*)pointer;
     
