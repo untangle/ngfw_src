@@ -301,13 +301,16 @@ Ung.AppItem = Ext.extend(Ext.Component, {
     operationSemaphore: false,
     autoEl: 'div',
     state: null,
+    // install button
     buttonInstall: null,
+    // store button
     buttonStore: null,
+    //progress bar component
+    progressBar: null,
     constructor: function(config) {
 		this.id="appItem_"+config.item.name;
     	Ung.AppItem.superclass.constructor.apply(this, arguments);
     },	
-    
     // private
     onRender : function(container, position) {
     	Ung.AppItem.superclass.onRender.call(this,container, position);
@@ -354,7 +357,7 @@ Ung.AppItem = Ext.extend(Ext.Component, {
 			this.buttonStore.setVisible(false);
         }
 	},
-	// get the node name associated with the App, if 
+	// get the node name associated with the App
 	getNodeName: function() {
 		var nodeName=null; // for libitems with no trial node return null
 		if(this.item.type=="NODE") { // for simple nodes return node name
@@ -364,6 +367,7 @@ Ung.AppItem = Ext.extend(Ext.Component, {
 		}
 		return nodeName;
 	},
+	//  get the node mackage desc associated with the App
 	getNodeItem: function() {
 		var md=null; // for libitems with no trial node return null
 		if(this.item.type=="NODE") { // for simple nodes return node name
@@ -431,12 +435,12 @@ Ung.AppItem = Ext.extend(Ext.Component, {
 		this.state=newState;
 		
 	},
+	//display Buttons xor Progress barr
 	displayButtonsOrProgress: function (displayButtons) {
 		this.buttonInstall.setVisible(displayButtons);
 		this.buttonStore.setVisible(displayButtons);
 		if(displayButtons) {
-			this.progressBar.reset();
-			this.progressBar.hide()
+			this.progressBar.reset(true);
 		} else {
 			this.progressBar.show();
 		}
@@ -619,23 +623,96 @@ Ext.ComponentMgr.registerType('ungButton', Ung.Button);
 
 //Node Class
 Ung.Node = Ext.extend(Ext.Component, {
-	initComponent : function(){
-	    Ung.Node.superclass.initComponent.call(this);
-	},
-	hidden: false,
-	disabled: false,
-	
-	name: "",
-	displayName: "",
-	image: "",
-	state: "", // On, Off, Attention, Stopped
-	powerOn: false,
+	autoEl: "div",	
+	//---Node specific attributes------
+	//node name
+	name: null,
+	//node image
+	image: null,
+	//mackage description
+	md: null,
+	//--------------------------------
+	// node state
+	state: null, // On, Off, Attention, Stopped
+	//is powered on,
+	powerOn: null,
+	//running state
 	runState: "INITIALIZED", // RUNNING, INITIALIZED
-	webContext: "",
-	viewPosition: "",
+	
+	//settings Component
 	settings: null,
+	//settings Window
+	settingsWin: null,
+	//settings Class name
 	settingsClassName: null,
-	stats: null, //last blinger data received
+	//last blinger data received
+	stats: null,
+	subCmps: null,
+    constructor: function(config) {
+		this.subCmps=[];
+    	Ung.Window.superclass.constructor.apply(this, arguments);
+    },
+	//before Destroy
+	beforeDestroy : function(){
+		Ext.each(this.subCmps,Ext.destroy);
+		Ext.get('nodePower_'+this.getId()).removeAllListeners();
+		Ext.destroy(
+			this.settingsWin,
+			this.settings
+		);
+        Ung.Node.superclass.beforeDestroy.call(this);
+    },
+	onRender: function(container, position) {
+       	Ung.Node.superclass.onRender.call(this, container, position);
+        this.getEl().addClass("node");
+        this.getEl().set({'viewPosition':this.md.viewPosition});
+        var el= document.createElement("div");
+        
+       	var trialFlag="";
+       	var trialDays="";
+       	if(this.md.extraName!=null && this.md.extraName.indexOf("Trial")!=-1) {
+       		trialFlag=i18n._("Trial");
+       		var daysRemain=parseInt(this.md.extraName.replace("Trial (",""))
+       		trialDays=i18n.sprintf(i18n._("%s days remain"),daysRemain);
+       	}
+       	var templateHTML=Ung.Node.template.applyTemplate({'id':this.getId(),'image':this.image,'displayName':i18n._(this.md.displayName),'trialDays':trialDays,'trialFlag':trialFlag});
+        this.getEl().insertHtml("afterBegin",templateHTML);
+      
+		Ext.get('nodePower_'+this.getId()).on('click', this.onPowerClick, this);
+		this.subCmps.push(new Ext.ToolTip({
+		  html: Ung.Node.getStatusTip(),
+		  target: 'nodeState_'+this.getId(),
+		  autoWidth: true,
+		  autoHeight: true,
+		  showDelay: 20,
+		  dismissDelay: 0,
+		  hideDelay: 0
+		}));
+		this.subCmps.push(new Ext.ToolTip({
+		  html: Ung.Node.getPowerTip(),
+		  target: 'nodePower_'+this.getId(),
+		  autoWidth: true,
+		  autoHeight: true,
+		  showDelay: 20,
+		  dismissDelay: 0,
+		  hideDelay: 0
+		}));
+		this.subCmps.push(new Ext.Button({
+	        iconCls: 'nodeSettingsIcon',
+			renderTo: 'nodeSettingsButton_'+this.getId(),
+	        text: i18n._('Show Settings'),
+	        handler: function() {this.onSettingsAction();}.createDelegate(this)
+        }));
+		this.subCmps.push(new Ext.Button({
+	        iconCls: 'iconHelp',
+			renderTo: 'nodeHelpButton_'+this.getId(),
+	        text: i18n._('Help'),
+	        handler: function() {this.onHelpAction();}.createDelegate(this)
+        }));
+        this.updateRunState(this.runState);
+       	this.initBlingers();
+	},
+	//is runState "RUNNING"
 	isRunning: function() {
 		return (this.runState=="RUNNING")
 	},
@@ -690,22 +767,22 @@ Ung.Node = Ext.extend(Ext.Component, {
        		}.createDelegate(this));
        	}
 	},
-
-	onHelpClick: function () {
-       	var helpLink=main.getHelpLink(this.displayName);
+	// on click help
+	onHelpAction: function () {
+       	var helpLink=main.getHelpLink(this.md.displayName);
        	if(helpLink!==null && helpLink.length>0) {
        		window.open(helpLink);
        	}
 	},
-        
-	onSettingsClick: function() {
+	//on click settings
+	onSettingsAction: function() {
+		if(!this.settingsWin) {
+			this.settingsWin=new Ung.NodeSettingsWin({nodeCmp:this});
+		}
        	this.settingsWin.show();
-       	this.settingsWin.setPosition(220,0);
-       	var objSize=main.viewport.getSize();
-       	objSize.width=objSize.width-220;
-       	this.settingsWin.setSize(objSize);
        	this.loadSettings();
 	},
+	//load Node Context
 	loadNodeContext: function() {
 		if(this.nodeContext===undefined) {
     		this.nodeContext=rpc.nodeManager.nodeContext(this.Tid);
@@ -717,7 +794,20 @@ Ung.Node = Ext.extend(Ext.Component, {
 			this.nodeContext.nodeDesc=this.nodeContext.getNodeDesc();
 		}
 	},
-	initSettings: function(force) {
+	loadSettings: function() {
+       	if(this.settings) {
+       		this.settings.destroy();
+       		this.settings=null;
+       	}
+    	this.settingsClassName=Ung.Settings.getClassName(this.name);
+    	if(!this.settingsClassName) {
+        	//dynamicaly load node javaScript 
+        	var exception = Ung.Settings.loadNodeScript(this.name);
+        	if(exception) { 
+        		Ext.MessageBox.alert(i18n._("Failed"),exception.message); 
+				return;
+			}
+        }
     	this.loadNodeContext();
 		if(!Ung.i18nNodeInstances[this.name]) {
 			Ext.Ajax.request({
@@ -730,45 +820,30 @@ Ung.Node = Ext.extend(Ext.Component, {
 					var jsonResult=Ext.util.JSON.decode(result.responseText);
 					var cmp=Ext.getCmp(request.parentId);
 					Ung.i18nNodeInstances[cmp.name]=new Ung.NodeI18N({"map":i18n.map, "nodeMap":jsonResult});
-					cmp.postInitSettings()
+					cmp.renderSettings()
 				},
 				failure: function ( result, request) { 
 					Ext.MessageBox.alert(i18n._("Failed"), i18n._("Failed loading I18N translations for this node") ); 
 				}
 			});
 		} else {
-			this.postInitSettings();
+			this.renderSettings();
 		}
 	},
-	postInitSettings: function() {
-       	if(this.settings) {
-       		this.settings.destroy();
-       		this.settings=null;
-       	}
+	//render settings component
+	renderSettings: function() {
       	if(this.settingsClassName!==null) {
        		eval('this.settings=new '+this.settingsClassName+'({\'node\':this,\'tid\':this.tid,\'name\':this.name});');
-       		this.settings.render('settings_'+this.getId());
+       		this.settings.render(this.settingsWin.getContentEl());
        	} else {
-       		var settingsContent=document.getElementById('settings_'+this.getId());
-       		settingsContent.innerHTML="Error: There is no settings class for the node '"+this.name+"'.";
+       		var settingsContentEl=this.settingsWin.getContentEl(); 
+       		settingsContentEl.innerHTML="Error: There is no settings class for the node '"+this.name+"'.";
        	}
 	},
 	
-	loadSettings: function() {
-        	this.settingsClassName=Ung.Settings.getClassName(this.name);
-        	if(!this.settingsClassName) {
-	        	Ung.Settings.loadNodeScript(this.name, this.getId(), function(cmpId) {
-	        		var cmp=Ext.getCmp(cmpId);
-	        		cmp.settingsClassName=Ung.Settings.getClassName(cmp.name);
-	        		cmp.initSettings();
-	        	});
-	        } else {
-	        	this.initSettings();
-	        }
-	},
-	
-	onRemoveClick: function() {
-       	var message="Warning:\n"+i18n._(this.displayName)+" is about to be removed from the rack.\nIts settings will be lost and it will stop processing netwotk traffic.\n\nWould you like to continue removing?"; 
+	// remove node
+	removeAction: function() {
+       	var message="Warning:\n"+i18n._(this.md.displayName)+" is about to be removed from the rack.\nIts settings will be lost and it will stop processing netwotk traffic.\n\nWould you like to continue removing?"; 
        	if(!confirm(message)) {
        		return;
        	}
@@ -798,17 +873,7 @@ Ung.Node = Ext.extend(Ext.Component, {
 			}
 		}.createDelegate(this), this.Tid);
 	},
-	
-	onSaveClick: function() {
-       	if(this.settings) {
-       		this.settings.save();
-       	}
-	},
-	
-	onCancelClick: function() {
-       	this.settingsWin.cancelAction();
-	},
-	
+	// initialize blingers
 	initBlingers: function () {
        	if(this.blingers!==null) {
        		var nodeBlingers=document.getElementById('nodeBlingers_'+this.getId());
@@ -816,128 +881,10 @@ Ung.Node = Ext.extend(Ext.Component, {
        			var blingerData=this.blingers[i];
        			blingerData.parentId=this.getId();
        			blingerData.id="blinger_"+this.getId()+"_"+i;
-      				eval('var blinger=new Ung.'+blingerData.type+'(blingerData);');
-      				blinger.render('nodeBlingers_'+this.getId());
-       			//this.blingers[i].id=blinger.id;
-       			
+  				eval('var blinger=new Ung.'+blingerData.type+'(blingerData);');
+  				blinger.render('nodeBlingers_'+this.getId());
        		}
        	}
-	},
-	beforeDestroy : function(){
-		Ext.destroy(
-			this.settingsWin,
-			this.settings
-		);
-        Ung.Node.superclass.beforeDestroy.call(this);
-    },
-	onRender: function(container, position) {
-       	//Ung.Node.superclass.onRender.call(this, ct, position);
-        var el= document.createElement("div");
-        el.setAttribute('viewPosition',this.viewPosition);
-        container.dom.insertBefore(el, position);
-       	this.el = Ext.get(el);
-       	this.el.addClass("node");
-       	var trialFlag="";
-       	var trialDays="";
-       	if(this.md.extraName!=null && this.md.extraName.indexOf("Trial")!=-1) {
-       		trialFlag=i18n._("Trial");
-       		var daysRemain=parseInt(this.md.extraName.replace("Trial (",""))
-       		trialDays=i18n.sprintf(i18n._("%s days remain"),daysRemain);
-       	}
-       	var templateHTML=Ung.Node.template.applyTemplate({'id':this.getId(),'image':this.image,'displayName':i18n._(this.displayName),'trialDays':trialDays,'trialFlag':trialFlag});
-        this.getEl().insertHtml("afterBegin",templateHTML);
-      
-	    var settingsHTML=Ung.Node.templateSettings.applyTemplate({'id':this.getId()});
-	    var settingsButtonsHTML=Ung.Node.templateSettingsButtons.applyTemplate({'id':this.getId()});
-	    //Ext.MessageBox.alert(i18n._("Failed"),settingsHTML);
-	    this.settingsWin=new Ext.Window({
-			id: 'settingsWin_'+this.getId(),
-			layout:'border',
-			modal:true,
-			title:'Settings Window',
-			closeAction:'cancelAction',
-			autoCreate:true,
-			width:740,
-			height:690,
-			draggable:false,
-			resizable:false,
-			items: [{
-		        region:"center",
-		        html: settingsHTML,
-		        border: false,
-		        autoScroll: true,
-		        cls: 'windowBackground',
-		        bodyStyle: 'background-color: transparent;'
-		    	}, 
-		    	{
-		    	region: "south",
-		    	html: settingsButtonsHTML,
-		        border: false,
-		        height:40,
-		        cls: 'windowBackground',
-		        bodyStyle: 'background-color: transparent;'
-		    	}
-			],
-			cancelAction: function() {
-				Ext.destroy(this.settings);
-				this.settings=null;
-				this.settingsWin.hide();
-			}.createDelegate(this)
-           });
-		this.settingsWin.render('container');
-
-		Ext.get('nodePower_'+this.getId()).on('click', this.onPowerClick, this);
-		var cmp=null;
-		cmp=new Ext.ToolTip({
-		  html: Ung.Node.getStatusTip(),
-		  target: 'nodeState_'+this.getId(),
-		  autoWidth: true,
-		  autoHeight: true,
-		  showDelay: 0,
-		  dismissDelay: 0,
-		  hideDelay: 0
-		});
-		cmp=new Ext.ToolTip({
-		  html: Ung.Node.getPowerTip(),
-		  target: 'nodePower_'+this.getId(),
-		  autoWidth: true,
-		  autoHeight: true,
-		  showDelay: 0,
-		  dismissDelay: 0,
-		  hideDelay: 0
-		});
-		cmp=new Ext.Button({
-	        iconCls: 'nodeSettingsIcon',
-			renderTo: 'nodeSettingsButton_'+this.getId(),
-	        text: i18n._('Show Settings'),
-	        handler: function() {this.onSettingsClick();}.createDelegate(this)
-        });
-		cmp=new Ext.Button({
-	        iconCls: 'iconHelp',
-			renderTo: 'nodeHelpButton_'+this.getId(),
-	        text: i18n._('Help'),
-	        handler: function() {this.onHelpClick();}.createDelegate(this)
-        });
-		cmp=new Ext.Button({
-			iconCls: 'nodeRemoveIcon',
-			renderTo: 'nodeRemoveButton_'+this.getId(),
-	        text: i18n._('Remove'),
-	        handler: function() {this.onRemoveClick();}.createDelegate(this)
-        });
-		cmp=new Ext.Button({
-	        iconCls: 'cancelIcon',
-			renderTo: 'nodeCancelButton_'+this.getId(),
-	        text: i18n._('Cancel'),
-	        handler: function() {this.onCancelClick();}.createDelegate(this)
-        });
-		cmp=new Ext.Button({
-	        iconCls: 'saveIcon',
-			renderTo: 'nodeSaveButton_'+this.getId(),
-	        text: i18n._('Save'),
-	        handler: function() {this.onSaveClick();}.createDelegate(this)
-        });
-        this.updateRunState(this.runState);
-       	this.initBlingers();
 	}
 });
 // Get node component by nodeId
@@ -967,12 +914,6 @@ Ung.Node.template = new Ext.Template(
 '<div class="nodeSettingsButton" id="nodeSettingsButton_{id}"></div>',
 '<div class="nodeHelpButton" id="nodeHelpButton_{id}"></div>');
 
-Ung.Node.templateSettings=new Ext.Template(
-'<div class="nodeSettingsContent" id="settings_{id}"></div>');
-Ung.Node.templateSettingsButtons=new Ext.Template(
-'<div class="nodeRemoveButton" id="nodeRemoveButton_{id}"></div>',
-'<div class="nodeCancelButton" id="nodeCancelButton_{id}"></div>',
-'<div class="nodeSaveButton" id="nodeSaveButton_{id}"></div>');
 
 //Blinger Manager object
 Ung.BlingerManager = {
@@ -1288,8 +1229,8 @@ Ung.Settings = Ext.extend(Ext.Component, {
 Ung.Settings._nodeScripts={};
 
 // Dynamically loads javascript file for a node
-Ung.Settings.loadNodeScript=function(nodeName,cmpId,callbackFn) {
-	main.loadScript('script/'+nodeName+'/settings.js',function() {callbackFn(cmpId);});
+Ung.Settings.loadNodeScript=function(nodeName) {
+	main.loadScript('script/'+nodeName+'/settings.js');
 };
 Ung.Settings._classNames={};
 
@@ -1489,23 +1430,13 @@ Ung.Window = Ext.extend(Ext.Window, {
     show: function() {
     	Ung.Window.superclass.show.call(this);
 		if(this.sizeToRack) {
-			this.setPosition(220,0);
+			this.setPosition(main.contentLeftWidth,0);
 			var objSize=main.viewport.getSize();
-			objSize.width=objSize.width-220;
+			objSize.width=objSize.width-main.contentLeftWidth;
 			this.setSize(objSize);
 		}
     }
 });
-Ung.Window.buttonsTemplate=new Ext.Template(
-'<div class="buttonHelpPos" id="button_help_{id}"></div>',
-'<div class="buttonsRightPos">',
-'<table cellspacing="0" cellpadding="0" border="0" style="width: auto;">',
-'<tr><td><div style="margin-right: 10px;" id="button_cancel_{id}"></div></td>',
-'<td><div id="button_update_{id}"></div></td></tr>',
-'</table>',
-'</div>'
-);
-
 
 //update window
 // has the content and 3 standard buttons: help, cancel, Update
@@ -1530,14 +1461,14 @@ Ung.UpdateWindow = Ext.extend(Ung.Window, {
 		}
 		this.items= [{
 			region: "center",
-			html: '<div id="window_content_'+this.getId()+'">'+this.contentHtml+'</div>',
+			html: '<div class="windowContent" id="window_content_'+this.getId()+'">'+this.contentHtml+'</div>',
 			border: false,
 			autoScroll: true,
 			cls: 'windowBackground',
 			bodyStyle: 'background-color: transparent;'
 		},{
 			region: "south",
-			html: Ung.Window.buttonsTemplate.applyTemplate({id:this.getId()}),
+			html: Ung.UpdateWindow.buttonsTemplate.applyTemplate({id:this.getId()}),
 			border: false,
 			height:40,
 			cls: 'windowBackground',
@@ -1585,6 +1516,16 @@ Ung.UpdateWindow = Ext.extend(Ung.Window, {
 	}
 });
 
+//buttons Template
+Ung.UpdateWindow.buttonsTemplate=new Ext.Template(
+'<div class="buttonsLeftPos" id="button_help_{id}"></div>',
+'<div class="buttonsRightPos">',
+'<table cellspacing="0" cellpadding="0" border="0" style="width: auto;">',
+'<tr><td><div style="margin-right: 10px;" id="button_cancel_{id}"></div></td>',
+'<td><div id="button_update_{id}"></div></td></tr>',
+'</table>',
+'</div>'
+);
 // Manage list popup window 
 Ung.ManageListWindow = Ext.extend(Ung.UpdateWindow, {
 	// the editor grid
@@ -1663,7 +1604,7 @@ Ung.RowEditorWindow = Ext.extend(Ung.UpdateWindow, {
 	        labelWidth: 75,
 	        buttonAlign: 'right',
 	        border: false,
-	        bodyStyle: 'padding:10px 10px 0;',
+	        bodyStyle: 'padding:10px 10px 0px 10px;',
 	        defaults: {
 	            selectOnFocus: true,
 	            msgTarget: 'side'
@@ -1683,7 +1624,7 @@ Ung.RowEditorWindow = Ext.extend(Ung.UpdateWindow, {
 			this.setSize(objSize);
 		}
 		if(this.formPanel) {
-			this.formPanel.setHeight(this.getContentHeight());
+			this.formPanel.setHeight(this.getContentHeight()-10);
 		}
     },
     // populate is called whent a record is edited, tot populate the edit window
@@ -1733,6 +1674,7 @@ Ung.RowEditorWindow = Ext.extend(Ung.UpdateWindow, {
 		this.hide();
 	}	
 });
+
 
 //RpcProxy
 // uses json rpc to get the information from the server
@@ -2278,3 +2220,93 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 	}
 
 });
+
+//Node Settings Window
+Ung.NodeSettingsWin=Ext.extend(Ung.Window, {
+	nodeCmp: null,
+	layout:'border',
+	title: null,
+	// content html
+	contentHtml: null,
+	// buttons html
+	closeAction:'cancelAction',
+	// get the content element
+	getContentEl: function() {
+		return document.getElementById("window_content_"+this.getId());
+	},
+	// get the content element height
+	getContentHeight: function() {
+		return this.items.get(0).getEl().getHeight(true);
+	},
+	initComponent: function() {
+		if(!this.contentHtml) {
+			this.contentHtml="";
+		}
+		if(!this.title) {
+			this.title=i18n._('Settings Window');
+		}
+		this.items= [{
+			region: "center",
+			html: '<div class="windowContent" id="window_content_'+this.getId()+'">'+this.contentHtml+'</div>',
+			border: false,
+			autoScroll: true,
+			cls: 'windowBackground',
+			bodyStyle: 'background-color: transparent;'
+		},{
+			region: "south",
+			html: Ung.NodeSettingsWin.buttonsTemplate.applyTemplate({id:this.getId()}),
+			border: false,
+			height:40,
+			cls: 'windowBackground',
+			bodyStyle: 'background-color: transparent;'
+		}];
+		Ung.UpdateWindow.superclass.initComponent.call(this);
+	},
+	afterRender: function() {
+		Ung.UpdateWindow.superclass.afterRender.call(this);
+		this.initButtons.defer(1, this);
+	},
+	initButtons: function() {
+		this.subCmps.push(new Ext.Button({
+			iconCls: 'nodeRemoveIcon',
+			renderTo: 'button_remove_'+this.getId(),
+	        text: i18n._('Remove'),
+	        handler: function() {this.removeAction();}.createDelegate(this)
+        }));
+		this.subCmps.push(new Ext.Button({
+	        iconCls: 'cancelIcon',
+			renderTo: 'button_cancel_'+this.getId(),
+	        text: i18n._('Cancel'),
+	        handler: function() {this.cancelAction();}.createDelegate(this)
+        }));
+		this.subCmps.push(new Ext.Button({
+	        iconCls: 'saveIcon',
+			renderTo: 'button_save_'+this.getId(),
+	        text: i18n._('Save'),
+	        handler: function() {this.saveAction();}.createDelegate(this)
+        }));
+	},
+	removeAction: function() {
+		this.nodeCmp.removeAction();
+	},
+	cancelAction: function() {
+		Ext.destroy(this.nodeCmp.settings);
+		this.nodeCmp.settings=null;
+		this.hide();
+	},
+	saveAction: function() {
+		if(this.nodeCmp.settings) {
+       		this.nodeCmp.settings.save();
+       	}
+	}
+});
+//buttons Template
+Ung.NodeSettingsWin.buttonsTemplate=new Ext.Template(
+'<div class="buttonsLeftPos" id="button_remove_{id}"></div>',
+'<div class="buttonsRightPos">',
+'<table cellspacing="0" cellpadding="0" border="0" style="width: auto;">',
+'<tr><td><div style="margin-right: 10px;" id="button_cancel_{id}"></div></td>',
+'<td><div id="button_save_{id}"></div></td></tr>',
+'</table>',
+'</div>'
+);

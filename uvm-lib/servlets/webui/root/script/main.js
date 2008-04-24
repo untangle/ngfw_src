@@ -25,6 +25,7 @@ Ung.Main.prototype = {
 	viewport: null,
 	initSemaphore: null,
 	policySemaphore: null,
+	contentLeftWidth: 220,
 	//the application build version
 	version: null,
 	networkingWin: null,
@@ -114,7 +115,7 @@ Ung.Main.prototype = {
                     region:'west',
                     id: 'west',
                     html: contentLeftArr.join(""),
-                    width: 220,
+                    width: this.contentLeftWidth,
                     border: false
                  },{
                     region:'center',
@@ -198,7 +199,7 @@ Ung.Main.prototype = {
 		});
 	},
 	//Load script file dynamically 
-	loadScript: function(sScriptSrc, oCallback) {
+	loadScript: function(sScriptSrc) {
 		var error=null;
 		try {
 			if(window.XMLHttpRequest)
@@ -212,10 +213,7 @@ Ung.Main.prototype = {
 			else
 				window.eval(req.responseText);
 		} catch (e) {
-			error=e;	
-		}
-		if(oCallback) {
-			oCallback.call(this);
+			error=e;
 		}
 		return error;
 	},
@@ -349,12 +347,6 @@ Ung.Main.prototype = {
 		node.md=md;
 		node.name=md.name;
 		node.displayName=md.displayName;
-		node.viewPosition=md.viewPosition;
-		node.rackType=md.rackType;
-		node.isService=md.service;
-		node.isUtil=md.util;
-		node.isSecurity=md.security;
-		node.isCore=md.core;
 		node.image='image?name='+node.name;
 		node.blingers=eval([{'type':'ActivityBlinger','bars':['ACTIVITY 1','ACTIVITY 2','ACTIVITY 3','ACTIVITY 4']},{'type':'SystemBlinger'}]);
 		return node;
@@ -541,8 +533,8 @@ Ung.Main.prototype = {
 	
 	addNode: function (node) {
 		var nodeWidget=new Ung.Node(node);
-		var place=node.isSecurity?'security_nodes':'other_nodes';
-		var position=this.getNodePosition(place,node.viewPosition);
+		var place=node.md.security?'security_nodes':'other_nodes';
+		var position=this.getNodePosition(place,node.md.viewPosition);
 		nodeWidget.render(place,position);
 		Ung.AppItem.updateStateForNode(node.name, "installed");
 	},
@@ -551,9 +543,9 @@ Ung.Main.prototype = {
 		var hasUtilOrService=false;
 		var hasCore=false;
 		for(var i=0;i<this.nodes.length;i++) {
-			if(this.nodes[i].isUtil || this.nodes[i].isService) {
+			if(this.nodes[i].md.util || this.nodes[i].md.service) {
 				hasUtilOrService=true;
-			} else if(this.nodes[i].isCore) {
+			} else if(this.nodes[i].md.core) {
 				hasCore=true;
 			}
 		}

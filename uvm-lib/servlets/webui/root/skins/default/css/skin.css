@@ -181,36 +181,21 @@ button.nodeSettingsIcon {
 div.windowBackground {
 	background: transparent url(../images/main/background_grey.png) repeat;
 }
-div.nodeRemoveButton {
-	position:absolute;
-	left:10px;
-	bottom:14px;
-}
 button.nodeRemoveIcon {
 	background:transparent url(../images/main/icon_remove.png) no-repeat center left !important; 
-}
-div.nodeCancelButton {
-	position:absolute;
-	right:104px;
-	bottom:14px;
 }
 button.cancelIcon {
 	background:transparent url(../images/main/icon_cancel.png) no-repeat center left !important; 
 }
-div.nodeSaveButton {
-	position:absolute;
-	right:10px;
-	bottom:14px;
-}
 button.saveIcon {
 	background:transparent url(../images/main/icon_save.png) no-repeat center left !important; 
 }
-div.nodeSettingsContent {
+div.windowContent {
 	position:relative;
-	margin-top:8px;
-	margin-left:14px;
-	margin-right:14px;
-	margin-bottom: 8px;
+	margin-top:10px;
+	margin-left:10px;
+	margin-right:10px;
+	margin-bottom: 0px;
 
 }
 div.nodeBlingers {
@@ -348,7 +333,7 @@ button.iconRefresh {
     background: transparent url(../images/main/icon_refresh.png) no-repeat center left !important;
 }
 
-div.buttonHelpPos {
+div.buttonsLeftPos {
 	position:absolute;
 	left:10px;
 	bottom:10px;
