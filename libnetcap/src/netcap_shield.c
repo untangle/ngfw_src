@@ -441,7 +441,7 @@ void                 netcap_shield_unregister_hook  ( void )
 
 int                  netcap_shield_rep_blame        ( struct in_addr* ip, int amount )
 {
-    _apply_func_t func = { .func = _add_evil, .arg = (void*)amount };
+    _apply_func_t func = { .func = _add_evil, .arg = (void*)(long)amount };
 
     /* Do not create nodes, only update the nodes that exist */
     if ( _shield.enabled == NETCAP_SHIELD_ENABLE && _apply_close( ip, &func ) < 0 ) {
@@ -889,7 +889,7 @@ static int _add_srv_fail ( nc_shield_reputation_t *rep, int count, double divide
 static int _add_evil ( nc_shield_reputation_t *rep, int count, double divider, void* arg, int update_load )
                         
 {
-    int evil_count = (int)arg;
+    int evil_count = (int)(long)arg;
     /* Just in case */
     count = ( count <= 0 ) ? 1 : count;
 

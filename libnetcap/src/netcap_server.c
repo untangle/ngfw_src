@@ -238,7 +238,7 @@ int  netcap_server (void)
          * handle events
          */
         for(i=0;i<num_events;i++) {
-            epoll_info_t* info = ht_lookup(&_epoll_table,(void*)events[i].data.fd);
+            epoll_info_t* info = ht_lookup(&_epoll_table,(void*)(long)events[i].data.fd);
 
             if (!info) {
                 errlog(ERR_CRITICAL,"Constraint failed: epoll_info_t missing!\n");
@@ -679,7 +679,7 @@ static int  _epoll_info_add (int fd, int events, int type, netcap_session_t* net
     if (epoll_ctl(_epoll_fd,EPOLL_CTL_ADD,fd,&ev)<0)
         return perrlog("epoll_ctl");
 
-    if (ht_add(&_epoll_table,(void*)fd,(void*)info)<0)
+    if (ht_add(&_epoll_table,(void*)(long)fd,(void*)info)<0)
         return perrlog("ht_add");
 
     return 0;
@@ -687,7 +687,7 @@ static int  _epoll_info_add (int fd, int events, int type, netcap_session_t* net
 
 static int  _epoll_info_del_fd (int fd)
 {
-    epoll_info_t* epi = ht_lookup(&_epoll_table,(void*)fd);
+    epoll_info_t* epi = ht_lookup(&_epoll_table,(void*)(long)fd);
 
     if (!epi)
         return errlog(ERR_CRITICAL, "epoll_info_t for %d not found\n", fd );
@@ -712,7 +712,7 @@ static int  _epoll_info_del (epoll_info_t* info)
     if (epoll_ctl(_epoll_fd,EPOLL_CTL_DEL,ev.data.fd,&ev)<0)
         return perrlog("epoll_ctl");
 
-    if (ht_remove(&_epoll_table,(void*)info->fd)<0)
+    if (ht_remove(&_epoll_table,(void*)(long)info->fd)<0)
         return perrlog("ht_remove");
 
     free(info);

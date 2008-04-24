@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -107,7 +107,7 @@ int new_netcap_trie_insert_and_get ( netcap_trie_t* trie, struct in_addr* _ip, p
         
         /* Try to lookup the item, once more, it could have been inserted while waiting 
          * for the mutex lock */
-        if (( item = ht_lookup( &trie->ip_element_table, (void*)_ip->s_addr )) != NULL ) {
+        if (( item = ht_lookup( &trie->ip_element_table, (void*)(long)_ip->s_addr )) != NULL ) {
             if ( _set_line( line, (netcap_trie_base_t*)item ) < 0 ) {
                 return errlog( ERR_CRITICAL, "_set_line\n" );
             }
@@ -160,7 +160,7 @@ int new_netcap_trie_insert_and_get ( netcap_trie_t* trie, struct in_addr* _ip, p
         debug_nodate ( NC_TRIE_DEBUG_HIGH, "\n" );
 
         /* Insert the node into the hash table */
-        if ( ht_add( &trie->ip_element_table, (void*)_ip->s_addr, child.base ) < 0 ) {
+        if ( ht_add( &trie->ip_element_table, (void*)(long)_ip->s_addr, child.base ) < 0 ) {
             return errlog( ERR_CRITICAL, "ht_add\n" );
         }
         
@@ -170,7 +170,7 @@ int new_netcap_trie_insert_and_get ( netcap_trie_t* trie, struct in_addr* _ip, p
         
 
     /* Try to lookup the item, if it is in there, then return it */
-    if (( item = ht_lookup( &trie->ip_element_table, (void*)_ip->s_addr )) != NULL ) {
+    if (( item = ht_lookup( &trie->ip_element_table, (void*)(long)_ip->s_addr )) != NULL ) {
         if ( _set_line( line, (netcap_trie_base_t*)item ) < 0 ) return errlog( ERR_CRITICAL, "_set_line\n" );
         return 0;
     }
@@ -211,7 +211,7 @@ int new_netcap_trie_remove         ( netcap_trie_t* trie, struct in_addr* _ip, p
         
         /* Try to lookup the item, if it exists, then it needs to be removed,
          * if it doesn't then who cares */
-        if (( child.base = ht_lookup( &trie->ip_element_table, (void*)_ip->s_addr )) == NULL ) {
+        if (( child.base = ht_lookup( &trie->ip_element_table, (void*)(long)_ip->s_addr )) == NULL ) {
             debug_nodate( NC_TRIE_DEBUG_LOW, "\nTRIE: ignoring remove for ip %#010x\n", _ip->s_addr );
             return 0;
         }
@@ -219,7 +219,7 @@ int new_netcap_trie_remove         ( netcap_trie_t* trie, struct in_addr* _ip, p
         line->d[line->count++] = child;
 
         /* Remove the item right away, ??? return the error */
-        if ( ht_remove( &trie->ip_element_table, (void*)_ip->s_addr ) < 0 ) {
+        if ( ht_remove( &trie->ip_element_table, (void*)(long)_ip->s_addr ) < 0 ) {
             errlog( ERR_CRITICAL, "ht_remove\n" );
         }
         

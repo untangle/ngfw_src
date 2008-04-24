@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -49,7 +49,7 @@ typedef struct session_tuple {
 } session_tuple_t;
 
 static u_char _tuple_equ_func (const void* input,const void* input2);
-static u_int  _tuple_hash_func (const void* input);
+static u_long  _tuple_hash_func (const void* input);
 static session_tuple_t* _tuple_create (u_short proto, 
                                        in_addr_t shost, in_addr_t dhost, 
                                        u_short sport, u_short dport, u_int seq);
@@ -134,7 +134,7 @@ netcap_session_t* netcap_nc_sesstable_get (int if_lock, u_int id)
 
     if ( if_lock ) SESSTABLE_RDLOCK();
 
-    session = (netcap_session_t*)ht_lookup(&_sess_id_table,(void*)id);
+    session = (netcap_session_t*)ht_lookup(&_sess_id_table,(void*)(long)id);
 
     if ( if_lock ) SESSTABLE_UNLOCK();
     
@@ -230,7 +230,7 @@ int        netcap_nc_sesstable_add (int if_lock, netcap_session_t* netcap_sess)
 
     if ( if_lock) SESSTABLE_WRLOCK();
 
-    if ( ht_add( &_sess_id_table, (void*)netcap_sess->session_id, (void*)netcap_sess ) < 0 ) {
+    if ( ht_add( &_sess_id_table, (void*)(long)netcap_sess->session_id, (void*)netcap_sess ) < 0 ) {
         if ( if_lock ) SESSTABLE_UNLOCK();
         return perrlog( "hash_add" );
     }
@@ -406,7 +406,7 @@ int netcap_sesstable_remove_session (int if_lock, netcap_session_t* netcap_sess)
 static int _netcap_sesstable_remove (netcap_session_t* netcap_sess)
 {
     /* Static/private function, no error checking necessary */
-    if (ht_remove(&_sess_id_table,(void*)netcap_sess->session_id)<0) {
+    if (ht_remove(&_sess_id_table,(void*)(long)netcap_sess->session_id)<0) {
         /* ???? Why are errors ignored ???? */
         return -1;
     }
@@ -592,19 +592,19 @@ static session_tuple_t* _tuple_create ( u_short proto, in_addr_t shost, in_addr_
     return st;
 }
 
-static u_int  _tuple_hash_func ( const void* input )
+static u_long  _tuple_hash_func ( const void* input )
 {
-    u_int hash;
+    u_long hash;
     session_tuple_t* st = (session_tuple_t*) input;
 
     /* XXX weak, but prime hash table size */
     hash  = 17;
-    hash  = ( 37 * hash ) + (u_int)st->proto;
-    hash  = ( 37 * hash ) + (u_int)st->shost;
-    hash  = ( 37 * hash ) + (u_int)st->dhost;
-    hash  = ( 37 * hash ) + (u_int)st->sport;
-    hash  = ( 37 * hash ) + (u_int)st->dport;
-    hash  = ( 37 * hash ) + (u_int)st->seq;
+    hash  = ( 37 * hash ) + (u_long)st->proto;
+    hash  = ( 37 * hash ) + (u_long)st->shost;
+    hash  = ( 37 * hash ) + (u_long)st->dhost;
+    hash  = ( 37 * hash ) + (u_long)st->sport;
+    hash  = ( 37 * hash ) + (u_long)st->dport;
+    hash  = ( 37 * hash ) + (u_long)st->seq;
 
 /*     hash  = (u_int)(st->shost << 4 | ((st->shost>>28) & 0x0F)); */
 /*     hash ^= (u_int)(st->dhost << 8 | ((st->dhost>>24) & 0xFF)); */

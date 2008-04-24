@@ -160,7 +160,7 @@ int               netcap_intf_db_add_info( netcap_intf_db_t* db, netcap_intf_inf
 
     if ( _check_index( intf_info->index ) < 0 ) return errlog( ERR_CRITICAL, "_check_index\n" );
 
-    if ( ht_lookup( &db->index_to_info, (void*)intf_info->index ) != NULL ) {
+    if ( ht_lookup( &db->index_to_info, (void*)(long)intf_info->index ) != NULL ) {
         errlog( ERR_CRITICAL, "The interface[%d] is already in the database.", intf_info->index );
         return 0;
     }
@@ -173,12 +173,12 @@ int               netcap_intf_db_add_info( netcap_intf_db_t* db, netcap_intf_inf
     intf_info_dst = &db->info[db->info_count];
     memcpy( intf_info_dst, intf_info, sizeof( *intf_info ));
 
-    if ( ht_add( &db->index_to_info, (void*)intf_info_dst->index, intf_info_dst ) < 0 ) {
+    if ( ht_add( &db->index_to_info, (void*)(long)intf_info_dst->index, intf_info_dst ) < 0 ) {
         return errlog( ERR_CRITICAL, "ht_add\n" );
     }
 
     if ( ht_add( &db->name_to_info, intf_info_dst->name.s, intf_info_dst ) < 0 ) {
-        ht_remove( &db->index_to_info, (void*)intf_info_dst->index );
+        ht_remove( &db->index_to_info, (void*)(long)intf_info_dst->index );
         return errlog( ERR_CRITICAL, "ht_add\n" );
     }
 
@@ -251,7 +251,7 @@ netcap_intf_info_t* netcap_intf_db_index_to_info ( netcap_intf_db_t* db, int ind
 
     netcap_intf_info_t* intf_info = NULL;
 
-    if (( intf_info = ht_lookup( &db->index_to_info, (void*)index )) == NULL || !intf_info->is_valid ) {
+    if (( intf_info = ht_lookup( &db->index_to_info, (void*)(long)index )) == NULL || !intf_info->is_valid ) {
         return errlog_null( ERR_CRITICAL, "Nothing is known about '%d'\n", index );
     }
 
