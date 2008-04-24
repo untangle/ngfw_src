@@ -802,12 +802,17 @@ Ung.Node = Ext.extend(Ext.Component, {
     	this.settingsClassName=Ung.Settings.getClassName(this.name);
     	if(!this.settingsClassName) {
         	//dynamicaly load node javaScript 
-        	var exception = Ung.Settings.loadNodeScript(this.name);
-        	if(exception) { 
-        		Ext.MessageBox.alert(i18n._("Failed"),exception.message); 
-				return;
-			}
-        }
+        	Ung.Settings.loadNodeScript(this.name, this.getId(), function(cmpId) {
+        		var cmp=Ext.getCmp(cmpId);
+        		cmp.settingsClassName=Ung.Settings.getClassName(cmp.name);
+        		cmp.initSettings();
+	        });
+		} else {
+			this.initSettings();
+		}
+	},
+	//init settings
+	initSettings: function () {
     	this.loadNodeContext();
 		if(!Ung.i18nNodeInstances[this.name]) {
 			Ext.Ajax.request({
@@ -832,11 +837,12 @@ Ung.Node = Ext.extend(Ext.Component, {
 	},
 	//render settings component
 	renderSettings: function() {
+		var settingsContentEl=this.settingsWin.getContentEl();
       	if(this.settingsClassName!==null) {
        		eval('this.settings=new '+this.settingsClassName+'({\'node\':this,\'tid\':this.tid,\'name\':this.name});');
-       		this.settings.render(this.settingsWin.getContentEl());
+       		settingsContentEl.innerHTML="";
+       		this.settings.render(settingsContentEl);
        	} else {
-       		var settingsContentEl=this.settingsWin.getContentEl(); 
        		settingsContentEl.innerHTML="Error: There is no settings class for the node '"+this.name+"'.";
        	}
 	},
@@ -1229,8 +1235,8 @@ Ung.Settings = Ext.extend(Ext.Component, {
 Ung.Settings._nodeScripts={};
 
 // Dynamically loads javascript file for a node
-Ung.Settings.loadNodeScript=function(nodeName) {
-	main.loadScript('script/'+nodeName+'/settings.js');
+Ung.Settings.loadNodeScript=function(nodeName,cmpId,callbackFn) {
+	main.loadScript('script/'+nodeName+'/settings.js',function() {callbackFn(cmpId);});
 };
 Ung.Settings._classNames={};
 

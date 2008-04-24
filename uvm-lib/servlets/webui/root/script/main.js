@@ -199,7 +199,7 @@ Ung.Main.prototype = {
 		});
 	},
 	//Load script file dynamically 
-	loadScript: function(sScriptSrc) {
+	loadScript: function(sScriptSrc, fnCallback) {
 		var error=null;
 		try {
 			if(window.XMLHttpRequest)
@@ -214,6 +214,9 @@ Ung.Main.prototype = {
 				window.eval(req.responseText);
 		} catch (e) {
 			error=e;
+		}
+		if(fnCallback) {
+			fnCallback.call(this);
 		}
 		return error;
 	},
@@ -572,13 +575,7 @@ Ung.Main.prototype = {
 			out.push('<option value="'+rpc.policies[i].id+'" '+selVirtualRack+'>'+i18n._(rpc.policies[i].name)+'<\/option>');
 		}
 		out.push('<\/select>');
-		out.push('<div id="rack_policy_button" style="position:absolute;top:15px;left:500px;"><\/div>');
 		document.getElementById('rack_list').innerHTML=out.join('');
-		var buttonCmp = new Ext.Button({
-			'renderTo':'rack_policy_button',
-	        'text': i18n._('Show Policy Manager'),
-	        'handler': function() {Ext.MessageBox.alert(i18n._("Failed"),"TODO:Show Policy Manager");}
-        });
 		this.loadNodes();
 	},
 	// change current policy
