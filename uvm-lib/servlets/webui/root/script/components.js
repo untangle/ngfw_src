@@ -1273,7 +1273,17 @@ Ung.Settings = Ext.extend(Ext.Component, {
     },
     // All settings classes must override the save method
 	save: function() {
-	}
+	},
+    //validation functions
+    validateClient: function() {
+    	return true;
+    },
+    validateServer: function() {
+    	return true;
+    },
+    validate: function() {
+    	return this.validateClient() && this.validateServer();
+    }
 });
 Ung.Settings._nodeScripts={};
 

@@ -569,12 +569,12 @@ Ung.WebFilter = Ext.extend(Ung.Settings, {
 			predefinedType: "TYPE1"
 		});
     },
-    //validation function
-    validate: function(callback) {
+    //validation functions
+    validateServer: function() {
     	//ipMaddr list must be validated server side
-		var ipMaddrList=[];
 		var passedClientsSaveList=this.gridPassedClients?this.gridPassedClients.getSaveList():null;
 		if(passedClientsSaveList!=null) {
+			var ipMaddrList=[];
 			//added
 			for(var i=0;i<passedClientsSaveList[0].list.length;i++) {
 				ipMaddrList.push(passedClientsSaveList[0].list[i]["ipMaddr"]);
@@ -584,28 +584,25 @@ Ung.WebFilter = Ext.extend(Ung.Settings, {
 				ipMaddrList.push(passedClientsSaveList[2].list[i]["ipMaddr"]);
 			}
 			if(ipMaddrList.length>0) {
-				this.getValidator().validate(function (result, exception) {
-					if(exception) {Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}
+				try {
+					var result = this.getValidator().validate({list: ipMaddrList,"javaClass":"java.util.ArrayList"});
 					if(!result.valid) {
 						this.panelPassLists.onManagePassedClients();
 						this.gridPassedClients.focusFirstChangedDataByFieldValue("ipMaddr",result.cause);
 						Ext.MessageBox.alert(this.i18n._("Validation failed"),this.i18n._(result.message)+": "+result.cause);
-						return;
-					} else {
-						callback.call(this);
+						return false;
 					}
-					
-				}.createDelegate(this),{list: ipMaddrList,"javaClass":"java.util.ArrayList"});
+				} catch (e){
+					Ext.MessageBox.alert(i18n._("Failed"),e.message);
+					return false;
+				}
 			}
 		}
-		if(ipMaddrList.length==0) {
-			callback.call(this);
-		}
+		return true;
     },
     // save function
 	save: function() {
-		//validate first
-		this.validate( function() {
+		if (this.validate()) {
 			//disable tabs during save
 			this.tabs.disable();
 			this.getRpcNode().updateAll(function (result, exception) {
@@ -622,7 +619,7 @@ Ung.WebFilter = Ext.extend(Ung.Settings, {
 					this.gridBlockedMimeTypes?this.gridBlockedMimeTypes.getSaveList():null,
 					this.gridBlockedExtensions?this.gridBlockedExtensions.getSaveList():null,
 					this.gridBlacklistCategories?this.gridBlacklistCategories.getSaveList():null);
-		});
+		}
 	}
 });
 }
