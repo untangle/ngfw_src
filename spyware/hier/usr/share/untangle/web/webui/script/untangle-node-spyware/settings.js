@@ -30,178 +30,167 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
 			subCmps: [],
 			title: this.i18n._("Block Lists"),
 			parentId: this.getId(),
-			initComponent: function() {
-				var settingsCmp=Ext.getCmp(this.parentId);
-				var template=new Ext.Template(
-'<div style="margin:20px 5px 0px 5px;">'+settingsCmp.i18n._("Web")+'<hr/>',
-	'<div style="clear: both; margin-top: 10px; height:20px;"><input type="checkbox" id="web_checkbox_{id}" onchange="Ext.getCmp(\''+this.getId()+'\').onChangeSpyware(this)"/>&nbsp;&nbsp;&nbsp;'+settingsCmp.i18n._("Block Spyware & Ad URLs")+'</div>',
-	'<div style="clear: both; margin-top: 0px; height:25px;">'+settingsCmp.i18n._("User Bypass")+':&nbsp;&nbsp;&nbsp;',
-	'<select id="user_bypass_{id}" onchange="Ext.getCmp(\''+this.getId()+'\').onChangeUserBypass(this)">',
-		'<option value="NONE">'+settingsCmp.i18n._("None")+'</option>',
-		'<option value="USER_ONLY">'+settingsCmp.i18n._("Temporary")+'</option>',
-		'<option value="USER_AND_GLOBAL">'+settingsCmp.i18n._("Permanent and Global")+'</option>',
-	'</select></div>',
-'</div>',
-'<div style="margin:20px 5px 0px 5px;">'+settingsCmp.i18n._("Cookies")+'<hr/>',
-	'<div style="clear: both; margin-top: 10px; width:400px;height:20px;"><div style="float:left;width:300px;"><input type="checkbox" id="cookies_checkbox_{id}" onchange="Ext.getCmp(\''+this.getId()+'\').onChangeCookies(this)"/>&nbsp;&nbsp;&nbsp;'+settingsCmp.i18n._("Block Tracking & Ad Cookies")+'</div><div id="cookies_button_{id}" style="float:right;"></div></div></div>',
-'<div style="margin:20px 5px 0px 5px;">'+settingsCmp.i18n._("ActiveX")+'<hr/>',
-	'<div style="clear: both; margin-top: 10px; width:400px;height:20px;"><div style="float:left;width:300px;"><input type="checkbox" id="activex_checkbox_{id}" onchange="Ext.getCmp(\''+this.getId()+'\').onChangeActiveX(this)"/>&nbsp;&nbsp;&nbsp;'+settingsCmp.i18n._("Block Malware ActiveX Installs")+'</div><div id="activex_button_{id}" style="float:right;"></div></div>',
-	'<div style="clear: both; margin-top: 0px; width:400px;height:20px;"><div style="float:left;width:300px;"><input type="checkbox" id="block_all_activex_checkbox_{id}" onchange="Ext.getCmp(\''+this.getId()+'\').onChangeBlockAllActiveX(this)"/>&nbsp;&nbsp;&nbsp;'+settingsCmp.i18n._("Block All ActiveX")+'</div></div>',
-'</div>',
-'<div style="margin:20px 5px 0px 5px;">'+settingsCmp.i18n._("Traffic")+'<hr/>',
-	'<div style="clear: both; margin-top: 10px; width:400px;height:20px;"><div style="float:left;width:300px;"><input type="checkbox" id="subnet_checkbox_{id}" onchange="Ext.getCmp(\''+this.getId()+'\').onChangeSubnet(this)"/>&nbsp;&nbsp;&nbsp;'+settingsCmp.i18n._("Monitor Suspicious Traffic")+'</div><div id="subnet_button_{id}" style="float:right;"></div></div></div>',
-'<div style="margin:20px 5px 0px 5px; font-size:smaller;">'+settingsCmp.i18n._("Spyware Blocker signatures were last updated:")+' <span id="last_update_signatures_{id}"></span></div>');
-				this.html=template.applyTemplate({id: this.getId()}),
-				Ext.Panel.prototype.initComponent.call(this);
-			},
 			
-			afterRender: function() {
-				Ext.Panel.prototype.afterRender.call(this);
-				var settingsCmp= Ext.getCmp(this.parentId);
-				this.subCmps.push(new Ext.Button({
-					'renderTo':'cookies_button_'+this.id,
-					'text': settingsCmp.i18n._("manage list"),
-					'handler': function() {this.onManageCookiesList();}.createDelegate(this)
-				}));
-				this.subCmps.push(new Ext.Button({
-					'renderTo':'activex_button_'+this.id,
-					'text': settingsCmp.i18n._("manage list"),
-					'handler': function() {this.onManageActiveXList();}.createDelegate(this)
-				}));
-				this.subCmps.push(new Ext.Button({
-					'renderTo':'subnet_button_'+this.id,
-					'text': settingsCmp.i18n._("manage list"),
-					'handler': function() {this.onManageSubnetList();}.createDelegate(this)
-				}));
-				var baseSettings=Ext.getCmp(this.parentId).getBaseSettings();
-				document.getElementById("last_update_signatures_"+this.getId()).innerHTML="TODO: need api value";
-				document.getElementById("web_checkbox_"+this.getId()).checked=baseSettings.urlBlacklistEnabled;
-				document.getElementById("cookies_checkbox_"+this.getId()).checked=baseSettings.cookieBlockerEnabled;
-				document.getElementById("activex_checkbox_"+this.getId()).checked=baseSettings.activeXEnabled;
-				document.getElementById("block_all_activex_checkbox_"+this.getId()).checked=baseSettings.blockAllActiveX;
-				document.getElementById("subnet_checkbox_"+this.getId()).checked=baseSettings.spywareEnabled;
-				var selObj=document.getElementById("user_bypass_"+this.getId());
-				for(var i=0;i<selObj.options.length;i++) {
-					if(selObj.options[i].value==baseSettings.userWhitelistMode) {
-						selObj.options[i].selected=true;
-						break;
+		    layout: "form",
+		    bodyStyle:'padding:5px 5px 0',
+		    autoScroll: true,
+		    defaults: {
+	            xtype:'fieldset',
+	            autoHeight:true,
+	            buttonAlign: 'left'
+		    },
+			items: [
+				{
+	            title: this.i18n._('Web'),
+				items: [{
+                    xtype:'checkbox',
+                    boxLabel: 'Block Spyware & Ad URLs',
+                    hideLabel: true,
+                    name: 'urlBlacklistEnabled',
+                    checked: this.getBaseSettings().urlBlacklistEnabled,
+					listeners: {
+						"check": {
+							fn: function(elem, checked) {
+								this.getBaseSettings().urlBlacklistEnabled=checked;
+							}.createDelegate(this)
+						}
 					}
-				}
-			},
-			onChangeSpyware: function(checkObj) {
-				Ext.getCmp(this.parentId).getBaseSettings().urlBlacklistEnabled=checkObj.checked;
-			},
-			onChangeCookies: function(checkObj) {
-				Ext.getCmp(this.parentId).getBaseSettings().cookieBlockerEnabled=checkObj.checked;
-			},
-			onChangeActiveX: function(checkObj) {
-				Ext.getCmp(this.parentId).getBaseSettings().activeXEnabled=checkObj.checked;
-			},
-			onChangeSubnet: function(checkObj) {
-				Ext.getCmp(this.parentId).getBaseSettings().spywareEnabled=checkObj.checked;
-			},
-			onChangeBlockAllActiveX: function(checkObj) {
-				Ext.getCmp(this.parentId).getBaseSettings().blockAllActiveX=checkObj.checked;
-			},
-			onChangeUserBypass: function(selObj) {
-				Ext.getCmp(this.parentId).getBaseSettings().userWhitelistMode=selObj.options[selObj.selectedIndex].value;
-			},
+				},{
+                    xtype:'combo',
+                    fieldLabel: this.i18n._('User Bypass'),
+					name: "userWhitelist",
+				    store: new Ext.data.SimpleStore({
+						fields:['userWhitelistValue', 'userWhitelistName'],
+						data: [["NONE",this.i18n._("None")],
+								["USER_ONLY",this.i18n._("Temporary")],
+								["USER_AND_GLOBAL",this.i18n._("Permanent and Global")]]
+					}),
+					displayField: 'userWhitelistName',
+					valueField: 'userWhitelistValue',
+                    value: this.getBaseSettings().userWhitelistMode,
+				    typeAhead: true,
+				    mode: 'local',
+				    triggerAction: 'all',
+				    listClass: 'x-combo-list-small',
+				    selectOnFocus:true,
+					listeners: {
+						"change": {
+							fn: function(elem, newValue) {
+								this.getBaseSettings().userWhitelistMode=newValue;
+							}.createDelegate(this)
+						}
+					}
+				}]
+			}, {
+	            title: this.i18n._('Cookies'),
+				items: [{
+                    xtype:'checkbox',
+                    boxLabel: 'Block Tracking & Ad Cookies',
+                    hideLabel: true,
+                    name: 'cookieBlockerEnabled',
+                    checked: this.getBaseSettings().cookieBlockerEnabled,
+					listeners: {
+						"check": {
+							fn: function(elem, checked) {
+								this.getBaseSettings().cookieBlockerEnabled=checked;
+							}.createDelegate(this)
+						}
+					}
+				}],
+	            buttons :[
+	            	{
+						text: this.i18n._("manage list"),
+						handler: function() {this.panelBlockLists.onManageCookiesList();}.createDelegate(this)
+	                }
+	            ]
+			}, {
+	            title: this.i18n._('ActiveX'),
+				items: [{
+                    xtype:'checkbox',
+                    boxLabel: 'Block Malware ActiveX Installs',
+                    hideLabel: true,
+                    name: 'activeXEnabled',
+                    checked: this.getBaseSettings().activeXEnabled,
+					listeners: {
+						"check": {
+							fn: function(elem, checked) {
+								this.getBaseSettings().activeXEnabled=checked;
+							}.createDelegate(this)
+						}
+					}
+				},{
+                    xtype:'checkbox',
+                    boxLabel: 'Block All ActiveX',
+                    hideLabel: true,
+                    name: 'blockAllActiveX',
+                    checked: this.getBaseSettings().blockAllActiveX,
+					listeners: {
+						"check": {
+							fn: function(elem, checked) {
+								this.getBaseSettings().blockAllActiveX=checked;
+							}.createDelegate(this)
+						}
+					}
+				}],
+	            buttons :[
+	            	{
+						text: this.i18n._("manage list"),
+						handler: function() {this.panelBlockLists.onManageActiveXList();}.createDelegate(this)
+	                }
+	            ]
+			}, {
+	            title: this.i18n._('Traffic'),
+				items: [{
+                    xtype:'checkbox',
+                    boxLabel: 'Monitor Suspicious Traffic',
+                    hideLabel: true,
+                    name: 'spywareEnabled',
+                    checked: this.getBaseSettings().spywareEnabled,
+					listeners: {
+						"check": {
+							fn: function(elem, checked) {
+								this.getBaseSettings().spywareEnabled=checked;
+							}.createDelegate(this)
+						}
+					}
+				}],
+	            buttons :[
+	            	{
+						text: this.i18n._("manage list"),
+						handler: function() {this.panelBlockLists.onManageSubnetList();}.createDelegate(this)
+	                }
+	            ]
+			},{
+				html: this.i18n._("Spyware Blocker signatures were last updated")+ " " + "TODO: need api value"
+			}],
+			
 		    onManageCookiesList: function () {
-		    	var settingsCmp= Ext.getCmp(this.parentId);
 		    	if(!this.winCookiesList) {
-		    		this.winCookiesList=new Ung.UpdateWindow({
-		    			parentId: this.getId(),
-		    			listeners: {
-		    				'show':{
-						        fn: function() {
-						        	var panelCmp= Ext.getCmp(this.parentId);
-						        	var settingsCmp=Ext.getCmp(panelCmp.parentId);
-						        	this.initialChangedData=Ext.encode(settingsCmp.gridCookiesList.changedData);
-						        	settingsCmp.gridCookiesList.setHeight(this.getContentHeight());
-						        },
-						        delay: 1
-						    }
-		    			},
-		    			cancelAction: function () {
-		    				var panelCmp= Ext.getCmp(this.parentId);
-						    var settingsCmp=Ext.getCmp(panelCmp.parentId);
-		    				settingsCmp.gridCookiesList.changedData=Ext.decode(this.initialChangedData);
-		    				settingsCmp.gridCookiesList.getView().refresh();
-		    				this.hide();
-		    			},
-		    			updateAction: function () {
-		    				this.hide();
-		    			}
+			    	var settingsCmp= Ext.getCmp(this.parentId);
+		    		settingsCmp.buildCookiesList();
+		    		this.winCookiesList=new Ung.ManageListWindow({
+		    			grid: settingsCmp.gridCookiesList
 		    		});
-			    	if(!settingsCmp.gridCookiesList) {
-			    		settingsCmp.buildCookiesList();
-			    	}
 		    	}
 		    	this.winCookiesList.show();
 		    },
 		    onManageActiveXList: function () {
-		    	var settingsCmp= Ext.getCmp(this.parentId);
 		    	if(!this.winActiveXList) {
-		    		this.winActiveXList=new Ung.UpdateWindow({
-		    			parentId: this.getId(),
-		    			listeners: {
-		    				'show':{
-						        fn: function() {
-						        	var panelCmp= Ext.getCmp(this.parentId);
-						        	var settingsCmp=Ext.getCmp(panelCmp.parentId);
-						        	this.initialChangedData=Ext.encode(settingsCmp.gridActiveXList.changedData);
-						        	settingsCmp.gridActiveXList.setHeight(this.getContentHeight());
-						        },
-						        delay: 1
-						    }
-		    			},
-		    			cancelAction: function () {
-		    				var panelCmp= Ext.getCmp(this.parentId);
-						    var settingsCmp=Ext.getCmp(panelCmp.parentId);
-		    				settingsCmp.gridActiveXList.changedData=Ext.decode(this.initialChangedData);
-		    				settingsCmp.gridActiveXList.getView().refresh();
-		    				this.hide();
-		    			},
-		    			updateAction: function () {
-		    				this.hide();
-		    			}
+			    	var settingsCmp= Ext.getCmp(this.parentId);
+		    		settingsCmp.buildActiveXList();
+		    		this.winActiveXList=new Ung.ManageListWindow({
+		    			grid: settingsCmp.gridActiveXList
 		    		});
-			    	if(!settingsCmp.gridActiveXList) {
-			    		settingsCmp.buildActiveXList();
-			    	}
 		    	}
 		    	this.winActiveXList.show();
 		    },
 		    onManageSubnetList: function () {
-		    	var settingsCmp= Ext.getCmp(this.parentId);
 		    	if(!this.winSubnetList) {
-		    		this.winSubnetList=new Ung.UpdateWindow({
-		    			parentId: this.getId(),
-		    			listeners: {
-		    				'show':{
-						        fn: function() {
-						        	var panelCmp= Ext.getCmp(this.parentId);
-						        	var settingsCmp=Ext.getCmp(panelCmp.parentId);
-						        	this.initialChangedData=Ext.encode(settingsCmp.gridSubnetList.changedData);
-						        	settingsCmp.gridSubnetList.setHeight(this.getContentHeight());
-						        },
-						        delay: 1
-						    }
-		    			},
-		    			cancelAction: function () {
-		    				var panelCmp= Ext.getCmp(this.parentId);
-						    var settingsCmp=Ext.getCmp(panelCmp.parentId);
-		    				settingsCmp.gridSubnetList.changedData=Ext.decode(this.initialChangedData);
-		    				settingsCmp.gridSubnetList.getView().refresh();
-		    				this.hide();
-		    			},
-		    			updateAction: function () {
-		    				this.hide();
-		    			}
+			    	var settingsCmp= Ext.getCmp(this.parentId);
+		    		settingsCmp.buildSubnetList();
+		    		this.winSubnetList=new Ung.ManageListWindow({
+		    			grid: settingsCmp.gridSubnetList
 		    		});
-			    	if(!settingsCmp.gridSubnetList) {
-			    		settingsCmp.buildSubnetList();
-			    	}
 		    	}
 		    	this.winSubnetList.show();
 		    },
@@ -259,7 +248,6 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
 				})
 			]
     	});
-    	this.gridCookiesList.render(this.panelBlockLists.winCookiesList.getContentEl());
     },
     // ActiveX List
     buildActiveXList: function() {
@@ -281,7 +269,7 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
 				{name: 'description', convert: function(v){ return this.i18n._(v)}.createDelegate(this)}
 			],
 			columns: [
-	          {id:'string',header: this.i18n._("identification"), width: 140,  dataIndex: 'string',
+	          {id:'string',header: this.i18n._("identification"), width: 300,  dataIndex: 'string',
 		          editor: new Ext.form.TextField({allowBlank: false})},
 	          liveColumn
 			],
@@ -294,7 +282,7 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
 					name: "string",
 					fieldLabel: this.i18n._("Identification"),
 					allowBlank: false, 
-					width: 200
+					width: 300
 				}),
 				new Ext.form.Checkbox({
 					name: "live",
@@ -302,7 +290,6 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
 				})
 			]
     	});
-    	this.gridActiveXList.render(this.panelBlockLists.winActiveXList.getContentEl());
     },
     // Subnet List
     buildSubnetList: function() {
@@ -353,22 +340,7 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
 					fieldLabel: this.i18n._("Log")
 				})
 			]
-			/*
-			preEditValue : function(r, field){
-				if(field=="ipMaddr") {
-					return Ext.util.Format.htmlDecode(r.data[field].addr)
-				}
-				return Ung.EditorGrid.prototype.preEditValue.call(this,r, field);
-			},
-			postEditValue : function(value, originalValue, r, field){
-				if(field=="ipMaddr") {
-					return Ext.util.Format.htmlEncode(value)+
-				}
-				return Ung.EditorGrid.prototype.postEditValue.call(this,value, originalValue, r, field);
-			}
-			*/
     	});
-    	this.gridSubnetList.render(this.panelBlockLists.winSubnetList.getContentEl());
     },
     // Pass List
     buildPassList: function() {
@@ -391,15 +363,15 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
 				{name: 'description', convert: function(v){ return this.i18n._(v)}.createDelegate(this)}
 			],
 			columns: [
-				{id:'string',header: this.i18n._("site"), width: 140,  dataIndex: 'string',
+				{id:'string',header: this.i18n._("site"), width: 200,  dataIndex: 'string',
 				 editor: new Ext.form.TextField({allowBlank: false})},
 				passColumn,
-				{id:'description',header: this.i18n._("description"), width: 120, dataIndex: 'description',
+				{id:'description',header: this.i18n._("description"), width: 200, dataIndex: 'description',
 				 editor: new Ext.form.TextField({allowBlank: false})}
 			],
 			sortField: 'string',
 			columnsDefaultSortable: true,
-			autoExpandColumn: 'string',
+			autoExpandColumn: 'description',
 			plugins: [passColumn],
 			rowEditorInputLines: [
 				new Ext.form.TextField({
@@ -430,41 +402,42 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
 		});
     },
     
-    //validation function
-    validate: function(callback) {
+    //validation
+    validateServer: function() {
     	//ipMaddr list must be validated server side
-		var ipMaddrList=[];
 		var subnetSaveList=this.gridSubnetList?this.gridSubnetList.getSaveList():null;
 		if(subnetSaveList!=null) {
+			var ipMaddrList=[];
+			//added
 			for(var i=0;i<subnetSaveList[0].list.length;i++) {
 				ipMaddrList.push(subnetSaveList[0].list[i]["ipMaddr"]);
 			}
+			//modified
 			for(var i=0;i<subnetSaveList[2].list.length;i++) {
 				ipMaddrList.push(subnetSaveList[2].list[i]["ipMaddr"]);
 			}
 			if(ipMaddrList.length>0) {
-				this.getValidator().validate(function (result, exception) {
-					if(exception) {Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}
+				try {
+					var result = this.getValidator().validate({list: ipMaddrList,"javaClass":"java.util.ArrayList"});
 					if(!result.valid) {
 						this.panelBlockLists.onManageSubnetList();
 						this.gridSubnetList.focusFirstChangedDataByFieldValue("ipMaddr",result.cause);
 						Ext.MessageBox.alert(this.i18n._("Validation failed"),this.i18n._(result.message)+": "+result.cause);
-						return;
-					} else {
-						callback.call(this);
+						return false;
 					}
-					
-				}.createDelegate(this),{list: ipMaddrList,"javaClass":"java.util.ArrayList"});
+				} catch (e){
+					Ext.MessageBox.alert(i18n._("Failed"),e.message);
+					return false;
+				}
 			}
 		}
-		if(ipMaddrList.length==0) {
-			callback.call(this);
-		}
+		return true;
     },
+    
     // save function
 	save: function() {
 		//validate first
-		this.validate( function() {
+		if (this.validate()) {
 			//disable tabs during save
 			this.tabs.disable();
 			this.getRpcNode().updateAll(function (result, exception) {
@@ -479,7 +452,7 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
 				this.gridCookiesList?this.gridCookiesList.getSaveList():null,
 				this.gridSubnetList?this.gridSubnetList.getSaveList():null,
 				this.gridPassList.getSaveList() );
-		});
+		}
 	}
 });
 }
