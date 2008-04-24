@@ -347,40 +347,17 @@ div.iconDeleteRow {
 button.iconRefresh {
     background: transparent url(../images/main/icon_refresh.png) no-repeat center left !important;
 }
-.fieldLabel {
-	width: 100px;
-}
 
-div.inputLine {
-  clear: both;
-  padding-top: 5px;
-  }
-
-div.inputLine span.label {
-  float: left;
-  width: 100px;
-  text-align: right;
-  }
-
-div.inputLine span.formw {
-  float: right;
-  width: 235px;
-  text-align: left;
-}
 div.buttonHelpPos {
 	position:absolute;
 	left:10px;
-	bottom:5px;
+	bottom:10px;
 }
-div.buttonCancelPos {
-	position:absolute;
-	right:100px;
-	bottom:5px;
-}
-div.buttonUpdatePos {
-	position:absolute;
-	right:10px;
-	bottom:5px;
+div.buttonsRightPos {
+	position: absolute;
+	right: 10px;
+	bottom: 10px;
+	white-space: nowrap;
 }
 .grid-row-deleted {
 	background-color: #FF5151;

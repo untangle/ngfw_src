@@ -124,6 +124,8 @@ Ung.Main.prototype = {
                 }
              ]
         });
+		Ext.QuickTips.init();
+        
 		this.buildLeftTabs();
 
         Ext.getCmp("west").on("resize", function() {

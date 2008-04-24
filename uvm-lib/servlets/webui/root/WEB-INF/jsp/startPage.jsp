@@ -39,35 +39,10 @@
 			main=new Ung.Main();
 			main.init();
 		}
-		Ext.QuickTips.init();
 		Ext.onReady(init);
 	</script>
  </head>
 <body>
-<!-- 
-<div id="scripts_container" style="display: none;"></div>
--->
-<div id="container">
-<!-- 
-	<div id="contentleft">
-		<div id="logo"><img src="images/logo.png"/></div>
-		<div id="tabs">
-			<div id="tabLibrary" class="x-hide-display">
-			    <div style="margin-left:15px;font-size: 11px;text-align:left;">Click to Learn More</div>
-			    <div id="toolsLibrary"></div>
-			</div>
-			<div id="tabMyApps" class="x-hide-display">
-			    <div style="margin-left:15px;font-size: 11px;text-align:left;">Click to Install into Rack</div>
-			    <div id="toolsMyApps"></div>
-			</div>
-			<div id="tabConfig" class="x-hide-display">
-               	<div style="margin-left:15px;font-size: 11px;text-align:left;">Click to Configure</div>
-               	<div id="toolsConfig"></div>
-			</div>
-		</div>
- 		<div id="help"></div>
-	</div>
--->
-</div>
+<div id="container"></div>
 </body>
 </html>

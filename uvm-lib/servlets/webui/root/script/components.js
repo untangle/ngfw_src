@@ -1498,8 +1498,13 @@ Ung.Window = Ext.extend(Ext.Window, {
 });
 Ung.Window.buttonsTemplate=new Ext.Template(
 '<div class="buttonHelpPos" id="button_help_{id}"></div>',
-'<div class="buttonCancelPos" id="button_cancel_{id}"></div>',
-'<div class="buttonUpdatePos" id="button_update_{id}"></div>');
+'<div class="buttonsRightPos">',
+'<table cellspacing="0" cellpadding="0" border="0" style="width: auto;">',
+'<tr><td><div style="margin-right: 10px;" id="button_cancel_{id}"></div></td>',
+'<td><div id="button_update_{id}"></div></td></tr>',
+'</table>',
+'</div>'
+);
 
 
 //update window
@@ -1623,8 +1628,6 @@ Ung.RowEditorWindow = Ext.extend(Ung.UpdateWindow, {
 	grid: null,
 	// input lines for standard input lines (text, checkbox, textarea, ..)
 	inputLines: null,
-//	// content template must be defied for row editors with non standard input lines
-//	contentTemplate: null,
 	// the record currently edit
 	record: null,
 	//initial record data
@@ -1632,6 +1635,8 @@ Ung.RowEditorWindow = Ext.extend(Ung.UpdateWindow, {
 	sizeToRack: false,
 	//size to grid on show
 	sizeToGrid: false,
+	formPanel: null,
+	
 	initComponent: function() {
 		if(!this.height && !this.width) {
 			this.sizeToGrid=true;
@@ -1645,22 +1650,6 @@ Ung.RowEditorWindow = Ext.extend(Ung.UpdateWindow, {
 			this.subCmps.push(inputLine);
 		}
     	
-//    	var contentTemplate=null;
-//    	// to define custom lines we have to define components which have 
-//    	// "name" and "label" properties and
-//    	// "getValue" and "setValue" methods
-//    	if(this.inputLines) {
-//    		var contentArr=[];
-//    		for(var i=0;i<this.inputLines.length;i++) {
-//    			var inputLine=this.inputLines[i];
-//				this.subCmps.push(inputLine);
-//				contentArr.push('<div class="inputLine"><span class="label">'+inputLine.label+':</span><span class="formw"><div id="field_{id}_'+inputLine.name+'"></div></span></div>')
-//    		}
-//    		contentTemplate=new Ext.Template(contentArr);
-//    	} else {
-//    		contentTemplate=this.contentTemplate;
-//    	}
-//    	this.contentHtml=contentTemplate.applyTemplate({id:this.getId()});
         Ung.RowEditorWindow.superclass.initComponent.call(this);
     },
     onRender : function(container, position) {
@@ -1668,31 +1657,22 @@ Ung.RowEditorWindow = Ext.extend(Ung.UpdateWindow, {
     	this.initSubComponents.defer(1, this);
     },
     initSubComponents : function(container, position) {
-	    var fp = new Ext.FormPanel({
+	    this.formPanel = new Ext.FormPanel({
 	        id: 'editor-form',
 	        renderTo: this.getContentEl(),
 	        labelWidth: 75,
 	        buttonAlign: 'right',
 	        border: false,
-//			autoHeight: true,
-//			height: 300,
-//			height: this.getContentHeight(),
 	        bodyStyle: 'padding:10px 10px 0;',
 	        defaults: {
-	            //anchor: '95%',
-	            //allowBlank: false,
 	            selectOnFocus: true,
 	            msgTarget: 'side'
 	        },
 	        items: this.inputLines
 	    });
 	 
-		this.subCmps.push(fp);
+		this.subCmps.push(this.formPanel);
 
-//    	for(var i=0;i<this.inputLines.length;i++) {
-//			var inputLine=this.inputLines[i];
-//			inputLine.render('field_'+this.getId()+'_'+inputLine.name);
-//		}
     },
     show: function() {
     	Ung.UpdateWindow.superclass.show.call(this);
@@ -1701,6 +1681,9 @@ Ung.RowEditorWindow = Ext.extend(Ung.UpdateWindow, {
 		if(this.sizeToGrid) {
 			var objSize=this.grid.getSize();
 			this.setSize(objSize);
+		}
+		if(this.formPanel) {
+			this.formPanel.setHeight(this.getContentHeight());
 		}
     },
     // populate is called whent a record is edited, tot populate the edit window
