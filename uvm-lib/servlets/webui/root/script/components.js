@@ -1625,8 +1625,10 @@ Ung.RowEditorWindow = Ext.extend(Ung.UpdateWindow, {
 	inputLines: null,
 //	// content template must be defied for row editors with non standard input lines
 //	contentTemplate: null,
-	// the row Index of the curent edit
-	rowIndex: null,
+	// the record currently edit
+	record: null,
+	//initial record data
+	initialRecordData: null,
 	sizeToRack: false,
 	//size to grid on show
 	sizeToGrid: false,
@@ -1702,8 +1704,9 @@ Ung.RowEditorWindow = Ext.extend(Ung.UpdateWindow, {
 		}
     },
     // populate is called whent a record is edited, tot populate the edit window
-	populate: function(record,rowIndex) {
-		this.rowIndex=rowIndex;
+	populate: function(record) {
+		this.record=record;
+		this.initialRecordData = Ext.encode(record.data);
 		if(this.inputLines) {
     		for(var i=0;i<this.inputLines.length;i++) {
     			var inputLine=this.inputLines[i];
@@ -1729,12 +1732,11 @@ Ung.RowEditorWindow = Ext.extend(Ung.UpdateWindow, {
 	// updateAction is called to update the record after the edit
 	updateAction: function() {
 		 if(this.isFormValid()){
-			if(this.rowIndex!==null) {
-				var rec=this.grid.getStore().getAt(this.rowIndex);
+			if(this.record!==null) {
 				if(this.inputLines) {
 		    		for(var i=0;i<this.inputLines.length;i++) {
 		    			var inputLine=this.inputLines[i];
-						rec.set(inputLine.name, inputLine.getValue());
+						this.record.set(inputLine.name, inputLine.getValue());
 					}			
 				}
 			}
@@ -1742,7 +1744,11 @@ Ung.RowEditorWindow = Ext.extend(Ung.UpdateWindow, {
 	    } else {
 			Ext.MessageBox.alert('Warning', i18n._("The form is not valid!"));
 	    }		
-	}
+	},
+	cancelAction: function () {
+		this.record.data = Ext.decode(this.initialRecordData);
+		this.hide();
+	}	
 });
 
 //RpcProxy
@@ -1922,7 +1928,7 @@ Ext.grid.EditColumn.prototype ={
            var index = this.grid.getView().findRowIndex(t);
            var record = this.grid.store.getAt(index);
             //populate row editor
-           this.grid.rowEditor.populate(record,index);
+           this.grid.rowEditor.populate(record);
            this.grid.rowEditor.show();
         }
     },

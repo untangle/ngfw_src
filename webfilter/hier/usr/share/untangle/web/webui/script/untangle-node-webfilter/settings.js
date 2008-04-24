@@ -125,9 +125,12 @@ Ung.WebFilter = Ext.extend(Ung.Settings, {
 	       header: this.i18n._("block"), dataIndex: 'blockDomains', fixed:true,
 	       changeRecord: function(record) {
 	       		Ext.grid.CheckColumn.prototype.changeRecord.call(this,record);
-	       		if (record.get(this.dataIndex)){
+	       		var blocked = record.get(this.dataIndex);
+	       		if (blocked){
 	       			record.set('logOnly', true);
 	       		}
+				record.set('blockUrls',blocked);
+				record.set('blockExpressions',blocked);
 	       }
 	    });
 	    var logColumn = new Ext.grid.CheckColumn({
@@ -146,6 +149,8 @@ Ung.WebFilter = Ext.extend(Ung.Settings, {
 				{name: 'id'},
 				{name: 'displayName'},
 				{name: 'blockDomains'},
+				{name: 'blockUrls'},
+				{name: 'blockExpressions'},
 				{name: 'logOnly'},
 				{name: 'description', convert: function(v){ return this.i18n._(v)}.createDelegate(this)}
 			],
@@ -174,9 +179,12 @@ Ung.WebFilter = Ext.extend(Ung.Settings, {
 					listeners: {
 						"check": {
 							fn: function(elem, checked) {
+								var rowEditor = this.gridBlacklistCategories.rowEditor;
 								if (checked){
-									this.gridBlacklistCategories.rowEditor.inputLines[2].setValue(true);
+									rowEditor.inputLines[2].setValue(true);
 								}
+								rowEditor.record.data['blockUrls']=checked;
+								rowEditor.record.data['blockExpressions']=checked;
 							}.createDelegate(this)
 						}
 					}
