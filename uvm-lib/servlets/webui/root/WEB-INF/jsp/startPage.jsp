@@ -39,6 +39,7 @@
 			main=new Ung.Main();
 			main.init();
 		}
+		Ext.QuickTips.init();
 		Ext.onReady(init);
 	</script>
  </head>
