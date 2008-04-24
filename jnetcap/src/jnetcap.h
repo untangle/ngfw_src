@@ -1,6 +1,6 @@
 
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -27,8 +27,9 @@
 #define _UNINITIALIZED  0xDEADD00D
 #define _INITIALIZED    ~_UNINITIALIZED
 
-#define JLONG_TO_UINT( j_long )  ((unsigned long)(j_long) & 0xFFFFFFFF)
-#define UINT_TO_JLONG( num )     ((jlong)((uint)(num)))
+#define JLONG_TO_UINT( j_long )  ((unsigned int)((unsigned long)(j_long) & 0xFFFFFFFF))
+#define JLONG_TO_ULONG( j_long ) ((unsigned long)(j_long))
+#define UINT_TO_JLONG( num )     ((jlong)((unsigned long)(num)))
 
 extern __thread JNIEnv* thread_env;
 JNIEnv* jnetcap_get_java_env( void );

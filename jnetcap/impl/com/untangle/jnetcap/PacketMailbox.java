@@ -34,5 +34,5 @@ public interface PacketMailbox
     public Packet read( int timeout );
 
     /* Retrieve the value of the C pointer */
-    public int pointer();
+    public long pointer();
 }
