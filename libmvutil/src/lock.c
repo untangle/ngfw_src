@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -82,7 +82,7 @@ void lock_free (lock_t* lock)
 
 int  lock_rdlock (lock_t* lock)
 {
-    int num;
+    long num;
 
     if (!lock) {errno = EINVAL; return errlog(ERR_CRITICAL,"Invalid arguments\n");}
     
@@ -105,7 +105,7 @@ int  lock_rdlock (lock_t* lock)
 
 int  lock_try_rdlock (lock_t* lock)
 {
-    int num;
+    long num;
 
     if (!lock) {errno = EINVAL; return errlog(ERR_CRITICAL,"Invalid arguments\n");}
 
