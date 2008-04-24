@@ -570,6 +570,42 @@ Ung.WebFilter = Ext.extend(Ung.Settings, {
 		});
     },
     //validation functions
+    validateClient: function() {
+    	//no need for validation here...just alter the URLs
+		if(this.gridPassedUrls) {
+			this.alterUrls(this.gridPassedUrls.getSaveList());
+		}
+		if(this.gridBlockedUrls) {
+			this.alterUrls(this.gridBlockedUrls.getSaveList());
+		}
+		return true;
+    },
+    //private method
+    alterUrls: function(list) {
+		if(list!=null) {
+			//added
+			for(var i=0;i<list[0].list.length;i++) {
+				list[0].list[i]["string"] = this.alterUrl(list[0].list[i]["string"]);
+			}
+			//modified
+			for(var i=0;i<list[2].list.length;i++) {
+				list[2].list[i]["string"] = this.alterUrl(list[2].list[i]["string"]);
+			}
+		}
+    },
+    //private method
+    alterUrl: function(value) {
+		if (value.indexOf("http://") == 0) {
+			value = value.substr(7);
+		}
+		if (value.indexOf("www.") == 0) {
+			value = value.substr(4);
+		}
+		if (value.indexOf("/") == value.length - 1) {
+			value = value.substring(0, value.length - 1);
+		}
+		return value.trim();
+	},
     validateServer: function() {
     	//ipMaddr list must be validated server side
 		var passedClientsSaveList=this.gridPassedClients?this.gridPassedClients.getSaveList():null;
@@ -600,6 +636,10 @@ Ung.WebFilter = Ext.extend(Ung.Settings, {
 		}
 		return true;
     },
+    validate: function() {
+    	//reverse the order
+    	return this.validateServer() && this.validateClient();
+    },    
     // save function
 	save: function() {
 		if (this.validate()) {
