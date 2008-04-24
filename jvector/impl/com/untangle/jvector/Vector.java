@@ -49,15 +49,15 @@ public class Vector
     protected static final Logger logger = Logger.getLogger( Vector.class );
 
     /* Most of these should/could be static */
-    private native int  vector_create (int list);
-    private native int  vector_raze (int vecptr);
-    private native int  vector_send_msg (int vecptr, int msg, int arg);
-    private native void vector_set_timeout (int vecptr, int timeout_sec);
-    private native int  vector (int vecptr);
+    private native long  vector_create (long listptr);
+    private native int  vector_raze (long vecptr);
+    private native int  vector_send_msg (long vecptr, int msg, long arg);
+    private native void vector_set_timeout (long vecptr, int timeout_sec);
+    private native int  vector (long vecptr);
 
-    private native int  list_create (int flags);
-    private native int  list_add_tail (int listptr, int val);
-    private native int  list_raze (int listptr);
+    private native long  list_create (int flags);
+    private native long  list_add_tail (long listptr, long val);
+    private native int   list_raze (long listptr);
 
     private static native int cLoad();
 
@@ -67,8 +67,8 @@ public class Vector
     public static void mvutilDebugLevel( int level ) { debugLevel( MVUTIL_DEBUG, level ); }
     public static void vectorDebugLevel( int level ) { debugLevel( VECTOR_DEBUG, level ); }
 
-    private int vec_ptr = 0;
-    private int list_ptr;
+    private long vec_ptr = 0;
+    private long list_ptr;
 
     /* This list is always razed */
 
@@ -114,7 +114,7 @@ public class Vector
     public void shutdown()
     {
         if ( vec_ptr == 0 ) return;
-        vector_send_msg( vec_ptr, MSG_SHUTDOWN, 0 );
+        vector_send_msg( vec_ptr, MSG_SHUTDOWN, 0L );
     }
 
     static

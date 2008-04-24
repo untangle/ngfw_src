@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -51,7 +51,7 @@ static void* _ht_lookup(ht_t* table,void* key);
 static void* _ht_lookup_key(ht_t* table,void* key);
 static list_t* _ht_get_content_list (ht_t* table, int content_or_key);
 static u_char fake_equ_func (const void* input,const void* input2);
-static u_int  fake_hash_func (const void* input);
+static u_long  fake_hash_func (const void* input);
 
 static int  _remove_all_buckets (ht_t* table);
 static void _remove_bucket(ht_t* table,bucket_t* buck);
@@ -261,13 +261,13 @@ list_t* ht_get_key_list (ht_t* table)
 }
 
 
-u_int  string_hash_func (const void* input)
+u_long  string_hash_func (const void* input)
 {
     char* sn = (char* )input;
     int i;
     int len = strlen(sn);
     
-    u_int total = 1;
+    u_long total = 1;
 
     for(i=0;i<len && i<5;i++)
         total*= sn[i];
@@ -282,9 +282,9 @@ u_char string_equ_func (const void* input,const void* input2)
     return !(strcmp((char*)input,(char*)input2));
 }
 
-u_int  int_hash_func (const void* input)
+u_long  int_hash_func (const void* input)
 {
-    return (u_int)input;
+    return (u_long)input;
 }
 
 u_char int_equ_func (const void* input,const void* input2)
@@ -293,10 +293,10 @@ u_char int_equ_func (const void* input,const void* input2)
     else return 0;
 }
 
-static u_int  fake_hash_func (const void* input)
+static u_long  fake_hash_func (const void* input)
 {
     errlog(ERR_CRITICAL,"fake_hash_func called!\n");
-    return 0;
+    return 0L;
 }
 
 static u_char fake_equ_func (const void* input,const void* input2)
@@ -451,7 +451,7 @@ static void* _ht_lookup (ht_t* table,void* key)
     bucket_t* buck;
 
 #ifdef DEBUG_ON
-    u_int idx;
+    u_long idx;
 
     if (!table->hash_func || !table->equal_func) {
         errlog(ERR_CRITICAL,"Constraint failed: NULL func! (0x%08x,0x%08x)\n",table->hash_func,table->equal_func);

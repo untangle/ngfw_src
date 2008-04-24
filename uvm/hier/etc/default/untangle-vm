@@ -193,7 +193,17 @@ JAVA_OPTS_BEA="-Xgcpause -Xgcprio:pausetime"
 #  Minimum at 128m so we don't blow out smaller (512MB) machines
 #  Maximum at 320m so we leave a lot of space for stacks but still have enough for 10,000 sessions
 #  Stack size 96k which is small enough but still works
-JAVA_OPTS_COMMON="-verbose:gc -Xloggc:$UVM_GC_LOG -Xms128m -Xmx${MAX_HEAP_SIZE} -Xss96k -server"
+JAVA_OPTS_COMMON="-verbose:gc -Xloggc:$UVM_GC_LOG -Xms128m -Xmx${MAX_HEAP_SIZE} -server"
+
+if [ `uname -m` != 'x86_64' ]; then
+    JAVA_OPTS_COMMON="-Xss96k $JAVA_OPTS_COMMON"
+    JAVAWS=${JAVA_HOME}/bin/javaws
+else
+    JAVA_OPTS_COMMON="-Xss192k $JAVA_OPTS_COMMON"
+    JAVAWS=/usr/lib/jvm/ia32-java-6-sun/bin/javaws
+fi
+export JAVAWS
+
 if [ "x" != "x@PREFIX@" ] ; then
     JAVA_OPTS_COMMON="-ea $JAVA_OPTS_COMMON"
 fi

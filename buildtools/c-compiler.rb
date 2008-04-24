@@ -19,9 +19,15 @@
 # Robert Scott <rbscott@untangle.com>
 
 class CCompilerEnv
+  Amd64         = (`uname -m`.strip == "x86_64");
   ## These are the defaults, this way, overrides can append
   ## parameters to the defaults if they want to.
-  Defines       = "-D_GNU_SOURCE -D_REENTRANT"
+  if Amd64
+    ## Need -fPIC for linking on AMD64
+    Defines     = "-fPIC -O -D_GNU_SOURCE -D_REENTRANT"
+  else
+    Defines     = "-D_GNU_SOURCE -D_REENTRANT"
+  end
   Warnings      = "-Wall"
 
   CC            = "gcc"
@@ -52,7 +58,7 @@ class CCompilerEnv
     @flags         = CCompilerEnv.defaultDebugFlags
     @pkg           = ""
     @version       = ""
-
+    
     overrides.each_pair do |key,value|
       eval( "@#{key}=value" )
     end

@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -68,7 +68,7 @@ static int _mvpoll_ctl_del (mvpoll_t* mvp, mvpoll_key_t* key, eventmask_t event)
 static int _mvpoll_ctl_mod (mvpoll_t* mvp, mvpoll_key_t* key, eventmask_t event);
 static int _mvpoll_clear_event_fd (mvpoll_t* mvp);
 static int _mvpoll_wake (mvpoll_t* mvp);
-static u_int  _key_hash_func (const void* input);
+static u_long  _key_hash_func (const void* input);
 static u_char _key_equ_func (const void* input,const void* input2);
 static eventmask_t _null_poll (mvpoll_key_t* key);
 static char* MVPOLL_CTL_STR[] = { "NONE", "ADD" , "DEL" , "MOD" , "MAX" };
@@ -152,8 +152,8 @@ int         mvpoll_ctl (mvpoll_id_t mvp, int op, mvpoll_key_t* key, eventmask_t 
         ev.data.ptr = key;
         ev.events = event;
         
-        debug(8,"MVPOLL: epoll_ctl(%i,%s,%i,0x%08x)\n",mvp->epfd,MVPOLL_CTL_STR[op],(int)key->data,event);
-        if (epoll_ctl(mvp->epfd,op,(int)key->data,&ev)<0)
+        debug(8,"MVPOLL: epoll_ctl(%i,%s,%i,0x%08x)\n",mvp->epfd,MVPOLL_CTL_STR[op],key->data,event);
+        if (epoll_ctl(mvp->epfd,op,key->data.fd,&ev)<0)
             ret = perrlog("epoll_ctl");
     }
 
@@ -250,7 +250,7 @@ int           mvpoll_key_fd_init   ( mvpoll_key_t* key, int fd )
     key->type            = mvpoll_key_type_fd;
     key->special_destroy = NULL;
     key->poll            = _null_poll;
-    key->data            = (void*)fd;
+    key->data.fd         = fd;
     key->arg             = NULL;
     
     return 0;
@@ -649,10 +649,10 @@ static int _mvpoll_clear_event_fd (mvpoll_t* mvp)
 /**
  * key hash function
  */
-static u_int  _key_hash_func (const void* input)
+static u_long  _key_hash_func (const void* input)
 {
     mvpoll_key_t* key = (mvpoll_key_t*)input;
-    return (u_int)key ^ (u_int)key->type ^ (u_int)key->poll;
+    return (u_long)key ^ (u_long)key->type ^ (u_long)key->poll;
 }
 
 /**

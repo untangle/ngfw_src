@@ -20,15 +20,15 @@ package com.untangle.jvector;
 
 public class Relay
 {
-    private native int  relay_create ();
-    private native void relay_free (int relay_ptr);
-    private native void relay_set_src (int relay_ptr, int src_ptr);
-    private native void relay_set_snk (int relay_ptr, int snk_ptr);
+    private native long  relay_create ();
+    private native void relay_free (long relay_ptr);
+    private native void relay_set_src (long relay_ptr, long src_ptr);
+    private native void relay_set_snk (long relay_ptr, long snk_ptr);
 
     private Source src;
     private Sink   snk;
 
-    private int relay_ptr;
+    private long relay_ptr;
     
     public Relay (Source src, Sink snk)
     {
@@ -61,7 +61,7 @@ public class Relay
         return this.snk;
     }
 
-    public int get_relay()
+    public long get_relay()
     {
         return relay_ptr;
     }

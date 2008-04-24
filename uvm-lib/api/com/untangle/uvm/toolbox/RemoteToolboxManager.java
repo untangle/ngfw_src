@@ -163,7 +163,7 @@ public interface RemoteToolboxManager
     void requestInstall(String mackageName);
 
     MessageQueue<ToolboxMessage> subscribe();
-    
+
     /**
      * Get the undelivered messages for MessageQueue.
      *
@@ -194,5 +194,9 @@ public interface RemoteToolboxManager
     List<String> getWebstartResources();
 
     boolean hasPremiumSubscription();
-    
+
+    /**
+     * Get the host that is serving the library.
+     */
+    String getLibraryHost();
 }

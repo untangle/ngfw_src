@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -39,14 +39,14 @@
 
 #include "com_untangle_jvector_TCPSink.h"
 
-static int _sink_get_fd( jint pointer );
+static int _sink_get_fd( jlong pointer );
 
 /*
  * Class:     TCPSink
  * Method:    create
  * Signature: (I)I
  */
-JNIEXPORT jint JNICALL Java_com_untangle_jvector_TCPSink_create
+JNIEXPORT jlong JNICALL Java_com_untangle_jvector_TCPSink_create
 ( JNIEnv *env, jobject _this, jint _fd ) 
 {
     jvector_sink_t* snk;
@@ -54,27 +54,27 @@ JNIEXPORT jint JNICALL Java_com_untangle_jvector_TCPSink_create
     int fd;
     
     if (( fd = dup( _fd )) < 0 ) {
-        return (jint)jmvutil_error_null( JMVUTIL_ERROR_STT, ERR_CRITICAL, "dup: %s\n", errstr );
+        return (jlong)jmvutil_error_null( JMVUTIL_ERROR_STT, ERR_CRITICAL, "dup: %s\n", errstr );
     }
 
     /* Set to NON-blocking */
     if ( unet_blocking_disable( fd ) < 0 ) {
-        return (jint)jmvutil_error_null( JMVUTIL_ERROR_STT, ERR_CRITICAL, "unet_blocking_disable\n" );
+        return (jlong)jmvutil_error_null( JMVUTIL_ERROR_STT, ERR_CRITICAL, "unet_blocking_disable\n" );
     }
 
     if (( key = mvpoll_key_fd_create( fd )) == NULL ) {
-        return (jint)jmvutil_error_null( JMVUTIL_ERROR_STT, ERR_CRITICAL, "mvpoll_key_fd_create\n" );
+        return (jlong)jmvutil_error_null( JMVUTIL_ERROR_STT, ERR_CRITICAL, "mvpoll_key_fd_create\n" );
     }
     
     if (( snk = jvector_sink_create( _this, key )) == NULL ) {
-        return (jint)jmvutil_error_null( JMVUTIL_ERROR_STT, ERR_CRITICAL, "jvector_sink_create\n" );
+        return (jlong)jmvutil_error_null( JMVUTIL_ERROR_STT, ERR_CRITICAL, "jvector_sink_create\n" );
     }
     
-    return (jint)snk;    
+    return (jlong)snk;    
 }
 
 JNIEXPORT jint JNICALL Java_com_untangle_jvector_TCPSink_write
-( JNIEnv *env, jobject _this, jint pointer, jbyteArray _data, jint offset, jint size )
+( JNIEnv *env, jobject _this, jlong pointer, jbyteArray _data, jint offset, jint size )
 {
     jbyte* data;
     int number_bytes = -1;
@@ -145,7 +145,7 @@ JNIEXPORT jint JNICALL Java_com_untangle_jvector_TCPSink_write
  * Signature: (I)I
  */
 JNIEXPORT jint JNICALL Java_com_untangle_jvector_TCPSink_close
-  (JNIEnv *env, jclass _this, jint pointer)
+  (JNIEnv *env, jclass _this, jlong pointer)
 {
     int fd;
     
@@ -161,7 +161,7 @@ JNIEXPORT jint JNICALL Java_com_untangle_jvector_TCPSink_close
  * Signature: (I)I
  */
 JNIEXPORT void JNICALL Java_com_untangle_jvector_TCPSink_reset
-  (JNIEnv *env, jclass _class, jint pointer )
+  (JNIEnv *env, jclass _class, jlong pointer )
 {
     int fd;
     if (( fd = _sink_get_fd( pointer )) < 0 ) {
@@ -183,14 +183,14 @@ JNIEXPORT void JNICALL Java_com_untangle_jvector_TCPSink_reset
  * Signature: (I)I
  */
 JNIEXPORT jint JNICALL Java_com_untangle_jvector_TCPSink_shutdown
-  (JNIEnv *env, jclass _this, jint pointer)
+  (JNIEnv *env, jclass _this, jlong pointer)
 {
     jvector_sink_t* jv_snk = (jvector_sink_t*)pointer;
     int fd;
 
     if ( jv_snk == NULL || jv_snk->key == NULL ) return errlogargs();
     
-    fd = (int)jv_snk->key->data;
+    fd = jv_snk->key->data.fd;
     /* XXX Must NULL this out at some point
       jv_snk->key->data = (void*)-1;
       do not NULL out here, because it is used later
@@ -212,12 +212,12 @@ JNIEXPORT jint JNICALL Java_com_untangle_jvector_TCPSink_shutdown
     return 0;
 }
 
-static int _sink_get_fd( jint pointer )
+static int _sink_get_fd( jlong pointer )
 {
     /* XXX This should be throwing errors left and right */
-    if ( pointer == (jint)NULL || ((jvector_sink_t*)pointer)->key == NULL ) {
+    if ( pointer == (jlong)NULL || ((jvector_sink_t*)pointer)->key == NULL ) {
         return jmvutil_error( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, "Invalid pointer\n" );
     }
     
-    return (int)((jvector_sink_t*)pointer)->key->data;
+    return ((jvector_sink_t*)pointer)->key->data.fd;
 }

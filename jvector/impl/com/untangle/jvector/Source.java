@@ -20,10 +20,10 @@ package com.untangle.jvector;
 
 public abstract class Source
 {
-    protected int pointer;
+    protected long pointer;
 
     /* ??? Should this be package protected */
-    protected int src_ptr()
+    protected long src_ptr()
     {
         return pointer;
     }
@@ -58,7 +58,7 @@ public abstract class Source
         pointer = 0;
     }
     
-    protected native void raze( int pointer );
+    protected native void raze( long pointer );
 
     static 
     {

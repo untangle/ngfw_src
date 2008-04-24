@@ -23,6 +23,8 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.untangle.uvm.util.AdministrationOutsideAccessValve;
+import com.untangle.uvm.util.ReportingOutsideAccessValve;
 import org.apache.catalina.Container;
 import org.apache.catalina.Context;
 import org.apache.catalina.Engine;
@@ -39,9 +41,6 @@ import org.apache.catalina.session.StandardManager;
 import org.apache.catalina.startup.Embedded;
 import org.apache.coyote.http11.Http11BaseProtocol;
 import org.apache.log4j.Logger;
-
-import com.untangle.uvm.util.AdministrationOutsideAccessValve;
-import com.untangle.uvm.util.ReportingOutsideAccessValve;
 
 /**
  * Wrapper around the Tomcat server embedded within the UVM.
@@ -106,7 +105,7 @@ class TomcatManager
         try {
             b = InetAddress.getByName("192.0.2.42");
             l = InetAddress.getByName("127.0.0.1");
-        } catch (Exception exn) { 
+        } catch (Exception exn) {
             /* If it is null, it will just bind to 0.0.0.0 */
             l = null;
             b = null;
@@ -125,11 +124,10 @@ class TomcatManager
          * otherwise it is supposed to throw an IllegalStateException */
         loadSystemApp("/session-dumper", "session-dumper", new WebAppOptions(new AdministrationOutsideAccessValve()));
         loadSystemApp("/webstart", "webstart", new WebAppOptions(new AdministrationOutsideAccessValve()));
-        loadSystemApp("/library", "onlinestore", new WebAppOptions(new AdministrationOutsideAccessValve()));
         loadSystemApp("/reports", "reports", new WebAppOptions(true,new ReportingOutsideAccessValve()));
         loadSystemApp("/alpaca", "alpaca", new WebAppOptions(true,new AdministrationOutsideAccessValve()));
         loadSystemApp("/webui", "webui", new WebAppOptions(new AdministrationOutsideAccessValve()));
-        
+        loadSystemApp("/library", "library", new WebAppOptions(true,new AdministrationOutsideAccessValve()));
     }
 
     // package protected methods ----------------------------------------------
@@ -604,7 +602,7 @@ class TomcatManager
             StandardManager mgr = new StandardManager();
             mgr.setPathname(null); /* disable session persistence */
             ctx.setManager(mgr);
-            
+
             ctx.setResources(new StrongETagDirContext());
 
             /* This should be the first valve */
@@ -682,13 +680,13 @@ class TomcatManager
         ph.setCompression("on");
         ph.setCompressableMimeType("text/javascript,text/css");
         ph.setCompressionMinSize(200);
-        
+
         if (secure) {
             ph.setKeystore(this.keystoreFile);
             ph.setKeypass(this.keystorePass);
             ph.setKeyAlias(this.keyAlias);
         }
-        
+
 
         emb.addConnector(ret);
         return ret;

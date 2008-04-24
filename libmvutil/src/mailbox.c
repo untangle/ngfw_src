@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -206,7 +206,7 @@ int          mailbox_get_pollable_event(mailbox_t* mb)
 
     if (mb->size>0) {
         char buf[mb->size];
-        int num = mb->size;
+        size_t num = mb->size;
         
         memset(buf,0,mb->size); /* needed only to shut up debuggers */
         

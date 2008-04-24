@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -26,10 +26,10 @@
  * Method:    relay_create
  * Signature: ()I
  */
-JNIEXPORT jint JNICALL Java_com_untangle_jvector_Relay_relay_1create
+JNIEXPORT jlong JNICALL Java_com_untangle_jvector_Relay_relay_1create
     (JNIEnv * env, jobject _this)
 {
-    return (jint)relay_create();
+    return (jlong)relay_create();
 }
 
 /*
@@ -38,7 +38,7 @@ JNIEXPORT jint JNICALL Java_com_untangle_jvector_Relay_relay_1create
  * Signature: (I)V
  */
 JNIEXPORT void JNICALL Java_com_untangle_jvector_Relay_relay_1free
-    (JNIEnv * env, jobject _this, jint relay_ptr)
+    (JNIEnv * env, jobject _this, jlong relay_ptr)
 {
     relay_free((relay_t*) relay_ptr);
 }
@@ -49,7 +49,7 @@ JNIEXPORT void JNICALL Java_com_untangle_jvector_Relay_relay_1free
  * Signature: (II)V
  */
 JNIEXPORT void JNICALL Java_com_untangle_jvector_Relay_relay_1set_1src
-    (JNIEnv * env, jobject _this, jint relay_ptr, jint src_ptr)
+    (JNIEnv * env, jobject _this, jlong relay_ptr, jlong src_ptr)
 {
     relay_set_src((relay_t*) relay_ptr, (source_t*)src_ptr);
 
@@ -61,7 +61,7 @@ JNIEXPORT void JNICALL Java_com_untangle_jvector_Relay_relay_1set_1src
  * Signature: (II)V
  */
 JNIEXPORT void JNICALL Java_com_untangle_jvector_Relay_relay_1set_1snk
-    (JNIEnv * env, jobject _this, jint relay_ptr, jint snk_ptr)
+    (JNIEnv * env, jobject _this, jlong relay_ptr, jlong snk_ptr)
 {
     relay_set_snk((relay_t*) relay_ptr, (sink_t*)snk_ptr);
 }

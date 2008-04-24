@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -109,7 +109,7 @@ struct mvpoll_key {
      * for other keys can use it as they wish
      * (usually a pointer to the resource or unused)
      */
-    void* data;
+    union epoll_data data;
     /**
      * List of observers, all keys must keep track of observers for notify
      */

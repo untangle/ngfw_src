@@ -92,21 +92,21 @@ public class TCPSink extends Sink
 
     public void raze()
     {
-        if ( pointer != 0 ) {
+        if ( pointer != 0L ) {
             close( pointer );
             super.raze();
         }
 
-        pointer = 0;
+        pointer = 0L;
     }
 
     protected void sinkRaze()
     {
-        if ( pointer != 0 ) {
+        if ( pointer != 0L ) {
             close( pointer );
             super.sinkRaze();
         }
-        pointer = 0;
+        pointer = 0L;
     }
 
     protected int shutdown()
@@ -117,9 +117,9 @@ public class TCPSink extends Sink
         return shutdown( pointer );
     }
 
-    protected native int create( int fd );
-    protected static native int write( int pointer, byte[] data, int offset, int size );
-    protected static native int close( int pointer );
-    protected static native void reset( int pointer );
-    protected static native int shutdown( int pointer );
+    protected native long create( int fd );
+    protected static native int write( long pointer, byte[] data, int offset, int size );
+    protected static native int close( long pointer );
+    protected static native void reset( long pointer );
+    protected static native int shutdown( long pointer );
 }

@@ -20,9 +20,9 @@ package com.untangle.jvector;
 
 public abstract class Sink
 {
-    protected int pointer;
+    protected long pointer;
     
-    protected int snk_ptr() 
+    protected long snk_ptr() 
     { 
         return pointer;
     }
@@ -40,10 +40,10 @@ public abstract class Sink
      */
     public void raze()
     {
-        if ( pointer != 0 )
+        if ( pointer != 0L )
             raze( pointer );
         
-        pointer = 0;
+        pointer = 0L;
     }
 
     /* 
@@ -53,10 +53,10 @@ public abstract class Sink
     protected void sinkRaze()
     {
         /* NULL out the pointer */
-        pointer = 0;        
+        pointer = 0L;        
     }
 
-    protected native void raze( int pointer );
+    protected native void raze( long pointer );
 
     static
     {

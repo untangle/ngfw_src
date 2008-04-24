@@ -16,7 +16,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package com.untangle.uvm.user;
+package com.untangle.uvm.util;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -31,67 +31,61 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.untangle.uvm.node.NodeException;
-import com.untangle.uvm.node.script.ScriptRunner;
 import org.apache.log4j.Logger;
 
-public class Downloader extends HttpServlet
+/* Used to stream data to as the response to a servlet request */
+public class ServletStreamer
 {
-    private static final String WMI_INSTALLER_FILE_NAME = "/tmp/setup-wmi.exe";
-    private static final String WMI_DOWNLOAD_NAME = "setup.exe";
-    private static final String WMI_DOWNLOAD_TYPE = "application/download";
-    private static final String GENERATE_INSTALLER_SCRIPT =
-        System.getProperty( "bunnicula.home" ) + "/installers/wmimapper/makeinstaller";
+    private static final ServletStreamer INSTANCE = new ServletStreamer();
 
     private final Logger logger = Logger.getLogger( this.getClass());
 
-    protected void doGet( HttpServletRequest request,  HttpServletResponse response )
-        throws ServletException, IOException
+    private ServletStreamer()
     {
-        generateInstaller();
-        streamFile( request, response, WMI_INSTALLER_FILE_NAME, WMI_DOWNLOAD_NAME, WMI_DOWNLOAD_TYPE );
     }
 
-    private void generateInstaller() throws ServletException
-    {
-        try {
-            ScriptRunner.getInstance().exec( GENERATE_INSTALLER_SCRIPT );
-        } catch ( NodeException e ) {
-            logger.warn( "error running script", e );
-            throw new ServletException( "Unable to create WMI Installer, please try again later." );
-        }
-    }
-
-    /* Xxxxxxxxxxxxxxxxxx copied from openvpn, should be in a global util class in api */
-
-    /** Send a file to a user */
-    /**
-     * @param fileName - Full path of the file to download
-     * @param downloadFileName - Name that should be given to the file that is downloaded
-     */
-    private void streamFile( HttpServletRequest request, HttpServletResponse response,
-                             String fileName, String downloadFileName, String type )
+    public void stream( HttpServletRequest request, HttpServletResponse response,
+                        String fileName, String downloadFileName, String type )
         throws ServletException, IOException
     {
-        InputStream fileData;
+        stream( request, response, new File( fileName ), downloadFileName, type );
+    }
 
-        long length = 0;
-
+    public void stream( HttpServletRequest request, HttpServletResponse response,
+                        File file, String downloadFileName, String type )
+        throws ServletException, IOException
+    {
         try {
-            File file = new File( fileName );
-            fileData  = new FileInputStream( file );
-            length = file.length();
+            stream( request, response, new FileInputStream( file ), downloadFileName, type, file.length());
         } catch ( FileNotFoundException e ) {
-            logger.info( "The file '" + fileName + "' does not exist" );
-
+            logger.info( "The file '" + file + "' does not exist" );
             /* Indicate that the response was not rejected */
             response.sendError( HttpServletResponse.SC_FORBIDDEN );
             return;
         }
-
+    }
+    
+    /**
+     * Stream a file instead of sending to a client.
+     * @param request the request from the client.
+     * @param response The Response to the client.
+     * @param inputStream the stream to send.
+     * @param downloadFileName if non-null, send this file as an attachment rather than an inline file.
+     * @param type Mime type of the file.
+     * @param length Length of the file, if greater than zero this is set in the header.
+     */
+    public void stream( HttpServletRequest request, HttpServletResponse response,
+                        InputStream inputStream, String downloadFileName, String type, long length )
+        throws ServletException, IOException
+    {
         response.setContentType( type );
-        response.setHeader( "Content-Disposition", "attachment;filename=\"" + downloadFileName + "\"" );
-        response.setHeader( "Content-Length", "" + length );
+
+        if ( downloadFileName != null ) {
+            response.setHeader( "Content-Disposition", "attachment;filename=\"" + downloadFileName + "\"" );
+        }
+        if ( length > 0 ) {
+            response.setHeader( "Content-Length", "" + length );
+        }
 
         BufferedInputStream bis = null;
         BufferedOutputStream bos = null;
@@ -99,8 +93,8 @@ public class Downloader extends HttpServlet
 
         try {
             out = response.getOutputStream();
-            bis = new BufferedInputStream( fileData );
-            bos = new BufferedOutputStream(out);
+            bis = new BufferedInputStream( inputStream );
+            bos = new BufferedOutputStream( out );
             byte[] buff = new byte[2048];
             int bytesRead;
             while( -1 != ( bytesRead = bis.read( buff, 0, buff.length ))) bos.write( buff, 0, bytesRead );
@@ -110,20 +104,25 @@ public class Downloader extends HttpServlet
             try {
                 if ( bis != null ) bis.close();
             } catch ( Exception e ) {
-                logger.warn( "Error closing input stream [" + fileName + "]", e );
+                logger.warn( "Error closing input stream", e );
             }
 
             try {
                 if ( bos != null ) bos.close();
             } catch ( Exception e ) {
-                logger.warn( "Error closing output stream [" + fileName + "]", e );
+                logger.warn( "Error closing output stream", e );
             }
 
             try {
                 if ( out != null ) out.close();
             } catch ( Exception e ) {
-                logger.warn( "Error closing output stream [" + fileName + "]", e );
+                logger.warn( "Error closing output stream", e );
             }
         }
+    }
+
+    public static ServletStreamer getInstance()
+    {
+        return INSTANCE;
     }
 }

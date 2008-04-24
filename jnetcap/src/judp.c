@@ -53,17 +53,17 @@
 
 #define JLONG_TO_PACKET( packet, packet_ptr )   do { \
     if (( packet_ptr ) == 0 ) return errlogargs(); \
-    (packet) = (netcap_pkt_t*)JLONG_TO_UINT(( packet_ptr )); \
+    (packet) = (netcap_pkt_t*)JLONG_TO_ULONG(( packet_ptr )); \
   } while (0)
 
 #define JLONG_TO_PACKET_NULL( packet, packet_ptr )   do { \
     if (( packet_ptr ) == 0 ) return errlogargs_null(); \
-    (packet) = (netcap_pkt_t*)JLONG_TO_UINT(( packet_ptr )); \
+    (packet) = (netcap_pkt_t*)JLONG_TO_ULONG(( packet_ptr )); \
   } while (0)
 
 #define JLONG_TO_PACKET_VOID( packet, packet_ptr )   do { \
     if (( packet_ptr ) == 0 ) return (void)errlogargs(); \
-    (packet) = (netcap_pkt_t*)JLONG_TO_UINT(( packet_ptr )); \
+    (packet) = (netcap_pkt_t*)JLONG_TO_ULONG(( packet_ptr )); \
   } while (0)
 
 
@@ -114,7 +114,7 @@ JNIEXPORT jlong JNICALL JF_IPTraffic( createIPTraffic )
     pkt->data            = NULL;
     pkt->data_len        = 0;
 
-    return UINT_TO_JLONG((uint)pkt);
+    return UINT_TO_JLONG(pkt);
 }
 
 
@@ -129,7 +129,7 @@ JNIEXPORT jint JNICALL JF_IPTraffic( send )
     jbyte* data;
     int ret = 0;
     int data_len;
-    netcap_pkt_t* pkt = (netcap_pkt_t*)JLONG_TO_UINT(_pkt);
+    netcap_pkt_t* pkt = (netcap_pkt_t*)JLONG_TO_ULONG(_pkt);
     if ( pkt == NULL ) return errlogargs();
 
     /* Convert the byte array */
@@ -351,7 +351,7 @@ JNIEXPORT jint JNICALL JF_IPTraffic( setStringValue )
 JNIEXPORT void JNICALL JF_IPTraffic( raze )
   (JNIEnv* env, jclass _class, jlong _pkt )
 {
-    netcap_pkt_t* pkt = (netcap_pkt_t*)JLONG_TO_UINT(_pkt);
+    netcap_pkt_t* pkt = (netcap_pkt_t*)JLONG_TO_ULONG(_pkt);
     if ( pkt == NULL ) return (void)errlogargs();
 
     /* Remove the packet */
@@ -377,14 +377,14 @@ JNIEXPORT jlong JNICALL JF_UDPSession( read )
     struct timeval tv;
     netcap_pkt_t *pkt = NULL;
     mailbox_t*    mb = NULL;
-    netcap_session_t* netcap_sess = (netcap_session_t*)JLONG_TO_UINT( session_ptr );
-    if ( netcap_sess == NULL ) return UINT_TO_JLONG((uint)errlogargs_null());
+    netcap_session_t* netcap_sess = (netcap_session_t*)JLONG_TO_ULONG( session_ptr );
+    if ( netcap_sess == NULL ) return UINT_TO_JLONG(errlogargs_null());
 
     if ( if_client == JNI_TRUE ) mb = &netcap_sess->cli_mb; 
     else                         mb = &netcap_sess->srv_mb; 
     
     if ( utime_msec_add_now( &tv, timeout ) < 0 ) {
-        return UINT_TO_JLONG((u_int)errlog_null( ERR_CRITICAL, "utime_msec_add_now\n" ));
+        return UINT_TO_JLONG(errlog_null( ERR_CRITICAL, "utime_msec_add_now\n" ));
     }
     pkt = (netcap_pkt_t *) mailbox_utimed_get( mb, &tv );
     /*
@@ -405,7 +405,7 @@ JNIEXPORT jlong JNICALL JF_UDPSession( read )
 JNIEXPORT jbyteArray JNICALL JF_UDPSession( data )
   (JNIEnv* env, jclass _class, jlong packet_ptr )
 {
-    netcap_pkt_t* pkt = (netcap_pkt_t*)JLONG_TO_UINT( packet_ptr );
+    netcap_pkt_t* pkt = (netcap_pkt_t*)JLONG_TO_ULONG( packet_ptr );
     jbyteArray bytes = NULL;
     
     if ( pkt == NULL ) return errlogargs_null();
@@ -429,7 +429,7 @@ JNIEXPORT jbyteArray JNICALL JF_UDPSession( data )
 JNIEXPORT int JNICALL JF_UDPSession( getData )
   (JNIEnv* env, jclass _class, jlong packet_ptr, jbyteArray buffer )
 {
-    netcap_pkt_t* pkt = (netcap_pkt_t*)JLONG_TO_UINT( packet_ptr );
+    netcap_pkt_t* pkt = (netcap_pkt_t*)JLONG_TO_ULONG( packet_ptr );
     int buffer_len;
 
     if ( pkt == NULL || buffer == NULL ) return errlogargs();
@@ -456,7 +456,7 @@ JNIEXPORT int JNICALL JF_UDPSession( getData )
 JNIEXPORT jint JNICALL JF_UDPSession( send )
   (JNIEnv* env, jclass _class, jlong packet_ptr )
 {
-    netcap_pkt_t* pkt = (netcap_pkt_t*)JLONG_TO_UINT( packet_ptr );
+    netcap_pkt_t* pkt = (netcap_pkt_t*)JLONG_TO_ULONG( packet_ptr );
     if ( pkt == NULL ) return errlogargs();
     
     if ( pkt->data == NULL && pkt->data_len != 0 ) {
@@ -485,7 +485,7 @@ JNIEXPORT jint JNICALL JF_UDPSession( merge )
     in_addr_t src = (in_addr_t)JLONG_TO_UINT( src_addr );
     in_addr_t dst = (in_addr_t)JLONG_TO_UINT( dst_addr );
 
-    netcap_session_t* session = (netcap_session_t*)JLONG_TO_UINT( pointer );
+    netcap_session_t* session = (netcap_session_t*)JLONG_TO_ULONG( pointer );
 
     if ( session == NULL ) return errlogargs();
 
@@ -512,7 +512,7 @@ JNIEXPORT jint JNICALL JF_UDPSession( icmpMerge )
     in_addr_t src = (in_addr_t)JLONG_TO_UINT( src_addr );
     in_addr_t dst = (in_addr_t)JLONG_TO_UINT( dst_addr );
 
-    netcap_session_t* session = (netcap_session_t*)JLONG_TO_UINT( pointer );
+    netcap_session_t* session = (netcap_session_t*)JLONG_TO_ULONG( pointer );
 
     if ( session == NULL ) return errlogargs();
     
@@ -532,13 +532,13 @@ JNIEXPORT jint JNICALL JF_UDPSession( icmpMerge )
  * Method:    mailboxPointer
  * Signature: (JZ)I
  */
-JNIEXPORT jint JNICALL JF_UDPSession( mailboxPointer )
+JNIEXPORT jlong JNICALL JF_UDPSession( mailboxPointer )
   ( JNIEnv *env, jclass _class, jlong pointer, jboolean if_client )
 {
-    netcap_session_t* session = (netcap_session_t*)JLONG_TO_UINT( pointer );
+    netcap_session_t* session = (netcap_session_t*)JLONG_TO_ULONG( pointer );
     if ( session == NULL ) return errlogargs();
 
-    return (jint)(( if_client == JNI_TRUE ) ? &session->cli_mb : &session->srv_mb);
+    return (jlong)(long)(( if_client == JNI_TRUE ) ? &session->cli_mb : &session->srv_mb);
 }
 
 /*
@@ -564,8 +564,8 @@ JNIEXPORT void JNICALL JF_UDPSession( transferFirstPacketID )
         return (void)jmvutil_error( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, "Invalid Arguments\n" );
     }
 
-    netcap_session_t* session = (netcap_session_t*)JLONG_TO_UINT( session_ptr );
-    netcap_pkt_t* server_traffic = (netcap_pkt_t*)JLONG_TO_UINT( server_traffic_ptr );
+    netcap_session_t* session = (netcap_session_t*)JLONG_TO_ULONG( session_ptr );
+    netcap_pkt_t* server_traffic = (netcap_pkt_t*)JLONG_TO_ULONG( server_traffic_ptr );
 
     debug( 10, "NetcapUDPSession: Transferring the first packet id\n" );
 
@@ -606,7 +606,7 @@ JNIEXPORT jlong JNICALL JF_ICMPTraffic( icmpSource )
     struct in_addr source;
     int ret;
     
-    netcap_pkt_t* pkt = (netcap_pkt_t*)JLONG_TO_UINT( pointer );
+    netcap_pkt_t* pkt = (netcap_pkt_t*)JLONG_TO_ULONG( pointer );
     if ( pkt == NULL ) {
         return (jlong)jmvutil_error( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, "NULL pkt\n" );
     }

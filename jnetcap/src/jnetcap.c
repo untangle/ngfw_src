@@ -578,7 +578,7 @@ JNIEXPORT jboolean JNICALL JF_Netcap( isBroadcast )
 JNIEXPORT jint JNICALL JF_Netcap( updateIcmpPacket )
 ( JNIEnv *env, jobject _this, jbyteArray _data, jint data_len, jint icmp_type, jint icmp_code, jint icmp_pid, jlong _icmp_mb )
 {
-    mailbox_t* icmp_mb = (mailbox_t*)JLONG_TO_UINT( _icmp_mb );
+    mailbox_t* icmp_mb = (mailbox_t*)JLONG_TO_ULONG( _icmp_mb );
     jbyte* data;
     int data_lim;
     int ret = -1;

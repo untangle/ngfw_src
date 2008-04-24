@@ -44,8 +44,10 @@ public class UDPSink extends Sink
 
         this.traffic = traffic;
 
-        /* XXX After the conversion remove the (int), (may need longs for 64-bit) */
-        pointer = create( (int)traffic.pointer());
+        // 4/08 -- We're after conversion now, so it's been removed.
+        // WAS:
+        /*      xxx After the conversion remove the (int), (may need longs for 64-bit) */
+        pointer = create( traffic.pointer());
         
         this.icmpMailbox = icmpMailbox;
         this.icmpId      = icmpId;
@@ -142,7 +144,7 @@ public class UDPSink extends Sink
         default:
         }
 
-        numWritten = write((int)traffic.pointer(), crumb.data(), crumb.offset(), size, ttl, tos, 
+        numWritten = write(traffic.pointer(), crumb.data(), crumb.offset(), size, ttl, tos, 
                            options, isUdp, sourceAddress );
 
         if ( numWritten < 0 ) {
@@ -179,7 +181,7 @@ public class UDPSink extends Sink
         return shutdown( pointer );
     }
 
-    protected native int create( int pointer );
+    protected native long create( long pointer );
 
     /**
      * Send out a ICMP or UDP packet.</p>
@@ -196,7 +198,7 @@ public class UDPSink extends Sink
      * @return Number of bytes written
      */
     // protected static native int write( int pointer, byte[] data, int offset, int size, int packet );
-    protected static native int write( int pointer, byte[] data, int offset, int size, int ttl,
+    protected static native int write( long pointer, byte[] data, int offset, int size, int ttl,
                                        int tos, byte[] options, boolean isUdp, long srcAddress );
-    protected static native int shutdown( int pointer );
+    protected static native int shutdown( long pointer );
 }

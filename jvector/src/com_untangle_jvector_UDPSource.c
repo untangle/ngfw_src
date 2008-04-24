@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -42,28 +42,28 @@
  * Method:    create
  * Signature: (I)I
  */
-JNIEXPORT jint JNICALL Java_com_untangle_jvector_UDPSource_create
-  (JNIEnv *env, jobject _this, jint pointer )
+JNIEXPORT jlong JNICALL Java_com_untangle_jvector_UDPSource_create
+  (JNIEnv *env, jobject _this, jlong pointer )
 {
     jvector_source_t* src;
     mvpoll_key_t* key;
     mailbox_t* mb;
     
-    if (( mb = (mailbox_t*)pointer) == NULL ) return (jint)errlogargs_null();
+    if (( mb = (mailbox_t*)pointer) == NULL ) return (jlong)errlogargs_null();
         
     if (( key = mailbox_get_mvpoll_src_key( mb )) == NULL ) {
-        return (jint)errlog_null( ERR_CRITICAL, "mailbox_get_mvpoll_src_key\n" );
+        return (jlong)errlog_null( ERR_CRITICAL, "mailbox_get_mvpoll_src_key\n" );
     }
 
     if (( src = jvector_source_create( _this, key )) == NULL ) {
-        return (jint)errlog_null( ERR_CRITICAL, "jvector_source_create\n" );
+        return (jlong)errlog_null( ERR_CRITICAL, "jvector_source_create\n" );
     }
     
-    return (jint)src;    
+    return (jlong)src;    
 }
 
 JNIEXPORT jint JNICALL Java_com_untangle_jvector_UDPSource_shutdown
-(JNIEnv *env, jclass _this, jint pointer, jint mailbox_pointer )
+(JNIEnv *env, jclass _this, jlong pointer, jlong mailbox_pointer )
 {
     jvector_source_t* jv_src = (jvector_source_t*)pointer;
     

@@ -61,7 +61,7 @@ JNIEXPORT jlong JNICALL JF_Session( getSession )
         return 0;
     }
 
-    if (( session = netcap_sesstable_get( session_id )) == NULL ) {
+    if (( session = netcap_sesstable_get( (u_int)session_id )) == NULL ) {
         jmvutil_error( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, "netcap_sesstable_get(%10u)\n", session_id );
         return 0;
     }

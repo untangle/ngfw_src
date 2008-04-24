@@ -181,7 +181,7 @@ public class NetcapUDPSession extends NetcapSession
     private static native int    icmpMerge( long sessionPointer, int id, long srcAddr, long dstAddr, 
                                             byte intf );
 
-    private static native int    mailboxPointer( long sessionPointer, boolean ifClient );
+    private static native long    mailboxPointer( long sessionPointer, boolean ifClient );
     
     /* This is for sending the data associated with a netcap_pkt_t structure */
     private static native int  send( long packetPointer );
@@ -229,7 +229,7 @@ public class NetcapUDPSession extends NetcapSession
             return read( 0 );
         }
 
-        public int pointer()
+        public long pointer()
         {
             return NetcapUDPSession.mailboxPointer( pointer.value(), ifClient );
         }

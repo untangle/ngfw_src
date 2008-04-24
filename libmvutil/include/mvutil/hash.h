@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -24,7 +24,7 @@
 /**
  * The type of a hash function
  */
-typedef u_int  (*ht_hash_func_t)(const void *);
+typedef u_long  (*ht_hash_func_t)(const void *);
 
 /**
  * The type of a equals test (compares two keys)
@@ -265,7 +265,7 @@ extern u_char string_equ_func (const void* input,const void* input2);
  * \param input        a char *
  * \return the hash
  */
-extern u_int  string_hash_func (const void* input);
+extern u_long  string_hash_func (const void* input);
 
 /*! \brief hash equality function for strings
  * this is the int equality function
@@ -284,7 +284,7 @@ extern u_char int_equ_func (const void* input,const void* input2);
  * \param input        a int
  * \return the hash
  */
-extern u_int  int_hash_func (const void* input);
+extern u_long  int_hash_func (const void* input);
 
 
 

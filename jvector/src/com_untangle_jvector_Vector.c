@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -70,10 +70,10 @@ JNIEXPORT jint JNICALL Java_com_untangle_jvector_Vector_cLoad
  * Method:    vector_create
  * Signature: (I)I
  */
-JNIEXPORT jint JNICALL Java_com_untangle_jvector_Vector_vector_1create
-    (JNIEnv* env, jobject _this, jint list_ptr)
+JNIEXPORT jlong JNICALL Java_com_untangle_jvector_Vector_vector_1create
+    (JNIEnv* env, jobject _this, jlong list_ptr)
 {
-    return (jint)vector_create((list_t*)list_ptr);
+    return (jlong)vector_create((list_t*)list_ptr);
 }
 
 /*
@@ -82,7 +82,7 @@ JNIEXPORT jint JNICALL Java_com_untangle_jvector_Vector_vector_1create
  * Signature: (I)I
  */
 JNIEXPORT jint JNICALL Java_com_untangle_jvector_Vector_vector_1raze
-    (JNIEnv* env, jobject _this, jint vec_ptr)
+    (JNIEnv* env, jobject _this, jlong vec_ptr)
 {
     return (jint)vector_raze((vector_t*)vec_ptr);
 }
@@ -93,7 +93,7 @@ JNIEXPORT jint JNICALL Java_com_untangle_jvector_Vector_vector_1raze
  * Signature: (III)I
  */
 JNIEXPORT jint JNICALL Java_com_untangle_jvector_Vector_vector_1send_1msg
-    ( JNIEnv* env, jobject _this, jint vec_ptr, jint vec_msg, jint arg )
+    ( JNIEnv* env, jobject _this, jlong vec_ptr, jint vec_msg, jlong arg )
 {
     return (jint)vector_send_msg((vector_t*)vec_ptr,(vector_msg_t)vec_msg,(void*)arg);
 }
@@ -104,7 +104,7 @@ JNIEXPORT jint JNICALL Java_com_untangle_jvector_Vector_vector_1send_1msg
  * Signature: (II)I
  */
 JNIEXPORT void JNICALL Java_com_untangle_jvector_Vector_vector_1set_1timeout
-    (JNIEnv* env, jobject _this, jint vec_ptr, jint time)
+    (JNIEnv* env, jobject _this, jlong vec_ptr, jint time)
 {
     return vector_set_timeout((vector_t*)vec_ptr,(int)time);
 }
@@ -115,7 +115,7 @@ JNIEXPORT void JNICALL Java_com_untangle_jvector_Vector_vector_1set_1timeout
  * Signature: (I)I
  */
 JNIEXPORT jint JNICALL Java_com_untangle_jvector_Vector_vector
-    ( JNIEnv* env, jobject _this, jint vec_ptr )
+    ( JNIEnv* env, jobject _this, jlong vec_ptr )
 {
     return (jint)vector((vector_t*)vec_ptr);
 }
@@ -125,10 +125,10 @@ JNIEXPORT jint JNICALL Java_com_untangle_jvector_Vector_vector
  * Method:    list_create
  * Signature: (I)I
  */
-JNIEXPORT jint JNICALL Java_com_untangle_jvector_Vector_list_1create 
+JNIEXPORT jlong JNICALL Java_com_untangle_jvector_Vector_list_1create 
     (JNIEnv* env, jobject _this, jint flags)
 {
-    return (jint)list_create((u_int)flags);
+    return (jlong)list_create((u_int)flags);
 }
 
 /*
@@ -136,10 +136,10 @@ JNIEXPORT jint JNICALL Java_com_untangle_jvector_Vector_list_1create
  * Method:    list_add_tail
  * Signature: (II)I
  */
-JNIEXPORT jint JNICALL Java_com_untangle_jvector_Vector_list_1add_1tail
-    (JNIEnv* env, jobject _this, jint list_ptr, jint arg)
+JNIEXPORT jlong JNICALL Java_com_untangle_jvector_Vector_list_1add_1tail
+    (JNIEnv* env, jobject _this, jlong list_ptr, jlong arg)
 {
-    return (jint)list_add_tail((list_t*)list_ptr,(void*)arg);
+    return (jlong)list_add_tail((list_t*)list_ptr,(void*)arg);
 }
 
 /*
@@ -148,7 +148,7 @@ JNIEXPORT jint JNICALL Java_com_untangle_jvector_Vector_list_1add_1tail
  * Signature: (I)I
  */
 JNIEXPORT jint JNICALL Java_com_untangle_jvector_Vector_list_1raze
-    (JNIEnv* env, jobject _this, jint list_ptr)
+    (JNIEnv* env, jobject _this, jlong list_ptr)
 {
     return (jint)list_raze((list_t*)list_ptr);
 }
