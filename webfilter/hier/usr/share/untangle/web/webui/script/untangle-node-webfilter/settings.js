@@ -29,12 +29,29 @@ Ung.WebFilter = Ext.extend(Ung.Settings, {
 		    title: this.i18n._('Block Lists'),
 		    layout: "form",
 		    bodyStyle:'padding:5px 5px 0',
+		    autoScroll: true,
 		    defaults: {
 	            xtype:'fieldset',
 	            autoHeight:true,
 	            buttonAlign: 'left'
 		    },
-			items: [{
+			items: [
+				{
+				items: [{
+                    xtype:'checkbox',
+                    boxLabel: 'Block all sites except for Pass Lists',
+                    hideLabel: true,
+                    name: 'fascistMode',
+                    checked: this.getBaseSettings().fascistMode,
+					listeners: {
+						"check": {
+							fn: function(elem, checked) {
+								this.getBaseSettings().fascistMode=checked;
+							}.createDelegate(this)
+						}
+					}
+				}]
+			}, {
 	            title: this.i18n._('Categories'),
 	            buttons :[
 	            	{
@@ -66,6 +83,33 @@ Ung.WebFilter = Ext.extend(Ung.Settings, {
 						handler: function() {this.panelBlockLists.onManageBlockedMimeTypes();}.createDelegate(this)
 	                }
 	            ]
+			}, {
+				items: [{
+                    xtype:'combo',
+                    fieldLabel: this.i18n._('User Bypass'),
+					name: "userWhitelist",
+				    store: new Ext.data.SimpleStore({
+						fields:['userWhitelistValue', 'userWhitelistName'],
+						data: [["NONE",this.i18n._("None")],
+								["USER_ONLY",this.i18n._("Temporary")],
+								["USER_AND_GLOBAL",this.i18n._("Permanent and Global")]]
+					}),
+					displayField: 'userWhitelistName',
+					valueField: 'userWhitelistValue',
+                    value: this.getBaseSettings().userWhitelistMode,
+				    typeAhead: true,
+				    mode: 'local',
+				    triggerAction: 'all',
+				    listClass: 'x-combo-list-small',
+				    selectOnFocus:true,
+					listeners: {
+						"change": {
+							fn: function(elem, newValue) {
+								this.getBaseSettings().userWhitelistMode=newValue;
+							}.createDelegate(this)
+						}
+					}
+				}]
 			}],
 			
 		    onManageBlacklistCategories: function () {
