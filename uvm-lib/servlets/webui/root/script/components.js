@@ -1219,6 +1219,9 @@ Ung.Settings = Ext.extend(Ext.Component, {
         Ext.destroy(this.tabs);
         Ung.Settings.superclass.beforeDestroy.call(this);
     },
+    cancelAction: function() {
+    	this.node.settingsWin.cancelAction()
+    },
     // All settings classes must override the save method
 	save: function() {
 	},
@@ -1411,7 +1414,6 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
 });
 
 //Standard Ung window
-// has 2 sections: content and buttons
 Ung.Window = Ext.extend(Ext.Window, {
 	modal:true,
 	renderTo:'container',
@@ -1444,10 +1446,9 @@ Ung.Window = Ext.extend(Ext.Window, {
 		}
     }
 });
-
-//update window
-// has the content and 3 standard buttons: help, cancel, Update
-Ung.UpdateWindow = Ext.extend(Ung.Window, {
+//Buttons Window
+// has the content and 3 standard buttons one in the left and 2 in the right
+Ung.ButtonsWindow = Ext.extend(Ung.Window, {
 	layout:'border',
 	// content html
 	contentHtml: null,
@@ -1475,33 +1476,139 @@ Ung.UpdateWindow = Ext.extend(Ung.Window, {
 			bodyStyle: 'background-color: transparent;'
 		},{
 			region: "south",
-			html: Ung.UpdateWindow.buttonsTemplate.applyTemplate({id:this.getId()}),
+			html: Ung.ButtonsWindow.buttonsTemplate.applyTemplate({id:this.getId()}),
 			border: false,
 			height:40,
 			cls: 'windowBackground',
 			bodyStyle: 'background-color: transparent;'
 		}];
-		Ung.UpdateWindow.superclass.initComponent.call(this);
+		Ung.ButtonsWindow.superclass.initComponent.call(this);
 	},
 	afterRender: function() {
-		Ung.UpdateWindow.superclass.afterRender.call(this);
+		Ung.ButtonsWindow.superclass.afterRender.call(this);
 		this.initButtons.defer(1, this);
+	},
+	// the cancel action
+	//to override
+	cancelAction: function() {
+		this.hide();
+	}
+});
+
+//buttons Template
+Ung.ButtonsWindow.buttonsTemplate=new Ext.Template(
+'<div class="buttonsLeftPos" id="button_left_{id}"></div>',
+'<div class="buttonsRightPos">',
+'<table cellspacing="0" cellpadding="0" border="0" style="width: auto;">',
+'<tr><td><div style="margin-right: 10px;" id="button_inner_right_{id}"></div></td>',
+'<td><div id="button_margin_right_{id}"></div></td></tr>',
+'</table>',
+'</div>'
+);
+
+//Node Settings Window
+Ung.NodeSettingsWin=Ext.extend(Ung.ButtonsWindow, {
+	nodeCmp: null,
+	initComponent: function() {
+		if(!this.title) {
+			this.title=i18n._('Settings Window');
+		}
+		Ung.NodeSettingsWin.superclass.initComponent.call(this);
 	},
 	initButtons: function() {
 		this.subCmps.push(new Ext.Button({
-			renderTo: 'button_help_'+this.getId(),
+			iconCls: 'nodeRemoveIcon',
+			renderTo: 'button_left_'+this.getId(),
+	        text: i18n._('Remove'),
+	        handler: function() {this.removeAction();}.createDelegate(this)
+        }));
+		this.subCmps.push(new Ext.Button({
+	        iconCls: 'cancelIcon',
+			renderTo: 'button_inner_right_'+this.getId(),
+	        text: i18n._('Cancel'),
+	        handler: function() {this.cancelAction();}.createDelegate(this)
+        }));
+		this.subCmps.push(new Ext.Button({
+	        iconCls: 'saveIcon',
+			renderTo: 'button_margin_right_'+this.getId(),
+	        text: i18n._('Save'),
+	        handler: function() {this.saveAction();}.createDelegate(this)
+        }));
+	},
+	removeAction: function() {
+		this.nodeCmp.removeAction();
+	},
+	cancelAction: function() {
+		Ext.destroy(this.nodeCmp.settings);
+		this.nodeCmp.settings=null;
+		this.hide();
+	},
+	saveAction: function() {
+		if(this.nodeCmp.settings) {
+       		this.nodeCmp.settings.save();
+       	}
+	}
+});
+//Config Window
+Ung.ConfigWin=Ext.extend(Ung.ButtonsWindow, {
+	nodeCmp: null,
+	initComponent: function() {
+		if(!this.title) {
+			this.title=i18n._('Settings Window');
+		}
+		Ung.ButtonsWindow.superclass.initComponent.call(this);
+	},
+	initButtons: function() {
+		this.subCmps.push(new Ext.Button({
+			renderTo: 'button_left_'+this.getId(),
 			iconCls: 'iconHelp',
 			text: i18n._('Help'),
 			handler: function() {this.helpAction();}.createDelegate(this)
 		}));
 		this.subCmps.push(new Ext.Button({
-			renderTo: 'button_cancel_'+this.getId(),
+	        iconCls: 'cancelIcon',
+			renderTo: 'button_inner_right_'+this.getId(),
+	        text: i18n._('Cancel'),
+	        handler: function() {this.cancelAction();}.createDelegate(this)
+        }));
+		this.subCmps.push(new Ext.Button({
+	        iconCls: 'saveIcon',
+			renderTo: 'button_margin_right_'+this.getId(),
+	        text: i18n._('Save'),
+	        handler: function() {this.saveAction();}.createDelegate(this)
+        }));
+	},
+	//to override
+	helpAction: function() {
+		main.todo();
+	},
+	//to override
+	cancelAction: function() {
+		this.hide();
+	},
+	//to override
+	saveAction: function() {
+		main.todo();
+	}
+});
+//update window
+// has the content and 3 standard buttons: help, cancel, Update
+Ung.UpdateWindow = Ext.extend(Ung.ButtonsWindow, {
+	initButtons: function() {
+		this.subCmps.push(new Ext.Button({
+			renderTo: 'button_left_'+this.getId(),
+			iconCls: 'iconHelp',
+			text: i18n._('Help'),
+			handler: function() {this.helpAction();}.createDelegate(this)
+		}));
+		this.subCmps.push(new Ext.Button({
+			renderTo: 'button_inner_right_'+this.getId(),
 			iconCls: 'cancelIcon',
 			text: i18n._('Cancel'),
 			handler: function() {this.cancelAction();}.createDelegate(this)
 		}));
 		this.subCmps.push(new Ext.Button({
-			renderTo: 'button_update_'+this.getId(),
+			renderTo: 'button_margin_right_'+this.getId(),
 			iconCls: 'saveIcon',
 			text: i18n._('Update'),
 			handler: function() {this.updateAction();}.createDelegate(this)
@@ -1512,27 +1619,13 @@ Ung.UpdateWindow = Ext.extend(Ung.Window, {
 	helpAction: function() {
 		main.todo();
 	},
-	// the cancel action
-	//to override
-	cancelAction: function() {
-		this.hide();
-	},
 	// the update actions
 	//to override
 	updateAction: function() {
+		main.todo();
 	}
 });
 
-//buttons Template
-Ung.UpdateWindow.buttonsTemplate=new Ext.Template(
-'<div class="buttonsLeftPos" id="button_help_{id}"></div>',
-'<div class="buttonsRightPos">',
-'<table cellspacing="0" cellpadding="0" border="0" style="width: auto;">',
-'<tr><td><div style="margin-right: 10px;" id="button_cancel_{id}"></div></td>',
-'<td><div id="button_update_{id}"></div></td></tr>',
-'</table>',
-'</div>'
-);
 // Manage list popup window 
 Ung.ManageListWindow = Ext.extend(Ung.UpdateWindow, {
 	// the editor grid
@@ -2228,92 +2321,3 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 
 });
 
-//Node Settings Window
-Ung.NodeSettingsWin=Ext.extend(Ung.Window, {
-	nodeCmp: null,
-	layout:'border',
-	title: null,
-	// content html
-	contentHtml: null,
-	// buttons html
-	closeAction:'cancelAction',
-	// get the content element
-	getContentEl: function() {
-		return document.getElementById("window_content_"+this.getId());
-	},
-	// get the content element height
-	getContentHeight: function() {
-		return this.items.get(0).getEl().getHeight(true);
-	},
-	initComponent: function() {
-		if(!this.contentHtml) {
-			this.contentHtml="";
-		}
-		if(!this.title) {
-			this.title=i18n._('Settings Window');
-		}
-		this.items= [{
-			region: "center",
-			html: '<div class="windowContent" id="window_content_'+this.getId()+'">'+this.contentHtml+'</div>',
-			border: false,
-			autoScroll: true,
-			cls: 'windowBackground',
-			bodyStyle: 'background-color: transparent;'
-		},{
-			region: "south",
-			html: Ung.NodeSettingsWin.buttonsTemplate.applyTemplate({id:this.getId()}),
-			border: false,
-			height:40,
-			cls: 'windowBackground',
-			bodyStyle: 'background-color: transparent;'
-		}];
-		Ung.UpdateWindow.superclass.initComponent.call(this);
-	},
-	afterRender: function() {
-		Ung.UpdateWindow.superclass.afterRender.call(this);
-		this.initButtons.defer(1, this);
-	},
-	initButtons: function() {
-		this.subCmps.push(new Ext.Button({
-			iconCls: 'nodeRemoveIcon',
-			renderTo: 'button_remove_'+this.getId(),
-	        text: i18n._('Remove'),
-	        handler: function() {this.removeAction();}.createDelegate(this)
-        }));
-		this.subCmps.push(new Ext.Button({
-	        iconCls: 'cancelIcon',
-			renderTo: 'button_cancel_'+this.getId(),
-	        text: i18n._('Cancel'),
-	        handler: function() {this.cancelAction();}.createDelegate(this)
-        }));
-		this.subCmps.push(new Ext.Button({
-	        iconCls: 'saveIcon',
-			renderTo: 'button_save_'+this.getId(),
-	        text: i18n._('Save'),
-	        handler: function() {this.saveAction();}.createDelegate(this)
-        }));
-	},
-	removeAction: function() {
-		this.nodeCmp.removeAction();
-	},
-	cancelAction: function() {
-		Ext.destroy(this.nodeCmp.settings);
-		this.nodeCmp.settings=null;
-		this.hide();
-	},
-	saveAction: function() {
-		if(this.nodeCmp.settings) {
-       		this.nodeCmp.settings.save();
-       	}
-	}
-});
-//buttons Template
-Ung.NodeSettingsWin.buttonsTemplate=new Ext.Template(
-'<div class="buttonsLeftPos" id="button_remove_{id}"></div>',
-'<div class="buttonsRightPos">',
-'<table cellspacing="0" cellpadding="0" border="0" style="width: auto;">',
-'<tr><td><div style="margin-right: 10px;" id="button_cancel_{id}"></div></td>',
-'<td><div id="button_save_{id}"></div></td></tr>',
-'</table>',
-'</div>'
-);

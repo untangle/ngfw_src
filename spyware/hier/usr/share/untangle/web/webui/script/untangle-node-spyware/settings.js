@@ -445,7 +445,7 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
 				this.tabs.enable();
 				if(exception) {Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}
 				//exit settings screen
-				this.node.onCancelClick();
+				this.cancelAction();
 			}.createDelegate(this),
 				this.getBaseSettings(),
 				this.gridActiveXList?this.gridActiveXList.getSaveList():null,

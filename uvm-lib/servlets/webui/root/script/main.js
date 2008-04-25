@@ -28,7 +28,6 @@ Ung.Main.prototype = {
 	contentLeftWidth: 220,
 	//the application build version
 	version: null,
-	networkingWin: null,
 	iframeWin: null,
 	//init function
 	init: function() {

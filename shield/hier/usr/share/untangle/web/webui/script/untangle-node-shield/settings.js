@@ -217,9 +217,6 @@ Ung.Shield = Ext.extend(Ung.Settings, {
 			refreshList: function() {
 				this.settingsCmp.node.nodeContext.rpcNode.getLogs(this.refreshCallback.createDelegate(this), this.eventDepth);
 			}
-		    
-		    
-			
 		});
     },
     // save function
@@ -231,7 +228,7 @@ Ung.Shield = Ext.extend(Ung.Settings, {
 			this.tabs.enable();
 			if(exception) {Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}
 			//exit settings screen
-			this.node.onCancelClick();
+			this.cancelAction();
 		}.createDelegate(this),this.gridExceptions.getSaveList());
 	}
 });
