@@ -27,7 +27,6 @@ Ung.Shield = Ext.extend(Ung.Settings, {
 	            xtype:'fieldset',
 	            title: this.i18n._('Statistics'),
 	            autoHeight:true,
-	            //defaults: {width: 210},
 	            items :[
 	            	{
 						xtype:'textfield',
@@ -103,7 +102,7 @@ Ung.Shield = Ext.extend(Ung.Settings, {
 			columns: [
 				{id:'id', dataIndex: 'id', hidden: true },
 				enableColumn,
-				{id:'address',header: this.i18n._("address"), width: 140, dataIndex: 'address',
+				{id:'address',header: this.i18n._("address"), width: 200, dataIndex: 'address',
 					//this is a simple text editor
 					editor: new Ext.form.TextField({
 						allowBlank: false, 
@@ -133,7 +132,7 @@ Ung.Shield = Ext.extend(Ung.Settings, {
 						return value;
 					}
 				},
-				{id:'description',header: this.i18n._("description"), width: 120, dataIndex: 'description',
+				{id:'description',header: this.i18n._("description"), width: 200, dataIndex: 'description',
 					editor: new Ext.form.TextField({allowBlank: false})}
 			],
 			//sortField: 'address',
@@ -143,11 +142,11 @@ Ung.Shield = Ext.extend(Ung.Settings, {
 			rowEditorInputLines: [
 				new Ext.form.Checkbox({
 					name: "live",
-					label: this.i18n._("Enable")
+					fieldLabel: this.i18n._("Enable")
 				}),
 				new Ext.form.TextField({
 					name: "address",
-					label: this.i18n._("Address"),
+					fieldLabel: this.i18n._("Address"),
 					allowBlank: false, 
 					width: 200,
 					validator: function (fieldValue) {
@@ -156,7 +155,7 @@ Ung.Shield = Ext.extend(Ung.Settings, {
 				}),
 				new Ext.form.ComboBox({
 					name: "divider",
-					label: this.i18n._("User Count"),
+					fieldLabel: this.i18n._("User Count"),
 				    store: new Ext.data.SimpleStore({
 						fields:['dividerValue', 'dividerName'],
 						data: deviderData
@@ -171,7 +170,7 @@ Ung.Shield = Ext.extend(Ung.Settings, {
 				}),
 				new Ext.form.TextArea({
 					name: "description",
-					label: this.i18n._("Description"),
+					fieldLabel: this.i18n._("Description"),
 					width: 200,
 					height: 60
 				})
