@@ -1552,11 +1552,37 @@ Ung.NodeSettingsWin=Ext.extend(Ung.ButtonsWindow, {
 //Config Window
 Ung.ConfigWin=Ext.extend(Ung.ButtonsWindow, {
 	nodeCmp: null,
-	initComponent: function() {
-		if(!this.title) {
-			this.title=i18n._('Settings Window');
-		}
-		Ung.ButtonsWindow.superclass.initComponent.call(this);
+    // config i18n
+    i18n: null,
+    // tabs (if the window has tabs layout)
+    tabs: null,
+    // build Tab panel from an array of tab items
+    constructor: function(config) {
+		this.i18n=i18n;
+    	Ung.ConfigWin.superclass.constructor.apply(this, arguments);
+    },	
+    buildTabPanel: function(itemsArray) {
+		this.tabs = new Ext.TabPanel({
+	        renderTo: this.getContentEl().id,
+	        autoWidth :true,
+	        height: 400,
+	        activeTab: 0,
+	        frame: true,
+	        parentId: this.getId(),
+	        items: itemsArray,
+	        layoutOnTabChange:true,
+		    listeners: {
+		    	"show": {
+		    		fn: function() {
+		    			var winCmp=Ext.getCmp(this.parentId);
+						var objSize=Ext.get(winCmp.getContentEl().id).getSize(true);
+						objSize.width=objSize.width;
+						objSize.height=objSize.height;
+						this.setSize(objSize);
+					}
+				}
+			}
+	    });
 	},
 	initButtons: function() {
 		this.subCmps.push(new Ext.Button({

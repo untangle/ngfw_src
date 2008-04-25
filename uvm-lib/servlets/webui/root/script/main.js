@@ -314,7 +314,7 @@ Ung.Main.prototype = {
 	loadConfig: function() {
 		this.config = 
 			[{"name":"networking","displayName":i18n._("Networking"),"iconCls":"iconConfigNetwork"},
-			{"name":"remoteAdmin","displayName":i18n._("Remote Admin"),"iconCls":"iconConfigAdmin"},
+			{"name":"administration","displayName":i18n._("Administration"),"iconCls":"iconConfigAdmin"},
 			{"name":"email","displayName":i18n._("Email"),"iconCls":"iconConfigEmail"},
 			{"name":"userDirectory","displayName":i18n._("User Directory"),"iconCls":"iconConfigDirectory"},
 			{"name":"backupRestore","displayName":i18n._("Backup/Restore"),"iconCls":"iconConfigBackup"},
@@ -479,6 +479,12 @@ Ung.Main.prototype = {
 					iframeWin.setTitle("Networking");
 					window.frames["iframeWin_iframe"].location.href=alpacaUrl;
 				}.createDelegate(this));
+				break;
+			case "administration":
+				if(!main.administrationWin) {
+					main.administrationWin=new Ung.Administration({});
+				}
+				main.administrationWin.show();
 				break;
 			default:
 				Ext.MessageBox.alert(i18n._("Failed"),"TODO: implement config "+mackageDesc.name);
