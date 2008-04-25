@@ -51,14 +51,12 @@ div.racksWithoutSeparator {
 }
 #rack_list {
 	position:relative;
-	/*top: 54px;*/
 	background:transparent url(../images/main/background_rack_list.png) no-repeat;
 	width:789px;
 	height:50px;
 }
 #rack_nodes {
 	position:relative;
-	/*top:54px;*/
 	width:789px;
 }
 div.node {
@@ -149,6 +147,9 @@ div.iconStateOff {
 }
 div.iconStateAttention {
 	background:transparent url(../images/main/icon_state_attention.png) no-repeat center !important; 
+}
+div.iconStateStopped {
+	background:transparent url(../images/main/icon_state_stopped.png) no-repeat center !important; 
 }
 div.node div.nodePower {
 	position:absolute;
