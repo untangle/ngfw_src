@@ -13,9 +13,9 @@ Ung.SpamAssassin = Ext.extend(Ung.Settings, {
     	Ung.SpamAssassin.superclass.onRender.call(this,container, position);
 		//builds the 2 tabs
 		this.buildEmail();
-		//this.buildEventLog();
+		this.buildEventLog();
 		//builds the tab panel with the tabs
-	this.buildTabPanel([this.emailPanel]);//,this.gridEventLog]);
+	this.buildTabPanel([this.emailPanel, this.gridEventLog]);
     },
     // Email Config Panel
     buildEmail: function() {
@@ -170,14 +170,14 @@ Ung.SpamAssassin = Ext.extend(Ung.Settings, {
     // save function
 	save: function() {
 		//disable tabs during save
-//		this.tabs.disable();
-//		this.getRpcNode().updateAll(function (result, exception) {
-//			//re-enable tabs
-//			this.tabs.enable();
-//			if(exception) {Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}
-//			//exit settings screen
-//			this.node.onCancelClick();
-//		}.createDelegate(this),this.gridExceptions.getSaveList());
+		this.tabs.disable();
+		this.getRpcNode().updateAll(function (result, exception) {
+			//re-enable tabs
+			this.tabs.enable();
+			if(exception) {Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}
+			//exit settings screen
+			this.node.onCancelClick();
+		}.createDelegate(this),this.gridExceptions.getSaveList());
 	}
 });
 }

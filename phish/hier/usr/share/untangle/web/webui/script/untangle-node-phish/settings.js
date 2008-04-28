@@ -14,9 +14,9 @@ Ung.Phish = Ext.extend(Ung.Settings, {
 		//builds the 2 tabs
 		this.buildEmail();
                 this.buildWeb();
-		//this.buildEventLog();
+		this.buildEventLog();
 		//builds the tab panel with the tabs
-	this.buildTabPanel([this.emailPanel, this.webPanel]);//,this.gridEventLog]);
+	this.buildTabPanel([this.emailPanel, this.webPanel, this.gridEventLog]);
     },
     // Email Config Panel
     buildEmail: function() {
@@ -153,14 +153,14 @@ Ung.Phish = Ext.extend(Ung.Settings, {
     // save function
 	save: function() {
 		//disable tabs during save
-//		this.tabs.disable();
-//		this.getRpcNode().updateAll(function (result, exception) {
-//			//re-enable tabs
-//			this.tabs.enable();
-//			if(exception) {Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}
-//			//exit settings screen
-//			this.node.onCancelClick();
-//		}.createDelegate(this),this.gridExceptions.getSaveList());
+		this.tabs.disable();
+		this.getRpcNode().updateAll(function (result, exception) {
+			//re-enable tabs
+			this.tabs.enable();
+			if(exception) {Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}
+			//exit settings screen
+			this.node.onCancelClick();
+		}.createDelegate(this),this.gridExceptions.getSaveList());
 	}
 });
 }
