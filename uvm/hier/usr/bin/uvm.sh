@@ -155,7 +155,7 @@ restartServiceIfNeeded() {
       serviceName=$PGSERVICE
       ;;
     slapd)
-      pidFile=/var/run/slapd/slapd.pid
+      pidFile=/var/run/untangle-ldap/slapd.pid
       dpkg -l untangle-ldap-server | grep -q -E '^ii' || return
       isServiceRunning slapd && return
       ;;
