@@ -115,7 +115,7 @@ public class UtKeyStore {
                                                              null,
                                                              true,
                                                              true,
-                                                             1000*20);
+                                                             1000*60);
 
 
         if(result.exitCode!=0) {
@@ -243,7 +243,7 @@ public class UtKeyStore {
                                                              null,
                                                              true,
                                                              true,
-                                                             1000*20);
+                                                             1000*60);
 
 
         if(result.exitCode!=0) {
@@ -300,7 +300,7 @@ public class UtKeyStore {
                                                                                            null,
                                                                                            true,
                                                                                            true,
-                                                                                           1000*20);
+                                                                                           1000*60);
 
 
                                       if(result.exitCode!=0) {
