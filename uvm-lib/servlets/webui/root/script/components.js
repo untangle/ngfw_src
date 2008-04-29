@@ -471,7 +471,15 @@ Ung.AppItem = Ext.extend(Ext.Component, {
 	linkToStoreFn: function(e) {
 		rpc.adminManager.generateAuthNonce(function (result, exception) {
 			if(exception) { Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}
-			var url = "../library/libitem.php?name=" + this.item.name + "&" + result;
+            var currentLocation = window.location;
+            var query = result;
+            query += "&host=" + currentLocation.hostname;
+            query += "&port=" + currentLocation.port;
+            query += "&protocol=" + currentLocation.protocol.replace( /:$/, "" );
+            query += "&action=browse";
+            query += "&libitem=" + this.item.name;
+
+			var url = "../library/launcher?" + query;
 			var iframeWin=main.getIframeWin();
 			iframeWin.show();
 			iframeWin.setTitle("");

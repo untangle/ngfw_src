@@ -151,6 +151,7 @@ public class Launcher extends HttpServlet
         if ( port != null ) query += "&port=" + port;
         query += "&protocol=" + URLEncoder.encode( protocol );
         query += "&action=" + URLEncoder.encode( action );
+        query += "&webui=" + URLEncoder.encode( String.valueOf( true ));
         
         return query;
     }
