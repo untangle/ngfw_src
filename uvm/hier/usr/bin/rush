@@ -1,6 +1,6 @@
 #!/bin/sh
 
-for f in @PREFIX@/usr/share/untangle/web/webstart/untangle*jar; do
+for f in @PREFIX@/usr/share/untangle/web/webstart/*jar; do
     CLASSPATH=$f:$CLASSPATH
 done
 
