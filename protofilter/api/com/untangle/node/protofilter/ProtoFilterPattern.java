@@ -167,7 +167,7 @@ public class ProtoFilterPattern implements Serializable
         this.log = log;
     }
 
-	public void updateRule(ProtoFilterPattern pattern) {
+    public void updateRule(ProtoFilterPattern pattern) {
         this.mvid = pattern.mvid;
         this.protocol = pattern.protocol;
         this.category = pattern.category;
@@ -177,5 +177,5 @@ public class ProtoFilterPattern implements Serializable
         this.blocked = pattern.blocked;
         this.alert = pattern.alert;
         this.log = pattern.log;
-	}
+    }
 }
