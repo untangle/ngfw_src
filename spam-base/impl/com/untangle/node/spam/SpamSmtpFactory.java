@@ -51,7 +51,7 @@ public class SpamSmtpFactory implements TokenHandlerFactory
 
     public TokenHandler tokenHandler(TCPSession session) {
         SpamSettings spamSettings = m_spamImpl.getSpamSettings();
-        SpamSMTPConfig spamConfig = spamSettings.getSmtpConfig();
+        SpamSMTPConfig spamConfig = spamSettings.getBaseSettings().getSmtpConfig();
 
         if(!spamConfig.getScan()) {
             m_logger.debug("Scanning disabled. Return passthrough token handler");
@@ -68,7 +68,7 @@ public class SpamSmtpFactory implements TokenHandlerFactory
     public void handleNewSessionRequest(TCPNewSessionRequest tsr)
     {
         SpamSettings spamSettings = m_spamImpl.getSpamSettings();
-        SpamSMTPConfig spamConfig = spamSettings.getSmtpConfig();
+        SpamSMTPConfig spamConfig = spamSettings.getBaseSettings().getSmtpConfig();
 
         // Note that we may *****NOT***** release the session here.  This is because
         // the mail casings currently assume that there will be at least one node

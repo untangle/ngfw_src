@@ -28,6 +28,7 @@ import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -70,6 +71,7 @@ import com.untangle.uvm.toolbox.RemoteToolboxManager;
 import com.untangle.uvm.util.ListUtil;
 import com.untangle.uvm.util.OutsideValve;
 import com.untangle.uvm.util.QueryUtil;
+import com.untangle.node.util.PartialListUtil;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.AbstractNode;
 import com.untangle.uvm.vnet.Affinity;
@@ -127,11 +129,17 @@ public class SpywareImpl extends AbstractNode implements Spyware
 
     private final Logger logger = Logger.getLogger(getClass());
 
+    private final PartialListUtil listUtil = new PartialListUtil();
+
     private volatile SpywareSettings settings;
 
     private volatile Map<String, StringRule> activeXRules;
     private volatile Map<String, StringRule> cookieRules;
     private volatile Set<String> domainWhitelist;
+
+    /* the signatures are updated at startup, so using new Date() is not that far off. */
+    private Date lastSignatureUpdate = new Date();
+    private String signatureVersion;
 
     private final SpywareReplacementGenerator replacementGenerator;
 
@@ -189,8 +197,9 @@ public class SpywareImpl extends AbstractNode implements Spyware
 
     public List<StringRule> getActiveXRules(final int start, final int limit,
                                             final String... sortColumns) {
-        return getRules("select s.activeXRules from SpywareSettings s where s.tid = :tid ",
-                        start, limit, sortColumns);
+        return listUtil.getItems( "select s.activeXRules from SpywareSettings s where s.tid = :tid ",
+                                  getNodeContext(), getTid(), start, limit, sortColumns );
+
     }
 
     public void updateActiveXRules(List<StringRule> added, List<Long> deleted,
@@ -201,8 +210,8 @@ public class SpywareImpl extends AbstractNode implements Spyware
 
     public List<StringRule> getCookieRules(int start, int limit,
                                            String... sortColumns) {
-        return getRules("select s.cookieRules from SpywareSettings s where s.tid = :tid ",
-                        start, limit, sortColumns);
+        return listUtil.getItems("select s.cookieRules from SpywareSettings s where s.tid = :tid ",
+                                 getNodeContext(), getTid(), start, limit, sortColumns);
     }
 
     public void updateCookieRules(List<StringRule> added, List<Long> deleted,
@@ -213,8 +222,8 @@ public class SpywareImpl extends AbstractNode implements Spyware
 
     public List<IPMaddrRule> getSubnetRules(int start, int limit,
                                             String... sortColumns) {
-        return getRules("select s.subnetRules from SpywareSettings s where s.tid = :tid ",
-                        start, limit, sortColumns);
+        return listUtil.getItems("select s.subnetRules from SpywareSettings s where s.tid = :tid ",
+                                 getNodeContext(), getTid(), start, limit, sortColumns);
     }
 
     public void updateSubnetRules(List<IPMaddrRule> added, List<Long> deleted,
@@ -225,8 +234,8 @@ public class SpywareImpl extends AbstractNode implements Spyware
 
     public List<StringRule> getDomainWhitelist(int start, int limit,
                                                String... sortColumns) {
-        return getRules("select s.domainWhitelist from SpywareSettings s where s.tid = :tid ",
-                        start, limit, sortColumns);
+        return listUtil.getItems( "select s.domainWhitelist from SpywareSettings s where s.tid = :tid ",
+                                  getNodeContext(), getTid(), start, limit, sortColumns);
     }
 
     public void updateDomainWhitelist(List<StringRule> added, List<Long> deleted,
@@ -237,7 +246,11 @@ public class SpywareImpl extends AbstractNode implements Spyware
 
     public SpywareBaseSettings getBaseSettings()
     {
-        return settings.getBaseSettings();
+        SpywareBaseSettings baseSettings = settings.getBaseSettings();
+        /* Insert the last update information */
+        baseSettings.setLastUpdate(this.lastSignatureUpdate);
+        /* Have to figure out how to calculate the version string. */
+        return baseSettings;
     }
 
     public void setBaseSettings(final SpywareBaseSettings baseSettings)
@@ -271,7 +284,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
             {
                 public boolean doWork(Session s)
                 {
-                	SpywareImpl.this.settings = (SpywareSettings)s.merge(settings);
+                    SpywareImpl.this.settings = (SpywareSettings)s.merge(settings);
                     return true;
                 }
 
@@ -515,76 +528,43 @@ public class SpywareImpl extends AbstractNode implements Spyware
     }
     
     public void updateAll(final SpywareBaseSettings baseSettings, 
-    		final List[] activeXRules, final List[] cookieRules,
-    		final List[] subnetRules, final List[] domainWhitelist) {
-
+                          final List[] activeXRules, final List[] cookieRules,
+                          final List[] subnetRules, final List[] domainWhitelist) {
+        
         TransactionWork tw = new TransactionWork() {
-			public boolean doWork(Session s) {
-		    	if (baseSettings != null) {
-			        settings.setBaseSettings(baseSettings);
-		    	}
-		    	if (activeXRules != null && activeXRules.length >= 3) {
-		    		updateCachedRules(getSpywareSettings().getActiveXRules(), activeXRules[0], activeXRules[1], activeXRules[2]);
-		    	}
-		    	if (cookieRules != null && cookieRules.length >= 3) {
-		    		updateCachedRules(getSpywareSettings().getCookieRules(), cookieRules[0], cookieRules[1], cookieRules[2]);
-		    	}
-		    	if (subnetRules != null && subnetRules.length >= 3) {
-		    		updateCachedRules(getSpywareSettings().getSubnetRules(), subnetRules[0], subnetRules[1], subnetRules[2]);
-		    	}
-		    	if (domainWhitelist != null && domainWhitelist.length >= 3) {
-		    		updateCachedRules(getSpywareSettings().getDomainWhitelist(), domainWhitelist[0], domainWhitelist[1], domainWhitelist[2]);
-		    	}
+                public boolean doWork(Session s) {
+                    if (baseSettings != null) {
+                        settings.setBaseSettings(baseSettings);
+                    }
+                        
+                    listUtil.updateCachedItems( getSpywareSettings().getActiveXRules(), activeXRules );
+                    
+                    listUtil.updateCachedItems(getSpywareSettings().getCookieRules(), cookieRules );
+                    
+                    listUtil.updateCachedItems(getSpywareSettings().getSubnetRules(), subnetRules );
 
-				settings = (SpywareSettings)s.merge(settings);
-
-				return true;
-			}
-
-			public Object getResult() {
-				return null;
-			}
-		};
-		getNodeContext().runTransaction(tw);
-    	
-    	
-		
-		reconfigure();
-	}
+                    listUtil.updateCachedItems(getSpywareSettings().getDomainWhitelist(), domainWhitelist );
+                    
+                    settings = (SpywareSettings)s.merge(settings);
+                    
+                    return true;
+                }
+                
+                public Object getResult() {
+                    return null;
+                }
+            };
+        getNodeContext().runTransaction(tw);
+        
+        reconfigure();
+    }
     
-	public Validator getValidator() {
-		return new SpywareValidator();
-	}
+    public Validator getValidator() {
+        return new SpywareValidator();
+    }
 
     // private methods --------------------------------------------------------
 
-    // TODO we should have this into a util class
-    private List getRules(final String queryString, final int start,
-                          final int limit, final String... sortColumns) {
-        TransactionWork<List> tw = new TransactionWork<List>() {
-            private List result;
-
-            public boolean doWork(Session s) {
-                Query q = s.createQuery(queryString
-                                        + QueryUtil.toOrderByClause(sortColumns));
-                q.setParameter("tid", getTid());
-                q.setFirstResult(start);
-                q.setMaxResults(limit);
-                result = q.list();
-
-                return true;
-            }
-
-            public List getResult() {
-                return result;
-            }
-        };
-        getNodeContext().runTransaction(tw);
-
-        return tw.getResult();
-    }
-
-    // TODO we should have this into a util class
     private void updateRules(final Set rules, final List added,
                              final List<Long> deleted, final List modified)
     {
@@ -592,48 +572,18 @@ public class SpywareImpl extends AbstractNode implements Spyware
             {
                 public boolean doWork(Session s)
                 {
-                    updateCachedRules(rules, added, deleted, modified);
+                    listUtil.updateCachedItems(rules, added, deleted, modified);
 
                     settings = (SpywareSettings)s.merge(settings);
 
                     return true;
                 }
 
-
                 public Object getResult() { return null; }
             };
         getNodeContext().runTransaction(tw);
     }
     
-
-	private void updateCachedRules(final Set rules, final List added,
-			final List<Long> deleted, final List modified) {
-		for (Iterator i = rules.iterator(); i.hasNext();) {
-			Rule rule = (Rule) i.next();
-			Rule mRule = null;
-			if (deleted != null && ListUtil.contains(deleted, rule.getId())) {
-				i.remove();
-			} else if (modified != null
-					&& (mRule = modifiedRule(rule, modified)) != null) {
-				rule.update(mRule);
-			}
-		}
-
-		if (added != null) {
-			rules.addAll(added);
-		}
-	}
-
-    private Rule modifiedRule(Rule rule, List modified) {
-        for (Iterator iterator = modified.iterator(); iterator.hasNext();) {
-            Rule currentRule = (Rule)iterator.next();
-            if(currentRule.getId().equals(rule.getId())){
-                return currentRule;
-            }
-        }
-        return null;
-    }
-
     private boolean findMatch(Set<String> rules, String domain)
     {
         for (String d = domain; null != d; d = nextHost(d)) {
@@ -1056,5 +1006,17 @@ public class SpywareImpl extends AbstractNode implements Spyware
 
         return l;
     }
+
+    /* Probably would be better if URL database took a listener. */
+    private class SpywareUrlDatabase extends UrlDatabase
+    {
+        public void updateAll(boolean async)
+        {
+            super.updateAll(async);
+            
+            SpywareImpl.this.lastSignatureUpdate = new Date();
+        }
+    }
+
 
 }

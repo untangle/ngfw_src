@@ -38,6 +38,7 @@ import java.util.LinkedList;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -71,12 +72,8 @@ public class SpamSettings implements Serializable
     private Long id;
     private Tid tid;
 
-    private SpamSMTPConfig smtpConfig;
-    private SpamPOPConfig popConfig;
-    private SpamIMAPConfig imapConfig;
+    SpamBaseSettings baseSettings = new SpamBaseSettings();
     private List<SpamRBL> spamRBLList; // spam only
-    private List<SpamAssassinDef> spamAssassinDefList; // spamassassin only
-    private List<SpamAssassinLcl> spamAssassinLclList; // spamassassin only
 
     // constructors -----------------------------------------------------------
 
@@ -86,8 +83,6 @@ public class SpamSettings implements Serializable
     {
         this.tid = tid;
         spamRBLList = new LinkedList<SpamRBL>();
-        spamAssassinDefList = new LinkedList<SpamAssassinDef>();
-        spamAssassinLclList = new LinkedList<SpamAssassinLcl>();
     }
 
     // accessors --------------------------------------------------------------
@@ -122,55 +117,19 @@ public class SpamSettings implements Serializable
         this.tid = tid;
     }
 
-    /**
-     * SMTP settings.
-     *
-     * @return SMTP settings.
-     */
-    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
-    @JoinColumn(name="smtp_config", nullable=false)
-    public SpamSMTPConfig getSmtpConfig()
+    @Embedded
+    public SpamBaseSettings getBaseSettings()
     {
-        return smtpConfig;
+        if (null != baseSettings) {
+            baseSettings.setSpamRBLListLength(null == spamRBLList ? 0 : spamRBLList.size());
+        }
+
+        return baseSettings;
     }
 
-    public void setSmtpConfig(SpamSMTPConfig smtpConfig)
+    public void setBaseSettings(SpamBaseSettings baseSettings)
     {
-        this.smtpConfig = smtpConfig;
-    }
-
-    /**
-     * POP spam settings.
-     *
-     * @return POP settings.
-     */
-    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
-    @JoinColumn(name="pop_config", nullable=false)
-    public SpamPOPConfig getPopConfig()
-    {
-        return popConfig;
-    }
-
-    public void setPopConfig(SpamPOPConfig popConfig)
-    {
-        this.popConfig = popConfig;
-    }
-
-    /**
-     * IMAP spam settings.
-     *
-     * @return IMAP settings.
-     */
-    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
-    @JoinColumn(name="imap_config", nullable=false)
-    public SpamIMAPConfig getImapConfig()
-    {
-        return imapConfig;
-    }
-
-    public void setImapConfig(SpamIMAPConfig imapConfig)
-    {
-        this.imapConfig = imapConfig;
+        this.baseSettings = baseSettings;
     }
 
     /**
@@ -193,49 +152,8 @@ public class SpamSettings implements Serializable
     public void setSpamRBLList(List<SpamRBL> spamRBLList)
     {
         this.spamRBLList = spamRBLList;
-    }
-
-    /**
-     * SpamAssassin System Default Conf list.
-     *
-     * @return SpamAssassin System Default Conf list.
-     */
-    @OneToMany(fetch=FetchType.EAGER)
-    @Cascade({org.hibernate.annotations.CascadeType.ALL,
-                  org.hibernate.annotations.CascadeType.DELETE_ORPHAN})
-    @JoinTable(name="n_spamassassin_def_list",
-               joinColumns=@JoinColumn(name="settings_id"),
-               inverseJoinColumns=@JoinColumn(name="rule_id"))
-    @IndexColumn(name="position")
-    public List<SpamAssassinDef> getSpamAssassinDefList()
-    {
-        return UvmUtil.eliminateNulls(spamAssassinDefList);
-    }
-
-    public void setSpamAssassinDefList(List<SpamAssassinDef> spamAssassinDefList)
-    {
-        this.spamAssassinDefList = spamAssassinDefList;
-    }
-
-    /**
-     * SpamAssassin Local Default Conf list.
-     *
-     * @return SpamAssassin Local Default Conf list.
-     */
-    @OneToMany(fetch=FetchType.EAGER)
-    @Cascade({org.hibernate.annotations.CascadeType.ALL,
-                  org.hibernate.annotations.CascadeType.DELETE_ORPHAN})
-    @JoinTable(name="n_spamassassin_lcl_list",
-               joinColumns=@JoinColumn(name="settings_id"),
-               inverseJoinColumns=@JoinColumn(name="rule_id"))
-    @IndexColumn(name="position")
-    public List<SpamAssassinLcl> getSpamAssassinLclList()
-    {
-        return UvmUtil.eliminateNulls(spamAssassinLclList);
-    }
-
-    public void setSpamAssassinLclList(List<SpamAssassinLcl> spamAssassinLclList)
-    {
-        this.spamAssassinLclList = spamAssassinLclList;
+        if (null != baseSettings) {
+            baseSettings.setSpamRBLListLength(null == spamRBLList ? 0 : spamRBLList.size());
+        }
     }
 }

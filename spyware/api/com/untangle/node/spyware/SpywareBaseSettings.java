@@ -20,6 +20,8 @@ package com.untangle.node.spyware;
 
 import java.io.Serializable;
 
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.EnumType;
@@ -53,6 +55,12 @@ public class SpywareBaseSettings implements Serializable
     private int cookieRulesLength;
     private int subnetRulesLength;
     private int domainWhitelistLength;
+
+    /* This is the date when the system last checked for updates, not the date of the virus signatures. */
+    private Date lastUpdate;
+
+    /* This is the version string for the signatures, it may or may not include a date */
+    private String signatureVersion;
 
     public SpywareBaseSettings() { }
 
@@ -245,5 +253,27 @@ public class SpywareBaseSettings implements Serializable
     public void setDomainWhitelistLength(int domainWhitelistLength)
     {
         this.domainWhitelistLength = domainWhitelistLength;
+    }
+
+    @Transient
+    public Date getLastUpdate()
+    {
+        return this.lastUpdate;
+    }
+
+    public void setLastUpdate(Date newValue)
+    {
+        this.lastUpdate = newValue;
+    }
+
+    @Transient
+    public String getSignatureVersion()
+    {
+        return this.signatureVersion;
+    }
+
+    public void setSignatureVersion(String newValue)
+    {
+        this.signatureVersion = newValue;
     }
 }

@@ -47,7 +47,7 @@ public class SpamImapFactory
 
     public TokenHandler tokenHandler(TCPSession session) {
 
-        SpamIMAPConfig config = m_impl.getSpamSettings().getImapConfig();
+        SpamIMAPConfig config = m_impl.getSpamSettings().getBaseSettings().getImapConfig();
 
         if(!config.getScan()) {
             m_logger.debug("Scanning disabled.  Return passthrough token handler");

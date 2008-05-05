@@ -249,21 +249,6 @@ public class PhishNode extends SpamImpl implements Phish
     }
 
     @Override
-    protected void initSpamRBLList(SpamSettings tmpSpamSettings) {
-        return; // does not apply to clamphish
-    }
-
-    @Override
-    protected void initSpamAssassinDefList(SpamSettings tmpSpamSettings) {
-        return; // does not apply to clamphish
-    }
-
-    @Override
-    protected void initSpamAssassinLclList(SpamSettings tmpSpamSettings) {
-        return; // does not apply to clamphish
-    }
-
-    @Override
     public String getDefaultSubjectWrapperTemplate() {
         return MOD_SUB_TEMPLATE;
     }
@@ -311,26 +296,6 @@ public class PhishNode extends SpamImpl implements Phish
     @Override
     public boolean restartSpamAssassinDaemon() {
         return false; // does not apply to clamphish
-    }
-
-    @Override
-    public List<String> getUnWhitelistFromList() {
-        return null; // does not apply to clamphish
-    }
-
-    @Override
-    public void setUnWhitelistFromList(List<String> unWhitelistFromList) {
-        return; // does not apply to clamphish
-    }
-
-    @Override
-    public List<String> getUnWhitelistFromRcvdList() {
-        return null; // does not apply to clamphish
-    }
-
-    @Override
-    public void setUnWhitelistFromRcvdList(List<String> unWhitelistFromRcvdList) {
-        return; // does not apply to clamphish
     }
 
     // package private methods ------------------------------------------------

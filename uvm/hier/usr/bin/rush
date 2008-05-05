@@ -1,6 +1,6 @@
 #!/bin/sh
 
-for f in @PREFIX@/usr/share/untangle/web/webstart/untangle*jar; do
+for f in @PREFIX@/usr/share/untangle/toolbox/* @PREFIX@/usr/share/untangle/lib/untangle-libuvm-{api,reporting}; do
     CLASSPATH=$f:$CLASSPATH
 done
 
