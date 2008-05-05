@@ -191,8 +191,6 @@ public interface RemoteToolboxManager
 
     UpgradeSettings getUpgradeSettings();
 
-    List<String> getWebstartResources();
-
     boolean hasPremiumSubscription();
 
     /**

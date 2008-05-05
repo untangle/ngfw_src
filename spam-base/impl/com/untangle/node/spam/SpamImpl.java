@@ -381,10 +381,10 @@ public class SpamImpl extends AbstractNode implements SpamNode
     {
         SpamBaseSettings baseSettings = spamSettings.getBaseSettings();
 
-        /* Insert the last update information */
         baseSettings.setLastUpdate(this.lastSignatureUpdate);
+        baseSettings.setSignatureVersion(this.signatureVersion);
 
-        /* Have to figure out how to calculate the version string. */
+        /* XXXX Have to figure out how to calculate the version string. */
 
         return baseSettings;
     }

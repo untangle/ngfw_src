@@ -20,6 +20,7 @@ package com.untangle.node.virus;
 
 import static com.untangle.node.util.Ascii.CRLF;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -46,6 +47,7 @@ import com.untangle.uvm.node.StringRule;
 import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.util.ListUtil;
 import com.untangle.uvm.util.QueryUtil;
+import com.untangle.node.util.PartialListUtil;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.AbstractNode;
 import com.untangle.uvm.vnet.Affinity;
@@ -110,6 +112,12 @@ public abstract class VirusNodeImpl extends AbstractNode
     private final PipeSpec[] pipeSpecs;
 
     private final Logger logger = Logger.getLogger(VirusNodeImpl.class);
+
+    private final PartialListUtil listUtil = new PartialListUtil();
+
+    /* the signatures are updated at startup, so using new Date() is not that far off. */
+    private Date lastSignatureUpdate = new Date();
+    private String signatureVersion;
 
     private VirusSettings settings;
 
@@ -200,23 +208,28 @@ public abstract class VirusNodeImpl extends AbstractNode
     
     public VirusBaseSettings getBaseSettings()
     {
-        return settings.getBaseSettings();
+        VirusBaseSettings baseSettings = settings.getBaseSettings();
+
+        baseSettings.setLastUpdate(this.lastSignatureUpdate);
+        baseSettings.setSignatureVersion(this.signatureVersion);
+
+        return baseSettings;
     }
 
     public void setBaseSettings(final VirusBaseSettings baseSettings)
     {
         TransactionWork tw = new TransactionWork() {
-			public boolean doWork(Session s) {
-		        settings.setBaseSettings(baseSettings);
-				s.merge(settings);
-				return true;
-			}
-
-			public Object getResult() {
-				return null;
-			}
-		};
-		getNodeContext().runTransaction(tw);
+                public boolean doWork(Session s) {
+                    settings.setBaseSettings(baseSettings);
+                    s.merge(settings);
+                    return true;
+                }
+                
+                public Object getResult() {
+                    return null;
+                }
+            };
+        getNodeContext().runTransaction(tw);
     }
 
     public void setVirusSettings(final VirusSettings settings)
@@ -250,58 +263,51 @@ public abstract class VirusNodeImpl extends AbstractNode
     }
     
     public List<MimeTypeRule> getHttpMimeTypes(final int start, final int limit, final String... sortColumns) {
-		return getRules(
-				"select vs.httpMimeTypes from VirusSettings vs where vs.tid = :tid ",
-				start, limit, sortColumns);
-	}
+        return listUtil.getItems( "select vs.httpMimeTypes from VirusSettings vs where vs.tid = :tid ",
+                                  getNodeContext(), getTid(), start, limit, sortColumns);
+    }
 
-	public void updateHttpMimeTypes(List<MimeTypeRule> added, List<Long> deleted, List<MimeTypeRule> modified) {
-
-		updateRules(getHttpMimeTypes(), added, deleted, modified);
-	}
+    public void updateHttpMimeTypes(List<MimeTypeRule> added, List<Long> deleted, List<MimeTypeRule> modified) {
+        
+        updateRules(getHttpMimeTypes(), added, deleted, modified);
+    }
 
     public List<StringRule> getExtensions(final int start, final int limit, final String... sortColumns) {
-		return getRules(
-				"select vs.extensions from VirusSettings vs where vs.tid = :tid ",
-				start, limit, sortColumns);
-	}
+        return listUtil.getItems( "select vs.extensions from VirusSettings vs where vs.tid = :tid ",
+                                  getNodeContext(), getTid(), start, limit, sortColumns);
+    }
 
-	public void updateExtensions(List<StringRule> added, List<Long> deleted, List<StringRule> modified) {
-
-		updateRules(getExtensions(), added, deleted, modified);
-	}
+    public void updateExtensions(List<StringRule> added, List<Long> deleted, List<StringRule> modified) {
+        
+        updateRules(getExtensions(), added, deleted, modified);
+    }
 	
     public void updateAll(final VirusBaseSettings baseSettings, 
-    		final List[] httpMimeTypes, final List[] extensions) {
-
+                          final List[] httpMimeTypes, final List[] extensions) {
+        
         TransactionWork tw = new TransactionWork() {
-			public boolean doWork(Session s) {
-		    	if (baseSettings != null) {
-			        settings.setBaseSettings(baseSettings);
-		    	}
-		    	if (httpMimeTypes != null && httpMimeTypes.length >= 3) {
-		    		updateCachedRules(getHttpMimeTypes(), httpMimeTypes[0], httpMimeTypes[1], httpMimeTypes[2]);
-		    	}
-		    	if (extensions != null && extensions.length >= 3) {
-		    		updateCachedRules(getExtensions(), extensions[0], extensions[1], extensions[2]);
-		    	}
+                public boolean doWork(Session s) {
+                    if (baseSettings != null) {
+                        settings.setBaseSettings(baseSettings);
+                    }
+                    listUtil.updateCachedItems(getHttpMimeTypes(), httpMimeTypes );
+                    
+                    listUtil.updateCachedItems(getExtensions(), extensions );
+                    
+                    settings = (VirusSettings)s.merge(settings);
+                    
+                    return true;
+                }
 
-				settings = (VirusSettings)s.merge(settings);
-
-				return true;
-			}
-
-			public Object getResult() {
-				return null;
-			}
-		};
-		getNodeContext().runTransaction(tw);
-    	
-    	
+                public Object getResult() {
+                    return null;
+                }
+            };
+        getNodeContext().runTransaction(tw);    	
 		
-		reconfigure();
-	}
-	
+        reconfigure();
+    }
+    
     public String getSigVersion()
     {
         return this.scanner.getSigVersion();
@@ -372,6 +378,10 @@ public abstract class VirusNodeImpl extends AbstractNode
             subscriptions.add(subscription);
         }
         pipeSpecs[POP].setSubscriptions(subscriptions);
+
+        // Update the signature version string
+        // (Not an idea place for this.)
+        this.signatureVersion = getSigVersion();
     }
 
     // AbstractNode methods ----------------------------------------------
@@ -524,7 +534,6 @@ public abstract class VirusNodeImpl extends AbstractNode
                 public Object getResult() { return null; }
             };
         getNodeContext().runTransaction(tw);
-
     }
 
     protected void preStart()
@@ -606,34 +615,6 @@ public abstract class VirusNodeImpl extends AbstractNode
     }
     
     // private methods --------------------------------------------------------
-
-    // TODO we should have this into a util class
-    private List getRules(final String queryString, final int start,
-                          final int limit, final String... sortColumns) {
-        TransactionWork<List> tw = new TransactionWork<List>() {
-            private List result;
-
-            public boolean doWork(Session s) {
-                Query q = s.createQuery(queryString
-                                        + QueryUtil.toOrderByClause(sortColumns));
-                q.setParameter("tid", getTid());
-                q.setFirstResult(start);
-                q.setMaxResults(limit);
-                result = q.list();
-
-                return true;
-            }
-
-            public List getResult() {
-                return result;
-            }
-        };
-        getNodeContext().runTransaction(tw);
-
-        return tw.getResult();
-    }
-
-    // TODO we should have this into a util class
     private void updateRules(final Set rules, final List added,
                              final List<Long> deleted, final List modified)
     {
@@ -641,7 +622,7 @@ public abstract class VirusNodeImpl extends AbstractNode
             {
                 public boolean doWork(Session s)
                 {
-                    updateCachedRules(rules, added, deleted, modified);
+                    listUtil.updateCachedItems(rules, added, deleted, modified);
 
                     settings = (VirusSettings)s.merge(settings);
 
@@ -653,34 +634,4 @@ public abstract class VirusNodeImpl extends AbstractNode
             };
         getNodeContext().runTransaction(tw);
     }
-    
-
-	private void updateCachedRules(final Set rules, final List added,
-			final List<Long> deleted, final List modified) {
-		for (Iterator i = rules.iterator(); i.hasNext();) {
-			Rule rule = (Rule) i.next();
-			Rule mRule = null;
-			if (deleted != null && ListUtil.contains(deleted, rule.getId())) {
-				i.remove();
-			} else if (modified != null
-					&& (mRule = modifiedRule(rule, modified)) != null) {
-				rule.update(mRule);
-			}
-		}
-
-		if (added != null) {
-			rules.addAll(added);
-		}
-	}
-
-    private Rule modifiedRule(Rule rule, List modified) {
-        for (Iterator iterator = modified.iterator(); iterator.hasNext();) {
-            Rule currentRule = (Rule)iterator.next();
-            if(currentRule.getId().equals(rule.getId())){
-                return currentRule;
-            }
-        }
-        return null;
-    }
-    
 }

@@ -32,6 +32,8 @@
  */
 package com.untangle.node.virus;
 
+import java.util.Date;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -63,6 +65,13 @@ public class VirusBaseSettings {
     
     private int httpMimeTypesLength;
     private int extensionsLength;
+
+
+    /* This is the date when the system last checked for updates, not the date of the virus signatures. */
+    private Date lastUpdate;
+
+    /* This is the version string for the signatures, it may or may not include a date */
+    private String signatureVersion;
     
     public VirusBaseSettings() {
 	}
@@ -240,21 +249,43 @@ public class VirusBaseSettings {
     }
 
     @Transient
-	public int getHttpMimeTypesLength() {
-		return httpMimeTypesLength;
-	}
+    public int getHttpMimeTypesLength() {
+        return httpMimeTypesLength;
+    }
+    
+    public void setHttpMimeTypesLength(int httpMimeTypesLength) {
+        this.httpMimeTypesLength = httpMimeTypesLength;
+    }
+    
+    @Transient
+    public int getExtensionsLength() {
+        return extensionsLength;
+    }
+    
+    public void setExtensionsLength(int extensionsLength) {
+        this.extensionsLength = extensionsLength;
+    }
 
-	public void setHttpMimeTypesLength(int httpMimeTypesLength) {
-		this.httpMimeTypesLength = httpMimeTypesLength;
-	}
 
     @Transient
-	public int getExtensionsLength() {
-		return extensionsLength;
-	}
+    public Date getLastUpdate()
+    {
+        return this.lastUpdate;
+    }
 
-	public void setExtensionsLength(int extensionsLength) {
-		this.extensionsLength = extensionsLength;
-	}
+    public void setLastUpdate(Date newValue)
+    {
+        this.lastUpdate = newValue;
+    }
 
+    @Transient
+    public String getSignatureVersion()
+    {
+        return this.signatureVersion;
+    }
+
+    public void setSignatureVersion(String newValue)
+    {
+        this.signatureVersion = newValue;
+    }
 }

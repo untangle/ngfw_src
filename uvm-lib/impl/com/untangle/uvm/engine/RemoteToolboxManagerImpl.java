@@ -555,21 +555,6 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
         return tw.getResult();
     }
 
-    public List<String> getWebstartResources()
-    {
-        List<String> resources = new ArrayList<String>();
-
-        String d = System.getProperty("bunnicula.web.dir") + "/webstart";
-        for (File f : new File(d).listFiles()) {
-            String s = f.getName();
-            if (s.endsWith(".jar")) {
-                resources.add(s);
-            }
-        }
-
-        return resources;
-    }
-
     public boolean hasPremiumSubscription()
     {
         for (MackageDesc md : this.installed) {
