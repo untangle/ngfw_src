@@ -809,7 +809,7 @@ Ung.Node = Ext.extend(Ext.Component, {
        	}
     	this.settingsClassName=Ung.Settings.getClassName(this.name);
     	if(!this.settingsClassName) {
-        	//dynamicaly load node javaScript 
+        	//Dynamically load node javaScript 
         	Ung.Settings.loadNodeScript(this.name, this.getId(), function(cmpId) {
         		var cmp=Ext.getCmp(cmpId);
         		cmp.settingsClassName=Ung.Settings.getClassName(cmp.name);
@@ -1559,20 +1559,21 @@ Ung.NodeSettingsWin=Ext.extend(Ung.ButtonsWindow, {
 });
 //Config Window
 Ung.ConfigWin=Ext.extend(Ung.ButtonsWindow, {
-	nodeCmp: null,
     // config i18n
     i18n: null,
     // tabs (if the window has tabs layout)
     tabs: null,
-    // build Tab panel from an array of tab items
+    // class constructor
     constructor: function(config) {
 		this.i18n=i18n;
     	Ung.ConfigWin.superclass.constructor.apply(this, arguments);
     },	
+    // build Tab panel from an array of tab items
     buildTabPanel: function(itemsArray) {
 		this.tabs = new Ext.TabPanel({
 	        renderTo: this.getContentEl().id,
 	        autoWidth :true,
+	        //autoHeight :true,
 	        height: 400,
 	        activeTab: 0,
 	        frame: true,
@@ -1584,14 +1585,15 @@ Ung.ConfigWin=Ext.extend(Ung.ButtonsWindow, {
 		    		fn: function() {
 		    			var winCmp=Ext.getCmp(this.parentId);
 						var objSize=Ext.get(winCmp.getContentEl().id).getSize(true);
-						objSize.width=objSize.width;
-						objSize.height=objSize.height;
+						//objSize.width=objSize.width;
+						//objSize.height=objSize.height;
 						this.setSize(objSize);
 					}
 				}
 			}
 	    });
 	},
+	//initialize window buttons
 	initButtons: function() {
 		this.subCmps.push(new Ext.Button({
 			renderTo: 'button_left_'+this.getId(),
@@ -1619,6 +1621,7 @@ Ung.ConfigWin=Ext.extend(Ung.ButtonsWindow, {
 	//to override
 	cancelAction: function() {
 		this.hide();
+		Ext.destroy(this);
 	},
 	//to override
 	saveAction: function() {

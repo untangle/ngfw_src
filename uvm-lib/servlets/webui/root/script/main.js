@@ -14,6 +14,7 @@ var rpc=null;
 Ung.Main=function() {
 }
 Ung.Main.prototype = {
+	disableThreads: true, // in development environment is useful to disable threads.
 	leftTabs: null,
 	appsSemaphore: null,
 	apps: null,
@@ -197,7 +198,7 @@ Ung.Main.prototype = {
 		    ]
 		});
 	},
-	//Load script file dynamically 
+	//Load script file Dynamically 
 	loadScript: function(sScriptSrc, fnCallback) {
 		var error=null;
 		try {
@@ -218,6 +219,14 @@ Ung.Main.prototype = {
 			fnCallback.call(this);
 		}
 		return error;
+	},
+	//Load a resource if not loaded and execute a callback function
+	loadResourceAndExecute: function(resource,sScriptSrc, fnCallback) {
+		if(Ung.hasResource[resource]) {
+			fnCallback.call(this);
+		} else {
+			this.loadScript(sScriptSrc, fnCallback);
+		}
 	},
 	//get help link
 	getHelpLink: function(source,focus) {
@@ -267,7 +276,9 @@ Ung.Main.prototype = {
 		for(var appItemName in apps) {
 			this.apps.push(new Ung.AppItem(apps[appItemName]));
 		}
-		Ung.MessageClientThread.start();
+		if(!main.disableThreads) {
+			Ung.MessageClientThread.start();
+		}
 	},
 	// load Apps
 	loadApps: function() {
@@ -311,18 +322,6 @@ Ung.Main.prototype = {
 		}.createDelegate(this));
 	},
 	
-	loadConfig: function() {
-		this.config = 
-			[{"name":"networking","displayName":i18n._("Networking"),"iconCls":"iconConfigNetwork"},
-			{"name":"administration","displayName":i18n._("Administration"),"iconCls":"iconConfigAdmin"},
-			{"name":"email","displayName":i18n._("Email"),"iconCls":"iconConfigEmail"},
-			{"name":"userDirectory","displayName":i18n._("User Directory"),"iconCls":"iconConfigDirectory"},
-			{"name":"backupRestore","displayName":i18n._("Backup/Restore"),"iconCls":"iconConfigBackup"},
-			{"name":"support","displayName":i18n._("Support"),"iconCls":"iconConfigSupport"},
-			{"name":"upgrade","displayName":i18n._("Upgrade"),"iconCls":"iconConfigUpgrade"},
-			{"name":"setupInfo","displayName":i18n._("Setup Info"),"iconCls":"iconConfigSetup"}];		
-		this.buildConfig();	
-	},
 	//load policies list
 	loadPolicies: function() {
 		rpc.policyManager.getPolicies( function (result, exception) {
@@ -418,7 +417,9 @@ Ung.Main.prototype = {
 					nodeCmp.updateRunState(allNodeStates.map[this.nodes[i].tid]);
 				}
 			}
-			Ung.BlingerManager.start();
+			if(!main.disableThreads) {
+				Ung.BlingerManager.start();
+			}
 		}.createDelegate(this));
 	},
 	
@@ -468,33 +469,20 @@ Ung.Main.prototype = {
 		}
 		return this.iframeWin;
 	},
-	clickConfig: function(mackageDesc) {
-		switch(mackageDesc.name){
-			case "networking":
-				rpc.adminManager.generateAuthNonce(function (result, exception) {
-					if(exception) { Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}
-					var alpacaUrl = "/alpaca/?" + result;
-					var iframeWin=main.getIframeWin();
-					iframeWin.show();
-					iframeWin.setTitle("Networking");
-					window.frames["iframeWin_iframe"].location.href=alpacaUrl;
-				}.createDelegate(this));
-				break;
-			case "administration":
-				if(!main.administrationWin) {
-					main.administrationWin=new Ung.Administration({});
-				}
-				main.administrationWin.show();
-				break;
-			default:
-				Ext.MessageBox.alert(i18n._("Failed"),"TODO: implement config "+mackageDesc.name);
-				break;
-		}
+	// load Config
+	loadConfig: function() {
+		this.config = 
+			[{"name":"networking","displayName":i18n._("Networking"),"iconCls":"iconConfigNetwork"},
+			{"name":"administration","displayName":i18n._("Administration"),"iconCls":"iconConfigAdmin"},
+			{"name":"racks","displayName":i18n._("Racks"),"iconCls":"iconConfigAdmin"},
+			{"name":"email","displayName":i18n._("Email"),"iconCls":"iconConfigEmail"},
+			{"name":"userDirectory","displayName":i18n._("User Directory"),"iconCls":"iconConfigDirectory"},
+			{"name":"upgrade","displayName":i18n._("Upgrade"),"iconCls":"iconConfigUpgrade"},
+			{"name":"system","displayName":i18n._("System"),"iconCls":"iconConfigSetup"},
+			{"name":"systemInfo","displayName":i18n._("System Info"),"iconCls":"iconConfigSupport"}];		
+		this.buildConfig();	
 	},
-	
-	todo: function() {
-		Ext.MessageBox.alert(i18n._("Failed"),"TODO: implement this.");
-	},
+	//build config buttons
 	buildConfig: function() {
   		var out=[];
   		for(var i=0;i<this.config.length;i++) {
@@ -509,6 +497,34 @@ Ung.Main.prototype = {
 		        iconCls: item.iconCls
 	        });
   		}
+	},
+	//click Config Button
+	clickConfig: function(configItem) {
+		switch(configItem.name){
+			case "networking":
+				rpc.adminManager.generateAuthNonce(function (result, exception) {
+					if(exception) { Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}
+					var alpacaUrl = "/alpaca/?" + result;
+					var iframeWin=main.getIframeWin();
+					iframeWin.show();
+					iframeWin.setTitle("Networking");
+					window.frames["iframeWin_iframe"].location.href=alpacaUrl;
+				}.createDelegate(this));
+				break;
+			case "administration":
+				main.loadResourceAndExecute("Ung.Administration","script/config/administration.js", function() {
+					main.administrationWin=new Ung.Administration({});
+					main.administrationWin.show();
+				});
+				break;
+			default:
+				Ext.MessageBox.alert(i18n._("Failed"),"TODO: implement config "+configItem.name);
+				break;
+		}
+	},
+	
+	todo: function() {
+		Ext.MessageBox.alert(i18n._("Failed"),"TODO: implement this.");
 	},
 	
 	destoyNodes: function () {

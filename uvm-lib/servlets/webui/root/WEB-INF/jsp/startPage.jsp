@@ -27,11 +27,14 @@
     <script type="text/javascript" src="script/main.js"></script>
 	<script type="text/javascript" src="script/i18n.js"></script>
     <script type="text/javascript" src="script/components.js"></script>
-<!--     
+
+<!-- Just for Test, normaly this resources are Dynamically loaded     
+    
     <script type="text/javascript" src="script/untangle-node-protofilter/settings.js"></script>
     <script type="text/javascript" src="script/untangle-node-spyware/settings.js"></script>
     <script type="text/javascript" src="script/untangle-node-shield/settings.js"></script>
     <script type="text/javascript" src="script/untangle-node-webfilter/settings.js"></script>
+    <script type="text/javascript" src="script/config/administration.js"></script>
 -->	
     <script type="text/javascript" src="script/untangle-node-protofilter/settings.js"></script>
     <script type="text/javascript" src="script/untangle-node-shield/settings.js"></script>
