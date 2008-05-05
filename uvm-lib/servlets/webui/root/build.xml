@@ -14,7 +14,7 @@
     <target name="deployCurrent"  description="Deploy application">
         <copy todir="${deploy.path}/script"  preservelastmodified="true" verbose="true" failonerror="false">
         	<fileset dir="./script/">
-                <include name="*.*"/>
+                <include name="**/*.*"/>
             </fileset>
         	<fileset dir="./../../../../spyware/hier/usr/share/untangle/web/webui/script/">
 				<include name="**/*.*"/>
