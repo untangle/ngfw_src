@@ -6,6 +6,9 @@
  * http://extjs.com/license
  */
 
+.ext-el-mask {
+    background-color: #000;
+}
 .x-panel {
     border-style: solid;
     border-color: #d0d0d0;
