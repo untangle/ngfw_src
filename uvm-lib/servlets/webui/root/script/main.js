@@ -32,7 +32,7 @@ Ung.Main.prototype = {
 	iframeWin: null,
 	//init function
 	init: function() {
-		this.initSemaphore=6;
+		this.initSemaphore=7;
 		rpc = {};
 		//get JSONRpcClient
 		rpc.jsonrpc = new JSONRpcClient("/webui/JSON-RPC");
@@ -58,6 +58,12 @@ Ung.Main.prototype = {
 		rpc.jsonrpc.RemoteUvmContext.adminManager(function (result, exception) {
 			if(exception) { Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}
 			rpc.adminManager=result;
+			this.postinit();
+		}.createDelegate(this));
+		// get skin manager
+		rpc.jsonrpc.RemoteUvmContext.skinManager(function (result, exception) {
+			if(exception) { Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}
+			rpc.skinManager=result;
 			this.postinit();
 		}.createDelegate(this));
 		//get version

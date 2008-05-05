@@ -1561,11 +1561,14 @@ Ung.NodeSettingsWin=Ext.extend(Ung.ButtonsWindow, {
 Ung.ConfigWin=Ext.extend(Ung.ButtonsWindow, {
     // config i18n
     i18n: null,
+    // holds the json rpc results for the settings classes
+    rpc: null,     
     // tabs (if the window has tabs layout)
     tabs: null,
     // class constructor
     constructor: function(config) {
 		this.i18n=i18n;
+		this.rpc={};
     	Ung.ConfigWin.superclass.constructor.apply(this, arguments);
     },	
     // build Tab panel from an array of tab items

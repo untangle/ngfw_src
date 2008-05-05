@@ -51,6 +51,16 @@
     <servlet-name>I18NServlet</servlet-name>
     <url-pattern>/i18n</url-pattern>
   </servlet-mapping>
+
+  <servlet>
+    <servlet-name>UploadServlet</servlet-name>
+    <servlet-class>com.untangle.uvm.webui.servlet.UploadServlet</servlet-class>
+  </servlet>
+  
+  <servlet-mapping>
+    <servlet-name>UploadServlet</servlet-name>
+    <url-pattern>/upload</url-pattern>
+  </servlet-mapping>
   
   <welcome-file-list>
     <welcome-file>

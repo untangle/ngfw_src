@@ -1,4 +1,5 @@
 com.untangle.uvm.BrandingSettings
+com.untangle.uvm.SkinSettings
 com.untangle.uvm.MailSettings
 com.untangle.uvm.Period
 com.untangle.uvm.addrbook.AddressBookSettings

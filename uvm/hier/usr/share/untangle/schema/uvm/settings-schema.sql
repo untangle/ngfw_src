@@ -58,6 +58,13 @@ CREATE TABLE settings.uvm_branding_settings (
     contact_email text,
     PRIMARY KEY (settings_id));
 
+-- com.untangle.uvm.SkinSettings
+CREATE TABLE settings.u_skin_settings (
+    skin_settings_id int8 NOT NULL,
+    admin_skin text,
+    user_skin text,
+    PRIMARY KEY (skin_settings_id));
+
 -- com.untangle.uvm.MailSettings
 CREATE TABLE settings.u_mail_settings (
     mail_settings_id int8 NOT NULL,

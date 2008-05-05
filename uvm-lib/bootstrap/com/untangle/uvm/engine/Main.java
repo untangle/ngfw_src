@@ -44,6 +44,7 @@ import org.apache.log4j.Logger;
  * <li>bunnicula.web.dir - servlet directories.</li>
  * <li>bunnicula.conf.dir - configuration files, added to classpath.</li>
  * <li>bunnicula.tmp.dir - temporary files.</li>
+ * <li>bunnicula.skins.dir - skins files.</li>
  *
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
@@ -195,6 +196,8 @@ public class Main
         System.setProperty("bunnicula.conf.dir", bunniculaConf);
         String bunniculaTmp = bunniculaHome + "/tmp";
         System.setProperty("bunnicula.tmp.dir", bunniculaTmp);
+        String bunniculaSkins = bunniculaHome + "/web/webui/skins";
+        System.setProperty("bunnicula.skins.dir", bunniculaSkins);
 
         logger.info("bunnicula.home        " + bunniculaHome);
         logger.info("bunnicula.lib.dir     " + bunniculaLib);
@@ -205,6 +208,7 @@ public class Main
         logger.info("bunnicula.web.dir     " + bunniculaWeb);
         logger.info("bunnicula.conf.dir    " + bunniculaConf);
         logger.info("bunnicula.tmp.dir     " + bunniculaTmp);
+        logger.info("bunnicula.skins.dir     " + bunniculaSkins);
 
         File f = new File(bunniculaConf + "/uvm.properties");
         if (f.exists()) {
