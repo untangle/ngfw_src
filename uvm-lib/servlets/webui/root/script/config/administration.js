@@ -71,10 +71,10 @@ Ung.Administration = Ext.extend(Ung.ConfigWin, {
     buildSkins: function() {
     	var testStore = new Ext.data.Store({
 				        proxy: new Ung.RpcProxy(rpc.skinManager.getSkinsList, false),
-				        reader: new Ext.data.JsonReader({
+				        reader: new Ung.JsonListReader({
 				        	//totalProperty: "totalRecords",
 				        	root: 'list',
-					        fields: [{name: 'skinName', mapping: 0 }]
+					        fields: ['skinName']
 						})
 					});	
 
