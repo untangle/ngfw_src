@@ -159,6 +159,10 @@ Ung.Administration = Ext.extend(Ung.ConfigWin, {
 			                inputType: 'file', 
 			                xtype:'textfield', 
 			                allowBlank:false 
+			            },{
+			             xtype:'hidden',
+			             name: 'type',
+			             value: 'skin'
 			            }]
 					},				
 	            buttons :[

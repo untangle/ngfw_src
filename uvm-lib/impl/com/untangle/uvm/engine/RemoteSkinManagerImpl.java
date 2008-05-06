@@ -20,7 +20,6 @@ package com.untangle.uvm.engine;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileFilter;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -37,6 +36,7 @@ import org.hibernate.Session;
 import com.untangle.uvm.RemoteSkinManager;
 import com.untangle.uvm.SkinSettings;
 import com.untangle.uvm.UvmException;
+import com.untangle.uvm.util.DeletingDataSaver;
 import com.untangle.uvm.util.TransactionWork;
 
 /**
@@ -86,19 +86,12 @@ class RemoteSkinManagerImpl implements RemoteSkinManager
 		return settings;
 	}
 
-	public void setSkinSettings(final SkinSettings ss) {
-        TransactionWork tw = new TransactionWork()
-            {
-                public boolean doWork(Session s)
-                {
-                    s.saveOrUpdate(ss);
-                    return true;
-                }
-            };
-        uvmContext.runTransaction(tw);
-
-        this.settings = ss;
-		
+	public void setSkinSettings(SkinSettings settings) {
+        /* delete whatever is in the db, and just make a fresh settings object */
+        SkinSettings copy = new SkinSettings();
+        settings.copy(copy);
+        saveSettings(copy);
+        this.settings = copy;
 	}
 	
     public void uploadSkin(FileItem item) throws UvmException {
@@ -156,6 +149,12 @@ class RemoteSkinManagerImpl implements RemoteSkinManager
     }
     
     // private methods --------------------------------------------------------
+    private void saveSettings(SkinSettings settings) {
+        DeletingDataSaver<SkinSettings> saver = 
+            new DeletingDataSaver<SkinSettings>(uvmContext,"SkinSettings");
+        this.settings = saver.saveData(settings);
+    }
+    
     static {
         SKINS_DIR = System.getProperty("bunnicula.skins.dir");
     }

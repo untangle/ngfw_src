@@ -96,5 +96,9 @@ public class SkinSettings implements Serializable{
 		this.userPagesSkin = userPagesSkin;
 	}
 
+    public void copy(SkinSettings settings) {
+        settings.setAdministrationClientSkin(this.administrationClientSkin);
+        settings.setUserPagesSkin(this.userPagesSkin);
+    }
 
 }
