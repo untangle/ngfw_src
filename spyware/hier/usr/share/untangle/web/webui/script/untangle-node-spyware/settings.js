@@ -169,6 +169,16 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
 			    	var settingsCmp= Ext.getCmp(this.parentId);
 		    		settingsCmp.buildCookiesList();
 		    		this.winCookiesList=new Ung.ManageListWindow({
+		    			breadcrumbs: [
+                            {title:i18n._(rpc.currentPolicy.name), action: function(){
+                                this.panelBlockLists.winCookiesList.cancelAction();
+                                this.cancelAction();
+                            }.createDelegate(settingsCmp) },
+                            {title:settingsCmp.node.md.displayName, action: function(){
+                                this.panelBlockLists.winCookiesList.cancelAction();
+                            }.createDelegate(settingsCmp)},
+                            {title: settingsCmp.i18n._("Cookies List")}
+                        ],
 		    			grid: settingsCmp.gridCookiesList
 		    		});
 		    	}
@@ -179,6 +189,16 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
 			    	var settingsCmp= Ext.getCmp(this.parentId);
 		    		settingsCmp.buildActiveXList();
 		    		this.winActiveXList=new Ung.ManageListWindow({
+                        breadcrumbs: [
+                            {title:i18n._(rpc.currentPolicy.name), action: function(){
+                                this.panelBlockLists.winActiveXList.cancelAction();
+                                this.cancelAction();
+                            }.createDelegate(settingsCmp) },
+                            {title:settingsCmp.node.md.displayName, action: function(){
+                                this.panelBlockLists.winActiveXList.cancelAction();
+                            }.createDelegate(settingsCmp)},
+                            {title: settingsCmp.i18n._("ActiveX List")}
+                        ],
 		    			grid: settingsCmp.gridActiveXList
 		    		});
 		    	}
@@ -189,6 +209,16 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
 			    	var settingsCmp= Ext.getCmp(this.parentId);
 		    		settingsCmp.buildSubnetList();
 		    		this.winSubnetList=new Ung.ManageListWindow({
+                        breadcrumbs: [
+                            {title:i18n._(rpc.currentPolicy.name), action: function(){
+                                this.panelBlockLists.winSubnetList.cancelAction();
+                                this.cancelAction();
+                            }.createDelegate(settingsCmp) },
+                            {title:settingsCmp.node.md.displayName, action: function(){
+                                this.panelBlockLists.winSubnetList.cancelAction();
+                            }.createDelegate(settingsCmp)},
+                            {title: settingsCmp.i18n._("Subnet List")}
+                        ],
 		    			grid: settingsCmp.gridSubnetList
 		    		});
 		    	}

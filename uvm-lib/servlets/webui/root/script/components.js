@@ -414,10 +414,12 @@ Ung.AppItem = Ext.extend(Ext.Component, {
 					this.progressBar.reset();
 					this.progressBar.updateText(i18n._("Downloading..."));
 				} else {
-					var currentByteIncrement = options.size;
-					var currentPercentComplete = parseFloat(currentByteIndex + options.bytesDownloaded) / parseFloat(byteCountTotal);
+					//var currentByteIncrement = options.size;
+					//var currentPercentComplete = parseFloat(currentByteIndex + options.bytesDownloaded) / parseFloat(byteCountTotal);
+					var currentPercentComplete=parseFloat(options.bytesDownloaded) / parseFloat(options.size!=0?options.size:1);
             		var progressIndex = parseInt(90*currentPercentComplete);
-            		progressString = i18n._("Downloading file ") + options.name +" (" + options.byteCountTotal/1000 + "KBytes @ "  + options.speed + ")";
+            		//progressString = i18n._("Downloading file ") + options.name +" (" + options.byteCountTotal/1000 + "KBytes @ "  + options.speed + ")";
+            		progressString="Get @ " + options.speed;
             		this.progressBar.updateProgress(progressIndex, progressString);
 				}
 				break;
@@ -1426,7 +1428,9 @@ Ung.Window = Ext.extend(Ext.Window, {
 	modal:true,
 	renderTo:'container',
 	//window title
-	title:null,
+	title: null,
+	//breadcrumbs
+	breadcrumbs: null,
 	// function called by close action
 	closeAction:'hide',
 	draggable:false,
@@ -1439,6 +1443,22 @@ Ung.Window = Ext.extend(Ext.Window, {
 		this.subCmps=[];
     	Ung.Window.superclass.constructor.apply(this, arguments);
     },	
+	initComponent: function() {
+        if(!this.title) {
+            this.title='<span id="title_'+this.getId()+'"></span>';
+        }
+        Ung.Window.superclass.initComponent.call(this);
+	},
+    afterRender : function() {
+        Ung.Window.superclass.afterRender.call(this);
+        if(this.breadcrumbs) {
+            this.subCmps.push(new Ung.Breadcrumbs({
+                renderTo: 'title_'+this.getId(),
+                elements: this.breadcrumbs
+            }));
+        }
+    },
+	
 	beforeDestroy : function() {
 		Ext.each(this.subCmps,Ext.destroy);
 		Ung.Window.superclass.beforeDestroy.call(this);
@@ -1517,12 +1537,28 @@ Ung.ButtonsWindow.buttonsTemplate=new Ext.Template(
 //Node Settings Window
 Ung.NodeSettingsWin=Ext.extend(Ung.ButtonsWindow, {
 	nodeCmp: null,
-	initComponent: function() {
-		if(!this.title) {
-			this.title=i18n._('Settings Window');
-		}
-		Ung.NodeSettingsWin.superclass.initComponent.call(this);
-	},
+    initComponent: function() {
+        this.breadcrumbs=[
+                {title:i18n._(rpc.currentPolicy.name), action: function(){this.cancelAction();}.createDelegate(this) },
+                {title:this.nodeCmp.md.displayName}
+            ];
+        this.items= [{
+            region: "center",
+            html: '<div class="windowContent" id="window_content_'+this.getId()+'">'+this.contentHtml+'</div>',
+            border: false,
+            autoScroll: true,
+            cls: 'windowBackground',
+            bodyStyle: 'background-color: transparent;'
+        },{
+            region: "south",
+            html: Ung.ButtonsWindow.buttonsTemplate.applyTemplate({id:this.getId()}),
+            border: false,
+            height:40,
+            cls: 'windowBackground',
+            bodyStyle: 'background-color: transparent;'
+        }];
+        Ung.NodeSettingsWin.superclass.initComponent.call(this);
+    },
 	initButtons: function() {
 		this.subCmps.push(new Ext.Button({
 			iconCls: 'nodeRemoveIcon',
@@ -2407,3 +2443,33 @@ Ung.JsonListReader = Ext.extend(Ext.data.JsonReader, {
 	    };
     }
 });
+Ung.Breadcrumbs= Ext.extend(Ext.Component, {
+    autoEl: "div",  
+    //---Node specific attributes------
+    elements:null,
+    onRender: function(container, position) {
+    	Ung.Breadcrumbs.superclass.onRender.call(this, container, position);
+    	if(this.elements!=null) {
+    		for(var i=0;i<this.elements.length;i++) {
+    			if(i>0) {
+    				this.getEl().insertHtml('beforeEnd','<span class="iconBreadcrumbsSeparator">&nbsp;&nbsp;&nbsp;&nbsp;</span>');
+    			}
+    			var crumb=this.elements[i];
+    			if(crumb.action){
+        			var crumbEl=document.createElement("span");;
+        			crumbEl.className='breadcrumbLink';
+        			crumbEl.innerHTML=crumb.title;
+        			crumbEl=Ext.get(crumbEl);
+        			crumbEl.on("click", crumb.action, this);
+        			this.getEl().appendChild(crumbEl);
+        			
+        			
+    			} else {
+    				this.getEl().insertHtml('beforeEnd','<span class="breadcrumbText" >'+crumb.title+'</span>')
+    			}
+    			
+    			//out.push('<div class="'+(crumb.action?'breadcrumbLink':'breadcrumbText')+'" '+action+'>'+crumb.title+'</div>');
+    		}
+    	}
+    }
+}); 
