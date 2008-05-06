@@ -139,6 +139,7 @@ public class UvmContextImpl extends UvmContextBase
     private RemoteBrandingManager brandingManager;
     private LocalBrandingManager localBrandingManager;
     private RemoteSkinManagerImpl skinManager;
+    private RemoteLanguageManagerImpl languageManager;
     private PhoneBookFactory phoneBookFactory;
     private BasePortalManager portalManager;
     private LicenseManagerFactory licenseManagerFactory;
@@ -205,6 +206,11 @@ public class UvmContextImpl extends UvmContextBase
         return skinManager;
     }
 
+    public RemoteLanguageManagerImpl languageManager()
+    {
+        return languageManager;
+    }
+    
     public RemotePhoneBook remotePhoneBook()
     {
         return phoneBookFactory.getRemote();
@@ -717,6 +723,7 @@ public class UvmContextImpl extends UvmContextBase
         
         //Skins and Language managers
         skinManager = new RemoteSkinManagerImpl(this);
+        languageManager = new RemoteLanguageManagerImpl(this);
         
         phoneBookFactory = PhoneBookFactory.makeInstance();
 

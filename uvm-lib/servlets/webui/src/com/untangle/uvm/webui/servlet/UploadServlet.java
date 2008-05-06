@@ -17,6 +17,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.RemoteLanguageManager;
 import com.untangle.uvm.RemoteSkinManager;
 import com.untangle.uvm.client.RemoteUvmContext;
 
@@ -55,8 +56,8 @@ public class UploadServlet extends HttpServlet {
 				        RemoteSkinManager skinManager = uvm.skinManager();
 				        skinManager.uploadSkin(item);
 		    		} else if ("language".equals(uploadType)){
-//				        RemoteLanguageManager languageManager = uvm.languageManager();
-//				        languageManager.uploadLanguage(item);
+				        RemoteLanguageManager languageManager = uvm.languageManager();
+				        languageManager.uploadLanguagePack(item);
 		    		}
 			    }
 			}

@@ -22,3 +22,9 @@ CREATE TABLE settings.u_skin_settings (
     admin_skin text,
     user_skin text,
     PRIMARY KEY (skin_settings_id));
+
+-- com.untangle.uvm.LanguageSettings
+CREATE TABLE settings.u_language_settings (
+    language_settings_id int8 NOT NULL,
+    language text,
+    PRIMARY KEY (language_settings_id));
