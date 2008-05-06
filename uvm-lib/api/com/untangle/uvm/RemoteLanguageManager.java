@@ -33,6 +33,8 @@
 
 package com.untangle.uvm;
 
+import java.util.List;
+
 import org.apache.commons.fileupload.FileItem;
 
 /**
@@ -63,5 +65,8 @@ public interface RemoteLanguageManager
     void uploadLanguagePack(FileItem item) throws UvmException;
     
     
-//    List getLanguagesList();
+    /**
+     * Get list of available languages
+     */
+    List<LanguageInfo> getLanguagesList();
 }

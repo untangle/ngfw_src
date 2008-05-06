@@ -2,11 +2,11 @@ if(!Ung.hasResource["Ung.System"]) {
 Ung.hasResource["Ung.System"]=true;
 
 Ung.System = Ext.extend(Ung.ConfigWin, {
-    panelAdministration: null,
-    panelPublicAddress: null,
-    panelCertificates: null,
-    panelMonitoring: null,
-    panelSkins: null,
+    panelUntangleSupport: null,
+    panelBackup: null,
+    panelRestore: null,
+    panelProtocolSettings: null,
+    panelRegionalSettings: null,
 	initComponent: function() {
 		this.title=i18n._('System');
 		Ung.System.superclass.initComponent.call(this);
@@ -19,21 +19,21 @@ Ung.System = Ext.extend(Ung.ConfigWin, {
 		//builds the 2 tabs
     },
     initSubCmps: function() {
-		this.buildAdministration();
-		this.buildPublicAddress();
-		this.buildCertificates();
-		this.buildMonitoring();
-		this.buildSkins();
+		this.buildUntangleSupport();
+		this.buildBackup();
+		this.buildRestore();
+		this.buildProtocolSettings();
+		this.buildRegionalSettings();
 		//builds the tab panel with the tabs
-		this.buildTabPanel([this.panelAdministration,this.panelPublicAddress,this.panelCertificates,this.panelMonitoring,this.panelSkins]);
+		this.buildTabPanel([this.panelUntangleSupport,this.panelBackup,this.panelRestore,this.panelProtocolSettings,this.panelRegionalSettings]);
     	
     },
-    // get base settings object
-	getSkinSettings: function(forceReload) {
-		if(forceReload || this.rpc.skinSettings===undefined) {
-			this.rpc.skinSettings=rpc.skinManager.getSkinSettings();
+    // get languange settings object
+	getLanguageSettings: function(forceReload) {
+		if(forceReload || this.rpc.languageSettings===undefined) {
+			this.rpc.languageSettings=rpc.languageManager.getLanguageSettings();
 		}
-		return this.rpc.skinSettings;
+		return this.rpc.languageSettings;
 	},
     getTODOPanel: function(title) {
     	return new Ext.Panel({
@@ -56,31 +56,31 @@ Ung.System = Ext.extend(Ung.ConfigWin, {
 			}]
     	});
     },
-    buildAdministration: function() {
-    	this.panelAdministration=this.getTODOPanel("Administration");
+    buildUntangleSupport: function() {
+    	this.panelUntangleSupport=this.getTODOPanel("Untangle Support");
     },
-    buildPublicAddress: function() {
-    	this.panelPublicAddress=this.getTODOPanel("Public Address");
+    buildBackup: function() {
+    	this.panelBackup=this.getTODOPanel("Backup");
     },
-    buildCertificates: function() {
-    	this.panelCertificates=this.getTODOPanel("Certificates");
+    buildRestore: function() {
+    	this.panelRestore=this.getTODOPanel("Restore");
     },
-    buildMonitoring: function() {
-    	this.panelMonitoring=this.getTODOPanel("Monitoring");
+    buildProtocolSettings: function() {
+    	this.panelProtocolSettings=this.getTODOPanel("Protocol Settings");
     },
-    buildSkins: function() {
-    	var skinsStore = new Ext.data.Store({
-				        proxy: new Ung.RpcProxy(rpc.skinManager.getSkinsList, false),
-				        reader: new Ung.JsonListReader({
+    buildRegionalSettings: function() {
+    	var languagesStore = new Ext.data.Store({
+				        proxy: new Ung.RpcProxy(rpc.languageManager.getLanguagesList, false),
+				        reader: new Ext.data.JsonReader({
 				        	root: 'list',
-					        fields: ['skinName']
+					        fields: ['code', 'name']
 						})
 					});	
     
-    	this.panelSkins = new Ext.Panel({
+    	this.panelRegionalSettings = new Ext.Panel({
     		//private fields
 			parentId: this.getId(),
-		    title: this.i18n._('Skins'),
+		    title: this.i18n._('Regional Settings'),
 		    layout: "form",
 		    bodyStyle:'padding:5px 5px 0',
 		    autoScroll: true,
@@ -91,20 +91,16 @@ Ung.System = Ext.extend(Ung.ConfigWin, {
 		    },
 			items: [
 			{
-	            title: this.i18n._('Administration Skin'),
+	            title: this.i18n._('Language'),
 				items: [{
-                    bodyStyle:'padding:0 0 5px',
-                    border: false,
-					html: this.i18n._("This skin will used in the administration client")
-				}, {
                     xtype:'combo',
-					name: "administrationClientSkin",
-			 		store: skinsStore,	
-					displayField: 'skinName',
-					valueField: 'skinName',
-                    value: this.getSkinSettings().administrationClientSkin,
+					name: "language",
+			 		store: languagesStore,	
+					displayField: 'name',
+					valueField: 'code',
+                    value: this.getLanguageSettings().language,
 				    typeAhead: true,
-				    mode: 'remote',
+				    mode: 'local',
 				    triggerAction: 'all',
 				    listClass: 'x-combo-list-small',
 				    selectOnFocus:true,
@@ -112,45 +108,18 @@ Ung.System = Ext.extend(Ung.ConfigWin, {
 					listeners: {
 						"change": {
 							fn: function(elem, newValue) {
-								this.getSkinSettings().administrationClientSkin=newValue;
+								this.getLanguageSettings().language=newValue;
 							}.createDelegate(this)
 						}
 					}
 				}]
-			}, {
-                title: this.i18n._('Block Page Skin'),
-                items: [{
-                    bodyStyle:'padding:0 0 5px',
-                    border: false,
-                    html: this.i18n._("This skin will used in the user pages like quarantine and block pages")
-                }, {
-                    xtype:'combo',
-                    name: "userPagesSkin",
-                    store: skinsStore,  
-                    displayField: 'skinName',
-                    valueField: 'skinName',
-                    value: this.getSkinSettings().userPagesSkin,
-                    typeAhead: true,
-                    mode: 'remote',
-                    triggerAction: 'all',
-                    listClass: 'x-combo-list-small',
-                    selectOnFocus:true,
-                    hideLabel: true,
-                    listeners: {
-                        "change": {
-                            fn: function(elem, newValue) {
-                                this.getSkinSettings().userPagesSkin=newValue;
-                            }.createDelegate(this)
-                        }
-                    }
-                }]
             }, {
-	            title: this.i18n._('Upload New Skin'),
+	            title: this.i18n._('Upload New Language Pack'),
 	            items :
 					{
 			            fileUpload:true,
 			            xtype:'form',
-			            id:'upload_skin_form',
+			            id:'upload_language_form',
 			            url: 'upload',
 			            border: false,
 			            items:[{
@@ -162,54 +131,55 @@ Ung.System = Ext.extend(Ung.ConfigWin, {
 			            },{
 			             xtype:'hidden',
 			             name: 'type',
-			             value: 'skin'
+			             value: 'language'
 			            }]
 					},				
 	            buttons :[
 	            	{
 						text: this.i18n._("Upload"),
-						handler: function() {this.panelSkins.onUpload();}.createDelegate(this)
+						handler: function() {this.panelRegionalSettings.onUpload();}.createDelegate(this)
 	            	}
 	            ]
 			}],
             onUpload : function() {
-				var prova = Ext.getCmp('upload_skin_form');
+				var prova = Ext.getCmp('upload_language_form');
 				var cmp = Ext.getCmp(this.parentId); 
 
 				var form = prova.getForm();
 				form.submit( {
 					parentId: cmp.getId(),
-					waitMsg: cmp.i18n._('Please wait while your skin is uploaded...'),
+					waitMsg: cmp.i18n._('Please wait while your language pack is uploaded...'),
 					success: function(form,action) { 
-                        skinsStore.load();
+                        languagesStore.load();
 						var cmp = Ext.getCmp(action.options.parentId);						
-						Ext.MessageBox.alert(cmp.i18n._("Successed"), cmp.i18n._("Upload Skin Successed"));
+						Ext.MessageBox.alert(cmp.i18n._("Successed"), cmp.i18n._("Upload Language Pack Successed"));
 					},
 					failure: function(form,action) {
 						var cmp = Ext.getCmp(action.options.parentId); 
 						if (action.result.msg) {
 							Ext.MessageBox.alert(cmp.i18n._("Failed"), cmp.i18n._(action.result.msg));
 						} else {
-							Ext.MessageBox.alert(cmp.i18n._("Failed"), cmp.i18n._("Upload Skin Failed")); 
+							Ext.MessageBox.alert(cmp.i18n._("Failed"), cmp.i18n._("Upload Language Pack Failed")); 
 						}
 					}
 				});
 			}
     	});
+        languagesStore.load();
     },
     // save function
     saveAction: function() {
         if (this.validate()) {
             //disable tabs during save
             this.tabs.disable();
-            rpc.skinManager.setSkinSettings(function (result, exception) {
+            rpc.languageManager.setLanguageSettings(function (result, exception) {
                 //re-enable tabs
                 this.tabs.enable();
                 if(exception) {Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}
                 //exit settings screen
                 this.cancelAction();
             }.createDelegate(this),
-                    this.getSkinSettings());
+                    this.getLanguageSettings());
         }
     }
     

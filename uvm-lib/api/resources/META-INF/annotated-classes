@@ -1,4 +1,5 @@
 com.untangle.uvm.BrandingSettings
+com.untangle.uvm.LanguageSettings
 com.untangle.uvm.SkinSettings
 com.untangle.uvm.MailSettings
 com.untangle.uvm.Period
