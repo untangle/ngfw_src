@@ -5,8 +5,6 @@
     
     <style type="text/css">
         @import "ext/resources/css/ext-all.css";
-		@import "skins/default/css/ext-skin.css";
-		@import "skins/default/css/skin.css";
     </style>
 <!--
 	<script type="text/javascript" src="ext/source/core/Ext.js"></script>

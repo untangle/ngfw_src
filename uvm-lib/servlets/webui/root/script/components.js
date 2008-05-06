@@ -2382,7 +2382,8 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 	}
 
 });
-
+// Reads a list of strings form a json object
+// and creates a list of records
 Ung.JsonListReader = Ext.extend(Ext.data.JsonReader, {
     readRecords : function(o){
         var sid = this.meta ? this.meta.id : null;
