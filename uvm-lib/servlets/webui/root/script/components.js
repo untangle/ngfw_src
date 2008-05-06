@@ -1818,9 +1818,16 @@ Ung.RowEditorWindow = Ext.extend(Ung.UpdateWindow, {
 
 //RpcProxy
 // uses json rpc to get the information from the server
-Ung.RpcProxy = function(rpcFn){
+Ung.RpcProxy = function(rpcFn, paginated){
     Ung.RpcProxy.superclass.constructor.call(this);
     this.rpcFn = rpcFn;
+	//specified if we fetch data paginated or all at once
+	//default to true
+    if (paginated===undefined){
+	    this.paginated = true;
+    } else {
+    	this.paginated = paginated;
+    }
 };
 
 Ext.extend(Ung.RpcProxy, Ext.data.DataProxy, {
@@ -1841,7 +1848,13 @@ Ext.extend(Ung.RpcProxy, Ext.data.DataProxy, {
     	if(params.sort) {
     		sortColumns.push((params.dir=="ASC"?"+":"-")+params.sort)
     	}
-    	this.rpcFn(function (result, exception) {
+    	if (this.paginated){
+	    	this.rpcFn(this.errorHandler.createDelegate(obj), params.start?params.start:0, params.limit?params.limit:this.totalRecords!=null?this.totalRecords:2147483647, sortColumns);
+    	} else {
+    		this.rpcFn(this.errorHandler.createDelegate(obj));
+    	}
+	},
+	errorHandler: function (result, exception) {
 			if(exception) {
 				Ext.MessageBox.alert(i18n._("Failed"),exception.message); 
 				this.callback.call(this.scope, null, this.arg, false);
@@ -1858,7 +1871,6 @@ Ext.extend(Ung.RpcProxy, Ext.data.DataProxy, {
 	            this.callback.call(this.scope, null, this.arg, false);
 	            return;
 	        }
-		}.createDelegate(obj), params.start?params.start:0, params.limit?params.limit:this.totalRecords!=null?this.totalRecords:2147483647, sortColumns);
 	}
 });
 
