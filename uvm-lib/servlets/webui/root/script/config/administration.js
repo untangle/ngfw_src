@@ -72,7 +72,6 @@ Ung.Administration = Ext.extend(Ung.ConfigWin, {
     	var skinsStore = new Ext.data.Store({
 				        proxy: new Ung.RpcProxy(rpc.skinManager.getSkinsList, false),
 				        reader: new Ung.JsonListReader({
-				        	//totalProperty: "totalRecords",
 				        	root: 'list',
 					        fields: ['skinName']
 						})
@@ -81,7 +80,6 @@ Ung.Administration = Ext.extend(Ung.ConfigWin, {
     	this.panelSkins = new Ext.Panel({
     		//private fields
 			parentId: this.getId(),
-    		
 		    title: this.i18n._('Skins'),
 		    layout: "form",
 		    bodyStyle:'padding:5px 5px 0',
@@ -96,7 +94,6 @@ Ung.Administration = Ext.extend(Ung.ConfigWin, {
 	            title: this.i18n._('Administration Skin'),
 				items: [{
                     bodyStyle:'padding:0 0 5px',
-//                    baseCls: 'x-form-item-label',
                     border: false,
 					html: this.i18n._("This skin will used in the administration client")
 				}, {
@@ -124,7 +121,6 @@ Ung.Administration = Ext.extend(Ung.ConfigWin, {
                 title: this.i18n._('Block Page Skin'),
                 items: [{
                     bodyStyle:'padding:0 0 5px',
-//                    baseCls: 'x-form-item-label',
                     border: false,
                     html: this.i18n._("This skin will used in the user pages like quarantine and block pages")
                 }, {
@@ -181,7 +177,8 @@ Ung.Administration = Ext.extend(Ung.ConfigWin, {
 					parentId: cmp.getId(),
 					waitMsg: cmp.i18n._('Please wait while your skin is uploaded...'),
 					success: function(form,action) { 
-						var cmp = Ext.getCmp(action.options.parentId); 
+                        skinsStore.load();
+						var cmp = Ext.getCmp(action.options.parentId);						
 						Ext.MessageBox.alert(cmp.i18n._("Successed"), cmp.i18n._("Upload Skin Successed"));
 					},
 					failure: function(form,action) {
@@ -195,7 +192,6 @@ Ung.Administration = Ext.extend(Ung.ConfigWin, {
 				});
 			}
     	});
-		//testStore.load();
     },
     // save function
     saveAction: function() {
