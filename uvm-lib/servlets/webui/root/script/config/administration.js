@@ -69,7 +69,7 @@ Ung.Administration = Ext.extend(Ung.ConfigWin, {
     	this.panelMonitoring=this.getTODOPanel("Monitoring");
     },
     buildSkins: function() {
-    	var testStore = new Ext.data.Store({
+    	var skinsStore = new Ext.data.Store({
 				        proxy: new Ung.RpcProxy(rpc.skinManager.getSkinsList, false),
 				        reader: new Ung.JsonListReader({
 				        	//totalProperty: "totalRecords",
@@ -77,7 +77,7 @@ Ung.Administration = Ext.extend(Ung.ConfigWin, {
 					        fields: ['skinName']
 						})
 					});	
-
+    
     	this.panelSkins = new Ext.Panel({
     		//private fields
 			parentId: this.getId(),
@@ -95,25 +95,14 @@ Ung.Administration = Ext.extend(Ung.ConfigWin, {
 			{
 	            title: this.i18n._('Administration Skin'),
 				items: [{
+                    bodyStyle:'padding:0 0 5px',
+//                    baseCls: 'x-form-item-label',
+                    border: false,
 					html: this.i18n._("This skin will used in the administration client")
 				}, {
                     xtype:'combo',
 					name: "administrationClientSkin",
-//				    store: new Ext.data.SimpleStore({
-//						fields:['skinName', 'skinvalue'],
-//						data: [["NONE",this.i18n._("None")],
-//								["USER_ONLY",this.i18n._("Temporary")],
-//								["USER_AND_GLOBAL",this.i18n._("Permanent and Global")]]
-//					}),
-//			 		store: new Ext.data.Store({
-//				        proxy: new Ung.RpcProxy(rpc.skinManager.getSkinsList),
-//				        reader: new Ext.data.JsonReader({
-//				        	//totalProperty: "totalRecords",
-//				        	root: 'list',
-//					        fields: ['skinName']
-//						})
-//					}),	
-			 		store: testStore,	
+			 		store: skinsStore,	
 					displayField: 'skinName',
 					valueField: 'skinName',
                     value: this.getSkinSettings().administrationClientSkin,
@@ -122,6 +111,7 @@ Ung.Administration = Ext.extend(Ung.ConfigWin, {
 				    triggerAction: 'all',
 				    listClass: 'x-combo-list-small',
 				    selectOnFocus:true,
+				    hideLabel: true,
 					listeners: {
 						"change": {
 							fn: function(elem, newValue) {
@@ -131,6 +121,34 @@ Ung.Administration = Ext.extend(Ung.ConfigWin, {
 					}
 				}]
 			}, {
+                title: this.i18n._('Block Page Skin'),
+                items: [{
+                    bodyStyle:'padding:0 0 5px',
+//                    baseCls: 'x-form-item-label',
+                    border: false,
+                    html: this.i18n._("This skin will used in the user pages like quarantine and block pages")
+                }, {
+                    xtype:'combo',
+                    name: "userPagesSkin",
+                    store: skinsStore,  
+                    displayField: 'skinName',
+                    valueField: 'skinName',
+                    value: this.getSkinSettings().userPagesSkin,
+                    typeAhead: true,
+                    mode: 'remote',
+                    triggerAction: 'all',
+                    listClass: 'x-combo-list-small',
+                    selectOnFocus:true,
+                    hideLabel: true,
+                    listeners: {
+                        "change": {
+                            fn: function(elem, newValue) {
+                                this.getSkinSettings().userPagesSkin=newValue;
+                            }.createDelegate(this)
+                        }
+                    }
+                }]
+            }, {
 	            title: this.i18n._('Upload New Skin'),
 	            items :
 					{
@@ -178,7 +196,23 @@ Ung.Administration = Ext.extend(Ung.ConfigWin, {
 			}
     	});
 		//testStore.load();
+    },
+    // save function
+    saveAction: function() {
+        if (this.validate()) {
+            //disable tabs during save
+            this.tabs.disable();
+            rpc.skinManager.setSkinSettings(function (result, exception) {
+                //re-enable tabs
+                this.tabs.enable();
+                if(exception) {Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}
+                //exit settings screen
+                this.cancelAction();
+            }.createDelegate(this),
+                    this.getSkinSettings());
+        }
     }
+    
 });
 
 }

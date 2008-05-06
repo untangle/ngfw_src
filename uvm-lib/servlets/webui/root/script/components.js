@@ -1629,7 +1629,17 @@ Ung.ConfigWin=Ext.extend(Ung.ButtonsWindow, {
 	//to override
 	saveAction: function() {
 		main.todo();
-	}
+	},
+    //validation functions
+    validateClient: function() {
+        return true;
+    },
+    validateServer: function() {
+        return true;
+    },
+    validate: function() {
+        return this.validateClient() && this.validateServer();
+    }	
 });
 //update window
 // has the content and 3 standard buttons: help, cancel, Update
