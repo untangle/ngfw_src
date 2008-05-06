@@ -70,11 +70,11 @@ Ung.Administration = Ext.extend(Ung.ConfigWin, {
     },
     buildSkins: function() {
     	var testStore = new Ext.data.Store({
-				        proxy: new Ung.RpcProxy(rpc.skinManager.getSkinsList),
+				        proxy: new Ung.RpcProxy(rpc.skinManager.getSkinsList, false),
 				        reader: new Ext.data.JsonReader({
 				        	//totalProperty: "totalRecords",
 				        	root: 'list',
-					        fields: ['skinName']
+					        fields: [{name: 'skinName', mapping: 0 }]
 						})
 					});	
 
@@ -100,7 +100,7 @@ Ung.Administration = Ext.extend(Ung.ConfigWin, {
                     xtype:'combo',
 					name: "administrationClientSkin",
 //				    store: new Ext.data.SimpleStore({
-//						fields:['skinName'],
+//						fields:['skinName', 'skinvalue'],
 //						data: [["NONE",this.i18n._("None")],
 //								["USER_ONLY",this.i18n._("Temporary")],
 //								["USER_AND_GLOBAL",this.i18n._("Permanent and Global")]]
@@ -118,14 +118,14 @@ Ung.Administration = Ext.extend(Ung.ConfigWin, {
 					valueField: 'skinName',
                     value: this.getSkinSettings().administrationClientSkin,
 				    typeAhead: true,
-				    mode: 'local',
+				    mode: 'remote',
 				    triggerAction: 'all',
 				    listClass: 'x-combo-list-small',
 				    selectOnFocus:true,
 					listeners: {
 						"change": {
 							fn: function(elem, newValue) {
-								//this.getBaseSettings().userWhitelistMode=newValue;
+								this.getSkinSettings().administrationClientSkin=newValue;
 							}.createDelegate(this)
 						}
 					}
@@ -177,7 +177,7 @@ Ung.Administration = Ext.extend(Ung.ConfigWin, {
 				});
 			}
     	});
-		testStore.load();
+		//testStore.load();
     }
 });
 
