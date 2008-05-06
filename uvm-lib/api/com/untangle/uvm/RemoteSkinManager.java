@@ -38,7 +38,7 @@ import java.util.List;
 import org.apache.commons.fileupload.FileItem;
 
 /**
- * Allows the user to customize the branding of the product.
+ * Allows the user to customize the skins of the product.
  *
  * @author <a href="mailto:cmatei@untangle.com">Catalin Matei</a>
  * @version 1.0
@@ -55,7 +55,7 @@ public interface RemoteSkinManager
     /**
      * Set the settings.
      *
-     * @param bs the settings.
+     * @param skinSettings the settings.
      */
     void setSkinSettings(SkinSettings skinSettings);
     
