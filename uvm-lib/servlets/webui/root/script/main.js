@@ -32,10 +32,17 @@ Ung.Main.prototype = {
 	iframeWin: null,
 	//init function
 	init: function() {
-		this.initSemaphore=7;
+		this.initSemaphore=8;
 		rpc = {};
 		//get JSONRpcClient
 		rpc.jsonrpc = new JSONRpcClient("/webui/JSON-RPC");
+
+		// get language manager
+        rpc.jsonrpc.RemoteUvmContext.languageManager(function (result, exception) { 
+            if(exception) { Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}
+            rpc.languageManager=result;
+            this.postinit();//1
+        }.createDelegate(this));
 		// get skin manager
 		rpc.jsonrpc.RemoteUvmContext.skinManager(function (result, exception) {
 			if(exception) { Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}
@@ -46,38 +53,38 @@ Ung.Main.prototype = {
 				var skinSettings=result;
 				this.loadCss("skins/"+skinSettings.administrationClientSkin+"/css/ext-skin.css");
 				this.loadCss("skins/"+skinSettings.administrationClientSkin+"/css/skin.css");
-				this.postinit();//5
+				this.postinit();//2
 			}.createDelegate(this));
 		}.createDelegate(this));
 		//get node manager
 		rpc.jsonrpc.RemoteUvmContext.nodeManager(function (result, exception) { 
 			if(exception) { Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}
 			rpc.nodeManager=result;
-			this.postinit();//1
+			this.postinit();//3
 		}.createDelegate(this));
 		// get policy manager
 		rpc.jsonrpc.RemoteUvmContext.policyManager(function (result, exception) { 
 			if(exception) { Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}
 			rpc.policyManager=result;
-			this.postinit();//2
+			this.postinit();//4
 		}.createDelegate(this));
 		//get toolbox manager
 		rpc.jsonrpc.RemoteUvmContext.toolboxManager(function (result, exception) { 
 			if(exception) { Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}
 			rpc.toolboxManager=result;
-			this.postinit();//3
+			this.postinit();//5
 		}.createDelegate(this));
 		// get admin manager
 		rpc.jsonrpc.RemoteUvmContext.adminManager(function (result, exception) {
 			if(exception) { Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}
 			rpc.adminManager=result;
-			this.postinit();//4
+			this.postinit();//6
 		}.createDelegate(this));
 		//get version
 		rpc.jsonrpc.RemoteUvmContext.version(function (result, exception) {
 			if(exception) { Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}
 			rpc.version=result;
-			this.postinit();//6
+			this.postinit();//7
 		}.createDelegate(this));
 		//get i18n
 		Ext.Ajax.request({
@@ -86,7 +93,7 @@ Ung.Main.prototype = {
 			success: function ( result, request) {
 				var jsonResult=Ext.util.JSON.decode(result.responseText);
 				i18n =new Ung.I18N({"map":jsonResult});
-				main.postinit();//7
+				main.postinit();//8
 			},
 			failure: function ( result, request) { 
 				Ext.MessageBox.alert(i18n._("Failed"), i18n._('Failed loading I18N translations for main rack')); 
@@ -538,6 +545,12 @@ Ung.Main.prototype = {
 					main.administrationWin.show();
 				});
 				break;
+            case "system":
+                main.loadResourceAndExecute("Ung.System","script/config/system.js", function() {
+                    main.systemWin=new Ung.System({});
+                    main.systemWin.show();
+                });
+                break;
 			default:
 				Ext.MessageBox.alert(i18n._("Failed"),"TODO: implement config "+configItem.name);
 				break;
