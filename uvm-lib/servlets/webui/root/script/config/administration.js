@@ -8,7 +8,10 @@ Ung.Administration = Ext.extend(Ung.ConfigWin, {
     panelMonitoring: null,
     panelSkins: null,
 	initComponent: function() {
-		this.title=i18n._('Administration');
+		this.breadcrumbs=[{title:i18n._("Configuration"), action: function(){
+                this.cancelAction();
+            }.createDelegate(this) },
+            {title:i18n._('Administration')}];
 		Ung.Administration.superclass.initComponent.call(this);
 	},
     

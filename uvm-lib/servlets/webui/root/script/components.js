@@ -417,7 +417,7 @@ Ung.AppItem = Ext.extend(Ext.Component, {
 					//var currentByteIncrement = options.size;
 					//var currentPercentComplete = parseFloat(currentByteIndex + options.bytesDownloaded) / parseFloat(byteCountTotal);
 					var currentPercentComplete=parseFloat(options.bytesDownloaded) / parseFloat(options.size!=0?options.size:1);
-            		var progressIndex = parseInt(90*currentPercentComplete);
+            		var progressIndex = parseFloat(0.9*currentPercentComplete);
             		//progressString = i18n._("Downloading file ") + options.name +" (" + options.byteCountTotal/1000 + "KBytes @ "  + options.speed + ")";
             		progressString="Get @ " + options.speed;
             		this.progressBar.updateProgress(progressIndex, progressString);

@@ -8,7 +8,10 @@ Ung.System = Ext.extend(Ung.ConfigWin, {
     panelProtocolSettings: null,
     panelRegionalSettings: null,
 	initComponent: function() {
-		this.title=i18n._('System');
+        this.breadcrumbs=[{title:i18n._("Configuration"), action: function(){
+                this.cancelAction();
+            }.createDelegate(this) },
+            {title:i18n._('System')}];
 		Ung.System.superclass.initComponent.call(this);
 	},
     
