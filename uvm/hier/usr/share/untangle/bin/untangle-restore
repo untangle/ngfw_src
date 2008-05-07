@@ -63,14 +63,17 @@ clean_dirs
 tar zxf $tarfile -C /
 
 # restore the LDAP configuration
-if [ -x /usr/sbin/slapadd -a -f /usr/share/untangle/conf/dirbackup.ldif ]; then
-    /etc/init.d/slapd stop
-    rm -rf /var/lib/ldap
-    mkdir /var/lib/ldap
-    cp /usr/share/untangle/conf/ldap.DB_CONFIG /var/lib/ldap/DB_CONFIG
-    /usr/sbin/slapadd -l /usr/share/untangle/conf/dirbackup.ldif
-    /usr/sbin/slapindex
-    /etc/init.d/slapd start
+SLAPD_CONFIG=/etc/untangle-ldap/slapd.conf
+SLAPD_LIB_DIR=/var/lib/untangle-ldap
+UNTANGLE_SLAPD_CONFIG_DIR=/usr/share/untangle-ldap-server
+if [ -f $SLAPD_CONFIG -a -f /usr/share/untangle/conf/dirbackup.ldif ]; then
+    /etc/init.d/untangle-slapd stop
+    rm -rf ${SLAPD_LIB_DIR}
+    mkdir -p ${SLAPD_LIB_DIR}
+    cp ${UNTANGLE_SLAPD_CONFIG_DIR}/DB_CONFIG ${SLAPD_LIB_DIR}/DB_CONFIG
+    slapadd -f $SLAPD_CONFIG -l /usr/share/untangle/conf/dirbackup.ldif
+    slapindex -f $SLAPD_CONFIG
+    /etc/init.d/untangle-slapd start
 fi
 
 # try to download needed files, this may fail because the network settings may not be correct
