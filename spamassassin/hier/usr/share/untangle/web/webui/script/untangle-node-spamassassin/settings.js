@@ -17,6 +17,13 @@ Ung.SpamAssassin = Ext.extend(Ung.Settings, {
 		//builds the tab panel with the tabs
 	this.buildTabPanel([this.emailPanel, this.gridEventLog]);
     },
+    // get spam settings object
+    getSpamSettings: function(forceReload) {
+        if(forceReload || this.rpc.spamSettings===undefined) {
+            this.rpc.spamSettings=this.getRpcNode().getSpamSettings();
+        }
+        return this.rpc.spamSettings;
+    },
     // Email Config Panel
     buildEmail: function() {
     	this.emailPanel = new Ext.Panel({
@@ -118,7 +125,7 @@ Ung.SpamAssassin = Ext.extend(Ung.Settings, {
 	              xtype:'fieldset',
 	              title: this.i18n._('Note'),
 	              autoHeight:true,
-	              html: this.i18n._('Spam blocker was last updated xxx.')
+	              html: this.i18n._('Spam blocker was last updated ') + this.getSpamSettings().getBaseSettings().getSignatureVersion()
 		      }]
     	});
     },
