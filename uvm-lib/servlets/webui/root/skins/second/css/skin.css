@@ -14,7 +14,7 @@ div.centerRegion {
 	position:relative;
 	margin:auto;
 	background: transparent url(../images/main/background_empty_rack.png) repeat-y;
-	width:789px;
+	width:785px;
 	height:100%;
 }
 div.racksWithSeparator {
@@ -52,18 +52,18 @@ div.racksWithoutSeparator {
 #rack_list {
 	position:relative;
 	background:transparent url(../images/main/background_rack_list.png) no-repeat;
-	width:789px;
+	width:785px;
 	height:50px;
 }
 #rack_nodes {
 	position:relative;
-	width:789px;
+	width:785px;
 }
 div.node {
 	position:relative;
 	background: transparent url(../images/main/background_node.png) no-repeat;
-	width:789px;
-	height:119px;
+    width:785px;
+    height:93px;
 }
 #rack_select {
 	position:relative;
@@ -86,7 +86,7 @@ div.node {
 #nodes_separator {
 	position:relative;
 	background: transparent url(../images/main/background_separator.png) no-repeat;
-	width:789px;
+	width:785px;
 	height:50px;
 }
 .nodeImage {
@@ -134,7 +134,7 @@ div.iconHelp {
 div.node div.nodeState {
 	z-index: 200;
 	position:absolute;
-	top:54px;
+	top:50px;
 	right:54px;
 	height:33px;
 	width: 33px
@@ -153,7 +153,7 @@ div.iconStateError {
 }
 div.node div.nodePower {
 	position:absolute;
-	top:20px;
+	top:15px;
 	right:54px;
 	height:33px;
 	width: 33px;
@@ -167,12 +167,12 @@ div.iconPowerOff {
 
 div.node div.nodeSettingsButton {
 	position:absolute;
-	top:76px;
+	top:61px;
 	left:50px;
 }
 div.node div.nodeHelpButton {
 	position:absolute;
-	top:76px;
+	top:61px;
 	left:182px;
 	width:120px;
 }
@@ -201,7 +201,7 @@ div.windowContent {
 }
 div.nodeBlingers {
 	position:absolute;
-	bottom: 16px;
+	bottom: 6px;
 	right: 100px;
 	width: 355px;
 	height: 87px;
@@ -218,6 +218,7 @@ div.blingerName {
 	font-family: "times", sans-serif;
 	font-size: 11px;
 	color: #3F3F3F;
+	display: none;
 }
 div.activityBlinger {
 	position: absolute;
