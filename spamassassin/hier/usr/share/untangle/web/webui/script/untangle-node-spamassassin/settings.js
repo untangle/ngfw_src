@@ -17,13 +17,6 @@ Ung.SpamAssassin = Ext.extend(Ung.Settings, {
 		//builds the tab panel with the tabs
 	this.buildTabPanel([this.emailPanel, this.gridEventLog]);
     },
-    // get spam settings object
-    getSpamSettings: function(forceReload) {
-        if(forceReload || this.rpc.spamSettings===undefined) {
-            this.rpc.spamSettings=this.getRpcNode().getSpamSettings();
-        }
-        return this.rpc.spamSettings;
-    },
     // Email Config Panel
     buildEmail: function() {
     	this.emailPanel = new Ext.Panel({
