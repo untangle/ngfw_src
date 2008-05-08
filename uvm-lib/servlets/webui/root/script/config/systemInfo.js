@@ -32,7 +32,7 @@ Ung.SystemInfo = Ext.extend(Ung.ConfigWin, {
     	return new Ext.Panel({
 		    title: this.i18n._(title),
 		    layout: "form",
-		    bodyStyle:'padding:5px 5px 0',
+		    bodyStyle:'padding:5px 5px 0px 5px;',
 			items: [{
 	            xtype:'fieldset',
 	            title: this.i18n._(title),
@@ -78,7 +78,7 @@ Ung.SystemInfo = Ext.extend(Ung.ConfigWin, {
             title: this.i18n._('Branding'),
             layout: "form",
             logo: brandingSettings.logo,
-            bodyStyle:'padding:5px 5px 0',
+            bodyStyle:'padding:5px 5px 0px 5px;',
             autoScroll: true,
             defaults: {
                 xtype:'fieldset',
@@ -101,7 +101,7 @@ Ung.SystemInfo = Ext.extend(Ung.ConfigWin, {
             },
             items: [
                 {
-                    bodyStyle:'padding:0 0 5px',
+                    bodyStyle:'padding:0px 0px 5px 0px;',
                     border: false,
                     html: this.i18n._("The Branding Settings are used to set the logo and contact information that will be seen by users (e.g. reports).")
                 },
@@ -260,105 +260,6 @@ Ung.SystemInfo = Ext.extend(Ung.ConfigWin, {
                 });
             }
         });
-    },
-    buildRegionalSettings: function() {
-    	var languagesStore = new Ext.data.Store({
-				        proxy: new Ung.RpcProxy(rpc.languageManager.getLanguagesList, false),
-				        reader: new Ext.data.JsonReader({
-				        	root: 'list',
-					        fields: ['code', 'name']
-						})
-					});	
-    
-    	this.panelRegionalSettings = new Ext.Panel({
-    		//private fields
-			parentId: this.getId(),
-		    title: this.i18n._('Regional Settings'),
-		    layout: "form",
-		    bodyStyle:'padding:5px 5px 0',
-		    autoScroll: true,
-		    defaults: {
-	            xtype:'fieldset',
-	            autoHeight:true,
-	            buttonAlign: 'left'
-		    },
-			items: [
-			{
-	            title: this.i18n._('Language'),
-				items: [{
-                    xtype:'combo',
-					name: "language",
-			 		store: languagesStore,	
-					displayField: 'name',
-					valueField: 'code',
-                    value: this.getLanguageSettings().language,
-				    typeAhead: true,
-				    mode: 'local',
-				    triggerAction: 'all',
-				    listClass: 'x-combo-list-small',
-				    selectOnFocus:true,
-				    hideLabel: true,
-					listeners: {
-						"change": {
-							fn: function(elem, newValue) {
-								this.getLanguageSettings().language=newValue;
-							}.createDelegate(this)
-						}
-					}
-				}]
-            }, {
-	            title: this.i18n._('Upload New Language Pack'),
-	            items :
-					{
-			            fileUpload:true,
-			            xtype:'form',
-			            id:'upload_language_form',
-			            url: 'upload',
-			            border: false,
-			            items:[{
-			                fieldLabel: 'File', 
-			                name: 'file', 
-			                inputType: 'file', 
-			                xtype:'textfield', 
-			                allowBlank:false 
-			            },{
-			             xtype:'hidden',
-			             name: 'type',
-			             value: 'language'
-			            }]
-					},				
-	            buttons :[
-	            	{
-						text: this.i18n._("Upload"),
-						handler: function() {this.panelRegionalSettings.onUpload();}.createDelegate(this)
-	            	}
-	            ]
-			}],
-            onUpload : function() {
-				var prova = Ext.getCmp('upload_language_form');
-				var cmp = Ext.getCmp(this.parentId); 
-
-				var form = prova.getForm();
-				form.submit( {
-					parentId: cmp.getId(),
-					waitMsg: cmp.i18n._('Please wait while your language pack is uploaded...'),
-					success: function(form,action) { 
-                        languagesStore.load();
-						var cmp = Ext.getCmp(action.options.parentId);						
-						Ext.MessageBox.alert(cmp.i18n._("Successed"), cmp.i18n._("Upload Language Pack Successed"));
-					},
-					failure: function(form,action) {
-						var cmp = Ext.getCmp(action.options.parentId); 
-						if (action.result.msg) {
-							Ext.MessageBox.alert(cmp.i18n._("Failed"), cmp.i18n._(action.result.msg));
-						} else {
-							Ext.MessageBox.alert(cmp.i18n._("Failed"), cmp.i18n._("Upload Language Pack Failed")); 
-						}
-					}
-				});
-			}
-    	});
-        languagesStore.load();
     },
     // save function
     saveAction: function() {

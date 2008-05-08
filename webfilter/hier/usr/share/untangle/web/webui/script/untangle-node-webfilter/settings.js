@@ -28,7 +28,7 @@ Ung.WebFilter = Ext.extend(Ung.Settings, {
     		
 		    title: this.i18n._('Block Lists'),
 		    layout: "form",
-		    bodyStyle:'padding:5px 5px 0',
+		    bodyStyle:'padding:5px 5px 0px 5px;',
 		    autoScroll: true,
 		    defaults: {
 	            xtype:'fieldset',
@@ -454,7 +454,7 @@ Ung.WebFilter = Ext.extend(Ung.Settings, {
     		
 		    title: this.i18n._('Pass Lists'),
 		    layout: "form",
-		    bodyStyle:'padding:5px 5px 0',
+		    bodyStyle:'padding:5px 5px 0px; 5px;',
 		    defaults: {
 	            xtype:'fieldset',
 	            autoHeight:true,

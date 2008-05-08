@@ -22,7 +22,7 @@ Ung.Shield = Ext.extend(Ung.Settings, {
     	this.statusPanel = new Ext.Panel({
 		    title: this.i18n._('Status'),
 		    layout: "form",
-		    bodyStyle:'padding:5px 5px 0',
+		    bodyStyle:'padding:5px 5px 0px 5px;',
 			items: [{
 	            xtype:'fieldset',
 	            title: this.i18n._('Statistics'),

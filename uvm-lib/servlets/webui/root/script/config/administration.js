@@ -42,7 +42,7 @@ Ung.Administration = Ext.extend(Ung.ConfigWin, {
     	return new Ext.Panel({
 		    title: this.i18n._(title),
 		    layout: "form",
-		    bodyStyle:'padding:5px 5px 0',
+		    bodyStyle:'padding:5px 5px 0px 5px;',
 			items: [{
 	            xtype:'fieldset',
 	            title: this.i18n._(title),
@@ -85,7 +85,7 @@ Ung.Administration = Ext.extend(Ung.ConfigWin, {
 			parentId: this.getId(),
 		    title: this.i18n._('Skins'),
 		    layout: "form",
-		    bodyStyle:'padding:5px 5px 0',
+		    bodyStyle:'padding:5px 5px 0px 5px;',
 		    autoScroll: true,
 		    defaults: {
 	            xtype:'fieldset',
@@ -96,7 +96,7 @@ Ung.Administration = Ext.extend(Ung.ConfigWin, {
 			{
 	            title: this.i18n._('Administration Skin'),
 				items: [{
-                    bodyStyle:'padding:0 0 5px',
+                    bodyStyle:'padding:0px 0px 5px 5px;',
                     border: false,
 					html: this.i18n._("This skin will used in the administration client")
 				}, {
@@ -123,7 +123,7 @@ Ung.Administration = Ext.extend(Ung.ConfigWin, {
 			}, {
                 title: this.i18n._('Block Page Skin'),
                 items: [{
-                    bodyStyle:'padding:0 0 5px',
+                    bodyStyle:'padding:0px 0px 5px 5px;',
                     border: false,
                     html: this.i18n._("This skin will used in the user pages like quarantine and block pages")
                 }, {

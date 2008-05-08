@@ -32,7 +32,7 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
 			parentId: this.getId(),
 			
 		    layout: "form",
-		    bodyStyle:'padding:5px 5px 0',
+		    bodyStyle:'padding:5px 5px 0px 5px;',
 		    autoScroll: true,
 		    defaults: {
 	            xtype:'fieldset',

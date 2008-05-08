@@ -29,15 +29,14 @@ Ung.SpamAssassin = Ext.extend(Ung.Settings, {
     	this.emailPanel = new Ext.Panel({
 		    title: this.i18n._('Email'),
 		    layout: "form",
-		    bodyStyle:'padding:5px 5px 0',
-	            items: [{
+		    bodyStyle:'padding:5px 5px 0px 5px;',
+            items: [{
                       xtype:'fieldset',
                       title: this.i18n._('SMTP'),
-                      collapsible: true,
                       autoHeight:true,
                       defaults: {width: 210},
                       defaultType: 'textfield',
-		      items :[ new Ext.form.Checkbox({boxLabel: 'Scan SMTP', name: 'smtpScan' }),
+		      items :[ new Ext.form.Checkbox({boxLabel: 'Scan SMTP', name: 'smtpScan', hideLabel: true }),
                                new Ext.form.ComboBox({
                                             store: this.strengths,
 					    fieldLabel: 'Strength',
@@ -63,11 +62,10 @@ Ung.SpamAssassin = Ext.extend(Ung.Settings, {
                       ]},{
                       xtype:'fieldset',
                       title: this.i18n._('POP3'),
-                      collapsible: true,
                       autoHeight:true,
                       defaults: {width: 210},
                       defaultType: 'textfield',
-                      items :[ new Ext.form.Checkbox({boxLabel: 'Scan POP3', name: 'pop3Scan' }),
+                      items :[ new Ext.form.Checkbox({boxLabel: 'Scan POP3', name: 'pop3Scan', hideLabel: true }),
                                new Ext.form.ComboBox({
                                             store: this.strengths,
 					    fieldLabel: 'Strength',
@@ -93,11 +91,10 @@ Ung.SpamAssassin = Ext.extend(Ung.Settings, {
                       ]},{
                       xtype:'fieldset',
                       title: this.i18n._('IMAP'),
-                      collapsible: true,
                       autoHeight:true,
                       defaults: {width: 210},
                       defaultType: 'textfield',
-                      items :[ new Ext.form.Checkbox({boxLabel: 'Scan IMAP', name: 'imapScan' }),
+                      items :[ new Ext.form.Checkbox({boxLabel: 'Scan IMAP', name: 'imapScan', hideLabel: true }),
                                new Ext.form.ComboBox({
                                             store: this.strengths,
 					    fieldLabel: 'Strength',
@@ -125,7 +122,7 @@ Ung.SpamAssassin = Ext.extend(Ung.Settings, {
 	              xtype:'fieldset',
 	              title: this.i18n._('Note'),
 	              autoHeight:true,
-	              html: this.i18n._('Spam blocker was last updated ') + this.getSpamSettings().getBaseSettings().getSignatureVersion()
+	              html: this.i18n._('Spam blocker was last updated ') + this.getBaseSettings().signatureVersion
 		      }]
     	});
     },
