@@ -14,7 +14,7 @@ var rpc=null;
 Ung.Main=function() {
 }
 Ung.Main.prototype = {
-	disableThreads: false, // in development environment is useful to disable threads.
+	disableThreads: true, // in development environment is useful to disable threads.
 	leftTabs: null,
 	appsSemaphore: null,
 	apps: null,
@@ -548,6 +548,12 @@ Ung.Main.prototype = {
             case "system":
                 main.loadResourceAndExecute("Ung.System","script/config/system.js", function() {
                     main.systemWin=new Ung.System({});
+                    main.systemWin.show();
+                });
+                break;
+            case "systemInfo":
+                main.loadResourceAndExecute("Ung.SystemInfo","script/config/systemInfo.js", function() {
+                    main.systemWin=new Ung.SystemInfo({});
                     main.systemWin.show();
                 });
                 break;

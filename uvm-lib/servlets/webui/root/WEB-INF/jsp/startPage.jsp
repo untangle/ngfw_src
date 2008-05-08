@@ -27,18 +27,16 @@
     <script type="text/javascript" src="script/components.js"></script>
 
 <!-- Just for Test, normaly this resources are Dynamically loaded     
-    
-    <script type="text/javascript" src="script/untangle-node-protofilter/settings.js"></script>
-    <script type="text/javascript" src="script/untangle-node-shield/settings.js"></script>
-    <script type="text/javascript" src="script/untangle-node-webfilter/settings.js"></script>
-    <script type="text/javascript" src="script/config/administration.js"></script>
 -->	
     <script type="text/javascript" src="script/untangle-node-spyware/settings.js"></script>
     <script type="text/javascript" src="script/untangle-node-protofilter/settings.js"></script>
     <script type="text/javascript" src="script/untangle-node-shield/settings.js"></script>
     <script type="text/javascript" src="script/untangle-node-webfilter/settings.js"></script>
+    <script type="text/javascript" src="script/untangle-node-phish/settings.js"></script>
+    <script type="text/javascript" src="script/untangle-node-spamassassin/settings.js"></script>
     <script type="text/javascript" src="script/config/administration.js"></script>
     <script type="text/javascript" src="script/config/system.js"></script>
+    <script type="text/javascript" src="script/config/systemInfo.js"></script>
 
 	<script type="text/javascript">
 		function init() {

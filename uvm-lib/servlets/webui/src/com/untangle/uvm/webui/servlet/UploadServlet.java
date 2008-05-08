@@ -16,7 +16,9 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.untangle.uvm.BrandingSettings;
 import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.RemoteBrandingManager;
 import com.untangle.uvm.RemoteLanguageManager;
 import com.untangle.uvm.RemoteSkinManager;
 import com.untangle.uvm.client.RemoteUvmContext;
@@ -39,6 +41,7 @@ public class UploadServlet extends HttpServlet {
 
 		// Parse the request
 		List<FileItem> items = null; 
+		String msg=null;
 		try {
 			items = upload.parseRequest(req);
 			
@@ -58,6 +61,14 @@ public class UploadServlet extends HttpServlet {
 		    		} else if ("language".equals(uploadType)){
 				        RemoteLanguageManager languageManager = uvm.languageManager();
 				        languageManager.uploadLanguagePack(item);
+		    		} else if ("logo".equals(uploadType)){
+				        byte[] logo=item.get();
+				        msg=new String(logo);
+				      //TODO implement set logo in branding manager
+//				        RemoteBrandingManager brandingManager = uvm.brandingManager();
+//				        BrandingSettings brandingSettings= brandingManager.getBrandingSettings();
+//				        brandingSettings.setLogo(logo);
+//				        brandingManager.setBrandingSettings(brandingSettings);
 		    		}
 			    }
 			}
@@ -65,10 +76,7 @@ public class UploadServlet extends HttpServlet {
 			createRespose(resp, false, e.getMessage());
 			return;
 		}		
-		
-		
-		createRespose(resp, true, null);
-		
+		createRespose(resp, true, msg);
 	}
 	
 	private String getUploadType(List<FileItem> items){
