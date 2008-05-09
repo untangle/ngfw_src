@@ -416,14 +416,13 @@ public class SpamImpl extends AbstractNode implements SpamNode
     
     public void updateSpamRBLList( final List<SpamRBL> added, final List<Long> deleted,
                                    final List<SpamRBL> modified )
-    {
+    {        
         TransactionWork<Void> tw = new TransactionWork()
             {
                 public boolean doWork(Session s)
                 {
                     List<SpamRBL> rblList = getSpamSettings().getSpamRBLList();
                     listUtil.updateCachedItems( rblList, spamRblHandler, added, deleted, modified);
-                    initSpamRBLList( rblList );
                     spamSettings = (SpamSettings)s.merge(spamSettings);
                     
                     return true;
@@ -444,8 +443,9 @@ public class SpamImpl extends AbstractNode implements SpamNode
                         spamSettings.setBaseSettings(baseSettings);
                     }
                     if (rblRules != null && rblRules.length >= 3) {
-                        listUtil.updateCachedItems( getSpamSettings().getSpamRBLList(), spamRblHandler, 
-                                                    rblRules );
+                        List<SpamRBL> rblList = new LinkedList<SpamRBL>( getSpamSettings().getSpamRBLList());
+                        listUtil.updateCachedItems( rblList, spamRblHandler, rblRules );
+                        // spamSettings.setSpamRBLList( rblList );
                     }
 
                     spamSettings = (SpamSettings)s.merge(spamSettings);

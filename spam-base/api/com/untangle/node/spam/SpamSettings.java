@@ -152,8 +152,5 @@ public class SpamSettings implements Serializable
     public void setSpamRBLList(List<SpamRBL> spamRBLList)
     {
         this.spamRBLList = spamRBLList;
-        if (null != baseSettings) {
-            baseSettings.setSpamRBLListLength(null == spamRBLList ? 0 : spamRBLList.size());
-        }
     }
 }

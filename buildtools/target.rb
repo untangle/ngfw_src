@@ -393,7 +393,7 @@ class ServletBuilder < Target
 
     Dir.chdir(@destRoot) do |d|
       Find.find('.') do |f|
-        if /\.jsp$/ =~ f
+        if /\.jspx?$/ =~ f
           @jsp_list << f
         end
       end
