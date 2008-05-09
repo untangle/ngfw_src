@@ -834,7 +834,7 @@ Ung.Node = Ext.extend(Ext.Component, {
                     Ung.i18nModuleInstances[this.name]=new Ung.ModuleI18N({"map":i18n.map, "moduleMap":result.map});
                     this.renderSettings()
 			}.createDelegate(this),
-			this.name.substr(this.name.lastIndexOf("-")+1)); // convention
+			this.name.replace("untangle-node-","")); // convention
 			
 		} else {
 			this.renderSettings();
@@ -1598,7 +1598,13 @@ Ung.ConfigWin=Ext.extend(Ung.ButtonsWindow, {
     tabs: null,
     // class constructor
     constructor: function(config) {
-		this.i18n=i18n;
+    	if(!Ung.i18nModuleInstances[config.name]) {
+            //TODO make this asynchronous
+            var moduleTranslations=rpc.languageManager.getTranslations(config.name); // convention
+            Ung.i18nModuleInstances[config.name]=new Ung.ModuleI18N({"map":i18n.map, "moduleMap":moduleTranslations.map})
+        }
+        
+		this.i18n=Ung.i18nModuleInstances[config.name];
 		this.rpc={};
     	Ung.ConfigWin.superclass.constructor.apply(this, arguments);
     },	

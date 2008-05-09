@@ -90,10 +90,10 @@ Ung.SystemInfo = Ext.extend(Ung.ConfigWin, {
                 	var formItem = this.items.get(1).items.get(2);
                 	if(enabled) {
                     	formItem.items.get(0).enable();
-                    	formItem.buttons[0].enable();
+                    	//formItem.buttons[0].enable();
                 	} else {
                         formItem.items.get(0).disable();
-                        formItem.buttons[0].disable();
+                        //formItem.buttons[0].disable();
                 		
                 	}
             	} catch(e) {
@@ -164,12 +164,13 @@ Ung.SystemInfo = Ext.extend(Ung.ConfigWin, {
                          name: 'type',
                          value: 'logo'
                          
-                        }],
+                        }]
+                        /*,
                         buttons :[{
                             text: this.i18n._("Upload"),
                             handler: function() {this.panelBranding.onUpload();}.createDelegate(this),
                             disabled: (brandingSettings.logo==null)
-                        }]
+                        }]*/
                     }
                 ]              
                 
@@ -270,8 +271,34 @@ Ung.SystemInfo = Ext.extend(Ung.ConfigWin, {
                 //re-enable tabs
                 this.tabs.enable();
                 if(exception) {Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}
-                //exit settings screen
-                this.cancelAction();
+                var formFile = this.items.get(1).items.get(2).items.get(0);
+                if(formFile.getValue().length>0) {
+                    var prova = Ext.getCmp('upload_logo_form');
+                    var form = prova.getForm();
+                    form.submit( {
+                        parentId: this.getId(),
+                        waitMsg: this.i18n._('Please wait while your logo image is uploaded...'),
+                        success: function(form,action) { 
+                            var cmp = Ext.getCmp(action.options.parentId);
+                            cmp.panelBranding.logo=action.result.msg;
+                            cmp.getBrandingSettings().logo=cmp.panelBranding.logo;
+                            //Ext.MessageBox.alert(cmp.i18n._("Successed"), cmp.i18n._("Upload Logo Successed"));
+                            //exit settings screen
+                            cmp.cancelAction();
+                        },
+                        failure: function(form,action) {
+                            var cmp = Ext.getCmp(action.options.parentId); 
+                            if (action.result.msg) {
+                                Ext.MessageBox.alert(cmp.i18n._("Failed"), cmp.i18n._(action.result.msg));
+                            } else {
+                                Ext.MessageBox.alert(cmp.i18n._("Failed"), cmp.i18n._("Upload Logo Failed")); 
+                            }
+                        }
+                    });
+                } else {
+                	this.cancelAction();
+                }
+                
             }.createDelegate(this),
                     this.getBrandingSettings());
         }

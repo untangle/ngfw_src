@@ -63,12 +63,12 @@ public class UploadServlet extends HttpServlet {
 				        languageManager.uploadLanguagePack(item);
 		    		} else if ("logo".equals(uploadType)){
 				        byte[] logo=item.get();
-				        msg=new String(logo);
+				        //msg=new String(logo);
 				      //TODO implement set logo in branding manager
-//				        RemoteBrandingManager brandingManager = uvm.brandingManager();
-//				        BrandingSettings brandingSettings= brandingManager.getBrandingSettings();
-//				        brandingSettings.setLogo(logo);
-//				        brandingManager.setBrandingSettings(brandingSettings);
+				        RemoteBrandingManager brandingManager = uvm.brandingManager();
+				        BrandingSettings brandingSettings= brandingManager.getBrandingSettings();
+				        brandingSettings.setLogo(logo);
+				        brandingManager.setBrandingSettings(brandingSettings);
 		    		}
 			    }
 			}

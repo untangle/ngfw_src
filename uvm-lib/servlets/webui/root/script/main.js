@@ -32,30 +32,36 @@ Ung.Main.prototype = {
 	iframeWin: null,
 	//init function
 	init: function() {
-		this.initSemaphore=8;
+		this.initSemaphore=7;
 		rpc = {};
 		//get JSONRpcClient
 		rpc.jsonrpc = new JSONRpcClient("/webui/JSON-RPC");
 
-		// get language manager
-        rpc.jsonrpc.RemoteUvmContext.languageManager(function (result, exception) { 
-            if(exception) { Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}
-            rpc.languageManager=result;
-            this.postinit();//1
-        }.createDelegate(this));
 		// get skin manager
 		rpc.jsonrpc.RemoteUvmContext.skinManager(function (result, exception) {
-			if(exception) { Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}
+			if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
 			rpc.skinManager=result;
 			//Load Current Skin
 			rpc.skinManager.getSkinSettings(function (result, exception) {
-			if(exception) { Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}
+			if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
 				var skinSettings=result;
 				this.loadCss("skins/"+skinSettings.administrationClientSkin+"/css/ext-skin.css");
 				this.loadCss("skins/"+skinSettings.administrationClientSkin+"/css/skin.css");
-				this.postinit();//2
+				this.postinit();//1
 			}.createDelegate(this));
 		}.createDelegate(this));
+        // get language manager
+        rpc.jsonrpc.RemoteUvmContext.languageManager(function (result, exception) { 
+            if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
+            rpc.languageManager=result;
+            //get translations for main module
+            rpc.languageManager.getTranslations(function (result, exception) {
+                if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
+                    i18n =new Ung.I18N({"map":result});
+                    this.postinit();//2
+                }.createDelegate(this),"main");
+        }.createDelegate(this));
+
 		//get node manager
 		rpc.jsonrpc.RemoteUvmContext.nodeManager(function (result, exception) { 
 			if(exception) { Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}
@@ -86,19 +92,7 @@ Ung.Main.prototype = {
 			rpc.version=result;
 			this.postinit();//7
 		}.createDelegate(this));
-		//get i18n
-		Ext.Ajax.request({
-	        url: "i18n",
-			method: 'GET',
-			success: function ( result, request) {
-				var jsonResult=Ext.util.JSON.decode(result.responseText);
-				i18n =new Ung.I18N({"map":jsonResult});
-				main.postinit();//8
-			},
-			failure: function ( result, request) { 
-				Ext.MessageBox.alert(i18n._("Failed"), i18n._('Failed loading I18N translations for main rack')); 
-			} 
-		});
+		
 	},
 	postinit: function() {
 		this.initSemaphore--;
@@ -541,19 +535,19 @@ Ung.Main.prototype = {
 				break;
 			case "administration":
 				main.loadResourceAndExecute("Ung.Administration","script/config/administration.js", function() {
-					main.administrationWin=new Ung.Administration({});
+					main.administrationWin=new Ung.Administration(configItem);
 					main.administrationWin.show();
 				});
 				break;
             case "system":
                 main.loadResourceAndExecute("Ung.System","script/config/system.js", function() {
-                    main.systemWin=new Ung.System({});
+                    main.systemWin=new Ung.System(configItem);
                     main.systemWin.show();
                 });
                 break;
             case "systemInfo":
                 main.loadResourceAndExecute("Ung.SystemInfo","script/config/systemInfo.js", function() {
-                    main.systemWin=new Ung.SystemInfo({});
+                    main.systemWin=new Ung.SystemInfo(configItem);
                     main.systemWin.show();
                 });
                 break;

@@ -21,7 +21,7 @@
 	<script type="text/javascript" src="ext/ext-all-debug.js"></script>
 
 	
-	<script type="text/javascript" src="jsonrpc/jsonrpc-min.js"></script>
+	<script type="text/javascript" src="jsonrpc/jsonrpc.js"></script>
     <script type="text/javascript" src="script/main.js"></script>
 	<script type="text/javascript" src="script/i18n.js"></script>
     <script type="text/javascript" src="script/components.js"></script>
