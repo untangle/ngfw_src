@@ -23,16 +23,16 @@ import java.util.Set;
 import com.untangle.uvm.vnet.*;
 import com.untangle.uvm.vnet.event.*;
 
-public class IPSSessionInfo {
+public class IPSSessionInfo
+{
+    private Set<IPSRuleSignature> c2sSignatures;
+    private Set<IPSRuleSignature> s2cSignatures;
+    private IPSession session;
+    private IPDataEvent event;
+    private String uriPath;
+    private boolean isServer;
 
-    private     Set<IPSRuleSignature>  c2sSignatures;
-    private     Set<IPSRuleSignature>  s2cSignatures;
-    private     IPSession               session;
-    private     IPDataEvent             event;
-    private     String                  uriPath;
-    private     boolean                 isServer;
-
-    //ContentOption variables
+    // ContentOption variables
     public int start;
     public int end;
     public int indexOfLastMatch;
@@ -80,21 +80,25 @@ public class IPSSessionInfo {
 
     // First match wins. XX
     public boolean processC2SSignatures() {
-        for(IPSRuleSignature sig : c2sSignatures)
-            if (sig.execute(this))
+        for(IPSRuleSignature sig : c2sSignatures) {
+            if (sig.execute(this)) {
                 return true;
+            }
+        }
         return false;
     }
 
     // First match wins. XX
     public boolean processS2CSignatures() {
-        for(IPSRuleSignature sig : s2cSignatures)
-            if (sig.execute(this))
+        for(IPSRuleSignature sig : s2cSignatures) {
+            if (sig.execute(this)) {
                 return true;
+            }
+        }
         return false;
     }
 
-    // For debugging/loggin
+    // For debugging/login
     public int numC2SSignatures() {return c2sSignatures.size();}
     public int numS2CSignatures() {return s2cSignatures.size();}
 

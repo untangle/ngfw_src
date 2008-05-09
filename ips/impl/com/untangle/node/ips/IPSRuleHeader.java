@@ -19,8 +19,10 @@
 package com.untangle.node.ips;
 
 import java.net.InetAddress;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import com.untangle.uvm.node.PortRange;
 import com.untangle.uvm.node.SessionEndpoints;
@@ -37,12 +39,12 @@ public class IPSRuleHeader
     private final int action;
     private final Protocol protocol;
 
-    private final List<IPMatcher> clientIPList;
+    private final Set<IPMatcher> clientIpSet;
     private final PortRange clientPortRange;
 
     private final boolean bidirectional;
 
-    private final List<IPMatcher> serverIPList;
+    private final Set<IPMatcher> serverIpSet;
     private final PortRange serverPortRange;
 
     private final Logger logger = Logger.getLogger(getClass());
@@ -66,8 +68,8 @@ public class IPSRuleHeader
         this.action = action;
         this.bidirectional = bidirectional;
         this.protocol = protocol;
-        this.clientIPList = clientIPList;
-        this.serverIPList = serverIPList;
+        this.clientIpSet = new HashSet<IPMatcher>(clientIPList);
+        this.serverIpSet = new HashSet<IPMatcher>(serverIPList);
 
         this.clientPortRange = clientPortRange;
         this.serverPortRange = serverPortRange;
@@ -146,7 +148,7 @@ public class IPSRuleHeader
         /**Check IP Match*/
         InetAddress cAddr = forward ? sess.clientAddr() : sess.serverAddr();
         boolean clientIPMatch = false;
-        Iterator<IPMatcher> clientIt = clientIPList.iterator();
+        Iterator<IPMatcher> clientIt = clientIpSet.iterator();
 
         IPMatcherFactory ipmf = IPMatcherFactory.getInstance();
         IPMatcher internalMatcher = ipmf.getInternalMatcher();
@@ -165,7 +167,7 @@ public class IPSRuleHeader
 
         InetAddress sAddr = forward ? sess.serverAddr() : sess.clientAddr();
         boolean serverIPMatch = false;
-        Iterator<IPMatcher> serverIt = serverIPList.iterator();
+        Iterator<IPMatcher> serverIt = serverIpSet.iterator();
         while(serverIt.hasNext() && !serverIPMatch)
             {
                 IPMatcher matcher = serverIt.next();
@@ -212,8 +214,8 @@ public class IPSRuleHeader
         boolean protocol = (this.protocol == other.protocol); // ?
         boolean clientPorts = (this.clientPortRange.equals(other.clientPortRange));
         boolean serverPorts = (this.serverPortRange.equals(other.serverPortRange));
-        boolean serverIP = (this.serverIPList.equals(other.serverIPList));
-        boolean clientIP = (this.serverIPList.equals(other.serverIPList));
+        boolean serverIP = (this.serverIpSet.equals(other.serverIpSet));
+        boolean clientIP = (this.serverIpSet.equals(other.serverIpSet));
         boolean direction = (this.bidirectional == other.bidirectional);
 
         return action && protocol && clientPorts && serverPorts && serverIP && clientIP && direction;
@@ -226,7 +228,7 @@ public class IPSRuleHeader
         String str = "alert "+protocol+" ";
         if(clientIPFlag)
             str += "!";
-        str += clientIPList + " ";
+        str += clientIpSet + " ";
         if(clientPortFlag)
             str += "!";
         str += clientPortRange;
@@ -236,10 +238,49 @@ public class IPSRuleHeader
             str += " -> ";
         if(serverIPFlag)
             str += "!";
-        str += serverIPList +" ";
+        str += serverIpSet +" ";
         if(serverPortFlag)
             str += "!";
         str += serverPortRange;
         return str;
+    }
+
+    public boolean equals(Object o)
+    {
+        if (!(o instanceof IPSRuleHeader)) {
+            return false;
+        }
+
+        IPSRuleHeader h = (IPSRuleHeader)o;
+
+        return action == h.action
+            && protocol.equals(h.protocol)
+            && clientIpSet.equals(h.clientIpSet)
+            && clientPortRange.equals(h.clientPortRange)
+            && bidirectional == h.bidirectional
+            && serverIpSet.equals(h.serverIpSet)
+            && serverPortRange.equals(h.serverPortRange)
+            && clientIPFlag == h.clientIPFlag
+            && clientPortFlag == h.clientPortFlag
+            && serverIPFlag == h.serverIPFlag
+            && serverPortFlag == h.serverIPFlag;
+    }
+
+    public int hashCode()
+    {
+        int result = 17;
+        result = 37 * result + action;
+        result = 37 * result + protocol.hashCode();
+        result = 37 * result + clientIpSet.hashCode();
+        result = 37 * result + clientPortRange.hashCode();
+        result = 37 * result + (bidirectional ? 1 : 0);
+        result = 37 * result + serverIpSet.hashCode();
+        result = 37 * result + serverPortRange.hashCode();
+        result = 37 * result + (clientIPFlag ? 1 : 0);
+        result = 37 * result + (clientPortFlag ? 1 : 0);
+        result = 37 * result + (serverIPFlag ? 1 : 0);
+        result = 38 * result + (serverPortFlag ? 1 : 0);
+
+        return result;
     }
 }
