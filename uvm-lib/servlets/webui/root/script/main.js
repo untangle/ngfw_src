@@ -57,38 +57,38 @@ Ung.Main.prototype = {
             //get translations for main module
             rpc.languageManager.getTranslations(function (result, exception) {
                 if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
-                    i18n =new Ung.I18N({"map":result});
+                    i18n =new Ung.I18N({"map":result.map});
                     this.postinit();//2
                 }.createDelegate(this),"main");
         }.createDelegate(this));
 
 		//get node manager
 		rpc.jsonrpc.RemoteUvmContext.nodeManager(function (result, exception) { 
-			if(exception) { Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}
+			if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
 			rpc.nodeManager=result;
 			this.postinit();//3
 		}.createDelegate(this));
 		// get policy manager
 		rpc.jsonrpc.RemoteUvmContext.policyManager(function (result, exception) { 
-			if(exception) { Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}
+			if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
 			rpc.policyManager=result;
 			this.postinit();//4
 		}.createDelegate(this));
 		//get toolbox manager
 		rpc.jsonrpc.RemoteUvmContext.toolboxManager(function (result, exception) { 
-			if(exception) { Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}
+			if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
 			rpc.toolboxManager=result;
 			this.postinit();//5
 		}.createDelegate(this));
 		// get admin manager
 		rpc.jsonrpc.RemoteUvmContext.adminManager(function (result, exception) {
-			if(exception) { Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}
+			if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
 			rpc.adminManager=result;
 			this.postinit();//6
 		}.createDelegate(this));
 		//get version
 		rpc.jsonrpc.RemoteUvmContext.version(function (result, exception) {
-			if(exception) { Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}
+			if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
 			rpc.version=result;
 			this.postinit();//7
 		}.createDelegate(this));
