@@ -27,9 +27,8 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
-import java.util.MissingResourceException;
+import java.util.ResourceBundle;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -37,8 +36,6 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.xnap.commons.i18n.I18n;
-import org.xnap.commons.i18n.I18nFactory;
 
 import com.untangle.uvm.LanguageInfo;
 import com.untangle.uvm.LanguageSettings;
@@ -58,6 +55,7 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
     private static final String LANGUAGES_DIR;
     private static final String LOCALE_DIR;
     private static final String DEFAULT_LANGUAGE = "en";
+    private static final String BASENAME_PREFIX = "i18n";
 	private static final int BUFFER = 2048; 
 
     private final Logger logger = Logger.getLogger(getClass());
@@ -121,31 +119,11 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
 				dest.flush();
 				dest.close();
 				
-				//TODO we compile an .mo file and install it in the appropriate place
-				// LOCALE_DIR
+				//compile to .mo file and install it in the appropriate place (LOCALE_DIR)
+//				compileMoFile(entry);
 				
-				//TODO compile the java properties version
-			    // TODO install it in the classpath
-				// LANGUAGES_DIR
-			    try {
-			    	String cmd = "msgfmt --java2 -d "+LANGUAGES_DIR+" -r i18n.webfilter -l "+entry.getName().substring(entry.getName().lastIndexOf(".")+1)+" " + LANGUAGES_DIR + File.separator + entry.getName();
-			    	System.out.println(cmd);
-					Process p = Runtime.getRuntime().exec(cmd);
-					p.waitFor();
-					System.out.println(p.exitValue());
-					
-				} catch (InterruptedException err) {
-					err.printStackTrace();
-				}
-			      
-				
-				//TODO call a hook that causes the UVM to reload these resources.
-//				try {
-//					Thread.currentThread().getContextClassLoader().loadClass("i18n.webfilter_ro");
-//				} catch (ClassNotFoundException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
+				//compile the java properties version & install it in the classpath (LANGUAGES_DIR)
+				compileResourceBundle(entry);
 			}
 			zis.close();		    	
 		    uploadedStream.close();
@@ -154,6 +132,49 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
 			throw new UvmException("Upload Language Pack Failed");
 	    }
     }
+
+	private void compileResourceBundle(ZipEntry entry) throws IOException,
+			UvmException {
+		boolean success = true;
+		try {
+			String cmd[] = { "msgfmt", "--java2", 
+					"-d", LANGUAGES_DIR,
+					"-r", BASENAME_PREFIX + "." + entry.getName().substring(0, entry.getName().lastIndexOf(".")),
+					"-l", entry.getName().substring(entry.getName().lastIndexOf(".")+1),
+					LANGUAGES_DIR + File.separator + entry.getName()};
+			Process p = Runtime.getRuntime().exec(cmd);
+			p.waitFor();
+			if (p.exitValue() != 0) {
+				success = false;
+			}
+			
+		} catch (InterruptedException err) {
+			success = false;
+		}
+		if (!success) {
+			throw new UvmException("Error compiling " + entry.getName() + " to resource bundle");
+		}
+	}
+
+	private void compileMoFile(ZipEntry entry) throws IOException, UvmException {
+		boolean success = true;
+		try {
+			String cmd[] = { "msgfmt",
+					"-o", LOCALE_DIR + File.separator + entry.getName().substring(0, entry.getName().lastIndexOf(".")) + File.separator + "mo",
+					LANGUAGES_DIR + File.separator + entry.getName()};
+			Process p = Runtime.getRuntime().exec(cmd);
+			p.waitFor();
+			if (p.exitValue() != 0) {
+				success = false;
+			}
+			
+		} catch (InterruptedException err) {
+			success = false;
+		}				
+		if (!success) {
+			throw new UvmException("Error compiling " + entry.getName() + " to .mo file");
+		}
+	}
 	
     public List<LanguageInfo> getLanguagesList() {
     	List<LanguageInfo> languages = new ArrayList<LanguageInfo>();
@@ -165,6 +186,7 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
     
     public Map<String, String> getTranslations(String module){
 		Map<String, String> map = new HashMap<String, String>();
+/*		
     	try {
     		I18n i18n = I18nFactory.getI18n("i18n."+module, module, Thread
     				.currentThread().getContextClassLoader(), new Locale(settings
@@ -181,6 +203,26 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
 			// Do nothing - Fall back to a default that returns the passed text if no resource bundle can be located
 			// is done in client side
 		}
+*/		
+	// We will use this approuch instead of the one above, because of a bug in ResouceBundle in jdk 1.5, related with cache:
+	// I18N is using ResourceBundle.getBundle(baseName, locale, loader); to load a resouce bundle which caches the ResourceBundles, 
+	// and if we tried once to load a resource bundle, second time will return not found (MissingResourceException), evean if 
+	// the resource is available now; this prevent dynamic loading, which we need.
+	try {
+		Class clazz = Thread.currentThread().getContextClassLoader().loadClass(BASENAME_PREFIX + "." + module + "_" + settings.getLanguage());
+		ResourceBundle resourceBundle = (ResourceBundle)clazz.newInstance();
+		if (resourceBundle != null) {
+			for (Enumeration<String> enumeration = resourceBundle.getKeys(); enumeration.hasMoreElements();) {
+				String key = enumeration.nextElement();
+				map.put(key, resourceBundle.getString(key));
+			}
+		}
+	} catch (Exception e) {
+		// Do nothing - Fall back to a default that returns the passed text if no resource bundle can be located
+		// is done in client side
+	}
+		
+		
 
 		return map;
     }
