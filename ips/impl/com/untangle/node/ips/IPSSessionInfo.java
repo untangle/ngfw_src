@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -18,15 +18,15 @@
 
 package com.untangle.node.ips;
 
-import java.util.List;
+import java.util.Set;
 
 import com.untangle.uvm.vnet.*;
 import com.untangle.uvm.vnet.event.*;
 
 public class IPSSessionInfo {
 
-    private     List<IPSRuleSignature>  c2sSignatures;
-    private     List<IPSRuleSignature>  s2cSignatures;
+    private     Set<IPSRuleSignature>  c2sSignatures;
+    private     Set<IPSRuleSignature>  s2cSignatures;
     private     IPSession               session;
     private     IPDataEvent             event;
     private     String                  uriPath;
@@ -41,11 +41,6 @@ public class IPSSessionInfo {
         this.session = session;
     }
 
-    //public void setContentOptionStart(int val) { start = val; }
-    //public int getContentOptionStart(int val) { return start; }
-    //public void setContentOptionEnd(int val) { end = val; }
-    //public int getContentOptionEnd(int val) { return end; }
-
     public void setUriPath(String path) {
         uriPath = path;
     }
@@ -53,18 +48,18 @@ public class IPSSessionInfo {
     public String  getUriPath() {
         return uriPath;
     }
-    /**Do i need to set sessionion data? I dont think so..
-     * Check later.
-     */
+
+    // Do i need to set sessionion data? I dont think so.. Check
+    // later.
     public IPSession getSession() {
         return session;
     }
 
-    public void setC2SSignatures(List<IPSRuleSignature> signatures) {
+    public void setC2SSignatures(Set<IPSRuleSignature> signatures) {
         this.c2sSignatures = signatures;
     }
 
-    public void setS2CSignatures(List<IPSRuleSignature> signatures) {
+    public void setS2CSignatures(Set<IPSRuleSignature> signatures) {
         this.s2cSignatures = signatures;
     }
     public void setEvent(IPDataEvent event) {
@@ -114,16 +109,4 @@ public class IPSSessionInfo {
         }
         session.release();
     }
-
-
-
-    /**Debug methods*/
-    public boolean testSignature(int num) {
-        return c2sSignatures.get(num).execute(this);
-    }
-
-    public IPSRuleSignature getSignature(int num) {
-        return c2sSignatures.get(num);
-    }
-    // */
 }

@@ -36,8 +36,8 @@ import com.untangle.uvm.vnet.*;
 import com.untangle.uvm.vnet.event.*;
 import org.apache.log4j.Logger;
 
-public class IPSDetectionEngine {
-
+public class IPSDetectionEngine
+{
     public static boolean DO_PROFILING = true;
 
     // Any chunk that takes this long gets an error
@@ -47,81 +47,73 @@ public class IPSDetectionEngine {
 
     private static final int SCAN_COUNTER  = Node.GENERIC_0_COUNTER;
 
-    private int             maxChunks   = 8;
-    private IPSSettings     settings    = null;
+    private int maxChunks = 8;
+    private IPSSettings settings = null;
     private Map<String,RuleClassification> classifications = null;
 
-    private IPSRuleManager   manager;
+    private IPSRuleManager manager;
     private IPSNodeImpl node;
 
     private static final LocalIntfManager intfManager = LocalUvmContextFactory.context().localIntfManager();
 
-    // We can't just attach the session info to a session, we have to attach it to the 'pipeline', since
-    // we have to access it from multiple pipes (octet & http).  So we keep the registry here.
+    // We can't just attach the session info to a session, we have to
+    // attach it to the 'pipeline', since we have to access it from
+    // multiple pipes (octet & http).  So we keep the registry here.
     private Map<Integer, IPSSessionInfo> sessionInfoMap = new ConcurrentHashMap<Integer, IPSSessionInfo>();
 
-    Map<Integer,List<IPSRuleHeader>>    portS2CMap      = new ConcurrentHashMap<Integer,List<IPSRuleHeader>>();
-    Map<Integer,List<IPSRuleHeader>>    portC2SMap  = new ConcurrentHashMap<Integer,List<IPSRuleHeader>>();
+    Map<Integer,List<IPSRuleHeader>> portS2CMap = new ConcurrentHashMap<Integer,List<IPSRuleHeader>>();
+    Map<Integer,List<IPSRuleHeader>> portC2SMap = new ConcurrentHashMap<Integer,List<IPSRuleHeader>>();
     // bug1443 -- save memory by memoizing
     List<List<IPSRuleHeader>> allPortMapLists = new ArrayList<List<IPSRuleHeader>>();
 
     private final Logger log = Logger.getLogger(getClass());
 
-    /*private static IPSDetectionEngine instance = new IPSDetectionEngine();
-      public  static IPSDetectionEngine instance() {
-      if(instance == null)
-      instance = new IPSDetectionEngine();
-      return instance;
-      }*/
-
-    public IPSDetectionEngine(IPSNodeImpl node) {
+    public IPSDetectionEngine(IPSNodeImpl node)
+    {
         this.node = node;
         manager = new IPSRuleManager(node);
-        //The Goggles! They do nothing!
-        /*String test = "alert tcp 10.0.0.40-10.0.0.101 any -> 66.35.250.0/24 80 (content:\"slashdot\"; msg:\"OMG teH SLASHd0t\";)";
-          String tesT = "alert tcp 10.0.0.1/24 any -> any any (content: \"spOOns|FF FF FF FF|spoons\"; msg:\"Matched binary FF FF FF and spoons\"; nocase;)";
-          String TesT = "alert tcp 10.0.0.1/24 any -> any any (uricontent:\"slashdot\"; nocase; msg:\"Uricontent matched\";)";
-          try {
-          manager.addRule(test);
-          manager.addRule(tesT);
-          manager.addRule(TesT);
-          } catch (ParseException e) {
-          log.warn("Could not parse rule; " + e.getMessage());
-          }*/
     }
 
-    public RuleClassification getClassification(String classificationName) {
+    public RuleClassification getClassification(String classificationName)
+    {
         return classifications.get(classificationName);
     }
 
-    public void setClassifications(List<RuleClassification> classificationList) {
+    public void setClassifications(List<RuleClassification> classificationList)
+    {
         classifications = new HashMap<String, RuleClassification>();
         for (RuleClassification rc : classificationList)
             classifications.put(rc.getName(), rc);
     }
 
-    public IPSSettings getSettings() {
+    public IPSSettings getSettings()
+    {
         return settings;
     }
 
-    public void setSettings(IPSSettings settings) {
+    public void setSettings(IPSSettings settings)
+    {
         this.settings = settings;
     }
 
     //fix this - settigns?
-    public void setMaxChunks(int max) {
+    public void setMaxChunks(int max)
+    {
         maxChunks = max;
     }
 
-    public int getMaxChunks() {
+    public int getMaxChunks()
+    {
         return maxChunks;
     }
 
-    public void updateUICount(int counter) {
+    public void updateUICount(int counter)
+    {
         node.incrementCount(counter);
     }
 
-    public void onReconfigure() {
+    public void onReconfigure()
+    {
         portC2SMap = new ConcurrentHashMap<Integer,List<IPSRuleHeader>>();
         portS2CMap = new ConcurrentHashMap<Integer,List<IPSRuleHeader>>();
         allPortMapLists = new ArrayList<List<IPSRuleHeader>>();
@@ -130,14 +122,16 @@ public class IPSDetectionEngine {
         log.debug("Done with reconfigure");
     }
 
-    public void stop() {
+    public void stop()
+    {
         portC2SMap = new ConcurrentHashMap<Integer,List<IPSRuleHeader>>();
         portS2CMap = new ConcurrentHashMap<Integer,List<IPSRuleHeader>>();
         allPortMapLists = new ArrayList<List<IPSRuleHeader>>();
         sessionInfoMap = new ConcurrentHashMap<Integer, IPSSessionInfo>();
     }
 
-    public void updateRule(IPSRule rule) {
+    public void updateRule(IPSRule rule)
+    {
         try {
             manager.updateRule(rule);
         } catch (ParseException e) {
@@ -148,7 +142,8 @@ public class IPSDetectionEngine {
     }
 
     //Deprecating?
-    public boolean addRule(IPSRule rule) {
+    public boolean addRule(IPSRule rule)
+    {
         try {
             return (manager.addRule(rule));
         } catch (ParseException e) {
@@ -160,8 +155,9 @@ public class IPSDetectionEngine {
         return false;
     }
 
-    public void processNewSessionRequest(IPNewSessionRequest request, Protocol protocol) {
-
+    public void processNewSessionRequest(IPNewSessionRequest request,
+                                         Protocol protocol)
+    {
         // Special case for dumping performance profile
         if (request.serverPort() == 7) {
             try {
@@ -234,7 +230,7 @@ public class IPSDetectionEngine {
         if (log.isDebugEnabled())
             log.debug("s2cSignature list size: " + s2cSignatures.size() + ", c2sSignature list size: " +
                       c2sSignatures.size());
-        if(c2sSignatures.size() > 0 || s2cSignatures.size() > 0) {
+        if (c2sSignatures.size() > 0 || s2cSignatures.size() > 0) {
             request.attach(new Object[] { c2sSignatures, s2cSignatures });
         } else {
             request.release();
@@ -273,7 +269,9 @@ public class IPSDetectionEngine {
     }
 
     //In process of fixing this
-    public void handleChunk(IPDataEvent event, IPSession session, boolean isFromServer) {
+    public void handleChunk(IPDataEvent event, IPSession session,
+                            boolean isFromServer)
+    {
         try {
             long startTime = System.currentTimeMillis();
 
@@ -296,7 +294,8 @@ public class IPSDetectionEngine {
                 node.statisticManager.incrDNC();
                 if (stats.s2tChunks() > maxChunks || stats.c2tChunks() > maxChunks) {
                     session.release();
-                    // Free up storage immediately in case session stays around a long time.
+                    // Free up storage immediately in case session
+                    // stays around a long time.
                     sessionInfoMap.remove(session.id());
                 }
             }
