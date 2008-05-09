@@ -45,6 +45,7 @@ import org.apache.log4j.Logger;
  * <li>bunnicula.conf.dir - configuration files, added to classpath.</li>
  * <li>bunnicula.tmp.dir - temporary files.</li>
  * <li>bunnicula.skins.dir - skins files.</li>
+ * <li>bunnicula.lang.dir - languages resources files.</li>
  *
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
@@ -198,6 +199,8 @@ public class Main
         System.setProperty("bunnicula.tmp.dir", bunniculaTmp);
         String bunniculaSkins = bunniculaHome + "/web/webui/skins";
         System.setProperty("bunnicula.skins.dir", bunniculaSkins);
+        String bunniculaLang = bunniculaHome + "/lang";
+        System.setProperty("bunnicula.lang.dir", bunniculaLang);
 
         logger.info("bunnicula.home        " + bunniculaHome);
         logger.info("bunnicula.lib.dir     " + bunniculaLib);
@@ -230,6 +233,8 @@ public class Main
         urls.add(new URL("file://" + bunniculaLib + "/untangle-libuvm-reporting/"));
         urls.add(new URL("file://" + bunniculaLib + "/jvector-impl/"));
         urls.add(new URL("file://" + bunniculaLib + "/jnetcap-impl/"));
+        String bunniculaLang = System.getProperty("bunnicula.lang.dir");
+        urls.add(new URL("file://" + bunniculaLang + "/"));
 
         String bunniculaToolbox = System.getProperty("bunnicula.toolbox.dir");
         mcl = new UvmClassLoader(urls.toArray(new URL[urls.size()]),

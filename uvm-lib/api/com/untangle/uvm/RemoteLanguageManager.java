@@ -34,6 +34,7 @@
 package com.untangle.uvm;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.fileupload.FileItem;
 
@@ -69,4 +70,12 @@ public interface RemoteLanguageManager
      * Get list of available languages
      */
     List<LanguageInfo> getLanguagesList();
+    
+    /**
+     * Return the map of translations for a module, for the current language
+     * 
+     * @param module  the name of the module
+     * @return map of translations 
+     */
+    Map<String, String> getTranslations(String module);
 }

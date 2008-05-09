@@ -824,23 +824,18 @@ Ung.Node = Ext.extend(Ext.Component, {
 	//init settings
 	initSettings: function () {
     	this.loadNodeContext();
-		if(!Ung.i18nNodeInstances[this.name]) {
-			Ext.Ajax.request({
-		        url: "i18n",
-		        params:{'nodeClassName':this.nodeContext.nodeDesc.className},
-				method: 'GET',
-				parentId: this.getId(),
-				disableCaching: false,
-				success: function ( result, request) {
-					var jsonResult=Ext.util.JSON.decode(result.responseText);
-					var cmp=Ext.getCmp(request.parentId);
-					Ung.i18nNodeInstances[cmp.name]=new Ung.NodeI18N({"map":i18n.map, "nodeMap":jsonResult});
-					cmp.renderSettings()
-				},
-				failure: function ( result, request) { 
-					Ext.MessageBox.alert(i18n._("Failed"), i18n._("Failed loading I18N translations for this node") ); 
-				}
-			});
+		if(!Ung.i18nModuleInstances[this.name]) {
+			//TODO replace this
+			rpc.languageManager.getTranslations(function (result, exception) {
+                    if(exception) { 
+                        Ext.MessageBox.alert(i18n._("Failed"), i18n._("Failed loading I18N translations for this node") ); 
+                        return;
+                    }
+                    Ung.i18nModuleInstances[this.name]=new Ung.ModuleI18N({"map":i18n.map, "moduleMap":result.map});
+                    this.renderSettings()
+			}.createDelegate(this),
+			this.name.substr(this.name.lastIndexOf("-")+1)); // convention
+			
 		} else {
 			this.renderSettings();
 		}
@@ -1173,7 +1168,7 @@ Ung.Settings = Ext.extend(Ext.Component, {
 	initComponent: function(container, position) {
 		this.rpc={};
 		//initializes the node i18n instance
-    	this.i18n=Ung.i18nNodeInstances[this.name];
+    	this.i18n=Ung.i18nModuleInstances[this.name];
     	Ung.Settings.superclass.initComponent.call(this);
 	},
     // build Tab panel from an array of tab items

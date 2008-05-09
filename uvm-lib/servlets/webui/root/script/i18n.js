@@ -1,5 +1,5 @@
-// instances map of i18n objects for nodes 
-Ung.i18nNodeInstances={};
+// instances map of i18n objects for modules 
+Ung.i18nModuleInstances={};
 
 //I18N object class
 Ung.I18N=Ext.extend(Ext.Component, {
@@ -85,15 +85,15 @@ Ung.I18N=Ext.extend(Ext.Component, {
 
 });
 
-//node I18N class object
-Ung.NodeI18N=Ext.extend(Ung.I18N, {
-	//node map
-	nodeMap: null,
-	//translation function tryes to find the word in the nodeMap
+//module I18N class object
+Ung.ModuleI18N=Ext.extend(Ung.I18N, {
+	//module map
+	moduleMap: null,
+	//translation function tryes to find the word in the moduleMap
 	// and if not succesful it tries to find it in the global map
 	_: function (s) {
-		if (this.nodeMap!== null && this.nodeMap[s]) {
-			return this.nodeMap[s];
+		if (this.moduleMap!== null && this.moduleMap[s]) {
+			return this.moduleMap[s];
 		}
 		if (this.map!== null && this.map[s]) {
 			return this.map[s];

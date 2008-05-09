@@ -39,7 +39,7 @@ Ung.WebFilter = Ext.extend(Ung.Settings, {
 				{
 				items: [{
                     xtype:'checkbox',
-                    boxLabel: 'Block all sites except for Pass Lists',
+                    boxLabel: this.i18n._('Block all sites except for Pass Lists'),
                     hideLabel: true,
                     name: 'fascistMode',
                     checked: this.getBaseSettings().fascistMode,

@@ -24,7 +24,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.MissingResourceException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -32,6 +37,8 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 import com.untangle.uvm.LanguageInfo;
 import com.untangle.uvm.LanguageSettings;
@@ -49,6 +56,7 @@ import com.untangle.uvm.util.TransactionWork;
 class RemoteLanguageManagerImpl implements RemoteLanguageManager
 {
     private static final String LANGUAGES_DIR;
+    private static final String LOCALE_DIR;
     private static final String DEFAULT_LANGUAGE = "en";
 	private static final int BUFFER = 2048; 
 
@@ -112,6 +120,32 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
 				}
 				dest.flush();
 				dest.close();
+				
+				//TODO we compile an .mo file and install it in the appropriate place
+				// LOCALE_DIR
+				
+				//TODO compile the java properties version
+			    // TODO install it in the classpath
+				// LANGUAGES_DIR
+			    try {
+			    	String cmd = "msgfmt --java2 -d "+LANGUAGES_DIR+" -r i18n.webfilter -l "+entry.getName().substring(entry.getName().lastIndexOf(".")+1)+" " + LANGUAGES_DIR + File.separator + entry.getName();
+			    	System.out.println(cmd);
+					Process p = Runtime.getRuntime().exec(cmd);
+					p.waitFor();
+					System.out.println(p.exitValue());
+					
+				} catch (InterruptedException err) {
+					err.printStackTrace();
+				}
+			      
+				
+				//TODO call a hook that causes the UVM to reload these resources.
+//				try {
+//					Thread.currentThread().getContextClassLoader().loadClass("i18n.webfilter_ro");
+//				} catch (ClassNotFoundException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
 			}
 			zis.close();		    	
 		    uploadedStream.close();
@@ -129,6 +163,28 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
     	return languages;
     }
     
+    public Map<String, String> getTranslations(String module){
+		Map<String, String> map = new HashMap<String, String>();
+    	try {
+    		I18n i18n = I18nFactory.getI18n("i18n."+module, module, Thread
+    				.currentThread().getContextClassLoader(), new Locale(settings
+    				.getLanguage()), I18nFactory.DEFAULT);
+    		
+    		if (i18n != null) {
+    			for (Enumeration<String> enumeration = i18n.getResources().getKeys(); enumeration
+    					.hasMoreElements();) {
+    				String key = enumeration.nextElement();
+    				map.put(key, i18n.tr(key));
+    			}
+    		}
+		} catch (MissingResourceException e) {
+			// Do nothing - Fall back to a default that returns the passed text if no resource bundle can be located
+			// is done in client side
+		}
+
+		return map;
+    }
+    
     // private methods --------------------------------------------------------
     private void saveSettings(LanguageSettings settings) {
         DeletingDataSaver<LanguageSettings> saver = 
@@ -137,7 +193,7 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
     }
     
     static {
-//        SKINS_DIR = System.getProperty("bunnicula.skins.dir");
-    	LANGUAGES_DIR = "/tmp";
+    	LANGUAGES_DIR = System.getProperty("bunnicula.lang.dir"); //place for languages resources files
+    	LOCALE_DIR = "/usr/share/locale"; // place for .mo files
     }
 }
