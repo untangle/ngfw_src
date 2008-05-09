@@ -19,12 +19,12 @@
 package com.untangle.node.ips;
 
 import java.net.InetAddress;
-import java.nio.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.untangle.uvm.LocalUvmContextFactory;
@@ -227,9 +227,9 @@ public class IPSDetectionEngine {
         //Check matches
         PipelineEndpoints pe = request.pipelineEndpoints();
         boolean incoming = intfManager.getInterfaceComparator().isMoreTrusted(pe.getServerIntf(), pe.getClientIntf());
-        List<IPSRuleSignature> c2sSignatures = manager.matchesHeader(request, incoming, IPSRuleManager.TO_SERVER, c2sList);
+        Set<IPSRuleSignature> c2sSignatures = manager.matchesHeader(request, incoming, IPSRuleManager.TO_SERVER, c2sList);
 
-        List<IPSRuleSignature> s2cSignatures = manager.matchesHeader(request, incoming, IPSRuleManager.TO_CLIENT, s2cList);
+        Set<IPSRuleSignature> s2cSignatures = manager.matchesHeader(request, incoming, IPSRuleManager.TO_CLIENT, s2cList);
 
         if (log.isDebugEnabled())
             log.debug("s2cSignature list size: " + s2cSignatures.size() + ", c2sSignature list size: " +
@@ -247,8 +247,8 @@ public class IPSDetectionEngine {
 
     public void processNewSession(IPSession session, Protocol protocol) {
         Object[] sigs = (Object[]) session.attachment();
-        List<IPSRuleSignature> c2sSignatures = (List<IPSRuleSignature>) sigs[0];
-        List<IPSRuleSignature> s2cSignatures = (List<IPSRuleSignature>) sigs[1];
+        Set<IPSRuleSignature> c2sSignatures = (Set<IPSRuleSignature>) sigs[0];
+        Set<IPSRuleSignature> s2cSignatures = (Set<IPSRuleSignature>) sigs[1];
 
         log.debug("registering IPSSessionInfo");
         IPSSessionInfo info = new IPSSessionInfo(session);

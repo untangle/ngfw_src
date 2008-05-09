@@ -134,8 +134,10 @@ public class IPSStringParser
         }
 
         /*Build and return the rule header*/
-        IPSRuleHeader ruleHeader = IPSRuleHeader.getHeader(action, direction, protocol, clientIPList, clientPortRange, serverIPList, serverPortRange);
-        ruleHeader.setNegationFlags(clientIPFlag, clientPortFlag, serverIPFlag, serverPortFlag);
+        IPSRuleHeader ruleHeader = IPSRuleHeader.getHeader
+            (action, direction, protocol, clientIPList, clientPortRange,
+             serverIPList, serverPortRange, clientIPFlag, clientPortFlag,
+             serverIPFlag, serverPortFlag);
         return ruleHeader;
     }
 

@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -19,13 +19,16 @@
 package com.untangle.node.ips;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.*;
 
-import com.untangle.uvm.node.SessionEndpoints;
 import com.untangle.uvm.node.ParseException;
+import com.untangle.uvm.node.SessionEndpoints;
 import org.apache.log4j.Logger;
 
 public class IPSRuleManager {
@@ -37,6 +40,9 @@ public class IPSRuleManager {
 
     private final List<IPSRuleHeader> knownHeaders = new ArrayList<IPSRuleHeader>();
     private final Map<Integer,IPSRule> knownRules = new HashMap<Integer,IPSRule>();
+
+    private final Map<IPSRuleHeader, Set<IPSRuleSignature>> signatures
+        = new HashMap<IPSRuleHeader, Set<IPSRuleSignature>>();
 
     private final IPSNodeImpl ips;
 
@@ -101,9 +107,9 @@ public class IPSRuleManager {
             if(rule.getModified()) {
                 //Delete previous rule
                 IPSRuleHeader header = inMap.getHeader();
-                header.removeSignature(inMap.getSignature());
+                removeSignature(header, inMap.getSignature());
 
-                if(header.signatureListIsEmpty()) {
+                if(signatureListIsEmpty(header)) {
                     logger.info("removing header");
                     knownRules.remove(sid);
                     knownHeaders.remove(header);
@@ -144,7 +150,7 @@ public class IPSRuleManager {
         if(!signature.remove() && !rule.disabled()) {
             for(IPSRuleHeader headerTmp : knownHeaders) {
                 if(headerTmp.matches(header)) {
-                    headerTmp.addSignature(signature);
+                    addSignature(headerTmp, signature);
 
                     rule.setHeader(headerTmp);
                     rule.setSignature(signature);
@@ -156,7 +162,7 @@ public class IPSRuleManager {
                 }
             }
 
-            header.addSignature(signature);
+            addSignature(header, signature);
             knownHeaders.add(header);
 
             rule.setHeader(header);
@@ -240,24 +246,27 @@ public class IPSRuleManager {
         return returnList;
     }
 
-    public List<IPSRuleSignature> matchesHeader(SessionEndpoints sess, boolean sessInbound, boolean forward) {
+    public Set<IPSRuleSignature> matchesHeader(SessionEndpoints sess,
+                                               boolean sessInbound,
+                                               boolean forward)
+    {
         return matchesHeader(sess, sessInbound, forward, knownHeaders);
     }
 
-    public List<IPSRuleSignature> matchesHeader(SessionEndpoints sess, boolean sessInbound, boolean forward, List<IPSRuleHeader> matchList) {
-        List<IPSRuleSignature> returnList = new ArrayList();
-        //logger.debug("Total List size: "+matchList.size()); /** *****************************************/
+    public Set<IPSRuleSignature> matchesHeader(SessionEndpoints sess, boolean sessInbound, boolean forward, List<IPSRuleHeader> matchList) {
+        Set<IPSRuleSignature> returnSet = new HashSet();
+        //logger.debug("Total List size: "+matchList.size());
 
         for(IPSRuleHeader header : matchList) {
             if(header.matches(sess, sessInbound, forward)) {
                 // logger.debug("Header matches: " + header);
-                returnList.addAll(header.getSignatures());
+                returnSet.addAll(getSignatures(header));
             } else {
                 // logger.debug("Header doesn't match: " + header);
             }
         }
-        //logger.debug("Signature List Size: "+returnList.size()); /** *****************************************/
-        return returnList;
+        //logger.debug("Signature List Size: "+returnList.size());
+        return returnSet;
     }
 
     /*For debug yo*/
@@ -313,5 +322,45 @@ public class IPSRuleManager {
         for(IPSRule rule : knownRules.values()) {
             logger.debug(rule.getHeader() + " /// " + rule.getSignature().toString());
         }
+    }
+
+    // private methods ---------------------------------------------------------
+
+    private void addSignature(IPSRuleHeader header, IPSRuleSignature signature)
+    {
+        Set<IPSRuleSignature> s = signatures.get(header);
+        if (null == s) {
+            s = new HashSet<IPSRuleSignature>();
+            signatures.put(header, s);
+        }
+        s.add(signature);
+    }
+
+    private void removeSignature(IPSRuleHeader header,
+                                 IPSRuleSignature signature)
+    {
+        Set<IPSRuleSignature> s = signatures.get(header);
+        if (null != s) {
+            s.remove(signature);
+            if (s.isEmpty()) {
+                signatures.remove(header);
+            }
+        }
+    }
+
+    private Set<IPSRuleSignature> getSignatures(IPSRuleHeader header)
+    {
+        Set<IPSRuleSignature> s = signatures.get(header);
+        if (null == s) {
+            return Collections.emptySet();
+        } else {
+            return s;
+        }
+    }
+
+    private boolean signatureListIsEmpty(IPSRuleHeader header)
+    {
+        Set<IPSRuleSignature> s = signatures.get(header);
+        return null == s ? true : s.isEmpty();
     }
 }

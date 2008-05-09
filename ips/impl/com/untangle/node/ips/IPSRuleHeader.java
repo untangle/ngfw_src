@@ -19,7 +19,6 @@
 package com.untangle.node.ips;
 
 import java.net.InetAddress;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -32,31 +31,26 @@ import org.apache.log4j.Logger;
 
 public class IPSRuleHeader
 {
-    private final Logger logger = Logger.getLogger(getClass());
-
     public static final boolean IS_BIDIRECTIONAL = true;
     public static final boolean IS_SERVER = true;
 
-    private int             action = 0;
-    private Protocol        protocol;
+    private final int action;
+    private final Protocol protocol;
 
-    private List<IPMatcher> clientIPList;
-    private PortRange       clientPortRange;
+    private final List<IPMatcher> clientIPList;
+    private final PortRange clientPortRange;
 
-    private boolean         bidirectional = false;
+    private final boolean bidirectional;
 
-    private List<IPMatcher> serverIPList;
-    private PortRange       serverPortRange;
+    private final List<IPMatcher> serverIPList;
+    private final PortRange serverPortRange;
 
-    private List<IPSRuleSignature> signatures = new ArrayList<IPSRuleSignature>();
+    private final Logger logger = Logger.getLogger(getClass());
 
-    /**
-     * Negation Flags: flag XOR input = answer
-     * */
-    private boolean     clientIPFlag = false;
-    private boolean     clientPortFlag = false;
-    private boolean     serverIPFlag = false;
-    private boolean     serverPortFlag = false;
+    private final boolean clientIPFlag;
+    private final boolean clientPortFlag;
+    private final boolean serverIPFlag;
+    private final boolean serverPortFlag;
 
     // constructors ------------------------------------------------------------
 
@@ -64,7 +58,9 @@ public class IPSRuleHeader
                           List<IPMatcher> clientIPList,
                           PortRange clientPortRange,
                           List<IPMatcher> serverIPList,
-                          PortRange serverPortRange)
+                          PortRange serverPortRange,
+                          boolean clientIPFlag, boolean clientPortFlag,
+                          boolean serverIPFlag, boolean serverPortFlag)
     {
 
         this.action = action;
@@ -75,6 +71,12 @@ public class IPSRuleHeader
 
         this.clientPortRange = clientPortRange;
         this.serverPortRange = serverPortRange;
+
+
+        this.clientIPFlag = clientIPFlag;
+        this.clientPortFlag = clientPortFlag;
+        this.serverIPFlag = serverIPFlag;
+        this.serverPortFlag = serverPortFlag;
     }
 
     // static methods ----------------------------------------------------------
@@ -84,11 +86,17 @@ public class IPSRuleHeader
                                           List<IPMatcher> clientIPList,
                                           PortRange clientPortRange,
                                           List<IPMatcher> serverIPList,
-                                          PortRange serverPortRange)
+                                          PortRange serverPortRange,
+                                          boolean clientIPFlag,
+                                          boolean clientPortFlag,
+                                          boolean serverIPFlag,
+                                          boolean serverPortFlag)
+
     {
         return new IPSRuleHeader(action, bidirectional, protocol, clientIPList,
-                                 clientPortRange, serverIPList,
-                                 serverPortRange);
+                                 clientPortRange, serverIPList,serverPortRange,
+                                 clientIPFlag, clientPortFlag,
+                                 serverIPFlag, serverPortFlag);
     }
 
     // public methods ----------------------------------------------------------
@@ -119,14 +127,14 @@ public class IPSRuleHeader
 
         boolean portMatch = (clientPortMatch ^ clientPortFlag) && (serverPortMatch ^ serverPortFlag);
 
-        /*      if(!portMatch && !bidirectional)
-                {
-                System.out.println();
-                System.out.println("Header: " + this);
-                System.out.println("ClientPort: " + clientPort);
-                System.out.println("ServerPort: " + serverPort);
-                System.out.println();
-                }*/
+        /*  if(!portMatch && !bidirectional)
+            {
+            System.out.println();
+            System.out.println("Header: " + this);
+            System.out.println("ClientPort: " + clientPort);
+            System.out.println("ServerPort: " + serverPort);
+            System.out.println();
+            }*/
 
         if(!portMatch && !bidirectional)
             return false;
@@ -144,14 +152,14 @@ public class IPSRuleHeader
         IPMatcher internalMatcher = ipmf.getInternalMatcher();
         IPMatcher externalMatcher = ipmf.getExternalMatcher();
 
-        while(clientIt.hasNext() && !clientIPMatch)  {
+        while(clientIt.hasNext() && !clientIPMatch) {
             IPMatcher matcher = clientIt.next();
             if (matcher == externalMatcher)
                 clientIPMatch = isInbound;
             else if (matcher == internalMatcher)
                 clientIPMatch = !isInbound;
             else
-                clientIPMatch =  matcher.isMatch(cAddr);
+                clientIPMatch = matcher.isMatch(cAddr);
             // logger.debug("client matcher: " + matcher + " sez: " + clientIPMatch);
         }
 
@@ -179,35 +187,16 @@ public class IPSRuleHeader
                 return matches(sess, sessInbound, !forward, true);
             }
 
-        /*      if(!(ipMatch && portMatch))
-                {
-                System.out.println();
-                System.out.println("Header: " + this);
-                System.out.println("ClientIP: " + clientAddr);
-                System.out.println("ServerIP: " + serverAddr);
-                System.out.println();
-                }*/
+        /*  if(!(ipMatch && portMatch))
+            {
+            System.out.println();
+            System.out.println("Header: " + this);
+            System.out.println("ClientIP: " + clientAddr);
+            System.out.println("ServerIP: " + serverAddr);
+            System.out.println();
+            }*/
 
         return ipMatch && portMatch;
-    }
-
-    public void setNegationFlags(boolean clientIP, boolean clientPort, boolean serverIP, boolean serverPort)
-    {
-
-        clientIPFlag = clientIP;
-        clientPortFlag = clientPort;
-        serverIPFlag = serverIP;
-        serverPortFlag = serverPort;
-    }
-
-    public void addSignature(IPSRuleSignature sig)
-    {
-        signatures.add(sig);
-    }
-
-    public boolean removeSignature(IPSRuleSignature sig)
-    {
-        return signatures.remove(sig);
     }
 
     public int getAction()
@@ -215,18 +204,8 @@ public class IPSRuleHeader
         return action;
     }
 
-    public List<IPSRuleSignature> getSignatures()
-    {
-        return signatures;
-    }
-
-    public boolean signatureListIsEmpty()
-    {
-        return signatures.isEmpty();
-    }
-
-    // Rule manager uses this to decide if the rule is already known.  We ignore the signatures
-    // attached.
+    // Rule manager uses this to decide if the rule is already
+    // known.
     public boolean matches(IPSRuleHeader other)
     {
         boolean action = (this.action == other.action);
@@ -239,6 +218,8 @@ public class IPSRuleHeader
 
         return action && protocol && clientPorts && serverPorts && serverIP && clientIP && direction;
     }
+
+    // Object methods ----------------------------------------------------------
 
     public String toString()
     {
