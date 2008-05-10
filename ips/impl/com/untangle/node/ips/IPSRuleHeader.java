@@ -18,11 +18,14 @@
 
 package com.untangle.node.ips;
 
+import java.lang.ref.WeakReference;
 import java.net.InetAddress;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.WeakHashMap;
 
 import com.untangle.uvm.node.PortRange;
 import com.untangle.uvm.node.SessionEndpoints;
@@ -35,6 +38,9 @@ public class IPSRuleHeader
 {
     public static final boolean IS_BIDIRECTIONAL = true;
     public static final boolean IS_SERVER = true;
+
+    private static final Map<IPSRuleHeader, WeakReference<IPSRuleHeader>> INSTANCES
+        = new WeakHashMap<IPSRuleHeader, WeakReference<IPSRuleHeader>>();
 
     private final int action;
     private final Protocol protocol;
@@ -95,10 +101,27 @@ public class IPSRuleHeader
                                           boolean serverPortFlag)
 
     {
-        return new IPSRuleHeader(action, bidirectional, protocol, clientIPList,
-                                 clientPortRange, serverIPList,serverPortRange,
-                                 clientIPFlag, clientPortFlag,
-                                 serverIPFlag, serverPortFlag);
+        IPSRuleHeader h = new IPSRuleHeader(action, bidirectional, protocol,
+                                            clientIPList, clientPortRange,
+                                            serverIPList,serverPortRange,
+                                            clientIPFlag, clientPortFlag,
+                                            serverIPFlag, serverPortFlag);
+
+        synchronized (INSTANCES) {
+            WeakReference<IPSRuleHeader> wr = INSTANCES.get(h);
+            if (null != wr) {
+                IPSRuleHeader c = wr.get();
+                if (null != wr) {
+                    h = c;
+                } else {
+                    INSTANCES.put(h, new WeakReference(h));
+                }
+            } else {
+                INSTANCES.put(h, new WeakReference(h));
+            }
+        }
+
+        return h;
     }
 
     // public methods ----------------------------------------------------------
