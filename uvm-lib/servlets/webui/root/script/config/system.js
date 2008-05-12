@@ -29,6 +29,11 @@ Ung.System = Ext.extend(Ung.ConfigWin, {
 		this.buildRegionalSettings();
 		//builds the tab panel with the tabs
 		this.buildTabPanel([this.panelUntangleSupport,this.panelBackup,this.panelRestore,this.panelProtocolSettings,this.panelRegionalSettings]);
+        this.tabs.activate(this.panelRegionalSettings);
+        this.panelUntangleSupport.disable();
+        this.panelBackup.disable();
+        this.panelRestore.disable();
+        this.panelProtocolSettings.disable();
     	
     },
     // get languange settings object

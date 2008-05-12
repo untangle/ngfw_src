@@ -29,6 +29,11 @@ Ung.Administration = Ext.extend(Ung.ConfigWin, {
 		this.buildSkins();
 		//builds the tab panel with the tabs
 		this.buildTabPanel([this.panelAdministration,this.panelPublicAddress,this.panelCertificates,this.panelMonitoring,this.panelSkins]);
+		this.tabs.activate(this.panelSkins);
+		this.panelAdministration.disable();
+		this.panelPublicAddress.disable();
+		this.panelCertificates.disable();
+		this.panelMonitoring.disable();
     	
     },
     // get base settings object

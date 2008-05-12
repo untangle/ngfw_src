@@ -26,6 +26,10 @@ Ung.SystemInfo = Ext.extend(Ung.ConfigWin, {
         this.buildBranding();
 		//builds the tab panel with the tabs
 		this.buildTabPanel([this.panelVersion,this.panelRegistration,this.panelLicenseAgreement,this.panelBranding]);
+        this.tabs.activate(this.panelBranding);
+        this.panelVersion.disable();
+        this.panelRegistration.disable();
+        this.panelLicenseAgreement.disable();
     	
     },
     getTODOPanel: function(title) {
