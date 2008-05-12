@@ -18,7 +18,7 @@
 
 package com.untangle.uvm.engine;
 
-import com.untangle.uvm.BrandingSettings;
+import com.untangle.uvm.BrandingBaseSettings;
 import com.untangle.uvm.LocalBrandingManager;
 import com.untangle.uvm.RemoteBrandingManager;
 
@@ -37,13 +37,18 @@ class RemoteBrandingManagerAdaptor implements RemoteBrandingManager
         this.brandingManager = brandingManager;
     }
 
-    public BrandingSettings getBrandingSettings()
+    public BrandingBaseSettings getBaseSettings()
     {
-        return this.brandingManager.getBrandingSettings();
+        return this.brandingManager.getBaseSettings();
     }
 
-    public void setBrandingSettings(BrandingSettings bs)
+    public void setBaseSettings(BrandingBaseSettings bs)
     {
-        this.brandingManager.setBrandingSettings(bs);
+        this.brandingManager.setBaseSettings(bs);
+    }
+    
+    public void setLogo(byte[] logo)
+    {
+        this.brandingManager.setLogo(logo);
     }
 }

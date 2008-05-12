@@ -20,7 +20,7 @@
 
 <%                    
 LocalUvmContext uvm = LocalUvmContextFactory.context();
-BrandingSettings bs = uvm.brandingManager().getBrandingSettings();
+BrandingBaseSettings bs = uvm.brandingManager().getBaseSettings();
 String company = bs.getCompanyName();
 String companyUrl = bs.getCompanyUrl();
 %>            

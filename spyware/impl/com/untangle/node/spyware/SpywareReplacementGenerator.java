@@ -19,7 +19,7 @@
 package com.untangle.node.spyware;
 
 import com.untangle.node.http.ReplacementGenerator;
-import com.untangle.uvm.BrandingSettings;
+import com.untangle.uvm.BrandingBaseSettings;
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.security.Tid;
@@ -55,7 +55,7 @@ public class SpywareReplacementGenerator
     protected String getReplacement(SpywareBlockDetails bd)
     {
         LocalUvmContext uvm = LocalUvmContextFactory.context();
-        BrandingSettings bs = uvm.brandingManager().getBrandingSettings();
+        BrandingBaseSettings bs = uvm.brandingManager().getBaseSettings();
         return String.format(SIMPLE_BLOCK_TEMPLATE, bd.getHost(), bd.getUrl(),
                              bs.getContactHtml());
     }

@@ -23,9 +23,9 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.List;
 
-import com.untangle.uvm.ArgonException;
-import com.untangle.uvm.BrandingSettings;
-import com.untangle.uvm.IntfConstants;
+import org.apache.log4j.Logger;
+
+import com.untangle.uvm.BrandingBaseSettings;
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.RemoteNetworkManager;
@@ -36,7 +36,6 @@ import com.untangle.uvm.node.NodeException;
 import com.untangle.uvm.node.script.ScriptException;
 import com.untangle.uvm.node.script.ScriptRunner;
 import com.untangle.uvm.node.script.ScriptWriter;
-import org.apache.log4j.Logger;
 
 // import static com.untangle.node.openvpn.Constants.*;
 
@@ -328,7 +327,7 @@ class OpenVpnManager
         LocalUvmContext uvm = LocalUvmContextFactory.context();
         RemoteNetworkManager nm = uvm.networkManager();
 
-        BrandingSettings bs = uvm.brandingManager().getBrandingSettings();
+        BrandingBaseSettings bs = uvm.brandingManager().getBaseSettings();
 
         String publicAddress = nm.getPublicAddress();
         writeClientConfigurationFile( settings, client, UNIX_CLIENT_DEFAULTS, UNIX_EXTENSION );

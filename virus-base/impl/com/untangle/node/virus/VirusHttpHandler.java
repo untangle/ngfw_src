@@ -26,6 +26,8 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.Iterator;
 
+import org.apache.log4j.Logger;
+
 import com.untangle.node.http.HttpMethod;
 import com.untangle.node.http.HttpStateMachine;
 import com.untangle.node.http.RequestLine;
@@ -38,14 +40,13 @@ import com.untangle.node.token.Header;
 import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenException;
 import com.untangle.node.util.TempFileFactory;
-import com.untangle.uvm.BrandingSettings;
+import com.untangle.uvm.BrandingBaseSettings;
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.node.MimeTypeRule;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.StringRule;
 import com.untangle.uvm.vnet.TCPSession;
-import org.apache.log4j.Logger;
 
 /**
  * Virus handler for HTTP.
@@ -286,7 +287,7 @@ class VirusHttpHandler extends HttpStateMachine
         String host = getResponseHost();
 
         LocalUvmContext uvm = LocalUvmContextFactory.context();
-        BrandingSettings bs = uvm.brandingManager().getBrandingSettings();
+        BrandingBaseSettings bs = uvm.brandingManager().getBaseSettings();
         String message = String.format(BLOCK_MESSAGE, host, uri, bs.getContactHtml());
 
         Header h = new Header();

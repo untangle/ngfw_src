@@ -290,7 +290,7 @@ class DigestGenerator {
 
 
             String companyName = LocalUvmContextFactory.context().brandingManager()
-                .getBrandingSettings().getCompanyName();
+                .getBaseSettings().getCompanyName();
             context.put(COMPANY_NAME_VV, companyName);
 
 
