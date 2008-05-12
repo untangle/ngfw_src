@@ -121,6 +121,7 @@ Ung.Administration = Ext.extend(Ung.ConfigWin, {
 						"change": {
 							fn: function(elem, newValue) {
 								this.getSkinSettings().administrationClientSkin=newValue;
+                                Ext.MessageBox.alert(this.i18n._("Info"), this.i18n._("Please note that you have to relogin after saving for the new skin to take effect."));
 							}.createDelegate(this)
 						}
 					}

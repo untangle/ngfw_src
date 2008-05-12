@@ -179,6 +179,7 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
     public List<LanguageInfo> getLanguagesList() {
     	List<LanguageInfo> languages = new ArrayList<LanguageInfo>();
     	languages.add(new LanguageInfo("en", "English"));
+    	languages.add(new LanguageInfo("es", "Spanish"));
     	languages.add(new LanguageInfo("fr", "French"));
     	languages.add(new LanguageInfo("ro", "Romanian"));
     	return languages;

@@ -117,6 +117,7 @@ Ung.System = Ext.extend(Ung.ConfigWin, {
 						"change": {
 							fn: function(elem, newValue) {
 								this.getLanguageSettings().language=newValue;
+								Ext.MessageBox.alert(this.i18n._("Info"), this.i18n._("Please note that you have to relogin after saving for the new language to take effect."));
 							}.createDelegate(this)
 						}
 					}
