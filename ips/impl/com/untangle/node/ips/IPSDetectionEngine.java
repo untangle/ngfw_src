@@ -247,7 +247,7 @@ public class IPSDetectionEngine
         Set<IPSRuleSignature> s2cSignatures = (Set<IPSRuleSignature>) sigs[1];
 
         log.debug("registering IPSSessionInfo");
-        IPSSessionInfo info = new IPSSessionInfo(session);
+        IPSSessionInfo info = new IPSSessionInfo(node, session);
         info.setC2SSignatures(c2sSignatures);
         info.setS2CSignatures(s2cSignatures);
         sessionInfoMap.put(session.id(), info);

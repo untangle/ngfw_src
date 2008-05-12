@@ -25,9 +25,11 @@ import com.untangle.uvm.vnet.event.*;
 
 public class IPSSessionInfo
 {
+    private final IPSession session;
+    private final IPSNodeImpl ips;
+
     private Set<IPSRuleSignature> c2sSignatures;
     private Set<IPSRuleSignature> s2cSignatures;
-    private IPSession session;
     private IPDataEvent event;
     private String uriPath;
     private boolean isServer;
@@ -37,51 +39,64 @@ public class IPSSessionInfo
     public int end;
     public int indexOfLastMatch;
 
-    public IPSSessionInfo(IPSession session) {
+    public IPSSessionInfo(IPSNodeImpl ips, IPSession session)
+    {
         this.session = session;
+        this.ips = ips;
     }
 
-    public void setUriPath(String path) {
+    public void setUriPath(String path)
+    {
         uriPath = path;
     }
 
-    public String  getUriPath() {
+    public String  getUriPath()
+    {
         return uriPath;
     }
 
     // Do i need to set sessionion data? I dont think so.. Check
     // later.
-    public IPSession getSession() {
+    public IPSession getSession()
+    {
         return session;
     }
 
-    public void setC2SSignatures(Set<IPSRuleSignature> signatures) {
+    public void setC2SSignatures(Set<IPSRuleSignature> signatures)
+    {
         this.c2sSignatures = signatures;
     }
 
-    public void setS2CSignatures(Set<IPSRuleSignature> signatures) {
+    public void setS2CSignatures(Set<IPSRuleSignature> signatures)
+    {
         this.s2cSignatures = signatures;
     }
-    public void setEvent(IPDataEvent event) {
+
+    public void setEvent(IPDataEvent event)
+    {
         this.event = event;
     }
 
-    public IPDataEvent getEvent() {
+    public IPDataEvent getEvent()
+    {
         return event;
     }
 
-    public void setFlow(boolean isServer) {
+    public void setFlow(boolean isServer)
+    {
         this.isServer = isServer;
     }
 
-    public boolean isServer() {
+    public boolean isServer()
+    {
         return isServer;
     }
 
     // First match wins. XX
-    public boolean processC2SSignatures() {
+    public boolean processC2SSignatures()
+    {
         for(IPSRuleSignature sig : c2sSignatures) {
-            if (sig.execute(this)) {
+            if (sig.execute(ips, this)) {
                 return true;
             }
         }
@@ -89,9 +104,10 @@ public class IPSSessionInfo
     }
 
     // First match wins. XX
-    public boolean processS2CSignatures() {
+    public boolean processS2CSignatures()
+    {
         for(IPSRuleSignature sig : s2cSignatures) {
-            if (sig.execute(this)) {
+            if (sig.execute(ips, this)) {
                 return true;
             }
         }
@@ -99,10 +115,11 @@ public class IPSSessionInfo
     }
 
     // For debugging/login
-    public int numC2SSignatures() {return c2sSignatures.size();}
-    public int numS2CSignatures() {return s2cSignatures.size();}
+    public int numC2SSignatures() { return c2sSignatures.size(); }
+    public int numS2CSignatures() { return s2cSignatures.size(); }
 
-    public void blockSession() {
+    public void blockSession()
+    {
         if(session instanceof TCPSession) {
             ((TCPSession)session).resetClient();
             ((TCPSession)session).resetServer();

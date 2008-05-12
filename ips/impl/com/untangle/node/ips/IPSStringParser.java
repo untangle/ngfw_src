@@ -56,7 +56,7 @@ public class IPSStringParser
                                                   boolean initializeSettingsTime)
         throws ParseException
     {
-        IPSRuleSignature returnSignature = new IPSRuleSignature(ips, action, rule);
+        IPSRuleSignature returnSignature = new IPSRuleSignature(action, rule);
 
         String replaceChar = ""+0xff42;
         signatureString = signatureString.replaceAll("\\\\;",replaceChar);
@@ -66,10 +66,10 @@ public class IPSStringParser
             options[i] = options[i].replaceAll(replaceChar,"\\\\;");
             int delim = options[i].indexOf(':');
             if (delim < 0) {
-                returnSignature.addOption(options[i].trim(),"No Params", initializeSettingsTime);
+                returnSignature.addOption(ips.getEngine(), options[i].trim(),"No Params", initializeSettingsTime);
             } else {
                 String opt = options[i].substring(0,delim).trim();
-                returnSignature.addOption(opt, options[i].substring(delim+1).trim(), initializeSettingsTime);
+                returnSignature.addOption(ips.getEngine(), opt, options[i].substring(delim+1).trim(), initializeSettingsTime);
             }
 
             if (returnSignature.remove()) {
