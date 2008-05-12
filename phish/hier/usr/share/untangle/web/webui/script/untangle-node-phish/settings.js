@@ -1,163 +1,216 @@
-if(!Ung.hasResource["Ung.Phish"]) {
-Ung.hasResource["Ung.Phish"]=true;
-Ung.Settings.registerClassName('untangle-node-phish','Ung.Phish');
+    if(!Ung.hasResource["Ung.Phish"]) {
+	Ung.hasResource["Ung.Phish"]=true;
+	Ung.Settings.registerClassName('untangle-node-phish','Ung.Phish');
 
-Ung.Phish = Ext.extend(Ung.Settings, {
-    actions: [ 'Quarantine', 'Block', 'Mark', 'Pass' ],
-    emailPanel: null,
-    webPanel: null,
-    gridEventLog: null,
-    //called when the component is rendered
-    onRender: function(container, position) {
-    	//call superclass renderer first
-    	Ung.Phish.superclass.onRender.call(this,container, position);
+	Ung.Phish = Ext.extend(Ung.Settings, {
+	    actions: null,
+	    actionsValues: null,
+	    emailPanel: null,
+	    webPanel: null,
+	    gridEventLog: null,
+	    //called when the component is rendered
+	    onRender: function(container, position) {
+		this.actions = [ this.i18n._('Quarantine'), this.i18n._('Block'), this.i18n._('Mark'), this.i18n._('Pass') ];
+		this.actionsValues = [ 'Quarantine', 'Block', 'Mark', 'Pass' ];
+    		//call superclass renderer first
+    		Ung.Phish.superclass.onRender.call(this,container, position);
 		//builds the 2 tabs
 		this.buildEmail();
                 this.buildWeb();
 		this.buildEventLog();
 		//builds the tab panel with the tabs
-	this.buildTabPanel([this.emailPanel, this.webPanel, this.gridEventLog]);
-    },
-    // Email Config Panel
-    buildEmail: function() {
-    	this.emailPanel = new Ext.Panel({
+		this.buildTabPanel([this.emailPanel, this.webPanel, this.gridEventLog]);
+	    },
+	    lookup: function(needle, haystack1, haystack2) {
+		for ( var  i = 0; i < haystack1.length; i++ ) {
+		    if ( haystack1[i] != undefined && haystack2[i] != undefined ) {
+			if ( needle == haystack1[i] ) { return haystack2[i]; }
+			if ( needle == haystack2[i] ) { return haystack1[i]; }
+		    }
+		}
+	    },
+	    // Email Config Panel
+	    buildEmail: function() {
+    		this.emailPanel = new Ext.Panel({
 		    title: this.i18n._('Email'),
 		    layout: "form",
 		    bodyStyle:'padding:5px 5px 0px 5px;',
 	            items: [{
-                      xtype:'fieldset',
-                      title: this.i18n._('SMTP'),
-                      autoHeight:true,
-                      defaults: {width: 210},
-                      defaultType: 'textfield',
-		      items :[ new Ext.form.Checkbox({boxLabel: 'Scan SMTP', name: 'smtpScan', hideLabel: true }),
-                                new Ext.form.ComboBox({
-                                            store: this.actions,
-					    fieldLabel: 'Action',
-                                            displayField: 'String',
-                                            valueField: 'smtpActionValue',
-                                            typeAhead: false,
- 				            emptyText: 'Quarantine',
-                                            mode: 'local',
-                                            triggerAction: 'all',
-                                            listClass: 'x-combo-list-small',
-                                            selectOnFocus:true})
-                      ]},{
-                      xtype:'fieldset',
-                      title: this.i18n._('POP3'),
-                      autoHeight:true,
-                      defaults: {width: 210},
-                      defaultType: 'textfield',
-                      items :[ new Ext.form.Checkbox({boxLabel: 'Scan POP3', name: 'pop3Scan', hideLabel: true }),
-                               new Ext.form.ComboBox({
-                                            store: this.actions,
-					    fieldLabel: 'Action',
-                                            displayField: 'String',
-                                            valueField: 'pop3ActionValue',
-                                            typeAhead: false,
- 				            emptyText: 'Mark',
-                                            mode: 'local',
-                                            triggerAction: 'all',
-                                            listClass: 'x-combo-list-small',
-                                            selectOnFocus:true})
-                      ]},{
-                      xtype:'fieldset',
-                      title: this.i18n._('IMAP'),
-                      autoHeight:true,
-                      defaults: {width: 210},
-                      defaultType: 'textfield',
-                      items :[ new Ext.form.Checkbox({boxLabel: 'Scan IMAP', name: 'imapScan', hideLabel: true }),
-                               new Ext.form.ComboBox({
-                                            store: this.actions,
-					    fieldLabel: 'Action',
-                                            displayField: 'String',
-                                            valueField: 'imapActionValue',
-                                            typeAhead: false,
- 				            emptyText: 'Mark',
-                                            mode: 'local',
-                                            triggerAction: 'all',
-                                            listClass: 'x-combo-list-small',
-                                            selectOnFocus:true})
-                      ]},
-                      {
-	              xtype:'fieldset',
-	              title: this.i18n._('Note'),
-	              autoHeight:true,
-	              html: this.i18n._('Phish Blocker email signatures were last updated xxx.')
-		      }]
-    	});
-    },
-    // Web Config Panel
-    buildWeb: function() {
-    	this.webPanel = new Ext.Panel({
+			xtype:'fieldset',
+			title: this.i18n._('SMTP'),
+			autoHeight:true,
+			defaults: {width: 210},
+			defaultType: 'textfield',
+			items :[ new Ext.form.Checkbox({boxLabel: this.i18n._('Scan SMTP'), name: 'smtpScan', hideLabel: true, checked: this.getBaseSettings().smtpConfig.scan,
+						        listeners: {
+                                                            "change": {
+                                                                fn: function(elem, newValue) {
+                                                                    this.getBaseSettings().smtpConfig.scan=newValue;
+                                                                }.createDelegate(this)
+                                                            }
+                                                        }}),
+                                 new Ext.form.ComboBox({
+                                     store: this.actions,
+				     fieldLabel: this.i18n._('Action'),
+                                     displayField: 'String',
+                                     valueField: 'smtpActionValue',
+                                     typeAhead: false,
+ 				     emptyText: this.i18n._('Quarantine'),
+                                     mode: 'local',
+                                     triggerAction: 'all',
+                                     listClass: 'x-combo-list-small',
+                                     selectOnFocus:true,
+				     value: this.lookup( this.getBaseSettings().smtpConfig.zMsgAction, this.actions, this.actionsValues ),
+                                     listeners: {
+                                         "change": {
+                                             fn: function(elem, newValue) {
+                                                 this.getBaseSettings().smtpConfig.zMsgAction=this.lookup( newValue, this.actions, this.actionsValues );
+                                             }.createDelegate(this)
+                                         }
+                                     }})
+			       ]},{
+				   xtype:'fieldset',
+				   title: this.i18n._('POP3'),
+				   autoHeight:true,
+				   defaults: {width: 210},
+				   defaultType: 'textfield',
+				   items :[ new Ext.form.Checkbox({boxLabel: this.i18n._('Scan POP3'), name: 'pop3Scan', hideLabel: true, checked: this.getBaseSettings().popConfig.scan,
+								   listeners: {
+								       "change": {
+									   fn: function(elem, newValue) {
+									       this.getBaseSettings().popConfig.scan=newValue;
+									   }.createDelegate(this)
+								       }
+								   }}),
+					    new Ext.form.ComboBox({
+						store: this.actions,
+						fieldLabel: this.i18n._('Action'),
+						displayField: 'String',
+						valueField: 'pop3ActionValue',
+						typeAhead: false,
+ 						emptyText: this.i18n._('Mark'),
+						mode: 'local',
+						triggerAction: 'all',
+						listClass: 'x-combo-list-small',
+						selectOnFocus:true,
+						value: this.lookup( this.getBaseSettings().popConfig.zMsgAction, this.actions, this.actionsValues ),
+                                                listeners: {
+                                                    "change": {
+                                                        fn: function(elem, newValue) {
+                                                            this.getBaseSettings().popConfig.zMsgAction=this.lookup( newValue, this.actions, this.actionsValues );
+                                                        }.createDelegate(this)
+                                                    }
+                                                }})
+					  ]},{
+					      xtype:'fieldset',
+					      title: this.i18n._('IMAP'),
+					      autoHeight:true,
+					      defaults: {width: 210},
+					      defaultType: 'textfield',
+					      items :[ new Ext.form.Checkbox({boxLabel: this.i18n._('Scan IMAP'), name: 'imapScan', hideLabel: true, checked: this.getBaseSettings().imapConfig.scan,
+									      listeners: {
+										  "change": {
+										      fn: function(elem, newValue) {
+											  this.getBaseSettings().imapConfig.scan=newValue;
+										      }.createDelegate(this)
+										  }
+									      }}),
+						       new Ext.form.ComboBox({
+							   store: this.actions,
+							   fieldLabel: this.i18n._('Action'),
+							   displayField: 'String',
+							   valueField: 'imapActionValue',
+							   typeAhead: false,
+ 							   emptyText: this.i18n._('Mark'),
+							   mode: 'local',
+							   triggerAction: 'all',
+							   listClass: 'x-combo-list-small',
+							   selectOnFocus:true,
+							   value: this.lookup( this.getBaseSettings().imapConfig.zMsgAction, this.actions, this.actionsValues ),
+							   listeners: {
+							       "change": {
+								   fn: function(elem, newValue) {
+								       this.getBaseSettings().imapConfig.zMsgAction=this.lookup( newValue, this.actions, this.actionsValues );
+								   }.createDelegate(this)
+							       }
+							   }})
+						     ]},
+			    {
+				xtype:'fieldset',
+				title: this.i18n._('Note'),
+				autoHeight:true,
+				html: this.i18n._('Phish Blocker email signatures were last updated ') + this.getBaseSettings().signatureVersion
+			    }]
+    		});
+	    },
+	    // Web Config Panel
+	    buildWeb: function() {
+    		this.webPanel = new Ext.Panel({
 		    title: this.i18n._('Web'),
 		    layout: "form",
 		    bodyStyle:'padding:5px 5px 0px 5px;',
-	            items: [new Ext.form.Checkbox({boxLabel: 'Enable Phish web filtering', name: 'webScan', hideLabel: true }),
-                      {
-	              xtype:'fieldset',
-	              title: this.i18n._('Note'),
-	              autoHeight:true,
-	              html: this.i18n._('Phish Blocker web signatures were last updated xxx.')
-		      }]
-    	});
-    },
-    // Event Log
-    buildEventLog: function() {
+	            items: [new Ext.form.Checkbox({boxLabel: this.i18n._('Enable Phish web filtering'), name: 'webScan', hideLabel: true }),
+			    {
+				xtype:'fieldset',
+				title: this.i18n._('Note'),
+				autoHeight:true,
+				html: this.i18n._('Phish Blocker web signatures were last updated ') + this.getBaseSettings().signatureVersion
+			    }]
+    		});
+	    },
+	    // Event Log
+	    buildEventLog: function() {
 		this.gridEventLog=new Ung.GridEventLog({
-			settingsCmp: this,
-			hasRepositories: false,
-			eventDepth: 1000,
-			
-			//the list of fields
-			fields:[
-				{name: 'createDate'},
-				{name: 'client'},
-				{name: 'clientIntf'},
-				{name: 'reputation'},
-				{name: 'limited'},
-				{name: 'dropped'},
-				{name: 'rejected'}
-			],
-			//the list of columns
-			columns: [
-				{header: this.i18n._("timestamp"), width: 120, sortable: true, dataIndex: 'createDate', renderer: function(value) {
-			    	return i18n.timestampFormat(value);
-			    }},
-			    {header: this.i18n._("source"), width: 120, sortable: true, dataIndex: 'client'},
-			    {header: this.i18n._("source")+"<br>"+this.i18n._("interface"), width: 120, sortable: true, dataIndex: 'clientIntf'},
-				{header: this.i18n._("reputation"), width: 120, sortable: true, dataIndex: 'reputation', renderer: function(value) {
-			    	return i18n.numberFormat(value);
-			    }},
-				{header: this.i18n._("limited"), width: 120, sortable: true, dataIndex: 'limited', renderer: function(value) {
-			    	return i18n.numberFormat(value);
-			    }},
-				{header: this.i18n._("dropped"), width: 120, sortable: true, dataIndex: 'dropped', renderer: function(value) {
-			    	return i18n.numberFormat(value);
-			    }},
-				{header: this.i18n._("reject"), width: 120, sortable: true, dataIndex: 'rejected', renderer: function(value) {
-			    	return i18n.numberFormat(value);
-			    }}
+		    settingsCmp: this,
+		    hasRepositories: false,
+		    eventDepth: 1000,
+		    
+		    //the list of fields
+		    fields:[
+			{name: 'createDate'},
+			{name: 'client'},
+			{name: 'clientIntf'},
+			{name: 'reputation'},
+			{name: 'limited'},
+			{name: 'dropped'},
+			{name: 'rejected'}
 		    ],
-			refreshList: function() {
-				this.settingsCmp.node.nodeContext.rpcNode.getLogs(this.refreshCallback.createDelegate(this), this.eventDepth);
-			}
-		    
-		    
-			
+		    //the list of columns
+		    columns: [
+			{header: this.i18n._("timestamp"), width: 120, sortable: true, dataIndex: 'createDate', renderer: function(value) {
+			    return i18n.timestampFormat(value);
+			}},
+			{header: this.i18n._("source"), width: 120, sortable: true, dataIndex: 'client'},
+			{header: this.i18n._("source")+"<br>"+this.i18n._("interface"), width: 120, sortable: true, dataIndex: 'clientIntf'},
+			{header: this.i18n._("reputation"), width: 120, sortable: true, dataIndex: 'reputation', renderer: function(value) {
+			    return i18n.numberFormat(value);
+			}},
+			{header: this.i18n._("limited"), width: 120, sortable: true, dataIndex: 'limited', renderer: function(value) {
+			    return i18n.numberFormat(value);
+			}},
+			{header: this.i18n._("dropped"), width: 120, sortable: true, dataIndex: 'dropped', renderer: function(value) {
+			    return i18n.numberFormat(value);
+			}},
+			{header: this.i18n._("reject"), width: 120, sortable: true, dataIndex: 'rejected', renderer: function(value) {
+			    return i18n.numberFormat(value);
+			}}
+		    ],
+		    refreshList: function() {
+			this.settingsCmp.node.nodeContext.rpcNode.getLogs(this.refreshCallback.createDelegate(this), this.eventDepth);
+		    }
 		});
-    },
-    // save function
-	save: function() {
-            //disable tabs during save
-            this.tabs.disable();
-            this.getRpcNode().setBaseSettings(function (result, exception) {
-                //re-enable tabs
-                this.tabs.enable();
-                if(exception) {Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}
-                //exit settings screen
-                this.cancelAction();
-            }.createDelegate(this),this.getBaseSettings());
-	}
-});
-}
+	    },
+	    // save function
+	    save: function() {
+		//disable tabs during save
+		this.tabs.disable();
+		this.getRpcNode().setBaseSettings(function (result, exception) {
+                    //re-enable tabs
+                    this.tabs.enable();
+                    if(exception) {Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}
+                    //exit settings screen
+                    this.cancelAction();
+		}.createDelegate(this),this.getBaseSettings());
+	    }
+	});
+    }
