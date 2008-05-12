@@ -161,7 +161,7 @@ Ung.Spyware = Ext.extend(Ung.Settings, {
 	                }
 	            ]
 			},{
-				html: this.i18n._("Spyware Blocker signatures were last updated")+ " " + "TODO: need api value"
+				html: this.i18n._("Spyware Blocker signatures were last updated")+ ":&nbsp;&nbsp;&nbsp;&nbsp;" + i18n.timestampFormat(this.getBaseSettings().lastUpdate)
 			}],
 			
 		    onManageCookiesList: function () {

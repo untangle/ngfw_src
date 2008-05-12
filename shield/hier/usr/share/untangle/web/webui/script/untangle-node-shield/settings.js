@@ -18,7 +18,6 @@ Ung.Shield = Ext.extend(Ung.Settings, {
     },
     // Status Panel
     buildStatus: function() {
-//    	main.loadScript("script/extensions/Ext.ux.SlideZone.js");
     	this.statusPanel = new Ext.Panel({
 		    title: this.i18n._('Status'),
 		    layout: "form",
@@ -33,30 +32,11 @@ Ung.Shield = Ext.extend(Ung.Settings, {
 						fieldLabel: this.i18n._('Status'),
 	                    name: 'status',
 	                    allowBlank:false,
-	                    value: 'active',
-	                    disabled: true
-	                },{
-						xtype:'textfield',
-						fieldLabel: this.i18n._('Level'),
-	                    name: 'level',
-	                    allowBlank:false,
-	                    value: 'normal',
-	                    disabled: true
+	                    value: this.node.isRunning()?this.i18n._('active'):this.i18n._('inactive'),
+	                    disabled: true,
+	                    readOnly:true
+	                    
 	                }
-//	                ,
-//					new Ext.ux.SlideZone({  
-//							type: 'vertical',
-//							size: 300, 
-//							sliderWidth: 21,
-//							sliderHeight: 15,
-//							maxValue: 100,
-//							minValue: 0,
-//							sliders: [{ 
-//										value: 40,  
-//										name: '1_1'
-//									  }]
-//					
-//					})	                
 	            ]
 			}, {
 	            xtype:'fieldset',
