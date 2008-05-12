@@ -66,6 +66,9 @@ public class SMTPSpamMessageAction implements Serializable
     private char key;
     private boolean uiSelectable;
 
+    public SMTPSpamMessageAction() {
+	}
+    
     private SMTPSpamMessageAction(char key, String name)
     {
         this(key, name, true);
@@ -102,15 +105,20 @@ public class SMTPSpamMessageAction implements Serializable
         return name;
     }
 
-    public char getKey()
-    {
+    public char getKey() {
         return key;
     }
+	public void setKey(char key) {
+		this.key = key;
+	}
 
-    public String getName()
-    {
+    public String getName() {
         return name;
     }
+	public void setName(String name) {
+		this.name = name;
+	}
+
 
     Object readResolve()
     {
@@ -131,4 +139,5 @@ public class SMTPSpamMessageAction implements Serializable
         }
         return (SMTPSpamMessageAction[]) azMsgAction.toArray(arproto);
     }
+
 }

@@ -67,9 +67,12 @@ public class SMTPNotifyAction implements Serializable
         INSTANCES.put(NEITHER.getKey(), NEITHER);
     }
 
-    private final String name;
-    private final char key;
+    private String name;
+    private char key;
 
+	public SMTPNotifyAction() {
+	}
+	
     protected SMTPNotifyAction(char key, String name)
     {
         this.key = key;
@@ -99,15 +102,19 @@ public class SMTPNotifyAction implements Serializable
         return name;
     }
 
-    public char getKey()
-    {
+    public char getKey() {
         return key;
     }
+	public void setKey(char key) {
+		this.key = key;
+	}
 
-    public String getName()
-    {
+    public String getName() {
         return name;
     }
+	public void setName(String name) {
+		this.name = name;
+	}
 
     Object readResolve()
     {

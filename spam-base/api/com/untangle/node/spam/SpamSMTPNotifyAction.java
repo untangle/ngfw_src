@@ -61,8 +61,11 @@ public class SpamSMTPNotifyAction// extends SMTPNotifyAction
         INSTANCES.put(NEITHER.getKey(), NEITHER);
     }
 
-    private final String name;
-    private final char key;
+    private String name;
+    private char key;
+    
+	public SpamSMTPNotifyAction() {
+	}    
 
     protected SpamSMTPNotifyAction(char key, String name)
     {
@@ -93,15 +96,19 @@ public class SpamSMTPNotifyAction// extends SMTPNotifyAction
         return name;
     }
 
-    public char getKey()
-    {
+    public char getKey() {
         return key;
     }
+	public void setKey(char key) {
+		this.key = key;
+	}
 
-    public String getName()
-    {
+    public String getName() {
         return name;
     }
+	public void setName(String name) {
+		this.name = name;
+	}
 
     Object readResolve()
     {

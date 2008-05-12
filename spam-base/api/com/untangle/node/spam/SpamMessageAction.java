@@ -62,6 +62,9 @@ public class SpamMessageAction implements Serializable
     private char key;
     private boolean uiSelectable;
 
+    public SpamMessageAction() {
+	}
+    
     private SpamMessageAction(char key, String name)
     {
         this(key, name, true);
@@ -98,15 +101,19 @@ public class SpamMessageAction implements Serializable
         return name;
     }
 
-    public char getKey()
-    {
+    public char getKey() {
         return key;
     }
+	public void setKey(char key) {
+		this.key = key;
+	}
 
-    public String getName()
-    {
+    public String getName() {
         return name;
     }
+	public void setName(String name) {
+		this.name = name;
+	}
 
     Object readResolve()
     {

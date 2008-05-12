@@ -149,15 +149,15 @@ Ung.Phish = Ext.extend(Ung.Settings, {
     },
     // save function
 	save: function() {
-		//disable tabs during save
-		this.tabs.disable();
-		this.getRpcNode().updateAll(function (result, exception) {
-			//re-enable tabs
-			this.tabs.enable();
-			if(exception) {Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}
-			//exit settings screen
-			this.node.onCancelClick();
-		}.createDelegate(this),this.gridExceptions.getSaveList());
+            //disable tabs during save
+            this.tabs.disable();
+            this.getRpcNode().setBaseSettings(function (result, exception) {
+                //re-enable tabs
+                this.tabs.enable();
+                if(exception) {Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}
+                //exit settings screen
+                this.cancelAction();
+            }.createDelegate(this),this.getBaseSettings());
 	}
 });
 }

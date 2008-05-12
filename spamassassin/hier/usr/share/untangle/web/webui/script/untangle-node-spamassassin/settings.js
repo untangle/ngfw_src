@@ -44,11 +44,11 @@
 			    autoHeight:true,
 			    defaults: {width: 210},
 			    defaultType: 'textfield',
-			    items :[ new Ext.form.Checkbox({boxLabel: this.i18n._('Scan SMTP'), name: 'smtpScan', hideLabel: true, checked: this.getBaseSettings().smtpConfig.bScan, 
+			    items :[ new Ext.form.Checkbox({boxLabel: this.i18n._('Scan SMTP'), name: 'smtpScan', hideLabel: true, checked: this.getBaseSettings().smtpConfig.scan, 
 							    listeners: {
 								"change": {
 								    fn: function(elem, newValue) {
-									this.getBaseSettings().smtpConfig.bScan=newValue;
+									this.getBaseSettings().smtpConfig.scan=newValue;
 								    }.createDelegate(this)
 								}
 							    }}),
@@ -96,11 +96,11 @@
 				       autoHeight:true,
 				       defaults: {width: 210},
 				       defaultType: 'textfield',
-				       items :[ new Ext.form.Checkbox({boxLabel: 'Scan POP3', name: 'pop3Scan', hideLabel: true, checked: this.getBaseSettings().popConfig.bScan,
+				       items :[ new Ext.form.Checkbox({boxLabel: 'Scan POP3', name: 'pop3Scan', hideLabel: true, checked: this.getBaseSettings().popConfig.scan,
 							    listeners: {
 								"change": {
 								    fn: function(elem, newValue) {
-									this.getBaseSettings().popConfig.bScan=newValue;
+									this.getBaseSettings().popConfig.scan=newValue;
 								    }.createDelegate(this)
 								}
 							    }}),
@@ -148,7 +148,7 @@
 						  autoHeight:true,
 						  defaults: {width: 210},
 						  defaultType: 'textfield',
-						  items :[ new Ext.form.Checkbox({boxLabel: 'Scan IMAP', name: 'imapScan', hideLabel: true, checked: this.getBaseSettings().imapConfig.bScan }),
+						  items :[ new Ext.form.Checkbox({boxLabel: 'Scan IMAP', name: 'imapScan', hideLabel: true, checked: this.getBaseSettings().imapConfig.scan }),
 							   new Ext.form.ComboBox({
 							       store: this.strengths,
 							       fieldLabel: this.i18n._('Strength'),
@@ -291,11 +291,11 @@
 		    //disable tabs during save
  		    this.tabs.disable();
  		    this.getRpcNode().setBaseSettings(function (result, exception) {
- 			//re-enable tabs
+ 			    //re-enable tabs
      			this.tabs.enable();
      			if(exception) {Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}
-     			//exit settings screen
-     			this.node.onCancelClick();
+                //exit settings screen
+                this.cancelAction();
  		    }.createDelegate(this),this.getBaseSettings());
 		}
 	    });
