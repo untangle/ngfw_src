@@ -145,5 +145,6 @@ public class BrandingBaseSettings implements Serializable {
         settings.setCompanyUrl(this.companyUrl);
         settings.setContactName(this.contactName);
         settings.setContactEmail(this.contactEmail);
+        settings.setDefaultLogo(this.defaultLogo);
     }
 }

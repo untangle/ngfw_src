@@ -68,20 +68,19 @@ Ung.SystemInfo = Ext.extend(Ung.ConfigWin, {
         }
         return rpc.brandingManager
     },
-    getBrandingSettings: function(forceReload) {
-        if(forceReload || this.rpc.brandingSettings===undefined) {
-            this.rpc.brandingSettings=this.getBrandingManager().getBrandingSettings();
+    getBrandingBaseSettings: function(forceReload) {
+        if(forceReload || this.rpc.brandingBaseSettings===undefined) {
+            this.rpc.brandingBaseSettings=this.getBrandingManager().getBaseSettings();
         }
-        return this.rpc.brandingSettings;
+        return this.rpc.brandingBaseSettings;
     },
     buildBranding: function() {
-    	var brandingSettings=this.getBrandingSettings();
+    	var brandingBaseSettings=this.getBrandingBaseSettings();
     	this.panelBranding = new Ext.Panel({
             //private fields
             parentId: this.getId(),
             title: this.i18n._('Branding'),
             layout: "form",
-            logo: brandingSettings.logo,
             bodyStyle:'padding:5px 5px 0px 5px;',
             autoScroll: true,
             defaults: {
@@ -94,10 +93,10 @@ Ung.SystemInfo = Ext.extend(Ung.ConfigWin, {
                 	var formItem = this.items.get(1).items.get(2);
                 	if(enabled) {
                     	formItem.items.get(0).enable();
-                    	//formItem.buttons[0].enable();
+                    	formItem.buttons[0].enable();
                 	} else {
                         formItem.items.get(0).disable();
-                        //formItem.buttons[0].disable();
+                        formItem.buttons[0].disable();
                 		
                 	}
             	} catch(e) {
@@ -118,12 +117,12 @@ Ung.SystemInfo = Ext.extend(Ung.ConfigWin, {
                         hideLabel: true,
                         boxLabel: 'Use Default Logo',
                         value: 'default',
-                        checked: brandingSettings.logo==null,
+                        checked: brandingBaseSettings.defaultLogo,
                         listeners: {
                             "check": {
                                 fn: function(elem, checked) {
                                     if(checked) {
-                                        this.getBrandingSettings().logo=null;
+                                        this.getBrandingBaseSettings().defaultLogo=true;
                                         this.panelBranding.enableFileUpload(false);
                                     }
                                 }.createDelegate(this)
@@ -136,12 +135,12 @@ Ung.SystemInfo = Ext.extend(Ung.ConfigWin, {
                         hideLabel: true,
                         boxLabel: 'Use Custom Logo',
                         value: 'custom',
-                        checked: brandingSettings.logo!=null,
+                        checked: !brandingBaseSettings.defaultLogo,
                         listeners: {
                             "check": {
                                 fn: function(elem, checked) {
                                 	if(checked) {
-                                        this.getBrandingSettings().logo=this.panelBranding.logo;
+                                        this.getBrandingBaseSettings().defaultLogo=false;
                                         this.panelBranding.enableFileUpload(true);
                                 	}
                                 }.createDelegate(this)
@@ -161,20 +160,19 @@ Ung.SystemInfo = Ext.extend(Ung.ConfigWin, {
                             name: 'file', 
                             inputType: 'file', 
                             xtype:'textfield',
-                            disabled: (brandingSettings.logo==null),
-                            allowBlank:false 
+                            disabled: brandingBaseSettings.defaultLogo,
+                            allowBlank: false 
                         },{
                          xtype:'hidden',
                          name: 'type',
                          value: 'logo'
                          
-                        }]
-                        /*,
+                        }],
                         buttons :[{
                             text: this.i18n._("Upload"),
                             handler: function() {this.panelBranding.onUpload();}.createDelegate(this),
-                            disabled: (brandingSettings.logo==null)
-                        }]*/
+                            disabled: (brandingBaseSettings.defaultLogo)
+                        }]
                     }
                 ]              
                 
@@ -189,11 +187,11 @@ Ung.SystemInfo = Ext.extend(Ung.ConfigWin, {
                         fieldLabel: this.i18n._('Company Name'),
                         name: 'companyName',
                         allowBlank:true,
-                        value: brandingSettings.companyName,
+                        value: brandingBaseSettings.companyName,
                         listeners: {
                             "change": {
                                 fn: function(elem, newValue) {
-                                    this.getBrandingSettings().companyName=newValue;
+                                    this.getBrandingBaseSettings().companyName=newValue;
                                 }.createDelegate(this)
                             }
                         }
@@ -202,11 +200,11 @@ Ung.SystemInfo = Ext.extend(Ung.ConfigWin, {
                         fieldLabel: this.i18n._('Company URL'),
                         name: 'companyUrl',
                         allowBlank:true,
-                        value: brandingSettings.companyUrl,
+                        value: brandingBaseSettings.companyUrl,
                         listeners: {
                             "change": {
                                 fn: function(elem, newValue) {
-                                    this.getBrandingSettings().companyUrl=newValue;
+                                    this.getBrandingBaseSettings().companyUrl=newValue;
                                 }.createDelegate(this)
                             }
                         }
@@ -215,11 +213,11 @@ Ung.SystemInfo = Ext.extend(Ung.ConfigWin, {
                         fieldLabel: this.i18n._('Contact Name'),
                         name: 'contactName',
                         allowBlank:true,
-                        value: brandingSettings.contactName,
+                        value: brandingBaseSettings.contactName,
                         listeners: {
                             "change": {
                                 fn: function(elem, newValue) {
-                                    this.getBrandingSettings().contactName=newValue;
+                                    this.getBrandingBaseSettings().contactName=newValue;
                                 }.createDelegate(this)
                             }
                         }
@@ -228,11 +226,11 @@ Ung.SystemInfo = Ext.extend(Ung.ConfigWin, {
                         fieldLabel: this.i18n._('Contact Email'),
                         name: 'contactEmail',
                         allowBlank:true,
-                        value: brandingSettings.contactEmail,
+                        value: brandingBaseSettings.contactEmail,
                         listeners: {
                             "change": {
                                 fn: function(elem, newValue) {
-                                    this.getBrandingSettings().contactEmail=newValue;
+                                    this.getBrandingBaseSettings().contactEmail=newValue;
                                 }.createDelegate(this)
                             }
                         }
@@ -243,26 +241,29 @@ Ung.SystemInfo = Ext.extend(Ung.ConfigWin, {
             onUpload : function() {
                 var prova = Ext.getCmp('upload_logo_form');
                 var cmp = Ext.getCmp(this.parentId); 
-
+                var fileText=prova.items.get(0);
+                if(fileText.getValue().length==0) {
+                    Ext.MessageBox.alert(cmp.i18n._("Failed"),cmp.i18n._('Please select an image to upload.'));
+                    return false;
+                }
                 var form = prova.getForm();
                 form.submit( {
                     parentId: cmp.getId(),
                     waitMsg: cmp.i18n._('Please wait while your logo image is uploaded...'),
                     success: function(form,action) { 
                         var cmp = Ext.getCmp(action.options.parentId);
-                        cmp.panelBranding.logo=action.result.msg;
-                        cmp.getBrandingSettings().logo=cmp.panelBranding.logo;
-                        //Ext.MessageBox.alert(cmp.i18n._("Successed"), cmp.i18n._("Upload Logo Successed"));
+                        Ext.MessageBox.alert(cmp.i18n._("Successed"), cmp.i18n._("Upload Logo Successed"));
                     },
                     failure: function(form,action) {
                         var cmp = Ext.getCmp(action.options.parentId); 
-                        if (action.result.msg) {
+                        if (action.result && action.result.msg) {
                             Ext.MessageBox.alert(cmp.i18n._("Failed"), cmp.i18n._(action.result.msg));
                         } else {
                             Ext.MessageBox.alert(cmp.i18n._("Failed"), cmp.i18n._("Upload Logo Failed")); 
                         }
                     }
                 });
+                
             }
         });
     },
@@ -271,11 +272,13 @@ Ung.SystemInfo = Ext.extend(Ung.ConfigWin, {
         if (this.validate()) {
             //disable tabs during save
             this.tabs.disable();
-            rpc.brandingManager.setBrandingSettings(function (result, exception) {
+            rpc.brandingManager.setBaseSettings(function (result, exception) {
                 //re-enable tabs
                 this.tabs.enable();
                 if(exception) {Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}
-                var formFile = this.items.get(1).items.get(2).items.get(0);
+                this.cancelAction();
+                /*
+                var formFile = this.panelBranding.items.get(1).items.get(2).items.get(0);
                 if(formFile.getValue().length>0) {
                     var prova = Ext.getCmp('upload_logo_form');
                     var form = prova.getForm();
@@ -284,8 +287,6 @@ Ung.SystemInfo = Ext.extend(Ung.ConfigWin, {
                         waitMsg: this.i18n._('Please wait while your logo image is uploaded...'),
                         success: function(form,action) { 
                             var cmp = Ext.getCmp(action.options.parentId);
-                            cmp.panelBranding.logo=action.result.msg;
-                            cmp.getBrandingSettings().logo=cmp.panelBranding.logo;
                             //Ext.MessageBox.alert(cmp.i18n._("Successed"), cmp.i18n._("Upload Logo Successed"));
                             //exit settings screen
                             cmp.cancelAction();
@@ -301,10 +302,10 @@ Ung.SystemInfo = Ext.extend(Ung.ConfigWin, {
                     });
                 } else {
                 	this.cancelAction();
-                }
+                }*/
                 
             }.createDelegate(this),
-                    this.getBrandingSettings());
+                    this.getBrandingBaseSettings());
         }
     }
     

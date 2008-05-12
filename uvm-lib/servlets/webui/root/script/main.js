@@ -105,7 +105,7 @@ Ung.Main.prototype = {
 		// initialize viewport object
 		var contentLeftArr=[
 			'<div id="contentleft">',
-				'<div id="logo"><img src="images/logo.png"/></div>',
+				'<div id="logo"><img src="/images/BrandingLogo.gif" border="0"/></div>',
 				'<div id="leftHorizontalRuler"></div>',
 				'<div id="leftTabs"></div>',
 		 		'<div id="help"></div>',

@@ -109,6 +109,8 @@ class BrandingManagerImpl implements LocalBrandingManager
         bs.copy(copy.getBaseSettings());
         if (bs.isDefaultLogo()) {
         	copy.setLogo(null);
+        } else {
+        	copy.setLogo(this.settings.getLogo());
         }
         saveSettings(copy);
         this.settings = copy;
