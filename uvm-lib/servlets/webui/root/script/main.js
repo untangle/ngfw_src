@@ -494,14 +494,14 @@ Ung.Main.prototype = {
 	// load Config
 	loadConfig: function() {
 		this.config = 
-			[{"name":"networking","displayName":i18n._("Networking"),"iconCls":"iconConfigNetwork"},
-			{"name":"administration","displayName":i18n._("Administration"),"iconCls":"iconConfigAdmin"},
-			{"name":"racks","displayName":i18n._("Racks"),"iconCls":"iconConfigAdmin"},
-			{"name":"email","displayName":i18n._("Email"),"iconCls":"iconConfigEmail"},
-			{"name":"userDirectory","displayName":i18n._("User Directory"),"iconCls":"iconConfigDirectory"},
-			{"name":"upgrade","displayName":i18n._("Upgrade"),"iconCls":"iconConfigUpgrade"},
-			{"name":"system","displayName":i18n._("System"),"iconCls":"iconConfigSetup"},
-			{"name":"systemInfo","displayName":i18n._("System Info"),"iconCls":"iconConfigSupport"}];		
+			[{"name":"networking","displayName":i18n._("Networking"),"iconClass":"iconConfigNetwork"},
+			{"name":"administration","displayName":i18n._("Administration"),"iconClass":"iconConfigAdmin"},
+			{"name":"racks","displayName":i18n._("Racks"),"iconClass":"iconConfigAdmin"},
+			{"name":"email","displayName":i18n._("Email"),"iconClass":"iconConfigEmail"},
+			{"name":"userDirectory","displayName":i18n._("User Directory"),"iconClass":"iconConfigDirectory"},
+			{"name":"upgrade","displayName":i18n._("Upgrade"),"iconClass":"iconConfigUpgrade"},
+			{"name":"system","displayName":i18n._("System"),"iconClass":"iconConfigSetup"},
+			{"name":"systemInfo","displayName":i18n._("System Info"),"iconClass":"iconConfigSupport"}];		
 		this.buildConfig();	
 	},
 	//build config buttons
@@ -516,7 +516,7 @@ Ung.Main.prototype = {
 				cls:'toolboxButton',
 		        text: item.displayName,
 		        handler: function() {main.clickConfig(main.config[this.configIndex]);},
-		        iconCls: item.iconCls
+		        iconCls: item.iconClass
 	        });
   		}
 	},
