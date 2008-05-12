@@ -287,16 +287,16 @@
 		    });
 		},
 		// save function
-//		save: function() {
+		save: function() {
 		    //disable tabs during save
-// 		    this.tabs.disable();
-// 		    this.getRpcNode().(function (result, exception) {
-// 			//re-enable tabs
-// 			this.tabs.enable();
-// 			if(exception) {Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}
-// 			//exit settings screen
-// 			this.node.onCancelClick();
-// 		    }.createDelegate(this),);
-//		}
+ 		    this.tabs.disable();
+ 		    this.getRpcNode().setBaseSettings(function (result, exception) {
+ 			//re-enable tabs
+     			this.tabs.enable();
+     			if(exception) {Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}
+     			//exit settings screen
+     			this.node.onCancelClick();
+ 		    }.createDelegate(this),this.getBaseSettings());
+		}
 	    });
 	}
