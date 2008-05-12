@@ -78,7 +78,7 @@ class BrandingManagerImpl implements LocalBrandingManager
 
         this.settings = tw.getResult();
         setBrandingProperties(settings);
-        setLogo(settings.getLogo());
+        setFileLogo(settings.getLogo());
     }
 
     // public methods ---------------------------------------------------------
@@ -96,7 +96,7 @@ class BrandingManagerImpl implements LocalBrandingManager
         saveSettings(copy);
         this.settings = copy;
         setBrandingProperties(this.settings);
-        setLogo(this.settings.getLogo());
+        setFileLogo(this.settings.getLogo());
     }
 
     public BrandingBaseSettings getBaseSettings() {
@@ -113,10 +113,21 @@ class BrandingManagerImpl implements LocalBrandingManager
         saveSettings(copy);
         this.settings = copy;
         setBrandingProperties(this.settings);
-        setLogo(this.settings.getLogo());
+        setFileLogo(this.settings.getLogo());
     }
     
-    public void setLogo(byte[] logo)
+    public void setLogo(byte[] logo) {
+        /* delete whatever is in the db, and just make a fresh settings object */
+        BrandingSettings copy = new BrandingSettings();
+        settings.copy(copy);
+        copy.setLogo(logo);
+        saveSettings(copy);
+        this.settings = copy;
+        setBrandingProperties(this.settings);
+        setFileLogo(this.settings.getLogo());
+    }
+    
+    private void setFileLogo(byte[] logo)
     {
         FileInputStream fis = null;
         FileOutputStream fos = null;
