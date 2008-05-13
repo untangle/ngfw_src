@@ -144,8 +144,7 @@ public class IPSRuleManager {
         if (header == null)
             throw new ParseException("Unable to parse header of rule " + ruleParts[0]);
 
-        IPSRuleSignature signature = IPSStringParser.parseSignature(ips, ruleParts[1], rule.getAction(), rule, false);
-        signature.setToString(ruleParts[1]);
+        IPSRuleSignature signature = IPSRuleSignature.parseSignature(ips, ruleParts[1], rule.getAction(), rule, false, ruleParts[1]);
 
         if(!signature.remove() && !rule.disabled()) {
             for(IPSRuleHeader headerTmp : knownHeaders) {
@@ -209,14 +208,13 @@ public class IPSRuleManager {
                 logger.warn("Ignoring rule with bad header: " + text);
                 return null;
             }
-            IPSRuleSignature signature  = IPSStringParser.parseSignature(ips, ruleParts[1], rule.getAction(), rule, true);
+            IPSRuleSignature signature  = IPSRuleSignature.parseSignature(ips, ruleParts[1], rule.getAction(), rule, true, null);
 
             if(signature.remove()) {
                 logger.warn("Ignoring rule with bad sig: " + text);
                 return null;
             }
             String msg = signature.getMessage();
-            signature.setMessage(msg);
             // remove the category since it's redundant
             int catlen = category.length();
             if (msg.length() > catlen) {

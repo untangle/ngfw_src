@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -23,11 +23,11 @@ import java.text.CharacterIterator;
 import java.util.regex.*;
 
 import com.sun.org.apache.xerces.internal.impl.xpath.regex.BMPattern;
-import com.untangle.uvm.vnet.event.*;
-import com.untangle.node.ips.IPSRuleSignature;
+import com.untangle.node.ips.IPSRuleSignatureImpl;
 import com.untangle.node.ips.IPSSessionInfo;
 import com.untangle.node.util.AsciiCharBuffer;
 import com.untangle.node.util.AsciiCharBufferCharacterIterator;
+import com.untangle.uvm.vnet.event.*;
 import org.apache.log4j.Logger;
 
 /**
@@ -58,7 +58,7 @@ public class ContentOption extends IPSOption {
     private boolean withinFlag = false;
     private boolean distanceFlag = false;
 
-    public ContentOption(IPSRuleSignature signature, String params) {
+    public ContentOption(IPSRuleSignatureImpl signature, String params) {
         super(signature, params);
         int index = params.indexOf('|');
         if(index < 0) {

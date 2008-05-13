@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -21,7 +21,7 @@ package com.untangle.node.ips.options;
 import java.nio.ByteBuffer;
 import java.util.regex.*;
 
-import com.untangle.node.ips.IPSRuleSignature;
+import com.untangle.node.ips.IPSRuleSignatureImpl;
 import com.untangle.node.ips.IPSSessionInfo;
 import com.untangle.node.util.AsciiCharBuffer;
 import org.apache.log4j.Logger;
@@ -32,7 +32,7 @@ public class PcreOption extends IPSOption {
 
     private Pattern pcrePattern;
 
-    public PcreOption(IPSRuleSignature signature, String params) {
+    public PcreOption(IPSRuleSignatureImpl signature, String params) {
         super(signature, params);
 
         int beginIndex = params.indexOf("/");

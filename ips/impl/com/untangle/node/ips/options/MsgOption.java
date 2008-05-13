@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -20,14 +20,14 @@ package com.untangle.node.ips.options;
 
 import java.util.regex.*;
 
+import com.untangle.node.ips.IPSRuleSignatureImpl;
 import com.untangle.uvm.vnet.event.*;
-import com.untangle.node.ips.IPSRuleSignature;
 
 public class MsgOption extends IPSOption {
 
     private static final String BLEEDING_PREFIX = "BLEEDING-EDGE";
 
-    public MsgOption(IPSRuleSignature signature, String params) {
+    public MsgOption(IPSRuleSignatureImpl signature, String params) {
         super(signature, params);
         // reomve useless 'BLEEDING-EDGE' prefix
         if (params.length() > BLEEDING_PREFIX.length()) {

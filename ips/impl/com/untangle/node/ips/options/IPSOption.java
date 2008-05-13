@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -21,19 +21,19 @@ package com.untangle.node.ips.options;
 import java.lang.reflect.*;
 import java.util.regex.PatternSyntaxException;
 
-import com.untangle.uvm.vnet.event.*;
 import com.untangle.node.ips.IPSDetectionEngine;
-import com.untangle.node.ips.IPSRuleSignature;
+import com.untangle.node.ips.IPSRuleSignatureImpl;
 import com.untangle.node.ips.IPSSessionInfo;
+import com.untangle.uvm.vnet.event.*;
 import org.apache.log4j.Logger;
 
 public abstract class IPSOption {
-    protected IPSRuleSignature signature;
+    protected IPSRuleSignatureImpl signature;
     protected boolean negationFlag = false;
 
     private static final Logger log = Logger.getLogger(IPSOption.class);
 
-    protected IPSOption(IPSRuleSignature signature, String params) {
+    protected IPSOption(IPSRuleSignatureImpl signature, String params) {
 
         this.signature = signature;
     }
@@ -48,8 +48,11 @@ public abstract class IPSOption {
         return true;
     }
 
-    public static IPSOption buildOption(IPSDetectionEngine engine, IPSRuleSignature signature, String optionName,
-                                        String params, boolean initializeSettingsTime) {
+    public static IPSOption buildOption(IPSDetectionEngine engine,
+                                        IPSRuleSignatureImpl signature,
+                                        String optionName,
+                                        String params,
+                                        boolean initializeSettingsTime) {
 
         boolean flag = false;
         if(params.charAt(0) == '!')  {
@@ -64,11 +67,11 @@ public abstract class IPSOption {
 
         IPSOption option = null;
         Class optionDefinition;
-        Class[] fourArgsClass = new Class[] { IPSDetectionEngine.class, IPSRuleSignature.class, String.class, Boolean.TYPE };
+        Class[] fourArgsClass = new Class[] { IPSDetectionEngine.class, IPSRuleSignatureImpl.class, String.class, Boolean.TYPE };
         Object[] fourOptionArgs = new Object[] { engine, signature, params, initializeSettingsTime };
-        Class[] threeArgsClass = new Class[] { IPSRuleSignature.class, String.class, Boolean.TYPE };
+        Class[] threeArgsClass = new Class[] { IPSRuleSignatureImpl.class, String.class, Boolean.TYPE };
         Object[] threeOptionArgs = new Object[] { signature, params, initializeSettingsTime };
-        Class[] twoArgsClass = new Class[] { IPSRuleSignature.class, String.class };
+        Class[] twoArgsClass = new Class[] { IPSRuleSignatureImpl.class, String.class };
         Object[] twoOptionArgs = new Object[] { signature, params };
         Constructor optionConstructor;
 

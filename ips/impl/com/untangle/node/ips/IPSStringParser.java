@@ -50,36 +50,6 @@ public class IPSStringParser
         return parts;
     }
 
-    public static IPSRuleSignature parseSignature(IPSNodeImpl ips,
-                                                  String signatureString,
-                                                  int action, IPSRule rule,
-                                                  boolean initializeSettingsTime)
-        throws ParseException
-    {
-        IPSRuleSignature returnSignature = new IPSRuleSignature(action, rule);
-
-        String replaceChar = ""+0xff42;
-        signatureString = signatureString.replaceAll("\\\\;",replaceChar);
-        String options[] = signatureString.trim().split(";");
-        for (int i = 0; i < options.length; i++) {
-            options[i].trim();
-            options[i] = options[i].replaceAll(replaceChar,"\\\\;");
-            int delim = options[i].indexOf(':');
-            if (delim < 0) {
-                returnSignature.addOption(ips.getEngine(), options[i].trim(),"No Params", initializeSettingsTime);
-            } else {
-                String opt = options[i].substring(0,delim).trim();
-                returnSignature.addOption(ips.getEngine(), opt, options[i].substring(delim+1).trim(), initializeSettingsTime);
-            }
-
-            if (returnSignature.remove()) {
-                // Early exit.  Don't bother with rest of options.
-                break;
-            }
-        }
-        return returnSignature;
-    }
-
     // Returns null if the rule is to be removed (like an 'ip' rule
     // for instance)
     public static IPSRuleHeader parseHeader(String header, int action)

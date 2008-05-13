@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -20,16 +20,16 @@ package com.untangle.node.ips.options;
 
 import java.util.regex.*;
 
-import com.untangle.uvm.vnet.event.*;
+import com.untangle.node.ips.IPSRuleSignatureImpl;
 import com.untangle.uvm.node.ParseException;
-import com.untangle.node.ips.IPSRuleSignature;
+import com.untangle.uvm.vnet.event.*;
 import org.apache.log4j.Logger;
 
 public class DepthOption extends IPSOption {
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    public DepthOption(IPSRuleSignature signature, String params) throws ParseException {
+    public DepthOption(IPSRuleSignatureImpl signature, String params) throws ParseException {
         super(signature, params);
         ContentOption option = (ContentOption) signature.getOption("ContentOption",this);
         if(option == null) {
