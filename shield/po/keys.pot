@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-04-15 15:51+0300\n"
+"POT-Creation-Date: 2008-05-13 15:36+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,111 +16,115 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:23
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:34
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:22
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:32
 msgid "Status"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:28
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:27
 msgid "Statistics"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:41
-msgid "Level"
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:35
+msgid "active"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:64
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:35
+msgid "inactive"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:43
 msgid "Note"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:66
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:45
 msgid ""
 "Attack Blocker is a heuristic based intrusion prevention and requires no "
 "configuration. Users can modify the treatment of certain IP and/or networks "
 "on the exception tab."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:75
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:54
 msgid "enable"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:78
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:57
 msgid "users"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:78
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:57
 msgid "unlimited"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:85
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:64
 msgid "[no description]"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:86
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:65
 msgid "Exceptions"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:106
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:85
 msgid "address"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:114
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:93
 msgid "user"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:114
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:93
 msgid "count"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:136
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:115
 msgid "description"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:146
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:125
 msgid "Enable"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:150
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:129
 msgid "Address"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:159
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:138
 msgid "User Count"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:174
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:153
 msgid "Description"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:200
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:179
 msgid "timestamp"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:203
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:204
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:182
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:183
 msgid "source"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:204
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:183
 msgid "interface"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:205
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:184
 msgid "reputation"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:208
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:187
 msgid "limited"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:211
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:190
 msgid "dropped"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:214
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:193
 msgid "reject"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:233
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:209
 msgid "Failed"
 msgstr ""
