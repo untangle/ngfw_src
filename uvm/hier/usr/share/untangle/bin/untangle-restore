@@ -1,5 +1,12 @@
 #! /bin/bash
 
+if [ "$USER" != "root" ] ; then
+    echo "sudo $0 $*"
+    exec sudo $0 $*
+fi
+
+. /etc/default/untangle-vm
+
 INST_OPTS=" -o DPkg::Options::=--force-confnew --yes --force-yes --fix-broken "
 UPGD_OPTS=" -o DPkg::Options::=--force-confnew --yes --force-yes --fix-broken "
 
@@ -8,7 +15,7 @@ restore_db()
     infile=$1
 
     dropdb -U postgres uvm >/dev/null 2>&1
-    createuser -U postgres -d -A untangle 2>/dev/null
+    createuser -U postgres ${PG_CREATEUSER_OPTIONS} untangle 2>/dev/null
     createdb -O postgres -U postgres uvm >/dev/null 2>&1
 
 #    if confirm "Restore settings?"; then
