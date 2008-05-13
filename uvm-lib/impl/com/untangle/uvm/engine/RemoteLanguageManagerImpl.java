@@ -21,7 +21,6 @@ package com.untangle.uvm.engine;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FilenameFilter;
@@ -31,7 +30,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -113,7 +111,7 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
 			
 			//validate language pack
 		    if (!item.getName().endsWith(".zip")) {
-				throw new UvmException("Invalid Language Pack.");
+				throw new UvmException("Invalid Language Pack");
 		    }
 			
 	        // Open the ZIP file
@@ -176,7 +174,7 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
 			success = false;
 		}
 		if (!success) {
-			throw new UvmException("Error compiling " + entry.getName() + " to resource bundle");
+			throw new UvmException("Error compiling to resource bundle");
 		}
 	}
 
@@ -196,7 +194,7 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
 			success = false;
 		}				
 		if (!success) {
-			throw new UvmException("Error compiling " + entry.getName() + " to .mo file");
+			throw new UvmException("Error compiling to mo file");
 		}
 	}
 	
