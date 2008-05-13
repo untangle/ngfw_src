@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-04-02 12:53+0300\n"
+"POT-Creation-Date: 2008-05-13 15:56+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -60,38 +60,30 @@ msgstr ""
 msgid "signature"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:72
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:74
 msgid "Category"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:73
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:80
 msgid "Protocol"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:74
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:86
 msgid "Block"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:75
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:90
 msgid "Log"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:76
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:94
 msgid "Description"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:77
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:100
 msgid "Signature"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:96
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:122
 msgid "Failed"
-msgstr ""
-
-#: Event Log repository name
-msgid "Protocol Events"
-msgstr ""
-
-#: Event Log repository name
-msgid "Blocked Protocol Events"
 msgstr ""
