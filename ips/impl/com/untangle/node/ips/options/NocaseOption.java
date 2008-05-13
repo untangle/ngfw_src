@@ -21,11 +21,12 @@ package com.untangle.node.ips.options;
 import com.untangle.node.ips.IPSRuleSignatureImpl;
 import org.apache.log4j.Logger;
 
-public class NocaseOption extends IPSOption {
-
+public class NocaseOption extends IPSOption
+{
     private final Logger logger = Logger.getLogger(getClass());
 
-    public NocaseOption(IPSRuleSignatureImpl signature, String params) {
+    public NocaseOption(IPSRuleSignatureImpl signature, String params)
+    {
         super(signature, params);
         String[] parents = new String [] { "ContentOption", "UricontentOption" };
         IPSOption option = signature.getOption(parents, this);

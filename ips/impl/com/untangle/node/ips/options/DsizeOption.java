@@ -23,13 +23,15 @@ import com.untangle.node.ips.IPSSessionInfo;
 import com.untangle.uvm.vnet.event.*;
 import org.apache.log4j.Logger;
 
-public class DsizeOption extends IPSOption {
-
+public class DsizeOption extends IPSOption
+{
     private final Logger log = Logger.getLogger(getClass());
 
-    int min;
-    int max;
-    public DsizeOption(IPSRuleSignatureImpl signature, String params) {
+    private int min;
+    private int max;
+
+    public DsizeOption(IPSRuleSignatureImpl signature, String params)
+    {
         super(signature, params);
         char ch = params.charAt(0);
         String range[] = params.split("<>");
@@ -56,16 +58,43 @@ public class DsizeOption extends IPSOption {
         }
     }
 
-    public boolean runnable() {
+    public boolean runnable()
+    {
         return true;
     }
 
     //XXX - check negation flag?
-    public boolean run(IPSSessionInfo sessionInfo) {
+    public boolean run(IPSSessionInfo sessionInfo)
+    {
         IPDataEvent event = sessionInfo.getEvent();
         int size = event.data().remaining();
         if(min <= size && max >= size)
             return true;
         return false;
+    }
+
+    public boolean optEquals(Object o)
+    {
+        if (!(o instanceof DsizeOption)) {
+            return false;
+        }
+
+        DsizeOption dso = (DsizeOption)o;
+
+        if (!super.optEquals(dso)) {
+            return false;
+        }
+
+        return min == dso.min
+            && max == dso.max;
+    }
+
+    public int optHashCode()
+    {
+        int result = 17;
+        result = result * 37 + super.optHashCode();
+        result = result * 37 + min;
+        result = result * 37 + max;
+        return result;
     }
 }

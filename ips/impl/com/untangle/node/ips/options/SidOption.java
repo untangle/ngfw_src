@@ -23,12 +23,13 @@ import com.untangle.node.ips.IPSRuleSignatureImpl;
 import com.untangle.uvm.vnet.event.*;
 import org.apache.log4j.Logger;
 
-
-public class SidOption extends IPSOption {
-
+public class SidOption extends IPSOption
+{
     private final Logger logger = Logger.getLogger(getClass());
 
-    public SidOption(IPSRuleSignatureImpl signature, String params, boolean initializeSettingsTime) {
+    public SidOption(IPSRuleSignatureImpl signature, String params,
+                     boolean initializeSettingsTime)
+    {
         super(signature, params);
         if (initializeSettingsTime) {
             int sid = -1;

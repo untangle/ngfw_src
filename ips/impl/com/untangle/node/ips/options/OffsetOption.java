@@ -25,11 +25,13 @@ import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.vnet.event.*;
 import org.apache.log4j.Logger;
 
-public class OffsetOption extends IPSOption {
-
+public class OffsetOption extends IPSOption
+{
     private final Logger logger = Logger.getLogger(getClass());
 
-    public OffsetOption(IPSRuleSignatureImpl signature, String params) throws ParseException {
+    public OffsetOption(IPSRuleSignatureImpl signature, String params)
+        throws ParseException
+    {
         super(signature, params);
         ContentOption option = (ContentOption) signature.getOption("ContentOption",this);
         if(option == null) {

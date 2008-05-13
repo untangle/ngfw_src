@@ -141,8 +141,9 @@ public class IPSRuleManager {
         String ruleParts[] = IPSStringParser.parseRuleSplit(noVarText);
 
         IPSRuleHeader header = IPSStringParser.parseHeader(ruleParts[0], rule.getAction());
-        if (header == null)
+        if (header == null) {
             throw new ParseException("Unable to parse header of rule " + ruleParts[0]);
+        }
 
         IPSRuleSignature signature = IPSRuleSignature.parseSignature(ips, ruleParts[1], rule.getAction(), rule, false, ruleParts[1]);
 

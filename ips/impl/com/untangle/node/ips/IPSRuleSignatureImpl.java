@@ -20,6 +20,7 @@ package com.untangle.node.ips;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
@@ -51,18 +52,40 @@ public class IPSRuleSignatureImpl
 
     private final List<IPSOption> options = new ArrayList<IPSOption>();
 
-    private String message = "No message set";
-    private String classification = "Rule is not classified";
-    private String url = "Rule is not documented";
+    private String message = null;
+    private String classification = null;
+    private String url = null;
     private boolean removeFlag = false;
 
     private static final Logger log = Logger.getLogger(IPSRuleSignature.class);
 
-    public IPSRuleSignatureImpl(int action, IPSRule rule, String string)
+    public IPSRuleSignatureImpl(IPSNodeImpl ips, String signatureString,
+                                int action, IPSRule rule,
+                                boolean initSettingsTime, String string)
     {
         this.action = action;
         this.rule = rule;
         this.string = null == string ? "Starting.." : string;
+
+        String replaceChar = ""+0xff42;
+        signatureString = signatureString.replaceAll("\\\\;",replaceChar);
+        String options[] = signatureString.trim().split(";");
+        for (int i = 0; i < options.length; i++) {
+            options[i].trim();
+            options[i] = options[i].replaceAll(replaceChar,"\\\\;");
+            int delim = options[i].indexOf(':');
+            if (delim < 0) {
+                addOption(ips.getEngine(), options[i].trim(),"No Params", initSettingsTime);
+            } else {
+                String opt = options[i].substring(0,delim).trim();
+                addOption(ips.getEngine(), opt, options[i].substring(delim+1).trim(), initSettingsTime);
+            }
+
+            if (remove()) {
+                // Early exit.  Don't bother with rest of options.
+                break;
+            }
+        }
     }
 
     public void remove(boolean remove)
@@ -78,21 +101,6 @@ public class IPSRuleSignatureImpl
     public IPSRule rule()
     {
         return rule;
-    }
-
-    public void addOption(IPSDetectionEngine engine, String optionName, String params, boolean initializeSettingsTime)
-    {
-        for (int i = 0; i < ignoreSafeOptions.length; i++) {
-            if (optionName.equalsIgnoreCase(ignoreSafeOptions[i]))
-                return;
-        }
-        IPSOption option = IPSOption.buildOption(engine,this,optionName,params, initializeSettingsTime);
-        if (option != null && option.runnable())
-            options.add(option);
-        else if (option == null) {
-            log.info("Could not add option: " + optionName);
-            removeFlag = true;
-        }
     }
 
     public IPSOption getOption(String name, IPSOption callingOption)
@@ -144,7 +152,6 @@ public class IPSRuleSignatureImpl
     public void setClassification(String classification)
     {
         this.classification = classification;
-        return;
     }
 
     public String getClassification()
@@ -245,6 +252,8 @@ public class IPSRuleSignatureImpl
         return string;
     }
 
+    // package protected static methods ----------------------------------------
+
     static void dumpRuleTimes()
     {
         if (IPSDetectionEngine.DO_PROFILING) {
@@ -260,5 +269,107 @@ public class IPSRuleSignatureImpl
             }
             log.warn(sb.toString());
         }
+    }
+
+    // private methods ---------------------------------------------------------
+
+    private void addOption(IPSDetectionEngine engine, String optionName,
+                           String params, boolean initializeSettingsTime)
+    {
+        for (int i = 0; i < ignoreSafeOptions.length; i++) {
+            if (optionName.equalsIgnoreCase(ignoreSafeOptions[i]))
+                return;
+        }
+        IPSOption option = IPSOption.buildOption(engine,this,optionName,params, initializeSettingsTime);
+        if (option != null && option.runnable()) {
+            options.add(option);
+        } else if (option == null) {
+            log.info("Could not add option: " + optionName);
+            removeFlag = true;
+        }
+    }
+
+    // Object methods ----------------------------------------------------------
+
+    public boolean equals(Object o)
+    {
+        if (!(o instanceof IPSRuleSignatureImpl)) {
+            return false;
+        }
+
+        IPSRuleSignatureImpl irs = (IPSRuleSignatureImpl)o;
+
+        if (options.size() != irs.options.size()) {
+            return false;
+        }
+        Iterator<IPSOption> i = options.iterator();
+        Iterator<IPSOption> j = irs.options.iterator();
+        while (i.hasNext() && j.hasNext()) {
+            if (!i.next().optEquals(j.next())) {
+                return false;
+            }
+        }
+        if (i.hasNext() || j.hasNext()) {
+            return false;
+        }
+
+        if (null == string || null == irs.string) {
+            if (string != irs.string) {
+                return false;
+            }
+        } else {
+            if (!string.equals(irs.string)) {
+                return false;
+            }
+        }
+
+        if (null == message || null == irs.message) {
+            if (message != irs.message) {
+                return false;
+            }
+        } else {
+            if (!message.equals(irs.message)) {
+                return false;
+            }
+        }
+
+        if (null == classification || null == irs.classification) {
+            if (classification != irs.classification) {
+                return false;
+            }
+        } else {
+            if (!classification.equals(irs.classification)) {
+                return false;
+            }
+        }
+
+        if (null == url || null == irs.url) {
+            if (url != irs.url) {
+                return false;
+            }
+        } else {
+            if (!url.equals(irs.url)) {
+                return false;
+            }
+        }
+
+        return action == irs.action
+            && removeFlag == irs.removeFlag;
+    }
+
+    public int hashCode()
+    {
+        int result = 17;
+        for (IPSOption o : options) {
+            result = 37 * result + o.optHashCode();
+        }
+
+        result = result * 37 + action;
+        result = result * 37 + (null == string ? 0 : string.hashCode());
+        result = result * 37 + (null == message ? 0 : message.hashCode());
+        result = result * 37 + (null == classification ? 0 : classification.hashCode());
+        result = result * 37 + (null == url ? 0 : url.hashCode());
+        result = result * 37 + (removeFlag ? 1 : 0);
+        return result;
     }
 }

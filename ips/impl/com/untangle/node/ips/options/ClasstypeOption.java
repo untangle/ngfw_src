@@ -68,15 +68,4 @@ public class ClasstypeOption extends IPSOption
             }
         }
     }
-
-    // Object methods ----------------------------------------------------------
-
-    public boolean equals(Object o)
-    {
-        if (!(o instanceof ClasstypeOption)) {
-            return false;
-        } else {
-            return super.equals(0);
-        }
-    }
 }

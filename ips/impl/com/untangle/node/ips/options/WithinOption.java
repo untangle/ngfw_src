@@ -22,7 +22,6 @@ import com.untangle.node.ips.IPSRuleSignatureImpl;
 import org.apache.log4j.Logger;
 
 public class WithinOption extends IPSOption {
-
     private final Logger logger = Logger.getLogger(getClass());
 
     public WithinOption(IPSRuleSignatureImpl signature, String params) {

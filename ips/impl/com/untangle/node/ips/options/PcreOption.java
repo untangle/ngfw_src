@@ -26,13 +26,14 @@ import com.untangle.node.ips.IPSSessionInfo;
 import com.untangle.node.util.AsciiCharBuffer;
 import org.apache.log4j.Logger;
 
-public class PcreOption extends IPSOption {
-
+public class PcreOption extends IPSOption
+{
     private final Logger logger = Logger.getLogger(getClass());
 
     private Pattern pcrePattern;
 
-    public PcreOption(IPSRuleSignatureImpl signature, String params) {
+    public PcreOption(IPSRuleSignatureImpl signature, String params)
+    {
         super(signature, params);
 
         int beginIndex = params.indexOf("/");
@@ -78,11 +79,13 @@ public class PcreOption extends IPSOption {
         }
     }
 
-    public boolean runnable() {
+    public boolean runnable()
+    {
         return true;
     }
 
-    public boolean run(IPSSessionInfo sessionInfo) {
+    public boolean run(IPSSessionInfo sessionInfo)
+    {
         ByteBuffer eventData = sessionInfo.getEvent().data();
 
         //  if(pcrePattern == null) {
@@ -99,5 +102,32 @@ public class PcreOption extends IPSOption {
         // }
 
         return negationFlag ^ patMatch;
+    }
+
+    public boolean optEquals(Object o)
+    {
+        if (!(o instanceof PcreOption)) {
+            return false;
+        }
+
+        PcreOption po = (PcreOption)o;
+
+        if (!super.optEquals(po)) {
+            return false;
+        }
+
+        if (null == pcrePattern || null == po.pcrePattern) {
+            return pcrePattern == po.pcrePattern;
+        } else {
+            return pcrePattern.pattern().equals(po.pcrePattern.pattern());
+        }
+    }
+
+    public int optHashCode()
+    {
+        int result = 17;
+        result = result * 37 + super.optHashCode();
+        result = result * 37 + (null == pcrePattern ? 0 : pcrePattern.pattern().hashCode());
+        return result;
     }
 }

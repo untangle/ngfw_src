@@ -23,11 +23,12 @@ import java.util.regex.*;
 import com.untangle.node.ips.IPSRuleSignatureImpl;
 import com.untangle.uvm.vnet.event.*;
 
-public class MsgOption extends IPSOption {
-
+public class MsgOption extends IPSOption
+{
     private static final String BLEEDING_PREFIX = "BLEEDING-EDGE";
 
-    public MsgOption(IPSRuleSignatureImpl signature, String params) {
+    public MsgOption(IPSRuleSignatureImpl signature, String params)
+    {
         super(signature, params);
         // reomve useless 'BLEEDING-EDGE' prefix
         if (params.length() > BLEEDING_PREFIX.length()) {

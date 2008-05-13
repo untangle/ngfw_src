@@ -28,7 +28,8 @@ import com.untangle.node.ips.IPSRuleSignatureImpl;
  *
  * @Author Nick Childers
  */
-public class ReferenceOption extends IPSOption {
+public class ReferenceOption extends IPSOption
+{
     private static final Pattern URLP = Pattern.compile("url,", Pattern.CASE_INSENSITIVE);
 
     public ReferenceOption(IPSRuleSignatureImpl signature, String params) {

@@ -21,11 +21,13 @@ package com.untangle.node.ips.options;
 import com.untangle.node.ips.IPSRuleSignatureImpl;
 import org.apache.log4j.Logger;
 
-public class DistanceOption extends IPSOption {
+public class DistanceOption extends IPSOption
+{
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    public DistanceOption(IPSRuleSignatureImpl signature, String params) {
+    public DistanceOption(IPSRuleSignatureImpl signature, String params)
+    {
         super(signature, params);
         int distance = Integer.parseInt(params);
         IPSOption option = signature.getOption("ContentOption",this);

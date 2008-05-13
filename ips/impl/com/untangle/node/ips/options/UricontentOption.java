@@ -24,31 +24,62 @@ import com.sun.org.apache.xerces.internal.impl.xpath.regex.BMPattern;
 import com.untangle.node.ips.IPSRuleSignatureImpl;
 import com.untangle.node.ips.IPSSessionInfo;
 
-public class UricontentOption extends IPSOption {
-
+public class UricontentOption extends IPSOption
+{
     private BMPattern uriPattern;
     private String stringPattern;
+    private boolean nocase = false;
 
-    public UricontentOption(IPSRuleSignatureImpl signature, String params) {
+    public UricontentOption(IPSRuleSignatureImpl signature, String params)
+    {
         super(signature, params);
         stringPattern = params;
-        uriPattern = new BMPattern(stringPattern, false);
+        uriPattern = new BMPattern(stringPattern, nocase);
     }
 
-    public void setNoCase() {
-        uriPattern = new BMPattern(stringPattern, true);
+    public void setNoCase()
+    {
+        nocase = true;
+        uriPattern = new BMPattern(stringPattern, nocase);
     }
 
-    public boolean runnable() {
+    public boolean runnable()
+    {
         return true;
     }
 
-    public boolean run(IPSSessionInfo sessionInfo) {
+    public boolean run(IPSSessionInfo sessionInfo)
+    {
         String path = sessionInfo.getUriPath();
         if(path != null) {
             int result = uriPattern.matches(path, 0, path.length());
             return negationFlag ^ (result >= 0);
         }
         return false;
+    }
+
+    public boolean optEquals(Object o)
+    {
+        if (!(o instanceof UricontentOption)) {
+            return false;
+        }
+
+        UricontentOption uo = (UricontentOption)o;
+
+        if (!super.optEquals(uo)) {
+            return false;
+        }
+
+        return stringPattern.equals(uo.stringPattern)
+            && nocase == nocase;
+    }
+
+    public int optHashCode()
+    {
+        int result = 17;
+        result = result * 37 + super.optHashCode();
+        result = result * 37 + stringPattern.hashCode();
+        result = result * 37 + (nocase ? 1 : 0);
+        return result;
     }
 }

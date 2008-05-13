@@ -27,24 +27,27 @@ import com.untangle.node.ips.IPSSessionInfo;
 import com.untangle.uvm.vnet.event.*;
 import org.apache.log4j.Logger;
 
-public abstract class IPSOption {
-    protected IPSRuleSignatureImpl signature;
+public abstract class IPSOption
+{
+    protected final IPSRuleSignatureImpl signature;
     protected boolean negationFlag = false;
 
     private static final Logger log = Logger.getLogger(IPSOption.class);
 
-    protected IPSOption(IPSRuleSignatureImpl signature, String params) {
-
+    protected IPSOption(IPSRuleSignatureImpl signature, String params)
+    {
         this.signature = signature;
     }
 
     // Overriden in concrete children that are runnable
-    public boolean runnable() {
+    public boolean runnable()
+    {
         return false;
     }
 
     // Overriden in concrete children that are runnable
-    public boolean run(IPSSessionInfo sessionInfo) {
+    public boolean run(IPSSessionInfo sessionInfo)
+    {
         return true;
     }
 
@@ -52,8 +55,8 @@ public abstract class IPSOption {
                                         IPSRuleSignatureImpl signature,
                                         String optionName,
                                         String params,
-                                        boolean initializeSettingsTime) {
-
+                                        boolean initializeSettingsTime)
+    {
         boolean flag = false;
         if(params.charAt(0) == '!')  {
             flag = true;
@@ -84,8 +87,8 @@ public abstract class IPSOption {
         }
 
         try {
-            // First look for a three arg one, then the two arg one (since most don't care about
-            // initializeSettingsTime).
+            // First look for a three arg one, then the two arg one
+            // (since most don't care about initializeSettingsTime).
             optionDefinition = Class.forName("com.untangle.node.ips.options."+optionName+"Option");
 
             // XXX remove reflection
@@ -101,8 +104,9 @@ public abstract class IPSOption {
                     option = (IPSOption) createObject(optionConstructor, twoOptionArgs);
                 }
             }
-            if (option != null)
+            if (option != null) {
                 option.negationFlag = flag;
+            }
         } catch (ClassNotFoundException e) {
             log.info("Could not load option(ClassNotFound): " + optionName + ", ignoring rule: " + signature.rule().getText());
             signature.remove(true);
@@ -112,7 +116,19 @@ public abstract class IPSOption {
         return option;
     }
 
-    private static Object createObject(Constructor constructor, Object[] arguments) {
+    public boolean optEquals(IPSOption o)
+    {
+        return negationFlag == o.negationFlag;
+    }
+
+    public int optHashCode()
+    {
+        return 17 * 37 + (negationFlag ? 1 : 0);
+    }
+
+    private static Object createObject(Constructor constructor,
+                                       Object[] arguments)
+    {
         Object object = null;
         try {
             object = constructor.newInstance(arguments);

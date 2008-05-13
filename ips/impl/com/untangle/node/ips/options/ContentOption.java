@@ -35,11 +35,9 @@ import org.apache.log4j.Logger;
  *
  * @Author Nick Childers
  */
-
 ///XXX - ADD ERROR HANDELING OMG!
-
-public class ContentOption extends IPSOption {
-
+public class ContentOption extends IPSOption
+{
     private ContentOption previousContentOption = null;
 
     private int start = 0;
@@ -55,7 +53,8 @@ public class ContentOption extends IPSOption {
     private BMPattern contentPattern;
     private final Logger logger = Logger.getLogger(getClass());
 
-    public ContentOption(IPSRuleSignatureImpl signature, String params) {
+    public ContentOption(IPSRuleSignatureImpl signature, String params)
+    {
         super(signature, params);
         int index = params.indexOf('|');
         if(index < 0) {
@@ -72,22 +71,26 @@ public class ContentOption extends IPSOption {
         contentPattern = new BMPattern(stringPattern, nocase);
     }
 
-    public void setNoCase() {
+    public void setNoCase()
+    {
         nocase = true;
         contentPattern = new BMPattern(stringPattern, nocase);
     }
 
-    public void setOffset(int val) {
+    public void setOffset(int val)
+    {
         start = val;
     }
 
-    public void setDepth(int val) {
+    public void setDepth(int val)
+    {
         end = start+val;
         if(start == end)
             end = 0;
     }
 
-    public void setDistance(int val) {
+    public void setDistance(int val)
+    {
         previousContentOption = getPreviousContentOption();
 
         if(previousContentOption == null) {
@@ -99,7 +102,8 @@ public class ContentOption extends IPSOption {
         distanceFlag = true;
     }
 
-    public void setWithin(int val) {
+    public void setWithin(int val)
+    {
         previousContentOption = getPreviousContentOption();
 
         if(previousContentOption == null) {
@@ -111,7 +115,8 @@ public class ContentOption extends IPSOption {
         withinFlag = true;
     }
 
-    private ContentOption getPreviousContentOption() {
+    private ContentOption getPreviousContentOption()
+    {
         IPSOption option = signature.getOption("ContentOption",this);
         if(option != null)
             return (ContentOption) option;
@@ -119,18 +124,22 @@ public class ContentOption extends IPSOption {
     }
 
 
-    private void setStartAndEndPoints(int offset, int depth, IPSSessionInfo sessionInfo) {
+    private void setStartAndEndPoints(int offset, int depth,
+                                      IPSSessionInfo sessionInfo)
+    {
         sessionInfo.start = offset;
         sessionInfo.end = offset+depth;
         if(sessionInfo.start == sessionInfo.end)
             sessionInfo.end = 0;
     }
 
-    public boolean runnable() {
+    public boolean runnable()
+    {
         return true;
     }
 
-    public boolean run(IPSSessionInfo sessionInfo) {
+    public boolean run(IPSSessionInfo sessionInfo)
+    {
         ByteBuffer eventData = sessionInfo.getEvent().data();
         AsciiCharBuffer data = AsciiCharBuffer.wrap(eventData);
         CharacterIterator iter = new AsciiCharBufferCharacterIterator(data);
@@ -176,8 +185,9 @@ public class ContentOption extends IPSOption {
      * string sections using a second sub function. That second sub function will also put all
      * the bytes of the string onto the byte buffer.
      */
-
-    private void buildBytePattern(ByteBuffer binaryBuffer, String params, int index) {
+    private void buildBytePattern(ByteBuffer binaryBuffer, String params,
+                                  int index)
+    {
         if(index == 0) {
             index = params.indexOf('|', 1);
             String bytes = params.substring(1,index);
@@ -201,7 +211,8 @@ public class ContentOption extends IPSOption {
         }
     }
 
-    private void parseASCIIPattern(ByteBuffer binaryBuffer, String params) {
+    private void parseASCIIPattern(ByteBuffer binaryBuffer, String params)
+    {
         if(params.length() > binaryBuffer.remaining()) {
             logger.warn("Very large ASCII pattern");
             return;
@@ -209,7 +220,8 @@ public class ContentOption extends IPSOption {
         binaryBuffer.put(params.getBytes());
     }
 
-    private void parseBinaryPattern(ByteBuffer binaryBuffer, String bytes) {
+    private void parseBinaryPattern(ByteBuffer binaryBuffer, String bytes)
+    {
         if(bytes.length()%2 != 0 || bytes.length() > binaryBuffer.remaining()) {
             logger.warn("Very large binary pattern"); //throw error XXX
             return;
@@ -224,9 +236,7 @@ public class ContentOption extends IPSOption {
         }
     }
 
-    // Object methods ----------------------------------------------------------
-
-    public boolean equals(Object o)
+    public boolean optEquals(Object o)
     {
         if (!(o instanceof ContentOption)) {
             return false;
@@ -234,13 +244,21 @@ public class ContentOption extends IPSOption {
 
         ContentOption co = (ContentOption)o;
 
-        if (null == previousContentOption) {
-            if (!previousContentOption.equals(co.previousContentOption)) {
+        if (!super.optEquals(co)) {
+            return false;
+        }
+
+        if (null == previousContentOption || null == co.previousContentOption) {
+            if (previousContentOption != co.previousContentOption) {
+                return false;
+            }
+        } else {
+            if (!previousContentOption.optEquals(co.previousContentOption)) {
                 return false;
             }
         }
 
-        return start == start
+        return start == co.start
             && end == co.end
             && distance == co.distance
             && within == co.within
@@ -250,10 +268,11 @@ public class ContentOption extends IPSOption {
             && nocase == co.nocase;
     }
 
-    public int hashCode()
+    public int optHashCode()
     {
         int result = 17;
-        result = result * 37 + previousContentOption.hashCode();
+        result = result * 37 + super.optHashCode();
+        result = result * 37 + (null == previousContentOption ? 0 : previousContentOption.optHashCode());
         result = result * 37 + start;
         result = result * 37 + end;
         result = result * 37 + distance;

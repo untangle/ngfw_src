@@ -42,28 +42,10 @@ public class IPSRuleSignature
                                                   String string)
         throws ParseException
     {
-        IPSRuleSignatureImpl impl = new IPSRuleSignatureImpl(action, rule,
-                                                             string);
+        IPSRuleSignatureImpl impl
+            = new IPSRuleSignatureImpl(ips, signatureString, action, rule,
+                                       initSettingsTime, string);
 
-        String replaceChar = ""+0xff42;
-        signatureString = signatureString.replaceAll("\\\\;",replaceChar);
-        String options[] = signatureString.trim().split(";");
-        for (int i = 0; i < options.length; i++) {
-            options[i].trim();
-            options[i] = options[i].replaceAll(replaceChar,"\\\\;");
-            int delim = options[i].indexOf(':');
-            if (delim < 0) {
-                impl.addOption(ips.getEngine(), options[i].trim(),"No Params", initSettingsTime);
-            } else {
-                String opt = options[i].substring(0,delim).trim();
-                impl.addOption(ips.getEngine(), opt, options[i].substring(delim+1).trim(), initSettingsTime);
-            }
-
-            if (impl.remove()) {
-                // Early exit.  Don't bother with rest of options.
-                break;
-            }
-        }
         return new IPSRuleSignature(impl);
     }
 
@@ -105,5 +87,21 @@ public class IPSRuleSignature
     static void dumpRuleTimes()
     {
         IPSRuleSignature.dumpRuleTimes();
+    }
+
+    // Object methods ----------------------------------------------------------
+
+    public boolean equals(Object o)
+    {
+        if (!(o instanceof IPSRuleSignature)) {
+            return false;
+        }
+
+        return impl.equals(((IPSRuleSignature)o).impl);
+    }
+
+    public int hashCode()
+    {
+        return impl.hashCode();
     }
 }
