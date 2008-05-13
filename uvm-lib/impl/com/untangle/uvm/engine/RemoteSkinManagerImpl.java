@@ -99,6 +99,11 @@ class RemoteSkinManagerImpl implements RemoteSkinManager
 	        BufferedOutputStream dest = null;
 			ZipEntry entry = null;
 			
+			//validate skin
+		    if (!item.getName().endsWith(".zip")) {
+				throw new UvmException("Invalid Skin.");
+		    }
+			
 	        // Open the ZIP file
 		    InputStream uploadedStream = item.getInputStream();
 		    ZipInputStream zis = new ZipInputStream(uploadedStream);

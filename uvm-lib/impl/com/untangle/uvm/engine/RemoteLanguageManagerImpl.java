@@ -111,6 +111,11 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
 	        BufferedOutputStream dest = null;
 			ZipEntry entry = null;
 			
+			//validate language pack
+		    if (!item.getName().endsWith(".zip")) {
+				throw new UvmException("Invalid Language Pack.");
+		    }
+			
 	        // Open the ZIP file
 		    InputStream uploadedStream = item.getInputStream();
 		    ZipInputStream zis = new ZipInputStream(uploadedStream);

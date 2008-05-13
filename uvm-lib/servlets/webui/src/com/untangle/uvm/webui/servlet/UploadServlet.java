@@ -16,7 +16,6 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.untangle.uvm.BrandingSettings;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.RemoteBrandingManager;
 import com.untangle.uvm.RemoteLanguageManager;
