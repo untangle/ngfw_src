@@ -1,0 +1,96 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR Untangle, Inc.
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2008-05-13 12:41+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../root/script/config/systemInfo.js:10
+msgid "Configuration"
+msgstr ""
+
+#: ../root/script/config/systemInfo.js:13
+msgid "System Info"
+msgstr ""
+
+#: ../root/script/config/systemInfo.js:82
+msgid "Branding"
+msgstr ""
+
+#: ../root/script/config/systemInfo.js:109
+msgid ""
+"The Branding Settings are used to set the logo and contact information that "
+"will be seen by users (e.g. reports)."
+msgstr ""
+
+#: ../root/script/config/systemInfo.js:112
+msgid "Logo"
+msgstr ""
+
+#: ../root/script/config/systemInfo.js:172
+msgid "Upload"
+msgstr ""
+
+#: ../root/script/config/systemInfo.js:180
+msgid "Contact Information"
+msgstr ""
+
+#: ../root/script/config/systemInfo.js:187
+msgid "Company Name"
+msgstr ""
+
+#: ../root/script/config/systemInfo.js:200
+msgid "Company URL"
+msgstr ""
+
+#: ../root/script/config/systemInfo.js:213
+msgid "Contact Name"
+msgstr ""
+
+#: ../root/script/config/systemInfo.js:226
+msgid "Contact Email"
+msgstr ""
+
+#: ../root/script/config/systemInfo.js:246
+#: ../root/script/config/systemInfo.js:260
+#: ../root/script/config/systemInfo.js:262
+#: ../root/script/config/systemInfo.js:278
+#: ../root/script/config/systemInfo.js:297
+#: ../root/script/config/systemInfo.js:299
+msgid "Failed"
+msgstr ""
+
+#: ../root/script/config/systemInfo.js:246
+msgid "Please select an image to upload."
+msgstr ""
+
+#: ../root/script/config/systemInfo.js:252
+#: ../root/script/config/systemInfo.js:287
+msgid "Please wait while your logo image is uploaded..."
+msgstr ""
+
+#: ../root/script/config/systemInfo.js:255
+#: ../root/script/config/systemInfo.js:290
+msgid "Successed"
+msgstr ""
+
+#: ../root/script/config/systemInfo.js:255
+#: ../root/script/config/systemInfo.js:290
+msgid "Upload Logo Successed"
+msgstr ""
+
+#: ../root/script/config/systemInfo.js:262
+#: ../root/script/config/systemInfo.js:299
+msgid "Upload Logo Failed"
+msgstr ""
