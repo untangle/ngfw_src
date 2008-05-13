@@ -19,13 +19,19 @@
 package com.untangle.uvm.engine;
 
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -56,6 +62,7 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
     private static final String LOCALE_DIR;
     private static final String DEFAULT_LANGUAGE = "en";
     private static final String BASENAME_PREFIX = "i18n";
+    private static final String LANGUAGES_CFG = "lang.cfg";    
 	private static final int BUFFER = 2048; 
 
     private final Logger logger = Logger.getLogger(getClass());
@@ -110,8 +117,16 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
 			while ((entry = zis.getNextEntry()) != null) {
 				int count;
 				byte data[] = new byte[BUFFER];
+				
 				// write the files to the disk
-				FileOutputStream fos = new FileOutputStream(LANGUAGES_DIR + File.separator + entry.getName());
+				String lang = entry.getName().substring(entry.getName().lastIndexOf(".")+1);
+				String destDir = LANGUAGES_DIR + File.separator + lang;
+				File destDirFile = new File(destDir);
+				if (!destDirFile.exists()) {
+					destDirFile.mkdir();
+				}
+				
+				FileOutputStream fos = new FileOutputStream(destDir + File.separator + entry.getName());
 				dest = new BufferedOutputStream(fos, BUFFER);
 				while ((count = zis.read(data, 0, BUFFER)) != -1) {
 					dest.write(data, 0, count);
@@ -137,18 +152,22 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
 			UvmException {
 		boolean success = true;
 		try {
+			String moduleName = entry.getName().substring(0, entry.getName().lastIndexOf("."));
+			String lang = entry.getName().substring(entry.getName().lastIndexOf(".")+1);
+			String srcDir = LANGUAGES_DIR + File.separator + lang;
+			
 			String cmd[] = { "msgfmt", "--java2", 
 					"-d", LANGUAGES_DIR,
-					"-r", BASENAME_PREFIX + "." + entry.getName().substring(0, entry.getName().lastIndexOf(".")),
-					"-l", entry.getName().substring(entry.getName().lastIndexOf(".")+1),
-					LANGUAGES_DIR + File.separator + entry.getName()};
+					"-r", BASENAME_PREFIX + "." + moduleName,
+					"-l", lang,
+					srcDir + File.separator + entry.getName()};
 			Process p = Runtime.getRuntime().exec(cmd);
 			p.waitFor();
 			if (p.exitValue() != 0) {
 				success = false;
 			}
 			
-		} catch (InterruptedException err) {
+		} catch (Exception err) {
 			success = false;
 		}
 		if (!success) {
@@ -177,11 +196,40 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
 	}
 	
     public List<LanguageInfo> getLanguagesList() {
-    	List<LanguageInfo> languages = new ArrayList<LanguageInfo>();
-    	languages.add(new LanguageInfo("en", "English"));
-    	languages.add(new LanguageInfo("es", "Spanish"));
-    	languages.add(new LanguageInfo("fr", "French"));
-    	languages.add(new LanguageInfo("ro", "Romanian"));
+        List<LanguageInfo> languages = new ArrayList<LanguageInfo>();
+        
+    	//get available languages
+    	File dir = new File(LANGUAGES_DIR);
+		FilenameFilter filter = new FilenameFilter() {
+			public boolean accept(File dir, String name) {
+				return !name.startsWith(BASENAME_PREFIX) 
+					&& !name.equals(LANGUAGES_CFG);
+			}
+		};
+		List<String> availableLanguages = Arrays.asList(dir.list(filter));
+    	
+		// Reading all languages from config file and keep only the one which we have translations for
+		try {
+			BufferedReader in = new BufferedReader(new FileReader(LANGUAGES_DIR + File.separator + LANGUAGES_CFG));
+			String s = new String();
+			while((s = in.readLine())!= null) {
+				if (s.trim().length() > 0){
+					String[] tokens = s.split("\\s");
+					if (tokens.length >= 2) {
+						String langCode = tokens[0];
+						String langName = tokens[1];
+						if (DEFAULT_LANGUAGE.equals(langCode) || 
+								availableLanguages.contains(langCode)){
+							languages.add(new LanguageInfo(tokens[0], tokens[1]));
+						}
+					}
+				}
+			}
+			in.close();
+		} catch (IOException e) {
+//			e.printStackTrace();
+		}
+    		
     	return languages;
     }
     
