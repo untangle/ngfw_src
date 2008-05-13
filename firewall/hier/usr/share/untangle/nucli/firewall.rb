@@ -156,7 +156,7 @@ class Firewall < UVMFilterNode
                 @@diag.if_level(2) { puts! msg ; p ex }
                 return msg
 	    end
-	    begin rule.setSrcPort(com.untangle.uvm.node.firewall.port.PortMatcherFactory.parse(src_addr))
+	    begin rule.setSrcPort(com.untangle.uvm.node.firewall.port.PortMatcherFactory.parse(src_port))
             rescue Exception => ex
                 msg = "Error: invalid source port value."
                 @@diag.if_level(2) { puts! msg ; p ex }
