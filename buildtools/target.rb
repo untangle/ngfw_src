@@ -255,7 +255,10 @@ class CopyFiles < Target
         if File.symlink?(src)
           deps << dest
 
-          file dest => src do
+          ## Handling symbolic links that don't resolve until in place.
+          file dest => src if File.exists?( src )
+            
+          file dest do
             ensureDirectory(File.dirname(dest))
             File.symlink(File.readlink(src), dest) if !File.exist?(dest)
           end
@@ -393,7 +396,7 @@ class ServletBuilder < Target
 
     Dir.chdir(@destRoot) do |d|
       Find.find('.') do |f|
-        if /\.jspx?$/ =~ f
+        if /\.jsp$/ =~ f
           @jsp_list << f
         end
       end

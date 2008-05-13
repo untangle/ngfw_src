@@ -1,0 +1,98 @@
+<html xmlns:jsp="http://java.sun.com/JSP/Page"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns="http://www.w3.org/1999/xhtml">
+
+  <jsp:output omit-xml-declaration="true"
+      doctype-root-element="html"      
+      doctype-public="-//W3C//DTD XHTML 1.0 Strict//EN"
+      doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"/>
+  
+  <jsp:directive.page contentType="text/html"/>
+
+  <jsp:directive.page import="org.xnap.commons.i18n.I18n"/>
+
+  <jsp:scriptlet>
+    <![CDATA[
+             /* This just makes it available to use later in the page. */
+             I18n i18n = (I18n)request.getAttribute("i18n");
+    ]]>
+  </jsp:scriptlet>
+
+
+  <head>
+    <title><c:out value="${pageTitle}"/></title>
+
+    <style type="text/css">
+      @import "skins/second/css/ext-skin.css";
+      @import "skins/second/css/skin.css";
+    </style>
+    
+    <script type="text/javascript">
+      <![CDATA[
+               // ${cdata_start}
+               var nonce = '${param.nonce}';
+               var tid = '${param.tid}';
+               var url = ${url};
+               // ${cdata_end}
+      ]]>
+    </script>
+    
+    <c:if test="${!empty javascript_file}">
+      <script type="text/javascript" src="${javascript_file}"></script>
+    </c:if>
+
+    <c:out escapeXml="false" value="${javascript}"/>
+  </head>
+  
+  <body id="simple">
+    <div id="content">
+      <div id="header">
+        <a href="${bs.companyUrl}"><img src="/images/BrandingLogo.gif" alt=""/></a>
+        <h1><span><c:out value="${title}"/></span></h1>
+      </div>
+      
+      <div id="main">
+        <p class="description">
+          <span>${description}</span>        
+        </p>
+        
+        <ul>
+          <li><jsp:expression>i18n.tr( "Host:" )</jsp:expression> ${bd.formattedHost}</li>
+          <li><jsp:expression>i18n.tr( "URL:" )</jsp:expression> ${bd.formattedUrl}</li>
+          <c:if test="${!empty reason}">
+            <li>${reason}</li>
+          </c:if>
+        </ul>
+        
+        <p class="contact">
+          <span>${contact}</span>
+        </p>
+        
+        <c:if test="${showUnblockNow}">
+          <button id="unblockNowButton" type="button" onclick="unblockSite(false)">
+            <jsp:expression>i18n.tr( "Unblock For Now" )</jsp:expression>
+          </button>
+        </c:if>
+        
+        <c:if test="${showUnblockGlobal}">
+          <button id="unblockGlobalButton" type="button" onclick="unblockSite(true)">
+            <jsp:expression>i18n.tr( "Unblock Permanently" )</jsp:expression>
+          </button>
+        </c:if>
+      </div>
+
+      <div id="footer">
+        <p><span><c:out value="${footer}"/></span></p>
+      </div>
+    </div>
+    
+    <!-- This is used in the CSS Zen Garden -->
+    <!-- These extra divs/spans may be used as catch-alls to add extra imagery. -->
+    <div id="extraDiv1"><span></span></div>
+    <div id="extraDiv2"><span></span></div>
+    <div id="extraDiv3"><span></span></div>
+    <div id="extraDiv4"><span></span></div>
+    <div id="extraDiv5"><span></span></div>
+    <div id="extraDiv6"><span></span></div>
+  </body>  
+</html>

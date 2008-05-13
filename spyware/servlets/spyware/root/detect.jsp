@@ -27,7 +27,7 @@
 // <![CDATA[
 var e = document.getElementById("untangleDetect");
 if (window == window.top && e.parentNode.tagName == "BODY") {
-  window.location.href = '/spyware/blockpage.jsp?<%=request.getQueryString()%>';
+  window.location.href = '/spyware/blockpage?<%=request.getQueryString()%>';
 }
 // ]]>
 </script>

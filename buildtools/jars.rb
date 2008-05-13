@@ -129,6 +129,10 @@ class Jars
                    commons-io-1.1/commons-io-1.1.jar
                  ).map { |n| Jars.downloadTarget(n) }
 
+  Jstl       = %w( Ajax/jars/jstl.jar 
+                   Ajax/jars/standard.jar 
+                 ).map { |f| Jars.downloadTarget(f) }
+
   HtmlParser = [ Jars.downloadTarget('htmlparser1_6_20060319/htmlparser1_6/lib/htmlparser.jar') ]
 
   VncViewer = [ Jars.downloadTarget('tightvnc-1.2.9/classes/VncViewer.jar') ]
@@ -138,7 +142,7 @@ class Jars
   Base       = Jars.makeGroup(Log4j, Hibernate, HibernateAnnotations, Postgres,
                               Activation, Jcifs, C3p0, Ant, JavaMailApi,
                               GetText, JavaMail, TomcatEmb, Velocity, WBEM, JRuby,
-                              Bdb, HttpClient, HtmlParser, VncViewer, XmlRpc)
+                              Bdb, HttpClient, HtmlParser, VncViewer, XmlRpc, Jstl)
 
   # Jars for compiling the GUI, and GUI node components
   Gui        = Jars.makeGroup(Alloy, JFreeChartGui, Netbeans, Jnlp)

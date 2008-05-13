@@ -69,7 +69,7 @@ class WebFilterReplacementGenerator
     @Override
     protected String getRedirectUrl(String nonce, String host, Tid tid)
     {
-        return "http://" + host + "/webfilter/blockpage.jsp?nonce=" + nonce
+        return "http://" + host + "/webfilter/blockpage?nonce=" + nonce
             + "&tid=" + tid;
     }
 }

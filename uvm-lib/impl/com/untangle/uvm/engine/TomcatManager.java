@@ -593,6 +593,7 @@ class TomcatManager
             StandardContext ctx = (StandardContext) emb.createContext(urlBase, fqRoot);
             if (options.allowLinking)
                 ctx.setAllowLinking(true);
+            ctx.setCrossContext(true);
             ctx.setSessionTimeout(options.sessionTimeout);
             if (null != realm) {
                 ctx.setRealm(realm);
