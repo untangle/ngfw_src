@@ -8,12 +8,12 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"POT-Creation-Date: 2008-02-20 17:03+0200\n"
+"POT-Creation-Date: 2008-05-13 13:01+0300\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "MIME-Version: 1.0\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"Content-Transfer-Encoding: 8bit\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=0; null;\n"
 
 msgid "decimal_sep"
@@ -28,294 +28,333 @@ msgstr "d-m-Y"
 msgid "timestamp_fmt"
 msgstr "d-m-Y G:i:s"
 
-#: ../root/script/main.js:37
-#: ../root/script/main.js:43
-#: ../root/script/main.js:49
-#: ../root/script/main.js:55
-#: ../root/script/main.js:61
-#: ../root/script/main.js:75
-#: ../root/script/main.js:187
-#: ../root/script/main.js:216
-#: ../root/script/main.js:245
-#: ../root/script/main.js:286
-#: ../root/script/main.js:293
-#: ../root/script/main.js:334
-#: ../root/script/main.js:369
-#: ../root/script/main.js:384
-#: ../root/script/main.js:396
-#: ../root/script/main.js:430
-#: ../root/script/main.js:436
-#: ../root/script/main.js:448
-#: ../root/script/main.js:586
-#: ../root/script/components.js:136
-#: ../root/script/components.js:143
-#: ../root/script/components.js:186
-#: ../root/script/components.js:230
-#: ../root/script/components.js:296
-#: ../root/script/components.js:458
-#: ../root/script/components.js:846
-#: ../root/script/components.js:880
-#: ../root/script/components.js:1142
-msgid "Failed"
-msgstr "Eşuat"
-
-#: ../root/script/main.js:75
-msgid "Failed loading I18N translations for main rack"
-msgstr "Încărcarea traducerilor pentru rackul principal a eşuat"
-
-#: ../root/script/main.js:115
-#: ../root/script/components.js:362
-#: ../root/script/components.js:982
+#: ../root/script/main.js:158
+#: ../root/script/components.js:719
+#: ../root/script/components.js:1641
+#: ../root/script/components.js:1688
 msgid "Help"
 msgstr "Ajutor"
 
-#: ../root/script/main.js:129
-msgid "loading"
-msgstr "se încarcă"
+#: ../root/script/main.js:169
+msgid "The value in this field is invalid"
+msgstr "Valoarea acestui câmp este invalidă"
 
-#: ../root/script/main.js:232
+#: ../root/script/main.js:170
+msgid "This field is required"
+msgstr "Acest câmp este necesar"
+
+#: ../root/script/main.js:175
+#: ../root/script/main.js:187
+#: ../root/script/main.js:192
+#: ../root/script/main.js:318
+#: ../root/script/main.js:332
+#: ../root/script/main.js:350
+#: ../root/script/main.js:381
+#: ../root/script/main.js:388
+#: ../root/script/main.js:432
+#: ../root/script/main.js:460
+#: ../root/script/main.js:528
+#: ../root/script/main.js:555
+#: ../root/script/main.js:561
+#: ../root/script/components.js:61
+#: ../root/script/components.js:76
+#: ../root/script/components.js:98
+#: ../root/script/components.js:111
+#: ../root/script/components.js:147
+#: ../root/script/components.js:162
+#: ../root/script/components.js:186
+#: ../root/script/components.js:198
+#: ../root/script/components.js:268
+#: ../root/script/components.js:475
+#: ../root/script/components.js:769
+#: ../root/script/components.js:776
+#: ../root/script/components.js:831
+#: ../root/script/components.js:866
+#: ../root/script/components.js:969
+#: ../root/script/components.js:1372
+#: ../root/script/components.js:1401
+#: ../root/script/components.js:1906
+msgid "Failed"
+msgstr "Eşuat"
+
+#: ../root/script/main.js:180
+msgid "Warning"
+msgstr "Avertisment"
+
+#: ../root/script/main.js:181
+#, python-format
+msgid "$s cannot be removed from the toolbox because it is being used by the"
+"following policy rack:<br><b>%s</b><br><br>You must remove the product from"
+"all policy racks first."
+msgstr "$s nu poate fi şters din toolbox deoarece este folosit de următorul rack:<br><b>%s</b><br><br>Produsul trebuie şeters in prealabil din toate rack-urilel."
+
+#: ../root/script/main.js:497
 msgid "Networking"
 msgstr "Reţea"
 
-#: ../root/script/main.js:233
-msgid "Remote Admin"
-msgstr "Administrare la distanţa"
+#: ../root/script/main.js:498
+msgid "Administration"
+msgstr "Administrare"
 
-#: ../root/script/main.js:234
+#: ../root/script/main.js:499
+msgid "Racks"
+msgstr ""
+
+#: ../root/script/main.js:500
 msgid "Email"
 msgstr "Email"
 
-#: ../root/script/main.js:235
+#: ../root/script/main.js:501
 msgid "User Directory"
 msgstr "User Directory"
 
-#: ../root/script/main.js:236
-msgid "Backup/Restore"
-msgstr "Copie siguranţă/Restaurare"
-
-#: ../root/script/main.js:237
-msgid "Support"
-msgstr "Suport"
-
-#: ../root/script/main.js:238
+#: ../root/script/main.js:502
 msgid "Upgrade"
 msgstr "Upgrade"
 
-#: ../root/script/main.js:239
-msgid "Setup Info"
-msgstr "Informaţii setări"
+#: ../root/script/main.js:503
+msgid "System"
+msgstr "Sistem"
 
-#: ../root/script/main.js:553
+#: ../root/script/main.js:504
+msgid "System Info"
+msgstr "Informaţii sistem"
+
+#: ../root/script/main.js:610
 msgid "Services & Utilities"
 msgstr "Servicii & Utilitare"
 
-#: ../root/script/main.js:553
+#: ../root/script/main.js:610
 msgid "Services"
 msgstr "Servicii"
 
-#: ../root/script/main.js:585
-msgid "Show Policy Manager"
-msgstr "Afişează Managerul de Politici"
-
-#: ../root/script/components.js:186
-msgid "Failed loading I18N translations for this node"
-msgstr "Încărcarea traducerilor pentru acest nod a eşuat"
+#: ../root/script/components.js:352
+#: ../root/script/components.js:462
+msgid "More Info"
+msgstr "Mai multe informaţii"
 
 #: ../root/script/components.js:356
+msgid "Install"
+msgstr "Instalează"
+
+#: ../root/script/components.js:389
+msgid "Unactivating..."
+msgstr "Dezactivează..."
+
+#: ../root/script/components.js:402
+msgid "Installing..."
+msgstr "Instalează..."
+
+#: ../root/script/components.js:408
+msgid "Uninstalling..."
+msgstr "Dezinstalează..."
+
+#: ../root/script/components.js:415
+msgid "Downloading..."
+msgstr "Descarcă..."
+
+#: ../root/script/components.js:421
+msgid "Downloading file"
+msgstr "Descarcă fişier"
+
+#: ../root/script/components.js:428
+msgid "Activating..."
+msgstr "Activează..."
+
+#: ../root/script/components.js:433
+msgid "..."
+msgstr ""
+
+#: ../root/script/components.js:466
+msgid "Trial install"
+msgstr "Instalare de evaluare"
+
+#: ../root/script/components.js:468
+msgid "Buy"
+msgstr "Cumpără"
+
+#: ../root/script/components.js:684
+msgid "Trial"
+msgstr "Evaluare"
+
+#: ../root/script/components.js:686
+#, python-format
+msgid "%s days remain"
+msgstr "%s zile rămase"
+
+#: ../root/script/components.js:713
 msgid "Show Settings"
 msgstr "Afişează Setările"
 
-#: ../root/script/components.js:368
-msgid "Remove"
-msgstr "Şterge"
+#: ../root/script/components.js:831
+msgid "Failed loading I18N translations for this node"
+msgstr "Încărcarea traducerilor pentru acest nod a eşuat"
 
-#: ../root/script/components.js:374
-#: ../root/script/components.js:988
-msgid "Cancel"
-msgstr "Anulează"
+#: ../root/script/components.js:858
+msgid "Warning:"
+msgstr "Avertisment:"
 
-#: ../root/script/components.js:380
-msgid "Save"
-msgstr "Salvează"
-
-#: ../root/script/components.js:394
+#: ../root/script/components.js:909
 msgid "The <B>Status Indicator</B> shows the current operating condition of a"
 "particular software product."
-msgstr "<B>Indicatorul de Stare</B> afişează condiţia curenta de operare a unui anumit produs software."
+msgstr "<B>Indicatorul de Stare</B> afişează condiţia curenta de operare a unui"
+"anumit produs software."
 
-#: ../root/script/components.js:395
+#: ../root/script/components.js:910
 msgid "Green"
 msgstr "Verde"
 
-#: ../root/script/components.js:395
+#: ../root/script/components.js:910
 msgid "indicates that the product is \"on\" and operating normally."
 msgstr "indică faptul ca produsul este pornit si funcţionează normal."
 
-#: ../root/script/components.js:396
+#: ../root/script/components.js:911
 msgid "Red"
 msgstr "Roşu"
 
-#: ../root/script/components.js:396
+#: ../root/script/components.js:911
 msgid "indicates that the product is \"on\", but that an abnormal condition has"
 "occurred."
 msgstr "indică faptul ca produsul este pornit dar o condiţie anormala a apărut."
 
-#: ../root/script/components.js:397
+#: ../root/script/components.js:912
 msgid "Yellow"
 msgstr "Galben"
 
-#: ../root/script/components.js:397
+#: ../root/script/components.js:912
 msgid "indicates that the product is saving or refreshing settings."
 msgstr "indică faptul ca produsul salvează sau actualizează setări."
 
-#: ../root/script/components.js:398
+#: ../root/script/components.js:913
 msgid "Clear"
 msgstr "Curăţă"
 
-#: ../root/script/components.js:398
+#: ../root/script/components.js:913
 msgid "indicates that the product is \"off\", and may be turned \"on\" by the user."
 msgstr "indică faptul ca produsul este oprit dar poate fi pornit de către utilizator."
 
-#: ../root/script/components.js:401
+#: ../root/script/components.js:916
 msgid "The <B>Power Button</B> allows you to turn a product \"on\" and \"off\"."
 msgstr "<B>Butonul Pornire</B> permite pornirea, respectiv oprirea produsului."
 
-#: ../root/script/components.js:494
+#: ../root/script/components.js:1005
 msgid "activity"
 msgstr "activitate"
 
-#: ../root/script/components.js:568
+#: ../root/script/components.js:1078
 msgid "system"
 msgstr "sistem"
 
-#: ../root/script/components.js:578
+#: ../root/script/components.js:1088
 msgid "Current Session Count:"
 msgstr "Număr de Sesiuni Curente:"
 
-#: ../root/script/components.js:579
+#: ../root/script/components.js:1089
 msgid "ACC:"
 msgstr "ACC:"
 
-#: ../root/script/components.js:580
+#: ../root/script/components.js:1090
 msgid "REQ:"
 msgstr "REQ:"
 
-#: ../root/script/components.js:581
+#: ../root/script/components.js:1091
 msgid "Data rate:"
 msgstr "Rata de date:"
 
-#: ../root/script/components.js:783
+#: ../root/script/components.js:1307
 msgid "timestamp"
 msgstr "moment de timp"
 
-#: ../root/script/components.js:786
+#: ../root/script/components.js:1310
 msgid "action"
 msgstr "acţiune"
 
-#: ../root/script/components.js:787
+#: ../root/script/components.js:1311
 msgid "blocked"
 msgstr "blocat"
 
-#: ../root/script/components.js:787
+#: ../root/script/components.js:1311
 msgid "passed"
 msgstr "permis"
 
-#: ../root/script/components.js:790
+#: ../root/script/components.js:1314
 msgid "client"
 msgstr "client"
 
-#: ../root/script/components.js:791
+#: ../root/script/components.js:1315
 msgid "request"
 msgstr "cerere"
 
-#: ../root/script/components.js:792
+#: ../root/script/components.js:1316
 msgid "reason for action"
 msgstr "motivul acţiunii"
 
-#: ../root/script/components.js:793
+#: ../root/script/components.js:1317
 msgid "blocked in block list"
 msgstr "blocat"
 
-#: ../root/script/components.js:793
+#: ../root/script/components.js:1317
 msgid "not blocked in block list"
 msgstr "neblocat"
 
-#: ../root/script/components.js:796
+#: ../root/script/components.js:1320
 msgid "server"
 msgstr "server"
 
-#: ../root/script/components.js:805
+#: ../root/script/components.js:1329
 msgid "Event Log"
 msgstr "Log Evenimente"
 
-#: ../root/script/components.js:831
-#: ../root/script/components.js:832
+#: ../root/script/components.js:1355
+#: ../root/script/components.js:1356
 msgid "Refresh"
 msgstr "Reîmprospătează"
 
-#: ../root/script/components.js:994
+#: ../root/script/components.js:1561
+msgid "Remove"
+msgstr "Şterge"
+
+#: ../root/script/components.js:1567
+#: ../root/script/components.js:1647
+#: ../root/script/components.js:1694
+msgid "Cancel"
+msgstr "Anulează"
+
+#: ../root/script/components.js:1573
+#: ../root/script/components.js:1653
+msgid "Save"
+msgstr "Salvează"
+
+#: ../root/script/components.js:1700
 msgid "Update"
 msgstr "Actualizează"
 
-#: ../root/script/components.js:1031
-#: ../root/script/components.js:1256
+#: ../root/script/components.js:1773
+#: ../root/script/components.js:2024
 msgid "Edit"
 msgstr "Editează"
 
-#: ../root/script/components.js:1303
-msgid "Delete"
-msgstr "Şterge"
-
-#: ../root/script/components.js:1448
-msgid "Add"
-msgstr "Adaugă"
-
-#: ../root/script/components.js:1449
-msgid "Add New Row"
-msgstr "Adaugă Rând Nou"
-
-#: ../root/script/components.js:1115
+#: ../root/script/components.js:1856
 msgid "The form is not valid!"
 msgstr "Formularul conţine date invalide!"
 
-#: ../root/script/components.js:1444
+#: ../root/script/components.js:2071
+msgid "Delete"
+msgstr "Şterge"
+
+#: ../root/script/components.js:2204
 msgid "Displaying topics {0} - {1} of {2}"
 msgstr "Afişează elementele {0} - {1} din {2}"
 
-#: ../root/script/components.js:1446
+#: ../root/script/components.js:2205
 msgid "No topics to display"
 msgstr "Nici un element de afişat"
 
-#~ msgid "OpenVPN"
-#~ msgstr "OpenVPN"
+#: ../root/script/components.js:2216
+msgid "Add"
+msgstr "Adaugă"
 
-#~ msgid "Web Filter"
-#~ msgstr "Filtrare Web"
-
-#~ msgid "Spyware Blocker"
-#~ msgstr "Protecţie Spyware"
-
-#~ msgid "Attack Blocker"
-#~ msgstr "Protecţie împotriva atacurilor"
-
-#~ msgid "Virus Blocker"
-#~ msgstr "Protecţie împotriva viruşilor"
-
-#~ msgid "Protocol Control"
-#~ msgstr "Controlul Protocoalelor"
-
-#~ msgid "Spam Blocker"
-#~ msgstr "Protecţie Spam"
-
-#~ msgid "Firewall"
-#~ msgstr "Firewall"
-
-#~ msgid "Intrusion Prevention"
-#~ msgstr "Protecţie împotriva intruziunii"
-
-#~ msgid "Phish Blocker"
-#~ msgstr "Protecţie Phish"
-
-#~ msgid "Untangle Reports"
-#~ msgstr "Rapoarte Untangle"
+#: ../root/script/components.js:2217
+msgid "Add New Row"
+msgstr "Adaugă Rând Nou"
 

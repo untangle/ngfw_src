@@ -177,7 +177,7 @@ Ung.Main.prototype = {
 				}
 				var tids=result;
 				if(tids.length>0) {
-					Ext.MessageBox.alert(i18n._(this.name+" "+i18n._("Warning")), 
+					Ext.MessageBox.alert(this.name+" "+i18n._("Warning"), 
 					i18n.sprintf(i18n._("$s cannot be removed from the toolbox because it is being used by the following policy rack:<br><b>%s</b><br><br>You must remove the product from all policy racks first."), this.displayName,tids[0]. policy.name));
 					return;
 				} else {
