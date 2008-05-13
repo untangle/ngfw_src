@@ -1,488 +1,566 @@
-if(!Ung.hasResource["Ung.Spyware"]) {
-Ung.hasResource["Ung.Spyware"]=true;
-Ung.Settings.registerClassName('untangle-node-spyware',"Ung.Spyware");
+if (!Ung.hasResource["Ung.Spyware"]) {
+    Ung.hasResource["Ung.Spyware"] = true;
+    Ung.Settings.registerClassName('untangle-node-spyware', "Ung.Spyware");
 
-Ung.Spyware = Ext.extend(Ung.Settings, {
-	gridActiveXList: null,
-	gridCookiesList: null,
-	gridSubnetList: null,
-	panelBlockLists: null,
-    gridPassList: null,
-    gridEventLog: null,
-    //called when the component is rendered
-    onRender: function(container, position) {
-    	//call superclass renderer first
-    	Ung.Spyware.superclass.onRender.call(this,container, position);
-		
-		//build the 3 tabs
-		this.buildBlockLists();
-		this.buildPassList();
-		this.buildEventLog();
-		//builds a tab panel with the 3 panels
-		this.buildTabPanel([this.panelBlockLists,this.gridPassList,this.gridEventLog]);
-    },
-    // Block lists panel
-    buildBlockLists: function () {
-		this.panelBlockLists=new Ext.Panel({
-			winCookiesList: null,
-			winActiveXList: null,
-			winSubnetList: null,
-			subCmps: [],
-			title: this.i18n._("Block Lists"),
-			parentId: this.getId(),
-			
-		    layout: "form",
-		    bodyStyle:'padding:5px 5px 0px 5px;',
-		    autoScroll: true,
-		    defaults: {
-	            xtype:'fieldset',
-	            autoHeight:true,
-	            buttonAlign: 'left'
-		    },
-			items: [
-				{
-	            title: this.i18n._('Web'),
-				items: [{
-                    xtype:'checkbox',
-                    boxLabel: 'Block Spyware & Ad URLs',
-                    hideLabel: true,
-                    name: 'urlBlacklistEnabled',
-                    checked: this.getBaseSettings().urlBlacklistEnabled,
-					listeners: {
-						"check": {
-							fn: function(elem, checked) {
-								this.getBaseSettings().urlBlacklistEnabled=checked;
-							}.createDelegate(this)
-						}
-					}
-				},{
-                    xtype:'combo',
-                    fieldLabel: this.i18n._('User Bypass'),
-					name: "userWhitelist",
-				    store: new Ext.data.SimpleStore({
-						fields:['userWhitelistValue', 'userWhitelistName'],
-						data: [["NONE",this.i18n._("None")],
-								["USER_ONLY",this.i18n._("Temporary")],
-								["USER_AND_GLOBAL",this.i18n._("Permanent and Global")]]
-					}),
-					displayField: 'userWhitelistName',
-					valueField: 'userWhitelistValue',
-                    value: this.getBaseSettings().userWhitelistMode,
-				    typeAhead: true,
-				    mode: 'local',
-				    triggerAction: 'all',
-				    listClass: 'x-combo-list-small',
-				    selectOnFocus:true,
-					listeners: {
-						"change": {
-							fn: function(elem, newValue) {
-								this.getBaseSettings().userWhitelistMode=newValue;
-							}.createDelegate(this)
-						}
-					}
-				}]
-			}, {
-	            title: this.i18n._('Cookies'),
-				items: [{
-                    xtype:'checkbox',
-                    boxLabel: 'Block Tracking & Ad Cookies',
-                    hideLabel: true,
-                    name: 'cookieBlockerEnabled',
-                    checked: this.getBaseSettings().cookieBlockerEnabled,
-					listeners: {
-						"check": {
-							fn: function(elem, checked) {
-								this.getBaseSettings().cookieBlockerEnabled=checked;
-							}.createDelegate(this)
-						}
-					}
-				}],
-	            buttons :[
-	            	{
-						text: this.i18n._("manage list"),
-						handler: function() {this.panelBlockLists.onManageCookiesList();}.createDelegate(this)
-	                }
-	            ]
-			}, {
-	            title: this.i18n._('ActiveX'),
-				items: [{
-                    xtype:'checkbox',
-                    boxLabel: 'Block Malware ActiveX Installs',
-                    hideLabel: true,
-                    name: 'activeXEnabled',
-                    checked: this.getBaseSettings().activeXEnabled,
-					listeners: {
-						"check": {
-							fn: function(elem, checked) {
-								this.getBaseSettings().activeXEnabled=checked;
-							}.createDelegate(this)
-						}
-					}
-				},{
-                    xtype:'checkbox',
-                    boxLabel: 'Block All ActiveX',
-                    hideLabel: true,
-                    name: 'blockAllActiveX',
-                    checked: this.getBaseSettings().blockAllActiveX,
-					listeners: {
-						"check": {
-							fn: function(elem, checked) {
-								this.getBaseSettings().blockAllActiveX=checked;
-							}.createDelegate(this)
-						}
-					}
-				}],
-	            buttons :[
-	            	{
-						text: this.i18n._("manage list"),
-						handler: function() {this.panelBlockLists.onManageActiveXList();}.createDelegate(this)
-	                }
-	            ]
-			}, {
-	            title: this.i18n._('Traffic'),
-				items: [{
-                    xtype:'checkbox',
-                    boxLabel: 'Monitor Suspicious Traffic',
-                    hideLabel: true,
-                    name: 'spywareEnabled',
-                    checked: this.getBaseSettings().spywareEnabled,
-					listeners: {
-						"check": {
-							fn: function(elem, checked) {
-								this.getBaseSettings().spywareEnabled=checked;
-							}.createDelegate(this)
-						}
-					}
-				}],
-	            buttons :[
-	            	{
-						text: this.i18n._("manage list"),
-						handler: function() {this.panelBlockLists.onManageSubnetList();}.createDelegate(this)
-	                }
-	            ]
-			},{
-				html: this.i18n._("Spyware Blocker signatures were last updated")+ ":&nbsp;&nbsp;&nbsp;&nbsp;" + i18n.timestampFormat(this.getBaseSettings().lastUpdate)
-			}],
-			
-		    onManageCookiesList: function () {
-		    	if(!this.winCookiesList) {
-			    	var settingsCmp= Ext.getCmp(this.parentId);
-		    		settingsCmp.buildCookiesList();
-		    		this.winCookiesList=new Ung.ManageListWindow({
-		    			breadcrumbs: [
-                            {title:i18n._(rpc.currentPolicy.name), action: function(){
-                                this.panelBlockLists.winCookiesList.cancelAction();
-                                this.cancelAction();
-                            }.createDelegate(settingsCmp) },
-                            {title:settingsCmp.node.md.displayName, action: function(){
-                                this.panelBlockLists.winCookiesList.cancelAction();
-                            }.createDelegate(settingsCmp)},
-                            {title: settingsCmp.i18n._("Cookies List")}
-                        ],
-		    			grid: settingsCmp.gridCookiesList
-		    		});
-		    	}
-		    	this.winCookiesList.show();
-		    },
-		    onManageActiveXList: function () {
-		    	if(!this.winActiveXList) {
-			    	var settingsCmp= Ext.getCmp(this.parentId);
-		    		settingsCmp.buildActiveXList();
-		    		this.winActiveXList=new Ung.ManageListWindow({
-                        breadcrumbs: [
-                            {title:i18n._(rpc.currentPolicy.name), action: function(){
-                                this.panelBlockLists.winActiveXList.cancelAction();
-                                this.cancelAction();
-                            }.createDelegate(settingsCmp) },
-                            {title:settingsCmp.node.md.displayName, action: function(){
-                                this.panelBlockLists.winActiveXList.cancelAction();
-                            }.createDelegate(settingsCmp)},
-                            {title: settingsCmp.i18n._("ActiveX List")}
-                        ],
-		    			grid: settingsCmp.gridActiveXList
-		    		});
-		    	}
-		    	this.winActiveXList.show();
-		    },
-		    onManageSubnetList: function () {
-		    	if(!this.winSubnetList) {
-			    	var settingsCmp= Ext.getCmp(this.parentId);
-		    		settingsCmp.buildSubnetList();
-		    		this.winSubnetList=new Ung.ManageListWindow({
-                        breadcrumbs: [
-                            {title:i18n._(rpc.currentPolicy.name), action: function(){
-                                this.panelBlockLists.winSubnetList.cancelAction();
-                                this.cancelAction();
-                            }.createDelegate(settingsCmp) },
-                            {title:settingsCmp.node.md.displayName, action: function(){
-                                this.panelBlockLists.winSubnetList.cancelAction();
-                            }.createDelegate(settingsCmp)},
-                            {title: settingsCmp.i18n._("Subnet List")}
-                        ],
-		    			grid: settingsCmp.gridSubnetList
-		    		});
-		    	}
-		    	this.winSubnetList.show();
-		    },
-			
-			beforeDestroy : function(){
-		        Ext.destroy(
-		            this.winCookiesList,
-		            this.winActiveXList,
-		            this.winSubnetList
-		        );
-	        	Ext.each(this.subCmps,Ext.destroy);
-		        Ext.Panel.prototype.beforeDestroy.call(this);
-		    }
-		});
-    
-    },
-    // Cookies List
-    buildCookiesList: function() {
-	    var liveColumn = new Ext.grid.CheckColumn({
-	       header: "<b>"+this.i18n._("block")+"</b>", dataIndex: 'live', fixed:true
-	    });
+    Ung.Spyware = Ext.extend(Ung.Settings, {
+        gridActiveXList : null,
+        gridCookiesList : null,
+        gridSubnetList : null,
+        panelBlockLists : null,
+        gridPassList : null,
+        gridEventLog : null,
+        // called when the component is rendered
+        onRender : function(container, position) {
+            // call superclass renderer first
+            Ung.Spyware.superclass.onRender.call(this, container, position);
 
-    	this.gridCookiesList=new Ung.EditorGrid({
-    		settingsCmp: this,
-    		totalRecords: this.getBaseSettings().cookieRulesLength,
-    		emptyRow: {"string":this.i18n._("[no identification]"),"live":true,"description":this.i18n._("[no description]")},
-    		title: this.i18n._("Cookies List"),
-    		recordJavaClass: "com.untangle.uvm.node.StringRule",
-    		proxyRpcFn: this.getRpcNode().getCookieRules,
-			fields: [
-				{name: 'id'},
-				{name: 'string'},
-				{name: 'live'},
-				{name: 'description', convert: function(v){ return this.i18n._(v)}.createDelegate(this)}
-			],
-			columns: [
-	          {id:'string',header: this.i18n._("identification"), width: 140,  dataIndex: 'string',
-		          editor: new Ext.form.TextField({allowBlank: false})},
-	          liveColumn
-			],
-			sortField: 'string',
-			columnsDefaultSortable: true,
-			autoExpandColumn: 'string',
-			plugins: [liveColumn],
-			rowEditorInputLines: [
-				new Ext.form.TextField({
-					name: "string",
-					fieldLabel: this.i18n._("Identification"),
-					allowBlank: false, 
-					width: 200
-				}),
-				new Ext.form.Checkbox({
-					name: "live",
-					fieldLabel: this.i18n._("Block")
-				})
-			]
-    	});
-    },
-    // ActiveX List
-    buildActiveXList: function() {
-	    var liveColumn = new Ext.grid.CheckColumn({
-	       header: "<b>"+this.i18n._("block")+"</b>", dataIndex: 'live', fixed:true
-	    });
+            // build the 3 tabs
+            this.buildBlockLists();
+            this.buildPassList();
+            this.buildEventLog();
+            // builds a tab panel with the 3 panels
+            this.buildTabPanel([this.panelBlockLists, this.gridPassList, this.gridEventLog]);
+        },
+        // Block lists panel
+        buildBlockLists : function() {
+            this.panelBlockLists = new Ext.Panel({
+                winCookiesList : null,
+                winActiveXList : null,
+                winSubnetList : null,
+                subCmps : [],
+                title : this.i18n._("Block Lists"),
+                parentId : this.getId(),
 
-    	this.gridActiveXList=new Ung.EditorGrid({
-    		settingsCmp: this,
-    		totalRecords: this.getBaseSettings().activeXRulesLength,
-    		emptyRow: {"string":this.i18n._("[no identification]"),"live":true,"description":this.i18n._("[no description]")},
-    		title: this.i18n._("ActiveX List"),
-    		recordJavaClass: "com.untangle.uvm.node.StringRule",
-    		proxyRpcFn: this.getRpcNode().getActiveXRules,
-			fields: [
-				{name: 'id'},
-				{name: 'string'},
-				{name: 'live'},
-				{name: 'description', convert: function(v){ return this.i18n._(v)}.createDelegate(this)}
-			],
-			columns: [
-	          {id:'string',header: this.i18n._("identification"), width: 300,  dataIndex: 'string',
-		          editor: new Ext.form.TextField({allowBlank: false})},
-	          liveColumn
-			],
-			sortField: 'string',
-			columnsDefaultSortable: true,
-			autoExpandColumn: 'string',
-			plugins: [liveColumn],
-			rowEditorInputLines: [
-				new Ext.form.TextField({
-					name: "string",
-					fieldLabel: this.i18n._("Identification"),
-					allowBlank: false, 
-					width: 300
-				}),
-				new Ext.form.Checkbox({
-					name: "live",
-					fieldLabel: this.i18n._("Block")
-				})
-			]
-    	});
-    },
-    // Subnet List
-    buildSubnetList: function() {
-	    var logColumn = new Ext.grid.CheckColumn({
-	       header: "<b>"+this.i18n._("log")+"</b>", dataIndex: 'log', fixed:true
-	    });
+                layout : "form",
+                bodyStyle : 'padding:5px 5px 0px 5px;',
+                autoScroll : true,
+                defaults : {
+                    xtype : 'fieldset',
+                    autoHeight : true,
+                    buttonAlign : 'left'
+                },
+                items : [{
+                    title : this.i18n._('Web'),
+                    items : [{
+                        xtype : 'checkbox',
+                        boxLabel : 'Block Spyware & Ad URLs',
+                        hideLabel : true,
+                        name : 'urlBlacklistEnabled',
+                        checked : this.getBaseSettings().urlBlacklistEnabled,
+                        listeners : {
+                            "check" : {
+                                fn : function(elem, checked) {
+                                    this.getBaseSettings().urlBlacklistEnabled = checked;
+                                }.createDelegate(this)
+                            }
+                        }
+                    }, {
+                        xtype : 'combo',
+                        fieldLabel : this.i18n._('User Bypass'),
+                        name : "userWhitelist",
+                        store : new Ext.data.SimpleStore({
+                            fields : ['userWhitelistValue', 'userWhitelistName'],
+                            data : [["NONE", this.i18n._("None")], ["USER_ONLY", this.i18n._("Temporary")],
+                                    ["USER_AND_GLOBAL", this.i18n._("Permanent and Global")]]
+                        }),
+                        displayField : 'userWhitelistName',
+                        valueField : 'userWhitelistValue',
+                        value : this.getBaseSettings().userWhitelistMode,
+                        typeAhead : true,
+                        mode : 'local',
+                        triggerAction : 'all',
+                        listClass : 'x-combo-list-small',
+                        selectOnFocus : true,
+                        listeners : {
+                            "change" : {
+                                fn : function(elem, newValue) {
+                                    this.getBaseSettings().userWhitelistMode = newValue;
+                                }.createDelegate(this)
+                            }
+                        }
+                    }]
+                }, {
+                    title : this.i18n._('Cookies'),
+                    items : [{
+                        xtype : 'checkbox',
+                        boxLabel : 'Block Tracking & Ad Cookies',
+                        hideLabel : true,
+                        name : 'cookieBlockerEnabled',
+                        checked : this.getBaseSettings().cookieBlockerEnabled,
+                        listeners : {
+                            "check" : {
+                                fn : function(elem, checked) {
+                                    this.getBaseSettings().cookieBlockerEnabled = checked;
+                                }.createDelegate(this)
+                            }
+                        }
+                    }],
+                    buttons : [{
+                        text : this.i18n._("manage list"),
+                        handler : function() {
+                            this.panelBlockLists.onManageCookiesList();
+                        }.createDelegate(this)
+                    }]
+                }, {
+                    title : this.i18n._('ActiveX'),
+                    items : [{
+                        xtype : 'checkbox',
+                        boxLabel : 'Block Malware ActiveX Installs',
+                        hideLabel : true,
+                        name : 'activeXEnabled',
+                        checked : this.getBaseSettings().activeXEnabled,
+                        listeners : {
+                            "check" : {
+                                fn : function(elem, checked) {
+                                    this.getBaseSettings().activeXEnabled = checked;
+                                }.createDelegate(this)
+                            }
+                        }
+                    }, {
+                        xtype : 'checkbox',
+                        boxLabel : 'Block All ActiveX',
+                        hideLabel : true,
+                        name : 'blockAllActiveX',
+                        checked : this.getBaseSettings().blockAllActiveX,
+                        listeners : {
+                            "check" : {
+                                fn : function(elem, checked) {
+                                    this.getBaseSettings().blockAllActiveX = checked;
+                                }.createDelegate(this)
+                            }
+                        }
+                    }],
+                    buttons : [{
+                        text : this.i18n._("manage list"),
+                        handler : function() {
+                            this.panelBlockLists.onManageActiveXList();
+                        }.createDelegate(this)
+                    }]
+                }, {
+                    title : this.i18n._('Traffic'),
+                    items : [{
+                        xtype : 'checkbox',
+                        boxLabel : 'Monitor Suspicious Traffic',
+                        hideLabel : true,
+                        name : 'spywareEnabled',
+                        checked : this.getBaseSettings().spywareEnabled,
+                        listeners : {
+                            "check" : {
+                                fn : function(elem, checked) {
+                                    this.getBaseSettings().spywareEnabled = checked;
+                                }.createDelegate(this)
+                            }
+                        }
+                    }],
+                    buttons : [{
+                        text : this.i18n._("manage list"),
+                        handler : function() {
+                            this.panelBlockLists.onManageSubnetList();
+                        }.createDelegate(this)
+                    }]
+                }, {
+                    html : this.i18n._("Spyware Blocker signatures were last updated") + ":&nbsp;&nbsp;&nbsp;&nbsp;"
+                            + (this.getBaseSettings().lastUpdate != null) ? i18n.timestampFormat(this.getBaseSettings().lastUpdate) : i18n
+                            ._("Unknown")
+                }],
 
-    	this.gridSubnetList=new Ung.EditorGrid({
-    		settingsCmp: this,
-    		totalRecords: this.getBaseSettings().subnetRulesLength,
-    		emptyRow: {"ipMaddr":"1.2.3.4/5","name":this.i18n._("[no name]"),"log":true, description: this.i18n._("[no description]")},
-    		title: this.i18n._("Subnet List"),
-    		recordJavaClass: "com.untangle.uvm.node.IPMaddrRule",
-    		proxyRpcFn: this.getRpcNode().getSubnetRules,
-			fields: [
-				{name: 'id'},
-				{name: 'name'},
-				{name: 'ipMaddr'},
-				{name: 'log'},
-				{name: 'description', convert: function(v){ return this.i18n._(v)}.createDelegate(this)}
-			],
-			columns: [
-				{id:'name',header: this.i18n._("name"), width: 150,  dataIndex: 'name',
-				 editor: new Ext.form.TextField({allowBlank: false})},
-				{id:'ipMaddr',header: this.i18n._("subnet"), width: 200,  dataIndex: 'ipMaddr',
-				 editor: new Ext.form.TextField({allowBlank: false})},
-				logColumn
-			],
-			sortField: 'name',
-			columnsDefaultSortable: true,
-			autoExpandColumn: 'name',
-			plugins: [logColumn],
-			rowEditorInputLines: [
-				new Ext.form.TextField({
-					name: "name",
-					fieldLabel: this.i18n._("Name"),
-					allowBlank: false, 
-					width: 200
-				}),
-				new Ext.form.TextField({
-					name: "ipMaddr",
-					fieldLabel: this.i18n._("Subnet"),
-					allowBlank: false, 
-					width: 200
-				}),
-				new Ext.form.Checkbox({
-					name: "log",
-					fieldLabel: this.i18n._("Log")
-				})
-			]
-    	});
-    },
-    // Pass List
-    buildPassList: function() {
-	    var passColumn = new Ext.grid.CheckColumn({
-	       header: "<b>"+this.i18n._("pass")+"</b>", dataIndex: 'live', fixed:true
-	    });
+                onManageCookiesList : function() {
+                    if (!this.winCookiesList) {
+                        var settingsCmp = Ext.getCmp(this.parentId);
+                        settingsCmp.buildCookiesList();
+                        this.winCookiesList = new Ung.ManageListWindow({
+                            breadcrumbs : [{
+                                title : i18n._(rpc.currentPolicy.name),
+                                action : function() {
+                                    this.panelBlockLists.winCookiesList.cancelAction();
+                                    this.cancelAction();
+                                }.createDelegate(settingsCmp)
+                            }, {
+                                title : settingsCmp.node.md.displayName,
+                                action : function() {
+                                    this.panelBlockLists.winCookiesList.cancelAction();
+                                }.createDelegate(settingsCmp)
+                            }, {
+                                title : settingsCmp.i18n._("Cookies List")
+                            }],
+                            grid : settingsCmp.gridCookiesList
+                        });
+                    }
+                    this.winCookiesList.show();
+                },
+                onManageActiveXList : function() {
+                    if (!this.winActiveXList) {
+                        var settingsCmp = Ext.getCmp(this.parentId);
+                        settingsCmp.buildActiveXList();
+                        this.winActiveXList = new Ung.ManageListWindow({
+                            breadcrumbs : [{
+                                title : i18n._(rpc.currentPolicy.name),
+                                action : function() {
+                                    this.panelBlockLists.winActiveXList.cancelAction();
+                                    this.cancelAction();
+                                }.createDelegate(settingsCmp)
+                            }, {
+                                title : settingsCmp.node.md.displayName,
+                                action : function() {
+                                    this.panelBlockLists.winActiveXList.cancelAction();
+                                }.createDelegate(settingsCmp)
+                            }, {
+                                title : settingsCmp.i18n._("ActiveX List")
+                            }],
+                            grid : settingsCmp.gridActiveXList
+                        });
+                    }
+                    this.winActiveXList.show();
+                },
+                onManageSubnetList : function() {
+                    if (!this.winSubnetList) {
+                        var settingsCmp = Ext.getCmp(this.parentId);
+                        settingsCmp.buildSubnetList();
+                        this.winSubnetList = new Ung.ManageListWindow({
+                            breadcrumbs : [{
+                                title : i18n._(rpc.currentPolicy.name),
+                                action : function() {
+                                    this.panelBlockLists.winSubnetList.cancelAction();
+                                    this.cancelAction();
+                                }.createDelegate(settingsCmp)
+                            }, {
+                                title : settingsCmp.node.md.displayName,
+                                action : function() {
+                                    this.panelBlockLists.winSubnetList.cancelAction();
+                                }.createDelegate(settingsCmp)
+                            }, {
+                                title : settingsCmp.i18n._("Subnet List")
+                            }],
+                            grid : settingsCmp.gridSubnetList
+                        });
+                    }
+                    this.winSubnetList.show();
+                },
 
-    	this.gridPassList=new Ung.EditorGrid({
-    		settingsCmp: this,
-    		totalRecords:this.getBaseSettings().domainWhitelistLength,
-    		emptyRow: {"string":"","live":true,"category":this.i18n._("[no category]"),"description":this.i18n._("[no description]")},
-    		title: this.i18n._("Pass List"),
-    		proxyRpcFn: this.getRpcNode().getDomainWhitelist,
-    		recordJavaClass: "com.untangle.uvm.node.StringRule",
-			fields: [
-				{name: 'id'},
-				{name: 'string'},
-				{name: 'live'},
-				{name: 'category'},
-				{name: 'description', convert: function(v){ return this.i18n._(v)}.createDelegate(this)}
-			],
-			columns: [
-				{id:'string',header: this.i18n._("site"), width: 200,  dataIndex: 'string',
-				 editor: new Ext.form.TextField({allowBlank: false})},
-				passColumn,
-				{id:'description',header: this.i18n._("description"), width: 200, dataIndex: 'description',
-				 editor: new Ext.form.TextField({allowBlank: false})}
-			],
-			sortField: 'string',
-			columnsDefaultSortable: true,
-			autoExpandColumn: 'description',
-			plugins: [passColumn],
-			rowEditorInputLines: [
-				new Ext.form.TextField({
-					name: "string",
-					fieldLabel: this.i18n._("Site"),
-					allowBlank: false, 
-					width: 200
-				}),
-				new Ext.form.Checkbox({
-					name: "live",
-					fieldLabel: this.i18n._("Pass")
-				}),
-				new Ext.form.TextArea({
-					name: "description",
-					fieldLabel: this.i18n._("Description"),
-					width: 200,
-					height: 60
-				})
-			]
-    	});
-    },
-    // Event Log
-    buildEventLog: function() {
-		this.gridEventLog=new Ung.GridEventLog({
-			settingsCmp: this,
-			//This is a predefined event log, so there is no need to specify the fields and columns
-			predefinedType: "TYPE1"
-		});
-    },
-    
-    //validation
-    validateServer: function() {
-    	//ipMaddr list must be validated server side
-		var subnetSaveList=this.gridSubnetList?this.gridSubnetList.getSaveList():null;
-		if(subnetSaveList!=null) {
-			var ipMaddrList=[];
-			//added
-			for(var i=0;i<subnetSaveList[0].list.length;i++) {
-				ipMaddrList.push(subnetSaveList[0].list[i]["ipMaddr"]);
-			}
-			//modified
-			for(var i=0;i<subnetSaveList[2].list.length;i++) {
-				ipMaddrList.push(subnetSaveList[2].list[i]["ipMaddr"]);
-			}
-			if(ipMaddrList.length>0) {
-				try {
-					var result = this.getValidator().validate({list: ipMaddrList,"javaClass":"java.util.ArrayList"});
-					if(!result.valid) {
-						this.panelBlockLists.onManageSubnetList();
-						this.gridSubnetList.focusFirstChangedDataByFieldValue("ipMaddr",result.cause);
-						Ext.MessageBox.alert(this.i18n._("Validation failed"),this.i18n._(result.message)+": "+result.cause);
-						return false;
-					}
-				} catch (e){
-					Ext.MessageBox.alert(i18n._("Failed"),e.message);
-					return false;
-				}
-			}
-		}
-		return true;
-    },
-    
-    // save function
-	save: function() {
-		//validate first
-		if (this.validate()) {
-			//disable tabs during save
-			this.tabs.disable();
-			this.getRpcNode().updateAll(function (result, exception) {
-				//re-enable tabs
-				this.tabs.enable();
-				if(exception) {Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}
-				//exit settings screen
-				this.cancelAction();
-			}.createDelegate(this),
-				this.getBaseSettings(),
-				this.gridActiveXList?this.gridActiveXList.getSaveList():null,
-				this.gridCookiesList?this.gridCookiesList.getSaveList():null,
-				this.gridSubnetList?this.gridSubnetList.getSaveList():null,
-				this.gridPassList.getSaveList() );
-		}
-	}
-});
+                beforeDestroy : function() {
+                    Ext.destroy(this.winCookiesList, this.winActiveXList, this.winSubnetList);
+                    Ext.each(this.subCmps, Ext.destroy);
+                    Ext.Panel.prototype.beforeDestroy.call(this);
+                }
+            });
+
+        },
+        // Cookies List
+        buildCookiesList : function() {
+            var liveColumn = new Ext.grid.CheckColumn({
+                header : "<b>" + this.i18n._("block") + "</b>",
+                dataIndex : 'live',
+                fixed : true
+            });
+
+            this.gridCookiesList = new Ung.EditorGrid({
+                settingsCmp : this,
+                totalRecords : this.getBaseSettings().cookieRulesLength,
+                emptyRow : {
+                    "string" : this.i18n._("[no identification]"),
+                    "live" : true,
+                    "description" : this.i18n._("[no description]")
+                },
+                title : this.i18n._("Cookies List"),
+                recordJavaClass : "com.untangle.uvm.node.StringRule",
+                proxyRpcFn : this.getRpcNode().getCookieRules,
+                fields : [{
+                    name : 'id'
+                }, {
+                    name : 'string'
+                }, {
+                    name : 'live'
+                }, {
+                    name : 'description',
+                    convert : function(v) {
+                        return this.i18n._(v)
+                    }.createDelegate(this)
+                }],
+                columns : [{
+                    id : 'string',
+                    header : this.i18n._("identification"),
+                    width : 140,
+                    dataIndex : 'string',
+                    editor : new Ext.form.TextField({
+                        allowBlank : false
+                    })
+                }, liveColumn],
+                sortField : 'string',
+                columnsDefaultSortable : true,
+                autoExpandColumn : 'string',
+                plugins : [liveColumn],
+                rowEditorInputLines : [new Ext.form.TextField({
+                    name : "string",
+                    fieldLabel : this.i18n._("Identification"),
+                    allowBlank : false,
+                    width : 200
+                }), new Ext.form.Checkbox({
+                    name : "live",
+                    fieldLabel : this.i18n._("Block")
+                })]
+            });
+        },
+        // ActiveX List
+        buildActiveXList : function() {
+            var liveColumn = new Ext.grid.CheckColumn({
+                header : "<b>" + this.i18n._("block") + "</b>",
+                dataIndex : 'live',
+                fixed : true
+            });
+
+            this.gridActiveXList = new Ung.EditorGrid({
+                settingsCmp : this,
+                totalRecords : this.getBaseSettings().activeXRulesLength,
+                emptyRow : {
+                    "string" : this.i18n._("[no identification]"),
+                    "live" : true,
+                    "description" : this.i18n._("[no description]")
+                },
+                title : this.i18n._("ActiveX List"),
+                recordJavaClass : "com.untangle.uvm.node.StringRule",
+                proxyRpcFn : this.getRpcNode().getActiveXRules,
+                fields : [{
+                    name : 'id'
+                }, {
+                    name : 'string'
+                }, {
+                    name : 'live'
+                }, {
+                    name : 'description',
+                    convert : function(v) {
+                        return this.i18n._(v)
+                    }.createDelegate(this)
+                }],
+                columns : [{
+                    id : 'string',
+                    header : this.i18n._("identification"),
+                    width : 300,
+                    dataIndex : 'string',
+                    editor : new Ext.form.TextField({
+                        allowBlank : false
+                    })
+                }, liveColumn],
+                sortField : 'string',
+                columnsDefaultSortable : true,
+                autoExpandColumn : 'string',
+                plugins : [liveColumn],
+                rowEditorInputLines : [new Ext.form.TextField({
+                    name : "string",
+                    fieldLabel : this.i18n._("Identification"),
+                    allowBlank : false,
+                    width : 300
+                }), new Ext.form.Checkbox({
+                    name : "live",
+                    fieldLabel : this.i18n._("Block")
+                })]
+            });
+        },
+        // Subnet List
+        buildSubnetList : function() {
+            var logColumn = new Ext.grid.CheckColumn({
+                header : "<b>" + this.i18n._("log") + "</b>",
+                dataIndex : 'log',
+                fixed : true
+            });
+
+            this.gridSubnetList = new Ung.EditorGrid({
+                settingsCmp : this,
+                totalRecords : this.getBaseSettings().subnetRulesLength,
+                emptyRow : {
+                    "ipMaddr" : "1.2.3.4/5",
+                    "name" : this.i18n._("[no name]"),
+                    "log" : true,
+                    description : this.i18n._("[no description]")
+                },
+                title : this.i18n._("Subnet List"),
+                recordJavaClass : "com.untangle.uvm.node.IPMaddrRule",
+                proxyRpcFn : this.getRpcNode().getSubnetRules,
+                fields : [{
+                    name : 'id'
+                }, {
+                    name : 'name'
+                }, {
+                    name : 'ipMaddr'
+                }, {
+                    name : 'log'
+                }, {
+                    name : 'description',
+                    convert : function(v) {
+                        return this.i18n._(v)
+                    }.createDelegate(this)
+                }],
+                columns : [{
+                    id : 'name',
+                    header : this.i18n._("name"),
+                    width : 150,
+                    dataIndex : 'name',
+                    editor : new Ext.form.TextField({
+                        allowBlank : false
+                    })
+                }, {
+                    id : 'ipMaddr',
+                    header : this.i18n._("subnet"),
+                    width : 200,
+                    dataIndex : 'ipMaddr',
+                    editor : new Ext.form.TextField({
+                        allowBlank : false
+                    })
+                }, logColumn],
+                sortField : 'name',
+                columnsDefaultSortable : true,
+                autoExpandColumn : 'name',
+                plugins : [logColumn],
+                rowEditorInputLines : [new Ext.form.TextField({
+                    name : "name",
+                    fieldLabel : this.i18n._("Name"),
+                    allowBlank : false,
+                    width : 200
+                }), new Ext.form.TextField({
+                    name : "ipMaddr",
+                    fieldLabel : this.i18n._("Subnet"),
+                    allowBlank : false,
+                    width : 200
+                }), new Ext.form.Checkbox({
+                    name : "log",
+                    fieldLabel : this.i18n._("Log")
+                })]
+            });
+        },
+        // Pass List
+        buildPassList : function() {
+            var passColumn = new Ext.grid.CheckColumn({
+                header : "<b>" + this.i18n._("pass") + "</b>",
+                dataIndex : 'live',
+                fixed : true
+            });
+
+            this.gridPassList = new Ung.EditorGrid({
+                settingsCmp : this,
+                totalRecords : this.getBaseSettings().domainWhitelistLength,
+                emptyRow : {
+                    "string" : "",
+                    "live" : true,
+                    "category" : this.i18n._("[no category]"),
+                    "description" : this.i18n._("[no description]")
+                },
+                title : this.i18n._("Pass List"),
+                proxyRpcFn : this.getRpcNode().getDomainWhitelist,
+                recordJavaClass : "com.untangle.uvm.node.StringRule",
+                fields : [{
+                    name : 'id'
+                }, {
+                    name : 'string'
+                }, {
+                    name : 'live'
+                }, {
+                    name : 'category'
+                }, {
+                    name : 'description',
+                    convert : function(v) {
+                        return this.i18n._(v)
+                    }.createDelegate(this)
+                }],
+                columns : [{
+                    id : 'string',
+                    header : this.i18n._("site"),
+                    width : 200,
+                    dataIndex : 'string',
+                    editor : new Ext.form.TextField({
+                        allowBlank : false
+                    })
+                }, passColumn, {
+                    id : 'description',
+                    header : this.i18n._("description"),
+                    width : 200,
+                    dataIndex : 'description',
+                    editor : new Ext.form.TextField({
+                        allowBlank : false
+                    })
+                }],
+                sortField : 'string',
+                columnsDefaultSortable : true,
+                autoExpandColumn : 'description',
+                plugins : [passColumn],
+                rowEditorInputLines : [new Ext.form.TextField({
+                    name : "string",
+                    fieldLabel : this.i18n._("Site"),
+                    allowBlank : false,
+                    width : 200
+                }), new Ext.form.Checkbox({
+                    name : "live",
+                    fieldLabel : this.i18n._("Pass")
+                }), new Ext.form.TextArea({
+                    name : "description",
+                    fieldLabel : this.i18n._("Description"),
+                    width : 200,
+                    height : 60
+                })]
+            });
+        },
+        // Event Log
+        buildEventLog : function() {
+            this.gridEventLog = new Ung.GridEventLog({
+                settingsCmp : this,
+                // This is a predefined event log, so there is no need to
+                // specify the fields and columns
+                predefinedType : "TYPE1"
+            });
+        },
+
+        // validation
+        validateServer : function() {
+            // ipMaddr list must be validated server side
+            var subnetSaveList = this.gridSubnetList ? this.gridSubnetList.getSaveList() : null;
+            if (subnetSaveList != null) {
+                var ipMaddrList = [];
+                // added
+                for (var i = 0; i < subnetSaveList[0].list.length; i++) {
+                    ipMaddrList.push(subnetSaveList[0].list[i]["ipMaddr"]);
+                }
+                // modified
+                for (var i = 0; i < subnetSaveList[2].list.length; i++) {
+                    ipMaddrList.push(subnetSaveList[2].list[i]["ipMaddr"]);
+                }
+                if (ipMaddrList.length > 0) {
+                    try {
+                        var result = this.getValidator().validate({
+                            list : ipMaddrList,
+                            "javaClass" : "java.util.ArrayList"
+                        });
+                        if (!result.valid) {
+                            this.panelBlockLists.onManageSubnetList();
+                            this.gridSubnetList.focusFirstChangedDataByFieldValue("ipMaddr", result.cause);
+                            Ext.MessageBox.alert(this.i18n._("Validation failed"), this.i18n._(result.message) + ": " + result.cause);
+                            return false;
+                        }
+                    } catch (e) {
+                        Ext.MessageBox.alert(i18n._("Failed"), e.message);
+                        return false;
+                    }
+                }
+            }
+            return true;
+        },
+
+        // save function
+        save : function() {
+            // validate first
+            if (this.validate()) {
+                // disable tabs during save
+                this.tabs.disable();
+                this.getRpcNode().updateAll(function(result, exception) {
+                    // re-enable tabs
+                    this.tabs.enable();
+                    if (exception) {
+                        Ext.MessageBox.alert(i18n._("Failed"), exception.message);
+                        return;
+                    }
+                    // exit settings screen
+                    this.cancelAction();
+                }.createDelegate(this), this.getBaseSettings(), this.gridActiveXList ? this.gridActiveXList.getSaveList() : null,
+                        this.gridCookiesList ? this.gridCookiesList.getSaveList() : null,
+                        this.gridSubnetList ? this.gridSubnetList.getSaveList() : null, this.gridPassList.getSaveList());
+            }
+        }
+    });
 }

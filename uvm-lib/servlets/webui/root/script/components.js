@@ -1281,6 +1281,8 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
 	//This was introduced for the speed of development. 
 	// TYPE1: timeStamp, blocked, pipelineEndpoints, protocol, blocked, server
 	predefinedType: null,
+	//for internal use
+	rpc: null,
 	//get the fields for a predefined type 
 	getPredefinedFields: function(type) {
 		var fields=null;
@@ -1325,6 +1327,7 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
 	},
 	//called when the component is initialized
 	initComponent: function(){
+    	this.rpc={};
     	if(this.title==null) {
     		this.title=i18n._('Event Log');
     	}
@@ -1338,7 +1341,7 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
     	if(this.eventManagerFn==null && this.hasRepositories == true) {
     		this.eventManagerFn=this.settingsCmp.getEventManager();
     	}
-    	this.settingsCmp.rpc.repository={};
+    	this.rpc.repository={};
 	    this.store = new Ext.data.Store({
 	        proxy: new Ung.MemoryProxy({root: 'list'}),
 	        sortInfo: this.sortField?{field: this.sortField, direction: "ASC"}:null,
@@ -1371,10 +1374,10 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
 			this.eventManagerFn.getRepositoryDescs(function (result, exception) {
 				if(exception) {Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}
 				if(this.settingsCmp) {
-					this.settingsCmp.rpc.repositoryDescs=result;
+					this.rpc.repositoryDescs=result;
 					var out=[];
 					out.push('<select id="selectRepository_'+this.getId()+'_'+this.settingsCmp.node.tid+'" class="height:11px; font-size:9px;">');
-					var repList=this.settingsCmp.rpc.repositoryDescs.list;
+					var repList=this.rpc.repositoryDescs.list;
 					for(var i=0;i<repList.length;i++) {
 						var repDesc=repList[i];
 						var selOpt=(i===0)?"selected":"";
@@ -1409,10 +1412,10 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
 		if (this.hasRepositories) {
 			var selRepository=this.getSelectedRepository();
 			if(selRepository!==null) {
-				if(this.settingsCmp.rpc.repository[selRepository] === undefined) {
-					this.settingsCmp.rpc.repository[selRepository]=this.eventManagerFn.getRepository(selRepository);
+				if(this.rpc.repository[selRepository] === undefined) {
+					this.rpc.repository[selRepository]=this.eventManagerFn.getRepository(selRepository);
 				}
-				this.settingsCmp.rpc.repository[selRepository].getEvents(this.refreshCallback.createDelegate(this));
+				this.rpc.repository[selRepository].getEvents(this.refreshCallback.createDelegate(this));
 			}
 		}
 	}
