@@ -25,7 +25,8 @@ import com.untangle.node.ips.RuleClassification;
 import com.untangle.uvm.vnet.event.*;
 import org.apache.log4j.Logger;
 
-public class ClasstypeOption extends IPSOption {
+public class ClasstypeOption extends IPSOption
+{
     private static final int HIGH_PRIORITY = 1;
     private static final int MEDIUM_PRIORITY = 2;
     private static final int LOW_PRIORITY = 3;
@@ -33,7 +34,10 @@ public class ClasstypeOption extends IPSOption {
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    public ClasstypeOption(IPSDetectionEngine engine, IPSRuleSignatureImpl signature, String params, boolean initializeSettingsTime) {
+    public ClasstypeOption(IPSDetectionEngine engine,
+                           IPSRuleSignatureImpl signature,
+                           String params, boolean initializeSettingsTime)
+    {
         super(signature, params);
 
         RuleClassification rc = null;
@@ -62,6 +66,17 @@ public class ClasstypeOption extends IPSOption {
                     break;
                 }
             }
+        }
+    }
+
+    // Object methods ----------------------------------------------------------
+
+    public boolean equals(Object o)
+    {
+        if (!(o instanceof ClasstypeOption)) {
+            return false;
+        } else {
+            return super.equals(0);
         }
     }
 }

@@ -40,23 +40,20 @@ import org.apache.log4j.Logger;
 
 public class ContentOption extends IPSOption {
 
-    private final Logger logger = Logger.getLogger(getClass());
-
     private ContentOption previousContentOption = null;
 
-    //private int indexOfMatch = 0;
     private int start = 0;
     private int end = 0;
     private int distance = 0;
     private int within = 0;
 
-    private BMPattern contentPattern;
-
-    private byte[] bytePattern;
-    private String stringPattern;
-    private boolean hasBinaryData = false;
+    private final String stringPattern;
     private boolean withinFlag = false;
     private boolean distanceFlag = false;
+    private boolean nocase = false;
+
+    private BMPattern contentPattern;
+    private final Logger logger = Logger.getLogger(getClass());
 
     public ContentOption(IPSRuleSignatureImpl signature, String params) {
         super(signature, params);
@@ -67,25 +64,21 @@ public class ContentOption extends IPSOption {
         else {
             ByteBuffer binaryBuffer = ByteBuffer.allocate(2048);
             buildBytePattern(binaryBuffer, params, index);
-            bytePattern = new byte[binaryBuffer.position()];
+            byte[] bytePattern = new byte[binaryBuffer.position()];
             binaryBuffer.flip();
             binaryBuffer.get(bytePattern);
             stringPattern = new String(bytePattern);
         }
-        contentPattern = new BMPattern(stringPattern, false);
+        contentPattern = new BMPattern(stringPattern, nocase);
     }
 
-    //public int getIndexOfLastMatch() {
-    //  return indexOfMatch;
-    //}
-
     public void setNoCase() {
-        contentPattern = new BMPattern(stringPattern, true);
+        nocase = true;
+        contentPattern = new BMPattern(stringPattern, nocase);
     }
 
     public void setOffset(int val) {
         start = val;
-        //setStartAndEndPoints(val,end);
     }
 
     public void setDepth(int val) {
@@ -229,5 +222,46 @@ public class ContentOption extends IPSOption {
             tmpByte = (byte) (tmpByte | tail);
             binaryBuffer.put(tmpByte);
         }
+    }
+
+    // Object methods ----------------------------------------------------------
+
+    public boolean equals(Object o)
+    {
+        if (!(o instanceof ContentOption)) {
+            return false;
+        }
+
+        ContentOption co = (ContentOption)o;
+
+        if (null == previousContentOption) {
+            if (!previousContentOption.equals(co.previousContentOption)) {
+                return false;
+            }
+        }
+
+        return start == start
+            && end == co.end
+            && distance == co.distance
+            && within == co.within
+            && stringPattern.equals(co.stringPattern)
+            && withinFlag == co.withinFlag
+            && distanceFlag == co.distanceFlag
+            && nocase == co.nocase;
+    }
+
+    public int hashCode()
+    {
+        int result = 17;
+        result = result * 37 + previousContentOption.hashCode();
+        result = result * 37 + start;
+        result = result * 37 + end;
+        result = result * 37 + distance;
+        result = result * 37 + within;
+        result = result * 37 + stringPattern.hashCode();
+        result = result * 37 + (withinFlag ? 1 : 0);
+        result = result * 37 + (distanceFlag ? 1 : 0);
+        result = result * 37 + (nocase ? 1 : 0);
+        return result;
     }
 }
