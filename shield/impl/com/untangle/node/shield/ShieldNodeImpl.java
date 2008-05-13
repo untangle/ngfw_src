@@ -32,6 +32,7 @@ import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
+import com.untangle.node.util.PartialListUtil;
 import com.untangle.uvm.IntfEnum;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.localapi.LocalShieldManager;
@@ -72,6 +73,8 @@ public class ShieldNodeImpl extends AbstractNode
 
     // We keep a stats around so we don't have to create one each time.
     private NodeStats fakeStats;
+    
+    private final PartialListUtil listUtil = new PartialListUtil();    
 
     public ShieldNodeImpl() {}
 
@@ -253,9 +256,9 @@ public class ShieldNodeImpl extends AbstractNode
 
 	public List<ShieldNodeRule> getShieldNodeRules(int start, int limit,
 			String... sortColumns) {
-		return getRules(
+		return listUtil.getItems(
 				"select ts.shieldNodeRules from ShieldSettings ts where ts.tid = :tid ",
-				start, limit, sortColumns);
+				getNodeContext(), getTid(), start, limit, sortColumns);
 	}
 
 	public void updateShieldNodeRules(List<ShieldNodeRule> added,
@@ -276,53 +279,14 @@ public class ShieldNodeImpl extends AbstractNode
     	}
 	}
 
-    private List getRules(final String queryString, final int start,
-			final int limit, final String... sortColumns) {
-		TransactionWork<List> tw = new TransactionWork<List>() {
-			private List result;
-
-			public boolean doWork(Session s) {
-				Query q = s.createQuery(queryString
-						+ QueryUtil.toOrderByClause(sortColumns));
-				q.setParameter("tid", getTid());
-				q.setFirstResult(start);
-				q.setMaxResults(limit);
-				result = q.list();
-
-				return true;
-			}
-
-			public List getResult() {
-				return result;
-			}
-		};
-		getNodeContext().runTransaction(tw);
-
-		return tw.getResult();
-	}
-    
     private void updateRules(final Set<ShieldNodeRule> rules,
 			final List<ShieldNodeRule> added, final List<Long> deleted,
 			final List<ShieldNodeRule> modified) {
     	
 		TransactionWork tw = new TransactionWork() {
 			public boolean doWork(Session s) {
-				for (Iterator<ShieldNodeRule> i = rules.iterator(); i
-						.hasNext();) {
-					ShieldNodeRule rule = i.next();
-					ShieldNodeRule mRule = null;
-					if (deleted != null && ListUtil.contains(deleted, rule.getId())) {
-						i.remove();
-					} else if (modified != null
-							&& (mRule = modified(rule, modified)) != null) {
-						rule.update(mRule);
-					}
-				}
-
-				if (added != null) {
-					rules.addAll(added);
-				}
-
+				listUtil.updateCachedItems( rules, added, deleted, modified );
+				
 				settings = (ShieldSettings)s.merge(settings);
 
 				return true;
@@ -335,17 +299,4 @@ public class ShieldNodeImpl extends AbstractNode
 		getNodeContext().runTransaction(tw);
 	}
 
-	private ShieldNodeRule modified(ShieldNodeRule rule,
-			List modified) {
-		for (Iterator<ShieldNodeRule> iterator = modified.iterator(); iterator
-				.hasNext();) {
-			ShieldNodeRule currentRule = iterator.next();
-			if (currentRule.getId().equals(rule.getId())) {
-				return currentRule;
-			}
-		}
-		return null;
-	}
-    
-    
 }
