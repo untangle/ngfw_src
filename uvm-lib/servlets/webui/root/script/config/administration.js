@@ -55,7 +55,7 @@ Ung.Administration = Ext.extend(Ung.ConfigWin, {
 	            items :[
 	            	{
 						xtype:'textfield',
-						fieldLabel: this.i18n._('TODO'),
+						fieldLabel: 'TODO',
 	                    name: 'todo',
 	                    allowBlank:false,
 	                    value: 'todo',

@@ -101,7 +101,7 @@ class RemoteSkinManagerImpl implements RemoteSkinManager
 			
 			//validate skin
 		    if (!item.getName().endsWith(".zip")) {
-				throw new UvmException("Invalid Skin.");
+				throw new UvmException("Invalid Skin");
 		    }
 			
 	        // Open the ZIP file
