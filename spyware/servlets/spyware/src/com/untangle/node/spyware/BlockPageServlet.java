@@ -29,7 +29,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
-import com.untangle.uvm.BrandingSettings;
+import com.untangle.uvm.BrandingBaseSettings;
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
 
@@ -49,7 +49,7 @@ public class BlockPageServlet extends HttpServlet
         throws ServletException
     {
         LocalUvmContext uvm = LocalUvmContextFactory.context();
-        BrandingSettings bs = uvm.brandingManager().getBrandingSettings();
+        BrandingBaseSettings bs = uvm.brandingManager().getBaseSettings();
         LocalNodeManager nm = uvm.nodeManager();
         
         Tid tid = new Tid(Long.parseLong(request.getParameter( "tid" )));
