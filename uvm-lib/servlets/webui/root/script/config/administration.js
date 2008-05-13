@@ -110,6 +110,7 @@ Ung.Administration = Ext.extend(Ung.ConfigWin, {
 			 		store: skinsStore,	
 					displayField: 'skinName',
 					valueField: 'skinName',
+					forceSelection: true,
                     value: this.getSkinSettings().administrationClientSkin,
 				    typeAhead: true,
 				    mode: 'remote',
@@ -135,9 +136,10 @@ Ung.Administration = Ext.extend(Ung.ConfigWin, {
                 }, {
                     xtype:'combo',
                     name: "userPagesSkin",
-                    store: skinsStore,  
+                    store: skinsStore,
                     displayField: 'skinName',
                     valueField: 'skinName',
+                    forceSelection: true,
                     value: this.getSkinSettings().userPagesSkin,
                     typeAhead: true,
                     mode: 'remote',
@@ -196,7 +198,7 @@ Ung.Administration = Ext.extend(Ung.ConfigWin, {
 					},
 					failure: function(form,action) {
 						var cmp = Ext.getCmp(action.options.parentId); 
-						if (action.result.msg) {
+						if (action.result && action.result.msg) {
 							Ext.MessageBox.alert(cmp.i18n._("Failed"), cmp.i18n._(action.result.msg));
 						} else {
 							Ext.MessageBox.alert(cmp.i18n._("Failed"), cmp.i18n._("Upload Skin Failed")); 

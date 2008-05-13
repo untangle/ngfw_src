@@ -84,7 +84,7 @@ Ung.System = Ext.extend(Ung.ConfigWin, {
 					        fields: ['code', 'name']
 						})
 					});	
-    
+        
     	this.panelRegionalSettings = new Ext.Panel({
     		//private fields
 			parentId: this.getId(),
@@ -101,12 +101,15 @@ Ung.System = Ext.extend(Ung.ConfigWin, {
 			{
 	            title: this.i18n._('Language'),
 				items: [{
+                    id: 'system_language_combo',
                     xtype:'combo',
 					name: "language",
-			 		store: languagesStore,	
+			 		store: languagesStore,
+			 		lazyInit: false,
+			 		forceSelection: true,
 					displayField: 'name',
 					valueField: 'code',
-                    value: this.getLanguageSettings().language,
+                    //value: this.getLanguageSettings().language,
 				    typeAhead: true,
 				    mode: 'local',
 				    triggerAction: 'all',
@@ -119,6 +122,18 @@ Ung.System = Ext.extend(Ung.ConfigWin, {
 								this.getLanguageSettings().language=newValue;
 								Ext.MessageBox.alert(this.i18n._("Info"), this.i18n._("Please note that you have to relogin after saving for the new language to take effect."));
 							}.createDelegate(this)
+						}, 
+						"render": {
+                            fn: function(elem) {
+                                languagesStore.load({callback: function (r, options, success) {
+                                    if(success) {
+                                        var languageComboCmp=Ext.getCmp("system_language_combo");
+                                        if(languageComboCmp) {
+                                            languageComboCmp.setValue(this.getLanguageSettings().language);
+                                        }
+                                    }
+                                }.createDelegate(this)})
+                            }.createDelegate(this)
 						}
 					}
 				}]
@@ -165,7 +180,7 @@ Ung.System = Ext.extend(Ung.ConfigWin, {
 					},
 					failure: function(form,action) {
 						var cmp = Ext.getCmp(action.options.parentId); 
-						if (action.result.msg) {
+						if (action.result && action.result.msg) {
 							Ext.MessageBox.alert(cmp.i18n._("Failed"), cmp.i18n._(action.result.msg));
 						} else {
 							Ext.MessageBox.alert(cmp.i18n._("Failed"), cmp.i18n._("Upload Language Pack Failed")); 
@@ -174,7 +189,7 @@ Ung.System = Ext.extend(Ung.ConfigWin, {
 				});
 			}
     	});
-        languagesStore.load();
+        
     },
     // save function
     saveAction: function() {
