@@ -1,0 +1,332 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR Untangle, Inc.
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# 
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2008-05-13 16:07+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=0; null;\n"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:29
+msgid "Block Lists"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:42
+msgid "Block all sites except for Pass Lists"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:55
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:189
+msgid "Categories"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:58
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:66
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:74
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:82
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:467
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:475
+msgid "manage list"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:63
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:280
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:464
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:539
+msgid "Sites"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:71
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:341
+msgid "File Types"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:79
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:400
+msgid "MIME Types"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:89
+msgid "User Bypass"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:93
+msgid "None"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:94
+msgid "Temporary"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:95
+msgid "Permanent and Global"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:169
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:270
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:331
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:390
+msgid "block"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:181
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:273
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:334
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:393
+msgid "log"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:202
+msgid "category"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:206
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:295
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:356
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:415
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:552
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:604
+msgid "description"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:216
+msgid "Category"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:222
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:313
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:372
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:431
+msgid "Block"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:238
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:317
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:376
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:435
+msgid "Log"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:242
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:321
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:380
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:439
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:574
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:624
+msgid "Description"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:253
+msgid "\"URL\" specified cannot be blocked because it uses secure http (https)"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:265
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:292
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:309
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:526
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:550
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:566
+msgid "Invalid \"URL\" specified"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:279
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:538
+msgid "[no site]"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:279
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:340
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:399
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:538
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:590
+msgid "[no description]"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:291
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:549
+msgid "site"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:305
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:562
+msgid "Site"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:352
+msgid "file type"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:366
+msgid "File Type"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:411
+msgid "MIME type"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:425
+msgid "MIME Type"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:455
+msgid "Pass Lists"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:472
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:591
+msgid "IP addresses"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:514
+msgid "\"URL\" specified cannot be passed because it uses secure http (https)"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:532
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:584
+msgid "pass"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:570
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:620
+msgid "Pass"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:601
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:614
+msgid "IP address/range"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:695
+msgid "Validation failed"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:699
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:718
+msgid "Failed"
+msgstr ""
+
+#: database data: n_webfilter_blcat.display_name
+msgid "Anonymous Surfing"
+msgstr ""
+
+#: database data: n_webfilter_blcat.display_name
+msgid "Dating"
+msgstr ""
+
+#: database data: n_webfilter_blcat.display_name
+#: n_webfilter_blcat.description
+msgid "Gambling"
+msgstr ""
+
+#: database data: n_webfilter_blcat.display_name
+msgid "Hacking"
+msgstr ""
+
+#: database data: n_webfilter_blcat.display_name
+#: n_webfilter_blcat.description
+msgid "Hate and Aggression"
+msgstr ""
+
+#: database data: n_webfilter_blcat.display_name
+#: n_webfilter_blcat.description
+msgid "Illegal Drugs"
+msgstr ""
+
+#: database data: n_webfilter_blcat.display_name
+#: n_webfilter_blcat.description
+msgid "Job Search"
+msgstr ""
+
+#: database data: n_webfilter_blcat.display_name
+msgid "Pornography"
+msgstr ""
+
+#: database data: n_webfilter_blcat.display_name
+msgid "Shopping"
+msgstr ""
+
+#: database data: n_webfilter_blcat.display_name
+#: n_webfilter_blcat.description
+msgid "Social Networking"
+msgstr ""
+
+#: database data: n_webfilter_blcat.display_name
+#: n_webfilter_blcat.description
+msgid "Sports"
+msgstr ""
+
+#: database data: n_webfilter_blcat.display_name
+#: n_webfilter_blcat.description
+msgid "Vacation"
+msgstr ""
+
+#: database data: n_webfilter_blcat.display_name
+#: n_webfilter_blcat.description
+msgid "Violence"
+msgstr ""
+
+#: database data: n_webfilter_blcat.display_name
+#: n_webfilter_blcat.description
+msgid "Web Mail"
+msgstr ""
+
+#: database data: n_webfilter_blcat.description
+msgid "Adult and Sexually Explicit"
+msgstr ""
+
+#: database data: n_webfilter_blcat.description
+msgid "Anonymous Web Surfing"
+msgstr ""
+
+#: database data: n_webfilter_blcat.description
+msgid "Online Dating"
+msgstr ""
+
+#: database data: n_webfilter_blcat.description
+msgid "Online Shopping"
+msgstr ""
+
+#: database data: n_webfilter_blcat.description
+msgid "Security Cracking"
+msgstr ""
+
+#: database data: u_string_rule.name
+msgid "archive"
+msgstr ""
+
+#: database data: u_string_rule.name
+msgid "audio"
+msgstr ""
+
+#: database data: u_string_rule.name
+msgid "compression"
+msgstr ""
+
+#: database data: u_string_rule.name
+msgid "executable"
+msgstr ""
+
+#: database data: u_string_rule.name
+msgid "flash"
+msgstr ""
+
+#: database data: u_string_rule.name
+msgid "image"
+msgstr ""
+
+#: database data: u_string_rule.name
+msgid "java"
+msgstr ""
+
+#: database data: u_string_rule.name
+msgid "video"
+msgstr ""

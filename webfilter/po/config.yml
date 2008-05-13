@@ -1,0 +1,15 @@
+database:
+  name: uvm
+  username: postgres
+  password: ""
+  host: localhost
+  
+table:
+- name: n_webfilter_blcat
+  column:
+  - display_name
+  - description
+- name: u_string_rule
+  column:
+  - name
+  
