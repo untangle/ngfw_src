@@ -14,7 +14,7 @@ var rpc=null;
 Ung.Main=function() {
 }
 Ung.Main.prototype = {
-	disableThreads: true, // in development environment is useful to disable threads.
+	disableThreads: false, // in development environment is useful to disable threads.
 	leftTabs: null,
 	appsSemaphore: null,
 	apps: null,
