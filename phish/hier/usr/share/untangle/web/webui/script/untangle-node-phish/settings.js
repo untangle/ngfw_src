@@ -4,6 +4,7 @@ if (!Ung.hasResource["Ung.Phish"]) {
 
     Ung.Phish = Ext.extend(Ung.Settings, {
         smtpData: null,
+        spamData: null,
         emailPanel: null,
         webPanel: null,
         gridWebEventLog : null,
@@ -18,19 +19,6 @@ if (!Ung.hasResource["Ung.Phish"]) {
 
         // called when the component is rendered
         onRender : function(container, position) {
-            this.actionsStore = new Ext.data.SimpleStore({
-                fields: [
-                    {name: 'value'},
-                    {name: 'label'}
-                ],
-                data: [
-                    [this.i18n._('Quarantine'),'Quarantine'], 
-                    [this.i18n._('Block'),'Block'],
-                    [this.i18n._('Mark'),'Mark'],
-                    [this.i18n._('Pass'),'Pass']
-                ]
-                    
-            });
             //workarownd to solve the problem with baseSettings.popConfig.msgAction==baseSettings.imapConfig.msgAction
             var baseSettings=this.getBaseSettings();
             if(baseSettings.popConfig.msgAction==baseSettings.imapConfig.msgAction) {
@@ -65,18 +53,14 @@ if (!Ung.hasResource["Ung.Phish"]) {
         // Email Config Panel
         buildEmail : function() {
             this.smtpData= [
-                    ['mark message',this.i18n._('Mark'),'M'],
-                    ['pass message',this.i18n._('Pass'),'P'],
-                    ['block message',this.i18n._('Block'),'B'],
-                    ['quarantine message',this.i18n._('Quarantine'),'Q']
+                ['mark message',this.i18n._('Mark'),'M'],
+                ['pass message',this.i18n._('Pass'),'P'],
+                ['block message',this.i18n._('Block'),'B'],
+                ['quarantine message',this.i18n._('Quarantine'),'Q']
             ];
             this.spamData= [
-                    ['mark message',this.i18n._('Mark'),'M'],
-                    ['pass message',this.i18n._('Pass'),'P']
-            ];
-            this.spamData1= [
-                    ['mark message',this.i18n._('Mark'),'M'],
-                    ['pass message',this.i18n._('Pass'),'P']
+                ['mark message',this.i18n._('Mark'),'M'],
+                ['pass message',this.i18n._('Pass'),'P']
             ];
             this.emailPanel = new Ext.Panel({
                 title : this.i18n._('Email'),
@@ -89,7 +73,6 @@ if (!Ung.hasResource["Ung.Phish"]) {
                     defaults : {
                         width : 210
                     },
-                    defaultType : 'textfield',
                     items : [{
                     	xtype : 'checkbox',
                         boxLabel : this.i18n._('Scan SMTP'),
@@ -105,14 +88,12 @@ if (!Ung.hasResource["Ung.Phish"]) {
                         }
                     }, {
                     	xtype : 'combo',
+                        editable: false,
                         store : this.smtpData,
                         fieldLabel : this.i18n._('Action'),
-                        forceSelection: true,
-                        typeAhead : false,
                         mode : 'local',
                         triggerAction : 'all',
                         listClass : 'x-combo-list-small',
-                        selectOnFocus : true,
                         value : this.getBaseSettings().smtpConfig.msgAction.name,
                         listeners : {
                             "change" : {
@@ -135,7 +116,6 @@ if (!Ung.hasResource["Ung.Phish"]) {
                     defaults : {
                         width : 210
                     },
-                    defaultType : 'textfield',
                     items : [{
                     	xtype : 'checkbox',
                         boxLabel : this.i18n._('Scan POP3'),
@@ -151,14 +131,12 @@ if (!Ung.hasResource["Ung.Phish"]) {
                         }
                     }, {
                     	xtype: 'combo',
+                        editable: false,
                         store : this.spamData,
                         fieldLabel : this.i18n._('Action'),
-                        typeAhead : false,
                         mode : 'local',
                         triggerAction : 'all',
                         listClass : 'x-combo-list-small',
-                        selectOnFocus : true,
-                        forceSelection: true,
                         value :this.getBaseSettings().popConfig.msgAction.name,
                         listeners : {
                             "change" : {
@@ -181,7 +159,6 @@ if (!Ung.hasResource["Ung.Phish"]) {
                     defaults : {
                         width : 210
                     },
-                    defaultType : 'textfield',
                     items : [{
                     	xtype : 'checkbox',
                         boxLabel : this.i18n._('Scan IMAP'),
@@ -197,22 +174,20 @@ if (!Ung.hasResource["Ung.Phish"]) {
                         }
                     }, {
                     	xtype : 'combo',
-                        store : this.spamData1,
+                        editable: false,
+                        store : this.spamData,
                         fieldLabel : this.i18n._('Action'),
-                        typeAhead : false,
                         mode : 'local',
                         triggerAction : 'all',
                         listClass : 'x-combo-list-small',
-                        selectOnFocus : true,
-                        forceSelection: true,
                         value : this.getBaseSettings().imapConfig.msgAction.name,
                         listeners : {
                             "change" : {
                                 fn : function(elem, newValue) {
                                     this.getBaseSettings().imapConfig.msgAction.name = newValue;
-                                    for(var i=0;i<this.spamData1.length;i++) {
-                                       if(this.spamData1[i][0]==newValue) {
-                                           this.getBaseSettings().imapConfig.msgAction.key=this.spamData1[i][2]
+                                    for(var i=0;i<this.spamData.length;i++) {
+                                       if(this.spamData[i][0]==newValue) {
+                                           this.getBaseSettings().imapConfig.msgAction.key=this.spamData[i][2]
                                            break;
                                        }
                                     }

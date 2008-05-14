@@ -55,7 +55,9 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                             }
                         }
                     }, {
-                        xtype : 'combo',
+                        xtype:'combo',
+                        editable: false,
+                        mode: 'local',
                         fieldLabel : this.i18n._('User Bypass'),
                         name : "userWhitelist",
                         store : new Ext.data.SimpleStore({
@@ -66,12 +68,8 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                         displayField : 'userWhitelistName',
                         valueField : 'userWhitelistValue',
                         value : this.getBaseSettings().userWhitelistMode,
-                        typeAhead : true,
-                        forceSelection: true,
-                        mode : 'local',
                         triggerAction : 'all',
                         listClass : 'x-combo-list-small',
-                        selectOnFocus : true,
                         listeners : {
                             "change" : {
                                 fn : function(elem, newValue) {

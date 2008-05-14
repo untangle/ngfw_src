@@ -3,20 +3,23 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
     Ung.Settings.registerClassName('untangle-node-spamassassin', 'Ung.SpamAssassin');
 
     Ung.SpamAssassin = Ext.extend(Ung.Settings, {
-        strengths : null,
-        strengthsValues : null,
-        actions : null,
-        actionsValues : null,
+        strengthsData : null,
+        smtpData: null,
+        spamData: null,
         emailPanel : null,
         gridEventLog : null,
         gridRBLEventLog : null,
         // called when the component is rendered
         onRender : function(container, position) {
-            this.strengths = [this.i18n._('Low'), this.i18n._('Medium'), this.i18n._('High'), this.i18n._('Very High'),
-                    this.i18n._('Extreme'), this.i18n._('Custom')];
-            this.strengthsValues = [50, 43, 35, 33, 30, 20];
-            this.actions = [this.i18n._('Quarantine'), this.i18n._('Block'), this.i18n._('Mark'), this.i18n._('Pass')];
-            this.actionsValues = ['Quarantine', 'Block', 'Mark', 'Pass'],
+            //workarownd to solve the problem with baseSettings.popConfig.msgAction==baseSettings.imapConfig.msgAction
+            var baseSettings=this.getBaseSettings();
+            if(baseSettings.popConfig.msgAction==baseSettings.imapConfig.msgAction) {
+                var msgAction={};
+                msgAction.javaClass=baseSettings.imapConfig.msgAction.javaClass;
+                msgAction.key=baseSettings.imapConfig.msgAction.key;
+                msgAction.name=baseSettings.imapConfig.msgAction.name;
+                baseSettings.imapConfig.msgAction=msgAction;
+            }
             // call superclass renderer first
             Ung.SpamAssassin.superclass.onRender.call(this, container, position);
             // builds the tabs
@@ -38,8 +41,36 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                 }
             }
         },
+        isCustomStrength: function (strength) {
+           return !(strength==50 || strength==43 || strength==35 ||strength==33 ||strength==30)
+        },
+        getStrengthSelectionValue: function (strength) {
+        	if(this.isCustomStrength(strength)) {
+        		return 0;
+        	} else {
+        		return strength;
+        	}
+        },
         // Email Config Panel
         buildEmail : function() {
+            this.smtpData= [
+                ['mark message',this.i18n._('Mark'),'M'],
+                ['pass message',this.i18n._('Pass'),'P'],
+                ['block message',this.i18n._('Block'),'B'],
+                ['quarantine message',this.i18n._('Quarantine'),'Q']
+            ];
+            this.spamData= [
+                ['mark message',this.i18n._('Mark'),'M'],
+                ['pass message',this.i18n._('Pass'),'P']
+            ];
+        	this.strengthsData= [
+        	   [50, this.i18n._('Low')],
+               [43, this.i18n._('Medium')],
+               [35, this.i18n._('High')],
+               [33, this.i18n._('Very High')],
+               [30, this.i18n._('Extreme')],
+               [0, this.i18n._('Custom')],
+        	];
             this.emailPanel = new Ext.Panel({
                 title : this.i18n._('Email'),
                 layout : "form",
@@ -51,10 +82,9 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                     defaults : {
                         width : 210
                     },
-                    defaultType : 'textfield',
-                    items : [new Ext.form.Checkbox({
+                    items : [{
+                    	xtype : 'checkbox',
                         boxLabel : this.i18n._('Scan SMTP'),
-                        name : 'smtpScan',
                         hideLabel : true,
                         checked : this.getBaseSettings().smtpConfig.scan,
                         listeners : {
@@ -64,46 +94,77 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                                 }.createDelegate(this)
                             }
                         }
-                    }), new Ext.form.ComboBox({
-                        store : this.strengths,
+                    },{
+                        xtype : 'checkbox',
+                        boxLabel : this.i18n._('Enable SMTP greylisting'),
+                        hideLabel : true,
+                        checked : this.getBaseSettings().smtpConfig.throttle,
+                        listeners : {
+                            "change" : {
+                                fn : function(elem, newValue) {
+                                    this.getBaseSettings().smtpConfig.throttle = newValue;
+                                }.createDelegate(this)
+                            }
+                        }
+                    }, {
+                        xtype : 'combo',
+                        editable: false,
+                        store : this.strengthsData,
                         fieldLabel : this.i18n._('Strength'),
-                        displayField : 'select',
-                        valueField : 'smtpStrengthValue',
-                        typeAhead : false,
-                        emptyText : this.i18n._('Medium'),
                         mode : 'local',
                         triggerAction : 'all',
                         listClass : 'x-combo-list-small',
-                        selectOnFocus : true,
-                        value : this.lookup(this.getBaseSettings().smtpConfig.strength, this.strengths, this.strengthsValues),
+                        value : this.getStrengthSelectionValue(this.getBaseSettings().smtpConfig.strength),
                         listeners : {
                             "change" : {
                                 fn : function(elem, newValue) {
-                                    this.getBaseSettings().smtpConfig.strength = this
-                                            .lookup(newValue, this.strengths, this.strengthsValues);
+                                	var customCmp=this.emailPanel.items.get(0).items.get(3);
+                                	if(newValue==0) {
+                                		customCmp.enable();
+                                	} else {
+                                		customCmp.disable();
+                                		this.getBaseSettings().smtpConfig.strength=newValue;
+                                	}
+                                	customCmp.setValue(this.getBaseSettings().smtpConfig.strength);
                                 }.createDelegate(this)
                             }
                         }
-                    }), new Ext.form.ComboBox({
-                        store : this.actions,
+                    }, {
+                        xtype:'textfield',
+                        fieldLabel: this.i18n._('Custom Strength'),
+                        allowBlank:false,
+                        value: this.getBaseSettings().smtpConfig.strength,
+                        disabled:  !this.isCustomStrength(this.getBaseSettings().smtpConfig.strength),
+                        listeners : {
+                            "change" : {
+                                fn : function(elem, newValue) {
+                                    this.getBaseSettings().smtpConfig.strength=newValue;
+                                }.createDelegate(this)
+                            }
+                        }
+                    },  {
+                        xtype:'combo',
+                        editable: false,
+                        store : this.smtpData,
                         fieldLabel : this.i18n._('Action'),
-                        displayField : 'String',
-                        valueField : 'smtpActionValue',
-                        typeAhead : false,
-                        emptyText : this.i18n._('Quarantine'),
                         mode : 'local',
                         triggerAction : 'all',
                         listClass : 'x-combo-list-small',
-                        selectOnFocus : true,
-                        value : this.lookup(this.getBaseSettings().smtpConfig.zMsgAction, this.actions, this.actionsValues),
+                        value : this.getBaseSettings().smtpConfig.msgAction.name,
                         listeners : {
                             "change" : {
                                 fn : function(elem, newValue) {
-                                    this.getBaseSettings().smtpConfig.zMsgAction = this.lookup(newValue, this.actions, this.actionsValues);
+                                    this.getBaseSettings().smtpConfig.msgAction.name = newValue;
+                                    for(var i=0;i<this.smtpData.length;i++) {
+                                       if(this.smtpData[i][0]==newValue) {
+                                           this.getBaseSettings().smtpConfig.msgAction.key=this.smtpData[i][2]
+                                           break;
+                                       }
+                                    }
                                 }.createDelegate(this)
                             }
                         }
-                    })]
+                    }]
                 }, {
                     xtype : 'fieldset',
                     title : this.i18n._('POP3'),
@@ -111,10 +172,9 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                     defaults : {
                         width : 210
                     },
-                    defaultType : 'textfield',
-                    items : [new Ext.form.Checkbox({
+                    items : [{
+                    	xtype : 'checkbox',
                         boxLabel : 'Scan POP3',
-                        name : 'pop3Scan',
                         hideLabel : true,
                         checked : this.getBaseSettings().popConfig.scan,
                         listeners : {
@@ -124,45 +184,65 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                                 }.createDelegate(this)
                             }
                         }
-                    }), new Ext.form.ComboBox({
-                        store : this.strengths,
+                    }, {
+                        xtype : 'combo',
+                        editable: false,
+                        store : this.strengthsData,
                         fieldLabel : this.i18n._('Strength'),
-                        displayField : 'String',
-                        valueField : 'pop3StrengthValue',
-                        typeAhead : false,
-                        emptyText : this.i18n._('Medium'),
                         mode : 'local',
                         triggerAction : 'all',
                         listClass : 'x-combo-list-small',
-                        selectOnFocus : true,
-                        value : this.lookup(this.getBaseSettings().popConfig.strength, this.strengths, this.strengthsValues),
+                        value : this.getStrengthSelectionValue(this.getBaseSettings().popConfig.strength),
                         listeners : {
                             "change" : {
                                 fn : function(elem, newValue) {
-                                    this.getBaseSettings().popConfig.strength = this.lookup(newValue, this.strengths, this.strengthsValues);
+                                    var customCmp=this.emailPanel.items.get(1).items.get(2);
+                                    if(newValue==0) {
+                                        customCmp.enable();
+                                    } else {
+                                        customCmp.disable();
+                                        this.getBaseSettings().popConfig.strength=newValue;
+                                    }
+                                    customCmp.setValue(this.getBaseSettings().popConfig.strength);
                                 }.createDelegate(this)
                             }
                         }
-                    }), new Ext.form.ComboBox({
-                        store : this.actions,
+                    }, {
+                        xtype:'textfield',
+                        fieldLabel: this.i18n._('Custom Strength'),
+                        allowBlank:false,
+                        value: this.getBaseSettings().popConfig.strength,
+                        disabled:  !this.isCustomStrength(this.getBaseSettings().popConfig.strength),
+                        listeners : {
+                            "change" : {
+                                fn : function(elem, newValue) {
+                                    this.getBaseSettings().popConfig.strength=newValue;
+                                }.createDelegate(this)
+                            }
+                        }
+                    }, {
+                        xtype: 'combo',
+                        editable: false,
+                        store : this.spamData,
                         fieldLabel : this.i18n._('Action'),
-                        displayField : 'String',
-                        valueField : 'pop3ActionValue',
-                        typeAhead : false,
-                        emptyText : this.i18n._('Mark'),
                         mode : 'local',
                         triggerAction : 'all',
                         listClass : 'x-combo-list-small',
-                        selectOnFocus : true,
-                        value : this.lookup(this.getBaseSettings().popConfig.zMsgAction, this.actions, this.actionsValues),
+                        value :this.getBaseSettings().popConfig.msgAction.name,
                         listeners : {
                             "change" : {
                                 fn : function(elem, newValue) {
-                                    this.getBaseSettings().popConfig.zMsgAction = this.lookup(newValue, this.actions, this.actionsValues);
+                                    this.getBaseSettings().popConfig.msgAction.name = newValue;
+                                    for(var i=0;i<this.spamData.length;i++) {
+                                       if(this.spamData[i][0]==newValue) {
+                                           this.getBaseSettings().popConfig.msgAction.key=this.spamData[i][2]
+                                           break;
+                                       }
+                                    }
                                 }.createDelegate(this)
                             }
                         }
-                    })]
+                    }]
                 }, {
                     xtype : 'fieldset',
                     title : this.i18n._('IMAP'),
@@ -170,52 +250,71 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                     defaults : {
                         width : 210
                     },
-                    defaultType : 'textfield',
-                    items : [new Ext.form.Checkbox({
+                    items : [{
+                    	xtype : 'checkbox',
                         boxLabel : 'Scan IMAP',
                         name : 'imapScan',
                         hideLabel : true,
                         checked : this.getBaseSettings().imapConfig.scan
-                    }), new Ext.form.ComboBox({
-                        store : this.strengths,
+                    }, {
+                        xtype : 'combo',
+                        editable: false,
+                        store : this.strengthsData,
                         fieldLabel : this.i18n._('Strength'),
-                        displayField : 'String',
-                        valueField : 'imapStrengthValue',
-                        typeAhead : false,
-                        emptyText : this.i18n._('Medium'),
                         mode : 'local',
                         triggerAction : 'all',
                         listClass : 'x-combo-list-small',
-                        selectOnFocus : true,
-                        value : this.lookup(this.getBaseSettings().imapConfig.strength, this.strengths, this.strengthsValues),
+                        value : this.getStrengthSelectionValue(this.getBaseSettings().imapConfig.strength),
                         listeners : {
                             "change" : {
                                 fn : function(elem, newValue) {
-                                    this.getBaseSettings().imapConfig.strength = this
-                                            .lookup(newValue, this.strengths, this.strengthsValues);
+                                    var customCmp=this.emailPanel.items.get(2).items.get(2);
+                                    if(newValue==0) {
+                                        customCmp.enable();
+                                    } else {
+                                        customCmp.disable();
+                                        this.getBaseSettings().imapConfig.strength=newValue;
+                                    }
+                                    customCmp.setValue(this.getBaseSettings().imapConfig.strength);
                                 }.createDelegate(this)
                             }
                         }
-                    }), new Ext.form.ComboBox({
-                        store : this.actions,
+                    }, {
+                        xtype:'textfield',
+                        fieldLabel: this.i18n._('Custom Strength'),
+                        allowBlank:false,
+                        value: this.getBaseSettings().imapConfig.strength,
+                        disabled:  !this.isCustomStrength(this.getBaseSettings().imapConfig.strength),
+                        listeners : {
+                            "change" : {
+                                fn : function(elem, newValue) {
+                                    this.getBaseSettings().imapConfig.strength=newValue;
+                                }.createDelegate(this)
+                            }
+                        }
+                    },  {
+                        xtype : 'combo',
+                        editable: false,
+                        store : this.spamData,
                         fieldLabel : this.i18n._('Action'),
-                        displayField : 'String',
-                        valueField : 'imapActionValue',
-                        typeAhead : false,
-                        emptyText : this.i18n._('Mark'),
                         mode : 'local',
                         triggerAction : 'all',
                         listClass : 'x-combo-list-small',
-                        selectOnFocus : true,
-                        value : this.lookup(this.getBaseSettings().imapConfig.zMsgAction, this.actions, this.actionsValues),
+                        value : this.getBaseSettings().imapConfig.msgAction.name,
                         listeners : {
                             "change" : {
                                 fn : function(elem, newValue) {
-                                    this.getBaseSettings().imapConfig.zMsgAction = this.lookup(newValue, this.actions, this.actionsValues);
+                                    this.getBaseSettings().imapConfig.msgAction.name = newValue;
+                                    for(var i=0;i<this.spamData.length;i++) {
+                                       if(this.spamData[i][0]==newValue) {
+                                           this.getBaseSettings().imapConfig.msgAction.key=this.spamData[i][2]
+                                           break;
+                                       }
+                                    }
                                 }.createDelegate(this)
                             }
                         }
-                    })]
+                    }]
                 }, {
                     xtype : 'fieldset',
                     title : this.i18n._('Note'),

@@ -34,7 +34,7 @@
 package com.untangle.node.spam;
 
 import java.io.Serializable;
-import java.util.*;
+
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -274,42 +274,4 @@ public abstract class SpamProtoConfig implements Serializable
     public static final int HIGH_STRENGTH = 35;
     public static final int VERY_HIGH_STRENGTH = 33;
     public static final int EXTREME_STRENGTH = 30;
-    public static final Map<String, Integer> scanStrengthEnumeration
-                                                              = new LinkedHashMap<String, Integer>();
-    static {
-        scanStrengthEnumeration.put("low",       LOW_STRENGTH);
-        scanStrengthEnumeration.put("medium",    MEDIUM_STRENGTH);
-        scanStrengthEnumeration.put("high",      HIGH_STRENGTH);
-        scanStrengthEnumeration.put("very high", VERY_HIGH_STRENGTH);
-        scanStrengthEnumeration.put("extreme", EXTREME_STRENGTH);
-    }
-
-    @Transient
-    public void setStrengthByName(String strengthEnum)
-    {
-        Integer str = (Integer) scanStrengthEnumeration.get(strengthEnum);
-        if (str != null)
-            strength = str.intValue();
-    }
-
-    @Transient
-    public String getStrengthByName()
-    {
-        for (String strname : scanStrengthEnumeration.keySet()) {
-            int strval = scanStrengthEnumeration.get(strname);
-            if (strength >= strval) {
-                return (String) strname;
-            }
-        }
-        // Failsafe, shouldn't happen.
-        return "very low";
-    }
-
-    private static final String[] SSE_PROTO = new String[0];
-
-    @Transient
-    public static String[] getScanStrengthEnumeration()
-    {
-        return scanStrengthEnumeration.keySet().toArray(SSE_PROTO);
-    }
 }

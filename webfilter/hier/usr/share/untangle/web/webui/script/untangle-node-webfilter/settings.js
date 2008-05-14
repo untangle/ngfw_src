@@ -86,6 +86,8 @@ Ung.WebFilter = Ext.extend(Ung.Settings, {
 			}, {
 				items: [{
                     xtype:'combo',
+                    editable: false,
+                    mode: 'local',
                     fieldLabel: this.i18n._('User Bypass'),
 					name: "userWhitelist",
 				    store: new Ext.data.SimpleStore({
@@ -97,12 +99,8 @@ Ung.WebFilter = Ext.extend(Ung.Settings, {
 					displayField: 'userWhitelistName',
 					valueField: 'userWhitelistValue',
                     value: this.getBaseSettings().userWhitelistMode,
-				    typeAhead: true,
-				    forceSelection: true,
-				    mode: 'local',
 				    triggerAction: 'all',
 				    listClass: 'x-combo-list-small',
-				    selectOnFocus:true,
 					listeners: {
 						"change": {
 							fn: function(elem, newValue) {
