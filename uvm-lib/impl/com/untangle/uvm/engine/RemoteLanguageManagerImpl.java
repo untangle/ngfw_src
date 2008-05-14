@@ -60,7 +60,8 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
     private static final String LOCALE_DIR;
     private static final String DEFAULT_LANGUAGE = "en";
     private static final String BASENAME_PREFIX = "i18n";
-    private static final String LANGUAGES_CFG = "lang.cfg";    
+    private static final String LANGUAGES_CFG = "lang.cfg";  
+    private static final String LC_MESSAGES = "LC_MESSAGES";
 	private static final int BUFFER = 2048; 
 
     private final Logger logger = Logger.getLogger(getClass());
@@ -118,30 +119,37 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
 		    InputStream uploadedStream = item.getInputStream();
 		    ZipInputStream zis = new ZipInputStream(uploadedStream);
 			while ((entry = zis.getNextEntry()) != null) {
-				int count;
-				byte data[] = new byte[BUFFER];
-				
-				// write the files to the disk
-				String lang = entry.getName().substring(entry.getName().lastIndexOf(".")+1);
-				String destDir = LANGUAGES_DIR + File.separator + lang;
-				File destDirFile = new File(destDir);
-				if (!destDirFile.exists()) {
-					destDirFile.mkdir();
+				if (entry.isDirectory()) {
+					File dir = new File(LANGUAGES_DIR + File.separator + entry.getName());
+					if (!dir.exists()) {
+						dir.mkdir();
+					}
+				} else {
+					int count;
+					byte data[] = new byte[BUFFER];
+					
+					// write the files to the disk
+//					String lang = entry.getName().substring(entry.getName().lastIndexOf(".")+1);
+//					String destDir = LANGUAGES_DIR + File.separator + lang;
+//					File destDirFile = new File(destDir);
+//					if (!destDirFile.exists()) {
+//						destDirFile.mkdir();
+//					}
+					
+					FileOutputStream fos = new FileOutputStream(LANGUAGES_DIR + File.separator + entry.getName());
+					dest = new BufferedOutputStream(fos, BUFFER);
+					while ((count = zis.read(data, 0, BUFFER)) != -1) {
+						dest.write(data, 0, count);
+					}
+					dest.flush();
+					dest.close();
+					
+					//compile to .mo file and install it in the appropriate place (LOCALE_DIR)
+					compileMoFile(entry);
+					
+					//compile the java properties version & install it in the classpath (LANGUAGES_DIR)
+					compileResourceBundle(entry);
 				}
-				
-				FileOutputStream fos = new FileOutputStream(destDir + File.separator + entry.getName());
-				dest = new BufferedOutputStream(fos, BUFFER);
-				while ((count = zis.read(data, 0, BUFFER)) != -1) {
-					dest.write(data, 0, count);
-				}
-				dest.flush();
-				dest.close();
-				
-				//compile to .mo file and install it in the appropriate place (LOCALE_DIR)
-//				compileMoFile(entry);
-				
-				//compile the java properties version & install it in the classpath (LANGUAGES_DIR)
-				compileResourceBundle(entry);
 			}
 			zis.close();		    	
 		    uploadedStream.close();
@@ -155,15 +163,15 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
 			UvmException {
 		boolean success = true;
 		try {
-			String moduleName = entry.getName().substring(0, entry.getName().lastIndexOf("."));
-			String lang = entry.getName().substring(entry.getName().lastIndexOf(".")+1);
-			String srcDir = LANGUAGES_DIR + File.separator + lang;
+			String tokens[] = entry.getName().split(File.separator);
+			String lang = tokens[0];
+			String moduleName = tokens[1].substring(0, tokens[1].lastIndexOf("."));
 			
 			String cmd[] = { "msgfmt", "--java2", 
 					"-d", LANGUAGES_DIR,
 					"-r", BASENAME_PREFIX + "." + moduleName,
 					"-l", lang,
-					srcDir + File.separator + entry.getName()};
+					LANGUAGES_DIR + File.separator + entry.getName()};
 			Process p = Runtime.getRuntime().exec(cmd);
 			p.waitFor();
 			if (p.exitValue() != 0) {
@@ -181,8 +189,12 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
 	private void compileMoFile(ZipEntry entry) throws IOException, UvmException {
 		boolean success = true;
 		try {
+			String tokens[] = entry.getName().split(File.separator);
+			String lang = tokens[0];
+			String moduleName = tokens[1].substring(0, tokens[1].lastIndexOf("."));
+			
 			String cmd[] = { "msgfmt",
-					"-o", LOCALE_DIR + File.separator + entry.getName().substring(0, entry.getName().lastIndexOf(".")) + File.separator + "mo",
+					"-o", LOCALE_DIR + File.separator + lang + File.separator + LC_MESSAGES + File.separator + moduleName  + ".mo",
 					LANGUAGES_DIR + File.separator + entry.getName()};
 			Process p = Runtime.getRuntime().exec(cmd);
 			p.waitFor();
