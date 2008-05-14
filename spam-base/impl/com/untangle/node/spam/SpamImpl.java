@@ -347,8 +347,12 @@ public class SpamImpl extends AbstractNode implements SpamNode
 
     public SpamSettings getSpamSettings()
     {
-        if( this.spamSettings == null )
+        if( this.spamSettings == null ) {
             logger.error("Settings not yet initialized. State: " + getNodeContext().getRunState() );
+        } else {
+            spamSettings.getBaseSettings().setLastUpdate(this.lastSignatureUpdate);
+            spamSettings.getBaseSettings().setSignatureVersion(this.signatureVersion);
+        }
 
         return this.spamSettings;
     }
