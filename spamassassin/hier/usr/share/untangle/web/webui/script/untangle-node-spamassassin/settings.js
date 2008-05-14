@@ -131,10 +131,12 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                         }
                     }, {
                         xtype:'textfield',
-                        fieldLabel: this.i18n._('Custom Strength'),
+                        fieldLabel: this.i18n._('Strength Value'),
                         allowBlank:false,
                         value: this.getBaseSettings().smtpConfig.strength,
                         disabled:  !this.isCustomStrength(this.getBaseSettings().smtpConfig.strength),
+                        regex: /^(100|[3-9][0-9])$/,
+                        regexText: this.i18n._('Strength Value must be a number in range 100-30. Smaller value is higher strength.'),
                         listeners : {
                             "change" : {
                                 fn : function(elem, newValue) {
@@ -209,10 +211,12 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                         }
                     }, {
                         xtype:'textfield',
-                        fieldLabel: this.i18n._('Custom Strength'),
+                        fieldLabel: this.i18n._('Strength Value'),
                         allowBlank:false,
                         value: this.getBaseSettings().popConfig.strength,
                         disabled:  !this.isCustomStrength(this.getBaseSettings().popConfig.strength),
+                        regex: /^(100|[3-9][0-9])$/,
+                        regexText: this.i18n._('Strength Value must be a number in range 100-30. Smaller value is higher strength.'),
                         listeners : {
                             "change" : {
                                 fn : function(elem, newValue) {
@@ -281,10 +285,12 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                         }
                     }, {
                         xtype:'textfield',
-                        fieldLabel: this.i18n._('Custom Strength'),
+                        fieldLabel: this.i18n._('Strength Value'),
                         allowBlank:false,
                         value: this.getBaseSettings().imapConfig.strength,
                         disabled:  !this.isCustomStrength(this.getBaseSettings().imapConfig.strength),
+                        regex: /^(100|[3-9][0-9])$/,
+                        regexText: this.i18n._('Strength Value must be a number in range 100-30. Smaller value is higher strength.'),
                         listeners : {
                             "change" : {
                                 fn : function(elem, newValue) {
@@ -451,20 +457,31 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                 }]
             });
         },
+        validateClient: function() {
+            var valid= (this.emailPanel.items.get(0).items.get(3).isValid() &&
+                this.emailPanel.items.get(1).items.get(2).isValid() &&
+                this.emailPanel.items.get(2).items.get(2));
+            if(!valid) {
+            	Ext.MessageBox.alert(i18n._("Failed"), this.i18n._("Some fields have invalid values."))
+            }
+            return valid;
+        },
         // save function
         save : function() {
-            // disable tabs during save
-            this.tabs.disable();
-            this.getRpcNode().setBaseSettings(function(result, exception) {
-                // re-enable tabs
-                this.tabs.enable();
-                if (exception) {
-                    Ext.MessageBox.alert(i18n._("Failed"), exception.message);
-                    return;
-                }
-                // exit settings screen
-                this.cancelAction();
-            }.createDelegate(this), this.getBaseSettings());
+            if (this.validate()) {
+                // disable tabs during save
+                this.tabs.disable();
+                this.getRpcNode().setBaseSettings(function(result, exception) {
+                    // re-enable tabs
+                    this.tabs.enable();
+                    if (exception) {
+                        Ext.MessageBox.alert(i18n._("Failed"), exception.message);
+                        return;
+                    }
+                    // exit settings screen
+                    this.cancelAction();
+                }.createDelegate(this), this.getBaseSettings());
+            }
         }
     });
 }
