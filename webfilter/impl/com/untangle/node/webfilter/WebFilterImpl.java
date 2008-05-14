@@ -20,7 +20,6 @@ package com.untangle.node.webfilter;
 
 import java.net.InetAddress;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -33,6 +32,7 @@ import com.untangle.node.http.UserWhitelistMode;
 import com.untangle.node.token.Header;
 import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenAdaptor;
+import com.untangle.node.util.PartialListUtil;
 import com.untangle.uvm.LocalAppServerManager;
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
@@ -45,12 +45,9 @@ import com.untangle.uvm.node.IPMaddrRule;
 import com.untangle.uvm.node.MimeType;
 import com.untangle.uvm.node.MimeTypeRule;
 import com.untangle.uvm.node.NodeContext;
-import com.untangle.uvm.node.Rule;
 import com.untangle.uvm.node.StringRule;
 import com.untangle.uvm.node.Validator;
-import com.untangle.uvm.util.ListUtil;
 import com.untangle.uvm.util.OutsideValve;
-import com.untangle.uvm.util.QueryUtil;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.AbstractNode;
 import com.untangle.uvm.vnet.Affinity;
@@ -84,6 +81,10 @@ public class WebFilterImpl extends AbstractNode implements WebFilter
     private final EventLogger<WebFilterEvent> eventLogger;
 
     private volatile WebFilterSettings settings;
+    
+    private final PartialListUtil listUtil = new PartialListUtil();    
+    private final BlacklistCategoryHandler categoryHandler = new BlacklistCategoryHandler();
+    
 
     // constructors -----------------------------------------------------------
 
@@ -234,46 +235,46 @@ public class WebFilterImpl extends AbstractNode implements WebFilter
 
 	public List<BlacklistCategory> getBlacklistCategories(int start, int limit,
 			String... sortColumns) {
-        return getRules(
+        return listUtil.getItems(
 				"select blacklistCategory from WebFilterSettings hbs " +
 				"join hbs.blacklistCategories as blacklistCategory where hbs.tid = :tid ",
-				"blacklistCategory", start, limit, sortColumns);
+                getNodeContext(), getTid(), "blacklistCategory", start, limit, sortColumns);
 	}
 
 	public List<StringRule> getBlockedExtensions(int start, int limit,
 			String... sortColumns) {
-        return getRules(
+        return listUtil.getItems(
 				"select hbs.blockedExtensions from WebFilterSettings hbs where hbs.tid = :tid ",
-				start, limit, sortColumns);
+				getNodeContext(), getTid(), start, limit, sortColumns);
 	}
 
 	public List<MimeTypeRule> getBlockedMimeTypes(int start, int limit,
 			String... sortColumns) {
-        return getRules(
+        return listUtil.getItems(
 				"select blockedMimeType from WebFilterSettings hbs " +
 				"join hbs.blockedMimeTypes as blockedMimeType where hbs.tid = :tid ",
-				"blockedMimeType", start, limit, sortColumns);
+				getNodeContext(), getTid(), "blockedMimeType", start, limit, sortColumns);
 	}
 
 	public List<StringRule> getBlockedUrls(int start, int limit,
 			String... sortColumns) {
-        return getRules(
+        return listUtil.getItems(
 				"select hbs.blockedUrls from WebFilterSettings hbs where hbs.tid = :tid ",
-				start, limit, sortColumns);
+				getNodeContext(), getTid(), start, limit, sortColumns);
 	}
 
 	public List<IPMaddrRule> getPassedClients(int start, int limit,
 			String... sortColumns) {
-        return getRules(
+        return listUtil.getItems(
 				"select hbs.passedClients from WebFilterSettings hbs where hbs.tid = :tid ",
-				start, limit, sortColumns);
+				getNodeContext(), getTid(), start, limit, sortColumns);
 	}
 
 	public List<StringRule> getPassedUrls(int start, int limit,
 			String... sortColumns) {
-        return getRules(
+        return listUtil.getItems(
 				"select hbs.passedUrls from WebFilterSettings hbs where hbs.tid = :tid ",
-				start, limit, sortColumns);
+				getNodeContext(), getTid(), start, limit, sortColumns);
 	}
 
 	public void updateBlacklistCategories(List<BlacklistCategory> added,
@@ -317,24 +318,13 @@ public class WebFilterImpl extends AbstractNode implements WebFilter
 		    	if (baseSettings != null) {
 			        settings.setBaseSettings(baseSettings);
 		    	}
-		    	if (passedClients != null && passedClients.length >= 3) {
-		    		updateCachedRules(getWebFilterSettings().getPassedClients(), passedClients[0], passedClients[1], passedClients[2]);
-		    	}
-		    	if (passedUrls != null && passedUrls.length >= 3) {
-		    		updateCachedRules(getWebFilterSettings().getPassedUrls(), passedUrls[0], passedUrls[1], passedUrls[2]);
-		    	}
-		    	if (blockedUrls != null && blockedUrls.length >= 3) {
-		    		updateCachedRules(getWebFilterSettings().getBlockedUrls(), blockedUrls[0], blockedUrls[1], blockedUrls[2]);
-		    	}
-		    	if (blockedMimeTypes != null && blockedMimeTypes.length >= 3) {
-		    		updateCachedRules(getWebFilterSettings().getBlockedMimeTypes(), blockedMimeTypes[0], blockedMimeTypes[1], blockedMimeTypes[2]);
-		    	}
-		    	if (blockedExtensions != null && blockedExtensions.length >= 3) {
-		    		updateCachedRules(getWebFilterSettings().getBlockedExtensions(), blockedExtensions[0], blockedExtensions[1], blockedExtensions[2]);
-		    	}		    	
-		    	if (blacklistCategories != null && blacklistCategories.length >= 3) {
-		    		updateCachedCategories(getWebFilterSettings().getBlacklistCategories(), blacklistCategories[0], blacklistCategories[1], blacklistCategories[2]);
-		    	}
+                
+                listUtil.updateCachedItems(getWebFilterSettings().getPassedClients(), passedClients);
+                listUtil.updateCachedItems(getWebFilterSettings().getPassedUrls(), passedUrls);
+                listUtil.updateCachedItems(getWebFilterSettings().getBlockedUrls(), blockedUrls);
+                listUtil.updateCachedItems(getWebFilterSettings().getBlockedMimeTypes(), blockedMimeTypes);
+                listUtil.updateCachedItems(getWebFilterSettings().getBlockedExtensions(), blockedExtensions);
+                listUtil.updateCachedItems(getWebFilterSettings().getBlacklistCategories(), categoryHandler, blacklistCategories);
 
 				settings = (WebFilterSettings)s.merge(settings);
 
@@ -736,41 +726,11 @@ public class WebFilterImpl extends AbstractNode implements WebFilter
         }
     }
     
-    private List getRules(final String queryString, final int start,
-			final int limit, final String... sortColumns) {
-    	return getRules(queryString, null, start, limit, sortColumns);
-    }
-    
-    private List getRules(final String queryString, final String alias, final int start,
-			final int limit, final String... sortColumns) {
-		TransactionWork<List> tw = new TransactionWork<List>() {
-			private List result;
-
-			public boolean doWork(Session s) {
-				Query q = s.createQuery(queryString
-						+ QueryUtil.toOrderByClause(alias, sortColumns));
-				q.setParameter("tid", getTid());
-				q.setFirstResult(start);
-				q.setMaxResults(limit);
-				result = q.list();
-
-				return true;
-			}
-
-			public List getResult() {
-				return result;
-			}
-		};
-		getNodeContext().runTransaction(tw);
-
-		return tw.getResult();
-	}
-    
     private void updateRules(final Set rules, final List added,
 			final List<Long> deleted, final List modified) {
 		TransactionWork tw = new TransactionWork() {
 			public boolean doWork(Session s) {
-				updateCachedRules(rules, added, deleted, modified);
+				listUtil.updateCachedItems( rules, added, deleted, modified );
 
 				settings = (WebFilterSettings)s.merge(settings);
 
@@ -784,39 +744,11 @@ public class WebFilterImpl extends AbstractNode implements WebFilter
 		getNodeContext().runTransaction(tw);
 	}
 
-	private void updateCachedRules(final Set rules, final List added,
-			final List<Long> deleted, final List modified) {
-		for (Iterator i = rules.iterator(); i.hasNext();) {
-			Rule rule = (Rule) i.next();
-			Rule mRule = null;
-			if (deleted != null && ListUtil.contains(deleted, rule.getId())) {
-				i.remove();
-			} else if (modified != null
-					&& (mRule = modifiedRule(rule, modified)) != null) {
-				rule.update(mRule);
-			}
-		}
-
-		if (added != null) {
-			rules.addAll(added);
-		}
-	}
-
-	private Rule modifiedRule(Rule rule, List modified) {
-		for (Iterator iterator = modified.iterator(); iterator.hasNext();) {
-			Rule currentRule = (Rule) iterator.next();
-			if (currentRule.getId().equals(rule.getId())) {
-				return currentRule;
-			}
-		}
-		return null;
-	}
-    
     private void updateCategories(final Set categories, final List added,
 			final List<Long> deleted, final List modified) {
 		TransactionWork tw = new TransactionWork() {
 			public boolean doWork(Session s) {
-				updateCachedCategories(categories, added, deleted, modified);
+				listUtil.updateCachedItems( categories, categoryHandler, added, deleted, modified );
 
 				settings = (WebFilterSettings)s.merge(settings);
 
@@ -830,32 +762,16 @@ public class WebFilterImpl extends AbstractNode implements WebFilter
 		getNodeContext().runTransaction(tw);
 	}
     
-	private void updateCachedCategories(final Set categories, final List added,
-			final List<Long> deleted, final List modified) {
-		for (Iterator i = categories.iterator(); i.hasNext();) {
-			BlacklistCategory category = (BlacklistCategory) i.next();
-			BlacklistCategory mCategory = null;
-			if (deleted != null && ListUtil.contains(deleted, category.getId())) {
-				i.remove();
-			} else if (modified != null
-					&& (mCategory = modifiedCategory(category, modified)) != null) {
-				category.update(mCategory);
-			}
-		}
+    private static class BlacklistCategoryHandler implements PartialListUtil.Handler<BlacklistCategory>
+    {
+        public Long getId( BlacklistCategory rule )
+        {
+            return rule.getId();
+        }
 
-		if (added != null) {
-			categories.addAll(added);
-		}
-	}
-
-	private BlacklistCategory modifiedCategory(BlacklistCategory category, List modified) {
-		for (Iterator iterator = modified.iterator(); iterator.hasNext();) {
-			BlacklistCategory currentCategory = (BlacklistCategory) iterator.next();
-			if (currentCategory.getId().equals(category.getId())) {
-				return currentCategory;
-			}
-		}
-		return null;
-	}
-
+        public void update( BlacklistCategory current, BlacklistCategory newRule )
+        {
+            current.update( newRule );
+        }
+    }
 }

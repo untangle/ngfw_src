@@ -43,10 +43,7 @@ import org.hibernate.Session;
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.Rule;
-import com.untangle.uvm.node.StringRule;
-
 import com.untangle.uvm.security.Tid;
-
 import com.untangle.uvm.util.ListUtil;
 import com.untangle.uvm.util.QueryUtil;
 import com.untangle.uvm.util.TransactionWork;
@@ -64,32 +61,52 @@ public class PartialListUtil
     public List getItems( String queryString, NodeContext nodeContext, Tid tid, 
                           int start, int limit, String ... sortColumns)
     {
-        return getItems( queryString, nodeContext, new Parameter[] { new Parameter( "tid", tid ) }, 
-                         start, limit, sortColumns );
+        return getItems( queryString, nodeContext, tid, null, start, limit, sortColumns );
     }
 
     public List getItems( String queryString, NodeContext nodeContext, Parameter[] parameters, 
                           int start, int limit, String ... sortColumns)
                           
     {
-        TransactionWork<List> tw = getItemsTransactionWork( queryString, parameters, 
-                                                            start, limit, sortColumns );
-
-        nodeContext.runTransaction( tw );
-        return tw.getResult();
+    	return getItems(queryString, nodeContext, parameters, null, start, limit, sortColumns);
     }    
 
     public List getItems( String queryString, LocalUvmContext localContext, Parameter[] parameters, 
                           int start, int limit, String ... sortColumns)
                           
     {
+    	return getItems(queryString, localContext, parameters, null, start, limit, sortColumns);
+    }
+
+    /* Just a helper function for the most common case of listing from a node. */
+    public List getItems( String queryString, NodeContext nodeContext, Tid tid, 
+                          String alias, int start, int limit, String ... sortColumns)
+    {
+        return getItems( queryString, nodeContext, new Parameter[] { new Parameter( "tid", tid ) }, 
+                         alias, start, limit, sortColumns );
+    }
+
+    public List getItems( String queryString, NodeContext nodeContext, Parameter[] parameters, 
+                          String alias, int start, int limit, String ... sortColumns)
+                          
+    {
         TransactionWork<List> tw = getItemsTransactionWork( queryString, parameters, 
-                                                            start, limit, sortColumns );
+                                                            alias, start, limit, sortColumns );
+
+        nodeContext.runTransaction( tw );
+        return tw.getResult();
+    }    
+
+    public List getItems( String queryString, LocalUvmContext localContext, Parameter[] parameters, 
+                          String alias, int start, int limit, String ... sortColumns)
+                          
+    {
+        TransactionWork<List> tw = getItemsTransactionWork( queryString, parameters, 
+                                                            alias, start, limit, sortColumns );
 
         localContext.runTransaction( tw );
         return tw.getResult();
     }
-
 
     /* danger, but this is how it comes in from the web ui */
     public void updateCachedItems( Collection items, List[] modifications )
@@ -144,14 +161,14 @@ public class PartialListUtil
     }
 
     private TransactionWork<List> 
-        getItemsTransactionWork( final String queryString, final Parameter[] parameters, 
+        getItemsTransactionWork( final String queryString, final Parameter[] parameters, final String alias,
                                  final int start, final int limit, final String ... sortColumns )
     {
         return new TransactionWork<List>() {
             private List result;
 
             public boolean doWork( Session s ) {
-                Query q = s.createQuery( queryString + QueryUtil.toOrderByClause( sortColumns ));
+                Query q = s.createQuery( queryString + QueryUtil.toOrderByClause(alias, sortColumns ));
                                         
                 if ( parameters != null ) {
                     for ( Parameter parameter : parameters ) {
