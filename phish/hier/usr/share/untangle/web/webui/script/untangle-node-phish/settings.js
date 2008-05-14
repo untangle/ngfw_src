@@ -31,6 +31,15 @@ if (!Ung.hasResource["Ung.Phish"]) {
                 ]
                     
             });
+            //workarownd to solve the problem with baseSettings.popConfig.msgAction==baseSettings.imapConfig.msgAction
+            var baseSettings=this.getBaseSettings();
+            if(baseSettings.popConfig.msgAction==baseSettings.imapConfig.msgAction) {
+                var msgAction={};
+                msgAction.javaClass=baseSettings.imapConfig.msgAction.javaClass;
+                msgAction.key=baseSettings.imapConfig.msgAction.key;
+                msgAction.name=baseSettings.imapConfig.msgAction.name;
+                baseSettings.imapConfig.msgAction=msgAction;
+            }
             // call superclass renderer first
             Ung.Phish.superclass.onRender.call(this, container, position);
             // builds the 3 tabs

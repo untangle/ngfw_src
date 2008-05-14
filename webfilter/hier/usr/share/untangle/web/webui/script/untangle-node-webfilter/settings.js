@@ -98,6 +98,7 @@ Ung.WebFilter = Ext.extend(Ung.Settings, {
 					valueField: 'userWhitelistValue',
                     value: this.getBaseSettings().userWhitelistMode,
 				    typeAhead: true,
+				    forceSelection: true,
 				    mode: 'local',
 				    triggerAction: 'all',
 				    listClass: 'x-combo-list-small',

@@ -67,6 +67,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                         valueField : 'userWhitelistValue',
                         value : this.getBaseSettings().userWhitelistMode,
                         typeAhead : true,
+                        forceSelection: true,
                         mode : 'local',
                         triggerAction : 'all',
                         listClass : 'x-combo-list-small',
