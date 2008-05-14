@@ -161,6 +161,22 @@ public class PhishNode extends SpamImpl implements Phish
         return (PhishSettings)getSpamSettings();
     }
 
+    public void setPhishBaseSettings(PhishBaseSettings phishBaseSettings)
+    {
+    	PhishSettings phishSettings = getPhishSettings();
+    	phishBaseSettings.copy(phishSettings.getBaseSettings());
+    	phishSettings.setEnableGooglePhishList(phishBaseSettings.getEnableGooglePhishList());
+        setSpamSettings(phishSettings);
+    }
+
+    public PhishBaseSettings getPhishBaseSettings()
+    {
+    	PhishBaseSettings phishBaseSettings = new PhishBaseSettings();
+    	PhishSettings phishSettings = getPhishSettings();
+    	phishSettings.getBaseSettings().copy(phishBaseSettings);
+    	phishBaseSettings.setEnableGooglePhishList(phishSettings.getEnableGooglePhishList());
+        return phishBaseSettings;
+    }
 
     public PhishBlockDetails getBlockDetails(String nonce)
     {

@@ -9,12 +9,12 @@ if (!Ung.hasResource["Ung.Phish"]) {
         gridWebEventLog : null,
         gridEmailEventLog : null,
         // override get base settings object
-//        getBaseSettings: function(forceReload) {
-//            if(forceReload || this.rpc.baseSettings===undefined) {
-//                this.rpc.baseSettings=this.getRpcNode().getPhishBaseSettings();
-//            }
-//            return this.rpc.baseSettings;
-//        },
+        getBaseSettings: function(forceReload) {
+            if(forceReload || this.rpc.baseSettings===undefined) {
+                this.rpc.baseSettings=this.getRpcNode().getPhishBaseSettings();
+            }
+            return this.rpc.baseSettings;
+        },
 
         // called when the component is rendered
         onRender : function(container, position) {
@@ -397,7 +397,7 @@ if (!Ung.hasResource["Ung.Phish"]) {
         save : function() {
             // disable tabs during save
             this.tabs.disable();
-            this.getRpcNode().setBaseSettings(function(result, exception) {
+            this.getRpcNode().setPhishBaseSettings(function(result, exception) {
                 // re-enable tabs
                 this.tabs.enable();
                 if (exception) {

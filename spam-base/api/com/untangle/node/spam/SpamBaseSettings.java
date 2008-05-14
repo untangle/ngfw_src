@@ -19,7 +19,6 @@
 package com.untangle.node.spam;
 
 import java.io.Serializable;
-
 import java.util.Date;
 
 import javax.persistence.CascadeType;
@@ -134,4 +133,14 @@ public class SpamBaseSettings implements Serializable
     {
         this.signatureVersion = newValue;
     }
+
+    public void copy(SpamBaseSettings baseSettings)
+    {
+		baseSettings.setSmtpConfig(this.smtpConfig);
+		baseSettings.setPopConfig(this.popConfig);
+		baseSettings.setImapConfig(this.imapConfig);
+		baseSettings.setSpamRBLListLength(this.rblListLength);
+		baseSettings.setLastUpdate(this.lastUpdate);
+		baseSettings.setSignatureVersion(this.signatureVersion);
+    }    
 }
