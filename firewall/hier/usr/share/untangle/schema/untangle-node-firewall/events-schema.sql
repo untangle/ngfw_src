@@ -1,6 +1,6 @@
 -- events schema for release-5.0
 -- $HeadURL$
--- Copyright (c) 2003-2007 Untangle, Inc. 
+-- Copyright (c) 2003-2007 Untangle, Inc.
 --
 -- This program is free software; you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License, version 2,
@@ -25,7 +25,6 @@ CREATE TABLE events.n_firewall_evt (
     event_id int8 NOT NULL,
     pl_endp_id int8,
     was_blocked bool,
-    rule_id int8,
     rule_index int4,
     time_stamp timestamp,
     PRIMARY KEY (event_id));

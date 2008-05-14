@@ -19,12 +19,8 @@
 package com.untangle.node.firewall;
 
 import java.io.Serializable;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -44,20 +40,18 @@ import com.untangle.uvm.node.PipelineEndpoints;
     @Table(name="n_firewall_evt", schema="events")
     public class FirewallEvent extends PipelineEvent implements Serializable
     {
-        private FirewallRule rule;
         private int     ruleIndex;
         private boolean wasBlocked;
 
         // Constructors
         public FirewallEvent() { }
 
-        public FirewallEvent( PipelineEndpoints pe,  FirewallRule rule, boolean wasBlocked, int ruleIndex )
+        public FirewallEvent( PipelineEndpoints pe, boolean wasBlocked, int ruleIndex )
         {
             super(pe);
 
             this.wasBlocked = wasBlocked;
             this.ruleIndex  = ruleIndex;
-            this.rule       = rule;
         }
 
         /**
@@ -90,23 +84,6 @@ import com.untangle.uvm.node.PipelineEndpoints;
         public void setRuleIndex( int ruleIndex )
         {
             this.ruleIndex = ruleIndex;
-        }
-
-        /**
-         * Firewall rule that triggered this event
-         *
-         * @return firewall rule that triggered this event
-         */
-        @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
-        @JoinColumn(name="rule_id")
-        public FirewallRule getRule()
-        {
-            return rule;
-        }
-
-        public void setRule( FirewallRule rule )
-        {
-            this.rule = rule;
         }
 
         // Syslog methods -----------------------------------------------------
