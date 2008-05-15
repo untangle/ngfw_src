@@ -7,3 +7,7 @@ sleep 1
 
 @PREFIX@/usr/bin/mcli updateAddress
 
+/etc/init.d/untangle-net-alpaca-iptables restart
+
+true
+
