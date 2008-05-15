@@ -111,7 +111,7 @@ public class IPSRuleHeader
             WeakReference<IPSRuleHeader> wr = INSTANCES.get(h);
             if (null != wr) {
                 IPSRuleHeader c = wr.get();
-                if (null != wr) {
+                if (null != c) {
                     h = c;
                 } else {
                     INSTANCES.put(h, new WeakReference(h));

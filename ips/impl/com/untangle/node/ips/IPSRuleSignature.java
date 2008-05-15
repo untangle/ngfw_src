@@ -18,12 +18,19 @@
 
 package com.untangle.node.ips;
 
+import java.lang.ref.WeakReference;
+import java.util.Map;
+import java.util.WeakHashMap;
+
 import com.untangle.node.ips.options.*;
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.vnet.event.*;
 
 public class IPSRuleSignature
 {
+    private static final Map<IPSRuleSignature, WeakReference<IPSRuleSignature>> INSTANCES
+        = new WeakHashMap<IPSRuleSignature, WeakReference<IPSRuleSignature>>();
+
     private final IPSRuleSignatureImpl impl;
 
     // constructors ------------------------------------------------------------
@@ -46,7 +53,23 @@ public class IPSRuleSignature
             = new IPSRuleSignatureImpl(ips, rule, signatureString, action,
                                        initSettingsTime, string);
 
-        return new IPSRuleSignature(impl);
+        IPSRuleSignature s = new IPSRuleSignature(impl);
+
+        synchronized (INSTANCES) {
+            WeakReference<IPSRuleSignature> wr = INSTANCES.get(s);
+            if (null != wr) {
+                IPSRuleSignature c = wr.get();
+                if (null != c) {
+                    s = c;
+                } else {
+                    INSTANCES.put(s, new WeakReference(s));
+                }
+            } else {
+                INSTANCES.put(s, new WeakReference(s));
+            }
+        }
+
+        return s;
     }
 
     public int sid()
