@@ -18,9 +18,6 @@
 
 package com.untangle.node.ips.options;
 
-import java.util.regex.*;
-
-import com.untangle.node.ips.IPSRuleSignatureImpl;
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.vnet.event.*;
 import org.apache.log4j.Logger;
@@ -29,10 +26,12 @@ public class OffsetOption extends IPSOption
 {
     private final Logger logger = Logger.getLogger(getClass());
 
-    public OffsetOption(IPSRuleSignatureImpl signature, String params)
-        throws ParseException
+    public OffsetOption(OptionArg arg) throws ParseException
     {
-        super(signature, params);
+        super(arg);
+
+        String params = arg.getParams();
+
         ContentOption option = (ContentOption) signature.getOption("ContentOption",this);
         if(option == null) {
             logger.warn("Unable to find content option to set offset for sig: " + signature);

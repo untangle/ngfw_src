@@ -20,7 +20,6 @@ package com.untangle.node.ips.options;
 
 import java.util.regex.*;
 
-import com.untangle.node.ips.IPSRuleSignatureImpl;
 import com.untangle.node.ips.IPSSessionInfo;
 import com.untangle.uvm.vnet.event.*;
 
@@ -40,9 +39,11 @@ public class FlowOption extends IPSOption
 
     private boolean matchFromServer = false;
 
-    public FlowOption(IPSRuleSignatureImpl signature, String params)
+    public FlowOption(OptionArg arg)
     {
-        super(signature, params);
+        super(arg);
+
+        String params = arg.getParams();
 
         if(noStream.matcher(params).find()) {
             signature.remove(true);

@@ -18,7 +18,6 @@
 
 package com.untangle.node.ips.options;
 
-import com.untangle.node.ips.IPSRuleSignatureImpl;
 import org.apache.log4j.Logger;
 
 public class DistanceOption extends IPSOption
@@ -26,10 +25,11 @@ public class DistanceOption extends IPSOption
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    public DistanceOption(IPSRuleSignatureImpl signature, String params)
+    public DistanceOption(OptionArg arg)
     {
-        super(signature, params);
-        int distance = Integer.parseInt(params);
+        super(arg);
+
+        int distance = Integer.parseInt(arg.getParams());
         IPSOption option = signature.getOption("ContentOption",this);
         if(option == null) {
             logger.warn("Unable to find content option to set distance for sig: " + signature);

@@ -18,18 +18,16 @@
 
 package com.untangle.node.ips.options;
 
-import java.util.regex.*;
-
-import com.untangle.node.ips.IPSRuleSignatureImpl;
-import com.untangle.uvm.vnet.event.*;
-
 public class MsgOption extends IPSOption
 {
     private static final String BLEEDING_PREFIX = "BLEEDING-EDGE";
 
-    public MsgOption(IPSRuleSignatureImpl signature, String params)
+    public MsgOption(OptionArg arg)
     {
-        super(signature, params);
+        super(arg);
+
+        String params = arg.getParams();
+
         // reomve useless 'BLEEDING-EDGE' prefix
         if (params.length() > BLEEDING_PREFIX.length()) {
             String beginParams = params.substring(0, BLEEDING_PREFIX.length());

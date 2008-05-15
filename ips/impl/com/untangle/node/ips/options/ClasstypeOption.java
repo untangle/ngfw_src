@@ -25,7 +25,7 @@ import com.untangle.node.ips.RuleClassification;
 import com.untangle.uvm.vnet.event.*;
 import org.apache.log4j.Logger;
 
-public class ClasstypeOption extends IPSOption
+class ClasstypeOption extends IPSOption
 {
     private static final int HIGH_PRIORITY = 1;
     private static final int MEDIUM_PRIORITY = 2;
@@ -34,11 +34,13 @@ public class ClasstypeOption extends IPSOption
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    public ClasstypeOption(IPSDetectionEngine engine,
-                           IPSRuleSignatureImpl signature,
-                           String params, boolean initializeSettingsTime)
+    ClasstypeOption(OptionArg arg)
     {
-        super(signature, params);
+        super(arg);
+
+        IPSDetectionEngine engine = arg.getEngine();
+        String params = arg.getParams();
+        IPSRuleSignatureImpl sig = arg.getSignature();
 
         RuleClassification rc = null;
         if (engine != null)
@@ -50,8 +52,8 @@ public class ClasstypeOption extends IPSOption
         } else {
             signature.setClassification(rc.getDescription());
 
-            if (true == initializeSettingsTime) {
-                IPSRule rule = signature.rule();
+            if (true == arg.getInitializeSettingsTime()) {
+                IPSRule rule = arg.getRule();
                 int priority = rc.getPriority();
                 // logger.debug("Rule Priority for " + rule.getDescription() + " is " + priority);
                 switch (priority) {

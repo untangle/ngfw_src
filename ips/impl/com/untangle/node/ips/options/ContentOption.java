@@ -23,7 +23,6 @@ import java.text.CharacterIterator;
 import java.util.regex.*;
 
 import com.sun.org.apache.xerces.internal.impl.xpath.regex.BMPattern;
-import com.untangle.node.ips.IPSRuleSignatureImpl;
 import com.untangle.node.ips.IPSSessionInfo;
 import com.untangle.node.util.AsciiCharBuffer;
 import com.untangle.node.util.AsciiCharBufferCharacterIterator;
@@ -36,7 +35,7 @@ import org.apache.log4j.Logger;
  * @Author Nick Childers
  */
 ///XXX - ADD ERROR HANDELING OMG!
-public class ContentOption extends IPSOption
+class ContentOption extends IPSOption
 {
     private ContentOption previousContentOption = null;
 
@@ -53,9 +52,12 @@ public class ContentOption extends IPSOption
     private BMPattern contentPattern;
     private final Logger logger = Logger.getLogger(getClass());
 
-    public ContentOption(IPSRuleSignatureImpl signature, String params)
+    ContentOption(OptionArg arg)
     {
-        super(signature, params);
+        super(arg);
+
+        String params = arg.getParams();
+
         int index = params.indexOf('|');
         if(index < 0) {
             stringPattern = params;
@@ -169,7 +171,7 @@ public class ContentOption extends IPSOption
         //return super.negationFlag() ^ contentPattern.matcher(data.substring(start,end)).find();
         if (result >= 0) {
             if (logger.isDebugEnabled())
-                logger.debug("content matched for rule " + signature.rule().getSid() + ": " + stringPattern);
+                logger.debug("content matched for rule " + signature.getSid() + ": " + stringPattern);
             sessionInfo.indexOfLastMatch = result + stringPattern.length();
             // Was: sessionInfo.indexOfLastMatch = matcher.end();, is my version wrong?
             return true;

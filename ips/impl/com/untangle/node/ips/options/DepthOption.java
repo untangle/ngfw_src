@@ -18,22 +18,23 @@
 
 package com.untangle.node.ips.options;
 
-import java.util.regex.*;
-
-import com.untangle.node.ips.IPSRuleSignatureImpl;
 import com.untangle.uvm.node.ParseException;
-import com.untangle.uvm.vnet.event.*;
 import org.apache.log4j.Logger;
 
 public class DepthOption extends IPSOption {
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    public DepthOption(IPSRuleSignatureImpl signature, String params) throws ParseException {
-        super(signature, params);
-        ContentOption option = (ContentOption) signature.getOption("ContentOption",this);
-        if(option == null) {
-            logger.warn("Unable to find content option to set depth for sig: " + signature.rule().getText());
+    public DepthOption(OptionArg arg) throws ParseException
+    {
+        super(arg);
+
+        String params = arg.getParams();
+
+        ContentOption option = (ContentOption)signature.getOption("ContentOption",this);
+        if (option == null) {
+            logger.warn("Unable to find content option to set depth for sig: "
+                        + arg.getRule().getText());
             signature.remove(true);
             return;
         }

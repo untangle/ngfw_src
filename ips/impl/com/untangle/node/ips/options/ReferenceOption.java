@@ -18,9 +18,8 @@
 
 package com.untangle.node.ips.options;
 
-import java.util.regex.*;
-
-import com.untangle.node.ips.IPSRuleSignatureImpl;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * This class matches the reference option found in snort based rule
@@ -32,8 +31,11 @@ public class ReferenceOption extends IPSOption
 {
     private static final Pattern URLP = Pattern.compile("url,", Pattern.CASE_INSENSITIVE);
 
-    public ReferenceOption(IPSRuleSignatureImpl signature, String params) {
-        super(signature, params);
+    ReferenceOption(OptionArg arg)
+    {
+        super(arg);
+
+        String params = arg.getParams();
 
         Matcher urlm = URLP.matcher(params);
         if (true == urlm.find()) {

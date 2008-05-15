@@ -18,7 +18,6 @@
 
 package com.untangle.node.ips.options;
 
-import com.untangle.node.ips.IPSRuleSignatureImpl;
 import com.untangle.node.ips.IPSSessionInfo;
 import com.untangle.uvm.vnet.event.*;
 import org.apache.log4j.Logger;
@@ -30,9 +29,12 @@ public class DsizeOption extends IPSOption
     private int min;
     private int max;
 
-    public DsizeOption(IPSRuleSignatureImpl signature, String params)
+    public DsizeOption(OptionArg arg)
     {
-        super(signature, params);
+        super(arg);
+
+        String params = arg.getParams();
+
         char ch = params.charAt(0);
         String range[] = params.split("<>");
         try {

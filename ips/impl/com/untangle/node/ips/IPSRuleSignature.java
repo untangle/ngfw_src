@@ -35,28 +35,28 @@ public class IPSRuleSignature
 
     // public static methods ---------------------------------------------------
 
-    public static IPSRuleSignature parseSignature(IPSNodeImpl ips,
+    public static IPSRuleSignature parseSignature(IPSNodeImpl ips, IPSRule rule,
                                                   String signatureString,
-                                                  int action, IPSRule rule,
+                                                  int action,
                                                   boolean initSettingsTime,
                                                   String string)
         throws ParseException
     {
         IPSRuleSignatureImpl impl
-            = new IPSRuleSignatureImpl(ips, signatureString, action, rule,
+            = new IPSRuleSignatureImpl(ips, rule, signatureString, action,
                                        initSettingsTime, string);
 
         return new IPSRuleSignature(impl);
     }
 
+    public int sid()
+    {
+        return impl.getSid();
+    }
+
     public boolean remove()
     {
         return impl.remove();
-    }
-
-    public IPSRule rule()
-    {
-        return impl.rule();
     }
 
     public String getMessage()

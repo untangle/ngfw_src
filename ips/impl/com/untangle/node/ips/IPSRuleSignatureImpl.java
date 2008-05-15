@@ -23,11 +23,11 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
 
-import com.untangle.node.ips.options.*;
+import com.untangle.node.ips.options.IPSOption;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.vnet.IPSession;
-import com.untangle.uvm.vnet.event.*;
 import org.apache.log4j.Logger;
 
 public class IPSRuleSignatureImpl
@@ -38,16 +38,17 @@ public class IPSRuleSignatureImpl
      *
      * These rules should all be added at some point!
      *****************************************/
-    private String[] ignoreSafeOptions = { "rev","priority" };
+    private static final String[] IGNORE_SAFE_OPTIONS = { "rev", "priority" };
     /** **************************************/
 
-    private static final int DETECT_COUNTER   = Node.GENERIC_1_COUNTER;
-    private static final int BLOCK_COUNTER    = Node.GENERIC_2_COUNTER;
+    private static final int DETECT_COUNTER = Node.GENERIC_1_COUNTER;
+    private static final int BLOCK_COUNTER = Node.GENERIC_2_COUNTER;
 
-    private static HashMap<IPSRule,long[]> ruleTimes = new HashMap<IPSRule,long[]>();
+    private static final Map<Integer, long[]> ruleTimes
+        = new HashMap<Integer, long[]>();
 
+    private final int sid;
     private final int action;
-    private final IPSRule rule;
     private final String string;
 
     private final List<IPSOption> options = new ArrayList<IPSOption>();
@@ -59,12 +60,12 @@ public class IPSRuleSignatureImpl
 
     private static final Logger log = Logger.getLogger(IPSRuleSignature.class);
 
-    public IPSRuleSignatureImpl(IPSNodeImpl ips, String signatureString,
-                                int action, IPSRule rule,
+    public IPSRuleSignatureImpl(IPSNodeImpl ips, IPSRule rule,
+                                String signatureString, int action,
                                 boolean initSettingsTime, String string)
     {
+        this.sid = rule.getSid();
         this.action = action;
-        this.rule = rule;
         this.string = null == string ? "Starting.." : string;
 
         String replaceChar = ""+0xff42;
@@ -75,10 +76,13 @@ public class IPSRuleSignatureImpl
             options[i] = options[i].replaceAll(replaceChar,"\\\\;");
             int delim = options[i].indexOf(':');
             if (delim < 0) {
-                addOption(ips.getEngine(), options[i].trim(),"No Params", initSettingsTime);
+                addOption(ips.getEngine(), rule, options[i].trim(), "No Params",
+                          initSettingsTime);
             } else {
                 String opt = options[i].substring(0,delim).trim();
-                addOption(ips.getEngine(), opt, options[i].substring(delim+1).trim(), initSettingsTime);
+                addOption(ips.getEngine(), rule, opt,
+                          options[i].substring(delim+1).trim(),
+                          initSettingsTime);
             }
 
             if (remove()) {
@@ -98,9 +102,9 @@ public class IPSRuleSignatureImpl
         return removeFlag;
     }
 
-    public IPSRule rule()
+    public int getSid()
     {
-        return rule;
+        return sid;
     }
 
     public IPSOption getOption(String name, IPSOption callingOption)
@@ -191,12 +195,12 @@ public class IPSRuleSignatureImpl
             // Throw away last three digits as they are always zero on linux.
             long elapsed = (System.nanoTime() - startTime) / 1000l;
             synchronized(ruleTimes) {
-                long[] existingCountAndTime = ruleTimes.get(rule);
+                long[] existingCountAndTime = ruleTimes.get(sid);
                 if (existingCountAndTime == null) {
                     existingCountAndTime = new long[2];
                     existingCountAndTime[0] = 1;
                     existingCountAndTime[1] = elapsed;
-                    ruleTimes.put(rule, existingCountAndTime);
+                    ruleTimes.put(sid, existingCountAndTime);
                 } else {
                     existingCountAndTime[0]++;
                     existingCountAndTime[1] += elapsed;
@@ -244,7 +248,9 @@ public class IPSRuleSignatureImpl
             break;
         }
 
-        ips.log(new IPSLogEvent(session.pipelineEndpoints(), rule.getSid(), classification, message, blocked)); //Add list number that this rule came from
+        //Add list number that this rule came from
+        ips.log(new IPSLogEvent(session.pipelineEndpoints(), sid,
+                                classification, message, blocked));
     }
 
     public String toString()
@@ -260,27 +266,33 @@ public class IPSRuleSignatureImpl
             StringBuilder sb = new StringBuilder(String.format("\n%10s %12s %10s\n",
                                                                "Count", "Micros", "Rule"));
             synchronized(ruleTimes) {
-                for (IPSRule rule : ruleTimes.keySet()) {
-                    long[] countAndTime = ruleTimes.get(rule);
+                for (Integer sid : ruleTimes.keySet()) {
+                    long[] countAndTime = ruleTimes.get(sid);
                     sb.append(String.format("%10d %12d %10d\n",
-                                            countAndTime[0], countAndTime[1], rule.getSid()));
+                                            countAndTime[0], countAndTime[1], sid));
                 }
+
                 ruleTimes.clear();
             }
             log.warn(sb.toString());
+
         }
     }
 
     // private methods ---------------------------------------------------------
 
-    private void addOption(IPSDetectionEngine engine, String optionName,
-                           String params, boolean initializeSettingsTime)
+    private void addOption(IPSDetectionEngine engine, IPSRule rule,
+                           String optionName, String params,
+                           boolean initializeSettingsTime)
     {
-        for (int i = 0; i < ignoreSafeOptions.length; i++) {
-            if (optionName.equalsIgnoreCase(ignoreSafeOptions[i]))
+        for (int i = 0; i < IGNORE_SAFE_OPTIONS.length; i++) {
+            if (optionName.equalsIgnoreCase(IGNORE_SAFE_OPTIONS[i])) {
                 return;
+            }
         }
-        IPSOption option = IPSOption.buildOption(engine,this,optionName,params, initializeSettingsTime);
+        IPSOption option = IPSOption
+            .buildOption(engine, this, rule, optionName, params,
+                         initializeSettingsTime);
         if (option != null && option.runnable()) {
             options.add(option);
         } else if (option == null) {
@@ -298,6 +310,11 @@ public class IPSRuleSignatureImpl
         }
 
         IPSRuleSignatureImpl irs = (IPSRuleSignatureImpl)o;
+
+        if (sid != irs.sid || action != irs.action
+            || removeFlag != irs.removeFlag) {
+            return false;
+        }
 
         if (options.size() != irs.options.size()) {
             return false;
@@ -353,8 +370,7 @@ public class IPSRuleSignatureImpl
             }
         }
 
-        return action == irs.action
-            && removeFlag == irs.removeFlag;
+        return true;
     }
 
     public int hashCode()
@@ -364,6 +380,7 @@ public class IPSRuleSignatureImpl
             result = 37 * result + o.optHashCode();
         }
 
+        result = result * 37 + sid;
         result = result * 37 + action;
         result = result * 37 + (null == string ? 0 : string.hashCode());
         result = result * 37 + (null == message ? 0 : message.hashCode());

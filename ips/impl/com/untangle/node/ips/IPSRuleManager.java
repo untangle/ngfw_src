@@ -31,7 +31,8 @@ import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.SessionEndpoints;
 import org.apache.log4j.Logger;
 
-public class IPSRuleManager {
+public class IPSRuleManager
+{
 
     public static final boolean TO_SERVER = true;
     public static final boolean TO_CLIENT = false;
@@ -93,13 +94,15 @@ public class IPSRuleManager {
 
     // public methods ---------------------------------------------------------
 
-    public void onReconfigure() {
+    public void onReconfigure()
+    {
         for(IPSRule rule : knownRules.values()) {
             rule.remove(true);
         }
     }
 
-    public void updateRule(IPSRule rule) throws ParseException {
+    public void updateRule(IPSRule rule) throws ParseException
+    {
         int sid = rule.getSid();
         IPSRule inMap = knownRules.get(sid);
         if(inMap != null) {
@@ -127,14 +130,8 @@ public class IPSRuleManager {
         rule.setModified(false);
     }
 
-    //    public boolean addRule(String rule, Long key) throws ParseException {
-    //      IPSRule test = new IPSRule(rule,"Not set", "Not set");
-    //    test.setLog(true);
-    //  test.setKeyValue(key);
-    //return addRule(test);
-    //}
-
-    public boolean addRule(IPSRule rule) throws ParseException {
+    public boolean addRule(IPSRule rule) throws ParseException
+    {
         String ruleText = rule.getText();
 
         String noVarText = substituteVariables(ruleText);
@@ -145,7 +142,9 @@ public class IPSRuleManager {
             throw new ParseException("Unable to parse header of rule " + ruleParts[0]);
         }
 
-        IPSRuleSignature signature = IPSRuleSignature.parseSignature(ips, ruleParts[1], rule.getAction(), rule, false, ruleParts[1]);
+        IPSRuleSignature signature = IPSRuleSignature
+            .parseSignature(ips, rule, ruleParts[1], rule.getAction(), false,
+                            ruleParts[1]);
 
         if(!signature.remove() && !rule.disabled()) {
             for(IPSRuleHeader headerTmp : knownHeaders) {
@@ -209,12 +208,16 @@ public class IPSRuleManager {
                 logger.warn("Ignoring rule with bad header: " + text);
                 return null;
             }
-            IPSRuleSignature signature  = IPSRuleSignature.parseSignature(ips, ruleParts[1], rule.getAction(), rule, true, null);
+
+            IPSRuleSignature signature  = IPSRuleSignature
+                .parseSignature(ips, rule, ruleParts[1], rule.getAction(),
+                                true, null);
 
             if(signature.remove()) {
                 logger.warn("Ignoring rule with bad sig: " + text);
                 return null;
             }
+
             String msg = signature.getMessage();
             // remove the category since it's redundant
             int catlen = category.length();
@@ -223,6 +226,7 @@ public class IPSRuleManager {
                 if (beginMsg.equalsIgnoreCase(category))
                     msg = msg.substring(catlen).trim();
             }
+
             rule.setDescription(msg);
             rule.setSignature(signature);
             rule.setClassification(signature.getClassification());
@@ -235,7 +239,8 @@ public class IPSRuleManager {
         return rule;
     }
 
-    public List<IPSRuleHeader> matchingPortsList(int port, boolean toServer) {
+    public List<IPSRuleHeader> matchingPortsList(int port, boolean toServer)
+    {
         List<IPSRuleHeader> returnList = new ArrayList();
         for(IPSRuleHeader header : knownHeaders) {
             if(header.portMatches(port, toServer)) {
@@ -252,7 +257,11 @@ public class IPSRuleManager {
         return matchesHeader(sess, sessInbound, forward, knownHeaders);
     }
 
-    public Set<IPSRuleSignature> matchesHeader(SessionEndpoints sess, boolean sessInbound, boolean forward, List<IPSRuleHeader> matchList) {
+    public Set<IPSRuleSignature> matchesHeader(SessionEndpoints sess,
+                                               boolean sessInbound,
+                                               boolean forward,
+                                               List<IPSRuleHeader> matchList)
+    {
         Set<IPSRuleSignature> returnSet = new HashSet();
         //logger.debug("Total List size: "+matchList.size());
 
@@ -268,19 +277,18 @@ public class IPSRuleManager {
         return returnSet;
     }
 
-    /*For debug yo*/
-    public List<IPSRuleHeader> getHeaders() {
+    public List<IPSRuleHeader> getHeaders()
+    {
         return knownHeaders;
     }
 
-    public void clear() {
+    public void clear()
+    {
         knownHeaders.clear();
     }
 
-    private String substituteVariables(String string) {
-        //string = string.replaceAll("\\$HOME_NET","10.0.0.1/24");
-        //string = string.replaceAll("\\$EXTERNAL_NET","!10.0.0.1/24");
-
+    private String substituteVariables(String string)
+    {
         Matcher match = variablePattern.matcher(string);
         if(match.find()) {
             IPSDetectionEngine engine = null;

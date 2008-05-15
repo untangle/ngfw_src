@@ -19,7 +19,6 @@
 package com.untangle.node.ips.options;
 
 import com.untangle.node.ips.IPSRule;
-import com.untangle.node.ips.IPSRuleSignatureImpl;
 import com.untangle.uvm.vnet.event.*;
 import org.apache.log4j.Logger;
 
@@ -27,18 +26,21 @@ public class SidOption extends IPSOption
 {
     private final Logger logger = Logger.getLogger(getClass());
 
-    public SidOption(IPSRuleSignatureImpl signature, String params,
-                     boolean initializeSettingsTime)
+    public SidOption(OptionArg arg)
     {
-        super(signature, params);
-        if (initializeSettingsTime) {
+        super(arg);
+
+        if (arg.getInitializeSettingsTime()) {
+            String params = arg.getParams();
+
             int sid = -1;
             try {
                 sid = Integer.parseInt(params);
             } catch (NumberFormatException x) {
                 logger.warn("Unable to parse sid: " + params);
             }
-            IPSRule rule = signature.rule();
+
+            IPSRule rule = arg.getRule();
             rule.setSid(sid);
         }
     }

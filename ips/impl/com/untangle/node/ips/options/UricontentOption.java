@@ -21,7 +21,6 @@ package com.untangle.node.ips.options;
 import java.util.regex.*;
 
 import com.sun.org.apache.xerces.internal.impl.xpath.regex.BMPattern;
-import com.untangle.node.ips.IPSRuleSignatureImpl;
 import com.untangle.node.ips.IPSSessionInfo;
 
 public class UricontentOption extends IPSOption
@@ -30,10 +29,11 @@ public class UricontentOption extends IPSOption
     private String stringPattern;
     private boolean nocase = false;
 
-    public UricontentOption(IPSRuleSignatureImpl signature, String params)
+    public UricontentOption(OptionArg arg)
     {
-        super(signature, params);
-        stringPattern = params;
+        super(arg);
+
+        stringPattern = arg.getParams();
         uriPattern = new BMPattern(stringPattern, nocase);
     }
 

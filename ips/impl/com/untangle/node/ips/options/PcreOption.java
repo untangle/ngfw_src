@@ -19,9 +19,9 @@
 package com.untangle.node.ips.options;
 
 import java.nio.ByteBuffer;
-import java.util.regex.*;
+import java.util.regex.Pattern;
 
-import com.untangle.node.ips.IPSRuleSignatureImpl;
+import com.untangle.node.ips.IPSRule;
 import com.untangle.node.ips.IPSSessionInfo;
 import com.untangle.node.util.AsciiCharBuffer;
 import org.apache.log4j.Logger;
@@ -32,16 +32,19 @@ public class PcreOption extends IPSOption
 
     private Pattern pcrePattern;
 
-    public PcreOption(IPSRuleSignatureImpl signature, String params)
+    public PcreOption(OptionArg arg)
     {
-        super(signature, params);
+        super(arg);
+
+        String params = arg.getParams();
+        IPSRule rule = arg.getRule();
 
         int beginIndex = params.indexOf("/");
         int endIndex = params.lastIndexOf("/");
 
         if (endIndex < 0 || beginIndex < 0 || endIndex == beginIndex) {
             logger.warn("Malformed pcre: " + params + ", ignoring rule: " +
-                        signature.rule().getText());
+                        rule.getText());
             signature.remove(true);
         } else {
             try {
@@ -64,16 +67,17 @@ public class PcreOption extends IPSOption
                         flag = flag | Pattern.COMMENTS;
                         break;
                     default:
-                        logger.info("Unable to handle pcre option: " + c + ", ignoring rule: " +
-                                    signature.rule().getText());
+                        logger.info("Unable to handle pcre option: "
+                                    + c + ", ignoring rule: " + rule.getText());
                         signature.remove(true);
                         break;
                     }
                 }
                 pcrePattern = Pattern.compile(pattern, flag);
             } catch(Exception e) {
-                logger.warn("Unable to parse pcre: " + params + " (" + e.getMessage() + "), ignoring rule: " +
-                            signature.rule().getText());
+                logger.warn("Unable to parse pcre: " + params + " ("
+                            + e.getMessage() + "), ignoring rule: "
+                            + rule.getText());
                 signature.remove(true);
             }
         }

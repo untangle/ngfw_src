@@ -18,12 +18,10 @@
 
 package com.untangle.node.ips.options;
 
-import com.untangle.node.ips.IPSRuleSignatureImpl;
-
 public class TestOption extends IPSOption
 {
-    public TestOption(IPSRuleSignatureImpl signature, String params)
+    public TestOption(OptionArg arg)
     {
-        super(signature, params);
+        super(arg);
     }
 }

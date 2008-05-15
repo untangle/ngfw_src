@@ -39,10 +39,14 @@ public class IPSSessionInfo
     public int end;
     public int indexOfLastMatch;
 
-    public IPSSessionInfo(IPSNodeImpl ips, IPSession session)
+    public IPSSessionInfo(IPSNodeImpl ips, IPSession session,
+                          Set<IPSRuleSignature> c2sSignatures,
+                          Set<IPSRuleSignature> s2cSignatures)
     {
         this.session = session;
         this.ips = ips;
+        this.c2sSignatures = c2sSignatures;
+        this.s2cSignatures = s2cSignatures;
     }
 
     public void setUriPath(String path)
@@ -60,16 +64,6 @@ public class IPSSessionInfo
     public IPSession getSession()
     {
         return session;
-    }
-
-    public void setC2SSignatures(Set<IPSRuleSignature> signatures)
-    {
-        this.c2sSignatures = signatures;
-    }
-
-    public void setS2CSignatures(Set<IPSRuleSignature> signatures)
-    {
-        this.s2cSignatures = signatures;
     }
 
     public void setEvent(IPDataEvent event)

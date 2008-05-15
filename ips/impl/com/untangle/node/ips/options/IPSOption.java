@@ -22,6 +22,7 @@ import java.lang.reflect.*;
 import java.util.regex.PatternSyntaxException;
 
 import com.untangle.node.ips.IPSDetectionEngine;
+import com.untangle.node.ips.IPSRule;
 import com.untangle.node.ips.IPSRuleSignatureImpl;
 import com.untangle.node.ips.IPSSessionInfo;
 import com.untangle.uvm.vnet.event.*;
@@ -30,13 +31,15 @@ import org.apache.log4j.Logger;
 public abstract class IPSOption
 {
     protected final IPSRuleSignatureImpl signature;
-    protected boolean negationFlag = false;
+
+    protected final boolean negationFlag;
 
     private static final Logger log = Logger.getLogger(IPSOption.class);
 
-    protected IPSOption(IPSRuleSignatureImpl signature, String params)
+    protected IPSOption(OptionArg arg)
     {
-        this.signature = signature;
+        this.signature = arg.getSignature();
+        this.negationFlag = arg.getNegationFlag();
     }
 
     // Overriden in concrete children that are runnable
@@ -53,13 +56,14 @@ public abstract class IPSOption
 
     public static IPSOption buildOption(IPSDetectionEngine engine,
                                         IPSRuleSignatureImpl signature,
+                                        IPSRule rule,
                                         String optionName,
                                         String params,
                                         boolean initializeSettingsTime)
     {
-        boolean flag = false;
+        boolean negationFlag = false;
         if(params.charAt(0) == '!')  {
-            flag = true;
+            negationFlag = true;
             params = params.replaceFirst("!","").trim();
         }
 
@@ -68,20 +72,15 @@ public abstract class IPSOption
 
         // XXX get rid of this reflection
 
+        OptionArg oa = new OptionArg(engine, rule, signature, params,
+                                     initializeSettingsTime, negationFlag);
+
         IPSOption option = null;
-        Class optionDefinition;
-        Class[] fourArgsClass = new Class[] { IPSDetectionEngine.class, IPSRuleSignatureImpl.class, String.class, Boolean.TYPE };
-        Object[] fourOptionArgs = new Object[] { engine, signature, params, initializeSettingsTime };
-        Class[] threeArgsClass = new Class[] { IPSRuleSignatureImpl.class, String.class, Boolean.TYPE };
-        Object[] threeOptionArgs = new Object[] { signature, params, initializeSettingsTime };
-        Class[] twoArgsClass = new Class[] { IPSRuleSignatureImpl.class, String.class };
-        Object[] twoOptionArgs = new Object[] { signature, params };
-        Constructor optionConstructor;
 
         optionName = optionName.toLowerCase();
         char ch = optionName.charAt(0);
         try {
-            optionName = optionName.replaceFirst(""+ch,""+(char)(ch - 'a' + 'A'));
+            optionName = optionName.replaceFirst("" + ch, "" + (char)(ch - 'a' + 'A'));
         } catch(PatternSyntaxException e) {
             log.error("Bad option name", e);
         }
@@ -89,30 +88,24 @@ public abstract class IPSOption
         try {
             // First look for a three arg one, then the two arg one
             // (since most don't care about initializeSettingsTime).
-            optionDefinition = Class.forName("com.untangle.node.ips.options."+optionName+"Option");
-
-            // XXX remove reflection
-            try {
-                optionConstructor = optionDefinition.getConstructor(fourArgsClass);
-                option = (IPSOption) createObject(optionConstructor, fourOptionArgs);
-            } catch (NoSuchMethodException exn) {
-                try {
-                    optionConstructor = optionDefinition.getConstructor(threeArgsClass);
-                    option = (IPSOption) createObject(optionConstructor, threeOptionArgs);
-                } catch (NoSuchMethodException e) {
-                    optionConstructor = optionDefinition.getConstructor(twoArgsClass);
-                    option = (IPSOption) createObject(optionConstructor, twoOptionArgs);
-                }
-            }
-            if (option != null) {
-                option.negationFlag = flag;
-            }
+            Class clazz = Class
+                .forName("com.untangle.node.ips.options."+optionName+"Option");
+            Constructor constructor = clazz
+                .getConstructor(new Class[] { IPSOption.class });
+            option = (IPSOption)constructor.newInstance(new Object[] { oa });
         } catch (ClassNotFoundException e) {
-            log.info("Could not load option(ClassNotFound): " + optionName + ", ignoring rule: " + signature.rule().getText());
+            log.info("Could not load option: " + optionName + ", ignoring rule: " + signature.getSid());
             signature.remove(true);
         } catch (NoSuchMethodException e) {
-            log.error("Could not load option(NoSuchMethod): ", e);
+            log.warn("Could not load option", e);
+        } catch (InstantiationException e) {
+            log.warn("Could not load option", e);
+        } catch (IllegalAccessException e) {
+            log.warn("Could not load option", e);
+        } catch (InvocationTargetException e) {
+            log.warn("Could not load option", e);
         }
+
         return option;
     }
 
@@ -124,24 +117,6 @@ public abstract class IPSOption
     public int optHashCode()
     {
         return 17 * 37 + (negationFlag ? 1 : 0);
-    }
-
-    private static Object createObject(Constructor constructor,
-                                       Object[] arguments)
-    {
-        Object object = null;
-        try {
-            object = constructor.newInstance(arguments);
-        } catch (InstantiationException e) {
-            log.error("Could not create object(InstantiationException): ", e);
-        } catch (IllegalAccessException e) {
-            log.error("Could not create object(IllegalAccessException): ", e);
-        } catch (IllegalArgumentException e) {
-            log.error("Could not create object(IllegalArgumentException): ", e);
-        } catch (InvocationTargetException e) {
-            log.error("Could not create object(InvocationTargetException): ", e.getTargetException());
-        }
-        return object;
     }
 }
 
