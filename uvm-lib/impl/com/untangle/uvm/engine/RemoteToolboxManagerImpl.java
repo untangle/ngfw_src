@@ -521,8 +521,9 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
                         logger.info("creating new UpgradeSettings");
                         // pick a random time.
                         Random rand = new Random();
-                        Period period = new Period(23, 30, true);
+                        Period period = new Period(23, rand.nextInt(60), true);
                         us = new UpgradeSettings(period);
+			// only turn on auto-upgrade for full ISO install
                         UpstreamService upgradeSvc =
                             LocalUvmContextFactory.context().upstreamManager().getService(RemoteUpstreamManager.AUTO_UPGRADE_SERVICE_NAME);
                         if (upgradeSvc != null)
