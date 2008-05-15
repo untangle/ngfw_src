@@ -336,7 +336,7 @@ while true; do
                     esac
                 fi
 	        if dpkg -l untangle-clamav-config | grep -q -E '^ii' ; then # we're managing clamav
-	          [ `tail -n 50 /var/log/clamav/clamav.log  | grep -c "$CLAMAV_LOG_ERROR"` -gt 2 ] && restartService clamav-daemon $CLAMD_PID_FILE "non-functional" stopFirst 'rm -fr /var/lib/clamav/*'
+	          [ `tail -n 50 /var/log/clamav/clamav.log  | grep -c "$CLAMAV_LOG_ERROR"` -gt 2 ] && restartService clamav-daemon $CLAMD_PID_FILE "non-functional" stopFirst '/etc/init.d/clamav-freshclam stop ; rm -fr /var/lib/clamav/*'
                   case "`$BANNER_NANNY $CLAMD_PORT $TIMEOUT`" in
                     *success*) true ;;
                     *) restartService clamav-daemon $CLAMD_PID_FILE "hung" stopFirst ;;
