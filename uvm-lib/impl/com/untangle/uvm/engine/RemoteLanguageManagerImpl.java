@@ -30,9 +30,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -48,6 +50,8 @@ import com.untangle.uvm.UvmException;
 import com.untangle.uvm.util.DeletingDataSaver;
 import com.untangle.uvm.util.TransactionWork;
 
+import edu.emory.mathcs.backport.java.util.Collections;
+
 /**
  * Implementation of RemoteLanguageManagerImpl.
  *
@@ -57,9 +61,12 @@ import com.untangle.uvm.util.TransactionWork;
 class RemoteLanguageManagerImpl implements RemoteLanguageManager
 {
     private static final String LANGUAGES_DIR;
+    private static final String LANGUAGES_COMMUNITY_DIR;
+    private static final String LANGUAGES_OFFICIAL_DIR;
     private static final String LOCALE_DIR;
     private static final String DEFAULT_LANGUAGE = "en";
-    private static final String BASENAME_PREFIX = "i18n";
+    private static final String BASENAME_COMMUNITY_PREFIX = "i18n.community";
+    private static final String BASENAME_OFFICIAL_PREFIX = "i18n.official";
     private static final String LANGUAGES_CFG = "lang.cfg";  
     private static final String LC_MESSAGES = "LC_MESSAGES";
 	private static final int BUFFER = 2048; 
@@ -120,7 +127,7 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
 		    ZipInputStream zis = new ZipInputStream(uploadedStream);
 			while ((entry = zis.getNextEntry()) != null) {
 				if (entry.isDirectory()) {
-					File dir = new File(LANGUAGES_DIR + File.separator + entry.getName());
+					File dir = new File(LANGUAGES_COMMUNITY_DIR + File.separator + entry.getName());
 					if (!dir.exists()) {
 						dir.mkdir();
 					}
@@ -129,14 +136,7 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
 					byte data[] = new byte[BUFFER];
 					
 					// write the files to the disk
-//					String lang = entry.getName().substring(entry.getName().lastIndexOf(".")+1);
-//					String destDir = LANGUAGES_DIR + File.separator + lang;
-//					File destDirFile = new File(destDir);
-//					if (!destDirFile.exists()) {
-//						destDirFile.mkdir();
-//					}
-					
-					FileOutputStream fos = new FileOutputStream(LANGUAGES_DIR + File.separator + entry.getName());
+					FileOutputStream fos = new FileOutputStream(LANGUAGES_COMMUNITY_DIR + File.separator + entry.getName());
 					dest = new BufferedOutputStream(fos, BUFFER);
 					while ((count = zis.read(data, 0, BUFFER)) != -1) {
 						dest.write(data, 0, count);
@@ -169,9 +169,9 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
 			
 			String cmd[] = { "msgfmt", "--java2", 
 					"-d", LANGUAGES_DIR,
-					"-r", BASENAME_PREFIX + "." + moduleName,
+					"-r", BASENAME_COMMUNITY_PREFIX + "." + moduleName,
 					"-l", lang,
-					LANGUAGES_DIR + File.separator + entry.getName()};
+					LANGUAGES_COMMUNITY_DIR + File.separator + entry.getName()};
 			Process p = Runtime.getRuntime().exec(cmd);
 			p.waitFor();
 			if (p.exitValue() != 0) {
@@ -195,7 +195,7 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
 			
 			String cmd[] = { "msgfmt",
 					"-o", LOCALE_DIR + File.separator + lang + File.separator + LC_MESSAGES + File.separator + moduleName  + ".mo",
-					LANGUAGES_DIR + File.separator + entry.getName()};
+					LANGUAGES_COMMUNITY_DIR + File.separator + entry.getName()};
 			Process p = Runtime.getRuntime().exec(cmd);
 			p.waitFor();
 			if (p.exitValue() != 0) {
@@ -212,16 +212,12 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
 	
     public List<LanguageInfo> getLanguagesList() {
         List<LanguageInfo> languages = new ArrayList<LanguageInfo>();
-        
-    	//get available languages
-    	File dir = new File(LANGUAGES_DIR);
-		FilenameFilter filter = new FilenameFilter() {
-			public boolean accept(File dir, String name) {
-				return !name.startsWith(BASENAME_PREFIX) 
-					&& !name.equals(LANGUAGES_CFG);
-			}
-		};
-		List<String> availableLanguages = Arrays.asList(dir.list(filter));
+ 
+        Set<String> availableLanguages = new HashSet<String>();
+    	//get available official languages
+        Collections.addAll(availableLanguages, (new File(LANGUAGES_OFFICIAL_DIR)).list());
+    	//get available community languages
+        Collections.addAll(availableLanguages, (new File(LANGUAGES_COMMUNITY_DIR)).list());
     	
 		// Reading all languages from config file and keep only the one which we have translations for
 		try {
@@ -273,12 +269,18 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
 	// and if we tried once to load a resource bundle, second time will return not found (MissingResourceException), evean if 
 	// the resource is available now; this prevent dynamic loading, which we need.
 	try {
-		Class clazz = Thread.currentThread().getContextClassLoader().loadClass(BASENAME_PREFIX + "." + module + "_" + settings.getLanguage());
-		ResourceBundle resourceBundle = (ResourceBundle)clazz.newInstance();
-		if (resourceBundle != null) {
-			for (Enumeration<String> enumeration = resourceBundle.getKeys(); enumeration.hasMoreElements();) {
-				String key = enumeration.nextElement();
-				map.put(key, resourceBundle.getString(key));
+		Class clazz = loadResourceBundleClass(BASENAME_COMMUNITY_PREFIX + "." + module + "_" + settings.getLanguage());
+		if (clazz == null) {
+			// fall back to official translations
+			clazz = loadResourceBundleClass(BASENAME_OFFICIAL_PREFIX + "." + module + "_" + settings.getLanguage());
+		}
+		if (clazz != null) {
+			ResourceBundle resourceBundle = (ResourceBundle)clazz.newInstance();
+			if (resourceBundle != null) {
+				for (Enumeration<String> enumeration = resourceBundle.getKeys(); enumeration.hasMoreElements();) {
+					String key = enumeration.nextElement();
+					map.put(key, resourceBundle.getString(key));
+				}
 			}
 		}
 	} catch (Exception e) {
@@ -290,6 +292,15 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
 
 		return map;
     }
+
+	private Class loadResourceBundleClass(String name) {
+		Class clazz = null;
+		try {
+			clazz =Thread.currentThread().getContextClassLoader().loadClass(name);
+		} catch (ClassNotFoundException e1) {
+		}
+		return clazz;
+	}
     
     // private methods --------------------------------------------------------
     private void saveSettings(LanguageSettings settings) {
@@ -300,6 +311,8 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
     
     static {
     	LANGUAGES_DIR = System.getProperty("bunnicula.lang.dir"); //place for languages resources files
+    	LANGUAGES_COMMUNITY_DIR = LANGUAGES_DIR + File.separator + "community"; //place for community languages resources files
+    	LANGUAGES_OFFICIAL_DIR = LANGUAGES_DIR + File.separator + "official"; //place for official languages resources files
     	LOCALE_DIR = "/usr/share/locale"; // place for .mo files
     }
 }
