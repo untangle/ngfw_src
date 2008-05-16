@@ -40,14 +40,14 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.IndexColumn;
 
 /**
- * Hibernate object to store IPS settings.
+ * Hibernate object to store Ips settings.
  *
  * @author <a href="mailto:nchilders@untangle.com">Nick Childers</a>
  * @version 1.0
  */
 @Entity
 @Table(name="n_ips_settings", schema="settings")
-public class IPSSettings implements Serializable
+public class IpsSettings implements Serializable
 {
     private static final long serialVersionUID = -7056565971726289302L;
 
@@ -56,13 +56,13 @@ public class IPSSettings implements Serializable
 
     private IpsBaseSettings baseSettings = new IpsBaseSettings();
 
-    private List<IPSRule> rules = new ArrayList<IPSRule>();
-    private List<IPSVariable> variables = new ArrayList<IPSVariable>();
-    private List<IPSVariable> immutableVariables = new ArrayList<IPSVariable>();
+    private List<IpsRule> rules = new ArrayList<IpsRule>();
+    private List<IpsVariable> variables = new ArrayList<IpsVariable>();
+    private List<IpsVariable> immutableVariables = new ArrayList<IpsVariable>();
 
-    public IPSSettings() {}
+    public IpsSettings() {}
 
-    public IPSSettings(Tid tid)
+    public IpsSettings(Tid tid)
     {
         this.tid = tid;
     }
@@ -112,11 +112,11 @@ public class IPSSettings implements Serializable
                    org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     @JoinColumn(name="settings_id")
     @IndexColumn(name="position")
-    public List<IPSRule> getRules()
+    public List<IpsRule> getRules()
     {
         return UvmUtil.eliminateNulls(this.rules);
     }
-    public void setRules(List<IPSRule> rules) { this.rules = rules; }
+    public void setRules(List<IpsRule> rules) { this.rules = rules; }
 
     @OneToMany(fetch=FetchType.EAGER)
     @Cascade({ org.hibernate.annotations.CascadeType.ALL,
@@ -125,12 +125,12 @@ public class IPSSettings implements Serializable
                joinColumns=@JoinColumn(name="setting_id"),
                inverseJoinColumns=@JoinColumn(name="variable_id"))
     @IndexColumn(name="position")
-    public List<IPSVariable> getVariables()
+    public List<IpsVariable> getVariables()
     {
         return UvmUtil.eliminateNulls(this.variables);
     }
 
-    public void setVariables(List<IPSVariable> variables)
+    public void setVariables(List<IpsVariable> variables)
     {
         this.variables = variables;
     }
@@ -142,12 +142,12 @@ public class IPSSettings implements Serializable
                joinColumns=@JoinColumn(name="setting_id"),
                inverseJoinColumns=@JoinColumn(name="variable_id"))
     @IndexColumn(name="position")
-    public List<IPSVariable> getImmutableVariables()
+    public List<IpsVariable> getImmutableVariables()
     {
         return UvmUtil.eliminateNulls(this.immutableVariables);
     }
 
-    public void setImmutableVariables(List<IPSVariable> variables)
+    public void setImmutableVariables(List<IpsVariable> variables)
     {
         this.immutableVariables = variables;
     }

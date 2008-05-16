@@ -18,20 +18,20 @@
 
 package com.untangle.node.ips;
 
-import com.untangle.uvm.logging.SimpleEventFilter;
 import com.untangle.uvm.logging.RepositoryDesc;
+import com.untangle.uvm.logging.SimpleEventFilter;
 
-public class IPSLogFilter implements SimpleEventFilter<IPSLogEvent>
+public class IpsBlockedFilter implements SimpleEventFilter<IpsLogEvent>
 {
-    private static final RepositoryDesc REPO_DESC = new RepositoryDesc("All Events");
+    private static final RepositoryDesc REPO_DESC = new RepositoryDesc("Blocked Events");
 
-    private static final String WARM_QUERY = "FROM IPSLogEvent evt "
-        + "WHERE evt.pipelineEndpoints.policy = :policy "
+    private static final String WARM_QUERY = "FROM IpsLogEvent evt "
+        + "WHERE evt.blocked = true AND evt.pipelineEndpoints.policy = :policy "
         + "ORDER BY evt.timeStamp DESC";
 
     // constructors -----------------------------------------------------------
 
-    IPSLogFilter() { }
+    IpsBlockedFilter () { }
 
     // SimpleEventFilter methods ----------------------------------------------
 
@@ -45,8 +45,8 @@ public class IPSLogFilter implements SimpleEventFilter<IPSLogEvent>
         return new String[] { WARM_QUERY };
     }
 
-    public boolean accept(IPSLogEvent e)
+    public boolean accept(IpsLogEvent e)
     {
-        return true;
+        return e.isBlocked();
     }
 }

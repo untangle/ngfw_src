@@ -24,10 +24,10 @@ import com.untangle.uvm.reporting.BaseSummarizer;
 import com.untangle.uvm.reporting.Util;
 import org.apache.log4j.Logger;
 
-public class IPSSummarizer extends BaseSummarizer {
+public class IpsSummarizer extends BaseSummarizer {
     private final Logger log = Logger.getLogger(getClass());
 
-    public IPSSummarizer() { }
+    public IpsSummarizer() { }
 
     public String getSummaryHtml(Connection conn, Timestamp startDate, Timestamp endDate)
     {

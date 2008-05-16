@@ -27,7 +27,7 @@ import java.util.regex.Pattern;
  *
  * @Author Nick Childers
  */
-public class ReferenceOption extends IPSOption
+public class ReferenceOption extends IpsOption
 {
     private static final Pattern URLP = Pattern.compile("url,", Pattern.CASE_INSENSITIVE);
 

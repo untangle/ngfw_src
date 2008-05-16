@@ -21,7 +21,7 @@ package com.untangle.node.ips.options;
 import com.untangle.uvm.node.ParseException;
 import org.apache.log4j.Logger;
 
-public class DepthOption extends IPSOption
+public class DepthOption extends IpsOption
 {
     private final Logger logger = Logger.getLogger(getClass());
 

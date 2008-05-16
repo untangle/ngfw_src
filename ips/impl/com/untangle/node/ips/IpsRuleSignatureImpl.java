@@ -25,12 +25,12 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 
-import com.untangle.node.ips.options.IPSOption;
+import com.untangle.node.ips.options.IpsOption;
 import com.untangle.uvm.node.Node;
-import com.untangle.uvm.vnet.IPSession;
+import com.untangle.uvm.vnet.*;
 import org.apache.log4j.Logger;
 
-public class IPSRuleSignatureImpl
+public class IpsRuleSignatureImpl
 {
     /***************************************
      * These are options that are safe to ignore
@@ -51,16 +51,16 @@ public class IPSRuleSignatureImpl
     private final int action;
     private final String string;
 
-    private final List<IPSOption> options = new ArrayList<IPSOption>();
+    private final List<IpsOption> options = new ArrayList<IpsOption>();
 
     private String message = null;
     private String classification = null;
     private String url = null;
     private boolean removeFlag = false;
 
-    private static final Logger log = Logger.getLogger(IPSRuleSignature.class);
+    private static final Logger log = Logger.getLogger(IpsRuleSignature.class);
 
-    public IPSRuleSignatureImpl(IPSNodeImpl ips, IPSRule rule,
+    public IpsRuleSignatureImpl(IpsNodeImpl ips, IpsRule rule,
                                 String signatureString, int action,
                                 boolean initSettingsTime, String string)
     {
@@ -107,13 +107,13 @@ public class IPSRuleSignatureImpl
         return sid;
     }
 
-    public IPSOption getOption(String name, IPSOption callingOption)
+    public IpsOption getOption(String name, IpsOption callingOption)
     {
         String[] parents = new String[] { name };
         return getOption(parents, callingOption);
     }
 
-    public IPSOption getOption(String[] names, IPSOption callingOption)
+    public IpsOption getOption(String[] names, IpsOption callingOption)
     {
         Class[] optionDefinitions = new Class[names.length];
         for (int i = 0; i < names.length; i++) {
@@ -131,10 +131,10 @@ public class IPSRuleSignatureImpl
          */
         int index = options.indexOf(callingOption);
         index = (index < 0) ? options.size():index;
-        ListIterator<IPSOption> it = options.listIterator(index);
+        ListIterator<IpsOption> it = options.listIterator(index);
 
         while(it.hasPrevious()) {
-            IPSOption option = it.previous();
+            IpsOption option = it.previous();
             for (int i = 0; i < optionDefinitions.length; i++) {
                 if (optionDefinitions[i] != null && optionDefinitions[i].isInstance(option))
                     return option;
@@ -174,13 +174,13 @@ public class IPSRuleSignatureImpl
         return url;
     }
 
-    public boolean execute(IPSNodeImpl ips, IPSSessionInfo info)
+    public boolean execute(IpsNodeImpl ips, IpsSessionInfo info)
     {
         boolean result = true;
         long startTime = 0;
-        if (IPSDetectionEngine.DO_PROFILING)
+        if (IpsDetectionEngine.DO_PROFILING)
             startTime = System.nanoTime();
-        for (IPSOption option : options) {
+        for (IpsOption option : options) {
             boolean opres = option.run(info);
             // if (log.isDebugEnabled())
             // log.debug("res: " + opres + ", rule " + rule.getSid() + " option " + option.getClass().getName());
@@ -191,7 +191,7 @@ public class IPSRuleSignatureImpl
             }
         }
 
-        if (IPSDetectionEngine.DO_PROFILING) {
+        if (IpsDetectionEngine.DO_PROFILING) {
             // Throw away last three digits as they are always zero on linux.
             long elapsed = (System.nanoTime() - startTime) / 1000l;
             synchronized(ruleTimes) {
@@ -213,7 +213,7 @@ public class IPSRuleSignatureImpl
         return result;
     }
 
-    private void doAction(IPSNodeImpl ips, IPSSessionInfo info)
+    private void doAction(IpsNodeImpl ips, IpsSessionInfo info)
     {
         IPSession session = info.getSession();
         if (null == session) {
@@ -222,24 +222,24 @@ public class IPSRuleSignatureImpl
         }
 
         // XXX this is not a good way to get a reference to the node
-        IPSDetectionEngine engine = ips.getEngine();
+        IpsDetectionEngine engine = ips.getEngine();
 
         boolean blocked = false;
         switch(action) {
-        case IPSRule.ALERT:
+        case IpsRule.ALERT:
             // Can't happen right now.
             log.warn("Alert: "+classification + ", " + message);
             ips.statisticManager.incrLogged();
             engine.updateUICount(DETECT_COUNTER);
             break;
 
-        case IPSRule.LOG:
+        case IpsRule.LOG:
             log.debug("Log: "+classification + ", " + message);
             ips.statisticManager.incrLogged();
             engine.updateUICount(DETECT_COUNTER);
             break;
 
-        case IPSRule.BLOCK:
+        case IpsRule.BLOCK:
             log.info("Block: "+classification + ", " + message);
             blocked = true;
             ips.statisticManager.incrBlocked();
@@ -249,7 +249,7 @@ public class IPSRuleSignatureImpl
         }
 
         //Add list number that this rule came from
-        ips.log(new IPSLogEvent(session.pipelineEndpoints(), sid,
+        ips.log(new IpsLogEvent(session.pipelineEndpoints(), sid,
                                 classification, message, blocked));
     }
 
@@ -262,7 +262,7 @@ public class IPSRuleSignatureImpl
 
     static void dumpRuleTimes()
     {
-        if (IPSDetectionEngine.DO_PROFILING) {
+        if (IpsDetectionEngine.DO_PROFILING) {
             StringBuilder sb = new StringBuilder(String.format("\n%10s %12s %10s\n",
                                                                "Count", "Micros", "Rule"));
             synchronized(ruleTimes) {
@@ -281,7 +281,7 @@ public class IPSRuleSignatureImpl
 
     // private methods ---------------------------------------------------------
 
-    private void addOption(IPSDetectionEngine engine, IPSRule rule,
+    private void addOption(IpsDetectionEngine engine, IpsRule rule,
                            String optionName, String params,
                            boolean initializeSettingsTime)
     {
@@ -290,7 +290,7 @@ public class IPSRuleSignatureImpl
                 return;
             }
         }
-        IPSOption option = IPSOption
+        IpsOption option = IpsOption
             .buildOption(engine, this, rule, optionName, params,
                          initializeSettingsTime);
         if (option != null && option.runnable()) {
@@ -305,11 +305,11 @@ public class IPSRuleSignatureImpl
 
     public boolean equals(Object o)
     {
-        if (!(o instanceof IPSRuleSignatureImpl)) {
+        if (!(o instanceof IpsRuleSignatureImpl)) {
             return false;
         }
 
-        IPSRuleSignatureImpl irs = (IPSRuleSignatureImpl)o;
+        IpsRuleSignatureImpl irs = (IpsRuleSignatureImpl)o;
 
         if (sid != irs.sid || action != irs.action
             || removeFlag != irs.removeFlag) {
@@ -319,8 +319,8 @@ public class IPSRuleSignatureImpl
         if (options.size() != irs.options.size()) {
             return false;
         }
-        Iterator<IPSOption> i = options.iterator();
-        Iterator<IPSOption> j = irs.options.iterator();
+        Iterator<IpsOption> i = options.iterator();
+        Iterator<IpsOption> j = irs.options.iterator();
         while (i.hasNext() && j.hasNext()) {
             if (!i.next().optEquals(j.next())) {
                 return false;
@@ -376,7 +376,7 @@ public class IPSRuleSignatureImpl
     public int hashCode()
     {
         int result = 17;
-        for (IPSOption o : options) {
+        for (IpsOption o : options) {
             result = 37 * result + o.optHashCode();
         }
 

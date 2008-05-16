@@ -37,7 +37,7 @@ import com.untangle.uvm.node.PipelineEndpoints;
 @Entity
 @org.hibernate.annotations.Entity(mutable=false)
     @Table(name="n_ips_evt", schema="events")
-    public class IPSLogEvent extends PipelineEvent {
+    public class IpsLogEvent extends PipelineEvent {
 
         private String classification;
         private String message;
@@ -46,9 +46,9 @@ import com.untangle.uvm.node.PipelineEndpoints;
 
         // constructors -----------------------------------------------------------
 
-        public IPSLogEvent() { }
+        public IpsLogEvent() { }
 
-        public IPSLogEvent(PipelineEndpoints pe, int ruleSid, String classification,
+        public IpsLogEvent(PipelineEndpoints pe, int ruleSid, String classification,
                            String message, boolean blocked) {
             super(pe);
 
@@ -141,6 +141,6 @@ import com.untangle.uvm.node.PipelineEndpoints;
         // Object methods ---------------------------------------------------------
 
         public String toString() {
-            return "IPSLogEvent id: " + getId() + " Message: " + message;
+            return "IpsLogEvent id: " + getId() + " Message: " + message;
         }
     }

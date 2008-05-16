@@ -18,14 +18,14 @@
 
 package com.untangle.node.ips.options;
 
-import com.untangle.node.ips.IPSDetectionEngine;
-import com.untangle.node.ips.IPSRule;
-import com.untangle.node.ips.IPSRuleSignatureImpl;
+import com.untangle.node.ips.IpsDetectionEngine;
+import com.untangle.node.ips.IpsRule;
+import com.untangle.node.ips.IpsRuleSignatureImpl;
 import com.untangle.node.ips.RuleClassification;
 import com.untangle.uvm.vnet.event.*;
 import org.apache.log4j.Logger;
 
-class ClasstypeOption extends IPSOption
+class ClasstypeOption extends IpsOption
 {
     private static final int HIGH_PRIORITY = 1;
     private static final int MEDIUM_PRIORITY = 2;
@@ -38,9 +38,9 @@ class ClasstypeOption extends IPSOption
     {
         super(arg);
 
-        IPSDetectionEngine engine = arg.getEngine();
+        IpsDetectionEngine engine = arg.getEngine();
         String params = arg.getParams();
-        IPSRuleSignatureImpl sig = arg.getSignature();
+        IpsRuleSignatureImpl sig = arg.getSignature();
 
         RuleClassification rc = null;
         if (engine != null)
@@ -53,7 +53,7 @@ class ClasstypeOption extends IPSOption
             signature.setClassification(rc.getDescription());
 
             if (true == arg.getInitializeSettingsTime()) {
-                IPSRule rule = arg.getRule();
+                IpsRule rule = arg.getRule();
                 int priority = rc.getPriority();
                 // logger.debug("Rule Priority for " + rule.getDescription() + " is " + priority);
                 switch (priority) {

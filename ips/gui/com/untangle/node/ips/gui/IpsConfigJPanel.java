@@ -30,9 +30,9 @@ import com.untangle.gui.widgets.editTable.*;
 import com.untangle.uvm.node.*;
 import com.untangle.node.ips.*;
 
-public class IPSConfigJPanel extends MEditTableJPanel{
+public class IpsConfigJPanel extends MEditTableJPanel{
 
-    public IPSConfigJPanel() {
+    public IpsConfigJPanel() {
         super(true, true);
         super.setFillJButtonEnabled( false );
         super.setInsets(new Insets(4, 4, 2, 2));
@@ -41,14 +41,14 @@ public class IPSConfigJPanel extends MEditTableJPanel{
         super.setAddRemoveEnabled(true);
 
         // create actual table model
-        IPSTableModel ipsTableModel = new IPSTableModel();
+        IpsTableModel ipsTableModel = new IpsTableModel();
         this.setTableModel( ipsTableModel );
-        ipsTableModel.setSortingStatus(2, IPSTableModel.ASCENDING);
+        ipsTableModel.setSortingStatus(2, IpsTableModel.ASCENDING);
     }
 }
 
 
-class IPSTableModel extends MSortedTableModel<Object>{
+class IpsTableModel extends MSortedTableModel<Object>{
 
     private static final int T_TW = Util.TABLE_TOTAL_WIDTH_LARGE;
     private static final int C0_MW = Util.STATUS_MIN_WIDTH; /* status */
@@ -75,17 +75,17 @@ class IPSTableModel extends MSortedTableModel<Object>{
         addTableColumn( tableColumnModel,  6,  C6_MW,  false,  true,  false, false, UrlButtonRunnable.class,  "false", "info URL");
         addTableColumn( tableColumnModel,  7,  C7_MW,  false, false, false, false, Integer.class, "0", "SID" );
         addTableColumn( tableColumnModel,  8,  C8_MW, true,  true,  false, false, String.class,  sc.empty("no signature"), "signature");
-        addTableColumn( tableColumnModel,  9,  10,     false, false, true,  false, IPSRule.class, null, "");
+        addTableColumn( tableColumnModel,  9,  10,     false, false, true,  false, IpsRule.class, null, "");
         return tableColumnModel;
     }
 
     public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception{
         List elemList = new ArrayList(tableVector.size());
 
-        IPSRule newElem = null;
+        IpsRule newElem = null;
 
         for( Vector rowVector : tableVector ){
-            newElem = (IPSRule) rowVector.elementAt(9);
+            newElem = (IpsRule) rowVector.elementAt(9);
             newElem.setCategory( (String) rowVector.elementAt(2) );
             newElem.setLive( (Boolean) rowVector.elementAt(3) );
             newElem.setLog( (Boolean) rowVector.elementAt(4) );
@@ -105,20 +105,20 @@ class IPSTableModel extends MSortedTableModel<Object>{
 
         // SAVE SETTINGS ////////
         if( !validateOnly ){
-            IPSSettings nodeSettings = (IPSSettings) settings;
+            IpsSettings nodeSettings = (IpsSettings) settings;
             nodeSettings.setRules(elemList);
         }
 
     }
 
     public Vector<Vector> generateRows(Object settings){
-        IPSSettings ipsSettings = (IPSSettings) settings;
-        List<IPSRule> rules = (List<IPSRule>) ipsSettings.getRules();
+        IpsSettings ipsSettings = (IpsSettings) settings;
+        List<IpsRule> rules = (List<IpsRule>) ipsSettings.getRules();
         Vector<Vector> allRows = new Vector<Vector>(rules.size());
         Vector tempRow = null;
         int rowIndex = 0;
 
-        for( IPSRule newElem : rules ){
+        for( IpsRule newElem : rules ){
             rowIndex++;
             tempRow = new Vector(10);
             tempRow.add( super.ROW_SAVED );

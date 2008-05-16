@@ -18,11 +18,11 @@
 
 package com.untangle.node.ips.options;
 
-import com.untangle.node.ips.IPSSessionInfo;
+import com.untangle.node.ips.IpsSessionInfo;
 import com.untangle.uvm.vnet.event.*;
 import org.apache.log4j.Logger;
 
-public class DsizeOption extends IPSOption
+public class DsizeOption extends IpsOption
 {
     private final Logger log = Logger.getLogger(getClass());
 
@@ -66,7 +66,7 @@ public class DsizeOption extends IPSOption
     }
 
     //XXX - check negation flag?
-    public boolean run(IPSSessionInfo sessionInfo)
+    public boolean run(IpsSessionInfo sessionInfo)
     {
         IPDataEvent event = sessionInfo.getEvent();
         int size = event.data().remaining();

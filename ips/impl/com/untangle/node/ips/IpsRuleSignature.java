@@ -26,39 +26,39 @@ import com.untangle.node.ips.options.*;
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.vnet.event.*;
 
-public class IPSRuleSignature
+public class IpsRuleSignature
 {
-    private static final Map<IPSRuleSignature, WeakReference<IPSRuleSignature>> INSTANCES
-        = new WeakHashMap<IPSRuleSignature, WeakReference<IPSRuleSignature>>();
+    private static final Map<IpsRuleSignature, WeakReference<IpsRuleSignature>> INSTANCES
+        = new WeakHashMap<IpsRuleSignature, WeakReference<IpsRuleSignature>>();
 
-    private final IPSRuleSignatureImpl impl;
+    private final IpsRuleSignatureImpl impl;
 
     // constructors ------------------------------------------------------------
 
-    private IPSRuleSignature(IPSRuleSignatureImpl impl)
+    private IpsRuleSignature(IpsRuleSignatureImpl impl)
     {
         this.impl = impl;
     }
 
     // public static methods ---------------------------------------------------
 
-    public static IPSRuleSignature parseSignature(IPSNodeImpl ips, IPSRule rule,
+    public static IpsRuleSignature parseSignature(IpsNodeImpl ips, IpsRule rule,
                                                   String signatureString,
                                                   int action,
                                                   boolean initSettingsTime,
                                                   String string)
         throws ParseException
     {
-        IPSRuleSignatureImpl impl
-            = new IPSRuleSignatureImpl(ips, rule, signatureString, action,
+        IpsRuleSignatureImpl impl
+            = new IpsRuleSignatureImpl(ips, rule, signatureString, action,
                                        initSettingsTime, string);
 
-        IPSRuleSignature s = new IPSRuleSignature(impl);
+        IpsRuleSignature s = new IpsRuleSignature(impl);
 
         synchronized (INSTANCES) {
-            WeakReference<IPSRuleSignature> wr = INSTANCES.get(s);
+            WeakReference<IpsRuleSignature> wr = INSTANCES.get(s);
             if (null != wr) {
-                IPSRuleSignature c = wr.get();
+                IpsRuleSignature c = wr.get();
                 if (null != c) {
                     s = c;
                 } else {
@@ -97,7 +97,7 @@ public class IPSRuleSignature
         return impl.getURL();
     }
 
-    public boolean execute(IPSNodeImpl ips, IPSSessionInfo info)
+    public boolean execute(IpsNodeImpl ips, IpsSessionInfo info)
     {
         return impl.execute(ips, info);
     }
@@ -109,18 +109,18 @@ public class IPSRuleSignature
 
     static void dumpRuleTimes()
     {
-        IPSRuleSignature.dumpRuleTimes();
+        IpsRuleSignature.dumpRuleTimes();
     }
 
     // Object methods ----------------------------------------------------------
 
     public boolean equals(Object o)
     {
-        if (!(o instanceof IPSRuleSignature)) {
+        if (!(o instanceof IpsRuleSignature)) {
             return false;
         }
 
-        return impl.equals(((IPSRuleSignature)o).impl);
+        return impl.equals(((IpsRuleSignature)o).impl);
     }
 
     public int hashCode()

@@ -30,7 +30,7 @@ import com.untangle.uvm.node.firewall.ip.IPMatcher;
 import com.untangle.uvm.node.firewall.ip.IPMatcherFactory;
 import com.untangle.uvm.vnet.Protocol;
 
-public class IPSStringParser
+public class IpsStringParser
 {
     public static final String HOME_IP = "Home"+0xBEEF;
     public static final String EXTERNAL_IP = "External"+0xBEEF;
@@ -52,7 +52,7 @@ public class IPSStringParser
 
     // Returns null if the rule is to be removed (like an 'ip' rule
     // for instance)
-    public static IPSRuleHeader parseHeader(String header, int action)
+    public static IpsRuleHeader parseHeader(String header, int action)
         throws ParseException
     {
         List<IPMatcher> ipMatcher, portMatcher;
@@ -67,7 +67,7 @@ public class IPSStringParser
             throw new ParseException("Not a valid String Header:\n" + header);
         }
 
-        /*Objects needed for a IPSRuleHeader constructor*/
+        /*Objects needed for a IpsRuleHeader constructor*/
         Protocol protocol;
         List<IPMatcher> clientIPList, serverIPList;
         PortRange clientPortRange, serverPortRange;
@@ -104,7 +104,7 @@ public class IPSStringParser
         }
 
         /*Build and return the rule header*/
-        IPSRuleHeader ruleHeader = IPSRuleHeader.getHeader
+        IpsRuleHeader ruleHeader = IpsRuleHeader.getHeader
             (action, direction, protocol, clientIPList, clientPortRange,
              serverIPList, serverPortRange, clientIPFlag, clientPortFlag,
              serverIPFlag, serverPortFlag);
@@ -130,9 +130,9 @@ public class IPSStringParser
         throws ParseException
     {
         if (direction.equals("<>"))
-            return IPSRuleHeader.IS_BIDIRECTIONAL;
+            return IpsRuleHeader.IS_BIDIRECTIONAL;
         else if (direction.equals("->"))
-            return !IPSRuleHeader.IS_BIDIRECTIONAL;
+            return !IpsRuleHeader.IS_BIDIRECTIONAL;
         else
             throw new ParseException("Invalid direction opperator: " + direction);
     }

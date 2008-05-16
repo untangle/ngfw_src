@@ -36,7 +36,7 @@ import com.untangle.uvm.vnet.*;
 import com.untangle.uvm.vnet.event.*;
 import org.apache.log4j.Logger;
 
-public class IPSDetectionEngine
+public class IpsDetectionEngine
 {
     public static boolean DO_PROFILING = true;
 
@@ -48,30 +48,30 @@ public class IPSDetectionEngine
     private static final int SCAN_COUNTER  = Node.GENERIC_0_COUNTER;
 
     private int maxChunks = 8;
-    private IPSSettings settings = null;
+    private IpsSettings settings = null;
     private Map<String,RuleClassification> classifications = null;
 
-    private IPSRuleManager manager;
-    private IPSNodeImpl node;
+    private IpsRuleManager manager;
+    private IpsNodeImpl node;
 
     private static final LocalIntfManager intfManager = LocalUvmContextFactory.context().localIntfManager();
 
     // We can't just attach the session info to a session, we have to
     // attach it to the 'pipeline', since we have to access it from
     // multiple pipes (octet & http).  So we keep the registry here.
-    private Map<Integer, IPSSessionInfo> sessionInfoMap = new ConcurrentHashMap<Integer, IPSSessionInfo>();
+    private Map<Integer, IpsSessionInfo> sessionInfoMap = new ConcurrentHashMap<Integer, IpsSessionInfo>();
 
-    Map<Integer,List<IPSRuleHeader>> portS2CMap = new ConcurrentHashMap<Integer,List<IPSRuleHeader>>();
-    Map<Integer,List<IPSRuleHeader>> portC2SMap = new ConcurrentHashMap<Integer,List<IPSRuleHeader>>();
+    Map<Integer,List<IpsRuleHeader>> portS2CMap = new ConcurrentHashMap<Integer,List<IpsRuleHeader>>();
+    Map<Integer,List<IpsRuleHeader>> portC2SMap = new ConcurrentHashMap<Integer,List<IpsRuleHeader>>();
     // bug1443 -- save memory by memoizing
-    List<List<IPSRuleHeader>> allPortMapLists = new ArrayList<List<IPSRuleHeader>>();
+    List<List<IpsRuleHeader>> allPortMapLists = new ArrayList<List<IpsRuleHeader>>();
 
     private final Logger log = Logger.getLogger(getClass());
 
-    public IPSDetectionEngine(IPSNodeImpl node)
+    public IpsDetectionEngine(IpsNodeImpl node)
     {
         this.node = node;
-        manager = new IPSRuleManager(node);
+        manager = new IpsRuleManager(node);
     }
 
     public RuleClassification getClassification(String classificationName)
@@ -86,12 +86,12 @@ public class IPSDetectionEngine
             classifications.put(rc.getName(), rc);
     }
 
-    public IPSSettings getSettings()
+    public IpsSettings getSettings()
     {
         return settings;
     }
 
-    public void setSettings(IPSSettings settings)
+    public void setSettings(IpsSettings settings)
     {
         this.settings = settings;
     }
@@ -114,19 +114,19 @@ public class IPSDetectionEngine
 
     public void onReconfigure()
     {
-        portC2SMap = new ConcurrentHashMap<Integer,List<IPSRuleHeader>>();
-        portS2CMap = new ConcurrentHashMap<Integer,List<IPSRuleHeader>>();
-        allPortMapLists = new ArrayList<List<IPSRuleHeader>>();
+        portC2SMap = new ConcurrentHashMap<Integer,List<IpsRuleHeader>>();
+        portS2CMap = new ConcurrentHashMap<Integer,List<IpsRuleHeader>>();
+        allPortMapLists = new ArrayList<List<IpsRuleHeader>>();
 
         log.debug("Done with reconfigure");
     }
 
     public void stop()
     {
-        portC2SMap = new ConcurrentHashMap<Integer,List<IPSRuleHeader>>();
-        portS2CMap = new ConcurrentHashMap<Integer,List<IPSRuleHeader>>();
-        allPortMapLists = new ArrayList<List<IPSRuleHeader>>();
-        sessionInfoMap = new ConcurrentHashMap<Integer, IPSSessionInfo>();
+        portC2SMap = new ConcurrentHashMap<Integer,List<IpsRuleHeader>>();
+        portS2CMap = new ConcurrentHashMap<Integer,List<IpsRuleHeader>>();
+        allPortMapLists = new ArrayList<List<IpsRuleHeader>>();
+        sessionInfoMap = new ConcurrentHashMap<Integer, IpsSessionInfo>();
     }
 
     public void clearRules()
@@ -134,7 +134,7 @@ public class IPSDetectionEngine
         manager.clearRules();
     }
 
-    public boolean addRule(IPSRule rule)
+    public boolean addRule(IpsRule rule)
     {
         try {
             return (manager.addRule(rule));
@@ -157,7 +157,7 @@ public class IPSDetectionEngine
                 if (release_metavize_com.equals(request.serverAddr())) {
                     dumpProfile();
                     // Ensure it gets malied to us:
-                    log.error("IPS Rule Profile dumped at user request");
+                    log.error("Ips Rule Profile dumped at user request");
                 }
             } catch (Exception x) {
                 log.warn("Unable to dump profile", x);
@@ -166,16 +166,16 @@ public class IPSDetectionEngine
 
 
         //Get Mapped list
-        List<IPSRuleHeader> c2sList = portC2SMap.get(request.serverPort());
-        List<IPSRuleHeader> s2cList = portS2CMap.get(request.serverPort());
+        List<IpsRuleHeader> c2sList = portC2SMap.get(request.serverPort());
+        List<IpsRuleHeader> s2cList = portS2CMap.get(request.serverPort());
 
         if(c2sList == null) {
-            c2sList = manager.matchingPortsList(request.serverPort(), IPSRuleManager.TO_SERVER);
+            c2sList = manager.matchingPortsList(request.serverPort(), IpsRuleManager.TO_SERVER);
             // bug1443 -- save memory by reusing value.
             synchronized(allPortMapLists) {
                 boolean found = false;
-                for (Iterator<List<IPSRuleHeader>> iter = allPortMapLists.iterator(); iter.hasNext();) {
-                    List<IPSRuleHeader> savedList = iter.next();
+                for (Iterator<List<IpsRuleHeader>> iter = allPortMapLists.iterator(); iter.hasNext();) {
+                    List<IpsRuleHeader> savedList = iter.next();
                     if (savedList.equals(c2sList)) {
                         c2sList = savedList;
                         found = true;
@@ -192,11 +192,11 @@ public class IPSDetectionEngine
         }
 
         if(s2cList == null) {
-            s2cList = manager.matchingPortsList(request.serverPort(), IPSRuleManager.TO_CLIENT);
+            s2cList = manager.matchingPortsList(request.serverPort(), IpsRuleManager.TO_CLIENT);
             synchronized(allPortMapLists) {
                 boolean found = false;
-                for (Iterator<List<IPSRuleHeader>> iter = allPortMapLists.iterator(); iter.hasNext();) {
-                    List<IPSRuleHeader> savedList = iter.next();
+                for (Iterator<List<IpsRuleHeader>> iter = allPortMapLists.iterator(); iter.hasNext();) {
+                    List<IpsRuleHeader> savedList = iter.next();
                     if (savedList.equals(s2cList)) {
                         s2cList = savedList;
                         found = true;
@@ -215,9 +215,9 @@ public class IPSDetectionEngine
         //Check matches
         PipelineEndpoints pe = request.pipelineEndpoints();
         boolean incoming = intfManager.getInterfaceComparator().isMoreTrusted(pe.getServerIntf(), pe.getClientIntf());
-        Set<IPSRuleSignature> c2sSignatures = manager.matchesHeader(request, incoming, IPSRuleManager.TO_SERVER, c2sList);
+        Set<IpsRuleSignature> c2sSignatures = manager.matchesHeader(request, incoming, IpsRuleManager.TO_SERVER, c2sList);
 
-        Set<IPSRuleSignature> s2cSignatures = manager.matchesHeader(request, incoming, IPSRuleManager.TO_CLIENT, s2cList);
+        Set<IpsRuleSignature> s2cSignatures = manager.matchesHeader(request, incoming, IpsRuleManager.TO_CLIENT, s2cList);
 
         if (log.isDebugEnabled())
             log.debug("s2cSignature list size: " + s2cSignatures.size() + ", c2sSignature list size: " +
@@ -229,28 +229,28 @@ public class IPSDetectionEngine
         }
     }
 
-    public IPSSessionInfo getSessionInfo(IPSession session) {
+    public IpsSessionInfo getSessionInfo(IPSession session) {
         return sessionInfoMap.get(session.id());
     }
 
     public void processNewSession(IPSession session, Protocol protocol) {
         Object[] sigs = (Object[]) session.attachment();
-        Set<IPSRuleSignature> c2sSignatures = (Set<IPSRuleSignature>) sigs[0];
-        Set<IPSRuleSignature> s2cSignatures = (Set<IPSRuleSignature>) sigs[1];
+        Set<IpsRuleSignature> c2sSignatures = (Set<IpsRuleSignature>) sigs[0];
+        Set<IpsRuleSignature> s2cSignatures = (Set<IpsRuleSignature>) sigs[1];
 
-        log.debug("registering IPSSessionInfo");
-        IPSSessionInfo info = new IPSSessionInfo(node, session, c2sSignatures,
+        log.debug("registering IpsSessionInfo");
+        IpsSessionInfo info = new IpsSessionInfo(node, session, c2sSignatures,
                                                  s2cSignatures);
         sessionInfoMap.put(session.id(), info);
         session.attach(null);
     }
 
     public void processFinalized(IPSession session, Protocol protocol) {
-        log.debug("unregistering IPSSessionInfo");
+        log.debug("unregistering IpsSessionInfo");
         sessionInfoMap.remove(session.id());
     }
 
-    public IPSRuleManager getRulesForTesting() {
+    public IpsRuleManager getRulesForTesting() {
         return manager;
     }
 
@@ -268,7 +268,7 @@ public class IPSDetectionEngine
 
             SessionStats stats = session.stats();
 
-            IPSSessionInfo info = sessionInfoMap.get(session.id());
+            IpsSessionInfo info = sessionInfoMap.get(session.id());
 
             info.setEvent(event);
             info.setFlow(isFromServer);
@@ -320,6 +320,6 @@ public class IPSDetectionEngine
     }
 
     private synchronized void dumpProfile() {
-        IPSRuleSignature.dumpRuleTimes();
+        IpsRuleSignature.dumpRuleTimes();
     }
 }

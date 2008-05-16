@@ -20,7 +20,7 @@ package com.untangle.node.ips.options;
 
 import org.apache.log4j.Logger;
 
-public class WithinOption extends IPSOption {
+public class WithinOption extends IpsOption {
     private final Logger logger = Logger.getLogger(getClass());
 
     public WithinOption(OptionArg arg) {
@@ -29,7 +29,7 @@ public class WithinOption extends IPSOption {
         String params = arg.getParams();
 
         int within = Integer.parseInt(params);
-        IPSOption option = signature.getOption("ContentOption",this);
+        IpsOption option = signature.getOption("ContentOption",this);
         if(option == null) {
             logger.warn("Unable to find content option to set within for sig: " + signature);
             return;

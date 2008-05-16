@@ -20,6 +20,6 @@
 
 package com.untangle.node.ips;
 
-public class IPSRuleHeader {
-    public IPSRuleHeader() { }
+public class IpsRuleHeader {
+    public IpsRuleHeader() { }
 }

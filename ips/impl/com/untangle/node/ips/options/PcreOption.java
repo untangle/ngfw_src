@@ -21,12 +21,12 @@ package com.untangle.node.ips.options;
 import java.nio.ByteBuffer;
 import java.util.regex.Pattern;
 
-import com.untangle.node.ips.IPSRule;
-import com.untangle.node.ips.IPSSessionInfo;
+import com.untangle.node.ips.IpsRule;
+import com.untangle.node.ips.IpsSessionInfo;
 import com.untangle.node.util.AsciiCharBuffer;
 import org.apache.log4j.Logger;
 
-public class PcreOption extends IPSOption
+public class PcreOption extends IpsOption
 {
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -37,7 +37,7 @@ public class PcreOption extends IPSOption
         super(arg);
 
         String params = arg.getParams();
-        IPSRule rule = arg.getRule();
+        IpsRule rule = arg.getRule();
 
         int beginIndex = params.indexOf("/");
         int endIndex = params.lastIndexOf("/");
@@ -88,7 +88,7 @@ public class PcreOption extends IPSOption
         return true;
     }
 
-    public boolean run(IPSSessionInfo sessionInfo)
+    public boolean run(IpsSessionInfo sessionInfo)
     {
         ByteBuffer eventData = sessionInfo.getEvent().data();
 

@@ -22,15 +22,15 @@ import com.untangle.uvm.logging.StatisticEvent;
 import com.untangle.uvm.node.StatisticManager;
 import com.untangle.uvm.node.NodeContext;
 
-class IPSStatisticManager extends StatisticManager {
+class IpsStatisticManager extends StatisticManager {
 
     /* Interface matcher to determine if the sessions is incoming or outgoing */
     //final IntfMatcher matcherIncoming = IntfMatcher.MATCHER_IN;
     //final IntfMatcher matcherOutgoing = IntfMatcher.MATCHER_OUT;
 
-    private IPSStatisticEvent statisticEvent = new IPSStatisticEvent();
+    private IpsStatisticEvent statisticEvent = new IpsStatisticEvent();
 
-    public IPSStatisticManager(NodeContext tctx) {
+    public IpsStatisticManager(NodeContext tctx) {
         super(EventLoggerFactory.factory().getEventLogger(tctx));
     }
 
@@ -39,7 +39,7 @@ class IPSStatisticManager extends StatisticManager {
     }
 
     protected StatisticEvent getNewStatisticEvent() {
-        return ( this.statisticEvent = new IPSStatisticEvent());
+        return ( this.statisticEvent = new IpsStatisticEvent());
     }
 
     void incrDNC() {

@@ -18,7 +18,7 @@
 
 package com.untangle.node.ips.options;
 
-public class MsgOption extends IPSOption
+public class MsgOption extends IpsOption
 {
     private static final String BLEEDING_PREFIX = "BLEEDING-EDGE";
 

@@ -18,11 +18,11 @@
 
 package com.untangle.node.ips.options;
 
-import com.untangle.node.ips.IPSRule;
+import com.untangle.node.ips.IpsRule;
 import com.untangle.uvm.vnet.event.*;
 import org.apache.log4j.Logger;
 
-public class SidOption extends IPSOption
+public class SidOption extends IpsOption
 {
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -40,7 +40,7 @@ public class SidOption extends IPSOption
                 logger.warn("Unable to parse sid: " + params);
             }
 
-            IPSRule rule = arg.getRule();
+            IpsRule rule = arg.getRule();
             rule.setSid(sid);
         }
     }

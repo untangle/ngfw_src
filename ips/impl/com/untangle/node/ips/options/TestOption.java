@@ -18,7 +18,7 @@
 
 package com.untangle.node.ips.options;
 
-public class TestOption extends IPSOption
+public class TestOption extends IpsOption
 {
     public TestOption(OptionArg arg)
     {

@@ -23,15 +23,15 @@ import com.untangle.uvm.vnet.TCPSession;
 import com.untangle.node.token.TokenHandler;
 import com.untangle.node.token.TokenHandlerFactory;
 
-public class IPSHttpFactory implements TokenHandlerFactory {
-    private final IPSNodeImpl node;
+public class IpsHttpFactory implements TokenHandlerFactory {
+    private final IpsNodeImpl node;
 
-    IPSHttpFactory(IPSNodeImpl node) {
+    IpsHttpFactory(IpsNodeImpl node) {
         this.node = node;
     }
 
     public TokenHandler tokenHandler(TCPSession session) {
-        return new IPSHttpHandler(session, node);
+        return new IpsHttpHandler(session, node);
     }
 
     public void handleNewSessionRequest(TCPNewSessionRequest tsr)

@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -16,10 +16,13 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-// Fake
-
 package com.untangle.node.ips;
 
-public class IPSRuleSignature {
-    public IPSRuleSignature() { }
+import com.untangle.uvm.logging.EventManager;
+import com.untangle.uvm.node.Node;
+
+public interface IpsNode extends Node {
+    IpsBaseSettings getBaseSettings();
+    void setBaseSettings(IpsBaseSettings baseSettings);
+    EventManager<IpsLogEvent> getEventManager();
 }

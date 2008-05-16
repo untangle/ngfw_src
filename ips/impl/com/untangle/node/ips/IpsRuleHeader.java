@@ -34,13 +34,13 @@ import com.untangle.uvm.node.firewall.ip.IPMatcherFactory;
 import com.untangle.uvm.vnet.Protocol;
 import org.apache.log4j.Logger;
 
-public class IPSRuleHeader
+public class IpsRuleHeader
 {
     public static final boolean IS_BIDIRECTIONAL = true;
     public static final boolean IS_SERVER = true;
 
-    private static final Map<IPSRuleHeader, WeakReference<IPSRuleHeader>> INSTANCES
-        = new WeakHashMap<IPSRuleHeader, WeakReference<IPSRuleHeader>>();
+    private static final Map<IpsRuleHeader, WeakReference<IpsRuleHeader>> INSTANCES
+        = new WeakHashMap<IpsRuleHeader, WeakReference<IpsRuleHeader>>();
 
     private final int action;
     private final Protocol protocol;
@@ -62,7 +62,7 @@ public class IPSRuleHeader
 
     // constructors ------------------------------------------------------------
 
-    private IPSRuleHeader(int action, boolean bidirectional, Protocol protocol,
+    private IpsRuleHeader(int action, boolean bidirectional, Protocol protocol,
                           List<IPMatcher> clientIPList,
                           PortRange clientPortRange,
                           List<IPMatcher> serverIPList,
@@ -89,7 +89,7 @@ public class IPSRuleHeader
 
     // static methods ----------------------------------------------------------
 
-    public static IPSRuleHeader getHeader(int action, boolean bidirectional,
+    public static IpsRuleHeader getHeader(int action, boolean bidirectional,
                                           Protocol protocol,
                                           List<IPMatcher> clientIPList,
                                           PortRange clientPortRange,
@@ -101,16 +101,16 @@ public class IPSRuleHeader
                                           boolean serverPortFlag)
 
     {
-        IPSRuleHeader h = new IPSRuleHeader(action, bidirectional, protocol,
+        IpsRuleHeader h = new IpsRuleHeader(action, bidirectional, protocol,
                                             clientIPList, clientPortRange,
                                             serverIPList,serverPortRange,
                                             clientIPFlag, clientPortFlag,
                                             serverIPFlag, serverPortFlag);
 
         synchronized (INSTANCES) {
-            WeakReference<IPSRuleHeader> wr = INSTANCES.get(h);
+            WeakReference<IpsRuleHeader> wr = INSTANCES.get(h);
             if (null != wr) {
-                IPSRuleHeader c = wr.get();
+                IpsRuleHeader c = wr.get();
                 if (null != c) {
                     h = c;
                 } else {
@@ -231,7 +231,7 @@ public class IPSRuleHeader
 
     // Rule manager uses this to decide if the rule is already
     // known.
-    public boolean matches(IPSRuleHeader other)
+    public boolean matches(IpsRuleHeader other)
     {
         boolean action = (this.action == other.action);
         boolean protocol = (this.protocol == other.protocol); // ?
@@ -270,11 +270,11 @@ public class IPSRuleHeader
 
     public boolean equals(Object o)
     {
-        if (!(o instanceof IPSRuleHeader)) {
+        if (!(o instanceof IpsRuleHeader)) {
             return false;
         }
 
-        IPSRuleHeader h = (IPSRuleHeader)o;
+        IpsRuleHeader h = (IpsRuleHeader)o;
 
         return action == h.action
             && protocol.equals(h.protocol)

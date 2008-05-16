@@ -30,9 +30,9 @@ import com.untangle.gui.widgets.editTable.*;
 import com.untangle.node.ips.*;
 //import javax.swing.event.*;
 
-public class IPSVariableJPanel extends MEditTableJPanel {
+public class IpsVariableJPanel extends MEditTableJPanel {
 
-    public IPSVariableJPanel() {
+    public IpsVariableJPanel() {
         super(true, true);
         super.setInsets(new Insets(4, 4, 2, 2));
         super.setTableTitle("General Settings");
@@ -40,15 +40,15 @@ public class IPSVariableJPanel extends MEditTableJPanel {
         super.setAddRemoveEnabled(true);
 
         // create actual table model
-        IPSVariableTableModel tableModel = new IPSVariableTableModel();
-        tableModel.setSortingStatus(2, IPSVariableTableModel.ASCENDING);
+        IpsVariableTableModel tableModel = new IpsVariableTableModel();
+        tableModel.setSortingStatus(2, IpsVariableTableModel.ASCENDING);
         this.setTableModel( tableModel );
     }
 }
 
 
 
-class IPSVariableTableModel extends MSortedTableModel<Object>{
+class IpsVariableTableModel extends MSortedTableModel<Object>{
 
     private static final int T_TW = Util.TABLE_TOTAL_WIDTH;
     private static final int C0_MW = Util.STATUS_MIN_WIDTH; /* status */
@@ -69,17 +69,17 @@ class IPSVariableTableModel extends MSortedTableModel<Object>{
         addTableColumn( tableColumnModel,  2, C2_MW, true,  true,  false, false, String.class,  "$SOME_VARIABLE", "variable name");
         addTableColumn( tableColumnModel,  3, C3_MW, true,  true,  false, false, String.class,  "some_value", sc.bold("variable value"));
         addTableColumn( tableColumnModel,  4, C4_MW, true,  true,  false, true,  String.class,  sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION);
-        addTableColumn( tableColumnModel,  5, 10,    false, false, true,  false, IPSVariable.class,  null, "");
+        addTableColumn( tableColumnModel,  5, 10,    false, false, true,  false, IpsVariable.class,  null, "");
         return tableColumnModel;
     }
 
 
     public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception{
         List elemList = new ArrayList(tableVector.size());
-        IPSVariable newElem = null;
+        IpsVariable newElem = null;
 
         for( Vector rowVector : tableVector ){
-            newElem = (IPSVariable) rowVector.elementAt(5);
+            newElem = (IpsVariable) rowVector.elementAt(5);
             newElem.setVariable( (String) rowVector.elementAt(2) );
             newElem.setDefinition( (String) rowVector.elementAt(3) );
             newElem.setDescription( (String) rowVector.elementAt(4) );
@@ -88,20 +88,20 @@ class IPSVariableTableModel extends MSortedTableModel<Object>{
 
         // SAVE SETTINGS ////////////
         if( !validateOnly ){
-            IPSSettings ipsSettings = (IPSSettings) settings;
+            IpsSettings ipsSettings = (IpsSettings) settings;
             ipsSettings.setVariables( elemList );
         }
 
     }
 
     public Vector<Vector> generateRows(Object settings){
-        IPSSettings ipsSettings = (IPSSettings) settings;
-        List<IPSVariable> variables = (List<IPSVariable>) ipsSettings.getVariables();
+        IpsSettings ipsSettings = (IpsSettings) settings;
+        List<IpsVariable> variables = (List<IpsVariable>) ipsSettings.getVariables();
         Vector<Vector> allRows = new Vector<Vector>(variables.size());
         Vector tempRow = null;
         int rowIndex = 0;
 
-        for( IPSVariable ipsVariable : variables ){
+        for( IpsVariable ipsVariable : variables ){
             rowIndex++;
             tempRow = new Vector(6);
             tempRow.add( super.ROW_SAVED );

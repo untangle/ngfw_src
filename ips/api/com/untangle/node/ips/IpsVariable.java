@@ -27,26 +27,26 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 /**
- * Hibernate object to store IPS Variable.
+ * Hibernate object to store Ips Variable.
  *
  * @author <a href="mailto:nchilders@untangle.com">Nick Childers</a>
  * @version 1.0
  */
 @Entity
 @Table(name="n_ips_variable", schema="settings")
-public class IPSVariable implements Serializable {
+public class IpsVariable implements Serializable {
     private Long id;
     private static final long serialVersionUID = -7777708957041660234L;
     private String variable;
     private String definition;
     private String description;
 
-    public IPSVariable() {}
+    public IpsVariable() {}
 
-    public IPSVariable(String var, String def, String desc) {
+    public IpsVariable(String var, String def, String desc) {
 
         if(512 < var.length() || 512 < def.length())
-            throw new IllegalArgumentException("IPS Variable argument too long");
+            throw new IllegalArgumentException("Ips Variable argument too long");
 
         this.variable = var;
         this.definition = def;

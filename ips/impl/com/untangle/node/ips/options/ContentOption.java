@@ -23,7 +23,7 @@ import java.text.CharacterIterator;
 import java.util.regex.*;
 
 import com.sun.org.apache.xerces.internal.impl.xpath.regex.BMPattern;
-import com.untangle.node.ips.IPSSessionInfo;
+import com.untangle.node.ips.IpsSessionInfo;
 import com.untangle.node.util.AsciiCharBuffer;
 import com.untangle.node.util.AsciiCharBufferCharacterIterator;
 import com.untangle.uvm.vnet.event.*;
@@ -35,7 +35,7 @@ import org.apache.log4j.Logger;
  * @Author Nick Childers
  */
 ///XXX - ADD ERROR HANDELING OMG!
-class ContentOption extends IPSOption
+class ContentOption extends IpsOption
 {
     private ContentOption previousContentOption = null;
 
@@ -119,7 +119,7 @@ class ContentOption extends IPSOption
 
     private ContentOption getPreviousContentOption()
     {
-        IPSOption option = signature.getOption("ContentOption",this);
+        IpsOption option = signature.getOption("ContentOption",this);
         if(option != null)
             return (ContentOption) option;
         return null; //error checking OMGWTFBBQ
@@ -127,7 +127,7 @@ class ContentOption extends IPSOption
 
 
     private void setStartAndEndPoints(int offset, int depth,
-                                      IPSSessionInfo sessionInfo)
+                                      IpsSessionInfo sessionInfo)
     {
         sessionInfo.start = offset;
         sessionInfo.end = offset+depth;
@@ -140,7 +140,7 @@ class ContentOption extends IPSOption
         return true;
     }
 
-    public boolean run(IPSSessionInfo sessionInfo)
+    public boolean run(IpsSessionInfo sessionInfo)
     {
         ByteBuffer eventData = sessionInfo.getEvent().data();
         AsciiCharBuffer data = AsciiCharBuffer.wrap(eventData);

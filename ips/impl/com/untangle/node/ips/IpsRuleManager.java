@@ -31,60 +31,60 @@ import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.SessionEndpoints;
 import org.apache.log4j.Logger;
 
-public class IPSRuleManager
+public class IpsRuleManager
 {
     public static final boolean TO_SERVER = true;
     public static final boolean TO_CLIENT = false;
 
     private static final Pattern variablePattern = Pattern.compile("\\$[^ \n\r\t]+");
 
-    private final List<IPSRuleHeader> headers = new ArrayList<IPSRuleHeader>();
-    private final Map<IPSRuleHeader, Set<IPSRuleSignature>> signatures
-        = new HashMap<IPSRuleHeader, Set<IPSRuleSignature>>();
+    private final List<IpsRuleHeader> headers = new ArrayList<IpsRuleHeader>();
+    private final Map<IpsRuleHeader, Set<IpsRuleSignature>> signatures
+        = new HashMap<IpsRuleHeader, Set<IpsRuleSignature>>();
 
-    private final IPSNodeImpl ips;
+    private final IpsNodeImpl ips;
 
     private final Logger logger = Logger.getLogger(getClass());
 
     // constructors -----------------------------------------------------------
 
-    public IPSRuleManager(IPSNodeImpl ips)
+    public IpsRuleManager(IpsNodeImpl ips)
     {
         this.ips = ips;
         // note the sequence of constructor calls:
-        //   IPSNodeImpl -> IPSDetectionEngine -> IPSRuleManager
-        // - IPSRuleManager cannot retrieve the IPSDetectionEngine object
-        //   from IPSNodeImpl here
-        //   (IPSNodeImpl is creating an IPSDetectionEngine object and
-        //    thus, in the process of creating this IPSRuleManager object too
-        //    so IPSNodeImpl does not have an IPSDetectionEngine object
-        //    to return to this IPSRuleManager object right now)
-        // - IPSRuleManager must wait for IPSNodeImpl to create and save
-        //   an IPSDetectionEngine object
+        //   IpsNodeImpl -> IpsDetectionEngine -> IpsRuleManager
+        // - IpsRuleManager cannot retrieve the IpsDetectionEngine object
+        //   from IpsNodeImpl here
+        //   (IpsNodeImpl is creating an IpsDetectionEngine object and
+        //    thus, in the process of creating this IpsRuleManager object too
+        //    so IpsNodeImpl does not have an IpsDetectionEngine object
+        //    to return to this IpsRuleManager object right now)
+        // - IpsRuleManager must wait for IpsNodeImpl to create and save
+        //   an IpsDetectionEngine object
     }
 
     // static methods ---------------------------------------------------------
 
-    public static List<IPSVariable> getImmutableVariables()
+    public static List<IpsVariable> getImmutableVariables()
     {
-        List<IPSVariable> l = new ArrayList<IPSVariable>();
-        l.add(new IPSVariable("$EXTERNAL_NET",IPSStringParser.EXTERNAL_IP,"Magic EXTERNAL_NET token"));
-        l.add(new IPSVariable("$HOME_NET",IPSStringParser.HOME_IP,"Magic HOME_NET token"));
+        List<IpsVariable> l = new ArrayList<IpsVariable>();
+        l.add(new IpsVariable("$EXTERNAL_NET",IpsStringParser.EXTERNAL_IP,"Magic EXTERNAL_NET token"));
+        l.add(new IpsVariable("$HOME_NET",IpsStringParser.HOME_IP,"Magic HOME_NET token"));
 
         return l;
     }
 
-    public static List<IPSVariable> getDefaultVariables()
+    public static List<IpsVariable> getDefaultVariables()
     {
-        List<IPSVariable> l = new ArrayList<IPSVariable>();
-        l.add(new IPSVariable("$HTTP_SERVERS", "$HOME_NET","Addresses of possible local HTTP servers"));
-        l.add(new IPSVariable("$HTTP_PORTS", "80","Port that HTTP servers run on"));
-        l.add(new IPSVariable("$SSH_PORTS", "22","Port that SSH servers run on"));
-        l.add(new IPSVariable("$SMTP_SERVERS", "$HOME_NET","Addresses of possible local SMTP servers"));
-        l.add(new IPSVariable("$TELNET_SERVERS", "$HOME_NET","Addresses of possible local telnet servers"));
-        l.add(new IPSVariable("$SQL_SERVERS", "!any","Addresses of local SQL servers"));
-        l.add(new IPSVariable("$ORACLE_PORTS", "1521","Port that Oracle servers run on"));
-        l.add(new IPSVariable("$AIM_SERVERS", "[64.12.24.0/24,64.12.25.0/24,64.12.26.14/24,64.12.28.0/24,64.12.29.0/24,64.12.161.0/24,64.12.163.0/24,205.188.5.0/24,205.188.9.0/24]","Addresses of possible AOL Instant Messaging servers"));
+        List<IpsVariable> l = new ArrayList<IpsVariable>();
+        l.add(new IpsVariable("$HTTP_SERVERS", "$HOME_NET","Addresses of possible local HTTP servers"));
+        l.add(new IpsVariable("$HTTP_PORTS", "80","Port that HTTP servers run on"));
+        l.add(new IpsVariable("$SSH_PORTS", "22","Port that SSH servers run on"));
+        l.add(new IpsVariable("$SMTP_SERVERS", "$HOME_NET","Addresses of possible local SMTP servers"));
+        l.add(new IpsVariable("$TELNET_SERVERS", "$HOME_NET","Addresses of possible local telnet servers"));
+        l.add(new IpsVariable("$SQL_SERVERS", "!any","Addresses of local SQL servers"));
+        l.add(new IpsVariable("$ORACLE_PORTS", "1521","Port that Oracle servers run on"));
+        l.add(new IpsVariable("$AIM_SERVERS", "[64.12.24.0/24,64.12.25.0/24,64.12.26.14/24,64.12.28.0/24,64.12.29.0/24,64.12.161.0/24,64.12.163.0/24,205.188.5.0/24,205.188.9.0/24]","Addresses of possible AOL Instant Messaging servers"));
 
         return l;
     }
@@ -97,24 +97,24 @@ public class IPSRuleManager
         headers.clear();
     }
 
-    public boolean addRule(IPSRule rule) throws ParseException
+    public boolean addRule(IpsRule rule) throws ParseException
     {
         String ruleText = rule.getText();
 
         String noVarText = substituteVariables(ruleText);
-        String ruleParts[] = IPSStringParser.parseRuleSplit(noVarText);
+        String ruleParts[] = IpsStringParser.parseRuleSplit(noVarText);
 
-        IPSRuleHeader header = IPSStringParser.parseHeader(ruleParts[0], rule.getAction());
+        IpsRuleHeader header = IpsStringParser.parseHeader(ruleParts[0], rule.getAction());
         if (header == null) {
             throw new ParseException("Unable to parse header of rule " + ruleParts[0]);
         }
 
-        IPSRuleSignature signature = IPSRuleSignature
+        IpsRuleSignature signature = IpsRuleSignature
             .parseSignature(ips, rule, ruleParts[1], rule.getAction(), false,
                             ruleParts[1]);
 
         if(!signature.remove() && !rule.disabled()) {
-            for(IPSRuleHeader headerTmp : headers) {
+            for(IpsRuleHeader headerTmp : headers) {
                 if(headerTmp.matches(header)) {
                     addSignature(headerTmp, signature);
 
@@ -146,7 +146,7 @@ public class IPSRuleManager
     }
 
     // This is how a rule gets created
-    public IPSRule createRule(String text, String category) {
+    public IpsRule createRule(String text, String category) {
         if(text == null || text.length() <= 0 || text.charAt(0) == '#') {
             logger.warn("Ignoring empty rule: " + text);
             return null;
@@ -160,18 +160,18 @@ public class IPSRuleManager
             text = text.substring(firstSpace + 1);
         }
 
-        IPSRule rule = new IPSRule(text, category, "The signature failed to load");
+        IpsRule rule = new IpsRule(text, category, "The signature failed to load");
 
         text = substituteVariables(text);
         try {
-            String ruleParts[]   = IPSStringParser.parseRuleSplit(text);
-            IPSRuleHeader header = IPSStringParser.parseHeader(ruleParts[0], rule.getAction());
+            String ruleParts[]   = IpsStringParser.parseRuleSplit(text);
+            IpsRuleHeader header = IpsStringParser.parseHeader(ruleParts[0], rule.getAction());
             if (header == null) {
                 logger.warn("Ignoring rule with bad header: " + text);
                 return null;
             }
 
-            IPSRuleSignature signature  = IPSRuleSignature
+            IpsRuleSignature signature  = IpsRuleSignature
                 .parseSignature(ips, rule, ruleParts[1], rule.getAction(),
                                 true, null);
 
@@ -200,10 +200,10 @@ public class IPSRuleManager
         return rule;
     }
 
-    public List<IPSRuleHeader> matchingPortsList(int port, boolean toServer)
+    public List<IpsRuleHeader> matchingPortsList(int port, boolean toServer)
     {
-        List<IPSRuleHeader> returnList = new ArrayList();
-        for(IPSRuleHeader header : headers) {
+        List<IpsRuleHeader> returnList = new ArrayList();
+        for(IpsRuleHeader header : headers) {
             if(header.portMatches(port, toServer)) {
                 returnList.add(header);
             }
@@ -211,22 +211,22 @@ public class IPSRuleManager
         return returnList;
     }
 
-    public Set<IPSRuleSignature> matchesHeader(SessionEndpoints sess,
+    public Set<IpsRuleSignature> matchesHeader(SessionEndpoints sess,
                                                boolean sessInbound,
                                                boolean forward)
     {
         return matchesHeader(sess, sessInbound, forward, headers);
     }
 
-    public Set<IPSRuleSignature> matchesHeader(SessionEndpoints sess,
+    public Set<IpsRuleSignature> matchesHeader(SessionEndpoints sess,
                                                boolean sessInbound,
                                                boolean forward,
-                                               List<IPSRuleHeader> matchList)
+                                               List<IpsRuleHeader> matchList)
     {
-        Set<IPSRuleSignature> returnSet = new HashSet();
+        Set<IpsRuleSignature> returnSet = new HashSet();
         //logger.debug("Total List size: "+matchList.size());
 
-        for(IPSRuleHeader header : matchList) {
+        for(IpsRuleHeader header : matchList) {
             if(header.matches(sess, sessInbound, forward)) {
                 // logger.debug("Header matches: " + header);
                 returnSet.addAll(getSignatures(header));
@@ -238,7 +238,7 @@ public class IPSRuleManager
         return returnSet;
     }
 
-    public List<IPSRuleHeader> getHeaders()
+    public List<IpsRuleHeader> getHeaders()
     {
         return headers;
     }
@@ -253,10 +253,10 @@ public class IPSRuleManager
     {
         Matcher match = variablePattern.matcher(string);
         if(match.find()) {
-            IPSDetectionEngine engine = null;
+            IpsDetectionEngine engine = null;
             if (ips != null)
                 engine = ips.getEngine();
-            List<IPSVariable> varList, imVarList;
+            List<IpsVariable> varList, imVarList;
             /* This is null when initializing settings, but the
              * settings are initialized with these values so using the
              * defaults is harmless */
@@ -265,18 +265,18 @@ public class IPSRuleManager
                 imVarList = getImmutableVariables();
                 varList = getDefaultVariables();
             } else {
-                imVarList = (List<IPSVariable>) engine.getSettings().getImmutableVariables();
-                varList = (List<IPSVariable>) engine.getSettings().getVariables();
+                imVarList = (List<IpsVariable>) engine.getSettings().getImmutableVariables();
+                varList = (List<IpsVariable>) engine.getSettings().getVariables();
             }
-            for(IPSVariable var : imVarList) {
+            for(IpsVariable var : imVarList) {
                 string = string.replaceAll("\\"+var.getVariable(),var.getDefinition());
             }
-            for(IPSVariable var : varList) {
+            for(IpsVariable var : varList) {
                 // Special case == allow regular variables to refer to immutable variables
                 String def = var.getDefinition();
                 Matcher submatch = variablePattern.matcher(def);
                 if (submatch.find()) {
-                    for(IPSVariable subvar : imVarList) {
+                    for(IpsVariable subvar : imVarList) {
                         def = def.replaceAll("\\"+subvar.getVariable(),subvar.getDefinition());
                     }
                 }
@@ -292,20 +292,20 @@ public class IPSRuleManager
 
     // private methods ---------------------------------------------------------
 
-    private void addSignature(IPSRuleHeader header, IPSRuleSignature signature)
+    private void addSignature(IpsRuleHeader header, IpsRuleSignature signature)
     {
-        Set<IPSRuleSignature> s = signatures.get(header);
+        Set<IpsRuleSignature> s = signatures.get(header);
         if (null == s) {
-            s = new HashSet<IPSRuleSignature>();
+            s = new HashSet<IpsRuleSignature>();
             signatures.put(header, s);
         }
         s.add(signature);
     }
 
-    private void removeSignature(IPSRuleHeader header,
-                                 IPSRuleSignature signature)
+    private void removeSignature(IpsRuleHeader header,
+                                 IpsRuleSignature signature)
     {
-        Set<IPSRuleSignature> s = signatures.get(header);
+        Set<IpsRuleSignature> s = signatures.get(header);
         if (null != s) {
             s.remove(signature);
             if (s.isEmpty()) {
@@ -314,9 +314,9 @@ public class IPSRuleManager
         }
     }
 
-    private Set<IPSRuleSignature> getSignatures(IPSRuleHeader header)
+    private Set<IpsRuleSignature> getSignatures(IpsRuleHeader header)
     {
-        Set<IPSRuleSignature> s = signatures.get(header);
+        Set<IpsRuleSignature> s = signatures.get(header);
         if (null == s) {
             return Collections.emptySet();
         } else {
@@ -324,9 +324,9 @@ public class IPSRuleManager
         }
     }
 
-    private boolean signatureListIsEmpty(IPSRuleHeader header)
+    private boolean signatureListIsEmpty(IpsRuleHeader header)
     {
-        Set<IPSRuleSignature> s = signatures.get(header);
+        Set<IpsRuleSignature> s = signatures.get(header);
         return null == s ? true : s.isEmpty();
     }
 }

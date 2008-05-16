@@ -40,20 +40,20 @@ public class LogJPanel extends MLogTableJPanel {
     public LogJPanel(Node node, MNodeControlsJPanel mNodeControlsJPanel){
         super(node, mNodeControlsJPanel);
 
-        final IPSNode ips = (IPSNode)node;
+        final IpsNode ips = (IpsNode)node;
 
         setTableModel(new LogTableModel());
 
-        EventManager<IPSLogEvent> eventManager = ips.getEventManager();
+        EventManager<IpsLogEvent> eventManager = ips.getEventManager();
         for (RepositoryDesc fd : eventManager.getRepositoryDescs()) {
             queryJComboBox.addItem(fd.getName());
         }
     }
 
     protected void refreshSettings(){
-        IPSNode ips = (IPSNode)logNode;
-        EventManager<IPSLogEvent> em = ips.getEventManager();
-        EventRepository<IPSLogEvent> ef = em.getRepository((String)queryJComboBox.getSelectedItem());
+        IpsNode ips = (IpsNode)logNode;
+        EventManager<IpsLogEvent> em = ips.getEventManager();
+        EventRepository<IpsLogEvent> ef = em.getRepository((String)queryJComboBox.getSelectedItem());
         settings = ef.getEvents();
     }
 
@@ -74,11 +74,11 @@ public class LogJPanel extends MLogTableJPanel {
 
 
         public Vector<Vector> generateRows(Object settings){
-            List<IPSLogEvent> logList = (List<IPSLogEvent>) settings;
+            List<IpsLogEvent> logList = (List<IpsLogEvent>) settings;
             Vector<Vector> allEvents = new Vector<Vector>(logList.size());
             Vector event;
 
-            for( IPSLogEvent log : logList ){
+            for( IpsLogEvent log : logList ){
                 PipelineEndpoints pe = log.getPipelineEndpoints();
 
                 event = new Vector(6);

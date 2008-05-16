@@ -28,7 +28,7 @@ import com.untangle.uvm.logging.SyslogBuilder;
 import com.untangle.uvm.logging.SyslogPriority;
 
 /**
- * Log event for a IPS statistics.
+ * Log event for a Ips statistics.
  *
  * @author <a href="mailto:nchilders@untangle.com">nchilders</a>
  * @stolen from rbscott yo
@@ -37,15 +37,15 @@ import com.untangle.uvm.logging.SyslogPriority;
 @Entity
 @org.hibernate.annotations.Entity(mutable=false)
     @Table(name="n_ips_statistic_evt", schema="events")
-    public class IPSStatisticEvent extends StatisticEvent {
+    public class IpsStatisticEvent extends StatisticEvent {
         private int dnc = 0; // did-not-care
         private int logged = 0; // logged or alerted
         private int blocked = 0;
 
         // Constructors
-        public IPSStatisticEvent() { }
+        public IpsStatisticEvent() { }
 
-        public IPSStatisticEvent( int dnc, int logged, int blocked )
+        public IpsStatisticEvent( int dnc, int logged, int blocked )
         {
             this.dnc = dnc;
             this.logged  = logged;

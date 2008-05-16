@@ -23,19 +23,19 @@ import java.util.List;
 import com.untangle.gui.node.Refreshable;
 import com.untangle.node.ips.*;
 
-public class IPSStatusJPanel extends javax.swing.JPanel implements Refreshable<Object>{
+public class IpsStatusJPanel extends javax.swing.JPanel implements Refreshable<Object>{
 
-    public IPSStatusJPanel() {
+    public IpsStatusJPanel() {
         initComponents();
     }
 
     public void doRefresh(Object settings){
-        IPSSettings ipsSettings = (IPSSettings) settings;
-        List<IPSRule> rules = (List<IPSRule>) ipsSettings.getRules();
+        IpsSettings ipsSettings = (IpsSettings) settings;
+        List<IpsRule> rules = (List<IpsRule>) ipsSettings.getRules();
         int enabled = 0;
         int logging = 0;
         int blocking = 0;
-        for( IPSRule rule : rules){
+        for( IpsRule rule : rules){
             enabled++;
             if(rule.isLive())
                 blocking++;

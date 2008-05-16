@@ -22,7 +22,7 @@ import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.vnet.event.*;
 import org.apache.log4j.Logger;
 
-public class OffsetOption extends IPSOption
+public class OffsetOption extends IpsOption
 {
     private final Logger logger = Logger.getLogger(getClass());
 

@@ -47,7 +47,7 @@ public class MNodeControlsJPanel extends com.untangle.gui.node.MNodeControlsJPan
     public void generateGui(){
 
         // STATUS
-        IPSStatusJPanel ipsStatusJPanel = new IPSStatusJPanel();
+        IpsStatusJPanel ipsStatusJPanel = new IpsStatusJPanel();
         addTab(NAME_STATUS, null, ipsStatusJPanel);
         addRefreshable(NAME_STATUS, ipsStatusJPanel);
 
@@ -55,14 +55,14 @@ public class MNodeControlsJPanel extends com.untangle.gui.node.MNodeControlsJPan
         JTabbedPane advancedJTabbedPane = addTabbedPane(NAME_ADVANCED, null);
         
         // RULE LIST /////
-        IPSConfigJPanel ipsConfigJPanel = new IPSConfigJPanel();
+        IpsConfigJPanel ipsConfigJPanel = new IpsConfigJPanel();
         advancedJTabbedPane.addTab(NAME_RULE_LIST, null, ipsConfigJPanel);
         addSavable(NAME_RULE_LIST, ipsConfigJPanel);
         addRefreshable(NAME_RULE_LIST, ipsConfigJPanel);
         ipsConfigJPanel.setSettingsChangedListener(this);
         
         // VARIABLE LIST /////
-        IPSVariableJPanel ipsVariableJPanel = new IPSVariableJPanel();
+        IpsVariableJPanel ipsVariableJPanel = new IpsVariableJPanel();
         advancedJTabbedPane.addTab(NAME_VARIABLE_LIST, null, ipsVariableJPanel);
         addSavable(NAME_VARIABLE_LIST, ipsVariableJPanel);
         addRefreshable(NAME_VARIABLE_LIST, ipsVariableJPanel);

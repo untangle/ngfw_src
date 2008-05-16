@@ -20,10 +20,10 @@ package com.untangle.node.ips.options;
 
 import java.util.regex.*;
 
-import com.untangle.node.ips.IPSSessionInfo;
+import com.untangle.node.ips.IpsSessionInfo;
 import com.untangle.uvm.vnet.event.*;
 
-public class FlowOption extends IPSOption
+public class FlowOption extends IpsOption
 {
     /**
      * The options "only_stream" and "established" would  have *no* effect.
@@ -60,7 +60,7 @@ public class FlowOption extends IPSOption
         return true;
     }
 
-    public boolean run(IPSSessionInfo sessionInfo)
+    public boolean run(IpsSessionInfo sessionInfo)
     {
         boolean fromServer = sessionInfo.isServer();
         boolean returnValue = !(fromServer ^ matchFromServer);

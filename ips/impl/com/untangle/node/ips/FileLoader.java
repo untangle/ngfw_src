@@ -102,15 +102,15 @@ class FileLoader {
         return result;
     }
 
-    static List<IPSRule> loadAllRuleFiles(IPSRuleManager manager)
+    static List<IpsRule> loadAllRuleFiles(IpsRuleManager manager)
     {
-        List<IPSRule> ruleList = new ArrayList<IPSRule>();
+        List<IpsRule> ruleList = new ArrayList<IpsRule>();
         File file = new File(SNORT_RULES_HOME + "/rules");
         loadRuleFiles(manager, file, ruleList);
         return ruleList;
     }
 
-    private static void loadRuleFiles(IPSRuleManager manager, File file, List<IPSRule> result) {
+    private static void loadRuleFiles(IpsRuleManager manager, File file, List<IpsRule> result) {
         if (file.isDirectory()) {
             String[] children = file.list();
             Arrays.sort(children);
@@ -129,7 +129,7 @@ class FileLoader {
 
     /** Temp subroutines for loading local snort rules.
      */
-    private static void processRuleFile(IPSRuleManager manager, File file, List<IPSRule> result) {
+    private static void processRuleFile(IpsRuleManager manager, File file, List<IpsRule> result) {
         try {
             String category = file.getName().replaceAll(".rules",""); //Should move this to script land
             category = category.replace("bleeding-",""); //Should move this to script land
@@ -146,7 +146,7 @@ class FileLoader {
                         continue lineloop;
                     }
                 }
-                IPSRule rule = manager.createRule(str.trim(), category);
+                IpsRule rule = manager.createRule(str.trim(), category);
                 if (rule != null) {
                     int sid = rule.getSid();
                     for (int slowRule : VERY_SLOW_RULES) {

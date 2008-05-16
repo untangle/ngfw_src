@@ -21,22 +21,22 @@ package com.untangle.node.ips.options;
 import java.lang.reflect.*;
 import java.util.regex.PatternSyntaxException;
 
-import com.untangle.node.ips.IPSDetectionEngine;
-import com.untangle.node.ips.IPSRule;
-import com.untangle.node.ips.IPSRuleSignatureImpl;
-import com.untangle.node.ips.IPSSessionInfo;
+import com.untangle.node.ips.IpsDetectionEngine;
+import com.untangle.node.ips.IpsRule;
+import com.untangle.node.ips.IpsRuleSignatureImpl;
+import com.untangle.node.ips.IpsSessionInfo;
 import com.untangle.uvm.vnet.event.*;
 import org.apache.log4j.Logger;
 
-public abstract class IPSOption
+public abstract class IpsOption
 {
-    protected final IPSRuleSignatureImpl signature;
+    protected final IpsRuleSignatureImpl signature;
 
     protected final boolean negationFlag;
 
-    private static final Logger log = Logger.getLogger(IPSOption.class);
+    private static final Logger log = Logger.getLogger(IpsOption.class);
 
-    protected IPSOption(OptionArg arg)
+    protected IpsOption(OptionArg arg)
     {
         this.signature = arg.getSignature();
         this.negationFlag = arg.getNegationFlag();
@@ -49,14 +49,14 @@ public abstract class IPSOption
     }
 
     // Overriden in concrete children that are runnable
-    public boolean run(IPSSessionInfo sessionInfo)
+    public boolean run(IpsSessionInfo sessionInfo)
     {
         return true;
     }
 
-    public static IPSOption buildOption(IPSDetectionEngine engine,
-                                        IPSRuleSignatureImpl signature,
-                                        IPSRule rule,
+    public static IpsOption buildOption(IpsDetectionEngine engine,
+                                        IpsRuleSignatureImpl signature,
+                                        IpsRule rule,
                                         String optionName,
                                         String params,
                                         boolean initializeSettingsTime)
@@ -75,7 +75,7 @@ public abstract class IPSOption
         OptionArg oa = new OptionArg(engine, rule, signature, params,
                                      initializeSettingsTime, negationFlag);
 
-        IPSOption option = null;
+        IpsOption option = null;
 
         optionName = optionName.toLowerCase();
         char ch = optionName.charAt(0);
@@ -91,8 +91,8 @@ public abstract class IPSOption
             Class clazz = Class
                 .forName("com.untangle.node.ips.options."+optionName+"Option");
             Constructor constructor = clazz
-                .getConstructor(new Class[] { IPSOption.class });
-            option = (IPSOption)constructor.newInstance(new Object[] { oa });
+                .getConstructor(new Class[] { IpsOption.class });
+            option = (IpsOption)constructor.newInstance(new Object[] { oa });
         } catch (ClassNotFoundException e) {
             log.info("Could not load option: " + optionName + ", ignoring rule: " + signature.getSid());
             signature.remove(true);
@@ -109,7 +109,7 @@ public abstract class IPSOption
         return option;
     }
 
-    public boolean optEquals(IPSOption o)
+    public boolean optEquals(IpsOption o)
     {
         return negationFlag == o.negationFlag;
     }

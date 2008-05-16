@@ -27,14 +27,14 @@ import javax.persistence.Transient;
 import com.untangle.uvm.node.Rule;
 
 /**
- * Hibernate object to store IPS rules.
+ * Hibernate object to store Ips rules.
  *
  * @author <a href="mailto:nchilders@untangle.com">Nick Childers</a>
  * @version 1.0
  */
 @Entity
 @Table(name="n_ips_rule", schema="settings")
-public class IPSRule extends Rule implements Serializable
+public class IpsRule extends Rule implements Serializable
 {
     private static final long serialVersionUID = -7009708957041660234L;
 
@@ -57,9 +57,9 @@ public class IPSRule extends Rule implements Serializable
     private String classification;
     private String url;
 
-    public IPSRule() {}
+    public IpsRule() {}
 
-    public IPSRule(String rule, String  category, String description) {
+    public IpsRule(String rule, String  category, String description) {
 
         super("Name", category,description,false);
 
@@ -121,8 +121,8 @@ public class IPSRule extends Rule implements Serializable
     }
 
     public boolean equals(Object o) {
-        if (o instanceof IPSRule) {
-            IPSRule other = (IPSRule) o;
+        if (o instanceof IpsRule) {
+            IpsRule other = (IpsRule) o;
             // Following isn't totally complete, but is good enough
             // for what we use from Rule. XX
             return (rule == null ? other.rule == null : rule.equals(other.rule)) &&

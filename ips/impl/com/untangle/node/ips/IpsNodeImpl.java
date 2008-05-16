@@ -37,34 +37,34 @@ import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
-public class IPSNodeImpl extends AbstractNode implements IPSNode {
+public class IpsNodeImpl extends AbstractNode implements IpsNode {
     private final Logger logger = Logger.getLogger(getClass());
 
-    private final EventLogger<IPSLogEvent> eventLogger;
+    private final EventLogger<IpsLogEvent> eventLogger;
 
-    private IPSSettings settings = null;
-    final IPSStatisticManager statisticManager;
+    private IpsSettings settings = null;
+    final IpsStatisticManager statisticManager;
 
     private final EventHandler handler;
     private final SoloPipeSpec octetPipeSpec, httpPipeSpec;
     private final PipeSpec[] pipeSpecs;
 
-    private IPSDetectionEngine engine;
+    private IpsDetectionEngine engine;
 
-    public IPSNodeImpl() {
-        engine = new IPSDetectionEngine(this);
+    public IpsNodeImpl() {
+        engine = new IpsDetectionEngine(this);
         handler = new EventHandler(this);
-        statisticManager = new IPSStatisticManager(getNodeContext());
+        statisticManager = new IpsStatisticManager(getNodeContext());
         // Put the octet stream close to the server so that it is after the http processing.
         octetPipeSpec = new SoloPipeSpec("ips-octet", this, handler,Fitting.OCTET_STREAM, Affinity.SERVER,10);
-        httpPipeSpec = new SoloPipeSpec("ips-http", this, new TokenAdaptor(this, new IPSHttpFactory(this)), Fitting.HTTP_TOKENS, Affinity.SERVER,0);
+        httpPipeSpec = new SoloPipeSpec("ips-http", this, new TokenAdaptor(this, new IpsHttpFactory(this)), Fitting.HTTP_TOKENS, Affinity.SERVER,0);
         pipeSpecs = new PipeSpec[] { httpPipeSpec, octetPipeSpec };
 
         eventLogger = EventLoggerFactory.factory().getEventLogger(getNodeContext());
 
-        SimpleEventFilter<IPSLogEvent> ef = new IPSLogFilter();
+        SimpleEventFilter<IpsLogEvent> ef = new IpsLogFilter();
         eventLogger.addSimpleEventFilter(ef);
-        ef = new IPSBlockedFilter();
+        ef = new IpsBlockedFilter();
         eventLogger.addSimpleEventFilter(ef);
 
         List<RuleClassification> classifications = FileLoader.loadClassifications();
@@ -98,7 +98,7 @@ public class IPSNodeImpl extends AbstractNode implements IPSNode {
         getNodeContext().runTransaction(tw);
     }
 
-    public EventManager<IPSLogEvent> getEventManager()
+    public EventManager<IpsLogEvent> getEventManager()
     {
         return eventLogger;
     }
@@ -106,13 +106,13 @@ public class IPSNodeImpl extends AbstractNode implements IPSNode {
     public void initializeSettings()
     {
         logger.info("Loading Variables...");
-        IPSSettings settings = new IPSSettings(getTid());
-        settings.setVariables(IPSRuleManager.getDefaultVariables());
-        settings.setImmutableVariables(IPSRuleManager.getImmutableVariables());
+        IpsSettings settings = new IpsSettings(getTid());
+        settings.setVariables(IpsRuleManager.getDefaultVariables());
+        settings.setImmutableVariables(IpsRuleManager.getImmutableVariables());
 
         logger.info("Loading Rules...");
-        IPSRuleManager manager = new IPSRuleManager(this); // A fake one for now.  XXX
-        List<IPSRule> ruleList = FileLoader.loadAllRuleFiles(manager);
+        IpsRuleManager manager = new IpsRuleManager(this); // A fake one for now.  XXX
+        List<IpsRule> ruleList = FileLoader.loadAllRuleFiles(manager);
 
         settings.getBaseSettings().setMaxChunks(engine.getMaxChunks());
         settings.setRules(ruleList);
@@ -123,7 +123,7 @@ public class IPSNodeImpl extends AbstractNode implements IPSNode {
         statisticManager.stop();
     }
 
-    public IPSDetectionEngine getEngine() {
+    public IpsDetectionEngine getEngine() {
         return engine;
     }
 
@@ -145,7 +145,7 @@ public class IPSNodeImpl extends AbstractNode implements IPSNode {
         queryDBForSettings();
 
         // Upgrade to 3.2 will have nuked the settings.  Recreate them
-        if (IPSNodeImpl.this.settings == null) {
+        if (IpsNodeImpl.this.settings == null) {
             logger.warn("No settings found.  Creating anew.");
             initializeSettings();
         }
@@ -155,20 +155,20 @@ public class IPSNodeImpl extends AbstractNode implements IPSNode {
 
     // package protected methods -----------------------------------------------
 
-    void log(IPSLogEvent ile)
+    void log(IpsLogEvent ile)
     {
         eventLogger.log(ile);
     }
 
     // private methods ---------------------------------------------------------
 
-    private void setIpsSettings(final IPSSettings settings)
+    private void setIpsSettings(final IpsSettings settings)
     {
         TransactionWork tw = new TransactionWork()
             {
                 public boolean doWork(Session s)
                 {
-                    IPSNodeImpl.this.settings = (IPSSettings)s.merge(settings);
+                    IpsNodeImpl.this.settings = (IpsSettings)s.merge(settings);
                     return true;
                 }
 
@@ -184,9 +184,9 @@ public class IPSNodeImpl extends AbstractNode implements IPSNode {
         engine.setSettings(settings);
         engine.onReconfigure();
         engine.setMaxChunks(settings.getBaseSettings().getMaxChunks());
-        List<IPSRule> rules = (List<IPSRule>) settings.getRules();
+        List<IpsRule> rules = (List<IpsRule>) settings.getRules();
         engine.clearRules();
-        for(IPSRule rule : rules) {
+        for(IpsRule rule : rules) {
             engine.addRule(rule);
         }
     }
@@ -196,9 +196,9 @@ public class IPSNodeImpl extends AbstractNode implements IPSNode {
             {
                 public boolean doWork(Session s)
                 {
-                    Query q = s.createQuery("from IPSSettings ips where ips.tid = :tid");
+                    Query q = s.createQuery("from IpsSettings ips where ips.tid = :tid");
                     q.setParameter("tid", getTid());
-                    IPSNodeImpl.this.settings = (IPSSettings)q.uniqueResult();
+                    IpsNodeImpl.this.settings = (IpsSettings)q.uniqueResult();
                     return true;
                 }
 

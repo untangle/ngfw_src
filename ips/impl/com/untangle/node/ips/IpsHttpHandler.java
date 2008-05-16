@@ -26,19 +26,19 @@ import com.untangle.node.token.Chunk;
 import com.untangle.node.token.Header;
 import org.apache.log4j.Logger;
 
-class IPSHttpHandler extends HttpStateMachine {
+class IpsHttpHandler extends HttpStateMachine {
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    private IPSDetectionEngine engine;
+    private IpsDetectionEngine engine;
 
-    IPSHttpHandler(TCPSession session, IPSNodeImpl node) {
+    IpsHttpHandler(TCPSession session, IpsNodeImpl node) {
         super(session);
         engine = node.getEngine();
     }
 
     protected RequestLineToken doRequestLine(RequestLineToken requestLine) {
-        IPSSessionInfo info = engine.getSessionInfo(getSession());
+        IpsSessionInfo info = engine.getSessionInfo(getSession());
         if (info != null) {
             // Null is no longer unusual, it happens whenever we've released the
             // session from the byte pipe.

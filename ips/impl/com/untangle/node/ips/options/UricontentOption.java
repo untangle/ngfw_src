@@ -21,9 +21,9 @@ package com.untangle.node.ips.options;
 import java.util.regex.*;
 
 import com.sun.org.apache.xerces.internal.impl.xpath.regex.BMPattern;
-import com.untangle.node.ips.IPSSessionInfo;
+import com.untangle.node.ips.IpsSessionInfo;
 
-public class UricontentOption extends IPSOption
+public class UricontentOption extends IpsOption
 {
     private BMPattern uriPattern;
     private String stringPattern;
@@ -48,7 +48,7 @@ public class UricontentOption extends IPSOption
         return true;
     }
 
-    public boolean run(IPSSessionInfo sessionInfo)
+    public boolean run(IpsSessionInfo sessionInfo)
     {
         String path = sessionInfo.getUriPath();
         if(path != null) {

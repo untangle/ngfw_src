@@ -1,5 +1,5 @@
 /*
- * $HeadURL: svn://chef/branch/prod/web-ui/work/src/ips/api/com/untangle/node/ips/IPSSettings.java $
+ * $HeadURL: svn://chef/branch/prod/web-ui/work/src/ips/api/com/untangle/node/ips/IpsSettings.java $
  * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -25,7 +25,7 @@ import javax.persistence.Transient;
 
 
 /**
- * Base Settings for the IPS node.
+ * Base Settings for the Ips node.
  *
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
