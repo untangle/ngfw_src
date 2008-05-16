@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -21,8 +21,6 @@ package com.untangle.node.ips;
 import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -58,11 +56,6 @@ public class IPSRule extends Rule implements Serializable
     private String classification;
     private String url;
 
-    //Variables set at run time
-    private transient IPSRuleHeader header;
-    private transient IPSRuleSignature signature;
-    private transient boolean remove; //Should no longer be in the list
-
     public IPSRule() {}
 
     public IPSRule(String rule, String  category, String description) {
@@ -71,7 +64,6 @@ public class IPSRule extends Rule implements Serializable
 
         this.rule = rule;
         this.modified = false;
-        this.remove = false;
     }
 
     @Transient
@@ -89,26 +81,6 @@ public class IPSRule extends Rule implements Serializable
     @Column(nullable=false)
     public int getSid() { return this.sid; }
     public void setSid(int sid) { this.sid = sid; }
-
-    //Non Hibernate functions
-    @Transient
-    public IPSRuleHeader getHeader() {
-        return header;
-    }
-
-    public void setHeader(IPSRuleHeader header) {
-        this.header = header;
-    }
-
-    @Transient
-    public IPSRuleSignature getSignature() {
-        return signature;
-    }
-
-    public void setSignature(IPSRuleSignature signature) {
-        this.signature = signature;
-        //super.setDescription(getMessage());
-    }
 
     /* every rule signature has classification (so default text is replaced) */
     @Transient
@@ -130,14 +102,6 @@ public class IPSRule extends Rule implements Serializable
     public void setURL(String url) {
         this.url = url;
         return;
-    }
-
-    public boolean remove() {
-        return remove;
-    }
-
-    public void remove(boolean val) {
-        remove = val;
     }
 
     public boolean disabled() {

@@ -225,12 +225,10 @@ public class IPSNodeImpl extends AbstractNode implements IPSNode {
         engine.onReconfigure();
         engine.setMaxChunks(settings.getMaxChunks());
         List<IPSRule> rules = (List<IPSRule>) settings.getRules();
+        engine.clearRules();
         for(IPSRule rule : rules) {
-            engine.updateRule(rule);
+            engine.addRule(rule);
         }
-        if (logger.isDebugEnabled())
-            engine.dumpRules();
-        //remove all deleted rules XXXX
     }
 
     void log(IPSLogEvent ile)

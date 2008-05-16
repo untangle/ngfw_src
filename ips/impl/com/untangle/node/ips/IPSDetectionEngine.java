@@ -118,7 +118,6 @@ public class IPSDetectionEngine
         portS2CMap = new ConcurrentHashMap<Integer,List<IPSRuleHeader>>();
         allPortMapLists = new ArrayList<List<IPSRuleHeader>>();
 
-        manager.onReconfigure();
         log.debug("Done with reconfigure");
     }
 
@@ -130,18 +129,11 @@ public class IPSDetectionEngine
         sessionInfoMap = new ConcurrentHashMap<Integer, IPSSessionInfo>();
     }
 
-    public void updateRule(IPSRule rule)
+    public void clearRules()
     {
-        try {
-            manager.updateRule(rule);
-        } catch (ParseException e) {
-            log.warn("Could not parse rule: ", e);
-        } catch (Exception e) {
-            log.error("Exception updating rule " + rule.getSid(), e);
-        }
+        manager.clearRules();
     }
 
-    //Deprecating?
     public boolean addRule(IPSRule rule)
     {
         try {
