@@ -3,30 +3,31 @@ if (!Ung.hasResource["Ung.Phish"]) {
     Ung.Settings.registerClassName('untangle-node-phish', 'Ung.Phish');
 
     Ung.Phish = Ext.extend(Ung.Settings, {
-        smtpData: null,
-        spamData: null,
-        emailPanel: null,
-        webPanel: null,
+        smtpData : null,
+        spamData : null,
+        emailPanel : null,
+        webPanel : null,
         gridWebEventLog : null,
         gridEmailEventLog : null,
         // override get base settings object
-        getBaseSettings: function(forceReload) {
-            if(forceReload || this.rpc.baseSettings===undefined) {
-                this.rpc.baseSettings=this.getRpcNode().getPhishBaseSettings();
+        getBaseSettings : function(forceReload) {
+            if (forceReload || this.rpc.baseSettings === undefined) {
+                this.rpc.baseSettings = this.getRpcNode().getPhishBaseSettings();
             }
             return this.rpc.baseSettings;
         },
 
         // called when the component is rendered
         onRender : function(container, position) {
-            //workarownd to solve the problem with baseSettings.popConfig.msgAction==baseSettings.imapConfig.msgAction
-            var baseSettings=this.getBaseSettings();
-            if(baseSettings.popConfig.msgAction==baseSettings.imapConfig.msgAction) {
-                var msgAction={};
-                msgAction.javaClass=baseSettings.imapConfig.msgAction.javaClass;
-                msgAction.key=baseSettings.imapConfig.msgAction.key;
-                msgAction.name=baseSettings.imapConfig.msgAction.name;
-                baseSettings.imapConfig.msgAction=msgAction;
+            // workarownd to solve the problem with
+            // baseSettings.popConfig.msgAction==baseSettings.imapConfig.msgAction
+            var baseSettings = this.getBaseSettings();
+            if (baseSettings.popConfig.msgAction == baseSettings.imapConfig.msgAction) {
+                var msgAction = {};
+                msgAction.javaClass = baseSettings.imapConfig.msgAction.javaClass;
+                msgAction.key = baseSettings.imapConfig.msgAction.key;
+                msgAction.name = baseSettings.imapConfig.msgAction.name;
+                baseSettings.imapConfig.msgAction = msgAction;
             }
             // call superclass renderer first
             Ung.Phish.superclass.onRender.call(this, container, position);
@@ -52,19 +53,14 @@ if (!Ung.hasResource["Ung.Phish"]) {
         },
         // Email Config Panel
         buildEmail : function() {
-            this.smtpData= [
-                ['mark message',this.i18n._('Mark'),'M'],
-                ['pass message',this.i18n._('Pass'),'P'],
-                ['block message',this.i18n._('Block'),'B'],
-                ['quarantine message',this.i18n._('Quarantine'),'Q']
-            ];
-            this.spamData= [
-                ['mark message',this.i18n._('Mark'),'M'],
-                ['pass message',this.i18n._('Pass'),'P']
-            ];
+            this.smtpData = [['mark message', this.i18n._('Mark'), 'M'], ['pass message', this.i18n._('Pass'), 'P'],
+                    ['block message', this.i18n._('Block'), 'B'], ['quarantine message', this.i18n._('Quarantine'), 'Q']];
+            this.spamData = [['mark message', this.i18n._('Mark'), 'M'], ['pass message', this.i18n._('Pass'), 'P']];
             this.emailPanel = new Ext.Panel({
                 title : this.i18n._('Email'),
+                info : 'emailPanel',
                 layout : "form",
+                autoScroll : true,
                 bodyStyle : 'padding:5px 5px 0px 5px;',
                 items : [{
                     xtype : 'fieldset',
@@ -74,7 +70,7 @@ if (!Ung.hasResource["Ung.Phish"]) {
                         width : 210
                     },
                     items : [{
-                    	xtype : 'checkbox',
+                        xtype : 'checkbox',
                         boxLabel : this.i18n._('Scan SMTP'),
                         name : 'smtpScan',
                         hideLabel : true,
@@ -87,8 +83,9 @@ if (!Ung.hasResource["Ung.Phish"]) {
                             }
                         }
                     }, {
-                    	xtype : 'combo',
-                        editable: false,
+                        xtype : 'combo',
+                        name : 'smtpAction',
+                        editable : false,
                         store : this.smtpData,
                         fieldLabel : this.i18n._('Action'),
                         mode : 'local',
@@ -98,13 +95,13 @@ if (!Ung.hasResource["Ung.Phish"]) {
                         listeners : {
                             "change" : {
                                 fn : function(elem, newValue) {
-                                	this.getBaseSettings().smtpConfig.msgAction.name = newValue;
-                                	for(var i=0;i<this.smtpData.length;i++) {
-                                	   if(this.smtpData[i][0]==newValue) {
-                                	       this.getBaseSettings().smtpConfig.msgAction.key=this.smtpData[i][2]
-                                	       break;
-                                	   }
-                                	}
+                                    this.getBaseSettings().smtpConfig.msgAction.name = newValue;
+                                    for (var i = 0; i < this.smtpData.length; i++) {
+                                        if (this.smtpData[i][0] == newValue) {
+                                            this.getBaseSettings().smtpConfig.msgAction.key = this.smtpData[i][2]
+                                            break;
+                                        }
+                                    }
                                 }.createDelegate(this)
                             }
                         }
@@ -117,7 +114,7 @@ if (!Ung.hasResource["Ung.Phish"]) {
                         width : 210
                     },
                     items : [{
-                    	xtype : 'checkbox',
+                        xtype : 'checkbox',
                         boxLabel : this.i18n._('Scan POP3'),
                         name : 'pop3Scan',
                         hideLabel : true,
@@ -130,23 +127,24 @@ if (!Ung.hasResource["Ung.Phish"]) {
                             }
                         }
                     }, {
-                    	xtype: 'combo',
-                        editable: false,
+                        xtype : 'combo',
+                        name : 'pop3Action',
+                        editable : false,
                         store : this.spamData,
                         fieldLabel : this.i18n._('Action'),
                         mode : 'local',
                         triggerAction : 'all',
                         listClass : 'x-combo-list-small',
-                        value :this.getBaseSettings().popConfig.msgAction.name,
+                        value : this.getBaseSettings().popConfig.msgAction.name,
                         listeners : {
                             "change" : {
                                 fn : function(elem, newValue) {
                                     this.getBaseSettings().popConfig.msgAction.name = newValue;
-                                    for(var i=0;i<this.spamData.length;i++) {
-                                       if(this.spamData[i][0]==newValue) {
-                                           this.getBaseSettings().popConfig.msgAction.key=this.spamData[i][2]
-                                           break;
-                                       }
+                                    for (var i = 0; i < this.spamData.length; i++) {
+                                        if (this.spamData[i][0] == newValue) {
+                                            this.getBaseSettings().popConfig.msgAction.key = this.spamData[i][2]
+                                            break;
+                                        }
                                     }
                                 }.createDelegate(this)
                             }
@@ -160,7 +158,7 @@ if (!Ung.hasResource["Ung.Phish"]) {
                         width : 210
                     },
                     items : [{
-                    	xtype : 'checkbox',
+                        xtype : 'checkbox',
                         boxLabel : this.i18n._('Scan IMAP'),
                         name : 'imapScan',
                         hideLabel : true,
@@ -173,8 +171,9 @@ if (!Ung.hasResource["Ung.Phish"]) {
                             }
                         }
                     }, {
-                    	xtype : 'combo',
-                        editable: false,
+                        xtype : 'combo',
+                        name : 'imapAction',
+                        editable : false,
                         store : this.spamData,
                         fieldLabel : this.i18n._('Action'),
                         mode : 'local',
@@ -185,11 +184,11 @@ if (!Ung.hasResource["Ung.Phish"]) {
                             "change" : {
                                 fn : function(elem, newValue) {
                                     this.getBaseSettings().imapConfig.msgAction.name = newValue;
-                                    for(var i=0;i<this.spamData.length;i++) {
-                                       if(this.spamData[i][0]==newValue) {
-                                           this.getBaseSettings().imapConfig.msgAction.key=this.spamData[i][2]
-                                           break;
-                                       }
+                                    for (var i = 0; i < this.spamData.length; i++) {
+                                        if (this.spamData[i][0] == newValue) {
+                                            this.getBaseSettings().imapConfig.msgAction.key = this.spamData[i][2]
+                                            break;
+                                        }
                                     }
                                 }.createDelegate(this)
                             }
@@ -201,8 +200,8 @@ if (!Ung.hasResource["Ung.Phish"]) {
                     autoHeight : true,
                     html : this.i18n._('Phish Blocker email signatures were last updated')
                             + ":&nbsp;&nbsp;&nbsp;&nbsp;"
-                            + (this.getBaseSettings().lastUpdate != null ? i18n
-                                    .timestampFormat(this.getBaseSettings().lastUpdate) : i18n._("unknown"))
+                            + (this.getBaseSettings().lastUpdate != null ? i18n.timestampFormat(this.getBaseSettings().lastUpdate) : i18n
+                                    ._("unknown"))
                 }]
             });
         },
@@ -211,20 +210,21 @@ if (!Ung.hasResource["Ung.Phish"]) {
             this.webPanel = new Ext.Panel({
                 title : this.i18n._('Web'),
                 layout : "form",
+                autoScroll : true,
                 bodyStyle : 'padding:5px 5px 0px 5px;',
                 items : [{
                     xtype : 'fieldset',
                     autoHeight : true,
                     items : [{
-                    	xtype : 'checkbox',
+                        xtype : 'checkbox',
                         boxLabel : this.i18n._('Enable Phish web filtering'),
-                        name : 'webScan',
+                        name : 'enableGooglePhishList',
                         hideLabel : true,
                         checked : this.getBaseSettings().enableGooglePhishList,
                         listeners : {
                             "check" : {
                                 fn : function(elem, checked) {
-                                	this.getBaseSettings().enableGooglePhishList = checked;
+                                    this.getBaseSettings().enableGooglePhishList = checked;
                                 }.createDelegate(this)
                             }
                         }
@@ -235,13 +235,15 @@ if (!Ung.hasResource["Ung.Phish"]) {
                     autoHeight : true,
                     html : this.i18n._('Phish Blocker web signatures were last updated ')
                             + ":&nbsp;&nbsp;&nbsp;&nbsp;"
-                            + (this.getBaseSettings().lastUpdate != null ? i18n.timestampFormat(this.getBaseSettings().lastUpdate) : i18n._("unknown"))
+                            + (this.getBaseSettings().lastUpdate != null ? i18n.timestampFormat(this.getBaseSettings().lastUpdate) : i18n
+                                    ._("unknown"))
                 }]
             });
         },
         // Web Event Log
         buildWebEventLog : function() {
             this.gridWebEventLog = new Ung.GridEventLog({
+                info : 'gridWebEventLog',
                 settingsCmp : this,
                 title : this.i18n._("Web Event Log"),
                 // the list of fields
@@ -301,6 +303,7 @@ if (!Ung.hasResource["Ung.Phish"]) {
         // Email Event Log
         buildEmailEventLog : function() {
             this.gridEmailEventLog = new Ung.GridEventLog({
+                info : 'gridEmailEventLog',
                 settingsCmp : this,
                 title : this.i18n._("Email Event Log"),
                 // the list of fields

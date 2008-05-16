@@ -1,20 +1,21 @@
 Ext.namespace('Ung');
-//The location of the blank pixel image
+// The location of the blank pixel image
 Ext.BLANK_IMAGE_URL = 'ext/resources/images/default/s.gif';
-//Global Variables
-//the main object instance
+// Global Variables
+// the main object instance
 var main=null; 
-//the main internationalization object
+// the main internationalization object
 var i18n=null;
-//the main json rpc object
+// the main json rpc object
 var rpc=null;
 
 
-//Main object class
+// Main object class
 Ung.Main=function() {
 }
 Ung.Main.prototype = {
-	disableThreads: false, // in development environment is useful to disable threads.
+	disableThreads: false, // in development environment is useful to disable
+                            // threads.
 	leftTabs: null,
 	appsSemaphore: null,
 	apps: null,
@@ -22,75 +23,75 @@ Ung.Main.prototype = {
 	myApps: null,
 	config: null,
 	nodes: null,
-	//the Ext.Viewport object for the application 
+	// the Ext.Viewport object for the application
 	viewport: null,
 	initSemaphore: null,
 	policySemaphore: null,
 	contentLeftWidth: 220,
-	//the application build version
+	// the application build version
 	version: null,
 	iframeWin: null,
-	//init function
+	// init function
 	init: function() {
 		this.initSemaphore=7;
 		rpc = {};
-		//get JSONRpcClient
+		// get JSONRpcClient
 		rpc.jsonrpc = new JSONRpcClient("/webui/JSON-RPC");
 
 		// get skin manager
 		rpc.jsonrpc.RemoteUvmContext.skinManager(function (result, exception) {
 			if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
 			rpc.skinManager=result;
-			//Load Current Skin
+			// Load Current Skin
 			rpc.skinManager.getSkinSettings(function (result, exception) {
 			if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
 				var skinSettings=result;
 				this.loadCss("skins/"+skinSettings.administrationClientSkin+"/css/ext-skin.css");
 				this.loadCss("skins/"+skinSettings.administrationClientSkin+"/css/skin.css");
-				this.postinit();//1
+				this.postinit();// 1
 			}.createDelegate(this));
 		}.createDelegate(this));
         // get language manager
         rpc.jsonrpc.RemoteUvmContext.languageManager(function (result, exception) { 
             if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
             rpc.languageManager=result;
-            //get translations for main module
+            // get translations for main module
             rpc.languageManager.getTranslations(function (result, exception) {
                 if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
                     i18n =new Ung.I18N({"map":result.map});
-                    this.postinit();//2
+                    this.postinit();// 2
                 }.createDelegate(this),"main");
         }.createDelegate(this));
 
-		//get node manager
+		// get node manager
 		rpc.jsonrpc.RemoteUvmContext.nodeManager(function (result, exception) { 
 			if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
 			rpc.nodeManager=result;
-			this.postinit();//3
+			this.postinit();// 3
 		}.createDelegate(this));
 		// get policy manager
 		rpc.jsonrpc.RemoteUvmContext.policyManager(function (result, exception) { 
 			if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
 			rpc.policyManager=result;
-			this.postinit();//4
+			this.postinit();// 4
 		}.createDelegate(this));
-		//get toolbox manager
+		// get toolbox manager
 		rpc.jsonrpc.RemoteUvmContext.toolboxManager(function (result, exception) { 
 			if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
 			rpc.toolboxManager=result;
-			this.postinit();//5
+			this.postinit();// 5
 		}.createDelegate(this));
 		// get admin manager
 		rpc.jsonrpc.RemoteUvmContext.adminManager(function (result, exception) {
 			if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
 			rpc.adminManager=result;
-			this.postinit();//6
+			this.postinit();// 6
 		}.createDelegate(this));
-		//get version
+		// get version
 		rpc.jsonrpc.RemoteUvmContext.version(function (result, exception) {
 			if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
 			rpc.version=result;
-			this.postinit();//7
+			this.postinit();// 7
 		}.createDelegate(this));
 		
 	},
@@ -198,7 +199,7 @@ Ung.Main.prototype = {
 				}
 		}.createDelegate(mackageDesc), mackageDesc.name);
 	},
-	//build left tabs
+	// build left tabs
 	buildLeftTabs: function () {
 		this.leftTabs = new Ext.TabPanel({
 		    renderTo: 'leftTabs',
@@ -212,7 +213,7 @@ Ung.Main.prototype = {
 		    ]
 		});
 	},
-	//Load css file Dynamically 
+	// Load css file Dynamically
 	loadCss: function(filename) {
 		var fileref=document.createElement("link");
 		fileref.setAttribute("rel", "stylesheet");
@@ -220,7 +221,7 @@ Ung.Main.prototype = {
 		fileref.setAttribute("href", filename);
 		document.getElementsByTagName("head")[0].appendChild(fileref);
 	},
-	//Load script file Dynamically 
+	// Load script file Dynamically
 	loadScript: function(sScriptSrc, fnCallback) {
 		var error=null;
 		try {
@@ -242,7 +243,7 @@ Ung.Main.prototype = {
 		}
 		return error;
 	},
-	//Load a resource if not loaded and execute a callback function
+	// Load a resource if not loaded and execute a callback function
 	loadResourceAndExecute: function(resource,sScriptSrc, fnCallback) {
 		if(Ung.hasResource[resource]) {
 			fnCallback.call(this);
@@ -250,7 +251,7 @@ Ung.Main.prototype = {
 			this.loadScript(sScriptSrc, fnCallback);
 		}
 	},
-	//get help link
+	// get help link
 	getHelpLink: function(source,focus) {
 		var baseLink="http://www.untangle.com/docs/get.php?";
 		if(source) {
@@ -267,7 +268,7 @@ Ung.Main.prototype = {
 		this.loadApps();
 		this.loadConfig();
 	},
-	// build apps 
+	// build apps
 	buildApps: function() {
 		this.appsSemaphore--;
 		if(this.appsSemaphore!==0) {
@@ -281,7 +282,7 @@ Ung.Main.prototype = {
 		}
 		for(var i=0;i<this.myApps.length;i++) {
 			var item=this.myApps[i];
-  			//if trial item asociate with store item button as trialItem
+  			// if trial item asociate with store item button as trialItem
   			if(item.extraName!=null && item.extraName.indexOf("Trial")!=-1) {
   				var storeLibitemName=item.name.replace("-node-","-libitem-");
   				if(apps[storeLibitemName]) {
@@ -289,7 +290,7 @@ Ung.Main.prototype = {
   				} else {
   					apps[item.name]={item:item};
   				}
-  			} else { //if not traial put separate button
+  			} else { // if not traial put separate button
   				apps[item.name]={item:item};
   			}
 		}
@@ -306,7 +307,7 @@ Ung.Main.prototype = {
 	loadApps: function() {
 		this.appsSemaphore=2;
 		Ung.MessageClientThread.stop();
-		//destoy current apps components
+		// destoy current apps components
 		if(main.apps!=null) {
 			for(var i=0; i<main.apps.length; i++) {
 				Ext.destroy(main.apps[i]);
@@ -327,7 +328,7 @@ Ung.Main.prototype = {
 			this.buildApps();
 		}.createDelegate(this));
 		
-		//get activated and installed items ( installedVisible)
+		// get activated and installed items ( installedVisible)
 		rpc.toolboxManager.installedVisible(function (result, exception) {
 			if(exception) { Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}
 			var installedVisibleMD=result;
@@ -344,7 +345,7 @@ Ung.Main.prototype = {
 		}.createDelegate(this));
 	},
 	
-	//load policies list
+	// load policies list
 	loadPolicies: function() {
 		rpc.policyManager.getPolicies( function (result, exception) {
 			if(exception) { Ext.MessageBox.alert(i18n._("Failed"),exception.message); return; }
@@ -374,7 +375,7 @@ Ung.Main.prototype = {
 		node.blingers=eval([{'type':'ActivityBlinger','bars':['ACTIVITY 1','ACTIVITY 2','ACTIVITY 3','ACTIVITY 4']},{'type':'SystemBlinger'}]);
 		return node;
 	},
-	//load the list of nodes for the current policy
+	// load the list of nodes for the current policy
 	loadNodes: function() {
 		this.policySemaphore=2;
 		rpc.nodeManager.nodeInstancesVisible(function (result, exception) {
@@ -426,7 +427,7 @@ Ung.Main.prototype = {
 		Ung.AppItem.updateStatesForCurrentPolicy();
 		this.loadNodesRunStates();
 	},
-	//load run states for all Nodes
+	// load run states for all Nodes
 	loadNodesRunStates: function() {
 		rpc.nodeManager.allNodeStates(function (result, exception) {
 			if(exception) { Ext.MessageBox.alert(i18n._("Failed"),exception.message);
@@ -504,12 +505,14 @@ Ung.Main.prototype = {
 			{"name":"systemInfo","displayName":i18n._("System Info"),"iconClass":"iconConfigSupport"}];		
 		this.buildConfig();	
 	},
-	//build config buttons
+	// build config buttons
 	buildConfig: function() {
   		var out=[];
   		for(var i=0;i<this.config.length;i++) {
   			var item=this.config[i];
   			var buttonCmp=new Ung.Button({
+  				id: "configItem_"+item.name,
+  				info: "configItem_"+item.name,
 				configIndex: i,
 				height: '42px',
 				renderTo: 'configItems',
@@ -520,7 +523,7 @@ Ung.Main.prototype = {
 	        });
   		}
 	},
-	//click Config Button
+	// click Config Button
 	clickConfig: function(configItem) {
 		switch(configItem.name){
 			case "networking":
@@ -565,7 +568,7 @@ Ung.Main.prototype = {
 		if(this.nodes!==null) {
 			for(var i=0;i<this.nodes.length;i++) {
 				var node=this.nodes[i];
-				var cmp=Ext.getCmp(this.nodes[i].id);
+				var cmp=Ung.Node.getCmp(this.nodes[i].tid);
 				if(cmp) {
 					cmp.destroy();
 					cmp=null;
@@ -596,7 +599,7 @@ Ung.Main.prototype = {
 		nodeWidget.render(place,position);
 		Ung.AppItem.updateStateForNode(node.name, "installed");
 	},
-	//Show - hide Services header in the rack
+	// Show - hide Services header in the rack
 	updateSeparator: function() {
 		var hasUtilOrService=false;
 		var hasCore=false;
@@ -617,7 +620,7 @@ Ung.Main.prototype = {
 		}
 	},
 	
-	//build policies select box
+	// build policies select box
 	buildPolicies: function () {
 		var out=[];
 		out.push('<select id="rack_select" onchange="main.changePolicy()">');

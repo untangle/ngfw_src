@@ -24,6 +24,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
         // Block lists panel
         buildBlockLists : function() {
             this.panelBlockLists = new Ext.Panel({
+                info : 'panelBlockLists',
                 winCookiesList : null,
                 winActiveXList : null,
                 winSubnetList : null,
@@ -55,9 +56,9 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                             }
                         }
                     }, {
-                        xtype:'combo',
-                        editable: false,
-                        mode: 'local',
+                        xtype : 'combo',
+                        editable : false,
+                        mode : 'local',
                         fieldLabel : this.i18n._('User Bypass'),
                         name : "userWhitelist",
                         store : new Ext.data.SimpleStore({
@@ -95,6 +96,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                         }
                     }],
                     buttons : [{
+                        info : 'manageCookiesListButton',
                         text : this.i18n._("manage list"),
                         handler : function() {
                             this.panelBlockLists.onManageCookiesList();
@@ -130,6 +132,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                         }
                     }],
                     buttons : [{
+                        info : 'manageActiveXListButton',
                         text : this.i18n._("manage list"),
                         handler : function() {
                             this.panelBlockLists.onManageActiveXList();
@@ -152,6 +155,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                         }
                     }],
                     buttons : [{
+                        info : 'manageSubnetListButton',
                         text : this.i18n._("manage list"),
                         handler : function() {
                             this.panelBlockLists.onManageSubnetList();
@@ -253,6 +257,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
             });
 
             this.gridCookiesList = new Ung.EditorGrid({
+                info : 'gridCookiesList',
                 settingsCmp : this,
                 totalRecords : this.getBaseSettings().cookieRulesLength,
                 emptyRow : {
@@ -308,6 +313,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
             });
 
             this.gridActiveXList = new Ung.EditorGrid({
+                info : 'gridActiveXList',
                 settingsCmp : this,
                 totalRecords : this.getBaseSettings().activeXRulesLength,
                 emptyRow : {
@@ -363,6 +369,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
             });
 
             this.gridSubnetList = new Ung.EditorGrid({
+                info : 'gridSubnetList',
                 settingsCmp : this,
                 totalRecords : this.getBaseSettings().subnetRulesLength,
                 emptyRow : {
@@ -434,6 +441,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
             });
 
             this.gridPassList = new Ung.EditorGrid({
+                info : 'gridPassList',
                 settingsCmp : this,
                 totalRecords : this.getBaseSettings().domainWhitelistLength,
                 emptyRow : {
@@ -500,6 +508,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
         buildEventLog : function() {
             this.gridEventLog = new Ung.GridEventLog({
                 settingsCmp : this,
+                info : 'gridEventLog',
                 // This is a predefined event log, so there is no need to
                 // specify the fields and columns
                 predefinedType : "TYPE1"
