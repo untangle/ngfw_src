@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -22,11 +22,7 @@ import com.untangle.uvm.logging.EventManager;
 import com.untangle.uvm.node.Node;
 
 public interface IPSNode extends Node {
-    IPSSettings getIPSSettings();
-    void setIPSSettings(IPSSettings settings);
-    void addRule(IPSRule rule);
-    void deleteRule(int sid);
-    void addVariable(IPSVariable variable);
-    void deleteVariable(String variable);    
+    IpsBaseSettings getBaseSettings();
+    void setBaseSettings(IpsBaseSettings baseSettings);
     EventManager<IPSLogEvent> getEventManager();
 }

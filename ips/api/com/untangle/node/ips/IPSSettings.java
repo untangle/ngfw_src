@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -46,18 +47,23 @@ import org.hibernate.annotations.IndexColumn;
  */
 @Entity
 @Table(name="n_ips_settings", schema="settings")
-public class IPSSettings implements Serializable {
+public class IPSSettings implements Serializable
+{
     private static final long serialVersionUID = -7056565971726289302L;
-    private int maxChunks;
+
     private Long id;
     private Tid tid;
+
+    private IpsBaseSettings baseSettings = new IpsBaseSettings();
+
     private List<IPSRule> rules = new ArrayList<IPSRule>();
     private List<IPSVariable> variables = new ArrayList<IPSVariable>();
     private List<IPSVariable> immutableVariables = new ArrayList<IPSVariable>();
 
     public IPSSettings() {}
 
-    public IPSSettings(Tid tid) {
+    public IPSSettings(Tid tid)
+    {
         this.tid = tid;
     }
 
@@ -67,9 +73,22 @@ public class IPSSettings implements Serializable {
     protected Long getID() { return id; }
     protected void setID(Long id) { this.id = id; }
 
-    @Column(name="max_chunks")
-    protected int getMaxChunks() { return maxChunks; }
-    protected void setMaxChunks(int maxChunks) { this.maxChunks = maxChunks; }
+    @Embedded
+    public IpsBaseSettings getBaseSettings()
+    {
+        if (null != baseSettings) {
+            baseSettings.setRulesLength(null == rules ? 0 : rules.size());
+            baseSettings.setVariablesLength(null == variables ? 0 : variables.size());
+            baseSettings.setImmutableVariablesLength(null == immutableVariables ? 0 : immutableVariables.size());
+        }
+
+        return baseSettings;
+    }
+
+    public void setBaseSettings(IpsBaseSettings baseSettings)
+    {
+        this.baseSettings = baseSettings;
+    }
 
     /**
      * Node id for these settings.
@@ -78,11 +97,13 @@ public class IPSSettings implements Serializable {
      */
     @ManyToOne(fetch=FetchType.EAGER)
     @JoinColumn(name="tid", nullable=false)
-    public Tid getTid() {
+    public Tid getTid()
+    {
         return tid;
     }
 
-    public void setTid(Tid tid) {
+    public void setTid(Tid tid)
+    {
         this.tid = tid;
     }
 
@@ -91,7 +112,10 @@ public class IPSSettings implements Serializable {
                    org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     @JoinColumn(name="settings_id")
     @IndexColumn(name="position")
-    public List<IPSRule> getRules() { return UvmUtil.eliminateNulls(this.rules); }
+    public List<IPSRule> getRules()
+    {
+        return UvmUtil.eliminateNulls(this.rules);
+    }
     public void setRules(List<IPSRule> rules) { this.rules = rules; }
 
     @OneToMany(fetch=FetchType.EAGER)
@@ -101,8 +125,15 @@ public class IPSSettings implements Serializable {
                joinColumns=@JoinColumn(name="setting_id"),
                inverseJoinColumns=@JoinColumn(name="variable_id"))
     @IndexColumn(name="position")
-    public List<IPSVariable> getVariables() { return UvmUtil.eliminateNulls(this.variables); }
-    public void setVariables(List<IPSVariable> variables) { this.variables = variables; }
+    public List<IPSVariable> getVariables()
+    {
+        return UvmUtil.eliminateNulls(this.variables);
+    }
+
+    public void setVariables(List<IPSVariable> variables)
+    {
+        this.variables = variables;
+    }
 
     @OneToMany(fetch=FetchType.EAGER)
     @Cascade({ org.hibernate.annotations.CascadeType.ALL,
@@ -111,6 +142,13 @@ public class IPSSettings implements Serializable {
                joinColumns=@JoinColumn(name="setting_id"),
                inverseJoinColumns=@JoinColumn(name="variable_id"))
     @IndexColumn(name="position")
-    public List<IPSVariable> getImmutableVariables() { return UvmUtil.eliminateNulls(this.immutableVariables); }
-    public void setImmutableVariables(List<IPSVariable> variables) { this.immutableVariables = variables; }
+    public List<IPSVariable> getImmutableVariables()
+    {
+        return UvmUtil.eliminateNulls(this.immutableVariables);
+    }
+
+    public void setImmutableVariables(List<IPSVariable> variables)
+    {
+        this.immutableVariables = variables;
+    }
 }

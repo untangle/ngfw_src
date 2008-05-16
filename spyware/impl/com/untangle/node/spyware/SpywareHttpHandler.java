@@ -390,7 +390,7 @@ public class SpywareHttpHandler extends HttpStateMachine
             int cs = m.start();
             int ce = m.end();
 
-            boolean block = node.getSpywareSettings().getBaseSettings().getBlockAllActiveX();
+            boolean block = node.getBaseSettings().getBlockAllActiveX();
             String ident = null;
             if (!block) {
                 String clsid = m.group(1);

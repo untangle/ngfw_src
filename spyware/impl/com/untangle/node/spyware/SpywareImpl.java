@@ -37,19 +37,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-import org.apache.catalina.Valve;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.log4j.Logger;
-import org.hibernate.Query;
-import org.hibernate.Session;
-
 import com.sleepycat.je.DatabaseException;
 import com.untangle.node.http.UserWhitelistMode;
 import com.untangle.node.token.Header;
 import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenAdaptor;
+import com.untangle.node.util.PartialListUtil;
 import com.untangle.node.util.PrefixUrlList;
 import com.untangle.node.util.UrlDatabase;
 import com.untangle.node.util.UrlDatabaseResult;
@@ -68,10 +61,7 @@ import com.untangle.uvm.node.Rule;
 import com.untangle.uvm.node.StringRule;
 import com.untangle.uvm.node.Validator;
 import com.untangle.uvm.toolbox.RemoteToolboxManager;
-import com.untangle.uvm.util.ListUtil;
 import com.untangle.uvm.util.OutsideValve;
-import com.untangle.uvm.util.QueryUtil;
-import com.untangle.node.util.PartialListUtil;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.AbstractNode;
 import com.untangle.uvm.vnet.Affinity;
@@ -79,6 +69,13 @@ import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.vnet.SoloPipeSpec;
 import com.untangle.uvm.vnet.TCPSession;
+import org.apache.catalina.Valve;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpMethod;
+import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.log4j.Logger;
+import org.hibernate.Query;
+import org.hibernate.Session;
 
 public class SpywareImpl extends AbstractNode implements Spyware
 {
@@ -205,7 +202,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
     public void updateActiveXRules(List<StringRule> added, List<Long> deleted,
                                    List<StringRule> modified) {
 
-        updateRules(getSpywareSettings().getActiveXRules(), added, deleted, modified);
+        updateRules(settings.getActiveXRules(), added, deleted, modified);
     }
 
     public List<StringRule> getCookieRules(int start, int limit,
@@ -217,7 +214,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
     public void updateCookieRules(List<StringRule> added, List<Long> deleted,
                                   List<StringRule> modified) {
 
-        updateRules(getSpywareSettings().getCookieRules(), added, deleted, modified);
+        updateRules(settings.getCookieRules(), added, deleted, modified);
     }
 
     public List<IPMaddrRule> getSubnetRules(int start, int limit,
@@ -229,7 +226,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
     public void updateSubnetRules(List<IPMaddrRule> added, List<Long> deleted,
                                   List<IPMaddrRule> modified) {
 
-        updateRules(getSpywareSettings().getSubnetRules(), added, deleted, modified);
+        updateRules(settings.getSubnetRules(), added, deleted, modified);
     }
 
     public List<StringRule> getDomainWhitelist(int start, int limit,
@@ -241,7 +238,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
     public void updateDomainWhitelist(List<StringRule> added, List<Long> deleted,
                                       List<StringRule> modified) {
 
-        updateRules(getSpywareSettings().getDomainWhitelist(), added, deleted, modified);
+        updateRules(settings.getDomainWhitelist(), added, deleted, modified);
     }
 
     public SpywareBaseSettings getBaseSettings()
@@ -256,43 +253,17 @@ public class SpywareImpl extends AbstractNode implements Spyware
     public void setBaseSettings(final SpywareBaseSettings baseSettings)
     {
         TransactionWork tw = new TransactionWork() {
-			public boolean doWork(Session s) {
-		        settings.setBaseSettings(baseSettings);
-				s.merge(settings);
-				return true;
-			}
+            public boolean doWork(Session s) {
+                settings.setBaseSettings(baseSettings);
+                s.merge(settings);
+                return true;
+            }
 
-			public Object getResult() {
-				return null;
-			}
-		};
-		getNodeContext().runTransaction(tw);
-    }
-
-    public SpywareSettings getSpywareSettings()
-    {
-        if (null == settings) {
-            logger.error("Settings not yet initialized. State: "
-                         + getNodeContext().getRunState());
-        }
-        return settings;
-    }
-
-    public void setSpywareSettings(final SpywareSettings settings)
-    {
-        TransactionWork tw = new TransactionWork()
-            {
-                public boolean doWork(Session s)
-                {
-                    SpywareImpl.this.settings = (SpywareSettings)s.merge(settings);
-                    return true;
-                }
-
-                public Object getResult() { return null; }
-            };
+            public Object getResult() {
+                return null;
+            }
+        };
         getNodeContext().runTransaction(tw);
-
-        reconfigure();
     }
 
     public UserWhitelistMode getUserWhitelistMode()
@@ -526,39 +497,39 @@ public class SpywareImpl extends AbstractNode implements Spyware
     {
         eventLogger.log(se);
     }
-    
-    public void updateAll(final SpywareBaseSettings baseSettings, 
+
+    public void updateAll(final SpywareBaseSettings baseSettings,
                           final List[] activeXRules, final List[] cookieRules,
                           final List[] subnetRules, final List[] domainWhitelist) {
-        
+
         TransactionWork tw = new TransactionWork() {
                 public boolean doWork(Session s) {
                     if (baseSettings != null) {
                         settings.setBaseSettings(baseSettings);
                     }
-                        
-                    listUtil.updateCachedItems( getSpywareSettings().getActiveXRules(), activeXRules );
-                    
-                    listUtil.updateCachedItems(getSpywareSettings().getCookieRules(), cookieRules );
-                    
-                    listUtil.updateCachedItems(getSpywareSettings().getSubnetRules(), subnetRules );
 
-                    listUtil.updateCachedItems(getSpywareSettings().getDomainWhitelist(), domainWhitelist );
-                    
+                    listUtil.updateCachedItems(settings.getActiveXRules(), activeXRules);
+
+                    listUtil.updateCachedItems(settings.getCookieRules(), cookieRules);
+
+                    listUtil.updateCachedItems(settings.getSubnetRules(), subnetRules);
+
+                    listUtil.updateCachedItems(settings.getDomainWhitelist(), domainWhitelist);
+
                     settings = (SpywareSettings)s.merge(settings);
-                    
+
                     return true;
                 }
-                
+
                 public Object getResult() {
                     return null;
                 }
             };
         getNodeContext().runTransaction(tw);
-        
+
         reconfigure();
     }
-    
+
     public Validator getValidator() {
         return new SpywareValidator();
     }
@@ -583,7 +554,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
             };
         getNodeContext().runTransaction(tw);
     }
-    
+
     private boolean findMatch(Set<String> rules, String domain)
     {
         for (String d = domain; null != d; d = nextHost(d)) {
@@ -962,6 +933,23 @@ public class SpywareImpl extends AbstractNode implements Spyware
         domainWhitelist = s;
     }
 
+    private void setSpywareSettings(final SpywareSettings settings)
+    {
+        TransactionWork tw = new TransactionWork()
+            {
+                public boolean doWork(Session s)
+                {
+                    SpywareImpl.this.settings = (SpywareSettings)s.merge(settings);
+                    return true;
+                }
+
+                public Object getResult() { return null; }
+            };
+        getNodeContext().runTransaction(tw);
+
+        reconfigure();
+    }
+
     private String normalizeDomain(String dom)
     {
         String url = dom.toLowerCase();
@@ -1013,7 +1001,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
         public void updateAll(boolean async)
         {
             super.updateAll(async);
-            
+
             SpywareImpl.this.lastSignatureUpdate = new Date();
         }
     }

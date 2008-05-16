@@ -18,7 +18,6 @@
 
 package com.untangle.node.ips;
 
-import java.util.Iterator;
 import java.util.List;
 
 import com.untangle.node.token.TokenAdaptor;
@@ -78,76 +77,25 @@ public class IPSNodeImpl extends AbstractNode implements IPSNode {
         return pipeSpecs;
     }
 
-    public IPSSettings getIPSSettings() {
-        if( this.settings == null )
-            logger.error("Settings not yet initialized. State: " + getNodeContext().getRunState() );
-        return this.settings;
+    public IpsBaseSettings getBaseSettings()
+    {
+        return settings.getBaseSettings();
     }
 
-    public void setIPSSettings(final IPSSettings settings) {
-        TransactionWork tw = new TransactionWork()
-            {
-                public boolean doWork(Session s)
-                {
-                    s.merge(settings);
-                    IPSNodeImpl.this.settings = settings;
-                    return true;
-                }
+    public void setBaseSettings(final IpsBaseSettings baseSettings)
+    {
+        TransactionWork tw = new TransactionWork() {
+            public boolean doWork(Session s) {
+                settings.setBaseSettings(baseSettings);
+                s.merge(settings);
+                return true;
+            }
 
-                public Object getResult() { return null; }
-            };
+            public Object getResult() {
+                return null;
+            }
+        };
         getNodeContext().runTransaction(tw);
-
-        try {
-            reconfigure();
-        }
-        catch (NodeException exn) {
-            logger.error("Could not save IPS settings", exn);
-        }
-    }
-
-    public void addRule(IPSRule rule) {
-        getIPSSettings().getRules().add(rule);
-        //persist the new rule
-        setIPSSettings(getIPSSettings());
-    }
-
-    public void deleteRule(int sid) {
-        boolean removed = false;
-        for (Iterator<IPSRule> iterator = getIPSSettings().getRules().iterator(); iterator.hasNext();) {
-            IPSRule element = (IPSRule) iterator.next();
-            if (element.getSid() == sid){
-                iterator.remove();
-                removed = true;
-                //break;
-            }
-        }
-        // persist the changes
-        if(removed) {
-            setIPSSettings(getIPSSettings());
-        }
-    }
-
-    public void addVariable(IPSVariable variable) {
-        getIPSSettings().getVariables().add(variable);
-        //persist the new variable
-        setIPSSettings(getIPSSettings());
-    }
-
-    public void deleteVariable(String variable) {
-        boolean removed = false;
-        for (Iterator<IPSVariable> iterator = getIPSSettings().getVariables().iterator(); iterator.hasNext();) {
-            IPSVariable element = (IPSVariable) iterator.next();
-            if (element.getVariable().equals(variable)){
-                iterator.remove();
-                removed = true;
-                //break;
-            }
-        }
-        // persist the changes
-        if(removed) {
-            setIPSSettings(getIPSSettings());
-        }
     }
 
     public EventManager<IPSLogEvent> getEventManager()
@@ -155,8 +103,8 @@ public class IPSNodeImpl extends AbstractNode implements IPSNode {
         return eventLogger;
     }
 
-    public void initializeSettings() {
-
+    public void initializeSettings()
+    {
         logger.info("Loading Variables...");
         IPSSettings settings = new IPSSettings(getTid());
         settings.setVariables(IPSRuleManager.getDefaultVariables());
@@ -166,13 +114,81 @@ public class IPSNodeImpl extends AbstractNode implements IPSNode {
         IPSRuleManager manager = new IPSRuleManager(this); // A fake one for now.  XXX
         List<IPSRule> ruleList = FileLoader.loadAllRuleFiles(manager);
 
-        settings.setMaxChunks(engine.getMaxChunks());
+        settings.getBaseSettings().setMaxChunks(engine.getMaxChunks());
         settings.setRules(ruleList);
 
-        setIPSSettings(settings);
+        setIpsSettings(settings);
         logger.info(ruleList.size() + " rules loaded");
 
         statisticManager.stop();
+    }
+
+    public IPSDetectionEngine getEngine() {
+        return engine;
+    }
+
+    // protected methods -------------------------------------------------------
+
+    protected void postStop() {
+        statisticManager.stop();
+        engine.stop();
+    }
+
+    protected void preStart() throws NodeStartException {
+        logger.info("Pre Start");
+
+        statisticManager.start();
+    }
+
+    protected void postInit(String args[]) throws NodeException {
+        logger.info("Post init");
+        queryDBForSettings();
+
+        // Upgrade to 3.2 will have nuked the settings.  Recreate them
+        if (IPSNodeImpl.this.settings == null) {
+            logger.warn("No settings found.  Creating anew.");
+            initializeSettings();
+        }
+
+        reconfigure();
+    }
+
+    // package protected methods -----------------------------------------------
+
+    void log(IPSLogEvent ile)
+    {
+        eventLogger.log(ile);
+    }
+
+    // private methods ---------------------------------------------------------
+
+    private void setIpsSettings(final IPSSettings settings)
+    {
+        TransactionWork tw = new TransactionWork()
+            {
+                public boolean doWork(Session s)
+                {
+                    IPSNodeImpl.this.settings = (IPSSettings)s.merge(settings);
+                    return true;
+                }
+
+                public Object getResult() { return null; }
+            };
+        getNodeContext().runTransaction(tw);
+
+        reconfigure();
+    }
+
+    private void reconfigure()
+    {
+        engine.setSettings(settings);
+        engine.onReconfigure();
+        engine.setMaxChunks(settings.getBaseSettings().getMaxChunks());
+        List<IPSRule> rules = (List<IPSRule>) settings.getRules();
+        engine.clearRules();
+        for(IPSRule rule : rules) {
+            engine.addRule(rule);
+        }
     }
 
     private void queryDBForSettings() {
@@ -190,56 +206,4 @@ public class IPSNodeImpl extends AbstractNode implements IPSNode {
             };
         getNodeContext().runTransaction(tw);
     }
-
-    protected void postInit(String args[]) throws NodeException {
-        logger.info("Post init");
-        queryDBForSettings();
-
-        // Upgrade to 3.2 will have nuked the settings.  Recreate them
-        if (IPSNodeImpl.this.settings == null) {
-            logger.warn("No settings found.  Creating anew.");
-            initializeSettings();
-        }
-
-        reconfigure();
-
-    }
-
-    protected void preStart() throws NodeStartException {
-        logger.info("Pre Start");
-
-        statisticManager.start();
-    }
-
-    public IPSDetectionEngine getEngine() {
-        return engine;
-    }
-
-    protected void postStop() {
-        statisticManager.stop();
-        engine.stop();
-    }
-
-    private void reconfigure() throws NodeException {
-        engine.setSettings(settings);
-        engine.onReconfigure();
-        engine.setMaxChunks(settings.getMaxChunks());
-        List<IPSRule> rules = (List<IPSRule>) settings.getRules();
-        engine.clearRules();
-        for(IPSRule rule : rules) {
-            engine.addRule(rule);
-        }
-    }
-
-    void log(IPSLogEvent ile)
-    {
-        eventLogger.log(ile);
-    }
-
-    //XXX soon to be deprecated ------------------------------------------
-
-    public Object getSettings() { return getIPSSettings(); }
-
-    public void setSettings(Object obj) { setIPSSettings((IPSSettings)obj); }
-
 }

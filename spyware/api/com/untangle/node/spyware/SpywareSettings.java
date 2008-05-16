@@ -21,7 +21,6 @@ package com.untangle.node.spyware;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
-
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -34,11 +33,10 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.Cascade;
-
 import com.untangle.uvm.node.IPMaddrRule;
 import com.untangle.uvm.node.StringRule;
 import com.untangle.uvm.security.Tid;
+import org.hibernate.annotations.Cascade;
 
 /**
  * Settings for the Spyware node.
@@ -62,7 +60,6 @@ public class SpywareSettings implements Serializable
     private Set<IPMaddrRule> subnetRules;
     private Set<StringRule> domainWhitelist = new HashSet<StringRule>();
 
-    // not for the GUI! XXX move to a private class
     private int accessVersion = -1;
     private int activeXVersion = -1;
     private int cookieVersion = -1;

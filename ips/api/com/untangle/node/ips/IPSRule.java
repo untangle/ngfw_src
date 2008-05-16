@@ -43,6 +43,7 @@ public class IPSRule extends Rule implements Serializable
     public static final int LOG = 1;
     public static final int PASS = 2;
     public static final int BLOCK = 3;
+
     public static final String[] ACTIONS = { "alert","log","pass","block" };
 
     //Hibernate Variables
