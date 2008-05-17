@@ -1,6 +1,6 @@
--- settings conversion for release-5.2.1
--- $HeadURL: svn://chef/work/src/uvm/hier/usr/share/untangle/schema/uvm/settings-convert-12.sql $
--- Copyright (c) 2003-2008 Untangle, Inc.
+-- settings conversion for release-webui
+-- $HeadURL: svn://chef/work/src/uvm/hier/usr/share/untangle/schema/uvm/settings-convert-15.sql $
+-- Copyright (c) 2003-2007 Untangle, Inc.
 --
 -- This program is free software; you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License, version 2,
@@ -16,5 +16,15 @@
 -- Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
 --
 
--- Change 23:30 to a random time between 23:00 and 23:59
-UPDATE settings.u_period set minute = trunc(60 * random()) where hour = 23 and minute = 30;
+-- com.untangle.uvm.SkinSettings
+CREATE TABLE settings.u_skin_settings (
+    skin_settings_id int8 NOT NULL,
+    admin_skin text,
+    user_skin text,
+    PRIMARY KEY (skin_settings_id));
+
+-- com.untangle.uvm.LanguageSettings
+CREATE TABLE settings.u_language_settings (
+    language_settings_id int8 NOT NULL,
+    language text,
+    PRIMARY KEY (language_settings_id));

@@ -1,5 +1,7 @@
-#! /bin/bash
+#! /bin/bash -x
 # $Id$
+
+exec > /tmp/uvm.log 2>&1
 
 NAME=$0
 
@@ -154,8 +156,13 @@ restartServiceIfNeeded() {
       isServiceRunning $PG_DAEMON_NAME && return
       serviceName=$PGSERVICE
       ;;
+    mongrel)
+      pidFile=/tmp/foo-doesnt-exist
+      isServiceRunning --find-shell mongrel_rails && return
+      serviceName="untangle-net-alpaca untangle-net-alpaca-iptables"
+      ;;
     slapd)
-      pidFile=/var/run/slapd/slapd.pid
+      pidFile=/var/run/untangle-ldap/slapd.pid
       dpkg -l untangle-ldap-server | grep -q -E '^ii' || return
       isServiceRunning slapd && return
       ;;
@@ -187,7 +194,9 @@ restartServiceIfNeeded() {
       ;;
   esac
 
-  restartService $serviceName $pidFile "missing"
+  for service in $serviceName ; do
+    restartService $service $pidFile "missing"
+  done
 }
 
 restartService() {
@@ -195,6 +204,7 @@ restartService() {
   pidFile=$2
   reason=$3
   stopFirst=$4
+  hook=$5
   servicePid=
   echo "*** restarting $reason $serviceName on `date` ***" >> $UVM_WRAPPER_LOG
   if [ -n "$stopFirst" ] ; then
@@ -206,6 +216,7 @@ restartService() {
   else # remove the pidfile
     [ -n "$pidFile" ] && rm -f $pidFile
   fi
+  eval "$5"
   /etc/init.d/$serviceName start
 }
 
@@ -312,17 +323,20 @@ while true; do
             restartServiceIfNeeded spamassassin
             restartServiceIfNeeded slapd
             restartServiceIfNeeded untangle-support-agent
+            restartServiceIfNeeded mongrel
 	    
 	    if [ $counter -gt 60 ] ; then # fire up the other nannies
+	        curl -sf -m 10 "http://localhost:3000/alpaca/dns?argyle=`sudo head -n 1 /etc/untangle-net-alpaca/nonce`" > /dev/null || restartService mongrel /tmp/foo-doesnt-exist "untangle-net-alpaca untangle-net-alpaca-iptables" "non-functional"
+
 	        if dpkg -l untangle-spamassassin-update | grep -q ii ; then # we're managing spamassassin
 	            [ `tail -n 50 /var/log/mail.info | grep -c "$SPAMASSASSIN_LOG_ERROR"` -gt 2 ] && restartService spamassassin $SPAMASSASSIN_PID_FILE "non-functional" stopFirst
-                    date -Iseconds
                     case "`$BANNER_NANNY $SPAMASSASSIN_PORT $TIMEOUT`" in
                       *success*) true ;;
                       *) restartService spamassassin $SPAMASSASSIN_PID_FILE "hung" stopFirst ;;
                     esac
                 fi
 	        if dpkg -l untangle-clamav-config | grep -q -E '^ii' ; then # we're managing clamav
+	          [ `tail -n 50 /var/log/clamav/clamav.log  | grep -c -E "$CLAMAV_LOG_ERROR"` -gt 2 ] && restartService clamav-daemon $CLAMD_PID_FILE "non-functional" stopFirst '/etc/init.d/clamav-freshclam stop ; rm -fr /var/lib/clamav/* ; freshclam ; /etc/init.d/clamav-freshclam restart'
                   case "`$BANNER_NANNY $CLAMD_PORT $TIMEOUT`" in
                     *success*) true ;;
                     *) restartService clamav-daemon $CLAMD_PID_FILE "hung" stopFirst ;;

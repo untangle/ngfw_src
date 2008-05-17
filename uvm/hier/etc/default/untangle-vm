@@ -46,6 +46,7 @@ CLAMD_PORT=3310
 CLAMD_PID_FILE=/var/run/clamav/clamd.pid
 CLAMD_MAX_VIRTUAL_SIZE=125000
 SPAMASSASSIN_LOG_ERROR="bayes: cannot open bayes databases /home/spamc/.spamassassin/bayes_\* R/W: lock failed: Interrupted system call"
+CLAMAV_LOG_ERROR="ERROR: (Malformed database|Not supported data format|Broken or not a CVD file)"
 SUPPORT_AGENT_MAX_ALLOWED_CPU=30
 SUPPORT_AGENT_PID_FILE=/var/run/rbot.pid
 
@@ -159,20 +160,53 @@ export JAVA_HOME
 PATH=${JAVA_HOME}/bin:${PATH}
 export PATH
 
+# Could use HOSTTYPE, but it's not as standard as uname -m
+MACHARCH=`uname -m`
+
 # The maximum heap/virtual sizes depend on the memory available
 MEM=$(awk '/MemTotal/ { print $2 }' < /proc/meminfo)
-if [ $MEM -gt 1900000 ] ; then
-  MAX_HEAP_SIZE=640m
-  MAX_VIRTUAL_SIZE=1500000
-  MAX_UCB_DB_MEG=80
+if [ $MEM -gt 3900000 ] ; then
+    if [ $MACHARCH = 'x86_64' ]; then
+	MAX_HEAP_SIZE=1200m
+	MAX_VIRTUAL_SIZE=5500000
+	MAX_UCB_DB_MEG=150
+	[ -z "$UVM_SESSION_LIMIT" ] && UVM_SESSION_LIMIT=30000
+    else
+	MAX_HEAP_SIZE=960m
+	MAX_VIRTUAL_SIZE=2500000
+	MAX_UCB_DB_MEG=120
+    fi
+elif [ $MEM -gt 1900000 ] ; then
+    if [ $MACHARCH = 'x86_64' ]; then
+	MAX_HEAP_SIZE=800m
+	MAX_VIRTUAL_SIZE=3500000
+	MAX_UCB_DB_MEG=100
+	[ -z "$UVM_SESSION_LIMIT" ] && UVM_SESSION_LIMIT=20000
+    else
+	MAX_HEAP_SIZE=640m
+	MAX_VIRTUAL_SIZE=1500000
+	MAX_UCB_DB_MEG=80
+    fi
 elif [ $MEM -gt 900000 ] ; then
-  MAX_HEAP_SIZE=320m
-  MAX_VIRTUAL_SIZE=950000
-  MAX_UCB_DB_MEG=32
+    if [ $MACHARCH = 'x86_64' ]; then
+	MAX_HEAP_SIZE=380m
+	MAX_VIRTUAL_SIZE=1950000
+	MAX_UCB_DB_MEG=48
+    else
+	MAX_HEAP_SIZE=320m
+	MAX_VIRTUAL_SIZE=950000
+	MAX_UCB_DB_MEG=32
+    fi
 else
-  MAX_HEAP_SIZE=220m
-  MAX_VIRTUAL_SIZE=800000
-  MAX_UCB_DB_MEG=20
+    if [ $MACHARCH = 'x86_64' ]; then
+	MAX_HEAP_SIZE=260m
+	MAX_VIRTUAL_SIZE=1500000
+	MAX_UCB_DB_MEG=24
+  else
+	MAX_HEAP_SIZE=220m
+	MAX_VIRTUAL_SIZE=800000
+	MAX_UCB_DB_MEG=20
+    fi
 fi
 
 ## Limit Berkeley DB caching to 5% of java heap
@@ -195,7 +229,7 @@ JAVA_OPTS_BEA="-Xgcpause -Xgcprio:pausetime"
 #  Stack size 96k which is small enough but still works
 JAVA_OPTS_COMMON="-verbose:gc -Xloggc:$UVM_GC_LOG -Xms128m -Xmx${MAX_HEAP_SIZE} -server"
 
-if [ `uname -m` != 'x86_64' ]; then
+if [ $MACHARCH != 'x86_64' ]; then
     JAVA_OPTS_COMMON="-Xss96k $JAVA_OPTS_COMMON"
     JAVAWS=${JAVA_HOME}/bin/javaws
 else
