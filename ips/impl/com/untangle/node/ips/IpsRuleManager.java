@@ -25,7 +25,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.SessionEndpoints;
@@ -65,28 +66,28 @@ public class IpsRuleManager
 
     // static methods ---------------------------------------------------------
 
-    public static List<IpsVariable> getImmutableVariables()
+    public static Set<IpsVariable> getImmutableVariables()
     {
-        List<IpsVariable> l = new ArrayList<IpsVariable>();
-        l.add(new IpsVariable("$EXTERNAL_NET",IpsStringParser.EXTERNAL_IP,"Magic EXTERNAL_NET token"));
-        l.add(new IpsVariable("$HOME_NET",IpsStringParser.HOME_IP,"Magic HOME_NET token"));
+        Set<IpsVariable> s = new HashSet<IpsVariable>();
+        s.add(new IpsVariable("$EXTERNAL_NET",IpsStringParser.EXTERNAL_IP,"Magic EXTERNAL_NET token"));
+        s.add(new IpsVariable("$HOME_NET",IpsStringParser.HOME_IP,"Magic HOME_NET token"));
 
-        return l;
+        return s;
     }
 
-    public static List<IpsVariable> getDefaultVariables()
+    public static Set<IpsVariable> getDefaultVariables()
     {
-        List<IpsVariable> l = new ArrayList<IpsVariable>();
-        l.add(new IpsVariable("$HTTP_SERVERS", "$HOME_NET","Addresses of possible local HTTP servers"));
-        l.add(new IpsVariable("$HTTP_PORTS", "80","Port that HTTP servers run on"));
-        l.add(new IpsVariable("$SSH_PORTS", "22","Port that SSH servers run on"));
-        l.add(new IpsVariable("$SMTP_SERVERS", "$HOME_NET","Addresses of possible local SMTP servers"));
-        l.add(new IpsVariable("$TELNET_SERVERS", "$HOME_NET","Addresses of possible local telnet servers"));
-        l.add(new IpsVariable("$SQL_SERVERS", "!any","Addresses of local SQL servers"));
-        l.add(new IpsVariable("$ORACLE_PORTS", "1521","Port that Oracle servers run on"));
-        l.add(new IpsVariable("$AIM_SERVERS", "[64.12.24.0/24,64.12.25.0/24,64.12.26.14/24,64.12.28.0/24,64.12.29.0/24,64.12.161.0/24,64.12.163.0/24,205.188.5.0/24,205.188.9.0/24]","Addresses of possible AOL Instant Messaging servers"));
+        Set<IpsVariable> s = new HashSet<IpsVariable>();
+        s.add(new IpsVariable("$HTTP_SERVERS", "$HOME_NET","Addresses of possible local HTTP servers"));
+        s.add(new IpsVariable("$HTTP_PORTS", "80","Port that HTTP servers run on"));
+        s.add(new IpsVariable("$SSH_PORTS", "22","Port that SSH servers run on"));
+        s.add(new IpsVariable("$SMTP_SERVERS", "$HOME_NET","Addresses of possible local SMTP servers"));
+        s.add(new IpsVariable("$TELNET_SERVERS", "$HOME_NET","Addresses of possible local telnet servers"));
+        s.add(new IpsVariable("$SQL_SERVERS", "!any","Addresses of local SQL servers"));
+        s.add(new IpsVariable("$ORACLE_PORTS", "1521","Port that Oracle servers run on"));
+        s.add(new IpsVariable("$AIM_SERVERS", "[64.12.24.0/24,64.12.25.0/24,64.12.26.14/24,64.12.28.0/24,64.12.29.0/24,64.12.161.0/24,64.12.163.0/24,205.188.5.0/24,205.188.9.0/24]","Addresses of possible AOL Instant Messaging servers"));
 
-        return l;
+        return s;
     }
 
     // public methods ---------------------------------------------------------
@@ -256,27 +257,27 @@ public class IpsRuleManager
             IpsDetectionEngine engine = null;
             if (ips != null)
                 engine = ips.getEngine();
-            List<IpsVariable> varList, imVarList;
+            Set<IpsVariable> varSet, imVarSet;
             /* This is null when initializing settings, but the
              * settings are initialized with these values so using the
              * defaults is harmless */
             if(engine == null || engine.getSettings() == null) {
                 logger.debug("engine.getSettings() is null");
-                imVarList = getImmutableVariables();
-                varList = getDefaultVariables();
+                imVarSet = getImmutableVariables();
+                varSet = getDefaultVariables();
             } else {
-                imVarList = (List<IpsVariable>) engine.getSettings().getImmutableVariables();
-                varList = (List<IpsVariable>) engine.getSettings().getVariables();
+                imVarSet = (Set<IpsVariable>) engine.getSettings().getImmutableVariables();
+                varSet = (Set<IpsVariable>) engine.getSettings().getVariables();
             }
-            for(IpsVariable var : imVarList) {
+            for(IpsVariable var : imVarSet) {
                 string = string.replaceAll("\\"+var.getVariable(),var.getDefinition());
             }
-            for(IpsVariable var : varList) {
+            for(IpsVariable var : varSet) {
                 // Special case == allow regular variables to refer to immutable variables
                 String def = var.getDefinition();
                 Matcher submatch = variablePattern.matcher(def);
                 if (submatch.find()) {
-                    for(IpsVariable subvar : imVarList) {
+                    for(IpsVariable subvar : imVarSet) {
                         def = def.replaceAll("\\"+subvar.getVariable(),subvar.getDefinition());
                     }
                 }

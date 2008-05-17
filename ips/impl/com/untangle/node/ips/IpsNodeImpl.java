@@ -19,8 +19,10 @@
 package com.untangle.node.ips;
 
 import java.util.List;
+import java.util.Set;
 
 import com.untangle.node.token.TokenAdaptor;
+import com.untangle.node.util.PartialListUtil;
 import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.EventLoggerFactory;
 import com.untangle.uvm.logging.EventManager;
@@ -50,6 +52,8 @@ public class IpsNodeImpl extends AbstractNode implements IpsNode {
     private final PipeSpec[] pipeSpecs;
 
     private IpsDetectionEngine engine;
+
+    private final PartialListUtil listUtil = new PartialListUtil();
 
     public IpsNodeImpl() {
         engine = new IpsDetectionEngine(this);
@@ -112,19 +116,63 @@ public class IpsNodeImpl extends AbstractNode implements IpsNode {
 
         logger.info("Loading Rules...");
         IpsRuleManager manager = new IpsRuleManager(this); // A fake one for now.  XXX
-        List<IpsRule> ruleList = FileLoader.loadAllRuleFiles(manager);
+        Set<IpsRule> ruleSet = FileLoader.loadAllRuleFiles(manager);
 
         settings.getBaseSettings().setMaxChunks(engine.getMaxChunks());
-        settings.setRules(ruleList);
+        settings.setRules(ruleSet);
 
         setIpsSettings(settings);
-        logger.info(ruleList.size() + " rules loaded");
+        logger.info(ruleSet.size() + " rules loaded");
 
         statisticManager.stop();
     }
 
     public IpsDetectionEngine getEngine() {
         return engine;
+    }
+
+    public List<IpsRule> getRules(final int start, final int limit,
+                                  final String... sortColumns)
+    {
+        return listUtil.getItems("select s.rules from IpsSettings s where s.tid = :tid ",
+                                 getNodeContext(), getTid(), start, limit,
+                                 sortColumns);
+    }
+
+    public void updateRules(List<IpsRule> added, List<Long> deleted,
+                            List<IpsRule> modified)
+    {
+        updateRules(settings.getRules(), added, deleted, modified);
+    }
+
+    public List<IpsVariable> getVariables(final int start, final int limit,
+                                          final String... sortColumns)
+    {
+        return listUtil.getItems("select s.variables from IpsSettings s where s.tid = :tid ",
+                                 getNodeContext(), getTid(), start, limit,
+                                 sortColumns);
+    }
+
+    public void updateVariables(List<IpsVariable> added, List<Long> deleted,
+                                List<IpsVariable> modified)
+    {
+        updateRules(settings.getVariables(), added, deleted, modified);
+    }
+
+    public List<IpsVariable> getImmutableVariables(final int start,
+                                                   final int limit,
+                                                   final String... sortColumns)
+    {
+        return listUtil.getItems("select s.immutableVariables from IpsSettings s where s.tid = :tid ",
+                                 getNodeContext(), getTid(), start, limit,
+                                 sortColumns);
+    }
+
+    public void updateImmutableVariables(List<IpsVariable> added,
+                                         List<Long> deleted,
+                                         List<IpsVariable> modified)
+    {
+        updateRules(settings.getImmutableVariables(), added, deleted, modified);
     }
 
     // protected methods -------------------------------------------------------
@@ -161,6 +209,25 @@ public class IpsNodeImpl extends AbstractNode implements IpsNode {
     }
 
     // private methods ---------------------------------------------------------
+
+    private void updateRules(final Set rules, final List added,
+                             final List<Long> deleted, final List modified)
+    {
+        TransactionWork tw = new TransactionWork()
+            {
+                public boolean doWork(Session s)
+                {
+                    listUtil.updateCachedItems(rules, added, deleted, modified);
+
+                    settings = (IpsSettings)s.merge(settings);
+
+                    return true;
+                }
+
+                public Object getResult() { return null; }
+            };
+        getNodeContext().runTransaction(tw);
+    }
 
     private void setIpsSettings(final IpsSettings settings)
     {

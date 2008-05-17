@@ -142,7 +142,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
 
     final SpywareStatisticManager statisticManager;
 
-    // constructors -------------------------------------------------------
+    // constructors ------------------------------------------------------------
 
     public SpywareImpl()
     {
@@ -190,54 +190,63 @@ public class SpywareImpl extends AbstractNode implements Spyware
         eventLogger.addSimpleEventFilter(ef);
     }
 
-    // SpywareNode methods -----------------------------------------------
+    // SpywareNode methods -----------------------------------------------------
 
     public List<StringRule> getActiveXRules(final int start, final int limit,
-                                            final String... sortColumns) {
-        return listUtil.getItems( "select s.activeXRules from SpywareSettings s where s.tid = :tid ",
-                                  getNodeContext(), getTid(), start, limit, sortColumns );
+                                            final String... sortColumns)
+    {
+        return listUtil.getItems("select s.activeXRules from SpywareSettings s where s.tid = :tid ",
+                                  getNodeContext(), getTid(), start, limit,
+                                 sortColumns);
 
     }
 
     public void updateActiveXRules(List<StringRule> added, List<Long> deleted,
-                                   List<StringRule> modified) {
-
+                                   List<StringRule> modified)
+    {
         updateRules(settings.getActiveXRules(), added, deleted, modified);
     }
 
     public List<StringRule> getCookieRules(int start, int limit,
-                                           String... sortColumns) {
+                                           String... sortColumns)
+    {
         return listUtil.getItems("select s.cookieRules from SpywareSettings s where s.tid = :tid ",
-                                 getNodeContext(), getTid(), start, limit, sortColumns);
+                                 getNodeContext(), getTid(), start, limit,
+                                 sortColumns);
     }
 
     public void updateCookieRules(List<StringRule> added, List<Long> deleted,
-                                  List<StringRule> modified) {
-
+                                  List<StringRule> modified)
+    {
         updateRules(settings.getCookieRules(), added, deleted, modified);
     }
 
     public List<IPMaddrRule> getSubnetRules(int start, int limit,
-                                            String... sortColumns) {
+                                            String... sortColumns)
+    {
         return listUtil.getItems("select s.subnetRules from SpywareSettings s where s.tid = :tid ",
-                                 getNodeContext(), getTid(), start, limit, sortColumns);
+                                 getNodeContext(), getTid(), start, limit,
+                                 sortColumns);
     }
 
     public void updateSubnetRules(List<IPMaddrRule> added, List<Long> deleted,
-                                  List<IPMaddrRule> modified) {
-
+                                  List<IPMaddrRule> modified)
+    {
         updateRules(settings.getSubnetRules(), added, deleted, modified);
     }
 
     public List<StringRule> getDomainWhitelist(int start, int limit,
-                                               String... sortColumns) {
+                                               String... sortColumns)
+    {
         return listUtil.getItems( "select s.domainWhitelist from SpywareSettings s where s.tid = :tid ",
-                                  getNodeContext(), getTid(), start, limit, sortColumns);
+                                  getNodeContext(), getTid(), start, limit,
+                                  sortColumns);
     }
 
-    public void updateDomainWhitelist(List<StringRule> added, List<Long> deleted,
-                                      List<StringRule> modified) {
-
+    public void updateDomainWhitelist(List<StringRule> added,
+                                      List<Long> deleted,
+                                      List<StringRule> modified)
+    {
         updateRules(settings.getDomainWhitelist(), added, deleted, modified);
     }
 
@@ -342,7 +351,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
         return eventLogger;
     }
 
-    // Node methods ------------------------------------------------------
+    // Node methods ------------------------------------------------------------
 
     // AbstractNode methods ----------------------------------------------
 
@@ -534,7 +543,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
         return new SpywareValidator();
     }
 
-    // private methods --------------------------------------------------------
+    // private methods ---------------------------------------------------------
 
     private void updateRules(final Set rules, final List added,
                              final List<Long> deleted, final List modified)
@@ -577,7 +586,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
         return host.substring(i + 1);
     }
 
-    // settings intialization -------------------------------------------------
+    // settings intialization --------------------------------------------------
 
     private void updateActiveX(SpywareSettings settings)
     {

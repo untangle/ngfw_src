@@ -19,8 +19,8 @@
 package com.untangle.node.ips;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
@@ -34,7 +34,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import com.untangle.node.util.UvmUtil;
 import com.untangle.uvm.security.Tid;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.IndexColumn;
@@ -56,9 +55,9 @@ public class IpsSettings implements Serializable
 
     private IpsBaseSettings baseSettings = new IpsBaseSettings();
 
-    private List<IpsRule> rules = new ArrayList<IpsRule>();
-    private List<IpsVariable> variables = new ArrayList<IpsVariable>();
-    private List<IpsVariable> immutableVariables = new ArrayList<IpsVariable>();
+    private Set<IpsRule> rules = new HashSet<IpsRule>();
+    private Set<IpsVariable> variables = new HashSet<IpsVariable>();
+    private Set<IpsVariable> immutableVariables = new HashSet<IpsVariable>();
 
     public IpsSettings() {}
 
@@ -112,11 +111,11 @@ public class IpsSettings implements Serializable
                    org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     @JoinColumn(name="settings_id")
     @IndexColumn(name="position")
-    public List<IpsRule> getRules()
+    public Set<IpsRule> getRules()
     {
-        return UvmUtil.eliminateNulls(this.rules);
+        return this.rules;
     }
-    public void setRules(List<IpsRule> rules) { this.rules = rules; }
+    public void setRules(Set<IpsRule> rules) { this.rules = rules; }
 
     @OneToMany(fetch=FetchType.EAGER)
     @Cascade({ org.hibernate.annotations.CascadeType.ALL,
@@ -125,12 +124,12 @@ public class IpsSettings implements Serializable
                joinColumns=@JoinColumn(name="setting_id"),
                inverseJoinColumns=@JoinColumn(name="variable_id"))
     @IndexColumn(name="position")
-    public List<IpsVariable> getVariables()
+    public Set<IpsVariable> getVariables()
     {
-        return UvmUtil.eliminateNulls(this.variables);
+        return this.variables;
     }
 
-    public void setVariables(List<IpsVariable> variables)
+    public void setVariables(Set<IpsVariable> variables)
     {
         this.variables = variables;
     }
@@ -142,12 +141,12 @@ public class IpsSettings implements Serializable
                joinColumns=@JoinColumn(name="setting_id"),
                inverseJoinColumns=@JoinColumn(name="variable_id"))
     @IndexColumn(name="position")
-    public List<IpsVariable> getImmutableVariables()
+    public Set<IpsVariable> getImmutableVariables()
     {
-        return UvmUtil.eliminateNulls(this.immutableVariables);
+        return this.immutableVariables;
     }
 
-    public void setImmutableVariables(List<IpsVariable> variables)
+    public void setImmutableVariables(Set<IpsVariable> variables)
     {
         this.immutableVariables = variables;
     }
