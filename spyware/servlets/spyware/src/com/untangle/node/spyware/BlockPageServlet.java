@@ -81,8 +81,10 @@ public class BlockPageServlet extends HttpServlet
         request.setAttribute( "url", null == bd ? "javascript:history.back()" : "'" + bd.getFormattedUrl() + "'" );
 
         /* This is just plain wrong. */
-        request.setAttribute( "cdata_start", "<![CDATA" + "[" );
-        request.setAttribute( "cdata_end", "]" + "]>" );
+        request.setAttribute( "cdata_start", "<![CDATA[" );
+        request.setAttribute( "cdata_end", "]]>" );
+        /* End of the wrongness */
+
         request.setAttribute( "contact", i18n.tr( "Please contact {0}.", bs.getContactHtml()));
 
         if (UserWhitelistMode.NONE != mode && null != bd && null != bd.getWhitelistHost()) {

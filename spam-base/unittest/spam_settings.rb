@@ -1,7 +1,7 @@
 ## A rush shell for testing adding and removing rules and loading settings
 
 ## (Wherever the rush shell is)
-## To run use: cat spam_settings.rb | ./dist/usr/bin/rush
+## To run use: ./dist/usr/bin/rush spam_settings.rb 
 
 require 'java'
 nm = RUSH.uvm.nodeManager()

@@ -183,6 +183,13 @@ public interface LocalUvmContext
     LocalBrandingManager localBrandingManager();
 
     /**
+     * Get the <code>RemoteSkinManager</code> singleton.
+     *
+     * @return the RemoteSkinManager.
+     */
+    RemoteSkinManager skinManager();
+
+    /**
      * Get the phonebook singleton
      * @return the singleton
      */

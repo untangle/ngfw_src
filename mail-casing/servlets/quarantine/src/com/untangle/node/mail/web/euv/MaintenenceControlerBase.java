@@ -153,6 +153,17 @@ public abstract class MaintenenceControlerBase extends HttpServlet {
         MaxDaysToInternTag.setMaxDays(req, maxDaysToIntern);
         MaxDaysIdleInboxTag.setMaxDays(req, maxDaysIdleInbox);
 
+        /* This is just plain wrong. */
+        req.setAttribute( "cdata_start", "<![CDATA[" );
+        req.setAttribute( "cdata_end", "]]>" );
+        /* End of the wrongness */
+
+
+        /* Setup the cobranding settings. */
+        LocalUvmContext uvm = LocalUvmContextFactory.context();
+        req.setAttribute( "bs", uvm.brandingManager().getBaseSettings());
+        /* setup the skinning settings */
+        req.setAttribute( "ss", uvm.skinManager().getSkinSettings());
         serviceImpl(req, resp, account, quarantine, safelist);
     }
 

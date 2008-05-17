@@ -53,7 +53,7 @@
       
       <div id="main">
         <p class="description">
-          <span>${description}</span>        
+          <span>${description}</span>
         </p>
         
         <ul>

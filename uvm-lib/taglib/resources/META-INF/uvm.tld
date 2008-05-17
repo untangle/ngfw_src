@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<taglib xmlns="http://java.sun.com/xml/ns/j2ee"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee web-jsptaglibrary_2_0.xsd"
+    version="2.0">
+    
+  <description>Untangle UVM Template Library</description>
+  <display-name>UVM core</display-name>
+  <tlib-version>1.0</tlib-version>
+  <short-name>uvm</short-name>
+  <uri>http://java.untangle.com/jsp/uvm</uri>
+
+  
+  <tag>
+    <name>skin</name>
+    <tag-class>com.untangle.uvm.jsp.SkinTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <name>name</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+
+    <!-- a presently unused attribute which in an ideal world would be admin or user -->
+    <attribute>
+      <name>type</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+
+  <tag>
+    <name>script</name>
+    <tag-class>com.untangle.uvm.jsp.ScriptTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <name>src</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+
+  <tag>
+    <name>cdata</name>
+    <tag-class>com.untangle.uvm.jsp.CDataTag</tag-class>
+    <body-content>true</body-content>
+  </tag>
+
+
+  <tag>
+    <name>inlineScript</name>
+    <tag-class>com.untangle.uvm.jsp.InlineScriptTag</tag-class>
+    <body-content>true</body-content>
+  </tag>
+
+  
+  <tag>
+    <name>i18nload</name>
+    <tag-class>com.untangle.uvm.jsp.I18nLoadTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <name>path</name>
+      <required>true</required>
+    </attribute>
+    <attribute>
+      <name>path</name>
+      <required>false</required>
+    </attribute>
+  </tag>
+
+  <tag>
+    <name>i18n</name>
+    <tag-class>com.untangle.uvm.jsp.I18nTag</tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <name>p0</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>p1</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>p2</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>p3</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>value</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+</taglib>

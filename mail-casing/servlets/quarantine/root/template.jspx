@@ -1,0 +1,62 @@
+<html xmlns:jsp="http://java.sun.com/JSP/Page"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:uvm="http://java.untangle.com/jsp/uvm"
+      xmlns="http://www.w3.org/1999/xhtml">
+  
+  <jsp:output omit-xml-declaration="true"
+      doctype-root-element="html"      
+      doctype-public="-//W3C//DTD XHTML 1.0 Strict//EN"
+      doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"/>
+   
+  <!-- This will have to change for internationalization -->
+  <jsp:directive.page contentType="text/html"/>
+
+  <head>
+    <title><c:out value="${pageTitle}"/></title>
+
+    <style type="text/css">
+      @import "/webui/ext/resources/css/ext-all.css";
+    </style>
+
+    <uvm:skin type="user" name="${ss.userPagesSkin}"/>
+
+    <!-- extjs, json and i18n libraries, this should be consolidated into a helper tag. -->
+    
+    <uvm:script src="/webui/ext/source/core/Ext.js"/>
+    <uvm:script src="/webui/ext/source/adapter/ext-base.js"/>
+    <uvm:script src="/webui/ext/ext-all-debug.js"/>
+    <uvm:script src="/webui/jsonrpc/jsonrpc.js"/>
+    
+    <c:out escapeXml="false" value="${javascript}"/>
+  </head>
+  
+  
+  <body>
+    <div id="content">
+      <div id="header">
+        <a href="${bs.companyUrl}"><img src="/images/BrandingLogo.gif" alt=""/></a>
+        <h1><span><c:out value="${title}" escapeXml="false"/></span></h1>
+      </div>
+
+      <div id="main">
+        <c:out escapeXml="false" value="${requestScope.content}"/>
+      </div>
+
+      <div id="footer">
+        <p><span><c:out value="${footer}" escapeXml="false"/></span></p>
+      </div>
+
+    </div>
+
+    <!-- This is used in the CSS Zen Garden -->
+    <!-- These extra divs/spans may be used as catch-alls to add extra imagery. -->
+    <div id="extraDiv1"><span><!-- jspx --></span></div>
+    <div id="extraDiv2"><span><!-- jspx --></span></div>
+    <div id="extraDiv3"><span><!-- jspx --></span></div>
+    <div id="extraDiv4"><span><!-- jspx --></span></div>
+    <div id="extraDiv5"><span><!-- jspx --></span></div>
+    <div id="extraDiv6"><span><!-- jspx --></span></div>
+  </body>
+
+
+</html>

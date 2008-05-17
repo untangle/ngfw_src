@@ -49,7 +49,7 @@ public final class Constants extends WebConstants {
     public static final String REQ_DIGEST_VIEW = "/ReqLogin.jsp";
     public static final String INVALID_PORTAL_EMAIL = "/InvalidPortalEmail.jsp";
 
-    public static final String INBOX_VIEW = "/Inbox.jsp";
+    public static final String INBOX_VIEW = "/inbox.jspx";
 
     public static final String SAFELIST_VIEW = "/Safelist.jsp";
 
@@ -58,6 +58,8 @@ public final class Constants extends WebConstants {
     public static final String INBOX_MAINTENENCE_CTL = "/manageuser";
 
     public static final String UNMAP_CTL = "/unmp";
+
+    public static final String SAFELIST_CTL = "/safelist";
 
     public static final String MAP_CTL = "/mp";
     public static final String MAP_ADDRESS_VIEW = "/Rmap.jsp";

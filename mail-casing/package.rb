@@ -22,6 +22,12 @@ mail = BuildEnv::SRC['untangle-casing-mail']
 
 jt = [mail['localapi']]
 
+deps = %w(
+           slf4j-1.4.3/slf4j-log4j12-1.4.3.jar
+           slf4j-1.4.3/slf4j-api-1.4.3.jar
+         ).map { |f| Jars.downloadTarget(f) }
+deps << ThirdpartyJar.get('../pkgs/jabsorb-1.2.2/jabsorb-1.2.2.jar');
+
 ServletBuilder.new(mail, 'com.untangle.node.mail.quarantine.jsp',
-                   "./mail-casing/servlets/quarantine", [], jt)
+                   "./mail-casing/servlets/quarantine", deps, jt)
 

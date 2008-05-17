@@ -44,6 +44,10 @@ deps  = Jars::Base + Jars::TomcatEmb + Jars::JavaMail + Jars::Jcifs +
 
 jts << JarTarget.build_target(uvm_lib, deps, 'impl', "./uvm-lib/impl")
 
+## This little piggy doesn't go to the normal place.
+taglib = JarTarget.build_target(uvm_lib, deps, 'taglib', "./uvm-lib/taglib")
+BuildEnv::SRC.installTarget.install_jars(taglib, "#{uvm_lib.distDirectory}/usr/share/java/uvm" )
+
 # servlets
 ServletBuilder.new(uvm_lib, 'com.untangle.uvm.invoker.jsp',
                    "./uvm-lib/servlets/http-invoker", [], [], [],

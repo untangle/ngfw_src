@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
-<!-- Used by quarantine servlets -->
+<taglib xmlns="http://java.sun.com/xml/ns/j2ee"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee web-jsptaglibrary_2_0.xsd"
+    version="2.0">
 
-<!DOCTYPE taglib PUBLIC "-//Sun Microsystems, Inc.//DTD JSP Tag Library 1.1//EN" 
-"http://java.sun.com/j2ee/dtds/web-jsptaglibrary_1_2.dtd">
-<taglib>
-
-  <tlibversion>1.0</tlibversion>
-  <jspversion>1.1</jspversion>
+  <tlibversion>1.1</tlibversion>
   <shortname>quar_end_user</shortname>
   <info>Quarantine End User Application Tag library</info>
 
@@ -439,6 +437,42 @@
       <required>true</required>
       <rtexpvalue>false</rtexpvalue>
     </attribute>      
-  </tag>  
-   
+  </tag>
+
+  /* Function used to request one of the URLS */
+  <function>
+    <name>url</name>
+    <function-class>com.untangle.node.mail.web.euv.tags.QuarantineFunctions</function-class>
+    <function-signature>java.lang.String url( javax.servlet.jsp.PageContext, java.lang.String )</function-signature>
+  </function>
+
+  /* Given a controller and an action, build the desired URL. (url 
+  * a the recommended shortcut for this function) */
+  <function>
+    <name>buildUrl</name>
+    <function-class>com.untangle.node.mail.web.euv.tags.QuarantineFunctions</function-class>
+    <function-signature>java.lang.String buildUrl( javax.servlet.jsp.PageContext, java.lang.String, java.lang.String )</function-signature>
+  </function>
+
+  <function>
+    <name>remappedTo</name>
+    <function-class>com.untangle.node.mail.web.euv.tags.QuarantineFunctions</function-class>
+    <function-signature>java.lang.String remappedTo( javax.servlet.jsp.PageContext, boolean )</function-signature>
+  </function>
+
+  <function>
+    <name>maxDaysToIntern</name>
+    <function-class>com.untangle.node.mail.web.euv.tags.QuarantineFunctions</function-class>
+    <function-signature>java.lang.String maxDaysToIntern( javax.servlet.jsp.PageContext )</function-signature>
+  </function>
+
+  <function>
+    <name>totalMessageCount</name>
+    <function-class>com.untangle.node.mail.web.euv.tags.QuarantineFunctions</function-class>
+    <function-signature>java.lang.String totalMessageCount( javax.servlet.jsp.PageContext )</function-signature>
+  </function>
+
+
+
+
 </taglib>

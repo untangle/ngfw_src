@@ -29,6 +29,7 @@ public final class CurrentAuthTokenTag
     extends SingleValueTag {
 
     private static final String AUTH_TOKEN_KEY = "untangle.auth_token";
+    private static final String EL_AUTH_TOKEN_KEY = "currentAuthToken";
 
     private boolean m_encoded = false;
 
@@ -54,9 +55,11 @@ public final class CurrentAuthTokenTag
     public static final void setCurrent(ServletRequest request,
                                         String token) {
         request.setAttribute(AUTH_TOKEN_KEY, token);
+        request.setAttribute(EL_AUTH_TOKEN_KEY, token );
     }
     public static final void clearCurret(ServletRequest request) {
         request.removeAttribute(AUTH_TOKEN_KEY);
+        request.removeAttribute(EL_AUTH_TOKEN_KEY);
     }
 
     /**

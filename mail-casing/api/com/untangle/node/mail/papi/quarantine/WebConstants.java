@@ -49,6 +49,8 @@ public class WebConstants {
     //key for the value of the (base64 encoded) email address
     public static final String SAFELIST_TARGET_ADDR_RP = "sladdr";
 
+    public static final String MAPVIEW_VIEW_RV = "mapview";
+
     public static final String UNMAPPER_VIEW_RV = "unmapview";
     public static final String UNMAPPER_REMOVE_RV = "unmapremove";
     //When the "action" is "unmapremove", this is the
