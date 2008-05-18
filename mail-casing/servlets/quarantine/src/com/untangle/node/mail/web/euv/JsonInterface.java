@@ -32,4 +32,10 @@ public interface JsonInterface
     public List<JsonInboxRecord> getInboxRecords( String token, int start, int limit, 
                                                   String sortColumn, boolean isAscending )
         throws BadTokenException, NoSuchInboxException, QuarantineUserActionFailedException;
+
+    public int releaseMessages( String token, String messages[] )
+        throws BadTokenException, NoSuchInboxException, QuarantineUserActionFailedException;
+
+    public int purgeMessages( String token, String messages[] )
+        throws BadTokenException, NoSuchInboxException, QuarantineUserActionFailedException;
 }

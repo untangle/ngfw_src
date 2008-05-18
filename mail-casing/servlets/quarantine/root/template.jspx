@@ -26,6 +26,7 @@
     <uvm:script src="/webui/ext/source/adapter/ext-base.js"/>
     <uvm:script src="/webui/ext/ext-all-debug.js"/>
     <uvm:script src="/webui/jsonrpc/jsonrpc.js"/>
+    <uvm:script src="/webui/script/sprintf.js"/>
     
     <c:out escapeXml="false" value="${javascript}"/>
   </head>
@@ -43,7 +44,7 @@
       </div>
 
       <div id="footer">
-        <p><span><c:out value="${footer}" escapeXml="false"/></span></p>
+        <p><span><uvm:i18n>Powered by Untangle&amp;trade;</uvm:i18n></span></p>
       </div>
 
     </div>

@@ -33,10 +33,8 @@
 
 package com.untangle.node.mail.papi.quarantine;
 
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.Map;
 
 /* Class acts as a helper for sorting InboxRecords */
@@ -44,38 +42,16 @@ public final class InboxRecordComparator {
     // Ways to sort an InboxRecord
     // - indices are used by Inbox.jsp to execute a sort request
     public static enum SortBy {
-        INTERN_DATE( "date", 0 ), /* 0 => Sort by the date the message was interned */
-        SIZE( "size", 1 ), /* 1 => Sort by the message size */
-        SENDER( "sender", 2 ), /* 2 => Sort by the sender of the message */
-        SUBJECT( "subject", 3 ), /* 3 => Sort by the subject */
-        DETAIL( "detail", 4 ), /* 4 => Sort by the quarantine detail (score) */
-        ATTACHMENT_COUNT( "attachment_count", 5 ); /* 5 => Sort by the attachment count */
-
-        private final String name;
-        private final int index;
-
-        private SortBy( String name, int index )
-        {
-            this.name = name;
-            this.index = index;
-        }
-
-        public String getName()
-        {
-            return this.name;
-        }
-
-        public int getIndex()
-        {
-            return this.index;
-        }
+        INTERN_DATE, /* 0 => Sort by the date the message was interned */
+        SIZE, /* 1 => Sort by the message size */
+        SENDER, /* 2 => Sort by the sender of the message */
+        SUBJECT, /* 3 => Sort by the subject */
+        DETAIL, /* 4 => Sort by the quarantine detail (score) */
+        ATTACHMENT_COUNT; /* 5 => Sort by the attachment count */
     };
 
     private static final EnumMap<SortBy, IRComp> m_fwdComparators;
     private static final EnumMap<SortBy, IRComp> m_bwdComparators;
-
-    private static final Map<String, SortBy> NAME_TO_SORT_BY;
-    private static final Map<Integer, SortBy> INDEX_TO_SORT_BY;
 
     static {
         m_fwdComparators = new EnumMap<SortBy, IRComp>(SortBy.class);
@@ -98,16 +74,6 @@ public final class InboxRecordComparator {
 
         m_fwdComparators.put(SortBy.ATTACHMENT_COUNT, new AttachmentComp().setReverse(false));
         m_bwdComparators.put(SortBy.ATTACHMENT_COUNT, new AttachmentComp().setReverse(true));
-
-        Map <String,SortBy> nameMap = new HashMap<String,SortBy>();
-        Map <Integer,SortBy> indexMap = new HashMap<Integer,SortBy>();
-        for ( SortBy sb : SortBy.values()) {
-            nameMap.put( sb.getName(), sb );
-            indexMap.put( sb.getIndex(), sb );
-        }
-
-        NAME_TO_SORT_BY = Collections.unmodifiableMap( nameMap );
-        INDEX_TO_SORT_BY = Collections.unmodifiableMap( indexMap );
     }
 
     /**
@@ -121,16 +87,6 @@ public final class InboxRecordComparator {
      */
     public static Comparator<InboxRecord> getComparator(SortBy criteria, boolean forward) {
         return (forward ? m_fwdComparators : m_bwdComparators).get(criteria);
-    }
-
-    public static SortBy getSortBy( String name )
-    {
-        return NAME_TO_SORT_BY.get( name );
-    }
-
-    public static SortBy getSortBy( int index )
-    {
-        return INDEX_TO_SORT_BY.get( index );
     }
 
     //============================ Inner Class ============================

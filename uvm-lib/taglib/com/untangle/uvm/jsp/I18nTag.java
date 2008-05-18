@@ -119,6 +119,13 @@ public class I18nTag extends BodyTagSupport
         }
     }
 
+    public static String i18n( PageContext pageContext, String value )
+    {
+        /* Actually translate the string */
+        I18n i18n = (I18n)pageContext.getRequest().getAttribute( "i18n" );
+        return i18n.tr( value );
+    }
+
     public void release()
     {
         this.p = null;

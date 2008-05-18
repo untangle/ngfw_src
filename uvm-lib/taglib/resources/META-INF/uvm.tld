@@ -99,4 +99,11 @@
       <rtexprvalue>true</rtexprvalue>
     </attribute>
   </tag>
+
+  <function>
+    <name>i18n</name>
+    <function-class>com.untangle.uvm.jsp.I18nTag</function-class>
+    <function-signature>java.lang.String i18n( javax.servlet.jsp.PageContext, java.lang.String )</function-signature>
+  </function>
+
 </taglib>

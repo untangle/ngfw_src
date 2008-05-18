@@ -27,6 +27,27 @@
                inboxDetails.token = '${currentAuthToken}';
                inboxDetails.totalCount = ${q:totalMessageCount(pageContext)};
                inboxDetails.address = '${currentAddress}';
+               
+               var globalStrings = {};
+               globalStrings.headerSender = '${uvm:i18n( pageContext, "From" )}';
+               globalStrings.headerQuarantineDetail = '${uvm:i18n( pageContext, "Score" )}';
+               globalStrings.headerSubject = '${uvm:i18n( pageContext, "Subject" )}';
+               globalStrings.headerQuarantineDate = '${uvm:i18n( pageContext, "Date" )}';
+               globalStrings.headerSize = '${uvm:i18n( pageContext, "Size (KB)" )}';
+               globalStrings.quarantineGridTitle = '${uvm:i18n( pageContext, 'Quarantined Messages' )}';
+               
+               globalStrings.buttonRelease = [ '${uvm:i18n( pageContext, "Release Messages" )}',
+                                               '${uvm:i18n( pageContext, "Release one Message" )}',
+                                               '${uvm:i18n( pageContext, "Release %d Messages" )}'];
+               globalStrings.buttonDelete = [ '${uvm:i18n( pageContext, "Delete Messages" )}',
+                                               '${uvm:i18n( pageContext, "Delete one Message" )}',
+                                               '${uvm:i18n( pageContext, "Delete %d Messages" )}'];
+
+               globalStrings.releaseMessages = [ '${uvm:i18n( pageContext, 'Released one message' )}', 
+                                                 '${uvm:i18n( pageContext, 'Released %d messages' )}' ];
+               globalStrings.deletedMessages = [ '${uvm:i18n( pageContext, 'Deleted one message' )}', 
+                                                 '${uvm:i18n( pageContext, 'Deleted %d messages' )}' ];
+
       ]]>
     </uvm:inlineScript>
 

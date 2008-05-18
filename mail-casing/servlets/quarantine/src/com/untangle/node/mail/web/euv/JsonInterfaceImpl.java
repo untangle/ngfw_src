@@ -19,8 +19,11 @@
 package com.untangle.node.mail.web.euv;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.untangle.node.mail.papi.quarantine.BadTokenException;
 import com.untangle.node.mail.papi.quarantine.InboxIndex;
@@ -32,9 +35,21 @@ import com.untangle.node.mail.papi.quarantine.QuarantineUserActionFailedExceptio
 
 import com.untangle.node.mail.papi.quarantine.QuarantineUserView;
 
+import static com.untangle.node.mail.papi.quarantine.InboxRecordComparator.SortBy;
+
 public class JsonInterfaceImpl implements JsonInterface
 {
     public static final int DEFAULT_LIMIT = 20;
+
+    private static final Map<String, SortBy> NAME_TO_SORT_BY;
+    private static final SortBy DEFAULT_SORT_COLUMN = SortBy.INTERN_DATE;
+
+    private static enum ACTION
+    {
+        PURGE,
+        RELEASE
+    };
+
 
     private static final JsonInterfaceImpl INSTANCE = new JsonInterfaceImpl();
 
@@ -49,17 +64,17 @@ public class JsonInterfaceImpl implements JsonInterface
         /* First grab the account */
         String account = quarantine.getAccountFromToken(token);
 
-        if ( start < 0 ) start = 0;
-        if ( limit <= 0 ) limit = DEFAULT_LIMIT;
-
         if ( account == null ) return new ArrayList<JsonInboxRecord>();
         
         InboxIndex index = quarantine.getInboxIndex(account);
 
         if ( index == null ) return new ArrayList<JsonInboxRecord>();
 
-        InboxRecordComparator.SortBy sortBy = InboxRecordComparator.getSortBy( sortColumn );
-        if ( sortBy == null ) sortBy = InboxRecordComparator.SortBy.INTERN_DATE;
+        if ( start < 0 ) start = 0;
+        if ( limit <= 0 ) limit = DEFAULT_LIMIT;
+
+        SortBy sortBy = NAME_TO_SORT_BY.get( sortColumn );
+        if ( sortBy == null ) sortBy = DEFAULT_SORT_COLUMN;
 
         InboxRecordCursor cursor = 
             InboxRecordCursor.get( index.getAllRecords(), sortBy, isAscending, start, limit );
@@ -71,9 +86,65 @@ public class JsonInterfaceImpl implements JsonInterface
         return records;
     }
 
+    public int releaseMessages( String token, String messages[] )
+        throws BadTokenException, NoSuchInboxException, QuarantineUserActionFailedException
+    {
+        return handleMessages( ACTION.RELEASE, token, messages );
+    }
+    
+    public int purgeMessages( String token, String messages[] )
+        throws BadTokenException, NoSuchInboxException, QuarantineUserActionFailedException
+    {
+        return handleMessages( ACTION.PURGE, token, messages );
+    }
+
+
     public static JsonInterfaceImpl getInstance()
     {
         return INSTANCE;
+    }
+
+    private int handleMessages( ACTION action, String token, String messages[] )
+        throws BadTokenException, NoSuchInboxException, QuarantineUserActionFailedException
+    {
+        /* This just seems wrong */
+        QuarantineUserView quarantine =
+            QuarantineEnduserServlet.instance().getQuarantine();
+                
+        /* First grab the account */
+        String account = quarantine.getAccountFromToken(token);
+
+        if ( account == null ) return 0;
+
+        InboxIndex index = quarantine.getInboxIndex( account );
+
+        if ( index == null ) return 0;
+        
+        switch ( action ) {
+        case PURGE:
+            index = quarantine.purge( account, messages );
+            break;
+        case RELEASE:
+            index = quarantine.rescue( account, messages );
+            break;
+        }
+
+        return index.size();
+    }
+
+    static {
+        
+        Map <String,SortBy> nameMap = new HashMap<String,SortBy>();
+
+        nameMap.put( "sender", SortBy.SENDER );
+        nameMap.put( "attachmentCount", SortBy.ATTACHMENT_COUNT );
+        nameMap.put( "quarantineDetail", SortBy.DETAIL );
+        nameMap.put( "truncatedSubject", SortBy.SUBJECT );
+        nameMap.put( "subject", SortBy.SUBJECT );
+        nameMap.put( "quarantinedDate", SortBy.INTERN_DATE );
+        nameMap.put( "size", SortBy.SIZE );
+
+        NAME_TO_SORT_BY = Collections.unmodifiableMap( nameMap );
     }
 }
 

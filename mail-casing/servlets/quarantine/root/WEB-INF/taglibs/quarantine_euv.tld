@@ -471,8 +471,4 @@
     <function-class>com.untangle.node.mail.web.euv.tags.QuarantineFunctions</function-class>
     <function-signature>java.lang.String totalMessageCount( javax.servlet.jsp.PageContext )</function-signature>
   </function>
-
-
-
-
 </taglib>
