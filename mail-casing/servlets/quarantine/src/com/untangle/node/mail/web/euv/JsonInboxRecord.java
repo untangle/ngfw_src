@@ -25,154 +25,72 @@ import com.untangle.node.mail.papi.quarantine.MailSummary;
 
 public class JsonInboxRecord
 {
-    private String[] recipients;
-    private String mailID;
-    private Date quarantinedDate;
-    private int size;
-    private int attachmentCount;
-    private String truncatedSender;
-    private String sender;
-    private String truncatedSubject;
-    private String subject;
-    private String quarantineCategory;
-    private String quarantineDetail;
-    private int quarantineSize;
+    private final InboxRecord record;
 
     JsonInboxRecord( InboxRecord record )
     {
-        MailSummary ms = record.getMailSummary();
-        this.recipients = record.getRecipients();
-        this.mailID = record.getMailID();
-        this.quarantinedDate = new Date( record.getInternDate());
-        this.size = (int)record.getSize();
-        this.attachmentCount = ms.getAttachmentCount();
-        this.truncatedSender = ms.getTruncatedSender();
-        this.sender = ms.getSender();
-        this.truncatedSubject = ms.getTruncatedSubject();
-        this.subject = ms.getSubject();
-        this.quarantineCategory = ms.getQuarantineCategory();
-        this.quarantineDetail = ms.getQuarantineDetail();
-        this.quarantineSize = (int)ms.getQuarantineSize();
+        this.record = record;
     }
 
     public String[] getRecipients()
     {
-        return this.recipients;
-    }
+        return this.record.getRecipients();
 
-    public void setRecipients( String[] newValue )
-    {
-        this.recipients = newValue;
     }
         
     public String getMailID()
     {
-        return this.mailID;
-    }
-
-    public void setMailID( String newValue )
-    {
-        this.mailID = newValue;
+        return this.record.getMailID();
     }
 
     public Date getQuarantinedDate()
     {
-        return this.quarantinedDate;
-    }
-
-    public void setQuarantinedDate( Date newValue )
-    {
-        this.quarantinedDate = newValue;
+        return new Date( this.record.getInternDate());
     }
 
     public int getSize()
     {
-        return this.size;
-    }
-
-    public void setSize( int newValue )
-    {
-        this.size = newValue;
+        return (int)this.record.getSize();
     }
 
     /* Everything past here is from MailSummary */
     public int getAttachmentCount()
     {
-        return this.attachmentCount;
+        return this.record.getMailSummary().getAttachmentCount();
     }
 
-    public void setAttachmentCount( int newValue )
-    {
-        this.attachmentCount = newValue;
-    }
-        
     public String getTruncatedSender()
     {
-        return this.truncatedSender;
-    }
-
-    public void setTruncatedSender( String newValue )
-    {
-        this.truncatedSender = newValue;
+        return this.record.getMailSummary().getTruncatedSender();
     }
 
     public String getSender()
     {
-        return this.sender;
-    }
-
-    public void setSender( String newValue )
-    {
-        this.sender = newValue;
+        return this.record.getMailSummary().getSender();
     }
         
     public String getTruncatedSubject()
     {
-        return this.truncatedSubject;
-    }
-
-    public void setTruncatedSubject( String newValue )
-    {
-        this.truncatedSubject = newValue;
+        return this.record.getMailSummary().getTruncatedSubject();
     }
         
     public String getSubject()
     {
-        return this.subject;
-    }
-
-    public void setSubject( String newValue )
-    {
-        this.subject = newValue;
+        return this.record.getMailSummary().getSubject();
     }
         
     public String getQuarantineCategory()
     {
-        return this.quarantineCategory;
-    }
-
-    public void setQuarantineCategory( String newValue )
-    {
-        this.quarantineCategory = newValue;
+        return this.record.getMailSummary().getQuarantineCategory();
     }
 
     public String getQuarantineDetail()
     {
-        return this.quarantineDetail;
-    }
-
-    public void setQuarantineDetail( String newValue )
-    {
-        this.quarantineDetail = newValue;
+        return this.record.getMailSummary().getQuarantineDetail();
     }
 
     public int getQuarantineSize()
     {
-        return this.quarantineSize;
-    }
-
-    public void setQuarantineSize( int newValue )
-    {
-        this.quarantineSize = newValue;
+        return (int)this.record.getMailSummary().getQuarantineSize();
     }
 }
