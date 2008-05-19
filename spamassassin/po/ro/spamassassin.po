@@ -1,0 +1,190 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR Untangle, Inc.
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2008-05-19 18:28+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=0; null;\n"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:57
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:59
+msgid "Mark"
+msgstr "Marchează"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:57
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:59
+msgid "Pass"
+msgstr "Trece"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:58
+msgid "Block"
+msgstr "Blochează"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:58
+msgid "Quarantine"
+msgstr "Carantina"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:60
+msgid "Low"
+msgstr "Scazut"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:60
+msgid "Medium"
+msgstr "Mediu"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:60
+msgid "High"
+msgstr "Ridicat"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:61
+msgid "Very High"
+msgstr "Foarte Ridicat"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:61
+msgid "Extreme"
+msgstr "Extrem"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:61
+msgid "Custom"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:63
+msgid "Email"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:70
+msgid "SMTP"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:78
+msgid "Scan SMTP"
+msgstr "Scanează SMTP"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:91
+msgid "Enable SMTP greylisting"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:106
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:190
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:268
+msgid "Strength"
+msgstr "Putere"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:128
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:212
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:290
+msgid "Strength Value"
+msgstr "Valoare Putere"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:133
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:217
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:295
+msgid "Strength Value must be a number in range 100-30. Smaller value is higher"
+"strength."
+msgstr "Valoarea puterii trebuie să fie un număr in intervalul 100-30. O valoare mai mica înseamnă putere mai mare"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:146
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:230
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:308
+msgid "Action"
+msgstr "Actiune"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:167
+msgid "POP3"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:175
+msgid "Scan POP3"
+msgstr "Scanează POP3"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:251
+msgid "IMAP"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:259
+msgid "Scan IMAP"
+msgstr "Scanează IMAP"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:329
+msgid "Note"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:331
+msgid "Spam blocker was last updated"
+msgstr "Spam blocker a fost ultima dată actualizat la"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:334
+msgid "unknown"
+msgstr "necunoscut"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:361
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:433
+msgid "timestamp"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:369
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:441
+msgid "action"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:374
+msgid "client"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:383
+msgid "subject"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:388
+msgid "receiver"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:393
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:449
+msgid "sender"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:398
+msgid "SPAM score"
+msgstr "Scor SPAM"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:403
+msgid "server"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:420
+msgid "DNSBL Event Log"
+msgstr "Log Evenimente DNSBL"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:446
+msgid "skipped"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:446
+msgid "blocked"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:457
+msgid "dnsbl server"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:471
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:484
+msgid "Failed"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:471
+msgid "Some fields have invalid values."
+msgstr "Unele câmpuri au valori nevalide."
+
