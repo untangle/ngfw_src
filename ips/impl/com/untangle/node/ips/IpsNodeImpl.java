@@ -251,7 +251,7 @@ public class IpsNodeImpl extends AbstractNode implements IpsNode {
         engine.setSettings(settings);
         engine.onReconfigure();
         engine.setMaxChunks(settings.getBaseSettings().getMaxChunks());
-        List<IpsRule> rules = (List<IpsRule>) settings.getRules();
+        Set<IpsRule> rules = settings.getRules();
         engine.clearRules();
         for(IpsRule rule : rules) {
             engine.addRule(rule);
