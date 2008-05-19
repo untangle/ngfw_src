@@ -269,7 +269,7 @@ Ung.Quarantine.prototype = {
 
             /* Refresh the safelist table */
             if ( getSafelist != null ) {
-                sl = getSafelist( result );
+                var sl = getSafelist( result );
                 /* Build a new set of data */
                 for ( var c = 0 ; c < sl.length ; c++ ) sl[c] = [sl[c]];
                 safelist.store.loadData( sl );

@@ -24,6 +24,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.untangle.node.mail.papi.quarantine.BadTokenException;
+import com.untangle.node.mail.papi.quarantine.InboxAlreadyRemappedException;
 import com.untangle.node.mail.papi.quarantine.NoSuchInboxException;
 import com.untangle.node.mail.papi.quarantine.QuarantineUserActionFailedException;
 import com.untangle.node.mail.papi.safelist.NoSuchSafelistException;
@@ -51,10 +52,11 @@ public interface JsonInterface
 
     /* Map the account associated with token to address. */
     public void setRemap( String token, String address )
-        throws BadTokenException, NoSuchInboxException, QuarantineUserActionFailedException;
+        throws BadTokenException, NoSuchInboxException, QuarantineUserActionFailedException,
+               InboxAlreadyRemappedException;
 
     /* Delete a set of remaps to the account associated with token. */
-    public void deleteRemap( String token, String[] address )
+    public String[] deleteRemaps( String token, String[] address )
         throws BadTokenException, NoSuchInboxException, QuarantineUserActionFailedException;
 
 

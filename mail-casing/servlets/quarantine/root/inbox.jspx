@@ -30,6 +30,8 @@
 
                var safelistData = ${q:jsonSafelist(pageContext)};
                
+               var remapsData = ${q:jsonReceivingRemaps(pageContext)};
+               
                var globalStrings = {};
                globalStrings.headerSender = '${uvm:i18n( pageContext, "From" )}';
                globalStrings.headerQuarantineDetail = '${uvm:i18n( pageContext, "Score" )}';
@@ -65,6 +67,7 @@
     <!-- Libraries for the quarantine application -->
     <uvm:script src="quarantine.js"/>
     <uvm:script src="safelist.js"/>
+    <uvm:script src="remaps.js"/>
   </c:set>
   
   <c:set var="content" scope="request">
@@ -154,7 +157,7 @@
       </q:hasInboxRecords>
 
       <!-- This is a list of the email addresses that are redirected to this email address. -->
-      <div id="quarantine-redirects"><!-- jspx --></div>
+      <div id="quarantine-remaps"><!-- jspx --></div>
   </c:set>
   
   <jsp:forward page="/template.jspx"/>

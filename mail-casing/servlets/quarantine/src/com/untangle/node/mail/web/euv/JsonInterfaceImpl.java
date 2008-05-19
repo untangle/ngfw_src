@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.untangle.node.mail.papi.quarantine.BadTokenException;
+import com.untangle.node.mail.papi.quarantine.InboxAlreadyRemappedException;
 import com.untangle.node.mail.papi.quarantine.InboxIndex;
 import com.untangle.node.mail.papi.quarantine.InboxRecord;
 import com.untangle.node.mail.papi.quarantine.InboxRecordComparator;
@@ -125,16 +126,37 @@ public class JsonInterfaceImpl implements JsonInterface
 
     /* Map the account associated with token to address. */
     public void setRemap( String token, String address )
-        throws BadTokenException, NoSuchInboxException, QuarantineUserActionFailedException
+        throws BadTokenException, NoSuchInboxException, QuarantineUserActionFailedException,
+               InboxAlreadyRemappedException
     {
+        /* This just seems wrong */
+        QuarantineUserView quarantine =
+            QuarantineEnduserServlet.instance().getQuarantine();
         
+        /* First grab the account */
+        String account = quarantine.getAccountFromToken(token);
+        
+        if ( account == null ) return;
+        
+        quarantine.remapSelfService( account, address );
     }
 
     /* Delete a set of remaps to the account associated with token. */
-    public void deleteRemap( String token, String[] address )
+    public String[] deleteRemaps( String token, String[] addresses )
         throws BadTokenException, NoSuchInboxException, QuarantineUserActionFailedException
     {
+        /* This just seems wrong */
+        QuarantineUserView quarantine =
+            QuarantineEnduserServlet.instance().getQuarantine();
         
+        /* First grab the account */
+        String account = quarantine.getAccountFromToken(token);
+        
+        if ( account == null ) return new String[0];
+        
+        for ( String address : addresses ) quarantine.unmapSelfService( account, address.toLowerCase());
+
+        return quarantine.getMappedFrom(account);
     }
 
 
