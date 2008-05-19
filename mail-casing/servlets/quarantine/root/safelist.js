@@ -101,8 +101,9 @@ Ung.Safelist.prototype = {
     
 };
 
-var safelist = new Ung.Safelist();
+var safelist;
 
 Ext.onReady(function() {
+    safelist = new Ung.Safelist();
     safelist.init();    
 });

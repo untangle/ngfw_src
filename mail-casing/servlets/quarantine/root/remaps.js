@@ -85,8 +85,9 @@ Ung.Remaps.prototype = {
     
 };
 
-var remaps = new Ung.Remaps();
+var remaps = null;
 
 Ext.onReady(function() {
+    remaps = new Ung.Remaps();
     remaps.init();    
 });

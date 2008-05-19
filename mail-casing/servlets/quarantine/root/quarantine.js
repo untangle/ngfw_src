@@ -445,6 +445,7 @@ Ext.onReady(function() {
         sm: quarantine.selectionModel,
         trackMouseOver:false,
         loadMask: true,
+        frame : true,
         bbar: new Ext.PagingToolbar({
             pageSize: quarantine.pageSize,
             store: quarantine.store,

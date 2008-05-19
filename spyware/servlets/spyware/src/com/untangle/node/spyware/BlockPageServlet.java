@@ -67,6 +67,7 @@ public class BlockPageServlet extends HttpServlet
 
         /* These have to be registered against the request, otherwise
          * the included template cannot see them. */
+        request.setAttribute( "ss", uvm.skinManager().getSkinSettings());
         request.setAttribute( "bs", bs );
         request.setAttribute( "pageTitle", i18n.tr( "{0} | Spyware Blocker Warning", company ));
         request.setAttribute( "title", "Spyware Blocker" );

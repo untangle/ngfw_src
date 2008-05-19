@@ -42,6 +42,7 @@
                
                globalStrings.quarantineGridTitle = '${uvm:i18n( pageContext, 'Quarantined Messages' )}';
                globalStrings.safelistGridTitle = '${uvm:i18n( pageContext, "Safelist" )}';
+               globalStrings.remapsGridTitle = '${uvm:i18n( pageContext, "Alias Control" )}';
                
                globalStrings.buttonRelease = [ '${uvm:i18n( pageContext, "Release Messages" )}',
                                                '${uvm:i18n( pageContext, "Release one Message" )}',

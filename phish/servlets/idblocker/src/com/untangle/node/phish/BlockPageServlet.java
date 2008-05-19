@@ -68,6 +68,7 @@ public class BlockPageServlet extends HttpServlet
         /* These have to be registered against the request, otherwise
          * the included template cannot see them. */
         request.setAttribute( "bs", bs );
+        request.setAttribute( "ss", uvm.skinManager().getSkinSettings());
         request.setAttribute( "pageTitle", i18n.tr( "{0} | Phish Blocker Warning", company ));
         request.setAttribute( "title", "Phish Blocker" );
         request.setAttribute( "footer", i18n.tr( "{0} Phish Blocker", company ));
