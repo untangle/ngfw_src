@@ -32,6 +32,7 @@ import com.untangle.node.mail.papi.safelist.SafelistEndUserView;
 import com.untangle.node.mail.web.euv.tags.HasSafelistTag;
 import com.untangle.node.mail.web.euv.tags.InboxIndexTag;
 import com.untangle.node.mail.web.euv.tags.MessagesSetTag;
+import com.untangle.node.mail.web.euv.tags.SafelistListTag;
 import com.untangle.node.mail.web.euv.tags.PagnationPropertiesTag;
 import com.untangle.node.util.Pair;
 
@@ -110,6 +111,8 @@ public class InboxMaintenenceControler
 
             //Set the flag for whether the user does/does not have a Safelist
             HasSafelistTag.setCurrent(req, safelist.hasOrCanHaveSafelist(account));
+
+            SafelistListTag.setCurrentList(req, safelist.getSafelistContents(account));
 
             InboxIndexTag.setCurrentIndex(req,
                                           InboxRecordCursor.get(

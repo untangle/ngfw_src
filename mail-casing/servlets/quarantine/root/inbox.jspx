@@ -27,6 +27,8 @@
                inboxDetails.token = '${currentAuthToken}';
                inboxDetails.totalCount = ${q:totalMessageCount(pageContext)};
                inboxDetails.address = '${currentAddress}';
+
+               var safelistData = ${q:jsonSafelist(pageContext)};
                
                var globalStrings = {};
                globalStrings.headerSender = '${uvm:i18n( pageContext, "From" )}';
@@ -34,7 +36,10 @@
                globalStrings.headerSubject = '${uvm:i18n( pageContext, "Subject" )}';
                globalStrings.headerQuarantineDate = '${uvm:i18n( pageContext, "Date" )}';
                globalStrings.headerSize = '${uvm:i18n( pageContext, "Size (KB)" )}';
+               globalStrings.headerEmailAddress = '${uvm:i18n( pageContext, "Email Address" )}';
+               
                globalStrings.quarantineGridTitle = '${uvm:i18n( pageContext, 'Quarantined Messages' )}';
+               globalStrings.safelistGridTitle = '${uvm:i18n( pageContext, "Safelist" )}';
                
                globalStrings.buttonRelease = [ '${uvm:i18n( pageContext, "Release Messages" )}',
                                                '${uvm:i18n( pageContext, "Release one Message" )}',
@@ -59,6 +64,7 @@
 
     <!-- Libraries for the quarantine application -->
     <uvm:script src="quarantine.js"/>
+    <uvm:script src="safelist.js"/>
   </c:set>
   
   <c:set var="content" scope="request">
@@ -92,16 +98,17 @@
           <p><span><uvm:i18n>You have no quarantined emails.</uvm:i18n></span></p>
         </q:hasInboxRecords>
 
-        <q:hasSafelist includeIfTrue="true">
-          <p>
-            <span>
-              <uvm:i18n p0="${q:url(pageContext, 'safelist_view')}">
-                You may also view your <a href="{0}">safelist</a>
-                of email senders whose emails you never want to quarantine.
-              </uvm:i18n>
-            </span>
-          </p>
-        </q:hasSafelist>
+        <p>
+          <span>
+            <uvm:i18n p0="${q:url(pageContext, 'safelist_view')}">
+              You may also view your <a href="{0}">safelist</a>
+              of email senders whose emails you never want to quarantine.
+            </uvm:i18n>
+          </span>
+        </p>
+        
+        <!-- This is a list of the email addresses that have been safelisted. -->
+        <div id="quarantine-safelist"><!-- jspx --></div>
 
         <q:isReceivesRemaps includeIfTrue="true">
           <!--
@@ -143,9 +150,11 @@
 
       
       <q:hasInboxRecords includeIfTrue="true">
-        <div id="quarantine-inbox-records">
-        </div>
+        <div id="quarantine-inbox-records"><!-- jspx --></div>
       </q:hasInboxRecords>
+
+      <!-- This is a list of the email addresses that are redirected to this email address. -->
+      <div id="quarantine-redirects"><!-- jspx --></div>
   </c:set>
   
   <jsp:forward page="/template.jspx"/>

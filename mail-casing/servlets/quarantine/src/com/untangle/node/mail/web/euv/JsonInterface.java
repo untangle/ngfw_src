@@ -41,6 +41,21 @@ public interface JsonInterface
     public int purgeMessages( String token, String messages[] )
         throws BadTokenException, NoSuchInboxException, QuarantineUserActionFailedException;
 
+    /* Add the addresses in addresses to the safelist associated with token */
     public SafelistReturnCode safelist( String token, String addresses[] )
         throws BadTokenException, NoSuchInboxException, NoSuchSafelistException, QuarantineUserActionFailedException, SafelistActionFailedException;
+
+    /* Replace the safelist for the account associated with token. */
+    public SafelistReturnCode replaceSafelist( String token, String addresses[] )
+        throws BadTokenException, NoSuchInboxException, NoSuchSafelistException, QuarantineUserActionFailedException, SafelistActionFailedException;
+
+    /* Map the account associated with token to address. */
+    public void setRemap( String token, String address )
+        throws BadTokenException, NoSuchInboxException, QuarantineUserActionFailedException;
+
+    /* Delete a set of remaps to the account associated with token. */
+    public void deleteRemap( String token, String[] address )
+        throws BadTokenException, NoSuchInboxException, QuarantineUserActionFailedException;
+
+
 }

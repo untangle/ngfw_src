@@ -471,4 +471,17 @@
     <function-class>com.untangle.node.mail.web.euv.tags.QuarantineFunctions</function-class>
     <function-signature>java.lang.String totalMessageCount( javax.servlet.jsp.PageContext )</function-signature>
   </function>
+
+  <function>
+    <name>jsonSafelist</name>
+    <function-class>com.untangle.node.mail.web.euv.tags.QuarantineFunctions</function-class>
+    <function-signature>java.lang.String jsonSafelist( javax.servlet.jsp.PageContext )</function-signature>
+  </function>
+
+  <function>
+    <name>jsonReceivingRemaps</name>
+    <function-class>com.untangle.node.mail.web.euv.tags.QuarantineFunctions</function-class>
+    <function-signature>java.lang.String jsonReceivingRemaps( javax.servlet.jsp.PageContext )</function-signature>
+  </function>
+
 </taglib>

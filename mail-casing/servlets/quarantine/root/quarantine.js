@@ -62,7 +62,6 @@ Ung.CountingHash = Ext.extend( Ung.SimpleHash, {
 } );
 
 
-//RpcProxy
 // uses json rpc to get the information from the server
 // @param rpcFn Remote JSON call to retrieve results.
 // @param paginated True if this table is paginated.
@@ -213,9 +212,11 @@ Ung.Quarantine.prototype = {
             return safelist + " , " + release;
         };
 
+        var getSafelist = function( result ) { return result.safelist; };
+
         var getCount = function( result ) { return result.totalRecords };
         var action = quarantine.rpc.safelist;
-        action( this.refreshTable.createDelegate( quarantine, [ null, getCount, getMessage ], true ),
+        action( this.refreshTable.createDelegate( quarantine, [ null, getCount, getMessage, getSafelist ], true ),
                 inboxDetails.token, addresses );
     },
 
@@ -239,7 +240,7 @@ Ung.Quarantine.prototype = {
         disabled : true
     } ),
     
-    refreshTable : function( result, exception, foo, messages, getCount, getMessage )
+    refreshTable : function( result, exception, foo, messages, getCount, getMessage, getSafelist )
     {
         if ( exception ) {
             Ext.MessageBox.alert("Failed",exception.message); 
@@ -265,6 +266,14 @@ Ung.Quarantine.prototype = {
             
             /* Refresh the table */
             quarantine.grid.setDisabled( false );
+
+            /* Refresh the safelist table */
+            if ( getSafelist != null ) {
+                sl = getSafelist( result );
+                /* Build a new set of data */
+                for ( var c = 0 ; c < sl.length ; c++ ) sl[c] = [sl[c]];
+                safelist.store.loadData( sl );
+            }
 
         } catch ( e ) {
             alert( "Unable to refresh table: " + e );
@@ -450,3 +459,43 @@ Ext.onReady(function() {
     // trigger the data store load
     quarantine.store.load({params:{start:0, limit:quarantine.pageSize}});
 });
+
+
+
+// Grid check column (copied from main.js)
+Ext.grid.CheckColumn = function(config) {
+    Ext.apply(this, config);
+    if (!this.id) {
+        this.id = Ext.id();
+    }
+    if (!this.width) {
+        this.width = 40;
+    }
+    this.renderer = this.renderer.createDelegate(this);
+};
+
+Ext.grid.CheckColumn.prototype = {
+    init : function(grid) {
+        this.grid = grid;
+        this.grid.on('render', function() {
+            var view = this.grid.getView();
+            view.mainBody.on('mousedown', this.onMouseDown, this);
+        }, this);
+    },
+    changeRecord : function(record) {
+        record.set(this.dataIndex, !record.data[this.dataIndex]);
+    },
+    onMouseDown : function(e, t) {
+        if (t.className && t.className.indexOf('x-grid3-cc-' + this.id) != -1) {
+            e.stopEvent();
+            var index = this.grid.getView().findRowIndex(t);
+            var record = this.grid.store.getAt(index);
+            this.changeRecord(record);
+        }
+    },
+
+    renderer : function(value, metadata, record) {
+        metadata.css += ' x-grid3-check-col-td';
+        return '<div class="x-grid3-check-col' + (value ? '-on' : '') + ' x-grid3-cc-' + this.id + '">&#160;</div>';
+    }
+};

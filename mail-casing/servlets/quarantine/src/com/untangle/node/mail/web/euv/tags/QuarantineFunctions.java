@@ -65,6 +65,17 @@ public class QuarantineFunctions
         }
     }
 
+    public static String jsonSafelist( PageContext pageContext )
+    {
+        return buildJsonList( SafelistListTag.getCurrentList(pageContext.getRequest()));
+    }
+
+    /* This is a list of addresses that are redirected to this user account */
+    public static String jsonReceivingRemaps( PageContext pageContext )
+    {
+        return buildJsonList( ReceivingRemapsListTag.getCurrentList(pageContext.getRequest()));
+    }
+
     public static String buildQuery( PageContext pageContext, String controller, String action )
     {
         String query = "/quarantine" + controller + "?";
@@ -75,5 +86,22 @@ public class QuarantineFunctions
         if ( token != null ) query += "&" + Constants.AUTH_TOKEN_RP + "=" + URLEncoder.encode( token );
 
         return query;
+    }
+
+    private static final String buildJsonList( String[] values )
+    {
+        if ( values == null ) return "[]";
+        boolean isFirst = true;
+        StringBuilder sb = new StringBuilder();
+        sb.append( "[" );
+        for ( String s : values ) {
+            if ( !isFirst ) sb.append( "," );
+            isFirst = false;
+            sb.append( "['" + s + "']\n" );
+        }
+
+        sb.append( "]" );
+
+        return  sb.toString();
     }
 }
