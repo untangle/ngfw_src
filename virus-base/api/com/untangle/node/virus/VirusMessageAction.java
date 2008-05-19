@@ -61,9 +61,12 @@ public class VirusMessageAction implements Serializable
         INSTANCES.put(REMOVE.getKey(), REMOVE);
     }
 
-    private final String name;
-    private final char key;
+    private String name;
+    private char key;
 
+    public VirusMessageAction() {
+	}
+    
     private VirusMessageAction(char key, String name)
     {
         this.key = key;
@@ -93,15 +96,21 @@ public class VirusMessageAction implements Serializable
         return name;
     }
 
-    public char getKey()
-    {
-        return key;
-    }
+    public char getKey() {
+		return key;
+	}
 
-    public String getName()
-    {
-        return name;
-    }
+	public void setKey(char key) {
+		this.key = key;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
 
     Object readResolve()
     {
@@ -119,4 +128,5 @@ public class VirusMessageAction implements Serializable
         }
         return azMsgAction;
     }
+
 }

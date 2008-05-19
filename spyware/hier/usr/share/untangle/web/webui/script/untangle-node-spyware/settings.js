@@ -163,8 +163,8 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                     }]
                 }, {
                     html : this.i18n._("Spyware Blocker signatures were last updated") + ":&nbsp;&nbsp;&nbsp;&nbsp;"
-                            + (this.getBaseSettings().lastUpdate != null) ? i18n.timestampFormat(this.getBaseSettings().lastUpdate) : i18n
-                            ._("Unknown")
+                            + ((this.getBaseSettings().lastUpdate != null) ? i18n.timestampFormat(this.getBaseSettings().lastUpdate) : 
+                            this.i18n._("Unknown"))
                 }],
 
                 onManageCookiesList : function() {

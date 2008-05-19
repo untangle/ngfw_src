@@ -259,8 +259,9 @@ public abstract class VirusNodeImpl extends AbstractNode
     }
     
     public List<MimeTypeRule> getHttpMimeTypes(final int start, final int limit, final String... sortColumns) {
-        return listUtil.getItems( "select vs.httpMimeTypes from VirusSettings vs where vs.tid = :tid ",
-                                  getNodeContext(), getTid(), start, limit, sortColumns);
+        return listUtil.getItems( "select vs.httpMimeTypes from VirusSettings vs " +
+        		"join vs.httpMimeTypes as httpMimeTypes where vs.tid = :tid ",
+        		getNodeContext(), getTid(),"httpMimeTypes", start, limit, sortColumns);
     }
 
     public void updateHttpMimeTypes(List<MimeTypeRule> added, List<Long> deleted, List<MimeTypeRule> modified) {

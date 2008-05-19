@@ -60,9 +60,12 @@ public class SMTPVirusMessageAction implements Serializable
         INSTANCES.put(BLOCK.getKey(), BLOCK);
     }
 
-    private final String name;
-    private final char key;
+    private String name;
+    private char key;
 
+    public SMTPVirusMessageAction() {
+	}
+    
     private SMTPVirusMessageAction(char key, String name)
     {
         this.key = key;
@@ -92,15 +95,21 @@ public class SMTPVirusMessageAction implements Serializable
         return name;
     }
 
-    public char getKey()
-    {
-        return key;
-    }
+    public char getKey() {
+		return key;
+	}
 
-    public String getName()
-    {
-        return name;
-    }
+	public void setKey(char key) {
+		this.key = key;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
 
     Object readResolve()
     {

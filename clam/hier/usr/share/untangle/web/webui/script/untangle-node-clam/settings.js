@@ -51,29 +51,27 @@ if (!Ung.hasResource["Ung.Clam"]) {
                         }
                     }]
                 }, {
-                    title : this.i18n._('File Extensions'),
-                    buttons : [{
-                        info : 'manageExtensionsButton',
-                        text : this.i18n._("manage list"),
-                        handler : function() {
-                            this.panelWeb.onManageExtensions();
-                        }.createDelegate(this)
-                    }]
-                }, {
-                    title : this.i18n._('MIME Types'),
-                    buttons : [{
-                        info : 'manageMimeTypesButton',
-                        text : this.i18n._("manage list"),
-                        handler : function() {
-                            this.panelWeb.onManageMimeTypes();
-                        }.createDelegate(this)
-                    }]
-                }, {
                 	title: this.i18n._('Advanced Settings'),
                 	checkboxToggle:true,
                 	collapsed: true,
                 	labelWidth: 150,
                     items : [{
+                        xtype : 'button',
+                        info : 'extensionsButton',
+                        text : this.i18n._('File Extensions'),
+                        style : 'padding-bottom:10px;',
+                        handler : function() {
+                            this.panelWeb.onManageExtensions();
+                        }.createDelegate(this)
+                    }, {
+                        xtype : 'button',
+                        info : 'mimeTypesButton',
+                        text : this.i18n._('MIME Types'),
+                        style : 'padding-bottom:10px;',
+                        handler : function() {
+                            this.panelWeb.onManageMimeTypes();
+                        }.createDelegate(this)
+                    }, {
                         xtype : 'checkbox',
                         boxLabel : this.i18n._('Disable HTTP Resume'),
                         hideLabel : true,
@@ -87,11 +85,15 @@ if (!Ung.hasResource["Ung.Clam"]) {
                             }
                         }
                     },{
-                        xtype : 'textfield',
-                        fieldLabel : this.i18n._('Scan trickle rate (1-99)'), //TODO add validation
+                        xtype : 'numberfield',
+                        fieldLabel : this.i18n._('Scan trickle rate (1-99)'),
                         name : 'tricklePercent',
                         value : this.getBaseSettings().tricklePercent,
                         width: 25,
+                        allowDecimals: false,
+                        allowNegative: false,
+                        minValue: 1,                        
+                        maxValue: 99,
                         listeners : {
                             "change" : {
                                 fn : function(elem, newValue) {
@@ -100,6 +102,10 @@ if (!Ung.hasResource["Ung.Clam"]) {
                             }
                         }
                     }]
+                }, {
+                    html : this.i18n._("Virus Blocker signatures were last updated") + ":&nbsp;&nbsp;&nbsp;&nbsp;"
+                            + ((this.getBaseSettings().lastUpdate != null) ? i18n.timestampFormat(this.getBaseSettings().lastUpdate) : 
+                            this.i18n._("Unknown"))
                 }],
 
                 onManageExtensions : function() {
@@ -399,7 +405,7 @@ if (!Ung.hasResource["Ung.Clam"]) {
         },
         // save function
         save : function() {
-            if (this.validate()) {
+            if (this.validate()) {  //TODO add validation - if we have a ticke rate invalid
                 // disable tabs during save
                 this.tabs.disable();
                 this.getRpcNode().updateAll(function(result, exception) {
