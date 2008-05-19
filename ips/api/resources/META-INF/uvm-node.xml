@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -20,8 +20,7 @@
 <uvm-node>
   <node-desc name="untangle-node-ips"
              display-name="Intrusion Prevention"
-             classname="com.untangle.node.ips.IPSNodeImpl"
-             gui-classname="com.untangle.node.ips.gui.MNodeJPanel"
+             classname="com.untangle.node.ips.IpsNodeImpl"
              />
   <parent>untangle-casing-http</parent>
 </uvm-node>
