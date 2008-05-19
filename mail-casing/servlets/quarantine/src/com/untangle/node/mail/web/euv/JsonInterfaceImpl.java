@@ -22,8 +22,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.untangle.node.mail.papi.quarantine.BadTokenException;
 import com.untangle.node.mail.papi.quarantine.InboxIndex;
@@ -32,6 +34,9 @@ import com.untangle.node.mail.papi.quarantine.InboxRecordComparator;
 import com.untangle.node.mail.papi.quarantine.InboxRecordCursor;
 import com.untangle.node.mail.papi.quarantine.NoSuchInboxException;
 import com.untangle.node.mail.papi.quarantine.QuarantineUserActionFailedException;
+import com.untangle.node.mail.papi.safelist.NoSuchSafelistException;
+import com.untangle.node.mail.papi.safelist.SafelistEndUserView;
+import com.untangle.node.mail.papi.safelist.SafelistActionFailedException;
 
 import com.untangle.node.mail.papi.quarantine.QuarantineUserView;
 
@@ -98,6 +103,58 @@ public class JsonInterfaceImpl implements JsonInterface
         return handleMessages( ACTION.PURGE, token, messages );
     }
 
+    public SafelistReturnCode safelist( String token, String addresses[] )
+        throws BadTokenException, NoSuchInboxException, NoSuchSafelistException,
+               QuarantineUserActionFailedException, SafelistActionFailedException
+    {
+        /* This just seems wrong */
+        QuarantineUserView quarantine =
+            QuarantineEnduserServlet.instance().getQuarantine();
+        /* This just seems wrong */
+        SafelistEndUserView safelist =
+            QuarantineEnduserServlet.instance().getSafelist();
+
+        if ( addresses.length == 0 ) return SafelistReturnCode.EMPTY;
+                
+        /* First grab the account */
+        String account = quarantine.getAccountFromToken(token);
+
+        if ( account == null ) return SafelistReturnCode.EMPTY;
+
+        InboxIndex index = quarantine.getInboxIndex( account );
+
+        if ( index == null ) return SafelistReturnCode.EMPTY;
+
+        String[] sl = new String[addresses.length];
+        for(int c = 0; c< addresses.length; c++) sl[c] = addresses[c].toLowerCase();
+
+        String[] userSafelist = safelist.getSafelistContents( account );
+        int currentSize = userSafelist.length;
+
+        /* Add each of the entries. */
+        for(String addr : sl) userSafelist = safelist.addToSafelist( account, addr );
+
+        Set<String> mids = new HashSet<String>();
+
+        /* Now build a list of message ids to release */
+        for ( InboxRecord record : index ) {
+            for ( String addr : addresses ) {
+                if ( record.getMailSummary().getSender().equalsIgnoreCase( addr )) {
+                    mids.add( record.getMailID());
+                    break;
+                }
+            }
+        }
+        
+        /* Now release the hounds */
+        int totalRecords = index.size();
+        if ( mids.size() > 0 ) {
+            totalRecords = handleMessages( ACTION.RELEASE, token, mids.toArray( new String[mids.size()]));
+        }
+
+        return new SafelistReturnCode( userSafelist.length - currentSize, totalRecords, userSafelist );
+    }
+
 
     public static JsonInterfaceImpl getInstance()
     {
@@ -133,7 +190,6 @@ public class JsonInterfaceImpl implements JsonInterface
     }
 
     static {
-        
         Map <String,SortBy> nameMap = new HashMap<String,SortBy>();
 
         nameMap.put( "sender", SortBy.SENDER );

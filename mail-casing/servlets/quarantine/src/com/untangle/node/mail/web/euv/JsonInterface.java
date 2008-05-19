@@ -26,6 +26,8 @@ import java.util.List;
 import com.untangle.node.mail.papi.quarantine.BadTokenException;
 import com.untangle.node.mail.papi.quarantine.NoSuchInboxException;
 import com.untangle.node.mail.papi.quarantine.QuarantineUserActionFailedException;
+import com.untangle.node.mail.papi.safelist.NoSuchSafelistException;
+import com.untangle.node.mail.papi.safelist.SafelistActionFailedException;
 
 public interface JsonInterface
 {
@@ -38,4 +40,7 @@ public interface JsonInterface
 
     public int purgeMessages( String token, String messages[] )
         throws BadTokenException, NoSuchInboxException, QuarantineUserActionFailedException;
+
+    public SafelistReturnCode safelist( String token, String addresses[] )
+        throws BadTokenException, NoSuchInboxException, NoSuchSafelistException, QuarantineUserActionFailedException, SafelistActionFailedException;
 }

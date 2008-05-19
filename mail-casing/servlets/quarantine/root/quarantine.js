@@ -5,15 +5,14 @@ Ext.BLANK_IMAGE_URL = '/webui/ext/resources/images/default/s.gif';
 
 Ung.SimpleHash = function()
 {
+    this.data = new Object();
+    this.size = 0;
 }
 
 Ung.SimpleHash.prototype = {
-    data : {},
-    size : 0,
-
     put : function( key, value )
     {
-        if ( this.data[key] ) {
+        if ( this.data[key] != null ) {
             if ( value == null ) this.size--;
         } else {
             if ( value != null ) this.size++;
@@ -24,7 +23,7 @@ Ung.SimpleHash.prototype = {
 
     clear : function( key )
     {
-        if ( this.data[key] ) this.size--;
+        if ( this.data[key] != null ) this.size--;
         this.data[key] = null;
     },
 
@@ -39,6 +38,29 @@ Ung.SimpleHash.prototype = {
         return this.data[key];
     }
 }
+
+Ung.CountingHash = Ext.extend( Ung.SimpleHash, {
+    add : function( key ) {
+        var current = this.get( key );
+        
+        if ( current == null ) current = 1;
+        else current++;
+        
+        return this.put( key, current );
+    },
+    
+    minus : function( key ) {
+        var current = this.get( key );
+        
+        if ( current != null ) {
+            if ( current <= 1 ) current = null;
+            else current--;
+        }
+        
+        return this.put( key, current );
+    }
+} );
+
 
 //RpcProxy
 // uses json rpc to get the information from the server
@@ -122,6 +144,9 @@ Ung.Quarantine.prototype = {
     /* This is a hash of message ids that are ready to be deleted or released. */
     actionItems : new Ung.SimpleHash(),
 
+    /* This is a hash of the email addresses to safelist */
+    addresses : new Ung.CountingHash(),
+
     init: function() {
 		//get JSONRpcClient
 		this.rpc = new JSONRpcClient("/quarantine/JSON-RPC").Quarantine;
@@ -134,63 +159,109 @@ Ung.Quarantine.prototype = {
     grid : null,
 
     pageSize : 25,
+
+    clearSelections : function()
+    {
+        /* Clear the current action items */
+        quarantine.actionItems.clearAll();
+        quarantine.addresses.clearAll();
+        quarantine.selectionModel.clearSelections();
+        quarantine.grid.setDisabled( true );
+    },
     
-    executeAction : function( action, messages ) {
+    releaseOrDelete : function( action, messages ) {
         var mids = [];
         for ( var key in quarantine.actionItems.data ) mids.push( key );
 
-        /* Clear the current action items */
-        quarantine.actionItems.clearAll();
-        quarantine.selectionModel.clearSelections();
-
-        quarantine.grid.setDisabled( true );
+        this.clearSelections();
         
-        var obj = {};
-        obj.messages = messages;
-        action(this.refreshTable.createDelegate(obj), inboxDetails.token, mids );
+        var getMessage = function( result, messages ) {
+            var message = messages[1];
+            var count = quarantine.store.proxy.totalRecords - result;
+            if( count <= 0 ) message = "";
+            else if ( count == 1 ) message = messages[0];
+            return sprintf( message, count );
+        };
+        
+        var getCount = function( result ) { return result; };
+        action( this.refreshTable.createDelegate(quarantine, [ messages, getCount, getMessage ], true ), 
+                inboxDetails.token, mids );
+    },
+    
+    safelist : function()
+    {
+        var addresses = [];
+        for ( var key in quarantine.addresses.data ) addresses.push( key );
+
+        this.clearSelections();
+        var getMessage = function( result, messages ) {
+            var safelist = globalStrings.safelistMessages[1];
+            var release = globalStrings.releaseMessages[1];
+            
+            if ( result.safelistCount <= 0 ) safelist = "";
+            if ( result.safelistCount == 1 ) safelist = globalStrings.safelistMessages[0];
+            safelist = sprintf( safelist, result.safelistCount );
+
+            var count = quarantine.store.proxy.totalRecords - result.totalRecords;
+            if ( count <= 0 ) release = "";
+            if ( count == 1 ) release = globalStrings.releaseMessages[0];
+            release = sprintf( release, count );
+            
+            if ( safelist == "" && release == "" ) return "";
+            if ( safelist == "" ) return release;
+            if ( release == "" ) return safelist;
+            return safelist + " , " + release;
+        };
+
+        var getCount = function( result ) { return result.totalRecords };
+        var action = quarantine.rpc.safelist;
+        action( this.refreshTable.createDelegate( quarantine, [ null, getCount, getMessage ], true ),
+                inboxDetails.token, addresses );
     },
 
     releaseButton : new Ext.Button( {
-        handler : function() { quarantine.executeAction( quarantine.rpc.releaseMessages,
-                                                         globalStrings.releaseMessages); },
+        handler : function() { quarantine.releaseOrDelete( quarantine.rpc.releaseMessages,
+                                                           globalStrings.releaseMessages); },
         text : globalStrings.buttonRelease[0],
         disabled : true
     } ),
 
     deleteButton : new Ext.Button( {
-        handler : function() { quarantine.executeAction( quarantine.rpc.purgeMessages, 
-                                                         globalStrings.deletedMessages ); },
+        handler : function() { quarantine.releaseOrDelete( quarantine.rpc.purgeMessages, 
+                                                           globalStrings.deletedMessages ); },
         text : globalStrings.buttonDelete[0],
         disabled : true
     } ),
+
+    safelistButton : new Ext.Button( {
+        handler : function() { quarantine.safelist() },
+        text : globalStrings.buttonSafelist[0],
+        disabled : true
+    } ),
     
-    refreshTable : function( result, exception ) {
+    refreshTable : function( result, exception, foo, messages, getCount, getMessage )
+    {
         if ( exception ) {
             Ext.MessageBox.alert("Failed",exception.message); 
             return;
         }
 
         try {
-            /* This is the number of messages released or deleted */
-            var count = quarantine.store.proxy.totalRecords - result;
+            var message = getMessage( result, messages );
 
             /* Update the new total number of records */
-            quarantine.store.proxy.setTotalRecords( result );
+            quarantine.store.proxy.setTotalRecords( getCount( result ));
 
             /* to refresh the buttons at the bottom */
-            quarantine.updateActionItem( null, false );
+            quarantine.updateActionItem( null, null,false );
             
             /* Reload the data */
             quarantine.store.load({params:{start:0, limit:quarantine.pageSize}});
-
-            var message = this.messages[1];
-            if ( count <= 0 ) message = "";
-            else if ( count == 1 ) message = this.messages[0];
-
-            message = sprintf( message, count );
             
             /* need some sprintf or something here */
-            quarantine.grid.setTitle( globalStrings.quarantineGridTitle + " (" + message + ")" );
+            var title = globalStrings.quarantineGridTitle;
+            if ( message != null && message != "" ) title += " (" + message + ")";
+            quarantine.grid.setTitle( title );
             
             /* Refresh the table */
             quarantine.grid.setDisabled( false );
@@ -200,14 +271,19 @@ Ung.Quarantine.prototype = {
         }
     },
 
-    updateActionItem : function( mailid, ifAdd )
+    updateActionItem : function( mailid, address, ifAdd )
     {
         var value = true;
         if ( !ifAdd ) value = null;
         if ( mailid != null ) this.actionItems.put( mailid, value );
+        if ( address != null ) {
+            if ( ifAdd ) this.addresses.add( address );
+            else this.addresses.minus( address );
+        }
 
         var deleteText;
         var releaseText;
+        var safelistText = globalStrings.buttonSafelist[0];
         
         var count = this.actionItems.size;
         if ( count == 0 ) {
@@ -227,8 +303,21 @@ Ung.Quarantine.prototype = {
             quarantine.deleteButton.setDisabled( false );
         }
 
+        count = this.addresses.size;
+        if ( count == 0 ) {
+            safelistText = globalStrings.buttonSafelist[0];
+            quarantine.safelistButton.setDisabled( true );
+        } else if ( count == 1 ) {
+            safelistText = globalStrings.buttonSafelist[1];
+            quarantine.safelistButton.setDisabled( false );
+        } else {
+            safelistText = sprintf( globalStrings.buttonSafelist[2], count );
+            quarantine.safelistButton.setDisabled( false );
+        }        
+
         quarantine.releaseButton.setText( releaseText );
         quarantine.deleteButton.setText( deleteText );
+        quarantine.safelistButton.setText( safelistText );
     }
 }
 
@@ -239,10 +328,10 @@ Ext.onReady(function() {
     quarantine.selectionModel = new Ext.grid.CheckboxSelectionModel({
         listeners : {
             rowselect : function( sm, rowIndex, record ) {
-                quarantine.updateActionItem( record.data.mailID, true );
+                quarantine.updateActionItem( record.data.mailID, record.data.sender, true );
             },
             rowdeselect : function( sm, rowIndex, record ) {
-                quarantine.updateActionItem( record.data.mailID, false );
+                quarantine.updateActionItem( record.data.mailID, record.data.sender, false );
             }
         }});
     
@@ -353,7 +442,7 @@ Ext.onReady(function() {
             displayInfo: true,
             displayMsg: 'Displaying Messages {0} - {1} of {2}',
             emptyMsg: 'No messges to display',
-            items: [ quarantine.releaseButton, quarantine.deleteButton ] })
+            items: [ quarantine.releaseButton, quarantine.deleteButton, quarantine.safelistButton ] })
     });
 
     quarantine.grid.render();

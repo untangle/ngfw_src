@@ -43,11 +43,17 @@
                                                '${uvm:i18n( pageContext, "Delete one Message" )}',
                                                '${uvm:i18n( pageContext, "Delete %d Messages" )}'];
 
+               globalStrings.buttonSafelist = [ '${uvm:i18n( pageContext, "Safelist Addresses" )}',
+                                                '${uvm:i18n( pageContext, "Safelist one Address" )}',
+                                                '${uvm:i18n( pageContext, "Safelist %d Addresses" )}'];
+
                globalStrings.releaseMessages = [ '${uvm:i18n( pageContext, 'Released one message' )}', 
                                                  '${uvm:i18n( pageContext, 'Released %d messages' )}' ];
                globalStrings.deletedMessages = [ '${uvm:i18n( pageContext, 'Deleted one message' )}', 
                                                  '${uvm:i18n( pageContext, 'Deleted %d messages' )}' ];
 
+               globalStrings.safelistMessages =  [ '${uvm:i18n( pageContext, 'Safelisted one address' )}',
+                                                   '${uvm:i18n( pageContext, 'Safelisted %d addresses' )}'];
       ]]>
     </uvm:inlineScript>
 
