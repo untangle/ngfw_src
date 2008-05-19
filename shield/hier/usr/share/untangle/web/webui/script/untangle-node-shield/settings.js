@@ -191,7 +191,7 @@ if (!Ung.hasResource["Ung.Shield"]) {
         buildEventLog : function() {
             this.gridEventLog = new Ung.GridEventLog({
                 settingsCmp : this,
-                info : 'buildEventLog',
+                info : 'gridEventLog',
                 hasRepositories : false,
                 eventDepth : 1000,
 

@@ -1476,6 +1476,9 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
         if (this.autoExpandColumn == null) {
             this.autoExpandColumn = "timestamp";
         }
+        if (this.info == null) {
+            this.info = "gridEventLog";
+        }
         if (this.predefinedType != null) {
             this.fields = this.getPredefinedFields(this.predefinedType);
             this.columns = this.getPredefinedColumns(this.predefinedType);
