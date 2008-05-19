@@ -22,7 +22,6 @@ import static com.untangle.node.util.Ascii.CRLF;
 
 import java.util.Date;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -32,6 +31,7 @@ import org.hibernate.Session;
 
 import com.untangle.node.mail.papi.smtp.SMTPNotifyAction;
 import com.untangle.node.token.TokenAdaptor;
+import com.untangle.node.util.PartialListUtil;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.localapi.SessionMatcher;
 import com.untangle.uvm.logging.EventLogger;
@@ -42,12 +42,8 @@ import com.untangle.uvm.node.MimeType;
 import com.untangle.uvm.node.MimeTypeRule;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeContext;
-import com.untangle.uvm.node.Rule;
 import com.untangle.uvm.node.StringRule;
 import com.untangle.uvm.policy.Policy;
-import com.untangle.uvm.util.ListUtil;
-import com.untangle.uvm.util.QueryUtil;
-import com.untangle.node.util.PartialListUtil;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.AbstractNode;
 import com.untangle.uvm.vnet.Affinity;

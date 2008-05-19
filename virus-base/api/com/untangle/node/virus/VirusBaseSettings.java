@@ -32,6 +32,7 @@
  */
 package com.untangle.node.virus;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.CascadeType;
@@ -49,7 +50,7 @@ import javax.persistence.Transient;
  * @version 1.0
  */
 @Embeddable
-public class VirusBaseSettings {
+public class VirusBaseSettings implements Serializable {
     private boolean ftpDisableResume = true;
     private boolean httpDisableResume = true;
     private int tricklePercent = 90;
