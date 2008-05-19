@@ -186,11 +186,12 @@ class EventHandler extends AbstractEventHandler
 
     void configure(FirewallSettings settings)
     {
-        this.isQuickExit = settings.isQuickExit();
-        this.rejectSilently = settings.isRejectSilently();
-        this.isDefaultAccept = settings.isDefaultAccept();
+        this.isQuickExit = settings.getBaseSettings().isQuickExit();
+        this.rejectSilently = settings.getBaseSettings().isRejectSilently();
+        this.isDefaultAccept = settings.getBaseSettings().isDefaultAccept();
 
-        /* Create a new list in tmp to avoid sessions that are iterating the current list */
+        /* Create a new list in tmp to avoid sessions that are
+         * iterating the current list */
         List <FirewallMatcher> firewallRuleList = new LinkedList<FirewallMatcher>();
 
         List<FirewallRule> list = (List<FirewallRule>)settings.getFirewallRuleList();

@@ -196,7 +196,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
                                             final String... sortColumns)
     {
         return listUtil.getItems("select s.activeXRules from SpywareSettings s where s.tid = :tid ",
-                                  getNodeContext(), getTid(), start, limit,
+                                 getNodeContext(), getTid(), start, limit,
                                  sortColumns);
 
     }

@@ -25,9 +25,11 @@ import com.untangle.uvm.node.Node;
 
 public interface IpsNode extends Node
 {
+    EventManager<IpsLogEvent> getEventManager();
+
     IpsBaseSettings getBaseSettings();
     void setBaseSettings(IpsBaseSettings baseSettings);
-    EventManager<IpsLogEvent> getEventManager();
+
 
     List<IpsRule> getRules(int start, int limit, String... sortColumns);
     void updateRules(List<IpsRule> added, List<Long> deleted,

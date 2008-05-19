@@ -24,6 +24,7 @@ import java.util.LinkedList;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -50,17 +51,15 @@ import org.hibernate.annotations.IndexColumn;
 @Table(name="n_firewall_settings", schema="settings")
 public class FirewallSettings implements Serializable, Validatable
 {
-    private Long id;
-    private Tid tid;
-
     /* XXX Must be updated */
     private static final long serialVersionUID = 1629094295874759581L;
 
-    private List<FirewallRule> firewallRuleList = null;
+    private Long id;
+    private Tid tid;
 
-    private boolean quickExit = true;
-    private boolean rejectSilently = true;
-    private boolean isDefaultAccept = true;
+    private FirewallBaseSettings baseSettings;
+
+    private List<FirewallRule> firewallRuleList = null;
 
     private FirewallSettings() {}
 
@@ -108,48 +107,19 @@ public class FirewallSettings implements Serializable, Validatable
         this.tid = tid;
     }
 
-    /**
-     * If true, exit on the first positive or negative match.  Otherwise, exit
-     * on the first negative match.
-     */
-    @Column(name="is_quickexit", nullable=false)
-    public boolean isQuickExit()
+    @Embedded
+    public FirewallBaseSettings getBaseSettings()
     {
-        return this.quickExit;
+        if (null != baseSettings) {
+            baseSettings.setFirewallRulesLengh(null == firewallRuleList ? 0 : firewallRuleList.size());
+        }
+
+        return baseSettings;
     }
 
-    public void setQuickExit( boolean b )
+    public void setBaseSettings(FirewallBaseSettings baseSettings)
     {
-        this.quickExit = b;
-    }
-
-    /**
-     *  If true, the session is rejected quietly (default), otherwise the connection
-     *  is rejected silently.
-     */
-    @Column(name="is_reject_silent", nullable=false)
-    public boolean isRejectSilently()
-    {
-        return this.rejectSilently;
-    }
-
-    public void setRejectSilently( boolean b )
-    {
-        this.rejectSilently = b;
-    }
-
-    /**
-     *  If true, the session is accepted if it doesn't match any other rules.
-     */
-    @Column(name="is_default_accept", nullable=false)
-    public boolean isDefaultAccept()
-    {
-        return this.isDefaultAccept;
-    }
-
-    public void setDefaultAccept( boolean b )
-    {
-        this.isDefaultAccept = b;
+        this.baseSettings = baseSettings;
     }
 
     /**
