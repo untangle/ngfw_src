@@ -33,7 +33,7 @@ Ung.Main.prototype = {
 	iframeWin: null,
 	// init function
 	init: function() {
-		this.initSemaphore=7;
+		this.initSemaphore=8;
 		rpc = {};
 		// get JSONRpcClient
 		rpc.jsonrpc = new JSONRpcClient("/webui/JSON-RPC");
@@ -93,6 +93,12 @@ Ung.Main.prototype = {
 			rpc.version=result;
 			this.postinit();// 7
 		}.createDelegate(this));
+        // get network manager
+        rpc.jsonrpc.RemoteUvmContext.networkManager(function (result, exception) {
+            if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
+            rpc.networkManager=result;
+            this.postinit();// 8
+        }.createDelegate(this));
 		
 	},
 	postinit: function() {

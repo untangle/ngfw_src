@@ -34,8 +34,7 @@ if (!Ung.hasResource["Ung.System"]) {
             // builds the tab panel with the tabs
             this.buildTabPanel([this.panelUntangleSupport, this.panelBackup, this.panelRestore, this.panelProtocolSettings,
                     this.panelRegionalSettings]);
-            this.tabs.activate(this.panelRegionalSettings);
-            this.panelUntangleSupport.disable();
+            this.tabs.activate(this.panelUntangleSupport);
             this.panelBackup.disable();
             this.panelRestore.disable();
             this.panelProtocolSettings.disable();
@@ -47,6 +46,18 @@ if (!Ung.hasResource["Ung.System"]) {
                 this.rpc.languageSettings = rpc.languageManager.getLanguageSettings();
             }
             return this.rpc.languageSettings;
+        },
+        getAccessSettings : function(forceReload) {
+            if (forceReload || this.rpc.accessSettings === undefined) {
+                this.rpc.accessSettings = rpc.networkManager.getAccessSettings();
+            }
+            return this.rpc.accessSettings;
+        },
+        getMiscSettings : function(forceReload) {
+            if (forceReload || this.rpc.miscSettings === undefined) {
+                this.rpc.miscSettings = rpc.networkManager.getMiscSettings();
+            }
+            return this.rpc.miscSettings;
         },
         getTODOPanel : function(title) {
             return new Ext.Panel({
@@ -70,7 +81,55 @@ if (!Ung.hasResource["Ung.System"]) {
             });
         },
         buildUntangleSupport : function() {
-            this.panelUntangleSupport = this.getTODOPanel("Untangle Support");
+            this.panelUntangleSupport = new Ext.Panel({
+                // private fields
+                info : 'panelUntangleSupport',
+                parentId : this.getId(),
+                title : this.i18n._('Untangle Support'),
+                layout : "form",
+                bodyStyle : 'padding:5px 5px 0px 5px;',
+                autoScroll : true,
+                defaults : {
+                    xtype : 'fieldset',
+                    autoHeight : true,
+                    buttonAlign : 'left'
+                },
+                items : [{
+                    title : this.i18n._('Support'),
+                    defaults : {
+                        border : false,
+                        bodyStyle : 'padding:5px 5px 0px 5px;'
+                    },
+                    items : [{
+                        xtype : 'checkbox',
+                        name : 'isSupportEnabled',
+                        boxLabel : this.i18n._('<b>Allow</b> us to securely access your server for support purposes.'),
+                        hideLabel : true,
+                        checked : this.getAccessSettings().isSupportEnabled,
+                        listeners : {
+                            "change" : {
+                                fn : function(elem, newValue) {
+                                    this.getAccessSettings().isSupportEnabled = newValue;
+                                }.createDelegate(this)
+                            }
+                        }
+                    }, {
+                        xtype : 'checkbox',
+                        name : 'isSupportEnabled',
+                        boxLabel : this.i18n._('<b>Send</b> us data about your server. This will send us status updates and an email if any unexpected problems occur, but will not allow us to login to your server. No personal information about your network traffic will be transmitted.'),
+                        hideLabel : true,
+                        checked : this.getMiscSettings().isExceptionReportingEnabled,
+                        listeners : {
+                            "change" : {
+                                fn : function(elem, newValue) {
+                                    this.getMiscSettings().isExceptionReportingEnabled = newValue;
+                                }.createDelegate(this)
+                            }
+                        }
+                    }]
+                }]
+            });
+
         },
         buildBackup : function() {
             this.panelBackup = this.getTODOPanel("Backup");
@@ -96,7 +155,7 @@ if (!Ung.hasResource["Ung.System"]) {
                 parentId : this.getId(),
                 title : this.i18n._('Regional Settings'),
                 layout : "form",
-                bodyStyle : 'padding:5px 5px 0px 5px',
+                bodyStyle : 'padding:5px 5px 0px 5px;',
                 autoScroll : true,
                 defaults : {
                     xtype : 'fieldset',
@@ -104,6 +163,43 @@ if (!Ung.hasResource["Ung.System"]) {
                     buttonAlign : 'left'
                 },
                 items : [{
+                    title : this.i18n._('Current Time'),
+                    defaults : {
+                        border : false,
+                        bodyStyle : 'padding:5px 5px 0px 5px'
+                    },
+                    items : [{
+                        html : this.i18n._('time is automatically synced via NTP')
+                    }, {
+                        html : this.i18n.timestampFormat(rpc.adminManager.getDate())
+                    }]
+                }, {
+                    title : this.i18n._('Timezone'),
+                    items : [{
+                        xtype : 'combo',
+                        name : 'timezone',
+                        // editable : false,
+                        store : [],
+                        fieldLabel : this.i18n._('Timezone'),
+                        mode : 'local',
+                        triggerAction : 'all',
+                        listClass : 'x-combo-list-small',
+                        value : rpc.adminManager.getTimeZone(),
+                        listeners : {
+                            "change" : {
+                                fn : function(elem, newValue) {
+                                    this.getBaseSettings().smtpConfig.msgAction.name = newValue;
+                                    for (var i = 0; i < this.smtpData.length; i++) {
+                                        if (this.smtpData[i][0] == newValue) {
+                                            this.getBaseSettings().smtpConfig.msgAction.key = this.smtpData[i][2]
+                                            break;
+                                        }
+                                    }
+                                }.createDelegate(this)
+                            }
+                        }
+                    }]
+                }, {
                     title : this.i18n._('Language'),
                     items : [{
                         id : 'system_language_combo',
@@ -200,18 +296,38 @@ if (!Ung.hasResource["Ung.System"]) {
         saveAction : function() {
             if (this.validate()) {
                 // disable tabs during save
-                this.tabs.disable();
+                // this.tabs.disable();
+            	this.saveSemaphore=2;
                 rpc.languageManager.setLanguageSettings(function(result, exception) {
                     // re-enable tabs
-                    this.tabs.enable();
+                    // this.tabs.enable();
                     if (exception) {
                         Ext.MessageBox.alert(i18n._("Failed"), exception.message);
                         return;
                     }
                     // exit settings screen
-                    this.cancelAction();
+                    
+                    this.afterSave();
+                    
                 }.createDelegate(this), this.getLanguageSettings());
+                rpc.networkManager.setSettings(function(result, exception) {
+                    // re-enable tabs
+                    // this.tabs.enable();
+                    if (exception) {
+                        Ext.MessageBox.alert(i18n._("Failed"), exception.message);
+                        return;
+                    }
+                    // exit settings screen
+                    this.afterSave();
+                }.createDelegate(this), this.getAccessSettings(), this.getMiscSettings());
+
             }
+        },
+        afterSave : function () {
+        	this.saveSemaphore--;
+        	if(this.saveSemaphore==0) {
+        	   this.cancelAction();
+        	}
         }
 
     });
