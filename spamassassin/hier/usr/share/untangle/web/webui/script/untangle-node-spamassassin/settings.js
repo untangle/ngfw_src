@@ -140,7 +140,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                         }
                     }, {
                         xtype : 'combo',
-                        name : 'smptAction',
+                        name : 'smtpAction',
                         editable : false,
                         store : this.smtpData,
                         fieldLabel : this.i18n._('Action'),

@@ -7,15 +7,25 @@ if (!Ung.hasResource["Ung.Virus"]) {
         gridEventLog : null,
         // called when the component is rendered
         onRender : function(container, position) {
+            // workarownd to solve the problem with
+            // baseSettings.popConfig.msgAction==baseSettings.imapConfig.msgAction
+            var baseSettings = this.getBaseSettings();
+            if (baseSettings.popConfig.msgAction == baseSettings.imapConfig.msgAction) {
+                var msgAction = {};
+                msgAction.javaClass = baseSettings.imapConfig.msgAction.javaClass;
+                msgAction.key = baseSettings.imapConfig.msgAction.key;
+                msgAction.name = baseSettings.imapConfig.msgAction.name;
+                baseSettings.imapConfig.msgAction = msgAction;
+            }
             // call superclass renderer first
             Ung.Virus.superclass.onRender.call(this, container, position);
             // builds the 4 tabs
             this.buildWeb();
-//            this.buildEmail();
+            this.buildEmail();
             this.buildFtp();
             this.buildEventLog();
             // builds the tab panel with the tabs
-            this.buildTabPanel([this.panelWeb, /*this.panelEmail,*/ this.panelFtp, this.gridEventLog]);
+            this.buildTabPanel([this.panelWeb, this.panelEmail, this.panelFtp, this.gridEventLog]);
         },
         // Web Panel
         buildWeb : function() {
@@ -377,60 +387,154 @@ if (!Ung.hasResource["Ung.Virus"]) {
                     html : this.i18n._("Virus Blocker signatures were last updated") + ":&nbsp;&nbsp;&nbsp;&nbsp;"
                             + ((this.getBaseSettings().lastUpdate != null) ? i18n.timestampFormat(this.getBaseSettings().lastUpdate) : 
                             this.i18n._("Unknown"))
-                }],
+                }]
 
-                onManageExtensions : function() {
-                    if (!this.winExtensions) {
-                        var settingsCmp = Ext.getCmp(this.parentId);
-                        settingsCmp.buildExtensions();
-                        this.winExtensions = new Ung.ManageListWindow({
-                            breadcrumbs : [{
-                                title : i18n._(rpc.currentPolicy.name),
-                                action : function() {
-                                    this.panelWin.winExtensions.cancelAction();
-                                    this.cancelAction();
-                                }.createDelegate(settingsCmp)
-                            }, {
-                                title : settingsCmp.node.md.displayName,
-                                action : function() {
-                                    this.panelWin.winExtensions.cancelAction();
-                                }.createDelegate(settingsCmp)
-                            }, {
-                                title : settingsCmp.i18n._("File Extensions")
-                            }],
-                            grid : settingsCmp.gridExtensions
-                        });
-                    }
-                    this.winExtensions.show();
+            });
+        },
+        // Email Panel
+        buildEmail : function() {
+            this.panelEmail = new Ext.Panel({
+                info : 'panelEmail',
+                // private fields
+                parentId : this.getId(),
+
+                title : this.i18n._('Email'),
+                layout : "form",
+                bodyStyle : 'padding:5px 5px 0px 5px;',
+                autoScroll : true,
+                defaults : {
+                    xtype : 'fieldset',
+                    autoHeight : true,
+                    buttonAlign : 'left'
                 },
-                onManageMimeTypes : function() {
-                    if (!this.winMimeTypes) {
-                        var settingsCmp = Ext.getCmp(this.parentId);
-                        settingsCmp.buildMimeTypes();
-                        this.winMimeTypes = new Ung.ManageListWindow({
-                            breadcrumbs : [{
-                                title : i18n._(rpc.currentPolicy.name),
-                                action : function() {
-                                    this.panelWin.winMimeTypes.cancelAction();
-                                    this.cancelAction();
-                                }.createDelegate(settingsCmp)
-                            }, {
-                                title : settingsCmp.node.md.displayName,
-                                action : function() {
-                                    this.panelWin.winMimeTypes.cancelAction();
-                                }.createDelegate(settingsCmp)
-                            }, {
-                                title : settingsCmp.i18n._("MIME Types")
-                            }],
-                            grid : settingsCmp.gridMimeTypes
-                        });
-                    }
-                    this.winMimeTypes.show();
-                },
-                beforeDestroy : function() {
-                    Ext.destroy( this.winExtensions, this.winMimeTypes);
-                    Ext.Panel.prototype.beforeDestroy.call(this);
-                }
+                items : [{
+                	layout:'column',
+                    items:[{
+                        columnWidth:.3,
+                        layout: 'form',
+                        border:false,
+                        items: [{
+                            xtype : 'checkbox',
+                            boxLabel : this.i18n._('Scan SMTP'),
+                            hideLabel : true,
+                            name : 'scanSMTP',
+                            checked : this.getBaseSettings().smtpConfig.scan,
+                            listeners : {
+                                "check" : {
+                                    fn : function(elem, checked) {
+                                        this.getBaseSettings().smtpConfig.scan = checked;
+                                    }.createDelegate(this)
+                                }
+                            }
+                        }, {
+                            xtype : 'checkbox',
+                            boxLabel : this.i18n._('Scan POP3'),
+                            hideLabel : true,
+                            name : 'scanPOP',
+                            checked : this.getBaseSettings().popConfig.scan,
+                            listeners : {
+                                "check" : {
+                                    fn : function(elem, checked) {
+                                        this.getBaseSettings().popConfig.scan = checked;
+                                    }.createDelegate(this)
+                                }
+                            }
+                        }, {
+                            xtype : 'checkbox',
+                            boxLabel : this.i18n._('Scan IMAP'),
+                            hideLabel : true,
+                            name : 'scanIMAP',
+                            checked : this.getBaseSettings().imapConfig.scan,
+                            listeners : {
+                                "check" : {
+                                    fn : function(elem, checked) {
+                                        this.getBaseSettings().imapConfig.scan = checked;
+                                    }.createDelegate(this)
+                                }
+                            }
+                        }]
+                    },{
+                        columnWidth:.3,
+                        layout: 'form',
+                        border:false,
+                        items: [{
+                            xtype : 'combo',
+                            name : 'smtpAction',
+                            editable : false,
+                            fieldLabel : this.i18n._('Action'),
+                            mode : 'local',
+                            triggerAction : 'all',
+                            listClass : 'x-combo-list-small',
+                            store : new Ext.data.SimpleStore({
+                                fields : ['key', 'name'],
+                                data : [["P", this.i18n._("pass message")], 
+                                        ["R", this.i18n._("remove infection")],
+                                        ["B", this.i18n._("block message")]]
+                            }),
+                            displayField : 'name',
+                            valueField : 'key',
+                            value : this.getBaseSettings().smtpConfig.msgAction.key,
+                            listeners : {
+                                "change" : {
+                                    fn : function(elem, newValue) {
+                                        this.getBaseSettings().smtpConfig.msgAction.key = newValue;
+                                    }.createDelegate(this)
+                                }
+                            }
+                        },{
+                            xtype : 'combo',
+                            name : 'popAction',
+                            editable : false,
+                            fieldLabel : this.i18n._('Action'),
+                            mode : 'local',
+                            triggerAction : 'all',
+                            listClass : 'x-combo-list-small',
+                            store : new Ext.data.SimpleStore({
+                                fields : ['key', 'name'],
+                                data : [["P", this.i18n._("pass message")], 
+                                        ["R", this.i18n._("remove infection")]]
+                            }),
+                            displayField : 'name',
+                            valueField : 'key',
+                            value : this.getBaseSettings().popConfig.msgAction.key,
+                            listeners : {
+                                "change" : {
+                                    fn : function(elem, newValue) {
+                                        this.getBaseSettings().popConfig.msgAction.key = newValue;
+                                    }.createDelegate(this)
+                                }
+                            }
+                        },{
+                            xtype : 'combo',
+                            name : 'imapAction',
+                            editable : false,
+                            fieldLabel : this.i18n._('Action'),
+                            mode : 'local',
+                            triggerAction : 'all',
+                            listClass : 'x-combo-list-small',
+                            store : new Ext.data.SimpleStore({
+                                fields : ['key', 'name'],
+                                data : [["P", this.i18n._("pass message")], 
+                                        ["R", this.i18n._("remove infection")]]
+                            }),
+                            displayField : 'name',
+                            valueField : 'key',
+                            value : this.getBaseSettings().imapConfig.msgAction.key,
+                            listeners : {
+                                "change" : {
+                                    fn : function(elem, newValue) {
+                                        this.getBaseSettings().imapConfig.msgAction.key = newValue;
+                                    }.createDelegate(this)
+                                }
+                            }
+                        }]
+                    }]
+                }, {
+                    html : this.i18n._("Virus Blocker signatures were last updated") + ":&nbsp;&nbsp;&nbsp;&nbsp;"
+                            + ((this.getBaseSettings().lastUpdate != null) ? i18n.timestampFormat(this.getBaseSettings().lastUpdate) : 
+                            this.i18n._("Unknown"))
+                }]
+
             });
         },
         // Event Log
