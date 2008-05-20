@@ -1353,19 +1353,30 @@ Ung.Settings._nodeScripts = {};
 // Dynamically loads javascript file for a node
 Ung.Settings.loadNodeScript = function(nodeName, cmpId, callbackFn) {
     main.loadScript('script/' + nodeName + '/settings.js', function() {
-        callbackFn(cmpId);
+        var cmp = Ext.getCmp(cmpId);
+        cmp.settingsClassName = Ung.Settings.getClassName(cmp.name);
+        
+        if(!Ung.Settings.dependency[cmp.name]) {
+        	callbackFn(cmpId);
+        } else {
+        	main.loadScript('script/' + Ung.Settings.dependency[cmp.name].name + '/settings.js', function() {
+                Ung.Settings.dependency[cmp.name].fn.call(this);
+                callbackFn(cmpId);
+        	});
+        }
     });
 };
-Ung.Settings._classNames = {};
 
+Ung.Settings.classNames = {};
+Ung.Settings.dependency = {};
 // Static function get the settings class name for a node
 Ung.Settings.getClassName = function(name) {
-    var className = Ung.Settings._classNames[name];
+    var className = Ung.Settings.classNames[name];
     return className === undefined ? null : className;
 };
 // Static function to register a settings class name for a node
 Ung.Settings.registerClassName = function(name, className) {
-    Ung.Settings._classNames[name] = className;
+    Ung.Settings.classNames[name] = className;
 };
 
 // Event Log class

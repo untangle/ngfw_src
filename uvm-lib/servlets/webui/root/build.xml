@@ -34,6 +34,9 @@
             <fileset dir="./../../../../phish/hier/usr/share/untangle/web/webui/script/">
                 <include name="**/*.*"/>
             </fileset>
+            <fileset dir="./../../../../virus-base/hier/usr/share/untangle/web/webui/script/">
+                <include name="**/*.*"/>
+            </fileset>
             <fileset dir="./../../../../clam/hier/usr/share/untangle/web/webui/script/">
                 <include name="**/*.*"/>
             </fileset>
