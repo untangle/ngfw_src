@@ -903,22 +903,7 @@ Ung.Node = Ext.extend(Ext.Component, {
     // init settings
     initSettings : function() {
         this.loadNodeContext();
-        if (!Ung.i18nModuleInstances[this.name]) {
-            rpc.languageManager.getTranslations(function(result, exception) {
-                if (exception) {
-                    Ext.MessageBox.alert(i18n._("Failed"), i18n._("Failed loading I18N translations for this node"));
-                    return;
-                }
-                Ung.i18nModuleInstances[this.name] = new Ung.ModuleI18N({
-                    "map" : i18n.map,
-                    "moduleMap" : result.map
-                });
-                this.renderSettings()
-            }.createDelegate(this), this.name.replace("untangle-node-", "")); // convention
-
-        } else {
-            this.renderSettings();
-        }
+        this.renderSettings();
     },
     // render settings component
     renderSettings : function() {
@@ -1268,7 +1253,31 @@ Ung.Settings = Ext.extend(Ext.Component, {
     rpc : null,
     autoEl : 'div',
     constructor : function(config) {
-        this.id = "settings_" + config.node.name + "_" + rpc.currentPolicy;
+        var nodeName=config.node.name;
+        this.id = "settings_" + nodeName + "_" + rpc.currentPolicy;
+        if (!Ung.i18nModuleInstances[nodeName]) {
+            if(Ung.Settings.dependency[nodeName]) {
+                var dependencyName=Ung.Settings.dependency[nodeName].name;
+                if (!Ung.i18nModuleInstances[dependencyName]) {
+                    var dependencyTranslations = rpc.languageManager.getTranslations(dependencyName.replace("untangle-base-", "")); // convention
+                    Ung.i18nModuleInstances[dependencyName] = new Ung.ModuleI18N({
+                        "map" : i18n.map,
+                        "moduleMap" : dependencyTranslations.map
+                    })                
+                }
+            }
+
+            var moduleTranslations=rpc.languageManager.getTranslations(nodeName.replace("untangle-node-", "")); // convention
+            var moduleMap=moduleTranslations.map;
+            if(Ung.Settings.dependency[nodeName]) {
+                var dependencyMap=Ung.i18nModuleInstances[Ung.Settings.dependency[nodeName].name].map;
+                Ext.applyIf(moduleMap, dependencyMap);
+            }
+            Ung.i18nModuleInstances[nodeName] = new Ung.ModuleI18N({
+                    "map" : i18n.map,
+                    "moduleMap" : moduleMap
+            });
+        }
         Ung.Settings.superclass.constructor.apply(this, arguments);
     },
     // called when the component is initialized
@@ -1359,10 +1368,15 @@ Ung.Settings.loadNodeScript = function(nodeName, cmpId, callbackFn) {
         if(!Ung.Settings.dependency[cmp.name]) {
         	callbackFn(cmpId);
         } else {
-        	main.loadScript('script/' + Ung.Settings.dependency[cmp.name].name + '/settings.js', function() {
-                Ung.Settings.dependency[cmp.name].fn.call(this);
-                callbackFn(cmpId);
-        	});
+        	var dependencyClassName=Ung.Settings.getClassName(Ung.Settings.dependency[cmp.name].name);
+        	if(!dependencyClassName) {
+            	main.loadScript('script/' + Ung.Settings.dependency[cmp.name].name + '/settings.js', function() {
+                    Ung.Settings.dependency[cmp.name].fn.call(this);
+                    callbackFn(cmpId);
+            	});
+        	} else {
+        		callbackFn(cmpId);
+        	}
         }
     });
 };

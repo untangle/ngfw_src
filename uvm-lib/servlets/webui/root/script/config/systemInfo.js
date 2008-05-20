@@ -107,10 +107,12 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                     }
                 },
                 items : [{
-                    bodyStyle : 'padding:0px 0px 5px 0px;',
-                    border : false,
-                    html : this.i18n
-                            ._("The Branding Settings are used to set the logo and contact information that will be seen by users (e.g. reports).")
+                    items: [{
+                        bodyStyle : 'padding:0px 0px 5px 0px;',
+                        border : false,
+                        html : this.i18n
+                                ._("The Branding Settings are used to set the logo and contact information that will be seen by users (e.g. reports).")
+                    }]
                 }, {
                     title : this.i18n._('Logo'),
                     items : [{
