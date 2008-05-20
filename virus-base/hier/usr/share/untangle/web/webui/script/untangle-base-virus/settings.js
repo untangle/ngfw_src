@@ -12,7 +12,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
             // builds the 4 tabs
             this.buildWeb();
 //            this.buildEmail();
-//            this.buildFtp();
+            this.buildFtp();
             this.buildEventLog();
             // builds the tab panel with the tabs
             this.buildTabPanel([this.panelWeb, /*this.panelEmail, this.panelFtp,*/ this.gridEventLog]);
@@ -301,6 +301,150 @@ if (!Ung.hasResource["Ung.Virus"]) {
                 })]
             });
         },        
+        // Ftp Panel
+        buildFtp : function() {
+            this.panelFtp = new Ext.Panel({
+                info : 'panelFtp',
+                // private fields
+                parentId : this.getId(),
+
+                title : this.i18n._('FTP'),
+                layout : "form",
+                bodyStyle : 'padding:5px 5px 0px 5px;',
+                autoScroll : true,
+                defaults : {
+                    xtype : 'fieldset',
+                    autoHeight : true,
+                    buttonAlign : 'left'
+                },
+                items : [{
+                    items : [{
+                        xtype : 'checkbox',
+                        boxLabel : this.i18n._('Scan HTTP'),
+                        hideLabel : true,
+                        name : 'scanHttp',
+                        checked : this.getBaseSettings().httpConfig.scan,
+                        listeners : {
+                            "check" : {
+                                fn : function(elem, checked) {
+                                    this.getBaseSettings().httpConfig.scan = checked;
+                                }.createDelegate(this)
+                            }
+                        }
+                    }]
+                }, {
+                    title: this.i18n._('Advanced Settings'),
+                    checkboxToggle:true,
+                    collapsed: true,
+                    labelWidth: 150,
+                    items : [{
+                        xtype : 'button',
+                        info : 'extensionsButton',
+                        text : this.i18n._('File Extensions'),
+                        style : 'padding-bottom:10px;',
+                        handler : function() {
+                            this.panelWeb.onManageExtensions();
+                        }.createDelegate(this)
+                    }, {
+                        xtype : 'button',
+                        info : 'mimeTypesButton',
+                        text : this.i18n._('MIME Types'),
+                        style : 'padding-bottom:10px;',
+                        handler : function() {
+                            this.panelWeb.onManageMimeTypes();
+                        }.createDelegate(this)
+                    }, {
+                        xtype : 'checkbox',
+                        boxLabel : this.i18n._('Disable HTTP Resume'),
+                        hideLabel : true,
+                        name : 'httpDisableResume',
+                        checked : this.getBaseSettings().httpDisableResume,
+                        listeners : {
+                            "check" : {
+                                fn : function(elem, checked) {
+                                    this.getBaseSettings().httpDisableResume = checked;
+                                }.createDelegate(this)
+                            }
+                        }
+                    },{
+                        xtype : 'numberfield',
+                        fieldLabel : this.i18n._('Scan trickle rate (1-99)'),
+                        name : 'tricklePercent',
+                        id: 'virus_trickle_percent',
+                        value : this.getBaseSettings().tricklePercent,
+                        width: 25,
+                        allowDecimals: false,
+                        allowNegative: false,
+                        minValue: 1,                        
+                        maxValue: 99,
+                        listeners : {
+                            "change" : {
+                                fn : function(elem, newValue) {
+                                    this.getBaseSettings().tricklePercent = newValue;
+                                }.createDelegate(this)
+                            }
+                        }
+                    }]
+                }, {
+                    html : this.i18n._("Virus Blocker signatures were last updated") + ":&nbsp;&nbsp;&nbsp;&nbsp;"
+                            + ((this.getBaseSettings().lastUpdate != null) ? i18n.timestampFormat(this.getBaseSettings().lastUpdate) : 
+                            this.i18n._("Unknown"))
+                }],
+
+                onManageExtensions : function() {
+                    if (!this.winExtensions) {
+                        var settingsCmp = Ext.getCmp(this.parentId);
+                        settingsCmp.buildExtensions();
+                        this.winExtensions = new Ung.ManageListWindow({
+                            breadcrumbs : [{
+                                title : i18n._(rpc.currentPolicy.name),
+                                action : function() {
+                                    this.panelWin.winExtensions.cancelAction();
+                                    this.cancelAction();
+                                }.createDelegate(settingsCmp)
+                            }, {
+                                title : settingsCmp.node.md.displayName,
+                                action : function() {
+                                    this.panelWin.winExtensions.cancelAction();
+                                }.createDelegate(settingsCmp)
+                            }, {
+                                title : settingsCmp.i18n._("File Extensions")
+                            }],
+                            grid : settingsCmp.gridExtensions
+                        });
+                    }
+                    this.winExtensions.show();
+                },
+                onManageMimeTypes : function() {
+                    if (!this.winMimeTypes) {
+                        var settingsCmp = Ext.getCmp(this.parentId);
+                        settingsCmp.buildMimeTypes();
+                        this.winMimeTypes = new Ung.ManageListWindow({
+                            breadcrumbs : [{
+                                title : i18n._(rpc.currentPolicy.name),
+                                action : function() {
+                                    this.panelWin.winMimeTypes.cancelAction();
+                                    this.cancelAction();
+                                }.createDelegate(settingsCmp)
+                            }, {
+                                title : settingsCmp.node.md.displayName,
+                                action : function() {
+                                    this.panelWin.winMimeTypes.cancelAction();
+                                }.createDelegate(settingsCmp)
+                            }, {
+                                title : settingsCmp.i18n._("MIME Types")
+                            }],
+                            grid : settingsCmp.gridMimeTypes
+                        });
+                    }
+                    this.winMimeTypes.show();
+                },
+                beforeDestroy : function() {
+                    Ext.destroy( this.winExtensions, this.winMimeTypes);
+                    Ext.Panel.prototype.beforeDestroy.call(this);
+                }
+            });
+        },
         // Event Log
         buildEventLog : function() {
             this.gridEventLog = new Ung.GridEventLog({
