@@ -1,6 +1,6 @@
 /*
  * $HeadURL: svn://chef/branch/prod/web-ui/work/src/uvm-lib/api/com/untangle/uvm/node/ValidationResult.java $
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -30,6 +30,7 @@
  * of the library, but you are not obligated to do so.  If you do not wish
  * to do so, delete this exception statement from your version.
  */
+
 package com.untangle.uvm.node;
 
 import java.io.Serializable;
@@ -44,31 +45,31 @@ public class ValidationResult implements Serializable {
     private boolean valid;
     private String message;
     private Object cause;
-    
-	public ValidationResult(boolean valid) {
-		this.valid = valid;
-	}
 
-	public ValidationResult(boolean valid, String message) {
-		this.valid = valid;
-		this.message = message;
-	}
+    public ValidationResult(boolean valid) {
+        this.valid = valid;
+    }
 
-	public ValidationResult(boolean valid, String message, Object cause) {
-		this.valid = valid;
-		this.message = message;
-		this.cause = cause;
-	}
+    public ValidationResult(boolean valid, String message) {
+        this.valid = valid;
+        this.message = message;
+    }
 
-	public boolean isValid() {
-		return valid;
-	}
-	
-	public String getMessage() {
-		return message;
-	}
-	
-	public Object getCause() {
-		return cause;
-	}
+    public ValidationResult(boolean valid, String message, Object cause) {
+        this.valid = valid;
+        this.message = message;
+        this.cause = cause;
+    }
+
+    public boolean isValid() {
+        return valid;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public Object getCause() {
+        return cause;
+    }
 }
