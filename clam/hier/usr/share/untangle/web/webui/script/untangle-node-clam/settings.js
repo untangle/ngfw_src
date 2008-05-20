@@ -88,7 +88,7 @@ if (!Ung.hasResource["Ung.Clam"]) {
                         xtype : 'numberfield',
                         fieldLabel : this.i18n._('Scan trickle rate (1-99)'),
                         name : 'tricklePercent',
-                        id: 'tricklePercent',
+                        id: 'virus_trickle_percent',
                         value : this.getBaseSettings().tricklePercent,
                         width: 25,
                         allowDecimals: false,
@@ -407,7 +407,7 @@ if (!Ung.hasResource["Ung.Clam"]) {
         // validation function
 		validateClient : function() {
 			//validate trickle rate
-            var tricklePercentCmp = Ext.getCmp('tricklePercent');
+            var tricklePercentCmp = Ext.getCmp('virus_trickle_percent');
             if (tricklePercentCmp.isValid()) {
 				return true;
 			} else {
