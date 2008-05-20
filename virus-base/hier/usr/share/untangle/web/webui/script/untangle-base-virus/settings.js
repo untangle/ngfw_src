@@ -15,7 +15,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
             this.buildFtp();
             this.buildEventLog();
             // builds the tab panel with the tabs
-            this.buildTabPanel([this.panelWeb, /*this.panelEmail, this.panelFtp,*/ this.gridEventLog]);
+            this.buildTabPanel([this.panelWeb, /*this.panelEmail,*/ this.panelFtp, this.gridEventLog]);
         },
         // Web Panel
         buildWeb : function() {
@@ -88,7 +88,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
                         xtype : 'numberfield',
                         fieldLabel : this.i18n._('Scan trickle rate (1-99)'),
                         name : 'tricklePercent',
-                        id: 'virus_trickle_percent',
+                        id: 'virus_http_trickle_percent',
                         value : this.getBaseSettings().tricklePercent,
                         width: 25,
                         allowDecimals: false,
@@ -98,6 +98,8 @@ if (!Ung.hasResource["Ung.Virus"]) {
                         listeners : {
                             "change" : {
                                 fn : function(elem, newValue) {
+                    	            var tricklePercentFtpCmp = Ext.getCmp('virus_ftp_trickle_percent');
+                    	            tricklePercentFtpCmp.setValue(newValue);
                                     this.getBaseSettings().tricklePercent = newValue;
                                 }.createDelegate(this)
                             }
@@ -320,14 +322,14 @@ if (!Ung.hasResource["Ung.Virus"]) {
                 items : [{
                     items : [{
                         xtype : 'checkbox',
-                        boxLabel : this.i18n._('Scan HTTP'),
+                        boxLabel : this.i18n._('Scan FTP'),
                         hideLabel : true,
-                        name : 'scanHttp',
-                        checked : this.getBaseSettings().httpConfig.scan,
+                        name : 'scanFTP',
+                        checked : this.getBaseSettings().ftpConfig.scan,
                         listeners : {
                             "check" : {
                                 fn : function(elem, checked) {
-                                    this.getBaseSettings().httpConfig.scan = checked;
+                                    this.getBaseSettings().ftpConfig.scan = checked;
                                 }.createDelegate(this)
                             }
                         }
@@ -338,31 +340,15 @@ if (!Ung.hasResource["Ung.Virus"]) {
                     collapsed: true,
                     labelWidth: 150,
                     items : [{
-                        xtype : 'button',
-                        info : 'extensionsButton',
-                        text : this.i18n._('File Extensions'),
-                        style : 'padding-bottom:10px;',
-                        handler : function() {
-                            this.panelWeb.onManageExtensions();
-                        }.createDelegate(this)
-                    }, {
-                        xtype : 'button',
-                        info : 'mimeTypesButton',
-                        text : this.i18n._('MIME Types'),
-                        style : 'padding-bottom:10px;',
-                        handler : function() {
-                            this.panelWeb.onManageMimeTypes();
-                        }.createDelegate(this)
-                    }, {
                         xtype : 'checkbox',
-                        boxLabel : this.i18n._('Disable HTTP Resume'),
+                        boxLabel : this.i18n._('Disable FTP Resume'),
                         hideLabel : true,
-                        name : 'httpDisableResume',
-                        checked : this.getBaseSettings().httpDisableResume,
+                        name : 'ftpDisableResume',
+                        checked : this.getBaseSettings().ftpDisableResume,
                         listeners : {
                             "check" : {
                                 fn : function(elem, checked) {
-                                    this.getBaseSettings().httpDisableResume = checked;
+                                    this.getBaseSettings().ftpDisableResume = checked;
                                 }.createDelegate(this)
                             }
                         }
@@ -370,7 +356,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
                         xtype : 'numberfield',
                         fieldLabel : this.i18n._('Scan trickle rate (1-99)'),
                         name : 'tricklePercent',
-                        id: 'virus_trickle_percent',
+                        id: 'virus_ftp_trickle_percent',
                         value : this.getBaseSettings().tricklePercent,
                         width: 25,
                         allowDecimals: false,
@@ -380,7 +366,9 @@ if (!Ung.hasResource["Ung.Virus"]) {
                         listeners : {
                             "change" : {
                                 fn : function(elem, newValue) {
-                                    this.getBaseSettings().tricklePercent = newValue;
+                                    var tricklePercentHttpCmp = Ext.getCmp('virus_http_trickle_percent');
+									tricklePercentHttpCmp.setValue(newValue);
+									this.getBaseSettings().tricklePercent = newValue;
                                 }.createDelegate(this)
                             }
                         }
@@ -551,15 +539,11 @@ if (!Ung.hasResource["Ung.Virus"]) {
         // validation function
 		validateClient : function() {
 			//validate trickle rate
-            var tricklePercentCmp = Ext.getCmp('virus_trickle_percent');
+            var tricklePercentCmp = Ext.getCmp('virus_http_trickle_percent');
             if (tricklePercentCmp.isValid()) {
 				return true;
 			} else {
-				Ext.MessageBox.alert('Warning', this.i18n._("Scan trickle rate should be between 1 and 99!"),
-						function() {
-							this.focus(true);
-						}.createDelegate(tricklePercentCmp));
-						
+				Ext.MessageBox.alert('Warning', this.i18n._("Scan trickle rate should be between 1 and 99!"));
                 return false;
             }
 		},
