@@ -1,7 +1,5 @@
-#! /bin/bash -x
+#! /bin/bash
 # $Id$
-
-exec > /tmp/uvm.log 2>&1
 
 NAME=$0
 
