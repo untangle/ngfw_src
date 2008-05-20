@@ -1,8 +1,6 @@
 #! /bin/bash -x
 # $Id$
 
-exec > /tmp/uvm.log 2>&1
-
 NAME=$0
 
 # get a bunch of default values
@@ -326,7 +324,10 @@ while true; do
             restartServiceIfNeeded mongrel
 	    
 	    if [ $counter -gt 60 ] ; then # fire up the other nannies
-	        curl -sf -m 10 "http://localhost:3000/alpaca/dns?argyle=`sudo head -n 1 /etc/untangle-net-alpaca/nonce`" > /dev/null || restartService mongrel /tmp/foo-doesnt-exist "untangle-net-alpaca untangle-net-alpaca-iptables" "non-functional"
+	        if ! curl -sf -m 10 "http://localhost:3000/alpaca/dns?argyle=`head -n 1 /etc/untangle-net-alpaca/nonce`" > /dev/null ; then
+		  restartService untangle-net-alpaca /tmp/foo-doesnt-exist "non-functional"
+		  restartService untangle-net-alpaca-iptables /tmp/foo-doesnt-exist "non-functional"
+		fi
 
 	        if dpkg -l untangle-spamassassin-update | grep -q ii ; then # we're managing spamassassin
 	            [ `tail -n 50 /var/log/mail.info | grep -c "$SPAMASSASSIN_LOG_ERROR"` -gt 2 ] && restartService spamassassin $SPAMASSASSIN_PID_FILE "non-functional" stopFirst
