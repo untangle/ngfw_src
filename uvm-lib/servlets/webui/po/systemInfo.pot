@@ -82,12 +82,12 @@ msgstr ""
 
 #: ../root/script/config/systemInfo.js:255
 #: ../root/script/config/systemInfo.js:290
-msgid "Successed"
+msgid "Succeeded"
 msgstr ""
 
 #: ../root/script/config/systemInfo.js:255
 #: ../root/script/config/systemInfo.js:290
-msgid "Upload Logo Successed"
+msgid "Upload Logo Succeeded"
 msgstr ""
 
 #: ../root/script/config/systemInfo.js:262

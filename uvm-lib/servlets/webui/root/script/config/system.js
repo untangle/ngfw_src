@@ -181,7 +181,7 @@ if (!Ung.hasResource["Ung.System"]) {
                         success : function(form, action) {
                             languagesStore.load();
                             var cmp = Ext.getCmp(action.options.parentId);
-                            Ext.MessageBox.alert(cmp.i18n._("Successed"), cmp.i18n._("Upload Language Pack Successed"));
+                            Ext.MessageBox.alert(cmp.i18n._("Succeeded"), cmp.i18n._("Upload Language Pack Succeeded"));
                         },
                         failure : function(form, action) {
                             var cmp = Ext.getCmp(action.options.parentId);

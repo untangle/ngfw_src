@@ -67,11 +67,11 @@ msgid "Please wait while your skin is uploaded..."
 msgstr ""
 
 #: ../root/script/config/administration.js:195
-msgid "Successed"
+msgid "Succeeded"
 msgstr ""
 
 #: ../root/script/config/administration.js:195
-msgid "Upload Skin Successed"
+msgid "Upload Skin Succeeded"
 msgstr ""
 
 #: ../root/script/config/administration.js:200

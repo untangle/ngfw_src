@@ -55,11 +55,11 @@ msgid "Please wait while your language pack is uploaded..."
 msgstr ""
 
 #: ../root/script/config/system.js:164
-msgid "Successed"
+msgid "Succeeded"
 msgstr ""
 
 #: ../root/script/config/system.js:164
-msgid "Upload Language Pack Successed"
+msgid "Upload Language Pack Succeeded"
 msgstr ""
 
 #: ../root/script/config/system.js:169 ../root/script/config/system.js:171

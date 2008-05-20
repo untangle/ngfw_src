@@ -250,7 +250,7 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                         waitMsg : cmp.i18n._('Please wait while your logo image is uploaded...'),
                         success : function(form, action) {
                             var cmp = Ext.getCmp(action.options.parentId);
-                            Ext.MessageBox.alert(cmp.i18n._("Successed"), cmp.i18n._("Upload Logo Successed"));
+                            Ext.MessageBox.alert(cmp.i18n._("Succeeded"), cmp.i18n._("Upload Logo Succeeded"));
                         },
                         failure : function(form, action) {
                             var cmp = Ext.getCmp(action.options.parentId);

@@ -199,7 +199,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         success : function(form, action) {
                             skinsStore.load();
                             var cmp = Ext.getCmp(action.options.parentId);
-                            Ext.MessageBox.alert(cmp.i18n._("Successed"), cmp.i18n._("Upload Skin Successed"));
+                            Ext.MessageBox.alert(cmp.i18n._("Succeeded"), cmp.i18n._("Upload Skin Succeeded"));
                         },
                         failure : function(form, action) {
                             var cmp = Ext.getCmp(action.options.parentId);
