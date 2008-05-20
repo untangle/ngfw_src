@@ -88,6 +88,7 @@ if (!Ung.hasResource["Ung.Clam"]) {
                         xtype : 'numberfield',
                         fieldLabel : this.i18n._('Scan trickle rate (1-99)'),
                         name : 'tricklePercent',
+                        id: 'tricklePercent',
                         value : this.getBaseSettings().tricklePercent,
                         width: 25,
                         allowDecimals: false,
@@ -403,9 +404,24 @@ if (!Ung.hasResource["Ung.Clam"]) {
                 }]
             });
         },
+        // validation function
+		validateClient : function() {
+			//validate trickle rate
+            var tricklePercentCmp = Ext.getCmp('tricklePercent');
+            if (tricklePercentCmp.isValid()) {
+				return true;
+			} else {
+				Ext.MessageBox.alert('Warning', this.i18n._("Scan trickle rate should be between 1 and 99!"),
+						function() {
+							this.focus(true);
+						}.createDelegate(tricklePercentCmp));
+						
+                return false;
+            }
+		},
         // save function
         save : function() {
-            if (this.validate()) {  //TODO add validation - if we have a ticke rate invalid
+            if (this.validate()) {
                 // disable tabs during save
                 this.tabs.disable();
                 this.getRpcNode().updateAll(function(result, exception) {
