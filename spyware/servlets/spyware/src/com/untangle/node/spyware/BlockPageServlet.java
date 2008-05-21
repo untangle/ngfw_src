@@ -19,8 +19,6 @@
 package com.untangle.node.spyware;
 
 import java.io.IOException;
-import javax.security.auth.login.FailedLoginException;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -36,7 +34,8 @@ import com.untangle.uvm.LocalUvmContextFactory;
 import  com.untangle.uvm.node.LocalNodeManager;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.security.Tid;
-  
+
+import com.untangle.node.http.BlockPageUtil;  
 import com.untangle.node.http.UserWhitelistMode;
 import com.untangle.node.spyware.Spyware;
 import com.untangle.node.spyware.SpywareBlockDetails;
@@ -54,53 +53,69 @@ public class BlockPageServlet extends HttpServlet
         
         Tid tid = new Tid(Long.parseLong(request.getParameter( "tid" )));
         
-        NodeContext nctx = nm.nodeContext( tid );
-        Spyware tran = (Spyware)nctx.node();
-        UserWhitelistMode mode = tran.getUserWhitelistMode();
+        Spyware node = (Spyware)nm.nodeContext( tid ).node();
         String nonce = request.getParameter("nonce");
-        SpywareBlockDetails bd = tran.getBlockDetails(nonce);
-        
-        I18n i18n = I18nFactory.getI18n("spyware", "Messages", Thread.currentThread().getContextClassLoader(), request.getLocale(), I18nFactory.FALLBACK);
-        request.setAttribute( "i18n", i18n );
 
-        String company = bs.getCompanyName();
+        SpywareHandler handler = new SpywareHandler( node.getBlockDetails(nonce), 
+                                                     node.getUserWhitelistMode());
+        BlockPageUtil.getInstance().handle( request, response, this, handler );        
+    }
+    
+    
+    private static class SpywareHandler implements BlockPageUtil.Handler
+    {
+        private final SpywareBlockDetails blockDetails;
+        private final UserWhitelistMode userWhitelistMode;
 
-        /* These have to be registered against the request, otherwise
-         * the included template cannot see them. */
-        request.setAttribute( "ss", uvm.skinManager().getSkinSettings());
-        request.setAttribute( "bs", bs );
-        request.setAttribute( "pageTitle", i18n.tr( "{0} | Spyware Blocker Warning", company ));
-        request.setAttribute( "title", "Spyware Blocker" );
-        request.setAttribute( "footer", i18n.tr( "{0} Spyware Blocker", company ));
-        request.setAttribute( "javascript_file", "spyware.js" );
-        request.setAttribute( "description", i18n.tr( "This web page was blocked because it may be designed to steal personal information." ));
-                     
-        /* Register the block detail with the page */
-        request.setAttribute( "bd", bd );
-
-        /* Everything below here can be moved into a parent class, + i18n should go into an interface */
-        request.setAttribute( "url", null == bd ? "javascript:history.back()" : "'" + bd.getFormattedUrl() + "'" );
-
-        /* This is just plain wrong. */
-        request.setAttribute( "cdata_start", "<![CDATA[" );
-        request.setAttribute( "cdata_end", "]]>" );
-        /* End of the wrongness */
-
-        request.setAttribute( "contact", i18n.tr( "Please contact {0}.", bs.getContactHtml()));
-
-        if (UserWhitelistMode.NONE != mode && null != bd && null != bd.getWhitelistHost()) {
-            request.setAttribute( "showUnblockNow", true );
-            if (UserWhitelistMode.USER_AND_GLOBAL == mode) {
-                request.setAttribute( "showUnblockGlobal", true );
-            }
+        public SpywareHandler( SpywareBlockDetails blockDetails, UserWhitelistMode userWhitelistMode )
+        {
+            this.blockDetails = blockDetails;
+            this.userWhitelistMode = userWhitelistMode;
         }
 
-        try {
-            getServletConfig().getServletContext().getContext( "/" ).
-                getRequestDispatcher("/blockpage_template.jspx").forward( request, response );
-        } catch ( IOException e ) {
-            throw new ServletException( "Unable to render blockpage template.", e );
+        /* This is the name of the node to use when retrieving the I18N bundle */
+        public String getI18n()
+        {
+            return "spyware";
+        }
+        
+        /* Retrieve the page title (in the window bar) of the page */
+        public String getPageTitle( BrandingBaseSettings bs, I18n i18n )
+        {
+            return i18n.tr( "{0} | Spyware Blocker Warning", bs.getCompanyName());
+        }
+        
+        /* Retrieve the title (top of the pae) of the page */
+        public String getTitle( BrandingBaseSettings bs, I18n i18n )
+        {
+            return "Spyware Blocker";
+        }
+        
+        public String getFooter( BrandingBaseSettings bs, I18n i18n )
+        {
+            return i18n.tr( "{0} Spyware Blocker", bs.getCompanyName());
+        }
+        
+        /* Return the name of the script file to load, or null if there is not a script. */
+        public String getScriptFile()
+        {
+            return "spyware.js";
+        }
+        
+        /* Retrieve the description of why this page was blocked. */
+        public String getDescription( BrandingBaseSettings bs, I18n i18n )
+        {
+            return i18n.tr( "This web page was blocked because it may be designed to steal personal information." );
+        }
+    
+        public SpywareBlockDetails getBlockDetails()
+        {
+            return this.blockDetails;
+        }
+    
+        public UserWhitelistMode getUserWhitelistMode()
+        {
+            return this.userWhitelistMode;
         }
     }
-
 }

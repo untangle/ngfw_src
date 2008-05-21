@@ -25,15 +25,13 @@
 
     <uvm:skin type="user" name="${ss.userPagesSkin}"/>
     
-    <script type="text/javascript">
+    <uvm:inlineScript>
       <![CDATA[
-               // ${cdata_start}
                var nonce = '${param.nonce}';
                var tid = '${param.tid}';
                var url = ${url};
-               // ${cdata_end}
       ]]>
-    </script>
+    </uvm:inlineScript>
     
     <c:if test="${!empty javascript_file}">
       <script type="text/javascript" src="${javascript_file}"></script>
@@ -55,10 +53,10 @@
         </p>
         
         <ul>
-          <li><jsp:expression>i18n.tr( "Host:" )</jsp:expression> ${bd.formattedHost}</li>
-          <li><jsp:expression>i18n.tr( "URL:" )</jsp:expression> ${bd.formattedUrl}</li>
+          <li><uvm:i18n p0="${bd.formattedHost}">Host: {0}</uvm:i18n></li>
+          <li><uvm:i18n p0="${bd.formattedUrl}">URL: {0}</uvm:i18n></li>
           <c:if test="${!empty reason}">
-            <li>${reason}</li>
+            <li><uvm:i18n p0="${reason}">Reason: {0}</uvm:i18n></li>
           </c:if>
         </ul>
         

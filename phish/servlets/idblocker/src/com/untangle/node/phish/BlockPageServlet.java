@@ -18,25 +18,21 @@
 
 package com.untangle.node.phish;
 
-import java.io.IOException;
-import javax.security.auth.login.FailedLoginException;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.xnap.commons.i18n.I18n;
-import org.xnap.commons.i18n.I18nFactory;
 
 import com.untangle.uvm.BrandingBaseSettings;
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
 
 import  com.untangle.uvm.node.LocalNodeManager;
-import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.security.Tid;
-  
+
+import com.untangle.node.http.BlockPageUtil;  
 import com.untangle.node.http.UserWhitelistMode;
 import com.untangle.node.phish.Phish;
 import com.untangle.node.phish.PhishBlockDetails;
@@ -54,51 +50,69 @@ public class BlockPageServlet extends HttpServlet
         
         Tid tid = new Tid(Long.parseLong(request.getParameter( "tid" )));
         
-        NodeContext nctx = nm.nodeContext( tid );
-        Phish tran = (Phish)nctx.node();
-        UserWhitelistMode mode = tran.getUserWhitelistMode();
+        Phish node = (Phish)nm.nodeContext( tid ).node();
         String nonce = request.getParameter("nonce");
-        PhishBlockDetails bd = tran.getBlockDetails(nonce);
-        
-        I18n i18n = I18nFactory.getI18n("phish", "Messages", Thread.currentThread().getContextClassLoader(), request.getLocale(), I18nFactory.FALLBACK);
-        request.setAttribute( "i18n", i18n );
 
-        String company = bs.getCompanyName();
+        PhishHandler handler = new PhishHandler( node.getBlockDetails(nonce), node.getUserWhitelistMode());
+                                                         
+        BlockPageUtil.getInstance().handle( request, response, this, handler );        
+    }
+    
+    private static class PhishHandler implements BlockPageUtil.Handler
+    {
+        private final PhishBlockDetails blockDetails;
+        private final UserWhitelistMode userWhitelistMode;
 
-        /* These have to be registered against the request, otherwise
-         * the included template cannot see them. */
-        request.setAttribute( "bs", bs );
-        request.setAttribute( "ss", uvm.skinManager().getSkinSettings());
-        request.setAttribute( "pageTitle", i18n.tr( "{0} | Phish Blocker Warning", company ));
-        request.setAttribute( "title", "Phish Blocker" );
-        request.setAttribute( "footer", i18n.tr( "{0} Phish Blocker", company ));
-        request.setAttribute( "javascript_file", "blockpage.js" );
-        request.setAttribute( "description", i18n.tr( "This web page was blocked because it may be designed to steal personal information." ));
-                     
-        /* Register the block detail with the page */
-        request.setAttribute( "bd", bd );
-
-        /* Everything below here can be moved into a parent class, + i18n should go into an interface */
-        request.setAttribute( "url", null == bd ? "javascript:history.back()" : "'" + bd.getFormattedUrl() + "'" );
-
-        /* This is just plain wrong. */
-        request.setAttribute( "cdata_start", "<![CDATA" + "[" );
-        request.setAttribute( "cdata_end", "]" + "]>" );
-        request.setAttribute( "contact", i18n.tr( "Please contact {0}.", bs.getContactHtml()));
-
-        if (UserWhitelistMode.NONE != mode && null != bd && null != bd.getWhitelistHost()) {
-            request.setAttribute( "showUnblockNow", true );
-            if (UserWhitelistMode.USER_AND_GLOBAL == mode) {
-                request.setAttribute( "showUnblockGlobal", true );
-            }
+        public PhishHandler( PhishBlockDetails blockDetails, UserWhitelistMode userWhitelistMode )
+        {
+            this.blockDetails = blockDetails;
+            this.userWhitelistMode = userWhitelistMode;
         }
 
-        try {
-            getServletConfig().getServletContext().getContext( "/" ).
-                getRequestDispatcher("/blockpage_template.jspx").forward( request, response );
-        } catch ( IOException e ) {
-            throw new ServletException( "Unable to render blockpage template.", e );
+        /* This is the name of the node to use when retrieving the I18N bundle */
+        public String getI18n()
+        {
+            return "phish";
+        }
+        
+        /* Retrieve the page title (in the window bar) of the page */
+        public String getPageTitle( BrandingBaseSettings bs, I18n i18n )
+        {
+            return i18n.tr( "{0} | Phish Blocker Warning", bs.getCompanyName());
+        }
+        
+        /* Retrieve the title (top of the pae) of the page */
+        public String getTitle( BrandingBaseSettings bs, I18n i18n )
+        {
+            return "Phish Blocker";
+        }
+        
+        public String getFooter( BrandingBaseSettings bs, I18n i18n )
+        {
+            return i18n.tr( "{0}  Phish Blocker", bs.getCompanyName());
+        }
+        
+        /* Return the name of the script file to load, or null if there is not a script. */
+        public String getScriptFile()
+        {
+            return "blockpage.js";
+        }
+        
+        /* Retrieve the description of why this page was blocked. */
+        public String getDescription( BrandingBaseSettings bs, I18n i18n )
+        {
+            return i18n.tr( "This web page was blocked because it may be designed to steal personal information." );
+        }
+    
+        public PhishBlockDetails getBlockDetails()
+        {
+            return this.blockDetails;
+        }
+    
+        public UserWhitelistMode getUserWhitelistMode()
+        {
+            return this.userWhitelistMode;
         }
     }
-
 }
+

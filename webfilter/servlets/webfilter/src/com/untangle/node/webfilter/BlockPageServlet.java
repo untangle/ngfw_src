@@ -19,8 +19,6 @@
 package com.untangle.node.webfilter;
 
 import java.io.IOException;
-import javax.security.auth.login.FailedLoginException;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -34,9 +32,9 @@ import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
 
 import  com.untangle.uvm.node.LocalNodeManager;
-import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.security.Tid;
-  
+
+import com.untangle.node.http.BlockPageUtil;  
 import com.untangle.node.http.UserWhitelistMode;
 import com.untangle.node.webfilter.WebFilter;
 import com.untangle.node.webfilter.WebFilterBlockDetails;
@@ -54,52 +52,70 @@ public class BlockPageServlet extends HttpServlet
         
         Tid tid = new Tid(Long.parseLong(request.getParameter( "tid" )));
         
-        NodeContext nctx = nm.nodeContext( tid );
-        WebFilter tran = (WebFilter)nctx.node();
-        UserWhitelistMode mode = tran.getUserWhitelistMode();
+        WebFilter node = (WebFilter)nm.nodeContext( tid ).node();
         String nonce = request.getParameter("nonce");
-        WebFilterBlockDetails bd = tran.getDetails(nonce);
-        
-        I18n i18n = I18nFactory.getI18n("webfilter", "Messages", Thread.currentThread().getContextClassLoader(), request.getLocale(), I18nFactory.FALLBACK);
-        request.setAttribute( "i18n", i18n );
 
-        String company = bs.getCompanyName();
+        WebFilterBlockDetails blockDetails = node.getDetails(nonce);
+        request.setAttribute( "reason", blockDetails.getReason());
+        WebFilterHandler handler = new WebFilterHandler( blockDetails, node.getUserWhitelistMode());
+                                                         
+        BlockPageUtil.getInstance().handle( request, response, this, handler );        
+    }
+    
+    private static class WebFilterHandler implements BlockPageUtil.Handler
+    {
+        private final WebFilterBlockDetails blockDetails;
+        private final UserWhitelistMode userWhitelistMode;
 
-        /* These have to be registered against the request, otherwise
-         * the included template cannot see them. */
-        request.setAttribute( "bs", bs );
-        request.setAttribute( "ss", uvm.skinManager().getSkinSettings());
-        request.setAttribute( "pageTitle", i18n.tr( "{0} | Web Filter Warning", company ));
-        request.setAttribute( "title", "Web Filter" );
-        request.setAttribute( "footer", i18n.tr( "{0} Web Filter", company ));
-        request.setAttribute( "javascript_file", "webfilter.js" );
-        request.setAttribute( "description", i18n.tr( "This web page was blocked because it is considered inappropriate." ));
-                     
-        /* Register the block detail with the page */
-        request.setAttribute( "bd", bd );
-        request.setAttribute( "reason", bd.getReason());
-
-        /* Everything below here is abstractable, + i18n should go into an interface */
-        request.setAttribute( "url", null == bd ? "javascript:history.back()" : "'" + bd.getFormattedUrl() + "'" );
-
-        /* This is just plain wrong. */
-        request.setAttribute( "cdata_start", "<![CDATA" + "[" );
-        request.setAttribute( "cdata_end", "]" + "]>" );
-        request.setAttribute( "contact", i18n.tr( "Please contact {0}.", bs.getContactHtml()));
-
-        if (UserWhitelistMode.NONE != mode && null != bd && null != bd.getWhitelistHost()) {
-            request.setAttribute( "showUnblockNow", true );
-            if (UserWhitelistMode.USER_AND_GLOBAL == mode) {
-                request.setAttribute( "showUnblockGlobal", true );
-            }
+        public WebFilterHandler( WebFilterBlockDetails blockDetails, UserWhitelistMode userWhitelistMode )
+        {
+            this.blockDetails = blockDetails;
+            this.userWhitelistMode = userWhitelistMode;
         }
 
-        try {
-            getServletConfig().getServletContext().getContext( "/" ).
-                getRequestDispatcher("/blockpage_template.jspx").forward( request, response );
-        } catch ( IOException e ) {
-            throw new ServletException( "Unable to render blockpage template.", e );
+        /* This is the name of the node to use when retrieving the I18N bundle */
+        public String getI18n()
+        {
+            return "webfilter";
+        }
+        
+        /* Retrieve the page title (in the window bar) of the page */
+        public String getPageTitle( BrandingBaseSettings bs, I18n i18n )
+        {
+            return i18n.tr( "{0} | Web Filter Warning", bs.getCompanyName());
+        }
+        
+        /* Retrieve the title (top of the pae) of the page */
+        public String getTitle( BrandingBaseSettings bs, I18n i18n )
+        {
+            return "Web Filter";
+        }
+        
+        public String getFooter( BrandingBaseSettings bs, I18n i18n )
+        {
+            return i18n.tr( "{0} Web Filter", bs.getCompanyName());
+        }
+        
+        /* Return the name of the script file to load, or null if there is not a script. */
+        public String getScriptFile()
+        {
+            return "webfilter.js";
+        }
+        
+        /* Retrieve the description of why this page was blocked. */
+        public String getDescription( BrandingBaseSettings bs, I18n i18n )
+        {
+            return i18n.tr( "This web page was blocked because it is considered inappropriate." );
+        }
+    
+        public WebFilterBlockDetails getBlockDetails()
+        {
+            return this.blockDetails;
+        }
+    
+        public UserWhitelistMode getUserWhitelistMode()
+        {
+            return this.userWhitelistMode;
         }
     }
-
 }

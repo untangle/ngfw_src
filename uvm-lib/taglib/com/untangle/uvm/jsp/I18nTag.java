@@ -30,7 +30,6 @@ import org.xnap.commons.i18n.I18n;
 public class I18nTag extends BodyTagSupport
 {
     public String p[] = new String[4];
-    public String value;
     
     public String getP0()
     {
@@ -72,16 +71,6 @@ public class I18nTag extends BodyTagSupport
         this.p[3] = v;
     }
     
-    public String getValue()
-    {
-        return this.value;
-    }
-
-    public void setValue(String v)
-    {
-        this.value = v;
-    }
-
     public final int doStartTag() throws JspException
     {
         return EVAL_BODY_TAG;
@@ -90,16 +79,14 @@ public class I18nTag extends BodyTagSupport
     public final int doEndTag() throws JspException
     {
         BodyContent body = getBodyContent();
-        String bodyString = body.getString();
+        String bodyString = null;
 
-        if ( this.value == null ) {
-            if ( bodyString == null ) {
-                throw new JspException( "Translation string must be in the body or in value." );
-            }
-            
-            setValue( bodyString );
-        } else if ( bodyString != null ) {
-            throw new JspException( "Translation string cannot be in body and value." );
+        if ( body != null ) bodyString = body.getString();
+
+        JspWriter out = getPreviousOut();
+                
+        if ( bodyString == null ) {
+            throw new JspException( "Translation string must be in the body." );
         }
         
         try {
@@ -107,7 +94,7 @@ public class I18nTag extends BodyTagSupport
             I18n i18n = (I18n)pageContext.getRequest().getAttribute( "i18n" );
             for ( int c = 0 ; c < this.p.length ; c++ ) if ( this.p[c] == null ) this.p[c] = "";
 
-            body.getEnclosingWriter().print( i18n.tr( this.value, this.p ));
+            out.print( i18n.tr( bodyString, this.p ));
 
             return EVAL_PAGE;
             
@@ -115,7 +102,6 @@ public class I18nTag extends BodyTagSupport
             throw new JspException( "Unable to write translation string.", e );
         } finally {
             for ( int c = 0 ; c < this.p.length ; c++ ) this.p[c] = null;
-            this.value = null;
         }
     }
 
@@ -129,6 +115,5 @@ public class I18nTag extends BodyTagSupport
     public void release()
     {
         this.p = null;
-        this.value = null;
     }
 }
