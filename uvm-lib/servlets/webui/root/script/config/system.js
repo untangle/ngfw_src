@@ -266,7 +266,7 @@ if (!Ung.hasResource["Ung.System"]) {
                         listeners : {
                             "change" : {
                                 fn : function(elem, newValue) {
-                                    this.timeZone = newValue;
+                                    this.rpc.timeZone = newValue;
                                 }.createDelegate(this)
                             }
                         }
@@ -367,7 +367,7 @@ if (!Ung.hasResource["Ung.System"]) {
         // save function
         saveAction : function() {
             if (this.validate()) {
-                this.saveSemaphore = 2;
+                this.saveSemaphore = 3;
                 // save language settings
                 rpc.languageManager.setLanguageSettings(function(result, exception) {
                     if (exception) {
@@ -393,7 +393,7 @@ if (!Ung.hasResource["Ung.System"]) {
                         return;
                     }
                     this.afterSave();
-                }.createDelegate(this), this.timeZone);
+                }.createDelegate(this), this.rpc.timeZone);
             }
         },
         afterSave : function() {
