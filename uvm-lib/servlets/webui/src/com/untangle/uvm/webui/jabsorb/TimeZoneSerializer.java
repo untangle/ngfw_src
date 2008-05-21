@@ -8,6 +8,8 @@ import org.jabsorb.serializer.ObjectMatch;
 import org.jabsorb.serializer.SerializerState;
 import org.jabsorb.serializer.UnmarshallException;
 
+import sun.util.calendar.ZoneInfo;
+
 public class TimeZoneSerializer extends AbstractSerializer {
 	/**
 	 * Unique serialisation id.
@@ -17,7 +19,7 @@ public class TimeZoneSerializer extends AbstractSerializer {
 	/**
 	 * Classes that this can serialise.
 	 */
-	private static Class[] _serializableClasses = new Class[] { TimeZone.class };
+	private static Class[] _serializableClasses = new Class[] { TimeZone.class, ZoneInfo.class };
 
 	/**
 	 * Classes that this can serialise to.

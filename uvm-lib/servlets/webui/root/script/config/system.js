@@ -262,11 +262,11 @@ if (!Ung.hasResource["Ung.System"]) {
                         mode : 'local',
                         triggerAction : 'all',
                         listClass : 'x-combo-list-small',
-                        value : this.getTimeZone().ID,
+                        value : this.getTimeZone(),
                         listeners : {
                             "change" : {
                                 fn : function(elem, newValue) {
-                                    this.getTimeZone().ID = newValue;
+                                    this.timeZone = newValue;
                                 }.createDelegate(this)
                             }
                         }
@@ -393,7 +393,7 @@ if (!Ung.hasResource["Ung.System"]) {
                         return;
                     }
                     this.afterSave();
-                }.createDelegate(this), this.getTimeZone());
+                }.createDelegate(this), this.timeZone);
             }
         },
         afterSave : function() {
