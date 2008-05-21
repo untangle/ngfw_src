@@ -33,18 +33,28 @@
 
 package com.untangle.uvm.logging;
 
-/**
- * Counters.
- *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
- */
-public interface CounterStats
-{
-    long getCount();
-    long getCountSinceMidnight();
+import java.io.Serializable;
+import java.util.Map;
 
-    long get1MinuteCount();
-    long get5MinuteCount();
-    long get15MinuteCount();
+public class GlobalStats implements Serializable
+{
+    private final Map<String, CounterStats> counters;
+    private final Map<String, LoadStats> loads;
+
+    GlobalStats(Map<String, CounterStats> counters,
+                Map<String, LoadStats> loads)
+    {
+        this.counters = counters;
+        this.loads = loads;
+    }
+
+    public Map<String, CounterStats> getCounters()
+    {
+        return counters;
+    }
+
+    public Map<String, LoadStats> loads()
+    {
+        return loads;
+    }
 }

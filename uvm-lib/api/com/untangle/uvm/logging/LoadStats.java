@@ -34,17 +34,14 @@
 package com.untangle.uvm.logging;
 
 /**
- * Counters.
+ * Load statistics.
  *
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
-public interface CounterStats
+public interface LoadStats
 {
-    long getCount();
-    long getCountSinceMidnight();
-
-    long get1MinuteCount();
-    long get5MinuteCount();
-    long get15MinuteCount();
+    float get1MinuteAverage();
+    float get5MinuteAverage();
+    float get15MinuteAverage();
 }

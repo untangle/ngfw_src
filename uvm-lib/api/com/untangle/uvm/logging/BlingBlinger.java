@@ -43,22 +43,27 @@ public class BlingBlinger implements CounterStats
 
     // StateKeeper methods -----------------------------------------------------
 
-    public int getCount()
+    public long getCount()
     {
         return 0;
     }
 
-    public float get1MinuteAverage()
+    public long getCountSinceMidnight()
     {
         return 0;
     }
 
-    public float get5MinuteAverage()
+    public long get1MinuteCount()
     {
         return 0;
     }
 
-    public float get15MinuteAverage()
+    public long get5MinuteCount()
+    {
+        return 0;
+    }
+
+    public long get15MinuteCount()
     {
         return 0;
     }

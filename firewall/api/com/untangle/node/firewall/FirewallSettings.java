@@ -19,7 +19,6 @@
 package com.untangle.node.firewall;
 
 import java.io.Serializable;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import javax.persistence.CascadeType;
@@ -35,8 +34,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.untangle.node.util.UvmUtil;
-import com.untangle.uvm.node.ParseException;
-import com.untangle.uvm.node.Validatable;
 import com.untangle.uvm.security.Tid;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.IndexColumn;
@@ -49,7 +46,7 @@ import org.hibernate.annotations.IndexColumn;
  */
 @Entity
 @Table(name="n_firewall_settings", schema="settings")
-public class FirewallSettings implements Serializable, Validatable
+public class FirewallSettings implements Serializable
 {
     /* XXX Must be updated */
     private static final long serialVersionUID = 1629094295874759581L;
@@ -67,14 +64,6 @@ public class FirewallSettings implements Serializable, Validatable
     {
         this.tid = tid;
         this.firewallRuleList = new LinkedList();
-    }
-
-    /* Validation method */
-    public void validate() throws ParseException
-    {
-        for ( Iterator iter = this.firewallRuleList.iterator(); iter.hasNext() ; ) {
-            ((FirewallRule)iter.next()).fixPing();
-        }
     }
 
     @Id

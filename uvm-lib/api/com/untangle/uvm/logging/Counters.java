@@ -33,75 +33,114 @@
 
 package com.untangle.uvm.logging;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * Class for registering LoadStats and CounterStats objects and
+ * retrieving their values.
+ *
+ * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
+ * @version 1.0
+ */
 public class Counters
 {
-    private final Map<String, CounterStats> stats
-        = new ConcurrentHashMap<String, CounterStats>();
+    private final Map<String, CounterStats> counters
+        = new HashMap<String, CounterStats>();
 
-    public Set<String> getCounterNames()
+    private final Map<String, LoadStats> loads
+        = new HashMap<String, LoadStats>();
+
+    public void addCounter(String name, CounterStats counterStats)
     {
-        return stats.keySet();
+        synchronized (counters) {
+            counters.put(name, counterStats);
+        }
     }
 
-    public Map<String, CounterStats> getAllStats()
+    public void addCounter(String name, LoadStats loadStats)
     {
-        Map m = new HashMap(stats.size());
+        synchronized (loads) {
+            loads.put(name, loadStats);
+        }
+    }
 
-        for (String n : stats.keySet()) {
-            CounterStats cs = stats.get(n);
-            if (null != cs) {
-                m.put(n, new FixedStats(cs));
+    public GlobalStats getAllStats()
+    {
+        Map<String, CounterStats> c = new HashMap<String, CounterStats>();
+        synchronized (counters) {
+            for (String n : counters.keySet()) {
+                c.put(n, new FixedCounts(c.get(n)));
             }
         }
 
-        return m;
-    }
+        Map<String, LoadStats> l = new HashMap<String, LoadStats>();
+        synchronized (loads) {
+            for (String n : loads.keySet()) {
+                l.put(n, new FixedLoads(l.get(n)));
+            }
+        }
 
-    public int getCount(String name)
-    {
-        return stats.get(name).getCount();
-    }
-
-    public float get1MinuteAverage(String name)
-    {
-        return stats.get(name).get1MinuteAverage();
-    }
-
-    public float get5MinuteAverage(String name)
-    {
-        return stats.get(name).get5MinuteAverage();
-    }
-
-    public float get15MinuteAverage(String name)
-    {
-        return stats.get(name).get15MinuteAverage();
+        return new GlobalStats(c, l);
     }
 
     // private classes ---------------------------------------------------------
 
-    private static class FixedStats implements CounterStats
+    private static class FixedCounts implements CounterStats, Serializable
     {
-        private final int count;
+        private final long count;
+        private final long countSinceMidnight;
+        private final long cnt1;
+        private final long cnt5;
+        private final long cnt15;
+
+        public FixedCounts(CounterStats cs)
+        {
+            this.count = cs.getCount();
+            this.countSinceMidnight = cs.getCountSinceMidnight();
+            this.cnt1 = cs.get1MinuteCount();
+            this.cnt5 = cs.get5MinuteCount();
+            this.cnt15 = cs.get15MinuteCount();
+        }
+
+        public long getCount()
+        {
+            return count;
+        }
+
+        public long getCountSinceMidnight()
+        {
+            return countSinceMidnight;
+        }
+
+        public long get1MinuteCount()
+        {
+            return cnt1;
+        }
+
+        public long get5MinuteCount()
+        {
+            return cnt5;
+        }
+
+        public long get15MinuteCount()
+        {
+            return cnt15;
+        }
+    }
+
+    private static class FixedLoads implements LoadStats, Serializable
+    {
         private final float avg1;
         private final float avg5;
         private final float avg15;
 
-        public FixedStats(CounterStats cs)
+        public FixedLoads(LoadStats ls)
         {
-            this.count = cs.getCount();
-            this.avg1 = cs.get1MinuteAverage();
-            this.avg5 = cs.get5MinuteAverage();
-            this.avg15 = cs.get15MinuteAverage();
-        }
-
-        public int getCount()
-        {
-            return count;
+            avg1 = ls.get1MinuteAverage();
+            avg5 = ls.get5MinuteAverage();
+            avg15 = ls.get15MinuteAverage();
         }
 
         public float get1MinuteAverage()

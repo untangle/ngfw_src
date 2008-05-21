@@ -34,17 +34,25 @@
 package com.untangle.uvm.logging;
 
 /**
- * Counters.
+ * Interface for a steerable value. Allows LoadMaster to get updated
+ * values.
  *
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
-public interface CounterStats
+public interface LoadStrober
 {
-    long getCount();
-    long getCountSinceMidnight();
+    /**
+     * Update and return the value.
+     *
+     * @return the updated value.
+     */
+    long updateValue();
 
-    long get1MinuteCount();
-    long get5MinuteCount();
-    long get15MinuteCount();
+    /**
+     * Get the last updated value.
+     *
+     * @return the value from the last update.
+     */
+    long getLastValue();
 }

@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -30,6 +30,7 @@
  * of the library, but you are not obligated to do so.  If you do not wish
  * to do so, delete this exception statement from your version.
  */
+
 package com.untangle.uvm.util;
 
 import org.apache.log4j.Logger;
@@ -81,7 +82,7 @@ public class Pulse
     /**
      * Create a new pulse with the default name and set whether it is
      * a daemon thread.
-     */    
+     */
     public Pulse( boolean isDaemon, Runnable blip )
     {
         this( null, isDaemon, blip );
@@ -89,7 +90,7 @@ public class Pulse
 
     /**
      * Create a new pulse and set its name, default isDaemon.
-     */    
+     */
     public Pulse( String name, Runnable blip )
     {
         this( name, null, blip );
@@ -111,7 +112,7 @@ public class Pulse
             /* Set the thread name */
             this.thread = new Thread( this.ticker, name );
         }
-        
+
         if ( null != isDaemon ) this.thread.setDaemon( isDaemon );
     }
 
@@ -127,7 +128,7 @@ public class Pulse
         }
 
         this.delay = Math.max( delay, DELAY_MINIMUM );
-        
+
         /* Indicate that the thread is now starting */
         this.state = PulseState.STARTING;
 
@@ -191,7 +192,7 @@ public class Pulse
             logger.debug( "Updating the delay to " + delay );
             this.delay = Math.max( delay, DELAY_MINIMUM );
             break;
-                        
+
         case RUNNING:
             logger.debug( "Updating the delay to " + delay );
             this.delay = Math.max( delay, DELAY_MINIMUM );
@@ -200,7 +201,7 @@ public class Pulse
                 this.ticker.setNextTrigger( 0 );
                 this.ticker.notifyAll();
             }
-            
+
             break;
         }
     }
@@ -216,11 +217,11 @@ public class Pulse
 
         /* has ticked since beat was called. */
         if ( count != this.ticker.getCount()) return true;
-        
+
         synchronized ( this.ticker ) {
             /* has ticked since beat was called. */
             if ( count != this.ticker.getCount()) return true;
-            
+
             try {
                 this.ticker.wait( maxWait );
             } catch ( InterruptedException e ) {
@@ -252,7 +253,7 @@ public class Pulse
     {
         this.state = state;
     }
-    
+
     private class Ticker implements Runnable
     {
         private final Runnable beat;
@@ -275,10 +276,10 @@ public class Pulse
                     Pulse.this.logger.warn( "Unable to start the ticker thread outside of running state" );
                     return;
                 }
-                
+
                 setState( PulseState.RUNNING );
             }
-            
+
             while ( PulseState.RUNNING == getState()) {
                 /* run the blip */
                 try {
@@ -286,15 +287,15 @@ public class Pulse
                 } catch ( Exception e ) {
                     logger.warn( "error running blip", e );
                 }
-                
+
                 synchronized ( this ) {
                     /* Increment the number of counts */
                     this.count++;
-                    
+
                     /* Notify anyone waiting */
                     notifyAll();
                 }
-                
+
                 try {
                     waitForNextBlip();
                 } catch ( Exception e ) {
@@ -323,12 +324,12 @@ public class Pulse
                 setNextTrigger( -1 );
                 /* doesn't matter, just some time that will not happen soon */
                 delay = 60 * 60 * 1000;
-            } else { 
+            } else {
                 /* set the time of the next trigger */
                 /* add a tenth of a second little buffer */
                 setNextTrigger( waitStart + delay - 100 );
             }
-            
+
             while ( true ) {
                 try {
                     if ( delay <= 0 ) {
@@ -380,7 +381,7 @@ public class Pulse
         {
             return this.nextTrigger;
         }
-        
+
         private synchronized void setNextTrigger( long nextTrigger )
         {
             this.nextTrigger = nextTrigger;
