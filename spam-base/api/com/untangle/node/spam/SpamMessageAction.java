@@ -33,105 +33,45 @@
 
 package com.untangle.node.spam;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 
-// XXX convert to enum when we dump XDoclet
-
-public class SpamMessageAction implements Serializable
+public enum SpamMessageAction
 {
+    PASS('P', "pass message"),
+    MARK('M', "mark message"),
+    SAFELIST('S', "safelist message"),
+    OVERSIZE('Z', "oversize message");
+    
     private static final long serialVersionUID = -6364692037092527263L;
-
-    private static final Map INSTANCES = new HashMap();
 
     public static final char PASS_KEY = 'P';
     public static final char MARK_KEY = 'M';
     public static final char SAFELIST_KEY = 'S'; // special pass case
     public static final char OVERSIZE_KEY = 'Z'; // special pass case
 
-    public static final SpamMessageAction PASS = new SpamMessageAction(PASS_KEY, "pass message");
-    public static final SpamMessageAction MARK = new SpamMessageAction(MARK_KEY, "mark message");
-    public static final SpamMessageAction SAFELIST = new SpamMessageAction(SAFELIST_KEY, "safelist message", false);
-    public static final SpamMessageAction OVERSIZE = new SpamMessageAction(OVERSIZE_KEY, "oversize message", false);
-
     private String name;
     private char key;
-    private boolean uiSelectable;
 
-    public SpamMessageAction() {
-	}
-    
     private SpamMessageAction(char key, String name)
-    {
-        this(key, name, true);
-    }
-
-    private SpamMessageAction(char key, String name, boolean uiSelectable)
     {
         this.key = key;
         this.name = name;
-        this.uiSelectable = uiSelectable;
-        INSTANCES.put(key, this);
     }
 
-    public static SpamMessageAction getInstance(char key)
-    {
-        return (SpamMessageAction)INSTANCES.get(key);
-    }
-
-    public static SpamMessageAction getInstance(String name)
-    {
-        SpamMessageAction zMsgAction;
-        for (Iterator i = INSTANCES.keySet().iterator(); true == i.hasNext(); )
-            {
-                zMsgAction = (SpamMessageAction)INSTANCES.get(i.next());
-                if (name.equals(zMsgAction.getName())) {
-                    return zMsgAction;
-                }
-            }
-        return null;
-    }
-
-    public String toString()
-    {
-        return name;
+    public static SpamMessageAction getInstance(char key) {
+    	SpamMessageAction[] values = values();
+    	for (int i = 0; i < values.length; i++) {
+    		if (values[i].getKey() == key){
+    			return values[i];
+    		}
+		}
+    	return null;
     }
 
     public char getKey() {
         return key;
     }
-	public void setKey(char key) {
-		this.key = key;
-	}
-
+    
     public String getName() {
         return name;
-    }
-	public void setName(String name) {
-		this.name = name;
-	}
-
-    Object readResolve()
-    {
-        return getInstance(key);
-    }
-
-    private static SpamMessageAction[] arproto = new SpamMessageAction[0];
-
-    // UI gets selectable values here
-    public static SpamMessageAction[] getValues()
-    {
-        List azMsgAction = new ArrayList();
-        for (Iterator iter = INSTANCES.keySet().iterator(); iter.hasNext();) {
-            SpamMessageAction zMsgAction = (SpamMessageAction)INSTANCES.get(iter.next());
-            if (!zMsgAction.uiSelectable)
-                continue;
-            azMsgAction.add(zMsgAction);
-        }
-        return (SpamMessageAction[]) azMsgAction.toArray(arproto);
     }
 }

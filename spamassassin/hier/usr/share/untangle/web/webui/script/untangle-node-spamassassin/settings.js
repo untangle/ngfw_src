@@ -11,16 +11,6 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
         gridRBLEventLog : null,
         // called when the component is rendered
         onRender : function(container, position) {
-            // workarownd to solve the problem with
-            // baseSettings.popConfig.msgAction==baseSettings.imapConfig.msgAction
-            var baseSettings = this.getBaseSettings();
-            if (baseSettings.popConfig.msgAction == baseSettings.imapConfig.msgAction) {
-                var msgAction = {};
-                msgAction.javaClass = baseSettings.imapConfig.msgAction.javaClass;
-                msgAction.key = baseSettings.imapConfig.msgAction.key;
-                msgAction.name = baseSettings.imapConfig.msgAction.name;
-                baseSettings.imapConfig.msgAction = msgAction;
-            }
             // call superclass renderer first
             Ung.SpamAssassin.superclass.onRender.call(this, container, position);
             // builds the tabs
@@ -54,9 +44,9 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
         },
         // Email Config Panel
         buildEmail : function() {
-            this.smtpData = [['mark message', this.i18n._('Mark'), 'M'], ['pass message', this.i18n._('Pass'), 'P'],
-                    ['block message', this.i18n._('Block'), 'B'], ['quarantine message', this.i18n._('Quarantine'), 'Q']];
-            this.spamData = [['mark message', this.i18n._('Mark'), 'M'], ['pass message', this.i18n._('Pass'), 'P']];
+            this.smtpData = [['MARK', this.i18n._('Mark')], ['PASS', this.i18n._('Pass')],
+                    ['BLOCK', this.i18n._('Block')], ['QUARANTINE', this.i18n._('Quarantine')]];
+            this.spamData = [['MARK', this.i18n._('Mark')], ['PASS', this.i18n._('Pass')]];
             this.strengthsData = [[50, this.i18n._('Low')], [43, this.i18n._('Medium')], [35, this.i18n._('High')],
                     [33, this.i18n._('Very High')], [30, this.i18n._('Extreme')], [0, this.i18n._('Custom')],];
             this.emailPanel = new Ext.Panel({
@@ -142,22 +132,21 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                         xtype : 'combo',
                         name : 'smtpAction',
                         editable : false,
-                        store : this.smtpData,
+                        store : new Ext.data.SimpleStore({
+                            fields : ['key', 'name'],
+                            data : this.smtpData
+                        }),
+                        valueField : 'key',
+                        displayField : 'name',
                         fieldLabel : this.i18n._('Action'),
                         mode : 'local',
                         triggerAction : 'all',
                         listClass : 'x-combo-list-small',
-                        value : this.getBaseSettings().smtpConfig.msgAction.name,
+                        value : this.getBaseSettings().smtpConfig.msgAction,
                         listeners : {
                             "change" : {
                                 fn : function(elem, newValue) {
-                                    this.getBaseSettings().smtpConfig.msgAction.name = newValue;
-                                    for (var i = 0; i < this.smtpData.length; i++) {
-                                        if (this.smtpData[i][0] == newValue) {
-                                            this.getBaseSettings().smtpConfig.msgAction.key = this.smtpData[i][2]
-                                            break;
-                                        }
-                                    }
+                                    this.getBaseSettings().smtpConfig.msgAction = newValue;
                                 }.createDelegate(this)
                             }
                         }
@@ -226,22 +215,21 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                         xtype : 'combo',
                         name : 'pop3Action',
                         editable : false,
-                        store : this.spamData,
+                        store : new Ext.data.SimpleStore({
+                            fields : ['key', 'name'],
+                            data : this.spamData
+                        }),
+                        valueField : 'key',
+                        displayField : 'name',
                         fieldLabel : this.i18n._('Action'),
                         mode : 'local',
                         triggerAction : 'all',
                         listClass : 'x-combo-list-small',
-                        value : this.getBaseSettings().popConfig.msgAction.name,
+                        value : this.getBaseSettings().popConfig.msgAction,
                         listeners : {
                             "change" : {
                                 fn : function(elem, newValue) {
-                                    this.getBaseSettings().popConfig.msgAction.name = newValue;
-                                    for (var i = 0; i < this.spamData.length; i++) {
-                                        if (this.spamData[i][0] == newValue) {
-                                            this.getBaseSettings().popConfig.msgAction.key = this.spamData[i][2]
-                                            break;
-                                        }
-                                    }
+                                    this.getBaseSettings().popConfig.msgAction = newValue;
                                 }.createDelegate(this)
                             }
                         }
@@ -304,22 +292,21 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                         xtype : 'combo',
                         name : 'imapAction',
                         editable : false,
-                        store : this.spamData,
+                        store : new Ext.data.SimpleStore({
+                            fields : ['key', 'name'],
+                            data : this.spamData
+                        }),
+                        valueField : 'key',
+                        displayField : 'name',
                         fieldLabel : this.i18n._('Action'),
                         mode : 'local',
                         triggerAction : 'all',
                         listClass : 'x-combo-list-small',
-                        value : this.getBaseSettings().imapConfig.msgAction.name,
+                        value : this.getBaseSettings().imapConfig.msgAction,
                         listeners : {
                             "change" : {
                                 fn : function(elem, newValue) {
-                                    this.getBaseSettings().imapConfig.msgAction.name = newValue;
-                                    for (var i = 0; i < this.spamData.length; i++) {
-                                        if (this.spamData[i][0] == newValue) {
-                                            this.getBaseSettings().imapConfig.msgAction.key = this.spamData[i][2]
-                                            break;
-                                        }
-                                    }
+                                    this.getBaseSettings().imapConfig.msgAction = newValue;
                                 }.createDelegate(this)
                             }
                         }
@@ -344,7 +331,9 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                 fields : [{
                     name : 'createDate'
                 }, {
-                    name : 'actionName'
+                    name : 'type'
+                }, {
+                    name : 'actionType'
                 }, {
                     name : 'messageInfo'
                 }, {
@@ -369,7 +358,34 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                     header : i18n._("action"),
                     width : 90,
                     sortable : true,
-                    dataIndex : 'actionName'
+                    dataIndex : 'actionType',
+                    renderer : function(value, metadata, record ) {
+                        switch (record.data.type) {
+                            case 'POP/IMAP' :
+                                switch (value) {
+                                    case 0 : // PASSED
+                                        return this.i18n._("pass message");
+                                    default :
+                                    case 1 : // MARKED
+                                        return this.i18n._("mark infection");
+                                }
+                                break;
+                            case 'SMTP' :
+                                switch (value) {
+                                    case 0 : // PASSED
+                                        return this.i18n._("pass message");
+                                    case 1 : // MARKED
+                                        return this.i18n._("mark infection");
+                                    case 2 : // BLOCKED
+                                        return this.i18n._("block message");
+                                    default :
+                                    case 3 : // QUARANTINED
+                                        return this.i18n._("quarantine message");
+                                }
+                                break;
+                        }
+                        return "";
+                    }.createDelegate(this)
                 }, {
                     header : i18n._("client"),
                     width : 120,

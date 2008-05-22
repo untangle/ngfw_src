@@ -18,36 +18,24 @@
 
 package com.untangle.node.phish;
 
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
 
-// XXX to enum when we XDoclet gets out of the way
-
-public class Action implements Serializable
+public enum Action
 {
+    PASS('P', "pass"),
+    BLOCK('B', "block");
+    
     private static final long serialVersionUID = -1388743204136835821L;
 
     public static char PASS_KEY = 'P';
     public static char BLOCK_KEY = 'B';
 
-    public static final Action PASS = new Action(PASS_KEY, "pass");
-    public static final Action BLOCK = new Action(BLOCK_KEY, "block");
-
-    private static final Map INSTANCES = new HashMap();
-
-    static {
-        INSTANCES.put(PASS.getKey(), PASS);
-        INSTANCES.put(BLOCK.getKey(), BLOCK);
-    }
-
     private final char key;
-    private final String action;
+    private final String name;
 
-    private Action(char key, String action)
+    private Action(char key, String name)
     {
         this.key = key;
-        this.action = action;
+        this.name = name;
     }
 
     public char getKey()
@@ -55,20 +43,20 @@ public class Action implements Serializable
         return key;
     }
 
-    public String toString()
+    public String getName()
     {
-        return action;
+        return name;
     }
-
+    
     public static Action getInstance(char key)
     {
-        return (Action)INSTANCES.get(key);
+    	Action[] values = values();
+    	for (int i = 0; i < values.length; i++) {
+    		if (values[i].getKey() == key){
+    			return values[i];
+    		}
+		}
+    	return null;
     }
 
-    // serialization methods --------------------------------------------------
-
-    private Object readResolve()
-    {
-        return INSTANCES.get(key);
-    }
 }

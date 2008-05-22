@@ -33,10 +33,6 @@
 
 package com.untangle.node.virus;
 
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 
 /**
  * Action that was taken.
@@ -44,29 +40,18 @@ import java.util.Map;
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
-public class VirusMessageAction implements Serializable
+public enum VirusMessageAction
 {
+	PASS('P', "pass message"), REMOVE('R', "remove infection");
+	
     private static final long serialVersionUID = -6364692037092527263L;
-
-    private static final Map INSTANCES = new HashMap();
 
     public static final char PASS_KEY = 'P';
     public static final char REMOVE_KEY = 'R';
 
-    public static final VirusMessageAction PASS = new VirusMessageAction(PASS_KEY, "pass message");
-    public static final VirusMessageAction REMOVE = new VirusMessageAction(REMOVE_KEY, "remove infection");
-
-    static {
-        INSTANCES.put(PASS.getKey(), PASS);
-        INSTANCES.put(REMOVE.getKey(), REMOVE);
-    }
-
     private String name;
     private char key;
 
-    public VirusMessageAction() {
-	}
-    
     private VirusMessageAction(char key, String name)
     {
         this.key = key;
@@ -75,58 +60,21 @@ public class VirusMessageAction implements Serializable
 
     public static VirusMessageAction getInstance(char key)
     {
-        return (VirusMessageAction)INSTANCES.get(key);
-    }
-
-    public static VirusMessageAction getInstance(String name)
-    {
-        VirusMessageAction zMsgAction;
-        for (Iterator i = INSTANCES.keySet().iterator(); true == i.hasNext(); )
-            {
-                zMsgAction = (VirusMessageAction)INSTANCES.get(i.next());
-                if (name.equals(zMsgAction.getName())) {
-                    return zMsgAction;
-                }
-            }
-        return null;
-    }
-
-    public String toString()
-    {
-        return name;
+    	VirusMessageAction[] values = values();
+    	for (int i = 0; i < values.length; i++) {
+    		if (values[i].getKey() == key){
+    			return values[i];
+    		}
+		}
+    	return null;
     }
 
     public char getKey() {
 		return key;
 	}
 
-	public void setKey(char key) {
-		this.key = key;
-	}
-
 	public String getName() {
 		return name;
 	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-    Object readResolve()
-    {
-        return getInstance(key);
-    }
-
-    public static VirusMessageAction[] getValues()
-    {
-        VirusMessageAction[] azMsgAction = new VirusMessageAction[INSTANCES.size()];
-        Iterator iter = INSTANCES.keySet().iterator();
-        VirusMessageAction zMsgAction;
-        for (int i = 0; true == iter.hasNext(); i++) {
-            zMsgAction = (VirusMessageAction)INSTANCES.get(iter.next());
-            azMsgAction[i] = zMsgAction;
-        }
-        return azMsgAction;
-    }
-
+	
 }

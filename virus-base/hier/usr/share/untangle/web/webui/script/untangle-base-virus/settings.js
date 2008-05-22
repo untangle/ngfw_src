@@ -7,16 +7,6 @@ if (!Ung.hasResource["Ung.Virus"]) {
         gridEventLog : null,
         // called when the component is rendered
         onRender : function(container, position) {
-            // workarownd to solve the problem with
-            // baseSettings.popConfig.msgAction==baseSettings.imapConfig.msgAction
-            var baseSettings = this.getBaseSettings();
-            if (baseSettings.popConfig.msgAction == baseSettings.imapConfig.msgAction) {
-                var msgAction = {};
-                msgAction.javaClass = baseSettings.imapConfig.msgAction.javaClass;
-                msgAction.key = baseSettings.imapConfig.msgAction.key;
-                msgAction.name = baseSettings.imapConfig.msgAction.name;
-                baseSettings.imapConfig.msgAction = msgAction;
-            }
             // call superclass renderer first
             Ung.Virus.superclass.onRender.call(this, container, position);
             // builds the 4 tabs
@@ -467,17 +457,17 @@ if (!Ung.hasResource["Ung.Virus"]) {
                             listClass : 'x-combo-list-small',
                             store : new Ext.data.SimpleStore({
                                 fields : ['key', 'name'],
-                                data : [["P", this.i18n._("pass message")], 
-                                        ["R", this.i18n._("remove infection")],
-                                        ["B", this.i18n._("block message")]]
+                                data : [["PASS", this.i18n._("pass message")], 
+                                        ["REMOVE", this.i18n._("remove infection")],
+                                        ["BLOCK", this.i18n._("block message")]]
                             }),
                             displayField : 'name',
                             valueField : 'key',
-                            value : this.getBaseSettings().smtpConfig.msgAction.key,
+                            value : this.getBaseSettings().smtpConfig.msgAction,
                             listeners : {
                                 "change" : {
                                     fn : function(elem, newValue) {
-                                        this.getBaseSettings().smtpConfig.msgAction.key = newValue;
+                                        this.getBaseSettings().smtpConfig.msgAction = newValue;
                                     }.createDelegate(this)
                                 }
                             }
@@ -491,16 +481,16 @@ if (!Ung.hasResource["Ung.Virus"]) {
                             listClass : 'x-combo-list-small',
                             store : new Ext.data.SimpleStore({
                                 fields : ['key', 'name'],
-                                data : [["P", this.i18n._("pass message")], 
-                                        ["R", this.i18n._("remove infection")]]
+                                data : [["PASS", this.i18n._("pass message")], 
+                                        ["REMOVE", this.i18n._("remove infection")]]
                             }),
                             displayField : 'name',
                             valueField : 'key',
-                            value : this.getBaseSettings().popConfig.msgAction.key,
+                            value : this.getBaseSettings().popConfig.msgAction,
                             listeners : {
                                 "change" : {
                                     fn : function(elem, newValue) {
-                                        this.getBaseSettings().popConfig.msgAction.key = newValue;
+                                        this.getBaseSettings().popConfig.msgAction = newValue;
                                     }.createDelegate(this)
                                 }
                             }
@@ -514,16 +504,16 @@ if (!Ung.hasResource["Ung.Virus"]) {
                             listClass : 'x-combo-list-small',
                             store : new Ext.data.SimpleStore({
                                 fields : ['key', 'name'],
-                                data : [["P", this.i18n._("pass message")], 
-                                        ["R", this.i18n._("remove infection")]]
+                                data : [["PASS", this.i18n._("pass message")], 
+                                        ["REMOVE", this.i18n._("remove infection")]]
                             }),
                             displayField : 'name',
                             valueField : 'key',
-                            value : this.getBaseSettings().imapConfig.msgAction.key,
+                            value : this.getBaseSettings().imapConfig.msgAction,
                             listeners : {
                                 "change" : {
                                     fn : function(elem, newValue) {
-                                        this.getBaseSettings().imapConfig.msgAction.key = newValue;
+                                        this.getBaseSettings().imapConfig.msgAction = newValue;
                                     }.createDelegate(this)
                                 }
                             }

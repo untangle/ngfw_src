@@ -19,16 +19,6 @@ if (!Ung.hasResource["Ung.Phish"]) {
 
         // called when the component is rendered
         onRender : function(container, position) {
-            // workarownd to solve the problem with
-            // baseSettings.popConfig.msgAction==baseSettings.imapConfig.msgAction
-            var baseSettings = this.getBaseSettings();
-            if (baseSettings.popConfig.msgAction == baseSettings.imapConfig.msgAction) {
-                var msgAction = {};
-                msgAction.javaClass = baseSettings.imapConfig.msgAction.javaClass;
-                msgAction.key = baseSettings.imapConfig.msgAction.key;
-                msgAction.name = baseSettings.imapConfig.msgAction.name;
-                baseSettings.imapConfig.msgAction = msgAction;
-            }
             // call superclass renderer first
             Ung.Phish.superclass.onRender.call(this, container, position);
             // builds the 3 tabs
@@ -53,9 +43,9 @@ if (!Ung.hasResource["Ung.Phish"]) {
         },
         // Email Config Panel
         buildEmail : function() {
-            this.smtpData = [['mark message', this.i18n._('Mark'), 'M'], ['pass message', this.i18n._('Pass'), 'P'],
-                    ['block message', this.i18n._('Block'), 'B'], ['quarantine message', this.i18n._('Quarantine'), 'Q']];
-            this.spamData = [['mark message', this.i18n._('Mark'), 'M'], ['pass message', this.i18n._('Pass'), 'P']];
+            this.smtpData = [['MARK', this.i18n._('Mark')], ['PASS', this.i18n._('Pass')],
+                    ['BLOCK', this.i18n._('Block')], ['QUARANTINE', this.i18n._('Quarantine')]];
+            this.spamData = [['MARK', this.i18n._('Mark')], ['PASS', this.i18n._('Pass')]];
             this.emailPanel = new Ext.Panel({
                 title : this.i18n._('Email'),
                 info : 'emailPanel',
@@ -86,22 +76,21 @@ if (!Ung.hasResource["Ung.Phish"]) {
                         xtype : 'combo',
                         name : 'smtpAction',
                         editable : false,
-                        store : this.smtpData,
+                        store : new Ext.data.SimpleStore({
+                            fields : ['key', 'name'],
+                            data : this.smtpData
+                        }),
+                        valueField : 'key',
+                        displayField : 'name',
                         fieldLabel : this.i18n._('Action'),
                         mode : 'local',
                         triggerAction : 'all',
                         listClass : 'x-combo-list-small',
-                        value : this.getBaseSettings().smtpConfig.msgAction.name,
+                        value : this.getBaseSettings().smtpConfig.msgAction,
                         listeners : {
                             "change" : {
                                 fn : function(elem, newValue) {
-                                    this.getBaseSettings().smtpConfig.msgAction.name = newValue;
-                                    for (var i = 0; i < this.smtpData.length; i++) {
-                                        if (this.smtpData[i][0] == newValue) {
-                                            this.getBaseSettings().smtpConfig.msgAction.key = this.smtpData[i][2]
-                                            break;
-                                        }
-                                    }
+                                    this.getBaseSettings().smtpConfig.msgAction = newValue;
                                 }.createDelegate(this)
                             }
                         }
@@ -130,22 +119,21 @@ if (!Ung.hasResource["Ung.Phish"]) {
                         xtype : 'combo',
                         name : 'pop3Action',
                         editable : false,
-                        store : this.spamData,
+                        store : new Ext.data.SimpleStore({
+                            fields : ['key', 'name'],
+                            data : this.spamData
+                        }),
+                        valueField : 'key',
+                        displayField : 'name',
                         fieldLabel : this.i18n._('Action'),
                         mode : 'local',
                         triggerAction : 'all',
                         listClass : 'x-combo-list-small',
-                        value : this.getBaseSettings().popConfig.msgAction.name,
+                        value : this.getBaseSettings().popConfig.msgAction,
                         listeners : {
                             "change" : {
                                 fn : function(elem, newValue) {
-                                    this.getBaseSettings().popConfig.msgAction.name = newValue;
-                                    for (var i = 0; i < this.spamData.length; i++) {
-                                        if (this.spamData[i][0] == newValue) {
-                                            this.getBaseSettings().popConfig.msgAction.key = this.spamData[i][2]
-                                            break;
-                                        }
-                                    }
+                                    this.getBaseSettings().popConfig.msgAction = newValue;
                                 }.createDelegate(this)
                             }
                         }
@@ -174,22 +162,21 @@ if (!Ung.hasResource["Ung.Phish"]) {
                         xtype : 'combo',
                         name : 'imapAction',
                         editable : false,
-                        store : this.spamData,
+                        store : new Ext.data.SimpleStore({
+                            fields : ['key', 'name'],
+                            data : this.spamData
+                        }),
+                        valueField : 'key',
+                        displayField : 'name',
                         fieldLabel : this.i18n._('Action'),
                         mode : 'local',
                         triggerAction : 'all',
                         listClass : 'x-combo-list-small',
-                        value : this.getBaseSettings().imapConfig.msgAction.name,
+                        value : this.getBaseSettings().imapConfig.msgAction,
                         listeners : {
                             "change" : {
                                 fn : function(elem, newValue) {
-                                    this.getBaseSettings().imapConfig.msgAction.name = newValue;
-                                    for (var i = 0; i < this.spamData.length; i++) {
-                                        if (this.spamData[i][0] == newValue) {
-                                            this.getBaseSettings().imapConfig.msgAction.key = this.spamData[i][2]
-                                            break;
-                                        }
-                                    }
+                                    this.getBaseSettings().imapConfig.msgAction = newValue;
                                 }.createDelegate(this)
                             }
                         }
@@ -250,7 +237,7 @@ if (!Ung.hasResource["Ung.Phish"]) {
                 fields : [{
                     name : 'createDate'
                 }, {
-                    name : 'action'
+                    name : 'actionType'
                 }, {
                     name : 'pipelineEndpoints'
                 }, {
@@ -277,9 +264,15 @@ if (!Ung.hasResource["Ung.Phish"]) {
                     header : i18n._("action"),
                     width : 120,
                     sortable : true,
-                    dataIndex : 'action',
+                    dataIndex : 'actionType',
                     renderer : function(value) {
-                        return value ? this.i18n._("none") : this.i18n._(value.action);
+                        switch (value) {
+                            case 0 : // PASSED
+                                return this.i18n._("pass");
+                            default :
+                            case 1 : // BLOCKED
+                                return this.i18n._("block");
+                        }
                     }.createDelegate(this)
                 }, {
                     header : this.i18n._("request"),
@@ -310,7 +303,9 @@ if (!Ung.hasResource["Ung.Phish"]) {
                 fields : [{
                     name : 'createDate'
                 }, {
-                    name : 'actionName'
+                    name : 'type'
+                }, {
+                    name : 'actionType'
                 }, {
                     name : 'messageInfo'
                 }, {
@@ -333,7 +328,34 @@ if (!Ung.hasResource["Ung.Phish"]) {
                     header : i18n._("action"),
                     width : 90,
                     sortable : true,
-                    dataIndex : 'actionName'
+                    dataIndex : 'actionType',
+                    renderer : function(value, metadata, record ) {
+                        switch (record.data.type) {
+                            case 'POP/IMAP' :
+                                switch (value) {
+                                    case 0 : // PASSED
+                                        return this.i18n._("pass message");
+                                    default :
+                                    case 1 : // MARKED
+                                        return this.i18n._("mark infection");
+                                }
+                                break;
+                            case 'SMTP' :
+                                switch (value) {
+                                    case 0 : // PASSED
+                                        return this.i18n._("pass message");
+                                    case 1 : // MARKED
+                                        return this.i18n._("mark infection");
+                                    case 2 : // BLOCKED
+                                        return this.i18n._("block message");
+                                    default :
+                                    case 3 : // QUARANTINED
+                                        return this.i18n._("quarantine message");
+                                }
+                                break;
+                        }
+                        return "";
+                    }.createDelegate(this)
                 }, {
                     header : i18n._("client"),
                     width : 120,

@@ -102,17 +102,4 @@ public class VirusPOPConfig extends VirusMailConfig implements Serializable
         return;
     }
 
-    /* for GUI */
-    @Transient
-    public String[] getMsgActionEnumeration()
-    {
-        VirusMessageAction[] azMsgAction = VirusMessageAction.getValues();
-        String[] azStr = new String[azMsgAction.length];
-
-        for (int i = 0; i < azMsgAction.length; i++)
-            azStr[i] = azMsgAction[i].toString();
-
-        return azStr;
-    }
-
 }

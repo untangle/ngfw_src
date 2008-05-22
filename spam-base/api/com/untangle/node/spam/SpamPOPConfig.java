@@ -121,16 +121,4 @@ public class SpamPOPConfig extends SpamProtoConfig
         return;
     }
 
-    /* for GUI */
-    @Transient
-    public String[] getMsgActionEnumeration()
-    {
-        SpamMessageAction[] azMsgAction = SpamMessageAction.getValues();
-        String[] azStr = new String[azMsgAction.length];
-
-        for (int i = 0; i < azMsgAction.length; i++)
-            azStr[i] = azMsgAction[i].toString();
-
-        return azStr;
-    }
 }

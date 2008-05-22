@@ -156,19 +156,6 @@ public class VirusSMTPConfig extends VirusMailConfig implements Serializable
         return;
     }
 
-    /* for GUI */
-    @Transient
-    public String[] getMsgActionEnumeration()
-    {
-        SMTPVirusMessageAction[] azMsgAction = SMTPVirusMessageAction.getValues();
-        String[] azStr = new String[azMsgAction.length];
-
-        for (int i = 0; i < azMsgAction.length; i++)
-            azStr[i] = azMsgAction[i].toString();
-
-        return azStr;
-    }
-
     /**
      * notifyAction: a string specifying a response to events if a
      * message containing virus (defaults to NEITHER) one of SENDER,
@@ -190,16 +177,4 @@ public class VirusSMTPConfig extends VirusMailConfig implements Serializable
         return;
     }
 
-    /* for GUI */
-    @Transient
-    public String[] getNotifyActionEnumeration()
-    {
-        SMTPNotifyAction[] azNotifyAction = SMTPNotifyAction.getValues();
-        String[] azStr = new String[azNotifyAction.length];
-
-        for (int i = 0; i < azNotifyAction.length; i++)
-            azStr[i] = azNotifyAction[i].toString();
-
-        return azStr;
-    }
 }
