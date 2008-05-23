@@ -35,7 +35,6 @@ if (!Ung.hasResource["Ung.System"]) {
             this.buildTabPanel([this.panelUntangleSupport, this.panelBackup, this.panelRestore, this.panelProtocolSettings,
                     this.panelRegionalSettings]);
             this.tabs.activate(this.panelUntangleSupport);
-            this.panelBackup.disable();
             this.panelRestore.disable();
             this.panelProtocolSettings.disable();
 
@@ -139,7 +138,49 @@ if (!Ung.hasResource["Ung.System"]) {
 
         },
         buildBackup : function() {
-            this.panelBackup = this.getTODOPanel("Backup");
+            this.panelBackup = new Ext.Panel({
+                // private fields
+                info : 'panelBackup',
+                parentId : this.getId(),
+                title : this.i18n._('Backup'),
+                layout : "form",
+                bodyStyle : 'padding:5px 5px 0px 5px;',
+                autoScroll : true,
+                defaults : {
+                    xtype : 'fieldset',
+                    autoHeight : true,
+                    buttonAlign : 'left'
+                },
+                items : [{
+                    title : this.i18n._('Backup to File'),
+                    defaults : {
+                        border : false,
+                        bodyStyle : 'padding:5px 5px 0px 5px;'
+                    },
+                    items : [{
+                    	html: "test"
+                    }]
+                },{
+                    title : this.i18n._('Backup to USB Key'),
+                    defaults : {
+                        border : false,
+                        bodyStyle : 'padding:5px 5px 0px 5px;'
+                    },
+                    items : [{
+                        html: "test"
+                    }]
+                },{
+                    title : this.i18n._('Backup to Hard Disk'),
+                    defaults : {
+                        border : false,
+                        bodyStyle : 'padding:5px 5px 0px 5px;'
+                    },
+                    items : [{
+                        html: "test"
+                    }]
+                }]
+            });
+
         },
         buildRestore : function() {
             this.panelRestore = this.getTODOPanel("Restore");

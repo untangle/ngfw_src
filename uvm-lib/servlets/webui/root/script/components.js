@@ -1375,6 +1375,7 @@ Ung.Settings.loadNodeScript = function(nodeName, cmpId, callbackFn) {
                     callbackFn(cmpId);
             	});
         	} else {
+        		Ung.Settings.dependency[cmp.name].fn.call(this);
         		callbackFn(cmpId);
         	}
         }
