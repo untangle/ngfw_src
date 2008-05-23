@@ -64,6 +64,10 @@ public class UploadServlet extends HttpServlet {
 				        byte[] logo=item.get();
 				        RemoteBrandingManager brandingManager = uvm.brandingManager();
 				        brandingManager.setLogo(logo);
+		    		}else if ("restore".equals(uploadType)){
+				        byte[] backupFileBytes=item.get();
+				        uvm.restoreBackup(backupFileBytes);
+				        
 		    		}
 			    }
 			}

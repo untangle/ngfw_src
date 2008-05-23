@@ -35,7 +35,6 @@ if (!Ung.hasResource["Ung.System"]) {
             this.buildTabPanel([this.panelUntangleSupport, this.panelBackup, this.panelRestore, this.panelProtocolSettings,
                     this.panelRegionalSettings]);
             this.tabs.activate(this.panelUntangleSupport);
-            this.panelRestore.disable();
             this.panelProtocolSettings.disable();
 
         },
@@ -146,6 +145,33 @@ if (!Ung.hasResource["Ung.System"]) {
                 layout : "form",
                 bodyStyle : 'padding:5px 5px 0px 5px;',
                 autoScroll : true,
+                onBackupToFile: function() {
+                    Ext.MessageBox.progress(i18n._("Please wait"),i18n._("Backing Up..."));
+                	var cmp=Ext.getCmp(this.parentId);
+                    rpc.jsonrpc.RemoteUvmContext.localBackup(function (result, exception) {
+                        if(exception) {
+                        	Ext.MessageBox.alert(this.i18n._("Backup Failure Warning"),this.i18n._("Error:  The local file backup procedure failed.  Please try again.")); 
+                        } else {
+                            Ext.MessageBox.alert(this.i18n._("Backup Success"),this.i18n._("Success:  The local file backup procedure completed."));
+                        }
+                    }.createDelegate(cmp));
+                },
+                onBackupToUSBKey: function() {
+                	Ext.MessageBox.progress(i18n._("Please wait"),i18n._("Backing Up..."));
+                    var cmp=Ext.getCmp(this.parentId);
+                    rpc.jsonrpc.RemoteUvmContext.usbBackup(function (result, exception) {
+                        if(exception) {
+                            Ext.MessageBox.alert(this.i18n._("Backup Failure Warning"),this.i18n._("Error:  The USB Key backup procedure failed.  Contact support for further direction.")); 
+                        } else {
+                            Ext.MessageBox.alert(this.i18n._("Backup Success"),this.i18n._("Success:  The USB Key backup procedure completed."));
+                        }
+                    }.createDelegate(cmp));
+                },
+                onBackupToHardDisk: function() {
+                	main.todo();
+                	//TODO: need a download servlet for this
+                	//the main implementation is in the BackupJDialog.java
+                },
                 defaults : {
                     xtype : 'fieldset',
                     autoHeight : true,
@@ -158,7 +184,14 @@ if (!Ung.hasResource["Ung.System"]) {
                         bodyStyle : 'padding:5px 5px 0px 5px;'
                     },
                     items : [{
-                    	html: "test"
+                    	html: this.i18n._("You can backup your current system configuration to a file on your local computer for later restoration, in the event that you would like to replace new settings with your current settings.  The file name will end with \".egbackup\"<br> <br> After backing up your current system configuration to a file, you can then restore that configuration through this dialog by going to \"Restore\" -> \"From Local File\".")
+                    }],
+                    buttons : [{
+                        text : this.i18n._("Backup to File"),
+                        name: "backupToFileButton",
+                        handler : function() {
+                            this.panelBackup.onBackupToFile();
+                        }.createDelegate(this)
                     }]
                 },{
                     title : this.i18n._('Backup to USB Key'),
@@ -167,7 +200,14 @@ if (!Ung.hasResource["Ung.System"]) {
                         bodyStyle : 'padding:5px 5px 0px 5px;'
                     },
                     items : [{
-                        html: "test"
+                        html: this.i18n._("You can backup your current system configuration to USB Key for later restoration, in the event that you would like to replace new settings with your current settings.<br>\n<br>\nAfter backing up your current system configuration to USB Key, you can then restore that configuration through the <b>Backup and Restore Utilities</b>.  To access the Backup and Restore Utilities, you must have a monitor and keyboard physically plugged into your server when it is turned on, and then select \"Backup and Restore Utilities\" from the boot prompt.<br>\n<br>\n<b>Note: You must insert your USB Key into a valid USB port on the back of your server before pressing the button.  You must not remove the USB Key from the USB port until after the process is complete.  The progress bar will inform you when the process is complete.</b>")
+                    }],
+                    buttons : [{
+                    	name: "backupToUSBKeyButton",
+                        text : this.i18n._("Backup to USB Key"),
+                        handler : function() {
+                            this.panelBackup.onBackupToUSBKey();
+                        }.createDelegate(this)
                     }]
                 },{
                     title : this.i18n._('Backup to Hard Disk'),
@@ -176,14 +216,107 @@ if (!Ung.hasResource["Ung.System"]) {
                         bodyStyle : 'padding:5px 5px 0px 5px;'
                     },
                     items : [{
-                        html: "test"
+                        html: this.i18n._("You can backup your current system configuration to Hard Disk for later restoration, in the event that you would like to replace new settings with your current settings.<br>\n<br>\nAfter backing up your current system configuration to Hard Disk, you can then restore that configuration through the <b>Backup and Restore Utilities</b>.  To access the Backup and Restore Utilities, you must have a monitor and keyboard physically plugged into your server when it is turned on, and then select \"Backup and Restore Utilities\" from the boot prompt.")
+                    }],
+                    buttons : [{
+                        text : this.i18n._("Backup to Hard Disk"),
+                        name: "backupToHardDiskButton",
+                        handler : function() {
+                            this.panelBackup.onBackupToHardDisk();
+                        }.createDelegate(this)
                     }]
                 }]
             });
 
         },
         buildRestore : function() {
-            this.panelRestore = this.getTODOPanel("Restore");
+            this.panelRestore = new Ext.Panel({
+                // private fields
+                name : 'panelBackup',
+                parentId : this.getId(),
+                title : this.i18n._('Restore'),
+                layout : "form",
+                bodyStyle : 'padding:5px 5px 0px 5px;',
+                autoScroll : true,
+                onRestoreFromFileFile: function() {
+                	var prova = Ext.getCmp('upload_restore_file_form');
+                    var cmp = Ext.getCmp(this.parentId);
+                    var fileText = prova.items.get(0);
+                    if (fileText.getValue().length == 0) {
+                        Ext.MessageBox.alert(cmp.i18n._("Failed"), cmp.i18n._('Please select a file to upload.'));
+                        return false;
+                    }
+                    var form = prova.getForm();
+                    form.submit({
+                        parentId : cmp.getId(),
+                        waitMsg : cmp.i18n._('Please wait while Restoring...'),
+                        success : function(form, action) {
+                            var cmp = Ext.getCmp(action.options.parentId);
+                            Ext.MessageBox.alert(cmp.i18n._("Restore Success"), cmp.i18n._("Success:  The Local File restore procedure completed."), function(btn, text){
+                                //TODO: restart client after restore
+                            	//In the curent gui there is a separate dialog for an alert before this happens
+                                Ext.MessageBox.alert("TODO:","Restart client after restore");
+                            });
+                        },
+                        failure : function(form, action) {
+                            var cmp = Ext.getCmp(action.options.parentId);
+                            if (action.result && action.result.msg) {
+                                Ext.MessageBox.alert(cmp.i18n._("Restore Backup File Warning"), cmp.i18n._("Error:  The Local File restore procedure failed.  The reason reported by the Untangle Server was:")+cmp.i18n._(action.result.msg));
+                            } else {
+                                Ext.MessageBox.alert(cmp.i18n._("Restore Backup File Warning"), cmp.i18n._("Error:  The Local File restore procedure failed."));
+                            }
+                        }
+                    });
+                },
+                defaults : {
+                    xtype : 'fieldset',
+                    autoHeight : true,
+                    buttonAlign : 'left'
+                },
+                items : [{
+                    title : this.i18n._('From File'),
+                    defaults : {
+                        border : false,
+                        bodyStyle : 'padding:5px 5px 0px 5px;'
+                    },
+                    items : [{
+                        html: this.i18n._("You can restore a previous system configuration from a backup file on your local computer.  The backup file name ends with \".egbackup\"")
+                    },{
+                        fileUpload : true,
+                        xtype : 'form',
+                        id : 'upload_restore_file_form',
+                        url : 'upload',
+                        border : false,
+                        items : [{
+                            fieldLabel : 'File',
+                            name : 'file',
+                            inputType : 'file',
+                            xtype : 'textfield',
+                            allowBlank : false
+                        }, {
+                            xtype : 'hidden',
+                            name : 'type',
+                            value : 'restore'
+                        }]
+                    }],
+                    buttons : [{
+                        text : this.i18n._("Restore from File"),
+                        name: "restoreFromFileButton",
+                        handler : function() {
+                            this.panelRestore.onRestoreFromFileFile();
+                        }.createDelegate(this)
+                    }]
+                },{
+                    title : this.i18n._('From Hard Disk and USB Key'),
+                    defaults : {
+                        border : false,
+                        bodyStyle : 'padding:5px 5px 0px 5px;'
+                    },
+                    items : [{
+                        html: this.i18n._("After backing up your system configuration, you can restore that configuration through the <b>Recovery Utilities</b> on your server once it is done booting.\n<br>\n<br>To access the <b>Recovery Utilities</b>, you must have a monitor and keyboard physically plugged into your server, and then click on the Recovery Utilities toolbar button when it is done booting.")
+                    }]
+                }]
+            });
         },
         buildProtocolSettings : function() {
             this.panelProtocolSettings = this.getTODOPanel("Protocol Settings");
@@ -408,6 +541,7 @@ if (!Ung.hasResource["Ung.System"]) {
         // save function
         saveAction : function() {
             if (this.validate()) {
+            	Ext.MessageBox.progress(i18n._("Please wait"), i18n._("Saving..."));
                 this.saveSemaphore = 3;
                 // save language settings
                 rpc.languageManager.setLanguageSettings(function(result, exception) {
@@ -440,6 +574,7 @@ if (!Ung.hasResource["Ung.System"]) {
         afterSave : function() {
             this.saveSemaphore--;
             if (this.saveSemaphore == 0) {
+            	Ext.MessageBox.hide();
                 this.cancelAction();
             }
         }

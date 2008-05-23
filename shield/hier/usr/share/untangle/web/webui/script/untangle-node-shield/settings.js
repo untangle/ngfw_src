@@ -270,11 +270,9 @@ if (!Ung.hasResource["Ung.Shield"]) {
         },
         // save function
         save : function() {
-            // disable tabs during save
-            this.tabs.disable();
+            Ext.MessageBox.progress(i18n._("Please wait"), i18n._("Saving..."));
             this.getRpcNode().updateAll(function(result, exception) {
-                // re-enable tabs
-                this.tabs.enable();
+                Ext.MessageBox.hide();
                 if (exception) {
                     Ext.MessageBox.alert(i18n._("Failed"), exception.message);
                     return;
