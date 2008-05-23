@@ -88,7 +88,7 @@ if (!Ung.hasResource["Ung.System"]) {
         buildUntangleSupport : function() {
             this.panelUntangleSupport = new Ext.Panel({
                 // private fields
-                info : 'panelUntangleSupport',
+                name : 'panelUntangleSupport',
                 parentId : this.getId(),
                 title : this.i18n._('Untangle Support'),
                 layout : "form",
@@ -140,7 +140,7 @@ if (!Ung.hasResource["Ung.System"]) {
         buildBackup : function() {
             this.panelBackup = new Ext.Panel({
                 // private fields
-                info : 'panelBackup',
+                name : 'panelBackup',
                 parentId : this.getId(),
                 title : this.i18n._('Backup'),
                 layout : "form",
@@ -269,7 +269,7 @@ if (!Ung.hasResource["Ung.System"]) {
             }
             this.panelRegionalSettings = new Ext.Panel({
                 // private fields
-                info : 'panelRegionalSettings',
+                name : 'panelRegionalSettings',
                 parentId : this.getId(),
                 title : this.i18n._('Regional Settings'),
                 layout : "form",

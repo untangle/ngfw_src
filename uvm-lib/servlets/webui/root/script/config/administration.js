@@ -91,7 +91,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
             });
 
             this.panelSkins = new Ext.Panel({
-                info : "panelSkins",
+                name : "panelSkins",
                 // private fields
                 parentId : this.getId(),
                 title : this.i18n._('Skins'),

@@ -48,7 +48,7 @@ if (!Ung.hasResource["Ung.Phish"]) {
             this.spamData = [['MARK', this.i18n._('Mark')], ['PASS', this.i18n._('Pass')]];
             this.emailPanel = new Ext.Panel({
                 title : this.i18n._('Email'),
-                info : 'emailPanel',
+                name : 'emailPanel',
                 layout : "form",
                 autoScroll : true,
                 bodyStyle : 'padding:5px 5px 0px 5px;',
@@ -230,7 +230,7 @@ if (!Ung.hasResource["Ung.Phish"]) {
         // Web Event Log
         buildWebEventLog : function() {
             this.gridWebEventLog = new Ung.GridEventLog({
-                info : 'gridWebEventLog',
+                name : 'gridWebEventLog',
                 settingsCmp : this,
                 title : this.i18n._("Web Event Log"),
                 // the list of fields
@@ -296,7 +296,7 @@ if (!Ung.hasResource["Ung.Phish"]) {
         // Email Event Log
         buildEmailEventLog : function() {
             this.gridEmailEventLog = new Ung.GridEventLog({
-                info : 'gridEmailEventLog',
+                name : 'gridEmailEventLog',
                 settingsCmp : this,
                 title : this.i18n._("Email Event Log"),
                 // the list of fields

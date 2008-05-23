@@ -14,7 +14,7 @@ var rpc=null;
 Ung.Main=function() {
 }
 Ung.Main.prototype = {
-	disableThreads: false, // in development environment is useful to disable
+	disableThreads: true, // in development environment is useful to disable
                             // threads.
 	leftTabs: null,
 	appsSemaphore: null,
@@ -372,7 +372,7 @@ Ung.Main.prototype = {
 	},
 	createNode: function (Tid, md) {
 		var node={};
-		node.id=node.tid=Tid.id;
+		node.tid=Tid.id;
 		node.Tid=Tid;
 		node.md=md;
 		node.name=md.name;
@@ -518,7 +518,7 @@ Ung.Main.prototype = {
   			var item=this.config[i];
   			var buttonCmp=new Ung.Button({
   				id: "configItem_"+item.name,
-  				info: "configItem_"+item.name,
+  				name: "configItem_"+item.name,
 				configIndex: i,
 				height: '42px',
 				renderTo: 'configItems',

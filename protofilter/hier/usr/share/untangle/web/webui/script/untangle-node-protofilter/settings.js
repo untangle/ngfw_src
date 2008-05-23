@@ -32,7 +32,7 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
 
             this.gridProtocolList = new Ung.EditorGrid({
                 settingsCmp : this,
-                info : 'gridProtocolList',
+                name : 'gridProtocolList',
                 // the total records is set from the base settings
                 // patternsLength field
                 totalRecords : this.getBaseSettings().patternsLength,
@@ -155,7 +155,7 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
         buildEventLog : function() {
             this.gridEventLog = new Ung.GridEventLog({
                 settingsCmp : this,
-                info : 'gridEventLog',
+                name : 'gridEventLog',
                 // This is a predefined event log, so there is no need to
                 // specify the fields and columns
                 predefinedType : "TYPE1"

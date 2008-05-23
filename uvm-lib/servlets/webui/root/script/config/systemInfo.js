@@ -81,7 +81,7 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
             var brandingBaseSettings = this.getBrandingBaseSettings();
             this.panelBranding = new Ext.Panel({
                 // private fields
-                info : 'panelBranding',
+                name : 'panelBranding',
                 parentId : this.getId(),
                 title : this.i18n._('Branding'),
                 layout : "form",

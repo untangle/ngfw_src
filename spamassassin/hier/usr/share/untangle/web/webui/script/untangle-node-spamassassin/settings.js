@@ -51,7 +51,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                     [33, this.i18n._('Very High')], [30, this.i18n._('Extreme')], [0, this.i18n._('Custom')],];
             this.emailPanel = new Ext.Panel({
                 title : this.i18n._('Email'),
-                info : 'emailPanel',
+                name : 'emailPanel',
                 layout : "form",
                 autoScroll : true,
                 bodyStyle : 'padding:5px 5px 0px 5px;',
@@ -326,7 +326,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
         buildEventLog : function() {
             this.gridEventLog = new Ung.GridEventLog({
                 settingsCmp : this,
-                info : 'buildEventLog',
+                name : 'buildEventLog',
                 // the list of fields
                 fields : [{
                     name : 'createDate'
@@ -431,7 +431,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
         buildRBLEventLog : function() {
             this.gridRBLEventLog = new Ung.GridEventLog({
                 settingsCmp : this,
-                info : 'gridRBLEventLog',
+                name : 'gridRBLEventLog',
                 eventManagerFn : this.getRpcNode().getRBLEventManager(),
                 title : this.i18n._("DNSBL Event Log"),
                 // the list of fields

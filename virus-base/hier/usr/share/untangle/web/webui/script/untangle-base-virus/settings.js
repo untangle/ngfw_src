@@ -20,7 +20,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
         // Web Panel
         buildWeb : function() {
             this.panelWeb = new Ext.Panel({
-                info : 'panelWeb',
+                name : 'panelWeb',
                 // private fields
                 winExtensions : null,
                 winMimeTypes : null,
@@ -57,7 +57,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
                 	labelWidth: 150,
                     items : [{
                         xtype : 'button',
-                        info : 'extensionsButton',
+                        name : 'extensionsButton',
                         text : this.i18n._('File Extensions'),
                         style : 'padding-bottom:10px;',
                         handler : function() {
@@ -65,7 +65,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
                         }.createDelegate(this)
                     }, {
                         xtype : 'button',
-                        info : 'mimeTypesButton',
+                        name : 'mimeTypesButton',
                         text : this.i18n._('MIME Types'),
                         style : 'padding-bottom:10px;',
                         handler : function() {
@@ -174,7 +174,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
             });
 
             this.gridExtensions = new Ung.EditorGrid({
-                info : 'gridExtensions',
+                name : 'gridExtensions',
                 settingsCmp : this,
                 totalRecords : this.getBaseSettings().extensionsLength,
                 emptyRow : {
@@ -243,7 +243,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
             });
 
             this.gridMimeTypes = new Ung.EditorGrid({
-                info : 'gridMimeTypes',
+                name : 'gridMimeTypes',
                 settingsCmp : this,
                 totalRecords : this.getBaseSettings().httpMimeTypesLength,
                 emptyRow : {
@@ -306,7 +306,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
         // Ftp Panel
         buildFtp : function() {
             this.panelFtp = new Ext.Panel({
-                info : 'panelFtp',
+                name : 'panelFtp',
                 // private fields
                 parentId : this.getId(),
 
@@ -384,7 +384,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
         // Email Panel
         buildEmail : function() {
             this.panelEmail = new Ext.Panel({
-                info : 'panelEmail',
+                name : 'panelEmail',
                 // private fields
                 parentId : this.getId(),
 

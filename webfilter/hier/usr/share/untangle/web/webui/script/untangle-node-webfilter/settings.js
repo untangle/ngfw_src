@@ -19,7 +19,7 @@ if (!Ung.hasResource["Ung.WebFilter"]) {
         // Block Lists Panel
         buildBlockLists : function() {
             this.panelBlockLists = new Ext.Panel({
-                info : 'panelBlockLists',
+                name : 'panelBlockLists',
                 // private fields
                 winBlacklistCategories : null,
                 winBlockedUrls : null,
@@ -54,7 +54,7 @@ if (!Ung.hasResource["Ung.WebFilter"]) {
                 }, {
                     title : this.i18n._('Categories'),
                     buttons : [{
-                        info : 'manageBlacklistCategoriesButton',
+                        name : 'manageBlacklistCategoriesButton',
                         text : this.i18n._("manage list"),
                         handler : function() {
                             this.panelBlockLists.onManageBlacklistCategories();
@@ -63,7 +63,7 @@ if (!Ung.hasResource["Ung.WebFilter"]) {
                 }, {
                     title : this.i18n._('Sites'),
                     buttons : [{
-                        info : 'manageBlockedUrlsButton',
+                        name : 'manageBlockedUrlsButton',
                         text : this.i18n._("manage list"),
                         handler : function() {
                             this.panelBlockLists.onManageBlockedUrls();
@@ -72,7 +72,7 @@ if (!Ung.hasResource["Ung.WebFilter"]) {
                 }, {
                     title : this.i18n._('File Types'),
                     buttons : [{
-                        info : 'manageBlockedExtensionsButton',
+                        name : 'manageBlockedExtensionsButton',
                         text : this.i18n._("manage list"),
                         handler : function() {
                             this.panelBlockLists.onManageBlockedExtensions();
@@ -81,7 +81,7 @@ if (!Ung.hasResource["Ung.WebFilter"]) {
                 }, {
                     title : this.i18n._('MIME Types'),
                     buttons : [{
-                        info : 'manageBlockedMimeTypesButton',
+                        name : 'manageBlockedMimeTypesButton',
                         text : this.i18n._("manage list"),
                         handler : function() {
                             this.panelBlockLists.onManageBlockedMimeTypes();
@@ -239,7 +239,7 @@ if (!Ung.hasResource["Ung.WebFilter"]) {
             });
 
             this.gridBlacklistCategories = new Ung.EditorGrid({
-                info : 'gridBlacklistCategories',
+                name : 'gridBlacklistCategories',
                 settingsCmp : this,
                 totalRecords : this.getBaseSettings().blacklistCategoriesLength,
                 hasAdd : false,
@@ -349,7 +349,7 @@ if (!Ung.hasResource["Ung.WebFilter"]) {
             });
 
             this.gridBlockedUrls = new Ung.EditorGrid({
-                info : 'gridBlockedUrls',
+                name : 'gridBlockedUrls',
                 settingsCmp : this,
                 totalRecords : this.getBaseSettings().blockedUrlsLength,
                 emptyRow : {
@@ -433,7 +433,7 @@ if (!Ung.hasResource["Ung.WebFilter"]) {
             });
 
             this.gridBlockedExtensions = new Ung.EditorGrid({
-                info : 'gridBlockedExtensions',
+                name : 'gridBlockedExtensions',
                 settingsCmp : this,
                 totalRecords : this.getBaseSettings().blockedExtensionsLength,
                 emptyRow : {
@@ -513,7 +513,7 @@ if (!Ung.hasResource["Ung.WebFilter"]) {
             });
 
             this.gridBlockedMimeTypes = new Ung.EditorGrid({
-                info : 'gridBlockedMimeTypes',
+                name : 'gridBlockedMimeTypes',
                 settingsCmp : this,
                 totalRecords : this.getBaseSettings().blockedMimeTypesLength,
                 emptyRow : {
@@ -584,7 +584,7 @@ if (!Ung.hasResource["Ung.WebFilter"]) {
         buildPassLists : function() {
             this.panelPassLists = new Ext.Panel({
                 // private fields
-                info : 'panelPassLists',
+                name : 'panelPassLists',
                 winPassedUrls : null,
                 winPassedClients : null,
                 parentId : this.getId(),
@@ -600,7 +600,7 @@ if (!Ung.hasResource["Ung.WebFilter"]) {
                 items : [{
                     title : this.i18n._('Sites'),
                     buttons : [{
-                        info : 'managePassedUrlsButton',
+                        name : 'managePassedUrlsButton',
                         text : this.i18n._("manage list"),
                         handler : function() {
                             this.panelPassLists.onManagePassedUrls();
@@ -609,7 +609,7 @@ if (!Ung.hasResource["Ung.WebFilter"]) {
                 }, {
                     title : this.i18n._('IP addresses'),
                     buttons : [{
-                        info : 'managePassedClientsButton',
+                        name : 'managePassedClientsButton',
                         text : this.i18n._("manage list"),
                         handler : function() {
                             this.panelPassLists.onManagePassedClients();
@@ -699,7 +699,7 @@ if (!Ung.hasResource["Ung.WebFilter"]) {
             });
 
             this.gridPassedUrls = new Ung.EditorGrid({
-                info : 'gridPassedUrls',
+                name : 'gridPassedUrls',
                 settingsCmp : this,
                 totalRecords : this.getBaseSettings().passedUrlsLength,
                 emptyRow : {
@@ -772,7 +772,7 @@ if (!Ung.hasResource["Ung.WebFilter"]) {
             });
 
             this.gridPassedClients = new Ung.EditorGrid({
-                info : 'gridPassedClients',
+                name : 'gridPassedClients',
                 settingsCmp : this,
                 totalRecords : this.getBaseSettings().passedClientsLength,
                 emptyRow : {
@@ -835,7 +835,7 @@ if (!Ung.hasResource["Ung.WebFilter"]) {
         // Event Log
         buildEventLog : function() {
             this.gridEventLog = new Ung.GridEventLog({
-                info : 'gridEventLog',
+                name : 'gridEventLog',
                 settingsCmp : this,
                 // This is a predefined event log, so there is no need to
                 // specify the fields and columns
