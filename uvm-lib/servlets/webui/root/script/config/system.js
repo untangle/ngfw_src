@@ -146,16 +146,31 @@ if (!Ung.hasResource["Ung.System"]) {
                 bodyStyle : 'padding:5px 5px 0px 5px;',
                 autoScroll : true,
                 onBackupToFile: function() {
-                    Ext.MessageBox.progress(i18n._("Please wait"),i18n._("Backing Up..."));
-                	var cmp=Ext.getCmp(this.parentId);
-                    rpc.jsonrpc.RemoteUvmContext.localBackup(function (result, exception) {
-                        if(exception) {
-                        	Ext.MessageBox.alert(this.i18n._("Backup Failure Warning"),this.i18n._("Error:  The local file backup procedure failed.  Please try again.")); 
-                        } else {
-                            Ext.MessageBox.alert(this.i18n._("Backup Success"),this.i18n._("Success:  The local file backup procedure completed."));
+                	// A two step process: first asks the server for permission to download the file (the outer ajax request) 
+                	// and then if successful opens the iframe which initiates the download.
+                    Ext.Ajax.request({
+                        url: 'backup',
+                        params: {action:'requestBackup'},
+                        success: function(response) {
+                            try {
+                                Ext.destroy(Ext.get('downloadIframe'));
+                            }
+                            catch(e) {}
+                            Ext.DomHelper.append(document.body, {
+                                tag: 'iframe',
+                                id:'downloadIframe',
+                                frameBorder: 0,
+                                width: 0,
+                                height: 0,
+                                css: 'display:none;visibility:hidden;height:0px;',
+                                src: 'backup?action=initiateDownload'
+                            });
+                        },
+                        failure: function() {
+                            Ext.MessageBox.alert(this.i18n._("Backup Failure Warning"),this.i18n._("Error:  The local file backup procedure failed.  Please try again.")); 
                         }
-                    }.createDelegate(cmp));
-                },
+                    });                	
+                }.createDelegate(this),
                 onBackupToUSBKey: function() {
                 	Ext.MessageBox.progress(i18n._("Please wait"),i18n._("Backing Up..."));
                     var cmp=Ext.getCmp(this.parentId);
@@ -168,9 +183,15 @@ if (!Ung.hasResource["Ung.System"]) {
                     }.createDelegate(cmp));
                 },
                 onBackupToHardDisk: function() {
-                	main.todo();
-                	//TODO: need a download servlet for this
-                	//the main implementation is in the BackupJDialog.java
+                    Ext.MessageBox.progress(i18n._("Please wait"),i18n._("Backing Up..."));
+                    var cmp=Ext.getCmp(this.parentId);
+                    rpc.jsonrpc.RemoteUvmContext.localBackup(function (result, exception) {
+                        if(exception) {
+                            Ext.MessageBox.alert(this.i18n._("Backup Failure Warning"),this.i18n._("Error:  The Hard Disk backup procedure failed.  Contact support for further direction.")); 
+                        } else {
+                            Ext.MessageBox.alert(this.i18n._("Backup Success"),this.i18n._("Success:  The Hard Disk backup procedure completed."));
+                        }
+                    }.createDelegate(cmp));
                 },
                 defaults : {
                     xtype : 'fieldset',
@@ -184,7 +205,7 @@ if (!Ung.hasResource["Ung.System"]) {
                         bodyStyle : 'padding:5px 5px 0px 5px;'
                     },
                     items : [{
-                    	html: this.i18n._("You can backup your current system configuration to a file on your local computer for later restoration, in the event that you would like to replace new settings with your current settings.  The file name will end with \".egbackup\"<br> <br> After backing up your current system configuration to a file, you can then restore that configuration through this dialog by going to \"Restore\" -> \"From Local File\".")
+                    	html: this.i18n._("You can backup your current system configuration to a file on your local computer for later restoration, in the event that you would like to replace new settings with your current settings.  The file name will end with \".backup\"<br> <br> After backing up your current system configuration to a file, you can then restore that configuration through this dialog by going to \"Restore\" -> \"From Local File\".")
                     }],
                     buttons : [{
                         text : this.i18n._("Backup to File"),

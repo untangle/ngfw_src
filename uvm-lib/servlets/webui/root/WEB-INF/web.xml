@@ -52,6 +52,16 @@
     <url-pattern>/upload</url-pattern>
   </servlet-mapping>
   
+  <servlet>
+    <servlet-name>BackupServlet</servlet-name>
+    <servlet-class>com.untangle.uvm.webui.servlet.BackupServlet</servlet-class>
+  </servlet>
+  
+  <servlet-mapping>
+    <servlet-name>BackupServlet</servlet-name>
+    <url-pattern>/backup</url-pattern>
+  </servlet-mapping>
+  
   <welcome-file-list>
     <welcome-file>
       index.jsp
