@@ -111,21 +111,6 @@ class Blacklist
 
         for (BlacklistCategory cat : settings.getBlacklistCategories()) {
             String catName = cat.getName();
-            if (cat.getBlockDomains()) {
-                String dbName = "ubl-" + catName + "-dom";
-
-                try {
-                    UrlList ul = new PrefixUrlList(BLACKLIST_HOME, "webfilter",
-                                                   dbName, m,
-                                                   new File(INIT_HOME, dbName));
-                    urlDatabase.addBlacklist(dbName, ul);
-                } catch (IOException exn) {
-                    logger.warn("could not open: " + dbName, exn);
-                } catch (DatabaseException exn) {
-                    logger.warn("could not open: " + dbName, exn);
-                }
-            }
-
             if (cat.getBlockUrls()) {
                 String dbName = "ubl-" + catName + "-url";
                 try {
