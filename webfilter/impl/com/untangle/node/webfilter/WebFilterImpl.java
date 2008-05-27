@@ -517,6 +517,9 @@ public class WebFilterImpl extends AbstractNode implements WebFilter
             bc = new BlacklistCategory("socialnetworking", "Social Networking", "Social Networking");
             settings.addBlacklistCategory(bc);
             bc = new BlacklistCategory("proxy", "Proxy Sites", "Proxy Sites");
+            bc.setBlockDomains(true);
+            bc.setBlockUrls(true);
+            bc.setBlockExpressions(true);
             settings.addBlacklistCategory(bc);
         }
         if (curCategories.size() < 14) {
