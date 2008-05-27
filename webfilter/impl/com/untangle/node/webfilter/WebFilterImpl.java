@@ -471,7 +471,7 @@ public class WebFilterImpl extends AbstractNode implements WebFilter
     // this here.
     private void updateToCurrentCategories(WebFilterSettings settings)
     {
-        List curCategories = settings.getBlacklistCategories();
+        List<BlacklistCategory> curCategories = settings.getBlacklistCategories();
 
         if (curCategories.size() == 0) {
             /*
@@ -516,7 +516,7 @@ public class WebFilterImpl extends AbstractNode implements WebFilter
             settings.addBlacklistCategory(bc);
             bc = new BlacklistCategory("socialnetworking", "Social Networking", "Social Networking");
             settings.addBlacklistCategory(bc);
-            bc = new BlacklistCategory("proxy", "Anonymous Surfing", "Anonymous Web Surfing");
+            bc = new BlacklistCategory("proxy", "Proxy Sites", "Proxy Sites");
             settings.addBlacklistCategory(bc);
         }
         if (curCategories.size() < 14) {
@@ -525,6 +525,13 @@ public class WebFilterImpl extends AbstractNode implements WebFilter
              */
             BlacklistCategory bc = new BlacklistCategory("dating", "Dating", "Online Dating");
             settings.addBlacklistCategory(bc);
+        }
+
+        for (BlacklistCategory bc : curCategories) {
+            if (bc.getName().equals("proxy")) {
+                bc.setDisplayName("Proxy Sites");
+                bc.setDescription("Proxy Sites");
+            }
         }
     }
 
