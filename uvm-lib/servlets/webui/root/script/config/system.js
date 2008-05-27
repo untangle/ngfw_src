@@ -274,9 +274,10 @@ if (!Ung.hasResource["Ung.System"]) {
                         success : function(form, action) {
                             var cmp = Ext.getCmp(action.options.parentId);
                             Ext.MessageBox.alert(cmp.i18n._("Restore Success"), cmp.i18n._("Success:  The Local File restore procedure completed."), function(btn, text){
-                                //TODO: restart client after restore
-                            	//In the curent gui there is a separate dialog for an alert before this happens
-                                Ext.MessageBox.alert("TODO:","Restart client after restore");
+                                Ext.MessageBox.alert(cmp.i18n._("Attention"),
+                                    cmp.i18n._("You must now exit this program.")+"<br>"+
+                                    cmp.i18n._("You can log in again after a brief period.")+"<br><b>"+
+                                    cmp.i18n._("DO NOT MANUALLY SHUTDOWN OR RESTART THE UNTANGLE SERVER WHILE IT IS UPGRADING!")+"</b>");
                             });
                         },
                         failure : function(form, action) {
@@ -301,7 +302,7 @@ if (!Ung.hasResource["Ung.System"]) {
                         bodyStyle : 'padding:5px 5px 0px 5px;'
                     },
                     items : [{
-                        html: this.i18n._("You can restore a previous system configuration from a backup file on your local computer.  The backup file name ends with \".egbackup\"")
+                        html: this.i18n._("You can restore a previous system configuration from a backup file on your local computer.  The backup file name ends with \".backup\"")
                     },{
                         fileUpload : true,
                         xtype : 'form',
