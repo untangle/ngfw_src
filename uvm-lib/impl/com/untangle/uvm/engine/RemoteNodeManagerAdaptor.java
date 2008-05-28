@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.untangle.uvm.node.DeployException;
+import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.NodeState;
 import com.untangle.uvm.node.NodeStats;
@@ -101,6 +102,11 @@ class RemoteNodeManagerAdaptor implements RemoteNodeManager
         return nodeManager.nodeContext(tid);
     }
 
+    public Node node(String name)
+    {
+        return nodeManager.node(name);
+    }
+    
     public Map<Tid, NodeStats> allNodeStats()
     {
         return nodeManager.allNodeStats();

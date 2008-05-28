@@ -36,6 +36,15 @@ import java.util.Set;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.log4j.Logger;
+import org.apache.log4j.helpers.LogLog;
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.XMLReaderFactory;
+
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.logging.UvmLoggingContext;
 import com.untangle.uvm.logging.UvmLoggingContextFactory;
@@ -53,17 +62,8 @@ import com.untangle.uvm.node.UvmNodeHandler;
 import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.security.Tid;
 import com.untangle.uvm.toolbox.MackageDesc;
-import com.untangle.uvm.toolbox.MackageInstallException;
 import com.untangle.uvm.toolbox.RemoteToolboxManager;
 import com.untangle.uvm.util.TransactionWork;
-import org.apache.log4j.Logger;
-import org.apache.log4j.helpers.LogLog;
-import org.hibernate.Query;
-import org.hibernate.Session;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.XMLReaderFactory;
 
 /**
  * Implements LocalNodeManager.
@@ -208,6 +208,16 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
     public NodeContextImpl nodeContext(Tid tid)
     {
         return tids.get(tid);
+    }
+    
+    public Node node(String name) {
+        Node node = null;
+        List<Tid> nodeInstances = nodeInstances(name);
+        if(nodeInstances.size()>0){
+            NodeContext nodeContext = nodeContext(nodeInstances.get(0));
+            node = nodeContext.node();
+        }
+        return node;
     }
 
     public Tid instantiate(String nodeName)

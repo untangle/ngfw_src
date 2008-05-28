@@ -151,6 +151,16 @@ public interface LocalNodeManager
     NodeContext nodeContext(Tid tid);
 
     /**
+     * Get the <code>Node</code> for a node instance; 
+     * if the are more than a node instance for the provided name, 
+     * the first node instance is returned.
+     *
+     * @param name of the node.
+     * @return the instance's <code>Node</code>.
+     */
+    public Node node(String name);
+    
+    /**
      * Get the statistics and counts for all nodes in one call.
      *
      * @return a <code>Map</code> from Tid to NodeStats for all
