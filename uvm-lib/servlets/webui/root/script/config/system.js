@@ -35,7 +35,6 @@ if (!Ung.hasResource["Ung.System"]) {
             this.buildTabPanel([this.panelUntangleSupport, this.panelBackup, this.panelRestore, this.panelProtocolSettings,
                     this.panelRegionalSettings]);
             this.tabs.activate(this.panelUntangleSupport);
-            this.panelProtocolSettings.disable();
 
         },
         // get languange settings object
@@ -57,32 +56,23 @@ if (!Ung.hasResource["Ung.System"]) {
             }
             return this.rpc.miscSettings;
         },
+        getFtpNode : function(forceReload) {
+            if (forceReload || this.rpc.ftpNode === undefined) {
+                this.rpc.ftpNode = rpc.nodeManager.node("untangle-casing-ftp");
+            }
+            return this.rpc.ftpNode;
+        },
+        getFtpSettings : function(forceReload) {
+            if (forceReload || this.rpc.ftpSettings === undefined) {
+                this.rpc.ftpSettings = this.getFtpNode(forceReload).getFtpSettings();
+            }
+            return this.rpc.ftpSettings;
+        },
         getTimeZone : function(forceReload) {
             if (forceReload || this.rpc.timeZone === undefined) {
                 this.rpc.timeZone = rpc.adminManager.getTimeZone();
             }
             return this.rpc.timeZone;
-        },
-        getTODOPanel : function(title) {
-            return new Ext.Panel({
-                title : this.i18n._(title),
-                layout : "form",
-                autoScroll : true,
-                bodyStyle : 'padding:5px 5px 0px 5px',
-                items : [{
-                    xtype : 'fieldset',
-                    title : this.i18n._(title),
-                    autoHeight : true,
-                    items : [{
-                        xtype : 'textfield',
-                        fieldLabel : 'TODO',
-                        name : 'todo',
-                        allowBlank : false,
-                        value : 'todo',
-                        disabled : true
-                    }]
-                }]
-            });
         },
         buildUntangleSupport : function() {
             this.panelUntangleSupport = new Ext.Panel({
@@ -341,7 +331,59 @@ if (!Ung.hasResource["Ung.System"]) {
             });
         },
         buildProtocolSettings : function() {
-            this.panelProtocolSettings = this.getTODOPanel("Protocol Settings");
+            this.panelProtocolSettings = new Ext.Panel({
+                name : 'panelProtocolSettings',
+                // private fields
+                parentId : this.getId(),
+
+                title : this.i18n._('Protocol Settings'),
+                layout : "form",
+                bodyStyle : 'padding:5px 5px 0px 5px;',
+                autoScroll : true,
+                defaults : {
+                    xtype : 'fieldset',
+                    autoHeight : true
+                },
+                items : [{
+//                	title: this.i18n._('HTTP')
+//                    items : [{
+//                    }]
+//                },{
+                    title: this.i18n._('FTP'),
+                    items : [{
+                        style : 'padding-bottom:10px;',
+                        border: false,
+                        html: this.i18n._("Warning:  These settings should not be changed unless instructed to do so by support.")                    	
+                    },{
+                        xtype : 'radio',
+                        boxLabel : i18n.sprintf(this.i18n._('%sEnable Processing%s of File Transfer traffic.  (This is the default setting)'), '<b>', '</b>'), 
+                        hideLabel : true,
+                        name : 'ftpEnabled',
+                        checked : this.getFtpSettings().enabled,
+                        listeners : {
+                            "check" : {
+                                fn : function(elem, checked) {
+                                    this.getFtpSettings().enabled = checked;
+                                }.createDelegate(this)
+                            }
+                        }
+                    },{
+                        xtype : 'radio',
+                        boxLabel : i18n.sprintf(this.i18n._('%sDisable Processing%s of File Transfer traffic.'), '<b>', '</b>'), 
+                        hideLabel : true,
+                        name : 'ftpEnabled',
+                        checked : !this.getFtpSettings().enabled,
+                        listeners : {
+                            "check" : {
+                                fn : function(elem, checked) {
+                                    this.getFtpSettings().enabled = !checked;
+                                }.createDelegate(this)
+                            }
+                        }
+                    }]
+                }]
+
+            });
         },
         buildRegionalSettings : function() {
             var languagesStore = new Ext.data.Store({
@@ -564,7 +606,7 @@ if (!Ung.hasResource["Ung.System"]) {
         saveAction : function() {
             if (this.validate()) {
             	Ext.MessageBox.progress(i18n._("Please wait"), i18n._("Saving..."));
-                this.saveSemaphore = 3;
+                this.saveSemaphore = 4;
                 // save language settings
                 rpc.languageManager.setLanguageSettings(function(result, exception) {
                     if (exception) {
@@ -582,6 +624,15 @@ if (!Ung.hasResource["Ung.System"]) {
                     }
                     this.afterSave();
                 }.createDelegate(this), this.getAccessSettings(), this.getMiscSettings());
+                
+                // save ftp settings
+                this.getFtpNode().setFtpSettings(function(result, exception) {
+                    if (exception) {
+                        Ext.MessageBox.alert(i18n._("Failed"), exception.message);
+                        return;
+                    }
+                    this.afterSave();
+                }.createDelegate(this), this.getFtpSettings());
                 
                 //save timezone
                 rpc.adminManager.setTimeZone(function(result, exception) {
