@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -77,6 +77,7 @@ class CategoryTableModel extends MSortedTableModel<Object> {
 
     private DefaultComboBoxModel categoryComboBoxModel;
     private DefaultComboBoxModel fascistComboBoxModel;
+    private DefaultComboBoxModel ipHostOnlyComboBoxModel;
 
 
     public CategoryTableModel(){
@@ -87,6 +88,10 @@ class CategoryTableModel extends MSortedTableModel<Object> {
         fascistComboBoxModel = new DefaultComboBoxModel();
         fascistComboBoxModel.addElement( ACTION_DONT_BLOCK );
         fascistComboBoxModel.addElement( ACTION_BLOCK );
+
+        ipHostOnlyComboBoxModel = new DefaultComboBoxModel();
+        ipHostOnlyComboBoxModel.addElement(ACTION_DONT_BLOCK);
+        ipHostOnlyComboBoxModel.addElement(ACTION_BLOCK);
     }
 
     public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception {
@@ -95,12 +100,15 @@ class CategoryTableModel extends MSortedTableModel<Object> {
 
         int i = 0;
         boolean isFascistMode = false;
+        boolean blockAllIpHosts = false;
         for( Vector rowVector : tableVector ){
             if( 0 == i ){ // HACK TO DEAL WITH FASCIST MODE ROW
                 String selectedItem = (String) ((ComboBoxModel) rowVector.elementAt(3)).getSelectedItem();
                 isFascistMode = selectedItem.equals(ACTION_BLOCK);
-            }
-            else{
+            } else if (1 == i) {
+                String selectedItem = (String) ((ComboBoxModel) rowVector.elementAt(3)).getSelectedItem();
+                blockAllIpHosts = selectedItem.equals(ACTION_BLOCK);
+            } else{
                 newElem = (BlacklistCategory) rowVector.elementAt(6);
                 newElem.setDisplayName( (String) rowVector.elementAt(2) );
                 String selectedItem = (String) ((ComboBoxModel) rowVector.elementAt(3)).getSelectedItem();
@@ -134,6 +142,7 @@ class CategoryTableModel extends MSortedTableModel<Object> {
             WebFilterSettings webFilterSettings = (WebFilterSettings) settings;
             webFilterSettings.setBlacklistCategories( elemList );
             webFilterSettings.setFascistMode( isFascistMode );
+            webFilterSettings.setBlockAllIpHosts( blockAllIpHosts );
         }
 
     }
@@ -160,6 +169,24 @@ class CategoryTableModel extends MSortedTableModel<Object> {
         }
         tempRow.add( newComboBoxModel );
         tempRow.add( "Blocks any web page that is not in the pass lists." );
+        tempRow.add( "" );
+        tempRow.add( null );
+        allRows.add( tempRow );
+
+        // HACK TO DEAL WITH BLOCK ALL IP HOSTS MODE
+        tempRow = new Vector(7);
+        tempRow.add( super.ROW_SAVED );
+        tempRow.add( rowIndex );
+        tempRow.add( "IP Only Hosts" );
+
+        newComboBoxModel = copyComboBoxModel(ipHostOnlyComboBoxModel);
+        if ( webFilterSettings.getBlockAllIpHosts() ){
+            newComboBoxModel.setSelectedItem( ACTION_BLOCK );
+        } else {
+            newComboBoxModel.setSelectedItem( ACTION_DONT_BLOCK );
+        }
+        tempRow.add( newComboBoxModel );
+        tempRow.add( "Blocks any web page that is refered to by IP address rather than hostname" );
         tempRow.add( "" );
         tempRow.add( null );
         allRows.add( tempRow );

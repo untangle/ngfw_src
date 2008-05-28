@@ -32,6 +32,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import com.sleepycat.je.DatabaseException;
 import com.untangle.node.http.RequestLineToken;
@@ -65,6 +66,9 @@ class Blacklist
             throw new RuntimeException(exn);
         }
     }
+
+    private static final Pattern IP_PATTERN = Pattern
+        .compile("\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}");
 
     private static final File INIT_HOME = new File("/usr/share/untangle-webfilter-init/");
 
@@ -207,7 +211,6 @@ class Blacklist
                 return null;
             } else {
                 while (null != dom) {
-
                     StringRule sr = findCategory(passedUrls, dom + path,
                                                  settings.getPassedUrls());
                     String category = null == sr ? null : sr.getDescription();
@@ -222,6 +225,14 @@ class Blacklist
                     }
                     dom = nextHost(dom);
                 }
+            }
+        }
+
+        if (settings.getBlockAllIpHosts()) {
+            if (null == host || IP_PATTERN.matcher(host).matches()) {
+                WebFilterEvent hbe = new WebFilterEvent
+                    (requestLine.getRequestLine(), Action.BLOCK,
+                     Reason.BLOCK_IP_HOST, host);
             }
         }
 
