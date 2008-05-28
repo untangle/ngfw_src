@@ -233,6 +233,12 @@ class Blacklist
                 WebFilterEvent hbe = new WebFilterEvent
                     (requestLine.getRequestLine(), Action.BLOCK,
                      Reason.BLOCK_IP_HOST, host);
+                node.log(hbe);
+
+                WebFilterBlockDetails bd = new WebFilterBlockDetails
+                    (settings, host, uri.toString(),
+                     "host name is an IP address (" + host + ")", clientIp);
+                return node.generateNonce(bd);
             }
         }
 
