@@ -581,7 +581,7 @@
         </textElement>
         <textFieldExpression class="java.lang.String"><![CDATA[
         $P{REPORT_MAX_COUNT}.intValue() <= $V{REPORT_COUNT}.intValue() ?
-        new String("Note: This Untangle Report is limited to " + $P{REPORT_MAX_COUNT} + " incidents.") :
+        new String("Note: This report is limited to " + $P{REPORT_MAX_COUNT} + " incidents.") :
         new String("")]]></textFieldExpression>
       </textField>
 
@@ -597,7 +597,7 @@
         </textElement>
         <textFieldExpression class="java.lang.String"><![CDATA[
         $P{REPORT_MAX_COUNT}.intValue() <= $V{REPORT_COUNT}.intValue() ?
-        new String("Note: This Untangle Report is limited to " + $P{REPORT_MAX_COUNT} + " incidents.") :
+        new String("Note: This report is limited to " + $P{REPORT_MAX_COUNT} + " incidents.") :
         new String("")]]></textFieldExpression>
       </textField>
 

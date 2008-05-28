@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
 -->
 <!DOCTYPE document
-	PUBLIC "-//UJAC.org//Print Document//EN" 
-	"http://ujac.sourceforge.net/ujac-print-document.dtd">
+    PUBLIC "-//UJAC.org//Print Document//EN"
+    "http://ujac.sourceforge.net/ujac-print-document.dtd">
 
 <document size="LETTER" margin-left="25" margin-right="25" margin-top="25" margin-bottom="25">
   <font-def name="title"       family="Helvetica" size="18" style="normal"/>
@@ -27,17 +27,17 @@
   <font-def name="link"        family="Helvetica" size="12" style="italic"/>
   <font-def name="small"       family="Helvetica" size="8"  style="normal"/>
 
-  <style-def name="table.bordered" 
+  <style-def name="table.bordered"
              border-style="top|bottom|left|right" border-width="0.5" font="normal"/>
 
   <table halign="center" widths="60,40" width="90" spacing-after="20">
     <table-row>
       <cell>
         <paragraph font="title" halign="left">
-          Untangle Reports ${type} Briefings
+          ${companyName} Reports ${type} Briefings
         </paragraph>
       </cell>
-    
+
       <cell>
         <paragraph font="small" halign="right">
           ${period}
@@ -51,7 +51,7 @@
       <!-- Toggle the colors back and forth -->
       <toggle-property name="mainColor" type="String" a="eeeeee" b="dddddd"/>
       <toggle-property name="linkColor" type="String" a="e4e4e4" b="d4d4d4"/>
-      
+
       <table-row padding-bottom="7" padding-top="2" leading="0" valign="middle">
         <!-- Cell for the description icon -->
         <cell bgcolor="${mainColor}" halign="center">

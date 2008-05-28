@@ -82,6 +82,10 @@ prepared=${REPORT_PREPARED}
 hostname=${hostname}
 ipAddress=${ipAddress}
 
+## branding
+companyName=${COMPANY_NAME}
+companyUrl=${COMPANY_URL}
+
 EOF
 }
 
