@@ -324,9 +324,11 @@ while true; do
             restartServiceIfNeeded mongrel
 	    
 	    if [ $counter -gt 60 ] ; then # fire up the other nannies
-	        if ! curl -sf -m 10 "http://localhost:3000/alpaca/dns?argyle=`head -n 1 /etc/untangle-net-alpaca/nonce`" > /dev/null ; then
-		  restartService untangle-net-alpaca /tmp/foo-doesnt-exist "non-functional"
-		  restartService untangle-net-alpaca-iptables /tmp/foo-doesnt-exist "non-functional"
+                curl -sf -m 10 "http://localhost:3000/alpaca/dns?argyle=`head -n 1 /etc/untangle-net-alpaca/nonce`" > /dev/null
+	        rc=$?
+	        if [ $rc -ne 0 ] ; then
+		  restartService untangle-net-alpaca /tmp/foo-doesnt-exist "non-functional (RC=$rc)"
+		  restartService untangle-net-alpaca-iptables /tmp/foo-doesnt-exist "non-functional (RC=$rc)"
 		fi
 
 	        if dpkg -l untangle-spamassassin-update | grep -q ii ; then # we're managing spamassassin
