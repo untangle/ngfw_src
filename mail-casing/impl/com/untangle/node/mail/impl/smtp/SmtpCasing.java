@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -18,12 +18,12 @@
 
 package com.untangle.node.mail.impl.smtp;
 
-import com.untangle.uvm.vnet.TCPSession;
 import com.untangle.node.mail.impl.AbstractMailCasing;
 import com.untangle.node.sasl.SASLObserver;
 import com.untangle.node.sasl.SASLObserverFactory;
 import com.untangle.node.token.Parser;
 import com.untangle.node.token.Unparser;
+import com.untangle.uvm.vnet.TCPSession;
 import org.apache.log4j.Logger;
 
 
@@ -32,8 +32,6 @@ public class SmtpCasing
 
     private final Logger m_logger =
         Logger.getLogger(SmtpCasing.class);
-
-    private static final boolean TRACE = false;
 
     private final SmtpParser m_parser;
     private final SmtpUnparser m_unparser;
@@ -46,7 +44,7 @@ public class SmtpCasing
     public SmtpCasing(TCPSession session,
                       boolean clientSide) {
 
-        super(session, clientSide, "smtp", TRACE);
+        super(session, clientSide, "smtp");
 
         m_tracker = new CasingSessionTracker();
 

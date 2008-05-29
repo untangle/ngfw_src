@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -18,10 +18,10 @@
 
 package com.untangle.node.mail.impl.imap;
 
-import com.untangle.uvm.vnet.TCPSession;
 import com.untangle.node.mail.impl.AbstractMailCasing;
 import com.untangle.node.token.Parser;
 import com.untangle.node.token.Unparser;
+import com.untangle.uvm.vnet.TCPSession;
 import org.apache.log4j.Logger;
 
 
@@ -34,8 +34,6 @@ class ImapCasing
     private final Logger m_logger =
         Logger.getLogger(ImapCasing.class);
 
-    private static final boolean TRACE = false;
-
     private final ImapParser m_parser;
     private final ImapUnparser m_unparser;
 
@@ -45,7 +43,7 @@ class ImapCasing
     ImapCasing(TCPSession session,
                boolean clientSide) {
 
-        super(session, clientSide, "imap", TRACE);
+        super(session, clientSide, "imap");
 
         //This sillyness is to work around some issues
         //with classloaders and logging

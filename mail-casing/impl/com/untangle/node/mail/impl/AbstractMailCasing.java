@@ -39,10 +39,10 @@ public abstract class AbstractMailCasing implements Casing
 
     public AbstractMailCasing(TCPSession session,
                               boolean clientSide,
-                              String protocolString,
-                              boolean trace) {
+                              String protocolString)
+    {
 
-        m_trace = trace;
+        m_trace = Boolean.parseBoolean(System.getProperty("com.untangle.node.mail.tracing"));
 
         if(m_logger.isEnabledFor(Level.DEBUG)) {
             m_logger.debug("Creating " +
@@ -54,7 +54,7 @@ public abstract class AbstractMailCasing implements Casing
 
         if(m_trace) {
             m_tracer = new CasingTracer(
-                                        new File(System.getProperty("user.dir"), protocolString),
+                                        new File(System.getProperty("bunnicula.tmp.dir"), protocolString),
                                         session.id() + "_" + protocolString,
                                         clientSide);
         }

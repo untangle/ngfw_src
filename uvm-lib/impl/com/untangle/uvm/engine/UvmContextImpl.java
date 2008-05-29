@@ -44,7 +44,6 @@ import com.untangle.uvm.addrbook.RemoteAddressBook;
 import com.untangle.uvm.argon.Argon;
 import com.untangle.uvm.argon.ArgonManagerImpl;
 import com.untangle.uvm.client.RemoteUvmContext;
-import com.untangle.uvm.engine.ADPhoneBookAssistantManager;
 import com.untangle.uvm.license.LicenseManagerFactory;
 import com.untangle.uvm.license.LocalLicenseManager;
 import com.untangle.uvm.license.RemoteLicenseManager;
@@ -66,7 +65,6 @@ import com.untangle.uvm.policy.PolicyManagerFactory;
 import com.untangle.uvm.policy.RemotePolicyManager;
 import com.untangle.uvm.portal.BasePortalManager;
 import com.untangle.uvm.toolbox.RemoteToolboxManager;
-import com.untangle.uvm.toolbox.RemoteUpstreamManager;
 import com.untangle.uvm.user.ADPhoneBookAssistant;
 import com.untangle.uvm.user.LocalPhoneBook;
 import com.untangle.uvm.user.PhoneBookFactory;
@@ -651,6 +649,11 @@ public class UvmContextImpl extends UvmContextBase
 
     public void loadLibrary(String libname) {
         System.loadLibrary(libname);
+    }
+
+    public String setProperty(String key, String value)
+    {
+        return System.setProperty(key, value);
     }
 
     // UvmContextBase methods --------------------------------------------------

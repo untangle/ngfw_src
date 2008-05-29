@@ -245,6 +245,8 @@ public class RemoteClient
             messageQueue();
         } else if (args[0].equalsIgnoreCase("loadRup")) {
             loadRup();
+        } else if (args[0].equalsIgnoreCase("setProperty")) {
+            setProperty(args[1], args[2]);
         } else if (args[0].equalsIgnoreCase("addPolicy")) {
             addPolicy(args[1], 3 > args.length ? null : args[2]);
         } else if (args[0].equalsIgnoreCase("listPolicies")) {
@@ -909,6 +911,11 @@ public class RemoteClient
         mc.loadRup();
     }
 
+    private static void setProperty(String key, String value)
+    {
+        mc.setProperty(key, value);
+    }
+
     private static void addPolicy(String policy, String notes)
         throws PolicyException
     {
@@ -1036,6 +1043,7 @@ public class RemoteClient
         System.out.println("    ucli gc");
         System.out.println("    ucli messageQueue");
         System.out.println("    ucli loadRup");
+        System.out.println("    ucli setProperty key value");
         System.out.println("  policy manager:");
         System.out.println("    ucli addPolicy name [notes]");
         System.out.println("    ucli listPolicies");
@@ -1067,11 +1075,11 @@ public class RemoteClient
 
     private static void doRestartCliServer()
     {
-        mc.restartCliServer(); 
+        mc.restartCliServer();
     }
 
     private static void doStopCliServer()
     {
-        mc.stopCliServer(); 
+        mc.stopCliServer();
     }
 }
