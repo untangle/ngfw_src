@@ -24,7 +24,7 @@
  *
  */
 
-package com.untangle.uvm.webui.jabsorb;
+package com.untangle.uvm.webui.jabsorb.serializer;
 
 import org.hibernate.proxy.LazyInitializer;
 import org.hibernate.proxy.pojo.cglib.CGLIBLazyInitializer;

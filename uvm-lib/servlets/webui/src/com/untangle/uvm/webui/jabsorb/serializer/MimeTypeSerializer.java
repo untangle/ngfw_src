@@ -1,6 +1,4 @@
-package com.untangle.uvm.webui.jabsorb;
-
-import java.util.TimeZone;
+package com.untangle.uvm.webui.jabsorb.serializer;
 
 import org.jabsorb.serializer.AbstractSerializer;
 import org.jabsorb.serializer.MarshallException;
@@ -8,9 +6,9 @@ import org.jabsorb.serializer.ObjectMatch;
 import org.jabsorb.serializer.SerializerState;
 import org.jabsorb.serializer.UnmarshallException;
 
-import sun.util.calendar.ZoneInfo;
+import com.untangle.uvm.node.MimeType;
 
-public class TimeZoneSerializer extends AbstractSerializer {
+public class MimeTypeSerializer extends AbstractSerializer {
 	/**
 	 * Unique serialisation id.
 	 */
@@ -19,7 +17,7 @@ public class TimeZoneSerializer extends AbstractSerializer {
 	/**
 	 * Classes that this can serialise.
 	 */
-	private static Class[] _serializableClasses = new Class[] { TimeZone.class, ZoneInfo.class };
+	private static Class[] _serializableClasses = new Class[] { MimeType.class };
 
 	/**
 	 * Classes that this can serialise to.
@@ -45,8 +43,8 @@ public class TimeZoneSerializer extends AbstractSerializer {
 		
         if( o == null ) {
             return "";
-        } else if (o instanceof TimeZone) {
-			return ((TimeZone)o).getID();
+        } else if (o instanceof MimeType) {
+			return ((MimeType)o).getType();
 		}
         
 		return null;
@@ -76,9 +74,9 @@ public class TimeZoneSerializer extends AbstractSerializer {
 		Object returnValue = null;
 		String val = json instanceof String ? (String) json : json.toString();
 		try {
-			returnValue = TimeZone.getTimeZone(val);
+			returnValue = new MimeType( val );
 		} catch (Exception e) {
-			throw new UnmarshallException("Invalid \"TimeZone\" specified:"
+			throw new UnmarshallException("Invalid \"MIME type\" specified:"
 					+ val);
 		}
 		

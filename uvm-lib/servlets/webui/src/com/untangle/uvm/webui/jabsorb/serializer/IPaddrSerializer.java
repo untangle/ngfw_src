@@ -1,4 +1,4 @@
-package com.untangle.uvm.webui.jabsorb;
+package com.untangle.uvm.webui.jabsorb.serializer;
 
 import org.jabsorb.serializer.AbstractSerializer;
 import org.jabsorb.serializer.MarshallException;

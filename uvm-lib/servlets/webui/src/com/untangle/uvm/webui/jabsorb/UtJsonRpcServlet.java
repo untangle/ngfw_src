@@ -29,6 +29,14 @@ import org.jabsorb.JSONRPCServlet;
 
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.client.RemoteUvmContext;
+import com.untangle.uvm.webui.jabsorb.serializer.EnumSerializer;
+import com.untangle.uvm.webui.jabsorb.serializer.IPMaddrSerializer;
+import com.untangle.uvm.webui.jabsorb.serializer.IPaddrSerializer;
+import com.untangle.uvm.webui.jabsorb.serializer.LazyInitializerSerializer;
+import com.untangle.uvm.webui.jabsorb.serializer.MimeTypeSerializer;
+import com.untangle.uvm.webui.jabsorb.serializer.ExtendedListSerializer;
+import com.untangle.uvm.webui.jabsorb.serializer.TimeZoneSerializer;
+import com.untangle.uvm.webui.jabsorb.serializer.URLSerializer;
 
 /**
  * Initializes the JSONRPCBridge.
@@ -60,13 +68,17 @@ public class UtJsonRpcServlet extends JSONRPCServlet
             s.setAttribute(BRIDGE_ATTRIBUTE, b);
             
             try {
+            	// general serializers
                 b.registerSerializer(new EnumSerializer());
-                b.registerSerializer(new LazyInitializerSerializer());
+                b.registerSerializer(new URLSerializer());
+                // uvm related serializers
                 b.registerSerializer(new IPMaddrSerializer());
                 b.registerSerializer(new IPaddrSerializer());
-                b.registerSerializer(new URLSerializer());
                 b.registerSerializer(new TimeZoneSerializer());
                 b.registerSerializer(new MimeTypeSerializer());
+                // hibernate related serializers
+                b.registerSerializer(new LazyInitializerSerializer());
+                b.registerSerializer(new ExtendedListSerializer());
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

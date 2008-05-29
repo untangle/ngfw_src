@@ -23,7 +23,7 @@ if (!Ung.hasResource["Ung.System"]) {
             // call superclass renderer first
             Ung.System.superclass.onRender.call(this, container, position);
             this.initSubCmps.defer(1, this);
-            // builds the 2 tabs
+            // builds the 5 tabs
         },
         initSubCmps : function() {
             this.buildUntangleSupport();
@@ -67,6 +67,18 @@ if (!Ung.hasResource["Ung.System"]) {
                 this.rpc.ftpSettings = this.getFtpNode(forceReload).getFtpSettings();
             }
             return this.rpc.ftpSettings;
+        },
+        getMailNode : function(forceReload) {
+            if (forceReload || this.rpc.mailNode === undefined) {
+                this.rpc.mailNode = rpc.nodeManager.node("untangle-casing-mail");
+            }
+            return this.rpc.mailNode;
+        },
+        getMailSettings : function(forceReload) {
+            if (forceReload || this.rpc.mailSettings === undefined) {
+                this.rpc.mailSettings = this.getMailNode(forceReload).getMailNodeSettings();
+            }
+            return this.rpc.mailSettings;
         },
         getTimeZone : function(forceReload) {
             if (forceReload || this.rpc.timeZone === undefined) {
@@ -381,8 +393,151 @@ if (!Ung.hasResource["Ung.System"]) {
                             }
                         }
                     }]
+                },{
+                    title: this.i18n._('SMTP'),
+                    items : [{
+                        xtype : 'radio',
+                        boxLabel : i18n.sprintf(this.i18n._('%sEnable SMTP%s email processing.  (This is the default setting)'), '<b>', '</b>'), 
+                        hideLabel : true,
+                        name : 'smtpEnabled',
+                        checked : this.getMailSettings().smtpEnabled,
+                        listeners : {
+                            "check" : {
+                                fn : function(elem, checked) {
+                                    this.getMailSettings().smtpEnabled = checked;
+                                }.createDelegate(this)
+                            }
+                        }
+                    },{
+                        xtype : 'radio',
+                        boxLabel : i18n.sprintf(this.i18n._('%sDisable SMTP%s email processing.'), '<b>', '</b>'), 
+                        hideLabel : true,
+                        name : 'smtpEnabled',
+                        checked : !this.getMailSettings().smtpEnabled,
+                        listeners : {
+                            "check" : {
+                                fn : function(elem, checked) {
+                                    this.getMailSettings().smtpEnabled = !checked;
+                                }.createDelegate(this)
+                            }
+                        }
+                    },{
+                        xtype : 'numberfield',
+                        fieldLabel : this.i18n._('SMTP timeout (seconds)'),
+                        labelStyle: 'width:150px;',
+                        name : 'smtpTimeout',
+                        id: 'system_protocolSettings_smtpTimeout',
+                        value : this.getMailSettings().smtpTimeout/1000,
+                        width: 50,
+                        allowDecimals: false,
+                        allowNegative: false,
+                        minValue: 0,                        
+                        maxValue: 86400,
+                        listeners : {
+                            "change" : {
+                                fn : function(elem, newValue) {
+                                    this.getMailSettings().smtpTimeout = newValue*1000;
+                                }.createDelegate(this)
+                            }
+                        }
+                    }]
+                },{
+                    title: this.i18n._('POP3'),
+                    items : [{
+                        xtype : 'radio',
+                        boxLabel : i18n.sprintf(this.i18n._('%sEnable POP3%s email processing.  (This is the default setting)'), '<b>', '</b>'), 
+                        hideLabel : true,
+                        name : 'popEnabled',
+                        checked : this.getMailSettings().popEnabled,
+                        listeners : {
+                            "check" : {
+                                fn : function(elem, checked) {
+                                    this.getMailSettings().popEnabled = checked;
+                                }.createDelegate(this)
+                            }
+                        }
+                    },{
+                        xtype : 'radio',
+                        boxLabel : i18n.sprintf(this.i18n._('%sDisable POP3%s email processing.'), '<b>', '</b>'), 
+                        hideLabel : true,
+                        name : 'popEnabled',
+                        checked : !this.getMailSettings().popEnabled,
+                        listeners : {
+                            "check" : {
+                                fn : function(elem, checked) {
+                                    this.getMailSettings().popEnabled = !checked;
+                                }.createDelegate(this)
+                            }
+                        }
+                    },{
+                        xtype : 'numberfield',
+                        fieldLabel : this.i18n._('POP3 timeout (seconds)'),
+                        labelStyle: 'width:150px;',
+                        name : 'popTimeout',
+                        id: 'system_protocolSettings_popTimeout',
+                        value : this.getMailSettings().popTimeout/1000,
+                        width: 50,
+                        allowDecimals: false,
+                        allowNegative: false,
+                        minValue: 0,                        
+                        maxValue: 86400,
+                        listeners : {
+                            "change" : {
+                                fn : function(elem, newValue) {
+                                    this.getMailSettings().popTimeout = newValue*1000;
+                                }.createDelegate(this)
+                            }
+                        }
+                    }]
+                },{
+                    title: this.i18n._('IMAP'),
+                    items : [{
+                        xtype : 'radio',
+                        boxLabel : i18n.sprintf(this.i18n._('%sEnable IMAP%s email processing.  (This is the default setting)'), '<b>', '</b>'), 
+                        hideLabel : true,
+                        name : 'imapEnabled',
+                        checked : this.getMailSettings().imapEnabled,
+                        listeners : {
+                            "check" : {
+                                fn : function(elem, checked) {
+                                    this.getMailSettings().imapEnabled = checked;
+                                }.createDelegate(this)
+                            }
+                        }
+                    },{
+                        xtype : 'radio',
+                        boxLabel : i18n.sprintf(this.i18n._('%sDisable IMAP%s email processing.'), '<b>', '</b>'), 
+                        hideLabel : true,
+                        name : 'imapEnabled',
+                        checked : !this.getMailSettings().imapEnabled,
+                        listeners : {
+                            "check" : {
+                                fn : function(elem, checked) {
+                                    this.getMailSettings().imapEnabled = !checked;
+                                }.createDelegate(this)
+                            }
+                        }
+                    },{
+                        xtype : 'numberfield',
+                        fieldLabel : this.i18n._('IMAP timeout (seconds)'),
+                        labelStyle: 'width:150px;',
+                        name : 'imapTimeout',
+                        id: 'system_protocolSettings_imapTimeout',
+                        value : this.getMailSettings().imapTimeout/1000,
+                        width: 50,
+                        allowDecimals: false,
+                        allowNegative: false,
+                        minValue: 0,                        
+                        maxValue: 86400,
+                        listeners : {
+                            "change" : {
+                                fn : function(elem, newValue) {
+                                    this.getMailSettings().imapTimeout = newValue*1000;
+                                }.createDelegate(this)
+                            }
+                        }
+                    }]
                 }]
-
             });
         },
         buildRegionalSettings : function() {
@@ -602,11 +757,46 @@ if (!Ung.hasResource["Ung.System"]) {
             });
 
         },
+        // validation function
+        validateClient : function() {
+            //validate timeout
+        	return this.validateSMTP() && this.validatePOP() && this.validateIMAP(); 
+        },
+        //validate SMTP timeout
+        validateSMTP : function() {
+            var smtpTimeoutCmp = Ext.getCmp('system_protocolSettings_smtpTimeout');
+            if (smtpTimeoutCmp.isValid()) {
+                return true;
+            } else {
+                Ext.MessageBox.alert('Warning', this.i18n._("SMTP timeout should be between 0 and 86400!"));
+                return false;
+            }
+        },
+        //validate POP timeout
+        validatePOP : function() {
+            var popTimeoutCmp = Ext.getCmp('system_protocolSettings_popTimeout');
+            if (popTimeoutCmp.isValid()) {
+                return true;
+            } else {
+                Ext.MessageBox.alert('Warning', this.i18n._("POP timeout should be between 0 and 86400!"));
+                return false;
+            }
+        },
+        //validate IMAP timeout
+        validateIMAP : function() {
+            var imapTimeoutCmp = Ext.getCmp('system_protocolSettings_imapTimeout');
+            if (imapTimeoutCmp.isValid()) {
+                return true;
+            } else {
+                Ext.MessageBox.alert('Warning', this.i18n._("IMAP timeout should be between 0 and 86400!"));
+                return false;
+            }
+        },
         // save function
         saveAction : function() {
             if (this.validate()) {
             	Ext.MessageBox.progress(i18n._("Please wait"), i18n._("Saving..."));
-                this.saveSemaphore = 4;
+                this.saveSemaphore = 5;
                 // save language settings
                 rpc.languageManager.setLanguageSettings(function(result, exception) {
                     if (exception) {
@@ -633,6 +823,15 @@ if (!Ung.hasResource["Ung.System"]) {
                     }
                     this.afterSave();
                 }.createDelegate(this), this.getFtpSettings());
+                
+                // save mail settings
+                this.getMailNode().setMailNodeSettings(function(result, exception) {
+                    if (exception) {
+                        Ext.MessageBox.alert(i18n._("Failed"), exception.message);
+                        return;
+                    }
+                    this.afterSave();
+                }.createDelegate(this), this.getMailSettings());
                 
                 //save timezone
                 rpc.adminManager.setTimeZone(function(result, exception) {

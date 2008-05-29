@@ -70,12 +70,12 @@ public class SafelistSender implements Serializable
     @Id
     @Column(name="id")
     @GeneratedValue
-    protected Long getId()
+    public Long getId()
     {
         return id;
     }
 
-    protected void setId(Long id)
+    public void setId(Long id)
     {
         this.id = id;
 

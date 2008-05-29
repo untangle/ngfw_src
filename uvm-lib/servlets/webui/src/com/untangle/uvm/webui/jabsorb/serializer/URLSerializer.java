@@ -1,4 +1,6 @@
-package com.untangle.uvm.webui.jabsorb;
+package com.untangle.uvm.webui.jabsorb.serializer;
+
+import java.net.URL;
 
 import org.jabsorb.serializer.AbstractSerializer;
 import org.jabsorb.serializer.MarshallException;
@@ -6,9 +8,7 @@ import org.jabsorb.serializer.ObjectMatch;
 import org.jabsorb.serializer.SerializerState;
 import org.jabsorb.serializer.UnmarshallException;
 
-import com.untangle.uvm.node.IPMaddr;
-
-public class IPMaddrSerializer extends AbstractSerializer {
+public class URLSerializer extends AbstractSerializer {
 	/**
 	 * Unique serialisation id.
 	 */
@@ -17,7 +17,7 @@ public class IPMaddrSerializer extends AbstractSerializer {
 	/**
 	 * Classes that this can serialise.
 	 */
-	private static Class[] _serializableClasses = new Class[] { IPMaddr.class };
+	private static Class[] _serializableClasses = new Class[] { URL.class };
 
 	/**
 	 * Classes that this can serialise to.
@@ -43,7 +43,7 @@ public class IPMaddrSerializer extends AbstractSerializer {
 		
         if( o == null ) {
             return "";
-        } else if (o instanceof IPMaddr) {
+        } else if (o instanceof URL) {
 			return o.toString();
 		}
         
@@ -74,9 +74,9 @@ public class IPMaddrSerializer extends AbstractSerializer {
 		Object returnValue = null;
 		String val = json instanceof String ? (String) json : json.toString();
 		try {
-			returnValue = IPMaddr.parse(val);
+			returnValue = new URL(val);
 		} catch (Exception e) {
-			throw new UnmarshallException("Invalid \"subnet\" specified:"
+			throw new UnmarshallException("Invalid \"URL\" specified:"
 					+ val);
 		}
 		
