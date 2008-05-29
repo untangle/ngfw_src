@@ -65,6 +65,7 @@ public class NodeReporter
     public static final int CHART_WIDTH = 600;
     public static final int CHART_HEIGHT = 200;
 
+    public static final String REPORT_FILES_RESOURCE = "META-INF/report-files";
     private final Logger logger = Logger.getLogger(getClass());
     public static final String ICON_DESC = "IconDesc42x42.png";
     public static final String ICON_ORG = "IconOrg42x42.png";
@@ -90,19 +91,24 @@ public class NodeReporter
 
     public void process(Connection conn) throws Exception
     {
+	
+	if (!tctx.resourceExists(REPORT_FILES_RESOURCE)) {
+            logger.info("No reports for: " + nodeName);
+	    return;
+	}
+
+        InputStream is = tctx.getResourceAsStream(REPORT_FILES_RESOURCE);
+        if (null == is) {
+	    // Shouldn't happen, and exception was already noted in NodeContextImpl.
+            return;
+	}
+
+	logger.info("Beginning generation for: " + nodeName);
         nodeDir.mkdir();
 
         File imagesDir = new File(nodeDir, "images");
         File globalImagesDir = new File(nodeDir, "../images");
         Scanner scanner = null;
-
-        InputStream is = tctx.getResourceAsStream("META-INF/report-files");
-        if (null == is) {
-            logger.warn("No reports for: " + nodeName);
-            return;
-        } else {
-            logger.info("Beginning generation for: " + nodeName);
-        }
 
         // Need to do the parameters & scanners first.
         BufferedReader br = new BufferedReader(new InputStreamReader(is));

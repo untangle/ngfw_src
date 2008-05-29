@@ -291,10 +291,47 @@ class NodeContextImpl implements NodeContext
         return LocalUvmContextFactory.context().runTransaction(tw);
     }
 
+    public boolean resourceExists(String res)
+    {
+        String baseNodeName = nodeDesc.getNodeBase();
+        return resourceExistsInt(res, getMackageDesc(), baseNodeName);
+    }
+
     public InputStream getResourceAsStream(String res)
     {
         String baseNodeName = nodeDesc.getNodeBase();
         return getResourceAsStreamInt(res, getMackageDesc(), baseNodeName);
+    }
+
+    private boolean resourceExistsInt(String res, MackageDesc mackageDesc, String baseNodeName)
+    {
+	boolean exists;
+        try {
+            URL url = new URL(toolboxManager.getResourceDir(mackageDesc), res);
+            File f = new File(url.toURI());
+	    exists = f.exists();
+        } catch (MalformedURLException exn) {
+            logger.info("resource not found, malformed url: " + res, exn);
+            return false;
+        } catch (URISyntaxException exn) {
+            logger.info("resource not found, uri syntax: " + res, exn);
+            return false;
+        }
+
+	if (exists)
+	    return true;
+	else {
+            // bug3699: Try the base, if any.
+            if (baseNodeName != null) {
+                MackageDesc baseDesc = toolboxManager.mackageDesc(baseNodeName);
+                if (baseDesc == null) {
+                    return false;
+                }
+                // Assume only one level of base.
+                return resourceExistsInt(res, baseDesc, null);
+            }
+            return false;
+        }
     }
 
     private InputStream getResourceAsStreamInt(String res, MackageDesc mackageDesc, String baseNodeName)
