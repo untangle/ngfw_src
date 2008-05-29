@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -134,6 +134,25 @@ public class DhcpMap
     private static final String TEST_INSTALLED =
         " SELECT 1 FROM n_router_evt_dhcp_abs_leases";
 
+    private static final String DELETE_OLD_SETTINGS =
+        "DELETE FROM settings.n_reporting_settings WHERE tid NOT IN "
+        + "(SELECT tid FROM settings.u_node_persistent_state "
+        + "WHERE NOT target_state = 'destroyed')";
+
+    private static final String DELETE_OLD_ENTRIES =
+        "DELETE FROM settings.u_ipmaddr_dir_entries WHERE ipmaddr_dir_id NOT IN "
+        + "(SELECT id FROM settings.u_ipmaddr_dir WHERE id IN "
+        + "(SELECT network_directory FROM settings.n_reporting_settings))";
+
+    private static final String DELETE_OLD_DIRS =
+        "DELETE FROM settings.u_ipmaddr_dir WHERE id NOT IN "
+        + "(SELECT network_directory FROM settings.n_reporting_settings)";
+
+    private static final String[] HOUSEKEEPING_SQL
+        = new String[] { DELETE_OLD_SETTINGS, DELETE_OLD_ENTRIES,
+                         DELETE_OLD_DIRS };
+
+
     private DhcpMap()
     {
     }
@@ -172,6 +191,8 @@ public class DhcpMap
 
     public void generateAddressMap(Connection conn, Timestamp start, Timestamp end)
     {
+        doHouseKeeping(conn);
+
         boolean natNodeInstalled = true;
         // Really all we have to know is, do the tables exist at all?  If they do, everything
         // works fine, otherwise the queries give Errors.  So we just try a simple query here
@@ -211,6 +232,20 @@ public class DhcpMap
             writeLeases( conn, map );
         } catch ( SQLException e ) {
             logger.warn( "Unable to generate address map", e );
+        }
+    }
+
+    public void doHouseKeeping(Connection conn)
+    {
+        logger.debug( "Houskeeping." );
+
+        try {
+            for (String sql : HOUSEKEEPING_SQL) {
+                Statement stmt = conn.createStatement();
+                stmt.executeUpdate( sql );
+            }
+        } catch ( SQLException e ) {
+            logger.warn( "Unable to delete address map", e );
         }
     }
 
