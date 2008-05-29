@@ -388,7 +388,7 @@ typedef void (*netcap_icmp_hook_t) (netcap_session_t* netcap_sess, netcap_pkt_t*
 /**
  * Initialization, and global controls
  */
-int   netcap_init( int shield_enable );
+int   netcap_init( void );
 int   netcap_cleanup (void);
 const char* netcap_version (void);
 void  netcap_debug_set_level   (int lev);
@@ -569,120 +569,6 @@ int  netcap_endpoints_bzero         ( netcap_endpoints_t* tuple );
  * Toggle opaque mode
  */
 int  netcap_tcp_syn_mode (int toggle);
-
-typedef enum  {
-    NC_SHIELD_MODE_RELAXED,
-    NC_SHIELD_MODE_LAX,
-    NC_SHIELD_MODE_TIGHT,
-    NC_SHIELD_MODE_CLOSED
-} netcap_shield_mode_t;
-
-#define NC_SHIELD_MODE_MAX NC_SHIELD_MODE_CLOSED
-
-typedef enum {
-    NC_SHIELD_EVENT_REJECTION,
-    NC_SHIELD_EVENT_STATISTIC
-} netcap_shield_event_type_t;
-
-typedef struct 
-{
-    int accepted;  // Number of accepted packets/sessions
-    int limited;   // Number of limited packets/sessions
-    int dropped;   // Number of dropped packets/sessions
-    int rejected;  // Number of rejected packets/sessions
-} netcap_shield_response_counters_t;
-
-typedef struct 
-{
-    netcap_shield_response_counters_t total;
-    netcap_shield_response_counters_t tcp;
-    netcap_shield_response_counters_t udp;
-    netcap_shield_response_counters_t icmp;    
-} netcap_shield_counters_t;
-
-typedef struct
-{
-    netcap_shield_event_type_t type;
-    
-    union {
-        /* Bad behavior stats for one ip and its corresponding interface */
-        struct {
-            in_addr_t ip;
-            double reputation;
-            netcap_shield_mode_t mode;
-            netcap_intf_t client_intf;
-            int limited;
-            int dropped;
-            int rejected;
-        } rejection;
-        
-         /* These are statistics for the whole shield */
-        struct {            
-            netcap_shield_counters_t counters;
-
-            int relaxed;   // Number of ticks in the relaxed mode
-            int lax;       // Number of ticks in the lax mode
-            int tight;     // Number of ticks in the tight mode
-            int closed;    // Number of ticks in the closed mode
-        } statistic;
-    } data;
-} netcap_shield_event_data_t;
-
-typedef struct {
-    double divider;
-    struct in_addr address;
-    struct in_addr netmask;
-} netcap_shield_bless_t;
-
-typedef struct {
-    int count;
-    netcap_shield_bless_t* d;
-} netcap_shield_bless_array_t;
-
-/** Hook that can be called whenever a shield rejection/opaque/block event occurs, 
- * or gather statistics about the shield 
- */
-typedef void (*netcap_shield_event_hook_t) ( netcap_shield_event_data_t* data );
-
-/**
- * Register a shield hook
- */
-int   netcap_shield_register_hook     ( netcap_shield_event_hook_t hook );
-
-/**
- * Unregister the shield hook
- */
-void  netcap_shield_unregister_hook   ( void );
-
-/**
- * Reconfigure all of the node settings 
- */
-int netcap_shield_bless_users( netcap_shield_bless_array_t* nodes );
-
-
-/**
- * netcap_shield_rep_add_chunk: Add a chunk to the reputation of ip.
- *  ip: The IP to add the chunk against.
- *  protocol: Either IPPROTO_UDP, IPPROTO_ICMP or IPPROTO_TCP.
- *  size: Size of the chunk in bytes.
- */
-int   netcap_shield_rep_add_chunk      ( struct in_addr* ip, int protocol, u_short size );
-
-/**
- * netcap_shield_rep_end_session: Inform the shield that IP has ended a session.
- */
-int   netcap_shield_rep_end_session    ( struct in_addr* ip );
-
-/**
- * When calling netcap_init, pass in this value to initialize the shield, otherwise pass in 0
- */
-#define NETCAP_SHIELD_ENABLE   0x00E0F00D
-
-/* Load in a new shield configuration */
-int   netcap_shield_cfg_load           ( char* buf, int buf_len );
-
-/* Dump out the current status of the shield */
-int   netcap_shield_status             ( int conn, struct sockaddr_in *dst_addr );
 
 /**
  * netcap_sched_donate: Donate a thread to the scheduler.

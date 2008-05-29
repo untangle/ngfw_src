@@ -93,8 +93,6 @@ public class RemoteClient
     private static String policyName = null;
     private static Policy policy = null;
 
-    private static final String SHIELD_STATUS_USAGE = "ucli shieldStatus ip port [interval]";
-
     private static boolean verbose = false;
     private static int timeout = 120000;
 
@@ -237,8 +235,6 @@ public class RemoteClient
                 System.arraycopy(args, 1, pwArgs, 0, pwArgs.length);
                 logError(pwArgs);
             }
-        } else if (args[0].equalsIgnoreCase("shieldStatus")) {
-            shieldStatus(args);
         } else if (args[0].equalsIgnoreCase("shieldReconfigure")) {
             shieldReconfigure();
         } else if (args[0].equalsIgnoreCase("updateAddress")) {
@@ -938,36 +934,8 @@ public class RemoteClient
     }
 
     /**
-     * <code>shieldStatus</code> Sends out the current state of the shield
-     * via UDP to the host and port specified in the command line
-     */
-    private static void shieldStatus(String args[]) throws Exception
-    {
-        /* If interval is zero, it doesn't loop */
-        int interval = 0;
-        InetAddress destination;
-        int port = 0;
-
-        switch (args.length) {
-        case 4:
-            /* Convert from seconds to milliseconds */
-            interval = Integer.parseInt(args[3]) * 1000;
-            /* fallthrough */
-        case 3:
-            destination = InetAddress.getByName(args[1]);
-            port = Integer.parseInt(args[2]);
-            break;
-
-        default:
-            throw new Exception("Usage: " + SHIELD_STATUS_USAGE);
-        }
-
-        mc.shieldManager().shieldStatus(destination,port,interval);
-    }
-
-    /**
-     * <code>shieldStatus</code> Sends out the current state of the shield
-     * via UDP to the host and port specified in the command line
+     * <code>shieldReconfigure</code> Reload the JSON configuration
+     * file.
      */
     private static void shieldReconfigure() throws Exception
     {
@@ -1090,7 +1058,6 @@ public class RemoteClient
         System.out.println("    ucli register mackage-name");
         System.out.println("    ucli unregister mackage-name");
         System.out.println("  argon commands:");
-        System.out.println("    " + SHIELD_STATUS_USAGE);
         System.out.println("    ucli shieldReconfigure");
         System.out.println("  nucli server commands:");
         System.out.println("    ucli restartCliServer");

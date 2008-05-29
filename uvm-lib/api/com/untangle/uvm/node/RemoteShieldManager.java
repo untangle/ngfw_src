@@ -37,9 +37,6 @@ import java.net.InetAddress;
 
 public interface RemoteShieldManager
 {
-    /* Dump the current state of the shield every <interval> seconds */
-    public void shieldStatus( InetAddress destination, int port, int interval );
-
-    /* Reload the XML configuration file and reconfigure the shield */
+    /* Reload the JSON configuration file and reconfigure the shield */
     public void shieldReconfigure();
 }

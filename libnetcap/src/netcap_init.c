@@ -38,7 +38,6 @@
 #include "netcap_interface.h"
 #include "netcap_session.h"
 #include "netcap_sesstable.h"
-#include "netcap_shield.h"
 #include "netcap_sched.h"
 #include "netcap_nfconntrack.h"
 #include "netcap_virtual_interface.h"
@@ -63,11 +62,11 @@ static struct {
     .mutex  = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP
 };
 
-static int _netcap_init( int shield_enable );
+static int _netcap_init();
 static int _tls_init   ( void* buf, size_t size );
 
 
-int netcap_init( int shield_enable )
+int netcap_init()
 {
     int ret;
 
@@ -75,7 +74,7 @@ int netcap_init( int shield_enable )
         return perrlog( "pthread_mutex_lock" );
     }
 
-    if (( ret = _netcap_init( shield_enable )) == 0 ) {
+    if (( ret = _netcap_init()) == 0 ) {
         _init.status = STATUS_INITIALIZED;
     } else {
         _init.status = STATUS_ERROR;
@@ -92,7 +91,7 @@ int netcap_init( int shield_enable )
 /*! \brief must be called before netcap is used 
  *  XXX how can this be done automatically? _init doesnt work
  */
-static int _netcap_init( int shield_enable )
+static int _netcap_init()
 {
     if ( pthread_key_create( &_init.tls_key, uthread_tls_free ) != 0 )
         return perrlog( "pthread_key_create\n" );
@@ -119,8 +118,6 @@ static int _netcap_init( int shield_enable )
         return perrlog("netcap_server_init");
     if (netcap_sched_init()<0)
         return perrlog("netcap_sched_init");
-    if ( shield_enable == NETCAP_SHIELD_ENABLE && ( netcap_shield_init() < 0 ))
-        return perrlog("netcap_shield_init");
     if (netcap_nfconntrack_init()<0)
         return errlog( ERR_CRITICAL, "netcap_nfconntrack_init\n" );
     if (netcap_virtual_interface_init( NETCAP_TUN_DEVICE_NAME ) < 0 )
@@ -172,8 +169,6 @@ int netcap_cleanup()
         perrlog("netcap_interface_cleanup");
     if (netcap_arp_cleanup()<0)
         return errlog(ERR_CRITICAL,"netcap_arp_init\n");
-    if (netcap_shield_cleanup()<0)
-        perrlog("netcap_shield_cleanup");
     if (netcap_sched_cleanup_z ( NULL ) < 0 )
         perrlog("netcap_sched_cleanup");
     netcap_virtual_interface_destroy();

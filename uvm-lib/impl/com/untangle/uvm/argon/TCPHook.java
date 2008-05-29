@@ -26,7 +26,6 @@ import com.untangle.jnetcap.Netcap;
 import com.untangle.jnetcap.NetcapHook;
 import com.untangle.jnetcap.NetcapSession;
 import com.untangle.jnetcap.NetcapTCPSession;
-import com.untangle.jnetcap.Shield;
 import com.untangle.jvector.Sink;
 import com.untangle.jvector.Source;
 import com.untangle.jvector.TCPSink;
@@ -43,7 +42,6 @@ public class TCPHook implements NetcapHook
     private static TCPHook INSTANCE;
     private final Logger logger = Logger.getLogger(getClass());
 
-    private final Shield shield;
 
     public static TCPHook getInstance() {
         if ( INSTANCE == null )
@@ -55,7 +53,6 @@ public class TCPHook implements NetcapHook
     /* Singleton */
     private TCPHook()
     {
-        shield = Shield.getInstance();
     }
 
     private static synchronized void init()
@@ -90,12 +87,10 @@ public class TCPHook implements NetcapHook
         protected TCPSession prevSession = null;
         protected final TCPSideListener clientSideListener = new TCPSideListener();
         protected final TCPSideListener serverSideListener = new TCPSideListener();
-        protected final long shieldUser;
 
         protected TCPArgonHook( int id )
         {
             netcapTCPSession   = new NetcapTCPSession( id );
-            shieldUser = Inet4AddressConverter.toLong( netcapTCPSession.clientSide().client().host());
         }
 
         protected int timeout()
@@ -319,13 +314,11 @@ public class TCPHook implements NetcapHook
             public void dataEvent( Source source, int numBytes )
             {
                 super.dataEvent( source, numBytes );
-                shield.addChunk( shieldUser , Netcap.IPPROTO_TCP, numBytes );
             }
 
             public void dataEvent( Sink sink, int numBytes )
             {
                 super.dataEvent( sink, numBytes );
-                shield.addChunk( shieldUser, Netcap.IPPROTO_TCP, numBytes );
             }
 
             public void shutdownEvent( Source source )

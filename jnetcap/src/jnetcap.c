@@ -177,7 +177,7 @@ int jnetcap_initialized( void )
  * Signature: (I)I
  */
 JNIEXPORT jint JNICALL JF_Netcap( init )
-( JNIEnv *env, jclass _class, jboolean shield_enable, jint netcap_debug_level, jint jnetcap_debug_level )
+( JNIEnv *env, jclass _class, jint netcap_debug_level, jint jnetcap_debug_level )
 {
     int ret = 0;
     jclass local;
@@ -200,7 +200,7 @@ JNIEXPORT jint JNICALL JF_Netcap( init )
             /* Set the jnetcap debugging level */
             debug_set_mylevel( jnetcap_debug_level );
             
-            if ( netcap_init(( shield_enable == JNI_TRUE ) ? NETCAP_SHIELD_ENABLE : 0 ) < 0 ) {
+            if ( netcap_init() < 0 ) {
                 ret = errlog ( ERR_CRITICAL, "netcap_init\n" );
                 break;
             }

@@ -141,21 +141,19 @@ public final class Netcap {
     /**
      * Initialzie the JNetcap and Netcap library. </p>
      *
-     * @param enableShield Whether or not to enable to the shield.
      * @param netcapLevel Netcap debugging level.
      * @param jnetcapLevel JNetcap debugging level.
      */
-    public static native int init( boolean enableShield, int netcapLevel, int jnetcapLevel );
+    public static native int init( int netcapLevel, int jnetcapLevel );
     
     /** 
      * Initialize the JNetcap and Netcap library with the same debugging level for
      * JNetcap and Netcap.</p>
-     * @param enableShield - Whether or not to enable the shield.
      * @param level - The debugging level for jnetcap and libnetcap.
      */
-    public static int init( boolean enableShield, int level )
+    public static int init( int level )
     {
-        return init( enableShield, level, level );
+        return init( level, level );
     }
     
     /**

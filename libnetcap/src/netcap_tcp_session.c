@@ -130,14 +130,6 @@ int netcap_tcp_session_destroy(int if_lock,netcap_session_t* netcap_sess)
 
     netcap_sesstable_remove_session(if_lock, netcap_sess);
 
-    /* If you removed the endpoints, then you ended an actual session */
-    if ( netcap_sess->remove_tuples ) {
-        if ( netcap_shield_rep_end_session( &netcap_sess->cli.cli.host ) < 0 ) {
-            errlog(ERR_CRITICAL,"netcap_shield_rep_end_session\n");
-            err--;
-        }
-    }
-
     if ( netcap_tcp_session_close ( netcap_sess) ) {
         errlog(ERR_CRITICAL,"netcap_tcp_session_close\n");
         err--;

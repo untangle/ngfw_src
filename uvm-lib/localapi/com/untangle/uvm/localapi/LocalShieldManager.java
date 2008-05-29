@@ -44,9 +44,6 @@ public interface LocalShieldManager extends RemoteShieldManager
     /* Toggle whether or not the shield is enabled */
     public void setIsShieldEnabled( boolean isEnabled );
 
-    /* Set the file used to configure the shield */
-    public void setShieldConfigurationFile( String file );
-
     /* Set the shield node rules */
     public void setShieldNodeSettings( List<ShieldNodeSettings> shieldNodeSettingsList ) 
         throws ArgonException;

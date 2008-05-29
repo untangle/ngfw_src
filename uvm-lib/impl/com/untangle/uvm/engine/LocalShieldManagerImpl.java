@@ -28,8 +28,6 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.jnetcap.Shield;
-
 import com.untangle.uvm.ArgonException;
 import com.untangle.uvm.localapi.LocalShieldManager;
 
@@ -53,36 +51,6 @@ class LocalShieldManagerImpl implements LocalShieldManager
         this.isShieldEnabled = isEnabled;
     }
 
-    /* Set the file used to configure the shield */
-    public void setShieldConfigurationFile( String file )
-    {
-        this.shieldFile = file;
-        shieldReconfigure();
-    }
-
-    public void shieldStatus( InetAddress ip, int port, int interval )
-    {
-        /* Do nothing if the shield is not enabled */
-        if ( !this.isShieldEnabled ) {
-            logger.debug( "The shield is disabled" );
-            return;
-        }
-
-        /* Verify the port is in a valid range */
-        if ( port < 0 || port > 0xFFFF ) throw new IllegalArgumentException( "Invalid port: " + port );
-
-        do {
-            Shield.getInstance().status( ip, port );
-
-            try {
-                if ( interval > 0 ) Thread.sleep( interval );
-            } catch ( InterruptedException e ) {
-                logger.debug( "Shield status interrupted" );
-                break;
-            }
-        } while ( interval > 0 );
-    }
-
     public void shieldReconfigure()
     {
         /* Do nothing if the shield is not enabled */
@@ -91,7 +59,7 @@ class LocalShieldManagerImpl implements LocalShieldManager
             return;
         }
 
-        if ( this.shieldFile  != null ) Shield.getInstance().config( this.shieldFile );
+        logger.warn( "implement me" );
     }
 
     /* Update the shield node settings */
@@ -144,10 +112,6 @@ class LocalShieldManagerImpl implements LocalShieldManager
                                                                            netmask ));
         }
 
-        try {
-            Shield.getInstance().setNodeSettings( settingsList );
-        } catch ( Exception e ) {
-            throw new ArgonException( "Unable to set the shield node settingss", e );
-        }
+        logger.warn( "implement me" );
     }
 }
