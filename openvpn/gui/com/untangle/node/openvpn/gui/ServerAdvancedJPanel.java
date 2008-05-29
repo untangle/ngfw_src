@@ -256,7 +256,7 @@ public class ServerAdvancedJPanel extends javax.swing.JPanel
 
         siteJPanel.setBorder(new javax.swing.border.TitledBorder(null, "Site Name", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
         jLabel10.setFont(new java.awt.Font("Dialog", 0, 12));
-        jLabel10.setText("<html> If you have multiple VPN sites, you may want to use this to change the name of this site.  Then cients can choose between multiple VPN sites to connect to, because each one will have a different name.</html>");
+        jLabel10.setText("<html> If you have multiple VPN sites, you can change the name of this site.  Then clients can choose between multiple VPN sites to connect to, because each one will have a different name.</html>");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
