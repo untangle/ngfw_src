@@ -133,7 +133,7 @@ if (!Ung.hasResource["Ung.System"]) {
                     items : [{
                         xtype : 'checkbox',
                         name : 'isSupportEnabled',
-                        boxLabel : this.i18n._('<b>Allow</b> us to securely access your server for support purposes.'),
+                        boxLabel : i18n.sprintf(this.i18n._('%sAllow%s us to securely access your server for support purposes.'), '<b>', '</b>'),
                         hideLabel : true,
                         checked : this.getAccessSettings().isSupportEnabled,
                         listeners : {
@@ -146,8 +146,9 @@ if (!Ung.hasResource["Ung.System"]) {
                     }, {
                         xtype : 'checkbox',
                         name : 'isSupportEnabled',
-                        boxLabel : this.i18n
-                                ._('<b>Send</b> us data about your server. This will send us status updates and an email if any unexpected problems occur, but will not allow us to login to your server. No personal information about your network traffic will be transmitted.'),
+                        boxLabel : i18n.sprintf(this.i18n
+                                ._('%sSend%s us data about your server. This will send us status updates and an email if any unexpected problems occur, but will not allow us to login to your server. No personal information about your network traffic will be transmitted.'),
+                                '<b>', '</b>'),
                         hideLabel : true,
                         checked : this.getMiscSettings().isExceptionReportingEnabled,
                         listeners : {
@@ -231,7 +232,9 @@ if (!Ung.hasResource["Ung.System"]) {
                         bodyStyle : 'padding:5px 5px 0px 5px;'
                     },
                     items : [{
-                    	html: this.i18n._("You can backup your current system configuration to a file on your local computer for later restoration, in the event that you would like to replace new settings with your current settings.  The file name will end with \".backup\"<br> <br> After backing up your current system configuration to a file, you can then restore that configuration through this dialog by going to \"Restore\" -> \"From Local File\".")
+                    	html: this.i18n._("You can backup your current system configuration to a file on your local computer for later restoration, in the event that you would like to replace new settings with your current settings.  The file name will end with \".backup\"") +
+                    			"<br> <br> " +
+                    			this.i18n._("After backing up your current system configuration to a file, you can then restore that configuration through this dialog by going to \"Restore\" -> \"From Local File\".")
                     }],
                     buttons : [{
                         text : this.i18n._("Backup to File"),
@@ -247,7 +250,12 @@ if (!Ung.hasResource["Ung.System"]) {
                         bodyStyle : 'padding:5px 5px 0px 5px;'
                     },
                     items : [{
-                        html: this.i18n._("You can backup your current system configuration to USB Key for later restoration, in the event that you would like to replace new settings with your current settings.<br>\n<br>\nAfter backing up your current system configuration to USB Key, you can then restore that configuration through the <b>Backup and Restore Utilities</b>.  To access the Backup and Restore Utilities, you must have a monitor and keyboard physically plugged into your server when it is turned on, and then select \"Backup and Restore Utilities\" from the boot prompt.<br>\n<br>\n<b>Note: You must insert your USB Key into a valid USB port on the back of your server before pressing the button.  You must not remove the USB Key from the USB port until after the process is complete.  The progress bar will inform you when the process is complete.</b>")
+                        html: this.i18n._("You can backup your current system configuration to USB Key for later restoration, in the event that you would like to replace new settings with your current settings.") +
+                        		"<br>\n<br>\n" +
+                        		i18n.sprintf(this.i18n._("After backing up your current system configuration to USB Key, you can then restore that configuration through the %sBackup and Restore Utilities%s.  To access the Backup and Restore Utilities, you must have a monitor and keyboard physically plugged into your server when it is turned on, and then select \"Backup and Restore Utilities\" from the boot prompt."),'<b>','</b>') +
+                        		"<br>\n<br>\n<b>" +
+                        		this.i18n._("Note: You must insert your USB Key into a valid USB port on the back of your server before pressing the button.  You must not remove the USB Key from the USB port until after the process is complete.  The progress bar will inform you when the process is complete.") +
+                        		"</b>"
                     }],
                     buttons : [{
                     	name: "backupToUSBKeyButton",
@@ -263,7 +271,9 @@ if (!Ung.hasResource["Ung.System"]) {
                         bodyStyle : 'padding:5px 5px 0px 5px;'
                     },
                     items : [{
-                        html: this.i18n._("You can backup your current system configuration to Hard Disk for later restoration, in the event that you would like to replace new settings with your current settings.<br>\n<br>\nAfter backing up your current system configuration to Hard Disk, you can then restore that configuration through the <b>Backup and Restore Utilities</b>.  To access the Backup and Restore Utilities, you must have a monitor and keyboard physically plugged into your server when it is turned on, and then select \"Backup and Restore Utilities\" from the boot prompt.")
+                        html: this.i18n._("You can backup your current system configuration to Hard Disk for later restoration, in the event that you would like to replace new settings with your current settings.") +
+                        		"<br>\n<br>\n" +
+                        		i18n.sprintf(this.i18n._("After backing up your current system configuration to Hard Disk, you can then restore that configuration through the %sBackup and Restore Utilities%s.  To access the Backup and Restore Utilities, you must have a monitor and keyboard physically plugged into your server when it is turned on, and then select \"Backup and Restore Utilities\" from the boot prompt.",'<b>','</b>'))
                     }],
                     buttons : [{
                         text : this.i18n._("Backup to Hard Disk"),
@@ -361,7 +371,9 @@ if (!Ung.hasResource["Ung.System"]) {
                         bodyStyle : 'padding:5px 5px 0px 5px;'
                     },
                     items : [{
-                        html: this.i18n._("After backing up your system configuration, you can restore that configuration through the <b>Recovery Utilities</b> on your server once it is done booting.\n<br>\n<br>To access the <b>Recovery Utilities</b>, you must have a monitor and keyboard physically plugged into your server, and then click on the Recovery Utilities toolbar button when it is done booting.")
+                        html: i18n.sprintf(this.i18n._("After backing up your system configuration, you can restore that configuration through the %sRecovery Utilities%s on your server once it is done booting."),'<b>','</b>') +
+                        		"\n<br>\n<br>" +
+                        		i18n.sprintf(this.i18n._("To access the %sRecovery Utilities%s, you must have a monitor and keyboard physically plugged into your server, and then click on the Recovery Utilities toolbar button when it is done booting."),'<b>','</b>')
                     }]
                 }]
             });
