@@ -91,6 +91,10 @@ EOF
 }
 
 getPopId() {
+  # the wizard needs to create this before we go any further
+  [[ -f $ACTIVATION_KEY_FILE ]] || return
+
+  # already done
   [[ -f $POPID_FILE ]] && return
 
   echo "$NAME: about to create pop id" >> $UVM_WRAPPER_LOG
