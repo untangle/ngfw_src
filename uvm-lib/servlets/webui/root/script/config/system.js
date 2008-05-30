@@ -56,6 +56,21 @@ if (!Ung.hasResource["Ung.System"]) {
             }
             return this.rpc.miscSettings;
         },
+        getHttpNode : function(forceReload) {
+            if (forceReload || this.rpc.httpNode === undefined) {
+                this.rpc.httpNode = rpc.nodeManager.node("untangle-casing-http");
+            }
+            return this.rpc.httpNode;
+        },
+        isHttpLoaded : function(forceReload) {
+        	return this.getHttpNode(forceReload) != null;
+        },
+        getHttpSettings : function(forceReload) {
+            if (forceReload || this.rpc.httpSettings === undefined) {
+                this.rpc.httpSettings = this.getHttpNode(forceReload).getHttpSettings();
+            }
+            return this.rpc.httpSettings;
+        },
         getFtpNode : function(forceReload) {
             if (forceReload || this.rpc.ftpNode === undefined) {
                 this.rpc.ftpNode = rpc.nodeManager.node("untangle-casing-ftp");
@@ -357,10 +372,167 @@ if (!Ung.hasResource["Ung.System"]) {
                     autoHeight : true
                 },
                 items : [{
-//                	title: this.i18n._('HTTP')
-//                    items : [{
-//                    }]
-//                },{
+                	title: this.i18n._('HTTP'),
+                    defaults : {
+                        xtype : 'fieldset',
+                        autoHeight : true
+                    },
+                    items : [{
+                    	title: this.i18n._('Web Override'),
+                        items : [{
+                            xtype : 'radio',
+                            boxLabel : i18n.sprintf(this.i18n._('%sEnable Processing%s of web traffic.  (This is the default setting)'), '<b>', '</b>'), 
+                            hideLabel : true,
+                            name : 'httpEnabled',
+                            checked : this.getHttpSettings().enabled,
+                            listeners : {
+                                "check" : {
+                                    fn : function(elem, checked) {
+                                        this.getHttpSettings().enabled = checked;
+                                    }.createDelegate(this)
+                                }
+                            }
+                        },{
+                            xtype : 'radio',
+                            boxLabel : i18n.sprintf(this.i18n._('%sDisable Processing%s of web traffic.'), '<b>', '</b>'), 
+                            hideLabel : true,
+                            name : 'httpEnabled',
+                            checked : !this.getHttpSettings().enabled,
+                            listeners : {
+                                "check" : {
+                                    fn : function(elem, checked) {
+                                        this.getHttpSettings().enabled = !checked;
+                                    }.createDelegate(this)
+                                }
+                            }
+                        }]
+                    },{
+                        title: this.i18n._('Long URIs'),
+                        items : [{
+                            xtype : 'radio',
+                            boxLabel : i18n.sprintf(this.i18n._('%sEnable Processing%s of long URIs.  The traffic is considered \"Non-Http\".  (This is the default setting)'), '<b>', '</b>'), 
+                            hideLabel : true,
+                            name : 'httpBlockLongUris',
+                            checked : !this.getHttpSettings().blockLongUris,
+                            listeners : {
+                                "check" : {
+                                    fn : function(elem, checked) {
+                                        this.getHttpSettings().blockLongUris = !checked;
+                                    }.createDelegate(this)
+                                }
+                            }
+                        },{
+                            xtype : 'radio',
+                            boxLabel : i18n.sprintf(this.i18n._('%sDisable Processing%s of long URIs.'), '<b>', '</b>'), 
+                            hideLabel : true,
+                            name : 'httpBlockLongUris',
+                            checked : this.getHttpSettings().blockLongUris,
+                            listeners : {
+                                "check" : {
+                                    fn : function(elem, checked) {
+                                        this.getHttpSettings().blockLongUris = checked;
+                                    }.createDelegate(this)
+                                }
+                            }
+                        },{
+                            xtype : 'numberfield',
+                            fieldLabel : this.i18n._('Max URI Length (characters)'),
+                            labelStyle: 'width:200px;',
+                            name : 'maxUriLength',
+                            id: 'system_protocolSettings_maxUriLength',
+                            value : this.getHttpSettings().maxUriLength,
+                            width: 50,
+                            allowDecimals: false,
+                            allowNegative: false,
+                            minValue: 1024,                        
+                            maxValue: 4096,
+                            listeners : {
+                                "change" : {
+                                    fn : function(elem, newValue) {
+                                        this.getHttpSettings().maxUriLength = newValue;
+                                    }.createDelegate(this)
+                                }
+                            }
+                        }]
+                    },{
+                        title: this.i18n._('Long Headers'),
+                        items : [{
+                            xtype : 'radio',
+                            boxLabel : i18n.sprintf(this.i18n._('%sEnable Processing%s of long headers.  The traffic is considered \"Non-Http\".  (This is the default setting)'), '<b>', '</b>'), 
+                            hideLabel : true,
+                            name : 'httpBlockLongHeaders',
+                            checked : !this.getHttpSettings().blockLongHeaders,
+                            listeners : {
+                                "check" : {
+                                    fn : function(elem, checked) {
+                                        this.getHttpSettings().blockLongHeaders = !checked;
+                                    }.createDelegate(this)
+                                }
+                            }
+                        },{
+                            xtype : 'radio',
+                            boxLabel : i18n.sprintf(this.i18n._('%sDisable Processing%s of long headers.'), '<b>', '</b>'), 
+                            hideLabel : true,
+                            name : 'httpBlockLongHeaders',
+                            checked : this.getHttpSettings().blockLongHeaders,
+                            listeners : {
+                                "check" : {
+                                    fn : function(elem, checked) {
+                                        this.getHttpSettings().blockLongHeaders = checked;
+                                    }.createDelegate(this)
+                                }
+                            }
+                        },{
+                            xtype : 'numberfield',
+                            fieldLabel : this.i18n._('Max Header Length (characters)'),
+                            labelStyle: 'width:200px;',
+                            name : 'maxHeaderLength',
+                            id: 'system_protocolSettings_maxHeaderLength',
+                            value : this.getHttpSettings().maxHeaderLength,
+                            width: 50,
+                            allowDecimals: false,
+                            allowNegative: false,
+                            minValue: 1024,                        
+                            maxValue: 8192,
+                            listeners : {
+                                "change" : {
+                                    fn : function(elem, newValue) {
+                                        this.getHttpSettings().maxHeaderLength = newValue;
+                                    }.createDelegate(this)
+                                }
+                            }
+                        }]
+                    },{
+                        title: this.i18n._('Non-Http Blocking'),
+                        items : [{
+                            xtype : 'radio',
+                            boxLabel : i18n.sprintf(this.i18n._('%sAllow%s non-Http traffic to travel over port 80.  (This is the default setting)'), '<b>', '</b>'), 
+                            hideLabel : true,
+                            name : 'nonHttpBlocked',
+                            checked : !this.getHttpSettings().nonHttpBlocked,
+                            listeners : {
+                                "check" : {
+                                    fn : function(elem, checked) {
+                                        this.getHttpSettings().nonHttpBlocked = !checked;
+                                    }.createDelegate(this)
+                                }
+                            }
+                        },{
+                            xtype : 'radio',
+                            boxLabel : i18n.sprintf(this.i18n._('%sStop%s non-Http traffic to travel over port 80.'), '<b>', '</b>'), 
+                            hideLabel : true,
+                            name : 'nonHttpBlocked',
+                            checked : this.getHttpSettings().nonHttpBlocked,
+                            listeners : {
+                                "check" : {
+                                    fn : function(elem, checked) {
+                                        this.getHttpSettings().nonHttpBlocked = checked;
+                                    }.createDelegate(this)
+                                }
+                            }
+                        }]
+                    }]
+                },{
                     title: this.i18n._('FTP'),
                     items : [{
                         style : 'padding-bottom:10px;',
@@ -424,7 +596,7 @@ if (!Ung.hasResource["Ung.System"]) {
                     },{
                         xtype : 'numberfield',
                         fieldLabel : this.i18n._('SMTP timeout (seconds)'),
-                        labelStyle: 'width:150px;',
+                        labelStyle: 'width:200px;',
                         name : 'smtpTimeout',
                         id: 'system_protocolSettings_smtpTimeout',
                         value : this.getMailSettings().smtpTimeout/1000,
@@ -472,7 +644,7 @@ if (!Ung.hasResource["Ung.System"]) {
                     },{
                         xtype : 'numberfield',
                         fieldLabel : this.i18n._('POP3 timeout (seconds)'),
-                        labelStyle: 'width:150px;',
+                        labelStyle: 'width:200px;',
                         name : 'popTimeout',
                         id: 'system_protocolSettings_popTimeout',
                         value : this.getMailSettings().popTimeout/1000,
@@ -520,7 +692,7 @@ if (!Ung.hasResource["Ung.System"]) {
                     },{
                         xtype : 'numberfield',
                         fieldLabel : this.i18n._('IMAP timeout (seconds)'),
-                        labelStyle: 'width:150px;',
+                        labelStyle: 'width:200px;',
                         name : 'imapTimeout',
                         id: 'system_protocolSettings_imapTimeout',
                         value : this.getMailSettings().imapTimeout/1000,
@@ -760,7 +932,28 @@ if (!Ung.hasResource["Ung.System"]) {
         // validation function
         validateClient : function() {
             //validate timeout
-        	return this.validateSMTP() && this.validatePOP() && this.validateIMAP(); 
+        	return  this.validateMaxHeaderLength() && this.validateMaxUriLength() && this.validateSMTP() && this.validatePOP() && this.validateIMAP(); 
+        },
+        
+        //validate Max URI Length
+        validateMaxUriLength : function() {
+            var maxUriLengthCmp = Ext.getCmp('system_protocolSettings_maxUriLength');
+            if (maxUriLengthCmp.isValid()) {
+                return true;
+            } else {
+                Ext.MessageBox.alert('Warning', this.i18n._("Max URI Length should be between 1024 and 4096!"));
+                return false;
+            }
+        },
+        //validate Max Header Length
+        validateMaxHeaderLength : function() {
+            var maxHeaderLengthCmp = Ext.getCmp('system_protocolSettings_maxHeaderLength');
+            if (maxHeaderLengthCmp.isValid()) {
+                return true;
+            } else {
+                Ext.MessageBox.alert('Warning', this.i18n._("Max Header Length should be between 1024 and 8192!"));
+                return false;
+            }
         },
         //validate SMTP timeout
         validateSMTP : function() {
@@ -796,7 +989,7 @@ if (!Ung.hasResource["Ung.System"]) {
         saveAction : function() {
             if (this.validate()) {
             	Ext.MessageBox.progress(i18n._("Please wait"), i18n._("Saving..."));
-                this.saveSemaphore = 5;
+                this.saveSemaphore = 6;
                 // save language settings
                 rpc.languageManager.setLanguageSettings(function(result, exception) {
                     if (exception) {
@@ -814,6 +1007,15 @@ if (!Ung.hasResource["Ung.System"]) {
                     }
                     this.afterSave();
                 }.createDelegate(this), this.getAccessSettings(), this.getMiscSettings());
+                
+                // save http settings
+                this.getHttpNode().setHttpSettings(function(result, exception) {
+                    if (exception) {
+                        Ext.MessageBox.alert(i18n._("Failed"), exception.message);
+                        return;
+                    }
+                    this.afterSave();
+                }.createDelegate(this), this.getHttpSettings());
                 
                 // save ftp settings
                 this.getFtpNode().setFtpSettings(function(result, exception) {

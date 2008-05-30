@@ -39,4 +39,7 @@ package com.untangle.node.http;
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
-public interface HttpNode { }
+public interface HttpNode { 
+    HttpSettings getHttpSettings();
+    void setHttpSettings(HttpSettings settings);
+}
