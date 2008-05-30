@@ -57,11 +57,8 @@ CLI_SERVER_HOME=/usr/share/untangle-cli-server/src
 # activation stuff...
 UNTANGLE_HARDWARE=@UVM_HOME@/.untanglehw
 ACTIVATION_KEY_FILE=@UVM_HOME@/activation.key
-ACTIVATION_KEY_FILE_TMP=${ACTIVATION_KEY_FILE}.tmp
-TMP_ARCHIVE=@PREFIX@/tmp/activation.tar
-ACTIVATION_URL_TEMPLATE="https://activation.untangle.com/cgi-bin/get-license-key2.rb?license_key=%s&internal_ip=%s"
+POPID_FILE=@UVM_HOME@/popid
 REMOTE_SUPPORT_ENABLE_URL_TEMPLATE="https://activation.untangle.com/cgi-bin/enable-remote-support.rb?license_key=%s&internal_ip=%s"
-FAKE_KEY=0000-0000-0000-0000
 KEY_VERIFICATION="@UVM_HOME@/conf/etc/mvverifykey"
 KEY_TEMPLATE=XXX_REG_KEY_XXX
 ETC_ISSUE=/etc/issue
@@ -79,7 +76,7 @@ case `head -1 $ETC_ISSUE | awk "{ print \\$$i }"` in
   # FIMXE !!!
   *) REPOSITORY=etch SOURCES_LIST=${SOURCES_LIST_NEW} ;;
 esac
-DEFAULT_UNTANGLE_SOURCE="deb http://${KEY_TEMPLATE}:metavize@updates.untangle.com/public/${REPOSITORY} stable main premium upstream\ndeb http://${KEY_TEMPLATE}:metavize@updates.untangle.com/public/${REPOSITORY} durango main premium upstream"
+DEFAULT_UNTANGLE_SOURCE="deb http://${KEY_TEMPLATE}:untangle@updates.untangle.com/public/${REPOSITORY} stable main premium upstream\ndeb http://${KEY_TEMPLATE}:untangle@updates.untangle.com/public/${REPOSITORY} durango main premium upstream"
 
 ## For testing uncomment if you want to generate /etc/network/interfaces files.
 # UVM_ENABLE_NETWORK_CFG="anything"
