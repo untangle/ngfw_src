@@ -367,10 +367,16 @@ if (!Ung.hasResource["Ung.System"]) {
             });
         },
         buildProtocolSettings : function() {
-            var casingItems = new Array();
+            var protocolSettingsItems = new Array();
+            
+            protocolSettingsItems.push(new Ext.form.FieldSet({
+                autoHeight : true,
+                border: false,
+                html: this.i18n._('Warning: These settings should not be changed unless instructed to do so by support.')
+            }));
             
             if (this.isHttpLoaded()) {
-            	casingItems.push(new Ext.form.FieldSet({
+            	protocolSettingsItems.push(new Ext.form.FieldSet({
                     title: this.i18n._('HTTP'),
                     autoHeight : true,
                     defaults : {
@@ -536,14 +542,10 @@ if (!Ung.hasResource["Ung.System"]) {
             }
         	
             if (this.isFtpLoaded()) {
-                casingItems.push( new Ext.form.FieldSet({
+                protocolSettingsItems.push( new Ext.form.FieldSet({
                     title: this.i18n._('FTP'),
                     autoHeight : true,
                     items : [{
-                        style : 'padding-bottom:10px;',
-                        border: false,
-                        html: this.i18n._("Warning:  These settings should not be changed unless instructed to do so by support.")                        
-                    },{
                         xtype : 'radio',
                         boxLabel : i18n.sprintf(this.i18n._('%sEnable Processing%s of File Transfer traffic.  (This is the default setting)'), '<b>', '</b>'), 
                         hideLabel : true,
@@ -574,7 +576,7 @@ if (!Ung.hasResource["Ung.System"]) {
             }
             
             if (this.isMailLoaded()) {
-                casingItems.push(new Ext.form.FieldSet({
+                protocolSettingsItems.push(new Ext.form.FieldSet({
                     title: this.i18n._('SMTP'),
                     autoHeight : true,
                     items : [{
@@ -624,7 +626,7 @@ if (!Ung.hasResource["Ung.System"]) {
                         }
                     }]
                 }));
-                casingItems.push(new Ext.form.FieldSet({
+                protocolSettingsItems.push(new Ext.form.FieldSet({
                     title: this.i18n._('POP3'),
                     autoHeight : true,
                     items : [{
@@ -674,7 +676,7 @@ if (!Ung.hasResource["Ung.System"]) {
                         }
                     }]
                 }));
-                casingItems.push( new Ext.form.FieldSet({
+                protocolSettingsItems.push( new Ext.form.FieldSet({
                     title: this.i18n._('IMAP'),
                     autoHeight : true,
                     items : [{
@@ -739,7 +741,7 @@ if (!Ung.hasResource["Ung.System"]) {
                     xtype : 'fieldset',
                     autoHeight : true
                 },
-                items: casingItems.length != 0 ? casingItems : null
+                items: protocolSettingsItems.length != 0 ? protocolSettingsItems : null
             });
         },
         buildRegionalSettings : function() {
