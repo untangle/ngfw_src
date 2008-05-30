@@ -35,6 +35,9 @@ if (!Ung.hasResource["Ung.System"]) {
             this.buildTabPanel([this.panelUntangleSupport, this.panelBackup, this.panelRestore, this.panelProtocolSettings,
                     this.panelRegionalSettings]);
             this.tabs.activate(this.panelUntangleSupport);
+            if (!this.isHttpLoaded() && !this.isFtpLoaded() && !this.isMailLoaded() ){
+                this.panelProtocolSettings.disable();
+            }
 
         },
         // get languange settings object
@@ -77,6 +80,9 @@ if (!Ung.hasResource["Ung.System"]) {
             }
             return this.rpc.ftpNode;
         },
+        isFtpLoaded : function(forceReload) {
+            return this.getFtpNode(forceReload) != null;
+        },
         getFtpSettings : function(forceReload) {
             if (forceReload || this.rpc.ftpSettings === undefined) {
                 this.rpc.ftpSettings = this.getFtpNode(forceReload).getFtpSettings();
@@ -88,6 +94,9 @@ if (!Ung.hasResource["Ung.System"]) {
                 this.rpc.mailNode = rpc.nodeManager.node("untangle-casing-mail");
             }
             return this.rpc.mailNode;
+        },
+        isMailLoaded : function(forceReload) {
+            return this.getMailNode(forceReload) != null;
         },
         getMailSettings : function(forceReload) {
             if (forceReload || this.rpc.mailSettings === undefined) {
@@ -358,27 +367,18 @@ if (!Ung.hasResource["Ung.System"]) {
             });
         },
         buildProtocolSettings : function() {
-            this.panelProtocolSettings = new Ext.Panel({
-                name : 'panelProtocolSettings',
-                // private fields
-                parentId : this.getId(),
-
-                title : this.i18n._('Protocol Settings'),
-                layout : "form",
-                bodyStyle : 'padding:5px 5px 0px 5px;',
-                autoScroll : true,
-                defaults : {
-                    xtype : 'fieldset',
-                    autoHeight : true
-                },
-                items : [{
-                	title: this.i18n._('HTTP'),
+            var casingItems = new Array();
+            
+            if (this.isHttpLoaded()) {
+            	casingItems.push(new Ext.form.FieldSet({
+                    title: this.i18n._('HTTP'),
+                    autoHeight : true,
                     defaults : {
                         xtype : 'fieldset',
                         autoHeight : true
                     },
                     items : [{
-                    	title: this.i18n._('Web Override'),
+                      title: this.i18n._('Web Override'),
                         items : [{
                             xtype : 'radio',
                             boxLabel : i18n.sprintf(this.i18n._('%sEnable Processing%s of web traffic.  (This is the default setting)'), '<b>', '</b>'), 
@@ -532,12 +532,17 @@ if (!Ung.hasResource["Ung.System"]) {
                             }
                         }]
                     }]
-                },{
+            	}));
+            }
+        	
+            if (this.isFtpLoaded()) {
+                casingItems.push( new Ext.form.FieldSet({
                     title: this.i18n._('FTP'),
+                    autoHeight : true,
                     items : [{
                         style : 'padding-bottom:10px;',
                         border: false,
-                        html: this.i18n._("Warning:  These settings should not be changed unless instructed to do so by support.")                    	
+                        html: this.i18n._("Warning:  These settings should not be changed unless instructed to do so by support.")                        
                     },{
                         xtype : 'radio',
                         boxLabel : i18n.sprintf(this.i18n._('%sEnable Processing%s of File Transfer traffic.  (This is the default setting)'), '<b>', '</b>'), 
@@ -565,8 +570,13 @@ if (!Ung.hasResource["Ung.System"]) {
                             }
                         }
                     }]
-                },{
+                }));
+            }
+            
+            if (this.isMailLoaded()) {
+                casingItems.push(new Ext.form.FieldSet({
                     title: this.i18n._('SMTP'),
+                    autoHeight : true,
                     items : [{
                         xtype : 'radio',
                         boxLabel : i18n.sprintf(this.i18n._('%sEnable SMTP%s email processing.  (This is the default setting)'), '<b>', '</b>'), 
@@ -613,8 +623,10 @@ if (!Ung.hasResource["Ung.System"]) {
                             }
                         }
                     }]
-                },{
+                }));
+                casingItems.push(new Ext.form.FieldSet({
                     title: this.i18n._('POP3'),
+                    autoHeight : true,
                     items : [{
                         xtype : 'radio',
                         boxLabel : i18n.sprintf(this.i18n._('%sEnable POP3%s email processing.  (This is the default setting)'), '<b>', '</b>'), 
@@ -661,8 +673,10 @@ if (!Ung.hasResource["Ung.System"]) {
                             }
                         }
                     }]
-                },{
+                }));
+                casingItems.push( new Ext.form.FieldSet({
                     title: this.i18n._('IMAP'),
+                    autoHeight : true,
                     items : [{
                         xtype : 'radio',
                         boxLabel : i18n.sprintf(this.i18n._('%sEnable IMAP%s email processing.  (This is the default setting)'), '<b>', '</b>'), 
@@ -709,7 +723,23 @@ if (!Ung.hasResource["Ung.System"]) {
                             }
                         }
                     }]
-                }]
+                }));
+            }            	
+            
+            this.panelProtocolSettings = new Ext.Panel({
+                name : 'panelProtocolSettings',
+                // private fields
+                parentId : this.getId(),
+
+                title : this.i18n._('Protocol Settings'),
+                layout : "form",
+                bodyStyle : 'padding:5px 5px 0px 5px;',
+                autoScroll : true,
+                defaults : {
+                    xtype : 'fieldset',
+                    autoHeight : true
+                },
+                items: casingItems.length != 0 ? casingItems : null
             });
         },
         buildRegionalSettings : function() {
@@ -932,7 +962,8 @@ if (!Ung.hasResource["Ung.System"]) {
         // validation function
         validateClient : function() {
             //validate timeout
-        	return  this.validateMaxHeaderLength() && this.validateMaxUriLength() && this.validateSMTP() && this.validatePOP() && this.validateIMAP(); 
+        	return  (!this.isHttpLoaded() || this.validateMaxHeaderLength() && this.validateMaxUriLength()) && 
+        	   (!this.isMailLoaded() || this.validateSMTP() && this.validatePOP() && this.validateIMAP()); 
         },
         
         //validate Max URI Length
@@ -1009,31 +1040,43 @@ if (!Ung.hasResource["Ung.System"]) {
                 }.createDelegate(this), this.getAccessSettings(), this.getMiscSettings());
                 
                 // save http settings
-                this.getHttpNode().setHttpSettings(function(result, exception) {
-                    if (exception) {
-                        Ext.MessageBox.alert(i18n._("Failed"), exception.message);
-                        return;
-                    }
-                    this.afterSave();
-                }.createDelegate(this), this.getHttpSettings());
+                if (this.isHttpLoaded()) {
+                    this.getHttpNode().setHttpSettings(function(result, exception) {
+                        if (exception) {
+                            Ext.MessageBox.alert(i18n._("Failed"), exception.message);
+                            return;
+                        }
+                        this.afterSave();
+                    }.createDelegate(this), this.getHttpSettings());
+                } else {
+                	this.saveSemaphore--;
+                };
                 
                 // save ftp settings
-                this.getFtpNode().setFtpSettings(function(result, exception) {
-                    if (exception) {
-                        Ext.MessageBox.alert(i18n._("Failed"), exception.message);
-                        return;
-                    }
-                    this.afterSave();
-                }.createDelegate(this), this.getFtpSettings());
+                if (this.isFtpLoaded()) {
+                    this.getFtpNode().setFtpSettings(function(result, exception) {
+                        if (exception) {
+                            Ext.MessageBox.alert(i18n._("Failed"), exception.message);
+                            return;
+                        }
+                        this.afterSave();
+                    }.createDelegate(this), this.getFtpSettings());
+                } else {
+                    this.saveSemaphore--;
+                };
                 
                 // save mail settings
-                this.getMailNode().setMailNodeSettings(function(result, exception) {
-                    if (exception) {
-                        Ext.MessageBox.alert(i18n._("Failed"), exception.message);
-                        return;
-                    }
-                    this.afterSave();
-                }.createDelegate(this), this.getMailSettings());
+                if (this.isMailLoaded()) {
+                    this.getMailNode().setMailNodeSettings(function(result, exception) {
+                        if (exception) {
+                            Ext.MessageBox.alert(i18n._("Failed"), exception.message);
+                            return;
+                        }
+                        this.afterSave();
+                    }.createDelegate(this), this.getMailSettings());
+                } else {
+                    this.saveSemaphore--;
+                };
                 
                 //save timezone
                 rpc.adminManager.setTimeZone(function(result, exception) {
