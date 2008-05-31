@@ -160,7 +160,8 @@ class RealMkg
     pkg_list = get_pkg_list("apt-get install #{INST_OPTS} --print-uris #{pkg} #{recs}")
     r = download(pkg_list)
     if (r != 0)
-      return r;
+      return r
+    end
 
     log "installing: \"#{pkg}\""
 
@@ -196,7 +197,8 @@ class RealMkg
     pkg_list = get_pkg_list("apt-get dist-upgrade #{UPGD_OPTS} --print-uris")
     download(pkg_list)
     if (r != 0)
-      return r;
+      return r
+    end
     r = cmd_to_stderr("apt-get dist-upgrade #{UPGD_OPTS}")
 
     log "done #{@stamp}"
