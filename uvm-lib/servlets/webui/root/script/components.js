@@ -2396,39 +2396,41 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
             this.plugins.push(deleteColumn);
             this.columns.push(deleteColumn);
         }
-        this.store = new Ext.data.Store({
-            proxy : new Ung.RpcProxy(this.proxyRpcFn),
-            sortInfo : this.sortField ? {
-                field : this.sortField,
-                direction : "ASC"
-            } : null,
-            reader : new Ext.data.JsonReader({
-                totalProperty : "totalRecords",
-                root : 'list',
-                fields : this.fields
-            }),
-
-            remoteSort : true,
-            getPageStart : function() {
-                if (this.lastOptions && this.lastOptions.params) {
-                    return this.lastOptions.params.start
-                } else {
-                    return 0;
-                }
-            },
-            listeners : {
-                "update" : {
-                    fn : function(store, record, operation) {
-                        this.updateChangedData(record, "modified");
-                    }.createDelegate(this)
+        if (!this.store){
+            this.store = new Ext.data.Store({
+                proxy : new Ung.RpcProxy(this.proxyRpcFn),
+                sortInfo : this.sortField ? {
+                    field : this.sortField,
+                    direction : "ASC"
+                } : null,
+                reader : new Ext.data.JsonReader({
+                    totalProperty : "totalRecords",
+                    root : 'list',
+                    fields : this.fields
+                }),
+    
+                remoteSort : true,
+                getPageStart : function() {
+                    if (this.lastOptions && this.lastOptions.params) {
+                        return this.lastOptions.params.start
+                    } else {
+                        return 0;
+                    }
                 },
-                "load" : {
-                    fn : function(store, records, options) {
-                        this.updateFromChangedData(records, options);
-                    }.createDelegate(this)
+                listeners : {
+                    "update" : {
+                        fn : function(store, record, operation) {
+                            this.updateChangedData(record, "modified");
+                        }.createDelegate(this)
+                    },
+                    "load" : {
+                        fn : function(store, records, options) {
+                            this.updateFromChangedData(records, options);
+                        }.createDelegate(this)
+                    }
                 }
-            }
-        });
+            });
+        }
         this.bbar = new Ext.PagingToolbar({
             pageSize : this.recordsPerPage,
             store : this.store,

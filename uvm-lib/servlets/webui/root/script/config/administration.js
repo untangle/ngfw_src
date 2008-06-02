@@ -35,7 +35,6 @@ if (!Ung.hasResource["Ung.Administration"]) {
             this.buildTabPanel([this.panelAdministration, this.panelPublicAddress, this.panelCertificates, this.panelMonitoring,
                     this.panelSkins]);
             this.tabs.activate(this.panelSkins);
-            this.panelAdministration.disable();
             this.panelPublicAddress.disable();
             this.panelCertificates.disable();
             this.panelMonitoring.disable();
@@ -48,6 +47,14 @@ if (!Ung.hasResource["Ung.Administration"]) {
             }
             return this.rpc.skinSettings;
         },
+        // get admin settings
+        getAdminSettings : function(forceReload) {
+            if (forceReload || this.rpc.adminSettings === undefined) {
+                this.rpc.adminSettings = rpc.adminManager.getAdminSettings();
+            }
+            return this.rpc.adminSettings;
+        },
+        
         getTODOPanel : function(title) {
             return new Ext.Panel({
                 title : this.i18n._(title),
@@ -70,7 +77,201 @@ if (!Ung.hasResource["Ung.Administration"]) {
             });
         },
         buildAdministration : function() {
-            this.panelAdministration = this.getTODOPanel("Administration");
+            // read-only is a check column
+            var readOnlyColumn = new Ext.grid.CheckColumn({
+                header : this.i18n._("read-only"),
+                dataIndex : 'readOnly',
+                fixed : true
+            });
+
+            this.panelAdministration = new Ext.Panel({
+                name : 'panelAdministration',
+                // private fields
+                parentId : this.getId(),
+
+                title : this.i18n._('Administration'),
+                layout : "form",
+                bodyStyle : 'padding:5px 5px 0px 5px;',
+                autoScroll : true,
+                defaults : {
+                    autoHeight : true
+                },
+                items : [new Ung.EditorGrid({
+                    settingsCmp : this,
+                    name : 'gridAdminAccounts',
+//                    // the total records is set from the base settings
+//                    // patternsLength field
+//                    totalRecords : this.getBaseSettings().patternsLength,
+                    emptyRow : {
+                        "login" : this.i18n._("[no login]"),
+                        "name" : this.i18n._("[no description]"),
+                        "readOnly" : false,
+                        "email" : this.i18n._("[no email]")
+//                        ,
+//                        "clearPassword" : ""
+                    },
+                    title : this.i18n._("Admin Accounts"),
+                    // the column is autoexpanded if the grid width permits
+                    autoExpandColumn : 'name',
+                    recordJavaClass : "com.untangle.uvm.security.User",
+//                    // this is the function used by Ung.RpcProxy to retrive data
+//                    // from the server
+//                    proxyRpcFn : this.getRpcNode().getPatterns,
+                    
+        store: new Ext.data.Store({
+            data : this.getAdminSettings().users.set,
+//            sortInfo : this.sortField ? {
+//                field : this.sortField,
+//                direction : "ASC"
+//            } : null,
+            reader : new Ext.data.JsonReader({
+//                totalProperty : "totalRecords",
+//                root : 'set',
+                fields : [{
+                        name : 'id'
+                    }, {
+                        name : 'login'
+                    },
+                    // this field is internationalized so a converter was
+                    // added
+                    {
+                        name : 'name',
+                        convert : function(v) {
+                            return this.i18n._(v)
+                        }.createDelegate(this)
+                    }, {
+                        name : 'readOnly'
+                    }, {
+                        name : 'email'
+//                    }, {
+//                        name : 'clearPassword'
+                    }]
+            })
+//            ,
+
+//            remoteSort : true,
+//            getPageStart : function() {
+//                if (this.lastOptions && this.lastOptions.params) {
+//                    return this.lastOptions.params.start
+//                } else {
+//                    return 0;
+//                }
+//            },
+//            listeners : {
+//                "update" : {
+//                    fn : function(store, record, operation) {
+//                        this.updateChangedData(record, "modified");
+//                    }.createDelegate(this)
+//                },
+//                "load" : {
+//                    fn : function(store, records, options) {
+//                        this.updateFromChangedData(records, options);
+//                    }.createDelegate(this)
+//                }
+//            }
+        }),
+    // is grid paginated
+    isPaginated : function() {
+        return false;
+    },
+    // load a page
+    loadPage : function(pageStart, callback, scope, arg) {
+//            this.getStore().load({
+//                callback : callback,
+//                scope : scope,
+//                arg : arg
+//            });
+    },
+        
+                    
+                    // the list of fields
+                    fields : [{
+                        name : 'id'
+                    }, {
+                        name : 'login'
+                    },
+                    // this field is internationalized so a converter was
+                    // added
+                    {
+                        name : 'name',
+                        convert : function(v) {
+                            return this.i18n._(v)
+                        }.createDelegate(this)
+                    }, {
+                        name : 'readOnly'
+                    }, {
+                        name : 'email'
+//                    }, {
+//                        name : 'clearPassword'
+                    }],
+                    // the list of columns for the column model
+                    columns : [{
+                        id : 'id',
+                        dataIndex : 'id',
+                        hidden : true
+                    }, {
+                        id : 'login',
+                        header : this.i18n._("login"),
+                        width : 200,
+                        dataIndex : 'login',
+                        editor : new Ext.form.TextField({
+                            allowBlank : false
+                        })
+                    }, {
+                        id : 'name',
+                        header : this.i18n._("description"),
+                        width : 200,
+                        dataIndex : 'name',
+                        editor : new Ext.form.TextField({
+                            allowBlank : false
+                        })
+                    }, readOnlyColumn, {
+                        id : 'email',
+                        header : this.i18n._("email"),
+                        width : 200,
+                        dataIndex : 'email',
+                        editor : new Ext.form.TextField({
+                            allowBlank : false
+                        })
+                    }
+//                    , {
+//                        id : 'password',
+//                        header : this.i18n._("description"),
+//                        width : 200,
+//                        dataIndex : 'description',
+//                        editor : new Ext.form.TextField({
+//                            allowBlank : false
+//                        })
+//                    }
+                    ],
+                    sortField : 'login',
+                    columnsDefaultSortable : true,
+                    plugins : [readOnlyColumn],
+                    // the row input lines used by the row editor window
+                    rowEditorInputLines : [new Ext.form.TextField({
+                        name : "login",
+                        fieldLabel : this.i18n._("Login"),
+                        allowBlank : false,
+                        width : 200
+                    }), new Ext.form.TextField({
+                        name : "name",
+                        fieldLabel : this.i18n._("Description"),
+                        allowBlank : false,
+                        width : 200
+                    }), new Ext.form.Checkbox({
+                        name : "readOnly",
+                        fieldLabel : this.i18n._("Read-only")
+                    }), new Ext.form.TextField({
+                        name : "email",
+                        fieldLabel : this.i18n._("Email"),
+                        width : 200
+//                    }), new Ext.form.TextField({
+//                        name : "password",
+//                        fieldLabel : this.i18n._("Password"),
+//                        width : 200
+                    })]
+                })]
+            })
         },
         buildPublicAddress : function() {
             this.panelPublicAddress = this.getTODOPanel("Public Address");
