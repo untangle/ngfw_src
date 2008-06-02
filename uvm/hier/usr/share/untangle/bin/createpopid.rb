@@ -29,7 +29,6 @@ PLATFORMS = { :sarge    => 0,
 
 # files
 UNTANGLE = "@PREFIX@/usr/share/untangle"
-#UNTANGLE = "/tmp/foo"
 UNTANGLE_GPG_HOME = File.join(UNTANGLE, "gpg")
 ACTIVATION_FILE = File.join(UNTANGLE, "activation.key")
 POPID_FILE = File.join(UNTANGLE, "popid")
@@ -137,12 +136,12 @@ def createPopId(fingerprint, bits, existingKey)
   end
 
   # insert meaningful bit in the right part
-  popId = popId.insert(-2, bits)
+  popId = popId.insert(-2, bits).downcase
 
   # group and join
   one = popId[0,LEFT_LENGTH].scan(/.{4}/)
   two = popId[LEFT_LENGTH,popId.length-LEFT_LENGTH].scan(/.{7}/)
-  return one.join("-"), (one + two).join("-")
+  return [one, one+two].map{ |list| list.join("-") }
 end
 
 def writeToFiles(activationKey, popId)
