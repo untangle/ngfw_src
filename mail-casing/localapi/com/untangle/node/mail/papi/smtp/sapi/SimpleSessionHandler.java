@@ -54,12 +54,6 @@ public class SimpleSessionHandler
 
     }
 
-    public void handleOpeningResponse(Response resp,
-                                      Session.SmtpResponseActions actions) {
-        m_logger.debug("[handleOpeningResponse]");
-        actions.sendResponseToClient(resp);
-    }
-
     public TransactionHandler createTxHandler(SmtpTransaction tx) {
         return new SimpleTransactionHandler(tx);
     }

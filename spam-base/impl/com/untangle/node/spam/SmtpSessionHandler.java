@@ -34,6 +34,7 @@ import com.untangle.node.mail.papi.MessageInfo;
 import com.untangle.node.mail.papi.quarantine.MailSummary;
 import com.untangle.node.mail.papi.quarantine.QuarantineNodeView;
 import com.untangle.node.mail.papi.safelist.SafelistNodeView;
+import com.untangle.node.mail.papi.smtp.Response;
 import com.untangle.node.mail.papi.smtp.SmtpTransaction;
 import com.untangle.node.mail.papi.smtp.sapi.BufferingSessionHandler;
 import com.untangle.node.mime.EmailAddress;
@@ -62,6 +63,9 @@ public class SmtpSessionHandler
     private final SafelistNodeView m_safelist;
     private final TCPSession m_session;
 
+    // Now we also keep the salutation to help SpamAssassin evaluate.
+    private String m_receivedBy;
+    
     public SmtpSessionHandler(TCPSession session,
                               long maxClientWait,
                               long maxSvrWait,
@@ -115,7 +119,7 @@ public class SmtpSessionHandler
         m_spamImpl.incrementScanCounter();
 
         //Scan the message
-        File f = messageToFile(msg);
+        File f = messageToFile(msg, tx);
         if(f == null) {
             m_logger.error("Error writing to file.  Unable to scan.  Assume pass");
             postSpamEvent(msgInfo, cleanReport(), SMTPSpamMessageAction.PASS);
@@ -221,6 +225,18 @@ public class SmtpSessionHandler
     }
 
     @Override
+    public void handleOpeningResponse(Response resp,
+				      com.untangle.node.mail.papi.smtp.sapi.Session.SmtpResponseActions actions) {
+	// Note the receivedBy
+	String[] rargs = resp.getArgs();
+	if (rargs == null || rargs.length < 1)
+	    m_receivedBy = null;
+	else
+	    m_receivedBy = rargs[0];
+	super.handleOpeningResponse(resp, actions);
+    }
+
+    @Override
     public BlockOrPassResult blockOrPass(MIMEMessage msg,
                                          SmtpTransaction tx,
                                          MessageInfo msgInfo) {
@@ -230,7 +246,7 @@ public class SmtpSessionHandler
         m_spamImpl.incrementScanCounter();
 
         //Scan the message
-        File f = messageToFile(msg);
+        File f = messageToFile(msg, tx);
         if(f == null) {
             m_logger.error("Error writing to file.  Unable to scan.  Assume pass");
             postSpamEvent(msgInfo, cleanReport(), SMTPSpamMessageAction.PASS);
@@ -362,7 +378,7 @@ public class SmtpSessionHandler
      * Wrapper that handles exceptions, and returns
      * null if there is a problem
      */
-    private File messageToFile(MIMEMessage msg) {
+    private File messageToFile(MIMEMessage msg, SmtpTransaction tx) {
 
         //Build the "fake" received header for SpamAssassin
         InetAddress clientAddr = getSession().getClientAddress();
@@ -371,7 +387,12 @@ public class SmtpSessionHandler
         sb.append("from ").append(getHELOEHLOName()).
             append(" (").append(clientAddr.getHostName()).
             append(" [").append(clientAddr.getHostAddress()).append("])").append(CRLF);
-        sb.append("\tby mv-edgeguard; ").append(MIMEUtil.getRFC822Date());
+	EmailAddress envFrom = tx.getFrom();
+	if (envFrom != null) {
+	    String smtpEnvFrom = envFrom.toSMTPString();
+	    sb.append("\t(envelope-from ").append(smtpEnvFrom).append(")").append(CRLF);
+	}
+        sb.append("\tby ").append(m_receivedBy == null ? "mv-edgeguard" : m_receivedBy).append("; ").append(MIMEUtil.getRFC822Date());
 
 
         File ret = null;

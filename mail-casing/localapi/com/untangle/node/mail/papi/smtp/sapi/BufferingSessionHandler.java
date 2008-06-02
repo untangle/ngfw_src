@@ -295,14 +295,6 @@ public abstract class BufferingSessionHandler
     }
 
     @Override
-    public final void handleOpeningResponse(Response resp,
-                                            Session.SmtpResponseActions actions) {
-        m_logger.debug("[handleOpeningResponse]");
-
-        actions.sendResponseToClient(resp);
-    }
-
-    @Override
     public void observeEHLOCommand(Command cmd) {
         m_heloName = cmd.getArgString();
     }
