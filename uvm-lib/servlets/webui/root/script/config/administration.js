@@ -83,7 +83,11 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 dataIndex : 'readOnly',
                 fixed : true
             });
-
+            var storeData=[];
+            var storeDataSet=this.getAdminSettings().users.set;
+            for(var id in storeDataSet) {
+            	storeData.push(storeDataSet[id]);
+            }
             this.panelAdministration = new Ext.Panel({
                 name : 'panelAdministration',
                 // private fields
@@ -96,7 +100,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 defaults : {
                     autoHeight : true
                 },
-                items : [new Ung.EditorGrid({
+                items : [this.gridAdministration=new Ung.EditorGrid({
                     settingsCmp : this,
                     name : 'gridAdminAccounts',
 //                    // the total records is set from the base settings
@@ -114,84 +118,16 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     // the column is autoexpanded if the grid width permits
                     autoExpandColumn : 'name',
                     recordJavaClass : "com.untangle.uvm.security.User",
-//                    // this is the function used by Ung.RpcProxy to retrive data
-//                    // from the server
-//                    proxyRpcFn : this.getRpcNode().getPatterns,
                     
-        store: new Ext.data.Store({
-            data : this.getAdminSettings().users.set,
-//            sortInfo : this.sortField ? {
-//                field : this.sortField,
-//                direction : "ASC"
-//            } : null,
-            reader : new Ext.data.JsonReader({
-//                totalProperty : "totalRecords",
-//                root : 'set',
-                fields : [{
-                        name : 'id'
-                    }, {
-                        name : 'login'
-                    },
-                    // this field is internationalized so a converter was
-                    // added
-                    {
-                        name : 'name',
-                        convert : function(v) {
-                            return this.i18n._(v)
-                        }.createDelegate(this)
-                    }, {
-                        name : 'readOnly'
-                    }, {
-                        name : 'email'
-//                    }, {
-//                        name : 'clearPassword'
-                    }]
-            })
-//            ,
-
-//            remoteSort : true,
-//            getPageStart : function() {
-//                if (this.lastOptions && this.lastOptions.params) {
-//                    return this.lastOptions.params.start
-//                } else {
-//                    return 0;
-//                }
-//            },
-//            listeners : {
-//                "update" : {
-//                    fn : function(store, record, operation) {
-//                        this.updateChangedData(record, "modified");
-//                    }.createDelegate(this)
-//                },
-//                "load" : {
-//                    fn : function(store, records, options) {
-//                        this.updateFromChangedData(records, options);
-//                    }.createDelegate(this)
-//                }
-//            }
-        }),
-    // is grid paginated
-    isPaginated : function() {
-        return false;
-    },
-    // load a page
-    loadPage : function(pageStart, callback, scope, arg) {
-//            this.getStore().load({
-//                callback : callback,
-//                scope : scope,
-//                arg : arg
-//            });
-    },
-        
-                    
+                    data : storeData,
+                    dataRoot: null,
                     // the list of fields
                     fields : [{
                         name : 'id'
                     }, {
                         name : 'login'
                     },
-                    // this field is internationalized so a converter was
-                    // added
+                    // this field is internationalized so a converter was added
                     {
                         name : 'name',
                         convert : function(v) {
@@ -417,19 +353,37 @@ if (!Ung.hasResource["Ung.Administration"]) {
         // save function
         saveAction : function() {
             if (this.validate()) {
+            	this.saveSemaphore = 2;
                 Ext.MessageBox.progress(i18n._("Please wait"), i18n._("Saving..."));
-                rpc.skinManager.setSkinSettings(function(result, exception) {
-                    Ext.MessageBox.hide();
+                var listAdministration=this.gridAdministration.getFullSaveList();
+                var setAdministration={};
+                for(var i=0; i<listAdministration.length;i++) {
+                    setAdministration[i]=listAdministration[i];
+                }
+                this.getAdminSettings().users.set=setAdministration;
+                rpc.adminManager.setAdminSettings(function(result, exception) {
                     if (exception) {
                         Ext.MessageBox.alert(i18n._("Failed"), exception.message);
                         return;
                     }
-                    // exit settings screen
-                    this.cancelAction();
+                    this.afterSave();
+                }.createDelegate(this), this.getAdminSettings());
+
+                rpc.skinManager.setSkinSettings(function(result, exception) {
+                    if (exception) {
+                        Ext.MessageBox.alert(i18n._("Failed"), exception.message);
+                        return;
+                    }
+                    this.afterSave();
                 }.createDelegate(this), this.getSkinSettings());
             }
-        }
-
+        },
+        afterSave : function() {
+            this.saveSemaphore--;
+            if (this.saveSemaphore == 0) {
+                Ext.MessageBox.hide();
+                this.cancelAction();
+            }
+        }        
     });
-
 }

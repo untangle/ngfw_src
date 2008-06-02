@@ -2159,6 +2159,10 @@ Ung.MemoryProxy = function(config) {
 };
 
 Ext.extend(Ung.MemoryProxy, Ext.data.DataProxy, {
+    // sets the total number of records
+    setTotalRecords : function(totalRecords) {
+        this.totalRecords = totalRecords;
+    },
     // the root property
     root : null,
     // the data
@@ -2396,7 +2400,7 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
             this.plugins.push(deleteColumn);
             this.columns.push(deleteColumn);
         }
-        if (!this.store){
+        if (this.proxyRpcFn) {
             this.store = new Ext.data.Store({
                 proxy : new Ung.RpcProxy(this.proxyRpcFn),
                 sortInfo : this.sortField ? {
@@ -2410,13 +2414,6 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
                 }),
     
                 remoteSort : true,
-                getPageStart : function() {
-                    if (this.lastOptions && this.lastOptions.params) {
-                        return this.lastOptions.params.start
-                    } else {
-                        return 0;
-                    }
-                },
                 listeners : {
                     "update" : {
                         fn : function(store, record, operation) {
@@ -2430,7 +2427,43 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
                     }
                 }
             });
+        } else if(this.data) {
+            this.store = new Ext.data.Store({
+                proxy : new Ung.MemoryProxy({
+                    root : this.dataRoot
+                }),
+                sortInfo : this.sortField ? {
+                    field : this.sortField,
+                    direction : "ASC"
+                } : null,
+                remoteSort : true,
+                reader : new Ext.data.JsonReader({
+                    totalProperty : "totalRecords",
+                    root : this.dataRoot,
+                    fields : this.fields
+                }),
+                listeners : {
+                    "update" : {
+                        fn : function(store, record, operation) {
+                            this.updateChangedData(record, "modified");
+                        }.createDelegate(this)
+                    },
+                    "load" : {
+                        fn : function(store, records, options) {
+                            this.updateFromChangedData(records, options);
+                        }.createDelegate(this)
+                    }
+                }
+            });
+        	this.getStore().proxy.data = this.data;
+        	this.totalRecords=this.data.length
         }
+//        this.store.on("update", function(store, record, operation) {
+//                            this.updateChangedData(record, "modified");
+//                        }.createDelegate(this));
+//        this.store.on("load", function(store, records, options) {
+//                            this.updateFromChangedData(records, options);
+//                        }.createDelegate(this));        
         this.bbar = new Ext.PagingToolbar({
             pageSize : this.recordsPerPage,
             store : this.store,
@@ -2472,7 +2505,13 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
             this.getColumnModel().defaultSortable = this.columnsDefaultSortable;
         }
     },
-
+    getPageStart : function() {
+        if (this.store.lastOptions && this.store.lastOptions.params) {
+            return this.store.lastOptions.params.start
+        } else {
+            return 0;
+        }
+    },
     genAddedId : function() {
         this.addedId--;
         return this.addedId;
@@ -2529,7 +2568,7 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
     },
     // when a page is rendered load the changedData for it
     updateFromChangedData : function(store, records, options) {
-        var pageStart = this.store.getPageStart();
+        var pageStart = this.getPageStart();
         for (id in this.changedData) {
             var cd = this.changedData[id];
             if (pageStart == cd.pageStart) {
@@ -2570,7 +2609,7 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
             this.changedData[id] = {
                 op : currentOp,
                 recData : record.data,
-                pageStart : this.store.getPageStart()
+                pageStart : this.getPageStart()
             };
             if ("deleted" == currentOp) {
                 var index = this.store.indexOf(record);
@@ -2586,7 +2625,7 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
                     this.changedData[id] = {
                         op : currentOp,
                         recData : record.data,
-                        pageStart : this.store.getPageStart()
+                        pageStart : this.getPageStart()
                     };
                     this.getView().refreshRow(record);
                 }
@@ -2597,7 +2636,7 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
                     this.changedData[id] = {
                         op : currentOp,
                         recData : record.data,
-                        pageStart : this.store.getPageStart()
+                        pageStart : this.getPageStart()
                     };
                 }
             }
@@ -2682,9 +2721,13 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
     // Get the entire list
     // for the unpaginated grids, that send all the records on save
     getFullSaveList : function() {
-        // TODO: implement this
+        var list=[];
+        var records=this.store.getRange();
+        for(var i=0; i<records.length;i++) {
+            list.push(records[i].data)
+        }
+        return list;
     }
-
 });
 // Reads a list of strings form a json object
 // and creates a list of records
