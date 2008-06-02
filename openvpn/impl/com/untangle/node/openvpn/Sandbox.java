@@ -47,7 +47,7 @@ class Sandbox
 {
     private final Logger logger = Logger.getLogger( Sandbox.class );
     
-    private static final int DEFAULT_MAX_CLIENTS = 20;
+    private static final int DEFAULT_MAX_CLIENTS = 500;
     private static final boolean DEFAULT_KEEP_ALIVE  = true;
     private static final boolean DEFAULT_EXPOSE_CLIENTS = true;
 
