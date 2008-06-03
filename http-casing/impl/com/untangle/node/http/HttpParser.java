@@ -18,9 +18,7 @@
 
 package com.untangle.node.http;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -35,7 +33,6 @@ import com.untangle.node.token.ParseResult;
 import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenStreamer;
 import com.untangle.node.util.AsciiCharBuffer;
-import com.untangle.node.util.UriUtil;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.node.MimeType;
 import com.untangle.uvm.vnet.Pipeline;
@@ -596,7 +593,7 @@ public class HttpParser extends AbstractParser
         }
     }
 
-    // private methods --------------------------------------------------------
+    // private methods ---------------------------------------------------------
 
     private Object firstLine(ByteBuffer data) throws ParseException
     {
@@ -617,7 +614,7 @@ public class HttpParser extends AbstractParser
             logger.debug(sessStr + "method: " + method);
         }
         eat(data, SP);
-        URI requestUri = requestUri(data);
+        byte[] requestUri = requestUri(data);
         eat(data, SP);
         String httpVersion = version(data);
         eatCrLf(data);
@@ -812,7 +809,8 @@ public class HttpParser extends AbstractParser
         return new Chunk(buffer.slice());
     }
 
-    private String requestUriString(ByteBuffer b)
+    // Request-URI    = "*" | absoluteURI | abs_path | authority
+    private byte[] requestUri(ByteBuffer b)
         throws ParseException
     {
         ByteBuffer dup = b.duplicate();
@@ -837,26 +835,8 @@ public class HttpParser extends AbstractParser
 
         byte[] a = new byte[dup.remaining()];
         dup.get(a);
-        try {
-            return new String(a, "UTF-8");
-        } catch (UnsupportedEncodingException exn) {
-            logger.warn("Could not decode URI", exn);
-            return new String(a);
-        }
-    }
 
-    // Request-URI    = "*" | absoluteURI | abs_path | authority
-    private URI requestUri(ByteBuffer b)
-               throws ParseException
-    {
-        String uriStr = requestUriString(b);
-        uriStr = UriUtil.escapeUri(uriStr);
-
-        try {
-            return new URI(uriStr);
-        } catch (URISyntaxException exn) {
-            throw new ParseException(exn);
-        }
+        return a;
     }
 
     private void eat(ByteBuffer data, String s) throws ParseException
@@ -1117,4 +1097,6 @@ public class HttpParser extends AbstractParser
                 }
             };
     }
+
+
 }

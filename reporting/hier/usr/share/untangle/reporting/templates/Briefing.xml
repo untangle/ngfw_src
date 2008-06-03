@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -17,12 +17,12 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
 -->
 <!DOCTYPE document
-	PUBLIC "-//UJAC.org//Print Document//EN" 
-	"http://ujac.sourceforge.net/ujac-print-document.dtd">
+    PUBLIC "-//UJAC.org//Print Document//EN"
+    "http://ujac.sourceforge.net/ujac-print-document.dtd">
 
 <document size="LETTER" margin-left="25" margin-right="25" margin-top="50" margin-bottom="50">
   <set-property name="linkPrefix"     type="String" value="link-"/>
-  
+
   <font-def name="header"    family="Helvetica" size="12" style="bold"/>
   <font-def name="normal"    family="Helvetica" size="12" style="normal"/>
   <font-def name="statistic" family="Helvetica" size="11" style="normal"/>
@@ -38,7 +38,7 @@
   <style-def name="cell.link"     halign="center" font="link"/>
 
   <style-def name="table.summary-border" halign="center"
-             border-style="top|bottom|left|right" border-width="0.5" font="normal" 
+             border-style="top|bottom|left|right" border-width="0.5" font="normal"
              padding-top="2" padding-bottom="7" padding-right="5" padding-left="5"/>
 
   <style-def name=".title"    font="title"    spacing-after="10"/>
@@ -60,7 +60,7 @@
       Page ${pageNumber} of ${pageCount}
     </footer-part>
   </footer>
-  
+
   <table halign="center" widths="9.5,50.5,40" width="90">
     <cell>
       <image source="${imageDirectory + iconDescription}"/>
@@ -81,19 +81,19 @@
   <!-- Only display the graph if one is available -->
   <if cond="${graph isDefined}">
     <paragraph class="subtitle">Visual Summary</paragraph>
-    
+
     <paragraph class="image">
       <image halign="center" width="507" source="${imageDirectory + graph}"/>
     </paragraph>
   </if>
-  
+
   <paragraph class="subtitle">Vital Statistics</paragraph>
-  
+
   <set-property name="descriptionColor" type="String" value="eeeeee"/>
   <set-property name="percentColor"     type="String" value="e4e4e4"/>
 
   <table width="90" widths="50,37.5,12.5" halign="center" class="summary">
-    
+
     <!-- Iterate all of the data -->
     <foreach sequence="${statistics}" loop-variable="row">
       <if cond="${row.indent == 1}">
@@ -102,13 +102,13 @@
       <else>
         <set-property name="rowClass" type="String" value="normal"/>
       </else>
-      
+
       <table-row>
         <cell class="${rowClass}" bgcolor="${descriptionColor}">${row.description}</cell>
         <cell class="data"        bgcolor="${descriptionColor}">${row.data}</cell>
         <cell class="data"        bgcolor="${percentColor}">${row.percent}</cell>
       </table-row>
-      
+
       <toggle-property name="descriptionColor" type="String" a="eeeeee" b="dddddd"/>
       <toggle-property name="percentColor"     type="String" a="e4e4e4" b="d4d4d4"/>
     </foreach>
@@ -157,7 +157,7 @@
     <paragraph class="subtitle">Detailed Reports [disabled]</paragraph>
     <paragraph font="medium" halign="center">
       To receive detailed reports enable "Include Incident Lists in
-      Emails" in the "Generation Settings" tab of Untangle Reports.
+      Emails" in the "Generation Settings" tab of ${companyName} Reports.
     </paragraph>
 
     <!-- Iterate all of the detailed reports and

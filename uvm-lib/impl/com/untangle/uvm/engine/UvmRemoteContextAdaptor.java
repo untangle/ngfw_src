@@ -248,4 +248,9 @@ class RemoteUvmContextAdaptor implements RemoteUvmContext
     {
         context.stopCliServer();
     }
+
+    public String setProperty(String key, String value)
+    {
+        return context.setProperty(key, value);
+    }
 }

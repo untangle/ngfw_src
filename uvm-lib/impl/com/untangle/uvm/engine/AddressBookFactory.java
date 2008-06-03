@@ -64,14 +64,14 @@ class AddressBookFactory
             className = PREMIUM_ADDRESSBOOK_IMPL;
         }
         try {
-            Constructor<PremiumAddressBook> constructor = 
+            Constructor<PremiumAddressBook> constructor =
                 (Constructor<PremiumAddressBook>)Class.forName( className ).
                 getDeclaredConstructor(DefaultAddressBookImpl.class);
 
             this.premium = constructor.newInstance( this.limited );
             this.remote = new RemoteAddressBookAdaptor(this.premium);
         } catch ( Exception e ) {
-            logger.warn( "Could not load premium AddressBook: " + className, e );
+            logger.debug( "Could not load premium AddressBook: " + className);
             this.premium = null;
             this.remote = new RemoteAddressBookAdaptor(this.limited);
         }

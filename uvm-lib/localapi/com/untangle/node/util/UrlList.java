@@ -371,6 +371,8 @@ public abstract class UrlList
 
                     HttpClient hc = new HttpClient();
                     HttpMethod get = new GetMethod(url.toString());
+                    get.setRequestHeader("Accept-Encoding", "gzip");
+
                     int rc = hc.executeMethod(get);
                     is = get.getResponseBodyAsStream();
                 }

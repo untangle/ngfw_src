@@ -38,7 +38,6 @@
 #include "netcap_session.h"
 #include "netcap_icmp.h"
 #include "netcap_icmp_msg.h"
-#include "netcap_shield.h"
 
 /* Cleanup at most 2 UDP packets per iteration */
 #define _ICMP_CACHE_CLEANUP_MAX 2
@@ -71,8 +70,6 @@ typedef enum
 } _find_t;
 
 static int _restore_cached_msg( mailbox_t* mb, netcap_icmp_msg_t* msg );
-
-static int _shield_check_reputation( netcap_pkt_t* pkt, struct in_addr* ip, netcap_intf_t intf );
 
 /**
  * Retrieve a UDP or TCP session using the information from an error message as the key
@@ -761,19 +758,6 @@ static _find_t _icmp_find_session( netcap_pkt_t* pkt, netcap_session_t** netcap_
         case ICMP_ECHOREPLY:
             /* fallthrough */
         case ICMP_ECHO:
-            if ( _shield_check_reputation( pkt, &pkt->src.host, pkt->src_intf ) < 0 ) {
-                ret = _FIND_DROP;
-                break;
-            }
-
-            /* Let the shield know about the request */
-            if ( netcap_shield_rep_add_request( &pkt->src.host ) < 0 ) {
-                errlog ( ERR_CRITICAL, "netcap_shield_rep_add_request\n" );
-            }
-
-            if ( netcap_shield_rep_add_chunk( &pkt->src.host, IPPROTO_ICMP, pkt->data_len ) < 0 ) {
-                errlog( ERR_CRITICAL, "netcap_shield_rep_add_chunk" );
-            }
             return _FIND_ACCEPT;
 
         case ICMP_REDIRECT:
@@ -796,17 +780,6 @@ static _find_t _icmp_find_session( netcap_pkt_t* pkt, netcap_session_t** netcap_
                 break;
             }
             
-            if ( netcap_shield_rep_add_chunk( &session->cli.cli.host, IPPROTO_ICMP, pkt->data_len ) < 0 ) {
-                                              
-                errlog( ERR_CRITICAL, "netcap_shield_rep_add_chunk" );
-            }
-
-            /* Check if this sessions should be allowed */
-            if ( _shield_check_reputation( pkt, &session->cli.cli.host, session->cli.intf ) < 0 ) {
-                ret = _FIND_DROP;
-                break;
-            }
-
             if ( mb == NULL ) {
                 ret = errlog( ERR_CRITICAL, "_icmp_get_error_session\n" );
                 break;
@@ -872,33 +845,6 @@ static int _restore_cached_msg( mailbox_t* mb, netcap_icmp_msg_t* msg )
         netcap_icmp_msg_raze( msg );
     }
     
-    return 0;
-}
-
-static int _shield_check_reputation( netcap_pkt_t* pkt, struct in_addr* ip, netcap_intf_t intf )
-{
-    netcap_shield_response_t response;
-    
-    if ( netcap_shield_rep_check( &response, ip, IPPROTO_ICMP, intf ) < 0 ) {
-        errlog ( ERR_CRITICAL, "netcap_shield_rep_check\n" );
-    } else {
-        switch ( response.ans ) {
-        case NC_SHIELD_DROP:
-        case NC_SHIELD_RESET:
-            if ( response.if_print ) {
-                debug( 4, "ICMP: Shield dropped packet: %s:%d -> %s:%d\n",
-                       unet_next_inet_ntoa ( pkt->src.host.s_addr ), pkt->src.port, 
-                       unet_next_inet_ntoa ( pkt->dst.host.s_addr ), pkt->dst.port );
-            }
-            return -1;
-        case NC_SHIELD_YES:
-        case NC_SHIELD_LIMITED:
-            break;
-        default:
-            errlog ( ERR_CRITICAL, "netcap_shield_rep_check\n" );
-        }
-    }
-
     return 0;
 }
 

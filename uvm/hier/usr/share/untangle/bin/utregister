@@ -9,11 +9,10 @@ REGISTRATION_INFO_FILE=@UVM_HOME@/registration.info
 
 /bin/rm -f "$REGISTRATION_DONE_FILE"
 
-# this is unelegant, but as of now the registration info is written
-# during the setup wizard, yet it doesn't have the actual key at that
-# time, so this file always contains only 0s...
-ACTIVATION_KEY=`cat $ACTIVATION_KEY_FILE`
-perl -i -npe "s/$FAKE_KEY/$ACTIVATION_KEY/" $REGISTRATION_INFO_FILE
+# the registration info is written by the setup wizard, which uses the
+# activation key and not the pop id
+POPID=`cat $POPID_FILE`
+perl -i -pe "s/regKey=.*/regKey=$POPID/" $REGISTRATION_INFO_FILE
 
 /usr/bin/curl --max-time 30 -o /dev/null -d "`cat $REGISTRATION_INFO_FILE`" "https://poptrack.untangle.com/register/custreg.php"
 if [ "$?" -eq "0" ]; then

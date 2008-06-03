@@ -47,12 +47,12 @@ BOTRIGHT.label=Destination Port
 TOPMMID.label=Protocol
 BOTMMID.label=Rule Applied
 
-TOPRMID.expr=$F{c_server_addr}
-TOPLMID.expr=$F{was_blocked}.booleanValue() ? "blocked" : "passed"
 TOPLEFT.expr=$F{time_stamp}
-BOTRMID.expr=$F{c_client_addr}
+TOPLMID.expr=$F{was_blocked}.booleanValue() ? "blocked" : "passed"
 BOTLMID.expr=""
-BOTRIGHT.expr=($F{c_client_port}).toString()
-TOPRIGHT.expr=($F{c_server_port}).toString()
+TOPRMID.expr=$F{c_client_addr}
+BOTRMID.expr=$F{c_server_addr}
+TOPRIGHT.expr=($F{c_client_port}).toString()
+BOTRIGHT.expr=($F{c_server_port}).toString()
 TOPMMID.expr=$F{protocol}
 BOTMMID.expr=($F{rule_index}).toString()

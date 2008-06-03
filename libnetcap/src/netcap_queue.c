@@ -122,10 +122,10 @@ int  netcap_queue_init (void)
         /* Unbind any existing queue handlers */
         /* In > 2.6.22, EINVAL is returned if the queue handler isn't register.  So
            we just ignore it. */
-        if ( nfq_unbind_pf( _queue.nfq_h, PF_INET ) < 0 && errno != EINVAL ) return perrlog( "nfq_unbind_pf" );
+        if ( nfq_unbind_pf( _queue.nfq_h, PF_INET ) < 0 && errno != EINVAL ) perrlog( "nfq_unbind_pf" );
         
         /* Bind queue */
-        if ( nfq_bind_pf( _queue.nfq_h, PF_INET ) < 0 ) return perrlog( "nfq_bind_pf" );
+        if ( nfq_bind_pf( _queue.nfq_h, PF_INET ) < 0 ) perrlog( "nfq_bind_pf" );
         
         /* Bind the socket to a queue */
         if (( _queue.nfq_qh = nfq_create_queue( _queue.nfq_h,  0, &_nf_callback, NULL )) == NULL ) {
@@ -164,7 +164,9 @@ int  netcap_queue_cleanup (void)
     
     /* close the queue */
     if ( _queue.nfq_h != NULL ) {
-        if ( nfq_unbind_pf( _queue.nfq_h, AF_INET) < 0 ) perrlog( "nfq_unbind_pf" );
+        // Don't unbind on shutdown, if you do other processes
+        // that use nfq will stop working.
+        // if ( nfq_unbind_pf( _nfqueue.nfq_h, AF_INET) < 0 ) perrlog( "nfq_unbind_pf" );
         if ( nfq_close( _queue.nfq_h ) < 0 ) perrlog( "nfq_close" );
     }
 

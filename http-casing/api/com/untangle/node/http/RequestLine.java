@@ -34,8 +34,10 @@
 package com.untangle.node.http;
 
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.sql.Timestamp;
 import java.util.Date;
@@ -53,7 +55,9 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
+import com.untangle.node.util.UriUtil;
 import com.untangle.uvm.node.PipelineEndpoints;
+import org.apache.log4j.Logger;
 import org.hibernate.annotations.Type;
 
 /**
@@ -71,23 +75,32 @@ public class RequestLine implements Serializable
 
     private Long id;
     private HttpMethod method;
+    private byte[] requestUriBytes;
     private URI requestUri;
     private PipelineEndpoints pipelineEndpoints;
     private HttpRequestEvent httpRequestEvent; // Filled in after creation time.
     private Date timeStamp = new Date();
 
-    // constructors --------------------------------------------------------------
+    private final Logger logger = Logger.getLogger(getClass());
+
+    // constructors ------------------------------------------------------------
 
     public RequestLine() { }
 
-    public RequestLine(PipelineEndpoints pe, HttpMethod method, URI requestUri)
+    public RequestLine(PipelineEndpoints pe, HttpMethod method,
+                       byte[] requestUriBytes)
     {
         this.pipelineEndpoints = pe;
         this.method = method;
-        this.requestUri = requestUri;
+
+        this.requestUriBytes = new byte[requestUriBytes.length];
+        System.arraycopy(requestUriBytes, 0, this.requestUriBytes, 0,
+                         requestUriBytes.length);
+
+        this.requestUri = getUri(requestUriBytes);
     }
 
-    // business methods ----------------------------------------------------------
+    // business methods --------------------------------------------------------
 
     @Transient
     public URL getUrl()
@@ -106,7 +119,16 @@ public class RequestLine implements Serializable
         return url;
     }
 
-    // accessors -----------------------------------------------------------------
+    @Transient
+    public byte[] getUriBytes()
+    {
+        byte[] b = new byte[requestUriBytes.length];
+        System.arraycopy(requestUriBytes, 0, b, 0,
+                         requestUriBytes.length);
+        return b;
+    }
+
+    // accessors ---------------------------------------------------------------
 
     @Id
     @Column(name="request_id")
@@ -213,11 +235,39 @@ public class RequestLine implements Serializable
         this.httpRequestEvent = httpRequestEvent;
     }
 
-    // Object methods ------------------------------------------------------------
+    // Object methods ----------------------------------------------------------
 
     public String toString()
     {
         return "RequestLine id: " + id + " length: "
             + requestUri.toString().length() + " (" + super.toString() + ")";
+    }
+
+    // private methods ---------------------------------------------------------
+
+    @Transient
+    private URI getUri(byte[] b)
+    {
+        String uriStr;
+
+        try {
+            uriStr = new String(b, "UTF-8");
+        } catch (UnsupportedEncodingException exn) {
+            logger.warn("Could not decode URI", exn);
+            uriStr = new String(b);
+        }
+
+        uriStr = UriUtil.escapeUri(uriStr);
+
+        try {
+            return new URI(uriStr);
+        } catch (URISyntaxException exn) {
+            logger.warn("ignoring bad uri: " + uriStr, exn);
+            try {
+                return new URI("/");
+            } catch (URISyntaxException e) {
+                throw new RuntimeException("this should never happen", e);
+            }
+        }
     }
 }

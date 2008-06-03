@@ -46,6 +46,9 @@ import com.untangle.node.token.Token;
  */
 public class RequestLineToken implements Token
 {
+    private static final byte[] SPACE_BYTES = " ".getBytes();
+    private static final byte[] CRLF_BYTES = "\r\n".getBytes();
+
     private RequestLine requestLine;
     private String httpVersion;
 
@@ -99,10 +102,26 @@ public class RequestLineToken implements Token
 
     public ByteBuffer getBytes()
     {
-        StringBuilder sb = new StringBuilder();
-        sb.append(getMethod()).append(" ").append(getRequestUri().toString())
-            .append(" ").append(httpVersion).append("\r\n");
-        byte[] buf = sb.toString().getBytes();
+        byte[][] e = new byte[][]{ requestLine.getMethod().toString().getBytes(),
+                                   SPACE_BYTES,
+                                   requestLine.getUriBytes(),
+                                   SPACE_BYTES,
+                                   httpVersion.getBytes(),
+                                   CRLF_BYTES };
+
+        int l = 0;
+        for (byte[] ba : e) {
+            l += ba.length;
+        }
+
+        byte[] buf = new byte[l];
+
+        int i = 0;
+        for (byte[] ba : e) {
+            for (int j = 0; j < ba.length; j++) {
+                buf[i++] = ba[j];
+            }
+        }
 
         return ByteBuffer.wrap(buf);
     }
@@ -110,7 +129,8 @@ public class RequestLineToken implements Token
     public int getEstimatedSize()
     {
         return requestLine.getMethod().toString().length()
-            + requestLine.getUrl().toString().length()
-            + httpVersion.toString().length();
+            + requestLine.getUriBytes().length
+            + httpVersion.toString().length()
+            + 4;
     }
 }

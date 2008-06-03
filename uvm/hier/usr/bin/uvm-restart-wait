@@ -21,7 +21,7 @@ echo $$ >$pidfile
 while true; do
     if is_rebooting; then
         exit
-    elif ps -C apt-get >/dev/null 2>&1; then
+    elif ps -C apt-get,aptitude,synaptic >/dev/null 2>&1; then
         sleep 1
     else
         # restart will have been scheduled by the time apt-get is gone

@@ -29,8 +29,7 @@ headerClasses = [ 'com.untangle.jnetcap.Netcap',
   'com.untangle.jnetcap.ICMPTraffic',
   'com.untangle.jnetcap.NetcapUDPSession',
   'com.untangle.jnetcap.NetcapSession',
-  'com.untangle.jnetcap.NetcapTCPSession',
-  'com.untangle.jnetcap.Shield' ]
+  'com.untangle.jnetcap.NetcapTCPSession' ]
 
 javah = JavahTarget.new(jnetcap, j, headerClasses)
 

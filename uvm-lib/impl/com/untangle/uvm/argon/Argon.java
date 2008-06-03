@@ -19,15 +19,12 @@
 package com.untangle.uvm.argon;
 
 import com.untangle.jnetcap.Netcap;
-import com.untangle.jnetcap.Shield;
 import com.untangle.jvector.Vector;
 import com.untangle.uvm.ArgonException;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.localapi.LocalIntfManager;
-import com.untangle.uvm.localapi.LocalShieldManager;
 import com.untangle.uvm.networking.NetworkException;
 import com.untangle.uvm.networking.NetworkManagerImpl;
-import com.untangle.uvm.shield.ShieldMonitor;
 import com.untangle.uvm.util.XMLRPCUtil;
 import org.apache.log4j.Logger;
 
@@ -65,9 +62,6 @@ public class Argon
     int sessionThreadLimit  = 10000;
     int newSessionSchedPolicy  = SCHED_NORMAL;
     int sessionSchedPolicy  = SCHED_NORMAL;
-    boolean isShieldEnabled = true;
-    String shieldFile       = null;
-    Shield shield;
 
     /* Number of threads to donate to netcap */
     int numThreads        = 15;
@@ -83,9 +77,6 @@ public class Argon
     public void run( NetworkManagerImpl networkManager )
     {
         this.networkManager = networkManager;
-
-        /* Get an instance of the shield */
-        shield = Shield.getInstance();
 
         /* Parse all of the properties */
         parseProperties();
@@ -137,14 +128,6 @@ public class Argon
             mvutilDebugLevel = Integer.parseInt( temp );
         }
 
-        if (( temp = System.getProperty( "argon.shield.enabled" )) != null ) {
-            isShieldEnabled = Boolean.parseBoolean( temp );
-        }
-
-        if (( temp = System.getProperty( "argon.shield.cfg_file" )) != null ) {
-            shieldFile = temp;
-        }
-
         if (( temp = System.getProperty( "argon.sessionlimit" )) != null ) {
             sessionThreadLimit  = Integer.parseInt( temp );
         }
@@ -176,7 +159,7 @@ public class Argon
      */
     private void init() throws ArgonException
     {
-        if ( Netcap.init( isShieldEnabled, netcapDebugLevel, jnetcapDebugLevel ) < 0 ) {
+        if ( Netcap.init( netcapDebugLevel, jnetcapDebugLevel ) < 0 ) {
             throw new ArgonException( "Unable to initialize netcap" );
         }
 
@@ -196,16 +179,6 @@ public class Argon
 
         /* Initialize the network manager, this has to be done after netcap init. */
         networkManager.init();
-
-        if ( isShieldEnabled ) {
-            shield.registerEventListener( ShieldMonitor.getInstance());
-        }
-
-        /* Initialize the shield configuration */
-        LocalShieldManager lsm = LocalUvmContextFactory.context().localShieldManager();
-        lsm.setIsShieldEnabled( isShieldEnabled );
-        lsm.setShieldConfigurationFile( shieldFile );
-
 
         Vector.mvutilDebugLevel( mvutilDebugLevel );
         Vector.vectorDebugLevel( vectorDebugLevel );
@@ -229,8 +202,6 @@ public class Argon
 
         argonManager.isShutdown();
         networkManager.isShutdown();
-
-        shield.unregisterEventListener();
 
         /* Remove both of the hooks to guarantee that no new sessions are created */
         Netcap.unregisterTCPHook();

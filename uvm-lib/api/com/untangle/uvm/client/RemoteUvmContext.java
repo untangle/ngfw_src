@@ -312,4 +312,6 @@ public interface RemoteUvmContext
      * Stops Command Line Interface Server
      */
     void stopCliServer();
+
+    String setProperty(String key, String value);
 }

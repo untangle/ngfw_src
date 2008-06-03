@@ -114,13 +114,6 @@ int netcap_udp_session_destroy(int if_lock, netcap_session_t* netcap_sess) {
     /* Remove the session from the endpoints first */
     netcap_sesstable_remove_session(if_lock, netcap_sess);
 
-    /* If you removed the endpoints, then you ended an actual session */
-    if ( netcap_sess->remove_tuples ) {
-        if ( netcap_shield_rep_end_session( &netcap_sess->cli.cli.host ) < 0 ) {
-            err -= errlog(ERR_CRITICAL,"netcap_shield_rep_end_session\n");
-        }
-    }
-
     // Free the session and its mailboxes
     if ( netcap_nc_session__destroy(netcap_sess,NC_SESSION_IF_MB) ) {
         err -= errlog(ERR_CRITICAL,"netcap_session_raze");

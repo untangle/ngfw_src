@@ -91,7 +91,7 @@ public class VpnSettings implements Serializable, Validatable
 
     private boolean exposeClients;
 
-    private int maxClients = 100;
+    private int maxClients = 500;
 
     private List<VpnGroup> groupList;
     private List<VpnClient> clientList;

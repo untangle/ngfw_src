@@ -168,29 +168,37 @@ public class SpywareImpl extends AbstractNode implements Spyware
     {
         replacementGenerator = new SpywareReplacementGenerator(getTid());
 
-        LocalUvmContext uvm = LocalUvmContextFactory.context();
-        Map m = new HashMap();
-        m.put("key", uvm.getActivationKey());
-        RemoteToolboxManager tm = uvm.toolboxManager();
-        Boolean rup = tm.hasPremiumSubscription();
-        m.put("premium", rup.toString());
-        m.put("client-version", uvm.getFullVersion());
+        final LocalUvmContext uvm = LocalUvmContextFactory.context();
 
-        for (String list : getSpywareLists()) {
-            if (list.startsWith("spyware-")
-                && (list.endsWith("dom") || list.endsWith("url"))) {
-                try {
-                    UrlList l = new PrefixUrlList(BLACKLIST_HOME, "spyware",
-                                                  list, m, null);
-                    urlDatabase.addBlacklist(list, l);
-                    urlDatabase.updateAll(true);
-                } catch (IOException exn) {
-                    logger.warn("could not set up database", exn);
-                } catch (DatabaseException exn) {
-                    logger.warn("could not set up database", exn);
+        Thread t = new Thread(new Runnable() {
+                public void run()
+                {
+                    Map m = new HashMap();
+                    m.put("key", uvm.getActivationKey());
+                    RemoteToolboxManager tm = uvm.toolboxManager();
+                    Boolean rup = tm.hasPremiumSubscription();
+                    m.put("premium", rup.toString());
+                    m.put("client-version", uvm.getFullVersion());
+
+                    for (String list : getSpywareLists()) {
+                        if (list.startsWith("spyware-")
+                            && (list.endsWith("dom") || list.endsWith("url"))) {
+                            try {
+                                UrlList l = new PrefixUrlList(BLACKLIST_HOME, "spyware",
+                                                              list, m, null);
+                                urlDatabase.addBlacklist(list, l);
+                            } catch (IOException exn) {
+                                logger.warn("could not set up database", exn);
+                            } catch (DatabaseException exn) {
+                                logger.warn("could not set up database", exn);
+                            }
+                        }
+                    }
+                    urlDatabase.updateAll(false);
                 }
-            }
-        }
+            }, "spyware-init");
+        t.setDaemon(true);
+        t.start();
 
         NodeContext tctx = getNodeContext();
         eventLogger = EventLoggerFactory.factory().getEventLogger(tctx);
@@ -391,7 +399,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
 
     // Node methods ------------------------------------------------------------
 
-    // AbstractNode methods ----------------------------------------------
+    // AbstractNode methods ----------------------------------------------------
 
     @Override
     protected PipeSpec[] getPipeSpecs()

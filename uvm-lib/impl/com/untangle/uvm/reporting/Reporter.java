@@ -295,8 +295,6 @@ public class Reporter implements Runnable
             }
             String nodeName = tctx.getNodeDesc().getName();
             try {
-                // XXX should we set logging context?
-                logger.info("Running NodeReporter for " + nodeName);
                 NodeReporter nodeReporter = new NodeReporter(outputDir, tctx, settings);
                 nodeReporter.process(conn);
             } catch (Exception exn) {

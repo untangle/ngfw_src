@@ -90,6 +90,15 @@ public interface NodeContext
 
     InputStream getResourceAsStream(String resource);
 
+    /**
+     * <code>resourceExists</code> returns true if the given resources exists
+     * for this Node.  False if it does not exist.
+     *
+     * @param resource a <code>String</code> naming the resource
+     * @return a <code>boolean</code> true if the resource exists, false otherwise.
+     */
+    boolean resourceExists(String resource);
+
     // call-through methods ---------------------------------------------------
 
     IPSessionDesc[] liveSessionDescs();

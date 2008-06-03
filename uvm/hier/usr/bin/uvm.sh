@@ -1,7 +1,5 @@
-#! /bin/bash -x
+#! /bin/bash
 # $Id$
-
-exec > /tmp/uvm.log 2>&1
 
 NAME=$0
 
@@ -92,39 +90,22 @@ ok, status = client.call( "generate_rules" )
 EOF
 }
 
-getLicenseKey() {
-  # the wizard has not run yet, exit right away
-  [[ ! -f $ACTIVATION_KEY_FILE ]] && return
+getPopId() {
+  # the wizard needs to create this before we go any further
+  [[ -f $ACTIVATION_KEY_FILE ]] || return
 
-  # if the activation temp file isn't there, but the activation one
-  # is, it means we already have a valid key, so we don't want to
-  # proceed any further.
-  #
-  # Copyright TeamJanky 2007: the double test is to avoid a possible
-  # race condition where we pass 1), but the other backgrounded curl
-  # completes before 2), and then when we reach 3) our temp file has
-  # already been deleted and we're left in the cold...
-  [[ -f $ACTIVATION_KEY_FILE_TMP ]] || return
-  ## Let the other curl take precedence
-  ps aux | grep -q '[c]url' && return
-  [[ -f $ACTIVATION_KEY_FILE_TMP ]] || return
+  # already done
+  [[ -f $POPID_FILE ]] && return
 
-  KEY=`cat $ACTIVATION_KEY_FILE_TMP`
-
-  # for CD downloads, the temp key is only 0s, so we need to ask the
-  # server for a brand new one; that's done by not supplying any value
-  # to the CGI variable
-  [[ $KEY = $FAKE_KEY ]] && KEY=""
-
-  if curl --insecure --fail -o $TMP_ARCHIVE `printf ${ACTIVATION_URL_TEMPLATE} "$KEY" $(/usr/share/untangle/bin/utip)`; then
-    echo "$NAME curl call for license key succeeded" >> $UVM_WRAPPER_LOG
-    echo "$NAME $TMP_ARCHIVE is a `file $TMP_ARCHIVE`" >> $UVM_WRAPPER_LOG
-    rm -f $ACTIVATION_KEY_FILE_TMP
-    tar -C / -xf $TMP_ARCHIVE
+  echo "$NAME: about to create pop id" >> $UVM_WRAPPER_LOG
+  output=`ruby @UVM_HOME@/bin/createpopid.rb 2>&1`
+  if [ $? = 0 ] ; then
+    echo "$NAME: created pop id" >> $UVM_WRAPPER_LOG
     @UVM_HOME@/bin/utactivate
     @UVM_HOME@/bin/utregister # register under new key
   else
-    echo "$NAME curl call for license key failed (RC=$?)" >> $UVM_WRAPPER_LOG    
+    echo "$NAME: failed to create pop id; output was: '$output'" >> $UVM_WRAPPER_LOG
+    return 1
   fi
 }
 
@@ -191,6 +172,11 @@ restartServiceIfNeeded() {
       dpkg -l untangle-support-agent | grep -q -E '^ii' || return
       # this is a bit janky, need something better...
       isServiceRunning ruby && return
+      ;;
+    kav)
+      pidFile="/var/run/aveserver.pid"
+      dpkg -l untangle-kav | grep -q -E '^ii' || return
+      isServiceRunning aveserver && return
       ;;
   esac
 
@@ -298,11 +284,7 @@ while true; do
     counter=0
 
     while true; do
-
-        # try to fetch a key right away; bg'ed so as to not block the
-        # rest of the uvm.sh tasks. We ensure only one key-fetching
-        # function runs at all times
-        getLicenseKey &
+        getPopId
 
         sleep $SLEEP_TIME
 	let counter=${counter}+$SLEEP_TIME
@@ -324,9 +306,15 @@ while true; do
             restartServiceIfNeeded slapd
             restartServiceIfNeeded untangle-support-agent
             restartServiceIfNeeded mongrel
+            restartServiceIfNeeded kav
 	    
 	    if [ $counter -gt 60 ] ; then # fire up the other nannies
-	        curl -sf -m 10 "http://localhost:3000/alpaca/dns?argyle=`sudo head -n 1 /etc/untangle-net-alpaca/nonce`" > /dev/null || restartService mongrel /tmp/foo-doesnt-exist "untangle-net-alpaca untangle-net-alpaca-iptables" "non-functional"
+                curl -sf -m 10 "http://localhost:3000/alpaca/dns?argyle=`head -n 1 /etc/untangle-net-alpaca/nonce`" > /dev/null
+	        rc=$?
+	        if [ $rc -ne 0 ] ; then
+		  restartService untangle-net-alpaca /tmp/foo-doesnt-exist "non-functional (RC=$rc)"
+		  restartService untangle-net-alpaca-iptables /tmp/foo-doesnt-exist "non-functional (RC=$rc)"
+		fi
 
 	        if dpkg -l untangle-spamassassin-update | grep -q ii ; then # we're managing spamassassin
 	            [ `tail -n 50 /var/log/mail.info | grep -c "$SPAMASSASSIN_LOG_ERROR"` -gt 2 ] && restartService spamassassin $SPAMASSASSIN_PID_FILE "non-functional" stopFirst

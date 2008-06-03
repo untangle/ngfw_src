@@ -6,6 +6,9 @@ UVM_CACHEDIR="/var/lib/uvm"
 USER=root
 GROUP=adm
 
+# shouldn't here in the first place
+rm -f /tmp/uvm.log
+
 # modify limit to support many file descriptors
 LIMITS_FILE=/etc/security/limits.conf
 LIMITS_LINE="${USER}    soft    nofile  128000"

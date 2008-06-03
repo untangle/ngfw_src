@@ -39,7 +39,6 @@
 #include "netcap_session.h"
 #include "netcap_pkt.h"
 #include "netcap_globals.h"
-#include "netcap_shield.h"
 #include "netcap_icmp.h"
 #include "netcap_queue.h"
 #include "netcap_nfconntrack.h"
@@ -183,13 +182,6 @@ int _netcap_tcp_callback_cli_complete( netcap_session_t* netcap_sess, netcap_cal
         if (!(msg = mailbox_timed_get(&netcap_sess->tcp_mb,5))) {
             if (errno == ETIMEDOUT) {
                 debug(6,"TCP: (%10u) Missed ACCEPT message\n",netcap_sess->session_id);
-                /**
-                 * This is bad behavior, the host used up the resources, but 
-                 * client did not respond (Typically a SYN flood)
-
-                 * (e.g. the person presses the stop button in their browser before connected)
-                 */
-                netcap_shield_rep_blame( &netcap_sess->cli.cli.host, NC_SHIELD_ERR_3 );
                 return -1;
             }
             else

@@ -32,8 +32,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import org.apache.log4j.Logger;
+import java.util.regex.Pattern;
 
 import com.sleepycat.je.DatabaseException;
 import com.untangle.node.http.RequestLineToken;
@@ -49,6 +48,7 @@ import com.untangle.uvm.node.MimeType;
 import com.untangle.uvm.node.MimeTypeRule;
 import com.untangle.uvm.node.StringRule;
 import com.untangle.uvm.toolbox.RemoteToolboxManager;
+import org.apache.log4j.Logger;
 
 /**
  * Does blacklist lookups in the database.
@@ -66,6 +66,9 @@ class Blacklist
             throw new RuntimeException(exn);
         }
     }
+
+    private static final Pattern IP_PATTERN = Pattern
+        .compile("\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}");
 
     private static final File INIT_HOME = new File("/usr/share/untangle-webfilter-init/");
 
@@ -112,21 +115,6 @@ class Blacklist
 
         for (BlacklistCategory cat : settings.getBlacklistCategories()) {
             String catName = cat.getName();
-            if (cat.getBlockDomains()) {
-                String dbName = "ubl-" + catName + "-dom";
-
-                try {
-                    UrlList ul = new PrefixUrlList(BLACKLIST_HOME, "webfilter",
-                                                   dbName, m,
-                                                   new File(INIT_HOME, dbName));
-                    urlDatabase.addBlacklist(dbName, ul);
-                } catch (IOException exn) {
-                    logger.warn("could not open: " + dbName, exn);
-                } catch (DatabaseException exn) {
-                    logger.warn("could not open: " + dbName, exn);
-                }
-            }
-
             if (cat.getBlockUrls()) {
                 String dbName = "ubl-" + catName + "-url";
                 try {
@@ -223,7 +211,6 @@ class Blacklist
                 return null;
             } else {
                 while (null != dom) {
-
                     StringRule sr = findCategory(passedUrls, dom + path,
                                                  settings.getPassedUrls());
                     String category = null == sr ? null : sr.getDescription();
@@ -238,6 +225,20 @@ class Blacklist
                     }
                     dom = nextHost(dom);
                 }
+            }
+        }
+
+        if (settings.getBaseSettings().getBlockAllIpHosts()) {
+            if (null == host || IP_PATTERN.matcher(host).matches()) {
+                WebFilterEvent hbe = new WebFilterEvent
+                    (requestLine.getRequestLine(), Action.BLOCK,
+                     Reason.BLOCK_IP_HOST, host);
+                node.log(hbe);
+
+                WebFilterBlockDetails bd = new WebFilterBlockDetails
+                    (settings, host, uri.toString(),
+                     "host name is an IP address (" + host + ")", clientIp);
+                return node.generateNonce(bd);
             }
         }
 

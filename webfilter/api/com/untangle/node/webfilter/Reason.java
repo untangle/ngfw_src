@@ -39,6 +39,7 @@ public class Reason implements Serializable
     public static final Reason BLOCK_EXTENSION = new Reason('E', "in File Extensions Block list");
     public static final Reason BLOCK_MIME = new Reason('M', "in MIME Types Block list");
     public static final Reason BLOCK_ALL = new Reason('A', "blocking all traffic");
+    public static final Reason BLOCK_IP_HOST = new Reason('H', "hostname is an IP address");
     public static final Reason PASS_URL = new Reason('I', "in URLs Pass list");
     public static final Reason PASS_CLIENT = new Reason('C', "in Clients Pass list");
 
@@ -56,6 +57,7 @@ public class Reason implements Serializable
         INSTANCES.put('E', BLOCK_EXTENSION);
         INSTANCES.put('M', BLOCK_MIME);
         INSTANCES.put('A', BLOCK_ALL);
+        INSTANCES.put('H', BLOCK_IP_HOST);
         INSTANCES.put('I', PASS_URL);
         INSTANCES.put('C', PASS_CLIENT);
         INSTANCES.put('N', DEFAULT);

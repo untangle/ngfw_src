@@ -145,11 +145,16 @@ public abstract class SessionHandler {
      * a ResponseCompletion.  Instead, this method is used
      * to handle this "misaligned" response.
      *
+     * This built-in method may be overriden.
+     *
      * @param resp the response
      * @param actions the available actions.
      */
-    public abstract void handleOpeningResponse(Response resp,
-                                               Session.SmtpResponseActions actions);
+    public void handleOpeningResponse(Response resp,
+				      Session.SmtpResponseActions actions) {
+        actions.sendResponseToClient(resp);
+    }
+
 
     /**
      * The calling {@link #getSession Session} handles

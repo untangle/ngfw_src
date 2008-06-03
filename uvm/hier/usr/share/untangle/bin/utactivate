@@ -5,48 +5,36 @@
 REG_KEY="$1"
 
 if [ -n "$REG_KEY" ] ; then # the install wizard is calling us
-  # we need some temporary, although invalid, key, so that the rest 
-  # of the uvm works ok...
-  echo $FAKE_KEY > $ACTIVATION_KEY_FILE
-
-  # this file is what uvm.sh uses to figure out if it needs to fetch
-  # a key or not, so we create it last, and only if it's not already
-  # there: if it is, it means we're reinstalling after resetting to
-  # factory defaults, and in this case we'd like to keep the same
-  # key for POPtracking reasons (bug #2510)
-  if [[ ! -f $ACTIVATION_KEY_FILE_TMP ]] ; then
-    echo $REG_KEY > $ACTIVATION_KEY_FILE_TMP
-  fi
+  echo $REG_KEY > $ACTIVATION_KEY_FILE
 
   if [[ $REG_KEY != $FAKE_KEY ]] ; then
     $KEY_VERIFICATION $REG_KEY 2> /dev/null
     VERIFY_RES="$?"
     if [ "$VERIFY_RES" -eq 1 ]; then
-	echo "Key is invalid: $REG_KEY"
-	rm -f $ACTIVATION_KEY_FILE $ACTIVATION_KEY_FILE_TMP
-	exit 1
+      echo "Key is invalid: $REG_KEY"
+      rm -f $ACTIVATION_KEY_FILE
+      exit 1
+    elif [ "$VERIFY_RES" -ne 0 ]; then
+      echo "Error validating registration.  Unable to continue."
+      rm -f $ACTIVATION_KEY_FILE
+      exit 2
     fi
-    if [ "$VERIFY_RES" -ne 0 ]; then
-	echo "Error validating registration.  Unable to continue."
-	rm -f $ACTIVATION_KEY_FILE $ACTIVATION_KEY_FILE_TMP
-	exit 2
-    fi
-
-    # If we get here, the key is good.
-    echo "Key is valid"
   fi
+
+  # If we get here, the key is good.
+  echo "Key is valid"
 else
-  # we're being called through uvm.sh, and the right key is in the 
-  # activation file already
+  # we're being called from uvm.sh, and the popid is in the right
+  # file already
 
   # This next will fail if testing on development machines, which is "a good thing"
   echo "Installing sources list"
-  KEY=`cat $ACTIVATION_KEY_FILE`
-  if [ -f "$SOURCES_LIST" ] && grep -q "$KEY" $SOURCES_LIST ; then # already taken care of
+  POPID=`cat $POPID_FILE`
+  if [ -f "$SOURCES_LIST" ] && grep -q "$POPID" $SOURCES_LIST ; then # already taken care of
     true
   else # dump the right source in the right place :)
     touch $SOURCES_LIST # so that we don't fail next line because of noclobber
-    echo -e $DEFAULT_UNTANGLE_SOURCE | sed "s/$KEY_TEMPLATE/$KEY/" >> $SOURCES_LIST
+    echo -e $DEFAULT_UNTANGLE_SOURCE | sed "s/$KEY_TEMPLATE/$POPID/" >> $SOURCES_LIST
   fi
   apt-get update
 fi

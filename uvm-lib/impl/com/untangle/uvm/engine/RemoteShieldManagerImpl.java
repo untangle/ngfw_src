@@ -37,11 +37,6 @@ class RemoteShieldManagerImpl implements RemoteShieldManager
         this.lsm = lsm;
     }
 
-    public void shieldStatus( InetAddress ip, int port, int interval )
-    {
-        this.lsm.shieldStatus( ip, port, interval );
-    }
-
     public void shieldReconfigure()
     {
         this.lsm.shieldReconfigure();
