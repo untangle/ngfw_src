@@ -218,7 +218,7 @@ class VirusFtpHandler extends FtpStateMachine
         VirusScannerResult result;
 
         try {
-            node.incrementCount(SCAN_COUNTER);
+            //node.incrementCount(SCAN_COUNTER);
             result = node.getScanner().scanFile(file);
         } catch (Exception exn) {
             // Should never happen
@@ -230,13 +230,13 @@ class VirusFtpHandler extends FtpStateMachine
         node.log(new VirusLogEvent(getSession().pipelineEndpoints(), result, node.getScanner().getVendorName()));
 
         if (result.isClean()) {
-            node.incrementCount(PASS_COUNTER);
+            //node.incrementCount(PASS_COUNTER);
             Pipeline p = getPipeline();
             TokenStreamer tokSt = new FileChunkStreamer
                 (file, inChannel, null, EndMarker.MARKER, true);
             return new TokenStreamerAdaptor(p, tokSt);
         } else {
-            node.incrementCount(BLOCK_COUNTER);
+            //node.incrementCount(BLOCK_COUNTER);
             // Todo: Quarantine (for now, don't delete the file) XXX
             TCPSession s = getSession();
             s.shutdownClient();

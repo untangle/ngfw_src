@@ -122,7 +122,7 @@ class TomcatManager
 
         /* rbs: according to the javadoc, each valve object can only be assigned to one container,
          * otherwise it is supposed to throw an IllegalStateException */
-        loadSystemApp("/session-dumper", "session-dumper", new WebAppOptions(new AdministrationOutsideAccessValve()));
+        //loadSystemApp("/session-dumper", "session-dumper", new WebAppOptions(new AdministrationOutsideAccessValve()));
         loadSystemApp("/reports", "reports", new WebAppOptions(true,new ReportingOutsideAccessValve()));
         loadSystemApp("/alpaca", "alpaca", new WebAppOptions(true,new AdministrationOutsideAccessValve()));
         loadSystemApp("/webui", "webui", new WebAppOptions(new AdministrationOutsideAccessValve()));
@@ -349,8 +349,10 @@ class TomcatManager
             baseHost.setErrorReportValveClass("com.untangle.uvm.engine.UvmErrorReportValve");
             OurSingleSignOn ourSsoWorkaroundValve = new OurSingleSignOn();
             /* XXXXX Hackstered to get single sign on to ignore certain contexts */
-            SingleSignOn ssoValve = new SpecialSingleSignOn( uvmContext, "/session-dumper", "",
-                                                             "/reports", "/library" );
+//             SingleSignOn ssoValve = new SpecialSingleSignOn(uvmContext, "/session-dumper", "",
+//                                                             "/reports", "/library" );
+            SingleSignOn ssoValve = new SpecialSingleSignOn(uvmContext, "",
+                                                            "/reports", "/library" );
 
             // ssoValve.setRequireReauthentication(true);
             baseHost.getPipeline().addValve(ourSsoWorkaroundValve);

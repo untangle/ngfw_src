@@ -25,10 +25,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
-import org.hibernate.Query;
-import org.hibernate.Session;
-
 import com.untangle.node.mail.papi.smtp.SMTPNotifyAction;
 import com.untangle.node.token.TokenAdaptor;
 import com.untangle.node.util.PartialListUtil;
@@ -53,6 +49,9 @@ import com.untangle.uvm.vnet.PipelineFoundry;
 import com.untangle.uvm.vnet.Protocol;
 import com.untangle.uvm.vnet.SoloPipeSpec;
 import com.untangle.uvm.vnet.Subscription;
+import org.apache.log4j.Logger;
+import org.hibernate.Query;
+import org.hibernate.Session;
 
 /**
  * Virus Node.
@@ -201,7 +200,7 @@ public abstract class VirusNodeImpl extends AbstractNode
     }
 
     // VirusNode methods -------------------------------------------------
-    
+
     public VirusBaseSettings getBaseSettings()
     {
         VirusBaseSettings baseSettings = settings.getBaseSettings();
@@ -220,7 +219,7 @@ public abstract class VirusNodeImpl extends AbstractNode
                     s.merge(settings);
                     return true;
                 }
-                
+
                 public Object getResult() {
                     return null;
                 }
@@ -257,15 +256,15 @@ public abstract class VirusNodeImpl extends AbstractNode
             logger.error("Settings not yet initialized. State: " + getNodeContext().getRunState() );
         return settings;
     }
-    
+
     public List<MimeTypeRule> getHttpMimeTypes(final int start, final int limit, final String... sortColumns) {
         return listUtil.getItems( "select vs.httpMimeTypes from VirusSettings vs " +
-        		"join vs.httpMimeTypes as httpMimeTypes where vs.tid = :tid ",
-        		getNodeContext(), getTid(),"httpMimeTypes", start, limit, sortColumns);
+                "join vs.httpMimeTypes as httpMimeTypes where vs.tid = :tid ",
+                getNodeContext(), getTid(),"httpMimeTypes", start, limit, sortColumns);
     }
 
     public void updateHttpMimeTypes(List<MimeTypeRule> added, List<Long> deleted, List<MimeTypeRule> modified) {
-        
+
         updateRules(getHttpMimeTypes(), added, deleted, modified);
     }
 
@@ -275,24 +274,24 @@ public abstract class VirusNodeImpl extends AbstractNode
     }
 
     public void updateExtensions(List<StringRule> added, List<Long> deleted, List<StringRule> modified) {
-        
+
         updateRules(getExtensions(), added, deleted, modified);
     }
-	
-    public void updateAll(final VirusBaseSettings baseSettings, 
+
+    public void updateAll(final VirusBaseSettings baseSettings,
                           final List[] httpMimeTypes, final List[] extensions) {
-        
+
         TransactionWork tw = new TransactionWork() {
                 public boolean doWork(Session s) {
                     if (baseSettings != null) {
                         settings.setBaseSettings(baseSettings);
                     }
                     listUtil.updateCachedItems(getHttpMimeTypes(), httpMimeTypes );
-                    
+
                     listUtil.updateCachedItems(getExtensions(), extensions );
-                    
+
                     settings = (VirusSettings)s.merge(settings);
-                    
+
                     return true;
                 }
 
@@ -300,16 +299,16 @@ public abstract class VirusNodeImpl extends AbstractNode
                     return null;
                 }
             };
-        getNodeContext().runTransaction(tw);    	
-		
+        getNodeContext().runTransaction(tw);
+
         reconfigure();
     }
-    
+
     public String getSigVersion()
     {
         return this.scanner.getSigVersion();
     }
-	
+
     public EventManager<VirusEvent> getEventManager()
     {
         return eventLogger;
@@ -542,7 +541,7 @@ public abstract class VirusNodeImpl extends AbstractNode
     {
         shutdownMatchingSessions();
     }
-    
+
     // package protected methods ----------------------------------------------
 
     VirusScanner getScanner()
@@ -588,29 +587,36 @@ public abstract class VirusNodeImpl extends AbstractNode
     /**
      * Increment the counter for messages scanned
      */
-    public void incrementScanCounter() {
-        incrementCount(Node.GENERIC_0_COUNTER);
+    public void incrementScanCounter()
+    {
+        //incrementCount(Node.GENERIC_0_COUNTER);
     }
+
     /**
      * Increment the counter for blocked (SMTP only).
      */
-    public void incrementBlockCounter() {
-        incrementCount(Node.GENERIC_1_COUNTER);
+    public void incrementBlockCounter()
+    {
+        //incrementCount(Node.GENERIC_1_COUNTER);
     }
+
     /**
      * Increment the counter for messages passed
      */
-    public void incrementPassCounter() {
-        incrementCount(Node.GENERIC_2_COUNTER);
+    public void incrementPassCounter()
+    {
+        //incrementCount(Node.GENERIC_2_COUNTER);
     }
+
     /**
      * Increment the counter for messages where we
      * removed a virus
      */
-    public void incrementRemoveCounter() {
-        incrementCount(Node.GENERIC_3_COUNTER);
+    public void incrementRemoveCounter()
+    {
+        //incrementCount(Node.GENERIC_3_COUNTER);
     }
-    
+
     // private methods --------------------------------------------------------
     private void updateRules(final Set rules, final List added,
                              final List<Long> deleted, final List modified)

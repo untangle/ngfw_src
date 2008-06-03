@@ -29,7 +29,8 @@ import com.untangle.jvector.OutgoingSocketQueue;
 import com.untangle.jvector.PacketCrumb;
 import com.untangle.jvector.ShutdownCrumb;
 import com.untangle.jvector.UDPPacketCrumb;
-import com.untangle.uvm.node.MutateTStats;
+import com.untangle.uvm.logging.BlingBlinger;
+import com.untangle.uvm.logging.Counters;
 import com.untangle.uvm.node.PipelineEndpoints;
 import com.untangle.uvm.util.MetaEnv;
 import com.untangle.uvm.vnet.*;
@@ -46,6 +47,15 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
 {
     protected int[] maxPacketSize;
 
+    private final BlingBlinger s2tChunks;
+    private final BlingBlinger c2tChunks;
+    private final BlingBlinger t2sChunks;
+    private final BlingBlinger t2cChunks;
+    private final BlingBlinger s2tBytes;
+    private final BlingBlinger c2tBytes;
+    private final BlingBlinger t2sBytes;
+    private final BlingBlinger t2cBytes;
+
     protected UDPSessionImpl(Dispatcher disp,
                              com.untangle.uvm.argon.UDPSession pSession,
                              PipelineEndpoints pe,
@@ -59,12 +69,27 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
         if (serverMaxPacketSize < 2 || serverMaxPacketSize > UDP_MAX_MESG_SIZE)
             throw new IllegalArgumentException("Illegal maximum server packet bufferSize: " + serverMaxPacketSize);
         this.maxPacketSize = new int[] { clientMaxPacketSize, serverMaxPacketSize };
-        logger = disp.mPipe().sessionLoggerUDP();
+
+        MPipeImpl mPipe = disp.mPipe();
+
+        logger = mPipe.sessionLoggerUDP();
+
+        Counters c = mPipe.node().getCounters();
+
+        s2tChunks = c.getBlingBlinger("s2tChunks");
+        c2tChunks = c.getBlingBlinger("c2tChunks");
+        t2sChunks = c.getBlingBlinger("t2sChunks");
+        t2cChunks = c.getBlingBlinger("t2cChunks");
+        s2tBytes = c.getBlingBlinger("s2tBytes");
+        c2tBytes = c.getBlingBlinger("c2tBytes");
+        t2sBytes = c.getBlingBlinger("t2sBytes");
+        t2cBytes = c.getBlingBlinger("t2cBytes");
     }
 
     public int serverMaxPacketSize() {
         return maxPacketSize[SERVER];
     }
+
     public void serverMaxPacketSize(int numBytes) {
         if (numBytes < 2 || numBytes > UDP_MAX_MESG_SIZE)
             throw new IllegalArgumentException("Illegal maximum packet bufferSize: " + numBytes);
@@ -251,10 +276,20 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
                     times[SessionStats.FIRST_BYTE_WROTE_TO_CLIENT + side] = MetaEnv.currentTimeMillis();
             }
             mPipe.lastSessionWriteFailed(false);
+
             stats.wroteData(side, numWritten);
-            MutateTStats.wroteData(side, this, numWritten);
-            if (logger.isDebugEnabled())
+
+            if (CLIENT == side) {
+                t2sChunks.increment();
+                t2sBytes.increment(numWritten);
+            } else {
+                t2cChunks.increment();
+                t2cBytes.increment(numWritten);
+            }
+
+            if (logger.isDebugEnabled()) {
                 debug("wrote " + numWritten + " to " + side);
+            }
         }
     }
 
@@ -375,7 +410,14 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
         dispatcher.lastSessionNumRead(numRead);
 
         stats.readData(side, numRead);
-        MutateTStats.readData(side, this, numRead);
+
+        if (CLIENT == side) {
+            c2tChunks.increment();
+            c2tBytes.increment(numRead);
+        } else {
+            s2tChunks.increment();
+            s2tBytes.increment(numRead);
+        }
 
         // We have received bytes.  Give them to the user.
 
@@ -425,7 +467,6 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
             warn("Exception in Finalized", x);
         }
 
-        MutateTStats.removeUDPSession(mPipe);
         super.closeFinal();
     }
 

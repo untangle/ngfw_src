@@ -63,7 +63,8 @@ public class SpamPopHandler extends PopStateMachine
 
     // constructors -----------------------------------------------------------
 
-    protected SpamPopHandler(TCPSession session, SpamImpl node, MailExport zMExport)
+    protected SpamPopHandler(TCPSession session, SpamImpl node,
+                             MailExport zMExport)
     {
         super(session);
 
@@ -94,16 +95,16 @@ public class SpamPopHandler extends PopStateMachine
         logger.debug("SCAN MESSAGE!");
         if (giveUpSize < zMsgFile.length()) {
             postSpamEvent(zMsgInfo, cleanReport(), SpamMessageAction.OVERSIZE);
-            zNode.incrementCount(PASS_COUNTER);
+            //zNode.incrementCount(PASS_COUNTER);
         } else if (true == zSLNodeView.isSafelisted(null, zMMessage.getMMHeaders().getFrom(), null)) {
             postSpamEvent(zMsgInfo, cleanReport(), SpamMessageAction.SAFELIST);
-            zNode.incrementCount(PASS_COUNTER);
+            //zNode.incrementCount(PASS_COUNTER);
         } else if (true == bScan) {
             SpamReport zReport;
 
             if (null != (zReport = scanFile(zMsgFile)) &&
                 SpamMessageAction.MARK == zMsgAction) {
-                zNode.incrementCount(MARK_COUNTER);
+                //zNode.incrementCount(MARK_COUNTER);
 
                 /* wrap spam message and rebuild message token */
                 MIMEMessage zWMMessage = zWMsgGenerator.wrap(zMMessage, zReport);
@@ -122,7 +123,7 @@ public class SpamPopHandler extends PopStateMachine
                     throw new TokenException("cannot create wrapped message file after marking message as spam: " + exn);
                 }
             } else {
-                zNode.incrementCount(PASS_COUNTER);
+                //zNode.incrementCount(PASS_COUNTER);
             }
         } else {
             if (logger.isDebugEnabled()) {

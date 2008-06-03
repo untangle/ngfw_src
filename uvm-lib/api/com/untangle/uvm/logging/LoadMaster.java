@@ -53,14 +53,14 @@ public class LoadMaster implements LoadStats
 
     private final LoadStrober loadStrober;
 
-    // constructors ------------------------------------------------------------
+    // constructors -----------------------------------------------------------
 
     public LoadMaster(LoadStrober loadStrober)
     {
         this.loadStrober = loadStrober;
     }
 
-    // public methods ----------------------------------------------------------
+    // public methods ---------------------------------------------------------
 
     /**
      * Start strobing the source.
@@ -97,7 +97,12 @@ public class LoadMaster implements LoadStats
         }
     }
 
-    // StateKeeper methods -----------------------------------------------------
+    public LoadStrober getLoadStrober()
+    {
+        return loadStrober;
+    }
+
+    // StateKeeper methods ----------------------------------------------------
 
     public float get1MinuteAverage()
     {

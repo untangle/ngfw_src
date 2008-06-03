@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -23,8 +23,6 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Logger;
-
 import com.untangle.node.util.AsciiCharBuffer;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.node.Node;
@@ -40,6 +38,7 @@ import com.untangle.uvm.vnet.event.TCPChunkEvent;
 import com.untangle.uvm.vnet.event.TCPSessionEvent;
 import com.untangle.uvm.vnet.event.UDPPacketEvent;
 import com.untangle.uvm.vnet.event.UDPSessionEvent;
+import org.apache.log4j.Logger;
 
 public class EventHandler extends AbstractEventHandler
 {
@@ -236,7 +235,7 @@ public class EventHandler extends AbstractEventHandler
         }
 
         ProtoFilterPattern elem = _findMatch(sessInfo, sess, server);
-        node.incrementCount( SCAN_COUNTER );
+        //node.incrementCount( SCAN_COUNTER );
         if (elem != null) {
             sessInfo.protocol = elem.getProtocol();
             sessInfo.identified = true;
@@ -256,14 +255,14 @@ public class EventHandler extends AbstractEventHandler
                 }
             }
 
-            node.incrementCount( DETECT_COUNTER );
+            //node.incrementCount( DETECT_COUNTER );
 
             if(elem.getAlert()) {
                 /* XXX Do alert here */
             }
 
             if (elem.isBlocked()) {
-                node.incrementCount( BLOCK_COUNTER );
+                //node.incrementCount( BLOCK_COUNTER );
 
                 if (logger.isInfoEnabled()) {
                     logger.info(" ----------------BLOCKED: " + sessInfo.protocol + " traffic----------------");
@@ -307,13 +306,13 @@ public class EventHandler extends AbstractEventHandler
         AsciiCharBuffer buffer = server ? sessInfo.serverBuffer : sessInfo.clientBuffer;
         AsciiCharBuffer toScan = buffer.asReadOnlyBuffer();
         toScan.flip();
-        
+
         for (Iterator iterator = _patternSet.iterator(); iterator.hasNext();) {
-			ProtoFilterPattern elem = (ProtoFilterPattern) iterator.next();
+            ProtoFilterPattern elem = (ProtoFilterPattern) iterator.next();
             Pattern pat = PatternFactory.createRegExPattern(elem.getDefinition());
             if (pat != null && pat.matcher(toScan).find())
                 return elem; /* XXX - can match multiple patterns */
-		}
+        }
 
         return null;
     }

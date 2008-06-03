@@ -36,7 +36,6 @@ import com.untangle.uvm.node.IPaddr;
 import com.untangle.uvm.node.NodeException;
 import com.untangle.uvm.node.NodeStartException;
 import com.untangle.uvm.node.NodeState;
-import com.untangle.uvm.node.NodeStats;
 import com.untangle.uvm.node.NodeStopException;
 import com.untangle.uvm.node.UnconfiguredException;
 import com.untangle.uvm.node.ValidateException;
@@ -603,14 +602,6 @@ public class VpnNodeImpl extends AbstractNode
             logger.error( "Unable to cleanup data.", e );
         }
     }
-
-    @Override public NodeStats getStats()
-    {
-        /* Track the session info separately */
-        NodeStats stats = super.getStats();
-        return this.openVpnMonitor.updateStats( stats );
-    }
-
 
     // private methods -------------------------------------------------------
 

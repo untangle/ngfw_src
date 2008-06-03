@@ -35,10 +35,16 @@ package com.untangle.uvm.logging;
 
 public class BlingBlinger implements CounterStats
 {
-    // public methods ----------------------------------------------------------
+    // public methods ---------------------------------------------------------
 
-    public void increment(int delta)
+    public long increment()
     {
+        return increment(1);
+    }
+
+    public long increment(long delta)
+    {
+        return 0;
     }
 
     // StateKeeper methods -----------------------------------------------------

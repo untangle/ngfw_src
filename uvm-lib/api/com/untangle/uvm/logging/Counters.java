@@ -46,39 +46,81 @@ import java.util.Map;
  */
 public class Counters
 {
-    private final Map<String, CounterStats> counters
-        = new HashMap<String, CounterStats>();
+    private final Map<String, BlingBlinger> blingers
+        = new HashMap<String, BlingBlinger>();
 
-    private final Map<String, LoadStats> loads
-        = new HashMap<String, LoadStats>();
+    private final Map<String, LoadMaster> loads
+        = new HashMap<String, LoadMaster>();
 
-    public void addCounter(String name, CounterStats counterStats)
+    public BlingBlinger getBlingBlinger(String name)
     {
-        synchronized (counters) {
-            counters.put(name, counterStats);
+        BlingBlinger b;
+
+        synchronized (blingers) {
+            b = blingers.get(name);
+            if (null == b) {
+                b = new BlingBlinger();
+                blingers.put(name, b);
+            }
+        }
+
+        return b;
+    }
+
+    public long incrementCounter(String name, long delta)
+    {
+        BlingBlinger b = getBlingBlinger(name);
+        synchronized (b) {
+            return b.increment(delta);
         }
     }
 
-    public void addCounter(String name, LoadStats loadStats)
+    public void addLoadMaster(String name, LoadMaster loadMaster)
     {
         synchronized (loads) {
-            loads.put(name, loadStats);
+            loads.put(name, loadMaster);
         }
+    }
+
+    public LoadCounter getLoadCounter(String name)
+    {
+        LoadMaster lm;
+        LoadCounter lc = null;
+
+        synchronized (loads) {
+            lm = loads.get(name);
+            if (null == lm) {
+                lc = new LoadCounter();
+                lm = new LoadMaster(lc);
+                loads.put(name, lm);
+            }
+        }
+
+        if (null == lc) {
+            LoadStrober ls = lm.getLoadStrober();
+            if (ls instanceof LoadCounter) {
+                lc = (LoadCounter)ls;
+            } else {
+                throw new IllegalStateException("Not a LoadCounter: " + ls);
+            }
+        }
+
+        return lc;
     }
 
     public GlobalStats getAllStats()
     {
         Map<String, CounterStats> c = new HashMap<String, CounterStats>();
-        synchronized (counters) {
-            for (String n : counters.keySet()) {
-                c.put(n, new FixedCounts(c.get(n)));
+        synchronized (blingers) {
+            for (String n : blingers.keySet()) {
+                c.put(n, new FixedCounts(blingers.get(n)));
             }
         }
 
         Map<String, LoadStats> l = new HashMap<String, LoadStats>();
         synchronized (loads) {
             for (String n : loads.keySet()) {
-                l.put(n, new FixedLoads(l.get(n)));
+                l.put(n, new FixedLoads(loads.get(n)));
             }
         }
 

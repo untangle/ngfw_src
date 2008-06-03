@@ -33,6 +33,7 @@
 
 package com.untangle.uvm.node;
 
+import com.untangle.uvm.logging.Counters;
 import com.untangle.uvm.security.Tid;
 import com.untangle.uvm.vnet.IPSessionDesc;
 
@@ -125,5 +126,5 @@ public interface Node
      * @exception NodeException if the node is not in the
      * <code>RUNNING</code> state
      */
-    NodeStats getStats() throws IllegalStateException;
+    Counters getCounters() throws IllegalStateException;
 }

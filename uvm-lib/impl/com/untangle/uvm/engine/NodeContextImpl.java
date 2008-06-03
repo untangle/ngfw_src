@@ -42,7 +42,6 @@ import com.untangle.uvm.node.NodeDesc;
 import com.untangle.uvm.node.NodeException;
 import com.untangle.uvm.node.NodePreferences;
 import com.untangle.uvm.node.NodeState;
-import com.untangle.uvm.node.NodeStats;
 import com.untangle.uvm.node.TooManyInstancesException;
 import com.untangle.uvm.node.UndeployException;
 import com.untangle.uvm.policy.Policy;
@@ -275,11 +274,6 @@ class NodeContextImpl implements NodeContext
     {
         return null == node ? NodeState.LOADED
             : node.getRunState();
-    }
-
-    public NodeStats getStats()
-    {
-        return node.getStats();
     }
 
     // XXX should be LocalNodeContext ------------------------------------

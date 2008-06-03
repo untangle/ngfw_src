@@ -66,8 +66,8 @@ ServletBuilder.new(uvm_lib, "com.untangle.uvm.installer.servlet",
 deps = %w(
            slf4j-1.4.3/slf4j-log4j12-1.4.3.jar
            slf4j-1.4.3/slf4j-api-1.4.3.jar
-           Ajax/jars/jstl.jar 
-           Ajax/jars/standard.jar 
+           Ajax/jars/jstl.jar
+           Ajax/jars/standard.jar
          ).map { |f| Jars.downloadTarget(f) }
 deps << ThirdpartyJar.get('../pkgs/jabsorb-1.2.2/jabsorb-1.2.2.jar');
 
@@ -75,7 +75,7 @@ ms = [ MoveSpec.new("../pkgs/jabsorb-1.2.2/webapps/jsonrpc", 'jsonrpc*.js', './j
 
 ServletBuilder.new(uvm_lib, "com.untangle.uvm.webui.servlet",
                    "./uvm-lib/servlets/webui", deps, [], ms)
-                   
+
 
 # Ajax Tk
 deps = FileList["#{BuildEnv::DOWNLOADS}/Ajax/jars/*jar"].exclude(/.*servlet-api.jar/).map { |n| ThirdpartyJar.get(n) }
@@ -205,8 +205,8 @@ file bundledAjx => ajaxTkList do
 end
 BuildEnv::SRC.installTarget.register_dependency(bundledAjx)
 
-ServletBuilder.new(uvm_lib, 'com.untangle.uvm.sessiondumper.jsp',
-                   "./uvm-lib/servlets/session-dumper")
+# ServletBuilder.new(uvm_lib, 'com.untangle.uvm.sessiondumper.jsp',
+#                    "./uvm-lib/servlets/session-dumper")
 
 BuildEnv::SRC.installTarget.install_jars(jts, "#{uvm_lib.distDirectory}/usr/share/untangle/lib",
                                         nil, false, true)

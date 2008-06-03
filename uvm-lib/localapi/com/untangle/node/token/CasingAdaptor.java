@@ -39,7 +39,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.node.MutateTStats;
+import com.untangle.uvm.logging.BlingBlinger;
+import com.untangle.uvm.logging.Counters;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.vnet.AbstractEventHandler;
 import com.untangle.uvm.vnet.MPipeException;
@@ -73,6 +74,12 @@ public class CasingAdaptor extends AbstractEventHandler
 
     private final PipelineFoundry pipeFoundry = LocalUvmContextFactory.context()
         .pipelineFoundry();
+
+    private final BlingBlinger s2tBytes;
+    private final BlingBlinger c2tBytes;
+    private final BlingBlinger t2sBytes;
+    private final BlingBlinger t2cBytes;
+
     private final Logger logger = Logger.getLogger(CasingAdaptor.class);
 
     private volatile boolean releaseParseExceptions;
@@ -84,6 +91,12 @@ public class CasingAdaptor extends AbstractEventHandler
         this.casingFactory = casingFactory;
         this.clientSide = clientSide;
         this.releaseParseExceptions = releaseParseExceptions;
+
+        Counters c = node.getCounters();
+        s2tBytes = c.getBlingBlinger("s2tBytes");
+        c2tBytes = c.getBlingBlinger("c2tBytes");
+        t2sBytes = c.getBlingBlinger("t2sBytes");
+        t2cBytes = c.getBlingBlinger("t2cBytes");
     }
 
     // accessors --------------------------------------------------------------
@@ -325,10 +338,12 @@ public class CasingAdaptor extends AbstractEventHandler
         Long key = new Long(b.getLong());
         Token tok = (Token)pipeline.detach(key);
 
-        int d = s2c ? MutateTStats.SERVER_TO_CLIENT
-            : MutateTStats.CLIENT_TO_SERVER;
         try {
-            MutateTStats.rereadData(d, s, tok.getEstimatedSize() - TOKEN_SIZE);
+            if (s2c) {
+                s2tBytes.increment(tok.getEstimatedSize() - TOKEN_SIZE);
+            } else {
+                c2tBytes.increment(tok.getEstimatedSize() - TOKEN_SIZE);
+            }
         } catch (Exception exn) {
             logger.warn("could not estimated size", exn);
         }
@@ -458,13 +473,9 @@ public class CasingAdaptor extends AbstractEventHandler
             }
         }
 
-        int direction = s2c ? MutateTStats.SERVER_TO_CLIENT
-            : MutateTStats.CLIENT_TO_SERVER;
-
         if (pr.isStreamer()) {
             TokenStreamer tokSt
-                = new TokenStreamerWrapper(pr.getTokenStreamer(), s,
-                                           direction);
+                = new TokenStreamerWrapper(pr.getTokenStreamer(), s, s2c);
             TCPStreamer ts = new TokenStreamerAdaptor(pipeline, tokSt);
             if (s2c) {
                 s.beginClientStream(ts);
@@ -481,8 +492,11 @@ public class CasingAdaptor extends AbstractEventHandler
             // XXX add magic:
             for (Token t : results) {
                 try {
-                    MutateTStats.rewroteData(direction, s,
-                                             t.getEstimatedSize() - TOKEN_SIZE);
+                    if (s2c) {
+                        t2cBytes.increment(t.getEstimatedSize() - TOKEN_SIZE);
+                    } else {
+                        t2sBytes.increment(t.getEstimatedSize() - TOKEN_SIZE);
+                    }
                 } catch (Exception exn) {
                     logger.error("could not estimate size", exn);
                 }

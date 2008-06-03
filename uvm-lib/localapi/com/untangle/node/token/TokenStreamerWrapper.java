@@ -33,7 +33,8 @@
 
 package com.untangle.node.token;
 
-import com.untangle.uvm.node.MutateTStats;
+import com.untangle.uvm.logging.BlingBlinger;
+import com.untangle.uvm.logging.Counters;
 import com.untangle.uvm.vnet.Session;
 import org.apache.log4j.Logger;
 
@@ -51,14 +52,20 @@ class TokenStreamerWrapper implements TokenStreamer
 
     private final TokenStreamer tokenStreamer;
     private final Session session;
-    private final int direction;
+    private final BlingBlinger blinger;
 
     TokenStreamerWrapper(TokenStreamer tokenStreamer, Session session,
-                         int direction)
+                         boolean s2c)
     {
         this.tokenStreamer = tokenStreamer;
         this.session = session;
-        this.direction = direction;
+
+        Counters c = session.mPipe().node().getCounters();
+        if (s2c) {
+            blinger = c.getBlingBlinger("t2cBytes");
+        } else {
+            blinger = c.getBlingBlinger("t2sBytes");
+        }
     }
 
     public Token nextToken()
@@ -67,8 +74,7 @@ class TokenStreamerWrapper implements TokenStreamer
 
         if (null != token) {
             try {
-                MutateTStats.rewroteData(direction, session,
-                                         token.getEstimatedSize() - TOKEN_SIZE);
+                blinger.increment(token.getEstimatedSize() - TOKEN_SIZE);
             } catch (Exception exn) {
                 logger.warn("could not estimate size", exn);
             }

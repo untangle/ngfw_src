@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -33,8 +33,8 @@
 
 package com.untangle.uvm.vnet;
 
-import com.untangle.uvm.vnet.event.*;
 import com.untangle.uvm.node.Node;
+import com.untangle.uvm.vnet.event.*;
 
 
 /**
@@ -58,14 +58,14 @@ public abstract class AbstractEventHandler implements SessionEventListener {
     {
     }
 
-    protected long incrementCount(int i)
+    protected long incrementCount(String n)
     {
-        return xform.incrementCount(i, 1);
+        return xform.incrementCount(n, 1);
     }
 
-    protected long incrementCount(int i, long delta)
+    protected long incrementCount(String n, long delta)
     {
-        return xform.incrementCount(i, delta);
+        return xform.incrementCount(n, delta);
     }
 
     /*

@@ -109,7 +109,7 @@ public class IpsDetectionEngine
 
     public void updateUICount(int counter)
     {
-        node.incrementCount(counter);
+        //node.incrementCount(counter);
     }
 
     public void onReconfigure()

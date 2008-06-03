@@ -36,15 +36,6 @@ import java.util.Set;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.log4j.Logger;
-import org.apache.log4j.helpers.LogLog;
-import org.hibernate.Query;
-import org.hibernate.Session;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.XMLReaderFactory;
-
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.logging.UvmLoggingContext;
 import com.untangle.uvm.logging.UvmLoggingContextFactory;
@@ -56,7 +47,6 @@ import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.NodeDesc;
 import com.untangle.uvm.node.NodeStartException;
 import com.untangle.uvm.node.NodeState;
-import com.untangle.uvm.node.NodeStats;
 import com.untangle.uvm.node.UndeployException;
 import com.untangle.uvm.node.UvmNodeHandler;
 import com.untangle.uvm.policy.Policy;
@@ -64,6 +54,14 @@ import com.untangle.uvm.security.Tid;
 import com.untangle.uvm.toolbox.MackageDesc;
 import com.untangle.uvm.toolbox.RemoteToolboxManager;
 import com.untangle.uvm.util.TransactionWork;
+import org.apache.log4j.Logger;
+import org.apache.log4j.helpers.LogLog;
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.XMLReaderFactory;
 
 /**
  * Implements LocalNodeManager.
@@ -209,7 +207,7 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
     {
         return tids.get(tid);
     }
-    
+
     public Node node(String name) {
         Node node = null;
         List<Tid> nodeInstances = nodeInstances(name);
@@ -265,18 +263,6 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
         tc.destroyPersistentState();
     }
 
-    public Map<Tid, NodeStats> allNodeStats()
-    {
-        HashMap<Tid, NodeStats> result = new HashMap<Tid, NodeStats>();
-        for (Iterator<Tid> iter = tids.keySet().iterator(); iter.hasNext();) {
-            Tid tid = iter.next();
-            NodeContextImpl tci = tids.get(tid);
-            if (tci.getRunState() == NodeState.RUNNING)
-                result.put(tid, tci.getStats());
-        }
-        return result;
-    }
-
     public Map<Tid, NodeState> allNodeStates()
     {
         HashMap<Tid, NodeState> result = new HashMap<Tid, NodeState>();
@@ -287,7 +273,7 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
         }
         return result;
     }
-    
+
     // Manager lifetime -------------------------------------------------------
 
     void init()

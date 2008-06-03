@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -20,6 +20,9 @@ package com.untangle.uvm.engine;
 
 import com.untangle.uvm.argon.ArgonAgent;
 import com.untangle.uvm.argon.ArgonAgentImpl;
+import com.untangle.uvm.node.Node;
+import com.untangle.uvm.node.NodeDesc;
+import com.untangle.uvm.util.MetaEnv;
 import com.untangle.uvm.vnet.IPSessionDesc;
 import com.untangle.uvm.vnet.MPipe;
 import com.untangle.uvm.vnet.MPipeException;
@@ -28,9 +31,6 @@ import com.untangle.uvm.vnet.Session;
 import com.untangle.uvm.vnet.TCPSession;
 import com.untangle.uvm.vnet.UDPSession;
 import com.untangle.uvm.vnet.event.SessionEventListener;
-import com.untangle.uvm.node.Node;
-import com.untangle.uvm.node.NodeDesc;
-import com.untangle.uvm.util.MetaEnv;
 import org.apache.log4j.Logger;
 
 /**
@@ -76,7 +76,6 @@ class MPipeImpl implements MPipe {
     public MPipeImpl(MPipeManagerImpl xm, PipeSpec pipeSpec,
                      SessionEventListener listener)
     {
-
         this.xm = xm;
         this.node = pipeSpec.getNode();
         this.listener = listener;

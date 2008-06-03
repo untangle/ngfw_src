@@ -471,7 +471,7 @@ class OpenVpnMonitor implements Runnable
 
         for ( Stats stats : statusMap.values()) {
             if ( stats.isNew ) {
-                node.incrementCount( Constants.CONNECT_COUNTER );
+                //node.incrementCount( Constants.CONNECT_COUNTER );
 
                 stats.isNew = false;
             }

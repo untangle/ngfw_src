@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -41,8 +41,7 @@ import java.util.Set;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.localapi.SessionMatcher;
 import com.untangle.uvm.localapi.SessionMatcherFactory;
-import com.untangle.uvm.policy.Policy;
-import com.untangle.uvm.security.Tid;
+import com.untangle.uvm.logging.Counters;
 import com.untangle.uvm.node.LocalNodeManager;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeContext;
@@ -50,8 +49,9 @@ import com.untangle.uvm.node.NodeDesc;
 import com.untangle.uvm.node.NodeException;
 import com.untangle.uvm.node.NodeStartException;
 import com.untangle.uvm.node.NodeState;
-import com.untangle.uvm.node.NodeStats;
 import com.untangle.uvm.node.NodeStopException;
+import com.untangle.uvm.policy.Policy;
+import com.untangle.uvm.security.Tid;
 import com.untangle.uvm.util.TransactionWork;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
@@ -79,7 +79,7 @@ public abstract class NodeBase implements Node
 
     private NodeState runState;
     private boolean wasStarted = false;
-    private NodeStats stats = new NodeStats();
+    private Counters counters = new Counters();
 
     protected NodeBase()
     {
@@ -168,24 +168,26 @@ public abstract class NodeBase implements Node
         return nodeContext.getNodeDesc();
     }
 
-    public NodeStats getStats() throws IllegalStateException
+    public Counters getCounters() throws IllegalStateException
     {
         if (NodeState.RUNNING != getRunState()) {
             throw new IllegalStateException("Stats called in state: "
                                             + getRunState());
         }
-        return stats;
+        return counters;
     }
 
     // NodeBase methods ---------------------------------------------------
 
-    public void addNodeListener(NodeListener tl) {
+    public void addNodeListener(NodeListener tl)
+    {
         synchronized (nodeListeners) {
             nodeListeners.add(tl);
         }
     }
 
-    public void removeNodeListener(NodeListener tl) {
+    public void removeNodeListener(NodeListener tl)
+    {
         synchronized (nodeListeners) {
             nodeListeners.remove(tl);
         }
@@ -407,7 +409,6 @@ public abstract class NodeBase implements Node
     }
 
     // XXX i am worried about races in the lifecycle methods
-
     private void init(boolean syncState, String[] args)
         throws NodeException, IllegalStateException
     {
@@ -527,6 +528,7 @@ public abstract class NodeBase implements Node
             start();
         }
     }
+
     private void parentStop()
         throws NodeStopException, IllegalStateException
     {
@@ -565,13 +567,13 @@ public abstract class NodeBase implements Node
         return SessionMatcherFactory.getNullInstance();
     }
 
-    public long incrementCount(int i)
+    public long incrementCount(String name)
     {
-        return incrementCount(i, 1);
+        return incrementCount(name, 1);
     }
 
-    public long incrementCount(int i, long delta)
+    public long incrementCount(String name, long delta)
     {
-        return stats.incrementCount(i, delta);
+        return counters.incrementCounter(name, delta);
     }
 }

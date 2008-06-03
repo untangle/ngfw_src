@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -36,9 +36,9 @@ package com.untangle.uvm.node;
 import java.io.InputStream;
 
 import com.untangle.uvm.security.Tid;
-import com.untangle.uvm.vnet.IPSessionDesc;
 import com.untangle.uvm.toolbox.MackageDesc;
 import com.untangle.uvm.util.TransactionWork;
+import com.untangle.uvm.vnet.IPSessionDesc;
 
 /**
  * Holds the context for a Node instance.
@@ -95,6 +95,4 @@ public interface NodeContext
     IPSessionDesc[] liveSessionDescs();
 
     NodeState getRunState();
-
-    NodeStats getStats();
 }

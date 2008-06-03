@@ -50,6 +50,8 @@ import com.untangle.node.util.UrlList;
 import com.untangle.uvm.LocalAppServerManager;
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.logging.BlingBlinger;
+import com.untangle.uvm.logging.Counters;
 import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.EventLoggerFactory;
 import com.untangle.uvm.logging.EventManager;
@@ -128,13 +130,31 @@ public class SpywareImpl extends AbstractNode implements Spyware
 
     private final PartialListUtil listUtil = new PartialListUtil();
 
+    private final BlingBlinger subnetScanBlinger;
+    private final BlingBlinger subnetBlockBlinger;
+
+    private final BlingBlinger httpScan;
+    private final BlingBlinger httpWhitelisted;
+    private final BlingBlinger httpBlockedDomain;
+    private final BlingBlinger httpPassed;
+    private final BlingBlinger httpClientCookieScan;
+    private final BlingBlinger httpClientCookieBlock;
+    private final BlingBlinger httpClientCookiePass;
+    private final BlingBlinger httpServerCookieScan;
+    private final BlingBlinger httpServerCookieBlock;
+    private final BlingBlinger httpServerCookiePass;
+    private final BlingBlinger httpActiveXScan;
+    private final BlingBlinger httpActiveXBlock;
+    private final BlingBlinger httpActiveXPass;
+
     private volatile SpywareSettings settings;
 
     private volatile Map<String, StringRule> activeXRules;
     private volatile Map<String, StringRule> cookieRules;
     private volatile Set<String> domainWhitelist;
 
-    /* the signatures are updated at startup, so using new Date() is not that far off. */
+    /* the signatures are updated at startup, so using new Date() is
+     * not that far off. */
     private Date lastSignatureUpdate = new Date();
     private String signatureVersion;
 
@@ -188,6 +208,24 @@ public class SpywareImpl extends AbstractNode implements Spyware
         eventLogger.addSimpleEventFilter(ef);
         ef = new SpywareCookieFilter();
         eventLogger.addSimpleEventFilter(ef);
+
+        Counters c = getCounters();
+        subnetScanBlinger = c.getBlingBlinger("subnetScanBlinger");
+        subnetBlockBlinger = c.getBlingBlinger("subnetBlockBlinger");
+
+        httpScan = c.getBlingBlinger("httpScan");
+        httpWhitelisted = c.getBlingBlinger("httpWhitelisted");
+        httpBlockedDomain = c.getBlingBlinger("httpBlockedDomain");
+        httpPassed = c.getBlingBlinger("httpPassed");
+        httpClientCookieScan = c.getBlingBlinger("httpClientCookieScan");
+        httpClientCookieBlock = c.getBlingBlinger("httpClientCookieBlock");
+        httpClientCookiePass = c.getBlingBlinger("httpClientCookiePass");
+        httpServerCookieScan = c.getBlingBlinger("httpServerCookieScan");
+        httpServerCookieBlock = c.getBlingBlinger("httpServerCookieBlock");
+        httpServerCookiePass = c.getBlingBlinger("httpServerCookiePass");
+        httpActiveXScan = c.getBlingBlinger("httpActiveXScan");
+        httpActiveXBlock = c.getBlingBlinger("httpActiveXBlock");
+        httpActiveXPass = c.getBlingBlinger("httpActiveXPass");
     }
 
     // SpywareNode methods -----------------------------------------------------
@@ -262,16 +300,16 @@ public class SpywareImpl extends AbstractNode implements Spyware
     public void setBaseSettings(final SpywareBaseSettings baseSettings)
     {
         TransactionWork tw = new TransactionWork() {
-            public boolean doWork(Session s) {
-                settings.setBaseSettings(baseSettings);
-                s.merge(settings);
-                return true;
-            }
+                public boolean doWork(Session s) {
+                    settings.setBaseSettings(baseSettings);
+                    s.merge(settings);
+                    return true;
+                }
 
-            public Object getResult() {
-                return null;
-            }
-        };
+                public Object getResult() {
+                    return null;
+                }
+            };
         getNodeContext().runTransaction(tw);
     }
 
@@ -419,7 +457,82 @@ public class SpywareImpl extends AbstractNode implements Spyware
         unDeployWebAppIfRequired(logger);
     }
 
-    // package private methods ------------------------------------------------
+    // package private methods -------------------------------------------------
+
+    void incrementSubnetScan()
+    {
+        subnetScanBlinger.increment();
+    }
+
+    void incrementSubnetBlock()
+    {
+        subnetBlockBlinger.increment();
+    }
+
+    void incrementHttpScan()
+    {
+        httpScan.increment();
+    }
+
+    void incrementHttpWhitelisted()
+    {
+        httpWhitelisted.increment();
+    }
+
+    void incrementHttpBlockedDomain()
+    {
+        httpBlockedDomain.increment();
+    }
+
+    void incrementHttpPassed()
+    {
+        httpPassed.increment();
+    }
+
+    void incrementHttpClientCookieScan()
+    {
+        httpClientCookieScan.increment();
+    }
+
+    void incrementHttpClientCookieBlock()
+    {
+        httpClientCookieBlock.increment();
+    }
+
+    void incrementHttpClientCookiePass()
+    {
+        httpClientCookiePass.increment();
+    }
+
+    void incrementHttpServerCookieScan()
+    {
+        httpServerCookieScan.increment();
+    }
+
+    void incrementHttpServerCookieBlock()
+    {
+        httpServerCookieBlock.increment();
+    }
+
+    void incrementHttpServerCookiePass()
+    {
+        httpServerCookiePass.increment();
+    }
+
+    void incrementHttpActiveXScan()
+    {
+        httpActiveXScan.increment();
+    }
+
+    void incrementHttpActiveXBlock()
+    {
+        httpActiveXBlock.increment();
+    }
+
+    void incrementHttpActiveXPass()
+    {
+        httpActiveXPass.increment();
+    }
 
     Token[] generateResponse(SpywareBlockDetails bd, TCPSession sess,
                              String uri, Header header, boolean persistent)

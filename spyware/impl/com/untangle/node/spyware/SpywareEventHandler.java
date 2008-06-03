@@ -133,7 +133,7 @@ public class SpywareEventHandler extends AbstractEventHandler
             logger.debug("Subnet scan: " + ipm.toString() + " -> DETECTED.");
         }
 
-        node.incrementCount(Spyware.SCAN);
+        node.incrementSubnetScan();
 
         if (logger.isInfoEnabled()) {
             logger.info("-------------------- Detected Spyware --------------------");
@@ -151,16 +151,14 @@ public class SpywareEventHandler extends AbstractEventHandler
         ipr.attach(new SpywareAccessEvent(ipr.pipelineEndpoints(), ir.getName(), ir.getIpMaddr(), ir.isLive()));
 
         if (ir.isLive()) {
-            node.incrementCount(Spyware.BLOCK); //XXX logged but not blocked (count as blocked anyway)???
-            if (ipr instanceof TCPNewSessionRequest)
+            node.incrementSubnetBlock();
+            if (ipr instanceof TCPNewSessionRequest) {
                 ((TCPNewSessionRequest)ipr).rejectReturnRst(true);
-            if (ipr instanceof UDPNewSessionRequest)
+            }
+            if (ipr instanceof UDPNewSessionRequest) {
                 ipr.rejectReturnUnreachable(IPNewSessionRequest.PROHIBITED,true);
+            }
             return;
-        }
-
-        if (ir.getAlert()) {
-            /* XXX alerts */
         }
 
         if (release) { ipr.release(true); }

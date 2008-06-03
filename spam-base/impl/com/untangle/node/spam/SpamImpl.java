@@ -75,7 +75,7 @@ public class SpamImpl extends AbstractNode implements SpamNode
         "by the Spam Blocker to be spam based on a score of $SPAMReport:SCORE$ where anything" + CRLF +
         "above $SPAMReport:THRESHOLD$ is spam.  The details of the report are as follows:" + CRLF + CRLF +
         "$SPAMReport:FULL$";
-    
+
     private final RBLEventHandler rblHandler = new RBLEventHandler(this);
 
     private final SpamRBLHandler spamRblHandler = new SpamRBLHandler();
@@ -159,29 +159,33 @@ public class SpamImpl extends AbstractNode implements SpamNode
         //The scanning blingy-bringer has been disabled
         //      incrementCount(Node.GENERIC_0_COUNTER);
     }
+
     /**
      * Increment the counter for blocked (SMTP only).
      */
     public void incrementBlockCounter() {
-        incrementCount(Node.GENERIC_1_COUNTER);
+        //incrementCount(Node.GENERIC_1_COUNTER);
     }
+
     /**
      * Increment the counter for messages passed
      */
     public void incrementPassCounter() {
-        incrementCount(Node.GENERIC_0_COUNTER);
+        //incrementCount(Node.GENERIC_0_COUNTER);
     }
+
     /**
      * Increment the counter for messages marked
      */
     public void incrementMarkCounter() {
-        incrementCount(Node.GENERIC_2_COUNTER);
+        //incrementCount(Node.GENERIC_2_COUNTER);
     }
+
     /**
      * Increment the count for messages quarantined.
      */
     public void incrementQuarantineCount() {
-        incrementCount(Node.GENERIC_3_COUNTER);
+        //incrementCount(Node.GENERIC_3_COUNTER);
     }
 
     /**
@@ -191,6 +195,7 @@ public class SpamImpl extends AbstractNode implements SpamNode
     public String getDefaultSubjectWrapperTemplate() {
         return MOD_SUB_TEMPLATE;
     }
+
     /**
      * Method for subclass (currently - clamphish) to define
      * the default wrapping body template for POP/IMAP
@@ -198,6 +203,7 @@ public class SpamImpl extends AbstractNode implements SpamNode
     public String getDefaultBodyWrapperTemplate() {
         return MOD_BODY_TEMPLATE;
     }
+
     /**
      * Method for subclass (currently - clamphish) to define
      * the default Subject template for SMTP wrapped messages
@@ -205,6 +211,7 @@ public class SpamImpl extends AbstractNode implements SpamNode
     public String getDefaultSMTPSubjectWrapperTemplate() {
         return getDefaultSubjectWrapperTemplate();
     }
+
     /**
      * Method for subclass (currently - clamphish) to define
      * the default wrapping body template for SMTP
@@ -255,7 +262,7 @@ public class SpamImpl extends AbstractNode implements SpamNode
     private void ensureTemplateSettings(SpamSettings ss) {
         ensureTemplateSettings(ss.getBaseSettings());
     }
-    
+
     private void ensureTemplateSettings(SpamBaseSettings sbs) {
         SpamIMAPConfig ic = sbs.getImapConfig();
         ic.setSubjectWrapperTemplate(getDefaultSubjectWrapperTemplate());
@@ -404,7 +411,7 @@ public class SpamImpl extends AbstractNode implements SpamNode
                     s.merge(spamSettings);
                     return true;
                 }
-                
+
                 public Object getResult() {
                     return null;
                 }
@@ -417,10 +424,10 @@ public class SpamImpl extends AbstractNode implements SpamNode
         String query = "select s.spamRBLList from SpamSettings s where s.tid = :tid ";
         return listUtil.getItems( query, getNodeContext(), getTid(), start, limit, sortColumns );
     }
-    
+
     public void updateSpamRBLList( final List<SpamRBL> added, final List<Long> deleted,
                                    final List<SpamRBL> modified )
-    {        
+    {
         TransactionWork<Void> tw = new TransactionWork()
             {
                 public boolean doWork(Session s)
@@ -428,10 +435,10 @@ public class SpamImpl extends AbstractNode implements SpamNode
                     List<SpamRBL> rblList = getSpamSettings().getSpamRBLList();
                     listUtil.updateCachedItems( rblList, spamRblHandler, added, deleted, modified);
                     spamSettings = (SpamSettings)s.merge(spamSettings);
-                    
+
                     return true;
                 }
-                
+
                 public Void getResult() { return null; }
             };
 

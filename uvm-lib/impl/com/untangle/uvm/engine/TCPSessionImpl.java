@@ -26,7 +26,8 @@ import com.untangle.jvector.IncomingSocketQueue;
 import com.untangle.jvector.OutgoingSocketQueue;
 import com.untangle.jvector.ResetCrumb;
 import com.untangle.jvector.ShutdownCrumb;
-import com.untangle.uvm.node.MutateTStats;
+import com.untangle.uvm.logging.BlingBlinger;
+import com.untangle.uvm.logging.Counters;
 import com.untangle.uvm.node.PipelineEndpoints;
 import com.untangle.uvm.util.MetaEnv;
 import com.untangle.uvm.vnet.*;
@@ -52,6 +53,15 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
     protected boolean[] lineBuffering = new boolean[] { false, false };
     protected ByteBuffer[] readBuf = new ByteBuffer[] { null, null };
 
+    private final BlingBlinger s2tChunks;
+    private final BlingBlinger c2tChunks;
+    private final BlingBlinger t2sChunks;
+    private final BlingBlinger t2cChunks;
+    private final BlingBlinger s2tBytes;
+    private final BlingBlinger c2tBytes;
+    private final BlingBlinger t2sBytes;
+    private final BlingBlinger t2cBytes;
+
     protected TCPSessionImpl(Dispatcher disp,
                              com.untangle.uvm.argon.TCPSession pSession,
                              PipelineEndpoints pe,
@@ -68,12 +78,26 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
             throw new IllegalArgumentException("Illegal maximum server read bufferSize: " + serverReadBufferSize);
         this.readBufferSize = new int[] { clientReadBufferSize, serverReadBufferSize };
         this.readLimit = new int[] { clientReadBufferSize, serverReadBufferSize };
-        logger = disp.mPipe().sessionLoggerTCP();
+
+        MPipeImpl mPipe = disp.mPipe();
+
+        logger = mPipe.sessionLoggerTCP();
+
+        Counters c = mPipe.node().getCounters();
+        s2tChunks = c.getBlingBlinger("s2tChunks");
+        c2tChunks = c.getBlingBlinger("c2tChunks");
+        t2sChunks = c.getBlingBlinger("t2sChunks");
+        t2cChunks = c.getBlingBlinger("t2cChunks");
+        s2tBytes = c.getBlingBlinger("s2tBytes");
+        c2tBytes = c.getBlingBlinger("c2tBytes");
+        t2sBytes = c.getBlingBlinger("t2sBytes");
+        t2cBytes = c.getBlingBlinger("t2cBytes");
     }
 
     public int serverReadBufferSize() {
         return readBufferSize[SERVER];
     }
+
     public void serverReadBufferSize(int numBytes) {
         if (numBytes < 2 || numBytes > TCP_MAX_CHUNK_SIZE)
             throw new IllegalArgumentException("Illegal maximum read bufferSize: " + numBytes);
@@ -320,7 +344,15 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
             }
             mPipe.lastSessionWriteFailed(false);
             stats.wroteData(side, numWritten);
-            MutateTStats.wroteData(side, this, numWritten);
+
+            if (CLIENT == side) {
+                t2sChunks.increment();
+                t2sBytes.increment(numWritten);
+            } else {
+                t2cChunks.increment();
+                t2cBytes.increment(numWritten);
+            }
+
             if (logger.isDebugEnabled())
                 debug("wrote " + numWritten + " to " + sideName);
         }
@@ -582,7 +614,14 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
         dispatcher.lastSessionNumRead(numRead);
 
         stats.readData(side, numRead);
-        MutateTStats.readData(side, this, numRead);
+
+        if (CLIENT == side) {
+            c2tChunks.increment();
+            c2tBytes.increment(numRead);
+        } else {
+            s2tChunks.increment();
+            s2tBytes.increment(numRead);
+        }
 
         // We have received bytes.  Give them to the user.
 
@@ -642,7 +681,6 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
 
         readBuf[CLIENT] = null;
         readBuf[SERVER] = null;
-        MutateTStats.removeTCPSession(mPipe);
         super.closeFinal();
     }
 
@@ -653,6 +691,7 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
         pSession.killSession();
     }
 
-    // Don't need equal or hashcode since we can only have one of these objects per
-    // session (so the memory address is ok for equals/hashcode).
+    // Don't need equal or hashcode since we can only have one of
+    // these objects per session (so the memory address is ok for
+    // equals/hashcode).
 }
