@@ -107,7 +107,7 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                     }
                 },
                 items : [{
-                    items: [{
+                    items : [{
                         bodyStyle : 'padding:0px 0px 5px 0px;',
                         border : false,
                         html : this.i18n
@@ -270,7 +270,7 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
         // save function
         saveAction : function() {
             if (this.validate()) {
-                Ext.MessageBox.progress(i18n._("Please wait"), i18n._("Saving..."));
+                Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
                 rpc.brandingManager.setBaseSettings(function(result, exception) {
                     Ext.MessageBox.hide();
                     if (exception) {

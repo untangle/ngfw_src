@@ -199,7 +199,7 @@ if (!Ung.hasResource["Ung.System"]) {
                     });                	
                 }.createDelegate(this),
                 onBackupToUSBKey: function() {
-                	Ext.MessageBox.progress(i18n._("Please wait"),i18n._("Backing Up..."));
+                	Ext.MessageBox.wait(i18n._("Backing Up..."), i18n._("Please wait"));
                     var cmp=Ext.getCmp(this.parentId);
                     rpc.jsonrpc.RemoteUvmContext.usbBackup(function (result, exception) {
                         if(exception) {
@@ -210,7 +210,7 @@ if (!Ung.hasResource["Ung.System"]) {
                     }.createDelegate(cmp));
                 },
                 onBackupToHardDisk: function() {
-                    Ext.MessageBox.progress(i18n._("Please wait"),i18n._("Backing Up..."));
+                    Ext.MessageBox.wait(i18n._("Backing Up..."), i18n._("Please wait"));
                     var cmp=Ext.getCmp(this.parentId);
                     rpc.jsonrpc.RemoteUvmContext.localBackup(function (result, exception) {
                         if(exception) {
@@ -1033,7 +1033,7 @@ if (!Ung.hasResource["Ung.System"]) {
         // save function
         saveAction : function() {
             if (this.validate()) {
-            	Ext.MessageBox.progress(i18n._("Please wait"), i18n._("Saving..."));
+                Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
                 this.saveSemaphore = 6;
                 // save language settings
                 rpc.languageManager.setLanguageSettings(function(result, exception) {

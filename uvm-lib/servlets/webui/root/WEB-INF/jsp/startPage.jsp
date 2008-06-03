@@ -37,6 +37,7 @@
 <!--     <script type="text/javascript" src="script/untangle-base-virus/settings.js"></script> 
     <script type="text/javascript" src="script/untangle-node-clam/settings.js"></script> --> 
     <script type="text/javascript" src="script/config/administration.js"></script>
+    <script type="text/javascript" src="script/config/email.js"></script>
     <script type="text/javascript" src="script/config/system.js"></script>
     <script type="text/javascript" src="script/config/systemInfo.js"></script>
 

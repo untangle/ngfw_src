@@ -919,7 +919,7 @@ if (!Ung.hasResource["Ung.WebFilter"]) {
         // save function
         save : function() {
             if (this.validate()) {
-                Ext.MessageBox.progress(i18n._("Please wait"), i18n._("Saving..."));
+                Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
                 this.getRpcNode().updateAll(function(result, exception) {
                     Ext.MessageBox.hide();
                     if (exception) {

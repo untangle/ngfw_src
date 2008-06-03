@@ -662,7 +662,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
         saveAction : function() {
             if (this.validate()) {
             	this.saveSemaphore = 3;
-                Ext.MessageBox.progress(i18n._("Please wait"), i18n._("Saving..."));
+                Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
                 
 //                var listAdministration=this.gridAdministration.getFullSaveList();
 //                var setAdministration={};

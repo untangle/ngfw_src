@@ -14,7 +14,7 @@ var rpc=null;
 Ung.Main=function() {
 }
 Ung.Main.prototype = {
-	disableThreads: false, // in development environment is useful to disable
+	disableThreads: true, // in development environment is useful to disable
                             // threads.
 	leftTabs: null,
 	appsSemaphore: null,
@@ -555,6 +555,12 @@ Ung.Main.prototype = {
 					main.administrationWin.show();
 				});
 				break;
+            case "email":
+                main.loadResourceAndExecute("Ung.Email","script/config/email.js", function() {
+                    main.emailWin=new Ung.Email(configItem);
+                    main.emailWin.show();
+                });
+                break;
             case "system":
                 main.loadResourceAndExecute("Ung.System","script/config/system.js", function() {
                     main.systemWin=new Ung.System(configItem);
@@ -563,8 +569,8 @@ Ung.Main.prototype = {
                 break;
             case "systemInfo":
                 main.loadResourceAndExecute("Ung.SystemInfo","script/config/systemInfo.js", function() {
-                    main.systemWin=new Ung.SystemInfo(configItem);
-                    main.systemWin.show();
+                    main.systemInfoWin=new Ung.SystemInfo(configItem);
+                    main.systemInfoWin.show();
                 });
                 break;
 			default:
