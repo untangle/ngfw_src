@@ -118,7 +118,7 @@ public interface Node
     void dumpSessions();
 
     /**
-     * Returns the <code>NodeStats</code> for this node.
+     * Returns the <code>Counters</code> for this node.
      * The node must be in the running state.
      *
      * @return a <code>NodeStats</code> giving the

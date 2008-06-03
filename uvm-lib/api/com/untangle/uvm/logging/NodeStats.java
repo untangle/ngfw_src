@@ -36,13 +36,13 @@ package com.untangle.uvm.logging;
 import java.io.Serializable;
 import java.util.Map;
 
-public class GlobalStats implements Serializable
+public class NodeStats implements Serializable
 {
     private final Map<String, CounterStats> counters;
     private final Map<String, LoadStats> loads;
 
-    GlobalStats(Map<String, CounterStats> counters,
-                Map<String, LoadStats> loads)
+    NodeStats(Map<String, CounterStats> counters,
+              Map<String, LoadStats> loads)
     {
         this.counters = counters;
         this.loads = loads;

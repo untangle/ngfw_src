@@ -108,7 +108,7 @@ public class Counters
         return lc;
     }
 
-    public GlobalStats getAllStats()
+    public NodeStats getAllStats()
     {
         Map<String, CounterStats> c = new HashMap<String, CounterStats>();
         synchronized (blingers) {
@@ -124,7 +124,7 @@ public class Counters
             }
         }
 
-        return new GlobalStats(c, l);
+        return new NodeStats(c, l);
     }
 
     // private classes ---------------------------------------------------------
