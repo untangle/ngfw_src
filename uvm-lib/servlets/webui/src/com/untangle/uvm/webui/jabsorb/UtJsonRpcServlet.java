@@ -30,11 +30,12 @@ import org.jabsorb.JSONRPCServlet;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.client.RemoteUvmContext;
 import com.untangle.uvm.webui.jabsorb.serializer.EnumSerializer;
+import com.untangle.uvm.webui.jabsorb.serializer.ExtendedListSerializer;
+import com.untangle.uvm.webui.jabsorb.serializer.ExtendedSetSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.IPMaddrSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.IPaddrSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.LazyInitializerSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.MimeTypeSerializer;
-import com.untangle.uvm.webui.jabsorb.serializer.ExtendedListSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.TimeZoneSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.URLSerializer;
 
@@ -79,6 +80,7 @@ public class UtJsonRpcServlet extends JSONRPCServlet
                 // hibernate related serializers
                 b.registerSerializer(new LazyInitializerSerializer());
                 b.registerSerializer(new ExtendedListSerializer());
+                b.registerSerializer(new ExtendedSetSerializer());
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

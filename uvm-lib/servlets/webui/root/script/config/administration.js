@@ -34,10 +34,9 @@ if (!Ung.hasResource["Ung.Administration"]) {
             // builds the tab panel with the tabs
             this.buildTabPanel([this.panelAdministration, this.panelPublicAddress, this.panelCertificates, this.panelMonitoring,
                     this.panelSkins]);
-            this.tabs.activate(this.panelSkins);
+            this.tabs.activate(this.panelMonitoring);
             this.panelPublicAddress.disable();
             this.panelCertificates.disable();
-            this.panelMonitoring.disable();
 
         },
         // get base settings object
@@ -53,6 +52,20 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 this.rpc.adminSettings = rpc.adminManager.getAdminSettings();
             }
             return this.rpc.adminSettings;
+        },
+        // get admin settings
+        getSnmpSettings : function(forceReload) {
+            if (forceReload || this.rpc.snmpSettings === undefined) {
+                this.rpc.snmpSettings = rpc.adminManager.getSnmpManager().getSnmpSettings();
+            }
+            return this.rpc.snmpSettings;
+        },
+        // get logging settings
+        getLoggingSettings : function(forceReload) {
+            if (forceReload || this.rpc.loggingSettings === undefined) {
+                this.rpc.loggingSettings = main.getLoggingManager().getLoggingSettings();
+            }
+            return this.rpc.loggingSettings;
         },
         
         getTODOPanel : function(title) {
@@ -216,7 +229,302 @@ if (!Ung.hasResource["Ung.Administration"]) {
             this.panelCertificates = this.getTODOPanel("Certificates");
         },
         buildMonitoring : function() {
-            this.panelMonitoring = this.getTODOPanel("Monitoring");
+            this.panelMonitoring = new Ext.Panel({
+                name : 'panelMonitoring',
+                // private fields
+                parentId : this.getId(),
+
+                title : this.i18n._('Monitoring'),
+                layout : "form",
+                bodyStyle : 'padding:5px 5px 0px 5px;',
+                autoScroll : true,
+                defaults : {
+                    xtype : 'fieldset',
+                    autoHeight : true
+                },
+                items: [{
+                    title: this.i18n._('SNMP'),
+                    items : [{
+                        xtype : 'radio',
+                        boxLabel : i18n.sprintf(this.i18n._('%sDisable%s SNMP Monitoring. (This is the default setting.)'), '<b>', '</b>'), 
+                        hideLabel : true,
+                        name : 'snmpEnabled',
+                        checked : !this.getSnmpSettings().enabled,
+                        listeners : {
+                            "check" : {
+                                fn : function(elem, checked) {
+                                    this.getSnmpSettings().enabled = !checked;
+                                }.createDelegate(this)
+                            }
+                        }
+                    },{
+                        xtype : 'radio',
+                        boxLabel : i18n.sprintf(this.i18n._('%sEnable%s SNMP Monitoring.'), '<b>', '</b>'), 
+                        hideLabel : true,
+                        name : 'snmpEnabled',
+                        checked : this.getSnmpSettings().enabled,
+                        listeners : {
+                            "check" : {
+                                fn : function(elem, checked) {
+                                    this.getSnmpSettings().enabled = checked;
+                                }.createDelegate(this)
+                            }
+                        }
+                    },{
+                        xtype : 'textfield',
+                        fieldLabel : this.i18n._('Community'),
+//                        labelStyle: 'width:200px;',
+                        name : 'communityString',
+                        value : this.getSnmpSettings().communityString,
+                        listeners : {
+                            "change" : {
+                                fn : function(elem, newValue) {
+                                    this.getSnmpSettings().communityString = newValue;
+                                }.createDelegate(this)
+                            }
+                        }
+                    },{
+                        xtype : 'textfield',
+                        fieldLabel : this.i18n._('System Contact'),
+//                        labelStyle: 'width:200px;',
+                        name : 'sysContact',
+                        value : this.getSnmpSettings().sysContact,
+                        vtype : 'email',
+                        listeners : {
+                            "change" : {
+                                fn : function(elem, newValue) {
+                                    this.getSnmpSettings().sysContact = newValue;
+                                }.createDelegate(this)
+                            }
+                        }
+                    },{
+                        xtype : 'textfield',
+                        fieldLabel : this.i18n._('System Location'),
+//                        labelStyle: 'width:200px;',
+                        name : 'sysLocation',
+                        value : this.getSnmpSettings().sysLocation,
+                        listeners : {
+                            "change" : {
+                                fn : function(elem, newValue) {
+                                    this.getSnmpSettings().sysLocation = newValue;
+                                }.createDelegate(this)
+                            }
+                        }
+                    },{
+                        border: false,
+                        html : '<hr>'
+                    },{
+                        xtype : 'radio',
+                        boxLabel : i18n.sprintf(this.i18n._('%sDisable Traps%s so no trap events are generated.  (This is the default setting.)'), '<b>', '</b>'), 
+                        hideLabel : true,
+                        name : 'sendTraps',
+                        checked : !this.getSnmpSettings().sendTraps,
+                        listeners : {
+                            "check" : {
+                                fn : function(elem, checked) {
+                                    this.getSnmpSettings().sendTraps = !checked;
+                                }.createDelegate(this)
+                            }
+                        }
+                    },{
+                        xtype : 'radio',
+                        boxLabel : i18n.sprintf(this.i18n._('%sEnable Traps%s so trap events are sent when they are generated.'), '<b>', '</b>'), 
+                        hideLabel : true,
+                        name : 'sendTraps',
+                        checked : this.getSnmpSettings().sendTraps,
+                        listeners : {
+                            "check" : {
+                                fn : function(elem, checked) {
+                                    this.getSnmpSettings().sendTraps = checked;
+                                }.createDelegate(this)
+                            }
+                        }
+                    },{
+                        xtype : 'textfield',
+                        fieldLabel : this.i18n._('Community'),
+//                        labelStyle: 'width:200px;',
+                        name : 'trapCommunity',
+                        value : this.getSnmpSettings().trapCommunity,
+                        listeners : {
+                            "change" : {
+                                fn : function(elem, newValue) {
+                                    this.getSnmpSettings().trapCommunity = newValue;
+                                }.createDelegate(this)
+                            }
+                        }
+                    },{
+                        xtype : 'textfield',
+                        fieldLabel : this.i18n._('Host'),
+//                        labelStyle: 'width:200px;',
+                        name : 'trapHost',
+                        value : this.getSnmpSettings().trapHost,
+                        listeners : {
+                            "change" : {
+                                fn : function(elem, newValue) {
+                                    this.getSnmpSettings().trapHost = newValue;
+                                }.createDelegate(this)
+                            }
+                        }
+                    },{
+                        xtype : 'numberfield',
+                        fieldLabel : this.i18n._('Port'),
+//                        labelStyle: 'width:200px;',
+                        name : 'trapPort',
+                        value : this.getSnmpSettings().trapPort,
+                        width: 50,
+                        allowDecimals: false,
+                        allowNegative: false,
+                        minValue: 0,                        
+                        maxValue: 86400,
+                        listeners : {
+                            "change" : {
+                                fn : function(elem, newValue) {
+                                    this.getSnmpSettings().trapPort = newValue;
+                                }.createDelegate(this)
+                            }
+                        }
+                    }]
+                }, {
+                    title: this.i18n._('Syslog'),
+                    items: [{
+                        xtype : 'radio',
+                        boxLabel : i18n.sprintf(this.i18n._('%sDisable%s Syslog Monitoring. (This is the default setting.)'), '<b>', '</b>'), 
+                        hideLabel : true,
+                        name : 'syslogEnabled',
+                        checked : !this.getLoggingSettings().syslogEnabled,
+                        listeners : {
+                            "check" : {
+                                fn : function(elem, checked) {
+                                    this.getLoggingSettings().syslogEnabled = !checked;
+                                }.createDelegate(this)
+                            }
+                        }
+                    },{
+                        xtype : 'radio',
+                        boxLabel : i18n.sprintf(this.i18n._('%sEnable%s Syslog Monitoring.'), '<b>', '</b>'), 
+                        hideLabel : true,
+                        name : 'syslogEnabled',
+                        checked : this.getLoggingSettings().syslogEnabled,
+                        listeners : {
+                            "check" : {
+                                fn : function(elem, checked) {
+                                    this.getLoggingSettings().syslogEnabled = checked;
+                                }.createDelegate(this)
+                            }
+                        }
+                    },{
+                        xtype : 'textfield',
+                        fieldLabel : this.i18n._('Host'),
+//                        labelStyle: 'width:200px;',
+                        name : 'syslogHost',
+                        value : this.getLoggingSettings().syslogHost,
+                        listeners : {
+                            "change" : {
+                                fn : function(elem, newValue) {
+                                    this.getLoggingSettings().syslogHost = newValue;
+                                }.createDelegate(this)
+                            }
+                        }
+                    },{
+                        xtype : 'numberfield',
+                        fieldLabel : this.i18n._('Port'),
+//                        labelStyle: 'width:200px;',
+                        name : 'syslogPort',
+                        value : this.getLoggingSettings().syslogPort,
+                        width: 50,
+                        allowDecimals: false,
+                        allowNegative: false,
+                        minValue: 0,                        
+                        maxValue: 86400,
+                        listeners : {
+                            "change" : {
+                                fn : function(elem, newValue) {
+                                    this.getLoggingSettings().trapPort = syslogPort;
+                                }.createDelegate(this)
+                            }
+                        }
+                    },{
+                        xtype : 'combo',
+                        name : 'syslogFacility',
+                        editable : false,
+                        fieldLabel : this.i18n._('Facility'),
+                        mode : 'local',
+                        triggerAction : 'all',
+                        listClass : 'x-combo-list-small',
+                        store : new Ext.data.SimpleStore({
+                            fields : ['key', 'name'],
+                            data :[
+                                ["KERNEL", this.i18n._("kernel")],
+                                ["USER", this.i18n._("user")],
+                                ["MAIL", this.i18n._("mail")],
+                                ["DAEMON", this.i18n._("daemon")],
+                                ["SECURITY", this.i18n._("security 0")],
+                                ["SYSLOG", this.i18n._("syslog")],
+                                ["PRINTER", this.i18n._("printer")],
+                                ["NEWS", this.i18n._("news")],
+                                ["UUCP", this.i18n._("uucp")],
+                                ["CLOCK_0", this.i18n._("clock 0")],
+                                ["SECURITY_1", this.i18n._("security 1")],
+                                ["FTP", this.i18n._("ftp")],
+                                ["NTP", this.i18n._("ntp")],
+                                ["LOG_AUDIT", this.i18n._("log audit")],
+                                ["LOG_ALERT", this.i18n._("log alert")],
+                                ["CLOCK_1", this.i18n._("clock 1")],
+                                ["LOCAL_0", this.i18n._("local 0")],
+                                ["LOCAL_1", this.i18n._("local 1")],
+                                ["LOCAL_2", this.i18n._("local 2")],
+                                ["LOCAL_3", this.i18n._("local 3")],
+                                ["LOCAL_4", this.i18n._("local 4")],
+                                ["LOCAL_5", this.i18n._("local 5")],
+                                ["LOCAL_6", this.i18n._("local 6")],
+                                ["LOCAL_7", this.i18n._("local 7")]
+                            ]        
+                        }),
+                        displayField : 'name',
+                        valueField : 'key',
+                        value : this.getLoggingSettings().syslogFacility,
+                        listeners : {
+                            "change" : {
+                                fn : function(elem, newValue) {
+                                    this.getLoggingSettings().syslogFacility = newValue;
+                                }.createDelegate(this)
+                            }
+                        }
+                    },{
+                        xtype : 'combo',
+                        name : 'syslogThreshold',
+                        editable : false,
+                        fieldLabel : this.i18n._('Threshold'),
+                        mode : 'local',
+                        triggerAction : 'all',
+                        listClass : 'x-combo-list-small',
+                        store : new Ext.data.SimpleStore({
+                            fields : ['key', 'name'],
+                            data :[
+                                ["EMERGENCY", this.i18n._("emergency")],
+                                ["ALERT", this.i18n._("alert")],
+                                ["CRITICAL", this.i18n._("critical")],
+                                ["ERROR", this.i18n._("error")],
+                                ["WARNING", this.i18n._("warning")],
+                                ["NOTICE", this.i18n._("notice")],
+                                ["INFORMATIONAL", this.i18n._("informational")],
+                                ["DEBUG", this.i18n._("debug")]
+                            ]        
+                        }),
+                        
+                        displayField : 'name',
+                        valueField : 'key',
+                        value : this.getLoggingSettings().syslogThreshold,
+                        listeners : {
+                            "change" : {
+                                fn : function(elem, newValue) {
+                                    this.getLoggingSettings().syslogThreshold = newValue;
+                                }.createDelegate(this)
+                            }
+                        }
+                    }]
+                }]
+            });
         },
         buildSkins : function() {
             var skinsStore = new Ext.data.Store({
@@ -353,22 +661,39 @@ if (!Ung.hasResource["Ung.Administration"]) {
         // save function
         saveAction : function() {
             if (this.validate()) {
-            	this.saveSemaphore = 2;
+            	this.saveSemaphore = 3;
                 Ext.MessageBox.progress(i18n._("Please wait"), i18n._("Saving..."));
-                var listAdministration=this.gridAdministration.getFullSaveList();
-                var setAdministration={};
-                for(var i=0; i<listAdministration.length;i++) {
-                    setAdministration[i]=listAdministration[i];
-                }
-                this.getAdminSettings().users.set=setAdministration;
-                rpc.adminManager.setAdminSettings(function(result, exception) {
+                
+//                var listAdministration=this.gridAdministration.getFullSaveList();
+//                var setAdministration={};
+//                for(var i=0; i<listAdministration.length;i++) {
+//                    setAdministration[i]=listAdministration[i];
+//                }
+//                this.getAdminSettings().users.set=setAdministration;
+//                rpc.adminManager.setAdminSettings(function(result, exception) {
+//                    if (exception) {
+//                        Ext.MessageBox.alert(i18n._("Failed"), exception.message);
+//                        return;
+//                    }
+//                    this.afterSave();
+//                }.createDelegate(this), this.getAdminSettings());
+
+               rpc.adminManager.getSnmpManager().setSnmpSettings(function(result, exception) {
                     if (exception) {
                         Ext.MessageBox.alert(i18n._("Failed"), exception.message);
                         return;
                     }
                     this.afterSave();
-                }.createDelegate(this), this.getAdminSettings());
-
+                }.createDelegate(this), this.getSnmpSettings());
+                
+                main.getLoggingManager.setLoggingSettings(function(result, exception) {
+                    if (exception) {
+                        Ext.MessageBox.alert(i18n._("Failed"), exception.message);
+                        return;
+                    }
+                    this.afterSave();
+                }.createDelegate(this), this.getLoggingSettings());
+                
                 rpc.skinManager.setSkinSettings(function(result, exception) {
                     if (exception) {
                         Ext.MessageBox.alert(i18n._("Failed"), exception.message);

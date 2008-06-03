@@ -176,6 +176,13 @@ Ung.Main.prototype = {
 		Ext.form.Field.prototype.invalidText=i18n._('The value in this field is invalid');
 		Ext.form.TextField.prototype.blankText=i18n._('This field is required');
 	},
+    getLoggingManager : function(forceReload) {
+        if (forceReload || rpc.loggingManager === undefined) {
+            rpc.loggingManager = rpc.jsonrpc.RemoteUvmContext.loggingManager()
+        }
+        return rpc.loggingManager;
+    },
+	
 	unactivateNode: function(mackageDesc) {
 		rpc.nodeManager.nodeInstances(function (result, exception) {
 				if(exception) { 
