@@ -112,6 +112,7 @@ class Jars
   Postgres   = [ Jars.downloadTarget('postgres-jdbc-7.4_215/pg74.215.jdbc3.jar')]
   Velocity   = [ Jars.downloadTarget('velocity-1.4/velocity-1.4.jar') ]
   JRuby      = [ Jars.downloadTarget('jruby-complete/jruby-complete.jar') ]
+  Jabsorb    = [ Jars.downloadTarget('jabsorb-1.2.2/jabsorb-1.2.2.jar') ]
 
   # Jnlp       = [ ThirdpartyJar.get("#{BuildEnv::JAVA_HOME}/sample/jnlp/servlet/jnlp.jar") ]
   Jnlp       = [ Jars.downloadTarget('jnlp/jnlp.jar') ]

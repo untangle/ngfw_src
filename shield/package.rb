@@ -16,4 +16,4 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
 #
 
-NodeBuilder.makeNode(BuildEnv::SRC, 'untangle-node-shield', 'shield')
+NodeBuilder.makeNode(BuildEnv::SRC, 'untangle-node-shield', 'shield', Jars::Jabsorb )
