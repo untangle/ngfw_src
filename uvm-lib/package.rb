@@ -39,7 +39,7 @@ jts << JarTarget.build_target(uvm_lib, deps, 'reporting', "./uvm-lib/reporting")
 
 ## Implementation
 deps  = Jars::Base + Jars::TomcatEmb + Jars::JavaMail + Jars::Jcifs +
-  Jars::Dom4j + Jars::Activation + Jars::Trove + Jars::Jasper + Jars::JFreeChart + Jars::Jabsorb +
+  Jars::Dom4j + Jars::Activation + Jars::Trove + Jars::Jasper + Jars::JFreeChart +
   [ uvm_lib['bootstrap'], uvm_lib['api'], uvm_lib['localapi'], uvm_lib['reporting'], jnetcap['impl'], jvector['impl']]
 
 jts << JarTarget.build_target(uvm_lib, deps, 'impl', "./uvm-lib/impl")

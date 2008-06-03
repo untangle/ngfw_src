@@ -1,0 +1,25 @@
+#! /bin/bash
+
+exec >> @UVM_LOG@/iptables.log 2>&1
+
+FUNCTIONS_FILE=@UVM_HOME@/networking/functions
+
+## Interface to renew is the first argument.
+intf=$1
+
+## Interface index (used to assign an address if DHCP fails is)
+intfIndex=$2
+
+## The flags to pass to dhclient
+flags=$3
+
+if [ -r ${FUNCTIONS_FILE} ]; then
+    . ${FUNCTIONS_FILE}
+else
+    echo "Unable to load the functions file ${FUNCTIONS_FILE}"
+    exit -1
+fi
+
+dhcpInterface ${intf} ${intfIndex} ${flags}
+
+true
