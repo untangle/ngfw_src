@@ -58,16 +58,6 @@ public abstract class AbstractEventHandler implements SessionEventListener {
     {
     }
 
-    protected long incrementCount(String n)
-    {
-        return xform.incrementCount(n, 1);
-    }
-
-    protected long incrementCount(String n, long delta)
-    {
-        return xform.incrementCount(n, delta);
-    }
-
     /*
     // This should be enhanced. XXX
     public void handleMPipeHeartbeatRequest(MPipeHeartbeatRequestEvent event)

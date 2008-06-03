@@ -566,14 +566,4 @@ public abstract class NodeBase implements Node
         /* By default use the session matcher that doesn't match anything */
         return SessionMatcherFactory.getNullInstance();
     }
-
-    public long incrementCount(String name)
-    {
-        return incrementCount(name, 1);
-    }
-
-    public long incrementCount(String name, long delta)
-    {
-        return counters.incrementCounter(name, delta);
-    }
 }
