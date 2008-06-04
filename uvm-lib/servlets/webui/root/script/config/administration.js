@@ -273,7 +273,6 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     },{
                         xtype : 'textfield',
                         fieldLabel : this.i18n._('Community'),
-//                        labelStyle: 'width:200px;',
                         name : 'communityString',
                         value : this.getSnmpSettings().communityString,
                         listeners : {
@@ -286,7 +285,6 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     },{
                         xtype : 'textfield',
                         fieldLabel : this.i18n._('System Contact'),
-//                        labelStyle: 'width:200px;',
                         name : 'sysContact',
                         value : this.getSnmpSettings().sysContact,
                         vtype : 'email',
@@ -300,7 +298,6 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     },{
                         xtype : 'textfield',
                         fieldLabel : this.i18n._('System Location'),
-//                        labelStyle: 'width:200px;',
                         name : 'sysLocation',
                         value : this.getSnmpSettings().sysLocation,
                         listeners : {
@@ -342,7 +339,6 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     },{
                         xtype : 'textfield',
                         fieldLabel : this.i18n._('Community'),
-//                        labelStyle: 'width:200px;',
                         name : 'trapCommunity',
                         value : this.getSnmpSettings().trapCommunity,
                         listeners : {
@@ -355,7 +351,6 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     },{
                         xtype : 'textfield',
                         fieldLabel : this.i18n._('Host'),
-//                        labelStyle: 'width:200px;',
                         name : 'trapHost',
                         value : this.getSnmpSettings().trapHost,
                         listeners : {
@@ -368,7 +363,6 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     },{
                         xtype : 'numberfield',
                         fieldLabel : this.i18n._('Port'),
-//                        labelStyle: 'width:200px;',
                         name : 'trapPort',
                         value : this.getSnmpSettings().trapPort,
                         width: 50,
@@ -396,6 +390,12 @@ if (!Ung.hasResource["Ung.Administration"]) {
                             "check" : {
                                 fn : function(elem, checked) {
                                     this.getLoggingSettings().syslogEnabled = !checked;
+                                    if (checked) {
+                                        Ext.getCmp('administration_syslog_host').disable();
+                                        Ext.getCmp('administration_syslog_port').disable();
+                                        Ext.getCmp('administration_syslog_facility').disable();
+                                        Ext.getCmp('administration_syslog_threshold').disable();
+                                    }
                                 }.createDelegate(this)
                             }
                         }
@@ -409,43 +409,40 @@ if (!Ung.hasResource["Ung.Administration"]) {
                             "check" : {
                                 fn : function(elem, checked) {
                                     this.getLoggingSettings().syslogEnabled = checked;
+                                    if (checked) {
+                                        Ext.getCmp('administration_syslog_host').enable();
+                                        Ext.getCmp('administration_syslog_port').enable();
+                                        Ext.getCmp('administration_syslog_facility').enable();
+                                        Ext.getCmp('administration_syslog_threshold').enable();
+                                    }
                                 }.createDelegate(this)
                             }
                         }
                     },{
                         xtype : 'textfield',
                         fieldLabel : this.i18n._('Host'),
-//                        labelStyle: 'width:200px;',
                         name : 'syslogHost',
+                        id : 'administration_syslog_host',
                         value : this.getLoggingSettings().syslogHost,
-                        listeners : {
-                            "change" : {
-                                fn : function(elem, newValue) {
-                                    this.getLoggingSettings().syslogHost = newValue;
-                                }.createDelegate(this)
-                            }
-                        }
+                        allowBlank : false,
+                        blankText : this.i18n._("A \"Host\" must be specified.")
                     },{
                         xtype : 'numberfield',
                         fieldLabel : this.i18n._('Port'),
-//                        labelStyle: 'width:200px;',
                         name : 'syslogPort',
+                        id : 'administration_syslog_port',
                         value : this.getLoggingSettings().syslogPort,
                         width: 50,
                         allowDecimals: false,
                         allowNegative: false,
-                        minValue: 0,                        
-                        maxValue: 86400,
-                        listeners : {
-                            "change" : {
-                                fn : function(elem, newValue) {
-                                    this.getLoggingSettings().trapPort = syslogPort;
-                                }.createDelegate(this)
-                            }
-                        }
+                        minValue: 1,                        
+                        maxValue: 65535,
+                        minText: i18n.sprintf(this.i18n._("The port must be an integer number between %d and %d."), 1, 65535),
+                        maxText: i18n.sprintf(this.i18n._("The port must be an integer number between %d and %d."), 1, 65535)
                     },{
                         xtype : 'combo',
                         name : 'syslogFacility',
+                        id : 'administration_syslog_facility',
                         editable : false,
                         fieldLabel : this.i18n._('Facility'),
                         mode : 'local',
@@ -482,17 +479,11 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         }),
                         displayField : 'name',
                         valueField : 'key',
-                        value : this.getLoggingSettings().syslogFacility,
-                        listeners : {
-                            "change" : {
-                                fn : function(elem, newValue) {
-                                    this.getLoggingSettings().syslogFacility = newValue;
-                                }.createDelegate(this)
-                            }
-                        }
+                        value : this.getLoggingSettings().syslogFacility
                     },{
                         xtype : 'combo',
                         name : 'syslogThreshold',
+                        id : 'administration_syslog_threshold',
                         editable : false,
                         fieldLabel : this.i18n._('Threshold'),
                         mode : 'local',
@@ -511,17 +502,9 @@ if (!Ung.hasResource["Ung.Administration"]) {
                                 ["DEBUG", this.i18n._("debug")]
                             ]        
                         }),
-                        
                         displayField : 'name',
                         valueField : 'key',
-                        value : this.getLoggingSettings().syslogThreshold,
-                        listeners : {
-                            "change" : {
-                                fn : function(elem, newValue) {
-                                    this.getLoggingSettings().syslogThreshold = newValue;
-                                }.createDelegate(this)
-                            }
-                        }
+                        value : this.getLoggingSettings().syslogThreshold
                     }]
                 }]
             });
@@ -658,10 +641,40 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 }
             });
         },
+        // validation function
+        validateClient : function() {
+            return  this.validateSyslog(); 
+        },
+        
+        //validate Syslog
+        validateSyslog : function() {
+        	var isSyslogEnabled = this.getLoggingSettings().syslogEnabled;
+        	if (isSyslogEnabled) {
+                var syslogHostCmp = Ext.getCmp('administration_syslog_host');
+                if (!syslogHostCmp.isValid()) {
+                    Ext.MessageBox.alert('Warning', this.i18n._("A \"Host\" must be specified."));
+                    return false;
+                }
+                var syslogPortCmp = Ext.getCmp('administration_syslog_port');
+                if (!syslogPortCmp.isValid()) {
+                    Ext.MessageBox.alert('Warning', i18n.sprintf(this.i18n._("The port must be an integer number between %d and %d."), 1, 65535));
+                    return false;
+                }
+                //prepare for save
+                var syslogFacilityCmp = Ext.getCmp('administration_syslog_facility');
+                var syslogThresholdCmp = Ext.getCmp('administration_syslog_threshold');
+                
+                this.getLoggingSettings().syslogHost = syslogHostCmp.getValue();
+                this.getLoggingSettings().syslogPort = syslogPortCmp.getValue();
+                this.getLoggingSettings().syslogFacility = syslogFacilityCmp.getValue();
+                this.getLoggingSettings().syslogThreshold = syslogThresholdCmp.getValue();
+        	}
+        	return true;
+        },
         // save function
         saveAction : function() {
             if (this.validate()) {
-            	this.saveSemaphore = 3;
+            	this.saveSemaphore = 2;
                 Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
                 
 //                var listAdministration=this.gridAdministration.getFullSaveList();
@@ -678,15 +691,15 @@ if (!Ung.hasResource["Ung.Administration"]) {
 //                    this.afterSave();
 //                }.createDelegate(this), this.getAdminSettings());
 
-               rpc.adminManager.getSnmpManager().setSnmpSettings(function(result, exception) {
-                    if (exception) {
-                        Ext.MessageBox.alert(i18n._("Failed"), exception.message);
-                        return;
-                    }
-                    this.afterSave();
-                }.createDelegate(this), this.getSnmpSettings());
+//               rpc.adminManager.getSnmpManager().setSnmpSettings(function(result, exception) {
+//                    if (exception) {
+//                        Ext.MessageBox.alert(i18n._("Failed"), exception.message);
+//                        return;
+//                    }
+//                    this.afterSave();
+//                }.createDelegate(this), this.getSnmpSettings());
                 
-                main.getLoggingManager.setLoggingSettings(function(result, exception) {
+                main.getLoggingManager().setLoggingSettings(function(result, exception) {
                     if (exception) {
                         Ext.MessageBox.alert(i18n._("Failed"), exception.message);
                         return;
