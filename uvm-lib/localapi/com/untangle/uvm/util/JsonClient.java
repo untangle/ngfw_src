@@ -121,6 +121,5 @@ public class JsonClient
         {
             super( message );
         }
-
     }
 }

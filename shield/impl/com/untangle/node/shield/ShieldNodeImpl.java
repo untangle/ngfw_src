@@ -30,10 +30,15 @@ import com.untangle.uvm.IntfEnum;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.vnet.AbstractNode;
 import com.untangle.uvm.vnet.PipeSpec;
+import com.untangle.uvm.logging.EventLogger;
+import com.untangle.uvm.logging.EventLoggerFactory;
+import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.NodeStartException;
 import com.untangle.uvm.node.NodeState;
 import com.untangle.uvm.node.NodeStats;
 import com.untangle.uvm.node.NodeStopException;
+import com.untangle.uvm.shield.ShieldRejectionEvent;
+import com.untangle.uvm.shield.ShieldStatisticEvent;
 import com.untangle.uvm.util.TransactionWork;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
@@ -64,9 +69,17 @@ public class ShieldNodeImpl extends AbstractNode  implements ShieldNode
     // We keep a stats around so we don't have to create one each time.
     private NodeStats fakeStats;
 
-    private final ShieldManager shieldManager = new ShieldManager();
+    private final ShieldManager shieldManager;
 
-    public ShieldNodeImpl() {}
+    public ShieldNodeImpl()
+    {
+        NodeContext tctx = getNodeContext();
+        EventLogger<ShieldStatisticEvent> sse = EventLoggerFactory.factory().getEventLogger(tctx);
+        EventLogger<ShieldRejectionEvent> sre = EventLoggerFactory.factory().getEventLogger(tctx);
+
+        
+        this.shieldManager = new ShieldManager( sse, sre );
+    }
 
     public void setShieldSettings(final ShieldSettings settings)
     {
