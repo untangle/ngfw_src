@@ -213,9 +213,10 @@ public abstract class AbstractEventHandler implements SessionEventListener {
     public void handleUDPClientExpired(UDPSessionEvent event)
         throws MPipeException
     {
-        // Current assumption: A single expire will be generated on one side of the pipeline,
-        // which will travel across it.  Another possibility would be to hit them all at once.
-        // Just go ahead and expire the other side.  The node will override
+        // Current assumption: A single expire will be generated on
+        // one side of the pipeline, which will travel across it.
+        // Another possibility would be to hit them all at once.  Just
+        // go ahead and expire the other side.  The node will override
         // this method if it wants to keep the other side open.
         UDPSession sess = event.session();
         sess.expireServer();
@@ -224,9 +225,10 @@ public abstract class AbstractEventHandler implements SessionEventListener {
     public void handleUDPServerExpired(UDPSessionEvent event)
         throws MPipeException
     {
-        // Current assumption: A single expire will be generated on one side of the pipeline,
-        // which will travel across it.  Another possibility would be to hit them all at once.
-        // Just go ahead and expire the other side.  The node will override
+        // Current assumption: A single expire will be generated on
+        // one side of the pipeline, which will travel across it.
+        // Another possibility would be to hit them all at once.  Just
+        // go ahead and expire the other side.  The node will override
         // this method if it wants to keep the other side open.
         UDPSession sess = event.session();
         sess.expireClient();

@@ -95,7 +95,7 @@ public abstract class NodeBase implements Node
     protected abstract void connectMPipe();
     protected abstract void disconnectMPipe();
 
-    // Node methods -------------------------------------------------------
+    // Node methods ------------------------------------------------------------
 
     public final NodeState getRunState()
     {
