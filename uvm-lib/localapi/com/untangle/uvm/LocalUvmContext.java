@@ -41,7 +41,6 @@ import com.untangle.uvm.addrbook.RemoteAddressBook;
 import com.untangle.uvm.license.LocalLicenseManager;
 import com.untangle.uvm.license.RemoteLicenseManager;
 import com.untangle.uvm.localapi.LocalIntfManager;
-import com.untangle.uvm.localapi.LocalShieldManager;
 import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.RemoteLoggingManager;
 import com.untangle.uvm.logging.SyslogManager;
@@ -138,12 +137,6 @@ public interface LocalUvmContext
     LocalNetworkManager networkManager();
 
     RemotePingManager pingManager();
-
-    /** Get the <code>LocalShieldManager</code> singleton.
-     *
-     * @return the ShieldManager.
-     */
-    LocalShieldManager localShieldManager();
 
     RemoteReportingManager reportingManager();
 

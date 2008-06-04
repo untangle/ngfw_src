@@ -235,8 +235,6 @@ public class RemoteClient
                 System.arraycopy(args, 1, pwArgs, 0, pwArgs.length);
                 logError(pwArgs);
             }
-        } else if (args[0].equalsIgnoreCase("shieldReconfigure")) {
-            shieldReconfigure();
         } else if (args[0].equalsIgnoreCase("updateAddress")) {
             updateAddress();
         } else if (args[0].equalsIgnoreCase("gc")) {
@@ -940,15 +938,6 @@ public class RemoteClient
         }
     }
 
-    /**
-     * <code>shieldReconfigure</code> Reload the JSON configuration
-     * file.
-     */
-    private static void shieldReconfigure() throws Exception
-    {
-        mc.shieldManager().shieldReconfigure();
-    }
-
     private static void updateAddress() throws Exception
     {
         mc.networkManager().updateAddress();
@@ -1066,7 +1055,6 @@ public class RemoteClient
         System.out.println("    ucli register mackage-name");
         System.out.println("    ucli unregister mackage-name");
         System.out.println("  argon commands:");
-        System.out.println("    ucli shieldReconfigure");
         System.out.println("  nucli server commands:");
         System.out.println("    ucli restartCliServer");
         System.out.println("  debugging commands:");

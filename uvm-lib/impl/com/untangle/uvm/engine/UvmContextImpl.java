@@ -48,7 +48,6 @@ import com.untangle.uvm.license.LicenseManagerFactory;
 import com.untangle.uvm.license.LocalLicenseManager;
 import com.untangle.uvm.license.RemoteLicenseManager;
 import com.untangle.uvm.localapi.LocalIntfManager;
-import com.untangle.uvm.localapi.LocalShieldManager;
 import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.EventLoggerFactory;
 import com.untangle.uvm.logging.LogMailerImpl;
@@ -59,7 +58,6 @@ import com.untangle.uvm.networking.ping.PingManagerImpl;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.RemoteIntfManager;
 import com.untangle.uvm.node.RemoteNodeManager;
-import com.untangle.uvm.node.RemoteShieldManager;
 import com.untangle.uvm.policy.LocalPolicyManager;
 import com.untangle.uvm.policy.PolicyManagerFactory;
 import com.untangle.uvm.policy.RemotePolicyManager;
@@ -109,8 +107,6 @@ public class UvmContextImpl extends UvmContextBase
     private RemoteAdminManagerImpl adminManager;
     private ArgonManagerImpl argonManager;
     private RemoteIntfManagerImpl remoteIntfManager;
-    private LocalShieldManager localShieldManager;
-    private RemoteShieldManager remoteShieldManager;
     private HttpInvokerImpl httpInvoker;
     private RemoteLoggingManagerImpl loggingManager;
     private SyslogManagerImpl syslogManager;
@@ -295,11 +291,6 @@ public class UvmContextImpl extends UvmContextBase
     public LocalIntfManager localIntfManager()
     {
         return argonManager.getIntfManager();
-    }
-
-    public LocalShieldManager localShieldManager()
-    {
-        return localShieldManager;
     }
 
     public RemoteLicenseManager remoteLicenseManager()
@@ -729,10 +720,6 @@ public class UvmContextImpl extends UvmContextBase
         // Retrieve the argon manager
         argonManager = ArgonManagerImpl.getInstance();
 
-        // Create the shield managers
-        localShieldManager = new LocalShieldManagerImpl();
-        remoteShieldManager = new RemoteShieldManagerImpl(localShieldManager);
-
         appServerManager = new AppServerManagerImpl(this);
         remoteAppServerManager = new RemoteAppServerManagerAdaptor(appServerManager);
 
@@ -930,11 +917,6 @@ public class UvmContextImpl extends UvmContextBase
         }
 
         return remoteIntfManager;
-    }
-
-    RemoteShieldManager remoteShieldManager()
-    {
-        return this.remoteShieldManager;
     }
 
     boolean refreshToolbox()

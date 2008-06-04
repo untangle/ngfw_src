@@ -35,8 +35,10 @@ fi
 if [ ! -f /proc/net/netfilter/nfnetlink_queue ]; then
     echo "ERROR: kernel does not have IP_NF_QUEUE" >& 2
     exit 1
-elif [ "`cat /proc/net/netfilter/nfnetlink_queue | wc -l`x" != "0x" ] ; then
-    echo "ERROR: nfqueue allocated, exiting" >&2
+
+queue_owner=`awk -v queue=0 '{ if ( $1 == queue ) print $2 }' /proc/net/netfilter/nfnetlink_queue `
+elif [ -n "${queue_owner}" ] ; then
+    echo "ERROR: nfqueue allocated by (${queue_owner}), exiting" >&2
     exit 1
 fi
 

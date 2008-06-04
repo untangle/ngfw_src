@@ -28,8 +28,6 @@ import java.util.List;
 
 import com.untangle.uvm.IntfEnum;
 import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.localapi.LocalShieldManager;
-import com.untangle.uvm.shield.ShieldNodeSettings;
 import com.untangle.uvm.vnet.AbstractNode;
 import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.node.NodeStartException;
@@ -41,8 +39,8 @@ import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
-public class ShieldNodeImpl extends AbstractNode
-    implements ShieldNode
+public class ShieldNodeImpl extends AbstractNode  implements ShieldNode
+
 {
     private static final String SHIELD_REJECTION_EVENT_QUERY
         = "SELECT time_stamp, client_addr, client_intf, reputation, limited, dropped, rejected"
@@ -59,14 +57,14 @@ public class ShieldNodeImpl extends AbstractNode
 
     private final Logger logger = Logger.getLogger(ShieldNodeImpl.class);
 
-    private final List<ShieldNodeSettings> emptyList = Collections.emptyList();
-
     private final PipeSpec pipeSpec[] = new PipeSpec[0];
 
     private ShieldSettings settings;
 
     // We keep a stats around so we don't have to create one each time.
     private NodeStats fakeStats;
+
+    private final ShieldManager shieldManager = new ShieldManager();
 
     public ShieldNodeImpl() {}
 
@@ -86,10 +84,9 @@ public class ShieldNodeImpl extends AbstractNode
         getNodeContext().runTransaction(tw);
 
         if ( getRunState() == NodeState.RUNNING ) {
-            LocalShieldManager lsm = LocalUvmContextFactory.context().localShieldManager();
-
             try {
-                lsm.setShieldNodeSettings( this.settings.getShieldNodeRuleList());
+                this.shieldManager.start();
+                this.shieldManager.blessUsers( this.settings );
             } catch ( Exception e ) {
                 logger.error( "Error setting shield node rules", e );
             }
@@ -195,24 +192,20 @@ public class ShieldNodeImpl extends AbstractNode
     protected void postStart() throws NodeStartException
     {
         validateSettings();
-        LocalShieldManager lsm = LocalUvmContextFactory.context().localShieldManager();
-
         try {
-            lsm.setShieldNodeSettings( this.settings.getShieldNodeRuleList());
+            this.shieldManager.start();
+            this.shieldManager.blessUsers( this.settings );
         } catch ( Exception e ) {
-            throw new NodeStartException( e );
+            logger.error( "Error setting shield node rules", e );
         }
     }
 
     protected void postStop() throws NodeStopException
     {
-        LocalShieldManager lsm = LocalUvmContextFactory.context().localShieldManager();
-
         try {
-            /* Deconfigure all of the nodes */
-            lsm.setShieldNodeSettings( this.emptyList );
+            this.shieldManager.stop();
         } catch ( Exception e ) {
-            throw new NodeStopException( e );
+            logger.error( "Error setting shield node rules", e );
         }
     }
 

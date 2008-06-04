@@ -47,7 +47,6 @@ import com.untangle.uvm.logging.RemoteLoggingManager;
 import com.untangle.uvm.networking.ping.RemotePingManager;
 import com.untangle.uvm.node.RemoteIntfManager;
 import com.untangle.uvm.node.RemoteNodeManager;
-import com.untangle.uvm.node.RemoteShieldManager;
 import com.untangle.uvm.policy.RemotePolicyManager;
 import com.untangle.uvm.security.RemoteAdminManager;
 import com.untangle.uvm.toolbox.RemoteToolboxManager;
@@ -127,12 +126,6 @@ public interface RemoteUvmContext
      * @return the NetworkManager.
      */
     RemoteNetworkManager networkManager();
-
-    /** Get the <code>RemoteShieldManager</code> singleton.
-     *
-     * @return the ShieldManager.
-     */
-    RemoteShieldManager shieldManager();
 
     /**
      * Get the <code>RemoteReportingManager</code> singleton.

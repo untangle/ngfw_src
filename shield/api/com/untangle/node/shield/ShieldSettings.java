@@ -99,7 +99,7 @@ public class ShieldSettings implements Serializable
                fetch=FetchType.EAGER)
     @JoinColumn(name="settings_id")
     @IndexColumn(name="position")
-    public List getShieldNodeRuleList()
+    public List<ShieldNodeRule> getShieldNodeRuleList()
     {
         if (null == this.shieldNodeRuleList) {
             this.shieldNodeRuleList = new LinkedList();
@@ -108,10 +108,10 @@ public class ShieldSettings implements Serializable
         return UvmUtil.eliminateNulls(this.shieldNodeRuleList);
     }
 
-    public void setShieldNodeRuleList(List shieldNodeRuleList)
+    public void setShieldNodeRuleList(List<ShieldNodeRule> shieldNodeRuleList)
     {
         if (null == shieldNodeRuleList) {
-            shieldNodeRuleList = new LinkedList();
+            shieldNodeRuleList = new LinkedList<ShieldNodeRule>();
         }
 
         this.shieldNodeRuleList = shieldNodeRuleList;
