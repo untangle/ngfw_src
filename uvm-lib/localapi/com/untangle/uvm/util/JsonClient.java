@@ -38,6 +38,8 @@ import java.io.IOException;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpStatus;
+ 
+import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.multipart.Part;
@@ -54,8 +56,12 @@ public class JsonClient
 {
     public static final JsonClient INSTANCE = new JsonClient();
 
+    private final MultiThreadedHttpConnectionManager connectionManager = 
+        new MultiThreadedHttpConnectionManager();
+
     private JsonClient()
     {
+        this.connectionManager.getParams().setMaxTotalConnections( 5 );
     }
 
     public static void main(String[] args) throws Exception
@@ -73,7 +79,7 @@ public class JsonClient
     public JSONObject call( String url, String param, JSONObject object ) throws ConnectionException
     {
         // Create an instance of HttpClient.
-        HttpClient client = new HttpClient();
+        HttpClient client = new HttpClient( this.connectionManager );
         
         // Create a method instance.
         PostMethod method = new PostMethod( url );
