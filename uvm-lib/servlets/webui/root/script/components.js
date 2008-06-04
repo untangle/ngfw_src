@@ -2458,12 +2458,6 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
         	this.getStore().proxy.data = this.data;
         	this.totalRecords=this.data.length
         }
-//        this.store.on("update", function(store, record, operation) {
-//                            this.updateChangedData(record, "modified");
-//                        }.createDelegate(this));
-//        this.store.on("load", function(store, records, options) {
-//                            this.updateFromChangedData(records, options);
-//                        }.createDelegate(this));        
         this.bbar = new Ext.PagingToolbar({
             pageSize : this.recordsPerPage,
             store : this.store,
@@ -2483,6 +2477,7 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
                 text : i18n._('Add'),
                 tooltip : i18n._('Add New Row'),
                 iconCls : 'iconAddRow',
+                name : 'addButton',
                 parentId : this.getId(),
                 handler : function() {
                     var record = new Ext.data.Record(Ext.decode(Ext.encode(this.emptyRow)));

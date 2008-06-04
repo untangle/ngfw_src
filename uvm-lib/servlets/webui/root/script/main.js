@@ -14,7 +14,7 @@ var rpc=null;
 Ung.Main=function() {
 }
 Ung.Main.prototype = {
-	disableThreads: true, // in development environment is useful to disable
+	disableThreads: false, // in development environment is useful to disable
                             // threads.
 	leftTabs: null,
 	appsSemaphore: null,
@@ -580,7 +580,7 @@ Ung.Main.prototype = {
 	},
 	
 	todo: function() {
-		Ext.MessageBox.alert(i18n._("Failed"),"TODO: implement this.");
+		Ext.MessageBox.alert(i18n._("TODO"),"TODO: implement this.");
 	},
 	
 	destoyNodes: function () {
