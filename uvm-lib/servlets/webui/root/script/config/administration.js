@@ -254,6 +254,16 @@ if (!Ung.hasResource["Ung.Administration"]) {
                             "check" : {
                                 fn : function(elem, checked) {
                                     this.getSnmpSettings().enabled = !checked;
+                                    if (checked) {
+                                        Ext.getCmp('administration_snmp_communityString').disable();
+                                        Ext.getCmp('administration_snmp_sysContact').disable();
+                                        Ext.getCmp('administration_snmp_sysLocation').disable();
+                                        Ext.getCmp('administration_snmp_sendTraps_disable').disable();
+                                        Ext.getCmp('administration_snmp_sendTraps_enable').disable();
+                                        Ext.getCmp('administration_snmp_trapCommunity').disable();
+                                        Ext.getCmp('administration_snmp_trapHost').disable();
+                                        Ext.getCmp('administration_snmp_trapPort').disable();
+                                    }
                                 }.createDelegate(this)
                             }
                         }
@@ -267,6 +277,19 @@ if (!Ung.hasResource["Ung.Administration"]) {
                             "check" : {
                                 fn : function(elem, checked) {
                                     this.getSnmpSettings().enabled = checked;
+                                    if (checked) {
+                                        Ext.getCmp('administration_snmp_communityString').enable();
+                                        Ext.getCmp('administration_snmp_sysContact').enable();
+                                        Ext.getCmp('administration_snmp_sysLocation').enable();
+                                        Ext.getCmp('administration_snmp_sendTraps_disable').enable();
+                                        var sendTrapsEnableCmp = null;
+                                        (sendTrapsEnableCmp = Ext.getCmp('administration_snmp_sendTraps_enable')).enable();
+                                        if (sendTrapsEnableCmp.getValue()){
+                                            Ext.getCmp('administration_snmp_trapCommunity').enable();
+                                            Ext.getCmp('administration_snmp_trapHost').enable();
+                                            Ext.getCmp('administration_snmp_trapPort').enable();
+                                        }
+                                    }
                                 }.createDelegate(this)
                             }
                         }
@@ -274,39 +297,23 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         xtype : 'textfield',
                         fieldLabel : this.i18n._('Community'),
                         name : 'communityString',
+                        id: 'administration_snmp_communityString',
                         value : this.getSnmpSettings().communityString,
-                        listeners : {
-                            "change" : {
-                                fn : function(elem, newValue) {
-                                    this.getSnmpSettings().communityString = newValue;
-                                }.createDelegate(this)
-                            }
-                        }
+                        allowBlank : false,
+                        blankText : this.i18n._("An SNMP \"Community\" must be specified.")                        
                     },{
                         xtype : 'textfield',
                         fieldLabel : this.i18n._('System Contact'),
                         name : 'sysContact',
-                        value : this.getSnmpSettings().sysContact,
-                        vtype : 'email',
-                        listeners : {
-                            "change" : {
-                                fn : function(elem, newValue) {
-                                    this.getSnmpSettings().sysContact = newValue;
-                                }.createDelegate(this)
-                            }
-                        }
+                        id: 'administration_snmp_sysContact',
+                        value : this.getSnmpSettings().sysContact
+                        //vtype : 'email'
                     },{
                         xtype : 'textfield',
                         fieldLabel : this.i18n._('System Location'),
                         name : 'sysLocation',
-                        value : this.getSnmpSettings().sysLocation,
-                        listeners : {
-                            "change" : {
-                                fn : function(elem, newValue) {
-                                    this.getSnmpSettings().sysLocation = newValue;
-                                }.createDelegate(this)
-                            }
-                        }
+                        id: 'administration_snmp_sysLocation',
+                        value : this.getSnmpSettings().sysLocation
                     },{
                         border: false,
                         html : '<hr>'
@@ -315,11 +322,16 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         boxLabel : i18n.sprintf(this.i18n._('%sDisable Traps%s so no trap events are generated.  (This is the default setting.)'), '<b>', '</b>'), 
                         hideLabel : true,
                         name : 'sendTraps',
+                        id: 'administration_snmp_sendTraps_disable',                        
                         checked : !this.getSnmpSettings().sendTraps,
                         listeners : {
                             "check" : {
                                 fn : function(elem, checked) {
-                                    this.getSnmpSettings().sendTraps = !checked;
+                                    if (checked) {
+                                        Ext.getCmp('administration_snmp_trapCommunity').disable();
+                                        Ext.getCmp('administration_snmp_trapHost').disable();
+                                        Ext.getCmp('administration_snmp_trapPort').disable();
+                                    }
                                 }.createDelegate(this)
                             }
                         }
@@ -328,11 +340,16 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         boxLabel : i18n.sprintf(this.i18n._('%sEnable Traps%s so trap events are sent when they are generated.'), '<b>', '</b>'), 
                         hideLabel : true,
                         name : 'sendTraps',
+                        id: 'administration_snmp_sendTraps_enable',
                         checked : this.getSnmpSettings().sendTraps,
                         listeners : {
                             "check" : {
                                 fn : function(elem, checked) {
-                                    this.getSnmpSettings().sendTraps = checked;
+                                    if (this.getSnmpSettings().enabled && checked) {
+                                        Ext.getCmp('administration_snmp_trapCommunity').enable();
+                                        Ext.getCmp('administration_snmp_trapHost').enable();
+                                        Ext.getCmp('administration_snmp_trapPort').enable();
+                                    }
                                 }.createDelegate(this)
                             }
                         }
@@ -340,43 +357,31 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         xtype : 'textfield',
                         fieldLabel : this.i18n._('Community'),
                         name : 'trapCommunity',
+                        id: 'administration_snmp_trapCommunity',
                         value : this.getSnmpSettings().trapCommunity,
-                        listeners : {
-                            "change" : {
-                                fn : function(elem, newValue) {
-                                    this.getSnmpSettings().trapCommunity = newValue;
-                                }.createDelegate(this)
-                            }
-                        }
+                        allowBlank : false,
+                        blankText : this.i18n._("An Trap \"Community\" must be specified.")                        
                     },{
                         xtype : 'textfield',
                         fieldLabel : this.i18n._('Host'),
                         name : 'trapHost',
+                        id: 'administration_snmp_trapHost',
                         value : this.getSnmpSettings().trapHost,
-                        listeners : {
-                            "change" : {
-                                fn : function(elem, newValue) {
-                                    this.getSnmpSettings().trapHost = newValue;
-                                }.createDelegate(this)
-                            }
-                        }
+                        allowBlank : false,
+                        blankText : this.i18n._("An Trap \"Host\" must be specified.")                        
                     },{
                         xtype : 'numberfield',
                         fieldLabel : this.i18n._('Port'),
                         name : 'trapPort',
+                        id: 'administration_snmp_trapPort',
                         value : this.getSnmpSettings().trapPort,
                         width: 50,
                         allowDecimals: false,
                         allowNegative: false,
-                        minValue: 0,                        
-                        maxValue: 86400,
-                        listeners : {
-                            "change" : {
-                                fn : function(elem, newValue) {
-                                    this.getSnmpSettings().trapPort = newValue;
-                                }.createDelegate(this)
-                            }
-                        }
+                        minValue: 1,                        
+                        maxValue: 65535,
+                        minText: i18n.sprintf(this.i18n._("The port must be an integer number between %d and %d."), 1, 65535),
+                        maxText: i18n.sprintf(this.i18n._("The port must be an integer number between %d and %d."), 1, 65535)
                     }]
                 }, {
                     title: this.i18n._('Syslog'),
@@ -643,7 +648,57 @@ if (!Ung.hasResource["Ung.Administration"]) {
         },
         // validation function
         validateClient : function() {
-            return  this.validateSyslog(); 
+            return  this.validateSnmp() && this.validateSyslog(); 
+        },
+
+        //validate SNMP
+        validateSnmp : function() {
+            var isSnmpEnabled = this.getSnmpSettings().enabled;
+            if (isSnmpEnabled) {
+                var snmpCommunityCmp = Ext.getCmp('administration_snmp_communityString');
+                if (!snmpCommunityCmp.isValid()) {
+                    Ext.MessageBox.alert('Warning', this.i18n._("An SNMP \"Community\" must be specified."));
+                    return false;
+                }
+                
+                var sendTrapsEnableCmp = Ext.getCmp('administration_snmp_sendTraps_enable');
+                var isTrapEnabled = sendTrapsEnableCmp.getValue();
+                var snmpTrapCommunityCmp, snmpTrapHostCmp, snmpTrapPortCmp;                
+                if (isTrapEnabled) {
+                    snmpTrapCommunityCmp = Ext.getCmp('administration_snmp_trapCommunity');
+                    if (!snmpTrapCommunityCmp.isValid()) {
+                        Ext.MessageBox.alert('Warning', this.i18n._("An Trap \"Community\" must be specified."));
+                        return false;
+                    }
+                    
+                    snmpTrapHostCmp = Ext.getCmp('administration_snmp_trapHost');
+                    if (!snmpTrapHostCmp.isValid()) {
+                        Ext.MessageBox.alert('Warning', this.i18n._("An Trap \"Host\" must be specified."));
+                        return false;
+                    }
+                    
+                    snmpTrapPortCmp = Ext.getCmp('administration_snmp_trapPort');
+                    if (!snmpTrapPortCmp.isValid()) {
+                        Ext.MessageBox.alert('Warning', i18n.sprintf(this.i18n._("The port must be an integer number between %d and %d."), 1, 65535));
+                        return false;
+                    }
+                }
+                
+                //prepare for save
+                var snmpSysContactCmp = Ext.getCmp('administration_snmp_sysContact');
+                var snmpSysLocationCmp = Ext.getCmp('administration_snmp_sysLocation');
+                
+                this.getSnmpSettings().communityString = snmpCommunityCmp.getValue();
+                this.getSnmpSettings().sysContact = snmpSysContactCmp.getValue();
+                this.getSnmpSettings().sysLocation = snmpSysLocationCmp.getValue();
+                this.getSnmpSettings().sendTraps = isTrapEnabled;
+                if (isTrapEnabled) {
+                    this.getSnmpSettings().trapCommunity = snmpTrapCommunityCmp.getValue();
+                    this.getSnmpSettings().trapHost = snmpTrapHostCmp.getValue();
+                    this.getSnmpSettings().trapPort = snmpTrapPortCmp.getValue();
+                }
+            }
+            return true;
         },
         
         //validate Syslog
@@ -674,7 +729,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
         // save function
         saveAction : function() {
             if (this.validate()) {
-            	this.saveSemaphore = 2;
+            	this.saveSemaphore = 3;
                 Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
                 
 //                var listAdministration=this.gridAdministration.getFullSaveList();
@@ -691,13 +746,13 @@ if (!Ung.hasResource["Ung.Administration"]) {
 //                    this.afterSave();
 //                }.createDelegate(this), this.getAdminSettings());
 
-//               rpc.adminManager.getSnmpManager().setSnmpSettings(function(result, exception) {
-//                    if (exception) {
-//                        Ext.MessageBox.alert(i18n._("Failed"), exception.message);
-//                        return;
-//                    }
-//                    this.afterSave();
-//                }.createDelegate(this), this.getSnmpSettings());
+               rpc.adminManager.getSnmpManager().setSnmpSettings(function(result, exception) {
+                    if (exception) {
+                        Ext.MessageBox.alert(i18n._("Failed"), exception.message);
+                        return;
+                    }
+                    this.afterSave();
+                }.createDelegate(this), this.getSnmpSettings());
                 
                 main.getLoggingManager().setLoggingSettings(function(result, exception) {
                     if (exception) {
