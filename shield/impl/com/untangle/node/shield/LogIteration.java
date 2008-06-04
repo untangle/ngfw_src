@@ -28,8 +28,14 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONException;
 
+import com.untangle.uvm.IntfConstants;
 import com.untangle.uvm.node.IPaddr;
 import com.untangle.uvm.node.ParseException;
+
+import com.untangle.uvm.ArgonException;
+import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.localapi.ArgonInterface;
+import com.untangle.uvm.localapi.LocalIntfManager;
 
 import com.untangle.uvm.shield.ShieldRejectionEvent;
 import com.untangle.uvm.shield.ShieldStatisticEvent;
@@ -160,8 +166,19 @@ public class LogIteration
         for ( int c = 1 ; c < user_js.length(); c++ ) {
             JSONArray temp_js = user_js.getJSONArray( c );
             if ( temp_js.length() != 6 ) continue;
+            
+            LocalIntfManager lim = LocalUvmContextFactory.context().localIntfManager();
 
-            byte clientIntf = 0;
+            /* Mark it as internal */
+            byte clientIntf = IntfConstants.INTERNAL_INTF;
+
+            try {
+                ArgonInterface ai = lim.getIntfByName( temp_js.optString( 0, "" ));
+                if ( ai != null ) clientIntf = ai.getArgon();
+            } catch ( ArgonException e ) {
+                clientIntf = IntfConstants.INTERNAL_INTF;
+            }
+
             int mode = 0;
 
             int limited = temp_js.getInt( 3 );
