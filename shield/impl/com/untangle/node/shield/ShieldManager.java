@@ -93,7 +93,7 @@ class ShieldManager
         JSONArray users = new JSONArray();
         
         for ( ShieldNodeRule rule : settings.getShieldNodeRuleList()) {
-            if ( !rule.isEnabled()) continue;
+            if ( !rule.isLive()) continue;
 
             JSONObject rule_json = new JSONObject();
             String temp = rule.getAddressString();
