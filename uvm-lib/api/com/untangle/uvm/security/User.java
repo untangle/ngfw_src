@@ -155,8 +155,7 @@ public class User implements Serializable
         return password;
     }
 
-    /* for hibernate only */
-    private void setPassword(byte[] password)
+    public void setPassword(byte[] password)
     {
         this.password = password;
     }

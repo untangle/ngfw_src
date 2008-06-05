@@ -153,13 +153,12 @@ class RemoteAdminManagerImpl implements RemoteAdminManager
             {
                 public boolean doWork(Session s)
                 {
-                    s.saveOrUpdate(as);
+                	adminSettings = (AdminSettings)s.merge(as);
                     return true;
                 }
             };
         uvmContext.runTransaction(tw);
 
-        this.adminSettings = as;
     }
 
     public LoginSession[] loggedInUsers()

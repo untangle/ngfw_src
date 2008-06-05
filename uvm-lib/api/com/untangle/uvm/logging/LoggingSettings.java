@@ -159,7 +159,7 @@ public class LoggingSettings implements Serializable
      * @return a <code>SyslogPriority</code> value
      */
     @Column(name="syslog_threshold")
-    @Type(type="com.untangle.uvm.type.SyslogPriorityUserType")
+    @Type(type="com.untangle.uvm.logging.SyslogPriorityUserType")
     public SyslogPriority getSyslogThreshold()
     {
         return syslogThreshold;

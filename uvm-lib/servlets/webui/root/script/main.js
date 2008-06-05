@@ -108,6 +108,7 @@ Ung.Main.prototype = {
 		}
 		
 		this.initExtI18n();
+        this.initExtVTypes();
 		
 		// initialize viewport object
 		var contentLeftArr=[
@@ -176,6 +177,20 @@ Ung.Main.prototype = {
 		Ext.form.Field.prototype.invalidText=i18n._('The value in this field is invalid');
 		Ext.form.TextField.prototype.blankText=i18n._('This field is required');
 	},
+    // Add the additional 'advanced' VTypes
+	initExtVTypes: function(){
+        Ext.apply(Ext.form.VTypes, {
+          password: function(val, field) {
+            if (field.initialPassField) {
+              var pwd = Ext.getCmp(field.initialPassField);
+              return (val == pwd.getValue());
+            }
+            return true;
+          },
+          
+          passwordText: i18n._('Passwords do not match')
+        });
+      },
     getLoggingManager : function(forceReload) {
         if (forceReload || rpc.loggingManager === undefined) {
             rpc.loggingManager = rpc.jsonrpc.RemoteUvmContext.loggingManager()

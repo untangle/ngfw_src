@@ -34,7 +34,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
             // builds the tab panel with the tabs
             this.buildTabPanel([this.panelAdministration, this.panelPublicAddress, this.panelCertificates, this.panelMonitoring,
                     this.panelSkins]);
-            this.tabs.activate(this.panelMonitoring);
+            this.tabs.activate(this.panelAdministration);
             this.panelPublicAddress.disable();
             this.panelCertificates.disable();
 
@@ -110,48 +110,46 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 layout : "form",
                 bodyStyle : 'padding:5px 5px 0px 5px;',
                 autoScroll : true,
-                defaults : {
-                    autoHeight : true
-                },
+                hasEdit : false,
                 items : [this.gridAdministration=new Ung.EditorGrid({
                     settingsCmp : this,
+                    title : this.i18n._("Admin Accounts"),
+                    height : 350,
+                    autoScroll : true,
                     name : 'gridAdminAccounts',
-//                    // the total records is set from the base settings
-//                    // patternsLength field
-//                    totalRecords : this.getBaseSettings().patternsLength,
+                    recordJavaClass : "com.untangle.uvm.security.User",
                     emptyRow : {
                         "login" : this.i18n._("[no login]"),
                         "name" : this.i18n._("[no description]"),
                         "readOnly" : false,
-                        "email" : this.i18n._("[no email]")
-//                        ,
-//                        "clearPassword" : ""
+                        "email" : this.i18n._("[no email]"),
+                        "clearPassword" : "",
+                        "javaClass" : "com.untangle.uvm.security.User"
                     },
-                    title : this.i18n._("Admin Accounts"),
                     // the column is autoexpanded if the grid width permits
                     autoExpandColumn : 'name',
-                    recordJavaClass : "com.untangle.uvm.security.User",
                     
                     data : storeData,
                     dataRoot: null,
-                    // the list of fields
+                    // the list of fields; we need all as we get/set all records once 
                     fields : [{
                         name : 'id'
                     }, {
                         name : 'login'
-                    },
-                    // this field is internationalized so a converter was added
-                    {
-                        name : 'name',
-                        convert : function(v) {
-                            return this.i18n._(v)
-                        }.createDelegate(this)
+                    }, {
+                        name : 'password'
+                    }, {
+                        name : 'name'
+                    }, {
+                        name : 'email'
+                    }, {
+                        name : 'notes'
+                    }, {
+                        name : 'sendAlerts'
                     }, {
                         name : 'readOnly'
                     }, {
-                        name : 'email'
-//                    }, {
-//                        name : 'clearPassword'
+                        name : 'javaClass' //needed as users is a set
                     }],
                     // the list of columns for the column model
                     columns : [{
@@ -182,17 +180,23 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         editor : new Ext.form.TextField({
                             allowBlank : false
                         })
-                    }
-//                    , {
-//                        id : 'password',
-//                        header : this.i18n._("description"),
-//                        width : 200,
-//                        dataIndex : 'description',
-//                        editor : new Ext.form.TextField({
-//                            allowBlank : false
-//                        })
-//                    }
-                    ],
+                    }, {
+                        id : 'password',
+                        header : this.i18n._("password"),
+                        width : 150,
+                        dataIndex : null,
+                        renderer: function(value, meta, record, row, col, store) {
+                          var id = Ext.id();
+                          var btn = new Ext.Button({
+                            text: this.i18n._("change password"),
+                            handler : function() {
+                            	alert('cucu')
+                            }.createDelegate(this)
+                          });
+                          btn.render.defer(1, btn, [id]);
+                          return '<div  id=' + id + '></div>';
+                        }.createDelegate(this)                    
+                    }],
                     sortField : 'login',
                     columnsDefaultSortable : true,
                     plugins : [readOnlyColumn],
@@ -214,12 +218,36 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         name : "email",
                         fieldLabel : this.i18n._("Email"),
                         width : 200
-//                    }), new Ext.form.TextField({
-//                        name : "password",
-//                        fieldLabel : this.i18n._("Password"),
-//                        width : 200
+                    }), new Ext.form.TextField({
+                    	inputType: 'password',
+                        name : "clearPassword",
+                        id : 'administration_rowEditor_password',
+                        fieldLabel : this.i18n._("Password"),
+                        width : 200
+                    }), new Ext.form.TextField({
+                        inputType: 'password',
+//                        name : "confirm_password",
+                        name : "clearPassword",
+                        vtype: 'password',
+                        initialPassField: 'administration_rowEditor_password', // id of the initial password field
+                        fieldLabel : this.i18n._("Confirm Password"),
+                        width : 200
                     })]
-                })]
+                }), {
+                	xtype : 'fieldset',
+                	title : this.i18n._('External Administration'),
+                    autoHeight : true,
+                	items : [{
+                		html : 'test'
+                	}] 
+                },{
+                    xtype : 'fieldset',
+                    title : this.i18n._('Internal Administration'),
+                    autoHeight : true,
+                    items : [{
+                        html : 'Note: HTTPS administration is always enabled internally'
+                    }] 
+                }]
             })
         },
         buildPublicAddress : function() {
@@ -729,22 +757,25 @@ if (!Ung.hasResource["Ung.Administration"]) {
         // save function
         saveAction : function() {
             if (this.validate()) {
-            	this.saveSemaphore = 3;
+            	this.saveSemaphore = 4;
                 Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
                 
-//                var listAdministration=this.gridAdministration.getFullSaveList();
-//                var setAdministration={};
-//                for(var i=0; i<listAdministration.length;i++) {
-//                    setAdministration[i]=listAdministration[i];
-//                }
-//                this.getAdminSettings().users.set=setAdministration;
-//                rpc.adminManager.setAdminSettings(function(result, exception) {
-//                    if (exception) {
-//                        Ext.MessageBox.alert(i18n._("Failed"), exception.message);
-//                        return;
-//                    }
-//                    this.afterSave();
-//                }.createDelegate(this), this.getAdminSettings());
+                var listAdministration=this.gridAdministration.getFullSaveList();
+                var setAdministration={};
+                for(var i=0; i<listAdministration.length;i++) {
+                    setAdministration[i]=listAdministration[i];
+                    if (setAdministration[i].clearPassword != null){
+                    	delete setAdministration[i].password;
+                    }
+                }
+                this.getAdminSettings().users.set=setAdministration;
+                rpc.adminManager.setAdminSettings(function(result, exception) {
+                    if (exception) {
+                        Ext.MessageBox.alert(i18n._("Failed"), exception.message);
+                        return;
+                    }
+                    this.afterSave();
+                }.createDelegate(this), this.getAdminSettings());
 
                rpc.adminManager.getSnmpManager().setSnmpSettings(function(result, exception) {
                     if (exception) {
