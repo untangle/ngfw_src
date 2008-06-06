@@ -195,7 +195,7 @@ class RealMkg
     log "apt-get upgrade #{UPGD_OPTS}"
 
     pkg_list = get_pkg_list("apt-get dist-upgrade #{UPGD_OPTS} --print-uris")
-    download(pkg_list)
+    r = download(pkg_list)
     if (r != 0)
       return r
     end
