@@ -2014,7 +2014,7 @@ Ung.RowEditorWindow = Ext.extend(Ung.UpdateWindow, {
     },
     initSubComponents : function(container, position) {
         this.formPanel = new Ext.FormPanel({
-            id : 'editor-form',
+//            id : 'editor-form',
             renderTo : this.getContentEl(),
             labelWidth : 75,
             buttonAlign : 'right',
@@ -2719,8 +2719,18 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
         var list=[];
         var records=this.store.getRange();
         for(var i=0; i<records.length;i++) {
+            var id = records[i].get("id");
+            if (id != null && id >= 0) {
+                var d = this.changedData[id];
+                if (d) {
+                    if (d.op == "deleted") {
+                    	continue
+                    }
+                }
+            }
             list.push(records[i].data)
         }
+        	
         return list;
     }
 });

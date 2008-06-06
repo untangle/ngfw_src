@@ -23,7 +23,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
             // call superclass renderer first
             Ung.Administration.superclass.onRender.call(this, container, position);
             this.initSubCmps.defer(1, this);
-            // builds the 2 tabs
+            // builds the tabs
         },
         initSubCmps : function() {
             this.buildAdministration();
@@ -110,12 +110,12 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 layout : "form",
                 bodyStyle : 'padding:5px 5px 0px 5px;',
                 autoScroll : true,
-                hasEdit : false,
-                items : [this.gridAdministration=new Ung.EditorGrid({
+                items : [this.gridAdminAccounts=new Ung.EditorGrid({
                     settingsCmp : this,
                     title : this.i18n._("Admin Accounts"),
                     height : 350,
                     autoScroll : true,
+                    hasEdit : false,
                     name : 'gridAdminAccounts',
                     recordJavaClass : "com.untangle.uvm.security.User",
                     emptyRow : {
@@ -136,8 +136,8 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         name : 'id'
                     }, {
                         name : 'login'
-                    }, {
-                        name : 'password'
+//                    }, {
+//                        name : 'password'
                     }, {
                         name : 'name'
                     }, {
@@ -189,9 +189,11 @@ if (!Ung.hasResource["Ung.Administration"]) {
                           var id = Ext.id();
                           var btn = new Ext.Button({
                             text: this.i18n._("change password"),
-                            handler : function() {
-                            	alert('cucu')
-                            }.createDelegate(this)
+                            handler : function(record) {
+                                // populate row editor
+                                this.gridAdminAccounts.rowEditorChangePass.populate(record);
+                                this.gridAdminAccounts.rowEditorChangePass.show();
+                            }.createDelegate(this,[record])
                           });
                           btn.render.defer(1, btn, [id]);
                           return '<div  id=' + id + '></div>';
@@ -232,6 +234,22 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         initialPassField: 'administration_rowEditor_password', // id of the initial password field
                         fieldLabel : this.i18n._("Confirm Password"),
                         width : 200
+                    })],
+                    // the row input lines used by the change password window
+                    rowEditorChangePassInputLines : [new Ext.form.TextField({
+                        inputType: 'password',
+                        name : "clearPassword",
+                        id : 'administration_rowEditor1_password',
+                        fieldLabel : this.i18n._("Password"),
+                        width : 200
+                    }), new Ext.form.TextField({
+                        inputType: 'password',
+//                        name : "confirm_password",
+                        name : "clearPassword",
+                        vtype: 'password',
+                        initialPassField: 'administration_rowEditor1_password', // id of the initial password field
+                        fieldLabel : this.i18n._("Confirm Password"),
+                        width : 200
                     })]
                 }), {
                 	xtype : 'fieldset',
@@ -248,7 +266,18 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         html : 'Note: HTTPS administration is always enabled internally'
                     }] 
                 }]
-            })
+            });
+
+            if ( this.gridAdminAccounts.rowEditorChangePassInputLines != null) {
+                 this.gridAdminAccounts.rowEditorChangePass = new Ung.RowEditorWindow({
+                    grid : this.gridAdminAccounts,
+                    inputLines : this.gridAdminAccounts.rowEditorChangePassInputLines
+                });
+                 this.gridAdminAccounts.rowEditorChangePass.render('container');
+            }
+                                
+            
+            
         },
         buildPublicAddress : function() {
             this.panelPublicAddress = this.getTODOPanel("Public Address");
@@ -760,13 +789,13 @@ if (!Ung.hasResource["Ung.Administration"]) {
             	this.saveSemaphore = 4;
                 Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
                 
-                var listAdministration=this.gridAdministration.getFullSaveList();
+                var listAdministration=this.gridAdminAccounts.getFullSaveList();
                 var setAdministration={};
                 for(var i=0; i<listAdministration.length;i++) {
                     setAdministration[i]=listAdministration[i];
-                    if (setAdministration[i].clearPassword != null){
-                    	delete setAdministration[i].password;
-                    }
+//                    if (setAdministration[i].clearPassword != null){
+//                    	delete setAdministration[i].password;
+//                    }
                 }
                 this.getAdminSettings().users.set=setAdministration;
                 rpc.adminManager.setAdminSettings(function(result, exception) {

@@ -28,9 +28,13 @@ import java.net.UnknownHostException;
 import java.security.Principal;
 import java.util.Date;
 import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 import java.util.TimeZone;
 import javax.transaction.TransactionRolledbackException;
 
+import com.untangle.node.util.PartialListUtil.Handler;
 import com.untangle.uvm.MailSender;
 import com.untangle.uvm.MailSettings;
 import com.untangle.uvm.networking.NetworkException;
@@ -44,6 +48,7 @@ import com.untangle.uvm.security.UvmPrincipal;
 import com.untangle.uvm.snmp.SnmpManager;
 import com.untangle.uvm.snmp.SnmpManagerImpl;
 import com.untangle.uvm.util.FormUtil;
+import com.untangle.uvm.util.ListUtil;
 import com.untangle.uvm.util.TransactionWork;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
@@ -148,6 +153,8 @@ class RemoteAdminManagerImpl implements RemoteAdminManager
 
     public void setAdminSettings(final AdminSettings as)
     {
+        updateUserPassords(as);
+        
         // Do something with summaryPeriod? XXX
         TransactionWork tw = new TransactionWork()
             {
@@ -161,6 +168,26 @@ class RemoteAdminManagerImpl implements RemoteAdminManager
 
     }
 
+	private void updateUserPassords(final AdminSettings as) {
+		for ( Iterator<User> i = adminSettings.getUsers().iterator(); i.hasNext(); ) {
+        	User user = i.next();
+            User mUser = null;
+            if ( ( mUser = modifiedUser( user, as.getUsers() )) != null &&
+            		mUser.getPassword() == null) {
+            	mUser.updatePassword(user);
+            }
+        }
+	}
+    
+    private User modifiedUser( User user, Set<User> updatedUsers )
+    {
+        for ( User currentUser : updatedUsers ) {
+            if( currentUser.getId().equals( user.getId())) return currentUser;
+        }
+
+        return null;
+    }
+    
     public LoginSession[] loggedInUsers()
     {
         return HttpInvokerImpl.invoker().getLoginSessions();

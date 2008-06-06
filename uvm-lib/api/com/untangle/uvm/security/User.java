@@ -41,6 +41,8 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import com.untangle.uvm.node.Rule;
+
 /**
  * An UVM user.
  *
@@ -155,7 +157,8 @@ public class User implements Serializable
         return password;
     }
 
-    public void setPassword(byte[] password)
+    /* for hibernate only */
+    private void setPassword(byte[] password)
     {
         this.password = password;
     }
@@ -281,4 +284,9 @@ public class User implements Serializable
             + " email = " + email + " notes = " + notes
             + " alerts = " + sendAlerts + " ]";
     }
+    
+    public void updatePassword(User user) {
+		this.password = user.password;
+	}
+    
 }
