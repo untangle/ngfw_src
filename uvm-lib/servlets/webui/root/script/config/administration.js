@@ -136,8 +136,6 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         name : 'id'
                     }, {
                         name : 'login'
-//                    }, {
-//                        name : 'password'
                     }, {
                         name : 'name'
                     }, {
@@ -162,7 +160,8 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         width : 200,
                         dataIndex : 'login',
                         editor : new Ext.form.TextField({
-                            allowBlank : false
+                            allowBlank : false,
+                            blankText : this.i18n._("The login name cannot be blank.")
                         })
                     }, {
                         id : 'name',
@@ -207,6 +206,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         name : "login",
                         fieldLabel : this.i18n._("Login"),
                         allowBlank : false,
+                        blankText : this.i18n._("The login name cannot be blank."),
                         width : 200
                     }), new Ext.form.TextField({
                         name : "name",
@@ -225,7 +225,9 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         name : "clearPassword",
                         id : 'administration_rowEditor_password',
                         fieldLabel : this.i18n._("Password"),
-                        width : 200
+                        width : 200,
+                        minLength : 3,
+                        minLengthText : i18n.sprintf(this.i18n._("The password is shorter than the minimum %d characters."), 3)
                     }), new Ext.form.TextField({
                         inputType: 'password',
 //                        name : "confirm_password",
@@ -241,7 +243,9 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         name : "clearPassword",
                         id : 'administration_rowEditor1_password',
                         fieldLabel : this.i18n._("Password"),
-                        width : 200
+                        width : 200,
+                        minLength : 3,
+                        minLengthText : i18n.sprintf(this.i18n._("The password is shorter than the minimum %d characters."), 3)                        
                     }), new Ext.form.TextField({
                         inputType: 'password',
 //                        name : "confirm_password",
@@ -705,7 +709,42 @@ if (!Ung.hasResource["Ung.Administration"]) {
         },
         // validation function
         validateClient : function() {
-            return  this.validateSnmp() && this.validateSyslog(); 
+            return  this.validateAdminAccounts() && this.validateSnmp() && this.validateSyslog(); 
+        },
+        
+        //validate Admin Accounts
+        validateAdminAccounts : function() {
+            var listAdminAccounts = this.gridAdminAccounts.getFullSaveList();
+            var oneWritableAccount = false;
+            
+            // verify that the login name is not duplicated
+            for(var i=0; i<listAdminAccounts.length;i++) {
+                for(var j=i+1; j<listAdminAccounts.length;j++) {
+                	if (listAdminAccounts[i].login == listAdminAccounts[j].login) {
+                        Ext.MessageBox.alert('Warning', i18n.sprintf(this.i18n._("The login name: \"%s\" in row: %d  already exists."), listAdminAccounts[j].login, j+1));
+                		return false;
+                	}
+                }
+                
+                if (!listAdminAccounts[i].readOnly) {
+                    oneWritableAccount = true;
+                }
+            	
+            }
+            
+            // verify that there is at least one valid entry after all operations
+            if(listAdminAccounts.length <= 0 ){
+                Ext.MessageBox.alert('Warning', this.i18n._("There must always be at least one valid account."));
+                return false;
+            }
+        
+            // verify that there was at least one non-read-only account
+            if(!oneWritableAccount){
+                Ext.MessageBox.alert('Warning', this.i18n._("There must always be at least one non-read-only (writable) account."));
+                return false;
+            }
+            
+        	return true;
         },
 
         //validate SNMP
@@ -793,9 +832,6 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 var setAdministration={};
                 for(var i=0; i<listAdministration.length;i++) {
                     setAdministration[i]=listAdministration[i];
-//                    if (setAdministration[i].clearPassword != null){
-//                    	delete setAdministration[i].password;
-//                    }
                 }
                 this.getAdminSettings().users.set=setAdministration;
                 rpc.adminManager.setAdminSettings(function(result, exception) {
