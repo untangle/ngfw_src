@@ -170,10 +170,6 @@ public abstract class NodeBase implements Node
 
     public Counters getCounters() throws IllegalStateException
     {
-        if (NodeState.RUNNING != getRunState()) {
-            throw new IllegalStateException("Stats called in state: "
-                                            + getRunState());
-        }
         return counters;
     }
 
