@@ -58,8 +58,20 @@ public class Counters
 
         synchronized (blingers) {
             b = blingers.get(name);
+        }
+
+        return b;
+    }
+
+    public BlingBlinger makeBlingBlinger(String name, String displayName,
+                                         String action, String unit)
+    {
+        BlingBlinger b;
+
+        synchronized (blingers) {
+            b = blingers.get(name);
             if (null == b) {
-                b = new BlingBlinger();
+                b = new BlingBlinger(displayName, action, unit);
                 blingers.put(name, b);
             }
         }
@@ -67,9 +79,19 @@ public class Counters
         return b;
     }
 
+    public BlingBlinger makeBlingBlinger(String name, String displayName, String action)
+    {
+        return makeBlingBlinger(name, displayName, null);
+    }
+
+    public BlingBlinger makeBlingBlinger(String name, String displayName)
+    {
+        return makeBlingBlinger(name, displayName, null, null);
+    }
+
     public long incrementCounter(String name, long delta)
     {
-        BlingBlinger b = getBlingBlinger(name);
+        BlingBlinger b = blingers.get(name);
         synchronized (b) {
             return b.increment(delta);
         }

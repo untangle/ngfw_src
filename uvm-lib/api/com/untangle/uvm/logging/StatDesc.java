@@ -1,5 +1,5 @@
 /*
- * $HeadURL$
+ * $HeadURL: svn://chef/branch/prod/web-ui/work/src/uvm-lib/api/com/untangle/uvm/logging/LoggingSettings.java $
  * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
@@ -31,60 +31,33 @@
  * to do so, delete this exception statement from your version.
  */
 
-package com.untangle.node.token;
+package com.untangle.uvm.logging;
 
-import com.untangle.uvm.logging.BlingBlinger;
-import com.untangle.uvm.logging.Counters;
-import com.untangle.uvm.vnet.Session;
-import org.apache.log4j.Logger;
-
-import static com.untangle.node.token.CasingAdaptor.TOKEN_SIZE;
-
-/**
- * Wrapper lets us observe <code>TokenStreamer</code> results.
- *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
- */
-class TokenStreamerWrapper implements TokenStreamer
+public class StatDesc
 {
-    private final Logger logger = Logger.getLogger(getClass());
+    private final String displayName;
+    private final String action;
+    private final String unit;
 
-    private final TokenStreamer tokenStreamer;
-    private final Session session;
-    private final BlingBlinger blinger;
-
-    TokenStreamerWrapper(TokenStreamer tokenStreamer, Session session,
-                         boolean s2c)
+    public StatDesc(String displayName, String action, String unit)
     {
-        this.tokenStreamer = tokenStreamer;
-        this.session = session;
-
-        Counters c = session.mPipe().node().getCounters();
-        if (s2c) {
-            blinger = c.getBlingBlinger("n2cBytes");
-        } else {
-            blinger = c.getBlingBlinger("n2sBytes");
-        }
+        this.displayName = displayName;
+        this.action = action;
+        this.unit = unit;
     }
 
-    public Token nextToken()
+    public String getDisplayName()
     {
-        Token token = tokenStreamer.nextToken();
-
-        if (null != token) {
-            try {
-                blinger.increment(token.getEstimatedSize() - TOKEN_SIZE);
-            } catch (Exception exn) {
-                logger.warn("could not estimate size", exn);
-            }
-        }
-
-        return token;
+        return displayName;
     }
 
-    public boolean closeWhenDone()
+    public String getAction()
     {
-        return tokenStreamer.closeWhenDone();
+        return action;
+    }
+
+    public String getUnit()
+    {
+        return unit;
     }
 }

@@ -47,14 +47,14 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
 {
     protected int[] maxPacketSize;
 
-    private final BlingBlinger s2tChunks;
-    private final BlingBlinger c2tChunks;
-    private final BlingBlinger t2sChunks;
-    private final BlingBlinger t2cChunks;
-    private final BlingBlinger s2tBytes;
-    private final BlingBlinger c2tBytes;
-    private final BlingBlinger t2sBytes;
-    private final BlingBlinger t2cBytes;
+    private final BlingBlinger s2nChunks;
+    private final BlingBlinger c2nChunks;
+    private final BlingBlinger n2sChunks;
+    private final BlingBlinger n2cChunks;
+    private final BlingBlinger s2nBytes;
+    private final BlingBlinger c2nBytes;
+    private final BlingBlinger n2sBytes;
+    private final BlingBlinger n2cBytes;
 
     protected UDPSessionImpl(Dispatcher disp,
                              com.untangle.uvm.argon.UDPSession pSession,
@@ -76,14 +76,14 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
 
         Counters c = mPipe.node().getCounters();
 
-        s2tChunks = c.getBlingBlinger("s2tChunks");
-        c2tChunks = c.getBlingBlinger("c2tChunks");
-        t2sChunks = c.getBlingBlinger("t2sChunks");
-        t2cChunks = c.getBlingBlinger("t2cChunks");
-        s2tBytes = c.getBlingBlinger("s2tBytes");
-        c2tBytes = c.getBlingBlinger("c2tBytes");
-        t2sBytes = c.getBlingBlinger("t2sBytes");
-        t2cBytes = c.getBlingBlinger("t2cBytes");
+        s2nChunks = c.makeBlingBlinger("s2nChunks", "Server to Node Chunks");
+        c2nChunks = c.makeBlingBlinger("c2nChunks", "Client to Node Chunks");
+        n2sChunks = c.makeBlingBlinger("n2sChunks", "Node to Server Chunks");
+        n2cChunks = c.makeBlingBlinger("n2cChunks", "Server to Node Chunks");
+        s2nBytes = c.makeBlingBlinger("s2nBytes", "Server to Node Bytes", "byte");
+        c2nBytes = c.makeBlingBlinger("c2nBytes", "Client to Node Bytes", "byte");
+        n2sBytes = c.makeBlingBlinger("n2sBytes", "Node to Server Bytes", "byte");
+        n2cBytes = c.makeBlingBlinger("n2cBytes", "Node to Client Bytes", "byte");
     }
 
     public int serverMaxPacketSize() {
@@ -119,7 +119,7 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
     }
 
     public IPSessionDesc makeDesc()
-    {
+     {
         return new UDPSessionDescImpl(id(), new SessionStats(stats),
                                       clientState(), serverState(),
                                       clientIntf(), serverIntf(), clientAddr(),
@@ -280,11 +280,11 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
             stats.wroteData(side, numWritten);
 
             if (CLIENT == side) {
-                t2sChunks.increment();
-                t2sBytes.increment(numWritten);
+                n2sChunks.increment();
+                n2sBytes.increment(numWritten);
             } else {
-                t2cChunks.increment();
-                t2cBytes.increment(numWritten);
+                n2cChunks.increment();
+                n2cBytes.increment(numWritten);
             }
 
             if (logger.isDebugEnabled()) {
@@ -412,11 +412,11 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
         stats.readData(side, numRead);
 
         if (CLIENT == side) {
-            c2tChunks.increment();
-            c2tBytes.increment(numRead);
+            c2nChunks.increment();
+            c2nBytes.increment(numRead);
         } else {
-            s2tChunks.increment();
-            s2tBytes.increment(numRead);
+            s2nChunks.increment();
+            s2nBytes.increment(numRead);
         }
 
         // We have received bytes.  Give them to the user.

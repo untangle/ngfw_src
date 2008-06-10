@@ -130,22 +130,9 @@ public class SpywareImpl extends AbstractNode implements Spyware
 
     private final PartialListUtil listUtil = new PartialListUtil();
 
-    private final BlingBlinger subnetScanBlinger;
-    private final BlingBlinger subnetBlockBlinger;
-
-    private final BlingBlinger httpScan;
-    private final BlingBlinger httpWhitelisted;
-    private final BlingBlinger httpBlockedDomain;
-    private final BlingBlinger httpPassed;
-    private final BlingBlinger httpClientCookieScan;
-    private final BlingBlinger httpClientCookieBlock;
-    private final BlingBlinger httpClientCookiePass;
-    private final BlingBlinger httpServerCookieScan;
-    private final BlingBlinger httpServerCookieBlock;
-    private final BlingBlinger httpServerCookiePass;
-    private final BlingBlinger httpActiveXScan;
-    private final BlingBlinger httpActiveXBlock;
-    private final BlingBlinger httpActiveXPass;
+    private final BlingBlinger scanBlinger;
+    private final BlingBlinger passBlinger;
+    private final BlingBlinger blockBlinger;
 
     private volatile SpywareSettings settings;
 
@@ -218,22 +205,10 @@ public class SpywareImpl extends AbstractNode implements Spyware
         eventLogger.addSimpleEventFilter(ef);
 
         Counters c = getCounters();
-        subnetScanBlinger = c.getBlingBlinger("subnetScanBlinger");
-        subnetBlockBlinger = c.getBlingBlinger("subnetBlockBlinger");
 
-        httpScan = c.getBlingBlinger("httpScan");
-        httpWhitelisted = c.getBlingBlinger("httpWhitelisted");
-        httpBlockedDomain = c.getBlingBlinger("httpBlockedDomain");
-        httpPassed = c.getBlingBlinger("httpPassed");
-        httpClientCookieScan = c.getBlingBlinger("httpClientCookieScan");
-        httpClientCookieBlock = c.getBlingBlinger("httpClientCookieBlock");
-        httpClientCookiePass = c.getBlingBlinger("httpClientCookiePass");
-        httpServerCookieScan = c.getBlingBlinger("httpServerCookieScan");
-        httpServerCookieBlock = c.getBlingBlinger("httpServerCookieBlock");
-        httpServerCookiePass = c.getBlingBlinger("httpServerCookiePass");
-        httpActiveXScan = c.getBlingBlinger("httpActiveXScan");
-        httpActiveXBlock = c.getBlingBlinger("httpActiveXBlock");
-        httpActiveXPass = c.getBlingBlinger("httpActiveXPass");
+        scanBlinger = c.makeBlingBlinger("scan", "scan", "Scan Connection");
+        blockBlinger = c.makeBlingBlinger("block", "block", "Block Connection");
+        passBlinger = c.makeBlingBlinger("pass", "pass", "Pass Connection");
     }
 
     // SpywareNode methods -----------------------------------------------------
@@ -469,77 +444,77 @@ public class SpywareImpl extends AbstractNode implements Spyware
 
     void incrementSubnetScan()
     {
-        subnetScanBlinger.increment();
+        scanBlinger.increment();
     }
 
     void incrementSubnetBlock()
     {
-        subnetBlockBlinger.increment();
+        blockBlinger.increment();
     }
 
     void incrementHttpScan()
     {
-        httpScan.increment();
+        scanBlinger.increment();
     }
 
     void incrementHttpWhitelisted()
     {
-        httpWhitelisted.increment();
+        passBlinger.increment();
     }
 
     void incrementHttpBlockedDomain()
     {
-        httpBlockedDomain.increment();
+        blockBlinger.increment();
     }
 
     void incrementHttpPassed()
     {
-        httpPassed.increment();
+        passBlinger.increment();
     }
 
     void incrementHttpClientCookieScan()
     {
-        httpClientCookieScan.increment();
+        scanBlinger.increment();
     }
 
     void incrementHttpClientCookieBlock()
     {
-        httpClientCookieBlock.increment();
+        blockBlinger.increment();
     }
 
     void incrementHttpClientCookiePass()
     {
-        httpClientCookiePass.increment();
+        passBlinger.increment();
     }
 
     void incrementHttpServerCookieScan()
     {
-        httpServerCookieScan.increment();
+        scanBlinger.increment();
     }
 
     void incrementHttpServerCookieBlock()
     {
-        httpServerCookieBlock.increment();
+        blockBlinger.increment();
     }
 
     void incrementHttpServerCookiePass()
     {
-        httpServerCookiePass.increment();
+        passBlinger.increment();
     }
 
     void incrementHttpActiveXScan()
     {
-        httpActiveXScan.increment();
+        scanBlinger.increment();
     }
 
     void incrementHttpActiveXBlock()
     {
-        httpActiveXBlock.increment();
+        blockBlinger.increment();
     }
 
     void incrementHttpActiveXPass()
     {
-        httpActiveXPass.increment();
+        passBlinger.increment();
     }
 
     Token[] generateResponse(SpywareBlockDetails bd, TCPSession sess,

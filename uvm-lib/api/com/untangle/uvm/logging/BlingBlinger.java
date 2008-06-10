@@ -35,7 +35,19 @@ package com.untangle.uvm.logging;
 
 public class BlingBlinger implements CounterStats
 {
+    private final StatDesc statDesc;
+
+    public BlingBlinger(String displayName, String action, String unit)
+    {
+        this.statDesc = new StatDesc(displayName, action, unit);
+    }
+
     // public methods ---------------------------------------------------------
+
+    public StatDesc getStatDesc()
+    {
+        return statDesc;
+    }
 
     public long increment()
     {
@@ -47,7 +59,7 @@ public class BlingBlinger implements CounterStats
         return 0;
     }
 
-    // StateKeeper methods -----------------------------------------------------
+    // CounterStats methods ---------------------------------------------------
 
     public long getCount()
     {

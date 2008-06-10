@@ -251,10 +251,10 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
         Counters c = node.getCounters();
         udpLiveSessionCounter = c.getLoadCounter("udpLiveSessionCounter");
         tcpLiveSessionCounter = c.getLoadCounter("tcpLiveSessionCounter");
-        udpTotalSessionCounter = c.getBlingBlinger("udpTotalSessionCounter");
-        tcpTotalSessionCounter = c.getBlingBlinger("tcpTotalSessionCounter");
-        udpTotalSessionRequestCounter = c.getBlingBlinger("udpTotalSessionRequestCounter");
-        tcpTotalSessionRequestCounter = c.getBlingBlinger("tcpTotalSessionRequestCounter");
+        udpTotalSessionCounter = c.makeBlingBlinger("udpTotalSessionCounter", "UDP Sessions");
+        tcpTotalSessionCounter = c.makeBlingBlinger("tcpTotalSessionCounter", "TCP Sessions");
+        udpTotalSessionRequestCounter = c.makeBlingBlinger("udpTotalSessionRequestCounter", "UDP Session Requests");
+        tcpTotalSessionRequestCounter = c.makeBlingBlinger("tcpTotalSessionRequestCounter", "TCP Session Requests");
     }
 
     /*

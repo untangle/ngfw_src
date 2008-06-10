@@ -78,10 +78,10 @@ public class TokenAdaptor extends AbstractEventHandler
     private final PipelineFoundry pipeFoundry = LocalUvmContextFactory.context()
         .pipelineFoundry();
 
-    private final BlingBlinger s2tBytes;
-    private final BlingBlinger c2tBytes;
-    private final BlingBlinger t2sBytes;
-    private final BlingBlinger t2cBytes;
+    private final BlingBlinger s2nBytes;
+    private final BlingBlinger c2nBytes;
+    private final BlingBlinger n2sBytes;
+    private final BlingBlinger n2cBytes;
 
     private final Logger logger = Logger.getLogger(TokenAdaptor.class);
 
@@ -91,10 +91,10 @@ public class TokenAdaptor extends AbstractEventHandler
         this.handlerFactory = thf;
 
         Counters c = node.getCounters();
-        s2tBytes = c.getBlingBlinger("s2tBytes");
-        c2tBytes = c.getBlingBlinger("c2tBytes");
-        t2sBytes = c.getBlingBlinger("t2sBytes");
-        t2cBytes = c.getBlingBlinger("t2cBytes");
+        s2nBytes = c.getBlingBlinger("s2nBytes");
+        c2nBytes = c.getBlingBlinger("c2nBytes");
+        n2sBytes = c.getBlingBlinger("n2sBytes");
+        n2cBytes = c.getBlingBlinger("n2cBytes");
     }
 
     @Override
@@ -316,9 +316,9 @@ public class TokenAdaptor extends AbstractEventHandler
 
         try {
             if (s2c) {
-                s2tBytes.increment(token.getEstimatedSize() - TOKEN_SIZE);
+                s2nBytes.increment(token.getEstimatedSize() - TOKEN_SIZE);
             } else {
-                c2tBytes.increment(token.getEstimatedSize() - TOKEN_SIZE);
+                c2nBytes.increment(token.getEstimatedSize() - TOKEN_SIZE);
             }
         } catch (Exception exn) {
             logger.warn("could not get estimated size", exn);
@@ -440,9 +440,9 @@ public class TokenAdaptor extends AbstractEventHandler
 
             try {
                 if (s2c) {
-                    t2cBytes.increment(tok.getEstimatedSize() - TOKEN_SIZE);
+                    n2cBytes.increment(tok.getEstimatedSize() - TOKEN_SIZE);
                 } else {
-                    t2sBytes.increment(tok.getEstimatedSize() - TOKEN_SIZE);
+                    n2sBytes.increment(tok.getEstimatedSize() - TOKEN_SIZE);
                 }
             } catch (Exception exn) {
                 logger.warn("could not estimate size", exn);
