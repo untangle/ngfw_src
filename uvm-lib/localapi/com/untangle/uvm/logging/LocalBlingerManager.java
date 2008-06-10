@@ -31,10 +31,13 @@
 package com.untangle.uvm.logging;
 
 import com.untangle.uvm.policy.Policy;
+import com.untangle.uvm.security.Tid;
 
 public interface LocalBlingerManager
 {
-    Counters getUvmCounters();
     BlingerState getBlingerState();
     BlingerState getBlingerState(Policy p);
+    NodeStatDescs getNodeStatDesc(Tid t);
+
+    Counters getUvmCounters();
 }

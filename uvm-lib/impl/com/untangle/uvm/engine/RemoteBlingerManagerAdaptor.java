@@ -20,8 +20,10 @@ package com.untangle.uvm.engine;
 
 import com.untangle.uvm.logging.BlingerState;
 import com.untangle.uvm.logging.LocalBlingerManager;
+import com.untangle.uvm.logging.NodeStatDescs;
 import com.untangle.uvm.logging.RemoteBlingerManager;
 import com.untangle.uvm.policy.Policy;
+import com.untangle.uvm.security.Tid;
 
 class RemoteBlingerManagerAdaptor implements RemoteBlingerManager
 {
@@ -40,5 +42,10 @@ class RemoteBlingerManagerAdaptor implements RemoteBlingerManager
     public BlingerState getBlingerState(Policy p)
     {
         return lbm.getBlingerState(p);
+    }
+
+    public NodeStatDescs getNodeStatDesc(Tid t)
+    {
+        return lbm.getNodeStatDesc(t);
     }
 }

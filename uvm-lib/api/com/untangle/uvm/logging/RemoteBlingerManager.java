@@ -34,9 +34,11 @@
 package com.untangle.uvm.logging;
 
 import com.untangle.uvm.policy.Policy;
+import com.untangle.uvm.security.Tid;
 
 public interface RemoteBlingerManager
 {
     BlingerState getBlingerState();
     BlingerState getBlingerState(Policy p);
+    NodeStatDescs getNodeStatDesc(Tid t);
 }
