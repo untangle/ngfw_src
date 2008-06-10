@@ -52,15 +52,23 @@ public class LoadMaster implements LoadStats
         = new HashSet<LoadMaster>();
 
     private final LoadStrober loadStrober;
+    private final StatDesc statDesc;
 
     // constructors -----------------------------------------------------------
 
-    public LoadMaster(LoadStrober loadStrober)
+    public LoadMaster(LoadStrober loadStrober, String displayName,
+                      String action, String unit)
     {
         this.loadStrober = loadStrober;
+        this.statDesc = new StatDesc(displayName, action, unit);
     }
 
     // public methods ---------------------------------------------------------
+
+    public StatDesc getStatDesc()
+    {
+        return statDesc;
+    }
 
     /**
      * Start strobing the source.

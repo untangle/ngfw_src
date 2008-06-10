@@ -79,7 +79,8 @@ public class Counters
         return b;
     }
 
-    public BlingBlinger makeBlingBlinger(String name, String displayName, String action)
+    public BlingBlinger makeBlingBlinger(String name, String displayName,
+                                         String action)
     {
         return makeBlingBlinger(name, displayName, null);
     }
@@ -106,28 +107,40 @@ public class Counters
 
     public LoadCounter getLoadCounter(String name)
     {
-        LoadMaster lm;
+        LoadMaster lm = null;
         LoadCounter lc = null;
 
         synchronized (loads) {
             lm = loads.get(name);
-            if (null == lm) {
-                lc = new LoadCounter();
-                lm = new LoadMaster(lc);
-                loads.put(name, lm);
-            }
         }
 
-        if (null == lc) {
+        if (null != lm) {
             LoadStrober ls = lm.getLoadStrober();
             if (ls instanceof LoadCounter) {
                 lc = (LoadCounter)ls;
-            } else {
-                throw new IllegalStateException("Not a LoadCounter: " + ls);
             }
         }
 
         return lc;
+    }
+
+    public NodeStatDescs getStatDescs()
+    {
+        Map<String, StatDesc> bs = new HashMap<String, StatDesc>(blingers.size());
+        synchronized (blingers) {
+            for (String bn : blingers.keySet()) {
+                bs.put(bn, blingers.get(bn).getStatDesc());
+            }
+        }
+
+        Map<String, StatDesc> ls = new HashMap<String, StatDesc>(blingers.size());
+        synchronized (loads) {
+            for (String ln : loads.keySet()) {
+                ls.put(ln, loads.get(ln).getStatDesc());
+            }
+        }
+
+        return new NodeStatDescs(bs, ls);
     }
 
     public NodeStats getAllStats()
