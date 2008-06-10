@@ -39,11 +39,11 @@ import java.util.Map;
 
 import com.untangle.uvm.security.Tid;
 
-public class BlingState
+public class BlingerState
 {
     private final Map<Tid, NodeStats> stats;
 
-    public BlingState(Map<Tid, NodeStats> stats)
+    public BlingerState(Map<Tid, NodeStats> stats)
     {
         Map<Tid, NodeStats> m = new HashMap<Tid, NodeStats>(stats);
         this.stats = Collections.unmodifiableMap(m);

@@ -22,7 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.untangle.uvm.logging.BlingState;
+import com.untangle.uvm.logging.BlingerState;
 import com.untangle.uvm.logging.Counters;
 import com.untangle.uvm.logging.NodeStats;
 import com.untangle.uvm.logging.RemoteBlingerManager;
@@ -39,13 +39,13 @@ class BlingerManagerImpl implements RemoteBlingerManager
         this.nodeManager = nodeManager;
     }
 
-    public BlingState getBlingState()
+    public BlingerState getBlingerState()
     {
         List<Tid> tids = nodeManager.nodeInstances();
         return getNodeStats(tids);
     }
 
-    public BlingState getBlingState(Policy p)
+    public BlingerState getBlingerState(Policy p)
     {
         List<Tid> tids = nodeManager.nodeInstances(p);
         return getNodeStats(tids);
@@ -53,7 +53,7 @@ class BlingerManagerImpl implements RemoteBlingerManager
 
     // private methods ---------------------------------------------------------
 
-    private BlingState getNodeStats(List<Tid> tids)
+    private BlingerState getNodeStats(List<Tid> tids)
     {
         Map<Tid, NodeStats> stats = new HashMap<Tid, NodeStats>(tids.size());
 
@@ -62,6 +62,6 @@ class BlingerManagerImpl implements RemoteBlingerManager
             stats.put(t, c.getAllStats());
         }
 
-        return new BlingState(stats);
+        return new BlingerState(stats);
     }
 }

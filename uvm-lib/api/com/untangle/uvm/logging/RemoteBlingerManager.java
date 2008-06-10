@@ -37,6 +37,6 @@ import com.untangle.uvm.policy.Policy;
 
 public interface RemoteBlingerManager
 {
-    BlingState getBlingState();
-    BlingState getBlingState(Policy p);
+    BlingerState getBlingerState();
+    BlingerState getBlingerState(Policy p);
 }
