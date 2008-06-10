@@ -99,12 +99,12 @@ public class AddressSettings implements Serializable, Validatable
     @Id
     @Column(name="settings_id")
     @GeneratedValue
-    Long getId()
+    public Long getId()
     {
         return id;
     }
 
-    void setId( Long id )
+    public void setId( Long id )
     {
         this.id = id;
     }
@@ -220,7 +220,7 @@ public class AddressSettings implements Serializable, Validatable
                 break;
 
             default:
-                /* just throw an expception to get out of dodge */
+                /* just throw an exception to get out of dodge */
                 throw new Exception();
             }
         } catch ( Exception e ) {

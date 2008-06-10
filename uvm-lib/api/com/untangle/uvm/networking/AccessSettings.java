@@ -101,12 +101,12 @@ public class AccessSettings implements Serializable, Validatable
     @Id
     @Column(name="settings_id")
     @GeneratedValue
-    Long getId()
+    public Long getId()
     {
         return id;
     }
 
-    void setId( Long id )
+    public void setId( Long id )
     {
         this.id = id;
     }

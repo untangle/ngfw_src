@@ -53,7 +53,21 @@ if (!Ung.hasResource["Ung.Administration"]) {
             }
             return this.rpc.adminSettings;
         },
-        // get admin settings
+        // get access settings
+        getAccessSettings : function(forceReload) {
+            if (forceReload || this.rpc.accessSettings === undefined) {
+                this.rpc.accessSettings = rpc.networkManager.getAccessSettings();
+            }
+            return this.rpc.accessSettings;
+        },
+        // get address settings
+        getAddressSettings : function(forceReload) {
+            if (forceReload || this.rpc.addressSettings === undefined) {
+                this.rpc.addressSettings = rpc.networkManager.getAddressSettings();
+            }
+            return this.rpc.addressSettings;
+        },
+        // get snmp settings
         getSnmpSettings : function(forceReload) {
             if (forceReload || this.rpc.snmpSettings === undefined) {
                 this.rpc.snmpSettings = rpc.adminManager.getSnmpManager().getSnmpSettings();
@@ -90,6 +104,8 @@ if (!Ung.hasResource["Ung.Administration"]) {
             });
         },
         buildAdministration : function() {
+            var ipAddrMaskRe = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+            
             // read-only is a check column
             var readOnlyColumn = new Ext.grid.CheckColumn({
                 header : this.i18n._("read-only"),
@@ -260,14 +276,184 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 	title : this.i18n._('External Administration'),
                     autoHeight : true,
                 	items : [{
-                		html : 'test'
+                        xtype : 'checkbox',
+                        name : 'isOutsideAdministrationEnabled',
+                        boxLabel : this.i18n._('Enable External Administration.'),
+                        hideLabel : true,
+                        checked : this.getAccessSettings().isOutsideAdministrationEnabled,
+                        listeners : {
+                            "change" : {
+                                fn : function(elem, newValue) {
+                                    this.getAccessSettings().isOutsideAdministrationEnabled = newValue;
+                                }.createDelegate(this)
+                            }
+                        }
+                	},{
+                        xtype : 'checkbox',
+                        name : 'isOutsideReportingEnabled',
+                        boxLabel : this.i18n._('Enable External Report Viewing.'),
+                        hideLabel : true,
+                        checked : this.getAccessSettings().isOutsideReportingEnabled,
+                        listeners : {
+                            "change" : {
+                                fn : function(elem, newValue) {
+                                    this.getAccessSettings().isOutsideReportingEnabled = newValue;
+                                }.createDelegate(this)
+                            }
+                        }
+                    },{
+                        xtype : 'checkbox',
+                        name : 'isOutsideQuarantineEnabled',
+                        boxLabel : this.i18n._('Enable External Quarantine Viewing.'),
+                        hideLabel : true,
+                        checked : this.getAccessSettings().isOutsideQuarantineEnabled,
+                        listeners : {
+                            "change" : {
+                                fn : function(elem, newValue) {
+                                    this.getAccessSettings().isOutsideQuarantineEnabled = newValue;
+                                }.createDelegate(this)
+                            }
+                        }
+                    },{
+                        border: false,
+                        html : '<hr>'
+                    },{
+                        xtype : 'numberfield',
+                        fieldLabel : this.i18n._('External HTTPS port'),
+                        name : 'httpsPort',
+                        id: 'administration_httpsPort',
+                        value : this.getAddressSettings().httpsPort,
+                        width: 50,
+                        labelStyle: 'width:150px;',
+                        allowDecimals: false,
+                        allowNegative: false,
+                        minValue: 1,                        
+                        maxValue: 65535,
+                        minText: i18n.sprintf(this.i18n._("The port must be an integer number between %d and %d."), 1, 65535),
+                        maxText: i18n.sprintf(this.i18n._("The port must be an integer number between %d and %d."), 1, 65535),
+                        listeners : {
+                            "change" : {
+                                fn : function(elem, newValue) {
+                                    this.getAddressSettings().httpsPort = newValue;
+                                }.createDelegate(this)
+                            }
+                        }
+                    },{
+                        border: false,
+                        html : '<hr>'
+                    },{
+                        xtype : 'radio',
+                        boxLabel : this.i18n._('Allow external access from any IP address.'), 
+                        hideLabel : true,
+                        name : 'isOutsideAccessRestricted',
+                        checked : !this.getAccessSettings().isOutsideAccessRestricted,
+                        listeners : {
+                            "check" : {
+                                fn : function(elem, checked) {
+                                    this.getAccessSettings().isOutsideAccessRestricted = !checked;
+                                    if (checked) {
+                                        Ext.getCmp('administration_outsideNetwork').disable();
+                                        Ext.getCmp('administration_outsideNetmask').disable();
+                                    }
+                                }.createDelegate(this)
+                            }
+                        }
+                    },{
+                        xtype : 'radio',
+                        boxLabel : this.i18n._('Restrict external access to these external IP address(es).'), 
+                        hideLabel : true,
+                        name : 'isOutsideAccessRestricted',
+                        checked : this.getAccessSettings().isOutsideAccessRestricted,
+                        listeners : {
+                            "check" : {
+                                fn : function(elem, checked) {
+                                    this.getAccessSettings().isOutsideAccessRestricted = checked;
+                                    if (checked) {
+                                        Ext.getCmp('administration_outsideNetwork').enable();
+                                        Ext.getCmp('administration_outsideNetmask').enable();
+                                    }
+                                }.createDelegate(this)
+                            }
+                        }
+                    },{
+                        border: false,
+                    	layout:'column',
+                    	items: [{
+                            border: false,
+                            columnWidth:.3,
+                            layout: 'form',
+                            items: [{
+                                xtype : 'textfield',
+                                fieldLabel : this.i18n._('Address'),
+                                name : 'outsideNetwork',
+                                id : 'administration_outsideNetwork',
+                                value : this.getAccessSettings().outsideNetwork,
+                                allowBlank : false,
+                                blankText : this.i18n._("A \"IP Address\" must be specified."),
+                                validator : function(fieldValue) {
+                                    if (ipAddrMaskRe.test(fieldValue)) {
+                                        return true;
+                                    } else {
+                                        return this.i18n._('Invalid External Remote Administration \"IP Address\" specified.');
+                                    }
+                                }.createDelegate(this)
+                            }]
+                    	},{
+                            border: false,
+                            columnWidth:.3,
+                            layout: 'form',
+                            items: [{
+                                xtype : 'textfield',
+                                fieldLabel : '/', 
+                                labelSeparator  : '',
+                                name : 'outsideNetmask',
+                                id : 'administration_outsideNetmask',
+                                value : this.getAccessSettings().outsideNetmask,
+                                allowBlank : false,
+                                blankText : this.i18n._("A \"Netmask\" must be specified."),
+                                validator : function(fieldValue) {
+                                    if (ipAddrMaskRe.test(fieldValue)) {
+                                        return true;
+                                    } else {
+                                        return this.i18n._('Invalid External Remote Administration \"Netmask\" specified.');
+                                    }
+                                }.createDelegate(this)
+                            }]
+                    	}]
                 	}] 
                 },{
                     xtype : 'fieldset',
                     title : this.i18n._('Internal Administration'),
                     autoHeight : true,
                     items : [{
-                        html : 'Note: HTTPS administration is always enabled internally'
+                        xtype : 'radio',
+                        boxLabel : this.i18n._('Enable HTTP administration inside the local network (default)'), 
+                        hideLabel : true,
+                        name : 'isInsideInsecureEnabled',
+                        checked : this.getAccessSettings().isInsideInsecureEnabled,
+                        listeners : {
+                            "check" : {
+                                fn : function(elem, checked) {
+                                    this.getAccessSettings().isInsideInsecureEnabled = checked;
+                                }.createDelegate(this)
+                            }
+                        }
+                    },{
+                        xtype : 'radio',
+                        boxLabel : this.i18n._('Disable HTTP administration inside the local network'), 
+                        hideLabel : true,
+                        name : 'isInsideInsecureEnabled',
+                        checked : !this.getAccessSettings().isInsideInsecureEnabled,
+                        listeners : {
+                            "check" : {
+                                fn : function(elem, checked) {
+                                    this.getAccessSettings().isInsideInsecureEnabled = !checked;
+                                }.createDelegate(this)
+                            }
+                        }
+                    },{
+                    	border: false,
+                        html : this.i18n._('Note: HTTPS administration is always enabled internally')
                     }] 
                 }]
             });
@@ -709,7 +895,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
         },
         // validation function
         validateClient : function() {
-            return  this.validateAdminAccounts() && this.validateSnmp() && this.validateSyslog(); 
+            return  this.validateAdminAccounts() && this.validateExternalAdministration() && this.validateSnmp() && this.validateSyslog(); 
         },
         
         //validate Admin Accounts
@@ -745,6 +931,39 @@ if (!Ung.hasResource["Ung.Administration"]) {
             }
             
         	return true;
+        },
+        
+        //validate External Administration
+        validateExternalAdministration : function() {
+            var httpsPortCmp = Ext.getCmp('administration_httpsPort');
+            if (!httpsPortCmp.isValid()) {
+                Ext.MessageBox.alert('Warning', i18n.sprintf(this.i18n._("The port must be an integer number between %d and %d."), 1, 65535));
+                return false;
+            }
+            
+            var isOutsideAccessRestricted = this.getAccessSettings().isOutsideAccessRestricted;
+            if (isOutsideAccessRestricted) {
+                var outsideNetworkCmp = Ext.getCmp('administration_outsideNetwork');
+                if (!outsideNetworkCmp.isValid()) {
+                    Ext.MessageBox.alert('Warning', this.i18n._('Invalid External Remote Administration \"IP Address\" specified.'));
+                    return false;
+                }
+                var outsideNetmaskCmp = Ext.getCmp('administration_outsideNetmask');
+                if (!outsideNetmaskCmp.isValid()) {
+                    Ext.MessageBox.alert('Warning', this.i18n._("Invalid External Remote Administration \"Netmask\" specified."));
+                    return false;
+                }
+                //prepare for save
+                this.getAccessSettings().outsideNetwork = outsideNetworkCmp.getValue();
+                this.getAccessSettings().outsideNetmask = outsideNetmaskCmp.getValue();
+            }
+            
+            if (this.getAddressSettings().publicAddress == null ||
+                    this.getAddressSettings().publicAddress.length == 0) {
+                delete this.getAddressSettings().publicAddress;
+            }
+                
+            return true;
         },
 
         //validate SNMP
@@ -825,7 +1044,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
         // save function
         saveAction : function() {
             if (this.validate()) {
-            	this.saveSemaphore = 4;
+            	this.saveSemaphore = 6;
                 Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
                 
                 var listAdministration=this.gridAdminAccounts.getFullSaveList();
@@ -842,6 +1061,22 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     this.afterSave();
                 }.createDelegate(this), this.getAdminSettings());
 
+               rpc.networkManager.setAccessSettings(function(result, exception) {
+                    if (exception) {
+                        Ext.MessageBox.alert(i18n._("Failed"), exception.message);
+                        return;
+                    }
+                    this.afterSave();
+                }.createDelegate(this), this.getAccessSettings());
+                
+               rpc.networkManager.setAddressSettings(function(result, exception) {
+                    if (exception) {
+                        Ext.MessageBox.alert(i18n._("Failed"), exception.message);
+                        return;
+                    }
+                    this.afterSave();
+                }.createDelegate(this), this.getAddressSettings());
+                
                rpc.adminManager.getSnmpManager().setSnmpSettings(function(result, exception) {
                     if (exception) {
                         Ext.MessageBox.alert(i18n._("Failed"), exception.message);
