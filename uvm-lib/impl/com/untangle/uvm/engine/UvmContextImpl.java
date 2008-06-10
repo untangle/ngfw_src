@@ -90,6 +90,7 @@ public class UvmContextImpl extends UvmContextBase
 
     private static final String ACTIVATE_SCRIPT;
     private static final String ACTIVATION_KEY_FILE;
+    private static final String POP_ID_FILE;
     private static final String ARGON_FAKE_KEY;
 
     /* true if running in a development environment */
@@ -973,6 +974,20 @@ public class UvmContextImpl extends UvmContextBase
         return null;
     }
 
+    public String getPopID()
+    {
+        try {
+            File keyFile = new File(POP_ID_FILE);
+            if (keyFile.exists()) {
+                BufferedReader reader = new BufferedReader(new FileReader(keyFile));
+                return reader.readLine();
+            }
+        } catch (IOException x) {
+            logger.error("Unable to get pop id: ", x);
+        }
+        return null;
+    }
+
     // private methods --------------------------------------------------------
 
     private boolean loadRup(boolean refreshManagers)
@@ -1138,6 +1153,8 @@ public class UvmContextImpl extends UvmContextBase
             + "/utactivate";
         ACTIVATION_KEY_FILE = System.getProperty("bunnicula.home")
             + "/activation.key";
+        POP_ID_FILE = System.getProperty("bunnicula.home")
+            + "/popid";
         ARGON_FAKE_KEY = "argon.fake";
     }
 }
