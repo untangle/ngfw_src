@@ -24,15 +24,16 @@ import java.util.Map;
 
 import com.untangle.uvm.logging.BlingerState;
 import com.untangle.uvm.logging.Counters;
+import com.untangle.uvm.logging.LocalBlingerManager;
 import com.untangle.uvm.logging.NodeStats;
-import com.untangle.uvm.logging.RemoteBlingerManager;
 import com.untangle.uvm.node.LocalNodeManager;
 import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.security.Tid;
 
-class BlingerManagerImpl implements RemoteBlingerManager
+class BlingerManagerImpl implements LocalBlingerManager
 {
     private LocalNodeManager nodeManager;
+    private Counters uvmCounters;
 
     BlingerManagerImpl(LocalNodeManager nodeManager)
     {
@@ -51,11 +52,18 @@ class BlingerManagerImpl implements RemoteBlingerManager
         return getNodeStats(tids);
     }
 
+    public Counters getUvmCounters()
+    {
+        return uvmCounters;
+    }
+
     // private methods ---------------------------------------------------------
 
     private BlingerState getNodeStats(List<Tid> tids)
     {
         Map<Tid, NodeStats> stats = new HashMap<Tid, NodeStats>(tids.size());
+
+        stats.put(new Tid(0L), uvmCounters.getAllStats());
 
         for (Tid t : tids) {
             Counters c = nodeManager.nodeContext(t).node().getCounters();

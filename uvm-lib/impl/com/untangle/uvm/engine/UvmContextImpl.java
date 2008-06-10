@@ -51,6 +51,7 @@ import com.untangle.uvm.localapi.LocalIntfManager;
 import com.untangle.uvm.localapi.LocalShieldManager;
 import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.EventLoggerFactory;
+import com.untangle.uvm.logging.LocalBlingerManager;
 import com.untangle.uvm.logging.LogMailerImpl;
 import com.untangle.uvm.logging.RemoteBlingerManager;
 import com.untangle.uvm.logging.UvmRepositorySelector;
@@ -138,7 +139,9 @@ public class UvmContextImpl extends UvmContextBase
     private RemoteBrandingManager brandingManager;
     private LocalBrandingManager localBrandingManager;
     private RemoteSkinManagerImpl skinManager;
-    private BlingerManagerImpl blingerManager;
+    private LocalBlingerManager localBlingerManager;
+    private RemoteBlingerManager blingerManager;
+    private RemoteBrandingManager remoteBlingerManager;
     private RemoteLanguageManagerImpl languageManager;
     private PhoneBookFactory phoneBookFactory;
     private BasePortalManager portalManager;
@@ -209,6 +212,11 @@ public class UvmContextImpl extends UvmContextBase
     public RemoteBlingerManager blingerManager()
     {
         return blingerManager;
+    }
+
+    public LocalBlingerManager localBlingerManager()
+    {
+        return localBlingerManager;
     }
 
     public RemoteLanguageManagerImpl languageManager()
@@ -743,7 +751,8 @@ public class UvmContextImpl extends UvmContextBase
         nodeManager = new NodeManagerImpl(repositorySelector);
         remoteNodeManager = new RemoteNodeManagerAdaptor(nodeManager);
 
-        blingerManager = new BlingerManagerImpl(nodeManager);
+        localBlingerManager = new BlingerManagerImpl(nodeManager);
+        blingerManager = new RemoteBlingerManagerAdaptor(localBlingerManager);
 
         // Retrieve the reporting configuration manager
         reportingManager = RemoteReportingManagerImpl.reportingManager();
