@@ -33,24 +33,10 @@
 
 package com.untangle.uvm.logging;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import com.untangle.uvm.policy.Policy;
 
-import com.untangle.uvm.security.Tid;
-
-public class Globie
+public interface RemoteBlingerManager
 {
-    private final Map<Tid, NodeStats> stats;
-
-    public Globie(Map<Tid, NodeStats> stats)
-    {
-        Map<Tid, NodeStats> m = new HashMap<Tid, NodeStats>(stats);
-        this.stats = Collections.unmodifiableMap(m);
-    }
-
-    public Map<Tid, NodeStats> getNodeStats()
-    {
-        return stats;
-    }
+    BlingState getBlingState();
+    BlingState getBlingState(Policy p);
 }

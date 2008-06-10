@@ -32,13 +32,12 @@ import com.untangle.uvm.RemoteSkinManager;
 import com.untangle.uvm.addrbook.RemoteAddressBook;
 import com.untangle.uvm.client.RemoteUvmContext;
 import com.untangle.uvm.license.RemoteLicenseManager;
-import com.untangle.uvm.logging.Globie;
+import com.untangle.uvm.logging.RemoteBlingerManager;
 import com.untangle.uvm.logging.RemoteLoggingManager;
 import com.untangle.uvm.networking.ping.RemotePingManager;
 import com.untangle.uvm.node.RemoteIntfManager;
 import com.untangle.uvm.node.RemoteNodeManager;
 import com.untangle.uvm.node.RemoteShieldManager;
-import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.policy.RemotePolicyManager;
 import com.untangle.uvm.security.RemoteAdminManager;
 import com.untangle.uvm.toolbox.RemoteToolboxManager;
@@ -159,6 +158,11 @@ class RemoteUvmContextAdaptor implements RemoteUvmContext
         return context.skinManager();
     }
 
+    public RemoteBlingerManager blingerManager()
+    {
+        return context.blingerManager();
+    }
+
     public RemoteLanguageManager languageManager()
     {
         return context.languageManager();
@@ -254,15 +258,5 @@ class RemoteUvmContextAdaptor implements RemoteUvmContext
     public String setProperty(String key, String value)
     {
         return context.setProperty(key, value);
-    }
-
-    public Globie getNodeStats()
-    {
-        return context.getNodeStats();
-    }
-
-    public Globie getNodeStats(Policy p)
-    {
-        return context.getNodeStats(p);
     }
 }

@@ -27,9 +27,7 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.StringTokenizer;
 
 import com.sleepycat.je.DatabaseException;
@@ -51,12 +49,10 @@ import com.untangle.uvm.license.LocalLicenseManager;
 import com.untangle.uvm.license.RemoteLicenseManager;
 import com.untangle.uvm.localapi.LocalIntfManager;
 import com.untangle.uvm.localapi.LocalShieldManager;
-import com.untangle.uvm.logging.Counters;
 import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.EventLoggerFactory;
-import com.untangle.uvm.logging.Globie;
 import com.untangle.uvm.logging.LogMailerImpl;
-import com.untangle.uvm.logging.NodeStats;
+import com.untangle.uvm.logging.RemoteBlingerManager;
 import com.untangle.uvm.logging.UvmRepositorySelector;
 import com.untangle.uvm.networking.NetworkManagerImpl;
 import com.untangle.uvm.networking.RemoteNetworkManagerAdaptor;
@@ -66,11 +62,9 @@ import com.untangle.uvm.node.RemoteIntfManager;
 import com.untangle.uvm.node.RemoteNodeManager;
 import com.untangle.uvm.node.RemoteShieldManager;
 import com.untangle.uvm.policy.LocalPolicyManager;
-import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.policy.PolicyManagerFactory;
 import com.untangle.uvm.policy.RemotePolicyManager;
 import com.untangle.uvm.portal.BasePortalManager;
-import com.untangle.uvm.security.Tid;
 import com.untangle.uvm.toolbox.RemoteToolboxManager;
 import com.untangle.uvm.user.ADPhoneBookAssistant;
 import com.untangle.uvm.user.LocalPhoneBook;
@@ -144,6 +138,7 @@ public class UvmContextImpl extends UvmContextBase
     private RemoteBrandingManager brandingManager;
     private LocalBrandingManager localBrandingManager;
     private RemoteSkinManagerImpl skinManager;
+    private BlingerManagerImpl blingerManager;
     private RemoteLanguageManagerImpl languageManager;
     private PhoneBookFactory phoneBookFactory;
     private BasePortalManager portalManager;
@@ -209,6 +204,11 @@ public class UvmContextImpl extends UvmContextBase
     public RemoteSkinManagerImpl skinManager()
     {
         return skinManager;
+    }
+
+    public RemoteBlingerManager blingerManager()
+    {
+        return blingerManager;
     }
 
     public RemoteLanguageManagerImpl languageManager()
@@ -675,18 +675,6 @@ public class UvmContextImpl extends UvmContextBase
         return System.setProperty(key, value);
     }
 
-    public Globie getNodeStats()
-    {
-        List<Tid> tids = nodeManager.nodeInstances();
-        return getNodeStats(tids);
-    }
-
-    public Globie getNodeStats(Policy p)
-    {
-        List<Tid> tids = nodeManager.nodeInstances(p);
-        return getNodeStats(tids);
-    }
-
     // UvmContextBase methods --------------------------------------------------
 
     @Override
@@ -754,6 +742,8 @@ public class UvmContextImpl extends UvmContextBase
         // start nodes:
         nodeManager = new NodeManagerImpl(repositorySelector);
         remoteNodeManager = new RemoteNodeManagerAdaptor(nodeManager);
+
+        blingerManager = new BlingerManagerImpl(nodeManager);
 
         // Retrieve the reporting configuration manager
         reportingManager = RemoteReportingManagerImpl.reportingManager();
@@ -1054,18 +1044,6 @@ public class UvmContextImpl extends UvmContextBase
             cliServerManager = new CliServerManager(cliHome);
             cliServerManager.init();
         }
-    }
-
-    private Globie getNodeStats(List<Tid> tids)
-    {
-        Map<Tid, NodeStats> stats = new HashMap<Tid, NodeStats>(tids.size());
-
-        for (Tid t : tids) {
-            Counters c = nodeManager.nodeContext(t).node().getCounters();
-            stats.put(t, c.getAllStats());
-        }
-
-        return new Globie(stats);
     }
 
     // Uses reflection to allow easier optionality.
