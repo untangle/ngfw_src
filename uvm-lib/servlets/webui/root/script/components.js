@@ -17,15 +17,34 @@ Ext.override(Ext.Panel, {
             fn : function() {
                 if (this.name && this.getEl()) {
                     this.getEl().set({
-                        'name' : this.name
+                        'name' : this.name + " Content"
                     });
                 }
             }
         }
     }
 });
-
-
+/*
+Ext.override(Ext.TabPanel, {
+    listeners : {
+        "render" : {
+            fn : function() {
+                if (this.items) {
+                	var itemsLength=this.items
+                	for(var i=0;i<this.items.lengts;i++) {
+                        var tabEl=this.getTabEl(this.items[i]);
+                        if(this.items[i].name && tabEl) {
+                            tabEl.set({
+                                'name' : this.name
+                            });
+                        }
+                	}
+                }
+            }
+        }
+    }
+});
+*/
 // resources map
 Ung.hasResource = {};
 // Thread for installing nodes from store into toolbox
@@ -761,7 +780,7 @@ Ung.Node = Ext.extend(Ext.Component, {
             hideDelay : 0
         }));
         this.subCmps.push(new Ext.Button({
-            name : "settingsButton",
+            name : "Show Settings",
             iconCls : 'nodeSettingsIcon',
             renderTo : 'nodeSettingsButton_' + this.getId(),
             text : i18n._('Show Settings'),
@@ -770,7 +789,7 @@ Ung.Node = Ext.extend(Ext.Component, {
             }.createDelegate(this)
         }));
         this.subCmps.push(new Ext.Button({
-            name : "helpButton",
+            name : "Help",
             iconCls : 'iconHelp',
             renderTo : 'nodeHelpButton_' + this.getId(),
             text : i18n._('Help'),
@@ -980,8 +999,8 @@ Ung.Node.getPowerTip = function() {
 };
 Ung.Node.template = new Ext.Template('<div class="nodeImage"><img src="{image}"/></div>', '<div class="nodeLabel">{displayName}</div>',
         '<div class="nodeTrialDays">{trialDays}</div>', '<div class="nodeTrial">{trialFlag}</div>',
-        '<div class="nodeBlingers" id="nodeBlingers_{id}"></div>', '<div class="nodeState" id="nodeState_{id}" name="nodeState"></div>',
-        '<div class="nodePower" id="nodePower_{id}" name="nodePower"></div>',
+        '<div class="nodeBlingers" id="nodeBlingers_{id}"></div>', '<div class="nodeState" id="nodeState_{id}" name="State"></div>',
+        '<div class="nodePower" id="nodePower_{id}" name="Power"></div>',
         '<div class="nodeSettingsButton" id="nodeSettingsButton_{id}"></div>',
         '<div class="nodeHelpButton" id="nodeHelpButton_{id}"></div>');
 
@@ -994,6 +1013,9 @@ Ung.BlingerManager = {
     cycleCompleted : true,
 
     start : function() {
+    	//TODO: blinger are on progress!!!
+    	return;
+    	//-----------
         this.stop();
         this.intervalId = window.setInterval("Ung.BlingerManager.getNodesStats()", this.updateTime);
         this.started = true;
@@ -1279,7 +1301,7 @@ Ung.Settings = Ext.extend(Ext.Component, {
     buildTabPanel : function(itemsArray) {
         this.tabs = new Ext.TabPanel({
             renderTo : this.getEl().id,
-            width : 690,
+            autoWidth : true,
             height : 400,
             activeTab : 0,
             frame : true,
@@ -1491,7 +1513,7 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
             this.autoExpandColumn = "timestamp";
         }
         if (this.name == null) {
-            this.name = "gridEventLog";
+            this.name = "Event Log";
         }
         if (this.predefinedType != null) {
             this.fields = this.getPredefinedFields(this.predefinedType);
@@ -1540,6 +1562,7 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
     // called when the component is rendered
     onRender : function(container, position) {
         Ung.GridEventLog.superclass.onRender.call(this, container, position);
+        this.getGridEl().child("div[class*=x-grid3-viewport]").set({'name' : "table"});
         if (this.hasRepositories) {
             this.eventManagerFn.getRepositoryDescs(function(result, exception) {
                 if (exception) {
@@ -1751,7 +1774,7 @@ Ung.NodeSettingsWin = Ext.extend(Ung.ButtonsWindow, {
     },
     initButtons : function() {
         this.subCmps.push(new Ext.Button({
-            name : "removeButton",
+            name : "Remove",
             iconCls : 'nodeRemoveIcon',
             renderTo : 'button_left_' + this.getId(),
             text : i18n._('Remove'),
@@ -1760,7 +1783,7 @@ Ung.NodeSettingsWin = Ext.extend(Ung.ButtonsWindow, {
             }.createDelegate(this)
         }));
         this.subCmps.push(new Ext.Button({
-            name : "cancelButton",
+            name : "Cancel",
             iconCls : 'cancelIcon',
             renderTo : 'button_inner_right_' + this.getId(),
             text : i18n._('Cancel'),
@@ -1769,7 +1792,7 @@ Ung.NodeSettingsWin = Ext.extend(Ung.ButtonsWindow, {
             }.createDelegate(this)
         }));
         this.subCmps.push(new Ext.Button({
-            name : "saveButton",
+            name : "Save",
             iconCls : 'saveIcon',
             renderTo : 'button_margin_right_' + this.getId(),
             text : i18n._('Save'),
@@ -1825,7 +1848,6 @@ Ung.ConfigWin = Ext.extend(Ung.ButtonsWindow, {
         this.tabs = new Ext.TabPanel({
             renderTo : this.getContentEl().id,
             autoWidth : true,
-            // autoHeight :true,
             height : 400,
             activeTab : 0,
             frame : true,
@@ -1833,12 +1855,12 @@ Ung.ConfigWin = Ext.extend(Ung.ButtonsWindow, {
             items : itemsArray,
             layoutOnTabChange : true,
             listeners : {
-                "show" : {
+                "render" : {
                     fn : function() {
                         var winCmp = Ext.getCmp(this.parentId);
-                        var objSize = Ext.get(winCmp.getContentEl().id).getSize(true);
-                        // objSize.width=objSize.width;
-                        // objSize.height=objSize.height;
+                        var objSize = winCmp.items.get(0).getEl().getSize(true);
+                        objSize.width = objSize.width - 24;
+                        objSize.height = objSize.height - 17;
                         this.setSize(objSize);
                     }
                 }
@@ -1848,7 +1870,7 @@ Ung.ConfigWin = Ext.extend(Ung.ButtonsWindow, {
     // initialize window buttons
     initButtons : function() {
         this.subCmps.push(new Ext.Button({
-            name : 'helpButton',
+            name : 'Help',
             renderTo : 'button_left_' + this.getId(),
             iconCls : 'iconHelp',
             text : i18n._('Help'),
@@ -1857,7 +1879,7 @@ Ung.ConfigWin = Ext.extend(Ung.ButtonsWindow, {
             }.createDelegate(this)
         }));
         this.subCmps.push(new Ext.Button({
-            name : 'cancelButton',
+            name : 'Cancel',
             iconCls : 'cancelIcon',
             renderTo : 'button_inner_right_' + this.getId(),
             text : i18n._('Cancel'),
@@ -1866,7 +1888,7 @@ Ung.ConfigWin = Ext.extend(Ung.ButtonsWindow, {
             }.createDelegate(this)
         }));
         this.subCmps.push(new Ext.Button({
-            name : 'saveButton',
+            name : 'Save',
             iconCls : 'saveIcon',
             renderTo : 'button_margin_right_' + this.getId(),
             text : i18n._('Save'),
@@ -1904,7 +1926,7 @@ Ung.ConfigWin = Ext.extend(Ung.ButtonsWindow, {
 Ung.UpdateWindow = Ext.extend(Ung.ButtonsWindow, {
     initButtons : function() {
         this.subCmps.push(new Ext.Button({
-            name : 'helpButton',
+            name : 'Help',
             renderTo : 'button_left_' + this.getId(),
             iconCls : 'iconHelp',
             text : i18n._('Help'),
@@ -1913,7 +1935,7 @@ Ung.UpdateWindow = Ext.extend(Ung.ButtonsWindow, {
             }.createDelegate(this)
         }));
         this.subCmps.push(new Ext.Button({
-            name : 'cancelButton',
+            name : 'Cancel',
             renderTo : 'button_inner_right_' + this.getId(),
             iconCls : 'cancelIcon',
             text : i18n._('Cancel'),
@@ -1922,7 +1944,7 @@ Ung.UpdateWindow = Ext.extend(Ung.ButtonsWindow, {
             }.createDelegate(this)
         }));
         this.subCmps.push(new Ext.Button({
-            name : 'saveButton',
+            name : 'Update',
             renderTo : 'button_margin_right_' + this.getId(),
             iconCls : 'saveIcon',
             text : i18n._('Update'),
@@ -2477,7 +2499,7 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
                 text : i18n._('Add'),
                 tooltip : i18n._('Add New Row'),
                 iconCls : 'iconAddRow',
-                name : 'addButton',
+                name : 'Add',
                 parentId : this.getId(),
                 handler : function() {
                     var record = new Ext.data.Record(Ext.decode(Ext.encode(this.emptyRow)));
@@ -2518,6 +2540,8 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 
     afterRender : function() {
         Ung.EditorGrid.superclass.afterRender.call(this);
+        this.getGridEl().child("div[class*=x-grid3-viewport]").set({'name' : "table"});
+
         this.getView().getRowClass = function(record, index, rowParams, store) {
             var id = record.get("id");
             if (id == null || id < 0) {

@@ -19,7 +19,7 @@ if (!Ung.hasResource["Ung.WebFilter"]) {
         // Block Lists Panel
         buildBlockLists : function() {
             this.panelBlockLists = new Ext.Panel({
-                name : 'panelBlockLists',
+                name : 'Block Lists',
                 // private fields
                 winBlacklistCategories : null,
                 winBlockedUrls : null,
@@ -41,7 +41,7 @@ if (!Ung.hasResource["Ung.WebFilter"]) {
                         xtype : 'checkbox',
                         boxLabel : this.i18n._('Block all sites except for Pass Lists'),
                         hideLabel : true,
-                        name : 'fascistMode',
+                        name : 'Block all sites except for Pass Lists',
                         checked : this.getBaseSettings().fascistMode,
                         listeners : {
                             "check" : {
@@ -54,7 +54,7 @@ if (!Ung.hasResource["Ung.WebFilter"]) {
                 }, {
                     title : this.i18n._('Categories'),
                     buttons : [{
-                        name : 'manageBlacklistCategoriesButton',
+                        name : 'Categories manage list',
                         text : this.i18n._("manage list"),
                         handler : function() {
                             this.panelBlockLists.onManageBlacklistCategories();
@@ -63,7 +63,7 @@ if (!Ung.hasResource["Ung.WebFilter"]) {
                 }, {
                     title : this.i18n._('Sites'),
                     buttons : [{
-                        name : 'manageBlockedUrlsButton',
+                        name : 'Sites manage list',
                         text : this.i18n._("manage list"),
                         handler : function() {
                             this.panelBlockLists.onManageBlockedUrls();
@@ -72,7 +72,7 @@ if (!Ung.hasResource["Ung.WebFilter"]) {
                 }, {
                     title : this.i18n._('File Types'),
                     buttons : [{
-                        name : 'manageBlockedExtensionsButton',
+                        name : 'File Types manage list',
                         text : this.i18n._("manage list"),
                         handler : function() {
                             this.panelBlockLists.onManageBlockedExtensions();
@@ -81,7 +81,7 @@ if (!Ung.hasResource["Ung.WebFilter"]) {
                 }, {
                     title : this.i18n._('MIME Types'),
                     buttons : [{
-                        name : 'manageBlockedMimeTypesButton',
+                        name : 'MIME Types manage list',
                         text : this.i18n._("manage list"),
                         handler : function() {
                             this.panelBlockLists.onManageBlockedMimeTypes();
@@ -93,7 +93,7 @@ if (!Ung.hasResource["Ung.WebFilter"]) {
                         editable : false,
                         mode : 'local',
                         fieldLabel : this.i18n._('User Bypass'),
-                        name : "userWhitelist",
+                        name : "User Bypass",
                         store : new Ext.data.SimpleStore({
                             fields : ['userWhitelistValue', 'userWhitelistName'],
                             data : [["NONE", this.i18n._("None")], ["USER_ONLY", this.i18n._("Temporary")],
@@ -239,7 +239,7 @@ if (!Ung.hasResource["Ung.WebFilter"]) {
             });
 
             this.gridBlacklistCategories = new Ung.EditorGrid({
-                name : 'gridBlacklistCategories',
+                name : 'Categories',
                 settingsCmp : this,
                 totalRecords : this.getBaseSettings().blacklistCategoriesLength,
                 hasAdd : false,
@@ -349,7 +349,7 @@ if (!Ung.hasResource["Ung.WebFilter"]) {
             });
 
             this.gridBlockedUrls = new Ung.EditorGrid({
-                name : 'gridBlockedUrls',
+                name : 'Sites',
                 settingsCmp : this,
                 totalRecords : this.getBaseSettings().blockedUrlsLength,
                 emptyRow : {
@@ -433,7 +433,7 @@ if (!Ung.hasResource["Ung.WebFilter"]) {
             });
 
             this.gridBlockedExtensions = new Ung.EditorGrid({
-                name : 'gridBlockedExtensions',
+                name : 'File Types',
                 settingsCmp : this,
                 totalRecords : this.getBaseSettings().blockedExtensionsLength,
                 emptyRow : {
@@ -513,7 +513,7 @@ if (!Ung.hasResource["Ung.WebFilter"]) {
             });
 
             this.gridBlockedMimeTypes = new Ung.EditorGrid({
-                name : 'gridBlockedMimeTypes',
+                name : 'MIME Types',
                 settingsCmp : this,
                 totalRecords : this.getBaseSettings().blockedMimeTypesLength,
                 emptyRow : {
@@ -584,7 +584,7 @@ if (!Ung.hasResource["Ung.WebFilter"]) {
         buildPassLists : function() {
             this.panelPassLists = new Ext.Panel({
                 // private fields
-                name : 'panelPassLists',
+                name : 'Pass Lists',
                 winPassedUrls : null,
                 winPassedClients : null,
                 parentId : this.getId(),
@@ -600,7 +600,7 @@ if (!Ung.hasResource["Ung.WebFilter"]) {
                 items : [{
                     title : this.i18n._('Sites'),
                     buttons : [{
-                        name : 'managePassedUrlsButton',
+                        name : 'Sites manage list',
                         text : this.i18n._("manage list"),
                         handler : function() {
                             this.panelPassLists.onManagePassedUrls();
@@ -609,7 +609,7 @@ if (!Ung.hasResource["Ung.WebFilter"]) {
                 }, {
                     title : this.i18n._('IP addresses'),
                     buttons : [{
-                        name : 'managePassedClientsButton',
+                        name : 'IP addresses manage list',
                         text : this.i18n._("manage list"),
                         handler : function() {
                             this.panelPassLists.onManagePassedClients();
@@ -699,7 +699,7 @@ if (!Ung.hasResource["Ung.WebFilter"]) {
             });
 
             this.gridPassedUrls = new Ung.EditorGrid({
-                name : 'gridPassedUrls',
+                name : 'Sites',
                 settingsCmp : this,
                 totalRecords : this.getBaseSettings().passedUrlsLength,
                 emptyRow : {
@@ -772,7 +772,7 @@ if (!Ung.hasResource["Ung.WebFilter"]) {
             });
 
             this.gridPassedClients = new Ung.EditorGrid({
-                name : 'gridPassedClients',
+                name : 'IP addresses',
                 settingsCmp : this,
                 totalRecords : this.getBaseSettings().passedClientsLength,
                 emptyRow : {
@@ -835,7 +835,6 @@ if (!Ung.hasResource["Ung.WebFilter"]) {
         // Event Log
         buildEventLog : function() {
             this.gridEventLog = new Ung.GridEventLog({
-                name : 'gridEventLog',
                 settingsCmp : this,
                 // This is a predefined event log, so there is no need to
                 // specify the fields and columns
