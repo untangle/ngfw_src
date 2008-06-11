@@ -102,8 +102,6 @@ if (!Ung.hasResource["Ung.Administration"]) {
             });
         },
         buildAdministration : function() {
-            var ipAddrMaskRe = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
-            
             // read-only is a check column
             var readOnlyColumn = new Ext.grid.CheckColumn({
                 header : this.i18n._("read-only"),
@@ -325,10 +323,9 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         labelStyle: 'width:150px;',
                         allowDecimals: false,
                         allowNegative: false,
-                        minValue: 1,                        
-                        maxValue: 65535,
-                        minText: i18n.sprintf(this.i18n._("The port must be an integer number between %d and %d."), 1, 65535),
-                        maxText: i18n.sprintf(this.i18n._("The port must be an integer number between %d and %d."), 1, 65535),
+                        allowBlank : false,
+                        blankText : this.i18n._("You must provide a valid port."),
+                        vtype : 'port',
                         listeners : {
                             "change" : {
                                 fn : function(elem, newValue) {
@@ -388,13 +385,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                                 value : this.getAccessSettings().outsideNetwork,
                                 allowBlank : false,
                                 blankText : this.i18n._("A \"IP Address\" must be specified."),
-                                validator : function(fieldValue) {
-                                    if (ipAddrMaskRe.test(fieldValue)) {
-                                        return true;
-                                    } else {
-                                        return this.i18n._('Invalid External Remote Administration \"IP Address\" specified.');
-                                    }
-                                }.createDelegate(this)
+                                vtype : 'ipAddress'
                             }]
                     	},{
                             border: false,
@@ -409,13 +400,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                                 value : this.getAccessSettings().outsideNetmask,
                                 allowBlank : false,
                                 blankText : this.i18n._("A \"Netmask\" must be specified."),
-                                validator : function(fieldValue) {
-                                    if (ipAddrMaskRe.test(fieldValue)) {
-                                        return true;
-                                    } else {
-                                        return this.i18n._('Invalid External Remote Administration \"Netmask\" specified.');
-                                    }
-                                }.createDelegate(this)
+                                vtype : 'ipAddress'
                             }]
                     	}]
                 	}] 
@@ -738,10 +723,9 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         width: 50,
                         allowDecimals: false,
                         allowNegative: false,
-                        minValue: 1,                        
-                        maxValue: 65535,
-                        minText: i18n.sprintf(this.i18n._("The port must be an integer number between %d and %d."), 1, 65535),
-                        maxText: i18n.sprintf(this.i18n._("The port must be an integer number between %d and %d."), 1, 65535)
+                        allowBlank : false,
+                        blankText : this.i18n._("You must provide a valid port."),
+                        vtype : 'port'
                     }]
                 }, {
                     title: this.i18n._('Syslog'),
@@ -800,10 +784,9 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         width: 50,
                         allowDecimals: false,
                         allowNegative: false,
-                        minValue: 1,                        
-                        maxValue: 65535,
-                        minText: i18n.sprintf(this.i18n._("The port must be an integer number between %d and %d."), 1, 65535),
-                        maxText: i18n.sprintf(this.i18n._("The port must be an integer number between %d and %d."), 1, 65535)
+                        allowBlank : false,
+                        blankText : this.i18n._("You must provide a valid port."),
+                        vtype : 'port'
                     },{
                         xtype : 'combo',
                         name : 'syslogFacility',
@@ -1021,7 +1004,11 @@ if (!Ung.hasResource["Ung.Administration"]) {
             for(var i=0; i<listAdminAccounts.length;i++) {
                 for(var j=i+1; j<listAdminAccounts.length;j++) {
                 	if (listAdminAccounts[i].login == listAdminAccounts[j].login) {
-                        Ext.MessageBox.alert('Warning', i18n.sprintf(this.i18n._("The login name: \"%s\" in row: %d  already exists."), listAdminAccounts[j].login, j+1));
+                        Ext.MessageBox.alert('Warning', i18n.sprintf(this.i18n._("The login name: \"%s\" in row: %d  already exists."), listAdminAccounts[j].login, j+1),
+                            function () {
+                                this.tabs.activate(this.panelAdministration);
+                            }.createDelegate(this) 
+                        );
                 		return false;
                 	}
                 }
@@ -1034,13 +1021,21 @@ if (!Ung.hasResource["Ung.Administration"]) {
             
             // verify that there is at least one valid entry after all operations
             if(listAdminAccounts.length <= 0 ){
-                Ext.MessageBox.alert('Warning', this.i18n._("There must always be at least one valid account."));
+                Ext.MessageBox.alert('Warning', this.i18n._("There must always be at least one valid account."),
+                    function () {
+                        this.tabs.activate(this.panelAdministration);
+                    }.createDelegate(this) 
+                );
                 return false;
             }
         
             // verify that there was at least one non-read-only account
             if(!oneWritableAccount){
-                Ext.MessageBox.alert('Warning', this.i18n._("There must always be at least one non-read-only (writable) account."));
+                Ext.MessageBox.alert('Warning', this.i18n._("There must always be at least one non-read-only (writable) account."),
+                    function () {
+                        this.tabs.activate(this.panelAdministration);
+                    }.createDelegate(this) 
+                );
                 return false;
             }
             
@@ -1051,7 +1046,12 @@ if (!Ung.hasResource["Ung.Administration"]) {
         validateExternalAdministration : function() {
             var httpsPortCmp = Ext.getCmp('administration_httpsPort');
             if (!httpsPortCmp.isValid()) {
-                Ext.MessageBox.alert('Warning', i18n.sprintf(this.i18n._("The port must be an integer number between %d and %d."), 1, 65535));
+                Ext.MessageBox.alert('Warning', i18n.sprintf(this.i18n._("The port must be an integer number between %d and %d."), 1, 65535),
+                    function () {
+                        this.tabs.activate(this.panelAdministration);
+                        httpsPortCmp.focus(true);
+                    }.createDelegate(this) 
+                );
                 return false;
             }
             
@@ -1059,12 +1059,22 @@ if (!Ung.hasResource["Ung.Administration"]) {
             if (isOutsideAccessRestricted) {
                 var outsideNetworkCmp = Ext.getCmp('administration_outsideNetwork');
                 if (!outsideNetworkCmp.isValid()) {
-                    Ext.MessageBox.alert('Warning', this.i18n._('Invalid External Remote Administration \"IP Address\" specified.'));
+                    Ext.MessageBox.alert('Warning', this.i18n._('Invalid External Remote Administration \"IP Address\" specified.'),
+                        function () {
+                            this.tabs.activate(this.panelAdministration);
+                            outsideNetworkCmp.focus(true);
+                        }.createDelegate(this) 
+                    );
                     return false;
                 }
                 var outsideNetmaskCmp = Ext.getCmp('administration_outsideNetmask');
                 if (!outsideNetmaskCmp.isValid()) {
-                    Ext.MessageBox.alert('Warning', this.i18n._("Invalid External Remote Administration \"Netmask\" specified."));
+                    Ext.MessageBox.alert('Warning', this.i18n._("Invalid External Remote Administration \"Netmask\" specified."),
+                        function () {
+                            this.tabs.activate(this.panelAdministration);
+                            outsideNetmaskCmp.focus(true);
+                        }.createDelegate(this) 
+                    );
                     return false;
                 }
                 //prepare for save
@@ -1113,7 +1123,12 @@ if (!Ung.hasResource["Ung.Administration"]) {
             if (isSnmpEnabled) {
                 var snmpCommunityCmp = Ext.getCmp('administration_snmp_communityString');
                 if (!snmpCommunityCmp.isValid()) {
-                    Ext.MessageBox.alert('Warning', this.i18n._("An SNMP \"Community\" must be specified."));
+                    Ext.MessageBox.alert('Warning', this.i18n._("An SNMP \"Community\" must be specified."),
+                        function () {
+                            this.tabs.activate(this.panelMonitoring);
+                            snmpCommunityCmp.focus(true);
+                        }.createDelegate(this) 
+                    );
                     return false;
                 }
                 
@@ -1123,19 +1138,34 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 if (isTrapEnabled) {
                     snmpTrapCommunityCmp = Ext.getCmp('administration_snmp_trapCommunity');
                     if (!snmpTrapCommunityCmp.isValid()) {
-                        Ext.MessageBox.alert('Warning', this.i18n._("An Trap \"Community\" must be specified."));
+                        Ext.MessageBox.alert('Warning', this.i18n._("An Trap \"Community\" must be specified."), 
+                            function () {
+                                this.tabs.activate(this.panelMonitoring);
+                                snmpTrapCommunityCmp.focus(true);
+                            }.createDelegate(this) 
+                        );
                         return false;
                     }
                     
                     snmpTrapHostCmp = Ext.getCmp('administration_snmp_trapHost');
                     if (!snmpTrapHostCmp.isValid()) {
-                        Ext.MessageBox.alert('Warning', this.i18n._("An Trap \"Host\" must be specified."));
+                        Ext.MessageBox.alert('Warning', this.i18n._("An Trap \"Host\" must be specified."),
+                            function () {
+                                this.tabs.activate(this.panelMonitoring);
+                                snmpTrapHostCmp.focus(true);
+                            }.createDelegate(this) 
+                        );
                         return false;
                     }
                     
                     snmpTrapPortCmp = Ext.getCmp('administration_snmp_trapPort');
                     if (!snmpTrapPortCmp.isValid()) {
-                        Ext.MessageBox.alert('Warning', i18n.sprintf(this.i18n._("The port must be an integer number between %d and %d."), 1, 65535));
+                        Ext.MessageBox.alert('Warning', i18n.sprintf(this.i18n._("The port must be an integer number between %d and %d."), 1, 65535),
+                            function () {
+                                this.tabs.activate(this.panelMonitoring);
+                                snmpTrapPortCmp.focus(true);
+                            }.createDelegate(this) 
+                        );
                         return false;
                     }
                 }
@@ -1163,12 +1193,22 @@ if (!Ung.hasResource["Ung.Administration"]) {
         	if (isSyslogEnabled) {
                 var syslogHostCmp = Ext.getCmp('administration_syslog_host');
                 if (!syslogHostCmp.isValid()) {
-                    Ext.MessageBox.alert('Warning', this.i18n._("A \"Host\" must be specified."));
+                    Ext.MessageBox.alert('Warning', this.i18n._("A \"Host\" must be specified."),
+                        function () {
+                            this.tabs.activate(this.panelMonitoring);
+                            syslogHostCmp.focus(true);
+                        }.createDelegate(this) 
+                    );
                     return false;
                 }
                 var syslogPortCmp = Ext.getCmp('administration_syslog_port');
                 if (!syslogPortCmp.isValid()) {
-                    Ext.MessageBox.alert('Warning', i18n.sprintf(this.i18n._("The port must be an integer number between %d and %d."), 1, 65535));
+                    Ext.MessageBox.alert('Warning', i18n.sprintf(this.i18n._("The port must be an integer number between %d and %d."), 1, 65535),
+                        function () {
+                            this.tabs.activate(this.panelMonitoring);
+                            syslogPortCmp.focus(true);
+                        }.createDelegate(this) 
+                    );
                     return false;
                 }
                 //prepare for save

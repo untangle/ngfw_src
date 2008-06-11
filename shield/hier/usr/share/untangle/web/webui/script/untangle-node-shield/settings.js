@@ -58,7 +58,6 @@ if (!Ung.hasResource["Ung.Shield"]) {
 
             var deviderData = [[5, 5 + ' ' + this.i18n._("users")], [25, 25 + ' ' + this.i18n._("users")],
                     [40, 50 + ' ' + this.i18n._("users")], [75, 100 + ' ' + this.i18n._("users")], [-1, this.i18n._("unlimited")]];
-            var ipAddrMaskRe = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
 
             this.gridExceptions = new Ung.EditorGrid({
                 settingsCmp : this,
@@ -111,9 +110,7 @@ if (!Ung.hasResource["Ung.Shield"]) {
                     // this is a simple text editor
                     editor : new Ext.form.TextField({
                         allowBlank : false,
-                        validator : function(fieldValue) {
-                            return ipAddrMaskRe.test(fieldValue);
-                        }
+                        vtype : 'ipAddress'
                     })
                 }, {
                     id : 'divider',
@@ -162,9 +159,7 @@ if (!Ung.hasResource["Ung.Shield"]) {
                     fieldLabel : this.i18n._("Address"),
                     allowBlank : false,
                     width : 200,
-                    validator : function(fieldValue) {
-                        return ipAddrMaskRe.test(fieldValue);
-                    }
+                    vtype : 'ipAddress'
                 }), new Ext.form.ComboBox({
                     name : "divider",
                     fieldLabel : this.i18n._("User Count"),
