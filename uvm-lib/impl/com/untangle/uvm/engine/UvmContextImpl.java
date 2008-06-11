@@ -90,6 +90,7 @@ public class UvmContextImpl extends UvmContextBase
 
     private static final String ACTIVATE_SCRIPT;
     private static final String ACTIVATION_KEY_FILE;
+    private static final String REGISTRATION_INFO_FILE;
     private static final String POP_ID_FILE;
     private static final String ARGON_FAKE_KEY;
 
@@ -571,6 +572,11 @@ public class UvmContextImpl extends UvmContextBase
         // webserver, which is what matters.
         File keyFile = new File(ACTIVATION_KEY_FILE);
         return keyFile.exists();
+    }
+
+    public boolean isRegistered() {
+        File regFile = new File(REGISTRATION_INFO_FILE);
+        return regFile.exists();
     }
 
     public boolean isDevel()
@@ -1153,6 +1159,8 @@ public class UvmContextImpl extends UvmContextBase
             + "/utactivate";
         ACTIVATION_KEY_FILE = System.getProperty("bunnicula.home")
             + "/activation.key";
+        REGISTRATION_INFO_FILE = System.getProperty("bunnicula.home")
+            + "/registration.info";
         POP_ID_FILE = System.getProperty("bunnicula.home")
             + "/popid";
         ARGON_FAKE_KEY = "argon.fake";

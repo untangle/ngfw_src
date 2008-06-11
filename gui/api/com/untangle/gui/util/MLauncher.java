@@ -50,7 +50,6 @@ public class MLauncher {
     private static final String LOG4J_DEFAULT_PROPERTIES = "com/untangle/gui/log4j.properties";
     private static final String LOG4J_DEVEL_PROPERTIES   = "com/untangle/gui/log4j-devel.properties";
 
-    private static boolean isActivated;
     private static boolean isRegistered;
 
     private static final Logger logger = Logger.getLogger(MLauncher.class);
@@ -144,25 +143,26 @@ public class MLauncher {
         // HANDLE FIRST TIME LOGINS
         try{
             URL url = Util.getServerCodeBase();
-            isActivated = RemoteUvmContextFactory.factory().isActivated( url.getHost(), url.getPort(), 0, Util.isSecureViaHttps() );
+            isRegistered = RemoteUvmContextFactory.factory().isRegistered( url.getHost(), url.getPort(), 0, Util.isSecureViaHttps() );
         }
         catch(Exception e){
-            Util.handleExceptionNoRestart("unable to connect to server for activation check", e);
-            isActivated = true;
+            Util.handleExceptionNoRestart("unable to connect to server for registration check", e);
+            isRegistered = true;
         }
-        if( !isActivated ){
+        if( !isRegistered ){
             try{
                 SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
                     InitialSetupWizard initialSetupWizard = new InitialSetupWizard();
                     initialSetupWizard.setVisible(true);
-                    MLauncher.isRegistered = initialSetupWizard.isRegistered();
                 }});
+		URL url = Util.getServerCodeBase();
+		isRegistered = RemoteUvmContextFactory.factory().isRegistered( url.getHost(), url.getPort(), 0, Util.isSecureViaHttps() );
             }
             catch(Exception e){ Util.handleExceptionNoRestart("unable to show setup wizard", e); }
         }
 
         // LOGIN
-        if( isActivated || (!isActivated && isRegistered && InitialSetupRoutingJPanel.getNatEnabled() && !InitialSetupRoutingJPanel.getNatChanged()) )
+        if( isRegistered )
             new MLoginJFrame(args);
         else
             Util.exit(0);

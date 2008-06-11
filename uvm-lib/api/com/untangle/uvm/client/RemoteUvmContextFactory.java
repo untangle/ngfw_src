@@ -81,19 +81,24 @@ public class RemoteUvmContextFactory
     }
 
     /**
-     * Describe <code>isActivated</code> method here.
+     * Describe <code>isRegistered</code> method here.
      *
      * @param host the host of the Uvm.
      * @param timeout an <code>int</code> value.
      * @param secure use a SSL connection.
-     * @return a <code>boolean</code> true if already activated
+     * @return a <code>boolean</code> true if already registered
      * @exception UvmConnectException when an UvmLogin object cannot
      *    be accessed at given <code>host</code>
      */
-    public boolean isActivated(String host, int timeout, boolean secure)
+    public boolean isRegistered(String host, int port, int timeout, boolean secure)
         throws UvmConnectException
     {
-        return isActivated(host, 0, timeout, secure );
+        URL url = makeURL(host, port, secure);
+
+        synchronized (this) {
+            UvmLogin ml = uvmLogin(url, timeout, null);
+            return ml.isRegistered();
+        }
     }
 
     /**

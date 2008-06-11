@@ -48,6 +48,8 @@ public interface UvmLogin
 {
     boolean isActivated();
 
+    boolean isRegistered();
+
     RemoteUvmContext activationLogin(String key)
         throws FailedLoginException, MultipleLoginsException;
 
