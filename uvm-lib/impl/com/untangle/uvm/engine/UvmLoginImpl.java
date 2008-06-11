@@ -76,6 +76,11 @@ class UvmLoginImpl implements UvmLogin
         return LocalUvmContextFactory.context().isActivated();
     }
 
+    public boolean isRegistered()
+    {
+        return LocalUvmContextFactory.context().isRegistered();
+    }
+
     public RemoteUvmContext activationLogin(String key)
         throws FailedLoginException
     {

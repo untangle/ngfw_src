@@ -43,8 +43,6 @@ import com.untangle.uvm.client.RemoteUvmContextFactory;
 
 public class InitialSetupWizard extends MWizardJDialog {
 
-    private boolean isRegistered = false;
-
     private static final String MESSAGE_DIALOG_TITLE   = "Setup Wizard Warning";
     private static final String MESSAGE_NOT_REGISTERED = "You have not registered your Untangle Server.<br>Please run the Setup Wizard again.";
     private static final String MESSAGE_NO_PASSWORD    = "You have not set the Admin account password.<br><b>The default login/password is: admin/passwd</b>";
@@ -121,9 +119,6 @@ public class InitialSetupWizard extends MWizardJDialog {
         dialog.setVisible(true);
         if( dialog.isProceeding() ){
             if( Util.isInsideVM()) {
-                if (currentPage >= 3) { // REGISTERED
-                    isRegistered = true;
-                }
                 if (currentPage <= 2) { // NOT REGISTERED, MUST DO WIZARD AGAIN
                     MOneButtonJDialog.factory(this, "", MESSAGE_NOT_REGISTERED, MESSAGE_DIALOG_TITLE, "");
                 }
@@ -133,9 +128,6 @@ public class InitialSetupWizard extends MWizardJDialog {
                 initialSetupInterfaceJPanel.finishedAbnormal();
             }
             else if ( !Util.isUntangleAppliance() ) {
-                if (currentPage >= 2) { // REGISTERED
-                    isRegistered = true;
-                }
                 if (currentPage <= 1) { // NOT REGISTERED, MUST DO WIZARD AGAIN
                     MOneButtonJDialog.factory(this, "", MESSAGE_NOT_REGISTERED, MESSAGE_DIALOG_TITLE, "");
                 }
@@ -145,9 +137,6 @@ public class InitialSetupWizard extends MWizardJDialog {
                 initialSetupInterfaceJPanel.finishedAbnormal();
             }
             else {                
-                if (currentPage >= 3) { // REGISTERED
-                    isRegistered = true;
-                }
                 if (currentPage <= 2) { // NOT REGISTERED, MUST DO WIZARD AGAIN
                     MOneButtonJDialog.factory(this, "", MESSAGE_NOT_REGISTERED, MESSAGE_DIALOG_TITLE, "");
                 }
@@ -165,7 +154,6 @@ public class InitialSetupWizard extends MWizardJDialog {
     }
 
     protected void wizardFinishedNormal(){
-        isRegistered = true;
         if( (InitialSetupRoutingJPanel.getNatEnabled() && !InitialSetupRoutingJPanel.getNatChanged())
             || Util.isLocal() )
             cleanupConnection();
@@ -182,9 +170,6 @@ public class InitialSetupWizard extends MWizardJDialog {
             catch(Exception e){ Util.handleExceptionNoRestart("Error logging off", e); };
         }
     }
-
-    public boolean isRegistered(){ return isRegistered; }
-
 }
 
 
