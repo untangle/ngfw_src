@@ -35,8 +35,6 @@ if (!Ung.hasResource["Ung.Administration"]) {
             this.buildTabPanel([this.panelAdministration, this.panelPublicAddress, this.panelCertificates, this.panelMonitoring,
                     this.panelSkins]);
             this.tabs.activate(this.panelAdministration);
-            this.panelPublicAddress.disable();
-            this.panelCertificates.disable();
 
         },
         // get base settings object
@@ -470,7 +468,122 @@ if (!Ung.hasResource["Ung.Administration"]) {
             
         },
         buildPublicAddress : function() {
-            this.panelPublicAddress = this.getTODOPanel("Public Address");
+            this.panelPublicAddress = new Ext.Panel({
+
+                name : 'panelMonitoring',
+                // private fields
+                parentId : this.getId(),
+
+                title : this.i18n._('Public Address'),
+                layout : "form",
+                bodyStyle : 'padding:5px 5px 0px 5px;',
+                autoScroll : true,
+                items: {
+                    xtype: 'fieldset',
+                    autoHeight : true,
+                    items : [{
+                    	html : this.i18n._('The Public Address is the address or hostname that provides a public routable address for the ' +
+                    			'Untangle Server. This address will be used in emails sent by the Untangle Server to link back to ' +
+                    			'services hosted on the Untangle Server such as Quarantine Digests and OpenVPN Client emails.'),
+                        bodyStyle : 'padding-bottom:10px;',
+                        border : false
+                    },{
+                        xtype : 'radio',
+                        boxLabel : this.i18n._('Use External IP address (default)'), 
+                        hideLabel : true,
+                        name : 'publicAddress',
+                        checked : !this.getAddressSettings().isPublicAddressEnabled && !this.getAddressSettings().isHostNamePublic,
+                        listeners : {
+                            "check" : {
+                                fn : function(elem, checked) {
+                                    this.getAddressSettings().isPublicAddressEnabled = !checked;
+                                    if (checked) {
+                                        Ext.getCmp('administration_publicIPaddr').disable();
+                                        Ext.getCmp('administration_publicPort').disable();
+                                    }
+                                }.createDelegate(this)
+                            }
+                        }
+                    },{
+                    	html : this.i18n._('This works if your Untangle Server has a public static IP address.'),
+                        bodyStyle : 'padding:0px 5px 10px 25px;',
+                        border : false
+                    },{
+                        xtype : 'radio',
+                        boxLabel : this.i18n._('Use Hostname'), 
+                        hideLabel : true,
+                        name : 'publicAddress',
+                        checked : this.getAddressSettings().isHostNamePublic,
+                        listeners : {
+                            "check" : {
+                                fn : function(elem, checked) {
+                                    this.getAddressSettings().isHostNamePublic = checked;
+                                    if (checked) {
+                                        Ext.getCmp('administration_publicIPaddr').disable();
+                                        Ext.getCmp('administration_publicPort').disable();
+                                    }
+                                }.createDelegate(this)
+                            }
+                        }
+                    },{
+                        html : this.i18n._('This is recommended if the Untangle Server\'s fully qualified domain name looks up to its IP address both internally and externally.'),
+                        bodyStyle : 'padding:0px 5px 5px 25px;',
+                        border : false
+                    },{
+                        html : i18n.sprintf(this.i18n._('Current Hostname: %s%s%s'), '<i>', this.getAddressSettings().hostName, '</i>'),
+                        bodyStyle : 'padding:0px 5px 10px 25px;',
+                        border : false
+                    },{
+                        xtype : 'radio',
+                        boxLabel : this.i18n._('Use Manually Specified IP'), 
+                        hideLabel : true,
+                        name : 'publicAddress',
+                        checked : this.getAddressSettings().isPublicAddressEnabled,
+                        listeners : {
+                            "check" : {
+                                fn : function(elem, checked) {
+                                    this.getAddressSettings().isPublicAddressEnabled = checked;
+                                    if (checked) {
+                                        Ext.getCmp('administration_publicIPaddr').enable();
+                                        Ext.getCmp('administration_publicPort').enable();
+                                    }
+                                }.createDelegate(this)
+                            }
+                        }
+                    },{
+                        html : this.i18n._('This is recommended if the Untangle Server is installed behind another firewall with a port forward from the specified IP that redirects traffic to the Untangle Server.'),
+                        bodyStyle : 'padding:0px 5px 5px 25px;',
+                        border : false
+                    },{
+                    	xtype : 'panel',
+                        bodyStyle : 'padding-left:25px;',
+                        border : false,
+                        layout : 'form',
+                        items : [{
+                            xtype : 'textfield',
+                            fieldLabel : this.i18n._('Address'),
+                            name : 'publicIPaddr',
+                            id: 'administration_publicIPaddr',
+                            value : this.getAddressSettings().publicIPaddr,
+                            allowBlank : false,
+                            blankText : this.i18n._("You must provide a valid IP Address."),
+                            vtype : 'ipAddress'
+                        },{
+                            xtype : 'numberfield',
+                            fieldLabel : this.i18n._('Port'),
+                            name : 'publicPort',
+                            id: 'administration_publicPort',
+                            value : this.getAddressSettings().publicPort,
+                            width: 50,
+                            allowDecimals: false,
+                            allowNegative: false,
+                            allowBlank : false,
+                            blankText : this.i18n._("You must provide a valid port."),
+                            vtype : 'port'
+                        }]
+                    }]
+                }
+            });
         },
         buildCertificates : function() {
             this.panelCertificates = this.getTODOPanel("Certificates");
@@ -895,7 +1008,8 @@ if (!Ung.hasResource["Ung.Administration"]) {
         },
         // validation function
         validateClient : function() {
-            return  this.validateAdminAccounts() && this.validateExternalAdministration() && this.validateSnmp() && this.validateSyslog(); 
+            return  this.validateAdminAccounts() && this.validateExternalAdministration() && 
+                this.validatePublicAddress() && this.validateSnmp() && this.validateSyslog(); 
         },
         
         //validate Admin Accounts
@@ -958,14 +1072,41 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 this.getAccessSettings().outsideNetmask = outsideNetmaskCmp.getValue();
             }
             
-            if (this.getAddressSettings().publicAddress == null ||
-                    this.getAddressSettings().publicAddress.length == 0) {
-                delete this.getAddressSettings().publicAddress;
-            }
-                
             return true;
         },
 
+        //validate Public Address
+        validatePublicAddress : function() {
+            var isPublicAddressEnabled = this.getAddressSettings().isPublicAddressEnabled;
+            if (isPublicAddressEnabled) {
+                var publicIPaddrCmp = Ext.getCmp('administration_publicIPaddr');
+                if (!publicIPaddrCmp.isValid()) {
+                    Ext.MessageBox.alert('Warning', this.i18n._("You must provide a valid IP Address."), 
+                        function () {
+                            this.tabs.activate(this.panelPublicAddress);
+                            publicIPaddrCmp.focus(true);
+                        }.createDelegate(this) 
+                    );
+                    return false;
+                }
+                var publicPortCmp = Ext.getCmp('administration_publicPort');
+                if (!publicPortCmp.isValid()) {
+                    Ext.MessageBox.alert('Warning', i18n.sprintf(this.i18n._("The port must be an integer number between %d and %d."), 1, 65535),
+                        function () {
+                            this.tabs.activate(this.panelPublicAddress);
+                            publicPortCmp.focus(true);
+                        }.createDelegate(this) 
+                    );
+                    return false;
+                }
+                //prepare for save
+                this.getAddressSettings().publicIPaddr = publicIPaddrCmp.getValue();
+                this.getAddressSettings().publicPort = publicPortCmp.getValue();
+            }
+            
+            return true;
+        },
+        
         //validate SNMP
         validateSnmp : function() {
             var isSnmpEnabled = this.getSnmpSettings().enabled;
@@ -1069,6 +1210,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     this.afterSave();
                 }.createDelegate(this), this.getAccessSettings());
                 
+               delete this.getAddressSettings().publicAddress;
                rpc.networkManager.setAddressSettings(function(result, exception) {
                     if (exception) {
                         Ext.MessageBox.alert(i18n._("Failed"), exception.message);

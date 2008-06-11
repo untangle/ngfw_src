@@ -180,6 +180,21 @@ Ung.Main.prototype = {
     // Add the additional 'advanced' VTypes
 	initExtVTypes: function(){
         Ext.apply(Ext.form.VTypes, {
+          ipAddress: function(val, field) {
+            var ipAddrMaskRe = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+            return ipAddrMaskRe.test(val);
+          },
+          
+          ipAddressText: i18n._('Invalid IP Address.'),
+          
+          port: function(val, field) {
+          	var minValue = 1;                        
+            var maxValue = 65535;
+            return minValue <= val && val <= maxValue;
+          },
+          
+          portText: i18n.sprintf(i18n._("The port must be an integer number between %d and %d."), 1, 65535),
+          
           password: function(val, field) {
             if (field.initialPassField) {
               var pwd = Ext.getCmp(field.initialPassField);
