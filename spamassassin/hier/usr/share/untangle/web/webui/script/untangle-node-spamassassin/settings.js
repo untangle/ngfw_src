@@ -49,6 +49,15 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
             this.spamData = [['MARK', this.i18n._('Mark')], ['PASS', this.i18n._('Pass')]];
             this.strengthsData = [[50, this.i18n._('Low')], [43, this.i18n._('Medium')], [35, this.i18n._('High')],
                     [33, this.i18n._('Very High')], [30, this.i18n._('Extreme')], [0, this.i18n._('Custom')],];
+                    
+            var strengthValidator = function(fieldValue) {
+                if( 30 <= fieldValue && fieldValue <= 100) {
+                    return true;
+                } else {
+                    return this.i18n._('Strength Value must be a number in range 100-30. Smaller value is higher strength.'); 
+                }
+            }.createDelegate(this);
+                        
             this.emailPanel = new Ext.Panel({
                 title : this.i18n._('Email'),
                 name : 'emailPanel',
@@ -101,7 +110,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                         listeners : {
                             "change" : {
                                 fn : function(elem, newValue) {
-                                    var customCmp = this.emailPanel.items.get(0).items.get(3);
+                                    var customCmp = Ext.getCmp('spamassassin_smtpStrengthValue');
                                     if (newValue == 0) {
                                         customCmp.enable();
                                     } else {
@@ -113,14 +122,18 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                             }
                         }
                     }, {
-                        xtype : 'textfield',
-                        name : 'smtpStrengthValue',
+                        xtype : 'numberfield',
                         fieldLabel : this.i18n._('Strength Value'),
-                        allowBlank : false,
+                        name : 'smtpStrengthValue',
+                        id: 'spamassassin_smtpStrengthValue',
                         value : this.getBaseSettings().smtpConfig.strength,
+                        width: 50,
+                        allowDecimals: false,
+                        allowNegative: false,
+                        allowBlank : false,
+                        blankText : this.i18n._('Strength Value must be a number in range 100-30. Smaller value is higher strength.'),
                         disabled : !this.isCustomStrength(this.getBaseSettings().smtpConfig.strength),
-                        regex : /^(100|[3-9][0-9])$/,
-                        regexText : this.i18n._('Strength Value must be a number in range 100-30. Smaller value is higher strength.'),
+                        validator : strengthValidator,
                         listeners : {
                             "change" : {
                                 fn : function(elem, newValue) {
@@ -184,7 +197,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                         listeners : {
                             "change" : {
                                 fn : function(elem, newValue) {
-                                    var customCmp = this.emailPanel.items.get(1).items.get(2);
+                                    var customCmp = Ext.getCmp('spamassassin_pop3StrengthValue');
                                     if (newValue == 0) {
                                         customCmp.enable();
                                     } else {
@@ -196,14 +209,18 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                             }
                         }
                     }, {
-                        xtype : 'textfield',
-                        name : 'pop3StrengthValue',
+                        xtype : 'numberfield',
                         fieldLabel : this.i18n._('Strength Value'),
-                        allowBlank : false,
+                        name : 'pop3StrengthValue',
+                        id: 'spamassassin_pop3StrengthValue',
                         value : this.getBaseSettings().popConfig.strength,
+                        width: 50,
+                        allowDecimals: false,
+                        allowNegative: false,
+                        allowBlank : false,
+                        blankText : this.i18n._('Strength Value must be a number in range 100-30. Smaller value is higher strength.'),
                         disabled : !this.isCustomStrength(this.getBaseSettings().popConfig.strength),
-                        regex : /^(100|[3-9][0-9])$/,
-                        regexText : this.i18n._('Strength Value must be a number in range 100-30. Smaller value is higher strength.'),
+                        validator : strengthValidator,
                         listeners : {
                             "change" : {
                                 fn : function(elem, newValue) {
@@ -261,7 +278,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                         listeners : {
                             "change" : {
                                 fn : function(elem, newValue) {
-                                    var customCmp = this.emailPanel.items.get(2).items.get(2);
+                                    var customCmp = Ext.getCmp('spamassassin_imapStrengthValue');
                                     if (newValue == 0) {
                                         customCmp.enable();
                                     } else {
@@ -273,14 +290,18 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                             }
                         }
                     }, {
-                        xtype : 'textfield',
-                        name : 'imapStrengthValue',
+                        xtype : 'numberfield',
                         fieldLabel : this.i18n._('Strength Value'),
-                        allowBlank : false,
+                        name : 'imapStrengthValue',
+                        id: 'spamassassin_imapStrengthValue',
                         value : this.getBaseSettings().imapConfig.strength,
+                        width: 50,
+                        allowDecimals: false,
+                        allowNegative: false,
+                        allowBlank : false,
+                        blankText : this.i18n._('Strength Value must be a number in range 100-30. Smaller value is higher strength.'),
                         disabled : !this.isCustomStrength(this.getBaseSettings().imapConfig.strength),
-                        regex : /^(100|[3-9][0-9])$/,
-                        regexText : this.i18n._('Strength Value must be a number in range 100-30. Smaller value is higher strength.'),
+                        validator : strengthValidator,
                         listeners : {
                             "change" : {
                                 fn : function(elem, newValue) {
@@ -481,10 +502,18 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
             });
         },
         validateClient : function() {
-            var valid = (this.emailPanel.items.get(0).items.get(3).isValid() && this.emailPanel.items.get(1).items.get(2).isValid() && this.emailPanel.items
-                    .get(2).items.get(2));
+        	var cmp = null;
+            var valid = 
+                ((cmp = Ext.getCmp('spamassassin_smtpStrengthValue')).isValid() && 
+                (cmp = Ext.getCmp('spamassassin_pop3StrengthValue')).isValid() &&
+                (cmp = Ext.getCmp('spamassassin_imapStrengthValue')).isValid());
             if (!valid) {
-                Ext.MessageBox.alert(i18n._("Failed"), this.i18n._("Some fields have invalid values."))
+                Ext.MessageBox.alert(i18n._("Failed"), this.i18n._('Strength Value must be a number in range 100-30. Smaller value is higher strength.'),
+                    function () {
+                        this.tabs.activate(this.emailPanel);
+                        cmp.focus(true);
+                    }.createDelegate(this) 
+                );
             }
             return valid;
         },
