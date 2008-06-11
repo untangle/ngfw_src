@@ -236,9 +236,17 @@ Ung.Main.prototype = {
 		    deferredRender:false,
 		    defaults:{autoScroll: true},
 		    items:[
-		        {title:'Apps',html:'<div id="appsItems"></div>'},
-		        {title:'Config', html:'<div id="configItems"></div>'}
-		    ]
+		        {title: i18n._('Apps'),html:'<div id="appsItems"></div>',name:'Apps'},
+		        {title:i18n._('Config'), html:'<div id="configItems"></div>',name:'Config'}
+		    ],
+            listeners : {
+                "render" : {
+                    fn : function() {
+                        this.addNamesToPanels();
+                    }
+                }
+            }
+		    
 		});
 	},
 	// Load css file Dynamically

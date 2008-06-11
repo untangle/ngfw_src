@@ -24,27 +24,22 @@ Ext.override(Ext.Panel, {
         }
     }
 });
-/*
 Ext.override(Ext.TabPanel, {
-    listeners : {
-        "render" : {
-            fn : function() {
-                if (this.items) {
-                	var itemsLength=this.items
-                	for(var i=0;i<this.items.lengts;i++) {
-                        var tabEl=this.getTabEl(this.items[i]);
-                        if(this.items[i].name && tabEl) {
-                            tabEl.set({
-                                'name' : this.name
-                            });
-                        }
-                	}
+	addNamesToPanels: function () {
+		if (this.items) {
+            var items=this.items.getRange();
+            for(var i=0;i<items.length;i++) {
+                var tabEl=Ext.get(this.getTabEl(items[i]));
+                if(items[i].name && tabEl) {
+                    tabEl.set({
+                        'name' : items[i].name
+                    });
                 }
             }
         }
-    }
+		
+	}
 });
-*/
 // resources map
 Ung.hasResource = {};
 // Thread for installing nodes from store into toolbox
@@ -1311,6 +1306,7 @@ Ung.Settings = Ext.extend(Ext.Component, {
             listeners : {
                 "render" : {
                     fn : function() {
+                        this.addNamesToPanels();
                         var settingsCmp = Ext.getCmp(this.parentId);
                         var objSize = settingsCmp.node.settingsWin.items.get(0).getEl().getSize(true);
                         objSize.width = objSize.width - 24;
@@ -1857,6 +1853,7 @@ Ung.ConfigWin = Ext.extend(Ung.ButtonsWindow, {
             listeners : {
                 "render" : {
                     fn : function() {
+                        this.addNamesToPanels();
                         var winCmp = Ext.getCmp(this.parentId);
                         var objSize = winCmp.items.get(0).getEl().getSize(true);
                         objSize.width = objSize.width - 24;
