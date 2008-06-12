@@ -17,7 +17,6 @@
  */
 package com.untangle.node.virus;
 
-import com.untangle.node.mail.*;
 import com.untangle.node.mail.papi.*;
 import com.untangle.node.mail.papi.smtp.*;
 import com.untangle.node.mail.papi.smtp.sapi.Session;
