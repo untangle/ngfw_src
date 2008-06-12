@@ -33,42 +33,22 @@
                var remapsData = ${q:jsonReceivingRemaps(pageContext)};
                
                var globalStrings = {};
-               globalStrings.headerSender = '${uvm:i18n( pageContext, "From" )}';
-               globalStrings.headerQuarantineDetail = '${uvm:i18n( pageContext, "Score" )}';
-               globalStrings.headerSubject = '${uvm:i18n( pageContext, "Subject" )}';
-               globalStrings.headerQuarantineDate = '${uvm:i18n( pageContext, "Date" )}';
-               globalStrings.headerSize = '${uvm:i18n( pageContext, "Size (KB)" )}';
                globalStrings.headerEmailAddress = '${uvm:i18n( pageContext, "Email Address" )}';
                
                globalStrings.quarantineGridTitle = '${uvm:i18n( pageContext, 'Quarantined Messages' )}';
                globalStrings.safelistGridTitle = '${uvm:i18n( pageContext, "Safelist" )}';
-               globalStrings.remapsGridTitle = '${uvm:i18n( pageContext, "Alias Control" )}';
-               
-               globalStrings.buttonRelease = [ '${uvm:i18n( pageContext, "Release Messages" )}',
-                                               '${uvm:i18n( pageContext, "Release one Message" )}',
-                                               '${uvm:i18n( pageContext, "Release %d Messages" )}'];
-               globalStrings.buttonDelete = [ '${uvm:i18n( pageContext, "Delete Messages" )}',
-                                               '${uvm:i18n( pageContext, "Delete one Message" )}',
-                                               '${uvm:i18n( pageContext, "Delete %d Messages" )}'];
-
-               globalStrings.buttonSafelist = [ '${uvm:i18n( pageContext, "Safelist Addresses" )}',
-                                                '${uvm:i18n( pageContext, "Safelist one Address" )}',
-                                                '${uvm:i18n( pageContext, "Safelist %d Addresses" )}'];
-
-               globalStrings.releaseMessages = [ '${uvm:i18n( pageContext, 'Released one message' )}', 
-                                                 '${uvm:i18n( pageContext, 'Released %d messages' )}' ];
-               globalStrings.deletedMessages = [ '${uvm:i18n( pageContext, 'Deleted one message' )}', 
-                                                 '${uvm:i18n( pageContext, 'Deleted %d messages' )}' ];
-
-               globalStrings.safelistMessages =  [ '${uvm:i18n( pageContext, 'Safelisted one address' )}',
-                                                   '${uvm:i18n( pageContext, 'Safelisted %d addresses' )}'];
+               globalStrings.remapsGridTitle = '${uvm:i18n( pageContext, "Alias Control" )}';               
       ]]>
     </uvm:inlineScript>
 
     <!-- Libraries for the quarantine application -->
     <uvm:script src="quarantine.js"/>
+    <uvm:script src="/webui/script/i18n.js"/>
+
+    <!-- 
     <uvm:script src="safelist.js"/>
     <uvm:script src="remaps.js"/>
+    -->
   </c:set>
   
   <c:set var="content" scope="request">

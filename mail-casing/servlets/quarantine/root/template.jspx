@@ -26,7 +26,6 @@
     <uvm:script src="/webui/ext/source/adapter/ext-base.js"/>
     <uvm:script src="/webui/ext/ext-all-debug.js"/>
     <uvm:script src="/webui/jsonrpc/jsonrpc.js"/>
-    <uvm:script src="/webui/script/sprintf.js"/>
     
     <c:out escapeXml="false" value="${javascript}"/>
   </head>

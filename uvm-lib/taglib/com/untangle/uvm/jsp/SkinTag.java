@@ -107,8 +107,8 @@ public class SkinTag extends SimpleTagSupport
 //             }
 
             out.println( "\n<style type=\"text/css\">" );
-            out.println( "  @import \"/webui/skins/" + skin + "/css/ext-skin.css\"></script>" );
-            out.println( "  @import \"/webui/skins/" + skin + "/css/skin.css\"></script>" );
+            out.println( "  @import \"/webui/skins/" + skin + "/css/ext-skin.css\";" );
+            out.println( "  @import \"/webui/skins/" + skin + "/css/skin.css\";" );
             out.println( "</style>" );
 
         } catch ( IOException e ) {
