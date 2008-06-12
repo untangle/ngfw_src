@@ -21,7 +21,7 @@ package com.untangle.node.mail.web.euv;
 public class SafelistReturnCode
 {
     static final SafelistReturnCode EMPTY = new SafelistReturnCode( 0, 0, new String[0] );
-    /* This is the number of entries that were safelisted. */
+    /* This is the number of entries that were safelisted (negative if addresses were deleted.) */
     private final int safelistCount;
 
     /* The new number of total records in this inbox */

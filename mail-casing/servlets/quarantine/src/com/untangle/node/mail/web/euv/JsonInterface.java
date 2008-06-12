@@ -50,6 +50,10 @@ public interface JsonInterface
     public SafelistReturnCode replaceSafelist( String token, String addresses[] )
         throws BadTokenException, NoSuchInboxException, NoSuchSafelistException, QuarantineUserActionFailedException, SafelistActionFailedException;
 
+    /* Delete users from the safelist */
+    public SafelistReturnCode deleteAddressesFromSafelist( String token, String addresses[] )
+        throws BadTokenException, NoSuchInboxException, NoSuchSafelistException, QuarantineUserActionFailedException, SafelistActionFailedException;
+
     /* Map the account associated with token to address. */
     public void setRemap( String token, String address )
         throws BadTokenException, NoSuchInboxException, QuarantineUserActionFailedException,

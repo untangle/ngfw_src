@@ -28,6 +28,9 @@
                inboxDetails.totalCount = ${q:totalMessageCount(pageContext)};
                inboxDetails.address = '${currentAddress}';
 
+               /* This is the number of days a message will be saved in the quarantine for */
+               var quarantineDays = ${q:maxDaysToIntern( pageContext )};
+
                var safelistData = ${q:jsonSafelist(pageContext)};
                
                var remapsData = ${q:jsonReceivingRemaps(pageContext)};
@@ -43,6 +46,7 @@
 
     <!-- Libraries for the quarantine application -->
     <uvm:script src="quarantine.js"/>
+    <uvm:script src="safelist.js"/>
     <uvm:script src="/webui/script/i18n.js"/>
 
     <!-- 
@@ -52,93 +56,7 @@
   </c:set>
   
   <c:set var="content" scope="request">
-    <q:isRemapped includeIfTrue="true">
-      <uvm:i18n p0="${currentAddress}" p1="${q:remappedTo( pageContext, false )}">
-        Quarantined emails for &quot;{0}&quot; have been forwarded to
-        the quarantine of &quot;{1}&quot;.  If you believe this to be
-        an error, please contact either your system administrator or
-        <a href="mailto:{1}">{1}</a> directly.
-      </uvm:i18n>
-      </q:isRemapped>
-
-      <q:isRemapped includeIfTrue="false">
-        <q:hasInboxRecords includeIfTrue="true">
-          <uvm:i18n p0="${company}" p1="${q:maxDaysToIntern( pageContext )}">
-            <p><span>
-              The emails listed below have been quarantined by the {0} Server and
-              will be deleted automatically after {1} days.
-            </span></p>
-            <p><span>
-              To release emails from the quarantine and
-              have them delivered to your email account or
-              to delete emails from the quarantine,
-              click the checkboxes for one or more emails and
-              click <code>Release</code> or <code>Delete</code>, respectively.
-            </span></p>
-          </uvm:i18n>
-        </q:hasInboxRecords>
-
-        <q:hasInboxRecords includeIfTrue="false">
-          <p><span><uvm:i18n>You have no quarantined emails.</uvm:i18n></span></p>
-        </q:hasInboxRecords>
-
-        <p>
-          <span>
-            <uvm:i18n p0="${q:url(pageContext, 'safelist_view')}">
-              You may also view your <a href="{0}">safelist</a>
-              of email senders whose emails you never want to quarantine.
-            </uvm:i18n>
-          </span>
-        </p>
-        
-        <!-- This is a list of the email addresses that have been safelisted. -->
-        <div id="quarantine-safelist"><!-- jspx --></div>
-
-        <q:isReceivesRemaps includeIfTrue="true">
-          <!--
-            This address received remaps.  Do not offer to let them pass
-            their account along until all inbound remaps are empty
-          -->
-          <p><span>
-            <uvm:i18n p0="${currentAddress}" p1="${q:url(pageContext,'unmap_view')}">
-              Note that quarantined emails for &quot;{0}&quot; as
-              well as for the following addresses are forwarded to
-              this quarantine.  If you wish to change the email
-              addresses that are associated with this address, please
-              visit <a href="{0}">the alias control</a> page.
-            </uvm:i18n>
-          </span></p>
-          <ul>
-            <q:forEachReceivingRemapsEntry>
-              <li><q:receivingRemapsEntry encoded="false"/></li>
-            </q:forEachReceivingRemapsEntry>
-          </ul>
-        </q:isReceivesRemaps>
-
-        <q:isReceivesRemaps includeIfTrue="false">
-          <!-- Offer to remap -->
-          <p><span>
-            <uvm:i18n p0="${currentAddress}" p1="${q:url(pageContext, 'map_view')}">
-              You can also forward all quarantined email for
-              &quot;{0}&quot; to the quarantine of a different email
-              address.  For example, when you have a mailing list
-              (such as &quot;sales@mycompany.com&quot; or
-              &quot;jobs@anotherCompany.com&quot;), you can have a
-              single person manage the quarantined emails for this
-              list.  To enable forwarding, please visit 
-              <a href="{1}">the quarantine redirect</a> page.
-            </uvm:i18n>
-          </span></p>
-        </q:isReceivesRemaps>
-      </q:isRemapped>
-
-      
-      <q:hasInboxRecords includeIfTrue="true">
-        <div id="quarantine-inbox-records"><!-- jspx --></div>
-      </q:hasInboxRecords>
-
-      <!-- This is a list of the email addresses that are redirected to this email address. -->
-      <div id="quarantine-remaps"><!-- jspx --></div>
+    <div id="quarantine-tab-panel"><!-- jspx --></div>
   </c:set>
   
   <jsp:forward page="/template.jspx"/>

@@ -131,7 +131,9 @@ Ext.extend(Ung.QuarantineProxy, Ext.data.DataProxy, {
 	}
 });
 
+var quarantineTabPanel = null;
 var quarantine = null;
+var safelist = null;
 
 var i18n = null;
 
@@ -157,10 +159,10 @@ Ung.Quarantine.prototype = {
 
         this.releaseButton= new Ext.Button( {
             handler : function() { quarantine.releaseOrDelete( quarantine.rpc.releaseMessages,
-                                                               [ i18n._( "Release Messages" ),
-                                                                 i18n._( "Release one Message" ),
-                                                                 i18n._( "Release %d Messages" ) ] ) },
-                text : i18n._( "Release Messages" ),
+                                                               [ i18n._( "Move to Inbox" ),
+                                                                 i18n._( "Move one Message to Inbox" ),
+                                                                 i18n._( "Move %d Messages to Inbox" ) ] ) },
+                text : i18n._( "Move to Inbox" ),
                     disabled : true
                     } );
 
@@ -175,7 +177,7 @@ Ung.Quarantine.prototype = {
         
         this.safelistButton = new Ext.Button( {
             handler : function() { quarantine.safelist() },
-            text : i18n._( "Safelist Messages" ),
+            text : i18n._( "Add Sender(s) to Safelist" ),
             disabled : true
                 } );
 
@@ -218,10 +220,12 @@ Ung.Quarantine.prototype = {
                 inboxDetails.token, mids );
     },
     
-    safelist : function()
+    safelist : function( addresses )
     {
-        var addresses = [];
-        for ( var key in quarantine.addresses.data ) addresses.push( key );
+        if ( addresses == null ) {
+            addresses = [];
+            for ( var key in quarantine.addresses.data ) addresses.push( key );
+        }
 
         this.clearSelections();
         var getMessage = function( result, messages ) {
@@ -305,32 +309,32 @@ Ung.Quarantine.prototype = {
         var count = this.actionItems.size;
         if ( count == 0 ) {
             deleteText = i18n._( "Delete Messages" );
-            releaseText = i18n._( "Release Messages" );
+            releaseText = i18n._( "Move to Inbox" );
             quarantine.releaseButton.setDisabled( true );
             quarantine.deleteButton.setDisabled( true );
         } else if ( count == 1 ) {
             deleteText = i18n._( "Delete one Message" );
-            releaseText = i18n._( "Release one Message" );
+            releaseText = i18n._( "Move one Message to Inbox" );
             quarantine.releaseButton.setDisabled( false );
             quarantine.deleteButton.setDisabled( false );
         } else {
             deleteText = i18n.sprintf( i18n._( "Delete %d Messages" ), count );
-            releaseText = i18n.sprintf( i18n._( "Release %d Messages" ), count );
+            releaseText = i18n.sprintf( i18n._( "Move %d Messages to Inbox" ), count );
             quarantine.releaseButton.setDisabled( false );
             quarantine.deleteButton.setDisabled( false );
         }
 
         count = this.addresses.size;
         if ( count == 0 ) {
-            safelistText = i18n._( "Safelist Addresses" );
+            safelistText = i18n._( "Add Sender(s) to Safelist" );
             quarantine.safelistButton.setDisabled( true );
         } else if ( count == 1 ) {
-            safelistText = i18n._( "Safelist one Address" );
+            safelistText = i18n._( "Add Sender to Safelist" );
             quarantine.safelistButton.setDisabled( false );
         } else {
-            safelistText = i18n.sprintf( i18n._( "Safelist %d Addresses" ), count );
+            safelistText = i18n.sprintf( i18n._( "Add %d Senders to Safelist" ), count );
             quarantine.safelistButton.setDisabled( false );
-        }        
+        }
 
         quarantine.releaseButton.setText( releaseText );
         quarantine.deleteButton.setText( deleteText );
@@ -455,21 +459,38 @@ Ung.QuarantineGrid = Ext.extend( Ext.grid.GridPanel, {
             pageSize: this.quarantine.pageSize,
             store: this.quarantine.store,
             displayInfo: true,
-            displayMsg: 'Displaying Messages {0} - {1} of {2}',
-            emptyMsg: 'No messges to display',
-            items: [ this.quarantine.releaseButton, this.quarantine.deleteButton, 
-                     this.quarantine.safelistButton ] });
+            displayMsg: i18n._( 'Showing items {0} - {1} of {2}' ),
+            emptyMsg: i18n._( 'No messges to display' ) });
+
+        config.tbar = new Ext.Toolbar({
+        items: [ this.quarantine.releaseButton, this.quarantine.deleteButton, 
+                 this.quarantine.safelistButton ] });
+
+        
         
         config.store = this.quarantine.store;
         config.sm = this.quarantine.selectionModel;
-        config.title = i18n._( "Quarantined Messages" );
         Ung.QuarantineGrid.superclass.constructor.apply(this, arguments);
     },
-    el : "quarantine-inbox-records",
-    width: 800,
-    height: 500,
     trackMouseOver:false,
     loadMask: true,
+    frame : true,
+    height : 450,
+    stripeRows : true
+});
+
+Ung.QuarantineTabPanel = Ext.extend( Ext.TabPanel, {
+    constructor : function( config )
+    {
+        Ung.QuarantineTabPanel.superclass.constructor.apply(this, arguments);
+    },
+
+    el : "quarantine-tab-panel",
+    width : 1000,
+    height : 500,
+    activeTab : 0,
+    layoutOnTabChange : true,
+    /* defaults : { autoHeight : true }, */
     frame : true
 });
 
@@ -494,49 +515,33 @@ Ext.onReady(function() {
 function completeInit()
 {
     quarantine = new Ung.Quarantine();
+    safelist = new Ung.Safelist();
 
     quarantine.init();
-    // pluggable renders
-    quarantine.grid.render();
-    
+    safelist.init();    
+
+
+    var message = i18n.sprintf( i18n._( "The messages below were quarantined and will be deleted after %d days." ), quarantineDays );
+
+    var panels = [];
+
+    panels.push( new Ext.Panel( { 
+        title : i18n._("Quarantined Messages" ),
+        items : [ new Ext.form.Label( { text : message } ), quarantine.grid ]
+    } ));
+
+    message = i18n._( "You can use the Safelist to make sure that messages from these senders are never quarantined." );
+
+    panels.push( new Ext.Panel( { 
+        title : i18n._("Safelist" ),
+        items : [ new Ext.form.Label( { text : message } ), safelist.grid ]
+    } ));
+
+    quarantineTabPanel = new Ung.QuarantineTabPanel( { items : panels } );
+
+    quarantineTabPanel.render();
+        
     // trigger the data store load
     quarantine.store.load({params:{start:0, limit:quarantine.pageSize}});
 }
 
-// Grid check column (copied from main.js)
-Ext.grid.CheckColumn = function(config) {
-    Ext.apply(this, config);
-    if (!this.id) {
-        this.id = Ext.id();
-    }
-    if (!this.width) {
-        this.width = 40;
-    }
-    this.renderer = this.renderer.createDelegate(this);
-};
-
-Ext.grid.CheckColumn.prototype = {
-    init : function(grid) {
-        this.grid = grid;
-        this.grid.on('render', function() {
-            var view = this.grid.getView();
-            view.mainBody.on('mousedown', this.onMouseDown, this);
-        }, this);
-    },
-    changeRecord : function(record) {
-        record.set(this.dataIndex, !record.data[this.dataIndex]);
-    },
-    onMouseDown : function(e, t) {
-        if (t.className && t.className.indexOf('x-grid3-cc-' + this.id) != -1) {
-            e.stopEvent();
-            var index = this.grid.getView().findRowIndex(t);
-            var record = this.grid.store.getAt(index);
-            this.changeRecord(record);
-        }
-    },
-
-    renderer : function(value, metadata, record) {
-        metadata.css += ' x-grid3-check-col-td';
-        return '<div class="x-grid3-check-col' + (value ? '-on' : '') + ' x-grid3-cc-' + this.id + '">&#160;</div>';
-    }
-};

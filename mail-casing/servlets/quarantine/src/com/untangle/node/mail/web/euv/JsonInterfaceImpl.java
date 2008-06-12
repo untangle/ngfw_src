@@ -124,6 +124,12 @@ public class JsonInterfaceImpl implements JsonInterface
         return handleSafelist( SAFELIST_ACTION.REPLACE, token, addresses );
     }
 
+    public SafelistReturnCode deleteAddressesFromSafelist( String token, String addresses[] )
+        throws BadTokenException, NoSuchInboxException, NoSuchSafelistException, QuarantineUserActionFailedException, SafelistActionFailedException
+    {
+        return handleSafelist( SAFELIST_ACTION.DELETE, token, addresses );
+    }
+
     /* Map the account associated with token to address. */
     public void setRemap( String token, String address )
         throws BadTokenException, NoSuchInboxException, QuarantineUserActionFailedException,
