@@ -44,7 +44,7 @@ div.racksWithoutSeparator {
 }
 #help {
 	position:relative;
-	width:87px;
+	width:60px;
 	margin-left: auto;
 	margin-right: auto;
 	margin-bottom: 10px;
@@ -157,12 +157,7 @@ div.node div.nodePower {
 	right:54px;
 	height:33px;
 	width: 33px;
-}
-div.iconPowerOn {
-	background:transparent url(../images/main/icon_power_on.png) no-repeat center !important; 
-}
-div.iconPowerOff {
-	background:transparent url(../images/main/icon_power_off.png) no-repeat center !important; 
+    background:transparent url(../images/main/icon_power.png) no-repeat center !important; 
 }
 
 div.node div.nodeSettingsButton {

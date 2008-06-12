@@ -805,7 +805,6 @@ Ung.Node = Ext.extend(Ext.Component, {
     },
     setPowerOn : function(powerOn) {
         this.powerOn = powerOn;
-        document.getElementById('nodePower_' + this.getId()).className = "nodePower iconPower" + (this.powerOn ? "On" : "Off");
     },
     updateRunState : function(runState) {
         this.runState = runState;

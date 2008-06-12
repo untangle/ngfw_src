@@ -81,10 +81,6 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
                         }],
                 // the list of columns for the column model
                 columns : [{
-                    id : 'id',
-                    dataIndex : 'id',
-                    hidden : true
-                }, {
                     id : 'category',
                     header : this.i18n._("category"),
                     width : 200,
