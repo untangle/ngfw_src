@@ -139,7 +139,7 @@ public class UvmContextImpl extends UvmContextBase
     private RemoteBrandingManager brandingManager;
     private LocalBrandingManager localBrandingManager;
     private RemoteSkinManagerImpl skinManager;
-    private LocalBlingerManager localBlingerManager;
+    private BlingerManagerImpl localBlingerManager;
     private RemoteBlingerManager blingerManager;
     private RemoteBrandingManager remoteBlingerManager;
     private RemoteLanguageManagerImpl languageManager;
@@ -751,7 +751,7 @@ public class UvmContextImpl extends UvmContextBase
         nodeManager = new NodeManagerImpl(repositorySelector);
         remoteNodeManager = new RemoteNodeManagerAdaptor(nodeManager);
 
-        localBlingerManager = new BlingerManagerImpl(nodeManager);
+        localBlingerManager = new BlingerManagerImpl();
         blingerManager = new RemoteBlingerManagerAdaptor(localBlingerManager);
 
         // Retrieve the reporting configuration manager

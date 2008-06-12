@@ -30,6 +30,8 @@
 
 package com.untangle.uvm.logging;
 
+import java.util.List;
+
 import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.security.Tid;
 
@@ -38,6 +40,8 @@ public interface LocalBlingerManager
     BlingerState getBlingerState();
     BlingerState getBlingerState(Policy p);
     NodeStatDescs getNodeStatDesc(Tid t);
+    List<String> getActiveBlingers(Tid tid);
+    void setActiveBlingers(Tid tid, List<String> activeBlingers);
 
     Counters getUvmCounters();
 }

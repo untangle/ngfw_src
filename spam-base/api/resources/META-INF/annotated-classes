@@ -4,5 +4,3 @@ com.untangle.node.spam.SpamSMTPConfig
 com.untangle.node.spam.SpamSettings
 com.untangle.node.spam.SpamBaseSettings
 com.untangle.node.spam.SpamRBL
-com.untangle.node.spam.SpamAssassinDef
-com.untangle.node.spam.SpamAssassinLcl

@@ -28,3 +28,16 @@ CREATE TABLE settings.u_language_settings (
     language_settings_id int8 NOT NULL,
     language text,
     PRIMARY KEY (language_settings_id));
+
+-- com.untangle.uvm.engine.BlingerSettings
+CREATE TABLE settings.u_blinger_settings (
+    settings_id       int8 NOT NULL,
+    tid               int8 UNIQUE,
+    PRIMARY KEY       (settings_id));
+
+-- com.untangle.uvm.engine.BlingerSettings.activeBlingers
+CREATE TABLE settings.u_blinger_active (
+    blinger_settings_id  int8 NOT NULL,
+    position             int4 NOT NULL,
+    blinger_name         text NOT NULL,
+    PRIMARY KEY          (blinger_settings_id, position));

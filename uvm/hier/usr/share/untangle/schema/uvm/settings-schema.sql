@@ -1,3 +1,4 @@
+
 -- settings schema for release-5.0
 -- $HeadURL$
 -- Copyright (c) 2003-2007 Untangle, Inc.
@@ -523,6 +524,17 @@ CREATE TABLE settings.u_wmi_settings (
     password          TEXT,
     PRIMARY KEY       (settings_id));
 
+CREATE TABLE settings.u_blinger_settings (
+    settings_id       int8 NOT NULL,
+    tid               int8 UNIQUE,
+    PRIMARY KEY       (settings_id));
+
+CREATE TABLE settings.u_blinger_active (
+    blinger_settings_id  int8 NOT NULL,
+    position             int4 NOT NULL,
+    blinger_name         text NOT NULL,
+    PRIMARY KEY          (blinger_settings_id, position));
+
 ----------------
 -- constraints |
 ----------------
@@ -589,4 +601,3 @@ ALTER TABLE u_dns_host_list
 ALTER TABLE u_dns_host_list
       ADD CONSTRAINT fk_uvm_dns_dns
       FOREIGN KEY (rule_id) REFERENCES u_dns_static_host_rule;
-

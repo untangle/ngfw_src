@@ -30,27 +30,32 @@ import com.untangle.uvm.logging.NodeStats;
 import com.untangle.uvm.node.LocalNodeManager;
 import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.security.Tid;
+import com.untangle.uvm.util.TransactionWork;
+import org.hibernate.Query;
+import org.hibernate.Session;
 
 class BlingerManagerImpl implements LocalBlingerManager
 {
     private LocalNodeManager nodeManager;
-    private Counters uvmCounters;
+    private Counters uvmCounters = new Counters();
 
-    BlingerManagerImpl(LocalNodeManager nodeManager)
+    BlingerManagerImpl()
     {
-        this.nodeManager = nodeManager;
+        makeTid0();
     }
 
     public BlingerState getBlingerState()
     {
-       List<Tid> tids = nodeManager.nodeInstances();
-        return getNodeStats(tids);
+        LocalNodeManager lm = UvmContextImpl.getInstance().nodeManager();
+        List<Tid> tids = lm.nodeInstances();
+        return getNodeStats(lm, tids);
     }
 
     public BlingerState getBlingerState(Policy p)
     {
-        List<Tid> tids = nodeManager.nodeInstances(p);
-        return getNodeStats(tids);
+        LocalNodeManager lm = UvmContextImpl.getInstance().nodeManager();
+        List<Tid> tids = lm.nodeInstances(p);
+        return getNodeStats(lm, tids);
     }
 
     public NodeStatDescs getNodeStatDesc(Tid t)
@@ -60,11 +65,75 @@ class BlingerManagerImpl implements LocalBlingerManager
             if (0 == id) {
                 return uvmCounters.getStatDescs();
             } else {
-                return nodeManager.nodeContext(t).node().getCounters().getStatDescs();
+                LocalNodeManager lm = UvmContextImpl.getInstance().nodeManager();
+                return lm.nodeContext(t).node().getCounters().getStatDescs();
             }
         } else {
             return null;
         }
+    }
+
+    public List<String> getActiveBlingers(final Tid tid)
+    {
+        TransactionWork<List<String>> tw = new TransactionWork<List<String>>()
+            {
+                private List<String> result;
+
+                public boolean doWork(Session s)
+                {
+                    Query q = s.createQuery
+                        ("from BlingerSettings bs where bs.tid = :tid");
+                    q.setParameter("tid", tid);
+                    BlingerSettings bs = (BlingerSettings)q.uniqueResult();
+                    if (null == bs) {
+                        result = null;
+                    } else {
+                        result = bs.getActiveBlingers();
+                    }
+
+                    return true;
+                }
+
+                @Override
+                public List<String> getResult()
+                {
+                    return result;
+                }
+            };
+        UvmContextImpl.getInstance().runTransaction(tw);
+
+        return tw.getResult();
+    }
+
+    public void setActiveBlingers(final Tid tid,
+                                  final List<String> activeBlingers)
+    {
+        TransactionWork<List<String>> tw = new TransactionWork<List<String>>()
+            {
+                public boolean doWork(Session s)
+                {
+                    Query q = s.createQuery
+                        ("from BlingerSettings bs where bs.tid = :tid");
+                    q.setParameter("tid", tid);
+                    BlingerSettings bs = (BlingerSettings)q.uniqueResult();
+                    if (null == bs) {
+                        System.out.println("NULL BS");
+                        bs = new BlingerSettings(tid);
+                        bs.setActiveBlingers(activeBlingers);
+                        System.out.println("TID: " + bs.getTid());
+                        s.save(bs);
+                    } else {
+                        System.out.println("EXISTING BS");
+                        bs.setActiveBlingers(activeBlingers);
+                        System.out.println("TID: " + bs.getTid());
+                        s.update(bs);
+                    }
+
+                    return true;
+                }
+            };
+
+        UvmContextImpl.getInstance().runTransaction(tw);
     }
 
     public Counters getUvmCounters()
@@ -74,17 +143,38 @@ class BlingerManagerImpl implements LocalBlingerManager
 
     // private methods ---------------------------------------------------------
 
-    private BlingerState getNodeStats(List<Tid> tids)
+    private BlingerState getNodeStats(LocalNodeManager lm, List<Tid> tids)
     {
         Map<Tid, NodeStats> stats = new HashMap<Tid, NodeStats>(tids.size());
 
         stats.put(new Tid(0L), uvmCounters.getAllStats());
 
         for (Tid t : tids) {
-            Counters c = nodeManager.nodeContext(t).node().getCounters();
+            Counters c = lm.nodeContext(t).node().getCounters();
             stats.put(t, c.getAllStats());
         }
 
         return new BlingerState(stats);
+    }
+
+    private void makeTid0()
+    {
+        TransactionWork<List<String>> tw = new TransactionWork<List<String>>()
+            {
+                public boolean doWork(Session s)
+                {
+                    Query q = s.createQuery
+                        ("from Tid t where t.id = 0");
+                    Tid t = (Tid)q.uniqueResult();
+                    if (null == t) {
+                        t = new Tid(0L);
+                        s.save(t);
+                    }
+
+                    return true;
+                }
+            };
+
+        UvmContextImpl.getInstance().runTransaction(tw);
     }
 }
