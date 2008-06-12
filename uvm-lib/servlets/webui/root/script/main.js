@@ -212,6 +212,13 @@ Ung.Main.prototype = {
         }
         return rpc.loggingManager;
     },
+    
+    getAppServerManager : function(forceReload) {
+        if (forceReload || rpc.appServerManager === undefined) {
+            rpc.appServerManager = rpc.jsonrpc.RemoteUvmContext.appServerManager()
+        }
+        return rpc.appServerManager;
+    },
 	
 	unactivateNode: function(mackageDesc) {
 		rpc.nodeManager.nodeInstances(function (result, exception) {

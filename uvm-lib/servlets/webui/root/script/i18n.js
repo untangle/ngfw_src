@@ -76,7 +76,9 @@ Ung.I18N = Ext.extend(Ext.Component, {
     },
     // formats a date
     dateFormat : function(v) {
-        return Ext.util.Format.date(v, this.map['date_fmt']);
+        var date = new Date();
+        date.setTime(v.time);
+        return Ext.util.Format.date(date, this.map['date_fmt']);
     },
     // formats a timestamp
     timestampFormat : function(v) {

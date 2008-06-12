@@ -150,4 +150,16 @@ public interface RemoteAppServerManager
      * @return the CertInfo, or null if the cert could not be parsed.
      */
     CertInfo getCertInfo(byte[] certBytes);
+    
+    /**
+	 * Get information on the current certificate used by this 
+	 * instance of the UVM. This method is
+	 * offered for the UI which will not have access to the libraries
+	 * (which call native code) to inspect certs.     
+	 * 
+	 * @return the CertInfo of the current cert, or null if there is a severe problem
+	 * on the server.
+	 */
+	CertInfo getCurrentServerCertInfo();
+    
 }

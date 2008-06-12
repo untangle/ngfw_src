@@ -347,6 +347,10 @@ class AppServerManagerImpl implements LocalAppServerManager
         }
     }
 
+	public CertInfo getCurrentServerCertInfo() {
+		return getCertInfo(getCurrentServerCert());
+	}
+
     /**
      * Callback indicating that the hostname has changed
      */

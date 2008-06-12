@@ -79,28 +79,14 @@ if (!Ung.hasResource["Ung.Administration"]) {
             }
             return this.rpc.loggingSettings;
         },
-        
-        getTODOPanel : function(title) {
-            return new Ext.Panel({
-                title : this.i18n._(title),
-                layout : "form",
-                autoScroll : true,
-                bodyStyle : 'padding:5px 5px 0px 5px;',
-                items : [{
-                    xtype : 'fieldset',
-                    title : this.i18n._(title),
-                    autoHeight : true,
-                    items : [{
-                        xtype : 'textfield',
-                        fieldLabel : 'TODO',
-                        name : 'todo',
-                        allowBlank : false,
-                        value : 'todo',
-                        disabled : true
-                    }]
-                }]
-            });
+        // get Current Server CertInfo
+        getCurrentServerCertInfo : function(forceReload) {
+            if (forceReload || this.rpc.currentServerCertInfo === undefined) {
+                this.rpc.currentServerCertInfo = main.getAppServerManager().getCurrentServerCertInfo();
+            }
+            return this.rpc.currentServerCertInfo;
         },
+        
         buildAdministration : function() {
             // read-only is a check column
             var readOnlyColumn = new Ext.grid.CheckColumn({
@@ -571,7 +557,63 @@ if (!Ung.hasResource["Ung.Administration"]) {
             });
         },
         buildCertificates : function() {
-            this.panelCertificates = this.getTODOPanel("Certificates");
+            this.panelCertificates = new Ext.Panel({
+                name : 'panelCertificates',
+                // private fields
+                parentId : this.getId(),
+
+                title : this.i18n._('Certificates'),
+                layout : "form",
+                bodyStyle : 'padding:5px 5px 0px 5px;',
+                autoScroll : true,
+                defaults : {
+                    xtype : 'fieldset',
+                    autoHeight : true
+                },
+                items: [{
+                    title: this.i18n._('Status'),
+                    items : [{
+                        xtype : 'textfield',
+                        fieldLabel : this.i18n._('Current Certificate Type'),
+                        labelStyle: 'width:150px;',
+                        value : this.getCurrentServerCertInfo().appearsSelfSigned ? this.i18n._("Self-Signed") : this.i18n._("Signed / Trusted"),
+                        disabled : true,
+                        width: 300
+                    },{
+                        html : '<hr>',
+                        border : false
+                    },{
+                        xtype : 'textfield',
+                        fieldLabel : this.i18n._('Valid starting'),
+                        labelStyle: 'width:150px; font-weight:bold',
+                        value : i18n.timestampFormat(this.getCurrentServerCertInfo().notBefore),
+                        disabled : true,
+                        width: 300
+                    },{
+                        xtype : 'textfield',
+                        fieldLabel : this.i18n._('Valid until'),
+                        labelStyle: 'width:150px; font-weight:bold',
+                        value : i18n.timestampFormat(this.getCurrentServerCertInfo().notAfter),
+                        disabled : true,
+                        width: 300
+                    },{
+                        xtype : 'textfield',
+                        fieldLabel : this.i18n._('Subject DN'),
+                        labelStyle: 'width:150px; font-weight:bold',
+                        value : this.getCurrentServerCertInfo().subjectDN,
+                        disabled : true,
+                        width: 300
+                    },{
+                        xtype : 'textfield',
+                        fieldLabel : this.i18n._('Issuer DN'),
+                        labelStyle: 'width:150px; font-weight:bold',
+                        value : this.getCurrentServerCertInfo().issuerDN,
+                        disabled : true,
+                        width: 300
+                    }]
+                }]
+            	
+            })
         },
         buildMonitoring : function() {
             this.panelMonitoring = new Ext.Panel({

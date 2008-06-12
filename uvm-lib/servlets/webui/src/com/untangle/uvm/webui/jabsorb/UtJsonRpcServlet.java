@@ -37,6 +37,7 @@ import com.untangle.uvm.webui.jabsorb.serializer.IPMaddrSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.IPaddrSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.LazyInitializerSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.MimeTypeSerializer;
+import com.untangle.uvm.webui.jabsorb.serializer.RFC2253NameSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.TimeZoneSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.URLSerializer;
 
@@ -79,6 +80,7 @@ public class UtJsonRpcServlet extends JSONRPCServlet
                 b.registerSerializer(new HostNameSerializer());
                 b.registerSerializer(new TimeZoneSerializer());
                 b.registerSerializer(new MimeTypeSerializer());
+                b.registerSerializer(new RFC2253NameSerializer());
                 // hibernate related serializers
                 b.registerSerializer(new LazyInitializerSerializer());
                 b.registerSerializer(new ExtendedListSerializer());
