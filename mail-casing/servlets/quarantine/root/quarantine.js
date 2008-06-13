@@ -142,7 +142,6 @@ Ung.Quarantine = function() {
 }
 
 Ung.Quarantine.prototype = {
-    disableThreads: true, // in development environment is useful to disable threads.
     rpc : null,
     
     /* This is a hash of message ids that are ready to be deleted or released. */
@@ -477,7 +476,8 @@ Ung.QuarantineGrid = Ext.extend( Ext.grid.GridPanel, {
     loadMask: true,
     frame : true,
     region : "center",
-    stripeRows : true
+    stripeRows : true,
+    autoExpandColumn : 4
 });
 
 Ung.QuarantineTabPanel = Ext.extend( Ext.TabPanel, {
@@ -510,7 +510,7 @@ Ext.onReady(function() {
         failure : function() {
             Ext.MessageBox.alert("Error", "Unable to load the language pack." );
         },
-      params : { module : 'quarantine' }
+      params : { module : 'mail-casing' }
     });
 
 });

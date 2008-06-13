@@ -23,6 +23,8 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
+import com.untangle.uvm.node.ParseException;
+
 import com.untangle.node.mail.papi.quarantine.BadTokenException;
 import com.untangle.node.mail.papi.quarantine.InboxAlreadyRemappedException;
 import com.untangle.node.mail.papi.quarantine.NoSuchInboxException;
@@ -32,6 +34,9 @@ import com.untangle.node.mail.papi.safelist.SafelistActionFailedException;
 
 public interface JsonInterface
 {
+    public boolean requestDigest( String account )
+        throws ParseException, QuarantineUserActionFailedException;
+
     public List<JsonInboxRecord> getInboxRecords( String token, int start, int limit, 
                                                   String sortColumn, boolean isAscending )
         throws BadTokenException, NoSuchInboxException, QuarantineUserActionFailedException;

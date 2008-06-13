@@ -28,35 +28,11 @@
     <servlet-name>QuarantineMain</servlet-name>
     <servlet-class>com.untangle.node.mail.web.euv.QuarantineEnduserServlet</servlet-class>
     <load-on-startup>1</load-on-startup>
- </servlet>
+  </servlet>
 
   <servlet>
     <servlet-name>InboxMaintenenceControler</servlet-name>
     <servlet-class>com.untangle.node.mail.web.euv.InboxMaintenenceControler</servlet-class>
-    <load-on-startup>2</load-on-startup>
-  </servlet>
-
-  <servlet>
-    <servlet-name>RequestDigestControler</servlet-name>
-    <servlet-class>com.untangle.node.mail.web.euv.RequestDigestControler</servlet-class>
-    <load-on-startup>2</load-on-startup>
-  </servlet>
-
-  <servlet>
-    <servlet-name>SafelistMaintenenceControler</servlet-name>
-    <servlet-class>com.untangle.node.mail.web.euv.SafelistMaintenenceControler</servlet-class>
-    <load-on-startup>2</load-on-startup>
-  </servlet>
-
-  <servlet>
-    <servlet-name>UnremapperControler</servlet-name>
-    <servlet-class>com.untangle.node.mail.web.euv.UnremapperControler</servlet-class>
-    <load-on-startup>2</load-on-startup>
-  </servlet>
-
-  <servlet>
-    <servlet-name>RemapperControler</servlet-name>
-    <servlet-class>com.untangle.node.mail.web.euv.RemapperControler</servlet-class>
     <load-on-startup>2</load-on-startup>
   </servlet>
 
@@ -77,41 +53,12 @@
     <url-pattern>/manageuser</url-pattern>
   </servlet-mapping>
 
-  <servlet-mapping>
-    <servlet-name>RequestDigestControler</servlet-name>
-    <url-pattern>/requestdigest</url-pattern>
-  </servlet-mapping>
-
-  <servlet-mapping>
-    <servlet-name>SafelistMaintenenceControler</servlet-name>
-    <url-pattern>/safelist</url-pattern>
-  </servlet-mapping>
-
-  <servlet-mapping>
-    <servlet-name>UnremapperControler</servlet-name>
-    <url-pattern>/unmp</url-pattern>
-  </servlet-mapping>
-
-
-  <servlet-mapping>
-    <servlet-name>RemapperControler</servlet-name>
-    <url-pattern>/mp</url-pattern>
-  </servlet-mapping>
-
   <welcome-file-list>
-    <welcome-file>/index.jsp</welcome-file>
+    <welcome-file>/request.jspx</welcome-file>
   </welcome-file-list>
 
  <servlet-mapping>
     <servlet-name>JSONRPCServlet</servlet-name>
     <url-pattern>/JSON-RPC</url-pattern>
   </servlet-mapping>
-
-  <!--
-      <servlet-mapping>
-      <servlet-name>RequestDigestControler</servlet-name>
-      <url-pattern>/</url-pattern>
-      </servlet-mapping>
-  -->
-
 </web-app>

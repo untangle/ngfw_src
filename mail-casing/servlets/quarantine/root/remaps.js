@@ -93,6 +93,7 @@ Ung.Remaps.prototype = {
         } );
 
         this.grid = new Ext.grid.GridPanel({
+            autoExpandColumn : 1,
             anchor : '100% -100',
             store : remaps.store,
             cm : remaps.cm,

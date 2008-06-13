@@ -27,6 +27,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.untangle.node.mime.EmailAddress;
+
+import com.untangle.uvm.node.ParseException;
+
 import com.untangle.node.mail.papi.quarantine.BadTokenException;
 import com.untangle.node.mail.papi.quarantine.InboxAlreadyRemappedException;
 import com.untangle.node.mail.papi.quarantine.InboxIndex;
@@ -64,6 +68,27 @@ public class JsonInterfaceImpl implements JsonInterface
     };
 
     private static final JsonInterfaceImpl INSTANCE = new JsonInterfaceImpl();
+
+    public boolean requestDigest(String account)
+        throws ParseException, QuarantineUserActionFailedException
+    {
+        if (account == null) throw new ParseException( "Missing account" );
+
+        //Validate at least basic format
+        if (EmailAddress.parseNE(account) == null) throw new ParseException("Invalid Email Address");
+        
+        QuarantineUserView quarantine =
+            QuarantineEnduserServlet.instance().getQuarantine();
+        if(quarantine == null) {
+            throw new QuarantineUserActionFailedException(Constants.SERVER_UNAVAILABLE_ERRO_VIEW);
+        }
+
+        try {
+            return quarantine.requestDigestEmail(account);
+        } catch(NoSuchInboxException ex) {
+            return false;
+        }
+    }
 
     public List<JsonInboxRecord> getInboxRecords( String token, int start, int limit, 
                                                   String sortColumn, boolean isAscending )

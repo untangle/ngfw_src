@@ -1,0 +1,33 @@
+<jsp:root version="2.0" 
+          xmlns:jsp="http://java.sun.com/JSP/Page"
+          xmlns:c="http://java.sun.com/jsp/jstl/core"
+          xmlns:uvm="http://java.untangle.com/jsp/uvm"
+          xmlns:q="urn:jsptld:/WEB-INF/taglibs/quarantine_euv.tld">
+
+  <jsp:output omit-xml-declaration="true"/>
+
+  <uvm:i18nload path="mail-casing"/>
+
+  <c:set var="title" scope="request">
+    <uvm:i18n>
+      Request Quarantine Digest Email 
+    </uvm:i18n>
+  </c:set>
+
+  <c:set var="pageTitle" scope="request">
+    <uvm:i18n p0="${bs.companyName}" p1="${currentAddress}">
+      {0} | Request Quarantine Digest Email
+    </uvm:i18n>
+  </c:set>
+
+  <c:set var="javascript" scope="request">
+    <uvm:script src="request.js"/>
+    <uvm:script src="/webui/script/i18n.js"/>
+  </c:set>
+  
+  <c:set var="content" scope="request">
+    <div id="quarantine-request-digest"><!-- jspx --></div>
+  </c:set>
+  
+  <jsp:forward page="/template.jspx"/>
+</jsp:root>

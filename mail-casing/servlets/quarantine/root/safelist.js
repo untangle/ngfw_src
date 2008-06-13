@@ -94,6 +94,7 @@ Ung.Safelist.prototype = {
             loadMask : true,
             frame : true,
             stripeRows : true,
+            autoExpandColumn : 1,
             tbar : [ this.addButton, this.deleteButton ]
          });
     

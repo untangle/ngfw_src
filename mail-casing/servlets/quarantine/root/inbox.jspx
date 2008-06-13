@@ -46,11 +46,6 @@
     <uvm:script src="safelist.js"/>
     <uvm:script src="remaps.js"/>
     <uvm:script src="/webui/script/i18n.js"/>
-
-    <!-- 
-    <uvm:script src="safelist.js"/>
-    <uvm:script src="remaps.js"/>
-    -->
   </c:set>
   
   <c:set var="content" scope="request">
