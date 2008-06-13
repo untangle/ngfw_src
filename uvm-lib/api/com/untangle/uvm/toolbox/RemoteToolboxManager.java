@@ -37,6 +37,7 @@ import java.util.List;
 
 import com.untangle.uvm.alerts.MessageQueue;
 import com.untangle.uvm.node.DeployException;
+import com.untangle.uvm.policy.Policy;
 
 /**
  * Manager for the Toolbox, which holds Mackages. A Mackage is all
@@ -48,6 +49,14 @@ import com.untangle.uvm.node.DeployException;
  */
 public interface RemoteToolboxManager
 {
+    /**
+     * Get the view of the rack for a policy.
+     *
+     * @param p policy.
+     * @return visible nodes for this policy.
+     */
+    RackView getRackView(Policy p);
+
     /**
      * All known mackages.
      *

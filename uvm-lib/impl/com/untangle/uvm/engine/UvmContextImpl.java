@@ -784,7 +784,7 @@ public class UvmContextImpl extends UvmContextBase
             this.heapMonitor.start();
         }
 
-    adPhoneBookAssistant = ADPhoneBookAssistantManager.getADPhoneBookAssistant();
+        adPhoneBookAssistant = ADPhoneBookAssistantManager.getADPhoneBookAssistant();
 
         /* initalize everything and start it up */
         phoneBookFactory.init();

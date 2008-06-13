@@ -17,16 +17,12 @@
  */
 
 package com.untangle.uvm.engine;
-
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -47,6 +43,7 @@ import com.untangle.uvm.Period;
 import com.untangle.uvm.alerts.MessageQueue;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.NodeException;
+import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.security.LoginSession;
 import com.untangle.uvm.security.Tid;
 import com.untangle.uvm.toolbox.DownloadComplete;
@@ -56,12 +53,14 @@ import com.untangle.uvm.toolbox.InstallComplete;
 import com.untangle.uvm.toolbox.InstallProgress;
 import com.untangle.uvm.toolbox.InstallTimeout;
 import com.untangle.uvm.toolbox.MackageDesc;
+import com.untangle.uvm.toolbox.MackageDesc.Type;
 import com.untangle.uvm.toolbox.MackageException;
 import com.untangle.uvm.toolbox.MackageInstallException;
 import com.untangle.uvm.toolbox.MackageInstallRequest;
 import com.untangle.uvm.toolbox.MackageUninstallException;
 import com.untangle.uvm.toolbox.MackageUpdateExtraName;
 import com.untangle.uvm.toolbox.ProgressVisitor;
+import com.untangle.uvm.toolbox.RackView;
 import com.untangle.uvm.toolbox.RemoteToolboxManager;
 import com.untangle.uvm.toolbox.RemoteUpstreamManager;
 import com.untangle.uvm.toolbox.ToolboxMessage;
@@ -151,6 +150,33 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
 
     // RemoteToolboxManager implementation ------------------------------------
 
+    // XXX this is not done yet!
+    public RackView getRackView(Policy p)
+    {
+        List<MackageDesc> uninstalled = new ArrayList<MackageDesc>();
+
+        for (MackageDesc md : uninstalled()) {
+            if (md.getType() == MackageDesc.Type.LIB_ITEM
+                && 0 <= md.getViewPosition()
+                && !md.getName().equals("untangle-libitem-router")) {
+                uninstalled.add(md);
+            }
+        }
+
+        List<MackageDesc> installed = new ArrayList<MackageDesc>();
+
+        // XXX NOT QUITE RIGHT
+        for (MackageDesc md : installedVisible()) {
+            if (md.getType() == MackageDesc.Type.NODE
+                && (md.isCore() || md.isSecurity())
+                && !md.getName().equals("untangle-node-router")) {
+                installed.add(md);
+            }
+        }
+
+        return new RackView(uninstalled, installed);
+    }
+
     // all known mackages
     public MackageDesc[] available()
     {
@@ -175,7 +201,7 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
                 return true;
             }
         }
-        
+
         return false;
     }
 
@@ -440,7 +466,7 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
             logger.warn("Could not find package for: " + mackageName);
             return;
         }
-        
+
         MackageInstallRequest mir = new MackageInstallRequest(md,isInstalled(mackageName));
 
         synchronized (messageQueues) {
@@ -466,11 +492,11 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
 
         return mq;
     }
-    
+
     public List<ToolboxMessage> getToolboxMessages() {
-    	return subscribe().getMessages();
+        return subscribe().getMessages();
     }
-    
+
 
     // RemoteToolboxManagerPriv implementation --------------------------------
 
@@ -539,7 +565,7 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
                         Random rand = new Random();
                         Period period = new Period(23, rand.nextInt(60), true);
                         us = new UpgradeSettings(period);
-			// only turn on auto-upgrade for full ISO install
+            // only turn on auto-upgrade for full ISO install
                         UpstreamService upgradeSvc =
                             LocalUvmContextFactory.context().upstreamManager().getService(RemoteUpstreamManager.AUTO_UPGRADE_SERVICE_NAME);
                         if (upgradeSvc != null)
@@ -566,7 +592,7 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
 
         return false;
     }
-    
+
     public String getLibraryHost()
     {
         String host = System.getProperty("uvm.store.host");

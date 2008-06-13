@@ -33,7 +33,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.untangle.uvm.LocalUvmContextFactory;
@@ -195,12 +194,12 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
     public List<Tid> nodeInstancesVisible(Policy policy)
     {
         List<Tid> nodeInstances = nodeInstances(policy);
-        Vector<Tid> visibleVector = new Vector<Tid>();
+        List<Tid> visibleVector = new ArrayList<Tid>();
         for( Tid tid : nodeInstances ){
             if( nodeContext(tid).getMackageDesc().getViewPosition() >= 0 )
                 visibleVector.add(tid);
         }
-        return (List<Tid>) visibleVector;
+        return visibleVector;
     }
 
     public NodeContextImpl nodeContext(Tid tid)
