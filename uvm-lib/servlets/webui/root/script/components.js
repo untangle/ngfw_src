@@ -24,6 +24,19 @@ Ext.override(Ext.Panel, {
         }
     }
 });
+Ext.override(Ext.PagingToolbar, {
+    listeners : {
+        "render" : {
+            fn : function() {
+                if (this.getEl()) {
+                    this.getEl().set({
+                        'name' : "Paging Toolbar"
+                    });
+                }
+            }
+        }
+    }
+});
 Ext.override(Ext.TabPanel, {
 	addNamesToPanels: function () {
 		if (this.items) {
@@ -1557,7 +1570,7 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
     // called when the component is rendered
     onRender : function(container, position) {
         Ung.GridEventLog.superclass.onRender.call(this, container, position);
-        this.getGridEl().child("div[class*=x-grid3-viewport]").set({'name' : "table"});
+        this.getGridEl().child("div[class*=x-grid3-viewport]").set({'name' : "Table"});
         if (this.hasRepositories) {
             this.eventManagerFn.getRepositoryDescs(function(result, exception) {
                 if (exception) {
@@ -2536,7 +2549,7 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 
     afterRender : function() {
         Ung.EditorGrid.superclass.afterRender.call(this);
-        this.getGridEl().child("div[class*=x-grid3-viewport]").set({'name' : "table"});
+        this.getGridEl().child("div[class*=x-grid3-viewport]").set({'name' : "Table"});
 
         this.getView().getRowClass = function(record, index, rowParams, store) {
             var id = record.get("id");
