@@ -49,28 +49,7 @@ Ung.Remaps.prototype = {
             reader : remaps.reader,
             data : inboxDetails.remapsData
         });
-    
-        this.forwardTo = new Ext.FormPanel( {
-            region : "north",
-            height : 100,
-            defaultType : 'textfield',
-            items : [{
-                fieldLabel : i18n._( "Forward Quarantined Messages To" ),
-                name : 'email_address',
-                value : inboxDetails.forwardAddress
-            }],
-            buttons : [ {
-                text : "Change Address",
-                handler: function() {
-                    var field = this.forwardTo.find( "name", "email_address" )[0];
-                    var email = field.getValue();
-                    quarantine.rpc.setRemap( this.setRemap.createDelegate( this ), 
-                                             inboxDetails.token, email );
-                    
-                },
-                scope : this
-            }]
-        } );
+
 
         this.deleteButton = new Ext.Button( {
             text : i18n._( "Delete Addresses" ),
@@ -91,9 +70,30 @@ Ung.Remaps.prototype = {
             },
             scope : this
         });
+    
+        this.forwardTo = new Ext.FormPanel( {
+            height : 100,
+            defaultType : 'textfield',
+            items : [{
+                fieldLabel : i18n._( "Forward Quarantined Messages To" ),
+                name : 'email_address',
+                value : inboxDetails.forwardAddress
+            }],
+            buttons : [ {
+                text : "Change Address",
+                handler: function() {
+                    var field = this.forwardTo.find( "name", "email_address" )[0];
+                    var email = field.getValue();
+                    quarantine.rpc.setRemap( this.setRemap.createDelegate( this ), 
+                                             inboxDetails.token, email );
+                    
+                },
+                scope : this
+            }]
+        } );
 
         this.grid = new Ext.grid.GridPanel({
-            region : "center",
+            anchor : '100% -100',
             store : remaps.store,
             cm : remaps.cm,
             loadMask : true,
@@ -102,6 +102,64 @@ Ung.Remaps.prototype = {
             sm : this.selectionModel,
             tbar : [ this.deleteButton ]
          });
+
+        var items = [];
+        
+        items.push ({ 
+            xtype : 'radio',
+            boxLabel : i18n._( "Forward Quarantined Messages To" ),
+            hideLabel : true,
+            name : "acceptQuantineMessages",
+            listeners : {
+                "check" : {
+                    fn : function(elem, checked) {
+                        if (checked) {
+                            this.emailAddressField.enable();
+                            this.grid.disable();
+                        }
+                    }.createDelegate(this)
+                 }
+            }});
+
+        this.emailAddressField = new Ext.form.TextField({
+            fieldLabel : i18n._( "Address" ),
+            name : "email_address",
+            value : inboxDetails.forwardAddress });
+
+        items.push( this.emailAddressField );
+
+        items.push({
+            xtype : 'button',
+            text : "Change Address",
+            handler: function() {
+                var field = this.forwardTo.find( "name", "email_address" )[0];
+                var email = field.getValue();
+                quarantine.rpc.setRemap( this.setRemap.createDelegate( this ), 
+                                         inboxDetails.token, email );
+            },
+            scope : this });
+
+        items.push ({ 
+            xtype : 'radio',
+            name : "acceptQuantineMessages",
+            boxLabel : i18n._( "Received Quarantined Messages From" ),
+            hideLabel : true,
+            listeners : {
+                check : {
+                    fn : function(elem, checked) {
+                        if (checked) {
+                            this.emailAddressField.disable();
+                            this.grid.enable();
+                        }
+                    }.createDelegate(this)
+                 }
+            }});
+
+        items.push( this.grid );
+
+        this.panel = new Ext.FormPanel( {
+            title : i18n._("Forward or Receive Quarantines" ),
+            items : items });
     },
 
     setRemap : function( result, exception )

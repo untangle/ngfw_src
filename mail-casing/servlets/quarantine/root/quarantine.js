@@ -543,11 +543,15 @@ function completeInit()
         layout : "border"
     } ));
     
+/*
     panels.push( new Ext.Panel( { 
         title : i18n._("Forward or Receive Quarantines" ),
         items : [ remaps.forwardTo, remaps.grid ],
-        layout : "border"
+        layout : "anchor"
     } ));
+*/
+
+    panels.push( remaps.panel );
 
     quarantineTabPanel = new Ung.QuarantineTabPanel( { items : panels } );
 
