@@ -110,13 +110,11 @@ Ung.Remaps.prototype = {
             boxLabel : i18n._( "Forward Quarantined Messages To" ),
             hideLabel : true,
             name : "acceptQuantineMessages",
+            checked : inboxDetails.forwardAddress != "",
             listeners : {
                 "check" : {
                     fn : function(elem, checked) {
-                        if (checked) {
-                            this.emailAddressField.enable();
-                            this.grid.disable();
-                        }
+                        if (checked) this.setHasForwardAddress( true );
                     }.createDelegate(this)
                  }
             }});
@@ -143,14 +141,12 @@ Ung.Remaps.prototype = {
             xtype : 'radio',
             name : "acceptQuantineMessages",
             boxLabel : i18n._( "Received Quarantined Messages From" ),
+            checked : inboxDetails.forwardAddress == "",
             hideLabel : true,
             listeners : {
                 check : {
                     fn : function(elem, checked) {
-                        if (checked) {
-                            this.emailAddressField.disable();
-                            this.grid.enable();
-                        }
+                        if (checked) this.setHasForwardAddress( false );
                     }.createDelegate(this)
                  }
             }});
@@ -160,6 +156,19 @@ Ung.Remaps.prototype = {
         this.panel = new Ext.FormPanel( {
             title : i18n._("Forward or Receive Quarantines" ),
             items : items });
+
+        this.setHasForwardAddress( inboxDetails.forwardAddress != "" );
+    },
+
+    setHasForwardAddress : function( isForwarded )
+    {
+        if ( isForwarded ) {
+            this.emailAddressField.enable();
+            this.grid.disable();
+        } else {
+            this.emailAddressField.disable();
+            this.grid.enable();            
+        }
     },
 
     setRemap : function( result, exception )
