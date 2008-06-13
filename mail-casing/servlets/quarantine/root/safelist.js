@@ -40,7 +40,7 @@ Ung.Safelist.prototype = {
         this.cm = new Ext.grid.ColumnModel([
             this.selectionModel,
             {
-                header: globalStrings.headerEmailAddress,
+                header: i18n._( "Email Address" ),
                 dataIndex: 'emailAddress',
                 width: 200,
                 editor : new Ext.form.TextField()
@@ -52,7 +52,7 @@ Ung.Safelist.prototype = {
 
         this.store = new Ext.data.Store({
             reader : safelist.reader,
-            data : safelistData
+            data : inboxDetails.safelistData
         });
 
         this.addButton = new Ext.Button( {
@@ -74,19 +74,21 @@ Ung.Safelist.prototype = {
                     return true;
                 });
 
+                this.grid.setDisabled( true );
+                this.selectionModel.clearSelections();
                 quarantine.selectionModel.clearSelections();
                 this.deleteButton.setText( i18n._( "Delete Addresses" ));
                 this.deleteButton.setDisabled( true );
                 
-                quarantine.rpc.deleteAddressesFromSafelist( this.deleteAddresses.createDelegate(), 
+                quarantine.rpc.deleteAddressesFromSafelist( this.deleteAddresses.createDelegate( this ), 
                                                             inboxDetails.token, addresses );
             },
             "scope" : this
         });
-        
+                    
         this.grid = new Ext.grid.GridPanel({
             store : safelist.store,
-            height : 450,
+            region : "center",
             cm : safelist.cm,
             sm : this.selectionModel,
             loadMask : true,
@@ -105,6 +107,7 @@ Ung.Safelist.prototype = {
                     fieldLabel : i18n._( "Email Address" ),
                     name : "email_address"
                 }],
+                frame : true,
                 autoHeight : true
             } );
             this.addWindow = new Ext.Window( {
@@ -144,6 +147,8 @@ Ung.Safelist.prototype = {
             Ext.MessageBox.alert("Failed",exception.message); 
             return;
         }
+        
+        this.grid.setDisabled( false );
         
         var count = result.safelistCount;
         count = -count;

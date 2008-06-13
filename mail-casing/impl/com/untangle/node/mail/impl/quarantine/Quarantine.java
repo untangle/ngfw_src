@@ -504,6 +504,11 @@ public class Quarantine
         return p.b;
     }
 
+    public String createAuthToken(String account)
+    {
+        return m_atm.createAuthToken(account.trim());
+    }
+
     public boolean requestDigestEmail(String account)
         throws NoSuchInboxException, QuarantineUserActionFailedException {
 

@@ -63,6 +63,6 @@ public interface QuarantineNodeView {
     public boolean quarantineMail(File file,
                                   MailSummary summary,
                                   EmailAddress...recipients);
-
-
+    
+    public String createAuthToken(String account);
 }

@@ -134,6 +134,7 @@ Ext.extend(Ung.QuarantineProxy, Ext.data.DataProxy, {
 var quarantineTabPanel = null;
 var quarantine = null;
 var safelist = null;
+var remaps = null;
 
 var i18n = null;
 
@@ -475,13 +476,15 @@ Ung.QuarantineGrid = Ext.extend( Ext.grid.GridPanel, {
     trackMouseOver:false,
     loadMask: true,
     frame : true,
-    height : 450,
+    region : "center",
     stripeRows : true
 });
 
 Ung.QuarantineTabPanel = Ext.extend( Ext.TabPanel, {
     constructor : function( config )
     {
+        /* Set the active tab to the forward address is mail is being forwarded. */
+        if ( inboxDetails.forwardAddress != "" ) config.activeTab = 2;
         Ung.QuarantineTabPanel.superclass.constructor.apply(this, arguments);
     },
 
@@ -516,25 +519,34 @@ function completeInit()
 {
     quarantine = new Ung.Quarantine();
     safelist = new Ung.Safelist();
+    remaps = new Ung.Remaps();
 
     quarantine.init();
-    safelist.init();    
+    safelist.init();
+    remaps.init();
 
-
-    var message = i18n.sprintf( i18n._( "The messages below were quarantined and will be deleted after %d days." ), quarantineDays );
+    var message = i18n.sprintf( i18n._( "The messages below were quarantined and will be deleted after %d days." ), inboxDetails.quarantineDays );
 
     var panels = [];
 
     panels.push( new Ext.Panel( { 
         title : i18n._("Quarantined Messages" ),
-        items : [ new Ext.form.Label( { text : message } ), quarantine.grid ]
+        items : [ new Ext.form.Label( { text : message, region : "north" } ), quarantine.grid ],
+        layout : "border"
     } ));
 
     message = i18n._( "You can use the Safelist to make sure that messages from these senders are never quarantined." );
 
     panels.push( new Ext.Panel( { 
         title : i18n._("Safelist" ),
-        items : [ new Ext.form.Label( { text : message } ), safelist.grid ]
+        items : [ new Ext.form.Label( { text : message, region : "north" } ), safelist.grid ],
+        layout : "border"
+    } ));
+    
+    panels.push( new Ext.Panel( { 
+        title : i18n._("Forward or Receive Quarantines" ),
+        items : [ remaps.forwardTo, remaps.grid ],
+        layout : "border"
     } ));
 
     quarantineTabPanel = new Ung.QuarantineTabPanel( { items : panels } );

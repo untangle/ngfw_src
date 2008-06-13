@@ -224,6 +224,11 @@ public class MailNodeImpl extends AbstractNode
         return 30 * (ONE_GB / ONE_GB);
     }
 
+    public String createAuthToken(String account)
+    {
+        return m_qtv.createAuthToken(account);
+    }
+
     // MailExport methods -----------------------------------------------------
 
     public MailNodeSettings getExportSettings()
@@ -458,6 +463,11 @@ public class MailNodeImpl extends AbstractNode
                                       MailSummary summary,
                                       EmailAddress...recipients) {
             return s_quarantine.quarantineMail(file, summary, recipients);
+        }
+        
+        public String createAuthToken(String account)
+        {
+            return s_quarantine.createAuthToken(account);
         }
     }
 
