@@ -22,7 +22,6 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -35,12 +34,11 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.Cascade;
-
 import com.untangle.uvm.node.IPMaddrRule;
 import com.untangle.uvm.node.MimeTypeRule;
 import com.untangle.uvm.node.StringRule;
 import com.untangle.uvm.security.Tid;
+import org.hibernate.annotations.Cascade;
 
 /**
  * WebFilter settings.
@@ -56,7 +54,7 @@ public class WebFilterSettings implements Serializable
 
     private Long id;
     private Tid tid;
-    
+
     private WebFilterBaseSettings baseSettings = new WebFilterBaseSettings();
 
     private Set<IPMaddrRule> passedClients = new HashSet<IPMaddrRule>();
@@ -198,9 +196,6 @@ public class WebFilterSettings implements Serializable
     @OneToMany(fetch=FetchType.EAGER)
     @Cascade({ org.hibernate.annotations.CascadeType.ALL,
                    org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    @JoinTable(name="n_webfilter_mime_types",
-               joinColumns=@JoinColumn(name="setting_id"),
-               inverseJoinColumns=@JoinColumn(name="rule_id"))
     public Set<MimeTypeRule> getBlockedMimeTypes()
     {
         return blockedMimeTypes;
@@ -252,7 +247,7 @@ public class WebFilterSettings implements Serializable
     }
 
     @Embedded
-	public WebFilterBaseSettings getBaseSettings() {
+    public WebFilterBaseSettings getBaseSettings() {
         if (null != baseSettings) {
             baseSettings.setPassedClientsLength(null == passedClients ? 0 : passedClients.size());
             baseSettings.setPassedUrlsLength(null == passedUrls ? 0 : passedUrls.size());
@@ -261,12 +256,12 @@ public class WebFilterSettings implements Serializable
             baseSettings.setBlockedExtensionsLength(null == blockedExtensions ? 0 : blockedExtensions.size());
             baseSettings.setBlacklistCategoriesLength(null == blacklistCategories ? 0 : blacklistCategories.size());
         }
-        
-        return baseSettings;
-	}
 
-	public void setBaseSettings(WebFilterBaseSettings baseSettings) {
+        return baseSettings;
+    }
+
+    public void setBaseSettings(WebFilterBaseSettings baseSettings) {
         this.baseSettings = baseSettings;
-	}
+    }
 
 }

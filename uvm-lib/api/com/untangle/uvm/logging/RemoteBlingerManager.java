@@ -43,6 +43,6 @@ public interface RemoteBlingerManager
     BlingerState getBlingerState();
     BlingerState getBlingerState(Policy p);
     NodeStatDescs getNodeStatDesc(Tid t);
-    List<String> getActiveBlingers(Tid tid);
-    void setActiveBlingers(Tid tid, List<String> activeBlingers);
+    List<ActiveBlinger> getActiveMetrics(Tid tid);
+    void setActiveMetrics(Tid tid, List<ActiveBlinger> activeMetrics);
 }

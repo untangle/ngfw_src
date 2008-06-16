@@ -27,13 +27,13 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.untangle.uvm.logging.ActiveBlinger;
 import com.untangle.uvm.security.Tid;
 import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CollectionOfElements;
 import org.hibernate.annotations.IndexColumn;
 
 @Entity
@@ -42,13 +42,14 @@ class BlingerSettings implements Serializable
 {
     private Long id;
     private Tid tid;
-    private List<String> activeBlingers;
+    private List<ActiveBlinger> activeMetrics;
 
     public BlingerSettings() {}
 
-    public BlingerSettings(Tid tid)
+    public BlingerSettings(Tid tid, List<ActiveBlinger> activeMetrics)
     {
         this.tid = tid;
+        this.activeMetrics = activeMetrics;
     }
 
     @Id
@@ -81,22 +82,18 @@ class BlingerSettings implements Serializable
         this.tid = tid;
     }
 
-    @CollectionOfElements(fetch=FetchType.EAGER)
+    @OneToMany(fetch=FetchType.EAGER)
     @Cascade({ org.hibernate.annotations.CascadeType.ALL,
                    org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    @JoinTable(
-            name="u_blinger_active",
-            joinColumns=@JoinColumn(name="blinger_settings_id")
-    )
-    @Column(name="blinger_name", nullable=false)
+    @JoinColumn(name="settings_id")
     @IndexColumn(name="position")
-    public List<String> getActiveBlingers()
+    public List<ActiveBlinger> getActiveMetrics()
     {
-        return activeBlingers;
+        return activeMetrics;
     }
 
-    public void setActiveBlingers(List<String> activeBlingers)
+    public void setActiveMetrics(List<ActiveBlinger> activeMetrics)
     {
-        this.activeBlingers = activeBlingers;
+        this.activeMetrics = activeMetrics;
     }
 }

@@ -1,4 +1,7 @@
 /*
+ * $HeadURL: svn://chef/branch/prod/web-ui/work/src/uvm-lib/api/com/untangle/uvm/logging/LoggingSettings.java $
+ * Copyright (c) 2003-2007 Untangle, Inc.
+ *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
  * as published by the Free Software Foundation.
@@ -30,18 +33,11 @@
 
 package com.untangle.uvm.logging;
 
-import java.util.List;
-
-import com.untangle.uvm.policy.Policy;
-import com.untangle.uvm.security.Tid;
-
-public interface LocalBlingerManager
+public enum BlingerInterval
 {
-    BlingerState getBlingerState();
-    BlingerState getBlingerState(Policy p);
-    NodeStatDescs getNodeStatDesc(Tid t);
-    List<ActiveBlinger> getActiveMetrics(Tid tid);
-    void setActiveMetrics(Tid tid, List<ActiveBlinger> activeMetrics);
-
-    Counters getUvmCounters();
+    ONE_MINUTE,
+        FIVE_MINUTES,
+        FIFTEEN_MINUTES,
+        SINCE_MIDNIGHT,
+        SINCE_UVM_START;
 }

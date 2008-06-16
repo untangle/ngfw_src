@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.untangle.uvm.logging.ActiveBlinger;
 import com.untangle.uvm.logging.BlingerState;
 import com.untangle.uvm.logging.Counters;
 import com.untangle.uvm.logging.LocalBlingerManager;
@@ -36,12 +37,11 @@ import org.hibernate.Session;
 
 class BlingerManagerImpl implements LocalBlingerManager
 {
-    private LocalNodeManager nodeManager;
-    private Counters uvmCounters = new Counters();
+    private final Counters uvmCounters = new Counters();
 
     BlingerManagerImpl()
     {
-        makeTid0();
+        ensureTid0();
     }
 
     public BlingerState getBlingerState()
@@ -73,11 +73,11 @@ class BlingerManagerImpl implements LocalBlingerManager
         }
     }
 
-    public List<String> getActiveBlingers(final Tid tid)
+    public List<ActiveBlinger> getActiveMetrics(final Tid tid)
     {
-        TransactionWork<List<String>> tw = new TransactionWork<List<String>>()
+        TransactionWork<List<ActiveBlinger>> tw = new TransactionWork<List<ActiveBlinger>>()
             {
-                private List<String> result;
+                private List<ActiveBlinger> result;
 
                 public boolean doWork(Session s)
                 {
@@ -88,14 +88,14 @@ class BlingerManagerImpl implements LocalBlingerManager
                     if (null == bs) {
                         result = null;
                     } else {
-                        result = bs.getActiveBlingers();
+                        result = bs.getActiveMetrics();
                     }
 
                     return true;
                 }
 
                 @Override
-                public List<String> getResult()
+                public List<ActiveBlinger> getResult()
                 {
                     return result;
                 }
@@ -105,10 +105,10 @@ class BlingerManagerImpl implements LocalBlingerManager
         return tw.getResult();
     }
 
-    public void setActiveBlingers(final Tid tid,
-                                  final List<String> activeBlingers)
+    public void setActiveMetrics(final Tid tid,
+                                 final List<ActiveBlinger> activeMetrics)
     {
-        TransactionWork<List<String>> tw = new TransactionWork<List<String>>()
+        TransactionWork<List<ActiveBlinger>> tw = new TransactionWork<List<ActiveBlinger>>()
             {
                 public boolean doWork(Session s)
                 {
@@ -117,16 +117,11 @@ class BlingerManagerImpl implements LocalBlingerManager
                     q.setParameter("tid", tid);
                     BlingerSettings bs = (BlingerSettings)q.uniqueResult();
                     if (null == bs) {
-                        System.out.println("NULL BS");
-                        bs = new BlingerSettings(tid);
-                        bs.setActiveBlingers(activeBlingers);
-                        System.out.println("TID: " + bs.getTid());
+                        bs = new BlingerSettings(tid, activeMetrics);
                         s.save(bs);
                     } else {
-                        System.out.println("EXISTING BS");
-                        bs.setActiveBlingers(activeBlingers);
-                        System.out.println("TID: " + bs.getTid());
-                        s.update(bs);
+                        bs.setActiveMetrics(activeMetrics);
+                        s.merge(bs);
                     }
 
                     return true;
@@ -157,9 +152,9 @@ class BlingerManagerImpl implements LocalBlingerManager
         return new BlingerState(stats);
     }
 
-    private void makeTid0()
+    private void ensureTid0()
     {
-        TransactionWork<List<String>> tw = new TransactionWork<List<String>>()
+        TransactionWork<List<ActiveBlinger>> tw = new TransactionWork<List<ActiveBlinger>>()
             {
                 public boolean doWork(Session s)
                 {
