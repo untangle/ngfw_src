@@ -1553,6 +1553,7 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
         }, {
             xtype : 'tbbutton',
             text : i18n._('Refresh'),
+            name : "Refresh",
             tooltip : i18n._('Refresh'),
             iconCls : 'iconRefresh',
             handler : function() {
@@ -1580,7 +1581,7 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
                 if (this.settingsCmp) {
                     this.rpc.repositoryDescs = result;
                     var out = [];
-                    out.push('<select id="selectRepository_' + this.getId() + '_' + this.settingsCmp.node.tid
+                    out.push('<select name="Event Type" id="selectRepository_' + this.getId() + '_' + this.settingsCmp.node.tid
                             + '" class="height:11px; font-size:9px;">');
                     var repList = this.rpc.repositoryDescs.list;
                     for (var i = 0; i < repList.length; i++) {
