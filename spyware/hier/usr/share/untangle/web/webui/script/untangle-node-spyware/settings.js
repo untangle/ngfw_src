@@ -24,7 +24,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
         // Block lists panel
         buildBlockLists : function() {
             this.panelBlockLists = new Ext.Panel({
-                name : 'panelBlockLists',
+                name : 'Block Lists',
                 winCookiesList : null,
                 winActiveXList : null,
                 winSubnetList : null,
@@ -46,7 +46,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                         xtype : 'checkbox',
                         boxLabel : 'Block Spyware & Ad URLs',
                         hideLabel : true,
-                        name : 'urlBlacklistEnabled',
+                        name : 'Block Spyware & Ad URLs',
                         checked : this.getBaseSettings().urlBlacklistEnabled,
                         listeners : {
                             "check" : {
@@ -60,7 +60,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                         editable : false,
                         mode : 'local',
                         fieldLabel : this.i18n._('User Bypass'),
-                        name : "userWhitelist",
+                        name : "User Bypass",
                         store : new Ext.data.SimpleStore({
                             fields : ['userWhitelistValue', 'userWhitelistName'],
                             data : [["NONE", this.i18n._("None")], ["USER_ONLY", this.i18n._("Temporary")],
@@ -85,7 +85,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                         xtype : 'checkbox',
                         boxLabel : 'Block Tracking & Ad Cookies',
                         hideLabel : true,
-                        name : 'cookieBlockerEnabled',
+                        name : 'Block Tracking & Ad Cookies',
                         checked : this.getBaseSettings().cookieBlockerEnabled,
                         listeners : {
                             "check" : {
@@ -96,7 +96,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                         }
                     }],
                     buttons : [{
-                        name : 'manageCookiesListButton',
+                        name : 'Cookies manage list',
                         text : this.i18n._("manage list"),
                         handler : function() {
                             this.panelBlockLists.onManageCookiesList();
@@ -108,7 +108,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                         xtype : 'checkbox',
                         boxLabel : 'Block Malware ActiveX Installs',
                         hideLabel : true,
-                        name : 'activeXEnabled',
+                        name : 'Block Malware ActiveX Installs',
                         checked : this.getBaseSettings().activeXEnabled,
                         listeners : {
                             "check" : {
@@ -121,7 +121,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                         xtype : 'checkbox',
                         boxLabel : 'Block All ActiveX',
                         hideLabel : true,
-                        name : 'blockAllActiveX',
+                        name : 'Block All ActiveX',
                         checked : this.getBaseSettings().blockAllActiveX,
                         listeners : {
                             "check" : {
@@ -132,7 +132,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                         }
                     }],
                     buttons : [{
-                        name : 'manageActiveXListButton',
+                        name : 'ActiveX manage list',
                         text : this.i18n._("manage list"),
                         handler : function() {
                             this.panelBlockLists.onManageActiveXList();
@@ -144,7 +144,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                         xtype : 'checkbox',
                         boxLabel : 'Monitor Suspicious Traffic',
                         hideLabel : true,
-                        name : 'spywareEnabled',
+                        name : 'Monitor Suspicious Traffic',
                         checked : this.getBaseSettings().spywareEnabled,
                         listeners : {
                             "check" : {
@@ -155,7 +155,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                         }
                     }],
                     buttons : [{
-                        name : 'manageSubnetListButton',
+                        name : 'Traffic manage list',
                         text : this.i18n._("manage list"),
                         handler : function() {
                             this.panelBlockLists.onManageSubnetList();
@@ -257,7 +257,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
             });
 
             this.gridCookiesList = new Ung.EditorGrid({
-                name : 'gridCookiesList',
+                name : 'Cookies List',
                 settingsCmp : this,
                 totalRecords : this.getBaseSettings().cookieRulesLength,
                 emptyRow : {
@@ -313,7 +313,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
             });
 
             this.gridActiveXList = new Ung.EditorGrid({
-                name : 'gridActiveXList',
+                name : 'ActiveX List',
                 settingsCmp : this,
                 totalRecords : this.getBaseSettings().activeXRulesLength,
                 emptyRow : {
@@ -369,7 +369,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
             });
 
             this.gridSubnetList = new Ung.EditorGrid({
-                name : 'gridSubnetList',
+                name : 'Subnet List',
                 settingsCmp : this,
                 totalRecords : this.getBaseSettings().subnetRulesLength,
                 emptyRow : {
@@ -441,7 +441,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
             });
 
             this.gridPassList = new Ung.EditorGrid({
-                name : 'gridPassList',
+                name : 'Pass List',
                 settingsCmp : this,
                 totalRecords : this.getBaseSettings().domainWhitelistLength,
                 emptyRow : {
@@ -508,7 +508,6 @@ if (!Ung.hasResource["Ung.Spyware"]) {
         buildEventLog : function() {
             this.gridEventLog = new Ung.GridEventLog({
                 settingsCmp : this,
-                name : 'gridEventLog',
                 // This is a predefined event log, so there is no need to
                 // specify the fields and columns
                 predefinedType : "TYPE1"

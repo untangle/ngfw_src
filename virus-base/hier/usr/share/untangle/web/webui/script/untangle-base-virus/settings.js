@@ -20,7 +20,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
         // Web Panel
         buildWeb : function() {
             this.panelWeb = new Ext.Panel({
-                name : 'panelWeb',
+                name : 'Web',
                 // private fields
                 winExtensions : null,
                 winMimeTypes : null,
@@ -40,7 +40,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
                         xtype : 'checkbox',
                         boxLabel : this.i18n._('Scan HTTP'),
                         hideLabel : true,
-                        name : 'scanHttp',
+                        name : 'Scan HTTP',
                         checked : this.getBaseSettings().httpConfig.scan,
                         listeners : {
                             "check" : {
@@ -57,7 +57,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
                 	labelWidth: 150,
                     items : [{
                         xtype : 'button',
-                        name : 'extensionsButton',
+                        name : 'File Extensions',
                         text : this.i18n._('File Extensions'),
                         style : 'padding-bottom:10px;',
                         handler : function() {
@@ -65,7 +65,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
                         }.createDelegate(this)
                     }, {
                         xtype : 'button',
-                        name : 'mimeTypesButton',
+                        name : 'MIME Types',
                         text : this.i18n._('MIME Types'),
                         style : 'padding-bottom:10px;',
                         handler : function() {
@@ -75,7 +75,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
                         xtype : 'checkbox',
                         boxLabel : this.i18n._('Disable HTTP Resume'),
                         hideLabel : true,
-                        name : 'httpDisableResume',
+                        name : 'Disable HTTP Resume',
                         checked : this.getBaseSettings().httpDisableResume,
                         listeners : {
                             "check" : {
@@ -87,7 +87,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
                     },{
                         xtype : 'numberfield',
                         fieldLabel : this.i18n._('Scan trickle rate (1-99)'),
-                        name : 'tricklePercent',
+                        name : 'Scan trickle rate',
                         id: 'virus_http_trickle_percent',
                         value : this.getBaseSettings().tricklePercent,
                         width: 25,
@@ -119,13 +119,13 @@ if (!Ung.hasResource["Ung.Virus"]) {
                             breadcrumbs : [{
                                 title : i18n._(rpc.currentPolicy.name),
                                 action : function() {
-                                    this.panelWin.winExtensions.cancelAction();
+                                    this.panelWeb.winExtensions.cancelAction();
                                     this.cancelAction();
                                 }.createDelegate(settingsCmp)
                             }, {
                                 title : settingsCmp.node.md.displayName,
                                 action : function() {
-                                    this.panelWin.winExtensions.cancelAction();
+                                    this.panelWeb.winExtensions.cancelAction();
                                 }.createDelegate(settingsCmp)
                             }, {
                                 title : settingsCmp.i18n._("File Extensions")
@@ -143,13 +143,13 @@ if (!Ung.hasResource["Ung.Virus"]) {
                             breadcrumbs : [{
                                 title : i18n._(rpc.currentPolicy.name),
                                 action : function() {
-                                    this.panelWin.winMimeTypes.cancelAction();
+                                    this.panelWeb.winMimeTypes.cancelAction();
                                     this.cancelAction();
                                 }.createDelegate(settingsCmp)
                             }, {
                                 title : settingsCmp.node.md.displayName,
                                 action : function() {
-                                    this.panelWin.winMimeTypes.cancelAction();
+                                    this.panelWeb.winMimeTypes.cancelAction();
                                 }.createDelegate(settingsCmp)
                             }, {
                                 title : settingsCmp.i18n._("MIME Types")
@@ -174,7 +174,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
             });
 
             this.gridExtensions = new Ung.EditorGrid({
-                name : 'gridExtensions',
+                name : 'File Extensions',
                 settingsCmp : this,
                 totalRecords : this.getBaseSettings().extensionsLength,
                 emptyRow : {
@@ -243,7 +243,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
             });
 
             this.gridMimeTypes = new Ung.EditorGrid({
-                name : 'gridMimeTypes',
+                name : 'MIME Types',
                 settingsCmp : this,
                 totalRecords : this.getBaseSettings().httpMimeTypesLength,
                 emptyRow : {
@@ -306,7 +306,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
         // Ftp Panel
         buildFtp : function() {
             this.panelFtp = new Ext.Panel({
-                name : 'panelFtp',
+                name : 'FTP',
                 // private fields
                 parentId : this.getId(),
 
@@ -324,7 +324,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
                         xtype : 'checkbox',
                         boxLabel : this.i18n._('Scan FTP'),
                         hideLabel : true,
-                        name : 'scanFTP',
+                        name : 'Scan FTP',
                         checked : this.getBaseSettings().ftpConfig.scan,
                         listeners : {
                             "check" : {
@@ -343,7 +343,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
                         xtype : 'checkbox',
                         boxLabel : this.i18n._('Disable FTP Resume'),
                         hideLabel : true,
-                        name : 'ftpDisableResume',
+                        name : 'Disable FTP Resume',
                         checked : this.getBaseSettings().ftpDisableResume,
                         listeners : {
                             "check" : {
@@ -354,8 +354,8 @@ if (!Ung.hasResource["Ung.Virus"]) {
                         }
                     },{
                         xtype : 'numberfield',
-                        fieldLabel : this.i18n._('Scan trickle rate (1-99)'),
-                        name : 'tricklePercent',
+                        fieldLabel : this.i18n._('Scan trickle rate'),
+                        name : 'Scan trickle rate (1-99)',
                         id: 'virus_ftp_trickle_percent',
                         value : this.getBaseSettings().tricklePercent,
                         width: 25,
@@ -384,7 +384,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
         // Email Panel
         buildEmail : function() {
             this.panelEmail = new Ext.Panel({
-                name : 'panelEmail',
+                name : 'Email',
                 // private fields
                 parentId : this.getId(),
 
@@ -407,7 +407,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
                             xtype : 'checkbox',
                             boxLabel : this.i18n._('Scan SMTP'),
                             hideLabel : true,
-                            name : 'scanSMTP',
+                            name : 'Scan SMTP',
                             checked : this.getBaseSettings().smtpConfig.scan,
                             listeners : {
                                 "check" : {
@@ -420,7 +420,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
                             xtype : 'checkbox',
                             boxLabel : this.i18n._('Scan POP3'),
                             hideLabel : true,
-                            name : 'scanPOP',
+                            name : 'Scan POP3',
                             checked : this.getBaseSettings().popConfig.scan,
                             listeners : {
                                 "check" : {
@@ -433,7 +433,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
                             xtype : 'checkbox',
                             boxLabel : this.i18n._('Scan IMAP'),
                             hideLabel : true,
-                            name : 'scanIMAP',
+                            name : 'Scan IMAP',
                             checked : this.getBaseSettings().imapConfig.scan,
                             listeners : {
                                 "check" : {
@@ -449,7 +449,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
                         border:false,
                         items: [{
                             xtype : 'combo',
-                            name : 'smtpAction',
+                            name : 'SMTP Action',
                             editable : false,
                             fieldLabel : this.i18n._('Action'),
                             mode : 'local',
@@ -473,7 +473,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
                             }
                         },{
                             xtype : 'combo',
-                            name : 'popAction',
+                            name : 'POP3 Action',
                             editable : false,
                             fieldLabel : this.i18n._('Action'),
                             mode : 'local',
@@ -496,7 +496,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
                             }
                         },{
                             xtype : 'combo',
-                            name : 'imapAction',
+                            name : 'IMAP Action',
                             editable : false,
                             fieldLabel : this.i18n._('Action'),
                             mode : 'local',

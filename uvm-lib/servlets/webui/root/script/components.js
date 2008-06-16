@@ -749,7 +749,7 @@ Ung.Node = Ext.extend(Ext.Component, {
             'viewPosition' : this.md.viewPosition
         });
         this.getEl().set({
-            'name' : this.name
+            'name' : this.md.displayName
         });
 
         var trialFlag = "";
@@ -762,7 +762,7 @@ Ung.Node = Ext.extend(Ext.Component, {
         var templateHTML = Ung.Node.template.applyTemplate({
             'id' : this.getId(),
             'image' : this.image,
-            'displayName' : i18n._(this.md.displayName),
+            'displayName' : this.md.displayName,
             'trialDays' : trialDays,
             'trialFlag' : trialFlag
         });
@@ -933,7 +933,7 @@ Ung.Node = Ext.extend(Ext.Component, {
 
     // remove node
     removeAction : function() {
-        var message = i18n._(this.md.displayName)
+        var message = this.md.displayName
                 + " is about to be removed from the rack.\nIts settings will be lost and it will stop processing netwotk traffic.\n\nWould you like to continue removing?";
         Ext.Msg.confirm(i18n._("Warning:"), message, function(btn, text) {
             if (btn == 'yes') {

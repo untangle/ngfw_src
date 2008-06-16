@@ -60,7 +60,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                         
             this.emailPanel = new Ext.Panel({
                 title : this.i18n._('Email'),
-                name : 'emailPanel',
+                name : 'Email',
                 layout : "form",
                 autoScroll : true,
                 bodyStyle : 'padding:5px 5px 0px 5px;',
@@ -73,7 +73,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                     },
                     items : [{
                         xtype : 'checkbox',
-                        name : 'smtpScan',
+                        name : 'Scan SMTP',
                         boxLabel : this.i18n._('Scan SMTP'),
                         hideLabel : true,
                         checked : this.getBaseSettings().smtpConfig.scan,
@@ -86,7 +86,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                         }
                     }, {
                         xtype : 'checkbox',
-                        name : 'smtpThrottle',
+                        name : 'Enable SMTP greylisting',
                         boxLabel : this.i18n._('Enable SMTP greylisting'),
                         hideLabel : true,
                         checked : this.getBaseSettings().smtpConfig.throttle,
@@ -99,7 +99,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                         }
                     }, {
                         xtype : 'combo',
-                        name : 'smtpStrength',
+                        name : 'SMTP Strength',
                         editable : false,
                         store : this.strengthsData,
                         fieldLabel : this.i18n._('Strength'),
@@ -124,7 +124,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                     }, {
                         xtype : 'numberfield',
                         fieldLabel : this.i18n._('Strength Value'),
-                        name : 'smtpStrengthValue',
+                        name : 'SMTP Strength Value',
                         id: 'spamassassin_smtpStrengthValue',
                         value : this.getBaseSettings().smtpConfig.strength,
                         width: 50,
@@ -143,7 +143,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                         }
                     }, {
                         xtype : 'combo',
-                        name : 'smtpAction',
+                        name : 'SMTP Action',
                         editable : false,
                         store : new Ext.data.SimpleStore({
                             fields : ['key', 'name'],
@@ -173,7 +173,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                     },
                     items : [{
                         xtype : 'checkbox',
-                        name : 'pop3Scan',
+                        name : 'Scan POP3',
                         boxLabel : this.i18n._('Scan POP3'),
                         hideLabel : true,
                         checked : this.getBaseSettings().popConfig.scan,
@@ -186,7 +186,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                         }
                     }, {
                         xtype : 'combo',
-                        name : 'pop3Strength',
+                        name : 'POP3 Strength',
                         editable : false,
                         store : this.strengthsData,
                         fieldLabel : this.i18n._('Strength'),
@@ -211,7 +211,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                     }, {
                         xtype : 'numberfield',
                         fieldLabel : this.i18n._('Strength Value'),
-                        name : 'pop3StrengthValue',
+                        name : 'POP3 Strength Value',
                         id: 'spamassassin_pop3StrengthValue',
                         value : this.getBaseSettings().popConfig.strength,
                         width: 50,
@@ -230,7 +230,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                         }
                     }, {
                         xtype : 'combo',
-                        name : 'pop3Action',
+                        name : 'POP3 Action',
                         editable : false,
                         store : new Ext.data.SimpleStore({
                             fields : ['key', 'name'],
@@ -260,14 +260,14 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                     },
                     items : [{
                         xtype : 'checkbox',
-                        name : 'imapScan',
+                        name : 'Scan IMAP',
                         boxLabel : this.i18n._('Scan IMAP'),
                         name : 'imapScan',
                         hideLabel : true,
                         checked : this.getBaseSettings().imapConfig.scan
                     }, {
                         xtype : 'combo',
-                        name : 'imapStrength',
+                        name : 'IMAP Strength',
                         editable : false,
                         store : this.strengthsData,
                         fieldLabel : this.i18n._('Strength'),
@@ -292,7 +292,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                     }, {
                         xtype : 'numberfield',
                         fieldLabel : this.i18n._('Strength Value'),
-                        name : 'imapStrengthValue',
+                        name : 'IMAP Strength Value',
                         id: 'spamassassin_imapStrengthValue',
                         value : this.getBaseSettings().imapConfig.strength,
                         width: 50,
@@ -311,7 +311,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                         }
                     }, {
                         xtype : 'combo',
-                        name : 'imapAction',
+                        name : 'IMAP Action',
                         editable : false,
                         store : new Ext.data.SimpleStore({
                             fields : ['key', 'name'],
@@ -347,7 +347,6 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
         buildEventLog : function() {
             this.gridEventLog = new Ung.GridEventLog({
                 settingsCmp : this,
-                name : 'buildEventLog',
                 // the list of fields
                 fields : [{
                     name : 'createDate'
@@ -452,7 +451,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
         buildRBLEventLog : function() {
             this.gridRBLEventLog = new Ung.GridEventLog({
                 settingsCmp : this,
-                name : 'gridRBLEventLog',
+                name : 'DNSBL Event Log',
                 eventManagerFn : this.getRpcNode().getRBLEventManager(),
                 title : this.i18n._("DNSBL Event Log"),
                 // the list of fields

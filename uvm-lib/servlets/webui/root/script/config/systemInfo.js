@@ -81,7 +81,7 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
             var brandingBaseSettings = this.getBrandingBaseSettings();
             this.panelBranding = new Ext.Panel({
                 // private fields
-                name : 'panelBranding',
+                name : 'Branding',
                 parentId : this.getId(),
                 title : this.i18n._('Branding'),
                 layout : "form",
@@ -117,7 +117,7 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                     title : this.i18n._('Logo'),
                     items : [{
                         xtype : 'radio',
-                        name : 'logoType',
+                        name : 'Logo',
                         hideLabel : true,
                         boxLabel : 'Use Default Logo',
                         value : 'default',
@@ -134,7 +134,7 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                         }
                     }, {
                         xtype : 'radio',
-                        name : 'logoType',
+                        name : 'Logo',
                         hideLabel : true,
                         boxLabel : 'Use Custom Logo',
                         value : 'custom',
@@ -159,7 +159,7 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                         border : false,
                         items : [{
                             fieldLabel : 'File',
-                            name : 'file',
+                            name : 'File',
                             inputType : 'file',
                             xtype : 'textfield',
                             disabled : brandingBaseSettings.defaultLogo,
@@ -186,7 +186,7 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                     items : [{
                         xtype : 'textfield',
                         fieldLabel : this.i18n._('Company Name'),
-                        name : 'companyName',
+                        name : 'Company Name',
                         allowBlank : true,
                         value : brandingBaseSettings.companyName,
                         listeners : {
@@ -199,7 +199,7 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                     }, {
                         xtype : 'textfield',
                         fieldLabel : this.i18n._('Company URL'),
-                        name : 'companyUrl',
+                        name : 'Company URL',
                         allowBlank : true,
                         value : brandingBaseSettings.companyUrl,
                         listeners : {
@@ -212,7 +212,7 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                     }, {
                         xtype : 'textfield',
                         fieldLabel : this.i18n._('Contact Name'),
-                        name : 'contactName',
+                        name : 'Contact Name',
                         allowBlank : true,
                         value : brandingBaseSettings.contactName,
                         listeners : {
@@ -225,7 +225,7 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                     }, {
                         xtype : 'textfield',
                         fieldLabel : this.i18n._('Contact Email'),
-                        name : 'contactEmail',
+                        name : 'Contact Email',
                         allowBlank : true,
                         value : brandingBaseSettings.contactEmail,
                         listeners : {

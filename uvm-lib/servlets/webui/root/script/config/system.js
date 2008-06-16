@@ -113,7 +113,7 @@ if (!Ung.hasResource["Ung.System"]) {
         buildUntangleSupport : function() {
             this.panelUntangleSupport = new Ext.Panel({
                 // private fields
-                name : 'panelUntangleSupport',
+                name : 'Untangle Support',
                 parentId : this.getId(),
                 title : this.i18n._('Untangle Support'),
                 layout : "form",
@@ -132,7 +132,7 @@ if (!Ung.hasResource["Ung.System"]) {
                     },
                     items : [{
                         xtype : 'checkbox',
-                        name : 'isSupportEnabled',
+                        name : 'Allow us to securely access your server for support purposes',
                         boxLabel : i18n.sprintf(this.i18n._('%sAllow%s us to securely access your server for support purposes.'), '<b>', '</b>'),
                         hideLabel : true,
                         checked : this.getAccessSettings().isSupportEnabled,
@@ -145,7 +145,7 @@ if (!Ung.hasResource["Ung.System"]) {
                         }
                     }, {
                         xtype : 'checkbox',
-                        name : 'isSupportEnabled',
+                        name : 'Send us data about your server',
                         boxLabel : i18n.sprintf(this.i18n
                                 ._('%sSend%s us data about your server. This will send us status updates and an email if any unexpected problems occur, but will not allow us to login to your server. No personal information about your network traffic will be transmitted.'),
                                 '<b>', '</b>'),
@@ -166,7 +166,7 @@ if (!Ung.hasResource["Ung.System"]) {
         buildBackup : function() {
             this.panelBackup = new Ext.Panel({
                 // private fields
-                name : 'panelBackup',
+                name : 'Backup',
                 parentId : this.getId(),
                 title : this.i18n._('Backup'),
                 layout : "form",
@@ -238,7 +238,7 @@ if (!Ung.hasResource["Ung.System"]) {
                     }],
                     buttons : [{
                         text : this.i18n._("Backup to File"),
-                        name: "backupToFileButton",
+                        name: "Backup to File",
                         handler : function() {
                             this.panelBackup.onBackupToFile();
                         }.createDelegate(this)
@@ -258,7 +258,7 @@ if (!Ung.hasResource["Ung.System"]) {
                         		"</b>"
                     }],
                     buttons : [{
-                    	name: "backupToUSBKeyButton",
+                    	name: "Backup to USB Key",
                         text : this.i18n._("Backup to USB Key"),
                         handler : function() {
                             this.panelBackup.onBackupToUSBKey();
@@ -277,7 +277,7 @@ if (!Ung.hasResource["Ung.System"]) {
                     }],
                     buttons : [{
                         text : this.i18n._("Backup to Hard Disk"),
-                        name: "backupToHardDiskButton",
+                        name: "Backup to Hard Disk",
                         handler : function() {
                             this.panelBackup.onBackupToHardDisk();
                         }.createDelegate(this)
@@ -289,7 +289,7 @@ if (!Ung.hasResource["Ung.System"]) {
         buildRestore : function() {
             this.panelRestore = new Ext.Panel({
                 // private fields
-                name : 'panelBackup',
+                name : 'Restore',
                 parentId : this.getId(),
                 title : this.i18n._('Restore'),
                 layout : "form",
@@ -359,7 +359,7 @@ if (!Ung.hasResource["Ung.System"]) {
                     }],
                     buttons : [{
                         text : this.i18n._("Restore from File"),
-                        name: "restoreFromFileButton",
+                        name: "Restore from File",
                         handler : function() {
                             this.panelRestore.onRestoreFromFileFile();
                         }.createDelegate(this)
@@ -401,7 +401,7 @@ if (!Ung.hasResource["Ung.System"]) {
                             xtype : 'radio',
                             boxLabel : i18n.sprintf(this.i18n._('%sEnable Processing%s of web traffic.  (This is the default setting)'), '<b>', '</b>'), 
                             hideLabel : true,
-                            name : 'httpEnabled',
+                            name : 'Web Override',
                             checked : this.getHttpSettings().enabled,
                             listeners : {
                                 "check" : {
@@ -414,7 +414,7 @@ if (!Ung.hasResource["Ung.System"]) {
                             xtype : 'radio',
                             boxLabel : i18n.sprintf(this.i18n._('%sDisable Processing%s of web traffic.'), '<b>', '</b>'), 
                             hideLabel : true,
-                            name : 'httpEnabled',
+                            name : 'Web Override',
                             checked : !this.getHttpSettings().enabled,
                             listeners : {
                                 "check" : {
@@ -430,7 +430,7 @@ if (!Ung.hasResource["Ung.System"]) {
                             xtype : 'radio',
                             boxLabel : i18n.sprintf(this.i18n._('%sEnable Processing%s of long URIs.  The traffic is considered \"Non-Http\".  (This is the default setting)'), '<b>', '</b>'), 
                             hideLabel : true,
-                            name : 'httpBlockLongUris',
+                            name : 'Long URIs',
                             checked : !this.getHttpSettings().blockLongUris,
                             listeners : {
                                 "check" : {
@@ -443,7 +443,7 @@ if (!Ung.hasResource["Ung.System"]) {
                             xtype : 'radio',
                             boxLabel : i18n.sprintf(this.i18n._('%sDisable Processing%s of long URIs.'), '<b>', '</b>'), 
                             hideLabel : true,
-                            name : 'httpBlockLongUris',
+                            name : 'Long URIs',
                             checked : this.getHttpSettings().blockLongUris,
                             listeners : {
                                 "check" : {
@@ -456,7 +456,7 @@ if (!Ung.hasResource["Ung.System"]) {
                             xtype : 'numberfield',
                             fieldLabel : this.i18n._('Max URI Length (characters)'),
                             labelStyle: 'width:200px;',
-                            name : 'maxUriLength',
+                            name : 'Max URI Length',
                             id: 'system_protocolSettings_maxUriLength',
                             value : this.getHttpSettings().maxUriLength,
                             width: 50,
@@ -478,7 +478,7 @@ if (!Ung.hasResource["Ung.System"]) {
                             xtype : 'radio',
                             boxLabel : i18n.sprintf(this.i18n._('%sEnable Processing%s of long headers.  The traffic is considered \"Non-Http\".  (This is the default setting)'), '<b>', '</b>'), 
                             hideLabel : true,
-                            name : 'httpBlockLongHeaders',
+                            name : 'Long Headers',
                             checked : !this.getHttpSettings().blockLongHeaders,
                             listeners : {
                                 "check" : {
@@ -491,7 +491,7 @@ if (!Ung.hasResource["Ung.System"]) {
                             xtype : 'radio',
                             boxLabel : i18n.sprintf(this.i18n._('%sDisable Processing%s of long headers.'), '<b>', '</b>'), 
                             hideLabel : true,
-                            name : 'httpBlockLongHeaders',
+                            name : 'Long Headers',
                             checked : this.getHttpSettings().blockLongHeaders,
                             listeners : {
                                 "check" : {
@@ -504,7 +504,7 @@ if (!Ung.hasResource["Ung.System"]) {
                             xtype : 'numberfield',
                             fieldLabel : this.i18n._('Max Header Length (characters)'),
                             labelStyle: 'width:200px;',
-                            name : 'maxHeaderLength',
+                            name : 'Max Header Length',
                             id: 'system_protocolSettings_maxHeaderLength',
                             value : this.getHttpSettings().maxHeaderLength,
                             width: 50,
@@ -526,7 +526,7 @@ if (!Ung.hasResource["Ung.System"]) {
                             xtype : 'radio',
                             boxLabel : i18n.sprintf(this.i18n._('%sAllow%s non-Http traffic to travel over port 80.  (This is the default setting)'), '<b>', '</b>'), 
                             hideLabel : true,
-                            name : 'nonHttpBlocked',
+                            name : 'Non-Http Blocking',
                             checked : !this.getHttpSettings().nonHttpBlocked,
                             listeners : {
                                 "check" : {
@@ -539,7 +539,7 @@ if (!Ung.hasResource["Ung.System"]) {
                             xtype : 'radio',
                             boxLabel : i18n.sprintf(this.i18n._('%sStop%s non-Http traffic to travel over port 80.'), '<b>', '</b>'), 
                             hideLabel : true,
-                            name : 'nonHttpBlocked',
+                            name : 'Non-Http Blocking',
                             checked : this.getHttpSettings().nonHttpBlocked,
                             listeners : {
                                 "check" : {
@@ -561,7 +561,7 @@ if (!Ung.hasResource["Ung.System"]) {
                         xtype : 'radio',
                         boxLabel : i18n.sprintf(this.i18n._('%sEnable Processing%s of File Transfer traffic.  (This is the default setting)'), '<b>', '</b>'), 
                         hideLabel : true,
-                        name : 'ftpEnabled',
+                        name : 'FTP',
                         checked : this.getFtpSettings().enabled,
                         listeners : {
                             "check" : {
@@ -574,7 +574,7 @@ if (!Ung.hasResource["Ung.System"]) {
                         xtype : 'radio',
                         boxLabel : i18n.sprintf(this.i18n._('%sDisable Processing%s of File Transfer traffic.'), '<b>', '</b>'), 
                         hideLabel : true,
-                        name : 'ftpEnabled',
+                        name : 'FTP',
                         checked : !this.getFtpSettings().enabled,
                         listeners : {
                             "check" : {
@@ -595,7 +595,7 @@ if (!Ung.hasResource["Ung.System"]) {
                         xtype : 'radio',
                         boxLabel : i18n.sprintf(this.i18n._('%sEnable SMTP%s email processing.  (This is the default setting)'), '<b>', '</b>'), 
                         hideLabel : true,
-                        name : 'smtpEnabled',
+                        name : 'SMTP',
                         checked : this.getMailSettings().smtpEnabled,
                         listeners : {
                             "check" : {
@@ -608,7 +608,7 @@ if (!Ung.hasResource["Ung.System"]) {
                         xtype : 'radio',
                         boxLabel : i18n.sprintf(this.i18n._('%sDisable SMTP%s email processing.'), '<b>', '</b>'), 
                         hideLabel : true,
-                        name : 'smtpEnabled',
+                        name : 'SMTP',
                         checked : !this.getMailSettings().smtpEnabled,
                         listeners : {
                             "check" : {
@@ -621,7 +621,7 @@ if (!Ung.hasResource["Ung.System"]) {
                         xtype : 'numberfield',
                         fieldLabel : this.i18n._('SMTP timeout (seconds)'),
                         labelStyle: 'width:200px;',
-                        name : 'smtpTimeout',
+                        name : 'SMTP timeout',
                         id: 'system_protocolSettings_smtpTimeout',
                         value : this.getMailSettings().smtpTimeout/1000,
                         width: 50,
@@ -645,7 +645,7 @@ if (!Ung.hasResource["Ung.System"]) {
                         xtype : 'radio',
                         boxLabel : i18n.sprintf(this.i18n._('%sEnable POP3%s email processing.  (This is the default setting)'), '<b>', '</b>'), 
                         hideLabel : true,
-                        name : 'popEnabled',
+                        name : 'POP3',
                         checked : this.getMailSettings().popEnabled,
                         listeners : {
                             "check" : {
@@ -658,7 +658,7 @@ if (!Ung.hasResource["Ung.System"]) {
                         xtype : 'radio',
                         boxLabel : i18n.sprintf(this.i18n._('%sDisable POP3%s email processing.'), '<b>', '</b>'), 
                         hideLabel : true,
-                        name : 'popEnabled',
+                        name : 'POP3',
                         checked : !this.getMailSettings().popEnabled,
                         listeners : {
                             "check" : {
@@ -671,7 +671,7 @@ if (!Ung.hasResource["Ung.System"]) {
                         xtype : 'numberfield',
                         fieldLabel : this.i18n._('POP3 timeout (seconds)'),
                         labelStyle: 'width:200px;',
-                        name : 'popTimeout',
+                        name : 'POP3 timeout',
                         id: 'system_protocolSettings_popTimeout',
                         value : this.getMailSettings().popTimeout/1000,
                         width: 50,
@@ -695,7 +695,7 @@ if (!Ung.hasResource["Ung.System"]) {
                         xtype : 'radio',
                         boxLabel : i18n.sprintf(this.i18n._('%sEnable IMAP%s email processing.  (This is the default setting)'), '<b>', '</b>'), 
                         hideLabel : true,
-                        name : 'imapEnabled',
+                        name : 'IMAP',
                         checked : this.getMailSettings().imapEnabled,
                         listeners : {
                             "check" : {
@@ -708,7 +708,7 @@ if (!Ung.hasResource["Ung.System"]) {
                         xtype : 'radio',
                         boxLabel : i18n.sprintf(this.i18n._('%sDisable IMAP%s email processing.'), '<b>', '</b>'), 
                         hideLabel : true,
-                        name : 'imapEnabled',
+                        name : 'IMAP',
                         checked : !this.getMailSettings().imapEnabled,
                         listeners : {
                             "check" : {
@@ -721,7 +721,7 @@ if (!Ung.hasResource["Ung.System"]) {
                         xtype : 'numberfield',
                         fieldLabel : this.i18n._('IMAP timeout (seconds)'),
                         labelStyle: 'width:200px;',
-                        name : 'imapTimeout',
+                        name : 'IMAP timeout',
                         id: 'system_protocolSettings_imapTimeout',
                         value : this.getMailSettings().imapTimeout/1000,
                         width: 50,
@@ -741,7 +741,7 @@ if (!Ung.hasResource["Ung.System"]) {
             }            	
             
             this.panelProtocolSettings = new Ext.Panel({
-                name : 'panelProtocolSettings',
+                name : 'Protocol Settings',
                 // private fields
                 parentId : this.getId(),
 
@@ -837,7 +837,7 @@ if (!Ung.hasResource["Ung.System"]) {
             }
             this.panelRegionalSettings = new Ext.Panel({
                 // private fields
-                name : 'panelRegionalSettings',
+                name : 'Regional Settings',
                 parentId : this.getId(),
                 title : this.i18n._('Regional Settings'),
                 layout : "form",
@@ -863,7 +863,7 @@ if (!Ung.hasResource["Ung.System"]) {
                     title : this.i18n._('Timezone'),
                     items : [{
                         xtype : 'combo',
-                        name : 'timezone',
+                        name : 'Timezone',
                         editable : false,
                         store : timeZones,
                         width : 350,
@@ -885,7 +885,7 @@ if (!Ung.hasResource["Ung.System"]) {
                     items : [{
                         id : 'system_language_combo',
                         xtype : 'combo',
-                        name : "language",
+                        name : "Language",
                         store : languagesStore,
                         forceSelection : true,
                         displayField : 'name',
@@ -942,6 +942,7 @@ if (!Ung.hasResource["Ung.System"]) {
                     },
                     buttons : [{
                         text : this.i18n._("Upload"),
+                        name : "Upload",
                         handler : function() {
                             this.panelRegionalSettings.onUpload();
                         }.createDelegate(this)

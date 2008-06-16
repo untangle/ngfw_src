@@ -48,7 +48,7 @@ if (!Ung.hasResource["Ung.Phish"]) {
             this.spamData = [['MARK', this.i18n._('Mark')], ['PASS', this.i18n._('Pass')]];
             this.emailPanel = new Ext.Panel({
                 title : this.i18n._('Email'),
-                name : 'emailPanel',
+                name : 'Email',
                 layout : "form",
                 autoScroll : true,
                 bodyStyle : 'padding:5px 5px 0px 5px;',
@@ -62,7 +62,7 @@ if (!Ung.hasResource["Ung.Phish"]) {
                     items : [{
                         xtype : 'checkbox',
                         boxLabel : this.i18n._('Scan SMTP'),
-                        name : 'smtpScan',
+                        name : 'Scan SMTP',
                         hideLabel : true,
                         checked : this.getBaseSettings().smtpConfig.scan,
                         listeners : {
@@ -74,7 +74,7 @@ if (!Ung.hasResource["Ung.Phish"]) {
                         }
                     }, {
                         xtype : 'combo',
-                        name : 'smtpAction',
+                        name : 'SMTP Action',
                         editable : false,
                         store : new Ext.data.SimpleStore({
                             fields : ['key', 'name'],
@@ -105,7 +105,7 @@ if (!Ung.hasResource["Ung.Phish"]) {
                     items : [{
                         xtype : 'checkbox',
                         boxLabel : this.i18n._('Scan POP3'),
-                        name : 'pop3Scan',
+                        name : 'Scan POP3',
                         hideLabel : true,
                         checked : this.getBaseSettings().popConfig.scan,
                         listeners : {
@@ -117,7 +117,7 @@ if (!Ung.hasResource["Ung.Phish"]) {
                         }
                     }, {
                         xtype : 'combo',
-                        name : 'pop3Action',
+                        name : 'POP3 Action',
                         editable : false,
                         store : new Ext.data.SimpleStore({
                             fields : ['key', 'name'],
@@ -148,7 +148,7 @@ if (!Ung.hasResource["Ung.Phish"]) {
                     items : [{
                         xtype : 'checkbox',
                         boxLabel : this.i18n._('Scan IMAP'),
-                        name : 'imapScan',
+                        name : 'Scan IMAP',
                         hideLabel : true,
                         checked : this.getBaseSettings().imapConfig.scan,
                         listeners : {
@@ -160,7 +160,7 @@ if (!Ung.hasResource["Ung.Phish"]) {
                         }
                     }, {
                         xtype : 'combo',
-                        name : 'imapAction',
+                        name : 'IMAP Action',
                         editable : false,
                         store : new Ext.data.SimpleStore({
                             fields : ['key', 'name'],
@@ -205,7 +205,7 @@ if (!Ung.hasResource["Ung.Phish"]) {
                     items : [{
                         xtype : 'checkbox',
                         boxLabel : this.i18n._('Enable Phish web filtering'),
-                        name : 'enableGooglePhishList',
+                        name : 'Enable Phish web filtering',
                         hideLabel : true,
                         checked : this.getBaseSettings().enableGooglePhishList,
                         listeners : {
@@ -230,7 +230,7 @@ if (!Ung.hasResource["Ung.Phish"]) {
         // Web Event Log
         buildWebEventLog : function() {
             this.gridWebEventLog = new Ung.GridEventLog({
-                name : 'gridWebEventLog',
+                name : 'Web Event Log',
                 settingsCmp : this,
                 title : this.i18n._("Web Event Log"),
                 // the list of fields
@@ -296,7 +296,7 @@ if (!Ung.hasResource["Ung.Phish"]) {
         // Email Event Log
         buildEmailEventLog : function() {
             this.gridEmailEventLog = new Ung.GridEventLog({
-                name : 'gridEmailEventLog',
+                name : 'Email Event Log',
                 settingsCmp : this,
                 title : this.i18n._("Email Event Log"),
                 // the list of fields

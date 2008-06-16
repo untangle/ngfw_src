@@ -20,7 +20,7 @@ if (!Ung.hasResource["Ung.Shield"]) {
         buildStatus : function() {
             this.statusPanel = new Ext.Panel({
                 title : this.i18n._('Status'),
-                name : 'statusPanel',
+                name : 'Status',
                 layout : "form",
                 autoScroll : true,
                 bodyStyle : 'padding:5px 5px 0px 5px;',
@@ -31,7 +31,7 @@ if (!Ung.hasResource["Ung.Shield"]) {
                     items : [{
                         xtype : 'textfield',
                         fieldLabel : this.i18n._('Status'),
-                        name : 'status',
+                        name : 'Statistics Status',
                         allowBlank : false,
                         value : this.node.isRunning() ? this.i18n._('active') : this.i18n._('inactive'),
                         disabled : true,
@@ -61,7 +61,7 @@ if (!Ung.hasResource["Ung.Shield"]) {
 
             this.gridExceptions = new Ung.EditorGrid({
                 settingsCmp : this,
-                name : 'gridExceptions',
+                name : 'Exceptions',
                 // the total records is set from the base settings
                 // shieldNodeRulesLength field
                 totalRecords : this.getBaseSettings().shieldNodeRulesLength,
@@ -186,7 +186,6 @@ if (!Ung.hasResource["Ung.Shield"]) {
         buildEventLog : function() {
             this.gridEventLog = new Ung.GridEventLog({
                 settingsCmp : this,
-                name : 'gridEventLog',
                 hasRepositories : false,
                 eventDepth : 1000,
 
