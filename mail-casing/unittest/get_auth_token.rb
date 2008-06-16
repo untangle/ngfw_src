@@ -11,4 +11,9 @@ mail = nm.nodeContext( tid ).node
 account = ENV["QUARANTINE_ACCOUNT"]
 puts "Retrieving authentication token for '#{account}'"
 token = mail.createAuthToken(account)
-puts "The authentication token for '#{account}' is '#{token}' URLEncoded: '#{java.net.URLEncoder.encode( token )}'"
+puts <<EOF
+Account: '#{account}'
+Token: '#{token}'
+URLEncoded: '#{java.net.URLEncoder.encode( token )}'
+URL: http://localhost/quarantine/manageuser?tkn=#{java.net.URLEncoder.encode( token )}&action=viewibx
+EOF
