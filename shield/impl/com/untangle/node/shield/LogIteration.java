@@ -194,8 +194,8 @@ public class LogIteration
         if ( !"timeval".equals( date.getString( "type" ))) throw new JSONException( "invalid date." );
         
         /* Time in millis */
-        long time = date.getInt( "tv_sec" ) * 1000;
-        time += date.getInt( "tv_usec" ) / 1000;
+        long time = date.getLong( "tv_sec" ) * 1000L;
+        time += date.getLong( "tv_usec" ) / 1000L;
 
         return new Date( time );
     }
