@@ -86,6 +86,13 @@ if (!Ung.hasResource["Ung.Administration"]) {
             }
             return this.rpc.currentServerCertInfo;
         },
+        // get hostname
+        getHostname : function(forceReload) {
+            if (forceReload || this.rpc.hostname === undefined) {
+                this.rpc.hostname = rpc.networkManager.getHostname();
+            }
+            return this.rpc.hostname;
+        },
         
         buildAdministration : function() {
             // read-only is a check column
@@ -106,12 +113,12 @@ if (!Ung.hasResource["Ung.Administration"]) {
 
                 title : this.i18n._('Administration'),
                 layout : "form",
-                bodyStyle : 'padding:5px 5px 0px 5px;',
                 autoScroll : true,
                 items : [this.gridAdminAccounts=new Ung.EditorGrid({
                     settingsCmp : this,
                     title : this.i18n._("Admin Accounts"),
-                    height : 350,
+                    height : 300,
+                    bodyStyle : 'padding-bottom:30px;',
                     autoScroll : true,
                     hasEdit : false,
                     name : 'gridAdminAccounts',
@@ -561,7 +568,8 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 name : 'panelCertificates',
                 // private fields
                 parentId : this.getId(),
-
+                winGenerateSelfSignedCertificate : null,
+                
                 title : this.i18n._('Certificates'),
                 layout : "form",
                 bodyStyle : 'padding:5px 5px 0px 5px;',
@@ -576,6 +584,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         xtype : 'textfield',
                         fieldLabel : this.i18n._('Current Certificate Type'),
                         labelStyle: 'width:150px;',
+                        id : 'administration_status_appearsSelfSigned',
                         value : this.getCurrentServerCertInfo().appearsSelfSigned ? this.i18n._("Self-Signed") : this.i18n._("Signed / Trusted"),
                         disabled : true,
                         width: 300
@@ -586,6 +595,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         xtype : 'textfield',
                         fieldLabel : this.i18n._('Valid starting'),
                         labelStyle: 'width:150px; font-weight:bold',
+                        id : 'administration_status_notBefore',
                         value : i18n.timestampFormat(this.getCurrentServerCertInfo().notBefore),
                         disabled : true,
                         width: 300
@@ -593,6 +603,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         xtype : 'textfield',
                         fieldLabel : this.i18n._('Valid until'),
                         labelStyle: 'width:150px; font-weight:bold',
+                        id : 'administration_status_notAfter',
                         value : i18n.timestampFormat(this.getCurrentServerCertInfo().notAfter),
                         disabled : true,
                         width: 300
@@ -600,6 +611,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         xtype : 'textfield',
                         fieldLabel : this.i18n._('Subject DN'),
                         labelStyle: 'width:150px; font-weight:bold',
+                        id : 'administration_status_subjectDN',
                         value : this.getCurrentServerCertInfo().subjectDN,
                         disabled : true,
                         width: 300
@@ -607,14 +619,243 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         xtype : 'textfield',
                         fieldLabel : this.i18n._('Issuer DN'),
                         labelStyle: 'width:150px; font-weight:bold',
+                        id : 'administration_status_issuerDN',
                         value : this.getCurrentServerCertInfo().issuerDN,
                         disabled : true,
                         width: 300
                     }]
-                }]
-            	
+                }, {
+                    title: this.i18n._('Generation'),
+                    defaults : {
+                        xtype : 'fieldset',
+                        autoHeight : true,
+                        layout:'column'
+                    },
+                    items : [{
+                        items: [{
+                            border: false,
+                            columnWidth:.3,
+                            layout: 'form',
+                            items: [{
+                                xtype : 'button',
+                                text : this.i18n._('Generate a <b>Self-Signed Certificate</b>'),
+                                name : 'Generate a Self-Signed Certificate',
+                                handler : function() {
+                                    this.panelCertificates.onGenerateSelfSignedCertificate();
+                                }.createDelegate(this)
+                            }]
+                        },{
+                            border: false,
+                            columnWidth:.7,
+                            layout: 'form',
+                            items: [{
+                            	html : this.i18n._("Click this button if you have been using a signed certificate, and you want to go back to using a self-signed certificate."),
+                            	border : false
+                            }]
+                        }]
+                    },{
+                        items: [{
+                            border: false,
+                            columnWidth:.3,
+                            layout: 'form',
+                            items: [{
+                                xtype : 'button',
+                                text : this.i18n._('Generate a <b>Self-Signed Certificate</b>'),
+                                name : 'Generate a Self-Signed Certificate'
+                            }]
+                        },{
+                            border: false,
+                            columnWidth:.7,
+                            layout: 'form',
+                            items: [{
+                                html : this.i18n._("Click this button if you have been using a signed certificate, and you want to go back to using a self-signed certificate."),
+                                border : false
+                            }]
+                        }]
+                    },{
+                        items: [{
+                            border: false,
+                            columnWidth:.3,
+                            layout: 'form',
+                            items: [{
+                                xtype : 'button',
+                                text : this.i18n._('Generate a <b>Self-Signed Certificate</b>'),
+                                name : 'Generate a Self-Signed Certificate'
+                            }]
+                        },{
+                            border: false,
+                            columnWidth:.7,
+                            layout: 'form',
+                            items: [{
+                                html : this.i18n._("Click this button if you have been using a signed certificate, and you want to go back to using a self-signed certificate."),
+                                border : false
+                            }]
+                        }]
+                    }]
+                }],
+                
+                onGenerateSelfSignedCertificate : function() {
+                    if (!this.winGenerateSelfSignedCertificate) {
+                        var settingsCmp = Ext.getCmp(this.parentId);
+                        settingsCmp.buildGenerateSelfSignedCertificate();
+                        this.winGenerateSelfSignedCertificate = new Ung.CertGenerateWindow({
+                            breadcrumbs : [{
+                                title : i18n._("Configuration"),
+                                action : function() {
+                                    this.panelCertificates.winGenerateSelfSignedCertificate.cancelAction();
+                                    this.cancelAction();
+                                }.createDelegate(settingsCmp)
+                            }, {
+                                title : i18n._('Administration'),
+                                action : function() {
+                                    this.panelCertificates.winGenerateSelfSignedCertificate.cancelAction();
+                                }.createDelegate(settingsCmp)
+                            }, {
+                                title : settingsCmp.i18n._("Generate a Self-Signed Certificate")
+                            }],
+                            certPanel : settingsCmp.panelGenerateSelfSignedCertificate,
+                            
+                            proceedAction : function() {
+                                Ext.MessageBox.wait(this.i18n._("Generating Certificate..."), i18n._("Please wait"));
+                                
+                                //validation
+                                var organizationCmp = Ext.getCmp('administration_organization');
+                                var organizationUnitCmp = Ext.getCmp('administration_organizationUnit');
+                                var cityCmp = Ext.getCmp('administration_city');
+                                var stateCmp = Ext.getCmp('administration_state');
+                                var countryCmp = Ext.getCmp('administration_country');
+                                if (this.isBlankField(organizationCmp, this.i18n._("You must specify an organization.")) ||
+                                    this.isBlankField(organizationUnitCmp, this.i18n._("You must specify an organization unit.")) ||
+                                    this.isBlankField(cityCmp, this.i18n._("You must specify a city.")) ||
+                                    this.isBlankField(stateCmp, this.i18n._("You must specify a state.")) ||
+                                    this.isBlankField(countryCmp, this.i18n._("You must specify a country."))) {
+                                    	return;
+                                }
+                                
+                                //get user values
+                                var organization = organizationCmp.getValue();
+                                var organizationUnit = organizationUnitCmp.getValue();
+                                var city = cityCmp.getValue();
+                                var state = stateCmp.getValue();
+                                var country = countryCmp.getValue();
+                                var distinguishedName = i18n.sprintf("O=%s,OU=%s,L=%s,ST=%s,C=%s",
+                                        organization, organizationUnit, city, state, country);
+                                
+                                // generate certificate
+                                main.getAppServerManager().regenCert(function(result, exception) {
+                                    if (exception) {
+                                        Ext.MessageBox.alert(i18n._("Failed"), exception.message);
+                                        return;
+                                    }
+                                    
+                                    if (result) { //true or false
+                                        //success
+                                        
+                                    	//update status
+                                    	this.updateCertificatesStatus();
+                                    	
+                                        Ext.MessageBox.alert(this.i18n._("Succeeded"), this.i18n._("Certificate Successfully Generated"),
+                                            function () {
+                                                this.panelCertificates.winGenerateSelfSignedCertificate.cancelAction();
+                                            }.createDelegate(this) 
+                                        );
+                                    } else {
+                                        //failed
+                                        Ext.MessageBox.alert(i18n._("Failed"), this.i18n._("Error generating self-signed certificate"));
+                                        return;
+                                    }
+                                }.createDelegate(this), distinguishedName, 5*365);
+                            	
+                            }.createDelegate(settingsCmp)
+                        });
+                    }
+                    this.winGenerateSelfSignedCertificate.show();
+                },
+                beforeDestroy : function() {
+                    Ext.destroy(this.winGenerateSelfSignedCertificate);
+                    Ext.Panel.prototype.beforeDestroy.call(this);
+                }
+                
             })
         },
+        
+        // Generate Self-Signed certificate
+        buildGenerateSelfSignedCertificate : function() {
+            this.panelGenerateSelfSignedCertificate = new Ext.Panel({
+                name : 'panelGenerateSelfSignedCertificate',
+                // private fields
+                parentId : this.getId(),
+
+                title : this.i18n._('Public Address'),
+                layout : "form",
+                bodyStyle : 'padding:5px 5px 0px 5px;',
+                autoScroll : true,
+                items: {
+                    xtype: 'fieldset',
+                    autoHeight : true,
+                    defaults : {
+                        labelStyle: 'width:150px;'
+                    },
+                    items : [{
+                        html : this.i18n._('Please fill out the following fields, which will be used to generate your self-signed certificate.'),
+                        bodyStyle : 'padding-bottom:10px;',
+                        border : false
+                    },{
+                        xtype : 'textfield',
+                        fieldLabel : this.i18n._('Organization') + " (O)",
+                        name : 'organization',
+                        id: 'administration_organization',
+                        allowBlank : false,
+                        blankText : this.i18n._("You must specify an organization.")
+                    },{
+                        xtype : 'textfield',
+                        fieldLabel : this.i18n._('Organization Unit') + " (OU)",
+                        name : 'organizationUnit',
+                        id: 'administration_organizationUnit',
+                        allowBlank : false,
+                        blankText : this.i18n._("You must specify an organization unit.")
+                    },{
+                        xtype : 'textfield',
+                        fieldLabel : this.i18n._('City') + " (L)",
+                        name : 'city',
+                        id: 'administration_city',
+                        allowBlank : false,
+                        blankText : this.i18n._("You must specify a city.")
+                    },{
+                        xtype : 'textfield',
+                        fieldLabel : this.i18n._('State') + " (ST)",
+                        name : 'state',
+                        id: 'administration_state',
+                        allowBlank : false,
+                        blankText : this.i18n._("You must specify a state.")
+                    },{
+                        xtype : 'textfield',
+                        fieldLabel : this.i18n._('Country') + " (C)",
+                        name : 'country',
+                        id: 'administration_country',
+                        allowBlank : false,
+                        blankText : this.i18n._("You must specify a country.")
+                    },{
+                        xtype : 'textfield',
+                        fieldLabel : this.i18n._('Hostname') + " (CN)",
+                        name : 'hostname',
+                        id: 'administration_hostname',
+                        value : this.getHostname(),
+                        disabled : true
+                    }]
+                }
+            });
+        },
+        
+        updateCertificatesStatus : function() {
+        	var certInfo = this.getCurrentServerCertInfo(true);
+        	Ext.getCmp('administration_status_appearsSelfSigned').setValue(certInfo.appearsSelfSigned ? this.i18n._("Self-Signed") : this.i18n._("Signed / Trusted"));
+            Ext.getCmp('administration_status_notBefore').setValue(i18n.timestampFormat(certInfo.notBefore));
+            Ext.getCmp('administration_status_notAfter').setValue(i18n.timestampFormat(certInfo.notAfter));
+            Ext.getCmp('administration_status_subjectDN').setValue(certInfo.subjectDN);
+            Ext.getCmp('administration_status_issuerDN').setValue(certInfo.issuerDN);
+        },
+        
         buildMonitoring : function() {
             this.panelMonitoring = new Ext.Panel({
                 name : 'panelMonitoring',
@@ -1031,6 +1272,20 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 }
             });
         },
+        
+        isBlankField : function (cmp, errMsg) {
+            if (cmp.getValue().length == 0) {
+                Ext.MessageBox.alert('Warning', errMsg ,
+                    function () {
+                        cmp.focus(true);
+                    } 
+                );
+                return true;
+            } else {
+                return false;
+            }
+        },
+        
         // validation function
         validateClient : function() {
             return  this.validateAdminAccounts() && this.validateExternalAdministration() && 
@@ -1334,4 +1589,55 @@ if (!Ung.hasResource["Ung.Administration"]) {
             }
         }        
     });
+    
+    // certificate generation window
+    Ung.CertGenerateWindow = Ext.extend(Ung.ButtonsWindow, {
+        // the certPanel
+        certPanel : null,
+        onRender : function(container, position) {
+            Ung.CertGenerateWindow.superclass.onRender.call(this, container, position);
+            this.initSubComponents.defer(1, this);
+        },
+        initSubComponents : function(container, position) {
+            this.certPanel.render(this.getContentEl());
+        },
+        listeners : {
+            'show' : {
+                fn : function() {
+                    this.certPanel.setHeight(this.getContentHeight());
+                },
+                delay : 1
+            }
+        },
+        initButtons : function() {
+            this.subCmps.push(new Ext.Button({
+                name : 'Cancel',
+                renderTo : 'button_inner_right_' + this.getId(),
+                iconCls : 'cancelIcon',
+                text : i18n._('Cancel'),
+                handler : function() {
+                    this.cancelAction();
+                }.createDelegate(this)
+            }));
+            this.subCmps.push(new Ext.Button({
+                name : 'Proceed',
+                renderTo : 'button_margin_right_' + this.getId(),
+                iconCls : 'saveIcon',
+                text : i18n._('Proceed'),
+                handler : function() {
+                    this.proceedAction();
+                }.createDelegate(this)
+            }));
+        },
+        // the proceed actions
+        // to override
+        proceedAction : function() {
+            main.todo();
+        },
+        beforeDestroy : function() {
+            Ext.destroy(this.certPanel);
+            Ung.ManageListWindow.superclass.beforeDestroy.call(this);
+        }
+    });
+    
 }
