@@ -818,8 +818,6 @@ public class UvmContextImpl extends UvmContextBase
         //Inform the AppServer manager that everything
         //else is started.
         appServerManager.postInit(httpInvoker);
-
-        System.out.println(toolboxManager.getRackView(null));
     }
 
     @Override
