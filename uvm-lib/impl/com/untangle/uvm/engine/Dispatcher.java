@@ -213,7 +213,6 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
     // Note that order of initialization is important in here, since
     // the "inner" classes access stuff from us.
     Dispatcher(MPipeImpl mPipe) {
-        System.out.println("HELLO WORLD");
         logger = Logger.getLogger(Dispatcher.class.getName());
         this.mPipe = mPipe;
         this.node = mPipe.node();
