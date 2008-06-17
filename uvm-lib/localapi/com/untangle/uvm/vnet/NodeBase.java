@@ -42,7 +42,7 @@ import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.localapi.SessionMatcher;
 import com.untangle.uvm.localapi.SessionMatcherFactory;
 import com.untangle.uvm.logging.Counters;
-import com.untangle.uvm.logging.NodeStatDescs;
+import com.untangle.uvm.logging.StatDescs;
 import com.untangle.uvm.node.LocalNodeManager;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeContext;
@@ -175,9 +175,9 @@ public abstract class NodeBase implements Node
         return counters;
     }
 
-    public NodeStatDescs getNodeStatDescs()
+    public StatDescs getStatDescss()
     {
-        return counters.getStatDescs();
+        return counters.getStatDescss();
     }
 
     // NodeBase methods ---------------------------------------------------

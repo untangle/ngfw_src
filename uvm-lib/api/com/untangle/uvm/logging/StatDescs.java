@@ -39,16 +39,16 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-public class NodeStatDescs implements Serializable
+public class StatDescs implements Serializable
 {
     private final List<StatDesc> metricDescs;
     private final List<StatDesc> activityDescs;
 
-    NodeStatDescs(Collection<BlingBlinger> metrics,
+    StatDescs(Collection<BlingBlinger> metrics,
                   Collection<BlingBlinger> activities)
     {
-        this.metricDescs = getStatDescs(metrics);
-        this.activityDescs = getStatDescs(activities);
+        this.metricDescs = getStatDescss(metrics);
+        this.activityDescs = getStatDescss(activities);
     }
 
     public List<StatDesc> getMetricDescs()
@@ -63,11 +63,11 @@ public class NodeStatDescs implements Serializable
 
     // private methods ---------------------------------------------------------
 
-    private List<StatDesc> getStatDescs(Collection<BlingBlinger> blingers)
+    private List<StatDesc> getStatDescss(Collection<BlingBlinger> blingers)
     {
         List<StatDesc> l = new ArrayList<StatDesc>(blingers.size());
         for (BlingBlinger bb : blingers) {
-            l.add(bb.getStatDesc());
+            l.add(bb.getStatDescs());
         }
 
         return Collections.unmodifiableList(l);

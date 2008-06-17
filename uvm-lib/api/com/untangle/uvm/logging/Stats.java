@@ -39,14 +39,14 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-public class NodeStats implements Serializable
+public class Stats implements Serializable
 {
     private final List<CounterStats> metrics;
     private final List<CounterStats> activities;
 
     // constructors ------------------------------------------------------------
 
-    NodeStats(Collection<BlingBlinger> metrics,
+    Stats(Collection<BlingBlinger> metrics,
               Collection<BlingBlinger> activities)
     {
         this.metrics = immutableCounterStats(metrics);

@@ -26,8 +26,8 @@ import com.untangle.uvm.logging.ActiveBlinger;
 import com.untangle.uvm.logging.BlingerState;
 import com.untangle.uvm.logging.Counters;
 import com.untangle.uvm.logging.LocalBlingerManager;
-import com.untangle.uvm.logging.NodeStatDescs;
-import com.untangle.uvm.logging.NodeStats;
+import com.untangle.uvm.logging.StatDescs;
+import com.untangle.uvm.logging.Stats;
 import com.untangle.uvm.node.LocalNodeManager;
 import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.security.Tid;
@@ -48,25 +48,25 @@ class BlingerManagerImpl implements LocalBlingerManager
     {
         LocalNodeManager lm = UvmContextImpl.getInstance().nodeManager();
         List<Tid> tids = lm.nodeInstances();
-        return getNodeStats(lm, tids);
+        return getStats(lm, tids);
     }
 
     public BlingerState getBlingerState(Policy p)
     {
         LocalNodeManager lm = UvmContextImpl.getInstance().nodeManager();
         List<Tid> tids = lm.nodeInstances(p);
-        return getNodeStats(lm, tids);
+        return getStats(lm, tids);
     }
 
-    public NodeStatDescs getNodeStatDesc(Tid t)
+    public StatDescs getStatDescs(Tid t)
     {
         Long id = t.getId();
         if (null != id) {
             if (0 == id) {
-                return uvmCounters.getStatDescs();
+                return uvmCounters.getStatDescss();
             } else {
                 LocalNodeManager lm = UvmContextImpl.getInstance().nodeManager();
-                return lm.nodeContext(t).node().getCounters().getStatDescs();
+                return lm.nodeContext(t).node().getCounters().getStatDescss();
             }
         } else {
             return null;
@@ -138,9 +138,9 @@ class BlingerManagerImpl implements LocalBlingerManager
 
     // private methods ---------------------------------------------------------
 
-    private BlingerState getNodeStats(LocalNodeManager lm, List<Tid> tids)
+    private BlingerState getStats(LocalNodeManager lm, List<Tid> tids)
     {
-        Map<Tid, NodeStats> stats = new HashMap<Tid, NodeStats>(tids.size());
+        Map<Tid, Stats> stats = new HashMap<Tid, Stats>(tids.size());
 
         stats.put(new Tid(0L), uvmCounters.getAllStats());
 

@@ -37,7 +37,7 @@
       <H1 ALIGN=CENTER> <%= tdesc.getName() %></H1>
 <%
       // First show the node stats
-      NodeStats tstats = null;
+      Stats tstats = null;
       try {
         tstats = tctx.getStats();
 %>

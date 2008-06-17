@@ -299,7 +299,7 @@ class OpenVpnMonitor implements Runnable
     }
 
     // XXX need counters
-//     NodeStats updateStats( NodeStats stats )
+//     Stats updateStats( Stats stats )
 //     {
 //         BufferedReader in = null;
 //         long rxBytes  = stats.getT2sBytes();

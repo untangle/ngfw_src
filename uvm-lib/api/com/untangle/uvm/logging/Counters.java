@@ -120,13 +120,13 @@ public class Counters
         return lc;
     }
 
-    public NodeStatDescs getStatDescs()
+    public StatDescs getStatDescss()
     {
-        return new NodeStatDescs(metrics.values(), activities);
+        return new StatDescs(metrics.values(), activities);
     }
 
-    public NodeStats getAllStats()
+    public Stats getAllStats()
     {
-        return new NodeStats(metrics.values(), activities);
+        return new Stats(metrics.values(), activities);
     }
 }

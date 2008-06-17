@@ -41,15 +41,15 @@ import com.untangle.uvm.security.Tid;
 
 public class BlingerState
 {
-    private final Map<Tid, NodeStats> stats;
+    private final Map<Tid, Stats> stats;
 
-    public BlingerState(Map<Tid, NodeStats> stats)
+    public BlingerState(Map<Tid, Stats> stats)
     {
-        Map<Tid, NodeStats> m = new HashMap<Tid, NodeStats>(stats);
+        Map<Tid, Stats> m = new HashMap<Tid, Stats>(stats);
         this.stats = Collections.unmodifiableMap(m);
     }
 
-    public Map<Tid, NodeStats> getNodeStats()
+    public Map<Tid, Stats> getStats()
     {
         return stats;
     }

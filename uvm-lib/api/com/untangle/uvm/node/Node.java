@@ -121,8 +121,8 @@ public interface Node
      * Returns the <code>Counters</code> for this node.
      * The node must be in the running state.
      *
-     * @return a <code>NodeStats</code> giving the
-     * <code>NodeStats</code> since the start of the node
+     * @return a <code>Stats</code> giving the
+     * <code>Stats</code> since the start of the node
      * @exception NodeException if the node is not in the
      * <code>RUNNING</code> state
      */

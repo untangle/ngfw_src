@@ -65,7 +65,7 @@ public class LoadMaster implements LoadStats
 
     // public methods ---------------------------------------------------------
 
-    public StatDesc getStatDesc()
+    public StatDesc getStatDescs()
     {
         return statDesc;
     }
