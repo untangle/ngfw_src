@@ -88,6 +88,15 @@ public abstract class NodeBase implements Node
         nodeContext = nodeManager.threadContext();
         tid = nodeContext.getTid();
 
+        counters.addMetric("s2nChunks", "Server to Node Chunks", null);
+        counters.addMetric("c2nChunks", "Client to Node Chunks", null);
+        counters.addMetric("n2sChunks", "Node to Server Chunks", null);
+        counters.addMetric("n2cChunks", "Server to Node Chunks", null);
+        counters.addMetric("s2nBytes", "Server to Node Bytes", "byte");
+        counters.addMetric("c2nBytes", "Client to Node Bytes", "byte");
+        counters.addMetric("n2sBytes", "Node to Server Bytes", "byte");
+        counters.addMetric("n2cBytes", "Node to Client Bytes", "byte");
+
         runState = NodeState.LOADED;
     }
 

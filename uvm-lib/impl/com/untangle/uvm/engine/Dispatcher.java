@@ -147,8 +147,8 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
     private long soonestTimerTime; // Ignored if soonestTimeredSession is null
 
     /**
-     * SessionHandler & friends let us know to update the selection keys for these
-     * session here.
+     * SessionHandler & friends let us know to update the selection
+     * keys for these session here.
      */
     // private LinkedQueue dirtySessions;
 
@@ -253,19 +253,16 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
                                                   "UDP Sessions");
         tcpLiveSessionCounter = c.makeLoadCounter("tcpLiveSessionCounter",
                                                   "TCP Sessions");
-        udpTotalSessionCounter = c.addMetric("udpTotalSessionCounter", "UDP Sessions", null);
-        tcpTotalSessionCounter = c.addMetric("tcpTotalSessionCounter", "TCP Sessions", null);
-        udpTotalSessionRequestCounter = c.addMetric("udpTotalSessionRequestCounter", "UDP Session Requests", null);
-        tcpTotalSessionRequestCounter = c.addMetric("tcpTotalSessionRequestCounter", "TCP Session Requests", null);
-
-        // c.addMetric("s2nChunks", "Server to Node Chunks", null);
-        // c.addMetric("c2nChunks", "Client to Node Chunks", null);
-        // c.addMetric("n2sChunks", "Node to Server Chunks", null);
-        // c.addMetric("n2cChunks", "Server to Node Chunks", null);
-        // c.addMetric("s2nBytes", "Server to Node Bytes", "byte");
-        // c.addMetric("c2nBytes", "Client to Node Bytes", "byte");
-        // c.addMetric("n2sBytes", "Node to Server Bytes", "byte");
-        // c.addMetric("n2cBytes", "Node to Client Bytes", "byte");
+        udpTotalSessionCounter = c.addMetric("udpTotalSessionCounter",
+                                             "UDP Sessions", null);
+        tcpTotalSessionCounter = c.addMetric("tcpTotalSessionCounter",
+                                             "TCP Sessions", null);
+        udpTotalSessionRequestCounter = c
+            .addMetric("udpTotalSessionRequestCounter", "UDP Session Requests",
+                       null);
+        tcpTotalSessionRequestCounter = c
+            .addMetric("tcpTotalSessionRequestCounter", "TCP Session Requests",
+                       null);
     }
 
     /*
