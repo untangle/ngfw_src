@@ -33,12 +33,13 @@
 
 package com.untangle.uvm.toolbox;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 
 import com.untangle.uvm.node.NodeDesc;
 
-public class RackView
+public class RackView implements Serializable
 {
     private List<MackageDesc> available;
     private List<NodeDesc> instances;
