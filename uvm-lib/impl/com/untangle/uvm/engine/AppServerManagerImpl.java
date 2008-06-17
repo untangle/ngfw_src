@@ -274,6 +274,7 @@ class AppServerManagerImpl implements LocalAppServerManager
             localCertInfo = OpenSSLWrapper.getCertInfo(cert);
         } catch (Exception ex) {
             logger.error("Unable to get info from cert", ex);
+            return false;
         }
 
         // This is a hack, but if they don't have a CN what the heck
@@ -282,6 +283,7 @@ class AppServerManagerImpl implements LocalAppServerManager
         if (null == cn) {
             logger.error("Received a cert without a CN? \"" +
                          new String(cert) + "\"");
+            return false;
         }
 
         String reason = "";

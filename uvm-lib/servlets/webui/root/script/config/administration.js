@@ -570,6 +570,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 parentId : this.getId(),
                 winGenerateSelfSignedCertificate : null,
                 winGenerateCertGenTrusted : null,
+                winCertImportTrusted : null,
                 
                 title : this.i18n._('Certificates'),
                 layout : "form",
@@ -687,7 +688,10 @@ if (!Ung.hasResource["Ung.Administration"]) {
                                 xtype : 'button',
                                 text : i18n.sprintf(this.i18n._('Import a %sSigned Certificate%s'), '<b>', '</b>'),
                                 minWidth : 250,
-                                name : 'Generate a Self-Signed Certificate'
+                                name : 'Generate a Self-Signed Certificate',
+                                handler : function() {
+                                    this.panelCertificates.onCertImportTrusted();
+                                }.createDelegate(this)
                             }]
                         },{
                             border: false,
@@ -829,9 +833,70 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     }
                     this.winGenerateCertGenTrusted.show();
                 },
+                
+                onCertImportTrusted : function() {
+                    if (!this.winCertImportTrusted) {
+                        var settingsCmp = Ext.getCmp(this.parentId);
+                        settingsCmp.buildCertImportTrusted();
+                        this.winCertImportTrusted = new Ung.CertGenerateWindow({
+                            breadcrumbs : [{
+                                title : i18n._("Configuration"),
+                                action : function() {
+                                    this.panelCertificates.winCertImportTrusted.cancelAction();
+                                    this.cancelAction();
+                                }.createDelegate(settingsCmp)
+                            }, {
+                                title : i18n._('Administration'),
+                                action : function() {
+                                    this.panelCertificates.winCertImportTrusted.cancelAction();
+                                }.createDelegate(settingsCmp)
+                            }, {
+                                title : settingsCmp.i18n._("Import Signed Certificate")
+                            }],
+                            certPanel : settingsCmp.panelCertImportTrusted,
+                            
+                            proceedAction : function() {
+                                Ext.MessageBox.wait(this.i18n._("Importing Certificate..."), i18n._("Please wait"));
+                                
+                                //get user values
+                                var cert = Ext.getCmp('administration_import_cert').getValue();
+                                var caCert = Ext.getCmp('administration_import_caCert').getValue();
+                                
+                                // import certificate
+                                main.getAppServerManager().importServerCert(function(result, exception) {
+                                    if (exception) {
+                                        Ext.MessageBox.alert(i18n._("Failed"), exception.message);
+                                        return;
+                                    }
+                                    
+                                    if (result) { //true or false
+                                        //success
+                                        
+                                        //update status
+                                        this.updateCertificatesStatus();
+                                        
+                                        Ext.MessageBox.alert(this.i18n._("Succeeded"), this.i18n._("Certificate Successfully Imported"),
+                                            function () {
+                                                this.panelCertificates.winCertImportTrusted.cancelAction();
+                                            }.createDelegate(this) 
+                                        );
+                                    } else {
+                                        //failed
+                                        Ext.MessageBox.alert(i18n._("Failed"), this.i18n._("Error importing certificate"));
+                                        return;
+                                    }
+                                }.createDelegate(this), cert, caCert.length==0?null:caCert );
+                                
+                            }.createDelegate(settingsCmp)
+                        });
+                    }
+                    this.winCertImportTrusted.show();
+                },
+                
                 beforeDestroy : function() {
                     Ext.destroy(this.winGenerateSelfSignedCertificate);
                     Ext.destroy(this.winGenerateCertGenTrusted);
+                    Ext.destroy(this.winCertImportTrusted);
                     Ext.Panel.prototype.beforeDestroy.call(this);
                 }
                 
@@ -935,6 +1000,47 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         hideLabel : true
                     }]
                 }
+            });
+        },
+        
+        // Import Signed Certificate
+        buildCertImportTrusted : function() {
+            this.panelCertImportTrusted = new Ext.Panel({
+                name : 'panelCertImportTrusted',
+                // private fields
+                parentId : this.getId(),
+
+                title : this.i18n._('Import Signed Certificate'),
+                layout : "form",
+                bodyStyle : 'padding:5px 5px 0px 5px;',
+                autoScroll : true,
+                    items : [{
+                        html : this.i18n._('When your Certificate Authority (Verisign, Thawte, etc.) ' +
+                        		'has sent your Signed Certificate, copy and paste it below (Control-V), ' +
+                        		'then press the Proceed button.'),
+                        bodyStyle : 'padding-bottom:10px;',
+                        border : false
+                    },{
+                        xtype : 'textarea',
+                        name : 'cert',
+                        id: 'administration_import_cert',
+                        anchor:'95%',
+                        height : 200,
+                        hideLabel : true
+                    },{
+                        html : this.i18n._('If your Certificate Authority (Verisign, Thawte, etc.) ' +
+                        		'also send you an Intermediate Certificate, paste it below.  ' +
+                        		'Otherwise, do not paste anything below.'),
+                        bodyStyle : 'padding:20px 0px 10px 0px;',
+                        border : false
+                    },{
+                        xtype : 'textarea',
+                        name : 'caCert',
+                        id: 'administration_import_caCert',
+                        anchor:'95%',
+                        height : 200,
+                        hideLabel : true
+                    }]
             });
         },
         
