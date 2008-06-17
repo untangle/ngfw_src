@@ -59,4 +59,10 @@ public class RackView implements Serializable
     {
         return instances;
     }
+
+    @Override
+    public String toString()
+    {
+        return "[RackView available: " + available + " instances: " + instances + "]";
+    }
 }

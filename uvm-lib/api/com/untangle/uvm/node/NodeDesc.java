@@ -262,4 +262,10 @@ public class NodeDesc implements Serializable
 
         return tid.equals(td.getTid());
     }
+
+    @Override
+    public String toString()
+    {
+        return "[NodeDesc name:" + name + "]";
+    }
 }

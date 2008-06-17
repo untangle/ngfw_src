@@ -26,9 +26,11 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.Vector;
 import java.util.WeakHashMap;
@@ -158,12 +160,19 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
             .context().nodeManager();
         List<NodeDesc> instances = tm.visibleNodes(p);
 
+        Set<String> instanceLibitems = new HashSet<String>();
+        for (NodeDesc nd : instances) {
+            // XXX libitem hack-attack
+            instanceLibitems.add(nd.getName().replaceFirst("-.*-", "-libitem-"));
+        }
+
         // XXX sorting?
         // XXX filter out instances on left...
         List<MackageDesc> uninstalled = new ArrayList<MackageDesc>();
         for (MackageDesc md : uninstalled()) {
             if (md.getType() == MackageDesc.Type.LIB_ITEM
                 && 0 <= md.getViewPosition()
+                && !instanceLibitems.contains(md.getName())
                 // XXX FLAG REFACTOR
                 && !md.getName().equals("untangle-libitem-router")) {
                 uninstalled.add(md);
