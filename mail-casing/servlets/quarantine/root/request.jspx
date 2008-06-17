@@ -8,6 +8,12 @@
 
   <uvm:i18nload path="mail-casing"/>
 
+  <jsp:scriptlet>
+    <![CDATA[
+             request.setAttribute( "bs", com.untangle.uvm.LocalUvmContextFactory.context().brandingManager().getBaseSettings());
+    ]]>
+  </jsp:scriptlet>
+
   <c:set var="title" scope="request">
     <uvm:i18n>
       Request Quarantine Digest Email 

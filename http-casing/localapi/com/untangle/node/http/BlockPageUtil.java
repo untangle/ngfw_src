@@ -18,6 +18,8 @@
 package com.untangle.node.http;
 
 import java.io.IOException;
+import java.util.Locale;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -27,6 +29,7 @@ import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 import com.untangle.uvm.BrandingBaseSettings;
+import com.untangle.uvm.LanguageSettings;
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
 
@@ -46,8 +49,14 @@ public class BlockPageUtil
     {
         LocalUvmContext uvm = LocalUvmContextFactory.context();
         BrandingBaseSettings bs = uvm.brandingManager().getBaseSettings();
+
         
-        I18n i18n = I18nFactory.getI18n(handler.getI18n(), "Messages", Thread.currentThread().getContextClassLoader(), request.getLocale(), I18nFactory.FALLBACK);
+        String module = handler.getI18n();
+
+        LanguageSettings ls = uvm.remoteContext().languageManager().getLanguageSettings();
+        Locale locale = new Locale(ls.getLanguage());
+                   
+        I18n i18n = I18nFactory.getI18n( "i18n." + module, module, Thread.currentThread().getContextClassLoader(), locale, I18nFactory.DEFAULT);
         request.setAttribute( "i18n", i18n );
 
         /* These have to be registered against the request, otherwise
