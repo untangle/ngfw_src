@@ -48,7 +48,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                 bodyStyle : 'padding:5px 5px 0px 5px;',
                 autoScroll : true,
                 onEmailTest: function() {
-                	main.todo();
+                	Ung.Util.todo();
                 },
 
                 defaults : {

@@ -1,14 +1,6 @@
-Ext.namespace('Ung');
-// The location of the blank pixel image
-Ext.BLANK_IMAGE_URL = 'ext/resources/images/default/s.gif';
 // Global Variables
 // the main object instance
 var main=null; 
-// the main internationalization object
-var i18n=null;
-// the main json rpc object
-var rpc=null;
-
 
 // Main object class
 Ung.Main=function() {
@@ -33,7 +25,7 @@ Ung.Main.prototype = {
 	iframeWin: null,
 	// init function
 	init: function() {
-		this.initSemaphore=8;
+		this.initSemaphore=9;
 		rpc = {};
 		// get JSONRpcClient
 		rpc.jsonrpc = new JSONRpcClient("/webui/JSON-RPC");
@@ -46,8 +38,8 @@ Ung.Main.prototype = {
 			rpc.skinManager.getSkinSettings(function (result, exception) {
 			if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
 				var skinSettings=result;
-				this.loadCss("skins/"+skinSettings.administrationClientSkin+"/css/ext-skin.css");
-				this.loadCss("skins/"+skinSettings.administrationClientSkin+"/css/skin.css");
+				Ung.Util.loadCss("skins/"+skinSettings.administrationClientSkin+"/css/ext-skin.css");
+				Ung.Util.loadCss("skins/"+skinSettings.administrationClientSkin+"/css/skin.css");
 				this.postinit();// 1
 			}.createDelegate(this));
 		}.createDelegate(this));
@@ -99,6 +91,11 @@ Ung.Main.prototype = {
             rpc.networkManager=result;
             this.postinit();// 8
         }.createDelegate(this));
+        rpc.jsonrpc.RemoteUvmContext.blingerManager(function (result, exception) {
+            if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
+            rpc.blingerManager=result;
+            this.postinit();// 9
+        }.createDelegate(this));
 		
 	},
 	postinit: function() {
@@ -132,8 +129,7 @@ Ung.Main.prototype = {
 		
 		this.viewport = new Ext.Viewport({
             layout:'border',
-            items:[
-                {
+            items:[{
                     region:'west',
                     id: 'west',
                     html: contentLeftArr.join(""),
@@ -277,44 +273,6 @@ Ung.Main.prototype = {
             }
 		    
 		});
-	},
-	// Load css file Dynamically
-	loadCss: function(filename) {
-		var fileref=document.createElement("link");
-		fileref.setAttribute("rel", "stylesheet");
-		fileref.setAttribute("type", "text/css");
-		fileref.setAttribute("href", filename);
-		document.getElementsByTagName("head")[0].appendChild(fileref);
-	},
-	// Load script file Dynamically
-	loadScript: function(sScriptSrc, fnCallback) {
-		var error=null;
-		try {
-			if(window.XMLHttpRequest)
-				var req = new XMLHttpRequest();
-			else
-				var req = new ActiveXObject("Microsoft.XMLHTTP");
-			req.open("GET",sScriptSrc,false);
-			req.send(null);
-			if( window.execScript)
-				window.execScript(req.responseText);
-			else
-				window.eval(req.responseText);
-		} catch (e) {
-			error=e;
-		}
-		if(fnCallback) {
-			fnCallback.call(this);
-		}
-		return error;
-	},
-	// Load a resource if not loaded and execute a callback function
-	loadResourceAndExecute: function(resource,sScriptSrc, fnCallback) {
-		if(Ung.hasResource[resource]) {
-			fnCallback.call(this);
-		} else {
-			this.loadScript(sScriptSrc, fnCallback);
-		}
 	},
 	// get help link
 	getHelpLink: function(source,focus) {
@@ -602,25 +560,25 @@ Ung.Main.prototype = {
 				}.createDelegate(this));
 				break;
 			case "administration":
-				main.loadResourceAndExecute("Ung.Administration","script/config/administration.js", function() {
+				Ung.Util.loadResourceAndExecute("Ung.Administration","script/config/administration.js", function() {
 					main.administrationWin=new Ung.Administration(configItem);
 					main.administrationWin.show();
 				});
 				break;
             case "email":
-                main.loadResourceAndExecute("Ung.Email","script/config/email.js", function() {
+                Ung.Util.loadResourceAndExecute("Ung.Email","script/config/email.js", function() {
                     main.emailWin=new Ung.Email(configItem);
                     main.emailWin.show();
                 });
                 break;
             case "system":
-                main.loadResourceAndExecute("Ung.System","script/config/system.js", function() {
+                Ung.Util.loadResourceAndExecute("Ung.System","script/config/system.js", function() {
                     main.systemWin=new Ung.System(configItem);
                     main.systemWin.show();
                 });
                 break;
             case "systemInfo":
-                main.loadResourceAndExecute("Ung.SystemInfo","script/config/systemInfo.js", function() {
+                Ung.Util.loadResourceAndExecute("Ung.SystemInfo","script/config/systemInfo.js", function() {
                     main.systemInfoWin=new Ung.SystemInfo(configItem);
                     main.systemInfoWin.show();
                 });
@@ -629,10 +587,6 @@ Ung.Main.prototype = {
 				Ext.MessageBox.alert(i18n._("Failed"),"TODO: implement config "+configItem.name);
 				break;
 		}
-	},
-	
-	todo: function() {
-		Ext.MessageBox.alert(i18n._("TODO"),"TODO: implement this.");
 	},
 	
 	destoyNodes: function () {

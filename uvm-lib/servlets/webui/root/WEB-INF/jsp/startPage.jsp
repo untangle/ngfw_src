@@ -22,9 +22,9 @@
 
 	
 	<script type="text/javascript" src="jsonrpc/jsonrpc.js"></script>
-    <script type="text/javascript" src="script/main.js"></script>
-	<script type="text/javascript" src="script/i18n.js"></script>
     <script type="text/javascript" src="script/components.js"></script>
+    <script type="text/javascript" src="script/i18n.js"></script>
+    <script type="text/javascript" src="script/main.js"></script>
 
 <!-- Just for Test, normaly this resources are Dynamically loaded     
 -->	

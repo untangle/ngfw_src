@@ -17,6 +17,15 @@
     <url-pattern>/startPage.do</url-pattern>
   </servlet-mapping>
 
+  <servlet>
+    <servlet-name>SetupServlet</servlet-name>
+    <servlet-class>com.untangle.uvm.webui.servlet.SetupServlet</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>SetupServlet</servlet-name>
+    <url-pattern>/setup</url-pattern>
+  </servlet-mapping>
 
   <servlet>
     <servlet-name>JSONRPCServlet</servlet-name>

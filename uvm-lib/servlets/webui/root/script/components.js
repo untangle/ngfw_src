@@ -1,3 +1,11 @@
+Ext.namespace('Ung');
+// The location of the blank pixel image
+Ext.BLANK_IMAGE_URL = 'ext/resources/images/default/s.gif';
+// the main internationalization object
+var i18n=null;
+// the main json rpc object
+var rpc=null;
+
 Ext.override(Ext.Button, {
     listeners : {
         "render" : {
@@ -53,6 +61,49 @@ Ext.override(Ext.TabPanel, {
 		
 	}
 });
+Ung.Util= {
+    // Load css file Dynamically
+    loadCss: function(filename) {
+        var fileref=document.createElement("link");
+        fileref.setAttribute("rel", "stylesheet");
+        fileref.setAttribute("type", "text/css");
+        fileref.setAttribute("href", filename);
+        document.getElementsByTagName("head")[0].appendChild(fileref);
+    },
+    // Load script file Dynamically
+    loadScript: function(sScriptSrc, fnCallback) {
+        var error=null;
+        try {
+            if(window.XMLHttpRequest)
+                var req = new XMLHttpRequest();
+            else
+                var req = new ActiveXObject("Microsoft.XMLHTTP");
+            req.open("GET",sScriptSrc,false);
+            req.send(null);
+            if( window.execScript)
+                window.execScript(req.responseText);
+            else
+                window.eval(req.responseText);
+        } catch (e) {
+            error=e;
+        }
+        if(fnCallback) {
+            fnCallback.call(this);
+        }
+        return error;
+    },
+    // Load a resource if not loaded and execute a callback function
+    loadResourceAndExecute: function(resource,sScriptSrc, fnCallback) {
+        if(Ung.hasResource[resource]) {
+            fnCallback.call(this);
+        } else {
+            Ung.Util.loadScript(sScriptSrc, fnCallback);
+        }
+    },
+    todo: function() {
+        Ext.MessageBox.alert(i18n._("TODO"),"TODO: implement this.");
+    }
+};
 // resources map
 Ung.hasResource = {};
 // Thread for installing nodes from store into toolbox
@@ -1379,7 +1430,7 @@ Ung.Settings._nodeScripts = {};
 
 // Dynamically loads javascript file for a node
 Ung.Settings.loadNodeScript = function(nodeName, cmpId, callbackFn) {
-    main.loadScript('script/' + nodeName + '/settings.js', function() {
+    Ung.Util.loadScript('script/' + nodeName + '/settings.js', function() {
         var cmp = Ext.getCmp(cmpId);
         cmp.settingsClassName = Ung.Settings.getClassName(cmp.name);
         
@@ -1388,7 +1439,7 @@ Ung.Settings.loadNodeScript = function(nodeName, cmpId, callbackFn) {
         } else {
         	var dependencyClassName=Ung.Settings.getClassName(Ung.Settings.dependency[cmp.name].name);
         	if(!dependencyClassName) {
-            	main.loadScript('script/' + Ung.Settings.dependency[cmp.name].name + '/settings.js', function() {
+            	Ung.Util.loadScript('script/' + Ung.Settings.dependency[cmp.name].name + '/settings.js', function() {
                     Ung.Settings.dependency[cmp.name].fn.call(this);
                     callbackFn(cmpId);
             	});
@@ -1909,7 +1960,7 @@ Ung.ConfigWin = Ext.extend(Ung.ButtonsWindow, {
     },
     // to override
     helpAction : function() {
-        main.todo();
+        Ung.Util.todo();
     },
     // to override
     cancelAction : function() {
@@ -1918,7 +1969,7 @@ Ung.ConfigWin = Ext.extend(Ung.ButtonsWindow, {
     },
     // to override
     saveAction : function() {
-        main.todo();
+        Ung.Util.todo();
     },
     // validation functions
     validateClient : function() {
@@ -1966,12 +2017,12 @@ Ung.UpdateWindow = Ext.extend(Ung.ButtonsWindow, {
     // the help method
     // to override
     helpAction : function() {
-        main.todo();
+        Ung.Util.todo();
     },
     // the update actions
     // to override
     updateAction : function() {
-        main.todo();
+        Ung.Util.todo();
     }
 });
 
