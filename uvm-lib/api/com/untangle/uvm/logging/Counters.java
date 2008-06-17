@@ -101,20 +101,13 @@ public class Counters
         }
     }
 
-    public LoadCounter getLoadCounter(String name)
+    public LoadCounter makeLoadCounter(String name, String displayName)
     {
-        LoadMaster lm = null;
-        LoadCounter lc = null;
+        LoadCounter lc = new LoadCounter();
+        LoadMaster lm = new LoadMaster(lc, name, displayName);
 
         synchronized (loads) {
-            lm = loads.get(name);
-        }
-
-        if (null != lm) {
-            LoadStrober ls = lm.getLoadStrober();
-            if (ls instanceof LoadCounter) {
-                lc = (LoadCounter)ls;
-            }
+            loads.put(name, lm);
         }
 
         return lc;

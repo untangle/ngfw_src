@@ -57,10 +57,10 @@ public class LoadMaster implements LoadStats
     // constructors -----------------------------------------------------------
 
     public LoadMaster(LoadStrober loadStrober, String name,
-                      String displayName, String unit, String action)
+                      String displayName)
     {
         this.loadStrober = loadStrober;
-        this.statDesc = new StatDesc(name, displayName, unit, action);
+        this.statDesc = new StatDesc(name, displayName, null, null);
     }
 
     // public methods ---------------------------------------------------------

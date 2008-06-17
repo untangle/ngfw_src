@@ -249,8 +249,10 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
         liveSessions = new ConcurrentHashMap();
 
         Counters c = node.getCounters();
-        udpLiveSessionCounter = c.getLoadCounter("udpLiveSessionCounter");
-        tcpLiveSessionCounter = c.getLoadCounter("tcpLiveSessionCounter");
+        udpLiveSessionCounter = c.makeLoadCounter("udpLiveSessionCounter",
+                                                  "UDP Sessions");
+        tcpLiveSessionCounter = c.makeLoadCounter("tcpLiveSessionCounter",
+                                                  "TCP Sessions");
         udpTotalSessionCounter = c.addMetric("udpTotalSessionCounter", "UDP Sessions", null);
         tcpTotalSessionCounter = c.addMetric("tcpTotalSessionCounter", "TCP Sessions", null);
         udpTotalSessionRequestCounter = c.addMetric("udpTotalSessionRequestCounter", "UDP Session Requests", null);
