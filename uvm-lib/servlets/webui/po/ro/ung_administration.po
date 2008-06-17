@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-05-13 12:11+0300\n"
+"POT-Creation-Date: 2008-06-17 19:14+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,70 +17,115 @@ msgstr ""
 "Plural-Forms: nplurals=0; null;\n"
 
 #: ../root/script/config/administration.js:11
+#: ../root/script/config/administration.js:12
+#: ../root/script/config/administration.js:735
+#: ../root/script/config/administration.js:813
+#: ../root/script/config/administration.js:864
 msgid "Configuration"
 msgstr ""
 
 #: ../root/script/config/administration.js:14
+#: ../root/script/config/administration.js:17
+#: ../root/script/config/administration.js:135
+#: ../root/script/config/administration.js:741
+#: ../root/script/config/administration.js:819
+#: ../root/script/config/administration.js:870
 msgid "Administration"
 msgstr ""
 
 #: ../root/script/config/administration.js:91
+#: ../root/script/config/administration.js:1374
 msgid "Skins"
 msgstr ""
 
 #: ../root/script/config/administration.js:102
+#: ../root/script/config/administration.js:1384
 msgid "Administration Skin"
 msgstr ""
 
 #: ../root/script/config/administration.js:106
+#: ../root/script/config/administration.js:1388
 msgid "This skin will used in the administration client"
 msgstr ""
 
 #: ../root/script/config/administration.js:124
+#: ../root/script/config/administration.js:1407
 msgid "Info"
 msgstr ""
 
 #: ../root/script/config/administration.js:124
+#: ../root/script/config/administration.js:1408
 msgid ""
 "Please note that you have to relogin after saving for the new skin to take "
 "effect."
 msgstr ""
 
 #: ../root/script/config/administration.js:130
+#: ../root/script/config/administration.js:1414
 msgid "Block Page Skin"
 msgstr ""
 
 #: ../root/script/config/administration.js:134
+#: ../root/script/config/administration.js:1418
 msgid "This skin will used in the user pages like quarantine and block pages"
 msgstr ""
 
 #: ../root/script/config/administration.js:157
+#: ../root/script/config/administration.js:1442
 msgid "Upload New Skin"
 msgstr ""
 
 #: ../root/script/config/administration.js:179
+#: ../root/script/config/administration.js:1462
+#: ../root/script/config/administration.js:1587
 msgid "Upload"
 msgstr ""
 
 #: ../root/script/config/administration.js:191
+#: ../root/script/config/administration.js:1475
 msgid "Please wait while your skin is uploaded..."
 msgstr ""
 
 #: ../root/script/config/administration.js:195
+#: ../root/script/config/administration.js:789
+#: ../root/script/config/administration.js:840
+#: ../root/script/config/administration.js:899
+#: ../root/script/config/administration.js:1479
+#: ../root/script/config/administration.js:1669
 msgid "Succeeded"
 msgstr ""
 
 #: ../root/script/config/administration.js:195
+#: ../root/script/config/administration.js:1479
 msgid "Upload Skin Succeeded"
 msgstr ""
 
 #: ../root/script/config/administration.js:200
 #: ../root/script/config/administration.js:202
 #: ../root/script/config/administration.js:217
+#: ../root/script/config/administration.js:779
+#: ../root/script/config/administration.js:796
+#: ../root/script/config/administration.js:834
+#: ../root/script/config/administration.js:847
+#: ../root/script/config/administration.js:889
+#: ../root/script/config/administration.js:906
+#: ../root/script/config/administration.js:1484
+#: ../root/script/config/administration.js:1486
+#: ../root/script/config/administration.js:1660
+#: ../root/script/config/administration.js:1674
+#: ../root/script/config/administration.js:1676
+#: ../root/script/config/administration.js:1945
+#: ../root/script/config/administration.js:1953
+#: ../root/script/config/administration.js:1962
+#: ../root/script/config/administration.js:1970
+#: ../root/script/config/administration.js:1978
+#: ../root/script/config/administration.js:1986
+#: ../root/script/config/administration.js:1997
 msgid "Failed"
 msgstr ""
 
 #: ../root/script/config/administration.js:202 Server side msg
+#: ../root/script/config/administration.js:1486
 msgid "Upload Skin Failed"
 msgstr ""
 
@@ -90,4 +135,762 @@ msgstr ""
 
 #: Server side msg
 msgid "A skin with the same name already exists"
+msgstr ""
+
+#: ../root/script/config/administration.js:121
+msgid "read-only"
+msgstr ""
+
+#: ../root/script/config/administration.js:140
+msgid "Admin Accounts"
+msgstr ""
+
+#: ../root/script/config/administration.js:148
+msgid "[no login]"
+msgstr ""
+
+#: ../root/script/config/administration.js:149
+msgid "[no description]"
+msgstr ""
+
+#: ../root/script/config/administration.js:151
+msgid "[no email]"
+msgstr ""
+
+#: ../root/script/config/administration.js:185
+msgid "login"
+msgstr ""
+
+#: ../root/script/config/administration.js:190
+#: ../root/script/config/administration.js:235
+msgid "The login name cannot be blank."
+msgstr ""
+
+#: ../root/script/config/administration.js:194
+msgid "description"
+msgstr ""
+
+#: ../root/script/config/administration.js:202
+msgid "email"
+msgstr ""
+
+#: ../root/script/config/administration.js:210
+msgid "password"
+msgstr ""
+
+#: ../root/script/config/administration.js:216
+msgid "change password"
+msgstr ""
+
+#: ../root/script/config/administration.js:233
+msgid "Login"
+msgstr ""
+
+#: ../root/script/config/administration.js:239
+msgid "Description"
+msgstr ""
+
+#: ../root/script/config/administration.js:244
+msgid "Read-only"
+msgstr ""
+
+#: ../root/script/config/administration.js:247
+msgid "Email"
+msgstr ""
+
+#: ../root/script/config/administration.js:253
+#: ../root/script/config/administration.js:271
+msgid "Password"
+msgstr ""
+
+#: ../root/script/config/administration.js:256
+#: ../root/script/config/administration.js:274
+#, python-format
+msgid "The password is shorter than the minimum %d characters."
+msgstr ""
+
+#: ../root/script/config/administration.js:263
+#: ../root/script/config/administration.js:281
+msgid "Confirm Password"
+msgstr ""
+
+#: ../root/script/config/administration.js:286
+msgid "External Administration"
+msgstr ""
+
+#: ../root/script/config/administration.js:291
+msgid "Enable External Administration."
+msgstr ""
+
+#: ../root/script/config/administration.js:304
+msgid "Enable External Report Viewing."
+msgstr ""
+
+#: ../root/script/config/administration.js:317
+msgid "Enable External Quarantine Viewing."
+msgstr ""
+
+#: ../root/script/config/administration.js:332
+msgid "External HTTPS port"
+msgstr ""
+
+#: ../root/script/config/administration.js:341
+#: ../root/script/config/administration.js:580
+#: ../root/script/config/administration.js:1228
+#: ../root/script/config/administration.js:1289
+msgid "You must provide a valid port."
+msgstr ""
+
+#: ../root/script/config/administration.js:355
+msgid "Allow external access from any IP address."
+msgstr ""
+
+#: ../root/script/config/administration.js:372
+msgid "Restrict external access to these external IP address(es)."
+msgstr ""
+
+#: ../root/script/config/administration.js:396
+#: ../root/script/config/administration.js:563
+msgid "Address"
+msgstr ""
+
+#: ../root/script/config/administration.js:401
+msgid "A \"IP Address\" must be specified."
+msgstr ""
+
+#: ../root/script/config/administration.js:416
+msgid "A \"Netmask\" must be specified."
+msgstr ""
+
+#: ../root/script/config/administration.js:423
+msgid "Internal Administration"
+msgstr ""
+
+#: ../root/script/config/administration.js:427
+msgid "Enable HTTP administration inside the local network (default)"
+msgstr ""
+
+#: ../root/script/config/administration.js:440
+msgid "Disable HTTP administration inside the local network"
+msgstr ""
+
+#: ../root/script/config/administration.js:453
+msgid "Note: HTTPS administration is always enabled internally"
+msgstr ""
+
+#: ../root/script/config/administration.js:476
+msgid "Public Address"
+msgstr ""
+
+#: ../root/script/config/administration.js:484
+msgid ""
+"The Public Address is the address or hostname that provides a public "
+"routable address for the "
+msgstr ""
+
+#: ../root/script/config/administration.js:485
+msgid ""
+"Untangle Server. This address will be used in emails sent by the Untangle "
+"Server to link back to "
+msgstr ""
+
+#: ../root/script/config/administration.js:486
+msgid ""
+"services hosted on the Untangle Server such as Quarantine Digests and "
+"OpenVPN Client emails."
+msgstr ""
+
+#: ../root/script/config/administration.js:491
+msgid "Use External IP address (default)"
+msgstr ""
+
+#: ../root/script/config/administration.js:507
+msgid "This works if your Untangle Server has a public static IP address."
+msgstr ""
+
+#: ../root/script/config/administration.js:512
+msgid "Use Hostname"
+msgstr ""
+
+#: ../root/script/config/administration.js:528
+msgid ""
+"This is recommended if the Untangle Server's fully qualified domain name "
+"looks up to its IP address both internally and externally."
+msgstr ""
+
+#: ../root/script/config/administration.js:532
+#, python-format
+msgid "Current Hostname: %s%s%s"
+msgstr ""
+
+#: ../root/script/config/administration.js:537
+msgid "Use Manually Specified IP"
+msgstr ""
+
+#: ../root/script/config/administration.js:553
+msgid ""
+"This is recommended if the Untangle Server is installed behind another "
+"firewall with a port forward from the specified IP that redirects traffic to "
+"the Untangle Server."
+msgstr ""
+
+#: ../root/script/config/administration.js:568
+#: ../root/script/config/administration.js:1800
+msgid "You must provide a valid IP Address."
+msgstr ""
+
+#: ../root/script/config/administration.js:572
+#: ../root/script/config/administration.js:1220
+#: ../root/script/config/administration.js:1281
+msgid "Port"
+msgstr ""
+
+#: ../root/script/config/administration.js:596
+msgid "Certificates"
+msgstr ""
+
+#: ../root/script/config/administration.js:605
+msgid "Status"
+msgstr ""
+
+#: ../root/script/config/administration.js:608
+msgid "Current Certificate Type"
+msgstr ""
+
+#: ../root/script/config/administration.js:611
+#: ../root/script/config/administration.js:1070
+msgid "Self-Signed"
+msgstr ""
+
+#: ../root/script/config/administration.js:611
+#: ../root/script/config/administration.js:1070
+msgid "Signed / Trusted"
+msgstr ""
+
+#: ../root/script/config/administration.js:619
+msgid "Valid starting"
+msgstr ""
+
+#: ../root/script/config/administration.js:627
+msgid "Valid until"
+msgstr ""
+
+#: ../root/script/config/administration.js:635
+msgid "Subject DN"
+msgstr ""
+
+#: ../root/script/config/administration.js:643
+msgid "Issuer DN"
+msgstr ""
+
+#: ../root/script/config/administration.js:651
+msgid "Generation"
+msgstr ""
+
+#: ../root/script/config/administration.js:664
+#, python-format
+msgid "Generate a %sSelf-Signed Certificate%s"
+msgstr ""
+
+#: ../root/script/config/administration.js:676
+msgid ""
+"Click this button if you have been using a signed certificate, and you want "
+"to go back to using a self-signed certificate."
+msgstr ""
+
+#: ../root/script/config/administration.js:687
+#, python-format
+msgid "Generate a %sCertificate Signature Request%s"
+msgstr ""
+
+#: ../root/script/config/administration.js:699
+msgid ""
+"Click this button to generate a certificate signature request, which you can "
+"then copy and paste for use by certificate authorities such as Thawte, "
+"Verisign, etc."
+msgstr ""
+
+#: ../root/script/config/administration.js:710
+#, python-format
+msgid "Import a %sSigned Certificate%s"
+msgstr ""
+
+#: ../root/script/config/administration.js:722
+msgid ""
+"Click this button to import a signed certificate which has been generated by "
+"a certificate authority, and was based on a previous signature request from "
+"Untangle."
+msgstr ""
+
+#: ../root/script/config/administration.js:746
+#: ../root/script/config/administration.js:934
+msgid "Generate a Self-Signed Certificate"
+msgstr ""
+
+#: ../root/script/config/administration.js:751
+#: ../root/script/config/administration.js:829
+msgid "Generating Certificate..."
+msgstr ""
+
+#: ../root/script/config/administration.js:751
+#: ../root/script/config/administration.js:829
+#: ../root/script/config/administration.js:880
+#: ../root/script/config/administration.js:1935
+msgid "Please wait"
+msgstr ""
+
+#: ../root/script/config/administration.js:759
+#: ../root/script/config/administration.js:954
+msgid "You must specify an organization."
+msgstr ""
+
+#: ../root/script/config/administration.js:760
+#: ../root/script/config/administration.js:961
+msgid "You must specify an organization unit."
+msgstr ""
+
+#: ../root/script/config/administration.js:761
+#: ../root/script/config/administration.js:968
+msgid "You must specify a city."
+msgstr ""
+
+#: ../root/script/config/administration.js:762
+#: ../root/script/config/administration.js:975
+msgid "You must specify a state."
+msgstr ""
+
+#: ../root/script/config/administration.js:763
+#: ../root/script/config/administration.js:982
+msgid "You must specify a country."
+msgstr ""
+
+#: ../root/script/config/administration.js:789
+msgid "Certificate Successfully Generated"
+msgstr ""
+
+#: ../root/script/config/administration.js:796
+msgid "Error generating self-signed certificate"
+msgstr ""
+
+#: ../root/script/config/administration.js:824
+#: ../root/script/config/administration.js:1002
+msgid "Generate a Certificate Signature Request"
+msgstr ""
+
+#: ../root/script/config/administration.js:840
+msgid "Certificate Signature Request Successfully Generated"
+msgstr ""
+
+#: ../root/script/config/administration.js:847
+msgid "Error generating certificate signature request"
+msgstr ""
+
+#: ../root/script/config/administration.js:875
+#: ../root/script/config/administration.js:1034
+msgid "Import Signed Certificate"
+msgstr ""
+
+#: ../root/script/config/administration.js:880
+msgid "Importing Certificate..."
+msgstr ""
+
+#: ../root/script/config/administration.js:899
+msgid "Certificate Successfully Imported"
+msgstr ""
+
+#: ../root/script/config/administration.js:906
+msgid "Error importing certificate"
+msgstr ""
+
+#: ../root/script/config/administration.js:945
+msgid ""
+"Please fill out the following fields, which will be used to generate your "
+"self-signed certificate."
+msgstr ""
+
+#: ../root/script/config/administration.js:950
+msgid "Organization"
+msgstr ""
+
+#: ../root/script/config/administration.js:957
+msgid "Organization Unit"
+msgstr ""
+
+#: ../root/script/config/administration.js:964
+msgid "City"
+msgstr ""
+
+#: ../root/script/config/administration.js:971
+msgid "State"
+msgstr ""
+
+#: ../root/script/config/administration.js:978
+msgid "Country"
+msgstr ""
+
+#: ../root/script/config/administration.js:985
+msgid "Hostname"
+msgstr ""
+
+#: ../root/script/config/administration.js:1010
+msgid "Click the Proceed button to generate a signature below.  "
+msgstr ""
+
+#: ../root/script/config/administration.js:1011
+msgid "Copy the signature (Control-C), and paste it into the necessary form "
+msgstr ""
+
+#: ../root/script/config/administration.js:1012
+msgid "from your Certificate Authority (Verisign, Thawte, etc.)."
+msgstr ""
+
+#: ../root/script/config/administration.js:1039
+msgid "When your Certificate Authority (Verisign, Thawte, etc.) "
+msgstr ""
+
+#: ../root/script/config/administration.js:1040
+msgid "has sent your Signed Certificate, copy and paste it below (Control-V), "
+msgstr ""
+
+#: ../root/script/config/administration.js:1041
+msgid "then press the Proceed button."
+msgstr ""
+
+#: ../root/script/config/administration.js:1052
+msgid "If your Certificate Authority (Verisign, Thawte, etc.) "
+msgstr ""
+
+#: ../root/script/config/administration.js:1053
+msgid "also send you an Intermediate Certificate, paste it below.  "
+msgstr ""
+
+#: ../root/script/config/administration.js:1054
+msgid "Otherwise, do not paste anything below."
+msgstr ""
+
+#: ../root/script/config/administration.js:1083
+msgid "Monitoring"
+msgstr ""
+
+#: ../root/script/config/administration.js:1092
+msgid "SNMP"
+msgstr ""
+
+#: ../root/script/config/administration.js:1095
+#, python-format
+msgid "%sDisable%s SNMP Monitoring. (This is the default setting.)"
+msgstr ""
+
+#: ../root/script/config/administration.js:1118
+#, python-format
+msgid "%sEnable%s SNMP Monitoring."
+msgstr ""
+
+#: ../root/script/config/administration.js:1144
+#: ../root/script/config/administration.js:1204
+msgid "Community"
+msgstr ""
+
+#: ../root/script/config/administration.js:1149
+#: ../root/script/config/administration.js:1832
+msgid "An SNMP \"Community\" must be specified."
+msgstr ""
+
+#: ../root/script/config/administration.js:1152
+msgid "System Contact"
+msgstr ""
+
+#: ../root/script/config/administration.js:1159
+msgid "System Location"
+msgstr ""
+
+#: ../root/script/config/administration.js:1168
+#, python-format
+msgid ""
+"%sDisable Traps%s so no trap events are generated.  (This is the default "
+"setting.)"
+msgstr ""
+
+#: ../root/script/config/administration.js:1186
+#, python-format
+msgid "%sEnable Traps%s so trap events are sent when they are generated."
+msgstr ""
+
+#: ../root/script/config/administration.js:1209
+#: ../root/script/config/administration.js:1847
+msgid "An Trap \"Community\" must be specified."
+msgstr ""
+
+#: ../root/script/config/administration.js:1212
+#: ../root/script/config/administration.js:1273
+msgid "Host"
+msgstr ""
+
+#: ../root/script/config/administration.js:1217
+#: ../root/script/config/administration.js:1858
+msgid "An Trap \"Host\" must be specified."
+msgstr ""
+
+#: ../root/script/config/administration.js:1232
+msgid "Syslog"
+msgstr ""
+
+#: ../root/script/config/administration.js:1235
+#, python-format
+msgid "%sDisable%s Syslog Monitoring. (This is the default setting.)"
+msgstr ""
+
+#: ../root/script/config/administration.js:1254
+#, python-format
+msgid "%sEnable%s Syslog Monitoring."
+msgstr ""
+
+#: ../root/script/config/administration.js:1278
+#: ../root/script/config/administration.js:1902
+msgid "A \"Host\" must be specified."
+msgstr ""
+
+#: ../root/script/config/administration.js:1296
+msgid "Facility"
+msgstr ""
+
+#: ../root/script/config/administration.js:1303
+msgid "kernel"
+msgstr ""
+
+#: ../root/script/config/administration.js:1304
+msgid "user"
+msgstr ""
+
+#: ../root/script/config/administration.js:1305
+msgid "mail"
+msgstr ""
+
+#: ../root/script/config/administration.js:1306
+msgid "daemon"
+msgstr ""
+
+#: ../root/script/config/administration.js:1307
+msgid "security 0"
+msgstr ""
+
+#: ../root/script/config/administration.js:1308
+msgid "syslog"
+msgstr ""
+
+#: ../root/script/config/administration.js:1309
+msgid "printer"
+msgstr ""
+
+#: ../root/script/config/administration.js:1310
+msgid "news"
+msgstr ""
+
+#: ../root/script/config/administration.js:1311
+msgid "uucp"
+msgstr ""
+
+#: ../root/script/config/administration.js:1312
+msgid "clock 0"
+msgstr ""
+
+#: ../root/script/config/administration.js:1313
+msgid "security 1"
+msgstr ""
+
+#: ../root/script/config/administration.js:1314
+msgid "ftp"
+msgstr ""
+
+#: ../root/script/config/administration.js:1315
+msgid "ntp"
+msgstr ""
+
+#: ../root/script/config/administration.js:1316
+msgid "log audit"
+msgstr ""
+
+#: ../root/script/config/administration.js:1317
+msgid "log alert"
+msgstr ""
+
+#: ../root/script/config/administration.js:1318
+msgid "clock 1"
+msgstr ""
+
+#: ../root/script/config/administration.js:1319
+msgid "local 0"
+msgstr ""
+
+#: ../root/script/config/administration.js:1320
+msgid "local 1"
+msgstr ""
+
+#: ../root/script/config/administration.js:1321
+msgid "local 2"
+msgstr ""
+
+#: ../root/script/config/administration.js:1322
+msgid "local 3"
+msgstr ""
+
+#: ../root/script/config/administration.js:1323
+msgid "local 4"
+msgstr ""
+
+#: ../root/script/config/administration.js:1324
+msgid "local 5"
+msgstr ""
+
+#: ../root/script/config/administration.js:1325
+msgid "local 6"
+msgstr ""
+
+#: ../root/script/config/administration.js:1326
+msgid "local 7"
+msgstr ""
+
+#: ../root/script/config/administration.js:1337
+msgid "Threshold"
+msgstr ""
+
+#: ../root/script/config/administration.js:1344
+msgid "emergency"
+msgstr ""
+
+#: ../root/script/config/administration.js:1345
+msgid "alert"
+msgstr ""
+
+#: ../root/script/config/administration.js:1346
+msgid "critical"
+msgstr ""
+
+#: ../root/script/config/administration.js:1347
+msgid "error"
+msgstr ""
+
+#: ../root/script/config/administration.js:1348
+msgid "warning"
+msgstr ""
+
+#: ../root/script/config/administration.js:1349
+msgid "notice"
+msgstr ""
+
+#: ../root/script/config/administration.js:1350
+msgid "informational"
+msgstr ""
+
+#: ../root/script/config/administration.js:1351
+msgid "debug"
+msgstr ""
+
+#: ../root/script/config/administration.js:1500
+msgid "Branding"
+msgstr ""
+
+#: ../root/script/config/administration.js:1528
+msgid ""
+"The Branding Settings are used to set the logo and contact information that "
+"will be seen by users (e.g. reports)."
+msgstr ""
+
+#: ../root/script/config/administration.js:1531
+msgid "Logo"
+msgstr ""
+
+#: ../root/script/config/administration.js:1596
+msgid "Contact Information"
+msgstr ""
+
+#: ../root/script/config/administration.js:1602
+msgid "Company Name"
+msgstr ""
+
+#: ../root/script/config/administration.js:1615
+msgid "Company URL"
+msgstr ""
+
+#: ../root/script/config/administration.js:1628
+msgid "Contact Name"
+msgstr ""
+
+#: ../root/script/config/administration.js:1641
+msgid "Contact Email"
+msgstr ""
+
+#: ../root/script/config/administration.js:1660
+msgid "Please select an image to upload."
+msgstr ""
+
+#: ../root/script/config/administration.js:1666
+msgid "Please wait while your logo image is uploaded..."
+msgstr ""
+
+#: ../root/script/config/administration.js:1669
+msgid "Upload Logo Succeeded"
+msgstr ""
+
+#: ../root/script/config/administration.js:1676
+msgid "Upload Logo Failed"
+msgstr ""
+
+#: ../root/script/config/administration.js:1687
+#: ../root/script/config/administration.js:1713
+#: ../root/script/config/administration.js:1730
+#: ../root/script/config/administration.js:1740
+#: ../root/script/config/administration.js:1755
+#: ../root/script/config/administration.js:1768
+#: ../root/script/config/administration.js:1778
+#: ../root/script/config/administration.js:1800
+#: ../root/script/config/administration.js:1810
+#: ../root/script/config/administration.js:1832
+#: ../root/script/config/administration.js:1847
+#: ../root/script/config/administration.js:1858
+#: ../root/script/config/administration.js:1869
+#: ../root/script/config/administration.js:1902
+#: ../root/script/config/administration.js:1912
+msgid "Warning"
+msgstr ""
+
+#: ../root/script/config/administration.js:1713
+#, python-format
+msgid "The login name: \"%s\" in row: %d  already exists."
+msgstr ""
+
+#: ../root/script/config/administration.js:1730
+msgid "There must always be at least one valid account."
+msgstr ""
+
+#: ../root/script/config/administration.js:1740
+msgid "There must always be at least one non-read-only (writable) account."
+msgstr ""
+
+#: ../root/script/config/administration.js:1755
+#: ../root/script/config/administration.js:1810
+#: ../root/script/config/administration.js:1869
+#: ../root/script/config/administration.js:1912
+#, python-format
+msgid "The port must be an integer number between %d and %d."
+msgstr ""
+
+#: ../root/script/config/administration.js:1768
+msgid "Invalid External Remote Administration \"IP Address\" specified."
+msgstr ""
+
+#: ../root/script/config/administration.js:1778
+msgid "Invalid External Remote Administration \"Netmask\" specified."
+msgstr ""
+
+#: ../root/script/config/administration.js:1935
+msgid "Saving..."
+msgstr ""
+
+#: ../root/script/config/administration.js:2040
+msgid "Cancel"
+msgstr ""
+
+#: ../root/script/config/administration.js:2049
+msgid "Proceed"
 msgstr ""
