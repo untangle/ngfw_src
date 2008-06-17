@@ -31,9 +31,11 @@ if (!Ung.hasResource["Ung.Administration"]) {
             this.buildCertificates();
             this.buildMonitoring();
             this.buildSkins();
+            this.buildBranding();
+            
             // builds the tab panel with the tabs
             this.buildTabPanel([this.panelAdministration, this.panelPublicAddress, this.panelCertificates, this.panelMonitoring,
-                    this.panelSkins]);
+                    this.panelSkins, this.panelBranding]);
             this.tabs.activate(this.panelAdministration);
 
         },
@@ -92,6 +94,13 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 this.rpc.hostname = rpc.networkManager.getHostname();
             }
             return this.rpc.hostname;
+        },
+        // get branding settings
+        getBrandingBaseSettings : function(forceReload) {
+            if (forceReload || this.rpc.brandingBaseSettings === undefined) {
+                this.rpc.brandingBaseSettings = main.getBrandingManager().getBaseSettings();
+            }
+            return this.rpc.brandingBaseSettings;
         },
         
         buildAdministration : function() {
@@ -1469,6 +1478,197 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 }
             });
         },
+
+        buildBranding : function() {
+            var brandingBaseSettings = this.getBrandingBaseSettings();
+            this.panelBranding = new Ext.Panel({
+                // private fields
+                name : 'Branding',
+                parentId : this.getId(),
+                title : this.i18n._('Branding'),
+                layout : "form",
+                bodyStyle : 'padding:5px 5px 0px 5px;',
+                autoScroll : true,
+                defaults : {
+                    xtype : 'fieldset',
+                    autoHeight : true,
+                    buttonAlign : 'left'
+                },
+                enableFileUpload : function(enabled) {
+                    try {
+                        var formItem = this.items.get(1).items.get(2);
+                        if (enabled) {
+                            formItem.items.get(0).enable();
+                            formItem.buttons[0].enable();
+                        } else {
+                            formItem.items.get(0).disable();
+                            formItem.buttons[0].disable();
+
+                        }
+                    } catch (e) {
+                    }
+                },
+                items : [{
+                    items : [{
+                        bodyStyle : 'padding:0px 0px 5px 0px;',
+                        border : false,
+                        html : this.i18n
+                                ._("The Branding Settings are used to set the logo and contact information that will be seen by users (e.g. reports).")
+                    }]
+                }, {
+                    title : this.i18n._('Logo'),
+                    items : [{
+                        xtype : 'radio',
+                        name : 'Logo',
+                        hideLabel : true,
+                        boxLabel : 'Use Default Logo',
+                        value : 'default',
+                        checked : brandingBaseSettings.defaultLogo,
+                        listeners : {
+                            "check" : {
+                                fn : function(elem, checked) {
+                                    if (checked) {
+                                        this.getBrandingBaseSettings().defaultLogo = true;
+                                        this.panelBranding.enableFileUpload(false);
+                                    }
+                                }.createDelegate(this)
+                            }
+                        }
+                    }, {
+                        xtype : 'radio',
+                        name : 'Logo',
+                        hideLabel : true,
+                        boxLabel : 'Use Custom Logo',
+                        value : 'custom',
+                        checked : !brandingBaseSettings.defaultLogo,
+                        listeners : {
+                            "check" : {
+                                fn : function(elem, checked) {
+                                    if (checked) {
+                                        this.getBrandingBaseSettings().defaultLogo = false;
+                                        this.panelBranding.enableFileUpload(true);
+                                    }
+                                }.createDelegate(this)
+                            }
+                        }
+                    }, {
+                        fileUpload : true,
+                        xtype : 'form',
+                        bodyStyle : 'padding:0px 0px 0px 25px',
+                        buttonAlign : 'left',
+                        id : 'upload_logo_form',
+                        url : 'upload',
+                        border : false,
+                        items : [{
+                            fieldLabel : 'File',
+                            name : 'File',
+                            inputType : 'file',
+                            xtype : 'textfield',
+                            disabled : brandingBaseSettings.defaultLogo,
+                            allowBlank : false
+                        }, {
+                            xtype : 'hidden',
+                            name : 'type',
+                            value : 'logo'
+                        }],
+                        buttons : [{
+                            text : this.i18n._("Upload"),
+                            handler : function() {
+                                this.panelBranding.onUpload();
+                            }.createDelegate(this),
+                            disabled : (brandingBaseSettings.defaultLogo)
+                        }]
+                    }]
+
+                }, {
+                    title : this.i18n._('Contact Information'),
+                    defaults : {
+                        width : 300
+                    },
+                    items : [{
+                        xtype : 'textfield',
+                        fieldLabel : this.i18n._('Company Name'),
+                        name : 'Company Name',
+                        allowBlank : true,
+                        value : brandingBaseSettings.companyName,
+                        listeners : {
+                            "change" : {
+                                fn : function(elem, newValue) {
+                                    this.getBrandingBaseSettings().companyName = newValue;
+                                }.createDelegate(this)
+                            }
+                        }
+                    }, {
+                        xtype : 'textfield',
+                        fieldLabel : this.i18n._('Company URL'),
+                        name : 'Company URL',
+                        allowBlank : true,
+                        value : brandingBaseSettings.companyUrl,
+                        listeners : {
+                            "change" : {
+                                fn : function(elem, newValue) {
+                                    this.getBrandingBaseSettings().companyUrl = newValue;
+                                }.createDelegate(this)
+                            }
+                        }
+                    }, {
+                        xtype : 'textfield',
+                        fieldLabel : this.i18n._('Contact Name'),
+                        name : 'Contact Name',
+                        allowBlank : true,
+                        value : brandingBaseSettings.contactName,
+                        listeners : {
+                            "change" : {
+                                fn : function(elem, newValue) {
+                                    this.getBrandingBaseSettings().contactName = newValue;
+                                }.createDelegate(this)
+                            }
+                        }
+                    }, {
+                        xtype : 'textfield',
+                        fieldLabel : this.i18n._('Contact Email'),
+                        name : 'Contact Email',
+                        allowBlank : true,
+                        value : brandingBaseSettings.contactEmail,
+                        listeners : {
+                            "change" : {
+                                fn : function(elem, newValue) {
+                                    this.getBrandingBaseSettings().contactEmail = newValue;
+                                }.createDelegate(this)
+                            }
+                        }
+                    }]
+
+                }],
+                onUpload : function() {
+                    var prova = Ext.getCmp('upload_logo_form');
+                    var cmp = Ext.getCmp(this.parentId);
+                    var fileText = prova.items.get(0);
+                    if (fileText.getValue().length == 0) {
+                        Ext.MessageBox.alert(cmp.i18n._("Failed"), cmp.i18n._('Please select an image to upload.'));
+                        return false;
+                    }
+                    var form = prova.getForm();
+                    form.submit({
+                        parentId : cmp.getId(),
+                        waitMsg : cmp.i18n._('Please wait while your logo image is uploaded...'),
+                        success : function(form, action) {
+                            var cmp = Ext.getCmp(action.options.parentId);
+                            Ext.MessageBox.alert(cmp.i18n._("Succeeded"), cmp.i18n._("Upload Logo Succeeded"));
+                        },
+                        failure : function(form, action) {
+                            var cmp = Ext.getCmp(action.options.parentId);
+                            if (action.result && action.result.msg) {
+                                Ext.MessageBox.alert(cmp.i18n._("Failed"), cmp.i18n._(action.result.msg));
+                            } else {
+                                Ext.MessageBox.alert(cmp.i18n._("Failed"), cmp.i18n._("Upload Logo Failed"));
+                            }
+                        }
+                    });
+
+                }
+            });
+        },
         
         isBlankField : function (cmp, errMsg) {
             if (cmp.getValue().length == 0) {
@@ -1719,7 +1919,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
         // save function
         saveAction : function() {
             if (this.validate()) {
-            	this.saveSemaphore = 6;
+            	this.saveSemaphore = 7;
                 Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
                 
                 var listAdministration=this.gridAdminAccounts.getFullSaveList();
@@ -1776,6 +1976,16 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     }
                     this.afterSave();
                 }.createDelegate(this), this.getSkinSettings());
+                
+                main.getBrandingManager().setBaseSettings(function(result, exception) {
+                    Ext.MessageBox.hide();
+                    if (exception) {
+                        Ext.MessageBox.alert(i18n._("Failed"), exception.message);
+                        return;
+                    }
+                    this.cancelAction();
+                }.createDelegate(this), this.getBrandingBaseSettings());
+                
             }
         },
         afterSave : function() {
@@ -1807,6 +2017,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
             }
         },
         initButtons : function() {
+            var settingsCmp = Ext.getCmp(this.certPanel.parentId);
             this.subCmps.push(new Ext.Button({
                 name : 'Cancel',
                 renderTo : 'button_inner_right_' + this.getId(),
@@ -1820,7 +2031,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 name : 'Proceed',
                 renderTo : 'button_margin_right_' + this.getId(),
                 iconCls : 'saveIcon',
-                text : i18n._('Proceed'),
+                text : settingsCmp.i18n._('Proceed'),
                 handler : function() {
                     this.proceedAction();
                 }.createDelegate(this)

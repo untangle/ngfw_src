@@ -220,6 +220,13 @@ Ung.Main.prototype = {
         return rpc.appServerManager;
     },
 	
+    getBrandingManager : function(forceReload) {
+        if (forceReload || rpc.brandingManager === undefined) {
+            rpc.brandingManager = rpc.jsonrpc.RemoteUvmContext.brandingManager()
+        }
+        return rpc.brandingManager;
+    },
+    
 	unactivateNode: function(mackageDesc) {
 		rpc.nodeManager.nodeInstances(function (result, exception) {
 				if(exception) { 
