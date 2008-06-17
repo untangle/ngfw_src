@@ -153,9 +153,13 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
 
     public RackView getRackView(Policy p)
     {
-        List<MackageDesc> uninstalled = new ArrayList<MackageDesc>();
+        NodeManagerImpl tm = (NodeManagerImpl)LocalUvmContextFactory
+            .context().nodeManager();
+        List<NodeDesc> instances = tm.visibleNodes(p);
 
         // XXX sorting?
+        // XXX filter out instances on left...
+        List<MackageDesc> uninstalled = new ArrayList<MackageDesc>();
         for (MackageDesc md : uninstalled()) {
             if (md.getType() == MackageDesc.Type.LIB_ITEM
                 && 0 <= md.getViewPosition()
@@ -164,10 +168,6 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
                 uninstalled.add(md);
             }
         }
-
-        NodeManagerImpl tm = (NodeManagerImpl)LocalUvmContextFactory
-            .context().nodeManager();
-        List<NodeDesc> instances = tm.visibleNodes(p);
 
         return new RackView(uninstalled, instances);
     }
@@ -793,6 +793,7 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
                                                  Map<String, String> instList)
         throws IOException
     {
+        Map<String, List<String>> trials = new HashMap<String, List<String>>();
         Map<String, MackageDesc> pkgs = new HashMap<String, MackageDesc>();
 
         BufferedReader br = new BufferedReader(new InputStreamReader(is));

@@ -84,14 +84,14 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
         logger = mPipe.sessionLoggerTCP();
 
         Counters c = mPipe.node().getCounters();
-        s2nChunks = c.addMetric("s2nChunks", "Server to Node Chunks", null);
-        c2nChunks = c.addMetric("c2nChunks", "Client to Node Chunks", null);
-        n2sChunks = c.addMetric("n2sChunks", "Node to Server Chunks", null);
-        n2cChunks = c.addMetric("n2cChunks", "Node to Client Chunks", null);
-        s2nBytes = c.addMetric("s2nBytes", "Server to Node Bytes", "byte");
-        c2nBytes = c.addMetric("c2nBytes", "Client to Node Bytes", "byte");
-        n2sBytes = c.addMetric("n2sBytes", "Node to Server Bytes", "byte");
-        n2cBytes = c.addMetric("n2cBytes", "Node to Client Bytes", "byte");
+        s2nChunks = c.getBlingBlinger("s2nChunks");
+        c2nChunks = c.getBlingBlinger("c2nChunks");
+        n2sChunks = c.getBlingBlinger("n2sChunks");
+        n2cChunks = c.getBlingBlinger("n2cChunks");
+        s2nBytes = c.getBlingBlinger("s2nBytes");
+        c2nBytes = c.getBlingBlinger("c2nBytes");
+        n2sBytes = c.getBlingBlinger("n2sBytes");
+        n2cBytes = c.getBlingBlinger("n2cBytes");
     }
 
     public int serverReadBufferSize() {

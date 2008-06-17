@@ -115,6 +115,7 @@ public class IpsSettings implements Serializable
     {
         return this.rules;
     }
+
     public void setRules(Set<IpsRule> rules) { this.rules = rules; }
 
     @OneToMany(fetch=FetchType.EAGER)
