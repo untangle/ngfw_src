@@ -17,6 +17,7 @@
  */
 
 package com.untangle.uvm.engine;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -793,7 +794,6 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
                                                  Map<String, String> instList)
         throws IOException
     {
-        Map<String, List<String>> trials = new HashMap<String, List<String>>();
         Map<String, MackageDesc> pkgs = new HashMap<String, MackageDesc>();
 
         BufferedReader br = new BufferedReader(new InputStreamReader(is));
