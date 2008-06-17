@@ -637,7 +637,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
             if (tricklePercentCmp.isValid()) {
 				return true;
 			} else {
-				Ext.MessageBox.alert('Warning', this.i18n._("Scan trickle rate should be between 1 and 99!"),
+				Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._("Scan trickle rate should be between 1 and 99!"),
                     function () {
                         this.tabs.activate(this.panelWeb);
                         tricklePercentCmp.focus(true);

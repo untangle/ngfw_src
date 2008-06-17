@@ -987,7 +987,7 @@ if (!Ung.hasResource["Ung.System"]) {
             if (maxUriLengthCmp.isValid()) {
                 return true;
             } else {
-                Ext.MessageBox.alert('Warning', this.i18n._("Max URI Length should be between 1024 and 4096!"),
+                Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._("Max URI Length should be between 1024 and 4096!"),
                     function () {
                         this.tabs.activate(this.panelProtocolSettings);
                         maxUriLengthCmp.focus(true);
@@ -1002,7 +1002,7 @@ if (!Ung.hasResource["Ung.System"]) {
             if (maxHeaderLengthCmp.isValid()) {
                 return true;
             } else {
-                Ext.MessageBox.alert('Warning', this.i18n._("Max Header Length should be between 1024 and 8192!"),
+                Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._("Max Header Length should be between 1024 and 8192!"),
                     function () {
                         this.tabs.activate(this.panelProtocolSettings);
                         maxHeaderLengthCmp.focus(true);
@@ -1017,7 +1017,7 @@ if (!Ung.hasResource["Ung.System"]) {
             if (smtpTimeoutCmp.isValid()) {
                 return true;
             } else {
-                Ext.MessageBox.alert('Warning', this.i18n._("SMTP timeout should be between 0 and 86400!"),
+                Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._("SMTP timeout should be between 0 and 86400!"),
                     function () {
                         this.tabs.activate(this.panelProtocolSettings);
                         smtpTimeoutCmp.focus(true);
@@ -1032,7 +1032,7 @@ if (!Ung.hasResource["Ung.System"]) {
             if (popTimeoutCmp.isValid()) {
                 return true;
             } else {
-                Ext.MessageBox.alert('Warning', this.i18n._("POP timeout should be between 0 and 86400!"),
+                Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._("POP timeout should be between 0 and 86400!"),
                     function () {
                         this.tabs.activate(this.panelProtocolSettings);
                         popTimeoutCmp.focus(true);
@@ -1047,7 +1047,7 @@ if (!Ung.hasResource["Ung.System"]) {
             if (imapTimeoutCmp.isValid()) {
                 return true;
             } else {
-                Ext.MessageBox.alert('Warning', this.i18n._("IMAP timeout should be between 0 and 86400!"),
+                Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._("IMAP timeout should be between 0 and 86400!"),
                     function () {
                         this.tabs.activate(this.panelProtocolSettings);
                         imapTimeoutCmp.focus(true);

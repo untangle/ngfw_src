@@ -2164,7 +2164,7 @@ Ung.RowEditorWindow = Ext.extend(Ung.UpdateWindow, {
             }
             this.hide();
         } else {
-            Ext.MessageBox.alert('Warning', i18n._("The form is not valid!"));
+            Ext.MessageBox.alert(i18n._('Warning'), i18n._("The form is not valid!"));
         }
     },
     cancelAction : function() {
