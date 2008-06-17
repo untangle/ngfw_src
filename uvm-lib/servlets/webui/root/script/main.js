@@ -223,6 +223,13 @@ Ung.Main.prototype = {
         return rpc.brandingManager;
     },
     
+    getLicenseManager : function(forceReload) {
+        if (forceReload || rpc.licenseManager === undefined) {
+            rpc.licenseManager = rpc.jsonrpc.RemoteUvmContext.licenseManager()
+        }
+        return rpc.licenseManager;
+    },
+    
 	unactivateNode: function(mackageDesc) {
 		rpc.nodeManager.nodeInstances(function (result, exception) {
 				if(exception) { 

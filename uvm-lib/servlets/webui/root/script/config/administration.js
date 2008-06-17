@@ -31,11 +31,16 @@ if (!Ung.hasResource["Ung.Administration"]) {
             this.buildCertificates();
             this.buildMonitoring();
             this.buildSkins();
-            this.buildBranding();
+            if (!this.isBrandingExpired()) {
+                this.buildBranding();
+            }
             
             // builds the tab panel with the tabs
-            this.buildTabPanel([this.panelAdministration, this.panelPublicAddress, this.panelCertificates, this.panelMonitoring,
-                    this.panelSkins, this.panelBranding]);
+            var adminTabs = [this.panelAdministration, this.panelPublicAddress, this.panelCertificates, this.panelMonitoring, this.panelSkins];
+            if (!this.isBrandingExpired()) {
+                adminTabs.push(this.panelBranding);
+            }
+            this.buildTabPanel(adminTabs);
             this.tabs.activate(this.panelAdministration);
 
         },
@@ -94,6 +99,14 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 this.rpc.hostname = rpc.networkManager.getHostname();
             }
             return this.rpc.hostname;
+        },
+        // is Branding Expired
+        isBrandingExpired : function(forceReload) {
+            if (forceReload || this.rpc.isBrandingExpired === undefined) {
+            	//TODO check branding product identifier name when this functionality is implemented on server side
+                this.rpc.isBrandingExpired = main.getLicenseManager().getLicenseStatus('untangle-branding-manager').expired;
+            }
+            return this.rpc.isBrandingExpired;
         },
         // get branding settings
         getBrandingBaseSettings : function(forceReload) {
@@ -1919,7 +1932,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
         // save function
         saveAction : function() {
             if (this.validate()) {
-            	this.saveSemaphore = 7;
+            	this.saveSemaphore = 6;
                 Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
                 
                 var listAdministration=this.gridAdminAccounts.getFullSaveList();
@@ -1977,14 +1990,17 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     this.afterSave();
                 }.createDelegate(this), this.getSkinSettings());
                 
-                main.getBrandingManager().setBaseSettings(function(result, exception) {
-                    Ext.MessageBox.hide();
-                    if (exception) {
-                        Ext.MessageBox.alert(i18n._("Failed"), exception.message);
-                        return;
-                    }
-                    this.cancelAction();
-                }.createDelegate(this), this.getBrandingBaseSettings());
+                if (!this.isBrandingExpired()) {
+                	this.saveSemaphore++;
+                    main.getBrandingManager().setBaseSettings(function(result, exception) {
+                        Ext.MessageBox.hide();
+                        if (exception) {
+                            Ext.MessageBox.alert(i18n._("Failed"), exception.message);
+                            return;
+                        }
+                        this.afterSave();
+                    }.createDelegate(this), this.getBrandingBaseSettings());
+                }
                 
             }
         },
