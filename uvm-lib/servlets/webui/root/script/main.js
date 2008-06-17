@@ -407,55 +407,28 @@ Ung.Main.prototype = {
 	},
 	// load the list of nodes for the current policy
 	loadNodes: function() {
-		this.policySemaphore=2;
-		rpc.nodeManager.nodeInstancesVisible(function (result, exception) {
-			if(exception) { Ext.MessageBox.alert(i18n._("Failed"),exception.message);
-				return;
-			}
-			rpc.policyTids=result.list;
-			this.loadNodesCallback();
-		}.createDelegate(this), rpc.currentPolicy);
-		rpc.nodeManager.nodeInstancesVisible(function (result, exception) {
-			if(exception) { Ext.MessageBox.alert(i18n._("Failed"),exception.message);
-				return;
-			}
-			rpc.commonTids=result.list;
-			this.loadNodesCallback();
-		}.createDelegate(this), null);
-	},
-	loadNodesCallback: function() {
-		this.policySemaphore--;
-		if(this.policySemaphore!==0) {
-			return;
-		}
-		Ung.BlingerManager.stop();
-		this.destoyNodes();
-		rpc.tids=[];
-		var i=null;
-		for(i=0;i<rpc.policyTids.length;i++) {
-			rpc.tids.push(rpc.policyTids[i]);
-		}
-		for(i=0;i<rpc.commonTids.length;i++) {
-			rpc.tids.push(rpc.commonTids[i]);
-		}
-		this.nodes=[];
-		for(i=0;i<rpc.tids.length;i++) {
-			if(rpc.tids[i].nodeName=="untangle-node-router") {
-				continue;
-			}
-			var md=this.getNodeMackageDesc(rpc.tids[i]);
-			if(md!=null) {
-				var node=this.createNode(rpc.tids[i], md);
-				this.nodes.push(node);
-			}
-		}
-		for(var i=0;i<this.nodes.length;i++) {
-			var node=this.nodes[i];
-			this.addNode(node);
-		}
-		this.updateSeparator();
-		Ung.AppItem.updateStatesForCurrentPolicy();
-		this.loadNodesRunStates();
+        rpc.toolboxManager.getRackView(function (result, exception) {
+            if(exception) { Ext.MessageBox.alert(i18n._("Failed"),exception.message);
+                return;
+            }
+            rpc.rackView=result;
+            Ung.BlingerManager.stop();
+            this.destoyNodes();
+            this.nodes=[];
+            for(var i=0;i<rpc.rackView.instances.list.length;i++) {
+            	var instance=rpc.rackView.instances.list[i];
+                var node=this.createNode(instance.tid, instance.mackageDesc);
+                this.nodes.push(node);
+            }
+            for(var i=0;i<this.nodes.length;i++) {
+                var node=this.nodes[i];
+                this.addNode(node);
+            }
+            this.updateSeparator();
+            Ung.AppItem.updateStatesForCurrentPolicy();
+            this.loadNodesRunStates();
+
+        }.createDelegate(this), rpc.currentPolicy);
 	},
 	// load run states for all Nodes
 	loadNodesRunStates: function() {
