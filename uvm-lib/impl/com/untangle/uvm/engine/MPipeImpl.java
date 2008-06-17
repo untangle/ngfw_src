@@ -78,6 +78,8 @@ class MPipeImpl implements MPipe {
     {
         this.xm = xm;
         this.node = pipeSpec.getNode();
+
+
         this.listener = listener;
         this.pipeSpec = pipeSpec;
 

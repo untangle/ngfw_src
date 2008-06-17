@@ -95,6 +95,7 @@ public class TokenAdaptor extends AbstractEventHandler
         c2nBytes = c.getBlingBlinger("c2nBytes");
         n2sBytes = c.getBlingBlinger("n2sBytes");
         n2cBytes = c.getBlingBlinger("n2cBytes");
+        System.out.println("GOT: " + n2cBytes);
     }
 
     @Override

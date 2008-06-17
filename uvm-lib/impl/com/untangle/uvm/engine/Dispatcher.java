@@ -213,6 +213,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
     // Note that order of initialization is important in here, since
     // the "inner" classes access stuff from us.
     Dispatcher(MPipeImpl mPipe) {
+        System.out.println("HELLO WORLD");
         logger = Logger.getLogger(Dispatcher.class.getName());
         this.mPipe = mPipe;
         this.node = mPipe.node();
@@ -258,14 +259,14 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
         udpTotalSessionRequestCounter = c.addMetric("udpTotalSessionRequestCounter", "UDP Session Requests", null);
         tcpTotalSessionRequestCounter = c.addMetric("tcpTotalSessionRequestCounter", "TCP Session Requests", null);
 
-        c.addMetric("s2nChunks", "Server to Node Chunks", null);
-        c.addMetric("c2nChunks", "Client to Node Chunks", null);
-        c.addMetric("n2sChunks", "Node to Server Chunks", null);
-        c.addMetric("n2cChunks", "Server to Node Chunks", null);
-        c.addMetric("s2nBytes", "Server to Node Bytes", "byte");
-        c.addMetric("c2nBytes", "Client to Node Bytes", "byte");
-        c.addMetric("n2sBytes", "Node to Server Bytes", "byte");
-        c.addMetric("n2cBytes", "Node to Client Bytes", "byte");
+        // c.addMetric("s2nChunks", "Server to Node Chunks", null);
+        // c.addMetric("c2nChunks", "Client to Node Chunks", null);
+        // c.addMetric("n2sChunks", "Node to Server Chunks", null);
+        // c.addMetric("n2cChunks", "Server to Node Chunks", null);
+        // c.addMetric("s2nBytes", "Server to Node Bytes", "byte");
+        // c.addMetric("c2nBytes", "Client to Node Bytes", "byte");
+        // c.addMetric("n2sBytes", "Node to Server Bytes", "byte");
+        // c.addMetric("n2cBytes", "Node to Client Bytes", "byte");
     }
 
     /*
