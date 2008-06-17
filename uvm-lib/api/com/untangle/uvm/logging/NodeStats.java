@@ -34,27 +34,120 @@
 package com.untangle.uvm.logging;
 
 import java.io.Serializable;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 public class NodeStats implements Serializable
 {
-    private final Map<String, CounterStats> counters;
-    private final Map<String, LoadStats> loads;
+    private final List<CounterStats> metrics;
+    private final List<CounterStats> activities;
 
-    NodeStats(Map<String, CounterStats> counters,
-              Map<String, LoadStats> loads)
+    // constructors ------------------------------------------------------------
+
+    NodeStats(Collection<BlingBlinger> metrics,
+              Collection<BlingBlinger> activities)
     {
-        this.counters = counters;
-        this.loads = loads;
+        this.metrics = immutableCounterStats(metrics);
+        this.activities = immutableCounterStats(activities);
     }
 
-    public Map<String, CounterStats> getCounters()
+    // public methods ----------------------------------------------------------
+
+    public List<CounterStats> getMetrics()
     {
-        return counters;
+        return metrics;
     }
 
-    public Map<String, LoadStats> loads()
+    public List<CounterStats> getActivities()
     {
-        return loads;
+        return activities;
+    }
+
+    // private methods ---------------------------------------------------------
+
+    private List<CounterStats> immutableCounterStats(Collection<BlingBlinger> stats)
+    {
+        List<CounterStats> l = new ArrayList<CounterStats>(stats.size());
+        for (CounterStats cs : stats) {
+            l.add(new FixedCounts(cs));
+        }
+
+        return Collections.unmodifiableList(l);
+    }
+
+    // private classes ---------------------------------------------------------
+
+    private static class FixedCounts implements CounterStats, Serializable
+    {
+        private final long count;
+        private final long countSinceMidnight;
+        private final long cnt1;
+        private final long cnt5;
+        private final long cnt15;
+
+        public FixedCounts(CounterStats cs)
+        {
+            this.count = cs.getCount();
+            this.countSinceMidnight = cs.getCountSinceMidnight();
+            this.cnt1 = cs.get1MinuteCount();
+            this.cnt5 = cs.get5MinuteCount();
+            this.cnt15 = cs.get15MinuteCount();
+        }
+
+        public long getCount()
+        {
+            return count;
+        }
+
+        public long getCountSinceMidnight()
+        {
+            return countSinceMidnight;
+        }
+
+        public long get1MinuteCount()
+        {
+            return cnt1;
+        }
+
+        public long get5MinuteCount()
+        {
+            return cnt5;
+        }
+
+        public long get15MinuteCount()
+        {
+            return cnt15;
+        }
+    }
+
+    private static class FixedLoads implements LoadStats, Serializable
+    {
+        private final float avg1;
+        private final float avg5;
+        private final float avg15;
+
+        public FixedLoads(LoadStats ls)
+        {
+            avg1 = ls.get1MinuteAverage();
+            avg5 = ls.get5MinuteAverage();
+            avg15 = ls.get15MinuteAverage();
+        }
+
+        public float get1MinuteAverage()
+        {
+            return avg1;
+        }
+
+        public float get5MinuteAverage()
+        {
+            return avg5;
+        }
+
+        public float get15MinuteAverage()
+        {
+            return avg15;
+        }
     }
 }

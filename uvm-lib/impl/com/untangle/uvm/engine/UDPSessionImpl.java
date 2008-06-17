@@ -76,14 +76,14 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
 
         Counters c = mPipe.node().getCounters();
 
-        s2nChunks = c.makeBlingBlinger("s2nChunks", "Server to Node Chunks");
-        c2nChunks = c.makeBlingBlinger("c2nChunks", "Client to Node Chunks");
-        n2sChunks = c.makeBlingBlinger("n2sChunks", "Node to Server Chunks");
-        n2cChunks = c.makeBlingBlinger("n2cChunks", "Server to Node Chunks");
-        s2nBytes = c.makeBlingBlinger("s2nBytes", "Server to Node Bytes", "byte");
-        c2nBytes = c.makeBlingBlinger("c2nBytes", "Client to Node Bytes", "byte");
-        n2sBytes = c.makeBlingBlinger("n2sBytes", "Node to Server Bytes", "byte");
-        n2cBytes = c.makeBlingBlinger("n2cBytes", "Node to Client Bytes", "byte");
+        s2nChunks = c.addMetric("s2nChunks", "Server to Node Chunks", null);
+        c2nChunks = c.addMetric("c2nChunks", "Client to Node Chunks", null);
+        n2sChunks = c.addMetric("n2sChunks", "Node to Server Chunks", null);
+        n2cChunks = c.addMetric("n2cChunks", "Server to Node Chunks", null);
+        s2nBytes = c.addMetric("s2nBytes", "Server to Node Bytes", "byte");
+        c2nBytes = c.addMetric("c2nBytes", "Client to Node Bytes", "byte");
+        n2sBytes = c.addMetric("n2sBytes", "Node to Server Bytes", "byte");
+        n2cBytes = c.addMetric("n2cBytes", "Node to Client Bytes", "byte");
     }
 
     public int serverMaxPacketSize() {

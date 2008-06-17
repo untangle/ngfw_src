@@ -37,9 +37,10 @@ public class BlingBlinger implements CounterStats
 {
     private final StatDesc statDesc;
 
-    public BlingBlinger(String displayName, String action, String unit)
+    public BlingBlinger(String name, String displayName, String unit,
+                        String action)
     {
-        this.statDesc = new StatDesc(displayName, action, unit);
+        this.statDesc = new StatDesc(name, displayName, unit, action);
     }
 
     // public methods ---------------------------------------------------------

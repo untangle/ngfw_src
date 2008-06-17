@@ -206,9 +206,9 @@ public class SpywareImpl extends AbstractNode implements Spyware
 
         Counters c = getCounters();
 
-        scanBlinger = c.makeBlingBlinger("scan", "scan", "Scan Connection");
-        blockBlinger = c.makeBlingBlinger("block", "block", "Block Connection");
-        passBlinger = c.makeBlingBlinger("pass", "pass", "Pass Connection");
+        scanBlinger = c.addActivity("scan", "Scan Connection", null, "SCAN");
+        blockBlinger = c.addActivity("block", "Block Connection", null, "BLOCK");
+        passBlinger = c.addActivity("pass", "Pass Connection", null, "PASS");
     }
 
     // SpywareNode methods -----------------------------------------------------

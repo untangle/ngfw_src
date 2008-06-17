@@ -35,12 +35,14 @@ package com.untangle.uvm.logging;
 
 public class StatDesc
 {
+    private final String name;
     private final String displayName;
     private final String action;
     private final String unit;
 
-    public StatDesc(String displayName, String action, String unit)
+    public StatDesc(String name, String displayName, String action, String unit)
     {
+        this.name = name;
         this.displayName = displayName;
         this.action = action;
         this.unit = unit;

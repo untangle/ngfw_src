@@ -33,8 +33,9 @@
 
 package com.untangle.uvm.logging;
 
-import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -46,8 +47,11 @@ import java.util.Map;
  */
 public class Counters
 {
-    private final Map<String, BlingBlinger> blingers
+    private final Map<String, BlingBlinger> metrics
         = new HashMap<String, BlingBlinger>();
+
+    private final List<BlingBlinger> activities
+        = new ArrayList<BlingBlinger>();
 
     private final Map<String, LoadMaster> loads
         = new HashMap<String, LoadMaster>();
@@ -56,46 +60,38 @@ public class Counters
     {
         BlingBlinger b;
 
-        synchronized (blingers) {
-            b = blingers.get(name);
+        synchronized (metrics) {
+            b = metrics.get(name);
         }
 
         return b;
     }
 
-    public BlingBlinger makeBlingBlinger(String name, String displayName,
-                                         String action, String unit)
+    public BlingBlinger addMetric(String name, String displayName, String unit)
     {
-        BlingBlinger b;
+        BlingBlinger b = new BlingBlinger(name, displayName, unit, null);
 
-        synchronized (blingers) {
-            b = blingers.get(name);
-            if (null == b) {
-                b = new BlingBlinger(displayName, action, unit);
-                blingers.put(name, b);
-            }
+        synchronized (metrics) {
+            metrics.put(name, b);
         }
 
         return b;
     }
 
-    public BlingBlinger makeBlingBlinger(String name, String displayName,
-                                         String action)
+    public BlingBlinger addActivity(String name, String displayName,
+                                    String unit, String action)
     {
-        return makeBlingBlinger(name, displayName, null);
-    }
+        BlingBlinger b = new BlingBlinger(name, displayName, unit, action);
 
-    public BlingBlinger makeBlingBlinger(String name, String displayName)
-    {
-        return makeBlingBlinger(name, displayName, null, null);
-    }
-
-    public long incrementCounter(String name, long delta)
-    {
-        BlingBlinger b = blingers.get(name);
-        synchronized (b) {
-            return b.increment(delta);
+        synchronized (metrics) {
+            metrics.put(name, b);
         }
+
+        synchronized (activities) {
+            activities.add(b);
+        }
+
+        return b;
     }
 
     public void addLoadMaster(String name, LoadMaster loadMaster)
@@ -126,113 +122,11 @@ public class Counters
 
     public NodeStatDescs getStatDescs()
     {
-        Map<String, StatDesc> bs = new HashMap<String, StatDesc>(blingers.size());
-        synchronized (blingers) {
-            for (String bn : blingers.keySet()) {
-                bs.put(bn, blingers.get(bn).getStatDesc());
-            }
-        }
-
-        Map<String, StatDesc> ls = new HashMap<String, StatDesc>(blingers.size());
-        synchronized (loads) {
-            for (String ln : loads.keySet()) {
-                ls.put(ln, loads.get(ln).getStatDesc());
-            }
-        }
-
-        return new NodeStatDescs(bs, ls);
+        return new NodeStatDescs(metrics.values(), activities);
     }
 
     public NodeStats getAllStats()
     {
-        Map<String, CounterStats> c = new HashMap<String, CounterStats>();
-        synchronized (blingers) {
-            for (String n : blingers.keySet()) {
-                c.put(n, new FixedCounts(blingers.get(n)));
-            }
-        }
-
-        Map<String, LoadStats> l = new HashMap<String, LoadStats>();
-        synchronized (loads) {
-            for (String n : loads.keySet()) {
-                l.put(n, new FixedLoads(loads.get(n)));
-            }
-        }
-
-        return new NodeStats(c, l);
-    }
-
-    // private classes ---------------------------------------------------------
-
-    private static class FixedCounts implements CounterStats, Serializable
-    {
-        private final long count;
-        private final long countSinceMidnight;
-        private final long cnt1;
-        private final long cnt5;
-        private final long cnt15;
-
-        public FixedCounts(CounterStats cs)
-        {
-            this.count = cs.getCount();
-            this.countSinceMidnight = cs.getCountSinceMidnight();
-            this.cnt1 = cs.get1MinuteCount();
-            this.cnt5 = cs.get5MinuteCount();
-            this.cnt15 = cs.get15MinuteCount();
-        }
-
-        public long getCount()
-        {
-            return count;
-        }
-
-        public long getCountSinceMidnight()
-        {
-            return countSinceMidnight;
-        }
-
-        public long get1MinuteCount()
-        {
-            return cnt1;
-        }
-
-        public long get5MinuteCount()
-        {
-            return cnt5;
-        }
-
-        public long get15MinuteCount()
-        {
-            return cnt15;
-        }
-    }
-
-    private static class FixedLoads implements LoadStats, Serializable
-    {
-        private final float avg1;
-        private final float avg5;
-        private final float avg15;
-
-        public FixedLoads(LoadStats ls)
-        {
-            avg1 = ls.get1MinuteAverage();
-            avg5 = ls.get5MinuteAverage();
-            avg15 = ls.get15MinuteAverage();
-        }
-
-        public float get1MinuteAverage()
-        {
-            return avg1;
-        }
-
-        public float get5MinuteAverage()
-        {
-            return avg5;
-        }
-
-        public float get15MinuteAverage()
-        {
-            return avg15;
-        }
+        return new NodeStats(metrics.values(), activities);
     }
 }

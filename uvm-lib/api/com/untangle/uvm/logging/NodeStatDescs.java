@@ -34,31 +34,42 @@
 package com.untangle.uvm.logging;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 public class NodeStatDescs implements Serializable
 {
-    private final Map<String, StatDesc> counterDescs;
-    private final Map<String, StatDesc> loadStatDescs;
+    private final List<StatDesc> metricDescs;
+    private final List<StatDesc> activityDescs;
 
-    public NodeStatDescs(Map<String, StatDesc> counterDescs,
-                         Map<String, StatDesc> loadStatDescs)
+    NodeStatDescs(Collection<BlingBlinger> metrics,
+                  Collection<BlingBlinger> activities)
     {
-        Map<String, StatDesc> m = new HashMap<String, StatDesc>(counterDescs);
-        this.counterDescs = Collections.unmodifiableMap(m);
-        m = new HashMap<String, StatDesc>(loadStatDescs);
-        this.loadStatDescs = Collections.unmodifiableMap(m);
+        this.metricDescs = getStatDescs(metrics);
+        this.activityDescs = getStatDescs(activities);
     }
 
-    public Map<String, StatDesc> getCounterDescs()
+    public List<StatDesc> getMetricDescs()
     {
-        return counterDescs;
+        return metricDescs;
     }
 
-    public Map<String, StatDesc> getLoadStatDescs()
+    public List<StatDesc> getActivityDescs()
     {
-        return loadStatDescs;
+        return activityDescs;
+    }
+
+    // private methods ---------------------------------------------------------
+
+    private List<StatDesc> getStatDescs(Collection<BlingBlinger> blingers)
+    {
+        List<StatDesc> l = new ArrayList<StatDesc>(blingers.size());
+        for (BlingBlinger bb : blingers) {
+            l.add(bb.getStatDesc());
+        }
+
+        return Collections.unmodifiableList(l);
     }
 }
