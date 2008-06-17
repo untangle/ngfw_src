@@ -23,11 +23,9 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -69,6 +67,7 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
     private static final String BASENAME_OFFICIAL_PREFIX = "i18n.official";
     private static final String LANGUAGES_CFG = "lang.cfg";  
     private static final String LC_MESSAGES = "LC_MESSAGES";
+    private static final String UNG_PREFIX = "ung_";
 	private static final int BUFFER = 2048; 
 
     private final Logger logger = Logger.getLogger(getClass());
@@ -245,10 +244,11 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
     }
     
     public Map<String, String> getTranslations(String module){
+    	String ungPrefixedModule = UNG_PREFIX + module;
 		Map<String, String> map = new HashMap<String, String>();
 /*		
     	try {
-    		I18n i18n = I18nFactory.getI18n("i18n."+module, module, Thread
+    		I18n i18n = I18nFactory.getI18n("i18n."+ungPrefixedModule, ungPrefixedModule, Thread
     				.currentThread().getContextClassLoader(), new Locale(settings
     				.getLanguage()), I18nFactory.DEFAULT);
     		
@@ -269,10 +269,10 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
 	// and if we tried once to load a resource bundle, second time will return not found (MissingResourceException), evean if 
 	// the resource is available now; this prevent dynamic loading, which we need.
 	try {
-		Class clazz = loadResourceBundleClass(BASENAME_COMMUNITY_PREFIX + "." + module + "_" + settings.getLanguage());
+		Class clazz = loadResourceBundleClass(BASENAME_COMMUNITY_PREFIX + "." + ungPrefixedModule + "_" + settings.getLanguage());
 		if (clazz == null) {
 			// fall back to official translations
-			clazz = loadResourceBundleClass(BASENAME_OFFICIAL_PREFIX + "." + module + "_" + settings.getLanguage());
+			clazz = loadResourceBundleClass(BASENAME_OFFICIAL_PREFIX + "." + ungPrefixedModule + "_" + settings.getLanguage());
 		}
 		if (clazz != null) {
 			ResourceBundle resourceBundle = (ResourceBundle)clazz.newInstance();

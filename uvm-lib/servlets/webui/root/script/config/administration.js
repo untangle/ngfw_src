@@ -103,7 +103,6 @@ if (!Ung.hasResource["Ung.Administration"]) {
         // is Branding Expired
         isBrandingExpired : function(forceReload) {
             if (forceReload || this.rpc.isBrandingExpired === undefined) {
-            	//TODO check branding product identifier name when this functionality is implemented on server side
                 this.rpc.isBrandingExpired = main.getLicenseManager().getLicenseStatus('untangle-branding-manager').expired;
             }
             return this.rpc.isBrandingExpired;
