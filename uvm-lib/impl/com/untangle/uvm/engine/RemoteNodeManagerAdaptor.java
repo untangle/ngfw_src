@@ -24,6 +24,7 @@ import java.util.Map;
 import com.untangle.uvm.node.DeployException;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeContext;
+import com.untangle.uvm.node.NodeDesc;
 import com.untangle.uvm.node.NodeState;
 import com.untangle.uvm.node.RemoteNodeManager;
 import com.untangle.uvm.node.UndeployException;
@@ -60,9 +61,9 @@ class RemoteNodeManagerAdaptor implements RemoteNodeManager
         return nodeManager.nodeInstances(policy);
     }
 
-    public List<Tid> nodeInstancesVisible(Policy policy)
+    public List<NodeDesc> visibleNodes(Policy policy)
     {
-        return nodeManager.nodeInstancesVisible(policy);
+        return nodeManager.visibleNodes(policy);
     }
 
     public List<Tid> nodeInstances(String name, Policy policy)

@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -79,9 +79,9 @@ public class UvmNodeHandler extends DefaultHandler
 
     public NodeDesc getNodeDesc(Tid tid)
     {
-        return new NodeDesc(tid, name, className, guiClassName,
-                                 nodeBase, exports, parents, uvmResources,
-                                 singleInstance, displayName);
+        return new NodeDesc(tid, mackageDesc, name, className, guiClassName,
+                            nodeBase, exports, parents, uvmResources,
+                            singleInstance, displayName);
     }
 
     // DefaultHandler methods -------------------------------------------------

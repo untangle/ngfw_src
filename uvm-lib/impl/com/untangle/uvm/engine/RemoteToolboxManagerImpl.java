@@ -42,6 +42,7 @@ import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.Period;
 import com.untangle.uvm.alerts.MessageQueue;
 import com.untangle.uvm.node.NodeContext;
+import com.untangle.uvm.node.NodeDesc;
 import com.untangle.uvm.node.NodeException;
 import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.security.LoginSession;
@@ -150,31 +151,25 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
 
     // RemoteToolboxManager implementation ------------------------------------
 
-    // XXX this is not done yet!
     public RackView getRackView(Policy p)
     {
         List<MackageDesc> uninstalled = new ArrayList<MackageDesc>();
 
+        // XXX sorting?
         for (MackageDesc md : uninstalled()) {
             if (md.getType() == MackageDesc.Type.LIB_ITEM
                 && 0 <= md.getViewPosition()
+                // XXX FLAG REFACTOR
                 && !md.getName().equals("untangle-libitem-router")) {
                 uninstalled.add(md);
             }
         }
 
-        List<MackageDesc> installed = new ArrayList<MackageDesc>();
+        NodeManagerImpl tm = (NodeManagerImpl)LocalUvmContextFactory
+            .context().nodeManager();
+        List<NodeDesc> instances = tm.visibleNodes(p);
 
-        // XXX NOT QUITE RIGHT
-        for (MackageDesc md : installedVisible()) {
-            if (md.getType() == MackageDesc.Type.NODE
-                && (md.isCore() || md.isSecurity())
-                && !md.getName().equals("untangle-node-router")) {
-                installed.add(md);
-            }
-        }
-
-        return new RackView(uninstalled, installed);
+        return new RackView(uninstalled, instances);
     }
 
     // all known mackages

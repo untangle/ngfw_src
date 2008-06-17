@@ -33,17 +33,20 @@
 
 package com.untangle.uvm.toolbox;
 
+import java.util.Collections;
 import java.util.List;
+
+import com.untangle.uvm.node.NodeDesc;
 
 public class RackView
 {
     private List<MackageDesc> available;
-    private List<MackageDesc> installed;
+    private List<NodeDesc> instances;
 
-    public RackView(List<MackageDesc> available, List<MackageDesc> installed)
+    public RackView(List<MackageDesc> available, List<NodeDesc> instances)
     {
-        this.available = available;
-        this.installed = installed;
+        this.available = Collections.unmodifiableList(available);
+        this.instances = Collections.unmodifiableList(instances);
     }
 
     public List<MackageDesc> getAvailable()
@@ -51,8 +54,8 @@ public class RackView
         return available;
     }
 
-    public List<MackageDesc> getInstalled()
+    public List<NodeDesc> getInstances()
     {
-        return installed;
+        return instances;
     }
 }

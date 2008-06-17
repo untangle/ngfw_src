@@ -74,9 +74,9 @@ public interface RemoteNodeManager
      * Node instances by policy, the visible ones only, for the GUI.
      *
      * @param policy policy of node.
-     * @return tids of corresponding nodes.
+     * @return <code>NodeDesc</code>s of corresponding nodes.
      */
-    List<Tid> nodeInstancesVisible(Policy policy);
+    List<NodeDesc> visibleNodes(Policy policy);
 
     /**
      * Node instances by name policy.

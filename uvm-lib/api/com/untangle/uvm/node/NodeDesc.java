@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -39,6 +39,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.untangle.uvm.security.Tid;
+import com.untangle.uvm.toolbox.MackageDesc;
 
 /**
  * Node settings and properties.
@@ -51,6 +52,8 @@ public class NodeDesc implements Serializable
     private static final long serialVersionUID = -578021414141899172L;
 
     private final Tid tid;
+
+    private final MackageDesc mackageDesc;
 
     private final String name;
 
@@ -70,12 +73,14 @@ public class NodeDesc implements Serializable
     private final int tcpServerReadBufferSize = 8192;
     private final int udpMaxPacketSize = 16384;
 
-    public NodeDesc(Tid tid, String name, String className,
-                         String guiClassName, String nodeBase,
-                         List<String> exports, List<String> parents, List<String> uvmResources, 
-                         boolean singleInstance, String displayName)
+    public NodeDesc(Tid tid, MackageDesc mackageDesc,
+                    String name, String className,
+                    String guiClassName, String nodeBase,
+                    List<String> exports, List<String> parents, List<String> uvmResources,
+                    boolean singleInstance, String displayName)
     {
         this.tid = tid;
+        this.mackageDesc = mackageDesc;
         this.name = name;
         this.className = className;
         this.guiClassName = guiClassName;
@@ -101,6 +106,11 @@ public class NodeDesc implements Serializable
     public Tid getTid()
     {
         return tid;
+    }
+
+    public MackageDesc getMackageDesc()
+    {
+        return mackageDesc;
     }
 
     /**

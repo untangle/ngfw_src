@@ -191,15 +191,28 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
         return l;
     }
 
-    public List<Tid> nodeInstancesVisible(Policy policy)
+    public List<NodeDesc> visibleNodes(Policy policy)
     {
-        List<Tid> nodeInstances = nodeInstances(policy);
-        List<Tid> visibleVector = new ArrayList<Tid>();
-        for( Tid tid : nodeInstances ){
-            if( nodeContext(tid).getMackageDesc().getViewPosition() >= 0 )
-                visibleVector.add(tid);
+        List<Tid> tids = nodeInstances();
+        List<NodeDesc> l = new ArrayList<NodeDesc>(tids.size());
+
+        for (Tid tid : tids) {
+            NodeContext nc = nodeContext(tid);
+            MackageDesc md = nc.getMackageDesc();
+            Policy p = tid.getPolicy();
+
+            // XXX FLAG REFACTOR refactor the flags
+            if ((null == p ? p == policy : p.equals(policy)) || md.isCore()) {
+                NodeDesc nd = nc.getNodeDesc();
+                // XXX FLAG REFACTOR use an untangle-type rather than
+                // the name here. other constrints?
+                if (!nd.getName().equals("untangle-node-router")) {
+                    l.add(nd);
+                }
+            }
         }
-        return visibleVector;
+
+        return l;
     }
 
     public NodeContextImpl nodeContext(Tid tid)
