@@ -76,8 +76,9 @@ public class NodeDesc implements Serializable
     public NodeDesc(Tid tid, MackageDesc mackageDesc,
                     String name, String className,
                     String guiClassName, String nodeBase,
-                    List<String> exports, List<String> parents, List<String> uvmResources,
-                    boolean singleInstance, String displayName)
+                    List<String> exports, List<String> parents,
+                    List<String> uvmResources, boolean singleInstance,
+                    String displayName)
     {
         this.tid = tid;
         this.mackageDesc = mackageDesc;

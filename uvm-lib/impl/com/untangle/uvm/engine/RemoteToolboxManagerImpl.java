@@ -170,7 +170,9 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
         // XXX filter out instances on left...
         List<MackageDesc> uninstalled = new ArrayList<MackageDesc>();
         for (MackageDesc md : installed()) {
-            if (md.getType() == MackageDesc.Type.LIB_ITEM
+            MackageDesc.Type type = md.getType();
+            if ((type == MackageDesc.Type.LIB_ITEM
+                 || type == MackageDesc.Type.TRIAL)
                 && 0 <= md.getViewPosition()
                 && !instanceLibitems.contains(md.getName())
                 // XXX FLAG REFACTOR
