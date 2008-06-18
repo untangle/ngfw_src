@@ -90,23 +90,16 @@ ok, status = client.call( "generate_rules" )
 EOF
 }
 
+# In 5.3, this code is only used to handle the upgrade and factory-defaults cases.
 getPopId() {
-  # the wizard needs to create this before we go any further
+  # for new installs from iso, do nothing
   [[ -f $ACTIVATION_KEY_FILE ]] || return
 
-  # already done
+  # for package installs, do nothing
   [[ -f $POPID_FILE ]] && return
 
-  echo "$NAME: about to create pop id" >> $UVM_WRAPPER_LOG
-  output=`ruby @UVM_HOME@/bin/createpopid.rb 2>&1`
-  if [ $? = 0 ] ; then
-    echo "$NAME: created pop id" >> $UVM_WRAPPER_LOG
-    @UVM_HOME@/bin/utactivate
-    @UVM_HOME@/bin/utregister # register under new key
-  else
-    echo "$NAME: failed to create pop id; output was: '$output'" >> $UVM_WRAPPER_LOG
-    return 1
-  fi
+  # ensure we have a popid
+  @UVM_HOME@/bin/utactivate
 }
 
 isServiceRunning() {
@@ -274,6 +267,8 @@ while true; do
 
     flushIptables
 
+    getPopId
+
     $UVM_LAUNCH $* >>$UVM_CONSOLE_LOG 2>&1 &
 
     pid=$!
@@ -284,7 +279,6 @@ while true; do
     counter=0
 
     while true; do
-        getPopId
 
         sleep $SLEEP_TIME
 	let counter=${counter}+$SLEEP_TIME

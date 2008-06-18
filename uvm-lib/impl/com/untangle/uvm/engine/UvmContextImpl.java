@@ -62,6 +62,7 @@ import com.untangle.uvm.policy.LocalPolicyManager;
 import com.untangle.uvm.policy.PolicyManagerFactory;
 import com.untangle.uvm.policy.RemotePolicyManager;
 import com.untangle.uvm.portal.BasePortalManager;
+import com.untangle.uvm.security.RegistrationInfo;
 import com.untangle.uvm.toolbox.RemoteToolboxManager;
 import com.untangle.uvm.user.ADPhoneBookAssistant;
 import com.untangle.uvm.user.LocalPhoneBook;
@@ -594,22 +595,27 @@ public class UvmContextImpl extends UvmContextBase
         return Boolean.getBoolean(PROPERTY_IS_INSIDE_VM);
     }
 
-    public boolean activate(String key) {
-        // Be nice to the poor user:
-        if (key.length() == 16)
-            key = key.substring(0, 4) + "-" + key.substring(4, 8) + "-" +
-                key.substring(8, 12) + "-" + key.substring(12,16);
-        // Fix for bug 1310: Make sure all the hex chars are lower cased.
-        key = key.toLowerCase();
-        if (key.length() != 19) {
-            // Don't even bother if the key isn't the right length.
-            // Could do other sanity checking here as well. XX
-            logger.error("Unable to activate with wrong length key: " + key);
-            return false;
-        }
-
+    public boolean activate(String key, RegistrationInfo regInfo) {
+	if (key != null) {
+	    // Be nice to the poor user:
+	    if (key.length() == 16)
+		key = key.substring(0, 4) + "-" + key.substring(4, 8) + "-" +
+		    key.substring(8, 12) + "-" + key.substring(12,16);
+	    // Fix for bug 1310: Make sure all the hex chars are lower cased.
+	    key = key.toLowerCase();
+	    if (key.length() != 19) {
+		// Don't even bother if the key isn't the right length.
+		// Could do other sanity checking here as well. XX
+		logger.error("Unable to activate with wrong length key: " + key);
+		return false;
+	    }
+	}
         try {
-            Process p = exec(new String[] { ACTIVATE_SCRIPT, key });
+            Process p;
+	    if (key == null)
+		p = exec(new String[] { ACTIVATE_SCRIPT });
+	    else
+		p = exec(new String[] { ACTIVATE_SCRIPT, key });
             for (byte[] buf = new byte[1024]; 0 <= p.getInputStream().read(buf); );
             int exitValue = p.waitFor();
             if (0 != exitValue) {
@@ -618,7 +624,6 @@ public class UvmContextImpl extends UvmContextBase
                 return false;
             } else {
                 logger.info("Product activated with key: " + key);
-                return true;
             }
         } catch (InterruptedException exn) {
             logger.error("Interrupted during activation with key: " + key);
@@ -627,6 +632,15 @@ public class UvmContextImpl extends UvmContextBase
             logger.error("Exception during activation with key: " + key, exn);
             return false;
         }
+
+	// Only register if activation succeeded
+	try {
+	    adminManager.setRegistrationInfo(regInfo);	
+	} catch (Exception x) {
+	    // Shouldn't happen
+	    logger.error("unable to set reg info", x);
+	}
+	return true;
     }
 
     public void doFullGC()

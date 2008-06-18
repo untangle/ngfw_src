@@ -41,6 +41,7 @@ import javax.security.auth.login.FailedLoginException;
 
 import com.untangle.uvm.engine.HttpInvokerStub;
 import com.untangle.uvm.security.LoginSession;
+import com.untangle.uvm.security.RegistrationInfo;
 import com.untangle.uvm.security.UvmLogin;
 
 /**
@@ -210,13 +211,14 @@ public class RemoteUvmContextFactory
      * @exception FailedLoginException if the key isn't kosher or the
      * product has already been activated
      */
-    public RemoteUvmContext activationLogin(String host, String key,
-                                             int timeout,
-                                             ClassLoader classLoader,
-                                             boolean secure)
+    public RemoteUvmContext activationLogin(String host, int port,
+					    RegistrationInfo regInfo,
+					    int timeout,
+					    ClassLoader classLoader,
+					    boolean secure)
         throws UvmConnectException, FailedLoginException
     {
-        return activationLogin( host, 0, key, timeout, classLoader, secure );
+        return activationLogin( host, port, null, regInfo, timeout, classLoader, secure );
     }
 
     /**
@@ -235,15 +237,16 @@ public class RemoteUvmContextFactory
      *    product has already been activated
      */
     public RemoteUvmContext activationLogin(String host, int port, String key,
-                                             int timeout,
-                                             ClassLoader classLoader,
-                                             boolean secure)
+					    RegistrationInfo regInfo,
+					    int timeout,
+					    ClassLoader classLoader,
+					    boolean secure)
         throws UvmConnectException, FailedLoginException
     {
         URL url = makeURL(host, port, secure);
         synchronized (this) {
             UvmLogin ml = uvmLogin(url, timeout, classLoader);
-            remoteContext = ml.activationLogin(key);
+            remoteContext = ml.activationLogin(key, regInfo);
             if (null != remoteContext) {
                 InvocationHandler ih = Proxy.getInvocationHandler(remoteContext);
                 httpInvokerStub = (HttpInvokerStub)ih;
