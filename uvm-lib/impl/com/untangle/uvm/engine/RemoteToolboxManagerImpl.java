@@ -45,6 +45,7 @@ import com.untangle.uvm.CronJob;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.Period;
 import com.untangle.uvm.alerts.MessageQueue;
+import com.untangle.uvm.logging.StatDescs;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.NodeDesc;
 import com.untangle.uvm.node.NodeException;
@@ -162,6 +163,13 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
             .context().nodeManager();
         List<NodeDesc> instances = tm.visibleNodes(p);
 
+        Map<Tid, StatDescs> statDescs = new HashMap<Tid, StatDescs>(instances.size());
+        for (NodeDesc nd : instances) {
+            Tid t = nd.getTid();
+            StatDescs sd = tm.nodeContext(t).node().getCounters().getStatDescs();
+            statDescs.put(t, sd);
+        }
+
         Set<String> displayNames = new HashSet<String>();
 
         Map<String, MackageDesc> nodes = new HashMap<String, MackageDesc>();
@@ -198,7 +206,7 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
 
         Collections.sort(apps);
 
-        return new RackView(apps, instances);
+        return new RackView(apps, instances, statDescs);
     }
 
     // all known mackages

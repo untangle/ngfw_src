@@ -113,7 +113,7 @@ public class Counters
         return lc;
     }
 
-    public StatDescs getStatDescss()
+    public StatDescs getStatDescs()
     {
         return new StatDescs(metrics.values(), activities);
     }

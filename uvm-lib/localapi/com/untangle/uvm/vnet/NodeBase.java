@@ -186,7 +186,7 @@ public abstract class NodeBase implements Node
 
     public StatDescs getStatDescss()
     {
-        return counters.getStatDescss();
+        return counters.getStatDescs();
     }
 
     // NodeBase methods ---------------------------------------------------

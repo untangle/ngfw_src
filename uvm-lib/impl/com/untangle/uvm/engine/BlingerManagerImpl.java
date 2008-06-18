@@ -63,10 +63,10 @@ class BlingerManagerImpl implements LocalBlingerManager
         Long id = t.getId();
         if (null != id) {
             if (0 == id) {
-                return uvmCounters.getStatDescss();
+                return uvmCounters.getStatDescs();
             } else {
                 LocalNodeManager lm = UvmContextImpl.getInstance().nodeManager();
-                return lm.nodeContext(t).node().getCounters().getStatDescss();
+                return lm.nodeContext(t).node().getCounters().getStatDescs();
             }
         } else {
             return null;

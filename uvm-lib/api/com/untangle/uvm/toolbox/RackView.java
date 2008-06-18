@@ -36,18 +36,24 @@ package com.untangle.uvm.toolbox;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
+import com.untangle.uvm.logging.StatDescs;
 import com.untangle.uvm.node.NodeDesc;
+import com.untangle.uvm.security.Tid;
 
 public class RackView implements Serializable
 {
     private List<Application> applications;
     private List<NodeDesc> instances;
+    private Map<Tid, StatDescs> statDescs;
 
-    public RackView(List<Application> applications, List<NodeDesc> instances)
+    public RackView(List<Application> applications, List<NodeDesc> instances,
+                    Map<Tid, StatDescs> statDescs)
     {
         this.applications = Collections.unmodifiableList(applications);
         this.instances = Collections.unmodifiableList(instances);
+        this.statDescs = Collections.unmodifiableMap(statDescs);
     }
 
     public List<Application> getApplications()
@@ -60,9 +66,14 @@ public class RackView implements Serializable
         return instances;
     }
 
+    public Map<Tid, StatDescs> getStatDescs()
+    {
+        return statDescs;
+    }
+
     @Override
     public String toString()
     {
-        return "RackView\n  AVAILABLE: " + applications + "\n  INSTANCES: " + instances;
+        return "RackView\n  AVAILABLE: " + applications + "\n  INSTANCES: " + instances + "\n  STAT DESCS: " + statDescs;
     }
 }
