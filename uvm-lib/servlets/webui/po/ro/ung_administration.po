@@ -7,16 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-06-17 19:14+0300\n"
+"POT-Creation-Date: 2008-06-18 10:43+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=0; null;\n"
 
-#: ../root/script/config/administration.js:11
 #: ../root/script/config/administration.js:12
 #: ../root/script/config/administration.js:735
 #: ../root/script/config/administration.js:813
@@ -24,117 +23,12 @@ msgstr ""
 msgid "Configuration"
 msgstr ""
 
-#: ../root/script/config/administration.js:14
 #: ../root/script/config/administration.js:17
 #: ../root/script/config/administration.js:135
 #: ../root/script/config/administration.js:741
 #: ../root/script/config/administration.js:819
 #: ../root/script/config/administration.js:870
 msgid "Administration"
-msgstr ""
-
-#: ../root/script/config/administration.js:91
-#: ../root/script/config/administration.js:1374
-msgid "Skins"
-msgstr ""
-
-#: ../root/script/config/administration.js:102
-#: ../root/script/config/administration.js:1384
-msgid "Administration Skin"
-msgstr ""
-
-#: ../root/script/config/administration.js:106
-#: ../root/script/config/administration.js:1388
-msgid "This skin will used in the administration client"
-msgstr ""
-
-#: ../root/script/config/administration.js:124
-#: ../root/script/config/administration.js:1407
-msgid "Info"
-msgstr ""
-
-#: ../root/script/config/administration.js:124
-#: ../root/script/config/administration.js:1408
-msgid ""
-"Please note that you have to relogin after saving for the new skin to take "
-"effect."
-msgstr ""
-
-#: ../root/script/config/administration.js:130
-#: ../root/script/config/administration.js:1414
-msgid "Block Page Skin"
-msgstr ""
-
-#: ../root/script/config/administration.js:134
-#: ../root/script/config/administration.js:1418
-msgid "This skin will used in the user pages like quarantine and block pages"
-msgstr ""
-
-#: ../root/script/config/administration.js:157
-#: ../root/script/config/administration.js:1442
-msgid "Upload New Skin"
-msgstr ""
-
-#: ../root/script/config/administration.js:179
-#: ../root/script/config/administration.js:1462
-#: ../root/script/config/administration.js:1587
-msgid "Upload"
-msgstr ""
-
-#: ../root/script/config/administration.js:191
-#: ../root/script/config/administration.js:1475
-msgid "Please wait while your skin is uploaded..."
-msgstr ""
-
-#: ../root/script/config/administration.js:195
-#: ../root/script/config/administration.js:789
-#: ../root/script/config/administration.js:840
-#: ../root/script/config/administration.js:899
-#: ../root/script/config/administration.js:1479
-#: ../root/script/config/administration.js:1669
-msgid "Succeeded"
-msgstr ""
-
-#: ../root/script/config/administration.js:195
-#: ../root/script/config/administration.js:1479
-msgid "Upload Skin Succeeded"
-msgstr ""
-
-#: ../root/script/config/administration.js:200
-#: ../root/script/config/administration.js:202
-#: ../root/script/config/administration.js:217
-#: ../root/script/config/administration.js:779
-#: ../root/script/config/administration.js:796
-#: ../root/script/config/administration.js:834
-#: ../root/script/config/administration.js:847
-#: ../root/script/config/administration.js:889
-#: ../root/script/config/administration.js:906
-#: ../root/script/config/administration.js:1484
-#: ../root/script/config/administration.js:1486
-#: ../root/script/config/administration.js:1660
-#: ../root/script/config/administration.js:1674
-#: ../root/script/config/administration.js:1676
-#: ../root/script/config/administration.js:1945
-#: ../root/script/config/administration.js:1953
-#: ../root/script/config/administration.js:1962
-#: ../root/script/config/administration.js:1970
-#: ../root/script/config/administration.js:1978
-#: ../root/script/config/administration.js:1986
-#: ../root/script/config/administration.js:1997
-msgid "Failed"
-msgstr ""
-
-#: ../root/script/config/administration.js:202 Server side msg
-#: ../root/script/config/administration.js:1486
-msgid "Upload Skin Failed"
-msgstr ""
-
-#: Server side msg
-msgid "Invalid Skin"
-msgstr ""
-
-#: Server side msg
-msgid "A skin with the same name already exists"
 msgstr ""
 
 #: ../root/script/config/administration.js:121
@@ -464,6 +358,35 @@ msgstr ""
 msgid "You must specify a country."
 msgstr ""
 
+#: ../root/script/config/administration.js:779
+#: ../root/script/config/administration.js:796
+#: ../root/script/config/administration.js:834
+#: ../root/script/config/administration.js:847
+#: ../root/script/config/administration.js:889
+#: ../root/script/config/administration.js:906
+#: ../root/script/config/administration.js:1484
+#: ../root/script/config/administration.js:1486
+#: ../root/script/config/administration.js:1660
+#: ../root/script/config/administration.js:1674
+#: ../root/script/config/administration.js:1676
+#: ../root/script/config/administration.js:1945
+#: ../root/script/config/administration.js:1953
+#: ../root/script/config/administration.js:1962
+#: ../root/script/config/administration.js:1970
+#: ../root/script/config/administration.js:1978
+#: ../root/script/config/administration.js:1986
+#: ../root/script/config/administration.js:1997
+msgid "Failed"
+msgstr ""
+
+#: ../root/script/config/administration.js:789
+#: ../root/script/config/administration.js:840
+#: ../root/script/config/administration.js:899
+#: ../root/script/config/administration.js:1479
+#: ../root/script/config/administration.js:1669
+msgid "Succeeded"
+msgstr ""
+
 #: ../root/script/config/administration.js:789
 msgid "Certificate Successfully Generated"
 msgstr ""
@@ -784,6 +707,57 @@ msgstr ""
 
 #: ../root/script/config/administration.js:1351
 msgid "debug"
+msgstr ""
+
+#: ../root/script/config/administration.js:1374
+msgid "Skins"
+msgstr ""
+
+#: ../root/script/config/administration.js:1384
+msgid "Administration Skin"
+msgstr ""
+
+#: ../root/script/config/administration.js:1388
+msgid "This skin will used in the administration client"
+msgstr ""
+
+#: ../root/script/config/administration.js:1407
+msgid "Info"
+msgstr ""
+
+#: ../root/script/config/administration.js:1408
+msgid ""
+"Please note that you have to relogin after saving for the new skin to take "
+"effect."
+msgstr ""
+
+#: ../root/script/config/administration.js:1414
+msgid "Block Page Skin"
+msgstr ""
+
+#: ../root/script/config/administration.js:1418
+msgid "This skin will used in the user pages like quarantine and block pages"
+msgstr ""
+
+#: ../root/script/config/administration.js:1442
+msgid "Upload New Skin"
+msgstr ""
+
+#: ../root/script/config/administration.js:1462
+#: ../root/script/config/administration.js:1587
+msgid "Upload"
+msgstr ""
+
+#: ../root/script/config/administration.js:1475
+msgid "Please wait while your skin is uploaded..."
+msgstr ""
+
+#: ../root/script/config/administration.js:1479
+msgid "Upload Skin Succeeded"
+msgstr ""
+
+#: ../root/script/config/administration.js:1486
+msgid "Upload Skin Failed"
 msgstr ""
 
 #: ../root/script/config/administration.js:1500

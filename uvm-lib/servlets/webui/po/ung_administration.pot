@@ -2,22 +2,21 @@
 # Copyright (C) YEAR Untangle, Inc.
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
+# 
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2008-06-18 10:43+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"POT-Creation-Date: 2008-06-17 19:14+0300\n"
-"Content-Type: text/plain; charset=utf-8\n"
-"MIME-Version: 1.0\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Content-Transfer-Encoding: 8bit\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=0; null;\n"
 
-#: ../root/script/config/administration.js:11
 #: ../root/script/config/administration.js:12
 #: ../root/script/config/administration.js:735
 #: ../root/script/config/administration.js:813
@@ -25,114 +24,12 @@ msgstr ""
 msgid "Configuration"
 msgstr ""
 
-#: ../root/script/config/administration.js:14
 #: ../root/script/config/administration.js:17
 #: ../root/script/config/administration.js:135
 #: ../root/script/config/administration.js:741
 #: ../root/script/config/administration.js:819
 #: ../root/script/config/administration.js:870
 msgid "Administration"
-msgstr ""
-
-#: ../root/script/config/administration.js:91
-#: ../root/script/config/administration.js:1374
-msgid "Skins"
-msgstr ""
-
-#: ../root/script/config/administration.js:102
-#: ../root/script/config/administration.js:1384
-msgid "Administration Skin"
-msgstr ""
-
-#: ../root/script/config/administration.js:106
-#: ../root/script/config/administration.js:1388
-msgid "This skin will used in the administration client"
-msgstr ""
-
-#: ../root/script/config/administration.js:124
-#: ../root/script/config/administration.js:1407
-msgid "Info"
-msgstr ""
-
-#: ../root/script/config/administration.js:124
-#: ../root/script/config/administration.js:1408
-msgid "Please note that you have to relogin after saving for the new skin to take"
-"effect."
-msgstr ""
-
-#: ../root/script/config/administration.js:130
-#: ../root/script/config/administration.js:1414
-msgid "Block Page Skin"
-msgstr ""
-
-#: ../root/script/config/administration.js:134
-#: ../root/script/config/administration.js:1418
-msgid "This skin will used in the user pages like quarantine and block pages"
-msgstr ""
-
-#: ../root/script/config/administration.js:157
-#: ../root/script/config/administration.js:1442
-msgid "Upload New Skin"
-msgstr ""
-
-#: ../root/script/config/administration.js:179
-#: ../root/script/config/administration.js:1462
-#: ../root/script/config/administration.js:1587
-msgid "Upload"
-msgstr ""
-
-#: ../root/script/config/administration.js:191
-#: ../root/script/config/administration.js:1475
-msgid "Please wait while your skin is uploaded..."
-msgstr ""
-
-#: ../root/script/config/administration.js:195
-#: ../root/script/config/administration.js:789
-#: ../root/script/config/administration.js:840
-#: ../root/script/config/administration.js:899
-#: ../root/script/config/administration.js:1479
-#: ../root/script/config/administration.js:1669
-msgid "Succeeded"
-msgstr ""
-
-#: ../root/script/config/administration.js:195
-#: ../root/script/config/administration.js:1479
-msgid "Upload Skin Succeeded"
-msgstr ""
-
-#: ../root/script/config/administration.js:200
-#: ../root/script/config/administration.js:202
-#: ../root/script/config/administration.js:217
-#: ../root/script/config/administration.js:779
-#: ../root/script/config/administration.js:796
-#: ../root/script/config/administration.js:834
-#: ../root/script/config/administration.js:847
-#: ../root/script/config/administration.js:889
-#: ../root/script/config/administration.js:906
-#: ../root/script/config/administration.js:1484
-#: ../root/script/config/administration.js:1486
-#: ../root/script/config/administration.js:1660
-#: ../root/script/config/administration.js:1674
-#: ../root/script/config/administration.js:1676
-#: ../root/script/config/administration.js:1945
-#: ../root/script/config/administration.js:1953
-#: ../root/script/config/administration.js:1962
-#: ../root/script/config/administration.js:1970
-#: ../root/script/config/administration.js:1978
-#: ../root/script/config/administration.js:1986
-#: ../root/script/config/administration.js:1997
-msgid "Failed"
-msgstr ""
-
-#: ../root/script/config/administration.js:202
-#: ../root/script/config/administration.js:1486
-msgid "Upload Skin Failed"
-msgstr ""
-
-msgid "Invalid Skin"
-msgstr ""
-
-msgid "A skin with the same name already exists"
 msgstr ""
 
 #: ../root/script/config/administration.js:121
@@ -281,17 +178,20 @@ msgid "Public Address"
 msgstr ""
 
 #: ../root/script/config/administration.js:484
-msgid "The Public Address is the address or hostname that provides a public"
-"routable address for the"
+msgid ""
+"The Public Address is the address or hostname that provides a public "
+"routable address for the "
 msgstr ""
 
 #: ../root/script/config/administration.js:485
-msgid "Untangle Server. This address will be used in emails sent by the Untangle"
-"Server to link back to"
+msgid ""
+"Untangle Server. This address will be used in emails sent by the Untangle "
+"Server to link back to "
 msgstr ""
 
 #: ../root/script/config/administration.js:486
-msgid "services hosted on the Untangle Server such as Quarantine Digests and"
+msgid ""
+"services hosted on the Untangle Server such as Quarantine Digests and "
 "OpenVPN Client emails."
 msgstr ""
 
@@ -308,7 +208,8 @@ msgid "Use Hostname"
 msgstr ""
 
 #: ../root/script/config/administration.js:528
-msgid "This is recommended if the Untangle Server's fully qualified domain name"
+msgid ""
+"This is recommended if the Untangle Server's fully qualified domain name "
 "looks up to its IP address both internally and externally."
 msgstr ""
 
@@ -322,8 +223,9 @@ msgid "Use Manually Specified IP"
 msgstr ""
 
 #: ../root/script/config/administration.js:553
-msgid "This is recommended if the Untangle Server is installed behind another"
-"firewall with a port forward from the specified IP that redirects traffic to"
+msgid ""
+"This is recommended if the Untangle Server is installed behind another "
+"firewall with a port forward from the specified IP that redirects traffic to "
 "the Untangle Server."
 msgstr ""
 
@@ -386,7 +288,8 @@ msgid "Generate a %sSelf-Signed Certificate%s"
 msgstr ""
 
 #: ../root/script/config/administration.js:676
-msgid "Click this button if you have been using a signed certificate, and you want"
+msgid ""
+"Click this button if you have been using a signed certificate, and you want "
 "to go back to using a self-signed certificate."
 msgstr ""
 
@@ -396,8 +299,9 @@ msgid "Generate a %sCertificate Signature Request%s"
 msgstr ""
 
 #: ../root/script/config/administration.js:699
-msgid "Click this button to generate a certificate signature request, which you can"
-"then copy and paste for use by certificate authorities such as Thawte,"
+msgid ""
+"Click this button to generate a certificate signature request, which you can "
+"then copy and paste for use by certificate authorities such as Thawte, "
 "Verisign, etc."
 msgstr ""
 
@@ -407,8 +311,9 @@ msgid "Import a %sSigned Certificate%s"
 msgstr ""
 
 #: ../root/script/config/administration.js:722
-msgid "Click this button to import a signed certificate which has been generated by"
-"a certificate authority, and was based on a previous signature request from"
+msgid ""
+"Click this button to import a signed certificate which has been generated by "
+"a certificate authority, and was based on a previous signature request from "
 "Untangle."
 msgstr ""
 
@@ -454,6 +359,35 @@ msgstr ""
 msgid "You must specify a country."
 msgstr ""
 
+#: ../root/script/config/administration.js:779
+#: ../root/script/config/administration.js:796
+#: ../root/script/config/administration.js:834
+#: ../root/script/config/administration.js:847
+#: ../root/script/config/administration.js:889
+#: ../root/script/config/administration.js:906
+#: ../root/script/config/administration.js:1484
+#: ../root/script/config/administration.js:1486
+#: ../root/script/config/administration.js:1660
+#: ../root/script/config/administration.js:1674
+#: ../root/script/config/administration.js:1676
+#: ../root/script/config/administration.js:1945
+#: ../root/script/config/administration.js:1953
+#: ../root/script/config/administration.js:1962
+#: ../root/script/config/administration.js:1970
+#: ../root/script/config/administration.js:1978
+#: ../root/script/config/administration.js:1986
+#: ../root/script/config/administration.js:1997
+msgid "Failed"
+msgstr ""
+
+#: ../root/script/config/administration.js:789
+#: ../root/script/config/administration.js:840
+#: ../root/script/config/administration.js:899
+#: ../root/script/config/administration.js:1479
+#: ../root/script/config/administration.js:1669
+msgid "Succeeded"
+msgstr ""
+
 #: ../root/script/config/administration.js:789
 msgid "Certificate Successfully Generated"
 msgstr ""
@@ -493,7 +427,8 @@ msgid "Error importing certificate"
 msgstr ""
 
 #: ../root/script/config/administration.js:945
-msgid "Please fill out the following fields, which will be used to generate your"
+msgid ""
+"Please fill out the following fields, which will be used to generate your "
 "self-signed certificate."
 msgstr ""
 
@@ -522,11 +457,11 @@ msgid "Hostname"
 msgstr ""
 
 #: ../root/script/config/administration.js:1010
-msgid "Click the Proceed button to generate a signature below."
+msgid "Click the Proceed button to generate a signature below.  "
 msgstr ""
 
 #: ../root/script/config/administration.js:1011
-msgid "Copy the signature (Control-C), and paste it into the necessary form"
+msgid "Copy the signature (Control-C), and paste it into the necessary form "
 msgstr ""
 
 #: ../root/script/config/administration.js:1012
@@ -534,11 +469,11 @@ msgid "from your Certificate Authority (Verisign, Thawte, etc.)."
 msgstr ""
 
 #: ../root/script/config/administration.js:1039
-msgid "When your Certificate Authority (Verisign, Thawte, etc.)"
+msgid "When your Certificate Authority (Verisign, Thawte, etc.) "
 msgstr ""
 
 #: ../root/script/config/administration.js:1040
-msgid "has sent your Signed Certificate, copy and paste it below (Control-V),"
+msgid "has sent your Signed Certificate, copy and paste it below (Control-V), "
 msgstr ""
 
 #: ../root/script/config/administration.js:1041
@@ -546,11 +481,11 @@ msgid "then press the Proceed button."
 msgstr ""
 
 #: ../root/script/config/administration.js:1052
-msgid "If your Certificate Authority (Verisign, Thawte, etc.)"
+msgid "If your Certificate Authority (Verisign, Thawte, etc.) "
 msgstr ""
 
 #: ../root/script/config/administration.js:1053
-msgid "also send you an Intermediate Certificate, paste it below."
+msgid "also send you an Intermediate Certificate, paste it below.  "
 msgstr ""
 
 #: ../root/script/config/administration.js:1054
@@ -595,7 +530,8 @@ msgstr ""
 
 #: ../root/script/config/administration.js:1168
 #, python-format
-msgid "%sDisable Traps%s so no trap events are generated.  (This is the default"
+msgid ""
+"%sDisable Traps%s so no trap events are generated.  (This is the default "
 "setting.)"
 msgstr ""
 
@@ -774,12 +710,64 @@ msgstr ""
 msgid "debug"
 msgstr ""
 
+#: ../root/script/config/administration.js:1374
+msgid "Skins"
+msgstr ""
+
+#: ../root/script/config/administration.js:1384
+msgid "Administration Skin"
+msgstr ""
+
+#: ../root/script/config/administration.js:1388
+msgid "This skin will used in the administration client"
+msgstr ""
+
+#: ../root/script/config/administration.js:1407
+msgid "Info"
+msgstr ""
+
+#: ../root/script/config/administration.js:1408
+msgid ""
+"Please note that you have to relogin after saving for the new skin to take "
+"effect."
+msgstr ""
+
+#: ../root/script/config/administration.js:1414
+msgid "Block Page Skin"
+msgstr ""
+
+#: ../root/script/config/administration.js:1418
+msgid "This skin will used in the user pages like quarantine and block pages"
+msgstr ""
+
+#: ../root/script/config/administration.js:1442
+msgid "Upload New Skin"
+msgstr ""
+
+#: ../root/script/config/administration.js:1462
+#: ../root/script/config/administration.js:1587
+msgid "Upload"
+msgstr ""
+
+#: ../root/script/config/administration.js:1475
+msgid "Please wait while your skin is uploaded..."
+msgstr ""
+
+#: ../root/script/config/administration.js:1479
+msgid "Upload Skin Succeeded"
+msgstr ""
+
+#: ../root/script/config/administration.js:1486
+msgid "Upload Skin Failed"
+msgstr ""
+
 #: ../root/script/config/administration.js:1500
 msgid "Branding"
 msgstr ""
 
 #: ../root/script/config/administration.js:1528
-msgid "The Branding Settings are used to set the logo and contact information that"
+msgid ""
+"The Branding Settings are used to set the logo and contact information that "
 "will be seen by users (e.g. reports)."
 msgstr ""
 
@@ -881,4 +869,3 @@ msgstr ""
 #: ../root/script/config/administration.js:2049
 msgid "Proceed"
 msgstr ""
-
