@@ -155,16 +155,15 @@ Ung.Main.prototype = {
        		main.leftTabs.setHeight(newHeight);
         });
         Ext.getCmp("west").fireEvent("resize");
-		var buttonCmp=new Ung.Button({
-			'height': '46px',
-			'width': '86px',
-			'renderTo': 'help',
-	        'text': i18n._('Help'),
-	        'handler': function() {	  
+		var buttonCmp=new Ext.Button({
+			name: 'Help',
+			renderTo: 'help',
+            iconCls: 'iconHelp',
+	        text: i18n._('Help'),
+	        handler: function() {	  
 				var rackBaseHelpLink = main.getHelpLink("rack");
 				window.open(rackBaseHelpLink);
-				},
-	        'iconCls': 'iconHelp'
+		    }
 		});
 		this.loadTools();
 		this.loadPolicies();
