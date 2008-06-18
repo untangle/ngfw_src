@@ -148,45 +148,44 @@ public class InitialSetupContactJPanel extends MWizardPageJPanel {
             throw exception;
 
         if( !validateOnly ){
-            try{
-                InitialSetupWizard.getInfiniteProgressJComponent().startLater("Saving Contact Information...");
-                RegistrationInfo registrationInfo = new RegistrationInfo(company, firstName, lastName, email, count);
-                registrationInfo.setAddress1(address1);
-                registrationInfo.setAddress2(address2);
-                registrationInfo.setCity(city);
-                registrationInfo.setState(state);
-                registrationInfo.setZipcode(zipcode);
-                registrationInfo.setPhone(phone);
+	    RegistrationInfo registrationInfo = new RegistrationInfo(company, firstName, lastName, email, count);
+	    registrationInfo.setAddress1(address1);
+	    registrationInfo.setAddress2(address2);
+	    registrationInfo.setCity(city);
+	    registrationInfo.setState(state);
+	    registrationInfo.setZipcode(zipcode);
+	    registrationInfo.setPhone(phone);
 
-                // KEY, IF NOT UNTANGLE APPLIANCE
-                if(!Util.isUntangleAppliance()){
-                    URL url = Util.getServerCodeBase();
-                    boolean isRegistered = com.untangle.uvm.client.RemoteUvmContextFactory.factory().
+	    // KEY, IF NOT UNTANGLE APPLIANCE
+	    if(!Util.isUntangleAppliance()){
+		try {
+		    InitialSetupWizard.getInfiniteProgressJComponent().startLater("Saving Contact Information...");
+		    URL url = Util.getServerCodeBase();
+		    boolean isRegistered = com.untangle.uvm.client.RemoteUvmContextFactory.factory().
 			isRegistered(url.getHost(),
 				     url.getPort(),
 				     0,
 				     Util.isSecureViaHttps() );
-                    if( !isRegistered ){
-                        RemoteUvmContext uvmContext = RemoteUvmContextFactory.factory().
+		    if( !isRegistered ){
+			RemoteUvmContext uvmContext = RemoteUvmContextFactory.factory().
 			    activationLogin( url.getHost(), url.getPort(),
 					     registrationInfo,
 					     0,
 					     Util.getClassLoader(),
 					     Util.isSecureViaHttps() );
-                        Util.setUvmContext(uvmContext);
-                        KeepAliveThread keepAliveThread = new KeepAliveThread(uvmContext);
-                        InitialSetupWizard.setKeepAliveThread(keepAliveThread);
+			Util.setUvmContext(uvmContext);
+			KeepAliveThread keepAliveThread = new KeepAliveThread(uvmContext);
+			InitialSetupWizard.setKeepAliveThread(keepAliveThread);
 			InitialSetupWizard.getInfiniteProgressJComponent().stopLater(1500l);
-                    }
-                } else {
+		    }
+		} catch(Exception e){
+		    InitialSetupWizard.getInfiniteProgressJComponent().stopLater(-1l);
+		    Util.handleExceptionNoRestart("Error sending data", e);
+		    throw new Exception("A network communication error occurred.  Please retry.");
+		} else {
 		    // Otherwise store it until we activate in next step
 		    InitialSetupWizard.setSharedData(registrationInfo);
 		}
-            }
-            catch(Exception e){
-                InitialSetupWizard.getInfiniteProgressJComponent().stopLater(-1l);
-                Util.handleExceptionNoRestart("Error sending data", e);
-                throw new Exception("A network communication error occurred.  Please retry.");
             }
         }
     }
