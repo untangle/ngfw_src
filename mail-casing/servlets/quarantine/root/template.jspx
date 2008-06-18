@@ -18,10 +18,10 @@
       @import "/webui/ext/resources/css/ext-all.css";
     </style>
 
-    <uvm:skin type="user" name="${ss.userPagesSkin}"/>
+    <uvm:skin src="ext-skin.css"  name="${ss.userPagesSkin}"/>
+    <uvm:skin src="userPages.css" name="${ss.userPagesSkin}"/>
 
     <!-- extjs, json and i18n libraries, this should be consolidated into a helper tag. -->
-    
     <uvm:script src="/webui/ext/source/core/Ext.js"/>
     <uvm:script src="/webui/ext/source/adapter/ext-base.js"/>
     <uvm:script src="/webui/ext/ext-all-debug.js"/>

@@ -33,41 +33,27 @@ import com.untangle.uvm.client.RemoteUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.SkinSettings;
 
+/* Ideally this would take care of everything and load the skin from the UVM context.
+ * but since global tags are loaded in a different classloader, they cannot see
+ * the UVM classes, and so the template has to pass in the name of the skin. */
+// LocalUvmContext uvm = LocalUvmContextFactory.context();
+// SkinSettings ss = uvm.skinManager().getSkinSettings();
+
+
+
 public class SkinTag extends SimpleTagSupport
 {
-    static enum SkinType {
-        ADMIN( "admin" ),
-        USER( "user" );
-        
-        private final String name;
-        private SkinType( String name )
-        {
-            this.name = name;
-        }
-
-        public String getName()
-        {
-            return this.name;
-        }
-    };
-
-    private static final Map<String, SkinType> NAME_TO_SKIN_TYPE;
-
-    private static final SkinType DEFAULT_SKIN_TYPE = SkinType.ADMIN;
-
-    private SkinType type = null;
+    private String src = null;
     private String name = null;
 
-    /* !!!unused!!! */
-    public String getType()
+    public String getSrc()
     {
-        if ( this.type == null ) return DEFAULT_SKIN_TYPE.getName();
-        return this.type.getName();
+        return this.src;
     }
 
-    public void setType( String newValue )
+    public void setSrc( String newValue )
     {
-        this.type = NAME_TO_SKIN_TYPE.get( newValue );
+        this.src = newValue;
     }
     
     public String getName()
@@ -86,31 +72,8 @@ public class SkinTag extends SimpleTagSupport
         JspWriter out = pageContext.getOut();
                 
         try {
-            /* Ideally this would take care of everything and load the skin from the UVM context.
-             * but since global tags are loaded in a different classloader, they cannot see
-             * the UVM classes, and so the template has to pass in the name of the skin. */
-            // LocalUvmContext uvm = LocalUvmContextFactory.context();
-            // SkinSettings ss = uvm.skinManager().getSkinSettings();
-
-            String skin = this.name;
-            
-            
-//             SkinType type = this.type;
-//             if ( type == null ) type = DEFAULT_SKIN_TYPE;
-//             switch ( type ) {
-//             case ADMIN:
-//                 skin = ss.getAdministrationClientSkin();
-//                 break;
-//             case USER:
-//                 skin = ss.getUserPagesSkin();
-//                 break;
-//             }
-
-            out.println( "\n<style type=\"text/css\">" );
-            out.println( "  @import \"/webui/skins/" + skin + "/css/ext-skin.css\";" );
-            out.println( "  @import \"/webui/skins/" + skin + "/css/skin.css\";" );
-            out.println( "</style>" );
-
+            String srcName  = "/webui/skins/" + this.name + "/css/" + this.src;
+            out.println( "\n<style type=\"text/css\" src=\"" + srcName + "\"></style>" );
         } catch ( IOException e ) {
             throw new JspException( "Unable to load the skins.", e );
         }
@@ -118,15 +81,7 @@ public class SkinTag extends SimpleTagSupport
 
     public void release()
     {
-        this.type = null;
+        this.src = null;
         this.name = null;
-    }
-
-    static {
-        Map <String,SkinType> nameMap = new HashMap<String,SkinType>();
-
-        for ( SkinType t : SkinType.values()) nameMap.put( t.getName(), t );
-
-        NAME_TO_SKIN_TYPE = Collections.unmodifiableMap( nameMap );
     }
 }

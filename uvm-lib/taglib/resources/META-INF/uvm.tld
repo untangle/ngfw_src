@@ -22,10 +22,9 @@
       <rtexprvalue>true</rtexprvalue>
     </attribute>
 
-    <!-- a presently unused attribute which in an ideal world would be admin or user -->
     <attribute>
-      <name>type</name>
-      <required>false</required>
+      <name>src</name>
+      <required>true</required>
       <rtexprvalue>true</rtexprvalue>
     </attribute>
   </tag>
