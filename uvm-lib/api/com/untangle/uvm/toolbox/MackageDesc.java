@@ -358,7 +358,7 @@ public class MackageDesc implements Serializable
 
     public String toString()
     {
-        return "Mackage name: " + name + "type: " + type;
+        return "Mackage name: " + name + " type: " + type;
     }
 
     // private methods ---------------------------------------------------------

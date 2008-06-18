@@ -85,7 +85,6 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
 
     static final String SESSION_ID_MDC_KEY = "SessionID";
 
-
     private Logger logger;
 
     private final MPipeImpl mPipe;

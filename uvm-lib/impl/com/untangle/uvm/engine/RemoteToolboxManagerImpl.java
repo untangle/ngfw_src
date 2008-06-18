@@ -169,7 +169,7 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
         // XXX sorting?
         // XXX filter out instances on left...
         List<MackageDesc> uninstalled = new ArrayList<MackageDesc>();
-        for (MackageDesc md : uninstalled()) {
+        for (MackageDesc md : installed()) {
             if (md.getType() == MackageDesc.Type.LIB_ITEM
                 && 0 <= md.getViewPosition()
                 && !instanceLibitems.contains(md.getName())
