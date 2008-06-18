@@ -157,30 +157,31 @@ public class InitialSetupContactJPanel extends MWizardPageJPanel {
                 registrationInfo.setState(state);
                 registrationInfo.setZipcode(zipcode);
                 registrationInfo.setPhone(phone);
+
                 // KEY, IF NOT UNTANGLE APPLIANCE
                 if(!Util.isUntangleAppliance()){
                     URL url = Util.getServerCodeBase();
-                    boolean isActivated = com.untangle.uvm.client.RemoteUvmContextFactory.factory().
-			isActivated( url.getHost(),
+                    boolean isRegistered = com.untangle.uvm.client.RemoteUvmContextFactory.factory().
+			isRegistered(url.getHost(),
 				     url.getPort(),
 				     0,
 				     Util.isSecureViaHttps() );
-                    if( !isActivated ){
+                    if( !isRegistered ){
                         RemoteUvmContext uvmContext = RemoteUvmContextFactory.factory().
 			    activationLogin( url.getHost(), url.getPort(),
-					     "0000-0000-0000-0000",
+					     registrationInfo,
 					     0,
 					     Util.getClassLoader(),
 					     Util.isSecureViaHttps() );
                         Util.setUvmContext(uvmContext);
                         KeepAliveThread keepAliveThread = new KeepAliveThread(uvmContext);
                         InitialSetupWizard.setKeepAliveThread(keepAliveThread);
+			InitialSetupWizard.getInfiniteProgressJComponent().stopLater(1500l);
                     }
-                }
-
-                Util.getRemoteAdminManager().setRegistrationInfo(registrationInfo);
-
-                InitialSetupWizard.getInfiniteProgressJComponent().stopLater(1500l);
+                } else {
+		    // Otherwise store it until we activate in next step
+		    InitialSetupWizard.setSharedData(registrationInfo);
+		}
             }
             catch(Exception e){
                 InitialSetupWizard.getInfiniteProgressJComponent().stopLater(-1l);

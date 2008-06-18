@@ -4,7 +4,7 @@
 
 REG_KEY="$1"
 
-if [ -n "$REG_KEY" ] ; then # the install wizard is calling us
+if [ -n "$REG_KEY" ] ; then # boxes with physical activation keys
   echo $REG_KEY > $ACTIVATION_KEY_FILE
 
   if [[ $REG_KEY != $FAKE_KEY ]] ; then
@@ -23,18 +23,31 @@ if [ -n "$REG_KEY" ] ; then # the install wizard is calling us
 
   # If we get here, the key is good.
   echo "Key is valid"
-else
-  # we're being called from uvm.sh, and the popid is in the right
-  # file already
+fi
 
-  # This next will fail if testing on development machines, which is "a good thing"
-  echo "Installing sources list"
-  POPID=`cat $POPID_FILE`
-  if [ -f "$SOURCES_LIST" ] && grep -q "$POPID" $SOURCES_LIST ; then # already taken care of
+if [ ! -f $ACTIVATION_KEY_FILE -o ! -f $POPID_FILE ]; then
+    # we need a popid
+    echo "$NAME: about to create pop id" >> $UVM_WRAPPER_LOG
+    output=`ruby @UVM_HOME@/bin/createpopid.rb 2>&1`
+    if [ $? = 0 ] ; then
+	echo "$NAME: created pop id" >> $UVM_WRAPPER_LOG
+    else
+	echo "$NAME: failed to create pop id; output was: '$output'"
+	exit 1
+    fi
+fi
+
+POPID=`cat $POPID_FILE`
+# This next will fail if testing on development machines, which is "a good thing"
+if [ -f "$SOURCES_LIST" ] && grep -q "$POPID" $SOURCES_LIST ; then # already taken care of
     true
-  else # dump the right source in the right place :)
+else # dump the right source in the right place :)
+    echo "Installing sources list"
     touch $SOURCES_LIST # so that we don't fail next line because of noclobber
     echo -e $DEFAULT_UNTANGLE_SOURCE | sed "s/$KEY_TEMPLATE/$POPID/" >> $SOURCES_LIST
-  fi
-  apt-get update
+    nohup apt-get update >& /dev/null &
 fi
+
+@UVM_HOME@/bin/utregister
+
+exit 0

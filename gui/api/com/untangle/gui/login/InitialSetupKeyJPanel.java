@@ -40,6 +40,7 @@ import javax.swing.SwingUtilities;
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.wizard.*;
 import com.untangle.uvm.client.*;
+import com.untangle.uvm.security.*;
 
 public class InitialSetupKeyJPanel extends MWizardPageJPanel {
 
@@ -82,14 +83,16 @@ public class InitialSetupKeyJPanel extends MWizardPageJPanel {
             try{
                 InitialSetupWizard.getInfiniteProgressJComponent().startLater("Saving Key...");
                 URL url = Util.getServerCodeBase();
-                boolean isActivated = com.untangle.uvm.client.RemoteUvmContextFactory.factory().isActivated( url.getHost(), url.getPort(), 0, Util.isSecureViaHttps() );
-                if( !isActivated ){
-                    RemoteUvmContext uvmContext = RemoteUvmContextFactory.factory().activationLogin( url.getHost(), url.getPort(),
-                                                                                                        key,
-                                                                                                        0,
-                                                                                                        Util.getClassLoader(),
-                                                                                                        Util.isSecureViaHttps() );
-
+                boolean isRegistered = com.untangle.uvm.client.RemoteUvmContextFactory.factory().isRegistered( url.getHost(), url.getPort(), 0, Util.isSecureViaHttps() );
+                if( !isRegistered ){
+		    RegistrationInfo registrationInfo = (RegistrationInfo) InitialSetupWizard.getSharedData();
+                    RemoteUvmContext uvmContext = RemoteUvmContextFactory.factory().
+			activationLogin( url.getHost(), url.getPort(),
+					 key,
+					 registrationInfo,
+					 0,
+					 Util.getClassLoader(),
+					 Util.isSecureViaHttps() );
                     Util.setUvmContext(uvmContext);
                     KeepAliveThread keepAliveThread = new KeepAliveThread(uvmContext);
                     InitialSetupWizard.setKeepAliveThread(keepAliveThread);
