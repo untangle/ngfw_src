@@ -73,7 +73,7 @@ public class SkinTag extends SimpleTagSupport
                 
         try {
             String srcName  = "/webui/skins/" + this.name + "/css/" + this.src;
-            out.println( "\n<style type=\"text/css\" src=\"" + srcName + "\"></style>" );
+            out.println( "\n<link type=\"text/css\" rel=\"stylesheet\" href=\"" + srcName + "\"></link>" );
         } catch ( IOException e ) {
             throw new JspException( "Unable to load the skins.", e );
         }
