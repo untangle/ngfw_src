@@ -8,6 +8,7 @@ var rpc=null;
 
 Ung.Setup =  {
 	init: function() {
+        /*
 		rpc = {};
 		// get JSONRpcClient
 		rpc.jsonrpc = new JSONRpcClient("/webui/JSON-RPC");
@@ -24,6 +25,26 @@ Ung.Setup =  {
                 }
              ]
         });
-		
+        */
+
+        this.wizard = new Ung.Wizard({
+            height : 400,
+            width : 800,
+            cards : [{
+                title : "Card 1",
+                panel : new Ext.Panel({  defaults : { border : false }, items : [{ html : "one foo" }] } )
+                    },{
+                title : "Card 2",
+                panel : new Ext.Panel({ defaults : { border : false }, items : [{ html : "two foo" }] } )
+            },{
+                title : "Card 3",
+                panel : new Ext.Panel({ defaults : { border : false }, items : [{ html : "The final countdown" }] } )
+            }],
+            el : "container"
+        });
+
+        this.wizard.render();
+
+        this.wizard.goToPage( 0 );
 	}
 };	
