@@ -25,6 +25,7 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -50,6 +51,7 @@ import com.untangle.uvm.node.NodeException;
 import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.security.LoginSession;
 import com.untangle.uvm.security.Tid;
+import com.untangle.uvm.toolbox.Application;
 import com.untangle.uvm.toolbox.DownloadComplete;
 import com.untangle.uvm.toolbox.DownloadProgress;
 import com.untangle.uvm.toolbox.DownloadSummary;
@@ -160,28 +162,43 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
             .context().nodeManager();
         List<NodeDesc> instances = tm.visibleNodes(p);
 
-        Set<String> instanceLibitems = new HashSet<String>();
-        for (NodeDesc nd : instances) {
-            // XXX libitem hack-attack
-            instanceLibitems.add(nd.getName().replaceFirst("-.*-", "-libitem-"));
-        }
+        Set<String> displayNames = new HashSet<String>();
 
-        // XXX sorting?
-        // XXX filter out instances on left...
-        List<MackageDesc> uninstalled = new ArrayList<MackageDesc>();
-        for (MackageDesc md : installed()) {
+        Map<String, MackageDesc> nodes = new HashMap<String, MackageDesc>();
+        Map<String, MackageDesc> trials = new HashMap<String, MackageDesc>();
+        Map<String, MackageDesc> libitems = new HashMap<String, MackageDesc>();
+        for (MackageDesc md : this.available) {
+            String dn = md.getDisplayName();
             MackageDesc.Type type = md.getType();
-            if ((type == MackageDesc.Type.LIB_ITEM
-                 || type == MackageDesc.Type.TRIAL)
-                && 0 <= md.getViewPosition()
-                && !instanceLibitems.contains(md.getName())
-                // XXX FLAG REFACTOR
-                && !md.getName().equals("untangle-libitem-router")) {
-                uninstalled.add(md);
+            if (type == MackageDesc.Type.LIB_ITEM) {
+                displayNames.add(dn);
+                libitems.put(dn, md);
+            } else if (type == MackageDesc.Type.TRIAL) {
+                displayNames.add(dn);
+                trials.put(dn, md);
+            } else if (type == MackageDesc.Type.NODE) {
+                displayNames.add(dn);
+                nodes.put(dn, md);
             }
         }
 
-        return new RackView(uninstalled, instances);
+        displayNames.remove(null);
+        displayNames.remove("Router");
+        for (NodeDesc nd : instances) {
+            displayNames.remove(nd.getDisplayName());
+        }
+
+        List<Application> apps = new ArrayList<Application>(displayNames.size());
+        for (String dn : displayNames) {
+            Application a = new Application(libitems.get(dn),
+                                            trials.get(dn),
+                                            nodes.get(dn));
+            apps.add(a);
+        }
+
+        Collections.sort(apps);
+
+        return new RackView(apps, instances);
     }
 
     // all known mackages

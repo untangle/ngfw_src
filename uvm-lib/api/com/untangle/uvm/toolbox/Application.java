@@ -1,5 +1,5 @@
 /*
- * $HeadURL: svn://chef/branch/prod/web-ui/work/src/uvm-lib/api/com/untangle/uvm/node/RemoteNodeManager.java $
+ * $HeadURL: svn://chef/branch/prod/web-ui/work/src/uvm-lib/api/com/untangle/uvm/toolbox/DownloadComplete.java $
  * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
@@ -34,35 +34,64 @@
 package com.untangle.uvm.toolbox;
 
 import java.io.Serializable;
-import java.util.Collections;
-import java.util.List;
 
-import com.untangle.uvm.node.NodeDesc;
-
-public class RackView implements Serializable
+public class Application implements Comparable<Application>, Serializable
 {
-    private List<Application> applications;
-    private List<NodeDesc> instances;
+    private final MackageDesc libitem;
+    private final MackageDesc trial;
+    private final MackageDesc node;
 
-    public RackView(List<Application> applications, List<NodeDesc> instances)
+    public Application(MackageDesc libitem, MackageDesc trial, MackageDesc node)
     {
-        this.applications = Collections.unmodifiableList(applications);
-        this.instances = Collections.unmodifiableList(instances);
+        this.libitem = libitem;
+        this.trial = trial;
+        this.node = node;
     }
 
-    public List<Application> getApplications()
+    public MackageDesc getLibItem()
     {
-        return applications;
+        return libitem;
     }
 
-    public List<NodeDesc> getInstances()
+    public MackageDesc getTrial()
     {
-        return instances;
+        return trial;
     }
+
+    public MackageDesc getNode()
+    {
+        return node;
+    }
+
+    public int getViewPosition()
+    {
+        if (libitem != null &&
+            libitem.getViewPosition() != MackageDesc.UNKNOWN_POSITION) {
+            return libitem.getViewPosition();
+        } else if (trial != null
+                   && trial.getViewPosition() != MackageDesc.UNKNOWN_POSITION) {
+            return trial.getViewPosition();
+        } else if (node != null
+                   && node.getViewPosition() != MackageDesc.UNKNOWN_POSITION) {
+            return node.getViewPosition();
+        } else {
+            return -1;
+        }
+    }
+
+    // Comparable methods ------------------------------------------------------
+
+    public int compareTo(Application a)
+    {
+        return new Integer(getViewPosition()).compareTo(a.getViewPosition());
+    }
+
+    // Object methods ----------------------------------------------------------
 
     @Override
     public String toString()
     {
-        return "RackView\n  AVAILABLE: " + applications + "\n  INSTANCES: " + instances;
+        return "(Application libitem: " + libitem + " trial: " + trial
+            + " node: " + node + ")";
     }
 }
