@@ -8,6 +8,8 @@ var i18n=null;
 // the main json rpc object
 var rpc = {};
 
+Ung.SetupWizard.LabelWidth = 150;
+
 Ung.SetupWizard.welcome = function()
 {
     var panel = new Ext.FormPanel({
@@ -28,7 +30,7 @@ Ung.SetupWizard.welcome = function()
 Ung.SetupWizard.settings = function()
 {
     var panel = new Ext.FormPanel({
-        labelWidth : 150,
+        labelWidth : Ung.SetupWizard.LabelWidth,
         defaultType : 'fieldset',
         cls : 'untangle-form-panel',
         defaults : { 
@@ -60,7 +62,7 @@ Ung.SetupWizard.settings = function()
                 editable : false,
                 store : Ung.SetupWizard.TimeZoneStore,
                 width : 350,
-                listWidth : 350,
+                listWidth : 355,
                 hideLabel : true,
                 mode : 'local',
                 triggerAction : 'all',
@@ -95,6 +97,83 @@ Ung.SetupWizard.settings = function()
     };
 }
 
+Ung.SetupWizard.registration = function()
+{
+    var employeeStore = [
+        [ 5, i18n._( "1-5" )],
+        [ 10, i18n._( "5-10" )],
+        [ 50, i18n._( "10-50" )],
+        [ 100, i18n._( "50-100" )],
+        [ 250, i18n._( "100-250" )],
+        [ 500, i18n._( "250-500" )],
+        [ 1000, i18n._( "500-1000" )],
+        [ 2500, i18n._( "> 1000 " )]];
+
+    var industryStore = [
+        [ "finance", i18n._( "Banking" ) ],
+        [ "software", i18n._( "Software" ) ]];
+
+    var panel = new Ext.FormPanel({
+        labelWidth : Ung.SetupWizard.LabelWidth,
+        defaultType : 'fieldset',
+        cls : 'untangle-form-panel',
+        defaults : { 
+            autoHeight : true
+        },
+        items : [{
+            defaultType : 'textfield',
+            title : i18n._( 'Required Information' ),
+            items : [{
+                xtype : 'label',
+                html : i18n._( 'Please provide administrator contact info.' ),
+                border : false
+            },{
+                fieldLabel : i18n._('Email'),
+            },{
+                fieldLabel : i18n._('Confirm Email'),
+            },{
+                fieldLabel : i18n._('Company Name'),
+            },{
+                fieldLabel : i18n._('Name'),
+            },{
+                fieldLabel : i18n._('Number of machines behind Untangle'),
+            }]
+        },{
+            defaultType : 'textfield',
+            title : i18n._( 'Optional Information' ),
+            items : [{
+                xtype : 'label',
+                html : i18n._( 'Answering these questions will help us build a better product - for you!' ),
+                border : false
+            },{
+                fieldLabel : i18n._('How did you find Untangle'),
+            },{
+                fieldLabel : i18n._('State/Province'),
+            },{
+                fieldLabel : i18n._('Country'),
+            },{
+                xtype : 'combo',
+                width : 100,
+                listWidth : 105,
+                store : industryStore,
+                fieldLabel : i18n._('What industry is your company in'),
+            },{
+                xtype : 'combo',
+                width : 50,
+                store : employeeStore,
+                fieldLabel : i18n._('Number of employees'),
+            }]
+        }]
+    });
+
+    return {
+        title : i18n._( "Registration" ),
+        cardTitle : i18n._( "Registration" ),
+        panel : panel
+    };
+}
+
+
 Ung.SetupWizard.TimeZoneStore = [];
 
 Ung.Setup =  {
@@ -119,11 +198,8 @@ Ung.Setup =  {
             width : 800,
             cards : [Ung.SetupWizard.welcome(),
                      Ung.SetupWizard.settings(),
+                     Ung.SetupWizard.registration(),
             {
-                title : "Card 2",
-                cardTitle : "Registration",
-                panel : new Ext.Panel({ defaults : { border : false }, items : [{ html : "two foo" }] } )
-            },{
                 title : "Card 3",
                 cardTitle : "Congrats",
                 panel : new Ext.Panel({ defaults : { border : false }, items : [{ html : "The final countdown" }] } )
@@ -133,6 +209,6 @@ Ung.Setup =  {
 
         this.wizard.render();
 
-        this.wizard.goToPage( 1 );
+        this.wizard.goToPage( 2 );
 	}
 };	
