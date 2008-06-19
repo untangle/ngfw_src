@@ -33,8 +33,8 @@
 
 package com.untangle.node.token;
 
-import com.untangle.uvm.logging.BlingBlinger;
-import com.untangle.uvm.logging.Counters;
+import com.untangle.uvm.message.BlingBlinger;
+import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.vnet.Session;
 import org.apache.log4j.Logger;
 

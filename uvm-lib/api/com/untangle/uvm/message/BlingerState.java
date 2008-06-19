@@ -31,35 +31,26 @@
  * to do so, delete this exception statement from your version.
  */
 
-package com.untangle.uvm.logging;
+package com.untangle.uvm.message;
 
-public class StatDesc
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
+import com.untangle.uvm.security.Tid;
+
+public class BlingerState
 {
-    private final String name;
-    private final String displayName;
-    private final String action;
-    private final String unit;
+    private final Map<Tid, Stats> stats;
 
-    public StatDesc(String name, String displayName, String action, String unit)
+    public BlingerState(Map<Tid, Stats> stats)
     {
-        this.name = name;
-        this.displayName = displayName;
-        this.action = action;
-        this.unit = unit;
+        Map<Tid, Stats> m = new HashMap<Tid, Stats>(stats);
+        this.stats = Collections.unmodifiableMap(m);
     }
 
-    public String getDisplayName()
+    public Map<Tid, Stats> getStats()
     {
-        return displayName;
-    }
-
-    public String getAction()
-    {
-        return action;
-    }
-
-    public String getUnit()
-    {
-        return unit;
+        return stats;
     }
 }

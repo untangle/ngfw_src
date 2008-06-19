@@ -31,7 +31,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import com.untangle.uvm.logging.ActiveBlinger;
+import com.untangle.uvm.message.ActiveStat;
 import com.untangle.uvm.security.Tid;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.IndexColumn;
@@ -42,11 +42,11 @@ class BlingerSettings implements Serializable
 {
     private Long id;
     private Tid tid;
-    private List<ActiveBlinger> activeMetrics;
+    private List<ActiveStat> activeMetrics;
 
     public BlingerSettings() {}
 
-    public BlingerSettings(Tid tid, List<ActiveBlinger> activeMetrics)
+    public BlingerSettings(Tid tid, List<ActiveStat> activeMetrics)
     {
         this.tid = tid;
         this.activeMetrics = activeMetrics;
@@ -87,12 +87,12 @@ class BlingerSettings implements Serializable
                    org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     @JoinColumn(name="settings_id")
     @IndexColumn(name="position")
-    public List<ActiveBlinger> getActiveMetrics()
+    public List<ActiveStat> getActiveMetrics()
     {
         return activeMetrics;
     }
 
-    public void setActiveMetrics(List<ActiveBlinger> activeMetrics)
+    public void setActiveMetrics(List<ActiveStat> activeMetrics)
     {
         this.activeMetrics = activeMetrics;
     }

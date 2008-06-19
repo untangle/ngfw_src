@@ -27,9 +27,9 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.untangle.uvm.argon.ArgonAgent;
-import com.untangle.uvm.logging.BlingBlinger;
-import com.untangle.uvm.logging.Counters;
-import com.untangle.uvm.logging.LoadCounter;
+import com.untangle.uvm.message.BlingBlinger;
+import com.untangle.uvm.message.Counters;
+import com.untangle.uvm.message.LoadCounter;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.NodeDesc;

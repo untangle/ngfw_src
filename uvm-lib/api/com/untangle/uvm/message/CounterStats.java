@@ -31,38 +31,20 @@
  * to do so, delete this exception statement from your version.
  */
 
-package com.untangle.uvm.logging;
+package com.untangle.uvm.message;
 
-public class LoadCounter implements LoadStrober
+/**
+ * Counters.
+ *
+ * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
+ * @version 1.0
+ */
+public interface CounterStats
 {
-    private long value;
+    long getCount();
+    long getCountSinceMidnight();
 
-    // public methods ---------------------------------------------------------
-
-    public void changeValue(long delta)
-    {
-        value += delta;
-    }
-
-    public void increment()
-    {
-        value++;
-    }
-
-    public void decrement()
-    {
-        value--;
-    }
-
-    // LoadStrober methods ----------------------------------------------------
-
-    public long updateValue()
-    {
-        return value;
-    }
-
-    public long getLastValue()
-    {
-        return value;
-    }
+    long get1MinuteCount();
+    long get5MinuteCount();
+    long get15MinuteCount();
 }

@@ -16,7 +16,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package com.untangle.uvm.logging;
+package com.untangle.uvm.message;
 
 import java.io.Serializable;
 import javax.persistence.Column;
@@ -28,16 +28,16 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="u_active_blinger", schema="settings")
-public class ActiveBlinger implements Serializable
+@Table(name="u_active_stat", schema="settings")
+public class ActiveStat implements Serializable
 {
     private Long id;
     private String name;
     private BlingerInterval interval;
 
-    public ActiveBlinger() { }
+    public ActiveStat() { }
 
-    public ActiveBlinger(String name, BlingerInterval interval)
+    public ActiveStat(String name, BlingerInterval interval)
     {
         this.name = name;
         this.interval = interval;
@@ -81,6 +81,6 @@ public class ActiveBlinger implements Serializable
     @Override
     public String toString()
     {
-        return "ActiveBlinger[#" + id + "] name: " + name + " interval: " + interval;
+        return "ActiveStat[#" + id + "] name: " + name + " interval: " + interval;
     }
 }

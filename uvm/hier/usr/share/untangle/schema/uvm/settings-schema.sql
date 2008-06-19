@@ -529,7 +529,7 @@ CREATE TABLE settings.u_blinger_settings (
     tid               int8 UNIQUE,
     PRIMARY KEY       (settings_id));
 
-CREATE TABLE settings.u_active_blinger (
+CREATE TABLE settings.u_active_stat (
     id                   int8 NOT NULL,
     settings_id          int8,
     position             int4,

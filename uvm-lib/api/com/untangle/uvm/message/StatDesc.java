@@ -31,20 +31,35 @@
  * to do so, delete this exception statement from your version.
  */
 
-package com.untangle.uvm.logging;
+package com.untangle.uvm.message;
 
-/**
- * Counters.
- *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
- */
-public interface CounterStats
+public class StatDesc
 {
-    long getCount();
-    long getCountSinceMidnight();
+    private final String name;
+    private final String displayName;
+    private final String action;
+    private final String unit;
 
-    long get1MinuteCount();
-    long get5MinuteCount();
-    long get15MinuteCount();
+    public StatDesc(String name, String displayName, String action, String unit)
+    {
+        this.name = name;
+        this.displayName = displayName;
+        this.action = action;
+        this.unit = unit;
+    }
+
+    public String getDisplayName()
+    {
+        return displayName;
+    }
+
+    public String getAction()
+    {
+        return action;
+    }
+
+    public String getUnit()
+    {
+        return unit;
+    }
 }

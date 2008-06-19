@@ -22,12 +22,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.untangle.uvm.logging.ActiveBlinger;
-import com.untangle.uvm.logging.BlingerState;
-import com.untangle.uvm.logging.Counters;
+import com.untangle.uvm.message.ActiveStat;
+import com.untangle.uvm.message.BlingerState;
+import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.logging.LocalBlingerManager;
-import com.untangle.uvm.logging.StatDescs;
-import com.untangle.uvm.logging.Stats;
+import com.untangle.uvm.message.StatDescs;
+import com.untangle.uvm.message.Stats;
 import com.untangle.uvm.node.LocalNodeManager;
 import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.security.Tid;
@@ -73,11 +73,11 @@ class BlingerManagerImpl implements LocalBlingerManager
         }
     }
 
-    public List<ActiveBlinger> getActiveMetrics(final Tid tid)
+    public List<ActiveStat> getActiveMetrics(final Tid tid)
     {
-        TransactionWork<List<ActiveBlinger>> tw = new TransactionWork<List<ActiveBlinger>>()
+        TransactionWork<List<ActiveStat>> tw = new TransactionWork<List<ActiveStat>>()
             {
-                private List<ActiveBlinger> result;
+                private List<ActiveStat> result;
 
                 public boolean doWork(Session s)
                 {
@@ -95,7 +95,7 @@ class BlingerManagerImpl implements LocalBlingerManager
                 }
 
                 @Override
-                public List<ActiveBlinger> getResult()
+                public List<ActiveStat> getResult()
                 {
                     return result;
                 }
@@ -106,9 +106,9 @@ class BlingerManagerImpl implements LocalBlingerManager
     }
 
     public void setActiveMetrics(final Tid tid,
-                                 final List<ActiveBlinger> activeMetrics)
+                                 final List<ActiveStat> activeMetrics)
     {
-        TransactionWork<List<ActiveBlinger>> tw = new TransactionWork<List<ActiveBlinger>>()
+        TransactionWork<List<ActiveStat>> tw = new TransactionWork<List<ActiveStat>>()
             {
                 public boolean doWork(Session s)
                 {
@@ -154,7 +154,7 @@ class BlingerManagerImpl implements LocalBlingerManager
 
     private void ensureTid0()
     {
-        TransactionWork<List<ActiveBlinger>> tw = new TransactionWork<List<ActiveBlinger>>()
+        TransactionWork<List<ActiveStat>> tw = new TransactionWork<List<ActiveStat>>()
             {
                 public boolean doWork(Session s)
                 {

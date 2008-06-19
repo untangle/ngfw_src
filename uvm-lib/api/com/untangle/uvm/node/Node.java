@@ -33,7 +33,7 @@
 
 package com.untangle.uvm.node;
 
-import com.untangle.uvm.logging.Counters;
+import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.security.Tid;
 import com.untangle.uvm.vnet.IPSessionDesc;
 

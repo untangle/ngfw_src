@@ -31,7 +31,7 @@
  * to do so, delete this exception statement from your version.
  */
 
-package com.untangle.uvm.logging;
+package com.untangle.uvm.message;
 
 import java.io.Serializable;
 import java.util.ArrayList;

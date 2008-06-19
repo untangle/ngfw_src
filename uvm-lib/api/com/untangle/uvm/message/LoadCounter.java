@@ -31,28 +31,38 @@
  * to do so, delete this exception statement from your version.
  */
 
-package com.untangle.uvm.logging;
+package com.untangle.uvm.message;
 
-/**
- * Interface for a steerable value. Allows LoadMaster to get updated
- * values.
- *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
- */
-public interface LoadStrober
+public class LoadCounter implements LoadStrober
 {
-    /**
-     * Update and return the value.
-     *
-     * @return the updated value.
-     */
-    long updateValue();
+    private long value;
 
-    /**
-     * Get the last updated value.
-     *
-     * @return the value from the last update.
-     */
-    long getLastValue();
+    // public methods ---------------------------------------------------------
+
+    public void changeValue(long delta)
+    {
+        value += delta;
+    }
+
+    public void increment()
+    {
+        value++;
+    }
+
+    public void decrement()
+    {
+        value--;
+    }
+
+    // LoadStrober methods ----------------------------------------------------
+
+    public long updateValue()
+    {
+        return value;
+    }
+
+    public long getLastValue()
+    {
+        return value;
+    }
 }

@@ -45,7 +45,7 @@ import com.untangle.uvm.CronJob;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.Period;
 import com.untangle.uvm.message.MessageQueue;
-import com.untangle.uvm.logging.StatDescs;
+import com.untangle.uvm.message.StatDescs;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.NodeDesc;
 import com.untangle.uvm.node.NodeException;

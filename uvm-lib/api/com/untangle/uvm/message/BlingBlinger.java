@@ -31,45 +31,59 @@
  * to do so, delete this exception statement from your version.
  */
 
-package com.untangle.uvm.logging;
+package com.untangle.uvm.message;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
-public class StatDescs implements Serializable
+public class BlingBlinger implements CounterStats
 {
-    private final List<StatDesc> metricDescs;
-    private final List<StatDesc> activityDescs;
+    private final StatDesc statDesc;
 
-    StatDescs(Collection<BlingBlinger> metrics,
-                  Collection<BlingBlinger> activities)
+    public BlingBlinger(String name, String displayName, String unit,
+                        String action)
     {
-        this.metricDescs = getStatDescss(metrics);
-        this.activityDescs = getStatDescss(activities);
+        this.statDesc = new StatDesc(name, displayName, unit, action);
     }
 
-    public List<StatDesc> getMetricDescs()
+    // public methods ---------------------------------------------------------
+
+    public StatDesc getStatDescs()
     {
-        return metricDescs;
+        return statDesc;
     }
 
-    public List<StatDesc> getActivityDescs()
+    public long increment()
     {
-        return activityDescs;
+        return increment(1);
     }
 
-    // private methods ---------------------------------------------------------
-
-    private List<StatDesc> getStatDescss(Collection<BlingBlinger> blingers)
+    public long increment(long delta)
     {
-        List<StatDesc> l = new ArrayList<StatDesc>(blingers.size());
-        for (BlingBlinger bb : blingers) {
-            l.add(bb.getStatDescs());
-        }
+        return 0;
+    }
 
-        return Collections.unmodifiableList(l);
+    // CounterStats methods ---------------------------------------------------
+
+    public long getCount()
+    {
+        return 0;
+    }
+
+    public long getCountSinceMidnight()
+    {
+        return 0;
+    }
+
+    public long get1MinuteCount()
+    {
+        return 0;
+    }
+
+    public long get5MinuteCount()
+    {
+        return 0;
+    }
+
+    public long get15MinuteCount()
+    {
+        return 0;
     }
 }

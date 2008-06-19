@@ -40,8 +40,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.logging.BlingBlinger;
-import com.untangle.uvm.logging.Counters;
+import com.untangle.uvm.message.BlingBlinger;
+import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.vnet.AbstractEventHandler;
 import com.untangle.uvm.vnet.MPipeException;

@@ -31,26 +31,45 @@
  * to do so, delete this exception statement from your version.
  */
 
-package com.untangle.uvm.logging;
+package com.untangle.uvm.message;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
-import com.untangle.uvm.security.Tid;
-
-public class BlingerState
+public class StatDescs implements Serializable
 {
-    private final Map<Tid, Stats> stats;
+    private final List<StatDesc> metricDescs;
+    private final List<StatDesc> activityDescs;
 
-    public BlingerState(Map<Tid, Stats> stats)
+    StatDescs(Collection<BlingBlinger> metrics,
+                  Collection<BlingBlinger> activities)
     {
-        Map<Tid, Stats> m = new HashMap<Tid, Stats>(stats);
-        this.stats = Collections.unmodifiableMap(m);
+        this.metricDescs = getStatDescss(metrics);
+        this.activityDescs = getStatDescss(activities);
     }
 
-    public Map<Tid, Stats> getStats()
+    public List<StatDesc> getMetricDescs()
     {
-        return stats;
+        return metricDescs;
+    }
+
+    public List<StatDesc> getActivityDescs()
+    {
+        return activityDescs;
+    }
+
+    // private methods ---------------------------------------------------------
+
+    private List<StatDesc> getStatDescss(Collection<BlingBlinger> blingers)
+    {
+        List<StatDesc> l = new ArrayList<StatDesc>(blingers.size());
+        for (BlingBlinger bb : blingers) {
+            l.add(bb.getStatDescs());
+        }
+
+        return Collections.unmodifiableList(l);
     }
 }

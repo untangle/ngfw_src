@@ -20,10 +20,10 @@ package com.untangle.uvm.engine;
 
 import java.util.List;
 
-import com.untangle.uvm.logging.ActiveBlinger;
-import com.untangle.uvm.logging.BlingerState;
+import com.untangle.uvm.message.ActiveStat;
+import com.untangle.uvm.message.BlingerState;
 import com.untangle.uvm.logging.LocalBlingerManager;
-import com.untangle.uvm.logging.StatDescs;
+import com.untangle.uvm.message.StatDescs;
 import com.untangle.uvm.logging.RemoteBlingerManager;
 import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.security.Tid;
@@ -52,12 +52,12 @@ class RemoteBlingerManagerAdaptor implements RemoteBlingerManager
         return lbm.getStatDescs(t);
     }
 
-    public List<ActiveBlinger> getActiveMetrics(Tid tid)
+    public List<ActiveStat> getActiveMetrics(Tid tid)
     {
         return lbm.getActiveMetrics(tid);
     }
 
-    public void setActiveMetrics(Tid tid, List<ActiveBlinger> activeMetrics)
+    public void setActiveMetrics(Tid tid, List<ActiveStat> activeMetrics)
     {
         lbm.setActiveMetrics(tid, activeMetrics);
     }

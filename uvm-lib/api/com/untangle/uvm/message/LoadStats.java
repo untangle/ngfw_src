@@ -31,59 +31,17 @@
  * to do so, delete this exception statement from your version.
  */
 
-package com.untangle.uvm.logging;
+package com.untangle.uvm.message;
 
-public class BlingBlinger implements CounterStats
+/**
+ * Load statistics.
+ *
+ * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
+ * @version 1.0
+ */
+public interface LoadStats
 {
-    private final StatDesc statDesc;
-
-    public BlingBlinger(String name, String displayName, String unit,
-                        String action)
-    {
-        this.statDesc = new StatDesc(name, displayName, unit, action);
-    }
-
-    // public methods ---------------------------------------------------------
-
-    public StatDesc getStatDescs()
-    {
-        return statDesc;
-    }
-
-    public long increment()
-    {
-        return increment(1);
-    }
-
-    public long increment(long delta)
-    {
-        return 0;
-    }
-
-    // CounterStats methods ---------------------------------------------------
-
-    public long getCount()
-    {
-        return 0;
-    }
-
-    public long getCountSinceMidnight()
-    {
-        return 0;
-    }
-
-    public long get1MinuteCount()
-    {
-        return 0;
-    }
-
-    public long get5MinuteCount()
-    {
-        return 0;
-    }
-
-    public long get15MinuteCount()
-    {
-        return 0;
-    }
+    float get1MinuteAverage();
+    float get5MinuteAverage();
+    float get15MinuteAverage();
 }

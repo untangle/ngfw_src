@@ -38,7 +38,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import com.untangle.uvm.logging.StatDescs;
+import com.untangle.uvm.message.StatDescs;
 import com.untangle.uvm.node.NodeDesc;
 import com.untangle.uvm.security.Tid;
 

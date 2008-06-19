@@ -31,17 +31,28 @@
  * to do so, delete this exception statement from your version.
  */
 
-package com.untangle.uvm.logging;
+package com.untangle.uvm.message;
 
 /**
- * Load statistics.
+ * Interface for a steerable value. Allows LoadMaster to get updated
+ * values.
  *
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
-public interface LoadStats
+public interface LoadStrober
 {
-    float get1MinuteAverage();
-    float get5MinuteAverage();
-    float get15MinuteAverage();
+    /**
+     * Update and return the value.
+     *
+     * @return the updated value.
+     */
+    long updateValue();
+
+    /**
+     * Get the last updated value.
+     *
+     * @return the value from the last update.
+     */
+    long getLastValue();
 }
