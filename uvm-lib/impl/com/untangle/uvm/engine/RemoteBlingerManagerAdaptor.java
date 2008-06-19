@@ -24,15 +24,15 @@ import com.untangle.uvm.message.ActiveStat;
 import com.untangle.uvm.message.BlingerState;
 import com.untangle.uvm.logging.LocalBlingerManager;
 import com.untangle.uvm.message.StatDescs;
-import com.untangle.uvm.logging.RemoteBlingerManager;
+import com.untangle.uvm.message.RemoteMessageManager;
 import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.security.Tid;
 
-class RemoteBlingerManagerAdaptor implements RemoteBlingerManager
+class RemoteMessageManagerAdaptor implements RemoteMessageManager
 {
     private final LocalBlingerManager lbm;
 
-    RemoteBlingerManagerAdaptor(LocalBlingerManager lbm)
+    RemoteMessageManagerAdaptor(LocalBlingerManager lbm)
     {
         this.lbm = lbm;
     }

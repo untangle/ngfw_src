@@ -524,7 +524,7 @@ CREATE TABLE settings.u_wmi_settings (
     password          TEXT,
     PRIMARY KEY       (settings_id));
 
-CREATE TABLE settings.u_blinger_settings (
+CREATE TABLE settings.u_stat_settings (
     settings_id       int8 NOT NULL,
     tid               int8 UNIQUE,
     PRIMARY KEY       (settings_id));

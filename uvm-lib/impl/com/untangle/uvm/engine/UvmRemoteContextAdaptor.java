@@ -32,7 +32,7 @@ import com.untangle.uvm.RemoteSkinManager;
 import com.untangle.uvm.addrbook.RemoteAddressBook;
 import com.untangle.uvm.client.RemoteUvmContext;
 import com.untangle.uvm.license.RemoteLicenseManager;
-import com.untangle.uvm.logging.RemoteBlingerManager;
+import com.untangle.uvm.message.RemoteMessageManager;
 import com.untangle.uvm.logging.RemoteLoggingManager;
 import com.untangle.uvm.networking.ping.RemotePingManager;
 import com.untangle.uvm.node.RemoteIntfManager;
@@ -158,7 +158,7 @@ class RemoteUvmContextAdaptor implements RemoteUvmContext
         return context.skinManager();
     }
 
-    public RemoteBlingerManager blingerManager()
+    public RemoteMessageManager blingerManager()
     {
         return context.blingerManager();
     }

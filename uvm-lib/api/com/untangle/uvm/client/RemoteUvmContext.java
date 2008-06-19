@@ -45,7 +45,7 @@ import com.untangle.uvm.RemoteReportingManager;
 import com.untangle.uvm.RemoteSkinManager;
 import com.untangle.uvm.addrbook.RemoteAddressBook;
 import com.untangle.uvm.license.RemoteLicenseManager;
-import com.untangle.uvm.logging.RemoteBlingerManager;
+import com.untangle.uvm.message.RemoteMessageManager;
 import com.untangle.uvm.logging.RemoteLoggingManager;
 import com.untangle.uvm.networking.ping.RemotePingManager;
 import com.untangle.uvm.node.RemoteIntfManager;
@@ -188,7 +188,7 @@ public interface RemoteUvmContext
      */
     RemoteSkinManager skinManager();
 
-    RemoteBlingerManager blingerManager();
+    RemoteMessageManager blingerManager();
 
     /**
      * Get the <code>RemoteLanguageManager</code> singleton.

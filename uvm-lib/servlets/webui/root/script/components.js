@@ -1305,7 +1305,7 @@ Ung.SystemBlinger = Ext.extend(Ext.Component, {
 });
 Ung.SystemBlinger.template = new Ext.Template('<div class="blingerName">{blingerName}</div>',
         '<div class="systemBlingerBox" id="blingerBox_{id}"></div>',
-        '<div class="systemBlingerSettings" id="systemBlingerSettings_{id}"></div>');
+        '<div class="systemStatSettings" id="systemStatSettings_{id}"></div>');
 Ext.ComponentMgr.registerType('ungSystemBlinger', Ung.SystemBlinger);
 
 // Setting base class

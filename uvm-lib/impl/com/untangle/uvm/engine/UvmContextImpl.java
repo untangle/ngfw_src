@@ -53,7 +53,7 @@ import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.EventLoggerFactory;
 import com.untangle.uvm.logging.LocalBlingerManager;
 import com.untangle.uvm.logging.LogMailerImpl;
-import com.untangle.uvm.logging.RemoteBlingerManager;
+import com.untangle.uvm.message.RemoteMessageManager;
 import com.untangle.uvm.logging.UvmRepositorySelector;
 import com.untangle.uvm.networking.NetworkManagerImpl;
 import com.untangle.uvm.networking.RemoteNetworkManagerAdaptor;
@@ -140,7 +140,7 @@ public class UvmContextImpl extends UvmContextBase
     private LocalBrandingManager localBrandingManager;
     private RemoteSkinManagerImpl skinManager;
     private BlingerManagerImpl localBlingerManager;
-    private RemoteBlingerManager blingerManager;
+    private RemoteMessageManager blingerManager;
     private RemoteBrandingManager remoteBlingerManager;
     private RemoteLanguageManagerImpl languageManager;
     private PhoneBookFactory phoneBookFactory;
@@ -209,7 +209,7 @@ public class UvmContextImpl extends UvmContextBase
         return skinManager;
     }
 
-    public RemoteBlingerManager blingerManager()
+    public RemoteMessageManager blingerManager()
     {
         return blingerManager;
     }
@@ -752,7 +752,7 @@ public class UvmContextImpl extends UvmContextBase
         remoteNodeManager = new RemoteNodeManagerAdaptor(nodeManager);
 
         localBlingerManager = new BlingerManagerImpl();
-        blingerManager = new RemoteBlingerManagerAdaptor(localBlingerManager);
+        blingerManager = new RemoteMessageManagerAdaptor(localBlingerManager);
 
         // Retrieve the reporting configuration manager
         reportingManager = RemoteReportingManagerImpl.reportingManager();

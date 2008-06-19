@@ -37,16 +37,16 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.IndexColumn;
 
 @Entity
-@Table(name="u_blinger_settings", schema="settings")
-class BlingerSettings implements Serializable
+@Table(name="u_stat_settings", schema="settings")
+class StatSettings implements Serializable
 {
     private Long id;
     private Tid tid;
     private List<ActiveStat> activeMetrics;
 
-    public BlingerSettings() {}
+    public StatSettings() {}
 
-    public BlingerSettings(Tid tid, List<ActiveStat> activeMetrics)
+    public StatSettings(Tid tid, List<ActiveStat> activeMetrics)
     {
         this.tid = tid;
         this.activeMetrics = activeMetrics;

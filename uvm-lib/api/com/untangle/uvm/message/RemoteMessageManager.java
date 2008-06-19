@@ -31,17 +31,15 @@
  * to do so, delete this exception statement from your version.
  */
 
-package com.untangle.uvm.logging;
+package com.untangle.uvm.message;
 
 import java.util.List;
 
-import com.untangle.uvm.message.ActiveStat;
-import com.untangle.uvm.message.BlingerState;
-import com.untangle.uvm.message.StatDescs;
+import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.security.Tid;
 
-public interface RemoteBlingerManager
+public interface RemoteMessageManager
 {
     BlingerState getBlingerState();
     BlingerState getBlingerState(Policy p);

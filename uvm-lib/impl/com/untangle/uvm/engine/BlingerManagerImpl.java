@@ -82,9 +82,9 @@ class BlingerManagerImpl implements LocalBlingerManager
                 public boolean doWork(Session s)
                 {
                     Query q = s.createQuery
-                        ("from BlingerSettings bs where bs.tid = :tid");
+                        ("from StatSettings bs where bs.tid = :tid");
                     q.setParameter("tid", tid);
-                    BlingerSettings bs = (BlingerSettings)q.uniqueResult();
+                    StatSettings bs = (StatSettings)q.uniqueResult();
                     if (null == bs) {
                         result = null;
                     } else {
@@ -113,11 +113,11 @@ class BlingerManagerImpl implements LocalBlingerManager
                 public boolean doWork(Session s)
                 {
                     Query q = s.createQuery
-                        ("from BlingerSettings bs where bs.tid = :tid");
+                        ("from StatSettings bs where bs.tid = :tid");
                     q.setParameter("tid", tid);
-                    BlingerSettings bs = (BlingerSettings)q.uniqueResult();
+                    StatSettings bs = (StatSettings)q.uniqueResult();
                     if (null == bs) {
-                        bs = new BlingerSettings(tid, activeMetrics);
+                        bs = new StatSettings(tid, activeMetrics);
                         s.save(bs);
                     } else {
                         bs.setActiveMetrics(activeMetrics);
