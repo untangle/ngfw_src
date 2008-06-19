@@ -484,3 +484,32 @@ div.iconArrowDown {
 	font-family:arial,helvetica,"FreeSans","Utkal","Nimbus Sans L","Malayalam","Phetsarath OT","Garuda",clean,sans-serif;
 	color: #20377A;
 }
+
+.untangle-form-panel
+{ 
+  padding:5px 5px 0px 5px;
+ }
+
+
+.wizard-steps .completed
+{ 
+  color: #0000CC;  
+ }
+
+.wizard-steps .incomplete
+{ 
+  color: #C0C0C0;
+ }
+
+.wizard-steps .current
+{ 
+  color: #00CC00;
+  font-weight: bold;
+ }
+
+.wizard-steps .step
+{
+  font-size: 11px;
+  line-height: 14px; /* works out to 14px */
+  font-family:arial,helvetica,"FreeSans","Utkal","Nimbus Sans L","Malayalam","Phetsarath OT","Garuda",clean,sans-serif;
+ }

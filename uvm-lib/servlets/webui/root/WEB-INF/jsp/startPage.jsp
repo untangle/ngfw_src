@@ -26,6 +26,9 @@
     <script type="text/javascript" src="script/i18n.js"></script>
     <script type="text/javascript" src="script/main.js"></script>
 
+    <!-- todo, move this to a place where it is loaded dynamically. -->
+    <script type="text/javascript" src="script/timezone.js"></script>
+
 <!-- Just for Test, normaly this resources are Dynamically loaded     
 -->	
     <script type="text/javascript" src="script/untangle-node-spyware/settings.js"></script>

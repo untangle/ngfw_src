@@ -15,7 +15,7 @@ Ung.Wizard = Ext.extend(Ext.Panel, {
             layout : 'table',
             layoutConfig : { columns : 1 },
             region : "west",
-            width : 100
+            width : 200
         } );
 
         var panels = [];
@@ -43,6 +43,7 @@ Ung.Wizard = Ext.extend(Ext.Panel, {
             items : panels,
             activeItem : 0,
             region : "center",
+            title : "foo",
             defaults : { 
                 autoHeight : true,
                 border : false
@@ -64,9 +65,13 @@ Ung.Wizard = Ext.extend(Ext.Panel, {
         var length = cards.length;
         for ( var c = 0 ; c < length ; c++ ) {
             var card = cards[c];
+            var title = '<span>' + card.title + '</span>';
+            if (( c > 0 ) && ( c < ( length - 1 ))) {
+                title = i18n.sprintf( i18n._( '<span>Step %d</span> - '), c  ) + title;
+            }
             var id = this.getStepId( c );
             items.push({ 
-                html : '<p>' + card.title + '</p>',
+                html : title,
                 cls : 'step'
             });
         }
@@ -110,7 +115,11 @@ Ung.Wizard = Ext.extend(Ext.Panel, {
         if ( handler ) handler();
 
         this.currentPage = index;
-        handler = this.cards[this.currentPage].onLoad;
+        var card = this.cards[this.currentPage];
+        handler = card.onLoad;
+
+        this.contentPanel.setTitle( this.getCardTitle( this.currentPage, card ));
+        //this.contentPanel.setTitle( "" );
         
         if ( hasChanged && ( handler )) handler();
 
@@ -150,5 +159,16 @@ Ung.Wizard = Ext.extend(Ext.Panel, {
         } else {
             this.nextButton.setText( "Next &raquo;" );
         }
+    },
+
+    getCardTitle : function( index, card )
+    {
+        var title = card.cardTitle;
+        if (( index > 0 ) && ( index < ( this.cards.length - 1 ))) {
+            if ( title == null ) title = i18n.sprintf( i18n._( 'Step %d'), index );
+            else title = i18n.sprintf( i18n._( 'Step %d - '), index ) + title;
+        }
+        
+        return title;
     }
 });

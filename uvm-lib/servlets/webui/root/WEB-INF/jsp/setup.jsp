@@ -5,8 +5,8 @@
     
     <style type="text/css">
         @import "ext/resources/css/ext-all.css";
-        @import "skins/second/css/ext-skin.css";
-        @import "skins/second/css/skin.css";
+        @import "skins/default/css/ext-skin.css";
+        @import "skins/default/css/skin.css";
     </style>
 <!--
     <script type="text/javascript" src="ext/source/core/Ext.js"></script>
@@ -27,6 +27,7 @@
         <script type="text/javascript" src="script/wizard.js"></script>
         <script type="text/javascript" src="script/setup.js"></script>
         <script type="text/javascript" src="script/i18n.js"></script>
+        <script type="text/javascript" src="script/timezone.js"></script>
 
 	<script type="text/javascript">
 		Ext.onReady(Ung.Setup.init);
