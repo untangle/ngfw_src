@@ -44,7 +44,7 @@ import com.untangle.uvm.license.RemoteLicenseManager;
 import com.untangle.uvm.localapi.LocalIntfManager;
 import com.untangle.uvm.localapi.LocalShieldManager;
 import com.untangle.uvm.logging.EventLogger;
-import com.untangle.uvm.logging.LocalBlingerManager;
+import com.untangle.uvm.logging.LocalMessageManager;
 import com.untangle.uvm.message.RemoteMessageManager;
 import com.untangle.uvm.logging.RemoteLoggingManager;
 import com.untangle.uvm.logging.SyslogManager;
@@ -193,7 +193,7 @@ public interface LocalUvmContext
 
     RemoteMessageManager blingerManager();
 
-    LocalBlingerManager localBlingerManager();
+    LocalMessageManager localBlingerManager();
 
     /**
      * Get the phonebook singleton

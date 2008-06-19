@@ -33,11 +33,11 @@ public class ActiveStat implements Serializable
 {
     private Long id;
     private String name;
-    private BlingerInterval interval;
+    private StatInterval interval;
 
     public ActiveStat() { }
 
-    public ActiveStat(String name, BlingerInterval interval)
+    public ActiveStat(String name, StatInterval interval)
     {
         this.name = name;
         this.interval = interval;
@@ -68,12 +68,12 @@ public class ActiveStat implements Serializable
 
 
     @Enumerated(EnumType.STRING)
-    public BlingerInterval getInterval()
+    public StatInterval getInterval()
     {
         return interval;
     }
 
-    public void setInterval(BlingerInterval interval)
+    public void setInterval(StatInterval interval)
     {
         this.interval = interval;
     }

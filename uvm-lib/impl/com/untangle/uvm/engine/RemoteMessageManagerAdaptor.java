@@ -21,8 +21,8 @@ package com.untangle.uvm.engine;
 import java.util.List;
 
 import com.untangle.uvm.message.ActiveStat;
-import com.untangle.uvm.message.BlingerState;
-import com.untangle.uvm.logging.LocalBlingerManager;
+import com.untangle.uvm.message.MessageBundle;
+import com.untangle.uvm.logging.LocalMessageManager;
 import com.untangle.uvm.message.StatDescs;
 import com.untangle.uvm.message.RemoteMessageManager;
 import com.untangle.uvm.policy.Policy;
@@ -30,21 +30,21 @@ import com.untangle.uvm.security.Tid;
 
 class RemoteMessageManagerAdaptor implements RemoteMessageManager
 {
-    private final LocalBlingerManager lbm;
+    private final LocalMessageManager lbm;
 
-    RemoteMessageManagerAdaptor(LocalBlingerManager lbm)
+    RemoteMessageManagerAdaptor(LocalMessageManager lbm)
     {
         this.lbm = lbm;
     }
 
-    public BlingerState getBlingerState()
+    public MessageBundle getMessageBundle()
     {
-        return lbm.getBlingerState();
+        return lbm.getMessageBundle();
     }
 
-    public BlingerState getBlingerState(Policy p)
+    public MessageBundle getMessageBundle(Policy p)
     {
-        return lbm.getBlingerState(p);
+        return lbm.getMessageBundle(p);
     }
 
     public StatDescs getStatDescs(Tid t)

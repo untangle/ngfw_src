@@ -51,7 +51,7 @@ import com.untangle.uvm.localapi.LocalIntfManager;
 import com.untangle.uvm.localapi.LocalShieldManager;
 import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.EventLoggerFactory;
-import com.untangle.uvm.logging.LocalBlingerManager;
+import com.untangle.uvm.logging.LocalMessageManager;
 import com.untangle.uvm.logging.LogMailerImpl;
 import com.untangle.uvm.message.RemoteMessageManager;
 import com.untangle.uvm.logging.UvmRepositorySelector;
@@ -214,7 +214,7 @@ public class UvmContextImpl extends UvmContextBase
         return blingerManager;
     }
 
-    public LocalBlingerManager localBlingerManager()
+    public LocalMessageManager localBlingerManager()
     {
         return localBlingerManager;
     }

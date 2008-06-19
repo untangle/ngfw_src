@@ -33,24 +33,29 @@
 
 package com.untangle.uvm.message;
 
-import java.util.Collections;
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.untangle.uvm.security.Tid;
 
-public class BlingerState
+public class MessageBundle
 {
+    private final List<Message> messages;
     private final Map<Tid, Stats> stats;
 
-    public BlingerState(Map<Tid, Stats> stats)
+    public MessageBundle(List<Message> messages, Map<Tid, Stats> stats)
     {
-        Map<Tid, Stats> m = new HashMap<Tid, Stats>(stats);
-        this.stats = Collections.unmodifiableMap(m);
+        this.messages = messages;
+        this.stats = stats;
     }
 
     public Map<Tid, Stats> getStats()
     {
         return stats;
+    }
+
+    public List<Message> getMessages()
+    {
+        return messages;
     }
 }

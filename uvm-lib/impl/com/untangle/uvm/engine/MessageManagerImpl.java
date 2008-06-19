@@ -18,14 +18,16 @@
 
 package com.untangle.uvm.engine;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.untangle.uvm.logging.LocalMessageManager;
 import com.untangle.uvm.message.ActiveStat;
-import com.untangle.uvm.message.BlingerState;
 import com.untangle.uvm.message.Counters;
-import com.untangle.uvm.logging.LocalBlingerManager;
+import com.untangle.uvm.message.Message;
+import com.untangle.uvm.message.MessageBundle;
 import com.untangle.uvm.message.StatDescs;
 import com.untangle.uvm.message.Stats;
 import com.untangle.uvm.node.LocalNodeManager;
@@ -35,27 +37,34 @@ import com.untangle.uvm.util.TransactionWork;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
-class MessageManagerImpl implements LocalBlingerManager
+class MessageManagerImpl implements LocalMessageManager
 {
     private final Counters uvmCounters = new Counters();
+
+    // XXX this needs to be per client session
+    private final List<Message> messages = new ArrayList<Message>();
 
     MessageManagerImpl()
     {
         ensureTid0();
     }
 
-    public BlingerState getBlingerState()
+    public MessageBundle getMessageBundle()
     {
         LocalNodeManager lm = UvmContextImpl.getInstance().nodeManager();
         List<Tid> tids = lm.nodeInstances();
-        return getStats(lm, tids);
+        Map<Tid, Stats> stats = getStats(lm, tids);
+        List<Message> messages = getMessages();
+        return new MessageBundle(messages, stats);
     }
 
-    public BlingerState getBlingerState(Policy p)
+    public MessageBundle getMessageBundle(Policy p)
     {
         LocalNodeManager lm = UvmContextImpl.getInstance().nodeManager();
         List<Tid> tids = lm.nodeInstances(p);
-        return getStats(lm, tids);
+        Map<Tid, Stats> stats = getStats(lm, tids);
+        List<Message> messages = getMessages();
+        return new MessageBundle(messages, stats);
     }
 
     public StatDescs getStatDescs(Tid t)
@@ -138,7 +147,7 @@ class MessageManagerImpl implements LocalBlingerManager
 
     // private methods ---------------------------------------------------------
 
-    private BlingerState getStats(LocalNodeManager lm, List<Tid> tids)
+    private Map<Tid, Stats> getStats(LocalNodeManager lm, List<Tid> tids)
     {
         Map<Tid, Stats> stats = new HashMap<Tid, Stats>(tids.size());
 
@@ -149,7 +158,13 @@ class MessageManagerImpl implements LocalBlingerManager
             stats.put(t, c.getAllStats());
         }
 
-        return new BlingerState(stats);
+        return stats;
+    }
+
+    private List<Message> getMessages()
+    {
+        // XXX implement
+        return new ArrayList<Message>();
     }
 
     private void ensureTid0()

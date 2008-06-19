@@ -41,8 +41,8 @@ import com.untangle.uvm.security.Tid;
 
 public interface RemoteMessageManager
 {
-    BlingerState getBlingerState();
-    BlingerState getBlingerState(Policy p);
+    MessageBundle getMessageBundle();
+    MessageBundle getMessageBundle(Policy p);
     StatDescs getStatDescs(Tid t);
     List<ActiveStat> getActiveMetrics(Tid tid);
     void setActiveMetrics(Tid tid, List<ActiveStat> activeMetrics);

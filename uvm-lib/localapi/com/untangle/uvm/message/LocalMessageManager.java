@@ -1,7 +1,4 @@
 /*
- * $HeadURL: svn://chef/branch/prod/web-ui/work/src/uvm-lib/api/com/untangle/uvm/logging/LoggingSettings.java $
- * Copyright (c) 2003-2007 Untangle, Inc.
- *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
  * as published by the Free Software Foundation.
@@ -31,13 +28,24 @@
  * to do so, delete this exception statement from your version.
  */
 
-package com.untangle.uvm.message;
+package com.untangle.uvm.logging;
 
-public enum BlingerInterval
+import java.util.List;
+
+import com.untangle.uvm.message.ActiveStat;
+import com.untangle.uvm.message.MessageBundle;
+import com.untangle.uvm.message.Counters;
+import com.untangle.uvm.message.StatDescs;
+import com.untangle.uvm.policy.Policy;
+import com.untangle.uvm.security.Tid;
+
+public interface LocalMessageManager
 {
-    ONE_MINUTE,
-        FIVE_MINUTES,
-        FIFTEEN_MINUTES,
-        SINCE_MIDNIGHT,
-        SINCE_UVM_START;
+    MessageBundle getMessageBundle();
+    MessageBundle getMessageBundle(Policy p);
+    StatDescs getStatDescs(Tid t);
+    List<ActiveStat> getActiveMetrics(Tid tid);
+    void setActiveMetrics(Tid tid, List<ActiveStat> activeMetrics);
+
+    Counters getUvmCounters();
 }
