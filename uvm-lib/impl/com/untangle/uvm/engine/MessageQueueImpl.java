@@ -22,7 +22,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.untangle.uvm.alerts.MessageQueue;
+import com.untangle.uvm.message.MessageQueue;
 
 /**
  * Simple message queue implementation.

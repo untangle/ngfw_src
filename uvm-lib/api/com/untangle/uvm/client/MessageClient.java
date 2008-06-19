@@ -33,7 +33,7 @@
 
 package com.untangle.uvm.client;
 
-import com.untangle.uvm.alerts.MessageQueue;
+import com.untangle.uvm.message.MessageQueue;
 import com.untangle.uvm.toolbox.ToolboxMessage;
 import com.untangle.uvm.toolbox.ToolboxMessageVisitor;
 import org.apache.log4j.Logger;

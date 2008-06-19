@@ -33,7 +33,7 @@
 
 package com.untangle.uvm.toolbox;
 
-import com.untangle.uvm.alerts.Message;
+import com.untangle.uvm.message.Message;
 
 /**
  * Interface for {@link ToolboxManagerVisitor} classes.

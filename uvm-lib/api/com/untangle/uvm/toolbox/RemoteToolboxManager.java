@@ -35,7 +35,7 @@ package com.untangle.uvm.toolbox;
 
 import java.util.List;
 
-import com.untangle.uvm.alerts.MessageQueue;
+import com.untangle.uvm.message.MessageQueue;
 import com.untangle.uvm.node.DeployException;
 import com.untangle.uvm.policy.Policy;
 
