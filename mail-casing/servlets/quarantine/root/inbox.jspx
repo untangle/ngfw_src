@@ -10,13 +10,13 @@
 
   <c:set var="title" scope="request">
     <uvm:i18n p0="${currentAddress}">
-      Quarantine Digest for: <span>{0}</span>
+      Quarantine Digest for:<br/><span style="font-weight: bold;">{0}</span>
     </uvm:i18n>
   </c:set>
 
   <c:set var="pageTitle" scope="request">
     <uvm:i18n p0="${bs.companyName}" p1="${currentAddress}">
-      {0} | Quarantine Digest for {1}
+      {0} | Quarantine Digest for: {1}
     </uvm:i18n>
   </c:set>
 

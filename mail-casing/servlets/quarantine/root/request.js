@@ -18,12 +18,14 @@ Ung.QuarantineRequest.prototype =  {
             defaults : {
                 xtype : "textfield"
             },
-
+            border: false,
+            bodyStyle : 'background-color: transparent;',
             items : [{
                 fieldLabel : i18n._( "Email Address" ),
-                name : "email_address"
+                name : "email_address",
+                width: '350'
             }],
-
+            buttonAlign: 'left', 
             buttons : [{
                 text : i18n._( "Request" ),
                 handler : function() {
@@ -34,7 +36,7 @@ Ung.QuarantineRequest.prototype =  {
                                             email );
                 },
                 scope : this
-            }],
+            }]
         });
     },
 

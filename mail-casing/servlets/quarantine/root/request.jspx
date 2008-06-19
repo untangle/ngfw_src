@@ -11,6 +11,7 @@
   <jsp:scriptlet>
     <![CDATA[
              request.setAttribute( "bs", com.untangle.uvm.LocalUvmContextFactory.context().brandingManager().getBaseSettings());
+             request.setAttribute( "ss", com.untangle.uvm.LocalUvmContextFactory.context().skinManager().getSkinSettings()); 
     ]]>
   </jsp:scriptlet>
 

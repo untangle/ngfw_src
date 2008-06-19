@@ -1,0 +1,21 @@
+body {
+    background: transparent url(../images/user/background_content.png) repeat-x !important;
+}
+
+#content {
+	padding: 17px 12px 12px 12px;
+}
+
+#header {
+	margin-bottom: 28px;
+}
+.title {
+    text-align: right;
+}
+
+.message {
+    padding: 8px 8px 8px 28px;
+    border: 1px solid #60BB3F;
+    font-size: 12px;
+    background: #FEFECB url(../images/user/icon_message.png) no-repeat scroll 7px center !important;
+}

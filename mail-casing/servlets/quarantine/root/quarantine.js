@@ -428,7 +428,7 @@ Ung.QuarantineGrid = Ext.extend( Ext.grid.GridPanel, {
         },{
            header: i18n._( "Score" ),
            dataIndex: 'quarantineDetail',
-           width: 40,
+           width: 40
         },{
            header: i18n._( "Subject" ),
            dataIndex: 'truncatedSubject',
@@ -443,7 +443,7 @@ Ung.QuarantineGrid = Ext.extend( Ext.grid.GridPanel, {
                d = Ext.util.Format.date( date, 'm/d/Y' );
                t = Ext.util.Format.date( date, 'g:i a' );
                return d + '<br/>' + t;
-           },
+           }
         },{
             header: i18n._( "Size (KB)" ),
            dataIndex: 'size',
@@ -494,7 +494,11 @@ Ung.QuarantineTabPanel = Ext.extend( Ext.TabPanel, {
     activeTab : 0,
     layoutOnTabChange : true,
     /* defaults : { autoHeight : true }, */
-    frame : true
+    frame : true,
+    defaults : {
+        border : false,
+        bodyStyle : 'padding:5px 5px 0px 5px;'
+    }
 });
 
 
@@ -531,7 +535,7 @@ function completeInit()
 
     panels.push( new Ext.Panel( { 
         title : i18n._("Quarantined Messages" ),
-        items : [ new Ext.form.Label( { text : message, region : "north" } ), quarantine.grid ],
+        items : [ new Ext.form.Label( { text : message, region : "north", cls:'message' } ), quarantine.grid ],
         layout : "border"
     } ));
 
@@ -539,7 +543,7 @@ function completeInit()
 
     panels.push( new Ext.Panel( { 
         title : i18n._("Safelist" ),
-        items : [ new Ext.form.Label( { text : message, region : "north" } ), safelist.grid ],
+        items : [ new Ext.form.Label( { text : message, region : "north", cls:'message' } ), safelist.grid ],
         layout : "border"
     } ));
     
