@@ -151,31 +151,23 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
     void destroy()
     {
         logger.info("RemoteToolboxManager destroyed");
-        if (cronJob != null)
+        if (cronJob != null) {
             cronJob.cancel();
+        }
     }
 
     // RemoteToolboxManager implementation ------------------------------------
 
     public RackView getRackView(Policy p)
     {
-        NodeManagerImpl tm = (NodeManagerImpl)LocalUvmContextFactory
-            .context().nodeManager();
-        List<NodeDesc> instances = tm.visibleNodes(p);
-
-        Map<Tid, StatDescs> statDescs = new HashMap<Tid, StatDescs>(instances.size());
-        for (NodeDesc nd : instances) {
-            Tid t = nd.getTid();
-            StatDescs sd = tm.nodeContext(t).node().getCounters().getStatDescs();
-            statDescs.put(t, sd);
-        }
-
-        Set<String> displayNames = new HashSet<String>();
+        MackageDesc[] available = this.available;
+        MackageDesc[] installed = this.installed;
 
         Map<String, MackageDesc> nodes = new HashMap<String, MackageDesc>();
         Map<String, MackageDesc> trials = new HashMap<String, MackageDesc>();
         Map<String, MackageDesc> libitems = new HashMap<String, MackageDesc>();
-        for (MackageDesc md : this.available) {
+        Set<String> displayNames = new HashSet<String>();
+        for (MackageDesc md : available) {
             String dn = md.getDisplayName();
             MackageDesc.Type type = md.getType();
             if (type == MackageDesc.Type.LIB_ITEM) {
@@ -190,18 +182,42 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
             }
         }
 
+        for (MackageDesc md : installed) {
+            String dn = md.getDisplayName();
+            MackageDesc.Type type = md.getType();
+            if (type == MackageDesc.Type.LIB_ITEM) {
+                libitems.remove(dn);
+                trials.remove(dn);
+            } else if (type == MackageDesc.Type.TRIAL) {
+                trials.remove(dn);
+            }
+        }
+
+        NodeManagerImpl tm = (NodeManagerImpl)LocalUvmContextFactory
+            .context().nodeManager();
+        List<NodeDesc> instances = tm.visibleNodes(p);
+
+        Map<Tid, StatDescs> statDescs = new HashMap<Tid, StatDescs>(instances.size());
+        for (NodeDesc nd : instances) {
+            Tid t = nd.getTid();
+            StatDescs sd = tm.nodeContext(t).node().getCounters().getStatDescs();
+            statDescs.put(t, sd);
+            nodes.remove(nd.getDisplayName());
+        }
+
         displayNames.remove(null);
         displayNames.remove("Router");
-        for (NodeDesc nd : instances) {
-            displayNames.remove(nd.getDisplayName());
-        }
 
         List<Application> apps = new ArrayList<Application>(displayNames.size());
         for (String dn : displayNames) {
-            Application a = new Application(libitems.get(dn),
-                                            trials.get(dn),
-                                            nodes.get(dn));
-            apps.add(a);
+            MackageDesc l = libitems.get(dn);
+            MackageDesc t = trials.get(dn);
+            MackageDesc n = nodes.get(dn);
+
+            if (l != null || t != null || n != null) {
+                Application a = new Application(l, t, n);
+                apps.add(a);
+            }
         }
 
         Collections.sort(apps);

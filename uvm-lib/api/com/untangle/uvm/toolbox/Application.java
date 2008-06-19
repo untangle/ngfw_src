@@ -37,25 +37,26 @@ import java.io.Serializable;
 
 public class Application implements Comparable<Application>, Serializable
 {
-    private final MackageDesc libitem;
-    private final MackageDesc trial;
+    private final MackageDesc libItem;
+    private final MackageDesc trialLibItem;
     private final MackageDesc node;
 
-    public Application(MackageDesc libitem, MackageDesc trial, MackageDesc node)
+    public Application(MackageDesc libItem, MackageDesc trialLibItem,
+                       MackageDesc node)
     {
-        this.libitem = libitem;
-        this.trial = trial;
+        this.libItem = libItem;
+        this.trialLibItem = trialLibItem;
         this.node = node;
     }
 
     public MackageDesc getLibItem()
     {
-        return libitem;
+        return libItem;
     }
 
-    public MackageDesc getTrial()
+    public MackageDesc getTrialLibItem()
     {
-        return trial;
+        return trialLibItem;
     }
 
     public MackageDesc getNode()
@@ -65,12 +66,12 @@ public class Application implements Comparable<Application>, Serializable
 
     public int getViewPosition()
     {
-        if (libitem != null &&
-            libitem.getViewPosition() != MackageDesc.UNKNOWN_POSITION) {
-            return libitem.getViewPosition();
-        } else if (trial != null
-                   && trial.getViewPosition() != MackageDesc.UNKNOWN_POSITION) {
-            return trial.getViewPosition();
+        if (libItem != null &&
+            libItem.getViewPosition() != MackageDesc.UNKNOWN_POSITION) {
+            return libItem.getViewPosition();
+        } else if (trialLibItem != null
+                   && trialLibItem.getViewPosition() != MackageDesc.UNKNOWN_POSITION) {
+            return trialLibItem.getViewPosition();
         } else if (node != null
                    && node.getViewPosition() != MackageDesc.UNKNOWN_POSITION) {
             return node.getViewPosition();
@@ -91,7 +92,7 @@ public class Application implements Comparable<Application>, Serializable
     @Override
     public String toString()
     {
-        return "(Application libitem: " + libitem + " trial: " + trial
-            + " node: " + node + ")";
+        return "(Application libItem: " + libItem + " trialLibItem: "
+            + trialLibItem + " node: " + node + ")";
     }
 }
