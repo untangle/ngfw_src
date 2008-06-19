@@ -35,11 +35,11 @@ import com.untangle.uvm.util.TransactionWork;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
-class BlingerManagerImpl implements LocalBlingerManager
+class MessageManagerImpl implements LocalBlingerManager
 {
     private final Counters uvmCounters = new Counters();
 
-    BlingerManagerImpl()
+    MessageManagerImpl()
     {
         ensureTid0();
     }
