@@ -164,6 +164,8 @@ Ung.Wizard = Ext.extend(Ext.Panel, {
     getCardTitle : function( index, card )
     {
         var title = card.cardTitle;
+        if ( title == null ) title = card.title;
+
         if (( index > 0 ) && ( index < ( this.cards.length - 1 ))) {
             if ( title == null ) title = i18n.sprintf( i18n._( 'Step %d'), index );
             else title = i18n.sprintf( i18n._( 'Step %d - '), index ) + title;
