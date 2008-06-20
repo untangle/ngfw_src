@@ -71,23 +71,23 @@ class RemoteNodeManagerAdaptor implements RemoteNodeManager
         return nodeManager.nodeInstances(name, policy);
     }
 
-    public Tid instantiate(String name, Policy policy) throws DeployException
+    public NodeDesc instantiate(String name, Policy policy) throws DeployException
     {
         return nodeManager.instantiate(name, policy);
     }
 
-    public Tid instantiate(String name, Policy policy, String[] args)
+    public NodeDesc instantiate(String name, Policy policy, String[] args)
         throws DeployException
     {
         return nodeManager.instantiate(name, policy, args);
     }
 
-    public Tid instantiate(String name, String[] args) throws DeployException
+    public NodeDesc instantiate(String name, String[] args) throws DeployException
     {
         return nodeManager.instantiate(name, args);
     }
 
-    public Tid instantiate(String name) throws DeployException
+    public NodeDesc instantiate(String name) throws DeployException
     {
         return nodeManager.instantiate(name);
     }

@@ -45,6 +45,7 @@ import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.Period;
 import com.untangle.uvm.message.LocalMessageManager;
 import com.untangle.uvm.message.StatDescs;
+import com.untangle.uvm.node.DeployException;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.NodeDesc;
 import com.untangle.uvm.node.NodeException;
@@ -296,7 +297,12 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
                     install(name, false);
                     NodeManagerImpl tm = (NodeManagerImpl)LocalUvmContextFactory
                         .context().nodeManager();
-                    tm.instantiate(name, p);
+                    try {
+                        tm.instantiate(name, p);
+                    } catch (DeployException exn) {
+                        // XXX send out error message
+                        logger.warn("could not deploy", exn);
+                    }
                 }
             });
         t.start();

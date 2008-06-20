@@ -232,28 +232,28 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
         return node;
     }
 
-    public Tid instantiate(String nodeName)
+    public NodeDesc instantiate(String nodeName)
         throws DeployException
     {
         Policy policy = getDefaultPolicyForNode(nodeName);
         return instantiate(nodeName, newTid(null, nodeName), new String[0]);
     }
 
-    public Tid instantiate(String nodeName, String[] args)
+    public NodeDesc instantiate(String nodeName, String[] args)
         throws DeployException
     {
         Policy policy = getDefaultPolicyForNode(nodeName);
         return instantiate(nodeName, newTid(policy, nodeName), args);
     }
 
-    public Tid instantiate(String nodeName, Policy policy)
+    public NodeDesc instantiate(String nodeName, Policy policy)
         throws DeployException
     {
         return instantiate(nodeName, newTid(policy, nodeName),
                            new String[0]);
     }
 
-    public Tid instantiate(String nodeName, Policy policy, String[] args)
+    public NodeDesc instantiate(String nodeName, Policy policy, String[] args)
         throws DeployException
     {
         return instantiate(nodeName, newTid(policy, nodeName), args);
@@ -428,7 +428,7 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
             if (0 == l.size()) {
                 try {
                     logger.info("instantiating new: " + md.getName());
-                    t = instantiate(md.getName());
+                    t = instantiate(md.getName()).getTid();
                 } catch (DeployException exn) {
                     logger.warn("could not deploy: " + md.getName(), exn);
                     continue;
@@ -691,7 +691,7 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
         return unloaded;
     }
 
-    private Tid instantiate(String nodeName, Tid tid, String[] args)
+    private NodeDesc instantiate(String nodeName, Tid tid, String[] args)
         throws DeployException
     {
         UvmContextImpl mctx = UvmContextImpl.getInstance();
@@ -732,7 +732,7 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
             }
         }
 
-        return tid;
+        return tDesc;
     }
 
     /**

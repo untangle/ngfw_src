@@ -97,7 +97,7 @@ public interface LocalNodeManager
      * @return the <code>tid</code> of the instance.
      * @exception DeployException if the instance cannot be created.
      */
-    Tid instantiate(String name, Policy policy) throws DeployException;
+    NodeDesc instantiate(String name, Policy policy) throws DeployException;
 
     /**
      * Create a new node instance under the given policy.  Note
@@ -110,7 +110,7 @@ public interface LocalNodeManager
      * @return the <code>tid</code> of the instance.
      * @exception DeployException if the instance cannot be created.
      */
-    Tid instantiate(String name, Policy policy, String[] args)
+    NodeDesc instantiate(String name, Policy policy, String[] args)
         throws DeployException;
 
     /**
@@ -122,7 +122,7 @@ public interface LocalNodeManager
      * @return the <code>tid</code> of the instance.
      * @exception DeployException if the instance cannot be created.
      */
-    Tid instantiate(String name, String[] args) throws DeployException;
+    NodeDesc instantiate(String name, String[] args) throws DeployException;
 
     /**
      * Create a new node instance under the default policy, or in
@@ -132,7 +132,7 @@ public interface LocalNodeManager
      * @return the <code>tid</code> of the instance.
      * @exception DeployException if the instance cannot be created.
      */
-    Tid instantiate(String name) throws DeployException;
+    NodeDesc instantiate(String name) throws DeployException;
 
     /**
      * Remove node instance from the pipeline.

@@ -299,11 +299,11 @@ class NodeContextImpl implements NodeContext
 
     private boolean resourceExistsInt(String res, MackageDesc mackageDesc, String baseNodeName)
     {
-	boolean exists;
+    boolean exists;
         try {
             URL url = new URL(toolboxManager.getResourceDir(mackageDesc), res);
             File f = new File(url.toURI());
-	    exists = f.exists();
+        exists = f.exists();
         } catch (MalformedURLException exn) {
             logger.info("resource not found, malformed url: " + res, exn);
             return false;
@@ -312,9 +312,9 @@ class NodeContextImpl implements NodeContext
             return false;
         }
 
-	if (exists)
-	    return true;
-	else {
+    if (exists)
+        return true;
+    else {
             // bug3699: Try the base, if any.
             if (baseNodeName != null) {
                 MackageDesc baseDesc = toolboxManager.mackageDesc(baseNodeName);
@@ -519,7 +519,7 @@ class NodeContextImpl implements NodeContext
             logger.debug("Parent does not exist, instantiating");
 
             try {
-                Tid parentTid = nodeManager.instantiate(parent, policy);
+                Tid parentTid = nodeManager.instantiate(parent, policy).getTid();
                 pctx = nodeManager.nodeContext(parentTid);
             } catch (TooManyInstancesException exn) {
                 pctx = getParentContext(parent);

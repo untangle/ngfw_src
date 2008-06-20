@@ -94,10 +94,10 @@ public interface RemoteNodeManager
      *
      * @param name of the node.
      * @param policy the policy this instance is applied to.
-     * @return the <code>tid</code> of the instance.
+     * @return the <code>NodeDesc</code> of the instance.
      * @exception DeployException if the instance cannot be created.
      */
-    Tid instantiate(String name, Policy policy) throws DeployException;
+    NodeDesc instantiate(String name, Policy policy) throws DeployException;
 
     /**
      * Create a new node instance under the given policy.  Note
@@ -107,10 +107,10 @@ public interface RemoteNodeManager
      * @param name of the node.
      * @param policy the policy this instance is applied to.
      * @param args node args.
-     * @return the <code>tid</code> of the instance.
+     * @return the <code>NodeDesc</code> of the instance.
      * @exception DeployException if the instance cannot be created.
      */
-    Tid instantiate(String name, Policy policy, String[] args)
+    NodeDesc instantiate(String name, Policy policy, String[] args)
         throws DeployException;
 
     /**
@@ -119,20 +119,20 @@ public interface RemoteNodeManager
      *
      * @param name of the node.
      * @param args node args.
-     * @return the <code>tid</code> of the instance.
+     * @return the <code>NodeDesc</code> of the instance.
      * @exception DeployException if the instance cannot be created.
      */
-    Tid instantiate(String name, String[] args) throws DeployException;
+    NodeDesc instantiate(String name, String[] args) throws DeployException;
 
     /**
      * Create a new node instance under the default policy, or in
      * the null policy if the node is a service.
      *
      * @param name of the node.
-     * @return the <code>tid</code> of the instance.
+     * @return the <code>NodeDesc</code> of the instance.
      * @exception DeployException if the instance cannot be created.
      */
-    Tid instantiate(String name) throws DeployException;
+    NodeDesc instantiate(String name) throws DeployException;
 
     /**
      * Remove node instance from the pipeline.

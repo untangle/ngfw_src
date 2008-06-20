@@ -122,8 +122,8 @@ public interface RemoteToolboxManager
      */
     void install(String name) throws MackageInstallException;
 
-    // void installAndInstantiate(String name, Policy p)
-    //     throws MackageInstallException, DeployException;
+    void installAndInstantiate(String name, Policy p)
+        throws MackageInstallException, DeployException;
 
     /**
      * Remove a Mackage from the toolbox.

@@ -363,8 +363,9 @@ public class RemoteClient
     private static Tid instantiate(String mackageName, String[] args)
         throws Exception
     {
-        Tid tid = null == policy ? tm.instantiate(mackageName, args)
+        NodeDesc nd = null == policy ? tm.instantiate(mackageName, args)
             : tm.instantiate(mackageName, policy, args);
+        Tid tid = nd.getTid();
         System.out.println(tid.getName());
 
         return tid;
