@@ -164,9 +164,6 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
             } else if (type == MackageDesc.Type.TRIAL) {
                 displayNames.add(dn);
                 trials.put(dn, md);
-            } else if (type == MackageDesc.Type.NODE) {
-                displayNames.add(dn);
-                nodes.put(dn, md);
             }
         }
 
@@ -178,6 +175,9 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
                 trials.remove(dn);
             } else if (type == MackageDesc.Type.TRIAL) {
                 trials.remove(dn);
+            } else if (type == MackageDesc.Type.NODE) {
+                displayNames.add(dn);
+                nodes.put(dn, md);
             }
         }
 
@@ -281,28 +281,25 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
         return packageMap.get(name);
     }
 
-    public void install(final String name)
+    public void install(String name)
     {
-        final AptLogTail alt;
+        install(name, true);
+    }
 
-        synchronized (tails) {
-            long i = ++lastTailKey;
-            alt = new AptLogTail(i);
-            tails.put(i, alt);
-        }
-
-        LocalUvmContextFactory.context().newThread(alt).start();
-
-        LocalUvmContextFactory.context().newThread(new Runnable() {
+    public void installAndInstantiate(final String name, final Policy p)
+        throws MackageInstallException
+    {
+        Thread t = new Thread(new Runnable()
+            {
                 public void run()
                 {
-                    try {
-                        execMkg("install " + name, alt.getKey());
-                    } catch (MackageException exn) {
-                        logger.warn("install failed", exn);
-                    }
+                    install(name, false);
+                    NodeManagerImpl tm = (NodeManagerImpl)LocalUvmContextFactory
+                        .context().nodeManager();
+                    tm.instantiate(name, p);
                 }
-            }).start();
+            });
+        t.start();
     }
 
     public void uninstall(String name) throws MackageUninstallException
@@ -569,6 +566,36 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
     }
 
     // package private methods ------------------------------------------------
+
+    private void install(final String name, boolean async)
+    {
+        final AptLogTail alt;
+
+        synchronized (tails) {
+            long i = ++lastTailKey;
+            alt = new AptLogTail(i);
+            tails.put(i, alt);
+        }
+
+        LocalUvmContextFactory.context().newThread(alt).start();
+
+        Runnable r = new Runnable() {
+                public void run()
+                {
+                    try {
+                        execMkg("install " + name, alt.getKey());
+                    } catch (MackageException exn) {
+                        logger.warn("install failed", exn);
+                    }
+                }
+            };
+
+        if (async) {
+            LocalUvmContextFactory.context().newThread(r).start();
+        } else {
+            r.run();
+        }
+    }
 
     URL getResourceDir(MackageDesc md)
     {
