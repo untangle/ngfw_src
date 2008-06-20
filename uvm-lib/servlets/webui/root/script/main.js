@@ -91,9 +91,9 @@ Ung.Main.prototype = {
             rpc.networkManager=result;
             this.postinit();// 8
         }.createDelegate(this));
-        rpc.jsonrpc.RemoteUvmContext.blingerManager(function (result, exception) {
+        rpc.jsonrpc.RemoteUvmContext.messageManager(function (result, exception) {
             if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
-            rpc.blingerManager=result;
+            rpc.messageManager=result;
             this.postinit();// 9
         }.createDelegate(this));
 		
@@ -411,7 +411,7 @@ Ung.Main.prototype = {
                 return;
             }
             rpc.rackView=result;
-            Ung.BlingerManager.stop();
+            Ung.MessageManager.stop();
             this.destoyNodes();
             this.nodes=[];
             for(var i=0;i<rpc.rackView.instances.list.length;i++) {
@@ -443,7 +443,7 @@ Ung.Main.prototype = {
 				}
 			}
 			if(!main.disableThreads) {
-				Ung.BlingerManager.start();
+				Ung.MessageManager.start();
 			}
 		}.createDelegate(this));
 	},

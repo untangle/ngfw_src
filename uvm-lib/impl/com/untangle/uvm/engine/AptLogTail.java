@@ -22,17 +22,17 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.message.LocalMessageManager;
 import com.untangle.uvm.toolbox.DownloadComplete;
 import com.untangle.uvm.toolbox.DownloadProgress;
 import com.untangle.uvm.toolbox.DownloadSummary;
 import com.untangle.uvm.toolbox.InstallComplete;
-import com.untangle.uvm.toolbox.InstallProgress;
 import com.untangle.uvm.toolbox.InstallTimeout;
 import org.apache.log4j.Logger;
 
@@ -61,9 +61,6 @@ class AptLogTail implements Runnable
     private final long key;
 
     private final RandomAccessFile raf;
-
-    private final List<InstallProgress> events
-        = new LinkedList<InstallProgress>();
 
     private volatile boolean live = true;
 
@@ -99,21 +96,6 @@ class AptLogTail implements Runnable
 
     // package protected methods ----------------------------------------------
 
-    List<InstallProgress> getEvents()
-    {
-        logger.debug("getting events");
-        List<InstallProgress> l;
-
-        synchronized (events) {
-            l = new ArrayList<InstallProgress>(events.size());
-            l.addAll(events);
-            events.clear();
-        }
-
-        logger.debug("returning events: " + l);
-        return l;
-    }
-
     long getKey()
     {
         return key;
@@ -121,9 +103,7 @@ class AptLogTail implements Runnable
 
     boolean isDead()
     {
-        synchronized (events) {
-            return !live && events.size() == 0;
-        }
+        return !live;
     }
 
     // Runnable methods -------------------------------------------------------
@@ -143,6 +123,9 @@ class AptLogTail implements Runnable
 
     public void doIt()
     {
+        LocalMessageManager mm = LocalUvmContextFactory.context()
+            .localMessageManager();
+
         // find `start key'
         logger.debug("finding start key: \"start " + key + "\"");
         for (String line = readLine(); !line.equals("start " + key); line = readLine());
@@ -173,9 +156,8 @@ class AptLogTail implements Runnable
             }
         }
 
-        synchronized (events) {
-            events.add(new DownloadSummary(downloadQueue.size(), totalSize));
-        }
+        mm.submitMessage(new DownloadSummary(downloadQueue.size(),
+                                             totalSize));
 
         for (PackageInfo pi : downloadQueue) {
             logger.debug("downloading: " + pi);
@@ -184,15 +166,11 @@ class AptLogTail implements Runnable
                 Matcher m = DOWNLOAD_PATTERN.matcher(line);
                 if (line.startsWith("DOWNLOAD SUCCEEDED: ")) {
                     logger.debug("download succeeded");
-                    synchronized (events) {
-                        events.add(new DownloadComplete(true));
-                    }
+                    mm.submitMessage(new DownloadComplete(true));
                     break;
                 } else if (line.startsWith("DOWNLOAD FAILED: " )) {
                     logger.debug("download failed");
-                    synchronized (events) {
-                        events.add(new DownloadComplete(false));
-                    }
+                    mm.submitMessage(new DownloadComplete(false));
                     break;
                 } else if (m.matches()) {
                     int bytesDownloaded = Integer.parseInt(m.group(1)) * 1000;
@@ -204,9 +182,7 @@ class AptLogTail implements Runnable
                         (pi.file, bytesDownloaded, pi.size, speed);
                     logger.debug("Adding event: " + dpe);
 
-                    synchronized (events) {
-                        events.add(dpe);
-                    }
+                    mm.submitMessage(dpe);
                 } else {
                     logger.debug("ignoring line: " + line);
                 }
@@ -214,14 +190,15 @@ class AptLogTail implements Runnable
         }
 
         logger.debug("installation complete");
-        synchronized (events) {
-            events.add(new InstallComplete(true));
-        }
+        mm.submitMessage(new InstallComplete(true));
         live = false;
     }
 
     private String readLine()
     {
+        LocalMessageManager mm = LocalUvmContextFactory.context()
+            .localMessageManager();
+
         try {
             while (true) {
                 long t = System.currentTimeMillis();
@@ -235,9 +212,7 @@ class AptLogTail implements Runnable
                             // just end the thread adding TimeoutEvent
                             logger.warn("AptLogTail timing out: "
                                         + (t - lastActivity));
-                            synchronized (events) {
-                                events.add(new InstallTimeout(t));
-                            }
+                            mm.submitMessage(new InstallTimeout(t));
                             throw new RuntimeException("timing out: "
                                                        + (t - lastActivity));
                         } else {

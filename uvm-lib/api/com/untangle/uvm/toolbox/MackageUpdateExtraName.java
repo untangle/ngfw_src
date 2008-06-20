@@ -33,6 +33,8 @@
 
 package com.untangle.uvm.toolbox;
 
+import com.untangle.uvm.message.Message;
+
 /**
  * Signals a request for the Swing GUI to initiate installation of a
  * Debian package.
@@ -40,11 +42,11 @@ package com.untangle.uvm.toolbox;
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
-public class MackageUpdateExtraName extends ToolboxMessage
+public class MackageUpdateExtraName extends Message
 {
     private final String mackageName;
     private final String extraName;
-    
+
     public MackageUpdateExtraName(String mackageName, String extraName)
     {
         this.mackageName = mackageName;
@@ -59,11 +61,5 @@ public class MackageUpdateExtraName extends ToolboxMessage
     public String getExtraName()
     {
         return this.extraName;
-    }
-
-    // ToolboxMessage methods -------------------------------------------------
-    public void accept(ToolboxMessageVisitor v)
-    {
-        v.visitUpdateExtraName(this);
     }
 }

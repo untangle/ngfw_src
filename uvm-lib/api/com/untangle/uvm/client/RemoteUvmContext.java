@@ -188,7 +188,7 @@ public interface RemoteUvmContext
      */
     RemoteSkinManager skinManager();
 
-    RemoteMessageManager blingerManager();
+    RemoteMessageManager messageManager();
 
     /**
      * Get the <code>RemoteLanguageManager</code> singleton.

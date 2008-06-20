@@ -1063,7 +1063,7 @@ Ung.Node.template = new Ext.Template('<div class="nodeImage"><img src="{image}"/
         '<div class="nodeHelpButton" id="nodeHelpButton_{id}"></div>');
 
 // Blinger Manager object
-Ung.BlingerManager = {
+Ung.MessageManager = {
     // update interval in millisecond
     updateTime : 5000,
     started : false,
@@ -1075,7 +1075,7 @@ Ung.BlingerManager = {
     	return;
     	//-----------
         this.stop();
-        this.intervalId = window.setInterval("Ung.BlingerManager.getNodesStats()", this.updateTime);
+        this.intervalId = window.setInterval("Ung.MessageManager.getNodesStats()", this.updateTime);
         this.started = true;
     },
 
@@ -1188,7 +1188,7 @@ Ung.ActivityBlinger = Ext.extend(Ext.Component, {
 });
 Ung.ActivityBlinger.template = new Ext.Template('<div class="blingerName">{blingerName}</div>',
         '<div class="activityBlingerBox" id="blingerBox_{id}"></div>');
-Ung.ActivityBlinger.decayFactor = Math.pow(0.94, Ung.BlingerManager.updateTime / 1000);
+Ung.ActivityBlinger.decayFactor = Math.pow(0.94, Ung.MessageManager.updateTime / 1000);
 Ung.ActivityBlinger.decayValue = function(newValue, lastValue, decay) {
     if (lastValue !== null && newValue != lastValue) {
         decay = 98;
@@ -1274,7 +1274,7 @@ Ung.SystemBlinger = Ext.extend(Ext.Component, {
         }
         var acc = this.sessionCountTotal;
         var req = this.sessionRequestTotal;
-        var dataRate = (this.byteCountCurrent - this.byteCountLast) / Ung.BlingerManager.updateTime;
+        var dataRate = (this.byteCountCurrent - this.byteCountLast) / Ung.MessageManager.updateTime;
         this.data[0].value = this.sessionCountCurrent;
         this.data[1].value = acc;
         this.data[2].value = req;

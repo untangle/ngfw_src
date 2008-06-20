@@ -33,9 +33,7 @@
 
 package com.untangle.uvm.toolbox;
 
-import java.util.List;
 
-import com.untangle.uvm.message.MessageQueue;
 import com.untangle.uvm.node.DeployException;
 import com.untangle.uvm.policy.Policy;
 
@@ -116,20 +114,6 @@ public interface RemoteToolboxManager
     MackageDesc mackageDesc(String name);
 
     /**
-     * Returns install or upgrade events. When install or upgrade is
-     * called, a key is returned that allows the client to get a list
-     * of events since the client last called getProgress(). The end
-     * of events is signaled by an element of type
-     * <code>InstallComplete</code>. A call to this method after such
-     * an element is returned will result in a
-     * <code>RuntimeException</code>.
-     *
-     * @param key returned from the install or upgrade method.
-     * @return list of events since the last call to getProgress().
-     */
-    List<InstallProgress> getProgress(long key);
-
-    /**
      * Install a Mackage in the Toolbox.
      *
      * @param name the name of the Mackage.
@@ -137,16 +121,6 @@ public interface RemoteToolboxManager
      *     be installed.
      */
     long install(String name) throws MackageInstallException;
-
-    /**
-     * Install a Mackage in the Toolbox, returning only after it is
-     * completely installed..
-     *
-     * @param name the name of the Mackage.
-     * @exception MackageInstallException when <code>name</code> cannot
-     *     be installed.
-     */
-    void installSynchronously(String name) throws MackageInstallException;
 
     /**
      * Remove a Mackage from the toolbox.
@@ -170,15 +144,6 @@ public interface RemoteToolboxManager
     void extraName(String mackageName, String extraName);
 
     void requestInstall(String mackageName);
-
-    MessageQueue<ToolboxMessage> subscribe();
-
-    /**
-     * Get the undelivered messages for MessageQueue.
-     *
-     * @return outstanding messages.
-     */
-    List<ToolboxMessage> getToolboxMessages();
 
     /**
      * Register the deployment of a Mackage at a particular URL.

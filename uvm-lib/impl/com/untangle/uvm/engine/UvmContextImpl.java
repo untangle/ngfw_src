@@ -51,10 +51,10 @@ import com.untangle.uvm.localapi.LocalIntfManager;
 import com.untangle.uvm.localapi.LocalShieldManager;
 import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.EventLoggerFactory;
-import com.untangle.uvm.logging.LocalMessageManager;
 import com.untangle.uvm.logging.LogMailerImpl;
-import com.untangle.uvm.message.RemoteMessageManager;
 import com.untangle.uvm.logging.UvmRepositorySelector;
+import com.untangle.uvm.message.LocalMessageManager;
+import com.untangle.uvm.message.RemoteMessageManager;
 import com.untangle.uvm.networking.NetworkManagerImpl;
 import com.untangle.uvm.networking.RemoteNetworkManagerAdaptor;
 import com.untangle.uvm.networking.ping.PingManagerImpl;
@@ -139,9 +139,9 @@ public class UvmContextImpl extends UvmContextBase
     private RemoteBrandingManager brandingManager;
     private LocalBrandingManager localBrandingManager;
     private RemoteSkinManagerImpl skinManager;
-    private MessageManagerImpl localBlingerManager;
-    private RemoteMessageManager blingerManager;
-    private RemoteBrandingManager remoteBlingerManager;
+    private MessageManagerImpl localMessageManager;
+    private RemoteMessageManager messageManager;
+    private RemoteBrandingManager remoteMessageManager;
     private RemoteLanguageManagerImpl languageManager;
     private PhoneBookFactory phoneBookFactory;
     private BasePortalManager portalManager;
@@ -209,14 +209,14 @@ public class UvmContextImpl extends UvmContextBase
         return skinManager;
     }
 
-    public RemoteMessageManager blingerManager()
+    public RemoteMessageManager messageManager()
     {
-        return blingerManager;
+        return messageManager;
     }
 
-    public LocalMessageManager localBlingerManager()
+    public LocalMessageManager localMessageManager()
     {
-        return localBlingerManager;
+        return localMessageManager;
     }
 
     public RemoteLanguageManagerImpl languageManager()
@@ -751,8 +751,8 @@ public class UvmContextImpl extends UvmContextBase
         nodeManager = new NodeManagerImpl(repositorySelector);
         remoteNodeManager = new RemoteNodeManagerAdaptor(nodeManager);
 
-        localBlingerManager = new MessageManagerImpl();
-        blingerManager = new RemoteMessageManagerAdaptor(localBlingerManager);
+        localMessageManager = new MessageManagerImpl();
+        messageManager = new RemoteMessageManagerAdaptor(localMessageManager);
 
         // Retrieve the reporting configuration manager
         reportingManager = RemoteReportingManagerImpl.reportingManager();

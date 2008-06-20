@@ -37,7 +37,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.StringBuilder;
-import java.net.InetAddress;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -58,19 +57,8 @@ import com.untangle.uvm.security.RegistrationInfo;
 import com.untangle.uvm.security.Tid;
 import com.untangle.uvm.security.User;
 import com.untangle.uvm.security.UvmPrincipal;
-import com.untangle.uvm.toolbox.DownloadComplete;
-import com.untangle.uvm.toolbox.DownloadProgress;
-import com.untangle.uvm.toolbox.DownloadSummary;
-import com.untangle.uvm.toolbox.InstallComplete;
-import com.untangle.uvm.toolbox.InstallProgress;
-import com.untangle.uvm.toolbox.InstallTimeout;
 import com.untangle.uvm.toolbox.MackageDesc;
-import com.untangle.uvm.toolbox.MackageInstallException;
-import com.untangle.uvm.toolbox.MackageInstallRequest;
-import com.untangle.uvm.toolbox.MackageUpdateExtraName;
-import com.untangle.uvm.toolbox.ProgressVisitor;
 import com.untangle.uvm.toolbox.RemoteToolboxManager;
-import com.untangle.uvm.toolbox.ToolboxMessageVisitor;
 import com.untangle.uvm.util.SessionUtil;
 import com.untangle.uvm.vnet.IPSessionDesc;
 import com.untangle.uvm.vnet.SessionDesc;
@@ -241,8 +229,6 @@ public class RemoteClient
             updateAddress();
         } else if (args[0].equalsIgnoreCase("gc")) {
             doFullGC();
-        } else if (args[0].equalsIgnoreCase("messageQueue")) {
-            messageQueue();
         } else if (args[0].equalsIgnoreCase("loadRup")) {
             loadRup();
         } else if (args[0].equalsIgnoreCase("setProperty")) {
@@ -275,82 +261,6 @@ public class RemoteClient
         }
 
         factory.logout();
-    }
-
-    private static class UcliToolboxMessageVisitor
-        implements ToolboxMessageVisitor
-    {
-        public void visitMackageInstallRequest(MackageInstallRequest req)
-        {
-            String mackageName = req.getMackageDesc().getName();
-            System.out.println("Installing: " + mackageName);
-            try {
-                tool.install(mackageName);
-                System.out.println("booyakasha");
-            } catch (MackageInstallException exn) {
-                System.out.println("could not install: " + mackageName);
-                exn.printStackTrace();
-            }
-        }
-
-        public void visitUpdateExtraName(MackageUpdateExtraName req)
-        {
-            String name = req.getMackageName();
-            String extraName = req.getExtraName();
-            System.out.println("new extra name: '" + extraName + "' for mackage: '" + name + "'" );
-        }
-    }
-
-    private static class Visitor implements ProgressVisitor
-    {
-        private boolean done = false;
-
-        // public methods ----------------------------------------------------
-
-        public boolean isDone()
-        {
-            return done;
-        }
-
-        // ProgressVisitor methods -------------------------------------------
-
-        public void visitDownloadSummary(DownloadSummary ds)
-        {
-            System.out.println("Downloading " + ds.getCount() + " packages "
-                               + ds.getSize() + " bytes.");
-        }
-
-        public void visitDownloadProgress(DownloadProgress dp)
-        {
-            System.out.println("Downloading " + dp.getName() + " "
-                               + dp.getBytesDownloaded() + "/" + dp.getSize()
-                               + " " + dp.getSpeed());
-        }
-
-        public void visitInstallComplete(InstallComplete ic)
-        {
-            if (ic.getSuccess()) {
-                System.out.println("Installation succeeded");
-            } else {
-                System.out.println("Installation failed");
-            }
-            done = true;
-        }
-
-        public void visitDownloadComplete(DownloadComplete dc)
-        {
-            if (dc.getSuccess()) {
-                System.out.println("Download succeeded");
-            } else {
-                System.out.println("Download failed");
-            }
-        }
-
-        public void visitInstallTimeout(InstallTimeout it)
-        {
-            System.out.println("Install timed out at: " + it.getTime());
-            done = true;
-        }
     }
 
     private static void install(String mackageName)
@@ -889,23 +799,6 @@ public class RemoteClient
         mc.doFullGC();
     }
 
-    private static void messageQueue()
-    {
-        MessageClient msgClient = new MessageClient(mc);
-        msgClient.setToolboxMessageVisitor(new UcliToolboxMessageVisitor());
-        msgClient.start();
-
-        // msgClient uses a daemon thread (only needed for ucli)
-        while (true) {
-            try {
-                Thread.sleep(600000);
-            } catch (InterruptedException exn) {
-                System.out.println("interrupted");
-                break;
-            }
-        }
-    }
-
     private static void loadRup()
     {
         mc.loadRup();
@@ -931,13 +824,7 @@ public class RemoteClient
 
     private static void doAptTail(long key)
     {
-        Visitor v = new Visitor();
-        while (!v.isDone()) {
-            List<InstallProgress> lip = tool.getProgress(key);
-            for (InstallProgress ip : lip) {
-                ip.accept(v);
-            }
-        }
+        // XXX implement me
     }
 
     /**
@@ -1041,7 +928,6 @@ public class RemoteClient
         System.out.println("    ucli shutdown");
         System.out.println("    ucli serverStats");
         System.out.println("    ucli gc");
-        System.out.println("    ucli messageQueue");
         System.out.println("    ucli loadRup");
         System.out.println("    ucli setProperty key value");
         System.out.println("  policy manager:");

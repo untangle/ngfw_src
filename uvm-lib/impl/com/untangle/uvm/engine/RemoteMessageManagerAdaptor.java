@@ -21,10 +21,11 @@ package com.untangle.uvm.engine;
 import java.util.List;
 
 import com.untangle.uvm.message.ActiveStat;
+import com.untangle.uvm.message.LocalMessageManager;
+import com.untangle.uvm.message.Message;
 import com.untangle.uvm.message.MessageBundle;
-import com.untangle.uvm.logging.LocalMessageManager;
-import com.untangle.uvm.message.StatDescs;
 import com.untangle.uvm.message.RemoteMessageManager;
+import com.untangle.uvm.message.StatDescs;
 import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.security.Tid;
 
@@ -60,5 +61,10 @@ class RemoteMessageManagerAdaptor implements RemoteMessageManager
     public void setActiveMetrics(Tid tid, List<ActiveStat> activeMetrics)
     {
         lbm.setActiveMetrics(tid, activeMetrics);
+    }
+
+    public List<Message> getMessages()
+    {
+        return lbm.getMessages();
     }
 }

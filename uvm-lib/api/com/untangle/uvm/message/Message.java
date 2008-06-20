@@ -34,6 +34,7 @@
 package com.untangle.uvm.message;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * Marker class for messages.
@@ -44,4 +45,15 @@ import java.io.Serializable;
  */
 public class Message implements Serializable
 {
+    private final Date time = new Date();
+
+    private final String getMessageType()
+    {
+        return getClass().getName();
+    }
+
+    private final Date getTime()
+    {
+        return time;
+    }
 }

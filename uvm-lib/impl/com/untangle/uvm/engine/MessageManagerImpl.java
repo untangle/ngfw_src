@@ -23,9 +23,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.untangle.uvm.logging.LocalMessageManager;
 import com.untangle.uvm.message.ActiveStat;
 import com.untangle.uvm.message.Counters;
+import com.untangle.uvm.message.LocalMessageManager;
 import com.untangle.uvm.message.Message;
 import com.untangle.uvm.message.MessageBundle;
 import com.untangle.uvm.message.StatDescs;
@@ -48,6 +48,8 @@ class MessageManagerImpl implements LocalMessageManager
     {
         ensureTid0();
     }
+
+    // RemoteMessageManager methods --------------------------------------------
 
     public MessageBundle getMessageBundle()
     {
@@ -140,9 +142,30 @@ class MessageManagerImpl implements LocalMessageManager
         UvmContextImpl.getInstance().runTransaction(tw);
     }
 
+    public List<Message> getMessages()
+    {
+        List<Message> l = new ArrayList<Message>(messages.size());
+
+        synchronized (messages) {
+            l.addAll(messages);
+            messages.clear();
+        }
+
+        return l;
+    }
+
+    // LocalMessageManager methods ---------------------------------------------
+
     public Counters getUvmCounters()
     {
         return uvmCounters;
+    }
+
+    public void submitMessage(Message m)
+    {
+        synchronized (messages) {
+            messages.add(m);
+        }
     }
 
     // private methods ---------------------------------------------------------
@@ -159,12 +182,6 @@ class MessageManagerImpl implements LocalMessageManager
         }
 
         return stats;
-    }
-
-    private List<Message> getMessages()
-    {
-        // XXX implement
-        return new ArrayList<Message>();
     }
 
     private void ensureTid0()

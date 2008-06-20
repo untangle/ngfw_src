@@ -36,7 +36,6 @@ package com.untangle.uvm.message;
 import java.util.List;
 
 import com.untangle.uvm.policy.Policy;
-import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.security.Tid;
 
 public interface RemoteMessageManager
@@ -46,4 +45,5 @@ public interface RemoteMessageManager
     StatDescs getStatDescs(Tid t);
     List<ActiveStat> getActiveMetrics(Tid tid);
     void setActiveMetrics(Tid tid, List<ActiveStat> activeMetrics);
+    List<Message> getMessages();
 }

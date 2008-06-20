@@ -34,7 +34,6 @@ import java.util.Random;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.Vector;
-import java.util.WeakHashMap;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
@@ -44,21 +43,14 @@ import java.util.concurrent.TimeoutException;
 import com.untangle.uvm.CronJob;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.Period;
-import com.untangle.uvm.message.MessageQueue;
+import com.untangle.uvm.message.LocalMessageManager;
 import com.untangle.uvm.message.StatDescs;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.NodeDesc;
 import com.untangle.uvm.node.NodeException;
 import com.untangle.uvm.policy.Policy;
-import com.untangle.uvm.security.LoginSession;
 import com.untangle.uvm.security.Tid;
 import com.untangle.uvm.toolbox.Application;
-import com.untangle.uvm.toolbox.DownloadComplete;
-import com.untangle.uvm.toolbox.DownloadProgress;
-import com.untangle.uvm.toolbox.DownloadSummary;
-import com.untangle.uvm.toolbox.InstallComplete;
-import com.untangle.uvm.toolbox.InstallProgress;
-import com.untangle.uvm.toolbox.InstallTimeout;
 import com.untangle.uvm.toolbox.MackageDesc;
 import com.untangle.uvm.toolbox.MackageDesc.Type;
 import com.untangle.uvm.toolbox.MackageException;
@@ -66,11 +58,9 @@ import com.untangle.uvm.toolbox.MackageInstallException;
 import com.untangle.uvm.toolbox.MackageInstallRequest;
 import com.untangle.uvm.toolbox.MackageUninstallException;
 import com.untangle.uvm.toolbox.MackageUpdateExtraName;
-import com.untangle.uvm.toolbox.ProgressVisitor;
 import com.untangle.uvm.toolbox.RackView;
 import com.untangle.uvm.toolbox.RemoteToolboxManager;
 import com.untangle.uvm.toolbox.RemoteUpstreamManager;
-import com.untangle.uvm.toolbox.ToolboxMessage;
 import com.untangle.uvm.toolbox.UpgradeSettings;
 import com.untangle.uvm.toolbox.UpstreamService;
 import com.untangle.uvm.util.TransactionWork;
@@ -111,8 +101,6 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
     private CronJob cronJob;
     private final UpdateTask updateTask = new UpdateTask();
     private final Map<Long, AptLogTail> tails = new HashMap<Long, AptLogTail>();
-    private final Map<LoginSession, MessageQueueImpl<ToolboxMessage>> messageQueues
-        = new WeakHashMap<LoginSession, MessageQueueImpl<ToolboxMessage>>();
 
     private volatile Map<String, MackageDesc> packageMap;
     private volatile MackageDesc[] available;
@@ -293,34 +281,6 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
         return packageMap.get(name);
     }
 
-    public List<InstallProgress> getProgress(long key)
-    {
-        logger.debug("getProgress(" + key + ")");
-        AptLogTail alt;
-        logger.debug("getting alt");
-        synchronized (tails) {
-            alt = tails.get(key);
-        }
-        logger.debug("got alt");
-
-        if (null == alt) {
-            logger.warn("no such progress key: " + key);
-            throw new RuntimeException("no such key: " + key);
-        }
-
-        logger.debug("getting events");
-        List<InstallProgress> l = alt.getEvents();
-        logger.debug("seeing if isDead");
-        if (alt.isDead()) {
-            synchronized (tails) {
-                logger.debug("removing dead alt");
-                tails.remove(key);
-            }
-        }
-
-        return l;
-    }
-
     public long install(final String name)
     {
         final AptLogTail alt;
@@ -345,18 +305,6 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
             }).start();
 
         return alt.getKey();
-    }
-
-    public void installSynchronously(String name) throws MackageInstallException
-    {
-        long k = install(name);
-
-        InstallVisitor v = new InstallVisitor();
-        while (!v.isDone()) {
-            for (InstallProgress p : getProgress(k)) {
-                p.accept(v);
-            }
-        }
     }
 
     public void uninstall(String name) throws MackageUninstallException
@@ -499,12 +447,9 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
 
         MackageUpdateExtraName mue = new MackageUpdateExtraName(mackageName,extraName);
 
-        synchronized (messageQueues) {
-            logger.info("updateExtraName: " + mackageName + " new extraname: " + extraName);
-            for (MessageQueueImpl<ToolboxMessage> mq : messageQueues.values()) {
-                mq.enqueue(mue);
-            }
-        }
+        LocalMessageManager mm = LocalUvmContextFactory.context()
+            .localMessageManager();
+        mm.submitMessage(mue);
     }
 
     public void requestInstall(String mackageName)
@@ -517,34 +462,11 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
 
         MackageInstallRequest mir = new MackageInstallRequest(md,isInstalled(mackageName));
 
-        synchronized (messageQueues) {
-            logger.info("requestInstall: " + mackageName);
-            for (MessageQueueImpl<ToolboxMessage> mq : messageQueues.values()) {
-                mq.enqueue(mir);
-            }
-        }
+        logger.info("requestInstall: " + mackageName);
+        LocalMessageManager mm = LocalUvmContextFactory.context()
+            .localMessageManager();
+        mm.submitMessage(mir);
     }
-
-    public MessageQueue<ToolboxMessage> subscribe()
-    {
-        LoginSession s = HttpInvokerImpl.invoker().getActiveLogin();
-
-        MessageQueueImpl mq;
-        synchronized (messageQueues) {
-            mq = messageQueues.get(s);
-            if (null == mq) {
-                mq = new MessageQueueImpl<ToolboxMessage>();
-                messageQueues.put(s, mq);
-            }
-        }
-
-        return mq;
-    }
-
-    public List<ToolboxMessage> getToolboxMessages() {
-        return subscribe().getMessages();
-    }
-
 
     // RemoteToolboxManagerPriv implementation --------------------------------
 
@@ -700,40 +622,6 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
                     logger.warn("could not upgrade", exn);
                 }
             }
-        }
-    }
-
-    private static class InstallVisitor implements ProgressVisitor
-    {
-        private final Logger logger = Logger.getLogger(getClass());
-
-        private boolean done = false;
-
-        // ProgressVisitor methods --------------------------------------------
-
-        public void visitDownloadSummary(DownloadSummary ds) { }
-
-        public void visitDownloadProgress(DownloadProgress dp) { }
-
-        public void visitDownloadComplete(DownloadComplete dc) { }
-
-        public void visitInstallComplete(InstallComplete ic)
-        {
-            logger.info("install complete, success: " + ic.getSuccess());
-            done = true;
-        }
-
-        public void visitInstallTimeout(InstallTimeout it)
-        {
-            logger.info("install timed out");
-            done = true;
-        }
-
-        // package protected methods ------------------------------------------
-
-        boolean isDone()
-        {
-            return done;
         }
     }
 

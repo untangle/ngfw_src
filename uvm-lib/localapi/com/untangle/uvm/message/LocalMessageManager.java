@@ -28,14 +28,10 @@
  * to do so, delete this exception statement from your version.
  */
 
-package com.untangle.uvm.logging;
+package com.untangle.uvm.message;
 
 import java.util.List;
 
-import com.untangle.uvm.message.ActiveStat;
-import com.untangle.uvm.message.MessageBundle;
-import com.untangle.uvm.message.Counters;
-import com.untangle.uvm.message.StatDescs;
 import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.security.Tid;
 
@@ -46,6 +42,8 @@ public interface LocalMessageManager
     StatDescs getStatDescs(Tid t);
     List<ActiveStat> getActiveMetrics(Tid tid);
     void setActiveMetrics(Tid tid, List<ActiveStat> activeMetrics);
+    List<Message> getMessages();
 
     Counters getUvmCounters();
+    void submitMessage(Message m);
 }

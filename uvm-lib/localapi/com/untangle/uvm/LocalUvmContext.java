@@ -44,10 +44,10 @@ import com.untangle.uvm.license.RemoteLicenseManager;
 import com.untangle.uvm.localapi.LocalIntfManager;
 import com.untangle.uvm.localapi.LocalShieldManager;
 import com.untangle.uvm.logging.EventLogger;
-import com.untangle.uvm.logging.LocalMessageManager;
-import com.untangle.uvm.message.RemoteMessageManager;
 import com.untangle.uvm.logging.RemoteLoggingManager;
 import com.untangle.uvm.logging.SyslogManager;
+import com.untangle.uvm.message.LocalMessageManager;
+import com.untangle.uvm.message.RemoteMessageManager;
 import com.untangle.uvm.networking.LocalNetworkManager;
 import com.untangle.uvm.networking.ping.RemotePingManager;
 import com.untangle.uvm.node.LocalNodeManager;
@@ -191,9 +191,9 @@ public interface LocalUvmContext
      */
     RemoteSkinManager skinManager();
 
-    RemoteMessageManager blingerManager();
+    RemoteMessageManager messageManager();
 
-    LocalMessageManager localBlingerManager();
+    LocalMessageManager localMessageManager();
 
     /**
      * Get the phonebook singleton

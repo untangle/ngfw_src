@@ -158,9 +158,9 @@ class RemoteUvmContextAdaptor implements RemoteUvmContext
         return context.skinManager();
     }
 
-    public RemoteMessageManager blingerManager()
+    public RemoteMessageManager messageManager()
     {
-        return context.blingerManager();
+        return context.messageManager();
     }
 
     public RemoteLanguageManager languageManager()
