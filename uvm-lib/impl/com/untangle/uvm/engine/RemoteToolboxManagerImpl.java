@@ -281,7 +281,7 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
         return packageMap.get(name);
     }
 
-    public long install(final String name)
+    public void install(final String name)
     {
         final AptLogTail alt;
 
@@ -303,8 +303,6 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
                     }
                 }
             }).start();
-
-        return alt.getKey();
     }
 
     public void uninstall(String name) throws MackageUninstallException

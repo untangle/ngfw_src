@@ -202,7 +202,9 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
             Policy p = tid.getPolicy();
 
             // XXX FLAG REFACTOR refactor the flags
-            if ((null == p ? p == policy : p.equals(policy)) || md.isCore()) {
+            if (!md.isService()
+                && ((null == p ? p == policy : p.equals(policy))
+                    || md.isCore())) {
                 NodeDesc nd = nc.getNodeDesc();
                 // XXX FLAG REFACTOR use an untangle-type rather than
                 // the name here. other constrints?

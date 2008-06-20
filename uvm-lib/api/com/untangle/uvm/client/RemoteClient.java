@@ -238,7 +238,7 @@ public class RemoteClient
         } else if (args[0].equalsIgnoreCase("listPolicies")) {
             listPolicies();
         } else if (args[0].equalsIgnoreCase("aptTail")) {
-            doAptTail(Long.parseLong(args[1]));
+            doAptTail();
         } else if (args[0].equalsIgnoreCase("passwd")) {
             String[] pwArgs = new String[args.length - 1];
             System.arraycopy(args, 1, pwArgs, 0, pwArgs.length);
@@ -266,9 +266,9 @@ public class RemoteClient
     private static void install(String mackageName)
         throws Exception
     {
-        long key = tool.install(mackageName);
+        tool.install(mackageName);
 
-        doAptTail(key);
+        doAptTail();
     }
 
     private static void uninstall(String mackageName)
@@ -286,9 +286,9 @@ public class RemoteClient
     private static void upgrade()
         throws Exception
     {
-        long key = tool.upgrade();
+        tool.upgrade();
 
-        doAptTail(key);
+        doAptTail();
     }
 
     private static void extraName(String mackage, String extraName)
@@ -822,7 +822,7 @@ public class RemoteClient
         }
     }
 
-    private static void doAptTail(long key)
+    private static void doAptTail()
     {
         // XXX implement me
     }

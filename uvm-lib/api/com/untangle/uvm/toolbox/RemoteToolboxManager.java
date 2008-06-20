@@ -120,7 +120,10 @@ public interface RemoteToolboxManager
      * @exception MackageInstallException when <code>name</code> cannot
      *     be installed.
      */
-    long install(String name) throws MackageInstallException;
+    void install(String name) throws MackageInstallException;
+
+    // void installAndInstantiate(String name, Policy p)
+    //     throws MackageInstallException, DeployException;
 
     /**
      * Remove a Mackage from the toolbox.
