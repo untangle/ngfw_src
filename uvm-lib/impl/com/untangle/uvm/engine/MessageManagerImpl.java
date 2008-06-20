@@ -27,7 +27,7 @@ import com.untangle.uvm.message.ActiveStat;
 import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.message.LocalMessageManager;
 import com.untangle.uvm.message.Message;
-import com.untangle.uvm.message.MessageBundle;
+import com.untangle.uvm.message.MessageQueue;
 import com.untangle.uvm.message.StatDescs;
 import com.untangle.uvm.message.Stats;
 import com.untangle.uvm.node.LocalNodeManager;
@@ -51,22 +51,22 @@ class MessageManagerImpl implements LocalMessageManager
 
     // RemoteMessageManager methods --------------------------------------------
 
-    public MessageBundle getMessageBundle()
+    public MessageQueue getMessageQueue()
     {
         LocalNodeManager lm = UvmContextImpl.getInstance().nodeManager();
         List<Tid> tids = lm.nodeInstances();
         Map<Tid, Stats> stats = getStats(lm, tids);
         List<Message> messages = getMessages();
-        return new MessageBundle(messages, stats);
+        return new MessageQueue(messages, stats);
     }
 
-    public MessageBundle getMessageBundle(Policy p)
+    public MessageQueue getMessageQueue(Policy p)
     {
         LocalNodeManager lm = UvmContextImpl.getInstance().nodeManager();
         List<Tid> tids = lm.nodeInstances(p);
         Map<Tid, Stats> stats = getStats(lm, tids);
         List<Message> messages = getMessages();
-        return new MessageBundle(messages, stats);
+        return new MessageQueue(messages, stats);
     }
 
     public StatDescs getStatDescs(Tid t)

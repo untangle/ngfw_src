@@ -37,8 +37,8 @@ import com.untangle.uvm.security.Tid;
 
 public interface LocalMessageManager
 {
-    MessageBundle getMessageBundle();
-    MessageBundle getMessageBundle(Policy p);
+    MessageQueue getMessageQueue();
+    MessageQueue getMessageQueue(Policy p);
     StatDescs getStatDescs(Tid t);
     List<ActiveStat> getActiveMetrics(Tid tid);
     void setActiveMetrics(Tid tid, List<ActiveStat> activeMetrics);

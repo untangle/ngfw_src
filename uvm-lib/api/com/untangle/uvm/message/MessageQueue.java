@@ -38,12 +38,12 @@ import java.util.Map;
 
 import com.untangle.uvm.security.Tid;
 
-public class MessageBundle
+public class MessageQueue
 {
     private final List<Message> messages;
     private final Map<Tid, Stats> stats;
 
-    public MessageBundle(List<Message> messages, Map<Tid, Stats> stats)
+    public MessageQueue(List<Message> messages, Map<Tid, Stats> stats)
     {
         this.messages = messages;
         this.stats = stats;

@@ -23,7 +23,7 @@ import java.util.List;
 import com.untangle.uvm.message.ActiveStat;
 import com.untangle.uvm.message.LocalMessageManager;
 import com.untangle.uvm.message.Message;
-import com.untangle.uvm.message.MessageBundle;
+import com.untangle.uvm.message.MessageQueue;
 import com.untangle.uvm.message.RemoteMessageManager;
 import com.untangle.uvm.message.StatDescs;
 import com.untangle.uvm.policy.Policy;
@@ -38,14 +38,14 @@ class RemoteMessageManagerAdaptor implements RemoteMessageManager
         this.lbm = lbm;
     }
 
-    public MessageBundle getMessageBundle()
+    public MessageQueue getMessageQueue()
     {
-        return lbm.getMessageBundle();
+        return lbm.getMessageQueue();
     }
 
-    public MessageBundle getMessageBundle(Policy p)
+    public MessageQueue getMessageQueue(Policy p)
     {
-        return lbm.getMessageBundle(p);
+        return lbm.getMessageQueue(p);
     }
 
     public StatDescs getStatDescs(Tid t)
