@@ -110,7 +110,7 @@ end
 def getVersion
   if getPackageVersion('untangle-gateway').nil? then
     :lite
-  elsif getPackageVersion('untangle-hardware-config').nil?
+  elsif getPackageVersion('untangle-hardware-support').nil?
     :cd
   else
     :hardware
