@@ -25,17 +25,24 @@ Ung.Wizard = Ext.extend(Ext.Panel, {
 
         this.previousButton = new Ext.Button({
             id : 'card-prev',
-            text : '&laquo; Previous',
+            text : i18n._( '&laquo; Previous' ),
             handler : this.goPrevious,
             scope : this
         });
 
         this.nextButton = new Ext.Button({
             id : 'card-next',
-            text : 'Next &raquo;',
+            text : i18n._( 'Next &raquo;' ),
             handler : this.goNext,
             scope : this
         });
+        
+        this.cardDefaults = config.cardDefaults;
+        if ( this.cardDefaults == null ) this.cardDefaults = {};
+        
+        /* Append some necessary defaults */
+        this.cardDefaults.autoHeight = true;
+        this.cardDefaults.border = false;
 
         /* Build a card to hold the wizard */
         this.contentPanel = new Ext.Panel({
@@ -43,11 +50,8 @@ Ung.Wizard = Ext.extend(Ext.Panel, {
             items : panels,
             activeItem : 0,
             region : "center",
-            title : "foo",
-            defaults : { 
-                autoHeight : true,
-                border : false
-            },
+            title : "&nbsp;",
+            defaults : this.cardDefaults, 
             bbar : [ '->', this.previousButton, this.nextButton ]
         });
 
@@ -112,8 +116,17 @@ Ung.Wizard = Ext.extend(Ext.Panel, {
         }
 
         /* If the page has changed and it is defined, then call the handler */
-        if ( handler ) handler();
+        if ( handler ) {
+            handler( this.afterChangeHandler.createDelegate( this, [ index, hasChanged ] ));
+        } else {
+            this.afterChangeHandler( index, hasChanged );
+        }
+    },
 
+    /* This function must be called once the the onPrevious or onNext handler completes,
+     * broken into its own function so the handler can run asynchronously */
+    afterChangeHandler : function( index, hasChanged )
+    {        
         this.currentPage = index;
         var card = this.cards[this.currentPage];
         handler = card.onLoad;
@@ -121,9 +134,19 @@ Ung.Wizard = Ext.extend(Ext.Panel, {
         this.contentPanel.setTitle( this.getCardTitle( this.currentPage, card ));
         //this.contentPanel.setTitle( "" );
         
-        if ( hasChanged && ( handler )) handler();
+        if ( hasChanged && ( handler )) {
+            handler( this.afterLoadHandler.createDelegate( this ));
+        } else {
+            this.afterLoadHandler();
+        }
+    },
 
+    afterLoadHandler : function()
+    {
         this.contentPanel.getLayout().setActiveItem( this.currentPage );
+
+        /* You have to force the layout for components that need to recalculate their heights */
+        this.contentPanel.doLayout();
         
         /* retrieve all of the items */
         var items = this.headerPanel.find();
@@ -159,6 +182,7 @@ Ung.Wizard = Ext.extend(Ext.Panel, {
         } else {
             this.nextButton.setText( "Next &raquo;" );
         }
+
     },
 
     getCardTitle : function( index, card )
