@@ -39,13 +39,13 @@ fi
 
 POPID=`cat $POPID_FILE`
 # This next will fail if testing on development machines, which is "a good thing"
-if [ -f "$SOURCES_LIST" ] && grep -q "$POPID" $SOURCES_LIST ; then # already taken care of
-    true
-else # dump the right source in the right place :)
-    echo "Installing sources list"
-    touch $SOURCES_LIST # so that we don't fail next line because of noclobber
-    echo -e $DEFAULT_UNTANGLE_SOURCE | sed "s/$KEY_TEMPLATE/$POPID/" >> $SOURCES_LIST
-    nohup apt-get update >& /dev/null &
+if [ -f "$SOURCES_LIST" ] ; then
+  # add untangle sources to sources.list; remove the old ones
+  echo "Installing sources list"
+  touch $SOURCES_LIST
+  perl -i -pe 's/.*untangle\.com.*//' $SOURCES_LIST
+  echo -e $DEFAULT_UNTANGLE_SOURCE | sed "s/$KEY_TEMPLATE/$POPID/" >> $SOURCES_LIST
+  nohup apt-get update >& /dev/null &
 fi
 
 @UVM_HOME@/bin/utregister
