@@ -1,9 +1,10 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <%@ page import="com.untangle.uvm.LocalUvmContextFactory" %>
-<%@ taglib uri="http://java.untangle.com/jsp/uvm" prefix="uvm" %>
+<%--@ taglib uri="http://java.untangle.com/jsp/uvm" prefix="uvm" --%>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:uvm="http://java.untangle.com/jsp/uvm">
 
   <head>
     <title>UNG - Setup Wizard</title>
