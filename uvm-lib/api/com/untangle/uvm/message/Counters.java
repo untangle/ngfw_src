@@ -33,7 +33,6 @@
 
 package com.untangle.uvm.message;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,8 +49,8 @@ public class Counters
     private final Map<String, BlingBlinger> metrics
         = new HashMap<String, BlingBlinger>();
 
-    private final List<BlingBlinger> activities
-        = new ArrayList<BlingBlinger>();
+    private final Map<String, BlingBlinger> activities
+        = new HashMap<String, BlingBlinger>();
 
     private final Map<String, LoadMaster> loads
         = new HashMap<String, LoadMaster>();
@@ -88,7 +87,7 @@ public class Counters
         }
 
         synchronized (activities) {
-            activities.add(b);
+            activities.put(name, b);
         }
 
         return b;
@@ -115,11 +114,21 @@ public class Counters
 
     public StatDescs getStatDescs()
     {
-        return new StatDescs(metrics.values(), activities);
+        return new StatDescs(metrics.values(), activities.values());
     }
 
     public Stats getAllStats()
     {
-        return new Stats(metrics.values(), activities);
+        return new Stats(metrics, activities);
+    }
+
+    public Stats getAllStats(List<ActiveStat> l)
+    {
+        Map<String, BlingBlinger> m = new HashMap<String, BlingBlinger>();
+        for (ActiveStat as : l) {
+            String n = as.getName();
+            m.put(n, metrics.get(n));
+        }
+        return new Stats(m, activities);
     }
 }

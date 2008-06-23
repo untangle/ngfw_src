@@ -177,8 +177,9 @@ class MessageManagerImpl implements LocalMessageManager
         stats.put(new Tid(0L), uvmCounters.getAllStats());
 
         for (Tid t : tids) {
+            List<ActiveStat> as = getActiveMetrics(t);
             Counters c = lm.nodeContext(t).node().getCounters();
-            stats.put(t, c.getAllStats());
+            stats.put(t, c.getAllStats(as));
         }
 
         return stats;
@@ -186,7 +187,7 @@ class MessageManagerImpl implements LocalMessageManager
 
     private void ensureTid0()
     {
-        TransactionWork<List<ActiveStat>> tw = new TransactionWork<List<ActiveStat>>()
+        TransactionWork tw = new TransactionWork()
             {
                 public boolean doWork(Session s)
                 {

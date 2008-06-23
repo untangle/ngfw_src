@@ -45,7 +45,7 @@ public class StatDescs implements Serializable
     private final List<StatDesc> activityDescs;
 
     StatDescs(Collection<BlingBlinger> metrics,
-                  Collection<BlingBlinger> activities)
+              Collection<BlingBlinger> activities)
     {
         this.metricDescs = getStatDescss(metrics);
         this.activityDescs = getStatDescss(activities);

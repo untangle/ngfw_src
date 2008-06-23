@@ -34,20 +34,19 @@
 package com.untangle.uvm.message;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Stats implements Serializable
 {
-    private final List<CounterStats> metrics;
-    private final List<CounterStats> activities;
+    private final Map<String, CounterStats> metrics;
+    private final Map<String, CounterStats> activities;
 
     // constructors ------------------------------------------------------------
 
-    Stats(Collection<BlingBlinger> metrics,
-              Collection<BlingBlinger> activities)
+    Stats(Map<String, BlingBlinger> metrics,
+          Map<String, BlingBlinger> activities)
     {
         this.metrics = immutableCounterStats(metrics);
         this.activities = immutableCounterStats(activities);
@@ -55,26 +54,26 @@ public class Stats implements Serializable
 
     // public methods ----------------------------------------------------------
 
-    public List<CounterStats> getMetrics()
+    public Map<String, CounterStats> getMetrics()
     {
         return metrics;
     }
 
-    public List<CounterStats> getActivities()
+    public Map<String, CounterStats> getActivities()
     {
         return activities;
     }
 
     // private methods ---------------------------------------------------------
 
-    private List<CounterStats> immutableCounterStats(Collection<BlingBlinger> stats)
+    private Map<String, CounterStats> immutableCounterStats(Map<String, BlingBlinger> stats)
     {
-        List<CounterStats> l = new ArrayList<CounterStats>(stats.size());
-        for (CounterStats cs : stats) {
-            l.add(new FixedCounts(cs));
+        Map<String, CounterStats> m = new HashMap<String, CounterStats>(stats.size());
+        for (String s : stats.keySet()) {
+            m.put(s, new FixedCounts(stats.get(s)));
         }
 
-        return Collections.unmodifiableList(l);
+        return Collections.unmodifiableMap(m);
     }
 
     // private classes ---------------------------------------------------------

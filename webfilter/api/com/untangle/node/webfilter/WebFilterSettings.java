@@ -266,5 +266,4 @@ public class WebFilterSettings implements Serializable
     public void setBaseSettings(WebFilterBaseSettings baseSettings) {
         this.baseSettings = baseSettings;
     }
-
 }

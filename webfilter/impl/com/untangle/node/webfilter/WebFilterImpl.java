@@ -736,7 +736,7 @@ public class WebFilterImpl extends AbstractNode implements WebFilter
     }
 
     private void updateRules(final Set rules, final List added,
-            final List<Long> deleted, final List modified) {
+                             final List<Long> deleted, final List modified) {
         TransactionWork tw = new TransactionWork() {
             public boolean doWork(Session s) {
                 listUtil.updateCachedItems( rules, added, deleted, modified );
