@@ -66,6 +66,7 @@ Ung.SetupWizard.Settings = Ext.extend(Object, {
                     listWidth : 355,
                     hideLabel : true,
                     mode : 'local',
+                    value : Ung.SetupWizard.CurrentValues.timezone,
                     triggerAction : 'all',
                     listClass : 'x-combo-list-small'
                 }]
@@ -73,7 +74,8 @@ Ung.SetupWizard.Settings = Ext.extend(Object, {
                 title : 'Hostname',
                 items : [{
                     hideLabel : true,
-                    xtype : 'textfield'
+                    xtype : 'textfield',
+                    value : Ung.SetupWizard.CurrentValues.hostname,
                 }]
             },{
                 title : 'Auto-Upgrade',
@@ -717,7 +719,7 @@ Ung.Setup =  {
 
         /* Initialize the timezone data */
         for ( var i = 0; i < Ung.TimeZoneData.length; i++) {
-            Ung.SetupWizard.TimeZoneStore.push([Ung.TimeZoneData[i][2], "(" + Ung.TimeZoneData[i][0] + ") " + Ung.TimeZoneData[i][1]]);
+            Ung.SetupWizard.TimeZoneStore.push([Ung.TimeZoneData[i][0], "(" + Ung.TimeZoneData[i][0] + ") " + Ung.TimeZoneData[i][1]]);
         }
         
         rpc.jsonrpc = new JSONRpcClient("/webui/JSON-RPC");
@@ -757,6 +759,6 @@ Ung.Setup =  {
 
         this.wizard.render();
 
-        this.wizard.goToPage( 0 );
+        this.wizard.goToPage( 1 );
 	}
 };

@@ -71,6 +71,8 @@ deps = %w(
          ).map { |f| Jars.downloadTarget(f) }
 deps << ThirdpartyJar.get('../pkgs/jabsorb-1.2.2/jabsorb-1.2.2.jar');
 
+deps << taglib
+
 ms = [ MoveSpec.new("../pkgs/jabsorb-1.2.2/webapps/jsonrpc", 'jsonrpc*.js', './jsonrpc') ]
 
 ServletBuilder.new(uvm_lib, "com.untangle.uvm.webui.servlet",
