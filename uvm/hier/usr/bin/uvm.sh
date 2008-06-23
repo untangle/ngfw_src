@@ -149,6 +149,7 @@ restartServiceIfNeeded() {
       pidFile=$SPAMASSASSIN_PID_FILE
       dpkg -l untangle-spamassassin-update | grep -q -E '^ii' || return
       isServiceRunning --find-shell spamd && return
+      hook="$SPAMD_RESTART_HOOK"
       ;;
     clamav-daemon)
       pidFile=$CLAMD_PID_FILE
@@ -174,7 +175,7 @@ restartServiceIfNeeded() {
   esac
 
   for service in $serviceName ; do
-    restartService $service $pidFile "missing"
+    restartService $service $pidFile "missing" noStopFirst "$hook"
   done
 }
 
@@ -186,7 +187,7 @@ restartService() {
   hook=$5
   servicePid=
   echo "*** restarting $reason $serviceName on `date` ***" >> $UVM_WRAPPER_LOG
-  if [ -n "$stopFirst" ] ; then
+  if [ "$stopFirst" = "stopFirst" ] ; then
     # netstat -plunt >> $UVM_WRAPPER_LOG
     [ -n "$pidFile" ] && servicePid=`cat $pidFile`
     /etc/init.d/$serviceName stop
@@ -195,7 +196,7 @@ restartService() {
   else # remove the pidfile
     [ -n "$pidFile" ] && rm -f $pidFile
   fi
-  eval "$5"
+  [ -n "$hook" ] && eval "$hook"
   /etc/init.d/$serviceName start
 }
 
@@ -311,23 +312,33 @@ while true; do
 		fi
 
 	        if dpkg -l untangle-spamassassin-update | grep -q ii ; then # we're managing spamassassin
-	            [ `tail -n 50 /var/log/mail.info | grep -c "$SPAMASSASSIN_LOG_ERROR"` -gt 2 ] && restartService spamassassin $SPAMASSASSIN_PID_FILE "non-functional" stopFirst
-                    case "`$BANNER_NANNY $SPAMASSASSIN_PORT $TIMEOUT`" in
-                      *success*) true ;;
-                      *) restartService spamassassin $SPAMASSASSIN_PID_FILE "hung" stopFirst ;;
-                    esac
+	          [ `tail -n 50 /var/log/mail.info | grep -c "$SPAMASSASSIN_LOG_ERROR"` -gt 2 ] && restartService spamassassin $SPAMASSASSIN_PID_FILE "non-functional" stopFirst "$SPAMD_RESTART_HOOK"
+                  case "`$BANNER_NANNY $SPAMASSASSIN_PORT $TIMEOUT`" in
+                    *success*) true ;;
+                    *) restartService spamassassin $SPAMASSASSIN_PID_FILE "hung" stopFirst "$SPAMD_RESTART_HOOK" ;;
+                  esac
+		  # memory-management
+		  pidof -x spamd | xargs -n 1 | while read pid ; do
+		    VIRT="`getVirtualMemUsage $pid`"
+		    if [ $VIRT -gt $SPAMD_MAX_VIRTUAL_SIZE ] ; then
+		      restartService spamassassin $SPAMASSASSIN_PID_FILE "memory-hogging ($VIRT)" stopFirst "$SPAMD_RESTART_HOOK"
+		    fi
+		  done
+
                 fi
 	        if dpkg -l untangle-clamav-config | grep -q -E '^ii' ; then # we're managing clamav
-	          [ `tail -n 50 /var/log/clamav/clamav.log  | grep -c -E "$CLAMAV_LOG_ERROR"` -gt 2 ] && restartService clamav-daemon $CLAMD_PID_FILE "non-functional" stopFirst '/etc/init.d/clamav-freshclam stop ; rm -fr /var/lib/clamav/* ; freshclam ; /etc/init.d/clamav-freshclam restart'
+	          [ `tail -n 50 /var/log/clamav/clamav.log  | grep -c -E "$CLAMAV_LOG_ERROR"` -gt 2 ] && restartService clamav-daemon $CLAMD_PID_FILE "non-functional" stopFirst "$CLAMD_NONFUNCTIONAL_HOOK"
                   case "`$BANNER_NANNY $CLAMD_PORT $TIMEOUT`" in
                     *success*) true ;;
                     *) restartService clamav-daemon $CLAMD_PID_FILE "hung" stopFirst ;;
                   esac
 		  # memory-management
-		  VIRT="`getVirtualMemUsage $(cat $CLAMD_PID_FILE)`"
-		  if [ $VIRT -gt $CLAMD_MAX_VIRTUAL_SIZE ] ; then
-		    restartService clamav-daemon $CLAMD_PID_FILE "memory-hogging ($VIRT)" stopFirst
-		  fi
+		  pidof -x clamd | xargs -n 1 | while read pid ; do 
+		    VIRT="`getVirtualMemUsage $pid`"
+		    if [ $VIRT -gt $CLAMD_MAX_VIRTUAL_SIZE ] ; then
+		      restartService clamav-daemon $CLAMD_PID_FILE "memory-hogging ($VIRT)" stopFirst
+		    fi
+		  done
 	        fi
 	        if dpkg -l untangle-support-agent | grep -q ii ; then # support-agent is supposed to run
 	            if [ -f "$SUPPORT_AGENT_PID_FILE" ] && ps `cat $SUPPORT_AGENT_PID_FILE` > /dev/null ; then # it runs
