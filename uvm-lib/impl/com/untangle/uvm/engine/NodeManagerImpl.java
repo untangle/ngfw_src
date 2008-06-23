@@ -39,11 +39,13 @@ import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.logging.UvmLoggingContext;
 import com.untangle.uvm.logging.UvmLoggingContextFactory;
 import com.untangle.uvm.logging.UvmRepositorySelector;
+import com.untangle.uvm.message.LocalMessageManager;
 import com.untangle.uvm.node.DeployException;
 import com.untangle.uvm.node.LocalNodeManager;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.NodeDesc;
+import com.untangle.uvm.node.NodeInstantiated;
 import com.untangle.uvm.node.NodeStartException;
 import com.untangle.uvm.node.NodeState;
 import com.untangle.uvm.node.UndeployException;
@@ -285,6 +287,7 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
             NodeContextImpl tci = tids.get(tid);
             result.put(tid, tci.getRunState());
         }
+
         return result;
     }
 
@@ -715,12 +718,14 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
         logger.info("initializing node desc for: " + nodeName);
         NodeDesc tDesc = initNodeDesc(mackageDesc, resUrls, tid);
 
+
+        NodeContextImpl tc;
         synchronized (this) {
             if (!live) {
                 throw new DeployException("NodeManager is shut down");
             }
 
-            NodeContextImpl tc = new NodeContextImpl
+            tc = new NodeContextImpl
                 ((URLClassLoader)getClass().getClassLoader(), tDesc, mackageDesc.getName(), true);
             tids.put(tid, tc);
             try {
@@ -730,6 +735,13 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
                     tids.remove(tid);
                 }
             }
+        }
+
+        Node node = tc.node();
+        if (null != node) {
+            NodeInstantiated ne = new NodeInstantiated(tDesc, node.getCounters().getStatDescs());
+            LocalMessageManager mm = mctx.localMessageManager();
+            mm.submitMessage(ne);
         }
 
         return tDesc;
