@@ -290,7 +290,7 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
     public void installAndInstantiate(final String name, final Policy p)
         throws MackageInstallException
     {
-        Thread t = new Thread(new Runnable()
+        Runnable r =new Runnable()
             {
                 public void run()
                 {
@@ -304,8 +304,8 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
                         logger.warn("could not deploy", exn);
                     }
                 }
-            });
-        t.start();
+            };
+        LocalUvmContextFactory.context().newThread(r).start();
     }
 
     public void uninstall(String name) throws MackageUninstallException
