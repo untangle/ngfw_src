@@ -196,6 +196,9 @@ public class WebFilterSettings implements Serializable
     @OneToMany(fetch=FetchType.EAGER)
     @Cascade({ org.hibernate.annotations.CascadeType.ALL,
                    org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    @JoinTable(name="n_webfilter_mime_types",
+               joinColumns=@JoinColumn(name="setting_id"),
+               inverseJoinColumns=@JoinColumn(name="rule_id"))
     public Set<MimeTypeRule> getBlockedMimeTypes()
     {
         return blockedMimeTypes;

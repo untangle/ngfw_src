@@ -26,8 +26,7 @@ CREATE TABLE settings.n_webfilter_template (
 -- com.untangle.tran.httpblocker.HttpBlockerSettings.blockedUrls
 CREATE TABLE settings.n_webfilter_passed_urls (
     setting_id int8 NOT NULL,
-    rule_id int8 NOT NULL,
-    position int4);
+    rule_id int8 NOT NULL);
 
 -- com.untangle.tran.httpblocker.HttpBlockerSettings
 CREATE TABLE settings.n_webfilter_settings (
@@ -42,26 +41,22 @@ CREATE TABLE settings.n_webfilter_settings (
 -- com.untangle.tran.httpblocker.HttpBlockerSettings.blockedExtensions
 CREATE TABLE settings.n_webfilter_extensions (
     setting_id int8 NOT NULL,
-    rule_id int8 NOT NULL,
-    position int4);
+    rule_id int8 NOT NULL);
 
 -- com.untangle.tran.httpblocker.HttpBlockerSettings.blockedMimeTypes
 CREATE TABLE settings.n_webfilter_mime_types (
     setting_id int8 NOT NULL,
-    rule_id int8 NOT NULL,
-    position int4);
+    rule_id int8 NOT NULL);
 
 -- com.untangle.tran.httpblocker.HttpBlockerSettings.passedClients
 CREATE TABLE settings.n_webfilter_passed_clients (
     setting_id int8 NOT NULL,
-    rule_id int8 NOT NULL,
-    position int4);
+    rule_id int8 NOT NULL);
 
 -- com.untangle.tran.httpblocker.HttpBlockerSettings.blockedUrls
 CREATE TABLE settings.n_webfilter_blocked_urls (
     setting_id int8 NOT NULL,
-    rule_id int8 NOT NULL,
-    position int4);
+    rule_id int8 NOT NULL);
 
 -- com.untangle.tran.httpblocker.BlacklistCategory
 CREATE TABLE settings.n_webfilter_blcat (
@@ -74,7 +69,6 @@ CREATE TABLE settings.n_webfilter_blcat (
     block_expressions bool NOT NULL,
     log_only bool NOT NULL,
     setting_id int8,
-    position int4,
     PRIMARY KEY (category_id));
 
 ----------------
@@ -126,10 +120,6 @@ ALTER TABLE settings.n_webfilter_passed_clients
 ALTER TABLE settings.n_webfilter_blocked_urls
     ADD CONSTRAINT fk_tr_httpblk_blocked_urls
     FOREIGN KEY (setting_id) REFERENCES settings.n_webfilter_settings;
-
-ALTER TABLE settings.n_webfilter_blocked_urls
-    ADD CONSTRAINT fk_tr_httpblk_blocked_urls_rule
-    FOREIGN KEY (rule_id) REFERENCES settings.u_string_rule;
 
 ALTER TABLE settings.n_webfilter_blcat
     ADD CONSTRAINT fk_tr_httpblk_blcat
