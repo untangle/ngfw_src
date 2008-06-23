@@ -38,7 +38,8 @@ import com.untangle.uvm.security.Tid;
 public class BlockPageUtil
 {
     private static final BlockPageUtil INSTANCE = new BlockPageUtil();
-
+    private static final String UNG_PREFIX = "ung_";
+    
     private BlockPageUtil()
     {
     }
@@ -52,11 +53,12 @@ public class BlockPageUtil
 
         
         String module = handler.getI18n();
-
+        String ungPrefixedModule = UNG_PREFIX + module;
+        
         LanguageSettings ls = uvm.remoteContext().languageManager().getLanguageSettings();
         Locale locale = new Locale(ls.getLanguage());
                    
-        I18n i18n = I18nFactory.getI18n( "i18n." + module, module, Thread.currentThread().getContextClassLoader(), locale, I18nFactory.DEFAULT);
+        I18n i18n = I18nFactory.getI18n( "i18n." + ungPrefixedModule, ungPrefixedModule, Thread.currentThread().getContextClassLoader(), locale, I18nFactory.DEFAULT);
         request.setAttribute( "i18n", i18n );
 
         /* These have to be registered against the request, otherwise

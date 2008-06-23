@@ -395,6 +395,7 @@ thead tr.x-grid3-hd-row {
 }
 
 div.appItem {
+    cursor: pointer;
 	position: relative;
 	background: transparent url(../images/main/background_app_item.png) no-repeat !important;
 	width: 177px;
@@ -417,20 +418,19 @@ div.appItem div.text {
 	font-size: 12px;
 	font-weight: bold;
 }
-div.appItem div.buttonPosA {
-	position: absolute;
-	right: 5px;
+div.appItem div.action {
+    position: absolute;
+    right: 5px;
 
-	top: 34px;
-	cursor: pointer;
-	height: 15px;
-	font-family: verdana, sans-serif;
-	font-size: 9px;
-	font-weight: bold;
-	color: green;
-	padding-right: 16px;
+    top: 34px;
+    height: 15px;
+    font-family: verdana, sans-serif;
+    font-size: 9px;
+    font-weight: bold;
+    color: green;
+    padding-right: 16px;
 }
-div.appItem div.buttonPosB {
+div.appItem div.buttonBuy {
 	position: absolute;
 	left: 53px;
 	top: 34px;
@@ -486,3 +486,32 @@ div.iconArrowDown {
 	font-family:arial,helvetica,"FreeSans","Utkal","Nimbus Sans L","Malayalam","Phetsarath OT","Garuda",clean,sans-serif;
 	color: #20377A;
 }
+
+.untangle-form-panel
+{ 
+  padding:5px 5px 0px 5px;
+ }
+
+
+.wizard-steps .completed
+{ 
+  color: #0000CC;  
+ }
+
+.wizard-steps .incomplete
+{ 
+  color: #C0C0C0;
+ }
+
+.wizard-steps .current
+{ 
+  color: #00CC00;
+  font-weight: bold;
+ }
+
+.wizard-steps .step
+{
+  font-size: 11px;
+  line-height: 14px; /* works out to 14px */
+  font-family:arial,helvetica,"FreeSans","Utkal","Nimbus Sans L","Malayalam","Phetsarath OT","Garuda",clean,sans-serif;
+ }

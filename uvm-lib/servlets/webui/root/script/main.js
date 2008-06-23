@@ -146,7 +146,7 @@ Ung.Main.prototype = {
                 }
              ]
         });
-		Ext.QuickTips.init();
+		//Ext.QuickTips.init();
         
 		this.buildLeftTabs();
 
@@ -165,7 +165,7 @@ Ung.Main.prototype = {
 				window.open(rackBaseHelpLink);
 		    }
 		});
-		this.loadTools();
+		this.loadConfig();
 		this.loadPolicies();
 	},
 	initExtI18n: function(){
@@ -293,10 +293,6 @@ Ung.Main.prototype = {
 		}
 		return helpLink;
 	},
-	loadTools: function() {
-		this.loadApps();
-		this.loadConfig();
-	},
 	// build apps
 	buildApps: function() {
 		this.appsSemaphore--;
@@ -369,7 +365,6 @@ Ung.Main.prototype = {
 				}
 			}
 			this.buildApps();
-			Ung.AppItem.updateStatesForCurrentPolicy();
 			
 		}.createDelegate(this));
 	},
@@ -404,31 +399,59 @@ Ung.Main.prototype = {
 		node.blingers=eval([{'type':'ActivityBlinger','bars':['ACTIVITY 1','ACTIVITY 2','ACTIVITY 3','ACTIVITY 4']},{'type':'SystemBlinger'}]);
 		return node;
 	},
-	// load the list of nodes for the current policy
-	loadNodes: function() {
+	buildApps: function () {
+        //destroy Apps
+        if(main.apps!=null) {
+            for(var i=0; i<main.apps.length; i++) {
+                Ext.destroy(main.apps[i]);
+            }
+            this.apps=null;
+        }
+        //build Apps
+        this.apps=[];
+        for(var i=0;i<rpc.rackView.applications.list.length;i++) {
+            var application=rpc.rackView.applications.list[i];
+            this.apps.push(new Ung.AppItem(application));
+        }
+	},
+	buildNodes: function() {
+        //build nodes
+        Ung.MessageManager.stop();
+        this.destoyNodes();
+        this.nodes=[];
+        for(var i=0;i<rpc.rackView.instances.list.length;i++) {
+            var instance=rpc.rackView.instances.list[i];
+            var node=this.createNode(instance.tid, instance.mackageDesc);
+            this.nodes.push(node);
+        }
+        for(var i=0;i<this.nodes.length;i++) {
+            var node=this.nodes[i];
+            this.addNode(node);
+        }
+        this.updateSeparator();
+        this.loadNodesRunStates();
+	   
+	},
+	// load the rack view for current policy
+	loadRackView: function() {
         rpc.toolboxManager.getRackView(function (result, exception) {
             if(exception) { Ext.MessageBox.alert(i18n._("Failed"),exception.message);
                 return;
             }
             rpc.rackView=result;
-            Ung.MessageManager.stop();
-            this.destoyNodes();
-            this.nodes=[];
-            for(var i=0;i<rpc.rackView.instances.list.length;i++) {
-            	var instance=rpc.rackView.instances.list[i];
-                var node=this.createNode(instance.tid, instance.mackageDesc);
-                this.nodes.push(node);
-            }
-            for(var i=0;i<this.nodes.length;i++) {
-                var node=this.nodes[i];
-                this.addNode(node);
-            }
-            this.updateSeparator();
-            Ung.AppItem.updateStatesForCurrentPolicy();
-            this.loadNodesRunStates();
-
+            main.buildApps();
+            main.buildNodes();
         }.createDelegate(this), rpc.currentPolicy);
 	},
+    loadApps: function() {
+        rpc.toolboxManager.getRackView(function (result, exception) {
+            if(exception) { Ext.MessageBox.alert(i18n._("Failed"),exception.message);
+                return;
+            }
+            rpc.rackView=result;
+            main.buildApps();
+        }.createDelegate(this), rpc.currentPolicy);
+    },
 	// load run states for all Nodes
 	loadNodesRunStates: function() {
 		rpc.nodeManager.allNodeStates(function (result, exception) {
@@ -461,16 +484,12 @@ Ung.Main.prototype = {
         	}
 			rpc.nodeManager.instantiate(function (result, exception) {
 				if(exception) { Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}
-				var tid = result;
-				rpc.tids.push(tid);
-				var md=this.getNodeMackageDesc(tid);
-				if(md==null) {
-					return;
-				}
-				var node=this.createNode(tid, md);
+				var instance = result;
+				var node=this.createNode(instance.tid, instance.mackageDesc);
 				this.nodes.push(node);
 				this.addNode(node);
-				this.updateSeparator();
+                this.updateSeparator();
+				this.loadApps();
 			}.createDelegate(this), mackageDesc.name, policy);
 		}
 	},
@@ -638,14 +657,14 @@ Ung.Main.prototype = {
 		}
 		out.push('<\/select>');
 		document.getElementById('rack_list').innerHTML=out.join('');
-		this.loadNodes();
+		this.loadRackView();
 	},
 	// change current policy
 	changePolicy: function () {
 		var rack_select=document.getElementById('rack_select');
 		if(rack_select.selectedIndex>=0) {
 			rpc.currentPolicy=rpc.policies[rack_select.selectedIndex];
-			this.loadNodes();
+			this.loadRackView();
 		}
 	}
 };	

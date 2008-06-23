@@ -398,11 +398,13 @@ Ung.MessageClientThread = {
         }.createDelegate(this));
     }
 };
-
-// App Items class
 Ung.AppItem = Ext.extend(Ext.Component, {
-    item : null,
-    trialItem : null,
+    libItem: null,
+    node : null,
+    trialLibItem : null,
+
+    
+    
     iconSrc : null,
     iconCls : null,
     renderTo : 'appsItems',
@@ -416,10 +418,20 @@ Ung.AppItem = Ext.extend(Ext.Component, {
     // progress bar component
     progressBar : null,
     constructor : function(config) {
-        this.id = "appItem_" + config.item.name;
+    	var name="";
+    	if(config.libItem!=null) {
+    		name=config.libItem.name;
+    		this.item=config.libItem;
+    	} else if(config.node!=null) {
+    		name=config.node.name;
+    		this.item=config.node;
+    	} else {
+    		return;
+    		//error
+    	}
+        this.id = "appItem_" + name;
         Ung.AppItem.superclass.constructor.apply(this, arguments);
     },
-    // private
     onRender : function(container, position) {
         Ung.AppItem.superclass.onRender.call(this, container, position);
         if (this.name && this.getEl()) {
@@ -441,10 +453,10 @@ Ung.AppItem = Ext.extend(Ext.Component, {
             'imageHtml' : imageHtml,
             'text' : this.item.displayName
         });
-        this.getEl().dom.innerHTML = html;
+        this.getEl().insertHtml("afterBegin", html);
+        //this.getEl().dom.innerHTML = html;
         this.getEl().addClass("appItem");
-        this.buttonInstall = Ext.get("buttonInstall_" + this.getId());
-        this.buttonStore = Ext.get("buttonStore_" + this.getId());
+        
         this.progressBar = new Ext.ProgressBar({
             text : '',
             id : 'progressBar_' + this.getId(),
@@ -460,46 +472,42 @@ Ung.AppItem = Ext.extend(Ext.Component, {
                 }
             }
         });
+        this.buttonBuy = Ext.get("buttonBuy_" + this.getId());
+        this.buttonBuy.setVisible(false);
+        this.action = Ext.get("action_" + this.getId());
         this.progressBar.hide();
-        this.buttonStore.on("click", this.linkToStoreFn, this);
-        this.buttonInstall.on("click", this.installNodeFn, this);
-        if (this.item.type == "LIB_ITEM") { // Store items
-            this.buttonStore.dom.className = "buttonPosA iconInfo";
-            this.buttonStore.dom.innerHTML = i18n._("More Info");
-            this.buttonInstall.setVisible(false);
-        } else { // Node items
-            this.buttonInstall.dom.className = "buttonPosA iconArrowRight";
-            this.buttonInstall.dom.innerHTML = i18n._("Install");
-            this.buttonStore.setVisible(false);
+        if(this.libItem!=null && this.node==null) { //libitem
+        	this.getEl().on("click", this.linkToStoreFn, this);
+        	this.action.insertHtml("afterBegin", i18n._("More Info"));
+        	this.action.addClass("iconInfo");
+        } else if(this.node!=null) { //node
+            this.getEl().on("click", this.installNodeFn, this);
+            this.action.insertHtml("afterBegin", i18n._("Install"));
+            this.action.addClass("iconArrowRight");
+        	if(this.libItem!=null) { //libitem and trial node
+                this.buttonBuy.setVisible(true);
+                this.buttonBuy.insertHtml("afterBegin", i18n._("Buy"));
+                this.buttonBuy.on("click", this.linkToStoreFn, this);
+                this.buttonBuy.addClass("buttonBuy");
+                this.buttonBuy.addClass("iconArrowDown");
+            }
+        } else {
+        	retrun;
+        	//error
         }
     },
     // get the node name associated with the App
     getNodeName : function() {
         var nodeName = null; // for libitems with no trial node return null
-        if (this.item.type == "NODE") { // for simple nodes return node name
-            nodeName = this.item.name;
-        } else if (this.trialItem) { // for libitems with trial nodes return
-                                        // trial node name
-            nodeName = this.trialItem.name;
-        }
+        if (this.node) { // nodes
+            nodeName = this.node.name;
+        } 
         return nodeName;
-    },
-    // get the node mackage desc associated with the App
-    getNodeItem : function() {
-        var md = null; // for libitems with no trial node return null
-        if (this.item.type == "NODE") { // for simple nodes return node name
-            md = this.item;
-        } else if (this.trialItem) { // for libitems with trial nodes return
-                                        // trial node name
-            md = this.trialItem;
-        }
-        return md;
     },
     setState : function(newState, options) {
         switch (newState) {
             case "unactivated" :
                 this.displayButtonsOrProgress(true);
-                this.setNodeInstalledState(false);
                 break;
             case "unactivating" :
                 this.displayButtonsOrProgress(false);
@@ -509,11 +517,9 @@ Ung.AppItem = Ext.extend(Ext.Component, {
                 break;
             case "activated" :
                 this.displayButtonsOrProgress(true);
-                this.setNodeInstalledState(false);
                 break;
             case "installed" :
                 this.displayButtonsOrProgress(true);
-                this.setNodeInstalledState(true);
                 break;
             case "installing" :
                 this.displayButtonsOrProgress(false);
@@ -560,38 +566,21 @@ Ung.AppItem = Ext.extend(Ext.Component, {
     },
     // display Buttons xor Progress barr
     displayButtonsOrProgress : function(displayButtons) {
-        this.buttonInstall.setVisible(displayButtons);
-        this.buttonStore.setVisible(displayButtons);
+        this.action.setVisible(displayButtons);
+        this.buttonBuy.setVisible(displayButtons);
         if (displayButtons) {
+        	this.getEl().unmask();
+        	this.buttonBuy.unmask();
             this.progressBar.reset(true);
         } else {
+        	this.getEl().mask();
+            this.buttonBuy.mask();
             this.progressBar.show();
-        }
-    },
-    // Set the installed state of the node
-    setNodeInstalledState : function(installed) {
-        if (this.item.type == "NODE") {
-            if (installed) {
-                this.hide();
-            } else {
-                this.show();
-            }
-        } else if (this.trialItem) {
-            if (installed) {
-                this.buttonInstall.setVisible(false);
-                this.buttonStore.dom.className = "buttonPosA iconInfo";
-                this.buttonStore.dom.innerHTML = i18n._("More Info");
-            } else {
-                this.buttonInstall.setVisible(true);
-                this.buttonInstall.dom.className = "buttonPosA iconArrowRight";
-                this.buttonInstall.dom.innerHTML = i18n._("Trial install");
-                this.buttonStore.dom.className = "buttonPosB iconArrowDown";
-                this.buttonStore.dom.innerHTML = i18n._("Buy");
-            }
         }
     },
     // open store page in a new frame
     linkToStoreFn : function(e) {
+    	e.stopEvent();
         rpc.adminManager.generateAuthNonce(function(result, exception) {
             if (exception) {
                 Ext.MessageBox.alert(i18n._("Failed"), exception.message);
@@ -603,7 +592,7 @@ Ung.AppItem = Ext.extend(Ext.Component, {
             query += "&port=" + currentLocation.port;
             query += "&protocol=" + currentLocation.protocol.replace(/:$/, "");
             query += "&action=browse";
-            query += "&libitem=" + this.item.name;
+            query += "&libitem=" + this.libItem.name;
 
             var url = "../library/launcher?" + query;
             var iframeWin = main.getIframeWin();
@@ -616,32 +605,15 @@ Ung.AppItem = Ext.extend(Ext.Component, {
     installNodeFn : function(e) {
         e.preventDefault();
         if (e.shiftKey) { // uninstall App
-            main.unactivateNode(this.getNodeItem());
+            main.unactivateNode(this.node);
         } else { // install node
-            main.installNode(this.getNodeItem());
+            main.installNode(this.node);
         }
     }
 
 });
 Ung.AppItem.template = new Ext.Template('<div class="icon">{imageHtml}</div>', '<div class="text">{text}</div>',
-        '<div id="buttonInstall_{id}"></div>', '<div id="buttonStore_{id}"></div>', '<div class="statePos" id="state_{id}"></div>');
-//
-// update all app items installed states for the current Policy nodes
-Ung.AppItem.updateStatesForCurrentPolicy = function() {
-    if (main.apps !== null && main.nodes !== null) {
-        var i = null;
-        var nodeNames = {}
-        for (i = 0; i < main.nodes.length; i++) {
-            nodeNames[main.nodes[i].name] = true;
-        }
-        for (i = 0; i < main.apps.length; i++) {
-            var app = main.apps[i];
-            if (app != null) {
-                app.setNodeInstalledState(nodeNames[app.getNodeName()] != null);
-            }
-        }
-    }
-};
+        '<div id="buttonBuy_{id}"></div>', '<div id="action_{id}" class="action"></div>', '<div class="statePos" id="state_{id}"></div>');
 // update node state for the app with a node name
 Ung.AppItem.updateStateForNode = function(nodeName, state, options) {
     var app = Ung.AppItem.getAppForNode(nodeName);
@@ -1009,9 +981,9 @@ Ung.Node = Ext.extend(Ext.Component, {
                                 break;
                             }
                         }
-                        // update AppItem button
-                        Ung.AppItem.updateStateForNode(nodeName, "activated");
                         main.updateSeparator();
+                        // update AppItem button
+                        main.loadApps();
                     }
                 }.createDelegate(this), this.Tid);
             }
