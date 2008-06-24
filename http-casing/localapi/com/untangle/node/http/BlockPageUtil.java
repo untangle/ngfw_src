@@ -57,8 +57,9 @@ public class BlockPageUtil
         
         LanguageSettings ls = uvm.remoteContext().languageManager().getLanguageSettings();
         Locale locale = new Locale(ls.getLanguage());
-                   
-        I18n i18n = I18nFactory.getI18n( "i18n." + ungPrefixedModule, ungPrefixedModule, Thread.currentThread().getContextClassLoader(), locale, I18nFactory.DEFAULT);
+        
+        // TODO get this from LanguageManager
+        I18n i18n = I18nFactory.getI18n( "i18n." + ungPrefixedModule, ungPrefixedModule, Thread.currentThread().getContextClassLoader(), locale, I18nFactory.FALLBACK);
         request.setAttribute( "i18n", i18n );
 
         /* These have to be registered against the request, otherwise

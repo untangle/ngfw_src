@@ -23,7 +23,7 @@
   <head>
     <title><c:out value="${pageTitle}"/></title>
 
-    <uvm:skin file="userPages.css" name="${ss.userPagesSkin}"/>
+    <uvm:skin src="userPages.css" name="${ss.userPagesSkin}"/>
     
     <uvm:inlineScript>
       <![CDATA[
