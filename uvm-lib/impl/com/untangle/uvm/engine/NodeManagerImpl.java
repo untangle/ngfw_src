@@ -53,7 +53,6 @@ import com.untangle.uvm.node.UvmNodeHandler;
 import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.security.Tid;
 import com.untangle.uvm.toolbox.MackageDesc;
-import com.untangle.uvm.toolbox.MackageInstallException;
 import com.untangle.uvm.toolbox.RemoteToolboxManager;
 import com.untangle.uvm.util.TransactionWork;
 import org.apache.log4j.Logger;
@@ -493,7 +492,6 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
     {
         RemoteToolboxManager tbm = LocalUvmContextFactory
             .context().toolboxManager();
-
 
         List<Runnable> restarters = new ArrayList<Runnable>(startQueue.size());
 
