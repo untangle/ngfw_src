@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -41,8 +41,6 @@ import java.util.Set;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.localapi.SessionMatcher;
 import com.untangle.uvm.localapi.SessionMatcherFactory;
-import com.untangle.uvm.policy.Policy;
-import com.untangle.uvm.security.Tid;
 import com.untangle.uvm.node.LocalNodeManager;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeContext;
@@ -52,6 +50,8 @@ import com.untangle.uvm.node.NodeStartException;
 import com.untangle.uvm.node.NodeState;
 import com.untangle.uvm.node.NodeStats;
 import com.untangle.uvm.node.NodeStopException;
+import com.untangle.uvm.policy.Policy;
+import com.untangle.uvm.security.Tid;
 import com.untangle.uvm.util.TransactionWork;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
@@ -226,7 +226,8 @@ public abstract class NodeBase implements Node
     {
         if (NodeState.LOADED == runState
             || NodeState.DESTROYED == runState) {
-            throw new IllegalStateException("disabling in: " + runState);
+            logger.warn("disabling in: " + runState);
+            return;
         } else if (NodeState.RUNNING == runState) {
             stop(false);
         }
@@ -297,7 +298,8 @@ public abstract class NodeBase implements Node
     {
         if (NodeState.LOADED == runState
             || NodeState.DESTROYED == runState) {
-            throw new IllegalStateException("enabling in: " + runState);
+            logger.warn("enabling in: " + runState);
+            return;
         } else if (NodeState.RUNNING == runState
                    || NodeState.INITIALIZED == runState) {
             // We're already fine.
@@ -412,7 +414,8 @@ public abstract class NodeBase implements Node
         throws NodeException, IllegalStateException
     {
         if (NodeState.LOADED != runState) {
-            throw new IllegalStateException("Init called in state: " + runState);
+            logger.warn("Init called in state: " + runState);
+            return;
         }
 
         try {
@@ -429,8 +432,8 @@ public abstract class NodeBase implements Node
     private void start(boolean syncState) throws NodeStartException
     {
         if (NodeState.INITIALIZED != getRunState()) {
-            throw new IllegalStateException("Start called in state: "
-                                            + getRunState());
+            logger.warn("Start called in state: " + getRunState());
+            return;
         }
 
         for (NodeBase parent : parents) {
@@ -463,8 +466,8 @@ public abstract class NodeBase implements Node
         throws NodeStopException, IllegalStateException
     {
         if (NodeState.RUNNING != getRunState()) {
-            throw new IllegalStateException("Stop called in state: "
-                                            + getRunState());
+            logger.warn("Stop called in state: " + getRunState());
+            return;
         }
 
         try {
@@ -503,7 +506,8 @@ public abstract class NodeBase implements Node
         if (NodeState.INITIALIZED != runState
             && NodeState.LOADED != runState
             && NodeState.DISABLED != runState) {
-            throw new IllegalStateException("Destroy in state: " + runState);
+            logger.warn("Destroy in state: " + runState);
+            return;
         }
 
         try {
