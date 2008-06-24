@@ -43,22 +43,26 @@
   <body id="simple">
     <div id="content">
       <div id="header">
-        <a href="${bs.companyUrl}"><img src="/images/BrandingLogo.gif" alt=""/></a>
-        <h1><span><c:out value="${title}"/></span></h1>
+      <table border="0" cellpadding="0" cellspacing="0" width="1000">
+        <tr><td width="1%"><a href="${bs.companyUrl}"><img src="/images/BrandingLogo.gif" alt=""/></a></td>
+        <td class="title-block-page"><c:out value="${title}" escapeXml="false"/></td></tr>
+      </table>
       </div>
       
       <div id="main">
+        <p class="icon-block">
+            <br/>
+        </p>
         <p class="description">
           <span>${description}</span>
         </p>
-        
-        <ul>
-          <li><uvm:i18n p0="${bd.formattedHost}">Host: {0}</uvm:i18n></li>
-          <li><uvm:i18n p0="${bd.formattedUrl}">URL: {0}</uvm:i18n></li>
+        <div class="info-list">
+          <div><uvm:i18n p0="${bd.formattedHost}">Host: {0}</uvm:i18n></div>
+          <div><uvm:i18n p0="${bd.formattedUrl}">URL: {0}</uvm:i18n></div>
           <c:if test="${!empty reason}">
-            <li><uvm:i18n p0="${reason}">Reason: {0}</uvm:i18n></li>
+            <div><uvm:i18n p0="${reason}">Reason: {0}</uvm:i18n></div>
           </c:if>
-        </ul>
+        </div>
         
         <p class="contact">
           <span>${contact}</span>
