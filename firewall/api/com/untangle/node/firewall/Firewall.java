@@ -31,4 +31,10 @@ public interface Firewall extends Node
 
     List<FirewallRule> getFirewallRuleList();
     void setFirewallRuleList(List<FirewallRule> rules);
+    
+    /**
+     * Update all settings once, in a single transaction
+     */
+    void updateAll(FirewallBaseSettings baseSettings, 
+    		List<FirewallRule> rules);
 }

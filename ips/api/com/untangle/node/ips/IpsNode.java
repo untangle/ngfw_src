@@ -43,4 +43,11 @@ public interface IpsNode extends Node
                                             String... sortColumns);
     void updateImmutableVariables(List<IpsVariable> added, List<Long> deleted,
                                   List<IpsVariable> modified);
+    
+    /**
+     * Update all settings once, in a single transaction
+     */
+    void updateAll(IpsBaseSettings baseSettings, 
+    		List[] rules, List[] variables, List[] immutableVariables);
+    
 }

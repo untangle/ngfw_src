@@ -21,6 +21,10 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+import org.hibernate.Query;
+import org.hibernate.Session;
+
 import com.untangle.uvm.localapi.SessionMatcher;
 import com.untangle.uvm.localapi.SessionMatcherFactory;
 import com.untangle.uvm.logging.EventLogger;
@@ -41,9 +45,6 @@ import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.vnet.SoloPipeSpec;
-import org.apache.log4j.Logger;
-import org.hibernate.Query;
-import org.hibernate.Session;
 
 public class FirewallImpl extends AbstractNode implements Firewall
 {
@@ -96,7 +97,7 @@ public class FirewallImpl extends AbstractNode implements Firewall
         TransactionWork tw = new TransactionWork() {
             public boolean doWork(Session s) {
                 settings.setBaseSettings(baseSettings);
-                s.merge(settings);
+                settings = (FirewallSettings)s.merge(settings);
                 return true;
             }
 
@@ -117,7 +118,25 @@ public class FirewallImpl extends AbstractNode implements Firewall
         TransactionWork tw = new TransactionWork() {
             public boolean doWork(Session s) {
                 settings.setFirewallRuleList(rules);
-                s.merge(settings);
+                settings = (FirewallSettings)s.merge(settings);
+                return true;
+            }
+
+            public Object getResult() {
+                return null;
+            }
+        };
+        getNodeContext().runTransaction(tw);
+    }
+    
+    public void updateAll(final FirewallBaseSettings baseSettings,
+    		final List<FirewallRule> rules)
+    {
+        TransactionWork tw = new TransactionWork() {
+            public boolean doWork(Session s) {
+                settings.setBaseSettings(baseSettings);
+                settings.setFirewallRuleList(rules);
+                settings = (FirewallSettings)s.merge(settings);
                 return true;
             }
 

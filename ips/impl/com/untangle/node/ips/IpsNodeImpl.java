@@ -21,6 +21,10 @@ package com.untangle.node.ips;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
+import org.hibernate.Query;
+import org.hibernate.Session;
+
 import com.untangle.node.token.TokenAdaptor;
 import com.untangle.node.util.PartialListUtil;
 import com.untangle.uvm.logging.EventLogger;
@@ -35,9 +39,6 @@ import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.vnet.SoloPipeSpec;
-import org.apache.log4j.Logger;
-import org.hibernate.Query;
-import org.hibernate.Session;
 
 public class IpsNodeImpl extends AbstractNode implements IpsNode {
     private final Logger logger = Logger.getLogger(getClass());
@@ -91,7 +92,7 @@ public class IpsNodeImpl extends AbstractNode implements IpsNode {
         TransactionWork tw = new TransactionWork() {
             public boolean doWork(Session s) {
                 settings.setBaseSettings(baseSettings);
-                s.merge(settings);
+                settings = (IpsSettings)s.merge(settings);
                 return true;
             }
 
@@ -174,7 +175,36 @@ public class IpsNodeImpl extends AbstractNode implements IpsNode {
     {
         updateRules(settings.getImmutableVariables(), added, deleted, modified);
     }
+    
+    public void updateAll(final IpsBaseSettings baseSettings,
+			final List[] rules, final List[] variables,
+			final List[] immutableVariables) {
 
+		TransactionWork tw = new TransactionWork() {
+			public boolean doWork(Session s) {
+				if (baseSettings != null) {
+					settings.setBaseSettings(baseSettings);
+				}
+
+				listUtil.updateCachedItems(settings.getRules(), rules);
+				listUtil.updateCachedItems(settings.getVariables(), variables);
+				listUtil.updateCachedItems(settings.getVariables(), immutableVariables);
+
+				settings = (IpsSettings)s.merge(settings);
+
+				return true;
+			}
+
+			public Object getResult() {
+				return null;
+			}
+		};
+		getNodeContext().runTransaction(tw);
+
+		reconfigure();
+	}
+    
+    
     // protected methods -------------------------------------------------------
 
     protected void postStop() {
