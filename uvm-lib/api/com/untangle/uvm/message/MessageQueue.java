@@ -37,8 +37,9 @@ import java.util.List;
 import java.util.Map;
 
 import com.untangle.uvm.security.Tid;
+import java.io.Serializable;
 
-public class MessageQueue
+public class MessageQueue implements Serializable
 {
     private final List<Message> messages;
     private final Map<Tid, Stats> stats;

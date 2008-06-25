@@ -43,12 +43,15 @@ public class StatDescs implements Serializable
 {
     private final List<StatDesc> metricDescs;
     private final List<StatDesc> activityDescs;
+    private final List<ActiveStat> activeMetrics;
 
     StatDescs(Collection<BlingBlinger> metrics,
-              Collection<BlingBlinger> activities)
+              Collection<BlingBlinger> activities,
+              List<ActiveStat> activeMetrics)
     {
         this.metricDescs = getStatDescss(metrics);
         this.activityDescs = getStatDescss(activities);
+        this.activeMetrics = Collections.unmodifiableList(activeMetrics);
     }
 
     public List<StatDesc> getMetricDescs()
@@ -59,6 +62,11 @@ public class StatDescs implements Serializable
     public List<StatDesc> getActivityDescs()
     {
         return activityDescs;
+    }
+
+    public List<ActiveStat> getActiveMetrics()
+    {
+        return activeMetrics;
     }
 
     // private methods ---------------------------------------------------------

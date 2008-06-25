@@ -33,7 +33,9 @@
 
 package com.untangle.uvm.message;
 
-public class StatDesc
+import java.io.Serializable;
+
+public class StatDesc implements Serializable
 {
     private final String name;
     private final String displayName;

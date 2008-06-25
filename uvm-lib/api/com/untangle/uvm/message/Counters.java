@@ -33,6 +33,7 @@
 
 package com.untangle.uvm.message;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -114,7 +115,8 @@ public class Counters
 
     public StatDescs getStatDescs()
     {
-        return new StatDescs(metrics.values(), activities.values());
+        List<ActiveStat> activeStats = new ArrayList<ActiveStat>();
+        return new StatDescs(metrics.values(), activities.values(), activeStats);
     }
 
     public Stats getAllStats()

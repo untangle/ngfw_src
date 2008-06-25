@@ -232,7 +232,6 @@ class NodeContextImpl implements NodeContext
                     };
                 mctx.runTransaction(tw);
             }
-
         }
     }
 
@@ -329,7 +328,9 @@ class NodeContextImpl implements NodeContext
         }
     }
 
-    private InputStream getResourceAsStreamInt(String res, MackageDesc mackageDesc, String baseNodeName)
+    private InputStream getResourceAsStreamInt(String res,
+                                               MackageDesc mackageDesc,
+                                               String baseNodeName)
     {
         try {
             URL url = new URL(toolboxManager.getResourceDir(mackageDesc), res);
