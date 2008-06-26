@@ -33,10 +33,13 @@
 
 package com.untangle.uvm;
 
+import java.util.List;
+
 import com.untangle.uvm.networking.AccessSettings;
 import com.untangle.uvm.networking.AddressSettings;
 import com.untangle.uvm.networking.BasicNetworkSettings;
 import com.untangle.uvm.networking.DynamicDNSSettings;
+import com.untangle.uvm.networking.Interface;
 import com.untangle.uvm.networking.MiscSettings;
 import com.untangle.uvm.networking.NetworkException;
 import com.untangle.uvm.networking.NetworkSpacesSettings;
@@ -83,6 +86,12 @@ public interface RemoteNetworkManager
      * Retrieve the current network configuration
      */
     NetworkSpacesSettingsImpl getNetworkSettings();
+
+    /**
+     * Retrieve the list of interfaces
+     * @param updateStatus True if you want to update the interface status.
+     */
+    List<Interface> getInterfaceList( boolean updateStatus );
 
     /* Set the access and address settings, used by the Remote Panel */
     void setSettings( AccessSettings access, AddressSettings address )

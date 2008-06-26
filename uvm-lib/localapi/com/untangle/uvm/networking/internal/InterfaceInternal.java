@@ -47,6 +47,9 @@ public class InterfaceInternal
 {
     /* This is the user representation of the interface name (eg. Internal/External) */
     private final String name;
+    /* The system name of the interface (eg eth0) */
+    private final String systemName;
+
     private final ArgonInterface argonIntf;
     private final NetworkSpaceInternal networkSpace;
     private final EthernetMedia ethernetMedia;
@@ -72,6 +75,7 @@ public class InterfaceInternal
         this.isPhysicalInterface = intf.isPhysicalInterface();
 
         this.name = intf.getName();
+        this.systemName = intf.getSystemName();
     }
     
     public ArgonInterface getArgonIntf()
@@ -82,6 +86,11 @@ public class InterfaceInternal
     public String getName()
     {
         return this.name;
+    }
+
+    public String getSystemName()
+    {
+        return this.systemName;
     }
 
     public NetworkSpaceInternal getNetworkSpace()
@@ -138,6 +147,7 @@ public class InterfaceInternal
         Interface i = new Interface( this.argonIntf.getArgon(), this.ethernetMedia, this.isPingable, 
                                      this.isPhysicalInterface );
         i.setName( getName());
+        i.setSystemName( getSystemName());
         i.setConnectionState( getConnectionState());
         i.setCurrentMedia( getCurrentMedia());
 
@@ -149,6 +159,7 @@ public class InterfaceInternal
         StringBuilder sb = new StringBuilder();
         sb.append( "argon intf:  " ).append( getArgonIntf());
         sb.append( "\nname:        " ).append( getName());
+        sb.append( "\nsystem-name: " ).append( getSystemName());
         sb.append( "\nspace-name: " ).append( getNetworkSpace().getName());
         sb.append( "\neth-media:   " ).append( getEthernetMedia());
         sb.append( "\nstatus:      " ).append( getConnectionState() + "/" + getCurrentMedia());

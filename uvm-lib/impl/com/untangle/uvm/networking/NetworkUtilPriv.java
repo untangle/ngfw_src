@@ -463,6 +463,7 @@ class NetworkUtilPriv extends NetworkUtil
             Interface i = new Interface( isPhysicalInterface );
             i.setArgonIntf( argonIntf.getArgon());
             i.setName( argonIntf.getUserName());
+            i.setSystemName( argonIntf.getPhysicalName());
             
             try {
                 interfaceList.add( InterfaceInternal.makeInterfaceInternal( i, networkSpace ));

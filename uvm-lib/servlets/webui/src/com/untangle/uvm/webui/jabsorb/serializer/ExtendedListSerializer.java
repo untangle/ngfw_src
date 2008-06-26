@@ -19,11 +19,6 @@ import org.json.JSONObject;
 public class ExtendedListSerializer extends ListSerializer
 {
   /**
-   * Unique serialisation id.
-   */
-  private final static long serialVersionUID = 2;
-
-  /**
    * Classes that this can serialise.
    */
   private static Class[] _serializableClasses = new Class[] { PersistentList.class };

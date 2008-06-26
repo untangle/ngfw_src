@@ -50,10 +50,12 @@ Ung.SetupWizard.Settings = Ext.extend(Object, {
                     value : 'Admin'
                 },{
                     inputType : 'password',
-                    fieldLabel : i18n._('Password')
+                    fieldLabel : i18n._('Password'),
+                    name : 'password'
                 },{
                     inputType : 'password',
-                    fieldLabel : i18n._('Confirm Password')
+                    fieldLabel : i18n._('Confirm Password'),
+                    name : 'confirmPassword'
                 }]
             },{
                 title : i18n._( 'Timezone' ),
@@ -96,8 +98,15 @@ Ung.SetupWizard.Settings = Ext.extend(Object, {
         this.card = {
             title : i18n._( "Settings" ),
             cardTitle : i18n._( "Configure your Server" ),
-            panel : panel
+            panel : panel,
+            onNext : this.saveSettings.createDelegate( this )
         };
+    },
+
+    saveSettings : function( handler )
+    {
+        rpc.adminManager.setAdminSettings( Ung.SetupWizard.CurrentValues.users );
+        handler();
     }
 });
 
@@ -116,10 +125,10 @@ Ung.SetupWizard.Registration = Ext.extend( Object, {
                               [ 2500, i18n._( "> 1000 " )]];
 
         this.industryStore = [
-                              [ "finance", i18n._( "Banking" ) ],
-                              [ "software", i18n._( "Software" ) ]];
+            i18n._( "Banking" ),
+            i18n._( "Software" ) ];
         
-        var panel = new Ext.FormPanel({
+        this.form = new Ext.FormPanel({
             defaultType : 'fieldset',
             defaults : { 
                 autoHeight : true
@@ -133,14 +142,22 @@ Ung.SetupWizard.Registration = Ext.extend( Object, {
                     border : false
                 },{
                     fieldLabel : i18n._('Email'),
+                    name : 'email'
                 },{
                     fieldLabel : i18n._('Confirm Email'),
+                    name : 'confirmEmail'
                 },{
                     fieldLabel : i18n._('Company Name'),
+                    name : 'companyName'
                 },{
                     fieldLabel : i18n._('Name'),
+                    name : 'name'
                 },{
+                    xtype : 'numberfield',
+                    minValue : 0,
+                    allowDecimals : false,
                     fieldLabel : i18n._('Number of machines behind Untangle'),
+                    name : 'numSeats'
                 }]
             },{
                 defaultType : 'textfield',
@@ -151,10 +168,13 @@ Ung.SetupWizard.Registration = Ext.extend( Object, {
                     border : false
                 },{
                     fieldLabel : i18n._('How did you find Untangle'),
+                    name : "findUntangle"
                 },{
                     fieldLabel : i18n._('State/Province'),
+                    name : "state"
                 },{
                     fieldLabel : i18n._('Country'),
+                    name : "country"
                 },{
                     xtype : 'combo',
                     width : 100,
@@ -164,6 +184,7 @@ Ung.SetupWizard.Registration = Ext.extend( Object, {
                     triggerAction : 'all',
                     listClass : 'x-combo-list-small',
                     fieldLabel : i18n._('What industry is your company in'),
+                    name : "industry"
                 },{
                     xtype : 'combo',
                     width : 50,
@@ -172,6 +193,7 @@ Ung.SetupWizard.Registration = Ext.extend( Object, {
                     store : this.employeeStore,
                     listClass : 'x-combo-list-small',
                     fieldLabel : i18n._('Number of employees'),
+                    name : "numEmployees"
                 }]
             }]
         });
@@ -179,19 +201,63 @@ Ung.SetupWizard.Registration = Ext.extend( Object, {
         this.card = {
             title : i18n._( "Registration" ),
             cardTitle : i18n._( "Registration" ),
-            panel : panel
+            panel : this.form,
+            onNext : this.saveRegistrationInfo.createDelegate( this )
         };
+    },
+
+    saveRegistrationInfo : function( handler )
+    {
+        var info = Ung.SetupWizard.CurrentValues.registrationInfo;
+        var misc = {};
+        this.setRegistrationValue( "name", misc, true );
+        this.setRegistrationValue( "email", info, true, "emailAddr" );
+        this.setRegistrationValue( "companyName", info, true );
+        this.setRegistrationValue( "numSeats", info, true );
+
+        this.setRegistrationValue( "findUntangle", misc, false );
+        this.setRegistrationValue( "state", misc, false );
+        this.setRegistrationValue( "country", misc, false );
+        this.setRegistrationValue( "industry", misc, false );
+        this.setRegistrationValue( "numEmployees", misc, false );
+
+        info.misc.map = misc;
+
+        rpc.adminManager.setRegistrationInfo(this.errorHandler.createDelegate( this, [ handler ], true ), info );
+    },
+
+    errorHandler : function( result, exception, foo, handler )
+    {
+        if(exception) {
+            Ext.MessageBox.alert("Failed",exception.message); 
+            return;
+        }
+        
+        handler();
+    },
+
+    setRegistrationValue : function( fieldName, map, isRequired, param )
+    {
+        if ( param == null ) param = fieldName;
+
+        var field = this.form.find( "name", fieldName );
+        if ( field == null || field.length == 0 ) return;
+        field = field[0];
+        var value = null;
+
+        /* Combo has to use the raw value, otherwise editable doesn't come through */
+        if ( field.xtype == "combo" ) value = field.getRawValue();
+        else value = field.getValue();
+
+        if ( value.length == 0 ) return;
+        map[param] = "" + value;
     }
- });
+});
 
 Ung.SetupWizard.Interfaces = Ext.extend( Object, {
     constructor : function()
     {
-        var data = [];
-    
-        data.push([i18n._( "External" ), ["eth0", "connected 100 Mb/s"]]);    
-        data.push([i18n._( "Internal" ),["eth1", "connected 100 Mb/s"]]);
-        data.push([i18n._( "DMZ" ),["eth2", "connected 100 Mb/s"]]);
+        var data = this.fixInterfaceList( Ung.SetupWizard.CurrentValues.interfaceArray );
     
         this.interfaceStore = new Ext.data.Store({
             reader : new Ext.data.ArrayReader({},[{ name : "name" }, { name : "status" }]),
@@ -302,6 +368,36 @@ Ung.SetupWizard.Interfaces = Ext.extend( Object, {
         sm.clearSelections();
     
         return true;
+    },
+
+    /* Given a list of interfaces, this takes out the ones that are not used */
+    fixInterfaceList : function( interfaceArray )
+    {
+        var cleanArray = [];
+
+        var data = interfaceArray.list;
+
+        for ( var c = 0 ;  c < data.length ; c++ ) {
+            var i = data[c];
+            /* This is the VPN interfaces, and this is a magic number. */
+            if ( i.argonIntf == 7 ) continue;
+            
+            /* This is an interface that doesn't exist */
+            // if ( i.systemName.indexOf( 'nointerface' ) == 0 ) continue;
+
+            cleanArray.push( i );
+        }
+
+        /* Now create a new array, in order to handle reordering, it is better
+         * to just have two few fields */
+        interfaceList = [];
+        
+        for ( var c = 0 ; c < cleanArray.length ; c++ ) {
+            var i = cleanArray[c];
+            interfaceList.push( [ i18n._( i.name ), [ i.systemName, i.connectionState, i.currentMedia ]] );
+        }
+
+        return interfaceList;
     }
 });
 
@@ -710,6 +806,14 @@ Ung.SetupWizard.Complete = Ext.extend( Object, {
     }
 });
 
+Ung.SetupWizard.PasswordUtil = Ext.extend( Object, {
+    /* Encode the password and return it as an array of bytes / ints */
+    encodePassword : function( password )
+    {
+        
+    }
+    
+});
 
 Ung.SetupWizard.TimeZoneStore = [];
 
@@ -725,6 +829,7 @@ Ung.Setup =  {
         rpc.jsonrpc = new JSONRpcClient("/webui/JSON-RPC");
         
         rpc.languageManager = rpc.jsonrpc.RemoteUvmContext.languageManager();
+        rpc.adminManager = rpc.jsonrpc.RemoteUvmContext.adminManager();
 
         var result = rpc.languageManager.getTranslations( "main" );
         i18n = new Ung.I18N( { "map": result.map })
@@ -759,6 +864,6 @@ Ung.Setup =  {
 
         this.wizard.render();
 
-        this.wizard.goToPage( 1 );
+        this.wizard.goToPage( 2 );
 	}
 };

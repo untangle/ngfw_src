@@ -77,6 +77,9 @@ public class Interface extends Rule
 
     private final boolean isPhysicalInterface;
 
+    /* This is the system name of the interface, this isn't saved to the database. */
+    private String systemName = "";
+
     public Interface()
     {
         this.isPhysicalInterface = true;
@@ -240,5 +243,19 @@ public class Interface extends Rule
     public boolean isPhysicalInterface()
     {
         return this.isPhysicalInterface;
+    }
+
+    /**
+     * Get the system name (eth0, etc)
+     */
+    @Transient
+    public String getSystemName()
+    {
+        return this.systemName;
+    }
+
+    public void setSystemName( String newValue )
+    {
+        this.systemName = newValue;
     }
 }

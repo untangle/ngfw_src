@@ -18,6 +18,8 @@
 
 package com.untangle.uvm.networking;
 
+import java.util.List;
+
 import com.untangle.uvm.RemoteNetworkManager;
 import com.untangle.uvm.node.HostName;
 import com.untangle.uvm.node.IPaddr;
@@ -107,6 +109,11 @@ public class RemoteNetworkManagerAdaptor implements RemoteNetworkManager
     public NetworkSpacesSettingsImpl getNetworkSettings()
     {
         return lnm.getNetworkSettings();
+    }
+
+    public List<Interface> getInterfaceList( boolean updateStatus )
+    {
+        return lnm.getInterfaceList( updateStatus );
     }
 
     /** Update the internal representation of the address */

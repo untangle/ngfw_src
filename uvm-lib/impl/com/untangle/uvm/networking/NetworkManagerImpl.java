@@ -18,7 +18,10 @@
 
 package com.untangle.uvm.networking;
 
+
 import java.net.InetAddress;
+
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -32,6 +35,7 @@ import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.networking.internal.AccessSettingsInternal;
 import com.untangle.uvm.networking.internal.AddressSettingsInternal;
+import com.untangle.uvm.networking.internal.InterfaceInternal;
 import com.untangle.uvm.networking.internal.MiscSettingsInternal;
 import com.untangle.uvm.networking.internal.NetworkSpaceInternal;
 import com.untangle.uvm.networking.internal.NetworkSpacesInternalSettings;
@@ -275,6 +279,16 @@ public class NetworkManagerImpl implements LocalNetworkManager
     public NetworkSpacesInternalSettings getNetworkInternalSettings()
     {
         return this.networkSettings;
+    }
+
+    public List<Interface> getInterfaceList( boolean updateStatus )
+    {
+        if ( updateStatus ) updateLinkStatus();
+
+        List<InterfaceInternal> internalList = this.networkSettings.getInterfaceList();
+        List<Interface> interfaceList = new ArrayList<Interface>( internalList.size());
+        for ( InterfaceInternal internal : internalList ) interfaceList.add( internal.toInterface());
+        return interfaceList;
     }
 
     /* Set the access and address settings, used by the Remote Panel */

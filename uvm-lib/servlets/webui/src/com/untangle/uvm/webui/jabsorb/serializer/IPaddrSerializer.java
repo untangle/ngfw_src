@@ -10,11 +10,6 @@ import com.untangle.uvm.node.IPaddr;
 
 public class IPaddrSerializer extends AbstractSerializer {
 	/**
-	 * Unique serialisation id.
-	 */
-	private final static long serialVersionUID = 2;
-
-	/**
 	 * Classes that this can serialise.
 	 */
 	private static Class[] _serializableClasses = new Class[] { IPaddr.class };
