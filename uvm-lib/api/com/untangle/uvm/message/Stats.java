@@ -78,7 +78,7 @@ public class Stats implements Serializable
 
     // private classes ---------------------------------------------------------
 
-    private static class FixedCounts implements CounterStats, Serializable
+    public static class FixedCounts implements CounterStats, Serializable
     {
         private final long count;
         private final long countSinceMidnight;

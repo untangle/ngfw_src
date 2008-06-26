@@ -1049,9 +1049,6 @@ Ung.MessageManager = {
     cycleCompleted : true,
 
     start : function() {
-    	//TODO: blinger are on progress!!!
-    	return;
-    	//-----------
         this.stop();
         this.intervalId = window.setInterval("Ung.MessageManager.run()", this.updateTime);
         this.started = true;
@@ -1065,9 +1062,34 @@ Ung.MessageManager = {
         this.started = false;
     },
     run : function () {
-    	rpc.messageManager.getMessages(function(result, exception) {
-    	
-    	}.createDelegate(this));
+    	rpc.messageManager.getMessageQueue(function(result, exception) {
+        if (exception) {
+            Ext.MessageBox.alert(i18n._("Failed"), exception.message);
+            return;
+        }
+    	   var messageQueue=result;
+    	   if(messageQueue.messages.list!=null && messageQueue.messages.list.length>0) {
+
+    	   	   var hasNodeInstantiated=false;
+    	       for(var i=0;i<messageQueue.messages.list.length;i++) {
+    	       	   var msg=messageQueue.messages.list[i];
+                    if (msg.javaClass.indexOf("MackageInstallRequest") >= 0) {
+                        //Ung.MoveFromStoreToToolboxThread.process(msg.mackageDesc);
+                    } else if (msg.javaClass.indexOf("MackageUpdateExtraName") >= 0) {
+
+                    } else if(msg.javaClass.indexOf("NodeInstantiated") != -1) {
+    	           	   hasNodeInstantiated=true;
+                       var node=main.createNode(msg.nodeDesc.tid, msg.nodeDesc.mackageDesc, msg.statDescs);
+                       main.nodes.push(node);
+                       main.addNode(node);
+    	           }
+    	       }
+    	       if(hasNodeInstantiated) {
+    	       	   main.updateSeparator();
+    	           main.loadApps();
+    	       }
+    	   }
+    	}.createDelegate(this), rpc.currentPolicy);
     }
     /*,
     hasActiveNodes : function() {

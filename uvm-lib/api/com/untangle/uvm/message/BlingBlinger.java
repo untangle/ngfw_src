@@ -33,7 +33,9 @@
 
 package com.untangle.uvm.message;
 
-public class BlingBlinger implements CounterStats
+import java.io.Serializable;
+
+public class BlingBlinger implements CounterStats, Serializable
 {
     private final StatDesc statDesc;
 
