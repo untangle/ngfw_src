@@ -2147,7 +2147,7 @@ Ung.RowEditorWindow = Ext.extend(Ung.UpdateWindow, {
 
 // RpcProxy
 // uses json rpc to get the information from the server
-Ung.RpcProxy = function(rpcFn, paginated) {
+Ung.RpcProxy = function(rpcFn, paginated, rpcFnArgs) {
     Ung.RpcProxy.superclass.constructor.call(this);
     this.rpcFn = rpcFn;
     // specified if we fetch data paginated or all at once
@@ -2157,6 +2157,8 @@ Ung.RpcProxy = function(rpcFn, paginated) {
     } else {
         this.paginated = paginated;
     }
+    // specified if we have aditional args for rpcFnArgs
+    this.rpcFnArgs = rpcFnArgs;
 };
 
 Ext.extend(Ung.RpcProxy, Ext.data.DataProxy, {
@@ -2182,7 +2184,12 @@ Ext.extend(Ung.RpcProxy, Ext.data.DataProxy, {
                     ? params.limit
                     : this.totalRecords != null ? this.totalRecords : 2147483647, sortColumns);
         } else {
-            this.rpcFn(this.errorHandler.createDelegate(obj));
+        	if (this.rpcFnArgs == null) {
+                this.rpcFn(this.errorHandler.createDelegate(obj));
+        	} else {
+        		var args = [this.errorHandler.createDelegate(obj)].concat(this.rpcFnArgs);
+                this.rpcFn.apply(this, args);
+        	}
         }
     },
     errorHandler : function(result, exception) {

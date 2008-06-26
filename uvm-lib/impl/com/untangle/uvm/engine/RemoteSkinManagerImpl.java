@@ -20,7 +20,10 @@ package com.untangle.uvm.engine;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -33,7 +36,9 @@ import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
+import com.thoughtworks.xstream.XStream;
 import com.untangle.uvm.RemoteSkinManager;
+import com.untangle.uvm.SkinInfo;
 import com.untangle.uvm.SkinSettings;
 import com.untangle.uvm.UvmException;
 import com.untangle.uvm.util.DeletingDataSaver;
@@ -112,7 +117,7 @@ class RemoteSkinManagerImpl implements RemoteSkinManager
 					File dir = new File(SKINS_DIR + File.separator + entry.getName());
 					boolean success = dir.mkdir();
 					if (!success) {
-						throw new UvmException("A skin with the same name already exists");
+						throw new UvmException("A skin folder with the same name already exists");
 					}
 				} else {
 					int count;
@@ -135,18 +140,39 @@ class RemoteSkinManagerImpl implements RemoteSkinManager
 	    }
     }
 	
-    public List<String> getSkinsList() {
-    	List<String> skins = new ArrayList<String>();
+    public List<SkinInfo> getSkinsList(boolean fetchAdminSkins, boolean fetchUserFacingSkins) {
+    	
+    	List<SkinInfo> skins = new ArrayList<SkinInfo>();
     	File dir = new File(SKINS_DIR);
     	
         File[] children = dir.listFiles();
         if (children == null) {
-            // Either dir does not exist or is not a directory
+        	logger.warn("Skin dir \""+SKINS_DIR+"\" does not exist");
         } else {
+        	XStream xstream = new XStream();
+        	xstream.alias("skin", SkinInfo.class);
             for (int i=0; i<children.length; i++) {
                 File file = children[i];
                 if (file.isDirectory() && !file.getName().startsWith(".")) {
-                	skins.add(file.getName());
+                	File[] skinFiles = file.listFiles(new FilenameFilter(){
+                		public boolean accept(File dir, String name) {
+                			return name.equals("skin.xml");
+                		}
+                	});
+                	if (skinFiles.length < 1) {
+                    	logger.warn("Skin folder \""+file.getName()+"\" does not have skin info file - skin.xml");
+                	} else {
+                    	SkinInfo skinInfo;
+						try {
+							skinInfo = (SkinInfo)xstream.fromXML(new FileInputStream(skinFiles[0]));
+							if(fetchAdminSkins && skinInfo.isAdminSkin() ||
+									fetchUserFacingSkins && skinInfo.isUserFacingSkin()) {
+		                    	skins.add(skinInfo);
+							} 
+						} catch (FileNotFoundException e) {
+	                    	logger.error("Error reading skin info from skin foder \"" + file.getName() + "\"");
+						}
+                	}
                 }
             }
         }    	

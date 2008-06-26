@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<skin>
+  <name>default</name>
+  <displayName>Default</displayName>
+  <adminSkin>true</adminSkin>
+  <userFacingSkin>true</userFacingSkin>
+</skin>

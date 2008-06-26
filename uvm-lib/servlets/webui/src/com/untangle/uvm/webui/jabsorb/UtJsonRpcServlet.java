@@ -39,7 +39,6 @@ import com.untangle.uvm.webui.jabsorb.serializer.LazyInitializerSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.MimeTypeSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.RFC2253NameSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.TimeZoneSerializer;
-import com.untangle.uvm.webui.jabsorb.serializer.UserSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.URLSerializer;
 
 /**
@@ -82,7 +81,7 @@ public class UtJsonRpcServlet extends JSONRPCServlet
                 b.registerSerializer(new TimeZoneSerializer());
                 b.registerSerializer(new MimeTypeSerializer());
                 b.registerSerializer(new RFC2253NameSerializer());
-                b.registerSerializer(new UserSerializer());
+//                b.registerSerializer(new UserSerializer());
                 // hibernate related serializers
                 b.registerSerializer(new LazyInitializerSerializer());
                 b.registerSerializer(new ExtendedListSerializer());
@@ -92,7 +91,6 @@ public class UtJsonRpcServlet extends JSONRPCServlet
             }
             
             b.setCallbackController(new UtCallbackController(b));
-            System.out.println(b.getCallbackController());
 
             RemoteUvmContext uvm = LocalUvmContextFactory.context().remoteContext();
             b.registerObject("RemoteUvmContext", uvm, RemoteUvmContext.class);

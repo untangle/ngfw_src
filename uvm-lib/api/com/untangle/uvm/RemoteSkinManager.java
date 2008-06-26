@@ -65,5 +65,5 @@ public interface RemoteSkinManager
     void uploadSkin(FileItem item) throws UvmException;
     
     
-    List<String> getSkinsList();
+    List<SkinInfo> getSkinsList(boolean fetchAdminSkins, boolean fetchUserFacingSkins);
 }

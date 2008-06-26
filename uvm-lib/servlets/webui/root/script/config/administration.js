@@ -1359,14 +1359,38 @@ if (!Ung.hasResource["Ung.Administration"]) {
             });
         },
         buildSkins : function() {
-            var skinsStore = new Ext.data.Store({
-                proxy : new Ung.RpcProxy(rpc.skinManager.getSkinsList, false),
-                reader : new Ung.JsonListReader({
+            var adminSkinsStore = new Ext.data.Store({
+                proxy : new Ung.RpcProxy(rpc.skinManager.getSkinsList, false, [true, false]),
+                reader : new Ext.data.JsonReader({
                     root : 'list',
-                    fields : ['skinName']
+                    fields: [{
+                        name: 'name'
+                    },{
+                        name: 'displayName',
+                        convert : function(v) {
+                            return this.i18n._(v)
+                        }.createDelegate(this)
+                    }]                    
                 })
             });
-
+            adminSkinsStore.load();
+            
+            var userFacingSkinsStore = new Ext.data.Store({
+                proxy : new Ung.RpcProxy(rpc.skinManager.getSkinsList, false, [false, true]),
+                reader : new Ext.data.JsonReader({
+                    root : 'list',
+                    fields: [{
+                        name: 'name'
+                    },{
+                        name: 'displayName',
+                        convert : function(v) {
+                            return this.i18n._(v)
+                        }.createDelegate(this)
+                    }]                    
+                })
+            });
+            userFacingSkinsStore.load();
+            
             this.panelSkins = new Ext.Panel({
                 name : "panelSkins",
                 // private fields
@@ -1389,9 +1413,9 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     }, {
                         xtype : 'combo',
                         name : "administrationClientSkin",
-                        store : skinsStore,
-                        displayField : 'skinName',
-                        valueField : 'skinName',
+                        store : adminSkinsStore,
+                        displayField : 'displayName',
+                        valueField : 'name',
                         forceSelection : true,
                         value : this.getSkinSettings().administrationClientSkin,
                         typeAhead : true,
@@ -1419,9 +1443,9 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     }, {
                         xtype : 'combo',
                         name : "userPagesSkin",
-                        store : skinsStore,
-                        displayField : 'skinName',
-                        valueField : 'skinName',
+                        store : userFacingSkinsStore,
+                        displayField : 'displayName',
+                        valueField : 'name',
                         forceSelection : true,
                         value : this.getSkinSettings().userPagesSkin,
                         typeAhead : true,
@@ -1474,7 +1498,8 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         parentId : cmp.getId(),
                         waitMsg : cmp.i18n._('Please wait while your skin is uploaded...'),
                         success : function(form, action) {
-                            skinsStore.load();
+                            adminSkinsStore.load();
+                            userFacingSkinsStore.load();
                             var cmp = Ext.getCmp(action.options.parentId);
                             Ext.MessageBox.alert(cmp.i18n._("Succeeded"), cmp.i18n._("Upload Skin Succeeded"));
                         },
