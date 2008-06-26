@@ -153,7 +153,7 @@ class RemoteAdminManagerImpl implements RemoteAdminManager
 
     public void setAdminSettings(final AdminSettings as)
     {
-        updateUserPassords(as);
+        updateUserPasswords(as);
         
         // Do something with summaryPeriod? XXX
         TransactionWork tw = new TransactionWork()
@@ -168,7 +168,7 @@ class RemoteAdminManagerImpl implements RemoteAdminManager
 
     }
 
-	private void updateUserPassords(final AdminSettings as) {
+	private void updateUserPasswords(final AdminSettings as) {
 		for ( Iterator<User> i = adminSettings.getUsers().iterator(); i.hasNext(); ) {
         	User user = i.next();
             User mUser = null;
