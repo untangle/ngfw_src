@@ -45,6 +45,11 @@ fi
 
 /usr/share/untangle/bin/update-schema uvm
 
+# Better to do this now while we have entropy available.
+if [ -f /usr/share/untangle/activation.key -a ! -f /usr/share/untangle/popid -a -x /usr/share/untangle/bin/utactivate ]; then
+    /usr/share/untangle/bin/utactivate
+fi
+
 # set up uvm to start at boot
 if [ -x "/etc/init.d/untangle-vm" ]; then
     # (remove to allow replacement when upgrading from 5.2 to 5.3)

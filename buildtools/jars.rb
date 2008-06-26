@@ -112,7 +112,11 @@ class Jars
   Postgres   = [ Jars.downloadTarget('postgres-jdbc-7.4_215/pg74.215.jdbc3.jar')]
   Velocity   = [ Jars.downloadTarget('velocity-1.4/velocity-1.4.jar') ]
   JRuby      = [ Jars.downloadTarget('jruby-complete/jruby-complete.jar') ]
+<<<<<<< .working
   XStream    = [ Jars.downloadTarget('xstream-distribution-1.3-bin/xstream-1.3/lib/xstream-1.3.jar'),  Jars.downloadTarget('xstream-distribution-1.3-bin/xstream-1.3/lib/xpp3_min-1.1.4c.jar')] 
+=======
+  Jabsorb    = [ Jars.downloadTarget('jabsorb-1.2.2/jabsorb-1.2.2.jar') ]
+>>>>>>> .merge-right.r16970
 
   # Jnlp       = [ ThirdpartyJar.get("#{BuildEnv::JAVA_HOME}/sample/jnlp/servlet/jnlp.jar") ]
   Jnlp       = [ Jars.downloadTarget('jnlp/jnlp.jar') ]

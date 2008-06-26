@@ -47,7 +47,7 @@ import com.untangle.uvm.logging.SyslogPriority;
         private int lax;
         private int tight;
         private int closed;
-
+        
         // Constructors
         public ShieldStatisticEvent()
         {
@@ -202,7 +202,6 @@ import com.untangle.uvm.logging.SyslogPriority;
         {
             this.closed = closed;
         }
-
         // Syslog methods ---------------------------------------------------------
 
         public void appendSyslog(SyslogBuilder sb)

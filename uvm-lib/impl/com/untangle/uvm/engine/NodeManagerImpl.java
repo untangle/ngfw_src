@@ -519,7 +519,6 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
         RemoteToolboxManager tbm = LocalUvmContextFactory
             .context().toolboxManager();
 
-
         List<Runnable> restarters = new ArrayList<Runnable>(startQueue.size());
 
         for (NodePersistentState tps : startQueue) {

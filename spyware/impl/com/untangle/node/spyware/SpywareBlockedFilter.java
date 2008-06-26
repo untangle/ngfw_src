@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -26,7 +26,7 @@ public class SpywareBlockedFilter implements SimpleEventFilter<SpywareEvent>
     private static final RepositoryDesc REPO_DESC = new RepositoryDesc("Blocked Events");
 
     private static final String ACCESS_QUERY
-        = "FROM SpywareAccessEvent evt WHERE evt.blocked AND evt.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp DESC";
+        = "FROM SpywareAccessEvent evt WHERE evt.blocked = true AND evt.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp DESC";
     private static final String ACTIVEX_QUERY
         = "FROM SpywareActiveXEvent evt WHERE evt.requestLine.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp DESC";
     private static final String BLACKLIST_QUERY

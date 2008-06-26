@@ -21,7 +21,6 @@ package com.untangle.node.shield;
 import java.io.Serializable;
 import java.util.LinkedHashSet;
 import java.util.Set;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
@@ -50,7 +49,7 @@ public class ShieldSettings implements Serializable
 
     private Long id;
     private Tid tid;
-    
+
     private ShieldBaseSettings baseSettings = new ShieldBaseSettings();
 
     private Set<ShieldNodeRule> shieldNodeRules = new LinkedHashSet<ShieldNodeRule>();
@@ -119,18 +118,18 @@ public class ShieldSettings implements Serializable
     }
 
     @Embedded
-	public ShieldBaseSettings getBaseSettings() {
+    public ShieldBaseSettings getBaseSettings() {
         if (null != baseSettings) {
             baseSettings.setShieldNodeRulesLength(null == shieldNodeRules ? 0 : shieldNodeRules.size());
         }
-        
-		return baseSettings;
-	}
 
-	public void setBaseSettings(ShieldBaseSettings baseSettings) {
-		if (null == baseSettings) {
-			baseSettings = new ShieldBaseSettings();
-		}
-		this.baseSettings = baseSettings;
-	}
+        return baseSettings;
+    }
+
+    public void setBaseSettings(ShieldBaseSettings baseSettings) {
+        if (null == baseSettings) {
+            baseSettings = new ShieldBaseSettings();
+        }
+        this.baseSettings = baseSettings;
+    }
 }

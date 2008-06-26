@@ -177,7 +177,6 @@ import org.hibernate.annotations.Type;
         {
             this.dropped = dropped;
         }
-
         // Syslog methods ---------------------------------------------------------
 
         public void appendSyslog(SyslogBuilder sb)
