@@ -139,6 +139,8 @@ public class RemoteClient
 
         if (args[0].equalsIgnoreCase("install")) {
             install(args[1]);
+        } else if (args[0].equalsIgnoreCase("installAndInstantiate")) {
+            installAndInstantiate(args[1]);
         } else if (args[0].equalsIgnoreCase("uninstall")) {
             uninstall(args[1]);
         } else if (args[0].equalsIgnoreCase("update")) {
@@ -268,6 +270,14 @@ public class RemoteClient
     {
         tool.install(mackageName);
 
+        doAptTail();
+    }
+
+    private static void installAndInstantiate(String mackageName)
+        throws Exception
+    {
+        Policy p = mc.policyManager().getDefaultPolicy();
+        tool.installAndInstantiate(mackageName, p);
         doAptTail();
     }
 

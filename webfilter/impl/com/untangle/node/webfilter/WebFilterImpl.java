@@ -117,7 +117,7 @@ public class WebFilterImpl extends AbstractNode implements WebFilter
         lmm.setActiveMetrics(getTid(), scanBlinger, blockBlinger, passBlinger);
     }
 
-    // WebFilter methods ----------------------------------------------------
+    // WebFilter methods ------------------------------------------------------
 
     public WebFilterSettings getWebFilterSettings()
     {

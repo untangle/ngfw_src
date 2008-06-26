@@ -298,14 +298,17 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
             {
                 public void run()
                 {
+                    List<String> nodes = predictNodeInstall(name);
                     install(name, false);
                     NodeManagerImpl tm = (NodeManagerImpl)LocalUvmContextFactory
                         .context().nodeManager();
-                    try {
-                        tm.instantiate(name, p);
-                    } catch (DeployException exn) {
-                        // XXX send out error message
-                        logger.warn("could not deploy", exn);
+                    for (String nn : nodes) {
+                        try {
+                            tm.instantiate(nn, p);
+                        } catch (DeployException exn) {
+                            // XXX send out error message
+                            logger.warn("could not deploy", exn);
+                        }
                     }
                 }
             };
@@ -910,5 +913,28 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
     private void execMkg(String command) throws MackageException
     {
         execMkg(command, -1);
+    }
+
+    private List<String> predictNodeInstall(String mkg)
+    {
+        List<String> l = new ArrayList<String>();
+
+        String cmd = System.getProperty("bunnicula.bin.dir")
+            + "/mkg predictInstall " + mkg;
+        try {
+            Process p = LocalUvmContextFactory.context().exec(cmd);
+            InputStream is = p.getInputStream();
+            BufferedReader br = new BufferedReader(new InputStreamReader(is));
+            String line;
+            while (null != (line = br.readLine())) {
+                if (line.contains("-node-")) {
+                    l.add(line);
+                }
+            }
+        } catch (IOException exn) {
+            logger.warn("could not predict node install: " + mkg, exn);
+        }
+
+        return l;
     }
 }

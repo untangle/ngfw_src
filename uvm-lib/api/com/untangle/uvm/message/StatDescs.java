@@ -51,8 +51,11 @@ public class StatDescs implements Serializable
     {
         this.metricDescs = getStatDescs(metrics);
         this.activityDescs = getStatDescs(activities);
-        
-        this.activeMetrics = activeMetrics==null?null:Collections.unmodifiableList(activeMetrics);
+        if (null == activeMetrics) {
+            this.activeMetrics = Collections.emptyList();
+        } else {
+            this.activeMetrics = Collections.unmodifiableList(activeMetrics);
+        }
     }
 
     public List<StatDesc> getMetricDescs()
