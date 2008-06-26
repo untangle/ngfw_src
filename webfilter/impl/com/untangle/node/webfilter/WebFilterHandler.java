@@ -64,7 +64,7 @@ public class WebFilterHandler extends HttpStateMachine
     @Override
     protected Header doRequestHeader(Header requestHeader)
     {
-        //node.incrementCount(SCAN, 1);
+        node.incrementScanCount();
 
         TCPSession sess = getSession();
 
@@ -78,7 +78,7 @@ public class WebFilterHandler extends HttpStateMachine
         if (null == nonce) {
             releaseRequest();
         } else {
-            //node.incrementCount(BLOCK, 1);
+            node.incrementBlockCount();
             boolean p = isRequestPersistent();
             String uri = getRequestLine().getRequestUri().toString();
             Token[] response = node.generateResponse(nonce, sess, uri,
@@ -121,11 +121,11 @@ public class WebFilterHandler extends HttpStateMachine
             }
 
             if (null == nonce) {
-                //node.incrementCount(PASS, 1);
+                node.incrementPassCount();
 
                 releaseResponse();
             } else {
-                //node.incrementCount(BLOCK, 1);
+                node.incrementBlockCount();
                 boolean p = isResponsePersistent();
                 Token[] response = node.generateResponse(nonce, sess, p);
                 blockResponse(response);

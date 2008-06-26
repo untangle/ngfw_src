@@ -36,12 +36,14 @@ import com.untangle.uvm.logging.EventLoggerFactory;
 import com.untangle.uvm.logging.EventManager;
 import com.untangle.uvm.logging.ListEventFilter;
 import com.untangle.uvm.logging.SimpleEventFilter;
+import com.untangle.uvm.message.BlingBlinger;
+import com.untangle.uvm.message.Counters;
+import com.untangle.uvm.message.LocalMessageManager;
 import com.untangle.uvm.node.IPMaddrRule;
 import com.untangle.uvm.node.MimeType;
 import com.untangle.uvm.node.MimeTypeRule;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.StringRule;
-import com.untangle.uvm.node.Validator;
 import com.untangle.uvm.util.OutsideValve;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.AbstractNode;
@@ -84,6 +86,9 @@ public class WebFilterImpl extends AbstractNode implements WebFilter
     private final PartialListUtil listUtil = new PartialListUtil();
     private final BlacklistCategoryHandler categoryHandler = new BlacklistCategoryHandler();
 
+    private final BlingBlinger scanBlinger;
+    private final BlingBlinger passBlinger;
+    private final BlingBlinger blockBlinger;
 
     // constructors -----------------------------------------------------------
 
@@ -100,6 +105,16 @@ public class WebFilterImpl extends AbstractNode implements WebFilter
         eventLogger.addSimpleEventFilter(sef);
         lef = new WebFilterPassedFilter();
         eventLogger.addListEventFilter(lef);
+
+        LocalMessageManager lmm = LocalUvmContextFactory.context()
+            .localMessageManager();
+        Counters c = lmm.getCounters(getTid());
+
+        scanBlinger = c.addActivity("scan", "Scan Connection", null, "SCAN");
+        blockBlinger = c.addActivity("block", "Block Connection", null, "BLOCK");
+        passBlinger = c.addActivity("pass", "Pass Connection", null, "PASS");
+
+        lmm.setActiveMetrics(getTid(), scanBlinger, blockBlinger, passBlinger);
     }
 
     // WebFilter methods ----------------------------------------------------
@@ -600,8 +615,19 @@ public class WebFilterImpl extends AbstractNode implements WebFilter
                                                      persistent);
     }
 
-    public Validator getValidator() {
-        return new WebFilterValidator();
+    void incrementScanCount()
+    {
+        scanBlinger.increment();
+    }
+
+    void incrementBlockCount()
+    {
+        blockBlinger.increment();
+    }
+
+    void incrementPassCount()
+    {
+        passBlinger.increment();
     }
 
     // private methods --------------------------------------------------------
