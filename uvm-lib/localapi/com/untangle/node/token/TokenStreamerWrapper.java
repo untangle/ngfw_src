@@ -33,8 +33,10 @@
 
 package com.untangle.node.token;
 
+import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.message.BlingBlinger;
 import com.untangle.uvm.message.Counters;
+import com.untangle.uvm.message.LocalMessageManager;
 import com.untangle.uvm.vnet.Session;
 import org.apache.log4j.Logger;
 
@@ -60,7 +62,9 @@ class TokenStreamerWrapper implements TokenStreamer
         this.tokenStreamer = tokenStreamer;
         this.session = session;
 
-        Counters c = session.mPipe().node().getCounters();
+        LocalMessageManager lmm = LocalUvmContextFactory.context()
+            .localMessageManager();
+        Counters c = lmm.getCounters(session.mPipe().node().getTid());
         if (s2c) {
             blinger = c.getBlingBlinger("n2cBytes");
         } else {

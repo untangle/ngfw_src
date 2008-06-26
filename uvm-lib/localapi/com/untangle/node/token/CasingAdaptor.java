@@ -41,6 +41,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.message.BlingBlinger;
 import com.untangle.uvm.message.Counters;
+import com.untangle.uvm.message.LocalMessageManager;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.vnet.AbstractEventHandler;
 import com.untangle.uvm.vnet.MPipeException;
@@ -92,7 +93,9 @@ public class CasingAdaptor extends AbstractEventHandler
         this.clientSide = clientSide;
         this.releaseParseExceptions = releaseParseExceptions;
 
-        Counters c = node.getCounters();
+        LocalMessageManager lmm = LocalUvmContextFactory.context()
+            .localMessageManager();
+        Counters c = lmm.getCounters(node.getTid());
         s2nBytes = c.getBlingBlinger("s2nBytes");
         c2nBytes = c.getBlingBlinger("c2nBytes");
         n2sBytes = c.getBlingBlinger("n2sBytes");

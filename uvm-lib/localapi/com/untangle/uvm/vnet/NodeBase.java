@@ -80,13 +80,14 @@ public abstract class NodeBase implements Node
 
     private NodeState runState;
     private boolean wasStarted = false;
-    private Counters counters = new Counters();
+    private Counters counters;
 
     protected NodeBase()
     {
         nodeManager = LocalUvmContextFactory.context().nodeManager();
         nodeContext = nodeManager.threadContext();
         tid = nodeContext.getTid();
+        counters = new Counters(tid);
 
         counters.addMetric("s2nChunks", "Server to Node Chunks", null);
         counters.addMetric("c2nChunks", "Client to Node Chunks", null);

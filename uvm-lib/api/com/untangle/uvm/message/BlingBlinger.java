@@ -45,7 +45,7 @@ public class BlingBlinger implements CounterStats
 
     // public methods ---------------------------------------------------------
 
-    public StatDesc getStatDescs()
+    public StatDesc getStatDesc()
     {
         return statDesc;
     }

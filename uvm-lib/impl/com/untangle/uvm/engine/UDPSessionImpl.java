@@ -29,8 +29,10 @@ import com.untangle.jvector.OutgoingSocketQueue;
 import com.untangle.jvector.PacketCrumb;
 import com.untangle.jvector.ShutdownCrumb;
 import com.untangle.jvector.UDPPacketCrumb;
+import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.message.BlingBlinger;
 import com.untangle.uvm.message.Counters;
+import com.untangle.uvm.message.LocalMessageManager;
 import com.untangle.uvm.node.PipelineEndpoints;
 import com.untangle.uvm.util.MetaEnv;
 import com.untangle.uvm.vnet.*;
@@ -74,7 +76,9 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
 
         logger = mPipe.sessionLoggerUDP();
 
-        Counters c = mPipe.node().getCounters();
+        LocalMessageManager lmm = LocalUvmContextFactory.context()
+            .localMessageManager();
+        Counters c = lmm.getCounters(mPipe.node().getTid());
         s2nChunks = c.getBlingBlinger("s2nChunks");
         c2nChunks = c.getBlingBlinger("c2nChunks");
         n2sChunks = c.getBlingBlinger("n2sChunks");

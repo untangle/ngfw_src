@@ -39,6 +39,7 @@ import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.logging.UvmLoggingContext;
 import com.untangle.uvm.logging.UvmLoggingContextFactory;
 import com.untangle.uvm.logging.UvmRepositorySelector;
+import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.message.LocalMessageManager;
 import com.untangle.uvm.node.DeployException;
 import com.untangle.uvm.node.LocalNodeManager;
@@ -739,7 +740,10 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
 
         Node node = tc.node();
         if (null != node) {
-            NodeInstantiated ne = new NodeInstantiated(tDesc, node.getCounters().getStatDescs());
+            LocalMessageManager lmm = LocalUvmContextFactory.context()
+                .localMessageManager();
+            Counters c = lmm.getCounters(node.getTid());
+            NodeInstantiated ne = new NodeInstantiated(tDesc, c.getStatDescs());
             LocalMessageManager mm = mctx.localMessageManager();
             mm.submitMessage(ne);
         }

@@ -33,10 +33,13 @@
 
 package com.untangle.uvm.message;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.untangle.uvm.LocalUvmContext;
+import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.security.Tid;
 
 /**
  * Class for registering LoadStats and CounterStats objects and
@@ -47,6 +50,8 @@ import java.util.Map;
  */
 public class Counters
 {
+    private final Tid tid;
+
     private final Map<String, BlingBlinger> metrics
         = new HashMap<String, BlingBlinger>();
 
@@ -55,6 +60,11 @@ public class Counters
 
     private final Map<String, LoadMaster> loads
         = new HashMap<String, LoadMaster>();
+
+    public Counters(Tid tid)
+    {
+        this.tid = tid;
+    }
 
     public BlingBlinger getBlingBlinger(String name)
     {
@@ -115,7 +125,8 @@ public class Counters
 
     public StatDescs getStatDescs()
     {
-        List<ActiveStat> activeStats = new ArrayList<ActiveStat>();
+        LocalUvmContext mctx = LocalUvmContextFactory.context();
+        List<ActiveStat> activeStats = mctx.messageManager().getActiveMetrics(tid);
         return new StatDescs(metrics.values(), activities.values(), activeStats);
     }
 

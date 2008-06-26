@@ -49,8 +49,8 @@ public class StatDescs implements Serializable
               Collection<BlingBlinger> activities,
               List<ActiveStat> activeMetrics)
     {
-        this.metricDescs = getStatDescss(metrics);
-        this.activityDescs = getStatDescss(activities);
+        this.metricDescs = getStatDescs(metrics);
+        this.activityDescs = getStatDescs(activities);
         this.activeMetrics = Collections.unmodifiableList(activeMetrics);
     }
 
@@ -71,11 +71,11 @@ public class StatDescs implements Serializable
 
     // private methods ---------------------------------------------------------
 
-    private List<StatDesc> getStatDescss(Collection<BlingBlinger> blingers)
+    private List<StatDesc> getStatDescs(Collection<BlingBlinger> blingers)
     {
         List<StatDesc> l = new ArrayList<StatDesc>(blingers.size());
         for (BlingBlinger bb : blingers) {
-            l.add(bb.getStatDescs());
+            l.add(bb.getStatDesc());
         }
 
         return Collections.unmodifiableList(l);

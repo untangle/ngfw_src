@@ -26,20 +26,25 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.argon.ArgonAgent;
 import com.untangle.uvm.message.BlingBlinger;
 import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.message.LoadCounter;
+import com.untangle.uvm.message.LocalMessageManager;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.NodeDesc;
 import com.untangle.uvm.util.MetaEnv;
 import com.untangle.uvm.util.SessionUtil;
+import com.untangle.uvm.vnet.IPNewSessionRequest;
 import com.untangle.uvm.vnet.IPSession;
 import com.untangle.uvm.vnet.IPSessionDesc;
 import com.untangle.uvm.vnet.MPipeException;
 import com.untangle.uvm.vnet.SessionStats;
+import com.untangle.uvm.vnet.TCPNewSessionRequest;
 import com.untangle.uvm.vnet.TCPSession;
+import com.untangle.uvm.vnet.UDPNewSessionRequest;
 import com.untangle.uvm.vnet.UDPSession;
 import com.untangle.uvm.vnet.event.IPDataResult;
 import com.untangle.uvm.vnet.event.IPSessionEvent;
@@ -247,7 +252,9 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
         // mainThread = new Thread(this, threadNameBase + "mainDisp");
         liveSessions = new ConcurrentHashMap();
 
-        Counters c = node.getCounters();
+        LocalMessageManager lmm = LocalUvmContextFactory.context()
+            .localMessageManager();
+        Counters c = lmm.getCounters(node.getTid());
         udpLiveSessionCounter = c.makeLoadCounter("udpLiveSessionCounter",
                                                   "UDP Sessions");
         tcpLiveSessionCounter = c.makeLoadCounter("tcpLiveSessionCounter",

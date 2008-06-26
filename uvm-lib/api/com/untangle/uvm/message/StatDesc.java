@@ -50,6 +50,11 @@ public class StatDesc implements Serializable
         this.unit = unit;
     }
 
+    public String getName()
+    {
+        return name;
+    }
+
     public String getDisplayName()
     {
         return displayName;

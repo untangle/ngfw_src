@@ -50,12 +50,13 @@ import com.untangle.node.util.UrlList;
 import com.untangle.uvm.LocalAppServerManager;
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.message.BlingBlinger;
-import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.EventLoggerFactory;
 import com.untangle.uvm.logging.EventManager;
 import com.untangle.uvm.logging.SimpleEventFilter;
+import com.untangle.uvm.message.BlingBlinger;
+import com.untangle.uvm.message.Counters;
+import com.untangle.uvm.message.LocalMessageManager;
 import com.untangle.uvm.node.IPMaddr;
 import com.untangle.uvm.node.IPMaddrRule;
 import com.untangle.uvm.node.NodeContext;
@@ -204,11 +205,15 @@ public class SpywareImpl extends AbstractNode implements Spyware
         ef = new SpywareCookieFilter();
         eventLogger.addSimpleEventFilter(ef);
 
-        Counters c = getCounters();
+        LocalMessageManager lmm = LocalUvmContextFactory.context()
+            .localMessageManager();
+        Counters c = lmm.getCounters(getTid());
 
         scanBlinger = c.addActivity("scan", "Scan Connection", null, "SCAN");
         blockBlinger = c.addActivity("block", "Block Connection", null, "BLOCK");
         passBlinger = c.addActivity("pass", "Pass Connection", null, "PASS");
+
+        lmm.setActiveMetrics(getTid(), scanBlinger, blockBlinger, passBlinger);
     }
 
     // SpywareNode methods -----------------------------------------------------

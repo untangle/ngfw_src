@@ -24,11 +24,13 @@ import java.util.List;
 import java.util.Map;
 
 import com.untangle.uvm.message.ActiveStat;
+import com.untangle.uvm.message.BlingBlinger;
 import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.message.LocalMessageManager;
 import com.untangle.uvm.message.Message;
 import com.untangle.uvm.message.MessageQueue;
 import com.untangle.uvm.message.StatDescs;
+import com.untangle.uvm.message.StatInterval;
 import com.untangle.uvm.message.Stats;
 import com.untangle.uvm.node.LocalNodeManager;
 import com.untangle.uvm.policy.Policy;
@@ -39,7 +41,7 @@ import org.hibernate.Session;
 
 class MessageManagerImpl implements LocalMessageManager
 {
-    private final Counters uvmCounters = new Counters();
+    private final Map<Tid, Counters> counters = new HashMap<Tid, Counters>();
 
     // XXX this needs to be per client session
     private final List<Message> messages = new ArrayList<Message>();
@@ -55,6 +57,7 @@ class MessageManagerImpl implements LocalMessageManager
     {
         LocalNodeManager lm = UvmContextImpl.getInstance().nodeManager();
         List<Tid> tids = lm.nodeInstances();
+        tids.add(new Tid(0L));
         Map<Tid, Stats> stats = getStats(lm, tids);
         List<Message> messages = getMessages();
         return new MessageQueue(messages, stats);
@@ -73,12 +76,7 @@ class MessageManagerImpl implements LocalMessageManager
     {
         Long id = t.getId();
         if (null != id) {
-            if (0 == id) {
-                return uvmCounters.getStatDescs();
-            } else {
-                LocalNodeManager lm = UvmContextImpl.getInstance().nodeManager();
-                return lm.nodeContext(t).node().getCounters().getStatDescs();
-            }
+            return getCounters(t).getStatDescs();
         } else {
             return null;
         }
@@ -158,7 +156,20 @@ class MessageManagerImpl implements LocalMessageManager
 
     public Counters getUvmCounters()
     {
-        return uvmCounters;
+        return getCounters(new Tid(0L));
+    }
+
+    public Counters getCounters(Tid t)
+    {
+        Counters c;
+        synchronized (counters) {
+            c = counters.get(t);
+            if (null == c) {
+                c = new Counters(t);
+                counters.put(t, c);
+            }
+        }
+        return c;
     }
 
     public void submitMessage(Message m)
@@ -168,17 +179,23 @@ class MessageManagerImpl implements LocalMessageManager
         }
     }
 
+    public void setActiveMetrics(Tid t, BlingBlinger... blingers)
+    {
+        List<ActiveStat> l = new ArrayList<ActiveStat>();
+        for (BlingBlinger b : blingers) {
+            new ActiveStat(b.getStatDesc().getName(), StatInterval.SINCE_MIDNIGHT);
+        }
+    }
+
     // private methods ---------------------------------------------------------
 
     private Map<Tid, Stats> getStats(LocalNodeManager lm, List<Tid> tids)
     {
         Map<Tid, Stats> stats = new HashMap<Tid, Stats>(tids.size());
 
-        stats.put(new Tid(0L), uvmCounters.getAllStats());
-
         for (Tid t : tids) {
             List<ActiveStat> as = getActiveMetrics(t);
-            Counters c = lm.nodeContext(t).node().getCounters();
+            Counters c = getCounters(t);
             stats.put(t, c.getAllStats(as));
         }
 

@@ -33,7 +33,6 @@
 
 package com.untangle.uvm.node;
 
-import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.security.Tid;
 import com.untangle.uvm.vnet.IPSessionDesc;
 
@@ -116,15 +115,4 @@ public interface Node
      * gory detail to the node log.  This is for debugging only.
      */
     void dumpSessions();
-
-    /**
-     * Returns the <code>Counters</code> for this node.
-     * The node must be in the running state.
-     *
-     * @return a <code>Stats</code> giving the
-     * <code>Stats</code> since the start of the node
-     * @exception NodeException if the node is not in the
-     * <code>RUNNING</code> state
-     */
-    Counters getCounters() throws IllegalStateException;
 }

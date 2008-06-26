@@ -43,6 +43,7 @@ import java.util.concurrent.TimeoutException;
 import com.untangle.uvm.CronJob;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.Period;
+import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.message.LocalMessageManager;
 import com.untangle.uvm.message.StatDescs;
 import com.untangle.uvm.node.DeployException;
@@ -189,7 +190,10 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
         Map<Tid, StatDescs> statDescs = new HashMap<Tid, StatDescs>(instances.size());
         for (NodeDesc nd : instances) {
             Tid t = nd.getTid();
-            StatDescs sd = tm.nodeContext(t).node().getCounters().getStatDescs();
+            LocalMessageManager lmm = LocalUvmContextFactory.context()
+                .localMessageManager();
+            Counters c = lmm.getCounters(t);
+            StatDescs sd = c.getStatDescs();
             statDescs.put(t, sd);
             nodes.remove(nd.getDisplayName());
         }
