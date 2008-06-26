@@ -11,8 +11,6 @@ Ung.Main.prototype = {
 	leftTabs: null,
 	appsSemaphore: null,
 	apps: null,
-	libraryApps: null,
-	myApps: null,
 	config: null,
 	nodes: null,
 	// the Ext.Viewport object for the application
@@ -293,81 +291,6 @@ Ung.Main.prototype = {
 		}
 		return helpLink;
 	},
-	// build apps
-	buildApps: function() {
-		this.appsSemaphore--;
-		if(this.appsSemaphore!==0) {
-			return;
-		}
-		var apps={};
-		// put sore items
-		for(var i=0;i<this.libraryApps.length;i++) {
-			var item=this.libraryApps[i];
-			apps[item.name]={item:item};
-		}
-		for(var i=0;i<this.myApps.length;i++) {
-			var item=this.myApps[i];
-  			// if trial item asociate with store item button as trialItem
-  			if(item.extraName!=null && item.extraName.indexOf("Trial")!=-1) {
-  				var storeLibitemName=item.name.replace("-node-","-libitem-");
-  				if(apps[storeLibitemName]) {
-  					apps[storeLibitemName].trialItem=item;
-  				} else {
-  					apps[item.name]={item:item};
-  				}
-  			} else { // if not traial put separate button
-  				apps[item.name]={item:item};
-  			}
-		}
-		
-		this.apps=[];
-		for(var appItemName in apps) {
-			this.apps.push(new Ung.AppItem(apps[appItemName]));
-		}
-		if(!main.disableThreads) {
-			Ung.MessageClientThread.start();
-		}
-	},
-	// load Apps
-	loadApps: function() {
-		this.appsSemaphore=2;
-		Ung.MessageClientThread.stop();
-		// destoy current apps components
-		if(main.apps!=null) {
-			for(var i=0; i<main.apps.length; i++) {
-				Ext.destroy(main.apps[i]);
-			}
-			this.apps=null;
-		}
-		// get unactivated items (store items)
-		rpc.toolboxManager.uninstalled(function (result, exception) {
-			if(exception) { Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}
-			var uninstalledMD=result;
-			this.libraryApps=[];
-			for(var i=0;i<uninstalledMD.length;i++) {
-				var md=uninstalledMD[i];
-				if(md.type=="LIB_ITEM" && md.viewPosition>=0 && md.name!="untangle-libitem-router") {
-					this.libraryApps.push(md);
-				}
-			}
-			this.buildApps();
-		}.createDelegate(this));
-		
-		// get activated and installed items ( installedVisible)
-		rpc.toolboxManager.installedVisible(function (result, exception) {
-			if(exception) { Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}
-			var installedVisibleMD=result;
-			this.myApps=[];
-			for(var i=0;i<installedVisibleMD.length;i++) {
-				var md=installedVisibleMD[i];
-				if(md.type=="NODE" && (md.core || md.security) && md.name!="untangle-node-router") {
-					this.myApps.push(md);
-				}
-			}
-			this.buildApps();
-			
-		}.createDelegate(this));
-	},
 	
 	// load policies list
 	loadPolicies: function() {
@@ -388,7 +311,7 @@ Ung.Main.prototype = {
 		}
 		return null;
 	},
-	createNode: function (Tid, md) {
+	createNode: function (Tid, md, statDesc) {
 		var node={};
 		node.tid=Tid.id;
 		node.Tid=Tid;
@@ -396,7 +319,8 @@ Ung.Main.prototype = {
 		node.name=md.name;
 		node.displayName=md.displayName;
 		node.image='image?name='+node.name;
-		node.blingers=eval([{'type':'ActivityBlinger','bars':['ACTIVITY 1','ACTIVITY 2','ACTIVITY 3','ACTIVITY 4']},{'type':'SystemBlinger'}]);
+		//node.blingers=eval([{'type':'ActivityBlinger','bars':['ACTIVITY 1','ACTIVITY 2','ACTIVITY 3','ACTIVITY 4']},{'type':'SystemBlinger'}]);
+		node.blingers=statDesc;
 		return node;
 	},
 	buildApps: function () {
@@ -421,7 +345,7 @@ Ung.Main.prototype = {
         this.nodes=[];
         for(var i=0;i<rpc.rackView.instances.list.length;i++) {
             var instance=rpc.rackView.instances.list[i];
-            var node=this.createNode(instance.tid, instance.mackageDesc);
+            var node=this.createNode(instance.tid, instance.mackageDesc,rpc.rackView.statDescs.map[instance.tid.id]);
             this.nodes.push(node);
         }
         for(var i=0;i<this.nodes.length;i++) {
@@ -485,11 +409,19 @@ Ung.Main.prototype = {
 			rpc.nodeManager.instantiate(function (result, exception) {
 				if(exception) { Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}
 				var instance = result;
-				var node=this.createNode(instance.tid, instance.mackageDesc);
-				this.nodes.push(node);
-				this.addNode(node);
-                this.updateSeparator();
-				this.loadApps();
+		        rpc.toolboxManager.getRackView(function (result, exception) {
+                    if(exception) { Ext.MessageBox.alert(i18n._("Failed"),exception.message);
+                        return;
+                    }
+                    rpc.rackView=result;
+                    var instance=this;
+                    var node=main.createNode(instance.tid, instance.mackageDesc, rpc.rackView.statDescs.map[instance.tid.id]);
+                    main.nodes.push(node);
+                    main.addNode(node);
+                    main.updateSeparator();
+                    main.buildApps();
+                }.createDelegate(instance), rpc.currentPolicy);
+
 			}.createDelegate(this), mackageDesc.name, policy);
 		}
 	},

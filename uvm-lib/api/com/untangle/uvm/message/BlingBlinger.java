@@ -40,7 +40,7 @@ public class BlingBlinger implements CounterStats
     public BlingBlinger(String name, String displayName, String unit,
                         String action)
     {
-        this.statDesc = new StatDesc(name, displayName, unit, action);
+        this.statDesc = new StatDesc(name, displayName, action, unit);
     }
 
     // public methods ---------------------------------------------------------

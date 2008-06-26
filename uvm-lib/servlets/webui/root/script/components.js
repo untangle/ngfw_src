@@ -992,12 +992,18 @@ Ung.Node = Ext.extend(Ext.Component, {
     // initialize blingers
     initBlingers : function() {
         if (this.blingers !== null) {
-            var nodeBlingers = document.getElementById('nodeBlingers_' + this.getId());
-            for (var i = 0; i < this.blingers.length; i++) {
-                var blingerData = this.blingers[i];
-                blingerData.parentId = this.getId();
-                blingerData.id = "blinger_" + this.getId() + "_" + i;
-                eval('var blinger=new Ung.' + blingerData.type + '(blingerData);');
+            if(this.blingers.activityDescs!=null) {
+            	var blinger=new Ung.ActivityBlinger({
+            	   parentId : this.getId(),
+            	   bars: this.blingers.activityDescs.list
+            	});
+            	blinger.render('nodeBlingers_' + this.getId());
+            }
+            if(this.blingers.metricDescs!=null) {
+                var blinger=new Ung.SystemBlinger({
+                   parentId : this.getId(),
+                   metric: this.blingers.metricDescs.list
+                });
                 blinger.render('nodeBlingers_' + this.getId());
             }
         }
@@ -1034,7 +1040,7 @@ Ung.Node.template = new Ext.Template('<div class="nodeImage"><img src="{image}"/
         '<div class="nodeSettingsButton" id="nodeSettingsButton_{id}"></div>',
         '<div class="nodeHelpButton" id="nodeHelpButton_{id}"></div>');
 
-// Blinger Manager object
+// Message Manager object
 Ung.MessageManager = {
     // update interval in millisecond
     updateTime : 5000,
@@ -1047,7 +1053,7 @@ Ung.MessageManager = {
     	return;
     	//-----------
         this.stop();
-        this.intervalId = window.setInterval("Ung.MessageManager.getNodesStats()", this.updateTime);
+        this.intervalId = window.setInterval("Ung.MessageManager.run()", this.updateTime);
         this.started = true;
     },
 
@@ -1058,7 +1064,12 @@ Ung.MessageManager = {
         this.cycleCompleted = true;
         this.started = false;
     },
-
+    run : function () {
+    	rpc.messageManager.getMessages(function(result, exception) {
+    	
+    	}.createDelegate(this));
+    }
+    /*,
     hasActiveNodes : function() {
         for (var i = 0; i < main.nodes.length; i++) {
             var nodeCmp = Ung.Node.getCmp(main.nodes[i].tid);
@@ -1098,6 +1109,7 @@ Ung.MessageManager = {
             }.createDelegate(this));
         }
     }
+    */
 };
 
 // Activity Blinger Class
@@ -1106,6 +1118,10 @@ Ung.ActivityBlinger = Ext.extend(Ext.Component, {
     bars : null,
     lastValues : null,
     decays : null,
+    constructor : function(config) {
+        this.id = "blinger_activity_" + config.parentId;
+        Ung.ActivityBlinger.superclass.constructor.apply(this, arguments);
+    },
     onRender : function(container, position) {
         var el = document.createElement("div");
         el.className = "activityBlinger";
@@ -1122,7 +1138,7 @@ Ung.ActivityBlinger = Ext.extend(Ext.Component, {
         if (this.bars !== null) {
             var out = [];
             for (var i = 0; i < this.bars.length; i++) {
-                var bar = this.bars[i];
+                var bar = this.bars[i].action;
                 var top = 3 + i * 15;
                 this.lastValues.push(null);
                 this.decays.push(0);
@@ -1181,6 +1197,10 @@ Ung.SystemBlinger = Ext.extend(Ext.Component, {
     sessionCountTotal : null,
     sessionRequestLast : null,
     sessionRequestTotal : null,
+    constructor : function(config) {
+        this.id = "blinger_system_" + config.parentId;
+        Ung.SystemBlinger.superclass.constructor.apply(this, arguments);
+    },
 
     onRender : function(container, position) {
         var el = document.createElement("div");
