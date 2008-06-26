@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -17,28 +17,21 @@
  */
 package com.untangle.node.shield;
 
-import org.apache.log4j.Logger;
-
 import java.util.Date;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import com.untangle.uvm.logging.EventLogger;
-
-import com.untangle.uvm.node.script.ScriptRunner;
-
 import com.untangle.uvm.LocalUvmContextFactory;
-
+import com.untangle.uvm.logging.EventLogger;
+import com.untangle.uvm.node.NodeException;
+import com.untangle.uvm.node.script.ScriptRunner;
+import com.untangle.uvm.shield.ShieldRejectionEvent;
+import com.untangle.uvm.shield.ShieldStatisticEvent;
 import com.untangle.uvm.util.JsonClient;
 import com.untangle.uvm.util.Worker;
 import com.untangle.uvm.util.WorkerRunner;
-
-import com.untangle.uvm.node.NodeException;
-
-import com.untangle.uvm.shield.ShieldRejectionEvent;
-import com.untangle.uvm.shield.ShieldStatisticEvent;
+import org.apache.log4j.Logger;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 class ShieldManager
 {
@@ -48,7 +41,7 @@ class ShieldManager
 
     private static final String START_SCRIPT = System.getProperty( "bunnicula.home" ) + "/shield/start";
     private static final String STOP_SCRIPT = System.getProperty( "bunnicula.home" ) + "/shield/stop";
-    private static final String SHIELD_URL = 
+    private static final String SHIELD_URL =
         System.getProperty( "uvm.shield.url", "http://localhost:3001" );
 
     private static final String FUNCTION_BLESS_USERS = "bless_users";
@@ -56,7 +49,7 @@ class ShieldManager
     private static final String RESPONSE_STATUS = "status";
     private static final String RESPONSE_MESSAGE = "message";
 
-    private static final int STATUS_SUCCESS = 104;    
+    private static final int STATUS_SUCCESS = 104;
 
     private final Logger logger = Logger.getLogger( this.getClass());
 
@@ -65,7 +58,7 @@ class ShieldManager
 
     private final WorkerRunner monitor = new WorkerRunner( new Monitor(), LocalUvmContextFactory.context());
 
-    ShieldManager( EventLogger<ShieldStatisticEvent> statisticLogger, 
+    ShieldManager( EventLogger<ShieldStatisticEvent> statisticLogger,
                    EventLogger<ShieldRejectionEvent> rejectionLogger )
     {
         this.statisticLogger = statisticLogger;
@@ -76,7 +69,7 @@ class ShieldManager
     {
         this.monitor.start();
     }
-    
+
     void stop()
     {
         this.monitor.stop();
@@ -91,8 +84,8 @@ class ShieldManager
         json.put( "write_config", false );
 
         JSONArray users = new JSONArray();
-        
-        for ( ShieldNodeRule rule : settings.getShieldNodeRuleList()) {
+
+        for ( ShieldNodeRule rule : settings.getShieldNodeRules()) {
             if ( !rule.isLive()) continue;
 
             JSONObject rule_json = new JSONObject();
@@ -105,18 +98,18 @@ class ShieldManager
             rule_json.put( "netmask", temp );
 
             rule_json.put( "divider", rule.getDivider());
-            
+
             users.put( rule_json );
         }
 
         json.put( "users", users );
-        
+
         JSONObject response = JsonClient.getInstance().call( SHIELD_URL, json );
         if ( logger.isDebugEnabled()) logger.debug( "Server returned:\n" + response.toString() + "\n" );
 
         int status = response.getInt( RESPONSE_STATUS );
         String message = response.getString( RESPONSE_MESSAGE );
-        
+
         if ( status != STATUS_SUCCESS ) {
             logger.warn( "There was an error[" + status +"] blessing the users: '" + message + "'" );
         }
@@ -135,7 +128,7 @@ class ShieldManager
         public void work() throws InterruptedException
         {
             Thread.sleep( SLEEP_DELAY_MS );
-            
+
             logger.debug( "Fetching the logs." );
 
             /* xxx This should use the key to determine the data
@@ -151,11 +144,11 @@ class ShieldManager
 
                     try {
                         LogIteration iteration = LogIteration.parse( iteration_js );
-                        
+
                         /* Combine in the statistics from the other logs */
                         add( this.statisticEvent, iteration.getStatisticEvent());
                         long now = System.currentTimeMillis();
-                        
+
                         if ( nextStatisticEvent > ( now + ( 2 * STATISTIC_DELAY_MS ))) {
                             logger.warn( "Statistic time is too far in the future, logging now." );
                             nextStatisticEvent = 0;
@@ -179,7 +172,7 @@ class ShieldManager
                         logger.info( "Unable to parse iteration: " + e.getMessage());
                     }
                 }
-                
+
             } catch ( Exception e ) {
                 logger.warn( "Unable to retrieve the logs: '" + e.getMessage() + "'", e );
             }
@@ -194,7 +187,7 @@ class ShieldManager
                 logger.error( "Unable to start the shield.", e );
             }
         }
-    
+
         public void stop()
         {
             try {
@@ -211,18 +204,18 @@ class ShieldManager
             request.put( "function", FUNCTION_GET_LOGS );
             request.put( "ignore_accept_only", true );
             if ( this.last_js != null ) request.put( "start_time", this.last_js );
-            
+
             JSONObject response = JsonClient.getInstance().call( SHIELD_URL, request );
-            
+
             if ( logger.isDebugEnabled()) logger.debug( "Server returned:\n" + response.toString() + "\n" );
             int status = response.getInt( RESPONSE_STATUS );
             String message = response.getString( RESPONSE_MESSAGE );
-            
+
             if ( status != STATUS_SUCCESS ) {
                 logger.warn( "There was an error[" + status +"] retrieving the logs: '" + message + "'" );
                 return null;
             }
-            
+
             return response.getJSONObject( "logs" );
         }
 
@@ -239,4 +232,4 @@ class ShieldManager
         }
     }
 }
-    
+

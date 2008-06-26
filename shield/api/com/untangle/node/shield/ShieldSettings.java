@@ -99,7 +99,7 @@ public class ShieldSettings implements Serializable
     @OneToMany(targetEntity=ShieldNodeRule.class, cascade=CascadeType.ALL,
                fetch=FetchType.EAGER)
     @JoinColumn(name="settings_id")
-    public Set getShieldNodeRules()
+    public Set<ShieldNodeRule> getShieldNodeRules()
     {
         if (null == this.shieldNodeRules) {
             this.shieldNodeRules = new LinkedHashSet<ShieldNodeRule>();
@@ -108,7 +108,7 @@ public class ShieldSettings implements Serializable
         return this.shieldNodeRules;
     }
 
-    public void setShieldNodeRules(Set shieldNodeRules)
+    public void setShieldNodeRules(Set<ShieldNodeRule> shieldNodeRules)
     {
         if (null == shieldNodeRules) {
             shieldNodeRules = new LinkedHashSet<ShieldNodeRule>();
