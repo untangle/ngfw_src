@@ -49,6 +49,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.zip.GZIPInputStream;
 
 import com.sleepycat.je.Cursor;
 import com.sleepycat.je.Database;
@@ -59,6 +60,7 @@ import com.sleepycat.je.Environment;
 import com.sleepycat.je.LockMode;
 import com.sleepycat.je.OperationStatus;
 import com.untangle.uvm.LocalUvmContextFactory;
+import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
@@ -374,7 +376,19 @@ public abstract class UrlList
                     get.setRequestHeader("Accept-Encoding", "gzip");
 
                     int rc = hc.executeMethod(get);
-                    is = get.getResponseBodyAsStream();
+
+                    Header h = get.getResponseHeader("Content-Encoding");
+
+                    if (null != h) {
+                        String ce = h.getValue();
+                        if (null != ce && ce.equals("gzip")) {
+                                is = new GZIPInputStream(get.getResponseBodyAsStream());
+                            }
+                    }
+
+                    if (null == is) {
+                        is = get.getResponseBodyAsStream();
+                    }
                 }
 
                 InputStreamReader isr = new InputStreamReader(is);

@@ -48,11 +48,14 @@ public interface UvmLogin
 {
     boolean isActivated();
 
-    RemoteUvmContext activationLogin(String key)
+    boolean isRegistered();
+
+    // Key may be null.
+    RemoteUvmContext activationLogin(String key, RegistrationInfo regInfo)
         throws FailedLoginException, MultipleLoginsException;
 
     RemoteUvmContext interactiveLogin(String username, String password,
-                                       boolean force)
+				      boolean force)
         throws FailedLoginException, MultipleLoginsException;
 
     RemoteUvmContext systemLogin(String username, String password)

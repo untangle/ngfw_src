@@ -6,6 +6,9 @@ join_string() {
     echo $1 | sed -e 's/^ *//g' -e 's/ *$//g' -e "s/ \\+/$2/g"
 }
 
+source @PREFIX@/etc/default/untangle-babysitter
+source @PREFIX@/etc/default/untangle-activation
+
 DEFAULT_DMZ="eth2"
 
 UVM_LOGDIR=@PREFIX@/var/log/uvm
@@ -37,47 +40,9 @@ else
     PG_CREATEUSER_OPTIONS="-dSR"
 fi
 
-# nanny stuff
-BANNER_NANNY=@PREFIX@/usr/share/untangle/bin/banner-nanny.sh
-TIMEOUT=8 # in seconds
-SPAMASSASSIN_PORT=783
-SPAMASSASSIN_PID_FILE=/var/run/spamd.pid
-CLAMD_PORT=3310
-CLAMD_PID_FILE=/var/run/clamav/clamd.pid
-CLAMD_MAX_VIRTUAL_SIZE=125000
-SPAMASSASSIN_LOG_ERROR="bayes: cannot open bayes databases /home/spamc/.spamassassin/bayes_\* R/W: lock failed: Interrupted system call"
-CLAMAV_LOG_ERROR="ERROR: (Malformed database|Not supported data format|Broken or not a CVD file)"
-SUPPORT_AGENT_MAX_ALLOWED_CPU=30
-SUPPORT_AGENT_PID_FILE=/var/run/rbot.pid
-
 # cli stuff
 CLI_SERVER_HOME=/usr/share/untangle-cli-server/src
 # JRUBY_HOME=/usr/lib/jruby1.0
-
-# activation stuff...
-UNTANGLE_HARDWARE=@UVM_HOME@/.untanglehw
-FAKE_KEY=0000-0000-0000-0000
-ACTIVATION_KEY_FILE=@UVM_HOME@/activation.key
-POPID_FILE=@UVM_HOME@/popid
-REMOTE_SUPPORT_ENABLE_URL_TEMPLATE="https://activation.untangle.com/cgi-bin/enable-remote-support.rb?license_key=%s&internal_ip=%s"
-KEY_VERIFICATION="@UVM_HOME@/conf/etc/mvverifykey"
-KEY_TEMPLATE=XXX_REG_KEY_XXX
-ETC_ISSUE=/etc/issue
-SOURCES_LIST_OLD=@PREFIX@/etc/apt/sources.list
-SOURCES_LIST_NEW=@PREFIX@/${SOURCES_LIST_OLD}.d/untangle.list
-# finding the correct repository
-grep -q Debian $ETC_ISSUE && i=3 || i=2
-case `head -1 $ETC_ISSUE | awk "{ print \\$$i }"` in
-  3.1) REPOSITORY=sarge SOURCES_LIST=${SOURCES_LIST_OLD} ;;
-  4.0) REPOSITORY=etch SOURCES_LIST=${SOURCES_LIST_NEW} ;;
-  lenny/sid) REPOSITORY=sid SOURCES_LIST=${SOURCES_LIST_NEW} ;;
-  7.04*) REPOSITORY=feisty SOURCES_LIST=${SOURCES_LIST_NEW} ;;
-  7.10*) REPOSITORY=gutsy SOURCES_LIST=${SOURCES_LIST_NEW} ;;
-  8.04*|hardy) REPOSITORY=hardy SOURCES_LIST=${SOURCES_LIST_NEW} ;;
-  # FIMXE !!!
-  *) REPOSITORY=etch SOURCES_LIST=${SOURCES_LIST_NEW} ;;
-esac
-DEFAULT_UNTANGLE_SOURCE="deb http://${KEY_TEMPLATE}:untangle@updates.untangle.com/public/${REPOSITORY} stable main premium upstream\ndeb http://${KEY_TEMPLATE}:untangle@updates.untangle.com/public/${REPOSITORY} durango main premium upstream"
 
 ## For testing uncomment if you want to generate /etc/network/interfaces files.
 # UVM_ENABLE_NETWORK_CFG="anything"
