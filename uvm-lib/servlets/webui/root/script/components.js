@@ -1087,9 +1087,7 @@ Ung.MessageManager = {
                    var msg=messageQueue.messages.list[i];
                     if (msg.javaClass.indexOf("MackageInstallRequest") >= 0) {
                         var policy=null;
-                        if ("SERVICE" != msg.mackageDesc.type) {
-                            policy = rpc.currentPolicy;
-                        }
+                        policy = rpc.currentPolicy;
 
                         rpc.toolboxManager.installAndInstantiate(function(result, exception) {
                             if (exception) {

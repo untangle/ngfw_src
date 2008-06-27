@@ -237,27 +237,72 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
         throws DeployException
     {
         Policy policy = getDefaultPolicyForNode(nodeName);
-        return instantiate(nodeName, newTid(null, nodeName), new String[0]);
+        return instantiate(nodeName, null, new String[0]);
     }
 
     public NodeDesc instantiate(String nodeName, String[] args)
         throws DeployException
     {
         Policy policy = getDefaultPolicyForNode(nodeName);
-        return instantiate(nodeName, newTid(policy, nodeName), args);
+        return instantiate(nodeName, policy, args);
     }
 
     public NodeDesc instantiate(String nodeName, Policy policy)
         throws DeployException
     {
-        return instantiate(nodeName, newTid(policy, nodeName),
-                           new String[0]);
+        return instantiate(nodeName, policy, new String[0]);
     }
 
-    public NodeDesc instantiate(String nodeName, Policy policy, String[] args)
+    public NodeDesc instantiate(String nodeName, Policy p, String[] args)
         throws DeployException
     {
-        return instantiate(nodeName, newTid(policy, nodeName), args);
+        UvmContextImpl mctx = UvmContextImpl.getInstance();
+
+        RemoteToolboxManagerImpl tbm = (RemoteToolboxManagerImpl)mctx.toolboxManager();
+
+        MackageDesc mackageDesc = tbm.mackageDesc(nodeName);
+
+        if (MackageDesc.Type.SERVICE == mackageDesc.getType()) {
+            p = null;
+        }
+
+        Tid tid = newTid(p, nodeName);
+
+        URL[] resUrls = new URL[] { tbm.getResourceDir(mackageDesc) };
+
+        logger.info("initializing node desc for: " + nodeName);
+        NodeDesc tDesc = initNodeDesc(mackageDesc, resUrls, tid);
+
+
+        NodeContextImpl tc;
+        synchronized (this) {
+            if (!live) {
+                throw new DeployException("NodeManager is shut down");
+            }
+
+            tc = new NodeContextImpl
+                ((URLClassLoader)getClass().getClassLoader(), tDesc, mackageDesc.getName(), true);
+            tids.put(tid, tc);
+            try {
+                tc.init(args);
+            } finally {
+                if (null == tc.node()) {
+                    tids.remove(tid);
+                }
+            }
+        }
+
+        Node node = tc.node();
+        if (null != node) {
+            LocalMessageManager lmm = LocalUvmContextFactory.context()
+                .localMessageManager();
+            Counters c = lmm.getCounters(node.getTid());
+            NodeInstantiated ne = new NodeInstantiated(tDesc, c.getStatDescs());
+            LocalMessageManager mm = mctx.localMessageManager();
+            mm.submitMessage(ne);
+        }
+
+        return tDesc;
     }
 
     public void destroy(final Tid tid) throws UndeployException
@@ -690,57 +735,6 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
         LocalUvmContextFactory.context().runTransaction(tw);
 
         return unloaded;
-    }
-
-    private NodeDesc instantiate(String nodeName, Tid tid, String[] args)
-        throws DeployException
-    {
-        UvmContextImpl mctx = UvmContextImpl.getInstance();
-
-        RemoteToolboxManagerImpl tbm = (RemoteToolboxManagerImpl)mctx.toolboxManager();
-
-        MackageDesc mackageDesc = tbm.mackageDesc(nodeName);
-        URL[] resUrls = new URL[] { tbm.getResourceDir(mackageDesc) };
-
-        if ((MackageDesc.Type.SERVICE == mackageDesc.getType())
-            && tid.getPolicy() != null) {
-            throw new DeployException("Cannot specify a policy for a service/util/core: "
-                                      + nodeName);
-        }
-
-        logger.info("initializing node desc for: " + nodeName);
-        NodeDesc tDesc = initNodeDesc(mackageDesc, resUrls, tid);
-
-
-        NodeContextImpl tc;
-        synchronized (this) {
-            if (!live) {
-                throw new DeployException("NodeManager is shut down");
-            }
-
-            tc = new NodeContextImpl
-                ((URLClassLoader)getClass().getClassLoader(), tDesc, mackageDesc.getName(), true);
-            tids.put(tid, tc);
-            try {
-                tc.init(args);
-            } finally {
-                if (null == tc.node()) {
-                    tids.remove(tid);
-                }
-            }
-        }
-
-        Node node = tc.node();
-        if (null != node) {
-            LocalMessageManager lmm = LocalUvmContextFactory.context()
-                .localMessageManager();
-            Counters c = lmm.getCounters(node.getTid());
-            NodeInstantiated ne = new NodeInstantiated(tDesc, c.getStatDescs());
-            LocalMessageManager mm = mctx.localMessageManager();
-            mm.submitMessage(ne);
-        }
-
-        return tDesc;
     }
 
     /**

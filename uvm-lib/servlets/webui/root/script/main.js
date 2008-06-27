@@ -399,12 +399,10 @@ Ung.Main.prototype = {
         if(mackageDesc!==null) {
             Ung.AppItem.updateStateForNode(mackageDesc.name, "installing")
             var policy=null;
-            if ("SERVICE" != mackageDesc.type) {
-                if(targetPolicy==null) {
-                    policy = rpc.currentPolicy;
-                } else {
-                    policy = targetPolicy;
-                }
+            if(targetPolicy==null) {
+                policy = rpc.currentPolicy;
+            } else {
+                policy = targetPolicy;
             }
             rpc.nodeManager.instantiate(function (result, exception) {
                 if(exception) { Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}
