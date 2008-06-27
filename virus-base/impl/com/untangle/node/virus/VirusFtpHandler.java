@@ -38,7 +38,6 @@ import com.untangle.node.token.TokenResult;
 import com.untangle.node.token.TokenStreamer;
 import com.untangle.node.token.TokenStreamerAdaptor;
 import com.untangle.node.util.TempFileFactory;
-import com.untangle.uvm.node.Node;
 import com.untangle.uvm.vnet.Pipeline;
 import com.untangle.uvm.vnet.TCPSession;
 import com.untangle.uvm.vnet.event.TCPStreamer;
@@ -52,12 +51,6 @@ import org.apache.log4j.Logger;
  */
 class VirusFtpHandler extends FtpStateMachine
 {
-    /* XXX Should be from the same place as the HTTP constants */
-    private static final int SCAN_COUNTER  = Node.GENERIC_0_COUNTER;
-    private static final int BLOCK_COUNTER = Node.GENERIC_1_COUNTER;
-    private static final int PASS_COUNTER  = Node.GENERIC_2_COUNTER;
-
-
     private final VirusNodeImpl node;
     private final boolean scan;
 

@@ -45,17 +45,6 @@ import com.untangle.uvm.vnet.IPSessionDesc;
  */
 public interface Node
 {
-    static final int GENERIC_0_COUNTER = 6; // XXX temp hack
-    static final int GENERIC_1_COUNTER = 7; // XXX temp hack
-    static final int GENERIC_2_COUNTER = 8; // XXX temp hack
-    static final int GENERIC_3_COUNTER = 9; // XXX temp hack
-    static final int GENERIC_4_COUNTER = 10; // XXX temp hack
-    static final int GENERIC_5_COUNTER = 11; // XXX temp hack
-    static final int GENERIC_6_COUNTER = 12; // XXX temp hack
-    static final int GENERIC_7_COUNTER = 13; // XXX temp hack
-    static final int GENERIC_8_COUNTER = 14; // XXX temp hack
-    static final int GENERIC_9_COUNTER = 15; // XXX temp hack
-
     // accessors --------------------------------------------------------------
 
     public Tid getTid();

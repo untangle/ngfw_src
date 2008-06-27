@@ -25,7 +25,6 @@ import java.util.regex.Pattern;
 
 import com.untangle.node.util.AsciiCharBuffer;
 import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.node.Node;
 import com.untangle.uvm.vnet.AbstractEventHandler;
 import com.untangle.uvm.vnet.IPSession;
 import com.untangle.uvm.vnet.MPipeException;
@@ -43,10 +42,6 @@ import org.apache.log4j.Logger;
 public class EventHandler extends AbstractEventHandler
 {
     private final Logger logger = Logger.getLogger(EventHandler.class);
-
-    static final int SCAN_COUNTER   = Node.GENERIC_0_COUNTER;
-    static final int DETECT_COUNTER = Node.GENERIC_1_COUNTER;
-    static final int BLOCK_COUNTER  = Node.GENERIC_2_COUNTER;
 
     // These are all set at preStart() time by reconfigure()
     private Set        _patternSet;

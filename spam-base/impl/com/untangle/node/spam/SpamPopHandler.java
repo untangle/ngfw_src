@@ -36,17 +36,12 @@ import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenException;
 import com.untangle.node.token.TokenResult;
 import com.untangle.node.util.TempFileFactory;
-import com.untangle.uvm.node.Node;
 import com.untangle.uvm.vnet.TCPSession;
 import org.apache.log4j.Logger;
 
 public class SpamPopHandler extends PopStateMachine
 {
     private final Logger logger = Logger.getLogger(getClass());
-
-    /* no block counter */
-    private final static int PASS_COUNTER = Node.GENERIC_0_COUNTER;
-    private final static int MARK_COUNTER = Node.GENERIC_2_COUNTER;
 
     private final SpamImpl zNode;
     private final SpamScanner zScanner;

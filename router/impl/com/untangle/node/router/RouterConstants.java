@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -18,27 +18,21 @@
 
 package com.untangle.node.router;
 
-import com.untangle.uvm.node.Node;
 
 class RouterConstants
 {
-    static final int BLOCK_COUNTER = Node.GENERIC_0_COUNTER;
-    static final int NAT_COUNTER   = Node.GENERIC_1_COUNTER;
-    static final int REDIR_COUNTER = Node.GENERIC_2_COUNTER;
-    static final int DMZ_COUNTER   = Node.GENERIC_3_COUNTER;
-    
     /* TCP Port range for nat */
     static final int TCP_NAT_PORT_START = 10000;
     static final int TCP_NAT_PORT_END   = 60000;
-    
+
     /* UDP Port range for nat */
     static final int UDP_NAT_PORT_START = 10000;
     static final int UDP_NAT_PORT_END   = 60000;
-    
+
     /* ICMP PID range for nat */
     static final int ICMP_PID_START     = 1;
     static final int ICMP_PID_END       = 60000;
-    
+
     /* Port the server receives data on, probably not the best place for this constant */
     static final int FTP_SERVER_PORT    = 21;
 }

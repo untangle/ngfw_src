@@ -38,11 +38,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.localapi.SessionMatcher;
 import com.untangle.uvm.localapi.SessionMatcherFactory;
 import com.untangle.uvm.message.Counters;
-import com.untangle.uvm.message.StatDescs;
 import com.untangle.uvm.node.LocalNodeManager;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeContext;
@@ -80,23 +80,23 @@ public abstract class NodeBase implements Node
 
     private NodeState runState;
     private boolean wasStarted = false;
-    private Counters counters;
 
     protected NodeBase()
     {
-        nodeManager = LocalUvmContextFactory.context().nodeManager();
+        LocalUvmContext uvm = LocalUvmContextFactory.context();
+        nodeManager = uvm.nodeManager();
         nodeContext = nodeManager.threadContext();
         tid = nodeContext.getTid();
-        counters = new Counters(tid);
 
-        counters.addMetric("s2nChunks", "Server to Node Chunks", null);
-        counters.addMetric("c2nChunks", "Client to Node Chunks", null);
-        counters.addMetric("n2sChunks", "Node to Server Chunks", null);
-        counters.addMetric("n2cChunks", "Server to Node Chunks", null);
-        counters.addMetric("s2nBytes", "Server to Node Bytes", "byte");
-        counters.addMetric("c2nBytes", "Client to Node Bytes", "byte");
-        counters.addMetric("n2sBytes", "Node to Server Bytes", "byte");
-        counters.addMetric("n2cBytes", "Node to Client Bytes", "byte");
+        Counters c = uvm.localMessageManager().getCounters(tid);
+        c.addMetric("s2nChunks", "Server to Node Chunks", null);
+        c.addMetric("c2nChunks", "Client to Node Chunks", null);
+        c.addMetric("n2sChunks", "Node to Server Chunks", null);
+        c.addMetric("n2cChunks", "Server to Node Chunks", null);
+        c.addMetric("s2nBytes", "Server to Node Bytes", "byte");
+        c.addMetric("c2nBytes", "Client to Node Bytes", "byte");
+        c.addMetric("n2sBytes", "Node to Server Bytes", "byte");
+        c.addMetric("n2cBytes", "Node to Client Bytes", "byte");
 
         runState = NodeState.LOADED;
     }
@@ -177,17 +177,6 @@ public abstract class NodeBase implements Node
     public NodeDesc getNodeDesc()
     {
         return nodeContext.getNodeDesc();
-    }
-
-    // XXX shouldn't be accessed by external apps
-    public Counters getCounters()
-    {
-        return counters;
-    }
-
-    public StatDescs getStatDescss()
-    {
-        return counters.getStatDescs();
     }
 
     // NodeBase methods ---------------------------------------------------

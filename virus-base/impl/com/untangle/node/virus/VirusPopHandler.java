@@ -34,18 +34,12 @@ import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenException;
 import com.untangle.node.token.TokenResult;
 import com.untangle.node.util.TempFileFactory;
-import com.untangle.uvm.node.Node;
 import com.untangle.uvm.vnet.TCPSession;
 import org.apache.log4j.Logger;
 
 public class VirusPopHandler extends PopStateMachine
 {
     private final Logger logger = Logger.getLogger(getClass());
-
-    /* no block counter */
-    private final static int SCAN_COUNTER = Node.GENERIC_0_COUNTER;
-    private final static int PASS_COUNTER = Node.GENERIC_2_COUNTER;
-    private final static int REMOVE_COUNTER = Node.GENERIC_3_COUNTER;
 
     private final VirusNodeImpl zNode;
     private final VirusScanner zScanner;

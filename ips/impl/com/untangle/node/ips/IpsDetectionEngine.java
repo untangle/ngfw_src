@@ -29,7 +29,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.localapi.LocalIntfManager;
-import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.PipelineEndpoints;
 import com.untangle.uvm.vnet.*;
@@ -44,8 +43,6 @@ public class IpsDetectionEngine
     public static final long ERROR_ELAPSED = 2000;
     // Any chunk that takes this long gets a warning
     public static final long WARN_ELAPSED = 20;
-
-    private static final int SCAN_COUNTER  = Node.GENERIC_0_COUNTER;
 
     private int maxChunks = 8;
     private IpsSettings settings = null;
@@ -273,7 +270,7 @@ public class IpsDetectionEngine
             info.setEvent(event);
             info.setFlow(isFromServer);
 
-            updateUICount(SCAN_COUNTER);
+            // updateUICount(SCAN_COUNTER); XXX
 
             boolean result;
             if(isFromServer)

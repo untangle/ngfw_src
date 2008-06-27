@@ -42,7 +42,6 @@ import com.untangle.uvm.BrandingBaseSettings;
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.node.MimeTypeRule;
-import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.StringRule;
 import com.untangle.uvm.vnet.TCPSession;
 import org.apache.log4j.Logger;
@@ -70,10 +69,6 @@ class VirusHttpHandler extends HttpStateMachine
         + "<p>URI: %s</p>"
         + "<p>Please contact %s</p>"
         + "</BODY></HTML>";
-
-    private static final int SCAN_COUNTER  = Node.GENERIC_0_COUNTER;
-    private static final int BLOCK_COUNTER = Node.GENERIC_1_COUNTER;
-    private static final int PASS_COUNTER  = Node.GENERIC_2_COUNTER;
 
     private final Logger logger = Logger.getLogger(getClass());
 

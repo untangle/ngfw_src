@@ -26,7 +26,6 @@ import java.util.ListIterator;
 import java.util.Map;
 
 import com.untangle.node.ips.options.IpsOption;
-import com.untangle.uvm.node.Node;
 import com.untangle.uvm.vnet.*;
 import org.apache.log4j.Logger;
 
@@ -40,9 +39,6 @@ public class IpsRuleSignatureImpl
      *****************************************/
     private static final String[] IGNORE_SAFE_OPTIONS = { "rev", "priority" };
     /** **************************************/
-
-    private static final int DETECT_COUNTER = Node.GENERIC_1_COUNTER;
-    private static final int BLOCK_COUNTER = Node.GENERIC_2_COUNTER;
 
     private static final Map<Integer, long[]> ruleTimes
         = new HashMap<Integer, long[]>();
@@ -230,20 +226,20 @@ public class IpsRuleSignatureImpl
             // Can't happen right now.
             log.warn("Alert: "+classification + ", " + message);
             ips.statisticManager.incrLogged();
-            engine.updateUICount(DETECT_COUNTER);
+            // engine.updateUICount(DETECT_COUNTER); XXX
             break;
 
         case IpsRule.LOG:
             log.debug("Log: "+classification + ", " + message);
             ips.statisticManager.incrLogged();
-            engine.updateUICount(DETECT_COUNTER);
+            // engine.updateUICount(DETECT_COUNTER); XXX
             break;
 
         case IpsRule.BLOCK:
             log.info("Block: "+classification + ", " + message);
             blocked = true;
             ips.statisticManager.incrBlocked();
-            engine.updateUICount(BLOCK_COUNTER);
+            // engine.updateUICount(BLOCK_COUNTER); XXX
             info.blockSession();
             break;
         }

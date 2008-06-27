@@ -29,10 +29,6 @@ import com.untangle.uvm.node.Validator;
 
 public interface Spyware extends Node
 {
-    static final int SCAN = Node.GENERIC_0_COUNTER;
-    static final int BLOCK = Node.GENERIC_1_COUNTER;
-    static final int PASS = Node.GENERIC_2_COUNTER;
-
     List<StringRule> getActiveXRules(int start, int limit, String... sortColumns);
     void updateActiveXRules(List<StringRule> added, List<Long> deleted, List<StringRule> modified);
 
@@ -51,23 +47,23 @@ public interface Spyware extends Node
     boolean unblockSite(String nonce, boolean global);
 
     UserWhitelistMode getUserWhitelistMode();
-    
+
     /**
      * Update all settings once, in a single transaction
      */
-    void updateAll(SpywareBaseSettings baseSettings, 
-    		List[] activeXRules, List[] cookieRules,
-    		List[] subnetRules, List[] domainWhitelist);
-    
+    void updateAll(SpywareBaseSettings baseSettings,
+            List[] activeXRules, List[] cookieRules,
+            List[] subnetRules, List[] domainWhitelist);
+
     /**
      * Reconfigure node. This method should be called after some settings are updated
      * in order to reconfigure the node accordingly.
      */
     void reconfigure();
-    
+
     EventManager<SpywareEvent> getEventManager();
-    
+
     Validator getValidator();
-    
-    
+
+
 }

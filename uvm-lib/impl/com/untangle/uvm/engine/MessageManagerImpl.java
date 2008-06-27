@@ -169,6 +169,7 @@ class MessageManagerImpl implements LocalMessageManager
                 counters.put(t, c);
             }
         }
+
         return c;
     }
 

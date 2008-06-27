@@ -41,9 +41,6 @@ import org.apache.log4j.Logger;
 
 class EventHandler extends AbstractEventHandler
 {
-    private static final int BLOCK_COUNTER = Node.GENERIC_0_COUNTER;
-    private static final int PASS_COUNTER  = Node.GENERIC_1_COUNTER;
-
     private final Logger logger = Logger.getLogger(EventHandler.class);
 
     private List <FirewallMatcher> firewallRuleList = new LinkedList<FirewallMatcher>();

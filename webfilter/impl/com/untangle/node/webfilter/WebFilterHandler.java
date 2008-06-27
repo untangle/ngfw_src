@@ -24,7 +24,6 @@ import com.untangle.node.http.StatusLine;
 import com.untangle.node.token.Chunk;
 import com.untangle.node.token.Header;
 import com.untangle.node.token.Token;
-import com.untangle.uvm.node.Node;
 import com.untangle.uvm.vnet.TCPSession;
 import org.apache.log4j.Logger;
 
@@ -36,10 +35,6 @@ import org.apache.log4j.Logger;
  */
 public class WebFilterHandler extends HttpStateMachine
 {
-    private static final int SCAN = Node.GENERIC_0_COUNTER;
-    private static final int BLOCK = Node.GENERIC_1_COUNTER;
-    private static final int PASS = Node.GENERIC_2_COUNTER;
-
     private final Logger logger = Logger.getLogger(getClass());
 
     private final WebFilterImpl node;

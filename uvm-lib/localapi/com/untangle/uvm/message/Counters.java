@@ -139,10 +139,10 @@ public class Counters
     {
         Map<String, BlingBlinger> m = new HashMap<String, BlingBlinger>();
         if(l!=null) {
-	        for (ActiveStat as : l) {
-	            String n = as.getName();
-	            m.put(n, metrics.get(n));
-	        }
+            for (ActiveStat as : l) {
+                String n = as.getName();
+                m.put(n, metrics.get(n));
+            }
         }
         return new Stats(m, activities);
     }
