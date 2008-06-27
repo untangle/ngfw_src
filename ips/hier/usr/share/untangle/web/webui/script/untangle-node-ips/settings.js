@@ -87,10 +87,16 @@ if (!Ung.hasResource["Ung.Ips"]) {
                 items : [this.gridRules = new Ung.EditorGrid({
 		                name : 'Rules',
 		                settingsCmp : this,
-		                height : 360,
+		                height : 350,
 		                totalRecords : this.getBaseSettings().rulesLength,
 		                emptyRow : {
 		                    "category" : this.i18n._("[no category]"),
+		                    "name" : this.i18n._("[no name]"),
+		                    "rule" : this.i18n._("[no rule]"),
+		                    "category" : this.i18n._("[no category]"),
+		                    "classification" : this.i18n._("[no classification]"),
+		                    "url" : this.i18n._("[no url]"),
+		                    "sid" : this.i18n._("0"),
 		                    "live" : true,
 		                    "log" : true,
 		                    "description" : this.i18n._("[no description]")
@@ -101,20 +107,28 @@ if (!Ung.hasResource["Ung.Ips"]) {
 		                fields : [{
                     		name : 'id'
                 		}, {
+		                    name : 'rule'
+                		}, {
+		                    name : 'sid'
+                		}, {
+		                    name : 'name'
+                		}, {
 		                    name : 'category'
+                		}, {
+		                    name : 'classification'
+                		}, {
+		                    name : 'url'
 		                }, {
 		                    name : 'live'
 		                }, {
 		                    name : 'log'
 		                }, {
 		                    name : 'description'
-		                }, {
-		                    name : 'javaClass'
 		                }],
 		                columns : [{
 		                    id : 'category',
 		                    header : this.i18n._("category"),
-		                    width : 140,
+		                    width : 200,
 		                    dataIndex : 'category',
 		                    editor : new Ext.form.TextField({
 		                        allowBlank : false
@@ -122,21 +136,60 @@ if (!Ung.hasResource["Ung.Ips"]) {
 		                }, blockColumn, logColumn, {
 		                    id : 'description',
 		                    header : this.i18n._("description"),
-		                    width : 140,
+		                    width : 200,
 		                    dataIndex : 'description',
-		                    editor : new Ext.form.TextField({
-		                        allowBlank : false
-		                    })
+		                    editor : null,
+		                    renderer : function(value, metadata, record) {
+		                    	var description = "";
+		                    	if (record.data.classification != null) 
+		                    	{
+		                    		description += record.data.classification + " ";
+		                    	}
+	                    		if (record.data.description != null) {
+		                    		description += "(" + record.data.description + ")";
+	                    		}	
+	                        	return description;
+		                    }
+		                }, {
+		                    id : 'id',
+		                    header : this.i18n._("id"),
+		                    width : 70,
+		                    dataIndex : 'sid',
+		                    editor : null
+		                }, {
+		                    id : 'info',
+		                    header : this.i18n._("info"),
+		                    width : 50,
+		                    dataIndex : 'url',
+		                    editor : null,
+		                    renderer : function(value) {
+		                        return (value === null || value.length == 0) ? "no info" : "<a href=" + value + ">info</a>";
+		                    }
 		                }],
 		                sortField : 'category',
 		                columnsDefaultSortable : true,
-		                autoExpandColumn : 'category',
+		                autoExpandColumn : 'description',
 		                plugins : [blockColumn, logColumn],
 		                rowEditorInputLines : [new Ext.form.TextField({
 		                    name : "category",
 		                    fieldLabel : this.i18n._("Category"),
 		                    allowBlank : false,
-		                    width : 200
+		                    width : 300
+		                }), new Ext.form.TextField({
+		                    name : "rule",
+		                    fieldLabel : this.i18n._("Rule"),
+		                    allowBlank : false,
+		                    width : 350
+		                }), new Ext.form.TextField({
+		                    name : "name",
+		                    fieldLabel : this.i18n._("Name"),
+		                    allowBlank : false,
+		                    width : 300
+		                }), new Ext.form.TextField({
+		                    name : "sid",
+		                    fieldLabel : this.i18n._("SID"),
+		                    allowBlank : false,
+		                    width : 50
 		                }), new Ext.form.Checkbox({
 		                    name : "live",
 		                    fieldLabel : this.i18n._("Block")
@@ -147,19 +200,20 @@ if (!Ung.hasResource["Ung.Ips"]) {
 		                    name : "description",
 		                    fieldLabel : this.i18n._("Description"),
 		                    allowBlank : false,
-		                    width : 200
+		                    width : 400
 		                })]
-					}),  {html : '<br> <br>'}, this.gridVariables = new Ung.EditorGrid({
+					}),  {html : '<br>'}, this.gridVariables = new Ung.EditorGrid({
 		                name : 'Variables',
 		                settingsCmp : this,
 		                totalRecords : this.getBaseSettings().variablesLength,
-		                height : 360,
+		                height : 350,
 		                emptyRow : {
 		                    "variable" : this.i18n._("[no name]"),
 		                    "definition" : this.i18n._("[no definition]"),
 		                    "description" : this.i18n._("[no description]")
 		                },
 		                title : this.i18n._("Variables"),
+		                autoExpandColumn : 'description',
 		                recordJavaClass : "com.untangle.node.ips.IpsVariable",
 		                proxyRpcFn : this.getRpcNode().getVariables,
 		                fields : [{
@@ -170,21 +224,19 @@ if (!Ung.hasResource["Ung.Ips"]) {
 		                    name : 'definition'
 		                }, {
 		                    name : 'description'
-		                }, {
-		                    name : 'javaClass'
 		                }],
 		                columns : [{
 		                    id : 'variable',
 		                    header : this.i18n._("name"),
-		                    width : 200,
+		                    width : 150,
 		                    dataIndex : 'variable',
 		                    editor : new Ext.form.TextField({
 		                        allowBlank : false
 		                    })
 		                }, {
 		                    id : 'definition',
-		                    header : this.i18n._("definition"),
-		                    width : 200,
+		                    header : this.i18n._("pass"),
+		                    width : 300,
 		                    dataIndex : 'definition',
 		                    editor : new Ext.form.TextField({
 		                        allowBlank : false
@@ -208,14 +260,14 @@ if (!Ung.hasResource["Ung.Ips"]) {
 		                    width : 200
 		                }), new Ext.form.TextField({
 		                    name : "definition",
-		                    fieldLabel : this.i18n._("Definition"),
+		                    fieldLabel : this.i18n._("Pass"),
 		                    allowBlank : false,
-		                    width : 200
+		                    width : 300
 						}), new Ext.form.TextField({
 		                    name : "description",
 		                    fieldLabel : this.i18n._("Description"),
 		                    allowBlank : false,
-		                    width : 200
+		                    width : 300
 						})]
 	            	})
             ]});
@@ -224,9 +276,65 @@ if (!Ung.hasResource["Ung.Ips"]) {
         buildEventLog : function() {
             this.gridEventLog = new Ung.GridEventLog({
                 settingsCmp : this,
-                // This is a predefined event log, so there is no need to
-                // specify the fields and columns
-                predefinedType : "TYPE1"
+                fields : [{
+                    name : 'timeStamp'
+                }, {
+                    name : 'ruleSid'
+                }, {
+                    name : 'pipelineEndpoints'
+                }, {
+                    name : 'message'
+                }, {
+                    name : 'blocked'
+                }],
+                columns : [{
+                    header : i18n._("timestamp"),
+                    width : 150,
+                    sortable : true,
+                    dataIndex : 'timeStamp',
+                    renderer : function(value) {
+                        return i18n.timestampFormat(value);
+                    }
+                }, {
+                    header : i18n._("action"),
+                    width : 55,
+                    sortable : true,
+                    dataIndex : 'blocked',
+                    renderer : function(value) {
+                        switch (value) {
+                            case 1 : // BLOCKED
+                                return this.i18n._("block");
+                            default :
+                            case 0 : // PASSED
+                                return this.i18n._("pass");
+                        }
+                    }.createDelegate(this)
+                }, {
+                    header : i18n._("client"),
+                    width : 165,
+                    sortable : true,
+                    dataIndex : 'pipelineEndpoints',
+                    renderer : function(value) {
+                        return value === null ? "" : value.CClientAddr.hostAddress + ":" + value.CClientPort;
+                    }
+                }, {
+                    header : i18n.sprintf(this.i18n._('reason for%saction'),'<br>'),
+                    width : 150,
+                    sortable : true,
+                    dataIndex : 'ruleSid',
+                    renderer : function(value, metadata, record) {
+                           return "#" + record.data.ruleSid + ": " + record.data.message;
+					}
+                }, {
+                    header : i18n._("server"),
+                    width : 165,
+                    sortable : true,
+                    dataIndex : 'pipelineEndpoints',
+                    renderer : function(value) {
+                        return value === null ? "" : value.SServerAddr.hostAddress + ":" + value.SServerPort;
+                    }
+                }]
+                
             });
         },
         // save function
