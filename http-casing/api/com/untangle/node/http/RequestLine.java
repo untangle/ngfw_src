@@ -122,9 +122,12 @@ public class RequestLine implements Serializable
     @Transient
     public byte[] getUriBytes()
     {
-        byte[] b = new byte[requestUriBytes.length];
-        System.arraycopy(requestUriBytes, 0, b, 0,
-                         requestUriBytes.length);
+    	byte[] b = null;
+    	if (requestUriBytes != null) {
+            b = new byte[requestUriBytes.length];
+            System.arraycopy(requestUriBytes, 0, b, 0,
+                             requestUriBytes.length);
+    	}
         return b;
     }
 

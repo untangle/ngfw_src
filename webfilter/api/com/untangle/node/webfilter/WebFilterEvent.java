@@ -159,7 +159,7 @@ import org.hibernate.annotations.Type;
         // WebFilterEvent methods ----------------------------------------------
 
         @Transient
-            private int getActionType()
+            public int getActionType()
         {
             if (null == action ||
                 Action.PASS_KEY == action.getKey()) {

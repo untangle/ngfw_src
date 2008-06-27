@@ -836,9 +836,91 @@ if (!Ung.hasResource["Ung.WebFilter"]) {
         buildEventLog : function() {
             this.gridEventLog = new Ung.GridEventLog({
                 settingsCmp : this,
-                // This is a predefined event log, so there is no need to
-                // specify the fields and columns
-                predefinedType : "TYPE1"
+                fields : [{
+                    name : 'timeStamp'
+                }, {
+                    name : 'actionType'
+                }, {
+                    name : 'requestLine'
+                }, {
+                    name : 'reason'
+                }],
+                columns : [{
+                    header : i18n._("timestamp"),
+                    width : 120,
+                    sortable : true,
+                    dataIndex : 'timeStamp',
+                    renderer : function(value) {
+                        return i18n.timestampFormat(value);
+                    }
+                }, {
+                    header : i18n._("action"),
+                    width : 70,
+                    sortable : true,
+                    dataIndex : 'actionType',
+                    renderer : function(value) {
+                        switch (value) {
+                            case 0 : // PASSED
+                                return this.i18n._("pass");
+                            default :
+                            case 1 : // BLOCKED
+                                return this.i18n._("block");
+                        }
+                    }.createDelegate(this)
+                }, {
+                    header : i18n._("client"),
+                    width : 120,
+                    sortable : true,
+                    dataIndex : 'requestLine',
+                    renderer : function(value) {
+                        return (value === null  || value.pipelineEndpoints === null) ? "" : value.pipelineEndpoints.CClientAddr.hostAddress + ":" + value.pipelineEndpoints.CClientPort;
+                    }
+                }, {
+                    header : i18n._("request"),
+                    width : 120,
+                    sortable : true,
+                    dataIndex : 'requestLine',
+                    renderer : function(value) {
+                        return (value === null  || value.url === null) ? "" : value.url;
+                    }
+                }, {
+                    header : i18n._("reason for action"),
+                    width : 120,
+                    sortable : true,
+                    dataIndex : 'reason',
+                    renderer : function(value) {
+                        switch (value) {
+                            case 'BLOCK_CATEGORY' : 
+                                return this.i18n._("in Categories Block list");
+                            case 'BLOCK_URL' : 
+                                return this.i18n._("in URLs Block list");
+                            case 'BLOCK_EXTENSION' : 
+                                return this.i18n._("in File Extensions Block list");
+                            case 'BLOCK_MIME' : 
+                                return this.i18n._("in MIME Types Block list");
+                            case 'BLOCK_ALL' : 
+                                return this.i18n._("blocking all traffic");
+                            case 'BLOCK_IP_HOST' : 
+                                return this.i18n._("hostname is an IP address");
+                            case 'PASS_URL' : 
+                                return this.i18n._("in URLs Pass list");
+                            case 'PASS_CLIENT' : 
+                                return this.i18n._("in Clients Pass list");
+                            default :
+                            case 'DEFAULT' :
+                                return this.i18n._("no rule applied");
+                        }
+                    }.createDelegate(this)
+                }, {
+                    header : i18n._("server"),
+                    width : 120,
+                    sortable : true,
+                    dataIndex : 'requestLine',
+                    renderer : function(value) {
+                        return (value === null  || value.pipelineEndpoints === null) ? "" : value.pipelineEndpoints.SServerAddr.hostAddress + ":" + value.pipelineEndpoints.SServerPort;
+                    }
+                }]
+                
             });
         },
         // validation functions
