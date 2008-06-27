@@ -79,8 +79,6 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
         LocalMessageManager lmm = LocalUvmContextFactory.context()
             .localMessageManager();
         Counters c = lmm.getCounters(mPipe.node().getTid());
-        System.out.println("TID: " + mPipe.node().getTid()
-                           + " COUNTERS: " + c);
         s2nChunks = c.getBlingBlinger("s2nChunks");
         c2nChunks = c.getBlingBlinger("c2nChunks");
         n2sChunks = c.getBlingBlinger("n2sChunks");

@@ -55,34 +55,27 @@ public class NodeDesc implements Serializable
 
     private final MackageDesc mackageDesc;
 
-    private final String name;
-
     private final String className;
     private final String guiClassName;
     private final String nodeBase;
+    private final String syslogName;
 
     private final List<String> exports;
     private final List<String> parents;
     private final List<String> uvmResources;
     private final boolean singleInstance;
 
-    private final String displayName;
-    private final String syslogName;
-
     private final int tcpClientReadBufferSize = 8192;
     private final int tcpServerReadBufferSize = 8192;
     private final int udpMaxPacketSize = 16384;
 
-    public NodeDesc(Tid tid, MackageDesc mackageDesc,
-                    String name, String className,
+    public NodeDesc(Tid tid, MackageDesc mackageDesc, String className,
                     String guiClassName, String nodeBase,
                     List<String> exports, List<String> parents,
-                    List<String> uvmResources, boolean singleInstance,
-                    String displayName)
+                    List<String> uvmResources, boolean singleInstance)
     {
         this.tid = tid;
         this.mackageDesc = mackageDesc;
-        this.name = name;
         this.className = className;
         this.guiClassName = guiClassName;
         this.nodeBase = nodeBase;
@@ -93,8 +86,8 @@ public class NodeDesc implements Serializable
         l = null == uvmResources ? new LinkedList<String>() : uvmResources;
         this.uvmResources = Collections.unmodifiableList(l);
         this.singleInstance = singleInstance;
-        this.displayName = displayName;
-        syslogName = displayName.replaceAll("\\p{Space}", "_");
+        String n = mackageDesc.getDisplayName();
+        this.syslogName = null == n ? null : n.replaceAll("\\p{Space}", "_");
     }
 
     // accessors --------------------------------------------------------------
@@ -121,7 +114,7 @@ public class NodeDesc implements Serializable
      */
     public String getName()
     {
-        return name;
+        return mackageDesc.getName();
     }
 
     /**
@@ -211,7 +204,7 @@ public class NodeDesc implements Serializable
      */
     public String getDisplayName()
     {
-        return displayName;
+        return mackageDesc.getDisplayName();
     }
 
     /**
@@ -267,6 +260,6 @@ public class NodeDesc implements Serializable
     @Override
     public String toString()
     {
-        return "[NodeDesc name:" + name + "]";
+        return "[NodeDesc name:" + getName() + "]";
     }
 }

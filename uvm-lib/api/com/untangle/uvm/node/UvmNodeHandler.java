@@ -79,9 +79,9 @@ public class UvmNodeHandler extends DefaultHandler
 
     public NodeDesc getNodeDesc(Tid tid)
     {
-        return new NodeDesc(tid, mackageDesc, name, className, guiClassName,
+        return new NodeDesc(tid, mackageDesc, className, guiClassName,
                             nodeBase, exports, parents, uvmResources,
-                            singleInstance, displayName);
+                            singleInstance);
     }
 
     // DefaultHandler methods -------------------------------------------------

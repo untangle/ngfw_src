@@ -509,7 +509,7 @@ class NodeContextImpl implements NodeContext
             throw new DeployException("could not create parent: " + parent);
         }
 
-        if (md.isService()) {
+        if (MackageDesc.Type.SERVICE == md.getType()) {
             policy = null;
         }
 

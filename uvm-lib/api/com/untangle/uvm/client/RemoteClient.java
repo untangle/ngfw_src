@@ -317,8 +317,7 @@ public class RemoteClient
                                + "extraName: " + mkgs[i].getExtraName()
                                + "\tinstalled: " + mkgs[i].getInstalledVersion()
                                + "\tavailable: "
-                               + mkgs[i].getAvailableVersion()
-                               + "\twebpage: " + mkgs[i].getWebsite());
+                               + mkgs[i].getAvailableVersion());
         }
     }
 

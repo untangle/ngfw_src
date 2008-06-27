@@ -53,25 +53,16 @@ public class MackageDesc implements Serializable
 
     public static final int UNKNOWN_POSITION = -1;
 
-    /* XXX change to enum in 1.5 */
-    public static final int NODE_BASE_TYPE = 3;
-
     public enum Type {
         NODE,
         CASING,
+        SERVICE,
         LIBRARY,
         BASE,
         LIB_ITEM,
         TRIAL,
         UNKNOWN
     }
-
-    public static final int RACK_TYPE_BUNDLE   = 0; // used for store positioning, not the actual rack
-    public static final int RACK_TYPE_SERVICE  = 1;
-    public static final int RACK_TYPE_UTIL     = 2;
-    public static final int RACK_TYPE_SECURITY = 3;
-    public static final int RACK_TYPE_CORE     = 4;
-    public static final int RACK_TYPE_UNKNOWN  = 5;
 
     private final String name;
     private final String displayName;
@@ -80,22 +71,14 @@ public class MackageDesc implements Serializable
     private final String availableVersion;
     private final String shortDescription;
     private final String longDescription;
-    private final String website;
     private final String fullVersion;
     private final int size;
     private final int installedSize;
-    private final String price;
     private final byte[] descIcon;
     private final int viewPosition;
-    private final int rackType;
     private final boolean autoStart;
-    private final boolean isBundle;
-    private final boolean isService;
-    private final boolean isUtil;
-    private final boolean isSecurity;
-    private final boolean isCore;
+    private final boolean invisible;
     private final String extraName;
-    private final String jarPrefix;
 
     public MackageDesc(Map<String, String> m, String installedVersion,
                        String extraName)
@@ -124,60 +107,15 @@ public class MackageDesc implements Serializable
         // versions
         availableVersion = m.get("version");
 
-        // price
-        price = m.get("price");
-
         // view position (used for store and toolbox)
         String v = m.get("view-position");
         viewPosition = null == v ? UNKNOWN_POSITION : Integer.parseInt(v);
 
-        // rack type init
-        int rt = RACK_TYPE_UNKNOWN;
-
-        // bundle or not
-        v = m.get("is-bundle");
-        isBundle = (v != null && Boolean.parseBoolean(v));
-        if (isBundle) {
-            rt = RACK_TYPE_BUNDLE;
-        }
-
-        // autostart or not
         v = m.get("auto-start");
         autoStart = (v != null && Boolean.parseBoolean(v));
 
-        // service or not
-        if (Type.CASING == type) {
-            isService = true;
-        } else {
-            v = m.get("is-service");
-            isService = (v != null && Boolean.parseBoolean(v));
-        }
-        if (isService) {
-            rt = RACK_TYPE_SERVICE;
-        }
-
-        // util or not
-        v = m.get("is-util");
-        isUtil = (v != null && Boolean.parseBoolean(v));
-        if (isUtil) {
-            rt = RACK_TYPE_UTIL;
-        }
-
-        // security or not
-        v = m.get("is-security");
-        isSecurity = (v != null && Boolean.parseBoolean(v));
-        if (isSecurity) {
-            rt = RACK_TYPE_SECURITY;
-        }
-
-        // core or not
-        v = m.get("is-core");
-        isCore = (v != null && Boolean.parseBoolean(v));
-        if (isCore) {
-            rt = RACK_TYPE_CORE;
-        }
-
-        this.rackType = rt;
+        v = m.get("invisible");
+        invisible = (v != null && Boolean.parseBoolean(v));
 
         // size
         v = m.get("size");
@@ -207,27 +145,12 @@ public class MackageDesc implements Serializable
             descIcon = null; // XXX default
         }
 
-        // website
-        website = m.get("website");
-
-        // Remove jarPrefix from control file since it's always the same as the
-        // package name.
-        if (Type.NODE == type || Type.CASING == type || Type.BASE == type)
-            jarPrefix = name;
-        else
-            jarPrefix = null;
-
         this.installedVersion = installedVersion;
     }
 
     public String getName()
     {
         return name;
-    }
-
-    public String getPrice()
-    {
-        return price;
     }
 
     public String getExtraName()
@@ -270,11 +193,6 @@ public class MackageDesc implements Serializable
         return fullVersion;
     }
 
-    public String getWebsite()
-    {
-        return website;
-    }
-
     public int getSize()
     {
         return size;
@@ -302,56 +220,14 @@ public class MackageDesc implements Serializable
         return viewPosition;
     }
 
-    public boolean isService()
-    {
-        return isService;
-    }
-
-    public boolean isUtil()
-    {
-        return isUtil;
-    }
-
-    public boolean isSecurity()
-    {
-        return isSecurity;
-    }
-
-    public boolean isCore()
-    {
-        return isCore;
-    }
-
     public boolean isAutoStart()
     {
         return autoStart;
     }
 
-    public boolean isBundle()
+    public boolean isInvisible()
     {
-        return isBundle;
-    }
-
-    public int getRackType()
-    {
-        if (rackType == RACK_TYPE_SERVICE) {
-            return RACK_TYPE_SERVICE;
-        } else if (rackType == RACK_TYPE_UTIL) {
-            return RACK_TYPE_UTIL;
-        } else if (rackType == RACK_TYPE_SECURITY) {
-            return RACK_TYPE_SECURITY;
-        } else if (rackType == RACK_TYPE_CORE) {
-            return RACK_TYPE_CORE;
-        } else if (rackType == RACK_TYPE_BUNDLE) {
-            return RACK_TYPE_BUNDLE;
-        } else {
-            return RACK_TYPE_UNKNOWN;
-        }
-    }
-
-    public String getJarPrefix()
-    {
-        return jarPrefix;
+        return invisible;
     }
 
     // Object methods ----------------------------------------------------------

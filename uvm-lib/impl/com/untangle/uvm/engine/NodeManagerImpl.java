@@ -204,14 +204,12 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
             MackageDesc md = nc.getMackageDesc();
             Policy p = tid.getPolicy();
 
-            // XXX FLAG REFACTOR refactor the flags
-            if (!md.isService()
-                && ((null == p ? p == policy : p.equals(policy))
-                    || md.isCore())) {
-                NodeDesc nd = nc.getNodeDesc();
-                // XXX FLAG REFACTOR use an untangle-type rather than
-                // the name here. other constrints?
-                if (!nd.getName().equals("untangle-node-router")) {
+            MackageDesc.Type type = md.getType();
+            if (!md.isInvisible() && (MackageDesc.Type.NODE == type
+                                      || MackageDesc.Type.SERVICE == type)) {
+                if ((null == p ? p == policy : p.equals(policy))
+                    || MackageDesc.Type.SERVICE == type) {
+                    NodeDesc nd = nc.getNodeDesc();
                     l.add(nd);
                 }
             }
@@ -704,14 +702,9 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
         MackageDesc mackageDesc = tbm.mackageDesc(nodeName);
         URL[] resUrls = new URL[] { tbm.getResourceDir(mackageDesc) };
 
-        if ((mackageDesc.isService() || mackageDesc.isUtil() || mackageDesc.isCore())
+        if ((MackageDesc.Type.SERVICE == mackageDesc.getType())
             && tid.getPolicy() != null) {
             throw new DeployException("Cannot specify a policy for a service/util/core: "
-                                      + nodeName);
-        }
-
-        if (mackageDesc.isSecurity() && tid.getPolicy() == null) {
-            throw new DeployException("Cannot have null policy for a security: "
                                       + nodeName);
         }
 
@@ -766,8 +759,13 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
         InputStream is = new URLClassLoader(urls)
             .getResourceAsStream(DESC_PATH);
         if (null == is) {
+            List<URL> ul = new ArrayList<URL>(urls.length);
+            for (URL u : urls) {
+                ul.add(u);
+            }
             throw new DeployException(mackageDesc.getName() + " desc "
-                                      + DESC_PATH + " not found");
+                                      + DESC_PATH + " not found in urls: "
+                                      + ul);
         }
 
         UvmNodeHandler mth = new UvmNodeHandler(mackageDesc);
@@ -795,10 +793,11 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
         MackageDesc mackageDesc = tbm.mackageDesc(nodeName);
         if (mackageDesc == null)
             throw new DeployException("Node named " + nodeName + " not found");
-        if (!mackageDesc.isSecurity())
+        if (MackageDesc.Type.SERVICE != mackageDesc.getType()) {
             return null;
-        else
+        } else {
             return LocalUvmContextFactory.context().policyManager().getDefaultPolicy();
+        }
     }
 
     private Tid newTid(Policy policy, String nodeName)

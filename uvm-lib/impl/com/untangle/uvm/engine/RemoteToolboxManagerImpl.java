@@ -177,7 +177,9 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
                 trials.remove(dn);
             } else if (type == MackageDesc.Type.TRIAL) {
                 trials.remove(dn);
-            } else if (type == MackageDesc.Type.NODE) {
+            } else if (!md.isInvisible()
+                       && (type == MackageDesc.Type.NODE
+                           || type == MackageDesc.Type.SERVICE)) {
                 displayNames.add(dn);
                 nodes.put(dn, md);
             }
@@ -199,7 +201,6 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
         }
 
         displayNames.remove(null);
-        displayNames.remove("Router");
 
         List<Application> apps = new ArrayList<Application>(displayNames.size());
         for (String dn : displayNames) {
@@ -304,15 +305,15 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
                         .context().nodeManager();
                     for (String nn : nodes) {
                         try {
-                        	register(nn);
-                        	tm.instantiate(nn, p);
+                            register(nn);
+                            tm.instantiate(nn, p);
                         } catch (DeployException exn) {
                             // XXX send out error message
                             logger.warn("could not deploy", exn);
                         } catch (MackageInstallException e) {
-							// TODO Auto-generated catch block
-                        	logger.warn("could not register", e);
-						}
+                            // TODO Auto-generated catch block
+                            logger.warn("could not register", e);
+                        }
                     }
                 }
             };
@@ -617,7 +618,7 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
     URL getResourceDir(MackageDesc md)
     {
         try {
-            return new URL(TOOLBOX_URL, md.getJarPrefix() + "-impl/");
+            return new URL(TOOLBOX_URL, md.getName() + "-impl/");
         } catch (MalformedURLException exn) {
             logger.warn(exn); /* should never happen */
             return null;
