@@ -6,7 +6,7 @@
 
   <jsp:output omit-xml-declaration="true"/>
 
-  <uvm:i18nload path="mail-casing"/>
+  <uvm:i18nload path="mail_casing"/>
 
   <c:set var="title" scope="request">
     <uvm:i18n p0="${currentAddress}">

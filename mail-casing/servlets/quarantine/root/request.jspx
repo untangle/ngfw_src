@@ -6,7 +6,7 @@
 
   <jsp:output omit-xml-declaration="true"/>
 
-  <uvm:i18nload path="mail-casing"/>
+  <uvm:i18nload path="mail_casing"/>
 
   <jsp:scriptlet>
     <![CDATA[

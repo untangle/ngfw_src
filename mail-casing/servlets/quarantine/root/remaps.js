@@ -38,7 +38,7 @@ Ung.Remaps.prototype = {
             this.selectionModel,
             {
                 header: i18n._( "Email Address" ),
-                dataIndex: 'emailAddress',
+                dataIndex: 'emailAddress'
             }]);
 
         this.reader = new Ext.data.ArrayReader(
