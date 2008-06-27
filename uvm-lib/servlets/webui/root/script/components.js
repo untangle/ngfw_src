@@ -46,8 +46,8 @@ Ext.override(Ext.PagingToolbar, {
     }
 });
 Ext.override(Ext.TabPanel, {
-	addNamesToPanels: function () {
-		if (this.items) {
+    addNamesToPanels: function () {
+        if (this.items) {
             var items=this.items.getRange();
             for(var i=0;i<items.length;i++) {
                 var tabEl=Ext.get(this.getTabEl(items[i]));
@@ -58,8 +58,8 @@ Ext.override(Ext.TabPanel, {
                 }
             }
         }
-		
-	}
+
+    }
 });
 Ung.Util= {
     // Load css file Dynamically
@@ -403,8 +403,8 @@ Ung.AppItem = Ext.extend(Ext.Component, {
     node : null,
     trialLibItem : null,
 
-    
-    
+
+
     iconSrc : null,
     iconCls : null,
     renderTo : 'appsItems',
@@ -418,17 +418,17 @@ Ung.AppItem = Ext.extend(Ext.Component, {
     // progress bar component
     progressBar : null,
     constructor : function(config) {
-    	var name="";
-    	if(config.libItem!=null) {
-    		name=config.libItem.name;
-    		this.item=config.libItem;
-    	} else if(config.node!=null) {
-    		name=config.node.name;
-    		this.item=config.node;
-    	} else {
-    		return;
-    		//error
-    	}
+        var name="";
+        if(config.libItem!=null) {
+            name=config.libItem.name;
+            this.item=config.libItem;
+        } else if(config.node!=null) {
+            name=config.node.name;
+            this.item=config.node;
+        } else {
+            return;
+            //error
+        }
         this.id = "appItem_" + name;
         Ung.AppItem.superclass.constructor.apply(this, arguments);
     },
@@ -456,7 +456,7 @@ Ung.AppItem = Ext.extend(Ext.Component, {
         this.getEl().insertHtml("afterBegin", html);
         //this.getEl().dom.innerHTML = html;
         this.getEl().addClass("appItem");
-        
+
         this.progressBar = new Ext.ProgressBar({
             text : '',
             id : 'progressBar_' + this.getId(),
@@ -477,14 +477,14 @@ Ung.AppItem = Ext.extend(Ext.Component, {
         this.action = Ext.get("action_" + this.getId());
         this.progressBar.hide();
         if(this.libItem!=null && this.node==null) { //libitem
-        	this.getEl().on("click", this.linkToStoreFn, this);
-        	this.action.insertHtml("afterBegin", i18n._("More Info"));
-        	this.action.addClass("iconInfo");
+            this.getEl().on("click", this.linkToStoreFn, this);
+            this.action.insertHtml("afterBegin", i18n._("More Info"));
+            this.action.addClass("iconInfo");
         } else if(this.node!=null) { //node
             this.getEl().on("click", this.installNodeFn, this);
             this.action.insertHtml("afterBegin", i18n._("Install"));
             this.action.addClass("iconArrowRight");
-        	if(this.libItem!=null) { //libitem and trial node
+            if(this.libItem!=null) { //libitem and trial node
                 this.buttonBuy.setVisible(true);
                 this.buttonBuy.insertHtml("afterBegin", i18n._("Buy"));
                 this.buttonBuy.on("click", this.linkToStoreFn, this);
@@ -492,8 +492,8 @@ Ung.AppItem = Ext.extend(Ext.Component, {
                 this.buttonBuy.addClass("iconArrowDown");
             }
         } else {
-        	retrun;
-        	//error
+            retrun;
+            //error
         }
     },
     // get the node name associated with the App
@@ -501,7 +501,7 @@ Ung.AppItem = Ext.extend(Ext.Component, {
         var nodeName = null; // for libitems with no trial node return null
         if (this.node) { // nodes
             nodeName = this.node.name;
-        } 
+        }
         return nodeName;
     },
     setState : function(newState, options) {
@@ -569,27 +569,27 @@ Ung.AppItem = Ext.extend(Ext.Component, {
         this.action.setVisible(displayButtons);
         this.buttonBuy.setVisible(displayButtons);
         if (displayButtons) {
-        	this.getEl().unmask();
-        	this.buttonBuy.unmask();
+            this.getEl().unmask();
+            this.buttonBuy.unmask();
             this.progressBar.reset(true);
         } else {
-        	this.getEl().mask();
+            this.getEl().mask();
             this.buttonBuy.mask();
             this.progressBar.show();
         }
     },
     // open store page in a new frame
     linkToStoreFn : function(e) {
-    	e.stopEvent();
-    	rpc.toolboxManager.upgradable(function(result, exception) {
-    		if (exception) {
+        e.stopEvent();
+        rpc.toolboxManager.upgradable(function(result, exception) {
+            if (exception) {
                 Ext.MessageBox.alert(i18n._("Failed"), exception.message);
                 return;
             }
             var upgradeList=result;
             if(upgradeList.length>0 || true) { //do not test upgrade list yet
-            	//main.setUpgrade(true)
-            	Ext.MessageBox.alert(i18n._("Failed"), "Upgrades are available, please click Upgrade button in Config panel.");
+                //main.setUpgrade(true)
+                Ext.MessageBox.alert(i18n._("Failed"), "Upgrades are available, please click Upgrade button in Config panel.");
             } else {
                 rpc.adminManager.generateAuthNonce(function(result, exception) {
                     if (exception) {
@@ -603,7 +603,7 @@ Ung.AppItem = Ext.extend(Ext.Component, {
                     query += "&protocol=" + currentLocation.protocol.replace(/:$/, "");
                     query += "&action=browse";
                     query += "&libitem=" + this.libItem.name;
-        
+
                     var url = "../library/launcher?" + query;
                     var iframeWin = main.getIframeWin();
                     iframeWin.show();
@@ -611,8 +611,8 @@ Ung.AppItem = Ext.extend(Ext.Component, {
                     window.frames["iframeWin_iframe"].location.href = url;
                 }.createDelegate(this));
             }
-    	}.createDelegate(this));
-    	
+        }.createDelegate(this));
+
     },
     // install node / uninstall App
     installNodeFn : function(e) {
@@ -1006,11 +1006,11 @@ Ung.Node = Ext.extend(Ext.Component, {
     initBlingers : function() {
         if (this.blingers !== null) {
             if(this.blingers.activityDescs!=null) {
-            	var blinger=new Ung.ActivityBlinger({
-            	   parentId : this.getId(),
-            	   bars: this.blingers.activityDescs.list
-            	});
-            	blinger.render('nodeBlingers_' + this.getId());
+                var blinger=new Ung.ActivityBlinger({
+                   parentId : this.getId(),
+                   bars: this.blingers.activityDescs.list
+                });
+                blinger.render('nodeBlingers_' + this.getId());
             }
             if(this.blingers.metricDescs!=null) {
                 var blinger=new Ung.SystemBlinger({
@@ -1075,23 +1075,23 @@ Ung.MessageManager = {
         this.started = false;
     },
     run : function () {
-    	rpc.messageManager.getMessageQueue(function(result, exception) {
+        rpc.messageManager.getMessageQueue(function(result, exception) {
         if (exception) {
             Ext.MessageBox.alert(i18n._("Failed"), exception.message);
             return;
         }
-    	   var messageQueue=result;
-    	   if(messageQueue.messages.list!=null && messageQueue.messages.list.length>0) {
-    	   	   var hasNodeInstantiated=false;
-    	       for(var i=0;i<messageQueue.messages.list.length;i++) {
-    	       	   var msg=messageQueue.messages.list[i];
+           var messageQueue=result;
+           if(messageQueue.messages.list!=null && messageQueue.messages.list.length>0) {
+               var hasNodeInstantiated=false;
+               for(var i=0;i<messageQueue.messages.list.length;i++) {
+                   var msg=messageQueue.messages.list[i];
                     if (msg.javaClass.indexOf("MackageInstallRequest") >= 0) {
                         var policy=null;
-                        if (!msg.mackageDesc.service && !msg.mackageDesc.util && !msg.mackageDesc.core) {
+                        if ("SERVICE" != msg.mackageDesc.type) {
                             policy = rpc.currentPolicy;
                         }
 
-                    	rpc.toolboxManager.installAndInstantiate(function(result, exception) {
+                        rpc.toolboxManager.installAndInstantiate(function(result, exception) {
                             if (exception) {
                                 Ext.MessageBox.alert(i18n._("Failed"), exception.message);
                                 return;
@@ -1101,18 +1101,18 @@ Ung.MessageManager = {
                     } else if (msg.javaClass.indexOf("MackageUpdateExtraName") >= 0) {
 
                     } else if(msg.javaClass.indexOf("NodeInstantiated") != -1) {
-    	           	   hasNodeInstantiated=true;
+                       hasNodeInstantiated=true;
                        var node=main.createNode(msg.nodeDesc.tid, msg.nodeDesc.mackageDesc, msg.statDescs);
                        main.nodes.push(node);
                        main.addNode(node);
-    	           }
-    	       }
-    	       if(hasNodeInstantiated) {
-    	       	   main.updateSeparator();
-    	           main.loadApps();
-    	       }
-    	   }
-    	}.createDelegate(this), rpc.currentPolicy);
+                   }
+               }
+               if(hasNodeInstantiated) {
+                   main.updateSeparator();
+                   main.loadApps();
+               }
+           }
+        }.createDelegate(this), rpc.currentPolicy);
     }
     /*,
     hasActiveNodes : function() {
@@ -1368,7 +1368,7 @@ Ung.Settings = Ext.extend(Ext.Component, {
                     Ung.i18nModuleInstances[dependencyName] = new Ung.ModuleI18N({
                         "map" : i18n.map,
                         "moduleMap" : dependencyTranslations.map
-                    })                
+                    })
                 }
             }
 
@@ -1470,20 +1470,20 @@ Ung.Settings.loadNodeScript = function(nodeName, cmpId, callbackFn) {
     Ung.Util.loadScript('script/' + nodeName + '/settings.js', function() {
         var cmp = Ext.getCmp(cmpId);
         cmp.settingsClassName = Ung.Settings.getClassName(cmp.name);
-        
+
         if(!Ung.Settings.dependency[cmp.name]) {
-        	callbackFn(cmpId);
+            callbackFn(cmpId);
         } else {
-        	var dependencyClassName=Ung.Settings.getClassName(Ung.Settings.dependency[cmp.name].name);
-        	if(!dependencyClassName) {
-            	Ung.Util.loadScript('script/' + Ung.Settings.dependency[cmp.name].name + '/settings.js', function() {
+            var dependencyClassName=Ung.Settings.getClassName(Ung.Settings.dependency[cmp.name].name);
+            if(!dependencyClassName) {
+                Ung.Util.loadScript('script/' + Ung.Settings.dependency[cmp.name].name + '/settings.js', function() {
                     Ung.Settings.dependency[cmp.name].fn.call(this);
                     callbackFn(cmpId);
-            	});
-        	} else {
-        		Ung.Settings.dependency[cmp.name].fn.call(this);
-        		callbackFn(cmpId);
-        	}
+                });
+            } else {
+                Ung.Settings.dependency[cmp.name].fn.call(this);
+                callbackFn(cmpId);
+            }
         }
     });
 };
@@ -2249,12 +2249,12 @@ Ext.extend(Ung.RpcProxy, Ext.data.DataProxy, {
                     ? params.limit
                     : this.totalRecords != null ? this.totalRecords : 2147483647, sortColumns);
         } else {
-        	if (this.rpcFnArgs == null) {
+            if (this.rpcFnArgs == null) {
                 this.rpcFn(this.errorHandler.createDelegate(obj));
-        	} else {
-        		var args = [this.errorHandler.createDelegate(obj)].concat(this.rpcFnArgs);
+            } else {
+                var args = [this.errorHandler.createDelegate(obj)].concat(this.rpcFnArgs);
                 this.rpcFn.apply(this, args);
-        	}
+            }
         }
     },
     errorHandler : function(result, exception) {
@@ -2539,7 +2539,7 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
                     root : 'list',
                     fields : this.fields
                 }),
-    
+
                 remoteSort : true,
                 listeners : {
                     "update" : {
@@ -2582,8 +2582,8 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
                     }
                 }
             });
-        	this.getStore().proxy.data = this.data;
-        	this.totalRecords=this.data.length
+            this.getStore().proxy.data = this.data;
+            this.totalRecords=this.data.length
         }
         this.bbar = new Ext.PagingToolbar({
             pageSize : this.recordsPerPage,
@@ -2853,13 +2853,13 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
                 var d = this.changedData[id];
                 if (d) {
                     if (d.op == "deleted") {
-                    	continue
+                        continue
                     }
                 }
             }
             list.push(records[i].data)
         }
-        	
+
         return list;
     }
 });
