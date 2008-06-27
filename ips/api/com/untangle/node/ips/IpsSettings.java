@@ -20,6 +20,7 @@ package com.untangle.node.ips;
 
 import java.io.Serializable;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -79,6 +80,19 @@ public class IpsSettings implements Serializable
             baseSettings.setRulesLength(null == rules ? 0 : rules.size());
             baseSettings.setVariablesLength(null == variables ? 0 : variables.size());
             baseSettings.setImmutableVariablesLength(null == immutableVariables ? 0 : immutableVariables.size());
+            
+            int logging = 0;
+            int blocking = 0;
+            for( IpsRule rule : rules){
+                if(rule.isLive())
+                    blocking++;
+                if(rule.getLog())
+                    logging++;
+            }
+            baseSettings.setTotalAvailable(null == rules ? 0 : rules.size());
+            baseSettings.setTotalBlocking(blocking);
+            baseSettings.setTotalLogging(logging);
+            
         }
 
         return baseSettings;

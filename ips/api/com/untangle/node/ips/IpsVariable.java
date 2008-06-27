@@ -70,5 +70,11 @@ public class IpsVariable implements Serializable {
     @Column(length=1024)
     public String getDescription() { return this.description; }
     public void setDescription(String s) { this.description = s; }
+
+    public void updateVariable(IpsVariable var) {
+        this.variable = var.variable;
+        this.description = var.description;
+        this.definition = var.definition;
+    }
 }
 

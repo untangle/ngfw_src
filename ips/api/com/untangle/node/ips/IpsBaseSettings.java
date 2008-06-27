@@ -37,6 +37,10 @@ public class IpsBaseSettings implements Serializable
     private int rulesLength;
     private int variablesLength;
     private int immutableVariablesLength;
+    
+    private int totalAvailable;
+    private int totalBlocking;
+    private int totalLogging;
 
     public IpsBaseSettings() { }
 
@@ -82,5 +86,32 @@ public class IpsBaseSettings implements Serializable
     public void setImmutableVariablesLength(int immutableVariablesLength)
     {
         this.immutableVariablesLength = immutableVariablesLength;
+    }
+
+    @Transient
+    public int getTotalAvailable() {
+        return this.totalAvailable;
+    }
+
+    public void setTotalAvailable(int totalAvailable) {
+        this.totalAvailable = totalAvailable;
+    }
+
+    @Transient
+    public int getTotalBlocking() {
+        return this.totalBlocking;
+    }
+
+    public void setTotalBlocking(int totalBlocking) {
+        this.totalBlocking = totalBlocking;
+    }
+
+    @Transient
+    public int getTotalLogging() {
+        return this.totalLogging;
+    }
+
+    public void setTotalLogging(int totalLogging) {
+        this.totalLogging = totalLogging;
     }
 }

@@ -55,6 +55,8 @@ public class IpsNodeImpl extends AbstractNode implements IpsNode {
     private IpsDetectionEngine engine;
 
     private final PartialListUtil listUtil = new PartialListUtil();
+    
+    private final IpsVariableHandler variableHandler = new IpsVariableHandler();
 
     public IpsNodeImpl() {
         engine = new IpsDetectionEngine(this);
@@ -105,6 +107,7 @@ public class IpsNodeImpl extends AbstractNode implements IpsNode {
 
     public EventManager<IpsLogEvent> getEventManager()
     {
+//	eventLogger.log(new IpsLogEvent(null, 0, "test", "test", true));
         return eventLogger;
     }
 
@@ -157,7 +160,7 @@ public class IpsNodeImpl extends AbstractNode implements IpsNode {
     public void updateVariables(List<IpsVariable> added, List<Long> deleted,
                                 List<IpsVariable> modified)
     {
-        updateRules(settings.getVariables(), added, deleted, modified);
+	updateVariables(settings.getVariables(), added, deleted, modified);
     }
 
     public List<IpsVariable> getImmutableVariables(final int start,
@@ -173,7 +176,7 @@ public class IpsNodeImpl extends AbstractNode implements IpsNode {
                                          List<Long> deleted,
                                          List<IpsVariable> modified)
     {
-        updateRules(settings.getImmutableVariables(), added, deleted, modified);
+	updateVariables(settings.getImmutableVariables(), added, deleted, modified);
     }
     
     public void updateAll(final IpsBaseSettings baseSettings,
@@ -187,8 +190,8 @@ public class IpsNodeImpl extends AbstractNode implements IpsNode {
 				}
 
 				listUtil.updateCachedItems(settings.getRules(), rules);
-				listUtil.updateCachedItems(settings.getVariables(), variables);
-				listUtil.updateCachedItems(settings.getVariables(), immutableVariables);
+				listUtil.updateCachedItems(settings.getVariables(), variableHandler, variables);
+				listUtil.updateCachedItems(settings.getVariables(), variableHandler, immutableVariables);
 
 				settings = (IpsSettings)s.merge(settings);
 
@@ -259,6 +262,25 @@ public class IpsNodeImpl extends AbstractNode implements IpsNode {
         getNodeContext().runTransaction(tw);
     }
 
+    private void updateVariables(final Set rules, final List added,
+	    final List<Long> deleted, final List modified)
+    {
+	TransactionWork tw = new TransactionWork()
+	{
+	    public boolean doWork(Session s)
+	    {
+		listUtil.updateCachedItems(rules, variableHandler, added, deleted, modified);
+
+		settings = (IpsSettings)s.merge(settings);
+
+		return true;
+	    }
+
+	    public Object getResult() { return null; }
+	};
+	getNodeContext().runTransaction(tw);
+    }
+    
     private void setIpsSettings(final IpsSettings settings)
     {
         TransactionWork tw = new TransactionWork()
@@ -302,5 +324,18 @@ public class IpsNodeImpl extends AbstractNode implements IpsNode {
                 public Object getResult() { return null; }
             };
         getNodeContext().runTransaction(tw);
+    }
+
+    private static class IpsVariableHandler implements PartialListUtil.Handler<IpsVariable>
+    {
+        public Long getId( IpsVariable var )
+        {
+            return var.getId();
+        }
+
+        public void update( IpsVariable current, IpsVariable newVar )
+        {
+            current.updateVariable( newVar );
+        }
     }
 }
