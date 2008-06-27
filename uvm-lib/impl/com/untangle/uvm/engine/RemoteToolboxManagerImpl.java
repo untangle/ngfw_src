@@ -304,11 +304,15 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
                         .context().nodeManager();
                     for (String nn : nodes) {
                         try {
-                            tm.instantiate(nn, p);
+                        	register(nn);
+                        	tm.instantiate(nn, p);
                         } catch (DeployException exn) {
                             // XXX send out error message
                             logger.warn("could not deploy", exn);
-                        }
+                        } catch (MackageInstallException e) {
+							// TODO Auto-generated catch block
+                        	logger.warn("could not register", e);
+						}
                     }
                 }
             };

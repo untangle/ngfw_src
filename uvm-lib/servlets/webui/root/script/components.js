@@ -581,25 +581,38 @@ Ung.AppItem = Ext.extend(Ext.Component, {
     // open store page in a new frame
     linkToStoreFn : function(e) {
     	e.stopEvent();
-        rpc.adminManager.generateAuthNonce(function(result, exception) {
-            if (exception) {
+    	rpc.toolboxManager.upgradable(function(result, exception) {
+    		if (exception) {
                 Ext.MessageBox.alert(i18n._("Failed"), exception.message);
                 return;
             }
-            var currentLocation = window.location;
-            var query = result;
-            query += "&host=" + currentLocation.hostname;
-            query += "&port=" + currentLocation.port;
-            query += "&protocol=" + currentLocation.protocol.replace(/:$/, "");
-            query += "&action=browse";
-            query += "&libitem=" + this.libItem.name;
-
-            var url = "../library/launcher?" + query;
-            var iframeWin = main.getIframeWin();
-            iframeWin.show();
-            iframeWin.setTitle("");
-            window.frames["iframeWin_iframe"].location.href = url;
-        }.createDelegate(this));
+            var upgradeList=result;
+            if(upgradeList.length>0 || true) { //do not test upgrade list yet
+            	//main.setUpgrade(true)
+            	Ext.MessageBox.alert(i18n._("Failed"), "Upgrades are available, please click Upgrade button in Config panel.");
+            } else {
+                rpc.adminManager.generateAuthNonce(function(result, exception) {
+                    if (exception) {
+                        Ext.MessageBox.alert(i18n._("Failed"), exception.message);
+                        return;
+                    }
+                    var currentLocation = window.location;
+                    var query = result;
+                    query += "&host=" + currentLocation.hostname;
+                    query += "&port=" + currentLocation.port;
+                    query += "&protocol=" + currentLocation.protocol.replace(/:$/, "");
+                    query += "&action=browse";
+                    query += "&libitem=" + this.libItem.name;
+        
+                    var url = "../library/launcher?" + query;
+                    var iframeWin = main.getIframeWin();
+                    iframeWin.show();
+                    iframeWin.setTitle("");
+                    window.frames["iframeWin_iframe"].location.href = url;
+                }.createDelegate(this));
+            }
+    	}.createDelegate(this));
+    	
     },
     // install node / uninstall App
     installNodeFn : function(e) {
@@ -1069,11 +1082,21 @@ Ung.MessageManager = {
         }
     	   var messageQueue=result;
     	   if(messageQueue.messages.list!=null && messageQueue.messages.list.length>0) {
-
     	   	   var hasNodeInstantiated=false;
     	       for(var i=0;i<messageQueue.messages.list.length;i++) {
     	       	   var msg=messageQueue.messages.list[i];
                     if (msg.javaClass.indexOf("MackageInstallRequest") >= 0) {
+                        var policy=null;
+                        if (!msg.mackageDesc.service && !msg.mackageDesc.util && !msg.mackageDesc.core) {
+                            policy = rpc.currentPolicy;
+                        }
+
+                    	rpc.toolboxManager.installAndInstantiate(function(result, exception) {
+                            if (exception) {
+                                Ext.MessageBox.alert(i18n._("Failed"), exception.message);
+                                return;
+                            }
+                        }.createDelegate(this),msg.mackageDesc.name, policy);
                         //Ung.MoveFromStoreToToolboxThread.process(msg.mackageDesc);
                     } else if (msg.javaClass.indexOf("MackageUpdateExtraName") >= 0) {
 

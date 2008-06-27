@@ -408,19 +408,20 @@ Ung.Main.prototype = {
         	}
 			rpc.nodeManager.instantiate(function (result, exception) {
 				if(exception) { Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}
-				var instance = result;
-		        rpc.toolboxManager.getRackView(function (result, exception) {
-                    if(exception) { Ext.MessageBox.alert(i18n._("Failed"),exception.message);
-                        return;
-                    }
-                    rpc.rackView=result;
-                    var instance=this;
-                    var node=main.createNode(instance.tid, instance.mackageDesc, rpc.rackView.statDescs.map[instance.tid.id]);
-                    main.nodes.push(node);
-                    main.addNode(node);
-                    main.updateSeparator();
-                    main.buildApps();
-                }.createDelegate(instance), rpc.currentPolicy);
+//This happens now on node instantiate                				
+//				var instance = result;
+//		        rpc.toolboxManager.getRackView(function (result, exception) {
+//                    if(exception) { Ext.MessageBox.alert(i18n._("Failed"),exception.message);
+//                        return;
+//                    }
+//                    rpc.rackView=result;
+//                    var instance=this;
+//                    var node=main.createNode(instance.tid, instance.mackageDesc, rpc.rackView.statDescs.map[instance.tid.id]);
+//                    main.nodes.push(node);
+//                    main.addNode(node);
+//                    main.updateSeparator();
+//                    main.buildApps();
+//                }.createDelegate(instance), rpc.currentPolicy);
 
 			}.createDelegate(this), mackageDesc.name, policy);
 		}
