@@ -216,7 +216,7 @@ abstract class ArgonHook implements Runnable
 
                     /* Call the raze method for each session */
                 } catch ( Exception e ) {
-                    logger.error( "Exception inside argon hook: " + sessionGlobalState, e );
+                    logger.error( "Exception executing argon hook: " + sessionGlobalState, e );
                 }
 
                 if ( logger.isDebugEnabled())
@@ -237,8 +237,6 @@ abstract class ArgonHook implements Runnable
                     /* Just in case */
                     logger.warn( "exception debugging invalid netcap interface: ", exn );
                 }
-            } else if ( message.startsWith( "netcap_interface_dst_intf" )) {
-                logger.warn( "Unable to determine the outgoing interface." );
             } else {
                 logger.error( "Exception executing argon hook:", e );
             }

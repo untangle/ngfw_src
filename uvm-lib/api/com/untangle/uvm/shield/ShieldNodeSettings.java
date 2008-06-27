@@ -31,9 +31,17 @@
  * to do so, delete this exception statement from your version.
  */
 
-package com.untangle.uvm.util;
+package com.untangle.uvm.shield;
 
-public interface Worker
+import com.untangle.uvm.node.IPaddr;
+
+public interface ShieldNodeSettings
 {
-    public void work() throws InterruptedException;
+    public boolean isLive();
+    
+    public IPaddr getAddress();
+
+    public IPaddr getNetmask();
+
+    public float getDivider();
 }

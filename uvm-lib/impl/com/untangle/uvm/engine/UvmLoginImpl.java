@@ -30,7 +30,6 @@ import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.security.LoginFailureReason;
 import com.untangle.uvm.security.LoginSession;
 import com.untangle.uvm.security.PasswordUtil;
-import com.untangle.uvm.security.RegistrationInfo;
 import com.untangle.uvm.security.User;
 import com.untangle.uvm.security.UvmLogin;
 import com.untangle.uvm.security.UvmPrincipal;
@@ -77,20 +76,13 @@ class UvmLoginImpl implements UvmLogin
         return LocalUvmContextFactory.context().isActivated();
     }
 
-    public boolean isRegistered()
-    {
-        return LocalUvmContextFactory.context().isRegistered();
-    }
-
-    // Key may be null.
-    public RemoteUvmContext activationLogin(String key, RegistrationInfo regInfo)
+    public RemoteUvmContext activationLogin(String key)
         throws FailedLoginException
     {
-	// This is the new way.
-        if (isRegistered())
+        if (isActivated())
             throw new FailedLoginException("Product has already been activated");
 
-        boolean success = LocalUvmContextFactory.context().activate(key, regInfo);
+        boolean success = LocalUvmContextFactory.context().activate(key);
         if (!success)
             throw new FailedLoginException("Activation key invalid");
 

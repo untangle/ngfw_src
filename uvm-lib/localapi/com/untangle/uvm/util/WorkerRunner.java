@@ -73,12 +73,8 @@ public class WorkerRunner
 
         logger.debug( "Starting the worker: " + this.worker );
 
-
-        worker.start();
-
         this.thread = localContext.newThread( new RunnerThread());
-
-    thread.start();
+        thread.start();
     }
 
     public synchronized void stop()
@@ -121,8 +117,6 @@ public class WorkerRunner
                 continue;
             }
         }
-
-        worker.stop();
     }
 
     private class RunnerThread implements Runnable

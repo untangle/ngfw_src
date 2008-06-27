@@ -42,6 +42,7 @@ import com.untangle.uvm.client.RemoteUvmContext;
 import com.untangle.uvm.license.LocalLicenseManager;
 import com.untangle.uvm.license.RemoteLicenseManager;
 import com.untangle.uvm.localapi.LocalIntfManager;
+import com.untangle.uvm.localapi.LocalShieldManager;
 import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.RemoteLoggingManager;
 import com.untangle.uvm.logging.SyslogManager;
@@ -52,7 +53,6 @@ import com.untangle.uvm.networking.ping.RemotePingManager;
 import com.untangle.uvm.node.LocalNodeManager;
 import com.untangle.uvm.policy.LocalPolicyManager;
 import com.untangle.uvm.portal.BasePortalManager;
-import com.untangle.uvm.security.RegistrationInfo;
 import com.untangle.uvm.security.RemoteAdminManager;
 import com.untangle.uvm.toolbox.RemoteToolboxManager;
 import com.untangle.uvm.toolbox.RemoteUpstreamManager;
@@ -141,6 +141,12 @@ public interface LocalUvmContext
     LocalNetworkManager networkManager();
 
     RemotePingManager pingManager();
+
+    /** Get the <code>LocalShieldManager</code> singleton.
+     *
+     * @return the ShieldManager.
+     */
+    LocalShieldManager localShieldManager();
 
     RemoteReportingManager reportingManager();
 
@@ -275,13 +281,6 @@ public interface LocalUvmContext
     boolean isActivated();
 
     /**
-     * Returns true if the product has been registered, false otherwise
-     *
-     * @return a <code>boolean</code> value
-     */
-    boolean isRegistered();
-
-    /**
      * Return true if running in a development environment.
      *
      * @return a <code>boolean</code> true if in development.
@@ -303,15 +302,15 @@ public interface LocalUvmContext
     boolean isInsideVM();
 
     /**
-     * Activates the Untangle Server using the given key and registration info.
-     * Returns true if the activation succeeds, false otherwise (if the key is
+     * Activates the Untangle Server using the given key.  Returns
+     * true if the activation succeeds, false otherwise (if the key is
      * bogus).
      *
      * @param key a <code>String</code> giving the key to be activated
      * under
      * @return a <code>boolean</code> true if the activation succeeded
      */
-    boolean activate(String key, RegistrationInfo regInfo);
+    boolean activate(String key);
 
     boolean runTransaction(TransactionWork tw);
 

@@ -243,7 +243,7 @@ public class Main
 
         ClassLoader oldCl = Thread.currentThread().getContextClassLoader();
         try {
-            // Entering UVM ClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            // Entering UVM ClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             Thread.currentThread().setContextClassLoader(mcl);
 
             uvmContext = (UvmContextBase)mcl

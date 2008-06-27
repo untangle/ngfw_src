@@ -266,7 +266,7 @@ class RemoteAdminManagerImpl implements RemoteAdminManager
         try {
             FileWriter writer = new FileWriter(regFile);
             writer.write("regKey=");
-            writer.write(uvmContext.getPopID());
+            writer.write(uvmContext.getActivationKey());
             writer.write("&version=");
             writer.write(uvmContext.version());
             writer.write("&");

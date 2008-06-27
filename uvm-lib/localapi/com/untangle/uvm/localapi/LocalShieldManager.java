@@ -31,9 +31,21 @@
  * to do so, delete this exception statement from your version.
  */
 
-package com.untangle.uvm.util;
+package com.untangle.uvm.localapi;
 
-public interface Worker
+import java.util.Set;
+
+import com.untangle.uvm.ArgonException;
+import com.untangle.uvm.node.RemoteShieldManager;
+import com.untangle.uvm.shield.ShieldNodeSettings;
+
+public interface LocalShieldManager extends RemoteShieldManager
 {
-    public void work() throws InterruptedException;
+    /* Toggle whether or not the shield is enabled */
+    public void setIsShieldEnabled( boolean isEnabled );
+
+    /* Set the shield node rules */
+    public void setShieldNodeSettings( Set<ShieldNodeSettings> shieldNodeSettings ) 
+        throws ArgonException;
 }
+

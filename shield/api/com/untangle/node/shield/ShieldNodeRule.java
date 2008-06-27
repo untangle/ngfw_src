@@ -32,6 +32,7 @@ import org.hibernate.annotations.Type;
 import com.untangle.uvm.node.IPaddr;
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.Rule;
+import com.untangle.uvm.shield.ShieldNodeSettings;
 
 
 /**
@@ -42,7 +43,7 @@ import com.untangle.uvm.node.Rule;
  */
 @Entity
 @Table(name="n_shield_node_rule", schema="settings")
-public class ShieldNodeRule extends Rule 
+public class ShieldNodeRule extends Rule implements ShieldNodeSettings
 {
     private static final long serialVersionUID = -6928365798856031269L;
 

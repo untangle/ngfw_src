@@ -14,7 +14,8 @@ require 'optparse'
 # constants
 
 # bits
-VERSIONS = { :hardware => 1,
+VERSIONS = { :old      => 0,
+             :hardware => 1,
              :cd       => 2,
              :lite     => 3,
              :ubuntu   => 9 }
@@ -108,12 +109,16 @@ def getPackageVersion(name)
 end
 
 def getVersion
-  if getPackageVersion('untangle-gateway').nil? then
-    :lite
-  elsif getPackageVersion('untangle-hardware-support').nil?
-    :cd
+  if getPackageVersion('untangle-vm') =~ /^5\.3/
+    if getPackageVersion('untangle-gateway-light').nil? then
+      :lite
+    elsif getPackageVersion('untangle-system-config').nil?
+      :cd
+    else
+      :hardware
+    end
   else
-    :hardware
+    :old
   end
 end
 

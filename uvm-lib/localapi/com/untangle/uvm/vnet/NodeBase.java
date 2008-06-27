@@ -230,8 +230,7 @@ public abstract class NodeBase implements Node
     {
         if (NodeState.LOADED == runState
             || NodeState.DESTROYED == runState) {
-            logger.warn("disabling in: " + runState);
-            return;
+            throw new IllegalStateException("disabling in: " + runState);
         } else if (NodeState.RUNNING == runState) {
             stop(false);
         }
@@ -302,8 +301,7 @@ public abstract class NodeBase implements Node
     {
         if (NodeState.LOADED == runState
             || NodeState.DESTROYED == runState) {
-            logger.warn("enabling in: " + runState);
-            return;
+            throw new IllegalStateException("enabling in: " + runState);
         } else if (NodeState.RUNNING == runState
                    || NodeState.INITIALIZED == runState) {
             // We're already fine.
@@ -417,8 +415,7 @@ public abstract class NodeBase implements Node
         throws NodeException, IllegalStateException
     {
         if (NodeState.LOADED != runState) {
-            logger.warn("Init called in state: " + runState);
-            return;
+            throw new IllegalStateException("Init called in state: " + runState);
         }
 
         try {
@@ -435,8 +432,8 @@ public abstract class NodeBase implements Node
     private void start(boolean syncState) throws NodeStartException
     {
         if (NodeState.INITIALIZED != getRunState()) {
-            logger.warn("Start called in state: " + getRunState());
-            return;
+            throw new IllegalStateException("Start called in state: "
+                                            + getRunState());
         }
 
         for (NodeBase parent : parents) {
@@ -469,8 +466,8 @@ public abstract class NodeBase implements Node
         throws NodeStopException, IllegalStateException
     {
         if (NodeState.RUNNING != getRunState()) {
-            logger.warn("Stop called in state: " + getRunState());
-            return;
+            throw new IllegalStateException("Stop called in state: "
+                                            + getRunState());
         }
 
         try {
@@ -509,8 +506,7 @@ public abstract class NodeBase implements Node
         if (NodeState.INITIALIZED != runState
             && NodeState.LOADED != runState
             && NodeState.DISABLED != runState) {
-            logger.warn("Destroy in state: " + runState);
-            return;
+            throw new IllegalStateException("Destroy in state: " + runState);
         }
 
         try {

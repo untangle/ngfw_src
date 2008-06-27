@@ -81,7 +81,7 @@ Description: The Untangle Email Decoder
 
 Package: untangle-node-shield
 Architecture: all
-Depends: untangle-vm, untangle-shield
+Depends: untangle-vm
 Conflicts: airgap-transform
 Provides: airgap-transform
 Replaces: airgap-transform

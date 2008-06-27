@@ -1,0 +1,398 @@
+#! /bin/bash
+
+## A few constants
+#IPTABLES="/sbin/iptables"
+IPTABLES=iptablesDbg
+
+EBTABLES="/sbin/ebtables"
+#EBTABLES=ebtablesDbg
+
+RT_TABLE_NAME_PREFIX="untangle-"
+
+## Expecte bridge configuration.
+BRIDGE_CFG_FILE=@UVM_CONF@/bridge_cfg
+
+## All of the custom rules start in the 16,000 range.
+RULE_PRIORITY_BASE=16
+
+IP_CMD=ip
+
+## don't print out debug messages in the production environment
+LOG_DEBUG=true
+
+if [ "x" != "x@PREFIX@" ] ; then
+    ## Printout debuging info in the non-production environment
+    LOG_DEBUG=logDebug
+fi
+
+# if necessary
+LOG_DEBUG=logDebug
+
+# always put tune first, so local traffic can't get stuck in queues when flushing.
+TABLE_LIST="tune nat mangle filter raw"
+EBTABLE_LIST="nat filter broute"
+CHAIN_MARKINTF="markintf"
+CHAIN_GUARDS="guards"
+CHAIN_ANTISUB="antisub"
+CHAIN_INTERCEPT="intercept"
+CHAIN_LIBERATION="liberation"
+
+## These are all for the mangle prerouting rules
+CHAINS_ORDER="${CHAIN_MARKINTF} ${CHAIN_GUARDS} ${CHAIN_ANTISUB} ${CHAIN_INTERCEPT} "
+
+## Invalid address and netmask used when dhcp loading fails.
+BOGUS_ADDRESS_BASE="169.254.210.5"
+BOGUS_NETMASK="255.255.0.0"
+
+## Base SYSFS path for interfaces
+SYSFS_INTERFACE_PATH="/sys/class/net"
+
+## Utility functions for the mv-networking scripts, use t_ flag for temporary variables, this
+## way global variables like bridge do not get overriden in functions.
+
+function joinLines() {
+    sed -e '{:start;N;s/\n/ /g;t start}'
+}
+
+## The script runs in two phases, generation is the process of creating the current configuration
+## The "get" functions are used to query the configuration created in the generate phase.
+
+function generateConfiguration() {
+    generateBridges
+    generateInterfaces
+}
+
+function generateBridges() {
+    bridgeList=""
+    for t_bridge in `getAllBridges` ; do
+        generateBridge $t_bridge
+        bridgeList="${bridgeList} ${t_bridge}"
+    done
+}
+
+function generateBridge() {
+    local t_bridge
+    local t_name
+    local t_addresses
+    local t_interfaces
+
+    t_bridge=$1
+
+    t_name="${t_bridge}"
+    t_addresses=`generateAddresses ${t_bridge}`
+    t_interfaces=`bridgeInterfaceList ${t_bridge}`
+    
+    for t_intf in ${t_interfaces} ; do
+        ## Set the bridge identifier for each interface
+        eval ${t_intf}_bridge=\"$t_bridge\"
+    done
+
+    eval ${t_bridge}_name="${name}"
+    eval ${t_bridge}_addresses=\"${t_addresses}\"
+    eval ${t_bridge}_interfaces=\"${t_interfaces}\"
+    
+## DBG    echo "Generated configuration for ${t_bridge}" # XDBG
+## DBG    echo "name: ${t_name}" # XDBG
+## DBG    echo "addresses: ${t_addresses}" # XDBG
+## DBG    echo "interfaces: ${t_interfaces}" # XDBG
+}
+
+function generateInterfaces() {
+## DBG    echo "Generating interfaces" # XDBG
+    interfaceList=""
+
+    for t_intf in `ifconfig | grep -v br0 | grep -v lo | grep -v '^ ' | grep -v '^$' | awk '{ print $1 }' | grep -v :`; do
+        ### Check if the interface is in a bridge
+        if [ -z `getBridge ${t_intf}` ]; then
+            t_name="${t_intf}"
+            t_addresses=`generateAddresses ${t_intf}`
+
+## DBG      echo "name: ${name}"  # XDBG
+## DBG      echo "addresses: ${addresses}" # XDBG
+            if [ -n "${t_addresses}" ]; then
+                eval ${t_intf}_name="${t_name}"
+                eval ${t_intf}_addresses=\"${t_addresses}\"
+                interfaceList="${interfaceList} ${t_intf}"
+            fi
+        fi
+    done
+}
+
+## print the address for a particular interface.  This will return aliases
+## also, unless the input ($1) is specific.
+## EG. br0=1.2.3.4/255.255.255.0, br0:0=10.0.0.1/255.0.0.0
+## getAddresses br0 => "1.2.3.4/255.255.255.0 10.0.0.1/255.0.0.0"
+## getAddresses br0:0 => "1.2.3.4/255.255.255.0"
+function generateAddresses() {
+## DBG    echo "generateAddresses $1"
+    ifconfig | grep -A 4 $1 | awk '/inet/ { print $2 "/" $4 }' | sed -e 's/addr://' -e 's/Mask://' | grep -v "^$" | joinLines
+}
+
+function getAllInterfaces() {
+    ls ${SYSFS_INTERFACE_PATH} | grep -v '\(lo\|dummy\|tun\)'
+}
+
+## Returns all of the interfaces that participate in a bridge
+## Get a list of all of the interfaces in a bridge
+function bridgeInterfaceList() {
+    ls ${SYSFS_INTERFACE_PATH}/${1}/brif/ 2> /dev/null
+}
+
+function getAddresses() {
+    if [ -n "$1" ]; then
+        eval echo \$${1}_addresses | sed 's/\/[^ ]*//g'
+    fi
+}
+
+function getMACAddress()
+{
+    local t_intf=$1
+    if [ -n "${t_intf}" ]; then
+        cat "${SYSFS_INTERFACE_PATH}/${t_intf}/address"
+    fi
+}
+
+function getNetmasks() {
+    if [ -n "$1" ]; then
+        eval echo \$${1}_addresses | sed 's/[^ /]*\///g'
+    fi
+}
+
+## Return the bridge that an interface($1) participates in or the empty string if it doesn't
+function getBridge() {
+    eval echo \$${1}_bridge
+}
+
+function getBridgeAddresses() {    
+    getAddresses `getBridge $1`
+}
+
+## Returns the "actual" address, this means the address of the bridge the interface is in(if it in
+## in one) or the address of the interface itself if it is not.
+function getActualAddresses() {
+    local l_interface=$1
+
+    if [ -z "`getBridge ${l_interface}`" ]; then
+        getAddresses ${l_interface}
+    else
+        getBridgeAddresses ${l_interface}
+    fi
+}
+
+function getBridgeNetmasks() {
+    getNetmasks `getBridge $1`
+}
+
+## $1 is the interface to check for.
+function isDhcpRunning() {
+    if [ -n $1 ]; then
+        ps aux | grep dhclient | grep $1 | grep -v grep
+    fi
+}
+
+function isInteger() {
+    local t_integer=$1
+    
+    if [ -z "${t_integer}" ]; then return; fi
+    
+    ## If the number is equal or not equal to zero, it is an integer
+    ## non-integers return false for both statements.
+    if [ 0 -ne "${t_integer}" -o 0 -eq "${t_integer}" ] > /dev/null ; then
+        echo "true"
+    fi
+}
+
+## Echos a non-empty value if this is a number
+function isValidIntfIndex() {
+    local t_intf=$1
+
+    ## First check if it is a number
+    if [ -z "`isInteger ${t_intf}`" ]; then
+        return
+    fi
+    
+    ## Interface is from 1 to 16
+    if [ 0 -lt "${t_intf}" -a "${t_intf}" -lt 16 ]; then
+        echo "true"
+    fi
+}
+
+function dhcpInterface() {
+    local t_interface=$1
+    local t_intfIndex=$2
+    local t_fakeAddress="${BOGUS_ADDRESS_BASE}${t_intfIndex}"
+
+    ${LOG_DEBUG} "Renewing interface ${t_interface}, index ${t_intfIndex}"
+
+    if [ -z "${t_interface}" ] || [ -z "${t_intfIndex}" ]; then
+        echo "[ERROR]: Interface or interface index is empty"
+        return
+    fi
+
+    killDhcp
+
+    dhclient ${t_interface}
+
+    if [ $? != 0 ]; then
+        echo "Unable to update interface ${t_interface}, going to fake address: ${t_fakeAddress}"
+        ifconfig ${t_interface} ${t_fakeAddress} netmask ${BOGUS_NETMASK}
+    fi
+}
+
+function killDhcp() {
+    echo "[DEBUG] Killing dhcp"
+
+    killall pump
+    killall dhclient
+    sleep .5
+    killall -KILL dhclient
+}
+
+function bridgeContainsInterface() {
+    local l_bridge=$1
+    local l_interface=$2
+
+    if [ -h "${SYSFS_INTERFACE_PATH}/${l_bridge}/brif/${l_interface}" ]; then
+        echo "true"
+    fi
+}
+
+function getAllBridges() {
+    find  ${SYSFS_INTERFACE_PATH} -name 'bridge_id' | sed -e 's/\/sys\/class\/net\///' \
+        -e 's/\.\///' -e 's/\/.*//'
+}
+
+function deleteAllBridges() {
+    local t_bridge
+    local l_bridgeList=`getAllBridges`
+    echo "Deleting all bridges: ${l_bridgeList}"
+    for t_bridge in ${l_bridgeList}; do 
+        deleteBridge ${t_bridge}
+    done
+}
+
+## Prints out anything if the bridges are not configured.
+## Designed this way so errors print a message which triggers
+## bridges being reconfigured.
+function areBridgesUnconfigured() {
+    if [ ! -f "${BRIDGE_CFG_FILE}" ]; then
+        echo "true";
+        return;
+    fi
+    
+    ## Remove any empty lines
+    sed -i '/^$/d' ${BRIDGE_CFG_FILE}
+
+    ## Sort the file, it works in place because it loads the data into memory.
+    sort ${BRIDGE_CFG_FILE} -o ${BRIDGE_CFG_FILE}
+
+    ## Dump out a description of the bridge
+    {
+        ## Dump all of the interfaces and the bridge they are in.
+        find ${SYSFS_INTERFACE_PATH} -path '*/brif/*';
+        
+        ## Dump all of the interfaces, excluding the interfaces that are not
+        ## interesting
+        find ${SYSFS_INTERFACE_PATH} -maxdepth 1 -mindepth 1 | grep -v '\(lo\|dummy\|tun\|br\|tap\|ppp\|bpq\|yam\|shaper\|sdl\|scc\|eql\|bond\|bcsh\|bcsf\|bcp\|bce\)'
+        
+        ## Remove the prefixes and jibberish
+    } |  sed -e "s|${SYSFS_INTERFACE_PATH}/||g" -e 's|/brif/| |' | sort |
+    
+    ## Compare the bridge status file and the output, if they don't match (diff returns 1, echo true).
+    diff -q - ${BRIDGE_CFG_FILE} > /dev/null || echo "true"
+}
+
+function deconfigureAllInterfaces() {
+    killDhcp
+    local l_interface
+    local l_interfaceList=`getAllInterfaces`
+    echo "Deconfiguring all interfaces: ${l_interfaceList}"
+    for l_interface in ${l_interfaceList}; do
+        ifconfig ${l_interface} 0.0.0.0 -promisc
+    done
+
+    l_interfaceList=`ifconfig -a | \grep '^[^ ]' | awk '{ print $1 }' | \grep '\(br\|eth\)'`
+    echo "Deconfiguring all interfaces, second pass: ${l_interfaceList}"
+    ## This is a safety measure to delete aliases.
+    for l_interface in ${l_interfaceList} ; do 
+        ifconfig ${l_interface} 0.0.0.0 -promisc
+    done
+    
+
+    ## Just in case
+    ifconfig lo 127.0.0.1 netmask 255.0.0.0
+}
+
+## Thisjust removes all of the interfaces from the bridge, 
+## Removing and adding a bridge creates a new index
+function deleteBridge() {
+    local l_bridge=$1
+    local l_port
+    if [ -n "${l_bridge}" ]; then
+        echo "Deleting all interfaces in bridge '${l_bridge}'"
+        ifconfig ${l_bridge} down
+        for l_port in `bridgeInterfaceList ${l_bridge}`; do
+            brctl delif ${l_bridge} ${l_port}
+            ifconfig ${l_port} 0.0.0.0
+            ifconfig ${l_port} down
+        done
+        brctl delbr ${l_bridge}
+    fi
+}
+
+## Use this function to echo the iptables command to standard out for logging and execute it
+## at the same time
+function iptablesDbg() {
+    echo /sbin/iptables $@
+    /sbin/iptables $@
+}
+
+function ebtablesDbg() {
+    echo /sbin/ebtables $@
+    /sbin/ebtables $@
+}
+
+
+function addGateway() {
+    local t_gateway=$1
+    
+    if [ "${t_gateway}x" != "x" ] && [ "${t_gateway}x" != "0.0.0.0x" ]; then
+        route add default gw ${t_gateway}
+    fi
+}
+
+function deleteGateways() {
+    ${LOG_DEBUG} "Deleting all of the default route(s)"
+    ${IP_CMD} route show | grep '^default' | sed  -e '/^default/d' -e 's| dev.*$||g' \
+        -e 's|\(.*\)|ip route del \1|' | sh
+}
+
+function logDebug() {
+    echo $@
+}
+
+## Flush all of the iptables rules
+function flush() {
+    local t_table
+
+    ## Always flush intercepting first to avoid a few errant packets flying in unmarked.
+    ${IPTABLES} -t mangle -F ${CHAIN_INTERCEPT} 2> /dev/null
+
+    ${IPTABLES} -t filter -F ${CHAIN_LIBERATION} 2> /dev/null
+
+    for table in ${TABLE_LIST}; do 
+        ${IPTABLES} -t ${table} -F
+    done
+
+    ## Remove all of the sub chains
+    for chain in ${CHAINS_ORDER} ; do
+        ${IPTABLES} -t mangle -X ${chain} 2> /dev/null
+    done
+
+    ${IPTABLES} -t filter -X ${CHAIN_LIBERATION} 2> /dev/null
+
+    ## flush all of the ebtables 
+    for t_table in ${EBTABLE_LIST} ; do ${EBTABLES} -t ${t_table} -F ; done
+}
+
+

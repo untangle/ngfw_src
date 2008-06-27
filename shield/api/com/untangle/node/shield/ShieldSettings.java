@@ -21,6 +21,7 @@ package com.untangle.node.shield;
 import java.io.Serializable;
 import java.util.LinkedHashSet;
 import java.util.Set;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
@@ -49,7 +50,7 @@ public class ShieldSettings implements Serializable
 
     private Long id;
     private Tid tid;
-
+    
     private ShieldBaseSettings baseSettings = new ShieldBaseSettings();
 
     private Set<ShieldNodeRule> shieldNodeRules = new LinkedHashSet<ShieldNodeRule>();
@@ -99,7 +100,7 @@ public class ShieldSettings implements Serializable
     @OneToMany(targetEntity=ShieldNodeRule.class, cascade=CascadeType.ALL,
                fetch=FetchType.EAGER)
     @JoinColumn(name="settings_id")
-    public Set<ShieldNodeRule> getShieldNodeRules()
+    public Set getShieldNodeRules()
     {
         if (null == this.shieldNodeRules) {
             this.shieldNodeRules = new LinkedHashSet<ShieldNodeRule>();
@@ -108,7 +109,7 @@ public class ShieldSettings implements Serializable
         return this.shieldNodeRules;
     }
 
-    public void setShieldNodeRules(Set<ShieldNodeRule> shieldNodeRules)
+    public void setShieldNodeRules(Set shieldNodeRules)
     {
         if (null == shieldNodeRules) {
             shieldNodeRules = new LinkedHashSet<ShieldNodeRule>();
@@ -118,18 +119,18 @@ public class ShieldSettings implements Serializable
     }
 
     @Embedded
-    public ShieldBaseSettings getBaseSettings() {
+	public ShieldBaseSettings getBaseSettings() {
         if (null != baseSettings) {
             baseSettings.setShieldNodeRulesLength(null == shieldNodeRules ? 0 : shieldNodeRules.size());
         }
+        
+		return baseSettings;
+	}
 
-        return baseSettings;
-    }
-
-    public void setBaseSettings(ShieldBaseSettings baseSettings) {
-        if (null == baseSettings) {
-            baseSettings = new ShieldBaseSettings();
-        }
-        this.baseSettings = baseSettings;
-    }
+	public void setBaseSettings(ShieldBaseSettings baseSettings) {
+		if (null == baseSettings) {
+			baseSettings = new ShieldBaseSettings();
+		}
+		this.baseSettings = baseSettings;
+	}
 }

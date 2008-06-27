@@ -25,11 +25,6 @@ log() {
   echo "*** `date -Iseconds` $1" >> $LOGFILE
 }
 
-cleanAndExit() {
-  ps auxwww | grep "nc localhost $2" | awk '{print $2}' | xargs kill -9 2> /dev/null
-  exit $1
-}
-
 ##########
 # main
 PORT=$1
@@ -56,7 +51,7 @@ while [ $failures -lt $MAX_TRIES ] ; do
     # So in both cases we want to exit with RC=0.
     if ! gotJob $pid ; then
       echo success
-      cleanAndExit 0 $PORT
+      exit 0 
     fi 
   done
 
@@ -68,4 +63,4 @@ while [ $failures -lt $MAX_TRIES ] ; do
   log "failure #$failures on port $PORT"
 done
 
-cleanAndExit 1 $PORT # we failed $MAX_TRIES in a row, exit with RC=1
+exit 1 # we failed $MAX_TRIES in a row, exit with RC=1

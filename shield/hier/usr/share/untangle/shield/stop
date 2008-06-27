@@ -1,8 +1,0 @@
-#!/bin/dash
-
-mkdir -p @PREFIX@/var/log/shield
-exec >> @PREFIX@/var/log/shield/monitor.log 2>&1
-
-/etc/init.d/untangle-shield stop
-
-echo "[`date`] Stopped the shield."

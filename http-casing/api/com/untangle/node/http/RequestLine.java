@@ -81,6 +81,8 @@ public class RequestLine implements Serializable
     private HttpRequestEvent httpRequestEvent; // Filled in after creation time.
     private Date timeStamp = new Date();
 
+    private final Logger logger = Logger.getLogger(getClass());
+
     // constructors ------------------------------------------------------------
 
     public RequestLine() { }
@@ -251,7 +253,7 @@ public class RequestLine implements Serializable
         try {
             uriStr = new String(b, "UTF-8");
         } catch (UnsupportedEncodingException exn) {
-            Logger.getLogger(getClass()).warn("Could not decode URI", exn);
+            logger.warn("Could not decode URI", exn);
             uriStr = new String(b);
         }
 
@@ -260,7 +262,7 @@ public class RequestLine implements Serializable
         try {
             return new URI(uriStr);
         } catch (URISyntaxException exn) {
-            Logger.getLogger(getClass()).warn("ignoring bad uri: " + uriStr, exn);
+            logger.warn("ignoring bad uri: " + uriStr, exn);
             try {
                 return new URI("/");
             } catch (URISyntaxException e) {

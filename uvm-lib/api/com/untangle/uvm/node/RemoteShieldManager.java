@@ -31,9 +31,12 @@
  * to do so, delete this exception statement from your version.
  */
 
-package com.untangle.uvm.util;
+package com.untangle.uvm.node;
 
-public interface Worker
+import java.net.InetAddress;
+
+public interface RemoteShieldManager
 {
-    public void work() throws InterruptedException;
+    /* Reload the JSON configuration file and reconfigure the shield */
+    public void shieldReconfigure();
 }

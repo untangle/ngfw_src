@@ -14,7 +14,11 @@ if [ -f "@UVM_HOME@/activation.key" ]; then
 
     /usr/share/untangle/reports/update-reports >> @UVM_LOG@/report.log 2>&1
 
-    @UVM_HOME@/bin/utregister
+    if [ -f "$REGINFO" ]; then
+        if [ ! -f "$REGDONE" -o "$REGDONE" -ot "$REGINFO" ]; then
+            @UVM_HOME@/bin/utregister
+        fi
+    fi
 fi
 
 exit 0
