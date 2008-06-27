@@ -102,9 +102,9 @@ def readExistingActivationKey
 end
 
 def getPackageVersion(name)
-  lines = `dpkg -l #{name} 2> /dev/null`.split(/\n/)
-  line = lines.grep(/^ii/)[0]
-  return line.nil? ? nil : line.split[2]
+  line = `dpkg-query --showformat='${Version}' -W #{name} 2> /dev/null`
+  version = line.empty? ? nil : line
+  return version
 end
 
 def getVersion
