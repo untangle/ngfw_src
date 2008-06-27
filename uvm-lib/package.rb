@@ -31,7 +31,7 @@ jts << (jt = JarTarget.build_target(uvm_lib, Jars::Base, 'api', ["./uvm-lib/api"
 BuildEnv::SRC.installTarget.install_jars(jt, uvm_lib.getWebappDir('webstart'), nil, true)
 
 ## Local API
-jts << JarTarget.build_target(uvm_lib, Jars::Base + [uvm_lib['api']], 'localapi', "./uvm-lib/localapi")
+jts << JarTarget.build_target(uvm_lib, Jars::Base + [uvm_lib['api'], ThirdpartyJar.get('../pkgs/jabsorb-1.2.2/jabsorb-1.2.2.jar')], 'localapi', "./uvm-lib/localapi")
 
 ## Reporting
 deps  = Jars::Base + Jars::Jasper + Jars::JFreeChart + [uvm_lib['api']]
@@ -69,7 +69,7 @@ deps = %w(
            Ajax/jars/jstl.jar
            Ajax/jars/standard.jar
          ).map { |f| Jars.downloadTarget(f) }
-deps << ThirdpartyJar.get('../pkgs/jabsorb-1.2.2/jabsorb-1.2.2.jar');
+deps << ThirdpartyJar.get('../pkgs/jabsorb-1.2.2/jabsorb-1.2.2.jar')
 
 deps << taglib
 
