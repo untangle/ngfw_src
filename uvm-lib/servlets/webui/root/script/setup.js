@@ -105,7 +105,9 @@ Ung.SetupWizard.Settings = Ext.extend(Object, {
 
     saveSettings : function( handler )
     {
-        rpc.adminManager.setAdminSettings( Ung.SetupWizard.CurrentValues.users );
+        var pass = Ung.SetupWizard.PasswordUtil.encodePassword( "passwd", [ 0xD4, 0xEE, 0x5F, 0x47, 0x4E, 0x77, 0x25, 0x46 ] );
+        
+        alert( "Built the password: " + pass );
         handler();
     }
 });
@@ -806,14 +808,25 @@ Ung.SetupWizard.Complete = Ext.extend( Object, {
     }
 });
 
-Ung.SetupWizard.PasswordUtil = Ext.extend( Object, {
+Ung.SetupWizard.PasswordUtil = {
     /* Encode the password and return it as an array of bytes / ints */
-    encodePassword : function( password )
+    /* @param password Password to encode as a string.
+     * @param key Salt to append, this should be an array of 8 bytes.
+     */
+    encodePassword : function( password, key )
     {
+        if ( key.length != 8 ) throw "Invalid key length: " + key.length;
         
+        var keyString = "";
+        for ( var c = 0 ; c < key.length ; c++ ) keyString += String.fromCharCode( key[c] );
+        
+        var encoding = hex_md5( password + keyString );
+        
+        for ( var c = 0 ; c < key.length ; c++ ) encoding += key[c].toString( 16 );
+
+        return encoding;
     }
-    
-});
+};
 
 Ung.SetupWizard.TimeZoneStore = [];
 

@@ -63,10 +63,11 @@ public class UserSerializer extends AbstractSerializer
                 /* Calculate the password */
                 
                 byte[] password = u.getPassword();
-                JSONArray jsPassword = new JSONArray();
-                for ( byte b : password ) jsPassword.put( b );
                 
-                jsUser.put( "password", jsPassword );
+                StringBuilder sb  = new StringBuilder();
+                for ( byte b : password ) sb.append( String.format( "%02x", ( b + 256 ) % 256 ));
+                
+                jsUser.put( "password", sb.toString());
                 
                 return jsUser;
             } catch ( JSONException e ) {
@@ -118,11 +119,14 @@ public class UserSerializer extends AbstractSerializer
         try {
             String login = jsUser.getString( "login" );
             byte[] password = new byte[PASSWORD_LENGTH];
-            JSONArray jsPassword = (JSONArray)jsUser.get("password");
-            if ( jsPassword.length() != PASSWORD_LENGTH ) {
+            String jsPassword = jsUser.getString("password");
+            if ( jsPassword.length() !=  ( PASSWORD_LENGTH * 2 )) {
                 throw new UnmarshallException( "Invalid password length" );
             }
-            for ( int c = 0 ; c < PASSWORD_LENGTH ; c++ ) password[c] = (byte)jsPassword.getInt( c );
+            for ( int c = 0 ; c < PASSWORD_LENGTH ; c++ ) {
+                int b = Integer.valueOf( jsPassword.substring( 2*c, 2*c + 2 ), 16 );
+                password[c] = (byte)b;
+            }
             String name = jsUser.getString( "name" );
             boolean readOnly = jsUser.getBoolean( "readOnly" );
             returnValue = new User( login, password, name, readOnly );
@@ -134,6 +138,8 @@ public class UserSerializer extends AbstractSerializer
             returnValue.setNotes( jsUser.getString( "notes" ));
             returnValue.setSendAlerts( jsUser.getBoolean( "sendAlerts" ));
         } catch ( JSONException e ) {
+            throw new UnmarshallException( "Unable to unmarshall user", e );
+        } catch ( NumberFormatException e ) {
             throw new UnmarshallException( "Unable to unmarshall user", e );
         }
         

@@ -1,7 +1,5 @@
 #!/bin/sh
 
-echo "hello $1"
-
 mv $1/jabsorb-1.2.2-src/jabsorb-1.2.2 $1/jabsorb-1.2.2
 rmdir $1/jabsorb-1.2.2-src
 
