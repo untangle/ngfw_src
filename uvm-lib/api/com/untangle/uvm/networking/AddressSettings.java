@@ -202,6 +202,10 @@ public class AddressSettings implements Serializable, Validatable
      */
     public void setPublicAddress( String newValue ) throws ParseException
     {
+        /* This is the to fix fabsorb which serializes everything, even methods marked transient */
+        if ( newValue == null ) return;
+        if ( newValue.length() == 0 ) return;
+
         try {
             IPaddr address;
             String valueArray[] = newValue.split( ":" );

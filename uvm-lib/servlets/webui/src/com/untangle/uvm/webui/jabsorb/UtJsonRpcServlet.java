@@ -81,7 +81,6 @@ public class UtJsonRpcServlet extends JSONRPCServlet
                 b.registerSerializer(new TimeZoneSerializer());
                 b.registerSerializer(new MimeTypeSerializer());
                 b.registerSerializer(new RFC2253NameSerializer());
-//                b.registerSerializer(new UserSerializer());
                 // hibernate related serializers
                 b.registerSerializer(new LazyInitializerSerializer());
                 b.registerSerializer(new ExtendedListSerializer());

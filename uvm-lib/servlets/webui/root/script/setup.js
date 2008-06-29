@@ -32,7 +32,7 @@ Ung.SetupWizard.Welcome = Ext.extend(Object,
 Ung.SetupWizard.Settings = Ext.extend(Object, {
     constructor : function( config )
     {
-        var panel = new Ext.FormPanel({
+        this.panel = new Ext.FormPanel({
             defaultType : 'fieldset',
             defaults : { 
                 autoHeight : true,
@@ -51,7 +51,9 @@ Ung.SetupWizard.Settings = Ext.extend(Object, {
                 },{
                     inputType : 'password',
                     fieldLabel : i18n._('Password'),
-                    name : 'password'
+                    name : 'password',
+                    minLength : 3,
+                    minLengthText : i18n.sprintf(i18n._("The password is shorter than the minimum %d characters."), 3)
                 },{
                     inputType : 'password',
                     fieldLabel : i18n._('Confirm Password'),
@@ -61,7 +63,7 @@ Ung.SetupWizard.Settings = Ext.extend(Object, {
                 title : i18n._( 'Timezone' ),
                 items : [{
                     xtype : 'combo',
-                    name : 'Timezone',
+                    name : 'timezone',
                     editable : false,
                     store : Ung.SetupWizard.TimeZoneStore,
                     width : 350,
@@ -77,17 +79,16 @@ Ung.SetupWizard.Settings = Ext.extend(Object, {
                 items : [{
                     hideLabel : true,
                     xtype : 'textfield',
-                    value : Ung.SetupWizard.CurrentValues.hostname,
+                    value : Ung.SetupWizard.CurrentValues.addressSettings.hostName,
+                    name : 'hostname',
                 }]
             },{
                 title : 'Auto-Upgrade',
                 items : [{
+                    name : "autoUpgrade",
                     xtype : 'checkbox',
                     hideLabel : true,
                     boxLabel : i18n._("Automatically download and install upgrades.")
-                },{
-                    xtype : 'textfield',
-                    fieldLabel : i18n._("Check for upgrades at")
                 }]
             },{
                 xtype : 'label',
@@ -98,17 +99,95 @@ Ung.SetupWizard.Settings = Ext.extend(Object, {
         this.card = {
             title : i18n._( "Settings" ),
             cardTitle : i18n._( "Configure your Server" ),
-            panel : panel,
+            panel : this.panel,
             onNext : this.saveSettings.createDelegate( this )
         };
     },
 
     saveSettings : function( handler )
     {
-        var pass = Ung.SetupWizard.PasswordUtil.encodePassword( "passwd", [ 0xD4, 0xEE, 0x5F, 0x47, 0x4E, 0x77, 0x25, 0x46 ] );
+        /* Do validation here */
+        if ( this.panel.find( "name", "password" )[0].getValue() != this.panel.find( "name", "confirmPassword" )[0].getValue()) {
+            Ext.MessageBox.alert(i18n._( "Invalid Password" ), i18n._( "Passwords do no match." )); 
+            return; 
+        }
+        var saver = new Ung.SetupWizard.SettingsSaver( this.panel, handler );
+        saver.savePassword();
+    }
+});
+
+Ung.SetupWizard.SettingsSaver = Ext.extend( Object, {
+    constructor : function( panel, handler )
+    {
+        this.panel = panel;
+        this.handler = handler;
+    },
+
+    savePassword : function()
+    {
+        /* First clear all of the user passwords */
+        var users = Ung.SetupWizard.CurrentValues.users.users.set;
+
+        /* New Password */
+        var password = this.panel.find( "name", "password" )[0].getValue();
         
-        alert( "Built the password: " + pass );
-        handler();
+        for ( key in users ) {
+            var user = users[key];
+            user.password = "";
+            if ( user.login == "admin" ) user.clearPassword = password;
+        }
+
+        rpc.adminManager.setAdminSettings( this.saveTimeZone.createDelegate( this ), Ung.SetupWizard.CurrentValues.users );
+    },
+
+    saveTimeZone : function( result, exception )
+    {
+        if( exception ) {
+            Ext.MessageBox.alert(i18n._( "Unable to save the admin password" ),exception.message); 
+            return;
+        }
+        
+        var timezone = this.panel.find( "name", "timezone" )[0].getValue();
+        
+        rpc.adminManager.setTimeZone( this.saveHostname.createDelegate( this ), timezone );
+    },
+
+    saveHostname : function( result, exception )
+    {
+        if( exception ) {
+            Ext.MessageBox.alert(i18n._( "Unable to save the time zone" ),exception.message); 
+            return;
+        }
+        
+        var addressSettings = Ung.SetupWizard.CurrentValues.addressSettings;
+        
+        addressSettings.hostName = this.panel.find( "name", "hostname" )[0].getValue();
+        
+        rpc.networkManager.setAddressSettings( this.saveAutoUpgrade.createDelegate( this ), 
+                                               addressSettings );
+    },
+
+    saveAutoUpgrade : function( result, exception )
+    {
+        if( exception ) {
+            Ext.MessageBox.alert(i18n._( "Unable to save the hostname" ),exception.message); 
+            return;
+        }
+
+        var upgradeSettings = Ung.SetupWizard.CurrentValues.upgradeSettings;
+        upgradeSettings.autoUpgrade = this.panel.find( "name", "autoUpgrade" )[0].getValue();
+
+        rpc.toolboxManager.setUpgradeSettings( this.complete.createDelegate( this ), upgradeSettings );
+    },
+
+    complete : function( result, exception )
+    {
+        if ( exception ) {
+            Ext.MessageBox.alert("Unable to save Upgrade Settings",exception.message); 
+            return;
+        }
+
+        this.handler();
     }
 });
 
@@ -843,6 +922,8 @@ Ung.Setup =  {
         
         rpc.languageManager = rpc.jsonrpc.RemoteUvmContext.languageManager();
         rpc.adminManager = rpc.jsonrpc.RemoteUvmContext.adminManager();
+        rpc.networkManager = rpc.jsonrpc.RemoteUvmContext.networkManager();
+        rpc.toolboxManager = rpc.jsonrpc.RemoteUvmContext.toolboxManager();
 
         var result = rpc.languageManager.getTranslations( "main" );
         i18n = new Ung.I18N( { "map": result.map })
@@ -877,6 +958,6 @@ Ung.Setup =  {
 
         this.wizard.render();
 
-        this.wizard.goToPage( 2 );
+        this.wizard.goToPage( 1 );
 	}
 };
