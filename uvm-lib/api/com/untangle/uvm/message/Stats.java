@@ -43,7 +43,7 @@ public class Stats implements Serializable
     private final Map<String, CounterStats> metrics;
     private final Map<String, CounterStats> activities;
 
-    // constructors ------------------------------------------------------------
+    // constructors -----------------------------------------------------------
 
     Stats(Map<String, BlingBlinger> metrics,
           Map<String, BlingBlinger> activities)
@@ -52,7 +52,7 @@ public class Stats implements Serializable
         this.activities = immutableCounterStats(activities);
     }
 
-    // public methods ----------------------------------------------------------
+    // public methods ---------------------------------------------------------
 
     public Map<String, CounterStats> getMetrics()
     {
@@ -64,7 +64,7 @@ public class Stats implements Serializable
         return activities;
     }
 
-    // private methods ---------------------------------------------------------
+    // private methods --------------------------------------------------------
 
     private Map<String, CounterStats> immutableCounterStats(Map<String, BlingBlinger> stats)
     {
@@ -76,7 +76,7 @@ public class Stats implements Serializable
         return Collections.unmodifiableMap(m);
     }
 
-    // private classes ---------------------------------------------------------
+    // private classes --------------------------------------------------------
 
     public static class FixedCounts implements CounterStats, Serializable
     {

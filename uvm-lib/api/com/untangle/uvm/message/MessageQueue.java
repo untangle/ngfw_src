@@ -33,11 +33,11 @@
 
 package com.untangle.uvm.message;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
 import com.untangle.uvm.security.Tid;
-import java.io.Serializable;
 
 public class MessageQueue implements Serializable
 {

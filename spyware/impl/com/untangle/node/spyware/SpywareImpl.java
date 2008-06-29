@@ -208,12 +208,9 @@ public class SpywareImpl extends AbstractNode implements Spyware
         LocalMessageManager lmm = LocalUvmContextFactory.context()
             .localMessageManager();
         Counters c = lmm.getCounters(getTid());
-
         scanBlinger = c.addActivity("scan", "Scan Connection", null, "SCAN");
         blockBlinger = c.addActivity("block", "Block Connection", null, "BLOCK");
         passBlinger = c.addActivity("pass", "Pass Connection", null, "PASS");
-
-        lmm.setActiveMetrics(getTid(), scanBlinger, blockBlinger, passBlinger);
     }
 
     // SpywareNode methods -----------------------------------------------------
@@ -398,6 +395,10 @@ public class SpywareImpl extends AbstractNode implements Spyware
         setSpywareSettings(settings);
 
         statisticManager.stop();
+
+        LocalMessageManager lmm = LocalUvmContextFactory.context()
+            .localMessageManager();
+        lmm.setActiveMetrics(getTid(), scanBlinger, blockBlinger, passBlinger);
     }
 
     protected void postInit(String[] args)

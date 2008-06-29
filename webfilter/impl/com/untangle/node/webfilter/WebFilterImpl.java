@@ -109,12 +109,9 @@ public class WebFilterImpl extends AbstractNode implements WebFilter
         LocalMessageManager lmm = LocalUvmContextFactory.context()
             .localMessageManager();
         Counters c = lmm.getCounters(getTid());
-
         scanBlinger = c.addActivity("scan", "Scan Connection", null, "SCAN");
         blockBlinger = c.addActivity("block", "Block Connection", null, "BLOCK");
         passBlinger = c.addActivity("pass", "Pass Connection", null, "PASS");
-
-        lmm.setActiveMetrics(getTid(), scanBlinger, blockBlinger, passBlinger);
     }
 
     // WebFilter methods ------------------------------------------------------
@@ -545,6 +542,10 @@ public class WebFilterImpl extends AbstractNode implements WebFilter
         updateToCurrentCategories(settings);
 
         setWebFilterSettings(settings);
+
+        LocalMessageManager lmm = LocalUvmContextFactory.context()
+            .localMessageManager();
+        lmm.setActiveMetrics(getTid(), scanBlinger, blockBlinger, passBlinger);
     }
     @Override
     protected void postInit(String[] args)
