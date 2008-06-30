@@ -881,7 +881,7 @@ Ung.SetupWizard.InternalNetwork = Ext.extend( Object, {
 Ung.SetupWizard.Email = Ext.extend( Object, {
     constructor : function( config )
     {
-        var panel = new Ext.FormPanel({
+        this.panel = new Ext.FormPanel({
             defaultType : 'textfield',
             defaults : {
                 autoHeight : true
@@ -895,6 +895,7 @@ Ung.SetupWizard.Email = Ext.extend( Object, {
                 handler : this.emailTest,
                 scope : this,
             },{
+                name : 'advanced',
                 xtype : 'checkbox',
                 hideLabel : true,
                 value : false,
@@ -908,24 +909,24 @@ Ung.SetupWizard.Email = Ext.extend( Object, {
                     }
                 }
             },{
-                name : 'email-from-address',
+                name : 'from-address',
                 xtype : "fieldset",
                 items : [{
-                    name : 'email-from-address-label',
+                    name : 'from-address-label',
                     xtype : 'label',
                     html : i18n._( "Please choose a <i>From Address</i> for emails originating from the Untangle Server" )
                 },{
                     xtype : 'textfield',
-                    name : 'email-from-address-textfield',
+                    name : 'from-address-textfield',
                     fieldLabel : i18n._("From Address")
                 }]
             },{
-                name : 'email-smtp-server-config',
+                name : 'smtp-server-config',
                 xtype : "fieldset",
                 defaultType : 'textfield',
                 items : [{
                     xtype : 'radio',
-                    name : 'email-smtp-send-directly',
+                    name : 'smtp-send-directly',
                     checked : true,
                     inputValue : "directly",
                     boxLabel : i18n._( 'Send Email Directly (default).' ),
@@ -940,7 +941,7 @@ Ung.SetupWizard.Email = Ext.extend( Object, {
                     }
                 },{
                     xtype : 'radio',
-                    name : 'email-smtp-send-directly',
+                    name : 'smtp-send-directly',
                     inputValue : "smtp-server",
                     boxLabel : i18n._( 'Send Email using the specified SMTP server.' ),
                     hideLabel : 'true',
@@ -953,17 +954,17 @@ Ung.SetupWizard.Email = Ext.extend( Object, {
                         }
                     }
                 },{
-                    name : 'email-smtp-server-addr',
+                    name : 'smtp-server-addr',
                     fieldLabel : i18n._( "SMTP Server" )
                 },{
-                    name : 'email-smtp-server-port',
+                    name : 'smtp-server-port',
                     xtype : 'numberfield',
                     minValue : 0,
                     maxValue : 65536,
                     allowDecimals : false,
                     fieldLabel : i18n._( 'Port' )
                 },{
-                    name : 'email-smtp-server-requires-auth',
+                    name : 'smtp-server-requires-auth',
                     xtype : 'checkbox',
                     hideLabel : true,
                     value : false,
@@ -977,10 +978,10 @@ Ung.SetupWizard.Email = Ext.extend( Object, {
                         }
                     }
                 },{
-                    name : 'email-smtp-server-username',
+                    name : 'smtp-server-username',
                     fieldLabel : i18n._( "Username" )
                 },{
-                    name : 'email-smtp-server-password',
+                    name : 'smtp-server-password',
                     inputType : 'password',
                     fieldLabel : i18n._( "Password" )
                 }]
@@ -992,20 +993,20 @@ Ung.SetupWizard.Email = Ext.extend( Object, {
         this.authArray = [];
         this.directlyArray = [];
 
-        this.advancedArray.push( panel.find( "name", "email-from-address" )[0]);
-        this.advancedArray.push( panel.find( "name", "email-smtp-server-config" )[0]);
+        this.advancedArray.push( this.panel.find( "name", "from-address" )[0]);
+        this.advancedArray.push( this.panel.find( "name", "smtp-server-config" )[0]);
 
-        this.directlyArray.push( panel.find( "name", "email-smtp-server-addr" )[0]);
-        this.directlyArray.push( panel.find( "name", "email-smtp-server-port" )[0]);
-        field = panel.find( "name", "email-smtp-server-requires-auth" )[0];
+        this.directlyArray.push( this.panel.find( "name", "smtp-server-addr" )[0]);
+        this.directlyArray.push( this.panel.find( "name", "smtp-server-port" )[0]);
+        field = this.panel.find( "name", "smtp-server-requires-auth" )[0];
         this.requiresAuth = field;
         this.directlyArray.push( field );
 
-        field = panel.find( "name", "email-smtp-server-username" )[0];
+        field = this.panel.find( "name", "smtp-server-username" )[0];
         this.directlyArray.push( field );
         this.authArray.push( field );
         
-        field = panel.find( "name", "email-smtp-server-password" )[0];
+        field = this.panel.find( "name", "smtp-server-password" )[0];
         this.directlyArray.push( field );
         this.authArray.push( field );
 
@@ -1015,7 +1016,8 @@ Ung.SetupWizard.Email = Ext.extend( Object, {
         this.card = {
             title : i18n._( "Email" ),
             cardTitle : i18n._( "Email Configuration" ),
-            panel : panel
+            panel : this.panel,
+            onNext : this.saveSettings.createDelegate( this )
         }
     },
     
@@ -1043,7 +1045,46 @@ Ung.SetupWizard.Email = Ext.extend( Object, {
         for ( var c = 0 ; c < length ; c++ ) {
             this.authArray[c].setDisabled( !requiresAuth );
         }
-    }    
+    },
+
+    saveSettings : function( handler )
+    {
+        var settings = Ung.SetupWizard.CurrentValues.mailSettings;
+        
+        settings.fromAddress = "untangle@" + Ung.SetupWizard.CurrentValues.addressSettings.hostName;
+        settings.useMxRecords = true;
+        settings.smtpHost = "";
+        settings.smtpPort = 25;
+        settings.authUser = "";
+        settings.authPass = "";
+
+        if ( this.panel.find( "name", "advanced" )[0].getValue()) {
+            settings.fromAddress = this.panel.find( "name", "from-address-textfield" )[0].getValue();
+            
+            if ( this.panel.find( "name", "smtp-send-directly" )[0].getGroupValue() == "smtp-server" ) {
+                settings.useMxRecords = false;
+                settings.smtpHost = this.panel.find( "name", "smtp-server-addr" )[0].getValue();
+                settings.smtpPort = this.panel.find( "name", "smtp-server-port" )[0].getValue();
+                
+                if ( this.panel.find( "name", "smtp-server-requires-auth" )[0].getValue()) {
+                    settings.authUser = this.panel.find( "name", "smtp-server-username" )[0].getValue();
+                    settings.authPass = this.panel.find( "name", "smtp-server-password" )[0].getValue();
+                }
+            }
+        }
+
+        rpc.mailSender.setMailSettings(this.complete.createDelegate( this, [ handler ], true ), settings );
+    },
+    
+    complete : function( result, exception, foo, handler )
+    {
+        if ( exception ) {
+            Ext.MessageBox.alert(i18n._( "Mail Settings" ),i18n._( "Unable to save settings." ) + exception.message );
+            return;
+        }
+
+        handler();
+    }
 });
 
 Ung.SetupWizard.Complete = Ext.extend( Object, {
@@ -1136,6 +1177,6 @@ Ung.Setup =  {
 
         this.wizard.render();
 
-        this.wizard.goToPage( 5 );
+        this.wizard.goToPage( 6 );
 	}
 };
