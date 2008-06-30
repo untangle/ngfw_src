@@ -90,7 +90,7 @@ class NetworkUtilPriv extends NetworkUtil
             primary = settings.getNetworkSpaceList().get( 0 );
         }
         
-        basic.isDhcpEnabled( false );
+        basic.setDhcpEnabled( false );
         IPNetwork primaryNetwork = primary.getPrimaryAddress();
 
         basic.setHost( primaryNetwork.getNetwork());

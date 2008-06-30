@@ -19,6 +19,7 @@ import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.Period;
 import com.untangle.uvm.node.HostName;
 import com.untangle.uvm.networking.AddressSettings;
+import com.untangle.uvm.networking.BasicNetworkSettings;
 import com.untangle.uvm.networking.NetworkUtil;
 import com.untangle.uvm.networking.LocalNetworkManager;
 import com.untangle.uvm.networking.Interface;
@@ -86,6 +87,8 @@ public class SetupServlet extends HttpServlet
         
         // pick a random time.
         UpgradeSettings upgrade = context.toolboxManager().getUpgradeSettings();
+
+        BasicNetworkSettings networkSettings = nm.getBasicSettings();
         try {
             request.setAttribute( "addressSettings", js.toJSON( addressSettings ));
             request.setAttribute( "interfaceArray", js.toJSON( nm.getInterfaceList( true )));
@@ -94,7 +97,7 @@ public class SetupServlet extends HttpServlet
             request.setAttribute( "upgradeSettings", js.toJSON( upgrade ));
 
             request.setAttribute( "mailSettings", js.toJSON( context.mailSender().getMailSettings()));
-            request.setAttribute( "networkSettings", js.toJSON( nm.getBasicSettings()));
+            request.setAttribute( "networkSettings", js.toJSON( networkSettings ));
         } catch ( MarshallException e ) {
             throw new ServletException( "Unable to serializer JSON", e );
         }

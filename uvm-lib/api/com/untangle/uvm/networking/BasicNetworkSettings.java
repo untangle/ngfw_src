@@ -78,7 +78,7 @@ public class BasicNetworkSettings implements Serializable
      *
      * @return True iff DHCP is enabled.
      */
-    public boolean isDhcpEnabled()
+    public boolean getDhcpEnabled()
     {
         return this.isDhcpEnabled;
     }
@@ -88,7 +88,7 @@ public class BasicNetworkSettings implements Serializable
      *
      * @param newValue True iff DHCP is enabled.
      */
-    public void isDhcpEnabled( boolean newValue )
+    public void setDhcpEnabled( boolean newValue )
     {
         this.isDhcpEnabled = newValue;
     }
@@ -270,7 +270,7 @@ public class BasicNetworkSettings implements Serializable
     {
         StringBuilder sb = new StringBuilder();
         
-        sb.append( "dhcp:        "   + isDhcpEnabled());
+        sb.append( "dhcp:        "   + getDhcpEnabled());
         sb.append( "\nhost:        " + getHost());
         sb.append( "\nnetmask:     " + getNetmask());
         sb.append( "\ngateway:     " + getGateway());

@@ -801,7 +801,7 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
 Ung.SetupWizard.InternalNetwork = Ext.extend( Object, {
     constructor : function( config )
     {
-        var panel = new Ext.FormPanel({
+        this.panel = new Ext.FormPanel({
             defaultType : 'fieldset',
             defaults : {
                 autoHeight : true
@@ -811,6 +811,7 @@ Ung.SetupWizard.InternalNetwork = Ext.extend( Object, {
                 items : [{
                     xtype : 'radio',
                     name : 'bridgeInterfaces',
+                    inputValue : 'bridge',
                     boxLabel : i18n._( 'This is recommended if the external interface is connected to a router or firewall.' ),
                     hideLabel : 'true'
                 },{
@@ -822,14 +823,17 @@ Ung.SetupWizard.InternalNetwork = Ext.extend( Object, {
                 items : [{
                     xtype : 'radio',
                     name : 'bridgeInterfaces',
+                    inputValue : 'router',
                     boxLabel : i18n._( 'This is recommended if the external port is plugged into your internet connection.' ),
                     hideLabel : 'true'
                 },{
+                    name : 'network',
                     xtype : 'textfield',
-                    fieldLabel : i18n._('Network'),
+                    fieldLabel : i18n._('Network')
                 },{
+                    name : 'netmask',
                     xtype : 'textfield',
-                    fieldLabel : i18n._('Netmask'),
+                    fieldLabel : i18n._('Netmask')
                 },{
                     xtype : 'label',
                     html : '<img src="/webui/skins/' + Ung.SetupWizard.currentSkin + '/images/main/wizard_router.png"/>'
@@ -839,8 +843,38 @@ Ung.SetupWizard.InternalNetwork = Ext.extend( Object, {
         
         this.card = {
             title : i18n._( "Internal Network" ),
-            panel : panel
+            panel : this.panel,
+            onNext : this.saveInternalNetwork.createDelegate( this )
         }
+    },
+
+    saveInternalNetwork : function( handler )
+    {
+        var value = this.panel.find( "name", "bridgeInterfaces" )[0].getGroupValue();
+        
+        if ( value == null ) {
+            Ext.MessageBox.alert(i18n._( "Select a value" ), i18n._( "Please choose bridge or router." )); 
+            return;
+        }
+                
+        var delegate = this.complete.createDelegate( this, [ handler ], true );
+        if ( value == 'bridge' ) {
+            rpc.networkManager.setWizardNatDisabled( delegate );
+        } else {
+            var network = this.panel.find( "name", "network" )[0].getValue();
+            var netmask = this.panel.find( "name", "netmask" )[0].getValue();
+            rpc.networkManager.setWizardNatEnabled( delegate, network, netmask );
+        }
+    },
+
+    complete : function( result, exception, foo, handler )
+    {
+        if(exception) {
+            Ext.MessageBox.alert(i18n._( "Local Network" ), i18n._( "Unable to save Local Network Settings" ) + exception.message ); 
+            return;
+        }
+
+        handler();
     }
 });
 
@@ -1102,6 +1136,6 @@ Ung.Setup =  {
 
         this.wizard.render();
 
-        this.wizard.goToPage( 4 );
+        this.wizard.goToPage( 5 );
 	}
 };

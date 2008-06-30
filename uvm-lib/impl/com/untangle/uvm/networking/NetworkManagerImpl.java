@@ -371,7 +371,7 @@ public class NetworkManagerImpl implements LocalNetworkManager
             method = "wizard_external_interface_pppoe";
             args[0] = pppoe.getUsername();
             args[1] = pppoe.getPassword();
-        } else if ( basic.isDhcpEnabled()) {
+        } else if ( basic.getDhcpEnabled()) {
             /* Dynamic address */
             args = new String[0];
             method = "wizard_external_interface_dynamic";
