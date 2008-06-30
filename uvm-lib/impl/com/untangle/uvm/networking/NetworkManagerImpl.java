@@ -378,13 +378,13 @@ public class NetworkManagerImpl implements LocalNetworkManager
         } else {
             /* Must be a static address */
             args = new String[5];
-            args[0] = basic.host().toString();
-            args[1] = basic.netmask().toString();
-            args[2] = basic.gateway().toString();
-            args[3] = basic.dns1().toString();
+            args[0] = basic.getHost().toString();
+            args[1] = basic.getNetmask().toString();
+            args[2] = basic.getGateway().toString();
+            args[3] = basic.getDns1().toString();
             args[4] = "";
             
-            IPaddr dns2 = basic.dns2();
+            IPaddr dns2 = basic.getDns2();
             if ( !dns2.isEmpty()) args[4] = dns2.toString();
             method = "wizard_external_interface_static";
         }

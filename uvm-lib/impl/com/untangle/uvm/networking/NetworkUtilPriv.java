@@ -93,8 +93,8 @@ class NetworkUtilPriv extends NetworkUtil
         basic.isDhcpEnabled( false );
         IPNetwork primaryNetwork = primary.getPrimaryAddress();
 
-        basic.host( primaryNetwork.getNetwork());
-        basic.netmask( primaryNetwork.getNetmask());
+        basic.setHost( primaryNetwork.getNetwork());
+        basic.setNetmask( primaryNetwork.getNetmask());
 
         /* interface aliases */
         List<InterfaceAlias> aliasList = new LinkedList<InterfaceAlias>();
@@ -104,9 +104,9 @@ class NetworkUtilPriv extends NetworkUtil
         }
         basic.setAliasList( aliasList );
         
-        basic.dns1( settings.getDns1());
-        basic.dns2( settings.getDns2());
-        basic.gateway( settings.getDefaultRoute());
+        basic.setDns1( settings.getDns1());
+        basic.setDns2( settings.getDns2());
+        basic.setGateway( settings.getDefaultRoute());
 
         logger.debug( "created: " + basic );
 

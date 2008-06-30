@@ -403,7 +403,7 @@ Ung.SetupWizard.Interfaces = Ext.extend( Object, {
 
                 complete();
             }.createDelegate( this ),
-            
+                        
             onNext : this.saveInterfaceList.createDelegate( this )
         };
     },
@@ -554,7 +554,8 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
          
         this.cards = [];
 
-        this.cards.push( new Ext.FormPanel({
+        this.cards.push( this.dhcpPanel = new Ext.FormPanel({
+            saveData : this.saveDHCP.createDelegate( this ),
             border : false,
             labelWidth : Ung.SetupWizard.LabelWidth,
             defaultType : 'textfield',
@@ -573,48 +574,58 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
                 },
                 autoHeight : true,
                 items : [{
-                    fieldLabel : i18n._( "IP" )
+                    name : "ip",
+                    fieldLabel : i18n._( "IP" ),
                 },{
-                    fieldLabel : i18n._( "Netmask" )
+                    name : "netmask",
+                    fieldLabel : i18n._( "Netmask" ),
                 },{
-                    fieldLabel : i18n._( "Default Route" )
-                },{
+                    name : "gateway",
                     fieldLabel : i18n._( "Gateway" )
                 },{
+                    name : "dns1",
                     fieldLabel : i18n._( "Primary DNS" )
                 },{
+                    name : "dns2",
                     fieldLabel : i18n._( "Secondary DNS" )
                 }]
              }]}));
                 
 
-        this.cards.push( new Ext.FormPanel({
+        this.cards.push( this.staticPanel = new Ext.FormPanel({
+            saveData : this.saveStatic.createDelegate( this ),
             border : false,
             labelWidth : Ung.SetupWizard.LabelWidth,
             defaultType : 'textfield',
             items : [{
+                name : "ip",
                 fieldLabel : i18n._( "IP" ),
             },{
+                name : "netmask",
                 fieldLabel : i18n._( "Netmask" ),
             },{
-                fieldLabel : i18n._( "Default Route" ),
-            },{
+                name : "gateway",
                 fieldLabel : i18n._( "Gateway" ),
             },{
+                name : "dns1",
                 fieldLabel : i18n._( "Primary DNS" ),
             },{
+                name : "dns2",
                 fieldLabel : i18n._( "Secondary DNS" ),
             }]}));
 
         /* PPPoE Panel */
-        this.cards.push( new Ext.FormPanel({
+        this.cards.push( this.pppoePanel = new Ext.FormPanel({
+            saveData : this.savePPPoE.createDelegate( this ),
             border : false,
             labelWidth : Ung.SetupWizard.LabelWidth,
             defaultType : 'textfield',
             items : [{
                 fieldLabel : i18n._( "Username" ),
+                name : "username",
                 disabled : false,
             },{
+                name : "password",
                 inputType : 'password',
                 fieldLabel : i18n._( "Password" ),
                 disabled : false,
@@ -633,16 +644,19 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
                 },
                 autoHeight : true,
                 items : [{
-                    fieldLabel : i18n._( "IP" )
+                    fieldLabel : i18n._( "IP" ),
+                    name : "ip"
                 },{
-                    fieldLabel : i18n._( "Netmask" )
+                    fieldLabel : i18n._( "Netmask" ),
+                    name : "netmask"
                 },{
-                    fieldLabel : i18n._( "Default Route" )
-                },{
+                    name : "gateway",
                     fieldLabel : i18n._( "Gateway" )
                 },{
+                    name : "dns1",
                     fieldLabel : i18n._( "Primary DNS" )
                 },{
+                    name : "dns2",
                     fieldLabel : i18n._( "Secondary DNS" )
                 }]
              }]}));
@@ -704,23 +718,84 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
             }]
         });
         
+        this.isInitialized = false;
+        
         this.card = {
             title : i18n._( "Internet Connection" ),
             panel : panel,
             onLoad : function( complete )
             {
-                this.cardPanel.layout.setActiveItem( 0 );
-
+                if ( !this.isInitialized ) this.cardPanel.layout.setActiveItem( 0 );
+                
+                this.isInitialized = true;
                 complete();
-            }.createDelegate(this)
+            }.createDelegate(this),
+            onNext : this.saveSettings.createDelegate( this )
         }
     },
     
     onSelectConfig : function( combo, record, index )
     {
         this.cardPanel.layout.setActiveItem( index );
-    }
+    },
 
+    saveSettings : function( handler )
+    {
+        this.cardPanel.layout.activeItem.saveData( handler );
+    },
+
+    saveDHCP : function( handler )
+    {
+        var ns = Ung.SetupWizard.CurrentValues.networkSettings;
+        ns.dhcpEnabled = true;
+        ns.PPPoESettings.live = false;
+        /* There is really no need to save the address settings again. */
+        rpc.networkManager.setSetupSettings( this.complete.createDelegate( this, [ handler ], true ),
+                                             Ung.SetupWizard.CurrentValues.addressSettings, ns );
+    },
+    
+    saveStatic : function( handler )
+    {
+        var ns = Ung.SetupWizard.CurrentValues.networkSettings;
+        ns.dhcpEnabled = false;
+        ns.PPPoESettings.live = false;
+
+        ns.host = this.staticPanel.find( "name", "ip" )[0].getValue();
+        ns.netmask = this.staticPanel.find( "name", "netmask" )[0].getValue();
+        ns.gateway = this.staticPanel.find( "name", "gateway" )[0].getValue();
+        ns.dns1 = this.staticPanel.find( "name", "dns1" )[0].getValue();
+        var dns2 = this.staticPanel.find( "name", "dns2" )[0].getValue();
+        
+        if ( dns2.length > 0 ) ns.dns2 = dns2;
+        else ns.dns2 = null;
+
+        rpc.networkManager.setSetupSettings( this.complete.createDelegate( this, [ handler ], true ),
+                                             Ung.SetupWizard.CurrentValues.addressSettings, ns );
+    },
+
+    savePPPoE : function( handler )
+    {
+        var ns = Ung.SetupWizard.CurrentValues.networkSettings;
+        ns.dhcpEnabled = true;
+        ns.PPPoESettings.live = true;
+
+        ns.PPPoESettings.username = this.pppoePanel.find( "name", "username" )[0].getValue();
+        ns.PPPoESettings.password = this.pppoePanel.find( "name", "password" )[0].getValue();
+        
+        rpc.networkManager.setSetupSettings( this.complete.createDelegate( this, [ handler ], true ),
+                                             Ung.SetupWizard.CurrentValues.addressSettings, ns );
+    },
+
+    complete : function( result, exception, foo, handler )
+    {
+        if(exception) {
+            Ext.MessageBox.alert( i18n._( "Network Settings" ),exception.message); 
+            return;
+        }
+        
+        handler();
+    }
+    
 });
 
 Ung.SetupWizard.InternalNetwork = Ext.extend( Object, {
@@ -749,6 +824,12 @@ Ung.SetupWizard.InternalNetwork = Ext.extend( Object, {
                     name : 'bridgeInterfaces',
                     boxLabel : i18n._( 'This is recommended if the external port is plugged into your internet connection.' ),
                     hideLabel : 'true'
+                },{
+                    xtype : 'textfield',
+                    fieldLabel : i18n._('Network'),
+                },{
+                    xtype : 'textfield',
+                    fieldLabel : i18n._('Netmask'),
                 },{
                     xtype : 'label',
                     html : '<img src="/webui/skins/' + Ung.SetupWizard.currentSkin + '/images/main/wizard_router.png"/>'
@@ -986,6 +1067,7 @@ Ung.Setup =  {
         rpc.adminManager = rpc.jsonrpc.RemoteUvmContext.adminManager();
         rpc.networkManager = rpc.jsonrpc.RemoteUvmContext.networkManager();
         rpc.toolboxManager = rpc.jsonrpc.RemoteUvmContext.toolboxManager();
+        rpc.mailSender = rpc.jsonrpc.RemoteUvmContext.mailSender();
 
         var result = rpc.languageManager.getTranslations( "main" );
         i18n = new Ung.I18N( { "map": result.map })
@@ -1020,6 +1102,6 @@ Ung.Setup =  {
 
         this.wizard.render();
 
-        this.wizard.goToPage( 3 );
+        this.wizard.goToPage( 4 );
 	}
 };

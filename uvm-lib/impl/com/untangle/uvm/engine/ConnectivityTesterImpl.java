@@ -77,8 +77,8 @@ class RemoteConnectivityTesterImpl implements RemoteConnectivityTester
     {
         BasicNetworkSettings basic = LocalUvmContextFactory.context().networkManager().getBasicSettings();
 
-        InetAddress dnsPrimary   = basic.dns1().getAddr();
-        InetAddress dnsSecondary = ( basic.dns2().isEmpty()) ? null : basic.dns2().getAddr();
+        InetAddress dnsPrimary   = basic.getDns1().getAddr();
+        InetAddress dnsSecondary = ( basic.getDns2().isEmpty()) ? null : basic.getDns2().getAddr();
 
         /* Wait for any bridge interfaces to come up */
         waitForBridges();

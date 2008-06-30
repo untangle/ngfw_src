@@ -34,7 +34,9 @@
           interfaceArray : ${interfaceArray},
           registrationInfo : ${registrationInfo},
           users : ${users},
-          upgradeSettings : ${upgradeSettings}
+          upgradeSettings : ${upgradeSettings},
+          networkSettings : ${networkSettings},
+          mailSettings : ${mailSettings}
       };
 
       Ext.onReady(Ung.Setup.init);

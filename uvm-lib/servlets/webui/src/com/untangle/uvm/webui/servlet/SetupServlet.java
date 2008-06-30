@@ -91,7 +91,10 @@ public class SetupServlet extends HttpServlet
             request.setAttribute( "interfaceArray", js.toJSON( nm.getInterfaceList( true )));
             request.setAttribute( "registrationInfo", js.toJSON( ri ));
             request.setAttribute( "users", js.toJSON( context.adminManager().getAdminSettings()));
-            request.setAttribute( "upgradeSettings", js.toJSON( upgrade )); 
+            request.setAttribute( "upgradeSettings", js.toJSON( upgrade ));
+
+            request.setAttribute( "mailSettings", js.toJSON( context.mailSender().getMailSettings()));
+            request.setAttribute( "networkSettings", js.toJSON( nm.getBasicSettings()));
         } catch ( MarshallException e ) {
             throw new ServletException( "Unable to serializer JSON", e );
         }
