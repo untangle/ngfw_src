@@ -116,6 +116,11 @@ public class RemoteNetworkManagerAdaptor implements RemoteNetworkManager
         return lnm.getInterfaceList( updateStatus );
     }
 
+    public void remapInterfaces( String[] osArray, String[] userArray ) throws NetworkException
+    {
+        lnm.remapInterfaces( osArray, userArray );
+    }
+        
     /** Update the internal representation of the address */
     public void updateAddress() throws NetworkException
     {

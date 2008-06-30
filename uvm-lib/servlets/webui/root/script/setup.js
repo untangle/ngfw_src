@@ -347,7 +347,7 @@ Ung.SetupWizard.Interfaces = Ext.extend( Object, {
     
         var refreshButton = new Ext.Button( {
             text : i18n._( "Refresh" ),
-            handler : this.refresh,
+            handler : this.refreshInterfaces,
             scope : this
         });
     
@@ -402,7 +402,9 @@ Ung.SetupWizard.Interfaces = Ext.extend( Object, {
                 this.isDragAndDropInitialized = true;
 
                 complete();
-            }.createDelegate( this )
+            }.createDelegate( this ),
+            
+            onNext : this.saveInterfaceList.createDelegate( this )
         };
     },
     
@@ -479,6 +481,66 @@ Ung.SetupWizard.Interfaces = Ext.extend( Object, {
         }
 
         return interfaceList;
+    },
+
+    saveInterfaceList : function( handler )
+    {
+        /* Commit the store to get rid of the change marks */
+        this.interfaceStore.commitChanges();
+
+        /* Build the two interface arrays */
+        var osArray = [];
+        var userArray = [];
+        this.interfaceStore.each( function( currentRow ) {
+            var status = currentRow.get( "status" );
+            userArray.push( currentRow.get( "name" ));
+            osArray.push( status[0] );
+        });
+
+        rpc.networkManager.remapInterfaces( this.errorHandler.createDelegate( this, [ handler ], true ), osArray, userArray );
+    },
+    
+    errorHandler : function( result, exception, foo, handler )
+    {
+        if(exception) {
+            Ext.MessageBox.alert(i18n._( "Unable to remap the interfaces." ), exception.message ); 
+            return;
+        }
+
+        handler();
+    },
+
+    refreshInterfaces : function()
+    {
+        rpc.networkManager.getInterfaceList( this.completeRefreshInterfaces.createDelegate( this ), true );
+    },
+        
+    completeRefreshInterfaces : function( result, exception )
+    {
+        if ( exception ) {
+            Ext.MessageBox.alert( i18n._( "Unable to refresh the interfaces." ), exception.message );
+            return;
+        }
+        
+        var interfaceList = this.fixInterfaceList( result );
+        
+        if ( interfaceList.length != this.interfaceStore.getCount()) {
+            Ext.MessageBox.alert( i18n._( "New interfaces" ), i18n._ ( "There are new interfaces, please restart the wizard." ), exception.message );
+            return;            
+        }
+        
+        var statusHash = {};
+        /* XXX This status array is brittle and should be refactored. XXXX */
+        for ( var c = 0 ;c < interfaceList.length ; c++ ) {
+            var status = interfaceList[c][1];
+            statusHash[status[0]] = status;
+        }
+        
+        /* This is designed to handle the case where the interfaces have been remapped. */
+        this.interfaceStore.each( function( currentRow ) {
+            var status = currentRow.get( "status" );
+            currentRow.set( "status", statusHash[status[0]]);
+        });
     }
 });
 
@@ -958,6 +1020,6 @@ Ung.Setup =  {
 
         this.wizard.render();
 
-        this.wizard.goToPage( 1 );
+        this.wizard.goToPage( 3 );
 	}
 };

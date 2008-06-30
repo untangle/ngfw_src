@@ -85,9 +85,7 @@ public class SetupServlet extends HttpServlet
 
         
         // pick a random time.
-        Random rand = new Random();
-        Period period = new Period(23, rand.nextInt(60), true);
-        UpgradeSettings upgrade = new UpgradeSettings( period);
+        UpgradeSettings upgrade = context.toolboxManager().getUpgradeSettings();
         try {
             request.setAttribute( "addressSettings", js.toJSON( addressSettings ));
             request.setAttribute( "interfaceArray", js.toJSON( nm.getInterfaceList( true )));

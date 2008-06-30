@@ -291,6 +291,15 @@ public class NetworkManagerImpl implements LocalNetworkManager
         return interfaceList;
     }
 
+    public void remapInterfaces( String[] osArray, String[] userArray ) throws NetworkException
+    {
+        try {
+            XMLRPCUtil.getInstance().callAlpaca( XMLRPCUtil.CONTROLLER_UVM, "remap_interfaces", null, osArray, userArray );
+        } catch ( Exception e ) {
+            throw new NetworkException( "Unable to configure the external interface.", e );
+        }
+    }
+
     /* Set the access and address settings, used by the Remote Panel */
     public void setSettings( AccessSettings access, AddressSettings address )
         throws NetworkException, ValidateException

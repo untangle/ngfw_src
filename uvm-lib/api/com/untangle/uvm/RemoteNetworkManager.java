@@ -93,6 +93,13 @@ public interface RemoteNetworkManager
      */
     List<Interface> getInterfaceList( boolean updateStatus );
 
+    /**
+     * Remap the interfaces
+     * @param osArray Array of os names (eth0, eth1, etc)
+     * @param userArray Array of system names (External, Internal, etc);
+     */
+    void remapInterfaces( String[] osArray, String[] userArray ) throws NetworkException;
+
     /* Set the access and address settings, used by the Remote Panel */
     void setSettings( AccessSettings access, AddressSettings address )
         throws NetworkException, ValidateException;
