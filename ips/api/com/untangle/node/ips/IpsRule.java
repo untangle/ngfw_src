@@ -137,4 +137,11 @@ public class IpsRule extends Rule implements Serializable
         // Good enough. XX
         return (null == rule ? 0 : rule.hashCode());
     }
+
+    public void update(IpsRule rule) {
+	super.update(rule);
+	this.rule = rule.rule;
+	this.sid = rule.sid;
+    }
+    
 }

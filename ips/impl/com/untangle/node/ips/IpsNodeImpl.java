@@ -27,12 +27,14 @@ import org.hibernate.Session;
 
 import com.untangle.node.token.TokenAdaptor;
 import com.untangle.node.util.PartialListUtil;
+import com.untangle.node.util.PartialListUtil.Handler;
 import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.EventLoggerFactory;
 import com.untangle.uvm.logging.EventManager;
 import com.untangle.uvm.logging.SimpleEventFilter;
 import com.untangle.uvm.node.NodeException;
 import com.untangle.uvm.node.NodeStartException;
+import com.untangle.uvm.node.Rule;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.AbstractNode;
 import com.untangle.uvm.vnet.Affinity;
@@ -57,6 +59,7 @@ public class IpsNodeImpl extends AbstractNode implements IpsNode {
     private final PartialListUtil listUtil = new PartialListUtil();
     
     private final IpsVariableHandler variableHandler = new IpsVariableHandler();
+    private final IpsRuleHandler ruleHandler = new IpsRuleHandler();
 
     public IpsNodeImpl() {
         engine = new IpsDetectionEngine(this);
@@ -189,7 +192,7 @@ public class IpsNodeImpl extends AbstractNode implements IpsNode {
 					settings.setBaseSettings(baseSettings);
 				}
 
-				listUtil.updateCachedItems(settings.getRules(), rules);
+				listUtil.updateCachedItems(settings.getRules(), ruleHandler, rules);
 				listUtil.updateCachedItems(settings.getVariables(), variableHandler, variables);
 				listUtil.updateCachedItems(settings.getVariables(), variableHandler, immutableVariables);
 
@@ -324,6 +327,20 @@ public class IpsNodeImpl extends AbstractNode implements IpsNode {
                 public Object getResult() { return null; }
             };
         getNodeContext().runTransaction(tw);
+    }
+
+    /* Utility handler for the most common case (rules) */
+    public static class IpsRuleHandler implements Handler<IpsRule>
+    {
+        public Long getId( IpsRule rule )
+        {
+            return rule.getId();
+        }
+
+        public void update( IpsRule current, IpsRule newRule )
+        {
+            current.update( newRule );
+        }
     }
 
     private static class IpsVariableHandler implements PartialListUtil.Handler<IpsVariable>

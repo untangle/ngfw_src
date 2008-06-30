@@ -52,7 +52,7 @@ class ContentOption extends IpsOption
     private BMPattern contentPattern;
     private final Logger logger = Logger.getLogger(getClass());
 
-    ContentOption(OptionArg arg)
+    public ContentOption(OptionArg arg)
     {
         super(arg);
 

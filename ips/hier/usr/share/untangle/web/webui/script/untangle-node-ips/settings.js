@@ -92,7 +92,7 @@ if (!Ung.hasResource["Ung.Ips"]) {
 		                emptyRow : {
 		                    "category" : this.i18n._("[no category]"),
 		                    "name" : this.i18n._("[no name]"),
-		                    "rule" : this.i18n._("[no rule]"),
+		                    "text" : this.i18n._("[no signature]"),
 		                    "category" : this.i18n._("[no category]"),
 		                    "classification" : this.i18n._("[no classification]"),
 		                    "url" : this.i18n._("[no url]"),
@@ -107,7 +107,7 @@ if (!Ung.hasResource["Ung.Ips"]) {
 		                fields : [{
                     		name : 'id'
                 		}, {
-		                    name : 'rule'
+		                    name : 'text'
                 		}, {
 		                    name : 'sid'
                 		}, {
@@ -176,8 +176,8 @@ if (!Ung.hasResource["Ung.Ips"]) {
 		                    allowBlank : false,
 		                    width : 300
 		                }), new Ext.form.TextField({
-		                    name : "rule",
-		                    fieldLabel : this.i18n._("Rule"),
+		                    name : "text",
+		                    fieldLabel : this.i18n._("Signature"),
 		                    allowBlank : false,
 		                    width : 350
 		                }), new Ext.form.TextField({

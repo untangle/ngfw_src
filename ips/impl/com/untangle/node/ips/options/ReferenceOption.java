@@ -31,7 +31,7 @@ public class ReferenceOption extends IpsOption
 {
     private static final Pattern URLP = Pattern.compile("url,", Pattern.CASE_INSENSITIVE);
 
-    ReferenceOption(OptionArg arg)
+    public ReferenceOption(OptionArg arg)
     {
         super(arg);
 

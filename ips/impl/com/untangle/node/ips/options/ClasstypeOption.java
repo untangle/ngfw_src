@@ -34,7 +34,7 @@ class ClasstypeOption extends IpsOption
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    ClasstypeOption(OptionArg arg)
+    public ClasstypeOption(OptionArg arg)
     {
         super(arg);
 

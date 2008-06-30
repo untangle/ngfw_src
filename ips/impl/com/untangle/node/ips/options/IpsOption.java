@@ -91,7 +91,7 @@ public abstract class IpsOption
             Class clazz = Class
                 .forName("com.untangle.node.ips.options."+optionName+"Option");
             Constructor constructor = clazz
-                .getConstructor(new Class[] { IpsOption.class });
+                .getConstructor(new Class[] { OptionArg.class });
             option = (IpsOption)constructor.newInstance(new Object[] { oa });
         } catch (ClassNotFoundException e) {
             log.info("Could not load option: " + optionName + ", ignoring rule: " + signature.getSid());
