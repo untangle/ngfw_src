@@ -40,6 +40,9 @@
             <fileset dir="./../../../../clam/hier/usr/share/untangle/web/webui/script/">
                 <include name="**/*.*"/>
             </fileset>
+            <fileset dir="./../../../../ips/hier/usr/share/untangle/web/webui/script/">
+                <include name="**/*.*"/>
+            </fileset>
         </copy>
         <copy todir="${deploy.path}/skins"  preservelastmodified="true" verbose="true">
         	<fileset dir="./skins/">
