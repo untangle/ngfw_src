@@ -170,33 +170,40 @@ if (!Ung.hasResource["Ung.Ips"]) {
 		                autoExpandColumn : 'description',
 		                plugins : [blockColumn, logColumn],
 		                rowEditorInputLines : [new Ext.form.TextField({
-		                    name : "category",
+		                    name : "Category",
+		                    dataIndex: "category",
 		                    fieldLabel : this.i18n._("Category"),
 		                    allowBlank : false,
 		                    width : 300
 		                }), new Ext.form.TextField({
-		                    name : "text",
+		                    name : "Signature",
+		                    dataIndex: "text",
 		                    fieldLabel : this.i18n._("Signature"),
 		                    allowBlank : false,
 		                    width : 350
 		                }), new Ext.form.TextField({
-		                    name : "name",
+		                    name : "Name",
+		                    dataIndex: "name",
 		                    fieldLabel : this.i18n._("Name"),
 		                    allowBlank : false,
 		                    width : 300
 		                }), new Ext.form.TextField({
-		                    name : "sid",
+		                    name : "SID",
+		                    dataIndex: "sid",
 		                    fieldLabel : this.i18n._("SID"),
 		                    allowBlank : false,
 		                    width : 50
 		                }), new Ext.form.Checkbox({
-		                    name : "live",
+		                    name : "Block",
+		                    dataIndex: "live",
 		                    fieldLabel : this.i18n._("Block")
 		                }), new Ext.form.Checkbox({
-		                    name : "log",
+		                    name : "Log",
+		                    dataIndex: "log",
 		                    fieldLabel : this.i18n._("Log")
 		                }), new Ext.form.TextField({
-		                    name : "description",
+		                    name : "Description",
+		                    dataIndex: "description",
 		                    fieldLabel : this.i18n._("Description"),
 		                    allowBlank : false,
 		                    width : 400
@@ -253,17 +260,20 @@ if (!Ung.hasResource["Ung.Ips"]) {
 		                columnsDefaultSortable : true,
 		                autoExpandColumn : 'variable',
 		                rowEditorInputLines : [new Ext.form.TextField({
-		                    name : "variable",
+		                    name : "Name",
+		                    dataIndex: "variable",
 		                    fieldLabel : this.i18n._("Name"),
 		                    allowBlank : false,
 		                    width : 200
 		                }), new Ext.form.TextField({
-		                    name : "definition",
+		                    name : "Pass",
+		                    dataIndex: "definition",
 		                    fieldLabel : this.i18n._("Pass"),
 		                    allowBlank : false,
 		                    width : 300
 						}), new Ext.form.TextField({
-		                    name : "description",
+		                    name : "Description",
+		                    dataIndex: "description",
 		                    fieldLabel : this.i18n._("Description"),
 		                    allowBlank : false,
 		                    width : 300

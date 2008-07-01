@@ -152,16 +152,19 @@ if (!Ung.hasResource["Ung.Shield"]) {
                 plugins : [enableColumn],
                 // the row input lines used by the row editor window
                 rowEditorInputLines : [new Ext.form.Checkbox({
-                    name : "live",
+                    name : "Enable",
+                    dataIndex : "live",
                     fieldLabel : this.i18n._("Enable")
                 }), new Ext.form.TextField({
-                    name : "address",
+                    name : "Address",
+                    dataIndex : "address",
                     fieldLabel : this.i18n._("Address"),
                     allowBlank : false,
                     width : 200,
                     vtype : 'ipAddress'
                 }), new Ext.form.ComboBox({
-                    name : "divider",
+                    name : "User Count",
+                    dataIndex : "divider",
                     fieldLabel : this.i18n._("User Count"),
                     store : new Ext.data.SimpleStore({
                         fields : ['dividerValue', 'dividerName'],
@@ -175,7 +178,8 @@ if (!Ung.hasResource["Ung.Shield"]) {
                     listClass : 'x-combo-list-small',
                     selectOnFocus : true
                 }), new Ext.form.TextArea({
-                    name : "description",
+                    name : "Description",
+                    dataIndex : "description",
                     fieldLabel : this.i18n._("Description"),
                     width : 200,
                     height : 60

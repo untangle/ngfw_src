@@ -2168,7 +2168,7 @@ Ung.RowEditorWindow = Ext.extend(Ung.UpdateWindow, {
             for (var i = 0; i < this.inputLines.length; i++) {
                 var inputLine = this.inputLines[i];
                 inputLine.suspendEvents();
-                inputLine.setValue(record.get(inputLine.name));
+                inputLine.setValue(record.get(inputLine.dataIndex));
                 inputLine.resumeEvents();
             }
         }
@@ -2193,7 +2193,7 @@ Ung.RowEditorWindow = Ext.extend(Ung.UpdateWindow, {
                 if (this.inputLines) {
                     for (var i = 0; i < this.inputLines.length; i++) {
                         var inputLine = this.inputLines[i];
-                        this.record.set(inputLine.name, inputLine.getValue());
+                        this.record.set(inputLine.dataIndex, inputLine.getValue());
                     }
                 }
             }

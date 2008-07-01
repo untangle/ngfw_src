@@ -294,12 +294,14 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                 autoExpandColumn : 'string',
                 plugins : [liveColumn],
                 rowEditorInputLines : [new Ext.form.TextField({
-                    name : "string",
+                    name : "Identification",
+                    dataIndex : "string",
                     fieldLabel : this.i18n._("Identification"),
                     allowBlank : false,
                     width : 200
                 }), new Ext.form.Checkbox({
-                    name : "live",
+                    name : "Block",
+                    dataIndex : "live",
                     fieldLabel : this.i18n._("Block")
                 })]
             });
@@ -350,12 +352,14 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                 autoExpandColumn : 'string',
                 plugins : [liveColumn],
                 rowEditorInputLines : [new Ext.form.TextField({
-                    name : "string",
+                    name : "Identification",
+                    dataIndex : "string",
                     fieldLabel : this.i18n._("Identification"),
                     allowBlank : false,
                     width : 300
                 }), new Ext.form.Checkbox({
-                    name : "live",
+                    name : "Block",
+                    dataIndex : "live",
                     fieldLabel : this.i18n._("Block")
                 })]
             });
@@ -417,17 +421,20 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                 autoExpandColumn : 'name',
                 plugins : [logColumn],
                 rowEditorInputLines : [new Ext.form.TextField({
-                    name : "name",
+                    name : "Name",
+                    dataIndex : "name",
                     fieldLabel : this.i18n._("Name"),
                     allowBlank : false,
                     width : 200
                 }), new Ext.form.TextField({
-                    name : "ipMaddr",
+                    name : "Subnet",
+                    dataIndex : "ipMaddr",
                     fieldLabel : this.i18n._("Subnet"),
                     allowBlank : false,
                     width : 200
                 }), new Ext.form.Checkbox({
-                    name : "log",
+                    name : "Log",
+                    dataIndex : "log",
                     fieldLabel : this.i18n._("Log")
                 })]
             });
@@ -489,15 +496,18 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                 autoExpandColumn : 'description',
                 plugins : [passColumn],
                 rowEditorInputLines : [new Ext.form.TextField({
-                    name : "string",
+                    name : "Site",
+                    dataIndex : "string",
                     fieldLabel : this.i18n._("Site"),
                     allowBlank : false,
                     width : 200
                 }), new Ext.form.Checkbox({
-                    name : "live",
+                    name : "Pass",
+                    dataIndex : "live",
                     fieldLabel : this.i18n._("Pass")
                 }), new Ext.form.TextArea({
-                    name : "description",
+                    name : "Description",
+                    dataIndex : "description",
                     fieldLabel : this.i18n._("Description"),
                     width : 200,
                     height : 60

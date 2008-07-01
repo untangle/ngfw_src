@@ -219,15 +219,18 @@ if (!Ung.hasResource["Ung.Virus"]) {
                 autoExpandColumn : 'name',
                 plugins : [liveColumn],
                 rowEditorInputLines : [new Ext.form.TextField({
-                    name : "string",
+                    name : "File Type",
+                    dataIndex : "string",
                     fieldLabel : this.i18n._("File Type"),
                     allowBlank : false,
                     width : 200
                 }), new Ext.form.Checkbox({
-                    name : "live",
+                    name : "Scan",
+                    dataIndex : "live",
                     fieldLabel : this.i18n._("Scan")
                 }), new Ext.form.TextArea({
-                    name : "name",
+                    name : "Description",
+                    dataIndex : "name",
                     fieldLabel : this.i18n._("Description"),
                     width : 200,
                     height : 60
@@ -288,15 +291,18 @@ if (!Ung.hasResource["Ung.Virus"]) {
                 autoExpandColumn : 'name',
                 plugins : [liveColumn],
                 rowEditorInputLines : [new Ext.form.TextField({
-                    name : "mimeType",
+                    name : "MIME Type",
+                    dataIndex : "mimeType",
                     fieldLabel : this.i18n._("MIME Type"),
                     allowBlank : false,
                     width : 200
                 }), new Ext.form.Checkbox({
-                    name : "live",
+                    name : "Scan",
+                    dataIndex : "live",
                     fieldLabel : this.i18n._("Scan")
                 }), new Ext.form.TextArea({
-                    name : "name",
+                    name : "Description",
+                    dataIndex : "name",
                     fieldLabel : this.i18n._("Description"),
                     width : 200,
                     height : 60

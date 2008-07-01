@@ -287,12 +287,14 @@ if (!Ung.hasResource["Ung.WebFilter"]) {
                 autoExpandColumn : 'description',
                 plugins : [liveColumn, logColumn],
                 rowEditorInputLines : [new Ext.form.TextField({
-                    name : "displayName",
+                    name : "Category",
+                    dataIndex : "displayName",
                     fieldLabel : this.i18n._("Category"),
                     allowBlank : false,
                     width : 200
                 }), new Ext.form.Checkbox({
-                    name : "blockDomains",
+                    name : "Block",
+                    dataIndex : "blockDomains",
                     fieldLabel : this.i18n._("Block"),
                     listeners : {
                         "check" : {
@@ -307,10 +309,12 @@ if (!Ung.hasResource["Ung.WebFilter"]) {
                         }
                     }
                 }), new Ext.form.Checkbox({
-                    name : "logOnly",
+                    name : "Log",
+                    dataIndex : "logOnly",
                     fieldLabel : this.i18n._("Log")
                 }), new Ext.form.TextArea({
-                    name : "description",
+                    name : "Description",
+                    dataIndex : "description",
                     fieldLabel : this.i18n._("Description"),
                     width : 200,
                     height : 60
@@ -399,20 +403,24 @@ if (!Ung.hasResource["Ung.WebFilter"]) {
                 autoExpandColumn : 'description',
                 plugins : [liveColumn, logColumn],
                 rowEditorInputLines : [new Ext.form.TextField({
-                    name : "string",
+                    name : "Site",
+                    dataIndex : "string",
                     fieldLabel : this.i18n._("Site"),
                     allowBlank : false,
                     width : 200,
                     validator : urlValidator,
                     blankText : this.i18n._("Invalid \"URL\" specified")
                 }), new Ext.form.Checkbox({
-                    name : "live",
+                    name : "Block",
+                    dataIndex : "live",
                     fieldLabel : this.i18n._("Block")
                 }), new Ext.form.Checkbox({
-                    name : "log",
+                    name : "Log",
+                    dataIndex : "log",
                     fieldLabel : this.i18n._("Log")
                 }), new Ext.form.TextArea({
-                    name : "description",
+                    name : "Description",
+                    dataIndex : "description",
                     fieldLabel : this.i18n._("Description"),
                     width : 200,
                     height : 60
@@ -481,18 +489,22 @@ if (!Ung.hasResource["Ung.WebFilter"]) {
                 autoExpandColumn : 'name',
                 plugins : [liveColumn, logColumn],
                 rowEditorInputLines : [new Ext.form.TextField({
-                    name : "string",
+                    name : "File Type",
+                    dataIndex : "string",
                     fieldLabel : this.i18n._("File Type"),
                     allowBlank : false,
                     width : 200
                 }), new Ext.form.Checkbox({
-                    name : "live",
+                    name : "Block",
+                    dataIndex : "live",
                     fieldLabel : this.i18n._("Block")
                 }), new Ext.form.Checkbox({
-                    name : "log",
+                    name : "Log",
+                    dataIndex : "log",
                     fieldLabel : this.i18n._("Log")
                 }), new Ext.form.TextArea({
-                    name : "name",
+                    name : "Description",
+                    dataIndex : "name",
                     fieldLabel : this.i18n._("Description"),
                     width : 200,
                     height : 60
@@ -561,18 +573,22 @@ if (!Ung.hasResource["Ung.WebFilter"]) {
                 autoExpandColumn : 'name',
                 plugins : [liveColumn, logColumn],
                 rowEditorInputLines : [new Ext.form.TextField({
-                    name : "mimeType",
+                    name : "MIME Type",
+                    dataIndex : "mimeType",
                     fieldLabel : this.i18n._("MIME Type"),
                     allowBlank : false,
                     width : 200
                 }), new Ext.form.Checkbox({
-                    name : "live",
+                    name : "Block",
+                    dataIndex : "live",
                     fieldLabel : this.i18n._("Block")
                 }), new Ext.form.Checkbox({
-                    name : "log",
+                    name : "Log",
+                    dataIndex : "log",
                     fieldLabel : this.i18n._("Log")
                 }), new Ext.form.TextArea({
-                    name : "name",
+                    name : "Description",
+                    dataIndex : "name",
                     fieldLabel : this.i18n._("Description"),
                     width : 200,
                     height : 60
@@ -746,17 +762,20 @@ if (!Ung.hasResource["Ung.WebFilter"]) {
                 autoExpandColumn : 'description',
                 plugins : [liveColumn],
                 rowEditorInputLines : [new Ext.form.TextField({
-                    name : "string",
+                    name : "Site",
+                    dataIndex : "string",
                     fieldLabel : this.i18n._("Site"),
                     allowBlank : false,
                     width : 200,
                     validator : urlValidator,
                     blankText : this.i18n._("Invalid \"URL\" specified")
                 }), new Ext.form.Checkbox({
-                    name : "live",
+                    name : "Pass",
+                    dataIndex : "live",
                     fieldLabel : this.i18n._("Pass")
                 }), new Ext.form.TextArea({
-                    name : "description",
+                    name : "Description",
+                    dataIndex : "description",
                     fieldLabel : this.i18n._("Description"),
                     width : 200,
                     height : 60
@@ -817,15 +836,18 @@ if (!Ung.hasResource["Ung.WebFilter"]) {
                 autoExpandColumn : 'description',
                 plugins : [liveColumn],
                 rowEditorInputLines : [new Ext.form.TextField({
-                    name : "ipMaddr",
+                    name : "IP address/range",
+                    dataIndex : "ipMaddr",
                     fieldLabel : this.i18n._("IP address/range"),
                     allowBlank : false,
                     width : 200
                 }), new Ext.form.Checkbox({
-                    name : "live",
+                    name : "Pass",
+                    dataIndex : "live",
                     fieldLabel : this.i18n._("Pass")
                 }), new Ext.form.TextArea({
-                    name : "description",
+                    name : "Description",
+                    dataIndex : "description",
                     fieldLabel : this.i18n._("Description"),
                     width : 200,
                     height : 60

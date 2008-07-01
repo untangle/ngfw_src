@@ -119,28 +119,34 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
                 plugins : [blockedColumn, logColumn],
                 // the row input lines used by the row editor window
                 rowEditorInputLines : [new Ext.form.TextField({
-                    name : "category",
+                    name : "Category",
+                    dataIndex : "category",
                     fieldLabel : this.i18n._("Category"),
                     allowBlank : false,
                     width : 200
                 }), new Ext.form.TextField({
-                    name : "protocol",
+                    name : "Protocol",
+                    dataIndex : "protocol",
                     fieldLabel : this.i18n._("Protocol"),
                     allowBlank : false,
                     width : 200
                 }), new Ext.form.Checkbox({
-                    name : "blocked",
+                    name : "Block",
+                    dataIndex : "blocked",
                     fieldLabel : this.i18n._("Block")
                 }), new Ext.form.Checkbox({
-                    name : "log",
+                    name : "Log",
+                    dataIndex : "log",
                     fieldLabel : this.i18n._("Log")
                 }), new Ext.form.TextArea({
-                    name : "description",
+                    name : "Description",
+                    dataIndex : "description",
                     fieldLabel : this.i18n._("Description"),
                     width : 200,
                     height : 60
                 }), new Ext.form.TextArea({
-                    name : "definition",
+                    name : "Signature",
+                    dataIndex : "definition",
                     fieldLabel : this.i18n._("Signature"),
                     width : 200,
                     height : 60
