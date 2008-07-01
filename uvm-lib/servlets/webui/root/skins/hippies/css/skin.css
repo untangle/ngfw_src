@@ -1,6 +1,6 @@
 #contentleft {
 	padding-top:25px;
-	background:transparent url(../images/main/background_left.png)  no-repeat !important;
+	background:transparent url(../images/admin/background_left.png)  no-repeat !important;
 	text-align:center;
 	height:100%;
 }
@@ -8,12 +8,12 @@
 	height:100%;
 }
 div.centerRegion {
-	background: transparent url(../images/main/background_right.png) repeat !important;
+	background: transparent url(../images/admin/background_right.png) repeat !important;
 }
 #racks {
 	position:relative;
 	margin:auto;
-	background: transparent url(../images/main/background_empty_rack.png) repeat-y;
+	background: transparent url(../images/admin/background_empty_rack.png) repeat-y;
 	width:789px;
 	height:100%;
 }
@@ -29,7 +29,7 @@ div.racksWithoutSeparator {
 }
 #leftHorizontalRuler {
 	position:relative;
-	background: transparent url(../images/main/background_left_hruler.png) no-repeat center center;
+	background: transparent url(../images/admin/background_left_hruler.png) no-repeat center center;
 	width: 200px;
 	height: 1px;
 	left: 10px;
@@ -51,7 +51,7 @@ div.racksWithoutSeparator {
 }
 #rack_list {
 	position:relative;
-	background:transparent url(../images/main/background_rack_list.png) no-repeat;
+	background:transparent url(../images/admin/background_rack_list.png) no-repeat;
 	width:789px;
 	height:50px;
 }
@@ -61,7 +61,7 @@ div.racksWithoutSeparator {
 }
 div.node {
 	position:relative;
-	background: transparent url(../images/main/background_node.png) no-repeat;
+	background: transparent url(../images/admin/background_node.png) no-repeat;
 	width:789px;
 	height:119px;
 }
@@ -85,7 +85,7 @@ div.node {
 }
 #nodes_separator {
 	position:relative;
-	background: transparent url(../images/main/background_separator.png) no-repeat;
+	background: transparent url(../images/admin/background_separator.png) no-repeat;
 	width:789px;
 	height:50px;
 }
@@ -124,10 +124,10 @@ div.node div.nodeTrial {
 }
 
 button.iconHelp {
-	background:transparent url(../images/main/icon_help.png) no-repeat center left !important; 
+	background:transparent url(../images/admin/icon_help.png) no-repeat center left !important; 
 }
 div.iconHelp {
-	background:transparent url(../images/main/icon_help.png) no-repeat !important;
+	background:transparent url(../images/admin/icon_help.png) no-repeat !important;
 	height:15px;
 	width:15px;
 }
@@ -140,16 +140,16 @@ div.node div.nodeState {
 	width: 33px
 }
 div.iconStateOn {
-	background:transparent url(../images/main/icon_state_on.png) no-repeat center !important; 
+	background:transparent url(../images/admin/icon_state_on.png) no-repeat center !important; 
 }
 div.iconStateOff {
-	background:transparent url(../images/main/icon_state_off.png) no-repeat center !important; 
+	background:transparent url(../images/admin/icon_state_off.png) no-repeat center !important; 
 }
 div.iconStateAttention {
-	background:transparent url(../images/main/icon_state_attention.png) no-repeat center !important; 
+	background:transparent url(../images/admin/icon_state_attention.png) no-repeat center !important; 
 }
 div.iconStateError {
-	background:transparent url(../images/main/icon_state_error.png) no-repeat center !important; 
+	background:transparent url(../images/admin/icon_state_error.png) no-repeat center !important; 
 }
 div.node div.nodePower {
 	position:absolute;
@@ -157,7 +157,7 @@ div.node div.nodePower {
 	right:54px;
 	height:33px;
 	width: 33px;
-    background:transparent url(../images/main/icon_power.png) no-repeat center !important; 
+    background:transparent url(../images/admin/icon_power.png) no-repeat center !important; 
 }
 div.node div.nodeSettingsButton {
 	position:absolute;
@@ -171,19 +171,19 @@ div.node div.nodeHelpButton {
 	width:120px;
 }
 button.nodeSettingsIcon {
-	background:transparent url(../images/main/icon_settings.png) no-repeat center left !important;  
+	background:transparent url(../images/admin/icon_settings.png) no-repeat center left !important;  
 }
 div.windowBackground {
-	background: transparent url(../images/main/background_grey.png) repeat;
+	background: transparent url(../images/admin/background_grey.png) repeat;
 }
 button.nodeRemoveIcon {
-	background:transparent url(../images/main/icon_remove.png) no-repeat center left !important; 
+	background:transparent url(../images/admin/icon_remove.png) no-repeat center left !important; 
 }
 button.cancelIcon {
-	background:transparent url(../images/main/icon_cancel.png) no-repeat center left !important; 
+	background:transparent url(../images/admin/icon_cancel.png) no-repeat center left !important; 
 }
 button.saveIcon {
-	background:transparent url(../images/main/icon_save.png) no-repeat center left !important; 
+	background:transparent url(../images/admin/icon_save.png) no-repeat center left !important; 
 }
 div.windowContent {
 	position:relative;
@@ -219,7 +219,7 @@ div.activityBlinger {
 	left: 0px;
 	width: 118px;
 	height: 82px;
-	background: transparent url(../images/main/background_activity_blinger_border.png) no-repeat scroll 0px 7px !important;
+	background: transparent url(../images/admin/background_activity_blinger_border.png) no-repeat scroll 0px 7px !important;
 }
 
 div.activityBlingerBox {
@@ -228,7 +228,7 @@ div.activityBlingerBox {
 	left: 9px;
 	height:60px;
 	width:100px;
-	background: transparent url(../images/main/background_activity_blinger.png) no-repeat !important;
+	background: transparent url(../images/admin/background_activity_blinger.png) no-repeat !important;
 }
 div.activityBlingerText {
 	position:absolute;
@@ -239,7 +239,7 @@ div.activityBlingerText {
 }
 div.activityBlingerBar {
 	position: absolute;
-	background: transparent url(../images/main/background_activity_blinger_bar.png) repeat-x;
+	background: transparent url(../images/admin/background_activity_blinger_bar.png) repeat-x;
 	left:0px;
 	height:10px;
 	z-index: 14;
@@ -250,7 +250,7 @@ div.systemBlinger {
 	right: 0px;
 	width: 219px;
 	height: 87px;
-	background: transparent url(../images/main/background_system_blinger_border.png) no-repeat scroll 0px 7px !important;
+	background: transparent url(../images/admin/background_system_blinger_border.png) no-repeat scroll 0px 7px !important;
 }
 div.systemBlingerBox {
 	position: relative;
@@ -277,7 +277,7 @@ div.systemBlingerValue {
 	padding-right:4px;
 	width: 100px;
 	height: 14px;
-	background: transparent url(../images/main/background_system_blinger_value.png) no-repeat right !important;
+	background: transparent url(../images/admin/background_system_blinger_value.png) no-repeat right !important;
 }
 div.systemBlingerSettings {
 	position: absolute;
@@ -285,7 +285,7 @@ div.systemBlingerSettings {
 	bottom: 0px;
 	width: 11px;
 	height: 11px;
-	background: transparent url(../images/main/icon_system_blinger_settings.png) no-repeat !important;
+	background: transparent url(../images/admin/icon_system_blinger_settings.png) no-repeat !important;
 }
 div.pixel {
 	position:absolute;
@@ -311,20 +311,20 @@ div.ungButtonInvalid {
 	border: 1px solid green;
 }
 button.iconAddRow {
-    background: transparent url(../images/main/icon_add_row.gif) no-repeat center left !important;
+    background: transparent url(../images/admin/icon_add_row.gif) no-repeat center left !important;
 }
 div.iconEditRow {
-	background:transparent url(../images/main/icon_edit_row.gif) no-repeat center center;
+	background:transparent url(../images/admin/icon_edit_row.gif) no-repeat center center;
 	width: 100%;
 	cursor: pointer;
 }
 div.iconDeleteRow {
-	background:transparent url(../images/main/icon_delete_row.gif) no-repeat center center;
+	background:transparent url(../images/admin/icon_delete_row.gif) no-repeat center center;
 	width: 100%;
 	cursor: pointer;
 }
 button.iconRefresh {
-    background: transparent url(../images/main/icon_refresh.png) no-repeat center left !important;
+    background: transparent url(../images/admin/icon_refresh.png) no-repeat center left !important;
 }
 
 div.buttonsLeftPos {
@@ -349,42 +349,42 @@ div.buttonsRightPos {
 }
 
 div.iconConfigNetwork {
-	background: transparent url(../images/main/config/icon_config_network.png) no-repeat !important; 
+	background: transparent url(../images/admin/config/icon_config_network.png) no-repeat !important; 
 	width:36px;
 	height:36px;
 }
 div.iconConfigAdmin {
-	background: transparent url(../images/main/config/icon_config_admin.png) no-repeat !important; 
+	background: transparent url(../images/admin/config/icon_config_admin.png) no-repeat !important; 
 	width:36px;
 	height:36px;
 }
 div.iconConfigEmail {
-	background: transparent url(../images/main/config/icon_config_email.png) no-repeat !important; 
+	background: transparent url(../images/admin/config/icon_config_email.png) no-repeat !important; 
 	width:36px;
 	height:36px;
 }
 div.iconConfigDirectory {
-	background: transparent url(../images/main/config/icon_config_directory.png) no-repeat !important; 
+	background: transparent url(../images/admin/config/icon_config_directory.png) no-repeat !important; 
 	width:36px;
 	height:36px;
 }
 div.iconConfigBackup {
-	background: transparent url(../images/main/config/icon_config_backup.png) no-repeat !important; 
+	background: transparent url(../images/admin/config/icon_config_backup.png) no-repeat !important; 
 	width:36px;
 	height:36px;
 }
 div.iconConfigSupport {
-	background: transparent url(../images/main/config/icon_config_support.png) no-repeat !important; 
+	background: transparent url(../images/admin/config/icon_config_support.png) no-repeat !important; 
 	width:36px;
 	height:36px;
 }
 div.iconConfigUpgrade {
-	background: transparent url(../images/main/config/icon_config_upgrade.png) no-repeat !important; 
+	background: transparent url(../images/admin/config/icon_config_upgrade.png) no-repeat !important; 
 	width:36px;
 	height:36px;
 }
 div.iconConfigSetup {
-	background: transparent url(../images/main/config/icon_config_setup.png) no-repeat !important; 
+	background: transparent url(../images/admin/config/icon_config_setup.png) no-repeat !important; 
 	width:36px;
 	height:36px;
 }
@@ -395,7 +395,7 @@ thead tr.x-grid3-hd-row {
 div.appItem {
     cursor: pointer;
 	position: relative;
-	background: transparent url(../images/main/background_app_item.png) no-repeat !important;
+	background: transparent url(../images/admin/background_app_item.png) no-repeat !important;
 	width: 177px;
 	height: 53px;
 	margin-bottom: 2px;
@@ -452,17 +452,17 @@ div.appItem div.statePos {
 	color: red;
 }
 div.iconInfo {
-	background:transparent url(../images/main/icon_info.png) no-repeat center right !important;
+	background:transparent url(../images/admin/icon_info.png) no-repeat center right !important;
 }
 div.iconArrowRight {
-	background:transparent url(../images/main/icon_arrow_right.png) no-repeat center right !important;
+	background:transparent url(../images/admin/icon_arrow_right.png) no-repeat center right !important;
 }
 div.iconArrowDown {
-	background:transparent url(../images/main/icon_arrow_down.png) no-repeat center right !important;
+	background:transparent url(../images/admin/icon_arrow_down.png) no-repeat center right !important;
 }
 
 .iconBreadcrumbsSeparator {
-    background:transparent url(../images/main/icon_breadcrumbs_separator.gif) no-repeat center center !important;
+    background:transparent url(../images/admin/icon_breadcrumbs_separator.gif) no-repeat center center !important;
     width:13px;
     height:12px;
 }
