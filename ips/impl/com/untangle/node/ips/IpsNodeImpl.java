@@ -141,9 +141,13 @@ public class IpsNodeImpl extends AbstractNode implements IpsNode {
     public List<IpsRule> getRules(final int start, final int limit,
                                   final String... sortColumns)
     {
-        return listUtil.getItems("select s.rules from IpsSettings s where s.tid = :tid ",
+        List<IpsRule> rules = listUtil.getItems("select s.rules from IpsSettings s where s.tid = :tid ",
                                  getNodeContext(), getTid(), start, limit,
                                  sortColumns);
+        for(IpsRule rule : rules) {
+            engine.addRule(rule);
+        }
+        return rules;
     }
 
     public void updateRules(List<IpsRule> added, List<Long> deleted,

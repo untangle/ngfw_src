@@ -94,8 +94,6 @@ if (!Ung.hasResource["Ung.Ips"]) {
 		                    "name" : this.i18n._("[no name]"),
 		                    "text" : this.i18n._("[no signature]"),
 		                    "category" : this.i18n._("[no category]"),
-		                    "classification" : this.i18n._("[no classification]"),
-		                    "url" : this.i18n._("[no url]"),
 		                    "sid" : this.i18n._("0"),
 		                    "live" : true,
 		                    "log" : true,
@@ -117,7 +115,7 @@ if (!Ung.hasResource["Ung.Ips"]) {
                 		}, {
 		                    name : 'classification'
                 		}, {
-		                    name : 'url'
+		                    name : 'URL'
 		                }, {
 		                    name : 'live'
 		                }, {
@@ -160,8 +158,9 @@ if (!Ung.hasResource["Ung.Ips"]) {
 		                    id : 'info',
 		                    header : this.i18n._("info"),
 		                    width : 50,
-		                    dataIndex : 'url',
+		                    dataIndex : 'URL',
 		                    editor : null,
+		                    sortable : false,
 		                    renderer : function(value) {
 		                        return (value === null || value.length == 0) ? "no info" : "<a href=" + value + ">info</a>";
 		                    }
