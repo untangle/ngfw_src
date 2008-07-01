@@ -180,12 +180,39 @@ class MessageManagerImpl implements LocalMessageManager
         }
     }
 
-    public void setActiveMetrics(Tid t, BlingBlinger... blingers)
+    public void setActiveMetricsIfNotSet(final Tid tid,
+                                         final BlingBlinger... blingers)
     {
-        List<ActiveStat> l = new ArrayList<ActiveStat>();
-        for (BlingBlinger b : blingers) {
-            new ActiveStat(b.getStatDesc().getName(), StatInterval.SINCE_MIDNIGHT);
-        }
+        TransactionWork<List<ActiveStat>> tw = new TransactionWork<List<ActiveStat>>()
+            {
+                public boolean doWork(Session s)
+                {
+                    Query q = s.createQuery
+                        ("from StatSettings bs where bs.tid = :tid");
+                    q.setParameter("tid", tid);
+                    StatSettings bs = (StatSettings)q.uniqueResult();
+                    if (null == bs) {
+                        List<ActiveStat> l = getActiveStats(blingers);
+                        bs = new StatSettings(tid, l);
+                        s.save(bs);
+                    } else {
+                        List<ActiveStat> as = bs.getActiveMetrics();
+                        if (null == as) {
+                            as = new ArrayList<ActiveStat>();
+                            bs.setActiveMetrics(as);
+                        }
+
+                        if (0 == as.size()) {
+                            as.addAll(getActiveStats(blingers));
+                            s.merge(bs);
+                        }
+                    }
+
+                    return true;
+                }
+            };
+
+        UvmContextImpl.getInstance().runTransaction(tw);
     }
 
     // private methods ---------------------------------------------------------
@@ -222,5 +249,17 @@ class MessageManagerImpl implements LocalMessageManager
             };
 
         UvmContextImpl.getInstance().runTransaction(tw);
+    }
+
+    private List<ActiveStat> getActiveStats(BlingBlinger[] blingers)
+    {
+        List<ActiveStat> l = new ArrayList<ActiveStat>();
+
+        for (BlingBlinger b : blingers) {
+            l.add(new ActiveStat(b.getStatDesc().getName(),
+                                 StatInterval.SINCE_MIDNIGHT));
+        }
+
+        return l;
     }
 }

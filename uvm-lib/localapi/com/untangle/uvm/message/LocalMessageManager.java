@@ -47,5 +47,5 @@ public interface LocalMessageManager
     Counters getUvmCounters();
     Counters getCounters(Tid t);
     void submitMessage(Message m);
-    void setActiveMetrics(Tid tid, BlingBlinger... l);
+    void setActiveMetricsIfNotSet(Tid tid, BlingBlinger... l);
 }
