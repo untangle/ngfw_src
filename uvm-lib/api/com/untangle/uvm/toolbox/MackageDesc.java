@@ -85,9 +85,7 @@ public class MackageDesc implements Serializable
     {
         this.extraName = extraName;
 
-        // XXX hack, use Mackage field instead.
         name = m.get("package");
-        // XXX hack
 
         String ut = m.get("untangle-type");
         Type untangleType = Type.UNKNOWN;
@@ -142,7 +140,7 @@ public class MackageDesc implements Serializable
         if (null != v) {
             descIcon = decode(v);
         } else {
-            descIcon = null; // XXX default
+            descIcon = null;
         }
 
         this.installedVersion = installedVersion;
