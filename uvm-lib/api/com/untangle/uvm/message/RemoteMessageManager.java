@@ -37,12 +37,14 @@ import java.util.List;
 
 import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.security.Tid;
+import java.util.Map;
 
 public interface RemoteMessageManager
 {
     MessageQueue getMessageQueue();
     MessageQueue getMessageQueue(Policy p);
     StatDescs getStatDescs(Tid t);
+    Map<String, Float> getSystemStats();
     List<ActiveStat> getActiveMetrics(Tid tid);
     void setActiveMetrics(Tid tid, List<ActiveStat> activeMetrics);
     List<Message> getMessages();

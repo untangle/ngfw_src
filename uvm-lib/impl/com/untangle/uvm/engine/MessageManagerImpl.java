@@ -18,10 +18,16 @@
 
 package com.untangle.uvm.engine;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.untangle.uvm.message.ActiveStat;
 import com.untangle.uvm.message.BlingBlinger;
@@ -35,20 +41,42 @@ import com.untangle.uvm.message.Stats;
 import com.untangle.uvm.node.LocalNodeManager;
 import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.security.Tid;
+import com.untangle.uvm.util.Pulse;
 import com.untangle.uvm.util.TransactionWork;
+import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
 class MessageManagerImpl implements LocalMessageManager
 {
+    private static final Pattern MEMINFO_PATTERN
+        = Pattern.compile("(\\w+):\\s+(\\d+)\\s+kB");
+
     private final Map<Tid, Counters> counters = new HashMap<Tid, Counters>();
 
     // XXX this needs to be per client session
     private final List<Message> messages = new ArrayList<Message>();
 
+    private final Pulse updatePulse = new Pulse("system-stat-collector",
+                                                true, new SystemStatCollector());
+
+    private volatile Map<String, Float> systemStats = Collections.emptyMap();
+
+    private final Logger logger = Logger.getLogger(getClass());
+
     MessageManagerImpl()
     {
         ensureTid0();
+    }
+
+    void start()
+    {
+        updatePulse.start(10000);
+    }
+
+    void stop()
+    {
+        updatePulse.stop();
     }
 
     // RemoteMessageManager methods --------------------------------------------
@@ -80,6 +108,11 @@ class MessageManagerImpl implements LocalMessageManager
         } else {
             return null;
         }
+    }
+
+    public Map<String, Float> getSystemStats()
+    {
+        return this.systemStats;
     }
 
     public List<ActiveStat> getActiveMetrics(final Tid tid)
@@ -261,5 +294,39 @@ class MessageManagerImpl implements LocalMessageManager
         }
 
         return l;
+    }
+
+    private class SystemStatCollector implements Runnable
+    {
+        public void run()
+        {
+            Map<String, Float> m = new HashMap<String, Float>();
+
+            try {
+                readMeminfo(m);
+            } catch (IOException exn) {
+                logger.warn("could not get memory information", exn);
+            }
+
+            systemStats = Collections.unmodifiableMap(m);
+        }
+
+        private void readMeminfo(Map<String, Float> m)
+            throws IOException
+        {
+            BufferedReader br = new BufferedReader(new FileReader("/proc/meminfo"));
+            for (String l = br.readLine(); null != l; l = br.readLine()) {
+                Matcher matcher = MEMINFO_PATTERN.matcher(l);
+                if (matcher.find()) {
+                    String n = matcher.group(1);
+                    String s = matcher.group(2);
+                    try {
+                        m.put(n, Float.parseFloat(s));
+                    } catch (NumberFormatException exn) {
+                        logger.warn("could not add value for: " + n);
+                    }
+                }
+            }
+        }
     }
 }

@@ -623,26 +623,26 @@ public class UvmContextImpl extends UvmContextBase
     }
 
     public boolean activate(String key, RegistrationInfo regInfo) {
-	if (key != null) {
-	    // Be nice to the poor user:
-	    if (key.length() == 16)
-		key = key.substring(0, 4) + "-" + key.substring(4, 8) + "-" +
-		    key.substring(8, 12) + "-" + key.substring(12,16);
-	    // Fix for bug 1310: Make sure all the hex chars are lower cased.
-	    key = key.toLowerCase();
-	    if (key.length() != 19) {
-		// Don't even bother if the key isn't the right length.
-		// Could do other sanity checking here as well. XX
-		logger.error("Unable to activate with wrong length key: " + key);
-		return false;
-	    }
-	}
+    if (key != null) {
+        // Be nice to the poor user:
+        if (key.length() == 16)
+        key = key.substring(0, 4) + "-" + key.substring(4, 8) + "-" +
+            key.substring(8, 12) + "-" + key.substring(12,16);
+        // Fix for bug 1310: Make sure all the hex chars are lower cased.
+        key = key.toLowerCase();
+        if (key.length() != 19) {
+        // Don't even bother if the key isn't the right length.
+        // Could do other sanity checking here as well. XX
+        logger.error("Unable to activate with wrong length key: " + key);
+        return false;
+        }
+    }
         try {
             Process p;
-	    if (key == null)
-		p = exec(new String[] { ACTIVATE_SCRIPT });
-	    else
-		p = exec(new String[] { ACTIVATE_SCRIPT, key });
+        if (key == null)
+        p = exec(new String[] { ACTIVATE_SCRIPT });
+        else
+        p = exec(new String[] { ACTIVATE_SCRIPT, key });
             for (byte[] buf = new byte[1024]; 0 <= p.getInputStream().read(buf); );
             int exitValue = p.waitFor();
             if (0 != exitValue) {
@@ -660,14 +660,14 @@ public class UvmContextImpl extends UvmContextBase
             return false;
         }
 
-	// Only register if activation succeeded
-	try {
-	    adminManager.setRegistrationInfo(regInfo);	
-	} catch (Exception x) {
-	    // Shouldn't happen
-	    logger.error("unable to set reg info", x);
-	}
-	return true;
+    // Only register if activation succeeded
+    try {
+        adminManager.setRegistrationInfo(regInfo);
+    } catch (Exception x) {
+        // Shouldn't happen
+        logger.error("unable to set reg info", x);
+    }
+    return true;
     }
 
     public void doFullGC()
@@ -764,6 +764,7 @@ public class UvmContextImpl extends UvmContextBase
         remoteNodeManager = new RemoteNodeManagerAdaptor(nodeManager);
 
         localMessageManager = new MessageManagerImpl();
+        localMessageManager.start();
         messageManager = new RemoteMessageManagerAdaptor(localMessageManager);
 
         // Retrieve the reporting configuration manager
@@ -841,6 +842,8 @@ public class UvmContextImpl extends UvmContextBase
             logger.warn("could not destroy HttpInvoker", exn);
         }
         httpInvoker = null;
+
+        localMessageManager.stop();
 
         // stop cli server
         if (cliServerManager != null)
