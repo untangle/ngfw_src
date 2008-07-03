@@ -65,6 +65,7 @@ public class BlingBlinger implements CounterStats, Serializable
 
     public long increment(long delta)
     {
+        // XXX fix ths
         synchronized (this) {
             count++;
             countSinceMidnight++;
