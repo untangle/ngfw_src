@@ -43,11 +43,14 @@ public class MessageQueue implements Serializable
 {
     private final List<Message> messages;
     private final Map<Tid, Stats> stats;
+    private final Map<String, Float> systemStats;
 
-    public MessageQueue(List<Message> messages, Map<Tid, Stats> stats)
+    public MessageQueue(List<Message> messages, Map<Tid, Stats> stats,
+                        Map<String, Float> systemStats)
     {
         this.messages = messages;
         this.stats = stats;
+        this.systemStats = systemStats;
     }
 
     public Map<Tid, Stats> getStats()
@@ -58,5 +61,10 @@ public class MessageQueue implements Serializable
     public List<Message> getMessages()
     {
         return messages;
+    }
+
+    public Map<String, Float> getSystemStats()
+    {
+        return systemStats;
     }
 }

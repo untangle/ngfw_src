@@ -39,6 +39,12 @@ public class BlingBlinger implements CounterStats, Serializable
 {
     private final StatDesc statDesc;
 
+    private volatile int count = 0;
+    private volatile int countSinceMidnight = 0;
+    private volatile int count1Min = 0;
+    private volatile int count5Min = 0;
+    private volatile int count15Min = 0;
+
     public BlingBlinger(String name, String displayName, String unit,
                         String action)
     {
@@ -59,33 +65,41 @@ public class BlingBlinger implements CounterStats, Serializable
 
     public long increment(long delta)
     {
-        return 0;
+        synchronized (this) {
+            count++;
+            countSinceMidnight++;
+            count1Min++;
+            count5Min++;
+            count15Min++;
+        }
+
+        return count;
     }
 
     // CounterStats methods ---------------------------------------------------
 
     public long getCount()
     {
-        return 0;
+        return count;
     }
 
     public long getCountSinceMidnight()
     {
-        return 0;
+        return countSinceMidnight;
     }
 
     public long get1MinuteCount()
     {
-        return 0;
+        return count1Min;
     }
 
     public long get5MinuteCount()
     {
-        return 0;
+        return count5Min;
     }
 
     public long get15MinuteCount()
     {
-        return 0;
+        return count15Min;
     }
 }

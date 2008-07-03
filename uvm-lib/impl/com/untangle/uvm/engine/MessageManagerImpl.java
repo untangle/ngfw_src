@@ -88,7 +88,7 @@ class MessageManagerImpl implements LocalMessageManager
         tids.add(new Tid(0L));
         Map<Tid, Stats> stats = getStats(lm, tids);
         List<Message> messages = getMessages();
-        return new MessageQueue(messages, stats);
+        return new MessageQueue(messages, stats, systemStats);
     }
 
     public MessageQueue getMessageQueue(Policy p)
@@ -97,7 +97,7 @@ class MessageManagerImpl implements LocalMessageManager
         List<Tid> tids = lm.nodeInstances(p);
         Map<Tid, Stats> stats = getStats(lm, tids);
         List<Message> messages = getMessages();
-        return new MessageQueue(messages, stats);
+        return new MessageQueue(messages, stats, systemStats);
     }
 
     public StatDescs getStatDescs(Tid t)
