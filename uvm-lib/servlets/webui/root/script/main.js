@@ -115,8 +115,9 @@ Ung.Main.prototype = {
             '</div>'];
         var contentRightArr=[
             '<div id="contentright">',
-                '<div id="racks">',
-                    '<div id="rack_list"></div>',
+                '<div id="racks" style="display:none;">',
+                    '<div id="rack_list">',
+                    '</div>',
                     '<div id="rack_nodes">',
                         '<div id="security_nodes"></div>',
                         '<div id="nodes_separator" style="display:none;"><div id="nodes_separator_text"></div></div>',
@@ -555,6 +556,7 @@ Ung.Main.prototype = {
     },
     // Show - hide Services header in the rack
     updateSeparator: function() {
+    	document.getElementById("racks").style.display=this.nodes.length>0?"":"none";
         var hasUtilOrService=false;
         var hasCore=false;
         for(var i=0;i<this.nodes.length;i++) {
@@ -573,7 +575,11 @@ Ung.Main.prototype = {
 
         }
     },
-
+    buildSystemBlingers: function () {
+        main.systemBlingers=new Ext.Panel({
+            
+        });
+    },
     // build policies select box
     buildPolicies: function () {
         var out=[];

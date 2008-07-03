@@ -417,6 +417,7 @@ Ung.AppItem = Ext.extend(Ext.Component, {
     buttonStore : null,
     // progress bar component
     progressBar : null,
+    
     constructor : function(config) {
         var name="";
         if(config.libItem!=null) {
@@ -581,6 +582,9 @@ Ung.AppItem = Ext.extend(Ext.Component, {
     // open store page in a new frame
     linkToStoreFn : function(e) {
         e.stopEvent();
+        if(!this.progressBar.hidden) {
+            return;
+        }
         rpc.toolboxManager.upgradable(function(result, exception) {
             if (exception) {
                 Ext.MessageBox.alert(i18n._("Failed"), exception.message);
@@ -617,6 +621,9 @@ Ung.AppItem = Ext.extend(Ext.Component, {
     // install node / uninstall App
     installNodeFn : function(e) {
         e.preventDefault();
+        if(!this.progressBar.hidden) {
+        	return;
+        }
         if (e.shiftKey) { // uninstall App
             main.unactivateNode(this.node);
         } else { // install node
@@ -765,6 +772,8 @@ Ung.Node = Ext.extend(Ext.Component, {
     settingsClassName : null,
     // last blinger data received
     stats : null,
+    activityBlinger: null,
+    systemBlinger: null,
     subCmps : null,
     constructor : function(config) {
         config.id = "node_" + config.tid;
@@ -862,21 +871,23 @@ Ung.Node = Ext.extend(Ext.Component, {
         this.setState(isRunning ? "On" : "Off");
     },
     updateBlingers : function() {
-        if (this.blingers !== null) {
-            if (this.powerOn && this.stats) {
-                for (var i = 0; i < this.blingers.length; i++) {
-                    Ext.getCmp(this.blingers[i].id).update(this.stats);
-                }
-            } else {
-                this.resetBlingers();
+        if (this.powerOn && this.stats) {
+            if(this.activityBlinger!=null) {
+            	this.activityBlinger.update(this.stats);
             }
+            if(this.systemBlinger!=null) {
+            	this.systemBlinger.update(this.stats);
+            }
+        } else {
+            this.resetBlingers();
         }
     },
     resetBlingers : function() {
-        if (this.blingers !== null) {
-            for (var i = 0; i < this.blingers.length; i++) {
-                Ext.getCmp(this.blingers[i].id).reset();
-            }
+        if(this.activityBlinger!=null) {
+            activityBlinger.reset();
+        }
+        if(this.systemBlinger!=null) {
+            systemBlinger.reset();
         }
     },
     onPowerClick : function() {
@@ -1006,18 +1017,20 @@ Ung.Node = Ext.extend(Ext.Component, {
     initBlingers : function() {
         if (this.blingers !== null) {
             if(this.blingers.activityDescs!=null) {
-                var blinger=new Ung.ActivityBlinger({
+                this.activityBlinger=new Ung.ActivityBlinger({
                    parentId : this.getId(),
                    bars: this.blingers.activityDescs.list
                 });
-                blinger.render('nodeBlingers_' + this.getId());
+                this.activityBlinger.render('nodeBlingers_' + this.getId());
+                this.subCmps.push(this.activityBlinger);
             }
             if(this.blingers.metricDescs!=null) {
-                var blinger=new Ung.SystemBlinger({
+                this.systemBlinger=new Ung.SystemBlinger({
                    parentId : this.getId(),
                    metric: this.blingers.metricDescs.list
                 });
-                blinger.render('nodeBlingers_' + this.getId());
+                this.systemBlinger.render('nodeBlingers_' + this.getId());
+                this.subCmps.push(this.systemBlinger);
             }
         }
     }
@@ -1075,11 +1088,17 @@ Ung.MessageManager = {
         this.started = false;
     },
     run : function () {
-        rpc.messageManager.getMessageQueue(function(result, exception) {
-        if (exception) {
-            Ext.MessageBox.alert(i18n._("Failed"), exception.message);
+    	if (!this.cycleCompleted) {
             return;
         }
+        rpc.messageManager.getMessageQueue(function(result, exception) {
+           if (exception) {
+                Ext.MessageBox.alert(i18n._("Failed"), exception.message, function() {
+                    this.cycleCompleted = true;
+                });
+                return;
+           }
+           this.cycleCompleted = true;
            var messageQueue=result;
            if(messageQueue.messages.list!=null && messageQueue.messages.list.length>0) {
                var hasNodeInstantiated=false;
@@ -1099,17 +1118,29 @@ Ung.MessageManager = {
                     } else if (msg.javaClass.indexOf("MackageUpdateExtraName") >= 0) {
 
                     } else if(msg.javaClass.indexOf("NodeInstantiated") != -1) {
-                       hasNodeInstantiated=true;
-                       var node=main.createNode(msg.nodeDesc.tid, msg.nodeDesc.mackageDesc, msg.statDescs);
-                       main.nodes.push(node);
-                       main.addNode(node);
-                   }
-               }
-               if(hasNodeInstantiated) {
-                   main.updateSeparator();
-                   main.loadApps();
-               }
-           }
+                    	if(msg.nodeDesc.mackageDesc.type=="NODE") {
+                            hasNodeInstantiated=true;
+                            var node=main.createNode(msg.nodeDesc.tid, msg.nodeDesc.mackageDesc, msg.statDescs);
+                            main.nodes.push(node);
+                            main.addNode(node);
+                    	}
+                    }
+                }
+                if(hasNodeInstantiated) {
+                    main.updateSeparator();
+                    main.loadApps();
+                }
+            }
+            for (var i = 0; i < main.nodes.length; i++) {
+                var nodeCmp = Ung.Node.getCmp(main.nodes[i].tid);
+                if (nodeCmp && nodeCmp.isRunning()) {
+                    nodeCmp.stats = messageQueue.stats.map[main.nodes[i].tid];
+                    nodeCmp.updateBlingers();
+                }
+            }
+            //aaa=messageQueue.stats.map["10"].activities.map //for test
+           
+           
         }.createDelegate(this), rpc.currentPolicy);
     }
     /*,
@@ -1197,10 +1228,13 @@ Ung.ActivityBlinger = Ext.extend(Ext.Component, {
         for (var i = 0; i < this.bars.length; i++) {
             var top = 3 + i * 15;
             var bar = this.bars[i];
-            var newValue = stats.counters[6 + i];
-            this.decays[i] = Ung.ActivityBlinger.decayValue(newValue, this.lastValues[i], this.decays[i]);
-            this.lastValues[i] = newValue;
-            var barPixelWidth = Math.floor(this.decays[i]);
+            var barPixelWidth=0;
+            if(stats.activities.map[bar.name]!=null) {
+                var newValue = stats.activities.map[bar.name].count;
+                this.decays[i] = Ung.ActivityBlinger.decayValue(newValue, this.lastValues[i], this.decays[i]);
+                this.lastValues[i] = newValue;
+                barPixelWidth = Math.floor(this.decays[i]);
+            }
             var barDiv = document.getElementById('activityBar_' + this.getId() + '_' + i);
             barDiv.style.width = barPixelWidth + "px";
             barDiv.style.display = (barPixelWidth === 0) ? "none" : "";
@@ -1256,87 +1290,195 @@ Ung.SystemBlinger = Ext.extend(Ext.Component, {
             'blingerName' : i18n._("system")
         });
         el.innerHTML = templateHTML;
-        this.byteCountCurrent = 0;
-        this.byteCountLast = 0;
-        this.sessionCountCurrent = 0;
-        this.sessionCountTotal = 0;
-        this.sessionRequestLast = 0;
-        this.sessionRequestTotal = 0;
 
-        this.data = [];
-        this.data.push({
-            "name" : i18n._("Current Session Count:"),
-            "value" : "&nbsp;"
-        });
-        this.data.push({
-            "name" : i18n._("ACC:"),
-            "value" : "&nbsp;"
-        });
-        this.data.push({
-            "name" : i18n._("REQ:"),
-            "value" : "&nbsp;"
-        });
-        this.data.push({
-            "name" : i18n._("Data rate:"),
-            "value" : "&nbsp;"
-        });
-        if (this.data !== null) {
-            var out = [];
-            for (var i = 0; i < this.data.length; i++) {
-                var dat = this.data[i];
-                var top = 1 + i * 15;
-                out.push('<div class="blingerText systemBlingerLabel" style="top:' + top + 'px;" id="systemName_' + this.getId() + '_' + i
-                        + '">' + dat.name + '</div>');
-                out.push('<div class="blingerText systemBlingerValue" style="top:' + top + 'px;" id="systemValue_' + this.getId() + '_' + i
-                        + '">' + dat.value + '</div>');
-            }
-            document.getElementById("blingerBox_" + this.getId()).innerHTML = out.join("");
+        var out = [];
+        for (var i = 0; i < 4; i++) {
+            var top = 1 + i * 15;
+            out.push('<div class="blingerText systemBlingerLabel" style="top:' + top + 'px;" id="systemName_' + this.getId() + '_' + i + '"></div>');
+            out.push('<div class="blingerText systemBlingerValue" style="top:' + top + 'px;" id="systemValue_' + this.getId() + '_' + i + '"></div>');
         }
+        document.getElementById("blingerBox_" + this.getId()).innerHTML = out.join("");
+        this.buildActiveMetrics();
+        var blingerBoxEl=Ext.get("blingerBox_" + this.getId());
+        blingerBoxEl.on("click", this.showBlingerSettings , this);
+        
     },
-
+    buildActiveMetrics : function () {
+    	var nodeCmp = Ext.getCmp(this.parentId);
+    	var activeMetrics=nodeCmp.blingers.activeMetrics.list;
+        for(var i=0; i<activeMetrics.length;i++) {
+        	var activeMetric=activeMetrics[i];
+            for(var j=0;j<nodeCmp.blingers.metricDescs.list.length;j++) {
+                var metric=nodeCmp.blingers.metricDescs.list[j];
+                if(activeMetric.name==metric.name) {
+                	activeMetric.metricDesc=metric;
+                	activeMetric.index=i;
+                    var nameDiv=document.getElementById('systemName_' + this.getId() + '_' + i);
+                    var valueDiv=document.getElementById('systemValue_' + this.getId() + '_' + i);
+                    nameDiv.innerHTML = i18n._(metric.displayName);
+                    nameDiv.style.display="";
+                    valueDiv.innerHTML = "&nbsp;";
+                    valueDiv.style.display="";
+                }
+            }
+        }
+        for(var i=activeMetrics.length; i<4;i++) {
+        	var nameDiv=document.getElementById('systemName_' + this.getId() + '_' + i);
+            var valueDiv=document.getElementById('systemValue_' + this.getId() + '_' + i);
+            nameDiv.innerHTML = "&nbsp;";
+            nameDiv.style.display="none";
+            valueDiv.innerHTML = "&nbsp;";
+            valueDiv.style.display="none";
+        }
+        
+    },
+    showBlingerSettings : function() {
+        var nodeCmp = Ext.getCmp(this.parentId);
+        this.tempMetrics=[];
+        if(this.configWin==null) {
+            var configItems=[];
+            for(var i=0;i<nodeCmp.blingers.metricDescs.list.length;i++) {
+                var metric=nodeCmp.blingers.metricDescs.list[i];
+                configItems.push({
+                    xtype : 'checkbox',
+                    boxLabel : i18n._(metric.displayName),
+                    hideLabel : true,
+                    name : metric.displayName,
+                    dataIndex: metric.name,
+                    checked : false,
+                    listeners : {
+                        "check" : {
+                            fn : function(elem, checked) {
+                                if(checked && this.tempMetrics.length>=4) {
+                                    Ext.MessageBox.alert(i18n._("Failed"),i18n._("Please set up to four items."));
+                                    elem.setValue(false);
+                                    return;
+                                }
+                                var itemIndex=-1;
+                                for(var i=0;i<this.tempMetrics.length;i++) {
+                                    if(this.tempMetrics[i]==elem.dataIndex) {
+                                        itemIndex=i;
+                                        break;
+                                    }
+                                }
+                                if(checked) {
+                                    if(itemIndex==-1) {
+                                        //add element
+                                        this.tempMetrics.push(elem.dataIndex); 
+                                    }
+                                } else {
+                                    if(itemIndex!=-1) {
+                                        //remove element
+                                        this.tempMetrics.splice(itemIndex,1);
+                                    }
+                                }
+                                
+                            }.createDelegate(this)
+                        }
+                    }
+                });
+            }
+            this.configWin=new Ung.Window({
+                blingerCmp: this,
+                modal : true,
+                title:"Set up to four",
+                bodyStyle : "padding: 5px 5px 5px 15px;",
+                items: configItems,
+                autoScroll : true,
+                draggable : true,
+                resizable : true,                   
+                renderTo : 'container',
+                buttons: [{
+                    name : 'Ok',
+                    text : i18n._("Ok"),
+                    handler : function() {
+                        this.updateActiveMetrics();
+                        this.configWin.hide();
+                    }.createDelegate(this)
+                },{
+                    name : 'Cancel',
+                    text : i18n._("Cancel"),
+                    handler : function() {
+                        this.configWin.hide();
+                    }.createDelegate(this)
+                }],
+                show : function() {
+                    Ung.Window.superclass.show.call(this);
+                    this.setSize({width:260,height:280});
+                    this.alignTo(this.blingerCmp.getEl(),"tr-br");
+                    var pos=this.getPosition();
+                    var sub=pos[1]+280-main.viewport.getSize().height
+                    if(sub>0) {
+                        this.setPosition( pos[0],pos[1]-sub);
+                    }
+                }              
+            });
+        }
+        
+        var activeMetrics=nodeCmp.blingers.activeMetrics.list;
+        for(var i=0;i<this.configWin.items.length;i++) {
+            this.configWin.items.get(i).setValue(false);
+        }
+        for(var j=0;j<activeMetrics.length;j++) {
+            for(var i=0;i<this.configWin.items.length;i++) {
+                var metricItem=this.configWin.items.get(i)
+                if(activeMetrics[j].name==metricItem.dataIndex) {
+                    metricItem.setValue(isActive);
+                    break;
+                }
+            }
+        }
+        this.configWin.show();
+    },
+    updateActiveMetrics : function() {
+    	var activeMetrics=[];
+    	var nodeCmp = Ext.getCmp(this.parentId);
+    	for(var i=0; i<this.tempMetrics.length;i++) {
+    		for(var j=0;j<nodeCmp.blingers.metricDescs.list.length;j++) {
+                var metric=nodeCmp.blingers.metricDescs.list[j];
+                if(this.tempMetrics[i]==metric.name) {
+                	activeMetrics.push({
+                	   javaClass : "com.untangle.uvm.message.ActiveStat",
+                	   name : metric.name,
+                	   interval: "SINCE_MIDNIGHT"
+                	});
+                }
+    		}
+    	}
+    	rpc.messageManager.setActiveMetrics(function(result, exception) {
+            if (exception) {
+                Ext.MessageBox.alert(i18n._("Failed"), exception.message);
+                return;
+            }
+            var nodeCmp = Ext.getCmp(this.parentId);
+            nodeCmp.blingers.activeMetrics.list=activeMetrics;
+            this.buildActiveMetrics();
+        }.createDelegate(this),nodeCmp.Tid,{javaClass:"java.util.List", list:activeMetrics});
+    	
+    },
     update : function(stats) {
         // UPDATE COUNTS
-        this.sessionCountCurrent = stats.tcpSessionCount + stats.udpSessionCount;
-        this.sessionCountTotal = stats.tcpSessionTotal + stats.udpSessionTotal;
-        this.sessionRequestTotal = stats.tcpSessionRequestTotal + stats.udpSessionRequestTotal;
-        this.byteCountCurrent = stats.c2tBytes + stats.s2tBytes;
-        // (RESET COUNTS IF NECESSARY)
-        if ((this.byteCountLast === 0) || (this.byteCountLast > this.byteCountCurrent)) {
-            this.byteCountLast = this.byteCountCurrent;
-        }
-        if ((this.sessionRequestLast === 0) || (this.sessionRequestLast > this.sessionRequestTotal)) {
-            this.sessionRequestLast = this.sessionRequestTotal;
-        }
-        var acc = this.sessionCountTotal;
-        var req = this.sessionRequestTotal;
-        var dataRate = (this.byteCountCurrent - this.byteCountLast) / Ung.MessageManager.updateTime;
-        this.data[0].value = this.sessionCountCurrent;
-        this.data[1].value = acc;
-        this.data[2].value = req;
-        this.data[3].value = dataRate.toFixed(2) + "/KBPs";
-        if (this.data !== null) {
-            for (var i = 0; i < this.data.length; i++) {
-                var valueDiv = document.getElementById('systemValue_' + this.getId() + '_' + i);
-                valueDiv.innerHTML = this.data[i].value;
-            }
+    	var nodeCmp = Ext.getCmp(this.parentId);
+    	var activeMetrics=nodeCmp.blingers.activeMetrics.list;
+        for (var i = 0; i < activeMetrics.length; i++) {
+        	var activeMetric=activeMetrics[i];
+        	var newValue="&nbsp;"
+        	if(stats.metrics.map[activeMetric.name]!=null) {
+        		newValue=stats.metrics.map[activeMetric.name].count;
+        		if(activeMetric.metricDesc.unit!=null) {
+        			newValue +=activeMetric.metricDesc.unit;
+        		}
+        	}
+            var valueDiv = document.getElementById('systemValue_' + this.getId() + '_' + activeMetric.index);
+            valueDiv.innerHTML = newValue;
         }
     },
     reset : function() {
-        this.byteCountCurrent = 0;
-        this.byteCountLast = 0;
-        this.sessionCountCurrent = 0;
-        this.sessionCountTotal = 0;
-        this.sessionRequestLast = 0;
-        this.sessionRequestTotal = 0;
-
-        if (this.data !== null) {
-            for (var i = 0; i < this.data.length; i++) {
-                this.data[i].value = "&nbsp;";
-                var valueDiv = document.getElementById('systemValue_' + this.getId() + '_' + i);
-                valueDiv.innerHTML = this.data[i].value;
-            }
+        for (var i = 0; i < 4; i++) {
+            var valueDiv = document.getElementById('systemValue_' + this.getId() + '_' + i);
+            valueDiv.innerHTML = "&nbsp;";
         }
-    }
+}
 });
 Ung.SystemBlinger.template = new Ext.Template('<div class="blingerName">{blingerName}</div>',
         '<div class="systemBlingerBox" id="blingerBox_{id}"></div>',
