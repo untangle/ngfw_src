@@ -37,7 +37,7 @@ Ung.Main.prototype = {
             if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
                 var skinSettings=result;
                 Ung.Util.loadCss("skins/"+skinSettings.administrationClientSkin+"/css/ext-skin.css");
-                Ung.Util.loadCss("skins/"+skinSettings.administrationClientSkin+"/css/skin.css");
+                Ung.Util.loadCss("skins/"+skinSettings.administrationClientSkin+"/css/admin.css");
                 this.postinit();// 1
             }.createDelegate(this));
         }.createDelegate(this));
@@ -148,6 +148,7 @@ Ung.Main.prototype = {
         //Ext.QuickTips.init();
 
         this.buildLeftTabs();
+        main.systemPanel=new Ung.SystemPanel({});
 
         Ext.getCmp("west").on("resize", function() {
             var newHeight=Math.max(this.getEl().getHeight()-250,100);
@@ -574,11 +575,6 @@ Ung.Main.prototype = {
             document.getElementById("racks").style.backgroundPosition="0px 50px";
 
         }
-    },
-    buildSystemBlingers: function () {
-        main.systemBlingers=new Ext.Panel({
-            
-        });
     },
     // build policies select box
     buildPolicies: function () {

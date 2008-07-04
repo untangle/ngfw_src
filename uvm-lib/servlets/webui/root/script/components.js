@@ -1185,6 +1185,26 @@ Ung.MessageManager = {
     }
     */
 };
+Ung.SystemPanel = Ext.extend(Ext.Component, {
+	autoEl : 'div',
+	renderTo: "rack_list",
+	constructor : function(config) {
+        this.id = "system_panel";
+        Ung.SystemPanel.superclass.constructor.apply(this, arguments);
+    },
+    onRender : function(container, position) {
+        Ung.SystemPanel.superclass.onRender.call(this, container, position);
+        var html="aaa";
+        var contentSystemBlingersArr=[
+            '<div id="systemBlingers">',
+                '<div class="network"></div>',
+                '<div class="label" style="width:100px;">'+i18n._("Network")+'</div>',
+                '</div>',
+            '</div>'];
+        this.getEl().insertHtml("afterBegin", html);
+        //this.getEl().alignTo("rack_list","tr-tr",[-42,0]);
+    }
+});
 
 // Activity Blinger Class
 Ung.ActivityBlinger = Ext.extend(Ext.Component, {
@@ -1423,7 +1443,7 @@ Ung.SystemBlinger = Ext.extend(Ext.Component, {
             for(var i=0;i<this.configWin.items.length;i++) {
                 var metricItem=this.configWin.items.get(i)
                 if(activeMetrics[j].name==metricItem.dataIndex) {
-                    metricItem.setValue(isActive);
+                    metricItem.setValue(true);
                     break;
                 }
             }
