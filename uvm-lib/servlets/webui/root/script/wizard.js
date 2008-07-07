@@ -115,6 +115,8 @@ Ung.Wizard = Ext.extend(Ext.Panel, {
             handler = this.cards[this.currentPage].onPrevious;
         }
 
+        if ( this.disableNext == true ) handler = null;
+
         /* If the page has changed and it is defined, then call the handler */
         if ( handler ) {
             handler( this.afterChangeHandler.createDelegate( this, [ index, hasChanged ] ));
