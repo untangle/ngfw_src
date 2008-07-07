@@ -24,8 +24,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -52,6 +54,15 @@ class MessageManagerImpl implements LocalMessageManager
     private static final Pattern MEMINFO_PATTERN
         = Pattern.compile("(\\w+):\\s+(\\d+)\\s+kB");
 
+    private static final Pattern VMSTAT_PATTERN
+        = Pattern.compile("(\\w+)\\s+(\\d+)");
+
+    private static final Pattern CPUINFO_PATTERN
+        = Pattern.compile("([ 0-9a-zA-Z]*\\w)\\s*:\\s*(.*)$");
+
+    private static final Set<String> MEMINFO_KEEPERS;
+    private static final Set<String> VMSTAT_KEEPERS;
+
     private final Map<Tid, Counters> counters = new HashMap<Tid, Counters>();
 
     // XXX this needs to be per client session
@@ -60,7 +71,7 @@ class MessageManagerImpl implements LocalMessageManager
     private final Pulse updatePulse = new Pulse("system-stat-collector",
                                                 true, new SystemStatCollector());
 
-    private volatile Map<String, Float> systemStats = Collections.emptyMap();
+    private volatile Map<String, Object> systemStats = Collections.emptyMap();
 
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -110,7 +121,7 @@ class MessageManagerImpl implements LocalMessageManager
         }
     }
 
-    public Map<String, Float> getSystemStats()
+    public Map<String, Object> getSystemStats()
     {
         return this.systemStats;
     }
@@ -300,10 +311,13 @@ class MessageManagerImpl implements LocalMessageManager
     {
         public void run()
         {
-            Map<String, Float> m = new HashMap<String, Float>();
+            Map<String, Object> m = new HashMap<String, Object>();
 
             try {
                 readMeminfo(m);
+                readVmstat(m);
+                readCpuinfo(m);
+                readLoadAverage(m);
             } catch (IOException exn) {
                 logger.warn("could not get memory information", exn);
             }
@@ -311,22 +325,121 @@ class MessageManagerImpl implements LocalMessageManager
             systemStats = Collections.unmodifiableMap(m);
         }
 
-        private void readMeminfo(Map<String, Float> m)
+        private void readMeminfo(Map<String, Object> m)
             throws IOException
         {
-            BufferedReader br = new BufferedReader(new FileReader("/proc/meminfo"));
+
+            readProcFile("/proc/meminfo", MEMINFO_PATTERN, MEMINFO_KEEPERS, m);
+        }
+
+        private void readVmstat(Map<String, Object> m)
+            throws IOException
+        {
+            readProcFile("/proc/vmstat", VMSTAT_PATTERN, VMSTAT_KEEPERS, m);
+        }
+
+        private void readProcFile(String filename, Pattern p,
+                                  Set<String> keepers, Map<String, Object> m)
+            throws IOException
+        {
+            BufferedReader br = new BufferedReader(new FileReader(filename));
             for (String l = br.readLine(); null != l; l = br.readLine()) {
-                Matcher matcher = MEMINFO_PATTERN.matcher(l);
+                Matcher matcher = p.matcher(l);
                 if (matcher.find()) {
                     String n = matcher.group(1);
-                    String s = matcher.group(2);
-                    try {
-                        m.put(n, Float.parseFloat(s));
-                    } catch (NumberFormatException exn) {
-                        logger.warn("could not add value for: " + n);
+                    if (keepers.contains(n)) {
+                        String s = matcher.group(2);
+                        try {
+                            m.put(n, Integer.parseInt(s));
+                        } catch (NumberFormatException exn) {
+                            logger.warn("could not add value for: " + n);
+                        }
                     }
                 }
             }
         }
+
+        private void readCpuinfo(Map<String, Object> m)
+            throws IOException
+        {
+            String cpuModel = null;
+            float cpuSpeed = 0;
+            int numCpus = 0;
+
+            BufferedReader br = new BufferedReader(new FileReader("/proc/cpuinfo"));
+            for (String l = br.readLine(); null != l; l = br.readLine()) {
+                Matcher matcher = CPUINFO_PATTERN.matcher(l);
+                if (matcher.find()) {
+                    String n = matcher.group(1);
+                    if (n.equals("model name")) {
+                        cpuModel = matcher.group(2);
+                    } else if (n.equals("processor")) {
+                        numCpus++;
+                    } else if (n.equals("cpu MHz")) {
+                        String v = matcher.group(2);
+                        try {
+                            cpuSpeed = Float.parseFloat(v);
+                        } catch (NumberFormatException exn) {
+                            logger.warn("could not parse cpu speed: " + v);
+                        }
+                    }
+                }
+            }
+
+            m.put("cpuModel", cpuModel);
+            m.put("cpuSpeed", cpuSpeed);
+            m.put("numCpus", numCpus);
+        }
+
+        private void readUptime(Map<String, Object> m)
+            throws IOException
+        {
+            BufferedReader br = new BufferedReader(new FileReader("/proc/cpuinfo"));
+            String l = br.readLine();
+            if (null != l) {
+                String s = l.split(" ")[0];
+                try {
+                    m.put("uptime", Float.parseFloat(s));
+                } catch (NumberFormatException exn) {
+                    logger.warn("could not parse uptime: " + s);
+                }
+            }
+        }
+
+        private void readLoadAverage(Map<String, Object> m)
+            throws IOException
+        {
+            BufferedReader br = new BufferedReader(new FileReader("/proc/loadavg"));
+            String l = br.readLine();
+            if (null != l) {
+                String[] s = l.split(" ");
+                if (s.length >= 3) {
+                    try {
+                        m.put("oneMinuteLoadAvg", Float.parseFloat(s[0]));
+                        m.put("fiveMinuteLoadAvg", Float.parseFloat(s[1]));
+                        m.put("fifteenMinuteLoadAvg", Float.parseFloat(s[2]));
+                    } catch (NumberFormatException exn) {
+                        logger.warn("could not parse loadavg: " + l);
+                    }
+                }
+            }
+        }
+    }
+
+    static {
+        Set<String> s = new HashSet<String>();
+        s.add("MemTotal");
+        s.add("MemFree");
+        s.add("Active");
+        s.add("Inactive");
+        s.add("SwapTotal");
+        s.add("SwapFree");
+        MEMINFO_KEEPERS = Collections.unmodifiableSet(s);
+
+        s = new HashSet<String>();
+        s.add("pgpgin");
+        s.add("pgpgout");
+        s.add("pgfault");
+        VMSTAT_KEEPERS = Collections.unmodifiableSet(s);
     }
 }

@@ -19,6 +19,7 @@
 package com.untangle.uvm.engine;
 
 import java.util.List;
+import java.util.Map;
 
 import com.untangle.uvm.message.ActiveStat;
 import com.untangle.uvm.message.LocalMessageManager;
@@ -28,7 +29,6 @@ import com.untangle.uvm.message.RemoteMessageManager;
 import com.untangle.uvm.message.StatDescs;
 import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.security.Tid;
-import java.util.Map;
 
 class RemoteMessageManagerAdaptor implements RemoteMessageManager
 {
@@ -54,7 +54,7 @@ class RemoteMessageManagerAdaptor implements RemoteMessageManager
         return lbm.getStatDescs(t);
     }
 
-    public Map<String, Float> getSystemStats()
+    public Map<String, Object> getSystemStats()
     {
         return lbm.getSystemStats();
     }

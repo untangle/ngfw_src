@@ -96,5 +96,4 @@ class RemotePolicyManagerAdaptor implements RemotePolicyManager
     {
         pm.shutdownSessions(policy);
     }
-
 }
