@@ -41,22 +41,22 @@ public interface JsonInterface
                                                   String sortColumn, boolean isAscending )
         throws BadTokenException, NoSuchInboxException, QuarantineUserActionFailedException;
 
-    public int releaseMessages( String token, String messages[] )
+    public ActionResponse releaseMessages( String token, String messages[] )
         throws BadTokenException, NoSuchInboxException, QuarantineUserActionFailedException;
 
-    public int purgeMessages( String token, String messages[] )
+    public ActionResponse purgeMessages( String token, String messages[] )
         throws BadTokenException, NoSuchInboxException, QuarantineUserActionFailedException;
 
     /* Add the addresses in addresses to the safelist associated with token */
-    public SafelistReturnCode safelist( String token, String addresses[] )
+    public ActionResponse safelist( String token, String addresses[] )
         throws BadTokenException, NoSuchInboxException, NoSuchSafelistException, QuarantineUserActionFailedException, SafelistActionFailedException;
 
     /* Replace the safelist for the account associated with token. */
-    public SafelistReturnCode replaceSafelist( String token, String addresses[] )
+    public ActionResponse replaceSafelist( String token, String addresses[] )
         throws BadTokenException, NoSuchInboxException, NoSuchSafelistException, QuarantineUserActionFailedException, SafelistActionFailedException;
 
     /* Delete users from the safelist */
-    public SafelistReturnCode deleteAddressesFromSafelist( String token, String addresses[] )
+    public ActionResponse deleteAddressesFromSafelist( String token, String addresses[] )
         throws BadTokenException, NoSuchInboxException, NoSuchSafelistException, QuarantineUserActionFailedException, SafelistActionFailedException;
 
     /* Map the account associated with token to address. */
@@ -64,9 +64,8 @@ public interface JsonInterface
         throws BadTokenException, NoSuchInboxException, QuarantineUserActionFailedException,
                InboxAlreadyRemappedException;
 
-    /* Delete a set of remaps to the account associated with token. */
+    /* Delete a set of remaps to the account associated with token, this returns the new list
+     * of addresses that are mapped to this address. */
     public String[] deleteRemaps( String token, String[] address )
         throws BadTokenException, NoSuchInboxException, QuarantineUserActionFailedException;
-
-
 }

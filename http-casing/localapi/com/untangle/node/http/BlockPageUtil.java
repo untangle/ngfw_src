@@ -50,7 +50,6 @@ public class BlockPageUtil
     {
         LocalUvmContext uvm = LocalUvmContextFactory.context();
         BrandingBaseSettings bs = uvm.brandingManager().getBaseSettings();
-
         
         String module = handler.getI18n();
         String ungPrefixedModule = UNG_PREFIX + module;
@@ -82,7 +81,7 @@ public class BlockPageUtil
         else value = "'" + bd.getFormattedUrl() + "'";
         request.setAttribute( "url", value );
 
-        request.setAttribute( "contact", i18n.tr( "Please contact {0}.", bs.getContactHtml()));
+        request.setAttribute( "contact", i18n.tr( "If you have any questions, Please contact {0}.", bs.getContactHtml()));
 
         UserWhitelistMode mode = handler.getUserWhitelistMode();
         if (( UserWhitelistMode.NONE != mode ) && ( null != bd ) && ( null != bd.getWhitelistHost())) {

@@ -189,10 +189,20 @@ Ung.Remaps.prototype = {
         
         this.grid.setDisabled( false );
 
+        var count = this.store.getCount();
         try {
             /* Build a new set of data */
             for ( var c = 0 ; c < result.length ; c++ ) result[c] = [result[c]];
-            remaps.store.loadData( result );
+            
+            /* If necessary display a message */
+            if ( count != result.length ) {
+                count = count - result.length;
+                var message = i18n.pluralise( i18n._( "Delete one Remap" ), 
+                                              i18n.sprintf( i18n._( "Deleted %d Remaps" ), count ),
+                                              count );
+                quarantine.showMessage( message );
+            }
+            this.store.loadData( result );
         } catch ( e ) {
             Ext.MessageBox.alert( i18n._( "Unable to update remap table." ), e ); 
             return;

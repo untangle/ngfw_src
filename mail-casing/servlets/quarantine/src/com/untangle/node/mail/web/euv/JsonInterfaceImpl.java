@@ -123,19 +123,19 @@ public class JsonInterfaceImpl implements JsonInterface
         return records;
     }
 
-    public int releaseMessages( String token, String messages[] )
+    public ActionResponse releaseMessages( String token, String messages[] )
         throws BadTokenException, NoSuchInboxException, QuarantineUserActionFailedException
     {
         return handleMessages( INBOX_ACTION.RELEASE, token, messages );
     }
     
-    public int purgeMessages( String token, String messages[] )
+    public ActionResponse purgeMessages( String token, String messages[] )
         throws BadTokenException, NoSuchInboxException, QuarantineUserActionFailedException
     {
         return handleMessages( INBOX_ACTION.PURGE, token, messages );
     }
 
-    public SafelistReturnCode safelist( String token, String addresses[] )
+    public ActionResponse safelist( String token, String addresses[] )
         throws BadTokenException, NoSuchInboxException, NoSuchSafelistException,
                QuarantineUserActionFailedException, SafelistActionFailedException
     {
@@ -143,13 +143,13 @@ public class JsonInterfaceImpl implements JsonInterface
     }
 
     /* Replace the safelist for the account associated with token. */
-    public SafelistReturnCode replaceSafelist( String token, String addresses[] )
+    public ActionResponse replaceSafelist( String token, String addresses[] )
         throws BadTokenException, NoSuchInboxException, NoSuchSafelistException, QuarantineUserActionFailedException, SafelistActionFailedException
     {
         return handleSafelist( SAFELIST_ACTION.REPLACE, token, addresses );
     }
 
-    public SafelistReturnCode deleteAddressesFromSafelist( String token, String addresses[] )
+    public ActionResponse deleteAddressesFromSafelist( String token, String addresses[] )
         throws BadTokenException, NoSuchInboxException, NoSuchSafelistException, QuarantineUserActionFailedException, SafelistActionFailedException
     {
         return handleSafelist( SAFELIST_ACTION.DELETE, token, addresses );
@@ -196,7 +196,7 @@ public class JsonInterfaceImpl implements JsonInterface
         return INSTANCE;
     }
 
-    private int handleMessages( INBOX_ACTION action, String token, String messages[] )
+    private ActionResponse handleMessages( INBOX_ACTION action, String token, String messages[] )
         throws BadTokenException, NoSuchInboxException, QuarantineUserActionFailedException
     {
         /* This just seems wrong */
@@ -206,25 +206,33 @@ public class JsonInterfaceImpl implements JsonInterface
         /* First grab the account */
         String account = quarantine.getAccountFromToken(token);
 
-        if ( account == null ) return 0;
+        if ( account == null ) return ActionResponse.EMPTY;
 
         InboxIndex index = quarantine.getInboxIndex( account );
 
-        if ( index == null ) return 0;
+        if ( index == null ) return ActionResponse.EMPTY;
+
+        int currentSize = index.size();
+
+        ActionResponse response = null;
         
         switch ( action ) {
         case PURGE:
             index = quarantine.purge( account, messages );
+            response = new ActionResponse( index.size(), null );
+            response.setPurgeCount( currentSize - index.size());
             break;
         case RELEASE:
             index = quarantine.rescue( account, messages );
+            response = new ActionResponse( index.size(), null );
+            response.setReleaseCount( currentSize - index.size());
             break;
         }
 
-        return index.size();
+        return response;
     }
 
-    private SafelistReturnCode handleSafelist( SAFELIST_ACTION action, String token, String addresses[] )
+    private ActionResponse handleSafelist( SAFELIST_ACTION action, String token, String addresses[] )
         throws BadTokenException, NoSuchInboxException, NoSuchSafelistException, QuarantineUserActionFailedException, SafelistActionFailedException
     {
         /* This just seems wrong */
@@ -233,22 +241,23 @@ public class JsonInterfaceImpl implements JsonInterface
         /* This just seems wrong */
         SafelistEndUserView safelist = QuarantineEnduserServlet.instance().getSafelist();
 
-        if (( addresses.length == 0 ) && ( action != SAFELIST_ACTION.REPLACE )) return SafelistReturnCode.EMPTY;
+        if (( addresses.length == 0 ) && ( action != SAFELIST_ACTION.REPLACE )) return ActionResponse.EMPTY;
                 
         /* First grab the account */
         String account = quarantine.getAccountFromToken(token);
 
-        if ( account == null ) return SafelistReturnCode.EMPTY;
+        if ( account == null ) return ActionResponse.EMPTY;
 
         InboxIndex index = quarantine.getInboxIndex( account );
 
-        if ( index == null ) return SafelistReturnCode.EMPTY;
-
+        if ( index == null ) return ActionResponse.EMPTY;
+        
+        
         String[] sl = new String[addresses.length];
         for(int c = 0; c< addresses.length; c++) sl[c] = addresses[c].toLowerCase();
 
         String[] userSafelist = safelist.getSafelistContents( account );
-        int currentSize = userSafelist.length;
+        int currentSafelistSize = userSafelist.length;
 
         /* Add each of the entries. */
         switch ( action ) {
@@ -280,11 +289,18 @@ public class JsonInterfaceImpl implements JsonInterface
         
         /* Now release the messages */
         int totalRecords = index.size();
+        int releaseCount = 0;
         if ( mids.size() > 0 ) {
-            totalRecords = handleMessages( INBOX_ACTION.RELEASE, token, mids.toArray( new String[mids.size()]));
+            ActionResponse temp = handleMessages( INBOX_ACTION.RELEASE, token, mids.toArray( new String[mids.size()]));
+            totalRecords = temp.getTotalRecords();
+            releaseCount = temp.getReleaseCount();
         }
 
-        return new SafelistReturnCode( userSafelist.length - currentSize, totalRecords, userSafelist );
+        ActionResponse response = new ActionResponse( totalRecords, userSafelist );
+        response.setReleaseCount( releaseCount );
+
+        response.setSafelistCount( userSafelist.length - currentSafelistSize );
+        return response;
     }
 
     static {

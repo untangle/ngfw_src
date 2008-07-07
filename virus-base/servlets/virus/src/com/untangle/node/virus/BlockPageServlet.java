@@ -16,7 +16,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package com.untangle.node.webfilter;
+package com.untangle.node.virus;
 
 import java.io.IOException;
 import javax.servlet.ServletException;
@@ -36,8 +36,8 @@ import com.untangle.uvm.security.Tid;
 
 import com.untangle.node.http.BlockPageUtil;  
 import com.untangle.node.http.UserWhitelistMode;
-import com.untangle.node.webfilter.WebFilter;
-import com.untangle.node.webfilter.WebFilterBlockDetails;
+import com.untangle.node.virus.VirusBlockDetails;
+import com.untangle.node.virus.VirusNodeImpl;
 
 public class BlockPageServlet extends HttpServlet
 {
@@ -52,70 +52,68 @@ public class BlockPageServlet extends HttpServlet
         
         Tid tid = new Tid(Long.parseLong(request.getParameter( "tid" )));
         
-        WebFilter node = (WebFilter)nm.nodeContext( tid ).node();
+        VirusNodeImpl node = (VirusNodeImpl)nm.nodeContext( tid ).node();
         String nonce = request.getParameter("nonce");
 
-        WebFilterBlockDetails blockDetails = node.getDetails(nonce);
+        VirusBlockDetails blockDetails = node.getDetails(nonce);
         request.setAttribute( "reason", blockDetails.getReason());
-        WebFilterHandler handler = new WebFilterHandler( blockDetails, node.getUserWhitelistMode());
+        VirusHandler handler = new VirusHandler( blockDetails );
                                                          
         BlockPageUtil.getInstance().handle( request, response, this, handler );        
     }
     
-    private static class WebFilterHandler implements BlockPageUtil.Handler
+    private static class VirusHandler implements BlockPageUtil.Handler
     {
-        private final WebFilterBlockDetails blockDetails;
-        private final UserWhitelistMode userWhitelistMode;
+        private final VirusBlockDetails blockDetails;
 
-        public WebFilterHandler( WebFilterBlockDetails blockDetails, UserWhitelistMode userWhitelistMode )
+        public VirusHandler( VirusBlockDetails blockDetails )
         {
             this.blockDetails = blockDetails;
-            this.userWhitelistMode = userWhitelistMode;
         }
 
         /* This is the name of the node to use when retrieving the I18N bundle */
         public String getI18n()
         {
-            return "webfilter";
+            return "virus";
         }
         
         /* Retrieve the page title (in the window bar) of the page */
         public String getPageTitle( BrandingBaseSettings bs, I18n i18n )
         {
-            return i18n.tr( "{0} | Web Filter Warning", bs.getCompanyName());
+            return i18n.tr( "{0} | {1} Warning", bs.getCompanyName(), this.blockDetails.getVendor());
         }
         
         /* Retrieve the title (top of the pae) of the page */
         public String getTitle( BrandingBaseSettings bs, I18n i18n )
         {
-            return "Web Filter";
+            return "Virus Blocker";
         }
         
         public String getFooter( BrandingBaseSettings bs, I18n i18n )
         {
-            return i18n.tr( "{0} Web Filter", bs.getCompanyName());
+            return i18n.tr( "{0} Virus Blocker", bs.getCompanyName());
         }
         
         /* Return the name of the script file to load, or null if there is not a script. */
         public String getScriptFile()
         {
-            return "webfilter.js";
+            return null;
         }
         
         /* Retrieve the description of why this page was blocked. */
         public String getDescription( BrandingBaseSettings bs, I18n i18n )
         {
-            return i18n.tr( "<b>This web page was blocked</b> because it is considered inappropriate." );
+            return i18n.tr( "<b>This file was blocked</b> because it contained a virus." );
         }
     
-        public WebFilterBlockDetails getBlockDetails()
+        public VirusBlockDetails getBlockDetails()
         {
             return this.blockDetails;
         }
     
         public UserWhitelistMode getUserWhitelistMode()
         {
-            return this.userWhitelistMode;
+            return UserWhitelistMode.NONE;
         }
     }
 }

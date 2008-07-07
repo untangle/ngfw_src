@@ -1,17 +1,71 @@
 html,body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,form,fieldset,input,p,blockquote,th,td{margin:0;padding:0;}img,body,html{border:0;}
-body {
+body.quarantine {
     background: transparent url(../images/user/background_content.png) repeat-x !important;
 }
-#content {
-	padding: 17px 12px 12px 12px;
+
+#content
+{
+  padding: 17px 12px 12px 12px;
 }
+
+body.blockpage
+{ 
+  text-align: center;
+  background-color: #808080;
+ }
+
+body.blockpage #content
+{
+  width : 627px;
+  height: 505px;
+  position: relative;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: left;
+  border : 1px solid #FFFFFF;
+  margin-top: 30px;
+  margin-bottom: 30px;
+  background: transparent url(../images/user/background_content.png) repeat-x !important;
+}
+
+body.blockpage
+{ 
+  font-family: arial, tahoma, helvetica, sans-serif;
+  font-size: 10pt;
+ }
+
+
+body.blockpage .description
+{ 
+  margin-bottom: 30px;
+ }
+
+
+body.blockpage p.contact
+{ 
+  position: absolute;
+  bottom: 15px;
+  left: 20px;
+  font-size: 8pt;
+ }
 
 #header {
 	margin-bottom: 28px;
 }
-.title {
-    text-align: right;
+
+body.quarantine #header
+{ 
+  width: 1000px;
+  }
+
+body.quarantine #header .title
+{
+  position: absolute;
+  bottom: 0px;
+  right: 0px;
+  text-align: right;
 }
+
 .title-block-page {
 	padding-left: 30px;
 	vertical-align: bottom;
@@ -32,12 +86,57 @@ body {
 .description {
     font-size: larger;
 }
-#main {
-    text-align: center;
+
+body.blockpage #main
+{
+  position : absolute;
+  left: 15px;
+  top: 130px;
+  width: 620px;
+  height: 380px;
+  text-align: center;
+  /* This is to place this above the border */
+  z-index: 100;
 }
+
+body.blockpage #extraDiv1
+{ 
+  position : absolute;
+  left: 15px;
+  top: 130px;
+  width: 620px;
+  height: 380px;
+  background: transparent url(../images/user/blockpage_border.gif) no-repeat;
+ }
+
+body.blockpage #extraDiv2
+{ 
+  position : absolute;
+  left: 15px;
+  bottom: 20px;
+  width: 620px;
+  height: 12px;
+  background: transparent url(../images/user/blockpage_border_bottom.gif) no-repeat;
+ }
+
+
+#header
+{ 
+  position : relative;
+ }
+
+body.blockpage #header .title
+{ 
+  position : absolute;
+  left : 180px;
+  bottom : 0px;
+  font: bold 36px arial, tahoma, helvetica, sans-serif;
+  color: #67686B;
+ }
+
 .info-list {
 	margin-top: 10px;
-	margin-bottom: 10px;
+	margin-bottom: 20px;
     width:340px;
     margin-left:auto;
     margin-right:auto;
@@ -46,9 +145,19 @@ body {
 }
 .info-list div{
     padding:5px 5px 5px 5px;
-    
 }
-#footer {
-	font-size: small;
-    text-align: center;
+
+body.blockpage #footer
+{
+  font-size: small;
+  text-align: right;
+  position : absolute;
+  left: 490px;
+  top: 520px;
+  display: none;
 }
+
+.action-messages
+{ 
+  width : 300px;
+ }

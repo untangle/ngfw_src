@@ -262,7 +262,16 @@ class VirusHttpHandler extends HttpStateMachine
             //node.incrementCount(BLOCK_COUNTER, 1);
 
             if (Mode.QUEUEING == getResponseMode()) {
-                blockResponse(blockMessage());
+                RequestLineToken rl = getResponseRequest();
+                String uri = null != rl ? rl.getRequestUri().toString() : "";
+                String host = getResponseHost();
+                VirusBlockDetails bd = new VirusBlockDetails(host,uri,null,this.vendor);
+                                                             
+                String nonce = node.generateNonce(bd);
+                boolean p = isRequestPersistent();
+                TCPSession sess = getSession();
+                Token[] response = node.generateResponse(nonce, sess, uri, p);
+                blockResponse(response);
             } else {
                 TCPSession s = getSession();
                 s.shutdownClient();

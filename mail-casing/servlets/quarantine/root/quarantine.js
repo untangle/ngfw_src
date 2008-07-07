@@ -158,28 +158,32 @@ Ung.Quarantine.prototype = {
         this.selectionModel = new Ung.QuarantineSelectionModel( { quarantine : this } );
 
         this.releaseButton= new Ext.Button( {
-            handler : function() { quarantine.releaseOrDelete( quarantine.rpc.releaseMessages,
-                                                               [ i18n._( "Move to Inbox" ),
-                                                                 i18n._( "Move one Message to Inbox" ),
-                                                                 i18n._( "Move %d Messages to Inbox" ) ] ) },
-                text : i18n._( "Move to Inbox" ),
-                    disabled : true
+            handler : function() { this.releaseOrDelete( quarantine.rpc.releaseMessages ) }.createDelegate( this ),
+            text : i18n._( "Move to Inbox" ),
+            disabled : true
                     } );
 
         this.deleteButton = new Ext.Button( {
-            handler : function() { quarantine.releaseOrDelete( quarantine.rpc.purgeMessages, 
-                                                               [ i18n._( "Delete Messages" ),
-                                                                 i18n._( "Delete one Message" ),
-                                                                 i18n._( "Delete %d Messages" ) ]); },
+            handler : function() { this.releaseOrDelete( quarantine.rpc.purgeMessages ) }.createDelegate( this ),
             text : i18n._( "Delete Messages" ),
             disabled : true
                 } );
         
         this.safelistButton = new Ext.Button( {
-            handler : function() { quarantine.safelist() },
+            handler : function() { this.safelist() }.createDelegate( this ),
             text : i18n._( "Add Sender(s) to Safelist" ),
             disabled : true
                 } );
+
+        /* This is used to show messages when they are available */
+        this.messageDisplayTip = new Ext.Tip({
+            cls : 'action-messages',
+            layout : 'form',
+        });
+
+        this.messageCount = 0;
+
+        this.hideTimeout = null;
 
         this.grid = new Ung.QuarantineGrid( { quarantine : this } );
     },
@@ -195,64 +199,33 @@ Ung.Quarantine.prototype = {
     clearSelections : function()
     {
         /* Clear the current action items */
-        quarantine.actionItems.clearAll();
-        quarantine.addresses.clearAll();
-        quarantine.selectionModel.clearSelections();
-        quarantine.grid.setDisabled( true );
+        this.actionItems.clearAll();
+        this.addresses.clearAll();
+        this.selectionModel.clearSelections();
+        this.grid.setDisabled( true );
     },
     
-    releaseOrDelete : function( action, messages ) {
+    releaseOrDelete : function( action ) {
         var mids = [];
-        for ( var key in quarantine.actionItems.data ) mids.push( key );
+        for ( var key in this.actionItems.data ) mids.push( key );
 
         this.clearSelections();
         
-        var getMessage = function( result, messages ) {
-            var message = messages[1];
-            var count = quarantine.store.proxy.totalRecords - result;
-            if( count <= 0 ) message = "";
-            else if ( count == 1 ) message = messages[0];
-            return i18n.sprintf( message, count );
-        };
-        
-        var getCount = function( result ) { return result; };
-        action( this.refreshTable.createDelegate(quarantine, [ messages, getCount, getMessage ], true ), 
-                inboxDetails.token, mids );
+        action( this.refreshTable.createDelegate(this), inboxDetails.token, mids );
     },
     
     safelist : function( addresses )
     {
         if ( addresses == null ) {
             addresses = [];
-            for ( var key in quarantine.addresses.data ) addresses.push( key );
+            for ( var key in this.addresses.data ) addresses.push( key );
         }
 
         this.clearSelections();
-        var getMessage = function( result, messages ) {
-            var safelist = i18n.pluralise( i18n._( "Safelisted one addressess" ), i18n.sprintf( i18n._( "Safelisted %d addresses" ), result.safelistCount ), result.safelistCount );
-
-            var count = quarantine.store.proxy.totalRecords - result.totalRecords;
-            var release = i18n.pluralise( i18n._( "Released one message" ), i18n.sprintf( i18n._( "Released %d messages" ), result.safelistCount ), count );
-
-            
-            if ( result.safelistCount <= 0 ) safelist = "";
-            if ( count <= 0 ) release = "";
-            
-            if ( safelist == "" && release == "" ) return "";
-            if ( safelist == "" ) return release;
-            if ( release == "" ) return safelist;
-            return safelist + " , " + release;
-        };
-
-        var getSafelist = function( result ) { return result.safelist; };
-
-        var getCount = function( result ) { return result.totalRecords };
-        var action = quarantine.rpc.safelist;
-        action( this.refreshTable.createDelegate( quarantine, [ null, getCount, getMessage, getSafelist ], true ),
-                inboxDetails.token, addresses );
+        this.rpc.safelist( this.refreshTable.createDelegate( this ), inboxDetails.token, addresses );
     },
     
-    refreshTable : function( result, exception, foo, messages, getCount, getMessage, getSafelist )
+    refreshTable : function( result, exception )
     {
         if ( exception ) {
             Ext.MessageBox.alert("Failed",exception.message); 
@@ -260,28 +233,24 @@ Ung.Quarantine.prototype = {
         }
 
         try {
-            var message = getMessage( result, messages );
-
             /* Update the new total number of records */
-            quarantine.store.proxy.setTotalRecords( getCount( result ));
+            this.store.proxy.setTotalRecords( result.totalRecords );
 
             /* to refresh the buttons at the bottom */
-            quarantine.updateActionItem( null, null,false );
+            this.updateActionItem( null, null, false );
             
             /* Reload the data */
-            quarantine.store.load({params:{start:0, limit:quarantine.pageSize}});
+            this.store.load({params:{start:0, limit:this.pageSize}});
             
-            /* need some sprintf or something here */
-            var title = i18n._( "Quarantined Messages" );
-            if ( message != null && message != "" ) title += " (" + message + ")";
-            quarantine.grid.setTitle( title );
+            var message = this.getMessage( result );
+            if ( message != "" ) this.showMessage( message );
             
             /* Refresh the table */
-            quarantine.grid.setDisabled( false );
+            this.grid.setDisabled( false );
 
             /* Refresh the safelist table */
-            if ( getSafelist != null ) {
-                var sl = getSafelist( result );
+            if ( result.safelist != null ) {
+                var sl = result.safelist;
                 /* Build a new set of data */
                 for ( var c = 0 ; c < sl.length ; c++ ) sl[c] = [sl[c]];
                 safelist.store.loadData( sl );
@@ -290,6 +259,33 @@ Ung.Quarantine.prototype = {
         } catch ( e ) {
             alert( "Unable to refresh table: " + e );
         }
+    },
+
+    getMessage : function( result )
+    {
+        var messages = [];
+        if ( result.purgeCount > 0 ) {
+            messages.push( i18n.pluralise( i18n._( "Deleted one Message" ), 
+                                          i18n.sprintf( i18n._( "Deleted %d Messages" ),
+                                                        result.purgeCount ),
+                                          result.purgeCount ));
+        }
+
+        if ( result.releaseCount > 0 ) {
+            messages.push( i18n.pluralise( i18n._( "Released one Message" ), 
+                                          i18n.sprintf( i18n._( "Released %d Messages" ), 
+                                                        result.releaseCount ),
+                                          result.releaseCount ));
+        }
+
+        if ( result.safelistCount > 0 ) {
+            messages.push( i18n.pluralise( i18n._( "Safelisted one Address" ), 
+                                          i18n.sprintf( i18n._( "Safelisted %d Addresses" ), 
+                                                        result.safelistCount ),
+                                          result.safelistCount ));            
+        }
+
+        return messages.join( "<br/>" );
     },
 
     updateActionItem : function( mailid, address, ifAdd )
@@ -310,35 +306,60 @@ Ung.Quarantine.prototype = {
         if ( count == 0 ) {
             deleteText = i18n._( "Delete Messages" );
             releaseText = i18n._( "Move to Inbox" );
-            quarantine.releaseButton.setDisabled( true );
-            quarantine.deleteButton.setDisabled( true );
+            this.releaseButton.setDisabled( true );
+            this.deleteButton.setDisabled( true );
         } else if ( count == 1 ) {
             deleteText = i18n._( "Delete one Message" );
             releaseText = i18n._( "Move one Message to Inbox" );
-            quarantine.releaseButton.setDisabled( false );
-            quarantine.deleteButton.setDisabled( false );
+            this.releaseButton.setDisabled( false );
+            this.deleteButton.setDisabled( false );
         } else {
             deleteText = i18n.sprintf( i18n._( "Delete %d Messages" ), count );
             releaseText = i18n.sprintf( i18n._( "Move %d Messages to Inbox" ), count );
-            quarantine.releaseButton.setDisabled( false );
-            quarantine.deleteButton.setDisabled( false );
+            this.releaseButton.setDisabled( false );
+            this.deleteButton.setDisabled( false );
         }
 
         count = this.addresses.size;
         if ( count == 0 ) {
             safelistText = i18n._( "Add Sender(s) to Safelist" );
-            quarantine.safelistButton.setDisabled( true );
+            this.safelistButton.setDisabled( true );
         } else if ( count == 1 ) {
             safelistText = i18n._( "Add Sender to Safelist" );
-            quarantine.safelistButton.setDisabled( false );
+            this.safelistButton.setDisabled( false );
         } else {
             safelistText = i18n.sprintf( i18n._( "Add %d Senders to Safelist" ), count );
-            quarantine.safelistButton.setDisabled( false );
+            this.safelistButton.setDisabled( false );
         }
 
-        quarantine.releaseButton.setText( releaseText );
-        quarantine.deleteButton.setText( deleteText );
-        quarantine.safelistButton.setText( safelistText );
+        this.releaseButton.setText( releaseText );
+        this.deleteButton.setText( deleteText );
+        this.safelistButton.setText( safelistText );
+    },
+    
+    showMessage : function( message )
+    {
+        this.messageCount++;
+
+        this.messageDisplayTip.add( new Ext.form.Label({ html : message + "<br/>" }));
+        this.messageDisplayTip.show();
+                                             
+        setTimeout( this.hideMessageTip.createDelegate( this ), 5000 );
+    },
+
+    hideMessageTip : function()
+    {
+        this.messageDisplayTip.remove( 0 );
+
+        this.messageCount--;
+
+        if ( this.messageCount <= 0 ) {
+            this.messageDisplayTip.hide();
+            this.messageCount = 0;
+        } else {
+            /* This updates the shadow */
+            this.messageDisplayTip.show();
+        }
     }
 }
 

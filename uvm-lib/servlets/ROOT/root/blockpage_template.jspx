@@ -40,13 +40,11 @@
     <c:out escapeXml="false" value="${javascript}"/>
   </head>
   
-  <body id="simple">
+  <body id="simple" class="blockpage">
     <div id="content">
       <div id="header">
-      <table border="0" cellpadding="0" cellspacing="0" width="1000">
-        <tr><td width="1%"><a href="${bs.companyUrl}"><img src="/images/BrandingLogo.gif" alt=""/></a></td>
-        <td class="title-block-page"><c:out value="${title}" escapeXml="false"/></td></tr>
-      </table>
+        <a href="${bs.companyUrl}"><img src="/images/BrandingLogo.gif" alt=""/></a>
+        <div class="title"><c:out value="${title}" escapeXml="false"/></div>
       </div>
       
       <div id="main">
@@ -57,16 +55,12 @@
           <span>${description}</span>
         </p>
         <div class="info-list">
-          <div><uvm:i18n p0="${bd.formattedHost}">Host: {0}</uvm:i18n></div>
-          <div><uvm:i18n p0="${bd.formattedUrl}">URL: {0}</uvm:i18n></div>
+          <div><uvm:i18n p0="${bd.formattedHost}"><b>Host:</b> {0}</uvm:i18n></div>
+          <div><uvm:i18n p0="${bd.formattedUrl}"><b>URL:</b> {0}</uvm:i18n></div>
           <c:if test="${!empty reason}">
-            <div><uvm:i18n p0="${reason}">Reason: {0}</uvm:i18n></div>
+            <div><uvm:i18n p0="${reason}"><b>Reason:</b> {0}</uvm:i18n></div>
           </c:if>
         </div>
-        
-        <p class="contact">
-          <span>${contact}</span>
-        </p>
         
         <c:if test="${showUnblockNow}">
           <button id="unblockNowButton" type="button" onclick="unblockSite(false)">
@@ -79,20 +73,24 @@
             <jsp:expression>i18n.tr( "Unblock Permanently" )</jsp:expression>
           </button>
         </c:if>
+
+        <p class="contact">
+          <span>${contact}</span>
+        </p>
+        
       </div>
 
       <div id="footer">
         <p><span><c:out value="${footer}"/></span></p>
       </div>
-    </div>
-    
-    <!-- This is used in the CSS Zen Garden -->
-    <!-- These extra divs/spans may be used as catch-alls to add extra imagery. -->
-    <div id="extraDiv1"><span></span></div>
-    <div id="extraDiv2"><span></span></div>
-    <div id="extraDiv3"><span></span></div>
-    <div id="extraDiv4"><span></span></div>
-    <div id="extraDiv5"><span></span></div>
-    <div id="extraDiv6"><span></span></div>
+
+      <!-- These extra divs/spans may be used as catch-alls to add extra imagery. -->
+      <div id="extraDiv1"><span></span></div>
+      <div id="extraDiv2"><span></span></div>
+      <div id="extraDiv3"><span></span></div>
+      <div id="extraDiv4"><span></span></div>
+      <div id="extraDiv5"><span></span></div>
+      <div id="extraDiv6"><span></span></div>
+    </div>    
   </body>  
 </html>

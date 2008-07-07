@@ -26,8 +26,12 @@ import java.util.List;
 import java.util.Set;
 
 import com.untangle.node.mail.papi.smtp.SMTPNotifyAction;
+import com.untangle.node.token.Header;
+import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenAdaptor;
 import com.untangle.node.util.PartialListUtil;
+import com.untangle.uvm.LocalAppServerManager;
+import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.localapi.SessionMatcher;
 import com.untangle.uvm.logging.EventLogger;
@@ -40,6 +44,7 @@ import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.StringRule;
 import com.untangle.uvm.policy.Policy;
+import com.untangle.uvm.util.OutsideValve;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.AbstractNode;
 import com.untangle.uvm.vnet.Affinity;
@@ -49,6 +54,8 @@ import com.untangle.uvm.vnet.PipelineFoundry;
 import com.untangle.uvm.vnet.Protocol;
 import com.untangle.uvm.vnet.SoloPipeSpec;
 import com.untangle.uvm.vnet.Subscription;
+import com.untangle.uvm.vnet.TCPSession;
+import org.apache.catalina.Valve;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -62,6 +69,7 @@ import org.hibernate.Session;
 public abstract class VirusNodeImpl extends AbstractNode
     implements VirusNode
 {
+    private static int deployCount = 0;
 
     //Programatic defaults for the contents
     //of the "message" emails generated as a result
@@ -105,6 +113,7 @@ public abstract class VirusNodeImpl extends AbstractNode
     private final VirusScanner scanner;
     private final EventLogger<VirusEvent> eventLogger;
     private final PipeSpec[] pipeSpecs;
+    private final VirusReplacementGenerator replacementGenerator;
 
     private final Logger logger = Logger.getLogger(VirusNodeImpl.class);
 
@@ -174,6 +183,8 @@ public abstract class VirusNodeImpl extends AbstractNode
     {
         this.scanner = scanner;
         this.pipeSpecs = initialPipeSpecs();
+
+        this.replacementGenerator = new VirusReplacementGenerator(getTid());
 
         NodeContext tctx = getNodeContext();
         eventLogger = EventLoggerFactory.factory().getEventLogger(getNodeContext());
@@ -314,6 +325,24 @@ public abstract class VirusNodeImpl extends AbstractNode
         return eventLogger;
     }
 
+    public VirusBlockDetails getDetails(String nonce)
+    {
+        return replacementGenerator.getNonceData(nonce);
+    }
+    
+    String generateNonce(VirusBlockDetails details)
+    {
+        return replacementGenerator.generateNonce(details);
+    }
+
+    Token[] generateResponse(String nonce, TCPSession session,
+                             String uri,boolean persistent)
+    {
+        return replacementGenerator.generateResponse(nonce, session, uri,
+                                                     null, persistent);
+                                                     
+    }
+
     abstract protected int getStrength();
 
     // Node methods ------------------------------------------------------
@@ -379,6 +408,8 @@ public abstract class VirusNodeImpl extends AbstractNode
         // (Not an idea place for this.)
         this.signatureVersion = getSigVersion();
     }
+
+    
 
     // AbstractNode methods ----------------------------------------------
 
@@ -542,6 +573,18 @@ public abstract class VirusNodeImpl extends AbstractNode
         shutdownMatchingSessions();
     }
 
+    @Override
+    protected void postInit(String[] args)
+    {
+        deployWebAppIfRequired(logger);
+    }
+
+    @Override
+    protected void postDestroy()
+    {
+        unDeployWebAppIfRequired(logger);
+    }
+
     // package protected methods ----------------------------------------------
 
     VirusScanner getScanner()
@@ -615,6 +658,63 @@ public abstract class VirusNodeImpl extends AbstractNode
     public void incrementRemoveCounter()
     {
         //incrementCount(Node.GENERIC_3_COUNTER);
+    }
+
+    private static synchronized void deployWebAppIfRequired(Logger logger)
+    {
+        if (0 != deployCount++) {
+            return;
+        }
+
+        LocalUvmContext mctx = LocalUvmContextFactory.context();
+        LocalAppServerManager asm = mctx.appServerManager();
+
+        Valve v = new OutsideValve()
+            {
+                protected boolean isInsecureAccessAllowed()
+                {
+                    return true;
+                }
+
+                /* Unified way to determine which parameter to check */
+                protected boolean isOutsideAccessAllowed()
+                {
+                    return false;
+                }
+
+                /* Unified way to determine which parameter to check */
+                protected String outsideErrorMessage()
+                {
+                    return "off-site access";
+                }
+
+                /* Unified way to determine which parameter to check */
+                protected String httpErrorMessage()
+                {
+                    return "standard access";
+                }
+            };
+
+        if (asm.loadInsecureApp("/virus", "virus", v)) {
+            logger.debug("Deployed Virus WebApp");
+        } else {
+            logger.error("Unable to deploy Virus WebApp");
+        }
+    }
+
+    private static synchronized void unDeployWebAppIfRequired(Logger logger) {
+        if (0 != --deployCount) {
+            return;
+        }
+
+        LocalUvmContext mctx = LocalUvmContextFactory.context();
+        LocalAppServerManager asm = mctx.appServerManager();
+
+        if (asm.unloadWebApp("/webfilter")) {
+            logger.debug("Unloaded Virus WebApp");
+        } else {
+            logger.warn("Unable to unload Virus WebApp");
+        }
     }
 
     // private methods --------------------------------------------------------

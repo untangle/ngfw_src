@@ -154,9 +154,9 @@ Ung.Safelist.prototype = {
         var count = result.safelistCount;
         count = -count;
 
-        var message = i18n.pluralise( i18n._( "Deleted one addressess" ), i18n.sprintf( i18n._( "Deleted %d addresses" ), count ), count );
+        var message = i18n.pluralise( i18n._( "Deleted one address" ), i18n.sprintf( i18n._( "Deleted %d addresses" ), count ), count );
         
-        alert( message );
+        quarantine.showMessage( message );
 
         var sl = result.safelist;
         /* Build a new set of data */
@@ -167,7 +167,7 @@ Ung.Safelist.prototype = {
     updateActionItems : function()
     {
         var count = this.selectionModel.getCount();
-        var text = i18n.pluralise( i18n._( "Delete one Addressess" ), i18n.sprintf( i18n._( "Delete %d Addresses" ), count ), count );
+        var text = i18n.pluralise( i18n._( "Delete one Address" ), i18n.sprintf( i18n._( "Delete %d Addresses" ), count ), count );
         if ( count > 0 ) {
             this.deleteButton.setDisabled( false );
         } else {
