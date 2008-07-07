@@ -1,0 +1,54 @@
+html,body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,form,fieldset,input,p,blockquote,th,td{margin:0;padding:0;}img,body,html{border:0;}
+body {
+    background: transparent url(../images/user/background_content.png) repeat-x !important;
+}
+#content {
+	padding: 17px 12px 12px 12px;
+}
+
+#header {
+	margin-bottom: 28px;
+}
+.title {
+    text-align: right;
+}
+.title-block-page {
+	padding-left: 30px;
+	vertical-align: bottom;
+	text-align: left;
+	font: bold 36px arial, tahoma, helvetica, sans-serif;
+	color: #67686B;
+}
+.icon-block {
+    background:transparent url(../images/user/icon_block.png) no-repeat center center;
+    height: 130px;
+}
+.message {
+    padding: 8px 8px 8px 28px;
+    border: 1px solid #60BB3F;
+    font-size: 12px;
+    background: #FEFECB url(../images/user/icon_message.png) no-repeat scroll 7px center !important;
+}
+.description {
+    font-size: larger;
+}
+#main {
+    text-align: center;
+}
+.info-list {
+	margin-top: 10px;
+	margin-bottom: 10px;
+    width:340px;
+    margin-left:auto;
+    margin-right:auto;
+    text-align: left;
+    background-color: #FFFFFF;
+}
+.info-list div{
+    padding:5px 5px 5px 5px;
+    
+}
+#footer {
+	font-size: small;
+    text-align: center;
+}

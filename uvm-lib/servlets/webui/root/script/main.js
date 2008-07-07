@@ -148,7 +148,7 @@ Ung.Main.prototype = {
         //Ext.QuickTips.init();
 
         this.buildLeftTabs();
-        main.systemPanel=new Ung.SystemPanel({});
+        main.systemStats=new Ung.SystemStats({});
 
         Ext.getCmp("west").on("resize", function() {
             var newHeight=Math.max(this.getEl().getHeight()-250,100);
@@ -589,7 +589,7 @@ Ung.Main.prototype = {
             out.push('<option value="'+rpc.policies[i].id+'" '+selVirtualRack+'>'+i18n._(rpc.policies[i].name)+'<\/option>');
         }
         out.push('<\/select>');
-        document.getElementById('rack_list').innerHTML=out.join('');
+        Ext.get("rack_list").insertHtml("afterBegin", out.join(''));
         this.loadRackView();
     },
     // change current policy

@@ -107,6 +107,7 @@ Ung.Util= {
 // resources map
 Ung.hasResource = {};
 // Thread for installing nodes from store into toolbox
+/*
 Ung.MoveFromStoreToToolboxThread = {
     // the queue of libitems mackage description to install
     // can install only one at a time
@@ -398,6 +399,7 @@ Ung.MessageClientThread = {
         }.createDelegate(this));
     }
 };
+*/
 Ung.AppItem = Ext.extend(Ext.Component, {
     libItem: null,
     node : null,
@@ -455,7 +457,6 @@ Ung.AppItem = Ext.extend(Ext.Component, {
             'text' : this.item.displayName
         });
         this.getEl().insertHtml("afterBegin", html);
-        //this.getEl().dom.innerHTML = html;
         this.getEl().addClass("appItem");
 
         this.progressBar = new Ext.ProgressBar({
@@ -971,7 +972,6 @@ Ung.Node = Ext.extend(Ext.Component, {
         var settingsContentEl = this.settingsWin.getContentEl();
         if (this.settingsClassName !== null) {
             eval('this.settings=new ' + this.settingsClassName + '({\'node\':this,\'tid\':this.tid,\'name\':this.name});');
-            settingsContentEl.innerHTML = "";
             this.settings.render(settingsContentEl);
         } else {
             settingsContentEl.innerHTML = "Error: There is no settings class for the node '" + this.name + "'.";
@@ -1131,6 +1131,7 @@ Ung.MessageManager = {
                     main.loadApps();
                 }
             }
+            main.systemStats.update(messageQueue.systemStats)
             for (var i = 0; i < main.nodes.length; i++) {
                 var nodeCmp = Ung.Node.getCmp(main.nodes[i].tid);
                 if (nodeCmp && nodeCmp.isRunning()) {
@@ -1185,29 +1186,38 @@ Ung.MessageManager = {
     }
     */
 };
-Ung.SystemPanel = Ext.extend(Ext.Component, {
+Ung.SystemStats = Ext.extend(Ext.Component, {
 	autoEl : 'div',
 	renderTo: "rack_list",
 	constructor : function(config) {
-        this.id = "system_panel";
-        Ung.SystemPanel.superclass.constructor.apply(this, arguments);
+        this.id = "system_stats";
+        Ung.SystemStats.superclass.constructor.apply(this, arguments);
     },
     onRender : function(container, position) {
-        Ung.SystemPanel.superclass.onRender.call(this, container, position);
-        var html="aaa";
-        var contentSystemBlingersArr=[
-            '<div id="systemBlingers">',
-                '<div class="network"></div>',
-                '<div class="label" style="width:100px;">'+i18n._("Network")+'</div>',
-                '</div>',
-            '</div>'];
-        this.getEl().insertHtml("afterBegin", html);
-        //this.getEl().alignTo("rack_list","tr-tr",[-42,0]);
-    }
+        Ung.SystemStats.superclass.onRender.call(this, container, position);
+        this.getEl().addClass("systemStats");
+        var contentSystemStatsArr=[
+            '<div class="label" style="width:100px;left:0px;">'+i18n._("Network")+'</div>',
+            '<div class="label" style="width:50px;left:120px;">'+i18n._("CPU Load")+'</div>',
+            '<div class="label" style="width:50px;left:200px;">'+i18n._("Memory")+'</div>',
+            '<div class="label" style="width:30px;right:0px;">'+i18n._("Disk")+'</div>',
+            '<div class="network"><div class="tx">'+i18n._("Tx:")+'</div><div class="rx">'+i18n._("Rx:")+'</div></div>',
+            '<div class="cpu"></div>',
+            '<div class="memory"></div>',
+            '<div class="disk"></div>',
+        ];
+        this.getEl().insertHtml("afterBegin", contentSystemStatsArr.join(''));
+    },
+    update : function(stats) {
+    	this.getEl().child("div[class=cpu]").dom.innerHTML=stats;
+    },
+    reset : function() {
+    }    
 });
 
 // Activity Blinger Class
 Ung.ActivityBlinger = Ext.extend(Ext.Component, {
+	autoEl: "div",
     parentId : null,
     bars : null,
     lastValues : null,
@@ -1217,16 +1227,13 @@ Ung.ActivityBlinger = Ext.extend(Ext.Component, {
         Ung.ActivityBlinger.superclass.constructor.apply(this, arguments);
     },
     onRender : function(container, position) {
-        var el = document.createElement("div");
-        el.className = "activityBlinger";
-        container.dom.insertBefore(el, position);
-        this.el = Ext.get(el);
-        this.id = Ext.id(this);
+    	Ung.ActivityBlinger.superclass.onRender.call(this, container, position);
+    	this.getEl().addClass("activityBlinger")
         var templateHTML = Ung.ActivityBlinger.template.applyTemplate({
             'id' : this.getId(),
             'blingerName' : i18n._("activity")
         });
-        el.innerHTML = templateHTML;
+        this.getEl().insertHtml("afterBegin", templateHTML);
         this.lastValues = [];
         this.decays = [];
         if (this.bars !== null) {
@@ -1240,7 +1247,7 @@ Ung.ActivityBlinger = Ext.extend(Ext.Component, {
                 out.push('<div class="activityBlingerBar" style="top:' + top + 'px;width:0px;display:none;" id="activityBar_'
                         + this.getId() + '_' + i + '"></div>');
             }
-            document.getElementById("blingerBox_" + this.getId()).innerHTML = out.join("");
+            Ext.get("blingerBox_" + this.getId()).insertHtml("afterBegin", out.join(""));
         }
     },
 
@@ -1286,6 +1293,7 @@ Ext.ComponentMgr.registerType('ungActivityBlinger', Ung.ActivityBlinger);
 
 // System Blinger Class
 Ung.SystemBlinger = Ext.extend(Ext.Component, {
+	autoEl:"div",
     parentId : null,
     data : null,
     byteCountCurrent : null,
@@ -1300,16 +1308,13 @@ Ung.SystemBlinger = Ext.extend(Ext.Component, {
     },
 
     onRender : function(container, position) {
-        var el = document.createElement("div");
-        el.className = "systemBlinger";
-        container.dom.insertBefore(el, position);
-        this.el = Ext.get(el);
-        this.id = Ext.id(this);
+        Ung.SystemBlinger.superclass.onRender.call(this, container, position);
+        this.getEl().addClass("systemBlinger")
         var templateHTML = Ung.SystemBlinger.template.applyTemplate({
             'id' : this.getId(),
             'blingerName' : i18n._("system")
         });
-        el.innerHTML = templateHTML;
+        this.getEl().insertHtml("afterBegin", templateHTML);
 
         var out = [];
         for (var i = 0; i < 4; i++) {
@@ -1317,9 +1322,10 @@ Ung.SystemBlinger = Ext.extend(Ext.Component, {
             out.push('<div class="blingerText systemBlingerLabel" style="top:' + top + 'px;" id="systemName_' + this.getId() + '_' + i + '"></div>');
             out.push('<div class="blingerText systemBlingerValue" style="top:' + top + 'px;" id="systemValue_' + this.getId() + '_' + i + '"></div>');
         }
-        document.getElementById("blingerBox_" + this.getId()).innerHTML = out.join("");
-        this.buildActiveMetrics();
         var blingerBoxEl=Ext.get("blingerBox_" + this.getId());
+        blingerBoxEl.insertHtml("afterBegin", out.join(""));
+        this.buildActiveMetrics();
+        
         blingerBoxEl.on("click", this.showBlingerSettings , this);
         
     },

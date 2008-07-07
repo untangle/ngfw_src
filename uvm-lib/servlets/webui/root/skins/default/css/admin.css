@@ -514,8 +514,51 @@ div.iconArrowDown {
   font-size: 11px;
   line-height: 14px; /* works out to 14px */
   font-family:arial,helvetica,"FreeSans","Utkal","Nimbus Sans L","Malayalam","Phetsarath OT","Garuda",clean,sans-serif;
- }
- #system_panel 
- {
- 
- }
+}
+
+div.systemStats {
+	position:absolute;
+	width: 300px;
+	height: 50px;
+    top:0px;
+    right:40px;
+}
+div.systemStats div.label {
+	position:absolute;
+	bottom:4px;
+    text-align: center;
+    font-size: 10px;
+    
+}
+div.systemStats div.network {
+    position: absolute;
+    top: 4px;
+    left:0px;
+    background: transparent url(../images/admin/background_network.png) no-repeat;
+    width:99px;
+    height:33px;
+}
+div.systemStats div.cpu {
+    position: absolute;
+    top: 4px;
+    left:120px;
+    background: transparent url(../images/admin/background_cpu.png) no-repeat;
+    width:50px;
+    height:30px;
+}
+div.systemStats div.memory {
+    position: absolute;
+    top: 4px;
+    left:200px;
+    background: transparent url(../images/admin/background_cpu.png) no-repeat;
+    width:50px;
+    height:30px;
+}
+div.systemStats div.disk {
+    position: absolute;
+    top: 4px;
+    right:0px;
+    background: transparent url(../images/admin/background_disk.png) no-repeat;
+    width:30px;
+    height:30px;
+}
