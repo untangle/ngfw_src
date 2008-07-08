@@ -885,10 +885,10 @@ Ung.Node = Ext.extend(Ext.Component, {
     },
     resetBlingers : function() {
         if(this.activityBlinger!=null) {
-            activityBlinger.reset();
+            this.activityBlinger.reset();
         }
         if(this.systemBlinger!=null) {
-            systemBlinger.reset();
+            this.systemBlinger.reset();
         }
     },
     onPowerClick : function() {
@@ -1198,18 +1198,73 @@ Ung.SystemStats = Ext.extend(Ext.Component, {
         this.getEl().addClass("systemStats");
         var contentSystemStatsArr=[
             '<div class="label" style="width:100px;left:0px;">'+i18n._("Network")+'</div>',
-            '<div class="label" style="width:50px;left:120px;">'+i18n._("CPU Load")+'</div>',
-            '<div class="label" style="width:50px;left:200px;">'+i18n._("Memory")+'</div>',
+            '<div class="label" style="width:50px;left:113px;">'+i18n._("CPU Load")+'</div>',
+            '<div class="label" style="width:79px;left:173px;">'+i18n._("Memory")+'</div>',
             '<div class="label" style="width:30px;right:0px;">'+i18n._("Disk")+'</div>',
-            '<div class="network"><div class="tx">'+i18n._("Tx:")+'</div><div class="rx">'+i18n._("Rx:")+'</div></div>',
+            '<div class="network"><div class="tx">'+i18n._("Tx:")+'<div class="tx_value"></div></div><div class="rx">'+i18n._("Rx:")+'<div class="rx_value"></div></div></div>',
             '<div class="cpu"></div>',
-            '<div class="memory"></div>',
-            '<div class="disk"></div>',
+            '<div class="memory"><div class="free">'+i18n._("F:")+'<div class="free_value"></div></div><div class="used">'+i18n._("U:")+'<div class="used_value"></div></div></div>',
+            '<div class="disk"><div name="disk_value"></div></div>',
         ];
         this.getEl().insertHtml("afterBegin", contentSystemStatsArr.join(''));
+        var extendedStatsArr=[
+            '<div class="title">'+i18n._("Memory Usage:")+'</div>',
+            '<div class="values"><span name="memory_used"></span> '+i18n._("used")+', <span name="memory_free"></span> '+i18n._("free")+', <span name="memory_total"></span> '+i18n._("total")+'</div>',
+            '<div class="title">'+i18n._("Memory Pages:")+'</div>',
+            '<div class="values"><span name="memory_pages_active"></span> '+i18n._("active")+', <span name="memory_pages_wired"></span> '+i18n._("wired")+'</div>',
+            '<div class="values"><span name="memory_pages_inactive"></span> '+i18n._("inactive")+', <span name="memory_pages_free"></span> '+i18n._("free")+'</div>',
+            '<div class="title">'+i18n._("VM Statistics:")+'</div>',
+            '<div class="values"><span name="vm_pageins"></span> '+i18n._("pageins")+', <span name="vm_pageouts"></span> '+i18n._("pageouts")+'</div>',
+            '<div class="values"><span name="vm_cache_lookups"></span> '+i18n._("cache lookups")+', <span name="vm_cache_hits"></span> '+i18n._("cache hits")+' (<span name="vm_cache_hits_percent"></span>)</div>',
+            '<div class="values"><span name="vm_page_faults"></span> '+i18n._("page faults")+', <span name="vm_copy_on_writes"></span> '+i18n._("copy-on-writes")+'</div>',
+            '<div class="title">'+i18n._("Swap Files:")+'</div>',
+            '<div class="values"><span name="swap_files_encrypted"></span> '+i18n._("encrypted swap files present in")+' <span name="swap_folder"></span> </div>',
+            '<div class="values"><span name="swap_files_peak"></span> '+i18n._("swap files at peak usage")+'</div>',
+            '<div class="values"><span name="swap_total"></span> '+i18n._("total swap space")+' (<span name="swap_used"></span> '+i18n._("used")+')</div>'
+        ];
+        this.extendedStats= new Ext.ToolTip({
+            target: this.getEl(),
+            dismissDelay:0,
+            hideDelay :400,
+            width: 350,
+            cls: 'extendedStats',
+            html: extendedStatsArr.join(''),
+            show : function(){
+                this.showBy("system_stats","tl-bl?");
+            }
+        });
+        this.extendedStats.render(Ext.getBody());
     },
     update : function(stats) {
-    	this.getEl().child("div[class=cpu]").dom.innerHTML=stats;
+        this.getEl().child("div[class=cpu]").dom.innerHTML=Math.round(stats.map.oneMinuteLoadAvg*100)+"%";
+        this.getEl().child("div[class=tx_value]").dom.innerHTML="TODO";
+        this.getEl().child("div[class=rx_value]").dom.innerHTML="TODO";
+        this.getEl().child("div[class=free_value]").dom.innerHTML=stats.map.MemFree;
+        this.getEl().child("div[class=used_value]").dom.innerHTML=stats.map.MemTotal-stats.map.MemFree;
+        var diskPercent=Math.round(Math.random()*20)*5;
+        this.getEl().child("div[name=disk_value]").dom.className="disk"+diskPercent;
+        if(this.extendedStats.rendered) {
+            var extendedStatsEl=this.extendedStats.getEl();
+            extendedStatsEl.child("span[name=memory_used]").dom.innerHTML=stats.map.MemTotal-stats.map.MemFree;
+            extendedStatsEl.child("span[name=memory_free]").dom.innerHTML=stats.map.MemFree;
+            extendedStatsEl.child("span[name=memory_total]").dom.innerHTML=stats.map.MemTotal;
+            extendedStatsEl.child("span[name=memory_pages_active]").dom.innerHTML=stats.map.Active;
+            extendedStatsEl.child("span[name=memory_pages_wired]").dom.innerHTML="TODO";
+            extendedStatsEl.child("span[name=memory_pages_inactive]").dom.innerHTML=stats.map.Inactive;
+            extendedStatsEl.child("span[name=memory_pages_free]").dom.innerHTML="TODO";
+            extendedStatsEl.child("span[name=vm_pageins]").dom.innerHTML=stats.map.pgpgin;
+            extendedStatsEl.child("span[name=vm_pageouts]").dom.innerHTML=stats.map.pgpgout;
+            extendedStatsEl.child("span[name=vm_cache_lookups]").dom.innerHTML="TODO";
+            extendedStatsEl.child("span[name=vm_cache_hits]").dom.innerHTML="TODO";
+            extendedStatsEl.child("span[name=vm_cache_hits_percent]").dom.innerHTML="TODO";
+            extendedStatsEl.child("span[name=vm_page_faults]").dom.innerHTML=stats.map.pgfault;
+            extendedStatsEl.child("span[name=vm_copy_on_writes]").dom.innerHTML="TODO";
+            extendedStatsEl.child("span[name=swap_files_encrypted]").dom.innerHTML="TODO";
+            extendedStatsEl.child("span[name=swap_folder]").dom.innerHTML="TODO";
+            extendedStatsEl.child("span[name=swap_files_peak]").dom.innerHTML="TODO";
+            extendedStatsEl.child("span[name=swap_total]").dom.innerHTML=stats.map.SwapTotal;
+            extendedStatsEl.child("span[name=swap_used]").dom.innerHTML=stats.map.SwapTotal-stats.map.SwapFree;
+        }
     },
     reset : function() {
     }    

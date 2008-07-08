@@ -522,13 +522,14 @@ div.systemStats {
 	height: 50px;
     top:0px;
     right:40px;
+    color: #FFFFFF;
+    font-size: 10px;
 }
 div.systemStats div.label {
 	position:absolute;
 	bottom:4px;
     text-align: center;
-    font-size: 10px;
-    
+    color: #000000;
 }
 div.systemStats div.network {
     position: absolute;
@@ -536,24 +537,95 @@ div.systemStats div.network {
     left:0px;
     background: transparent url(../images/admin/background_network.png) no-repeat;
     width:99px;
-    height:33px;
+    height:30px;
+    font-weight: bold;
 }
+div.systemStats div.network div.tx {
+    position: absolute;
+    top: 2px;
+    left:0px;
+    width:70px;
+    height:15px;
+    padding-left:25px;
+    color:#55BA47;
+    background: transparent url(../images/admin/icon_network_tx.png) no-repeat scroll 7px 1px !important;
+}
+div.systemStats div.network div.tx_idle {
+    background: transparent url(../images/admin/icon_network_tx_idle.png) no-repeat scroll 7px 1px !important;
+}
+div.systemStats div.network div.rx {
+    position: absolute;
+    bottom:0px;
+    width:70px;
+    height:15px;
+    padding-left:25px;
+    color:#AC2322;
+    background: transparent url(../images/admin/icon_network_rx.png) no-repeat scroll 7px 1px !important;
+}
+div.systemStats div.network div.rx_idle {
+    background: transparent url(../images/admin/icon_network_rx_idle.png) no-repeat scroll 7px 1px !important;
+}
+
+div.systemStats div.network div.rx div.rx_value {
+    position: absolute;
+    top:0px;
+    right:0px;
+}
+div.systemStats div.network div.tx div.tx_value {
+    position: absolute;
+    top:0px;
+    right:0px;
+}
+
 div.systemStats div.cpu {
     position: absolute;
     top: 4px;
-    left:120px;
+    left:113px;
     background: transparent url(../images/admin/background_cpu.png) no-repeat;
     width:50px;
     height:30px;
+    text-align: center;
+    padding-top: 7px;
+    font-weight: bold;
 }
 div.systemStats div.memory {
     position: absolute;
     top: 4px;
-    left:200px;
-    background: transparent url(../images/admin/background_cpu.png) no-repeat;
-    width:50px;
+    left:177px;
+    background: transparent url(../images/admin/background_memory.png) no-repeat;
+    width:79px;
     height:30px;
+    font-weight: bold;
 }
+div.systemStats div.memory div.free {
+    position: absolute;
+    top: 2px;
+    left:0px;
+    width:70px;
+    height:15px;
+    padding-left:4px;
+    color:#55BA47;
+}
+div.systemStats div.memory div.used {
+    position: absolute;
+    bottom:0px;
+    width:70px;
+    height:15px;
+    padding-left:4px;
+    color:#AC2322;
+}
+
+div.systemStats div.memory div.free div.free_value {
+    position: absolute;
+    top:0px;
+    right:0px;
+}
+div.systemStats div.memory div.used div.used_value {
+    position: absolute;
+    top:0px;
+    right:0px;
+}
+
 div.systemStats div.disk {
     position: absolute;
     top: 4px;
@@ -561,4 +633,119 @@ div.systemStats div.disk {
     background: transparent url(../images/admin/background_disk.png) no-repeat;
     width:30px;
     height:30px;
+}
+div.systemStats div.disk div.disk0 {
+	width:30px;
+    height:30px;
+    background: transparent url(../images/admin/disk/icon_disk0.png) no-repeat center center;
+}
+div.systemStats div.disk div.disk5 {
+    width:30px;
+    height:30px;
+	background: transparent url(../images/admin/disk/icon_disk5.png) no-repeat center center;
+}
+div.systemStats div.disk div.disk10 {
+    width:30px;
+    height:30px;
+    background: transparent url(../images/admin/disk/icon_disk10.png) no-repeat center center;
+}
+div.systemStats div.disk div.disk15 {
+    width:30px;
+    height:30px;
+	background: transparent url(../images/admin/disk/icon_disk15.png) no-repeat center center;
+}
+div.systemStats div.disk div.disk20 {
+    width:30px;
+    height:30px;
+    background: transparent url(../images/admin/disk/icon_disk20.png) no-repeat center center;
+}
+div.systemStats div.disk div.disk25 {
+    width:30px;
+    height:30px;
+    background: transparent url(../images/admin/disk/icon_disk25.png) no-repeat center center;
+}
+div.systemStats div.disk div.disk30 {
+    width:30px;
+    height:30px;
+    background: transparent url(../images/admin/disk/icon_disk30.png) no-repeat center center;
+}
+div.systemStats div.disk div.disk35 {
+    width:30px;
+    height:30px;
+    background: transparent url(../images/admin/disk/icon_disk35.png) no-repeat center center;
+}
+div.systemStats div.disk div.disk40 {
+    width:30px;
+    height:30px;
+    background: transparent url(../images/admin/disk/icon_disk40.png) no-repeat center center;
+}
+div.systemStats div.disk div.disk45 {
+    width:30px;
+    height:30px;
+    background: transparent url(../images/admin/disk/icon_disk45.png) no-repeat center center;
+}
+div.systemStats div.disk div.disk50 {
+    width:30px;
+    height:30px;
+    background: transparent url(../images/admin/disk/icon_disk50.png) no-repeat center center;
+}
+div.systemStats div.disk div.disk55 {
+    width:30px;
+    height:30px;
+    background: transparent url(../images/admin/disk/icon_disk55.png) no-repeat center center;
+}
+div.systemStats div.disk div.disk60 {
+    width:30px;
+    height:30px;
+    background: transparent url(../images/admin/disk/icon_disk60.png) no-repeat center center;
+}
+div.systemStats div.disk div.disk65 {
+    width:30px;
+    height:30px;
+    background: transparent url(../images/admin/disk/icon_disk65.png) no-repeat center center;
+}
+div.systemStats div.disk div.disk70 {
+    width:30px;
+    height:30px;
+    background: transparent url(../images/admin/disk/icon_disk70.png) no-repeat center center;
+}
+div.systemStats div.disk div.disk75 {
+    width:30px;
+    height:30px;
+    background: transparent url(../images/admin/disk/icon_disk75.png) no-repeat center center;
+}
+div.systemStats div.disk div.disk80 {
+    width:30px;
+    height:30px;
+    background: transparent url(../images/admin/disk/icon_disk80.png) no-repeat center center;
+}
+div.systemStats div.disk div.disk85 {
+    width:30px;
+    height:30px;
+    background: transparent url(../images/admin/disk/icon_disk85.png) no-repeat center center;
+}
+div.systemStats div.disk div.disk90 {
+    width:30px;
+    height:30px;
+    background: transparent url(../images/admin/disk/icon_disk90.png) no-repeat center center;
+}
+div.systemStats div.disk div.disk95 {
+    width:30px;
+    height:30px;
+    background: transparent url(../images/admin/disk/icon_disk95.png) no-repeat center center;
+}
+div.systemStats div.disk div.disk100 {
+    width:30px;
+    height:30px;
+    background: transparent url(../images/admin/disk/icon_disk100.png) no-repeat center center;
+}
+div.extendedStats {
+    font-size: 11px;
+}
+div.extendedStats div.title{
+    padding-left: 5px;
+    font-weight: bold;
+}
+div.extendedStats div.values{
+    padding-left: 30px;
 }
