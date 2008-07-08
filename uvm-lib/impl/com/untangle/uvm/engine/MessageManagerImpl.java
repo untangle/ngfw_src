@@ -19,6 +19,7 @@
 package com.untangle.uvm.engine;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -318,6 +319,7 @@ class MessageManagerImpl implements LocalMessageManager
                 readVmstat(m);
                 readCpuinfo(m);
                 readLoadAverage(m);
+                getNumProcs(m);
             } catch (IOException exn) {
                 logger.warn("could not get memory information", exn);
             }
@@ -423,6 +425,23 @@ class MessageManagerImpl implements LocalMessageManager
                     }
                 }
             }
+        }
+
+        private void getNumProcs(Map<String, Object> m)
+        {
+            int numProcs = 0;
+
+            File dir = new File("/proc");
+            if (dir.isDirectory()) {
+                for (File f : dir.listFiles()) {
+                    try {
+                        Integer.parseInt(f.getName());
+                        numProcs++;
+                    } catch (NumberFormatException exn) { }
+                }
+            }
+
+            m.put("numProcs", numProcs);
         }
     }
 
