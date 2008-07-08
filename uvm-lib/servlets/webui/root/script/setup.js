@@ -1172,11 +1172,12 @@ Ung.Setup =  {
                      email.card,
                      complete.card
             ],
+            disableNext : true,
             el : "container"
         });
 
         this.wizard.render();
 
-        this.wizard.goToPage( 6 );
+        this.wizard.goToPage( 1 );
 	}
 };

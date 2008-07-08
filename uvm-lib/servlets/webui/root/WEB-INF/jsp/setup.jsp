@@ -13,7 +13,7 @@
     </style>
     
     <uvm:skin src="ext-skin.css"  name="${ss.administrationClientSkin}"/>
-    <uvm:skin src="skin.css"      name="${ss.administrationClientSkin}"/>
+    <uvm:skin src="admin.css"      name="${ss.administrationClientSkin}"/>
 
     <script type="text/javascript" src="ext/source/core/Ext.js"></script>
     <script type="text/javascript" src="ext/source/adapter/ext-base.js"></script>
@@ -42,7 +42,16 @@
       Ext.onReady(Ung.Setup.init);
     </script>
  </head>
-<body>
-<div id="container"></div>
+<body class="wizard">
+<div id="container">
+  <!-- These extra divs/spans may be used as catch-alls to add extra imagery. -->
+  <div id="extraDiv1"><span></span></div>
+  <div id="extraDiv2"><span></span></div>
+  <div id="extraDiv3"><span></span></div>
+  <div id="extraDiv4"><span></span></div>
+  <div id="extraDiv5"><span></span></div>
+  <div id="extraDiv6"><span></span></div>
+</div>
+
 </body>
 </html>

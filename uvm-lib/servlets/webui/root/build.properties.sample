@@ -1,0 +1,5 @@
+# Ant properties for building
+
+deploy.path=../../../../dist/usr/share/untangle/web/webui
+#deploy.path=Z:/work/src/dist/usr/share/untangle/web/webui
+#deploy.path=X:/
