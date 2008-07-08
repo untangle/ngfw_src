@@ -61,6 +61,9 @@ class MessageManagerImpl implements LocalMessageManager
     private static final Pattern CPUINFO_PATTERN
         = Pattern.compile("([ 0-9a-zA-Z]*\\w)\\s*:\\s*(.*)$");
 
+    private static final Pattern CPU_USAGE_PATTERN
+        = Pattern.compile("cpu\\s+(\\d+)\\s+(\\d+)\\s+(\\d+)");
+
     private static final Set<String> MEMINFO_KEEPERS;
     private static final Set<String> VMSTAT_KEEPERS;
 
@@ -310,6 +313,11 @@ class MessageManagerImpl implements LocalMessageManager
 
     private class SystemStatCollector implements Runnable
     {
+        private long user0 = 0;
+        private long nice0 = 0;
+        private long system0 = 0;
+        private long idle0 = 0;
+
         public void run()
         {
             Map<String, Object> m = new HashMap<String, Object>();
@@ -320,6 +328,7 @@ class MessageManagerImpl implements LocalMessageManager
                 readCpuinfo(m);
                 readLoadAverage(m);
                 getNumProcs(m);
+                getCpuUsage(m);
             } catch (IOException exn) {
                 logger.warn("could not get memory information", exn);
             }
@@ -443,12 +452,55 @@ class MessageManagerImpl implements LocalMessageManager
 
             m.put("numProcs", numProcs);
         }
+
+        private void getCpuUsage(Map<String, Object> m)
+            throws IOException
+        {
+            BufferedReader br = new BufferedReader(new FileReader("/proc/loadavg"));
+            for (String l = br.readLine(); null != l; l = br.readLine()) {
+                Matcher matcher = CPU_USAGE_PATTERN.matcher(l);
+                if (matcher.find()) {
+                    try {
+                        long user1 = Long.parseLong(matcher.group(1));
+                        long nice1 = Long.parseLong(matcher.group(2));
+                        long system1 = Long.parseLong(matcher.group(3));
+                        long idle1 = Long.parseLong(matcher.group(4));
+
+                        long totalTime = (user1 - user0) + (nice1 - nice0)
+                            + (system1 - system0) + (idle1 - idle0);
+
+                        if (0 == totalTime) {
+                            m.put("userCpuUtilization", (float)0);
+                            m.put("systemCpuUtilization", (float)0);
+                        } else {
+                            m.put("userCpuUtilization",
+                                  ((user1 - user0) + (nice1 - nice0))
+                                  / (float)totalTime);
+                            m.put("systemCpuUtilization",
+                                  (system1 - system0) / (float)totalTime);
+                        }
+
+                        user0 = user1;
+                        nice0 = nice1;
+                        system0 = system1;
+                        idle0 = idle1;
+                    } catch (NumberFormatException exn) {
+                        m.put("userCpuUtilization", (float)0);
+                        m.put("systemCpuUtilization", (float)0);
+                    }
+
+                    break;
+                }
+            }
+        }
     }
 
     static {
         Set<String> s = new HashSet<String>();
         s.add("MemTotal");
         s.add("MemFree");
+        s.add("Cached");
+        s.add("Buffers");
         s.add("Active");
         s.add("Inactive");
         s.add("SwapTotal");

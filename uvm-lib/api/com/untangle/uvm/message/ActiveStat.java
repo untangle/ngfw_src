@@ -66,7 +66,6 @@ public class ActiveStat implements Serializable
         this.name = name;
     }
 
-
     @Enumerated(EnumType.STRING)
     public StatInterval getInterval()
     {
