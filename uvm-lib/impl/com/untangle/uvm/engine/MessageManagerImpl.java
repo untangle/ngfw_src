@@ -64,6 +64,9 @@ class MessageManagerImpl implements LocalMessageManager
     private static final Pattern CPU_USAGE_PATTERN
         = Pattern.compile("cpu\\s+(\\d+)\\s+(\\d+)\\s+(\\d+)");
 
+    private static final Pattern NET_DEV_PATTERN
+        = Pattern.compile("\\s*(eth\\d+):\\s*(\\d+)\\s+\\d+\\s+\\d+\\s+\\d+\\s+\\d+\\s+\\d+\\s+\\d+\\s+\\d+\\s+(\\d+)");
+
     private static final Set<String> MEMINFO_KEEPERS;
     private static final Set<String> VMSTAT_KEEPERS;
 
@@ -75,7 +78,11 @@ class MessageManagerImpl implements LocalMessageManager
     private final Pulse updatePulse = new Pulse("system-stat-collector",
                                                 true, new SystemStatCollector());
 
+    private final Map<String, Long> rxInfo = new HashMap<String, Long>(10);
+    private final Map<String, Long> txInfo = new HashMap<String, Long>(10);
+
     private volatile Map<String, Object> systemStats = Collections.emptyMap();
+
 
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -329,6 +336,7 @@ class MessageManagerImpl implements LocalMessageManager
                 readLoadAverage(m);
                 getNumProcs(m);
                 getCpuUsage(m);
+                getNetDevUsage(m);
             } catch (IOException exn) {
                 logger.warn("could not get memory information", exn);
             }
@@ -492,6 +500,57 @@ class MessageManagerImpl implements LocalMessageManager
                     break;
                 }
             }
+        }
+
+        private synchronized void getNetDevUsage(Map<String, Object> m)
+            throws IOException
+        {
+            long rxBytes = 0;
+            long txBytes = 0;
+
+            BufferedReader br = new BufferedReader(new FileReader("/proc/net/dev"));
+            for (String l = br.readLine(); null != l; l = br.readLine()) {
+                Matcher matcher = NET_DEV_PATTERN.matcher(l);
+                if (matcher.find()) {
+                    String iface = matcher.group(1);
+                    try {
+                        long rxBytes1 = Long.parseLong(matcher.group(2));
+                        long txBytes1 = Long.parseLong(matcher.group(3));
+
+                        Long b = rxInfo.get(iface);
+                        long rxBytes0 = null == b ? 0 : b;
+                        b = txInfo.get(iface);
+                        long txBytes0 = null == b ? 0 : b;
+
+                        rxBytes1 = fixRollover(rxBytes0, rxBytes1);
+                        txBytes1 = fixRollover(txBytes0, txBytes1);
+
+                        rxBytes += rxBytes1;
+                        txBytes += txBytes1;
+
+                        rxInfo.put(iface, rxBytes1);
+                        txInfo.put(iface, txBytes1);
+                    } catch (NumberFormatException exn) {
+                        logger.warn("could not add interface info for: "
+                                    + iface, exn);
+                    }
+                }
+            }
+
+            m.put("rxBytes", rxBytes);
+            m.put("txBytes", txBytes);
+        }
+
+        private long fixRollover(long previousCount, long kernelCount)
+        {
+            /* If the kernel is counting in 64-bits, just return the
+             * kernel count */
+            if (kernelCount >= (1L << 32)) return kernelCount;
+
+            long previousKernelCount = previousCount & 0xFFFFFFFFL;
+            if (previousKernelCount > kernelCount) previousCount += (1L << 32);
+
+            return ((previousCount & 0x7FFFFFFF00000000L) + kernelCount);
         }
     }
 
