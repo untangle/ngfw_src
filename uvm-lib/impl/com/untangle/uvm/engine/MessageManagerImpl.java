@@ -184,7 +184,14 @@ class MessageManagerImpl implements LocalMessageManager
                         bs = new StatSettings(tid, activeMetrics);
                         s.save(bs);
                     } else {
-                        bs.setActiveMetrics(activeMetrics);
+                        List<ActiveStat> l = bs.getActiveMetrics();
+                        if (null == bs) {
+                            bs.setActiveMetrics(activeMetrics);
+                        } else {
+                            l.clear();
+                            l.addAll(activeMetrics);
+                        }
+
                         s.merge(bs);
                     }
 
