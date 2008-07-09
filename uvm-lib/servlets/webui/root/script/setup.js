@@ -588,12 +588,11 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
             items : [{
                 xtype : 'button',
                 text : i18n._( 'Refresh' ),
-                handler : this.refresh,
-                scope : this,
+                handler : this.refresh.createDelegate( this ),
                 disabled : false
             },{
                 xtype : 'fieldset',
-                title : i18n._( "Status: not online" ),
+                title : i18n._( "Status" ),
                 defaultType : 'textfield',
                 defaults : {
                     disabled : true
@@ -658,12 +657,11 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
             },{
                 xtype : 'button',
                 text : i18n._( 'Refresh' ),
-                handler : this.refresh,
-                scope : this,
+                handler : this.refresh.createDelegate( this ),
                 disabled : false
             },{
                 xtype : 'fieldset',
-                title : i18n._( "Status: not online" ),
+                title : i18n._( "Status" ),
                 defaultType : 'textfield',
                 defaults : {
                     disabled : true
@@ -738,8 +736,7 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
             items : [ configure, this.cardPanel, {
                 xtype : 'button',
                 text : i18n._( 'Test Connectivity' ),
-                handler : this.refresh,
-                scope : this,
+                handler : this.testConnectivity.createDelegate( this ),
                 disabled : false
             }]
         });
@@ -821,6 +818,54 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
         this.refreshNetworkSettings();
         
         handler();
+    },
+
+    /* Refresh the current network settings (lease or whatever) */
+    refresh : function()
+    {
+        Ext.MessageBox.wait(i18n._("Refreshing..."), i18n._("Please wait"));
+        
+        var handler = function() { 
+            Ext.MessageBox.hide();
+        };
+
+        this.cardPanel.layout.activeItem.saveData( handler );
+    },
+
+    testConnectivity : function()
+    {
+        Ext.MessageBox.wait(i18n._("Testing Connectivity..."), i18n._("Please wait"));
+        
+        var handler = this.execConnectivityTest.createDelegate( this );
+
+        this.cardPanel.layout.activeItem.saveData( handler );        
+    },
+    
+    execConnectivityTest : function()
+    {
+        rpc.connectivityTester.getStatus( this.completeConnectivityTest.createDelegate( this ));
+    },
+    
+    completeConnectivityTest : function( result, exception )
+    {
+        if ( exception ) {
+            Ext.MessageBox.alert( i18n._( "Network Settings" ),exception.message); 
+            return;
+        }
+
+        var message = "";
+
+        if (( result.tcpWorking == false )  && ( result.dnsWorking == false )) {
+            message = i18n._( "Warning! Internet and DNS failed." );
+        } else if ( result.tcpWorking == false ) {
+            message = i18n._( "Warning! DNS succeeded, but Internet failed." );
+        } else if ( result.dnsWorking == false ) {
+            message = i18n._( "Warning! Internet succeeded, but DNS failed." );
+        } else {
+            message = i18n._( "Success!" );
+        }
+
+        Ext.MessageBox.alert( i18n._( "Internet Status" ), message ); 
     },
 
     /* This doesn't reload the settings, it just updates what is
@@ -1144,7 +1189,7 @@ Ung.SetupWizard.Complete = Ext.extend( Object, {
         var panel = new Ext.FormPanel({
         items : [{
             xtype : 'label',
-            html : i18n._( 'Your Untangle Server is now configured.!<br/>You are now ready to login and download some applications.' )
+            html : i18n._( 'Your Untangle Server is now configured!<br/>You are now ready to login and download some applications.' )
         }]
     });
 
@@ -1192,6 +1237,7 @@ Ung.Setup =  {
         rpc.languageManager = rpc.jsonrpc.RemoteUvmContext.languageManager();
         rpc.adminManager = rpc.jsonrpc.RemoteUvmContext.adminManager();
         rpc.networkManager = rpc.jsonrpc.RemoteUvmContext.networkManager();
+        rpc.connectivityTester = rpc.jsonrpc.RemoteUvmContext.getRemoteConnectivityTester();
         rpc.toolboxManager = rpc.jsonrpc.RemoteUvmContext.toolboxManager();
         rpc.mailSender = rpc.jsonrpc.RemoteUvmContext.mailSender();
 
@@ -1223,12 +1269,12 @@ Ung.Setup =  {
                      email.card,
                      complete.card
             ],
-            disableNext : true,
+/*            disableNext : true, */
             el : "container"
         });
 
         this.wizard.render();
 
-        this.wizard.goToPage( 1 );
+        this.wizard.goToPage( 4 );
 	}
 };
