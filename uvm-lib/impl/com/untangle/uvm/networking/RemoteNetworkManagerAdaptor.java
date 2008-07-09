@@ -49,6 +49,12 @@ public class RemoteNetworkManagerAdaptor implements RemoteNetworkManager
         this.lnm.setSetupSettings( address, basic );
     }
 
+    public BasicNetworkSettings setSetupSettings( BasicNetworkSettings basic )
+        throws NetworkException, ValidateException
+    {
+        return this.lnm.setSetupSettings( basic );
+    }
+
     /* Set the access and address settings, used by the Remote Panel */
     public void setSettings( AccessSettings access, AddressSettings address )
         throws NetworkException, ValidateException

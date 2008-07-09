@@ -776,8 +776,7 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
         ns.dhcpEnabled = true;
         ns.PPPoESettings.live = false;
         /* There is really no need to save the address settings again. */
-        rpc.networkManager.setSetupSettings( this.complete.createDelegate( this, [ handler ], true ),
-                                             Ung.SetupWizard.CurrentValues.addressSettings, ns );
+        rpc.networkManager.setSetupSettings( this.complete.createDelegate( this, [ handler ], true ), ns );
     },
     
     saveStatic : function( handler )
@@ -795,8 +794,7 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
         if ( dns2.length > 0 ) ns.dns2 = dns2;
         else ns.dns2 = null;
 
-        rpc.networkManager.setSetupSettings( this.complete.createDelegate( this, [ handler ], true ),
-                                             Ung.SetupWizard.CurrentValues.addressSettings, ns );
+        rpc.networkManager.setSetupSettings( this.complete.createDelegate( this, [ handler ], true ), ns );
     },
 
     savePPPoE : function( handler )
@@ -808,8 +806,7 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
         ns.PPPoESettings.username = this.pppoePanel.find( "name", "username" )[0].getValue();
         ns.PPPoESettings.password = this.pppoePanel.find( "name", "password" )[0].getValue();
         
-        rpc.networkManager.setSetupSettings( this.complete.createDelegate( this, [ handler ], true ),
-                                             Ung.SetupWizard.CurrentValues.addressSettings, ns );
+        rpc.networkManager.setSetupSettings( this.complete.createDelegate( this, [ handler ], true ), ns );
     },
 
     complete : function( result, exception, foo, handler )
@@ -818,8 +815,36 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
             Ext.MessageBox.alert( i18n._( "Network Settings" ),exception.message); 
             return;
         }
+
+        Ung.SetupWizard.CurrentValues.networkSettings = result;
+
+        this.refreshNetworkSettings();
         
         handler();
+    },
+
+    /* This doesn't reload the settings, it just updates what is
+     * displayed inside of the User Interface. */
+    refreshNetworkSettings : function()
+    {
+        var settings = Ung.SetupWizard.CurrentValues.networkSettings;
+        for ( var c = 0; c < this.cards.length ; c++ ) {
+            var card = this.cards[c];
+            this.updateValue( card.find( "name", "ip" )[0], settings.host );
+            this.updateValue( card.find( "name", "netmask" )[0], settings.netmask );
+            this.updateValue( card.find( "name", "gateway" )[0], settings.gateway );
+            this.updateValue( card.find( "name", "dns1" )[0], settings.dns1 );
+            this.updateValue( card.find( "name", "dns2" )[0], settings.dns2 );
+        }
+    },
+
+    /* Guard the field to shield strange values from the user. */
+    updateValue : function( field, value )
+    {
+        if ( field == null ) return;
+        if ( value == null || value == "0.0.0.0" ) value = "";
+
+        field.setValue( value );
     }
     
 });

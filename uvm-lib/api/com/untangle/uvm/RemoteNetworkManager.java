@@ -59,6 +59,11 @@ public interface RemoteNetworkManager
     void setSetupSettings(AddressSettings address, BasicNetworkSettings basic)
         throws NetworkException, ValidateException;
 
+    /* Save the basic network settings during the wizard.
+     * This can double for refresh because it returns the new, populated network settings.*/
+    BasicNetworkSettings setSetupSettings(BasicNetworkSettings basic)
+        throws NetworkException, ValidateException;
+
     /**
      * Retrieve the settings related to limiting access to the box.
      */

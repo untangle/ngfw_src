@@ -359,6 +359,12 @@ public class NetworkManagerImpl implements LocalNetworkManager
     {
         this.addressManager.setWizardSettings( address );
 
+        setSetupSettings( basic );
+    }
+
+    public BasicNetworkSettings setSetupSettings( BasicNetworkSettings basic )
+        throws NetworkException, ValidateException
+    {
         /* Send the call onto the alpaca */
         PPPoEConnectionRule pppoe = basic.getPPPoESettings();
 
@@ -395,7 +401,10 @@ public class NetworkManagerImpl implements LocalNetworkManager
         } catch ( Exception e ) {
             throw new NetworkException( "Unable to configure the external interface.", e );
         }
+
+        return getBasicSettings();
     }
+
 
     public void setWizardNatEnabled( IPaddr address, IPaddr netmask )
     {
