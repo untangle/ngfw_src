@@ -80,7 +80,7 @@ Ung.Remaps.prototype = {
                 value : inboxDetails.forwardAddress
             }],
             buttons : [ {
-                text : "Change Address",
+                text : "Apply",
                 handler: function() {
                     var field = this.forwardTo.find( "name", "email_address" )[0];
                     var email = field.getValue();

@@ -441,7 +441,7 @@ Ung.QuarantineGrid = Ext.extend( Ext.grid.GridPanel, {
         {
            header: i18n._( "From" ),
            dataIndex: 'sender',
-           width: 200
+           width: 150
         },{
            header: "&nbsp",
            dataIndex: 'attachmentCount',
@@ -453,7 +453,7 @@ Ung.QuarantineGrid = Ext.extend( Ext.grid.GridPanel, {
         },{
            header: i18n._( "Subject" ),
            dataIndex: 'truncatedSubject',
-           width: 300
+           width: 250
         },{
            header: i18n._( "Date" ),
            dataIndex: 'quarantinedDate',
@@ -471,7 +471,7 @@ Ung.QuarantineGrid = Ext.extend( Ext.grid.GridPanel, {
            renderer : function( value ) {
                return Math.round( (( value + 0.0 ) / 1024) * 10 ) / 10;
            },
-           width: 100
+           width: 60
         }]);        
 
         config.cm.defaultSortable = true;
@@ -510,7 +510,7 @@ Ung.QuarantineTabPanel = Ext.extend( Ext.TabPanel, {
     },
 
     el : "quarantine-tab-panel",
-    width : 1000,
+    width : 800,
     height : 500,
     activeTab : 0,
     layoutOnTabChange : true,
