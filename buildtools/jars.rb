@@ -91,8 +91,6 @@ class Jars
   XmlRpc     = [ Jars.downloadTarget('xmlrpc-3.1/lib/xmlrpc-client-3.1.jar'),
                  Jars.downloadTarget('xmlrpc-3.1/lib/xmlrpc-common-3.1.jar'),
          Jars.downloadTarget('xmlrpc-3.1/lib/ws-commons-util-1.0.2.jar') ]
-  ## WBEM Jars
-  WBEM       = [ Jars.downloadTarget('wbemservices-1.0.2.src/dist/wbemservices/lib/wbem.jar') ]
 
   ## GUIJars
   Alloy      = [ Jars.downloadTarget('alloylnf-1_4_4-1/alloy.jar') ]
@@ -112,7 +110,8 @@ class Jars
   Postgres   = [ Jars.downloadTarget('postgres-jdbc-7.4_215/pg74.215.jdbc3.jar')]
   Velocity   = [ Jars.downloadTarget('velocity-1.4/velocity-1.4.jar') ]
   JRuby      = [ Jars.downloadTarget('jruby-complete/jruby-complete.jar') ]
-  XStream    = [ Jars.downloadTarget('xstream-distribution-1.3-bin/xstream-1.3/lib/xstream-1.3.jar'),  Jars.downloadTarget('xstream-distribution-1.3-bin/xstream-1.3/lib/xpp3_min-1.1.4c.jar')]
+  XStream    = [ Jars.downloadTarget('xstream-distribution-1.3-bin/xstream-1.3/lib/xstream-1.3.jar'),
+                 Jars.downloadTarget('xstream-distribution-1.3-bin/xstream-1.3/lib/xpp3_min-1.1.4c.jar')]
 
   # Jnlp       = [ ThirdpartyJar.get("#{BuildEnv::JAVA_HOME}/sample/jnlp/servlet/jnlp.jar") ]
   Jnlp       = [ Jars.downloadTarget('jnlp/jnlp.jar') ]
@@ -142,7 +141,7 @@ class Jars
   # This is available to everything?
   Base       = Jars.makeGroup(Log4j, Hibernate, HibernateAnnotations, Postgres,
                               Activation, Jcifs, C3p0, Ant, JavaMailApi,
-                              GetText, JavaMail, TomcatEmb, Velocity, WBEM, JRuby,
+                              GetText, JavaMail, TomcatEmb, Velocity, JRuby,
                               Bdb, HttpClient, HtmlParser, VncViewer, XmlRpc, Jstl,
                               XStream)
 
