@@ -4,12 +4,11 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:uvm="http://java.untangle.com/jsp/uvm">
-
   <head>
     <title>UNG - Setup Wizard</title>
     
     <style type="text/css">
-        @import "ext/resources/css/ext-all.css";
+      @import "ext/resources/css/ext-all.css";
     </style>
     
     <uvm:skin src="ext-skin.css"  name="${ss.administrationClientSkin}"/>
@@ -29,29 +28,28 @@
       Ung.SetupWizard.currentSkin = "${ss.administrationClientSkin}";
 
       Ung.SetupWizard.CurrentValues = {
-          timezone : "${timezone.ID}",
-          addressSettings : ${addressSettings},
-          interfaceArray : ${interfaceArray},
-          registrationInfo : ${registrationInfo},
-          users : ${users},
-          upgradeSettings : ${upgradeSettings},
-          networkSettings : ${networkSettings},
-          mailSettings : ${mailSettings}
+        timezone : "${timezone.ID}",
+        addressSettings : ${addressSettings},
+        interfaceArray : ${interfaceArray},
+        registrationInfo : ${registrationInfo},
+        users : ${users},
+        upgradeSettings : ${upgradeSettings},
+        networkSettings : ${networkSettings},
+        mailSettings : ${mailSettings}
       };
 
       Ext.onReady(Ung.Setup.init);
     </script>
- </head>
-<body class="wizard">
-<div id="container">
-  <!-- These extra divs/spans may be used as catch-alls to add extra imagery. -->
-  <div id="extraDiv1"><span></span></div>
-  <div id="extraDiv2"><span></span></div>
-  <div id="extraDiv3"><span></span></div>
-  <div id="extraDiv4"><span></span></div>
-  <div id="extraDiv5"><span></span></div>
-  <div id="extraDiv6"><span></span></div>
-</div>
-
-</body>
+  </head>
+  <body class="wizard">
+    <div id="container">
+      <!-- These extra divs/spans may be used as catch-alls to add extra imagery. -->
+      <div id="extraDiv1"><span></span></div>
+      <div id="extraDiv2"><span></span></div>
+      <div id="extraDiv3"><span></span></div>
+      <div id="extraDiv4"><span></span></div>
+      <div id="extraDiv5"><span></span></div>
+      <div id="extraDiv6"><span></span></div>
+    </div>
+  </body>
 </html>

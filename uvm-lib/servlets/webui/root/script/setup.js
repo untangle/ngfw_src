@@ -8,7 +8,7 @@ var i18n=null;
 // the main json rpc object
 var rpc = {};
 
-Ung.SetupWizard.LabelWidth = 150;
+Ung.SetupWizard.LabelWidth = 200;
 
 Ung.SetupWizard.Welcome = Ext.extend(Object,
 {
@@ -42,12 +42,8 @@ Ung.SetupWizard.Settings = Ext.extend(Object, {
                 title : i18n._( 'Password' ),
                 items : [{
                     xtype : 'label',
-                    html : i18n._( '<b>Password:</b> Please choose a password for the admin account' ),
+                    html : i18n._( '<b>Password:</b> Please choose a password for the \'admin\' account' ),
                     border : false
-                },{
-                    fieldLabel : i18n._('Login'),
-                    disabled : true,
-                    value : 'Admin'
                 },{
                     inputType : 'password',
                     fieldLabel : i18n._('Password'),
@@ -74,25 +70,6 @@ Ung.SetupWizard.Settings = Ext.extend(Object, {
                     triggerAction : 'all',
                     listClass : 'x-combo-list-small'
                 }]
-            },{
-                title : 'Hostname',
-                items : [{
-                    hideLabel : true,
-                    xtype : 'textfield',
-                    value : Ung.SetupWizard.CurrentValues.addressSettings.hostName,
-                    name : 'hostname',
-                }]
-            },{
-                title : 'Auto-Upgrade',
-                items : [{
-                    name : "autoUpgrade",
-                    xtype : 'checkbox',
-                    hideLabel : true,
-                    boxLabel : i18n._("Automatically download and install upgrades.")
-                }]
-            },{
-                xtype : 'label',
-                fieldLabel : i18n._('Confirm Password')
             }]
         });
 
@@ -149,9 +126,10 @@ Ung.SetupWizard.SettingsSaver = Ext.extend( Object, {
         
         var timezone = this.panel.find( "name", "timezone" )[0].getValue();
         
-        rpc.adminManager.setTimeZone( this.saveHostname.createDelegate( this ), timezone );
+        rpc.adminManager.setTimeZone( this.complete.createDelegate( this ), timezone );
     },
 
+    /* This is no longer used */
     saveHostname : function( result, exception )
     {
         if( exception ) {
@@ -167,6 +145,7 @@ Ung.SetupWizard.SettingsSaver = Ext.extend( Object, {
                                                addressSettings );
     },
 
+    /* This is no longer used */
     saveAutoUpgrade : function( result, exception )
     {
         if( exception ) {
@@ -205,9 +184,46 @@ Ung.SetupWizard.Registration = Ext.extend( Object, {
                               [ 1000, i18n._( "500-1000" )],
                               [ 2500, i18n._( "> 1000 " )]];
 
+
+        this.findUntangleStore = [
+            i18n._( "Google / search engine" ),
+            i18n._( "Online Review" ),
+            i18n._( "Blog" ),
+            i18n._( "Friend" ),
+            i18n._( "Contacted by sales person" ),
+            i18n._( "My IT consultant or VAR" ),
+            i18n._( "Trade Show" ),
+            i18n._( "Other (for example, an online forum or software directory)" ) ];
+
         this.industryStore = [
-            i18n._( "Banking" ),
-            i18n._( "Software" ) ];
+            i18n._( "Accounting" ),
+            i18n._( "Aerospace/Defense" ),
+            i18n._( "Auto" ),
+            i18n._( "Biotechnology" ),
+            i18n._( "Broadcasting" ),
+            i18n._( "Business Services" ),
+            i18n._( "Construction" ),
+            i18n._( "Consumer Goods" ),
+            i18n._( "Consumer Services" ),
+            i18n._( "Education" ),
+            i18n._( "Entertainment" ),
+            i18n._( "Financial Services" ),
+            i18n._( "Government / Public Sector" ),
+            i18n._( "Healthcare" ),
+            i18n._( "High Technology / IT / Software" ),
+            i18n._( "Home / Personal Use" ),
+            i18n._( "Hospitality / Food Services" ),
+            i18n._( "Industrial / Manufacturing" ),
+            i18n._( "Legal" ),
+            i18n._( "Life Sciences" ),
+            i18n._( "Marketing Services" ),
+            i18n._( "Oil & Gas" ),
+            i18n._( "Processed & Packaged Goods" ),
+            i18n._( "Professional Services" ),
+            i18n._( "Publishing" ),
+            i18n._( "Telecommunications" ),
+            i18n._( "Utilities" ),
+            i18n._( "Other" ) ];
         
         this.form = new Ext.FormPanel({
             defaultType : 'fieldset',
@@ -223,10 +239,12 @@ Ung.SetupWizard.Registration = Ext.extend( Object, {
                     border : false
                 },{
                     fieldLabel : i18n._('Email'),
-                    name : 'email'
+                    name : 'email',
+                    width: 200
                 },{
                     fieldLabel : i18n._('Confirm Email'),
-                    name : 'confirmEmail'
+                    name : 'confirmEmail',
+                    width: 200
                 },{
                     fieldLabel : i18n._('Company Name'),
                     name : 'companyName'
@@ -237,7 +255,7 @@ Ung.SetupWizard.Registration = Ext.extend( Object, {
                     xtype : 'numberfield',
                     minValue : 0,
                     allowDecimals : false,
-                    fieldLabel : i18n._('Number of machines behind Untangle'),
+                    fieldLabel : i18n._('Number of personal computers behind Untangle Server'),
                     name : 'numSeats'
                 }]
             },{
@@ -249,7 +267,14 @@ Ung.SetupWizard.Registration = Ext.extend( Object, {
                     border : false
                 },{
                     fieldLabel : i18n._('How did you find Untangle'),
-                    name : "findUntangle"
+                    name : "findUntangle",
+                    xtype : 'combo',
+                    width : 200,
+                    listWidth : 205,
+                    store : this.findUntangleStore,
+                    mode : 'local',
+                    triggerAction : 'all',
+                    listClass : 'x-combo-list-small',
                 },{
                     fieldLabel : i18n._('State/Province'),
                     name : "state"
@@ -258,8 +283,8 @@ Ung.SetupWizard.Registration = Ext.extend( Object, {
                     name : "country"
                 },{
                     xtype : 'combo',
-                    width : 100,
-                    listWidth : 105,
+                    width : 200,
+                    listWidth : 205,
                     store : this.industryStore,
                     mode : 'local',
                     triggerAction : 'all',
@@ -268,7 +293,8 @@ Ung.SetupWizard.Registration = Ext.extend( Object, {
                     name : "industry"
                 },{
                     xtype : 'combo',
-                    width : 50,
+                    width : 70,
+                    listWidth: 75,
                     mode : 'local',
                     triggerAction : 'all',
                     store : this.employeeStore,
