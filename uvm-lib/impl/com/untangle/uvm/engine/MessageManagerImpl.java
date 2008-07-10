@@ -78,11 +78,12 @@ class MessageManagerImpl implements LocalMessageManager
     private final Pulse updatePulse = new Pulse("system-stat-collector",
                                                 true, new SystemStatCollector());
 
-    private final Map<String, Long> rxInfo = new HashMap<String, Long>(10);
-    private final Map<String, Long> txInfo = new HashMap<String, Long>(10);
+    long rxBytes0 = 0;
+    long txBytes0 = 0;
+
+    private long lastNetDevUpdate = System.currentTimeMillis();
 
     private volatile Map<String, Object> systemStats = Collections.emptyMap();
-
 
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -389,7 +390,7 @@ class MessageManagerImpl implements LocalMessageManager
             throws IOException
         {
             String cpuModel = null;
-            float cpuSpeed = 0;
+            double cpuSpeed = 0;
             int numCpus = 0;
 
             BufferedReader br = new BufferedReader(new FileReader("/proc/cpuinfo"));
@@ -404,7 +405,7 @@ class MessageManagerImpl implements LocalMessageManager
                     } else if (n.equals("cpu MHz")) {
                         String v = matcher.group(2);
                         try {
-                            cpuSpeed = Float.parseFloat(v);
+                            cpuSpeed = Double.parseDouble(v);
                         } catch (NumberFormatException exn) {
                             logger.warn("could not parse cpu speed: " + v);
                         }
@@ -425,7 +426,7 @@ class MessageManagerImpl implements LocalMessageManager
             if (null != l) {
                 String s = l.split(" ")[0];
                 try {
-                    m.put("uptime", Float.parseFloat(s));
+                    m.put("uptime", Double.parseDouble(s));
                 } catch (NumberFormatException exn) {
                     logger.warn("could not parse uptime: " + s);
                 }
@@ -441,9 +442,9 @@ class MessageManagerImpl implements LocalMessageManager
                 String[] s = l.split(" ");
                 if (s.length >= 3) {
                     try {
-                        m.put("oneMinuteLoadAvg", Float.parseFloat(s[0]));
-                        m.put("fiveMinuteLoadAvg", Float.parseFloat(s[1]));
-                        m.put("fifteenMinuteLoadAvg", Float.parseFloat(s[2]));
+                        m.put("oneMinuteLoadAvg", Double.parseDouble(s[0]));
+                        m.put("fiveMinuteLoadAvg", Double.parseDouble(s[1]));
+                        m.put("fifteenMinuteLoadAvg", Double.parseDouble(s[2]));
                     } catch (NumberFormatException exn) {
                         logger.warn("could not parse loadavg: " + l);
                     }
@@ -485,14 +486,14 @@ class MessageManagerImpl implements LocalMessageManager
                             + (system1 - system0) + (idle1 - idle0);
 
                         if (0 == totalTime) {
-                            m.put("userCpuUtilization", (float)0);
-                            m.put("systemCpuUtilization", (float)0);
+                            m.put("userCpuUtilization", (double)0);
+                            m.put("systemCpuUtilization", (double)0);
                         } else {
                             m.put("userCpuUtilization",
                                   ((user1 - user0) + (nice1 - nice0))
-                                  / (float)totalTime);
+                                  / (double)totalTime);
                             m.put("systemCpuUtilization",
-                                  (system1 - system0) / (float)totalTime);
+                                  (system1 - system0) / (double)totalTime);
                         }
 
                         user0 = user1;
@@ -500,8 +501,8 @@ class MessageManagerImpl implements LocalMessageManager
                         system0 = system1;
                         idle0 = idle1;
                     } catch (NumberFormatException exn) {
-                        m.put("userCpuUtilization", (float)0);
-                        m.put("systemCpuUtilization", (float)0);
+                        m.put("userCpuUtilization", 0.0);
+                        m.put("systemCpuUtilization", 0.0);
                     }
 
                     break;
@@ -512,8 +513,10 @@ class MessageManagerImpl implements LocalMessageManager
         private synchronized void getNetDevUsage(Map<String, Object> m)
             throws IOException
         {
-            long rxBytes = 0;
-            long txBytes = 0;
+            long rxBytes1 = 0;
+            long txBytes1 = 0;
+
+            long currentTime = System.currentTimeMillis();
 
             BufferedReader br = new BufferedReader(new FileReader("/proc/net/dev"));
             for (String l = br.readLine(); null != l; l = br.readLine()) {
@@ -521,22 +524,8 @@ class MessageManagerImpl implements LocalMessageManager
                 if (matcher.find()) {
                     String iface = matcher.group(1);
                     try {
-                        long rxBytes1 = Long.parseLong(matcher.group(2));
-                        long txBytes1 = Long.parseLong(matcher.group(3));
-
-                        Long b = rxInfo.get(iface);
-                        long rxBytes0 = null == b ? 0 : b;
-                        b = txInfo.get(iface);
-                        long txBytes0 = null == b ? 0 : b;
-
-                        rxBytes1 = fixRollover(rxBytes0, rxBytes1);
-                        txBytes1 = fixRollover(txBytes0, txBytes1);
-
-                        rxBytes += rxBytes1;
-                        txBytes += txBytes1;
-
-                        rxInfo.put(iface, rxBytes1);
-                        txInfo.put(iface, txBytes1);
+                        rxBytes1 += Long.parseLong(matcher.group(2));
+                        txBytes1 += Long.parseLong(matcher.group(3));
                     } catch (NumberFormatException exn) {
                         logger.warn("could not add interface info for: "
                                     + iface, exn);
@@ -544,20 +533,28 @@ class MessageManagerImpl implements LocalMessageManager
                 }
             }
 
-            m.put("rxBytes", rxBytes);
-            m.put("txBytes", txBytes);
+            rxBytes1 = incrementCount(rxBytes0, rxBytes1);
+            txBytes1 = incrementCount(txBytes0, txBytes1);
+
+            double dt = (currentTime - lastNetDevUpdate) / 1000.0;
+            m.put("rxBps", (rxBytes1 - rxBytes0) / dt);
+            m.put("txBps", (txBytes1 - txBytes0) / dt);
+            lastNetDevUpdate = currentTime;
+
+            rxBytes0 = rxBytes1;
+            txBytes0 = txBytes1;
         }
 
-        private long fixRollover(long previousCount, long kernelCount)
+        private long incrementCount( long previousCount, long kernelCount )
         {
             /* If the kernel is counting in 64-bits, just return the
              * kernel count */
-            if (kernelCount >= (1L << 32)) return kernelCount;
+            if ( kernelCount >= ( 1L << 32 ) ) return kernelCount;
 
             long previousKernelCount = previousCount & 0xFFFFFFFFL;
-            if (previousKernelCount > kernelCount) previousCount += (1L << 32);
+            if ( previousKernelCount > kernelCount ) previousCount += ( 1L << 32 );
 
-            return ((previousCount & 0x7FFFFFFF00000000L) + kernelCount);
+            return (( previousCount & 0x7FFFFFFF00000000L ) + kernelCount );
         }
     }
 
