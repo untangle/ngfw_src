@@ -67,6 +67,9 @@ class MessageManagerImpl implements LocalMessageManager
     private static final Pattern NET_DEV_PATTERN
         = Pattern.compile("\\s*(eth\\d+):\\s*(\\d+)\\s+\\d+\\s+\\d+\\s+\\d+\\s+\\d+\\s+\\d+\\s+\\d+\\s+\\d+\\s+(\\d+)");
 
+    private static final Pattern DISK_STATS_PATTERN
+        = Pattern.compile("\\s*\\d+\\s+\\d+\\s+[hs]d[a-zA-Z]+\\d+\\s+(\\d+)\\s+\\d+\\s+(\\d+)");
+
     private static final Set<String> MEMINFO_KEEPERS;
     private static final Set<String> VMSTAT_KEEPERS;
 
@@ -78,10 +81,13 @@ class MessageManagerImpl implements LocalMessageManager
     private final Pulse updatePulse = new Pulse("system-stat-collector",
                                                 true, new SystemStatCollector());
 
-    long rxBytes0 = 0;
-    long txBytes0 = 0;
-
+    private long rxBytes0 = 0;
+    private long txBytes0 = 0;
     private long lastNetDevUpdate = System.currentTimeMillis();
+
+    private long diskReads0 = 0;
+    private long diskWrites0 = 0;
+    private long lastDiskUpdate = System.currentTimeMillis();
 
     private volatile Map<String, Object> systemStats = Collections.emptyMap();
 
@@ -345,6 +351,7 @@ class MessageManagerImpl implements LocalMessageManager
                 getNumProcs(m);
                 getCpuUsage(m);
                 getNetDevUsage(m);
+                getDiskUsage(m);
             } catch (IOException exn) {
                 logger.warn("could not get memory information", exn);
             }
@@ -533,6 +540,7 @@ class MessageManagerImpl implements LocalMessageManager
                 }
             }
 
+            // XXX this doesn't seem right to me
             rxBytes1 = incrementCount(rxBytes0, rxBytes1);
             txBytes1 = incrementCount(txBytes0, txBytes1);
 
@@ -545,16 +553,55 @@ class MessageManagerImpl implements LocalMessageManager
             txBytes0 = txBytes1;
         }
 
-        private long incrementCount( long previousCount, long kernelCount )
+        private synchronized void getDiskUsage(Map<String, Object> m)
+            throws IOException
+        {
+            File root = new File("/");
+            m.put("totalDiskSpace", root.getTotalSpace());
+            m.put("freeDiskSpace", root.getFreeSpace());
+
+            long diskReads1 = 0;
+            long diskWrites1 = 0;
+
+            long currentTime = System.currentTimeMillis();
+
+            BufferedReader br = new BufferedReader(new FileReader("/proc/diskstats"));
+            for (String l = br.readLine(); null != l; l = br.readLine()) {
+                System.out.println(l);
+                Matcher matcher = DISK_STATS_PATTERN.matcher(l);
+                if (matcher.find()) {
+                    System.out.println("MATCHES!!!");
+                    try {
+                        diskReads1 += Long.parseLong(matcher.group(1));
+                        diskWrites1 += Long.parseLong(matcher.group(2));
+                    } catch (NumberFormatException exn) {
+                        logger.warn("could not get disk data", exn);
+                    }
+                }
+            }
+
+            diskReads1 = incrementCount(diskReads0, diskReads1);
+            diskWrites1 = incrementCount(diskWrites0, diskWrites1);
+
+            double dt = (currentTime - lastDiskUpdate) / 1000.0;
+            m.put("diskReadsPerSecond", (diskReads1 - diskReads0) / dt);
+            m.put("diskWritesPerSecond", (diskWrites1 - diskWrites0) / dt);
+            lastDiskUpdate = currentTime;
+
+            diskReads0 = diskReads1;
+            diskWrites0 = diskWrites1;
+        }
+
+        private long incrementCount(long previousCount, long kernelCount)
         {
             /* If the kernel is counting in 64-bits, just return the
              * kernel count */
-            if ( kernelCount >= ( 1L << 32 ) ) return kernelCount;
+            if (kernelCount >= (1L << 32)) return kernelCount;
 
             long previousKernelCount = previousCount & 0xFFFFFFFFL;
-            if ( previousKernelCount > kernelCount ) previousCount += ( 1L << 32 );
+            if (previousKernelCount > kernelCount) previousCount += (1L << 32);
 
-            return (( previousCount & 0x7FFFFFFF00000000L ) + kernelCount );
+            return ((previousCount & 0x7FFFFFFF00000000L) + kernelCount);
         }
     }
 
