@@ -364,17 +364,19 @@ class MessageManagerImpl implements LocalMessageManager
             throws IOException
         {
 
-            readProcFile("/proc/meminfo", MEMINFO_PATTERN, MEMINFO_KEEPERS, m);
+            readProcFile("/proc/meminfo", MEMINFO_PATTERN, MEMINFO_KEEPERS, m,
+                         1024);
         }
 
         private void readVmstat(Map<String, Object> m)
             throws IOException
         {
-            readProcFile("/proc/vmstat", VMSTAT_PATTERN, VMSTAT_KEEPERS, m);
+            readProcFile("/proc/vmstat", VMSTAT_PATTERN, VMSTAT_KEEPERS, m, 1);
         }
 
         private void readProcFile(String filename, Pattern p,
-                                  Set<String> keepers, Map<String, Object> m)
+                                  Set<String> keepers, Map<String, Object> m,
+                                  int multiple)
             throws IOException
         {
             BufferedReader br = new BufferedReader(new FileReader(filename));
@@ -385,7 +387,7 @@ class MessageManagerImpl implements LocalMessageManager
                     if (keepers.contains(n)) {
                         String s = matcher.group(2);
                         try {
-                            m.put(n, Integer.parseInt(s));
+                            m.put(n, Integer.parseInt(s) * multiple);
                         } catch (NumberFormatException exn) {
                             logger.warn("could not add value for: " + n);
                         }
