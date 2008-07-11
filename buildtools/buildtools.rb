@@ -20,7 +20,7 @@
 # Aaron Read <amread@untangle.com>
 
 # Certified Filthy2007
-ENV["JAVA_HOME"] = "/usr/lib/jvm/java-1.5.0-sun"
+ENV["JAVA_HOME"] = "/usr/lib/jvm/java-6-sun"
 
 SRC_HOME = [ ENV['SRC_HOME'], '../../work/src' ].compact.find do |d|
   File.exist?(d)
