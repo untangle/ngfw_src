@@ -19,7 +19,7 @@
 # Robert Scott <rbscott@untangle.com>
 # Aaron Read <amread@untangle.com>
 
-# Certified Filthy2007
+# Certified Filthy2008
 ENV["JAVA_HOME"] = "/usr/lib/jvm/java-6-sun"
 
 SRC_HOME = [ ENV['SRC_HOME'], '../../work/src' ].compact.find do |d|
