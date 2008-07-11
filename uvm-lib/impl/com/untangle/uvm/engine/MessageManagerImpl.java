@@ -79,7 +79,8 @@ class MessageManagerImpl implements LocalMessageManager
     private final List<Message> messages = new ArrayList<Message>();
 
     private final Pulse updatePulse = new Pulse("system-stat-collector",
-                                                true, new SystemStatCollector());
+                                                true,
+                                                new SystemStatCollector());
 
     private long rxBytes0 = 0;
     private long txBytes0 = 0;
@@ -567,10 +568,8 @@ class MessageManagerImpl implements LocalMessageManager
 
             BufferedReader br = new BufferedReader(new FileReader("/proc/diskstats"));
             for (String l = br.readLine(); null != l; l = br.readLine()) {
-                System.out.println(l);
                 Matcher matcher = DISK_STATS_PATTERN.matcher(l);
                 if (matcher.find()) {
-                    System.out.println("MATCHES!!!");
                     try {
                         diskReads1 += Long.parseLong(matcher.group(1));
                         diskWrites1 += Long.parseLong(matcher.group(2));
@@ -582,6 +581,8 @@ class MessageManagerImpl implements LocalMessageManager
 
             diskReads1 = incrementCount(diskReads0, diskReads1);
             diskWrites1 = incrementCount(diskWrites0, diskWrites1);
+            m.put("diskReads", diskReads1);
+            m.put("diskWrites", diskWrites1);
 
             double dt = (currentTime - lastDiskUpdate) / 1000.0;
             m.put("diskReadsPerSecond", (diskReads1 - diskReads0) / dt);
