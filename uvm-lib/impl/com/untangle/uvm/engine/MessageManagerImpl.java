@@ -430,6 +430,7 @@ class MessageManagerImpl implements LocalMessageManager
             throws IOException
         {
             BufferedReader br = new BufferedReader(new FileReader("/proc/cpuinfo"));
+
             String l = br.readLine();
             if (null != l) {
                 String s = l.split(" ")[0];
