@@ -82,17 +82,11 @@ public class Stats implements Serializable
     {
         private final long count;
         private final long countSinceMidnight;
-        private final long cnt1;
-        private final long cnt5;
-        private final long cnt15;
 
         public FixedCounts(CounterStats cs)
         {
             this.count = cs.getCount();
             this.countSinceMidnight = cs.getCountSinceMidnight();
-            this.cnt1 = cs.get1MinuteCount();
-            this.cnt5 = cs.get5MinuteCount();
-            this.cnt15 = cs.get15MinuteCount();
         }
 
         public long getCount()
@@ -103,21 +97,6 @@ public class Stats implements Serializable
         public long getCountSinceMidnight()
         {
             return countSinceMidnight;
-        }
-
-        public long get1MinuteCount()
-        {
-            return cnt1;
-        }
-
-        public long get5MinuteCount()
-        {
-            return cnt5;
-        }
-
-        public long get15MinuteCount()
-        {
-            return cnt15;
         }
     }
 

@@ -34,16 +34,17 @@
 package com.untangle.uvm.message;
 
 import java.io.Serializable;
+import java.util.Date;
 
 public class BlingBlinger implements CounterStats, Serializable
 {
     private final StatDesc statDesc;
 
+    private Date now = new Date();
+    private Date lastUpdate = new Date();
+
     private volatile int count = 0;
     private volatile int countSinceMidnight = 0;
-    private volatile int count1Min = 0;
-    private volatile int count5Min = 0;
-    private volatile int count15Min = 0;
 
     public BlingBlinger(String name, String displayName, String unit,
                         String action)
@@ -65,13 +66,18 @@ public class BlingBlinger implements CounterStats, Serializable
 
     public long increment(long delta)
     {
-        // XXX fix ths
         synchronized (this) {
+            now.setTime(System.currentTimeMillis());
+
             count++;
-            countSinceMidnight++;
-            count1Min++;
-            count5Min++;
-            count15Min++;
+            if (lastUpdate.getDay() == now.getDay()
+                && lastUpdate.getMonth() == now.getMonth()
+                && lastUpdate.getYear() == now.getYear()) {
+                countSinceMidnight++;
+            } else {
+                countSinceMidnight = 0;
+                lastUpdate.setTime(now.getTime());
+            }
         }
 
         return count;
@@ -87,20 +93,5 @@ public class BlingBlinger implements CounterStats, Serializable
     public long getCountSinceMidnight()
     {
         return countSinceMidnight;
-    }
-
-    public long get1MinuteCount()
-    {
-        return count1Min;
-    }
-
-    public long get5MinuteCount()
-    {
-        return count5Min;
-    }
-
-    public long get15MinuteCount()
-    {
-        return count15Min;
     }
 }

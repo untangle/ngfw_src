@@ -35,9 +35,6 @@ package com.untangle.uvm.message;
 
 public enum StatInterval
 {
-    ONE_MINUTE,
-        FIVE_MINUTES,
-        FIFTEEN_MINUTES,
         SINCE_MIDNIGHT,
         SINCE_UVM_START;
 }

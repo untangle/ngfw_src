@@ -43,8 +43,4 @@ public interface CounterStats
 {
     long getCount();
     long getCountSinceMidnight();
-
-    long get1MinuteCount();
-    long get5MinuteCount();
-    long get15MinuteCount();
 }
