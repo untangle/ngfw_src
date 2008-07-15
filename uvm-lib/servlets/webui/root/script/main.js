@@ -165,6 +165,20 @@ Ung.Main.prototype = {
                 window.open(rackBaseHelpLink);
             }
         });
+        buttonCmp=new Ext.Button({
+            name: 'What Apps should I use?',
+            id: 'help_empty_rack',
+            renderTo: 'contentright',
+            iconCls: 'iconHelp',
+            text: i18n._('What Apps should I use?'),
+            show : function() {
+            	Ung.Button.prototype.show.call(this);
+                this.getEl().alignTo("contentright","c-c");
+            }, 
+            handler: function() {
+                Ung.Util.todo();
+            }
+        });
         this.loadConfig();
         this.loadPolicies();
     },
@@ -562,24 +576,29 @@ Ung.Main.prototype = {
     },
     // Show - hide Services header in the rack
     updateSeparator: function() {
-    	document.getElementById("racks").style.display=this.nodes.length>0?"":"none";
-        var hasUtilOrService=false;
-        var hasCore=false;
-        for(var i=0;i<this.nodes.length;i++) {
-            if(this.nodes[i].md.util || this.nodes[i].md.service) {
-                hasUtilOrService=true;
-            } else if(this.nodes[i].md.core) {
-                hasCore=true;
+    	if(this.nodes.length==0) {
+    	   document.getElementById("racks").style.display="none";
+    	   Ext.getCmp("help_empty_rack").show();
+    	} else {
+    		Ext.getCmp("help_empty_rack").hide();
+    		document.getElementById("racks").style.display="";
+            var hasUtilOrService=false;
+            var hasCore=false;
+            for(var i=0;i<this.nodes.length;i++) {
+                if(this.nodes[i].md.util || this.nodes[i].md.service) {
+                    hasUtilOrService=true;
+                } else if(this.nodes[i].md.core) {
+                    hasCore=true;
+                }
             }
-        }
-        document.getElementById("nodes_separator_text").innerHTML=hasUtilOrService?i18n._("Services & Utilities"):hasCore?i18n._("Services"):"";
-        document.getElementById("nodes_separator").style.display=hasUtilOrService || hasCore?"":"none";
-        if(hasUtilOrService || hasCore) {
-            document.getElementById("racks").style.backgroundPosition="0px 100px";
-        } else {
-            document.getElementById("racks").style.backgroundPosition="0px 50px";
-
-        }
+            document.getElementById("nodes_separator_text").innerHTML=hasUtilOrService?i18n._("Services & Utilities"):hasCore?i18n._("Services"):"";
+            document.getElementById("nodes_separator").style.display=hasUtilOrService || hasCore?"":"none";
+            if(hasUtilOrService || hasCore) {
+                document.getElementById("racks").style.backgroundPosition="0px 100px";
+            } else {
+                document.getElementById("racks").style.backgroundPosition="0px 50px";
+            }
+    	}
     },
     // build policies select box
     buildPolicies: function () {
