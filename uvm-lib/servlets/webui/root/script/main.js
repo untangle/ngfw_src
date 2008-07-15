@@ -176,9 +176,60 @@ Ung.Main.prototype = {
                 this.getEl().alignTo("contentright","c-c");
             }, 
             handler: function() {
-                Ung.Util.todo();
+                rpc.adminManager.generateAuthNonce(function(result, exception) {
+                    if (exception) {
+                        Ext.MessageBox.alert(i18n._("Failed"), exception.message);
+                        return;
+                    }
+                    var currentLocation = window.location;
+                    var query = result;
+                    query += "&host=" + currentLocation.hostname;
+                    query += "&port=" + currentLocation.port;
+                    query += "&protocol=" + currentLocation.protocol.replace(/:$/, "");
+                    query += "&action=wizard";
+
+                    var url = "../library/launcher?" + query;
+                    var iframeWin = main.getIframeWin();
+                    iframeWin.show();
+                    iframeWin.setTitle("");
+                    window.frames["iframeWin_iframe"].location.href = url;
+                }.createDelegate(this));
+                
             }
         });
+        buttonCmp.hide();
+        buttonCmp=new Ext.Button({
+            id: "my_account_button",
+            name: "My Account",
+            height: '42px',
+            renderTo: 'appsItems',
+            text: i18n._("My Account"),
+            show : function() {
+                Ung.Button.prototype.show.call(this);
+                this.getEl().alignTo("appsItems","c-c",[0,10]);
+            }, 
+            handler: function() {
+                rpc.adminManager.generateAuthNonce(function(result, exception) {
+                    if (exception) {
+                        Ext.MessageBox.alert(i18n._("Failed"), exception.message);
+                        return;
+                    }
+                    var currentLocation = window.location;
+                    var query = result;
+                    query += "&host=" + currentLocation.hostname;
+                    query += "&port=" + currentLocation.port;
+                    query += "&protocol=" + currentLocation.protocol.replace(/:$/, "");
+                    query += "&action=my_account";
+
+                    var url = "../library/launcher?" + query;
+                    var iframeWin = main.getIframeWin();
+                    iframeWin.show();
+                    iframeWin.setTitle("");
+                    window.frames["iframeWin_iframe"].location.href = url;
+                }.createDelegate(this));
+            }
+        });
+        buttonCmp.hide();
         this.loadConfig();
         this.loadPolicies();
     },
@@ -280,9 +331,14 @@ Ung.Main.prototype = {
             height: 400,
             deferredRender:false,
             defaults:{autoScroll: true},
-            items:[
-                {title: i18n._('Apps'),html:'<div id="appsItems"></div>',name:'Apps'},
-                {title:i18n._('Config'), html:'<div id="configItems"></div>',name:'Config'}
+            items:[{
+                title: i18n._('Apps'),
+                tbar : [{xtype: 'tbtext', text: i18n._("Click to learn more")}],
+                html:'<div id="appsItems"></div>',name:'Apps'},
+                {title:i18n._('Config'),
+                tbar : [{xtype: 'tbtext', text: i18n._("Click to learn more")}],   
+                html:'<div id="configItems"></div>',
+                name:'Config'}
             ],
             listeners : {
                 "render" : {
@@ -352,6 +408,11 @@ Ung.Main.prototype = {
         for(var i=0;i<rpc.rackView.applications.list.length;i++) {
             var application=rpc.rackView.applications.list[i];
             this.apps.push(new Ung.AppItem(application));
+        }
+        if(this.apps.length>0) {
+        	Ext.getCmp("my_account_button").hide();
+        } else {
+        	Ext.getCmp("my_account_button").show();
         }
     },
     buildNodes: function() {
