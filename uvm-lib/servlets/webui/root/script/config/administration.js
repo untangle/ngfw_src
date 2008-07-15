@@ -120,7 +120,11 @@ if (!Ung.hasResource["Ung.Administration"]) {
             var readOnlyColumn = new Ext.grid.CheckColumn({
                 header : this.i18n._("read-only"),
                 dataIndex : 'readOnly',
-                fixed : true
+                fixed : true,
+                width : 60
+            });
+            var changePasswordColumn = new Ext.grid.ChangePasswordColumn({
+                header : this.i18n._("change password")
             });
             var storeData=[];
             var storeDataSet=this.getAdminSettings().users.set;
@@ -205,50 +209,38 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         editor : new Ext.form.TextField({
                             allowBlank : false
                         })
-                    }, {
-                        id : 'password',
-                        header : this.i18n._("password"),
-                        width : 150,
-                        dataIndex : null,
-                        renderer: function(value, meta, record, row, col, store) {
-                          var id = Ext.id();
-                          var btn = new Ext.Button({
-                            text: this.i18n._("change password"),
-                            handler : function(record) {
-                                // populate row editor
-                                this.gridAdminAccounts.rowEditorChangePass.populate(record);
-                                this.gridAdminAccounts.rowEditorChangePass.show();
-                            }.createDelegate(this,[record])
-                          });
-                          btn.render.defer(1, btn, [id]);
-                          return '<div  id=' + id + '></div>';
-                        }.createDelegate(this)                    
-                    }],
+                    }, changePasswordColumn
+                    ],
                     sortField : 'login',
                     columnsDefaultSortable : true,
-                    plugins : [readOnlyColumn],
+                    plugins : [readOnlyColumn,changePasswordColumn],
                     // the row input lines used by the row editor window
                     rowEditorInputLines : [new Ext.form.TextField({
-                        name : "login",
+                        name : "Login",
+                        dataIndex : "login",
                         fieldLabel : this.i18n._("Login"),
                         allowBlank : false,
                         blankText : this.i18n._("The login name cannot be blank."),
                         width : 200
                     }), new Ext.form.TextField({
-                        name : "name",
+                        name : "Name",
+                        dataIndex : "name",
                         fieldLabel : this.i18n._("Description"),
                         allowBlank : false,
                         width : 200
                     }), new Ext.form.Checkbox({
-                        name : "readOnly",
+                        name : "Read-only",
+                        dataIndex : "readOnly",
                         fieldLabel : this.i18n._("Read-only")
                     }), new Ext.form.TextField({
-                        name : "email",
+                        name : "Email",
+                        dataIndex : "email",
                         fieldLabel : this.i18n._("Email"),
                         width : 200
                     }), new Ext.form.TextField({
                     	inputType: 'password',
-                        name : "clearPassword",
+                        name : "Password",
+                        dataIndex : "clearPassword",
                         id : 'administration_rowEditor_password',
                         fieldLabel : this.i18n._("Password"),
                         width : 200,
@@ -256,8 +248,8 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         minLengthText : i18n.sprintf(this.i18n._("The password is shorter than the minimum %d characters."), 3)
                     }), new Ext.form.TextField({
                         inputType: 'password',
-//                        name : "confirm_password",
-                        name : "clearPassword",
+                        name : "Confirm Password",
+                        dataIndex : "clearPassword",
                         vtype: 'password',
                         initialPassField: 'administration_rowEditor_password', // id of the initial password field
                         fieldLabel : this.i18n._("Confirm Password"),
@@ -266,7 +258,8 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     // the row input lines used by the change password window
                     rowEditorChangePassInputLines : [new Ext.form.TextField({
                         inputType: 'password',
-                        name : "clearPassword",
+                        name : "Password",
+                        dataIndex : "clearPassword",
                         id : 'administration_rowEditor1_password',
                         fieldLabel : this.i18n._("Password"),
                         width : 200,
@@ -274,8 +267,8 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         minLengthText : i18n.sprintf(this.i18n._("The password is shorter than the minimum %d characters."), 3)                        
                     }), new Ext.form.TextField({
                         inputType: 'password',
-//                        name : "confirm_password",
-                        name : "clearPassword",
+                        name : "Confirm Password",
+                        dataIndex : "clearPassword",
                         vtype: 'password',
                         initialPassField: 'administration_rowEditor1_password', // id of the initial password field
                         fieldLabel : this.i18n._("Confirm Password"),
@@ -2087,5 +2080,52 @@ if (!Ung.hasResource["Ung.Administration"]) {
             Ung.ManageListWindow.superclass.beforeDestroy.call(this);
         }
     });
+    
+
+	// Grid Change Password column
+	Ext.grid.ChangePasswordColumn = function(config) {
+		Ext.apply(this, config);
+		if (!this.id) {
+			this.id = Ext.id();
+		}
+		if (!this.width) {
+			this.width = 100;
+		}
+		if (this.fixed == null) {
+			this.fixed = true;
+		}
+		if (this.sortable == null) {
+			this.sortable = false;
+		}
+		if (!this.dataIndex) {
+			this.dataIndex = null;
+		}
+		this.renderer = this.renderer.createDelegate(this);
+	};
+	Ext.grid.ChangePasswordColumn.prototype = {
+		init : function(grid) {
+			this.grid = grid;
+			this.grid.on('render', function() {
+				var view = this.grid.getView();
+				view.mainBody.on('mousedown', this.onMouseDown, this);
+			}, this);
+		},
+
+		onMouseDown : function(e, t) {
+			if (t.className && t.className.indexOf('iconEditRow') != -1) {
+				e.stopEvent();
+				var index = this.grid.getView().findRowIndex(t);
+				var record = this.grid.store.getAt(index);
+				// populate row editor
+                this.grid.rowEditorChangePass.populate(record);
+                this.grid.rowEditorChangePass.show();
+			}
+		},
+
+		renderer : function(value, metadata, record) {
+			return '<div class="iconEditRow">&nbsp;</div>';
+		}
+};
+    
     
 }
