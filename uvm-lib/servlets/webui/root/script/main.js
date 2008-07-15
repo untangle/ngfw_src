@@ -548,12 +548,17 @@ Ung.Main.prototype = {
         return position;
     },
 
-    addNode: function (node) {
+    addNode: function (node, startNode) {
         var nodeWidget=new Ung.Node(node);
         var place=node.md.security?'security_nodes':'other_nodes';
         var position=this.getNodePosition(place,node.md.viewPosition);
         nodeWidget.render(place,position);
         Ung.AppItem.updateStateForNode(node.name, "installed");
+        if(startNode) {
+        	if(!nodeWidget.isRunning() && node.name!="untangle-node-openvpn") {
+            	nodeWidget.onPowerClick();
+        	}
+        }
     },
     // Show - hide Services header in the rack
     updateSeparator: function() {

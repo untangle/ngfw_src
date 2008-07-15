@@ -69,7 +69,8 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                     title : this.i18n._('SMTP'),
                     autoHeight : true,
                     defaults : {
-                        width : 210
+                        width : 210,
+                        labelStyle: "width:160px;"
                     },
                     items : [{
                         xtype : 'checkbox',
@@ -123,7 +124,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                         }
                     }, {
                         xtype : 'numberfield',
-                        fieldLabel : this.i18n._('Strength Value'),
+                        fieldLabel : this.i18n._('Strength Value (100-30)'),
                         name : 'SMTP Strength Value',
                         id: 'spamassassin_smtpStrengthValue',
                         value : this.getBaseSettings().smtpConfig.strength,
@@ -169,7 +170,8 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                     title : this.i18n._('POP3'),
                     autoHeight : true,
                     defaults : {
-                        width : 210
+                        width : 210,
+                        labelStyle: "width:160px;"
                     },
                     items : [{
                         xtype : 'checkbox',
@@ -210,7 +212,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                         }
                     }, {
                         xtype : 'numberfield',
-                        fieldLabel : this.i18n._('Strength Value'),
+                        fieldLabel : this.i18n._('Strength Value (100-30)'),
                         name : 'POP3 Strength Value',
                         id: 'spamassassin_pop3StrengthValue',
                         value : this.getBaseSettings().popConfig.strength,
@@ -256,7 +258,8 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                     title : this.i18n._('IMAP'),
                     autoHeight : true,
                     defaults : {
-                        width : 210
+                        width : 210,
+                        labelStyle: "width:160px;"
                     },
                     items : [{
                         xtype : 'checkbox',
@@ -264,7 +267,14 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                         boxLabel : this.i18n._('Scan IMAP'),
                         name : 'imapScan',
                         hideLabel : true,
-                        checked : this.getBaseSettings().imapConfig.scan
+                        checked : this.getBaseSettings().imapConfig.scan,
+                        listeners : {
+                            "change" : {
+                                fn : function(elem, newValue) {
+                                    this.getBaseSettings().imapConfig.scan = newValue;
+                                }.createDelegate(this)
+                            }
+                        }
                     }, {
                         xtype : 'combo',
                         name : 'IMAP Strength',
@@ -291,7 +301,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                         }
                     }, {
                         xtype : 'numberfield',
-                        fieldLabel : this.i18n._('Strength Value'),
+                        fieldLabel : this.i18n._('Strength Value (100-30)'),
                         name : 'IMAP Strength Value',
                         id: 'spamassassin_imapStrengthValue',
                         value : this.getBaseSettings().imapConfig.strength,

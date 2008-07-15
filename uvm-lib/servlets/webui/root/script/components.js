@@ -483,6 +483,10 @@ Ung.AppItem = Ext.extend(Ext.Component, {
             this.action.insertHtml("afterBegin", i18n._("More Info"));
             this.action.addClass("iconInfo");
         } else if(this.node!=null) { //node
+            var label="Install";
+            if(this.libItem!=null) { //libitem and trial node
+                label="Trial Install";
+            }
             this.getEl().on("click", this.installNodeFn, this);
             this.action.insertHtml("afterBegin", i18n._("Install"));
             this.action.addClass("iconArrowRight");
@@ -592,7 +596,7 @@ Ung.AppItem = Ext.extend(Ext.Component, {
                 return;
             }
             var upgradeList=result;
-            if(upgradeList.length>0 || true) { //do not test upgrade list yet
+            if(upgradeList.length>0 && false) { //do not test upgrade list yet
                 //main.setUpgrade(true)
                 Ext.MessageBox.alert(i18n._("Failed"), "Upgrades are available, please click Upgrade button in Config panel.");
             } else {
@@ -1122,7 +1126,7 @@ Ung.MessageManager = {
                             hasNodeInstantiated=true;
                             var node=main.createNode(msg.nodeDesc.tid, msg.nodeDesc.mackageDesc, msg.statDescs);
                             main.nodes.push(node);
-                            main.addNode(node);
+                            main.addNode(node, true);
                     	}
                     }
                 }
@@ -1237,11 +1241,11 @@ Ung.SystemStats = Ext.extend(Ext.Component, {
     },
     update : function(stats) {
         this.getEl().child("div[class=cpu]").dom.innerHTML=Math.round(stats.map.oneMinuteLoadAvg*100)+"%";
-        this.getEl().child("div[class=tx_value]").dom.innerHTML="TODO";
-        this.getEl().child("div[class=rx_value]").dom.innerHTML="TODO";
+        this.getEl().child("div[class=tx_value]").dom.innerHTML=Math.round(stats.map.txBps);
+        this.getEl().child("div[class=rx_value]").dom.innerHTML=Math.round(stats.map.rxBps);
         this.getEl().child("div[class=free_value]").dom.innerHTML=stats.map.MemFree;
         this.getEl().child("div[class=used_value]").dom.innerHTML=stats.map.MemTotal-stats.map.MemFree;
-        var diskPercent=Math.round(Math.random()*20)*5;
+        var diskPercent=Math.round((1-stats.map.freeDiskSpace/stats.map.totalDiskSpace)*20 )*5;
         this.getEl().child("div[name=disk_value]").dom.className="disk"+diskPercent;
         if(this.extendedStats.rendered) {
             var extendedStatsEl=this.extendedStats.getEl();
@@ -2333,7 +2337,7 @@ Ung.RowEditorWindow = Ext.extend(Ung.UpdateWindow, {
     // size to grid on show
     sizeToGrid : false,
     formPanel : null,
-
+    addMode: null,
     initComponent : function() {
         if (!this.height && !this.width) {
             this.sizeToGrid = true;
@@ -2384,7 +2388,8 @@ Ung.RowEditorWindow = Ext.extend(Ung.UpdateWindow, {
         }
     },
     // populate is called whent a record is edited, tot populate the edit window
-    populate : function(record) {
+    populate : function(record, addMode) {
+    	this.addMode=addMode;
         this.record = record;
         this.initialRecordData = Ext.encode(record.data);
         if (this.inputLines) {
@@ -2418,6 +2423,10 @@ Ung.RowEditorWindow = Ext.extend(Ung.UpdateWindow, {
                         var inputLine = this.inputLines[i];
                         this.record.set(inputLine.dataIndex, inputLine.getValue());
                     }
+                }
+                if(this.addMode) {
+                	    this.grid.getStore().insert(0, [this.record]);
+                        this.grid.updateChangedData(this.record, "added");
                 }
             }
             this.hide();
@@ -2831,13 +2840,12 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
                     var record = new Ext.data.Record(Ext.decode(Ext.encode(this.emptyRow)));
                     record.set("id", this.genAddedId());
                     this.stopEditing();
-                    this.getStore().insert(0, [record]);
-                    this.updateChangedData(record, "added");
-                    var row = this.getView().findRowIndex(this.getView().getRow(0));
                     if (this.rowEditor) {
-                        this.rowEditor.populate(record, 0);
+                        this.rowEditor.populate(record, true);
                         this.rowEditor.show();
                     } else {
+                        this.getStore().insert(0, [record]);
+                        this.updateChangedData(record, "added");
                         this.startEditing(0, 0);
                     }
                 }.createDelegate(this)
