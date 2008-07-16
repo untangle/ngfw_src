@@ -7,7 +7,7 @@ patch_file=`pwd`/jabsorb-1.2.2-src.patch
 
 pushd $1/jabsorb-1.2.2
 cat ${patch_file} | patch -p1
-ant
+../apache-ant-1.6.5/bin/ant
 popd
 
 

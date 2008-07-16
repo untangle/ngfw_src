@@ -45,6 +45,9 @@ packages+=$(patsubst %.tar.gz,$(OUTPUT_DIRECTORY)/%,$(tarballs_gz))
 packages+=$(patsubst %.tar.bz2,$(OUTPUT_DIRECTORY)/%,$(tarballs_bz2))
 packages+=$(patsubst %.jar,$(OUTPUT_DIRECTORY)/%,$(jars))
 
+jabsorb-1.2.2-src.zip: $(OUTPUT_DIRECTORY)/apache-ant-1.6.5
+AjaxTK-3.1.1_GA_394-src.tar.gz: $(OUTPUT_DIRECTORY)/apache-ant-1.6.5
+
 all: $(packages) ;
 
 ## This verifies that the output directory hasn't been modified, it
