@@ -1,14 +1,17 @@
 #!/bin/sh
 
+set -e
+
 mv $1/jabsorb-1.2.2-src/jabsorb-1.2.2 $1/jabsorb-1.2.2
 rmdir $1/jabsorb-1.2.2-src
 
 patch_file=`pwd`/jabsorb-1.2.2-src.patch
 
-pushd $1/jabsorb-1.2.2
-cat ${patch_file} | patch -p1
-../apache-ant-1.6.5/bin/ant
-popd
+cd $1/jabsorb-1.2.2 && {
+    cat ${patch_file} | patch -p1
+    ../apache-ant-1.6.5/bin/ant
+}
+
 
 
 
