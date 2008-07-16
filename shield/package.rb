@@ -16,6 +16,4 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
 #
 
-dep = [ThirdpartyJar.get('../pkgs/jabsorb-1.2.2/jabsorb-1.2.2.jar')]
-
-NodeBuilder.makeNode(BuildEnv::SRC, 'untangle-node-shield', 'shield', dep )
+NodeBuilder.makeNode(BuildEnv::SRC, 'untangle-node-shield', 'shield' )

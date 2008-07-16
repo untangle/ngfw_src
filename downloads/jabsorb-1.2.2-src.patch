@@ -1,0 +1,107 @@
+diff -b -ur jabsorb-1.2.2/build.xml jabsorb-1.2.2.patched/build.xml
+--- jabsorb-1.2.2/build.xml	2008-01-16 17:47:54.000000000 -0800
++++ jabsorb-1.2.2.patched/build.xml	2008-07-15 22:38:51.000000000 -0700
+@@ -59,7 +59,8 @@
+   </target>
+ 
+   <target name="dist" depends="compile,compress-web-content,init-build" description="Puts the compiled source into a jar">
+-    <jar destfile="${app-jar}" basedir="${build}" excludes="*~" />
++    <jar destfile="${app-jar}" basedir="${build}" excludes="*~" includes="org/jabsorb/**/*.class"/>
++    <jar destfile="json.jar" basedir="${build}" excludes="*~" includes="org/json/**/*.class"/>
+   </target>
+ 
+   <target name="test.init" depends="init" description="Makes directories needed for the test jsps">
+diff -b -ur jabsorb-1.2.2/src/org/jabsorb/JSONRPCBridge.java jabsorb-1.2.2.patched/src/org/jabsorb/JSONRPCBridge.java
+--- jabsorb-1.2.2/src/org/jabsorb/JSONRPCBridge.java	2008-01-16 17:47:54.000000000 -0800
++++ jabsorb-1.2.2.patched/src/org/jabsorb/JSONRPCBridge.java	2008-07-15 22:28:53.000000000 -0700
+@@ -645,7 +645,6 @@
+           cbc.preInvokeCallback(context[i], itsThis, method, javaArgs);
+         }
+       }
+-
+       // Invoke the method
+       Object returnObj = method.invoke(itsThis, javaArgs);
+ 
+diff -b -ur jabsorb-1.2.2/src/org/jabsorb/reflect/ClassAnalyzer.java jabsorb-1.2.2.patched/src/org/jabsorb/reflect/ClassAnalyzer.java
+--- jabsorb-1.2.2/src/org/jabsorb/reflect/ClassAnalyzer.java	2008-01-16 17:47:52.000000000 -0800
++++ jabsorb-1.2.2.patched/src/org/jabsorb/reflect/ClassAnalyzer.java	2008-07-15 22:29:16.000000000 -0700
+@@ -30,8 +30,11 @@
+ import java.lang.reflect.Modifier;
+ import java.util.ArrayList;
+ import java.util.HashMap;
++import java.util.HashSet;
+ import java.util.Iterator;
++import java.util.List;
+ import java.util.Map;
++import java.util.Set;
+ 
+ import org.jabsorb.localarg.LocalArgController;
+ import org.slf4j.Logger;
+@@ -106,21 +109,30 @@
+   private static ClassData analyzeClass(Class clazz)
+   {
+     log.info("analyzing " + clazz.getName());
+-    Method methods[] = clazz.getMethods();
++
++    List methods = new ArrayList();
++
++    for (Iterator i = interfaces(clazz).iterator(); i.hasNext(); ) {
++        Class iface = (Class)i.next();
++        Method[] ms = iface.getMethods();
++        for (int j = 0; j < ms.length; j++) {
++            methods.add(ms[j]);
++        }
++    }
++
+     ClassData cd = new ClassData();
+     cd.clazz = clazz;
+ 
+     // Create temporary method map
+     HashMap staticMethodMap = new HashMap();
+     HashMap methodMap = new HashMap();
+-    for (int i = 0; i < methods.length; i++)
+-    {
+-      Method method = methods[i];
++    for (Iterator i = methods.iterator(); i.hasNext(); ) {
++        Method method = (Method)i.next();
+       if (method.getDeclaringClass() == Object.class)
+       {
+         continue;
+       }
+-      int mod = methods[i].getModifiers();
++      int mod = method.getModifiers();
+       if (!Modifier.isPublic(mod))
+       {
+         continue;
+@@ -192,4 +204,31 @@
+     }
+     return cd;
+   }
++
++
++    private static Set interfaces(Class c)
++    {
++        Set s = new HashSet();
++        return interfaces(c, s);
++    }
++
++    private static Set interfaces(Class c, Set s)
++    {
++        // XXX Is there are more structural way of accomplishing this
++        if (c.isInterface() && !c.getName().endsWith("Priv")) {
++            s.add(c);
++        }
++
++        Class[] ifaces = c.getInterfaces();
++        for (int i = 0; i < ifaces.length; i++) {
++            interfaces(ifaces[i], s);
++        }
++
++        Class superclass = c.getSuperclass();
++        if (null != superclass) {
++            interfaces(superclass, s);
++        }
++
++        return s;
++    }
+ }

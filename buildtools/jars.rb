@@ -65,6 +65,8 @@ class Jars
   C3p0       = [ Jars.downloadTarget('c3p0-0.9.0.4/lib/c3p0-0.9.0.4.jar') ]
   Ant        = [ Jars.downloadTarget('apache-ant-1.6.5/lib/ant.jar') ]
   JavaMailApi= [ Jars.downloadTarget('javamail-1.3.3_01/lib/mailapi.jar') ]
+  Jabsorb    = [ Jars.downloadTarget('jabsorb-1.2.2/jabsorb-1.2.2.jar')]
+  Json       = [ Jars.downloadTarget('jabsorb-1.2.2/json.jar')]
   GetText    = [ Jars.downloadTarget('gettext-commons-0.9.1/gettext-commons-0.9.1.jar') ]
 
   TomcatEmb  = [ 'catalina-optional.jar',
@@ -143,7 +145,7 @@ class Jars
                               Activation, Jcifs, C3p0, Ant, JavaMailApi,
                               GetText, JavaMail, TomcatEmb, Velocity, JRuby,
                               Bdb, HttpClient, HtmlParser, VncViewer, XmlRpc, Jstl,
-                              XStream)
+                              XStream, Json)
 
   # Jars for compiling the GUI, and GUI node components
   Gui        = Jars.makeGroup(Alloy, JFreeChartGui, Netbeans, Jnlp)
