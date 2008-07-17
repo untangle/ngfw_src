@@ -36,7 +36,8 @@ class Jars
 
       if p.nil?
         warn "Could not find #{path}"
-        paths.each { |p| warn " #{p} found: #{File.exist?(p)}" }
+
+        [ "#{BuildEnv::DOWNLOADS}/#{path}" ] + paths.each { |p| warn " #{p} found: #{File.exist?(p)}" }
       else
         ThirdpartyJar.get(p)
       end
