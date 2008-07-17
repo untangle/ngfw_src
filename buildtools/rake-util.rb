@@ -99,6 +99,7 @@ class BuildEnv
 
   # XXX XXX should these live here???
   DOWNLOADS = ["#{SRC_HOME}/downloads/output", '/usr/share/java/uvm'].find { |d| File.exist?(d) }
+  puts "DOWNLOADS: #{DOWNLOADS}"
   SERVLET_COMMON = "./servlet/common"
 
   attr_reader :home, :prefix, :staging, :devel, :deb, :isDevel, :grabbag, :downloads, :servletcommon, :include, :installTarget
