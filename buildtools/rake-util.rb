@@ -136,10 +136,7 @@ class BuildEnv
   end
 
   def BuildEnv::downloads
-    d = ["#{SRC_HOME}/downloads/output", '/usr/share/java/uvm'].find { |d| File.exist?(d) }
-    puts "SRC_HOME #{SRC_HOME}, DOWNLOADS: #{d}"
-
-    d
+    ["#{SRC_HOME}/downloads/output", '/usr/share/java/uvm'].find { |d| File.exist?(d) }
   end
 
   def [](name)
