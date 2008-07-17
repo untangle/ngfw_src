@@ -97,10 +97,6 @@ class BuildEnv
   JAVA_HOME = '/usr/lib/jvm/java-6-sun'
   THIRD_PARTY_JAR = 'usr/share/java/uvm'
 
-  # XXX XXX should these live here???
-  DOWNLOADS = ["#{SRC_HOME}/downloads/output", '/usr/share/java/uvm'].find { |d| File.exist?(d) }
-  K = "FOO"
-  puts "SRC_HOME #{SRC_HOME}, DOWNLOADS: #{BuildEnv::DOWNLOADS} K: #{K}"
   SERVLET_COMMON = "./servlet/common"
 
   attr_reader :home, :prefix, :staging, :devel, :deb, :isDevel, :grabbag, :downloads, :servletcommon, :include, :installTarget
@@ -137,6 +133,13 @@ class BuildEnv
     [@devel, @devel, @grabbag].each { |t| ensureDirectory(t) }
 
     @installTarget = InstallTarget.new(self['install'], [], "#{name}-install")
+  end
+
+  def BuildEnv::downloads
+    d = ["#{SRC_HOME}/downloads/output", '/usr/share/java/uvm'].find { |d| File.exist?(d) }
+    puts "SRC_HOME #{SRC_HOME}, DOWNLOADS: #{d}"
+
+    d
   end
 
   def [](name)

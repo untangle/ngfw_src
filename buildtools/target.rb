@@ -257,7 +257,7 @@ class CopyFiles < Target
 
           ## Handling symbolic links that don't resolve until in place.
           file dest => src if File.exists?( src )
-            
+
           file dest do
             ensureDirectory(File.dirname(dest))
             File.symlink(File.readlink(src), dest) if !File.exist?(dest)
@@ -307,7 +307,7 @@ end
 
 class ServletBuilder < Target
   JspcClassPath = ['apache-ant-1.6.5/lib/ant.jar'].map { |n|
-    "#{BuildEnv::DOWNLOADS}/#{n}"
+    "#{BuildEnv::downloads}/#{n}"
   } + ["#{BuildEnv::JAVA_HOME}/lib/tools.jar"];
 
   def initialize(package, pkgname, path, libdeps = [], nodedeps = [], ms = [],

@@ -22,7 +22,7 @@
 class Jars
   ## Makes the target with the downloads path prepended
   def Jars.downloadTarget(path)
-    p =  "#{BuildEnv::DOWNLOADS}/#{path}"
+    p =  "#{BuildEnv::downloads}/#{path}"
     if File.exist?(p)
       ThirdpartyJar.get(p)
     else
@@ -35,7 +35,7 @@ class Jars
       end
 
       if p.nil?
-        h = ([ "#{BuildEnv::DOWNLOADS}/#{path}" ] + paths).map do |p|
+        h = ([ "#{BuildEnv::downloads}/#{path}" ] + paths).map do |p|
           "#{p}: #{File.exist?(p)}"
         end
 

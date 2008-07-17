@@ -73,15 +73,15 @@ deps += Jars::Jabsorb
 
 deps << taglib
 
-ms = [ MoveSpec.new("#{BuildEnv::DOWNLOADS}/jabsorb-1.2.2/webapps/jsonrpc", 'jsonrpc*.js', './jsonrpc') ]
+ms = [ MoveSpec.new("#{BuildEnv::downloads}/jabsorb-1.2.2/webapps/jsonrpc", 'jsonrpc*.js', './jsonrpc') ]
 
 ServletBuilder.new(uvm_lib, "com.untangle.uvm.webui.servlet",
                    "./uvm-lib/servlets/webui", deps, [], ms)
 
 
 # Ajax Tk
-deps = FileList["#{BuildEnv::DOWNLOADS}/Ajax/jars/*jar"].exclude(/.*servlet-api.jar/).map { |n| ThirdpartyJar.get(n) }
-ms = [ MoveSpec.new("#{BuildEnv::DOWNLOADS}/Ajax/WebRoot/js", '**/*', 'AjaxTk')]
+deps = FileList["#{BuildEnv::downloads}/Ajax/jars/*jar"].exclude(/.*servlet-api.jar/).map { |n| ThirdpartyJar.get(n) }
+ms = [ MoveSpec.new("#{BuildEnv::downloads}/Ajax/WebRoot/js", '**/*', 'AjaxTk')]
 ServletBuilder.new(uvm_lib, 'com.untangle.uvm.root.jsp',
                    "./uvm-lib/servlets/ROOT", deps, [], ms)
 
@@ -190,7 +190,7 @@ ajaxTkList =
   'dwt/xforms/XFormChoices.js',
   'dwt/xforms/OSelect_XFormItem.js',
   'dwt/xforms/ButtonGrid.js',
-].map { |e| "#{BuildEnv::DOWNLOADS}/Ajax/WebRoot/js/#{e}" }
+].map { |e| "#{BuildEnv::downloads}/Ajax/WebRoot/js/#{e}" }
 
 bundledAjx = "#{uvm_lib.getWebappDir("ROOT")}/AjaxTk/BundledAjx.js"
 
