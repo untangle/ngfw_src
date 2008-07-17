@@ -23,6 +23,7 @@ class Jars
   ## Makes the target with the downloads path prepended
   def Jars.downloadTarget(path)
     p =  "#{BuildEnv::downloads}/#{path}"
+    puts "P: #{p} exist: #{File.exist?(p)}"
     if File.exist?(p)
       ThirdpartyJar.get(p)
     else
@@ -39,7 +40,7 @@ class Jars
           "#{p}: #{File.exist?(p)}"
         end
 
-        warn "Could not find #{File.expand_path(path)} (#{h.join(',')})"
+        warn "Could not find #{path} (#{h.join(',')})"
       else
         ThirdpartyJar.get(p)
       end
