@@ -116,7 +116,9 @@ public class I18nTag extends BodyTagSupport
     {
         this.p = null;
     }
-    
+ 
+    //we should use the methods from I18nUtil but, the I18nTag can not load the utility class at runtime,
+    //even if from jsp it can be used fine; do not know why.
     private static String tr(Map<String, String> i18n_map, String value, Object[] objects)
     {
         return MessageFormat.format( tr(i18n_map,value), objects);

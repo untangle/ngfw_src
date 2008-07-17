@@ -19,6 +19,8 @@
 package com.untangle.node.virus;
 
 import java.io.IOException;
+import java.util.Map;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -33,6 +35,7 @@ import com.untangle.uvm.LocalUvmContextFactory;
 
 import  com.untangle.uvm.node.LocalNodeManager;
 import com.untangle.uvm.security.Tid;
+import com.untangle.uvm.util.I18nUtil;
 
 import com.untangle.node.http.BlockPageUtil;  
 import com.untangle.node.http.UserWhitelistMode;
@@ -78,20 +81,21 @@ public class BlockPageServlet extends HttpServlet
         }
         
         /* Retrieve the page title (in the window bar) of the page */
-        public String getPageTitle( BrandingBaseSettings bs, I18n i18n )
+        public String getPageTitle( BrandingBaseSettings bs, Map<String,String> i18n_map )
         {
-            return i18n.tr( "{0} | {1} Warning", bs.getCompanyName(), this.blockDetails.getVendor());
+            return I18nUtil.tr(i18n_map, "{0} | {1} Warning", 
+                    new Object[]{bs.getCompanyName(), this.blockDetails.getVendor()});
         }
         
         /* Retrieve the title (top of the pae) of the page */
-        public String getTitle( BrandingBaseSettings bs, I18n i18n )
+        public String getTitle( BrandingBaseSettings bs, Map<String,String> i18n_map )
         {
             return "Virus Blocker";
         }
         
-        public String getFooter( BrandingBaseSettings bs, I18n i18n )
+        public String getFooter( BrandingBaseSettings bs, Map<String,String> i18n_map )
         {
-            return i18n.tr( "{0} Virus Blocker", bs.getCompanyName());
+            return I18nUtil.tr(i18n_map, "{0} Virus Blocker", bs.getCompanyName());
         }
         
         /* Return the name of the script file to load, or null if there is not a script. */
@@ -101,9 +105,10 @@ public class BlockPageServlet extends HttpServlet
         }
         
         /* Retrieve the description of why this page was blocked. */
-        public String getDescription( BrandingBaseSettings bs, I18n i18n )
+        public String getDescription( BrandingBaseSettings bs, Map<String,String> i18n_map )
         {
-            return i18n.tr( "<b>This file was blocked</b> because it contained a virus." );
+            return I18nUtil.tr(i18n_map, "{0}This file was blocked{1} because it contained a virus.",
+                    new Object[]{ "<b>","</b>" } );
         }
     
         public VirusBlockDetails getBlockDetails()

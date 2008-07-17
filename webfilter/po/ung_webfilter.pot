@@ -8,15 +8,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-05-13 16:07+0300\n"
+"POT-Creation-Date: 2008-07-17 17:33+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:29
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:30
 msgid "Block Lists"
 msgstr ""
 
@@ -25,193 +25,269 @@ msgid "Block all sites except for Pass Lists"
 msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:55
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:189
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:134
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:247
 msgid "Categories"
 msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:58
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:66
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:74
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:82
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:467
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:475
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:67
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:76
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:85
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:620
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:629
 msgid "manage list"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:63
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:280
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:464
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:539
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:64
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:158
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:365
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:617
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:653
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:726
 msgid "Sites"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:71
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:341
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:73
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:182
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:453
 msgid "File Types"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:79
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:400
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:82
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:206
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:537
 msgid "MIME Types"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:89
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:95
 msgid "User Bypass"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:93
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:99
 msgid "None"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:94
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:99
 msgid "Temporary"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:95
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:100
 msgid "Permanent and Global"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:169
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:270
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:331
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:390
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:222
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:345
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:433
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:517
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:889
 msgid "block"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:181
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:273
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:334
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:393
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:236
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:350
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:438
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:522
 msgid "log"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:202
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:270
 msgid "category"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:206
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:295
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:356
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:415
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:552
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:604
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:278
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:394
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:480
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:564
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:753
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:827
 msgid "description"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:216
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:292
 msgid "Category"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:222
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:313
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:372
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:431
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:298
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:416
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:500
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:584
 msgid "Block"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:238
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:317
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:376
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:435
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:314
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:420
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:504
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:588
 msgid "Log"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:242
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:321
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:380
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:439
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:574
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:624
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:318
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:424
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:508
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:592
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:779
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:851
 msgid "Description"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:253
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:328
 msgid "\"URL\" specified cannot be blocked because it uses secure http (https)"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:265
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:292
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:309
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:526
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:550
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:566
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:340
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:390
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:412
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:706
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:749
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:771
 msgid "Invalid \"URL\" specified"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:279
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:538
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:360
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:722
 msgid "[no site]"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:279
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:340
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:399
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:538
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:590
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:363
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:451
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:535
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:724
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:800
 msgid "[no description]"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:291
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:549
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:384
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:743
 msgid "site"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:305
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:562
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:408
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:767
 msgid "Site"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:352
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:472
 msgid "file type"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:366
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:494
 msgid "File Type"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:411
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:556
 msgid "MIME type"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:425
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:578
 msgid "MIME Type"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:455
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:608
 msgid "Pass Lists"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:472
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:591
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:626
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:677
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:802
 msgid "IP addresses"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:514
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:694
 msgid "\"URL\" specified cannot be passed because it uses secure http (https)"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:532
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:584
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:712
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:788
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:886
 msgid "pass"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:570
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:620
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:775
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:847
 msgid "Pass"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:601
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:614
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:819
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:841
 msgid "IP address/range"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:695
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:871
+msgid "timestamp"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:879
+msgid "action"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:893
+msgid "client"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:901
+msgid "request"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:909
+msgid "reason for action"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:916
+msgid "in Categories Block list"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:918
+msgid "in URLs Block list"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:920
+msgid "in File Extensions Block list"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:922
+msgid "in MIME Types Block list"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:924
+msgid "blocking all traffic"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:926
+msgid "hostname is an IP address"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:928
+msgid "in URLs Pass list"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:930
+msgid "in Clients Pass list"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:933
+msgid "no rule applied"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:937
+msgid "server"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:1007
 msgid "Validation failed"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:699
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:718
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:1011
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:1029
 msgid "Failed"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:1025
+msgid "Saving..."
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:1025
+msgid "Please wait"
 msgstr ""
 
 #: database data: n_webfilter_blcat.display_name
@@ -329,4 +405,40 @@ msgstr ""
 
 #: database data: u_string_rule.name
 msgid "video"
+msgstr ""
+
+#: BlockPageUtil.java:72
+msgid "If you have any questions, Please contact {0}."
+msgstr ""
+
+#: blockpage_template.jspx:48
+msgid "Host:"
+msgstr ""
+
+#: blockpage_template.jspx:49
+msgid "URL:"
+msgstr ""
+
+#: blockpage_template.jspx:51
+msgid "Reason:"
+msgstr ""
+
+#: blockpage_template.jspx:57
+msgid "Unblock For Now"
+msgstr ""
+
+#: blockpage_template.jspx:63
+msgid "Unblock Permanently"
+msgstr ""
+
+#: BlockPageServlet.java:80
+msgid "{0} | Web Filter Warning"
+msgstr ""
+
+#: BlockPageServlet.java:91
+msgid "{0} Web Filter"
+msgstr ""
+
+#: BlockPageServlet.java:103
+msgid "{0}This web page was blocked{1} because it is considered inappropriate."
 msgstr ""

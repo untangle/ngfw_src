@@ -18,27 +18,21 @@
 package com.untangle.node.http;
 
 import java.io.IOException;
-import java.util.Locale;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.xnap.commons.i18n.I18n;
-import org.xnap.commons.i18n.I18nFactory;
-
 import com.untangle.uvm.BrandingBaseSettings;
-import com.untangle.uvm.LanguageSettings;
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
-
-import com.untangle.uvm.security.Tid;
+import com.untangle.uvm.util.I18nUtil;
 
 public class BlockPageUtil
 {
     private static final BlockPageUtil INSTANCE = new BlockPageUtil();
-    private static final String UNG_PREFIX = "ung_";
     
     private BlockPageUtil()
     {
@@ -52,25 +46,19 @@ public class BlockPageUtil
         BrandingBaseSettings bs = uvm.brandingManager().getBaseSettings();
         
         String module = handler.getI18n();
-        String ungPrefixedModule = UNG_PREFIX + module;
-        
-        LanguageSettings ls = uvm.remoteContext().languageManager().getLanguageSettings();
-        Locale locale = new Locale(ls.getLanguage());
-        
-        // TODO get this from LanguageManager
-        I18n i18n = I18nFactory.getI18n( "i18n." + ungPrefixedModule, ungPrefixedModule, Thread.currentThread().getContextClassLoader(), locale, I18nFactory.FALLBACK);
-        request.setAttribute( "i18n", i18n );
+        Map<String,String> i18n_map = uvm.languageManager().getTranslations(module);
+        request.setAttribute( "i18n_map", i18n_map );
 
         /* These have to be registered against the request, otherwise
          * the included template cannot see them. */
         request.setAttribute( "ss", uvm.skinManager().getSkinSettings());
         request.setAttribute( "bs", bs );
-        request.setAttribute( "pageTitle", handler.getPageTitle( bs, i18n ));
-        request.setAttribute( "title", handler.getTitle( bs, i18n ));
-        request.setAttribute( "footer", handler.getFooter( bs, i18n ));
+        request.setAttribute( "pageTitle", handler.getPageTitle( bs, i18n_map ));
+        request.setAttribute( "title", handler.getTitle( bs, i18n_map ));
+        request.setAttribute( "footer", handler.getFooter( bs, i18n_map ));
         String value = handler.getScriptFile();
         if ( value != null ) request.setAttribute( "javascript_file", value );
-        request.setAttribute( "description", handler.getDescription( bs, i18n ));
+        request.setAttribute( "description", handler.getDescription( bs, i18n_map ));
                      
         /* Register the block detail with the page */
         BlockDetails bd = handler.getBlockDetails();
@@ -81,7 +69,7 @@ public class BlockPageUtil
         else value = "'" + bd.getFormattedUrl() + "'";
         request.setAttribute( "url", value );
 
-        request.setAttribute( "contact", i18n.tr( "If you have any questions, Please contact {0}.", bs.getContactHtml()));
+        request.setAttribute( "contact", I18nUtil.tr(i18n_map, "If you have any questions, Please contact {0}.", bs.getContactHtml()));
 
         UserWhitelistMode mode = handler.getUserWhitelistMode();
         if (( UserWhitelistMode.NONE != mode ) && ( null != bd ) && ( null != bd.getWhitelistHost())) {
@@ -105,18 +93,18 @@ public class BlockPageUtil
         public String getI18n();
 
         /* Retrieve the page title (in the window bar) of the page */
-        public String getPageTitle( BrandingBaseSettings bs, I18n i18n );
+        public String getPageTitle( BrandingBaseSettings bs, Map<String,String> i18n_map );
 
         /* Retrieve the title (top of the pae) of the page */
-        public String getTitle( BrandingBaseSettings bs, I18n i18n );
+        public String getTitle( BrandingBaseSettings bs, Map<String,String> i18n_map );
 
-        public String getFooter( BrandingBaseSettings bs, I18n i18n );
+        public String getFooter( BrandingBaseSettings bs, Map<String,String> i18n_map );
 
         /* Return the name of the script file to load, or null if there is not a script. */
         public String getScriptFile();
 
         /* Retrieve the description of why this page was blocked. */
-        public String getDescription( BrandingBaseSettings bs, I18n i18n );
+        public String getDescription( BrandingBaseSettings bs, Map<String,String> i18n_map );
 
         public BlockDetails getBlockDetails();
 

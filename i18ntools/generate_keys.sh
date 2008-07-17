@@ -16,6 +16,17 @@ case "$1" in
     echo 'update po files'
     msgmerge -U ro/ung_$1.po ung_$1.pot
     ;;
+"webfilter")
+    cd ../webfilter/po/
+    # TODO change charset=utf-8 for pot file
+    echo 'get new keys'
+    xgettext --copyright-holder='Untangle, Inc.' -L Python -k.i18n._ -o tmpkeys.pot ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js
+    msgcat tmpkeys.pot db_keys.pot block_page_keys.pot -o tmpkeys.pot
+    msgmerge -U ung_webfilter.pot tmpkeys.pot
+    rm tmpkeys.pot
+    echo 'update po files'
+    msgmerge -U ro/ung_webfilter.po ung_webfilter.pot
+    ;;
 *)
     echo 1>&2 Module Name \"$1\" is invalid ...
     exit 127

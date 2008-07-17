@@ -10,16 +10,6 @@
   
   <jsp:directive.page contentType="text/html"/>
 
-  <jsp:directive.page import="org.xnap.commons.i18n.I18n"/>
-
-  <jsp:scriptlet>
-    <![CDATA[
-             /* This just makes it available to use later in the page. */
-             I18n i18n = (I18n)request.getAttribute("i18n");
-    ]]>
-  </jsp:scriptlet>
-
-
   <head>
     <title><c:out value="${pageTitle}"/></title>
 
@@ -55,22 +45,22 @@
           <span>${description}</span>
         </p>
         <div class="info-list">
-          <div><uvm:i18n p0="${bd.formattedHost}"><b>Host:</b> {0}</uvm:i18n></div>
-          <div><uvm:i18n p0="${bd.formattedUrl}"><b>URL:</b> {0}</uvm:i18n></div>
+          <div><b><uvm:i18n>Host:</uvm:i18n></b> <c:out value="${bd.formattedHost}"/></div>
+          <div><b><uvm:i18n>URL:</uvm:i18n></b> <c:out value="${bd.formattedUrl}"/></div>
           <c:if test="${!empty reason}">
-            <div><uvm:i18n p0="${reason}"><b>Reason:</b> {0}</uvm:i18n></div>
+            <div><b><uvm:i18n>Reason:</uvm:i18n></b> <c:out value="${reason}"/></div>
           </c:if>
         </div>
         
         <c:if test="${showUnblockNow}">
           <button id="unblockNowButton" type="button" onclick="unblockSite(false)">
-            <jsp:expression>i18n.tr( "Unblock For Now" )</jsp:expression>
+            <uvm:i18n>Unblock For Now</uvm:i18n>
           </button>
         </c:if>
         
         <c:if test="${showUnblockGlobal}">
           <button id="unblockGlobalButton" type="button" onclick="unblockSite(true)">
-            <jsp:expression>i18n.tr( "Unblock Permanently" )</jsp:expression>
+            <uvm:i18n>Unblock Permanently</uvm:i18n>
           </button>
         </c:if>
 
