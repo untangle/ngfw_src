@@ -173,7 +173,7 @@ class AppServerManagerImpl implements LocalAppServerManager
 
     public void rebindExternalHttpsPort(int port) throws Exception
     {
-        tomcatManager.rebindExternalHttpsPort(port);
+        // XXX IMPLEMENT ME!!!
     }
 
     public boolean loadSystemApp(String urlBase, String rootDir)
@@ -195,8 +195,6 @@ class AppServerManagerImpl implements LocalAppServerManager
     {
         return tomcatManager.loadGlobalApp(urlBase, rootDir, valve);
     }
-
-
 
     public boolean loadInsecureApp(String urlBase, String rootDir)
     {
@@ -349,9 +347,9 @@ class AppServerManagerImpl implements LocalAppServerManager
         }
     }
 
-	public CertInfo getCurrentServerCertInfo() {
-		return getCertInfo(getCurrentServerCert());
-	}
+    public CertInfo getCurrentServerCertInfo() {
+        return getCertInfo(getCurrentServerCert());
+    }
 
     /**
      * Callback indicating that the hostname has changed

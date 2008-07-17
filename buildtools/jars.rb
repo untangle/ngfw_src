@@ -84,9 +84,10 @@ class Jars
                  'servlets-default.jar',
                  'tomcat-coyote.jar',
                  'tomcat-http.jar',
-                 'tomcat-util.jar'
+                 'tomcat-util.jar',
+                 'tomcat-ajp.jar'
                ].map do |n|
-    Jars.downloadTarget("apache-tomcat-5.5.17-embed/lib/#{n}")
+    Jars.downloadTarget("apache-tomcat-5.5.26/server/lib/#{n}")
   end
 
   ## XmlRpc Jars

@@ -39,7 +39,6 @@ import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.session.StandardManager;
 import org.apache.catalina.startup.Embedded;
-import org.apache.coyote.http11.Http11BaseProtocol;
 import org.apache.log4j.Logger;
 
 /**
@@ -49,8 +48,6 @@ class TomcatManager
 {
     private static final int NUM_TOMCAT_RETRIES = 15; //  5 minutes total
     private static final long TOMCAT_SLEEP_TIME = 20 * 1000; // 20 seconds
-    private static final long REBIND_SLEEP_TIME = 1 * 1000; // 1 second
-    private static final int NUM_REBIND_RETRIES = 5; //  10 seconds
 
     // Connector threadpool parameters.  Set down from default to save
     // memory since we aren't primarily a web server.
@@ -86,13 +83,6 @@ class TomcatManager
 
     private Context rootContext;
     private String welcomeFile = STANDARD_WELCOME;
-
-    private Connector defaultHTTPConnector;
-    private Connector localHTTPConnector;
-    private Connector defaultHTTPSConnector;
-    private Connector localHTTPSConnector; /* https localhost on 443. */
-    private Connector internalOpenHTTPSConnector; /* Sessions on this port are unrestricted */
-    private Connector externalHTTPSConnector; /* This isn't used anymore now that we use a redirect */
 
     // constructors -----------------------------------------------------------
 
@@ -161,42 +151,10 @@ class TomcatManager
         this.keystoreFile = ksFile;
         this.keystorePass = ksPass;
         this.keyAlias = ksAlias;
-
-        if (null != emb) {
-            // XXX Some validation of the new Keystore data, so we
-            // don't hose ourselves
-            int port = 0;
-            if (null != externalHTTPSConnector) {
-                port = externalHTTPSConnector.getPort();
-                destroyConnector(externalHTTPSConnector, "External HTTPS");
-                externalHTTPSConnector = createConnector(port, true);
-                startConnector(externalHTTPSConnector, "External HTTPS");
-            }
-
-            if (null != defaultHTTPSConnector) {
-                port = defaultHTTPSConnector.getPort();
-                destroyConnector(defaultHTTPSConnector, "Default HTTPS");
-                defaultHTTPSConnector = createConnector(port, true);
-                startConnector(defaultHTTPSConnector, "Default HTTPS");
-            }
-
-            if (null != internalOpenHTTPSConnector) {
-                port = internalOpenHTTPSConnector.getPort();
-                destroyConnector(internalOpenHTTPSConnector, "Internal HTTPS");
-                internalOpenHTTPSConnector = createConnector(port, true);
-                startConnector(internalOpenHTTPSConnector, "Internal HTTPS");
-            }
-
-            if (null != localHTTPSConnector) {
-                port = localHTTPSConnector.getPort();
-                destroyConnector(localHTTPSConnector, "Local HTTPS");
-                localHTTPSConnector = createConnector(port, true, this.localhost);
-                startConnector(localHTTPSConnector, "Local HTTPS");
-            }
-        }
     }
 
-    boolean loadPortalApp(String urlBase, String rootDir, Realm realm, AuthenticatorBase auth)
+    boolean loadPortalApp(String urlBase, String rootDir, Realm realm,
+                          AuthenticatorBase auth)
     {
         // Need a large timeout since we handle that ourselves.
         WebAppOptions options = new WebAppOptions(false, 24*60);
@@ -250,7 +208,6 @@ class TomcatManager
         return loadWebApp(urlBase, rootDir, null, null, valve);
     }
 
-
     boolean unloadWebApp(String contextRoot)
     {
         try {
@@ -273,17 +230,6 @@ class TomcatManager
                          contextRoot + "\"", ex);
         }
         return false;
-    }
-
-    void rebindExternalHttpsPort(int port)
-        throws Exception
-    {
-        /* We no longer need this port, the DNAT in the alpaca handles this redirect
-         * on, leaving it in just in case. */
-        /* Synchronize on the external thread */
-        synchronized(this.modifyExternalSynch) {
-            doRebindExternalHttpsPort(port);
-        }
     }
 
     /**
@@ -396,18 +342,9 @@ class TomcatManager
             // Engine for embedded server
             emb.addEngine(baseEngine);
 
-            // create Connectors
-            defaultHTTPConnector = createConnector(internalHTTPPort, false);
-            localHTTPConnector = createConnector(internalHTTPPort, false,this.localhost);
-            defaultHTTPSConnector = createConnector(internalHTTPSPort, true);
-            localHTTPSConnector = createConnector(internalHTTPSPort, true, this.localhost);
-            internalOpenHTTPSConnector = createConnector(internalOpenHTTPSPort, true);
-
-
-            /* Start the outside https server */
-            if (externalHTTPSPort != internalHTTPSPort) {
-                externalHTTPSConnector = createConnector(externalHTTPSPort, true);
-            }
+            // XXX ADD JK CONNECTOR
+            Connector jkConnector = new Connector("org.apache.jk.server.JkCoyoteHandler");
+            emb.addConnector(jkConnector);
 
             // start operation
             try {
@@ -623,125 +560,6 @@ class TomcatManager
                          + "\" from directory \"" + fqRoot + "\"", ex);
             return false;
         }
-    }
-
-    private void doRebindExternalHttpsPort(int port) throws Exception
-    {
-        logger.debug("Rebinding the HTTPS port");
-
-        if (port == 80 || port == 0 || port > 0xFFFF) {
-            throw new Exception("Cannot bind external to port 80");
-        }
-
-        /* This is kind of a questionable situation here, buecause it is not accessible here */
-        if (null != internalOpenHTTPSConnector
-            && internalOpenHTTPSConnector.getPort() == port) {
-            logger.info("External is already bound to port: " + port);
-            return;
-        }
-
-        /* If there was a failed attempt, retry, startExternal will
-         * only be null */
-        if (null != externalHTTPSConnector
-            && externalHTTPSConnector.getPort() == port) {
-            logger.info("External is already bound to port: " + port);
-            return;
-        }
-        destroyConnector(externalHTTPSConnector, "External HTTPS");
-        externalHTTPSConnector = null;
-
-        /* If it is not the default port, then rebind it */
-        if (null == defaultHTTPSConnector
-            || defaultHTTPSConnector.getPort() != port) {
-            logger.info("Rebinding external server to " + port);
-            externalHTTPSConnector = createConnector(port, true);
-            if (!startConnector(externalHTTPSConnector, "External HTTPS")) {
-                throw new Exception("Unable to bind to: " + port);
-            }
-        }
-    }
-
-    private Connector createConnector(int port, boolean secure)
-    {
-        return createConnector(port,secure,this.bindAddress);
-    }
-
-    /**
-     * Helper method - no synchronization
-     */
-    private Connector createConnector(int port, boolean secure, InetAddress address)
-    {
-        Connector ret = emb
-            .createConnector(address, port, secure);
-        ret.setProperty("minSpareThreads", MIN_SPARE_THREADS);
-        ret.setProperty("maxSpareThreads", MAX_SPARE_THREADS);
-        ret.setProperty("maxThreads", MAX_THREADS);
-
-        // enable compression
-        Http11BaseProtocol ph = (Http11BaseProtocol)ret.getProtocolHandler();
-        ph.setCompression("on");
-        ph.setCompressableMimeType("text/javascript,text/css");
-        ph.setCompressionMinSize(200);
-
-        if (secure) {
-            ph.setKeystore(this.keystoreFile);
-            ph.setKeypass(this.keystorePass);
-            ph.setKeyAlias(this.keyAlias);
-        }
-
-
-        emb.addConnector(ret);
-        return ret;
-    }
-
-    private boolean destroyConnector(Connector connector,
-                                     String nameForLog)
-    {
-        /* Need to change the port */
-        if (null != connector) {
-            logger.info("Removing connector on port " + connector.getPort());
-            emb.removeConnector(connector);
-            try {
-                connector.stop();
-            } catch (Exception e) {
-                logger.error("Unable to stop externalConnector", e);
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private boolean startConnector(Connector connector, String logName)
-    {
-        for (int i = 0; i < NUM_REBIND_RETRIES; i++) {
-            try {
-                connector.start();
-                return true;
-            } catch (LifecycleException ex) {
-                if (i == NUM_REBIND_RETRIES) {
-                    logger.error("Exception starting connector \"" + logName
-                                 + "\" on port " + connector.getPort(), ex);
-                    return false;
-                }
-            } catch (Exception ex) {
-                logger.error("Exception starting connector \"" + logName
-                             + "\" on port " + connector.getPort(), ex);
-                return false;
-            }
-
-            try {
-                Thread.sleep(REBIND_SLEEP_TIME);
-            } catch (InterruptedException exn) {
-                // XXX exit mechanism
-                logger.warn("Interrupted, breaking");
-                return false;
-            }
-        }
-        logger.error("Unable to start connector \"" + logName + "\" on port "
-                     + connector.getPort() + " after " + NUM_REBIND_RETRIES
-                     + " attempts sleeping " + REBIND_SLEEP_TIME
-                     + " between start attempts");
-        return false;
     }
 
     private boolean isAIUExn(LifecycleException exn)

@@ -57,7 +57,9 @@ public class HttpInvokerServlet extends HttpServlet
         }
         if (HttpInvoker.GZIP_RESPONSE)
             resp.setHeader("Content-Encoding", "gzip");
-        hi.handle(is, os, req.getLocalAddr().equals("127.0.0.1"), clientAddr);
+
+        // XXX used to check for 127.0.0
+        hi.handle(is, os, true, clientAddr);
     }
 
     @Override
