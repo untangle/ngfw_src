@@ -27,14 +27,16 @@ class Jars
       ThirdpartyJar.get(p)
     else
       b = File.basename(path)
-      p = [ "/usr/share/java/uvm/#{b}",
-            "/usr/share/java/reports/#{b}",
-            "/usr/share/untangle/web/webstart/#{b}" ].find do |f|
+      paths = [ "/usr/share/java/uvm/#{b}",
+                "/usr/share/java/reports/#{b}",
+                "/usr/share/untangle/web/webstart/#{b}" ]
+      p = paths.find do |f|
         File.exist?(f)
       end
 
       if p.nil?
         warn "Could not find #{path}"
+        paths.each { |p| warn " #{p} found: #{File.exist?(p)}" }
       else
         ThirdpartyJar.get(p)
       end
