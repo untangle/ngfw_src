@@ -3,7 +3,7 @@ Section: net
 Priority: optional
 Maintainer: Sebastien Delafond <seb@untangle.com>
 Build-Depends: untangle-development-build
-Standards-Version: 3.7.2
+Standards-Version: 3.8.0
 
 Package: untangle-libuvmcore
 Architecture: i386 amd64
@@ -41,7 +41,7 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9Y
  8fFxQUGBTa+YTKarqyt2YDQa1b8XvsYI+rvZxM+Vb07/kf0SvX2q/d/bXwIMAJ+e
  3tKQEpgPAAAAAElFTkSuQmCC
 Description: Untangle Core Library
- Untangle Core Library.
+ Untangle Core Library files.
 
 Package: untangle-casing-ftp
 Architecture: all
@@ -53,7 +53,7 @@ XB-Display-Name: File Transfer
 XB-Untangle-Type: casing
 XB-Is-Service: true
 Description: The Untangle File Transfer/FTP Decoder
- The Untangle File Transfer/FTP Decoder.
+ The Untangle File Transfer/FTP Decoder casing.
 
 Package: untangle-casing-http
 Architecture: all
@@ -65,7 +65,7 @@ XB-Display-Name: Web
 XB-Untangle-Type: casing
 XB-Is-Service: true
 Description: The Untangle Web Decoder
- The Untangle Web Decoder.
+ The Untangle Web Decoder casing.
 
 Package: untangle-casing-mail
 Architecture: all
@@ -77,7 +77,7 @@ XB-Display-Name: Email
 XB-Untangle-Type: casing
 XB-Is-Service: true
 Description: The Untangle Email Decoder
- The Untangle Email Decoder.
+ The Untangle Email Decoder casing.
 
 Package: untangle-node-shield
 Architecture: all
@@ -693,117 +693,6 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAACXBIWXMAAAsTAAALEw
 Description: Phish Blocker
  The Phish Blocker product.
 
-Package: untangle-node-test
-Section: qa/net
-Architecture: all
-Depends: untangle-vm
-Conflicts: test-transform
-Provides: test-transform
-Replaces: test-transform
-XB-Display-Name: Test
-XB-Untangle-Type: node
-XB-View-Position: 2002
-XB-Is-Core: true
-XB-Desc-Icon: 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
- IXmY0MNCBksAAAAASUVORK5CYII=
-Description: Test
- Test.
-
 Package: untangle-node-openvpn
 Architecture: all
 Depends: untangle-vm, untangle-nsis-addons, openssl, openvpn
@@ -1108,7 +997,7 @@ Description: Untangle Server Thirdparty Libraries
 
 Package: untangle-vm
 Architecture: all
-Depends: sun-java5-jre | sun-java6-jre, untangle-libuvm, untangle-libuvmcore, untangle-libuvmthirdparty, sudo, iptables (>= 1.3.6), untangle-libnfnetlink0, db4.2-util, untangle-ujac2pdf, at, ebtables, mime-support, untangle-nsis-addons, dnsmasq, pppoe, bridge-utils, iputils-ping, curl, wget, sg3-utils, pciutils, libdbd-pg-ruby, ruby, postgresql-client | postgresql-client-7.4 | postgresql-client-8.1 | postgresql-client-8.2, postgresql | postgresql-7.4 | postgresql-8.1 | postgresql-8.2, untangle-linux-image, mail-transport-agent, jruby1.0, libgettext-ruby, ethtool, net-tools, dnsutils, untangle-net-alpaca, untangle-node-router, untangle-ldap-server, libgpgme-ruby
+Depends: sun-java5-jre | sun-java6-jre, untangle-libuvm, untangle-libuvmcore, untangle-libuvmthirdparty, sudo, iptables (>= 1.3.6), untangle-libnfnetlink0, db4.2-util, untangle-ujac2pdf, at, ebtables, mime-support, untangle-nsis-addons, dnsmasq, pppoe, bridge-utils, iputils-ping, curl, wget, sg3-utils, pciutils, libdbd-pg-ruby, ruby, postgresql-client | postgresql-client-7.4 | postgresql-client-8.1 | postgresql-client-8.2, postgresql | postgresql-7.4 | postgresql-8.1 | postgresql-8.2, untangle-linux-image, mail-transport-agent, jruby1.0, libgettext-ruby, ethtool, net-tools, dnsutils, untangle-net-alpaca, untangle-node-router, untangle-ldap-server, libgpgme-ruby, dash
 Recommends: untangle-postgresql-config, untangle-gateway-light
 Provides: mvvm
 Conflicts: mvvm, untangle-restore-tools (< 5.1), untangle-linux-image-2.6.16-ck11-untangle-prod-486, untangle-linux-image-2.6.16-ck11-untangle-prod-xd-486, untangle-linux-image-2.6.16-ck11-untangle-cd-486, untangle-slapd, untangle-libldap-2.2-7, untangle-ldap-utils

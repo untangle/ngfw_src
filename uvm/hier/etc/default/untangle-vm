@@ -1,13 +1,13 @@
 # UVM server settings -*-sh-*-
 
+source @PREFIX@/etc/default/untangle-babysitter
+source @PREFIX@/etc/default/untangle-activation
+
 ## Simply function for taking a string, trim surround space, and the convert
 ## space separators to the token string. eg join_string " a b c " ";" -> "a;b;c"
 join_string() {
     echo $1 | sed -e 's/^ *//g' -e 's/ *$//g' -e "s/ \\+/$2/g"
 }
-
-source @PREFIX@/etc/default/untangle-babysitter
-source @PREFIX@/etc/default/untangle-activation
 
 DEFAULT_DMZ="eth2"
 
