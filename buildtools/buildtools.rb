@@ -25,6 +25,7 @@ ENV["JAVA_HOME"] = "/usr/lib/jvm/java-6-sun"
 SRC_HOME = [ ENV['SRC_HOME'], '../../work/src' ].compact.find do |d|
   File.exist?(d)
 end
+puts "SRC_HOME: #{SRC_HOME}"
 
 ## This is how you define where the stamp file will go
 module Rake
