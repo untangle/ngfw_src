@@ -6,14 +6,13 @@
 
   <jsp:output omit-xml-declaration="true"/>
 
-  <uvm:i18nload path="mail_casing"/>
-
   <jsp:scriptlet>
     <![CDATA[
              request.setAttribute( "bs", com.untangle.uvm.LocalUvmContextFactory.context().brandingManager().getBaseSettings());
              request.setAttribute( "ss", com.untangle.uvm.LocalUvmContextFactory.context().skinManager().getSkinSettings()); 
+             request.setAttribute( "i18n_map", com.untangle.uvm.LocalUvmContextFactory.context().languageManager().getTranslations("mail_casing")); 
     ]]>
-  </jsp:scriptlet>
+  </jsp:scriptlet>  
 
   <c:set var="title" scope="request">
     <uvm:i18n>

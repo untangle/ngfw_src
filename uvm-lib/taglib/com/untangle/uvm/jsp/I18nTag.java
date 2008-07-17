@@ -18,14 +18,14 @@
 package com.untangle.uvm.jsp;
 
 import java.io.IOException;
+import java.text.MessageFormat;
+import java.util.Map;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.BodyContent;
 import javax.servlet.jsp.tagext.BodyTagSupport;
-
-import org.xnap.commons.i18n.I18n;
 
 public class I18nTag extends BodyTagSupport
 {
@@ -81,7 +81,7 @@ public class I18nTag extends BodyTagSupport
         BodyContent body = getBodyContent();
         String bodyString = null;
 
-        if ( body != null ) bodyString = body.getString();
+        if ( body != null ) bodyString = body.getString().trim();
 
         JspWriter out = getPreviousOut();
                 
@@ -91,10 +91,10 @@ public class I18nTag extends BodyTagSupport
         
         try {
             /* Actually translate the string */
-            I18n i18n = (I18n)pageContext.getRequest().getAttribute( "i18n" );
+            Map<String, String> i18n_map = (Map<String, String>)pageContext.getRequest().getAttribute( "i18n_map" );
             for ( int c = 0 ; c < this.p.length ; c++ ) if ( this.p[c] == null ) this.p[c] = "";
 
-            out.print( i18n.tr( bodyString, this.p ));
+            out.print( tr(i18n_map, bodyString, this.p ));
 
             return EVAL_PAGE;
             
@@ -104,16 +104,30 @@ public class I18nTag extends BodyTagSupport
             for ( int c = 0 ; c < this.p.length ; c++ ) this.p[c] = null;
         }
     }
-
+    
     public static String i18n( PageContext pageContext, String value )
     {
         /* Actually translate the string */
-        I18n i18n = (I18n)pageContext.getRequest().getAttribute( "i18n" );
-        return i18n.tr( value );
+        Map<String, String> i18n_map = (Map<String, String>)pageContext.getRequest().getAttribute( "i18n_map" );
+        return tr(i18n_map, value);
     }
 
     public void release()
     {
         this.p = null;
     }
+    
+    private static String tr(Map<String, String> i18n_map, String value, Object[] objects)
+    {
+        return MessageFormat.format( tr(i18n_map,value), objects);
+    }
+
+    private static String tr(Map<String, String> i18n_map, String value)
+    {
+        String tr = i18n_map.get(value);
+        if (tr == null) {
+            tr = value;
+        }
+        return tr;
+    }    
 }

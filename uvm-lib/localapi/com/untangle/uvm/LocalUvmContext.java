@@ -185,6 +185,13 @@ public interface LocalUvmContext
      */
     RemoteSkinManager skinManager();
 
+    /**
+     * Get the <code>RemoteLanguageManager</code> singleton.
+     *
+     * @return the RemoteLanguageManager.
+     */
+    RemoteLanguageManager languageManager();
+    
     RemoteMessageManager messageManager();
 
     LocalMessageManager localMessageManager();

@@ -53,21 +53,6 @@
     <body-content>true</body-content>
   </tag>
 
-  
-  <tag>
-    <name>i18nload</name>
-    <tag-class>com.untangle.uvm.jsp.I18nLoadTag</tag-class>
-    <body-content>empty</body-content>
-    <attribute>
-      <name>path</name>
-      <required>true</required>
-    </attribute>
-    <attribute>
-      <name>path</name>
-      <required>false</required>
-    </attribute>
-  </tag>
-
   <tag>
     <name>i18n</name>
     <tag-class>com.untangle.uvm.jsp.I18nTag</tag-class>

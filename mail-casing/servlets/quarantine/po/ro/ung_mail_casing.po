@@ -195,8 +195,8 @@ msgid "Deleted %d addresses"
 msgstr ""
 
 #: ../root/inbox.jspx:13
-msgid "Quarantine Digest for: {0}"
-msgstr "Quarantine Digest pentru: {0}"
+msgid "Quarantine Digest for:"
+msgstr "Quarantine Digest pentru:"
 
 #: ../root/inbox.jspx:19
 msgid "{0} | Quarantine Digest for: {1}"

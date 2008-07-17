@@ -6,13 +6,18 @@
 
   <jsp:output omit-xml-declaration="true"/>
 
-  <uvm:i18nload path="mail_casing"/>
+  <jsp:scriptlet>
+    <![CDATA[
+             request.setAttribute( "i18n_map", com.untangle.uvm.LocalUvmContextFactory.context().languageManager().getTranslations("mail_casing")); 
+    ]]>
+  </jsp:scriptlet>  
 
   <c:set var="title" scope="request">
-    <uvm:i18n p0="${currentAddress}">
-      Quarantine Digest for:<br/><span style="font-weight: bold;">{0}</span>
+    <uvm:i18n>
+      Quarantine Digest for:
     </uvm:i18n>
   </c:set>
+  <br/><span style="font-weight: bold;">${currentAddress}</span>
 
   <c:set var="pageTitle" scope="request">
     <uvm:i18n p0="${bs.companyName}" p1="${currentAddress}">
