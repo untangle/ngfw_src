@@ -1,5 +1,0 @@
-#! /bin/bash
-
-#find /home/kiosk/.java/deployment/cache -type f -name "*gui.jar" -exec rm -f {} \; &> /dev/null || true
-#rm -rf /home/kiosk/.java &> /dev/null
-
