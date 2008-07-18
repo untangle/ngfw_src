@@ -1,0 +1,54 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2008-05-13 16:26+0300\n"
+"PO-Revision-Date: 2008-05-13 16:26+0300\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+
+#: BlockPageUtil.java:72
+msgid "If you have any questions, Please contact {0}."
+msgstr ""
+
+#: blockpage_template.jspx:48
+msgid "Host:"
+msgstr ""
+
+#: blockpage_template.jspx:49
+msgid "URL:"
+msgstr ""
+
+#: blockpage_template.jspx:51
+msgid "Reason:"
+msgstr ""
+
+#: blockpage_template.jspx:57
+msgid "Unblock For Now"
+msgstr ""
+
+#: blockpage_template.jspx:63
+msgid "Unblock Permanently"
+msgstr ""
+
+#: BlockPageServlet.java:79
+msgid "{0} | Spyware Blocker Warning"
+msgstr ""
+
+#: BlockPageServlet.java:90
+msgid "{0} Spyware Blocker"
+msgstr ""
+
+#: BlockPageServlet.java:102
+msgid "{0}This web page was blocked{1} because it may be designed to steal personal information."
+msgstr ""

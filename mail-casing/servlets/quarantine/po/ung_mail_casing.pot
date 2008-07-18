@@ -2,152 +2,145 @@
 # Copyright (C) YEAR Untangle, Inc.
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
+# 
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2008-07-18 08:51+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"POT-Creation-Date: 2008-06-27 13:15+0300\n"
-"Content-Type: text/plain; charset=utf-8\n"
-"MIME-Version: 1.0\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Content-Transfer-Encoding: 8bit\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=0; null;\n"
 
-#: ../root/quarantine.js:162
-#: ../root/quarantine.js:165
-#: ../root/quarantine.js:312
+#: ../root/quarantine.js:162 ../root/quarantine.js:308
 msgid "Move to Inbox"
 msgstr ""
 
-#: ../root/quarantine.js:163
-#: ../root/quarantine.js:317
-msgid "Move one Message to Inbox"
-msgstr ""
-
-#: ../root/quarantine.js:164
-#: ../root/quarantine.js:322
-#, python-format
-msgid "Move %d Messages to Inbox"
-msgstr ""
-
-#: ../root/quarantine.js:171
-#: ../root/quarantine.js:174
-#: ../root/quarantine.js:311
+#: ../root/quarantine.js:168 ../root/quarantine.js:307
 msgid "Delete Messages"
 msgstr ""
 
-#: ../root/quarantine.js:172
-#: ../root/quarantine.js:316
+#: ../root/quarantine.js:174 ../root/quarantine.js:325
+msgid "Add Sender(s) to Safelist"
+msgstr ""
+
+#: ../root/quarantine.js:268
+msgid "Deleted one Message"
+msgstr ""
+
+#: ../root/quarantine.js:269
+#, python-format
+msgid "Deleted %d Messages"
+msgstr ""
+
+#: ../root/quarantine.js:275
+msgid "Released one Message"
+msgstr ""
+
+#: ../root/quarantine.js:276
+#, python-format
+msgid "Released %d Messages"
+msgstr ""
+
+#: ../root/quarantine.js:282
+msgid "Safelisted one Address"
+msgstr ""
+
+#: ../root/quarantine.js:283
+#, python-format
+msgid "Safelisted %d Addresses"
+msgstr ""
+
+#: ../root/quarantine.js:312
 msgid "Delete one Message"
 msgstr ""
 
-#: ../root/quarantine.js:173
-#: ../root/quarantine.js:321
+#: ../root/quarantine.js:313
+msgid "Move one Message to Inbox"
+msgstr ""
+
+#: ../root/quarantine.js:317
 #, python-format
 msgid "Delete %d Messages"
 msgstr ""
 
-#: ../root/quarantine.js:180
-#: ../root/quarantine.js:329
-msgid "Add Sender(s) to Safelist"
-msgstr ""
-
-#: ../root/quarantine.js:232
-msgid "Safelisted one addressess"
-msgstr ""
-
-#: ../root/quarantine.js:232
+#: ../root/quarantine.js:318
 #, python-format
-msgid "Safelisted %d addresses"
+msgid "Move %d Messages to Inbox"
 msgstr ""
 
-#: ../root/quarantine.js:235
-msgid "Released one message"
-msgstr ""
-
-#: ../root/quarantine.js:235
-#, python-format
-msgid "Released %d messages"
-msgstr ""
-
-#: ../root/quarantine.js:275
-#: ../root/quarantine.js:537
-msgid "Quarantined Messages"
-msgstr ""
-
-#: ../root/quarantine.js:332
+#: ../root/quarantine.js:328
 msgid "Add Sender to Safelist"
 msgstr ""
 
-#: ../root/quarantine.js:335
+#: ../root/quarantine.js:331
 #, python-format
 msgid "Add %d Senders to Safelist"
 msgstr ""
 
-#: ../root/quarantine.js:421
+#: ../root/quarantine.js:442
 msgid "From"
 msgstr ""
 
-#: ../root/quarantine.js:429
+#: ../root/quarantine.js:450
 msgid "Score"
 msgstr ""
 
-#: ../root/quarantine.js:433
+#: ../root/quarantine.js:454
 msgid "Subject"
 msgstr ""
 
-#: ../root/quarantine.js:437
+#: ../root/quarantine.js:458
 msgid "Date"
 msgstr ""
 
-#: ../root/quarantine.js:448
+#: ../root/quarantine.js:469
 msgid "Size (KB)"
 msgstr ""
 
-#: ../root/quarantine.js:462
+#: ../root/quarantine.js:483
 msgid "Showing items {0} - {1} of {2}"
 msgstr ""
 
-#: ../root/quarantine.js:463
+#: ../root/quarantine.js:484
 msgid "No messges to display"
 msgstr ""
 
-#: ../root/quarantine.js:532
+#: ../root/quarantine.js:553
 #, python-format
 msgid "The messages below were quarantined and will be deleted after %d days."
 msgstr ""
 
-#: ../root/quarantine.js:542
-msgid "You can use the Safelist to make sure that messages from these senders are"
+#: ../root/quarantine.js:558
+msgid "Quarantined Messages"
+msgstr ""
+
+#: ../root/quarantine.js:563
+msgid ""
+"You can use the Safelist to make sure that messages from these senders are "
 "never quarantined."
 msgstr ""
 
-#: ../root/quarantine.js:545
+#: ../root/quarantine.js:566
 msgid "Safelist"
 msgstr ""
 
-#: ../root/remaps.js:40
-#: ../root/request.js:24
-#: ../root/safelist.js:43
+#: ../root/remaps.js:40 ../root/request.js:24 ../root/safelist.js:43
 #: ../root/safelist.js:108
 msgid "Email Address"
 msgstr ""
 
-#: ../root/remaps.js:55
-#: ../root/remaps.js:65
-#: ../root/remaps.js:210
-#: ../root/safelist.js:68
-#: ../root/safelist.js:80
-#: ../root/safelist.js:175
+#: ../root/remaps.js:55 ../root/remaps.js:65 ../root/remaps.js:220
+#: ../root/safelist.js:68 ../root/safelist.js:80 ../root/safelist.js:175
 msgid "Delete Addresses"
 msgstr ""
 
-#: ../root/remaps.js:78
-#: ../root/remaps.js:111
+#: ../root/remaps.js:78 ../root/remaps.js:111
 msgid "Forward Quarantined Messages To"
 msgstr ""
 
@@ -171,17 +164,24 @@ msgstr ""
 msgid "Unable to delete an entry."
 msgstr ""
 
-#: ../root/remaps.js:197
+#: ../root/remaps.js:200
+msgid "Delete one Remap"
+msgstr ""
+
+#: ../root/remaps.js:201
+#, python-format
+msgid "Deleted %d Remaps"
+msgstr ""
+
+#: ../root/remaps.js:207
 msgid "Unable to update remap table."
 msgstr ""
 
-#: ../root/remaps.js:205
-#: ../root/safelist.js:170
+#: ../root/remaps.js:215
 msgid "Delete one Addressess"
 msgstr ""
 
-#: ../root/remaps.js:205
-#: ../root/safelist.js:170
+#: ../root/remaps.js:215 ../root/safelist.js:170
 #, python-format
 msgid "Delete %d Addresses"
 msgstr ""
@@ -203,12 +203,16 @@ msgid "Cancel"
 msgstr ""
 
 #: ../root/safelist.js:157
-msgid "Deleted one addressess"
+msgid "Deleted one address"
 msgstr ""
 
 #: ../root/safelist.js:157
 #, python-format
 msgid "Deleted %d addresses"
+msgstr ""
+
+#: ../root/safelist.js:170
+msgid "Delete one Address"
 msgstr ""
 
 #: ../root/inbox.jspx:13

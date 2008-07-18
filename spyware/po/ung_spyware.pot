@@ -2,21 +2,22 @@
 # Copyright (C) YEAR Untangle, Inc.
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
+# 
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-05-13 15:48+0300\n"
+"POT-Creation-Date: 2008-07-18 09:21+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=0; null;\n"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:31
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:32
 msgid "Block Lists"
 msgstr ""
 
@@ -24,33 +25,33 @@ msgstr ""
 msgid "Web"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:60
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:62
 msgid "User Bypass"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:64
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:66
 msgid "None"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:65
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:66
 msgid "Temporary"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:66
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:67
 msgid "Permanent and Global"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:85
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:83
 msgid "Cookies"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:102
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:137
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:100
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:136
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:159
 msgid "manage list"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:107
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:106
 msgid "ActiveX"
 msgstr ""
 
@@ -58,122 +59,172 @@ msgstr ""
 msgid "Traffic"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:164
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:165
 msgid "Spyware Blocker signatures were last updated"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:180
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:250
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:167
+msgid "Unknown"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:187
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:268
 msgid "Cookies List"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:200
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:292
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:211
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:326
 msgid "ActiveX List"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:220
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:334
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:235
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:385
 msgid "Subnet List"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:243
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:285
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:254
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:312
 msgid "block"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:249
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:291
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:264
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:322
 msgid "[no identification]"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:249
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:291
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:333
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:384
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:266
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:324
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:383
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:458
 msgid "[no description]"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:260
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:302
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:285
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:343
 msgid "identification"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:271
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:313
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:299
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:357
 msgid "Identification"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:277
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:319
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:305
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:363
 msgid "Block"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:327
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:370
 msgid "log"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:333
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:381
 msgid "[no name]"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:345
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:404
 msgid "name"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:347
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:412
 msgid "subnet"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:358
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:426
 msgid "Name"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:364
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:432
 msgid "Subnet"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:370
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:438
 msgid "Log"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:378
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:445
 msgid "pass"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:384
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:457
 msgid "[no category]"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:385
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:460
 msgid "Pass List"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:396
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:479
 msgid "site"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:399
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:487
 msgid "description"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:409
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:501
 msgid "Site"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:415
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:507
 msgid "Pass"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:419
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:511
 msgid "Description"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:455
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:550
 msgid "Validation failed"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:459
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:476
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:554
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:570
 msgid "Failed"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:566
+msgid "Saving..."
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:566
+msgid "Please wait"
+msgstr ""
+
+#: BlockPageUtil.java:72
+msgid "If you have any questions, Please contact {0}."
+msgstr ""
+
+#: blockpage_template.jspx:48
+msgid "Host:"
+msgstr ""
+
+#: blockpage_template.jspx:49
+msgid "URL:"
+msgstr ""
+
+#: blockpage_template.jspx:51
+msgid "Reason:"
+msgstr ""
+
+#: blockpage_template.jspx:57
+msgid "Unblock For Now"
+msgstr ""
+
+#: blockpage_template.jspx:63
+msgid "Unblock Permanently"
+msgstr ""
+
+#: BlockPageServlet.java:79
+msgid "{0} | Spyware Blocker Warning"
+msgstr ""
+
+#: BlockPageServlet.java:90
+msgid "{0} Spyware Blocker"
+msgstr ""
+
+#: BlockPageServlet.java:102
+msgid ""
+"{0}This web page was blocked{1} because it may be designed to steal personal "
+"information."
 msgstr ""

@@ -1,0 +1,14 @@
+database:
+  name: uvm
+  username: postgres
+  password: ""
+  host: localhost
+  
+table:
+- name: u_string_rule
+  column:
+  - name
+- name: u_mimetype_rule
+  column:
+  - name
+  
