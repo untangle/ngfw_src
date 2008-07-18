@@ -69,6 +69,8 @@ install: build
 	@dh_testroot
 	@dh_installdirs -a
 	rake install
+	rm -f debian/untangle-vm/usr/share/untangle-vm/log
+	ln -sf /var/uvm/log debian/untangle-vm/usr/share/untangle-vm/log
 
 binary-arch: install
 	@dh_testdir
