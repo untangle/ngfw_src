@@ -75,8 +75,8 @@ class Jars
   GetText    = [ Jars.downloadTarget('gettext-commons-0.9.1/gettext-commons-0.9.1.jar') ]
 
   TomcatCommon = [ 'commons-el.jar',
-                   'commons-logging-api.jar',
                    'commons-modeler.jar',
+                   'jasper-compiler.jar',
                    'jasper-compiler-jdt.jar',
                    'jasper-runtime.jar',
                    'jsp-api.jar',
@@ -99,8 +99,7 @@ class Jars
     Jars.downloadTarget("apache-tomcat-5.5.26/server/lib/#{n}")
   end
 
-  TomcatEmb = TomcatCommon + TomcatServer
-
+  TomcatEmb = TomcatCommon + TomcatServer + [Jars.downloadTarget("hibernate-3.2/lib/commons-logging-1.0.4.jar")]
 
   ## XmlRpc Jars
   XmlRpc     = [ Jars.downloadTarget('xmlrpc-3.1/lib/xmlrpc-client-3.1.jar'),

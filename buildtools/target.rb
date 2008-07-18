@@ -385,10 +385,11 @@ class ServletBuilder < Target
     webfrag.close
 
     uvm_lib = BuildEnv::SRC['untangle-libuvm']
-    cp = @nodedeps.map { |j| j.filename } +
-      JspcClassPath + Jars::Base.map { |j| j.filename } +
-      [uvm_lib["api"], uvm_lib["localapi"]].map { |t| t.filename } +
-      Jars::Base.map {|f| f.filename }
+    cp = @nodedeps.map { |j| j.filename }
+    cp += JspcClassPath
+    cp += Jars::Base.map { |j| j.filename }
+    cp += [uvm_lib["api"], uvm_lib["localapi"]].map { |t| t.filename }
+    cp += Jars::Base.map {|f| f.filename }
 
     args = ["-s", "-die", "-l", "-v", "-compile", "-d", classroot,
       "-p", @pkgname, "-webinc", webfrag.path, "-source", "1.5",
