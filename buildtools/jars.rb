@@ -74,25 +74,31 @@ class Jars
   Json       = [ Jars.downloadTarget('jabsorb-1.2.2/json.jar')]
   GetText    = [ Jars.downloadTarget('gettext-commons-0.9.1/gettext-commons-0.9.1.jar') ]
 
-  TomcatEmb  = [ 'catalina-optional.jar',
-                 'catalina.jar',
-                 'commons-el.jar',
-                 'commons-logging.jar',
-                 'commons-modeler.jar',
-                 'jasper-compiler-jdt.jar',
-                 'jasper-compiler.jar',
-                 'jasper-runtime.jar',
-                 'jsp-api.jar',
-                 'naming-factory.jar',
-                 'naming-resources.jar',
-                 'servlet-api.jar',
-                 'servlets-default.jar',
-                 'tomcat-coyote.jar',
-                 'tomcat-http.jar',
-                 'tomcat-util.jar',
-                 'tomcat-ajp.jar'
-               ].map do |n|
+  TomcatCommon = [ 'commons-el.jar',
+                   'commons-logging-api.jar',
+                   'commons-modeler.jar',
+                   'jasper-compiler-jdt.jar',
+                   'jasper-runtime.jar',
+                   'jsp-api.jar',
+                   'naming-factory.jar',
+                   'naming-resources.jar',
+                   'servlet-api.jar',
+                 ].map do |n|
     Jars.downloadTarget("apache-tomcat-5.5.26/common/lib/#{n}")
+
+
+    TomcatServer  = [ 'catalina-optional.jar',
+                      'catalina.jar',
+                      'jsp-api.jar',
+                      'servlets-default.jar',
+                      'tomcat-coyote.jar',
+                      'tomcat-http.jar',
+                      'tomcat-util.jar',
+                      'tomcat-ajp.jar'
+                    ].map do |n|
+      Jars.downloadTarget("apache-tomcat-5.5.26/server/lib/#{n}")
+
+    TomcatEmb = TomcatCommon + TomcatServer
   end
 
   ## XmlRpc Jars
