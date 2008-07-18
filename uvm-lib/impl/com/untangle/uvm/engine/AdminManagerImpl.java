@@ -43,6 +43,7 @@ import com.untangle.uvm.security.GlobalPrincipal;
 import com.untangle.uvm.security.LoginSession;
 import com.untangle.uvm.security.RegistrationInfo;
 import com.untangle.uvm.security.RemoteAdminManager;
+import com.untangle.uvm.security.SystemInfo;
 import com.untangle.uvm.security.User;
 import com.untangle.uvm.security.UvmPrincipal;
 import com.untangle.uvm.snmp.SnmpManager;
@@ -356,5 +357,14 @@ class RemoteAdminManagerImpl implements RemoteAdminManager
                             + ALPACA_NONCE_FILE, e);
             }
         }
+    }
+    
+    public SystemInfo getSystemInfo()
+    {
+        String activationKey = uvmContext.getActivationKey();
+        String fullVersion = uvmContext.getFullVersion();
+        String javaVersion = System.getProperty("java.version");
+        
+        return new SystemInfo(activationKey, fullVersion, javaVersion);
     }
 }
