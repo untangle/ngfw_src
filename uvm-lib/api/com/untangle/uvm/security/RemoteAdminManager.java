@@ -140,4 +140,6 @@ public interface RemoteAdminManager
     String generateGlobalAuthNonce();
 
     String getAlpacaNonce();
+    
+    SystemInfo getSystemInfo();
 }

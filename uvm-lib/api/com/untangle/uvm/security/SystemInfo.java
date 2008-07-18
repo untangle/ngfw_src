@@ -1,5 +1,5 @@
 /*
- * $HeadURL$
+ * $HeadURL: svn://chef/branch/prod/web-ui/work/src/uvm-lib/api/com/untangle/uvm/security/SystemInfo.java $
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This library is free software; you can redistribute it and/or modify
@@ -30,28 +30,62 @@
  * of the library, but you are not obligated to do so.  If you do not wish
  * to do so, delete this exception statement from your version.
  */
-package com.untangle.uvm.license;
 
+package com.untangle.uvm.security;
 
-public interface RemoteLicenseManager
+import java.io.Serializable;
+
+/**
+ * The system info (activation key, build version, java version) for the Untangle customer
+ *
+ * @author <a href="mailto:cdondera@untangle.com">Catalin Dondera</a>
+ * @version 1.0
+ */
+public class SystemInfo implements Serializable
 {
-    /**
-     * Reload all of the available licenses.
-     */
-    public void reloadLicenses();
+    private static final long serialVersionUID = -879700823295949246L;
+    
+    private String activationKey;
+    private String fullVersion;
+    private String javaVersion;
+
+    public SystemInfo() { }
 
     /**
-     * Get the status of a license on a product.
+     * Creates a new <code>SystemInfo</code> with all of the required fields set.
+     *
+     * @param activationKey a <code>String</code> value
+     * @param fullVersion a <code>String</code> value
+     * @param javaVersion a <code>String</code> value
      */
-    public LicenseStatus getLicenseStatus( String productIdentifier );
+    public SystemInfo(String activationKey, String fullVersion, String javaVersion)
+    {
+        this.activationKey = activationKey;
+        this.fullVersion = fullVersion;
+        this.javaVersion = javaVersion;
+    }
 
-    /**
-     * Return true if the user has any premium products.
-     */
-    public boolean hasPremiumLicense();
+    public String getActivationKey() {
+        return activationKey;
+    }
 
-    /**
-     * Return the content of the license agreement.
-     */
-    public String getLicenseAgreement();
+    public void setActivationKey(String activationKey) {
+        this.activationKey = activationKey;
+    }
+
+    public String getFullVersion() {
+        return fullVersion;
+    }
+
+    public void setFullVersion(String fullVersion) {
+        this.fullVersion = fullVersion;
+    }
+
+    public String getJavaVersion() {
+        return javaVersion;
+    }
+
+    public void setJavaVersion(String javaVersion) {
+        this.javaVersion = javaVersion;
+    }
 }
