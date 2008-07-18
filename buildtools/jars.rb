@@ -47,7 +47,7 @@ class Jars
   end
 
   def Jars.makeGroup(*jars)
-    [ jars ].flatten.uniq
+    [ jars ].flatten.compact.uniq
   end
 
   ## Named groups of jars
