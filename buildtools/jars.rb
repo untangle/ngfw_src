@@ -87,7 +87,6 @@ class Jars
     Jars.downloadTarget("apache-tomcat-5.5.26/common/lib/#{n}")
   end
 
-
   TomcatServer  = [ 'catalina-optional.jar',
                     'catalina.jar',
                     'jsp-api.jar',
@@ -98,9 +97,10 @@ class Jars
                     'tomcat-ajp.jar'
                   ].map do |n|
     Jars.downloadTarget("apache-tomcat-5.5.26/server/lib/#{n}")
-
-    TomcatEmb = TomcatCommon + TomcatServer
   end
+
+  TomcatEmb = TomcatCommon + TomcatServer
+
 
   ## XmlRpc Jars
   XmlRpc     = [ Jars.downloadTarget('xmlrpc-3.1/lib/xmlrpc-client-3.1.jar'),
