@@ -1039,7 +1039,7 @@ Description: Untangle Server
 
 Package: untangle-libuvm
 Architecture: all
-Conflicts: untangle-vm (< 5.1)
+Conflicts: untangle-vm (<< 5.1)
 Depends: sun-java5-jre | sun-java6-jre
 XB-Display-Name: Untangle Server Libraries
 XB-Untangle-Type: library
