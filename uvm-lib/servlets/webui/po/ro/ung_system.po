@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-06-18 11:11+0300\n"
+"POT-Creation-Date: 2008-07-18 15:47+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -64,7 +64,7 @@ msgid "Backing Up..."
 msgstr ""
 
 #: ../root/script/config/system.js:202 ../root/script/config/system.js:213
-#: ../root/script/config/system.js:1062
+#: ../root/script/config/system.js:996
 msgid "Please wait"
 msgstr ""
 
@@ -165,11 +165,11 @@ msgstr ""
 msgid "Restore"
 msgstr ""
 
-#: ../root/script/config/system.js:303 ../root/script/config/system.js:967
-#: ../root/script/config/system.js:969 ../root/script/config/system.js:1067
-#: ../root/script/config/system.js:1076 ../root/script/config/system.js:1086
-#: ../root/script/config/system.js:1099 ../root/script/config/system.js:1112
-#: ../root/script/config/system.js:1124
+#: ../root/script/config/system.js:303 ../root/script/config/system.js:901
+#: ../root/script/config/system.js:903 ../root/script/config/system.js:1001
+#: ../root/script/config/system.js:1010 ../root/script/config/system.js:1020
+#: ../root/script/config/system.js:1033 ../root/script/config/system.js:1046
+#: ../root/script/config/system.js:1058
 msgid "Failed"
 msgstr ""
 
@@ -409,86 +409,86 @@ msgstr ""
 msgid "Protocol Settings"
 msgstr ""
 
-#: ../root/script/config/system.js:842
+#: ../root/script/config/system.js:776
 msgid "Regional Settings"
 msgstr ""
 
-#: ../root/script/config/system.js:852
+#: ../root/script/config/system.js:786
 msgid "Current Time"
 msgstr ""
 
-#: ../root/script/config/system.js:858
+#: ../root/script/config/system.js:792
 msgid "time is automatically synced via NTP"
 msgstr ""
 
-#: ../root/script/config/system.js:863
+#: ../root/script/config/system.js:797
 msgid "Timezone"
 msgstr ""
 
-#: ../root/script/config/system.js:884
+#: ../root/script/config/system.js:818
 msgid "Language"
 msgstr ""
 
-#: ../root/script/config/system.js:903
+#: ../root/script/config/system.js:837
 msgid "Info"
 msgstr ""
 
-#: ../root/script/config/system.js:904
+#: ../root/script/config/system.js:838
 msgid ""
 "Please note that you have to relogin after saving for the new language to "
 "take effect."
 msgstr ""
 
-#: ../root/script/config/system.js:924
+#: ../root/script/config/system.js:858
 msgid "Upload New Language Pack"
 msgstr ""
 
-#: ../root/script/config/system.js:944
+#: ../root/script/config/system.js:878
 msgid "Upload"
 msgstr ""
 
-#: ../root/script/config/system.js:958
+#: ../root/script/config/system.js:892
 msgid "Please wait while your language pack is uploaded..."
 msgstr ""
 
-#: ../root/script/config/system.js:962
+#: ../root/script/config/system.js:896
 msgid "Succeeded"
 msgstr ""
 
-#: ../root/script/config/system.js:962
+#: ../root/script/config/system.js:896
 msgid "Upload Language Pack Succeeded"
 msgstr ""
 
-#: ../root/script/config/system.js:969
+#: ../root/script/config/system.js:903
 msgid "Upload Language Pack Failed"
 msgstr ""
 
-#: ../root/script/config/system.js:990 ../root/script/config/system.js:1005
-#: ../root/script/config/system.js:1020 ../root/script/config/system.js:1035
-#: ../root/script/config/system.js:1050
+#: ../root/script/config/system.js:924 ../root/script/config/system.js:939
+#: ../root/script/config/system.js:954 ../root/script/config/system.js:969
+#: ../root/script/config/system.js:984
 msgid "Warning"
 msgstr ""
 
-#: ../root/script/config/system.js:990
+#: ../root/script/config/system.js:924
 msgid "Max URI Length should be between 1024 and 4096!"
 msgstr ""
 
-#: ../root/script/config/system.js:1005
+#: ../root/script/config/system.js:939
 msgid "Max Header Length should be between 1024 and 8192!"
 msgstr ""
 
-#: ../root/script/config/system.js:1020
+#: ../root/script/config/system.js:954
 msgid "SMTP timeout should be between 0 and 86400!"
 msgstr ""
 
-#: ../root/script/config/system.js:1035
+#: ../root/script/config/system.js:969
 msgid "POP timeout should be between 0 and 86400!"
 msgstr ""
 
-#: ../root/script/config/system.js:1050
+#: ../root/script/config/system.js:984
 msgid "IMAP timeout should be between 0 and 86400!"
 msgstr ""
 
-#: ../root/script/config/system.js:1062
+#: ../root/script/config/system.js:996
 msgid "Saving..."
 msgstr ""

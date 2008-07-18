@@ -1,10 +1,9 @@
 #!/bin/sh
 
-if [ $# -ne 1 ]; then
-     echo 1>&2 Usage: $0 module_name
-     exit 127
-fi
+ALL_MODULES='main administration system systemInfo mail_casing webfilter virus phish spyware spamassassin shield protofilter'
 
+function update_keys()
+{
 case "$1" in 
 "main")
     cd ../uvm-lib/servlets/webui/po
@@ -18,7 +17,7 @@ case "$1" in
     msgmerge -U ro/ung_main.po ung_main.pot
     ;;
 "administration"|"system"|"systemInfo")
-    cd ../uvm-lib/servlets/webui/po
+    cd ../uvm-lib/servlets/webui/po/
     echo 'get new keys'
     xgettext --copyright-holder='Untangle, Inc.' -L Python -k.i18n._ -o tmp_keys.pot ../root/script/config/$1.js
     msgmerge -U ung_$1.pot tmp_keys.pot
@@ -92,6 +91,28 @@ case "$1" in
     exit 127
     ;;
 esac
+}
+
+if [ $# -ne 1 ]; then
+     echo 1>&2 Usage: $0 "<module_name | all>"
+     exit 127
+fi
+
+if [ $1 == 'all' ]
+then
+    
+    current_dir=`pwd`
+    for module in ${ALL_MODULES}
+    do 
+        echo 'Updating keys for '${module}'...'
+        update_keys ${module}
+        cd ${current_dir}
+    done
+    
+else
+    update_keys $1
+fi
+
     
 # All done, exit ok
 exit 0

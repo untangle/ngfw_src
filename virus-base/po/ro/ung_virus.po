@@ -2,19 +2,19 @@
 # Copyright (C) YEAR Untangle, Inc.
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
+# 
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "POT-Creation-Date: 2008-07-18 11:06+0300\n"
-"Content-Type: text/plain; charset=UTF-8\n"
-"MIME-Version: 1.0\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=0; null;\n"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:29
@@ -227,36 +227,47 @@ msgstr ""
 msgid "Failed"
 msgstr ""
 
+#: database data: u_string_rule.name
 msgid "archive"
 msgstr ""
 
+#: database data: u_string_rule.name
 msgid "audio"
 msgstr ""
 
+#: database data: u_string_rule.name
 msgid "document"
 msgstr ""
 
+#: database data: u_string_rule.name
 msgid "executable"
 msgstr ""
 
+#: database data: u_string_rule.name
 msgid "flash"
 msgstr ""
 
+#: database data: u_string_rule.name
 msgid "java"
 msgstr ""
 
+#: database data: u_string_rule.name
 msgid "presentation"
 msgstr ""
 
+#: database data: u_string_rule.name
 msgid "script"
 msgstr ""
 
+#: database data: u_string_rule.name
 msgid "spreadsheet"
 msgstr ""
 
+#: database data: u_string_rule.name
 msgid "video"
 msgstr ""
 
+#: database data: u_mimetype_rule.name
 msgid "messages"
 msgstr ""
 
@@ -295,4 +306,3 @@ msgstr ""
 #: BlockPageServlet.java:110
 msgid "{0}This file was blocked{1} because it contained a virus."
 msgstr ""
-

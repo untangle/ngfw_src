@@ -2,24 +2,22 @@
 # Copyright (C) 2008 Untangle, Inc.
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <cmatei@untangle.com>, 2008.
-#
+# 
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "POT-Creation-Date: 2008-07-18 12:36+0300\n"
-"Content-Type: text/plain; charset=UTF-8\n"
-"MIME-Version: 1.0\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=0; null;\n"
 
-#: ../root/script/main.js:162
-#: ../root/script/components.js:853
-#: ../root/script/components.js:2199
-#: ../root/script/components.js:2255
+#: ../root/script/main.js:162 ../root/script/components.js:853
+#: ../root/script/components.js:2199 ../root/script/components.js:2255
 msgid "Help"
 msgstr "Ajutor"
 
@@ -27,42 +25,24 @@ msgstr "Ajutor"
 msgid "What Apps should I use?"
 msgstr ""
 
-#: ../root/script/main.js:181
-#: ../root/script/main.js:214
-#: ../root/script/main.js:300
-#: ../root/script/main.js:312
-#: ../root/script/main.js:317
-#: ../root/script/main.js:370
-#: ../root/script/main.js:439
-#: ../root/script/main.js:449
-#: ../root/script/main.js:459
-#: ../root/script/main.js:485
-#: ../root/script/main.js:489
-#: ../root/script/main.js:560
-#: ../root/script/main.js:593
-#: ../root/script/components.js:168
-#: ../root/script/components.js:183
-#: ../root/script/components.js:208
-#: ../root/script/components.js:221
-#: ../root/script/components.js:257
-#: ../root/script/components.js:272
-#: ../root/script/components.js:297
-#: ../root/script/components.js:309
-#: ../root/script/components.js:378
-#: ../root/script/components.js:595
-#: ../root/script/components.js:601
-#: ../root/script/components.js:605
-#: ../root/script/components.js:907
-#: ../root/script/components.js:917
-#: ../root/script/components.js:998
-#: ../root/script/components.js:1100
-#: ../root/script/components.js:1117
-#: ../root/script/components.js:1169
-#: ../root/script/components.js:1438
-#: ../root/script/components.js:1535
-#: ../root/script/components.js:1891
-#: ../root/script/components.js:1926
-#: ../root/script/components.js:2492
+#: ../root/script/main.js:181 ../root/script/main.js:214
+#: ../root/script/main.js:300 ../root/script/main.js:312
+#: ../root/script/main.js:317 ../root/script/main.js:370
+#: ../root/script/main.js:439 ../root/script/main.js:449
+#: ../root/script/main.js:459 ../root/script/main.js:485
+#: ../root/script/main.js:489 ../root/script/main.js:560
+#: ../root/script/main.js:593 ../root/script/components.js:168
+#: ../root/script/components.js:183 ../root/script/components.js:208
+#: ../root/script/components.js:221 ../root/script/components.js:257
+#: ../root/script/components.js:272 ../root/script/components.js:297
+#: ../root/script/components.js:309 ../root/script/components.js:378
+#: ../root/script/components.js:595 ../root/script/components.js:601
+#: ../root/script/components.js:605 ../root/script/components.js:907
+#: ../root/script/components.js:917 ../root/script/components.js:998
+#: ../root/script/components.js:1100 ../root/script/components.js:1117
+#: ../root/script/components.js:1169 ../root/script/components.js:1438
+#: ../root/script/components.js:1535 ../root/script/components.js:1891
+#: ../root/script/components.js:1926 ../root/script/components.js:2492
 msgid "Failed"
 msgstr "Eşuat"
 
@@ -91,16 +71,18 @@ msgstr ""
 msgid "Passwords do not match"
 msgstr ""
 
-#: ../root/script/main.js:305
-#: ../root/script/components.js:2434
+#: ../root/script/main.js:305 ../root/script/components.js:2434
 msgid "Warning"
 msgstr "Avertisment"
 
 #: ../root/script/main.js:306
-msgid "$s cannot be removed from the toolbox because it is being used by the"
-"following policy rack:<br><b>%s</b><br><br>You must remove the product from"
+#, fuzzy, python-format
+msgid ""
+"$s cannot be removed from the toolbox because it is being used by the "
+"following policy rack:<br><b>%s</b><br><br>You must remove the product from "
 "all policy racks first."
-msgstr "$s nu poate fi şters din toolbox deoarece este folosit de următorul rack:"
+msgstr ""
+"$s nu poate fi şters din toolbox deoarece este folosit de următorul rack:"
 "<br><b>%s</b><br><br>Produsul trebuie şeters in prealabil din toate rack-"
 "urilel."
 
@@ -108,8 +90,7 @@ msgstr "$s nu poate fi şters din toolbox deoarece este folosit de următorul ra
 msgid "Apps"
 msgstr ""
 
-#: ../root/script/main.js:336
-#: ../root/script/main.js:339
+#: ../root/script/main.js:336 ../root/script/main.js:339
 msgid "Click to learn more"
 msgstr ""
 
@@ -190,7 +171,8 @@ msgid "Downloading..."
 msgstr "Descarcă..."
 
 #: ../root/script/components.js:552
-msgid "Downloading file"
+#, fuzzy
+msgid "Downloading file "
 msgstr "Descarcă fişier"
 
 #: ../root/script/components.js:561
@@ -219,10 +201,13 @@ msgid "Warning:"
 msgstr "Avertisment:"
 
 #: ../root/script/components.js:1050
-msgid "The <B>Status Indicator</B> shows the current operating condition of a"
+#, fuzzy
+msgid ""
+"The <B>Status Indicator</B> shows the current operating condition of a "
 "particular software product."
-msgstr "<B>Indicatorul de Stare</B> afişează condiţia curenta de operare a"
-"unuianumit produs software."
+msgstr ""
+"<B>Indicatorul de Stare</B> afişează condiţia curenta de operare aunuianumit "
+"produs software."
 
 #: ../root/script/components.js:1052
 msgid "Green"
@@ -237,9 +222,12 @@ msgid "Red"
 msgstr "Roşu"
 
 #: ../root/script/components.js:1056
-msgid "indicates that the product is \"on\", but that an abnormal condition has"
+#, fuzzy
+msgid ""
+"indicates that the product is \"on\", but that an abnormal condition has "
 "occurred."
-msgstr "indică faptul ca produsul este pornit dar o condiţie anormala a apărut."
+msgstr ""
+"indică faptul ca produsul este pornit dar o condiţie anormala a apărut."
 
 #: ../root/script/components.js:1058
 msgid "Yellow"
@@ -254,11 +242,14 @@ msgid "Clear"
 msgstr "Curăţă"
 
 #: ../root/script/components.js:1060
-msgid "indicates that the product is \"off\", and may be turned \"on\" by the user."
-msgstr "indică faptul ca produsul este oprit dar poate fi pornit de către utilizator."
+msgid ""
+"indicates that the product is \"off\", and may be turned \"on\" by the user."
+msgstr ""
+"indică faptul ca produsul este oprit dar poate fi pornit de către utilizator."
 
 #: ../root/script/components.js:1064
-msgid "The <B>Power Button</B> allows you to turn a product \"on\" and \"off\"."
+msgid ""
+"The <B>Power Button</B> allows you to turn a product \"on\" and \"off\"."
 msgstr "<B>Butonul Pornire</B> permite pornirea, respectiv oprirea produsului."
 
 #: ../root/script/components.js:1204
@@ -297,13 +288,11 @@ msgstr ""
 msgid "Memory Usage:"
 msgstr ""
 
-#: ../root/script/components.js:1216
-#: ../root/script/components.js:1227
+#: ../root/script/components.js:1216 ../root/script/components.js:1227
 msgid "used"
 msgstr ""
 
-#: ../root/script/components.js:1216
-#: ../root/script/components.js:1219
+#: ../root/script/components.js:1216 ../root/script/components.js:1219
 msgid "free"
 msgstr ""
 
@@ -387,10 +376,8 @@ msgstr ""
 msgid "Ok"
 msgstr ""
 
-#: ../root/script/components.js:1485
-#: ../root/script/components.js:2111
-#: ../root/script/components.js:2208
-#: ../root/script/components.js:2264
+#: ../root/script/components.js:1485 ../root/script/components.js:2111
+#: ../root/script/components.js:2208 ../root/script/components.js:2264
 msgid "Cancel"
 msgstr "Anulează"
 
@@ -438,8 +425,7 @@ msgstr "server"
 msgid "Event Log"
 msgstr "Log Evenimente"
 
-#: ../root/script/components.js:1868
-#: ../root/script/components.js:1870
+#: ../root/script/components.js:1868 ../root/script/components.js:1870
 msgid "Refresh"
 msgstr "Reîmprospătează"
 
@@ -447,8 +433,7 @@ msgstr "Reîmprospătează"
 msgid "Remove"
 msgstr "Şterge"
 
-#: ../root/script/components.js:2120
-#: ../root/script/components.js:2217
+#: ../root/script/components.js:2120 ../root/script/components.js:2217
 msgid "Save"
 msgstr "Salvează"
 
@@ -456,8 +441,7 @@ msgstr "Salvează"
 msgid "Update"
 msgstr "Actualizează"
 
-#: ../root/script/components.js:2346
-#: ../root/script/components.js:2614
+#: ../root/script/components.js:2346 ../root/script/components.js:2614
 msgid "Edit"
 msgstr "Editează"
 
@@ -496,4 +480,3 @@ msgstr "d-m-Y"
 
 msgid "timestamp_fmt"
 msgstr "d-m-Y G:i:s"
-
