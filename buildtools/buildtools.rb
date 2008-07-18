@@ -49,8 +49,6 @@ if File.exist?('./downloads') and not $CleanBuild
   Kernel.system("make -C ./downloads")
 end
 
-Kernel.system("find #{SRC_HOME}/downloads")
-
 require "./buildtools/stamp-task.rb"
 require "./buildtools/rake-util.rb"
 require "./buildtools/target.rb"
