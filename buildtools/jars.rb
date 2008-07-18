@@ -35,11 +35,12 @@ class Jars
       end
 
       if p.nil?
+        puts "DL1: #{BuildEnv::downloads}"
         h = ([ "#{BuildEnv::downloads}/#{path}" ] + paths).map do |p|
           "#{p}: #{File.exist?(p)}"
         end
 
-        warn "Could not find #{File.expand_path(path)} (#{h.join(',')})"
+        warn "Could not find #{path} (#{h.join(',')})"
       else
         ThirdpartyJar.get(p)
       end
