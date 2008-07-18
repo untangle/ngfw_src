@@ -2,19 +2,19 @@
 # Copyright (C) YEAR Untangle, Inc.
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-# 
+#
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-06-18 11:11+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"POT-Creation-Date: 2008-06-18 11:11+0300\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Plural-Forms: nplurals=0; null;\n"
 
 #: ../root/script/config/system.js:12
@@ -40,10 +40,9 @@ msgstr ""
 
 #: ../root/script/config/system.js:150
 #, python-format
-msgid ""
-"%sSend%s us data about your server. This will send us status updates and an "
-"email if any unexpected problems occur, but will not allow us to login to "
-"your server. No personal information about your network traffic will be "
+msgid "%sSend%s us data about your server. This will send us status updates and an"
+"email if any unexpected problems occur, but will not allow us to login to"
+"your server. No personal information about your network traffic will be"
 "transmitted."
 msgstr ""
 
@@ -51,7 +50,8 @@ msgstr ""
 msgid "Backup"
 msgstr ""
 
-#: ../root/script/config/system.js:197 ../root/script/config/system.js:206
+#: ../root/script/config/system.js:197
+#: ../root/script/config/system.js:206
 #: ../root/script/config/system.js:217
 msgid "Backup Failure Warning"
 msgstr ""
@@ -60,22 +60,24 @@ msgstr ""
 msgid "Error:  The local file backup procedure failed.  Please try again."
 msgstr ""
 
-#: ../root/script/config/system.js:202 ../root/script/config/system.js:213
+#: ../root/script/config/system.js:202
+#: ../root/script/config/system.js:213
 msgid "Backing Up..."
 msgstr ""
 
-#: ../root/script/config/system.js:202 ../root/script/config/system.js:213
+#: ../root/script/config/system.js:202
+#: ../root/script/config/system.js:213
 #: ../root/script/config/system.js:1062
 msgid "Please wait"
 msgstr ""
 
 #: ../root/script/config/system.js:206
-msgid ""
-"Error:  The USB Key backup procedure failed.  Contact support for further "
+msgid "Error:  The USB Key backup procedure failed.  Contact support for further"
 "direction."
 msgstr ""
 
-#: ../root/script/config/system.js:208 ../root/script/config/system.js:219
+#: ../root/script/config/system.js:208
+#: ../root/script/config/system.js:219
 msgid "Backup Success"
 msgstr ""
 
@@ -84,8 +86,7 @@ msgid "Success:  The USB Key backup procedure completed."
 msgstr ""
 
 #: ../root/script/config/system.js:217
-msgid ""
-"Error:  The Hard Disk backup procedure failed.  Contact support for further "
+msgid "Error:  The Hard Disk backup procedure failed.  Contact support for further"
 "direction."
 msgstr ""
 
@@ -93,72 +94,68 @@ msgstr ""
 msgid "Success:  The Hard Disk backup procedure completed."
 msgstr ""
 
-#: ../root/script/config/system.js:229 ../root/script/config/system.js:240
+#: ../root/script/config/system.js:229
+#: ../root/script/config/system.js:240
 msgid "Backup to File"
 msgstr ""
 
 #: ../root/script/config/system.js:235
-msgid ""
-"You can backup your current system configuration to a file on your local "
-"computer for later restoration, in the event that you would like to replace "
+msgid "You can backup your current system configuration to a file on your local"
+"computer for later restoration, in the event that you would like to replace"
 "new settings with your current settings.  The file name will end with \"."
 "backup\""
 msgstr ""
 
 #: ../root/script/config/system.js:237
-msgid ""
-"After backing up your current system configuration to a file, you can then "
-"restore that configuration through this dialog by going to \"Restore\" -> "
+msgid "After backing up your current system configuration to a file, you can then"
+"restore that configuration through this dialog by going to \"Restore\" ->"
 "\"From Local File\"."
 msgstr ""
 
-#: ../root/script/config/system.js:247 ../root/script/config/system.js:262
+#: ../root/script/config/system.js:247
+#: ../root/script/config/system.js:262
 msgid "Backup to USB Key"
 msgstr ""
 
 #: ../root/script/config/system.js:253
-msgid ""
-"You can backup your current system configuration to USB Key for later "
-"restoration, in the event that you would like to replace new settings with "
+msgid "You can backup your current system configuration to USB Key for later"
+"restoration, in the event that you would like to replace new settings with"
 "your current settings."
 msgstr ""
 
 #: ../root/script/config/system.js:255
 #, python-format
-msgid ""
-"After backing up your current system configuration to USB Key, you can then "
-"restore that configuration through the %sBackup and Restore Utilities%s.  To "
-"access the Backup and Restore Utilities, you must have a monitor and "
-"keyboard physically plugged into your server when it is turned on, and then "
+msgid "After backing up your current system configuration to USB Key, you can then"
+"restore that configuration through the %sBackup and Restore Utilities%s.  To"
+"access the Backup and Restore Utilities, you must have a monitor and"
+"keyboard physically plugged into your server when it is turned on, and then"
 "select \"Backup and Restore Utilities\" from the boot prompt."
 msgstr ""
 
 #: ../root/script/config/system.js:257
-msgid ""
-"Note: You must insert your USB Key into a valid USB port on the back of your "
-"server before pressing the button.  You must not remove the USB Key from the "
-"USB port until after the process is complete.  The progress bar will inform "
+msgid "Note: You must insert your USB Key into a valid USB port on the back of your"
+"server before pressing the button.  You must not remove the USB Key from the"
+"USB port until after the process is complete.  The progress bar will inform"
 "you when the process is complete."
 msgstr ""
 
-#: ../root/script/config/system.js:268 ../root/script/config/system.js:279
+#: ../root/script/config/system.js:268
+#: ../root/script/config/system.js:279
 msgid "Backup to Hard Disk"
 msgstr ""
 
 #: ../root/script/config/system.js:274
-msgid ""
-"You can backup your current system configuration to Hard Disk for later "
-"restoration, in the event that you would like to replace new settings with "
+msgid "You can backup your current system configuration to Hard Disk for later"
+"restoration, in the event that you would like to replace new settings with"
 "your current settings."
 msgstr ""
 
 #: ../root/script/config/system.js:276
 #, python-format
-msgid ""
-"After backing up your current system configuration to Hard Disk, you can "
+msgid "After backing up your current system configuration to Hard Disk, you can"
 "then restore that configuration through the %sBackup and Restore Utilities%"
-"s.  To access the Backup and Restore Utilities, you must have a monitor and "
-"keyboard physically plugged into your server when it is turned on, and then "
+"s.  To access the Backup and Restore Utilities, you must have a monitor and"
+"keyboard physically plugged into your server when it is turned on, and then"
 "select \"Backup and Restore Utilities\" from the boot prompt."
 msgstr ""
 
@@ -166,10 +163,14 @@ msgstr ""
 msgid "Restore"
 msgstr ""
 
-#: ../root/script/config/system.js:303 ../root/script/config/system.js:967
-#: ../root/script/config/system.js:969 ../root/script/config/system.js:1067
-#: ../root/script/config/system.js:1076 ../root/script/config/system.js:1086
-#: ../root/script/config/system.js:1099 ../root/script/config/system.js:1112
+#: ../root/script/config/system.js:303
+#: ../root/script/config/system.js:967
+#: ../root/script/config/system.js:969
+#: ../root/script/config/system.js:1067
+#: ../root/script/config/system.js:1076
+#: ../root/script/config/system.js:1086
+#: ../root/script/config/system.js:1099
+#: ../root/script/config/system.js:1112
 #: ../root/script/config/system.js:1124
 msgid "Failed"
 msgstr ""
@@ -203,18 +204,17 @@ msgid "You can log in again after a brief period."
 msgstr ""
 
 #: ../root/script/config/system.js:316
-msgid ""
-"DO NOT MANUALLY SHUTDOWN OR RESTART THE UNTANGLE SERVER WHILE IT IS "
+msgid "DO NOT MANUALLY SHUTDOWN OR RESTART THE UNTANGLE SERVER WHILE IT IS"
 "UPGRADING!"
 msgstr ""
 
-#: ../root/script/config/system.js:322 ../root/script/config/system.js:324
+#: ../root/script/config/system.js:322
+#: ../root/script/config/system.js:324
 msgid "Restore Backup File Warning"
 msgstr ""
 
 #: ../root/script/config/system.js:322
-msgid ""
-"Error:  The Local File restore procedure failed.  The reason reported by the "
+msgid "Error:  The Local File restore procedure failed.  The reason reported by the"
 "Untangle Server was:"
 msgstr ""
 
@@ -227,8 +227,7 @@ msgid "From File"
 msgstr ""
 
 #: ../root/script/config/system.js:341
-msgid ""
-"You can restore a previous system configuration from a backup file on your "
+msgid "You can restore a previous system configuration from a backup file on your"
 "local computer.  The backup file name ends with \".backup\""
 msgstr ""
 
@@ -242,23 +241,20 @@ msgstr ""
 
 #: ../root/script/config/system.js:374
 #, python-format
-msgid ""
-"After backing up your system configuration, you can restore that "
-"configuration through the %sRecovery Utilities%s on your server once it is "
+msgid "After backing up your system configuration, you can restore that"
+"configuration through the %sRecovery Utilities%s on your server once it is"
 "done booting."
 msgstr ""
 
 #: ../root/script/config/system.js:376
 #, python-format
-msgid ""
-"To access the %sRecovery Utilities%s, you must have a monitor and keyboard "
-"physically plugged into your server, and then click on the Recovery "
+msgid "To access the %sRecovery Utilities%s, you must have a monitor and keyboard"
+"physically plugged into your server, and then click on the Recovery"
 "Utilities toolbar button when it is done booting."
 msgstr ""
 
 #: ../root/script/config/system.js:387
-msgid ""
-"Warning: These settings should not be changed unless instructed to do so by "
+msgid "Warning: These settings should not be changed unless instructed to do so by"
 "support."
 msgstr ""
 
@@ -286,8 +282,7 @@ msgstr ""
 
 #: ../root/script/config/system.js:431
 #, python-format
-msgid ""
-"%sEnable Processing%s of long URIs.  The traffic is considered \"Non-Http"
+msgid "%sEnable Processing%s of long URIs.  The traffic is considered \"Non-Http"
 "\".  (This is the default setting)"
 msgstr ""
 
@@ -306,8 +301,7 @@ msgstr ""
 
 #: ../root/script/config/system.js:479
 #, python-format
-msgid ""
-"%sEnable Processing%s of long headers.  The traffic is considered \"Non-Http"
+msgid "%sEnable Processing%s of long headers.  The traffic is considered \"Non-Http"
 "\".  (This is the default setting)"
 msgstr ""
 
@@ -326,8 +320,7 @@ msgstr ""
 
 #: ../root/script/config/system.js:527
 #, python-format
-msgid ""
-"%sAllow%s non-Http traffic to travel over port 80.  (This is the default "
+msgid "%sAllow%s non-Http traffic to travel over port 80.  (This is the default"
 "setting)"
 msgstr ""
 
@@ -342,8 +335,7 @@ msgstr ""
 
 #: ../root/script/config/system.js:562
 #, python-format
-msgid ""
-"%sEnable Processing%s of File Transfer traffic.  (This is the default "
+msgid "%sEnable Processing%s of File Transfer traffic.  (This is the default"
 "setting)"
 msgstr ""
 
@@ -435,8 +427,7 @@ msgid "Info"
 msgstr ""
 
 #: ../root/script/config/system.js:904
-msgid ""
-"Please note that you have to relogin after saving for the new language to "
+msgid "Please note that you have to relogin after saving for the new language to"
 "take effect."
 msgstr ""
 
@@ -464,8 +455,10 @@ msgstr ""
 msgid "Upload Language Pack Failed"
 msgstr ""
 
-#: ../root/script/config/system.js:990 ../root/script/config/system.js:1005
-#: ../root/script/config/system.js:1020 ../root/script/config/system.js:1035
+#: ../root/script/config/system.js:990
+#: ../root/script/config/system.js:1005
+#: ../root/script/config/system.js:1020
+#: ../root/script/config/system.js:1035
 #: ../root/script/config/system.js:1050
 msgid "Warning"
 msgstr ""
@@ -493,3 +486,4 @@ msgstr ""
 #: ../root/script/config/system.js:1062
 msgid "Saving..."
 msgstr ""
+

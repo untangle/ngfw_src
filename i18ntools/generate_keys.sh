@@ -6,6 +6,17 @@ if [ $# -ne 1 ]; then
 fi
 
 case "$1" in 
+"main")
+    cd ../uvm-lib/servlets/webui/po
+    echo 'get new keys'
+    xgettext --copyright-holder='Untangle, Inc.' -L Python -ki18n._ -o tmp_keys.pot ../root/script/main.js
+    xgettext -j --copyright-holder='Untangle, Inc.' -L Python -ki18n._ -o tmp_keys.pot ../root/script/components.js
+    msgcat tmp_keys.pot fmt_keys.pot -o tmp_keys.pot
+    msgmerge -U ung_main.pot tmp_keys.pot
+    rm tmp_keys.pot
+    echo 'update po files'
+    msgmerge -U ro/ung_main.po ung_main.pot
+    ;;
 "administration"|"system"|"systemInfo")
     cd ../uvm-lib/servlets/webui/po
     echo 'get new keys'
@@ -57,10 +68,20 @@ case "$1" in
     echo 'update po files'
     msgmerge -U ro/ung_$1.po ung_$1.pot
     ;;
-"spamassassin")    
+"spamassassin"|"shield")    
     cd ../$1/po/
     echo 'get new keys'
     xgettext --copyright-holder='Untangle, Inc.' -L Python -k.i18n._ -o tmp_keys.pot ../hier/usr/share/untangle/web/webui/script/untangle-node-$1/settings.js
+    msgmerge -U ung_$1.pot tmp_keys.pot
+    rm tmp_keys.pot
+    echo 'update po files'
+    msgmerge -U ro/ung_$1.po ung_$1.pot
+    ;;
+"protofilter")
+    cd ../$1/po/
+    echo 'get new keys'
+    xgettext --copyright-holder='Untangle, Inc.' -L Python -k.i18n._ -o tmp_keys.pot ../hier/usr/share/untangle/web/webui/script/untangle-node-$1/settings.js
+    msgcat tmp_keys.pot db_keys.pot -o tmp_keys.pot
     msgmerge -U ung_$1.pot tmp_keys.pot
     rm tmp_keys.pot
     echo 'update po files'

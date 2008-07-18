@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"POT-Creation-Date: 2008-06-18 10:38+0300\n"
+"POT-Creation-Date: 2008-05-13 13:01+0300\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "MIME-Version: 1.0\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,23 +17,15 @@ msgstr ""
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Plural-Forms: nplurals=0; null;\n"
 
-#: ../root/script/config/systemInfo.js:11
-msgid "Configuration"
-msgstr ""
+msgid "decimal_sep"
+msgstr "."
 
-#: ../root/script/config/systemInfo.js:16
-msgid "System Info"
-msgstr ""
+msgid "thousand_sep"
+msgstr ","
 
-#: ../root/script/config/systemInfo.js:70
-msgid "Saving..."
-msgstr ""
+msgid "date_fmt"
+msgstr "m/d/y"
 
-#: ../root/script/config/systemInfo.js:70
-msgid "Please wait"
-msgstr ""
-
-#: ../root/script/config/systemInfo.js:74
-msgid "Failed"
-msgstr ""
+msgid "timestamp_fmt"
+msgstr "Y-m-d g:i:s a"
 

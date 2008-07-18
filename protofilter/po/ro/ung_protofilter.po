@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-05-13 15:56+0300\n"
+"POT-Creation-Date: 2008-07-18 13:10+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -20,71 +20,79 @@ msgstr ""
 msgid "block"
 msgstr "blocat"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:26
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:28
 msgid "log"
 msgstr "log"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:33
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:40
 msgid "[no category]"
 msgstr "[fără categorie]"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:33
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:41
 msgid "[no protocol]"
 msgstr "[fără protocol]"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:33
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:44
 msgid "[no description]"
 msgstr "[fără descriere]"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:33
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:45
 msgid "[no signature]"
 msgstr "[fără signatură]"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:34
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:47
 msgid "Protocol List"
 msgstr "Listă Protocoale"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:55
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:85
 msgid "category"
 msgstr "categorie"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:58
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:94
 msgid "protocol"
 msgstr "protocol"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:62
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:102
 msgid "description"
 msgstr "descriere"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:64
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:110
 msgid "signature"
 msgstr "signatură"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:74
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:124
 msgid "Category"
 msgstr "Categorie"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:80
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:130
 msgid "Protocol"
 msgstr "Protocol"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:86
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:136
 msgid "Block"
 msgstr "Blocat"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:90
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:140
 msgid "Log"
 msgstr "Log"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:94
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:144
 msgid "Description"
 msgstr "Descriere"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:100
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:150
 msgid "Signature"
 msgstr "Signatură"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:122
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:167
+msgid "Saving..."
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:167
+msgid "Please wait"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:171
 msgid "Failed"
 msgstr "Eşuat"
 

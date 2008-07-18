@@ -2,19 +2,463 @@
 # Copyright (C) YEAR Untangle, Inc.
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
+# 
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-05-13 13:01+0300\n"
+"POT-Creation-Date: 2008-07-18 12:36+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=0; null;\n"
+
+#: ../root/script/main.js:162 ../root/script/components.js:853
+#: ../root/script/components.js:2199 ../root/script/components.js:2255
+msgid "Help"
+msgstr ""
+
+#: ../root/script/main.js:173
+msgid "What Apps should I use?"
+msgstr ""
+
+#: ../root/script/main.js:181 ../root/script/main.js:214
+#: ../root/script/main.js:300 ../root/script/main.js:312
+#: ../root/script/main.js:317 ../root/script/main.js:370
+#: ../root/script/main.js:439 ../root/script/main.js:449
+#: ../root/script/main.js:459 ../root/script/main.js:485
+#: ../root/script/main.js:489 ../root/script/main.js:560
+#: ../root/script/main.js:593 ../root/script/components.js:168
+#: ../root/script/components.js:183 ../root/script/components.js:208
+#: ../root/script/components.js:221 ../root/script/components.js:257
+#: ../root/script/components.js:272 ../root/script/components.js:297
+#: ../root/script/components.js:309 ../root/script/components.js:378
+#: ../root/script/components.js:595 ../root/script/components.js:601
+#: ../root/script/components.js:605 ../root/script/components.js:907
+#: ../root/script/components.js:917 ../root/script/components.js:998
+#: ../root/script/components.js:1100 ../root/script/components.js:1117
+#: ../root/script/components.js:1169 ../root/script/components.js:1438
+#: ../root/script/components.js:1535 ../root/script/components.js:1891
+#: ../root/script/components.js:1926 ../root/script/components.js:2492
+msgid "Failed"
+msgstr ""
+
+#: ../root/script/main.js:206
+msgid "My Account"
+msgstr ""
+
+#: ../root/script/main.js:237
+msgid "The value in this field is invalid"
+msgstr ""
+
+#: ../root/script/main.js:238
+msgid "This field is required"
+msgstr ""
+
+#: ../root/script/main.js:248
+msgid "Invalid IP Address."
+msgstr ""
+
+#: ../root/script/main.js:256
+#, python-format
+msgid "The port must be an integer number between %d and %d."
+msgstr ""
+
+#: ../root/script/main.js:266
+msgid "Passwords do not match"
+msgstr ""
+
+#: ../root/script/main.js:305 ../root/script/components.js:2434
+msgid "Warning"
+msgstr ""
+
+#: ../root/script/main.js:306
+#, python-format
+msgid ""
+"$s cannot be removed from the toolbox because it is being used by the "
+"following policy rack:<br><b>%s</b><br><br>You must remove the product from "
+"all policy racks first."
+msgstr ""
+
+#: ../root/script/main.js:335
+msgid "Apps"
+msgstr ""
+
+#: ../root/script/main.js:336 ../root/script/main.js:339
+msgid "Click to learn more"
+msgstr ""
+
+#: ../root/script/main.js:338
+msgid "Config"
+msgstr ""
+
+#: ../root/script/main.js:527
+msgid "Networking"
+msgstr ""
+
+#: ../root/script/main.js:528
+msgid "Administration"
+msgstr ""
+
+#: ../root/script/main.js:529
+msgid "Racks"
+msgstr ""
+
+#: ../root/script/main.js:530
+msgid "Email"
+msgstr ""
+
+#: ../root/script/main.js:531
+msgid "User Directory"
+msgstr ""
+
+#: ../root/script/main.js:532
+msgid "Upgrade"
+msgstr ""
+
+#: ../root/script/main.js:533
+msgid "System"
+msgstr ""
+
+#: ../root/script/main.js:534
+msgid "System Info"
+msgstr ""
+
+#: ../root/script/main.js:655
+msgid "Services & Utilities"
+msgstr ""
+
+#: ../root/script/main.js:655
+msgid "Services"
+msgstr ""
+
+#: ../root/script/components.js:104
+msgid "TODO"
+msgstr ""
+
+#: ../root/script/components.js:483
+msgid "More Info"
+msgstr ""
+
+#: ../root/script/components.js:491
+msgid "Install"
+msgstr ""
+
+#: ../root/script/components.js:495
+msgid "Buy"
+msgstr ""
+
+#: ../root/script/components.js:521
+msgid "Unactivating..."
+msgstr ""
+
+#: ../root/script/components.js:532
+msgid "Installing..."
+msgstr ""
+
+#: ../root/script/components.js:538
+msgid "Uninstalling..."
+msgstr ""
+
+#: ../root/script/components.js:545
+msgid "Downloading..."
+msgstr ""
+
+#: ../root/script/components.js:552
+msgid "Downloading file "
+msgstr ""
+
+#: ../root/script/components.js:561
+msgid "Activating..."
+msgstr ""
+
+#: ../root/script/components.js:566
+msgid "..."
+msgstr ""
+
+#: ../root/script/components.js:808
+msgid "Trial"
+msgstr ""
+
+#: ../root/script/components.js:810
+#, python-format
+msgid "%s days remain"
+msgstr ""
+
+#: ../root/script/components.js:844
+msgid "Show Settings"
+msgstr ""
+
+#: ../root/script/components.js:989
+msgid "Warning:"
+msgstr ""
+
+#: ../root/script/components.js:1050
+msgid ""
+"The <B>Status Indicator</B> shows the current operating condition of a "
+"particular software product."
+msgstr ""
+
+#: ../root/script/components.js:1052
+msgid "Green"
+msgstr ""
+
+#: ../root/script/components.js:1053
+msgid "indicates that the product is \"on\" and operating normally."
+msgstr ""
+
+#: ../root/script/components.js:1055
+msgid "Red"
+msgstr ""
+
+#: ../root/script/components.js:1056
+msgid ""
+"indicates that the product is \"on\", but that an abnormal condition has "
+"occurred."
+msgstr ""
+
+#: ../root/script/components.js:1058
+msgid "Yellow"
+msgstr ""
+
+#: ../root/script/components.js:1059
+msgid "indicates that the product is saving or refreshing settings."
+msgstr ""
+
+#: ../root/script/components.js:1060
+msgid "Clear"
+msgstr ""
+
+#: ../root/script/components.js:1060
+msgid ""
+"indicates that the product is \"off\", and may be turned \"on\" by the user."
+msgstr ""
+
+#: ../root/script/components.js:1064
+msgid ""
+"The <B>Power Button</B> allows you to turn a product \"on\" and \"off\"."
+msgstr ""
+
+#: ../root/script/components.js:1204
+msgid "Network"
+msgstr ""
+
+#: ../root/script/components.js:1205
+msgid "CPU Load"
+msgstr ""
+
+#: ../root/script/components.js:1206
+msgid "Memory"
+msgstr ""
+
+#: ../root/script/components.js:1207
+msgid "Disk"
+msgstr ""
+
+#: ../root/script/components.js:1208
+msgid "Tx:"
+msgstr ""
+
+#: ../root/script/components.js:1208
+msgid "Rx:"
+msgstr ""
+
+#: ../root/script/components.js:1210
+msgid "F:"
+msgstr ""
+
+#: ../root/script/components.js:1210
+msgid "U:"
+msgstr ""
+
+#: ../root/script/components.js:1215
+msgid "Memory Usage:"
+msgstr ""
+
+#: ../root/script/components.js:1216 ../root/script/components.js:1227
+msgid "used"
+msgstr ""
+
+#: ../root/script/components.js:1216 ../root/script/components.js:1219
+msgid "free"
+msgstr ""
+
+#: ../root/script/components.js:1216
+msgid "total"
+msgstr ""
+
+#: ../root/script/components.js:1217
+msgid "Memory Pages:"
+msgstr ""
+
+#: ../root/script/components.js:1218
+msgid "active"
+msgstr ""
+
+#: ../root/script/components.js:1218
+msgid "wired"
+msgstr ""
+
+#: ../root/script/components.js:1219
+msgid "inactive"
+msgstr ""
+
+#: ../root/script/components.js:1220
+msgid "VM Statistics:"
+msgstr ""
+
+#: ../root/script/components.js:1221
+msgid "pageins"
+msgstr ""
+
+#: ../root/script/components.js:1221
+msgid "pageouts"
+msgstr ""
+
+#: ../root/script/components.js:1222
+msgid "cache lookups"
+msgstr ""
+
+#: ../root/script/components.js:1222
+msgid "cache hits"
+msgstr ""
+
+#: ../root/script/components.js:1223
+msgid "page faults"
+msgstr ""
+
+#: ../root/script/components.js:1223
+msgid "copy-on-writes"
+msgstr ""
+
+#: ../root/script/components.js:1224
+msgid "Swap Files:"
+msgstr ""
+
+#: ../root/script/components.js:1225
+msgid "encrypted swap files present in"
+msgstr ""
+
+#: ../root/script/components.js:1226
+msgid "swap files at peak usage"
+msgstr ""
+
+#: ../root/script/components.js:1227
+msgid "total swap space"
+msgstr ""
+
+#: ../root/script/components.js:1293
+msgid "activity"
+msgstr ""
+
+#: ../root/script/components.js:1374
+msgid "system"
+msgstr ""
+
+#: ../root/script/components.js:1438
+msgid "Please set up to four items."
+msgstr ""
+
+#: ../root/script/components.js:1478
+msgid "Ok"
+msgstr ""
+
+#: ../root/script/components.js:1485 ../root/script/components.js:2111
+#: ../root/script/components.js:2208 ../root/script/components.js:2264
+msgid "Cancel"
+msgstr ""
+
+#: ../root/script/components.js:1778
+msgid "timestamp"
+msgstr ""
+
+#: ../root/script/components.js:1786
+msgid "action"
+msgstr ""
+
+#: ../root/script/components.js:1791
+msgid "blocked"
+msgstr ""
+
+#: ../root/script/components.js:1791
+msgid "passed"
+msgstr ""
+
+#: ../root/script/components.js:1794
+msgid "client"
+msgstr ""
+
+#: ../root/script/components.js:1802
+msgid "request"
+msgstr ""
+
+#: ../root/script/components.js:1807
+msgid "reason for action"
+msgstr ""
+
+#: ../root/script/components.js:1812
+msgid "blocked in block list"
+msgstr ""
+
+#: ../root/script/components.js:1812
+msgid "not blocked in block list"
+msgstr ""
+
+#: ../root/script/components.js:1815
+msgid "server"
+msgstr ""
+
+#: ../root/script/components.js:1831
+msgid "Event Log"
+msgstr ""
+
+#: ../root/script/components.js:1868 ../root/script/components.js:1870
+msgid "Refresh"
+msgstr ""
+
+#: ../root/script/components.js:2102
+msgid "Remove"
+msgstr ""
+
+#: ../root/script/components.js:2120 ../root/script/components.js:2217
+msgid "Save"
+msgstr ""
+
+#: ../root/script/components.js:2273
+msgid "Update"
+msgstr ""
+
+#: ../root/script/components.js:2346 ../root/script/components.js:2614
+msgid "Edit"
+msgstr ""
+
+#: ../root/script/components.js:2434
+msgid "The form is not valid!"
+msgstr ""
+
+#: ../root/script/components.js:2661
+msgid "Delete"
+msgstr ""
+
+#: ../root/script/components.js:2822
+msgid "Displaying topics {0} - {1} of {2}"
+msgstr ""
+
+#: ../root/script/components.js:2823
+msgid "No topics to display"
+msgstr ""
+
+#: ../root/script/components.js:2834
+msgid "Add"
+msgstr ""
+
+#: ../root/script/components.js:2835
+msgid "Add New Row"
+msgstr ""
 
 msgid "decimal_sep"
 msgstr "."
@@ -27,315 +471,3 @@ msgstr "m/d/y"
 
 msgid "timestamp_fmt"
 msgstr "Y-m-d g:i:s a"
-
-#: ../root/script/main.js:158 ../root/script/components.js:719
-#: ../root/script/components.js:1641 ../root/script/components.js:1688
-msgid "Help"
-msgstr ""
-
-#: ../root/script/main.js:169
-msgid "The value in this field is invalid"
-msgstr ""
-
-#: ../root/script/main.js:170
-msgid "This field is required"
-msgstr ""
-
-#: ../root/script/main.js:175 ../root/script/main.js:187
-#: ../root/script/main.js:192 ../root/script/main.js:318
-#: ../root/script/main.js:332 ../root/script/main.js:350
-#: ../root/script/main.js:381 ../root/script/main.js:388
-#: ../root/script/main.js:432 ../root/script/main.js:460
-#: ../root/script/main.js:528 ../root/script/main.js:555
-#: ../root/script/main.js:561 ../root/script/components.js:61
-#: ../root/script/components.js:76 ../root/script/components.js:98
-#: ../root/script/components.js:111 ../root/script/components.js:147
-#: ../root/script/components.js:162 ../root/script/components.js:186
-#: ../root/script/components.js:198 ../root/script/components.js:268
-#: ../root/script/components.js:475 ../root/script/components.js:769
-#: ../root/script/components.js:776 ../root/script/components.js:831
-#: ../root/script/components.js:866 ../root/script/components.js:969
-#: ../root/script/components.js:1372 ../root/script/components.js:1401
-#: ../root/script/components.js:1906
-msgid "Failed"
-msgstr ""
-
-#: ../root/script/main.js:180
-msgid "Warning"
-msgstr ""
-
-#: ../root/script/main.js:181
-#, python-format
-msgid ""
-"$s cannot be removed from the toolbox because it is being used by the "
-"following policy rack:<br><b>%s</b><br><br>You must remove the product from "
-"all policy racks first."
-msgstr ""
-
-#: ../root/script/main.js:497
-msgid "Networking"
-msgstr ""
-
-#: ../root/script/main.js:498
-msgid "Administration"
-msgstr ""
-
-#: ../root/script/main.js:499
-msgid "Racks"
-msgstr ""
-
-#: ../root/script/main.js:500
-msgid "Email"
-msgstr ""
-
-#: ../root/script/main.js:501
-msgid "User Directory"
-msgstr ""
-
-#: ../root/script/main.js:502
-msgid "Upgrade"
-msgstr ""
-
-#: ../root/script/main.js:503
-msgid "System"
-msgstr ""
-
-#: ../root/script/main.js:504
-msgid "System Info"
-msgstr ""
-
-#: ../root/script/main.js:610
-msgid "Services & Utilities"
-msgstr ""
-
-#: ../root/script/main.js:610
-msgid "Services"
-msgstr ""
-
-#: ../root/script/components.js:352 ../root/script/components.js:462
-msgid "More Info"
-msgstr ""
-
-#: ../root/script/components.js:356
-msgid "Install"
-msgstr ""
-
-#: ../root/script/components.js:389
-msgid "Unactivating..."
-msgstr ""
-
-#: ../root/script/components.js:402
-msgid "Installing..."
-msgstr ""
-
-#: ../root/script/components.js:408
-msgid "Uninstalling..."
-msgstr ""
-
-#: ../root/script/components.js:415
-msgid "Downloading..."
-msgstr ""
-
-#: ../root/script/components.js:421
-msgid "Downloading file "
-msgstr ""
-
-#: ../root/script/components.js:428
-msgid "Activating..."
-msgstr ""
-
-#: ../root/script/components.js:433
-msgid "..."
-msgstr ""
-
-#: ../root/script/components.js:466
-msgid "Trial install"
-msgstr ""
-
-#: ../root/script/components.js:468
-msgid "Buy"
-msgstr ""
-
-#: ../root/script/components.js:684
-msgid "Trial"
-msgstr ""
-
-#: ../root/script/components.js:686
-#, python-format
-msgid "%s days remain"
-msgstr ""
-
-#: ../root/script/components.js:713
-msgid "Show Settings"
-msgstr ""
-
-#: ../root/script/components.js:831
-msgid "Failed loading I18N translations for this node"
-msgstr ""
-
-#: ../root/script/components.js:858
-msgid "Warning:"
-msgstr ""
-
-#: ../root/script/components.js:909
-msgid ""
-"The <B>Status Indicator</B> shows the current operating condition of a "
-"particular software product."
-msgstr ""
-
-#: ../root/script/components.js:910
-msgid "Green"
-msgstr ""
-
-#: ../root/script/components.js:910
-msgid "indicates that the product is \"on\" and operating normally."
-msgstr ""
-
-#: ../root/script/components.js:911
-msgid "Red"
-msgstr ""
-
-#: ../root/script/components.js:911
-msgid ""
-"indicates that the product is \"on\", but that an abnormal condition has "
-"occurred."
-msgstr ""
-
-#: ../root/script/components.js:912
-msgid "Yellow"
-msgstr ""
-
-#: ../root/script/components.js:912
-msgid "indicates that the product is saving or refreshing settings."
-msgstr ""
-
-#: ../root/script/components.js:913
-msgid "Clear"
-msgstr ""
-
-#: ../root/script/components.js:913
-msgid ""
-"indicates that the product is \"off\", and may be turned \"on\" by the user."
-msgstr ""
-
-#: ../root/script/components.js:916
-msgid ""
-"The <B>Power Button</B> allows you to turn a product \"on\" and \"off\"."
-msgstr ""
-
-#: ../root/script/components.js:1005
-msgid "activity"
-msgstr ""
-
-#: ../root/script/components.js:1078
-msgid "system"
-msgstr ""
-
-#: ../root/script/components.js:1088
-msgid "Current Session Count:"
-msgstr ""
-
-#: ../root/script/components.js:1089
-msgid "ACC:"
-msgstr ""
-
-#: ../root/script/components.js:1090
-msgid "REQ:"
-msgstr ""
-
-#: ../root/script/components.js:1091
-msgid "Data rate:"
-msgstr ""
-
-#: ../root/script/components.js:1307
-msgid "timestamp"
-msgstr ""
-
-#: ../root/script/components.js:1310
-msgid "action"
-msgstr ""
-
-#: ../root/script/components.js:1311
-msgid "blocked"
-msgstr ""
-
-#: ../root/script/components.js:1311
-msgid "passed"
-msgstr ""
-
-#: ../root/script/components.js:1314
-msgid "client"
-msgstr ""
-
-#: ../root/script/components.js:1315
-msgid "request"
-msgstr ""
-
-#: ../root/script/components.js:1316
-msgid "reason for action"
-msgstr ""
-
-#: ../root/script/components.js:1317
-msgid "blocked in block list"
-msgstr ""
-
-#: ../root/script/components.js:1317
-msgid "not blocked in block list"
-msgstr ""
-
-#: ../root/script/components.js:1320
-msgid "server"
-msgstr ""
-
-#: ../root/script/components.js:1329
-msgid "Event Log"
-msgstr ""
-
-#: ../root/script/components.js:1355 ../root/script/components.js:1356
-msgid "Refresh"
-msgstr ""
-
-#: ../root/script/components.js:1561
-msgid "Remove"
-msgstr ""
-
-#: ../root/script/components.js:1567 ../root/script/components.js:1647
-#: ../root/script/components.js:1694
-msgid "Cancel"
-msgstr ""
-
-#: ../root/script/components.js:1573 ../root/script/components.js:1653
-msgid "Save"
-msgstr ""
-
-#: ../root/script/components.js:1700
-msgid "Update"
-msgstr ""
-
-#: ../root/script/components.js:1773 ../root/script/components.js:2024
-msgid "Edit"
-msgstr ""
-
-#: ../root/script/components.js:1856
-msgid "The form is not valid!"
-msgstr ""
-
-#: ../root/script/components.js:2071
-msgid "Delete"
-msgstr ""
-
-#: ../root/script/components.js:2204
-msgid "Displaying topics {0} - {1} of {2}"
-msgstr ""
-
-#: ../root/script/components.js:2205
-msgid "No topics to display"
-msgstr ""
-
-#: ../root/script/components.js:2216
-msgid "Add"
-msgstr ""
-
-#: ../root/script/components.js:2217
-msgid "Add New Row"
-msgstr ""
