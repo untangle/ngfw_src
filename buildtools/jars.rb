@@ -35,7 +35,6 @@ class Jars
       end
 
       if p.nil?
-        puts "DL1: #{BuildEnv::downloads}"
         h = ([ "#{BuildEnv::downloads}/#{path}" ] + paths).map do |p|
           "#{p}: #{File.exist?(p)}"
         end
@@ -93,7 +92,7 @@ class Jars
                  'tomcat-util.jar',
                  'tomcat-ajp.jar'
                ].map do |n|
-    Jars.downloadTarget("apache-tomcat-5.5.26/server/lib/#{n}")
+    Jars.downloadTarget("apache-tomcat-5.5.26/common/lib/#{n}")
   end
 
   ## XmlRpc Jars
