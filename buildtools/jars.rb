@@ -85,18 +85,19 @@ class Jars
                    'servlet-api.jar'
                  ].map do |n|
     Jars.downloadTarget("apache-tomcat-5.5.26/common/lib/#{n}")
+  end
 
 
-    TomcatServer  = [ 'catalina-optional.jar',
-                      'catalina.jar',
-                      'jsp-api.jar',
-                      'servlets-default.jar',
-                      'tomcat-coyote.jar',
-                      'tomcat-http.jar',
-                      'tomcat-util.jar',
-                      'tomcat-ajp.jar'
-                    ].map do |n|
-      Jars.downloadTarget("apache-tomcat-5.5.26/server/lib/#{n}")
+  TomcatServer  = [ 'catalina-optional.jar',
+                    'catalina.jar',
+                    'jsp-api.jar',
+                    'servlets-default.jar',
+                    'tomcat-coyote.jar',
+                    'tomcat-http.jar',
+                    'tomcat-util.jar',
+                    'tomcat-ajp.jar'
+                  ].map do |n|
+    Jars.downloadTarget("apache-tomcat-5.5.26/server/lib/#{n}")
 
     TomcatEmb = TomcatCommon + TomcatServer
   end
