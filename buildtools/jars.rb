@@ -75,7 +75,6 @@ class Jars
   GetText    = [ Jars.downloadTarget('gettext-commons-0.9.1/gettext-commons-0.9.1.jar') ]
 
   TomcatCommon = [ 'commons-el.jar',
-                   'commons-modeler.jar',
                    'jasper-compiler.jar',
                    'jasper-compiler-jdt.jar',
                    'jasper-runtime.jar',
@@ -89,6 +88,7 @@ class Jars
 
   TomcatServer  = [ 'catalina-optional.jar',
                     'catalina.jar',
+                    'commons-modeler-2.0.1.jar',
                     'jsp-api.jar',
                     'servlets-default.jar',
                     'tomcat-coyote.jar',
