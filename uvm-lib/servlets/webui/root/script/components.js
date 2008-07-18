@@ -1741,6 +1741,7 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
     // columns for the column model
     columns : null,
     enableHdMenu : false,
+    enableColumnMove: false,
     // Predefined event log type. means the fileds and columns are predefined.
     // This was introduced for the speed of development.
     // TYPE1: timeStamp, blocked, pipelineEndpoints, protocol, blocked, server
@@ -2737,6 +2738,7 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
     stripeRows : true,
     clicksToEdit : 1,
     enableHdMenu : false,
+    enableColumnMove: false,
     addedId : 0,
 
     initComponent : function() {

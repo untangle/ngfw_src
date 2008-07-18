@@ -749,3 +749,7 @@ div.extendedStats div.title{
 div.extendedStats div.values{
     padding-left: 30px;
 }
+button.iconUpgrade {
+    background: transparent url(../images/admin/icon_upgrade.png) no-repeat center left !important;
+}
+

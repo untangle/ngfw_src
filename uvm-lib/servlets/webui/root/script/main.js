@@ -589,6 +589,12 @@ Ung.Main.prototype = {
                     main.systemInfoWin.show();
                 });
                 break;
+            case "upgrade":
+                Ung.Util.loadResourceAndExecute("Ung.Upgrade","script/config/upgrade.js", function() {
+                    main.upgradeWin=new Ung.Upgrade(configItem);
+                    main.upgradeWin.show();
+                });
+                break;
             default:
                 Ext.MessageBox.alert(i18n._("Failed"),"TODO: implement config "+configItem.name);
                 break;
