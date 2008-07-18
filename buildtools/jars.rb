@@ -82,7 +82,7 @@ class Jars
                    'jsp-api.jar',
                    'naming-factory.jar',
                    'naming-resources.jar',
-                   'servlet-api.jar',
+                   'servlet-api.jar'
                  ].map do |n|
     Jars.downloadTarget("apache-tomcat-5.5.26/common/lib/#{n}")
 
