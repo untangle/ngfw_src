@@ -45,8 +45,8 @@ packages+=$(patsubst %.tar.gz,$(OUTPUT_DIRECTORY)/%,$(tarballs_gz))
 packages+=$(patsubst %.tar.bz2,$(OUTPUT_DIRECTORY)/%,$(tarballs_bz2))
 packages+=$(patsubst %.jar,$(OUTPUT_DIRECTORY)/%,$(jars))
 
-jabsorb-1.2.2-src.zip: $(OUTPUT_DIRECTORY)/apache-ant-1.6.5
-AjaxTK-3.1.1_GA_394-src.tar.gz: $(OUTPUT_DIRECTORY)/apache-ant-1.6.5
+$(OUTPUT_DIRECTORY)/jabsorb-1.2.2-src: $(OUTPUT_DIRECTORY)/apache-ant-1.6.5 jabsorb-1.2.2-src.patch
+$(OUTPUT_DIRECTORY)/AjaxTK-3.1.1_GA_394-src: $(OUTPUT_DIRECTORY)/apache-ant-1.6.5
 
 all: $(packages) ;
 

@@ -38,13 +38,16 @@ import java.net.InetAddress;
 import com.untangle.uvm.vnet.IPSessionDesc;
 import com.untangle.uvm.vnet.SessionStats;
 
+import org.json.JSONBean;
+
 /**
  * Client side IP Session Description.
  *
  * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
  * @version 1.0
  */
-class IPSessionDescImpl extends SessionDescImpl implements IPSessionDesc {
+@JSONBean.Marker
+public class IPSessionDescImpl extends SessionDescImpl implements IPSessionDesc {
 
     protected final byte clientState;
     protected final byte serverState;
@@ -78,46 +81,55 @@ class IPSessionDescImpl extends SessionDescImpl implements IPSessionDesc {
         this.serverPort = serverPort;
     }
 
+    @JSONBean.Getter()
     public short protocol()
     {
         return protocol;
     }
 
+    @JSONBean.Getter()
     public byte clientIntf()
     {
         return clientIntf;
     }
 
+    @JSONBean.Getter()
     public byte serverIntf()
     {
         return serverIntf;
     }
 
+    @JSONBean.Getter()
     public byte clientState()
     {
         return clientState;
     }
 
+    @JSONBean.Getter()
     public byte serverState()
     {
         return serverState;
     }
 
+    @JSONBean.Getter()
     public InetAddress clientAddr()
     {
         return clientAddr;
     }
 
+    @JSONBean.Getter()
     public InetAddress serverAddr()
     {
         return serverAddr;
     }
 
+    @JSONBean.Getter()
     public int clientPort()
     {
         return clientPort;
     }
 
+    @JSONBean.Getter()
     public int serverPort()
     {
         return serverPort;

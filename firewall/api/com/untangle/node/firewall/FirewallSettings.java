@@ -54,7 +54,7 @@ public class FirewallSettings implements Serializable
     private Long id;
     private Tid tid;
 
-    private FirewallBaseSettings baseSettings;
+    private FirewallBaseSettings baseSettings = new FirewallBaseSettings();
 
     private List<FirewallRule> firewallRuleList = null;
 
@@ -108,6 +108,9 @@ public class FirewallSettings implements Serializable
 
     public void setBaseSettings(FirewallBaseSettings baseSettings)
     {
+        if (null == baseSettings) {
+            baseSettings = new FirewallBaseSettings();
+        }
         this.baseSettings = baseSettings;
     }
 

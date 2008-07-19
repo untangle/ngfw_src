@@ -27,6 +27,8 @@ import javax.servlet.http.HttpSession;
 import org.jabsorb.JSONRPCBridge;
 import org.jabsorb.JSONRPCServlet;
 
+import org.jabsorb.serializer.impl.JSONBeanSerializer;
+
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.client.RemoteUvmContext;
 import com.untangle.uvm.webui.jabsorb.serializer.EnumSerializer;
@@ -73,6 +75,7 @@ public class UtJsonRpcServlet extends JSONRPCServlet
             
             try {
             	// general serializers
+                b.registerSerializer(new JSONBeanSerializer());
                 b.registerSerializer(new EnumSerializer());
                 b.registerSerializer(new URLSerializer());
                 b.registerSerializer(new Inet4AddressSerializer());
