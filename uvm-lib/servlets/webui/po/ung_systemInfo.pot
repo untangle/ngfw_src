@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-07-18 15:47+0300\n"
+"POT-Creation-Date: 2008-07-21 16:03+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,22 +17,125 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=0; null;\n"
 
-#: ../root/script/config/systemInfo.js:11
+#: ../root/script/config/systemInfo.js:10
 msgid "Configuration"
 msgstr ""
 
-#: ../root/script/config/systemInfo.js:16
+#: ../root/script/config/systemInfo.js:15
+#: ../root/script/config/systemInfo.js:72
 msgid "System Info"
 msgstr ""
 
-#: ../root/script/config/systemInfo.js:70
+#: ../root/script/config/systemInfo.js:67
+msgid "Version"
+msgstr ""
+
+#: ../root/script/config/systemInfo.js:84
+msgid "Summary"
+msgstr ""
+
+#: ../root/script/config/systemInfo.js:85
+msgid "Key"
+msgstr ""
+
+#: ../root/script/config/systemInfo.js:86
+msgid "Build"
+msgstr ""
+
+#: ../root/script/config/systemInfo.js:87
+msgid "Java"
+msgstr ""
+
+#: ../root/script/config/systemInfo.js:100
+#: ../root/script/config/systemInfo.js:104
+msgid "Registration"
+msgstr ""
+
+#: ../root/script/config/systemInfo.js:121
+msgid "Company Name"
+msgstr ""
+
+#: ../root/script/config/systemInfo.js:127
+msgid "First Name"
+msgstr ""
+
+#: ../root/script/config/systemInfo.js:133
+msgid "Last Name"
+msgstr ""
+
+#: ../root/script/config/systemInfo.js:140
+msgid "Address 1"
+msgstr ""
+
+#: ../root/script/config/systemInfo.js:145
+msgid "Address 2"
+msgstr ""
+
+#: ../root/script/config/systemInfo.js:150
+msgid "City"
+msgstr ""
+
+#: ../root/script/config/systemInfo.js:155
+msgid "State"
+msgstr ""
+
+#: ../root/script/config/systemInfo.js:160
+msgid "Zipcode"
+msgstr ""
+
+#: ../root/script/config/systemInfo.js:165
+msgid "Phone #"
+msgstr ""
+
+#: ../root/script/config/systemInfo.js:170
+msgid "Email"
+msgstr ""
+
+#: ../root/script/config/systemInfo.js:177
+#, python-format
+msgid "Number of computers%sprotected by Untangle"
+msgstr ""
+
+#: ../root/script/config/systemInfo.js:194
+msgid "License Agreement"
+msgstr ""
+
+#: ../root/script/config/systemInfo.js:209
+#: ../root/script/config/systemInfo.js:221
+#: ../root/script/config/systemInfo.js:233
+#: ../root/script/config/systemInfo.js:245
+#: ../root/script/config/systemInfo.js:257
+msgid "Warning"
+msgstr ""
+
+#: ../root/script/config/systemInfo.js:209
+msgid "You must fill out the company name."
+msgstr ""
+
+#: ../root/script/config/systemInfo.js:221
+msgid "You must fill out your first name."
+msgstr ""
+
+#: ../root/script/config/systemInfo.js:233
+msgid "You must fill out the last name."
+msgstr ""
+
+#: ../root/script/config/systemInfo.js:245
+msgid "You must fill out the email address in the format \"user@domain.com\"."
+msgstr ""
+
+#: ../root/script/config/systemInfo.js:257
+msgid "You must fill out the number of computers protected by Untangle."
+msgstr ""
+
+#: ../root/script/config/systemInfo.js:285
 msgid "Saving..."
 msgstr ""
 
-#: ../root/script/config/systemInfo.js:70
+#: ../root/script/config/systemInfo.js:285
 msgid "Please wait"
 msgstr ""
 
-#: ../root/script/config/systemInfo.js:74
+#: ../root/script/config/systemInfo.js:289
 msgid "Failed"
 msgstr ""
