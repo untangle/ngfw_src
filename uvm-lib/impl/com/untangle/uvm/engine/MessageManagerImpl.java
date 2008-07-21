@@ -459,7 +459,7 @@ class MessageManagerImpl implements LocalMessageManager
                     }
                 }
             } finally {
-                if (null == br) {
+                if (null != br) {
                     br.close();
                 }
             }
@@ -485,7 +485,7 @@ class MessageManagerImpl implements LocalMessageManager
                     }
                 }
             } finally {
-                if (null == br) {
+                if (null != br) {
                     br.close();
                 }
             }
@@ -550,7 +550,7 @@ class MessageManagerImpl implements LocalMessageManager
                     }
                 }
             } finally {
-                if (null == br) {
+                if (null != br) {
                     br.close();
                 }
             }
@@ -581,7 +581,7 @@ class MessageManagerImpl implements LocalMessageManager
                     }
                 }
             } finally {
-                if (null == br) {
+                if (null != br) {
                     br.close();
                 }
             }
@@ -626,7 +626,7 @@ class MessageManagerImpl implements LocalMessageManager
                     }
                 }
             } finally {
-                if (null == br) {
+                if (null != br) {
                     br.close();
                 }
             }
