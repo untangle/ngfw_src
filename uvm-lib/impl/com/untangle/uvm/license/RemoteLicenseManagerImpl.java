@@ -81,20 +81,11 @@ public class RemoteLicenseManagerImpl implements RemoteLicenseManager
      */
     public String getLicenseAgreement()
     {     
-        if ( hasPremiumLicense() ) {
-            try {
-                InputStream is = this.getClass().getClassLoader().getResourceAsStream("LicenseProfessional.txt");
-                BufferedReader br = new BufferedReader(new InputStreamReader(is));
-                StringBuffer license = new StringBuffer();
-                for (String l = br.readLine(); null != l; l = br.readLine()) {
-                    license.append(l);
-                    license.append("\r\n");
-                }
-                return license.toString();
-            } catch (IOException e) {
-                logger.error("Could not read the content of the LicenseProfessional.txt file");
-            }
+        if ( this.licenseManager == null ) {
+            /* can only have a premium license if they have the full license manager */
+            return null;
         }
-        return null;
+        
+        return this.licenseManager.getLicenseAgreement();
     }
 }
