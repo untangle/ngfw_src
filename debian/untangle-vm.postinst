@@ -1,5 +1,13 @@
 #! /bin/bash
 
+ourInit() {
+if [ -x /usr/sbin/invoke-rc.d ] && [ ! "`readlink /usr/sbin/invoke-rc.d`" = /bin/true ] ; then
+  invoke-rc.d $1 $2
+else
+  /etc/init.d/$1 $2
+fi
+}
+
 UVM_LOGDIR="/var/log/uvm"
 UVM_CACHEDIR="/var/lib/uvm"
 
@@ -51,7 +59,7 @@ if [ -f /usr/share/untangle/activation.key -a ! -f /usr/share/untangle/popid -a 
 fi
 
 # set up uvm to start at boot
-if [ -x "/etc/init.d/untangle-vm" ]; then
+if [ -x "ourInit untangle-vm" ]; then
     # (remove to allow replacement when upgrading from 5.2 to 5.3)
     update-rc.d -f untangle-vm remove
     update-rc.d untangle-vm defaults 95 5 > /dev/null
@@ -62,7 +70,7 @@ fi
 if [ -z "$2" ]; then
     if uname -r | grep -iq "untangle"; then
         echo "**************************************************************"
-        echo "Untangle installed.  Start with: /etc/init.d/untangle-vm start"
+        echo "Untangle installed.  Start with: ourInit untangle-vm start"
         echo "**************************************************************"
     else
         echo "********************************************************"
