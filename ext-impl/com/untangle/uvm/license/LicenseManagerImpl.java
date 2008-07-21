@@ -11,9 +11,13 @@
 package com.untangle.uvm.license;
 
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileFilter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -193,6 +197,28 @@ public class LicenseManagerImpl implements LicenseManager
     public boolean hasPremiumLicense()
     {
         return this.licenseSettings.getLicenses().size() > 0;
+    }
+
+    /**
+     * Return the content of the license agreement.
+     */
+    public String getLicenseAgreement()
+    {     
+        if ( hasPremiumLicense() ) {
+            try {
+                InputStream is = this.getClass().getClassLoader().getResourceAsStream("LicenseProfessional.txt");
+                BufferedReader br = new BufferedReader(new InputStreamReader(is));
+                StringBuffer license = new StringBuffer();
+                for (String l = br.readLine(); null != l; l = br.readLine()) {
+                    license.append(l);
+                    license.append("\r\n");
+                }
+                return license.toString();
+            } catch (IOException e) {
+                logger.error("Could not read the content of the LicenseProfessional.txt file");
+            }
+        }
+        return null;
     }
 
     /* --------------------- PACKAGE --------------------- */
