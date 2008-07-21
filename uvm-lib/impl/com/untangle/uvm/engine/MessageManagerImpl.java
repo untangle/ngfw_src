@@ -379,19 +379,26 @@ class MessageManagerImpl implements LocalMessageManager
                                   int multiple)
             throws IOException
         {
-            BufferedReader br = new BufferedReader(new FileReader(filename));
-            for (String l = br.readLine(); null != l; l = br.readLine()) {
-                Matcher matcher = p.matcher(l);
-                if (matcher.find()) {
-                    String n = matcher.group(1);
-                    if (keepers.contains(n)) {
-                        String s = matcher.group(2);
-                        try {
-                            m.put(n, Integer.parseInt(s) * multiple);
-                        } catch (NumberFormatException exn) {
-                            logger.warn("could not add value for: " + n);
+            BufferedReader br = null;
+            try {
+                br = new BufferedReader(new FileReader(filename));
+                for (String l = br.readLine(); null != l; l = br.readLine()) {
+                    Matcher matcher = p.matcher(l);
+                    if (matcher.find()) {
+                        String n = matcher.group(1);
+                        if (keepers.contains(n)) {
+                            String s = matcher.group(2);
+                            try {
+                                m.put(n, Integer.parseInt(s) * multiple);
+                            } catch (NumberFormatException exn) {
+                                logger.warn("could not add value for: " + n);
+                            }
                         }
                     }
+                }
+            } finally {
+                if (null != br) {
+                    br.close();
                 }
             }
         }
@@ -403,23 +410,30 @@ class MessageManagerImpl implements LocalMessageManager
             double cpuSpeed = 0;
             int numCpus = 0;
 
-            BufferedReader br = new BufferedReader(new FileReader("/proc/cpuinfo"));
-            for (String l = br.readLine(); null != l; l = br.readLine()) {
-                Matcher matcher = CPUINFO_PATTERN.matcher(l);
-                if (matcher.find()) {
-                    String n = matcher.group(1);
-                    if (n.equals("model name")) {
-                        cpuModel = matcher.group(2);
-                    } else if (n.equals("processor")) {
-                        numCpus++;
-                    } else if (n.equals("cpu MHz")) {
-                        String v = matcher.group(2);
-                        try {
-                            cpuSpeed = Double.parseDouble(v);
-                        } catch (NumberFormatException exn) {
-                            logger.warn("could not parse cpu speed: " + v);
+            BufferedReader br = null;
+            try {
+                br = new BufferedReader(new FileReader("/proc/cpuinfo"));
+                for (String l = br.readLine(); null != l; l = br.readLine()) {
+                    Matcher matcher = CPUINFO_PATTERN.matcher(l);
+                    if (matcher.find()) {
+                        String n = matcher.group(1);
+                        if (n.equals("model name")) {
+                            cpuModel = matcher.group(2);
+                        } else if (n.equals("processor")) {
+                            numCpus++;
+                        } else if (n.equals("cpu MHz")) {
+                            String v = matcher.group(2);
+                            try {
+                                cpuSpeed = Double.parseDouble(v);
+                            } catch (NumberFormatException exn) {
+                                logger.warn("could not parse cpu speed: " + v);
+                            }
                         }
                     }
+                }
+            } finally {
+                if (null != br) {
+                    br.close();
                 }
             }
 
@@ -431,15 +445,22 @@ class MessageManagerImpl implements LocalMessageManager
         private void readUptime(Map<String, Object> m)
             throws IOException
         {
-            BufferedReader br = new BufferedReader(new FileReader("/proc/cpuinfo"));
+            BufferedReader br = null;
+            try {
+                br = new BufferedReader(new FileReader("/proc/cpuinfo"));
 
-            String l = br.readLine();
-            if (null != l) {
-                String s = l.split(" ")[0];
-                try {
-                    m.put("uptime", Double.parseDouble(s));
-                } catch (NumberFormatException exn) {
-                    logger.warn("could not parse uptime: " + s);
+                String l = br.readLine();
+                if (null != l) {
+                    String s = l.split(" ")[0];
+                    try {
+                        m.put("uptime", Double.parseDouble(s));
+                    } catch (NumberFormatException exn) {
+                        logger.warn("could not parse uptime: " + s);
+                    }
+                }
+            } finally {
+                if (null == br) {
+                    br.close();
                 }
             }
         }
@@ -447,18 +468,25 @@ class MessageManagerImpl implements LocalMessageManager
         private void readLoadAverage(Map<String, Object> m)
             throws IOException
         {
-            BufferedReader br = new BufferedReader(new FileReader("/proc/loadavg"));
-            String l = br.readLine();
-            if (null != l) {
-                String[] s = l.split(" ");
-                if (s.length >= 3) {
-                    try {
-                        m.put("oneMinuteLoadAvg", Double.parseDouble(s[0]));
-                        m.put("fiveMinuteLoadAvg", Double.parseDouble(s[1]));
-                        m.put("fifteenMinuteLoadAvg", Double.parseDouble(s[2]));
-                    } catch (NumberFormatException exn) {
-                        logger.warn("could not parse loadavg: " + l);
+            BufferedReader br = null;
+            try {
+                br = new BufferedReader(new FileReader("/proc/loadavg"));
+                String l = br.readLine();
+                if (null != l) {
+                    String[] s = l.split(" ");
+                    if (s.length >= 3) {
+                        try {
+                            m.put("oneMinuteLoadAvg", Double.parseDouble(s[0]));
+                            m.put("fiveMinuteLoadAvg", Double.parseDouble(s[1]));
+                            m.put("fifteenMinuteLoadAvg", Double.parseDouble(s[2]));
+                        } catch (NumberFormatException exn) {
+                            logger.warn("could not parse loadavg: " + l);
+                        }
                     }
+                }
+            } finally {
+                if (null == br) {
+                    br.close();
                 }
             }
         }
@@ -483,40 +511,47 @@ class MessageManagerImpl implements LocalMessageManager
         private void getCpuUsage(Map<String, Object> m)
             throws IOException
         {
-            BufferedReader br = new BufferedReader(new FileReader("/proc/loadavg"));
-            for (String l = br.readLine(); null != l; l = br.readLine()) {
-                Matcher matcher = CPU_USAGE_PATTERN.matcher(l);
-                if (matcher.find()) {
-                    try {
-                        long user1 = Long.parseLong(matcher.group(1));
-                        long nice1 = Long.parseLong(matcher.group(2));
-                        long system1 = Long.parseLong(matcher.group(3));
-                        long idle1 = Long.parseLong(matcher.group(4));
+            BufferedReader br = null;
+            try {
+                br = new BufferedReader(new FileReader("/proc/loadavg"));
+                for (String l = br.readLine(); null != l; l = br.readLine()) {
+                    Matcher matcher = CPU_USAGE_PATTERN.matcher(l);
+                    if (matcher.find()) {
+                        try {
+                            long user1 = Long.parseLong(matcher.group(1));
+                            long nice1 = Long.parseLong(matcher.group(2));
+                            long system1 = Long.parseLong(matcher.group(3));
+                            long idle1 = Long.parseLong(matcher.group(4));
 
-                        long totalTime = (user1 - user0) + (nice1 - nice0)
-                            + (system1 - system0) + (idle1 - idle0);
+                            long totalTime = (user1 - user0) + (nice1 - nice0)
+                                + (system1 - system0) + (idle1 - idle0);
 
-                        if (0 == totalTime) {
-                            m.put("userCpuUtilization", (double)0);
-                            m.put("systemCpuUtilization", (double)0);
-                        } else {
-                            m.put("userCpuUtilization",
-                                  ((user1 - user0) + (nice1 - nice0))
-                                  / (double)totalTime);
-                            m.put("systemCpuUtilization",
-                                  (system1 - system0) / (double)totalTime);
+                            if (0 == totalTime) {
+                                m.put("userCpuUtilization", (double)0);
+                                m.put("systemCpuUtilization", (double)0);
+                            } else {
+                                m.put("userCpuUtilization",
+                                      ((user1 - user0) + (nice1 - nice0))
+                                      / (double)totalTime);
+                                m.put("systemCpuUtilization",
+                                      (system1 - system0) / (double)totalTime);
+                            }
+
+                            user0 = user1;
+                            nice0 = nice1;
+                            system0 = system1;
+                            idle0 = idle1;
+                        } catch (NumberFormatException exn) {
+                            m.put("userCpuUtilization", 0.0);
+                            m.put("systemCpuUtilization", 0.0);
                         }
 
-                        user0 = user1;
-                        nice0 = nice1;
-                        system0 = system1;
-                        idle0 = idle1;
-                    } catch (NumberFormatException exn) {
-                        m.put("userCpuUtilization", 0.0);
-                        m.put("systemCpuUtilization", 0.0);
+                        break;
                     }
-
-                    break;
+                }
+            } finally {
+                if (null == br) {
+                    br.close();
                 }
             }
         }
@@ -529,18 +564,25 @@ class MessageManagerImpl implements LocalMessageManager
 
             long currentTime = System.currentTimeMillis();
 
-            BufferedReader br = new BufferedReader(new FileReader("/proc/net/dev"));
-            for (String l = br.readLine(); null != l; l = br.readLine()) {
-                Matcher matcher = NET_DEV_PATTERN.matcher(l);
-                if (matcher.find()) {
-                    String iface = matcher.group(1);
-                    try {
-                        rxBytes1 += Long.parseLong(matcher.group(2));
-                        txBytes1 += Long.parseLong(matcher.group(3));
-                    } catch (NumberFormatException exn) {
-                        logger.warn("could not add interface info for: "
-                                    + iface, exn);
+            BufferedReader br = null;
+            try {
+                br = new BufferedReader(new FileReader("/proc/net/dev"));
+                for (String l = br.readLine(); null != l; l = br.readLine()) {
+                    Matcher matcher = NET_DEV_PATTERN.matcher(l);
+                    if (matcher.find()) {
+                        String iface = matcher.group(1);
+                        try {
+                            rxBytes1 += Long.parseLong(matcher.group(2));
+                            txBytes1 += Long.parseLong(matcher.group(3));
+                        } catch (NumberFormatException exn) {
+                            logger.warn("could not add interface info for: "
+                                        + iface, exn);
+                        }
                     }
+                }
+            } finally {
+                if (null == br) {
+                    br.close();
                 }
             }
 
@@ -569,16 +611,23 @@ class MessageManagerImpl implements LocalMessageManager
 
             long currentTime = System.currentTimeMillis();
 
-            BufferedReader br = new BufferedReader(new FileReader("/proc/diskstats"));
-            for (String l = br.readLine(); null != l; l = br.readLine()) {
-                Matcher matcher = DISK_STATS_PATTERN.matcher(l);
-                if (matcher.find()) {
-                    try {
-                        diskReads1 += Long.parseLong(matcher.group(1));
-                        diskWrites1 += Long.parseLong(matcher.group(2));
-                    } catch (NumberFormatException exn) {
-                        logger.warn("could not get disk data", exn);
+            BufferedReader br = null;
+            try {
+                br = new BufferedReader(new FileReader("/proc/diskstats"));
+                for (String l = br.readLine(); null != l; l = br.readLine()) {
+                    Matcher matcher = DISK_STATS_PATTERN.matcher(l);
+                    if (matcher.find()) {
+                        try {
+                            diskReads1 += Long.parseLong(matcher.group(1));
+                            diskWrites1 += Long.parseLong(matcher.group(2));
+                        } catch (NumberFormatException exn) {
+                            logger.warn("could not get disk data", exn);
+                        }
                     }
+                }
+            } finally {
+                if (null == br) {
+                    br.close();
                 }
             }
 
