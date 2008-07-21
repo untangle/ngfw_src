@@ -16,7 +16,7 @@ case "$1" in
     echo 'update po files'
     msgmerge -U ro/ung_main.po ung_main.pot
     ;;
-"administration"|"system"|"systemInfo")
+"administration"|"system"|"systemInfo"|"upgrade")
     cd ../uvm-lib/servlets/webui/po/
     echo 'get new keys'
     xgettext --copyright-holder='Untangle, Inc.' -L Python -k.i18n._ -o tmp_keys.pot ../root/script/config/$1.js
