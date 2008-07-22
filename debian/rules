@@ -79,7 +79,7 @@ binary-arch: install
 #	@dh_movefiles
 #	@dh_installdebconf
 	@dh_shlibdeps
-	@dh_installdocs
+	@dh_installdocs -n
 #	@dh_installexamples
 #	@dh_installmenu
 	@dh_installlogrotate
