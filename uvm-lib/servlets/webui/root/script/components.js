@@ -2763,7 +2763,7 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
         }
         if (this.proxyRpcFn) {
             this.store = new Ext.data.Store({
-                proxy : new Ung.RpcProxy(this.proxyRpcFn),
+                proxy : new Ung.RpcProxy(this.proxyRpcFn, this.paginated),
                 sortInfo : this.sortField ? {
                     field : this.sortField,
                     direction : "ASC"
