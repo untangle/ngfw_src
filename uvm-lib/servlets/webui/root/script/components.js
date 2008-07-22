@@ -2729,6 +2729,8 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
     columnsDefaultSortable : null,
     // force paginate, even if the totalRecords is smaller than minPaginateCount
     forcePaginate : false,
+    // paginate the grid by default
+    paginated: true,    
     // javaClass of the record, used in save function to create correct json-rpc
     // object
     recordJavaClass : null,
