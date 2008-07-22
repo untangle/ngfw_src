@@ -1095,6 +1095,7 @@ Ung.MessageManager = {
     	if (!this.cycleCompleted) {
             return;
         }
+        this.cycleCompleted = false;
         rpc.messageManager.getMessageQueue(function(result, exception) {
            if (exception) {
                 Ext.MessageBox.alert(i18n._("Failed"), exception.message, function() {

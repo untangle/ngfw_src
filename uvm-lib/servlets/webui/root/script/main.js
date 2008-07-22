@@ -595,6 +595,12 @@ Ung.Main.prototype = {
                     main.upgradeWin.show();
                 });
                 break;
+            case "racks":
+                Ung.Util.loadResourceAndExecute("Ung.Racks","script/config/racks.js", function() {
+                    main.racksWin=new Ung.Racks(configItem);
+                    main.racksWin.show();
+                });
+                break;
             default:
                 Ext.MessageBox.alert(i18n._("Failed"),"TODO: implement config "+configItem.name);
                 break;

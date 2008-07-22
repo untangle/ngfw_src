@@ -45,6 +45,7 @@
     <script type="text/javascript" src="script/config/system.js"></script>
     <script type="text/javascript" src="script/config/systemInfo.js"></script>
     <script type="text/javascript" src="script/config/upgrade.js"></script>
+    <script type="text/javascript" src="script/config/racks.js"></script>
 
 	<script type="text/javascript">
 		function init() {

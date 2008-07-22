@@ -36,56 +36,60 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
             }
             return this.rpc.upgradeSettings;
         },
-        loadGridUpgrade : function () {
+        loadGridUpgrade : function() {
             rpc.toolboxManager.upgradable(function(result, exception) {
                 if (exception) {
                     Ext.MessageBox.alert(i18n._("Failed"), exception.message);
                     return;
                 }
-                var upgradeList=result;
-//                var upgradeList=[];  /for test
-//                for(var i=0;i<main.nodes.length;i++) {
-//                   upgradeList.push(main.nodes[i].md);
-//                }
-                if(upgradeList.length>0) {
-                	Ext.getCmp("config_start_upgrade_button").enable();
-                	var upgradeData=[];
-                	var somethingVisibleAdded = false;
-                    for(var i=0;i<upgradeList.length;i++) {
-                    	var md=upgradeList[i];
-                    	if(md.type!="CASING" && md.type!="LIB_ITEM" && md.type!="TRIAL" && md.type!="BASE") {
-                        	somethingVisibleAdded=true;
-                        	upgradeData.push({
-                        	   image:"image?name="+md.name,
-                        	   name :md.name,
-                        	   displayName: md.displayName,
-                        	   availableVersion :md.availableVersion,
-                        	   type: md.type=="LIBRARY"?this.i18n._("System Component"):md.type=="NODE"?this.i18n._("Product"):this.i18n._("Unknown"),
-                        	   size: Math.round(md.size/1000)
-                        	})
-                    	}
+                var upgradeList = result;
+                // var upgradeList=[]; /for test
+                // for(var i=0;i<main.nodes.length;i++) {
+                // upgradeList.push(main.nodes[i].md);
+                // }
+                if (upgradeList.length > 0) {
+                    Ext.getCmp("config_start_upgrade_button").enable();
+                    var upgradeData = [];
+                    var somethingVisibleAdded = false;
+                    for (var i = 0; i < upgradeList.length; i++) {
+                        var md = upgradeList[i];
+                        if (md.type != "CASING" && md.type != "LIB_ITEM" && md.type != "TRIAL" && md.type != "BASE") {
+                            somethingVisibleAdded = true;
+                            upgradeData.push({
+                                image : "image?name=" + md.name,
+                                name : md.name,
+                                displayName : md.displayName,
+                                availableVersion : md.availableVersion,
+                                type : md.type == "LIBRARY" ? this.i18n._("System Component") : md.type == "NODE"
+                                        ? this.i18n._("Product")
+                                        : this.i18n._("Unknown"),
+                                size : Math.round(md.size / 1000)
+                            })
+                        }
                     }
-                    if(!somethingVisibleAdded) {
-                    	var size = 0;
-                        for(var i=0;i<upgradeList.length;i++) {
+                    if (!somethingVisibleAdded) {
+                        var size = 0;
+                        for (var i = 0; i < upgradeList.length; i++) {
                             size += upgradeList[i].size;
                         }
                         upgradeData.push({
-                           image:"image?name=unknown",
-                           name :md.name,
-                           displayName: this.i18n._("Various Updates"),
-                           availableVersion :this.i18n._("N/A"),
-                           type: this.i18n._("Misc."),
-                           size: Math.round(md.size/1000)
+                            image : "image?name=unknown",
+                            name : md.name,
+                            displayName : this.i18n._("Various Updates"),
+                            availableVersion : this.i18n._("N/A"),
+                            type : this.i18n._("Misc."),
+                            size : Math.round(md.size / 1000)
                         });
                     }
                 } else {
-                	Ext.getCmp("config_start_upgrade_button").disable();
+                    Ext.getCmp("config_start_upgrade_button").disable();
                 }
-                this.gridUpgrade.getStore().proxy.data={list:upgradeData};
+                this.gridUpgrade.getStore().proxy.data = {
+                    list : upgradeData
+                };
                 this.gridUpgrade.getStore().load();
             }.createDelegate(this));
-            
+
         },
         buildUpgrade : function() {
             this.gridUpgrade = new Ext.grid.GridPanel({
@@ -94,7 +98,7 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
                 parentId : this.getId(),
                 title : this.i18n._('Upgrade'),
                 enableHdMenu : false,
-                enableColumnMove : false,
+                enableColumnMove: false,
                 store : new Ext.data.Store({
                     proxy : new Ung.MemoryProxy({
                         root : 'list'
@@ -104,9 +108,9 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
                         root : 'list',
                         fields : [{
                             name : 'image'
-                        },{
+                        }, {
                             name : 'name'
-                        },{
+                        }, {
                             name : 'displayName'
                         }, {
                             name : 'availableVersion'
@@ -121,9 +125,9 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
                     header : "",
                     width : 70,
                     sortable : true,
-                    dataIndex : 'name',
+                    dataIndex : 'image',
                     renderer : function(value) {
-                        return "<img src='image?name=" + value + "'/>";
+                        return "<img src='" + value + "'/>";
                     }
                 }, {
                     header : this.i18n._("name"),
@@ -150,11 +154,11 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
                 }],
                 buttonAlign : 'center',
                 buttons : [{
-                	id: 'config_start_upgrade_button',
+                    id : 'config_start_upgrade_button',
                     text : i18n._('Upgrade'),
                     name : "Upgrade",
                     iconCls : 'iconUpgrade',
-                    disabled :true,
+                    disabled : true,
                     handler : function() {
                         this.gridUpgrade.upgrade();
                     }.createDelegate(this)
@@ -167,18 +171,18 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
                     });
                 },
                 upgrade : function() {
-                	if(Ung.Upgrade.PerformUpgradeThread.started) {
-                		return;
-                	}
-                	Ext.MessageBox.wait(i18n._("Downloading updates..."), i18n._("Please wait"));
-                    rpc.toolboxManager.upgrade(function(result, exception) {
-                    if (exception) {
-                        Ext.MessageBox.alert(i18n._("Failed"), exception.message);
+                    if (Ung.Upgrade.PerformUpgradeThread.started) {
                         return;
                     }
-                    var key=result;
-                    //Ung.Upgrade.PerformUpgradeThread.start(key);
-                }.createDelegate(this));
+                    Ext.MessageBox.wait(i18n._("Downloading updates..."), i18n._("Please wait"));
+                    rpc.toolboxManager.upgrade(function(result, exception) {
+                        if (exception) {
+                            Ext.MessageBox.alert(i18n._("Failed"), exception.message);
+                            return;
+                        }
+                        var key = result;
+                            // Ung.Upgrade.PerformUpgradeThread.start(key);
+                        }.createDelegate(this));
                 }
 
             });
@@ -389,33 +393,33 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
         }
 
     });
-Ung.Upgrade.PerformUpgradeThread = {
-    // update interval in millisecond
-    updateTime : 1000,
-    key: null,
-    started : false,
-    intervalId : null,
-    cycleCompleted : true,
+    Ung.Upgrade.PerformUpgradeThread = {
+        // update interval in millisecond
+        updateTime : 1000,
+        key : null,
+        started : false,
+        intervalId : null,
+        cycleCompleted : true,
 
-    start : function(key) {
-        this.stop();
-        this.key=key;
-        this.intervalId = window.setInterval("Ung.Upgrade.PerformUpgradeThread.run()", this.updateTime);
-        this.started = true;
-    },
+        start : function(key) {
+            this.stop();
+            this.key = key;
+            this.intervalId = window.setInterval("Ung.Upgrade.PerformUpgradeThread.run()", this.updateTime);
+            this.started = true;
+        },
 
-    stop : function() {
-        if (this.intervalId !== null) {
-            window.clearInterval(this.intervalId);
+        stop : function() {
+            if (this.intervalId !== null) {
+                window.clearInterval(this.intervalId);
+            }
+            this.cycleCompleted = true;
+            this.started = false;
+        },
+        run : function() {
+            if (!this.cycleCompleted) {
+                return;
+            }
         }
-        this.cycleCompleted = true;
-        this.started = false;
-    },
-    run : function () {
-        if (!this.cycleCompleted) {
-            return;
-        }
-    }
-};
+    };
 
 }

@@ -45,6 +45,9 @@ public class PolicyConfiguration implements Serializable
 
     private List<UserPolicyRule> userPolicyRules;
 
+    public PolicyConfiguration()
+    {
+    }
     public PolicyConfiguration(List policies, UserPolicyRule[] userRules)
     {
         this.policies = new ArrayList(policies);
