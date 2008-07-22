@@ -19,15 +19,9 @@
 package com.untangle.uvm.webui.jabsorb;
 
 import java.io.IOException;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
-import org.jabsorb.JSONRPCBridge;
-import org.jabsorb.JSONRPCServlet;
-
-import org.jabsorb.serializer.impl.JSONBeanSerializer;
 
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.client.RemoteUvmContext;
@@ -35,15 +29,18 @@ import com.untangle.uvm.webui.jabsorb.serializer.EnumSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.ExtendedListSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.ExtendedSetSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.HostNameSerializer;
-import com.untangle.uvm.webui.jabsorb.serializer.Inet4AddressSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.IPMaddrSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.IPaddrSerializer;
+import com.untangle.uvm.webui.jabsorb.serializer.Inet4AddressSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.LazyInitializerSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.MimeTypeSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.RFC2253NameSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.TimeSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.TimeZoneSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.URLSerializer;
+import org.jabsorb.JSONRPCBridge;
+import org.jabsorb.JSONRPCServlet;
+import org.jabsorb.serializer.impl.JSONBeanSerializer;
 
 /**
  * Initializes the JSONRPCBridge.
@@ -73,9 +70,9 @@ public class UtJsonRpcServlet extends JSONRPCServlet
         if (null == b) {
             b = new JSONRPCBridge();
             s.setAttribute(BRIDGE_ATTRIBUTE, b);
-            
+
             try {
-            	// general serializers
+                // general serializers
                 b.registerSerializer(new JSONBeanSerializer());
                 b.registerSerializer(new EnumSerializer());
                 b.registerSerializer(new URLSerializer());
@@ -97,7 +94,7 @@ public class UtJsonRpcServlet extends JSONRPCServlet
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            
+
             b.setCallbackController(new UtCallbackController(b));
 
             RemoteUvmContext uvm = LocalUvmContextFactory.context().remoteContext();
