@@ -10,7 +10,7 @@ UVM_RUNDIR=${UVM_RUNDIR:-@PREFIX@/var/run}
 UVM_NICENESS=${UVM_NICENESS:-0}
 UVM_CONSOLE_LOG=${UVM_CONSOLE_LOG:-$UVM_LOGDIR/console.log}
 UVM_WRAPPER_LOG=${UVM_WRAPPER_LOG:-$UVM_LOGDIR/wrapper.log}
-UVM_CMD=${UVM_CMD:-@PREFIX@/usr/bin/uvm.sh}
+UVM_CMD=${UVM_CMD:-@PREFIX@/usr/bin/uvm}
 UVM_USER=${UVM_USER:-$USER}
 UVM_PID="uvm.pid"
 UVM_CHUSER=" --chuid $UVM_USER:$UVM_USER "
@@ -148,9 +148,9 @@ case "$1" in
         # Attempt more aggressive kill now
         echo -n "ungraceful exit"
         kill -INT `ps awwx | grep java | grep uvm | awk '{print $1}' | grep -v $$ ` &>/dev/null
-        killall -s INT uvm.sh &>/dev/null
+        killall -s INT uvm &>/dev/null
         kill `ps awwx | grep java | grep uvm | awk '{print $1}' | grep -v $$ ` &>/dev/null
-        killall uvm.sh &>/dev/null
+        killall uvm &>/dev/null
 
         # Wait for completion
         for i in `seq 1 5` ; do
@@ -171,7 +171,7 @@ case "$1" in
         for i in `seq 1 5` ; do
             # send a kill signal
             kill -9 `ps awwx | grep java | grep uvm | awk '{print $1}' | grep -v $$ ` &>/dev/null
-            killall -9 uvm.sh &>/dev/null
+            killall -9 uvm &>/dev/null
 
             sleep 1
             echo -n "."

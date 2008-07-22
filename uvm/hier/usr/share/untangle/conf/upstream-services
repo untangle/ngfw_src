@@ -1,5 +1,3 @@
-#! /bin/bash
-#
 # Defines all upstream service managed by Untangle Gateway Appliance
 # If the corresponding package is not NONE, Untangle will only manage
 # the upstream service if that package is installed.

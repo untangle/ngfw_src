@@ -18,7 +18,7 @@ UVM_REBOOT_PIDFILE=$UVM_RUNDIR/uvm-reboot.pid
 UVM_CONSOLE_LOG=${UVM_CONSOLE_LOG:-$UVM_LOGDIR/console.log}
 UVM_WRAPPER_LOG=$UVM_LOGDIR/wrapper.log
 UVM_GC_LOG=$UVM_LOGDIR/gc.log
-UVM_CMD=@PREFIX@/usr/bin/uvm.sh
+UVM_CMD=@PREFIX@/usr/bin/uvm
 UVM_USER=root
 ## Defaults to 10000 in the code, set here if you want something else
 UVM_SESSION_LIMIT=""

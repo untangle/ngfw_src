@@ -14,7 +14,7 @@ UVM_CACHEDIR="/var/lib/uvm"
 USER=root
 GROUP=adm
 
-# shouldn't here in the first place
+# shouldn't here in the first place (old bug)
 rm -f /tmp/uvm.log
 
 # modify limit to support many file descriptors
