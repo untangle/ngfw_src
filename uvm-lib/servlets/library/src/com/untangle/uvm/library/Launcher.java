@@ -49,12 +49,20 @@ public class Launcher extends HttpServlet
     private static final String ACTION_BROWSE = "browse";
     private static final String ACTION_WIZARD = "wizard";
 
+    private static final String HTTP_USER_AGENT = "User-Agent";
+    private static final String HTTP_CONTENT_TYPE = "Content-Type";
+
     private final Logger logger = Logger.getLogger( this.getClass());
 
     protected void doGet( HttpServletRequest request,  HttpServletResponse response )
         throws ServletException, IOException
     {
         try {
+
+	    // Special workaround for Java6 JNLP showDocument() bug.  Our bug 4419.
+	    String userAgent = request.getHeader(HTTP_USER_AGENT);
+	    if (userAgent != null && userAgent.startsWith("JNLP"))
+		response.setHeader(HTTP_CONTENT_TYPE, "text/html");
 
             URL redirect;
             String action = request.getParameter( FIELD_ACTION );

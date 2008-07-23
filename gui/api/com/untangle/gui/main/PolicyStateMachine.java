@@ -302,6 +302,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
     // HANDLERS ///////////////////////////////////////////
     ///////////////////////////////////////////////////////
     private void storeWizardJButtonActionPerformed(java.awt.event.ActionEvent evt) {
+	URL newURL = null;
         try{
             if( Util.getIsDemo() )
                 return;
@@ -312,10 +313,11 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                 return;
             String query = getLibraryQuery( "wizard" );
             
-            URL newURL = buildURL( "/library/launcher", query );
+            newURL = buildURL( "/library/launcher", query );
             ((BasicService) ServiceManager.lookup("javax.jnlp.BasicService")).showDocument(newURL);
         }
         catch(Exception f){
+	    logger.warn("Unable to open: " + newURL);
             Util.handleExceptionNoRestart("Error showing store wizard.", f);
         }
     }
@@ -1262,13 +1264,15 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
 
     private class StoreSettingsActionListener implements ActionListener{
         public void actionPerformed(ActionEvent e){
+	    URL newURL = null;
             try{
                 String query = getLibraryQuery( "my_account" );
                 
-                URL newURL = buildURL( "/library/launcher", query );
+                newURL = buildURL( "/library/launcher", query );
                 ((BasicService) ServiceManager.lookup("javax.jnlp.BasicService")).showDocument(newURL);
             }
             catch(Exception f){
+		logger.warn("Unable to open: " + newURL);
                 Util.handleExceptionNoRestart("error launching browser for Library settings", f);
                 MOneButtonJDialog.factory(Util.getMMainJFrame(), "",
                                           "A problem occurred while trying to access Library."
@@ -1868,6 +1872,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
             this.mNodeJButton = mNodeJButton;
         }
         public void actionPerformed(java.awt.event.ActionEvent evt){
+	    URL newURL = null;
             if( Util.getIsDemo() )
                 return;
             if( Util.mustCheckUpgrades() ){
@@ -1878,11 +1883,12 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
             try{
                 String query = getLibraryQuery( "browse" );
                 query += "&libitem=" + URLEncoder.encode( mNodeJButton.getName());
-                URL newURL = buildURL( "/library/launcher", query );
+                newURL = buildURL( "/library/launcher", query );
 
                 ((BasicService) ServiceManager.lookup("javax.jnlp.BasicService")).showDocument(newURL);
             }
             catch(Exception f){
+		logger.warn("Unable to open: " + newURL);
                 Util.handleExceptionNoRestart("error launching browser for Library", f);
                 MOneButtonJDialog.factory(Util.getMMainJFrame(), "",
                                           "A problem occurred while trying to access the Library."
@@ -1986,7 +1992,15 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
     private URL buildURL( String path, String query ) throws MalformedURLException, URISyntaxException
     {
         URI cb = Util.getServerCodeBase().toURI();
-        
-        return new URL( cb.getScheme() + "://" + cb.getAuthority() + "/" + path + "?" + query );
+
+	StringBuilder sb = new StringBuilder(cb.getScheme());
+	sb.append("://");
+	sb.append(cb.getAuthority());
+	if (!path.startsWith("/"))
+	    sb.append("/");
+	sb.append(path);
+	sb.append("?");
+	sb.append(query);
+        return new URL(sb.toString());
     }
 }
