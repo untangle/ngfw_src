@@ -81,9 +81,8 @@ ServletBuilder.new(uvm_lib, "com.untangle.uvm.webui.servlet",
 
 # Ajax Tk
 deps = FileList["#{BuildEnv::downloads}/Ajax/jars/*jar"].exclude(/.*servlet-api.jar/).map { |n| ThirdpartyJar.get(n) }
-ms = [ MoveSpec.new("#{BuildEnv::downloads}/Ajax/WebRoot/js", '**/*', 'AjaxTk')]
 ServletBuilder.new(uvm_lib, 'com.untangle.uvm.blockpage.jsp',
-                   "./uvm-lib/servlets/blockpage", deps, [], ms)
+                   "./uvm-lib/servlets/blockpage", deps, [], [])
 
 # ServletBuilder.new(uvm_lib, 'com.untangle.uvm.sessiondumper.jsp',
 #                    "./uvm-lib/servlets/session-dumper")
