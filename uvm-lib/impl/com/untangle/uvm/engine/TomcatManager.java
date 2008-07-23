@@ -81,7 +81,6 @@ class TomcatManager
     private String keystorePass = "changeit";
     private String keyAlias = "tomcat";
 
-    private Context rootContext;
     private String welcomeFile = STANDARD_WELCOME;
 
     // constructors -----------------------------------------------------------
@@ -113,6 +112,7 @@ class TomcatManager
         /* rbs: according to the javadoc, each valve object can only be assigned to one container,
          * otherwise it is supposed to throw an IllegalStateException */
         //loadSystemApp("/session-dumper", "session-dumper", new WebAppOptions(new AdministrationOutsideAccessValve()));
+        loadSystemApp("/blockpage", "blockpage");
         loadSystemApp("/reports", "reports", new WebAppOptions(true,new ReportingOutsideAccessValve()));
         loadSystemApp("/alpaca", "alpaca", new WebAppOptions(true,new AdministrationOutsideAccessValve()));
         loadSystemApp("/webui", "webui", new WebAppOptions(new AdministrationOutsideAccessValve()));
@@ -307,20 +307,9 @@ class TomcatManager
             // add host to Engine
             baseEngine.addChild(baseHost);
 
-            // create root Context
-            rootContext = emb.createContext("", webAppRoot + "/ROOT");
-            StandardManager mgr = new StandardManager();
-            mgr.setPathname(null); /* disable session persistence */
-            rootContext.setManager(mgr);
-            rootContext.setManager(new StandardManager());
-            setRootWelcome(welcomeFile);
-
-            // add context to host
-            baseHost.addChild(rootContext);
-
             // create application Context
             StandardContext ctx = (StandardContext)emb.createContext("/http-invoker", "http-invoker");
-            mgr = new StandardManager();
+            StandardManager mgr = new StandardManager();
             mgr.setPathname(null); /* disable session persistence */
             ctx.setManager(mgr);
 

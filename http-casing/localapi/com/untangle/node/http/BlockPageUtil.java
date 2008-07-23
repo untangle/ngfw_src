@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -19,7 +19,6 @@ package com.untangle.node.http;
 
 import java.io.IOException;
 import java.util.Map;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -33,18 +32,18 @@ import com.untangle.uvm.util.I18nUtil;
 public class BlockPageUtil
 {
     private static final BlockPageUtil INSTANCE = new BlockPageUtil();
-    
+
     private BlockPageUtil()
     {
     }
-    
-    public void handle(HttpServletRequest request, HttpServletResponse response, 
+
+    public void handle(HttpServletRequest request, HttpServletResponse response,
                        HttpServlet servlet, Handler handler)
         throws ServletException
     {
         LocalUvmContext uvm = LocalUvmContextFactory.context();
         BrandingBaseSettings bs = uvm.brandingManager().getBaseSettings();
-        
+
         String module = handler.getI18n();
         Map<String,String> i18n_map = uvm.languageManager().getTranslations(module);
         request.setAttribute( "i18n_map", i18n_map );
@@ -59,7 +58,7 @@ public class BlockPageUtil
         String value = handler.getScriptFile();
         if ( value != null ) request.setAttribute( "javascript_file", value );
         request.setAttribute( "description", handler.getDescription( bs, i18n_map ));
-                     
+
         /* Register the block detail with the page */
         BlockDetails bd = handler.getBlockDetails();
         request.setAttribute( "bd", bd );
@@ -80,11 +79,13 @@ public class BlockPageUtil
         }
 
         try {
-            servlet.getServletConfig().getServletContext().getContext( "/" ).
-                getRequestDispatcher("/blockpage_template.jspx").forward( request, response );
+            servlet.getServletConfig().getServletContext()
+                .getContext("/blockpage")
+                .getRequestDispatcher("/blockpage_template.jspx")
+                .forward(request, response);
         } catch ( IOException e ) {
             throw new ServletException( "Unable to render blockpage template.", e );
-        }        
+        }
     }
 
     public interface Handler
@@ -115,5 +116,5 @@ public class BlockPageUtil
     {
         return INSTANCE;
     }
-        
+
 }
