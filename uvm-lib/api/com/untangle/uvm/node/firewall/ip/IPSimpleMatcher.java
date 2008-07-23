@@ -47,13 +47,12 @@ import com.untangle.uvm.node.firewall.ParsingConstants;
  * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
  * @version 1.0
  */
-public final class IPSimpleMatcher extends IPDBMatcher
+public enum IPSimpleMatcher implements IPDBMatcher
 {
     /* An IP Matcher that matches everything */
-    private static final IPDBMatcher ALL_MATCHER     = new IPSimpleMatcher( true );
-
+    ALL_MATCHER( true ),
     /* An IP Matcher that never matches */
-    private static final IPDBMatcher NOTHING_MATCHER = new IPSimpleMatcher( false );
+    NOTHING_MATCHER( false );
     
     private final boolean isAll;
 
@@ -75,15 +74,10 @@ public final class IPSimpleMatcher extends IPDBMatcher
 
     public String toDatabaseString()
     {
-        return toString();
-    }
-    
-    public String toString()
-    {
         if ( isAll ) return ParsingConstants.MARKER_ANY;
         return ParsingConstants.MARKER_NOTHING;
     }
-
+    
     /**
      * Retrieve the all matcher.
      *

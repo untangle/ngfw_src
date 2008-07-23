@@ -48,12 +48,10 @@ import com.untangle.uvm.node.firewall.ParsingConstants;
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
-public final class IntfRelativeMatcher extends IntfDBMatcher
+public enum IntfRelativeMatcher implements IntfDBMatcher
 {
-    private static final IntfDBMatcher LESS_TRUSTED_MATCHER
-        = new IntfRelativeMatcher(false);
-    private static final IntfDBMatcher MORE_TRUSTED_MATCHER
-        = new IntfRelativeMatcher(true);
+    LESS_TRUSTED_MATCHER(false),
+    MORE_TRUSTED_MATCHER(true);
 
     /* true if this is the all matcher */
     private final boolean moreTrusted;
@@ -78,11 +76,6 @@ public final class IntfRelativeMatcher extends IntfDBMatcher
     {
         return moreTrusted ? ParsingConstants.MARKER_MORE_TRUSTED
             : ParsingConstants.MARKER_LESS_TRUSTED;
-    }
-
-    public String toString()
-    {
-        return moreTrusted ? "More Trusted" : "Less Trusted";
     }
 
     /**

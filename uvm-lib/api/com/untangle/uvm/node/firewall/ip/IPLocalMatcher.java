@@ -47,7 +47,7 @@ import com.untangle.uvm.node.firewall.Parser;
  * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
  * @version 1.0
  */
-public final class IPLocalMatcher extends IPDBMatcher
+public final class IPLocalMatcher implements IPDBMatcher
 {
     private static final IPLocalMatcher INSTANCE = new IPLocalMatcher();
 

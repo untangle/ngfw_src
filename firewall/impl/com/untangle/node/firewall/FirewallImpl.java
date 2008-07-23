@@ -331,6 +331,8 @@ public class FirewallImpl extends AbstractNode implements Firewall
                 public Object getResult() { return null; }
             };
 
+        getNodeContext().runTransaction(tw);
+        
         try {
             reconfigure();
         } catch (NodeException exn) {

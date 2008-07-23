@@ -49,20 +49,19 @@ import com.untangle.uvm.node.IPaddr;
  * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
  * @version 1.0
  */
-public final class IPInternalMatcher implements IPMatcher
+public enum IPInternalMatcher implements IPMatcher
 {
+    /* The internal matcher */
+    MATCHER_INTERNAL( true ),
+    /* The external matcher (This is just the inverse of the internal
+     * matcher */
+    MATCHER_EXTERNAL( false );
+
     /* String representation for the internal matcher */
     private static final String MARKER_INTERNAL = "internal";
 
     /* String representation for the external matcher */
     private static final String MARKER_EXTERNAL = "external";
-    
-    /* The internal matcher */
-    private static final IPInternalMatcher MATCHER_INTERNAL = new IPInternalMatcher( true );
-
-    /* The external matcher (This is just the inverse of the internal
-     * matcher */
-    private static final IPInternalMatcher MATCHER_EXTERNAL = new IPInternalMatcher( false );
     
     /* The matcher to use when testing for match, this is updated when the address changes. */
     private static IPMatcher matcher = IPSimpleMatcher.getNilMatcher();
@@ -89,11 +88,6 @@ public final class IPInternalMatcher implements IPMatcher
         return ( this.isInternal == matcher.isMatch( address ));
     }
     
-    public String toString()
-    {
-        return toDatabaseString();
-    }
-
     /* This actually cannot be stored into a datbase, it is not a DBMatcher */
     public String toDatabaseString()
     {
