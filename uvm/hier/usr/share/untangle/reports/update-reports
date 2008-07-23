@@ -239,7 +239,7 @@ EOF
 
         cp -pr $REPORT_DIR/css $REPORT_DIR/current
         cp -pr $REPORT_DIR/images $REPORT_DIR/current
-        cp -pr @UVM_WEB@/ROOT/images/BrandingLogo.gif $REPORT_DIR/current/images
+        cp -pr /var/www/images/BrandingLogo.gif $REPORT_DIR/current/images
 
 # generate the web viewable page
         if [ $MV_EG_DAILY_REPORT == 'y' ]; then

@@ -100,24 +100,24 @@ class BrandingManagerImpl implements LocalBrandingManager
     }
 
     public BrandingBaseSettings getBaseSettings() {
-    	return settings.getBaseSettings();
+        return settings.getBaseSettings();
     }
-    
+
     public void setBaseSettings(BrandingBaseSettings bs) {
         /* delete whatever is in the db, and just make a fresh settings object */
         BrandingSettings copy = new BrandingSettings();
         bs.copy(copy.getBaseSettings());
         if (bs.isDefaultLogo()) {
-        	copy.setLogo(null);
+            copy.setLogo(null);
         } else {
-        	copy.setLogo(this.settings.getLogo());
+            copy.setLogo(this.settings.getLogo());
         }
         saveSettings(copy);
         this.settings = copy;
         setBrandingProperties(this.settings);
         setFileLogo(this.settings.getLogo());
     }
-    
+
     public void setLogo(byte[] logo) {
         /* delete whatever is in the db, and just make a fresh settings object */
         BrandingSettings copy = new BrandingSettings();
@@ -128,7 +128,7 @@ class BrandingManagerImpl implements LocalBrandingManager
         setBrandingProperties(this.settings);
         setFileLogo(this.settings.getLogo());
     }
-    
+
     private void setFileLogo(byte[] logo)
     {
         FileInputStream fis = null;
@@ -167,7 +167,7 @@ class BrandingManagerImpl implements LocalBrandingManager
             }
         }
     }
-    
+
     public File getLogoFile()
     {
         return BRANDING_LOGO;
@@ -207,18 +207,17 @@ class BrandingManagerImpl implements LocalBrandingManager
 
     private void saveSettings(BrandingSettings settings)
     {
-        DeletingDataSaver<BrandingSettings> saver = 
+        DeletingDataSaver<BrandingSettings> saver =
             new DeletingDataSaver<BrandingSettings>(LocalUvmContextFactory.context(),"BrandingSettings");
         this.settings = saver.saveData(settings);
     }
 
     static {
-        String wd = System.getProperty("bunnicula.web.dir");
-        File id = new File(wd, "ROOT/images");
+        File id = new File("/var/www/images");
         DEFAULT_LOGO = new File(id, "Logo150x96.gif");
         BRANDING_LOGO = new File(id, "BrandingLogo.gif");
         BRANDING_LOGO_WEB_PATH = "images/BrandingLogo.gif";
-        wd = System.getProperty("bunnicula.conf.dir");
+        String wd = System.getProperty("bunnicula.conf.dir");
         id = new File(wd);
         BRANDING_PROPS = new File(id, "branding.properties");
     }
