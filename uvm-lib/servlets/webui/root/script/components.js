@@ -2347,12 +2347,12 @@ Ung.RowEditorWindow = Ext.extend(Ung.UpdateWindow, {
         if (this.title == null) {
             this.title = i18n._('Edit');
         }
-
+/*
         for (var i = 0; i < this.inputLines.length; i++) {
             var inputLine = this.inputLines[i];
             this.subCmps.push(inputLine);
         }
-
+*/
         Ung.RowEditorWindow.superclass.initComponent.call(this);
     },
     onRender : function(container, position) {
