@@ -14,6 +14,29 @@ if (!Ung.hasResource["Ung.Firewall"]) {
             this.buildEventLog();
             // builds the tab panel with the tabs
             this.buildTabPanel([this.panelRules, this.gridEventLog]);
+
+            var ddrowTarget = new Ext.dd.DropTarget(this.gridRules.container, {
+                ddGroup: "GridDD",
+                // copy:false,
+                notifyDrop : function(dd, e, data){
+                    var sm = this.gridRules.getSelectionModel();
+                    var rows = sm.getSelections();
+                    var cindex = dd.getDragData(e).rowIndex;    // Here is need
+        
+                    var dsGrid = this.gridRules.getStore();
+                    
+                    for(i = 0; i < rows.length; i++) {
+                        rowData = dsGrid.getById(rows[i].id);
+                        dsGrid.remove(dsGrid.getById(rows[i].id));
+                        dsGrid.insert(cindex, rowData);
+                    };
+        
+                    this.gridRules.getView().refresh();
+        
+                    // put the cursor focus on the row of the gridRules which we just draged
+                    this.gridRules.getSelectionModel().selectRow(cindex); 
+                }.createDelegate(this)
+            });            
         },
         // Rules Panel
         buildRules : function() {
@@ -42,12 +65,10 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                         paginated : false,
                         
                         enableDragDrop : true,
-                        onRender : function() {
-                            Ung.EditorGrid.superclass.onRender.apply(this, arguments);
-
-                            this.dz = new Ung.GridDropZone(this, {ddGroup:this.ddGroup || 'GridDD'});
-                        }, // eo function onRender 
                         selModel: new Ext.grid.RowSelectionModel({singleSelect:true}),
+				        dropConfig: {
+				            appendOnly:true
+				        },
                         
                         emptyRow : {
                             "live" : true,
