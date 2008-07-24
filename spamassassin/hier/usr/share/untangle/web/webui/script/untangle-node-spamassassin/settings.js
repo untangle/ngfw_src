@@ -461,9 +461,9 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
         buildRBLEventLog : function() {
             this.gridRBLEventLog = new Ung.GridEventLog({
                 settingsCmp : this,
-                name : 'DNSBL Event Log',
+                name : 'Tarpit Event Log',
                 eventManagerFn : this.getRpcNode().getRBLEventManager(),
-                title : this.i18n._("DNSBL Event Log"),
+                title : this.i18n._("Tarpit Event Log"),
                 // the list of fields
                 fields : [{
                     name : 'createDate'
