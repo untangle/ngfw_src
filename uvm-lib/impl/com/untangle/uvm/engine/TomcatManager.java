@@ -63,8 +63,6 @@ class TomcatManager
 
     private static final String STANDARD_WELCOME = "/webui";
 
-    private final InetAddress localhost;
-
     private final Logger logger = Logger.getLogger(getClass());
 
     private final List<WebAppDescriptor> descriptors = new ArrayList<WebAppDescriptor>();
@@ -94,16 +92,6 @@ class TomcatManager
                   String webAppRoot, String logDir)
     {
         InetAddress l;
-
-        try {
-            l = InetAddress.getByName("127.0.0.1");
-        } catch (Exception exn) {
-            /* If it is null, it will just bind to 0.0.0.0 */
-            l = null;
-            logger.warn("Unable to parse 127.0.0.1", exn);
-        }
-
-        this.localhost = l;
 
         this.uvmContext = uvmContext;
         this.catalinaHome = catalinaHome;
@@ -266,14 +254,6 @@ class TomcatManager
             // jdi 8/30/04 -- canonical host name depends on ordering of
             // /etc/hosts
             String hostname = "localhost";
-
-            // set default logger and realm
-            // FileLogger fileLog = new FileLogger();
-            // fileLog.setDirectory(logDir);
-            // fileLog.setPrefix("tomcat");
-            // fileLog.setSuffix(".log");
-            // fileLog.setTimestamp(true);
-            // fileLog.setVerbosityLevel("DEBUG");
 
             emb = new Embedded(/* fileLog, */ uvmRealm);
             emb.setCatalinaHome(catalinaHome);
