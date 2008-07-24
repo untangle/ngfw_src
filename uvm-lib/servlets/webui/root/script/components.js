@@ -1895,10 +1895,15 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
                 }
                 if (this.settingsCmp) {
                     this.rpc.repositoryDescs = result;
+                    var repList = this.rpc.repositoryDescs.list;
+                    var displayStyle="";
+                    if(repList.length==1) {
+                    	displayStyle="display:none;";
+                    }
                     var out = [];
                     out.push('<select name="Event Type" id="selectRepository_' + this.getId() + '_' + this.settingsCmp.node.tid
-                            + '" class="height:11px; font-size:9px;">');
-                    var repList = this.rpc.repositoryDescs.list;
+                            + '" style="'+displayStyle+'">');
+                    
                     for (var i = 0; i < repList.length; i++) {
                         var repDesc = repList[i];
                         var selOpt = (i === 0) ? "selected" : "";
