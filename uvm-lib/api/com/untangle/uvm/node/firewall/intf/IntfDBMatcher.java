@@ -45,10 +45,16 @@ import com.untangle.uvm.node.InterfaceComparator;
  * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
  * @version 1.0
  */
-public interface IntfDBMatcher extends IntfMatcher, Serializable
+public abstract class IntfDBMatcher implements IntfMatcher, Serializable
 {
-    boolean isMatch(byte iface, byte otherIface,
+    /**
+     * Package protected so that only classes in the package can add to
+     * the list of database saveable intf matchers
+     */
+    IntfDBMatcher() { }
+
+    public abstract boolean isMatch(byte iface, byte otherIface,
                                     InterfaceComparator c);
 
-    String toDatabaseString();
+    public abstract String toDatabaseString();
 }

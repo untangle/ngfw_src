@@ -45,15 +45,15 @@ import com.untangle.uvm.vnet.Protocol;
  * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
  * @version 1.0
  */
-public interface ProtocolDBMatcher extends ProtocolMatcher, Serializable
+public abstract class ProtocolDBMatcher implements ProtocolMatcher, Serializable
 {
-//    /** Package protected so that only classes in the package can add to the list
-//     * of database saveable ip matchers */
-//    ProtocolDBMatcher()
-//    {
-//    }
+    /** Package protected so that only classes in the package can add to the list
+     * of database saveable ip matchers */
+    ProtocolDBMatcher()
+    {
+    }
 
-    boolean isMatch( Protocol protocol );
-    boolean isMatch( short protocol );
-    String toDatabaseString();
+    public abstract boolean isMatch( Protocol protocol );
+    public abstract boolean isMatch( short protocol );
+    public abstract String toDatabaseString();
 }

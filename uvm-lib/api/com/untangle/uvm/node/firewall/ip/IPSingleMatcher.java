@@ -48,7 +48,7 @@ import com.untangle.uvm.node.firewall.ParsingConstants;
  * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
  * @version 1.0
  */
-public final class IPSingleMatcher implements IPDBMatcher
+public final class IPSingleMatcher extends IPDBMatcher
 {
     /* The address that matches */
     private final InetAddress address;

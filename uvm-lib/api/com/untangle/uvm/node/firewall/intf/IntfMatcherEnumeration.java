@@ -110,7 +110,7 @@ final class IntfMatcherEnumeration
         matchers.add( IntfSimpleMatcher.getAllMatcher());
 
         for (byte num : intfEnum.getIntfNums()) {
-            IntfDBMatcher im = IntfSingleMatcher.getInstance(num);
+            IntfDBMatcher im = IntfSingleMatcher.makeInstance(num);
             matchers.add(im);
         }
 

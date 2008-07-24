@@ -52,17 +52,30 @@ import static com.untangle.uvm.node.firewall.protocol.ProtocolParsingConstants.M
  * @author <a href="mailto:rbscott@untangle.com">rbscott</a>
  * @version 1.0
  */
-public enum ProtocolBasicMatcher implements ProtocolDBMatcher
+public final class ProtocolBasicMatcher extends ProtocolDBMatcher
 {
+    private static final long serialVersionUID = 2396418065775379605L;
+
+    /** Map from a string name to a protocol matcher */
+    private static final Map<String,ProtocolBasicMatcher> nameToMatcherMap =
+        new HashMap<String,ProtocolBasicMatcher>();
+
     /** This matches TCP traffic */
-    MATCHER_TCP( MARKER_TCP, true, false, false ),
+    private static final ProtocolBasicMatcher MATCHER_TCP =
+        makeMatcher( MARKER_TCP, true, false, false );
+
     /** This matches UDP traffic */
-    MATCHER_UDP( MARKER_UDP, false, true, false ),
+    private static final ProtocolBasicMatcher MATCHER_UDP =
+        makeMatcher( MARKER_UDP, false, true, false );
+
     /** This matches PING traffic */
-    MATCHER_PING( MARKER_PING, false, false, true ),
+    private static final ProtocolBasicMatcher MATCHER_PING =
+        makeMatcher( MARKER_PING, false, false, true );
+
     /** This matches TCP and UDP traffic */
-    MATCHER_TCP_AND_UDP( MARKER_TCP_AND_UDP, true, true, false );
-    
+    private static final ProtocolBasicMatcher MATCHER_TCP_AND_UDP =
+        makeMatcher( MARKER_TCP_AND_UDP, true, true, false );
+
     /* The database string for this matcher */
     private final String name;
     
@@ -127,7 +140,26 @@ public enum ProtocolBasicMatcher implements ProtocolDBMatcher
 
     public String toDatabaseString()
     {
+        return toString();
+    }
+
+    public String toString()
+    {
         return this.name;
+    }
+
+    public boolean equals( Object o )
+    {
+        if (!( o instanceof ProtocolBasicMatcher )) return false;
+
+        /* just use to string, this will is only incorrect if this is
+         * subclassed, and this class is final. */
+        return toString().equals( o.toString());
+    }
+
+    public int hashCode()
+    {
+        return toString().hashCode();
     }
 
     /**
@@ -170,19 +202,17 @@ public enum ProtocolBasicMatcher implements ProtocolDBMatcher
         return MATCHER_TCP_AND_UDP;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public static ProtocolBasicMatcher getInstance(String name)
+    private static ProtocolBasicMatcher makeMatcher( String name, boolean tcp, boolean udp, boolean ping )
     {
-        ProtocolBasicMatcher[] values = values();
-        for (int i = 0; i < values.length; i++) {
-            if (values[i].getName().equals(name)){
-                return values[i];
-            }
+        ProtocolBasicMatcher matcher = nameToMatcherMap.get( name );
+
+        /* If necessary add the matcher to the map */
+        if ( matcher == null ) {
+            matcher = new ProtocolBasicMatcher( name, tcp, udp, ping );
+            nameToMatcherMap.put( name, matcher );
         }
-        return null;
+
+        return matcher;
     }
 
     /* This is the parser for simple protocol matchers */
@@ -197,7 +227,7 @@ public enum ProtocolBasicMatcher implements ProtocolDBMatcher
         {
             value = value.trim();
 
-            return ( ProtocolBasicMatcher.getInstance( value ) != null );
+            return ( nameToMatcherMap.get( value ) != null );
         }
 
         public ProtocolDBMatcher parse( String value ) throws ParseException
@@ -208,7 +238,7 @@ public enum ProtocolBasicMatcher implements ProtocolDBMatcher
                 throw new ParseException( "Invalid protocol basic matcher '" + value + "'" );
             }
 
-            ProtocolBasicMatcher matcher = ProtocolBasicMatcher.getInstance( value );
+            ProtocolBasicMatcher matcher = nameToMatcherMap.get( value );
 
             if ( matcher == null ) {
                 throw new ParseException( "Invalid protocol basic matcher '" + value + "'" );

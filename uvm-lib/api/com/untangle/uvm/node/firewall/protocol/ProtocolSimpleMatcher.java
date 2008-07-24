@@ -45,12 +45,14 @@ import com.untangle.uvm.node.firewall.ParsingConstants;
  * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
  * @version 1.0
  */
-public enum ProtocolSimpleMatcher implements ProtocolDBMatcher
+public final class ProtocolSimpleMatcher extends ProtocolDBMatcher
 {
+    // XXX private static final long serialVersionUID = 6026959848409522258L;
     /* A protocol matcher that matches everything */
-    MATCHER_ALL( true ),
+    private static final ProtocolDBMatcher MATCHER_ALL = new ProtocolSimpleMatcher( true );
+
     /* A protocol matcher that never matches */
-    MATCHER_NOTHING( false );
+    private static final ProtocolDBMatcher MATCHER_NOTHING = new ProtocolSimpleMatcher( false );
 
     /* true if this matches everyhthing */
     private final boolean isAll;
@@ -84,10 +86,15 @@ public enum ProtocolSimpleMatcher implements ProtocolDBMatcher
 
     public String toDatabaseString()
     {
+        return toString();
+    }
+
+    public String toString()
+    {
         String name = ( isAll ) ? ProtocolParsingConstants.MARKER_ANY : ParsingConstants.MARKER_NOTHING;
         return name.toUpperCase();
     }
-
+    
     /**
      * Retrieve the all matcher.
      *

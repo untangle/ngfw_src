@@ -45,8 +45,14 @@ import java.io.Serializable;
  * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
  * @version 1.0
  */
-public interface IPDBMatcher extends IPMatcher, Serializable
+public abstract class IPDBMatcher implements IPMatcher, Serializable
 {
+    /** Package protected so that only classes in the package can add to the list
+     * of database saveable ip matchers */
+    IPDBMatcher()
+    {
+    }
+
     public abstract boolean isMatch( InetAddress address );
     public abstract String toDatabaseString();
 }

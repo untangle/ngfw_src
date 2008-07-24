@@ -42,7 +42,6 @@ import com.untangle.uvm.node.InterfaceComparator;
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.firewall.Parser;
 import com.untangle.uvm.node.firewall.ParsingConstants;
-import com.untangle.uvm.vnet.Protocol;
 
 /**
  * An IntfMatcher that matches a single interface.
@@ -50,16 +49,22 @@ import com.untangle.uvm.vnet.Protocol;
  * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
  * @version 1.0
  */
-public enum IntfSingleMatcher implements IntfDBMatcher
+public final class IntfSingleMatcher extends IntfDBMatcher
 {
     /* Interface matcher for the external interface */
-    EXTERNAL_MATCHER(IntfConstants.EXTERNAL_INTF),
+    private static final IntfDBMatcher EXTERNAL_MATCHER;
+
     /* Interface matcher for the internal interface */
-    INTERNAL_MATCHER(IntfConstants.INTERNAL_INTF),
+    private static final IntfDBMatcher INTERNAL_MATCHER;
+
     /* Interface matcher for the dmz interface */
-    DMZ_MATCHER(IntfConstants.DMZ_INTF),
+    private static final IntfDBMatcher DMZ_MATCHER;
+
     /* Interface matcher for the vpn interface */
-    VPN_MATCHER(IntfConstants.VPN_INTF);
+    private static final IntfDBMatcher VPN_MATCHER;
+
+    /* Map of interfaces to their matcher */
+    static Map<Byte,IntfSingleMatcher> CACHE = new HashMap<Byte,IntfSingleMatcher>();
 
     /* The interface this matcher matches */
     private final byte intf;
@@ -88,24 +93,14 @@ public enum IntfSingleMatcher implements IntfDBMatcher
         }
     }
 
-    public byte getIntf() {
-        return intf;
-    }
-
-    public static IntfSingleMatcher getInstance(byte intf)
-    {
-        IntfSingleMatcher[] values = values();
-        for (int i = 0; i < values.length; i++) {
-            if (values[i].getIntf() == intf){
-                return values[i];
-            }
-        }
-        return null;
-    }
-
     public String toDatabaseString()
     {
         return Byte.toString(intf);
+    }
+
+    public String toString()
+    {
+        return IntfMatcherEnumeration.getInstance().getIntfUserName(intf);
     }
 
     /**
@@ -136,6 +131,18 @@ public enum IntfSingleMatcher implements IntfDBMatcher
         return VPN_MATCHER;
     }
 
+    public static IntfDBMatcher makeInstance(byte intf)
+    {
+        IntfSingleMatcher cache = CACHE.get(intf);
+
+        if (null == cache) {
+            cache = new IntfSingleMatcher(intf);
+            CACHE.put(intf, cache);
+        }
+
+        return cache;
+    }
+
     /* The parser for the single matcher */
     static final Parser<IntfDBMatcher> PARSER = new Parser<IntfDBMatcher>()
     {
@@ -156,8 +163,14 @@ public enum IntfSingleMatcher implements IntfDBMatcher
             }
 
             IntfMatcherEnumeration ime = IntfMatcherEnumeration.getInstance();
-            return getInstance(ime.parseInterface(value));
+            return makeInstance(ime.parseInterface(value));
         }
     };
 
-}
+    static
+    {
+        EXTERNAL_MATCHER = makeInstance(IntfConstants.EXTERNAL_INTF);
+        INTERNAL_MATCHER = makeInstance(IntfConstants.INTERNAL_INTF);
+        DMZ_MATCHER = makeInstance(IntfConstants.DMZ_INTF);
+        VPN_MATCHER = makeInstance(IntfConstants.VPN_INTF);
+    }}

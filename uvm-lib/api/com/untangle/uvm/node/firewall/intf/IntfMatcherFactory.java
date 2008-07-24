@@ -137,7 +137,7 @@ public class IntfMatcherFactory
      */
     public IntfDBMatcher makeSingleMatcher(byte intf) throws ParseException
     {
-        return IntfSingleMatcher.getInstance(intf);
+        return IntfSingleMatcher.makeInstance(intf);
     }
 
     /**

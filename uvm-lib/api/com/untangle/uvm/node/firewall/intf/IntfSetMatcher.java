@@ -49,7 +49,7 @@ import com.untangle.uvm.node.firewall.ParsingConstants;
  * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
  * @version 1.0
  */
-public final class IntfSetMatcher implements IntfDBMatcher
+public final class IntfSetMatcher extends IntfDBMatcher
 {
     /* Cache of the created interface matchers */
     static Map<ImmutableBitSet,IntfSetMatcher> CACHE

@@ -52,7 +52,7 @@ import com.untangle.uvm.node.firewall.ParsingConstants;
  * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
  * @version 1.0
  */
-public final class IPSetMatcher implements IPDBMatcher
+public final class IPSetMatcher extends IPDBMatcher
 {
     /* The set of addresses that match */
     private final Set<InetAddress> addressSet;

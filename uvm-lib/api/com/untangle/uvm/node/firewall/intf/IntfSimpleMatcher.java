@@ -33,6 +33,9 @@
 
 package com.untangle.uvm.node.firewall.intf;
 
+import java.net.InetAddress;
+
+import com.untangle.uvm.node.IPaddr;
 import com.untangle.uvm.node.InterfaceComparator;
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.firewall.Parser;
@@ -44,12 +47,15 @@ import com.untangle.uvm.node.firewall.ParsingConstants;
  * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
  * @version 1.0
  */
-public enum IntfSimpleMatcher implements IntfDBMatcher
+public final class IntfSimpleMatcher extends IntfDBMatcher
 {
     /* An interface matcher that matches everything */
-    ALL_MATCHER(true),
+    private static final IntfDBMatcher ALL_MATCHER
+        = new IntfSimpleMatcher(true);
+
     /* An interface matcher that doesn't match anything */
-    NOTHING_MATCHER(false);
+    private static final IntfDBMatcher NOTHING_MATCHER
+        = new IntfSimpleMatcher(false);
 
     /* true if this is the all matcher */
     private final boolean isAll;
@@ -70,6 +76,11 @@ public enum IntfSimpleMatcher implements IntfDBMatcher
     }
 
     public String toDatabaseString()
+    {
+        return toString();
+    }
+
+    public String toString()
     {
         if (isAll) return ParsingConstants.MARKER_ANY;
         return ParsingConstants.MARKER_NOTHING;
