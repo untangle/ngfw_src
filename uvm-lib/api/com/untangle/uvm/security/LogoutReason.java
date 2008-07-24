@@ -33,9 +33,6 @@
 
 package com.untangle.uvm.security;
 
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Reason a user was logged out of the system.
@@ -43,21 +40,11 @@ import java.util.Map;
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
-public class LogoutReason implements Serializable
+public enum LogoutReason
 {
-    private static final long serialVersionUID = 2003060303088994717L;
-
-    public static final LogoutReason TIMEOUT = new LogoutReason('T', "timed out");
-    public static final LogoutReason ADMINISTRATOR = new LogoutReason('A', "administrator initiated");
-    public static final LogoutReason USER = new LogoutReason('U', "user initiated");
-
-    private static final Map INSTANCES = new HashMap();
-
-    static {
-        INSTANCES.put('T', TIMEOUT);
-        INSTANCES.put('A', ADMINISTRATOR);
-        INSTANCES.put('U', USER);
-    }
+    TIMEOUT('T', "timed out"),
+    ADMINISTRATOR('A', "administrator initiated"),
+    USER('U', "user initiated");
 
     private final char key;
     private final String reason;
@@ -73,35 +60,14 @@ public class LogoutReason implements Serializable
         return key;
     }
 
-    public String toString()
-    {
-        return reason;
-    }
-
-    private Object readResolve()
-    {
-        return INSTANCES.get(key);
-    }
-
-    public static LogoutReason getInstance(char key)
-    {
-        return (LogoutReason)INSTANCES.get(key);
-    }
-
-    // Object methods ---------------------------------------------------------
-
-    public boolean equals(Object o)
-    {
-        if (!(o instanceof LogoutReason)) {
-            return false;
-        } else {
-            LogoutReason lfr = (LogoutReason)o;
-            return key == lfr.key;
+    public static LogoutReason getInstance(char key){
+        LogoutReason[] values = values();
+        for (int i = 0; i < values.length; i++) {
+            if (values[i].getKey() == key){
+                return values[i];
+            }
         }
+        return null;
     }
 
-    public int hashCode()
-    {
-        return (int)key;
-    }
 }
