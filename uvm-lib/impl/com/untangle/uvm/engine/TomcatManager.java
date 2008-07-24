@@ -63,7 +63,6 @@ class TomcatManager
 
     private static final String STANDARD_WELCOME = "/webui";
 
-    private final InetAddress bindAddress;
     private final InetAddress localhost;
 
     private final Logger logger = Logger.getLogger(getClass());
@@ -95,19 +94,15 @@ class TomcatManager
                   String webAppRoot, String logDir)
     {
         InetAddress l;
-        InetAddress b;
 
         try {
-            b = InetAddress.getByName("192.0.2.42");
             l = InetAddress.getByName("127.0.0.1");
         } catch (Exception exn) {
             /* If it is null, it will just bind to 0.0.0.0 */
             l = null;
-            b = null;
-            logger.warn("Unable to parse 192.0.2.42 or 127.0.0.1", exn);
+            logger.warn("Unable to parse 127.0.0.1", exn);
         }
 
-        this.bindAddress = b;
         this.localhost = l;
 
         this.uvmContext = uvmContext;
@@ -339,6 +334,7 @@ class TomcatManager
 
             // XXX ADD JK CONNECTOR
             Connector jkConnector = new Connector("org.apache.jk.server.JkCoyoteHandler");
+            jkConnector.setProperty("address", "127.0.0.1");
             emb.addConnector(jkConnector);
 
             // start operation
