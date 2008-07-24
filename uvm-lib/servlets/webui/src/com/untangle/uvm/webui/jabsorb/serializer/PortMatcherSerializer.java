@@ -23,7 +23,9 @@ public class PortMatcherSerializer extends AbstractSerializer {
 	/**
 	 * Classes that this can serialize.
 	 */
-	private static Class[] _serializableClasses = new Class[] { PortMatcher.class, PortDBMatcher.class, PortRangeMatcher.class, PortSetMatcher.class, PortSingleMatcher.class, PortSimpleMatcher.class };
+	private static Class[] _serializableClasses = new Class[] { PortMatcher.class, PortDBMatcher.class, PortRangeMatcher.class, PortSetMatcher.class, 
+	                                                    PortSingleMatcher.class, PortSimpleMatcher.class, PortSimpleMatcher.getAllMatcher().getClass(), 
+                                                        PortSimpleMatcher.getNilMatcher().getClass(), PortSimpleMatcher.getPingMatcher().getClass() };
 
 	/*
 	 * (non-Javadoc)

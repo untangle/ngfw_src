@@ -22,7 +22,9 @@ public class TimeMatcherSerializer extends AbstractSerializer {
 	/**
 	 * Classes that this can serialize.
 	 */
-	private static Class[] _serializableClasses = new Class[] { DayOfWeekMatcher.class, DayOfWeekDBMatcher.class, DayOfWeekSetMatcher.class, DayOfWeekSingleMatcher.class, DayOfWeekSimpleMatcher.class };
+	private static Class[] _serializableClasses = new Class[] { DayOfWeekMatcher.class, DayOfWeekDBMatcher.class, DayOfWeekSetMatcher.class, 
+                                    DayOfWeekSingleMatcher.class, DayOfWeekSimpleMatcher.class, DayOfWeekSimpleMatcher.getAllMatcher().getClass(), 
+                                    DayOfWeekSimpleMatcher.getNilMatcher().getClass() };
 
 	/*
 	 * (non-Javadoc)

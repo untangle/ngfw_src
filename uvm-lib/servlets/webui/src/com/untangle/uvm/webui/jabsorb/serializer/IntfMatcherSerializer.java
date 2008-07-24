@@ -23,7 +23,8 @@ public class IntfMatcherSerializer extends AbstractSerializer {
 	/**
 	 * Classes that this can serialize.
 	 */
-	private static Class[] _serializableClasses = new Class[] { IntfMatcher.class, IntfDBMatcher.class, IntfRelativeMatcher.class, IntfSetMatcher.class, IntfSingleMatcher.class, IntfSimpleMatcher.class };
+	private static Class[] _serializableClasses = new Class[] { IntfMatcher.class, IntfDBMatcher.class, IntfRelativeMatcher.class, 
+                                                            IntfSetMatcher.class, IntfSingleMatcher.class, IntfSimpleMatcher.class };
 
 	/*
 	 * (non-Javadoc)

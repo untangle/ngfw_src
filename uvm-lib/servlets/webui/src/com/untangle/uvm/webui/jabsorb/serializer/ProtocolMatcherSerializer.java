@@ -21,7 +21,8 @@ public class ProtocolMatcherSerializer extends AbstractSerializer {
 	/**
 	 * Classes that this can serialize.
 	 */
-	private static Class[] _serializableClasses = new Class[] { ProtocolSimpleMatcher.class, ProtocolBasicMatcher.class, ProtocolDBMatcher.class, ProtocolMatcher.class };
+	private static Class[] _serializableClasses = new Class[] { ProtocolSimpleMatcher.class, ProtocolBasicMatcher.class, ProtocolDBMatcher.class, 
+                                        ProtocolMatcher.class };
 
 	/*
 	 * (non-Javadoc)

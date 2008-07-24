@@ -26,7 +26,8 @@ public class IPMatcherSerializer extends AbstractSerializer {
 	/**
 	 * Classes that this can serialize.
 	 */
-	private static Class[] _serializableClasses = new Class[] { IPMatcher.class, IPDBMatcher.class, IPInternalMatcher.class, IPLocalMatcher.class, IPRangeMatcher.class, IPSetMatcher.class, IPSingleMatcher.class, IPSimpleMatcher.class, IPSubnetMatcher.class };
+	private static Class[] _serializableClasses = new Class[] { IPMatcher.class, IPDBMatcher.class, IPInternalMatcher.class, IPLocalMatcher.class, 
+                                    IPRangeMatcher.class, IPSetMatcher.class, IPSingleMatcher.class, IPSimpleMatcher.class, IPSubnetMatcher.class };
 
 	/*
 	 * (non-Javadoc)
