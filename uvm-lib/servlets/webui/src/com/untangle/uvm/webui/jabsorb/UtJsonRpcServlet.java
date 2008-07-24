@@ -19,9 +19,14 @@
 package com.untangle.uvm.webui.jabsorb;
 
 import java.io.IOException;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+
+import org.jabsorb.JSONRPCBridge;
+import org.jabsorb.JSONRPCServlet;
+import org.jabsorb.serializer.impl.JSONBeanSerializer;
 
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.client.RemoteUvmContext;
@@ -30,17 +35,20 @@ import com.untangle.uvm.webui.jabsorb.serializer.ExtendedListSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.ExtendedSetSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.HostNameSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.IPMaddrSerializer;
+import com.untangle.uvm.webui.jabsorb.serializer.IPMatcherSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.IPaddrSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.Inet4AddressSerializer;
+import com.untangle.uvm.webui.jabsorb.serializer.IntfMatcherSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.LazyInitializerSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.MimeTypeSerializer;
+import com.untangle.uvm.webui.jabsorb.serializer.PortMatcherSerializer;
+import com.untangle.uvm.webui.jabsorb.serializer.ProtocolMatcherSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.RFC2253NameSerializer;
+import com.untangle.uvm.webui.jabsorb.serializer.TimeMatcherSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.TimeSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.TimeZoneSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.URLSerializer;
-import org.jabsorb.JSONRPCBridge;
-import org.jabsorb.JSONRPCServlet;
-import org.jabsorb.serializer.impl.JSONBeanSerializer;
+import com.untangle.uvm.webui.jabsorb.serializer.UserMatcherSerializer;
 
 /**
  * Initializes the JSONRPCBridge.
@@ -90,6 +98,14 @@ public class UtJsonRpcServlet extends JSONRPCServlet
                 b.registerSerializer(new LazyInitializerSerializer());
                 b.registerSerializer(new ExtendedListSerializer());
                 b.registerSerializer(new ExtendedSetSerializer());
+                
+                // firewal related serializers
+                b.registerSerializer(new ProtocolMatcherSerializer());
+                b.registerSerializer(new IntfMatcherSerializer());
+                b.registerSerializer(new IPMatcherSerializer());
+                b.registerSerializer(new PortMatcherSerializer());
+                b.registerSerializer(new TimeMatcherSerializer());
+                b.registerSerializer(new UserMatcherSerializer());
                 
             } catch (Exception e) {
                 e.printStackTrace();
