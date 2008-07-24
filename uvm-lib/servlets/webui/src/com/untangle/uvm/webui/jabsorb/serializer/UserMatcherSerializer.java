@@ -52,7 +52,7 @@ public class UserMatcherSerializer extends AbstractSerializer {
 	public Object marshall(SerializerState state, Object p, Object o)
 			throws MarshallException {
 		if (o instanceof UserDBMatcher) {
-			return o.toString();
+			return ((UserDBMatcher) o).toDatabaseString();
 		}
 		return null;
 	}

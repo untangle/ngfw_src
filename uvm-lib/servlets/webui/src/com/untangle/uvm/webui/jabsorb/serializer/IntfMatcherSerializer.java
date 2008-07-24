@@ -53,7 +53,7 @@ public class IntfMatcherSerializer extends AbstractSerializer {
 	public Object marshall(SerializerState state, Object p, Object o)
 			throws MarshallException {
 		if (o instanceof IntfDBMatcher) {
-			return o.toString();
+			return ((IntfDBMatcher) o).toDatabaseString();
 		}
 		return null;
 	}

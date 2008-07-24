@@ -51,7 +51,7 @@ public class ProtocolMatcherSerializer extends AbstractSerializer {
 	public Object marshall(SerializerState state, Object p, Object o)
 			throws MarshallException {
 		if (o instanceof ProtocolDBMatcher) {
-			return o.toString();
+			return ((ProtocolDBMatcher) o).toDatabaseString();
 		}
 		return null;
 	}
