@@ -18,6 +18,12 @@
 
 package com.untangle.uvm.engine;
 
+import java.io.BufferedReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.BindException;
 import java.net.InetAddress;
 import java.security.Principal;
 import java.util.ArrayList;
@@ -55,7 +61,7 @@ class TomcatManager
     private static final String MAX_SPARE_THREADS = "3";
     private static final String MAX_THREADS = "100";
 
-    private static final String STANDARD_WELCOME = "webui";
+    private static final String STANDARD_WELCOME = "/webui";
 
     private final InetAddress bindAddress;
     private final InetAddress localhost;
@@ -402,6 +408,24 @@ class TomcatManager
     synchronized void setRootWelcome(String welcomeFile)
     {
         this.welcomeFile = welcomeFile;
+
+        FileWriter w = null;
+        try {
+            w = new FileWriter("/etc/apache2/untangle-homepage");
+            w.write("RedirectMatch 302 /index.html " + welcomeFile + "\n");
+        } catch (IOException exn) {
+            logger.warn("could not write homepage redirect", exn);
+        } finally {
+            if (null != w) {
+                try {
+                    w.close();
+                } catch (IOException exn) {
+                    logger.warn("could not close FileWriter", exn);
+                }
+            }
+        }
+
+        apacheReload();
     }
 
     String getRootWelcome()
@@ -566,6 +590,34 @@ class TomcatManager
     private static class TomClassLoader extends ClassLoader {
         TomClassLoader(ClassLoader parent) {
             super(parent);
+        }
+    }
+
+    private void apacheReload()
+    {
+        try {
+            logger.info("Reload Apache Config");
+            ProcessBuilder pb = new ProcessBuilder("/etc/init.d/apache2 reload");
+            pb.redirectErrorStream(true);
+            Process p = pb.start();
+            InputStream is = p.getInputStream();
+            BufferedReader br = new BufferedReader(new InputStreamReader(is));
+            for (String line = br.readLine(); null != line; line = br.readLine()) {
+                logger.info(line);
+            }
+
+            boolean done = false;
+            int tries = 5;
+
+            while (!done && 0 < tries) {
+                tries--;
+                try {
+                    p.waitFor();
+                    done = true;
+                } catch (InterruptedException exn) { }
+            }
+        } catch (IOException exn) {
+            logger.warn("Could not reload apache config", exn);
         }
     }
 }
