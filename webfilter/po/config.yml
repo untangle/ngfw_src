@@ -9,7 +9,4 @@ table:
   column:
   - display_name
   - description
-- name: u_string_rule
-  column:
-  - name
   

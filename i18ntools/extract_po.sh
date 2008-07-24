@@ -10,12 +10,12 @@ then
     mkdir $1
 fi    
 
-for module in main administration system systemInfo
+for module in main administration system systemInfo upgrade
 do 
     cp ../uvm-lib/servlets/webui/po/$1/ung_${module}.po ./$1/
 done
 
-for module in webfilter phish spyware spamassassin shield protofilter
+for module in webfilter phish spyware spamassassin shield protofilter ips
 do 
     cp ../${module}/po/$1/ung_${module}.po ./$1/
 done

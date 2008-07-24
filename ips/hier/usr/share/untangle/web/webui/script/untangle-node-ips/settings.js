@@ -94,7 +94,7 @@ if (!Ung.hasResource["Ung.Ips"]) {
 		                    "name" : this.i18n._("[no name]"),
 		                    "text" : this.i18n._("[no signature]"),
 		                    "category" : this.i18n._("[no category]"),
-		                    "sid" : this.i18n._("0"),
+		                    "sid" : "0",
 		                    "live" : true,
 		                    "log" : true,
 		                    "description" : this.i18n._("[no description]")

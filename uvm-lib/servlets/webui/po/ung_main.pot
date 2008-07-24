@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-07-18 12:36+0300\n"
+"POT-Creation-Date: 2008-07-24 19:04+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Plural-Forms: nplurals=0; null;\n"
 
 #: ../root/script/main.js:162 ../root/script/components.js:853
-#: ../root/script/components.js:2199 ../root/script/components.js:2255
+#: ../root/script/components.js:2206 ../root/script/components.js:2262
 msgid "Help"
 msgstr ""
 
@@ -32,7 +32,7 @@ msgstr ""
 #: ../root/script/main.js:439 ../root/script/main.js:449
 #: ../root/script/main.js:459 ../root/script/main.js:485
 #: ../root/script/main.js:489 ../root/script/main.js:560
-#: ../root/script/main.js:593 ../root/script/components.js:168
+#: ../root/script/main.js:605 ../root/script/components.js:168
 #: ../root/script/components.js:183 ../root/script/components.js:208
 #: ../root/script/components.js:221 ../root/script/components.js:257
 #: ../root/script/components.js:272 ../root/script/components.js:297
@@ -40,10 +40,10 @@ msgstr ""
 #: ../root/script/components.js:595 ../root/script/components.js:601
 #: ../root/script/components.js:605 ../root/script/components.js:907
 #: ../root/script/components.js:917 ../root/script/components.js:998
-#: ../root/script/components.js:1100 ../root/script/components.js:1117
-#: ../root/script/components.js:1169 ../root/script/components.js:1438
-#: ../root/script/components.js:1535 ../root/script/components.js:1891
-#: ../root/script/components.js:1926 ../root/script/components.js:2492
+#: ../root/script/components.js:1101 ../root/script/components.js:1118
+#: ../root/script/components.js:1170 ../root/script/components.js:1439
+#: ../root/script/components.js:1536 ../root/script/components.js:1893
+#: ../root/script/components.js:1933 ../root/script/components.js:2499
 msgid "Failed"
 msgstr ""
 
@@ -72,7 +72,7 @@ msgstr ""
 msgid "Passwords do not match"
 msgstr ""
 
-#: ../root/script/main.js:305 ../root/script/components.js:2434
+#: ../root/script/main.js:305 ../root/script/components.js:2441
 msgid "Warning"
 msgstr ""
 
@@ -128,11 +128,11 @@ msgstr ""
 msgid "System Info"
 msgstr ""
 
-#: ../root/script/main.js:655
+#: ../root/script/main.js:667
 msgid "Services & Utilities"
 msgstr ""
 
-#: ../root/script/main.js:655
+#: ../root/script/main.js:667
 msgid "Services"
 msgstr ""
 
@@ -243,220 +243,220 @@ msgid ""
 "The <B>Power Button</B> allows you to turn a product \"on\" and \"off\"."
 msgstr ""
 
-#: ../root/script/components.js:1204
+#: ../root/script/components.js:1205
 msgid "Network"
 msgstr ""
 
-#: ../root/script/components.js:1205
+#: ../root/script/components.js:1206
 msgid "CPU Load"
 msgstr ""
 
-#: ../root/script/components.js:1206
+#: ../root/script/components.js:1207
 msgid "Memory"
 msgstr ""
 
-#: ../root/script/components.js:1207
+#: ../root/script/components.js:1208
 msgid "Disk"
 msgstr ""
 
-#: ../root/script/components.js:1208
+#: ../root/script/components.js:1209
 msgid "Tx:"
 msgstr ""
 
-#: ../root/script/components.js:1208
+#: ../root/script/components.js:1209
 msgid "Rx:"
 msgstr ""
 
-#: ../root/script/components.js:1210
+#: ../root/script/components.js:1211
 msgid "F:"
 msgstr ""
 
-#: ../root/script/components.js:1210
+#: ../root/script/components.js:1211
 msgid "U:"
 msgstr ""
 
-#: ../root/script/components.js:1215
+#: ../root/script/components.js:1216
 msgid "Memory Usage:"
 msgstr ""
 
-#: ../root/script/components.js:1216 ../root/script/components.js:1227
+#: ../root/script/components.js:1217 ../root/script/components.js:1228
 msgid "used"
 msgstr ""
 
-#: ../root/script/components.js:1216 ../root/script/components.js:1219
+#: ../root/script/components.js:1217 ../root/script/components.js:1220
 msgid "free"
 msgstr ""
 
-#: ../root/script/components.js:1216
+#: ../root/script/components.js:1217
 msgid "total"
 msgstr ""
 
-#: ../root/script/components.js:1217
+#: ../root/script/components.js:1218
 msgid "Memory Pages:"
 msgstr ""
 
-#: ../root/script/components.js:1218
+#: ../root/script/components.js:1219
 msgid "active"
 msgstr ""
 
-#: ../root/script/components.js:1218
+#: ../root/script/components.js:1219
 msgid "wired"
 msgstr ""
 
-#: ../root/script/components.js:1219
+#: ../root/script/components.js:1220
 msgid "inactive"
 msgstr ""
 
-#: ../root/script/components.js:1220
+#: ../root/script/components.js:1221
 msgid "VM Statistics:"
 msgstr ""
 
-#: ../root/script/components.js:1221
+#: ../root/script/components.js:1222
 msgid "pageins"
 msgstr ""
 
-#: ../root/script/components.js:1221
+#: ../root/script/components.js:1222
 msgid "pageouts"
 msgstr ""
 
-#: ../root/script/components.js:1222
+#: ../root/script/components.js:1223
 msgid "cache lookups"
 msgstr ""
 
-#: ../root/script/components.js:1222
+#: ../root/script/components.js:1223
 msgid "cache hits"
 msgstr ""
 
-#: ../root/script/components.js:1223
+#: ../root/script/components.js:1224
 msgid "page faults"
 msgstr ""
 
-#: ../root/script/components.js:1223
+#: ../root/script/components.js:1224
 msgid "copy-on-writes"
 msgstr ""
 
-#: ../root/script/components.js:1224
+#: ../root/script/components.js:1225
 msgid "Swap Files:"
 msgstr ""
 
-#: ../root/script/components.js:1225
+#: ../root/script/components.js:1226
 msgid "encrypted swap files present in"
 msgstr ""
 
-#: ../root/script/components.js:1226
+#: ../root/script/components.js:1227
 msgid "swap files at peak usage"
 msgstr ""
 
-#: ../root/script/components.js:1227
+#: ../root/script/components.js:1228
 msgid "total swap space"
 msgstr ""
 
-#: ../root/script/components.js:1293
+#: ../root/script/components.js:1294
 msgid "activity"
 msgstr ""
 
-#: ../root/script/components.js:1374
+#: ../root/script/components.js:1375
 msgid "system"
 msgstr ""
 
-#: ../root/script/components.js:1438
+#: ../root/script/components.js:1439
 msgid "Please set up to four items."
 msgstr ""
 
-#: ../root/script/components.js:1478
+#: ../root/script/components.js:1479
 msgid "Ok"
 msgstr ""
 
-#: ../root/script/components.js:1485 ../root/script/components.js:2111
-#: ../root/script/components.js:2208 ../root/script/components.js:2264
+#: ../root/script/components.js:1486 ../root/script/components.js:2118
+#: ../root/script/components.js:2215 ../root/script/components.js:2271
 msgid "Cancel"
 msgstr ""
 
-#: ../root/script/components.js:1778
+#: ../root/script/components.js:1780
 msgid "timestamp"
 msgstr ""
 
-#: ../root/script/components.js:1786
+#: ../root/script/components.js:1788
 msgid "action"
 msgstr ""
 
-#: ../root/script/components.js:1791
+#: ../root/script/components.js:1793
 msgid "blocked"
 msgstr ""
 
-#: ../root/script/components.js:1791
+#: ../root/script/components.js:1793
 msgid "passed"
 msgstr ""
 
-#: ../root/script/components.js:1794
+#: ../root/script/components.js:1796
 msgid "client"
 msgstr ""
 
-#: ../root/script/components.js:1802
+#: ../root/script/components.js:1804
 msgid "request"
 msgstr ""
 
-#: ../root/script/components.js:1807
+#: ../root/script/components.js:1809
 msgid "reason for action"
 msgstr ""
 
-#: ../root/script/components.js:1812
+#: ../root/script/components.js:1814
 msgid "blocked in block list"
 msgstr ""
 
-#: ../root/script/components.js:1812
+#: ../root/script/components.js:1814
 msgid "not blocked in block list"
 msgstr ""
 
-#: ../root/script/components.js:1815
+#: ../root/script/components.js:1817
 msgid "server"
 msgstr ""
 
-#: ../root/script/components.js:1831
+#: ../root/script/components.js:1833
 msgid "Event Log"
 msgstr ""
 
-#: ../root/script/components.js:1868 ../root/script/components.js:1870
+#: ../root/script/components.js:1870 ../root/script/components.js:1872
 msgid "Refresh"
 msgstr ""
 
-#: ../root/script/components.js:2102
+#: ../root/script/components.js:2109
 msgid "Remove"
 msgstr ""
 
-#: ../root/script/components.js:2120 ../root/script/components.js:2217
+#: ../root/script/components.js:2127 ../root/script/components.js:2224
 msgid "Save"
 msgstr ""
 
-#: ../root/script/components.js:2273
+#: ../root/script/components.js:2280
 msgid "Update"
 msgstr ""
 
-#: ../root/script/components.js:2346 ../root/script/components.js:2614
+#: ../root/script/components.js:2353 ../root/script/components.js:2621
 msgid "Edit"
 msgstr ""
 
-#: ../root/script/components.js:2434
+#: ../root/script/components.js:2441
 msgid "The form is not valid!"
 msgstr ""
 
-#: ../root/script/components.js:2661
+#: ../root/script/components.js:2668
 msgid "Delete"
 msgstr ""
 
-#: ../root/script/components.js:2822
+#: ../root/script/components.js:2832
 msgid "Displaying topics {0} - {1} of {2}"
 msgstr ""
 
-#: ../root/script/components.js:2823
+#: ../root/script/components.js:2833
 msgid "No topics to display"
 msgstr ""
 
-#: ../root/script/components.js:2834
+#: ../root/script/components.js:2844
 msgid "Add"
 msgstr ""
 
-#: ../root/script/components.js:2835
+#: ../root/script/components.js:2845
 msgid "Add New Row"
 msgstr ""
 

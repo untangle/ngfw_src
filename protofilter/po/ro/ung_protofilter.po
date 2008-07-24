@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-07-18 13:10+0300\n"
+"POT-Creation-Date: 2008-07-24 19:04+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -96,618 +96,142 @@ msgstr ""
 msgid "Failed"
 msgstr "Eşuat"
 
-#: database data: n_protofilter_pattern.description
-msgid "   A popular computer game."
-msgstr "Un joc de calculator popular."
-
-#: database data: n_protofilter_pattern.description
-msgid "   Internet Message Access Protocol (A common e-mail protocol)"
-msgstr " Internet Message Access Protocol (Un protocol e-mail frecvent)"
-
-#: database data: n_protofilter_pattern.description
-msgid " (Simple) Network Time Protocol - RFCs 1305 and 2030"
-msgstr " (Simple) Network Time Protocol - RFCs 1305 and 2030"
-
-#: database data: n_protofilter_pattern.description
-msgid " 2D asteroids-style   space game - http://sscentral.com"
-msgstr "2D asteroids-style   joc spaţial - http://sscentral.com"
-
-#: database data: n_protofilter_pattern.description
-msgid " 2D asteroids-style space game - http://sscentral.com"
-msgstr "2D asteroids-style   joc spaţial - http://sscentral.com"
-
-#: database data: n_protofilter_pattern.description
-msgid " A Korean P2P filesharing program/protocol - http://www.soribada.com"
-msgstr ""
-"Un program/protocol P2P Corean de sharing de fisiere - http://www.soribada."
-"com"
-
-#: database data: n_protofilter_pattern.description
-msgid " A legal music distribution site - http://pressplay  .com"
-msgstr "Site legal de distribuite muzica - http://pressplay  .com"
-
-#: database data: n_protofilter_pattern.description
-msgid " A legal music distribution site - http://pressplay.com"
-msgstr "Site legal de distribuite muzica - http://pressplay.com"
-
-#: database data: n_protofilter_pattern.description
-msgid " A popular computer game."
-msgstr "Un joc de calculator popular."
-
-#: database data: n_protofilter_pattern.description
-msgid " A precursor to HTTP - RFC 1436"
-msgstr "Un precursor al HTTP - RFC 1436"
-
-#: database data: n_protofilter_pattern.description
-msgid " AOL instant messenger (OSCAR and TOC)"
-msgstr " AOL instant messenger (OSCAR şi TOC)"
-
-#: database data: n_protofilter_pattern.description
-msgid " An EA game"
-msgstr "Un joc EA"
-
-#: database data: n_protofilter_pattern.description
-msgid " An EA game."
-msgstr "Un joc EA."
-
-#: database data: n_protofilter_pattern.description
-msgid " An Internet radio site - http://live365.com"
-msgstr "Un site de radio-internet - http://live365.com"
-
-#: database data: n_protofilter_pattern.description
-msgid " An old P2P filesharing protocol"
-msgstr "Un protocol vechi de sharing de fişiere."
-
-#: database data: n_protofilter_pattern.description
-msgid " Anonymous information   retrieval - http://freenetproject.org"
-msgstr "Obţinere de informaţie anonimă - http://freenetproject.org"
-
-#: database data: n_protofilter_pattern.description
-msgid " Anonymous information retrieval - http://freenetproject.org"
-msgstr "Obţinere de informaţie anonimă - http://freenetproject.org"
-
-#: database data: n_protofilter_pattern.description
-msgid " Border Gateway Protocol - RFC 1771"
-msgstr "Border Gateway Protocol - RFC 1771"
-
-#: database data: n_protofilter_pattern.description
-msgid " Chinese   P2P filesharing - http://pp365.com http://poco.cn"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " Chinese   P2P filesharing - http://xunlei.com"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " Chinese P2P filesharing - http://pp365.com http://poco.cn"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " Chinese P2P filesharing - http://xunlei.com"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " Concurrent Versions System"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " Console gaming"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " Digital Video   Recorder - http://replaytv.com"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " Digital Video Recorder - http://replaytv.com"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " Domain Name System - RFC 1035"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " Dynamic Host Configuration Protocol - RFC 1541"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " File Transfer Protocol - RFC 959"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " Firewall traversal protocol   - RFC 1928"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " Firewall traversal protocol - RFC 1928"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " Hard drive temperature reporting"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " HyperText   Transfer Protocol - RFC 2616"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " HyperText Transfer Protocol - RFC 2616"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " Identification Protocol - RFC 1413"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " Insecure remote login - RFC 854"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " Internet Message Access Protocol (A common e-mail protocol)"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " Internet Relay Chat - RFC 1459"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " LAN-only P2P filesharing"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " Line Printer Daemon Protocol (old-style UNIX   printing) - RFC 1179"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " Line Printer Daemon Protocol (old-style UNIX printing) - RFC 1179"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " Microsoft Network chat client"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " NetBIOS name service"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " Network Basic Input Output System"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " Network News Transfer   Protocol - RFCs 977 and 2980"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " Network News Transfer Protocol - RFCs 977 and 2980"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " Networked GUI system used in most Unices"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " Novell   Core Protocol"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " Novell Core Protocol"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " P2P   filesharing (?)"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " P2P application - http://thecircle.org.au"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " P2P filesharing"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " P2P filesharing   - http://www.applejuicenet.de"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " P2P filesharing   / publishing tool - http://www.bittorrent.com"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " P2P filesharing (?)"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " P2P filesharing (Kazaa, Morpheus, iMesh, Grokster, etc)"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " P2P filesharing (implemented in giFT library)"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " P2P filesharing - http://aresgalaxy.sf.net"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " P2P filesharing - http://mute-net.sourceforge.net"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " P2P filesharing - http://slsknet.org"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " P2P filesharing - http://www.applejuicenet.de"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " P2P filesharing - http://www.neo-modus.com"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " P2P filesharing / publishing tool - http://www.bittorrent.com"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " Post Office Protocol version 3   (popular e-mail protocol) - RFC 1939"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " Post Office Protocol version 3 (popular e-mail protocol) - RFC 1939"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " Real Time Streaming Protocol - http://www.rtsp.org - RFC 2326"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " Remote Desktop Protocol (used in Windows Terminal   Services)"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " Remote Desktop Protocol (used in Windows Terminal Services)"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " Secure SHell"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " Secure Socket Layer / Transport Layer Security - RFC 2246"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " Server Message Block - Microsoft Windows filesharing"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " Session Initiation Protocol - Internet telephony - RFC 3261"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " Simple Mail Transfer Protocol - RFC 2821 (See also RFC   1869)"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " Simple Mail Transfer Protocol - RFC 2821 (See also RFC 1869)"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " Simple Network Management Protocol - RFC 1157"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid ""
-" Simple Service Discovery   Protocol - easy discovery of network devices"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " Simple Service Discovery Protocol - easy discovery of network devices"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " Simple Traversal of UDP Through NAT - RFC 3489"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " The Onion Router - used for anonymization   - http://tor.eff.org"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " The Onion Router - used for anonymization - http://tor.eff.org"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " Trivial File Transfer Protocol - used for   bootstrapping - RFC 1350"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " Trivial File Transfer Protocol - used for bootstrapping - RFC 1350"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " VPN client software to a Cisco   VPN server"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " VPN client software to a Cisco VPN server"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " Virtual   Network Computing. Also known as RFB - Remote Frame Buffer"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " Virtual Network Computing. Also known as RFB - Remote Frame Buffer"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " VoIP - http://ventrilo.com"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " VoIP application - http://goteamspeak.com"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " Voice over IP."
-msgstr "Voce peste IP"
-
-#: database data: n_protofilter_pattern.description
-msgid " Zeroconf   Multicast Address Allocation Protocol"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " Zeroconf Multicast Address Allocation Protocol"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " a Chinese P2P program - http://www.kugoo.com"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " a Chinese P2P protocol/program - http://www.100bao.com"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " a Korean P2P protocol"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " a new standard for UNIX printing   - RFC 2911"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " a new standard for UNIX printing - RFC 2911"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " a system monitor - http://gkrellm.net"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " a version control system"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " a worm that attacks Microsoft IIS   web servers"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " a worm that attacks Microsoft IIS web   servers, and MORE!"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " a worm that attacks Microsoft IIS web servers"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " a worm that attacks Microsoft IIS web servers, and MORE!"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " ads/news content downloaded by AOL Instant Messenger"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " an Electronic Arts   game"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " an Electronic Arts game"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " an instant   messenger protocol - http://yahoo.com"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " an instant messenger protocol - http://yahoo.com"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " computer game"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " game (Half-Life 2 mod) - http://www.valvesoftware.com"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " network   game"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " network game"
-msgstr "Retelistica"
-
-#: database data: n_protofilter_pattern.description
-msgid " network game - http://www.valvesoftware.com"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " open instant messenger protocol - RFC 3920 - http://jabber.org"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " popular   network game - http://blizzard.com/"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " popular network game - http://blizzard.com/"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " remote login - RFC   1282"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " remote login - RFC 1282"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " streaming   audio"
-msgstr "(ro)Streaming Video"
-
-#: database data: n_protofilter_pattern.description
-msgid " streaming audio"
-msgstr "(ro)Streaming Video"
-
-#: database data: n_protofilter_pattern.description
-msgid " the native protocol   of iMesh, a P2P application - http://imesh.com"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid " the native protocol of iMesh, a P2P application - http://imesh.com"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid ""
-"Half   Life 1 engine games (HL 1, Quake 2/3/World, Counterstrike 1.6, etc.)"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid ""
-"Half Life 1 engine games (HL 1, Quake 2/3/World, Counterstrike 1.6, etc.)"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid "Life 2 Deathmatch - popular computer game"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid "MSN (Microsoft Network) Messenger file transfers (MSNFTP and MSNSLP  )"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid "MSN (Microsoft Network) Messenger file transfers (MSNFTP and MSNSLP)"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid "Quicktime HTTP"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid "RTSP tunneled within HTTP"
-msgstr ""
-
-#: database data: n_protofilter_pattern.description
-msgid "Valid certificate SSL"
-msgstr ""
-
-#: database data: n_protofilter_pattern.category
-msgid "Email"
-msgstr "Posta electronica"
-
-#: database data: n_protofilter_pattern.category
-msgid "File Transfer"
-msgstr "Transfer de fisiere"
-
-#: database data: n_protofilter_pattern.category
-msgid "Instant   Messenger"
-msgstr "Mesaje instant"
-
-#: database data: n_protofilter_pattern.category
-msgid "Instant Messenger"
-msgstr "Mesaje instant"
-
-#: database data: n_protofilter_pattern.category
-msgid "Internet News"
-msgstr "Stiri online"
-
-#: database data: n_protofilter_pattern.category
-msgid "Music"
-msgstr "Muzica"
-
-#: database data: n_protofilter_pattern.category
-msgid "Networking"
-msgstr "Retelistica"
-
-#: database data: n_protofilter_pattern.category
-msgid "Peer   to Peer"
-msgstr "P2P"
-
-#: database data: n_protofilter_pattern.category
-msgid "Peer to   Peer"
-msgstr "P2P"
-
-#: database data: n_protofilter_pattern.category
-msgid "Peer to Peer"
-msgstr "P2P"
-
-#: database data: n_protofilter_pattern.category
-msgid "Printing"
-msgstr "P2P"
-
-#: database data: n_protofilter_pattern.category
-msgid "Remote Deskop"
-msgstr "(ro)Remote Deskop"
-
-#: database data: n_protofilter_pattern.category
-msgid "Remote Desktop"
-msgstr "(ro)Remote Deskop"
-
-#: database data: n_protofilter_pattern.category
-msgid "Software   Development"
-msgstr "Dezvolare de soft"
-
-#: database data: n_protofilter_pattern.category
-msgid "Software Development"
-msgstr "Dezvolare de soft"
-
-#: database data: n_protofilter_pattern.category
-msgid "Streaming   Video"
-msgstr "(ro)Streaming Video"
-
-#: database data: n_protofilter_pattern.category
-msgid "Streaming Video"
-msgstr "(ro)Streaming Video"
-
-#: database data: n_protofilter_pattern.category
-msgid "System Administration"
-msgstr "Administrare de sistem"
-
-#: database data: n_protofilter_pattern.category
-msgid "Video   Game"
-msgstr "Joc video"
-
-#: database data: n_protofilter_pattern.category
-msgid "Video Game"
-msgstr "Joc video"
-
-#: database data: n_protofilter_pattern.category
-msgid "Voice over IP"
-msgstr "Voce peste IP"
-
-#: database data: n_protofilter_pattern.category
-msgid "Web"
-msgstr "Web"
-
-#: database data: n_protofilter_pattern.category
-msgid "Worm"
-msgstr "Vierme"
+#~ msgid "   A popular computer game."
+#~ msgstr "Un joc de calculator popular."
+
+#~ msgid "   Internet Message Access Protocol (A common e-mail protocol)"
+#~ msgstr " Internet Message Access Protocol (Un protocol e-mail frecvent)"
+
+#~ msgid " (Simple) Network Time Protocol - RFCs 1305 and 2030"
+#~ msgstr " (Simple) Network Time Protocol - RFCs 1305 and 2030"
+
+#~ msgid " 2D asteroids-style   space game - http://sscentral.com"
+#~ msgstr "2D asteroids-style   joc spaţial - http://sscentral.com"
+
+#~ msgid " 2D asteroids-style space game - http://sscentral.com"
+#~ msgstr "2D asteroids-style   joc spaţial - http://sscentral.com"
+
+#~ msgid " A Korean P2P filesharing program/protocol - http://www.soribada.com"
+#~ msgstr ""
+#~ "Un program/protocol P2P Corean de sharing de fisiere - http://www."
+#~ "soribada.com"
+
+#~ msgid " A legal music distribution site - http://pressplay  .com"
+#~ msgstr "Site legal de distribuite muzica - http://pressplay  .com"
+
+#~ msgid " A legal music distribution site - http://pressplay.com"
+#~ msgstr "Site legal de distribuite muzica - http://pressplay.com"
+
+#~ msgid " A popular computer game."
+#~ msgstr "Un joc de calculator popular."
+
+#~ msgid " A precursor to HTTP - RFC 1436"
+#~ msgstr "Un precursor al HTTP - RFC 1436"
+
+#~ msgid " AOL instant messenger (OSCAR and TOC)"
+#~ msgstr " AOL instant messenger (OSCAR şi TOC)"
+
+#~ msgid " An EA game"
+#~ msgstr "Un joc EA"
+
+#~ msgid " An EA game."
+#~ msgstr "Un joc EA."
+
+#~ msgid " An Internet radio site - http://live365.com"
+#~ msgstr "Un site de radio-internet - http://live365.com"
+
+#~ msgid " An old P2P filesharing protocol"
+#~ msgstr "Un protocol vechi de sharing de fişiere."
+
+#~ msgid " Anonymous information   retrieval - http://freenetproject.org"
+#~ msgstr "Obţinere de informaţie anonimă - http://freenetproject.org"
+
+#~ msgid " Anonymous information retrieval - http://freenetproject.org"
+#~ msgstr "Obţinere de informaţie anonimă - http://freenetproject.org"
+
+#~ msgid " Border Gateway Protocol - RFC 1771"
+#~ msgstr "Border Gateway Protocol - RFC 1771"
+
+#~ msgid " Voice over IP."
+#~ msgstr "Voce peste IP"
+
+#~ msgid " network game"
+#~ msgstr "Retelistica"
+
+#~ msgid " streaming   audio"
+#~ msgstr "(ro)Streaming Video"
+
+#~ msgid " streaming audio"
+#~ msgstr "(ro)Streaming Video"
+
+#~ msgid "Email"
+#~ msgstr "Posta electronica"
+
+#~ msgid "File Transfer"
+#~ msgstr "Transfer de fisiere"
+
+#~ msgid "Instant   Messenger"
+#~ msgstr "Mesaje instant"
+
+#~ msgid "Instant Messenger"
+#~ msgstr "Mesaje instant"
+
+#~ msgid "Internet News"
+#~ msgstr "Stiri online"
+
+#~ msgid "Music"
+#~ msgstr "Muzica"
+
+#~ msgid "Networking"
+#~ msgstr "Retelistica"
+
+#~ msgid "Peer   to Peer"
+#~ msgstr "P2P"
+
+#~ msgid "Peer to   Peer"
+#~ msgstr "P2P"
+
+#~ msgid "Peer to Peer"
+#~ msgstr "P2P"
+
+#~ msgid "Printing"
+#~ msgstr "P2P"
+
+#~ msgid "Remote Deskop"
+#~ msgstr "(ro)Remote Deskop"
+
+#~ msgid "Remote Desktop"
+#~ msgstr "(ro)Remote Deskop"
+
+#~ msgid "Software   Development"
+#~ msgstr "Dezvolare de soft"
+
+#~ msgid "Software Development"
+#~ msgstr "Dezvolare de soft"
+
+#~ msgid "Streaming   Video"
+#~ msgstr "(ro)Streaming Video"
+
+#~ msgid "Streaming Video"
+#~ msgstr "(ro)Streaming Video"
+
+#~ msgid "System Administration"
+#~ msgstr "Administrare de sistem"
+
+#~ msgid "Video   Game"
+#~ msgstr "Joc video"
+
+#~ msgid "Video Game"
+#~ msgstr "Joc video"
+
+#~ msgid "Voice over IP"
+#~ msgstr "Voce peste IP"
+
+#~ msgid "Web"
+#~ msgstr "Web"
+
+#~ msgid "Worm"
+#~ msgstr "Vierme"
 
 #~ msgid "Protocol Events"
 #~ msgstr "Evenimente Protocoale"

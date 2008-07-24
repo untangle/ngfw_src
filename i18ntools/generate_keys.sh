@@ -1,6 +1,6 @@
 #!/bin/sh
 
-ALL_MODULES='main administration system systemInfo mail_casing webfilter virus phish spyware spamassassin shield protofilter'
+ALL_MODULES='main administration system systemInfo upgrade mail_casing webfilter virus phish spyware spamassassin shield protofilter ips'
 
 function update_keys()
 {
@@ -51,7 +51,7 @@ case "$1" in
     cd ../virus-base/po/
     echo 'get new keys'
     xgettext --copyright-holder='Untangle, Inc.' -L Python -k.i18n._ -o tmp_keys.pot ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js
-    msgcat tmp_keys.pot db_keys.pot block_page_keys.pot -o tmp_keys.pot
+    msgcat tmp_keys.pot block_page_keys.pot -o tmp_keys.pot
     msgmerge -U ung_$1.pot tmp_keys.pot
     rm tmp_keys.pot
     echo 'update po files'
@@ -67,20 +67,10 @@ case "$1" in
     echo 'update po files'
     msgmerge -U ro/ung_$1.po ung_$1.pot
     ;;
-"spamassassin"|"shield")    
+"spamassassin"|"shield"|"protofilter"|"ips")    
     cd ../$1/po/
     echo 'get new keys'
     xgettext --copyright-holder='Untangle, Inc.' -L Python -k.i18n._ -o tmp_keys.pot ../hier/usr/share/untangle/web/webui/script/untangle-node-$1/settings.js
-    msgmerge -U ung_$1.pot tmp_keys.pot
-    rm tmp_keys.pot
-    echo 'update po files'
-    msgmerge -U ro/ung_$1.po ung_$1.pot
-    ;;
-"protofilter")
-    cd ../$1/po/
-    echo 'get new keys'
-    xgettext --copyright-holder='Untangle, Inc.' -L Python -k.i18n._ -o tmp_keys.pot ../hier/usr/share/untangle/web/webui/script/untangle-node-$1/settings.js
-    msgcat tmp_keys.pot db_keys.pot -o tmp_keys.pot
     msgmerge -U ung_$1.pot tmp_keys.pot
     rm tmp_keys.pot
     echo 'update po files'

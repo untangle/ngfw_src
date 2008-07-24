@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-07-18 11:06+0300\n"
+"POT-Creation-Date: 2008-07-24 19:04+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -225,50 +225,6 @@ msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:662
 msgid "Failed"
-msgstr ""
-
-#: database data: u_string_rule.name
-msgid "archive"
-msgstr ""
-
-#: database data: u_string_rule.name
-msgid "audio"
-msgstr ""
-
-#: database data: u_string_rule.name
-msgid "document"
-msgstr ""
-
-#: database data: u_string_rule.name
-msgid "executable"
-msgstr ""
-
-#: database data: u_string_rule.name
-msgid "flash"
-msgstr ""
-
-#: database data: u_string_rule.name
-msgid "java"
-msgstr ""
-
-#: database data: u_string_rule.name
-msgid "presentation"
-msgstr ""
-
-#: database data: u_string_rule.name
-msgid "script"
-msgstr ""
-
-#: database data: u_string_rule.name
-msgid "spreadsheet"
-msgstr ""
-
-#: database data: u_string_rule.name
-msgid "video"
-msgstr ""
-
-#: database data: u_mimetype_rule.name
-msgid "messages"
 msgstr ""
 
 #: BlockPageUtil.java:72

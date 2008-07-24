@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-07-17 17:33+0300\n"
+"POT-Creation-Date: 2008-07-24 19:10+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -291,15 +291,10 @@ msgid "Please wait"
 msgstr ""
 
 #: database data: n_webfilter_blcat.display_name
-msgid "Anonymous Surfing"
-msgstr ""
-
-#: database data: n_webfilter_blcat.display_name
 msgid "Dating"
 msgstr ""
 
-#: database data: n_webfilter_blcat.display_name
-#: n_webfilter_blcat.description
+#: database data: n_webfilter_blcat.display_name n_webfilter_blcat.description
 msgid "Gambling"
 msgstr ""
 
@@ -307,18 +302,15 @@ msgstr ""
 msgid "Hacking"
 msgstr ""
 
-#: database data: n_webfilter_blcat.display_name
-#: n_webfilter_blcat.description
+#: database data: n_webfilter_blcat.display_name n_webfilter_blcat.description
 msgid "Hate and Aggression"
 msgstr ""
 
-#: database data: n_webfilter_blcat.display_name
-#: n_webfilter_blcat.description
+#: database data: n_webfilter_blcat.display_name n_webfilter_blcat.description
 msgid "Illegal Drugs"
 msgstr ""
 
-#: database data: n_webfilter_blcat.display_name
-#: n_webfilter_blcat.description
+#: database data: n_webfilter_blcat.display_name n_webfilter_blcat.description
 msgid "Job Search"
 msgstr ""
 
@@ -326,41 +318,36 @@ msgstr ""
 msgid "Pornography"
 msgstr ""
 
+#: database data: n_webfilter_blcat.display_name n_webfilter_blcat.description
+msgid "Proxy Sites"
+msgstr ""
+
 #: database data: n_webfilter_blcat.display_name
 msgid "Shopping"
 msgstr ""
 
-#: database data: n_webfilter_blcat.display_name
-#: n_webfilter_blcat.description
+#: database data: n_webfilter_blcat.display_name n_webfilter_blcat.description
 msgid "Social Networking"
 msgstr ""
 
-#: database data: n_webfilter_blcat.display_name
-#: n_webfilter_blcat.description
+#: database data: n_webfilter_blcat.display_name n_webfilter_blcat.description
 msgid "Sports"
 msgstr ""
 
-#: database data: n_webfilter_blcat.display_name
-#: n_webfilter_blcat.description
+#: database data: n_webfilter_blcat.display_name n_webfilter_blcat.description
 msgid "Vacation"
 msgstr ""
 
-#: database data: n_webfilter_blcat.display_name
-#: n_webfilter_blcat.description
+#: database data: n_webfilter_blcat.display_name n_webfilter_blcat.description
 msgid "Violence"
 msgstr ""
 
-#: database data: n_webfilter_blcat.display_name
-#: n_webfilter_blcat.description
+#: database data: n_webfilter_blcat.display_name n_webfilter_blcat.description
 msgid "Web Mail"
 msgstr ""
 
 #: database data: n_webfilter_blcat.description
 msgid "Adult and Sexually Explicit"
-msgstr ""
-
-#: database data: n_webfilter_blcat.description
-msgid "Anonymous Web Surfing"
 msgstr ""
 
 #: database data: n_webfilter_blcat.description
@@ -373,38 +360,6 @@ msgstr ""
 
 #: database data: n_webfilter_blcat.description
 msgid "Security Cracking"
-msgstr ""
-
-#: database data: u_string_rule.name
-msgid "archive"
-msgstr ""
-
-#: database data: u_string_rule.name
-msgid "audio"
-msgstr ""
-
-#: database data: u_string_rule.name
-msgid "compression"
-msgstr ""
-
-#: database data: u_string_rule.name
-msgid "executable"
-msgstr ""
-
-#: database data: u_string_rule.name
-msgid "flash"
-msgstr ""
-
-#: database data: u_string_rule.name
-msgid "image"
-msgstr ""
-
-#: database data: u_string_rule.name
-msgid "java"
-msgstr ""
-
-#: database data: u_string_rule.name
-msgid "video"
 msgstr ""
 
 #: BlockPageUtil.java:72
@@ -441,4 +396,6 @@ msgstr "{0} Web Filter"
 
 #: BlockPageServlet.java:103
 msgid "{0}This web page was blocked{1} because it is considered inappropriate."
-msgstr "{0}Aceasta pagina web a fost blocata{1} pentru ca este considerata nepotrivita."
+msgstr ""
+"{0}Aceasta pagina web a fost blocata{1} pentru ca este considerata "
+"nepotrivita."

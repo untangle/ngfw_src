@@ -5,12 +5,12 @@ then
     mkdir pot
 fi    
 
-for module in main administration system systemInfo
+for module in main administration system systemInfo upgrade
 do 
     cp ../uvm-lib/servlets/webui/po/ung_${module}.pot ./pot/
 done
 
-for module in webfilter phish spyware spamassassin shield protofilter
+for module in webfilter phish spyware spamassassin shield protofilter ips
 do 
     cp ../${module}/po/ung_${module}.pot ./pot/
 done

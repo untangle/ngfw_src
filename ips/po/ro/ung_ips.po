@@ -1,0 +1,183 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR Untangle, Inc.
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# 
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2008-07-24 19:18+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=0; null;\n"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:26
+msgid "Status"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:36
+msgid "Statistics"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:44
+msgid "Total Signatures Available"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:48
+msgid "Total Signatures Logging"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:52
+msgid "Total Signatures Blocking"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:57
+msgid "Note"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:58
+msgid ""
+"Untangle, Inc. continues to maintain the default signature settings through "
+"automatic updates. You are free to modify and add signatures, however it is "
+"not required."
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:67
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:315
+msgid "block"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:74
+msgid "log"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:83
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:102
+msgid "Rules"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:93
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:96
+msgid "[no category]"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:94
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:217
+msgid "[no name]"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:95
+msgid "[no signature]"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:100
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:219
+msgid "[no description]"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:128
+msgid "category"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:136
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:252
+msgid "description"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:153
+msgid "id"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:159
+msgid "info"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:175
+msgid "Category"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:181
+msgid "Signature"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:187
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:265
+msgid "Name"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:193
+msgid "SID"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:199
+msgid "Block"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:203
+msgid "Log"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:207
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:277
+msgid "Description"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:218
+msgid "[no definition]"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:221
+msgid "Variables"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:236
+msgid "name"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:244
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:318
+msgid "pass"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:271
+msgid "Pass"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:300
+msgid "timestamp"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:308
+msgid "action"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:322
+msgid "client"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:330
+#, python-format
+msgid "reason for%saction"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:338
+msgid "server"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:352
+msgid "Saving..."
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:352
+msgid "Please wait"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:356
+msgid "Failed"
+msgstr ""
