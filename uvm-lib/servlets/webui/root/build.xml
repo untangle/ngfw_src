@@ -43,6 +43,9 @@
             <fileset dir="./../../../../ips/hier/usr/share/untangle/web/webui/script/">
                 <include name="**/*.*"/>
             </fileset>
+            <fileset dir="./../../../../firewall/hier/usr/share/untangle/web/webui/script/">
+                <include name="**/*.*"/>
+            </fileset>
             <fileset dir="./../../../../../../hades/rup/portal/hier/usr/share/untangle/web/webui/script/">
                 <include name="**/*.*"/>
             </fileset>
