@@ -160,7 +160,10 @@ public class TimeSerializer extends AbstractSerializer
     else if (java.sql.Date.class.equals(clazz))
     {
       returnValue = new java.sql.Date(time);
-    }
+    }else if (java.sql.Time.class.equals(clazz))
+    {
+        returnValue = new java.sql.Time(time);
+      }
     if (returnValue == null)
     {
       throw new UnmarshallException("invalid class " + clazz);

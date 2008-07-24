@@ -57,8 +57,8 @@ if (!Ung.hasResource["Ung.Racks"]) {
             this.gridRacks = new Ung.EditorGrid({
                 settingsCmp : this,
                 name : 'Racks',
-                height : 300,
-                bodyStyle : 'padding-bottom:20px;',
+                height : 250,
+                bodyStyle : 'padding-bottom:15px;',
                 autoScroll : true,
                 parentId : this.getId(),
                 title : this.i18n._('Racks'),
@@ -130,8 +130,7 @@ if (!Ung.hasResource["Ung.Racks"]) {
             this.gridPolicies = new Ung.EditorGrid({
                 settingsCmp : this,
                 name : 'Policies',
-                height : 300,
-                bodyStyle : 'padding-bottom:20px;',
+                height : 250,
                 autoScroll : true,
                 parentId : this.getId(),
                 title : this.i18n._('Policies'),
@@ -139,18 +138,18 @@ if (!Ung.hasResource["Ung.Racks"]) {
                 emptyRow : {
                     "live" : true,
                     "policy" : null,
-                    "clientIntf" : null,
-                    "serverIntf" : null,
-                    "protocol": null,
-                    "clientAddr" : null,
-                    "serverAddr" :null,
-                    "clientPort" : null,
-                    "serverPort" : null,
-                    "user" : null,
+                    "clientIntf" : "any",
+                    "serverIntf" : "any",
+                    "protocol": "TCP & UDP",
+                    "clientAddr" : "any",
+                    "serverAddr" : "any",
+                    "clientPort" : "any",
+                    "serverPort" : "any",
+                    "user" : "[any]",
                     "startTime" : null,
                     "endTime" : null,
-                    "dayOfWeek" : null,
-                    "description" : null,
+                    "dayOfWeek" : "any",
+                    "description" : this.i18n._('[no description]'),
                     "javaClass" : "com.untangle.uvm.policy.UserPolicyRule"
                 },
                 //autoExpandColumn : 'notes',
@@ -193,7 +192,7 @@ if (!Ung.hasResource["Ung.Racks"]) {
                 columns : [liveColumn,
             	{
                     header : this.i18n._("<b>Use this rack</b> when the <br/>next colums are matched..."),
-                    width : 200,
+                    width : 170,
                     sortable : true,
                     dataIndex : 'policy',
                     renderer : function(value) {
@@ -201,64 +200,93 @@ if (!Ung.hasResource["Ung.Racks"]) {
                     }.createDelegate(this)
                 }, {
                     header : this.i18n._("client <br/>interface"),
-                    width : 150,
+                    width : 100,
                     sortable : true,
-                    dataIndex : 'clientIntf'
+                    dataIndex : 'clientIntf',
+                    editor: new Ung.Util.InterfaceCombo({
+                    })
 
                 }, {
                     header : this.i18n._("server <br/>interface"),
-                    width : 150,
+                    width : 100,
                     sortable : true,
-                    dataIndex : 'serverIntf'
+                    dataIndex : 'serverIntf',
+                    editor: new Ung.Util.InterfaceCombo({
+                    })
 
                 }, {
                     header : this.i18n._("protocol"),
-                    width : 150,
+                    width : 100,
                     sortable : true,
-                    dataIndex : 'protocol'
+                    dataIndex : 'protocol',
+                    editor: new Ung.Util.ProtocolCombo({
+                    })
+                    
 
                 }, {
                     header : this.i18n._("clientAddr"),
-                    width : 150,
+                    width : 100,
                     sortable : true,
-                    dataIndex : 'clientAddr'
+                    dataIndex : 'clientAddr',
+                    editor : new Ext.form.TextField({
+                        allowBlank : false
+                    })
 
                 }, {
                     header : this.i18n._("serverAddr"),
-                    width : 150,
+                    width : 100,
                     sortable : true,
-                    dataIndex : 'serverAddr'
+                    dataIndex : 'serverAddr',
+                    editor : new Ext.form.TextField({
+                        allowBlank : false
+                    })
 
                 }, {
                     header : this.i18n._("user"),
-                    width : 150,
+                    width : 110,
                     sortable : true,
                     dataIndex : 'user'
 
                 }, {
                     header : this.i18n._("startTime"),
-                    width : 100,
+                    width : 60,
                     sortable : true,
-                    dataIndex : 'startTime'
-
+                    dataIndex : 'startTime',
+                    renderer : function(value) {
+                        return value==null?"" : value.time;
+                    }.createDelegate(this),
+                    editor : new Ext.form.TextField({
+                        allowBlank : false
+                    })
                 }, {
                     header : this.i18n._("endTime"),
-                    width : 100,
+                    width : 60,
                     sortable : true,
-                    dataIndex : 'endTime'
+                    dataIndex : 'endTime',
+                    renderer : function(value) {
+                        return value==null?"" : value.time;
+                    }.createDelegate(this),
+                    editor : new Ext.form.TextField({
+                        allowBlank : false,
+                        value: this.value==null?"" : this.value.time
+                    })
 
                 }, {
                     header : this.i18n._("dayOfWeek"),
-                    width : 150,
+                    width : 80,
                     sortable : true,
-                    dataIndex : 'dayOfWeek'
-
+                    dataIndex : 'dayOfWeek',
+                    editor : new Ext.form.TextField({
+                        allowBlank : false
+                    })
                 }, {
                     header : this.i18n._("description"),
-                    width : 150,
+                    width : 90,
                     sortable : true,
-                    dataIndex : 'description'
-
+                    dataIndex : 'description',
+                    editor : new Ext.form.TextField({
+                        allowBlank : false
+                    })
                 }],
                 plugins : [liveColumn],
                 
@@ -276,9 +304,24 @@ if (!Ung.hasResource["Ung.Racks"]) {
                             this.initialRecordData = Ext.encode(record.data);
                             alert("todo populate");
                         },
+                        isFormValid: function() {
+                        	return true;
+                        },
                         updateAction : function() {
-                            alert("todo updateAction");
-                            this.cancelAction();
+                            if (this.isFormValid()) {
+                                if (this.record !== null) {
+                                    if (this.inputLines) {
+                                        
+                                    }
+                                    if(this.addMode) {
+                                            this.grid.getStore().insert(0, [this.record]);
+                                            this.grid.updateChangedData(this.record, "added");
+                                    }
+                                }
+                                this.hide();
+                            } else {
+                                Ext.MessageBox.alert(i18n._('Warning'), i18n._("The form is not valid!"));
+                            }
                         },
                         show : function() {
                             Ung.UpdateWindow.superclass.show.call(this);

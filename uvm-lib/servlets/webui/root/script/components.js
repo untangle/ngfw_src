@@ -104,6 +104,51 @@ Ung.Util= {
         Ext.MessageBox.alert(i18n._("TODO"),"TODO: implement this.");
     }
 };
+
+Ung.Util.InterfaceCombo=Ext.extend(Ext.form.ComboBox, {
+    initComponent : function() {
+        this.store = new Ext.data.SimpleStore({
+            fields : ['key', 'name'],
+            data :[
+                ["any", i18n._("any")],
+                ["0", i18n._("External")],
+                ["7", i18n._("VPN")],
+                ["1", i18n._("Internal")],
+                ["more_trusted", i18n._("More Trusted")],
+                ["less_trusted", i18n._("Less Trusted")]
+            ]
+        });
+        Ung.Util.ProtocolCombo.superclass.initComponent.call(this);
+    },
+    displayField : 'name',
+    valueField : 'key',
+    editable: false,
+    mode : 'local',
+    triggerAction : 'all',
+    listClass : 'x-combo-list-small'
+});
+
+Ung.Util.ProtocolCombo=Ext.extend(Ext.form.ComboBox, {
+    initComponent : function() {
+        this.store = new Ext.data.SimpleStore({
+            fields : ['key', 'name'],
+            data :[
+                ["TCP & UDP", i18n._("TCP & UDP")],
+                ["UDP", i18n._("UDP")],
+                ["TCP", i18n._("TCP")],
+                ["ANY", i18n._("ANY")]
+            ]
+        });
+        Ung.Util.ProtocolCombo.superclass.initComponent.call(this);
+    },
+    displayField : 'name',
+    valueField : 'key',
+    editable: false,
+    mode : 'local',
+    triggerAction : 'all',
+    listClass : 'x-combo-list-small'
+});
+
 // resources map
 Ung.hasResource = {};
 // Thread for installing nodes from store into toolbox
@@ -1100,7 +1145,7 @@ Ung.MessageManager = {
            if (exception) {
                 Ext.MessageBox.alert(i18n._("Failed"), exception.message, function() {
                     this.cycleCompleted = true;
-                });
+                }.createDelegate(this));
                 return;
            }
            this.cycleCompleted = true;
@@ -2372,6 +2417,7 @@ Ung.RowEditorWindow = Ext.extend(Ung.UpdateWindow, {
             buttonAlign : 'right',
             border : false,
             bodyStyle : 'padding:10px 10px 0px 10px;',
+            autoScroll: true,
             defaults : {
                 selectOnFocus : true,
                 msgTarget : 'side'
