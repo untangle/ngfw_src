@@ -52,6 +52,7 @@ if (!Ung.hasResource["Ung.Firewall"]) {
             this.panelRules = new Ext.Panel({
                 name : 'panelRules',
                 // private fields
+                gridRulesList : null,
                 parentId : this.getId(),
                 title : this.i18n._('Rules'),
                 autoScroll : true,
@@ -93,14 +94,37 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                         }, {
                             name : 'live'
                         }, {
+                            name : 'action'
+                        }, {
+                            name : 'log'
+                        }, {
+                            name : 'protocol'
+                        }, {
+                            name : 'srcIntf'
+                        }, {
+                            name : 'dstIntf'
+                        }, {
+                            name : 'srcAddress'
+                        }, {
+                            name : 'dstAddress'
+                        }, {
+                            name : 'srcPort'
+                        }, {
+                            name : 'dstPort'
+                        }, {
+                            name : 'name'
+                        }, {
+                            name : 'category'
+                        }, {
                             name : 'description'
+                        }, {
+                            name : 'javaClass'
                         }],
                         columns : [liveColumn, {
                             id : 'description',
                             header : this.i18n._("Description"),
                             width : 200,
-                            dataIndex : 'description',
-                            editor : null
+                            dataIndex : 'description'
                         }, {
                             id : 'reorder',
                             header : this.i18n._("Reorder"),
@@ -120,11 +144,11 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                             dataIndex: "action",
                             fieldLabel : this.i18n._("Action"),
 	                        store : new Ext.data.SimpleStore({
-	                            fields : ['actionValue', 'actionName'],
+	                            fields : ['key', 'name'],
 	                            data : actionData
 	                        }),
-	                        displayField : 'actionName',
-	                        valueField : 'actionValue',
+	                        displayField : 'name',
+	                        valueField : 'key',
                             forceSelection : true,
 	                        typeAhead : true,
 	                        mode : 'local',
@@ -135,17 +159,17 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                             name : "Log",
                             dataIndex: "log",
                             fieldLabel : this.i18n._("Log")
-                        }), new Ext.form.TextField({
+                        }), new Ung.Util.ProtocolCombo({
                             name : "Traffic Type",
                             dataIndex: "protocol",
                             fieldLabel : this.i18n._("Traffic Type"),
-                            width : 300
-                        }), new Ext.form.TextField({
+                            width : 100
+                        }), new Ung.Util.InterfaceCombo({
                             name : "Source Interface",
                             dataIndex: "srcIntf",
                             fieldLabel : this.i18n._("Source Interface"),
                             width : 150
-                        }), new Ext.form.TextField({
+                        }), new Ung.Util.InterfaceCombo({
                             name : "Destination Interface",
                             dataIndex: "dstIntf",
                             fieldLabel : this.i18n._("Destination Interface"),
@@ -154,26 +178,26 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                             name : "Source Address",
                             dataIndex: "srcAddress",
                             fieldLabel : this.i18n._("Source Address"),
-                            width : 150,
-                            vtype : 'ipAddress'
+                            allowBlank : false,
+                            width : 150
                         }), new Ext.form.TextField({
                             name : "Destination Address",
                             dataIndex: "dstAddress",
                             fieldLabel : this.i18n._("Destination Address"),
-                            width : 150,
-                            vtype : 'ipAddress'
+                            allowBlank : false,
+                            width : 150
                         }), new Ext.form.TextField({
                             name : "Source Port",
                             dataIndex: "srcPort",
                             fieldLabel : this.i18n._("Source Port"),
                             width : 150,
-                            vtype : 'port'
+                            allowBlank : false
                         }), new Ext.form.TextField({
                             name : "Destination Port",
                             dataIndex: "dstPort",
                             fieldLabel : this.i18n._("Destination Port"),
-                            width : 150,
-                            vtype : 'port'
+                            allowBlank : false,
+                            width : 150
                         }), new Ext.form.TextField({
                             name : "Category",
                             dataIndex: "category",
@@ -186,7 +210,33 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                             width : 400
                         })]
                     })
-            ]});
+                ]
+//                ,
+//                onManagePassedRules : function() {
+//                    if (!this.gridRulesList) {
+//                        var settingsCmp = Ext.getCmp(this.parentId);
+//                        settingsCmp.buildRules();
+//                        this.gridRulesList = new Ung.ManageListWindow({
+//                            breadcrumbs : [{
+//                                title : i18n._(rpc.currentPolicy.name),
+//                                action : function() {
+//                                    this.panelRules.gridRulesList.cancelAction();
+//                                    this.cancelAction();
+//                                }.createDelegate(settingsCmp)
+//                            }, {
+//                                title : settingsCmp.node.md.displayName,
+//                                action : function() {
+//                                    this.panelRules.gridRulesList.cancelAction();
+//                                }.createDelegate(settingsCmp)
+//                            }, {
+//                                title : settingsCmp.i18n._("Rules")
+//                            }],
+//                            grid : settingsCmp.gridRules
+//                        });
+//                    }
+//                    this.gridRulesList.show();
+//                }
+            });
         },
         // Event Log
         buildEventLog : function() {
@@ -253,22 +303,113 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                 
             });
         },
+        validateServer : function() {
+            // ipMaddr list must be validated server side
+            var passedAddresses = this.gridRules ? this.gridRules.getFullSaveList() : null;
+            if (passedAddresses != null) {
+                var srcAddrList = [];
+                var dstAddrList = [];
+                var srcPortList = [];
+                var dstPortList = [];
+                for (var i = 0; i < passedAddresses.length; i++) {
+                    srcAddrList.push(passedAddresses[i]["srcAddress"]);
+                    dstAddrList.push(passedAddresses[i]["dstAddress"]);
+                    srcPortList.push(passedAddresses[i]["srcPort"]);
+                    dstPortList.push(passedAddresses[i]["dstPort"]);
+                }
+                if (srcAddrList.length > 0) {
+                    try {
+                        var result = this.getValidator().validate({
+                            map : { "type"      : "IP", 
+                                    "values"    : {"javaClass" : "java.util.ArrayList", list : srcAddrList}
+                            },
+                            "javaClass" : "java.util.HashMap"
+                        });
+                        if (!result.valid) {
+                            //this.panelRules.onManagePassedRules();
+                            //this.gridRules.editRowChangedDataByFieldValue("srcAddress", result.cause);
+                            Ext.MessageBox.alert(this.i18n._("Validation failed for Source Address"), this.i18n._(result.message) + ": " + result.cause);
+                            return false;
+                        }
+                    } catch (e) {
+                        Ext.MessageBox.alert(i18n._("Failed"), e.message);
+                        return false;
+                    }
+                }
+                if (dstAddrList.length > 0) {
+                    try {
+                        var result = this.getValidator().validate({
+                            map : { "type"      : "IP", 
+                                    "values"    : {"javaClass" : "java.util.ArrayList", list : dstAddrList}
+                            },
+                            "javaClass" : "java.util.HashMap"
+                        });
+                        if (!result.valid) {
+                            //this.panelRules.onManagePassedRules();
+                            //this.gridRules.focusFirstChangedDataByFieldValue("dstAddress", result.cause);
+                            Ext.MessageBox.alert(this.i18n._("Validation failed for Destination Address"), this.i18n._(result.message) + ": " + result.cause);
+                            return false;
+                        }
+                    } catch (e) {
+                        Ext.MessageBox.alert(i18n._("Failed"), e.message);
+                        return false;
+                    }
+                }
+                if (srcPortList.length > 0) {
+                    try {
+                        var result = this.getValidator().validate({
+                            map : { "type"      : "Port", 
+                                    "values"    : {"javaClass" : "java.util.ArrayList", list : srcPortList}
+                            },
+                            "javaClass" : "java.util.HashMap"
+                        });
+                        if (!result.valid) {
+                            //this.panelRules.onManagePassedRules();
+                            //this.gridRules.editRowChangedDataByFieldValue("srcAddress", result.cause);
+                            Ext.MessageBox.alert(this.i18n._("Validation failed for Source Port"), this.i18n._(result.message) + ": " + result.cause);
+                            return false;
+                        }
+                    } catch (e) {
+                        Ext.MessageBox.alert(i18n._("Failed"), e.message);
+                        return false;
+                    }
+                }
+                if (dstPortList.length > 0) {
+                    try {
+                        var result = this.getValidator().validate({
+                            map : { "type"      : "Port", 
+                                    "values"    : {"javaClass" : "java.util.ArrayList", list : dstPortList}
+                            },
+                            "javaClass" : "java.util.HashMap"
+                        });
+                        if (!result.valid) {
+                            //this.panelRules.onManagePassedRules();
+                            //this.gridRules.focusFirstChangedDataByFieldValue("dstAddress", result.cause);
+                            Ext.MessageBox.alert(this.i18n._("Validation failed for Destination Address"), this.i18n._(result.message) + ": " + result.cause);
+                            return false;
+                        }
+                    } catch (e) {
+                        Ext.MessageBox.alert(i18n._("Failed"), e.message);
+                        return false;
+                    }
+                }
+            }
+            return true;
+        },
         // save function
         save : function() {
-//            if (this.validate()) {
-//                Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-//                this.getRpcNode().updateAll(function(result, exception) {
-//                    Ext.MessageBox.hide();
-//                    if (exception) {
-//                        Ext.MessageBox.alert(i18n._("Failed"), exception.message);
-//                        return;
-//                    }
-//                    // exit settings screen
-//                    this.cancelAction();
-//                }.createDelegate(this), this.getBaseSettings(), this.gridRules ? this.gridRules.getSaveList() : null,
-//                        this.gridVariables ? this.gridVariables.getSaveList() : null,
-//                        null);
-//            }
+            if (this.validate()) {
+                Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
+                this.getRpcNode().updateAll(function(result, exception) {
+                    Ext.MessageBox.hide();
+                    if (exception) {
+                        Ext.MessageBox.alert(i18n._("Failed"), exception.message);
+                        return;
+                    }
+                    // exit settings screen
+                    this.cancelAction();
+                }.createDelegate(this), this.getBaseSettings(), this.gridRules ? {javaClass:"java.util.ArrayList",list:this.gridRules.getFullSaveList()} : null);
+            }
         }
     });
 }

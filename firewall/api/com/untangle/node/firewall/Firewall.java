@@ -21,6 +21,7 @@ import java.util.List;
 
 import com.untangle.uvm.logging.EventManager;
 import com.untangle.uvm.node.Node;
+import com.untangle.uvm.node.Validator;
 
 public interface Firewall extends Node
 {
@@ -37,4 +38,6 @@ public interface Firewall extends Node
      */
     void updateAll(FirewallBaseSettings baseSettings, 
     		List<FirewallRule> rules);
+
+    Validator getValidator();
 }

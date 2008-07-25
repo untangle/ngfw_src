@@ -3101,11 +3101,21 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
     // focus the first changed row matching a field value
     // used by validation functions
     focusFirstChangedDataByFieldValue : function(field, value) {
-        var cd = this.findFirstChangedDataByFieldValue("ipMaddr", value)
+        var cd = this.findFirstChangedDataByFieldValue(field, value)
         if (cd != null) {
             this.loadPage(cd.pageStart, function(r, options, success) {
                 if (success) {
-                    this.focusChangedDataField(options.arg, "ipMaddr");
+                    this.focusChangedDataField(options.arg, field);
+                }
+            }.createDelegate(this), this, cd);
+        }
+    },
+    editRowChangedDataByFieldValue : function(field, value) {
+        var cd = this.findFirstChangedDataByFieldValue(field, value)
+        if (cd != null) {
+            this.loadPage(cd.pageStart, function(r, options, success) {
+                if (success) {
+                     alert("todo");
                 }
             }.createDelegate(this), this, cd);
         }

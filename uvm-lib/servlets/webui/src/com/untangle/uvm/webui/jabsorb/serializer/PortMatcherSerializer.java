@@ -84,7 +84,7 @@ public class PortMatcherSerializer extends AbstractSerializer {
         try {
             returnValue = PortMatcherFactory.parse(val);
         } catch (Exception e) {
-            throw new UnmarshallException("Invalid \"interface\" specified:"
+            throw new UnmarshallException("Invalid \"port\" specified:"
                                           + val);
         }
         

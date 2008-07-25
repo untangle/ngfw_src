@@ -34,6 +34,7 @@ import com.untangle.uvm.logging.SimpleEventFilter;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.NodeException;
 import com.untangle.uvm.node.NodeStartException;
+import com.untangle.uvm.node.Validator;
 import com.untangle.uvm.node.firewall.intf.IntfDBMatcher;
 import com.untangle.uvm.node.firewall.intf.IntfMatcherFactory;
 import com.untangle.uvm.node.firewall.ip.IPMatcherFactory;
@@ -145,6 +146,10 @@ public class FirewallImpl extends AbstractNode implements Firewall
             }
         };
         getNodeContext().runTransaction(tw);
+    }
+
+    public Validator getValidator() {
+        return new FirewallValidator();
     }
 
     // AbstractNode methods ----------------------------------------------------

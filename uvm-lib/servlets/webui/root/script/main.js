@@ -247,6 +247,13 @@ Ung.Main.prototype = {
 
           ipAddressText: i18n._('Invalid IP Address.'),
 
+          ipAddressMatcher: function(val, field) {
+            var ipAddrMaskRe = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+            return ipAddrMaskRe.test(val);
+          },
+
+          ipAddressMatcherText: i18n._('Invalid IP Address.'),
+
           port: function(val, field) {
             var minValue = 1;
             var maxValue = 65535;
@@ -254,6 +261,14 @@ Ung.Main.prototype = {
           },
 
           portText: i18n.sprintf(i18n._("The port must be an integer number between %d and %d."), 1, 65535),
+
+          portMatcher: function(val, field) {
+            var minValue = 1;
+            var maxValue = 65535;
+            return (minValue <= val && val <= maxValue) || (val == 'any' || val == 'all' || val == 'n/a' || val == 'none');
+          },
+
+          portMatcherText: i18n.sprintf(i18n._("The port must be an integer number between %d and %d or one of the following values: any, all, n/a, none."), 1, 65535),
 
           password: function(val, field) {
             if (field.initialPassField) {
