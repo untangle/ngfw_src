@@ -64,6 +64,7 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                         height : 500,
                         totalRecords : this.getBaseSettings().firewallRulesLength,
                         paginated : false,
+                        hasReorder : true,
                         
                         enableDragDrop : true,
                         selModel: new Ext.grid.RowSelectionModel({singleSelect:true}),
@@ -125,11 +126,6 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                             header : this.i18n._("Description"),
                             width : 200,
                             dataIndex : 'description'
-                        }, {
-                            id : 'reorder',
-                            header : this.i18n._("Reorder"),
-                            width : 100,
-                            editor : null
                         }],
                         sortField : 'description',
                         columnsDefaultSortable : true,

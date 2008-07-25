@@ -2764,6 +2764,38 @@ Ext.grid.DeleteColumn.prototype = {
         return '<div class="iconDeleteRow">&nbsp;</div>';
     }
 };
+// Grid delete column
+Ext.grid.ReorderColumn = function(config) {
+    Ext.apply(this, config);
+    if (!this.id) {
+        this.id = Ext.id();
+    }
+    if (!this.header) {
+        this.header = i18n._("Reorder");
+    }
+    if (!this.width) {
+        this.width = 50;
+    }
+    if (this.fixed == null) {
+        this.fixed = true;
+    }
+    if (this.sortable == null) {
+        this.sortable = false;
+    }
+    if (!this.dataIndex) {
+        this.dataIndex = null;
+    }
+    this.renderer = this.renderer.createDelegate(this);
+};
+Ext.grid.ReorderColumn.prototype = {
+    init : function(grid) {
+        this.grid = grid;
+    },
+
+    renderer : function(value, metadata, record) {
+        return '<div class="iconDrag">&nbsp;</div>';
+    }
+};
 
 // Editor Grid class
 Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
@@ -2785,6 +2817,8 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
     hasEdit : true,
     // has Delete buton on each record
     hasDelete : true,
+    // the default Empty record for a new row
+    hasReorder : false,
     // the default Empty record for a new row
     emptyRow : null,
     // input lines used by the row editor
@@ -2811,6 +2845,14 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 
     initComponent : function() {
         this.changedData = {};
+        if (this.hasReorder) {
+            var reorderColumn = new Ext.grid.ReorderColumn();
+            if (!this.plugins) {
+                this.plugins = [];
+            }
+            this.plugins.push(reorderColumn);
+            this.columns.push(reorderColumn);
+        }
         if (this.hasEdit) {
             var editColumn = new Ext.grid.EditColumn();
             if (!this.plugins) {
