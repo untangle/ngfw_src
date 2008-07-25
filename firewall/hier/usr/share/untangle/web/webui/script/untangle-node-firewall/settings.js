@@ -55,6 +55,7 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                 gridRulesList : null,
                 parentId : this.getId(),
                 title : this.i18n._('Rules'),
+                layout : 'form',
                 autoScroll : true,
                 border : false,
                 bodyStyle : 'padding:5px 5px 0px 5px;',
@@ -205,33 +206,39 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                             fieldLabel : this.i18n._("Description"),
                             width : 400
                         })]
-                    })
+                    }),{
+                        xtype : 'fieldset',
+                        autoHeight : true,
+                        title : this.i18n._('Default Action'),
+                        items : [{
+	                        xtype : 'radio',
+                            boxLabel : this.i18n._('Block'), 
+                            hideLabel : true,
+	                        name : 'isDefaultAccept',
+	                        checked : !this.getBaseSettings().isDefaultAccept,
+	                        listeners : {
+	                            "check" : {
+	                                fn : function(elem, checked) {
+	                                    this.getBaseSettings().isDefaultAccept = !checked;
+	                                }.createDelegate(this)
+	                            }
+	                        }
+	                    },{
+	                        xtype : 'radio',
+	                        boxLabel : this.i18n._('Pass'), 
+	                        hideLabel : true,
+	                        name : 'isDefaultAccept',
+	                        checked : this.getBaseSettings().isDefaultAccept,
+	                        listeners : {
+	                            "check" : {
+	                                fn : function(elem, checked) {
+	                                    this.getBaseSettings().isDefaultAccept = checked;
+	                                }.createDelegate(this)
+	                            }
+	                        }
+                        }]
+                    }
                 ]
-//                ,
-//                onManagePassedRules : function() {
-//                    if (!this.gridRulesList) {
-//                        var settingsCmp = Ext.getCmp(this.parentId);
-//                        settingsCmp.buildRules();
-//                        this.gridRulesList = new Ung.ManageListWindow({
-//                            breadcrumbs : [{
-//                                title : i18n._(rpc.currentPolicy.name),
-//                                action : function() {
-//                                    this.panelRules.gridRulesList.cancelAction();
-//                                    this.cancelAction();
-//                                }.createDelegate(settingsCmp)
-//                            }, {
-//                                title : settingsCmp.node.md.displayName,
-//                                action : function() {
-//                                    this.panelRules.gridRulesList.cancelAction();
-//                                }.createDelegate(settingsCmp)
-//                            }, {
-//                                title : settingsCmp.i18n._("Rules")
-//                            }],
-//                            grid : settingsCmp.gridRules
-//                        });
-//                    }
-//                    this.gridRulesList.show();
-//                }
             });
         },
         // Event Log
@@ -322,8 +329,6 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                             "javaClass" : "java.util.HashMap"
                         });
                         if (!result.valid) {
-                            //this.panelRules.onManagePassedRules();
-                            //this.gridRules.editRowChangedDataByFieldValue("srcAddress", result.cause);
                             Ext.MessageBox.alert(this.i18n._("Validation failed for Source Address"), this.i18n._(result.message) + ": " + result.cause);
                             return false;
                         }
@@ -341,8 +346,6 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                             "javaClass" : "java.util.HashMap"
                         });
                         if (!result.valid) {
-                            //this.panelRules.onManagePassedRules();
-                            //this.gridRules.focusFirstChangedDataByFieldValue("dstAddress", result.cause);
                             Ext.MessageBox.alert(this.i18n._("Validation failed for Destination Address"), this.i18n._(result.message) + ": " + result.cause);
                             return false;
                         }
@@ -360,8 +363,6 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                             "javaClass" : "java.util.HashMap"
                         });
                         if (!result.valid) {
-                            //this.panelRules.onManagePassedRules();
-                            //this.gridRules.editRowChangedDataByFieldValue("srcAddress", result.cause);
                             Ext.MessageBox.alert(this.i18n._("Validation failed for Source Port"), this.i18n._(result.message) + ": " + result.cause);
                             return false;
                         }
@@ -379,8 +380,6 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                             "javaClass" : "java.util.HashMap"
                         });
                         if (!result.valid) {
-                            //this.panelRules.onManagePassedRules();
-                            //this.gridRules.focusFirstChangedDataByFieldValue("dstAddress", result.cause);
                             Ext.MessageBox.alert(this.i18n._("Validation failed for Destination Address"), this.i18n._(result.message) + ": " + result.cause);
                             return false;
                         }
