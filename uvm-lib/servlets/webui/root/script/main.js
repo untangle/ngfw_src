@@ -145,7 +145,7 @@ Ung.Main.prototype = {
                 }
              ]
         });
-        //Ext.QuickTips.init();
+        Ext.QuickTips.init();
 
         this.buildLeftTabs();
         main.systemStats=new Ung.SystemStats({});
