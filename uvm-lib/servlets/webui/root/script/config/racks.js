@@ -5,6 +5,7 @@ if (!Ung.hasResource["Ung.Racks"]) {
         panelPolicyManagement : null,
         gridRacks : null,
         gridPolicies : null,
+        policyStore : null,
         initComponent : function() {
             this.breadcrumbs = [{
                 title : i18n._("Configuration"),
@@ -122,6 +123,10 @@ if (!Ung.hasResource["Ung.Racks"]) {
 
         },
         buildPolicies : function() {
+        	this.policyStore=new Ext.data.JsonStore({
+                fields : ['id', 'default', 'name', 'notes', 'javaClass'],
+                data : this.getPolicyConfiguration().policies.list
+            });
         	var liveColumn = new Ext.grid.CheckColumn({
                 header : "<b>" + this.i18n._("live") + "</b>",
                 dataIndex : 'live',
@@ -195,14 +200,28 @@ if (!Ung.hasResource["Ung.Racks"]) {
                     width : 170,
                     sortable : true,
                     dataIndex : 'policy',
-                    renderer : function(value) {
-                        return value!=null?value.name : this.i18n._("&gt; No rack");
-                    }.createDelegate(this)
+                    editor: new Ext.form.ComboBox({
+                        store : this.policyStore,
+                        displayField : 'name',
+                        valueField : 'name',
+                        editable: false,
+                        mode : 'local',
+                        triggerAction : 'all',
+                        listClass : 'x-combo-list-small'
+                    })
                 }, {
                     header : this.i18n._("client <br/>interface"),
                     width : 100,
                     sortable : true,
                     dataIndex : 'clientIntf',
+                    renderer : function(value) {
+                        var result=""
+                        var store=Ung.Util.getInterfaceStore();
+                        if(store) {
+                            result=store.getAt(store.find("key", value)).get("name");
+                        }
+                        return result;
+                    },
                     editor: new Ung.Util.InterfaceCombo({
                     })
 
@@ -211,6 +230,14 @@ if (!Ung.hasResource["Ung.Racks"]) {
                     width : 100,
                     sortable : true,
                     dataIndex : 'serverIntf',
+                    renderer : function(value) {
+                        var result=""
+                        var store=Ung.Util.getInterfaceStore();
+                        if(store) {
+                            result=store.getAt(store.find("key", value)).get("name");
+                        }
+                        return result;
+                    },
                     editor: new Ung.Util.InterfaceCombo({
                     })
 
@@ -219,6 +246,14 @@ if (!Ung.hasResource["Ung.Racks"]) {
                     width : 100,
                     sortable : true,
                     dataIndex : 'protocol',
+                    renderer : function(value) {
+                        var result=""
+                        var store=Ung.Util.getProtocolStore();
+                        if(store) {
+                            result=store.getAt(store.find("key", value)).get("name");
+                        }
+                        return result;
+                    },
                     editor: new Ung.Util.ProtocolCombo({
                     })
                     

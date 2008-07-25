@@ -102,23 +102,45 @@ Ung.Util= {
     },
     todo: function() {
         Ext.MessageBox.alert(i18n._("TODO"),"TODO: implement this.");
+    },
+    interfaceStore:null,
+    getInterfaceStore : function() {
+    	if(this.interfaceStore==null) {
+    		this.interfaceStore=new Ext.data.SimpleStore({
+                fields : ['key', 'name'],
+                data :[
+                    ["any", i18n._("any")],
+                    ["0", i18n._("External")],
+                    ["7", i18n._("VPN")],
+                    ["1", i18n._("Internal")],
+                    ["more_trusted", i18n._("More Trusted")],
+                    ["less_trusted", i18n._("Less Trusted")]
+                ]
+            });
+    	}
+    	return this.interfaceStore;
+    },
+    protocolStore:null,
+    getProtocolStore : function() {
+        if(this.protocolStore==null) {
+            this.protocolStore=new Ext.data.SimpleStore({
+                fields : ['key', 'name'],
+                data :[
+                    ["TCP & UDP", i18n._("TCP & UDP")],
+                    ["UDP", i18n._("UDP")],
+                    ["TCP", i18n._("TCP")],
+                    ["ANY", i18n._("ANY")]
+                ]
+            });
+        }
+        return this.protocolStore;
     }
 };
 
 Ung.Util.InterfaceCombo=Ext.extend(Ext.form.ComboBox, {
     initComponent : function() {
-        this.store = new Ext.data.SimpleStore({
-            fields : ['key', 'name'],
-            data :[
-                ["any", i18n._("any")],
-                ["0", i18n._("External")],
-                ["7", i18n._("VPN")],
-                ["1", i18n._("Internal")],
-                ["more_trusted", i18n._("More Trusted")],
-                ["less_trusted", i18n._("Less Trusted")]
-            ]
-        });
-        Ung.Util.ProtocolCombo.superclass.initComponent.call(this);
+        this.store = Ung.Util.getInterfaceStore();
+        Ung.Util.InterfaceCombo.superclass.initComponent.call(this);
     },
     displayField : 'name',
     valueField : 'key',
@@ -130,15 +152,7 @@ Ung.Util.InterfaceCombo=Ext.extend(Ext.form.ComboBox, {
 
 Ung.Util.ProtocolCombo=Ext.extend(Ext.form.ComboBox, {
     initComponent : function() {
-        this.store = new Ext.data.SimpleStore({
-            fields : ['key', 'name'],
-            data :[
-                ["TCP & UDP", i18n._("TCP & UDP")],
-                ["UDP", i18n._("UDP")],
-                ["TCP", i18n._("TCP")],
-                ["ANY", i18n._("ANY")]
-            ]
-        });
+        this.store = Ung.Util.getProtocolStore();
         Ung.Util.ProtocolCombo.superclass.initComponent.call(this);
     },
     displayField : 'name',
