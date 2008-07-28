@@ -134,7 +134,17 @@ Ung.Util= {
             });
         }
         return this.protocolStore;
+    },
+    formatTime : function(value, rec) {
+        if(value==null) {
+            return null;
+        } else {
+            var d=new Date();
+            d.setTime(value.time);
+            return d.format("H:i");
+        }
     }
+    
 };
 
 Ung.Util.InterfaceCombo=Ext.extend(Ext.form.ComboBox, {
@@ -2846,6 +2856,12 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
     initComponent : function() {
         this.changedData = {};
         if (this.hasReorder) {
+        	this.enableDragDrop = true;
+        	this.selModel= new Ext.grid.RowSelectionModel({singleSelect:true});
+            this.dropConfig= {
+                appendOnly:true
+            };
+
             var reorderColumn = new Ext.grid.ReorderColumn();
             if (!this.plugins) {
                 this.plugins = [];
@@ -2986,6 +3002,31 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 
     afterRender : function() {
         Ung.EditorGrid.superclass.afterRender.call(this);
+        if(this.hasReorder) {
+            var ddrowTarget = new Ext.dd.DropTarget(this.container, {
+                ddGroup: this.getId()+"GridDD",
+                // copy:false,
+                notifyDrop : function(dd, e, data){
+                    var sm = this.getSelectionModel();
+                    var rows = sm.getSelections();
+                    var cindex = dd.getDragData(e).rowIndex;    // Here is need
+        
+                    var dsGrid = this.getStore();
+                    
+                    for(i = 0; i < rows.length; i++) {
+                        rowData = dsGrid.getById(rows[i].id);
+                        dsGrid.remove(dsGrid.getById(rows[i].id));
+                        dsGrid.insert(cindex, rowData);
+                    };
+        
+                    this.getView().refresh();
+        
+                    // put the cursor focus on the row of the gridRules which we just draged
+                    this.getSelectionModel().selectRow(cindex); 
+                }.createDelegate(this)
+            });
+        }
+        
         this.getGridEl().child("div[class*=x-grid3-viewport]").set({'name' : "Table"});
 
         this.getView().getRowClass = function(record, index, rowParams, store) {
