@@ -646,6 +646,12 @@ Ung.Main.prototype = {
                     main.racksWin.show();
                 });
                 break;
+            case "userDirectory":
+                Ung.Util.loadResourceAndExecute("Ung.UserDirectory","script/config/userDirectory.js", function() {
+                    main.userDirectoryWin=new Ung.UserDirectory(configItem);
+                    main.userDirectoryWin.show();
+                });
+                break;
             default:
                 Ext.MessageBox.alert(i18n._("Failed"),"TODO: implement config "+configItem.name);
                 break;
