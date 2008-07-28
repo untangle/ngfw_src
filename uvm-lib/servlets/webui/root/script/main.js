@@ -103,8 +103,9 @@ Ung.Main.prototype = {
         }
 
         this.initExtI18n();
+        this.initExtGlobal();
         this.initExtVTypes();
-
+        
         // initialize viewport object
         var contentLeftArr=[
             '<div id="contentleft">',
@@ -236,6 +237,35 @@ Ung.Main.prototype = {
     initExtI18n: function(){
         Ext.form.Field.prototype.invalidText=i18n._('The value in this field is invalid');
         Ext.form.TextField.prototype.blankText=i18n._('This field is required');
+    },
+    initExtGlobal: function(){
+    	
+    	// init quick tips
+    	Ext.QuickTips.init();
+    	
+    	//hide/unhide Field and label
+        Ext.override(Ext.form.Field, {
+            showContainer: function() {
+                this.enable();
+                this.show();
+                this.getEl().up('.x-form-item').setDisplayed(true); // show entire container and children (including label if applicable)
+            },
+            
+            hideContainer: function() {
+                this.disable(); // for validation
+                this.hide();
+                this.getEl().up('.x-form-item').setDisplayed(false); // hide container and children (including label if applicable)
+            },
+            
+            setContainerVisible: function(visible) {
+                if (visible) {
+                    this.showContainer();
+                } else {
+                    this.hideContainer();
+                }
+                return this;
+            }
+        });
     },
     // Add the additional 'advanced' VTypes
     initExtVTypes: function(){
