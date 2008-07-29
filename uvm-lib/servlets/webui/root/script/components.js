@@ -3221,7 +3221,9 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
                     deleted.push(parseInt(id));
                 }
             } else {
-                cd.recData["javaClass"] = this.recordJavaClass;
+            	if (this.recordJavaClass != null){
+                    cd.recData["javaClass"] = this.recordJavaClass;
+            	}
                 if (id < 0) {
                     added.push(cd.recData);
                 } else {
