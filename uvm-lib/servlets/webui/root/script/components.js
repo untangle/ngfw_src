@@ -3000,11 +3000,17 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
         return this.forcePaginate || (this.totalRecords != null && this.totalRecords >= this.minPaginateCount)
     },
 
+    beforeDestroy : function() {
+    	if(this.rowEditor) {
+            Ext.destroy(this.rowEditor);
+    	}
+        Ung.EditorGrid.superclass.beforeDestroy.call(this);
+    },    
     afterRender : function() {
         Ung.EditorGrid.superclass.afterRender.call(this);
         if(this.hasReorder) {
             var ddrowTarget = new Ext.dd.DropTarget(this.container, {
-                ddGroup: this.getId()+"GridDD",
+                ddGroup: "GridDD",
                 // copy:false,
                 notifyDrop : function(dd, e, data){
                     var sm = this.getSelectionModel();

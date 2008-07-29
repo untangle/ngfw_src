@@ -56,6 +56,7 @@ if (!Ung.hasResource["Ung.Racks"]) {
         buildRacks : function() {
             this.gridRacks = new Ung.EditorGrid({
                 settingsCmp : this,
+                anchor :"100% 50%",
                 name : 'Racks',
                 height : 250,
                 bodyStyle : 'padding-bottom:15px;',
@@ -69,7 +70,6 @@ if (!Ung.hasResource["Ung.Racks"]) {
                     "notes" : this.i18n._("[no description]"),
                     "javaClass" : "com.untangle.uvm.policy.Policy"
                 },
-                // autoExpandColumn : 'notes',
                 data : this.getPolicyConfiguration().policies,
                 dataRoot : 'list',
                 paginated : false,
@@ -156,6 +156,7 @@ if (!Ung.hasResource["Ung.Racks"]) {
                 settingsCmp : this,
                 name : 'Policies',
                 height : 250,
+                anchor :"100% 50%",
                 autoScroll : true,
                 parentId : this.getId(),
                 title : this.i18n._('Policies'),
@@ -256,7 +257,7 @@ if (!Ung.hasResource["Ung.Racks"]) {
                     })
                 }, {
                     header : this.i18n._("client <br/>interface"),
-                    width : 80,
+                    width : 75,
                     sortable : true,
                     dataIndex : 'clientIntf',
                     renderer : function(value) {
@@ -274,7 +275,7 @@ if (!Ung.hasResource["Ung.Racks"]) {
 
                 }, {
                     header : this.i18n._("server <br/>interface"),
-                    width : 80,
+                    width : 75,
                     sortable : true,
                     dataIndex : 'serverIntf',
                     renderer : function(value) {
@@ -361,7 +362,7 @@ if (!Ung.hasResource["Ung.Racks"]) {
                     })
                 }, {
                     header : this.i18n._("dayOfWeek"),
-                    width : 70,
+                    width : 65,
                     sortable : true,
                     dataIndex : 'dayOfWeek',
                     editor : new Ext.form.TextField({
@@ -369,7 +370,7 @@ if (!Ung.hasResource["Ung.Racks"]) {
                     })
                 }, {
                     header : this.i18n._("description"),
-                    width : 80,
+                    width : 75,
                     sortable : true,
                     dataIndex : 'description',
                     editor : new Ext.form.TextField({
