@@ -2266,6 +2266,10 @@ Ung.ConfigWin = Ext.extend(Ung.ButtonsWindow, {
             }
         });
     },
+    beforeDestroy : function() {
+        Ext.destroy(this.tabs);
+        Ung.Settings.superclass.beforeDestroy.call(this);
+    },
     // initialize window buttons
     initButtons : function() {
         this.subCmps.push(new Ext.Button({
@@ -2448,8 +2452,8 @@ Ung.RowEditorWindow = Ext.extend(Ung.UpdateWindow, {
             },
             items : this.inputLines
         });
-
         this.subCmps.push(this.formPanel);
+        this.inputLines=this.formPanel.items.getRange();
 
     },
     show : function() {
@@ -2469,24 +2473,20 @@ Ung.RowEditorWindow = Ext.extend(Ung.UpdateWindow, {
     	this.addMode=addMode;
         this.record = record;
         this.initialRecordData = Ext.encode(record.data);
-        if (this.inputLines) {
-            for (var i = 0; i < this.inputLines.length; i++) {
-                var inputLine = this.inputLines[i];
-                inputLine.suspendEvents();
-                inputLine.setValue(record.get(inputLine.dataIndex));
-                inputLine.resumeEvents();
-            }
+        for (var i = 0; i < this.inputLines.length; i++) {
+            var inputLine = this.inputLines[i];
+            inputLine.suspendEvents();
+            inputLine.setValue(record.get(inputLine.dataIndex));
+            inputLine.resumeEvents();
         }
     },
     // check if the form is valid;
     // this is the default functionality which can be overwritten
     isFormValid : function() {
-        if (this.inputLines) {
-            for (var i = 0; i < this.inputLines.length; i++) {
-                var inputLine = this.inputLines[i];
-                if (!inputLine.isValid()) {
-                    return false;
-                }
+        for (var i = 0; i < this.inputLines.length; i++) {
+            var inputLine = this.inputLines[i];
+            if (!inputLine.isValid()) {
+                return false;
             }
         }
         return true;
@@ -2943,13 +2943,15 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
             this.getStore().proxy.data = this.data;
             this.totalRecords=this.data.length
         }
-        this.bbar = new Ext.PagingToolbar({
-            pageSize : this.recordsPerPage,
-            store : this.store,
-            displayInfo : true,
-            displayMsg : i18n._('Displaying topics {0} - {1} of {2}'),
-            emptyMsg : i18n._("No topics to display")
-        });
+        if(this.paginated) {
+            this.bbar = new Ext.PagingToolbar({
+                pageSize : this.recordsPerPage,
+                store : this.store,
+                displayInfo : true,
+                displayMsg : i18n._('Displaying topics {0} - {1} of {2}'),
+                emptyMsg : i18n._("No topics to display")
+            });
+        }
         if (this.rowEditorInputLines != null) {
             this.rowEditor = new Ung.RowEditorWindow({
                 grid : this,
@@ -3161,14 +3163,16 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
         if (this.totalRecords != null) {
             this.getStore().proxy.setTotalRecords(this.totalRecords);
         }
-        if (this.isPaginated()) {
-            this.getBottomToolbar().show();
-            this.getBottomToolbar().enable();
-        } else {
-            this.getBottomToolbar().hide();
-            this.getBottomToolbar().disable();
+        if(this.paginated) {
+            if (this.isPaginated()) {
+                this.getBottomToolbar().show();
+                this.getBottomToolbar().enable();
+            } else {
+                this.getBottomToolbar().hide();
+                this.getBottomToolbar().disable();
+            }
+            this.getBottomToolbar().syncSize();
         }
-        this.getBottomToolbar().syncSize();
     },
     findFirstChangedDataByFieldValue : function(field, value) {
         for (id in this.changedData) {

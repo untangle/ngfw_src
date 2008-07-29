@@ -1,6 +1,3 @@
-var tim = {
-    time : 1235
-};
 if (!Ung.hasResource["Ung.Racks"]) {
     Ung.hasResource["Ung.Racks"] = true;
 
