@@ -339,6 +339,13 @@ Ung.Main.prototype = {
         return rpc.licenseManager;
     },
 
+    getAppAddressBook : function(forceReload) {
+        if (forceReload || rpc.appAddressBook === undefined) {
+            rpc.appAddressBook = rpc.jsonrpc.RemoteUvmContext.appAddressBook()
+        }
+        return rpc.appAddressBook;
+    },
+
     unactivateNode: function(mackageDesc) {
         rpc.nodeManager.nodeInstances(function (result, exception) {
                 if(exception) {
