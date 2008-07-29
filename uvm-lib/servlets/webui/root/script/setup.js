@@ -1269,7 +1269,7 @@ Ung.Setup =  {
                      email.card,
                      complete.card
             ],
-/*            disableNext : true, */
+            disableNext : true,
             el : "container"
         });
 

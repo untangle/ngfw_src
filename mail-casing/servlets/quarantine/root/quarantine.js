@@ -499,6 +499,7 @@ Ung.QuarantineGrid = Ext.extend( Ext.grid.GridPanel, {
     region : "center",
     stripeRows : true,
     autoExpandColumn : 4
+	
 });
 
 Ung.QuarantineTabPanel = Ext.extend( Ext.TabPanel, {
@@ -510,15 +511,15 @@ Ung.QuarantineTabPanel = Ext.extend( Ext.TabPanel, {
     },
 
     el : "quarantine-tab-panel",
-    width : 800,
-    height : 500,
+    width : '100%',
+    height : 430,
     activeTab : 0,
     layoutOnTabChange : true,
     /* defaults : { autoHeight : true }, */
     frame : true,
     defaults : {
         border : false,
-        bodyStyle : 'padding:5px 5px 0px 5px;'
+        bodyStyle : 'padding:4px 5px 0px 5px;'
     }
 });
 
@@ -556,7 +557,7 @@ function completeInit()
 
     panels.push( new Ext.Panel( { 
         title : i18n._("Quarantined Messages" ),
-        items : [ new Ext.form.Label( { text : message, region : "north", cls:'message' } ), quarantine.grid ],
+        items : [ new Ext.form.Label( { text : message, region : "north", cls:'message',ctCls:'message-container' ,margins:'4 4 4 4'} ), quarantine.grid ],
         layout : "border"
     } ));
 
@@ -564,7 +565,7 @@ function completeInit()
 
     panels.push( new Ext.Panel( { 
         title : i18n._("Safelist" ),
-        items : [ new Ext.form.Label( { text : message, region : "north", cls:'message' } ), safelist.grid ],
+        items : [ new Ext.form.Label( { text : message, region : "north", cls:'message',ctCls:'message-container' ,margins:'4 4 4 4' } ), safelist.grid ],
         layout : "border"
     } ));
     

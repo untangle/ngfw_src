@@ -75,7 +75,7 @@ Ung.Remaps.prototype = {
             height : 100,
             defaultType : 'textfield',
             items : [{
-                fieldLabel : i18n._( "Forward Quarantined Messages To" ),
+                fieldLabel : i18n._( "Forward Quarantined Messages To:" ),
                 name : 'email_address',
                 value : inboxDetails.forwardAddress
             }],
@@ -96,6 +96,7 @@ Ung.Remaps.prototype = {
             autoExpandColumn : 1,
             anchor : '100% -100',
             store : remaps.store,
+			cls:'quarantine-received-messages-grid',
             cm : remaps.cm,
             loadMask : true,
             frame : true,
@@ -108,9 +109,11 @@ Ung.Remaps.prototype = {
         
         items.push ({ 
             xtype : 'radio',
-            boxLabel : i18n._( "Forward Quarantined Messages To" ),
+            boxLabel : i18n._( "Forward Quarantined Messages To:" ),
             hideLabel : true,
+			id:'radio1',
             name : "acceptQuantineMessages",
+			ctCls:'quarantine-label',			
             checked : inboxDetails.forwardAddress != "",
             listeners : {
                 "check" : {
@@ -119,16 +122,23 @@ Ung.Remaps.prototype = {
                     }.createDelegate(this)
                  }
             }});
-
+		//var radio1 = items[items.length-1].getId();
+		Ext.QuickTips.init()		
+		var tt1 = new Ext.ToolTip({
+			target: Ext.get('radio1'),
+			title: 'Forward Quarantined Messages to....'
+		});
+		
         this.emailAddressField = new Ext.form.TextField({
             fieldLabel : i18n._( "Address" ),
             name : "email_address",
-            value : inboxDetails.forwardAddress });
+            value : inboxDetails.forwardAddress ,
+			cls:'quarantine-left-indented'
+			}
+			);
 
         items.push( this.emailAddressField );
-
-        items.push({
-            xtype : 'button',
+		this.changeAddressButton = new Ext.Button({
             text : "Change Address",
             handler: function() {
                 var field = this.forwardTo.find( "name", "email_address" )[0];
@@ -136,14 +146,32 @@ Ung.Remaps.prototype = {
                 quarantine.rpc.setRemap( this.setRemap.createDelegate( this ), 
                                          inboxDetails.token, email );
             },
-            scope : this });
+			cls:'quarantine-change-address',
+            scope : this		
+		});
+		items.push(this.changeAddressButton);
+        /*
+		items.push({
+	            xtype : 'button',
+	            text : "Change Address",
+	            handler: function() {
+	                var field = this.forwardTo.find( "name", "email_address" )[0];
+	                var email = field.getValue();
+	                quarantine.rpc.setRemap( this.setRemap.createDelegate( this ), 
+	                                         inboxDetails.token, email );
+	            },
+				cls:'quarantine-change-address',
+	            scope : this });
+			*/
 
         items.push ({ 
             xtype : 'radio',
             name : "acceptQuantineMessages",
-            boxLabel : i18n._( "Received Quarantined Messages From" ),
+			id: 'radio2',
+            boxLabel : i18n._( "Received Quarantined Messages From:" ),
             checked : inboxDetails.forwardAddress == "",
             hideLabel : true,
+			cls:'quarantine-received-messages',
             listeners : {
                 check : {
                     fn : function(elem, checked) {
@@ -151,10 +179,14 @@ Ung.Remaps.prototype = {
                     }.createDelegate(this)
                  }
             }});
-
+		var tt2 = new Ext.ToolTip({
+			target: Ext.get('radio2'),
+			title: 'Forward Quarantined Messages to....',
+			html:'Forward Quarantined messages to ...'
+		});
         items.push( this.grid );
 
-        this.panel = new Ext.FormPanel( {
+        this.panel = new Ext.Panel( {
             title : i18n._("Forward or Receive Quarantines" ),
             items : items });
 
@@ -165,9 +197,11 @@ Ung.Remaps.prototype = {
     {
         if ( isForwarded ) {
             this.emailAddressField.enable();
+			this.changeAddressButton.enable();
             this.grid.disable();
         } else {
             this.emailAddressField.disable();
+			this.changeAddressButton.disable();
             this.grid.enable();            
         }
     },

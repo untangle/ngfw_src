@@ -1,6 +1,11 @@
-html,body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,form,fieldset,input,p,blockquote,th,td{margin:0;padding:0;}img,body,html{border:0;}
+﻿html,body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,form,fieldset,input,p,blockquote,th,td{margin:0;padding:0;}img,body,html{border:0;}
+body{
+	font-family:Tahoma, Arial, Helvetica, sans-serif;
+}  
+
 body.quarantine {
     background: transparent url(../images/user/background_content.png) repeat-x !important;
+    margin:0 auto;
 }
 
 #content
@@ -50,20 +55,24 @@ body.blockpage p.contact
  }
 
 #header {
-	margin-bottom: 28px;
+	margin-bottom: 0px;
 }
 
 body.quarantine #header
 { 
-  width: 800px;
+  width: 100%;
+  margin-bottom:10px;
   }
 
 body.quarantine #header .title
 {
   position: absolute;
-  bottom: 0px;
-  right: 0px;
+  top: 10px;
+  font-weight:bold;
+  right: 1px;
   text-align: right;
+  color:#333;
+  font-size:10pt;
 }
 
 .title-block-page {
@@ -78,10 +87,46 @@ body.quarantine #header .title
     height: 130px;
 }
 .message {
-    padding: 8px 8px 8px 28px;
+    padding: 5px 5px 5px 28px;
     border: 1px solid #60BB3F;
-    font-size: 12px;
-    background: #FEFECB url(../images/user/icon_message.png) no-repeat scroll 7px center !important;
+    font-size: 8pt;
+    background: #FEFEDD url(../images/user/icon_message.png) no-repeat scroll 7px center !important;
+    color:#333;
+}
+.message-container{
+	 padding:2px;
+}
+.white-background{
+	background-color:#FFF;
+	background-image:none;
+}
+.quarantine-left-indented{
+	margin-left:20px;
+}
+.quarantine-received-messages-grid{
+	margin:7px 0px 0px 20px;
+	width:500px;
+}
+.safelist-grid{
+	width:50%;
+}
+/*
+.safelist-grid, .quarantine-grid{
+	margin-top:20px;
+}
+*/
+.quarantine-label{
+	font-size:9pt;
+	margin:20px 0px 0px 10px;
+}
+.quarantine-received-messages{
+	margin-top:50px;
+}
+.quarantine-change-address{	
+	display:inline;
+	margin:0px 0px 0px 10px;
+	position:relative;
+	top:7px;
 }
 .description {
     font-size: larger;
@@ -160,4 +205,9 @@ body.blockpage #footer
 .action-messages
 { 
   width : 300px;
+  position:absolute;
+  top:93px;
+  left:40%;
+  text-align:center;
+  font-weight:bold;
  }

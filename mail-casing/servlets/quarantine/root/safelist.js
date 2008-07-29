@@ -42,7 +42,6 @@ Ung.Safelist.prototype = {
             {
                 header: i18n._( "Email Address" ),
                 dataIndex: 'emailAddress',
-                width: 200,
                 editor : new Ext.form.TextField()
             }]);
 
@@ -94,7 +93,9 @@ Ung.Safelist.prototype = {
             loadMask : true,
             frame : true,
             stripeRows : true,
-            autoExpandColumn : 1,
+			cls:'safelist-grid',
+			autoExpandColumn : 1,	
+			autoExpandMax: 1700,
             tbar : [ this.addButton, this.deleteButton ]
          });
     
@@ -108,16 +109,17 @@ Ung.Safelist.prototype = {
                     fieldLabel : i18n._( "Email Address" ),
                     name : "email_address"
                 }],
-                frame : true,
-                autoHeight : true
+                frame :false,
+                height:'100%'
             } );
             this.addWindow = new Ext.Window( {
-                layout:'form',
+
                 width:500,
                 height:300,
                 closeAction:'hide',
                 plain: true,
                 items  :[ panel ],
+				title:i18n._('Add an Email Address to Safelist'),
                 
                 buttons: [{
                     text : i18n._( 'Save' ),
