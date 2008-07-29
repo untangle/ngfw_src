@@ -3261,9 +3261,31 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
                     }
                 }
             }
+            if (this.recordJavaClass != null){
+                records[i].data["javaClass"] = this.recordJavaClass;
+            }
             list.push(records[i].data)
         }
 
+        return list;
+    },
+    getDeletedList : function() {
+        var list=[];
+        var records=this.store.getRange();
+        for(var i=0; i<records.length;i++) {
+            var id = records[i].get("id");
+            if (id != null && id >= 0) {
+                var d = this.changedData[id];
+                if (d) {
+                    if (d.op == "deleted") {
+                    	if (this.recordJavaClass != null){
+                            records[i].data["javaClass"] = this.recordJavaClass;
+                        }
+                        list.push(records[i].data);
+                    }
+                }
+            }
+        }
         return list;
     }
 });

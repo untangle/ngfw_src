@@ -4,7 +4,7 @@ if (!Ung.hasResource["Ung.Racks"]) {
     Ung.Racks = Ext.extend(Ung.ConfigWin, {
         panelPolicyManagement : null,
         gridRacks : null,
-        gridPolicies : null,
+        gridRules : null,
         policyStore : null,
         initComponent : function() {
             this.breadcrumbs = [{
@@ -46,7 +46,7 @@ if (!Ung.hasResource["Ung.Racks"]) {
                 title : this.i18n._('Policy Management'),
                 layout : "form",
                 autoScroll : true,
-                items : [this.gridRacks, this.gridPolicies]
+                items : [this.gridRacks, this.gridRules]
             });
 
         },
@@ -64,8 +64,7 @@ if (!Ung.hasResource["Ung.Racks"]) {
                 emptyRow : {
                     "default" : false,
                     "name" : this.i18n._("[no name]"),
-                    "notes" : this.i18n._("[no description]"),
-                    "javaClass" : "com.untangle.uvm.policy.Policy"
+                    "notes" : this.i18n._("[no description]")
                 },
                 data : this.getPolicyConfiguration().policies,
                 dataRoot : 'list',
@@ -79,8 +78,6 @@ if (!Ung.hasResource["Ung.Racks"]) {
                     name : 'name'
                 }, {
                     name : 'notes'
-                }, {
-                    name : 'javaClass'
                 }],
                 columns : [{
                     header : this.i18n._("name"),
@@ -149,7 +146,7 @@ if (!Ung.hasResource["Ung.Racks"]) {
                 width : 25,
                 fixed : true
             });
-            this.gridPolicies = new Ung.EditorGrid({
+            this.gridRules = new Ung.EditorGrid({
                 settingsCmp : this,
                 name : 'Policies',
                 height : 250,
@@ -173,8 +170,7 @@ if (!Ung.hasResource["Ung.Racks"]) {
                     "startTimeFormatted" : "00:00",
                     "endTimeFormatted" : "23:59",
                     "dayOfWeek" : "any",
-                    "description" : this.i18n._('[no description]'),
-                    "javaClass" : "com.untangle.uvm.policy.UserPolicyRule"
+                    "description" : this.i18n._('[no description]')
                 },
                 // autoExpandColumn : 'notes',
                 data : this.getPolicyConfiguration().userPolicyRules,
@@ -188,7 +184,10 @@ if (!Ung.hasResource["Ung.Racks"]) {
                     name : 'policy'
                 }, {
                     name : 'policyName',
-                    mapping : 'policy==null?null:policy.name'
+                    mapping : 'policy',
+                    convert : function(val, rec) {
+                    	return val==null?null:val.name;
+                    }
                 }, {
                     name : 'clientIntf'
                 }, {
@@ -217,8 +216,6 @@ if (!Ung.hasResource["Ung.Racks"]) {
                     name : 'dayOfWeek'
                 }, {
                     name : 'description'
-                }, {
-                    name : 'javaClass'
                 }],
                 columns : [liveColumn, {
                     header : this.i18n._("<b>Use this rack</b> when the <br/>next colums are matched..."),
@@ -386,31 +383,31 @@ if (!Ung.hasResource["Ung.Racks"]) {
                             this.addMode = addMode;
                             this.record = record;
                             this.initialRecordData = Ext.encode(record.data);
-                            Ext.getCmp("gridPolicies_rowEditor_protocol").setValue(record.data.protocol);
-                            Ext.getCmp("gridPolicies_rowEditor_client_interface").setValue(record.data.clientIntf);
-                            Ext.getCmp("gridPolicies_rowEditor_server_interface").setValue(record.data.serverIntf);
-                            Ext.getCmp("gridPolicies_rowEditor_client_address").setValue(record.data.clientAddr);
-                            Ext.getCmp("gridPolicies_rowEditor_server_address").setValue(record.data.serverAddr);
-                            Ext.getCmp("gridPolicies_rowEditor_server_port").setValue(record.data.serverPort);
-                            Ext.getCmp("gridPolicies_rowEditor_start_time").setValue(record.data.startTimeFormatted);
-                            Ext.getCmp("gridPolicies_rowEditor_end_time").setValue(record.data.endTimeFormatted);
-                            Ext.getCmp("gridPolicies_rowEditor_sunday").setValue(record.data.dayOfWeek == "any"
+                            Ext.getCmp("gridRules_rowEditor_protocol").setValue(record.data.protocol);
+                            Ext.getCmp("gridRules_rowEditor_client_interface").setValue(record.data.clientIntf);
+                            Ext.getCmp("gridRules_rowEditor_server_interface").setValue(record.data.serverIntf);
+                            Ext.getCmp("gridRules_rowEditor_client_address").setValue(record.data.clientAddr);
+                            Ext.getCmp("gridRules_rowEditor_server_address").setValue(record.data.serverAddr);
+                            Ext.getCmp("gridRules_rowEditor_server_port").setValue(record.data.serverPort);
+                            Ext.getCmp("gridRules_rowEditor_start_time").setValue(record.data.startTimeFormatted);
+                            Ext.getCmp("gridRules_rowEditor_end_time").setValue(record.data.endTimeFormatted);
+                            Ext.getCmp("gridRules_rowEditor_sunday").setValue(record.data.dayOfWeek == "any"
                                     || record.data.dayOfWeek.indexOf("Sunday") >= 0);
-                            Ext.getCmp("gridPolicies_rowEditor_monday").setValue(record.data.dayOfWeek == "any"
+                            Ext.getCmp("gridRules_rowEditor_monday").setValue(record.data.dayOfWeek == "any"
                                     || record.data.dayOfWeek.indexOf("Monday") >= 0);
-                            Ext.getCmp("gridPolicies_rowEditor_tuesday").setValue(record.data.dayOfWeek == "any"
+                            Ext.getCmp("gridRules_rowEditor_tuesday").setValue(record.data.dayOfWeek == "any"
                                     || record.data.dayOfWeek.indexOf("Tuesday") >= 0);
-                            Ext.getCmp("gridPolicies_rowEditor_wednesday").setValue(record.data.dayOfWeek == "any"
+                            Ext.getCmp("gridRules_rowEditor_wednesday").setValue(record.data.dayOfWeek == "any"
                                     || record.data.dayOfWeek.indexOf("Wednesday") >= 0);
-                            Ext.getCmp("gridPolicies_rowEditor_thursday").setValue(record.data.dayOfWeek == "any"
+                            Ext.getCmp("gridRules_rowEditor_thursday").setValue(record.data.dayOfWeek == "any"
                                     || record.data.dayOfWeek.indexOf("Thursday") >= 0);
-                            Ext.getCmp("gridPolicies_rowEditor_friday").setValue(record.data.dayOfWeek == "any"
+                            Ext.getCmp("gridRules_rowEditor_friday").setValue(record.data.dayOfWeek == "any"
                                     || record.data.dayOfWeek.indexOf("Friday") >= 0);
-                            Ext.getCmp("gridPolicies_rowEditor_saturday").setValue(record.data.dayOfWeek == "any"
+                            Ext.getCmp("gridRules_rowEditor_saturday").setValue(record.data.dayOfWeek == "any"
                                     || record.data.dayOfWeek.indexOf("Saturday") >= 0);
-                            Ext.getCmp("gridPolicies_rowEditor_rack").setValue(record.data.policyName);
-                            Ext.getCmp("gridPolicies_rowEditor_description").setValue(record.data.description);
-                            Ext.getCmp("gridPolicies_rowEditor_live").setValue(record.data.live);
+                            Ext.getCmp("gridRules_rowEditor_rack").setValue(record.data.policyName);
+                            Ext.getCmp("gridRules_rowEditor_description").setValue(record.data.description);
+                            Ext.getCmp("gridRules_rowEditor_live").setValue(record.data.live);
                         },
                         isFormValid : function() {
                             return true;
@@ -418,53 +415,53 @@ if (!Ung.hasResource["Ung.Racks"]) {
                         updateAction : function() {
                             if (this.isFormValid()) {
                                 if (this.record !== null) {
-                                    this.record.set("protocol", Ext.getCmp("gridPolicies_rowEditor_protocol").getValue());
-                                    this.record.set("clientIntf", Ext.getCmp("gridPolicies_rowEditor_client_interface").getValue());
-                                    this.record.set("serverIntf", Ext.getCmp("gridPolicies_rowEditor_server_interface").getValue());
-                                    this.record.set("clientAddr", Ext.getCmp("gridPolicies_rowEditor_client_address").getValue());
-                                    this.record.set("serverAddr", Ext.getCmp("gridPolicies_rowEditor_server_address").getValue());
-                                    this.record.set("serverPort", Ext.getCmp("gridPolicies_rowEditor_server_port").getValue());
-                                    this.record.set("startTimeFormatted", Ext.getCmp("gridPolicies_rowEditor_start_time").getValue());
-                                    this.record.set("endTimeFormatted", Ext.getCmp("gridPolicies_rowEditor_end_time").getValue());
+                                    this.record.set("protocol", Ext.getCmp("gridRules_rowEditor_protocol").getValue());
+                                    this.record.set("clientIntf", Ext.getCmp("gridRules_rowEditor_client_interface").getValue());
+                                    this.record.set("serverIntf", Ext.getCmp("gridRules_rowEditor_server_interface").getValue());
+                                    this.record.set("clientAddr", Ext.getCmp("gridRules_rowEditor_client_address").getValue());
+                                    this.record.set("serverAddr", Ext.getCmp("gridRules_rowEditor_server_address").getValue());
+                                    this.record.set("serverPort", Ext.getCmp("gridRules_rowEditor_server_port").getValue());
+                                    this.record.set("startTimeFormatted", Ext.getCmp("gridRules_rowEditor_start_time").getValue());
+                                    this.record.set("endTimeFormatted", Ext.getCmp("gridRules_rowEditor_end_time").getValue());
                                     var dayOfWeek = "";
-                                    if (Ext.getCmp("gridPolicies_rowEditor_sunday").getValue()
-                                            && Ext.getCmp("gridPolicies_rowEditor_monday").getValue()
-                                            && Ext.getCmp("gridPolicies_rowEditor_tuesday").getValue()
-                                            && Ext.getCmp("gridPolicies_rowEditor_wednesday").getValue()
-                                            && Ext.getCmp("gridPolicies_rowEditor_thursday").getValue()
-                                            && Ext.getCmp("gridPolicies_rowEditor_friday").getValue()
-                                            && Ext.getCmp("gridPolicies_rowEditor_saturday").getValue()) {
+                                    if (Ext.getCmp("gridRules_rowEditor_sunday").getValue()
+                                            && Ext.getCmp("gridRules_rowEditor_monday").getValue()
+                                            && Ext.getCmp("gridRules_rowEditor_tuesday").getValue()
+                                            && Ext.getCmp("gridRules_rowEditor_wednesday").getValue()
+                                            && Ext.getCmp("gridRules_rowEditor_thursday").getValue()
+                                            && Ext.getCmp("gridRules_rowEditor_friday").getValue()
+                                            && Ext.getCmp("gridRules_rowEditor_saturday").getValue()) {
                                        dayOfWeek="any" 	
 
                                     } else {
                                         var out = [];
-                                        if (Ext.getCmp("gridPolicies_rowEditor_sunday").getValue()) {
+                                        if (Ext.getCmp("gridRules_rowEditor_sunday").getValue()) {
                                             out.push("Sunday");
                                         }
-                                        if (Ext.getCmp("gridPolicies_rowEditor_monday").getValue()) {
+                                        if (Ext.getCmp("gridRules_rowEditor_monday").getValue()) {
                                             out.push("Monday");
                                         }
-                                        if (Ext.getCmp("gridPolicies_rowEditor_tuesday").getValue()) {
+                                        if (Ext.getCmp("gridRules_rowEditor_tuesday").getValue()) {
                                             out.push("Tuesday");
                                         }
-                                        if (Ext.getCmp("gridPolicies_rowEditor_wednesday").getValue()) {
+                                        if (Ext.getCmp("gridRules_rowEditor_wednesday").getValue()) {
                                             out.push("Wednesday");
                                         }
-                                        if (Ext.getCmp("gridPolicies_rowEditor_thursday").getValue()) {
+                                        if (Ext.getCmp("gridRules_rowEditor_thursday").getValue()) {
                                             out.push("Sunday");
                                         }
-                                        if (Ext.getCmp("gridPolicies_rowEditor_friday").getValue()) {
+                                        if (Ext.getCmp("gridRules_rowEditor_friday").getValue()) {
                                             out.push("Friday");
                                         }
-                                        if (Ext.getCmp("gridPolicies_rowEditor_saturday").getValue()) {
+                                        if (Ext.getCmp("gridRules_rowEditor_saturday").getValue()) {
                                             out.push("Saturday");
                                         }
                                         dayOfWeek=out.join(",");
                                     }
                                     this.record.set("dayOfWeek", dayOfWeek);
-                                    this.record.set("policyName", Ext.getCmp("gridPolicies_rowEditor_rack").getValue());
-                                    this.record.set("description", Ext.getCmp("gridPolicies_rowEditor_description").getValue());
-                                    this.record.set("live", Ext.getCmp("gridPolicies_rowEditor_live").getValue());
+                                    this.record.set("policyName", Ext.getCmp("gridRules_rowEditor_rack").getValue());
+                                    this.record.set("description", Ext.getCmp("gridRules_rowEditor_description").getValue());
+                                    this.record.set("live", Ext.getCmp("gridRules_rowEditor_live").getValue());
 
                                     if (this.addMode) {
                                         this.grid.getStore().insert(0, [this.record]);
@@ -492,7 +489,7 @@ if (!Ung.hasResource["Ung.Racks"]) {
                         border : false,
                         html : this.i18n._("The protocol you would like this policy to handle.")
                     }, new Ung.Util.ProtocolCombo({
-                        id : 'gridPolicies_rowEditor_protocol',
+                        id : 'gridRules_rowEditor_protocol',
                         xtype : 'combo',
                         fieldLabel : this.i18n._("Protocol")
                     })]
@@ -506,7 +503,7 @@ if (!Ung.hasResource["Ung.Racks"]) {
                         html : this.i18n._("The ethernet interface (NIC) you would like this policy to handle.")
                     }, new Ung.Util.InterfaceCombo({
                         name : 'Client',
-                        id : 'gridPolicies_rowEditor_client_interface',
+                        id : 'gridRules_rowEditor_client_interface',
                         fieldLabel : this.i18n._("Client"),
                         editable : false,
                         store : Ung.Util.getInterfaceStore(),
@@ -514,7 +511,7 @@ if (!Ung.hasResource["Ung.Racks"]) {
 
                     }), new Ung.Util.InterfaceCombo({
                         name : 'Server',
-                        id : 'gridPolicies_rowEditor_server_interface',
+                        id : 'gridRules_rowEditor_server_interface',
                         fieldLabel : this.i18n._("Server"),
                         width : 350
 
@@ -530,13 +527,13 @@ if (!Ung.hasResource["Ung.Racks"]) {
                     }, {
                         xtype : 'textfield',
                         name : 'Client',
-                        id : 'gridPolicies_rowEditor_client_address',
+                        id : 'gridRules_rowEditor_client_address',
                         fieldLabel : this.i18n._("Client"),
                         allowBlank : false
                     }, {
                         xtype : 'textfield',
                         name : 'Server',
-                        id : 'gridPolicies_rowEditor_server_address',
+                        id : 'gridRules_rowEditor_server_address',
                         fieldLabel : this.i18n._("Server"),
                         allowBlank : false
                     }]
@@ -551,7 +548,7 @@ if (!Ung.hasResource["Ung.Racks"]) {
                     }, {
                         xtype : 'textfield',
                         name : 'Server',
-                        id : 'gridPolicies_rowEditor_server_port',
+                        id : 'gridRules_rowEditor_server_port',
                         fieldLabel : this.i18n._("Server"),
                         allowBlank : false
                     }]
@@ -578,13 +575,13 @@ if (!Ung.hasResource["Ung.Racks"]) {
                         xtype : 'timefield',
                         name : 'Start Time',
                         format : "H:i",
-                        id : 'gridPolicies_rowEditor_start_time',
+                        id : 'gridRules_rowEditor_start_time',
                         fieldLabel : this.i18n._("Start Time"),
                         allowBlank : false
                     }, {
                         xtype : 'timefield',
                         name : 'End Time',
-                        id : 'gridPolicies_rowEditor_end_time',
+                        id : 'gridRules_rowEditor_end_time',
                         format : "H:i",
                         fieldLabel : this.i18n._("End Time"),
                         allowBlank : false
@@ -600,49 +597,49 @@ if (!Ung.hasResource["Ung.Racks"]) {
                     }, {
                         xtype : 'checkbox',
                         name : 'Sunday',
-                        id : 'gridPolicies_rowEditor_sunday',
+                        id : 'gridRules_rowEditor_sunday',
                         boxLabel : this.i18n._('Sunday'),
                         hideLabel : true,
                         checked : true
                     }, {
                         xtype : 'checkbox',
                         name : 'Monday',
-                        id : 'gridPolicies_rowEditor_monday',
+                        id : 'gridRules_rowEditor_monday',
                         boxLabel : this.i18n._('Monday'),
                         hideLabel : true,
                         checked : true
                     }, {
                         xtype : 'checkbox',
                         name : 'Tuesday',
-                        id : 'gridPolicies_rowEditor_tuesday',
+                        id : 'gridRules_rowEditor_tuesday',
                         boxLabel : this.i18n._('Tuesday'),
                         hideLabel : true,
                         checked : true
                     }, {
                         xtype : 'checkbox',
                         name : 'Wednesday',
-                        id : 'gridPolicies_rowEditor_wednesday',
+                        id : 'gridRules_rowEditor_wednesday',
                         boxLabel : this.i18n._('Wednesday'),
                         hideLabel : true,
                         checked : true
                     }, {
                         xtype : 'checkbox',
                         name : 'Thursday',
-                        id : 'gridPolicies_rowEditor_thursday',
+                        id : 'gridRules_rowEditor_thursday',
                         boxLabel : this.i18n._('Thursday'),
                         hideLabel : true,
                         checked : true
                     }, {
                         xtype : 'checkbox',
                         name : 'Friday',
-                        id : 'gridPolicies_rowEditor_friday',
+                        id : 'gridRules_rowEditor_friday',
                         boxLabel : this.i18n._('Friday'),
                         hideLabel : true,
                         checked : true
                     }, {
                         xtype : 'checkbox',
                         name : 'Saturday',
-                        id : 'gridPolicies_rowEditor_saturday',
+                        id : 'gridRules_rowEditor_saturday',
                         boxLabel : this.i18n._('Saturday'),
                         hideLabel : true,
                         checked : true
@@ -658,7 +655,7 @@ if (!Ung.hasResource["Ung.Racks"]) {
                     }, {
                         xtype : 'combo',
                         name : 'Rack',
-                        id : 'gridPolicies_rowEditor_rack',
+                        id : 'gridRules_rowEditor_rack',
                         fieldLabel : this.i18n._("Rack"),
                         editable : false,
                         store : this.policyStore,
@@ -673,7 +670,7 @@ if (!Ung.hasResource["Ung.Racks"]) {
                         xtype : 'textfield',
                         name : 'Description',
                         width : 200,
-                        id : 'gridPolicies_rowEditor_description',
+                        id : 'gridRules_rowEditor_description',
                         fieldLabel : this.i18n._("Description"),
                         allowBlank : false
                     }]
@@ -683,46 +680,71 @@ if (!Ung.hasResource["Ung.Racks"]) {
                     items : [{
                         xtype : 'checkbox',
                         name : 'Enable this Policy',
-                        id : 'gridPolicies_rowEditor_live',
+                        id : 'gridRules_rowEditor_live',
                         boxLabel : this.i18n._('Enable this Policy'),
                         hideLabel : true,
                         checked : true
                     }]
                 }]
             });
-
         },
         validateClient : function() {
+            var rackList=this.gridRacks.getFullSaveList();
+            if(rackList.length==0) {
+                Ext.MessageBox.alert(this.i18n._("There must always be at least one available rack."));
+                return false;
+            }
+            for(var i=0;i<rackList.length;i++) {
+            	for(var j=i+1;j<rackList.length;j++) {
+            	   if(rackList[i].name==rackList[j].name) {
+            	   	   Ext.MessageBox.alert(i18n._("Failed"), i18n.sprintf(this.i18n._("The rack named %s already exists."),rackList[i].name));
+            	       return false;
+            	   }
+            	}
+            }
+            var rulesList=this.gridRules.getFullSaveList();
+            var rackDeletedList=this.gridRacks.getDeletedList();
+            for(var i=0;i<rulesList.length;i++) {
+                if(rulesList[i].policy!=null) {
+                	for(var j=0;j<rackDeletedList.length;j++) {
+                		if(rulesList[i].policy.id==rackDeletedList[j].id) {
+                			Ext.MessageBox.alert(i18n._("Failed"), i18n.sprintf(this.i18n._('The rack named %s cannot be removed because it is currently being used in "Custom Policies".'),rackDeletedList[j].name));
+                            return false;
+                		}
+                	}
+                }
+            }
+            return true;
+        },
+        validateServer : function() {
+        	var rackDeletedList=this.gridRacks.getDeletedList();
+        	for(var i=0;i<rackDeletedList.length;i++)
+        	try {
+                var result = rpc.nodeManager.nodeInstances(rackDeletedList[i]);
+                if (result.list.length>0) {
+                    Ext.MessageBox.alert(i18n._("Failed"), i18n.sprintf(this.i18n._("The rack named %s cannot be removed because it is not empty.  Please remove all products first."),rackDeletedList[i].name));
+                    return false;
+                }
+            } catch (e) {
+                Ext.MessageBox.alert(i18n._("Failed"), e.message);
+                return false;
+            }
             return true;
         },
         // save function
         saveAction : function() {
-            rpc.jsonrpc.RemoteUvmContext.version(function(result, exception) {
-                if (exception) {
-                    Ext.MessageBox.alert("Failed", exception.message);
-                    return;
-                }
-            }, this.gridPolicies.getFullSaveList())
-            return;
             if (this.validate()) {
+                this.getPolicyConfiguration().policies.list=this.gridRacks.getFullSaveList();
+                this.getPolicyConfiguration().userPolicyRules.list=this.gridRules.getFullSaveList();
                 Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-                this.saveSemaphore = 1;
-                // save language settings
-
                 rpc.policyManager.setPolicyConfiguration(function(result, exception) {
                     if (exception) {
                         Ext.MessageBox.alert(i18n._("Failed"), exception.message);
                         return;
                     }
-                    this.afterSave();
-                }.createDelegate(this), this.getPolicyConfiguration());
-            }
-        },
-        afterSave : function() {
-            this.saveSemaphore--;
-            if (this.saveSemaphore == 0) {
-                Ext.MessageBox.hide();
+                    Ext.MessageBox.hide();
                 this.cancelAction();
+                }.createDelegate(this), this.getPolicyConfiguration());
             }
         }
 
