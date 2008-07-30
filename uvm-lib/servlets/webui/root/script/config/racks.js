@@ -173,6 +173,8 @@ if (!Ung.hasResource["Ung.Racks"]) {
                     "clientPort" : null,
                     "serverPort" : "any",
                     "user" : "[any]",
+                    "startTime" : {"time":-7200000,"javaClass":"java.sql.Time"},
+                    "endTime" : {"time":79140000,"javaClass":"java.sql.Time"},
                     "startTimeFormatted" : "00:00",
                     "endTimeFormatted" : "23:59",
                     "dayOfWeek" : "any",
@@ -210,6 +212,10 @@ if (!Ung.hasResource["Ung.Racks"]) {
                     name : 'serverPort'
                 }, {
                     name : 'user'
+                }, {
+                    name : 'startTime'
+                }, {
+                    name : 'endTime'
                 }, {
                     name : 'startTimeFormatted',
                     mapping: 'startTime',
@@ -347,6 +353,11 @@ if (!Ung.hasResource["Ung.Racks"]) {
                     width : 55,
                     sortable : true,
                     dataIndex : 'startTimeFormatted',
+                    renderer : function(value, metadata, record) {
+                        var dt = Date.parseDate(value, "H:i");
+                        record.data.startTime = {"time":dt.getTime(),"javaClass":"java.sql.Time"};
+                        return value;
+                    }.createDelegate(this),
                     editor : new Ext.form.TimeField({
                         format : "H:i",
                         allowBlank : false
@@ -356,6 +367,11 @@ if (!Ung.hasResource["Ung.Racks"]) {
                     width : 55,
                     sortable : true,
                     dataIndex : 'endTimeFormatted',
+                    renderer : function(value, metadata, record) {
+                        var dt = Date.parseDate(value, "H:i");
+                        record.data.endTime = {"time":dt.getTime(),"javaClass":"java.sql.Time"};
+                        return value;
+                    }.createDelegate(this),
                     editor : new Ext.form.TimeField({
                         format : "H:i",
                         allowBlank : false
@@ -365,9 +381,19 @@ if (!Ung.hasResource["Ung.Racks"]) {
                     width : 65,
                     sortable : true,
                     dataIndex : 'dayOfWeek',
+                    renderer : function(value, metadata, record) {
+                    	var out=[];
+                    	if(value!=null) {
+                    		var arr=value.split(",");
+                    		for(var i=0;i<arr.length;i++) {
+                    			out.push(this.i18n._(arr[i]));
+                    		}
+                    	}
+                    	return out.join(",");
+                    }.createDelegate(this)/*,
                     editor : new Ext.form.TextField({
                         allowBlank : false
-                    })
+                    })*/
                 }, {
                     header : this.i18n._("description"),
                     width : 75,
@@ -454,7 +480,7 @@ if (!Ung.hasResource["Ung.Racks"]) {
                                             out.push("Wednesday");
                                         }
                                         if (Ext.getCmp("gridRules_rowEditor_thursday").getValue()) {
-                                            out.push("Sunday");
+                                            out.push("Thursday");
                                         }
                                         if (Ext.getCmp("gridRules_rowEditor_friday").getValue()) {
                                             out.push("Friday");
