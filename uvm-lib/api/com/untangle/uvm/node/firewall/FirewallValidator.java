@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-package com.untangle.node.firewall;
+package com.untangle.uvm.node.firewall;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -42,7 +42,7 @@ public class FirewallValidator implements Validator {
                             IPMatcherFactory.parse(val);
                         } catch (Exception e) {
                             return new ValidationResult(false,
-                                    "Invalid address specified:", val);
+                                    "Invalid address specified", val);
                         }
                     }
                 }
@@ -55,7 +55,7 @@ public class FirewallValidator implements Validator {
                             PortMatcherFactory.parse(val);
                         } catch (Exception e) {
                             return new ValidationResult(false,
-                                    "Invalid port specified:", val);
+                                    "Invalid port specified", val);
                         }
                     }
                 }

@@ -36,6 +36,12 @@ if (!Ung.hasResource["Ung.Racks"]) {
             }
             return this.rpc.policyConfiguration;
         },
+        getPolicyManagerValidator : function(forceReload) {
+            if (forceReload || this.rpc.policyManagerValidator === undefined) {
+                this.rpc.policyManagerValidator = rpc.policyManager.getValidator();
+            }
+            return this.rpc.policyManagerValidator;
+        },
         buildPolicyManagement : function() {
             this.buildRacks();
             this.buildPolicies();
@@ -729,6 +735,69 @@ if (!Ung.hasResource["Ung.Racks"]) {
                 Ext.MessageBox.alert(i18n._("Failed"), e.message);
                 return false;
             }
+            
+            var passedAddresses = this.gridRules.getFullSaveList();
+            var clientAddrList = [];
+            var serverAddrList = [];
+            var serverPortList = [];
+            var dstPortList = [];
+            for (var i = 0; i < passedAddresses.length; i++) {
+                clientAddrList.push(passedAddresses[i]["clientAddr"]);
+                serverAddrList.push(passedAddresses[i]["serverAddr"]);
+                serverPortList.push(passedAddresses[i]["serverPort"]);
+            }
+            if (clientAddrList.length > 0) {
+                try {
+                    var result = this.getPolicyManagerValidator().validate({
+                        map : { "type"      : "IP", 
+                                "values"    : {"javaClass" : "java.util.ArrayList", list : clientAddrList}
+                        },
+                        "javaClass" : "java.util.HashMap"
+                    });
+                    if (!result.valid) {
+                        Ext.MessageBox.alert(this.i18n._("Validation failed for Client Address"), this.i18n._(result.message) + ": " + result.cause);
+                        return false;
+                    }
+                } catch (e) {
+                    Ext.MessageBox.alert(i18n._("Failed"), e.message);
+                    return false;
+                }
+            }
+            if (serverAddrList.length > 0) {
+                try {
+                    var result = this.getPolicyManagerValidator().validate({
+                        map : { "type"      : "IP", 
+                                "values"    : {"javaClass" : "java.util.ArrayList", list : serverAddrList}
+                        },
+                        "javaClass" : "java.util.HashMap"
+                    });
+                    if (!result.valid) {
+                        Ext.MessageBox.alert(this.i18n._("Validation failed for Server Address"), this.i18n._(result.message) + ": " + result.cause);
+                        return false;
+                    }
+                } catch (e) {
+                    Ext.MessageBox.alert(i18n._("Failed"), e.message);
+                    return false;
+                }
+            }
+            if (serverPortList.length > 0) {
+                try {
+                    var result = this.getPolicyManagerValidator().validate({
+                        map : { "type"      : "Port", 
+                                "values"    : {"javaClass" : "java.util.ArrayList", list : serverPortList}
+                        },
+                        "javaClass" : "java.util.HashMap"
+                    });
+                    if (!result.valid) {
+                        Ext.MessageBox.alert(this.i18n._("Validation failed for Server Port"), this.i18n._(result.message) + ": " + result.cause);
+                        return false;
+                    }
+                } catch (e) {
+                    Ext.MessageBox.alert(i18n._("Failed"), e.message);
+                    return false;
+                }
+            }
+            
             return true;
         },
         // save function
