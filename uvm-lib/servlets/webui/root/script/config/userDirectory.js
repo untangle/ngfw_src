@@ -4,6 +4,7 @@ if (!Ung.hasResource["Ung.UserDirectory"]) {
     Ung.UserDirectory = Ext.extend(Ung.ConfigWin, {
         panelActiveDirectoryConnector : null,
         panelLocalDirectory : null,
+        gridUsers : null,
         initComponent : function() {
             this.breadcrumbs = [{
                 title : i18n._("Configuration"),
@@ -78,6 +79,7 @@ if (!Ung.hasResource["Ung.UserDirectory"]) {
         buildLocalDirectory : function() {
             var storeData=main.getAppAddressBook().getLocalUserEntries().list;
             for(var i=0; i<storeData.length; i++) {
+                storeData[i].id = i;
                 storeData[i].password = "***UNCHANGED***";
             }
             
@@ -166,7 +168,7 @@ if (!Ung.hasResource["Ung.UserDirectory"]) {
                                 return result;
 		                    }
                         }],
-                        sortField : 'uid',
+                        sortField : 'UID',
                         columnsDefaultSortable : true,
                         autoExpandColumn : 'email',
                         rowEditorInputLines : [new Ext.form.TextField({
@@ -208,6 +210,7 @@ if (!Ung.hasResource["Ung.UserDirectory"]) {
            });
         },
         validateClient : function() {
+            return  this.validateLocalDirectoryUsers();
 //            var companyNameCmp = Ext.getCmp('companyName');
 //            if (!companyNameCmp.isValid()) {
 //                Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._('You must fill out the company name.'),
@@ -281,8 +284,66 @@ if (!Ung.hasResource["Ung.UserDirectory"]) {
 //            var phoneCmp = Ext.getCmp('phone');
 //            this.getRegistrationInfo().phone = phoneCmp.getValue();
             
+            //return true;
+        },
+        
+        //validate local directory users
+        validateLocalDirectoryUsers : function() {
+            var listUsers = this.gridUsers.getFullSaveList();
+            
+            for(var i=0; i<listUsers.length;i++) {
+                // verify that the login name is not duplicated
+                for(var j=i+1; j<listUsers.length;j++) {
+                    if (listUsers[i].UID == listUsers[j].UID) {
+                        Ext.MessageBox.alert(this.i18n._('Warning'), i18n.sprintf(this.i18n._('The login name "%s" at row %d has already been taken.'), listUsers[j].UID, j+1),
+                            function () {
+                                this.tabs.activate(this.panelLocalDirectory);
+                            }.createDelegate(this) 
+                        );
+                        return false;
+                    }
+                }
+                // first name contains no spaces
+                if (listUsers[i].firstName.indexOf(" ") != -1) {
+                    Ext.MessageBox.alert(this.i18n._('Warning'), i18n.sprintf(this.i18n._('The first name at row %d must not contain any space characters.'), i+1),
+                        function () {
+                            this.tabs.activate(this.panelLocalDirectory);
+                        }.createDelegate(this) 
+                    );
+                    return false;
+                }
+                // last name contains no spaces
+                if (listUsers[i].lastName.indexOf(" ") != -1) {
+                    Ext.MessageBox.alert(this.i18n._('Warning'), i18n.sprintf(this.i18n._('The last name at row %d must not contain any space characters.'), i+1),
+                        function () {
+                            this.tabs.activate(this.panelLocalDirectory);
+                        }.createDelegate(this) 
+                    );
+                    return false;
+                }
+                // the password is at least one character
+                if (listUsers[i].password.length == 0) {
+                    Ext.MessageBox.alert(this.i18n._('Warning'), i18n.sprintf(this.i18n._('The password at row %d must be at least 1 character long.'), i+1),
+                        function () {
+                            this.tabs.activate(this.panelLocalDirectory);
+                        }.createDelegate(this) 
+                    );
+                    return false;
+                }
+                // the password contains no spaces
+                if (listUsers[i].password.indexOf(" ") != -1) {
+                    Ext.MessageBox.alert(this.i18n._('Warning'), i18n.sprintf(this.i18n._('The password at row %d must not contain any space characters.'), i+1),
+                        function () {
+                            this.tabs.activate(this.panelLocalDirectory);
+                        }.createDelegate(this) 
+                    );
+                    return false;
+                }
+            }
+            
             return true;
         },
+        
         // save function
         saveAction : function() {
             if (this.validate()) {
