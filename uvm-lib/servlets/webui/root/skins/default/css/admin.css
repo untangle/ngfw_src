@@ -328,6 +328,11 @@ div.iconDeleteRow {
 	width: 100%;
 	cursor: pointer;
 }
+div.iconLogoutRow {
+    background:transparent url(../images/admin/icon_logout_row.gif) no-repeat center center;
+    width: 100%;
+    cursor: pointer;
+}
 div.iconDrag {
     background:transparent url(../images/admin/icon_drag.gif) no-repeat center center;
     width: 100%;
