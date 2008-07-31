@@ -509,7 +509,6 @@ if (!Ung.hasResource["Ung.Racks"]) {
                             Ung.UpdateWindow.superclass.show.call(this);
                         }
                     });
-                    this.rowEditor.render('container');
                     Ung.EditorGrid.prototype.initComponent.call(this);
                 },
                 customInputLines : [{

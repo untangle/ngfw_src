@@ -2952,12 +2952,14 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
                 emptyMsg : i18n._("No topics to display")
             });
         }
-        if (this.rowEditorInputLines != null) {
+        if (this.rowEditor==null && this.rowEditorInputLines != null) {
             this.rowEditor = new Ung.RowEditorWindow({
                 grid : this,
                 inputLines : this.rowEditorInputLines
             });
-            this.rowEditor.render('container');
+        }
+        if(this.rowEditor!=null) {
+        	this.rowEditor.render('container');
         }
         if (this.hasAdd) {
             this.tbar = [{
