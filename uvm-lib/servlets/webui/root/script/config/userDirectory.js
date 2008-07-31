@@ -30,13 +30,27 @@ if (!Ung.hasResource["Ung.UserDirectory"]) {
             this.buildTabPanel(pageTabs);
             this.tabs.activate(this.panelActiveDirectoryConnector);
         },
+        getAddressBookSettings : function(forceReload) {
+            if (forceReload || this.rpc.addressBookSettings === undefined) {
+                this.rpc.addressBookSettings = main.getAppAddressBook().getAddressBookSettings();
+            }
+            return this.rpc.addressBookSettings;
+        },
+        getADRepositorySettings : function(forceReload) {
+            if (forceReload || this.rpc.ADRepositorySettings === undefined) {
+                this.rpc.ADRepositorySettings = this.getAddressBookSettings().ADRepositorySettings;
+            }
+            return this.rpc.ADRepositorySettings;
+        },
         buildActiveDirectoryConnector : function() {
+            var enableAD = this.getAddressBookSettings().addressBookConfiguration == 'AD_AND_LOCAL' ? true : false;
             this.panelActiveDirectoryConnector = new Ext.Panel({
                 name : 'Active Directory (AD) Connector',
                 parentId : this.getId(),
                 title : this.i18n._('Active Directory (AD) Connector'),
                 layout : "form",
                 bodyStyle : 'padding:5px 5px 0px 5px;',
+                autoScroll : true,
                 items : [{
                     title : this.i18n._('Active Directory (AD) Server'),
                     name : 'Active Directory (AD) Server',
@@ -46,34 +60,190 @@ if (!Ung.hasResource["Ung.UserDirectory"]) {
                         html : i18n.sprintf(this.i18n._('This alows your server to connect to an %sActive Directory Server%s in order to recognize various users for use in reporting, firewall, router, policies, etc.'),'<b>','</b>'),
                         border : false
                     }, {
-                        html : "<br",
+                        html : "<br>",
                         border : false
                     }, {
                         xtype : 'radio',
-                        boxLabel : this.i18n._('<b>Disabled</b>'), 
+                        boxLabel : '<b>'+this.i18n._('Disabled')+'</b>', 
                         hideLabel : true,
-                        name : 'enabled',
-                        checked : false,
+                        name : 'enableAD',
+                        checked : this.getAddressBookSettings().addressBookConfiguration != 'AD_AND_LOCAL',
                         listeners : {
                             "check" : {
                                 fn : function(elem, checked) {
+                                    if (checked) {
+                                        this.getAddressBookSettings().addressBookConfiguration = 'LOCAL_ONLY';
+                                        Ext.getCmp('adConnector_LDAPHost').disable();
+                                        Ext.getCmp('adConnector_LDAPPort').disable();
+                                        Ext.getCmp('adConnector_superuser').disable();
+                                        Ext.getCmp('adConnector_superuserPass').disable();
+                                        Ext.getCmp('adConnector_domain').disable();
+                                        Ext.getCmp('adConnector_OUFilter').disable();
+                                        Ext.getCmp('adConnector_ActiveDirectoryTest').disable();
+                                        Ext.getCmp('adConnector_ActiveDirectoryUsers').disable();
+                                        Ext.getCmp('adConnector_ADUsersTextArea').disable();
+                                    }
+                                    else {
+                                        this.getAddressBookSettings().addressBookConfiguration = 'AD_AND_LOCAL';
+                                        Ext.getCmp('adConnector_LDAPHost').enable();
+                                        Ext.getCmp('adConnector_LDAPPort').enable();
+                                        Ext.getCmp('adConnector_superuser').enable();
+                                        Ext.getCmp('adConnector_superuserPass').enable();
+                                        Ext.getCmp('adConnector_domain').enable();
+                                        Ext.getCmp('adConnector_OUFilter').enable();
+                                        Ext.getCmp('adConnector_ActiveDirectoryTest').enable();
+                                        Ext.getCmp('adConnector_ActiveDirectoryUsers').enable();
+                                        Ext.getCmp('adConnector_ADUsersTextArea').enable();
+                                    }
                                 }.createDelegate(this)
                             }
                         }
                     }, {
                         xtype : 'radio',
-                        boxLabel : this.i18n._('<b>Enabled</b>'), 
+                        boxLabel : '<b>'+this.i18n._('Enabled')+'</b>', 
                         hideLabel : true,
-                        name : 'enabled',
-                        checked : true,
-                        listeners : {
-                            "check" : {
-                                fn : function(elem, checked) {
-                                }.createDelegate(this)
-                            }
-                         }
-                    }]
-                }]
+                        name : 'enableAD',
+                        checked : this.getAddressBookSettings().addressBookConfiguration == 'AD_AND_LOCAL'
+                    }, {
+                        xtype : 'textfield',
+                        name : 'AD Server IP or Hostname',
+                        fieldLabel : 'AD Server IP or Hostname',
+                        id : 'adConnector_LDAPHost',
+                        labelStyle : 'text-align: right; width: 200px;',
+                        width : 200,
+                        value : this.getADRepositorySettings().LDAPHost
+                    }, {
+                        xtype : 'textfield',
+                        name : 'Port',
+                        fieldLabel : 'Port',
+                        id : 'adConnector_LDAPPort',
+                        labelStyle : 'text-align: right; width: 200px;',
+                        width : 80,
+                        value : this.getADRepositorySettings().LDAPPort,
+                        vtype : "port"
+                    }, {
+                        xtype : 'textfield',
+                        name : 'Authentication Login',
+                        fieldLabel : 'Authentication Login',
+                        id : 'adConnector_superuser',
+                        labelStyle : 'text-align: right; width: 200px;',
+                        width : 150,
+                        value : this.getADRepositorySettings().superuser
+                    }, {
+                        xtype : 'textfield',
+                        inputType: 'password',
+                        name : 'Authentication Password',
+                        fieldLabel : 'Authentication Password',
+                        id : 'adConnector_superuserPass',
+                        labelStyle : 'text-align: right; width: 200px;',
+                        width : 150,
+                        value : this.getADRepositorySettings().superuserPass
+                    }, {
+                        html : "<hr>",
+                        border : false
+                    }, {
+                        xtype : 'textfield',
+                        name : 'Active Directory Domain',
+                        fieldLabel : 'Active Directory Domain',
+                        id : 'adConnector_domain',
+                        labelStyle : 'text-align: right; width: 200px;',
+                        width : 200,
+                        value : this.getADRepositorySettings().domain
+                    }, {
+                        xtype : 'textfield',
+                        name : 'Active Directory Organization',
+                        fieldLabel : 'Active Directory Organization',
+                        id : 'adConnector_OUFilter',
+                        labelStyle : 'text-align: right; width: 200px;',
+                        width : 200,
+                        value : this.getADRepositorySettings().OUFilter
+                    }, {
+                        html : "<hr>",
+                        border : false
+                    }, {
+                        html : i18n.sprintf(this.i18n._('The %sActive Directory Test%s can be used to test that your settings above are correct.'),'<b>','</b>'),
+                        border : false
+                    }, {
+                        html : "<br>",
+                        border : false
+                    }, {
+                        xtype : 'button',
+                        text : this.i18n._('Active Directory Test'),
+                        iconCls : 'adTestIcon',
+                        id : 'adConnector_ActiveDirectoryTest',
+                        name : 'Active Directory Test',
+                        handler : function() {
+                            this.panelActiveDirectoryConnector.onADTestClick();
+                        }.createDelegate(this)
+                    }, {
+                        html : "<hr>",
+                        border : false
+                    }, {
+                        xtype : 'button',
+                        text : this.i18n._('AD Login Script'),
+                        name : 'AD Login Script',
+                        handler : function() {
+                            this.panelActiveDirectoryConnector.onADLoginScriptClick();
+                        }.createDelegate(this)
+                    }, {
+                        html : "<hr>",
+                        border : false
+                    }, {
+                        xtype : 'button',
+                        text : this.i18n._('Active Directory Users'),
+                        id : 'adConnector_ActiveDirectoryUsers',
+                        name : 'Active Directory Users',
+                        handler : function() {
+                            this.panelActiveDirectoryConnector.onADUsersClick();
+                        }.createDelegate(this)
+                    }, {
+                        html : "<br>",
+                        border : false
+                    }, {
+                        xtype : 'textarea',
+	                    name : 'Active Directory Users Text Area',
+                        id : 'adConnector_ADUsersTextArea',
+	                    hideLabel : true,
+	                    readOnly : true,
+	                    width : 300,
+	                    height : 200
+	                }]
+                }],
+                
+                onADTestActionPerformed : function() {
+                    return true;
+                },
+                
+                onADLoginScriptClick : function() {
+                    return true;
+                },
+                
+                onADUsersClick : function() {
+	                var userEntries = main.getAppAddressBook().getUserEntries('MS_ACTIVE_DIRECTORY').list;
+                    
+                    var usersList = "";
+		            for(var i=0; i<userEntries.length; i++) {
+			            if(userEntries[i] == null) {
+                            usersList += this.i18n._('[any]');
+                            continue;
+                        }
+                        
+                        var repository = this.i18n._('UNKNOWN');
+                        if(userEntries[i].storedIn == 'MS_ACTIVE_DIRECTORY') {
+                            repository = this.i18n._('Active Directory');
+                        }
+                        else if(userEntries[i].storedIn == 'LOCAL_DIRECTORY') {
+                            repository = this.i18n._('Local');
+                        }
+
+                        var uid = userEntries[i].UID != null ? userEntries[i].UID : this.i18n._('[any]');
+		                usersList += ( uid + " (" + repository + ")" + "\r\n");
+		            }
+                    
+                    Ext.getCmp('adConnector_ADUsersTextArea').setValue(usersList);
+                    
+                    return true;
+                }.createDelegate(this)                
             });
         },
         buildLocalDirectory : function() {
@@ -209,84 +379,85 @@ if (!Ung.hasResource["Ung.UserDirectory"]) {
                 ]
            });
         },
+        
         validateClient : function() {
-            return  this.validateLocalDirectoryUsers();
-//            var companyNameCmp = Ext.getCmp('companyName');
-//            if (!companyNameCmp.isValid()) {
-//                Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._('You must fill out the company name.'),
-//                    function () {
-//                        this.tabs.activate(this.panelRegistration);
-//                        companyNameCmp.focus(true);
-//                    }.createDelegate(this) 
-//                );
-//                return false;
-//            }
-//            this.getRegistrationInfo().companyName = companyNameCmp.getValue();
-//
-//            var firstNameCmp = Ext.getCmp('firstName');
-//            if (!firstNameCmp.isValid()) {
-//                Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._('You must fill out your first name.'),
-//                    function () {
-//                        this.tabs.activate(this.panelRegistration);
-//                        firstNameCmp.focus(true);
-//                    }.createDelegate(this) 
-//                );
-//                return false;
-//            }
-//            this.getRegistrationInfo().companyName = companyNameCmp.getValue();
-//
-//            var lastNameCmp = Ext.getCmp('lastName');
-//            if (!lastNameCmp.isValid()) {
-//                Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._('You must fill out the last name.'),
-//                    function () {
-//                        this.tabs.activate(this.panelRegistration);
-//                        lastNameCmp.focus(true);
-//                    }.createDelegate(this) 
-//                );
-//                return false;
-//            }
-//            this.getRegistrationInfo().companyName = companyNameCmp.getValue();
-//
-//            var emailAddrCmp = Ext.getCmp('emailAddr');
-//            if (!emailAddrCmp.isValid()) {
-//                Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._('You must fill out the email address in the format "user@domain.com".'),
-//                    function () {
-//                        this.tabs.activate(this.panelRegistration);
-//                        emailAddrCmp.focus(true);
-//                    }.createDelegate(this) 
-//                );
-//                return false;
-//            }
-//            this.getRegistrationInfo().companyName = companyNameCmp.getValue();
-//
-//            var numSeatsCmp = Ext.getCmp('numSeats');
-//            if (!numSeatsCmp.isValid()) {
-//                Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._('You must fill out the number of computers protected by Untangle.'),
-//                    function () {
-//                        this.tabs.activate(this.panelRegistration);
-//                        numSeatsCmp.focus(true);
-//                    }.createDelegate(this) 
-//                );
-//                return false;
-//            }
-//            this.getRegistrationInfo().companyName = companyNameCmp.getValue();
-//
-//            var address1Cmp = Ext.getCmp('address1');
-//            this.getRegistrationInfo().address1 = address1Cmp.getValue();
-//            var address2Cmp = Ext.getCmp('address2');
-//            this.getRegistrationInfo().address2 = address2Cmp.getValue();
-//            var cityCmp = Ext.getCmp('city');
-//            this.getRegistrationInfo().city = cityCmp.getValue();
-//            var stateCmp = Ext.getCmp('state');
-//            this.getRegistrationInfo().state = stateCmp.getValue();
-//            var zipcodeCmp = Ext.getCmp('zipcode');
-//            this.getRegistrationInfo().zipcode = zipcodeCmp.getValue();
-//            var phoneCmp = Ext.getCmp('phone');
-//            this.getRegistrationInfo().phone = phoneCmp.getValue();
-            
-            //return true;
+            return  this.validateLocalDirectoryUsers() && this.validateADConnectorSettings();
         },
         
+        //validate AD connector settings
+        validateADConnectorSettings : function() {
+            if(this.getAddressBookSettings().addressBookConfiguration == 'AD_AND_LOCAL') {
+                var hostCmp = Ext.getCmp('adConnector_LDAPHost');
+                var portCmp = Ext.getCmp('adConnector_LDAPPort');
+                var loginCmp = Ext.getCmp('adConnector_superuser');
+                var passwordCmp = Ext.getCmp('adConnector_superuserPass');
+                var domainCmp = Ext.getCmp('adConnector_domain');
+                var orgCmp = Ext.getCmp('adConnector_OUFilter');
+
+                //validate port
+	            if (!portCmp.isValid()) {
+                    Ext.MessageBox.alert(this.i18n._('Warning'), i18n.sprintf(this.i18n._("The port must be an integer number between %d and %d."), 1, 65535),
+	                    function () {
+	                        this.tabs.activate(this.panelActiveDirectoryConnector);
+	                        portCmp.focus(true);
+	                    }.createDelegate(this) 
+	                );
+	                return false;
+	            }
+                
+                // CHECK THAT BOTH PASSWORD AND LOGIN ARE FILLED OR UNFILLED
+                if (loginCmp.getValue().length > 0 && passwordCmp.getValue().length == 0) {
+                    Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._('A "Password" must be specified if a "Login" is specified.'),
+                        function () {
+                            this.tabs.activate(this.panelActiveDirectoryConnector);
+                            passwordCmp.focus(true);
+                        }.createDelegate(this) 
+                    );
+                    return false;
+                }
+                else if(loginCmp.getValue().length == 0 && passwordCmp.getValue().length > 0) {
+                    Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._('A "Login" must be specified if a "Password" is specified.'),
+                        function () {
+                            this.tabs.activate(this.panelActiveDirectoryConnector);
+                            loginCmp.focus(true);
+                        }.createDelegate(this) 
+                    );
+                    return false;
+                }
+                
+                // CHECK THAT IF EITHER LOGIN OR PASSWORD ARE FILLED, A HOSTNAME IS GIVEN
+                if (loginCmp.getValue().length > 0 && passwordCmp.getValue().length > 0 && hostCmp.getValue().length == 0) {
+                    Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._('A "Hostname" must be specified if "Login" or "Password" are specified.'),
+                        function () {
+                            this.tabs.activate(this.panelActiveDirectoryConnector);
+                            hostCmp.focus(true);
+                        }.createDelegate(this) 
+                    );
+                    return false;
+                }
+
+                // CHECK THAT A DOMAIN IS SUPPLIED
+                if (domainCmp.getValue().length == 0) {
+                    Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._('A "Search Base" must be specified.'),
+                        function () {
+                            this.tabs.activate(this.panelActiveDirectoryConnector);
+                            domainCmp.focus(true);
+                        }.createDelegate(this) 
+                    );
+                    return false;
+                }
+                
+                // SAVE SETTINGS
+                this.getAddressBookSettings().ADRepositorySettings.LDAPHost = hostCmp.getValue();
+                this.getAddressBookSettings().ADRepositorySettings.LDAPPort = portCmp.getValue();
+                this.getAddressBookSettings().ADRepositorySettings.superuser = loginCmp.getValue();
+                this.getAddressBookSettings().ADRepositorySettings.superuserPass = passwordCmp.getValue();
+                this.getAddressBookSettings().ADRepositorySettings.domain = domainCmp.getValue();
+                this.getAddressBookSettings().ADRepositorySettings.OUFilter = orgCmp.getValue();
+            }
+            return true;
+        },
+
         //validate local directory users
         validateLocalDirectoryUsers : function() {
             var listUsers = this.gridUsers.getFullSaveList();
@@ -348,6 +519,17 @@ if (!Ung.hasResource["Ung.UserDirectory"]) {
         saveAction : function() {
             if (this.validate()) {
                 Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
+                //save AD connector settings
+                main.getAppAddressBook().setAddressBookSettings(function(result, exception) {
+                    Ext.MessageBox.hide();
+                    if (exception) {
+                        Ext.MessageBox.alert(i18n._("Failed"), exception.message);
+                        return;
+                    }
+                    // exit settings screen
+                    this.cancelAction();
+                }.createDelegate(this), this.getAddressBookSettings() );
+                //save local users            
                 main.getAppAddressBook().setLocalUserEntries(function(result, exception) {
                     Ext.MessageBox.hide();
                     if (exception) {
