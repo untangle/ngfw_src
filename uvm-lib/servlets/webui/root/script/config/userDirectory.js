@@ -213,7 +213,7 @@ if (!Ung.hasResource["Ung.UserDirectory"]) {
                 onADTestClick : function() {
 					Ext.MessageBox.show({
 					   title : this.i18n._('Active Directory Test'),
-					   msg : this.i18n._('Active Directory Test'),
+					   msg : this.i18n._('Active Directory Test:'),
 					   buttons : Ext.Msg.CANCEL,
                        modal : true,
                        wait : true,
@@ -222,20 +222,24 @@ if (!Ung.hasResource["Ung.UserDirectory"]) {
                        width : 300
 					});
                     
-                    var message = main.getAppAddressBook().getStatus().ADWorking == true ?
-                        this.i18n._('Success!  Your settings work.') : this.i18n._('Failure!  Your settings are not correct.');
+                    var message = main.getAppAddressBook().getStatus( function(result, exception) {
+	                    if (exception) {
+	                        Ext.MessageBox.alert(i18n._("Failed"), exception.message);
+	                        return;
+	                    }
+                        var message = result.ADWorking == true ? this.i18n._('Success!  Your settings work.') : this.i18n._('Failure!  Your settings are not correct.');
 
-                    Ext.MessageBox.show({
-                       title : this.i18n._('Active Directory Test'),
-                       msg : this.i18n._('Active Directory Test'),
-                       buttons : Ext.Msg.CANCEL,
-                       modal : true,
-                       progress : true,
-                       waitConfig: {interval: 100},
-                       progressText : message,
-                       width : 300
-                    });
-                    
+                        Ext.MessageBox.show({
+	                       title : this.i18n._('Active Directory Test'),
+	                       msg : this.i18n._('Active Directory Test:'),
+	                       buttons : Ext.Msg.CANCEL,
+	                       modal : true,
+	                       progress : true,
+	                       waitConfig: {interval: 100},
+	                       progressText : message,
+	                       width : 300
+	                    });
+                    }.createDelegate(this));
                 }.createDelegate(this),
                 
                 onADLoginScriptClick : function() {
