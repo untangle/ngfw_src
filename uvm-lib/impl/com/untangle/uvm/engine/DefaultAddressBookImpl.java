@@ -18,6 +18,7 @@
 
 package com.untangle.uvm.engine;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -130,7 +131,7 @@ class DefaultAddressBookImpl implements RemoteAddressBook {
         return isNotConfigured() ? false : m_localAdapter.authenticate(uid, pwd);
     }
 
-    private static class ABStatus implements RemoteAddressBook.Status {
+    public static class ABStatus implements RemoteAddressBook.Status, Serializable {
         private final boolean isLocalWorking;
         private final String localDetail;
 

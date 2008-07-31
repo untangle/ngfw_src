@@ -210,12 +210,43 @@ if (!Ung.hasResource["Ung.UserDirectory"]) {
 	                }]
                 }],
                 
-                onADTestActionPerformed : function() {
-                    return true;
-                },
+                onADTestClick : function() {
+					Ext.MessageBox.show({
+					   title : this.i18n._('Active Directory Test'),
+					   msg : this.i18n._('Active Directory Test'),
+					   buttons : Ext.Msg.CANCEL,
+                       modal : true,
+                       wait : true,
+                       waitConfig: {interval: 100},
+                       progressText : this.i18n._('Testing...'),
+                       width : 300
+					});
+                    
+                    var message = main.getAppAddressBook().getStatus().ADWorking == true ?
+                        this.i18n._('Success!  Your settings work.') : this.i18n._('Failure!  Your settings are not correct.');
+
+                    Ext.MessageBox.show({
+                       title : this.i18n._('Active Directory Test'),
+                       msg : this.i18n._('Active Directory Test'),
+                       buttons : Ext.Msg.CANCEL,
+                       modal : true,
+                       progress : true,
+                       waitConfig: {interval: 100},
+                       progressText : message,
+                       width : 300
+                    });
+                    
+                }.createDelegate(this),
                 
                 onADLoginScriptClick : function() {
-                    return true;
+	                rpc.adminManager.generateAuthNonce(function (result, exception) {
+	                    if(exception) { 
+                            Ext.MessageBox.alert(i18n._("Failed"),exception.message); 
+                            return;
+                        }
+	                    var loginScriptUrl = "../adpb/?" + result;
+                        window.open(loginScriptUrl);
+	                }.createDelegate(this));
                 },
                 
                 onADUsersClick : function() {
@@ -241,8 +272,6 @@ if (!Ung.hasResource["Ung.UserDirectory"]) {
 		            }
                     
                     Ext.getCmp('adConnector_ADUsersTextArea').setValue(usersList);
-                    
-                    return true;
                 }.createDelegate(this)                
             });
         },
