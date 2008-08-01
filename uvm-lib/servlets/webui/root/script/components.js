@@ -2610,7 +2610,8 @@ Ext.extend(Ung.MemoryProxy, Ext.data.DataProxy, {
             var list = null;
             if (this.data != null) {
                 list = (this.root != null) ? this.data[this.root] : this.data;
-            } else {
+            }
+            if(list==null) {
                 list = [];
             }
             var totalRecords = list.length;
