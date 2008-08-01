@@ -695,7 +695,7 @@ Ung.Main.prototype = {
 
     addNode: function (node, startNode) {
         var nodeWidget=new Ung.Node(node);
-        var place=node.md.security?'security_nodes':'other_nodes';
+        var place=(node.md.type=="NODE")?'security_nodes':'other_nodes';
         var position=this.getNodePosition(place,node.md.viewPosition);
         nodeWidget.render(place,position);
         Ung.AppItem.updateStateForNode(node.name, "installed");
@@ -713,18 +713,19 @@ Ung.Main.prototype = {
     	} else {
     		Ext.getCmp("help_empty_rack").hide();
     		document.getElementById("racks").style.display="";
-            var hasUtilOrService=false;
-            var hasCore=false;
+            var hasUtil=false;
+            var hasService=false;
             for(var i=0;i<this.nodes.length;i++) {
-                if(this.nodes[i].md.util || this.nodes[i].md.service) {
-                    hasUtilOrService=true;
-                } else if(this.nodes[i].md.core) {
-                    hasCore=true;
-                }
+                if(this.nodes[i].md.type!="NODE") {
+            	   hasService=true;
+            	   if(this.nodes[i].md.type!="SERVICE") {
+            	       hasUtil=true
+            	   }
+            	}
             }
-            document.getElementById("nodes_separator_text").innerHTML=hasUtilOrService?i18n._("Services & Utilities"):hasCore?i18n._("Services"):"";
-            document.getElementById("nodes_separator").style.display=hasUtilOrService || hasCore?"":"none";
-            if(hasUtilOrService || hasCore) {
+            document.getElementById("nodes_separator_text").innerHTML=(hasService && hasUtil)?i18n._("Services & Utilities"):hasService?i18n._("Services"):"";
+            document.getElementById("nodes_separator").style.display= hasService?"":"none";
+            if(hasService) {
                 document.getElementById("racks").style.backgroundPosition="0px 100px";
             } else {
                 document.getElementById("racks").style.backgroundPosition="0px 50px";
