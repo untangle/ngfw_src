@@ -25,10 +25,17 @@ if (!Ung.hasResource["Ung.Email"]) {
         },
         initSubCmps : function() {
             this.buildOutgoingServer();
-            this.buildFromSafeList();
-            this.buildQuarantine();
+            if( this.isMailLoaded() ) {
+	            this.buildFromSafeList();
+	            this.buildQuarantine();
+            }
             // builds the tab panel with the tabs
-            this.buildTabPanel([this.panelOutgoingServer, this.panelFromSafeList, this.panelQuarantine]);
+            var pageTabs = [this.panelOutgoingServer];
+            if( this.isMailLoaded() ) {
+                pageTabs.push( this.panelFromSafeList );
+                pageTabs.push( this.panelQuarantine );
+            }
+            this.buildTabPanel(pageTabs);
             this.tabs.activate(this.panelOutgoingServer);
         },
         // get languange settings object
@@ -37,6 +44,15 @@ if (!Ung.hasResource["Ung.Email"]) {
                 this.rpc.languageSettings = rpc.languageManager.getLanguageSettings();
             }
             return this.rpc.languageSettings;
+        },
+        getMailNode : function(forceReload) {
+            if (forceReload || this.rpc.mailNode === undefined) {
+                this.rpc.mailNode = rpc.nodeManager.node("untangle-casing-mail");
+            }
+            return this.rpc.mailNode;
+        },
+        isMailLoaded : function(forceReload) {
+            return this.getMailNode(forceReload) != null;
         },
         buildOutgoingServer : function() {
             this.panelOutgoingServer = new Ext.Panel({
