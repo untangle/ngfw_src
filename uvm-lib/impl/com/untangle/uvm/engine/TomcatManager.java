@@ -315,6 +315,7 @@ class TomcatManager
             // XXX ADD JK CONNECTOR
             Connector jkConnector = new Connector("org.apache.jk.server.JkCoyoteHandler");
             jkConnector.setProperty("address", "127.0.0.1");
+            jkConnector.setProperty("tomcatAuthentication", "false");
             emb.addConnector(jkConnector);
 
             // start operation

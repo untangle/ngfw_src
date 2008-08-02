@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -91,13 +91,13 @@ public class UvmErrorReportValve extends ErrorReportValve
       w.write("</head>\n");
       w.write("<body>\n");
       w.write("<div id=\"main\" style=\"width:500px;margin:50px auto 0 auto;\">\n");
-         w.write("<div class=\"main-top-left\"></div><div class=\"main-top-right\"></div><div class=\"main-mid-left\"><div class=\"main-mid-right\"><div class=\"main-mid\">\n");
-		     w.write("<center>");
-			      w.write("<img alt=\"\" src=\"/images/BrandingLogo.gif\" /><br /><br />\n");
- 			      w.write("<b>Untangle Server</b><br /><br />\n");
-  				  w.write("<em>");  w.write(errorMessage);  w.write("</em>\n");
-     		 w.write("</center><br /><br />\n");
-     	 w.write("</div></div></div><div class=\"main-bot-left\"></div><div class=\"main-bot-right\"></div>\n");
+      w.write("<div class=\"main-top-left\"></div><div class=\"main-top-right\"></div><div class=\"main-mid-left\"><div class=\"main-mid-right\"><div class=\"main-mid\">\n");
+      w.write("<center>");
+      w.write("<img alt=\"\" src=\"/images/BrandingLogo.gif\" /><br /><br />\n");
+      w.write("<b>Untangle Server</b><br /><br />\n");
+      w.write("<em>");  w.write(errorMessage);  w.write("</em>\n");
+      w.write("</center><br /><br />\n");
+      w.write("</div></div></div><div class=\"main-bot-left\"></div><div class=\"main-bot-right\"></div>\n");
       w.write("</div>\n");
       w.write("</body>\n");
       w.write("</html>\n");
