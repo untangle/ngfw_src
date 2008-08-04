@@ -64,7 +64,8 @@ if (!Ung.hasResource["Ung.UserDirectory"]) {
                         border : false
                     }, {
                         xtype : 'radio',
-                        boxLabel : '<b>'+this.i18n._('Disabled')+'</b>', 
+                        boxLabel : '<b>'+this.i18n._('Disabled')+'</b>',
+                        style : "margin-left: 50px;",
                         hideLabel : true,
                         name : 'enableAD',
                         checked : this.getAddressBookSettings().addressBookConfiguration != 'AD_AND_LOCAL',
@@ -101,6 +102,7 @@ if (!Ung.hasResource["Ung.UserDirectory"]) {
                     }, {
                         xtype : 'radio',
                         boxLabel : '<b>'+this.i18n._('Enabled')+'</b>', 
+                        style : "margin-left: 50px;",
                         hideLabel : true,
                         name : 'enableAD',
                         checked : this.getAddressBookSettings().addressBookConfiguration == 'AD_AND_LOCAL'
@@ -152,12 +154,13 @@ if (!Ung.hasResource["Ung.UserDirectory"]) {
                             columnWidth:.2,
                             layout: 'form',
                             items: [ new Ext.Panel({
-                                buttonAlign : 'center',
+                                buttonAlign : 'right',
                                 bodyStyle : "padding-top: 35px; padding-right: 35px;",
                                 footer : false,
                                 border : false,
                                 buttons: [ new Ext.Button({
 						            name: 'Help',
+                                    style : "margin-right: 20px;",
 						            iconCls: 'iconHelp',
 						            text: i18n._('Help'),
 						            handler: function() {
