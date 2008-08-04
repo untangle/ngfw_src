@@ -152,6 +152,9 @@ if (!Ung.hasResource["Ung.Racks"]) {
                 width : 25,
                 fixed : true
             });
+            var usersColumn=new Ext.grid.UsersColumn({
+                dataIndex : 'user'
+            });
             this.gridRules = new Ung.EditorGrid({
                 settingsCmp : this,
                 name : 'Policies',
@@ -342,13 +345,9 @@ if (!Ung.hasResource["Ung.Racks"]) {
                         allowBlank : false
                     })
 
-                }, {
-                    header : this.i18n._("user"),
-                    width : 70,
-                    sortable : true,
-                    dataIndex : 'user'
-
-                }, {
+                },  
+                usersColumn,
+                {
                     header : this.i18n._("start time"),
                     width : 55,
                     sortable : true,
@@ -403,7 +402,7 @@ if (!Ung.hasResource["Ung.Racks"]) {
                         allowBlank : false
                     })
                 }],
-                plugins : [liveColumn],
+                plugins : [liveColumn,usersColumn],
 
                 initComponent : function() {
                     this.rowEditor = new Ung.RowEditorWindow({
@@ -421,6 +420,7 @@ if (!Ung.hasResource["Ung.Racks"]) {
                             Ext.getCmp("gridRules_rowEditor_client_address").setValue(record.data.clientAddr);
                             Ext.getCmp("gridRules_rowEditor_server_address").setValue(record.data.serverAddr);
                             Ext.getCmp("gridRules_rowEditor_server_port").setValue(record.data.serverPort);
+                            Ext.getCmp("gridRules_rowEditor_user").setValue(record.data.user);
                             Ext.getCmp("gridRules_rowEditor_start_time").setValue(record.data.startTimeFormatted);
                             Ext.getCmp("gridRules_rowEditor_end_time").setValue(record.data.endTimeFormatted);
                             Ext.getCmp("gridRules_rowEditor_sunday").setValue(record.data.dayOfWeek == "any"
@@ -453,6 +453,7 @@ if (!Ung.hasResource["Ung.Racks"]) {
                                     this.record.set("clientAddr", Ext.getCmp("gridRules_rowEditor_client_address").getValue());
                                     this.record.set("serverAddr", Ext.getCmp("gridRules_rowEditor_server_address").getValue());
                                     this.record.set("serverPort", Ext.getCmp("gridRules_rowEditor_server_port").getValue());
+                                    this.record.set("user", Ext.getCmp("gridRules_rowEditor_user").getValue());
                                     this.record.set("startTimeFormatted", Ext.getCmp("gridRules_rowEditor_start_time").getValue());
                                     this.record.set("endTimeFormatted", Ext.getCmp("gridRules_rowEditor_end_time").getValue());
                                     var dayOfWeek = "";
@@ -509,6 +510,12 @@ if (!Ung.hasResource["Ung.Racks"]) {
                             Ung.UpdateWindow.superclass.show.call(this);
                         }
                     });
+                    
+                    this.usersWindow= new Ung.UsersWindow({
+                    	grid : this
+                    });
+                    //this.usersWindow.renderTo('container');
+                    
                     Ung.EditorGrid.prototype.initComponent.call(this);
                 },
                 customInputLines : [{
@@ -592,7 +599,23 @@ if (!Ung.hasResource["Ung.Racks"]) {
                         border : false,
                         html : this.i18n._("The users you would like to apply this policy to.")
                     }, {
-                        html : "todo"
+                        xtype : 'textfield',
+                        name : 'Users',
+                        width : 200,
+                        readOnly : true,
+                        id : 'gridRules_rowEditor_user',
+                        fieldLabel : this.i18n._("Users"),
+                        allowBlank : false
+                    }, {
+                        xtype: "button",
+                        name : 'Change Users',
+                        text : i18n._("Change Users"),
+                        handler : function() {
+                            this.gridRules.usersWindow.populate(this.gridRules.rowEditor.record,function() {
+                                Ext.getCmp("gridRules_rowEditor_user").setValue(this.gridRules.rowEditor.record.data.user);
+                            }.createDelegate(this));
+                            this.gridRules.usersWindow.show();
+                        }.createDelegate(this)
                     }]
                 }, {
                     xtype : 'fieldset',

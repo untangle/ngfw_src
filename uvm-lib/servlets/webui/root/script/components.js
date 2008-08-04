@@ -2425,12 +2425,6 @@ Ung.RowEditorWindow = Ext.extend(Ung.UpdateWindow, {
         if (this.title == null) {
             this.title = i18n._('Edit');
         }
-/*
-        for (var i = 0; i < this.inputLines.length; i++) {
-            var inputLine = this.inputLines[i];
-            this.subCmps.push(inputLine);
-        }
-*/
         Ung.RowEditorWindow.superclass.initComponent.call(this);
     },
     onRender : function(container, position) {
@@ -3345,5 +3339,238 @@ Ung.Breadcrumbs = Ext.extend(Ext.Component, {
 
             }
         }
+    }
+});
+
+// Grid edit column
+Ext.grid.UsersColumn = function(config) {
+    Ext.apply(this, config);
+    if (!this.id) {
+        this.id = Ext.id();
+    }
+    if (!this.header) {
+        this.header = i18n._("user");
+    }
+    if (!this.width) {
+        this.width = 70;
+    }
+    if (this.fixed == null) {
+        this.fixed = true;
+    }
+    if (this.sortable == null) {
+        this.sortable = false;
+    }
+    if (!this.dataIndex) {
+        this.dataIndex = null;
+    }
+    this.renderer = this.renderer.createDelegate(this);
+};
+
+Ext.grid.UsersColumn.prototype = {
+    init : function(grid) {
+        this.grid = grid;
+        this.grid.on('render', function() {
+            var view = this.grid.getView();
+            view.mainBody.on('mousedown', this.onMouseDown, this);
+            view.mainBody.on('mouseover', this.onMouseOver, this);
+            view.mainBody.on('mouseout', this.onMouseOut, this);
+        }, this);
+    },
+
+    onMouseDown : function(e, t) {
+        if (t.className && t.className.indexOf('ungButton') != -1) {
+            e.stopEvent();
+            var index = this.grid.getView().findRowIndex(t);
+            var record = this.grid.store.getAt(index);
+            // populate row editor
+            this.grid.usersWindow.populate(record);
+            this.grid.usersWindow.show();
+        }
+    },
+    // private
+    onMouseOver : function(e,t) {
+        if (t.className && t.className.indexOf('ungButton') != -1) {
+            t.className="ungButton usersColumn ungButtonHover";
+        }
+    },
+    // private
+    onMouseOut : function(e,t) {
+        if (t.className && t.className.indexOf('ungButton') != -1) {
+            t.className="ungButton usersColumn";
+        }
+    },
+    renderer : function(value, metadata, record) {
+        return '<div class="ungButton usersColumn">'+value+'</div>';
+    }
+};
+
+// Row editor window used by editor grid
+Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
+    // the record currently edit
+    record : null,
+    //renderTo: 'container',
+    sizeToRack : true,
+    // size to grid on show
+    sizeToGrid : false,
+    usersGrid:null,
+    formPanel : null,
+    fnCallback: null,
+    initComponent : function() {
+        if (!this.height && !this.width) {
+            this.sizeToGrid = true;
+        }
+        if (this.title == null) {
+            this.title = i18n._('Portal Question');
+        }
+        Ung.UsersWindow.superclass.initComponent.call(this);
+    },
+    onRender : function(container, position) {
+        Ung.UsersWindow.superclass.onRender.call(this, container, position);
+        this.initSubComponents.defer(1, this);
+    },
+    initSubComponents : function(container, position) {
+    	var selModel = new Ext.grid.CheckboxSelectionModel();
+    	this.usersGrid=new Ext.grid.GridPanel({
+    	   //title: i18n._('Users'),
+    	   height: 210,
+    	   width: 290,
+           enableHdMenu : false,
+           enableColumnMove: false,
+    	   store: new Ext.data.Store({
+                proxy : new Ung.MemoryProxy({
+                    root : 'list'
+                }),
+                sortInfo : this.sortField ? {
+                    field : this.sortField,
+                    direction : "ASC"
+                } : null,
+                remoteSort : true,
+                reader : new Ext.data.JsonReader({
+                    totalProperty : "totalRecords",
+                    root : 'list',
+                    fields : [{name: "UID"}]
+                })
+            }),
+            columns: [selModel, {
+                header : i18n._("user"),
+                width : 250,
+                fixed :true,
+                sortable : false,
+                dataIndex : 'UID'
+            }],
+            selModel : selModel
+    	});
+        this.formPanel = new Ext.FormPanel({
+            renderTo : this.getContentEl(),
+            labelWidth : 75,
+            buttonAlign : 'right',
+            border : false,
+            bodyStyle : 'padding:10px 10px 0px 10px;',
+            autoScroll: true,
+            defaults : {
+                selectOnFocus : true,
+                msgTarget : 'side'
+            },
+            items : [{
+                xtype : 'fieldset',
+                title : i18n._('Select Users'),
+                autoHeight : true,
+                items: [{
+                	bodyStyle : 'padding:0px 0px 5px 5px;',
+                    border : false,
+                    html: i18n._("You may choose user IDs/Logins that exist in the User Directory (either local or remote Active Directory), or you can add a new user to the User Directory, and then choose that user.")	
+                }, {
+                    xtype : 'fieldset',
+                    title : i18n._('Select an existing user or users'),
+                    autoHeight : true,
+                    items: [this.usersGrid]
+                }, {
+                    xtype : 'fieldset',
+                    title : i18n._('Add a new user'),
+                    autoHeight : true,
+                    items:[{
+                    	xtype: "button",
+                        name : 'Open User Directory',
+                        text : i18n._("Open User Directory"),
+                        handler : function() {
+                            //TODO
+                        }.createDelegate(this)
+                    }]
+                }]
+            }]
+        });
+        this.subCmps.push(this.formPanel);
+        this.loadUsers();
+    },
+    loadUsers : function() {
+        main.getAppAddressBook().getUserEntries(function(result, exception) {
+            if (exception) {
+                Ext.MessageBox.alert(i18n._("Failed"), exception.message);
+                return;
+            }
+            if (this.settingsCmp !== null) {
+            	result.list.unshift({UID: "[any]"});
+                this.usersGrid.getStore().proxy.data = result;
+                this.usersGrid.getStore().load({
+                    params : {
+                        start : 0
+                    }
+                });
+            }
+        }.createDelegate(this))    
+    },
+    // populate is called whent a record is edited, tot populate the edit window
+    populate : function(record,fnCallback) {
+    	this.fnCallback=fnCallback;
+        this.record = record;
+        var users=record.get("user");
+        var store=this.usersGrid.getStore();
+        var sm=this.usersGrid.getSelectionModel();
+        sm.clearSelections();
+        if(users!=null) {
+        	users=users.split(",");
+        }
+        for(var i=0;i<users.length;i++) {
+        	var index=store.find("UID",users[i]);
+        	if(index>=0) {
+        	   sm.selectRow(index,true);
+        	}
+        }
+        
+        
+    },
+    // check if the form is valid;
+    // this is the default functionality which can be overwritten
+    isFormValid : function() {
+        return true;
+    },
+    // updateAction is called to update the record after the edit
+    updateAction : function() {
+        if (this.isFormValid()) {
+            if (this.record !== null) {
+            	var sm=this.usersGrid.getSelectionModel();
+            	var users=[];
+            	var selRecs=sm.getSelections();
+            	for(var i=0;i<selRecs.length;i++) {
+            		var uid=selRecs[i].get("UID");
+            		if(uid=="[any]") {
+            			users=[uid];
+            			break;
+            		} else {
+            		  users.push(selRecs[i].get("UID"));
+            		}
+            	}
+            	this.record.set("user",users.join(","));
+            	if(this.fnCallback) {
+            		this.fnCallback.call()
+            	}
+            }
+            this.hide();
+        } else {
+            Ext.MessageBox.alert(i18n._('Warning'), i18n._("The form is not valid!"));
+        }
+    },
+    cancelAction : function() {
+        this.hide();
     }
 });

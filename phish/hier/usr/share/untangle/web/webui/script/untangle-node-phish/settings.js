@@ -21,7 +21,7 @@ if (!Ung.hasResource["Ung.Phish"]) {
         onRender : function(container, position) {
             // call superclass renderer first
             Ung.Phish.superclass.onRender.call(this, container, position);
-            // builds the 3 tabs
+            // builds the tabs
             this.buildEmail();
             this.buildWeb();
             this.buildWebEventLog();
