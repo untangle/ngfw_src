@@ -105,56 +105,84 @@ if (!Ung.hasResource["Ung.UserDirectory"]) {
                         name : 'enableAD',
                         checked : this.getAddressBookSettings().addressBookConfiguration == 'AD_AND_LOCAL'
                     }, {
-                        xtype : 'textfield',
-                        name : 'AD Server IP or Hostname',
-                        fieldLabel : 'AD Server IP or Hostname',
-                        id : 'adConnector_LDAPHost',
-                        labelStyle : 'text-align: right; width: 200px;',
-                        width : 200,
-                        value : this.getADRepositorySettings().LDAPHost
-                    }, {
-                        xtype : 'textfield',
-                        name : 'Port',
-                        fieldLabel : 'Port',
-                        id : 'adConnector_LDAPPort',
-                        labelStyle : 'text-align: right; width: 200px;',
-                        width : 80,
-                        value : this.getADRepositorySettings().LDAPPort,
-                        vtype : "port"
-                    }, {
-                        xtype : 'textfield',
-                        name : 'Authentication Login',
-                        fieldLabel : 'Authentication Login',
-                        id : 'adConnector_superuser',
-                        labelStyle : 'text-align: right; width: 200px;',
-                        width : 150,
-                        value : this.getADRepositorySettings().superuser
-                    }, {
-                        xtype : 'textfield',
-                        inputType: 'password',
-                        name : 'Authentication Password',
-                        fieldLabel : 'Authentication Password',
-                        id : 'adConnector_superuserPass',
-                        labelStyle : 'text-align: right; width: 200px;',
-                        width : 150,
-                        value : this.getADRepositorySettings().superuserPass
+                        border: false,
+                        layout:'column',
+                        items: [ { 
+                            border: false,
+                            columnWidth:.7,
+                            layout: 'form',
+                            items: [ {
+		                        xtype : 'textfield',
+		                        name : 'AD Server IP or Hostname',
+		                        fieldLabel : this.i18n._('AD Server IP or Hostname'),
+		                        id : 'adConnector_LDAPHost',
+		                        labelStyle : 'text-align: right; width: 250px;',
+		                        width : 200,
+		                        value : this.getADRepositorySettings().LDAPHost
+		                    }, {
+		                        xtype : 'textfield',
+		                        name : 'Port',
+		                        fieldLabel : this.i18n._('Port'),
+		                        id : 'adConnector_LDAPPort',
+		                        labelStyle : 'text-align: right; width: 250px;',
+		                        width : 80,
+		                        value : this.getADRepositorySettings().LDAPPort,
+		                        vtype : "port"
+		                    }, {
+		                        xtype : 'textfield',
+		                        name : 'Authentication Login',
+		                        fieldLabel : this.i18n._('Authentication Login'),
+		                        id : 'adConnector_superuser',
+		                        labelStyle : 'text-align: right; width: 250px;',
+		                        width : 150,
+		                        value : this.getADRepositorySettings().superuser
+		                    }, {
+		                        xtype : 'textfield',
+		                        inputType: 'password',
+		                        name : 'Authentication Password',
+		                        fieldLabel : this.i18n._('Authentication Password'),
+		                        id : 'adConnector_superuserPass',
+		                        labelStyle : 'text-align: right; width: 250px;',
+		                        width : 150,
+		                        value : this.getADRepositorySettings().superuserPass
+		                    }]
+                        }, { 
+                            border: false,
+                            columnWidth:.3,
+                            layout: 'form',
+                            items: [ new Ext.Panel({
+                                buttonAlign : 'right',
+                                bodyStyle : "padding-top: 35px",
+                                footer : false,
+                                border : false,
+                                buttons: [new Ext.Button({
+						            name: 'Help',
+						            iconCls: 'iconHelp',
+						            text: i18n._('Help'),
+						            handler: function() {
+						                var helpLink = "http://www.untangle.com/docs/get.php?" + "version=" + rpc.version + "&source=active_directory_config";
+						                window.open(helpLink);
+						            }
+						        })]
+                            })]
+                        }]
                     }, {
                         html : "<hr>",
                         border : false
                     }, {
                         xtype : 'textfield',
                         name : 'Active Directory Domain',
-                        fieldLabel : 'Active Directory Domain',
+                        fieldLabel : this.i18n._('Active Directory Domain'),
                         id : 'adConnector_domain',
-                        labelStyle : 'text-align: right; width: 200px;',
+                        labelStyle : 'text-align: right; width: 250px;',
                         width : 200,
                         value : this.getADRepositorySettings().domain
                     }, {
                         xtype : 'textfield',
-                        name : 'Active Directory Organization',
-                        fieldLabel : 'Active Directory Organization',
+                        name : 'Active Directory Organization (optional)',
+                        fieldLabel : this.i18n._('Active Directory Organization (optional)'),
                         id : 'adConnector_OUFilter',
-                        labelStyle : 'text-align: right; width: 200px;',
+                        labelStyle : 'text-align: right; width: 250px;',
                         width : 200,
                         value : this.getADRepositorySettings().OUFilter
                     }, {
@@ -163,51 +191,75 @@ if (!Ung.hasResource["Ung.UserDirectory"]) {
                     }, {
                         html : i18n.sprintf(this.i18n._('The %sActive Directory Test%s can be used to test that your settings above are correct.'),'<b>','</b>'),
                         border : false
-                    }, {
-                        html : "<br>",
+                    }, new Ext.Panel({
+                        buttonAlign : 'center',
+                        footer : false,
+                        border : false,
+                        buttons: [{
+	                        xtype : 'button',
+	                        text : this.i18n._('Active Directory Test'),
+	                        iconCls : 'adTestIcon',
+	                        id : 'adConnector_ActiveDirectoryTest',
+	                        name : 'Active Directory Test',
+	                        handler : function() {
+	                            this.panelActiveDirectoryConnector.onADTestClick();
+	                        }.createDelegate(this)
+                        }]
+                    }), {
+                        html : "<hr>",
                         border : false
-                    }, {
-                        xtype : 'button',
-                        text : this.i18n._('Active Directory Test'),
-                        iconCls : 'adTestIcon',
-                        id : 'adConnector_ActiveDirectoryTest',
-                        name : 'Active Directory Test',
-                        handler : function() {
-                            this.panelActiveDirectoryConnector.onADTestClick();
-                        }.createDelegate(this)
-                    }, {
+                    }, new Ext.Panel({
+                        buttonAlign : 'center',
+                        footer : false,
+                        border : false,
+                        buttons: [{
+	                        xtype : 'button',
+	                        text : this.i18n._('AD Login Script'),
+	                        name : 'AD Login Script',
+	                        handler : function() {
+	                            this.panelActiveDirectoryConnector.onADLoginScriptClick();
+	                        }.createDelegate(this)
+	                    }]
+                    }), {
                         html : "<hr>",
                         border : false
                     }, {
-                        xtype : 'button',
-                        text : this.i18n._('AD Login Script'),
-                        name : 'AD Login Script',
-                        handler : function() {
-                            this.panelActiveDirectoryConnector.onADLoginScriptClick();
-                        }.createDelegate(this)
-                    }, {
-                        html : "<hr>",
-                        border : false
-                    }, {
-                        xtype : 'button',
-                        text : this.i18n._('Active Directory Users'),
-                        id : 'adConnector_ActiveDirectoryUsers',
-                        name : 'Active Directory Users',
-                        handler : function() {
-                            this.panelActiveDirectoryConnector.onADUsersClick();
-                        }.createDelegate(this)
-                    }, {
-                        html : "<br>",
-                        border : false
-                    }, {
-                        xtype : 'textarea',
-	                    name : 'Active Directory Users Text Area',
-                        id : 'adConnector_ADUsersTextArea',
-	                    hideLabel : true,
-	                    readOnly : true,
-	                    width : 300,
-	                    height : 200
-	                }]
+                        border: false,
+                        layout:'column',
+                        items: [ { 
+                            border: false,
+                            columnWidth:.3,
+                            layout: 'form',
+                            items: [ new Ext.Panel({
+		                        buttonAlign : 'right',
+                                bodyStyle : "padding-top: 90px",
+		                        footer : false,
+		                        border : false,
+		                        buttons: [{
+		                            xtype : 'button',
+		                            text : this.i18n._('Active Directory Users'),
+			                        id : 'adConnector_ActiveDirectoryUsers',
+			                        name : 'Active Directory Users',
+			                        handler : function() {
+			                            this.panelActiveDirectoryConnector.onADUsersClick();
+			                        }.createDelegate(this)
+		                        }]
+		                    })]
+                        }, { 
+                            border: false,
+                            columnWidth:.7,
+                            layout: 'form',
+                            items: [ {
+		                        xtype : 'textarea',
+		                        name : 'Active Directory Users Text Area',
+		                        id : 'adConnector_ADUsersTextArea',
+		                        hideLabel : true,
+		                        readOnly : true,
+		                        width : 300,
+		                        height : 200
+		                    }]
+                        }]
+                    }]
                 }],
                 
                 onADTestClick : function() {
@@ -551,30 +603,43 @@ if (!Ung.hasResource["Ung.UserDirectory"]) {
         // save function
         saveAction : function() {
             if (this.validate()) {
-                Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
+                this.saveSemaphore = 2;
+                Ext.MessageBox.show({
+                   title : this.i18n._('Please wait'),
+                   msg : this.i18n._('Saving...'),
+                   modal : true,
+                   wait : true,
+                   waitConfig: {interval: 100},
+                   progressText : " ",
+                   width : 200
+                });
                 //save AD connector settings
                 main.getAppAddressBook().setAddressBookSettings(function(result, exception) {
-                    Ext.MessageBox.hide();
                     if (exception) {
                         Ext.MessageBox.alert(i18n._("Failed"), exception.message);
                         return;
                     }
                     // exit settings screen
-                    this.cancelAction();
+                    this.afterSave();
                 }.createDelegate(this), this.getAddressBookSettings() );
                 //save local users            
                 main.getAppAddressBook().setLocalUserEntries(function(result, exception) {
-                    Ext.MessageBox.hide();
                     if (exception) {
                         Ext.MessageBox.alert(i18n._("Failed"), exception.message);
                         return;
                     }
                     // exit settings screen
-                    this.cancelAction();
+                    this.afterSave();
                 }.createDelegate(this), this.gridUsers ? {javaClass:"java.util.ArrayList",list:this.gridUsers.getFullSaveList()} : null);
             }
+        },
+        afterSave : function() {
+            this.saveSemaphore--;
+            if (this.saveSemaphore == 0) {
+                Ext.MessageBox.hide();
+                this.cancelAction();
+            }
         }
-
     });
 
 }
