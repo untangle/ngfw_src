@@ -109,7 +109,7 @@ if (!Ung.hasResource["Ung.UserDirectory"]) {
                         layout:'column',
                         items: [ { 
                             border: false,
-                            columnWidth:.7,
+                            columnWidth:.8,
                             layout: 'form',
                             items: [ {
 		                        xtype : 'textfield',
@@ -125,6 +125,7 @@ if (!Ung.hasResource["Ung.UserDirectory"]) {
 		                        fieldLabel : this.i18n._('Port'),
 		                        id : 'adConnector_LDAPPort',
 		                        labelStyle : 'text-align: right; width: 250px;',
+                                allowBlank : false,
 		                        width : 80,
 		                        value : this.getADRepositorySettings().LDAPPort,
 		                        vtype : "port"
@@ -148,14 +149,14 @@ if (!Ung.hasResource["Ung.UserDirectory"]) {
 		                    }]
                         }, { 
                             border: false,
-                            columnWidth:.3,
+                            columnWidth:.2,
                             layout: 'form',
                             items: [ new Ext.Panel({
-                                buttonAlign : 'right',
-                                bodyStyle : "padding-top: 35px",
+                                buttonAlign : 'center',
+                                bodyStyle : "padding-top: 35px; padding-right: 35px;",
                                 footer : false,
                                 border : false,
-                                buttons: [new Ext.Button({
+                                buttons: [ new Ext.Button({
 						            name: 'Help',
 						            iconCls: 'iconHelp',
 						            text: i18n._('Help'),
