@@ -143,6 +143,16 @@ Ung.Util= {
             d.setTime(value.time);
             return d.format("H:i");
         }
+    },
+    
+    // Test if there is data in the specified object
+    hasData : function(obj) {
+        var hasData = false;
+        for (id in obj) {
+            hasData = true;
+            break;
+        }
+        return hasData;
     }
     
 };
@@ -2513,7 +2523,7 @@ Ung.RowEditorWindow = Ext.extend(Ung.UpdateWindow, {
 
 // RpcProxy
 // uses json rpc to get the information from the server
-Ung.RpcProxy = function(rpcFn, paginated, rpcFnArgs) {
+Ung.RpcProxy = function(rpcFn, rpcFnArgs, paginated ) {
     Ung.RpcProxy.superclass.constructor.call(this);
     this.rpcFn = rpcFn;
     // specified if we fetch data paginated or all at once
@@ -2546,9 +2556,18 @@ Ext.extend(Ung.RpcProxy, Ext.data.DataProxy, {
             sortColumns.push((params.dir == "ASC" ? "+" : "-") + params.sort)
         }
         if (this.paginated) {
-            this.rpcFn(this.errorHandler.createDelegate(obj), params.start ? params.start : 0, params.limit
-                    ? params.limit
-                    : this.totalRecords != null ? this.totalRecords : 2147483647, sortColumns);
+            if (this.rpcFnArgs == null) {
+                this.rpcFn(this.errorHandler.createDelegate(obj), params.start ? params.start : 0, params.limit
+                        ? params.limit
+                        : this.totalRecords != null ? this.totalRecords : 2147483647, sortColumns);
+            } else {
+                var args = [this.errorHandler.createDelegate(obj)].
+                            concat(this.rpcFnArgs).
+                                concat([params.start ? params.start : 0, 
+                                    params.limit ? params.limit : this.totalRecords != null ? this.totalRecords : 2147483647, 
+                                    sortColumns]);
+                this.rpcFn.apply(this, args);
+            }
         } else {
             if (this.rpcFnArgs == null) {
                 this.rpcFn(this.errorHandler.createDelegate(obj));
@@ -2814,6 +2833,8 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
     settingsCmp : null,
     // proxy Json Rpc function to populate the Store
     proxyRpcFn : null,
+    // specified if we have aditional args for proxyRpcFn
+    proxyRpcFnArgs : null,
     // the list of fields used to by the Store
     fields : null,
     // has Add button
@@ -2882,7 +2903,7 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
         }
         if (this.proxyRpcFn) {
             this.store = new Ext.data.Store({
-                proxy : new Ung.RpcProxy(this.proxyRpcFn, this.paginated),
+                proxy : new Ung.RpcProxy(this.proxyRpcFn, this.proxyRpcFnArgs, this.paginated),
                 sortInfo : this.sortField ? {
                     field : this.sortField,
                     direction : "ASC"
@@ -3099,12 +3120,7 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
     },
     // Test if there are changed data
     hasChangedData : function() {
-        var hasChangedData = false;
-        for (id in this.changedData) {
-            hasChangedData = true;
-            break;
-        }
-        return hasChangedData;
+    	return Ung.Util.hasData(this.changedData);
     },
     // Update Changed data after an operation (modifyed, deleted, added)
     updateChangedData : function(record, currentOp) {
