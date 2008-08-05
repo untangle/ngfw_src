@@ -162,4 +162,9 @@ class ProtoFilter < UVMFilterNode
     @@diag.if_level(2) { puts! msg }
     return msg
   end
+
+  def get_snmp_stat_map()
+      return {7 => "scan", 8 => "detect", 9 => "block"};
+  end
+
 end
