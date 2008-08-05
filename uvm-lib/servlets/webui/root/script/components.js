@@ -153,6 +153,40 @@ Ung.Util= {
             break;
         }
         return hasData;
+    },
+    
+    // Get the save list from the changed data
+    getSaveList : function(changedData, recordJavaClass) {
+        var added = [];
+        var deleted = [];
+        var modified = [];
+        for (id in changedData) {
+            var cd = changedData[id]
+            if ("deleted" == cd.op) {
+                if (id > 0) {
+                    deleted.push(parseInt(id));
+                }
+            } else {
+                if (recordJavaClass != null){
+                    cd.recData["javaClass"] = recordJavaClass;
+                }
+                if (id < 0) {
+                    added.push(cd.recData);
+                } else {
+                    modified.push(cd.recData);
+                }
+            }
+        }
+        return [{
+            list : added,
+            "javaClass" : "java.util.ArrayList"
+        }, {
+            list : deleted,
+            "javaClass" : "java.util.ArrayList"
+        }, {
+            list : modified,
+            "javaClass" : "java.util.ArrayList"
+        }];
     }
     
 };
@@ -3228,36 +3262,7 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
     },
     // Get the save list from the changed data
     getSaveList : function() {
-        var added = [];
-        var deleted = [];
-        var modified = [];
-        for (id in this.changedData) {
-            var cd = this.changedData[id]
-            if ("deleted" == cd.op) {
-                if (id > 0) {
-                    deleted.push(parseInt(id));
-                }
-            } else {
-            	if (this.recordJavaClass != null){
-                    cd.recData["javaClass"] = this.recordJavaClass;
-            	}
-                if (id < 0) {
-                    added.push(cd.recData);
-                } else {
-                    modified.push(cd.recData);
-                }
-            }
-        }
-        return [{
-            list : added,
-            "javaClass" : "java.util.ArrayList"
-        }, {
-            list : deleted,
-            "javaClass" : "java.util.ArrayList"
-        }, {
-            list : modified,
-            "javaClass" : "java.util.ArrayList"
-        }];
+    	return Ung.Util.getSaveList(this.changedData, this.recordJavaClass);
     },
     // Get the entire list
     // for the unpaginated grids, that send all the records on save
