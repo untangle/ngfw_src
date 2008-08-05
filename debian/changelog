@@ -1,3 +1,9 @@
+untangle-vm (5.4.0~svn20080629r17045trunk+seb20080717T104819-1sarge) seb; urgency=low
+
+  * auto build
+
+ -- Sebastien Delafond <seb@debian.org>  Thu, 17 Jul 2008 10:48:20 -0700
+
 untangle-vm (5.0.1-1) mustang-1; urgency=low
 
   * auto build

@@ -96,13 +96,13 @@ class ShieldManager
             temp = rule.getNetmaskString();
             if ( temp.length() == 0 ) temp = "255.255.255.255";
             rule_json.put( "netmask", temp );
-
             rule_json.put( "divider", rule.getDivider());
 
             users.put( rule_json );
         }
 
         json.put( "users", users );
+        json.put( "write_users", true );
 
         JSONObject response = JsonClient.getInstance().call( SHIELD_URL, json );
         if ( logger.isDebugEnabled()) logger.debug( "Server returned:\n" + response.toString() + "\n" );

@@ -1,6 +1,19 @@
 #! /bin/bash
 # $Id: uvm,v 1.10 2005/03/22 01:51:56 cng Exp $
 
+### BEGIN INIT INFO
+# Provides:          untangle-vm
+# Required-Start:    $local_fs $remote_fs
+# Required-Stop:     $local_fs $remote_fs
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: the untangle vurtual machine
+### END INIT INFO
+
+. /lib/lsb/init-functions
+
+DESC="Service for starting the Untangle virtual machine"
+
 if [ -f /etc/default/untangle-vm ] ; then
     . /etc/default/untangle-vm
 fi
@@ -10,7 +23,7 @@ UVM_RUNDIR=${UVM_RUNDIR:-/var/run}
 UVM_NICENESS=${UVM_NICENESS:-0}
 UVM_CONSOLE_LOG=${UVM_CONSOLE_LOG:-$UVM_LOGDIR/console.log}
 UVM_WRAPPER_LOG=${UVM_WRAPPER_LOG:-$UVM_LOGDIR/wrapper.log}
-UVM_CMD=${UVM_CMD:-/usr/bin/uvm.sh}
+UVM_CMD=${UVM_CMD:-/usr/bin/uvm}
 UVM_USER=${UVM_USER:-$USER}
 UVM_PID="uvm.pid"
 UVM_CHUSER=" --chuid $UVM_USER:$UVM_USER "
@@ -148,9 +161,9 @@ case "$1" in
         # Attempt more aggressive kill now
         echo -n "ungraceful exit"
         kill -INT `ps awwx | grep java | grep uvm | awk '{print $1}' | grep -v $$ ` &>/dev/null
-        killall -s INT uvm.sh &>/dev/null
+        killall -s INT uvm &>/dev/null
         kill `ps awwx | grep java | grep uvm | awk '{print $1}' | grep -v $$ ` &>/dev/null
-        killall uvm.sh &>/dev/null
+        killall uvm &>/dev/null
 
         # Wait for completion
         for i in `seq 1 5` ; do
@@ -171,7 +184,7 @@ case "$1" in
         for i in `seq 1 5` ; do
             # send a kill signal
             kill -9 `ps awwx | grep java | grep uvm | awk '{print $1}' | grep -v $$ ` &>/dev/null
-            killall -9 uvm.sh &>/dev/null
+            killall -9 uvm &>/dev/null
 
             sleep 1
             echo -n "."

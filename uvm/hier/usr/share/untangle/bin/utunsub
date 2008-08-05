@@ -10,8 +10,8 @@ FAILED=0
 if [ $? -ne 0 ] ; then FAILED=1 ; fi
 
 if [ $FAILED -ne 0 ] ; then
-    echo "Failed. Rescheduling \"$0 $1\" for +1 hour" &>> /var/log/uvm/apt.log
-    echo "$0 $1 &> /dev/null" | at "+1 hour" &> /dev/null
+    echo "Failed. Rescheduling \"$0 $1\" for +1 hour" >> /var/log/uvm/apt.log
+    echo "$0 $1 &> /dev/null" | at "+1 hour" > /dev/null 2>&1
 fi
 
 exit 0

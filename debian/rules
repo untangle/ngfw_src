@@ -69,6 +69,9 @@ install: build
 	@dh_testroot
 	@dh_installdirs -a
 	rake install
+	rm -f debian/untangle-vm/usr/share/untangle/log
+	ln -sf /var/log/uvm debian/untangle-vm/usr/share/untangle/log
+	find debian/untangle-libuvm/usr/share/untangle -type f | xargs chmod 644
 
 binary-arch: install
 	@dh_testdir
@@ -76,7 +79,7 @@ binary-arch: install
 #	@dh_movefiles
 #	@dh_installdebconf
 	@dh_shlibdeps
-	@dh_installdocs
+	@dh_installdocs -n
 #	@dh_installexamples
 #	@dh_installmenu
 	@dh_installlogrotate
@@ -98,6 +101,8 @@ binary-arch: install
 	@for i in $(PACKAGES) ; do \
 	if [ -f debian/version ] ; then dh_gencontrol -- -v"`cat debian/version`" ; else dh_gencontrol ; fi \
 	done
+	@rm -fr debian/untangle-node-openvpn/usr/share/untangle/openvpn/installer/openvpn/install-win32/license.txt
+	@find debian/untangle-libuvmthirdparty -name '*.jar' | xargs chmod 644
 	@dh_md5sums
 	@dh_builddeb --destdir=../ 2>&1 | egrep -v "(user-defined|ignoring)"
 	# FIXME: oh, nastiness (not as nasty as Dirk's rebuildmvvm.sh, but that ain't saying much heh)

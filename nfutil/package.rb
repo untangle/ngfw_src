@@ -31,4 +31,4 @@ file nfutil do
 end
 
 BuildEnv::SRC.installTarget.register_dependency(nfutil)
-BuildEnv::SRC.installTarget.install_files(nfutil, "#{BuildEnv::SRC['untangle-libuvm'].distDirectory}/usr/share/untangle/networking/")
+BuildEnv::SRC.installTarget.install_files(nfutil, "#{BuildEnv::SRC['untangle-libuvmcore'].distDirectory}/usr/bin")

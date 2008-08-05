@@ -8,7 +8,7 @@ sudo modprobe -r ip_queue || {
 }
 
 echo "unbinding nf_queue"
-@UVM_HOME@/networking/nfutil unbind || {
+@PREFIX@/usr/bin/nfutil unbind || {
     echo "Unable to unbind nfqueue"
     exit -1
 }

@@ -456,7 +456,6 @@ static void* _ht_lookup (ht_t* table,void* key)
     if (!table->hash_func || !table->equal_func) {
         errlog(ERR_CRITICAL,"Constraint failed: NULL func! (0x%08x,0x%08x)\n",table->hash_func,table->equal_func);
         _ht_print_table(table);
-        pthread_kill(pthread_self(),11);
         return NULL;
     }    
         

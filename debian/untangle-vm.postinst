@@ -1,12 +1,20 @@
 #! /bin/bash
 
+ourInit() {
+if [ -x /usr/sbin/invoke-rc.d ] && [ ! "`readlink /usr/sbin/invoke-rc.d`" = /bin/true ] ; then
+  invoke-rc.d $1 $2
+else
+  /etc/init.d/$1 $2
+fi
+}
+
 UVM_LOGDIR="/var/log/uvm"
 UVM_CACHEDIR="/var/lib/uvm"
 
 USER=root
 GROUP=adm
 
-# shouldn't here in the first place
+# shouldn't here in the first place (old bug)
 rm -f /tmp/uvm.log
 
 # modify limit to support many file descriptors
@@ -62,7 +70,7 @@ fi
 if [ -z "$2" ]; then
     if uname -r | grep -iq "untangle"; then
         echo "**************************************************************"
-        echo "Untangle installed.  Start with: /etc/init.d/untangle-vm start"
+        echo "Untangle installed.  Start with: ourInit untangle-vm start"
         echo "**************************************************************"
     else
         echo "********************************************************"

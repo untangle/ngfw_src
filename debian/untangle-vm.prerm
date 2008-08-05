@@ -1,9 +1,17 @@
 #!/bin/bash
+
+ourInit() {
+if [ -x /usr/sbin/invoke-rc.d ] && [ ! "`readlink /usr/sbin/invoke-rc.d`" = /bin/true ] ; then
+  invoke-rc.d $1 $2
+else
+  /etc/init.d/$1 $2
+fi
+}
 # untangle-vm prerm
 
 if [ "$1" = "remove" ] ; then
    if [ -x /etc/init.d/untangle-vm ]; then
-     /etc/init.d/untangle-vm stop
+     ourInit untangle-vm stop
    fi
   echo "Note: Untangle virtual machine stopped."
 fi

@@ -2,6 +2,7 @@
 
 . @PREFIX@/etc/default/untangle-vm
 
+NAME="$0"
 REG_KEY="$1"
 
 if [ -n "$REG_KEY" ] ; then # boxes with physical activation keys
@@ -27,12 +28,12 @@ fi
 
 if [ ! -f $ACTIVATION_KEY_FILE -o ! -f $POPID_FILE ]; then
     # we need a popid
-    echo "$NAME: about to create pop id" >> $UVM_WRAPPER_LOG
+    echo "`date` $NAME: about to create pop id" >> $UVM_WRAPPER_LOG
     output=`ruby @UVM_HOME@/bin/createpopid.rb 2>&1`
     if [ $? = 0 ] ; then
-	echo "$NAME: created pop id" >> $UVM_WRAPPER_LOG
+	echo "`date` $NAME: created pop id" >> $UVM_WRAPPER_LOG
     else
-	echo "$NAME: failed to create pop id; output was: '$output'"
+	echo "`date` $NAME: failed to create pop id; output was: '$output'"
 	exit 1
     fi
 fi
