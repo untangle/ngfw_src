@@ -626,4 +626,10 @@ class Webfilter < UVMFilterNode
         end
     end
 
+    protected 
+    
+    def get_snmp_stat_map()
+      return {7 => "scan", 8 => "block", 9 => "pass"};
+    end
+    
 end # WebFilter
