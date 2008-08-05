@@ -30,7 +30,9 @@ import com.untangle.node.mail.papi.*;
 import com.untangle.node.mail.papi.quarantine.BadTokenException;
 import com.untangle.node.mail.papi.quarantine.Inbox;
 import com.untangle.node.mail.papi.quarantine.InboxAlreadyRemappedException;
+import com.untangle.node.mail.papi.quarantine.InboxArray;
 import com.untangle.node.mail.papi.quarantine.InboxIndex;
+import com.untangle.node.mail.papi.quarantine.InboxRecordArray;
 import com.untangle.node.mail.papi.quarantine.MailSummary;
 import com.untangle.node.mail.papi.quarantine.NoSuchInboxException;
 import com.untangle.node.mail.papi.quarantine.QuarantineMaintenenceView;
@@ -435,6 +437,19 @@ public class MailNodeImpl extends AbstractNode
         public long getInboxesTotalSize()
             throws QuarantineUserActionFailedException {
             return s_quarantine.getInboxesTotalSize();
+        }
+
+        public InboxArray getInboxArray( int start, int limit, String sortColumn, boolean isAscending )
+            throws QuarantineUserActionFailedException
+        {
+            return s_quarantine.getInboxArray( start, limit, sortColumn, isAscending );
+        }
+        
+        public InboxRecordArray getInboxRecordArray( String account, int start, int limit, String sortColumn,
+                                                     boolean isAscending )
+            throws NoSuchInboxException, QuarantineUserActionFailedException
+        {
+            return s_quarantine.getInboxRecordArray( account, start, limit, sortColumn, isAscending );
         }
 
         public String getFormattedInboxesTotalSize(boolean inMB) {

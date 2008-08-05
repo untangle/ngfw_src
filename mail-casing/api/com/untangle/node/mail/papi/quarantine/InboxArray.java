@@ -32,55 +32,50 @@
  */
 
 package com.untangle.node.mail.papi.quarantine;
-import java.util.List;
+
+import java.io.Serializable;
+import java.util.Arrays;
 
 /**
- * Interface for Admins to browse/manipulate
- * the Quarantine.
+ * A class for accessing a paginated array of data from the server.
  */
-public interface QuarantineMaintenenceView
-    extends QuarantineManipulation {
+public final class InboxArray implements Serializable
+{
+    private final Inbox[] inboxes;
 
-    /**
-     * Total size of the entire store (in bytes)
-     */
-    public long getInboxesTotalSize()
-        throws QuarantineUserActionFailedException;
+    /* This is the total number of records in the inbox (not the size of inboxes) */
+    private final int totalRecords;
 
-    /**
-     * Get the inboxes
-     */
-    public InboxArray getInboxArray( int start, int limit, String sortColumn, boolean isAscending )
-        throws QuarantineUserActionFailedException;
+    public InboxArray( Inbox[] inboxes, int totalRecords )
+    {
+        this.inboxes = inboxes;
+        this.totalRecords = totalRecords;
+    }
 
-    public InboxRecordArray getInboxRecordArray( String account, int start, int limit, String sortColumn,
-                                                 boolean isAscending )
-        throws NoSuchInboxException, QuarantineUserActionFailedException;
+    public Inbox[] getInboxes()
+    {
+        return this.inboxes;
+    }
 
-    /**
-     * Total size of the entire store
-     * (in kilobytes (inMB = false) or megabytes (inMB = true))
-     */
-    public String getFormattedInboxesTotalSize(boolean inMB);
+    public int getTotalRecords()
+    {
+        return this.totalRecords;
+    }
 
-    /**
-     * List all inboxes maintained by this Quarantine
-     *
-     * @return the list of all inboxes
-     */
-    public List<Inbox> listInboxes()
-        throws QuarantineUserActionFailedException;
+    public static InboxArray getInboxArray( Inbox[] allInboxes, InboxComparator.SortBy sortBy,
+                                            int startingAt, int limit, boolean ascending )
+    {
+        Arrays.sort( allInboxes, InboxComparator.getComparator( sortBy, ascending ));
 
-    /**
-     * Delete the given inbox, even if there are messages within.  This
-     * does <b>not</b> prevent the account from automagically
-     * being recreated next time SPAM is sent its way.
-     *
-     * @param account the email address
-     */
-    public void deleteInbox(String account)
-        throws NoSuchInboxException, QuarantineUserActionFailedException;
+        if ( startingAt >= allInboxes.length ) startingAt = allInboxes.length - 1 - limit;
+        
+        if ( startingAt < 0 ) startingAt = 0;
 
-    public void rescueInbox(String account)
-        throws NoSuchInboxException, QuarantineUserActionFailedException;
+        if (( startingAt + limit ) > allInboxes.length ) limit = allInboxes.length - startingAt;
+
+        Inbox[] inboxes = new Inbox[limit];
+        System.arraycopy( allInboxes, startingAt, inboxes, 0, limit );
+
+        return new InboxArray( inboxes, allInboxes.length );
+    }
 }

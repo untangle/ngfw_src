@@ -24,6 +24,7 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,8 +44,13 @@ import com.untangle.node.mail.papi.MailNodeSettings;
 import com.untangle.node.mail.papi.quarantine.BadTokenException;
 import com.untangle.node.mail.papi.quarantine.Inbox;
 import com.untangle.node.mail.papi.quarantine.InboxAlreadyRemappedException;
+import com.untangle.node.mail.papi.quarantine.InboxArray;
+import com.untangle.node.mail.papi.quarantine.InboxComparator;
 import com.untangle.node.mail.papi.quarantine.InboxIndex;
 import com.untangle.node.mail.papi.quarantine.InboxRecord;
+import com.untangle.node.mail.papi.quarantine.InboxRecordArray;
+import com.untangle.node.mail.papi.quarantine.InboxRecordComparator;
+import com.untangle.node.mail.papi.quarantine.InboxRecordCursor;
 import com.untangle.node.mail.papi.quarantine.MailSummary;
 import com.untangle.node.mail.papi.quarantine.NoSuchInboxException;
 import com.untangle.node.mail.papi.quarantine.QuarantineEjectionHandler;
@@ -80,6 +86,15 @@ public class Quarantine
     private GlobEmailAddressList m_quarantineForList;
     private GlobEmailAddressMapper m_addressAliases;
     private MailNodeImpl m_impl;
+
+    private static final Map<String, InboxComparator.SortBy> NAME_TO_I_SORT_BY;
+    private static final InboxComparator.SortBy DEFAULT_I_SORT_COLUMN = InboxComparator.SortBy.ADDRESS;
+
+    private static final Map<String, InboxRecordComparator.SortBy> NAME_TO_IR_SORT_BY;
+    private static final InboxRecordComparator.SortBy DEFAULT_IR_SORT_COLUMN = 
+        InboxRecordComparator.SortBy.INTERN_DATE;
+
+
 
     public Quarantine() {
         m_store = new QuarantineStore(
@@ -455,6 +470,41 @@ public class Quarantine
         return result.b;
     }
 
+    /**
+     * Get the inboxes
+     */
+    public InboxArray getInboxArray( int start, int limit, String sortColumn, boolean isAscending )
+        throws QuarantineUserActionFailedException
+    {
+        List<Inbox> inboxList = m_store.listInboxes();
+        if ( inboxList == null ) return new InboxArray( new Inbox[0], 0 );
+
+        InboxComparator.SortBy sortBy = NAME_TO_I_SORT_BY.get( sortColumn );
+        if ( sortBy == null ) sortBy = DEFAULT_I_SORT_COLUMN;
+        
+        return InboxArray.getInboxArray( inboxList.toArray( new Inbox[inboxList.size()] ), sortBy,
+                                         start, limit, isAscending );
+    }
+
+    public InboxRecordArray getInboxRecordArray( String account, int start, int limit, String sortColumn,
+                                                 boolean isAscending )
+        throws NoSuchInboxException, QuarantineUserActionFailedException
+    {
+        Pair<QuarantineStore.GenericStatus, InboxIndexImpl> result = m_store.getIndex(account);
+        
+        checkAndThrowCommonErrors(result.a, account);
+
+        InboxRecordComparator.SortBy sortBy = NAME_TO_IR_SORT_BY.get( sortColumn );
+        if ( sortBy == null ) sortBy = DEFAULT_IR_SORT_COLUMN;
+
+        InboxIndex index = result.b;
+
+        InboxRecordCursor cursor = 
+            InboxRecordCursor.get( index.getAllRecords(), sortBy, isAscending, start, limit );
+        
+        return new InboxRecordArray( cursor.getRecords(), index.size());
+    }
+
     public void test() {
         //Do nothing.
     }
@@ -712,6 +762,32 @@ public class Quarantine
             IOUtil.close(fIn);
             IOUtil.delete(data);
         }
+    }
+
+    static
+    {
+        Map <String,InboxRecordComparator.SortBy> irNameMap =
+            new HashMap<String,InboxRecordComparator.SortBy>();
+
+        irNameMap.put( "sender", InboxRecordComparator.SortBy.SENDER );
+        irNameMap.put( "attachmentCount", InboxRecordComparator.SortBy.ATTACHMENT_COUNT );
+        irNameMap.put( "quarantineDetail", InboxRecordComparator.SortBy.DETAIL );
+        irNameMap.put( "truncatedSubject", InboxRecordComparator.SortBy.SUBJECT );
+        irNameMap.put( "subject", InboxRecordComparator.SortBy.SUBJECT );
+        irNameMap.put( "quarantinedDate", InboxRecordComparator.SortBy.INTERN_DATE );
+        irNameMap.put( "size", InboxRecordComparator.SortBy.SIZE );
+
+        NAME_TO_IR_SORT_BY = Collections.unmodifiableMap( irNameMap );
+
+        Map <String,InboxComparator.SortBy> iNameMap =
+            new HashMap<String,InboxComparator.SortBy>();
+
+        iNameMap.put( "address", InboxComparator.SortBy.ADDRESS );
+        iNameMap.put( "size", InboxComparator.SortBy.SIZE );
+        iNameMap.put( "numberMesssages", InboxComparator.SortBy.NUMBER_MESSAGES );
+
+        NAME_TO_I_SORT_BY = Collections.unmodifiableMap( iNameMap );
+
     }
 }
 

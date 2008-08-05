@@ -62,7 +62,7 @@ public final class InboxRecordComparator {
 
         m_fwdComparators.put(SortBy.SIZE, new SizeComp().setReverse(false));
         m_bwdComparators.put(SortBy.SIZE, new SizeComp().setReverse(true));
-
+        
         m_fwdComparators.put(SortBy.SENDER, new SenderComp().setReverse(false));
         m_bwdComparators.put(SortBy.SENDER, new SenderComp().setReverse(true));
 
