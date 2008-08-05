@@ -195,7 +195,6 @@ Ung.Main.prototype = {
                     iframeWin.setTitle("");
                     window.frames["iframeWin_iframe"].location.href = url;
                 }.createDelegate(this));
-                
             }
         });
         buttonCmp.hide();
@@ -443,7 +442,6 @@ Ung.Main.prototype = {
         node.name=md.name;
         node.displayName=md.displayName;
         node.image='image?name='+node.name;
-        //node.blingers=eval([{'type':'ActivityBlinger','bars':['ACTIVITY 1','ACTIVITY 2','ACTIVITY 3','ACTIVITY 4']},{'type':'SystemBlinger'}]);
         node.blingers=statDesc;
         return node;
     },
@@ -534,22 +532,10 @@ Ung.Main.prototype = {
                 policy = targetPolicy;
             }
             rpc.nodeManager.instantiate(function (result, exception) {
-                if(exception) { Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}
-//This happens now on node instantiate
-//              var instance = result;
-//              rpc.toolboxManager.getRackView(function (result, exception) {
-//                    if(exception) { Ext.MessageBox.alert(i18n._("Failed"),exception.message);
-//                        return;
-//                    }
-//                    rpc.rackView=result;
-//                    var instance=this;
-//                    var node=main.createNode(instance.tid, instance.mackageDesc, rpc.rackView.statDescs.map[instance.tid.id]);
-//                    main.nodes.push(node);
-//                    main.addNode(node);
-//                    main.updateSeparator();
-//                    main.buildApps();
-//                }.createDelegate(instance), rpc.currentPolicy);
-
+                if(exception) {
+                    Ext.MessageBox.alert(i18n._("Failed"),exception.message); 
+                    return;
+                }
             }.createDelegate(this), mackageDesc.name, policy);
         }
     },
@@ -708,8 +694,8 @@ Ung.Main.prototype = {
     // Show - hide Services header in the rack
     updateSeparator: function() {
     	if(this.nodes.length==0) {
-    	   document.getElementById("racks").style.display="none";
-    	   Ext.getCmp("help_empty_rack").show();
+    	    document.getElementById("racks").style.display="none";
+    	    Ext.getCmp("help_empty_rack").show();
     	} else {
     		Ext.getCmp("help_empty_rack").hide();
     		document.getElementById("racks").style.display="";

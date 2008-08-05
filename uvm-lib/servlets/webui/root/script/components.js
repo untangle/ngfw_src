@@ -3404,8 +3404,8 @@ Ext.grid.UsersColumn.prototype = {
             var index = this.grid.getView().findRowIndex(t);
             var record = this.grid.store.getAt(index);
             // populate row editor
-            this.grid.usersWindow.populate(record);
             this.grid.usersWindow.show();
+            this.grid.usersWindow.populate(record);
         }
     },
     // private
@@ -3434,6 +3434,8 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
     // size to grid on show
     sizeToGrid : false,
     usersGrid:null,
+    populateSemaphore: null,
+    userEntries: null,
     formPanel : null,
     fnCallback: null,
     initComponent : function() {
@@ -3469,7 +3471,29 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
                 reader : new Ext.data.JsonReader({
                     totalProperty : "totalRecords",
                     root : 'list',
-                    fields : [{name: "UID"}]
+                    fields : [{
+                        name: "UID"
+                    }, {
+                        name: "name",
+                        mapping: "UID",
+                        convert : function(val, rec) {
+                            var name=val;
+                            var repository=null;
+                            if(rec.storedIn) {
+                                if(rec.storedIn=="MS_ACTIVE_DIRECTORY") {
+                                	repository=i18n._('Active Directory');
+                                } else if(rec.storedIn=="LOCAL_DIRECTORY") {
+                                	repository=i18n._('Local');
+                                } else {
+                                	repository=i18n._('UNKNOWN');
+                                }
+                            }
+                            if(repository) {
+                            	name+=" ("+repository+")";
+                            }
+                            return name;
+                        }
+                    }]
                 })
             }),
             columns: [selModel, {
@@ -3477,7 +3501,7 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
                 width : 250,
                 fixed :true,
                 sortable : false,
-                dataIndex : 'UID'
+                dataIndex : 'name'
             }],
             selModel : selModel
     	});
@@ -3514,51 +3538,83 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
                         name : 'Open User Directory',
                         text : i18n._("Open User Directory"),
                         handler : function() {
-                            //TODO
+                            Ung.Util.loadResourceAndExecute("Ung.UserDirectory","script/config/userDirectory.js", function() {
+                                main.userDirectoryWin=new Ung.UserDirectory({"name":"userDirectory",fnCallback: function() {
+                                    this.populate(this.record,this.fnCallback)
+                                }.createDelegate(this)});
+                                main.userDirectoryWin.show();
+                            }.createDelegate(this));
                         }.createDelegate(this)
                     }]
                 }]
             }]
         });
         this.subCmps.push(this.formPanel);
-        this.loadUsers();
-    },
-    loadUsers : function() {
-        main.getAppAddressBook().getUserEntries(function(result, exception) {
-            if (exception) {
-                Ext.MessageBox.alert(i18n._("Failed"), exception.message);
-                return;
-            }
-            if (this.settingsCmp !== null) {
-            	result.list.unshift({UID: "[any]"});
-                this.usersGrid.getStore().proxy.data = result;
-                this.usersGrid.getStore().load({
-                    params : {
-                        start : 0
-                    }
-                });
-            }
-        }.createDelegate(this))    
     },
     // populate is called whent a record is edited, tot populate the edit window
     populate : function(record,fnCallback) {
     	this.fnCallback=fnCallback;
         this.record = record;
-        var users=record.get("user");
+        Ext.MessageBox.wait(i18n._("Loading..."), i18n._("Please wait"));
+        this.usersGrid.getSelectionModel().clearSelections();
         var store=this.usersGrid.getStore();
-        var sm=this.usersGrid.getSelectionModel();
-        sm.clearSelections();
-        if(users!=null) {
-        	users=users.split(",");
+        store.proxy.data = {list:[]};
+        store.load({
+            params : {
+                start : 0
+            }
+        });
+        this.populateSemaphore=2;
+        this.userEntries=[{UID: "[any]"}];
+        main.getAppAddressBook().getUserEntries(function(result, exception) {
+            if (exception) {
+                Ext.MessageBox.alert(i18n._("Failed"), i18n._("There was a problem refreshing Active Directory users.  Please check your Active Directory settings and then try again."), function(){
+                    this.populateCallback();
+                }.createDelegate(this));
+                return;
+            } else {
+            	this.userEntries=this.userEntries.concat(result.list);
+            }
+            this.populateCallback();
+        }.createDelegate(this),'MS_ACTIVE_DIRECTORY')    
+        main.getAppAddressBook().getUserEntries(function(result, exception) {
+            if (exception) {
+                Ext.MessageBox.alert(i18n._("Failed"), i18n._("There was a problem refreshing Local Directory users.  Please check your Local Directory settings and try again."), function(){
+                    this.populateCallback();
+                }.createDelegate(this));
+                return;
+            } else {
+                this.userEntries=this.userEntries.concat(result.list);
+            }
+            this.populateCallback();
+        }.createDelegate(this),'LOCAL_DIRECTORY')    
+    },
+    populateCallback : function () {
+        this.populateSemaphore--;
+        if (this.populateSemaphore == 0) {
+            if (this.settingsCmp !== null) {
+            	var sm=this.usersGrid.getSelectionModel();
+            	sm.clearSelections()
+            	var store=this.usersGrid.getStore();
+                store.proxy.data = {list:this.userEntries};
+                store.load({
+                    params : {
+                        start : 0
+                    }
+                });
+                var users=this.record.get("user");
+                if(users!=null) {
+                    users=users.split(",");
+                }
+                for(var i=0;i<users.length;i++) {
+                    var index=store.find("UID",users[i]);
+                    if(index>=0) {
+                       sm.selectRow(index,true);
+                    }
+                }
+            }
+            Ext.MessageBox.hide();
         }
-        for(var i=0;i<users.length;i++) {
-        	var index=store.find("UID",users[i]);
-        	if(index>=0) {
-        	   sm.selectRow(index,true);
-        	}
-        }
-        
-        
     },
     // check if the form is valid;
     // this is the default functionality which can be overwritten

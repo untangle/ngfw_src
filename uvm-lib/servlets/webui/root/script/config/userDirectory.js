@@ -2,6 +2,7 @@ if (!Ung.hasResource["Ung.UserDirectory"]) {
     Ung.hasResource["Ung.UserDirectory"] = true;
 
     Ung.UserDirectory = Ext.extend(Ung.ConfigWin, {
+    	fnCallback:null,
         panelActiveDirectoryConnector : null,
         panelLocalDirectory : null,
         gridUsers : null,
@@ -642,6 +643,9 @@ if (!Ung.hasResource["Ung.UserDirectory"]) {
             if (this.saveSemaphore == 0) {
                 Ext.MessageBox.hide();
                 this.cancelAction();
+                if(this.fnCallback) {
+                	this.fnCallback.call();
+                }
             }
         }
     });

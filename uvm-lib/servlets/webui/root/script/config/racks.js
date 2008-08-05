@@ -611,10 +611,10 @@ if (!Ung.hasResource["Ung.Racks"]) {
                         name : 'Change Users',
                         text : i18n._("Change Users"),
                         handler : function() {
+                            this.gridRules.usersWindow.show();
                             this.gridRules.usersWindow.populate(this.gridRules.rowEditor.record,function() {
                                 Ext.getCmp("gridRules_rowEditor_user").setValue(this.gridRules.rowEditor.record.data.user);
                             }.createDelegate(this));
-                            this.gridRules.usersWindow.show();
                         }.createDelegate(this)
                     }]
                 }, {
