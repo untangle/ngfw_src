@@ -35,12 +35,14 @@ import java.util.Map;
 
 import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.security.Tid;
+import com.untangle.uvm.message.Stats;
 
 public interface LocalMessageManager
 {
     MessageQueue getMessageQueue();
     MessageQueue getMessageQueue(Policy p);
     StatDescs getStatDescs(Tid t);
+    Stats getStats(Tid t);
     Map<String, Object> getSystemStats();
     List<ActiveStat> getActiveMetrics(Tid tid);
     void setActiveMetrics(Tid tid, List<ActiveStat> activeMetrics);

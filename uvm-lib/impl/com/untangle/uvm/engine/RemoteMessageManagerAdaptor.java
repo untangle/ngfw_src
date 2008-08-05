@@ -29,6 +29,7 @@ import com.untangle.uvm.message.RemoteMessageManager;
 import com.untangle.uvm.message.StatDescs;
 import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.security.Tid;
+import com.untangle.uvm.message.Stats;
 
 class RemoteMessageManagerAdaptor implements RemoteMessageManager
 {
@@ -73,4 +74,10 @@ class RemoteMessageManagerAdaptor implements RemoteMessageManager
     {
         return lbm.getMessages();
     }
+
+    public Stats getStats(Tid t)
+    {
+        return lbm.getStats(t);
+    }
+
 }

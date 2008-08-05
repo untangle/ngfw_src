@@ -285,6 +285,14 @@ class MessageManagerImpl implements LocalMessageManager
         UvmContextImpl.getInstance().runTransaction(tw);
     }
 
+    public Stats getStats(Tid t)
+    {
+        List<ActiveStat> as = getActiveMetrics(t);
+        Counters c = getCounters(t);
+
+        return c.getAllStats(as);
+    }
+
     // private methods ---------------------------------------------------------
 
     private Map<Tid, Stats> getStats(LocalNodeManager lm, List<Tid> tids)
