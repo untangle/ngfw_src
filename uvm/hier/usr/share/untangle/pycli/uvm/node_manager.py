@@ -47,7 +47,10 @@ class NodeManager(Manager):
     def api_instances(self):
         for tid in self.__nodeManager.nodeInstances()["list"]:
             nodeContext, node = self.__get_node( tid, True )
-            policy = tid["policy"]
+
+            policy = None
+            if ( tid.has_key( "policy" )): policy = tid["policy"]
+            
             if ( policy == None ): policy = "null"
             else: policy = self.getPolicyString( policy )
             print "%s\t%-25s\t%s\t%s" % ( tid["name"], nodeContext.getNodeDesc()["name"], policy, node.getRunState())

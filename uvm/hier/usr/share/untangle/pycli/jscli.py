@@ -60,8 +60,6 @@ calledMethod = False
 script = args.pop(0)
 method = args.pop(0).lower()
 
-
-
 for manager in Manager.managers:
     try:
         dir(manager).index( "api_" + method )
