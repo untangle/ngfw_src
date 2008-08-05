@@ -17,6 +17,8 @@
  */
 package com.untangle.node.mail.web.euv.tags;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.net.URLEncoder;
 
 import javax.servlet.ServletRequest;
@@ -28,6 +30,13 @@ import com.untangle.node.mail.papi.quarantine.InboxRecordCursor;
 
 public class QuarantineFunctions
 {
+    private static final String SL_KEY = "untangle.safelist.contents.";
+    private static final String INBOX_CURSOR_KEY = "untangle.inbox_cursor";
+    private static final String REMAPS_KEY = "untangle.remapps.ReceivingRemapsListTag";
+    private static final String MESSAGES_KEY_PREFIX = "untangle.messages.";
+    private static final String ERROR_MSG_SUFFIX = "error";
+    private static final String INFO_MSG_SUFFIX = "info";
+
     public static String remappedTo( PageContext pageContext, boolean isEncoded )
     {
         String remapped = RemappedToTag.getCurrent(pageContext.getRequest());
@@ -45,47 +54,20 @@ public class QuarantineFunctions
 
     public static int totalMessageCount( PageContext pageContext )
     {
-        InboxRecordCursor cursor = InboxIndexTag.getCurrentIndex(pageContext.getRequest());
+        InboxRecordCursor cursor = getCurrentIndex(pageContext.getRequest());
         if ( cursor == null ) return 0;
         return (int)cursor.inboxCount();
     }
     
-    public static String url( PageContext pageContext, String type )
-    {
-        String query = "";
-        if ( "map_view".equals( type )) {
-            return buildQuery( pageContext, Constants.MAP_CTL, Constants.MAPVIEW_VIEW_RV );
-        } else if ( "unmap_view".equals( type )) {
-            return buildQuery( pageContext, Constants.UNMAP_CTL, Constants.UNMAPPER_VIEW_RV );
-        } else if ( "safelist_view".equals( type )) {
-            return buildQuery( pageContext,Constants.SAFELIST_CTL, Constants.SAFELIST_VIEW_RV );
-        } else {
-            System.err.println( "Unable to handle the type: " + type );
-            return "";
-        }
-    }
-
     public static String jsonSafelist( PageContext pageContext )
     {
-        return buildJsonList( SafelistListTag.getCurrentList(pageContext.getRequest()));
+        return buildJsonList( getCurrentSafelist(pageContext.getRequest()));
     }
 
     /* This is a list of addresses that are redirected to this user account */
     public static String jsonReceivingRemaps( PageContext pageContext )
     {
-        return buildJsonList( ReceivingRemapsListTag.getCurrentList(pageContext.getRequest()));
-    }
-
-    public static String buildQuery( PageContext pageContext, String controller, String action )
-    {
-        String query = "/quarantine" + controller + "?";
-        query += Constants.ACTION_RP + "=" + URLEncoder.encode( action );
-
-        
-        String token = CurrentAuthTokenTag.getCurrent( pageContext.getRequest());
-        if ( token != null ) query += "&" + Constants.AUTH_TOKEN_RP + "=" + URLEncoder.encode( token );
-
-        return query;
+        return buildJsonList( getCurrentRemapsList(pageContext.getRequest()));
     }
 
     private static final String buildJsonList( String[] values )
@@ -103,5 +85,122 @@ public class QuarantineFunctions
         sb.append( "]" );
 
         return  sb.toString();
+    }
+
+    public static void setCurrentSafelist( ServletRequest request, String[] list )
+    {
+        request.setAttribute(SL_KEY, list);
+    }
+
+    public static void setCurrentRemapsList( ServletRequest request, String[] list )
+    {
+        request.setAttribute(REMAPS_KEY, list);
+    }
+
+    public static final void setCurrentIndex(ServletRequest request, InboxRecordCursor index) 
+    {
+        request.setAttribute(INBOX_CURSOR_KEY, index);
+    }
+    
+    public static final void clearCurrentIndex( ServletRequest request )
+    {
+        request.removeAttribute(INBOX_CURSOR_KEY);
+    }
+
+    public static final void setErrorMessages(ServletRequest request, String...messages )
+    {
+        setMessages(request, ERROR_MSG_SUFFIX, messages);
+    }
+
+    public static final void setInfoMessages( ServletRequest request, String...messages )
+    {
+        setMessages(request, INFO_MSG_SUFFIX, messages);
+    }
+
+    public static final void setMessages(ServletRequest request, String msgType, String...messages) 
+    {
+        for( String msg : messages ) addMessage( request, msgType, msg );
+    }
+
+    public static final void addErrorMessage( ServletRequest request, String message )
+    {
+        addMessage(request, ERROR_MSG_SUFFIX, message);
+    }
+
+    public static final void addInfoMessage( ServletRequest request, String message )
+    {
+        addMessage( request, INFO_MSG_SUFFIX, message );
+    }
+
+    public static final void addMessage( ServletRequest request, String msgType, String msg ) 
+    {
+        ArrayList<String> list = getMessages(request, msgType);
+        if(list == null) {
+            list = new ArrayList<String>();
+            request.setAttribute(MESSAGES_KEY_PREFIX + msgType, list);
+        }
+        list.add(msg);
+    }
+
+    public static final void clearMessages( ServletRequest request, String msgType ) 
+    {
+        request.removeAttribute(MESSAGES_KEY_PREFIX + msgType);
+    }
+
+    /**
+     * Returns null if there are no safelist entries
+     * - sort string entries, within list, according to natural, ascending order
+     */
+    static String[] getCurrentSafelist(ServletRequest request) {
+        Object allSLEntries = request.getAttribute(SL_KEY);
+        if (null != allSLEntries) {
+            Arrays.sort((String[]) allSLEntries);
+        }
+        return (String[]) allSLEntries;
+    }
+
+    static boolean hasCurrentLSafelst(ServletRequest request) {
+        String[] list = getCurrentSafelist(request);
+        return list != null && list.length > 0;
+    }
+
+    /**
+     * Returns null if there is no index
+     */
+    static InboxRecordCursor getCurrentIndex(ServletRequest request) {
+        return (InboxRecordCursor) request.getAttribute(INBOX_CURSOR_KEY);
+    }
+
+    static boolean hasCurrentIndex(ServletRequest request) {
+        InboxRecordCursor index = getCurrentIndex(request);
+        return index != null && index.size() > 0;
+    }
+
+    /**
+     * Returns null if there are no such messages
+     */
+    static String[] getCurrentRemapsList(ServletRequest request)
+    {
+        return (String[]) request.getAttribute(REMAPS_KEY);
+    }
+
+    static boolean hasCurrentRemapsList(ServletRequest request)
+    {
+        String[] list = getCurrentRemapsList(request);
+        return list != null && list.length > 0;
+    }
+
+    /**
+     * Returns null if there are no such messages
+     */
+    private static ArrayList<String> getMessages(ServletRequest request,
+                                                 String msgType) {
+        return (ArrayList<String>) request.getAttribute(MESSAGES_KEY_PREFIX + msgType);
+    }
+
+    static boolean hasMessages(ServletRequest request,
+                               String msgType) {
+        ArrayList<String> msgs = getMessages(request, msgType);
+        return msgs != null && msgs.size() > 0;
     }
 }

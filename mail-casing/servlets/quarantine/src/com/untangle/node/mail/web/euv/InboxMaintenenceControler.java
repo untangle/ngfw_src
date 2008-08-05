@@ -43,16 +43,12 @@ import com.untangle.node.mail.papi.safelist.SafelistEndUserView;
 import com.untangle.node.mail.web.euv.tags.CurrentAuthTokenTag;
 import com.untangle.node.mail.web.euv.tags.CurrentEmailAddressTag;
 import com.untangle.node.mail.web.euv.tags.HasSafelistTag;
-import com.untangle.node.mail.web.euv.tags.InboxIndexTag;
 import com.untangle.node.mail.web.euv.tags.IsReceivesRemapsTag;
 import com.untangle.node.mail.web.euv.tags.IsRemappedTag;
 import com.untangle.node.mail.web.euv.tags.MaxDaysIdleInboxTag;
 import com.untangle.node.mail.web.euv.tags.MaxDaysToInternTag;
-import com.untangle.node.mail.web.euv.tags.MessagesSetTag;
-import com.untangle.node.mail.web.euv.tags.ReceivingRemapsListTag;
+import com.untangle.node.mail.web.euv.tags.QuarantineFunctions;
 import com.untangle.node.mail.web.euv.tags.RemappedToTag;
-import com.untangle.node.mail.web.euv.tags.SafelistListTag;
-import com.untangle.node.mail.web.euv.tags.PagnationPropertiesTag;
 import com.untangle.node.util.Pair;
 
 /**
@@ -137,7 +133,7 @@ public class InboxMaintenenceControler extends HttpServlet
             String[] inboundRemappings = quarantine.getMappedFrom(account);
             if(inboundRemappings != null && inboundRemappings.length > 0) {
                 IsReceivesRemapsTag.setCurrent(req, true);
-                ReceivingRemapsListTag.setCurrentList(req, inboundRemappings);
+                QuarantineFunctions.setCurrentRemapsList(req, inboundRemappings);
             }
             else {
                 IsReceivesRemapsTag.setCurrent(req, false);
@@ -145,7 +141,7 @@ public class InboxMaintenenceControler extends HttpServlet
         }
         catch(BadTokenException ex) {
             //Put a message in the request
-            MessagesSetTag.setErrorMessages(req, "Unable to determine your email address from your previous request");
+            QuarantineFunctions.setErrorMessages(req, "Unable to determine your email address from your previous request");
             req.getRequestDispatcher(Constants.REQ_DIGEST_VIEW).forward(req, resp);
             return;
         }
@@ -201,17 +197,15 @@ public class InboxMaintenenceControler extends HttpServlet
             //Set the flag for whether the user does/does not have a Safelist
             HasSafelistTag.setCurrent(req, safelist.hasOrCanHaveSafelist(account));
 
-            SafelistListTag.setCurrentList(req, safelist.getSafelistContents(account));
+            QuarantineFunctions.setCurrentSafelist(req, safelist.getSafelistContents(account));
 
-            InboxIndexTag.setCurrentIndex(req,
-                                          InboxRecordCursor.get(
-                                                                index.getAllRecords(),
-                                                                sortBy,
-                                                                ascending,
-                                                                startingAt,
-                                                                rowsPerPage));
-
-            PagnationPropertiesTag.setCurrentRowsPerPAge(req, "" + rowsPerPage);
+            QuarantineFunctions.setCurrentIndex(req,
+                                                InboxRecordCursor.get(
+                                                                      index.getAllRecords(),
+                                                                      sortBy,
+                                                                      ascending,
+                                                                      startingAt,
+                                                                      rowsPerPage));
 
             req.getRequestDispatcher(Constants.INBOX_VIEW).forward(req, resp);
         } catch(NoSuchInboxException ex) {
@@ -219,7 +213,7 @@ public class InboxMaintenenceControler extends HttpServlet
             //there is no inbox.  Likely, it was deleted.  Don't
             //give them an error - simply forward them to the display
             //page w/ no messages
-            InboxIndexTag.setCurrentIndex(req, null);
+            QuarantineFunctions.setCurrentIndex(req, null);
             req.getRequestDispatcher(Constants.INBOX_VIEW).forward(req, resp);
         }
         //    catch(QuarantineUserActionFailedException ex) {

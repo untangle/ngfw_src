@@ -42,7 +42,7 @@ public final class HasMessagesTag
 
     @Override
     protected boolean isConditionTrue() {
-        return MessagesSetTag.hasMessages(pageContext.getRequest(), getType());
+        return QuarantineFunctions.hasMessages(pageContext.getRequest(), getType());
     }
 
 }

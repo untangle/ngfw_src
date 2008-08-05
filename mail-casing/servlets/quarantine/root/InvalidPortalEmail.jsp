@@ -103,33 +103,6 @@ String companyUrl = bs.getCompanyUrl();
 
         <!-- MAIN MESSAGE -->
         <br/>
-        <center>
-        <table>
-              <quarantine:hasMessages type="info">
-        <tr><td>
-                  <ul class="messageText">
-                    <quarantine:forEachMessage type="info">
-                      <li><quarantine:message/></li>
-                    </quarantine:forEachMessage>
-                  </ul>
-        </td></tr>
-              </quarantine:hasMessages>
-        </table>
-        </center>
-
-        <center>
-        <table>
-              <quarantine:hasMessages type="error">
-        <tr><td>
-                  <ul class="errortext">
-                    <quarantine:forEachMessage type="error">
-                      <li><quarantine:message/></li>
-                    </quarantine:forEachMessage>
-                  </ul>
-        </td></tr>
-              </quarantine:hasMessages>
-        </table>
-        </center>
 
         <!-- INPUT FORM -->
             <form name="form1" method="POST" action="requestdigest">

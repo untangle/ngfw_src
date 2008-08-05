@@ -39,11 +39,6 @@ public final class Constants extends WebConstants {
     public static final String SERVER_UNAVAILABLE_ERRO_VIEW = "/TryLater.jsp";
 
     /**
-     * FWD for requesting a digest email/login
-     */
-    public static final String REQ_DIGEST_CTL = "/requestdigest";
-
-    /**
      * View for requesting a digest email/login
      */
     public static final String REQ_DIGEST_VIEW = "/request.jspx";
@@ -52,11 +47,4 @@ public final class Constants extends WebConstants {
     public static final String INBOX_VIEW = "/inbox.jspx";
 
     public static final String INBOX_MAINTENENCE_CTL = "/manageuser";
-
-    public static final String UNMAP_CTL = "/unmp";
-
-    public static final String SAFELIST_CTL = "/safelist";
-
-    public static final String MAP_CTL = "/mp";
-    public static final String MAP_ADDRESS_VIEW = "/Rmap.jsp";
 }

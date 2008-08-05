@@ -27,6 +27,6 @@ public final class HasInboxIndexTag
 
     @Override
     protected boolean isConditionTrue() {
-        return InboxIndexTag.hasCurrentIndex(pageContext.getRequest());
+        return QuarantineFunctions.hasCurrentIndex(pageContext.getRequest());
     }
 }

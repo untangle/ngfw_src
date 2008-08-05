@@ -28,7 +28,7 @@ public final class InboxSizeRecordsTag extends SingleValueTag {
 
     @Override
     protected String getValue() {
-        InboxRecordCursor iCursor = InboxIndexTag.getCurrentIndex(pageContext.getRequest());
+        InboxRecordCursor iCursor = QuarantineFunctions.getCurrentIndex(pageContext.getRequest());
         try {
             return "(" + String.format("%01.1f", new Float(iCursor.inboxSize() / 1024.0)) + " KB)";
         }

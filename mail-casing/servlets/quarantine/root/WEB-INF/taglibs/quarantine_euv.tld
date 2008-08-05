@@ -9,21 +9,6 @@
   <info>Quarantine End User Application Tag library</info>
 
   <!--
-    Tag used to iterate over a set of messages.  Messages
-    are either of type "error" of "info".
-  -->
-  <tag>
-    <name>forEachMessage</name>
-    <tagclass>com.untangle.node.mail.web.euv.tags.MessagesSetTag</tagclass>
-    <bodycontent>JSP</bodycontent>
-    <attribute>
-        <name>type</name>
-        <required>true</required>
-        <rtexpvalue>false</rtexpvalue>
-    </attribute>
-  </tag>
-
-  <!--
     Includes everything between its tags if there are
     messages of "type" "error" or "info"
   -->
@@ -36,40 +21,6 @@
         <required>true</required>
         <rtexpvalue>false</rtexpvalue>
     </attribute>    
-  </tag>
-
-  <!--
-    Used within a "forEachMessage" tag, this dereferences the 
-    "current" message while iterating.  It is replaced by the text
-    of the current message
-  -->
-  <tag>
-    <name>message</name>
-    <tagclass>com.untangle.node.mail.web.euv.tags.MessageTag</tagclass>
-    <bodycontent>empty</bodycontent>
-  </tag>
-
-
-  <!--
-    Used within an iterating tag.  This outputs a different
-    string depending on if we're on an odd or even element
-    within an iterator.  The attributes "odd" and "even"
-    determine the strings.
-  -->
-  <tag>
-    <name>oddEven</name>
-    <tagclass>com.untangle.node.mail.web.euv.tags.OddEvenTag</tagclass>
-    <bodycontent>empty</bodycontent>
-    <attribute>
-      <name>even</name>
-      <required>true</required>
-      <rtexpvalue>false</rtexpvalue>
-    </attribute>
-    <attribute>
-      <name>odd</name>
-      <required>true</required>
-      <rtexpvalue>false</rtexpvalue>
-    </attribute>         
   </tag>
 
   <!--
@@ -87,19 +38,6 @@
     </attribute>      
   </tag>
   
-  
-  <!--
-    Tag which declares an iteration over the "current"
-    InboxIndex.  Within each iteration, sets an "oddEven"
-    and an "inboxRecord"
-  -->
-  <tag>
-    <name>forEachInboxRecord</name>
-    <tagclass>com.untangle.node.mail.web.euv.tags.InboxIndexTag</tagclass>
-    <bodycontent>JSP</bodycontent>
-  </tag>
-  
-
   <!--
     Used within an forEachInboxRecord tag, to access the "current"
     InboxRecord.  Valid values for "prop" are:
@@ -162,70 +100,6 @@
     <tagclass>com.untangle.node.mail.web.euv.tags.InboxSizeRecordsTag</tagclass>
     <bodycontent>empty</bodycontent>
   </tag>
-
-  <!--
-    Tag outputs the relative URL (from the web-app down) including
-    any parameters for a "next" and "prev" link.  Note that argument
-    "LinkType" can take the literal "next" and "prev" strings
-
-    This tag only makes sense if the "hasPagnation" tag tests true/false
-  -->
-  <tag>
-    <name>pagnationLink</name>
-    <tagclass>com.untangle.node.mail.web.euv.tags.PagnationLinksTag</tagclass>
-    <bodycontent>empty</bodycontent>
-    <attribute>
-      <name>linkType</name>
-      <required>true</required>
-      <rtexpvalue>false</rtexpvalue>
-    </attribute>    
-  </tag>
-
-  <!--
-    Unlike the pagnationLink, this tag outputs the individual
-    elements which could make-up a link
-
-    Valid values for "propName" are:
-
-    "sorting"
-    "ascending"
-    "prevId"
-    "nextId"
-    "thisId"
-    "rPPOption"
-  -->
-  <tag>
-    <name>pagnationProperties</name>
-    <tagclass>com.untangle.node.mail.web.euv.tags.PagnationPropertiesTag</tagclass>
-    <bodycontent>empty</bodycontent>
-    <attribute>
-      <name>propName</name>
-      <required>true</required>
-      <rtexpvalue>false</rtexpvalue>
-    </attribute>    
-  </tag>  
-
-  <!--
-    Conditional tag which includes/excludes a block depending
-    on if there are "prev" and "next" pages to be shown.
-
-    Values for "LinkType" are "true" and "false"
-  -->
-  <tag>
-    <name>hasPagnation</name>
-    <tagclass>com.untangle.node.mail.web.euv.tags.HasPagnationTag</tagclass>
-    <bodycontent>JSP</bodycontent>
-    <attribute>
-      <name>linkType</name>
-      <required>true</required>
-      <rtexpvalue>false</rtexpvalue>
-    </attribute>      
-    <attribute>
-      <name>includeIfTrue</name>
-      <required>true</required>
-      <rtexpvalue>false</rtexpvalue>
-    </attribute>  
-  </tag>    
   
   <!--
     Tag outputs the current email address, or null if not set
@@ -268,20 +142,7 @@
       <rtexpvalue>false</rtexpvalue>
     </attribute>    
   </tag>
-
-
   
-  <!--
-    Tag which declares an iteration over the "current"
-    Safelist.  Within each iteration, sets an "oddEven"
-    and a "safelistEntry"
-  -->
-  <tag>
-    <name>forEachSafelistEntry</name>
-    <tagclass>com.untangle.node.mail.web.euv.tags.SafelistListTag</tagclass>
-    <bodycontent>JSP</bodycontent>
-  </tag>
-
   <!--
     Used within an forEachSafelistEntry tag, to access the "current"
     entry. "encoded" will return a base64 encoded version of the address
@@ -352,13 +213,6 @@
   </tag>
 
 <!--   For remapping -->
-
-  <tag>
-    <name>forEachReceivingRemapsEntry</name>
-    <tagclass>com.untangle.node.mail.web.euv.tags.ReceivingRemapsListTag</tagclass>
-    <bodycontent>JSP</bodycontent>
-  </tag>
-
   <tag>
     <name>receivingRemapsEntry</name>
     <tagclass>com.untangle.node.mail.web.euv.tags.ReceivingRemapsEntryTag</tagclass>
@@ -402,57 +256,6 @@
       <rtexpvalue>false</rtexpvalue>
     </attribute>    
   </tag>
-
-  <!-- Rows Per Page "RPP" stuff -->
-
-  <!--
-    Block which sets the "rPPOption" and "isRPPOptionSelected" tag
-    for each possible RowsPerPage value
-  -->
-  <tag>
-    <name>forEachRPPOption</name>
-    <tagclass>com.untangle.node.mail.web.euv.tags.RPPIteratorTag</tagclass>
-    <bodycontent>JSP</bodycontent>
-  </tag>
-
-  <!--
-    From within a "forEachRPPOption" block, this is the current option
-  -->
-  <tag>
-    <name>rPPOption</name>
-    <tagclass>com.untangle.node.mail.web.euv.tags.RPPCurrentOptionTag</tagclass>
-    <bodycontent>empty</bodycontent>
-  </tag>
-
-  <!--
-    From within a "forEAchRPPOption" block, this indicates if the current
-    option is selected
-  -->
-  <tag>
-    <name>isRPPOptionSelected</name>
-    <tagclass>com.untangle.node.mail.web.euv.tags.RPPIsCurrentOptionSelectedTag</tagclass>
-    <bodycontent>JSP</bodycontent>
-    <attribute>
-      <name>includeIfTrue</name>
-      <required>true</required>
-      <rtexpvalue>false</rtexpvalue>
-    </attribute>      
-  </tag>
-
-  /* Function used to request one of the URLS */
-  <function>
-    <name>url</name>
-    <function-class>com.untangle.node.mail.web.euv.tags.QuarantineFunctions</function-class>
-    <function-signature>java.lang.String url( javax.servlet.jsp.PageContext, java.lang.String )</function-signature>
-  </function>
-
-  /* Given a controller and an action, build the desired URL. (url 
-  * a the recommended shortcut for this function) */
-  <function>
-    <name>buildUrl</name>
-    <function-class>com.untangle.node.mail.web.euv.tags.QuarantineFunctions</function-class>
-    <function-signature>java.lang.String buildUrl( javax.servlet.jsp.PageContext, java.lang.String, java.lang.String )</function-signature>
-  </function>
 
   <function>
     <name>remappedTo</name>
