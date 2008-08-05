@@ -199,6 +199,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                     }]
                 }, {
                     title : this.i18n._('Email Test'),
+                    buttonAlign : 'center',
                     items : [{
                         bodyStyle : 'padding:0px 0px 5px 5px;',
                         border : false,
@@ -206,6 +207,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                     }], 
                     buttons : [{
                         text : this.i18n._("Email Test"),
+                        iconCls : 'testIcon',
                         name: "emailTestButton",
                         handler : function() {
                             this.panelOutgoingServer.onEmailTest();

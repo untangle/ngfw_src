@@ -186,8 +186,8 @@ button.cancelIcon {
 button.saveIcon {
 	background:transparent url(../images/admin/icon_save.png) no-repeat center left !important; 
 }
-button.adTestIcon {
-	background:transparent url(../images/admin/icon_ad_test.png) no-repeat center left !important; 
+button.testIcon {
+	background:transparent url(../images/admin/icon_test.png) no-repeat center left !important; 
 }
 div.windowContent {
 	position:relative;

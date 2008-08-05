@@ -202,7 +202,7 @@ if (!Ung.hasResource["Ung.UserDirectory"]) {
                         buttons: [{
 	                        xtype : 'button',
 	                        text : this.i18n._('Active Directory Test'),
-	                        iconCls : 'adTestIcon',
+	                        iconCls : 'testIcon',
 	                        id : 'adConnector_ActiveDirectoryTest',
 	                        name : 'Active Directory Test',
 	                        handler : function() {
