@@ -37,6 +37,7 @@ import com.untangle.uvm.IntfConstants;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.engine.PipelineFoundryImpl;
 import com.untangle.uvm.node.PipelineEndpoints;
+import com.untangle.uvm.networking.LocalNetworkManager;
 import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.policy.PolicyRule;
 import com.untangle.uvm.user.UserInfo;
@@ -103,9 +104,12 @@ abstract class ArgonHook implements Runnable
                 logger.debug( "New thread for session id: " + netcapSession.id() +
                               " " + sessionGlobalState );
             }
+
+            boolean isSingleNicMode = 
+                LocalUvmContextFactory.context().networkManager().isSingleNicModeEnabled();
 	    
             /* Update the server interface */
-            netcapSession.determineServerIntf();
+            netcapSession.determineServerIntf( isSingleNicMode );
 
             /* If the server interface is still unknown, drop the session */
             byte serverIntf = netcapSession.serverSide().interfaceId();

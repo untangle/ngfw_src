@@ -230,7 +230,7 @@ JNIEXPORT jstring JNICALL JF_Session( getStringValue )
  * Signature: (J)I
  */
 JNIEXPORT void JNICALL JF_Session( determineServerIntf )
-(JNIEnv* env, jclass _this, jlong session_ptr )
+(JNIEnv* env, jclass _this, jlong session_ptr, jboolean is_single_nic )
 {
     netcap_session_t* session;
 
@@ -239,7 +239,24 @@ JNIEXPORT void JNICALL JF_Session( determineServerIntf )
     if ( netcap_interface_dst_intf( session ) < 0 ) {
         jmvutil_error( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, "netcap_interface_dst_intf\n" );
         return;
-    }    
+    }
+
+    if (( session->srv.intf == session->cli.intf ) && ( is_single_nic == JNI_TRUE )) {
+        debug( 9, "[JSESSION] Testing the session %#010x for single NIC mode\n", session->session_id );
+        if ( session->nat_info.original.src_address == session->nat_info.reply.dst_address ) {
+            debug( 9, "[JSESSION] (%#010x,%s -> %s) is external to interal\n", session->session_id,
+                   unet_next_inet_ntoa( session->nat_info.original.src_address ),
+                   unet_next_inet_ntoa( session->nat_info.reply.dst_address ));
+            session->cli.intf = NC_INTF_0;
+            session->srv.intf = NC_INTF_1;
+        } else {
+            debug( 9, "[JSESSION] (%#010x,%s -> %s) is internal to external\n", session->session_id,
+                   unet_next_inet_ntoa( session->nat_info.original.src_address ),
+                   unet_next_inet_ntoa( session->nat_info.reply.src_address ));
+            session->cli.intf = NC_INTF_1;
+            session->srv.intf = NC_INTF_0;
+        }
+    }
 }
 
 /*

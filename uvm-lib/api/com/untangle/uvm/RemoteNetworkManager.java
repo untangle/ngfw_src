@@ -112,6 +112,9 @@ public interface RemoteNetworkManager
     /* Returns true if address is local to the edgeguard */
     boolean isAddressLocal( IPaddr address );
 
+    /* Returns true if single nic mode is enabled */
+    boolean isSingleNicModeEnabled();
+
     /* Forces the link status to be re-examined, since it is likely to
      * have changed */
     void updateLinkStatus();

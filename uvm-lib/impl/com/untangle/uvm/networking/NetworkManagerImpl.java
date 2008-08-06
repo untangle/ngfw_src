@@ -27,9 +27,11 @@ import java.util.Set;
 
 import com.untangle.jnetcap.Netcap;
 import com.untangle.uvm.ArgonException;
+import com.untangle.uvm.ArgonManager;
 import com.untangle.uvm.IntfConstants;
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.localapi.SessionMatcherFactory;
 import com.untangle.uvm.networking.internal.AccessSettingsInternal;
 import com.untangle.uvm.networking.internal.AddressSettingsInternal;
 import com.untangle.uvm.networking.internal.MiscSettingsInternal;
@@ -72,12 +74,17 @@ public class NetworkManagerImpl implements LocalNetworkManager
     /* Script to run after reconfiguration (from NetworkSettings Listener) */
     private static final String AFTER_RECONFIGURE_SCRIPT = BUNNICULA_BASE + "/networking/after-reconfigure";
 
+    private static final String SINGLE_NIC_FLAG = "8e1f48a294372f872b74fedec79696a8";
+
     /* A flag for devel environments, used to determine whether or not
      * the etc files actually are written, this enables/disables reconfiguring networking */
     private boolean saveSettings = true;
 
     /* Inidicates whether or not the networking manager has been initialized */
     private boolean isInitialized = false;
+
+    /* Indicates whether or not single NIC mode is enabled */
+    private boolean isSingleNicModeEnabled = false;
 
     /* Manager for the iptables rules */
     private final RuleManager ruleManager;
@@ -427,6 +434,12 @@ public class NetworkManagerImpl implements LocalNetworkManager
         return nup.isAddressLocal( this.networkSettings, address );
     }
 
+    /* Returns true if single nic mode is enabled */
+    public boolean isSingleNicModeEnabled()
+    {
+        return this.isSingleNicModeEnabled;
+    }
+
     public void updateAddress()
     {
         /* Get the new address for any dhcp spaces */
@@ -499,6 +512,11 @@ public class NetworkManagerImpl implements LocalNetworkManager
 	}
 
         /* Update the internal address */
+        if ( SINGLE_NIC_FLAG.equals( properties.getProperty( "com.untangle.networking.single-nic-mode" ))) {
+            setSingleNicMode( true );
+        } else {
+            setSingleNicMode( false );
+        }
         
         try {
             callNetworkListeners();
@@ -681,6 +699,20 @@ public class NetworkManagerImpl implements LocalNetworkManager
 
         /* Load the address/hostname settings */
         this.addressManager.init();
+    }
+
+    private void setSingleNicMode( boolean newValue )
+    {
+        logger.debug( "setSingleNicMode(" + newValue + ")" );
+
+        if ( newValue != this.isSingleNicModeEnabled ) {
+            logger.info( "Changing the state of single NIC mode[" + newValue + "], killall all sessions." );
+            
+            ArgonManager argonManager = LocalUvmContextFactory.context().argonManager();
+            argonManager.shutdownMatches(SessionMatcherFactory.getAllInstance());
+        }
+        
+        this.isSingleNicModeEnabled = newValue;
     }
 
     /* Method to calculate what the current internal address is */
