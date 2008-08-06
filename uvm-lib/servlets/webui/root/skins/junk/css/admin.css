@@ -489,31 +489,85 @@ div.iconArrowDown {
 { 
   padding:5px 5px 0px 5px;
  }
-
-
+/*Wizard container */
+#container{
+	margin:10px auto;
+	position:relative;
+}
+.logo-container{
+	position:absolute;
+	top:10px;
+	left:25px;
+}
+.wizard-steps{
+	padding-top:120px;
+}
+.empty-background{
+	background-color:none;
+}
 .wizard-steps .completed
 { 
-  color: #0000CC;  
+  color: #000;  
  }
 
 .wizard-steps .incomplete
 { 
-  color: #C0C0C0;
+  color: #444;
  }
 
 .wizard-steps .current
 { 
-  color: #00CC00;
+  color: #333;
   font-weight: bold;
  }
 
 .wizard-steps .step
 {
-  font-size: 11px;
-  line-height: 14px; /* works out to 14px */
+  font-size: 12px;
+  line-height: 23px; /* works out to 14px */
+  margin:3px 0px 3px 25px;
   font-family:arial,helvetica,"FreeSans","Utkal","Nimbus Sans L","Malayalam","Phetsarath OT","Garuda",clean,sans-serif;
+  padding:0px 0px 0px 0px;
  }
-
+ .nostep{
+		padding:0px 0px 0px 22px;
+}
+ .current div, .incomplete div, .completed div{
+	padding:0px 0px 0px 5px;
+ }
+ .current div{
+	width:200px;
+ }
+ .incomplete div{
+	background-color:#F0F0F0;
+ }
+ .completed div{
+	background-color:#F0F0F0;
+ }
+.incomplete div div .count{
+	background:url(../images/wizard/step-incomplete.jpg) no-repeat left center !important;
+	margin:0px 4px 0px 0px;
+	color:#444444;
+	font-size:11px;
+	margin:0px 4px 0px 0px;
+	padding:2px 6px 2px 5px;	
+}
+.current div div .count{
+	background: url(../images/wizard/step-current.jpg) no-repeat left center !important;
+	margin:0px 4px 0px 0px;
+	color:#444444;
+	font-size:11px;
+	margin:0px 4px 0px 0px;
+	padding:2px 6px 2px 5px;	
+}
+.completed div div .count{
+	background: url(../images/wizard/step-completed.jpg) no-repeat left center !important;
+	margin:0px 4px 0px 0px;
+	color:#FFF;
+	font-size:11px;
+	margin:0px 4px 0px 0px;
+	padding:2px 6px 2px 5px;	
+}
 .wizard .x-form-item label
 { 
   text-align: right;

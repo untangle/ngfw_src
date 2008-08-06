@@ -6,7 +6,11 @@ Ung.Wizard = Ext.extend(Ext.Panel, {
     constructor : function( config )
     {
         this.cards = config.cards;
-        
+		var logo_container = Ext.get('extraDiv1');
+		logo_container.addClass( 'logo-container');
+        var logo = document.createElement('img');
+		logo.src= '../images/BrandingLogo.gif';		
+		logo_container.appendChild(logo);		
         /* Build a panel to hold the headers on the left */
         this.headerPanel = new Ext.Panel( {
             cls : 'wizard-steps',
@@ -15,7 +19,9 @@ Ung.Wizard = Ext.extend(Ext.Panel, {
             layout : 'table',
             layoutConfig : { columns : 1 },
             region : "west",
-            width : 200
+            width : 200,
+			bodyStyle:{background:'none','background-image':'../images/BrandingLogo.gif','padding':'20 0 0 0'},
+			border:false
         } );
 
         var panels = [];
@@ -34,6 +40,8 @@ Ung.Wizard = Ext.extend(Ext.Panel, {
             id : 'card-next',
             text : i18n._( 'Next &raquo;' ),
             handler : this.goNext,
+			cls:'x-btn-over',
+			overCls :'x-btn-',
             scope : this
         });
         
@@ -52,7 +60,8 @@ Ung.Wizard = Ext.extend(Ext.Panel, {
             region : "center",
             title : "&nbsp;",
             defaults : this.cardDefaults, 
-            bbar : [ '->', this.previousButton, this.nextButton ]
+            bbar : [ '->', this.previousButton, this.nextButton ],
+			border:false
         });
 
         config.layout = "border";
@@ -69,15 +78,19 @@ Ung.Wizard = Ext.extend(Ext.Panel, {
         var length = cards.length;
         for ( var c = 0 ; c < length ; c++ ) {
             var card = cards[c];
-            var title = '<span>' + card.title + '</span>';
+			var addnlclass = '';
+			if(c === 0 || c == length -1){
+				addnlclass = ' nostep ';
+			}
+            var title = '<span class="text'+addnlclass+'">' + card.title + '</span>';
             if (( c > 0 ) && ( c < ( length - 1 ))) {
-                title = i18n.sprintf( i18n._( '<span>Step %d</span> - '), c  ) + title;
+                title = i18n.sprintf( i18n._( '<span class="count">%d</span> '), c  ) + title;
             }
             var id = this.getStepId( c );
             items.push({ 
                 html : title,
                 cls : 'step'
-            });
+			});
         }
         
         return items;

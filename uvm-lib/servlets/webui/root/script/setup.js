@@ -1271,10 +1271,11 @@ Ung.Setup =  {
             ],
             disableNext : true,
             el : "container"
+			
         });
 
         this.wizard.render();
 
-        this.wizard.goToPage( 4 );
+        this.wizard.goToPage( 0 );
 	}
 };
