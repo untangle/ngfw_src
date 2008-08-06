@@ -31,6 +31,7 @@
 
 <!-- Just for Test, normaly this resources are Dynamically loaded     
 -->	
+    <script type="text/javascript" src="script/untangle-node-openvpn/settings.js"></script>
     <script type="text/javascript" src="script/untangle-node-spyware/settings.js"></script>
     <script type="text/javascript" src="script/untangle-node-protofilter/settings.js"></script>
     <script type="text/javascript" src="script/untangle-node-shield/settings.js"></script>
