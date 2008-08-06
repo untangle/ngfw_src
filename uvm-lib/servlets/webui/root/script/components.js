@@ -3282,7 +3282,11 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
             if (this.recordJavaClass != null){
                 records[i].data["javaClass"] = this.recordJavaClass;
             }
-            list.push(records[i].data)
+            var recData=Ext.decode(Ext.encode(records[i].data));
+            if(recData.id<0) {
+            	delete recData.id
+            }
+            list.push(recData)
         }
 
         return list;
