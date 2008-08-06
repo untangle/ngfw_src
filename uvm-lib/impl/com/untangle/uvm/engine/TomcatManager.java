@@ -25,7 +25,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.BindException;
 import java.net.InetAddress;
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -76,9 +75,6 @@ class TomcatManager
     private final String logDir;
 
     private final UvmContextImpl uvmContext;
-    private final NonceFactory nonceFactory = new NonceFactory();
-    private final UvmRealm uvmRealm = new UvmRealm( false, nonceFactory );
-    private final UvmRealm globalRealm = new UvmRealm( true, nonceFactory );
 
     private String keystoreFile = "conf/keystore";
     private String keystorePass = "changeit";
@@ -152,11 +148,7 @@ class TomcatManager
 
     boolean loadSystemApp(String urlBase, String rootDir, WebAppOptions options)
     {
-        /* tomcat cannot share the same authenticator across apps, you
-         * receive a LifecycleException: Security Interceptor has
-         * already been started exception. */
-        UvmAuthenticator uvmAuth = new UvmAuthenticator();
-        return loadWebApp(urlBase, rootDir, uvmRealm, uvmAuth, options);
+        return loadWebApp(urlBase, rootDir, null, null, options);
     }
 
     boolean loadSystemApp(String urlBase, String rootDir, Valve valve)
@@ -170,11 +162,7 @@ class TomcatManager
 
     boolean loadGlobalApp(String urlBase, String rootDir, WebAppOptions options)
     {
-        /* tomcat cannot share the same authenticator across apps, you
-         * receive a LifecycleException: Security Interceptor has
-         * already been started exception. */
-        UvmAuthenticator uvmAuth = new UvmAuthenticator();
-        return loadWebApp(urlBase, rootDir, globalRealm, uvmAuth, options);
+        return loadWebApp(urlBase, rootDir, null, null, options);
     }
 
     boolean loadGlobalApp(String urlBase, String rootDir, Valve valve)
@@ -236,8 +224,7 @@ class TomcatManager
     }
 
     // XXX exception handling
-    synchronized void startTomcat(HttpInvoker httpInvoker,
-                                  int internalHTTPPort,
+    synchronized void startTomcat(int internalHTTPPort,
                                   int internalHTTPSPort,
                                   int externalHTTPSPort,
                                   int internalOpenHTTPSPort)
@@ -248,14 +235,14 @@ class TomcatManager
         ClassLoader uvmCl = Thread.currentThread().getContextClassLoader();
         ClassLoader tomcatParent = new TomClassLoader(uvmCl);
         try {
-            // Entering Tomcat ClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            // Entering Tomcat ClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             Thread.currentThread().setContextClassLoader(tomcatParent);
 
             // jdi 8/30/04 -- canonical host name depends on ordering of
             // /etc/hosts
             String hostname = "localhost";
 
-            emb = new Embedded(/* fileLog, */ uvmRealm);
+            emb = new Embedded();
             emb.setCatalinaHome(catalinaHome);
 
             // create an Engine
@@ -299,7 +286,6 @@ class TomcatManager
 
             /* Moved after adding the valve */
             baseHost.addChild(ctx);
-            ctx.getServletContext().setAttribute("invoker", httpInvoker);
 
             // Load the webapps which were requested before the
             // system started-up.
@@ -312,7 +298,6 @@ class TomcatManager
             // Engine for embedded server
             emb.addEngine(baseEngine);
 
-            // XXX ADD JK CONNECTOR
             Connector jkConnector = new Connector("org.apache.jk.server.JkCoyoteHandler");
             jkConnector.setProperty("address", "127.0.0.1");
             jkConnector.setProperty("tomcatAuthentication", "false");
@@ -370,11 +355,6 @@ class TomcatManager
             // restored classloader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         }
 
-    }
-
-    String generateAuthNonce(InetAddress clientAddr, Principal user)
-    {
-        return uvmRealm.generateAuthNonce(clientAddr, user);
     }
 
     void resetRootWelcome()
@@ -467,12 +447,11 @@ class TomcatManager
         }
     }
 
-
     // private methods --------------------------------------------------------
 
     /**
-     * Loads the web application.  If Tomcat is not yet running, schedules it for
-     * later loading.
+     * Loads the web application.  If Tomcat is not yet running,
+     * schedules it for later loading.
      *
      * @param urlBase a <code>String</code> value
      * @param rootDir a <code>String</code> value
@@ -509,17 +488,20 @@ class TomcatManager
                                Realm realm,
                                AuthenticatorBase auth,
                                Valve valve) {
-        return loadWebApp(urlBase, rootDir, realm, auth, new WebAppOptions(valve));
+        return loadWebApp(urlBase, rootDir, realm, auth,
+                          new WebAppOptions(valve));
     }
 
     private boolean loadWebAppImpl(String urlBase, String rootDir,
-                                   Realm realm, AuthenticatorBase auth, WebAppOptions options)
+                                   Realm realm, AuthenticatorBase auth,
+                                   WebAppOptions options)
     {
         String fqRoot = webAppRoot + "/" + rootDir;
 
         logger.info("Adding web app " + fqRoot);
         try {
-            StandardContext ctx = (StandardContext) emb.createContext(urlBase, fqRoot);
+            StandardContext ctx = (StandardContext)emb
+                .createContext(urlBase, fqRoot);
             if (options.allowLinking)
                 ctx.setAllowLinking(true);
             ctx.setCrossContext(true);

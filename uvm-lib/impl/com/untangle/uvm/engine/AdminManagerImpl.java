@@ -23,33 +23,24 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.security.Principal;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 import java.util.TimeZone;
 import javax.transaction.TransactionRolledbackException;
 
-import com.untangle.node.util.PartialListUtil.Handler;
 import com.untangle.uvm.MailSender;
 import com.untangle.uvm.MailSettings;
-import com.untangle.uvm.networking.NetworkException;
 import com.untangle.uvm.security.AdminSettings;
-import com.untangle.uvm.security.GlobalPrincipal;
 import com.untangle.uvm.security.LoginSession;
 import com.untangle.uvm.security.RegistrationInfo;
 import com.untangle.uvm.security.RemoteAdminManager;
 import com.untangle.uvm.security.SystemInfo;
 import com.untangle.uvm.security.User;
-import com.untangle.uvm.security.UvmPrincipal;
 import com.untangle.uvm.snmp.SnmpManager;
 import com.untangle.uvm.snmp.SnmpManagerImpl;
 import com.untangle.uvm.util.FormUtil;
-import com.untangle.uvm.util.ListUtil;
 import com.untangle.uvm.util.TransactionWork;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
@@ -77,7 +68,6 @@ class RemoteAdminManagerImpl implements RemoteAdminManager
     private static final String ALPACA_NONCE_FILE = "/etc/untangle-net-alpaca/nonce";
 
     private final UvmContextImpl uvmContext;
-    private final UvmLoginImpl uvmLogin;
 
     private final Logger logger = Logger.getLogger(RemoteAdminManagerImpl.class);
 
@@ -109,8 +99,6 @@ class RemoteAdminManagerImpl implements RemoteAdminManager
             };
         uvmContext.runTransaction(tw);
 
-        uvmLogin = UvmLoginImpl.uvmLogin();
-
         snmpManager = SnmpManagerImpl.snmpManager();
 
         // If timezone on box is different (example: kernel upgrade), reset it:
@@ -123,10 +111,6 @@ class RemoteAdminManagerImpl implements RemoteAdminManager
             }
 
         logger.info("Initialized RemoteAdminManager");
-    }
-
-    UvmLoginImpl uvmLogin() {
-        return uvmLogin;
     }
 
     public MailSettings getMailSettings()
@@ -155,13 +139,13 @@ class RemoteAdminManagerImpl implements RemoteAdminManager
     public void setAdminSettings(final AdminSettings as)
     {
         updateUserPasswords(as);
-        
+
         // Do something with summaryPeriod? XXX
         TransactionWork tw = new TransactionWork()
             {
                 public boolean doWork(Session s)
                 {
-                	adminSettings = (AdminSettings)s.merge(as);
+                    adminSettings = (AdminSettings)s.merge(as);
                     return true;
                 }
             };
@@ -169,17 +153,17 @@ class RemoteAdminManagerImpl implements RemoteAdminManager
 
     }
 
-	private void updateUserPasswords(final AdminSettings as) {
-		for ( Iterator<User> i = adminSettings.getUsers().iterator(); i.hasNext(); ) {
-        	User user = i.next();
+    private void updateUserPasswords(final AdminSettings as) {
+        for ( Iterator<User> i = adminSettings.getUsers().iterator(); i.hasNext(); ) {
+            User user = i.next();
             User mUser = null;
             if ( ( mUser = modifiedUser( user, as.getUsers() )) != null &&
-            		mUser.getPassword() == null) {
-            	mUser.updatePassword(user);
+                    mUser.getPassword() == null) {
+                mUser.updatePassword(user);
             }
         }
-	}
-    
+    }
+
     private User modifiedUser( User user, Set<User> updatedUsers )
     {
         for ( User currentUser : updatedUsers ) {
@@ -188,20 +172,10 @@ class RemoteAdminManagerImpl implements RemoteAdminManager
 
         return null;
     }
-    
-    public LoginSession[] loggedInUsers()
-    {
-        return HttpInvokerImpl.invoker().getLoginSessions();
-    }
-
-    public void logout()
-    {
-        HttpInvokerImpl.invoker().logoutActiveLogin();
-    }
 
     public LoginSession whoAmI()
     {
-        return HttpInvokerImpl.invoker().getActiveLogin();
+        return null;
     }
 
     public TimeZone getTimeZone()
@@ -298,39 +272,6 @@ class RemoteAdminManagerImpl implements RemoteAdminManager
         return snmpManager;
     }
 
-    public String generateAuthNonce() {
-        HttpInvokerImpl invoker = HttpInvokerImpl.invoker();
-        LoginSession ls = invoker.getActiveLogin();
-        TomcatManager tm = uvmContext.tomcatManager();
-        if (ls == null){
-        	//throw new IllegalStateException("generateAuthNonce called from backend");
-        	logger.warn("generateAuthNonce called from backend");
-            try {
-				return tm.generateAuthNonce(InetAddress.getByName("192.0.2.1"), new UvmPrincipal("admin", false));
-			} catch (UnknownHostException e) {
-	        	logger.warn("unable to create nonce", e);
-				return null;
-			}
-        }
-        logger.info("Generating auth nonce for " + ls.getClientAddr() + " " + ls.getUvmPrincipal());
-        return tm.generateAuthNonce(ls.getClientAddr(), ls.getUvmPrincipal());
-   }
-
-    public String generateGlobalAuthNonce() {
-        HttpInvokerImpl invoker = HttpInvokerImpl.invoker();
-        LoginSession ls = invoker.getActiveLogin();
-        if (ls == null)
-            throw new IllegalStateException("generateGlobalAuthNonce called from backend");
-        TomcatManager tm = uvmContext.tomcatManager();
-        UvmPrincipal uvmPrincipal = ls.getUvmPrincipal();
-        logger.info("Generating global auth nonce for " + ls.getClientAddr() + " " + uvmPrincipal );
-
-        /* Create a new global login to be used for the nonce */
-        GlobalPrincipal principal = new GlobalPrincipal( uvmPrincipal.getName());
-        return tm.generateAuthNonce(ls.getClientAddr(), principal );
-    }
-
-
     public String getAlpacaNonce()
     {
         BufferedReader stream = null;
@@ -358,13 +299,13 @@ class RemoteAdminManagerImpl implements RemoteAdminManager
             }
         }
     }
-    
+
     public SystemInfo getSystemInfo()
     {
         String activationKey = uvmContext.getActivationKey();
         String fullVersion = uvmContext.getFullVersion();
         String javaVersion = System.getProperty("java.version");
-        
+
         return new SystemInfo(activationKey, fullVersion, javaVersion);
     }
 }

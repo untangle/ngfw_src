@@ -43,9 +43,6 @@ import java.lang.reflect.Method;
  */
 public class RemoteUvmContextFactory
 {
-    private static final String SYSTEM_USER = "localadmin";
-    private static final String SYSTEM_PASSWORD = "nimda11lacol";
-
     private static final RemoteUvmContextFactory FACTORY
         = new RemoteUvmContextFactory();
 

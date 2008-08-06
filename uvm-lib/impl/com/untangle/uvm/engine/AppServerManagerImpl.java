@@ -106,7 +106,7 @@ class AppServerManagerImpl implements LocalAppServerManager
         this.externalHttpsPort = p;
     }
 
-    public void postInit(HttpInvoker httpInvoker)
+    public void postInit()
     {
         String eHost = getFQDN();
 
@@ -149,7 +149,7 @@ class AppServerManagerImpl implements LocalAppServerManager
         try {
             String disableTomcat = System.getProperty("bunnicula.devel.notomcat");
             if (null == disableTomcat || !Boolean.valueOf(disableTomcat)) {
-                tomcatManager.startTomcat(httpInvoker, DEFAULT_HTTP_PORT,
+                tomcatManager.startTomcat(DEFAULT_HTTP_PORT,
                                           DEFAULT_HTTPS_PORT,
                                           externalHttpsPort,
                                           NetworkUtil.INTERNAL_OPEN_HTTPS_PORT);

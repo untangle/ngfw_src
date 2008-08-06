@@ -49,10 +49,6 @@ taglib = JarTarget.build_target(uvm_lib, deps, 'taglib', "./uvm-lib/taglib")
 BuildEnv::SRC.installTarget.install_jars(taglib, "#{uvm_lib.distDirectory}/usr/share/java/uvm" )
 
 # servlets
-ServletBuilder.new(uvm_lib, 'com.untangle.uvm.invoker.jsp',
-                   "./uvm-lib/servlets/http-invoker", [], [], [],
-                   [BuildEnv::SERVLET_COMMON])
-
 ServletBuilder.new(uvm_lib, 'com.untangle.uvm.reports.jsp',
                    "./uvm-lib/servlets/reports")
 

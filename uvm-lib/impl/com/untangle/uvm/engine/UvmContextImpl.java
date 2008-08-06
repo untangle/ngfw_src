@@ -112,7 +112,6 @@ public class UvmContextImpl extends UvmContextBase
     private RemoteAdminManagerImpl adminManager;
     private ArgonManagerImpl argonManager;
     private RemoteIntfManagerImpl remoteIntfManager;
-    private HttpInvokerImpl httpInvoker;
     private RemoteLoggingManagerImpl loggingManager;
     private SyslogManagerImpl syslogManager;
     private EventLogger eventLogger;
@@ -341,11 +340,6 @@ public class UvmContextImpl extends UvmContextBase
     public PipelineFoundryImpl pipelineFoundry()
     {
         return pipelineFoundry;
-    }
-
-    public UvmLoginImpl uvmLogin()
-    {
-        return adminManager.uvmLogin();
     }
 
     public void waitForStartup()
@@ -798,8 +792,6 @@ public class UvmContextImpl extends UvmContextBase
         /* initalize everything and start it up */
         phoneBookFactory.init();
 
-        httpInvoker = HttpInvokerImpl.invoker();
-
         remoteContext = new RemoteUvmContextAdaptor(this);
         state = UvmState.INITIALIZED;
     }
@@ -815,8 +807,6 @@ public class UvmContextImpl extends UvmContextBase
         logger.debug("restarting nodes");
         nodeManager.init();
 
-        logger.debug("starting HttpInvoker");
-        httpInvoker.init();
         startCliServer();
         logger.debug("postInit complete");
         synchronized (startupWaitLock) {
@@ -826,22 +816,13 @@ public class UvmContextImpl extends UvmContextBase
 
         //Inform the AppServer manager that everything
         //else is started.
-        appServerManager.postInit(httpInvoker);
+        appServerManager.postInit();
     }
 
     @Override
     protected void destroy()
     {
         state = UvmState.DESTROYED;
-
-        // stop remote services:
-        try {
-            if (httpInvoker != null)
-                httpInvoker.destroy();
-        } catch (Exception exn) {
-            logger.warn("could not destroy HttpInvoker", exn);
-        }
-        httpInvoker = null;
 
         localMessageManager.stop();
 

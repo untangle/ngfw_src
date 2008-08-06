@@ -20,18 +20,14 @@ package com.untangle.uvm.networking;
 
 
 import java.net.InetAddress;
-
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
 import com.untangle.jnetcap.Netcap;
-import com.untangle.uvm.ArgonException;
 import com.untangle.uvm.IntfConstants;
-import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.networking.internal.AccessSettingsInternal;
 import com.untangle.uvm.networking.internal.AddressSettingsInternal;
@@ -43,16 +39,11 @@ import com.untangle.uvm.networking.internal.ServicesInternalSettings;
 import com.untangle.uvm.node.HostName;
 import com.untangle.uvm.node.IPSessionDesc;
 import com.untangle.uvm.node.IPaddr;
-import com.untangle.uvm.node.LocalNodeManager;
 import com.untangle.uvm.node.ValidateException;
 import com.untangle.uvm.node.script.ScriptRunner;
 import com.untangle.uvm.node.script.ScriptWriter;
-import com.untangle.uvm.security.Tid;
-import com.untangle.uvm.toolbox.RemoteToolboxManager;
 import com.untangle.uvm.util.XMLRPCUtil;
 import org.apache.log4j.Logger;
-import org.hibernate.Query;
-import org.hibernate.Session;
 
 import static com.untangle.uvm.networking.ShellFlags.FILE_RULE_CFG;
 
@@ -102,7 +93,7 @@ public class NetworkManagerImpl implements LocalNetworkManager
     /** The nuts and bolts of networking, the real bits of panther.  this my friend
      * should never be null */
     private NetworkSpacesInternalSettings networkSettings = null;
-    
+
     /** The current services settings */
     private ServicesInternalSettings servicesSettings = null;
 
@@ -165,7 +156,7 @@ public class NetworkManagerImpl implements LocalNetworkManager
         if ( settings == null ) return null;
 
         NetworkSpaceInternal external = settings.getNetworkSpace( IntfConstants.EXTERNAL_INTF );
-        
+
         if ( external == null ) return null;
 
         return external.getPrimaryAddress().getNetwork();
@@ -389,7 +380,7 @@ public class NetworkManagerImpl implements LocalNetworkManager
             args[2] = basic.getGateway().toString();
             args[3] = basic.getDns1().toString();
             args[4] = "";
-            
+
             IPaddr dns2 = basic.getDns2();
             if ( !dns2.isEmpty()) args[4] = dns2.toString();
             method = "wizard_external_interface_static";
@@ -420,14 +411,12 @@ public class NetworkManagerImpl implements LocalNetworkManager
 
             /* Make a synchronous request */
             try {
-                XMLRPCUtil.getInstance().callAlpaca( XMLRPCUtil.CONTROLLER_UVM, 
+                XMLRPCUtil.getInstance().callAlpaca( XMLRPCUtil.CONTROLLER_UVM,
                                                      "wizard_internal_interface_nat", null,
                                                      address.toString(), netmask.toString());
             } catch ( Exception e ) {
                 logger.warn( "Unable to enable NAT.", e );
             }
-
-            if ( !hasChanged ) LocalUvmContextFactory.context().adminManager().logout();
         }
         catch(Exception e){
             logger.error( "Error setting up NAT in wizard", e );
@@ -436,13 +425,11 @@ public class NetworkManagerImpl implements LocalNetworkManager
 
     public void setWizardNatDisabled()
     {
-        LocalUvmContextFactory.context().adminManager().logout();
-
         logger.debug( "disabling nat as requested by setup wizard: " );
 
         /* Make a synchronous request */
         try {
-            XMLRPCUtil.getInstance().callAlpaca( XMLRPCUtil.CONTROLLER_UVM, 
+            XMLRPCUtil.getInstance().callAlpaca( XMLRPCUtil.CONTROLLER_UVM,
                                                  "wizard_internal_interface_bridge", null );
         } catch ( Exception e ) {
             logger.warn( "Unable to disable NAT for wizard", e );
@@ -480,9 +467,9 @@ public class NetworkManagerImpl implements LocalNetworkManager
         }
 
         NetworkUtilPriv nup = NetworkUtilPriv.getPrivInstance();
-        
+
         Properties properties = null;
-        
+
         try {
             properties = nup.loadProperties();
         } catch ( Exception e ) {
@@ -493,45 +480,45 @@ public class NetworkManagerImpl implements LocalNetworkManager
         this.networkSettings = NetworkUtilPriv.getPrivInstance().loadNetworkSettings( properties );
 
         /* Load whether or not dynamic DNS is enabled */
-        this.isDynamicDnsEnabled = 
+        this.isDynamicDnsEnabled =
             Boolean.parseBoolean( properties.getProperty( "com.untangle.networking.ddns-en" ));
         logger.debug( "DynamicDns: " + this.isDynamicDnsEnabled );
-        
+
         /* Load the internal address (has to happen before the services settings are loaded) */
         updateInternalAddress( this.networkSettings );
         logger.debug( "New internal address is: '" + this.internalAddress + "'" );
         IPaddr serviceAddress = NetworkUtil.BOGUS_DHCP_ADDRESS;
         if ( this.internalAddress != null ) serviceAddress = new IPaddr( this.internalAddress );
 
-        this.servicesSettings = 
+        this.servicesSettings =
             NetworkUtilPriv.getPrivInstance().loadServicesSettings( properties, serviceAddress );
 
         this.addressManager.updateAddress( properties );
-        
+
         if ( logger.isDebugEnabled()) {
             logger.debug( "New network settings: " + this.networkSettings );
             logger.debug( "New services settings: " + this.servicesSettings );
         }
 
-	/* XXX This should be rethought,but it is important for the firewall
-	 * rules for the QA push XXXX */
-	try {
-	    ScriptWriter scriptWriter = new ScriptWriter();
-	    /* Set whether or not setup has completed */
-	    
-	    this.accessManager.commit( scriptWriter );
-	    this.addressManager.commit( scriptWriter );
-	    this.miscManager.commit( scriptWriter );
-	    this.ruleManager.commit( scriptWriter );
+    /* XXX This should be rethought,but it is important for the firewall
+     * rules for the QA push XXXX */
+    try {
+        ScriptWriter scriptWriter = new ScriptWriter();
+        /* Set whether or not setup has completed */
 
-	    /* Save out the script */
-	    scriptWriter.writeFile( FILE_RULE_CFG );
-	} catch ( Exception e ) {
-	    logger.warn( "Error committing the networking.sh file", e );
-	}
+        this.accessManager.commit( scriptWriter );
+        this.addressManager.commit( scriptWriter );
+        this.miscManager.commit( scriptWriter );
+        this.ruleManager.commit( scriptWriter );
+
+        /* Save out the script */
+        scriptWriter.writeFile( FILE_RULE_CFG );
+    } catch ( Exception e ) {
+        logger.warn( "Error committing the networking.sh file", e );
+    }
 
         /* Update the internal address */
-        
+
         try {
             callNetworkListeners();
         } catch ( Exception e ) {
@@ -549,14 +536,14 @@ public class NetworkManagerImpl implements LocalNetworkManager
 
         /* ignore everything on the external or dmz interface */
         if ( argonIntf == IntfConstants.EXTERNAL_INTF || argonIntf == IntfConstants.DMZ_INTF ) return null;
-        
+
         /* Retrieve the network settings */
         NetworkSpacesInternalSettings settings = this.networkSettings;
 
         if ( settings == null ) return null;
 
         NetworkSpaceInternal local = settings.getNetworkSpace( argonIntf );
-        
+
         if ( local == null ) return null;
 
         IPNetwork network = local.getPrimaryAddress();
@@ -722,11 +709,11 @@ public class NetworkManagerImpl implements LocalNetworkManager
         if ( settings == null ) return;
 
         NetworkSpaceInternal internal = settings.getNetworkSpace( IntfConstants.INTERNAL_INTF );
-        
+
         if ( internal == null ) return;
-        
+
         IPaddr address = internal.getPrimaryAddress().getNetwork();
-        this.internalAddress = address.getAddr();        
+        this.internalAddress = address.getAddr();
     }
 
     /* Create a networking manager, this is a first come first serve
