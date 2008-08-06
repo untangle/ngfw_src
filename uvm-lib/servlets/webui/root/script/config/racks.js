@@ -512,7 +512,8 @@ if (!Ung.hasResource["Ung.Racks"]) {
                     });
                     
                     this.usersWindow= new Ung.UsersWindow({
-                    	grid : this
+                    	grid : this,
+                    	userDataIndex : "user"
                     });
                     //this.usersWindow.renderTo('container');
                     

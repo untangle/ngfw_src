@@ -3433,6 +3433,8 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
     sizeToRack : true,
     // size to grid on show
     sizeToGrid : false,
+    singleSelectUser : false,
+    userDataIndex : null,
     usersGrid:null,
     populateSemaphore: null,
     userEntries: null,
@@ -3452,7 +3454,7 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
         this.initSubComponents.defer(1, this);
     },
     initSubComponents : function(container, position) {
-    	var selModel = new Ext.grid.CheckboxSelectionModel();
+    	var selModel = new Ext.grid.CheckboxSelectionModel({singleSelect : this.singleSelectUser});
     	this.usersGrid=new Ext.grid.GridPanel({
     	   //title: i18n._('Users'),
     	   height: 210,
@@ -3518,15 +3520,16 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
             },
             items : [{
                 xtype : 'fieldset',
-                title : i18n._('Select Users'),
+                title : this.singleSelectUser ? i18n._('Select User') : i18n._('Select Users'),
                 autoHeight : true,
                 items: [{
                 	bodyStyle : 'padding:0px 0px 5px 5px;',
                     border : false,
-                    html: i18n._("You may choose user IDs/Logins that exist in the User Directory (either local or remote Active Directory), or you can add a new user to the User Directory, and then choose that user.")	
+                    html: this.singleSelectUser ? i18n._("You may choose user ID/Login that exists in the User Directory (either local or remote Active Directory), or you can add a new user to the User Directory, and then choose that user.")
+                                : i18n._("You may choose user IDs/Logins that exist in the User Directory (either local or remote Active Directory), or you can add a new user to the User Directory, and then choose that user.")
                 }, {
                     xtype : 'fieldset',
-                    title : i18n._('Select an existing user or users'),
+                    title : this.singleSelectUser ? i18n._('Select an existing user') : i18n._('Select an existing user or users'),
                     autoHeight : true,
                     items: [this.usersGrid]
                 }, {
@@ -3565,7 +3568,7 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
             }
         });
         this.populateSemaphore=2;
-        this.userEntries=[{UID: "[any]"}];
+        this.userEntries=this.singleSelectUser ? [] : [{UID: "[any]"}];
         main.getAppAddressBook().getUserEntries(function(result, exception) {
             if (exception) {
                 Ext.MessageBox.alert(i18n._("Failed"), i18n._("There was a problem refreshing Active Directory users.  Please check your Active Directory settings and then try again."), function(){
@@ -3602,7 +3605,7 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
                         start : 0
                     }
                 });
-                var users=this.record.get("user");
+                var users=this.record.get(this.userDataIndex);
                 if(users!=null) {
                     users=users.split(",");
                 }
@@ -3619,6 +3622,10 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
     // check if the form is valid;
     // this is the default functionality which can be overwritten
     isFormValid : function() {
+    	if (this.singleSelectUser) {
+    		// one user must be selected
+    		return (this.usersGrid.getSelectionModel().getSelections().length == 1);
+    	}
         return true;
     },
     // updateAction is called to update the record after the edit
@@ -3637,14 +3644,14 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
             		  users.push(selRecs[i].get("UID"));
             		}
             	}
-            	this.record.set("user",users.join(","));
+            	this.record.set(this.userDataIndex,users.join(","));
             	if(this.fnCallback) {
             		this.fnCallback.call()
             	}
             }
             this.hide();
         } else {
-            Ext.MessageBox.alert(i18n._('Warning'), i18n._("The form is not valid!"));
+            Ext.MessageBox.alert(i18n._('Warning'), i18n._("Please choose a user id/login or press Cancel!"));
         }
     },
     cancelAction : function() {
