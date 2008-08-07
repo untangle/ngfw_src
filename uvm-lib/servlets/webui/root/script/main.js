@@ -345,6 +345,13 @@ Ung.Main.prototype = {
         return rpc.appAddressBook;
     },
 
+    getMailSender : function(forceReload) {
+        if (forceReload || rpc.mailSender === undefined) {
+            rpc.mailSender = rpc.jsonrpc.RemoteUvmContext.mailSender()
+        }
+        return rpc.mailSender;
+    },
+
     unactivateNode: function(mackageDesc) {
         rpc.nodeManager.nodeInstances(function (result, exception) {
                 if(exception) {
