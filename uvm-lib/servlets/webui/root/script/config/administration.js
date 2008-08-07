@@ -657,6 +657,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                                 text : i18n.sprintf(this.i18n._('Generate a %sSelf-Signed Certificate%s'), '<b>', '</b>'),
                                 minWidth : 250,
                                 name : 'Generate a Self-Signed Certificate',
+                                iconCls : 'actionIcon',
                                 handler : function() {
                                     this.panelCertificates.onGenerateSelfSignedCertificate();
                                 }.createDelegate(this)
@@ -680,6 +681,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                                 text : i18n.sprintf(this.i18n._('Generate a %sCertificate Signature Request%s'), '<b>', '</b>'),
                                 minWidth : 250,
                                 name : 'Generate a Self-Signed Certificate',
+                                iconCls : 'actionIcon',
                                 handler : function() {
                                     this.panelCertificates.onGenerateCertGenTrusted();
                                 }.createDelegate(this)
@@ -703,6 +705,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                                 text : i18n.sprintf(this.i18n._('Import a %sSigned Certificate%s'), '<b>', '</b>'),
                                 minWidth : 250,
                                 name : 'Generate a Self-Signed Certificate',
+                                iconCls : 'actionIcon',
                                 handler : function() {
                                     this.panelCertificates.onCertImportTrusted();
                                 }.createDelegate(this)

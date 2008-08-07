@@ -49,6 +49,9 @@
             <fileset dir="./../../../../openvpn/hier/usr/share/untangle/web/webui/script/">
                 <include name="**/*.*"/>
             </fileset>
+            <fileset dir="./../../../../reporting/hier/usr/share/untangle/web/webui/script/">
+                <include name="**/*.*"/>
+            </fileset>
             <fileset dir="./../../../../../../hades/rup/portal/hier/usr/share/untangle/web/webui/script/">
                 <include name="**/*.*"/>
             </fileset>

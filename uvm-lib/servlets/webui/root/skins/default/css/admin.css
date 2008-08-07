@@ -189,6 +189,9 @@ button.saveIcon {
 button.testIcon {
 	background:transparent url(../images/admin/icon_test.png) no-repeat center left !important; 
 }
+button.actionIcon {
+    background:transparent url(../images/admin/icon_action.gif) no-repeat center left !important; 
+}
 div.windowContent {
 	position:relative;
 	margin-top:10px;

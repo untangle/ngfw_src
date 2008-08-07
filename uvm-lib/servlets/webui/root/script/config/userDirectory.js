@@ -221,6 +221,7 @@ if (!Ung.hasResource["Ung.UserDirectory"]) {
 	                        xtype : 'button',
 	                        text : this.i18n._('AD Login Script'),
 	                        name : 'AD Login Script',
+                            iconCls : 'actionIcon',
 	                        handler : function() {
 	                            this.panelActiveDirectoryConnector.onADLoginScriptClick();
 	                        }.createDelegate(this)
