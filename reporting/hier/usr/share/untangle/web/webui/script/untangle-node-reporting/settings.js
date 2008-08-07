@@ -26,25 +26,50 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                 layout : "form",
                 autoScroll : true,
                 bodyStyle : 'padding:5px 5px 0px 5px;',
-                items : [{
-                    buttonAlign : 'center',
-                    footer : false,
-                    border : false,
-                    buttons: [{
-                        xtype : 'button',
-                        text : this.i18n._('View Reports'),
-                        name : 'View Reports',
-                        iconCls : 'actionIcon',
-                        handler : function() {
-                            rpc.adminManager.generateAuthNonce(function (result, exception) {
-                                if(exception) { 
-                                    Ext.MessageBox.alert(i18n._("Failed"),exception.message); 
-                                    return;
-                                }
-                                var viewReportsUrl = "../reports/?" + result;
-                                window.open(viewReportsUrl);
-                            }.createDelegate(this));
-                        }.createDelegate(this)
+                items: [{
+                    title : this.i18n._('Status'),
+                    xtype : 'fieldset',
+                    autoHeight : true,
+                    items : [{
+                        buttonAlign : 'center',
+                        footer : false,
+                        border : false,
+                        buttons: [{
+                            xtype : 'button',
+                            text : this.i18n._('View Reports'),
+                            name : 'View Reports',
+                            iconCls : 'actionIcon',
+                            handler : function() {
+                                rpc.adminManager.generateAuthNonce(function (result, exception) {
+                                    if(exception) { 
+                                        Ext.MessageBox.alert(i18n._("Failed"),exception.message); 
+                                        return;
+                                    }
+                                    var viewReportsUrl = "../reports/?" + result;
+                                    window.open(viewReportsUrl);
+                                }.createDelegate(this));
+                            }.createDelegate(this)
+                        }]
+                    }, {
+                        buttonAlign : 'center',
+                        footer : false,
+                        border : false,
+                        buttons: [{
+                            xtype : 'button',
+                            text : this.i18n._('Archived Reports'),
+                            name : 'Archived Reports',
+                            iconCls : 'actionIcon',
+                            handler : function() {
+                                rpc.adminManager.generateAuthNonce(function (result, exception) {
+                                    if(exception) { 
+                                        Ext.MessageBox.alert(i18n._("Failed"),exception.message); 
+                                        return;
+                                    }
+                                    var viewReportsUrl = "../reports/archive?" + result;
+                                    window.open(viewReportsUrl);
+                                }.createDelegate(this));
+                            }.createDelegate(this)
+                        }]
                     }]
                 }]
             });
