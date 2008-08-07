@@ -977,7 +977,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
                 }
             };
 
-        if (asm.loadInsecureApp("/spyware", "spyware", v)) {
+        if (null != asm.loadInsecureApp("/spyware", "spyware", v)) {
             logger.debug("Deployed Spyware WebApp");
         } else {
             logger.error("Unable to deploy Spyware WebApp");

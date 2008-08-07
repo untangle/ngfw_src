@@ -33,6 +33,8 @@
 
 package com.untangle.uvm;
 
+import javax.servlet.ServletContext;
+
 import com.untangle.uvm.security.CertInfo;
 import com.untangle.uvm.security.RFC2253Name;
 import org.apache.catalina.Valve;
@@ -66,13 +68,13 @@ public interface LocalAppServerManager
      * @param rootDir the name of the root directory under the "web"
      * directory of edgeguard w/ the app.
      */
-    boolean loadSystemApp(String urlBase, String rootDir);
+    ServletContext loadSystemApp(String urlBase, String rootDir);
 
-    boolean loadSystemApp(String urlBase, String rootDir, Valve valve);
+    ServletContext loadSystemApp(String urlBase, String rootDir, Valve valve);
 
-    boolean loadGlobalApp(String urlBase, String rootDir);
+    ServletContext loadGlobalApp(String urlBase, String rootDir);
 
-    boolean loadGlobalApp(String urlBase, String rootDir, Valve valve);
+    ServletContext loadGlobalApp(String urlBase, String rootDir, Valve valve);
 
 
     /**
@@ -86,14 +88,14 @@ public interface LocalAppServerManager
      * @param rootDir the name of the root directory under the "web"
      * directory of edgeguard w/ the app.
      */
-    boolean loadInsecureApp(String urlBase, String rootDir);
+    ServletContext loadInsecureApp(String urlBase, String rootDir);
 
-    boolean loadInsecureApp(String urlBase, String rootDir, Valve valve);
+    ServletContext loadInsecureApp(String urlBase, String rootDir, Valve valve);
 
     /**
      * Load the quarantine app.  This is hack, designed this way to not force
      * the valve object into the uvm-client.jar */
-    boolean loadQuarantineApp(String urlBase, String rootDir);
+    ServletContext loadQuarantineApp(String urlBase, String rootDir);
 
     boolean unloadWebApp(String urlBase);
 

@@ -21,6 +21,7 @@ package com.untangle.uvm.engine;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.Properties;
+import javax.servlet.ServletContext;
 
 import com.untangle.node.util.OpenSSLWrapper;
 import com.untangle.node.util.UtKeyStore;
@@ -176,39 +177,43 @@ class AppServerManagerImpl implements LocalAppServerManager
         // XXX IMPLEMENT ME!!!
     }
 
-    public boolean loadSystemApp(String urlBase, String rootDir)
+    public ServletContext loadSystemApp(String urlBase, String rootDir)
     {
         return tomcatManager.loadSystemApp(urlBase, rootDir);
     }
 
-    public boolean loadSystemApp(String urlBase, String rootDir, Valve valve)
+    public ServletContext loadSystemApp(String urlBase, String rootDir,
+                                        Valve valve)
     {
         return tomcatManager.loadSystemApp(urlBase, rootDir, valve);
     }
 
-    public boolean loadGlobalApp(String urlBase, String rootDir)
+    public ServletContext loadGlobalApp(String urlBase, String rootDir)
     {
         return tomcatManager.loadGlobalApp(urlBase, rootDir);
     }
 
-    public boolean loadGlobalApp(String urlBase, String rootDir, Valve valve)
+    public ServletContext loadGlobalApp(String urlBase, String rootDir,
+                                        Valve valve)
     {
         return tomcatManager.loadGlobalApp(urlBase, rootDir, valve);
     }
 
-    public boolean loadInsecureApp(String urlBase, String rootDir)
+    public ServletContext loadInsecureApp(String urlBase, String rootDir)
     {
         return tomcatManager.loadInsecureApp(urlBase, rootDir);
     }
 
-    public boolean loadInsecureApp(String urlBase, String rootDir, Valve valve)
+    public ServletContext loadInsecureApp(String urlBase, String rootDir,
+                                          Valve valve)
     {
         return tomcatManager.loadInsecureApp(urlBase, rootDir, valve);
     }
 
-    public boolean loadQuarantineApp(String urlBase, String rootDir)
+    public ServletContext loadQuarantineApp(String urlBase, String rootDir)
     {
-        return tomcatManager.loadInsecureApp(urlBase, rootDir, new QuarantineOutsideAccessValve());
+        return tomcatManager.loadInsecureApp(urlBase, rootDir,
+                                             new QuarantineOutsideAccessValve());
     }
 
     public boolean unloadWebApp(String contextRoot)

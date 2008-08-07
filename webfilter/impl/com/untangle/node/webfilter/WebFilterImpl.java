@@ -738,7 +738,7 @@ public class WebFilterImpl extends AbstractNode implements WebFilter
                 }
             };
 
-        if (asm.loadInsecureApp("/webfilter", "webfilter", v)) {
+        if (null != asm.loadInsecureApp("/webfilter", "webfilter", v)) {
             logger.debug("Deployed WebFilter WebApp");
         } else {
             logger.error("Unable to deploy WebFilter WebApp");

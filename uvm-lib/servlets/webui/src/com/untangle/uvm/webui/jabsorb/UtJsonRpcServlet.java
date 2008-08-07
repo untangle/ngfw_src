@@ -19,14 +19,9 @@
 package com.untangle.uvm.webui.jabsorb;
 
 import java.io.IOException;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
-import org.jabsorb.JSONRPCBridge;
-import org.jabsorb.JSONRPCServlet;
-import org.jabsorb.serializer.impl.JSONBeanSerializer;
 
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.client.RemoteUvmContext;
@@ -49,6 +44,10 @@ import com.untangle.uvm.webui.jabsorb.serializer.TimeSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.TimeZoneSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.URLSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.UserMatcherSerializer;
+import org.apache.log4j.Logger;
+import org.jabsorb.JSONRPCBridge;
+import org.jabsorb.JSONRPCServlet;
+import org.jabsorb.serializer.impl.JSONBeanSerializer;
 
 /**
  * Initializes the JSONRPCBridge.
@@ -60,13 +59,34 @@ public class UtJsonRpcServlet extends JSONRPCServlet
 {
     private static final String BRIDGE_ATTRIBUTE = "JSONRPCBridge";
 
+    private final Logger logger = Logger.getLogger(getClass());
+
+    private InheritableThreadLocal<HttpServletRequest> threadRequest;
+
     // HttpServlet methods ----------------------------------------------------
+
+    public void init()
+    {
+        threadRequest = (InheritableThreadLocal<HttpServletRequest>)getServletContext()
+            .getAttribute("threadRequest");
+        if (null == threadRequest) {
+            logger.warn("could not get threadRequest");
+        }
+    }
 
     public void service(HttpServletRequest req, HttpServletResponse resp)
         throws IOException
     {
+        if (null != threadRequest) {
+            threadRequest.set(req);
+        }
+
         initSessionBridge(req);
         super.service(req, resp);
+
+        if (null != threadRequest) {
+            threadRequest.set(null);
+        }
     }
 
     // private methods --------------------------------------------------------
@@ -91,14 +111,14 @@ public class UtJsonRpcServlet extends JSONRPCServlet
                 b.registerSerializer(new IPaddrSerializer());
                 b.registerSerializer(new HostNameSerializer());
                 b.registerSerializer(new TimeZoneSerializer());
-                
+
                 b.registerSerializer(new MimeTypeSerializer());
                 b.registerSerializer(new RFC2253NameSerializer());
                 // hibernate related serializers
                 b.registerSerializer(new LazyInitializerSerializer());
                 b.registerSerializer(new ExtendedListSerializer());
                 b.registerSerializer(new ExtendedSetSerializer());
-                
+
                 // firewal related serializers
                 b.registerSerializer(new ProtocolMatcherSerializer());
                 b.registerSerializer(new IntfMatcherSerializer());
@@ -106,7 +126,7 @@ public class UtJsonRpcServlet extends JSONRPCServlet
                 b.registerSerializer(new PortMatcherSerializer());
                 b.registerSerializer(new TimeMatcherSerializer());
                 b.registerSerializer(new UserMatcherSerializer());
-                
+
             } catch (Exception e) {
                 e.printStackTrace();
             }

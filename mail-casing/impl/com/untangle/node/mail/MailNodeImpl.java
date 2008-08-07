@@ -125,7 +125,7 @@ public class MailNodeImpl extends AbstractNode
 
     private static synchronized void deployWebAppIfRequired(Logger logger) {
         if(!s_deployedWebApp) {
-            if(LocalUvmContextFactory.context().appServerManager().loadQuarantineApp("/quarantine", "quarantine")) {
+            if (null != LocalUvmContextFactory.context().appServerManager().loadQuarantineApp("/quarantine", "quarantine")) {
                 logger.debug("Deployed Quarantine web app");
             }
             else {
@@ -137,7 +137,7 @@ public class MailNodeImpl extends AbstractNode
 
     private static synchronized void unDeployWebAppIfRequired(Logger logger) {
         if(!s_unDeployedWebApp) {
-            if(LocalUvmContextFactory.context().appServerManager().unloadWebApp("/quarantine")) {
+            if (LocalUvmContextFactory.context().appServerManager().unloadWebApp("/quarantine")) {
                 logger.debug("Unloaded Quarantine web app");
             }
             else {
@@ -166,7 +166,7 @@ public class MailNodeImpl extends AbstractNode
     }
 
 
-    // MailNode methods --------------------------------------------------
+    // MailNode methods --------------------------------------------------------
 
     public MailNodeSettings getMailNodeSettings()
     {
@@ -259,7 +259,7 @@ public class MailNodeImpl extends AbstractNode
         POP_PIPE_SPEC.setReleaseParseExceptions(true);
     }
 
-    // Node methods ------------------------------------------------------
+    // Node methods -----------------------------------------------------------
 
     @Override
     protected void preDestroy() throws NodeException {
@@ -347,7 +347,7 @@ public class MailNodeImpl extends AbstractNode
         registerApps();
     }
 
-    // AbstractNode methods ----------------------------------------------
+    // AbstractNode methods ---------------------------------------------------
 
     @Override
     protected PipeSpec[] getPipeSpecs()
@@ -444,7 +444,7 @@ public class MailNodeImpl extends AbstractNode
         {
             return s_quarantine.getInboxArray( start, limit, sortColumn, isAscending );
         }
-        
+
         public InboxRecordArray getInboxRecordArray( String account, int start, int limit, String sortColumn,
                                                      boolean isAscending )
             throws NoSuchInboxException, QuarantineUserActionFailedException
@@ -479,7 +479,7 @@ public class MailNodeImpl extends AbstractNode
                                       EmailAddress...recipients) {
             return s_quarantine.quarantineMail(file, summary, recipients);
         }
-        
+
         public String createAuthToken(String account)
         {
             return s_quarantine.createAuthToken(account);

@@ -18,21 +18,18 @@
 
 package com.untangle.node.phish;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import com.sleepycat.je.DatabaseException;
 import com.untangle.node.http.UserWhitelistMode;
 import com.untangle.node.spam.SpamImpl;
-import com.untangle.node.spam.SpamSettings;
 import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenAdaptor;
 import com.untangle.node.util.EncryptedUrlList;
@@ -163,18 +160,18 @@ public class PhishNode extends SpamImpl implements Phish
 
     public void setPhishBaseSettings(PhishBaseSettings phishBaseSettings)
     {
-    	PhishSettings phishSettings = getPhishSettings();
-    	phishBaseSettings.copy(phishSettings.getBaseSettings());
-    	phishSettings.setEnableGooglePhishList(phishBaseSettings.getEnableGooglePhishList());
+        PhishSettings phishSettings = getPhishSettings();
+        phishBaseSettings.copy(phishSettings.getBaseSettings());
+        phishSettings.setEnableGooglePhishList(phishBaseSettings.getEnableGooglePhishList());
         setSpamSettings(phishSettings);
     }
 
     public PhishBaseSettings getPhishBaseSettings()
     {
-    	PhishBaseSettings phishBaseSettings = new PhishBaseSettings();
-    	PhishSettings phishSettings = getPhishSettings();
-    	phishSettings.getBaseSettings().copy(phishBaseSettings);
-    	phishBaseSettings.setEnableGooglePhishList(phishSettings.getEnableGooglePhishList());
+        PhishBaseSettings phishBaseSettings = new PhishBaseSettings();
+        PhishSettings phishSettings = getPhishSettings();
+        phishSettings.getBaseSettings().copy(phishBaseSettings);
+        phishBaseSettings.setEnableGooglePhishList(phishSettings.getEnableGooglePhishList());
         return phishBaseSettings;
     }
 
@@ -382,7 +379,7 @@ public class PhishNode extends SpamImpl implements Phish
                 }
             };
 
-        if (asm.loadInsecureApp("/idblocker", "idblocker", v)) {
+        if (null != asm.loadInsecureApp("/idblocker", "idblocker", v)) {
             logger.debug("Deployed idblocker WebApp");
         } else {
             logger.error("Unable to deploy idblocker WebApp");

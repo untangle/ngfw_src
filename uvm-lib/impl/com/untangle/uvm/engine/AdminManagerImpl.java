@@ -23,11 +23,14 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.TimeZone;
+import javax.servlet.http.HttpServletRequest;
 import javax.transaction.TransactionRolledbackException;
 
 import com.untangle.uvm.MailSender;
@@ -38,6 +41,7 @@ import com.untangle.uvm.security.RegistrationInfo;
 import com.untangle.uvm.security.RemoteAdminManager;
 import com.untangle.uvm.security.SystemInfo;
 import com.untangle.uvm.security.User;
+import com.untangle.uvm.security.UvmPrincipal;
 import com.untangle.uvm.snmp.SnmpManager;
 import com.untangle.uvm.snmp.SnmpManagerImpl;
 import com.untangle.uvm.util.FormUtil;
@@ -68,15 +72,18 @@ class RemoteAdminManagerImpl implements RemoteAdminManager
     private static final String ALPACA_NONCE_FILE = "/etc/untangle-net-alpaca/nonce";
 
     private final UvmContextImpl uvmContext;
+    private final InheritableThreadLocal<HttpServletRequest> threadRequest;
 
     private final Logger logger = Logger.getLogger(RemoteAdminManagerImpl.class);
 
     private AdminSettings adminSettings;
     private SnmpManager snmpManager;
 
-    RemoteAdminManagerImpl(UvmContextImpl uvmContext)
+    RemoteAdminManagerImpl(UvmContextImpl uvmContext,
+                           InheritableThreadLocal<HttpServletRequest> threadRequest)
     {
         this.uvmContext = uvmContext;
+        this.threadRequest = threadRequest;
 
         TransactionWork tw = new TransactionWork()
             {
@@ -175,7 +182,21 @@ class RemoteAdminManagerImpl implements RemoteAdminManager
 
     public LoginSession whoAmI()
     {
-        return null;
+        HttpServletRequest req = threadRequest.get();
+        String u = req.getRemoteUser();
+        if (null != req && null != u) {
+            try {
+                // XXX we could add caching if this is called frequently
+                UvmPrincipal p = null == u ? null : new UvmPrincipal(u);
+                String id = req.getSession().getId();
+                InetAddress ca = InetAddress.getByName(req.getRemoteAddr());
+                return new LoginSession(p, id, ca);
+            } catch (UnknownHostException exn) {
+                return null;
+            }
+        } else {
+            return null;
+        }
     }
 
     public TimeZone getTimeZone()

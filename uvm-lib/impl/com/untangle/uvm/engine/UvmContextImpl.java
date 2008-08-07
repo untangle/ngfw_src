@@ -29,6 +29,7 @@ import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
+import javax.servlet.http.HttpServletRequest;
 
 import com.sleepycat.je.DatabaseException;
 import com.sleepycat.je.Environment;
@@ -703,15 +704,16 @@ public class UvmContextImpl extends UvmContextBase
         loggingManager.start();
         eventLogger = EventLoggerFactory.factory().getEventLogger();
 
-        // Create the tomcat manager *before* the UVM, so we can
-        // "register" webapps to be started before Tomcat exists.
-        tomcatManager = new TomcatManager(this,
+        InheritableThreadLocal<HttpServletRequest> threadRequest
+            = new InheritableThreadLocal<HttpServletRequest>();
+
+        tomcatManager = new TomcatManager(this, threadRequest,
                                           System.getProperty("bunnicula.home"),
                                           System.getProperty("bunnicula.web.dir"),
                                           System.getProperty("bunnicula.log.dir"));
 
         // start services:
-        adminManager = new RemoteAdminManagerImpl(this);
+        adminManager = new RemoteAdminManagerImpl(this, threadRequest);
         mailSender = MailSenderImpl.mailSender();
 
         logMailer = new LogMailerImpl();

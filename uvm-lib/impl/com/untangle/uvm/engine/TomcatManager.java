@@ -25,13 +25,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.BindException;
 import java.net.InetAddress;
-import java.util.ArrayList;
-import java.util.List;
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
 
 import com.untangle.uvm.util.AdministrationOutsideAccessValve;
 import com.untangle.uvm.util.ReportingOutsideAccessValve;
 import org.apache.catalina.Container;
-import org.apache.catalina.Context;
 import org.apache.catalina.Engine;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.Pipeline;
@@ -64,16 +63,11 @@ class TomcatManager
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    private final List<WebAppDescriptor> descriptors = new ArrayList<WebAppDescriptor>();
-
-    private Embedded emb = null;
-    private StandardHost baseHost;
-    private Object modifyExternalSynch = new Object();
-
+    private final Embedded emb;
+    private final StandardHost baseHost;
+    private final Object modifyExternalSynch = new Object();
     private final String webAppRoot;
-    private final String catalinaHome;
     private final String logDir;
-
     private final UvmContextImpl uvmContext;
 
     private String keystoreFile = "conf/keystore";
@@ -84,24 +78,77 @@ class TomcatManager
 
     // constructors -----------------------------------------------------------
 
-    TomcatManager(UvmContextImpl uvmContext, String catalinaHome,
-                  String webAppRoot, String logDir)
+    TomcatManager(UvmContextImpl uvmContext,
+                  InheritableThreadLocal<HttpServletRequest> threadRequest,
+                  String catalinaHome, String webAppRoot, String logDir)
     {
         InetAddress l;
 
         this.uvmContext = uvmContext;
-        this.catalinaHome = catalinaHome;
         this.webAppRoot = webAppRoot;
         this.logDir = logDir;
 
-        /* rbs: according to the javadoc, each valve object can only be assigned to one container,
-         * otherwise it is supposed to throw an IllegalStateException */
-        //loadSystemApp("/session-dumper", "session-dumper", new WebAppOptions(new AdministrationOutsideAccessValve()));
-        loadSystemApp("/blockpage", "blockpage");
-        loadSystemApp("/reports", "reports", new WebAppOptions(true,new ReportingOutsideAccessValve()));
-        loadSystemApp("/alpaca", "alpaca", new WebAppOptions(true,new AdministrationOutsideAccessValve()));
-        loadSystemApp("/webui", "webui", new WebAppOptions(new AdministrationOutsideAccessValve()));
-        loadSystemApp("/library", "library", new WebAppOptions(true,new AdministrationOutsideAccessValve()));
+        ClassLoader uvmCl = Thread.currentThread().getContextClassLoader();
+        ClassLoader tomcatParent = new TomClassLoader(uvmCl);
+        try {
+            // Entering Tomcat ClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            Thread.currentThread().setContextClassLoader(tomcatParent);
+
+            // jdi 8/30/04 -- canonical host name depends on ordering of
+            // /etc/hosts
+            String hostname = "localhost";
+
+            emb = new Embedded();
+            emb.setCatalinaHome(catalinaHome);
+
+            // create an Engine
+            Engine baseEngine = emb.createEngine();
+
+            // set Engine properties
+            baseEngine.setName("tomcat");
+            baseEngine.setDefaultHost(hostname);
+
+            baseEngine.setParentClassLoader(tomcatParent);
+
+            // create Host
+            baseHost = (StandardHost)emb
+                .createHost(hostname, webAppRoot);
+            baseHost.setUnpackWARs(true);
+            baseHost.setDeployOnStartup(true);
+            baseHost.setAutoDeploy(true);
+            baseHost.setErrorReportValveClass("com.untangle.uvm.engine.UvmErrorReportValve");
+            OurSingleSignOn ourSsoWorkaroundValve = new OurSingleSignOn();
+
+            SingleSignOn ssoValve = new SpecialSingleSignOn(uvmContext, "",
+                                                            "/reports", "/library" );
+
+            // ssoValve.setRequireReauthentication(true);
+            baseHost.getPipeline().addValve(ourSsoWorkaroundValve);
+            baseHost.getPipeline().addValve(ssoValve);
+
+            // add host to Engine
+            baseEngine.addChild(baseHost);
+
+            // add new Engine to set of
+            // Engine for embedded server
+            emb.addEngine(baseEngine);
+
+            //loadSystemApp("/session-dumper", "session-dumper", new WebAppOptions(new AdministrationOutsideAccessValve()));
+            loadSystemApp("/blockpage", "blockpage");
+            loadSystemApp("/reports", "reports",
+                          new WebAppOptions(true,
+                                            new ReportingOutsideAccessValve()));
+            loadSystemApp("/alpaca", "alpaca",
+                          new WebAppOptions(true, new AdministrationOutsideAccessValve()));
+            ServletContext ctx = loadSystemApp("/webui", "webui",
+                                               new WebAppOptions(new AdministrationOutsideAccessValve()));
+            ctx.setAttribute("threadRequest", threadRequest);
+            loadSystemApp("/library", "library",
+                          new WebAppOptions(true,new AdministrationOutsideAccessValve()));
+        } finally {
+            Thread.currentThread().setContextClassLoader(uvmCl);
+            // restored classloader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        }
     }
 
     // package protected methods ----------------------------------------------
@@ -138,49 +185,51 @@ class TomcatManager
         this.keyAlias = ksAlias;
     }
 
-    boolean loadPortalApp(String urlBase, String rootDir, Realm realm,
-                          AuthenticatorBase auth)
+    ServletContext loadPortalApp(String urlBase, String rootDir, Realm realm,
+                                 AuthenticatorBase auth)
     {
         // Need a large timeout since we handle that ourselves.
         WebAppOptions options = new WebAppOptions(false, 24*60);
         return loadWebApp(urlBase, rootDir, realm, auth, options);
     }
 
-    boolean loadSystemApp(String urlBase, String rootDir, WebAppOptions options)
+    ServletContext loadSystemApp(String urlBase, String rootDir,
+                                 WebAppOptions options)
     {
         return loadWebApp(urlBase, rootDir, null, null, options);
     }
 
-    boolean loadSystemApp(String urlBase, String rootDir, Valve valve)
+    ServletContext loadSystemApp(String urlBase, String rootDir, Valve valve)
     {
         return loadSystemApp(urlBase, rootDir, new WebAppOptions(true, valve));
     }
 
-    boolean loadSystemApp(String urlBase, String rootDir) {
+    ServletContext loadSystemApp(String urlBase, String rootDir) {
         return loadSystemApp(urlBase, rootDir, new WebAppOptions());
     }
 
-    boolean loadGlobalApp(String urlBase, String rootDir, WebAppOptions options)
+    ServletContext loadGlobalApp(String urlBase, String rootDir,
+                                 WebAppOptions options)
     {
         return loadWebApp(urlBase, rootDir, null, null, options);
     }
 
-    boolean loadGlobalApp(String urlBase, String rootDir, Valve valve)
+    ServletContext loadGlobalApp(String urlBase, String rootDir, Valve valve)
     {
         return loadGlobalApp(urlBase, rootDir, new WebAppOptions(true, valve));
     }
 
-    boolean loadGlobalApp(String urlBase, String rootDir)
+    ServletContext loadGlobalApp(String urlBase, String rootDir)
     {
         return loadGlobalApp(urlBase, rootDir, new WebAppOptions());
     }
 
-    boolean loadInsecureApp(String urlBase, String rootDir)
+    ServletContext loadInsecureApp(String urlBase, String rootDir)
     {
         return loadWebApp(urlBase, rootDir, null, null);
     }
 
-    boolean loadInsecureApp(String urlBase, String rootDir, Valve valve)
+    ServletContext loadInsecureApp(String urlBase, String rootDir, Valve valve)
     {
         return loadWebApp(urlBase, rootDir, null, null, valve);
     }
@@ -238,66 +287,6 @@ class TomcatManager
             // Entering Tomcat ClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             Thread.currentThread().setContextClassLoader(tomcatParent);
 
-            // jdi 8/30/04 -- canonical host name depends on ordering of
-            // /etc/hosts
-            String hostname = "localhost";
-
-            emb = new Embedded();
-            emb.setCatalinaHome(catalinaHome);
-
-            // create an Engine
-            Engine baseEngine = emb.createEngine();
-
-            // set Engine properties
-            baseEngine.setName("tomcat");
-            baseEngine.setDefaultHost(hostname);
-
-            baseEngine.setParentClassLoader(tomcatParent);
-
-            // create Host
-            baseHost = (StandardHost)emb
-                .createHost(hostname, webAppRoot);
-            baseHost.setUnpackWARs(true);
-            baseHost.setDeployOnStartup(true);
-            baseHost.setAutoDeploy(true);
-            baseHost.setErrorReportValveClass("com.untangle.uvm.engine.UvmErrorReportValve");
-            OurSingleSignOn ourSsoWorkaroundValve = new OurSingleSignOn();
-            /* XXXXX Hackstered to get single sign on to ignore certain contexts */
-//             SingleSignOn ssoValve = new SpecialSingleSignOn(uvmContext, "/session-dumper", "",
-//                                                             "/reports", "/library" );
-            SingleSignOn ssoValve = new SpecialSingleSignOn(uvmContext, "",
-                                                            "/reports", "/library" );
-
-            // ssoValve.setRequireReauthentication(true);
-            baseHost.getPipeline().addValve(ourSsoWorkaroundValve);
-            baseHost.getPipeline().addValve(ssoValve);
-
-            // add host to Engine
-            baseEngine.addChild(baseHost);
-
-            // create application Context
-            StandardContext ctx = (StandardContext)emb.createContext("/http-invoker", "http-invoker");
-            StandardManager mgr = new StandardManager();
-            mgr.setPathname(null); /* disable session persistence */
-            ctx.setManager(mgr);
-
-            /* Add a valve to block outside access */
-            ctx.addValve(new AdministrationOutsideAccessValve());
-
-            /* Moved after adding the valve */
-            baseHost.addChild(ctx);
-
-            // Load the webapps which were requested before the
-            // system started-up.
-            for (WebAppDescriptor desc : descriptors) {
-                loadWebAppImpl(desc.urlBase, desc.relativeRoot, desc.realm,
-                               desc.auth, desc.options);
-            }
-
-            // add new Engine to set of
-            // Engine for embedded server
-            emb.addEngine(baseEngine);
-
             Connector jkConnector = new Connector("org.apache.jk.server.JkCoyoteHandler");
             jkConnector.setProperty("address", "127.0.0.1");
             jkConnector.setProperty("tomcatAuthentication", "false");
@@ -354,7 +343,6 @@ class TomcatManager
             Thread.currentThread().setContextClassLoader(uvmCl);
             // restored classloader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         }
-
     }
 
     void resetRootWelcome()
@@ -391,25 +379,6 @@ class TomcatManager
     }
 
     // private classes --------------------------------------------------------
-
-    private static class WebAppDescriptor
-    {
-        final String urlBase;
-        final String relativeRoot;
-        final Realm realm;
-        final AuthenticatorBase auth;
-        final WebAppOptions options;
-
-        WebAppDescriptor(String base, String rr, Realm realm,
-                         AuthenticatorBase auth, WebAppOptions options)
-        {
-            this.urlBase = base;
-            this.relativeRoot = rr;
-            this.realm = realm;
-            this.auth = auth;
-            this.options = options;
-        }
-    }
 
     private static class WebAppOptions
     {
@@ -459,42 +428,34 @@ class TomcatManager
      * @param auth an <code>AuthenticatorBase</code> value
      * @return a <code>boolean</code> value
      */
-    private synchronized boolean loadWebApp(String urlBase,
-                                            String rootDir,
-                                            Realm realm,
-                                            AuthenticatorBase auth,
-                                            WebAppOptions options)
+    private synchronized ServletContext loadWebApp(String urlBase,
+                                                   String rootDir,
+                                                   Realm realm,
+                                                   AuthenticatorBase auth,
+                                                   WebAppOptions options)
     {
-        if (null == emb) {
-            // haven't started yet
-            WebAppDescriptor wad = new WebAppDescriptor(urlBase, rootDir,
-                                                        realm, auth, options);
-            descriptors.add(wad);
-            return true;
-        } else {
-            return loadWebAppImpl(urlBase, rootDir, realm, auth, options);
-        }
+        return loadWebAppImpl(urlBase, rootDir, realm, auth, options);
     }
 
-    private boolean loadWebApp(String urlBase,
-                               String rootDir,
-                               Realm realm,
-                               AuthenticatorBase auth) {
+    private ServletContext loadWebApp(String urlBase,
+                                      String rootDir,
+                                      Realm realm,
+                                      AuthenticatorBase auth) {
         return loadWebApp(urlBase, rootDir, realm, auth, new WebAppOptions());
     }
 
-    private boolean loadWebApp(String urlBase,
-                               String rootDir,
-                               Realm realm,
-                               AuthenticatorBase auth,
-                               Valve valve) {
+    private ServletContext loadWebApp(String urlBase,
+                                      String rootDir,
+                                      Realm realm,
+                                      AuthenticatorBase auth,
+                                      Valve valve) {
         return loadWebApp(urlBase, rootDir, realm, auth,
                           new WebAppOptions(valve));
     }
 
-    private boolean loadWebAppImpl(String urlBase, String rootDir,
-                                   Realm realm, AuthenticatorBase auth,
-                                   WebAppOptions options)
+    private ServletContext loadWebAppImpl(String urlBase, String rootDir,
+                                          Realm realm, AuthenticatorBase auth,
+                                          WebAppOptions options)
     {
         String fqRoot = webAppRoot + "/" + rootDir;
 
@@ -526,11 +487,11 @@ class TomcatManager
             }
             baseHost.addChild(ctx);
 
-            return true;
+            return ctx.getServletContext();
         } catch(Exception ex) {
             logger.error("Unable to deploy webapp \"" + urlBase
                          + "\" from directory \"" + fqRoot + "\"", ex);
-            return false;
+            return null;
         }
     }
 

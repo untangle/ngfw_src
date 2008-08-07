@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Set;
 
 import com.untangle.node.mail.papi.smtp.SMTPNotifyAction;
-import com.untangle.node.token.Header;
 import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenAdaptor;
 import com.untangle.node.util.PartialListUtil;
@@ -329,7 +328,7 @@ public abstract class VirusNodeImpl extends AbstractNode
     {
         return replacementGenerator.getNonceData(nonce);
     }
-    
+
     String generateNonce(VirusBlockDetails details)
     {
         return replacementGenerator.generateNonce(details);
@@ -340,7 +339,7 @@ public abstract class VirusNodeImpl extends AbstractNode
     {
         return replacementGenerator.generateResponse(nonce, session, uri,
                                                      null, persistent);
-                                                     
+
     }
 
     abstract protected int getStrength();
@@ -409,7 +408,7 @@ public abstract class VirusNodeImpl extends AbstractNode
         this.signatureVersion = getSigVersion();
     }
 
-    
+
 
     // AbstractNode methods ----------------------------------------------
 
@@ -695,7 +694,7 @@ public abstract class VirusNodeImpl extends AbstractNode
                 }
             };
 
-        if (asm.loadInsecureApp("/virus", "virus", v)) {
+        if (null != asm.loadInsecureApp("/virus", "virus", v)) {
             logger.debug("Deployed Virus WebApp");
         } else {
             logger.error("Unable to deploy Virus WebApp");

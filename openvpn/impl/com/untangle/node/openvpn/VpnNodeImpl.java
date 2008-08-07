@@ -417,7 +417,7 @@ public class VpnNodeImpl extends AbstractNode
     private synchronized void deployWebApp()
     {
         if ( !isWebAppDeployed ) {
-            if ( LocalUvmContextFactory.context().appServerManager().loadInsecureApp( WEB_APP_PATH, WEB_APP )) {
+            if (null != LocalUvmContextFactory.context().appServerManager().loadInsecureApp( WEB_APP_PATH, WEB_APP)) {
                 logger.debug( "Deployed openvpn web app" );
             }
             else logger.warn( "Unable to deploy openvpn web app" );
