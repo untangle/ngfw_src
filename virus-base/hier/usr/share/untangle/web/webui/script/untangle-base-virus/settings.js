@@ -3,7 +3,6 @@ if (!Ung.hasResource["Ung.Virus"]) {
     Ung.Settings.registerClassName('untangle-base-virus', 'Ung.Virus');
 
     Ung.Virus = Ext.extend(Ung.Settings, {
-        gridExceptions : null,
         gridEventLog : null,
         // called when the component is rendered
         onRender : function(container, position) {

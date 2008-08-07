@@ -54,7 +54,6 @@ if (!Ung.hasResource["Ung.Racks"]) {
                 autoScroll : true,
                 items : [this.gridRacks, this.gridRules]
             });
-
         },
         buildRacks : function() {
             this.gridRacks = new Ung.EditorGrid({
