@@ -441,6 +441,25 @@ if (!Ung.hasResource["Ung.Spyware"]) {
         },
         // Pass List
         buildPassList : function() {
+            var urlValidator = function(fieldValue) {
+                if (fieldValue.indexOf("https") == 0) {
+                    return this.i18n._("\"URL\" specified cannot be blocked because it uses secure http (https)");
+                }
+                if (fieldValue.indexOf("http://") == 0) {
+                    fieldValue = fieldValue.substr(7);
+                }
+                if (fieldValue.indexOf("www.") == 0) {
+                    fieldValue = fieldValue.substr(4);
+                }
+                if (fieldValue.indexOf("/") == fieldValue.length - 1) {
+                    fieldValue = fieldValue.substring(0, fieldValue.length - 1);
+                }
+                if (fieldValue.trim().length == 0) {
+                    return this.i18n._("Invalid \"URL\" specified");
+                }
+                return true;
+            }.createDelegate(this);
+            
             var passColumn = new Ext.grid.CheckColumn({
                 header : "<b>" + this.i18n._("pass") + "</b>",
                 dataIndex : 'live',
@@ -480,7 +499,9 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                     width : 200,
                     dataIndex : 'string',
                     editor : new Ext.form.TextField({
-                        allowBlank : false
+                        allowBlank : false,
+                        validator : urlValidator,
+                        blankText : this.i18n._("Invalid \"URL\" specified")
                     })
                 }, passColumn, {
                     id : 'description',
@@ -499,8 +520,10 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                     name : "Site",
                     dataIndex : "string",
                     fieldLabel : this.i18n._("Site"),
+                    width : 200,
+                    validator : urlValidator,
                     allowBlank : false,
-                    width : 200
+                    blankText : this.i18n._("Invalid \"URL\" specified")
                 }), new Ext.form.Checkbox({
                     name : "Pass",
                     dataIndex : "live",
@@ -524,6 +547,40 @@ if (!Ung.hasResource["Ung.Spyware"]) {
             });
         },
 
+        // validation functions
+        validateClient : function() {
+            // no need for validation here...just alter the URLs
+            if (this.gridPassList) {
+                this.alterUrls(this.gridPassList.getSaveList());
+            }
+            return true;
+        },
+        // private method
+        alterUrls : function(list) {
+            if (list != null) {
+                // added
+                for (var i = 0; i < list[0].list.length; i++) {
+                    list[0].list[i]["string"] = this.alterUrl(list[0].list[i]["string"]);
+                }
+                // modified
+                for (var i = 0; i < list[2].list.length; i++) {
+                    list[2].list[i]["string"] = this.alterUrl(list[2].list[i]["string"]);
+                }
+            }
+        },
+        // private method
+        alterUrl : function(value) {
+            if (value.indexOf("http://") == 0) {
+                value = value.substr(7);
+            }
+            if (value.indexOf("www.") == 0) {
+                value = value.substr(4);
+            }
+            if (value.indexOf("/") == value.length - 1) {
+                value = value.substring(0, value.length - 1);
+            }
+            return value.trim();
+        },        
         // validation
         validateServer : function() {
             // ipMaddr list must be validated server side
@@ -567,7 +624,10 @@ if (!Ung.hasResource["Ung.Spyware"]) {
             }
             return true;
         },
-
+        validate : function() {
+            // reverse the order because valdate client alters the data
+            return this.validateServer() && this.validateClient();
+        },
         // save function
         save : function() {
             // validate first
