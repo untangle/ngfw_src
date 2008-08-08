@@ -1,3 +1,9 @@
+untangle-vm (5.4.0~svn20080722r17704trunk+seb20080722T151546-1etch) seb; urgency=low
+
+  * auto build
+
+ -- Sebastien Delafond <seb@untangle.com>  Tue, 22 Jul 2008 15:15:47 -0700
+
 untangle-vm (5.4.0~svn20080629r17045trunk+seb20080717T104819-1sarge) seb; urgency=low
 
   * auto build
