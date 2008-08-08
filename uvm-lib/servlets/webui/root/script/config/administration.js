@@ -1356,7 +1356,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
         },
         buildSkins : function() {
             var adminSkinsStore = new Ext.data.Store({
-                proxy : new Ung.RpcProxy(rpc.skinManager.getSkinsList, false, [true, false]),
+                proxy : new Ung.RpcProxy(rpc.skinManager.getSkinsList, [true, false], false),
                 reader : new Ext.data.JsonReader({
                     root : 'list',
                     fields: [{
@@ -1372,7 +1372,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
             adminSkinsStore.load();
             
             var userFacingSkinsStore = new Ext.data.Store({
-                proxy : new Ung.RpcProxy(rpc.skinManager.getSkinsList, false, [false, true]),
+                proxy : new Ung.RpcProxy(rpc.skinManager.getSkinsList, [false, true], false),
                 reader : new Ext.data.JsonReader({
                     root : 'list',
                     fields: [{

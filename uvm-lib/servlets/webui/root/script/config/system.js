@@ -758,7 +758,7 @@ if (!Ung.hasResource["Ung.System"]) {
         },
         buildRegionalSettings : function() {
             var languagesStore = new Ext.data.Store({
-                proxy : new Ung.RpcProxy(rpc.languageManager.getLanguagesList, false),
+                proxy : new Ung.RpcProxy(rpc.languageManager.getLanguagesList, null, false),
                 reader : new Ext.data.JsonReader({
                     root : 'list',
                     fields : ['code', 'name']
