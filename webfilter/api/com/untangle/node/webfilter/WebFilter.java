@@ -26,6 +26,7 @@ import com.untangle.uvm.node.IPMaddrRule;
 import com.untangle.uvm.node.MimeTypeRule;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.StringRule;
+import com.untangle.uvm.node.Validator;
 
 /**
  * Interface the the WebFilter Node.
@@ -64,6 +65,8 @@ public interface WebFilter extends Node
             List[] blockedUrls, List[] blockedMimeTypes,
             List[] blockedExtensions, List[] blacklistCategories);
 
+    Validator getValidator();
+    
     /**
      * Reconfigure node. This method should be called after some settings are updated
      * in order to reconfigure the node accordingly.
@@ -76,4 +79,5 @@ public interface WebFilter extends Node
     UserWhitelistMode getUserWhitelistMode();
 
     EventManager<WebFilterEvent> getEventManager();
+    
 }

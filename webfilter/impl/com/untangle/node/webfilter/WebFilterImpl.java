@@ -40,10 +40,12 @@ import com.untangle.uvm.message.BlingBlinger;
 import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.message.LocalMessageManager;
 import com.untangle.uvm.node.IPMaddrRule;
+import com.untangle.uvm.node.IPMaddrValidator;
 import com.untangle.uvm.node.MimeType;
 import com.untangle.uvm.node.MimeTypeRule;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.StringRule;
+import com.untangle.uvm.node.Validator;
 import com.untangle.uvm.util.OutsideValve;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.AbstractNode;
@@ -352,6 +354,10 @@ public class WebFilterImpl extends AbstractNode implements WebFilter
 
 
         reconfigure();
+    }
+    
+    public Validator getValidator() {
+        return new IPMaddrValidator();
     }
 
     // Node methods ------------------------------------------------------

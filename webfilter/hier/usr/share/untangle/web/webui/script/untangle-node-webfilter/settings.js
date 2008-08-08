@@ -1002,9 +1002,18 @@ if (!Ung.hasResource["Ung.WebFilter"]) {
                             "javaClass" : "java.util.ArrayList"
                         });
                         if (!result.valid) {
+                            var errorMsg = "";
+                            switch (result.errorCode) {
+                                case 'INVALID_IPMADDR' : 
+                                    errorMsg = this.i18n._("Invalid subnet specified") + ": " + result.cause;
+                                break;
+                                default :
+                                    errorMsg = this.i18n._(result.errorCode) + ": " + result.cause;
+                            }
+                            
                             this.panelPassLists.onManagePassedClients();
                             this.gridPassedClients.focusFirstChangedDataByFieldValue("ipMaddr", result.cause);
-                            Ext.MessageBox.alert(this.i18n._("Validation failed"), this.i18n._(result.message) + ": " + result.cause);
+                            Ext.MessageBox.alert(this.i18n._("Validation failed"), errorMsg);
                             return false;
                         }
                     } catch (e) {
