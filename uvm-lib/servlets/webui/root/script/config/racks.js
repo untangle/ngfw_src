@@ -794,50 +794,38 @@ if (!Ung.hasResource["Ung.Racks"]) {
                 serverAddrList.push(passedAddresses[i]["serverAddr"]);
                 serverPortList.push(passedAddresses[i]["serverPort"]);
             }
+            var validateData = {
+                map : {},
+                javaClass : "java.util.HashMap"
+            }; 
             if (clientAddrList.length > 0) {
-                try {
-                    var result = this.getPolicyManagerValidator().validate({
-                        map : { "type"      : "IP", 
-                                "values"    : {"javaClass" : "java.util.ArrayList", list : clientAddrList}
-                        },
-                        "javaClass" : "java.util.HashMap"
-                    });
-                    if (!result.valid) {
-                        Ext.MessageBox.alert(this.i18n._("Validation failed for Client Address"), this.i18n._(result.message) + ": " + result.cause);
-                        return false;
-                    }
-                } catch (e) {
-                    Ext.MessageBox.alert(i18n._("Failed"), e.message);
-                    return false;
-                }
+                validateData.map["CLIENT_ADDR"] = {"javaClass" : "java.util.ArrayList", list : clientAddrList};
             }
             if (serverAddrList.length > 0) {
-                try {
-                    var result = this.getPolicyManagerValidator().validate({
-                        map : { "type"      : "IP", 
-                                "values"    : {"javaClass" : "java.util.ArrayList", list : serverAddrList}
-                        },
-                        "javaClass" : "java.util.HashMap"
-                    });
-                    if (!result.valid) {
-                        Ext.MessageBox.alert(this.i18n._("Validation failed for Server Address"), this.i18n._(result.message) + ": " + result.cause);
-                        return false;
-                    }
-                } catch (e) {
-                    Ext.MessageBox.alert(i18n._("Failed"), e.message);
-                    return false;
-                }
+                validateData.map["SERVER_ADDR"] = {"javaClass" : "java.util.ArrayList", list : serverAddrList};
             }
             if (serverPortList.length > 0) {
+                validateData.map["SERVER_PORT"] = {"javaClass" : "java.util.ArrayList", list : serverPortList};
+            }
+            if (Ung.Util.hasData(validateData.map)) {
                 try {
-                    var result = this.getPolicyManagerValidator().validate({
-                        map : { "type"      : "Port", 
-                                "values"    : {"javaClass" : "java.util.ArrayList", list : serverPortList}
-                        },
-                        "javaClass" : "java.util.HashMap"
-                    });
+                    var result = this.getPolicyManagerValidator().validate(validateData);
                     if (!result.valid) {
-                        Ext.MessageBox.alert(this.i18n._("Validation failed for Server Port"), this.i18n._(result.message) + ": " + result.cause);
+                        var errorMsg = "";
+                        switch (result.errorCode) {
+                            case 'INVALID_CLIENT_ADDR' : 
+                                errorMsg = this.i18n._("Invalid address specified for Client Address") + ": " + result.cause;
+                            break;
+                            case 'INVALID_SERVER_ADDR' : 
+                                errorMsg = this.i18n._("Invalid address specified for Server Address") + ": " + result.cause;
+                            break;
+                            case 'INVALID_SERVER_PORT' : 
+                                errorMsg = this.i18n._("Invalid port specified for Server Port") + ": " + result.cause;
+                            break;
+                            default :
+                                errorMsg = this.i18n._(result.errorCode) + ": " + result.cause;
+                        }
+                        Ext.MessageBox.alert(this.i18n._("Validation failed"), errorMsg);
                         return false;
                     }
                 } catch (e) {
@@ -845,7 +833,6 @@ if (!Ung.hasResource["Ung.Racks"]) {
                     return false;
                 }
             }
-            
             return true;
         },
         // save function

@@ -291,67 +291,44 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                     srcPortList.push(passedAddresses[i]["srcPort"]);
                     dstPortList.push(passedAddresses[i]["dstPort"]);
                 }
+                var validateData = {
+                    map : {},
+                    javaClass : "java.util.HashMap"
+                }; 
                 if (srcAddrList.length > 0) {
-                    try {
-                        var result = this.getValidator().validate({
-                            map : { "type"      : "IP", 
-                                    "values"    : {"javaClass" : "java.util.ArrayList", list : srcAddrList}
-                            },
-                            "javaClass" : "java.util.HashMap"
-                        });
-                        if (!result.valid) {
-                            Ext.MessageBox.alert(this.i18n._("Validation failed for Source Address"), this.i18n._(result.message) + ": " + result.cause);
-                            return false;
-                        }
-                    } catch (e) {
-                        Ext.MessageBox.alert(i18n._("Failed"), e.message);
-                        return false;
-                    }
+                    validateData.map["SRC_ADDR"] = {"javaClass" : "java.util.ArrayList", list : srcAddrList};
                 }
                 if (dstAddrList.length > 0) {
-                    try {
-                        var result = this.getValidator().validate({
-                            map : { "type"      : "IP", 
-                                    "values"    : {"javaClass" : "java.util.ArrayList", list : dstAddrList}
-                            },
-                            "javaClass" : "java.util.HashMap"
-                        });
-                        if (!result.valid) {
-                            Ext.MessageBox.alert(this.i18n._("Validation failed for Destination Address"), this.i18n._(result.message) + ": " + result.cause);
-                            return false;
-                        }
-                    } catch (e) {
-                        Ext.MessageBox.alert(i18n._("Failed"), e.message);
-                        return false;
-                    }
+                    validateData.map["DST_ADDR"] = {"javaClass" : "java.util.ArrayList", list : dstAddrList};
                 }
                 if (srcPortList.length > 0) {
-                    try {
-                        var result = this.getValidator().validate({
-                            map : { "type"      : "Port", 
-                                    "values"    : {"javaClass" : "java.util.ArrayList", list : srcPortList}
-                            },
-                            "javaClass" : "java.util.HashMap"
-                        });
-                        if (!result.valid) {
-                            Ext.MessageBox.alert(this.i18n._("Validation failed for Source Port"), this.i18n._(result.message) + ": " + result.cause);
-                            return false;
-                        }
-                    } catch (e) {
-                        Ext.MessageBox.alert(i18n._("Failed"), e.message);
-                        return false;
-                    }
+                    validateData.map["SRC_PORT"] = {"javaClass" : "java.util.ArrayList", list : srcPortList};
                 }
                 if (dstPortList.length > 0) {
+                    validateData.map["DST_PORT"] = {"javaClass" : "java.util.ArrayList", list : dstPortList};
+                }
+                if (Ung.Util.hasData(validateData.map)) {
                     try {
-                        var result = this.getValidator().validate({
-                            map : { "type"      : "Port", 
-                                    "values"    : {"javaClass" : "java.util.ArrayList", list : dstPortList}
-                            },
-                            "javaClass" : "java.util.HashMap"
-                        });
+                        var result = this.getValidator().validate(validateData);
                         if (!result.valid) {
-                            Ext.MessageBox.alert(this.i18n._("Validation failed for Destination Address"), this.i18n._(result.message) + ": " + result.cause);
+                            var errorMsg = "";
+                            switch (result.errorCode) {
+                                case 'INVALID_SRC_ADDR' : 
+                                    errorMsg = this.i18n._("Invalid address specified for Source Address") + ": " + result.cause;
+                                break;
+                                case 'INVALID_DST_ADDR' : 
+                                    errorMsg = this.i18n._("Invalid address specified for Destination Address") + ": " + result.cause;
+                                break;
+                                case 'INVALID_SRC_PORT' : 
+                                    errorMsg = this.i18n._("Invalid port specified for Source Port") + ": " + result.cause;
+                                break;
+                                case 'INVALID_DST_PORT' : 
+                                    errorMsg = this.i18n._("Invalid port specified for Destination Port") + ": " + result.cause;
+                                break;
+                                default :
+                                    errorMsg = this.i18n._(result.errorCode) + ": " + result.cause;
+                            }
+                            Ext.MessageBox.alert(this.i18n._("Validation failed"), errorMsg);
                             return false;
                         }
                     } catch (e) {

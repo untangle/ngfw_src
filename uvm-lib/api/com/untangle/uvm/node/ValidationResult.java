@@ -43,21 +43,21 @@ import java.io.Serializable;
  */
 public class ValidationResult implements Serializable {
     private boolean valid;
-    private String message;
+    private String errorCode;
     private Object cause;
 
     public ValidationResult(boolean valid) {
         this.valid = valid;
     }
 
-    public ValidationResult(boolean valid, String message) {
+    public ValidationResult(boolean valid, String errorCode) {
         this.valid = valid;
-        this.message = message;
+        this.errorCode = errorCode;
     }
 
-    public ValidationResult(boolean valid, String message, Object cause) {
+    public ValidationResult(boolean valid, String errorCode, Object cause) {
         this.valid = valid;
-        this.message = message;
+        this.errorCode = errorCode;
         this.cause = cause;
     }
 
@@ -65,8 +65,8 @@ public class ValidationResult implements Serializable {
         return valid;
     }
 
-    public String getMessage() {
-        return message;
+    public String getErrorCode() {
+        return errorCode;
     }
 
     public Object getCause() {

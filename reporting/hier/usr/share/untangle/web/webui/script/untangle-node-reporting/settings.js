@@ -16,7 +16,13 @@ if (!Ung.hasResource["Ung.Reporting"]) {
             this.buildGeneration();
             this.buildIpMap();
             // builds the tab panel with the tabs
-            this.buildTabPanel([this.panelStatus/*, this.panelGeneration, this.gridIpMap*/]);
+            this.buildTabPanel([this.panelStatus, /*this.panelGeneration,*/ this.gridIpMap]);
+        },
+        getReportingSettings : function(forceReload) {
+            if (forceReload || this.rpc.reportingSettings === undefined) {
+                this.rpc.reportingSettings = this.getRpcNode().getReportingSettings();
+            }
+            return this.rpc.reportingSettings;
         },
         // Status Panel
         buildStatus : function() {
@@ -79,155 +85,127 @@ if (!Ung.hasResource["Ung.Reporting"]) {
         },
         // IP Map grid
         buildIpMap : function() {
-//            // enable is a check column
-//            var enableColumn = new Ext.grid.CheckColumn({
-//                header : this.i18n._("enable"),
-//                dataIndex : 'live',
-//                fixed : true
-//            });
-//
-//            var deviderData = [[5, 5 + ' ' + this.i18n._("users")], [25, 25 + ' ' + this.i18n._("users")],
-//                    [40, 50 + ' ' + this.i18n._("users")], [75, 100 + ' ' + this.i18n._("users")], [-1, this.i18n._("unlimited")]];
-//
-//            this.gridExceptions = new Ung.EditorGrid({
-//                settingsCmp : this,
-//                name : 'Exceptions',
-//                // the total records is set from the base settings
-//                // shieldNodeRulesLength field
-//                totalRecords : this.getBaseSettings().shieldNodeRulesLength,
-//                emptyRow : {
-//                    "live" : true,
-//                    "address" : "1.2.3.4",
-//                    "divider" : 5,
-//                    "description" : i18n._("[no description]")
-//                },
-//                title : this.i18n._("Exceptions"),
-//                // the column is autoexpanded if the grid width permits
-//                autoExpandColumn : 'description',
-//                recordJavaClass : "com.untangle.node.shield.ShieldNodeRule",
-//                // this is the function used by Ung.RpcProxy to retrive data
-//                // from the server
-//                proxyRpcFn : this.getRpcNode().getShieldNodeRules,
-//
-//                // the list of fields
-//                fields : [{
-//                    name : 'id'
-//                }, {
-//                    name : 'live'
-//                }, {
-//                    name : 'address'
-//                }, {
-//                    name : 'divider'
-//                },
-//                        // this field is internationalized so a converter was
-//                        // added
-//                        {
-//                            name : 'description',
-//                            convert : function(v) {
-//                                return this.i18n._(v)
-//                            }.createDelegate(this)
-//                        },],
-//                // the list of columns for the column model
-//                columns : [{
-//                    id : 'id',
-//                    dataIndex : 'id',
-//                    hidden : true
-//                }, enableColumn, {
-//                    id : 'address',
-//                    header : this.i18n._("address"),
-//                    width : 200,
-//                    dataIndex : 'address',
-//                    // this is a simple text editor
-//                    editor : new Ext.form.TextField({
-//                        allowBlank : false,
-//                        vtype : 'ipAddress'
-//                    })
-//                }, {
-//                    id : 'divider',
-//                    header : this.i18n._("user") + "<br>" + this.i18n._("count"),
-//                    width : 100,
-//                    dataIndex : 'divider',
-//                    editor : new Ext.form.ComboBox({
-//                        store : new Ext.data.SimpleStore({
-//                            fields : ['dividerValue', 'dividerName'],
-//                            data : deviderData
-//                        }),
-//                        displayField : 'dividerName',
-//                        valueField : 'dividerValue',
-//                        typeAhead : true,
-//                        mode : 'local',
-//                        triggerAction : 'all',
-//                        listClass : 'x-combo-list-small',
-//                        selectOnFocus : true
-//                    }),
-//                    renderer : function(value) {
-//                        for (var i = 0; i < deviderData.length; i++) {
-//                            if (deviderData[i][0] == value) {
-//                                return deviderData[i][1];
-//                            }
-//                        }
-//                        return value;
-//                    }
-//                }, {
-//                    id : 'description',
-//                    header : this.i18n._("description"),
-//                    width : 200,
-//                    dataIndex : 'description',
-//                    editor : new Ext.form.TextField({
-//                        allowBlank : false
-//                    })
-//                }],
-//                // sortField: 'address',
-//                columnsDefaultSortable : true,
-//                plugins : [enableColumn],
-//                // the row input lines used by the row editor window
-//                rowEditorInputLines : [new Ext.form.Checkbox({
-//                    name : "Enable",
-//                    dataIndex : "live",
-//                    fieldLabel : this.i18n._("Enable")
-//                }), new Ext.form.TextField({
-//                    name : "Address",
-//                    dataIndex : "address",
-//                    fieldLabel : this.i18n._("Address"),
-//                    allowBlank : false,
-//                    width : 200,
-//                    vtype : 'ipAddress'
-//                }), new Ext.form.ComboBox({
-//                    name : "User Count",
-//                    dataIndex : "divider",
-//                    fieldLabel : this.i18n._("User Count"),
-//                    store : new Ext.data.SimpleStore({
-//                        fields : ['dividerValue', 'dividerName'],
-//                        data : deviderData
-//                    }),
-//                    displayField : 'dividerName',
-//                    valueField : 'dividerValue',
-//                    typeAhead : true,
-//                    mode : 'local',
-//                    triggerAction : 'all',
-//                    listClass : 'x-combo-list-small',
-//                    selectOnFocus : true
-//                }), new Ext.form.TextArea({
-//                    name : "Description",
-//                    dataIndex : "description",
-//                    fieldLabel : this.i18n._("Description"),
-//                    width : 200,
-//                    height : 60
-//                })]
-//            });
+            this.gridIpMap = new Ung.EditorGrid({
+                settingsCmp : this,
+                name : 'IP addresses',
+                title : this.i18n._("IP addresses"),
+                emptyRow : {
+                    "ipMaddr" : "0.0.0.0/32",
+                    "name" : this.i18n._("[no name]"),
+                    "description" : this.i18n._("[no description]")
+                },
+                // the column is autoexpanded if the grid width permits
+                autoExpandColumn : 'name',
+                recordJavaClass : "com.untangle.uvm.node.IPMaddrRule",
+                
+                data : this.getReportingSettings().networkDirectory.entries,
+                dataRoot: 'list',
+                
+                // the list of fields
+                fields : [{
+                    name : 'id'
+                }, {
+                    name : 'ipMaddr'
+                }, {
+                    name : 'name'
+                }, {
+                    name : 'description'
+                }],
+                // the list of columns for the column model
+                columns : [{
+                    id : 'ipMaddr',
+                    header : this.i18n._("IP address"),
+                    width : 200,
+                    dataIndex : 'ipMaddr',
+                    editor : new Ext.form.TextField({})                    
+                }, {
+                    id : 'name',
+                    header : this.i18n._("name"),
+                    width : 200,
+                    dataIndex : 'name',
+                    editor : new Ext.form.TextField({})                    
+                }],
+                columnsDefaultSortable : true,
+                // the row input lines used by the row editor window
+                rowEditorInputLines : [new Ext.form.TextField({
+                    name : "Subnet",
+                    dataIndex : "ipMaddr",
+                    fieldLabel : this.i18n._("IP Address"),
+                    allowBlank : false,
+                    width : 200
+                }), new Ext.form.TextField({
+                    name : "Name",
+                    dataIndex : "name",
+                    fieldLabel : this.i18n._("Name"),
+                    allowBlank : false,
+                    width : 200
+                })]
+            });
+        },
+        // validation
+        validateServer : function() {
+            // ipMaddr list must be validated server side
+            var ipMapList = this.gridIpMap.getSaveList();
+            var ipMaddrList = [];
+            // added
+            for (var i = 0; i < ipMapList[0].list.length; i++) {
+                ipMaddrList.push(ipMapList[0].list[i]["ipMaddr"]);
+            }
+            // modified
+            for (var i = 0; i < ipMapList[2].list.length; i++) {
+                ipMaddrList.push(ipMapList[2].list[i]["ipMaddr"]);
+            }
+            if (ipMaddrList.length > 0) {
+                try {
+                    var result = this.getValidator().validate({
+                        list : ipMaddrList,
+                        "javaClass" : "java.util.ArrayList"
+                    });
+                    if (!result.valid) {
+                        var errorMsg = "";
+                        switch (result.errorCode) {
+                            case 'INVALID_IPMADDR' : 
+                                errorMsg = this.i18n._("Invalid \"IP address\" specified") + ": " + result.cause;
+                            break;
+                            default :
+                                errorMsg = this.i18n._(result.errorCode) + ": " + result.cause;
+                        }
+                        
+                        this.tabs.activate(this.gridIpMap);
+                        this.gridIpMap.focusFirstChangedDataByFieldValue("ipMaddr", result.cause);
+                        Ext.MessageBox.alert(this.i18n._("Validation failed"), errorMsg);
+                        return false;
+                    }
+                } catch (e) {
+                    Ext.MessageBox.alert(i18n._("Failed"), e.message);
+                    return false;
+                }
+            }
+                
+            return true;
         },
         // save function
         save : function() {
-            Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-            this.getRpcNode().updateAll(function(result, exception) {
+            if (this.validate()) {
+                this.saveSemaphore = 1;
+                Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
+                
+                this.getReportingSettings().networkDirectory.entries.list = this.gridIpMap.getFullSaveList();
+                this.getRpcNode().setReportingSettings(function(result, exception) {
+                    if (exception) {
+                        Ext.MessageBox.alert(i18n._("Failed"), exception.message);
+                        return;
+                    }
+                    this.afterSave();
+                }.createDelegate(this), this.getReportingSettings());
+            }
+        },
+        afterSave : function() {
+            this.saveSemaphore--;
+            if (this.saveSemaphore == 0) {
                 Ext.MessageBox.hide();
-                if (exception) {
-                    Ext.MessageBox.alert(i18n._("Failed"), exception.message);
-                    return;
-                }
-                // exit settings screen
                 this.cancelAction();
-            }.createDelegate(this), this.gridExceptions.getSaveList());
-        }
+            }
+        }        
     });
 }

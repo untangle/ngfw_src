@@ -15,12 +15,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-package com.untangle.node.spyware;
+package com.untangle.node.reporting;
 
 import com.untangle.uvm.node.IPMaddrValidator;
 import com.untangle.uvm.node.ValidationResult;
 
-public class SpywareValidator extends IPMaddrValidator {
+public class ReportingValidator extends IPMaddrValidator {
 
 	public ValidationResult validate(Object data) {
         // for now we only validate IPMaddr data

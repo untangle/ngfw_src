@@ -33,7 +33,6 @@ import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.license.ProductIdentifier;
 import com.untangle.uvm.localapi.SessionMatcherFactory;
 import com.untangle.uvm.node.Validator;
-import com.untangle.uvm.node.firewall.FirewallValidator;
 import com.untangle.uvm.node.firewall.intf.IntfMatcher;
 import com.untangle.uvm.node.firewall.intf.IntfMatcherFactory;
 import com.untangle.uvm.node.firewall.ip.IPMatcher;
@@ -329,6 +328,6 @@ class DefaultPolicyManager implements LocalPolicyManager
     }
 
     public Validator getValidator() {
-        return new FirewallValidator();
+        return new PolicyValidator();
     }
 }

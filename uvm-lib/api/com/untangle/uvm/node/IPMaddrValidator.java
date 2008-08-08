@@ -15,15 +15,33 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-package com.untangle.node.spyware;
+package com.untangle.uvm.node;
 
-import com.untangle.uvm.node.IPMaddrValidator;
-import com.untangle.uvm.node.ValidationResult;
+import java.util.List;
 
-public class SpywareValidator extends IPMaddrValidator {
+public class IPMaddrValidator implements Validator {
+
+    public static final String ERR_CODE_INVALID_IPMADDR = "INVALID_IPMADDR";
 
 	public ValidationResult validate(Object data) {
-        // for now we only validate IPMaddr data
-	    return super.validate(data);
+
+		try {
+			if (data != null) {
+				for (String ipMaddrString : (List<String>) data) {
+					try {
+						IPMaddr.parse(ipMaddrString);
+					} catch (Exception e) {
+						return new ValidationResult(false,
+						        ERR_CODE_INVALID_IPMADDR, ipMaddrString);
+					}
+				}
+
+			}
+		} catch (Exception e) {
+			return new ValidationResult(false, e.getMessage(), e);
+		}
+
+		return new ValidationResult(true);
 	}
+
 }
