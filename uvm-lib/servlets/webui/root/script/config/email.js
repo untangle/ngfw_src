@@ -69,11 +69,22 @@ if (!Ung.hasResource["Ung.Email"]) {
             }
             return this.rpc.mailSettings;
         },
-        getGlobalSafelist : function(forceReload) {
-            if (forceReload || this.rpc.globalSafelist === undefined) {
-                this.rpc.globalSafelist = this.getMailNode().getSafelistAdminView().getSafelistContents('GLOBAL');
+        getMailNodeSettings : function(forceReload) {
+            if (forceReload || this.rpc.mailNodeSettings === undefined) {
+                this.rpc.mailNodeSettings = this.getMailNode().getMailNodeSettings();
             }
-            return this.rpc.globalSafelist;
+            return this.rpc.mailNodeSettings;
+        },
+//        getGlobalSafelist : function(forceReload) {
+//            if (forceReload || this.rpc.globalSafelist === undefined) {
+//                this.rpc.globalSafelist = this.getMailNode().getSafelistAdminView().getSafelistContents('GLOBAL');
+//            }
+//            return this.rpc.globalSafelist;
+//        },
+        getFormattedTime: function(hours, minutes) {
+            var hh = hours < 10 ? "0" + hours : hours;
+            var mm = minutes < 10 ? "0" + minutes : minutes;
+            return hh + ":" + mm;
         },
         buildOutgoingServer : function() {
             this.panelOutgoingServer = new Ext.Panel({
@@ -176,7 +187,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                         checked : !this.getMailSettings().useMxRecords
                     }, {
                         xtype : 'fieldset',
-                        height : 145,
+                        height : 150,
                         style : "margin-left: 75px;",
                         items : [{
                             xtype : 'textfield',
@@ -267,11 +278,10 @@ if (!Ung.hasResource["Ung.Email"]) {
             });
         },
         buildFromSafeList : function() {
-            var values = this.getGlobalSafelist();
-            var storeData;
+            var values = this.getMailNode().getSafelistAdminView().getSafelistContents('GLOBAL');
+            var storeData = [];
             for(var i=0; i<values.length; i++) {
-                storeData[i].id = i;
-                storeData[i].emailAddress = values[i];
+                storeData.push({id:i, emailAddress: values[i]});
             }
 
             this.panelFromSafeList = new Ext.Panel({
@@ -295,8 +305,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                         paginated : false,
                         height : 330,
                         emptyRow : {
-                            "emailAddress" : this.i18n._("[no email address]"),
-                            //"javaClass" : "java.lang.String"
+                            "emailAddress" : this.i18n._("[no email address]")
                         },
                         autoExpandColumn : 'emailAddress',
                         data : storeData,
@@ -305,27 +314,21 @@ if (!Ung.hasResource["Ung.Email"]) {
                             name : 'id'
                         }, {
                             name : 'emailAddress'
-//                        }, {
-//                            name : 'javaClass'
                         }],
                         columns : [{
                             id : 'emailAddress',
                             header : this.i18n._("email address"),
                             width : 200,
-                            dataIndex : 'emailAddress',
-                            editor : new Ext.form.TextField({
-                                allowBlank : false
-                            })
+                            dataIndex : 'emailAddress'
                         }],
                         sortField : 'emailAddress',
                         columnsDefaultSortable : true,
-                        autoExpandColumn : 'emailAddress',
-                        rowEditorInputLines : [new Ext.form.TextField({
-                        }), new Ext.form.TextField({
+                        rowEditorInputLines : [ new Ext.form.TextField({
                             name : "Email Address",
                             dataIndex: "emailAddress",
                             fieldLabel : this.i18n._("Email Address"),
-                            //allowBlank : false,
+                            labelStyle : 'width: 80px;',
+                            allowBlank : false,
                             width : 200
                         })]
                     })]
@@ -336,7 +339,6 @@ if (!Ung.hasResource["Ung.Email"]) {
         },
         buildQuarantine : function() {
             this.panelQuarantine = new Ext.Panel({
-                // private fields
                 name : 'panelQuarantine',
                 parentId : this.getId(),
                 title : this.i18n._('Quarantine'),
@@ -351,39 +353,39 @@ if (!Ung.hasResource["Ung.Email"]) {
                 items : [{
                 	items: [{
                         xtype : 'textfield',
-                        name : 'smtpStrengthValue',
+                        name : 'Maximum Holding Time (days) (max 36)',
                         fieldLabel : this.i18n._('Maximum Holding Time (days) (max 36)'),
+                        labelStyle : 'width: 230px;',
                         allowBlank : false,
-                        // value :
-                        // this.getBaseSettings().smtpConfig.strength,
-                        // disabled :
-                        // !this.isCustomStrength(this.getBaseSettings().smtpConfig.strength),
+                        value : this.getMailNodeSettings().quarantineSettings.maxMailIntern/(1440*60*1000),
                         regex : /^([0-9]|[0-2][0-9]|3[0-6])$/,
                         regexText : this.i18n._('Maximum Holding Time must be a number in range 0-36'),
+                        width : 70,
                         listeners : {
                             "change" : {
                                 fn : function(elem, newValue) {
-                                    // this.getBaseSettings().smtpConfig.strength
-                                    // = newValue;
+                                    this.getMailNodeSettings().quarantineSettings.maxMailIntern = newValue * (1440*60*1000);
                                 }.createDelegate(this)
                             }
                         }
                     }, {
-                        xtype : 'textfield',
-                        name : 'smtpStrengthValue',
+                        xtype : 'timefield',
+                        name : 'Digest Sending Time',
                         fieldLabel : this.i18n._('Digest Sending Time'),
+                        labelStyle : 'width: 230px;',
                         allowBlank : false,
-                        // value :
-                        // this.getBaseSettings().smtpConfig.strength,
-                        // disabled :
-                        // !this.isCustomStrength(this.getBaseSettings().smtpConfig.strength),
-                        //regex : /^([0-9]|[0-2][0-9]|3[0-6])$/,
-                        //regexText : this.i18n._('Maximum Holding Time must be a number in range 0-36'),
-                        listeners : {
+                        format : "H:i",
+					    minValue: '00:00',
+					    maxValue: '23:59',
+					    increment: 1,
+                        width : 70,
+                        value : this.getFormattedTime(this.getMailNodeSettings().quarantineSettings.digestHourOfDay,this.getMailNodeSettings().quarantineSettings.digestMinuteOfDay),
+					    listeners : {
                             "change" : {
                                 fn : function(elem, newValue) {
-                                    // this.getBaseSettings().smtpConfig.strength
-                                    // = newValue;
+                                    var dt = Date.parseDate(newValue, "H:i");
+                                    this.getMailNodeSettings().quarantineSettings.digestHourOfDay = dt.getHours();
+                                    this.getMailNodeSettings().quarantineSettings.digestMinuteOfDay = dt.getMinutes();
                                 }.createDelegate(this)
                             }
                         }
@@ -495,7 +497,7 @@ if (!Ung.hasResource["Ung.Email"]) {
         // save function
         saveAction : function() {
             if (this.validate()) {
-                this.saveSemaphore = 1;
+                this.saveSemaphore = 3;
                 Ext.MessageBox.show({
                    title : this.i18n._('Please wait'),
                    msg : this.i18n._('Saving...'),
@@ -505,14 +507,39 @@ if (!Ung.hasResource["Ung.Email"]) {
                    progressText : " ",
                    width : 200
                 });
-                // save language settings
-                 main.getMailSender().setMailSettings(function(result, exception) {
+                
+                // save mail settings
+                main.getMailSender().setMailSettings(function(result, exception) {
 	                 if (exception) {
 		                 Ext.MessageBox.alert(i18n._("Failed"), exception.message);
 		                 return;
                     }
                     this.afterSave();
                 }.createDelegate(this), this.getMailSettings());
+                
+                // save mail node settings
+                this.getMailNode().setMailNodeSettings(function(result, exception) {
+                     if (exception) {
+                         Ext.MessageBox.alert(i18n._("Failed"), exception.message);
+                         return;
+                    }
+                    this.afterSave();
+                }.createDelegate(this), this.getMailNodeSettings());
+
+                // save global safelist
+                var globalSafelistGridValues = this.globalSafelistGrid.getFullSaveList();
+                var globalList = [];
+	            for(var i=0; i<globalSafelistGridValues.length; i++) {
+	                globalList.push(globalSafelistGridValues[i].emailAddress);
+	            }
+                this.getMailNode().getSafelistAdminView().replaceSafelist(function(result, exception) {
+                     if (exception) {
+                         Ext.MessageBox.alert(i18n._("Failed"), exception.message);
+                         return;
+                    }
+                    this.afterSave();
+                }.createDelegate(this), 'GLOBAL', globalList);
+                
             }
         },
         afterSave : function() {
