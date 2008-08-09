@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -29,7 +29,7 @@ PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.2//EN"
   <description>
     Installation Servlet
   </description>
-  
+
   <!-- Launcher, this is used to initiate the session with the     -->
   <!-- library.  this guarantees that the client has been          -->
   <!-- authenticated when they go to download the image to install -->
@@ -56,24 +56,4 @@ PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.2//EN"
     <servlet-name>Installer</servlet-name>
     <url-pattern>/install.png</url-pattern>
   </servlet-mapping>
-
-  <security-constraint>
-    <web-resource-collection>
-      <http-method>GET</http-method>
-      <http-method>POST</http-method>
-      <url-pattern>/*</url-pattern>
-    </web-resource-collection>
-    <auth-constraint>
-      <role-name>user</role-name>
-    </auth-constraint>
-  </security-constraint>
-
-  <security-role>
-    <role-name>user</role-name>
-  </security-role>
-
-  <login-config>
-    <auth-method>BASIC</auth-method>
-    <realm-name>Untangle Administration</realm-name>
-  </login-config>
 </web-app>
