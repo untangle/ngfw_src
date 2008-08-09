@@ -149,6 +149,8 @@ class TomcatManager
             Thread.currentThread().setContextClassLoader(uvmCl);
             // restored classloader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         }
+
+        apacheReload();
     }
 
     // package protected methods ----------------------------------------------
@@ -513,8 +515,35 @@ class TomcatManager
         }
     }
 
+    private void writeIncludes(String type)
+    {
+        String bh = System.getProperty("bunnicula.home");
+        if (null == bh) {
+            bh = "/usr/share/untangle";
+        }
+
+        FileWriter fw = null;
+        try {
+            fw = new FileWriter("/etc/apache2/untangle-" + type);
+            fw.write("Include " + bh + "/apache2/" + type + "/*.conf\n");
+        } catch (IOException exn) {
+            logger.warn("could not write includes: " + type);
+        } finally {
+            if (null != fw) {
+                try {
+                    fw.close();
+                } catch (IOException exn) {
+                    logger.warn("could not close file", exn);
+                }
+            }
+        }
+    }
+
     private void apacheReload()
     {
+        writeIncludes("unrestricted");
+        writeIncludes("internal");
+
         try {
             logger.info("Reload Apache Config");
             ProcessBuilder pb = new ProcessBuilder("/etc/init.d/apache2 reload");

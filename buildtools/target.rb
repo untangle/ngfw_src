@@ -327,6 +327,23 @@ class ServletBuilder < Target
     deps << CopyFiles.new(package, MoveSpec.new("#{path}/root/", "**/*",
                                                 @destRoot), "#{suffix}-root")
 
+    if File.exist? "#{path}/unrestricted.conf"
+      deps << CopyFiles.new(package,
+                            MoveSpec.fileMove("#{path}/unrestricted.conf",
+                                              "#{package.distDirectory}/usr/share/untangle/apache2/unrestricted",
+                                              "#{name}.conf"),
+                            "#{suffix}-apache")
+    end
+
+    if File.exist? "#{path}/internal.conf"
+      deps << CopyFiles.new(package,
+                            MoveSpec.fileMove("#{path}/internal.conf",
+                                              "#{package.distDirectory}/usr/share/untangle/apache2/internal",
+                                              "#{name}.conf"),
+                            "#{suffix}-apache")
+    end
+
+
     unless 0 == ms.length
       deps << CopyFiles.new(package, ms, "#{suffix}-ms", nil, @destRoot)
     end
@@ -354,14 +371,14 @@ class ServletBuilder < Target
     jardeps << uvm_lib["api"] << uvm_lib["localapi"]
 
     @srcJar = JarTarget.build_target(package, jardeps, name, "#{path}/src",
-                                    false);
+                                     false)
     deps << @srcJar
 
     po_dir = "#{path}/po"
     if File.exist? po_dir
       JavaMsgFmtTarget.make_po_targets(package, po_dir,
-                                        @srcJar.javac_dir,
-                                        "#{pkgname}.Messages").each do |t|
+                                       @srcJar.javac_dir,
+                                       "#{pkgname}.Messages").each do |t|
         @srcJar.register_dependency(t)
       end
     end
@@ -392,8 +409,8 @@ class ServletBuilder < Target
     cp += Jars::Base.map {|f| f.filename }
 
     args = ["-s", "-die", "-l", "-v", "-compile", "-d", classroot,
-      "-p", @pkgname, "-webinc", webfrag.path, "-source", "1.5",
-      "-target", "1.5", "-uriroot", @destRoot]
+            "-p", @pkgname, "-webinc", webfrag.path, "-source", "1.5",
+            "-target", "1.5", "-uriroot", @destRoot]
 
     Dir.chdir(@destRoot) do |d|
       Find.find('.') do |f|
@@ -626,7 +643,7 @@ class JarTarget < Target
   end
 
   def JarTarget.build_target(package, jars, suffix, basepaths,
-                            registerTarget = true)
+                             registerTarget = true)
     build_dir = "#{package.buildEnv.staging}/#{package.name}-#{suffix}"
 
     deps = []
@@ -656,7 +673,7 @@ class JarTarget < Target
     end
 
     deps += [jc, buildCopyFilesTargets(package, basepaths, suffix,
-                                                 build_dir)]
+                                       build_dir)]
 
     JarTarget.new(package, deps.flatten, suffix, build_dir, registerTarget)
   end
