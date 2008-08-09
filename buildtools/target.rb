@@ -409,6 +409,11 @@ class ServletBuilder < Target
 
     args += @jsp_list.to_a
 
+    if @jsp_list.empty?
+      debug( "Empty JSP file list." )
+      return
+    end
+
     JavaCompiler.run(cp, "org.apache.jasper.JspC", *args)
 
     FileList["#{@destRoot}/**/*.java"].each { |f| FileUtils.rm(f) }
