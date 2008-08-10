@@ -115,7 +115,7 @@ def printUsage(script):
 
 handler = CurlRequestHandler()
 try:
-    handler.make_request( "http://localhost/login/login.py", urllib.urlencode({ "username" : "admin", "password" : "passwd" }))
+    handler.make_request( "http://localhost/auth/login", urllib.urlencode({ "username" : "admin", "password" : "passwd" }))
 except JSONRPCException:
     pass
 
