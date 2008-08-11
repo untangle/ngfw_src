@@ -19,12 +19,14 @@
 package com.untangle.uvm.engine;
 
 import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.BindException;
 import java.net.InetAddress;
+import java.util.Properties;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
@@ -292,6 +294,10 @@ class TomcatManager
             Connector jkConnector = new Connector("org.apache.jk.server.JkCoyoteHandler");
             jkConnector.setProperty("address", "127.0.0.1");
             jkConnector.setProperty("tomcatAuthentication", "false");
+            String secret = getSecret();
+            if (null != secret) {
+                jkConnector.setProperty("request.secret", secret);
+            }
             emb.addConnector(jkConnector);
 
             // start operation
@@ -570,5 +576,28 @@ class TomcatManager
         } catch (IOException exn) {
             logger.warn("Could not reload apache config", exn);
         }
+    }
+
+    private String getSecret()
+    {
+        Properties p = new Properties();
+
+        FileReader r = null;
+        try {
+            r = new FileReader("/etc/apache2/workers.properties");
+            p.load(r);
+        } catch (IOException exn) {
+            logger.warn("could not read secret", exn);
+        } finally {
+            if (null != r) {
+                try {
+                    r.close();
+                } catch (IOException exn) {
+                    logger.warn("could not close file", exn);
+                }
+            }
+        }
+
+        return p.getProperty("worker.uvmWorker.secret");
     }
 }
