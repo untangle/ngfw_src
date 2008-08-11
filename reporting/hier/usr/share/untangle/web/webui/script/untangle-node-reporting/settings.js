@@ -16,13 +16,21 @@ if (!Ung.hasResource["Ung.Reporting"]) {
             this.buildGeneration();
             this.buildIpMap();
             // builds the tab panel with the tabs
-            this.buildTabPanel([this.panelStatus, /*this.panelGeneration,*/ this.gridIpMap]);
+            this.buildTabPanel([this.panelStatus, this.panelGeneration, this.gridIpMap]);
+            this.tabs.activate(this.panelStatus);
         },
         getReportingSettings : function(forceReload) {
             if (forceReload || this.rpc.reportingSettings === undefined) {
                 this.rpc.reportingSettings = this.getRpcNode().getReportingSettings();
             }
             return this.rpc.reportingSettings;
+        },
+        // get mail settings
+        getMailSettings : function(forceReload) {
+            if (forceReload || this.rpc.mailSettings === undefined) {
+                this.rpc.mailSettings = rpc.adminManager.getMailSettings();
+            }
+            return this.rpc.mailSettings;
         },
         // Status Panel
         buildStatus : function() {
@@ -82,6 +90,245 @@ if (!Ung.hasResource["Ung.Reporting"]) {
         },
         // Generation panel
         buildGeneration : function() {
+            var storeData = [];
+            var reportEmail = this.getMailSettings().reportEmail;
+            if (reportEmail != null && reportEmail != "") {
+                var values = this.getMailSettings().reportEmail.split(',');
+                for(var i=0; i<values.length; i++) {
+                    storeData.push({id:i, emailAddress: values[i].replace(' ','')});
+                }
+            }
+            
+            // WEEKLY SCHEDULE 
+            var weeklySundayCurrent = false;
+            var weeklyMondayCurrent = false;
+            var weeklyTuesdayCurrent = false;
+            var weeklyWednesdayCurrent = false;
+            var weeklyThursdayCurrent = false;
+            var weeklyFridayCurrent = false;
+            var weeklySaturdayCurrent = false;
+            var weeklySched = this.getReportingSettings().schedule.weeklySched.list;
+            for(var i=0; i<weeklySched.length;i++) {
+                switch (weeklySched[i].day)
+                    {
+                    case 1: //Schedule.SUNDAY
+                        weeklySundayCurrent = true;
+                        break;
+                    case 2: //Schedule.MONDAY:
+                        weeklyMondayCurrent = true;
+                        break;
+                    case 3: //Schedule.TUESDAY:
+                        weeklyTuesdayCurrent = true;
+                        break;
+                    case 4: //Schedule.WEDNESDAY:
+                        weeklyWednesdayCurrent = true;
+                        break;
+                    case 5: //Schedule.THURSDAY:
+                        weeklyThursdayCurrent = true;
+                        break;
+                    case 6: //Schedule.FRIDAY:
+                        weeklyFridayCurrent = true;
+                        break;
+                    case 7: //Schedule.SATURDAY:
+                        weeklySaturdayCurrent = true;
+                        break;
+                    }
+            }
+            
+            this.panelGeneration = new Ext.Panel({
+                // private fields
+                name : 'Generation',
+                parentId : this.getId(),
+                title : this.i18n._('Generation'),
+                layout : "form",
+                bodyStyle : 'padding:5px 5px 0px 5px;',
+                autoScroll : true,
+                defaults : {
+                    xtype : 'fieldset',
+                    autoHeight : true
+                },
+                items : [{
+                    title : this.i18n._('Email'),
+                    layout:'column',
+                    height : 350,
+                    items: [{
+                        border: false,
+                        columnWidth:.5,
+                        items: [ this.gridRecipients = new Ung.EditorGrid({
+                            name : 'Recipients',
+                            title : this.i18n._("Recipients"),
+                            hasEdit : false,
+                            settingsCmp : this,
+                            paginated : false,
+                            height : 300,
+                            emptyRow : {
+                                "emailAddress" : "reportrecipient@example.com"
+                            },
+                            autoExpandColumn : 'emailAddress',
+                            data : storeData,
+                            dataRoot: null,
+                            fields : [{
+                                name : 'id'
+                            }, {
+                                name : 'emailAddress'
+                            }],
+                            columns : [{
+                                id : 'emailAddress',
+                                header : this.i18n._("email address"),
+                                width : 200,
+                                dataIndex : 'emailAddress',
+                                editor : new Ext.form.TextField({
+                                    vtype: 'email',
+                                    allowBlank : false,
+                                    blankText : this.i18n._("The email address cannot be blank.")
+                                })
+                            }],
+                            sortField : 'emailAddress',
+                            columnsDefaultSortable : true
+                        })]
+                    },{
+                        border: false,
+                        columnWidth:.5,
+                        layout: 'form',
+                        items: [{
+                            xtype : 'fieldset',
+                            border: false,
+                            height : 300,
+                            items : [{
+                                xtype : 'checkbox',
+                                name : 'Include Incident Reports in emailed reports',
+                                boxLabel : i18n.sprintf(this.i18n._('Include %sIncident Reports%s in emailed reports'),'<b>','</b>'),
+                                hideLabel : true,
+                                checked : this.getReportingSettings().emailDetail,
+                                listeners : {
+                                    "check" : {
+                                        fn : function(elem, newValue) {
+                                            this.getReportingSettings().emailDetail = newValue;
+                                        }.createDelegate(this)
+                                    }
+                                }
+                            }, {
+                            	border : false,
+                            	html : this.i18n._('This makes emailed reports larger, but includes information about each incident/violation.')
+                            }]
+                        }]
+                    }]
+                },{
+                	title : this.i18n._("Daily Reports"),
+                	items : [{
+                		border : false,
+                		html : this.i18n._('Daily Reports are generated at midnight and covers events from the previous 24 hours, up to, but not including the day of generation.')
+                	},  {
+                        xtype : 'checkbox',
+                        name : 'Generate Daily Reports',
+                        labelStyle: 'width:150px;',
+                        fieldLabel : this.i18n._('Generate Daily Reports'),
+                        boxLabel : this.i18n._('Every Day'),
+                        checked : this.getReportingSettings().schedule.daily,
+                        listeners : {
+                            "check" : {
+                                fn : function(elem, newValue) {
+                                    this.getReportingSettings().schedule.daily = newValue;
+                                }.createDelegate(this)
+                            }
+                        }
+                	}]
+                },{
+                    title : this.i18n._("Weekly Reports"),
+                    items : [{
+                        border : false,
+                        html : this.i18n._('Weekly Reports are generated at midnight and covers events from the previous 7 days, up to, but not including the day of generation.')
+                    },  {
+                        xtype : 'checkbox',
+                        name : 'Sunday',
+                        id : 'reporting_weeklySunday', 
+                        labelStyle: 'width:150px;',
+                        fieldLabel : this.i18n._('Generate Weekly Reports'),
+                        boxLabel : this.i18n._('Sunday'),
+                        checked : weeklySundayCurrent
+                    },  {
+                        xtype : 'checkbox',
+                        name : 'Monday',
+                        id : 'reporting_weeklyMonday', 
+                        labelStyle: 'width:150px;',
+                        boxLabel : this.i18n._('Monday'),
+                        hasLabel : false,
+                        labelSeparator : '',
+                        checked : weeklyMondayCurrent
+                    },  {
+                        xtype : 'checkbox',
+                        name : 'Tuesday',
+                        id : 'reporting_weeklyTuesday', 
+                        labelStyle: 'width:150px;',
+                        boxLabel : this.i18n._('Tuesday'),
+                        hasLabel : false,
+                        labelSeparator : '',
+                        checked : weeklyTuesdayCurrent
+                    },  {
+                        xtype : 'checkbox',
+                        name : 'Wednesday',
+                        id : 'reporting_weeklyWednesday', 
+                        labelStyle: 'width:150px;',
+                        boxLabel : this.i18n._('Wednesday'),
+                        hasLabel : false,
+                        labelSeparator : '',
+                        checked : weeklyWednesdayCurrent
+                    },  {
+                        xtype : 'checkbox',
+                        name : 'Thursday',
+                        id : 'reporting_weeklyThursday', 
+                        labelStyle: 'width:150px;',
+                        boxLabel : this.i18n._('Thursday'),
+                        hasLabel : false,
+                        labelSeparator : '',
+                        checked : weeklyThursdayCurrent
+                    },  {
+                        xtype : 'checkbox',
+                        name : 'Friday',
+                        id : 'reporting_weeklyFriday', 
+                        labelStyle: 'width:150px;',
+                        boxLabel : this.i18n._('Friday'),
+                        hasLabel : false,
+                        labelSeparator : '',
+                        checked : weeklyFridayCurrent
+                    },  {
+                        xtype : 'checkbox',
+                        name : 'Saturday',
+                        id : 'reporting_weeklySaturday', 
+                        labelStyle: 'width:150px;',
+                        boxLabel : this.i18n._('Saturday'),
+                        hasLabel : false,
+                        labelSeparator : '',
+                        checked : weeklySaturdayCurrent
+                    }]
+                },{
+                    title : this.i18n._("Monthly Reports"),
+                    items : [{
+                        border : false,
+                        html : this.i18n._('Monthly Reports are generated at midnight and covers events from the previous 30 days, up to, but not including the day of generation.')
+                    },  {
+                        xtype : 'radiogroup',
+                        name : 'Generate Monthly Reports',
+                        fieldLabel : 'Generate Monthly Reports',
+                        labelStyle: 'width:150px;',
+                        itemCls: 'x-check-group-alt',
+                        columns: 1,
+                        items : [{
+                            boxLabel : this.i18n._('Never'),
+                            name: 'rb-col'
+                        },{
+                            boxLabel : this.i18n._('First Day of Month'),
+                            name: 'rb-col'
+                        },{
+                            boxLabel : this.i18n._('Everyday'),
+                            name: 'rb-col'
+                        },{
+                            boxLabel : this.i18n._('Once Per Week'),
+                            name: 'rb-col'
+                        }]
+                    }]
+                }]
+            });
         },
         // IP Map grid
         buildIpMap : function() {
@@ -187,9 +434,21 @@ if (!Ung.hasResource["Ung.Reporting"]) {
         // save function
         save : function() {
             if (this.validate()) {
-                this.saveSemaphore = 1;
+                this.saveSemaphore = 2;
                 Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
                 
+                // set weekly schedule
+                var weeklySched = [];
+                if (Ext.getCmp('reporting_weeklySunday').getValue())  weeklySched.push({javaClass:"com.untangle.node.reporting.WeeklyScheduleRule", day:1});
+                if (Ext.getCmp('reporting_weeklyMonday').getValue())  weeklySched.push({javaClass:"com.untangle.node.reporting.WeeklyScheduleRule", day:2});
+                if (Ext.getCmp('reporting_weeklyTuesday').getValue())  weeklySched.push({javaClass:"com.untangle.node.reporting.WeeklyScheduleRule", day:3});
+                if (Ext.getCmp('reporting_weeklyWednesday').getValue())  weeklySched.push({javaClass:"com.untangle.node.reporting.WeeklyScheduleRule", day:4});
+                if (Ext.getCmp('reporting_weeklyThursday').getValue())  weeklySched.push({javaClass:"com.untangle.node.reporting.WeeklyScheduleRule", day:5});
+                if (Ext.getCmp('reporting_weeklyFriday').getValue())  weeklySched.push({javaClass:"com.untangle.node.reporting.WeeklyScheduleRule", day:6});
+                if (Ext.getCmp('reporting_weeklySaturday').getValue())  weeklySched.push({javaClass:"com.untangle.node.reporting.WeeklyScheduleRule", day:7});
+                this.getReportingSettings().schedule.weeklySched.list = weeklySched;
+                
+                // set Ip Map list
                 this.getReportingSettings().networkDirectory.entries.list = this.gridIpMap.getFullSaveList();
                 this.getRpcNode().setReportingSettings(function(result, exception) {
                     if (exception) {
@@ -198,6 +457,23 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                     }
                     this.afterSave();
                 }.createDelegate(this), this.getReportingSettings());
+                
+                // save email recipients
+                var gridRecipientsValues = this.gridRecipients.getFullSaveList();
+                var recipientsList = [];
+                for(var i=0; i<gridRecipientsValues.length; i++) {
+                    recipientsList.push(gridRecipientsValues[i].emailAddress);
+                }
+                this.getMailSettings().reportEmail = recipientsList.length == 0 ? "" : recipientsList.join(",");
+                // do the save
+                rpc.adminManager.setMailSettings(function(result, exception) {
+                    if (exception) {
+                        Ext.MessageBox.alert(i18n._("Failed"), exception.message);
+                        return;
+                    }
+                    this.afterSave();
+                }.createDelegate(this), this.getMailSettings());
+                
             }
         },
         afterSave : function() {
