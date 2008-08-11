@@ -546,7 +546,9 @@ class TomcatManager
 
         try {
             logger.info("Reload Apache Config");
-            ProcessBuilder pb = new ProcessBuilder("/etc/init.d/apache2 reload");
+            ProcessBuilder pb = new ProcessBuilder("/etc/init.d/apache2",
+                                                   "reload");
+
             pb.redirectErrorStream(true);
             Process p = pb.start();
             InputStream is = p.getInputStream();
