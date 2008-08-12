@@ -178,7 +178,7 @@ Ung.Quarantine.prototype = {
         /* This is used to show messages when they are available */
         this.messageDisplayTip = new Ext.Tip({
             cls : 'action-messages',
-            layout : 'form',
+            layout : 'form'
         });
 
         this.messageCount = 0;
@@ -536,7 +536,7 @@ Ext.onReady(function() {
         failure : function() {
             Ext.MessageBox.alert("Error", "Unable to load the language pack." );
         },
-      params : { module : 'mail_casing' }
+        params : { module : 'mail_casing' }
     });
 
 });
