@@ -152,7 +152,7 @@ class TomcatManager
             // restored classloader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         }
 
-        apacheReload();
+        resetRootWelcome();
     }
 
     // package protected methods ----------------------------------------------
@@ -356,15 +356,19 @@ class TomcatManager
     void resetRootWelcome()
     {
         setRootWelcome(STANDARD_WELCOME);
+        apacheReload();
     }
 
     synchronized void setRootWelcome(String welcomeFile)
     {
         this.welcomeFile = welcomeFile;
 
+        String bh = System.getProperty("bunnicula.home");
+        String p = bh + "/apache2/conf.d/homepage.conf";
+
         FileWriter w = null;
         try {
-            w = new FileWriter("/etc/apache2/untangle-homepage");
+            w = new FileWriter(p);
             w.write("RedirectMatch 302 /index.html " + welcomeFile + "\n");
         } catch (IOException exn) {
             logger.warn("could not write homepage redirect", exn);
