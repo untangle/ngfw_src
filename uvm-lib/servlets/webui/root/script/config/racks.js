@@ -151,8 +151,15 @@ if (!Ung.hasResource["Ung.Racks"]) {
                 width : 25,
                 fixed : true
             });
-            var usersColumn=new Ext.grid.UsersColumn({
-                dataIndex : 'user'
+            var usersColumn=new Ext.grid.ButtonColumn({
+                width: 80,
+                header: this.i18n._("user"), 
+                dataIndex : 'user',
+                handle : function(record) {
+                    // populate usersWindow
+                    this.grid.usersWindow.show();
+                    this.grid.usersWindow.populate(record);
+                }
             });
             this.gridRules = new Ung.EditorGrid({
                 settingsCmp : this,

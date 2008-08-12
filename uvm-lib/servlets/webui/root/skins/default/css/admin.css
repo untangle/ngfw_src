@@ -768,7 +768,7 @@ div.extendedStats div.values{
 button.iconUpgrade {
     background: transparent url(../images/admin/icon_upgrade.png) no-repeat center left !important;
 }
-div.usersColumn {
+div.buttonColumn {
     width:99%;
     height:16px;
     padding-left: 1px;

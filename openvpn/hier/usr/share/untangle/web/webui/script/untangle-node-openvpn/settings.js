@@ -4,7 +4,8 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
 
     Ung.OpenVPN = Ext.extend(Ung.Settings, {
         configState: null,
-    	panelStatus: null,
+        addressPoolStore:null,
+        panelStatus: null,
     	panelClients: null,
     	gridVPNClients: null,
     	gridVPNSites: null,
@@ -62,6 +63,16 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
         formatHostAddress : function (hostAddress) {
         	return hostAddress==null?"":(hostAddress.hostName==null || hostAddress.hostName=="")?hostAddress.hostName :hostAddress.ip
         },
+        getAddressPoolStore : function() {
+        	if(this.addressPoolStore==null) {
+        		this.addressPoolStore = new Ext.data.JsonStore({
+                    fields : ['id', 'name'],
+                    data : this.getVpnSettings().groupList.list
+                });
+        	}
+        	return this.addressPoolStore;
+        },
+        
         // Block lists panel
         buildStatus : function() {
             var statusLabel="";
@@ -221,6 +232,20 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 
             });
         },
+        getDistributeColumn : function () {
+            return new Ext.grid.ButtonColumn({
+                width: 110,
+                header: this.i18n._("distribute"), 
+                dataIndex : null,
+                handle : function(record) {
+                    // populate usersWindow
+                    alert("todo");
+                },
+                renderer : function(value, metadata, record) {
+                    return '<div class="ungButton buttonColumn" style="text-align:center;">'+i18n._("Distribute Client")+'</div>';
+                }
+            });
+        },
         buildVPNClients : function() {
             // live is a check column
             var liveColumn = new Ext.grid.CheckColumn({
@@ -230,6 +255,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 width: 80,
                 fixed : true
             });
+            var distributeColumn=this.getDistributeColumn();
 
             this.gridVPNClients = new Ung.EditorGrid({
                 settingsCmp : this,
@@ -270,7 +296,6 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     header : this.i18n._("client name"),
                     width : 200,
                     dataIndex : 'name',
-                    // this is a simple text editor
                     editor : new Ext.form.TextField({
                         allowBlank : false
                     })
@@ -279,27 +304,25 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     header : this.i18n._("address pool"),
                     width : 200,
                     dataIndex : 'group',
-                    editor : new Ext.form.TextField({
-                        allowBlank : false
-                    })
-                }, {
-                    id : 'distribute',
-                    header : this.i18n._("distribute"),
-                    width : 200,
-                    dataIndex : null
-                    
-                }, {
+                    editor : new Ext.form.ComboBox({
+                        store: this.getAddressPoolStore(),
+                        displayField : 'name',
+                        valueField : 'id',
+                        editable: false,
+                        mode : 'local',
+                        triggerAction : 'all',
+                        listClass : 'x-combo-list-small'
+                   })
+                }, distributeColumn,
+                {
                     id : 'address',
                     header : this.i18n._("virtual address"),
-                    width : 200,
-                    dataIndex : 'address',
-                    editor : new Ext.form.TextField({
-                        allowBlank : false
-                    })
+                    width : 100,
+                    dataIndex : 'address'
                 }],
                 //sortField : 'name',
                 //columnsDefaultSortable : true,
-                plugins : [liveColumn],
+                plugins : [liveColumn, distributeColumn],
                 // the row input lines used by the row editor window
                 rowEditorInputLines : [{
                     xtype : 'checkbox',
@@ -311,27 +334,19 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     name : "Client name",
                     dataIndex : "name",
                     fieldLabel : this.i18n._("Client name"),
+                    allowBlank : false,
                     width : 200
                 }, {
-                    xtype : "textfield",
-                    name : "Host/network name",
-                    dataIndex : "network",
+                    xtype : "combo",
+                    name : "Address pool",
                     fieldLabel : this.i18n._("Address pool"),
-                    allowBlank : false,
-                    width : 200
-                }, {
-                    xtype : "textfield",
-                    name : "Distribute",
-                    dataIndex : null,
-                    fieldLabel : this.i18n._("Distribute"),
-                    allowBlank : false,
-                    width : 200
-                }, {
-                    xtype : "textfield",
-                    name : "Virtual address",
-                    dataIndex : "address",
-                    fieldLabel : this.i18n._("Virtual address"),
-                    allowBlank : false,
+                    store: this.getAddressPoolStore(),
+                    displayField : 'name',
+                    valueField : 'id',
+                    editable: false,
+                    mode : 'local',
+                    triggerAction : 'all',
+                    listClass : 'x-combo-list-small',
                     width : 200
                 }]
             });
@@ -345,6 +360,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 width: 80,
                 fixed : true
             });
+            var distributeColumn=this.getDistributeColumn();
 
             this.gridVPNSites = new Ung.EditorGrid({
                 settingsCmp : this,
@@ -375,11 +391,13 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     name : 'network'
                 }, {
                     name : 'netmask'
+                }, {
+                    name : 'group'
                 }],
                 // the list of columns for the column model
                 columns : [liveColumn, {
                     id : 'name',
-                    header : this.i18n._("host/network name"),
+                    header : this.i18n._("site name"),
                     width : 200,
                     dataIndex : 'name',
                     // this is a simple text editor
@@ -387,25 +405,41 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         allowBlank : false
                     })
                 }, {
-                    id : 'network',
-                    header : this.i18n._("IP address"),
+                    id : 'group',
+                    header : this.i18n._("address pool"),
                     width : 200,
+                    dataIndex : 'group',
+                    editor : new Ext.form.ComboBox({
+                        store: this.getAddressPoolStore(),
+                        displayField : 'name',
+                        valueField : 'id',
+                        editable: false,
+                        mode : 'local',
+                        triggerAction : 'all',
+                        listClass : 'x-combo-list-small'
+                   })
+                }, {
+                    id : 'network',
+                    header : this.i18n._("network address"),
+                    width : 100,
                     dataIndex : 'network',
                     editor : new Ext.form.TextField({
-                        allowBlank : false
+                        allowBlank : false,
+                        vtype : 'ipAddress'
                     })
                 }, {
                     id : 'netmask',
-                    header : this.i18n._("netmask"),
-                    width : 200,
+                    header : this.i18n._("network mask"),
+                    width : 100,
                     dataIndex : 'netmask',
                     editor : new Ext.form.TextField({
-                        allowBlank : false
+                        allowBlank : false,
+                        vtype : 'ipAddress'
                     })
-                }],
+                }, distributeColumn],
                 //sortField : 'name',
                 //columnsDefaultSortable : true,
-                plugins : [liveColumn],
+                plugins : [liveColumn, distributeColumn],
                 // the row input lines used by the row editor window
                 rowEditorInputLines : [{
                     xtype : 'checkbox',
@@ -414,24 +448,39 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     fieldLabel : this.i18n._("Enabled")
                 }, {
                     xtype : "textfield",
-                    name : "IP address",
-                    dataIndex : "name",
-                    fieldLabel : this.i18n._("IP address"),
-                    width : 200
-                }, {
-                    xtype : "textfield",
-                    name : "Host/network name",
+                    name : "site name",
                     dataIndex : "network",
-                    fieldLabel : this.i18n._("Host/network name"),
+                    fieldLabel : this.i18n._("Site name"),
                     allowBlank : false,
                     width : 200
                 }, {
-                    xtype : "textfield",
-                    name : "Netmask",
-                    dataIndex : "netmask",
-                    fieldLabel : this.i18n._("Netmask"),
-                    allowBlank : false,
+                    xtype : "combo",
+                    name : "Address pool",
+                    fieldLabel : this.i18n._("Address pool"),
+                    store: this.getAddressPoolStore(),
+                    displayField : 'name',
+                    valueField : 'id',
+                    editable: false,
+                    mode : 'local',
+                    triggerAction : 'all',
+                    listClass : 'x-combo-list-small',
                     width : 200
+                },  {
+                    xtype : "textfield",
+                    name : "Network address",
+                    dataIndex : "network",
+                    fieldLabel : this.i18n._("Network address"),
+                    allowBlank : false,
+                    width : 200,
+                    vtype : 'ipAddress'
+                }, {
+                    xtype : "textfield",
+                    name : "Network mask",
+                    dataIndex : "netmask",
+                    fieldLabel : this.i18n._("Network mask"),
+                    allowBlank : false,
+                    width : 200,
+                    vtype : 'ipAddress'
                 }]
             });
         },
@@ -501,7 +550,8 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     width : 200,
                     dataIndex : 'network',
                     editor : new Ext.form.TextField({
-                        allowBlank : false
+                        allowBlank : false,
+                        vtype : 'ipAddress'
                     })
                 }, {
                     id : 'netmask',
@@ -509,7 +559,8 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     width : 200,
                     dataIndex : 'netmask',
                     editor : new Ext.form.TextField({
-                        allowBlank : false
+                        allowBlank : false,
+                        vtype : 'ipAddress'
                     })
                 }],
                 //sortField : 'name',
@@ -522,17 +573,18 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     dataIndex : "live",
                     fieldLabel : this.i18n._("Enabled")
                 }, {
-                	xtype : "textfield",
-                    name : "IP address",
+                    xtype : "textfield",
+                    name : "Host/network name",
                     dataIndex : "name",
-                    fieldLabel : this.i18n._("IP address"),
+                    fieldLabel : this.i18n._("Host/network name"),
                     width : 200
                 }, {
                 	xtype : "textfield",
-                    name : "Host/network name",
+                    name : "IP address",
                     dataIndex : "network",
-                    fieldLabel : this.i18n._("Host/network name"),
                     allowBlank : false,
+                    fieldLabel : this.i18n._("IP address"),
+                    vtype : 'ipAddress',
                     width : 200
                 }, {
                 	xtype : "textfield",
@@ -540,6 +592,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     dataIndex : "netmask",
                     fieldLabel : this.i18n._("Netmask"),
                     allowBlank : false,
+                    vtype : 'ipAddress',
                     width : 200
                 }]
             });
@@ -612,7 +665,8 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     width : 200,
                     dataIndex : 'address',
                     editor : new Ext.form.TextField({
-                        allowBlank : false
+                        allowBlank : false,
+                        vtype : 'ipAddress'
                     })
                 }, {
                     id : 'netmask',
@@ -620,7 +674,8 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     width : 200,
                     dataIndex : 'netmask',
                     editor : new Ext.form.TextField({
-                        allowBlank : false
+                        allowBlank : false,
+                        vtype : 'ipAddress'
                     })
                 },
                 exportDNSColumn],
@@ -635,31 +690,32 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     fieldLabel : this.i18n._("Enabled")
                 }, {
                     xtype : "textfield",
-                    name : "Client name",
+                    name : "Pool name",
                     dataIndex : "name",
-                    fieldLabel : this.i18n._("Client name"),
+                    fieldLabel : this.i18n._("Pool name"),
+                    allowBlank : false,
                     width : 200
                 }, {
                     xtype : "textfield",
-                    name : "Host/network name",
+                    name : "IP address",
                     dataIndex : "address",
-                    fieldLabel : this.i18n._("Address pool"),
+                    fieldLabel : this.i18n._("IP address"),
                     allowBlank : false,
+                    vtype : 'ipAddress',
                     width : 200
                 }, {
                     xtype : "textfield",
-                    name : "Distribute",
-                    dataIndex : null,
-                    fieldLabel : this.i18n._("Distribute"),
+                    name : "Netmask",
+                    dataIndex : 'netmask',
+                    fieldLabel : this.i18n._("Netmask"),
                     allowBlank : false,
+                    vtype : 'ipAddress',
                     width : 200
                 }, {
-                    xtype : "textfield",
-                    name : "Virtual address",
-                    dataIndex : "address",
-                    fieldLabel : this.i18n._("Virtual address"),
-                    allowBlank : false,
-                    width : 200
+                    xtype : 'checkbox',
+                    name : "export DNS",
+                    dataIndex : "useDNS",
+                    fieldLabel : this.i18n._("export DNS")
                 }]
             });
         },

@@ -2513,9 +2513,11 @@ Ung.RowEditorWindow = Ext.extend(Ung.UpdateWindow, {
         this.initialRecordData = Ext.encode(record.data);
         for (var i = 0; i < this.inputLines.length; i++) {
             var inputLine = this.inputLines[i];
-            inputLine.suspendEvents();
-            inputLine.setValue(record.get(inputLine.dataIndex));
-            inputLine.resumeEvents();
+            if(inputLine.dataIndex!=null) {
+                inputLine.suspendEvents();
+                inputLine.setValue(record.get(inputLine.dataIndex));
+                inputLine.resumeEvents();
+            }
         }
     },
     // check if the form is valid;
@@ -2536,7 +2538,9 @@ Ung.RowEditorWindow = Ext.extend(Ung.UpdateWindow, {
                 if (this.inputLines) {
                     for (var i = 0; i < this.inputLines.length; i++) {
                         var inputLine = this.inputLines[i];
-                        this.record.set(inputLine.dataIndex, inputLine.getValue());
+                        if(inputLine.dataIndex!=null) {
+                            this.record.set(inputLine.dataIndex, inputLine.getValue());
+                        }
                     }
                 }
                 if(this.addMode) {
@@ -3367,17 +3371,14 @@ Ung.Breadcrumbs = Ext.extend(Ext.Component, {
     }
 });
 
-// Grid edit column
-Ext.grid.UsersColumn = function(config) {
+
+Ext.grid.ButtonColumn = function(config) {
     Ext.apply(this, config);
     if (!this.id) {
         this.id = Ext.id();
     }
-    if (!this.header) {
-        this.header = i18n._("user");
-    }
     if (!this.width) {
-        this.width = 70;
+        this.width = 80;
     }
     if (this.fixed == null) {
         this.fixed = true;
@@ -3391,7 +3392,7 @@ Ext.grid.UsersColumn = function(config) {
     this.renderer = this.renderer.createDelegate(this);
 };
 
-Ext.grid.UsersColumn.prototype = {
+Ext.grid.ButtonColumn.prototype = {
     init : function(grid) {
         this.grid = grid;
         this.grid.on('render', function() {
@@ -3407,25 +3408,26 @@ Ext.grid.UsersColumn.prototype = {
             e.stopEvent();
             var index = this.grid.getView().findRowIndex(t);
             var record = this.grid.store.getAt(index);
-            // populate row editor
-            this.grid.usersWindow.show();
-            this.grid.usersWindow.populate(record);
+            this.handle(record)
         }
+    },
+    //to override
+    handle : function(record) {
     },
     // private
     onMouseOver : function(e,t) {
         if (t.className && t.className.indexOf('ungButton') != -1) {
-            t.className="ungButton usersColumn ungButtonHover";
+            t.className="ungButton buttonColumn ungButtonHover";
         }
     },
     // private
     onMouseOut : function(e,t) {
         if (t.className && t.className.indexOf('ungButton') != -1) {
-            t.className="ungButton usersColumn";
+            t.className="ungButton buttonColumn";
         }
     },
     renderer : function(value, metadata, record) {
-        return '<div class="ungButton usersColumn">'+value+'</div>';
+        return '<div class="ungButton buttonColumn">'+value+'</div>';
     }
 };
 
