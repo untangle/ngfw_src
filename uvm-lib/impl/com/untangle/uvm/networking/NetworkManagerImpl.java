@@ -19,6 +19,8 @@
 package com.untangle.uvm.networking;
 
 import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -42,6 +44,7 @@ import com.untangle.uvm.node.HostName;
 import com.untangle.uvm.node.IPSessionDesc;
 import com.untangle.uvm.node.IPaddr;
 import com.untangle.uvm.node.LocalNodeManager;
+import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.ValidateException;
 import com.untangle.uvm.node.script.ScriptRunner;
 import com.untangle.uvm.node.script.ScriptWriter;
@@ -121,12 +124,27 @@ public class NetworkManagerImpl implements LocalNetworkManager
     /* Flag to indicate when the UVM has been shutdown */
     private boolean isShutdown = false;
 
+    /* Bogus IP Address used to guarantee an address exists. */
+    private final IPaddr bogusAddress;
+
     private NetworkManagerImpl()
     {
         this.ruleManager = RuleManager.getInstance();
         this.accessManager = new AccessManagerImpl();
         this.addressManager = new AddressManagerImpl();
         this.miscManager = new MiscManagerImpl();
+
+        IPaddr address = null;
+        try {
+            address = IPaddr.parse( "192.0.2.1" );
+        } catch ( ParseException e ) {
+            /* This should never happen */
+            address = null;
+        } catch ( UnknownHostException e ) {
+            /* This should never happen */
+            address = null;
+        }
+        this.bogusAddress = address;
     }
 
     /**
@@ -535,6 +553,8 @@ public class NetworkManagerImpl implements LocalNetworkManager
 
         /* ignore everything on the external or dmz interface */
         if ( argonIntf == IntfConstants.EXTERNAL_INTF || argonIntf == IntfConstants.DMZ_INTF ) return null;
+
+        if ( this.isSingleNicModeEnabled ) argonIntf = IntfConstants.EXTERNAL_INTF;
         
         /* Retrieve the network settings */
         NetworkSpacesInternalSettings settings = this.networkSettings;
@@ -553,6 +573,8 @@ public class NetworkManagerImpl implements LocalNetworkManager
 
         if ( address == null ) return null;
 
+        if ( address.equals( this.bogusAddress )) return null;
+        
         return address.getAddr();
     }
 

@@ -244,7 +244,7 @@ JNIEXPORT void JNICALL JF_Session( determineServerIntf )
     if (( session->srv.intf == session->cli.intf ) && ( is_single_nic == JNI_TRUE )) {
         debug( 9, "[JSESSION] Testing the session %#010x for single NIC mode\n", session->session_id );
         if ( session->nat_info.original.src_address == session->nat_info.reply.dst_address ) {
-            debug( 9, "[JSESSION] (%#010x,%s -> %s) is external to interal\n", session->session_id,
+            debug( 9, "[JSESSION] (%#010x,%s -> %s) is external to internal\n", session->session_id,
                    unet_next_inet_ntoa( session->nat_info.original.src_address ),
                    unet_next_inet_ntoa( session->nat_info.reply.dst_address ));
             session->cli.intf = NC_INTF_0;
