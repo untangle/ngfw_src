@@ -521,7 +521,7 @@ class TomcatManager
         }
     }
 
-    private void writeIncludes(String type)
+    private void writeIncludes()
     {
         String bh = System.getProperty("bunnicula.home");
         if (null == bh) {
@@ -530,10 +530,10 @@ class TomcatManager
 
         FileWriter fw = null;
         try {
-            fw = new FileWriter("/etc/apache2/untangle-" + type);
-            fw.write("Include " + bh + "/apache2/" + type + "/*.conf\n");
+            fw = new FileWriter("/etc/apache2/untangle-conf.d");
+            fw.write("Include " + bh + "/apache2/conf.d/*.conf\n");
         } catch (IOException exn) {
-            logger.warn("could not write includes: " + type);
+            logger.warn("could not write includes: conf.d");
         } finally {
             if (null != fw) {
                 try {
@@ -547,8 +547,7 @@ class TomcatManager
 
     private void apacheReload()
     {
-        writeIncludes("unrestricted");
-        writeIncludes("internal");
+        writeIncludes();
 
         try {
             logger.info("Reload Apache Config");

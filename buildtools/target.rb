@@ -327,22 +327,13 @@ class ServletBuilder < Target
     deps << CopyFiles.new(package, MoveSpec.new("#{path}/root/", "**/*",
                                                 @destRoot), "#{suffix}-root")
 
-    if File.exist? "#{path}/unrestricted.conf"
+    if File.exist? "#{path}/apache.conf"
       deps << CopyFiles.new(package,
-                            MoveSpec.fileMove("#{path}/unrestricted.conf",
-                                              "#{package.distDirectory}/usr/share/untangle/apache2/unrestricted",
+                            MoveSpec.fileMove("#{path}/apache.conf",
+                                              "#{package.distDirectory}/usr/share/untangle/apache2/conf.d/",
                                               "#{name}.conf"),
                             "#{suffix}-apache")
     end
-
-    if File.exist? "#{path}/internal.conf"
-      deps << CopyFiles.new(package,
-                            MoveSpec.fileMove("#{path}/internal.conf",
-                                              "#{package.distDirectory}/usr/share/untangle/apache2/internal",
-                                              "#{name}.conf"),
-                            "#{suffix}-apache")
-    end
-
 
     unless 0 == ms.length
       deps << CopyFiles.new(package, ms, "#{suffix}-ms", nil, @destRoot)

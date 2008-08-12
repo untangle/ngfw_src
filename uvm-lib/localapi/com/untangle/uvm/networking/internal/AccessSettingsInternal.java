@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -34,8 +34,6 @@
 package com.untangle.uvm.networking.internal;
 
 import com.untangle.uvm.networking.AccessSettings;
-
-import com.untangle.uvm.node.HostName;
 import com.untangle.uvm.node.IPaddr;
 
 /** These are settings related to remote access to the untangle.
@@ -48,14 +46,14 @@ public class AccessSettingsInternal
     private final boolean isInsideInsecureEnabled;
     private final boolean isOutsideAccessEnabled;
     private final boolean isOutsideAccessRestricted;
-    
+
     private final IPaddr outsideNetwork;
     private final IPaddr outsideNetmask;
 
     private final boolean isOutsideAdministrationEnabled;
     private final boolean isOutsideQuarantineEnabled;
     private final boolean isOutsideReportingEnabled;
-    
+
     private AccessSettingsInternal( AccessSettings settings )
     {
         this.isSupportEnabled = settings.getIsSupportEnabled();
@@ -69,19 +67,19 @@ public class AccessSettingsInternal
         this.isOutsideQuarantineEnabled = settings.getIsOutsideQuarantineEnabled();
         this.isOutsideReportingEnabled = settings.getIsOutsideReportingEnabled();
     }
-    
+
     /* Get whether or not support is enabled. */
     public boolean getIsSupportEnabled()
     {
         return this.isSupportEnabled;
     }
-            
+
     /** True if insecure access from the inside is enabled. */
     public boolean getIsInsideInsecureEnabled()
     {
         return this.isInsideInsecureEnabled;
     }
-    
+
     /** True if outside (secure) access is enabled. */
     public boolean getIsOutsideAccessEnabled()
     {
@@ -95,9 +93,9 @@ public class AccessSettingsInternal
     }
 
     /**
-     * The netmask of the network/host that is allowed to administer the box from outside
-     * This is ignored if outside access is not enabled, null for just
-     * one host.
+     * The netmask of the network/host that is allowed to administer
+     * the box from outside This is ignored if outside access is not
+     * enabled, null for just one host.
      */
 
     /** The restricted network of machines allowed to connect to the box. */
@@ -105,7 +103,7 @@ public class AccessSettingsInternal
     {
         return this.outsideNetwork;
     }
-   
+
     /** The restricted netmask of machines allowed to connect to the box. */
     public IPaddr getOutsideNetmask()
     {
@@ -122,12 +120,12 @@ public class AccessSettingsInternal
     {
         return this.isOutsideQuarantineEnabled;
     }
-    
+
     public boolean getIsOutsideReportingEnabled()
     {
         return this.isOutsideReportingEnabled;
     }
-        
+
     public AccessSettings toSettings()
     {
         AccessSettings settings = new AccessSettings();
