@@ -135,6 +135,15 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                     }
             }
             
+            // MONTHLY SCHEDULE 
+            var schedule = this.getReportingSettings().schedule;
+            var monthlyFirstCurrent = schedule.monthlyNFirst;
+            var monthlyEverydayCurrent = schedule.monthlyNDaily;
+            var monthlyOnceCurrent = ( schedule.monthlyNDayOfWk != -1 /*Schedule.NONE*/ );
+            var monthlyOnceDayCurrent = schedule.monthlyNDayOfWk;
+            var monthlyNoneCurrent = !( monthlyFirstCurrent || monthlyEverydayCurrent || monthlyOnceCurrent );
+            var monthlyOnceComboCurrent = monthlyOnceCurrent ? schedule.monthlyNDayOfWk : 1 /*SUNDAY*/ ;
+            
             this.panelGeneration = new Ext.Panel({
                 // private fields
                 name : 'Generation',
@@ -315,21 +324,81 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                         columns: 1,
                         items : [{
                             boxLabel : this.i18n._('Never'),
-                            name: 'rb-col'
+                            name: 'rb-col',
+                            id : 'reporting_monthlyNone',
+                            checked : monthlyNoneCurrent
                         },{
                             boxLabel : this.i18n._('First Day of Month'),
-                            name: 'rb-col'
+                            name: 'rb-col',
+                            id : 'reporting_monthlyFirst',
+                            checked : monthlyFirstCurrent
                         },{
                             boxLabel : this.i18n._('Everyday'),
-                            name: 'rb-col'
+                            name: 'rb-col',
+                            id : 'reporting_monthlyEveryday',
+                            checked : monthlyEverydayCurrent
                         },{
                             boxLabel : this.i18n._('Once Per Week'),
-                            name: 'rb-col'
+                            name: 'rb-col',
+                            id : 'reporting_monthlyOnce',
+                            checked : monthlyOnceCurrent,
+                            listeners : {
+                                "check" : {
+                                    fn : function(elem, checked) {
+                                            Ext.getCmp('reporting_monthlyOnceCombo').setDisabled(!checked);
+                                    }
+                                }
+                            }
                         }]
+                    }, {
+                        xtype : 'combo',
+                        editable : false,
+                        mode : 'local',
+                        fieldLabel : '',
+                        labelSeparator : '',
+                        labelStyle: 'width:150px;',
+                        name : "Once Per Week combo",
+                        id : 'reporting_monthlyOnceCombo', 
+                        store : new Ext.data.SimpleStore({
+                            fields : ['monthlyOnceValue', 'monthlyOnceName'],
+                            data : [[1, this.i18n._("Sunday")], 
+                                    [2, this.i18n._("Monday")],
+                                    [3, this.i18n._("Tuesday")],
+                                    [4, this.i18n._("Wednesday")],
+                                    [5, this.i18n._("Thursday")],
+                                    [6, this.i18n._("Friday")],
+                                    [7, this.i18n._("Saturday")]]
+                        }),
+                        displayField : 'monthlyOnceName',
+                        valueField : 'monthlyOnceValue',
+                        value : monthlyOnceComboCurrent,
+                        disabled : !monthlyOnceCurrent,
+                        triggerAction : 'all',
+                        listClass : 'x-combo-list-small'
+                    }]
+                },{
+                    title : this.i18n._("Data Retention"),
+                    items : [{
+                        border : false,
+                        html : this.i18n._("Limits data retention to one week, this allows reports to run faster on high traffic sites.")
+                    },  {
+                        xtype : 'checkbox',
+                        name : 'Limit data retention',
+                        labelStyle: 'width:150px;',
+                        fieldLabel : this.i18n._('Limit data retention'),
+                        boxLabel : this.i18n._("Keep One Week's Data"),
+                        checked : this.getReportingSettings().daysToKeep == 8,
+                        listeners : {
+                            "check" : {
+                                fn : function(elem, newValue) {
+                                    this.getReportingSettings().daysToKeep = newValue ? 8 : 33;
+                                }.createDelegate(this)
+                            }
+                        }
                     }]
                 }]
             });
-        },
+        },  
         // IP Map grid
         buildIpMap : function() {
             this.gridIpMap = new Ung.EditorGrid({
@@ -447,6 +516,13 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                 if (Ext.getCmp('reporting_weeklyFriday').getValue())  weeklySched.push({javaClass:"com.untangle.node.reporting.WeeklyScheduleRule", day:6});
                 if (Ext.getCmp('reporting_weeklySaturday').getValue())  weeklySched.push({javaClass:"com.untangle.node.reporting.WeeklyScheduleRule", day:7});
                 this.getReportingSettings().schedule.weeklySched.list = weeklySched;
+                
+                // set monthly schedule
+                var schedule = this.getReportingSettings().schedule;
+                schedule.monthlyNFirst = Ext.getCmp('reporting_monthlyFirst').getValue();
+                schedule.monthlyNDaily = Ext.getCmp('reporting_monthlyEveryday').getValue();
+                var monthlyOnce = Ext.getCmp('reporting_monthlyOnce').getValue();
+                schedule.monthlyNDayOfWk = monthlyOnce ? Ext.getCmp('reporting_monthlyOnceCombo').getValue() : -1 //NONE ;
                 
                 // set Ip Map list
                 this.getReportingSettings().networkDirectory.entries.list = this.gridIpMap.getFullSaveList();
