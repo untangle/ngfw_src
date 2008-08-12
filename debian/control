@@ -689,7 +689,7 @@ Conflicts: openvpn-transform
 Provides: openvpn-transform
 Replaces: openvpn-transform
 XB-Display-Name: OpenVPN
-XB-Untangle-Type: node
+XB-Untangle-Type: service
 XB-View-Position: 1003
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAACXBIWXMAAAsTAAALEwEAmpwY
  AAAABGdBTUEAALGOfPtRkwAAACBjSFJNAAB6JQAAgIMAAPn/AACA6QAAdTAAAOpgAAA6mAAA
