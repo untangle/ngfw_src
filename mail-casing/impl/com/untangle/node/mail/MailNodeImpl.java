@@ -43,6 +43,7 @@ import com.untangle.node.mail.papi.quarantine.QuarantineUserView;
 import com.untangle.node.mail.papi.safelist.NoSuchSafelistException;
 import com.untangle.node.mail.papi.safelist.SafelistActionFailedException;
 import com.untangle.node.mail.papi.safelist.SafelistAdminView;
+import com.untangle.node.mail.papi.safelist.SafelistCount;
 import com.untangle.node.mail.papi.safelist.SafelistEndUserView;
 import com.untangle.node.mail.papi.safelist.SafelistManipulation;
 import com.untangle.node.mail.papi.safelist.SafelistNodeView;
@@ -561,6 +562,11 @@ public class MailNodeImpl extends AbstractNode
         public boolean safelistExists(String safelistOwnerAddress)
             throws SafelistActionFailedException {
             return s_safelistMngr.safelistExists(safelistOwnerAddress);
+        }
+
+        public List<SafelistCount> getSafelistCounts()
+            throws NoSuchSafelistException, SafelistActionFailedException {
+            return s_safelistMngr.getSafelistCounts();
         }
     }
 }

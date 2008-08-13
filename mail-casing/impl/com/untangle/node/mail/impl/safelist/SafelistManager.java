@@ -31,6 +31,7 @@ import com.untangle.node.mail.papi.MailNodeSettings;
 import com.untangle.node.mail.papi.safelist.NoSuchSafelistException;
 import com.untangle.node.mail.papi.safelist.SafelistActionFailedException;
 import com.untangle.node.mail.papi.safelist.SafelistAdminView;
+import com.untangle.node.mail.papi.safelist.SafelistCount;
 import com.untangle.node.mail.papi.safelist.SafelistEndUserView;
 import com.untangle.node.mail.papi.safelist.SafelistManipulation;
 import com.untangle.node.mail.papi.safelist.SafelistNodeView;
@@ -293,6 +294,17 @@ public class SafelistManager
         return bReturn;
     }
 
+    //See doc on SafelistAdminView.java
+    public List<SafelistCount> getSafelistCounts()
+        throws NoSuchSafelistException, SafelistActionFailedException {
+        List<String> safelists = listSafelists();
+        List<SafelistCount> safelistCounts = new ArrayList<SafelistCount>(safelists.size());
+        for(String account : safelists){
+            SafelistCount safelistCnt = new SafelistCount(account, getSafelistCnt(account));
+            safelistCounts.add(safelistCnt);
+        }
+    return safelistCounts;
+}
     //--------------------- SafelistEndUserView -----------------------
 
     // refresh (add/delete/update) safelists for this recipient and

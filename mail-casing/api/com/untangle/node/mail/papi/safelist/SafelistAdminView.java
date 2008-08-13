@@ -79,4 +79,14 @@ public interface SafelistAdminView
      */
     public boolean safelistExists(String safelistOwnerAddress)
         throws SafelistActionFailedException;
+
+    /**
+     * List the email addresses and counts of all users who
+     * have a safelist
+     *
+     * @return the list of all safelist owners counts.
+     */
+    public List<SafelistCount> getSafelistCounts()
+        throws NoSuchSafelistException, SafelistActionFailedException;
+
 }
