@@ -58,6 +58,11 @@ import org.apache.catalina.Valve;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.LocalUvmContext;
+import com.untangle.uvm.message.BlingBlinger;
+import com.untangle.uvm.message.Counters;
+import com.untangle.uvm.message.LocalMessageManager;
 
 /**
  * Virus Node.
@@ -124,6 +129,11 @@ public abstract class VirusNodeImpl extends AbstractNode
 
     private VirusSettings settings;
 
+    private final BlingBlinger scanBlinger;
+    private final BlingBlinger passBlinger;
+    private final BlingBlinger blockBlinger;
+    private final BlingBlinger removeBlinger;
+
     /* This can't be static because it uses policy which is per node */
     private final SessionMatcher VIRUS_SESSION_MATCHER = new SessionMatcher() {
             /* Kill all sessions on ports 20, 21 and 80 */
@@ -150,7 +160,7 @@ public abstract class VirusNodeImpl extends AbstractNode
                 return false;
             }
 
-            /* This would all be faster as a set */
+            
             private boolean testClientPort( int clientPort )
             {
                 /* FTP responds on port 20 */
@@ -207,6 +217,14 @@ public abstract class VirusNodeImpl extends AbstractNode
 
         ef = new VirusSmtpFilter(vendor);
         eventLogger.addSimpleEventFilter(ef);
+
+        LocalMessageManager lmm = LocalUvmContextFactory.context().localMessageManager();
+        Counters c = lmm.getCounters(getTid());
+        scanBlinger = c.addActivity("scan", "Scan Message", null, "SCAN");
+        blockBlinger = c.addActivity("block", "Block Message", null, "BLOCK");
+        passBlinger = c.addActivity("pass", "Pass Message", null, "PASS");
+        removeBlinger = c.addActivity("remove", "Remove Message", null, "REMOVE");
+        lmm.setActiveMetricsIfNotSet(getTid(), scanBlinger, blockBlinger, passBlinger, removeBlinger);
     }
 
     // VirusNode methods -------------------------------------------------
@@ -629,34 +647,34 @@ public abstract class VirusNodeImpl extends AbstractNode
     /**
      * Increment the counter for messages scanned
      */
-    public void incrementScanCounter()
+    public void incrementScanCount()
     {
-        //incrementCount(Node.GENERIC_0_COUNTER);
+	scanBlinger.increment();
     }
 
     /**
      * Increment the counter for blocked (SMTP only).
      */
-    public void incrementBlockCounter()
+    public void incrementBlockCount()
     {
-        //incrementCount(Node.GENERIC_1_COUNTER);
+	blockBlinger.increment();
     }
 
     /**
      * Increment the counter for messages passed
      */
-    public void incrementPassCounter()
+    public void incrementPassCount()
     {
-        //incrementCount(Node.GENERIC_2_COUNTER);
+	passBlinger.increment();
     }
 
     /**
      * Increment the counter for messages where we
      * removed a virus
      */
-    public void incrementRemoveCounter()
+    public void incrementRemoveCount()
     {
-        //incrementCount(Node.GENERIC_3_COUNTER);
+	removeBlinger.increment();
     }
 
     private static synchronized void deployWebAppIfRequired(Logger logger)

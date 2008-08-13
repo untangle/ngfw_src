@@ -104,11 +104,6 @@ public class IpsDetectionEngine
         return maxChunks;
     }
 
-    public void updateUICount(int counter)
-    {
-        //node.incrementCount(counter);
-    }
-
     public void onReconfigure()
     {
         portC2SMap = new ConcurrentHashMap<Integer,List<IpsRuleHeader>>();
@@ -270,7 +265,7 @@ public class IpsDetectionEngine
             info.setEvent(event);
             info.setFlow(isFromServer);
 
-            // updateUICount(SCAN_COUNTER); XXX
+            node.incrementScanCount();
 
             boolean result;
             if(isFromServer)

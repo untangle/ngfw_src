@@ -46,6 +46,11 @@ import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.vnet.SoloPipeSpec;
+import com.untangle.uvm.message.BlingBlinger;
+import com.untangle.uvm.message.Counters;
+import com.untangle.uvm.message.LocalMessageManager;
+import com.untangle.uvm.LocalUvmContext;
+import com.untangle.uvm.LocalUvmContextFactory;
 
 public class FirewallImpl extends AbstractNode implements Firewall
 {
@@ -60,6 +65,9 @@ public class FirewallImpl extends AbstractNode implements Firewall
     private FirewallSettings settings = null;
     final FirewallStatisticManager statisticManager;
 
+    private final BlingBlinger passBlinger;
+    private final BlingBlinger blockBlinger;
+
     public FirewallImpl()
     {
         this.handler = new EventHandler(this);
@@ -67,9 +75,7 @@ public class FirewallImpl extends AbstractNode implements Firewall
 
         /* Have to figure out pipeline ordering, this should always
          * next to towards the outside, then there is OpenVpn and then Nat */
-        this.pipeSpec = new SoloPipeSpec
-            ("firewall", this, handler, Fitting.OCTET_STREAM, Affinity.CLIENT,
-             SoloPipeSpec.MAX_STRENGTH - 3);
+        this.pipeSpec = new SoloPipeSpec("firewall", this, handler, Fitting.OCTET_STREAM, Affinity.CLIENT, SoloPipeSpec.MAX_STRENGTH - 3);
         this.pipeSpecs = new SoloPipeSpec[] { pipeSpec };
 
         NodeContext tctx = getNodeContext();
@@ -79,6 +85,12 @@ public class FirewallImpl extends AbstractNode implements Firewall
         eventLogger.addSimpleEventFilter(ef);
         ef = new FirewallBlockedFilter();
         eventLogger.addSimpleEventFilter(ef);
+
+        LocalMessageManager lmm = LocalUvmContextFactory.context().localMessageManager();
+        Counters c = lmm.getCounters(getTid());
+        blockBlinger = c.addActivity("block", "Block Request", null, "BLOCK");
+        passBlinger = c.addActivity("pass", "Pass Request", null, "PASS");
+        lmm.setActiveMetricsIfNotSet(getTid(), blockBlinger, passBlinger);
     }
 
     // Firewall methods --------------------------------------------------------
@@ -344,4 +356,15 @@ public class FirewallImpl extends AbstractNode implements Firewall
             logger.error("Could not save Firewall settings", exn);
         }
     }
+
+    public void incrementBlockCount() 
+    {
+	blockBlinger.increment();
+    }
+
+    public void incrementPassCount() 
+    {
+	passBlinger.increment();
+    }
+
 }

@@ -224,7 +224,7 @@ class VirusHttpHandler extends HttpStateMachine
             if (logger.isDebugEnabled()) {
                 logger.debug("Scanning the file: " + scanfile);
             }
-            //node.incrementCount(SCAN_COUNTER);
+            node.incrementScanCount();
             result = node.getScanner().scanFile(scanfile);
         } catch (Exception e) {
             // Should never happen
@@ -242,7 +242,7 @@ class VirusHttpHandler extends HttpStateMachine
         node.log(new VirusHttpEvent(requestLine, result,  vendor));
 
         if (result.isClean()) {
-            //node.incrementCount(PASS_COUNTER, 1);
+            node.incrementPassCount();
 
             if (result.isVirusCleaned()) {
                 logger.info("Cleaned infected file");
@@ -259,7 +259,7 @@ class VirusHttpHandler extends HttpStateMachine
         } else {
             logger.info("Virus found, killing session");
             // Todo: Quarantine (for now, don't delete the file) XXX
-            //node.incrementCount(BLOCK_COUNTER, 1);
+            node.incrementBlockCount();
 
             if (Mode.QUEUEING == getResponseMode()) {
                 RequestLineToken rl = getResponseRequest();

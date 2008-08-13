@@ -131,7 +131,7 @@ class EventHandler extends AbstractEventHandler
             }
 
             /* Increment the block counter */
-            //node.incrementCount(BLOCK_COUNTER); // BLOCK COUNTER
+            node.incrementBlockCount(); 
 
             /* If necessary log the event */
             if (log) {
@@ -147,7 +147,7 @@ class EventHandler extends AbstractEventHandler
             request.release(log);
 
             /* Increment the pass counter */
-            //node.incrementCount(PASS_COUNTER); // PASS COUNTER
+            node.incrementPassCount();
 
             /* If necessary log the event */
             if (log) {

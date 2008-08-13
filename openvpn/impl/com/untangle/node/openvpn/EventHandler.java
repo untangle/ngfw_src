@@ -105,7 +105,7 @@ class EventHandler extends AbstractEventHandler
 
         /* Clients pass all traffic */
         if ( this.isUntanglePlatformClient ) {
-            //node.incrementCount( Constants.PASS_COUNTER );
+            node.incrementPassCount();
             request.release();
 
             return;
@@ -148,7 +148,7 @@ class EventHandler extends AbstractEventHandler
         if ( logger.isDebugEnabled()) {
             logger.debug( "Accepted VPN session: [" + request.id() + "]" );
         }
-        //node.incrementCount( Constants.PASS_COUNTER );
+        node.incrementPassCount();
         request.release();
 
         /* XXX Probably want to create an event */
@@ -160,7 +160,7 @@ class EventHandler extends AbstractEventHandler
         /* XXX Should this always reject silently */
         request.rejectSilently();
 
-        //node.incrementCount( Constants.BLOCK_COUNTER );
+        node.incrementBlockCount();
 
         /* XXX Probably want to create an event */
         if ( logger.isDebugEnabled()) {

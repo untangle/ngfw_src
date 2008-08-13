@@ -328,7 +328,7 @@ class OpenVpnMonitor implements Runnable
 //                         continue;
 //                     }
 
-//                     rxBytes  = incrementCount( rxBytes,  Long.parseLong( args[PROCNET_STAT_RX_BYTES] ));
+//                     rxBytes  = ( rxBytes,  Long.parseLong( args[PROCNET_STAT_RX_BYTES] ));
 //                     rxChunks = incrementCount( rxChunks, Long.parseLong( args[PROCNET_STAT_RX_PACKETS] ));
 //                     txBytes  = incrementCount( txBytes,  Long.parseLong( args[PROCNET_STAT_TX_BYTES] ));
 //                     txChunks = incrementCount( txChunks, Long.parseLong( args[PROCNET_STAT_TX_PACKETS] ));
@@ -471,8 +471,7 @@ class OpenVpnMonitor implements Runnable
 
         for ( Stats stats : statusMap.values()) {
             if ( stats.isNew ) {
-                //node.incrementCount( Constants.CONNECT_COUNTER );
-
+                node.incrementConnectCount();
                 stats.isNew = false;
             }
 

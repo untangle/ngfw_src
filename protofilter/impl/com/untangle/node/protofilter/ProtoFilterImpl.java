@@ -42,6 +42,12 @@ import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.vnet.SoloPipeSpec;
+import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.LocalUvmContext;
+import com.untangle.uvm.message.BlingBlinger;
+import com.untangle.uvm.message.Counters;
+import com.untangle.uvm.message.LocalMessageManager;
+
 
 public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
 {
@@ -61,6 +67,10 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
     private final PartialListUtil listUtil = new PartialListUtil();
     private final ProtoFilterPatternHandler patternHandler = new ProtoFilterPatternHandler();
 
+    private final BlingBlinger scanBlinger;
+    private final BlingBlinger detectBlinger;
+    private final BlingBlinger blockBlinger;
+
     // constructors -----------------------------------------------------------
 
     public ProtoFilterImpl()
@@ -72,6 +82,13 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
         eventLogger.addSimpleEventFilter(ef);
         ef = new ProtoFilterBlockedFilter();
         eventLogger.addSimpleEventFilter(ef);
+
+        LocalMessageManager lmm = LocalUvmContextFactory.context().localMessageManager();
+        Counters c = lmm.getCounters(getTid());
+        scanBlinger = c.addActivity("scan", "Scan Protocol", null, "SCAN");
+        blockBlinger = c.addActivity("block", "Block Protocol", null, "BLOCK");
+        detectBlinger = c.addActivity("detect", "Detect Protocol", null, "DETECT");
+        lmm.setActiveMetricsIfNotSet(getTid(), scanBlinger, blockBlinger, detectBlinger);
     }
 
     // ProtoFilter methods ----------------------------------------------------
@@ -404,5 +421,20 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
         {
             current.updateRule( newRule );
         }
+    }
+
+    void incrementScanCount()
+    {
+        scanBlinger.increment();
+    }
+
+    void incrementBlockCount()
+    {
+        blockBlinger.increment();
+    }
+
+    void incrementDetectCount()
+    {
+        detectBlinger.increment();
     }
 }

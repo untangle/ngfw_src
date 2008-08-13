@@ -81,7 +81,7 @@ public class VirusPopHandler extends PopStateMachine
 
         if (true == bScan &&
             MIMEUtil.EMPTY_MIME_PARTS != (azMPart = MIMEUtil.getCandidateParts(zMMessage))) {
-            //zNode.incrementCount(SCAN_COUNTER);
+            zNode.incrementScanCount();
 
             TempFileFactory zTFFactory = new TempFileFactory(getPipeline());
             VirusScannerResult zFirstResult = null;
@@ -117,7 +117,7 @@ public class VirusPopHandler extends PopStateMachine
             }
 
             if (null != zFirstResult) {
-                //zNode.incrementCount(REMOVE_COUNTER);
+                zNode.incrementRemoveCount();
 
                 /* wrap infected message and rebuild message token */
                 MIMEMessage zWMMessage = zWMsgGenerator.wrap(zMMessage, zFirstResult);
@@ -136,7 +136,7 @@ public class VirusPopHandler extends PopStateMachine
                     throw new TokenException("cannot create wrapped message file after removing virus: " + exn);
                 }
             } else {
-                //zNode.incrementCount(PASS_COUNTER);
+                zNode.incrementPassCount();
             }
         } //else {
         //logger.debug("scan is not enabled or message contains no MIME parts");

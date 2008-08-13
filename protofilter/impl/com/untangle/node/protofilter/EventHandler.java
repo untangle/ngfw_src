@@ -230,7 +230,7 @@ public class EventHandler extends AbstractEventHandler
         }
 
         ProtoFilterPattern elem = _findMatch(sessInfo, sess, server);
-        //node.incrementCount( SCAN_COUNTER );
+        node.incrementScanCount();
         if (elem != null) {
             sessInfo.protocol = elem.getProtocol();
             sessInfo.identified = true;
@@ -250,14 +250,14 @@ public class EventHandler extends AbstractEventHandler
                 }
             }
 
-            //node.incrementCount( DETECT_COUNTER );
+            node.incrementDetectCount();
 
             if(elem.getAlert()) {
                 /* XXX Do alert here */
             }
 
             if (elem.isBlocked()) {
-                //node.incrementCount( BLOCK_COUNTER );
+                node.incrementBlockCount();
 
                 if (logger.isInfoEnabled()) {
                     logger.info(" ----------------BLOCKED: " + sessInfo.protocol + " traffic----------------");

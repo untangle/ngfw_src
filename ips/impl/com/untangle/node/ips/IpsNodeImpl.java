@@ -41,6 +41,12 @@ import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.vnet.SoloPipeSpec;
+import com.untangle.uvm.LocalUvmContext;
+import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.message.BlingBlinger;
+import com.untangle.uvm.message.Counters;
+import com.untangle.uvm.message.LocalMessageManager;
+
 
 public class IpsNodeImpl extends AbstractNode implements IpsNode {
     private final Logger logger = Logger.getLogger(getClass());
@@ -61,6 +67,8 @@ public class IpsNodeImpl extends AbstractNode implements IpsNode {
     private final IpsVariableHandler variableHandler = new IpsVariableHandler();
     private final IpsRuleHandler ruleHandler = new IpsRuleHandler();
 
+    private final BlingBlinger scanBlinger;
+
     public IpsNodeImpl() {
         engine = new IpsDetectionEngine(this);
         handler = new EventHandler(this);
@@ -79,6 +87,12 @@ public class IpsNodeImpl extends AbstractNode implements IpsNode {
 
         List<RuleClassification> classifications = FileLoader.loadClassifications();
         engine.setClassifications(classifications);
+
+
+        LocalMessageManager lmm = LocalUvmContextFactory.context().localMessageManager();
+        Counters c = lmm.getCounters(getTid());
+        scanBlinger = c.addActivity("scan", "Scan Connection", null, "SCAN");
+        lmm.setActiveMetricsIfNotSet(getTid(), scanBlinger);
     }
 
     @Override
@@ -359,4 +373,10 @@ public class IpsNodeImpl extends AbstractNode implements IpsNode {
             current.updateVariable( newVar );
         }
     }
+
+    public void incrementScanCount() 
+    {
+	scanBlinger.increment();
+    }
 }
+

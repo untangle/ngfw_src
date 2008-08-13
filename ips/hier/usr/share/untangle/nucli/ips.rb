@@ -216,7 +216,7 @@ class Ips < UVMFilterNode
   end
 
   def get_snmp_stat_map()
-      return {7 => "scan", 8 => "detect", 9 => "block"};
+      return {7 => "scan"};
   end
 
 end

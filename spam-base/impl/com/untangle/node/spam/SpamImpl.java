@@ -39,6 +39,11 @@ import com.untangle.uvm.vnet.SoloPipeSpec;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.LocalUvmContext;
+import com.untangle.uvm.message.BlingBlinger;
+import com.untangle.uvm.message.Counters;
+import com.untangle.uvm.message.LocalMessageManager;
 
 import static com.untangle.node.util.Ascii.CRLF;
 
@@ -104,6 +109,12 @@ public class SpamImpl extends AbstractNode implements SpamNode
 
     private volatile SpamSettings spamSettings;
 
+    private final BlingBlinger scanBlinger;
+    private final BlingBlinger passBlinger;
+    private final BlingBlinger blockBlinger;
+    private final BlingBlinger markBlinger;
+    private final BlingBlinger quarantineBlinger;
+
     // constructors -----------------------------------------------------------
 
     public SpamImpl(SpamScanner scanner)
@@ -136,6 +147,15 @@ public class SpamImpl extends AbstractNode implements SpamNode
 
         ef = new RBLSkippedFilter();
         rblEventLogger.addSimpleEventFilter(ef);
+
+        LocalMessageManager lmm = LocalUvmContextFactory.context().localMessageManager();
+        Counters c = lmm.getCounters(getTid());
+        scanBlinger = c.addActivity("scan", "Scan Message", null, "SCAN");
+        passBlinger = c.addActivity("pass", "Pass Message", null, "PASS");
+        blockBlinger = c.addActivity("block", "Block Message", null, "BLOCK");
+        markBlinger = c.addActivity("mark", "Mark Message", null, "MARK");
+        quarantineBlinger = c.addActivity("quarantine", "Quarantine Message", null, "QUARANTINE");
+        lmm.setActiveMetricsIfNotSet(getTid(), scanBlinger, passBlinger, blockBlinger, markBlinger, quarantineBlinger);
     }
 
     // Spam methods -----------------------------------------------------------
@@ -155,37 +175,36 @@ public class SpamImpl extends AbstractNode implements SpamNode
     /**
      * Increment the counter for messages scanned
      */
-    public void incrementScanCounter() {
-        //The scanning blingy-bringer has been disabled
-        //      incrementCount(Node.GENERIC_0_COUNTER);
+    public void incrementScanCount() {
+	scanBlinger.increment();
     }
 
     /**
      * Increment the counter for blocked (SMTP only).
      */
-    public void incrementBlockCounter() {
-        //incrementCount(Node.GENERIC_1_COUNTER);
+    public void incrementBlockCount() {
+	blockBlinger.increment();
     }
 
     /**
      * Increment the counter for messages passed
      */
-    public void incrementPassCounter() {
-        //incrementCount(Node.GENERIC_0_COUNTER);
+    public void incrementPassCount() {
+	passBlinger.increment();
     }
 
     /**
      * Increment the counter for messages marked
      */
-    public void incrementMarkCounter() {
-        //incrementCount(Node.GENERIC_2_COUNTER);
+    public void incrementMarkCount() {
+	markBlinger.increment();
     }
 
     /**
      * Increment the count for messages quarantined.
      */
     public void incrementQuarantineCount() {
-        //incrementCount(Node.GENERIC_3_COUNTER);
+	quarantineBlinger.increment();
     }
 
     /**
@@ -575,4 +594,5 @@ public class SpamImpl extends AbstractNode implements SpamNode
         setSpamSettings((SpamSettings)settings);
         return;
     }
+
 }

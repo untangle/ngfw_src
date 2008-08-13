@@ -50,6 +50,10 @@ import com.untangle.uvm.vnet.SoloPipeSpec;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import com.untangle.uvm.message.BlingBlinger;
+import com.untangle.uvm.message.Counters;
+import com.untangle.uvm.message.LocalMessageManager;
+
 
 public class VpnNodeImpl extends AbstractNode
     implements VpnNode
@@ -88,7 +92,12 @@ public class VpnNodeImpl extends AbstractNode
 
     private Sandbox sandbox = null;
 
+    private final BlingBlinger passBlinger;
+    private final BlingBlinger blockBlinger;
+    private final BlingBlinger connectBlinger;
+
     // constructor ------------------------------------------------------------
+
 
     public VpnNodeImpl()
     {
@@ -102,6 +111,14 @@ public class VpnNodeImpl extends AbstractNode
             ( TRAN_NAME, this, handler, Fitting.OCTET_STREAM, Affinity.CLIENT,
               SoloPipeSpec.MAX_STRENGTH - 2);
         this.pipeSpecs = new SoloPipeSpec[] { pipeSpec };
+
+
+        LocalMessageManager lmm = LocalUvmContextFactory.context().localMessageManager();
+        Counters c = lmm.getCounters(getTid());
+        blockBlinger = c.addActivity("block", "Block Connection", null, "BLOCK");
+        passBlinger = c.addActivity("pass", "Pass Connection", null, "PASS");
+        connectBlinger = c.addActivity("connect", "Connect", null, "CONNECT");
+        lmm.setActiveMetricsIfNotSet(getTid(), blockBlinger, passBlinger, connectBlinger);
     }
 
     @Override public void initializeSettings()
@@ -743,4 +760,18 @@ public class VpnNodeImpl extends AbstractNode
         return this.openVpnMonitor.getClientDistLogger();
     }
 
+    public void incrementBlockCount()
+    {
+        blockBlinger.increment();
+    }
+
+    public void incrementPassCount()
+    {
+        passBlinger.increment();
+    }
+
+    public void incrementConnectCount()
+    {
+        connectBlinger.increment();
+    }
 }

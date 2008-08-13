@@ -94,4 +94,10 @@ public class BlingBlinger implements CounterStats, Serializable
     {
         return countSinceMidnight;
     }
+
+    public Date getLastActivityDate()
+    {
+	return now;
+    }
 }
+
