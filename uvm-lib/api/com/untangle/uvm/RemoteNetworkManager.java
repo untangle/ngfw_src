@@ -33,6 +33,8 @@
 
 package com.untangle.uvm;
 
+import java.net.InetAddress;
+
 import com.untangle.uvm.networking.AccessSettings;
 import com.untangle.uvm.networking.AddressSettings;
 import com.untangle.uvm.networking.BasicNetworkSettings;

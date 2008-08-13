@@ -105,8 +105,8 @@ abstract class ArgonHook implements Runnable
                               " " + sessionGlobalState );
             }
 
-            boolean isSingleNicMode = 
-                LocalUvmContextFactory.context().networkManager().isSingleNicModeEnabled();
+            LocalNetworkManager lnm = LocalUvmContextFactory.context().networkManager();
+            boolean isSingleNicMode = lnm.isSingleNicModeEnabled();
 	    
             /* Update the server interface */
             netcapSession.determineServerIntf( isSingleNicMode );
@@ -129,6 +129,11 @@ abstract class ArgonHook implements Runnable
                 raze();
                 return;
 	    }
+
+            if ( isSingleNicMode ) {
+                lnm.singleNicRegisterAddress( netcapSession.clientSide().client().host());
+                lnm.singleNicRegisterAddress( netcapSession.serverSide().server().host());
+            }
 
             clientSide = new NetcapIPSessionDescImpl( sessionGlobalState, true );
 

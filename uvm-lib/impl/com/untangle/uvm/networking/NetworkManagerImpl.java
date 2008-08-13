@@ -29,7 +29,6 @@ import java.util.Set;
 
 import com.untangle.jnetcap.Netcap;
 import com.untangle.uvm.ArgonException;
-import com.untangle.uvm.ArgonManager;
 import com.untangle.uvm.IntfConstants;
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
@@ -77,17 +76,12 @@ public class NetworkManagerImpl implements LocalNetworkManager
     /* Script to run after reconfiguration (from NetworkSettings Listener) */
     private static final String AFTER_RECONFIGURE_SCRIPT = BUNNICULA_BASE + "/networking/after-reconfigure";
 
-    private static final String SINGLE_NIC_FLAG = "8e1f48a294372f872b74fedec79696a8";
-
     /* A flag for devel environments, used to determine whether or not
      * the etc files actually are written, this enables/disables reconfiguring networking */
     private boolean saveSettings = true;
 
     /* Inidicates whether or not the networking manager has been initialized */
     private boolean isInitialized = false;
-
-    /* Indicates whether or not single NIC mode is enabled */
-    private boolean isSingleNicModeEnabled = false;
 
     /* Manager for the iptables rules */
     private final RuleManager ruleManager;
@@ -100,6 +94,9 @@ public class NetworkManagerImpl implements LocalNetworkManager
 
     /* Manager for MiscSettings */
     private final MiscManagerImpl miscManager;
+
+    /* Manager for single nic mode. */
+    private final SingleNicManager singleNicManager;
 
     /* ??? Does the order matter, it shouldn't.  */
     private Set<NetworkSettingsListener> networkListeners = new HashSet<NetworkSettingsListener>();
@@ -124,27 +121,13 @@ public class NetworkManagerImpl implements LocalNetworkManager
     /* Flag to indicate when the UVM has been shutdown */
     private boolean isShutdown = false;
 
-    /* Bogus IP Address used to guarantee an address exists. */
-    private final IPaddr bogusAddress;
-
     private NetworkManagerImpl()
     {
         this.ruleManager = RuleManager.getInstance();
         this.accessManager = new AccessManagerImpl();
         this.addressManager = new AddressManagerImpl();
         this.miscManager = new MiscManagerImpl();
-
-        IPaddr address = null;
-        try {
-            address = IPaddr.parse( "192.0.2.1" );
-        } catch ( ParseException e ) {
-            /* This should never happen */
-            address = null;
-        } catch ( UnknownHostException e ) {
-            /* This should never happen */
-            address = null;
-        }
-        this.bogusAddress = address;
+        this.singleNicManager = new SingleNicManager();
     }
 
     /**
@@ -455,7 +438,12 @@ public class NetworkManagerImpl implements LocalNetworkManager
     /* Returns true if single nic mode is enabled */
     public boolean isSingleNicModeEnabled()
     {
-        return this.isSingleNicModeEnabled;
+        return this.singleNicManager.getIsEnabled();
+    }
+
+    public void singleNicRegisterAddress( InetAddress address )
+    {
+        this.singleNicManager.registerAddress( address );
     }
 
     public void updateAddress()
@@ -529,13 +517,8 @@ public class NetworkManagerImpl implements LocalNetworkManager
 	    logger.warn( "Error committing the networking.sh file", e );
 	}
 
-        /* Update the internal address */
-        if ( SINGLE_NIC_FLAG.equals( properties.getProperty( "com.untangle.networking.single-nic-mode" ))) {
-            setSingleNicMode( true );
-        } else {
-            setSingleNicMode( false );
-        }
-        
+        /* Update single nic mode. */
+        this.singleNicManager.setIsEnabled( properties.getProperty( "com.untangle.networking.single-nic-mode" ));        
         try {
             callNetworkListeners();
         } catch ( Exception e ) {
@@ -554,7 +537,7 @@ public class NetworkManagerImpl implements LocalNetworkManager
         /* ignore everything on the external or dmz interface */
         if ( argonIntf == IntfConstants.EXTERNAL_INTF || argonIntf == IntfConstants.DMZ_INTF ) return null;
 
-        if ( this.isSingleNicModeEnabled ) argonIntf = IntfConstants.EXTERNAL_INTF;
+        if ( this.singleNicManager.getIsEnabled()) argonIntf = IntfConstants.EXTERNAL_INTF;
         
         /* Retrieve the network settings */
         NetworkSpacesInternalSettings settings = this.networkSettings;
@@ -573,7 +556,7 @@ public class NetworkManagerImpl implements LocalNetworkManager
 
         if ( address == null ) return null;
 
-        if ( address.equals( this.bogusAddress )) return null;
+        if ( NetworkUtilPriv.getPrivInstance().isBogus( address )) return null;
         
         return address.getAddr();
     }
@@ -599,6 +582,7 @@ public class NetworkManagerImpl implements LocalNetworkManager
     {
         this.isShutdown = true;
         this.ruleManager.isShutdown();
+        this.singleNicManager.stop();
     }
 
     public void flushIPTables() throws NetworkException
@@ -694,8 +678,11 @@ public class NetworkManagerImpl implements LocalNetworkManager
         /* Done before so these get called on the first update */
         registerListener(new IPMatcherListener());
         registerListener(new CifsListener());
+        registerListener(this.singleNicManager.getListener());
 
         updateAddress();
+
+        this.singleNicManager.start();
 
         try {
             generateRules();
@@ -721,20 +708,6 @@ public class NetworkManagerImpl implements LocalNetworkManager
 
         /* Load the address/hostname settings */
         this.addressManager.init();
-    }
-
-    private void setSingleNicMode( boolean newValue )
-    {
-        logger.debug( "setSingleNicMode(" + newValue + ")" );
-
-        if ( newValue != this.isSingleNicModeEnabled ) {
-            logger.info( "Changing the state of single NIC mode[" + newValue + "], killall all sessions." );
-            
-            ArgonManager argonManager = LocalUvmContextFactory.context().argonManager();
-            argonManager.shutdownMatches(SessionMatcherFactory.getAllInstance());
-        }
-        
-        this.isSingleNicModeEnabled = newValue;
     }
 
     /* Method to calculate what the current internal address is */
