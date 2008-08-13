@@ -54,14 +54,8 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                             name : 'View Reports',
                             iconCls : 'actionIcon',
                             handler : function() {
-                                rpc.adminManager.generateAuthNonce(function (result, exception) {
-                                    if(exception) { 
-                                        Ext.MessageBox.alert(i18n._("Failed"),exception.message); 
-                                        return;
-                                    }
-                                    var viewReportsUrl = "../reports/?" + result;
-                                    window.open(viewReportsUrl);
-                                }.createDelegate(this));
+                                var viewReportsUrl = "../reports/";
+                                window.open(viewReportsUrl);
                             }.createDelegate(this)
                         }]
                     }, {
@@ -74,14 +68,8 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                             name : 'Archived Reports',
                             iconCls : 'actionIcon',
                             handler : function() {
-                                rpc.adminManager.generateAuthNonce(function (result, exception) {
-                                    if(exception) { 
-                                        Ext.MessageBox.alert(i18n._("Failed"),exception.message); 
-                                        return;
-                                    }
-                                    var viewReportsUrl = "../reports/archive?" + result;
-                                    window.open(viewReportsUrl);
-                                }.createDelegate(this));
+                                var viewReportsUrl = "../reports/archive";
+                                window.open(viewReportsUrl);
                             }.createDelegate(this)
                         }]
                     }]

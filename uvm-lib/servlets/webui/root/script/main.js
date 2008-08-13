@@ -177,24 +177,17 @@ Ung.Main.prototype = {
                 this.getEl().alignTo("contentright","c-c");
             }, 
             handler: function() {
-                rpc.adminManager.generateAuthNonce(function(result, exception) {
-                    if (exception) {
-                        Ext.MessageBox.alert(i18n._("Failed"), exception.message);
-                        return;
-                    }
-                    var currentLocation = window.location;
-                    var query = result;
-                    query += "&host=" + currentLocation.hostname;
-                    query += "&port=" + currentLocation.port;
-                    query += "&protocol=" + currentLocation.protocol.replace(/:$/, "");
-                    query += "&action=wizard";
+                var currentLocation = window.location;
+                var query = "host=" + currentLocation.hostname;
+                query += "&port=" + currentLocation.port;
+                query += "&protocol=" + currentLocation.protocol.replace(/:$/, "");
+                query += "&action=wizard";
 
-                    var url = "../library/launcher?" + query;
-                    var iframeWin = main.getIframeWin();
-                    iframeWin.show();
-                    iframeWin.setTitle("");
-                    window.frames["iframeWin_iframe"].location.href = url;
-                }.createDelegate(this));
+                var url = "../library/launcher?" + query;
+                var iframeWin = main.getIframeWin();
+                iframeWin.show();
+                iframeWin.setTitle("");
+                window.frames["iframeWin_iframe"].location.href = url;
             }
         });
         buttonCmp.hide();
@@ -209,24 +202,17 @@ Ung.Main.prototype = {
                 this.getEl().alignTo("appsItems","c-c",[0,10]);
             }, 
             handler: function() {
-                rpc.adminManager.generateAuthNonce(function(result, exception) {
-                    if (exception) {
-                        Ext.MessageBox.alert(i18n._("Failed"), exception.message);
-                        return;
-                    }
-                    var currentLocation = window.location;
-                    var query = result;
-                    query += "&host=" + currentLocation.hostname;
-                    query += "&port=" + currentLocation.port;
-                    query += "&protocol=" + currentLocation.protocol.replace(/:$/, "");
-                    query += "&action=my_account";
+                var currentLocation = window.location;
+                var query = "host=" + currentLocation.hostname;
+                query += "&port=" + currentLocation.port;
+                query += "&protocol=" + currentLocation.protocol.replace(/:$/, "");
+                query += "&action=my_account";
 
-                    var url = "../library/launcher?" + query;
-                    var iframeWin = main.getIframeWin();
-                    iframeWin.show();
-                    iframeWin.setTitle("");
-                    window.frames["iframeWin_iframe"].location.href = url;
-                }.createDelegate(this));
+                var url = "../library/launcher?" + query;
+                var iframeWin = main.getIframeWin();
+                iframeWin.show();
+                iframeWin.setTitle("");
+                window.frames["iframeWin_iframe"].location.href = url;
             }
         });
         buttonCmp.hide();
@@ -601,14 +587,11 @@ Ung.Main.prototype = {
     clickConfig: function(configItem) {
         switch(configItem.name){
             case "networking":
-                rpc.adminManager.generateAuthNonce(function (result, exception) {
-                    if(exception) { Ext.MessageBox.alert(i18n._("Failed"),exception.message); return;}
-                    var alpacaUrl = "/alpaca/?" + result;
-                    var iframeWin=main.getIframeWin();
-                    iframeWin.show();
-                    iframeWin.setTitle("Networking");
-                    window.frames["iframeWin_iframe"].location.href=alpacaUrl;
-                }.createDelegate(this));
+                var alpacaUrl = "/alpaca/";
+                var iframeWin=main.getIframeWin();
+                iframeWin.show();
+                iframeWin.setTitle("Networking");
+                window.frames["iframeWin_iframe"].location.href=alpacaUrl;
                 break;
             case "administration":
                 Ung.Util.loadResourceAndExecute("Ung.Administration","script/config/administration.js", function() {

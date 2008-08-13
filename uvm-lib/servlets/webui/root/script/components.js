@@ -713,25 +713,18 @@ Ung.AppItem = Ext.extend(Ext.Component, {
                 //main.setUpgrade(true)
                 Ext.MessageBox.alert(i18n._("Failed"), "Upgrades are available, please click Upgrade button in Config panel.");
             } else {
-                rpc.adminManager.generateAuthNonce(function(result, exception) {
-                    if (exception) {
-                        Ext.MessageBox.alert(i18n._("Failed"), exception.message);
-                        return;
-                    }
-                    var currentLocation = window.location;
-                    var query = result;
-                    query += "&host=" + currentLocation.hostname;
-                    query += "&port=" + currentLocation.port;
-                    query += "&protocol=" + currentLocation.protocol.replace(/:$/, "");
-                    query += "&action=browse";
-                    query += "&libitem=" + this.libItem.name;
+                var currentLocation = window.location;
+                var query = "&host=" + currentLocation.hostname;
+                query += "&port=" + currentLocation.port;
+                query += "&protocol=" + currentLocation.protocol.replace(/:$/, "");
+                query += "&action=browse";
+                query += "&libitem=" + this.libItem.name;
 
-                    var url = "../library/launcher?" + query;
-                    var iframeWin = main.getIframeWin();
-                    iframeWin.show();
-                    iframeWin.setTitle("");
-                    window.frames["iframeWin_iframe"].location.href = url;
-                }.createDelegate(this));
+                var url = "../library/launcher?" + query;
+                var iframeWin = main.getIframeWin();
+                iframeWin.show();
+                iframeWin.setTitle("");
+                window.frames["iframeWin_iframe"].location.href = url;
             }
         }.createDelegate(this));
 
@@ -2217,6 +2210,7 @@ Ung.NodeSettingsWin = Ext.extend(Ung.ButtonsWindow, {
     initButtons : function() {
         this.subCmps.push(new Ext.Button({
             name : "Remove",
+            id : this.getId() + "_removeBtn",
             iconCls : 'nodeRemoveIcon',
             renderTo : 'button_left_' + this.getId(),
             text : i18n._('Remove'),
@@ -2226,6 +2220,7 @@ Ung.NodeSettingsWin = Ext.extend(Ung.ButtonsWindow, {
         }));
         this.subCmps.push(new Ext.Button({
             name : "Cancel",
+            id : this.getId() + "_cancelBtn",
             iconCls : 'cancelIcon',
             renderTo : 'button_inner_right_' + this.getId(),
             text : i18n._('Cancel'),
@@ -2235,6 +2230,7 @@ Ung.NodeSettingsWin = Ext.extend(Ung.ButtonsWindow, {
         }));
         this.subCmps.push(new Ext.Button({
             name : "Save",
+            id : this.getId() + "_saveBtn",
             iconCls : 'saveIcon',
             renderTo : 'button_margin_right_' + this.getId(),
             text : i18n._('Save'),
@@ -2318,6 +2314,7 @@ Ung.ConfigWin = Ext.extend(Ung.ButtonsWindow, {
     initButtons : function() {
         this.subCmps.push(new Ext.Button({
             name : 'Help',
+            id : this.getId() + "_helpBtn",
             renderTo : 'button_left_' + this.getId(),
             iconCls : 'iconHelp',
             text : i18n._('Help'),
@@ -2327,6 +2324,7 @@ Ung.ConfigWin = Ext.extend(Ung.ButtonsWindow, {
         }));
         this.subCmps.push(new Ext.Button({
             name : 'Cancel',
+            id : this.getId() + "_cancelBtn",
             iconCls : 'cancelIcon',
             renderTo : 'button_inner_right_' + this.getId(),
             text : i18n._('Cancel'),
@@ -2336,6 +2334,7 @@ Ung.ConfigWin = Ext.extend(Ung.ButtonsWindow, {
         }));
         this.subCmps.push(new Ext.Button({
             name : 'Save',
+            id : this.getId() + "_saveBtn",
             iconCls : 'saveIcon',
             renderTo : 'button_margin_right_' + this.getId(),
             text : i18n._('Save'),

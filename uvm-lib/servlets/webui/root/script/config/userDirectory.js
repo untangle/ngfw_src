@@ -301,14 +301,8 @@ if (!Ung.hasResource["Ung.UserDirectory"]) {
                 }.createDelegate(this),
                 
                 onADLoginScriptClick : function() {
-	                rpc.adminManager.generateAuthNonce(function (result, exception) {
-	                    if(exception) { 
-                            Ext.MessageBox.alert(i18n._("Failed"),exception.message); 
-                            return;
-                        }
-	                    var loginScriptUrl = "../adpb/?" + result;
-                        window.open(loginScriptUrl);
-	                }.createDelegate(this));
+                    var loginScriptUrl = "../adpb/";
+                    window.open(loginScriptUrl);
                 },
                 
                 onADUsersClick : function() {
