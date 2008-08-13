@@ -45,6 +45,8 @@
     <script type="text/javascript" src="script/untangle-node-firewall/settings.js"></script>
     <script type="text/javascript" src="script/untangle-node-portal/settings.js"></script>
     <script type="text/javascript" src="script/untangle-node-reporting/settings.js"></script>
+    <script type="text/javascript" src="script/untangle-node-boxbackup/settings.js"></script>
+    <script type="text/javascript" src="script/untangle-node-pcremote/settings.js"></script>
 <!--     <script type="text/javascript" src="script/untangle-base-virus/settings.js"></script> 
     <script type="text/javascript" src="script/untangle-node-clam/settings.js"></script> --> 
     <script type="text/javascript" src="script/config/administration.js"></script>

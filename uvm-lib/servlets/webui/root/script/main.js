@@ -552,6 +552,12 @@ Ung.Main.prototype = {
         }
         return this.iframeWin;
     },
+    openInRightFrame : function(title, url) {
+        var iframeWin=main.getIframeWin();
+        iframeWin.show();
+        iframeWin.setTitle(title);
+        window.frames["iframeWin_iframe"].location.href=url;
+    },
     // load Config
     loadConfig: function() {
         this.config =
@@ -588,10 +594,7 @@ Ung.Main.prototype = {
         switch(configItem.name){
             case "networking":
                 var alpacaUrl = "/alpaca/";
-                var iframeWin=main.getIframeWin();
-                iframeWin.show();
-                iframeWin.setTitle("Networking");
-                window.frames["iframeWin_iframe"].location.href=alpacaUrl;
+                main.openInRightFrame(i18n._("Networking"), alpacaUrl);
                 break;
             case "administration":
                 Ung.Util.loadResourceAndExecute("Ung.Administration","script/config/administration.js", function() {

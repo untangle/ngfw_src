@@ -55,7 +55,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                             iconCls : 'actionIcon',
                             handler : function() {
                                 var viewReportsUrl = "../reports/";
-                                window.open(viewReportsUrl);
+                                main.openInRightFrame(i18n._("View Reports"), viewReportsUrl);
                             }.createDelegate(this)
                         }]
                     }, {
@@ -69,7 +69,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                             iconCls : 'actionIcon',
                             handler : function() {
                                 var viewReportsUrl = "../reports/archive";
-                                window.open(viewReportsUrl);
+                                main.openInRightFrame(i18n._("Archived Reports"), viewReportsUrl);
                             }.createDelegate(this)
                         }]
                     }]
