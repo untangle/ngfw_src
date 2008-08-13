@@ -6,6 +6,8 @@ if (!Ung.hasResource["Ung.Email"]) {
         panelFromSafeList : null,
         panelQuarantine : null,
         globalSafelistGrid : null,
+        userSafelistGrid : null,
+        safelistDetailsWin : null,
         initComponent : function() {
             this.breadcrumbs = [{
                 title : i18n._("Configuration"),
@@ -278,16 +280,37 @@ if (!Ung.hasResource["Ung.Email"]) {
             });
         },
         buildFromSafeList : function() {
-            var values = this.getMailNode().getSafelistAdminView().getSafelistContents('GLOBAL');
-            var storeData = [];
-            for(var i=0; i<values.length; i++) {
-                storeData.push({id:i, emailAddress: values[i]});
+            var valuesGlobal = this.getMailNode().getSafelistAdminView().getSafelistContents('GLOBAL');
+            var storeDataGlobal = [];
+            for(var i=0; i<valuesGlobal.length; i++) {
+                storeDataGlobal.push({id:i, emailAddress: valuesGlobal[i]});
+            }
+            
+            var safelistUsers = this.getMailNode().getSafelistAdminView().listSafelists().list;
+            var safelistSettings = this.getMailNodeSettings().safelistSettings.list;
+            var storeDataUser = [];
+            for(var i=0; i<safelistUsers.length; i++) {
+                if(safelistUsers[i].toLowerCase() == 'global') {
+                    continue;
+                }
+                var cnt = 0;
+                var safeSendersList = []
+                for(var j=0; j<safelistSettings.length; j++) {
+                    if(safelistUsers[i] == safelistSettings[j].recipient.addr) {
+                        cnt++;
+                        safeSendersList.push([safelistSettings[j].sender.addr, safelistSettings[j].sender.addr]);
+                    }
+                }
+                storeDataUser.push({id:i, emailAddress: safelistUsers[i], count: cnt, safeSenders: safeSendersList});
             }
 
             this.panelFromSafeList = new Ext.Panel({
                 // private fields
                 name : 'From-Safe List',
                 parentId : this.getId(),
+                winSafelistShowDetail : null,
+                
+                
                 title : this.i18n._('From-Safe List'),
                 layout : "form",
                 bodyStyle : 'padding:5px 5px 0px 5px;',
@@ -303,12 +326,12 @@ if (!Ung.hasResource["Ung.Email"]) {
                         hasEdit : false,
                         settingsCmp : this,
                         paginated : false,
-                        height : 330,
+                        height : 300,
                         emptyRow : {
                             "emailAddress" : this.i18n._("[no email address]")
                         },
                         autoExpandColumn : 'emailAddress',
-                        data : storeData,
+                        data : storeDataGlobal,
                         dataRoot: null,
                         fields : [{
                             name : 'id'
@@ -333,10 +356,150 @@ if (!Ung.hasResource["Ung.Email"]) {
                         })]
                     })]
                 },{
-                	title : this.i18n._('Per User')
-                }]
+                	title : this.i18n._('Per User'),
+                    height : 350,
+                    items : [ this.userSafelistGrid = new Ung.EditorGrid({
+                        name : 'Per User',
+                        sm : new Ext.grid.RowSelectionModel({singleSelect:true}),
+                        hasEdit : false,
+                        hasAdd : false,
+                        hasDelete : false,
+                        settingsCmp : this,
+                        paginated : false,
+                        height : 300,
+                        autoExpandColumn : 'emailAddress',
+                        data : storeDataUser,
+                        dataRoot: null,
+                        fields : [{
+                            name : 'id'
+                        }, {
+                            name : 'emailAddress'
+                        }, {
+                            name : 'count'
+                        }],
+                        columns : [{
+                            id : 'emailAddress',
+                            header : this.i18n._("account address"),
+                            width : 200,
+                            dataIndex : 'emailAddress'
+                        }, {
+                            id : 'count',
+                            header : this.i18n._("safe list size"),
+                            width : 200,
+                            dataIndex : 'count'
+                        }],
+                        sortField : 'emailAddress',
+                        columnsDefaultSortable : true
+                    }), 
+//                    new Ext.Button({
+//                      name : 'Purge Selected',
+//                      //iconCls : 'cancelIcon',
+//                      text : i18n._('Purge Selected'),
+//                      handler : function() {
+//                          this.onPurgeSelected();
+//                      }.createDelegate(this)
+//                  }), 
+                    new Ext.Button({
+                        name : 'Show Detail',
+                        iconCls : 'detailIcon',
+                        text : i18n._('Show Detail'),
+                        handler : function() {
+		                    var selectedRecord = this.userSafelistGrid.getSelectionModel().getSelected().data;
+		                    var data = this.userSafelistGrid.getStore().proxy.data;
+                            this.panelFromSafeList.onShowDetail(data[selectedRecord.id]);
+                        }.createDelegate(this)
+                    })]
+                }],
+                
+//		        onPurgeSelected : function() {
+//		            main.todo();
+//		        },
+		        onShowDetail : function(selectedRecord) {
+                    if (!this.winSafelistShowDetail) {
+                        var settingsCmp = Ext.getCmp(this.panelFromSafeList.parentId);
+                        settingsCmp.buildPanelSafelistDetails();
+                        var multiselectCmp = Ext.getCmp('xxx');
+                        multiselectCmp.data = selectedRecord.safeSenders;
+                        settingsCmp.panelSafelistDetails.setTitle(this.i18n._('Email From-SafeList Details for: ') + selectedRecord.emailAddress);
+                        this.winSafelistShowDetail = new Ung.EmailAddressDetails({
+                            detailsPanel : settingsCmp.panelSafelistDetails,
+                            account : selectedRecord.emailAddress,
+                            title : this.i18n._('Email From-SafeList Details for: ') + selectedRecord.emailAddress,
+                            proceedAction : function() {main.todo();}.createDelegate(settingsCmp)
+                        });
+                    }
+                    this.winSafelistShowDetail.show();
+		        }.createDelegate(this)
+            });
+            
+        },
+        // Generate Self-Signed certificate
+        buildPanelSafelistDetails : function() {
+            this.panelSafelistDetails = new Ext.FormPanel({
+                name : 'panelSafelistDetails',
+                // private fields
+                parentId : this.getId(),
+                layout : "form",
+                bodyStyle : 'padding:5px 5px 0px 5px;',
+                autoScroll : true,
+                buttonAlign : 'center',
+                items: [{
+		            xtype:"multiselect",
+		            name:"multiselect",
+                    id : 'xxx',
+                    hideLabel : true,
+		            dataFields:["code", "desc"], 
+		            valueField:"code",
+		            displayField:"desc",
+		            width:350,
+		            height:400,
+		            allowBlank:false,
+                    tbar:[{
+		                text:i18n._('Email Address')
+                    }]
+		        }],
+                buttons : [ new Ext.Button({
+	                name : 'Purge Selected',
+                    iconCls : 'purgeIcon',
+	                text : i18n._('Purge Selected'),
+	                handler : function() {
+	                    Ext.MessageBox.show({
+	                       buttons : Ext.Msg.CANCEL,
+	                       modal : true,
+	                       wait : true,
+	                       waitConfig: {interval: 100},
+	                       progressText : this.i18n._('Removing...'),
+	                       width : 300
+	                    });
+	                    
+                        var multiselectCmp = Ext.getCmp('xxx');
+                        var emails = multiselectCmp.view.getSelectedRecords();
+                        this.purgeSemaphore = emails.length;
+                        for(var i=0; i<emails.length; i++) {
+		                    this.getMailNode().getSafelistAdminView().removeFromSafelist(function(result, exception) {
+	                            if (exception) {
+	                                Ext.MessageBox.alert(i18n._("Failed"), exception.message);
+	                                return;
+	                            }
+	
+					            this.purgeSemaphore--;
+					            if (this.purgeSemaphore <= 0) {
+//                                    multiselectCmp.data = result;
+//                                    multiselectCmp.store.data = result;
+                                    var emails = [];
+                                    for(var j=0; j<result.length; j++) {
+                                        emails.push([result[j], result[j]]);
+                                    }
+                                    multiselectCmp.store.loadData(emails);
+                                    Ext.MessageBox.hide();
+					            }
+	                        }.createDelegate(this), this.winSafelistShowDetail.account, emails[i].data.desc);
+                        }
+	                }.createDelegate(this)
+	            })]
             });
         },
+
         buildQuarantine : function() {
             this.panelQuarantine = new Ext.Panel({
                 name : 'panelQuarantine',
@@ -549,7 +712,57 @@ if (!Ung.hasResource["Ung.Email"]) {
                 this.cancelAction();
             }
         }
-
     });
-
+    
+    // email address details window for Safe List and Quarantine
+    Ung.EmailAddressDetails = Ext.extend(Ung.ButtonsWindow, {
+        // the certPanel
+        detailsPanel : null,
+        account : null,
+        onRender : function(container, position) {
+            Ung.EmailAddressDetails.superclass.onRender.call(this, container, position);
+            this.initSubComponents.defer(1, this);
+        },
+        initSubComponents : function(container, position) {
+            this.detailsPanel.render(this.getContentEl());
+        },
+        listeners : {
+            'show' : {
+                fn : function() {
+                    this.detailsPanel.setHeight(this.getContentHeight());
+                },
+                delay : 1
+            }
+        },
+        initButtons : function() {
+            var settingsCmp = Ext.getCmp(this.detailsPanel.parentId);
+            this.subCmps.push(new Ext.Button({
+                name : 'Cancel',
+                renderTo : 'button_margin_right_' + this.getId(),
+                iconCls : 'cancelIcon',
+                text : i18n._('Cancel'),
+                handler : function() {
+                    this.cancelAction();
+                }.createDelegate(this)
+            }));
+            this.subCmps.push(new Ext.Button({
+                name : 'Help',
+                renderTo : 'button_left_' + this.getId(),
+                iconCls : 'iconHelp',
+                text : settingsCmp.i18n._('Help'),
+                handler : function() {
+                    this.helpAction();
+                }.createDelegate(this)
+            }));
+        },
+        // the proceed actions
+        // to override
+        proceedAction : function() {
+            main.todo();
+        },
+        beforeDestroy : function() {
+            Ext.destroy(this.detailsPanel);
+            Ung.ButtonsWindow.superclass.beforeDestroy.call(this);
+        }
+    });
 }

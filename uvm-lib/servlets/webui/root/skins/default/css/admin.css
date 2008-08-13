@@ -192,6 +192,12 @@ button.testIcon {
 button.actionIcon {
     background:transparent url(../images/admin/icon_action.gif) no-repeat center left !important; 
 }
+button.purgeIcon {
+	background:transparent url(../images/admin/icon_purge.png) no-repeat center left !important; 
+}
+button.detailIcon {
+	background:transparent url(../images/admin/icon_detail.png) no-repeat center left !important; 
+}
 div.windowContent {
 	position:relative;
 	margin-top:10px;
