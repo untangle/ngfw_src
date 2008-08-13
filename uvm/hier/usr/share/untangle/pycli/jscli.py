@@ -3,6 +3,7 @@ import sys
 from StringIO import StringIO
 
 import urllib
+import getopt
 from jsonrpc import ServiceProxy
 from jsonrpc import JSONRPCException
 from copy import copy
@@ -123,11 +124,12 @@ proxy = ServiceProxy( "http://localhost/webui/JSON-RPC", None, handler )
 
 remoteContext = proxy.RemoteUvmContext
 
-args = copy( sys.argv )
+(optlist, args) = getopt.getopt(sys.argv[1:], 'h:u:w:t:p:v')
+# XXX do something with the options
 
 calledMethod = False
 
-script = args.pop(0)
+script = sys.argv[0]
 
 if len(args) == 0:
     printUsage(script)
