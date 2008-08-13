@@ -7,6 +7,8 @@ if (!Ung.hasResource["Ung.Email"]) {
         panelQuarantine : null,
         globalSafelistGrid : null,
         userSafelistGrid : null,
+        quarantinableAddressesGrid : null,
+        quarantineForwardsGrid : null,
         safelistDetailsWin : null,
         initComponent : function() {
             this.breadcrumbs = [{
@@ -77,12 +79,6 @@ if (!Ung.hasResource["Ung.Email"]) {
             }
             return this.rpc.mailNodeSettings;
         },
-//        getGlobalSafelist : function(forceReload) {
-//            if (forceReload || this.rpc.globalSafelist === undefined) {
-//                this.rpc.globalSafelist = this.getMailNode().getSafelistAdminView().getSafelistContents('GLOBAL');
-//            }
-//            return this.rpc.globalSafelist;
-//        },
         getFormattedTime: function(hours, minutes) {
             var hh = hours < 10 ? "0" + hours : hours;
             var mm = minutes < 10 ? "0" + minutes : minutes;
@@ -320,13 +316,13 @@ if (!Ung.hasResource["Ung.Email"]) {
                 },
                 items : [{
                     title : this.i18n._('Global'),
-                    height : 350,
+                    height : 300,
                     items : [ this.globalSafelistGrid = new Ung.EditorGrid({
                         name : 'Global',
                         hasEdit : false,
                         settingsCmp : this,
                         paginated : false,
-                        height : 300,
+                        height : 250,
                         emptyRow : {
                             "emailAddress" : this.i18n._("[no email address]")
                         },
@@ -366,7 +362,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                         hasDelete : false,
                         settingsCmp : this,
                         paginated : false,
-                        height : 300,
+                        height : 250,
                         autoExpandColumn : 'emailAddress',
                         data : storeDataUser,
                         dataRoot: null,
@@ -390,31 +386,61 @@ if (!Ung.hasResource["Ung.Email"]) {
                         }],
                         sortField : 'emailAddress',
                         columnsDefaultSortable : true
-                    }), 
-//                    new Ext.Button({
-//                      name : 'Purge Selected',
-//                      //iconCls : 'cancelIcon',
-//                      text : i18n._('Purge Selected'),
-//                      handler : function() {
-//                          this.onPurgeSelected();
-//                      }.createDelegate(this)
-//                  }), 
-                    new Ext.Button({
-                        name : 'Show Detail',
-                        iconCls : 'detailIcon',
-                        text : i18n._('Show Detail'),
-                        handler : function() {
-		                    var selectedRecord = this.userSafelistGrid.getSelectionModel().getSelected().data;
-		                    var data = this.userSafelistGrid.getStore().proxy.data;
-                            this.panelFromSafeList.onShowDetail(data[selectedRecord.id]);
-                        }.createDelegate(this)
-                    })]
-                }],
-                
-//		        onPurgeSelected : function() {
-//		            main.todo();
-//		        },
-		        onShowDetail : function(selectedRecord) {
+                    }), new Ext.Panel({
+                        buttonAlign : 'center',
+                        footer : false,
+                        border : false,
+                        buttons: [{
+                            xtype : 'button',
+                            name : 'Purge Selected',
+                            iconCls : 'purgeIcon',
+                            text : i18n._('Purge Selected'),
+		                    handler : function() {
+		                        Ext.MessageBox.show({
+		                           buttons : Ext.Msg.CANCEL,
+		                           modal : true,
+		                           wait : true,
+		                           waitConfig: {interval: 100},
+		                           progressText : this.i18n._('Removing...'),
+		                           width : 300
+		                        });
+		                        
+                                var selectedRecords = this.userSafelistGrid.getSelectionModel().getSelections();
+
+		                        this.purgeSemaphore1 = selectedRecords.length;
+		                        for(var i=0; i<selectedRecords.length; i++) {
+		                            this.getMailNode().getSafelistAdminView().deleteSafelist(function(result, exception) {
+		                                if (exception) {
+		                                    Ext.MessageBox.alert(i18n._("Failed"), exception.message);
+		                                    return;
+		                                }
+		    
+		                                this.purgeSemaphore1--;
+		                                if (this.purgeSemaphore1 <= 0) {
+//		                                    var emails = [];
+//		                                    for(var j=0; j<result.length; j++) {
+//		                                        emails.push([result[j], result[j]]);
+//		                                    }
+//		                                    multiselectCmp.store.loadData(emails);
+		                                    Ext.MessageBox.hide();
+		                                }
+		                            }.createDelegate(this), selectedRecords[i].data.emailAddress);
+		                        }
+		                    }.createDelegate(this)
+                        }, {
+                            xtype : 'button',
+                            name : 'Show Detail',
+                            iconCls : 'detailIcon',
+                            text : i18n._('Show Detail'),
+                            handler : function() {
+                                var selectedRecord = this.userSafelistGrid.getSelectionModel().getSelected().data;
+                                var data = this.userSafelistGrid.getStore().proxy.data;
+                                this.panelFromSafeList.onShowDetail(data[selectedRecord.id]);
+                            }.createDelegate(this)
+                        }]
+                    })
+                ]}],
+                onShowDetail : function(selectedRecord) {
                     if (!this.winSafelistShowDetail) {
                         var settingsCmp = Ext.getCmp(this.panelFromSafeList.parentId);
                         settingsCmp.buildPanelSafelistDetails();
@@ -429,7 +455,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                         });
                     }
                     this.winSafelistShowDetail.show();
-		        }.createDelegate(this)
+                }.createDelegate(this)
             });
             
         },
@@ -474,7 +500,7 @@ if (!Ung.hasResource["Ung.Email"]) {
 	                    
                         var multiselectCmp = Ext.getCmp('xxx');
                         var emails = multiselectCmp.view.getSelectedRecords();
-                        this.purgeSemaphore = emails.length;
+                        this.purgeSemaphore2 = emails.length;
                         for(var i=0; i<emails.length; i++) {
 		                    this.getMailNode().getSafelistAdminView().removeFromSafelist(function(result, exception) {
 	                            if (exception) {
@@ -482,10 +508,8 @@ if (!Ung.hasResource["Ung.Email"]) {
 	                                return;
 	                            }
 	
-					            this.purgeSemaphore--;
-					            if (this.purgeSemaphore <= 0) {
-//                                    multiselectCmp.data = result;
-//                                    multiselectCmp.store.data = result;
+					            this.purgeSemaphore2--;
+					            if (this.purgeSemaphore2 <= 0) {
                                     var emails = [];
                                     for(var j=0; j<result.length; j++) {
                                         emails.push([result[j], result[j]]);
@@ -555,24 +579,144 @@ if (!Ung.hasResource["Ung.Email"]) {
                     }]
                 }, {
                 	title : this.i18n._('User Quarantines'),
-                	items: [{
-                	}]
+                	items: [{}]
                 }, {
                 	title : this.i18n._('Quarantinable Addresses'),
                     items: [{
                         bodyStyle : 'padding:0px 0px 5px 5px;',
                         border : false,
                         html : this.i18n._('This list is a list of all addresses that will have quarantines automatically created. An email address that does not have a quarantinable address will have their mail marked instead.')
-                    },{
-                    }]
+                    },  this.quarantinableAddressesGrid = new Ung.EditorGrid({
+                        name : 'Quarantinable Addresses',
+                        settingsCmp : this,
+                        height : 350,
+                        paginated : false,
+                        emptyRow : {
+                            "address" : this.i18n._("quarantineme@example.com"),
+                            "category" : this.i18n._("[no category]"),
+                            "description" : this.i18n._("[no description]"),
+                            "javaClass" : "com.untangle.node.mail.papi.EmailAddressRule"
+                        },
+                        recordJavaClass : "com.untangle.node.mail.papi.EmailAddressRule",
+                        data : this.getMailNodeSettings().quarantineSettings.allowedAddressPatterns,
+                        dataRoot : 'list',
+                        fields : [{
+                            name : 'id'
+                        }, {
+                            name : 'address'
+                        }, {
+                            name : 'category'
+                        }, {
+                            name : 'description'
+                        }],
+                        columns : [{
+                            id : 'address',
+                            header : this.i18n._("quarantinable<br>address"),
+                            width : 200,
+                            dataIndex : 'address',
+                            editor : new Ext.form.TextField({
+                            })
+                        }, {
+                            id : 'description',
+                            header : this.i18n._("description"),
+                            width : 200,
+                            dataIndex : 'description',
+                            editor : new Ext.form.TextField({
+                            }),
+                            renderer : function(value, metadata, record) {
+                                return record.data.address == "*" ? this.i18n._("All addresses have quarantines") : value;
+                            }.createDelegate(this)
+                        }],
+                        autoExpandColumn : 'description',
+                        rowEditorInputLines : [new Ext.form.TextField({
+                            name : "Category",
+                            dataIndex: "category",
+                            fieldLabel : this.i18n._("Category"),
+                            allowBlank : false,
+                            width : 300
+                        }), new Ext.form.TextField({
+                            name : "Address",
+                            dataIndex: "address",
+                            fieldLabel : this.i18n._("Address"),
+                            allowBlank : false,
+                            width : 300
+                        }), new Ext.form.TextField({
+                            name : "Description",
+                            dataIndex: "description",
+                            fieldLabel : this.i18n._("Description"),
+                            allowBlank : false,
+                            width : 400
+                        })]
+                    })]
                 }, {
                     title : this.i18n._('Quarantine Forwards'),
                     items: [{
                         bodyStyle : 'padding:0px 0px 5px 5px;',
                         border : false,
                         html : this.i18n._('This is a list of email addresses whose quarantine digest get forward to another account. This is common for distribution lists where the whole list should not receive the digest.')
-                    },{
-                    }]
+                    }, this.quarantineForwardsGrid = new Ung.EditorGrid({
+                        name : 'Quarantine Forwards',
+                        settingsCmp : this,
+                        height : 350,
+                        paginated : false,
+                        emptyRow : {
+                            "address1" : this.i18n._("distributionlistrecipient@example.com"),
+                            "address2" : this.i18n._("quarantinelistowner@example.com"),
+                            "category" : this.i18n._("[no category]"),
+                            "description" : this.i18n._("[no description]"),
+                            "javaClass" : "com.untangle.node.mail.papi.EmailAddressPairRule"
+                        },
+                        recordJavaClass : "com.untangle.node.mail.papi.EmailAddressPairRule",
+                        data : this.getMailNodeSettings().quarantineSettings.addressRemaps,
+                        dataRoot : 'list',
+                        fields : [{
+                            name : 'id'
+                        }, {
+                            name : 'address1'
+                        }, {
+                            name : 'address2'
+                        }, {
+                            name : 'category'
+                        }, {
+                            name : 'description'
+                        }],
+                        columns : [{
+                            id : 'address1',
+                            header : this.i18n._("distribution<br>list address"),
+                            width : 200,
+                            dataIndex : 'address1',
+                            editor : new Ext.form.TextField({
+                            })
+                        }, {
+                            id : 'address2',
+                            header : this.i18n._("send to<br>address"),
+                            width : 200,
+                            dataIndex : 'address2',
+                            editor : new Ext.form.TextField({
+                            })
+                        }],
+                        rowEditorInputLines : [new Ext.form.TextField({
+                            name : "address1",
+                            dataIndex: "address1",
+                            fieldLabel : this.i18n._("Distribution<br>List Address"),
+                            width : 300
+                        }), new Ext.form.TextField({
+                            name : "address2",
+                            dataIndex: "address2",
+                            fieldLabel : this.i18n._("Send To<br>Address"),
+                            width : 300
+                        }), , new Ext.form.TextField({
+                            name : "Category",
+                            dataIndex: "category",
+                            fieldLabel : this.i18n._("Category"),
+                            width : 300
+                        }), new Ext.form.TextField({
+                            name : "Description",
+                            dataIndex: "description",
+                            fieldLabel : this.i18n._("Description"),
+                            width : 400
+                        })]
+                    })]
                 }]
             });
         },
