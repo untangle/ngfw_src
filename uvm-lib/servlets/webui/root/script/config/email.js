@@ -43,13 +43,27 @@ if (!Ung.hasResource["Ung.Email"]) {
             this.buildTabPanel(pageTabs);
             this.tabs.activate(this.panelOutgoingServer);
             
-            var smtpLoginCmp = Ext.getCmp('email_smtpLogin');
-            if(smtpLoginCmp != null && smtpLoginCmp.getValue().length > 0) {
-                Ext.getCmp('email_smtpUseAuthentication').setValue(true);
+            var useSmtp = Ext.getCmp('email_smtpEnabled').getValue();
+            if(useSmtp == false) {
+                Ext.getCmp('email_smtpHost').disable();
+                Ext.getCmp('email_smtpPort').disable();
+                Ext.getCmp('email_smtpUseAuthentication').disable();
+                Ext.getCmp('email_smtpLogin').disable();
+                Ext.getCmp('email_smtpPassword').disable();
             }
             else {
-                Ext.getCmp('email_smtpUseAuthentication').setValue(false);
+                Ext.getCmp('email_smtpHost').enable();
+                Ext.getCmp('email_smtpPort').enable();
+                Ext.getCmp('email_smtpUseAuthentication').enable();
+                Ext.getCmp('email_smtpLogin').enable();
+                Ext.getCmp('email_smtpPassword').enable();
             }
+            
+            var smtpLoginCmp = Ext.getCmp('email_smtpLogin');
+            var useAuthentication = smtpLoginCmp != null && smtpLoginCmp.getValue().length > 0;
+            Ext.getCmp('email_smtpUseAuthentication').setValue(useAuthentication);
+            Ext.getCmp('email_smtpLogin').setContainerVisible(useAuthentication);
+            Ext.getCmp('email_smtpPassword').setContainerVisible(useAuthentication);
         },
         // get languange settings object
         getLanguageSettings : function(forceReload) {
@@ -95,43 +109,65 @@ if (!Ung.hasResource["Ung.Email"]) {
                 autoScroll : true,
                 
                 onEmailTest : function() {
+                    this.emailTestMessage = this.i18n
+                                ._("<center>\n<b>Email Test:</b><br><br>\nEnter an email address which you would like to send a test message to,<br>\nand then press \"Proceed\".  You should receive an email shortly after<br>\nrunning the test.  If not, your email settings may not be correct.<br><br>\nEmail Address:</center>");
                     if( this.validateOutgoingServer() ) {
 	                    Ext.MessageBox.show({
 	                        title : this.i18n._('Email Test'),
-	                        //msg : this.i18n._('Email Test:'),
 	                        buttons : { 
                                 cancel:this.i18n._('Close'), 
                                 ok:this.i18n._('Proceed') 
                             },
-                            msg : this.i18n
-                                ._("<center>\n<b>Email Test:</b><br><br>\nEnter an email address which you would like to send a test message to,<br>\nand then press \"Proceed\".  You should receive an email shortly after<br>\nrunning the test.  If not, your email settings may not be correct.<br><br>\nEmail Address:</center>"),
+                            msg : this.emailTestMessage,
 	                        modal : true,
                             prompt : true,
-	                        //wait : true,
-	                        //waitConfig: {interval: 100},
+	                        fn: function(btn, emailAddress){
+							    if (btn == 'ok'){
+                                    Ext.MessageBox.show({
+                                        title : this.i18n._('Email Test'),
+                                        msg : this.emailTestMessage,
+			                            buttons : { 
+			                                cancel:this.i18n._('Close'), 
+			                                ok:this.i18n._('Proceed') 
+			                            },
+                                        modal : true,
+                                        prompt : true,
+                                        progress : true,
+                                        wait : true,
+                                        waitConfig: {interval: 100},
+                                        progressText : this.i18n._('Sending...'),
+                                        value : emailAddress,
+                                        width : 450
+                                    });
+			                        var message = rpc.adminManager.sendTestMessage( function(result, exception) {
+			                            if (exception) {
+			                                Ext.MessageBox.alert(i18n._("Failed"), exception.message);
+			                                return;
+			                            }
+			                            this.testEmailResultMessage = result == true ? this.i18n._('Test email sent.') : this.i18n._('Warning!  Test failed.  Check your settings.');
+			    
+			                            Ext.MessageBox.show({
+			                                title : this.i18n._('Email Test'),
+			                                msg : this.emailTestMessage,
+	                                        buttons : { 
+	                                            cancel:this.i18n._('Close'), 
+	                                            ok:this.i18n._('Proceed') 
+	                                        },
+			                                modal : true,
+                                            prompt : true,
+			                                progress : true,
+			                                waitConfig: {interval: 100},
+			                                progressText : this.testEmailResultMessage,
+                                            value : emailAddress,
+			                                width : 450
+			                            });
+			                        }.createDelegate(this), emailAddress);
+							    }
+                            }.createDelegate(this),
                             progress : true,
 	                        progressText : ' ',
-	                        width : 600
+	                        width : 450
 	                    });
-	                    
-//	                    var message = rpc.adminManager.sendTestMessage( function(result, exception) {
-//	                        if (exception) {
-//	                            Ext.MessageBox.alert(i18n._("Failed"), exception.message);
-//	                            return;
-//	                        }
-//	                        var message = result == true ? this.i18n._('Success!  Your settings work.') : this.i18n._('Failure!  Your settings are not correct.');
-//	
-//	                        Ext.MessageBox.show({
-//	                           title : this.i18n._('Email Test'),
-//	                           msg : this.i18n._('Email Test:'),
-//	                           buttons : Ext.Msg.CANCEL,
-//	                           modal : true,
-//	                           progress : true,
-//	                           waitConfig: {interval: 100},
-//	                           progressText : message,
-//	                           width : 300
-//	                        });
-//	                    }.createDelegate(this), this.getMailSettings().fromAddress);
                     }
                 }.createDelegate(this),
 
@@ -149,6 +185,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                                 ._("The Outgoing Email Server settings determine how the Untangle Server sends emails such as reports, quarantine digests, etc. In most cases the default setting should work, but if not, you should specify an SMTP server that will relay mail for the  Untangle Server.")
                     }, {
                         xtype : 'radio',
+                        id : 'email_smtpDisabled',
                         name : 'email_smtpEnabled',
                         boxLabel : this.i18n._('Send email directly (default)'),
                         hideLabel : true,
@@ -178,6 +215,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                         }
                     }, {
                         xtype : 'radio',
+                        id : 'email_smtpEnabled',
                         name : 'email_smtpEnabled',
                         boxLabel : this.i18n._('Send Email using the specified SMTP Server'),
                         hideLabel : true,
@@ -696,16 +734,16 @@ if (!Ung.hasResource["Ung.Email"]) {
                             })
                         }],
                         rowEditorInputLines : [new Ext.form.TextField({
-                            name : "address1",
+                            name : "Distribution<br>List Address",
                             dataIndex: "address1",
                             fieldLabel : this.i18n._("Distribution<br>List Address"),
                             width : 300
                         }), new Ext.form.TextField({
-                            name : "address2",
+                            name : "Send To<br>Address",
                             dataIndex: "address2",
                             fieldLabel : this.i18n._("Send To<br>Address"),
                             width : 300
-                        }), , new Ext.form.TextField({
+                        }), new Ext.form.TextField({
                             name : "Category",
                             dataIndex: "category",
                             fieldLabel : this.i18n._("Category"),
