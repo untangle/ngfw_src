@@ -4,12 +4,13 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
 
     Ung.OpenVPN = Ext.extend(Ung.Settings, {
         configState: null,
-        addressPoolStore:null,
+        groupsStore:null,
         panelStatus: null,
     	panelClients: null,
-    	gridVPNClients: null,
-    	gridVPNSites: null,
+    	gridClients: null,
+    	gridSites: null,
     	gridExports: null,
+    	gridGroups: null,
     	panelAdvanced: null,
     	gridEventLog: null,
         // called when the component is rendered
@@ -63,14 +64,14 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
         formatHostAddress : function (hostAddress) {
         	return hostAddress==null?"":(hostAddress.hostName==null || hostAddress.hostName=="")?hostAddress.hostName :hostAddress.ip
         },
-        getAddressPoolStore : function() {
-        	if(this.addressPoolStore==null) {
-        		this.addressPoolStore = new Ext.data.JsonStore({
+        getGroupsStore : function() {
+        	if(this.groupsStore==null) {
+        		this.groupsStore = new Ext.data.JsonStore({
                     fields : ['id', 'name'],
                     data : this.getVpnSettings().groupList.list
                 });
         	}
-        	return this.addressPoolStore;
+        	return this.groupsStore;
         },
         
         // Block lists panel
@@ -85,7 +86,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 clientButtonDisabled=true;
             } else if(this.configState=="SERVER_ROUTE") {
                 statusLabel=this.i18n._("VPN Server");
-                serverButtonDisabled=true;
+                //serverButtonDisabled=true; //For test only
             } else {
             	clientButtonDisabled=true;
             	serverButtonDisabled=true;
@@ -246,7 +247,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 }
             });
         },
-        buildVPNClients : function() {
+        generateGridClients : function() {
             // live is a check column
             var liveColumn = new Ext.grid.CheckColumn({
                 id: "live",
@@ -257,7 +258,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             });
             var distributeColumn=this.getDistributeColumn();
 
-            this.gridVPNClients = new Ung.EditorGrid({
+            var gridClients = new Ung.EditorGrid({
                 settingsCmp : this,
                 name : 'VPN Clients',
                 // the total records is set from the base settings
@@ -305,7 +306,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     width : 200,
                     dataIndex : 'group',
                     editor : new Ext.form.ComboBox({
-                        store: this.getAddressPoolStore(),
+                        store: this.getGroupsStore(),
                         displayField : 'name',
                         valueField : 'id',
                         editable: false,
@@ -340,7 +341,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     xtype : "combo",
                     name : "Address pool",
                     fieldLabel : this.i18n._("Address pool"),
-                    store: this.getAddressPoolStore(),
+                    store: this.getGroupsStore(),
                     displayField : 'name',
                     valueField : 'id',
                     editable: false,
@@ -350,8 +351,9 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     width : 200
                 }]
             });
+            return gridClients;
         },
-        buildVPNSites : function() {
+        generateGridSites : function() {
             // live is a check column
             var liveColumn = new Ext.grid.CheckColumn({
                 id: "live",
@@ -362,7 +364,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             });
             var distributeColumn=this.getDistributeColumn();
 
-            this.gridVPNSites = new Ung.EditorGrid({
+            var gridSites = new Ung.EditorGrid({
                 settingsCmp : this,
                 name : 'VPN Sites',
                 // the total records is set from the base settings
@@ -410,7 +412,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     width : 200,
                     dataIndex : 'group',
                     editor : new Ext.form.ComboBox({
-                        store: this.getAddressPoolStore(),
+                        store: this.getGroupsStore(),
                         displayField : 'name',
                         valueField : 'id',
                         editable: false,
@@ -457,7 +459,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     xtype : "combo",
                     name : "Address pool",
                     fieldLabel : this.i18n._("Address pool"),
-                    store: this.getAddressPoolStore(),
+                    store: this.getGroupsStore(),
                     displayField : 'name',
                     valueField : 'id',
                     editable: false,
@@ -483,10 +485,11 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     vtype : 'ipAddress'
                 }]
             });
+            return gridSites;
         },
         buildClients : function() {
-            this.buildVPNClients();
-            this.buildVPNSites();
+            this.gridClients=this.generateGridClients();
+            this.gridSites=this.generateGridSites();
             this.panelClients = new Ext.Panel({
                 // private fields
                 name : 'Clients',
@@ -494,10 +497,10 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 title : this.i18n._('Clients'),
                 layout : "form",
                 autoScroll : true,
-                items : [this.gridVPNClients,this.gridVPNSites]
+                items : [this.gridClients,this.gridSites]
             });
         },        
-        buildExports : function() {
+        generateGridExports : function() {
             // live is a check column
             var liveColumn = new Ext.grid.CheckColumn({
             	id: "live",
@@ -507,7 +510,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 fixed : true
             });
 
-            this.gridExports = new Ung.EditorGrid({
+            var gridExports = new Ung.EditorGrid({
                 settingsCmp : this,
                 name : 'Exported Hosts and Networks',
                 // the total records is set from the base settings
@@ -596,8 +599,12 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     width : 200
                 }]
             });
+            return gridExports;
         },
-        buildAddressPools : function() {
+        buildExports : function () {
+        	this.gridExports=this.generateGridExports();
+        },
+        generateGridGroups : function() {
             // live is a check column
             var liveColumn = new Ext.grid.CheckColumn({
                 id: "live",
@@ -614,7 +621,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 fixed : true
             });
 
-            this.gridAddressPools = new Ung.EditorGrid({
+            var gridGroups = new Ung.EditorGrid({
                 settingsCmp : this,
                 name : 'Address Pools',
                 // the total records is set from the base settings
@@ -718,9 +725,10 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     fieldLabel : this.i18n._("export DNS")
                 }]
             });
+            return gridGroups;
         },
         buildAdvanced : function() {
-        	this.buildAddressPools();
+        	this.gridGroups=this.generateGridGroups();
             this.panelAdvanced = new Ext.Panel({
                 name : 'Advanced',
                 title : this.i18n._("Advanced"),
@@ -737,7 +745,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 items : [{
                     xtype : 'fieldset',
                     autoHeight : true,
-                    items:[this.gridAddressPools]
+                    items:[this.gridGroups]
                 },{
                     xtype : 'fieldset',
                     autoHeight : true,
@@ -1011,7 +1019,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         }]
                     }]
                 }
-            }
+            };
             var congratulationsCard= {
                 title : this.i18n._( "Congratulations" ),
                 cardTitle : this.i18n._( "Congratulations! OpenVPN is configured as a VPN Client." ),
@@ -1051,22 +1059,180 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             this.clientSetup.show();
             clientWizard.goToPage( 0 );
         },
+        
+        //
         configureVNPServer :function () {
             if(this.serverSetup) {
                 Ext.destroy(this.serverSetup)
             }
+            var welcomeCard={
+                title : this.i18n._("Welcome"),
+                cardTitle : this.i18n._( "Welcome to the OpenVPN Setup Wizard!" ),
+                panel : {
+                    xtype: 'form',
+                    items : [{
+                        html : this.i18n._( 'This wizard will help guide you through your initial setup and configuration of OpenVPN as a VPN Routing Server.' ),
+                        bodyStyle : 'padding:10px 10px 10px 10px;',
+                        border : false
+                    }, {
+                        html : this.i18n._('Warning:  Finishing this wizard will cause any previous OpenVPN settings you had to be lost, and overwritten by new settings.  Only finish this wizard if you would like completely new settings.' ),
+                        bodyStyle : 'padding:10px 10px 10px 10px;',
+                        border : false
+                    }]
+                }
+            };
+            var certificateCard={
+                title : this.i18n._( "Generate Certificate" ),
+                cardTitle : this.i18n._( "Generate Certificate" ),
+                panel : {
+                    xtype: 'form',
+                    items : [{
+                        html : this.i18n._('Please take a moment to specify some information about your location, to be used to generate a secure digital certificate.' ),
+                        bodyStyle : 'padding:10px 10px 10px 10px;',
+                        border : false
+                    },{
+                        xtype : 'fieldset',
+                        autoHeight : true,
+                        buttonAlign : 'left',
+                        title: this.i18n._('This information is required.'),
+                        items:[{
+                            xtype : "textfield",
+                            id:'openvpn_server_wizard_organization',
+                            name : "Organization",
+                            fieldLabel : this.i18n._("Organization"),
+                            allowBlank : false,
+                            width : 200
+                        },{
+                            xtype : "textfield",
+                            id:'openvpn_server_wizard_country',
+                            name : "Country",
+                            fieldLabel : this.i18n._("Country"),
+                            allowBlank : false,
+                            value: 'US',
+                            width : 200
+                        },{
+                            xtype : "textfield",
+                            id:'openvpn_server_wizard_state',
+                            name : "State",
+                            fieldLabel : this.i18n._("State"),
+                            allowBlank : false,
+                            width : 200
+                        },{
+                            xtype : "textfield",
+                            id:'openvpn_server_wizard_city',
+                            name : "City",
+                            fieldLabel : this.i18n._("City"),
+                            allowBlank : false,
+                            width : 200
+                        }]
+                    }]
+                }
+            };
+            var gridGroups=this.generateGridGroups();
+            var groupsCard= {
+                title : this.i18n._( "Add Address Pools" ),
+                cardTitle : this.i18n._( "Add Address Pools" ),
+                panel : {
+                    xtype: 'form',
+                    items : [{
+                        html : "<b>"+this.i18n._('Please add at least one Address Pool.' )+"</b>",
+                        bodyStyle : 'padding:10px 10px 10px 10px;',
+                        border : false
+                    }, {
+                        html : this.i18n._('Connecting VPN clients and sites will be assigned IP addresses from these pools, and each pool can have a policy applied to it.' ),
+                        bodyStyle : 'padding:10px 10px 10px 10px;',
+                        border : false
+                    }, gridGroups]
+                }
+            };
+            var gridExports=this.generateGridExports();
+            var exportsCard= {
+                title : this.i18n._( "Add Exports" ),
+                cardTitle : this.i18n._( "Add Exports" ),
+                panel : {
+                    xtype: 'form',
+                    items : [{
+                        html : "<b>"+this.i18n._('Optionally add exported hosts and networks.')+"</b>",
+                        bodyStyle : 'padding:10px 10px 10px 10px;',
+                        border : false
+                    }, {
+                        html : this.i18n._('These exports will be visible to clients and sites on the VPN, and vice versa.' ),
+                        bodyStyle : 'padding:10px 10px 10px 10px;',
+                        border : false
+                    }, gridExports]
+                }
+            };
+            var gridClients=this.generateGridClients();
+            var clientsCard= {
+                title : this.i18n._( "Add VPN Clients" ),
+                cardTitle : this.i18n._( "Add VPN Clients" ),
+                panel : {
+                    xtype: 'form',
+                    items : [{
+                        html : "<b>"+this.i18n._('Optionally add VPN Clients.')+"</b>",
+                        bodyStyle : 'padding:10px 10px 10px 10px;',
+                        border : false
+                    }, {
+                        html : this.i18n._('VPN Clients can remotely login to the VPN, and access any exported hosts or networks, and vice versa.' ),
+                        bodyStyle : 'padding:10px 10px 10px 10px;',
+                        border : false
+                    }, gridClients]
+                }
+            };
+            var gridSites=this.generateGridSites();
+            var sitesCard= {
+                title : this.i18n._( "Add VPN Sites" ),
+                cardTitle : this.i18n._( "Add VPN Sites" ),
+                panel : {
+                    xtype: 'form',
+                    items : [{
+                        html : "<b>"+this.i18n._('Optionally add VPN Sites.')+"</b>",
+                        bodyStyle : 'padding:10px 10px 10px 10px;',
+                        border : false
+                    }, {
+                        html : this.i18n._('VPN Sites are remote networks that can access any exported hosts and networks on the VPN, and vice versa.' ),
+                        bodyStyle : 'padding:10px 10px 10px 10px;',
+                        border : false
+                    }, gridSites]
+                }
+            };
+            var congratulationsCard= {
+                title : this.i18n._( "Congratulations" ),
+                cardTitle : this.i18n._( "Congratulations! OpenVPN is configured as a VPN Routing Server." ),
+                panel : {
+                    xtype: 'form',
+                    items : [{
+                        html : this.i18n._('If necessary, you can change the configuration of OpenVPN by launching the Setup Wizard again.'),
+                        bodyStyle : 'padding:10px 10px 10px 10px;',
+                        border : false
+                    }]
+                }
+            };
+            var serverWizard=new Ung.Wizard({
+                height : 500,
+                width : 800,
+                cardDefaults : {
+                    labelWidth : 150,
+                    cls : 'untangle-form-panel'
+                },
+                cards : [welcomeCard, certificateCard, groupsCard, exportsCard, clientsCard, sitesCard, congratulationsCard],
+                disableNext : true
+                
+            });
+            
             this.serverSetup=new Ung.Window({
-               title: this.i18n._("OpenVPN Server Setup Wizard"),
+               title: this.i18n._("OpenVPN Client Setup Wizard"),
                items:[{
                     region : "center",
-                    html : 'aaa',
+                    items: [serverWizard],
                     border : false,
                     autoScroll : true,
                     cls : 'windowBackground',
                     bodyStyle : 'background-color: transparent;'
                }]
-            })
-            this.serverWizard.show();
-        }
+            });
+            
+            this.serverSetup.show();
+            serverWizard.goToPage( 0 );        }
     });
 }
