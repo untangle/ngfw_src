@@ -8,13 +8,13 @@ class ReportingManager(Manager):
         self.__reportingManager = self.__remoteContext.reportingManager()
 
     def api_isreportingenabled(self):
-        print self.__reportingManager.isReportingEnabled()
+        print ('%s' % self.__reportingManager.isReportingEnabled()).lower()
 
     def api_arereportsavailable(self):
-        print self.__reportingManager.isReportsAvailable()
+        print ('%s' % self.__reportingManager.isReportsAvailable()).lower()
 
     def api_isreportingrunning(self):
-        print self.__reportingManager.isRunning()
+        print ('%s' % self.__reportingManager.isRunning()).lower()
 
     def api_startreports(self):
         print "Report generation starting"
@@ -38,7 +38,7 @@ class ReportingManager(Manager):
             parsedArgs += 2
         if ( args.count( "-n" ) > 0 ):
             arg = args[args.index( "-n" ) + 1]
-            midnight = datetime.datetime( *time.strptime( arg, "%Y-%m-%d" )[0:6] )
+            midnight = datetime( *strptime( arg, "%Y-%m-%d" )[0:6] )
             parsedArgs += 2
 
         if ( parsedArgs != len( args )):

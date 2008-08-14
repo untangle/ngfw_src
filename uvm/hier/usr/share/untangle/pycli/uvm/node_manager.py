@@ -42,7 +42,7 @@ class NodeManager(Manager):
         tid = self.buildTid( tidString )
         nodeContext, node = self.__get_node( tid )
         if ( nodeContext == None or node == None ): return
-        print node.neverStarted()
+        print ('%s' % node.neverStarted()).lower()
 
     def api_instances(self):
         for tid in self.__nodeManager.nodeInstances()["list"]:
@@ -50,7 +50,7 @@ class NodeManager(Manager):
 
             policy = None
             if ( tid.has_key( "policy" )): policy = tid["policy"]
-            
+
             if ( policy == None ): policy = "null"
             else: policy = self.getPolicyString( policy )
             print "%s\t%-25s\t%s\t%s" % ( tid["name"], nodeContext.getNodeDesc()["name"], policy, node.getRunState())
@@ -85,7 +85,7 @@ class NodeManager(Manager):
         print "%s%d\t%s\t%s:%d\t%s\t%s:%d" % ( self.formatProtocol(session["protocol"])[1], session["id"], self.formatState( session["clientState"] ), session["clientAddr"],session["clientPort"], self.formatState( session["serverState"] ), session["serverAddr"],session["serverPort"] ),
         print "\t%s\t%s" % ( self.formatTime( stats["creationDate"] ),
                              self.formatTime( stats["lastActivityDate"] )),
-        print "\t%d\t%d\t%d\t%d" % ( stats["c2tBytes"], stats["t2sBytes"], stats["s2tBytes"], stats["t2cBytes"] )        
+        print "\t%d\t%d\t%d\t%d" % ( stats["c2tBytes"], stats["t2sBytes"], stats["s2tBytes"], stats["t2cBytes"] )
 
     def __get_node( self, tid, raiseException = False ):
         nodeContext = self.__nodeManager.nodeContext( tid )
@@ -100,5 +100,5 @@ class NodeManager(Manager):
             return [ None, None ]
 
         return [ nodeContext, node ]
-        
+
 Manager.managers.append( NodeManager )
