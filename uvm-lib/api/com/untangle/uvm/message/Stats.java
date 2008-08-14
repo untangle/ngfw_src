@@ -37,6 +37,7 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Date;
 
 public class Stats implements Serializable
 {
@@ -82,11 +83,13 @@ public class Stats implements Serializable
     {
         private final long count;
         private final long countSinceMidnight;
+        private final Date lastActivityDate;
 
         public FixedCounts(CounterStats cs)
         {
             this.count = cs.getCount();
             this.countSinceMidnight = cs.getCountSinceMidnight();
+            this.lastActivityDate = cs.getLastActivityDate();
         }
 
         public long getCount()
@@ -97,6 +100,11 @@ public class Stats implements Serializable
         public long getCountSinceMidnight()
         {
             return countSinceMidnight;
+        }
+
+        public Date getLastActivityDate()
+        {
+            return lastActivityDate;
         }
     }
 

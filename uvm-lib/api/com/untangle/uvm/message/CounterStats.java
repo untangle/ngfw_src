@@ -33,6 +33,8 @@
 
 package com.untangle.uvm.message;
 
+import java.util.Date;
+
 /**
  * Counters.
  *
@@ -43,4 +45,5 @@ public interface CounterStats
 {
     long getCount();
     long getCountSinceMidnight();
+    Date getLastActivityDate();
 }
