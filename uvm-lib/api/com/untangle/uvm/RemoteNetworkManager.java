@@ -38,11 +38,9 @@ import java.util.List;
 import com.untangle.uvm.networking.AccessSettings;
 import com.untangle.uvm.networking.AddressSettings;
 import com.untangle.uvm.networking.BasicNetworkSettings;
-import com.untangle.uvm.networking.DynamicDNSSettings;
 import com.untangle.uvm.networking.Interface;
 import com.untangle.uvm.networking.MiscSettings;
 import com.untangle.uvm.networking.NetworkException;
-import com.untangle.uvm.networking.NetworkSpacesSettings;
 import com.untangle.uvm.networking.NetworkSpacesSettingsImpl;
 import com.untangle.uvm.node.HostName;
 import com.untangle.uvm.node.IPaddr;
@@ -132,6 +130,9 @@ public interface RemoteNetworkManager
 
     /* Returns true if address is local to the edgeguard */
     boolean isAddressLocal( IPaddr address );
+
+    /* Returns true if single nic mode is enabled */
+    boolean isSingleNicModeEnabled();
 
     /* Forces the link status to be re-examined, since it is likely to
      * have changed */

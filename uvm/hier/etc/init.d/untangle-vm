@@ -10,6 +10,7 @@ UVM_RUNDIR=${UVM_RUNDIR:-@PREFIX@/var/run}
 UVM_NICENESS=${UVM_NICENESS:-0}
 UVM_CONSOLE_LOG=${UVM_CONSOLE_LOG:-$UVM_LOGDIR/console.log}
 UVM_WRAPPER_LOG=${UVM_WRAPPER_LOG:-$UVM_LOGDIR/wrapper.log}
+UVM_STATUS_FILE=${UVM_STATUS_FILE:-@PREFIX@/mnt/hgfs/untangle/status}
 UVM_CMD=${UVM_CMD:-@PREFIX@/usr/bin/uvm}
 UVM_USER=${UVM_USER:-$USER}
 UVM_PID="uvm.pid"
@@ -26,6 +27,15 @@ if [ "x" != "x@PREFIX@" ] ; then
     fi
 fi
 
+updateStatus() {
+    echo -ne $1
+    if [ -d `dirname $UVM_STATUS_FILE` ] ; then echo "$2" > $UVM_STATUS_FILE ; fi
+}
+
+updateStatusExit() {
+    updateStatus $1 $2
+    exit
+}
 
 case "$1" in
     start)
@@ -48,7 +58,7 @@ case "$1" in
             fi
         fi
 
-        echo -n "[."
+        updateStatus "[." "Starting"
 
         start-stop-daemon --start \
             --background --make-pidfile -q \
@@ -59,8 +69,9 @@ case "$1" in
             --exec ${UVM_CMD} -- ${UVM_ARGS}
 
         if [ $? != "0" ] ; then
-            exit
+            updateStatusExit "x]\n" "Stopped"
         fi
+
         echo -n "." ; sleep 1 ; echo -n "." ; sleep 1 # time for console.log to be rm'd
 
         pid=$(cat ${UVM_RUNDIR}/${UVM_PID})
@@ -69,7 +80,7 @@ case "$1" in
         for i in `seq 1 $UVM_TIMEOUT` ; do
             ps -p $pid >/dev/null
             if [ $? -ne 0 ]; then
-                exit
+                updateStatusExit "x]\n" "Stopped"
             fi
 
             EXPC="`cat $UVM_CONSOLE_LOG 2>/dev/null | grep -i exception `"
@@ -101,8 +112,7 @@ case "$1" in
             sleep 1
             echo -n "."
             if [ "x" != "x$FINI" ] ; then
-                echo "]"
-                exit
+                updateStatusExit "]\n" "Running"
             fi
         done
 
@@ -117,15 +127,16 @@ case "$1" in
             exit
         fi
 
-        echo -n "[."
+        updateStatus "[." "Stopping"
 
         # Attempt polite kill first
         start-stop-daemon -s INT --stop \
             -q \
             --pidfile ${UVM_RUNDIR}/${UVM_PID}
         code=$?
+
         if [ $code != "0" ] ; then
-            exit
+            updateStatusExit "x]\n" "Stopped"
         fi
 
         rm -f ${UVM_RUNDIR}/${UVM_PID}  &> /dev/null
@@ -136,9 +147,8 @@ case "$1" in
             sleep 1
             echo -n "."
             if [ "x" != "x$FINI" ] ; then
-                sleep 1 ; echo -n "." ; sleep 1
-                echo ".]"
-                exit
+                sleep 1  
+                updateStatusExit "]\n" "Stopped"
             fi
             if [ -z "`ps awwx | grep java | grep uvm | awk '{print $1}'`" ] ; then
                 break
@@ -158,9 +168,8 @@ case "$1" in
             sleep 1
             echo -n "."
             if [ "x" != "x$FINI" ] ; then
-                sleep 1 ; echo -n "." ; sleep 1
-                echo "]"
-                exit
+                sleep 1 
+                updateStatusExit "]\n" "Stopped"
             fi
             if [ -z "`ps awwx | grep java | grep uvm | awk '{print $1}'`" ] ; then
                 break
@@ -176,8 +185,7 @@ case "$1" in
             sleep 1
             echo -n "."
             if [ -z "`ps awwx | grep java | grep uvm | awk '{print $1}'`" ] ; then
-                echo "]"
-                exit
+                updateStatusExit "]\n" "Stopped"
             fi
         done
 

@@ -1,19 +1,6 @@
 #! /bin/bash
 # $Id: uvm,v 1.10 2005/03/22 01:51:56 cng Exp $
 
-### BEGIN INIT INFO
-# Provides:          untangle-vm
-# Required-Start:    $local_fs $remote_fs
-# Required-Stop:     $local_fs $remote_fs
-# Default-Start:     2 3 4 5
-# Default-Stop:      0 1 6
-# Short-Description: the untangle vurtual machine
-### END INIT INFO
-
-. /lib/lsb/init-functions
-
-DESC="Service for starting the Untangle virtual machine"
-
 if [ -f /etc/default/untangle-vm ] ; then
     . /etc/default/untangle-vm
 fi

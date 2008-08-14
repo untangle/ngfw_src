@@ -18,7 +18,6 @@
 
 package com.untangle.uvm.networking;
 
-
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -86,6 +85,9 @@ public class NetworkManagerImpl implements LocalNetworkManager
     /* Manager for MiscSettings */
     private final MiscManagerImpl miscManager;
 
+    /* Manager for single nic mode. */
+    private final SingleNicManager singleNicManager;
+
     /* ??? Does the order matter, it shouldn't.  */
     private Set<NetworkSettingsListener> networkListeners = new HashSet<NetworkSettingsListener>();
     private Set<IntfEnumListener> intfEnumListeners = new HashSet<IntfEnumListener>();
@@ -115,6 +117,7 @@ public class NetworkManagerImpl implements LocalNetworkManager
         this.accessManager = new AccessManagerImpl();
         this.addressManager = new AddressManagerImpl();
         this.miscManager = new MiscManagerImpl();
+        this.singleNicManager = new SingleNicManager();
     }
 
     /**
@@ -446,6 +449,17 @@ public class NetworkManagerImpl implements LocalNetworkManager
         return nup.isAddressLocal( this.networkSettings, address );
     }
 
+    /* Returns true if single nic mode is enabled */
+    public boolean isSingleNicModeEnabled()
+    {
+        return this.singleNicManager.getIsEnabled();
+    }
+
+    public void singleNicRegisterAddress( InetAddress address )
+    {
+        this.singleNicManager.registerAddress( address );
+    }
+
     public void updateAddress()
     {
         /* Get the new address for any dhcp spaces */
@@ -500,25 +514,25 @@ public class NetworkManagerImpl implements LocalNetworkManager
             logger.debug( "New services settings: " + this.servicesSettings );
         }
 
-    /* XXX This should be rethought,but it is important for the firewall
-     * rules for the QA push XXXX */
-    try {
-        ScriptWriter scriptWriter = new ScriptWriter();
-        /* Set whether or not setup has completed */
+        /* XXX This should be rethought,but it is important for the firewall
+         * rules for the QA push XXXX */
+        try {
+            ScriptWriter scriptWriter = new ScriptWriter();
+            /* Set whether or not setup has completed */
 
-        this.accessManager.commit( scriptWriter );
-        this.addressManager.commit( scriptWriter );
-        this.miscManager.commit( scriptWriter );
-        this.ruleManager.commit( scriptWriter );
+            this.accessManager.commit( scriptWriter );
+            this.addressManager.commit( scriptWriter );
+            this.miscManager.commit( scriptWriter );
+            this.ruleManager.commit( scriptWriter );
 
-        /* Save out the script */
-        scriptWriter.writeFile( FILE_RULE_CFG );
-    } catch ( Exception e ) {
-        logger.warn( "Error committing the networking.sh file", e );
-    }
+            /* Save out the script */
+            scriptWriter.writeFile( FILE_RULE_CFG );
+        } catch ( Exception e ) {
+            logger.warn( "Error committing the networking.sh file", e );
+        }
 
-        /* Update the internal address */
-
+        /* Update single nic mode. */
+        this.singleNicManager.setIsEnabled( properties.getProperty( "com.untangle.networking.single-nic-mode" ));
         try {
             callNetworkListeners();
         } catch ( Exception e ) {
@@ -536,6 +550,7 @@ public class NetworkManagerImpl implements LocalNetworkManager
 
         /* ignore everything on the external or dmz interface */
         if ( argonIntf == IntfConstants.EXTERNAL_INTF || argonIntf == IntfConstants.DMZ_INTF ) return null;
+        if ( this.singleNicManager.getIsEnabled()) argonIntf = IntfConstants.EXTERNAL_INTF;
 
         /* Retrieve the network settings */
         NetworkSpacesInternalSettings settings = this.networkSettings;
@@ -553,6 +568,8 @@ public class NetworkManagerImpl implements LocalNetworkManager
         IPaddr address = network.getNetwork();
 
         if ( address == null ) return null;
+
+        if ( NetworkUtilPriv.getPrivInstance().isBogus( address )) return null;
 
         return address.getAddr();
     }
@@ -578,6 +595,7 @@ public class NetworkManagerImpl implements LocalNetworkManager
     {
         this.isShutdown = true;
         this.ruleManager.isShutdown();
+        this.singleNicManager.stop();
     }
 
     public void flushIPTables() throws NetworkException
@@ -673,8 +691,11 @@ public class NetworkManagerImpl implements LocalNetworkManager
         /* Done before so these get called on the first update */
         registerListener(new IPMatcherListener());
         registerListener(new CifsListener());
+        registerListener(this.singleNicManager.getListener());
 
         updateAddress();
+
+        this.singleNicManager.start();
 
         try {
             generateRules();

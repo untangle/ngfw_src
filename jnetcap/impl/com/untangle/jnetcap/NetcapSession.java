@@ -111,9 +111,9 @@ public abstract class NetcapSession {
         return toString( pointer.value(), true );
     }
 
-    public void determineServerIntf()
+    public void determineServerIntf( boolean isSingleNicMode )
     {
-        determineServerIntf( pointer.value());
+        determineServerIntf( pointer.value(), isSingleNicMode );
     }
 
     public void raze()
@@ -140,7 +140,7 @@ public abstract class NetcapSession {
 
     private static native long getSession( int id, short protocol );
     private static native void raze( long session );
-    private static native void determineServerIntf( long session );
+    private static native void determineServerIntf( long session, boolean isSingleNicMode );
 
     protected static native long   getLongValue  ( int id, long session );
     protected static native int    getIntValue   ( int id, long session );

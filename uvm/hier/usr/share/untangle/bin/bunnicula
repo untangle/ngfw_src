@@ -3,6 +3,16 @@
 # get a bunch of default values
 source @PREFIX@/etc/default/untangle-vm
 
+
+UVM_AUTO_SCRIPT=${UVM_AUTO_SCRIPT:-@PREFIX@/var/lib/untangle-windows-installer/pre_uvm.rb}
+UVM_AUTO_CONFIG=${UVM_AUTO_CONFIG:-@PREFIX@/mnt/hgfs/untangle/config.js}
+
+# auto configuration script
+[ -x ${UVM_AUTO_SCRIPT} ]  && [ -f ${UVM_AUTO_CONFIG} ] && ${UVM_AUTO_SCRIPT} ${UVM_AUTO_CONFIG}
+
+## Remove this after it is executed to guarantee it never runs again.
+rm -f ${UVM_AUTO_SCRIPT}
+
 ## Configure IPV4 parameters
 
 procset() {

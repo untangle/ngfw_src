@@ -168,6 +168,12 @@ public class RemoteNetworkManagerAdaptor implements RemoteNetworkManager
         return lnm.isAddressLocal( address );
     }
 
+    /* Returns true if single nic mode is enabled */
+    public boolean isSingleNicModeEnabled()
+    {
+        return lnm.isSingleNicModeEnabled();
+    }
+
     /* Forces the link status to be re-examined, since it is likely to have changed */
     public void updateLinkStatus()
     {
