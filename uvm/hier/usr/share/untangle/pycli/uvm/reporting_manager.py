@@ -1,6 +1,7 @@
 from uvm.manager import Manager
 from datetime import datetime
 from time import strptime
+from string import atoi
 
 class ReportingManager(Manager):
     def __init__(self, remoteContext):
@@ -47,7 +48,7 @@ class ReportingManager(Manager):
         if ( daysToKeep < 1 ): daysToKeep = 1
 
         print "Preparing for report generation to ", outputBaseDirName
-        midnight = self.buildDate( midnight.strftime( "%s" ) )
+        midnight = self.buildDate( atoi( midnight.strftime( "%s" ) ) )
         self.__reportingManager.prepareReports( outputBaseDirName, midnight, daysToKeep )
 
 Manager.managers.append( ReportingManager )
