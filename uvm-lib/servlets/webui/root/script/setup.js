@@ -35,7 +35,7 @@ Ung.SetupWizard.Settings = Ext.extend(Object, {
         this.panel = new Ext.FormPanel({
             defaultType : 'fieldset',
             defaults : { 
-                autoHeight : true,
+                autoHeight : true
             },
             items : [{
                 defaultType : 'textfield',
@@ -274,7 +274,7 @@ Ung.SetupWizard.Registration = Ext.extend( Object, {
                     store : this.findUntangleStore,
                     mode : 'local',
                     triggerAction : 'all',
-                    listClass : 'x-combo-list-small',
+                    listClass : 'x-combo-list-small'
                 },{
                     fieldLabel : i18n._('State/Province'),
                     name : "state"
@@ -405,7 +405,7 @@ Ung.SetupWizard.Interfaces = Ext.extend( Object, {
                    return value[0] + ": " + value[1];
                },
                width : 400
-            }]),
+            }])
         });
     
         var panel = new Ext.Panel({
@@ -600,10 +600,10 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
                 autoHeight : true,
                 items : [{
                     name : "ip",
-                    fieldLabel : i18n._( "IP" ),
+                    fieldLabel : i18n._( "IP" )
                 },{
                     name : "netmask",
-                    fieldLabel : i18n._( "Netmask" ),
+                    fieldLabel : i18n._( "Netmask" )
                 },{
                     name : "gateway",
                     fieldLabel : i18n._( "Gateway" )
@@ -624,19 +624,19 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
             defaultType : 'textfield',
             items : [{
                 name : "ip",
-                fieldLabel : i18n._( "IP" ),
+                fieldLabel : i18n._( "IP" )
             },{
                 name : "netmask",
-                fieldLabel : i18n._( "Netmask" ),
+                fieldLabel : i18n._( "Netmask" )
             },{
                 name : "gateway",
-                fieldLabel : i18n._( "Gateway" ),
+                fieldLabel : i18n._( "Gateway" )
             },{
                 name : "dns1",
-                fieldLabel : i18n._( "Primary DNS" ),
+                fieldLabel : i18n._( "Primary DNS" )
             },{
                 name : "dns2",
-                fieldLabel : i18n._( "Secondary DNS" ),
+                fieldLabel : i18n._( "Secondary DNS" )
             }]}));
 
         /* PPPoE Panel */
@@ -648,12 +648,12 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
             items : [{
                 fieldLabel : i18n._( "Username" ),
                 name : "username",
-                disabled : false,
+                disabled : false
             },{
                 name : "password",
                 inputType : 'password',
                 fieldLabel : i18n._( "Password" ),
-                disabled : false,
+                disabled : false
             },{
                 xtype : 'button',
                 text : i18n._( 'Refresh' ),
@@ -694,7 +694,7 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
             activePanel : 0,
             defaults : { 
                 autoHeight : true,
-                border : false,
+                border : false
             }
         });
 
@@ -984,12 +984,12 @@ Ung.SetupWizard.Email = Ext.extend( Object, {
             },
             items : [{
                 xtype : 'label',
-                html : i18n._( "Your Untangle Server sends email for Quarantine Digests, Reports, etc." ),
+                html : i18n._( "Your Untangle Server sends email for Quarantine Digests, Reports, etc." )
             },{
                 xtype : 'button',
                 text : i18n._( 'Email Test' ),
                 handler : this.emailTest,
-                scope : this,
+                scope : this
             },{
                 name : 'advanced',
                 xtype : 'checkbox',
@@ -1249,7 +1249,7 @@ Ung.Setup =  {
         var registration = new Ung.SetupWizard.Registration();
         var interfaces = new Ung.SetupWizard.Interfaces();
         var internet = new Ung.SetupWizard.Internet();
-        var internal = new Ung.SetupWizard.InternalNetwork();
+        var internalNetwork = new Ung.SetupWizard.InternalNetwork();
         var email = new Ung.SetupWizard.Email();
         var complete = new Ung.SetupWizard.Complete();
 
@@ -1265,7 +1265,7 @@ Ung.Setup =  {
                      registration.card,
                      interfaces.card,
                      internet.card,
-                     internal.card,
+                     internalNetwork.card,
                      email.card,
                      complete.card
             ],

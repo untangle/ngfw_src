@@ -126,7 +126,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         iconCls : "actionIcon",
                         disabled : serverButtonDisabled,
                         handler : function() {
-                            //TODO
+                            this.configureVNPServer();
                         }.createDelegate(this)
                     },{
                         html: this.i18n._("This configures OpenVPN so remote users and networks can connect and access exported hosts and networks."),
@@ -139,7 +139,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         iconCls : "actionIcon",
                         disabled : clientButtonDisabled,
                         handler : function() {
-                            //TODO
+                            this.configureVNPClient();
                         }.createDelegate(this)
                     },{
                         html: this.i18n._("This configures OpenVPN so it connects to a remote OpenVPN Server and can access exported hosts and networks."),
@@ -879,6 +879,194 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     this.cancelAction();
                 }.createDelegate(this), this.getVpnSettings());
             }
+        },
+        
+        configureVNPClient :function () {
+            if(this.clientSetup) {
+                Ext.destroy(this.clientSetup)
+            }
+            var welcomeCard={
+                title : this.i18n._("Welcome"),
+                cardTitle : this.i18n._( "Welcome to the OpenVPN Setup Wizard!" ),
+                panel : {
+                	xtype: 'form',
+                    items : [{
+                        html : this.i18n._( 'This wizard will help guide you through your initial setup and configuration of OpenVPN as a VPN Client.' ),
+                        bodyStyle : 'padding:10px 10px 10px 10px;',
+                        border : false
+                    }, {
+                        html : this.i18n._('Warning:  Finishing this wizard will cause any previous OpenVPN settings you had to be lost, and overwritten by new settings.  Only finish this wizard if you would like completely new settings.' ),
+                        bodyStyle : 'padding:10px 10px 10px 10px;',
+                        border : false
+                    }]
+                }
+            };
+            var downloadCard={
+                title : this.i18n._( "Download Configuration" ),
+                cardTitle : this.i18n._( "Welcome to the OpenVPN Setup Wizard!" ),
+                panel : {
+                    xtype: 'form',
+                    items : [{
+                        html : this.i18n._('Please specify where your VPN Client configuration should come from.  You may specify a Server or USB Key.  If you choose USB Key, you must press "Read USB Key" to load configurations from the key, and then choose a configuration from the drop-down-list.' ),
+                        bodyStyle : 'padding:10px 10px 10px 10px;',
+                        border : false
+                    },{
+                        xtype : 'fieldset',
+                        autoHeight : true,
+                        buttonAlign : 'left',
+                        items:[{
+                        	xtype: "radio",
+                            boxLabel: this.i18n._('Download from Server'),
+                            hideLabel: true,
+                            name: 'downloadClientConfiguration', 
+                            inputValue: true, 
+                            checked: true,
+                            listeners : {
+                                "check" : {
+                                    fn : function(elem, checked) {
+                                        if(checked) {
+                                            Ext.getCmp("openvpn_client_wizard_server_ip").enable();
+                                            Ext.getCmp("openvpn_client_wizard_password").enable();
+                                            Ext.getCmp("openvpn_client_read_usb").disable();
+                                            Ext.getCmp("openvpn_client_configurations").disable();
+                                        } else {
+                                            Ext.getCmp("openvpn_client_wizard_server_ip").disable();
+                                            Ext.getCmp("openvpn_client_wizard_password").disable();
+                                            Ext.getCmp("openvpn_client_read_usb").enable();
+                                            Ext.getCmp("openvpn_client_configurations").enable();
+                                        }
+                                    }.createDelegate(this)
+                                }
+                            }
+                        }, {
+                            xtype : "textfield",
+                            id:'openvpn_client_wizard_server_ip',
+                            name : "Server IP Address",
+                            labelStyle : 'text-align: right;  width: 150px;',
+                            fieldLabel : this.i18n._("Server IP Address"),
+                            allowBlank : false,
+                            width : 200,
+                            vtype : 'ipAddress'
+                        }, {
+                            xtype : "textfield",
+                            id:'openvpn_client_wizard_password',
+                            name : "Password",
+                            labelStyle : 'text-align: right; width: 150px;',
+                            fieldLabel : this.i18n._("Password"),
+                            width : 200,
+                            inputType: 'password'
+                        },{
+                            xtype: "radio",
+                            boxLabel: this.i18n._('Download from USB Key'),
+                            style: "margin-left:20px;",
+                            hideLabel: true,
+                            name: 'downloadClientConfiguration', 
+                            inputValue: true, 
+                            checked: false
+                            
+                        }, {
+                        	xtype: "panel",
+                        	border : false,
+                        	width: 500,
+                            layout:'column',
+                            items: [{
+                            	width: 200,
+                            	border : false,
+                                items: [{
+                                    xtype : 'button',
+                                    id:'openvpn_client_read_usb',
+                                    name : 'Read USB Key',
+                                    style: "margin-left:20px;",
+                                    text : this.i18n._('Read USB Key'),
+                                    style : 'padding-bottom:10px;',
+                                    disabled: true,
+                                    handler : function() {
+                                        //
+                                    }.createDelegate(this)
+                                }]
+                            }, {
+                                columnWidth: 1,
+                                border : false,
+                                items: [{
+                                    xtype : 'combo',
+                                    name : 'Configurations',
+                                    id : 'openvpn_client_configurations',
+                                    editable : false,
+                                    hideLabel : true,
+                                    mode : 'local',
+                                    triggerAction : 'all',
+                                    listClass : 'x-combo-list-small',
+                                    store : new Ext.data.SimpleStore({
+                                        fields : ['key', 'name'],
+                                        data :[
+                                            ["", this.i18n._("[No Configurations]")],
+                                        ]        
+                                    }),
+                                    displayField : 'name',
+                                    valueField : 'key',
+                                    value : "",
+                                    disabled: true
+                                }]
+                            }]
+                        }]
+                    }]
+                }
+            }
+            var congratulationsCard= {
+                title : this.i18n._( "Congratulations" ),
+                cardTitle : this.i18n._( "Congratulations! OpenVPN is configured as a VPN Client." ),
+                panel : {
+                    xtype: 'form',
+                    items : [{
+                        html : this.i18n._('If necessary, you can change the configuration of OpenVPN by launching the Setup Wizard again.'),
+                        bodyStyle : 'padding:10px 10px 10px 10px;',
+                        border : false
+                    }]
+                }
+            };
+            var clientWizard=new Ung.Wizard({
+                height : 500,
+                width : 800,
+                cardDefaults : {
+                    labelWidth : 150,
+                    cls : 'untangle-form-panel'
+                },
+                cards : [welcomeCard, downloadCard,congratulationsCard],
+                disableNext : true
+                
+            });
+            
+            this.clientSetup=new Ung.Window({
+               title: this.i18n._("OpenVPN Client Setup Wizard"),
+               items:[{
+                    region : "center",
+                    items: [clientWizard],
+                    border : false,
+                    autoScroll : true,
+                    cls : 'windowBackground',
+                    bodyStyle : 'background-color: transparent;'
+               }]
+            });
+            
+            this.clientSetup.show();
+            clientWizard.goToPage( 0 );
+        },
+        configureVNPServer :function () {
+            if(this.serverSetup) {
+                Ext.destroy(this.serverSetup)
+            }
+            this.serverSetup=new Ung.Window({
+               title: this.i18n._("OpenVPN Server Setup Wizard"),
+               items:[{
+                    region : "center",
+                    html : 'aaa',
+                    border : false,
+                    autoScroll : true,
+                    cls : 'windowBackground',
+                    bodyStyle : 'background-color: transparent;'
+               }]
+            })
+            this.serverWizard.show();
         }
     });
 }

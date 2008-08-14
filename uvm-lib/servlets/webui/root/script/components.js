@@ -2163,6 +2163,10 @@ Ung.ButtonsWindow = Ext.extend(Ung.Window, {
         Ung.ButtonsWindow.superclass.afterRender.call(this);
         this.initButtons.defer(1, this);
     },
+    // to override
+    initButtons: function() {
+    	
+    },
     // the cancel action
     // to override
     cancelAction : function() {
