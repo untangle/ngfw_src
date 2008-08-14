@@ -310,6 +310,13 @@ while true; do
 		  restartService untangle-net-alpaca /tmp/foo-doesnt-exist "non-functional (RC=$rc)"
 		  restartService untangle-net-alpaca-iptables /tmp/foo-doesnt-exist "non-functional (RC=$rc)"
 		fi
+                # memory-management for alpaca
+		pidof -x mongrel_rails | xargs -n 1 | while read pid ; do
+		  VIRT="`getVirtualMemUsage $pid`"
+		  if [ $VIRT -gt $ALPACA_MAX_VIRTUAL_SIZE ] ; then
+		    restartService untangle-net-alpaca-iptables /tmp/foo-doesnt-exist "memory-hogging ($VIRT)" stopFirst
+		  fi
+		done
 
 	        if dpkg -l untangle-spamassassin-update | grep -q ii ; then # we're managing spamassassin
 	          [ `tail -n 50 /var/log/mail.info | grep -c "$SPAMASSASSIN_LOG_ERROR"` -gt 2 ] && restartService spamassassin $SPAMASSASSIN_PID_FILE "non-functional" stopFirst "$SPAMD_RESTART_HOOK"
