@@ -1661,12 +1661,14 @@ Ung.SystemBlinger = Ext.extend(Ext.Component, {
         	var newValue="&nbsp;"
         	if(stats.metrics.map[activeMetric.name]!=null) {
         		newValue=stats.metrics.map[activeMetric.name].count;
-        		if(activeMetric.metricDesc.unit!=null) {
+        		if(activeMetric.metricDesc!=null && activeMetric.metricDesc.unit!=null) {
         			newValue +=activeMetric.metricDesc.unit;
         		}
         	}
             var valueDiv = document.getElementById('systemValue_' + this.getId() + '_' + activeMetric.index);
-            valueDiv.innerHTML = newValue;
+            if(valueDiv!=null) {
+                valueDiv.innerHTML = newValue;
+            }
         }
     },
     reset : function() {

@@ -1018,7 +1018,43 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                             }]
                         }]
                     }]
-                }
+                },
+                onNext: function ( handler ) {
+                	if(!Ext.getCmp("openvpn_client_wizard_server_ip").disabled) {
+                		var serverAddress=Ext.getCmp("openvpn_client_wizard_server_ip").getValue();
+                		var serverPort = null;
+                		var serverAddressErrorMsg=this.i18n._('The "Server Address" is not a valid IP address.');
+                		if(serverAddress==null || serverAddress.length==0) {
+                			Ext.MessageBox.alert(i18n._("Failed"), serverAddressErrorMsg);
+                			return;
+                		}
+                		var serverAddressArr=serverAddress.split(":");
+                		if(serverAddressArr.length==1) {
+                			serverPort="443"
+                		} else if(serverAddressArr.length==2) {
+                			serverPort=serverAddressArr[1];
+                		} else {
+                            Ext.MessageBox.alert(i18n._("Failed"), serverAddressErrorMsg);
+                            return;
+                		}
+                		var ipAddr=serverAddressArr[0];
+                		var password=Ext.getCmp("openvpn_client_wizard_password").getValue();
+                		if(password==null || password.length==0) {
+                    		Ext.MessageBox.alert(i18n._("Failed"), this.i18n._('Please supply a password will be used to connect to the server.'));
+                            return;
+                		}
+                		this.getRpcNode().downloadConfig(ipAddr,serverPort,password, function(result, exception) {
+                            if (exception) {
+                                Ext.MessageBox.alert(i18n._("Failed"), exception.message);
+                                return;
+                            }
+                            //go to next step
+                		}.createDelegate(this))
+                	} else {
+                		
+                	}
+                	return false;
+                }.createDelegate(this)
             };
             var congratulationsCard= {
                 title : this.i18n._( "Congratulations" ),
@@ -1039,9 +1075,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     labelWidth : 150,
                     cls : 'untangle-form-panel'
                 },
-                cards : [welcomeCard, downloadCard,congratulationsCard],
-                disableNext : true
-                
+                cards : [welcomeCard, downloadCard,congratulationsCard]
             });
             
             this.clientSetup=new Ung.Window({
@@ -1209,15 +1243,13 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 }
             };
             var serverWizard=new Ung.Wizard({
-                height : 500,
-                width : 800,
+                autoHeight : true,
+                //width : 800,
                 cardDefaults : {
                     labelWidth : 150,
                     cls : 'untangle-form-panel'
                 },
-                cards : [welcomeCard, certificateCard, groupsCard, exportsCard, clientsCard, sitesCard, congratulationsCard],
-                disableNext : true
-                
+                cards : [welcomeCard, certificateCard, groupsCard, exportsCard, clientsCard, sitesCard, congratulationsCard]
             });
             
             this.serverSetup=new Ung.Window({
