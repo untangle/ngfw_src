@@ -351,7 +351,7 @@ class MessageManagerImpl implements LocalMessageManager
         {
             Map<String, Object> m = new HashMap<String, Object>();
 
-	    System.out.println("Running SystemStatCollector");
+	    //System.out.println("Running SystemStatCollector");
 
             try {
                 readMeminfo(m);
@@ -580,14 +580,13 @@ class MessageManagerImpl implements LocalMessageManager
 
             long currentTime = System.currentTimeMillis();
 
-	    System.out.println("getNetDevUsage");
+	    //System.out.println("getNetDevUsage");
 
             BufferedReader br = null;
             try {
                 br = new BufferedReader(new FileReader("/proc/net/dev"));
 		Integer i = new Integer(0);
                 for (String l = br.readLine(); null != l; l = br.readLine(), i += 1) {
-	    	    System.out.println(l);
                     Matcher matcher = NET_DEV_PATTERN.matcher(l);
                     if (matcher.find()) {
                         String iface = matcher.group(1);
@@ -633,8 +632,8 @@ class MessageManagerImpl implements LocalMessageManager
 	    }
             lastNetDevUpdate = currentTime;
 
-	    System.out.println("rxBps: " + m.get("rxBps"));
-	    System.out.println("txBps: " + m.get("txBps"));
+	    //System.out.println("rxBps: " + m.get("rxBps"));
+	    //System.out.println("txBps: " + m.get("txBps"));
         }
 
         private synchronized void getDiskUsage(Map<String, Object> m)
@@ -644,7 +643,7 @@ class MessageManagerImpl implements LocalMessageManager
             m.put("totalDiskSpace", root.getTotalSpace());
             m.put("freeDiskSpace", root.getFreeSpace());
 
-	    System.out.println("total/free Diskspace: " + m.get("totalDiskSpace") + "," + m.get("freeDiskSpace"));
+	    //System.out.println("total/free Diskspace: " + m.get("totalDiskSpace") + "," + m.get("freeDiskSpace"));
 
             long diskReads0 = 0, diskReads1 = 0;
             long diskWrites0 = 0, diskWrites1 = 0;
@@ -690,7 +689,7 @@ class MessageManagerImpl implements LocalMessageManager
             m.put("diskReads", diskReads1);
             m.put("diskWrites", diskWrites1);
 
-	    System.out.println("disk Reads/Writes: " + m.get("diskReads") + "," + m.get("diskWrites"));
+	    //System.out.println("disk Reads/Writes: " + m.get("diskReads") + "," + m.get("diskWrites"));
 
             double dt = (currentTime - lastDiskUpdate) / 1000.0;
 	    if (Math.abs(dt) < 5.0e-5) {
