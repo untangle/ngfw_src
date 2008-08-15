@@ -323,6 +323,7 @@ if (!Ung.hasResource["Ung.Email"]) {
             var safelistUsers = this.getMailNode().getSafelistAdminView().listSafelists().list;
             var safelistSettings = this.getMailNodeSettings().safelistSettings.list;
             var storeDataUser = [];
+            var currentId = 0;
             for(var i=0; i<safelistUsers.length; i++) {
                 if(safelistUsers[i].toLowerCase() == 'global') {
                     continue;
@@ -335,7 +336,8 @@ if (!Ung.hasResource["Ung.Email"]) {
                         safeSendersList.push([safelistSettings[j].sender.addr, safelistSettings[j].sender.addr]);
                     }
                 }
-                storeDataUser.push({id:i, emailAddress: safelistUsers[i], count: cnt, safeSenders: safeSendersList});
+                storeDataUser.push({id:currentId, emailAddress: safelistUsers[i], count: cnt, safeSenders: safeSendersList});
+                currentId++;
             }
 
             this.panelFromSafeList = new Ext.Panel({
@@ -434,7 +436,11 @@ if (!Ung.hasResource["Ung.Email"]) {
                             iconCls : 'purgeIcon',
                             text : i18n._('Purge Selected'),
 		                    handler : function() {
-		                        Ext.MessageBox.show({
+                                var selectedRecords = this.userSafelistGrid.getSelectionModel().getSelections();
+                                if(selectedRecords === undefined || selectedRecords.length == 0) {
+                                    return;
+                                }
+                                Ext.MessageBox.show({
 		                           buttons : Ext.Msg.CANCEL,
 		                           modal : true,
 		                           wait : true,
@@ -443,7 +449,6 @@ if (!Ung.hasResource["Ung.Email"]) {
 		                           width : 300
 		                        });
 		                        
-                                var selectedRecords = this.userSafelistGrid.getSelectionModel().getSelections();
 
 		                        this.purgeSemaphore1 = selectedRecords.length;
 		                        for(var i=0; i<selectedRecords.length; i++) {
@@ -471,9 +476,12 @@ if (!Ung.hasResource["Ung.Email"]) {
                             iconCls : 'detailIcon',
                             text : i18n._('Show Detail'),
                             handler : function() {
-                                var selectedRecord = this.userSafelistGrid.getSelectionModel().getSelected().data;
+                                var selectedRecord = this.userSafelistGrid.getSelectionModel().getSelected();
+                                if(selectedRecord === undefined) {
+                                    return;
+                                }
                                 var data = this.userSafelistGrid.getStore().proxy.data;
-                                this.panelFromSafeList.onShowDetail(data[selectedRecord.id]);
+                                this.panelFromSafeList.onShowDetail(data[selectedRecord.data.id]);
                             }.createDelegate(this)
                         }]
                     })
