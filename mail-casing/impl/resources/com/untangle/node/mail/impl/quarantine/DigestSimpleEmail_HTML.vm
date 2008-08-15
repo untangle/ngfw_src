@@ -1,0 +1,31 @@
+##
+#*
+---------------------------------------------------------------------------
+
+Summary of Objects/variables referenced
+
+$user_email - the user's email address (a string)
+$inbox_link - to access your spam quarantine
+
+---------------------------------------------------------------
+*#
+##
+##
+##
+##
+##
+##
+<html>
+  <head>
+    <title>Quarantine Digest for $user_email</title>
+  </head>
+
+  <body>
+
+  <h3>Quarantine Digest for $user_email</h3>
+
+  <a href="$inbox_link">Click here to access your spam quarantine.</a>
+  From this link you can have a specific email delivered to your email account or delete an email from the quarantine.
+  
+  </body>
+</html>

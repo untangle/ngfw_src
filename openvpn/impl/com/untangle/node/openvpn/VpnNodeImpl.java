@@ -24,12 +24,18 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
-import com.untangle.uvm.ArgonException;
+import org.apache.log4j.Logger;
+import org.hibernate.Query;
+import org.hibernate.Session;
+
 import com.untangle.uvm.IntfConstants;
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.MailSender;
 import com.untangle.uvm.logging.EventManager;
+import com.untangle.uvm.message.BlingBlinger;
+import com.untangle.uvm.message.Counters;
+import com.untangle.uvm.message.LocalMessageManager;
 import com.untangle.uvm.node.HostAddress;
 import com.untangle.uvm.node.HostName;
 import com.untangle.uvm.node.IPaddr;
@@ -47,12 +53,6 @@ import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.vnet.SoloPipeSpec;
-import org.apache.log4j.Logger;
-import org.hibernate.Query;
-import org.hibernate.Session;
-import com.untangle.uvm.message.BlingBlinger;
-import com.untangle.uvm.message.Counters;
-import com.untangle.uvm.message.LocalMessageManager;
 
 
 public class VpnNodeImpl extends AbstractNode
@@ -61,8 +61,6 @@ public class VpnNodeImpl extends AbstractNode
     private static final String TRAN_NAME    = "openvpn";
     private static final String WEB_APP      = TRAN_NAME;
     private static final String WEB_APP_PATH = "/" + WEB_APP;
-    private static final String MAIL_IMAGE_DIR_PREFIX = "images";
-    private static final String MAIL_IMAGE_DIR = Constants.DATA_DIR + "/images";
 
     private static final String CLEANUP_SCRIPT = Constants.SCRIPT_DIR + "/cleanup";
 
@@ -332,28 +330,7 @@ public class VpnNodeImpl extends AbstractNode
     {
         try {
             String subject = "OpenVPN Client";
-            File imageDirectory = new File( MAIL_IMAGE_DIR );
-            List<File> extraList = new LinkedList<File>();
-            List<String> locationList = new LinkedList<String>();
-
-            if ( imageDirectory.exists() && imageDirectory.isDirectory()) {
-                for ( File image : imageDirectory.listFiles()) {
-                    extraList.add( image );
-                    locationList.add( MAIL_IMAGE_DIR_PREFIX + "/" + image.getName());
-                }
-            }
-
-            /* Add the file for the logo */
             LocalUvmContext uvm = LocalUvmContextFactory.context();
-
-            File logo = uvm.localBrandingManager().getLogoFile();
-            if ( logo.exists()) {
-                locationList.add( uvm.localBrandingManager().getLogoWebPath() );
-                extraList.add( logo );
-            } else {
-                logger.warn( "The logo: " + logo + " doesn't exist." );
-            }
-
             MailSender mailSender = uvm.mailSender();
 
             /* Read in the contents of the file */
@@ -372,8 +349,7 @@ public class VpnNodeImpl extends AbstractNode
 
             String recipients[] = { email };
 
-            mailSender.sendMessageWithAttachments( recipients, subject, sb.toString(),
-                                                   locationList, extraList );
+            mailSender.sendHtmlMessage( recipients, subject, sb.toString());
         } catch ( Exception e ) {
             logger.warn( "Error distributing client key", e );
             throw new NodeException( e );

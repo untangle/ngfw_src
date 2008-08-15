@@ -147,9 +147,6 @@ public class Quarantine
             Period p = new Period(h, m, true);
             m_cronJob.reschedule(p);
         }
-
-        m_digestGenerator.setMaxMailInternInDays(settings.getMaxMailIntern() / QuarantineSettings.DAY);
-        m_digestGenerator.setMaxIdleInboxInDays(settings.getMaxIdleInbox() / QuarantineSettings.DAY);
     }
 
     private boolean m_opened = false;
@@ -644,39 +641,19 @@ public class Quarantine
                                     InboxIndex index) {
 
         String internalHost = getInternalIPAsString();
+        
         if(internalHost == null) {
             m_logger.warn("Unable to determine internal interface");
             return false;
         }
-
-        String fromAddr = LocalUvmContextFactory.context().mailSender().getMailSettings().getFromAddress();
-        MIMEMessage msg = m_digestGenerator.generateMsg(index,
-                                                        internalHost,
-                                                        account,
-                                                        fromAddr,
-                                                        m_atm);
-
-        if(msg == null) {
-            m_logger.debug("Unable to generate digest message for \"" + account + "\"");
-            return false;
-        }
-
-        //Convert message to a Stream
-        InputStream in = null;
-        try {
-            ByteBuffer buf = msg.toByteBuffer();
-            in = new ByteBufferInputStream(buf);
-        } catch(Exception ex) {
-            m_logger.error("Exception converting MIMEMessage to a byte[]", ex);
-            IOUtil.close(in);
-            return false;
-        }
-
-        //Attempt the send
-        boolean ret = LocalUvmContextFactory.context().mailSender().sendMessage(in, account);
-
-        IOUtil.close(in);
-
+        String[] recipients = {account};
+        String subject = "Quarantine Digest"; 
+        
+        String bodyHtml = m_digestGenerator.generateMsgBody(internalHost, account, m_atm);
+        
+        // Attempt the send
+        boolean ret = LocalUvmContextFactory.context().mailSender().sendHtmlMessage(recipients, subject, bodyHtml);
+        
         return ret;
     }
 
