@@ -2,7 +2,7 @@ Ext.namespace('Ung');
 Ext.namespace('Ung.SetupWizard');
 
 // The location of the blank pixel image
-Ext.BLANK_IMAGE_URL = 'ext/resources/images/default/s.gif';
+Ext.BLANK_IMAGE_URL = '/ext/resources/images/default/s.gif';
 // the main internationalization object
 var i18n=null;
 // the main json rpc object
@@ -912,7 +912,7 @@ Ung.SetupWizard.InternalNetwork = Ext.extend( Object, {
                     hideLabel : 'true'
                 },{
                     xtype : 'label',
-                    html : '<img src="/webui/skins/' + Ung.SetupWizard.currentSkin + '/images/main/wizard_bridge.png"/>'
+                    html : '<img src="/skins/' + Ung.SetupWizard.currentSkin + '/images/main/wizard_bridge.png"/>'
                 }]
             },{
                 title : i18n._( 'Router' ),
@@ -932,7 +932,7 @@ Ung.SetupWizard.InternalNetwork = Ext.extend( Object, {
                     fieldLabel : i18n._('Netmask')
                 },{
                     xtype : 'label',
-                    html : '<img src="/webui/skins/' + Ung.SetupWizard.currentSkin + '/images/main/wizard_router.png"/>'
+                    html : '<img src="/skins/' + Ung.SetupWizard.currentSkin + '/images/main/wizard_router.png"/>'
                 }]
            }]
         });

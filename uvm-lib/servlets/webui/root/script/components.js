@@ -1,6 +1,6 @@
 Ext.namespace('Ung');
 // The location of the blank pixel image
-Ext.BLANK_IMAGE_URL = 'ext/resources/images/default/s.gif';
+Ext.BLANK_IMAGE_URL = '/ext/resources/images/default/s.gif';
 // the main internationalization object
 var i18n=null;
 // the main json rpc object

@@ -44,7 +44,12 @@
       <param-value>200</param-value>
     </init-param>
   </servlet>
-
+  
+  <servlet>
+    <servlet-name>I18NServlet</servlet-name>
+    <servlet-class>com.untangle.node.mail.web.euv.I18NServlet</servlet-class>
+  </servlet>
+  
 
   @JSP_PRE_COMPILED_SERVLETS@
 
@@ -57,8 +62,14 @@
     <welcome-file>/request.jspx</welcome-file>
   </welcome-file-list>
 
- <servlet-mapping>
+  <servlet-mapping>
     <servlet-name>JSONRPCServlet</servlet-name>
     <url-pattern>/JSON-RPC</url-pattern>
   </servlet-mapping>
+  
+  <servlet-mapping>
+    <servlet-name>I18NServlet</servlet-name>
+    <url-pattern>/i18n</url-pattern>
+  </servlet-mapping>
+  
 </web-app>

@@ -19,19 +19,10 @@ package com.untangle.uvm.jsp;
 
 import java.io.IOException;
 
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Collections;
-
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.PageContext;
-import javax.servlet.jsp.tagext.BodyContent;
 import javax.servlet.jsp.tagext.SimpleTagSupport;
-
-import com.untangle.uvm.client.RemoteUvmContext;
-import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.SkinSettings;
 
 /* Ideally this would take care of everything and load the skin from the UVM context.
  * but since global tags are loaded in a different classloader, they cannot see
@@ -72,7 +63,7 @@ public class SkinTag extends SimpleTagSupport
         JspWriter out = pageContext.getOut();
                 
         try {
-            String srcName  = "/webui/skins/" + this.name + "/css/" + this.src;
+            String srcName  = "/skins/" + this.name + "/css/" + this.src;
             out.println( "\n<link type=\"text/css\" rel=\"stylesheet\" href=\"" + srcName + "\"></link>" );
         } catch ( IOException e ) {
             throw new JspException( "Unable to load the skins.", e );

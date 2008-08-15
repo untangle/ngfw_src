@@ -197,7 +197,8 @@ public class Main
         System.setProperty("bunnicula.conf.dir", bunniculaConf);
         String bunniculaTmp = bunniculaHome + "/tmp";
         System.setProperty("bunnicula.tmp.dir", bunniculaTmp);
-        String bunniculaSkins = bunniculaHome + "/web/webui/skins";
+//        String bunniculaSkins = bunniculaHome + "/web/webui/skins";
+        String bunniculaSkins = "/var/www/skins";
         System.setProperty("bunnicula.skins.dir", bunniculaSkins);
         String bunniculaLang = bunniculaHome + "/lang";
         System.setProperty("bunnicula.lang.dir", bunniculaLang);

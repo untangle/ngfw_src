@@ -28,7 +28,7 @@
 
   <c:set var="javascript" scope="request">
     <uvm:script src="request.js"/>
-    <uvm:script src="/webui/script/i18n.js"/>
+    <uvm:script src="/script/i18n.js"/>
   </c:set>
   
   <c:set var="content" scope="request">

@@ -69,10 +69,8 @@ deps += Jars::Jabsorb
 
 deps << taglib
 
-ms = [ MoveSpec.new("#{BuildEnv::downloads}/jabsorb-1.2.2/webapps/jsonrpc", 'jsonrpc*.js', './jsonrpc') ]
-
 ServletBuilder.new(uvm_lib, "com.untangle.uvm.webui.servlet",
-                   "./uvm-lib/servlets/webui", deps, [], ms)
+                   "./uvm-lib/servlets/webui", deps)
 
 
 # Ajax Tk

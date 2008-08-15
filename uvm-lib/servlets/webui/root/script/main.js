@@ -36,8 +36,8 @@ Ung.Main.prototype = {
             rpc.skinManager.getSkinSettings(function (result, exception) {
             if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
                 var skinSettings=result;
-                Ung.Util.loadCss("skins/"+skinSettings.administrationClientSkin+"/css/ext-skin.css");
-                Ung.Util.loadCss("skins/"+skinSettings.administrationClientSkin+"/css/admin.css");
+                Ung.Util.loadCss("/skins/"+skinSettings.administrationClientSkin+"/css/ext-skin.css");
+                Ung.Util.loadCss("/skins/"+skinSettings.administrationClientSkin+"/css/admin.css");
                 this.postinit();// 1
             }.createDelegate(this));
         }.createDelegate(this));

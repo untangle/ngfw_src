@@ -1,7 +1,7 @@
 Ext.namespace('Ung');
 
 //The location of the blank pixel image
-Ext.BLANK_IMAGE_URL = '/webui/ext/resources/images/default/s.gif';
+Ext.BLANK_IMAGE_URL = '/ext/resources/images/default/s.gif';
 
 Ung.SimpleHash = function()
 {
@@ -527,7 +527,7 @@ Ung.QuarantineTabPanel = Ext.extend( Ext.TabPanel, {
 Ext.onReady(function() {
     // Initialize the I18n
     Ext.Ajax.request({
-        url : '/webui/i18n',
+        url : 'i18n',
             success : function( response, options ) {
             i18n = new Ung.I18N({ map : Ext.decode( response.responseText )});
             completeInit();

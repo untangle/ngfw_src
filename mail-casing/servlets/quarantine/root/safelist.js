@@ -1,7 +1,7 @@
 Ext.namespace('Ung');
 
 //The location of the blank pixel image
-Ext.BLANK_IMAGE_URL = '/webui/ext/resources/images/default/s.gif';
+Ext.BLANK_IMAGE_URL = '/ext/resources/images/default/s.gif';
 
 Ung.SafelistSelectionModel = Ext.extend(  Ext.grid.CheckboxSelectionModel, {    
     onRowSelect : function( sm, rowIndex, record ) {
@@ -130,13 +130,13 @@ Ung.Safelist.prototype = {
                         quarantine.safelist( [ email ] );
                         this.addWindow.hide();
                     },
-                    scope : this,
+                    scope : this
                 },{
                     text : i18n._( 'Cancel' ),
                     handler: function() {
                         this.addWindow.hide();
                     },
-                    scope : this,
+                    scope : this
                 }]
             } );
         }
