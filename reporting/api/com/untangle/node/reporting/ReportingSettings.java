@@ -55,7 +55,7 @@ public class ReportingSettings implements Serializable
     private boolean emailDetail = false; // do not email detail info
     private IPMaddrDirectory networkDirectory = new IPMaddrDirectory();
     private Schedule schedule = new Schedule();
-    private int daysToKeep = 33;
+    private int daysToKeep = 8;
 
     public ReportingSettings() { }
 

@@ -5,6 +5,7 @@ SPAMASSASSIN_PORT=783
 SPAMASSASSIN_PID_FILE=/var/run/spamd.pid
 CLAMD_PORT=3310
 CLAMD_PID_FILE=/var/run/clamav/clamd.pid
+ALPACA_MAX_VIRTUAL_SIZE=125000
 CLAMD_MAX_VIRTUAL_SIZE=125000
 CLAMD_NONFUNCTIONAL_HOOK='/etc/init.d/clamav-freshclam stop ; rm -fr /var/lib/clamav/* ; freshclam ; /etc/init.d/clamav-freshclam restart'
 SPAMD_MAX_VIRTUAL_SIZE=125000

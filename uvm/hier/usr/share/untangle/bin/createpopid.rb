@@ -31,6 +31,10 @@ UNTANGLE = "@PREFIX@/usr/share/untangle"
 UNTANGLE_GPG_HOME = File.join(UNTANGLE, "gpg")
 ACTIVATION_FILE = File.join(UNTANGLE, "activation.key")
 POPID_FILE = File.join(UNTANGLE, "popid")
+ENTROPY_AVAILABLE_FILE = "/proc/sys/kernel/random/entropy_avail"
+
+# minimum entropy needed to generate our key
+MINIMUM_ENTROPY = 3000
 
 # length of the left part
 LEFT_LENGTH = 16
@@ -68,9 +72,30 @@ def parseCommandLineArgs(args)
   return options
 end
 
+def hasEnoughEntropy
+  return (File.new(ENTROPY_AVAILABLE_FILE).read.to_i > MINIMUM_ENTROPY)
+end
+
 def createGpgKeyring(config)
+  if hasEnoughEntropy then
+    puts "GPGME"
+    createGpgKeyringWithGPGME(config)
+  else
+    puts "GPG"
+    createGpgKeyringWithGPG(config)
+  end
+end
+
+def createGpgKeyringWithGPGME(config)
   ctx = GPGME::Ctx.new
   ctx.genkey(config, nil, nil)
+end
+
+def createGpgKeyringWithGPG(config)
+  IO.popen("gpg --batch --quick-random --gen-key 2> /dev/null", 'w+') { |f|
+    f.puts(config.gsub!(/^<.*/, '')) # gpg doesn't want the XML-style config
+  }
+  raise Exception.new if $? != 0
 end
 
 def getPlatform
