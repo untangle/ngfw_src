@@ -66,7 +66,7 @@ public class SpamImapHandler
 
         //I'm incrementing the count, even if the message is too big
         //or cannot be converted to file
-        m_spamImpl.incrementScanCount();
+        //m_spamImpl.incrementScanCount(); node can only have 4 metrics at this time - KenH, 8/15/08
 
         //Scan the message
         File f = messageToFile(msg);

@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.lang.System;
 
 import com.untangle.uvm.message.ActiveStat;
 import com.untangle.uvm.message.BlingBlinger;
@@ -62,7 +63,7 @@ class MessageManagerImpl implements LocalMessageManager
         = Pattern.compile("([ 0-9a-zA-Z]*\\w)\\s*:\\s*(.*)$");
 
     private static final Pattern CPU_USAGE_PATTERN
-        = Pattern.compile("cpu\\s+(\\d+)\\s+(\\d+)\\s+(\\d+)");
+        = Pattern.compile("cpu\\s+(\\d+)\\s+(\\d+)\\s+(\\d+)\\s+(\\d+)");
 
     private static final Pattern NET_DEV_PATTERN
         = Pattern.compile("\\s*(eth\\d+):\\s*(\\d+)\\s+\\d+\\s+\\d+\\s+\\d+\\s+\\d+\\s+\\d+\\s+\\d+\\s+\\d+\\s+(\\d+)");
@@ -82,12 +83,10 @@ class MessageManagerImpl implements LocalMessageManager
                                                 true,
                                                 new SystemStatCollector());
 
-    private long rxBytes0 = 0;
-    private long txBytes0 = 0;
+    private final Map<String,Long> rxtxBytes0 = new HashMap<String,Long>();
     private long lastNetDevUpdate = System.currentTimeMillis();
 
-    private long diskReads0 = 0;
-    private long diskWrites0 = 0;
+    private final Map<String,Long> diskRW0 = new HashMap<String,Long>();
     private long lastDiskUpdate = System.currentTimeMillis();
 
     private volatile Map<String, Object> systemStats = Collections.emptyMap();
@@ -352,6 +351,8 @@ class MessageManagerImpl implements LocalMessageManager
         {
             Map<String, Object> m = new HashMap<String, Object>();
 
+	    System.out.println("Running SystemStatCollector");
+
             try {
                 readMeminfo(m);
                 readVmstat(m);
@@ -521,15 +522,19 @@ class MessageManagerImpl implements LocalMessageManager
         {
             BufferedReader br = null;
             try {
-                br = new BufferedReader(new FileReader("/proc/loadavg"));
+                br = new BufferedReader(new FileReader("/proc/stat"));
                 for (String l = br.readLine(); null != l; l = br.readLine()) {
                     Matcher matcher = CPU_USAGE_PATTERN.matcher(l);
                     if (matcher.find()) {
                         try {
                             long user1 = Long.parseLong(matcher.group(1));
+			    user1 = incrementCount(user0, user1);
                             long nice1 = Long.parseLong(matcher.group(2));
+			    nice1 = incrementCount(nice0, nice1);
                             long system1 = Long.parseLong(matcher.group(3));
+			    system1 = incrementCount(system0, system1);
                             long idle1 = Long.parseLong(matcher.group(4));
+			    idle1 = incrementCount(idle0, idle1);
 
                             long totalTime = (user1 - user0) + (nice1 - nice0)
                                 + (system1 - system0) + (idle1 - idle0);
@@ -544,6 +549,9 @@ class MessageManagerImpl implements LocalMessageManager
                                 m.put("systemCpuUtilization",
                                       (system1 - system0) / (double)totalTime);
                             }
+
+			    //System.out.println("userCpuUtilization: " + m.get("userCpuUtilization"));
+			    //System.out.println("systemCpuUtilization: " + m.get("systemCpuUtilization"));
 
                             user0 = user1;
                             nice0 = nice1;
@@ -567,21 +575,42 @@ class MessageManagerImpl implements LocalMessageManager
         private synchronized void getNetDevUsage(Map<String, Object> m)
             throws IOException
         {
-            long rxBytes1 = 0;
-            long txBytes1 = 0;
+            long rxBytes0 = 0, rxBytes1 = 0;
+            long txBytes0 = 0, txBytes1 = 0;
 
             long currentTime = System.currentTimeMillis();
+
+	    System.out.println("getNetDevUsage");
 
             BufferedReader br = null;
             try {
                 br = new BufferedReader(new FileReader("/proc/net/dev"));
-                for (String l = br.readLine(); null != l; l = br.readLine()) {
+		Integer i = new Integer(0);
+                for (String l = br.readLine(); null != l; l = br.readLine(), i += 1) {
+	    	    System.out.println(l);
                     Matcher matcher = NET_DEV_PATTERN.matcher(l);
                     if (matcher.find()) {
                         String iface = matcher.group(1);
+
+			// get stored previous values or initialize them to 0
+		        Long rxbytes0 = rxtxBytes0.get("rx"+i);
+		        if (rxbytes0 == null) rxbytes0 = 0L;
+		        Long txbytes0 = rxtxBytes0.get("tx"+i);
+		    	if (txbytes0 == null) txbytes0 = 0L;
+
                         try {
-                            rxBytes1 += Long.parseLong(matcher.group(2));
-                            txBytes1 += Long.parseLong(matcher.group(3));
+			    // accumulate previous values
+			    rxBytes0 += rxbytes0;
+			    txBytes0 += txbytes0;
+			    // parse new incoming values w/64-bit correction for 32-bit rollover
+                            long rxbytes1 = incrementCount(rxbytes0.longValue(), Long.parseLong(matcher.group(2)));
+                            long txbytes1 = incrementCount(txbytes0.longValue(), Long.parseLong(matcher.group(3)));
+			    // accumulate 64-bit corrected values
+			    rxBytes1 += rxbytes1;
+			    txBytes1 += txbytes1;
+			    // update stored previous values w/new 64 corrected values
+			    rxtxBytes0.put("rx"+i, rxbytes1);
+			    rxtxBytes0.put("tx"+i, txbytes1);
                         } catch (NumberFormatException exn) {
                             logger.warn("could not add interface info for: "
                                         + iface, exn);
@@ -594,17 +623,18 @@ class MessageManagerImpl implements LocalMessageManager
                 }
             }
 
-            // XXX this doesn't seem right to me
-            rxBytes1 = incrementCount(rxBytes0, rxBytes1);
-            txBytes1 = incrementCount(txBytes0, txBytes1);
-
             double dt = (currentTime - lastNetDevUpdate) / 1000.0;
-            m.put("rxBps", (rxBytes1 - rxBytes0) / dt);
-            m.put("txBps", (txBytes1 - txBytes0) / dt);
+	    if (Math.abs(dt) < 5.0e-5) {
+            	m.put("rxBps", 0.0);
+            	m.put("txBps", 0.0);
+	    } else {
+            	m.put("rxBps", (rxBytes1 - rxBytes0) / dt);
+            	m.put("txBps", (txBytes1 - txBytes0) / dt);
+	    }
             lastNetDevUpdate = currentTime;
 
-            rxBytes0 = rxBytes1;
-            txBytes0 = txBytes1;
+	    System.out.println("rxBps: " + m.get("rxBps"));
+	    System.out.println("txBps: " + m.get("txBps"));
         }
 
         private synchronized void getDiskUsage(Map<String, Object> m)
@@ -614,20 +644,38 @@ class MessageManagerImpl implements LocalMessageManager
             m.put("totalDiskSpace", root.getTotalSpace());
             m.put("freeDiskSpace", root.getFreeSpace());
 
-            long diskReads1 = 0;
-            long diskWrites1 = 0;
+	    System.out.println("total/free Diskspace: " + m.get("totalDiskSpace") + "," + m.get("freeDiskSpace"));
+
+            long diskReads0 = 0, diskReads1 = 0;
+            long diskWrites0 = 0, diskWrites1 = 0;
 
             long currentTime = System.currentTimeMillis();
 
             BufferedReader br = null;
             try {
                 br = new BufferedReader(new FileReader("/proc/diskstats"));
-                for (String l = br.readLine(); null != l; l = br.readLine()) {
+		Integer i = new Integer(0);
+                for (String l = br.readLine(); null != l; l = br.readLine(), i += 1) {
                     Matcher matcher = DISK_STATS_PATTERN.matcher(l);
                     if (matcher.find()) {
+			Long diskreads0 = diskRW0.get("dr"+i);
+                        if (diskreads0 == null) diskreads0 = 0L;
+                        Long diskwrites0 = diskRW0.get("dw"+i);
+                        if (diskwrites0 == null) diskwrites0 = 0L;
+
                         try {
-                            diskReads1 += Long.parseLong(matcher.group(1));
-                            diskWrites1 += Long.parseLong(matcher.group(2));
+			    // accumulate previous values
+			    diskReads0 += diskreads0;
+                            diskWrites0 += diskwrites0;
+			    // parse new incoming values w/64-bit correction for 32-bit rollover
+                            long diskreads1 = incrementCount(diskreads0.longValue(), Long.parseLong(matcher.group(1)));
+                            long diskwrites1 = incrementCount(diskwrites0.longValue(), Long.parseLong(matcher.group(2)));
+			    // accumulate 64-bit corrected values
+                            diskReads1 += diskreads1;
+                            diskWrites1 += diskwrites1;
+			    // update stored previous values w/new 64 corrected values
+                            diskRW0.put("dr"+i, diskreads1);
+                            diskRW0.put("dw"+i, diskwrites1);
                         } catch (NumberFormatException exn) {
                             logger.warn("could not get disk data", exn);
                         }
@@ -639,18 +687,20 @@ class MessageManagerImpl implements LocalMessageManager
                 }
             }
 
-            diskReads1 = incrementCount(diskReads0, diskReads1);
-            diskWrites1 = incrementCount(diskWrites0, diskWrites1);
             m.put("diskReads", diskReads1);
             m.put("diskWrites", diskWrites1);
 
-            double dt = (currentTime - lastDiskUpdate) / 1000.0;
-            m.put("diskReadsPerSecond", (diskReads1 - diskReads0) / dt);
-            m.put("diskWritesPerSecond", (diskWrites1 - diskWrites0) / dt);
-            lastDiskUpdate = currentTime;
+	    System.out.println("disk Reads/Writes: " + m.get("diskReads") + "," + m.get("diskWrites"));
 
-            diskReads0 = diskReads1;
-            diskWrites0 = diskWrites1;
+            double dt = (currentTime - lastDiskUpdate) / 1000.0;
+	    if (Math.abs(dt) < 5.0e-5) {
+                m.put("diskReadsPerSecond", 0.0);
+                m.put("diskWritesPerSecond", 0.0);
+	    } else {
+                m.put("diskReadsPerSecond", (diskReads1 - diskReads0) / dt);
+                m.put("diskWritesPerSecond", (diskWrites1 - diskWrites0) / dt);
+	    }
+            lastDiskUpdate = currentTime;
         }
 
         private long incrementCount(long previousCount, long kernelCount)

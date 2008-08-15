@@ -59,7 +59,7 @@ public class PhishHttpHandler extends HttpStateMachine
     @Override
     protected Header doRequestHeader(Header requestHeader)
     {
-        node.incrementScanCount();
+        //node.incrementScanCount();
         
         RequestLineToken rlToken = getRequestLine();
         URI uri = rlToken.getRequestUri();

@@ -116,7 +116,7 @@ public class SmtpSessionHandler
 
         //I'm incrementing the count, even if the message is too big
         //or cannot be converted to file
-        m_spamImpl.incrementScanCount();
+        //m_spamImpl.incrementScanCount();
 
         //Scan the message
         File f = messageToFile(msg, tx);
@@ -243,7 +243,7 @@ public class SmtpSessionHandler
 
         m_logger.debug("[handleMessageCanNotBlock]");
 
-        m_spamImpl.incrementScanCount();
+        //m_spamImpl.incrementScanCount();
 
         //Scan the message
         File f = messageToFile(msg, tx);

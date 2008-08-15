@@ -109,7 +109,7 @@ public class SpamImpl extends AbstractNode implements SpamNode
 
     private volatile SpamSettings spamSettings;
 
-    private final BlingBlinger scanBlinger;
+    //private final BlingBlinger scanBlinger;
     private final BlingBlinger passBlinger;
     private final BlingBlinger blockBlinger;
     private final BlingBlinger markBlinger;
@@ -150,12 +150,12 @@ public class SpamImpl extends AbstractNode implements SpamNode
 
         LocalMessageManager lmm = LocalUvmContextFactory.context().localMessageManager();
         Counters c = lmm.getCounters(getTid());
-        scanBlinger = c.addActivity("scan", "Scan Message", null, "SCAN");
+        //scanBlinger = c.addActivity("scan", "Scan Message", null, "SCAN");
         passBlinger = c.addActivity("pass", "Pass Message", null, "PASS");
         blockBlinger = c.addActivity("block", "Block Message", null, "BLOCK");
         markBlinger = c.addActivity("mark", "Mark Message", null, "MARK");
         quarantineBlinger = c.addActivity("quarantine", "Quarantine Message", null, "QUARANTINE");
-        lmm.setActiveMetricsIfNotSet(getTid(), scanBlinger, passBlinger, blockBlinger, markBlinger, quarantineBlinger);
+        lmm.setActiveMetricsIfNotSet(getTid(), passBlinger, blockBlinger, markBlinger, quarantineBlinger);
     }
 
     // Spam methods -----------------------------------------------------------
@@ -175,9 +175,9 @@ public class SpamImpl extends AbstractNode implements SpamNode
     /**
      * Increment the counter for messages scanned
      */
-    public void incrementScanCount() {
-	scanBlinger.increment();
-    }
+    //public void incrementScanCount() {
+	//scanBlinger.increment();
+    //}
 
     /**
      * Increment the counter for blocked (SMTP only).
