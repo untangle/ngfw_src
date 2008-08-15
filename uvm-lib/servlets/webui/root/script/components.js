@@ -1498,7 +1498,11 @@ Ung.SystemBlinger = Ext.extend(Ext.Component, {
     buildActiveMetrics : function () {
     	var nodeCmp = Ext.getCmp(this.parentId);
     	var activeMetrics=nodeCmp.blingers.activeMetrics.list;
-        for(var i=0; i<activeMetrics.length;i++) {
+    	if(activeMetrics.length>4) {
+    		Ext.MessageBox.alert(i18n._("Failed"), i18n.sprintf(i18n._("The node %s has %s metrics. The maximum number of metrics is 4."),nodeCmp.displayName ,activeMetrics.length));
+    	}
+    	var metricsLen=Math.min(activeMetrics.length,4);
+        for(var i=0; i<metricsLen;i++) {
         	var activeMetric=activeMetrics[i];
             for(var j=0;j<nodeCmp.blingers.metricDescs.list.length;j++) {
                 var metric=nodeCmp.blingers.metricDescs.list[j];
