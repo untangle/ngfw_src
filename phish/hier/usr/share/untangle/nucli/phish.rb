@@ -211,7 +211,7 @@ HELP
   end
   
   def get_snmp_stat_map()
-      return {7 => "scan", 8 => "block", 9 => "pass", 10 => "remove"};
+      return {8 => "block", 9 => "pass", 10 => "remove"};
   end
 
 end

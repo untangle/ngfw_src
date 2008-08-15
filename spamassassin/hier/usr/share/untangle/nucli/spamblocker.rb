@@ -192,7 +192,7 @@ HELP
   end
   
   def get_snmp_stat_map()
-      return {7 => "scan", 8 => "block", 9 => "mark", 10 => "quarantine", 11 => "pass"};
+      return {8 => "block", 9 => "mark", 10 => "quarantine", 11 => "pass"};
   end
 
 end
