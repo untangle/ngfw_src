@@ -152,7 +152,7 @@ Ung.Main.prototype = {
         main.systemStats=new Ung.SystemStats({});
 
         Ext.getCmp("west").on("resize", function() {
-            var newHeight=Math.max(this.getEl().getHeight()-180,100);
+            var newHeight=Math.max(this.getEl().getHeight()-220,100);
             main.leftTabs.setHeight(newHeight);
         });
         Ext.getCmp("west").fireEvent("resize");

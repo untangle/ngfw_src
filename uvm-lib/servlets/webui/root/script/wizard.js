@@ -119,7 +119,7 @@ Ung.Wizard = Ext.extend(Ext.Panel, {
         var hasChanged = false;
         var handler = null;
 
-        if ( this.currentPage < index ) {
+        if ( this.currentPage < index || (index==this.currentPage && this.currentPage==this.cards.length-1)) {
             /* moving forward, call the forward handler */
             hasChanged = true;
             handler = this.cards[this.currentPage].onNext;

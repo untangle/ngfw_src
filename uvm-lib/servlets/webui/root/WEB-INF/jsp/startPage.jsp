@@ -1,5 +1,8 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <html xmlns="http://www.w3.org/1999/xhtml">
+<c:set var="isDebug" value="false"/>
 <head>
     <title>UNG</title>
     
@@ -7,15 +10,22 @@
         @import "/ext/resources/css/ext-all.css";
         @import "/ext/examples/multiselect/multiselect.css";
     </style>
-<!--
-	<script type="text/javascript" src="/ext/source/core/Ext.js"></script>
-	<script type="text/javascript" src="/ext/source/adapter/ext-base.js"></script>
-	<script type="text/javascript" src="/ext/ext-all-debug.js"></script>
-	<script type="text/javascript" src="/jsonrpc/jsonrpc.js"></script>
-
+<c:if test="${isDebug==false}">
 	<script type="text/javascript" src="/ext/adapter/ext/ext-base.js"></script>
 	<script type="text/javascript" src="/ext/ext-all.js"></script>
--->	
+
+    <script type="text/javascript" src="/jsonrpc/jsonrpc-min.js"></script>
+    <script type="text/javascript" src="/script/i18n.js"></script>
+    <script type="text/javascript" src="script/components.js"></script>
+    <script type="text/javascript" src="script/main.js"></script>
+
+    <script type="text/javascript" src="/ext/examples/multiselect/MultiSelect.js"></script>
+    <script type="text/javascript" src="/ext/examples/multiselect/DDView.js"></script>
+    <!-- todo, move this to a place where it is loaded dynamically. -->
+    <script type="text/javascript" src="script/timezone.js"></script>
+    <script type="text/javascript" src="script/wizard.js"></script>
+</c:if>	
+<c:if test="${isDebug==true}">
 	<script type="text/javascript" src="/ext/source/core/Ext.js"></script>
 	<script type="text/javascript" src="/ext/source/adapter/ext-base.js"></script>
 	<script type="text/javascript" src="/ext/ext-all-debug.js"></script>
@@ -30,6 +40,7 @@
 
     <!-- todo, move this to a place where it is loaded dynamically. -->
     <script type="text/javascript" src="script/timezone.js"></script>
+    <script type="text/javascript" src="script/wizard.js"></script>
 
 <!-- Just for Test, normaly this resources are Dynamically loaded     
 -->	
@@ -55,8 +66,7 @@
     <script type="text/javascript" src="script/config/upgrade.js"></script>
     <script type="text/javascript" src="script/config/racks.js"></script>
     <script type="text/javascript" src="script/config/userDirectory.js"></script>
-    <script type="text/javascript" src="script/wizard.js"></script>
-    
+</c:if>
 	<script type="text/javascript">
 		function init() {
 			main=new Ung.Main();
