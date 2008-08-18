@@ -19,7 +19,6 @@
 package com.untangle.node.webfilter;
 
 import java.util.Map;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -44,19 +43,19 @@ public class BlockPageServlet extends HttpServlet
         LocalUvmContext uvm = LocalUvmContextFactory.context();
         BrandingBaseSettings bs = uvm.brandingManager().getBaseSettings();
         LocalNodeManager nm = uvm.nodeManager();
-        
+
         Tid tid = new Tid(Long.parseLong(request.getParameter( "tid" )));
-        
+
         WebFilter node = (WebFilter)nm.nodeContext( tid ).node();
         String nonce = request.getParameter("nonce");
 
         WebFilterBlockDetails blockDetails = node.getDetails(nonce);
         request.setAttribute( "reason", blockDetails.getReason());
         WebFilterHandler handler = new WebFilterHandler( blockDetails, node.getUserWhitelistMode());
-                                                         
-        BlockPageUtil.getInstance().handle( request, response, this, handler );        
+
+        BlockPageUtil.getInstance().handle( request, response, this, handler );
     }
-    
+
     private static class WebFilterHandler implements BlockPageUtil.Handler
     {
         private final WebFilterBlockDetails blockDetails;
@@ -73,42 +72,42 @@ public class BlockPageServlet extends HttpServlet
         {
             return "webfilter";
         }
-        
+
         /* Retrieve the page title (in the window bar) of the page */
         public String getPageTitle( BrandingBaseSettings bs, Map<String,String> i18n_map )
         {
             return I18nUtil.tr(i18n_map, "{0} | Web Filter Warning", bs.getCompanyName());
         }
-        
+
         /* Retrieve the title (top of the pae) of the page */
         public String getTitle( BrandingBaseSettings bs, Map<String,String> i18n_map )
         {
             return "Web Filter";
         }
-        
+
         public String getFooter( BrandingBaseSettings bs, Map<String,String> i18n_map )
         {
             return I18nUtil.tr(i18n_map, "{0} Web Filter", bs.getCompanyName());
         }
-        
+
         /* Return the name of the script file to load, or null if there is not a script. */
         public String getScriptFile()
         {
             return "webfilter.js";
         }
-        
+
         /* Retrieve the description of why this page was blocked. */
         public String getDescription( BrandingBaseSettings bs, Map<String,String> i18n_map )
         {
-            return I18nUtil.tr(i18n_map, "{0}This web page was blocked{1} because it is considered inappropriate.", 
+            return I18nUtil.tr(i18n_map, "{0}This web page was blocked{1} because it is considered inappropriate.",
                     new Object[]{ "<b>","</b>" } );
         }
-    
+
         public WebFilterBlockDetails getBlockDetails()
         {
             return this.blockDetails;
         }
-    
+
         public UserWhitelistMode getUserWhitelistMode()
         {
             return this.userWhitelistMode;

@@ -28,6 +28,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.StringTokenizer;
 import javax.servlet.http.HttpServletRequest;
 
@@ -688,6 +689,11 @@ public class UvmContextImpl extends UvmContextBase
     public String setProperty(String key, String value)
     {
         return System.setProperty(key, value);
+    }
+
+    public Map<String, String> getTranslations(String module)
+    {
+        return languageManager.getTranslations(module);
     }
 
     // UvmContextBase methods --------------------------------------------------

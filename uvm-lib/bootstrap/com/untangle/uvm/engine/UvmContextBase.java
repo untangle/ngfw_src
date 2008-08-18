@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -18,6 +18,8 @@
 
 package com.untangle.uvm.engine;
 
+import java.util.Map;
+
 /**
  * This class is for Main to manipulate UvmContext without resorting
  * to reflection and allowing package protection of sensitive methods.
@@ -28,6 +30,10 @@ package com.untangle.uvm.engine;
 public abstract class UvmContextBase
 {
     protected Main main;
+
+    // public methods ---------------------------------------------------------
+
+    public abstract Map<String, String> getTranslations(String module);
 
     // abstract methods -------------------------------------------------------
 

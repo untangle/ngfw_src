@@ -24,6 +24,7 @@ import java.net.URL;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import com.untangle.uvm.logging.UvmRepositorySelector;
 import org.apache.log4j.LogManager;
@@ -52,8 +53,10 @@ import org.apache.log4j.Logger;
  */
 public class Main
 {
-    private static String UVM_LOCAL_CONTEXT_CLASSNAME
+    private static final String UVM_LOCAL_CONTEXT_CLASSNAME
         = "com.untangle.uvm.engine.UvmContextImpl";
+
+    private static Main MAIN;
 
     private final SchemaUtil schemaUtil = new SchemaUtil();
 
@@ -63,7 +66,7 @@ public class Main
     private Class uvmPrivClass;
     private UvmContextBase uvmContext;
 
-    // constructor ------------------------------------------------------------
+    // constructor -------------------------------------------------------------
 
     private Main()
     {
@@ -72,17 +75,27 @@ public class Main
                                          new Object());
     }
 
-    // public static methods --------------------------------------------------
+    // public static methods ---------------------------------------------------
 
     /**
      * The fun starts here.
      */
     public static final void main(String[] args) throws Exception
     {
-        new Main().init();
+        synchronized (Main.class) {
+            if (null == MAIN) {
+                MAIN = new Main();
+                MAIN.init();
+            }
+        }
     }
 
-    // public methods ---------------------------------------------------------
+    public static Main getMain()
+    {
+        return MAIN;
+    }
+
+    // public methods ----------------------------------------------------------
 
     /**
      * @see UvmClassLoader.refreshToolbox()
@@ -138,7 +151,12 @@ public class Main
         return mcl.loadUvmResource(name);
     }
 
-    // private methods --------------------------------------------------------
+    public Map<String, String> getTranslations(String module)
+    {
+        return uvmContext.getTranslations(module);
+    }
+
+    // private methods ---------------------------------------------------------
 
     private void init() throws Exception
     {
@@ -197,7 +215,6 @@ public class Main
         System.setProperty("bunnicula.conf.dir", bunniculaConf);
         String bunniculaTmp = bunniculaHome + "/tmp";
         System.setProperty("bunnicula.tmp.dir", bunniculaTmp);
-//        String bunniculaSkins = bunniculaHome + "/web/webui/skins";
         String bunniculaSkins = "/var/www/skins";
         System.setProperty("bunnicula.skins.dir", bunniculaSkins);
         String bunniculaLang = bunniculaHome + "/lang";
@@ -223,7 +240,6 @@ public class Main
         }
     }
 
-    // XXX get rid of all these throws
     private void startUvm() throws Exception
     {
         List<URL> urls = new ArrayList();

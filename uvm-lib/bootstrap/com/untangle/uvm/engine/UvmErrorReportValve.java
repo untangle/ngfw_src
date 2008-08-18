@@ -20,11 +20,13 @@ package com.untangle.uvm.engine;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Map;
 
 import org.apache.catalina.connector.Request;
 import org.apache.catalina.connector.Response;
 import org.apache.catalina.util.RequestUtil;
 import org.apache.catalina.valves.ErrorReportValve;
+import org.apache.log4j.Logger;
 
 /**
  * Sends a friendly error page when a problem occurs.
@@ -40,7 +42,20 @@ public class UvmErrorReportValve extends ErrorReportValve
 {
     public static final String UVM_WEB_MESSAGE_ATTR = "com.untangle.uvm.web.message";
 
+    private static final Logger logger = Logger.getLogger(UvmErrorReportValve.class);
+
     protected void report(Request request, Response response,
+                          Throwable throwable)
+        throws IOException
+    {
+        try {
+            doReport(request, response, throwable);
+        } catch (Throwable t) {
+            logger.warn("could not make error page", t);
+        }
+    }
+
+    protected void doReport(Request request, Response response,
                           Throwable throwable)
         throws IOException
     {
@@ -78,28 +93,48 @@ public class UvmErrorReportValve extends ErrorReportValve
     private void writeReport(PrintWriter w, String errorMessage)
         throws IOException
     {
-      w.write("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n");
-      w.write("<html xmlns=\"http://www.w3.org/1999/xhtml\">\n");
-      w.write("<head>\n");
-      w.write("<title>Untangle Server</title>\n");
-      w.write("<meta http-equiv=\"Content-Type\" content=\"text/html;charset=iso-8859-1\" />\n");
-      w.write("<style type=\"text/css\">\n");
-      w.write("/* <![CDATA[ */\n");
-      w.write("@import url(/images/base.css);\n");
-      w.write("/* ]]> */\n");
-      w.write("</style>\n");
-      w.write("</head>\n");
-      w.write("<body>\n");
-      w.write("<div id=\"main\" style=\"width:500px;margin:50px auto 0 auto;\">\n");
-      w.write("<div class=\"main-top-left\"></div><div class=\"main-top-right\"></div><div class=\"main-mid-left\"><div class=\"main-mid-right\"><div class=\"main-mid\">\n");
-      w.write("<center>");
-      w.write("<img alt=\"\" src=\"/images/BrandingLogo.gif\" /><br /><br />\n");
-      w.write("<b>Untangle Server</b><br /><br />\n");
-      w.write("<em>");  w.write(errorMessage);  w.write("</em>\n");
-      w.write("</center><br /><br />\n");
-      w.write("</div></div></div><div class=\"main-bot-left\"></div><div class=\"main-bot-right\"></div>\n");
-      w.write("</div>\n");
-      w.write("</body>\n");
-      w.write("</html>\n");
+        Map<String, String> i18nMap = getTranslations();
+
+        w.write("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n");
+        w.write("<html xmlns=\"http://www.w3.org/1999/xhtml\">\n");
+        w.write("<head>\n");
+        w.write("<title>");
+        w.write(tr(i18nMap, "Untangle Server"));
+        w.write("</title>\n");
+        w.write("<meta http-equiv=\"Content-Type\" content=\"text/html;charset=iso-8859-1\" />\n");
+        w.write("<style type=\"text/css\">\n");
+        w.write("/* <![CDATA[ */\n");
+        w.write("@import url(/images/base.css);\n");
+        w.write("/* ]]> */\n");
+        w.write("</style>\n");
+        w.write("</head>\n");
+        w.write("<body>\n");
+        w.write("<div id=\"main\" style=\"width:500px;margin:50px auto 0 auto;\">\n");
+        w.write("<div class=\"main-top-left\"></div><div class=\"main-top-right\"></div><div class=\"main-mid-left\"><div class=\"main-mid-right\"><div class=\"main-mid\">\n");
+        w.write("<center>");
+        w.write("<img alt=\"\" src=\"/images/BrandingLogo.gif\" /><br /><br />\n");
+        w.write("<b>");
+        w.write(tr(i18nMap, "Untangle Server"));
+        w.write("</b><br /><br />\n");
+        w.write("<em>");  w.write(errorMessage);  w.write("</em>\n");
+        w.write("</center><br /><br />\n");
+        w.write("</div></div></div><div class=\"main-bot-left\"></div><div class=\"main-bot-right\"></div>\n");
+        w.write("</div>\n");
+        w.write("</body>\n");
+        w.write("</html>\n");
+    }
+
+    private Map<String, String> getTranslations()
+    {
+        return Main.getMain().getTranslations("bootstrap");
+    }
+
+    public String tr(Map<String, String> i18n_map, String value)
+    {
+        String tr = i18n_map.get(value);
+        if (tr == null) {
+            tr = value;
+        }
+        return tr;
     }
 }
