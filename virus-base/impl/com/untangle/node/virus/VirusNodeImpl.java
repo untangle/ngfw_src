@@ -37,6 +37,9 @@ import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.EventLoggerFactory;
 import com.untangle.uvm.logging.EventManager;
 import com.untangle.uvm.logging.SimpleEventFilter;
+import com.untangle.uvm.message.BlingBlinger;
+import com.untangle.uvm.message.Counters;
+import com.untangle.uvm.message.LocalMessageManager;
 import com.untangle.uvm.node.MimeType;
 import com.untangle.uvm.node.MimeTypeRule;
 import com.untangle.uvm.node.Node;
@@ -58,11 +61,6 @@ import org.apache.catalina.Valve;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.LocalUvmContext;
-import com.untangle.uvm.message.BlingBlinger;
-import com.untangle.uvm.message.Counters;
-import com.untangle.uvm.message.LocalMessageManager;
 
 /**
  * Virus Node.
@@ -160,7 +158,7 @@ public abstract class VirusNodeImpl extends AbstractNode
                 return false;
             }
 
-            
+
             private boolean testClientPort( int clientPort )
             {
                 /* FTP responds on port 20 */
@@ -287,8 +285,8 @@ public abstract class VirusNodeImpl extends AbstractNode
 
     public List<MimeTypeRule> getHttpMimeTypes(final int start, final int limit, final String... sortColumns) {
         return listUtil.getItems( "select vs.httpMimeTypes from VirusSettings vs " +
-                "join vs.httpMimeTypes as httpMimeTypes where vs.tid = :tid ",
-                getNodeContext(), getTid(),"httpMimeTypes", start, limit, sortColumns);
+                                  "join vs.httpMimeTypes as httpMimeTypes where vs.tid = :tid ",
+                                  getNodeContext(), getTid(),"httpMimeTypes", start, limit, sortColumns);
     }
 
     public void updateHttpMimeTypes(List<MimeTypeRule> added, List<Long> deleted, List<MimeTypeRule> modified) {
@@ -431,7 +429,7 @@ public abstract class VirusNodeImpl extends AbstractNode
     // AbstractNode methods ----------------------------------------------
 
     @Override
-    protected PipeSpec[] getPipeSpecs()
+        protected PipeSpec[] getPipeSpecs()
     {
         return pipeSpecs;
     }
@@ -470,25 +468,25 @@ public abstract class VirusNodeImpl extends AbstractNode
         baseSettings.setFtpConfig(new VirusConfig(true, true, "Scan FTP files" ));
 
         baseSettings.setSmtpConfig(new VirusSMTPConfig(true,
-                                             SMTPVirusMessageAction.REMOVE,
-                                             SMTPNotifyAction.NEITHER,
-                                             "Scan SMTP e-mail",
-                                             MOD_SUB_TEMPLATE,
-                                             MOD_BODY_SMTP_TEMPLATE,
-                                             NOTIFY_SUB_TEMPLATE,
-                                             NOTIFY_BODY_TEMPLATE));
+                                                       SMTPVirusMessageAction.REMOVE,
+                                                       SMTPNotifyAction.NEITHER,
+                                                       "Scan SMTP e-mail",
+                                                       MOD_SUB_TEMPLATE,
+                                                       MOD_BODY_SMTP_TEMPLATE,
+                                                       NOTIFY_SUB_TEMPLATE,
+                                                       NOTIFY_BODY_TEMPLATE));
 
         baseSettings.setPopConfig(new VirusPOPConfig(true,
-                                           VirusMessageAction.REMOVE,
-                                           "Scan POP e-mail",
-                                           MOD_SUB_TEMPLATE,
-                                           MOD_BODY_TEMPLATE));
+                                                     VirusMessageAction.REMOVE,
+                                                     "Scan POP e-mail",
+                                                     MOD_SUB_TEMPLATE,
+                                                     MOD_BODY_TEMPLATE));
 
         baseSettings.setImapConfig(new VirusIMAPConfig(true,
-                                             VirusMessageAction.REMOVE,
-                                             "Scan IMAP e-mail",
-                                             MOD_SUB_TEMPLATE,
-                                             MOD_BODY_TEMPLATE));
+                                                       VirusMessageAction.REMOVE,
+                                                       "Scan IMAP e-mail",
+                                                       MOD_SUB_TEMPLATE,
+                                                       MOD_BODY_TEMPLATE));
 
         initMimeTypes(vs);
         initFileExtensions(vs);
@@ -591,13 +589,13 @@ public abstract class VirusNodeImpl extends AbstractNode
     }
 
     @Override
-    protected void postInit(String[] args)
+        protected void postInit(String[] args)
     {
         deployWebAppIfRequired(logger);
     }
 
     @Override
-    protected void postDestroy()
+        protected void postDestroy()
     {
         unDeployWebAppIfRequired(logger);
     }
@@ -649,7 +647,7 @@ public abstract class VirusNodeImpl extends AbstractNode
      */
     public void incrementScanCount()
     {
-	scanBlinger.increment();
+        scanBlinger.increment();
     }
 
     /**
@@ -657,7 +655,7 @@ public abstract class VirusNodeImpl extends AbstractNode
      */
     public void incrementBlockCount()
     {
-	blockBlinger.increment();
+        blockBlinger.increment();
     }
 
     /**
@@ -665,7 +663,7 @@ public abstract class VirusNodeImpl extends AbstractNode
      */
     public void incrementPassCount()
     {
-	passBlinger.increment();
+        passBlinger.increment();
     }
 
     /**
@@ -674,7 +672,7 @@ public abstract class VirusNodeImpl extends AbstractNode
      */
     public void incrementRemoveCount()
     {
-	removeBlinger.increment();
+        removeBlinger.increment();
     }
 
     private static synchronized void deployWebAppIfRequired(Logger logger)
@@ -698,18 +696,6 @@ public abstract class VirusNodeImpl extends AbstractNode
                 {
                     return false;
                 }
-
-                /* Unified way to determine which parameter to check */
-                protected String outsideErrorMessage()
-                {
-                    return "off-site access";
-                }
-
-                /* Unified way to determine which parameter to check */
-                protected String httpErrorMessage()
-                {
-                    return "standard access";
-                }
             };
 
         if (null != asm.loadInsecureApp("/virus", "virus", v)) {
@@ -727,7 +713,7 @@ public abstract class VirusNodeImpl extends AbstractNode
         LocalUvmContext mctx = LocalUvmContextFactory.context();
         LocalAppServerManager asm = mctx.appServerManager();
 
-        if (asm.unloadWebApp("/webfilter")) {
+        if (asm.unloadWebApp("/virus")) {
             logger.debug("Unloaded Virus WebApp");
         } else {
             logger.warn("Unable to unload Virus WebApp");

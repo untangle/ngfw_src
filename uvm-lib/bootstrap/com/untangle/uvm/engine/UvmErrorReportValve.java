@@ -56,7 +56,7 @@ public class UvmErrorReportValve extends ErrorReportValve
     }
 
     protected void doReport(Request request, Response response,
-                          Throwable throwable)
+                            Throwable throwable)
         throws IOException
     {
         int statusCode = response.getStatus();
@@ -64,6 +64,8 @@ public class UvmErrorReportValve extends ErrorReportValve
         if ((statusCode < 400) || (response.getContentCount() > 0)) {
             return;
         }
+
+        Map<String, String> i18nMap = getTranslations();
 
         String errorMessage = null;
 
@@ -73,28 +75,23 @@ public class UvmErrorReportValve extends ErrorReportValve
         }
 
         if (null == errorMessage) {
-            errorMessage = response.getMessage();
+            errorMessage = getError(i18nMap, statusCode);
         }
 
-        if (null == errorMessage) {
-            errorMessage = "";
-        }
         errorMessage = RequestUtil.filter(errorMessage);
-        errorMessage = sm.getString("http." + statusCode, errorMessage);
 
         response.setContentType("text/html");
         response.setCharacterEncoding("utf-8");
         PrintWriter writer = response.getReporter();
         if (null != writer) {
-            writeReport(writer, errorMessage);
+            writeReport(writer, i18nMap, errorMessage);
         }
     }
 
-    private void writeReport(PrintWriter w, String errorMessage)
+    private void writeReport(PrintWriter w, Map<String, String> i18nMap,
+                             String errorMessage)
         throws IOException
     {
-        Map<String, String> i18nMap = getTranslations();
-
         w.write("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n");
         w.write("<html xmlns=\"http://www.w3.org/1999/xhtml\">\n");
         w.write("<head>\n");
@@ -129,12 +126,89 @@ public class UvmErrorReportValve extends ErrorReportValve
         return Main.getMain().getTranslations("bootstrap");
     }
 
-    public String tr(Map<String, String> i18n_map, String value)
+    private String tr(Map<String, String> i18nMap, String value)
     {
-        String tr = i18n_map.get(value);
-        if (tr == null) {
-            tr = value;
+        String tr = i18nMap.get(value);
+        return null == tr ? value : tr;
+    }
+
+    private String getError(Map<String, String> i18nMap, int errorCode)
+    {
+        switch (errorCode) {
+        case 400:
+            return tr(i18nMap, "Bad Request");
+
+        case 401:
+            return tr(i18nMap, "Unauthorized");
+
+        case 402:
+            return tr(i18nMap, "Payment Required");
+
+        case 403:
+            return tr(i18nMap, "Forbidden");
+
+        case 404:
+            return tr(i18nMap, "Not Found");
+
+        case 405:
+            return tr(i18nMap, "Method Not Allowed");
+
+        case 406:
+            return tr(i18nMap, "Not Acceptable");
+
+        case 407:
+            return tr(i18nMap, "Proxy Authentication Required");
+
+        case 408:
+            return tr(i18nMap, "Request Timeout");
+
+        case 409:
+            return tr(i18nMap, "Conflict");
+
+        case 410:
+            return tr(i18nMap, "Gone");
+
+        case 411:
+            return tr(i18nMap, "Length Required");
+
+        case 412:
+            return tr(i18nMap, "Precondition Failed");
+
+        case 413:
+            return tr(i18nMap, "Request Entity Too Large");
+
+        case 414:
+            return tr(i18nMap, "Request-URI Too Long");
+
+        case 415:
+            return tr(i18nMap, "Unsupported Media Type");
+
+        case 416:
+            return tr(i18nMap, "Requested Range Not Satisfiable");
+
+        case 417:
+            return tr(i18nMap, "Expectation Failed");
+
+        case 500:
+            return tr(i18nMap, "Internal Server Error");
+
+        case 501:
+            return tr(i18nMap, "Not Implemented");
+
+        case 502:
+            return tr(i18nMap, "Bad Gateway");
+
+        case 503:
+            return tr(i18nMap, "Service Unavailable");
+
+        case 504:
+            return tr(i18nMap, "Gateway Timeout");
+
+        case 505:
+            return tr(i18nMap, "HTTP Version Not Supported");
+
+        default:
+            return tr(i18nMap, "Error");
         }
-        return tr;
     }
 }

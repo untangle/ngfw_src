@@ -964,17 +964,6 @@ public class SpywareImpl extends AbstractNode implements Spyware
                 {
                     return false;
                 }
-
-                /* Unified way to determine which parameter to check */
-                protected String outsideErrorMessage()
-                {
-                    return "off-site access";
-                }
-
-                protected String httpErrorMessage()
-                {
-                    return "standard access";
-                }
             };
 
         if (null != asm.loadInsecureApp("/spyware", "spyware", v)) {

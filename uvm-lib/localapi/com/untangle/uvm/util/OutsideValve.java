@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -35,10 +35,12 @@ package com.untangle.uvm.util;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 
 import com.untangle.uvm.LocalAppServerManager;
+import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.networking.NetworkUtil;
 import com.untangle.uvm.networking.internal.AccessSettingsInternal;
@@ -104,9 +106,19 @@ public abstract class OutsideValve extends ValveBase
     protected abstract boolean isOutsideAccessAllowed();
 
     /* Unified way to get an error string */
-    protected abstract String outsideErrorMessage();
+    protected String outsideErrorMessage()
+    {
+        LocalUvmContext uvm = LocalUvmContextFactory.context();
+        Map<String,String> i18n_map = uvm.languageManager().getTranslations("uvm");
+        return I18nUtil.tr(i18n_map, "off-site access");
+    }
 
-    protected abstract String httpErrorMessage();
+    protected String httpErrorMessage()
+    {
+        LocalUvmContext uvm = LocalUvmContextFactory.context();
+        Map<String,String> i18n_map = uvm.languageManager().getTranslations("uvm");
+        return I18nUtil.tr(i18n_map, "standard access");
+    }
 
     private boolean isAccessAllowed(boolean isOutsideAccessAllowed, ServletRequest request)
     {

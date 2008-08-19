@@ -355,7 +355,7 @@ public class WebFilterImpl extends AbstractNode implements WebFilter
 
         reconfigure();
     }
-    
+
     public Validator getValidator() {
         return new IPMaddrValidator();
     }
@@ -729,18 +729,6 @@ public class WebFilterImpl extends AbstractNode implements WebFilter
                 protected boolean isOutsideAccessAllowed()
                 {
                     return false;
-                }
-
-                /* Unified way to determine which parameter to check */
-                protected String outsideErrorMessage()
-                {
-                    return "off-site access";
-                }
-
-                /* Unified way to determine which parameter to check */
-                protected String httpErrorMessage()
-                {
-                    return "standard access";
                 }
             };
 

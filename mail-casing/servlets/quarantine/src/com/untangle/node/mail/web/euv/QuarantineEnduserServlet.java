@@ -57,7 +57,7 @@ public class QuarantineEnduserServlet
     protected void service(HttpServletRequest req, HttpServletResponse resp)
         throws ServletException, IOException {
 
-        resp.sendError(HttpServletResponse.SC_NOT_FOUND, "Not Found");
+        resp.sendError(HttpServletResponse.SC_NOT_FOUND);
     }
 
     /**

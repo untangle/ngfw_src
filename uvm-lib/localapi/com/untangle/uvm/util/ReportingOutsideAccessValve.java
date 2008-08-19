@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -32,6 +32,10 @@
  */
 package com.untangle.uvm.util;
 
+import com.untangle.uvm.LocalUvmContext;
+import com.untangle.uvm.LocalUvmContextFactory;
+import java.util.Map;
+
 public class ReportingOutsideAccessValve extends OutsideValve
 {
     public ReportingOutsideAccessValve()
@@ -45,11 +49,15 @@ public class ReportingOutsideAccessValve extends OutsideValve
 
     protected String outsideErrorMessage()
     {
-        return "off-site access to reporting";
+        LocalUvmContext uvm = LocalUvmContextFactory.context();
+        Map<String,String> i18n_map = uvm.languageManager().getTranslations("uvm");
+        return I18nUtil.tr(i18n_map, "off-site access to reporting");
     }
 
     protected String httpErrorMessage()
     {
-        return "standard access to reporting";
+        LocalUvmContext uvm = LocalUvmContextFactory.context();
+        Map<String,String> i18n_map = uvm.languageManager().getTranslations("uvm");
+        return I18nUtil.tr(i18n_map, "standard access to reporting");
     }
 }
