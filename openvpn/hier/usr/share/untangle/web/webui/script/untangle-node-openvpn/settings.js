@@ -25,8 +25,6 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 }
                 this.configState = result;
 
-                this.configState = "SERVER_ROUTE" // !!!For test only
-
                 this.buildStatus();
                 var tabs = [this.panelStatus];
                 if (this.configState == "SERVER_ROUTE") {
@@ -61,11 +59,6 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             return this.rpc.vpnServerAddress;
         },
 
-        formatHostAddress : function(hostAddress) {
-            return hostAddress == null ? "" : (hostAddress.hostName == null || hostAddress.hostName == "")
-                    ? hostAddress.hostName
-                    : hostAddress.ip
-        },
         getGroupsStore : function() {
             if (this.groupsStore == null) {
                 this.groupsStore = new Ext.data.JsonStore({
@@ -84,12 +77,11 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             if (this.configState == "UNCONFIGURED") {
                 statusLabel = this.i18n._("Unconfigured: Use buttons below.");
             } else if (this.configState == "CLIENT") {
-                statusLabel = this.i18n.sprintf(this.i18n._("VPN Client: Connected to %s"), this.formatHostAddress(this
-                        .getVpnServerAddress()));
+                statusLabel = this.i18n.sprintf(this.i18n._("VPN Client: Connected to %s"), this.getVpnServerAddress());
                 clientButtonDisabled = true;
             } else if (this.configState == "SERVER_ROUTE") {
                 statusLabel = this.i18n._("VPN Server");
-                // serverButtonDisabled=true; //For test only
+                serverButtonDisabled=true;
             } else {
                 clientButtonDisabled = true;
                 serverButtonDisabled = true;
@@ -252,7 +244,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 }
             });
         },
-        generateGridClients : function() {
+        generateGridClients : function(inWizard) {
             // live is a check column
             var liveColumn = new Ext.grid.CheckColumn({
                 id : "live",
@@ -262,25 +254,33 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 fixed : true
             });
             var distributeColumn = this.getDistributeColumn();
+            var anchor=null;
+            var height=null;
+            if(!inWizard) {
+                anchor="100% 50%";
+                height=250;
+            }
 
             var gridClients = new Ung.EditorGrid({
                 settingsCmp : this,
                 name : 'VPN Clients',
                 // the total records is set from the base settings
                 paginated : false,
-                anchor : "100% 50%",
-                height : 250,
+                anchor : anchor,
+                height : height,
                 emptyRow : {
                     "live" : true,
                     "name" : this.i18n._("[no name]"),
                     "group" : null,
-                    "address" : "192.168.1.0"
+                    "address" : "192.168.1.0",
+                    "netmask": "255.255.255.0"
                 },
                 title : this.i18n._("VPN Clients"),
                 // the column is autoexpanded if the grid width permits
                 // autoExpandColumn : 'name',
                 recordJavaClass : "com.untangle.node.openvpn.VpnClient",
-                data : this.getVpnSettings().exportedAddressList,
+                data : this.getVpnSettings().clientList,
+                dataRoot : 'list',
                 // the list of fields
                 fields : [{
                     name : 'id'
@@ -291,10 +291,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 }, {
                     name : 'group'
                 }, {
-                    name : 'address',
-                    convert : function(val, rec) {
-                        return val == null ? "" : this.formatHostAddress(val.addr);
-                    }.createDelegate(this)
+                    name : 'address'
                 }],
                 // the list of columns for the column model
                 columns : [liveColumn, {
@@ -357,7 +354,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             });
             return gridClients;
         },
-        generateGridSites : function() {
+        generateGridSites : function(inWizard) {
             // live is a check column
             var liveColumn = new Ext.grid.CheckColumn({
                 id : "live",
@@ -366,6 +363,12 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 width : 80,
                 fixed : true
             });
+            var anchor=null;
+            var height=null;
+            if(!inWizard) {
+            	anchor="100% 50%";
+            	height=250;
+            }
             var distributeColumn = this.getDistributeColumn();
 
             var gridSites = new Ung.EditorGrid({
@@ -373,8 +376,8 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 name : 'VPN Sites',
                 // the total records is set from the base settings
                 paginated : false,
-                anchor : "100% 50%",
-                height : 250,
+                anchor : anchor,
+                height : height,
                 emptyRow : {
                     "live" : true,
                     "name" : this.i18n._("[no name]"),
@@ -385,7 +388,8 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 // the column is autoexpanded if the grid width permits
                 // autoExpandColumn : 'name',
                 recordJavaClass : "com.untangle.node.openvpn.VpnSite",
-                data : this.getVpnSettings().exportedAddressList,
+                data : this.getVpnSettings().siteList,
+                dataRoot : 'list',
                 // the list of fields
                 fields : [{
                     name : 'id'
@@ -530,6 +534,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 // autoExpandColumn : 'name',
                 recordJavaClass : "com.untangle.node.openvpn.ServerSiteNetwork",
                 data : this.getVpnSettings().exportedAddressList,
+                dataRoot : 'list',
                 // the list of fields
                 fields : [{
                     name : 'id'
@@ -634,13 +639,15 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     "live" : true,
                     "name" : this.i18n._("[no name]"),
                     "group" : null,
-                    "address" : "192.168.1.0"
+                    "address" : "172.16.16.0",
+                    "netmask": "255.255.255.0"
                 },
                 title : this.i18n._("Address Pools"),
                 // the column is autoexpanded if the grid width permits
                 // autoExpandColumn : 'name',
                 recordJavaClass : "com.untangle.node.openvpn.VpnGroup",
                 data : this.getVpnSettings().groupList,
+                dataRoot : 'list',
                 // the list of fields
                 fields : [{
                     name : 'id'
@@ -649,15 +656,9 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 }, {
                     name : 'name'
                 }, {
-                    name : 'address',
-                    convert : function(val, rec) {
-                        return val == null ? "" : this.formatHostAddress(val.addr);
-                    }.createDelegate(this)
+                    name : 'address'
                 }, {
-                    name : 'netmask',
-                    convert : function(val, rec) {
-                        return val == null ? "" : this.formatHostAddress(val.addr);
-                    }.createDelegate(this)
+                    name : 'netmask'
                 }],
                 // the list of columns for the column model
                 columns : [liveColumn, {
@@ -873,21 +874,65 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 }]
             });
         },
-
+        validateClient: function () {
+        	var groupList=this.gridGroups.getFullSaveList();
+        	if(groupList.length==0) {
+                Ext.MessageBox.alert(i18n._("Failed"), this.i18n._("You must create at least one group."));
+        		return false;
+        	}
+            var clientList=this.gridClients.getFullSaveList();
+            var groupListDeleted=this.gridGroups.getDeletedList();
+            for(var i=0;i<clientList.length;i++) {
+                if(clientList[i].policy!=null) {
+                    for(var j=0;j<groupListDeleted.length;j++) {
+                        if(clientList[i].policy.id==groupListDeleted[j].id) {
+                            Ext.MessageBox.alert(i18n._("Failed"), i18n.sprintf(this.i18n._('The group "%s" cannot be deleted because it is being used by the client: %s in the Client To Site List.'), groupListDeleted[j].name, clientList[i].name));
+                            return false;
+                        }
+                    }
+                }
+            }
+            var siteList=this.gridClients.getFullSaveList();
+            var groupListDeleted=this.gridGroups.getDeletedList();
+            for(var i=0;i<siteList.length;i++) {
+                if(siteList[i].policy!=null) {
+                    for(var j=0;j<groupListDeleted.length;j++) {
+                        if(siteList[i].policy.id==groupListDeleted[j].id) {
+                            Ext.MessageBox.alert(i18n._("Failed"), i18n.sprintf(this.i18n._('The group "%s" cannot be deleted because it is being used by the site: %s in the Site To Site List.'), groupListDeleted[j].name, siteList[i].name));
+                            return false;
+                        }
+                    }
+                }
+            }
+        	
+        	return true;
+        },
         // save function
         save : function() {
             // validate first
-            if (this.validate()) {
-                Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-                this.getRpcNode().setVpnSettings(function(result, exception) {
-                    Ext.MessageBox.hide();
-                    if (exception) {
-                        Ext.MessageBox.alert(i18n._("Failed"), exception.message);
-                        return;
-                    }
-                    // exit settings screen
-                    this.cancelAction();
-                }.createDelegate(this), this.getVpnSettings());
+            if(this.configState == "SERVER_ROUTE") {
+                if (this.validate()) {
+                	var vpnSettings=this.getVpnSettings();
+                	var groupList=this.gridGroups.getFullSaveList();
+                	//erase current ids. Workaround TODO: investigate why it cracks when the id is not erased
+                	for(var i=0;i<groupList.length;i++) {
+                		delete groupList[i].id;
+                	}
+                	vpnSettings.groupList.list=groupList;
+                    vpnSettings.exportedAddressList.list=this.gridExports.getFullSaveList();
+                    vpnSettings.clientList.list=this.gridClients.getFullSaveList();
+                    vpnSettings.siteList.list=this.gridSites.getFullSaveList();
+                    Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
+                    this.getRpcNode().setVpnSettings(function(result, exception) {
+                        Ext.MessageBox.hide();
+                        if (exception) {
+                            Ext.MessageBox.alert(i18n._("Failed"), exception.message);
+                            return;
+                        }
+                        // exit settings screen
+                        this.cancelAction();
+                    }.createDelegate(this), vpnSettings);
+                }
             }
         },
 
@@ -911,7 +956,19 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         bodyStyle : 'padding:10px 10px 10px 10px;',
                         border : false
                     }]
-                }
+                },
+                onNext : function(handler) {
+                    this.getRpcNode().startConfig(function(result, exception) {
+                        if (exception) {
+                            Ext.MessageBox.alert(i18n._("Failed"), exception.message);
+                            return;
+                        }
+                        this.handler();
+                    }.createDelegate({
+                            handler : handler,
+                            settingsCmp : this
+                        }), "CLIENT")
+                }.createDelegate(this)
             };
             var downloadCard = {
                 title : this.i18n._("Download Configuration"),
@@ -1039,8 +1096,6 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     }]
                 },
                 onNext : function(handler) {
-                    handler();
-                    return;
                     if (!Ext.getCmp("openvpn_client_wizard_server_ip").disabled) {
                         // download from server
                         var serverAddress = Ext.getCmp("openvpn_client_wizard_server_ip").getValue();
@@ -1103,13 +1158,13 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         }
                         Ext.MessageBox.wait(i18n._("Downloading Configuration... (This may take up to one minute)"), i18n._("Please wait"));
                         this.getRpcNode().downloadConfigUsb(function(result, exception) {
-                            Ext.MessageBox.hide();
                             if (exception) {
                                 Ext.MessageBox.alert(this.settingsCmp.i18n._("Error downloading config from USB key."), i18n
                                         ._("Your VPN Client configuration could not be downloaded from the USB key.  Please try again."));
                                 return;
                             }
                             this.getRpcNode().completeConfig(function(result, exception) {
+                            	Ext.MessageBox.hide();
                                 if (exception) {
                                     Ext.MessageBox.alert(i18n._("Failed"), exception.message);
                                     return;
@@ -1141,7 +1196,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 }.createDelegate(this)
             };
             var clientWizard = new Ung.Wizard({
-                height : 500,
+                height : 400,
                 width : 800,
                 cardDefaults : {
                     labelWidth : 150,
@@ -1197,7 +1252,19 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         bodyStyle : 'padding:10px 10px 10px 10px;',
                         border : false
                     }]
-                }
+                },
+                onNext : function(handler) {
+                    this.getRpcNode().startConfig(function(result, exception) {
+                        if (exception) {
+                            Ext.MessageBox.alert(i18n._("Failed"), exception.message);
+                            return;
+                        }
+                        this.handler();
+                    }.createDelegate({
+                            handler : handler,
+                            settingsCmp : this
+                        }), "SERVER_ROUTE")
+                }.createDelegate(this)
             };
             var certificateCard = {
                 title : this.i18n._("Generate Certificate"),
@@ -1238,14 +1305,61 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                             width : 200
                         }, {
                             xtype : "textfield",
-                            id : 'openvpn_server_wizard_city',
+                            id : 'openvpn_server_wizard_locality',
                             name : "City",
                             fieldLabel : this.i18n._("City"),
                             allowBlank : false,
                             width : 200
                         }]
                     }]
-                }
+                },
+                onNext : function(handler) {
+                	var organization=Ext.getCmp("openvpn_server_wizard_organization").getValue();
+                    var country=Ext.getCmp("openvpn_server_wizard_country").getValue();
+                    var state=Ext.getCmp("openvpn_server_wizard_state").getValue();
+                    var locality=Ext.getCmp("openvpn_server_wizard_locality").getValue();
+                    if(organization.length==0) {
+                    	Ext.MessageBox.alert(i18n._("Failed"), this.i18n._("You must fill out the name of your organization."));
+                    	return;
+                    }
+                    if(country.length==0) {
+                        Ext.MessageBox.alert(i18n._("Failed"), this.i18n._("You must fill out the name of your country."));
+                        return;
+                    }
+                    if(country.length!=2) {
+                        Ext.MessageBox.alert(i18n._("Failed"), this.i18n._("The country code must be 2 characters long."));
+                        return;
+                    }
+                    if(state.length==0) {
+                        Ext.MessageBox.alert(i18n._("Failed"), this.i18n._("You must fill out the name of your state."));
+                        return;
+                    }
+                    if(locality.length==0) {
+                        Ext.MessageBox.alert(i18n._("Failed"), this.i18n._("You must fill out the name of your locality."));
+                        return;
+                    }
+                    Ext.MessageBox.wait(i18n._("Generating Certificate..."), i18n._("Please wait"));
+                    var certificateParameters={
+                        javaClass: "com.untangle.node.openvpn.CertificateParameters",
+                        organization: organization,
+                        domain: "",
+                        country: country,
+                        state: state,
+                        locality: locality,
+                        storeCaUsb: false
+                    };
+                    this.getRpcNode().generateCertificate(function(result, exception) {
+                        Ext.MessageBox.hide();
+                        if (exception) {
+                            Ext.MessageBox.alert(i18n._("Failed"), exception.message);
+                            return;
+                        }
+                        this.handler();
+                    }.createDelegate({
+                            handler : handler,
+                            settingsCmp : this
+                        }), certificateParameters)
+                }.createDelegate(this)
             };
             var gridGroups = this.generateGridGroups();
             var groupsCard = {
@@ -1263,7 +1377,27 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         bodyStyle : 'padding:10px 10px 10px 10px;',
                         border : false
                     }, gridGroups]
-                }
+                },
+                onNext : function(handler) {
+                	var gridGroups=Ext.getCmp(this.serverSetup.gridGroupsId);
+                	var saveList=gridGroups.getFullSaveList();
+                	if(saveList.length==0) {
+                		Ext.MessageBox.alert(i18n._("Failed"), this.i18n._("You must create at least one group."));
+                        return;
+                	}
+                	Ext.MessageBox.wait(i18n._("Adding Address Pools..."), i18n._("Please wait"));
+                	this.getRpcNode().setAddressGroups(function(result, exception) {
+                	    Ext.MessageBox.hide();
+                        if (exception) {
+                            Ext.MessageBox.alert(i18n._("Failed"), exception.message);
+                            return;
+                        }
+                        this.handler();
+                    }.createDelegate({
+                            handler : handler,
+                            settingsCmp : this
+                        }), {javaClass:"com.untangle.node.openvpn.GroupList", groupList:{javaClass:"java.util.ArrayList", list: saveList}})
+                }.createDelegate(this)
             };
             var gridExports = this.generateGridExports();
             var exportsCard = {
@@ -1280,9 +1414,25 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         bodyStyle : 'padding:10px 10px 10px 10px;',
                         border : false
                     }, gridExports]
-                }
+                },
+                onNext : function(handler) {
+                    var gridExports=Ext.getCmp(this.serverSetup.gridExportsId);
+                    var saveList=gridExports.getFullSaveList();
+                    Ext.MessageBox.wait(i18n._("Adding Exports..."), i18n._("Please wait"));
+                    this.getRpcNode().setExportedAddressList(function(result, exception) {
+                        Ext.MessageBox.hide();
+                        if (exception) {
+                            Ext.MessageBox.alert(i18n._("Failed"), exception.message);
+                            return;
+                        }
+                        this.handler();
+                    }.createDelegate({
+                            handler : handler,
+                            settingsCmp : this
+                        }), {javaClass:"com.untangle.node.openvpn.ExportList", exportsList:{javaClass:"java.util.ArrayList", list: saveList}})
+                }.createDelegate(this)
             };
-            var gridClients = this.generateGridClients();
+            var gridClients = this.generateGridClients(true);
             var clientsCard = {
                 title : this.i18n._("Add VPN Clients"),
                 cardTitle : this.i18n._("Add VPN Clients"),
@@ -1298,9 +1448,25 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         bodyStyle : 'padding:10px 10px 10px 10px;',
                         border : false
                     }, gridClients]
-                }
+                },
+                onNext : function(handler) {
+                    var gridClients=Ext.getCmp(this.serverSetup.gridClientsId);
+                    var saveList=gridClients.getFullSaveList();
+                    Ext.MessageBox.wait(i18n._("Adding VPN Clients..."), i18n._("Please wait"));
+                    this.getRpcNode().setClients(function(result, exception) {
+                        Ext.MessageBox.hide();
+                        if (exception) {
+                            Ext.MessageBox.alert(i18n._("Failed"), exception.message);
+                            return;
+                        }
+                        this.handler();
+                    }.createDelegate({
+                            handler : handler,
+                            settingsCmp : this
+                        }), {javaClass:"com.untangle.node.openvpn.ClientList", exportsList:{javaClass:"java.util.ArrayList", list: saveList}})
+                }.createDelegate(this)
             };
-            var gridSites = this.generateGridSites();
+            var gridSites = this.generateGridSites(true);
             var sitesCard = {
                 title : this.i18n._("Add VPN Sites"),
                 cardTitle : this.i18n._("Add VPN Sites"),
@@ -1316,7 +1482,31 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         bodyStyle : 'padding:10px 10px 10px 10px;',
                         border : false
                     }, gridSites]
-                }
+                },
+                onNext : function(handler) {
+                    var gridSites=Ext.getCmp(this.serverSetup.gridSitesId);
+                    var saveList=gridSites.getFullSaveList();
+                    Ext.MessageBox.wait(i18n._("Adding VPN Sites..."), i18n._("Please wait"));
+                    this.getRpcNode().setSites(function(result, exception) {
+                        Ext.MessageBox.hide();
+                        if (exception) {
+                            Ext.MessageBox.alert(i18n._("Failed"), exception.message);
+                            return;
+                        }
+                        this.settingsCmp.getRpcNode().completeConfig(function(result, exception) {
+                            Ext.MessageBox.hide();
+                            if (exception) {
+                                Ext.MessageBox.alert(i18n._("Failed"), exception.message);
+                                return;
+                            }
+                            // go to next step
+                            this.handler();
+                        }.createDelegate(this))
+                    }.createDelegate({
+                            handler : handler,
+                            settingsCmp : this
+                        }), {javaClass:"com.untangle.node.openvpn.SiteList", exportsList:{javaClass:"java.util.ArrayList", list: saveList}})
+                }.createDelegate(this)
             };
             var congratulationsCard = {
                 title : this.i18n._("Congratulations"),
@@ -1331,12 +1521,12 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     }]
                 },
                 onNext : function(handler) {
-                    this.clientSetup.endAction();
-                }
+                    this.serverSetup.endAction();
+                }.createDelegate(this)
             };
             var serverWizard = new Ung.Wizard({
-                autoHeight : true,
-                // width : 800,
+                height : 400,
+                width : 800,
                 cardDefaults : {
                     labelWidth : 150,
                     cls : 'untangle-form-panel'
@@ -1345,7 +1535,12 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             });
 
             this.serverSetup = new Ung.Window({
+                gridGroupsId: gridGroups.getId(),
+                gridExportsId: gridExports.getId(),
+                gridClientsId: gridClients.getId(),
+            	gridSitesId: gridSites.getId(),
                 title : this.i18n._("OpenVPN Client Setup Wizard"),
+                closeAction : "endAction",
                 items : [{
                     region : "center",
                     items : [serverWizard],
@@ -1355,8 +1550,8 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     bodyStyle : 'background-color: transparent;'
                 }],
                 endAction : function() {
-                    this.clientSetup.hide();
-                    Ext.destroy(this.clientSetup);
+                    this.serverSetup.hide();
+                    Ext.destroy(this.serverSetup);
                     if(this.mustRefresh || true) {
                         var nodeWidget=this.node;
                         nodeWidget.settingsWin.cancelAction();

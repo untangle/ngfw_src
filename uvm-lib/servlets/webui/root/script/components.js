@@ -2978,7 +2978,8 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
         } else if(this.data) {
             this.store = new Ext.data.Store({
                 proxy : new Ung.MemoryProxy({
-                    root : this.dataRoot
+                    root : this.dataRoot,
+                    data: this.data
                 }),
                 sortInfo : this.sortField ? {
                     field : this.sortField,
@@ -3003,7 +3004,7 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
                     }
                 }
             });
-            this.getStore().proxy.data = this.data;
+            this.getStore().loadData(this.data);
             this.totalRecords=this.data.length
         }
         if(this.paginated) {
