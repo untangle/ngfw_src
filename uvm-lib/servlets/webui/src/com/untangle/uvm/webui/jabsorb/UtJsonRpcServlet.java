@@ -78,8 +78,6 @@ public class UtJsonRpcServlet extends JSONRPCServlet
     public void service(HttpServletRequest req, HttpServletResponse resp)
         throws IOException
     {
-        System.out.println(req.getUserPrincipal());
-
         if (null != threadRequest) {
             threadRequest.set(req);
         }
