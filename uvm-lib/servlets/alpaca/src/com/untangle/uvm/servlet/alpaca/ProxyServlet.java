@@ -147,7 +147,7 @@ public class ProxyServlet extends HttpServlet
             logger.warn("unknown host", exn);
             try {
                 LocalUvmContext uvm = LocalUvmContextFactory.context();
-                Map<String,String> i18n_map = uvm.languageManager().getTranslations("uvm");
+                Map<String,String> i18n_map = uvm.languageManager().getTranslations("main");
                 resp.sendError(HttpServletResponse.SC_REQUEST_TIMEOUT, I18nUtil.tr(i18n_map, "could not resolve host"));
             } catch (IOException e) {
                 logger.warn("could not send error page", e);
@@ -156,7 +156,7 @@ public class ProxyServlet extends HttpServlet
             logger.warn("unknown host", exn);
             try {
                 LocalUvmContext uvm = LocalUvmContextFactory.context();
-                Map<String,String> i18n_map = uvm.languageManager().getTranslations("uvm");
+                Map<String,String> i18n_map = uvm.languageManager().getTranslations("main");
                 resp.sendError(HttpServletResponse.SC_REQUEST_TIMEOUT, I18nUtil.tr(i18n_map, "request timed out"));
             } catch (IOException e) {
                 logger.warn("could not send error page", e);
