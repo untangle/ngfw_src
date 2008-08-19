@@ -285,7 +285,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         hideLabel : true,
                         checked : this.getAccessSettings().isOutsideAdministrationEnabled,
                         listeners : {
-                            "change" : {
+                            "check" : {
                                 fn : function(elem, newValue) {
                                     this.getAccessSettings().isOutsideAdministrationEnabled = newValue;
                                 }.createDelegate(this)
@@ -298,7 +298,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         hideLabel : true,
                         checked : this.getAccessSettings().isOutsideReportingEnabled,
                         listeners : {
-                            "change" : {
+                            "check" : {
                                 fn : function(elem, newValue) {
                                     this.getAccessSettings().isOutsideReportingEnabled = newValue;
                                 }.createDelegate(this)
@@ -311,7 +311,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         hideLabel : true,
                         checked : this.getAccessSettings().isOutsideQuarantineEnabled,
                         listeners : {
-                            "change" : {
+                            "check" : {
                                 fn : function(elem, newValue) {
                                     this.getAccessSettings().isOutsideQuarantineEnabled = newValue;
                                 }.createDelegate(this)

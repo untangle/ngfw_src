@@ -79,7 +79,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                         hideLabel : true,
                         checked : this.getBaseSettings().smtpConfig.scan,
                         listeners : {
-                            "change" : {
+                            "check" : {
                                 fn : function(elem, newValue) {
                                     this.getBaseSettings().smtpConfig.scan = newValue;
                                 }.createDelegate(this)
@@ -92,7 +92,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                         hideLabel : true,
                         checked : this.getBaseSettings().smtpConfig.throttle,
                         listeners : {
-                            "change" : {
+                            "check" : {
                                 fn : function(elem, newValue) {
                                     this.getBaseSettings().smtpConfig.throttle = newValue;
                                 }.createDelegate(this)
@@ -180,7 +180,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                         hideLabel : true,
                         checked : this.getBaseSettings().popConfig.scan,
                         listeners : {
-                            "change" : {
+                            "check" : {
                                 fn : function(elem, newValue) {
                                     this.getBaseSettings().popConfig.scan = newValue;
                                 }.createDelegate(this)
@@ -269,7 +269,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                         hideLabel : true,
                         checked : this.getBaseSettings().imapConfig.scan,
                         listeners : {
-                            "change" : {
+                            "check" : {
                                 fn : function(elem, newValue) {
                                     this.getBaseSettings().imapConfig.scan = newValue;
                                 }.createDelegate(this)

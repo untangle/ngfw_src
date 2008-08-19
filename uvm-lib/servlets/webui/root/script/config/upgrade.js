@@ -259,7 +259,7 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
                         hideLabel : true,
                         checked : this.getUpgradeSettings().period.sunday,
                         listeners : {
-                            "change" : {
+                            "check" : {
                                 fn : function(elem, newValue) {
                                     this.getUpgradeSettings().period.sunday = newValue;
                                 }.createDelegate(this)
@@ -272,7 +272,7 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
                         hideLabel : true,
                         checked : this.getUpgradeSettings().period.monday,
                         listeners : {
-                            "change" : {
+                            "check" : {
                                 fn : function(elem, newValue) {
                                     this.getUpgradeSettings().period.monday = newValue;
                                 }.createDelegate(this)
@@ -285,7 +285,7 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
                         hideLabel : true,
                         checked : this.getUpgradeSettings().period.tuesday,
                         listeners : {
-                            "change" : {
+                            "check" : {
                                 fn : function(elem, newValue) {
                                     this.getUpgradeSettings().period.tuesday = newValue;
                                 }.createDelegate(this)
@@ -298,7 +298,7 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
                         hideLabel : true,
                         checked : this.getUpgradeSettings().period.wednesday,
                         listeners : {
-                            "change" : {
+                            "check" : {
                                 fn : function(elem, newValue) {
                                     this.getUpgradeSettings().period.wednesday = newValue;
                                 }.createDelegate(this)
@@ -311,7 +311,7 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
                         hideLabel : true,
                         checked : this.getUpgradeSettings().period.thursday,
                         listeners : {
-                            "change" : {
+                            "check" : {
                                 fn : function(elem, newValue) {
                                     this.getUpgradeSettings().period.thursday = newValue;
                                 }.createDelegate(this)
@@ -324,7 +324,7 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
                         hideLabel : true,
                         checked : this.getUpgradeSettings().period.friday,
                         listeners : {
-                            "change" : {
+                            "check" : {
                                 fn : function(elem, newValue) {
                                     this.getUpgradeSettings().period.friday = newValue;
                                 }.createDelegate(this)
@@ -337,7 +337,7 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
                         hideLabel : true,
                         checked : this.getUpgradeSettings().period.saturday,
                         listeners : {
-                            "change" : {
+                            "check" : {
                                 fn : function(elem, newValue) {
                                     this.getUpgradeSettings().period.saturday = newValue;
                                 }.createDelegate(this)

@@ -137,7 +137,7 @@ if (!Ung.hasResource["Ung.System"]) {
                         hideLabel : true,
                         checked : this.getAccessSettings().isSupportEnabled,
                         listeners : {
-                            "change" : {
+                            "check" : {
                                 fn : function(elem, newValue) {
                                     this.getAccessSettings().isSupportEnabled = newValue;
                                 }.createDelegate(this)
@@ -152,7 +152,7 @@ if (!Ung.hasResource["Ung.System"]) {
                         hideLabel : true,
                         checked : this.getMiscSettings().isExceptionReportingEnabled,
                         listeners : {
-                            "change" : {
+                            "check" : {
                                 fn : function(elem, newValue) {
                                     this.getMiscSettings().isExceptionReportingEnabled = newValue;
                                 }.createDelegate(this)

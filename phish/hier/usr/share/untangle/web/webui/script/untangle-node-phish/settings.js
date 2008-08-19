@@ -66,7 +66,7 @@ if (!Ung.hasResource["Ung.Phish"]) {
                         hideLabel : true,
                         checked : this.getBaseSettings().smtpConfig.scan,
                         listeners : {
-                            "change" : {
+                            "check" : {
                                 fn : function(elem, newValue) {
                                     this.getBaseSettings().smtpConfig.scan = newValue;
                                 }.createDelegate(this)
@@ -109,7 +109,7 @@ if (!Ung.hasResource["Ung.Phish"]) {
                         hideLabel : true,
                         checked : this.getBaseSettings().popConfig.scan,
                         listeners : {
-                            "change" : {
+                            "check" : {
                                 fn : function(elem, newValue) {
                                     this.getBaseSettings().popConfig.scan = newValue;
                                 }.createDelegate(this)
