@@ -38,10 +38,6 @@ jt = JarTarget.build_target(gui, deps, 'api', "./gui/api")
 BuildEnv::SRC.installTarget.install_jars(jt, gui.getWebappDir('webstart'), nil, true)
 mini.install_jars(jt, gui.getWebappDir('webstart'), nil, true)
 
-## Implementation
-deps = Jars::Base + Jars::Gui + Jars::TomcatEmb + [uvm_lib['api'], gui['api']]
-jt = JarTarget.build_target(gui, deps, 'impl', "./gui/impl")
-
 # XXX renaming because the package name is bad
 BuildEnv::SRC.installTarget.install_jars(jt, gui.getWebappDir('webstart'), nil, true)
 mini.install_jars(jt, gui.getWebappDir('webstart'), nil, true)
