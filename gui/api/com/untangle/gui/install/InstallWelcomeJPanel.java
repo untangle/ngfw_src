@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -33,21 +33,64 @@
 
 package com.untangle.gui.install;
 
-import com.untangle.gui.widgets.wizard.*;
+import java.awt.Component;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.util.Locale;
+import javax.swing.ComboBoxModel;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.ImageIcon;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.ListCellRenderer;
+import javax.swing.SwingConstants;
+import javax.swing.plaf.basic.BasicComboBoxRenderer;
+
+import com.untangle.gui.widgets.wizard.MWizardPageJPanel;
 
 public class InstallWelcomeJPanel extends MWizardPageJPanel {
 
+    private final ComboBoxModel localeModel;
+    private final ListCellRenderer localeRenderer;
+
     public InstallWelcomeJPanel() {
         initComponents();
+
+        localeModel = new DefaultComboBoxModel(new Object[] {
+                Locale.ENGLISH,
+                Locale.FRENCH,
+                Locale.GERMAN,
+                new Locale("ES"),
+                new Locale("PT")
+            });
+
+        localeRenderer = new BasicComboBoxRenderer() {
+                public Component getListCellRendererComponent
+                    (JList list, Object value, int index, boolean isSelected,
+                     boolean cellHasFocus)
+                {
+                    Locale l = (Locale)value;
+                    String newValue = l.getLanguage();
+                    return super.getListCellRendererComponent
+                        (list, newValue, index, isSelected, cellHasFocus);
+                }
+            };
     }
 
-
-    private void initComponents() {//GEN-BEGIN:initComponents
+    // <editor-fold defaultstate="collapsed" desc=" Generated Code ">//GEN-BEGIN:initComponents
+    private void initComponents() {
         java.awt.GridBagConstraints gridBagConstraints;
 
         contentJPanel = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
+        jPanel1 = new javax.swing.JPanel();
+        jLabel3 = new javax.swing.JLabel();
+        jComboBox1 = new javax.swing.JComboBox();
         backgroundJPabel = new javax.swing.JLabel();
 
         setLayout(new java.awt.GridBagLayout());
@@ -68,7 +111,7 @@ public class InstallWelcomeJPanel extends MWizardPageJPanel {
         contentJPanel.add(jLabel1, gridBagConstraints);
 
         jLabel2.setFont(new java.awt.Font("Dialog", 0, 12));
-        jLabel2.setText("<html>This wizard will take you step-by-step through<br>\nthe Untangle Platform CD installation process.</html>");
+        jLabel2.setText("<html>This wizard will take you step-by-step through<br> the Untangle Platform CD installation process.</html>");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
@@ -78,10 +121,28 @@ public class InstallWelcomeJPanel extends MWizardPageJPanel {
         gridBagConstraints.insets = new java.awt.Insets(15, 15, 15, 15);
         contentJPanel.add(jLabel2, gridBagConstraints);
 
+        jLabel3.setFont(new java.awt.Font("Dialog", 0, 12));
+        jLabel3.setText("Language");
+        jPanel1.add(jLabel3);
+
+        jComboBox1.setFont(new java.awt.Font("Dialog", 0, 12));
+        jComboBox1.setModel(localeModel);
+        jComboBox1.setRenderer(localeRenderer);
+        jPanel1.add(jComboBox1);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(15, 15, 15, 15);
+        contentJPanel.add(jPanel1, gridBagConstraints);
+
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
         add(contentJPanel, gridBagConstraints);
@@ -95,14 +156,16 @@ public class InstallWelcomeJPanel extends MWizardPageJPanel {
         gridBagConstraints.weightx = 1.0;
         add(backgroundJPabel, gridBagConstraints);
 
-    }//GEN-END:initComponents
-
+    }// </editor-fold>//GEN-END:initComponents
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel backgroundJPabel;
     private javax.swing.JPanel contentJPanel;
+    private javax.swing.JComboBox jComboBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JPanel jPanel1;
     // End of variables declaration//GEN-END:variables
 
 }
