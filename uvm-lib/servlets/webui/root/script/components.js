@@ -187,6 +187,14 @@ Ung.Util= {
             list : modified,
             "javaClass" : "java.util.ArrayList"
         }];
+    },
+    // If the grid is not rendered it sets the new store data; otherwise it loads the now store data
+    loadGridStoreData : function(grid, storeData) {
+        if (grid.rendered) {
+            grid.store.loadData(storeData);
+        } else {
+            grid.store.proxy.data = storeData;
+        }
     }
     
 };
