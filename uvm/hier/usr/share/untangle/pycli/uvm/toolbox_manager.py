@@ -6,22 +6,23 @@ class ToolboxManager(Manager):
         self.__toolbox = self.__remoteContext.toolboxManager()
 
     def api_install(self, mackageName):
-        self.__toolbox.install( mackageName )
+        key = self.__toolbox.install( mackageName )
+        self.doAptTailLog( key )
 
     def api_installandinstantiate(self,mackageName):
         policy = self.__remoteContext.policyManager().getDefaultPolicy()
-        self.__toolbox.installAndInstantiate(mackageName, policy)
-        self.doAptTailLog()
+        key = self.__toolbox.installAndInstantiate(mackageName, policy)
+        self.doAptTailLog( key )
 
     def api_uninstall(self, mackageName):
         self.__toolbox.uninstall( mackageName )        
 
     def api_update(self):
         self.__toolbox.update()
-        self.doAptTailLog()
 
     def api_upgrade(self):
-        self.__toolbox.upgrade()
+        key = self.__toolbox.upgrade()
+        self.doAptTailLog( key )
 
     def api_extraname(self, mackageName, extraName):
         self.__toolbox.extraName( mackage, extraName)

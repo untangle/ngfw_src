@@ -13,7 +13,7 @@ class Manager(object):
         if ( shortName == "http" or shortName == "ftp" or shortName == "mail" ): return "untangle-casing-" + shortName
         return "untangle-node-" + shortName
 
-    def doAptTailLog(self):
+    def doAptTailLog(self, key ):
         print "Implement me!"
 
     def buildTid(self,tid):
