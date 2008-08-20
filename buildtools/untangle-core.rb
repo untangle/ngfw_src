@@ -63,8 +63,6 @@ require "#{SRC_HOME}/clam/package.rb"
 
 ## Other packages
 require "#{SRC_HOME}/util/package.rb"
-require "#{SRC_HOME}/gui/package.rb"
-
 
 if CCompilerEnv::Amd64
   wlibs         = ['ipq_pic']
