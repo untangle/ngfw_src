@@ -3,8 +3,7 @@
 ## (Wherever the rush shell is)
 ## To run use: ./dist/usr/bin/rush ./mail-casing/unittest/get_inboxes.rb 
 
-require 'java'
-nm = RUSH.uvm.nodeManager()
+nm = Untangle::RemoteUvmContext.nodeManager()
 tid = nm.nodeInstances( 'untangle-casing-mail' ).first
 mail = nm.nodeContext( tid ).node
 
@@ -14,16 +13,16 @@ puts "total size: #{quarantine.getInboxesTotalSize()}"
 
 inboxArray = quarantine.getInboxArray( 0, 10, "", true )
 
-puts "array: #{inboxArray}, #{inboxArray.getInboxes().size()} #{inboxArray.getTotalRecords()}"
+puts "array: #{inboxArray["inboxes"].size()} #{inboxArray["totalRecords"]}"
 
-inboxArray.getInboxes().each do |inbox|
-  address = inbox.getAddress()
+inboxArray["inboxes"].each do |inbox|
+  address = inbox["address"]
   puts "inbox: #{address}"
 
   inboxRecordArray = quarantine.getInboxRecordArray( address, 0, 3, "", true )
 
-  inboxRecordArray.getInboxRecords().each do |record|
-    puts " record: #{record.getMailID()}, (#{record.getRecipients()})"
+  inboxRecordArray["inboxRecords"].each do |record|
+    puts " record: #{record["mailID"]}, (#{record["recipients"]})"
   end
 end
 

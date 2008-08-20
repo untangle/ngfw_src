@@ -5,6 +5,9 @@ class Manager(object):
     __states = { 0 : "CLOSED", 4 : "OPEN", 5 : "H_IN", 6 : "H_OUT" }
 
     managers = []
+
+    policy = None
+    verbosity = 0
     
     def shortNameToPackageName(self,shortName):
         if ( shortName == "http" or shortName == "ftp" or shortName == "mail" ): return "untangle-casing-" + shortName

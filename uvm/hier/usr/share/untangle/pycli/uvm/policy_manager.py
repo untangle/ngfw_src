@@ -11,6 +11,9 @@ class PolicyManager(Manager):
     def api_listpolicies( self ):
         for policy in self.__policyManager.getPolicies():
             print self.getPolicyString( policy )
+
+    def api_getpolicy( self, policy_name ):
+        print self.getPolicyString( self.__policyManager.getPolicy( policy_name ))
                                         
 Manager.managers.append( PolicyManager )
 

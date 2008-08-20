@@ -44,7 +44,49 @@ class CurlRequestHandler(object):
 
         return response.getvalue()
 
-def printUsage(script):
+class ArgumentParser(object):
+    def __init__(self):
+        self.hostname = "localhost"
+        self.username = None
+        self.password = None
+        self.timeout = None
+        self.policy_name = None
+        self.verbosity = 0
+
+    def set_hostname( self, arg ):
+        self.hostname = arg
+
+    def set_username( self, arg ):
+        self.username = arg
+
+    def set_password( self, arg ):
+        self.password = arg
+
+    def set_timeout( self, arg ):
+        self.timeout = int( arg )
+
+    def set_policy( self, arg ):
+        self.policy_name = arg
+
+    def increase_verbosity( self, arg ):
+        self.verbosity += 1
+
+    def parse_args( self ):
+        handlers = {
+            '-h' : self.set_hostname,
+            '-u' : self.set_username,
+            '-w' : self.set_password,
+            '-t' : self.set_timeout,
+            '-p' : self.set_policy,
+            '-v' : self.increase_verbosity
+        }
+
+        (optlist, args) = getopt.getopt(sys.argv[1:], 'h:u:w:t:p:v')
+        for opt in optlist:
+            handlers[opt[0]](opt[1])
+        return args
+
+def printUsage():
     print """\
 %s Usage:
   optional args:
@@ -112,30 +154,44 @@ def printUsage(script):
     ucli restartCliServer
   debugging commands:
     ucli aptTail
-""" % script
+""" % sys.argv[0]
 
-handler = CurlRequestHandler()
+def make_proxy( parser ):
+    handler = CurlRequestHandler()
+    
+    try:
+        if ( parser.username != None and parser.password != None ):
+            handler.make_request( "http://" + parser.hostname  + "/auth/login", urllib.urlencode({ "username" : parser.username, "password" : parser.password }))
+    except JSONRPCException:
+        pass
+
+    proxy = ServiceProxy( "http://" + parser.hostname +  "/webui/JSON-RPC", None, handler )
+
+    return proxy
+
+parser = ArgumentParser()
+
 try:
-    handler.make_request( "http://localhost/auth/login", urllib.urlencode({ "username" : "admin", "password" : "passwd" }))
-except JSONRPCException:
-    pass
+    script_args = parser.parse_args()
+except:
+    printUsage()
+    sys.exit(1)
 
-proxy = ServiceProxy( "http://localhost/webui/JSON-RPC", None, handler )
-
+proxy = make_proxy( parser )
 remoteContext = proxy.RemoteUvmContext
 
-(optlist, args) = getopt.getopt(sys.argv[1:], 'h:u:w:t:p:v')
-# XXX do something with the options
+if ( parser.policy_name != None ):
+        Manager.policy = remoteContext.policyManager().getPolicy(parser.policy_name)
+
+Manager.verbosity = parser.verbosity
 
 calledMethod = False
 
-script = sys.argv[0]
-
-if len(args) == 0:
-    printUsage(script)
+if len(script_args) == 0:
+    printUsage()
     sys.exit(1)
 
-method = args.pop(0).lower()
+method = script_args.pop(0).lower()
 
 for manager in Manager.managers:
     try:
@@ -146,12 +202,12 @@ for manager in Manager.managers:
     calledMethod = True
     try:
         remoteManager = manager(remoteContext)
-        getattr( remoteManager, "api_" + method )( *args )
+        getattr( remoteManager, "api_" + method )( *script_args )
     except JSONRPCException, e:
         print "Unable to make the request: ", e.error
     break
 
 if not calledMethod:
     print "Unable to find method: ", method
-    printUsage(script)
+    printUsage()
     sys.exit(1)

@@ -1,15 +1,14 @@
 from uvm.manager import Manager
 
 class NodeManager(Manager):
-    def __init__(self, remoteContext,policy = None):
+    def __init__(self, remoteContext):
         self.__remoteContext = remoteContext
         self.__nodeManager = self.__remoteContext.nodeManager()
-        self.__policy = policy
 
     def api_instantiate(self,mackageName,*args):
         nodeDesc = None
-        if ( self.__policy == None ): nodeDesc = self.__nodeManager.instantiate( mackageName,args )
-        else: nodeDesc = self.__nodeManager.instantiate( mackageName, self.__policy, args )
+        if ( Manager.policy == None ): nodeDesc = self.__nodeManager.instantiate( mackageName,args )
+        else: nodeDesc = self.__nodeManager.instantiate( mackageName, Manager.policy, args )
         tid = nodeDesc["tid"]
         print tid["id"]
         return tid
@@ -45,7 +44,10 @@ class NodeManager(Manager):
         print ('%s' % node.neverStarted()).lower()
 
     def api_instances(self):
-        for tid in self.__nodeManager.nodeInstances()["list"]:
+        if ( Manager.policy == None ): instances = self.__nodeManager.nodeInstances()
+        else: instances = self.__nodeManager.nodeInstances( Manager.policy )
+        
+        for tid in instances["list"]:
             nodeContext, node = self.__get_node( tid, True )
 
             policy = None
