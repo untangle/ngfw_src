@@ -2743,29 +2743,26 @@ Ext.grid.CheckColumn.prototype = {
     }
 };
 // Grid edit column
-Ext.grid.EditColumn = function(config) {
-    Ext.apply(this, config);
-    if (!this.id) {
-        this.id = Ext.id();
-    }
-    if (!this.header) {
-        this.header = i18n._("Edit");
-    }
-    if (!this.width) {
-        this.width = 35;
-    }
-    if (this.fixed == null) {
-        this.fixed = true;
-    }
-    if (this.sortable == null) {
-        this.sortable = false;
-    }
-    if (!this.dataIndex) {
-        this.dataIndex = null;
-    }
-    this.renderer = this.renderer.createDelegate(this);
-};
-Ext.grid.EditColumn.prototype = {
+Ext.grid.IconColumn = Ext.extend(Object, {
+    constructor : function(config) {
+        Ext.apply(this, config);
+        if (!this.id) {
+            this.id = Ext.id();
+        }
+        if (!this.width) {
+            this.width = 35;
+        }
+        if (this.fixed == null) {
+            this.fixed = true;
+        }
+        if (this.sortable == null) {
+            this.sortable = false;
+        }
+        if (!this.dataIndex) {
+            this.dataIndex = null;
+        }
+        this.renderer = this.renderer.createDelegate(this);
+    },
     init : function(grid) {
         this.grid = grid;
         this.grid.on('render', function() {
@@ -2775,66 +2772,52 @@ Ext.grid.EditColumn.prototype = {
     },
 
     onMouseDown : function(e, t) {
-        if (t.className && t.className.indexOf('iconEditRow') != -1) {
+        if (t.className && t.className.indexOf(this.iconClass) != -1) {
             e.stopEvent();
             var index = this.grid.getView().findRowIndex(t);
             var record = this.grid.store.getAt(index);
-            // populate row editor
-            this.grid.rowEditor.populate(record);
-            this.grid.rowEditor.show();
+            this.handle(record)
         }
     },
 
     renderer : function(value, metadata, record) {
-        return '<div class="iconEditRow">&nbsp;</div>';
+        return '<div class="'+this.iconClass+'">&nbsp;</div>';
     }
-};
-// Grid delete column
-Ext.grid.DeleteColumn = function(config) {
-    Ext.apply(this, config);
-    if (!this.id) {
-        this.id = Ext.id();
-    }
-    if (!this.header) {
-        this.header = i18n._("Delete");
-    }
-    if (!this.width) {
-        this.width = 39;
-    }
-    if (this.fixed == null) {
-        this.fixed = true;
-    }
-    if (this.sortable == null) {
-        this.sortable = false;
-    }
-    if (!this.dataIndex) {
-        this.dataIndex = null;
-    }
-    this.renderer = this.renderer.createDelegate(this);
-};
-Ext.grid.DeleteColumn.prototype = {
-    init : function(grid) {
-        this.grid = grid;
-        this.grid.on('render', function() {
-            var view = this.grid.getView();
-            view.mainBody.on('mousedown', this.onMouseDown, this);
-        }, this);
-    },
-
-    onMouseDown : function(e, t) {
-        if (t.className && t.className.indexOf('iconDeleteRow') != -1) {
-            e.stopEvent();
-            var index = this.grid.getView().findRowIndex(t);
-            var record = this.grid.store.getAt(index);
-            this.grid.updateChangedData(record, "deleted");
-            // this.grid.getView().addRowClass(index, "grid-row-deleted");
+});
+// Grid edit column
+Ext.grid.EditColumn=Ext.extend(Ext.grid.IconColumn, {
+    constructor : function(config) {
+        if (!this.header) {
+            this.header = i18n._("Edit");
         }
+        if (!this.width) {
+            this.width = 35;
+        }
+        Ext.grid.EditColumn.superclass.constructor.call(this);
     },
-
-    renderer : function(value, metadata, record) {
-        return '<div class="iconDeleteRow">&nbsp;</div>';
+	iconClass: 'iconEditRow',
+    handle : function(record) {
+        // populate row editor
+        this.grid.rowEditor.populate(record);
+        this.grid.rowEditor.show();
     }
-};
+});
+// Grid edit column
+Ext.grid.DeleteColumn=Ext.extend(Ext.grid.IconColumn, {
+    constructor : function(config) {
+        if (!this.header) {
+            this.header = i18n._("Delete");
+        }
+        if (!this.width) {
+            this.width = 39;
+        }
+        Ext.grid.DeleteColumn.superclass.constructor.call(this);
+    },
+    iconClass: 'iconDeleteRow',
+    handle : function(record) {
+        this.grid.updateChangedData(record, "deleted");
+    }
+});
 // Grid delete column
 Ext.grid.ReorderColumn = function(config) {
     Ext.apply(this, config);

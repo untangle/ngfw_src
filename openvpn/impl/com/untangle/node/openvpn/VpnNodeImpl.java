@@ -173,7 +173,7 @@ public class VpnNodeImpl extends AbstractNode
                     for ( Object o : q.list()) s.delete((VpnSettings)o );
 
                     /* Save the new settings */
-                    s.saveOrUpdate( newSettings );
+                    s.merge( newSettings );
                     VpnNodeImpl.this.settings = newSettings;
                     return true;
                 }
