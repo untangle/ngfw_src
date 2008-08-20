@@ -3058,7 +3058,9 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
     isPaginated : function() {
         return this.forcePaginate || (this.totalRecords != null && this.totalRecords >= this.minPaginateCount)
     },
-
+    clearChangedData : function () {
+    	this.changedData = {};
+    },
     beforeDestroy : function() {
     	if(this.rowEditor) {
             Ext.destroy(this.rowEditor);

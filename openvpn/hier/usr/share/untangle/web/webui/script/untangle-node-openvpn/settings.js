@@ -240,12 +240,56 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     alert("todo");
                 },
                 renderer : function(value, metadata, record) {
-                    return '<div class="ungButton buttonColumn" style="text-align:center;">' + i18n._("Distribute Client") + '</div>';
+                    var out= '';
+                    if(record.data.id>=0) {
+                    	out= '<div class="ungButton buttonColumn" style="text-align:center;" >' + i18n._("Distribute Client") + '</div>';
+                    }
+                    return out;
                 }
             });
         },
+        getGroupsColumn : function() {
+            return {
+                id : 'groupId',
+                header : this.i18n._("address pool"),
+                width : 200,
+                dataIndex : 'groupId',
+                renderer : function(value, metadata, record) {
+                    var result = ""
+                    var store = this.getGroupsStore();
+                    if (store) {
+                        var index = store.findBy(function(record, id) {
+                            if (record.data.id == value) {
+                                return true;
+                            } else {
+                                return false;
+                            }
+                        });
+                        if (index >= 0) {
+                            result = store.getAt(index).get("name");
+                            record.data.group = store.getAt(index).data;
+                        }
+                    }
+                    return result;
+                }.createDelegate(this),
+                editor : new Ext.form.ComboBox({
+                    store : this.getGroupsStore(),
+                    displayField : 'name',
+                    valueField : 'id',
+                    editable : false,
+                    mode : 'local',
+                    triggerAction : 'all',
+                    listClass : 'x-combo-list-small'
+                })
+            }        	
+        },
         generateGridClients : function(inWizard) {
             // live is a check column
+        	var clientList=this.getVpnSettings().clientList.list;
+        	for(var i=0;i<clientList.length;i++) {
+        		clientList[i].id=i+1;
+        	}
+        	
             var liveColumn = new Ext.grid.CheckColumn({
                 id : "live",
                 header : this.i18n._("enabled"),
@@ -254,7 +298,8 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 fixed : true
             });
             var distributeColumn = this.getDistributeColumn();
-            var defaultGroup= this.getGroupsStore().getCount()>0?this.getGroupsStore().getAt(0).data:null
+            var groupsColumn=this.getGroupsColumn();
+            var defaultGroup= this.getGroupsStore().getCount()>0?this.getGroupsStore().getAt(0).data:null;
             var gridClients = new Ung.EditorGrid({
                 settingsCmp : this,
                 name : 'VPN Clients',
@@ -267,14 +312,13 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     "name" : this.i18n._("[no name]"),
                     "groupId" : defaultGroup!=null?defaultGroup.id:null,
                     "group" : defaultGroup,
-                    "address" : null//,"unassigned"
+                    "address" : null
                 },
                 title : this.i18n._("VPN Clients"),
                 // the column is autoexpanded if the grid width permits
                 // autoExpandColumn : 'name',
                 recordJavaClass : "com.untangle.node.openvpn.VpnClient",
-                data : this.getVpnSettings().clientList,
-                dataRoot : 'list',
+                data : clientList,
                 // the list of fields
                 fields : [{
                     name : 'id'
@@ -284,7 +328,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     name : 'name'
                 }, {
                     name : 'group'
-                },{
+                }, {
                     name : 'groupId',
                     mapping: 'group',
                     convert : function(val, rec) {
@@ -302,39 +346,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     editor : new Ext.form.TextField({
                         allowBlank : false
                     })
-                }, {
-                    id : 'groupId',
-                    header : this.i18n._("address pool"),
-                    width : 200,
-                    dataIndex : 'groupId',
-                    renderer : function(value, metadata, record) {
-                        var result = ""
-                        var store = this.getGroupsStore();
-                        if (store) {
-                            var index = store.findBy(function(record, id) {
-                                if (record.data.id == value) {
-                                    return true;
-                                } else {
-                                    return false;
-                                }
-                            });
-                            if (index >= 0) {
-                                result = store.getAt(index).get("name");
-                                record.data.group = store.getAt(index).data;
-                            }
-                        }
-                        return result;
-                    }.createDelegate(this),
-                    editor : new Ext.form.ComboBox({
-                        store : this.getGroupsStore(),
-                        displayField : 'name',
-                        valueField : 'id',
-                        editable : false,
-                        mode : 'local',
-                        triggerAction : 'all',
-                        listClass : 'x-combo-list-small'
-                    })
-                }, distributeColumn, {
+                }, groupsColumn, distributeColumn, {
                     id : 'address',
                     header : this.i18n._("virtual address"),
                     width : 100,
@@ -378,6 +390,11 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
         },
         generateGridSites : function(inWizard) {
             // live is a check column
+            var siteList=this.getVpnSettings().siteList.list;
+            for(var i=0;i<siteList.length;i++) {
+                siteList[i].id=i+1;
+            }
+
             var liveColumn = new Ext.grid.CheckColumn({
                 id : "live",
                 header : this.i18n._("enabled"),
@@ -386,6 +403,8 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 fixed : true
             });
             var distributeColumn = this.getDistributeColumn();
+            var groupsColumn=this.getGroupsColumn();
+            var defaultGroup= this.getGroupsStore().getCount()>0?this.getGroupsStore().getAt(0).data:null
 
             var gridSites = new Ung.EditorGrid({
                 settingsCmp : this,
@@ -397,15 +416,24 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 emptyRow : {
                     "live" : true,
                     "name" : this.i18n._("[no name]"),
-                    "network" : "192.168.1.0",
-                    "netmask" : "255.255.255.0"
+                    "groupId" : defaultGroup!=null?defaultGroup.id:null,
+                    "group" : defaultGroup,
+                    "network" : "1.2.3.4",
+                    "netmask" : "255.255.255.0",
+                    "exportedAddressList" : {
+                    	javaClass: "java.util.ArrayList",
+                    	list:[{
+                            javaClass:"com.untangle.node.openvpn.ClientSiteNetwork",
+                    	   "network" : "1.2.3.4",
+                    	   "netmask" : "255.255.255.0"
+                        }]
+                    }
                 },
                 title : this.i18n._("VPN Sites"),
                 // the column is autoexpanded if the grid width permits
                 // autoExpandColumn : 'name',
                 recordJavaClass : "com.untangle.node.openvpn.VpnSite",
-                data : this.getVpnSettings().siteList,
-                dataRoot : 'list',
+                data : siteList,
                 // the list of fields
                 fields : [{
                     name : 'id'
@@ -414,11 +442,27 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 }, {
                     name : 'name'
                 }, {
-                    name : 'network'
+                	name: 'exportedAddressList'
                 }, {
-                    name : 'netmask'
+                    name : 'network',
+                    mapping : 'exportedAddressList',
+                    convert : function(val, rec) {
+                        return (val!=null && val.list!=null && val.list.length>0)?val.list[0].network:null;
+                    }
+                }, {
+                    name : 'netmask',
+                    mapping : 'exportedAddressList',
+                    convert : function(val, rec) {
+                        return (val!=null && val.list!=null && val.list.length>0)?val.list[0].netmask:null;
+                    }
                 }, {
                     name : 'group'
+                }, {
+                    name : 'groupId',
+                    mapping: 'group',
+                    convert : function(val, rec) {
+                        return val==null?null:val.id;
+                    }
                 }],
                 // the list of columns for the column model
                 columns : [liveColumn, {
@@ -430,29 +474,15 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     editor : new Ext.form.TextField({
                         allowBlank : false
                     })
-                }, {
-                    id : 'group',
-                    header : this.i18n._("address pool"),
-                    width : 200,
-                    dataIndex : 'group',
-                    renderer : function(value, metadata, record) {
-                        return value==null?null:value.name;
-                    },
-                    editor : {
-                    	xtype: "combo",
-                        store : this.getGroupsStore(),
-                        displayField : 'name',
-                        valueField : 'id',
-                        editable : false,
-                        mode : 'local',
-                        triggerAction : 'all',
-                        listClass : 'x-combo-list-small'
-                    }
-                }, {
+                }, groupsColumn, {
                     id : 'network',
                     header : this.i18n._("network address"),
                     width : 100,
                     dataIndex : 'network',
+                    renderer : function(value, metadata, record) {
+                    	record.data.exportedAddressList.list[0].network=value;
+                        return value;
+                    },
                     editor : new Ext.form.TextField({
                         allowBlank : false,
                         vtype : 'ipAddress'
@@ -462,6 +492,10 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     header : this.i18n._("network mask"),
                     width : 100,
                     dataIndex : 'netmask',
+                    renderer : function(value, metadata, record) {
+                        record.data.exportedAddressList.list[0].netmask=value;
+                        return value;
+                    },
                     editor : new Ext.form.TextField({
                         allowBlank : false,
                         vtype : 'ipAddress'
@@ -479,13 +513,14 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 }, {
                     xtype : "textfield",
                     name : "site name",
-                    dataIndex : "network",
+                    dataIndex : "name",
                     fieldLabel : this.i18n._("Site name"),
                     allowBlank : false,
                     width : 200
                 }, {
                     xtype : "combo",
                     name : "Address pool",
+                    dataIndex : "groupId",
                     fieldLabel : this.i18n._("Address pool"),
                     store : this.getGroupsStore(),
                     displayField : 'name',
@@ -913,7 +948,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     }
                 }
             }
-            var siteList=this.gridClients.getFullSaveList();
+            var siteList=this.gridSites.getFullSaveList();
             var groupListDeleted=this.gridGroups.getDeletedList();
             for(var i=0;i<siteList.length;i++) {
                 if(siteList[i].policy!=null) {
@@ -1455,6 +1490,12 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                             Ext.MessageBox.alert(i18n._("Failed"), exception.message);
                             return;
                         }
+                        var gridClients=Ext.getCmp(this.settingsCmp.serverSetup.gridClientsId);
+                        var gridSites=Ext.getCmp(this.settingsCmp.serverSetup.gridSitesId);
+                        gridClients.clearChangedData();
+                        gridSites.clearChangedData();
+                        Ung.Util.loadGridStoreData(gridClients,[]);
+                        Ung.Util.loadGridStoreData(gridSites,[]);
                         this.handler();
                     }.createDelegate({
                             handler : handler,
