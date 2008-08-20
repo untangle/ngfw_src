@@ -64,8 +64,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.text.JTextComponent;
 
 import org.apache.log4j.Logger;
-
-
 public class Util {
     private static final String PROPERTY_IS_DEVEL = "com.untangle.isDevel";
 
