@@ -2905,7 +2905,10 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
     clicksToEdit : 1,
     enableHdMenu : false,
     enableColumnMove: false,
+    autoGenerateId: false,
     addedId : 0,
+    generatedId:1,
+    
 
     initComponent : function() {
         this.changedData = {};
@@ -2938,6 +2941,15 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
             }
             this.plugins.push(deleteColumn);
             this.columns.push(deleteColumn);
+        }
+        if(this.autoGenerateId && this.fields!=null) {
+        	this.fields.push({
+        	    name: 'id',
+        	    mapping: null,
+        	    convert : function(val, rec) {
+                    return this.generatedId++;
+                }.createDelegate(this)
+        	})
         }
         if (this.proxyRpcFn) {
             this.store = new Ext.data.Store({

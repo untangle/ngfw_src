@@ -21,6 +21,7 @@ package com.untangle.node.openvpn;
 import com.untangle.uvm.node.HostAddress;
 import com.untangle.uvm.node.IPaddr;
 import com.untangle.uvm.node.Node;
+import com.untangle.uvm.node.Validator;
 
 import com.untangle.uvm.node.NodeException;
 import com.untangle.uvm.node.ValidateException;
@@ -78,4 +79,5 @@ public interface VpnNode extends Node
      * Access the EventManager for ClientDistributionEvents
      */    
     public EventManager<ClientDistributionEvent> getClientDistributionEventManager();
+    public Validator getValidator();
 }

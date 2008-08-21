@@ -45,6 +45,7 @@ import com.untangle.uvm.node.NodeState;
 import com.untangle.uvm.node.NodeStopException;
 import com.untangle.uvm.node.UnconfiguredException;
 import com.untangle.uvm.node.ValidateException;
+import com.untangle.uvm.node.Validator;
 import com.untangle.uvm.node.script.ScriptRunner;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.util.XMLRPCUtil;
@@ -750,4 +751,9 @@ public class VpnNodeImpl extends AbstractNode
     {
         connectBlinger.increment();
     }
+
+    public Validator getValidator() {
+        return new OpenVpnValidator();
+    }
+
 }

@@ -521,7 +521,6 @@ if (!Ung.hasResource["Ung.Racks"]) {
                     	grid : this,
                     	userDataIndex : "user"
                     });
-                    //this.usersWindow.renderTo('container');
                     
                     Ung.EditorGrid.prototype.initComponent.call(this);
                 },
