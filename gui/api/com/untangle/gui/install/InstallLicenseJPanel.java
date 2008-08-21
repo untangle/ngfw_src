@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -33,7 +33,6 @@
 
 package com.untangle.gui.install;
 
-import java.awt.Window;
 import java.awt.event.*;
 import java.io.*;
 import java.util.Properties;
@@ -42,9 +41,8 @@ import javax.swing.*;
 import com.untangle.gui.util.Util;
 import com.untangle.gui.widgets.dialogs.*;
 import com.untangle.gui.widgets.wizard.*;
-
-import org.apache.log4j.PropertyConfigurator;
 import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
 
 public class InstallLicenseJPanel extends MWizardPageJPanel {
 
@@ -54,8 +52,8 @@ public class InstallLicenseJPanel extends MWizardPageJPanel {
     private static final Logger logger = Logger.getLogger(InstallLicenseJPanel.class);
 
     public InstallLicenseJPanel() {
-	    // CONFIGURE LOGGING
-    	configureLogging();
+        // CONFIGURE LOGGING
+        configureLogging();
 
         initComponents();
 
@@ -143,7 +141,7 @@ public class InstallLicenseJPanel extends MWizardPageJPanel {
         gridBagConstraints.weighty = 1.0;
         add(contentJPanel, gridBagConstraints);
 
-        backgroundJPabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/login/ProductShot.png")));
+        backgroundJPabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/install/ProductShot.png")));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
@@ -199,7 +197,6 @@ public class InstallLicenseJPanel extends MWizardPageJPanel {
 
         PropertyConfigurator.configure(props);
     }
-
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup acceptButtonGroup;

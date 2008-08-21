@@ -44,23 +44,48 @@ import java.util.Map;
  */
 public class I18nUtil
 {
-    public static String tr(Map<String, String> i18n_map, String value)
+    private final Map<String, String> i18nMap;
+
+    public I18nUtil(Map<String, String> i18nMap)
     {
-        String tr = i18n_map.get(value);
+        this.i18nMap = i18nMap;
+    }
+
+    // public functions --------------------------------------------------------
+
+    public String tr(String value)
+    {
+        String tr = i18nMap.get(value);
         if (tr == null) {
             tr = value;
         }
         return tr;
     }
-    
-    public static String tr(Map<String, String> i18n_map, String value, Object[] objects)
+
+    public String tr(String value, Object o1)
     {
-        return MessageFormat.format( tr(i18n_map,value), objects);
+        return tr(i18nMap, value, new Object[]{ o1 });
     }
 
-    public static String tr(Map<String, String> i18n_map, String value, Object o1)
+    // static functions --------------------------------------------------------
+
+    public static String tr(Map<String, String> i18nMap, String value)
     {
-        return tr(i18n_map, value, new Object[]{ o1 });
+        String tr = i18nMap.get(value);
+        if (tr == null) {
+            tr = value;
+        }
+        return tr;
     }
-    
+
+    public static String tr(Map<String, String> i18nMap, String value, Object[] objects)
+    {
+        return MessageFormat.format( tr(i18nMap,value), objects);
+    }
+
+    public static String tr(Map<String, String> i18nMap, String value, Object o1)
+    {
+        return tr(i18nMap, value, new Object[]{ o1 });
+    }
+
 }

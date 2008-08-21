@@ -52,7 +52,7 @@ public class InstallWizard extends MWizardJDialog {
         this.args = args;
         setModal(true);
         setTitle("Untangle Platform Install Wizard");
-        addWizardPageJPanel(new InstallWelcomeJPanel(),       "1. Welcome", false, false);
+        addWizardPageJPanel(new InstallWelcomeJPanel(),       "1. Language", false, false);
         addWizardPageJPanel(new InstallLicenseJPanel(),       "2. License Agreement", false, false);
         addWizardPageJPanel(new InstallDiskJPanel(this),      "3. Choose Disk", false, false);
         addWizardPageJPanel(new InstallBenchmarkJPanel(this), "4. Hardware Test", false, false);

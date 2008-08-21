@@ -58,8 +58,6 @@ public class InstallWelcomeJPanel extends MWizardPageJPanel {
     private final ListCellRenderer localeRenderer;
 
     public InstallWelcomeJPanel() {
-        initComponents();
-
         localeModel = new DefaultComboBoxModel(new Object[] {
                 Locale.ENGLISH,
                 Locale.FRENCH,
@@ -74,11 +72,14 @@ public class InstallWelcomeJPanel extends MWizardPageJPanel {
                      boolean cellHasFocus)
                 {
                     Locale l = (Locale)value;
-                    String newValue = l.getLanguage();
+                    String newValue = l.getDisplayLanguage(l).toLowerCase();
+
                     return super.getListCellRendererComponent
                         (list, newValue, index, isSelected, cellHasFocus);
                 }
             };
+
+        initComponents();
     }
 
     // <editor-fold defaultstate="collapsed" desc=" Generated Code ">//GEN-BEGIN:initComponents
@@ -122,11 +123,13 @@ public class InstallWelcomeJPanel extends MWizardPageJPanel {
         contentJPanel.add(jLabel2, gridBagConstraints);
 
         jLabel3.setFont(new java.awt.Font("Dialog", 0, 12));
-        jLabel3.setText("Language");
+        jLabel3.setText("Language:");
         jPanel1.add(jLabel3);
 
         jComboBox1.setFont(new java.awt.Font("Dialog", 0, 12));
         jComboBox1.setModel(localeModel);
+        jComboBox1.setMinimumSize(new java.awt.Dimension(128, 24));
+        jComboBox1.setPreferredSize(new java.awt.Dimension(150, 24));
         jComboBox1.setRenderer(localeRenderer);
         jPanel1.add(jComboBox1);
 
