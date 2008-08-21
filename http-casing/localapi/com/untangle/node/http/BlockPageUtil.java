@@ -116,5 +116,4 @@ public class BlockPageUtil
     {
         return INSTANCE;
     }
-
 }
