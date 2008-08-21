@@ -472,18 +472,7 @@ public class SafelistManager
 
         mlSettings.setSafelistSettings(safelists);
 
-        TransactionWork tw = new TransactionWork()
-            {
-                public boolean doWork(Session s)
-                {
-                    s.merge(mlSettings);
-
-                    return true;
-                }
-
-                public Object getResult() { return null; }
-            };
-        mlImpl.getNodeContext().runTransaction(tw);
+        mlImpl.setMailNodeSettings(mlSettings);
 
         return;
     }

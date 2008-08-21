@@ -65,6 +65,7 @@ if (!Ung.hasResource["Ung.Email"]) {
             Ext.getCmp('email_smtpLogin').setContainerVisible(useAuthentication);
             Ext.getCmp('email_smtpPassword').setContainerVisible(useAuthentication);
         },
+        
         // get languange settings object
         getLanguageSettings : function(forceReload) {
             if (forceReload || this.rpc.languageSettings === undefined) {
@@ -93,11 +94,43 @@ if (!Ung.hasResource["Ung.Email"]) {
             }
             return this.rpc.mailNodeSettings;
         },
+        getSafelistAdminView : function(forceReload) {
+            if (forceReload || this.rpc.safelistAdminView === undefined) {
+                this.rpc.safelistAdminView = this.getMailNode().getSafelistAdminView();
+            }
+            return this.rpc.safelistAdminView;
+        },
         getFormattedTime: function(hours, minutes) {
             var hh = hours < 10 ? "0" + hours : hours;
             var mm = minutes < 10 ? "0" + minutes : minutes;
             return hh + ":" + mm;
         },
+        
+        loadUserSafelistData : function (safelistCounts) {
+            Ext.MessageBox.wait(i18n._("Loading..."), i18n._("Please wait"));
+            this.getSafelistAdminView().getSafelistCounts(
+                function(result, exception) {
+                    Ext.MessageBox.hide();
+                    if (exception) {
+                        Ext.MessageBox.alert(i18n._("Failed"), exception.message);
+                        return;
+                    }
+                    
+                    var safelistCounts = result.list;
+                    var storeDataUser = [];
+                    for(var i=0, currentId=0; i<safelistCounts.length; i++) {
+                        if(safelistCounts[i].emailAddress.toLowerCase() == 'global') {
+                            continue;
+                        }
+                        storeDataUser.push({id:currentId, emailAddress: safelistCounts[i].emailAddress, count: safelistCounts[i].count});
+                        currentId++;
+                    }
+                    
+                    Ung.Util.loadGridStoreData(this.userSafelistGrid, storeDataUser);
+                    
+              }.createDelegate(this)); 
+        },
+        
         buildOutgoingServer : function() {
             this.panelOutgoingServer = new Ext.Panel({
                 // private fields
@@ -314,37 +347,30 @@ if (!Ung.hasResource["Ung.Email"]) {
             });
         },
         buildFromSafeList : function() {
-            var valuesGlobal = this.getMailNode().getSafelistAdminView().getSafelistContents('GLOBAL');
+            var valuesGlobal = this.getSafelistAdminView().getSafelistContents('GLOBAL');
             var storeDataGlobal = [];
             for(var i=0; i<valuesGlobal.length; i++) {
                 storeDataGlobal.push({id:i, emailAddress: valuesGlobal[i]});
             }
             
-            var safelistUsers = this.getMailNode().getSafelistAdminView().listSafelists().list;
-            var safelistSettings = this.getMailNodeSettings().safelistSettings.list;
-            var storeDataUser = [];
-            var currentId = 0;
-            for(var i=0; i<safelistUsers.length; i++) {
-                if(safelistUsers[i].toLowerCase() == 'global') {
-                    continue;
+            var showDetailColumn = new Ext.grid.IconColumn({
+                header : this.i18n._("Show Detail"),
+                width : 100,
+                iconClass : 'iconDetailRow',
+                handle : function(record, index) {
+                    // select current row
+                    this.grid.getSelectionModel().selectRow(index);
+                    // show details
+                    this.grid.onShowDetail(record);
                 }
-                var cnt = 0;
-                var safeSendersList = []
-                for(var j=0; j<safelistSettings.length; j++) {
-                    if(safelistUsers[i] == safelistSettings[j].recipient.addr) {
-                        cnt++;
-                        safeSendersList.push([safelistSettings[j].sender.addr, safelistSettings[j].sender.addr]);
-                    }
-                }
-                storeDataUser.push({id:currentId, emailAddress: safelistUsers[i], count: cnt, safeSenders: safeSendersList});
-                currentId++;
-            }
-
+            });
+                
             this.panelFromSafeList = new Ext.Panel({
                 // private fields
                 name : 'From-Safe List',
                 parentId : this.getId(),
                 winSafelistShowDetail : null,
+
                 
                 
                 title : this.i18n._('From-Safe List'),
@@ -393,7 +419,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                     })]
                 },{
                 	title : this.i18n._('Per User'),
-                    height : 350,
+                    height : 300,
                     items : [ this.userSafelistGrid = new Ung.EditorGrid({
                         name : 'Per User',
                         sm : new Ext.grid.RowSelectionModel({singleSelect:true}),
@@ -404,8 +430,49 @@ if (!Ung.hasResource["Ung.Email"]) {
                         paginated : false,
                         height : 250,
                         autoExpandColumn : 'emailAddress',
-                        data : storeDataUser,
+//                        data : storeDataUser,
+                        data : [],
                         dataRoot: null,
+                        tbar : [{
+                            text : this.i18n._('Purge Selected'),
+                            tooltip : this.i18n._('Purge Selected'),
+                            iconCls : 'purgeIcon',
+                            name : 'Purge Selected',
+                            parentId : this.getId(),
+                            handler : function() {
+                                var selectedRecords = this.userSafelistGrid.getSelectionModel().getSelections();
+                                if(selectedRecords === undefined || selectedRecords.length == 0) {
+                                    return;
+                                }
+                                Ext.MessageBox.show({
+                                   buttons : Ext.Msg.CANCEL,
+                                   modal : true,
+                                   wait : true,
+                                   waitConfig: {interval: 100},
+                                   progressText : this.i18n._('Removing...'),
+                                   width : 300
+                                });
+                                
+
+                                this.purgeSemaphore1 = selectedRecords.length;
+                                for(var i=0; i<selectedRecords.length; i++) {
+                                    this.getSafelistAdminView().deleteSafelist(function(result, exception) {
+                                        if (exception) {
+                                            Ext.MessageBox.alert(i18n._("Failed"), exception.message);
+                                            return;
+                                        }
+            
+                                        this.purgeSemaphore1--;
+                                        if (this.purgeSemaphore1 <= 0) {
+                                            Ext.MessageBox.hide();
+                                        }
+                                    }.createDelegate(this), selectedRecords[i].data.emailAddress);
+                                }
+                                
+                                this.loadUserSafelistData();                                
+                                
+                            }.createDelegate(this)
+                        }],
                         fields : [{
                             name : 'id'
                         }, {
@@ -423,86 +490,29 @@ if (!Ung.hasResource["Ung.Email"]) {
                             header : this.i18n._("safe list size"),
                             width : 200,
                             dataIndex : 'count'
-                        }],
+                        }, showDetailColumn],
                         sortField : 'emailAddress',
-                        columnsDefaultSortable : true
-                    }), new Ext.Panel({
-                        buttonAlign : 'center',
-                        footer : false,
-                        border : false,
-                        buttons: [{
-                            xtype : 'button',
-                            name : 'Purge Selected',
-                            iconCls : 'purgeIcon',
-                            text : i18n._('Purge Selected'),
-		                    handler : function() {
-                                var selectedRecords = this.userSafelistGrid.getSelectionModel().getSelections();
-                                if(selectedRecords === undefined || selectedRecords.length == 0) {
-                                    return;
-                                }
-                                Ext.MessageBox.show({
-		                           buttons : Ext.Msg.CANCEL,
-		                           modal : true,
-		                           wait : true,
-		                           waitConfig: {interval: 100},
-		                           progressText : this.i18n._('Removing...'),
-		                           width : 300
-		                        });
-		                        
-
-		                        this.purgeSemaphore1 = selectedRecords.length;
-		                        for(var i=0; i<selectedRecords.length; i++) {
-		                            this.getMailNode().getSafelistAdminView().deleteSafelist(function(result, exception) {
-		                                if (exception) {
-		                                    Ext.MessageBox.alert(i18n._("Failed"), exception.message);
-		                                    return;
-		                                }
-		    
-		                                this.purgeSemaphore1--;
-		                                if (this.purgeSemaphore1 <= 0) {
-//		                                    var emails = [];
-//		                                    for(var j=0; j<result.length; j++) {
-//		                                        emails.push([result[j], result[j]]);
-//		                                    }
-//		                                    multiselectCmp.store.loadData(emails);
-		                                    Ext.MessageBox.hide();
-		                                }
-		                            }.createDelegate(this), selectedRecords[i].data.emailAddress);
-		                        }
-		                    }.createDelegate(this)
-                        }, {
-                            xtype : 'button',
-                            name : 'Show Detail',
-                            iconCls : 'detailIcon',
-                            text : i18n._('Show Detail'),
-                            handler : function() {
-                                var selectedRecord = this.userSafelistGrid.getSelectionModel().getSelected();
-                                if(selectedRecord === undefined) {
-                                    return;
-                                }
-                                var data = this.userSafelistGrid.getStore().proxy.data;
-                                this.panelFromSafeList.onShowDetail(data[selectedRecord.data.id]);
-                            }.createDelegate(this)
-                        }]
+                        columnsDefaultSortable : true,
+                        plugins : [showDetailColumn],
+                        
+                        onShowDetail : function(record) {
+                            var settingsCmp = Ext.getCmp(this.panelFromSafeList.parentId);
+                            if (!this.winSafelistShowDetail) {
+                                settingsCmp.buildPanelSafelistDetails();
+                                this.winSafelistShowDetail = new Ung.EmailAddressDetails({
+                                    detailsPanel : settingsCmp.panelSafelistDetails,
+                                    settingsCmp : settingsCmp
+                                });
+                            }
+                            this.winSafelistShowDetail.showForCurrentAccount(record.get('emailAddress'));
+                            
+                        }.createDelegate(this)
+                        
                     })
-                ]}],
-                onShowDetail : function(selectedRecord) {
-                    if (!this.winSafelistShowDetail) {
-                        var settingsCmp = Ext.getCmp(this.panelFromSafeList.parentId);
-                        settingsCmp.buildPanelSafelistDetails();
-                        var multiselectCmp = Ext.getCmp('xxx');
-                        multiselectCmp.data = selectedRecord.safeSenders;
-                        settingsCmp.panelSafelistDetails.setTitle(this.i18n._('Email From-SafeList Details for: ') + selectedRecord.emailAddress);
-                        this.winSafelistShowDetail = new Ung.EmailAddressDetails({
-                            detailsPanel : settingsCmp.panelSafelistDetails,
-                            account : selectedRecord.emailAddress,
-                            title : this.i18n._('Email From-SafeList Details for: ') + selectedRecord.emailAddress,
-                            proceedAction : function() {main.todo();}.createDelegate(settingsCmp)
-                        });
-                    }
-                    this.winSafelistShowDetail.show();
-                }.createDelegate(this)
+                ]}]
             });
+            
+            this.loadUserSafelistData();                                
             
         },
         // Generate Self-Signed certificate
@@ -518,55 +528,63 @@ if (!Ung.hasResource["Ung.Email"]) {
                 items: [{
 		            xtype:"multiselect",
 		            name:"multiselect",
-                    id : 'xxx',
+                    id : 'email_safelist_details_panel',
                     hideLabel : true,
-		            dataFields:["code", "desc"], 
-		            valueField:"code",
-		            displayField:"desc",
+		            valueField:"sender",
+		            displayField:"sender",
 		            width:350,
 		            height:400,
 		            allowBlank:false,
-                    tbar:[{
-		                text:i18n._('Email Address')
-                    }]
-		        }],
-                buttons : [ new Ext.Button({
-	                name : 'Purge Selected',
-                    iconCls : 'purgeIcon',
-	                text : i18n._('Purge Selected'),
-	                handler : function() {
-	                    Ext.MessageBox.show({
-	                       buttons : Ext.Msg.CANCEL,
-	                       modal : true,
-	                       wait : true,
-	                       waitConfig: {interval: 100},
-	                       progressText : this.i18n._('Removing...'),
-	                       width : 300
-	                    });
-	                    
-                        var multiselectCmp = Ext.getCmp('xxx');
-                        var emails = multiselectCmp.view.getSelectedRecords();
-                        this.purgeSemaphore2 = emails.length;
-                        for(var i=0; i<emails.length; i++) {
-		                    this.getMailNode().getSafelistAdminView().removeFromSafelist(function(result, exception) {
-	                            if (exception) {
-	                                Ext.MessageBox.alert(i18n._("Failed"), exception.message);
-	                                return;
-	                            }
-	
-					            this.purgeSemaphore2--;
-					            if (this.purgeSemaphore2 <= 0) {
-                                    var emails = [];
-                                    for(var j=0; j<result.length; j++) {
-                                        emails.push([result[j], result[j]]);
+                    tbar : [{
+                        text : this.i18n._('Purge Selected'),
+                        tooltip : this.i18n._('Purge Selected'),
+                        iconCls : 'purgeIcon',
+                        name : 'Purge Selected',
+                        parentId : this.getId(),
+                        handler : function() {
+                            Ext.MessageBox.show({
+                               buttons : Ext.Msg.CANCEL,
+                               modal : true,
+                               wait : true,
+                               waitConfig: {interval: 100},
+                               progressText : this.i18n._('Removing...'),
+                               width : 300
+                            });
+                            
+                            var multiselectCmp = Ext.getCmp('email_safelist_details_panel');
+                            var emails = multiselectCmp.view.getSelectedRecords();
+                            this.purgeSemaphore2 = emails.length;
+                            for(var i=0; i<emails.length; i++) {
+                                this.getSafelistAdminView().removeFromSafelist(function(result, exception) {
+                                    if (exception) {
+                                        Ext.MessageBox.alert(i18n._("Failed"), exception.message);
+                                        return;
                                     }
-                                    multiselectCmp.store.loadData(emails);
-                                    Ext.MessageBox.hide();
-					            }
-	                        }.createDelegate(this), this.winSafelistShowDetail.account, emails[i].data.desc);
-                        }
-	                }.createDelegate(this)
-	            })]
+        
+                                    this.purgeSemaphore2--;
+                                    if (this.purgeSemaphore2 <= 0) {
+                                        var emails = [];
+                                        for(var j=0; j<result.length; j++) {
+                                            emails.push([result[j], result[j]]);
+                                        }
+                                        multiselectCmp.store.loadData(emails);
+                                        Ext.MessageBox.hide();
+                                    }
+                                }.createDelegate(this), this.winSafelistShowDetail.account, emails[i].data.sender);
+                            }
+                            
+                            this.loadUserSafelistData();                                
+                            
+                        }.createDelegate(this)
+                    }], 
+                    store : new Ext.data.Store({
+                        proxy : new Ext.data.MemoryProxy(),
+                        reader : new Ung.JsonListReader({
+                            root : null,
+                            fields : ['sender']
+                        })
+                    }) 
+		        }]
             });
         },
 
@@ -885,7 +903,7 @@ if (!Ung.hasResource["Ung.Email"]) {
 	            for(var i=0; i<globalSafelistGridValues.length; i++) {
 	                globalList.push(globalSafelistGridValues[i].emailAddress);
 	            }
-                this.getMailNode().getSafelistAdminView().replaceSafelist(function(result, exception) {
+                this.getSafelistAdminView().replaceSafelist(function(result, exception) {
                      if (exception) {
                          Ext.MessageBox.alert(i18n._("Failed"), exception.message);
                          return;
@@ -906,6 +924,7 @@ if (!Ung.hasResource["Ung.Email"]) {
     
     // email address details window for Safe List and Quarantine
     Ung.EmailAddressDetails = Ext.extend(Ung.ButtonsWindow, {
+    	settingsCmp : null,
         // the certPanel
         detailsPanel : null,
         account : null,
@@ -925,7 +944,6 @@ if (!Ung.hasResource["Ung.Email"]) {
             }
         },
         initButtons : function() {
-            var settingsCmp = Ext.getCmp(this.detailsPanel.parentId);
             this.subCmps.push(new Ext.Button({
                 name : 'Cancel',
                 renderTo : 'button_margin_right_' + this.getId(),
@@ -939,12 +957,32 @@ if (!Ung.hasResource["Ung.Email"]) {
                 name : 'Help',
                 renderTo : 'button_left_' + this.getId(),
                 iconCls : 'iconHelp',
-                text : settingsCmp.i18n._('Help'),
+                text : this.settingsCmp.i18n._('Help'),
                 handler : function() {
                     this.helpAction();
                 }.createDelegate(this)
             }));
         },
+        showForCurrentAccount : function(emailAddress) {
+            this.account = emailAddress;  
+            var newTitle = this.settingsCmp.i18n._('Email From-SafeList Details for: ') + emailAddress;
+            this.setTitle(newTitle);
+            this.detailsPanel.setTitle(newTitle);
+            
+            this.show();
+                    
+            Ext.MessageBox.wait(i18n._("Loading..."), i18n._("Please wait"));
+            this.settingsCmp.getSafelistAdminView().getSafelistContents(
+                function(result, exception) {
+                    Ext.MessageBox.hide();
+                    if (exception) {
+                        Ext.MessageBox.alert(i18n._("Failed"), exception.message);
+                        return;
+                    }
+                    var multiselectCmp = Ext.getCmp('email_safelist_details_panel');
+                    multiselectCmp.store.loadData(result);
+                }, emailAddress); 
+        },        	
         // the proceed actions
         // to override
         proceedAction : function() {

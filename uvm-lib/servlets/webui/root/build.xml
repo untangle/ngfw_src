@@ -62,11 +62,16 @@
                 <include name="**/*.*"/>
             </fileset>
         </copy>
-        <!--copy todir="${deploy.path}/skins"  preservelastmodified="true" verbose="true">
-        	<fileset dir="./skins/">
+        <copy todir="${apache.path}/skins"  preservelastmodified="true" verbose="true">
+        	<fileset dir="./../../../../../pkgs/untangle-apache2-config/files/var/www/skins/">
                 <include name="**/*.*"/>
             </fileset>
-        </copy-->
+        </copy>
+        <copy todir="${apache.path}/script"  preservelastmodified="true" verbose="true" failonerror="false">
+            <fileset dir="./../../../../../pkgs/untangle-apache2-config/files/var/www/script/">
+                <include name="**/*.*"/>
+            </fileset>
+        </copy>
         <copy todir="${deploy.path}/WEB-INF/jsp"  preservelastmodified="true" verbose="true">
         	<fileset dir="./WEB-INF/jsp/">
                 <include name="*.*"/>

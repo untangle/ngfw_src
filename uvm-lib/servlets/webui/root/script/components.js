@@ -2784,7 +2784,7 @@ Ext.grid.IconColumn = Ext.extend(Object, {
             e.stopEvent();
             var index = this.grid.getView().findRowIndex(t);
             var record = this.grid.store.getAt(index);
-            this.handle(record)
+            this.handle(record, index)
         }
     },
 
