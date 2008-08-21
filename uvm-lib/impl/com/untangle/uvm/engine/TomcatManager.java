@@ -369,7 +369,7 @@ class TomcatManager
         FileWriter w = null;
         try {
             w = new FileWriter(p);
-            w.write("RedirectMatch 302 /index.html " + welcomeFile + "\n");
+            w.write("RedirectMatch 302 ^/index.html " + welcomeFile + "\n");
         } catch (IOException exn) {
             logger.warn("could not write homepage redirect", exn);
         } finally {
