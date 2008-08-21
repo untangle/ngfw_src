@@ -2092,7 +2092,4 @@ if (!Ung.hasResource["Ung.Administration"]) {
         }
     });
     
-};
-    
-    
 }
