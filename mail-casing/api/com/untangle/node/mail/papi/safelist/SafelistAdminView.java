@@ -86,7 +86,7 @@ public interface SafelistAdminView
      *
      * @return the list of all safelist owners counts.
      */
-    public List<SafelistCount> getSafelistCounts()
+    public List<SafelistCount> getUserSafelistCounts()
         throws NoSuchSafelistException, SafelistActionFailedException;
 
 }

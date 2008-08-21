@@ -19,11 +19,14 @@ package com.untangle.node.mail.impl.safelist;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.apache.log4j.Logger;
+import org.hibernate.Query;
+import org.hibernate.Session;
 
 import com.untangle.node.mail.MailNodeImpl;
 import com.untangle.node.mail.impl.GlobEmailAddressMapper;
@@ -33,16 +36,12 @@ import com.untangle.node.mail.papi.safelist.SafelistActionFailedException;
 import com.untangle.node.mail.papi.safelist.SafelistAdminView;
 import com.untangle.node.mail.papi.safelist.SafelistCount;
 import com.untangle.node.mail.papi.safelist.SafelistEndUserView;
-import com.untangle.node.mail.papi.safelist.SafelistManipulation;
 import com.untangle.node.mail.papi.safelist.SafelistNodeView;
 import com.untangle.node.mail.papi.safelist.SafelistRecipient;
 import com.untangle.node.mail.papi.safelist.SafelistSender;
 import com.untangle.node.mail.papi.safelist.SafelistSettings;
 import com.untangle.node.mime.EmailAddress;
 import com.untangle.uvm.util.TransactionWork;
-import org.apache.log4j.Logger;
-import org.hibernate.Query;
-import org.hibernate.Session;
 
 /**
  * Implementation of the safelist stuff
@@ -295,11 +294,16 @@ public class SafelistManager
     }
 
     //See doc on SafelistAdminView.java
-    public List<SafelistCount> getSafelistCounts()
+    public List<SafelistCount> getUserSafelistCounts()
         throws NoSuchSafelistException, SafelistActionFailedException {
         List<String> safelists = listSafelists();
         List<SafelistCount> safelistCounts = new ArrayList<SafelistCount>(safelists.size());
         for(String account : safelists){
+            
+            if (account.equals("GLOBAL")) {
+                // ignnore GLOBAL safelist for admin
+                continue;
+            }
             SafelistCount safelistCnt = new SafelistCount(account, getSafelistCnt(account));
             safelistCounts.add(safelistCnt);
         }

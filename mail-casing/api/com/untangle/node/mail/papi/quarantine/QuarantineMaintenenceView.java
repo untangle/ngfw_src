@@ -81,6 +81,12 @@ public interface QuarantineMaintenenceView
     public void deleteInbox(String account)
         throws NoSuchInboxException, QuarantineUserActionFailedException;
 
+    public void deleteInboxes(String[] accounts)
+        throws NoSuchInboxException, QuarantineUserActionFailedException;
+    
     public void rescueInbox(String account)
+        throws NoSuchInboxException, QuarantineUserActionFailedException;
+    
+    public void rescueInboxes(String[] accounts)
         throws NoSuchInboxException, QuarantineUserActionFailedException;
 }

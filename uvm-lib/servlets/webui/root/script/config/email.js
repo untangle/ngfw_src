@@ -9,6 +9,7 @@ if (!Ung.hasResource["Ung.Email"]) {
         userSafelistGrid : null,
         quarantinableAddressesGrid : null,
         quarantineForwardsGrid : null,
+        userQuarantinesGrid :null,        
         safelistDetailsWin : null,
         initComponent : function() {
             this.breadcrumbs = [{
@@ -66,13 +67,6 @@ if (!Ung.hasResource["Ung.Email"]) {
             Ext.getCmp('email_smtpPassword').setContainerVisible(useAuthentication);
         },
         
-        // get languange settings object
-        getLanguageSettings : function(forceReload) {
-            if (forceReload || this.rpc.languageSettings === undefined) {
-                this.rpc.languageSettings = rpc.languageManager.getLanguageSettings();
-            }
-            return this.rpc.languageSettings;
-        },
         getMailNode : function(forceReload) {
             if (forceReload || this.rpc.mailNode === undefined) {
                 this.rpc.mailNode = rpc.nodeManager.node("untangle-casing-mail");
@@ -100,35 +94,16 @@ if (!Ung.hasResource["Ung.Email"]) {
             }
             return this.rpc.safelistAdminView;
         },
+        getQuarantineMaintenenceView : function(forceReload) {
+            if (forceReload || this.rpc.quarantineMaintenenceView === undefined) {
+                this.rpc.quarantineMaintenenceView = this.getMailNode().getQuarantineMaintenenceView();
+            }
+            return this.rpc.quarantineMaintenenceView;
+        }, 
         getFormattedTime: function(hours, minutes) {
             var hh = hours < 10 ? "0" + hours : hours;
             var mm = minutes < 10 ? "0" + minutes : minutes;
             return hh + ":" + mm;
-        },
-        
-        loadUserSafelistData : function (safelistCounts) {
-            Ext.MessageBox.wait(i18n._("Loading..."), i18n._("Please wait"));
-            this.getSafelistAdminView().getSafelistCounts(
-                function(result, exception) {
-                    Ext.MessageBox.hide();
-                    if (exception) {
-                        Ext.MessageBox.alert(i18n._("Failed"), exception.message);
-                        return;
-                    }
-                    
-                    var safelistCounts = result.list;
-                    var storeDataUser = [];
-                    for(var i=0, currentId=0; i<safelistCounts.length; i++) {
-                        if(safelistCounts[i].emailAddress.toLowerCase() == 'global') {
-                            continue;
-                        }
-                        storeDataUser.push({id:currentId, emailAddress: safelistCounts[i].emailAddress, count: safelistCounts[i].count});
-                        currentId++;
-                    }
-                    
-                    Ung.Util.loadGridStoreData(this.userSafelistGrid, storeDataUser);
-                    
-              }.createDelegate(this)); 
         },
         
         buildOutgoingServer : function() {
@@ -430,9 +405,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                         paginated : false,
                         height : 250,
                         autoExpandColumn : 'emailAddress',
-//                        data : storeDataUser,
-                        data : [],
-                        dataRoot: null,
+                        proxyRpcFn : this.getSafelistAdminView().getUserSafelistCounts,
                         tbar : [{
                             text : this.i18n._('Purge Selected'),
                             tooltip : this.i18n._('Purge Selected'),
@@ -469,7 +442,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                                     }.createDelegate(this), selectedRecords[i].data.emailAddress);
                                 }
                                 
-                                this.loadUserSafelistData();                                
+                                this.userSafelistGrid.store.load();
                                 
                             }.createDelegate(this)
                         }],
@@ -511,8 +484,6 @@ if (!Ung.hasResource["Ung.Email"]) {
                     })
                 ]}]
             });
-            
-            this.loadUserSafelistData();                                
             
         },
         // Generate Self-Signed certificate
@@ -573,7 +544,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                                 }.createDelegate(this), this.winSafelistShowDetail.account, emails[i].data.sender);
                             }
                             
-                            this.loadUserSafelistData();                                
+                            this.userSafelistGrid.store.load();
                             
                         }.createDelegate(this)
                     }], 
@@ -589,6 +560,19 @@ if (!Ung.hasResource["Ung.Email"]) {
         },
 
         buildQuarantine : function() {
+            var sm = new Ext.grid.CheckboxSelectionModel({singleSelect:false});
+            var showDetailColumn = new Ext.grid.IconColumn({
+                header : this.i18n._("Show Detail"),
+                width : 100,
+                iconClass : 'iconDetailRow',
+                handle : function(record, index) {
+                    // select current row
+                    this.grid.getSelectionModel().selectRow(index);
+                    // show details
+                    this.grid.onShowDetail(record);
+                }
+            });
+        	
             this.panelQuarantine = new Ext.Panel({
                 name : 'panelQuarantine',
                 parentId : this.getId(),
@@ -643,8 +627,120 @@ if (!Ung.hasResource["Ung.Email"]) {
                     }]
                 }, {
                 	title : this.i18n._('User Quarantines'),
-                	items: [{}]
-                }, {
+                    height : 300,
+                    items : [ this.userQuarantinesGrid = new Ung.EditorGrid({
+                        name : 'User Quarantines',
+//                        sm : new Ext.grid.RowSelectionModel({singleSelect:false}),
+                        sm : sm,
+                        hasEdit : false,
+                        hasAdd : false,
+                        hasDelete : false,
+                        paginated : false,
+                        autoGenerateId : true,
+                        settingsCmp : this,
+                        height : 250,
+                        proxyRpcFn : this.getQuarantineMaintenenceView().listInboxes,
+ 
+                        tbar : [{
+                            text : this.i18n._('Purge Selected'),
+                            tooltip : this.i18n._('Purge Selected'),
+                            iconCls : 'purgeIcon',
+                            name : 'Purge Selected',
+                            parentId : this.getId(),
+                            handler : function() {
+                                var selectedRecords = this.userQuarantinesGrid.getSelectionModel().getSelections();
+                                if(selectedRecords === undefined || selectedRecords.length == 0) {
+                                    return;
+                                }
+                                var accounts = [];
+                                for(var i=0; i<selectedRecords.length; i++) {
+                                	accounts[i] = selectedRecords[i].data.address;
+                                }
+                                
+                                Ext.MessageBox.wait(this.i18n._("Purging..."), this.i18n._("Please wait"));
+                                this.getQuarantineMaintenenceView().deleteInboxes(function(result, exception) {
+                                    if (exception) {
+                                        Ext.MessageBox.alert(i18n._("Failed"), exception.message);
+                                        return;
+                                    }
+                                    Ext.MessageBox.hide();
+                                }.createDelegate(this), accounts);
+                                
+                                this.userQuarantinesGrid.store.load();
+                                
+                            }.createDelegate(this)
+                        }, {
+                            text : this.i18n._('Release Selected'),
+                            tooltip : this.i18n._('Release Selected'),
+                            iconCls : 'releaseIcon',
+                            name : 'Release Selected',
+                            parentId : this.getId(),
+                            handler : function() {
+                                var selectedRecords = this.userQuarantinesGrid.getSelectionModel().getSelections();
+                                if(selectedRecords === undefined || selectedRecords.length == 0) {
+                                    return;
+                                }
+                                var accounts = [];
+                                for(var i=0; i<selectedRecords.length; i++) {
+                                    accounts[i] = selectedRecords[i].data.address;
+                                }
+                                
+                                Ext.MessageBox.wait(this.i18n._("Releasing..."), this.i18n._("Please wait"));
+                                this.getQuarantineMaintenenceView().rescueInboxes(function(result, exception) {
+                                    if (exception) {
+                                        Ext.MessageBox.alert(i18n._("Failed"), exception.message);
+                                        return;
+                                    }
+                                    Ext.MessageBox.hide();
+                                }.createDelegate(this), accounts);
+                                
+                                this.userQuarantinesGrid.store.load();
+                                
+                            }.createDelegate(this)
+                        }],
+                        fields : [{
+                            name : 'address'
+                        }, {
+                            name : 'numMails'
+                        }, {
+                            name : 'formattedTotalSz'
+                        }],
+                        columns : [sm, {
+                            id : 'address',
+                            header : this.i18n._("account address"),
+                            width : 200,
+                            dataIndex : 'address'
+                        }, {
+                            id : 'numMails',
+                            header : this.i18n._("message count"),
+                            width : 200,
+                            dataIndex : 'numMails'
+                        }, {
+                            id : 'formattedTotalSz',
+                            header : this.i18n._("data size (kB)"),
+                            width : 200,
+                            dataIndex : 'formattedTotalSz'
+                        }, showDetailColumn],
+                        sortField : 'address',
+                        autoExpandColumn : 'address',
+                        columnsDefaultSortable : true,
+                        plugins : [showDetailColumn],
+                        
+                        onShowDetail : function(record) {
+                            var settingsCmp = Ext.getCmp(this.panelFromSafeList.parentId);
+                            if (!this.winSafelistShowDetail) {
+                                settingsCmp.buildPanelSafelistDetails();
+                                this.winSafelistShowDetail = new Ung.EmailAddressDetails({
+                                    detailsPanel : settingsCmp.panelSafelistDetails,
+                                    settingsCmp : settingsCmp
+                                });
+                            }
+                            this.winSafelistShowDetail.showForCurrentAccount(record.get('emailAddress'));
+                            
+                        }.createDelegate(this)
+                        
+                    })
+                ]}, {
                 	title : this.i18n._('Quarantinable Addresses'),
                     items: [{
                         bodyStyle : 'padding:0px 0px 5px 5px;',
@@ -653,7 +749,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                     },  this.quarantinableAddressesGrid = new Ung.EditorGrid({
                         name : 'Quarantinable Addresses',
                         settingsCmp : this,
-                        height : 350,
+                        height : 250,
                         paginated : false,
                         emptyRow : {
                             "address" : this.i18n._("quarantineme@example.com"),
@@ -721,7 +817,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                     }, this.quarantineForwardsGrid = new Ung.EditorGrid({
                         name : 'Quarantine Forwards',
                         settingsCmp : this,
-                        height : 350,
+                        height : 250,
                         paginated : false,
                         emptyRow : {
                             "address1" : this.i18n._("distributionlistrecipient@example.com"),

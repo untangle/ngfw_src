@@ -466,10 +466,20 @@ public class MailNodeImpl extends AbstractNode
             throws NoSuchInboxException, QuarantineUserActionFailedException {
             s_quarantine.deleteInbox(account);
         }
+        
+        public void deleteInboxes(String[] accounts)
+            throws NoSuchInboxException, QuarantineUserActionFailedException {
+            s_quarantine.deleteInboxes(accounts);
+        }
 
         public void rescueInbox(String account)
             throws NoSuchInboxException, QuarantineUserActionFailedException {
             s_quarantine.rescueInbox(account);
+        }
+        
+        public void rescueInboxes(String[] accounts)
+            throws NoSuchInboxException, QuarantineUserActionFailedException {
+            s_quarantine.rescueInboxes(accounts);
         }
     }
 
@@ -564,9 +574,9 @@ public class MailNodeImpl extends AbstractNode
             return s_safelistMngr.safelistExists(safelistOwnerAddress);
         }
 
-        public List<SafelistCount> getSafelistCounts()
+        public List<SafelistCount> getUserSafelistCounts()
             throws NoSuchSafelistException, SafelistActionFailedException {
-            return s_safelistMngr.getSafelistCounts();
+            return s_safelistMngr.getUserSafelistCounts();
         }
     }
 }

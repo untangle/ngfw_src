@@ -456,7 +456,16 @@ public class Quarantine
         }
         rescue(account, ids);
     }
-
+    
+    public void rescueInboxes(String[] accounts)
+        throws NoSuchInboxException, QuarantineUserActionFailedException {
+        if (accounts != null && accounts.length > 0) {
+            for (int i = 0; i < accounts.length; i++) {
+                rescueInbox(accounts[i]);
+            }
+        }
+    }
+    
     public InboxIndex getInboxIndex(String account)
         throws NoSuchInboxException, QuarantineUserActionFailedException {
 
@@ -535,6 +544,14 @@ public class Quarantine
         }
     }
 
+    public void deleteInboxes(String[] accounts)
+        throws NoSuchInboxException, QuarantineUserActionFailedException {
+        if (accounts != null && accounts.length > 0) {
+            for (int i = 0; i < accounts.length; i++) {
+                deleteInbox(accounts[i]);
+            }
+        }
+    }
 
     //--QuarantineUserView--
 
