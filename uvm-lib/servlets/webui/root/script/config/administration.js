@@ -123,9 +123,17 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 fixed : true,
                 width : 60
             });
-            var changePasswordColumn = new Ext.grid.ChangePasswordColumn({
-                header : this.i18n._("change password")
+            var changePasswordColumn = new Ext.grid.IconColumn({
+                header : this.i18n._("change password"),
+                width : 100,
+                iconClass : 'iconEditRow',
+                handle : function(record, index) {
+                    // populate row editor
+                    this.grid.rowEditorChangePass.populate(record);
+                    this.grid.rowEditorChangePass.show();
+                }
             });
+            
             var storeData=[];
             var storeDataSet=this.getAdminSettings().users.set;
             for(var id in storeDataSet) {
@@ -2084,50 +2092,6 @@ if (!Ung.hasResource["Ung.Administration"]) {
         }
     });
     
-
-	// Grid Change Password column
-	Ext.grid.ChangePasswordColumn = function(config) {
-		Ext.apply(this, config);
-		if (!this.id) {
-			this.id = Ext.id();
-		}
-		if (!this.width) {
-			this.width = 100;
-		}
-		if (this.fixed == null) {
-			this.fixed = true;
-		}
-		if (this.sortable == null) {
-			this.sortable = false;
-		}
-		if (!this.dataIndex) {
-			this.dataIndex = null;
-		}
-		this.renderer = this.renderer.createDelegate(this);
-	};
-	Ext.grid.ChangePasswordColumn.prototype = {
-		init : function(grid) {
-			this.grid = grid;
-			this.grid.on('render', function() {
-				var view = this.grid.getView();
-				view.mainBody.on('mousedown', this.onMouseDown, this);
-			}, this);
-		},
-
-		onMouseDown : function(e, t) {
-			if (t.className && t.className.indexOf('iconEditRow') != -1) {
-				e.stopEvent();
-				var index = this.grid.getView().findRowIndex(t);
-				var record = this.grid.store.getAt(index);
-				// populate row editor
-                this.grid.rowEditorChangePass.populate(record);
-                this.grid.rowEditorChangePass.show();
-			}
-		},
-
-		renderer : function(value, metadata, record) {
-			return '<div class="iconEditRow">&nbsp;</div>';
-		}
 };
     
     
