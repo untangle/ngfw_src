@@ -83,7 +83,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
             if (reportEmail != null && reportEmail != "") {
                 var values = this.getMailSettings().reportEmail.split(',');
                 for(var i=0; i<values.length; i++) {
-                    storeData.push({id:i, emailAddress: values[i].replace(' ','')});
+                    storeData.push({emailAddress: values[i].replace(' ','')});
                 }
             }
             
@@ -164,9 +164,8 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                             autoExpandColumn : 'emailAddress',
                             data : storeData,
                             dataRoot: null,
+                            autoGenerateId: true,
                             fields : [{
-                                name : 'id'
-                            }, {
                                 name : 'emailAddress'
                             }],
                             columns : [{

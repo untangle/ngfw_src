@@ -189,10 +189,6 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     }],
                     // the list of columns for the column model
                     columns : [{
-                        id : 'id',
-                        dataIndex : 'id',
-                        hidden : true
-                    }, {
                         id : 'login',
                         header : this.i18n._("login"),
                         width : 200,

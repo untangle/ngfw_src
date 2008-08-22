@@ -258,7 +258,9 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
         	return new Ung.ButtonsWindow({
         		grid: grid,
         		sizeToGrid:true,
-        		title: i18n._('Portal Question'),
+        		settingsCmp: this,
+        		title: i18n._('OpenVPN Question...'),
+        		distributeUsb: false,
                 initButtons : function() {
                     this.subCmps.push(new Ext.Button({
                         name : 'Cancel',
@@ -279,12 +281,108 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         }.createDelegate(this)
                     }));
                 },
-                populate : function(record,fnCallback) {
-                    this.fnCallback=fnCallback;
+                onRender : function(container, position) {
+                    Ung.ButtonsWindow.superclass.onRender.call(this, container, position);
+                    this.initSubComponents.defer(1, this);
+                },
+                initSubComponents : function(container, position) {
+                    this.formPanel = new Ext.FormPanel({
+                        renderTo : this.getContentEl(),
+                        labelWidth : 75,
+                        buttonAlign : 'right',
+                        border : false,
+                        bodyStyle : 'padding:10px 10px 0px 10px;',
+                        autoScroll: true,
+                        autoHeight : true,
+                        defaults : {
+                            selectOnFocus : true,
+                            msgTarget : 'side'
+                        },
+                        items : [{
+                            xtype : 'fieldset',
+                            title :  i18n._('Question:'),
+                            autoHeight : true,
+                            items: [{
+                                bodyStyle : 'padding:0px 0px 5px 5px;',
+                                border : false,
+                                html: i18n.sprintf(this.settingsCmp.i18n._("Please choose how you would like to distribute your digital key. <br>Note: If you choose to send via email, you must supply an email address to send the email to. If you choose to download to USB key, the data will be located on the key at: %s"),
+                                    '<br>/untangle-data/openvpn/setup-<span id="openvpn_distributeWindow_client_internal_name"></span>.exe')
+                            }, {
+                                xtype : 'radio',
+                                boxLabel : this.settingsCmp.i18n._('Distribute via Email'),
+                                hideLabel : true,
+                                id: 'openvpn_distributeWindow_distributeMethod_email',
+                                name : 'distributeMethod',
+                                checked : true,
+                                value: 1,
+                                listeners : {
+                                    "check" : {
+                                        fn : function(elem, checked) {
+                                        	var emailCmp=Ext.getCmp('openvpn_distributeWindow_email_address');
+                                        	this.distributeUsb=!checked;
+                                        	if(checked) {
+                                                emailCmp.enable();
+                                                this.record.data.distributionEmail=emailCmp.getValue();
+                                        	} else {
+                                        		emailCmp.disable();
+                                        		this.record.data.distributionEmail=null;
+                                        	}
+                                        }.createDelegate(this)
+                                    }
+                                }
+                            }, {
+                                xtype : 'textfield',
+                                fieldLabel : this.settingsCmp.i18n._('Email Address'),
+                                name : 'outsideNetwork',
+                                id : 'openvpn_distributeWindow_email_address',
+                                labelStyle: "width:150px;padding-left:20px;",
+                                width: 200,
+                                allowBlank : false,
+                                blankText : this.settingsCmp.i18n._("You must specify an email address to send the key to."),
+                                listeners : {
+                                    "change" : {
+                                        fn : function(elem, newValue) {
+                                            this.record.data.distributionEmail = newValue;
+                                        }.createDelegate(this)
+                                    }
+                                }
+                            }, {
+                                xtype : 'radio',
+                                boxLabel : this.settingsCmp.i18n._('Distribute via USB Key'),
+                                hideLabel : true,
+                                name : 'distributeMethod',
+                                checked : false,
+                                value: 2
+                            }]
+                        }]
+                    });
+                    this.subCmps.push(this.formPanel);
+                },
+                populate : function(record) {
                     this.record = record;
                 },                
                 proceedAction : function() {
-                    Ung.Util.todo();
+                	if(!this.distributeUsb && this.record.data.distributionEmail==null) {
+                		Ext.MessageBox.alert(i18n._("Failure"), this.settingsCmp.i18n._("You must specify an email address to send the key to."));
+                        return;
+                	}
+                	Ext.MessageBox.wait(this.settingsCmp.i18n._("Distributing digital key..."), i18n._("Please wait"));
+                    this.settingsCmp.getRpcNode().distributeClientConfig(function(result, exception) {
+                        if (exception) {
+                            var errorMsg=(this.record.data.distributionEmail==null)?
+                               this.settingsCmp.i18n._("OpenVPN was not able to save your digital key to your USB key.  Please try again."):
+                               this.settingsCmp.i18n._("OpenVPN was not able to send your digital key via email.  Please try again.");
+                            Ext.MessageBox.alert(this.settingsCmp.i18n._("Error saving/sending key"), errorMsg);
+                            return;
+                        }
+                        var successMsg=(this.record.data.distributionEmail==null)?
+                           this.settingsCmp.i18n._("OpenVPN successfully saved your digital key to your USB key."):
+                           this.settingsCmp.i18n._("OpenVPN successfully sent your digital key via email.");
+                        // go to next step
+                        Ext.MessageBox.alert(this.settingsCmp.i18n._("Success"),successMsg, function() {
+                        	this.hide();
+                        }.createDelegate(this));
+                    }.createDelegate(this), this.record.data)
                 }
         	});
         },
@@ -366,6 +464,9 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     name : 'live'
                 }, {
                     name : 'name'
+                }, {
+                    name : 'originalName',
+                    mapping: 'name'
                 }, {
                     name : 'group'
                 }, {
@@ -977,17 +1078,20 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 Ext.MessageBox.alert(i18n._("Failed"), this.i18n._("You must create at least one group."));
         		return false;
         	}
-            
-            //TODO: make this work!
             var clientList=this.gridClients.getFullSaveList();
+            for(var i=0;i<clientList.length;i++) {
+                if(clientList[i].id>=0 && clientList[i].name!=clientList[i].originalName) {
+                    Ext.MessageBox.alert(i18n._("Failed"), i18n.sprintf(this.i18n._('You cannot change an account name after its key has been distributed. Client name should be %s.'), clientList[i].originalName));
+                    return false;
+                }
+            }            
+            //TODO: make this work!
             var groupListDeleted=this.gridGroups.getDeletedList();
             for(var i=0;i<clientList.length;i++) {
-                if(clientList[i].policy!=null) {
-                    for(var j=0;j<groupListDeleted.length;j++) {
-                        if(clientList[i].policy.id==groupListDeleted[j].id) {
-                            Ext.MessageBox.alert(i18n._("Failed"), i18n.sprintf(this.i18n._('The group "%s" cannot be deleted because it is being used by the client: %s in the Client To Site List.'), groupListDeleted[j].name, clientList[i].name));
-                            return false;
-                        }
+                for(var j=0;j<groupListDeleted.length;j++) {
+                    if(clientList[i].groupId==groupListDeleted[j].id) {
+                        Ext.MessageBox.alert(i18n._("Failed"), i18n.sprintf(this.i18n._('The group "%s" cannot be deleted because it is being used by the client: %s in the Client To Site List.'), groupListDeleted[j].name, clientList[i].name));
+                        return false;
                     }
                 }
             }
@@ -995,12 +1099,10 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             var siteList=this.gridSites.getFullSaveList();
             var groupListDeleted=this.gridGroups.getDeletedList();
             for(var i=0;i<siteList.length;i++) {
-                if(siteList[i].policy!=null) {
-                    for(var j=0;j<groupListDeleted.length;j++) {
-                        if(siteList[i].policy.id==groupListDeleted[j].id) {
-                            Ext.MessageBox.alert(i18n._("Failed"), i18n.sprintf(this.i18n._('The group "%s" cannot be deleted because it is being used by the site: %s in the Site To Site List.'), groupListDeleted[j].name, siteList[i].name));
-                            return false;
-                        }
+                for(var j=0;j<groupListDeleted.length;j++) {
+                    if(siteList[i].groupId==groupListDeleted[j].id) {
+                        Ext.MessageBox.alert(i18n._("Failed"), i18n.sprintf(this.i18n._('The group "%s" cannot be deleted because it is being used by the site: %s in the Site To Site List.'), groupListDeleted[j].name, siteList[i].name));
+                        return false;
                     }
                 }
             }
@@ -1033,7 +1135,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             if(this.configState == "SERVER_ROUTE") {
                 if (this.validate()) {
                 	var vpnSettings=this.getVpnSettings();
-                	vpnSettings.groupList.list=groupList;
+                	vpnSettings.groupList.list=this.gridGroups.getFullSaveList();
                     vpnSettings.exportedAddressList.list=this.gridExports.getFullSaveList();
                     vpnSettings.clientList.list=this.gridClients.getFullSaveList();
                     vpnSettings.siteList.list=this.gridSites.getFullSaveList();

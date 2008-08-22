@@ -98,11 +98,7 @@ if (!Ung.hasResource["Ung.Shield"]) {
                             }.createDelegate(this)
                         },],
                 // the list of columns for the column model
-                columns : [{
-                    id : 'id',
-                    dataIndex : 'id',
-                    hidden : true
-                }, enableColumn, {
+                columns : [enableColumn, {
                     id : 'address',
                     header : this.i18n._("address"),
                     width : 200,

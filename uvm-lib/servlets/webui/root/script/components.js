@@ -1949,6 +1949,7 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
     // called when the component is initialized
     initComponent : function() {
         this.rpc = {};
+        
         if (this.title == null) {
             this.title = i18n._('Event Log');
         }
@@ -2900,6 +2901,7 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
     recordJavaClass : null,
     // the map of changed data in the grid
     // used by rendering functions and by save
+    dataRoot: null,
     changedData : null,
     stripeRows : true,
     clicksToEdit : 1,
@@ -2908,10 +2910,14 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
     autoGenerateId: false,
     addedId : 0,
     generatedId:1,
+    loadMask: null,
     
 
     initComponent : function() {
         this.changedData = {};
+        if(this.loadMask===null) {
+           this.loadMask={msg: i18n._("Loading ...")} ;	
+        }
         if (this.hasReorder) {
         	this.enableDragDrop = true;
         	this.selModel= new Ext.grid.RowSelectionModel({singleSelect:true});

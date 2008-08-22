@@ -334,7 +334,6 @@ if (!Ung.hasResource["Ung.UserDirectory"]) {
         buildLocalDirectory : function() {
             var storeData=main.getAppAddressBook().getLocalUserEntries().list;
             for(var i=0; i<storeData.length; i++) {
-                storeData[i].id = i;
                 storeData[i].password = "***UNCHANGED***";
             }
             
@@ -360,9 +359,8 @@ if (!Ung.hasResource["Ung.UserDirectory"]) {
                         recordJavaClass : "com.untangle.uvm.addrbook.UserEntry",
                         data : storeData,
                         dataRoot: null,
+                        autoGenerateId: true,
                         fields : [{
-                            name : 'id'
-                        }, {
                             name : 'UID'
                         }, {
                             name : 'firstName'
