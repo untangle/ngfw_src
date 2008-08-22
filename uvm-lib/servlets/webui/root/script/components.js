@@ -3339,6 +3339,8 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 // Reads a list of strings form a json object
 // and creates a list of records
 Ung.JsonListReader = Ext.extend(Ext.data.JsonReader, {
+	autoGenerateId:true,
+	generatedId:1,
     readRecords : function(o) {
         var sid = this.meta ? this.meta.id : null;
         var recordType = this.recordType, fields = recordType.prototype.fields;
@@ -3353,8 +3355,12 @@ Ung.JsonListReader = Ext.extend(Ext.data.JsonReader, {
             var id = ((sid || sid === 0) && n[sid] !== undefined && n[sid] !== "" ? n[sid] : null);
             var fName = (fields && fields.length > 0) ? fields.items[0].name : "name"
             values[fName] = n
+            if(this.autoGenerateId) {
+                values['id'] = this.generatedId++;
+            }
             var record = new recordType(values, id);
             record.json = n;
+            
             records[records.length] = record;
         }
         return {

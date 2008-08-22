@@ -520,6 +520,12 @@ public class MailNodeImpl extends AbstractNode
             throws NoSuchSafelistException, SafelistActionFailedException {
             return s_safelistMngr.removeFromSafelist(safelistOwnerAddress, toRemove);
         }
+        
+        public String[] removeFromSafelists(String safelistOwnerAddress,
+                            String[] toRemove)
+            throws NoSuchSafelistException, SafelistActionFailedException {
+            return s_safelistMngr.removeFromSafelists(safelistOwnerAddress, toRemove);
+        }
 
         public String[] replaceSafelist(String safelistOwnerAddress,
                                         String...listContents)
@@ -562,6 +568,11 @@ public class MailNodeImpl extends AbstractNode
         public void deleteSafelist(String safelistOwnerAddress)
             throws SafelistActionFailedException {
             s_safelistMngr.deleteSafelist(safelistOwnerAddress);
+        }
+        
+        public void deleteSafelists(String[] safelistOwnerAddresses)
+            throws SafelistActionFailedException {
+            s_safelistMngr.deleteSafelists(safelistOwnerAddresses);
         }
 
         public void createSafelist(String newListOwnerAddress)

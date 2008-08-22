@@ -8,7 +8,6 @@
     
     <style type="text/css">
         @import "/ext/resources/css/ext-all.css";
-        @import "/ext/examples/multiselect/multiselect.css";
     </style>
 <c:if test="${isDebug==false}">
 	<script type="text/javascript" src="/ext/adapter/ext/ext-base.js"></script>
@@ -19,8 +18,6 @@
     <script type="text/javascript" src="script/components.js"></script>
     <script type="text/javascript" src="script/main.js"></script>
 
-    <script type="text/javascript" src="/ext/examples/multiselect/MultiSelect.js"></script>
-    <script type="text/javascript" src="/ext/examples/multiselect/DDView.js"></script>
     <!-- todo, move this to a place where it is loaded dynamically. -->
     <script type="text/javascript" src="script/timezone.js"></script>
     <script type="text/javascript" src="script/wizard.js"></script>
@@ -29,8 +26,6 @@
 	<script type="text/javascript" src="/ext/source/core/Ext.js"></script>
 	<script type="text/javascript" src="/ext/source/adapter/ext-base.js"></script>
 	<script type="text/javascript" src="/ext/ext-all-debug.js"></script>
-    <script type="text/javascript" src="/ext/examples/multiselect/MultiSelect.js"></script>
-    <script type="text/javascript" src="/ext/examples/multiselect/DDView.js"></script>
 
 	
 	<script type="text/javascript" src="/jsonrpc/jsonrpc.js"></script>

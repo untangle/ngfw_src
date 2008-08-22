@@ -59,6 +59,9 @@ public interface SafelistAdminView
      */
     public void deleteSafelist(String safelistOwnerAddress)
         throws SafelistActionFailedException;
+    
+    public void deleteSafelists(String[] safelistOwnerAddresses)
+        throws SafelistActionFailedException;
 
     /**
      * To avoid any anoying concurrency issues, callers are

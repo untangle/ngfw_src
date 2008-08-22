@@ -184,6 +184,40 @@ public class SafelistManager
         setSndrs(rcpnt, sndrs);
         return toStringArray(sndrs);
     }
+    
+    public String[] removeFromSafelists(String rcpnt, String[] obsSndrs)
+        throws NoSuchSafelistException, SafelistActionFailedException
+    {
+        ArrayList<String> sndrs = getSndrs(rcpnt);
+        if (null == sndrs) {
+            return null;
+            //throw new NoSuchSafelistException(rcpnt + " has no safelist; cannot remove " + obsSndr + " from safelist");
+        }
+        if (obsSndrs != null && obsSndrs.length > 0) {
+            m_logger.debug("recipient: " + rcpnt + ", removed: " + obsSndrs + " from safelist");
+            for (int i = 0; i < obsSndrs.length; i++) {
+                String obsSndr =  obsSndrs[i].toLowerCase();
+                if (false == sndrs.contains(obsSndr)) {
+                    // if multiple views manipulate same user and
+                    // one view has recently removed sender,
+                    // other view does not refresh itself to pick up change
+                    // - we explicitly dropped duplicates from ArrayList
+                    //   so we don't have to remove sender again
+                    m_logger.debug("recipient: " + rcpnt + ", " + obsSndr + " does not exist in safelist");
+                } else {
+                    // else recipient is removing sender
+                    sndrs.remove(obsSndr);
+                    synchronized (allSndrsLock) {
+                        removeSndr(m_allSndrs, obsSndr);
+                    }
+                }
+            }
+
+            setSndrs(rcpnt, sndrs);
+        }
+        return toStringArray(sndrs);
+    }
+    
 
     //See doc on SafelistManipulation.java
     public String[] replaceSafelist(String rcpnt, String...newSndrs)
@@ -274,6 +308,16 @@ public class SafelistManager
         setSndrs(null, null);
         renew((List<SafelistSettings>) mlSettings.getSafelistSettings());
         return;
+    }
+    
+    public void deleteSafelists(String[] rcpnts)
+        throws SafelistActionFailedException
+    {
+        if (rcpnts != null && rcpnts.length > 0) {
+            for (int i = 0; i < rcpnts.length; i++) {
+                deleteSafelist(rcpnts[i]);
+            }
+        }
     }
 
     //See doc on SafelistAdminView.java
