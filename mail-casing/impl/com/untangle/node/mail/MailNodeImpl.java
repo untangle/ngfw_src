@@ -453,6 +453,11 @@ public class MailNodeImpl extends AbstractNode
             return s_quarantine.getInboxRecordArray( account, start, limit, sortColumn, isAscending );
         }
 
+        public InboxRecordArray getInboxRecordArray( String account)
+        throws NoSuchInboxException, QuarantineUserActionFailedException
+        {
+        return s_quarantine.getInboxRecordArray( account );
+}
         public String getFormattedInboxesTotalSize(boolean inMB) {
             return s_quarantine.getFormattedInboxesTotalSize(inMB);
         }

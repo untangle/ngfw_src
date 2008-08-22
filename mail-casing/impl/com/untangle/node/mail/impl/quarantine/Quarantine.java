@@ -510,6 +510,18 @@ public class Quarantine
         
         return new InboxRecordArray( cursor.getRecords(), index.size());
     }
+    
+    public InboxRecordArray getInboxRecordArray(String account )
+            throws NoSuchInboxException, QuarantineUserActionFailedException {
+        Pair<QuarantineStore.GenericStatus, InboxIndexImpl> result = m_store
+                .getIndex(account);
+
+        checkAndThrowCommonErrors(result.a, account);
+
+        InboxIndex index = result.b;
+
+        return new InboxRecordArray(index.getAllRecords(), index.size());
+    }
 
     public void test() {
         //Do nothing.

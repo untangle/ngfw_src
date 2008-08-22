@@ -12,6 +12,8 @@ if (!Ung.hasResource["Ung.Email"]) {
         quarantineForwardsGrid : null,
         userQuarantinesGrid :null,        
         safelistDetailsWin : null,
+        quarantinesDetailsWin : null,        
+        
         initComponent : function() {
             this.breadcrumbs = [{
                 title : i18n._("Configuration"),
@@ -106,6 +108,19 @@ if (!Ung.hasResource["Ung.Email"]) {
             var mm = minutes < 10 ? "0" + minutes : minutes;
             return hh + ":" + mm;
         },
+        reloadQuarantinesDetails : function() {
+            Ext.MessageBox.wait(i18n._("Loading..."), i18n._("Please wait"));
+            this.getQuarantineMaintenenceView().getInboxRecordArray(
+                function(result, exception) {
+                    Ext.MessageBox.hide();
+                    if (exception) {
+                        Ext.MessageBox.alert(i18n._("Failed"), exception.message);
+                        return;
+                    }
+                    this.userQuarantinesDetailsGrid.store.loadData(result.inboxRecords);
+                }.createDelegate(this), this.quarantinesDetailsWin.account)
+        },
+        
         
         buildOutgoingServer : function() {
             this.panelOutgoingServer = new Ext.Panel({
@@ -346,10 +361,6 @@ if (!Ung.hasResource["Ung.Email"]) {
                 // private fields
                 name : 'From-Safe List',
                 parentId : this.getId(),
-                winSafelistShowDetail : null,
-
-                
-                
                 title : this.i18n._('From-Safe List'),
                 layout : "form",
                 bodyStyle : 'padding:5px 5px 0px 5px;',
@@ -459,16 +470,33 @@ if (!Ung.hasResource["Ung.Email"]) {
                         plugins : [showDetailColumn],
                         
                         onShowDetail : function(record) {
-                            var settingsCmp = Ext.getCmp(this.panelFromSafeList.parentId);
-                            if (!this.winSafelistShowDetail) {
-                                settingsCmp.buildUserSafelistDetailsGrid();
-                                this.winSafelistShowDetail = new Ung.EmailAddressDetails({
-                                    detailsPanel : settingsCmp.userSafelistDetailsGrid,
-                                    settingsCmp : settingsCmp
+                            if (!this.safelistDetailsWin) {
+                                this.buildUserSafelistDetailsGrid();
+                                this.safelistDetailsWin = new Ung.EmailAddressDetails({
+                                    detailsPanel : this.userSafelistDetailsGrid,
+                                    settingsCmp : this,
+                                    showForCurrentAccount : function(emailAddress) {
+                                        this.account = emailAddress;  
+                                        var newTitle = this.settingsCmp.i18n._('Email From-SafeList Details for: ') + emailAddress;
+                                        this.setTitle(newTitle);
+                                        this.detailsPanel.setTitle(newTitle);
+                                        
+                                        this.show();
+                                                
+                                        Ext.MessageBox.wait(i18n._("Loading..."), i18n._("Please wait"));
+                                        this.settingsCmp.getSafelistAdminView().getSafelistContents(
+                                            function(result, exception) {
+                                                Ext.MessageBox.hide();
+                                                if (exception) {
+                                                    Ext.MessageBox.alert(i18n._("Failed"), exception.message);
+                                                    return;
+                                                }
+                                                this.settingsCmp.userSafelistDetailsGrid.store.loadData(result);
+                                            }.createDelegate(this), emailAddress); 
+                                    }          
                                 });
                             }
-                            this.winSafelistShowDetail.showForCurrentAccount(record.get('emailAddress'));
-                            
+                            this.safelistDetailsWin.showForCurrentAccount(record.get('emailAddress'));
                         }.createDelegate(this)
                         
                     })
@@ -476,7 +504,6 @@ if (!Ung.hasResource["Ung.Email"]) {
             });
             
         },
-        // Generate Self-Signed certificate
         buildUserSafelistDetailsGrid : function() {
             var smUserSafelistDetails = new Ext.grid.CheckboxSelectionModel({singleSelect:false});
             this.userSafelistDetailsGrid = new Ung.EditorGrid({
@@ -511,7 +538,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                                 }
                                  this.userSafelistDetailsGrid.store.loadData(result);
                                 Ext.MessageBox.hide();
-                            }.createDelegate(this), this.winSafelistShowDetail.account, senders);
+                            }.createDelegate(this), this.safelistDetailsWin.account, senders);
                             
                             this.userSafelistGrid.store.load();
                     }.createDelegate(this)
@@ -522,7 +549,6 @@ if (!Ung.hasResource["Ung.Email"]) {
                     width : 200,
                     dataIndex : 'sender'
                 }],
-//                autoExpandColumn : 'sender',
                 sortField : 'sender',
                 columnsDefaultSortable : true,
                 
@@ -533,88 +559,6 @@ if (!Ung.hasResource["Ung.Email"]) {
                         fields : ['sender']
                     })
                 }) 
-                
-//                items: [{
-//		            xtype:"multiselect",
-//		            name:"multiselect",
-//                    id : 'email_safelist_details_panel',
-//                    hideLabel : true,
-//		            valueField:"sender",
-//		            displayField:"sender",
-//		            width:350,
-//		            height:400,
-//		            allowBlank:false,
-//                    tbar : [{
-//                        text : this.i18n._('Purge Selected'),
-//                        tooltip : this.i18n._('Purge Selected'),
-//                        iconCls : 'purgeIcon',
-//                        name : 'Purge Selected',
-//                        parentId : this.getId(),
-//                        handler : function() {
-//                                var selectedRecords = this.userSafelistGrid.getSelectionModel().getSelections();
-//                                if(selectedRecords === undefined || selectedRecords.length == 0) {
-//                                    return;
-//                                }
-//                                var accounts = [];
-//                                for(var i=0; i<selectedRecords.length; i++) {
-//                                    accounts[i] = selectedRecords[i].data.emailAddress;
-//                                }
-//                                
-//                                Ext.MessageBox.wait(this.i18n._("Purging..."), this.i18n._("Please wait"));
-//                                this.getSafelistAdminView().deleteSafelist(function(result, exception) {
-//                                    if (exception) {
-//                                        Ext.MessageBox.alert(i18n._("Failed"), exception.message);
-//                                        return;
-//                                    }
-//                                    Ext.MessageBox.hide();
-//                                }.createDelegate(this), accounts);
-//                                
-//                                this.userSafelistGrid.store.load();
-//                        	
-//                        	
-//                            Ext.MessageBox.show({
-//                               buttons : Ext.Msg.CANCEL,
-//                               modal : true,
-//                               wait : true,
-//                               waitConfig: {interval: 100},
-//                               progressText : this.i18n._('Removing...'),
-//                               width : 300
-//                            });
-//                            
-//                            var multiselectCmp = Ext.getCmp('email_safelist_details_panel');
-//                            var emails = multiselectCmp.view.getSelectedRecords();
-//                            this.purgeSemaphore2 = emails.length;
-//                            for(var i=0; i<emails.length; i++) {
-//                                this.getSafelistAdminView().removeFromSafelist(function(result, exception) {
-//                                    if (exception) {
-//                                        Ext.MessageBox.alert(i18n._("Failed"), exception.message);
-//                                        return;
-//                                    }
-//        
-//                                    this.purgeSemaphore2--;
-//                                    if (this.purgeSemaphore2 <= 0) {
-//                                        var emails = [];
-//                                        for(var j=0; j<result.length; j++) {
-//                                            emails.push([result[j], result[j]]);
-//                                        }
-//                                        multiselectCmp.store.loadData(emails);
-//                                        Ext.MessageBox.hide();
-//                                    }
-//                                }.createDelegate(this), this.winSafelistShowDetail.account, emails[i].data.sender);
-//                            }
-//                            
-//                            this.userSafelistGrid.store.load();
-//                            
-//                        }.createDelegate(this)
-//                    }], 
-//                    store : new Ext.data.Store({
-//                        proxy : new Ext.data.MemoryProxy(),
-//                        reader : new Ung.JsonListReader({
-//                            root : null,
-//                            fields : ['sender']
-//                        })
-//                    }) 
-//		        }]
             });
         },
 
@@ -759,7 +703,6 @@ if (!Ung.hasResource["Ung.Email"]) {
                         	xtype: 'tbfill'
                         }, {
                         	xtype: 'tbtext', 
-                        	// TODO do async
                         	text: i18n.sprintf(this.i18n._('Total Disk Space Used: %s MB'), i18n.numberFormat((this.getQuarantineMaintenenceView().getInboxesTotalSize()/(1024 * 1024)).toFixed(3)))
                         }],
                         fields : [{
@@ -794,9 +737,33 @@ if (!Ung.hasResource["Ung.Email"]) {
                         plugins : [showDetailColumn],
                         
                         onShowDetail : function(record) {
-                        	
-                        	//TODO
-                            
+                            if (!this.quarantinesDetailsWin) {
+                                this.buildUserQuarantinesGrid();
+                                this.quarantinesDetailsWin = new Ung.EmailAddressDetails({
+                                    detailsPanel : this.userQuarantinesDetailsGrid,
+                                    settingsCmp : this,
+                                    showForCurrentAccount : function(emailAddress) {
+                                        this.account = emailAddress;  
+                                        var newTitle = this.settingsCmp.i18n._('Email Quarantine Details for: ') + emailAddress;
+                                        this.setTitle(newTitle);
+                                        this.detailsPanel.setTitle(newTitle);
+                                        
+                                        this.show();
+                                                
+                                        Ext.MessageBox.wait(i18n._("Loading..."), i18n._("Please wait"));
+                                        this.settingsCmp.getQuarantineMaintenenceView().getInboxRecordArray(
+                                            function(result, exception) {
+                                                Ext.MessageBox.hide();
+                                                if (exception) {
+                                                    Ext.MessageBox.alert(i18n._("Failed"), exception.message);
+                                                    return;
+                                                }
+                                                this.settingsCmp.userQuarantinesDetailsGrid.store.loadData(result.inboxRecords);
+                                            }.createDelegate(this), emailAddress); 
+                                    }          
+                                });
+                            }
+                            this.quarantinesDetailsWin.showForCurrentAccount(record.get('address'));
                         }.createDelegate(this)
                         
                     })
@@ -940,6 +907,156 @@ if (!Ung.hasResource["Ung.Email"]) {
                 }]
             });
         },
+        
+        buildUserQuarantinesGrid : function() {
+            var smUserQuarantinesDetails = new Ext.grid.CheckboxSelectionModel({singleSelect:false});
+            this.userQuarantinesDetailsGrid = new Ung.EditorGrid({
+                name : 'userQuarantinesDetailsGrid',
+                sm : smUserQuarantinesDetails,
+                hasEdit : false,
+                hasAdd : false,
+                hasDelete : false,
+                paginated : false,
+                autoGenerateId : true,
+                
+                tbar : [{
+                    text : this.i18n._('Purge Selected'),
+                    tooltip : this.i18n._('Purge Selected'),
+                    iconCls : 'purgeIcon',
+                    name : 'Purge Selected',
+                    parentId : this.getId(),
+                    handler : function() {
+                        var selectedRecords = this.userQuarantinesDetailsGrid.getSelectionModel().getSelections();
+                        if(selectedRecords === undefined || selectedRecords.length == 0) {
+                            return;
+                        }
+                        var emails = [];
+                        for(var i=0; i<selectedRecords.length; i++) {
+                            emails[i] = selectedRecords[i].data.mailID;
+                        }
+                        
+                        Ext.MessageBox.wait(this.i18n._("Purging..."), this.i18n._("Please wait"));
+                        this.getQuarantineMaintenenceView().purge(function(result, exception) {
+                            if (exception) {
+                                Ext.MessageBox.alert(i18n._("Failed"), exception.message);
+                                return;
+                            }
+                            //reload Quarantines Details
+                            this.reloadQuarantinesDetails();
+                        }.createDelegate(this), this.quarantinesDetailsWin.account, emails);
+                        
+                        this.userQuarantinesGrid.store.load();
+                    }.createDelegate(this)
+                }, {
+                    text : this.i18n._('Release Selected'),
+                    tooltip : this.i18n._('Release Selected'),
+                    iconCls : 'releaseIcon',
+                    name : 'Release Selected',
+                    parentId : this.getId(),
+                    handler : function() {
+                        var selectedRecords = this.userQuarantinesDetailsGrid.getSelectionModel().getSelections();
+                        if(selectedRecords === undefined || selectedRecords.length == 0) {
+                            return;
+                        }
+                        var emails = [];
+                        for(var i=0; i<selectedRecords.length; i++) {
+                            emails[i] = selectedRecords[i].data.mailID;
+                        }
+                        
+                        Ext.MessageBox.wait(this.i18n._("Releasing..."), this.i18n._("Please wait"));
+                        this.getQuarantineMaintenenceView().rescue(function(result, exception) {
+                            if (exception) {
+                                Ext.MessageBox.alert(i18n._("Failed"), exception.message);
+                                return;
+                            }
+                            
+                            //reload Quarantines Details
+                            this.reloadQuarantinesDetails();
+                        }.createDelegate(this), this.quarantinesDetailsWin.account, emails);
+                        
+                        this.userQuarantinesGrid.store.load();
+                    }.createDelegate(this)
+                }], 
+                fields : [{
+                    name : 'mailID'
+                }, {
+                    name : 'internDateAsDate'
+                }, {
+                    name : 'size'
+                }, {
+                    name : 'mailSummary'
+                }],
+                columns : [smUserQuarantinesDetails, {
+                    id : 'mailID',
+                    header : this.i18n._("MailID"),
+                    width : 150,
+                    dataIndex : 'mailID'
+                }, {
+                    id : 'internDateAsDate',
+                    header : this.i18n._("Date"),
+                    width : 150,
+                    dataIndex : 'internDateAsDate',
+                    renderer : function(value) {
+                        return i18n.timestampFormat(value);
+                    }
+                }, {
+                    id : 'sender',
+                    header : this.i18n._("Sender"),
+                    width : 150,
+                    dataIndex : 'mailSummary',
+                    renderer : function(value) {
+                        return value.sender;
+                    }
+                }, {
+                    id : 'subject',
+                    header : this.i18n._("Subject"),
+                    width : 150,
+                    dataIndex : 'mailSummary',
+                    renderer : function(value) {
+                        return value.subject;
+                    }
+                }, {
+                    id : 'size',
+                    header : this.i18n._("Size (KB)"),
+                    width : 85,
+                    dataIndex : 'size',
+                    renderer : function(value) {
+                        return i18n.numberFormat((value /1024.0).toFixed(3));
+                    }
+                    
+                }, {
+                    id : 'category',
+                    header : this.i18n._("Category"),
+                    width : 85,
+                    dataIndex : 'mailSummary',
+                    renderer : function(value) {
+                        return value.quarantineCategory;
+                    }
+                }, {
+                    id : 'detail',
+                    header : this.i18n._("Detail"),
+                    width : 85,
+                    dataIndex : 'mailSummary',
+                    renderer : function(value) {
+                    	var detail = value.quarantineDetail;
+                        if (isNaN(parseFloat(detail))) {
+                        	if (detail == "Message determined to be a fraud attempt") {
+                        		return this.i18n._("Identity Theft");
+                        	}
+                        } else {
+                            return i18n.numberFormat(parseFloat(detail).toFixed(3));
+                        }
+                        return detail;
+                    }
+                }],
+                sortField : 'internDateAsDate',
+                columnsDefaultSortable : true,
+                autoExpandColumn : 'subject',
+                data : [],
+                dataRoot: null
+            });
+        },
+        
 
         validateClient : function() {
             return  this.validateOutgoingServer();
@@ -1119,24 +1236,10 @@ if (!Ung.hasResource["Ung.Email"]) {
                 }.createDelegate(this)
             }));
         },
+        // to override
         showForCurrentAccount : function(emailAddress) {
             this.account = emailAddress;  
-            var newTitle = this.settingsCmp.i18n._('Email From-SafeList Details for: ') + emailAddress;
-            this.setTitle(newTitle);
-            this.detailsPanel.setTitle(newTitle);
-            
             this.show();
-                    
-            Ext.MessageBox.wait(i18n._("Loading..."), i18n._("Please wait"));
-            this.settingsCmp.getSafelistAdminView().getSafelistContents(
-                function(result, exception) {
-                    Ext.MessageBox.hide();
-                    if (exception) {
-                        Ext.MessageBox.alert(i18n._("Failed"), exception.message);
-                        return;
-                    }
-                    this.settingsCmp.userSafelistDetailsGrid.store.loadData(result);
-                }.createDelegate(this), emailAddress); 
         },        	
         // the proceed actions
         // to override

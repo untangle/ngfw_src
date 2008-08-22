@@ -56,6 +56,9 @@ public interface QuarantineMaintenenceView
     public InboxRecordArray getInboxRecordArray( String account, int start, int limit, String sortColumn,
                                                  boolean isAscending )
         throws NoSuchInboxException, QuarantineUserActionFailedException;
+    
+    public InboxRecordArray getInboxRecordArray( String account)
+        throws NoSuchInboxException, QuarantineUserActionFailedException;
 
     /**
      * Total size of the entire store
