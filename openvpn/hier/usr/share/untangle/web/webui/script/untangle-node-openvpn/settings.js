@@ -1085,7 +1085,6 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     return false;
                 }
             }            
-            //TODO: make this work!
             var groupListDeleted=this.gridGroups.getDeletedList();
             for(var i=0;i<clientList.length;i++) {
                 for(var j=0;j<groupListDeleted.length;j++) {
@@ -1095,7 +1094,6 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     }
                 }
             }
-            //TODO: make this work!
             var siteList=this.gridSites.getFullSaveList();
             var groupListDeleted=this.gridGroups.getDeletedList();
             for(var i=0;i<siteList.length;i++) {
