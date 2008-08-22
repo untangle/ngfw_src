@@ -2,7 +2,6 @@ Ext.namespace('Ung');
 // The location of the blank pixel image
 Ung.Wizard = Ext.extend(Ext.Panel, {
     currentPage : 0,
-
     constructor : function( config )
     {
         this.cards = config.cards;
@@ -20,7 +19,7 @@ Ung.Wizard = Ext.extend(Ext.Panel, {
             layoutConfig : { columns : 1 },
             region : "west",
             width : 200,
-			bodyStyle:{background:'none','background-image':'../images/BrandingLogo.gif','padding':'20 0 0 0'},
+			bodyStyle:{background:'none','padding':'20 0 0 0'},
 			border:false
         } );
 
@@ -59,6 +58,7 @@ Ung.Wizard = Ext.extend(Ext.Panel, {
             activeItem : 0,
             region : "center",
             title : "&nbsp;",
+			header:false,
             defaults : this.cardDefaults, 
             bbar : [ '->', this.previousButton, this.nextButton ],
 			border:false
@@ -118,15 +118,27 @@ Ung.Wizard = Ext.extend(Ext.Panel, {
 
         var hasChanged = false;
         var handler = null;
+		var validationPassed = true;
 
-        if ( this.currentPage < index || (index==this.currentPage && this.currentPage==this.cards.length-1)) {
-            /* moving forward, call the forward handler */
-            hasChanged = true;
-            handler = this.cards[this.currentPage].onNext;
-        } else if ( this.currentPage > index ) {
-            hasChanged = true;
-            handler = this.cards[this.currentPage].onPrevious;
-        }
+		if(validationPassed === true){
+	        if ( this.currentPage < index ) {
+				if(this.cards[this.currentPage].onValidate){
+					validationPassed = this.cards[this.currentPage].onValidate();
+				}			
+				if(validationPassed === true){
+		            /* moving forward, call the forward handler */
+		            hasChanged = true;
+		            handler = this.cards[this.currentPage].onNext;				
+				}else{
+					return false;
+				}
+	        } else if ( this.currentPage > index ) {
+	            hasChanged = true;
+	            handler = this.cards[this.currentPage].onPrevious;
+	        }
+		}else{
+			return;
+		}
 
         if ( this.disableNext == true ) handler = null;
 
@@ -134,6 +146,7 @@ Ung.Wizard = Ext.extend(Ext.Panel, {
         if ( handler ) {
             handler( this.afterChangeHandler.createDelegate( this, [ index, hasChanged ] ));
         } else {
+			//where are we going if there is no handler? - karthik
             this.afterChangeHandler( index, hasChanged );
         }
     },
@@ -146,7 +159,7 @@ Ung.Wizard = Ext.extend(Ext.Panel, {
         var card = this.cards[this.currentPage];
         handler = card.onLoad;
 
-        this.contentPanel.setTitle( this.getCardTitle( this.currentPage, card ));
+        //this.contentPanel.setTitle( this.getCardTitle( this.currentPage, card ));//removing title - karthik
         //this.contentPanel.setTitle( "" );
         
         if ( hasChanged && ( handler )) {
@@ -213,3 +226,30 @@ Ung.Wizard = Ext.extend(Ext.Panel, {
         return title;
     }
 });
+function _validateinvalidate(items,methodname){
+	var rv = true;
+	for(var i=0;i<items.length;i++){
+		switch(items[i].getXType()){
+			case 'fieldset':
+				if(!_validateinvalidate(items[i].items.items,methodname)){
+					rv = false;
+				}
+			break;
+			default:
+				if(items[i].validate){
+					if(!items[i][methodname].call(items[i])){
+						rv = false;
+					}
+				}			
+			break;		
+		}
+	}
+	return rv;
+}
+function _invalidate(items){
+	return _validateinvalidate(items,'clearInvalid')
+}
+function _validate(items){
+	return _validateinvalidate(items,'validate')
+
+}
