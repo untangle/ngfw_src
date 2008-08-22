@@ -630,7 +630,6 @@ if (!Ung.hasResource["Ung.Email"]) {
                     height : 300,
                     items : [ this.userQuarantinesGrid = new Ung.EditorGrid({
                         name : 'User Quarantines',
-//                        sm : new Ext.grid.RowSelectionModel({singleSelect:false}),
                         sm : sm,
                         hasEdit : false,
                         hasAdd : false,
@@ -697,13 +696,19 @@ if (!Ung.hasResource["Ung.Email"]) {
                                 this.userQuarantinesGrid.store.load();
                                 
                             }.createDelegate(this)
+                        }, {
+                        	xtype: 'tbfill'
+                        }, {
+                        	xtype: 'tbtext', 
+                        	// TODO do async
+                        	text: i18n.sprintf(this.i18n._('Total Disk Space Used: %s MB'), i18n.numberFormat((this.getQuarantineMaintenenceView().getInboxesTotalSize()/(1024 * 1024)).toFixed(3)))
                         }],
                         fields : [{
                             name : 'address'
                         }, {
                             name : 'numMails'
                         }, {
-                            name : 'formattedTotalSz'
+                            name : 'totalSz'
                         }],
                         columns : [sm, {
                             id : 'address',
@@ -716,10 +721,13 @@ if (!Ung.hasResource["Ung.Email"]) {
                             width : 200,
                             dataIndex : 'numMails'
                         }, {
-                            id : 'formattedTotalSz',
+                            id : 'totalSz',
                             header : this.i18n._("data size (kB)"),
                             width : 200,
-                            dataIndex : 'formattedTotalSz'
+                            dataIndex : 'totalSz',
+                            renderer : function(value) {
+                                return i18n.numberFormat((value /1024.0).toFixed(3));
+                            }
                         }, showDetailColumn],
                         sortField : 'address',
                         autoExpandColumn : 'address',
