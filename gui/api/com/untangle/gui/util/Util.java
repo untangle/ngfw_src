@@ -49,6 +49,7 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
@@ -76,6 +77,8 @@ public class Util {
     private static final String BASENAME_OFFICIAL_PREFIX = "i18n.official";
 
     private static final Logger logger = Logger.getLogger(Util.class);
+
+    private static final List<Localizable> localizable = new ArrayList<Localizable>();
 
     private Util(){}
 
@@ -511,9 +514,17 @@ public class Util {
         return stringBuffer.toString();
     }
 
+    public static void addLocalizable(Localizable l)
+    {
+        localizable.add(l);
+    }
+
     public static void setLocale(Locale l)
     {
         i18nMap = getTranslations(l);
+        for (Localizable lable : localizable) {
+            lable.reloadStrings();
+        }
     }
 
     public static String tr(String value)
@@ -529,7 +540,6 @@ public class Util {
     {
         return tr(value, new Object[]{ o1 });
     }
-
 
     private static Map<String, String> getTranslations(Locale locale)
     {

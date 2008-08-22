@@ -39,6 +39,7 @@ import java.io.FileWriter;
 import javax.swing.UIManager;
 import javax.swing.plaf.ColorUIResource;
 
+import com.untangle.gui.util.Util;
 import com.untangle.gui.widgets.dialogs.MTwoButtonJDialog;
 import com.untangle.gui.widgets.wizard.MWizardJDialog;
 
@@ -52,11 +53,22 @@ public class InstallWizard extends MWizardJDialog {
         this.args = args;
         setModal(true);
         setTitle("Untangle Platform Install Wizard");
-        addWizardPageJPanel(new InstallWelcomeJPanel(),       "1. Language", false, false);
-        addWizardPageJPanel(new InstallLicenseJPanel(),       "2. License Agreement", false, false);
-        addWizardPageJPanel(new InstallDiskJPanel(this),      "3. Choose Disk", false, false);
-        addWizardPageJPanel(new InstallBenchmarkJPanel(this), "4. Hardware Test", false, false);
-        addWizardPageJPanel(new InstallWarningJPanel(),       "5. Final Warning", false, false);
+
+        InstallWelcomeJPanel iwjp = new InstallWelcomeJPanel();
+        Util.addLocalizable(iwjp);
+        addWizardPageJPanel(iwjp, "1. Language", false, false);
+        InstallLicenseJPanel iljp = new InstallLicenseJPanel();
+        Util.addLocalizable(iljp);
+        addWizardPageJPanel(iljp, "2. License Agreement", false, false);
+        InstallDiskJPanel idjp = new InstallDiskJPanel(this);
+        Util.addLocalizable(idjp);
+        addWizardPageJPanel(idjp, "3. Choose Disk", false, false);
+        InstallBenchmarkJPanel ibjp = new InstallBenchmarkJPanel(this);
+        Util.addLocalizable(ibjp);
+        addWizardPageJPanel(ibjp, "4. Hardware Test", false, false);
+        InstallWarningJPanel iwajp = new InstallWarningJPanel();
+        Util.addLocalizable(iwajp);
+        addWizardPageJPanel(iwajp, "5. Final Warning", false, false);
     }
 
     private static String targetDisk;
@@ -127,5 +139,3 @@ public class InstallWizard extends MWizardJDialog {
         new InstallWizard(args).setVisible(true);
     }
 }
-
-
