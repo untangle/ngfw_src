@@ -88,6 +88,9 @@
                   <Connection code="localeRenderer" type="code"/>
                 </Property>
               </Properties>
+              <Events>
+                <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="jComboBox1ItemStateChanged"/>
+              </Events>
             </Component>
           </SubComponents>
         </Container>

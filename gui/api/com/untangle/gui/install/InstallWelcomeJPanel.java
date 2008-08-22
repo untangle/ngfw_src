@@ -50,6 +50,7 @@ import javax.swing.ListCellRenderer;
 import javax.swing.SwingConstants;
 import javax.swing.plaf.basic.BasicComboBoxRenderer;
 
+import com.untangle.gui.util.Util;
 import com.untangle.gui.widgets.wizard.MWizardPageJPanel;
 
 public class InstallWelcomeJPanel extends MWizardPageJPanel {
@@ -131,6 +132,12 @@ public class InstallWelcomeJPanel extends MWizardPageJPanel {
         jComboBox1.setMinimumSize(new java.awt.Dimension(128, 24));
         jComboBox1.setPreferredSize(new java.awt.Dimension(150, 24));
         jComboBox1.setRenderer(localeRenderer);
+        jComboBox1.addItemListener(new java.awt.event.ItemListener() {
+                public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                    jComboBox1ItemStateChanged(evt);
+                }
+            });
+
         jPanel1.add(jComboBox1);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -161,6 +168,16 @@ public class InstallWelcomeJPanel extends MWizardPageJPanel {
 
     }// </editor-fold>//GEN-END:initComponents
 
+    private void jComboBox1ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jComboBox1ItemStateChanged
+        if (java.awt.event.ItemEvent.SELECTED == evt.getStateChange()) {
+            Object o = evt.getItem();
+            if (o instanceof Locale) {
+                Locale l = (Locale)o;
+                Util.setLocale(l);
+            }
+        }
+    }//GEN-LAST:event_jComboBox1ItemStateChanged
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel backgroundJPabel;
     private javax.swing.JPanel contentJPanel;
@@ -170,5 +187,4 @@ public class InstallWelcomeJPanel extends MWizardPageJPanel {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel jPanel1;
     // End of variables declaration//GEN-END:variables
-
 }

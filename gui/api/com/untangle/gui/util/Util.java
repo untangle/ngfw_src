@@ -49,7 +49,12 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.ResourceBundle;
 import java.util.StringTokenizer;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
@@ -64,8 +69,11 @@ import javax.swing.SwingUtilities;
 import javax.swing.text.JTextComponent;
 
 import org.apache.log4j.Logger;
+
 public class Util {
     private static final String PROPERTY_IS_DEVEL = "com.untangle.isDevel";
+    private static final String BASENAME_COMMUNITY_PREFIX = "i18n.community";
+    private static final String BASENAME_OFFICIAL_PREFIX = "i18n.official";
 
     private static final Logger logger = Logger.getLogger(Util.class);
 
@@ -129,6 +137,8 @@ public class Util {
         }
         return imageIcons;
     }
+
+    private static Map<String, String> i18nMap = new HashMap<String, String>();
 
     private static ImageIcon iconOnState;
     private static ImageIcon iconOffState;
@@ -499,5 +509,61 @@ public class Util {
             }
         }
         return stringBuffer.toString();
+    }
+
+    public static void setLocale(Locale l)
+    {
+        i18nMap = getTranslations(l);
+    }
+
+    public static String tr(String value)
+    {
+        String tr = i18nMap.get(value);
+        if (tr == null) {
+            tr = value;
+        }
+        return tr;
+    }
+
+    public static String tr(String value, Object o1)
+    {
+        return tr(value, new Object[]{ o1 });
+    }
+
+
+    private static Map<String, String> getTranslations(Locale locale)
+    {
+        String module = "untangle-install-wizard";
+        String ungPrefixedModule = "ung_" + module;
+        Map<String, String> map = new HashMap<String, String>();
+
+        try {
+            Class clazz = loadResourceBundleClass(BASENAME_COMMUNITY_PREFIX + "." + ungPrefixedModule + "_" + locale.getLanguage());
+            if (clazz == null) {
+                // fall back to official translations
+                clazz = loadResourceBundleClass(BASENAME_OFFICIAL_PREFIX + "." + ungPrefixedModule + "_" + locale.getLanguage());
+            }
+            if (clazz != null) {
+                ResourceBundle resourceBundle = (ResourceBundle)clazz.newInstance();
+                if (resourceBundle != null) {
+                    for (Enumeration<String> enumeration = resourceBundle.getKeys(); enumeration.hasMoreElements();) {
+                        String key = enumeration.nextElement();
+                        map.put(key, resourceBundle.getString(key));
+                    }
+                }
+            }
+        } catch (Exception e) {
+        }
+
+        return map;
+    }
+
+    private static Class loadResourceBundleClass(String name) {
+        Class clazz = null;
+        try {
+            clazz =Thread.currentThread().getContextClassLoader().loadClass(name);
+        } catch (ClassNotFoundException e1) {
+        }
+        return clazz;
     }
 }
