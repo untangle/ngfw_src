@@ -1,4 +1,4 @@
-package com.untangle.uvm.webui.servlet;
+package com.untangle.uvm.setup.servlet;
 
 import java.io.IOException;
 
@@ -26,18 +26,6 @@ import com.untangle.uvm.networking.Interface;
 import com.untangle.uvm.security.RegistrationInfo;
 import com.untangle.uvm.toolbox.UpgradeSettings;
 
-import com.untangle.uvm.webui.jabsorb.serializer.EnumSerializer;
-import com.untangle.uvm.webui.jabsorb.serializer.ExtendedListSerializer;
-import com.untangle.uvm.webui.jabsorb.serializer.ExtendedSetSerializer;
-import com.untangle.uvm.webui.jabsorb.serializer.HostNameSerializer;
-import com.untangle.uvm.webui.jabsorb.serializer.IPMaddrSerializer;
-import com.untangle.uvm.webui.jabsorb.serializer.IPaddrSerializer;
-import com.untangle.uvm.webui.jabsorb.serializer.LazyInitializerSerializer;
-import com.untangle.uvm.webui.jabsorb.serializer.MimeTypeSerializer;
-import com.untangle.uvm.webui.jabsorb.serializer.RFC2253NameSerializer;
-import com.untangle.uvm.webui.jabsorb.serializer.TimeZoneSerializer;
-import com.untangle.uvm.webui.jabsorb.serializer.URLSerializer;
-
 /**
  * A servlet which will display the start page
  *
@@ -55,21 +43,6 @@ public class SetupServlet extends HttpServlet
         JSONSerializer js = new JSONSerializer();
         try {
             js.registerDefaultSerializers();
-
-            // general serializers
-            js.registerSerializer(new EnumSerializer());
-            js.registerSerializer(new URLSerializer());
-            // uvm related serializers
-            js.registerSerializer(new IPMaddrSerializer());
-            js.registerSerializer(new IPaddrSerializer());
-            js.registerSerializer(new HostNameSerializer());
-            js.registerSerializer(new TimeZoneSerializer());
-            js.registerSerializer(new MimeTypeSerializer());
-            js.registerSerializer(new RFC2253NameSerializer());
-            // hibernate related serializers
-            js.registerSerializer(new LazyInitializerSerializer());
-            js.registerSerializer(new ExtendedListSerializer());
-            js.registerSerializer(new ExtendedSetSerializer());
         } catch ( Exception e ) {
             throw new ServletException( "Unable to load the default serializer", e );
         }
