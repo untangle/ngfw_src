@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -38,10 +38,15 @@ import java.text.DecimalFormat;
 import javax.swing.JProgressBar;
 import javax.swing.SwingUtilities;
 
+import com.untangle.gui.util.Localizable;
+import com.untangle.gui.util.Util;
 import com.untangle.gui.widgets.dialogs.*;
 import com.untangle.gui.widgets.wizard.*;
 
-public class InstallBenchmarkJPanel extends MWizardPageJPanel {
+public class InstallBenchmarkJPanel
+    extends MWizardPageJPanel
+    implements Localizable
+{
 
     private static final String FAILURE_MESSAGE = "<html><font color=\"#FF0000\"><b>Warning!</b><br>"
         + "Your hardware does not meet minimum requirements. This system may not function properly.<br>"
@@ -80,6 +85,19 @@ public class InstallBenchmarkJPanel extends MWizardPageJPanel {
     public InstallBenchmarkJPanel(InstallWizard installWizard) {
         this.installWizard = installWizard;
         initComponents();
+    }
+
+    public void reloadStrings()
+    {
+        jLabel1.setText(Util.tr("These tests show you if your computer meets minimum hardware requirements."));
+        memoryNameJLabel.setText(Util.tr("Main Memory:"));
+        memoryJProgressBar.setString(Util.tr("Memory Test"));
+        cpuNameJLabel.setText(Util.tr("CPU:"));
+        cpuJProgressBar.setString(Util.tr("CPU Test"));
+        diskNameJLabel.setText(Util.tr("Hard Disk:"));
+        diskJProgressBar.setString(Util.tr("Hard Disk Test"));
+        nicNameJLabel.setText(Util.tr("Network Interfaces:"));
+        nicJProgressBar.setString(Util.tr("Memory Test"));
     }
 
     protected void initialFocus(){
@@ -269,7 +287,8 @@ public class InstallBenchmarkJPanel extends MWizardPageJPanel {
         return new Object[]{resultString,resultValue,resultR,resultG,resultB};
     }
 
-    private void initComponents() {//GEN-BEGIN:initComponents
+    // <editor-fold defaultstate="collapsed" desc=" Generated Code ">//GEN-BEGIN:initComponents
+    private void initComponents() {
         java.awt.GridBagConstraints gridBagConstraints;
 
         contentJPanel = new javax.swing.JPanel();
@@ -304,7 +323,7 @@ public class InstallBenchmarkJPanel extends MWizardPageJPanel {
 
         contentJPanel.setOpaque(false);
         jLabel1.setFont(new java.awt.Font("Dialog", 0, 12));
-        jLabel1.setText("<html>These tests show you if your computer meets minimum hardware requirements.</html>");
+        jLabel1.setText(Util.tr("These tests show you if your computer meets minimum hardware requirements."));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -317,7 +336,7 @@ public class InstallBenchmarkJPanel extends MWizardPageJPanel {
 
         memoryJPanel.setOpaque(false);
         memoryNameJLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        memoryNameJLabel.setText("Main Memory:");
+        memoryNameJLabel.setText(Util.tr("Main Memory:"));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -343,7 +362,7 @@ public class InstallBenchmarkJPanel extends MWizardPageJPanel {
         memoryJProgressBar.setMinimumSize(new java.awt.Dimension(480, 20));
         memoryJProgressBar.setPreferredSize(new java.awt.Dimension(480, 20));
         memoryJProgressBar.setRequestFocusEnabled(false);
-        memoryJProgressBar.setString("Memory Test");
+        memoryJProgressBar.setString(Util.tr("Memory Test"));
         memoryJProgressBar.setStringPainted(true);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -370,7 +389,7 @@ public class InstallBenchmarkJPanel extends MWizardPageJPanel {
 
         cpuJPanel.setOpaque(false);
         cpuNameJLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        cpuNameJLabel.setText("CPU:");
+        cpuNameJLabel.setText(Util.tr("CPU:"));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -396,7 +415,7 @@ public class InstallBenchmarkJPanel extends MWizardPageJPanel {
         cpuJProgressBar.setMinimumSize(new java.awt.Dimension(480, 20));
         cpuJProgressBar.setPreferredSize(new java.awt.Dimension(480, 20));
         cpuJProgressBar.setRequestFocusEnabled(false);
-        cpuJProgressBar.setString("CPU Test");
+        cpuJProgressBar.setString(Util.tr("CPU Test"));
         cpuJProgressBar.setStringPainted(true);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -423,7 +442,7 @@ public class InstallBenchmarkJPanel extends MWizardPageJPanel {
 
         diskJPanel.setOpaque(false);
         diskNameJLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        diskNameJLabel.setText("Hard Disk:");
+        diskNameJLabel.setText(Util.tr("Hard Disk:"));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -449,7 +468,7 @@ public class InstallBenchmarkJPanel extends MWizardPageJPanel {
         diskJProgressBar.setMinimumSize(new java.awt.Dimension(480, 20));
         diskJProgressBar.setPreferredSize(new java.awt.Dimension(480, 20));
         diskJProgressBar.setRequestFocusEnabled(false);
-        diskJProgressBar.setString("Hard Disk Test");
+        diskJProgressBar.setString(Util.tr("Hard Disk Test"));
         diskJProgressBar.setStringPainted(true);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -476,7 +495,7 @@ public class InstallBenchmarkJPanel extends MWizardPageJPanel {
 
         nicJPanel.setOpaque(false);
         nicNameJLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        nicNameJLabel.setText("Network Interfaces:");
+        nicNameJLabel.setText(Util.tr("Network Interfaces:"));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -486,7 +505,7 @@ public class InstallBenchmarkJPanel extends MWizardPageJPanel {
 
         nicResultJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
         nicResultJLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        nicResultJLabel.setText("3 Interfaces");
+        nicResultJLabel.setText("3");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 0;
@@ -502,7 +521,7 @@ public class InstallBenchmarkJPanel extends MWizardPageJPanel {
         nicJProgressBar.setMinimumSize(new java.awt.Dimension(480, 20));
         nicJProgressBar.setPreferredSize(new java.awt.Dimension(480, 20));
         nicJProgressBar.setRequestFocusEnabled(false);
-        nicJProgressBar.setString("Network Interface Test");
+        nicJProgressBar.setString(Util.tr("Memory Test"));
         nicJProgressBar.setStringPainted(true);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -552,7 +571,7 @@ public class InstallBenchmarkJPanel extends MWizardPageJPanel {
         gridBagConstraints.weightx = 1.0;
         add(backgroundJPabel, gridBagConstraints);
 
-    }//GEN-END:initComponents
+    }// </editor-fold>//GEN-END:initComponents
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

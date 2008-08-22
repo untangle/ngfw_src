@@ -38,13 +38,17 @@ import java.io.*;
 import java.util.Properties;
 import javax.swing.*;
 
+import com.untangle.gui.util.Localizable;
 import com.untangle.gui.util.Util;
 import com.untangle.gui.widgets.dialogs.*;
 import com.untangle.gui.widgets.wizard.*;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
-public class InstallLicenseJPanel extends MWizardPageJPanel {
+public class InstallLicenseJPanel
+    extends MWizardPageJPanel
+    implements Localizable
+{
 
     private static final String LOG4J_DEFAULT_PROPERTIES = "com/untangle/gui/log4j.properties";
     private static final String LOG4J_DEVEL_PROPERTIES   = "com/untangle/gui/log4j-devel.properties";
@@ -77,8 +81,13 @@ public class InstallLicenseJPanel extends MWizardPageJPanel {
             contentJEditorPane.setFont(new java.awt.Font("Courier", 0, 11));
         }
         catch(Exception e){
-            Util.handleExceptionNoRestart("error loading license", e);
+            Util.handleExceptionNoRestart(Util.tr("error loading license"), e);
         }
+    }
+
+    public void reloadStrings()
+    {
+        jLabel2.setText(Util.tr("License Agreement"));
     }
 
     public void doSave(Object settings, boolean validateOnly) throws Exception {
@@ -104,7 +113,7 @@ public class InstallLicenseJPanel extends MWizardPageJPanel {
 
         contentJPanel.setOpaque(false);
         jLabel2.setFont(new java.awt.Font("Dialog", 0, 12));
-        jLabel2.setText("<html>License Agreement</html>");
+        jLabel2.setText(Util.tr("License Agreement"));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;

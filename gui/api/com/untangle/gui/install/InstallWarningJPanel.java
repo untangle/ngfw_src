@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -35,11 +35,15 @@ package com.untangle.gui.install;
 
 import java.awt.Window;
 
-import com.untangle.gui.util.*;
+import com.untangle.gui.util.Localizable;
+import com.untangle.gui.util.Util;
 import com.untangle.gui.widgets.dialogs.*;
 import com.untangle.gui.widgets.wizard.*;
 
-public class InstallWarningJPanel extends MWizardPageJPanel {
+public class InstallWarningJPanel
+    extends MWizardPageJPanel
+    implements Localizable
+{
 
 
     public InstallWarningJPanel() {
@@ -61,7 +65,15 @@ public class InstallWarningJPanel extends MWizardPageJPanel {
             return false;
     }
 
-    private void initComponents() {//GEN-BEGIN:initComponents
+    public void reloadStrings()
+    {
+        headerJLabel.setText(Util.tr("Warning!"));
+        subheaderJLabel.setText(Util.tr("If you continue, in preparation for the Untangle Platform installation process, YOUR DISK WILL BE ERASED AND ALL ITS DATA WILL BE LOST!"));
+        messageJLabel.setText(Util.tr("If you would not like to continue, press the Close Window button.  Otherwise, press the Finish button."));
+    }
+
+    // <editor-fold defaultstate="collapsed" desc=" Generated Code ">//GEN-BEGIN:initComponents
+    private void initComponents() {
         java.awt.GridBagConstraints gridBagConstraints;
 
         contentJPanel = new javax.swing.JPanel();
@@ -77,8 +89,9 @@ public class InstallWarningJPanel extends MWizardPageJPanel {
 
         contentJPanel.setOpaque(false);
         headerJLabel.setFont(new java.awt.Font("Dialog", 1, 18));
+        headerJLabel.setForeground(java.awt.Color.red);
         headerJLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        headerJLabel.setText("<html><font color=\"#FF0000\">Warning!</font></html>");
+        headerJLabel.setText(Util.tr("Warning!"));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -88,8 +101,9 @@ public class InstallWarningJPanel extends MWizardPageJPanel {
         contentJPanel.add(headerJLabel, gridBagConstraints);
 
         subheaderJLabel.setFont(new java.awt.Font("Dialog", 0, 18));
+        subheaderJLabel.setForeground(java.awt.Color.red);
         subheaderJLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        subheaderJLabel.setText("<html><font color=\"#FF0000\">If you continue, in preparation for the Untangle Platform installation process, YOUR DISK WILL BE ERASED AND ALL ITS DATA WILL BE LOST!</font></html>");
+        subheaderJLabel.setText(Util.tr("If you continue, in preparation for the Untangle Platform installation process, YOUR DISK WILL BE ERASED AND ALL ITS DATA WILL BE LOST!"));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
@@ -99,7 +113,7 @@ public class InstallWarningJPanel extends MWizardPageJPanel {
         contentJPanel.add(subheaderJLabel, gridBagConstraints);
 
         messageJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
-        messageJLabel.setText("<html>If you would not like to continue, press the Close Window button.  Otherwise, press the Finish button.</html>");
+        messageJLabel.setText(Util.tr("If you would not like to continue, press the Close Window button.  Otherwise, press the Finish button."));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
@@ -127,7 +141,7 @@ public class InstallWarningJPanel extends MWizardPageJPanel {
         gridBagConstraints.weightx = 1.0;
         add(backgroundJPabel, gridBagConstraints);
 
-    }//GEN-END:initComponents
+    }// </editor-fold>//GEN-END:initComponents
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

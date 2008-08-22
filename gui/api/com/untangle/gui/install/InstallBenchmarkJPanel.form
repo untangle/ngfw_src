@@ -5,6 +5,10 @@
     <Property name="opaque" type="boolean" value="false"/>
   </Properties>
   <AuxValues>
+    <AuxValue name="FormSettings_generateMnemonicsCode" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_listenerGenerationStyle" type="java.lang.Integer" value="0"/>
+    <AuxValue name="FormSettings_variablesLocal" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_variablesModifier" type="java.lang.Integer" value="2"/>
     <AuxValue name="designerSize" type="java.awt.Dimension" value="-84,-19,0,5,115,114,0,18,106,97,118,97,46,97,119,116,46,68,105,109,101,110,115,105,111,110,65,-114,-39,-41,-84,95,68,20,2,0,2,73,0,6,104,101,105,103,104,116,73,0,5,119,105,100,116,104,120,112,0,0,1,-47,0,0,2,65"/>
   </AuxValues>
 
@@ -27,7 +31,9 @@
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
               <Font name="Dialog" size="12" style="0"/>
             </Property>
-            <Property name="text" type="java.lang.String" value="&lt;html&gt;These tests show you if your computer meets minimum hardware requirements.&lt;/html&gt;"/>
+            <Property name="text" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+              <Connection code="Util.tr(&quot;These tests show you if your computer meets minimum hardware requirements.&quot;)" type="code"/>
+            </Property>
           </Properties>
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
@@ -50,7 +56,9 @@
             <Component class="javax.swing.JLabel" name="memoryNameJLabel">
               <Properties>
                 <Property name="horizontalAlignment" type="int" value="2"/>
-                <Property name="text" type="java.lang.String" value="Main Memory:"/>
+                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                  <Connection code="Util.tr(&quot;Main Memory:&quot;)" type="code"/>
+                </Property>
               </Properties>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
@@ -92,7 +100,9 @@
                   <Dimension value="[480, 20]"/>
                 </Property>
                 <Property name="requestFocusEnabled" type="boolean" value="false"/>
-                <Property name="string" type="java.lang.String" value="Memory Test"/>
+                <Property name="string" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                  <Connection code="Util.tr(&quot;Memory Test&quot;)" type="code"/>
+                </Property>
                 <Property name="stringPainted" type="boolean" value="true"/>
               </Properties>
               <Constraints>
@@ -130,7 +140,9 @@
             <Component class="javax.swing.JLabel" name="cpuNameJLabel">
               <Properties>
                 <Property name="horizontalAlignment" type="int" value="2"/>
-                <Property name="text" type="java.lang.String" value="CPU:"/>
+                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                  <Connection code="Util.tr(&quot;CPU:&quot;)" type="code"/>
+                </Property>
               </Properties>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
@@ -172,7 +184,9 @@
                   <Dimension value="[480, 20]"/>
                 </Property>
                 <Property name="requestFocusEnabled" type="boolean" value="false"/>
-                <Property name="string" type="java.lang.String" value="CPU Test"/>
+                <Property name="string" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                  <Connection code="Util.tr(&quot;CPU Test&quot;)" type="code"/>
+                </Property>
                 <Property name="stringPainted" type="boolean" value="true"/>
               </Properties>
               <Constraints>
@@ -210,7 +224,9 @@
             <Component class="javax.swing.JLabel" name="diskNameJLabel">
               <Properties>
                 <Property name="horizontalAlignment" type="int" value="2"/>
-                <Property name="text" type="java.lang.String" value="Hard Disk:"/>
+                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                  <Connection code="Util.tr(&quot;Hard Disk:&quot;)" type="code"/>
+                </Property>
               </Properties>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
@@ -252,7 +268,9 @@
                   <Dimension value="[480, 20]"/>
                 </Property>
                 <Property name="requestFocusEnabled" type="boolean" value="false"/>
-                <Property name="string" type="java.lang.String" value="Hard Disk Test"/>
+                <Property name="string" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                  <Connection code="Util.tr(&quot;Hard Disk Test&quot;)" type="code"/>
+                </Property>
                 <Property name="stringPainted" type="boolean" value="true"/>
               </Properties>
               <Constraints>
@@ -290,7 +308,9 @@
             <Component class="javax.swing.JLabel" name="nicNameJLabel">
               <Properties>
                 <Property name="horizontalAlignment" type="int" value="2"/>
-                <Property name="text" type="java.lang.String" value="Network Interfaces:"/>
+                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                  <Connection code="Util.tr(&quot;Network Interfaces:&quot;)" type="code"/>
+                </Property>
               </Properties>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
@@ -304,7 +324,7 @@
                   <Font name="Dialog" size="12" style="0"/>
                 </Property>
                 <Property name="horizontalAlignment" type="int" value="2"/>
-                <Property name="text" type="java.lang.String" value="3 Interfaces"/>
+                <Property name="text" type="java.lang.String" value="3"/>
               </Properties>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
@@ -332,7 +352,9 @@
                   <Dimension value="[480, 20]"/>
                 </Property>
                 <Property name="requestFocusEnabled" type="boolean" value="false"/>
-                <Property name="string" type="java.lang.String" value="Network Interface Test"/>
+                <Property name="string" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                  <Connection code="Util.tr(&quot;Memory Test&quot;)" type="code"/>
+                </Property>
                 <Property name="stringPainted" type="boolean" value="true"/>
               </Properties>
               <Constraints>

@@ -1,5 +1,5 @@
 /*
- * $HeadURL$
+ * $HeadURL: svn://chef/branch/prod/web-ui/work/src/gui/api/com/untangle/gui/util/Util.java $
  * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
@@ -31,17 +31,9 @@
  * to do so, delete this exception statement from your version.
  */
 
-package com.untangle.gui.widgets.wizard;
+package com.untangle.gui.util;
 
-import javax.swing.JPanel;
-
-public abstract class MWizardPageJPanel extends javax.swing.JPanel {
-
-    protected boolean leavingForwards(){ return true; }
-    protected boolean leavingBackwards(){ return true; }
-    protected boolean enteringForwards(){ return true; }
-    protected boolean enteringBackwards(){ return true; }
-    protected void initialFocus(){}
-
-    protected void doSave(Object settings, boolean validateOnly) throws Exception {}
+public interface Localizable
+{
+    void reloadStrings();
 }

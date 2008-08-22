@@ -50,11 +50,14 @@ import javax.swing.ListCellRenderer;
 import javax.swing.SwingConstants;
 import javax.swing.plaf.basic.BasicComboBoxRenderer;
 
+import com.untangle.gui.util.Localizable;
 import com.untangle.gui.util.Util;
 import com.untangle.gui.widgets.wizard.MWizardPageJPanel;
 
-public class InstallWelcomeJPanel extends MWizardPageJPanel {
-
+public class InstallWelcomeJPanel
+    extends MWizardPageJPanel
+    implements Localizable
+{
     private final ComboBoxModel localeModel;
     private final ListCellRenderer localeRenderer;
 
@@ -83,6 +86,13 @@ public class InstallWelcomeJPanel extends MWizardPageJPanel {
         initComponents();
     }
 
+    public void reloadStrings()
+    {
+        jLabel1.setText(Util.tr("<html>Welcome to the<br>Untangle Platform Install Wizard!</html>"));
+        jLabel2.setText(Util.tr("<html>This wizard will take you step-by-step through<br> the Untangle Platform CD installation process.</html>"));
+        jLabel3.setText(Util.tr("Language:"));
+    }
+
     // <editor-fold defaultstate="collapsed" desc=" Generated Code ">//GEN-BEGIN:initComponents
     private void initComponents() {
         java.awt.GridBagConstraints gridBagConstraints;
@@ -103,7 +113,7 @@ public class InstallWelcomeJPanel extends MWizardPageJPanel {
         contentJPanel.setOpaque(false);
         jLabel1.setFont(new java.awt.Font("Dialog", 1, 18));
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setText("<html>Welcome to the<br>Untangle Platform Install Wizard!</html>");
+        jLabel1.setText(Util.tr("<html>Welcome to the<br>Untangle Platform Install Wizard!</html>"));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -113,7 +123,7 @@ public class InstallWelcomeJPanel extends MWizardPageJPanel {
         contentJPanel.add(jLabel1, gridBagConstraints);
 
         jLabel2.setFont(new java.awt.Font("Dialog", 0, 12));
-        jLabel2.setText("<html>This wizard will take you step-by-step through<br> the Untangle Platform CD installation process.</html>");
+        jLabel2.setText(Util.tr("<html>This wizard will take you step-by-step through<br> the Untangle Platform CD installation process.</html>"));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
@@ -124,7 +134,7 @@ public class InstallWelcomeJPanel extends MWizardPageJPanel {
         contentJPanel.add(jLabel2, gridBagConstraints);
 
         jLabel3.setFont(new java.awt.Font("Dialog", 0, 12));
-        jLabel3.setText("Language:");
+        jLabel3.setText(Util.tr("Language:"));
         jPanel1.add(jLabel3);
 
         jComboBox1.setFont(new java.awt.Font("Dialog", 0, 12));
@@ -133,10 +143,10 @@ public class InstallWelcomeJPanel extends MWizardPageJPanel {
         jComboBox1.setPreferredSize(new java.awt.Dimension(150, 24));
         jComboBox1.setRenderer(localeRenderer);
         jComboBox1.addItemListener(new java.awt.event.ItemListener() {
-                public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                    jComboBox1ItemStateChanged(evt);
-                }
-            });
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                jComboBox1ItemStateChanged(evt);
+            }
+        });
 
         jPanel1.add(jComboBox1);
 
