@@ -31,17 +31,15 @@ Ung.Wizard = Ext.extend(Ext.Panel, {
         this.previousButton = new Ext.Button({
             id : 'card-prev',
             text : i18n._( '&laquo; Previous' ),
-            handler : this.goPrevious,
-            scope : this
+            handler : this.goPrevious.createDelegate( this )
         });
 
         this.nextButton = new Ext.Button({
             id : 'card-next',
             text : i18n._( 'Next &raquo;' ),
-            handler : this.goNext,
+            handler : this.goNext.createDelegate( this ),
 			cls:'x-btn-over',
-			overCls :'x-btn-',
-            scope : this
+			overCls :'x-btn-'
         });
         
         this.cardDefaults = config.cardDefaults;
