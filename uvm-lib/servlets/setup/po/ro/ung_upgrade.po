@@ -1,0 +1,151 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2008 Untangle, Inc.
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <cmatei@untangle.com>, 2008.
+# 
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2008-07-24 19:04+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=0; null;\n"
+
+#: ../root/script/config/upgrade.js:9
+msgid "Configuration"
+msgstr ""
+
+#: ../root/script/config/upgrade.js:14 ../root/script/config/upgrade.js:99
+#: ../root/script/config/upgrade.js:158
+msgid "Upgrade"
+msgstr ""
+
+#: ../root/script/config/upgrade.js:42 ../root/script/config/upgrade.js:180
+#: ../root/script/config/upgrade.js:380
+msgid "Failed"
+msgstr ""
+
+#: ../root/script/config/upgrade.js:63
+msgid "System Component"
+msgstr ""
+
+#: ../root/script/config/upgrade.js:64
+msgid "Product"
+msgstr ""
+
+#: ../root/script/config/upgrade.js:65
+msgid "Unknown"
+msgstr ""
+
+#: ../root/script/config/upgrade.js:78
+msgid "Various Updates"
+msgstr ""
+
+#: ../root/script/config/upgrade.js:79
+msgid "N/A"
+msgstr ""
+
+#: ../root/script/config/upgrade.js:80
+msgid "Misc."
+msgstr ""
+
+#: ../root/script/config/upgrade.js:133
+msgid "name"
+msgstr ""
+
+#: ../root/script/config/upgrade.js:139
+msgid "new version"
+msgstr ""
+
+#: ../root/script/config/upgrade.js:145
+msgid "type"
+msgstr ""
+
+#: ../root/script/config/upgrade.js:150
+msgid "size (kb)"
+msgstr ""
+
+#: ../root/script/config/upgrade.js:177
+msgid "Downloading updates..."
+msgstr ""
+
+#: ../root/script/config/upgrade.js:177 ../root/script/config/upgrade.js:374
+msgid "Please wait"
+msgstr ""
+
+#: ../root/script/config/upgrade.js:196
+msgid "Upgrade Setup"
+msgstr ""
+
+#: ../root/script/config/upgrade.js:206
+msgid "Automatic Upgrade"
+msgstr ""
+
+#: ../root/script/config/upgrade.js:213
+msgid "Automatically Install Upgrades"
+msgstr ""
+
+#: ../root/script/config/upgrade.js:227
+msgid ""
+"If new upgrades are available at the specified upgrade time they will be "
+"automatically downloaded and installed. During the install the system may be "
+"rebooted resulting in momentary loss of connectivicty."
+msgstr ""
+
+#: ../root/script/config/upgrade.js:230
+msgid "Do Not Automatically Install Upgrades"
+msgstr ""
+
+#: ../root/script/config/upgrade.js:244
+msgid ""
+"If new upgrades are available at the specified upgrade time they will be not "
+"be installed. All upgrades must be manually installed using the button on "
+"the Upgrade tab."
+msgstr ""
+
+#: ../root/script/config/upgrade.js:246
+msgid ""
+"Note: Turning off Automatic Upgrades does not disable signature & list "
+"updates"
+msgstr ""
+
+#: ../root/script/config/upgrade.js:250
+msgid "Upgrade Time"
+msgstr ""
+
+#: ../root/script/config/upgrade.js:258
+msgid "Sunday"
+msgstr ""
+
+#: ../root/script/config/upgrade.js:271
+msgid "Monday"
+msgstr ""
+
+#: ../root/script/config/upgrade.js:284
+msgid "Tuesday"
+msgstr ""
+
+#: ../root/script/config/upgrade.js:297
+msgid "Wednesday"
+msgstr ""
+
+#: ../root/script/config/upgrade.js:310
+msgid "Thursday"
+msgstr ""
+
+#: ../root/script/config/upgrade.js:323
+msgid "Friday"
+msgstr ""
+
+#: ../root/script/config/upgrade.js:336
+msgid "Saturday"
+msgstr ""
+
+#: ../root/script/config/upgrade.js:374
+msgid "Saving..."
+msgstr ""
