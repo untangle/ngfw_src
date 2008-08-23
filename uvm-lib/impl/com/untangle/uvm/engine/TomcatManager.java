@@ -145,6 +145,10 @@ class TomcatManager
             ServletContext ctx = loadSystemApp("/webui", "webui",
                                                new WebAppOptions(new AdministrationOutsideAccessValve()));
             ctx.setAttribute("threadRequest", threadRequest);
+
+            ctx = loadSystemApp("/setup", "setup",
+                                new WebAppOptions(new AdministrationOutsideAccessValve()));
+            ctx.setAttribute("threadRequest", threadRequest);
             loadSystemApp("/library", "library",
                           new WebAppOptions(true,new AdministrationOutsideAccessValve()));
         } finally {

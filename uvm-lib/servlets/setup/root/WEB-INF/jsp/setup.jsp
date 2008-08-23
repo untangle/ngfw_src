@@ -1,4 +1,4 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">`
 
 <%@ taglib uri="http://java.untangle.com/jsp/uvm" prefix="uvm" %>
 
@@ -20,9 +20,11 @@
     
     <script type="text/javascript" src="/jsonrpc/jsonrpc.js"></script>
     <script type="text/javascript" src="/script/i18n.js"></script>
+    <script type="text/javascript" src="/script/timezone.js"></script>
+
     <script type="text/javascript" src="script/wizard.js"></script>
     <script type="text/javascript" src="script/setup.js"></script>
-    <script type="text/javascript" src="script/timezone.js"></script>
+
     
     <script type="text/javascript">
       Ung.SetupWizard.currentSkin = "${ss.administrationClientSkin}";

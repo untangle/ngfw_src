@@ -7,24 +7,13 @@
          http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd" >
 
   <servlet>
-    <servlet-name>StartPageServlet</servlet-name>
-    <servlet-class>com.untangle.uvm.webui.servlet.StartPageServlet</servlet-class>
-    <load-on-startup>1</load-on-startup>
-  </servlet>
-
-  <servlet-mapping>
-    <servlet-name>StartPageServlet</servlet-name>
-    <url-pattern>/startPage.do</url-pattern>
-  </servlet-mapping>
-
-  <servlet>
     <servlet-name>SetupServlet</servlet-name>
-    <servlet-class>com.untangle.uvm.webui.servlet.SetupServlet</servlet-class>
+    <servlet-class>com.untangle.uvm.setup.servlet.SetupServlet</servlet-class>
   </servlet>
 
   <servlet-mapping>
     <servlet-name>SetupServlet</servlet-name>
-    <url-pattern>/setup</url-pattern>
+    <url-pattern>/index.html</url-pattern>
   </servlet-mapping>
 
   <servlet>
@@ -41,49 +30,9 @@
     <url-pattern>/JSON-RPC</url-pattern>
   </servlet-mapping>
 
-  <servlet>
-    <servlet-name>ImageServlet</servlet-name>
-    <servlet-class>com.untangle.uvm.webui.servlet.ImageServlet</servlet-class>
-  </servlet>
-
-  <servlet-mapping>
-    <servlet-name>ImageServlet</servlet-name>
-    <url-pattern>/image</url-pattern>
-  </servlet-mapping>
-
-  <servlet>
-    <servlet-name>UploadServlet</servlet-name>
-    <servlet-class>com.untangle.uvm.webui.servlet.UploadServlet</servlet-class>
-  </servlet>
-
-  <servlet-mapping>
-    <servlet-name>UploadServlet</servlet-name>
-    <url-pattern>/upload</url-pattern>
-  </servlet-mapping>
-
-  <servlet>
-    <servlet-name>BackupServlet</servlet-name>
-    <servlet-class>com.untangle.uvm.webui.servlet.BackupServlet</servlet-class>
-  </servlet>
-
-  <servlet>
-    <servlet-name>I18NServlet</servlet-name>
-    <servlet-class>com.untangle.uvm.webui.servlet.I18NServlet</servlet-class>
-  </servlet>
-
-  <servlet-mapping>
-    <servlet-name>I18NServlet</servlet-name>
-    <url-pattern>/i18n</url-pattern>
-  </servlet-mapping>
-
-  <servlet-mapping>
-    <servlet-name>BackupServlet</servlet-name>
-    <url-pattern>/backup</url-pattern>
-  </servlet-mapping>
-
   <welcome-file-list>
     <welcome-file>
-      index.jsp
+      index.html
     </welcome-file>
   </welcome-file-list>
 

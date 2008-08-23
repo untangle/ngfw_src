@@ -72,6 +72,8 @@ deps << taglib
 ServletBuilder.new(uvm_lib, "com.untangle.uvm.webui.servlet",
                    "./uvm-lib/servlets/webui", deps)
 
+ServletBuilder.new(uvm_lib, "com.untangle.uvm.setup.servlet",
+                   "./uvm-lib/servlets/setup", deps)
 
 # Ajax Tk
 deps = FileList["#{BuildEnv::downloads}/Ajax/jars/*jar"].exclude(/.*servlet-api.jar/).map { |n| ThirdpartyJar.get(n) }

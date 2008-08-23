@@ -84,10 +84,6 @@ public class UtJsonRpcServlet extends JSONRPCServlet
 
         initSessionBridge(req);
 
-        logger.warn( "<getClass: " + getClass().getClassLoader() + ">" );
-        logger.warn( "<EnumSerializer: " + EnumSerializer.class.getClassLoader() + ">" );
-        logger.warn( "<contextClassLoader: " + Thread.currentThread().getContextClassLoader() + ">" );
-        logger.warn( "<JSONSerializer: " + org.jabsorb.JSONSerializer.class.getClassLoader() + ">" );
         super.service(req, resp);
 
         if (null != threadRequest) {
@@ -136,7 +132,7 @@ public class UtJsonRpcServlet extends JSONRPCServlet
                 b.registerSerializer(new UserMatcherSerializer());
 
             } catch (Exception e) {
-                logger.warn( "Unable to register serializer", e );;
+                logger.warn( "Unable to register serializers", e );
             }
 
             b.setCallbackController(new UtCallbackController(b));
