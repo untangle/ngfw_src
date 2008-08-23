@@ -73,6 +73,8 @@ class Jars
   Jabsorb    = [ Jars.downloadTarget('jabsorb-1.2.2/jabsorb-1.2.2.jar')]
   Json       = [ Jars.downloadTarget('jabsorb-1.2.2/json.jar')]
   GetText    = [ Jars.downloadTarget('gettext-commons-0.9.1/gettext-commons-0.9.1.jar') ]
+  Slf4j      = [ Jars.downloadTarget( 'slf4j-1.4.3/slf4j-log4j12-1.4.3.jar'),
+                 Jars.downloadTarget( 'slf4j-1.4.3/slf4j-api-1.4.3.jar' ) ]
 
   TomcatCommon = [ 'commons-el.jar',
                    'jasper-compiler.jar',
@@ -157,7 +159,7 @@ class Jars
                               Activation, Jcifs, C3p0, Ant, JavaMailApi,
                               GetText, JavaMail, TomcatEmb, Velocity, JRuby,
                               Bdb, HttpClient, HtmlParser, VncViewer, XmlRpc, Jstl,
-                              XStream, Json)
+                              XStream, Json, Jabsorb, Slf4j)
 
   # Jars for compiling the GUI, and GUI node components
   Gui        = Jars.makeGroup(Alloy, JFreeChartGui, Netbeans, Jnlp)
