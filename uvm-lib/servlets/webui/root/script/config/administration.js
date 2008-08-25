@@ -1505,11 +1505,23 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         },
                         failure : function(form, action) {
                             var cmp = Ext.getCmp(action.options.parentId);
+                            var errorMsg = cmp.i18n._("Upload Skin Failed");
                             if (action.result && action.result.msg) {
-                                Ext.MessageBox.alert(cmp.i18n._("Failed"), cmp.i18n._(action.result.msg));
-                            } else {
-                                Ext.MessageBox.alert(cmp.i18n._("Failed"), cmp.i18n._("Upload Skin Failed"));
+                                switch (action.result.msg) {
+                                    case 'Invalid Skin' : 
+                                        errorMsg = cmp.i18n._("Invalid Skin");
+                                    break;
+                                    case 'The default skin can not be overwritten' : 
+                                        errorMsg = cmp.i18n._("The default skin can not be overwritten");
+                                    break;
+                                    case 'Error creating skin folder' : 
+                                        errorMsg = cmp.i18n._("Error creating skin folder");
+                                    break;
+                                    default :
+                                        errorMsg = cmp.i18n._("Upload Skin Failed");
+                                }
                             }
+                            Ext.MessageBox.alert(cmp.i18n._("Failed"), errorMsg);
                         }
                     });
                 }
@@ -1695,11 +1707,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         },
                         failure : function(form, action) {
                             var cmp = Ext.getCmp(action.options.parentId);
-                            if (action.result && action.result.msg) {
-                                Ext.MessageBox.alert(cmp.i18n._("Failed"), cmp.i18n._(action.result.msg));
-                            } else {
-                                Ext.MessageBox.alert(cmp.i18n._("Failed"), cmp.i18n._("Upload Logo Failed"));
-                            }
+                            Ext.MessageBox.alert(cmp.i18n._("Failed"), cmp.i18n._("Upload Logo Failed"));
                         }
                     });
 

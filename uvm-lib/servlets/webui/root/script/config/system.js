@@ -318,11 +318,26 @@ if (!Ung.hasResource["Ung.System"]) {
                         },
                         failure : function(form, action) {
                             var cmp = Ext.getCmp(action.options.parentId);
+                            var errorMsg = cmp.i18n._("The Local File restore procedure failed.");
                             if (action.result && action.result.msg) {
-                                Ext.MessageBox.alert(cmp.i18n._("Restore Backup File Warning"), cmp.i18n._("Error:  The Local File restore procedure failed.  The reason reported by the Untangle Server was:")+cmp.i18n._(action.result.msg));
-                            } else {
-                                Ext.MessageBox.alert(cmp.i18n._("Restore Backup File Warning"), cmp.i18n._("Error:  The Local File restore procedure failed."));
+                                switch (action.result.msg) {
+                                    case 'File does not seem to be valid Untangle backup' : 
+                                        errorMsg = cmp.i18n._("File does not seem to be valid Untangle backup");
+                                    break;
+                                    case 'Error in processing restore itself (yet file seems valid)' : 
+                                        errorMsg = cmp.i18n._("Error in processing restore itself (yet file seems valid)");
+                                    break;
+                                    case 'File is from an older version of Untangle and cannot be used' : 
+                                        errorMsg = cmp.i18n._("File is from an older version of Untangle and cannot be used");
+                                    break;
+                                    case 'Unknown error in local processing' : 
+                                        errorMsg = cmp.i18n._("Unknown error in local processing");
+                                    break;
+                                    default :
+                                        errorMsg = cmp.i18n._("The Local File restore procedure failed.");
+                                }
                             }
+                            Ext.MessageBox.alert(cmp.i18n._("Failed"), errorMsg);
                         }
                     });
                 },
@@ -897,11 +912,23 @@ if (!Ung.hasResource["Ung.System"]) {
                         },
                         failure : function(form, action) {
                             var cmp = Ext.getCmp(action.options.parentId);
+                            var errorMsg = cmp.i18n._("Upload Language Pack Failed");
                             if (action.result && action.result.msg) {
-                                Ext.MessageBox.alert(cmp.i18n._("Failed"), cmp.i18n._(action.result.msg));
-                            } else {
-                                Ext.MessageBox.alert(cmp.i18n._("Failed"), cmp.i18n._("Upload Language Pack Failed"));
+                                switch (action.result.msg) {
+                                    case 'Invalid Language Pack' : 
+                                        errorMsg = cmp.i18n._("Invalid Language Pack");
+                                    break;
+                                    case 'Error compiling to resource bundle' : 
+                                        errorMsg = cmp.i18n._("Error compiling to resource bundle");
+                                    break;
+                                    case 'Error compiling to mo file' : 
+                                        errorMsg = cmp.i18n._("Error compiling to mo file");
+                                    break;
+                                    default :
+                                        errorMsg = cmp.i18n._("Upload Language Pack Failed");
+                                }
                             }
+                            Ext.MessageBox.alert(cmp.i18n._("Failed"), errorMsg);
                         }
                     });
                 }

@@ -32,6 +32,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -53,8 +54,9 @@ import com.untangle.uvm.util.TransactionWork;
 class RemoteSkinManagerImpl implements RemoteSkinManager
 {
     private static final String SKINS_DIR;
-    private static final String DEFAULT_ADMIN_SKIN = "default";
-    private static final String DEFAULT_USER_SKIN = "default";
+    private static final String DEFAULT_SKIN = "default";
+    private static final String DEFAULT_ADMIN_SKIN = DEFAULT_SKIN;
+    private static final String DEFAULT_USER_SKIN = DEFAULT_SKIN;
 	private static final int BUFFER = 2048; 
 
     private final Logger logger = Logger.getLogger(getClass());
@@ -103,6 +105,7 @@ class RemoteSkinManagerImpl implements RemoteSkinManager
 	    try {
 	        BufferedOutputStream dest = null;
 			ZipEntry entry = null;
+            File defaultSkinDir = new File(SKINS_DIR + File.separator + DEFAULT_SKIN);
 			
 			//validate skin
 		    if (!item.getName().endsWith(".zip")) {
@@ -114,10 +117,16 @@ class RemoteSkinManagerImpl implements RemoteSkinManager
 		    ZipInputStream zis = new ZipInputStream(uploadedStream);
 			while ((entry = zis.getNextEntry()) != null) {
 				if (entry.isDirectory()) {
-					File dir = new File(SKINS_DIR + File.separator + entry.getName());
-					boolean success = dir.mkdir();
-					if (!success) {
-						throw new UvmException("A skin folder with the same name already exists");
+                    File dir = new File(SKINS_DIR + File.separator + entry.getName());
+				    if (dir.equals(defaultSkinDir)) {
+				        throw new UvmException("The default skin can not be overwritten");
+				    }
+					if (dir.exists()) {
+					    FileUtils.cleanDirectory(dir);
+					} else {
+	                    if (!dir.mkdir()) {
+	                        throw new UvmException("Error creating skin folder");
+	                    }
 					}
 				} else {
 					int count;
