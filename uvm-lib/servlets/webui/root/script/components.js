@@ -1989,7 +1989,7 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
                 field : this.sortField,
                 direction : "ASC"
             } : null,
-            remoteSort : true,
+            remoteSort : false,
             reader : new Ext.data.JsonReader({
                 totalProperty : "totalRecords",
                 root : 'list',
