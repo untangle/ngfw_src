@@ -526,23 +526,20 @@ Ung.AppItem = Ext.extend(Ext.Component, {
     node : null,
     trialLibItem : null,
 
-
-
     iconSrc : null,
     iconCls : null,
     renderTo : 'appsItems',
     operationSemaphore : false,
     autoEl : 'div',
     state : null,
-    // install button
-    buttonInstall : null,
-    // store button
-    buttonStore : null,
+    // buy button
+    buttonBuy : null,
     // progress bar component
     progressBar : null,
-    
+    subCmps:null,
     constructor : function(config) {
         var name="";
+        this.subCmps=[];
         if(config.libItem!=null) {
             name=config.libItem.name;
             this.item=config.libItem;
@@ -558,6 +555,7 @@ Ung.AppItem = Ext.extend(Ext.Component, {
     },
     onRender : function(container, position) {
         Ung.AppItem.superclass.onRender.call(this, container, position);
+        
         if (this.name && this.getEl()) {
             this.getEl().set({
                 'name' : this.name
@@ -595,22 +593,26 @@ Ung.AppItem = Ext.extend(Ext.Component, {
                 }
             }
         });
+        
         this.buttonBuy = Ext.get("buttonBuy_" + this.getId());
         this.buttonBuy.setVisible(false);
-        this.action = Ext.get("action_" + this.getId());
+        this.actionEl = Ext.get("action_" + this.getId());
         this.progressBar.hide();
+        this.subCmps.push(this.progressBar);
         if(this.libItem!=null && this.node==null) { //libitem
-            this.getEl().on("click", this.linkToStoreFn, this);
-            this.action.insertHtml("afterBegin", i18n._("More Info"));
-            this.action.addClass("iconInfo");
+            //this.getEl().on("click", this.linkToStoreFn, this);
+        	this.actionEl.on("click", this.linkToStoreFn, this);
+            this.actionEl.insertHtml("afterBegin", i18n._("More Info"));
+            this.actionEl.addClass("iconInfo");
         } else if(this.node!=null) { //node
             var label="Install";
             if(this.libItem!=null) { //libitem and trial node
                 label="Trial Install";
             }
-            this.getEl().on("click", this.installNodeFn, this);
-            this.action.insertHtml("afterBegin", i18n._("Install"));
-            this.action.addClass("iconArrowRight");
+            //this.getEl().on("click", this.installNodeFn, this);
+            this.actionEl.on("click", this.installNodeFn, this);
+            this.actionEl.insertHtml("afterBegin", i18n._("Install"));
+            this.actionEl.addClass("iconArrowRight");
             if(this.libItem!=null) { //libitem and trial node
                 this.buttonBuy.setVisible(true);
                 this.buttonBuy.insertHtml("afterBegin", i18n._("Buy"));
@@ -691,9 +693,17 @@ Ung.AppItem = Ext.extend(Ext.Component, {
         this.state = newState;
 
     },
+    // before Destroy
+    beforeDestroy : function() {
+    	this.actionEl.removeAllListeners();
+        this.buttonBuy.removeAllListeners();
+        Ext.each(this.subCmps, Ext.destroy);
+        Ung.AppItem.superclass.beforeDestroy.call(this);
+    },
+    
     // display Buttons xor Progress barr
     displayButtonsOrProgress : function(displayButtons) {
-        this.action.setVisible(displayButtons);
+        this.actionEl.setVisible(displayButtons);
         this.buttonBuy.setVisible(displayButtons);
         if (displayButtons) {
             this.getEl().unmask();
@@ -1218,47 +1228,51 @@ Ung.MessageManager = {
                 return;
            }
            this.cycleCompleted = true;
-           var messageQueue=result;
-           if(messageQueue.messages.list!=null && messageQueue.messages.list.length>0) {
-               var hasNodeInstantiated=false;
-               for(var i=0;i<messageQueue.messages.list.length;i++) {
-                   var msg=messageQueue.messages.list[i];
-                    if (msg.javaClass.indexOf("MackageInstallRequest") >= 0) {
-                        var policy=null;
-                        policy = rpc.currentPolicy;
-
-                        rpc.toolboxManager.installAndInstantiate(function(result, exception) {
-                            if (exception) {
-                                Ext.MessageBox.alert(i18n._("Failed"), exception.message);
-                                return;
-                            }
-                        }.createDelegate(this),msg.mackageDesc.name, policy);
-                        //Ung.MoveFromStoreToToolboxThread.process(msg.mackageDesc);
-                    } else if (msg.javaClass.indexOf("MackageUpdateExtraName") >= 0) {
-
-                    } else if(msg.javaClass.indexOf("NodeInstantiated") != -1) {
-                    	if(msg.nodeDesc.mackageDesc.type=="NODE") {
-                            hasNodeInstantiated=true;
-                            var node=main.createNode(msg.nodeDesc.tid, msg.nodeDesc.mackageDesc, msg.statDescs);
-                            main.nodes.push(node);
-                            main.addNode(node, true);
-                    	}
+           try {
+               var messageQueue=result;
+               if(messageQueue.messages.list!=null && messageQueue.messages.list.length>0) {
+                   var hasNodeInstantiated=false;
+                   for(var i=0;i<messageQueue.messages.list.length;i++) {
+                       var msg=messageQueue.messages.list[i];
+                        if (msg.javaClass.indexOf("MackageInstallRequest") >= 0) {
+                            var policy=null;
+                            policy = rpc.currentPolicy;
+    
+                            rpc.toolboxManager.installAndInstantiate(function(result, exception) {
+                                if (exception) {
+                                    Ext.MessageBox.alert(i18n._("Failed"), exception.message);
+                                    return;
+                                }
+                            }.createDelegate(this),msg.mackageDesc.name, policy);
+                            //Ung.MoveFromStoreToToolboxThread.process(msg.mackageDesc);
+                        } else if (msg.javaClass.indexOf("MackageUpdateExtraName") >= 0) {
+    
+                        } else if(msg.javaClass.indexOf("NodeInstantiated") != -1) {
+                        	if(msg.nodeDesc.mackageDesc.type=="NODE") {
+                                hasNodeInstantiated=true;
+                                var node=main.createNode(msg.nodeDesc.tid, msg.nodeDesc.mackageDesc, msg.statDescs);
+                                main.nodes.push(node);
+                                main.addNode(node, true);
+                        	}
+                        }
+                    }
+                    if(hasNodeInstantiated) {
+                        main.updateSeparator();
+                        main.loadApps();
                     }
                 }
-                if(hasNodeInstantiated) {
-                    main.updateSeparator();
-                    main.loadApps();
+                main.systemStats.update(messageQueue.systemStats)
+                for (var i = 0; i < main.nodes.length; i++) {
+                    var nodeCmp = Ung.Node.getCmp(main.nodes[i].tid);
+                    if (nodeCmp && nodeCmp.isRunning()) {
+                        nodeCmp.stats = messageQueue.stats.map[main.nodes[i].tid];
+                        nodeCmp.updateBlingers();
+                    }
                 }
+                //aaa=messageQueue.stats.map["10"].activities.map //for test
+            } catch (err) {
+            	Ext.MessageBox.alert("Exception in MessageManager", err.message);
             }
-            main.systemStats.update(messageQueue.systemStats)
-            for (var i = 0; i < main.nodes.length; i++) {
-                var nodeCmp = Ung.Node.getCmp(main.nodes[i].tid);
-                if (nodeCmp && nodeCmp.isRunning()) {
-                    nodeCmp.stats = messageQueue.stats.map[main.nodes[i].tid];
-                    nodeCmp.updateBlingers();
-                }
-            }
-            //aaa=messageQueue.stats.map["10"].activities.map //for test
            
            
         }.createDelegate(this), rpc.currentPolicy);
@@ -2970,7 +2984,7 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
                     fields : this.fields
                 }),
 
-                remoteSort : true,
+                remoteSort : this.paginated,
                 listeners : {
                     "update" : {
                         fn : function(store, record, operation) {
@@ -2994,7 +3008,7 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
                     field : this.sortField,
                     direction : "ASC"
                 } : null,
-                remoteSort : true,
+                remoteSort : false,
                 reader : new Ext.data.JsonReader({
                     totalProperty : "totalRecords",
                     root : this.dataRoot,
@@ -3502,7 +3516,7 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
                     field : this.sortField,
                     direction : "ASC"
                 } : null,
-                remoteSort : true,
+                remoteSort : false,
                 reader : new Ext.data.JsonReader({
                     totalProperty : "totalRecords",
                     root : 'list',
