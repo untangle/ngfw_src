@@ -34,15 +34,11 @@
 package com.untangle.gui.util;
 
 import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
-import java.awt.Insets;
 import java.awt.KeyboardFocusManager;
 import java.awt.Rectangle;
-import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
@@ -70,6 +66,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.text.JTextComponent;
 
 import org.apache.log4j.Logger;
+import java.text.MessageFormat;
 
 public class Util {
     private static final String PROPERTY_IS_DEVEL = "com.untangle.isDevel";
@@ -329,57 +326,6 @@ public class Util {
         return childBounds;
     }
 
-    public static int determineMinHeight(int attemptedMinHeight){
-        GraphicsConfiguration graphicsConfiguration = getGraphicsConfiguration();
-        Insets screenInsets = Toolkit.getDefaultToolkit().getScreenInsets( graphicsConfiguration );
-        int screenHeight = graphicsConfiguration.getBounds().height - screenInsets.top - screenInsets.bottom;
-        //logger.debug("Screen height: " + graphicsConfiguration.getBounds().height);
-        //logger.debug("Screen width: " + graphicsConfiguration.getBounds().width);
-        //logger.debug("Top insets: " + screenInsets.top);
-        //logger.debug("Bottom insets: " + screenInsets.bottom);
-        //logger.debug("Right insets: " + screenInsets.right);
-        //logger.debug("Left insets: " + screenInsets.left);
-        //  logger.debug("Determined screen height to be: " + screenHeight);
-        if( screenHeight < attemptedMinHeight)
-            return screenHeight;
-        else
-            return attemptedMinHeight;
-    }
-
-    public static void resizeCheck(final Component resizableComponent, Dimension minSize, Dimension maxSize){
-
-        final int currentWidth = resizableComponent.getWidth();
-        final int currentHeight = resizableComponent.getHeight();
-        int newWidth = currentWidth;
-        int newHeight = currentHeight;
-        /*
-          logger.debug("----------------------");
-          logger.debug("| Initial size: " + currentSize);
-          logger.debug("| Min size: " + minSize);
-          logger.debug("| Max size: " + maxSize);
-          logger.debug("----------------------");
-        */
-        boolean resetSize = false;
-        if(currentWidth < minSize.width){
-            newWidth = minSize.width;
-            resetSize = true;
-        }
-        else if(currentWidth > maxSize.width){
-            newWidth = maxSize.width;
-            resetSize = true;
-        }
-        if(currentHeight < minSize.height){
-            newHeight = minSize.height;
-            resetSize = true;
-        }
-        else if(currentHeight > maxSize.height){
-            newHeight = maxSize.height;
-            resetSize = true;
-        }
-        if(resetSize){
-            resizableComponent.setSize( newWidth, newHeight );
-        }
-    }
     //////////////////////////////////////////////////////
 
     // FOCUS //
@@ -527,6 +473,11 @@ public class Util {
         }
     }
 
+    public static String marktr(String value)
+    {
+        return value;
+    }
+
     public static String tr(String value)
     {
         String tr = i18nMap.get(value);
@@ -536,9 +487,9 @@ public class Util {
         return tr;
     }
 
-    public static String tr(String value, Object o1)
+    public static String tr(String value, Object... objects)
     {
-        return tr(value, new Object[]{ o1 });
+        return MessageFormat.format(tr(value), objects);
     }
 
     private static Map<String, String> getTranslations(Locale locale)

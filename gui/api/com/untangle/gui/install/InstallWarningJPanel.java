@@ -51,13 +51,13 @@ public class InstallWarningJPanel
     }
 
     protected boolean leavingForwards(){
-        MTwoButtonJDialog dialog = MTwoButtonJDialog.factory((Window) this.getTopLevelAncestor(), "Install Wizard",
-                                                             "Your selected disk will be erased"
-                                                             + " if you continue installation.  Would you like to continue?",
-                                                             "Install Wizard Warning",
-                                                             "Warning");
-        dialog.setProceedText("<html><b>Continue</b></html>");
-        dialog.setCancelText("<html><b>Don't Continue</b></html>");
+        MTwoButtonJDialog dialog = MTwoButtonJDialog.factory((Window) this.getTopLevelAncestor(),
+                                                             Util.tr("Install Wizard"),
+                                                             Util.tr("Your selected disk will be erased if you continue installation. Would you like to continue?"),
+                                                             Util.tr("Install Wizard Warning"),
+                                                             Util.tr("Warning"));
+        dialog.setProceedText(Util.tr("<html><b>Continue</b></html>"));
+        dialog.setCancelText(Util.tr("<html><b>Don't Continue</b></html>"));
         dialog.setVisible(true);
         if( dialog.isProceeding() )
             return true;

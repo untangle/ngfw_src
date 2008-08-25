@@ -62,6 +62,11 @@ public class I18nUtil
         return tr;
     }
 
+    public String tr(String value, Object[] objects)
+    {
+        return MessageFormat.format( tr(i18nMap,value), objects);
+    }
+
     public String tr(String value, Object o1)
     {
         return tr(i18nMap, value, new Object[]{ o1 });
@@ -87,5 +92,4 @@ public class I18nUtil
     {
         return tr(i18nMap, value, new Object[]{ o1 });
     }
-
 }

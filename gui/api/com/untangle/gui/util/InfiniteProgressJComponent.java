@@ -200,10 +200,10 @@ public class InfiniteProgressJComponent extends JComponent implements MouseListe
                     sleepTime = minRunTime - Math.max(0l, (System.currentTimeMillis()-startTime));
                 }});
             }
-            catch(Exception e){ Util.handleExceptionNoRestart("Error sleeping", e); }
+            catch(Exception e){ Util.handleExceptionNoRestart(Util.tr("Error sleeping"), e); }
             if( sleepTime > 0 ){
                 try{ Thread.currentThread().sleep(sleepTime); }
-                catch(Exception e){ Util.handleExceptionNoRestart("Error sleeping", e); }
+                catch(Exception e){ Util.handleExceptionNoRestart(Util.tr("Error sleeping"), e); }
             }
         }
         SwingUtilities.invokeLater(new Runnable(){ public void run(){

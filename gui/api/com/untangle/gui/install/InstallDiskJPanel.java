@@ -66,7 +66,6 @@ public class InstallDiskJPanel
     public void reloadStrings()
     {
         jLabel1.setText(Util.tr("<html>This list shows the boot disks that were found.  <font color='#FF0000'>Please choose a disk for the Untangle Platform installation.  Warning, all the data on the boot disk you select will be deleted.</font></html>"));
-
     }
 
     public boolean enteringForwards(){
@@ -74,7 +73,7 @@ public class InstallDiskJPanel
             diskListCompoundSettings.refresh();
         }
         catch(Exception e){
-            Util.handleExceptionNoRestart("Error scanning disks", e);
+            Util.handleExceptionNoRestart(Util.tr("Error scanning disks"), e);
         }
         doRefresh(diskListCompoundSettings);
         return true;
@@ -111,9 +110,9 @@ public class InstallDiskJPanel
             return true;
         }
         else{
-            MOneButtonJDialog dialog = MOneButtonJDialog.factory(InstallDiskJPanel.this.getTopLevelAncestor(), "Install Wizard",
-                                                                 "You must select a boot disk which you would like to install Untangle onto.",
-                                                                 "Install Wizard Message", "Message");
+            MOneButtonJDialog dialog = MOneButtonJDialog.factory(InstallDiskJPanel.this.getTopLevelAncestor(), Util.tr("Install Wizard"),
+                                                                 Util.tr("You must select a boot disk which you would like to install Untangle onto."),
+                                                                 Util.tr("Install Wizard Message"), Util.tr("Message"));
             return false;
         }
     }
@@ -222,5 +221,4 @@ public class InstallDiskJPanel
     private javax.swing.JScrollPane diskJScrollPane;
     private javax.swing.JLabel jLabel1;
     // End of variables declaration//GEN-END:variables
-
 }

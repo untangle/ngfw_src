@@ -60,21 +60,16 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
-import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.EtchedBorder;
 
 import com.untangle.gui.util.InfiniteProgressJComponent;
+import com.untangle.gui.util.Localizable;
 import com.untangle.gui.util.Util;
 import com.untangle.gui.widgets.dialogs.MOneButtonJDialog;
 
-public class MWizardJDialog extends javax.swing.JDialog implements java.awt.event.WindowListener {
-
-    // BUTTON STRINGS ///////
-    protected String STRING_NEXT_PAGE = "Next";
-    protected String STRING_PREVIOUS_PAGE = "Previous";
-    protected String STRING_FINAL_PAGE = "Finish";
-    protected String STRING_CLOSE_WIZARD = "Close";
+public class MWizardJDialog
+    extends javax.swing.JDialog
+    implements java.awt.event.WindowListener, Localizable {
 
     // LABEL COLORS /////
     protected Color COLOR_COMPLETED = Color.GRAY;
@@ -119,6 +114,17 @@ public class MWizardJDialog extends javax.swing.JDialog implements java.awt.even
     public MWizardJDialog(){
         super();
         init(null);
+    }
+
+    public void reloadStrings()
+    {
+        previousJButton.setText(Util.tr("Previous"));
+        closeJButton.setText(Util.tr("Close"));
+
+        for (String s : labelMap.keySet()) {
+            JLabel l = labelMap.get(s);
+            l.setText(Util.tr(s));
+        }
     }
 
     protected void init(Window parentWindow){
@@ -172,20 +178,21 @@ public class MWizardJDialog extends javax.swing.JDialog implements java.awt.even
             if( currentPage == 0 ){
                 nextJButton.setEnabled(true);
                 previousJButton.setVisible(false);
-                nextJButton.setText(STRING_NEXT_PAGE);
+
+                nextJButton.setText(Util.tr("Next"));
                 nextJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/widgets/wizard/IconNext_16x16.png")));
             }
             else if( currentPage < (wizardPageMap.size()-1) ){
                 nextJButton.setEnabled(true);
                 previousJButton.setVisible(true);
-                nextJButton.setText(STRING_NEXT_PAGE);
+                nextJButton.setText(Util.tr("Next"));
                 nextJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/widgets/wizard/IconNext_16x16.png")));
             }
             else{
                 closeJButton.setEnabled(true); //Sometimes user may want to abort on last step
                 nextJButton.setEnabled(true);
                 previousJButton.setVisible(true);
-                nextJButton.setText(STRING_FINAL_PAGE);
+                nextJButton.setText(Util.tr("Finish"));
                 nextJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/widgets/wizard/IconFinish_16x16.png")));
             }
             if( checkpointVector.elementAt(currentPage) )
@@ -230,7 +237,7 @@ public class MWizardJDialog extends javax.swing.JDialog implements java.awt.even
     public void addWizardPageJPanel(MWizardPageJPanel wizardPageJPanel, String title, boolean isCheckpoint, boolean doSave){
         wizardPageMap.put(title, wizardPageJPanel);
 
-        JLabel newJLabel = new JLabel(title);
+        JLabel newJLabel = new JLabel(Util.tr(title));
         newJLabel.setFocusable(false);
         newJLabel.setBorder(new EmptyBorder(0,0,FONT_SPACING,0));
         newJLabel.setFont(NORMAL_FONT);
@@ -256,7 +263,8 @@ public class MWizardJDialog extends javax.swing.JDialog implements java.awt.even
 
     public boolean isShiftDown(){return isShiftDown; }
 
-    private void initComponents() {//GEN-BEGIN:initComponents
+    // <editor-fold defaultstate="collapsed" desc=" Generated Code ">//GEN-BEGIN:initComponents
+    private void initComponents() {
         java.awt.GridBagConstraints gridBagConstraints;
 
         titleJPanel = new javax.swing.JPanel();
@@ -287,7 +295,7 @@ public class MWizardJDialog extends javax.swing.JDialog implements java.awt.even
 
         contentJPanel.setLayout(new java.awt.BorderLayout());
 
-        contentJPanel.setBorder(new javax.swing.border.CompoundBorder(new javax.swing.border.EmptyBorder(new java.awt.Insets(4, 4, 4, 4)), new javax.swing.border.EtchedBorder()));
+        contentJPanel.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createEmptyBorder(4, 4, 4, 4), javax.swing.BorderFactory.createEtchedBorder()));
         contentJPanel.setFocusable(false);
         contentJPanel.setRequestFocusEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -308,16 +316,16 @@ public class MWizardJDialog extends javax.swing.JDialog implements java.awt.even
         jPanel1.setOpaque(false);
         nextJButton.setFont(new java.awt.Font("Arial", 0, 12));
         nextJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/widgets/wizard/IconNext_16x16.png")));
-        nextJButton.setText("Next");
+        nextJButton.setText(Util.tr("Next"));
         nextJButton.setDoubleBuffered(true);
         nextJButton.setIconTextGap(6);
         nextJButton.setMargin(new java.awt.Insets(4, 8, 4, 8));
         nextJButton.setOpaque(false);
         nextJButton.addActionListener(new java.awt.event.ActionListener() {
-                public void actionPerformed(java.awt.event.ActionEvent evt) {
-                    nextJButtonActionPerformed(evt);
-                }
-            });
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                nextJButtonActionPerformed(evt);
+            }
+        });
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
@@ -327,16 +335,16 @@ public class MWizardJDialog extends javax.swing.JDialog implements java.awt.even
 
         previousJButton.setFont(new java.awt.Font("Arial", 0, 12));
         previousJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/widgets/wizard/IconPrevious_16x16.png")));
-        previousJButton.setText("Previous");
+        previousJButton.setText(Util.tr("Previous"));
         previousJButton.setDoubleBuffered(true);
         previousJButton.setIconTextGap(6);
         previousJButton.setMargin(new java.awt.Insets(4, 8, 4, 8));
         previousJButton.setOpaque(false);
         previousJButton.addActionListener(new java.awt.event.ActionListener() {
-                public void actionPerformed(java.awt.event.ActionEvent evt) {
-                    previousJButtonActionPerformed(evt);
-                }
-            });
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                previousJButtonActionPerformed(evt);
+            }
+        });
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
@@ -345,16 +353,16 @@ public class MWizardJDialog extends javax.swing.JDialog implements java.awt.even
 
         closeJButton.setFont(new java.awt.Font("Default", 0, 12));
         closeJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/widgets/wizard/IconClose_16x16.png")));
-        closeJButton.setText("Close");
+        closeJButton.setText(Util.tr("Close"));
         closeJButton.setDoubleBuffered(true);
         closeJButton.setIconTextGap(6);
         closeJButton.setMargin(new java.awt.Insets(4, 8, 4, 8));
         closeJButton.setOpaque(false);
         closeJButton.addActionListener(new java.awt.event.ActionListener() {
-                public void actionPerformed(java.awt.event.ActionEvent evt) {
-                    closeJButtonActionPerformed(evt);
-                }
-            });
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                closeJButtonActionPerformed(evt);
+            }
+        });
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -390,7 +398,7 @@ public class MWizardJDialog extends javax.swing.JDialog implements java.awt.even
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         getContentPane().add(backgroundJLabel, gridBagConstraints);
 
-    }//GEN-END:initComponents
+    }// </editor-fold>//GEN-END:initComponents
 
 
 

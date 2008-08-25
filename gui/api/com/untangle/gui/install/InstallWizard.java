@@ -52,23 +52,31 @@ public class InstallWizard extends MWizardJDialog {
     public InstallWizard(String[] args) {
         this.args = args;
         setModal(true);
-        setTitle("Untangle Platform Install Wizard");
+        setTitle(Util.tr("Untangle Platform Install Wizard"));
 
         InstallWelcomeJPanel iwjp = new InstallWelcomeJPanel();
         Util.addLocalizable(iwjp);
-        addWizardPageJPanel(iwjp, "1. Language", false, false);
+        addWizardPageJPanel(iwjp, Util.marktr("1. Language"), false, false);
         InstallLicenseJPanel iljp = new InstallLicenseJPanel();
         Util.addLocalizable(iljp);
-        addWizardPageJPanel(iljp, "2. License Agreement", false, false);
+        addWizardPageJPanel(iljp, Util.marktr("2. License Agreement"), false, false);
         InstallDiskJPanel idjp = new InstallDiskJPanel(this);
         Util.addLocalizable(idjp);
-        addWizardPageJPanel(idjp, "3. Choose Disk", false, false);
+        addWizardPageJPanel(idjp, Util.marktr("3. Choose Disk"), false, false);
         InstallBenchmarkJPanel ibjp = new InstallBenchmarkJPanel(this);
         Util.addLocalizable(ibjp);
-        addWizardPageJPanel(ibjp, "4. Hardware Test", false, false);
+        addWizardPageJPanel(ibjp, Util.marktr("4. Hardware Test"), false, false);
         InstallWarningJPanel iwajp = new InstallWarningJPanel();
         Util.addLocalizable(iwajp);
-        addWizardPageJPanel(iwajp, "5. Final Warning", false, false);
+        addWizardPageJPanel(iwajp, Util.marktr("5. Final Warning"), false, false);
+
+        Util.addLocalizable(this);
+    }
+
+    public void reloadStrings()
+    {
+        super.reloadStrings();
+        setTitle(Util.tr("Untangle Platform Install Wizard"));
     }
 
     private static String targetDisk;
@@ -96,12 +104,12 @@ public class InstallWizard extends MWizardJDialog {
     }
 
     protected void wizardFinishedAbnormal(int currentPage){
-        MTwoButtonJDialog dialog = MTwoButtonJDialog.factory(this, "Install Wizard", "If you exit now, " +
-                                                             " you will not be able to continue installation.  " +
-                                                             "You should continue, if possible.  ", "Install Wizard Warning",
-                                                             "Warning");
-        dialog.setProceedText("<html><b>Exit</b> Wizard</html>");
-        dialog.setCancelText("<html><b>Continue</b> Wizard</html>");
+        MTwoButtonJDialog dialog = MTwoButtonJDialog.factory(this, Util.tr("Install Wizard"),
+                                                             Util.tr("If you exit now, you will not be able to continue installation. You should continue, if possible."),
+                                                             Util.tr("Install Wizard Warning"),
+                                                             Util.tr("Warning"));
+        dialog.setProceedText(Util.tr("<html><b>Exit</b> Wizard</html>"));
+        dialog.setCancelText(Util.tr("<html><b>Continue</b> Wizard</html>"));
         dialog.setVisible(true);
         if( dialog.isProceeding() ){
             super.wizardFinishedAbnormal(currentPage);
@@ -126,11 +134,6 @@ public class InstallWizard extends MWizardJDialog {
                                                                                    new Color(215,215,215)); // POPUPS
             javax.swing.LookAndFeel alloyLnF = new com.incors.plaf.alloy.AlloyLookAndFeel(theme);
             javax.swing.UIManager.setLookAndFeel(alloyLnF);
-            /*
-              KunststoffLookAndFeel kunststoffLaf = new KunststoffLookAndFeel();
-              kunststoffLaf.setCurrentTheme(new KunststoffTheme());
-              UIManager.setLookAndFeel(kunststoffLaf);
-            */
         }
         catch (Exception e) {
             e.printStackTrace();
