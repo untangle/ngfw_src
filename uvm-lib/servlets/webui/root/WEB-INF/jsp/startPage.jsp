@@ -35,7 +35,7 @@
 
     <!-- todo, move this to a place where it is loaded dynamically. -->
     <script type="text/javascript" src="script/timezone.js"></script>
-    <script type="text/javascript" src="script/wizard.js"></script>
+    <script type="text/javascript" src="/setup/script/wizard.js"></script>
 
 <!-- Just for Test, normaly this resources are Dynamically loaded     
 -->	
