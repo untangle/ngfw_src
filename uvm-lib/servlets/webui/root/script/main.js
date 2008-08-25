@@ -450,7 +450,10 @@ Ung.Main.prototype = {
         this.apps=[];
         for(var i=0;i<rpc.rackView.applications.list.length;i++) {
             var application=rpc.rackView.applications.list[i];
-            this.apps.push(new Ung.AppItem(application));
+            var appCmp=new Ung.AppItem(application);
+            if(appCmp.isValid) {
+                this.apps.push(appCmp);
+            }
         }
         if(this.apps.length>0) {
         	Ext.getCmp("my_account_button").hide();
@@ -671,7 +674,6 @@ Ung.Main.prototype = {
         }
         return position;
     },
-
     addNode: function (node, startNode) {
         var nodeWidget=new Ung.Node(node);
         var place=(node.md.type=="NODE")?'security_nodes':'other_nodes';
@@ -679,10 +681,24 @@ Ung.Main.prototype = {
         nodeWidget.render(place,position);
         Ung.AppItem.updateStateForNode(node.name, "installed");
         if(startNode) {
-        	if(!nodeWidget.isRunning() && node.name!="untangle-node-openvpn") {
-            	nodeWidget.onPowerClick();
-        	}
+        	main.startNode(nodeWidget)
         }
+    },
+    startNode : function(nodeWidget) {
+        if(!nodeWidget.isRunning() && nodeWidget.name!="untangle-node-openvpn") {
+            nodeWidget.onPowerClick();
+        }
+    },
+    getNode : function(nodeName) {
+    	if(main.nodes) {
+            for (var i = 0; i < main.nodes.length; i++) {
+                if (nodeName == main.nodes[i].name) {
+                    return main.nodes[i];
+                    break;
+                }
+            }
+    	}
+        return null;
     },
     // Show - hide Services header in the rack
     updateSeparator: function() {

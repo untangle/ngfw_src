@@ -540,6 +540,7 @@ Ung.AppItem = Ext.extend(Ext.Component, {
     constructor : function(config) {
         var name="";
         this.subCmps=[];
+        this.isValid=true;
         if(config.libItem!=null) {
             name=config.libItem.name;
             this.item=config.libItem;
@@ -547,13 +548,17 @@ Ung.AppItem = Ext.extend(Ext.Component, {
             name=config.node.name;
             this.item=config.node;
         } else {
-            return;
-            //error
+           Ext.MessageBox.alert(i18n._("Apps Error"), i18n._("Error in Rack View applications list."));
+           this.isValid=false;
+           //error
         }
         this.id = "appItem_" + name;
         Ung.AppItem.superclass.constructor.apply(this, arguments);
     },
     onRender : function(container, position) {
+    	if(!this.isValid) {
+    		return;
+    	}
         Ung.AppItem.superclass.onRender.call(this, container, position);
         
         if (this.name && this.getEl()) {
@@ -584,9 +589,10 @@ Ung.AppItem = Ext.extend(Ext.Component, {
             renderTo : "state_" + this.getId(),
             height : 17,
             width : 120,
-            waitDefault : function() {
+            waitDefault : function( updateText) {
                 if (!this.isWaiting()) {
                     this.wait({
+                    	text:  updateText,
                         interval : 100,
                         increment : 15
                     });
@@ -600,18 +606,14 @@ Ung.AppItem = Ext.extend(Ext.Component, {
         this.progressBar.hide();
         this.subCmps.push(this.progressBar);
         if(this.libItem!=null && this.node==null) { //libitem
-            //this.getEl().on("click", this.linkToStoreFn, this);
-        	this.actionEl.on("click", this.linkToStoreFn, this);
+            this.getEl().on("click", this.linkToStoreFn, this);
+        	//this.actionEl.on("click", this.linkToStoreFn, this);
             this.actionEl.insertHtml("afterBegin", i18n._("More Info"));
             this.actionEl.addClass("iconInfo");
         } else if(this.node!=null) { //node
-            var label="Install";
-            if(this.libItem!=null) { //libitem and trial node
-                label="Trial Install";
-            }
-            //this.getEl().on("click", this.installNodeFn, this);
-            this.actionEl.on("click", this.installNodeFn, this);
-            this.actionEl.insertHtml("afterBegin", i18n._("Install"));
+            this.getEl().on("click", this.installNodeFn, this);
+            //this.actionEl.on("click", this.installNodeFn, this);
+            this.actionEl.insertHtml("afterBegin", this.libItem==null?i18n._("Install"):i18n._("Trial Install"));
             this.actionEl.addClass("iconArrowRight");
             if(this.libItem!=null) { //libitem and trial node
                 this.buttonBuy.setVisible(true);
@@ -621,7 +623,7 @@ Ung.AppItem = Ext.extend(Ext.Component, {
                 this.buttonBuy.addClass("iconArrowDown");
             }
         } else {
-            retrun;
+            return;
             //error
         }
     },
@@ -641,8 +643,7 @@ Ung.AppItem = Ext.extend(Ext.Component, {
             case "unactivating" :
                 this.displayButtonsOrProgress(false);
                 this.progressBar.reset();
-                this.progressBar.updateText(i18n._("Unactivating..."));
-                this.progressBar.waitDefault();
+                this.progressBar.waitDefault(i18n._("Unactivating..."));
                 break;
             case "activated" :
                 this.displayButtonsOrProgress(true);
@@ -652,14 +653,12 @@ Ung.AppItem = Ext.extend(Ext.Component, {
                 break;
             case "installing" :
                 this.displayButtonsOrProgress(false);
-                this.progressBar.updateText(i18n._("Installing..."));
-                this.progressBar.waitDefault();
+                this.progressBar.waitDefault(i18n._("Installing..."));
                 break;
             case "uninstalling" :
                 this.show();
                 this.displayButtonsOrProgress(false);
-                this.progressBar.updateText(i18n._("Uninstalling..."));
-                this.progressBar.waitDefault();
+                this.progressBar.waitDefault(i18n._("Uninstalling..."));
                 break;
             case "activating_downloading" :
                 this.displayButtonsOrProgress(false);
@@ -681,13 +680,11 @@ Ung.AppItem = Ext.extend(Ext.Component, {
                 break;
             case "activating" :
                 this.displayButtonsOrProgress(false);
-                this.progressBar.updateText(i18n._("Activating..."));
-                this.progressBar.waitDefault();
+                this.progressBar.waitDefault(i18n._("Activating..."));
                 break;
             case "waiting" :
                 this.displayButtonsOrProgress(false);
-                this.progressBar.updateText(i18n._("..."));
-                this.progressBar.waitDefault();
+                this.progressBar.waitDefault(i18n._("..."));
                 break;
         }
         this.state = newState;
@@ -1237,7 +1234,8 @@ Ung.MessageManager = {
                         if (msg.javaClass.indexOf("MackageInstallRequest") >= 0) {
                             var policy=null;
                             policy = rpc.currentPolicy;
-    
+                            var appItemName=msg.mackageDesc.type=="TRIAL"?msg.mackageDesc.fullVersion:msg.mackageDesc.name
+                            Ung.AppItem.updateState(appItemName, "activating");
                             rpc.toolboxManager.installAndInstantiate(function(result, exception) {
                                 if (exception) {
                                     Ext.MessageBox.alert(i18n._("Failed"), exception.message);
@@ -1248,12 +1246,15 @@ Ung.MessageManager = {
                         } else if (msg.javaClass.indexOf("MackageUpdateExtraName") >= 0) {
     
                         } else if(msg.javaClass.indexOf("NodeInstantiated") != -1) {
-                        	if(msg.nodeDesc.mackageDesc.type=="NODE") {
+                    		var node=main.getNode(msg.nodeDesc.mackageDesc.name)
+                            if(!node) {
                                 hasNodeInstantiated=true;
                                 var node=main.createNode(msg.nodeDesc.tid, msg.nodeDesc.mackageDesc, msg.statDescs);
                                 main.nodes.push(node);
                                 main.addNode(node, true);
-                        	}
+                            } else {
+                            	main.startNode(Ung.Node.getCmp(node.tid));
+                            }
                         }
                     }
                     if(hasNodeInstantiated) {

@@ -164,8 +164,10 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
                 displayNames.add(dn);
                 libitems.put(dn, md);
             } else if (type == MackageDesc.Type.TRIAL) {
-                displayNames.add(dn);
-                trials.put(dn, md);
+                //Workaround for Trial display names. better solution is welcome.
+                String realDn=dn.replaceFirst(" [0-9]+.Day Trial","");
+                displayNames.add(realDn);
+                trials.put(realDn, md);
             }
         }
 
@@ -176,7 +178,9 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
                 libitems.remove(dn);
                 trials.remove(dn);
             } else if (type == MackageDesc.Type.TRIAL) {
-                trials.remove(dn);
+                //Workaround for Trial display names. better solution is welcome.
+                String realDn=dn.replaceFirst(" [0-9]+.Day Trial","");
+                trials.remove(realDn);
             } else if (!md.isInvisible()
                        && (type == MackageDesc.Type.NODE
                            || type == MackageDesc.Type.SERVICE)) {
