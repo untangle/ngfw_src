@@ -344,7 +344,7 @@ public class SafelistManager
         List<SafelistCount> safelistCounts = new ArrayList<SafelistCount>(safelists.size());
         for(String account : safelists){
             
-            if (account.equals("GLOBAL")) {
+            if (account.equalsIgnoreCase("GLOBAL")) {
                 // ignnore GLOBAL safelist for admin
                 continue;
             }

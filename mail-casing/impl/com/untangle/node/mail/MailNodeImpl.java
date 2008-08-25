@@ -194,6 +194,13 @@ public class MailNodeImpl extends AbstractNode
         s_safelistMngr.setSettings(this, settings);
     }
 
+    public void setMailNodeSettingsWithoutSafelists(final MailNodeSettings settings)
+    {
+        //get initial safelists
+        settings.setSafelistSettings(this.settings.getSafelistSettings());
+        setMailNodeSettings(settings);
+    }
+    
     public QuarantineUserView getQuarantineUserView() {
         return m_quv;
     }

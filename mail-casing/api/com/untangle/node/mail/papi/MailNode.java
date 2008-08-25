@@ -42,6 +42,7 @@ public interface MailNode
 {
     MailNodeSettings getMailNodeSettings();
     void setMailNodeSettings(MailNodeSettings settings);
+    void setMailNodeSettingsWithoutSafelists(MailNodeSettings settings);
 
     /**
      * Get the interface to the Quarantine used for end-user

@@ -108,7 +108,7 @@ if (!Ung.hasResource["Ung.Email"]) {
             var mm = minutes < 10 ? "0" + minutes : minutes;
             return hh + ":" + mm;
         },
-        reloadQuarantinesDetails : function() {
+        loadQuarantinesDetails : function() {
             Ext.MessageBox.wait(i18n._("Loading..."), i18n._("Please wait"));
             this.getQuarantineMaintenenceView().getInboxRecordArray(
                 function(result, exception) {
@@ -133,8 +133,9 @@ if (!Ung.hasResource["Ung.Email"]) {
                 autoScroll : true,
                 
                 onEmailTest : function() {
-                    this.emailTestMessage = this.i18n
-                                ._("<center>\n<b>Email Test:</b><br><br>\nEnter an email address which you would like to send a test message to,<br>\nand then press \"Proceed\".  You should receive an email shortly after<br>\nrunning the test.  If not, your email settings may not be correct.<br><br>\nEmail Address:</center>");
+                    this.emailTestMessage = "<center>" + 
+                            this.i18n._("Enter an email address which you would like to send a test message to, and then press \"Proceed\".  You should receive an email shortly after running the test.  If not, your email settings may not be correct.") + 
+                            "</center>";
                     if( this.validateOutgoingServer() ) {
 	                    Ext.MessageBox.show({
 	                        title : this.i18n._('Email Test'),
@@ -338,11 +339,11 @@ if (!Ung.hasResource["Ung.Email"]) {
             });
         },
         buildFromSafeList : function() {
-            var valuesGlobal = this.getSafelistAdminView().getSafelistContents('GLOBAL');
-            var storeDataGlobal = [];
-            for(var i=0; i<valuesGlobal.length; i++) {
-                storeDataGlobal.push({id:i, emailAddress: valuesGlobal[i]});
-            }
+//            var valuesGlobal = this.getSafelistAdminView().getSafelistContents('GLOBAL');
+//            var storeDataGlobal = [];
+//            for(var i=0; i<valuesGlobal.length; i++) {
+//                storeDataGlobal.push({id:i, emailAddress: valuesGlobal[i]});
+//            }
             
             var smUserSafelist = new Ext.grid.CheckboxSelectionModel({singleSelect:false});
             var showDetailColumn = new Ext.grid.IconColumn({
@@ -374,15 +375,17 @@ if (!Ung.hasResource["Ung.Email"]) {
                     items : [ this.globalSafelistGrid = new Ung.EditorGrid({
                         name : 'Global',
                         hasEdit : false,
+//                        paginated : false,
                         settingsCmp : this,
-                        paginated : false,
+//                        data : storeDataGlobal,
+//                        dataRoot: null,
+//                        proxyRpcFn : this.getSafelistAdminView().getSafelistContents,
+//                        proxyRpcFnArgs : ['GLOBAL'],
                         height : 250,
                         emptyRow : {
                             "emailAddress" : this.i18n._("[no email address]")
                         },
                         autoExpandColumn : 'emailAddress',
-                        data : storeDataGlobal,
-                        dataRoot: null,
                         fields : [{
                             name : 'id'
                         }, {
@@ -403,7 +406,14 @@ if (!Ung.hasResource["Ung.Email"]) {
                             labelStyle : 'width: 80px;',
                             allowBlank : false,
                             width : 200
-                        })]
+                        })],
+                        store : new Ext.data.Store({
+                            proxy : new Ung.RpcProxy(this.getSafelistAdminView().getSafelistContents, ['GLOBAL'], false), 
+                            reader : new Ung.JsonListReader({
+                                root : null,
+                                fields : ['emailAddress']
+                            })
+                        }) 
                     })]
                 },{
                 	title : this.i18n._('Per User'),
@@ -750,16 +760,9 @@ if (!Ung.hasResource["Ung.Email"]) {
                                         
                                         this.show();
                                                 
-                                        Ext.MessageBox.wait(i18n._("Loading..."), i18n._("Please wait"));
-                                        this.settingsCmp.getQuarantineMaintenenceView().getInboxRecordArray(
-                                            function(result, exception) {
-                                                Ext.MessageBox.hide();
-                                                if (exception) {
-                                                    Ext.MessageBox.alert(i18n._("Failed"), exception.message);
-                                                    return;
-                                                }
-                                                this.settingsCmp.userQuarantinesDetailsGrid.store.loadData(result.inboxRecords);
-                                            }.createDelegate(this), emailAddress); 
+                                        //load Quarantines Details
+                                        this.settingsCmp.loadQuarantinesDetails();
+                                        
                                     }          
                                 });
                             }
@@ -798,7 +801,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                         }],
                         columns : [{
                             id : 'address',
-                            header : this.i18n._("quarantinable<br>address"),
+                            header : this.i18n._("quarantinable address"),
                             width : 200,
                             dataIndex : 'address',
                             editor : new Ext.form.TextField({
@@ -869,28 +872,28 @@ if (!Ung.hasResource["Ung.Email"]) {
                         }],
                         columns : [{
                             id : 'address1',
-                            header : this.i18n._("distribution<br>list address"),
+                            header : this.i18n._("distribution list address"),
                             width : 200,
                             dataIndex : 'address1',
                             editor : new Ext.form.TextField({
                             })
                         }, {
                             id : 'address2',
-                            header : this.i18n._("send to<br>address"),
+                            header : this.i18n._("send to address"),
                             width : 200,
                             dataIndex : 'address2',
                             editor : new Ext.form.TextField({
                             })
                         }],
                         rowEditorInputLines : [new Ext.form.TextField({
-                            name : "Distribution<br>List Address",
+                            name : "Distribution List Address",
                             dataIndex: "address1",
-                            fieldLabel : this.i18n._("Distribution<br>List Address"),
+                            fieldLabel : this.i18n._("Distribution List Address"),
                             width : 300
                         }), new Ext.form.TextField({
-                            name : "Send To<br>Address",
+                            name : "Send To Address",
                             dataIndex: "address2",
-                            fieldLabel : this.i18n._("Send To<br>Address"),
+                            fieldLabel : this.i18n._("Send To Address"),
                             width : 300
                         }), new Ext.form.TextField({
                             name : "Category",
@@ -941,8 +944,8 @@ if (!Ung.hasResource["Ung.Email"]) {
                                 Ext.MessageBox.alert(i18n._("Failed"), exception.message);
                                 return;
                             }
-                            //reload Quarantines Details
-                            this.reloadQuarantinesDetails();
+                            //load Quarantines Details
+                            this.loadQuarantinesDetails();
                         }.createDelegate(this), this.quarantinesDetailsWin.account, emails);
                         
                         this.userQuarantinesGrid.store.load();
@@ -970,8 +973,8 @@ if (!Ung.hasResource["Ung.Email"]) {
                                 return;
                             }
                             
-                            //reload Quarantines Details
-                            this.reloadQuarantinesDetails();
+                            //load Quarantines Details
+                            this.loadQuarantinesDetails();
                         }.createDelegate(this), this.quarantinesDetailsWin.account, emails);
                         
                         this.userQuarantinesGrid.store.load();
@@ -1049,7 +1052,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                         return detail;
                     }
                 }],
-                sortField : 'internDateAsDate',
+//                sortField : 'internDateAsDate',
                 columnsDefaultSortable : true,
                 autoExpandColumn : 'subject',
                 data : [],
@@ -1162,7 +1165,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                 }.createDelegate(this), this.getMailSettings());
                 
                 // save mail node settings
-                this.getMailNode().setMailNodeSettings(function(result, exception) {
+                this.getMailNode().setMailNodeSettingsWithoutSafelists(function(result, exception) {
                      if (exception) {
                          Ext.MessageBox.alert(i18n._("Failed"), exception.message);
                          return;
