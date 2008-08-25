@@ -257,7 +257,7 @@ public class QuarantineSettings implements Serializable {
 
     @Column(name="max_idle_inbox_time", nullable=false)
     public long getMaxIdleInbox() {
-        return m_maxMailIntern;
+        return m_maxIdleInbox;
     }
 
     /**
@@ -266,7 +266,7 @@ public class QuarantineSettings implements Serializable {
      * cleaned-up.  This is a relative unit (ie "2 weeks")
      */
     public void setMaxIdleInbox(long max) {
-        m_maxMailIntern = max;
+        m_maxIdleInbox = max;
     }
 
     @Column(name="quarantine_external_mail", nullable=false)

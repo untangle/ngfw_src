@@ -612,7 +612,8 @@ if (!Ung.hasResource["Ung.Email"]) {
                         listeners : {
                             "change" : {
                                 fn : function(elem, newValue) {
-                                    this.getMailNodeSettings().quarantineSettings.maxMailIntern = newValue * (1440*60*1000);
+                                	var millisecValue = newValue * 1440*60*1000;
+                                    this.getMailNodeSettings().quarantineSettings.maxMailIntern = millisecValue;
                                 }.createDelegate(this)
                             }
                         }
@@ -1164,7 +1165,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                     this.afterSave();
                 }.createDelegate(this), this.getMailSettings());
                 
-                // save mail node settings
+                // save mail node settings 
                 this.getMailNodeSettings().quarantineSettings.allowedAddressPatterns.list = this.quarantinableAddressesGrid.getFullSaveList()                
                 this.getMailNodeSettings().quarantineSettings.addressRemaps.list = this.quarantineForwardsGrid.getFullSaveList()                
                 this.getMailNode().setMailNodeSettingsWithoutSafelists(function(result, exception) {
