@@ -1165,6 +1165,8 @@ if (!Ung.hasResource["Ung.Email"]) {
                 }.createDelegate(this), this.getMailSettings());
                 
                 // save mail node settings
+                this.getMailNodeSettings().quarantineSettings.allowedAddressPatterns.list = this.quarantinableAddressesGrid.getFullSaveList()                
+                this.getMailNodeSettings().quarantineSettings.addressRemaps.list = this.quarantineForwardsGrid.getFullSaveList()                
                 this.getMailNode().setMailNodeSettingsWithoutSafelists(function(result, exception) {
                      if (exception) {
                          Ext.MessageBox.alert(i18n._("Failed"), exception.message);
