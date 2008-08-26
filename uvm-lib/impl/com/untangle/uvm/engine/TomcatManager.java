@@ -287,8 +287,6 @@ class TomcatManager
                                   int internalOpenHTTPSPort)
         throws Exception
     {
-        //logger.warn( "startTomcat: " + org.jabsorb.JSONSerializer.class.getClassLoader());
-
         // Change for 4.0: Put the Tomcat class loader insdie the UVM
         // class loader.
         ClassLoader uvmCl = Thread.currentThread().getContextClassLoader();
