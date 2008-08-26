@@ -22,7 +22,7 @@
     <script type="text/javascript" src="/script/i18n.js"></script>
     <script type="text/javascript" src="/script/timezone.js"></script>
 
-    <script type="text/javascript" src="script/wizard.js"></script>
+    <script type="text/javascript" src="/script/wizard.js"></script>
     <script type="text/javascript" src="script/setup.js"></script>
 
     

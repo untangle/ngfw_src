@@ -20,6 +20,7 @@ package com.untangle.node.openvpn;
 
 import com.untangle.uvm.security.Tid;
 
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Set;
@@ -30,12 +31,14 @@ import java.util.LinkedList;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.FileNotFoundException;
+import java.net.UnknownHostException;
 
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.node.HostAddress;
 import com.untangle.uvm.node.IPaddr;
 import com.untangle.uvm.node.NodeException;
+import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.ValidateException;
 
 import com.untangle.uvm.node.script.ScriptRunner;
@@ -71,6 +74,27 @@ class Sandbox
     Sandbox( VpnNode.ConfigState configState )
     {
         this.configState = configState;
+        if(configState==VpnNode.ConfigState.SERVER_ROUTE) {
+            //XXX: this is an workaround to add a default group.
+            List<VpnGroup> groupList=new ArrayList<VpnGroup>();
+            VpnGroup vpnGroup= new VpnGroup();
+            vpnGroup.setName("[no name]");
+            vpnGroup.setLive(true);
+            try {
+                vpnGroup.setAddress(IPaddr.parse("172.16.16.0"));
+                vpnGroup.setNetmask(IPaddr.parse("255.255.255.0"));
+            } catch (ParseException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (UnknownHostException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            groupList.add(vpnGroup);
+            this.groupList= new GroupList(groupList);
+            this.clientList=new ClientList();
+            this.siteList=new SiteList();
+        }
     }
 
     List<String> getAvailableUsbList() throws NodeException

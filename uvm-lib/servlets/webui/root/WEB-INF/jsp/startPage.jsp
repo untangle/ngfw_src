@@ -20,7 +20,7 @@
 
     <!-- todo, move this to a place where it is loaded dynamically. -->
     <script type="text/javascript" src="/script/timezone.js"></script>
-    <script type="text/javascript" src="/setup/script/wizard.js"></script>
+    <script type="text/javascript" src="/script/wizard.js"></script>
 </c:if>	
 <c:if test="${isDebug==true}">
 	<script type="text/javascript" src="/ext/source/core/Ext.js"></script>
@@ -34,8 +34,8 @@
     <script type="text/javascript" src="script/main.js"></script>
 
     <!-- todo, move this to a place where it is loaded dynamically. -->
-    <script type="text/javascript" src="script/timezone.js"></script>
-    <script type="text/javascript" src="/setup/script/wizard.js"></script>
+    <script type="text/javascript" src="/script/timezone.js"></script>
+    <script type="text/javascript" src="/script/wizard.js"></script>
 
 <!-- Just for Test, normaly this resources are Dynamically loaded     
 -->	
@@ -71,7 +71,7 @@
 	</script>
  </head>
 <body>
-<div id="container"></div>
-<div id="extraDiv1"><span></span></div>
+<div id="container" style="margin:0px 0px 0px 0px;"></div>
+<div id="extraDiv1" style="display:none;"><span></span></div>
 </body>
 </html>
