@@ -288,7 +288,7 @@ class TomcatManager
         throws Exception
     {
         //logger.warn( "startTomcat: " + org.jabsorb.JSONSerializer.class.getClassLoader());
-            
+
         // Change for 4.0: Put the Tomcat class loader insdie the UVM
         // class loader.
         ClassLoader uvmCl = Thread.currentThread().getContextClassLoader();
@@ -533,7 +533,6 @@ class TomcatManager
         protected Class<?> findClass( String name )
             throws ClassNotFoundException
         {
-            System.out.println( "Attempting to load the class: " + name );
             return super.findClass( name );
         }
     }
