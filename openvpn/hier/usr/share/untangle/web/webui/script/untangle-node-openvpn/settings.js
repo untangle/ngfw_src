@@ -828,6 +828,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 name : 'Address Pools',
                 // the total records is set from the base settings
                 paginated : false,
+                autoGenerateId: true,
                 height : inWizard?250:250,
                 emptyRow : {
                     "live" : true,
@@ -954,8 +955,13 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         fieldLabel : this.i18n._('Server Port (UDP)'),
                         width : 80,
                         name : 'Server Port (UDP)',
+                        id : 'openvpn_advanced_publicPort',
                         value : this.getVpnSettings().publicPort,
+                        allowDecimals: false,
+                        allowNegative: false,
                         allowBlank : false,
+                        blankText : this.i18n._("You must provide a valid port."),
+                        vtype : 'port',
                         listeners : {
                             "change" : {
                                 fn : function(elem, newValue) {
@@ -968,7 +974,9 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         fieldLabel : this.i18n._('Site Name'),
                         name : 'Site Name',
                         value : this.getVpnSettings().siteName,
+                        id : 'openvpn_advanced_siteName',
                         allowBlank : false,
+                        blankText : this.i18n._("You must enter a site name."),
                         listeners : {
                             "change" : {
                                 fn : function(elem, newValue) {
@@ -1068,11 +1076,74 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 }]
             });
         },
-        validateClient: function () {
-        	if(!Ext.getCmp("openvpn_advanced_dns1").validate()) {
-        		Ext.MessageBox.alert(i18n._("Failed"), this.i18n._("A Primary IP Address must be specified."));
+        
+        // validation function
+        validateClient : function() {
+            return  this.validateAdvanced() && this.validateGroups();
+        },
+        
+        //validate OpenVPN Advanced settings
+        validateAdvanced : function() {
+        	//validate port
+            var portCmp = Ext.getCmp("openvpn_advanced_publicPort"); 
+            if(!portCmp.validate()) {
+                Ext.MessageBox.alert(i18n._("Failed"), this.i18n._("You must provide a valid port."), 
+                    function () {
+                        this.tabs.activate(this.panelAdvanced);
+                        portCmp.focus(true);
+                    }.createDelegate(this) 
+                );
                 return false;
-        	};
+            };
+        	
+            //validate site name
+            var siteCmp = Ext.getCmp("openvpn_advanced_siteName"); 
+            if(!siteCmp.validate()) {
+                Ext.MessageBox.alert(i18n._("Failed"), this.i18n._("You must enter a site name."), 
+                    function () {
+                        this.tabs.activate(this.panelAdvanced);
+                        siteCmp.focus(true);
+                    }.createDelegate(this) 
+                );
+                return false;
+            };
+            
+        	var dns1Cmp = Ext.getCmp("openvpn_advanced_dns1"); 
+            if(!dns1Cmp.validate()) {
+                Ext.MessageBox.alert(i18n._("Failed"), this.i18n._("A valid Primary IP Address must be specified."), 
+                    function () {
+                        this.tabs.activate(this.panelAdvanced);
+                        dns1Cmp.focus(true);
+                    }.createDelegate(this) 
+                );
+                return false;
+            };
+            
+            var dns2Cmp = Ext.getCmp("openvpn_advanced_dns2"); 
+            if(!dns2Cmp.validate()) {
+                Ext.MessageBox.alert(i18n._("Failed"), this.i18n._("A valid Secondary IP Address must be specified."), 
+                    function () {
+                        this.tabs.activate(this.panelAdvanced);
+                        dns2Cmp.focus(true);
+                    }.createDelegate(this) 
+                );
+                return false;
+            };
+            
+            return true;
+        },
+        
+        validateGroups : function() {
+        	return true;
+        },
+        
+        
+/*        
+        validateClient: function () {
+//        	if(!Ext.getCmp("openvpn_advanced_dns1").validate()) {
+//        		Ext.MessageBox.alert(i18n._("Failed"), this.i18n._("A Primary IP Address must be specified."));
+//                return false;
+//        	};
         	var groupList=this.gridGroups.getFullSaveList();
         	if(groupList.length==0) {
                 Ext.MessageBox.alert(i18n._("Failed"), this.i18n._("You must create at least one group."));
@@ -1106,6 +1177,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             }
         	return true;
         },
+*/        
         validateServer : function () {
         	//TODO: start this from 0 and make it work.
         	// implement validation functions from VpnSettings.validate()
