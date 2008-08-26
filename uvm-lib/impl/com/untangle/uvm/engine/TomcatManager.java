@@ -91,7 +91,7 @@ class TomcatManager
         this.logDir = logDir;
 
         ClassLoader uvmCl = Thread.currentThread().getContextClassLoader();
-        ClassLoader tomcatParent = new TomClassLoader(uvmCl);
+        ClassLoader tomcatParent = uvmCl;
         try {
             // Entering Tomcat ClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             Thread.currentThread().setContextClassLoader(tomcatParent);
@@ -292,7 +292,7 @@ class TomcatManager
         // Change for 4.0: Put the Tomcat class loader insdie the UVM
         // class loader.
         ClassLoader uvmCl = Thread.currentThread().getContextClassLoader();
-        ClassLoader tomcatParent = new TomClassLoader(uvmCl);
+        ClassLoader tomcatParent = uvmCl;
         try {
             // Entering Tomcat ClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             Thread.currentThread().setContextClassLoader(tomcatParent);
@@ -523,12 +523,6 @@ class TomcatManager
         if (msg.contains("address already in use"))
             return true;
         return false;
-    }
-
-    private static class TomClassLoader extends ClassLoader {
-        TomClassLoader(ClassLoader parent) {
-            super(parent);
-        }
     }
 
     private void writeIncludes()
