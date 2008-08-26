@@ -529,12 +529,6 @@ class TomcatManager
         TomClassLoader(ClassLoader parent) {
             super(parent);
         }
-
-        protected Class<?> findClass( String name )
-            throws ClassNotFoundException
-        {
-            return super.findClass( name );
-        }
     }
 
     private void writeIncludes()
