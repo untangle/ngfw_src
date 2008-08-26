@@ -1091,7 +1091,8 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
         
         // validation function
         validateClient : function() {
-            return  this.validateAdvanced() && this.validateGroups() && this.validateVpnClients();
+            return  this.validateAdvanced() && this.validateGroups() && 
+                this.validateVpnClients() && this.validateVpnSites();
         },
         
         //validate OpenVPN Advanced settings
@@ -1196,6 +1197,20 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 }
             }
             
+            // Group names must all be unique                
+            for(var i=0;i<groupList.length;i++) {
+                for(var j=i+1; j<groupList.length;j++) {
+                    if (groupList[i].name.toLowerCase() == groupList[j].name.toLowerCase()) {
+                        Ext.MessageBox.alert(this.i18n._('Failed'), i18n.sprintf(this.i18n._("The group name: \"%s\" in row: %d already exists."), groupList[j].name.toLowerCase(), j+1),
+                            function () {
+                                this.tabs.activate(this.panelAdvanced);
+                            }.createDelegate(this) 
+                        );
+                        return false;
+                    }
+                }
+            }
+            
             return true;
         },
         
@@ -1210,31 +1225,97 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     );
                     return false;
                 }
+                
+                // Client names must all be unique                
+                for(var j=i+1; j<clientList.length;j++) {
+                    if (clientList[i].name == clientList[j].name) {
+                        Ext.MessageBox.alert(this.i18n._('Failed'), i18n.sprintf(this.i18n._("The client name: \"%s\" in row: %d already exists."), clientList[j].name, j+1),
+                            function () {
+                                this.tabs.activate(this.panelClients);
+                            }.createDelegate(this) 
+                        );
+                        return false;
+                    }
+                }
             }
             return true;
         },
         
-        validateServer : function () {
-        	//TODO: start this from 0 and make it work.
-        	// implement validation functions from VpnSettings.validate()
-        	var validateData = {
+        validateVpnSites : function() {
+            var siteList=this.gridSites.getFullSaveList();
+            // Site names must all be unique                
+            for(var i=0;i<siteList.length;i++) {
+                for(var j=i+1; j<siteList.length;j++) {
+                    if (siteList[i].name == siteList[j].name) {
+                        Ext.MessageBox.alert(this.i18n._('Failed'), i18n.sprintf(this.i18n._("The site name: \"%s\" in row: %d already exists."), siteList[j].name, j+1),
+                            function () {
+                                this.tabs.activate(this.panelClients);
+                            }.createDelegate(this) 
+                        );
+                        return false;
+                    }
+                }
+            }
+            return true;
+        },
+        
+        validateServer : function() {
+            var validateData = {
                 map : {},
                 javaClass : "java.util.HashMap"
-            };
-            try {
-                var result = this.getOpenVpnValidator().validate(validateData);
-                if (!result.valid) {
-                    var errorMsg = "";
-
-                    Ext.MessageBox.alert(this.i18n._("Validation failed"), errorMsg);
+            }; 
+            var groupList=this.gridGroups.getFullSaveList();
+            if (groupList.length > 0) {
+                validateData.map["GROUP_LIST"] = {"javaClass" : "java.util.ArrayList", list : groupList};
+            }
+            var siteList=this.gridSites.getFullSaveList();
+            if (siteList.length > 0) {
+                validateData.map["SITE_LIST"] = {"javaClass" : "java.util.ArrayList", list : siteList};
+            }
+            var exportList=this.gridExports.getFullSaveList();
+            if (exportList.length > 0) {
+                validateData.map["EXPORT_LIST"] = {"javaClass" : "java.util.ArrayList", list : exportList};
+            }
+        	
+            // now let the server validate
+            if (Ung.Util.hasData(validateData.map)) {
+                try {
+                    var result = this.getValidator().validate(validateData);
+                    if (!result.valid) {
+                        var errorMsg = "";
+                        var tabToActivate = null;
+                        switch (result.errorCode) {
+                            case 'ERR_GROUP_LIST_OVERLAP' : 
+                                errorMsg = i18n.sprintf(this.i18n._("The two networks: %s and %s cannot overlap"),result.cause[0],result.cause[1]);
+                                tabToActivate = this.panelAdvanced;
+                            break;
+                            case 'ERR_SITE_LIST_OVERLAP' : 
+                                errorMsg = i18n.sprintf(this.i18n._("The two networks: %s and %s cannot overlap"),result.cause[0],result.cause[1]);
+                                tabToActivate = this.panelClients;
+                            break;
+                            case 'ERR_EXPORT_LIST_OVERLAP' : 
+                                errorMsg = i18n.sprintf(this.i18n._("The two networks: %s and %s cannot overlap"),result.cause[0],result.cause[1]);
+                                tabToActivate = this.gridExports;
+                            break;
+                            default :
+                                errorMsg = this.i18n._(result.errorCode) + ": " + result.cause;
+                        }
+                        Ext.MessageBox.alert(this.i18n._("Validation failed"), errorMsg,
+                            function() {
+									this.settingsCmp.tabs.activate(this.tabToActivate);
+							}.createDelegate({settingsCmp:this,tabToActivate:tabToActivate} )
+						);
+                        return false;
+                    }
+                } catch (e) {
+                    Ext.MessageBox.alert(i18n._("Failed"), e.message);
                     return false;
                 }
-            } catch (e) {
-                Ext.MessageBox.alert(i18n._("Failed"), e.message);
-                return false;
             }
-        	return true;
+            
+            return true;
         },
+        
         // save function
         save : function() {
             // validate first

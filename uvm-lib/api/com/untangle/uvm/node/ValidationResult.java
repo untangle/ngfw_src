@@ -72,4 +72,16 @@ public class ValidationResult implements Serializable {
     public Object getCause() {
         return cause;
     }
+
+    public void setValid(boolean valid) {
+        this.valid = valid;
+    }
+
+    public void setErrorCode(String errorCode) {
+        this.errorCode = errorCode;
+    }
+
+    public void setCause(Object cause) {
+        this.cause = cause;
+    }
 }
