@@ -12,32 +12,39 @@ Ung.SetupWizard.LabelWidth = 200;
 Ung.SetupWizard.LabelWidth2 = 214;
 Ung.SetupWizard.LabelWidth3 = 70;
 Ung.SetupWizard.LabelWidth4 = 100;
-Ext.apply(Ext.form.VTypes, {
-	ipCheck:function(val,field){
+
+Ext.apply( Ext.form.VTypes, {
+    ipCheck : function( val, field )
+    {
 		var re = /\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b/;
-		if(val.match(re)){
+		if ( val.match( re )) {
 			return true;
 		}
 	},
-	emailAddressCheck:function(val,field){
-		var re = /[a-z0-9!#$%&'*+\/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+\/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
-		if(val.match(re)){
+        
+	emailAddressCheck : function( val, field )
+    {
+        var re = new RegExp( "[a-z0-9!#$%&'*+\/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+\/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?");
+        if( val.match( re )) {
 			return true;
 		}
 	},
-	emailAddressMatchCheck:function(val,field){
+        
+    emailAddressMatchCheck : function( val, field )
+    {
 		var email_original = Ext.getCmp(field.compareEmailField);
 		return val == email_original.getValue();
 	},
-	passwordConfirmCheck:function(val,field){
+	passwordConfirmCheck : function(val,field){
 		var pass_original = Ext.getCmp(field.comparePasswordField);
 		return val == pass_original.getValue();
 	},
-	ipCheckText :'Please enter a valid IP Address',
-	emailAddressCheckText:'Please enter a valid email address',
-	emailAddressMatchCheckText:'Email addresses do not match',
-	passwordConfirmCheckText:'Passwords do not match'
+	ipCheckText : 'Please enter a valid IP Address',
+	emailAddressCheckText : 'Please enter a valid email address',
+	emailAddressMatchCheckText : 'Email addresses do not match',
+	passwordConfirmCheckText : 'Passwords do not match'
 });
+
 Ung.SetupWizard.Welcome = Ext.extend(Object,
 {
     constructor : function( config )
@@ -45,13 +52,13 @@ Ung.SetupWizard.Welcome = Ext.extend(Object,
         var panel = new Ext.FormPanel({
             items : [
 				{
-					xtype:'label',
+					xtype : 'label',
 					html : '<h2 class="wizardTitle">'+i18n._( "Thanks for using Untangle" )+'</h2>',
 				
 				},
 				{
                 xtype : 'label',
-				cls:'noborder',
+				cls : 'noborder',
                 html : i18n._( 'This wizard will guide you through the inital setup and configuration of your Untangle Server. <br/><br/>Click <b>Next</b> to get started.' )
                     }],
 				
@@ -72,19 +79,19 @@ Ung.SetupWizard.Settings = Ext.extend(Object, {
             defaultType : 'fieldset',
             defaults : { 
                 autoHeight : true,
-				cls:'noborder'
+				cls : 'noborder'
             },
             items : [
 				{
-					xtype:'label',
+					xtype : 'label',
 					html : '<h2 class="wizardTitle">'+i18n._( "Configure your Server" )+'</h2>',
 				
 				},
 				{
                 defaultType : 'textfield',
-				defaults:{
-					msgTarget:'side',
-					validationEvent:'blur'
+				defaults : {
+					msgTarget : 'side',
+					validationEvent : 'blur'
 				},
                 items : [				
 				{				
@@ -96,26 +103,26 @@ Ung.SetupWizard.Settings = Ext.extend(Object, {
                     inputType : 'text',
                     fieldLabel : i18n._('Login'),
                     name : 'login',
-					value:'admin',
-					readOnly:true,
-					fieldClass:'noborder',
-					ctCls:'smallTopMargin'
+					value : 'admin',
+					readOnly : true,
+					fieldClass : 'noborder',
+					ctCls : 'smallTopMargin'
                 },
 				{
                     inputType : 'password',
                     fieldLabel : i18n._('Password'),
                     name : 'password',
-					id:'settings_password',
-					allowBlank:false,
+					id : 'settings_password',
+					allowBlank : false,
                     minLength : 3,
                     minLengthText : i18n.sprintf(i18n._("The password is shorter than the minimum %d characters."), 3)
                 },{
                     inputType : 'password',
                     fieldLabel : i18n._('Confirm Password'),
                     name : 'confirmPassword',
-					allowBlank:false,
-					comparePasswordField:'settings_password',
-					vtype:'passwordConfirmCheck'
+					allowBlank : false,
+					comparePasswordField : 'settings_password',
+					vtype : 'passwordConfirmCheck'
                 }]
             },{
                 items : [
@@ -136,7 +143,7 @@ Ung.SetupWizard.Settings = Ext.extend(Object, {
                     value : Ung.SetupWizard.CurrentValues.timezone,
                     triggerAction : 'all',
                     listClass : 'x-combo-list-small',
-					ctCls:'smallTopMargin'
+					ctCls : 'smallTopMargin'
                 }]
             }]
         });
@@ -161,6 +168,8 @@ Ung.SetupWizard.Settings = Ext.extend(Object, {
 });
 
 Ung.SetupWizard.SettingsSaver = Ext.extend( Object, {
+    password : null,
+
     constructor : function( panel, handler )
     {
         this.panel = panel;
@@ -169,71 +178,60 @@ Ung.SetupWizard.SettingsSaver = Ext.extend( Object, {
 
     savePassword : function()
     {
-        /* First clear all of the user passwords */
-        var users = Ung.SetupWizard.CurrentValues.users.users.set;
-
         /* New Password */
-        var password = this.panel.find( "name", "password" )[0].getValue();
-        
-        for ( key in users ) {
-            var user = users[key];
-            user.password = "";
-            if ( user.login == "admin" ) user.clearPassword = password;
-        }
-
-        rpc.adminManager.setAdminSettings( this.saveTimeZone.createDelegate( this ), Ung.SetupWizard.CurrentValues.users );
+        this.password = this.panel.find( "name", "password" )[0].getValue();
+        rpc.setup.setAdminPassword( this.saveTimeZone.createDelegate( this ), this.password );
     },
 
     saveTimeZone : function( result, exception )
     {
         if( exception ) {
-            Ext.MessageBox.alert(i18n._( "Unable to save the admin password" ),exception.message); 
+            Ext.MessageBox.alert(i18n._( "Unable to save the admin password" ), exception.message ); 
             return;
         }
         
         var timezone = this.panel.find( "name", "timezone" )[0].getValue();
         
-        rpc.adminManager.setTimeZone( this.complete.createDelegate( this ), timezone );
+        rpc.setup.setTimeZone( this.authenticate.createDelegate( this ), timezone );
     },
 
-    /* This is no longer used */
-    saveHostname : function( result, exception )
-    {
-        if( exception ) {
-            Ext.MessageBox.alert(i18n._( "Unable to save the time zone" ),exception.message); 
-            return;
-        }
-        
-        var addressSettings = Ung.SetupWizard.CurrentValues.addressSettings;
-        
-        addressSettings.hostName = this.panel.find( "name", "hostname" )[0].getValue();
-        
-        rpc.networkManager.setAddressSettings( this.saveAutoUpgrade.createDelegate( this ), 
-                                               addressSettings );
-    },
-
-    /* This is no longer used */
-    saveAutoUpgrade : function( result, exception )
-    {
-        if( exception ) {
-            Ext.MessageBox.alert(i18n._( "Unable to save the hostname" ),exception.message); 
-            return;
-        }
-
-        var upgradeSettings = Ung.SetupWizard.CurrentValues.upgradeSettings;
-        upgradeSettings.autoUpgrade = this.panel.find( "name", "autoUpgrade" )[0].getValue();
-
-        rpc.toolboxManager.setUpgradeSettings( this.complete.createDelegate( this ), upgradeSettings );
-    },
-
-    complete : function( result, exception )
+    authenticate : function( result, exception )
     {
         if ( exception ) {
-            Ext.MessageBox.alert("Unable to save Upgrade Settings",exception.message); 
+            Ext.MessageBox.alert("Unable to save Time zone settings",exception.message); 
             return;
         }
-
-        this.handler();
+        
+        Ext.Ajax.request({ 
+            params : {
+                username : 'admin',
+                password : this.password
+            },
+            /* If it uses the default type then this will not work
+             * because the authentication handler doesn't like utf8 */
+            headers : { 
+                'Content-Type' : "application/x-www-form-urlencoded"
+            },
+            url : '/auth/login?url=/webui/setupSettings.js&realm=Administrator',
+            callback : this.getManagers.createDelegate( this )
+        });
+    },
+        
+    getManagers : function( options, success, response )
+    {
+        if ( success ) {
+            eval( response.responseText );
+            /* It is very wrong to do this all synchronously */
+            rpc.jsonrpc = new JSONRpcClient( "/webui/JSON-RPC" );
+            rpc.adminManager = rpc.jsonrpc.RemoteUvmContext.adminManager();
+            rpc.networkManager = rpc.jsonrpc.RemoteUvmContext.networkManager();
+            rpc.connectivityTester = rpc.jsonrpc.RemoteUvmContext.getRemoteConnectivityTester();
+            rpc.toolboxManager = rpc.jsonrpc.RemoteUvmContext.toolboxManager();
+            rpc.mailSender = rpc.jsonrpc.RemoteUvmContext.mailSender();
+            this.handler();
+        } else {
+            Ext.MessageBox.alert("Unable to save password.",exception.message); 
+        }
     }
 });
 
@@ -296,25 +294,25 @@ Ung.SetupWizard.Registration = Ext.extend( Object, {
             defaultType : 'fieldset',
             defaults : { 
                 autoHeight : true,
-				cls:'noborder'
+				cls : 'noborder'
 				
             },
             items : [{
-					xtype:'label',
+					xtype : 'label',
 					html : '<h2 class="wizardTitle">'+i18n._( "Registration" )+'</h2>',
 				
 				},{
                 defaultType : 'textfield',
-				defaults:{
-					validationEvent:'blur',
-					msgTarget:'side'
+				defaults : {
+					validationEvent : 'blur',
+					msgTarget : 'side'
 				},
                 items : [
 				{
-					xtype:'label',
+					xtype : 'label',
 					html : i18n._( '<span class="requiredstar">*</span> indicates Required Information' ),
-					border:false,
-					cls:'requiredInfo'
+					border : false,
+					cls : 'requiredInfo'
 				},
 				{
                     xtype : 'label',
@@ -323,36 +321,36 @@ Ung.SetupWizard.Registration = Ext.extend( Object, {
                 },{
                     fieldLabel : '<span class="requiredstar">*</span>'+i18n._('Email'),
                     name : 'email',
-					id:'registration_email',
-                    width: 200,
-					allowBlank:false,					
-					ctCls:'smallTopMargin',
-					vtype:'emailAddressCheck',					
+					id : 'registration_email',
+                    width : 200,
+					allowBlank : false,					
+					ctCls : 'smallTopMargin',
+					vtype : 'emailAddressCheck',					
 					
                 },{
                     fieldLabel : '<span class="requiredstar">*</span>'+i18n._('Confirm Email'),
                     name : 'confirmEmail',
-					allowBlank:false,										
-					compareEmailField:'registration_email',
-					vtype:'emailAddressMatchCheck',
-                    width: 200
+					allowBlank : false,										
+					compareEmailField : 'registration_email',
+					vtype : 'emailAddressMatchCheck',
+                    width : 200
                 },{
                     fieldLabel : '<span class="requiredstar">*</span>'+i18n._('Company Name'),
                     name : 'companyName',
-					allowBlank:false,
-					blankText:i18n._('Company name is required')										
+					allowBlank : false,
+					blankText : i18n._('Company name is required')										
                 },{
                     fieldLabel : '<span class="requiredstar">*</span>'+i18n._('Name'),
                     name : 'name',
-					allowBlank:false,
-					blankText:i18n._('Name is required')					
+					allowBlank : false,
+					blankText : i18n._('Name is required')					
                 },{
                     xtype : 'numberfield',
                     minValue : 0,
                     allowDecimals : false,
                     fieldLabel : '<span class="requiredstar">*</span>'+i18n._('Number of personal computers behind Untangle Server'),
                     name : 'numSeats',
-					allowBlank:false	
+					allowBlank : false	
                 }]
             },{
                 defaultType : 'textfield',
@@ -370,7 +368,7 @@ Ung.SetupWizard.Registration = Ext.extend( Object, {
                     mode : 'local',
                     triggerAction : 'all',
                     listClass : 'x-combo-list-small',
-					ctCls:'smallTopMargin'					
+					ctCls : 'smallTopMargin'					
                 },{
                     fieldLabel : i18n._('State/Province'),
                     name : "state"
@@ -390,7 +388,7 @@ Ung.SetupWizard.Registration = Ext.extend( Object, {
                 },{
                     xtype : 'combo',
                     width : 70,
-                    listWidth: 75,
+                    listWidth : 75,
                     mode : 'local',
                     triggerAction : 'all',
                     store : this.employeeStore,
@@ -406,10 +404,11 @@ Ung.SetupWizard.Registration = Ext.extend( Object, {
             cardTitle : i18n._( "Registration" ),
             panel : this.form,
             onNext : this.saveRegistrationInfo.createDelegate( this ),
-			onValidate: this.validateRegistration.createDelegate(this)
+			onValidate : this.validateRegistration.createDelegate(this)
         };
     },
-	validateRegistration : function(){
+	validateRegistration : function()
+    {
 		var rv = _validate(this.card.panel.items.items);
 		return rv;
 	},
@@ -464,11 +463,9 @@ Ung.SetupWizard.Registration = Ext.extend( Object, {
 Ung.SetupWizard.Interfaces = Ext.extend( Object, {
     constructor : function()
     {
-        var data = this.fixInterfaceList( Ung.SetupWizard.CurrentValues.interfaceArray );
-    
         this.interfaceStore = new Ext.data.Store({
             reader : new Ext.data.ArrayReader({},[{ name : "name" }, { name : "status" }]),
-            data : data
+            data : []
         });
     
         var refreshButton = new Ext.Button( {
@@ -480,43 +477,43 @@ Ung.SetupWizard.Interfaces = Ext.extend( Object, {
             store : this.interfaceStore,
             loadMask : true,
             stripeRows : true,
-			baseCls:'smallTopMargin',
+			baseCls : 'smallTopMargin',
             enableColumnResize : false,
             autoResizeColumn : 2,
             disableSelection : false,
-            selModel: new Ext.grid.RowSelectionModel({singleSelect:true}),
+            selModel : new Ext.grid.RowSelectionModel({singleSelect : true}),
             enableDragDrop : true,
-            ddGroup: 'interfaceDND',
+            ddGroup : 'interfaceDND',
             ddText : '',
             height : 300,
             tbar : [ refreshButton ],
             cm : new Ext.grid.ColumnModel([
             {
-               header: i18n._( "Name" ),
-               dataIndex: 'name',
+               header : i18n._( "Name" ),
+               dataIndex : 'name',
                sortable : false,
                fixed : true,
-               width: 100
+               width : 100
             },{
-               header: i18n._( "Status" ),
-               dataIndex: 'status',
+               header : i18n._( "Status" ),
+               dataIndex : 'status',
                sortable : false,
                renderer : function( value ) {
-                   return value[0] + ": " + value[1];
+                   return value[0] + " : " + value[1];
                },
                width : 400
             }]),
         });
     
         var panel = new Ext.Panel({
-			defaults:{cls:'noborder'},
+			defaults : { cls : 'noborder' },
             items : [
 				{
-					html:'<h2 class="wizardTitle">'+i18n._('Identify Network Cards')+'<h2>',
-					border: false
+					html : '<h2 class="wizardTitle">'+i18n._('Identify Network Cards')+'<h2>',
+					border : false
 				},
 				{
-				xtype:'label',
+				xtype : 'label',
                 html : i18n._( 'This step can help you identify your external, internal, and other network cards. Plug an active cable into each network card one at a time and hit refresh to determine which network card is which. You can also drag and drop the interfaces to remap them at this time.' ),
                 border : false
             }, this.interfaceGrid ]
@@ -542,9 +539,13 @@ Ung.SetupWizard.Interfaces = Ext.extend( Object, {
     
     initializeDragAndDrop : function()
     {
+        var data = this.fixInterfaceList( Ung.SetupWizard.CurrentValues.interfaceArray );
+        
+        this.interfaceStore.loadData( data );
+
         var ddrow = new Ext.dd.DropTarget(this.interfaceGrid.getView().mainBody, {
             ddGroup : 'interfaceDND',                
-            copy:false,
+            copy : false,
             notifyDrop : this.onNotifyDrop.createDelegate( this )
         });
     },
@@ -689,7 +690,7 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
         this.cards.push( this.dhcpPanel = new Ext.FormPanel({
             saveData : this.saveDHCP.createDelegate( this ),
             border : false,
-			cls:'networkCardFormMargin',
+			cls : 'networkCardFormMargin',
             labelWidth : Ung.SetupWizard.LabelWidth,
             defaultType : 'textfield',			
             items : [{
@@ -697,8 +698,8 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
                 title : i18n._( "DHCP Settings" ),
                 defaultType : 'textfield',
                 defaults : {
-					readOnly:true,
-					fieldClass:'noborder',
+					readOnly : true,
+					fieldClass : 'noborder',
                 },
                 autoHeight : true,
                 items : [
@@ -722,11 +723,11 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
 	                text : i18n._( 'Refresh' ),
 	                handler : this.refresh.createDelegate( this ),
 	                disabled : false,
-					cls:'rightAlign'					
+					cls : 'rightAlign'					
 				},{
                 xtype : 'button',
                 text : i18n._( 'Test Connectivity' ),
-				cls:'testConnectivity',
+				cls : 'testConnectivity',
                 handler : this.testConnectivity.createDelegate( this ),
                 disabled : false
             }]
@@ -736,7 +737,7 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
         this.cards.push( this.staticPanel = new Ext.FormPanel({
             saveData : this.saveStatic.createDelegate( this ),
             border : false,
-			cls:'networkCardFormMargin',			
+			cls : 'networkCardFormMargin',			
             labelWidth : Ung.SetupWizard.LabelWidth,
             defaultType : 'textfield',
             items : [{
@@ -745,37 +746,37 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
                 defaultType : 'textfield',
                 defaults : {
                     disabled : false,
-					msgTarget:'side',
-					maskRe:/(\d+|\.)/,
-					vtype:'ipCheck',					
+					msgTarget : 'side',
+					maskRe : /(\d+|\.)/,
+					vtype : 'ipCheck',					
                 },
                 autoHeight : true,
-				items:[
+				items : [
 					{
 		                name : "ip",
 		                fieldLabel : i18n._( "IP" ),
-						allowBlank:false							
+						allowBlank : false							
 		            },{
 		                name : "netmask",
 		                fieldLabel : i18n._( "Netmask" ),
-						vText:i18n._('Invalid Netmask Value'),
-						allowBlank:false													
+						vText : i18n._('Invalid Netmask Value'),
+						allowBlank : false													
 		            },{
 		                name : "gateway",
 		                fieldLabel : i18n._( "Gateway" ),
-						allowBlank:false													
+						allowBlank : false													
 		            },{
 		                name : "dns1",
 		                fieldLabel : i18n._( "Primary DNS" ),
-						allowBlank:false													
+						allowBlank : false													
 		            },{
 		                name : "dns2",
 		                fieldLabel : i18n._( "Secondary DNS" ),
-						allowBlank:false													
+						allowBlank : false													
 		            },{
                 xtype : 'button',
                 text : i18n._( 'Test Connectivity' ),
-				cls:'testConnectivity2',
+				cls : 'testConnectivity2',
                 handler : this.testConnectivity.createDelegate( this ),
                 disabled : false
             }
@@ -786,7 +787,7 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
         this.cards.push( this.pppoePanel = new Ext.FormPanel({
             saveData : this.savePPPoE.createDelegate( this ),
             border : false,
-			cls:'networkCardFormMargin',						
+			cls : 'networkCardFormMargin',						
             labelWidth : Ung.SetupWizard.LabelWidth2,
             defaultType : 'textfield',
             items : [{
@@ -794,61 +795,61 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
                 title : i18n._( "PPPoE Settings" ),
                 defaultType : 'textfield',
                 defaults : {
-					readOnly:true
+					readOnly : true
 				},
                 autoHeight : true,
                 items : [{
 	                fieldLabel : i18n._( "Username" ),
 	                name : "username",
 	                disabled : false,
-					readOnly:false,
-					fieldClass:'',
-					labelStyle:'width:'+Ung.SetupWizard.LabelWidth+'px'					
+					readOnly : false,
+					fieldClass : '',
+					labelStyle : 'width : '+Ung.SetupWizard.LabelWidth+'px'					
 	            },{
 	                name : "password",
 	                inputType : 'password',
 	                fieldLabel : i18n._( "Password" ),
 	                disabled : false,
-					readOnly:false,
-					fieldClass:'',
-					labelStyle:'width:'+Ung.SetupWizard.LabelWidth+'px'					
+					readOnly : false,
+					fieldClass : '',
+					labelStyle : 'width : '+Ung.SetupWizard.LabelWidth+'px'					
 	            },
 				{
                     fieldLabel : i18n._( "IP" ),
-					labelStyle:'width:'+Ung.SetupWizard.LabelWidth+'px',
+					labelStyle : 'width : '+Ung.SetupWizard.LabelWidth+'px',
                     name : "ip",
-					fieldClass:'noborder'					
+					fieldClass : 'noborder'					
                 },{
                     fieldLabel : i18n._( "Netmask" ),
                     name : "netmask",
-					labelStyle:'width:'+Ung.SetupWizard.LabelWidth+'px',
-					fieldClass:'noborder'					
+					labelStyle : 'width : '+Ung.SetupWizard.LabelWidth+'px',
+					fieldClass : 'noborder'					
                 },{
                     name : "gateway",
                     fieldLabel : i18n._( "Gateway" ),
-					labelStyle:'width:'+Ung.SetupWizard.LabelWidth+'px',
-					fieldClass:'noborder'					
+					labelStyle : 'width : '+Ung.SetupWizard.LabelWidth+'px',
+					fieldClass : 'noborder'					
                 },{
                     name : "dns1",
                     fieldLabel : i18n._( "Primary DNS" ),
-					labelStyle:'width:'+Ung.SetupWizard.LabelWidth+'px',
-					fieldClass:'noborder'					
+					labelStyle : 'width : '+Ung.SetupWizard.LabelWidth+'px',
+					fieldClass : 'noborder'					
                 },{
                     name : "dns2",
                     fieldLabel : i18n._( "Secondary DNS" ),
-					labelStyle:'width:'+Ung.SetupWizard.LabelWidth+'px',
-					fieldClass:'noborder'					
+					labelStyle : 'width : '+Ung.SetupWizard.LabelWidth+'px',
+					fieldClass : 'noborder'					
                 },
 				{
                 xtype : 'button',
                 text : i18n._( 'Refresh' ),
                 handler : this.refresh.createDelegate( this ),
                 disabled : false,
-				cls:'rightAlign'
+				cls : 'rightAlign'
 				},{
                 xtype : 'button',
                 text : i18n._( 'Test Connectivity' ),
-				cls:'testConnectivity',				
+				cls : 'testConnectivity',				
                 handler : this.testConnectivity.createDelegate( this ),
                 disabled : false
             }				
@@ -875,7 +876,7 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
             labelWidth : Ung.SetupWizard.LabelWidth2,
             items : [{
                 html : '<h2 class="wizardTitle">'+i18n._('Configure your Internet Connection')+'<h2>',
-                border: false
+                border : false
             },{
                 xtype : 'combo',
                 fieldLabel : i18n._('Configuration Type'),
@@ -921,7 +922,7 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
 			onValidate : this.validateInternetConnection.createDelegate(this)			
         }
     },
-    validateInternetConnection:function(){
+    validateInternetConnection : function(){
 		var _config = this.card.panel.find("name","configType")[0];
 		var rv = _validate(this[_config.getValue()+'Panel'].items.items);
 		return rv;		
@@ -1073,27 +1074,27 @@ Ung.SetupWizard.InternalNetwork = Ext.extend( Object, {
 				labelWidth : Ung.SetupWizard.LabelWidth3,			
             },
             items : [{
-                xtype:'label',
+                xtype : 'label',
                 html : '<h2 class="wizardTitle">'+i18n._( "Configure your Internal Network Interface" )+'</h2>',
             },{
                 //title : i18n._( 'Transparent Bridge' ),
-                cls:'noborder',
+                cls : 'noborder',
                 items : [{
                     xtype : 'radio',
                     name : 'bridgeInterfaces',
                     inputValue : 'bridge',
-                    boxLabel:i18n._('Transparent Bridge'),
-                    ctCls:'largeOption',					
+                    boxLabel : i18n._('Transparent Bridge'),
+                    ctCls : 'largeOption',					
                     hideLabel : 'true'
                 },{
-                    xtype:'label',
-                    html:'<div class="wizardlabelmargin1">'+i18n._('This is recommended if the external port is plugged into a firewall/router. This bridges Internal and External and disables DHCP.')+'</div>'
+                    xtype : 'label',
+                    html : '<div class="wizardlabelmargin1">'+i18n._('This is recommended if the external port is plugged into a firewall/router. This bridges Internal and External and disables DHCP.')+'</div>'
                 },{
                     xtype : 'label',
                     html : '<img class="wizardlabelmargin2" src="/skins/' + Ung.SetupWizard.currentSkin + '/images/admin/wizard/bridge.png"/>'
                 }]
             },{
-                cls:'noborder tallMargin',	
+                cls : 'noborder tallMargin',	
                 items : [{
                     xtype : 'radio',
                     name : 'bridgeInterfaces',
@@ -1109,8 +1110,8 @@ Ung.SetupWizard.InternalNetwork = Ext.extend( Object, {
                         }
                     }
                 },{
-                    xtype:'label',
-                    html:'<div class="wizardlabelmargin1">'+i18n._('This is recommended if the external port is plugged into your internet  connection. This enables NAT on the Internal Interface and DHCP.')+'</div>'
+                    xtype : 'label',
+                    html : '<div class="wizardlabelmargin1">'+i18n._('This is recommended if the external port is plugged into your internet  connection. This enables NAT on the Internal Interface and DHCP.')+'</div>'
                 },{
                     xtype : 'label',
                     html : '<img class="wizardlabelmargin3" src="/skins/' + Ung.SetupWizard.currentSkin + '/images/admin/wizard/router.png"/>'
@@ -1118,20 +1119,20 @@ Ung.SetupWizard.InternalNetwork = Ext.extend( Object, {
                     name : 'network',
                     xtype : 'textfield',
                     fieldLabel : i18n._('Network'),
-                                        vText:i18n._('Please enter a valid Network  Address'),
-                                        vtype:'ipCheck',
-                                        allowBlank:false,
-                                        msgTarget:'side',
-                                        maskRe:/(\d+|\.)/					
+                                        vText : i18n._('Please enter a valid Network  Address'),
+                                        vtype : 'ipCheck',
+                                        allowBlank : false,
+                                        msgTarget : 'side',
+                                        maskRe : /(\d+|\.)/					
                 },{
                     name : 'netmask',
                     xtype : 'textfield',
                     fieldLabel : i18n._('Netmask'),
-                                        vText:i18n._('Please enter a valid Netmask Value'),
-                                        vtype:'ipCheck',
-                                        allowBlank:false,
-                                        msgTarget:'side',
-                                        maskRe:/(\d+|\.)/					
+                                        vText : i18n._('Please enter a valid Netmask Value'),
+                                        vtype : 'ipCheck',
+                                        allowBlank : false,
+                                        msgTarget : 'side',
+                                        maskRe : /(\d+|\.)/					
                 }]
            }]
         });
@@ -1140,7 +1141,7 @@ Ung.SetupWizard.InternalNetwork = Ext.extend( Object, {
             title : i18n._( "Internal Network" ),
             panel : this.panel,
             onNext : this.saveInternalNetwork.createDelegate( this ),
-            onValidate:this.validateInternalNetwork.createDelegate(this)
+            onValidate : this.validateInternalNetwork.createDelegate(this)
         }
     },
     onSetRouter : function(isSet){
@@ -1151,7 +1152,7 @@ Ung.SetupWizard.InternalNetwork = Ext.extend( Object, {
         _invalidate(ar);
     },
     
-    validateInternalNetwork:function()
+    validateInternalNetwork : function()
     {
         var rv = true;
         var nic = false;
@@ -1162,7 +1163,7 @@ Ung.SetupWizard.InternalNetwork = Ext.extend( Object, {
 			}
 		}
 		switch(nic){
-			case 'router':
+			case 'router' :
 				rv = _validate(this.panel.items.items);			
 			break;
 		}
@@ -1205,17 +1206,17 @@ Ung.SetupWizard.Email = Ext.extend( Object, {
             defaultType : 'textfield',
             defaults : {
                 autoHeight : true,
-				cls:'noborder',
+				cls : 'noborder',
                 labelWidth : Ung.SetupWizard.LabelWidth4,
             },
             items : [{
-					xtype:'label',
+					xtype : 'label',
 					html : '<h2 class="wizardTitle">'+i18n._( "Email Configuration" )+'</h2>',
 				
 			},
 			{
-				xtype:'label',
-				html:i18n._('Your Untangle Server sends email for Quarantine Digests, Reports, etc.')
+				xtype : 'label',
+				html : i18n._('Your Untangle Server sends email for Quarantine Digests, Reports, etc.')
 			},
 			{
                 xtype : 'button',
@@ -1225,7 +1226,7 @@ Ung.SetupWizard.Email = Ext.extend( Object, {
             },{
                 name : 'advanced',
                 xtype : 'checkbox',
-                cls:'spacingMargin1',
+                cls : 'spacingMargin1',
                 hideLabel : true,
                 value : false,
                 boxLabel : i18n._("Advanced Email Configuration."),
@@ -1240,8 +1241,8 @@ Ung.SetupWizard.Email = Ext.extend( Object, {
                 name : 'from-address',
                 xtype : "fieldset",
 		defaults : {
-                    validationEvent:'blur',
-                    msgTarget:'side'
+                    validationEvent : 'blur',
+                    msgTarget : 'side'
                 },
                 items : [{
                     name : 'from-address-label',
@@ -1251,7 +1252,7 @@ Ung.SetupWizard.Email = Ext.extend( Object, {
                     xtype : 'textfield',
                     name : 'from-address-textfield',
                     fieldLabel : i18n._("From Address"),
-                                        labelStyle : 'margin-top:5px',
+                                        labelStyle : 'margin-top : 5px',
                                         cls : 'spacingMargin1',
                                         vtype : 'emailAddressCheck',
                                         allowBlank : false
@@ -1297,9 +1298,9 @@ Ung.SetupWizard.Email = Ext.extend( Object, {
                 },{
                     name : 'smtp-server-addr',
                     fieldLabel : i18n._( "SMTP Server" ),
-					maskRe:/(\d+|\.)/,					
-					vtype:'ipCheck',
-					allowBlank:false
+					maskRe : /(\d+|\.)/,					
+					vtype : 'ipCheck',
+					allowBlank : false
                 },{
                     name : 'smtp-server-port',
                     xtype : 'numberfield',
@@ -1307,13 +1308,13 @@ Ung.SetupWizard.Email = Ext.extend( Object, {
                     maxValue : 65536,
                     allowDecimals : false,
                     fieldLabel : i18n._( 'Port' ),
-					allowBlank:false					
+					allowBlank : false					
                 },{
                     name : 'smtp-server-requires-auth',
                     xtype : 'checkbox',
                     hideLabel : true,
                     value : false,
-					cls:'wizardlabelmargin4',
+					cls : 'wizardlabelmargin4',
                     boxLabel : i18n._("Server Requires Authentication."),
                     listeners : {
                         check : {
@@ -1323,16 +1324,16 @@ Ung.SetupWizard.Email = Ext.extend( Object, {
                         }
                     }
                 },{
-                    xtype:'textfield',
+                    xtype : 'textfield',
                     name : 'smtp-server-username',
                     fieldLabel : i18n._( "Username" ),
-                    labelStyle:'margin-left:80px',
-                    allowBlank:false						
+                    labelStyle : 'margin-left : 80px',
+                    allowBlank : false						
 	        },{
                     name : 'smtp-server-password',
                     inputType : 'password',
                     fieldLabel : i18n._( "Password" ),
-                    labelStyle : 'margin-left:80px',
+                    labelStyle : 'margin-left : 80px',
                     allowBlank : false
 	        }]
             }]
@@ -1368,13 +1369,13 @@ Ung.SetupWizard.Email = Ext.extend( Object, {
             cardTitle : i18n._( "Email Configuration" ),
             panel : this.panel,
             onNext : this.saveSettings.createDelegate( this ),
-			onValidate: this.validateEmailConfiguration.createDelegate(this)
+			onValidate : this.validateEmailConfiguration.createDelegate(this)
         }
     },
     emailTest : function()
     {
     },
-    validateEmailConfiguration: function(){
+    validateEmailConfiguration : function(){
 		var rv = true;
 		if(this.panel.find('name','advanced')[0].getValue()){//advanced email config checked
 			if(!_validate(this.panel.find('name','from-address')[0].items.items)){
@@ -1474,19 +1475,16 @@ Ung.SetupWizard.Complete = Ext.extend( Object, {
     constructor : function( config )
     {
         var panel = new Ext.FormPanel({
-        items : [{
-					xtype:'label',
-					html : '<h2 class="wizardTitle">'+i18n._( "Congrats!" )+'</h2>',
-				
-			},
-            {
-		            xtype : 'label',
-		            html : i18n._( '<b>Your Untangle Server is now configured.</b><br/><br/>You are now ready to login and download some applications.' ),
-					cls:'noborder'
-			}
-		]
-    });
-
+            items : [{
+                xtype : 'label',
+                html : '<h2 class="wizardTitle">'+i18n._( "Congrats!" )+'</h2>',
+             },{
+                xtype : 'label',
+		        html : i18n._( '<b>Your Untangle Server is now configured.</b><br/><br/>You are now ready to login and download some applications.' ),
+				cls : 'noborder'
+			}]
+        });
+        
         this.card = {
             title : i18n._( "Finished" ),
             cardTitle : i18n._( "Congratulations!" ),
@@ -1495,49 +1493,27 @@ Ung.SetupWizard.Complete = Ext.extend( Object, {
     }
 });
 
-Ung.SetupWizard.PasswordUtil = {
-    /* Encode the password and return it as an array of bytes / ints */
-    /* @param password Password to encode as a string.
-     * @param key Salt to append, this should be an array of 8 bytes.
-     */
-    encodePassword : function( password, key )
-    {
-        if ( key.length != 8 ) throw "Invalid key length: " + key.length;
-        
-        var keyString = "";
-        for ( var c = 0 ; c < key.length ; c++ ) keyString += String.fromCharCode( key[c] );
-        
-        var encoding = hex_md5( password + keyString );
-        
-        for ( var c = 0 ; c < key.length ; c++ ) encoding += key[c].toString( 16 );
-
-        return encoding;
-    }
-};
-
 Ung.SetupWizard.TimeZoneStore = [];
 
-Ung.Setup =  {
-    init: function() {
+Ung.Setup = {
+    isInitialized : false,
+    init : function()
+    {
+        if ( this.isInitialized == true ) return;
+        this.isInitialized = true;
+        
         rpc = {};
 
         /* Initialize the timezone data */
         for ( var i = 0; i < Ung.TimeZoneData.length; i++) {
             Ung.SetupWizard.TimeZoneStore.push([Ung.TimeZoneData[i][0], "(" + Ung.TimeZoneData[i][0] + ") " + Ung.TimeZoneData[i][1]]);
         }
-        
-        rpc.jsonrpc = new JSONRpcClient("/webui/JSON-RPC");
-        
-        rpc.languageManager = rpc.jsonrpc.RemoteUvmContext.languageManager();
-        rpc.adminManager = rpc.jsonrpc.RemoteUvmContext.adminManager();
-        rpc.networkManager = rpc.jsonrpc.RemoteUvmContext.networkManager();
-        rpc.connectivityTester = rpc.jsonrpc.RemoteUvmContext.getRemoteConnectivityTester();
-        rpc.toolboxManager = rpc.jsonrpc.RemoteUvmContext.toolboxManager();
-        rpc.mailSender = rpc.jsonrpc.RemoteUvmContext.mailSender();
 
-        var result = rpc.languageManager.getTranslations( "main" );
-        i18n = new Ung.I18N( { "map": result.map })
-        
+        rpc.setup = new JSONRpcClient("/setup/JSON-RPC").SetupContext;
+
+        alert( "insert language translations" );
+        i18n = new Ung.I18N( { "map" : {} })
+
         var welcome = new Ung.SetupWizard.Welcome();
         var settings = new Ung.SetupWizard.Settings();
         var registration = new Ung.SetupWizard.Registration();
@@ -1563,13 +1539,13 @@ Ung.Setup =  {
                      email.card,
                      complete.card
             ],
-            disableNext : true,
+            disableNext : false,
             el : "container"
 			
         });
 
         this.wizard.render();
 		Ext.QuickTips.init();
-        this.wizard.goToPage( 4 );
+        this.wizard.goToPage( 0 );
 	}
 };

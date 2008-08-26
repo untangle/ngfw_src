@@ -18,13 +18,14 @@
   </servlet-mapping>
 
   <servlet>
-    <servlet-name>SetupServlet</servlet-name>
-    <servlet-class>com.untangle.uvm.webui.servlet.SetupServlet</servlet-class>
+    <servlet-name>SetupSettingsServlet</servlet-name>
+    <servlet-class>com.untangle.uvm.webui.servlet.SetupSettingsServlet</servlet-class>
+    <load-on-startup>1</load-on-startup>
   </servlet>
 
   <servlet-mapping>
-    <servlet-name>SetupServlet</servlet-name>
-    <url-pattern>/setup</url-pattern>
+    <servlet-name>SetupSettingsServlet</servlet-name>
+    <url-pattern>/setupSettings.js</url-pattern>
   </servlet-mapping>
 
   <servlet>

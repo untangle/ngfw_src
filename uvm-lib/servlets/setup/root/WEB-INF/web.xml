@@ -18,7 +18,7 @@
 
   <servlet>
     <servlet-name>JSONRPCServlet</servlet-name>
-    <servlet-class>com.untangle.uvm.webui.jabsorb.UtJsonRpcServlet</servlet-class>
+    <servlet-class>com.untangle.uvm.setup.jabsorb.UtJsonRpcServlet</servlet-class>
     <init-param>
       <param-name>gzip_threshold</param-name>
       <param-value>200</param-value>
@@ -35,5 +35,4 @@
       index.html
     </welcome-file>
   </welcome-file-list>
-
 </web-app>

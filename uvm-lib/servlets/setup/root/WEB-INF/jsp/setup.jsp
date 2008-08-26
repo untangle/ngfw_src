@@ -30,14 +30,7 @@
       Ung.SetupWizard.currentSkin = "${ss.administrationClientSkin}";
 
       Ung.SetupWizard.CurrentValues = {
-        timezone : "${timezone.ID}",
-        addressSettings : ${addressSettings},
-        interfaceArray : ${interfaceArray},
-        registrationInfo : ${registrationInfo},
-        users : ${users},
-        upgradeSettings : ${upgradeSettings},
-        networkSettings : ${networkSettings},
-        mailSettings : ${mailSettings}
+        timezone : "${timezone.ID}"
       };
 
       Ext.onReady(Ung.Setup.init);

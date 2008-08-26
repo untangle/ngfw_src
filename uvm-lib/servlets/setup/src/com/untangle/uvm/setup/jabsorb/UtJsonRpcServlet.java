@@ -16,17 +16,17 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package com.untangle.uvm.webui.jabsorb;
-
-import java.util.Map;
+package com.untangle.uvm.setup.jabsorb;
 
 import java.io.IOException;
+
+import java.util.TimeZone;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.transaction.TransactionRolledbackException;
 
-import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.client.RemoteUvmContext;
 import com.untangle.uvm.webui.jabsorb.serializer.EnumSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.ExtendedListSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.ExtendedSetSerializer;
@@ -60,7 +60,7 @@ import org.jabsorb.serializer.impl.JSONBeanSerializer;
  */
 public class UtJsonRpcServlet extends JSONRPCServlet
 {
-    private static final String BRIDGE_ATTRIBUTE = "JSONRPCBridge";
+    private static final String BRIDGE_ATTRIBUTE = "SetupJSONRPCBridge";
 
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -93,12 +93,38 @@ public class UtJsonRpcServlet extends JSONRPCServlet
         }
     }
 
+    /**
+     * Find the JSONRPCBridge from the current session.
+     * If it can't be found in the session, or there is no session,
+     * then return the global bridge.
+     *
+     * @param request The message received
+     * @return the JSONRPCBridge to use for this request
+     */
+    protected JSONRPCBridge findBridge(HttpServletRequest request)
+    {
+        // Find the JSONRPCBridge for this session or create one
+        // if it doesn't exist
+        HttpSession session = request.getSession( false );
+        JSONRPCBridge jsonBridge = null;
+        if (session != null) jsonBridge = (JSONRPCBridge) session.getAttribute( BRIDGE_ATTRIBUTE );
+
+        if ( jsonBridge == null) {
+            /* Use the global bridge if it can't find the session bridge. */
+            jsonBridge = JSONRPCBridge.getGlobalBridge();
+            if ( logger.isDebugEnabled()) logger.debug("Using global bridge.");
+        }
+        return jsonBridge;
+    }
+
     // private methods --------------------------------------------------------
 
     private void initSessionBridge(HttpServletRequest req)
     {
         HttpSession s = req.getSession();
         JSONRPCBridge b = (JSONRPCBridge)s.getAttribute(BRIDGE_ATTRIBUTE);
+
+        logger.warn( "initSessionBridge: " + b );
 
         if (null == b) {
             b = new JSONRPCBridge();
@@ -139,8 +165,17 @@ public class UtJsonRpcServlet extends JSONRPCServlet
 
             b.setCallbackController(new UtCallbackController(b));
 
-            RemoteUvmContext uvm = LocalUvmContextFactory.context().remoteContext();
-            b.registerObject("RemoteUvmContext", uvm, RemoteUvmContext.class);
+            SetupContext sc = SetupContextImpl.makeSetupContext();
+            b.registerObject("SetupContext", sc, SetupContext.class);
         }
+    }
+
+    public interface SetupContext
+    {
+        public void setLanguage( String language );
+        
+        public void setAdminPassword( String password ) throws TransactionRolledbackException;
+        
+        public void setTimeZone( TimeZone timeZone ) throws TransactionRolledbackException;
     }
 }

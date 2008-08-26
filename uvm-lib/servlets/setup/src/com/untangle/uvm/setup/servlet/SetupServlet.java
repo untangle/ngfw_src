@@ -1,3 +1,21 @@
+/*
+ * $HeadURL: svn://chef/branch/prod/web-ui/work/src/uvm-lib/servlets/webui/src/com/untangle/uvm/webui/jabsorb/UtJsonRpcServlet.java $
+ * Copyright (c) 2003-2007 Untangle, Inc.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License, version 2,
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful, but
+ * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
+ * NONINFRINGEMENT.  See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
+
 package com.untangle.uvm.setup.servlet;
 
 import java.io.IOException;
@@ -45,34 +63,6 @@ public class SetupServlet extends HttpServlet
             js.registerDefaultSerializers();
         } catch ( Exception e ) {
             throw new ServletException( "Unable to load the default serializer", e );
-        }
-
-        LocalNetworkManager nm = context.networkManager();
-        AddressSettings addressSettings = nm.getAddressSettings();
-        HostName hostname = addressSettings.getHostName();
-        if ( hostname.isEmpty() || !hostname.isQualified()) {
-            addressSettings.setHostName( NetworkUtil.DEFAULT_HOSTNAME );
-        }               
-
-        RegistrationInfo ri = new RegistrationInfo();
-        ri.setMisc( new java.util.Hashtable<String,String>());
-
-        
-        // pick a random time.
-        UpgradeSettings upgrade = context.toolboxManager().getUpgradeSettings();
-
-        BasicNetworkSettings networkSettings = nm.getBasicSettings();
-        try {
-            request.setAttribute( "addressSettings", js.toJSON( addressSettings ));
-            request.setAttribute( "interfaceArray", js.toJSON( nm.getInterfaceList( true )));
-            request.setAttribute( "registrationInfo", js.toJSON( ri ));
-            request.setAttribute( "users", js.toJSON( context.adminManager().getAdminSettings()));
-            request.setAttribute( "upgradeSettings", js.toJSON( upgrade ));
-
-            request.setAttribute( "mailSettings", js.toJSON( context.mailSender().getMailSettings()));
-            request.setAttribute( "networkSettings", js.toJSON( networkSettings ));
-        } catch ( MarshallException e ) {
-            throw new ServletException( "Unable to serializer JSON", e );
         }
 
         String url="/WEB-INF/jsp/setup.jsp";
