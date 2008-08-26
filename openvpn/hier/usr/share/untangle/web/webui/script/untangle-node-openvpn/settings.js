@@ -68,7 +68,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
         getGroupsStore : function() {
             if (this.groupsStore == null) {
                 this.groupsStore = new Ext.data.JsonStore({
-                    fields : ['id', 'name','address', 'netmask', 'useDNS'],
+                    fields : ['id', 'name','javaClass'],
                     data : this.getVpnSettings().groupList.list
                 });
             }
@@ -406,7 +406,10 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         if (index >= 0) {
                             result = store.getAt(index).get("name");
                             record.data.group = store.getAt(index).data;
+                        } else {
+                        	record.data.group = null;
                         }
+                        
                     }
                     return result;
                 }.createDelegate(this),
@@ -828,7 +831,6 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 name : 'Address Pools',
                 // the total records is set from the base settings
                 paginated : false,
-                autoGenerateId: true,
                 height : inWizard?250:250,
                 emptyRow : {
                     "live" : true,
@@ -1048,14 +1050,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                             disabled : !this.getVpnSettings().isDnsOverrideEnabled,
                             allowBlank : false,
                             blankText : this.i18n._('A Valid Primary IP Address must be specified.'),
-                            vtype : 'ipAddress',
-                            listeners : {
-                                "change" : {
-                                    fn : function(elem, newValue) {
-                                        this.getVpnSettings().dns1 = newValue;
-                                    }.createDelegate(this)
-                                }
-                            }
+                            vtype : 'ipAddress'
                         }, {
                             xtype : 'textfield',
                             fieldLabel : this.i18n._('Secondary IP (optional)'),
@@ -1063,14 +1058,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                             id : 'openvpn_advanced_dns2',
                             disabled : !this.getVpnSettings().isDnsOverrideEnabled,
                             value : this.getVpnSettings().dns2,
-                            vtype : 'ipAddress',
-                            listeners : {
-                                "change" : {
-                                    fn : function(elem, newValue) {
-                                        this.getVpnSettings().dns2 = newValue;
-                                    }.createDelegate(this)
-                                }
-                            }
+                            vtype : 'ipAddress'
                         }]
                     }]
                 }]
@@ -1079,7 +1067,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
         
         // validation function
         validateClient : function() {
-            return  this.validateAdvanced() && this.validateGroups();
+            return  this.validateAdvanced() && this.validateGroups() && this.validateVpnClients();
         },
         
         //validate OpenVPN Advanced settings
@@ -1108,76 +1096,100 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 return false;
             };
             
-        	var dns1Cmp = Ext.getCmp("openvpn_advanced_dns1"); 
-            if(!dns1Cmp.validate()) {
-                Ext.MessageBox.alert(i18n._("Failed"), this.i18n._("A valid Primary IP Address must be specified."), 
-                    function () {
-                        this.tabs.activate(this.panelAdvanced);
-                        dns1Cmp.focus(true);
-                    }.createDelegate(this) 
-                );
-                return false;
-            };
-            
-            var dns2Cmp = Ext.getCmp("openvpn_advanced_dns2"); 
-            if(!dns2Cmp.validate()) {
-                Ext.MessageBox.alert(i18n._("Failed"), this.i18n._("A valid Secondary IP Address must be specified."), 
-                    function () {
-                        this.tabs.activate(this.panelAdvanced);
-                        dns2Cmp.focus(true);
-                    }.createDelegate(this) 
-                );
-                return false;
-            };
+            if (this.getVpnSettings().isDnsOverrideEnabled) {
+                var dns1Cmp = Ext.getCmp("openvpn_advanced_dns1"); 
+                if(!dns1Cmp.validate()) {
+                    Ext.MessageBox.alert(i18n._("Failed"), this.i18n._("A valid Primary IP Address must be specified."), 
+                        function () {
+                            this.tabs.activate(this.panelAdvanced);
+                            dns1Cmp.focus(true);
+                        }.createDelegate(this) 
+                    );
+                    return false;
+                };
+                
+                var dns2Cmp = Ext.getCmp("openvpn_advanced_dns2"); 
+                if(!dns2Cmp.validate()) {
+                    Ext.MessageBox.alert(i18n._("Failed"), this.i18n._("A valid Secondary IP Address must be specified."), 
+                        function () {
+                            this.tabs.activate(this.panelAdvanced);
+                            dns2Cmp.focus(true);
+                        }.createDelegate(this) 
+                    );
+                    return false;
+                };
+                
+                //prepare for save
+                this.getVpnSettings().dns1 = dns1Cmp.getValue();
+                this.getVpnSettings().dns2 = dns2Cmp.getValue() == "" ? null : dns2Cmp.getValue();
+            }  else {
+                this.getVpnSettings().dns1 = null;
+                this.getVpnSettings().dns2 = null;
+            }
             
             return true;
         },
         
         validateGroups : function() {
-        	return true;
+            var groupList=this.gridGroups.getFullSaveList();
+            
+            // verify that there is at least one group
+            if(groupList.length <= 0 ){
+                Ext.MessageBox.alert(this.i18n._('Failed'), this.i18n._("You must create at least one group."),
+                    function () {
+                        this.tabs.activate(this.panelAdvanced);
+                    }.createDelegate(this) 
+                );
+                return false;
+            }
+            
+            // removed groups should not be referenced
+            var removedGroups = this.gridGroups.getDeletedList();
+            for(var i=0; i<removedGroups.length;i++) {
+                var clientList = this.gridClients.getFullSaveList();
+                for(var j=0; j<clientList.length;j++) {
+                    if (removedGroups[i].id == clientList[j].groupId) {
+                        Ext.MessageBox.alert(this.i18n._('Failed'), 
+                            i18n.sprintf(this.i18n._("The group: \"%s\" cannot be deleted because it is being used by the client: %s in the Client To Site List."), removedGroups[i].name, clientList[j].name),
+                            function () {
+                                this.tabs.activate(this.panelAdvanced);
+                            }.createDelegate(this) 
+                        );
+                        return false;
+                    }
+                }
+                var siteList=this.gridSites.getFullSaveList();
+                for(var j=0; j<siteList.length;j++) {
+                    if (removedGroups[i].id == siteList[j].groupId) {
+                        Ext.MessageBox.alert(this.i18n._('Failed'), 
+                            i18n.sprintf(this.i18n._("The group: \"%s\" cannot be deleted because it is being used by the site: %s in the Site To Site List."), removedGroups[i].name, siteList[j].name),
+                            function () {
+                                this.tabs.activate(this.panelAdvanced);
+                            }.createDelegate(this) 
+                        );
+                        return false;
+                    }
+                }
+            }
+            
+            return true;
         },
         
-        
-/*        
-        validateClient: function () {
-//        	if(!Ext.getCmp("openvpn_advanced_dns1").validate()) {
-//        		Ext.MessageBox.alert(i18n._("Failed"), this.i18n._("A Primary IP Address must be specified."));
-//                return false;
-//        	};
-        	var groupList=this.gridGroups.getFullSaveList();
-        	if(groupList.length==0) {
-                Ext.MessageBox.alert(i18n._("Failed"), this.i18n._("You must create at least one group."));
-        		return false;
-        	}
+        validateVpnClients : function() {
             var clientList=this.gridClients.getFullSaveList();
             for(var i=0;i<clientList.length;i++) {
                 if(clientList[i].id>=0 && clientList[i].name!=clientList[i].originalName) {
-                    Ext.MessageBox.alert(i18n._("Failed"), i18n.sprintf(this.i18n._('You cannot change an account name after its key has been distributed. Client name should be %s.'), clientList[i].originalName));
+                    Ext.MessageBox.alert(i18n._("Failed"), i18n.sprintf(this.i18n._('You cannot change an account name after its key has been distributed. Client name should be %s.'), clientList[i].originalName),
+                        function () {
+                            this.tabs.activate(this.panelClients);
+                        }.createDelegate(this) 
+                    );
                     return false;
                 }
-            }            
-            var groupListDeleted=this.gridGroups.getDeletedList();
-            for(var i=0;i<clientList.length;i++) {
-                for(var j=0;j<groupListDeleted.length;j++) {
-                    if(clientList[i].groupId==groupListDeleted[j].id) {
-                        Ext.MessageBox.alert(i18n._("Failed"), i18n.sprintf(this.i18n._('The group "%s" cannot be deleted because it is being used by the client: %s in the Client To Site List.'), groupListDeleted[j].name, clientList[i].name));
-                        return false;
-                    }
-                }
             }
-            var siteList=this.gridSites.getFullSaveList();
-            var groupListDeleted=this.gridGroups.getDeletedList();
-            for(var i=0;i<siteList.length;i++) {
-                for(var j=0;j<groupListDeleted.length;j++) {
-                    if(siteList[i].groupId==groupListDeleted[j].id) {
-                        Ext.MessageBox.alert(i18n._("Failed"), i18n.sprintf(this.i18n._('The group "%s" cannot be deleted because it is being used by the site: %s in the Site To Site List.'), groupListDeleted[j].name, siteList[i].name));
-                        return false;
-                    }
-                }
-            }
-        	return true;
+            return true;
         },
-*/        
+        
         validateServer : function () {
         	//TODO: start this from 0 and make it work.
         	// implement validation functions from VpnSettings.validate()

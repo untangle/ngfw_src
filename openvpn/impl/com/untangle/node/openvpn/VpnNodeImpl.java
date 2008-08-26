@@ -20,8 +20,10 @@ package com.untangle.node.openvpn;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import org.apache.log4j.Logger;
@@ -135,7 +137,7 @@ public class VpnNodeImpl extends AbstractNode
     // VpnNode methods --------------------------------------------------
     public void setVpnSettings( final VpnSettings newSettings )
     {
-        final VpnSettings oldSettings = this.settings;
+        fixGroups(newSettings);
 
         /* Attempt to assign all of the clients addresses only if in server mode */
         try {
@@ -174,8 +176,7 @@ public class VpnNodeImpl extends AbstractNode
                     for ( Object o : q.list()) s.delete((VpnSettings)o );
 
                     /* Save the new settings */
-                    s.merge( newSettings );
-                    VpnNodeImpl.this.settings = newSettings;
+                    VpnNodeImpl.this.settings = (VpnSettings)s.merge( newSettings );
                     return true;
                 }
             };
@@ -212,6 +213,27 @@ public class VpnNodeImpl extends AbstractNode
             logger.error( "Could not save VPN settings", exn );
         }
     }
+    
+    private void fixGroups(VpnSettings newSettings) {
+        Map<Long,VpnGroup> resolveGroupMap = new HashMap<Long,VpnGroup>();
+        for ( VpnGroup group : newSettings.getGroupList()) {
+            resolveGroupMap.put( group.getId(), group );
+        }
+        
+        fixGroups(newSettings.getClientList(), resolveGroupMap);
+        fixGroups(newSettings.getSiteList(), resolveGroupMap);
+    }
+    
+    private void fixGroups(List newClientList, Map<Long,VpnGroup> resolveGroupMap) {
+        for (VpnClientBase client : (List<VpnClientBase>) newClientList) {
+            Long id = client.getGroup().getId();
+            VpnGroup newGroup = resolveGroupMap.get(id);
+            if (newGroup != null) {
+                client.setGroup(newGroup);
+            }
+        }
+    }
+    
 
     public VpnSettings getVpnSettings()
     {
