@@ -181,8 +181,8 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
                             return;
                         }
                         var key = result;
-                            // Ung.Upgrade.PerformUpgradeThread.start(key);
-                        }.createDelegate(this));
+                        //Ung.Upgrade.PerformUpgradeThread.start(key);
+                    }.createDelegate(this));
                 }
 
             });
@@ -419,6 +419,30 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
             if (!this.cycleCompleted) {
                 return;
             }
+            //TODO: getProgress is no longer available, what is the alternative?
+            rpc.toolboxManager.getProgress(function(result, exception) {
+               if (exception) {
+                    Ext.MessageBox.alert(i18n._("Failed"), exception.message, function() {
+                        this.cycleCompleted = true;
+                    }.createDelegate(this));
+                    return;
+               }
+               this.cycleCompleted = true;
+               try {
+                   var ipList=result;
+                   if(ipList.list!=null && ipList.list.length>0) {
+                       var hasNodeInstantiated=false;
+                       for(var i=0;i<ipList.length;i++) {
+                           var msg=ipList.list[i];
+                            if (msg.javaClass.indexOf("DownloadComplete") != -1) {
+                            } else if (msg.javaClass.indexOf("DownloadProgress") != -1) {
+                            } 
+                        }
+                    }
+                } catch (err) {
+                    Ext.MessageBox.alert("Exception in PerformUpgradeThread", err.message);
+                }
+            }.createDelegate(this), this.key);
         }
     };
 

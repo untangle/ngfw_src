@@ -520,7 +520,7 @@ Ung.Main.prototype = {
 
     installNode: function(mackageDesc, targetPolicy) {
         if(mackageDesc!==null) {
-            Ung.AppItem.updateStateForNode(mackageDesc.name, "installing")
+            Ung.AppItem.updateStateForNode(mackageDesc.name, "installing");
             var policy=null;
             if(targetPolicy==null) {
                 policy = rpc.currentPolicy;

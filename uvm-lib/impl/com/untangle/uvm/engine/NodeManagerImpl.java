@@ -265,7 +265,11 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
         if (MackageDesc.Type.SERVICE == mackageDesc.getType()) {
             p = null;
         }
-
+        //test if not duplicated
+        List<Tid> instancesList=this.nodeInstances(nodeName,p);
+        if(instancesList.size()>0) {
+            return null; //return if the node is already installed
+        }
         Tid tid = newTid(p, nodeName);
 
         URL[] resUrls = new URL[] { tbm.getResourceDir(mackageDesc) };

@@ -638,6 +638,7 @@ Ung.AppItem = Ext.extend(Ext.Component, {
     setState : function(newState, options) {
         switch (newState) {
             case "unactivated" :
+            case null:
                 this.displayButtonsOrProgress(true);
                 break;
             case "unactivating" :
