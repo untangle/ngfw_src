@@ -1199,7 +1199,7 @@ Ung.MessageManager = {
     started : false,
     intervalId : null,
     cycleCompleted : true,
-
+    //messageHistory:[], //for debug info
     start : function() {
         this.stop();
         this.intervalId = window.setInterval("Ung.MessageManager.run()", this.updateTime);
@@ -1230,6 +1230,7 @@ Ung.MessageManager = {
                var messageQueue=result;
                if(messageQueue.messages.list!=null && messageQueue.messages.list.length>0) {
                    var hasNodeInstantiated=false;
+                   //Ung.MessageManager.messageHistory.push(messageQueue.messages.list); //for debug info
                    for(var i=0;i<messageQueue.messages.list.length;i++) {
                        var msg=messageQueue.messages.list[i];
                         if (msg.javaClass.indexOf("MackageInstallRequest") >= 0) {
@@ -1253,9 +1254,9 @@ Ung.MessageManager = {
                                 var node=main.createNode(msg.nodeDesc.tid, msg.nodeDesc.mackageDesc, msg.statDescs);
                                 main.nodes.push(node);
                                 main.addNode(node, true);
-                            } else {
-                            	main.startNode(Ung.Node.getCmp(node.tid));
-                            }
+                            } 
+                        	main.startNode(Ung.Node.getCmp(node.tid));
+                        } else  {
                         }
                     }
                     if(hasNodeInstantiated) {

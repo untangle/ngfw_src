@@ -131,25 +131,26 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
                     }
                 }, {
                     header : this.i18n._("name"),
-                    width : 150,
+                    width : 190,
                     sortable : true,
                     dataIndex : 'displayName'
 
                 }, {
                     header : this.i18n._("new version"),
-                    width : 120,
+                    width : 230,
                     sortable : true,
                     dataIndex : 'availableVersion'
 
                 }, {
                     header : this.i18n._("type"),
-                    width : 120,
+                    width : 150,
                     sortable : true,
                     dataIndex : 'type'
                 }, {
                     header : this.i18n._("size (kb)"),
-                    width : 120,
+                    width : 110,
                     sortable : true,
+                    align: 'right', 
                     dataIndex : 'size'
                 }],
                 buttonAlign : 'center',
@@ -181,7 +182,7 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
                             return;
                         }
                         var key = result;
-                        //Ung.Upgrade.PerformUpgradeThread.start(key);
+                        
                     }.createDelegate(this));
                 }
 
