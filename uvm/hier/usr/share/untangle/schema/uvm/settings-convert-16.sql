@@ -41,3 +41,11 @@ CREATE TABLE settings.u_blinger_active (
     position             int4 NOT NULL,
     blinger_name         text NOT NULL,
     PRIMARY KEY          (blinger_settings_id, position));
+
+CREATE TABLE settings.u_active_stat (
+    id                   int8 NOT NULL,
+    settings_id          int8,
+    position             int4,
+    name                 text NOT NULL,
+    interval             text NOT NULL,
+    PRIMARY KEY (id));
