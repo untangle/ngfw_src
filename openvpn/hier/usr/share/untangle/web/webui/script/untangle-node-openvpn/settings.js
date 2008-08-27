@@ -1316,6 +1316,38 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             return true;
         },
         
+        validateExports : function(exportList) {
+            if (exportList.length > 0) {
+                var validateData = {
+                    map : {},
+                    javaClass : "java.util.HashMap"
+                }; 
+                validateData.map["EXPORT_LIST"] = {"javaClass" : "java.util.ArrayList", list : exportList};
+                
+                // now let the server validate
+                try {
+                    var result = this.getValidator().validate(validateData);
+                    if (!result.valid) {
+                        var errorMsg = "";
+                        switch (result.errorCode) {
+                            case 'ERR_EXPORT_LIST_OVERLAP' : 
+                                errorMsg = i18n.sprintf(this.i18n._("The two networks: %s and %s cannot overlap"),result.cause[0],result.cause[1]);
+                            break;
+                            default :
+                                errorMsg = this.i18n._(result.errorCode) + ": " + result.cause;
+                        }
+                        Ext.MessageBox.alert(this.i18n._("Validation failed"), errorMsg);
+                        return false;
+                    }
+                } catch (e) {
+                    Ext.MessageBox.alert(i18n._("Failed"), e.message);
+                    return false;
+                }
+            }
+            return true;
+        },
+        
+        
         // save function
         save : function() {
             // validate first
@@ -1807,6 +1839,11 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 onNext : function(handler) {
                     var gridExports=Ext.getCmp(this.serverSetup.gridExportsId);
                     var saveList=gridExports.getFullSaveList();
+                    
+                    if (!this.validateExports(saveList)) {
+                        return;
+                    }
+                    
                     Ext.MessageBox.wait(i18n._("Adding Exports..."), i18n._("Please wait"));
                     this.getRpcNode().setExportedAddressList(function(result, exception) {
                         if (exception) {
@@ -1825,7 +1862,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     }.createDelegate({
                             handler : handler,
                             settingsCmp : this
-                        }), {javaClass:"com.untangle.node.openvpn.ExportList", exportsList:{javaClass:"java.util.ArrayList", list: saveList}})
+                        }), {javaClass:"com.untangle.node.openvpn.ExportList", exportList:{javaClass:"java.util.ArrayList", list: saveList}})
                 }.createDelegate(this)
             };
             var congratulationsCard = {
