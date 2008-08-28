@@ -50,7 +50,7 @@ Ung.Main.prototype = {
                 if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
                     i18n =new Ung.I18N({"map":result.map});
                     this.postinit();// 2
-                }.createDelegate(this),"main");
+                }.createDelegate(this),"untangle-webui-main");
         }.createDelegate(this));
 
         // get node manager
@@ -564,13 +564,13 @@ Ung.Main.prototype = {
     // load Config
     loadConfig: function() {
         this.config =
-            [{"name":"networking","displayName":i18n._("Networking"),"iconClass":"iconConfigNetwork"},
-            {"name":"administration","displayName":i18n._("Administration"),"iconClass":"iconConfigAdmin"},
-            {"name":"email","displayName":i18n._("Email"),"iconClass":"iconConfigEmail"},
-            {"name":"localDirectory","displayName":i18n._("Local Directory"),"iconClass":"iconConfigDirectory"},
-            {"name":"upgrade","displayName":i18n._("Upgrade"),"iconClass":"iconConfigUpgrade"},
-            {"name":"system","displayName":i18n._("System"),"iconClass":"iconConfigSetup"},
-            {"name":"systemInfo","displayName":i18n._("System Info"),"iconClass":"iconConfigSupport"}];
+            [{"name":"untangle-webui-networking","displayName":i18n._("Networking"),"iconClass":"iconConfigNetwork"},
+            {"name":"untangle-webui-administration","displayName":i18n._("Administration"),"iconClass":"iconConfigAdmin"},
+            {"name":"untangle-webui-email","displayName":i18n._("Email"),"iconClass":"iconConfigEmail"},
+            {"name":"untangle-webui-localDirectory","displayName":i18n._("Local Directory"),"iconClass":"iconConfigDirectory"},
+            {"name":"untangle-webui-upgrade","displayName":i18n._("Upgrade"),"iconClass":"iconConfigUpgrade"},
+            {"name":"untangle-webui-system","displayName":i18n._("System"),"iconClass":"iconConfigSetup"},
+            {"name":"untangle-webui-systemInfo","displayName":i18n._("System Info"),"iconClass":"iconConfigSupport"}];
         this.buildConfig();
     },
     // build config buttons
@@ -594,41 +594,41 @@ Ung.Main.prototype = {
     // click Config Button
     clickConfig: function(configItem) {
         switch(configItem.name){
-            case "networking":
+            case "untangle-webui-networking":
                 var alpacaUrl = "/alpaca/";
                 main.openInRightFrame(i18n._("Networking"), alpacaUrl);
                 break;
-            case "administration":
+            case "untangle-webui-administration":
                 Ung.Util.loadResourceAndExecute("Ung.Administration","script/config/administration.js", function() {
                     main.administrationWin=new Ung.Administration(configItem);
                     main.administrationWin.show();
                 });
                 break;
-            case "email":
+            case "untangle-webui-email":
                 Ung.Util.loadResourceAndExecute("Ung.Email","script/config/email.js", function() {
                     main.emailWin=new Ung.Email(configItem);
                     main.emailWin.show();
                 });
                 break;
-            case "system":
+            case "untangle-webui-system":
                 Ung.Util.loadResourceAndExecute("Ung.System","script/config/system.js", function() {
                     main.systemWin=new Ung.System(configItem);
                     main.systemWin.show();
                 });
                 break;
-            case "systemInfo":
+            case "untangle-webui-systemInfo":
                 Ung.Util.loadResourceAndExecute("Ung.SystemInfo","script/config/systemInfo.js", function() {
                     main.systemInfoWin=new Ung.SystemInfo(configItem);
                     main.systemInfoWin.show();
                 });
                 break;
-            case "upgrade":
+            case "untangle-webui-upgrade":
                 Ung.Util.loadResourceAndExecute("Ung.Upgrade","script/config/upgrade.js", function() {
                     main.upgradeWin=new Ung.Upgrade(configItem);
                     main.upgradeWin.show();
                 });
                 break;
-            case "localDirectory":
+            case "untangle-webui-localDirectory":
                 Ung.Util.loadResourceAndExecute("Ung.LocalDirectory","script/config/LocalDirectory.js", function() {
                     main.localDirectoryWin=new Ung.LocalDirectory(configItem);
                     main.localDirectoryWin.show();

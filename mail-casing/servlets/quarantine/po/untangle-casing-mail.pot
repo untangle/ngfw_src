@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-07-18 08:51+0300\n"
+"POT-Creation-Date: 2008-08-28 18:29+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -34,8 +34,7 @@ msgid "Deleted one Message"
 msgstr ""
 
 #: ../root/quarantine.js:269
-#, python-format
-msgid "Deleted %d Messages"
+msgid "Deleted {0} Messages"
 msgstr ""
 
 #: ../root/quarantine.js:275
@@ -43,8 +42,7 @@ msgid "Released one Message"
 msgstr ""
 
 #: ../root/quarantine.js:276
-#, python-format
-msgid "Released %d Messages"
+msgid "Released {0} Messages"
 msgstr ""
 
 #: ../root/quarantine.js:282
@@ -52,8 +50,7 @@ msgid "Safelisted one Address"
 msgstr ""
 
 #: ../root/quarantine.js:283
-#, python-format
-msgid "Safelisted %d Addresses"
+msgid "Safelisted {0} Addresses"
 msgstr ""
 
 #: ../root/quarantine.js:312
@@ -65,13 +62,11 @@ msgid "Move one Message to Inbox"
 msgstr ""
 
 #: ../root/quarantine.js:317
-#, python-format
-msgid "Delete %d Messages"
+msgid "Delete {0} Messages"
 msgstr ""
 
 #: ../root/quarantine.js:318
-#, python-format
-msgid "Move %d Messages to Inbox"
+msgid "Move {0} Messages to Inbox"
 msgstr ""
 
 #: ../root/quarantine.js:328
@@ -79,8 +74,7 @@ msgid "Add Sender to Safelist"
 msgstr ""
 
 #: ../root/quarantine.js:331
-#, python-format
-msgid "Add %d Senders to Safelist"
+msgid "Add {0} Senders to Safelist"
 msgstr ""
 
 #: ../root/quarantine.js:442
@@ -111,107 +105,107 @@ msgstr ""
 msgid "No messges to display"
 msgstr ""
 
-#: ../root/quarantine.js:553
-#, python-format
-msgid "The messages below were quarantined and will be deleted after %d days."
+#: ../root/quarantine.js:554
+msgid "The messages below were quarantined and will be deleted after {0} days."
 msgstr ""
 
-#: ../root/quarantine.js:558
+#: ../root/quarantine.js:559
 msgid "Quarantined Messages"
 msgstr ""
 
-#: ../root/quarantine.js:563
+#: ../root/quarantine.js:564
 msgid ""
 "You can use the Safelist to make sure that messages from these senders are "
 "never quarantined."
 msgstr ""
 
-#: ../root/quarantine.js:566
+#: ../root/quarantine.js:567
 msgid "Safelist"
 msgstr ""
 
 #: ../root/remaps.js:40 ../root/request.js:24 ../root/safelist.js:43
-#: ../root/safelist.js:108
+#: ../root/safelist.js:109
 msgid "Email Address"
 msgstr ""
 
-#: ../root/remaps.js:55 ../root/remaps.js:65 ../root/remaps.js:220
-#: ../root/safelist.js:68 ../root/safelist.js:80 ../root/safelist.js:175
+#: ../root/remaps.js:55 ../root/remaps.js:65 ../root/remaps.js:254
+#: ../root/safelist.js:67 ../root/safelist.js:79 ../root/safelist.js:177
 msgid "Delete Addresses"
 msgstr ""
 
-#: ../root/remaps.js:78 ../root/remaps.js:111
-msgid "Forward Quarantined Messages To"
+#: ../root/remaps.js:78 ../root/remaps.js:112
+msgid "Forward Quarantined Messages To:"
 msgstr ""
 
-#: ../root/remaps.js:124
+#: ../root/remaps.js:133
 msgid "Address"
 msgstr ""
 
-#: ../root/remaps.js:144
-msgid "Received Quarantined Messages From"
+#: ../root/remaps.js:171
+msgid "Received Quarantined Messages From:"
 msgstr ""
 
-#: ../root/remaps.js:158
+#: ../root/remaps.js:190
 msgid "Forward or Receive Quarantines"
 msgstr ""
 
-#: ../root/remaps.js:178
+#: ../root/remaps.js:212
 msgid "Unable to set the forward."
 msgstr ""
 
-#: ../root/remaps.js:186
+#: ../root/remaps.js:220
 msgid "Unable to delete an entry."
 msgstr ""
 
-#: ../root/remaps.js:200
+#: ../root/remaps.js:234
 msgid "Delete one Remap"
 msgstr ""
 
-#: ../root/remaps.js:201
-#, python-format
-msgid "Deleted %d Remaps"
+#: ../root/remaps.js:235
+msgid "Deleted {0} Remaps"
 msgstr ""
 
-#: ../root/remaps.js:207
+#: ../root/remaps.js:241
 msgid "Unable to update remap table."
 msgstr ""
 
-#: ../root/remaps.js:215
+#: ../root/remaps.js:249
 msgid "Delete one Addressess"
 msgstr ""
 
-#: ../root/remaps.js:215 ../root/safelist.js:170
-#, python-format
-msgid "Delete %d Addresses"
+#: ../root/remaps.js:249 ../root/safelist.js:172
+msgid "Delete {0} Addresses"
 msgstr ""
 
 #: ../root/request.js:30
 msgid "Request"
 msgstr ""
 
-#: ../root/safelist.js:59
+#: ../root/safelist.js:58
 msgid "Add"
 msgstr ""
 
-#: ../root/safelist.js:123
+#: ../root/safelist.js:122
+msgid "Add an Email Address to Safelist"
+msgstr ""
+
+#: ../root/safelist.js:125
 msgid "Save"
 msgstr ""
 
-#: ../root/safelist.js:133
+#: ../root/safelist.js:135
 msgid "Cancel"
 msgstr ""
 
-#: ../root/safelist.js:157
+#: ../root/safelist.js:159
 msgid "Deleted one address"
 msgstr ""
 
-#: ../root/safelist.js:157
-#, python-format
-msgid "Deleted %d addresses"
+#: ../root/safelist.js:159
+msgid "Deleted {0} addresses"
 msgstr ""
 
-#: ../root/safelist.js:170
+#: ../root/safelist.js:172
 msgid "Delete one Address"
 msgstr ""
 

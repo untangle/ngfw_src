@@ -1,13 +1,14 @@
 # SOME DESCRIPTIVE TITLE.
-# Copyright (C) 2008 Untangle, Inc.
+# Copyright (C) YEAR Untangle, Inc.
 # This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <cmatei@untangle.com>, 2008.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 # 
+#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-07-18 15:47+0300\n"
+"POT-Creation-Date: 2008-08-28 18:29+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,30 +19,28 @@ msgstr ""
 
 #: ../root/script/config/system.js:12
 msgid "Configuration"
-msgstr "Configuraţie"
+msgstr ""
 
 #: ../root/script/config/system.js:17
 msgid "System"
-msgstr "Sistem"
+msgstr ""
 
 #: ../root/script/config/system.js:118
 msgid "Untangle Support"
-msgstr "Suport Untangle"
+msgstr ""
 
 #: ../root/script/config/system.js:128
 msgid "Support"
-msgstr "Suport"
+msgstr ""
 
 #: ../root/script/config/system.js:136
-#, python-format
-msgid "%sAllow%s us to securely access your server for support purposes."
-msgstr "%sPermiteţi%s să vă accesăm serverul dumneavoastră pentru support."
+msgid "{0}Allow{1} us to securely access your server for support purposes."
+msgstr ""
 
 #: ../root/script/config/system.js:150
-#, python-format
 msgid ""
-"%sSend%s us data about your server. This will send us status updates and an "
-"email if any unexpected problems occur, but will not allow us to login to "
+"{0}Send{1} us data about your server. This will send us status updates and "
+"an email if any unexpected problems occur, but will not allow us to login to "
 "your server. No personal information about your network traffic will be "
 "transmitted."
 msgstr ""
@@ -64,7 +63,7 @@ msgid "Backing Up..."
 msgstr ""
 
 #: ../root/script/config/system.js:202 ../root/script/config/system.js:213
-#: ../root/script/config/system.js:996
+#: ../root/script/config/system.js:1023
 msgid "Please wait"
 msgstr ""
 
@@ -123,11 +122,10 @@ msgid ""
 msgstr ""
 
 #: ../root/script/config/system.js:255
-#, python-format
 msgid ""
 "After backing up your current system configuration to USB Key, you can then "
-"restore that configuration through the %sBackup and Restore Utilities%s.  To "
-"access the Backup and Restore Utilities, you must have a monitor and "
+"restore that configuration through the {0}Backup and Restore Utilities{1}.  "
+"To access the Backup and Restore Utilities, you must have a monitor and "
 "keyboard physically plugged into your server when it is turned on, and then "
 "select \"Backup and Restore Utilities\" from the boot prompt."
 msgstr ""
@@ -152,24 +150,23 @@ msgid ""
 msgstr ""
 
 #: ../root/script/config/system.js:276
-#, python-format
 msgid ""
 "After backing up your current system configuration to Hard Disk, you can "
-"then restore that configuration through the %sBackup and Restore Utilities%"
-"s.  To access the Backup and Restore Utilities, you must have a monitor and "
-"keyboard physically plugged into your server when it is turned on, and then "
-"select \"Backup and Restore Utilities\" from the boot prompt."
+"then restore that configuration through the {0}Backup and Restore Utilities"
+"{1}.  To access the Backup and Restore Utilities, you must have a monitor "
+"and keyboard physically plugged into your server when it is turned on, and "
+"then select \"Backup and Restore Utilities\" from the boot prompt."
 msgstr ""
 
 #: ../root/script/config/system.js:294
 msgid "Restore"
 msgstr ""
 
-#: ../root/script/config/system.js:303 ../root/script/config/system.js:901
-#: ../root/script/config/system.js:903 ../root/script/config/system.js:1001
-#: ../root/script/config/system.js:1010 ../root/script/config/system.js:1020
-#: ../root/script/config/system.js:1033 ../root/script/config/system.js:1046
-#: ../root/script/config/system.js:1058
+#: ../root/script/config/system.js:303 ../root/script/config/system.js:340
+#: ../root/script/config/system.js:931 ../root/script/config/system.js:1028
+#: ../root/script/config/system.js:1037 ../root/script/config/system.js:1047
+#: ../root/script/config/system.js:1060 ../root/script/config/system.js:1073
+#: ../root/script/config/system.js:1085
 msgid "Failed"
 msgstr ""
 
@@ -207,288 +204,288 @@ msgid ""
 "UPGRADING!"
 msgstr ""
 
-#: ../root/script/config/system.js:322 ../root/script/config/system.js:324
-msgid "Restore Backup File Warning"
+#: ../root/script/config/system.js:321 ../root/script/config/system.js:337
+msgid "The Local File restore procedure failed."
 msgstr ""
 
-#: ../root/script/config/system.js:322
-msgid ""
-"Error:  The Local File restore procedure failed.  The reason reported by the "
-"Untangle Server was:"
+#: ../root/script/config/system.js:325
+msgid "File does not seem to be valid Untangle backup"
 msgstr ""
 
-#: ../root/script/config/system.js:324
-msgid "Error:  The Local File restore procedure failed."
+#: ../root/script/config/system.js:328
+msgid "Error in processing restore itself (yet file seems valid)"
 msgstr ""
 
-#: ../root/script/config/system.js:335
+#: ../root/script/config/system.js:331
+msgid "File is from an older version of Untangle and cannot be used"
+msgstr ""
+
+#: ../root/script/config/system.js:334
+msgid "Unknown error in local processing"
+msgstr ""
+
+#: ../root/script/config/system.js:350
 msgid "From File"
 msgstr ""
 
-#: ../root/script/config/system.js:341
+#: ../root/script/config/system.js:356
 msgid ""
 "You can restore a previous system configuration from a backup file on your "
 "local computer.  The backup file name ends with \".backup\""
 msgstr ""
 
-#: ../root/script/config/system.js:361
+#: ../root/script/config/system.js:376
 msgid "Restore from File"
 msgstr ""
 
-#: ../root/script/config/system.js:368
+#: ../root/script/config/system.js:383
 msgid "From Hard Disk and USB Key"
 msgstr ""
 
-#: ../root/script/config/system.js:374
-#, python-format
+#: ../root/script/config/system.js:389
 msgid ""
 "After backing up your system configuration, you can restore that "
-"configuration through the %sRecovery Utilities%s on your server once it is "
+"configuration through the {0}Recovery Utilities{1} on your server once it is "
 "done booting."
 msgstr ""
 
-#: ../root/script/config/system.js:376
-#, python-format
+#: ../root/script/config/system.js:391
 msgid ""
-"To access the %sRecovery Utilities%s, you must have a monitor and keyboard "
+"To access the {0}Recovery Utilities{1}, you must have a monitor and keyboard "
 "physically plugged into your server, and then click on the Recovery "
 "Utilities toolbar button when it is done booting."
 msgstr ""
 
-#: ../root/script/config/system.js:387
+#: ../root/script/config/system.js:402
 msgid ""
 "Warning: These settings should not be changed unless instructed to do so by "
 "support."
 msgstr ""
 
-#: ../root/script/config/system.js:392
+#: ../root/script/config/system.js:407
 msgid "HTTP"
 msgstr ""
 
-#: ../root/script/config/system.js:399
+#: ../root/script/config/system.js:414
 msgid "Web Override"
 msgstr ""
 
-#: ../root/script/config/system.js:402
-#, python-format
-msgid "%sEnable Processing%s of web traffic.  (This is the default setting)"
+#: ../root/script/config/system.js:417
+msgid "{0}Enable Processing{1} of web traffic.  (This is the default setting)"
 msgstr ""
 
-#: ../root/script/config/system.js:415
-#, python-format
-msgid "%sDisable Processing%s of web traffic."
+#: ../root/script/config/system.js:430
+msgid "{0}Disable Processing{1} of web traffic."
 msgstr ""
 
-#: ../root/script/config/system.js:428
+#: ../root/script/config/system.js:443
 msgid "Long URIs"
 msgstr ""
 
-#: ../root/script/config/system.js:431
-#, python-format
+#: ../root/script/config/system.js:446
 msgid ""
-"%sEnable Processing%s of long URIs.  The traffic is considered \"Non-Http"
+"{0}Enable Processing{1} of long URIs.  The traffic is considered \"Non-Http"
 "\".  (This is the default setting)"
 msgstr ""
 
-#: ../root/script/config/system.js:444
-#, python-format
-msgid "%sDisable Processing%s of long URIs."
+#: ../root/script/config/system.js:459
+msgid "{0}Disable Processing{1} of long URIs."
 msgstr ""
 
-#: ../root/script/config/system.js:457
+#: ../root/script/config/system.js:472
 msgid "Max URI Length (characters)"
 msgstr ""
 
-#: ../root/script/config/system.js:476
+#: ../root/script/config/system.js:491
 msgid "Long Headers"
 msgstr ""
 
-#: ../root/script/config/system.js:479
-#, python-format
+#: ../root/script/config/system.js:494
 msgid ""
-"%sEnable Processing%s of long headers.  The traffic is considered \"Non-Http"
-"\".  (This is the default setting)"
+"{0}Enable Processing{1} of long headers.  The traffic is considered \"Non-"
+"Http\".  (This is the default setting)"
 msgstr ""
 
-#: ../root/script/config/system.js:492
-#, python-format
-msgid "%sDisable Processing%s of long headers."
+#: ../root/script/config/system.js:507
+msgid "{0}Disable Processing{1} of long headers."
 msgstr ""
 
-#: ../root/script/config/system.js:505
+#: ../root/script/config/system.js:520
 msgid "Max Header Length (characters)"
 msgstr ""
 
-#: ../root/script/config/system.js:524
+#: ../root/script/config/system.js:539
 msgid "Non-Http Blocking"
 msgstr ""
 
-#: ../root/script/config/system.js:527
-#, python-format
+#: ../root/script/config/system.js:542
 msgid ""
-"%sAllow%s non-Http traffic to travel over port 80.  (This is the default "
+"{0}Allow{1} non-Http traffic to travel over port 80.  (This is the default "
 "setting)"
 msgstr ""
 
-#: ../root/script/config/system.js:540
-#, python-format
-msgid "%sStop%s non-Http traffic to travel over port 80."
+#: ../root/script/config/system.js:555
+msgid "{0}Stop{1} non-Http traffic to travel over port 80."
 msgstr ""
 
-#: ../root/script/config/system.js:558
+#: ../root/script/config/system.js:573
 msgid "FTP"
 msgstr ""
 
-#: ../root/script/config/system.js:562
-#, python-format
+#: ../root/script/config/system.js:577
 msgid ""
-"%sEnable Processing%s of File Transfer traffic.  (This is the default "
+"{0}Enable Processing{1} of File Transfer traffic.  (This is the default "
 "setting)"
 msgstr ""
 
-#: ../root/script/config/system.js:575
-#, python-format
-msgid "%sDisable Processing%s of File Transfer traffic."
+#: ../root/script/config/system.js:590
+msgid "{0}Disable Processing{1} of File Transfer traffic."
 msgstr ""
 
-#: ../root/script/config/system.js:592
+#: ../root/script/config/system.js:607
 msgid "SMTP"
 msgstr ""
 
-#: ../root/script/config/system.js:596
-#, python-format
-msgid "%sEnable SMTP%s email processing.  (This is the default setting)"
+#: ../root/script/config/system.js:611
+msgid "{0}Enable SMTP{1} email processing.  (This is the default setting)"
 msgstr ""
 
-#: ../root/script/config/system.js:609
-#, python-format
-msgid "%sDisable SMTP%s email processing."
+#: ../root/script/config/system.js:624
+msgid "{0}Disable SMTP{1} email processing."
 msgstr ""
 
-#: ../root/script/config/system.js:622
+#: ../root/script/config/system.js:637
 msgid "SMTP timeout (seconds)"
 msgstr ""
 
-#: ../root/script/config/system.js:642
+#: ../root/script/config/system.js:657
 msgid "POP3"
 msgstr ""
 
-#: ../root/script/config/system.js:646
-#, python-format
-msgid "%sEnable POP3%s email processing.  (This is the default setting)"
+#: ../root/script/config/system.js:661
+msgid "{0}Enable POP3{1} email processing.  (This is the default setting)"
 msgstr ""
 
-#: ../root/script/config/system.js:659
-#, python-format
-msgid "%sDisable POP3%s email processing."
+#: ../root/script/config/system.js:674
+msgid "{0}Disable POP3{1} email processing."
 msgstr ""
 
-#: ../root/script/config/system.js:672
+#: ../root/script/config/system.js:687
 msgid "POP3 timeout (seconds)"
 msgstr ""
 
-#: ../root/script/config/system.js:692
+#: ../root/script/config/system.js:707
 msgid "IMAP"
 msgstr ""
 
-#: ../root/script/config/system.js:696
-#, python-format
-msgid "%sEnable IMAP%s email processing.  (This is the default setting)"
+#: ../root/script/config/system.js:711
+msgid "{0}Enable IMAP{1} email processing.  (This is the default setting)"
 msgstr ""
 
-#: ../root/script/config/system.js:709
-#, python-format
-msgid "%sDisable IMAP%s email processing."
+#: ../root/script/config/system.js:724
+msgid "{0}Disable IMAP{1} email processing."
 msgstr ""
 
-#: ../root/script/config/system.js:722
+#: ../root/script/config/system.js:737
 msgid "IMAP timeout (seconds)"
 msgstr ""
 
-#: ../root/script/config/system.js:748
+#: ../root/script/config/system.js:763
 msgid "Protocol Settings"
 msgstr ""
 
-#: ../root/script/config/system.js:776
+#: ../root/script/config/system.js:791
 msgid "Regional Settings"
 msgstr ""
 
-#: ../root/script/config/system.js:786
+#: ../root/script/config/system.js:801
 msgid "Current Time"
 msgstr ""
 
-#: ../root/script/config/system.js:792
+#: ../root/script/config/system.js:807
 msgid "time is automatically synced via NTP"
 msgstr ""
 
-#: ../root/script/config/system.js:797
+#: ../root/script/config/system.js:812
 msgid "Timezone"
 msgstr ""
 
-#: ../root/script/config/system.js:818
+#: ../root/script/config/system.js:833
 msgid "Language"
 msgstr ""
 
-#: ../root/script/config/system.js:837
+#: ../root/script/config/system.js:852
 msgid "Info"
 msgstr ""
 
-#: ../root/script/config/system.js:838
+#: ../root/script/config/system.js:853
 msgid ""
 "Please note that you have to relogin after saving for the new language to "
 "take effect."
 msgstr ""
 
-#: ../root/script/config/system.js:858
+#: ../root/script/config/system.js:873
 msgid "Upload New Language Pack"
 msgstr ""
 
-#: ../root/script/config/system.js:878
+#: ../root/script/config/system.js:893
 msgid "Upload"
 msgstr ""
 
-#: ../root/script/config/system.js:892
+#: ../root/script/config/system.js:907
 msgid "Please wait while your language pack is uploaded..."
 msgstr ""
 
-#: ../root/script/config/system.js:896
+#: ../root/script/config/system.js:911
 msgid "Succeeded"
 msgstr ""
 
-#: ../root/script/config/system.js:896
+#: ../root/script/config/system.js:911
 msgid "Upload Language Pack Succeeded"
 msgstr ""
 
-#: ../root/script/config/system.js:903
+#: ../root/script/config/system.js:915 ../root/script/config/system.js:928
 msgid "Upload Language Pack Failed"
 msgstr ""
 
-#: ../root/script/config/system.js:924 ../root/script/config/system.js:939
-#: ../root/script/config/system.js:954 ../root/script/config/system.js:969
-#: ../root/script/config/system.js:984
+#: ../root/script/config/system.js:919
+msgid "Invalid Language Pack"
+msgstr ""
+
+#: ../root/script/config/system.js:922
+msgid "Error compiling to resource bundle"
+msgstr ""
+
+#: ../root/script/config/system.js:925
+msgid "Error compiling to mo file"
+msgstr ""
+
+#: ../root/script/config/system.js:951 ../root/script/config/system.js:966
+#: ../root/script/config/system.js:981 ../root/script/config/system.js:996
+#: ../root/script/config/system.js:1011
 msgid "Warning"
 msgstr ""
 
-#: ../root/script/config/system.js:924
+#: ../root/script/config/system.js:951
 msgid "Max URI Length should be between 1024 and 4096!"
 msgstr ""
 
-#: ../root/script/config/system.js:939
+#: ../root/script/config/system.js:966
 msgid "Max Header Length should be between 1024 and 8192!"
 msgstr ""
 
-#: ../root/script/config/system.js:954
+#: ../root/script/config/system.js:981
 msgid "SMTP timeout should be between 0 and 86400!"
 msgstr ""
 
-#: ../root/script/config/system.js:969
+#: ../root/script/config/system.js:996
 msgid "POP timeout should be between 0 and 86400!"
 msgstr ""
 
-#: ../root/script/config/system.js:984
+#: ../root/script/config/system.js:1011
 msgid "IMAP timeout should be between 0 and 86400!"
 msgstr ""
 
-#: ../root/script/config/system.js:996
+#: ../root/script/config/system.js:1023
 msgid "Saving..."
 msgstr ""

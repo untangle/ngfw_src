@@ -2,19 +2,19 @@
 # Copyright (C) YEAR Untangle, Inc.
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-# 
+#
+#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-07-24 19:10+0300\n"
+"POT-Creation-Date: 2008-08-28 18:29+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=0; null;\n"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:30
 msgid "Block Lists"
@@ -273,20 +273,24 @@ msgstr ""
 msgid "server"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:1007
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:1008
+msgid "Invalid subnet specified"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:1016
 msgid "Validation failed"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:1011
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:1029
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:1020
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:1038
 msgid "Failed"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:1025
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:1034
 msgid "Saving..."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:1025
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:1034
 msgid "Please wait"
 msgstr ""
 
@@ -364,38 +368,36 @@ msgstr ""
 
 #: BlockPageUtil.java:72
 msgid "If you have any questions, Please contact {0}."
-msgstr "Daca aveti intrebari, va rog contactati {0}"
+msgstr ""
 
 #: blockpage_template.jspx:48
 msgid "Host:"
-msgstr "Gazda:"
+msgstr ""
 
 #: blockpage_template.jspx:49
 msgid "URL:"
-msgstr "URL:"
+msgstr ""
 
 #: blockpage_template.jspx:51
 msgid "Reason:"
-msgstr "Motiv:"
+msgstr ""
 
 #: blockpage_template.jspx:57
 msgid "Unblock For Now"
-msgstr "Deblocheaza Pentru Moment"
+msgstr ""
 
 #: blockpage_template.jspx:63
 msgid "Unblock Permanently"
-msgstr "Deblocheaza permanent"
+msgstr ""
 
 #: BlockPageServlet.java:80
 msgid "{0} | Web Filter Warning"
-msgstr "{0} | Web Filter Alerta"
+msgstr ""
 
 #: BlockPageServlet.java:91
 msgid "{0} Web Filter"
-msgstr "{0} Web Filter"
+msgstr ""
 
 #: BlockPageServlet.java:103
 msgid "{0}This web page was blocked{1} because it is considered inappropriate."
 msgstr ""
-"{0}Aceasta pagina web a fost blocata{1} pentru ca este considerata "
-"nepotrivita."

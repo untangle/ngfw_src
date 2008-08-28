@@ -30,11 +30,20 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+
+import org.apache.commons.fileupload.FileItem;
+import org.apache.log4j.Logger;
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 import com.untangle.uvm.LanguageInfo;
 import com.untangle.uvm.LanguageSettings;
@@ -42,11 +51,8 @@ import com.untangle.uvm.RemoteLanguageManager;
 import com.untangle.uvm.UvmException;
 import com.untangle.uvm.util.DeletingDataSaver;
 import com.untangle.uvm.util.TransactionWork;
+
 import edu.emory.mathcs.backport.java.util.Collections;
-import org.apache.commons.fileupload.FileItem;
-import org.apache.log4j.Logger;
-import org.hibernate.Query;
-import org.hibernate.Session;
 
 /**
  * Implementation of RemoteLanguageManagerImpl.
@@ -65,7 +71,6 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
     private static final String BASENAME_OFFICIAL_PREFIX = "i18n.official";
     private static final String LANGUAGES_CFG = "lang.cfg";
     private static final String LC_MESSAGES = "LC_MESSAGES";
-    private static final String UNG_PREFIX = "ung_";
     private static final int BUFFER = 2048;
 
     private final Logger logger = Logger.getLogger(getClass());
@@ -73,6 +78,13 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
     private final UvmContextImpl uvmContext;
     private LanguageSettings settings;
 
+    static {
+        LANGUAGES_DIR = System.getProperty("bunnicula.lang.dir"); // place for languages resources files
+        LANGUAGES_COMMUNITY_DIR = LANGUAGES_DIR + File.separator + "community"; // place for community languages resources files
+        LANGUAGES_OFFICIAL_DIR = LANGUAGES_DIR + File.separator + "official"; // place for official languages resources files
+        LOCALE_DIR = "/usr/share/locale"; // place for .mo files
+    }
+    
     RemoteLanguageManagerImpl(UvmContextImpl uvmContext) {
         this.uvmContext = uvmContext;
 
@@ -153,6 +165,9 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
             }
             zis.close();
             uploadedStream.close();
+            
+            ResourceBundle.clearCache();
+            
         } catch (IOException e) {
             logger.error(e);
             throw new UvmException("Upload Language Pack Failed");
@@ -165,7 +180,7 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
         try {
             String tokens[] = entry.getName().split(File.separator);
             String lang = tokens[0];
-            String moduleName = tokens[1].substring(0, tokens[1].lastIndexOf("."));
+            String moduleName = tokens[1].substring(0, tokens[1].lastIndexOf(".")).replaceAll("-", "_");
 
             String cmd[] = { "msgfmt", "--java2",
                     "-d", LANGUAGES_DIR,
@@ -246,13 +261,20 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
     }
 
     public Map<String, String> getTranslations(String module){
-        String ungPrefixedModule = UNG_PREFIX + module;
         Map<String, String> map = new HashMap<String, String>();
-/*
+        String ungModule = module.replaceAll("-", "_");
         try {
-            I18n i18n = I18nFactory.getI18n("i18n."+ungPrefixedModule, ungPrefixedModule, Thread
-                    .currentThread().getContextClassLoader(), new Locale(settings
-                    .getLanguage()), I18nFactory.DEFAULT);
+            I18n i18n = null;
+            try {
+                i18n = I18nFactory.getI18n(BASENAME_COMMUNITY_PREFIX+"."+ungModule, ungModule, Thread
+                        .currentThread().getContextClassLoader(), new Locale(settings
+                        .getLanguage()), I18nFactory.DEFAULT);
+            } catch (MissingResourceException e) {
+                // fall back to official translations
+                i18n = I18nFactory.getI18n(BASENAME_OFFICIAL_PREFIX+"."+ungModule, ungModule, Thread
+                        .currentThread().getContextClassLoader(), new Locale(settings
+                        .getLanguage()), I18nFactory.DEFAULT);
+            }
 
             if (i18n != null) {
                 for (Enumeration<String> enumeration = i18n.getResources().getKeys(); enumeration
@@ -265,57 +287,47 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
             // Do nothing - Fall back to a default that returns the passed text if no resource bundle can be located
             // is done in client side
         }
-*/
-    // We will use this approuch instead of the one above, because of a bug in ResouceBundle in jdk 1.5, related with cache:
-    // I18N is using ResourceBundle.getBundle(baseName, locale, loader); to load a resouce bundle which caches the ResourceBundles,
-    // and if we tried once to load a resource bundle, second time will return not found (MissingResourceException), evean if
-    // the resource is available now; this prevent dynamic loading, which we need.
-    try {
-        Class clazz = loadResourceBundleClass(BASENAME_COMMUNITY_PREFIX + "." + ungPrefixedModule + "_" + settings.getLanguage());
-        if (clazz == null) {
-            // fall back to official translations
-            clazz = loadResourceBundleClass(BASENAME_OFFICIAL_PREFIX + "." + ungPrefixedModule + "_" + settings.getLanguage());
-        }
-        if (clazz != null) {
-            ResourceBundle resourceBundle = (ResourceBundle)clazz.newInstance();
-            if (resourceBundle != null) {
-                for (Enumeration<String> enumeration = resourceBundle.getKeys(); enumeration.hasMoreElements();) {
-                    String key = enumeration.nextElement();
-                    map.put(key, resourceBundle.getString(key));
-                }
-            }
-        }
-    } catch (Exception e) {
-        // Do nothing - Fall back to a default that returns the passed
-        // text if no resource bundle can be located is done in client
-        // side
-    }
-
-
+//    // We will use this approuch instead of the one above, because of a bug in ResouceBundle in jdk 1.5, related with cache:
+//    // I18N is using ResourceBundle.getBundle(baseName, locale, loader); to load a resouce bundle which caches the ResourceBundles,
+//    // and if we tried once to load a resource bundle, second time will return not found (MissingResourceException), evean if
+//    // the resource is available now; this prevent dynamic loading, which we need.
+//    try {
+//        Class clazz = loadResourceBundleClass(BASENAME_COMMUNITY_PREFIX + "." + ungPrefixedModule + "_" + settings.getLanguage());
+//        if (clazz == null) {
+//            // fall back to official translations
+//            clazz = loadResourceBundleClass(BASENAME_OFFICIAL_PREFIX + "." + ungPrefixedModule + "_" + settings.getLanguage());
+//        }
+//        if (clazz != null) {
+//            ResourceBundle resourceBundle = (ResourceBundle)clazz.newInstance();
+//            if (resourceBundle != null) {
+//                for (Enumeration<String> enumeration = resourceBundle.getKeys(); enumeration.hasMoreElements();) {
+//                    String key = enumeration.nextElement();
+//                    map.put(key, resourceBundle.getString(key));
+//                }
+//            }
+//        }
+//    } catch (Exception e) {
+//        // Do nothing - Fall back to a default that returns the passed
+//        // text if no resource bundle can be located is done in client
+//        // side
+//    }
 
         return map;
     }
 
-    private Class loadResourceBundleClass(String name) {
-        Class clazz = null;
-        try {
-            clazz =Thread.currentThread().getContextClassLoader().loadClass(name);
-        } catch (ClassNotFoundException e1) {
-        }
-        return clazz;
-    }
+//    private Class loadResourceBundleClass(String name) {
+//        Class clazz = null;
+//        try {
+//            clazz =Thread.currentThread().getContextClassLoader().loadClass(name);
+//        } catch (ClassNotFoundException e1) {
+//        }
+//        return clazz;
+//    }
 
     // private methods --------------------------------------------------------
     private void saveSettings(LanguageSettings settings) {
         DeletingDataSaver<LanguageSettings> saver =
             new DeletingDataSaver<LanguageSettings>(uvmContext,"LanguageSettings");
         this.settings = saver.saveData(settings);
-    }
-
-    static {
-        LANGUAGES_DIR = System.getProperty("bunnicula.lang.dir"); // place for languages resources files
-        LANGUAGES_COMMUNITY_DIR = LANGUAGES_DIR + File.separator + "community"; // place for community languages resources files
-        LANGUAGES_OFFICIAL_DIR = LANGUAGES_DIR + File.separator + "official"; // place for official languages resources files
-        LOCALE_DIR = "/usr/share/locale"; // place for .mo files
     }
 }

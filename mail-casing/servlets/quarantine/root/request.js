@@ -78,7 +78,7 @@ Ext.onReady( function(){
         failure : function() {
             Ext.MessageBox.alert("Error", "Unable to load the language pack." );
         },
-      params : { module : 'mail_casing' }
+      params : { module : 'untangle-casing-mail' }
     });
 });
 

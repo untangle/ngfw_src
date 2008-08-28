@@ -50,14 +50,14 @@ public class ReportingOutsideAccessValve extends OutsideValve
     protected String outsideErrorMessage()
     {
         LocalUvmContext uvm = LocalUvmContextFactory.context();
-        Map<String,String> i18n_map = uvm.languageManager().getTranslations("main");
+        Map<String,String> i18n_map = uvm.languageManager().getTranslations("untangle-libuvm");
         return I18nUtil.tr(i18n_map, "off-site access to reporting");
     }
 
     protected String httpErrorMessage()
     {
         LocalUvmContext uvm = LocalUvmContextFactory.context();
-        Map<String,String> i18n_map = uvm.languageManager().getTranslations("main");
+        Map<String,String> i18n_map = uvm.languageManager().getTranslations("untangle-libuvm");
         return I18nUtil.tr(i18n_map, "standard access to reporting");
     }
 }

@@ -1730,7 +1730,7 @@ Ung.Settings = Ext.extend(Ext.Component, {
             if(Ung.Settings.dependency[nodeName]) {
                 var dependencyName=Ung.Settings.dependency[nodeName].name;
                 if (!Ung.i18nModuleInstances[dependencyName]) {
-                    var dependencyTranslations = rpc.languageManager.getTranslations(dependencyName.replace("untangle-base-", "")); // convention
+                    var dependencyTranslations = rpc.languageManager.getTranslations(dependencyName); // convention
                     Ung.i18nModuleInstances[dependencyName] = new Ung.ModuleI18N({
                         "map" : i18n.map,
                         "moduleMap" : dependencyTranslations.map
@@ -1738,7 +1738,7 @@ Ung.Settings = Ext.extend(Ext.Component, {
                 }
             }
 
-            var moduleTranslations=rpc.languageManager.getTranslations(nodeName.replace("untangle-node-", "")); // convention
+            var moduleTranslations=rpc.languageManager.getTranslations(nodeName); // convention
             var moduleMap=moduleTranslations.map;
             if(Ung.Settings.dependency[nodeName]) {
                 var dependencyMap=Ung.i18nModuleInstances[Ung.Settings.dependency[nodeName].name].map;
@@ -3596,7 +3596,7 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
                         text : i18n._("Open Local Directory"),
                         handler : function() {
                             Ung.Util.loadResourceAndExecute("Ung.LocalDirectory","script/config/localDirectory.js", function() {
-                                main.localDirectoryWin=new Ung.LocalDirectory({"name":"localDirectory",fnCallback: function() {
+                                main.localDirectoryWin=new Ung.LocalDirectory({"name":"untangle-webui-localDirectory",fnCallback: function() {
                                     this.populate(this.record,this.fnCallback)
                                 }.createDelegate(this)});
                                 main.localDirectoryWin.show();

@@ -10,7 +10,7 @@
     <![CDATA[
              request.setAttribute( "bs", com.untangle.uvm.LocalUvmContextFactory.context().brandingManager().getBaseSettings());
              request.setAttribute( "ss", com.untangle.uvm.LocalUvmContextFactory.context().skinManager().getSkinSettings()); 
-             request.setAttribute( "i18n_map", com.untangle.uvm.LocalUvmContextFactory.context().languageManager().getTranslations("mail_casing")); 
+             request.setAttribute( "i18n_map", com.untangle.uvm.LocalUvmContextFactory.context().languageManager().getTranslations("untangle-casing-mail")); 
     ]]>
   </jsp:scriptlet>  
 

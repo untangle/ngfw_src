@@ -109,14 +109,14 @@ public abstract class OutsideValve extends ValveBase
     protected String outsideErrorMessage()
     {
         LocalUvmContext uvm = LocalUvmContextFactory.context();
-        Map<String,String> i18n_map = uvm.languageManager().getTranslations("main");
+        Map<String,String> i18n_map = uvm.languageManager().getTranslations("untangle-libuvm");
         return I18nUtil.tr(i18n_map, "off-site access");
     }
 
     protected String httpErrorMessage()
     {
         LocalUvmContext uvm = LocalUvmContextFactory.context();
-        Map<String,String> i18n_map = uvm.languageManager().getTranslations("main");
+        Map<String,String> i18n_map = uvm.languageManager().getTranslations("untangle-libuvm");
         return I18nUtil.tr(i18n_map, "standard access");
     }
 

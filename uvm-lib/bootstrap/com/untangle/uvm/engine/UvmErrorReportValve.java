@@ -123,7 +123,7 @@ public class UvmErrorReportValve extends ErrorReportValve
 
     private Map<String, String> getTranslations()
     {
-        return Main.getMain().getTranslations("bootstrap");
+        return Main.getMain().getTranslations("untangle-libuvm");
     }
 
     private String tr(Map<String, String> i18nMap, String value)

@@ -7,16 +7,16 @@ fi
 
 for module in main administration system systemInfo upgrade
 do 
-    cp ../uvm-lib/servlets/webui/po/ung_${module}.pot ./pot/
+    cp ../uvm-lib/servlets/webui/po/untangle-webui-${module}.pot ./pot/
 done
 
 for module in webfilter phish spyware spamassassin shield protofilter ips
 do 
-    cp ../${module}/po/ung_${module}.pot ./pot/
+    cp ../${module}/po/untangle-node-${module}.pot ./pot/
 done
 
-cp ../mail-casing/servlets/quarantine/po/ung_mail_casing.pot ./pot/
-cp ../virus-base/po/ung_virus.pot ./pot/
+cp ../mail-casing/servlets/quarantine/po/untangle-casing-mail.pot ./pot/
+cp ../virus-base/po/untangle-base-virus.pot ./pot/
 
 rm -f pot.zip
 zip -r pot.zip ./pot/

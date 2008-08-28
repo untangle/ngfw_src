@@ -1,13 +1,14 @@
 # SOME DESCRIPTIVE TITLE.
-# Copyright (C) 2008 Untangle, Inc.
+# Copyright (C) YEAR Untangle, Inc.
 # This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <cmatei@untangle.com>, 2008.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 # 
+#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-07-21 16:03+0300\n"
+"POT-Creation-Date: 2008-08-28 18:29+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -91,8 +92,7 @@ msgid "Email"
 msgstr ""
 
 #: ../root/script/config/systemInfo.js:177
-#, python-format
-msgid "Number of computers%sprotected by Untangle"
+msgid "Number of computers{0}protected by Untangle"
 msgstr ""
 
 #: ../root/script/config/systemInfo.js:194

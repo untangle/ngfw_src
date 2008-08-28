@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-07-18 15:47+0300\n"
+"POT-Creation-Date: 2008-08-28 18:29+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -70,75 +70,75 @@ msgstr "[fără descriere]"
 msgid "Exceptions"
 msgstr "Excepţii"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:107
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:103
 msgid "address"
 msgstr "adresă"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:117
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:113
 msgid "user"
 msgstr "utilizatori"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:117
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:113
 msgid "count"
 msgstr "total"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:143
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:139
 msgid "description"
 msgstr "descriere"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:157
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:153
 msgid "Enable"
 msgstr "Activat"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:161
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:157
 msgid "Address"
 msgstr "Adresă"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:168
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:164
 msgid "User Count"
 msgstr "Total Utilizatori"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:183
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:179
 msgid "Description"
 msgstr "Descriere"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:214
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:210
 msgid "timestamp"
 msgstr "moment de timp"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:222
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:227
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:218
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:223
 msgid "source"
 msgstr "sursă"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:227
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:223
 msgid "interface"
 msgstr "interfaţă"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:232
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:228
 msgid "reputation"
 msgstr "reputaţie"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:240
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:236
 msgid "limited"
 msgstr "limitat"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:248
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:244
 msgid "dropped"
 msgstr "eliminat"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:256
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:252
 msgid "reject"
 msgstr "respins"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:271
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:267
 msgid "Saving..."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:271
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:267
 msgid "Please wait"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:275
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:271
 msgid "Failed"
 msgstr "Eşuat"

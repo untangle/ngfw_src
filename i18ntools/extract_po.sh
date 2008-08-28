@@ -12,16 +12,16 @@ fi
 
 for module in main administration system systemInfo upgrade
 do 
-    cp ../uvm-lib/servlets/webui/po/$1/ung_${module}.po ./$1/
+    cp ../uvm-lib/servlets/webui/po/$1/untangle-webui-${module}.po ./$1/
 done
 
 for module in webfilter phish spyware spamassassin shield protofilter ips
 do 
-    cp ../${module}/po/$1/ung_${module}.po ./$1/
+    cp ../${module}/po/$1/untangle-node-${module}.po ./$1/
 done
 
-cp ../mail-casing/servlets/quarantine/po/$1/ung_mail_casing.po ./$1/
-cp ../virus-base/po/$1/ung_virus.po ./$1/
+cp ../mail-casing/servlets/quarantine/po/$1/untangle-casing-mail.po ./$1/
+cp ../virus-base/po/$1/untangle-base-virus.po ./$1/
 
 rm -f $1.zip
 zip -r $1.zip ./$1/

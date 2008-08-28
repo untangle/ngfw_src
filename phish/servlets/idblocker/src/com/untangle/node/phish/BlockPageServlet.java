@@ -69,7 +69,7 @@ public class BlockPageServlet extends HttpServlet
         /* This is the name of the node to use when retrieving the I18N bundle */
         public String getI18n()
         {
-            return "phish";
+            return "untangle-node-phish";
         }
         
         /* Retrieve the page title (in the window bar) of the page */
