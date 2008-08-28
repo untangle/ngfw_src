@@ -35,13 +35,6 @@ CREATE TABLE settings.u_stat_settings (
     tid               int8 UNIQUE,
     PRIMARY KEY       (settings_id));
 
--- com.untangle.uvm.engine.StatSettings.activeBlingers
-CREATE TABLE settings.u_blinger_active (
-    blinger_settings_id  int8 NOT NULL,
-    position             int4 NOT NULL,
-    blinger_name         text NOT NULL,
-    PRIMARY KEY          (blinger_settings_id, position));
-
 CREATE TABLE settings.u_active_stat (
     id                   int8 NOT NULL,
     settings_id          int8,
@@ -49,3 +42,4 @@ CREATE TABLE settings.u_active_stat (
     name                 text NOT NULL,
     interval             text NOT NULL,
     PRIMARY KEY (id));
+

@@ -30,3 +30,6 @@ ALTER TABLE settings.n_webfilter_passed_clients DROP COLUMN position;
 
 ALTER TABLE settings.n_webfilter_blocked_urls DROP CONSTRAINT n_webfilter_blocked_urls_pkey;
 ALTER TABLE settings.n_webfilter_blocked_urls DROP COLUMN position;
+
+ALTER TABLE settings.n_webfilter_blcat DROP CONSTRAINT n_webfilter_blcat_pkey;
+ALTER TABLE settings.n_webfilter_blcat DROP COLUMN position;

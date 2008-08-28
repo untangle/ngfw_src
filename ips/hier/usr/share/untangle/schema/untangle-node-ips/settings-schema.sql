@@ -31,7 +31,8 @@ create table settings.n_ips_variable (
     variable text,
     definition text,
     description text,
-    settings_id int8);
+    settings_id int8,
+    PRIMARY KEY (variable_id));
 
 create table settings.n_ips_immutable_variables (
     setting_id int8 NOT NULL,

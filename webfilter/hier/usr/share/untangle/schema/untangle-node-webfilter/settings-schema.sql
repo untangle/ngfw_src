@@ -68,8 +68,7 @@ CREATE TABLE settings.n_webfilter_blcat (
     block_urls bool NOT NULL,
     block_expressions bool NOT NULL,
     log_only bool NOT NULL,
-    setting_id int8,
-    PRIMARY KEY (category_id));
+    setting_id int8);
 
 ----------------
 -- constraints |
@@ -124,3 +123,7 @@ ALTER TABLE settings.n_webfilter_blocked_urls
 ALTER TABLE settings.n_webfilter_blcat
     ADD CONSTRAINT fk_tr_httpblk_blcat
     FOREIGN KEY (setting_id) REFERENCES settings.n_webfilter_settings;
+
+ALTER TABLE settings.n_webfilter_blocked_urls
+    ADD CONSTRAINT fk_tr_httpblk_blocked_urls_rule
+    FOREIGN KEY (rule_id) REFERENCES u_string_rule(rule_id);
