@@ -1142,7 +1142,7 @@ Ung.Node = Ext.extend(Ext.Component, {
     // initialize blingers
     initBlingers : function() {
         if (this.blingers !== null) {
-            if(this.blingers.activityDescs!=null) {
+            if(this.blingers.activityDescs!=null && this.blingers.activityDescs.list.length>0) {
                 this.activityBlinger=new Ung.ActivityBlinger({
                    parentId : this.getId(),
                    bars: this.blingers.activityDescs.list
@@ -1150,7 +1150,7 @@ Ung.Node = Ext.extend(Ext.Component, {
                 this.activityBlinger.render('nodeBlingers_' + this.getId());
                 this.subCmps.push(this.activityBlinger);
             }
-            if(this.blingers.metricDescs!=null) {
+            if(this.blingers.metricDescs!=null && this.blingers.metricDescs.list.length>0) {
                 this.systemBlinger=new Ung.SystemBlinger({
                    parentId : this.getId(),
                    metric: this.blingers.metricDescs.list
@@ -3586,10 +3586,11 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
                     xtype : 'fieldset',
                     title : i18n._('Add a new user'),
                     autoHeight : true,
-                    items:[{
+                    buttonAlign : 'left',
+                    buttons:[{
                     	xtype: "button",
-                        name : 'Open User Directory',
-                        text : i18n._("Open User Directory"),
+                        name : 'Open Local Directory',
+                        text : i18n._("Open Local Directory"),
                         handler : function() {
                             Ung.Util.loadResourceAndExecute("Ung.UserDirectory","script/config/userDirectory.js", function() {
                                 main.userDirectoryWin=new Ung.UserDirectory({"name":"userDirectory",fnCallback: function() {
@@ -3597,6 +3598,20 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
                                 }.createDelegate(this)});
                                 main.userDirectoryWin.show();
                             }.createDelegate(this));
+                        }.createDelegate(this)
+                    }, {
+                        xtype: "button",
+                        name : 'Open Active Directory',
+                        text : i18n._("Open Active Directory"),
+                        disabled : main.getNode('untangle-node-adconnector') == null,
+                        handler : function() {
+                            var node = main.getNode('untangle-node-adconnector');
+                            if (node != null) {
+                                var nodeCmp = Ung.Node.getCmp(node.tid);
+                                if (nodeCmp != null) {
+                                    nodeCmp.onSettingsAction();
+                                }
+                            }
                         }.createDelegate(this)
                     }]
                 }]
