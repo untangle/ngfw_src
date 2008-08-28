@@ -52,6 +52,8 @@
     <script type="text/javascript" src="script/untangle-node-reporting/settings.js"></script>
     <script type="text/javascript" src="script/untangle-node-boxbackup/settings.js"></script>
     <script type="text/javascript" src="script/untangle-node-pcremote/settings.js"></script>
+    <script type="text/javascript" src="script/untangle-node-policy/settings.js"></script>
+    <script type="text/javascript" src="script/untangle-node-adconnector/settings.js"></script>
 <!--     <script type="text/javascript" src="script/untangle-base-virus/settings.js"></script> 
     <script type="text/javascript" src="script/untangle-node-clam/settings.js"></script> --> 
     <script type="text/javascript" src="script/config/administration.js"></script>
@@ -59,8 +61,7 @@
     <script type="text/javascript" src="script/config/system.js"></script>
     <script type="text/javascript" src="script/config/systemInfo.js"></script>
     <script type="text/javascript" src="script/config/upgrade.js"></script>
-    <script type="text/javascript" src="script/config/racks.js"></script>
-    <script type="text/javascript" src="script/config/userDirectory.js"></script>
+    <script type="text/javascript" src="script/config/localDirectory.js"></script>
 </c:if>
 	<script type="text/javascript">
 		function init() {

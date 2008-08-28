@@ -566,9 +566,8 @@ Ung.Main.prototype = {
         this.config =
             [{"name":"networking","displayName":i18n._("Networking"),"iconClass":"iconConfigNetwork"},
             {"name":"administration","displayName":i18n._("Administration"),"iconClass":"iconConfigAdmin"},
-            {"name":"racks","displayName":i18n._("Racks"),"iconClass":"iconConfigAdmin"},
             {"name":"email","displayName":i18n._("Email"),"iconClass":"iconConfigEmail"},
-            {"name":"userDirectory","displayName":i18n._("User Directory"),"iconClass":"iconConfigDirectory"},
+            {"name":"localDirectory","displayName":i18n._("Local Directory"),"iconClass":"iconConfigDirectory"},
             {"name":"upgrade","displayName":i18n._("Upgrade"),"iconClass":"iconConfigUpgrade"},
             {"name":"system","displayName":i18n._("System"),"iconClass":"iconConfigSetup"},
             {"name":"systemInfo","displayName":i18n._("System Info"),"iconClass":"iconConfigSupport"}];
@@ -629,16 +628,10 @@ Ung.Main.prototype = {
                     main.upgradeWin.show();
                 });
                 break;
-            case "racks":
-                Ung.Util.loadResourceAndExecute("Ung.Racks","script/config/racks.js", function() {
-                    main.racksWin=new Ung.Racks(configItem);
-                    main.racksWin.show();
-                });
-                break;
-            case "userDirectory":
-                Ung.Util.loadResourceAndExecute("Ung.UserDirectory","script/config/userDirectory.js", function() {
-                    main.userDirectoryWin=new Ung.UserDirectory(configItem);
-                    main.userDirectoryWin.show();
+            case "localDirectory":
+                Ung.Util.loadResourceAndExecute("Ung.LocalDirectory","script/config/LocalDirectory.js", function() {
+                    main.localDirectoryWin=new Ung.LocalDirectory(configItem);
+                    main.localDirectoryWin.show();
                 });
                 break;
             default:

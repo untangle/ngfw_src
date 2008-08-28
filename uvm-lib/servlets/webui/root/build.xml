@@ -61,6 +61,12 @@
             <fileset dir="./../../../../../../hades/rup/pcremote/hier/usr/share/untangle/web/webui/script/">
                 <include name="**/*.*"/>
             </fileset>
+            <fileset dir="./../../../../../../hades/rup/policy/hier/usr/share/untangle/web/webui/script/">
+                <include name="**/*.*"/>
+            </fileset>
+            <fileset dir="./../../../../../../hades/rup/adconnector/hier/usr/share/untangle/web/webui/script/">
+                <include name="**/*.*"/>
+            </fileset>
         </copy>
         <copy todir="${apache.path}/skins"  preservelastmodified="true" verbose="true">
         	<fileset dir="./../../../../../pkgs/untangle-apache2-config/files/var/www/skins/">

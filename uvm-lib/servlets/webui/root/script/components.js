@@ -1050,7 +1050,7 @@ Ung.Node = Ext.extend(Ext.Component, {
         }
     },
     // on click settings
-    onSettingsAction : function() {
+    onSettingsAction : function(fnCallback) {
         if (!this.settingsWin) {
             this.settingsWin = new Ung.NodeSettingsWin({
                 nodeCmp : this
@@ -1058,6 +1058,9 @@ Ung.Node = Ext.extend(Ext.Component, {
         }
         this.settingsWin.show();
         this.loadSettings();
+        if (fnCallback) {
+            this.settings.fnCallback = fnCallback;
+        }
     },
     // load Node Context
     loadNodeContext : function() {
@@ -3592,11 +3595,11 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
                         name : 'Open Local Directory',
                         text : i18n._("Open Local Directory"),
                         handler : function() {
-                            Ung.Util.loadResourceAndExecute("Ung.UserDirectory","script/config/userDirectory.js", function() {
-                                main.userDirectoryWin=new Ung.UserDirectory({"name":"userDirectory",fnCallback: function() {
+                            Ung.Util.loadResourceAndExecute("Ung.LocalDirectory","script/config/localDirectory.js", function() {
+                                main.localDirectoryWin=new Ung.LocalDirectory({"name":"localDirectory",fnCallback: function() {
                                     this.populate(this.record,this.fnCallback)
                                 }.createDelegate(this)});
-                                main.userDirectoryWin.show();
+                                main.localDirectoryWin.show();
                             }.createDelegate(this));
                         }.createDelegate(this)
                     }, {
@@ -3609,7 +3612,10 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
                             if (node != null) {
                                 var nodeCmp = Ung.Node.getCmp(node.tid);
                                 if (nodeCmp != null) {
-                                    nodeCmp.onSettingsAction();
+                                	var fnCallback = function() {
+                                            this.populate(this.record,this.fnCallback)
+                                        }.createDelegate(this);
+                                    nodeCmp.onSettingsAction(fnCallback);
                                 }
                             }
                         }.createDelegate(this)
