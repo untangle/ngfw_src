@@ -343,6 +343,11 @@ class AppServerManagerImpl implements LocalAppServerManager
 
     public CertInfo getCertInfo(byte[] certBytes)
     {
+        if (certBytes == null) {
+            logger.warn("Can not get get info from a null cert");
+            return null;
+        }
+        
         try {
             return OpenSSLWrapper.getCertInfo(certBytes);
         } catch (Exception ex) {

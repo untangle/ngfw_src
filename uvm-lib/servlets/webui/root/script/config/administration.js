@@ -605,7 +605,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         fieldLabel : this.i18n._('Current Certificate Type'),
                         labelStyle: 'width:150px;',
                         id : 'administration_status_appearsSelfSigned',
-                        value : this.getCurrentServerCertInfo().appearsSelfSigned ? this.i18n._("Self-Signed") : this.i18n._("Signed / Trusted"),
+                        value : this.getCurrentServerCertInfo() == null ? "" : (this.getCurrentServerCertInfo().appearsSelfSigned ? this.i18n._("Self-Signed") : this.i18n._("Signed / Trusted")),
                         disabled : true,
                         width: 300
                     },{
@@ -616,7 +616,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         fieldLabel : this.i18n._('Valid starting'),
                         labelStyle: 'width:150px; font-weight:bold',
                         id : 'administration_status_notBefore',
-                        value : i18n.timestampFormat(this.getCurrentServerCertInfo().notBefore),
+                        value : this.getCurrentServerCertInfo() == null ? "" : i18n.timestampFormat(this.getCurrentServerCertInfo().notBefore),
                         disabled : true,
                         width: 300
                     },{
@@ -624,7 +624,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         fieldLabel : this.i18n._('Valid until'),
                         labelStyle: 'width:150px; font-weight:bold',
                         id : 'administration_status_notAfter',
-                        value : i18n.timestampFormat(this.getCurrentServerCertInfo().notAfter),
+                        value : this.getCurrentServerCertInfo() == null ? "" : i18n.timestampFormat(this.getCurrentServerCertInfo().notAfter),
                         disabled : true,
                         width: 300
                     },{
@@ -632,7 +632,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         fieldLabel : this.i18n._('Subject DN'),
                         labelStyle: 'width:150px; font-weight:bold',
                         id : 'administration_status_subjectDN',
-                        value : this.getCurrentServerCertInfo().subjectDN,
+                        value : this.getCurrentServerCertInfo() == null ? "" : this.getCurrentServerCertInfo().subjectDN,
                         disabled : true,
                         width: 300
                     },{
@@ -640,7 +640,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         fieldLabel : this.i18n._('Issuer DN'),
                         labelStyle: 'width:150px; font-weight:bold',
                         id : 'administration_status_issuerDN',
-                        value : this.getCurrentServerCertInfo().issuerDN,
+                        value : this.getCurrentServerCertInfo() == null ? "" : this.getCurrentServerCertInfo().issuerDN,
                         disabled : true,
                         width: 300
                     }]
@@ -1067,11 +1067,13 @@ if (!Ung.hasResource["Ung.Administration"]) {
         
         updateCertificatesStatus : function() {
         	var certInfo = this.getCurrentServerCertInfo(true);
-        	Ext.getCmp('administration_status_appearsSelfSigned').setValue(certInfo.appearsSelfSigned ? this.i18n._("Self-Signed") : this.i18n._("Signed / Trusted"));
-            Ext.getCmp('administration_status_notBefore').setValue(i18n.timestampFormat(certInfo.notBefore));
-            Ext.getCmp('administration_status_notAfter').setValue(i18n.timestampFormat(certInfo.notAfter));
-            Ext.getCmp('administration_status_subjectDN').setValue(certInfo.subjectDN);
-            Ext.getCmp('administration_status_issuerDN').setValue(certInfo.issuerDN);
+        	if (certInfo != null) {
+                Ext.getCmp('administration_status_appearsSelfSigned').setValue(certInfo.appearsSelfSigned ? this.i18n._("Self-Signed") : this.i18n._("Signed / Trusted"));
+                Ext.getCmp('administration_status_notBefore').setValue(i18n.timestampFormat(certInfo.notBefore));
+                Ext.getCmp('administration_status_notAfter').setValue(i18n.timestampFormat(certInfo.notAfter));
+                Ext.getCmp('administration_status_subjectDN').setValue(certInfo.subjectDN);
+                Ext.getCmp('administration_status_issuerDN').setValue(certInfo.issuerDN);
+        	}
         },
         
         buildMonitoring : function() {
