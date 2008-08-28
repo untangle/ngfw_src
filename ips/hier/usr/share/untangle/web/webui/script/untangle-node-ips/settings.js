@@ -347,7 +347,7 @@ if (!Ung.hasResource["Ung.Ips"]) {
             });
         },
         // save function
-        save : function() {
+        saveAction : function() {
             if (this.validate()) {
                 Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
                 this.getRpcNode().updateAll(function(result, exception) {

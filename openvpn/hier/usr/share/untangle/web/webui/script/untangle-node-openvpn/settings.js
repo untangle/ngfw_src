@@ -1349,7 +1349,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
         
         
         // save function
-        save : function() {
+        saveAction : function() {
             // validate first
             if(this.configState == "SERVER_ROUTE") {
                 if (this.validate()) {

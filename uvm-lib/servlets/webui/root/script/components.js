@@ -1816,7 +1816,7 @@ Ung.Settings = Ext.extend(Ext.Component, {
         this.node.settingsWin.cancelAction()
     },
     // All settings classes must override the save method
-    save : function() {
+    saveAction : function() {
     },
     // validation functions
     validateClient : function() {
@@ -2288,7 +2288,7 @@ Ung.NodeSettingsWin = Ext.extend(Ung.ButtonsWindow, {
     },
     saveAction : function() {
         if (this.nodeCmp.settings) {
-            this.nodeCmp.settings.save();
+            this.nodeCmp.settings.saveAction();
         }
     }
 });

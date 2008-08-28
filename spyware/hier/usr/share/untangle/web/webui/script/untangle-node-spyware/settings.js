@@ -629,7 +629,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
             return this.validateServer() && this.validateClient();
         },
         // save function
-        save : function() {
+        saveAction : function() {
             // validate first
             if (this.validate()) {
                 Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));

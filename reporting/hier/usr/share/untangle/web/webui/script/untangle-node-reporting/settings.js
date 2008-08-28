@@ -488,7 +488,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
             return true;
         },
         // save function
-        save : function() {
+        saveAction : function() {
             if (this.validate()) {
                 this.saveSemaphore = 2;
                 Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
