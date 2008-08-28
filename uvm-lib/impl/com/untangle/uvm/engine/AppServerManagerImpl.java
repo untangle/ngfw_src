@@ -18,10 +18,8 @@
 
 package com.untangle.uvm.engine;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileReader;
 import java.util.Properties;
 import javax.servlet.ServletContext;
 
@@ -44,7 +42,7 @@ import org.apache.log4j.Logger;
  */
 class AppServerManagerImpl implements LocalAppServerManager
 {
-    private static final String APACHE_PEM_FILE = "/etc/apache/server.pem";
+    private static final String APACHE_PEM_FILE = "/etc/apache2/ssl/apache.pem";
 
     private static final String KS_STORE_PASS = "changeit";
 
@@ -247,7 +245,7 @@ class AppServerManagerImpl implements LocalAppServerManager
     public boolean regenCert(RFC2253Name dn, int durationInDays)
     {
         try {
-	    OpenSSLWrapper.generateSelfSignedCert(getFQDN(), APACHE_PEM_FILE);
+        OpenSSLWrapper.generateSelfSignedCert(getFQDN(), APACHE_PEM_FILE);
             return true;
         } catch (Exception ex) {
             logger.error("Unable to regen cert", ex);
@@ -257,7 +255,7 @@ class AppServerManagerImpl implements LocalAppServerManager
 
     public boolean importServerCert(byte[] cert, byte[] caCert)
     {
-	// FIXME !!!
+    // FIXME !!!
 
         CertInfo localCertInfo = null;
 
@@ -299,7 +297,7 @@ class AppServerManagerImpl implements LocalAppServerManager
 
     public byte[] getCurrentServerCert()
     {
-	// FIXME ? our apache cert only handles one hostname right now
+    // FIXME ? our apache cert only handles one hostname right now
 //         String eHost = getFQDN();
 
 //         try {
@@ -311,11 +309,11 @@ class AppServerManagerImpl implements LocalAppServerManager
 //         }
 
         try {
-	    // FIXME: not sure about getBytes; probably B. Scott intended to
-	    // read the cert/key bytes without the header/footer lines, but
-	    // his code didn't seem to do it: "keytool whatever", which he
-	    // invokes, does returns the headers, and he doesn't seem to weed
-	    // them out...
+        // FIXME: not sure about getBytes; probably B. Scott intended to
+        // read the cert/key bytes without the header/footer lines, but
+        // his code didn't seem to do it: "keytool whatever", which he
+        // invokes, does returns the headers, and he doesn't seem to weed
+        // them out...
             return OpenSSLWrapper.getCertFromPEM(APACHE_PEM_FILE).getBytes();
         } catch (Exception ex) {
             logger.error("Unable to retreive current cert", ex);
@@ -328,13 +326,13 @@ class AppServerManagerImpl implements LocalAppServerManager
         String eHost = getFQDN();
 
         try {
-	    return OpenSSLWrapper.createCSR(eHost,
-					    // get them from dn
-					    "FIXME org",
-					    "FIXME country",
-					    "FIXME state",
-					    "FIXME city",
-					    new File(APACHE_PEM_FILE));
+        return OpenSSLWrapper.createCSR(eHost,
+                        // get them from dn
+                        "FIXME org",
+                        "FIXME country",
+                        "FIXME state",
+                        "FIXME city",
+                        new File(APACHE_PEM_FILE));
         } catch (Exception ex) {
             logger.error("Exception generating a CSR", ex);
             return null;
@@ -347,7 +345,7 @@ class AppServerManagerImpl implements LocalAppServerManager
             logger.warn("Can not get get info from a null cert");
             return null;
         }
-        
+
         try {
             return OpenSSLWrapper.getCertInfo(certBytes);
         } catch (Exception ex) {
