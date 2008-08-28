@@ -89,7 +89,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             if (this.configState == "UNCONFIGURED") {
                 statusLabel = this.i18n._("Unconfigured: Use buttons below.");
             } else if (this.configState == "CLIENT") {
-                statusLabel = this.i18n.sprintf(this.i18n._("VPN Client: Connected to %s"), this.getVpnServerAddress());
+                statusLabel = String.format(this.i18n._("VPN Client: Connected to {0}"), this.getVpnServerAddress());
                 clientButtonDisabled = true;
             } else if (this.configState == "SERVER_ROUTE") {
                 statusLabel = this.i18n._("VPN Server");
@@ -311,8 +311,8 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                             items: [{
                                 bodyStyle : 'padding:0px 0px 5px 5px;',
                                 border : false,
-                                html: i18n.sprintf(this.settingsCmp.i18n._("Please choose how you would like to distribute your digital key. <br>Note: If you choose to send via email, you must supply an email address to send the email to. If you choose to download to USB key, the data will be located on the key at: %s"),
-                                    '<br>/untangle-data/openvpn/setup-<span id="openvpn_distributeWindow_client_internal_name"></span>.exe')
+                                html: String.format(this.settingsCmp.i18n._("Please choose how you would like to distribute your digital key. {0}Note: If you choose to send via email, you must supply an email address to send the email to. If you choose to download to USB key, the data will be located on the key at: {1}"),
+                                    '<br>','<br>/untangle-data/openvpn/setup-<span id="openvpn_distributeWindow_client_internal_name"></span>.exe')
                             }, {
                                 xtype : 'radio',
                                 boxLabel : this.settingsCmp.i18n._('Distribute via Email'),
@@ -1175,7 +1175,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 for(var j=0; j<clientList.length;j++) {
                     if (removedGroups[i].id == clientList[j].groupId) {
                         Ext.MessageBox.alert(this.i18n._('Failed'), 
-                            i18n.sprintf(this.i18n._("The group: \"%s\" cannot be deleted because it is being used by the client: %s in the Client To Site List."), removedGroups[i].name, clientList[j].name),
+                            String.format(this.i18n._("The group: \"{0}\" cannot be deleted because it is being used by the client: {1} in the Client To Site List."), removedGroups[i].name, clientList[j].name),
                             function () {
                                 this.tabs.activate(this.panelAdvanced);
                             }.createDelegate(this) 
@@ -1187,7 +1187,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 for(var j=0; j<siteList.length;j++) {
                     if (removedGroups[i].id == siteList[j].groupId) {
                         Ext.MessageBox.alert(this.i18n._('Failed'), 
-                            i18n.sprintf(this.i18n._("The group: \"%s\" cannot be deleted because it is being used by the site: %s in the Site To Site List."), removedGroups[i].name, siteList[j].name),
+                            String.format(this.i18n._("The group: \"{0}\" cannot be deleted because it is being used by the site: {1} in the Site To Site List."), removedGroups[i].name, siteList[j].name),
                             function () {
                                 this.tabs.activate(this.panelAdvanced);
                             }.createDelegate(this) 
@@ -1201,7 +1201,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             for(var i=0;i<groupList.length;i++) {
                 for(var j=i+1; j<groupList.length;j++) {
                     if (groupList[i].name.toLowerCase() == groupList[j].name.toLowerCase()) {
-                        Ext.MessageBox.alert(this.i18n._('Failed'), i18n.sprintf(this.i18n._("The group name: \"%s\" in row: %d already exists."), groupList[j].name.toLowerCase(), j+1),
+                        Ext.MessageBox.alert(this.i18n._('Failed'), String.format(this.i18n._("The group name: \"{0}\" in row: {1} already exists."), groupList[j].name.toLowerCase(), j+1),
                             function () {
                                 this.tabs.activate(this.panelAdvanced);
                             }.createDelegate(this) 
@@ -1218,7 +1218,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             var clientList=this.gridClients.getFullSaveList();
             for(var i=0;i<clientList.length;i++) {
                 if(clientList[i].id>=0 && clientList[i].name!=clientList[i].originalName) {
-                    Ext.MessageBox.alert(i18n._("Failed"), i18n.sprintf(this.i18n._('You cannot change an account name after its key has been distributed. Client name should be %s.'), clientList[i].originalName),
+                    Ext.MessageBox.alert(i18n._("Failed"), String.format(this.i18n._('You cannot change an account name after its key has been distributed. Client name should be {0}.'), clientList[i].originalName),
                         function () {
                             this.tabs.activate(this.panelClients);
                         }.createDelegate(this) 
@@ -1229,7 +1229,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 // Client names must all be unique                
                 for(var j=i+1; j<clientList.length;j++) {
                     if (clientList[i].name == clientList[j].name) {
-                        Ext.MessageBox.alert(this.i18n._('Failed'), i18n.sprintf(this.i18n._("The client name: \"%s\" in row: %d already exists."), clientList[j].name, j+1),
+                        Ext.MessageBox.alert(this.i18n._('Failed'), String.format(this.i18n._("The client name: \"{0}\" in row: {1} already exists."), clientList[j].name, j+1),
                             function () {
                                 this.tabs.activate(this.panelClients);
                             }.createDelegate(this) 
@@ -1247,7 +1247,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             for(var i=0;i<siteList.length;i++) {
                 for(var j=i+1; j<siteList.length;j++) {
                     if (siteList[i].name == siteList[j].name) {
-                        Ext.MessageBox.alert(this.i18n._('Failed'), i18n.sprintf(this.i18n._("The site name: \"%s\" in row: %d already exists."), siteList[j].name, j+1),
+                        Ext.MessageBox.alert(this.i18n._('Failed'), String.format(this.i18n._("The site name: \"{0}\" in row: {1} already exists."), siteList[j].name, j+1),
                             function () {
                                 this.tabs.activate(this.panelClients);
                             }.createDelegate(this) 
@@ -1286,15 +1286,15 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         var tabToActivate = null;
                         switch (result.errorCode) {
                             case 'ERR_GROUP_LIST_OVERLAP' : 
-                                errorMsg = i18n.sprintf(this.i18n._("The two networks: %s and %s cannot overlap"),result.cause[0],result.cause[1]);
+                                errorMsg = String.format(this.i18n._("The two networks: {0} and {1} cannot overlap"),result.cause[0],result.cause[1]);
                                 tabToActivate = this.panelAdvanced;
                             break;
                             case 'ERR_SITE_LIST_OVERLAP' : 
-                                errorMsg = i18n.sprintf(this.i18n._("The two networks: %s and %s cannot overlap"),result.cause[0],result.cause[1]);
+                                errorMsg = String.format(this.i18n._("The two networks: {0} and {1} cannot overlap"),result.cause[0],result.cause[1]);
                                 tabToActivate = this.panelClients;
                             break;
                             case 'ERR_EXPORT_LIST_OVERLAP' : 
-                                errorMsg = i18n.sprintf(this.i18n._("The two networks: %s and %s cannot overlap"),result.cause[0],result.cause[1]);
+                                errorMsg = String.format(this.i18n._("The two networks: {0} and {1} cannot overlap"),result.cause[0],result.cause[1]);
                                 tabToActivate = this.gridExports;
                             break;
                             default :
@@ -1331,7 +1331,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         var errorMsg = "";
                         switch (result.errorCode) {
                             case 'ERR_EXPORT_LIST_OVERLAP' : 
-                                errorMsg = i18n.sprintf(this.i18n._("The two networks: %s and %s cannot overlap"),result.cause[0],result.cause[1]);
+                                errorMsg = String.format(this.i18n._("The two networks: {0} and {1} cannot overlap"),result.cause[0],result.cause[1]);
                             break;
                             default :
                                 errorMsg = this.i18n._(result.errorCode) + ": " + result.cause;

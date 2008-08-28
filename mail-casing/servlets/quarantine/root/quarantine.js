@@ -266,21 +266,21 @@ Ung.Quarantine.prototype = {
         var messages = [];
         if ( result.purgeCount > 0 ) {
             messages.push( i18n.pluralise( i18n._( "Deleted one Message" ), 
-                                          i18n.sprintf( i18n._( "Deleted %d Messages" ),
+                                          String.format( i18n._( "Deleted {0} Messages" ),
                                                         result.purgeCount ),
                                           result.purgeCount ));
         }
 
         if ( result.releaseCount > 0 ) {
             messages.push( i18n.pluralise( i18n._( "Released one Message" ), 
-                                          i18n.sprintf( i18n._( "Released %d Messages" ), 
+                                          String.format( i18n._( "Released {0} Messages" ), 
                                                         result.releaseCount ),
                                           result.releaseCount ));
         }
 
         if ( result.safelistCount > 0 ) {
             messages.push( i18n.pluralise( i18n._( "Safelisted one Address" ), 
-                                          i18n.sprintf( i18n._( "Safelisted %d Addresses" ), 
+                                          String.format( i18n._( "Safelisted {0} Addresses" ), 
                                                         result.safelistCount ),
                                           result.safelistCount ));            
         }
@@ -314,8 +314,8 @@ Ung.Quarantine.prototype = {
             this.releaseButton.setDisabled( false );
             this.deleteButton.setDisabled( false );
         } else {
-            deleteText = i18n.sprintf( i18n._( "Delete %d Messages" ), count );
-            releaseText = i18n.sprintf( i18n._( "Move %d Messages to Inbox" ), count );
+            deleteText = String.format( i18n._( "Delete {0} Messages" ), count );
+            releaseText = String.format( i18n._( "Move {0} Messages to Inbox" ), count );
             this.releaseButton.setDisabled( false );
             this.deleteButton.setDisabled( false );
         }
@@ -328,7 +328,7 @@ Ung.Quarantine.prototype = {
             safelistText = i18n._( "Add Sender to Safelist" );
             this.safelistButton.setDisabled( false );
         } else {
-            safelistText = i18n.sprintf( i18n._( "Add %d Senders to Safelist" ), count );
+            safelistText = String.format( i18n._( "Add {0} Senders to Safelist" ), count );
             this.safelistButton.setDisabled( false );
         }
 
@@ -551,7 +551,7 @@ function completeInit()
     safelist.init();
     remaps.init();
 
-    var message = i18n.sprintf( i18n._( "The messages below were quarantined and will be deleted after %d days." ), inboxDetails.quarantineDays );
+    var message = String.format( i18n._( "The messages below were quarantined and will be deleted after {0} days." ), inboxDetails.quarantineDays );
 
     var panels = [];
 

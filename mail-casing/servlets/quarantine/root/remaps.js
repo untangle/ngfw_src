@@ -232,7 +232,7 @@ Ung.Remaps.prototype = {
             if ( count != result.length ) {
                 count = count - result.length;
                 var message = i18n.pluralise( i18n._( "Delete one Remap" ), 
-                                              i18n.sprintf( i18n._( "Deleted %d Remaps" ), count ),
+                                              String.format( i18n._( "Deleted {0} Remaps" ), count ),
                                               count );
                 quarantine.showMessage( message );
             }
@@ -246,7 +246,7 @@ Ung.Remaps.prototype = {
     updateActionItems : function()
     {
         var count = this.selectionModel.getCount();
-        var text = i18n.pluralise( i18n._( "Delete one Addressess" ), i18n.sprintf( i18n._( "Delete %d Addresses" ), count ), count );
+        var text = i18n.pluralise( i18n._( "Delete one Addressess" ), String.format( i18n._( "Delete {0} Addresses" ), count ), count );
         if ( count > 0 ) {
             this.deleteButton.setDisabled( false );
         } else {

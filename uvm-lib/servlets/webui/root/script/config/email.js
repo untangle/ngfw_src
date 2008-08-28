@@ -714,7 +714,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                         	xtype: 'tbfill'
                         }, {
                         	xtype: 'tbtext', 
-                        	text: i18n.sprintf(this.i18n._('Total Disk Space Used: %s MB'), i18n.numberFormat((this.getQuarantineMaintenenceView().getInboxesTotalSize()/(1024 * 1024)).toFixed(3)))
+                        	text: String.format(this.i18n._('Total Disk Space Used: {0} MB'), i18n.numberFormat((this.getQuarantineMaintenenceView().getInboxesTotalSize()/(1024 * 1024)).toFixed(3)))
                         }],
                         fields : [{
                             name : 'address'
@@ -1077,7 +1077,7 @@ if (!Ung.hasResource["Ung.Email"]) {
 
             //validate port
             if (!portCmp.isValid()) {
-                Ext.MessageBox.alert(this.i18n._('Warning'), i18n.sprintf(this.i18n._("The port must be an integer number between %d and %d."), 1, 65535),
+                Ext.MessageBox.alert(this.i18n._('Warning'), String.format(this.i18n._("The port must be an integer number between {0} and {1}."), 1, 65535),
                     function () {
                         this.tabs.activate(this.panelActiveDirectoryConnector);
                         portCmp.focus(true);

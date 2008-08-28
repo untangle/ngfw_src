@@ -133,7 +133,7 @@ if (!Ung.hasResource["Ung.System"]) {
                     items : [{
                         xtype : 'checkbox',
                         name : 'Allow us to securely access your server for support purposes',
-                        boxLabel : i18n.sprintf(this.i18n._('%sAllow%s us to securely access your server for support purposes.'), '<b>', '</b>'),
+                        boxLabel : String.format(this.i18n._('{0}Allow{1} us to securely access your server for support purposes.'), '<b>', '</b>'),
                         hideLabel : true,
                         checked : this.getAccessSettings().isSupportEnabled,
                         listeners : {
@@ -146,8 +146,8 @@ if (!Ung.hasResource["Ung.System"]) {
                     }, {
                         xtype : 'checkbox',
                         name : 'Send us data about your server',
-                        boxLabel : i18n.sprintf(this.i18n
-                                ._('%sSend%s us data about your server. This will send us status updates and an email if any unexpected problems occur, but will not allow us to login to your server. No personal information about your network traffic will be transmitted.'),
+                        boxLabel : String.format(this.i18n
+                                ._('{0}Send{1} us data about your server. This will send us status updates and an email if any unexpected problems occur, but will not allow us to login to your server. No personal information about your network traffic will be transmitted.'),
                                 '<b>', '</b>'),
                         hideLabel : true,
                         checked : this.getMiscSettings().isExceptionReportingEnabled,
@@ -252,7 +252,7 @@ if (!Ung.hasResource["Ung.System"]) {
                     items : [{
                         html: this.i18n._("You can backup your current system configuration to USB Key for later restoration, in the event that you would like to replace new settings with your current settings.") +
                         		"<br>\n<br>\n" +
-                        		i18n.sprintf(this.i18n._("After backing up your current system configuration to USB Key, you can then restore that configuration through the %sBackup and Restore Utilities%s.  To access the Backup and Restore Utilities, you must have a monitor and keyboard physically plugged into your server when it is turned on, and then select \"Backup and Restore Utilities\" from the boot prompt."),'<b>','</b>') +
+                        		String.format(this.i18n._("After backing up your current system configuration to USB Key, you can then restore that configuration through the {0}Backup and Restore Utilities{1}.  To access the Backup and Restore Utilities, you must have a monitor and keyboard physically plugged into your server when it is turned on, and then select \"Backup and Restore Utilities\" from the boot prompt."),'<b>','</b>') +
                         		"<br>\n<br>\n<b>" +
                         		this.i18n._("Note: You must insert your USB Key into a valid USB port on the back of your server before pressing the button.  You must not remove the USB Key from the USB port until after the process is complete.  The progress bar will inform you when the process is complete.") +
                         		"</b>"
@@ -273,7 +273,7 @@ if (!Ung.hasResource["Ung.System"]) {
                     items : [{
                         html: this.i18n._("You can backup your current system configuration to Hard Disk for later restoration, in the event that you would like to replace new settings with your current settings.") +
                         		"<br>\n<br>\n" +
-                        		i18n.sprintf(this.i18n._("After backing up your current system configuration to Hard Disk, you can then restore that configuration through the %sBackup and Restore Utilities%s.  To access the Backup and Restore Utilities, you must have a monitor and keyboard physically plugged into your server when it is turned on, and then select \"Backup and Restore Utilities\" from the boot prompt.",'<b>','</b>'))
+                        		String.format(this.i18n._("After backing up your current system configuration to Hard Disk, you can then restore that configuration through the {0}Backup and Restore Utilities{1}.  To access the Backup and Restore Utilities, you must have a monitor and keyboard physically plugged into your server when it is turned on, and then select \"Backup and Restore Utilities\" from the boot prompt.",'<b>','</b>'))
                     }],
                     buttons : [{
                         text : this.i18n._("Backup to Hard Disk"),
@@ -386,9 +386,9 @@ if (!Ung.hasResource["Ung.System"]) {
                         bodyStyle : 'padding:5px 5px 0px 5px;'
                     },
                     items : [{
-                        html: i18n.sprintf(this.i18n._("After backing up your system configuration, you can restore that configuration through the %sRecovery Utilities%s on your server once it is done booting."),'<b>','</b>') +
+                        html: String.format(this.i18n._("After backing up your system configuration, you can restore that configuration through the {0}Recovery Utilities{1} on your server once it is done booting."),'<b>','</b>') +
                         		"\n<br>\n<br>" +
-                        		i18n.sprintf(this.i18n._("To access the %sRecovery Utilities%s, you must have a monitor and keyboard physically plugged into your server, and then click on the Recovery Utilities toolbar button when it is done booting."),'<b>','</b>')
+                        		String.format(this.i18n._("To access the {0}Recovery Utilities{1}, you must have a monitor and keyboard physically plugged into your server, and then click on the Recovery Utilities toolbar button when it is done booting."),'<b>','</b>')
                     }]
                 }]
             });
@@ -414,7 +414,7 @@ if (!Ung.hasResource["Ung.System"]) {
                       title: this.i18n._('Web Override'),
                         items : [{
                             xtype : 'radio',
-                            boxLabel : i18n.sprintf(this.i18n._('%sEnable Processing%s of web traffic.  (This is the default setting)'), '<b>', '</b>'), 
+                            boxLabel : String.format(this.i18n._('{0}Enable Processing{1} of web traffic.  (This is the default setting)'), '<b>', '</b>'), 
                             hideLabel : true,
                             name : 'Web Override',
                             checked : this.getHttpSettings().enabled,
@@ -427,7 +427,7 @@ if (!Ung.hasResource["Ung.System"]) {
                             }
                         },{
                             xtype : 'radio',
-                            boxLabel : i18n.sprintf(this.i18n._('%sDisable Processing%s of web traffic.'), '<b>', '</b>'), 
+                            boxLabel : String.format(this.i18n._('{0}Disable Processing{1} of web traffic.'), '<b>', '</b>'), 
                             hideLabel : true,
                             name : 'Web Override',
                             checked : !this.getHttpSettings().enabled,
@@ -443,7 +443,7 @@ if (!Ung.hasResource["Ung.System"]) {
                         title: this.i18n._('Long URIs'),
                         items : [{
                             xtype : 'radio',
-                            boxLabel : i18n.sprintf(this.i18n._('%sEnable Processing%s of long URIs.  The traffic is considered \"Non-Http\".  (This is the default setting)'), '<b>', '</b>'), 
+                            boxLabel : String.format(this.i18n._('{0}Enable Processing{1} of long URIs.  The traffic is considered \"Non-Http\".  (This is the default setting)'), '<b>', '</b>'), 
                             hideLabel : true,
                             name : 'Long URIs',
                             checked : !this.getHttpSettings().blockLongUris,
@@ -456,7 +456,7 @@ if (!Ung.hasResource["Ung.System"]) {
                             }
                         },{
                             xtype : 'radio',
-                            boxLabel : i18n.sprintf(this.i18n._('%sDisable Processing%s of long URIs.'), '<b>', '</b>'), 
+                            boxLabel : String.format(this.i18n._('{0}Disable Processing{1} of long URIs.'), '<b>', '</b>'), 
                             hideLabel : true,
                             name : 'Long URIs',
                             checked : this.getHttpSettings().blockLongUris,
@@ -491,7 +491,7 @@ if (!Ung.hasResource["Ung.System"]) {
                         title: this.i18n._('Long Headers'),
                         items : [{
                             xtype : 'radio',
-                            boxLabel : i18n.sprintf(this.i18n._('%sEnable Processing%s of long headers.  The traffic is considered \"Non-Http\".  (This is the default setting)'), '<b>', '</b>'), 
+                            boxLabel : String.format(this.i18n._('{0}Enable Processing{1} of long headers.  The traffic is considered \"Non-Http\".  (This is the default setting)'), '<b>', '</b>'), 
                             hideLabel : true,
                             name : 'Long Headers',
                             checked : !this.getHttpSettings().blockLongHeaders,
@@ -504,7 +504,7 @@ if (!Ung.hasResource["Ung.System"]) {
                             }
                         },{
                             xtype : 'radio',
-                            boxLabel : i18n.sprintf(this.i18n._('%sDisable Processing%s of long headers.'), '<b>', '</b>'), 
+                            boxLabel : String.format(this.i18n._('{0}Disable Processing{1} of long headers.'), '<b>', '</b>'), 
                             hideLabel : true,
                             name : 'Long Headers',
                             checked : this.getHttpSettings().blockLongHeaders,
@@ -539,7 +539,7 @@ if (!Ung.hasResource["Ung.System"]) {
                         title: this.i18n._('Non-Http Blocking'),
                         items : [{
                             xtype : 'radio',
-                            boxLabel : i18n.sprintf(this.i18n._('%sAllow%s non-Http traffic to travel over port 80.  (This is the default setting)'), '<b>', '</b>'), 
+                            boxLabel : String.format(this.i18n._('{0}Allow{1} non-Http traffic to travel over port 80.  (This is the default setting)'), '<b>', '</b>'), 
                             hideLabel : true,
                             name : 'Non-Http Blocking',
                             checked : !this.getHttpSettings().nonHttpBlocked,
@@ -552,7 +552,7 @@ if (!Ung.hasResource["Ung.System"]) {
                             }
                         },{
                             xtype : 'radio',
-                            boxLabel : i18n.sprintf(this.i18n._('%sStop%s non-Http traffic to travel over port 80.'), '<b>', '</b>'), 
+                            boxLabel : String.format(this.i18n._('{0}Stop{1} non-Http traffic to travel over port 80.'), '<b>', '</b>'), 
                             hideLabel : true,
                             name : 'Non-Http Blocking',
                             checked : this.getHttpSettings().nonHttpBlocked,
@@ -574,7 +574,7 @@ if (!Ung.hasResource["Ung.System"]) {
                     autoHeight : true,
                     items : [{
                         xtype : 'radio',
-                        boxLabel : i18n.sprintf(this.i18n._('%sEnable Processing%s of File Transfer traffic.  (This is the default setting)'), '<b>', '</b>'), 
+                        boxLabel : String.format(this.i18n._('{0}Enable Processing{1} of File Transfer traffic.  (This is the default setting)'), '<b>', '</b>'), 
                         hideLabel : true,
                         name : 'FTP',
                         checked : this.getFtpSettings().enabled,
@@ -587,7 +587,7 @@ if (!Ung.hasResource["Ung.System"]) {
                         }
                     },{
                         xtype : 'radio',
-                        boxLabel : i18n.sprintf(this.i18n._('%sDisable Processing%s of File Transfer traffic.'), '<b>', '</b>'), 
+                        boxLabel : String.format(this.i18n._('{0}Disable Processing{1} of File Transfer traffic.'), '<b>', '</b>'), 
                         hideLabel : true,
                         name : 'FTP',
                         checked : !this.getFtpSettings().enabled,
@@ -608,7 +608,7 @@ if (!Ung.hasResource["Ung.System"]) {
                     autoHeight : true,
                     items : [{
                         xtype : 'radio',
-                        boxLabel : i18n.sprintf(this.i18n._('%sEnable SMTP%s email processing.  (This is the default setting)'), '<b>', '</b>'), 
+                        boxLabel : String.format(this.i18n._('{0}Enable SMTP{1} email processing.  (This is the default setting)'), '<b>', '</b>'), 
                         hideLabel : true,
                         name : 'SMTP',
                         checked : this.getMailSettings().smtpEnabled,
@@ -621,7 +621,7 @@ if (!Ung.hasResource["Ung.System"]) {
                         }
                     },{
                         xtype : 'radio',
-                        boxLabel : i18n.sprintf(this.i18n._('%sDisable SMTP%s email processing.'), '<b>', '</b>'), 
+                        boxLabel : String.format(this.i18n._('{0}Disable SMTP{1} email processing.'), '<b>', '</b>'), 
                         hideLabel : true,
                         name : 'SMTP',
                         checked : !this.getMailSettings().smtpEnabled,
@@ -658,7 +658,7 @@ if (!Ung.hasResource["Ung.System"]) {
                     autoHeight : true,
                     items : [{
                         xtype : 'radio',
-                        boxLabel : i18n.sprintf(this.i18n._('%sEnable POP3%s email processing.  (This is the default setting)'), '<b>', '</b>'), 
+                        boxLabel : String.format(this.i18n._('{0}Enable POP3{1} email processing.  (This is the default setting)'), '<b>', '</b>'), 
                         hideLabel : true,
                         name : 'POP3',
                         checked : this.getMailSettings().popEnabled,
@@ -671,7 +671,7 @@ if (!Ung.hasResource["Ung.System"]) {
                         }
                     },{
                         xtype : 'radio',
-                        boxLabel : i18n.sprintf(this.i18n._('%sDisable POP3%s email processing.'), '<b>', '</b>'), 
+                        boxLabel : String.format(this.i18n._('{0}Disable POP3{1} email processing.'), '<b>', '</b>'), 
                         hideLabel : true,
                         name : 'POP3',
                         checked : !this.getMailSettings().popEnabled,
@@ -708,7 +708,7 @@ if (!Ung.hasResource["Ung.System"]) {
                     autoHeight : true,
                     items : [{
                         xtype : 'radio',
-                        boxLabel : i18n.sprintf(this.i18n._('%sEnable IMAP%s email processing.  (This is the default setting)'), '<b>', '</b>'), 
+                        boxLabel : String.format(this.i18n._('{0}Enable IMAP{1} email processing.  (This is the default setting)'), '<b>', '</b>'), 
                         hideLabel : true,
                         name : 'IMAP',
                         checked : this.getMailSettings().imapEnabled,
@@ -721,7 +721,7 @@ if (!Ung.hasResource["Ung.System"]) {
                         }
                     },{
                         xtype : 'radio',
-                        boxLabel : i18n.sprintf(this.i18n._('%sDisable IMAP%s email processing.'), '<b>', '</b>'), 
+                        boxLabel : String.format(this.i18n._('{0}Disable IMAP{1} email processing.'), '<b>', '</b>'), 
                         hideLabel : true,
                         name : 'IMAP',
                         checked : !this.getMailSettings().imapEnabled,

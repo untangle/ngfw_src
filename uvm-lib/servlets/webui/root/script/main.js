@@ -275,7 +275,7 @@ Ung.Main.prototype = {
             return minValue <= val && val <= maxValue;
           },
 
-          portText: i18n.sprintf(i18n._("The port must be an integer number between %d and %d."), 1, 65535),
+          portText: String.format(i18n._("The port must be an integer number between {0} and {1}."), 1, 65535),
 
           portMatcher: function(val, field) {
             var minValue = 1;
@@ -283,7 +283,7 @@ Ung.Main.prototype = {
             return (minValue <= val && val <= maxValue) || (val == 'any' || val == 'all' || val == 'n/a' || val == 'none');
           },
 
-          portMatcherText: i18n.sprintf(i18n._("The port must be an integer number between %d and %d or one of the following values: any, all, n/a, none."), 1, 65535),
+          portMatcherText: String.format(i18n._("The port must be an integer number between {0} and {1} or one of the following values: any, all, n/a, none."), 1, 65535),
 
           password: function(val, field) {
             if (field.initialPassField) {
@@ -347,7 +347,7 @@ Ung.Main.prototype = {
                 var tids=result;
                 if(tids.length>0) {
                     Ext.MessageBox.alert(this.name+" "+i18n._("Warning"),
-                    i18n.sprintf(i18n._("$s cannot be removed from the toolbox because it is being used by the following policy rack:<br><b>%s</b><br><br>You must remove the product from all policy racks first."), this.displayName,tids[0]. policy.name));
+                    String.format(i18n._("{0} cannot be removed from the toolbox because it is being used by the following policy rack:{1}You must remove the product from all policy racks first."), this.displayName,"<br><b>"+tids[0].policy.name+"</b><br><br>"));
                     return;
                 } else {
                     Ung.AppItem.updateStateForNode(this.name,"unactivating");

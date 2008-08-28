@@ -249,7 +249,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         fieldLabel : this.i18n._("Password"),
                         width : 200,
                         minLength : 3,
-                        minLengthText : i18n.sprintf(this.i18n._("The password is shorter than the minimum %d characters."), 3)
+                        minLengthText : String.format(this.i18n._("The password is shorter than the minimum {0} characters."), 3)
                     }), new Ext.form.TextField({
                         inputType: 'password',
                         name : "Confirm Password",
@@ -268,7 +268,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         fieldLabel : this.i18n._("Password"),
                         width : 200,
                         minLength : 3,
-                        minLengthText : i18n.sprintf(this.i18n._("The password is shorter than the minimum %d characters."), 3)                        
+                        minLengthText : String.format(this.i18n._("The password is shorter than the minimum {0} characters."), 3)                        
                     }), new Ext.form.TextField({
                         inputType: 'password',
                         name : "Confirm Password",
@@ -526,7 +526,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         bodyStyle : 'padding:0px 5px 5px 25px;',
                         border : false
                     },{
-                        html : i18n.sprintf(this.i18n._('Current Hostname: %s%s%s'), '<i>', this.getAddressSettings().hostName, '</i>'),
+                        html : String.format(this.i18n._('Current Hostname: {0}'), '<i>' + this.getAddressSettings().hostName + '</i>'),
                         bodyStyle : 'padding:0px 5px 10px 25px;',
                         border : false
                     },{
@@ -658,7 +658,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                             layout: 'form',
                             items: [{
                                 xtype : 'button',
-                                text : i18n.sprintf(this.i18n._('Generate a %sSelf-Signed Certificate%s'), '<b>', '</b>'),
+                                text : String.format(this.i18n._('Generate a {0}Self-Signed Certificate{1}'), '<b>', '</b>'),
                                 minWidth : 250,
                                 name : 'Generate a Self-Signed Certificate',
                                 iconCls : 'actionIcon',
@@ -682,7 +682,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                             layout: 'form',
                             items: [{
                                 xtype : 'button',
-                                text : i18n.sprintf(this.i18n._('Generate a %sCertificate Signature Request%s'), '<b>', '</b>'),
+                                text : String.format(this.i18n._('Generate a {0}Certificate Signature Request{1}'), '<b>', '</b>'),
                                 minWidth : 250,
                                 name : 'Generate a Self-Signed Certificate',
                                 iconCls : 'actionIcon',
@@ -706,7 +706,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                             layout: 'form',
                             items: [{
                                 xtype : 'button',
-                                text : i18n.sprintf(this.i18n._('Import a %sSigned Certificate%s'), '<b>', '</b>'),
+                                text : String.format(this.i18n._('Import a {0}Signed Certificate{1}'), '<b>', '</b>'),
                                 minWidth : 250,
                                 name : 'Generate a Self-Signed Certificate',
                                 iconCls : 'actionIcon',
@@ -770,7 +770,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                                 var city = cityCmp.getValue();
                                 var state = stateCmp.getValue();
                                 var country = countryCmp.getValue();
-                                var distinguishedName = i18n.sprintf("O=%s,OU=%s,L=%s,ST=%s,C=%s",
+                                var distinguishedName = String.format("O={0},OU={1},L={2},ST={3},C={4}",
                                         organization, organizationUnit, city, state, country);
                                 
                                 // generate certificate
@@ -1094,7 +1094,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     title: this.i18n._('SNMP'),
                     items : [{
                         xtype : 'radio',
-                        boxLabel : i18n.sprintf(this.i18n._('%sDisable%s SNMP Monitoring. (This is the default setting.)'), '<b>', '</b>'), 
+                        boxLabel : String.format(this.i18n._('{0}Disable{1} SNMP Monitoring. (This is the default setting.)'), '<b>', '</b>'), 
                         hideLabel : true,
                         name : 'snmpEnabled',
                         checked : !this.getSnmpSettings().enabled,
@@ -1117,7 +1117,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         }
                     },{
                         xtype : 'radio',
-                        boxLabel : i18n.sprintf(this.i18n._('%sEnable%s SNMP Monitoring.'), '<b>', '</b>'), 
+                        boxLabel : String.format(this.i18n._('{0}Enable{1} SNMP Monitoring.'), '<b>', '</b>'), 
                         hideLabel : true,
                         name : 'snmpEnabled',
                         checked : this.getSnmpSettings().enabled,
@@ -1167,7 +1167,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         html : '<hr>'
                     },{
                         xtype : 'radio',
-                        boxLabel : i18n.sprintf(this.i18n._('%sDisable Traps%s so no trap events are generated.  (This is the default setting.)'), '<b>', '</b>'), 
+                        boxLabel : String.format(this.i18n._('{0}Disable Traps{1} so no trap events are generated.  (This is the default setting.)'), '<b>', '</b>'), 
                         hideLabel : true,
                         name : 'sendTraps',
                         id: 'administration_snmp_sendTraps_disable',                        
@@ -1185,7 +1185,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         }
                     },{
                         xtype : 'radio',
-                        boxLabel : i18n.sprintf(this.i18n._('%sEnable Traps%s so trap events are sent when they are generated.'), '<b>', '</b>'), 
+                        boxLabel : String.format(this.i18n._('{0}Enable Traps{1} so trap events are sent when they are generated.'), '<b>', '</b>'), 
                         hideLabel : true,
                         name : 'sendTraps',
                         id: 'administration_snmp_sendTraps_enable',
@@ -1234,7 +1234,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     title: this.i18n._('Syslog'),
                     items: [{
                         xtype : 'radio',
-                        boxLabel : i18n.sprintf(this.i18n._('%sDisable%s Syslog Monitoring. (This is the default setting.)'), '<b>', '</b>'), 
+                        boxLabel : String.format(this.i18n._('{0}Disable{1} Syslog Monitoring. (This is the default setting.)'), '<b>', '</b>'), 
                         hideLabel : true,
                         name : 'syslogEnabled',
                         checked : !this.getLoggingSettings().syslogEnabled,
@@ -1253,7 +1253,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         }
                     },{
                         xtype : 'radio',
-                        boxLabel : i18n.sprintf(this.i18n._('%sEnable%s Syslog Monitoring.'), '<b>', '</b>'), 
+                        boxLabel : String.format(this.i18n._('{0}Enable{1} Syslog Monitoring.'), '<b>', '</b>'), 
                         hideLabel : true,
                         name : 'syslogEnabled',
                         checked : this.getLoggingSettings().syslogEnabled,
@@ -1745,7 +1745,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
             for(var i=0; i<listAdminAccounts.length;i++) {
                 for(var j=i+1; j<listAdminAccounts.length;j++) {
                 	if (listAdminAccounts[i].login == listAdminAccounts[j].login) {
-                        Ext.MessageBox.alert(this.i18n._('Warning'), i18n.sprintf(this.i18n._("The login name: \"%s\" in row: %d  already exists."), listAdminAccounts[j].login, j+1),
+                        Ext.MessageBox.alert(this.i18n._('Warning'), String.format(this.i18n._("The login name: \"{0}\" in row: {1}  already exists."), listAdminAccounts[j].login, j+1),
                             function () {
                                 this.tabs.activate(this.panelAdministration);
                             }.createDelegate(this) 
@@ -1787,7 +1787,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
         validateExternalAdministration : function() {
             var httpsPortCmp = Ext.getCmp('administration_httpsPort');
             if (!httpsPortCmp.isValid()) {
-                Ext.MessageBox.alert(this.i18n._('Warning'), i18n.sprintf(this.i18n._("The port must be an integer number between %d and %d."), 1, 65535),
+                Ext.MessageBox.alert(this.i18n._('Warning'), String.format(this.i18n._("The port must be an integer number between {0} and {1}."), 1, 65535),
                     function () {
                         this.tabs.activate(this.panelAdministration);
                         httpsPortCmp.focus(true);
@@ -1842,7 +1842,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 }
                 var publicPortCmp = Ext.getCmp('administration_publicPort');
                 if (!publicPortCmp.isValid()) {
-                    Ext.MessageBox.alert(this.i18n._('Warning'), i18n.sprintf(this.i18n._("The port must be an integer number between %d and %d."), 1, 65535),
+                    Ext.MessageBox.alert(this.i18n._('Warning'), String.format(this.i18n._("The port must be an integer number between {0} and {1}."), 1, 65535),
                         function () {
                             this.tabs.activate(this.panelPublicAddress);
                             publicPortCmp.focus(true);
@@ -1901,7 +1901,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     
                     snmpTrapPortCmp = Ext.getCmp('administration_snmp_trapPort');
                     if (!snmpTrapPortCmp.isValid()) {
-                        Ext.MessageBox.alert(this.i18n._('Warning'), i18n.sprintf(this.i18n._("The port must be an integer number between %d and %d."), 1, 65535),
+                        Ext.MessageBox.alert(this.i18n._('Warning'), String.format(this.i18n._("The port must be an integer number between {0} and {1}."), 1, 65535),
                             function () {
                                 this.tabs.activate(this.panelMonitoring);
                                 snmpTrapPortCmp.focus(true);
@@ -1944,7 +1944,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 }
                 var syslogPortCmp = Ext.getCmp('administration_syslog_port');
                 if (!syslogPortCmp.isValid()) {
-                    Ext.MessageBox.alert(this.i18n._('Warning'), i18n.sprintf(this.i18n._("The port must be an integer number between %d and %d."), 1, 65535),
+                    Ext.MessageBox.alert(this.i18n._('Warning'), String.format(this.i18n._("The port must be an integer number between {0} and {1}."), 1, 65535),
                         function () {
                             this.tabs.activate(this.panelMonitoring);
                             syslogPortCmp.focus(true);

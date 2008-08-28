@@ -327,7 +327,7 @@ if (!Ung.hasResource["Ung.Ips"]) {
                         return value === null ? "" : value.CClientAddr.hostAddress + ":" + value.CClientPort;
                     }
                 }, {
-                    header : i18n.sprintf(this.i18n._('reason for%saction'),'<br>'),
+                    header : String.format(this.i18n._('reason for{0}action'),'<br>'),
                     width : 150,
                     sortable : true,
                     dataIndex : 'ruleSid',

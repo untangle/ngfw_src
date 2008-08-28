@@ -929,7 +929,7 @@ Ung.Node = Ext.extend(Ext.Component, {
         if (this.md.extraName != null && this.md.extraName.indexOf("Trial") != -1) {
             trialFlag = i18n._("Trial");
             var daysRemain = parseInt(this.md.extraName.replace("Trial (", ""))
-            trialDays = i18n.sprintf(i18n._("%s days remain"), daysRemain);
+            trialDays = String.format(i18n._("{0} days remain"), daysRemain);
         }
         var templateHTML = Ung.Node.template.applyTemplate({
             'id' : this.getId(),
@@ -1527,7 +1527,7 @@ Ung.SystemBlinger = Ext.extend(Ext.Component, {
     	var nodeCmp = Ext.getCmp(this.parentId);
     	var activeMetrics=nodeCmp.blingers.activeMetrics.list;
     	if(activeMetrics.length>4) {
-    		Ext.MessageBox.alert(i18n._("Failed"), i18n.sprintf(i18n._("The node %s has %s metrics. The maximum number of metrics is 4."),nodeCmp.displayName ,activeMetrics.length));
+    		Ext.MessageBox.alert(i18n._("Failed"), String.format(i18n._("The node {0} has {1} metrics. The maximum number of metrics is {2}."),nodeCmp.displayName ,activeMetrics.length,4));
     	}
     	var metricsLen=Math.min(activeMetrics.length,4);
         for(var i=0; i<metricsLen;i++) {

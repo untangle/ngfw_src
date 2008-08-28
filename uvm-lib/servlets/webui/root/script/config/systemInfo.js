@@ -172,9 +172,9 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                             value : this.getRegistrationInfo().emailAddr,
                             vtype : 'email'
                         }), new Ext.form.TextField({
-                            name : "Number of computers%sprotected by Untangle",
+                            name : "Number of computers protected by Untangle",
                             id : 'numSeats',
-                            fieldLabel : i18n.sprintf(this.i18n._('Number of computers%sprotected by Untangle'),'<br>'),
+                            fieldLabel : String.format(this.i18n._('Number of computers{0}protected by Untangle'),'<br>'),
                             allowBlank : false,
                             value : this.getRegistrationInfo().numSeats
                         })]

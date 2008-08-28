@@ -193,7 +193,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                             items : [{
                                 xtype : 'checkbox',
                                 name : 'Include Incident Reports in emailed reports',
-                                boxLabel : i18n.sprintf(this.i18n._('Include %sIncident Reports%s in emailed reports'),'<b>','</b>'),
+                                boxLabel : String.format(this.i18n._('Include {0}Incident Reports{1} in emailed reports'),'<b>','</b>'),
                                 hideLabel : true,
                                 checked : this.getReportingSettings().emailDetail,
                                 listeners : {
