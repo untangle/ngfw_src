@@ -1110,7 +1110,7 @@ Ung.Node = Ext.extend(Ext.Component, {
     // remove node
     removeAction : function() {
         var message = this.md.displayName
-                + " is about to be removed from the rack.\nIts settings will be lost and it will stop processing netwotk traffic.\n\nWould you like to continue removing?";
+                + " is about to be removed from the rack.\nIts settings will be lost and it will stop processing network traffic.\n\nWould you like to continue removing?";
         Ext.Msg.confirm(i18n._("Warning:"), message, function(btn, text) {
             if (btn == 'yes') {
                 if (this.settingsWin) {
