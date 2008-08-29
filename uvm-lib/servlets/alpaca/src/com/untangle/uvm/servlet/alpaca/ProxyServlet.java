@@ -148,7 +148,7 @@ public class ProxyServlet extends HttpServlet
             try {
                 LocalUvmContext uvm = LocalUvmContextFactory.context();
                 Map<String,String> i18n_map = uvm.languageManager().getTranslations("untangle-libuvm");
-                resp.sendError(HttpServletResponse.SC_REQUEST_TIMEOUT, I18nUtil.tr(i18n_map, "could not resolve host"));
+                resp.sendError(HttpServletResponse.SC_REQUEST_TIMEOUT, I18nUtil.tr("could not resolve host", i18n_map));
             } catch (IOException e) {
                 logger.warn("could not send error page", e);
             }
@@ -157,7 +157,7 @@ public class ProxyServlet extends HttpServlet
             try {
                 LocalUvmContext uvm = LocalUvmContextFactory.context();
                 Map<String,String> i18n_map = uvm.languageManager().getTranslations("untangle-libuvm");
-                resp.sendError(HttpServletResponse.SC_REQUEST_TIMEOUT, I18nUtil.tr(i18n_map, "request timed out"));
+                resp.sendError(HttpServletResponse.SC_REQUEST_TIMEOUT, I18nUtil.tr("request timed out", i18n_map));
             } catch (IOException e) {
                 logger.warn("could not send error page", e);
             }

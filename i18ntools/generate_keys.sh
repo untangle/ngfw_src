@@ -2,7 +2,8 @@
 
 ALL_MODULES='untangle-libuvm 
     untangle-casing-mail untangle-base-virus 
-    untangle-node-webfilter untangle-node-phish untangle-node-spyware untangle-node-spamassassin untangle-node-shield untangle-node-protofilter untangle-node-ips'
+    untangle-node-webfilter untangle-node-phish untangle-node-spyware untangle-node-spamassassin untangle-node-shield untangle-node-protofilter untangle-node-ips untangle-node-firewall untangle-node-reporting
+    untangle-node-adconnector untangle-node-boxbackup untangle-node-policy untangle-node-portal'
 
 function update_keys()
 {
@@ -30,28 +31,70 @@ case "$1" in
     cd ../${moduleName}/po/
     echo 'get new keys'
     xgettext --copyright-holder='Untangle, Inc.' -L Python -ki18n._ -o tmp_keys.pot ../hier/usr/share/untangle/web/webui/script/${1}/settings.js
-    msgcat tmp_keys.pot db_keys.pot block_page_keys.pot -o tmp_keys.pot
+    xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../servlets/webfilter/src/com/untangle/node/webfilter/BlockPageServlet.java
+    xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../../http-casing/localapi/com/untangle/node/http/BlockPageUtil.java
+    msgcat tmp_keys.pot blockpage_jspx_keys.pot -o tmp_keys.pot
     msgmerge -U $1.pot tmp_keys.pot
     rm tmp_keys.pot
     echo 'update po files'
     msgmerge -U ro/$1.po $1.pot
     ;;
-"untangle-node-phish"|"untangle-node-spyware")
+"untangle-node-phish")
     moduleName=`echo "$1"|cut -d"-" -f3`
     cd ../${moduleName}/po/
     echo 'get new keys'
     xgettext --copyright-holder='Untangle, Inc.' -L Python -ki18n._ -o tmp_keys.pot ../hier/usr/share/untangle/web/webui/script/${1}/settings.js
-    msgcat tmp_keys.pot block_page_keys.pot -o tmp_keys.pot
+    xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../servlets/idblocker/src/com/untangle/node/phish/BlockPageServlet.java
+    xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../../http-casing/localapi/com/untangle/node/http/BlockPageUtil.java
+    msgcat tmp_keys.pot blockpage_jspx_keys.pot -o tmp_keys.pot
     msgmerge -U $1.pot tmp_keys.pot
     rm tmp_keys.pot
     echo 'update po files'
     msgmerge -U ro/$1.po $1.pot
     ;;
-"untangle-node-spamassassin"|"untangle-node-shield"|"untangle-node-protofilter"|"untangle-node-ips")    
+"untangle-node-spyware")
     moduleName=`echo "$1"|cut -d"-" -f3`
     cd ../${moduleName}/po/
     echo 'get new keys'
     xgettext --copyright-holder='Untangle, Inc.' -L Python -ki18n._ -o tmp_keys.pot ../hier/usr/share/untangle/web/webui/script/${1}/settings.js
+    xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../servlets/spyware/src/com/untangle/node/spyware/BlockPageServlet.java
+    xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../../http-casing/localapi/com/untangle/node/http/BlockPageUtil.java
+    msgcat tmp_keys.pot blockpage_jspx_keys.pot -o tmp_keys.pot
+    msgmerge -U $1.pot tmp_keys.pot
+    rm tmp_keys.pot
+    echo 'update po files'
+    msgmerge -U ro/$1.po $1.pot
+    ;;
+"untangle-node-spamassassin"|"untangle-node-shield"|"untangle-node-protofilter"|"untangle-node-ips"|"untangle-node-firewall"|"untangle-node-reporting")    
+    moduleName=`echo "$1"|cut -d"-" -f3`
+    cd ../${moduleName}/po/
+    echo 'get new keys'
+    xgettext --copyright-holder='Untangle, Inc.' -L Python -ki18n._ -o tmp_keys.pot ../hier/usr/share/untangle/web/webui/script/${1}/settings.js
+    msgmerge -U $1.pot tmp_keys.pot
+    rm tmp_keys.pot
+    echo 'update po files'
+    msgmerge -U ro/$1.po $1.pot
+    ;;
+"untangle-node-adconnector"|"untangle-node-boxbackup"|"untangle-node-policy")    
+    moduleName=`echo "$1"|cut -d"-" -f3`
+    cd ../../../hades/rup/${moduleName}/po/
+    echo 'get new keys'
+    xgettext --copyright-holder='Untangle, Inc.' -L Python -ki18n._ -o tmp_keys.pot ../hier/usr/share/untangle/web/webui/script/${1}/settings.js
+    msgmerge -U $1.pot tmp_keys.pot
+    rm tmp_keys.pot
+    echo 'update po files'
+    msgmerge -U ro/$1.po $1.pot
+    ;;
+"untangle-node-portal")    
+    moduleName=`echo "$1"|cut -d"-" -f3`
+    cd ../../../hades/rup/${moduleName}/po/
+    echo 'get new keys'
+    xgettext --copyright-holder='Untangle, Inc.' -L Python -ki18n._ -o tmp_keys.pot ../hier/usr/share/untangle/web/webui/script/${1}/settings.js
+    xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../servlets/browser/src/com/untangle/node/portal/browser/CommandRunner.java
+    xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../servlets/proxy/src/com/untangle/node/portal/proxy/ForwardServlet.java
+    xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../servlets/proxy/src/com/untangle/node/portal/proxy/WebProxy.java
+    xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../common/login/error.jsp
+    xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../common/login/login.jsp
     msgmerge -U $1.pot tmp_keys.pot
     rm tmp_keys.pot
     echo 'update po files'
@@ -73,7 +116,9 @@ case "$1" in
     cd ../virus-base/po/
     echo 'get new keys'
     xgettext --copyright-holder='Untangle, Inc.' -L Python -ki18n._ -o tmp_keys.pot ../hier/usr/share/untangle/web/webui/script/$1/settings.js
-    msgcat tmp_keys.pot block_page_keys.pot -o tmp_keys.pot
+    xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../servlets/virus/src/com/untangle/node/virus/BlockPageServlet.java
+    xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../../http-casing/localapi/com/untangle/node/http/BlockPageUtil.java
+    msgcat tmp_keys.pot blockpage_jspx_keys.pot -o tmp_keys.pot
     msgmerge -U $1.pot tmp_keys.pot
     rm tmp_keys.pot
     echo 'update po files'

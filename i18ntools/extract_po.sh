@@ -14,10 +14,16 @@ cp ../uvm-lib/po/$1/untangle-libuvm.po ./$1/
 cp ../mail-casing/po/$1/untangle-casing-mail.po ./$1/
 cp ../virus-base/po/$1/untangle-base-virus.po ./$1/
 
-for module in untangle-node-webfilter untangle-node-phish untangle-node-spyware untangle-node-spamassassin untangle-node-shield untangle-node-protofilter untangle-node-ips
+for module in untangle-node-webfilter untangle-node-phish untangle-node-spyware untangle-node-spamassassin untangle-node-shield untangle-node-protofilter untangle-node-ips untangle-node-firewall untangle-node-reporting
 do 
     module_dir=`echo "${module}"|cut -d"-" -f3`
     cp ../${module_dir}/po/$1/${module}.po ./$1/
+done
+
+for module in untangle-node-adconnector untangle-node-boxbackup untangle-node-policy untangle-node-portal
+do 
+    module_dir=`echo "${module}"|cut -d"-" -f3`
+    cp ../../../hades/rup/${module_dir}/po/$1/${module}.po ./$1/
 done
 
 rm -f $1.zip

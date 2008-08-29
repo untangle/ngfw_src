@@ -110,14 +110,14 @@ public abstract class OutsideValve extends ValveBase
     {
         LocalUvmContext uvm = LocalUvmContextFactory.context();
         Map<String,String> i18n_map = uvm.languageManager().getTranslations("untangle-libuvm");
-        return I18nUtil.tr(i18n_map, "off-site access");
+        return I18nUtil.tr("off-site access", i18n_map);
     }
 
     protected String httpErrorMessage()
     {
         LocalUvmContext uvm = LocalUvmContextFactory.context();
         Map<String,String> i18n_map = uvm.languageManager().getTranslations("untangle-libuvm");
-        return I18nUtil.tr(i18n_map, "standard access");
+        return I18nUtil.tr("standard access", i18n_map);
     }
 
     private boolean isAccessAllowed(boolean isOutsideAccessAllowed, ServletRequest request)

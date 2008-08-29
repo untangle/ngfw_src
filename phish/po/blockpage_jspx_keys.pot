@@ -17,10 +17,6 @@ msgstr ""
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
 
-#: BlockPageUtil.java:72
-msgid "If you have any questions, Please contact {0}."
-msgstr ""
-
 #: blockpage_template.jspx:48
 msgid "Host:"
 msgstr ""
@@ -39,16 +35,4 @@ msgstr ""
 
 #: blockpage_template.jspx:63
 msgid "Unblock Permanently"
-msgstr ""
-
-#: BlockPageServlet.java:80
-msgid "{0} | Web Filter Warning"
-msgstr ""
-
-#: BlockPageServlet.java:91
-msgid "{0} Web Filter"
-msgstr ""
-
-#: BlockPageServlet.java:103
-msgid "{0}This web page was blocked{1} because it is considered inappropriate."
 msgstr ""

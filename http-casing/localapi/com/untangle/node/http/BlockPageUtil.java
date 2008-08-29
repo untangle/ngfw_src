@@ -68,7 +68,7 @@ public class BlockPageUtil
         else value = "'" + bd.getFormattedUrl() + "'";
         request.setAttribute( "url", value );
 
-        request.setAttribute( "contact", I18nUtil.tr(i18n_map, "If you have any questions, Please contact {0}.", bs.getContactHtml()));
+        request.setAttribute( "contact", I18nUtil.tr("If you have any questions, Please contact {0}.", bs.getContactHtml(), i18n_map));
 
         UserWhitelistMode mode = handler.getUserWhitelistMode();
         if (( UserWhitelistMode.NONE != mode ) && ( null != bd ) && ( null != bd.getWhitelistHost())) {

@@ -64,17 +64,17 @@ public class I18nUtil
 
     public String tr(String value, Object[] objects)
     {
-        return MessageFormat.format( tr(i18nMap,value), objects);
+        return MessageFormat.format( tr(value,i18nMap), objects);
     }
 
     public String tr(String value, Object o1)
     {
-        return tr(i18nMap, value, new Object[]{ o1 });
+        return tr(value, new Object[]{ o1 }, i18nMap);
     }
 
     // static functions --------------------------------------------------------
 
-    public static String tr(Map<String, String> i18nMap, String value)
+    public static String tr(String value, Map<String, String> i18nMap)
     {
         String tr = i18nMap.get(value);
         if (tr == null) {
@@ -83,13 +83,13 @@ public class I18nUtil
         return tr;
     }
 
-    public static String tr(Map<String, String> i18nMap, String value, Object[] objects)
+    public static String tr(String value, Object[] objects, Map<String, String> i18nMap)
     {
-        return MessageFormat.format( tr(i18nMap,value), objects);
+        return MessageFormat.format( tr(value,i18nMap), objects);
     }
 
-    public static String tr(Map<String, String> i18nMap, String value, Object o1)
+    public static String tr(String value, Object o1, Map<String, String> i18nMap)
     {
-        return tr(i18nMap, value, new Object[]{ o1 });
+        return tr(value, new Object[]{ o1 }, i18nMap);
     }
 }

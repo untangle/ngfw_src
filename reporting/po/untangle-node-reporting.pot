@@ -1,0 +1,224 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR Untangle, Inc.
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# 
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2008-08-29 17:15+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=0; null;\n"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:38
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:44
+msgid "Status"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:53
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:58
+msgid "View Reports"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:67
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:72
+msgid "Archived Reports"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:139
+msgid "Generation"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:148
+msgid "Email"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:156
+msgid "Recipients"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:173
+msgid "email address"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:179
+msgid "The email address cannot be blank."
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:196
+msgid "Include {0}Incident Reports{1} in emailed reports"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:208
+msgid ""
+"This makes emailed reports larger, but includes information about each "
+"incident/violation."
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:213
+msgid "Daily Reports"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:216
+msgid ""
+"Daily Reports are generated at midnight and covers events from the previous "
+"24 hours, up to, but not including the day of generation."
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:221
+msgid "Generate Daily Reports"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:222
+msgid "Every Day"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:233
+msgid "Weekly Reports"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:236
+msgid ""
+"Weekly Reports are generated at midnight and covers events from the previous "
+"7 days, up to, but not including the day of generation."
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:242
+msgid "Generate Weekly Reports"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:243
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:351
+msgid "Sunday"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:250
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:352
+msgid "Monday"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:259
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:353
+msgid "Tuesday"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:268
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:354
+msgid "Wednesday"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:277
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:355
+msgid "Thursday"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:286
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:356
+msgid "Friday"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:295
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:357
+msgid "Saturday"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:301
+msgid "Monthly Reports"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:304
+msgid ""
+"Monthly Reports are generated at midnight and covers events from the "
+"previous 30 days, up to, but not including the day of generation."
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:313
+msgid "Never"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:318
+msgid "First Day of Month"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:323
+msgid "Everyday"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:328
+msgid "Once Per Week"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:367
+msgid "Data Retention"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:370
+msgid ""
+"Limits data retention to one week, this allows reports to run faster on high "
+"traffic sites."
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:375
+msgid "Limit data retention"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:376
+msgid "Keep One Week's Data"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:394
+msgid "IP addresses"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:397
+msgid "[no name]"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:398
+msgid "[no description]"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:420
+msgid "IP address"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:426
+msgid "name"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:436
+msgid "IP Address"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:442
+msgid "Name"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:471
+msgid "Invalid \"IP address\" specified"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:479
+msgid "Validation failed"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:483
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:518
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:534
+msgid "Failed"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:494
+msgid "Saving..."
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:494
+msgid "Please wait"
+msgstr ""

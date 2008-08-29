@@ -83,8 +83,8 @@ public class BlockPageServlet extends HttpServlet
         /* Retrieve the page title (in the window bar) of the page */
         public String getPageTitle( BrandingBaseSettings bs, Map<String,String> i18n_map )
         {
-            return I18nUtil.tr(i18n_map, "{0} | {1} Warning", 
-                    new Object[]{bs.getCompanyName(), this.blockDetails.getVendor()});
+            return I18nUtil.tr("{0} | {1} Warning", 
+                    new Object[]{bs.getCompanyName(), this.blockDetails.getVendor()}, i18n_map);
         }
         
         /* Retrieve the title (top of the pae) of the page */
@@ -95,7 +95,7 @@ public class BlockPageServlet extends HttpServlet
         
         public String getFooter( BrandingBaseSettings bs, Map<String,String> i18n_map )
         {
-            return I18nUtil.tr(i18n_map, "{0} Virus Blocker", bs.getCompanyName());
+            return I18nUtil.tr("{0} Virus Blocker", bs.getCompanyName(), i18n_map);
         }
         
         /* Return the name of the script file to load, or null if there is not a script. */
@@ -107,8 +107,8 @@ public class BlockPageServlet extends HttpServlet
         /* Retrieve the description of why this page was blocked. */
         public String getDescription( BrandingBaseSettings bs, Map<String,String> i18n_map )
         {
-            return I18nUtil.tr(i18n_map, "{0}This file was blocked{1} because it contained a virus.",
-                    new Object[]{ "<b>","</b>" } );
+            return I18nUtil.tr("{0}This file was blocked{1} because it contained a virus.",
+                    new Object[]{ "<b>","</b>" }, i18n_map);
         }
     
         public VirusBlockDetails getBlockDetails()

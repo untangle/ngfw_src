@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-08-28 18:29+0300\n"
+"POT-Creation-Date: 2008-08-29 19:07+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -294,79 +294,25 @@ msgstr ""
 msgid "Please wait"
 msgstr ""
 
-#: database data: n_webfilter_blcat.display_name
-msgid "Dating"
-msgstr ""
+#: ../servlets/webfilter/src/com/untangle/node/webfilter/BlockPageServlet.java:79
+#, java-format
+msgid "{0} | Web Filter Warning"
+msgstr "{0} | Web Filter Alerta"
 
-#: database data: n_webfilter_blcat.display_name n_webfilter_blcat.description
-msgid "Gambling"
-msgstr ""
+#: ../servlets/webfilter/src/com/untangle/node/webfilter/BlockPageServlet.java:90
+#, java-format
+msgid "{0} Web Filter"
+msgstr "{0} Web Filter"
 
-#: database data: n_webfilter_blcat.display_name
-msgid "Hacking"
+#: ../servlets/webfilter/src/com/untangle/node/webfilter/BlockPageServlet.java:102
+#, java-format
+msgid "{0}This web page was blocked{1} because it is considered inappropriate."
 msgstr ""
+"{0}Aceasta pagina web a fost blocata{1} pentru ca este considerata "
+"nepotrivita."
 
-#: database data: n_webfilter_blcat.display_name n_webfilter_blcat.description
-msgid "Hate and Aggression"
-msgstr ""
-
-#: database data: n_webfilter_blcat.display_name n_webfilter_blcat.description
-msgid "Illegal Drugs"
-msgstr ""
-
-#: database data: n_webfilter_blcat.display_name n_webfilter_blcat.description
-msgid "Job Search"
-msgstr ""
-
-#: database data: n_webfilter_blcat.display_name
-msgid "Pornography"
-msgstr ""
-
-#: database data: n_webfilter_blcat.display_name n_webfilter_blcat.description
-msgid "Proxy Sites"
-msgstr ""
-
-#: database data: n_webfilter_blcat.display_name
-msgid "Shopping"
-msgstr ""
-
-#: database data: n_webfilter_blcat.display_name n_webfilter_blcat.description
-msgid "Social Networking"
-msgstr ""
-
-#: database data: n_webfilter_blcat.display_name n_webfilter_blcat.description
-msgid "Sports"
-msgstr ""
-
-#: database data: n_webfilter_blcat.display_name n_webfilter_blcat.description
-msgid "Vacation"
-msgstr ""
-
-#: database data: n_webfilter_blcat.display_name n_webfilter_blcat.description
-msgid "Violence"
-msgstr ""
-
-#: database data: n_webfilter_blcat.display_name n_webfilter_blcat.description
-msgid "Web Mail"
-msgstr ""
-
-#: database data: n_webfilter_blcat.description
-msgid "Adult and Sexually Explicit"
-msgstr ""
-
-#: database data: n_webfilter_blcat.description
-msgid "Online Dating"
-msgstr ""
-
-#: database data: n_webfilter_blcat.description
-msgid "Online Shopping"
-msgstr ""
-
-#: database data: n_webfilter_blcat.description
-msgid "Security Cracking"
-msgstr ""
-
-#: BlockPageUtil.java:72
+#: ../../http-casing/localapi/com/untangle/node/http/BlockPageUtil.java:71
+#, java-format
 msgid "If you have any questions, Please contact {0}."
 msgstr "Daca aveti intrebari, va rog contactati {0}"
 
@@ -389,17 +335,3 @@ msgstr "Deblocheaza Pentru Moment"
 #: blockpage_template.jspx:63
 msgid "Unblock Permanently"
 msgstr "Deblocheaza permanent"
-
-#: BlockPageServlet.java:80
-msgid "{0} | Web Filter Warning"
-msgstr "{0} | Web Filter Alerta"
-
-#: BlockPageServlet.java:91
-msgid "{0} Web Filter"
-msgstr "{0} Web Filter"
-
-#: BlockPageServlet.java:103
-msgid "{0}This web page was blocked{1} because it is considered inappropriate."
-msgstr ""
-"{0}Aceasta pagina web a fost blocata{1} pentru ca este considerata "
-"nepotrivita."
