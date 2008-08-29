@@ -302,6 +302,7 @@ int  netcap_icmp_call_hook( netcap_pkt_t* pkt )
         switch( _icmp_find_session( pkt, &netcap_sess, full_pkt, full_pkt_len )) {
         case _FIND_EXIST:
             /* Packets in mailbox, nothing left to do */
+            pkt = NULL;
             ret = 0;
             break;
             
@@ -343,10 +344,12 @@ int  netcap_icmp_call_hook( netcap_pkt_t* pkt )
                 icmp_code = packet->icmp_code;
             }
             
-            ret = errlog ( ERR_CRITICAL, "_icmp_find_session (%s:%d -> %s:%d), type %d code %d\n",
-                           unet_next_inet_ntoa ( pkt->src.host.s_addr ), pkt->src.port, 
-                           unet_next_inet_ntoa ( pkt->dst.host.s_addr ), pkt->dst.port,
-                           icmp_type, icmp_code );
+            if ( pkt != NULL ) {
+                ret = errlog ( ERR_CRITICAL, "_icmp_find_session (%s:%d -> %s:%d), type %d code %d\n",
+                               unet_next_inet_ntoa ( pkt->src.host.s_addr ), pkt->src.port, 
+                               unet_next_inet_ntoa ( pkt->dst.host.s_addr ), pkt->dst.port,
+                               icmp_type, icmp_code );
+            }
         }
         }
 
