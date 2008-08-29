@@ -26,6 +26,9 @@ PLATFORMS = { :sarge    => 0,
               :gutsy    => 4,
               :hardy    => 5 }
 
+# workaround for <1.0 gpgme
+OLDGPGME = !defined?(GPGME::Ctx)
+
 # files
 UNTANGLE = "@PREFIX@/usr/share/untangle"
 UNTANGLE_GPG_HOME = File.join(UNTANGLE, "gpg")
@@ -77,7 +80,7 @@ def hasEnoughEntropy
 end
 
 def createGpgKeyring(config)
-  if hasEnoughEntropy then
+  if hasEnoughEntropy && !OLDGPGME then 
     puts "GPGME"
     createGpgKeyringWithGPGME(config)
   else
@@ -95,7 +98,8 @@ def createGpgKeyringWithGPG(config)
   IO.popen("gpg --batch --quick-random --gen-key 2> /dev/null", 'w+') { |f|
     f.puts(config.gsub!(/^<.*/, '')) # gpg doesn't want the XML-style config
   }
-  raise Exception.new if $? != 0
+  # exceptions occur for lots of reasons, like running the first time.
+  # raise Exception.new if $? != 0
 end
 
 def getPlatform
@@ -179,14 +183,35 @@ ENV['GPG_AGENT_INFO'] = nil
 ENV['GNUPGHOME'] = UNTANGLE_GPG_HOME
 
 # create the keyring only if no keys are available
+firsttime = true
 begin
-  key = GPGME.list_keys[0].subkeys[0]
+  fingerprint = nil
+  if (OLDGPGME)
+    IO.popen("gpg --with-colons --fingerprint 2> /dev/null") { |f|
+      f.each do |input|
+        if (input.index('fpr') == 0)
+          arr = input.split(':');
+          if (arr.length > 1)
+            fingerprint=arr[arr.length - 2];
+            break
+          end
+        end
+      end
+    }
+    raise NoMethodError if fingerprint == nil
+  else
+    key = GPGME.list_keys[0].subkeys[0]
+    fingerprint = key.fingerprint
+  end
 rescue NoMethodError
-  createGpgKeyring(GPG_KEY_CONFIG) # create the keyring
-  retry
+  if (firsttime)
+    firsttime = false
+    createGpgKeyring(GPG_KEY_CONFIG) # create the keyring
+    retry
+  end
+  puts "unable to get fingerprint"
+  exit 1
 end
-
-fingerprint = key.fingerprint
 
 bits = getBits(options[:typeNibble]) # what we'll embed in the popid
 
