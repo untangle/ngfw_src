@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -37,9 +37,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import org.hibernate.Query;
-import org.hibernate.Session;
-
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.Rule;
@@ -47,6 +44,8 @@ import com.untangle.uvm.security.Tid;
 import com.untangle.uvm.util.ListUtil;
 import com.untangle.uvm.util.QueryUtil;
 import com.untangle.uvm.util.TransactionWork;
+import org.hibernate.Query;
+import org.hibernate.Session;
 
 public class PartialListUtil
 {
@@ -56,52 +55,52 @@ public class PartialListUtil
     public PartialListUtil()
     {
     }
-    
+
     /* Just a helper function for the most common case of listing from a node. */
-    public List getItems( String queryString, NodeContext nodeContext, Tid tid, 
+    public List getItems( String queryString, NodeContext nodeContext, Tid tid,
                           int start, int limit, String ... sortColumns)
     {
         return getItems( queryString, nodeContext, tid, null, start, limit, sortColumns );
     }
 
-    public List getItems( String queryString, NodeContext nodeContext, Parameter[] parameters, 
+    public List getItems( String queryString, NodeContext nodeContext, Parameter[] parameters,
                           int start, int limit, String ... sortColumns)
-                          
-    {
-    	return getItems(queryString, nodeContext, parameters, null, start, limit, sortColumns);
-    }    
 
-    public List getItems( String queryString, LocalUvmContext localContext, Parameter[] parameters, 
-                          int start, int limit, String ... sortColumns)
-                          
     {
-    	return getItems(queryString, localContext, parameters, null, start, limit, sortColumns);
+        return getItems(queryString, nodeContext, parameters, null, start, limit, sortColumns);
+    }
+
+    public List getItems( String queryString, LocalUvmContext localContext, Parameter[] parameters,
+                          int start, int limit, String ... sortColumns)
+
+    {
+        return getItems(queryString, localContext, parameters, null, start, limit, sortColumns);
     }
 
     /* Just a helper function for the most common case of listing from a node. */
-    public List getItems( String queryString, NodeContext nodeContext, Tid tid, 
+    public List getItems( String queryString, NodeContext nodeContext, Tid tid,
                           String alias, int start, int limit, String ... sortColumns)
     {
-        return getItems( queryString, nodeContext, new Parameter[] { new Parameter( "tid", tid ) }, 
+        return getItems( queryString, nodeContext, new Parameter[] { new Parameter( "tid", tid ) },
                          alias, start, limit, sortColumns );
     }
 
-    public List getItems( String queryString, NodeContext nodeContext, Parameter[] parameters, 
+    public List getItems( String queryString, NodeContext nodeContext, Parameter[] parameters,
                           String alias, int start, int limit, String ... sortColumns)
-                          
+
     {
-        TransactionWork<List> tw = getItemsTransactionWork( queryString, parameters, 
+        TransactionWork<List> tw = getItemsTransactionWork( queryString, parameters,
                                                             alias, start, limit, sortColumns );
 
         nodeContext.runTransaction( tw );
         return tw.getResult();
-    }    
+    }
 
-    public List getItems( String queryString, LocalUvmContext localContext, Parameter[] parameters, 
+    public List getItems( String queryString, LocalUvmContext localContext, Parameter[] parameters,
                           String alias, int start, int limit, String ... sortColumns)
-                          
+
     {
-        TransactionWork<List> tw = getItemsTransactionWork( queryString, parameters, 
+        TransactionWork<List> tw = getItemsTransactionWork( queryString, parameters,
                                                             alias, start, limit, sortColumns );
 
         localContext.runTransaction( tw );
@@ -113,7 +112,7 @@ public class PartialListUtil
     {
         updateCachedItems((Collection<Rule>)items, RULE_HANDLER, modifications );
     }
-    
+
     public <T> void updateCachedItems( Collection<T> items, Handler<T> handler, List[] modifications )
     {
         if ( modifications == null ) return;
@@ -128,9 +127,9 @@ public class PartialListUtil
 
     /* not the best type safe solution, but every other case makes it hard to use. */
     public void updateCachedItems( Collection items, List added, List<Long> deleted, List modified )
-                                   
+
     {
-        updateCachedItems((Collection<Rule>)items, RULE_HANDLER, 
+        updateCachedItems((Collection<Rule>)items, RULE_HANDLER,
                           (List<Rule>)added, deleted, (List<Rule>)modified );
     }
 
@@ -146,7 +145,7 @@ public class PartialListUtil
                 handler.update( item, mItem );
             }
         }
-        
+
         if ( added != null ) items.addAll(added);
     }
 
@@ -160,7 +159,7 @@ public class PartialListUtil
         return null;
     }
 
-    private TransactionWork<List> 
+    private TransactionWork<List>
         getItemsTransactionWork( final String queryString, final Parameter[] parameters, final String alias,
                                  final int start, final int limit, final String ... sortColumns )
     {
@@ -169,13 +168,13 @@ public class PartialListUtil
 
             public boolean doWork( Session s ) {
                 Query q = s.createQuery( queryString + QueryUtil.toOrderByClause(alias, sortColumns ));
-                                        
+
                 if ( parameters != null ) {
                     for ( Parameter parameter : parameters ) {
                         q.setParameter( parameter.getKey(), parameter.getValue());
                     }
                 }
-                    
+
                 q.setFirstResult( start );
                 q.setMaxResults( limit );
                 result = q.list();
@@ -186,7 +185,7 @@ public class PartialListUtil
             public List getResult() {
                 return result;
             }
-        };        
+        };
     }
 
     public static class Parameter
@@ -215,7 +214,7 @@ public class PartialListUtil
     public interface Handler<T>
     {
         public Long getId( T item );
-        
+
         /**
          * Given another item of a specific type, update itself so it
          * contains the data from item.
@@ -238,5 +237,5 @@ public class PartialListUtil
             current.update( newRule );
         }
     }
-                                               
+
 }

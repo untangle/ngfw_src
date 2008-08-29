@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -19,19 +19,11 @@
 package com.untangle.node.webfilter;
 
 import java.io.Serializable;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Transient;
-
-import com.untangle.uvm.node.Rule;
 
 /**
  * Settings for a Blacklist category.
@@ -188,7 +180,7 @@ public class BlacklistCategory implements Serializable
     {
         this.logOnly = logOnly;
     }
-    
+
     public void update(BlacklistCategory blacklistCategory) {
         this.name = blacklistCategory.name;
         this.displayName = blacklistCategory.displayName;
@@ -197,6 +189,5 @@ public class BlacklistCategory implements Serializable
         this.blockUrls = blacklistCategory.blockUrls;
         this.blockExpressions = blacklistCategory.blockExpressions;
         this.logOnly = blacklistCategory.logOnly;
-	}
-    
+    }
 }
