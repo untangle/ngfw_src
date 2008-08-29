@@ -166,7 +166,7 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
             zis.close();
             uploadedStream.close();
             
-            ResourceBundle.clearCache();
+            ResourceBundle.clearCache(Thread.currentThread().getContextClassLoader());
             
         } catch (IOException e) {
             logger.error(e);
@@ -287,42 +287,9 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
             // Do nothing - Fall back to a default that returns the passed text if no resource bundle can be located
             // is done in client side
         }
-//    // We will use this approuch instead of the one above, because of a bug in ResouceBundle in jdk 1.5, related with cache:
-//    // I18N is using ResourceBundle.getBundle(baseName, locale, loader); to load a resouce bundle which caches the ResourceBundles,
-//    // and if we tried once to load a resource bundle, second time will return not found (MissingResourceException), evean if
-//    // the resource is available now; this prevent dynamic loading, which we need.
-//    try {
-//        Class clazz = loadResourceBundleClass(BASENAME_COMMUNITY_PREFIX + "." + ungPrefixedModule + "_" + settings.getLanguage());
-//        if (clazz == null) {
-//            // fall back to official translations
-//            clazz = loadResourceBundleClass(BASENAME_OFFICIAL_PREFIX + "." + ungPrefixedModule + "_" + settings.getLanguage());
-//        }
-//        if (clazz != null) {
-//            ResourceBundle resourceBundle = (ResourceBundle)clazz.newInstance();
-//            if (resourceBundle != null) {
-//                for (Enumeration<String> enumeration = resourceBundle.getKeys(); enumeration.hasMoreElements();) {
-//                    String key = enumeration.nextElement();
-//                    map.put(key, resourceBundle.getString(key));
-//                }
-//            }
-//        }
-//    } catch (Exception e) {
-//        // Do nothing - Fall back to a default that returns the passed
-//        // text if no resource bundle can be located is done in client
-//        // side
-//    }
 
         return map;
     }
-
-//    private Class loadResourceBundleClass(String name) {
-//        Class clazz = null;
-//        try {
-//            clazz =Thread.currentThread().getContextClassLoader().loadClass(name);
-//        } catch (ClassNotFoundException e1) {
-//        }
-//        return clazz;
-//    }
 
     // private methods --------------------------------------------------------
     private void saveSettings(LanguageSettings settings) {
