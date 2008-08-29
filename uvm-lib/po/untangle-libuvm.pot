@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-08-29 12:44+0300\n"
+"POT-Creation-Date: 2008-08-29 19:57+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2559,6 +2559,135 @@ msgstr ""
 
 #: ../servlets/webui/root/script/config/systemInfo.js:257
 msgid "You must fill out the number of computers protected by Untangle."
+msgstr ""
+
+#: ../servlets/alpaca/src/com/untangle/uvm/servlet/alpaca/ProxyServlet.java:151
+msgid "could not resolve host"
+msgstr ""
+
+#: ../servlets/alpaca/src/com/untangle/uvm/servlet/alpaca/ProxyServlet.java:160
+msgid "request timed out"
+msgstr ""
+
+#: ../localapi/com/untangle/uvm/util/OutsideValve.java:113
+msgid "off-site access"
+msgstr ""
+
+#: ../localapi/com/untangle/uvm/util/OutsideValve.java:120
+msgid "standard access"
+msgstr ""
+
+#: ../localapi/com/untangle/uvm/util/ReportingOutsideAccessValve.java:54
+msgid "off-site access to reporting"
+msgstr ""
+
+#: ../localapi/com/untangle/uvm/util/ReportingOutsideAccessValve.java:61
+msgid "standard access to reporting"
+msgstr ""
+
+#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:99
+#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:114
+msgid "Untangle Server"
+msgstr ""
+
+#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:139
+msgid "Bad Request"
+msgstr ""
+
+#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:142
+msgid "Unauthorized"
+msgstr ""
+
+#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:145
+msgid "Payment Required"
+msgstr ""
+
+#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:148
+msgid "Forbidden"
+msgstr ""
+
+#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:151
+msgid "Not Found"
+msgstr ""
+
+#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:154
+msgid "Method Not Allowed"
+msgstr ""
+
+#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:157
+msgid "Not Acceptable"
+msgstr ""
+
+#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:160
+msgid "Proxy Authentication Required"
+msgstr ""
+
+#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:163
+msgid "Request Timeout"
+msgstr ""
+
+#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:166
+msgid "Conflict"
+msgstr ""
+
+#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:169
+msgid "Gone"
+msgstr ""
+
+#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:172
+msgid "Length Required"
+msgstr ""
+
+#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:175
+msgid "Precondition Failed"
+msgstr ""
+
+#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:178
+msgid "Request Entity Too Large"
+msgstr ""
+
+#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:181
+msgid "Request-URI Too Long"
+msgstr ""
+
+#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:184
+msgid "Unsupported Media Type"
+msgstr ""
+
+#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:187
+msgid "Requested Range Not Satisfiable"
+msgstr ""
+
+#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:190
+msgid "Expectation Failed"
+msgstr ""
+
+#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:193
+msgid "Internal Server Error"
+msgstr ""
+
+#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:196
+msgid "Not Implemented"
+msgstr ""
+
+#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:199
+msgid "Bad Gateway"
+msgstr ""
+
+#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:202
+msgid "Service Unavailable"
+msgstr ""
+
+#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:205
+msgid "Gateway Timeout"
+msgstr ""
+
+#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:208
+msgid "HTTP Version Not Supported"
+msgstr ""
+
+#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:211
+msgid "Error"
 msgstr ""
 
 msgid "decimal_sep"

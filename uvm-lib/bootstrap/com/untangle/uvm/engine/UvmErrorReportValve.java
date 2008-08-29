@@ -96,7 +96,7 @@ public class UvmErrorReportValve extends ErrorReportValve
         w.write("<html xmlns=\"http://www.w3.org/1999/xhtml\">\n");
         w.write("<head>\n");
         w.write("<title>");
-        w.write(tr(i18nMap, "Untangle Server"));
+        w.write(tr("Untangle Server", i18nMap));
         w.write("</title>\n");
         w.write("<meta http-equiv=\"Content-Type\" content=\"text/html;charset=iso-8859-1\" />\n");
         w.write("<style type=\"text/css\">\n");
@@ -111,7 +111,7 @@ public class UvmErrorReportValve extends ErrorReportValve
         w.write("<center>");
         w.write("<img alt=\"\" src=\"/images/BrandingLogo.gif\" /><br /><br />\n");
         w.write("<b>");
-        w.write(tr(i18nMap, "Untangle Server"));
+        w.write(tr("Untangle Server", i18nMap));
         w.write("</b><br /><br />\n");
         w.write("<em>");  w.write(errorMessage);  w.write("</em>\n");
         w.write("</center><br /><br />\n");
@@ -126,7 +126,7 @@ public class UvmErrorReportValve extends ErrorReportValve
         return Main.getMain().getTranslations("untangle-libuvm");
     }
 
-    private String tr(Map<String, String> i18nMap, String value)
+    private String tr(String value, Map<String, String> i18nMap)
     {
         String tr = i18nMap.get(value);
         return null == tr ? value : tr;
@@ -136,79 +136,79 @@ public class UvmErrorReportValve extends ErrorReportValve
     {
         switch (errorCode) {
         case 400:
-            return tr(i18nMap, "Bad Request");
+            return tr("Bad Request", i18nMap);
 
         case 401:
-            return tr(i18nMap, "Unauthorized");
+            return tr("Unauthorized", i18nMap);
 
         case 402:
-            return tr(i18nMap, "Payment Required");
+            return tr("Payment Required", i18nMap);
 
         case 403:
-            return tr(i18nMap, "Forbidden");
+            return tr("Forbidden", i18nMap);
 
         case 404:
-            return tr(i18nMap, "Not Found");
+            return tr("Not Found", i18nMap);
 
         case 405:
-            return tr(i18nMap, "Method Not Allowed");
+            return tr("Method Not Allowed", i18nMap);
 
         case 406:
-            return tr(i18nMap, "Not Acceptable");
+            return tr("Not Acceptable", i18nMap);
 
         case 407:
-            return tr(i18nMap, "Proxy Authentication Required");
+            return tr("Proxy Authentication Required", i18nMap);
 
         case 408:
-            return tr(i18nMap, "Request Timeout");
+            return tr("Request Timeout", i18nMap);
 
         case 409:
-            return tr(i18nMap, "Conflict");
+            return tr("Conflict", i18nMap);
 
         case 410:
-            return tr(i18nMap, "Gone");
+            return tr("Gone", i18nMap);
 
         case 411:
-            return tr(i18nMap, "Length Required");
+            return tr("Length Required", i18nMap);
 
         case 412:
-            return tr(i18nMap, "Precondition Failed");
+            return tr("Precondition Failed", i18nMap);
 
         case 413:
-            return tr(i18nMap, "Request Entity Too Large");
+            return tr("Request Entity Too Large", i18nMap);
 
         case 414:
-            return tr(i18nMap, "Request-URI Too Long");
+            return tr("Request-URI Too Long", i18nMap);
 
         case 415:
-            return tr(i18nMap, "Unsupported Media Type");
+            return tr("Unsupported Media Type", i18nMap);
 
         case 416:
-            return tr(i18nMap, "Requested Range Not Satisfiable");
+            return tr("Requested Range Not Satisfiable", i18nMap);
 
         case 417:
-            return tr(i18nMap, "Expectation Failed");
+            return tr("Expectation Failed", i18nMap);
 
         case 500:
-            return tr(i18nMap, "Internal Server Error");
+            return tr("Internal Server Error", i18nMap);
 
         case 501:
-            return tr(i18nMap, "Not Implemented");
+            return tr("Not Implemented", i18nMap);
 
         case 502:
-            return tr(i18nMap, "Bad Gateway");
+            return tr("Bad Gateway", i18nMap);
 
         case 503:
-            return tr(i18nMap, "Service Unavailable");
+            return tr("Service Unavailable", i18nMap);
 
         case 504:
-            return tr(i18nMap, "Gateway Timeout");
+            return tr("Gateway Timeout", i18nMap);
 
         case 505:
-            return tr(i18nMap, "HTTP Version Not Supported");
+            return tr("HTTP Version Not Supported", i18nMap);
 
         default:
-            return tr(i18nMap, "Error");
+            return tr("Error", i18nMap);
         }
     }
 }

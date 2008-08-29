@@ -94,7 +94,7 @@ public class I18nTag extends BodyTagSupport
             Map<String, String> i18n_map = (Map<String, String>)pageContext.getRequest().getAttribute( "i18n_map" );
             for ( int c = 0 ; c < this.p.length ; c++ ) if ( this.p[c] == null ) this.p[c] = "";
 
-            out.print( tr(i18n_map, bodyString, this.p ));
+            out.print( tr(bodyString, this.p, i18n_map ));
 
             return EVAL_PAGE;
             
@@ -109,7 +109,7 @@ public class I18nTag extends BodyTagSupport
     {
         /* Actually translate the string */
         Map<String, String> i18n_map = (Map<String, String>)pageContext.getRequest().getAttribute( "i18n_map" );
-        return tr(i18n_map, value);
+        return tr(value, i18n_map);
     }
 
     public void release()
@@ -119,12 +119,12 @@ public class I18nTag extends BodyTagSupport
  
     //we should use the methods from I18nUtil but, the I18nTag can not load the utility class at runtime,
     //even if from jsp it can be used fine; do not know why.
-    private static String tr(Map<String, String> i18n_map, String value, Object[] objects)
+    private static String tr(String value, Object[] objects, Map<String, String> i18n_map)
     {
-        return MessageFormat.format( tr(i18n_map,value), objects);
+        return MessageFormat.format( tr(value,i18n_map), objects);
     }
 
-    private static String tr(Map<String, String> i18n_map, String value)
+    private static String tr(String value, Map<String, String> i18n_map)
     {
         String tr = i18n_map.get(value);
         if (tr == null) {
