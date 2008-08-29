@@ -10,18 +10,15 @@ then
     mkdir $1
 fi    
 
-for module in main administration system systemInfo upgrade
-do 
-    cp ../uvm-lib/servlets/webui/po/$1/untangle-webui-${module}.po ./$1/
-done
-
-for module in webfilter phish spyware spamassassin shield protofilter ips
-do 
-    cp ../${module}/po/$1/untangle-node-${module}.po ./$1/
-done
-
-cp ../mail-casing/servlets/quarantine/po/$1/untangle-casing-mail.po ./$1/
+cp ../uvm-lib/po/$1/untangle-libuvm.po ./$1/
+cp ../mail-casing/po/$1/untangle-casing-mail.po ./$1/
 cp ../virus-base/po/$1/untangle-base-virus.po ./$1/
+
+for module in untangle-node-webfilter untangle-node-phish untangle-node-spyware untangle-node-spamassassin untangle-node-shield untangle-node-protofilter untangle-node-ips
+do 
+    module_dir=`echo "${module}"|cut -d"-" -f3`
+    cp ../${module_dir}/po/$1/${module}.po ./$1/
+done
 
 rm -f $1.zip
 zip -r $1.zip ./$1/

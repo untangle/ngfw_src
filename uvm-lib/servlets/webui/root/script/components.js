@@ -2302,15 +2302,17 @@ Ung.ConfigWin = Ext.extend(Ung.ButtonsWindow, {
     tabs : null,
     // class constructor
     constructor : function(config) {
-        if (!Ung.i18nModuleInstances[config.name]) {
-            // TODO make this asynchronous
-            var moduleTranslations = rpc.languageManager.getTranslations(config.name); // convention
-            Ung.i18nModuleInstances[config.name] = new Ung.ModuleI18N({
-                "map" : i18n.map,
-                "moduleMap" : moduleTranslations.map
-            })
-        }
-        this.i18n = Ung.i18nModuleInstances[config.name];
+//        if (!Ung.i18nModuleInstances[config.name]) {
+//            // TODO make this asynchronous
+//            var moduleTranslations = rpc.languageManager.getTranslations(config.name); // convention
+//            Ung.i18nModuleInstances[config.name] = new Ung.ModuleI18N({
+//                "map" : i18n.map,
+//                "moduleMap" : moduleTranslations.map
+//            })
+//        }
+//        this.i18n = Ung.i18nModuleInstances[config.name];
+    	// for config elements we have the untangle-libuvm translation map
+        this.i18n = i18n;
         this.rpc = {};
         Ung.ConfigWin.superclass.constructor.apply(this, arguments);
     },
@@ -3596,7 +3598,7 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
                         text : i18n._("Open Local Directory"),
                         handler : function() {
                             Ung.Util.loadResourceAndExecute("Ung.LocalDirectory","script/config/localDirectory.js", function() {
-                                main.localDirectoryWin=new Ung.LocalDirectory({"name":"untangle-webui-localDirectory",fnCallback: function() {
+                                main.localDirectoryWin=new Ung.LocalDirectory({"name":"localDirectory",fnCallback: function() {
                                     this.populate(this.record,this.fnCallback)
                                 }.createDelegate(this)});
                                 main.localDirectoryWin.show();
