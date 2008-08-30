@@ -13,16 +13,12 @@
   </jsp:scriptlet>  
 
   <c:set var="title" scope="request">
-    <uvm:i18n>
-      Quarantine Digest for:
-    </uvm:i18n>
+    <uvm:i18n>Quarantine Digest for:</uvm:i18n>
   </c:set>
   <br/><span style="font-weight: bold;">${currentAddress}</span>
 
   <c:set var="pageTitle" scope="request">
-    <uvm:i18n p0="${bs.companyName}" p1="${currentAddress}">
-      {0} | Quarantine Digest for: {1}
-    </uvm:i18n>
+    <uvm:i18n p0="${bs.companyName}" p1="${currentAddress}">{0} | Quarantine Digest for: {1}</uvm:i18n>
   </c:set>
 
   <c:set var="javascript" scope="request">

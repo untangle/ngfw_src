@@ -15,15 +15,11 @@
   </jsp:scriptlet>  
 
   <c:set var="title" scope="request">
-    <uvm:i18n>
-      Request Quarantine Digest Email 
-    </uvm:i18n>
+    <uvm:i18n>Request Quarantine Digest Email</uvm:i18n>
   </c:set>
 
   <c:set var="pageTitle" scope="request">
-    <uvm:i18n p0="${bs.companyName}" p1="${currentAddress}">
-      {0} | Request Quarantine Digest Email
-    </uvm:i18n>
+    <uvm:i18n p0="${bs.companyName}" p1="${currentAddress}">{0} | Request Quarantine Digest Email</uvm:i18n>
   </c:set>
 
   <c:set var="javascript" scope="request">

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-08-29 12:45+0300\n"
+"POT-Creation-Date: 2008-08-30 09:24+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -222,18 +222,18 @@ msgstr ""
 msgid "Delete one Address"
 msgstr ""
 
-#: ../root/inbox.jspx:13
+#: ../servlets/quarantine/root/inbox.jspx:16
 msgid "Quarantine Digest for:"
 msgstr "Quarantine Digest pentru:"
 
-#: ../root/inbox.jspx:19
+#: ../servlets/quarantine/root/inbox.jspx:21
 msgid "{0} | Quarantine Digest for: {1}"
 msgstr "{0} | Quarantine Digest pentru: {1}"
 
-#: ../root/request.jspx:20
+#: ../servlets/quarantine/root/request.jspx:18
 msgid "Request Quarantine Digest Email"
 msgstr "Cerere Quarantine Digest Email"
 
-#: ../root/request.jspx:26
+#: ../servlets/quarantine/root/request.jspx:22
 msgid "{0} | Request Quarantine Digest Email"
 msgstr "{0} | Cerere Quarantine Digest Email"
