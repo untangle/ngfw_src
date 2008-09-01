@@ -113,7 +113,7 @@ case "$1" in
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../servlets/rsaproxy/src/com/untangle/node/rsa/proxy/ForwardServlet.java
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../servlets/rsaproxy/src/com/untangle/node/rsa/proxy/WebProxy.java
     echo "" >> ./$1.pot
-    ruby ../../../../work/src/i18ntools/xi18ntags.rb ../servlets/rsa/root/rsa.jspx >> ./tmp_jspx_keys.pot
+    ruby ../../../../work/src/i18ntools/xi18ntags.rb ../servlets/rsa/root/rsa.jspx dup >> ./tmp_jspx_keys.pot
     msgcat tmp_keys.pot tmp_jspx_keys.pot -o tmp_keys.pot
     msgmerge -U $1.pot tmp_keys.pot
     rm tmp_keys.pot

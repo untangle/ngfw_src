@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-09-01 11:10+0300\n"
+"POT-Creation-Date: 2008-09-01 11:34+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -199,20 +199,20 @@ msgstr ""
 msgid "If you have any questions, Please contact {0}."
 msgstr ""
 
-#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:51
-msgid "Reason:"
-msgstr ""
-
 #: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:48
 msgid "Host:"
 msgstr ""
 
-#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:57
-msgid "Unblock For Now"
-msgstr ""
-
 #: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:49
 msgid "URL:"
+msgstr ""
+
+#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:51
+msgid "Reason:"
+msgstr ""
+
+#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:57
+msgid "Unblock For Now"
 msgstr ""
 
 #: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:63
