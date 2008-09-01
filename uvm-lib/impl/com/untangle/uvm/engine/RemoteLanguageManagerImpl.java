@@ -262,16 +262,16 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
 
     public Map<String, String> getTranslations(String module){
         Map<String, String> map = new HashMap<String, String>();
-        String ungModule = module.replaceAll("-", "_");
+        String i18nModule = module.replaceAll("-", "_");
         try {
             I18n i18n = null;
             try {
-                i18n = I18nFactory.getI18n(BASENAME_COMMUNITY_PREFIX+"."+ungModule, ungModule, Thread
+                i18n = I18nFactory.getI18n(BASENAME_COMMUNITY_PREFIX+"."+i18nModule, i18nModule, Thread
                         .currentThread().getContextClassLoader(), new Locale(settings
                         .getLanguage()), I18nFactory.DEFAULT);
             } catch (MissingResourceException e) {
                 // fall back to official translations
-                i18n = I18nFactory.getI18n(BASENAME_OFFICIAL_PREFIX+"."+ungModule, ungModule, Thread
+                i18n = I18nFactory.getI18n(BASENAME_OFFICIAL_PREFIX+"."+i18nModule, i18nModule, Thread
                         .currentThread().getContextClassLoader(), new Locale(settings
                         .getLanguage()), I18nFactory.DEFAULT);
             }

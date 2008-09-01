@@ -1,6 +1,6 @@
 #!/bin/sh
 
-ALL_MODULES='untangle-libuvm 
+ALL_MODULES='untangle-libuvm untangle-install-wizard
     untangle-casing-mail untangle-base-virus 
     untangle-node-webfilter untangle-node-phish untangle-node-spyware untangle-node-spamassassin untangle-node-shield 
     untangle-node-protofilter untangle-node-ips untangle-node-firewall untangle-node-reporting untangle-node-openvpn
@@ -32,6 +32,23 @@ case "$1" in
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java
     
     msgcat tmp_keys.pot fmt_keys.pot -o tmp_keys.pot
+    msgmerge -U $1.pot tmp_keys.pot
+    rm tmp_keys.pot
+    echo 'update po files'
+    msgmerge -U ro/$1.po $1.pot
+    ;;
+"untangle-install-wizard")
+    cd ../gui/po
+    xgettext --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../api/com/untangle/gui/install/InstallBenchmarkJPanel.java
+    xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../api/com/untangle/gui/install/InstallDiskJPanel.java
+    xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../api/com/untangle/gui/install/InstallLicenseJPanel.java
+    xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../api/com/untangle/gui/install/InstallWarningJPanel.java
+    xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../api/com/untangle/gui/install/InstallWelcomeJPanel.java
+    xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../api/com/untangle/gui/install/InstallWizard.java
+    xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../api/com/untangle/gui/widgets/dialogs/MOneButtonJDialog.java
+    xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../api/com/untangle/gui/widgets/dialogs/MTwoButtonJDialog.java
+    xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../api/com/untangle/gui/widgets/wizard/MWizardJDialog.java
+    xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../api/com/untangle/gui/util/InfiniteProgressJComponent.java
     msgmerge -U $1.pot tmp_keys.pot
     rm tmp_keys.pot
     echo 'update po files'

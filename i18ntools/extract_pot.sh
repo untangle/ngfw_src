@@ -7,6 +7,7 @@ fi
 
 
 cp ../uvm-lib/po/untangle-libuvm.pot ./pot/
+cp ../gui/po/untangle-install-wizard.pot ./pot/
 cp ../mail-casing/po/untangle-casing-mail.pot ./pot/
 cp ../virus-base/po/untangle-base-virus.pot ./pot/
 

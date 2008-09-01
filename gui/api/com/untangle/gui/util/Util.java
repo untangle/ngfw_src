@@ -51,6 +51,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.StringTokenizer;
 import javax.swing.ImageIcon;
@@ -66,6 +67,9 @@ import javax.swing.SwingUtilities;
 import javax.swing.text.JTextComponent;
 
 import org.apache.log4j.Logger;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
+
 import java.text.MessageFormat;
 
 public class Util {
@@ -495,25 +499,32 @@ public class Util {
     private static Map<String, String> getTranslations(Locale locale)
     {
         String module = "untangle-install-wizard";
-        String ungPrefixedModule = "ung_" + module;
+        
         Map<String, String> map = new HashMap<String, String>();
-
+        String i18nModule = module.replaceAll("-", "_");
         try {
-            Class clazz = loadResourceBundleClass(BASENAME_COMMUNITY_PREFIX + "." + ungPrefixedModule + "_" + locale.getLanguage());
-            if (clazz == null) {
+            I18n i18n = null;
+            try {
+                i18n = I18nFactory.getI18n(BASENAME_COMMUNITY_PREFIX+"."+i18nModule, i18nModule, Thread
+                        .currentThread().getContextClassLoader(), new Locale(settings
+                        .getLanguage()), I18nFactory.DEFAULT);
+            } catch (MissingResourceException e) {
                 // fall back to official translations
-                clazz = loadResourceBundleClass(BASENAME_OFFICIAL_PREFIX + "." + ungPrefixedModule + "_" + locale.getLanguage());
+                i18n = I18nFactory.getI18n(BASENAME_OFFICIAL_PREFIX+"."+i18nModule, i18nModule, Thread
+                        .currentThread().getContextClassLoader(), new Locale(settings
+                        .getLanguage()), I18nFactory.DEFAULT);
             }
-            if (clazz != null) {
-                ResourceBundle resourceBundle = (ResourceBundle)clazz.newInstance();
-                if (resourceBundle != null) {
-                    for (Enumeration<String> enumeration = resourceBundle.getKeys(); enumeration.hasMoreElements();) {
-                        String key = enumeration.nextElement();
-                        map.put(key, resourceBundle.getString(key));
-                    }
+
+            if (i18n != null) {
+                for (Enumeration<String> enumeration = i18n.getResources().getKeys(); enumeration
+                        .hasMoreElements();) {
+                    String key = enumeration.nextElement();
+                    map.put(key, i18n.tr(key));
                 }
             }
-        } catch (Exception e) {
+        } catch (MissingResourceException e) {
+            // Do nothing - Fall back to a default that returns the passed text if no resource bundle can be located
+            // is done in client side
         }
 
         return map;
