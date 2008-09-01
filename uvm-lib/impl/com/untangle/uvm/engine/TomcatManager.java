@@ -61,7 +61,7 @@ class TomcatManager
     private static final String MAX_SPARE_THREADS = "3";
     private static final String MAX_THREADS = "100";
 
-    private static final String STANDARD_WELCOME = "/webui";
+    private static final String STANDARD_WELCOME = "/setup/welcome.do";
 
     private final Logger logger = Logger.getLogger(getClass());
 

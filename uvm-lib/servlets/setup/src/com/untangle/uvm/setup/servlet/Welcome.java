@@ -20,33 +20,32 @@ package com.untangle.uvm.setup.servlet;
 
 import java.io.IOException;
 
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.LocalUvmContext;
 
 /**
  * A servlet which will display the start page
  *
  * @author Catalin Matei <cmatei@untangle.com>
  */
-public class SetupServlet extends HttpServlet
+public class Welcome extends HttpServlet
 {
+    private static final String WEBUI_URL = "/webui/startPage.do";
+    private static final String SETUP_URL = "/setup/index.do";
+        
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
         throws ServletException, IOException 
-    {
-        LocalUvmContext context = LocalUvmContextFactory.context();
-        request.setAttribute( "ss", context.skinManager().getSkinSettings());
-        request.setAttribute( "timezone", context.adminManager().getTimeZone());
-            
-        String url="/WEB-INF/jsp/setup.jsp";
-        ServletContext sc = getServletContext();
-        RequestDispatcher rd = sc.getRequestDispatcher(url);
-        rd.forward(request, response);
+    {        
+        String url = WEBUI_URL;
+
+        /* If the user is not registered send them to the setup page. */
+        if ( !LocalUvmContextFactory.context().isRegistered()) url = SETUP_URL;
+
+        response.sendRedirect( url );
     }
 }
+
