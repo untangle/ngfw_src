@@ -438,10 +438,10 @@ public class OpenSSLWrapper {
                 str += input + "\n";
             }
             in.close();
-            Pattern pattern = Pattern.compile(stringPattern, Pattern.MULTILINE);
+            Pattern pattern = Pattern.compile(stringPattern, Pattern.DOTALL);
             Matcher matcher = pattern.matcher(str);
-            if(matcher.matches()) {
-                return matcher.group(1);
+            if(matcher.find()) {
+                return matcher.group(0);
             } else {
                 return null;
             }
