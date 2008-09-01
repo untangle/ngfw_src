@@ -76,7 +76,6 @@ public class SetupContextImpl implements UtJsonRpcServlet.SetupContext
         am.setAdminSettings( as );
     }
     
-    
     public void setTimeZone( TimeZone timeZone )
         throws TransactionRolledbackException
     {

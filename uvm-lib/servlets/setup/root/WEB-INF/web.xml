@@ -17,6 +17,16 @@
   </servlet-mapping>
 
   <servlet>
+    <servlet-name>LanguageServlet</servlet-name>
+    <servlet-class>com.untangle.uvm.setup.servlet.Language</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>LanguageServlet</servlet-name>
+    <url-pattern>/language.do</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
     <servlet-name>WelcomeServlet</servlet-name>
     <servlet-class>com.untangle.uvm.setup.servlet.Welcome</servlet-class>
   </servlet>

@@ -35,7 +35,7 @@ import com.untangle.uvm.LocalUvmContextFactory;
 public class Welcome extends HttpServlet
 {
     private static final String WEBUI_URL = "/webui/startPage.do";
-    private static final String SETUP_URL = "/setup/index.do";
+    private static final String SETUP_URL = "/setup/language.do";
         
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
         throws ServletException, IOException 
@@ -48,4 +48,3 @@ public class Welcome extends HttpServlet
         response.sendRedirect( url );
     }
 }
-
