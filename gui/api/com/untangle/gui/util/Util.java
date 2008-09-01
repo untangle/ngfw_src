@@ -506,13 +506,11 @@ public class Util {
             I18n i18n = null;
             try {
                 i18n = I18nFactory.getI18n(BASENAME_COMMUNITY_PREFIX+"."+i18nModule, i18nModule, Thread
-                        .currentThread().getContextClassLoader(), new Locale(settings
-                        .getLanguage()), I18nFactory.DEFAULT);
+                        .currentThread().getContextClassLoader(), locale, I18nFactory.DEFAULT);
             } catch (MissingResourceException e) {
                 // fall back to official translations
                 i18n = I18nFactory.getI18n(BASENAME_OFFICIAL_PREFIX+"."+i18nModule, i18nModule, Thread
-                        .currentThread().getContextClassLoader(), new Locale(settings
-                        .getLanguage()), I18nFactory.DEFAULT);
+                        .currentThread().getContextClassLoader(), locale, I18nFactory.DEFAULT);
             }
 
             if (i18n != null) {
