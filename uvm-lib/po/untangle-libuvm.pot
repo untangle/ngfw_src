@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-09-01 12:27+0300\n"
+"POT-Creation-Date: 2008-09-01 14:21+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -128,10 +128,6 @@ msgstr ""
 #: ../servlets/webui/root/script/config/email.js:1173
 #: ../servlets/webui/root/script/config/email.js:1187
 #: ../servlets/webui/root/script/config/localDirectory.js:240
-#: ../servlets/webui/root/script/config/upgrade.js:42
-#: ../servlets/webui/root/script/config/upgrade.js:181
-#: ../servlets/webui/root/script/config/upgrade.js:381
-#: ../servlets/webui/root/script/config/upgrade.js:426
 #: ../servlets/webui/root/script/config/system.js:303
 #: ../servlets/webui/root/script/config/system.js:340
 #: ../servlets/webui/root/script/config/system.js:931
@@ -142,6 +138,10 @@ msgstr ""
 #: ../servlets/webui/root/script/config/system.js:1073
 #: ../servlets/webui/root/script/config/system.js:1085
 #: ../servlets/webui/root/script/config/systemInfo.js:289
+#: ../servlets/webui/root/script/config/upgrade.js:42
+#: ../servlets/webui/root/script/config/upgrade.js:181
+#: ../servlets/webui/root/script/config/upgrade.js:381
+#: ../servlets/webui/root/script/config/upgrade.js:426
 msgid "Failed"
 msgstr ""
 
@@ -752,12 +752,12 @@ msgstr ""
 #: ../servlets/webui/root/script/config/email.js:970
 #: ../servlets/webui/root/script/config/email.js:1150
 #: ../servlets/webui/root/script/config/localDirectory.js:229
-#: ../servlets/webui/root/script/config/upgrade.js:178
-#: ../servlets/webui/root/script/config/upgrade.js:375
 #: ../servlets/webui/root/script/config/system.js:202
 #: ../servlets/webui/root/script/config/system.js:213
 #: ../servlets/webui/root/script/config/system.js:1023
 #: ../servlets/webui/root/script/config/systemInfo.js:285
+#: ../servlets/webui/root/script/config/upgrade.js:178
+#: ../servlets/webui/root/script/config/upgrade.js:375
 msgid "Please wait"
 msgstr ""
 
@@ -1389,9 +1389,9 @@ msgstr ""
 #: ../servlets/webui/root/script/config/administration.js:864
 #: ../servlets/webui/root/script/config/email.js:19
 #: ../servlets/webui/root/script/config/localDirectory.js:10
-#: ../servlets/webui/root/script/config/upgrade.js:9
 #: ../servlets/webui/root/script/config/system.js:12
 #: ../servlets/webui/root/script/config/systemInfo.js:10
+#: ../servlets/webui/root/script/config/upgrade.js:9
 msgid "Configuration"
 msgstr ""
 
@@ -2139,9 +2139,9 @@ msgstr ""
 #: ../servlets/webui/root/script/config/administration.js:1970
 #: ../servlets/webui/root/script/config/email.js:1151
 #: ../servlets/webui/root/script/config/localDirectory.js:230
-#: ../servlets/webui/root/script/config/upgrade.js:375
 #: ../servlets/webui/root/script/config/system.js:1023
 #: ../servlets/webui/root/script/config/systemInfo.js:285
+#: ../servlets/webui/root/script/config/upgrade.js:375
 msgid "Saving..."
 msgstr ""
 
@@ -2518,118 +2518,6 @@ msgstr ""
 
 #: ../servlets/webui/root/script/config/localDirectory.js:213
 msgid "The password at row {0} must not contain any space characters."
-msgstr ""
-
-#: ../servlets/webui/root/script/config/upgrade.js:63
-msgid "System Component"
-msgstr ""
-
-#: ../servlets/webui/root/script/config/upgrade.js:64
-msgid "Product"
-msgstr ""
-
-#: ../servlets/webui/root/script/config/upgrade.js:65
-msgid "Unknown"
-msgstr ""
-
-#: ../servlets/webui/root/script/config/upgrade.js:78
-msgid "Various Updates"
-msgstr ""
-
-#: ../servlets/webui/root/script/config/upgrade.js:79
-msgid "N/A"
-msgstr ""
-
-#: ../servlets/webui/root/script/config/upgrade.js:80
-msgid "Misc."
-msgstr ""
-
-#: ../servlets/webui/root/script/config/upgrade.js:133
-msgid "name"
-msgstr ""
-
-#: ../servlets/webui/root/script/config/upgrade.js:139
-msgid "new version"
-msgstr ""
-
-#: ../servlets/webui/root/script/config/upgrade.js:145
-msgid "type"
-msgstr ""
-
-#: ../servlets/webui/root/script/config/upgrade.js:150
-msgid "size (kb)"
-msgstr ""
-
-#: ../servlets/webui/root/script/config/upgrade.js:178
-msgid "Downloading updates..."
-msgstr ""
-
-#: ../servlets/webui/root/script/config/upgrade.js:197
-msgid "Upgrade Setup"
-msgstr ""
-
-#: ../servlets/webui/root/script/config/upgrade.js:207
-msgid "Automatic Upgrade"
-msgstr ""
-
-#: ../servlets/webui/root/script/config/upgrade.js:214
-msgid "Automatically Install Upgrades"
-msgstr ""
-
-#: ../servlets/webui/root/script/config/upgrade.js:228
-msgid ""
-"If new upgrades are available at the specified upgrade time they will be "
-"automatically downloaded and installed. During the install the system may be "
-"rebooted resulting in momentary loss of connectivicty."
-msgstr ""
-
-#: ../servlets/webui/root/script/config/upgrade.js:231
-msgid "Do Not Automatically Install Upgrades"
-msgstr ""
-
-#: ../servlets/webui/root/script/config/upgrade.js:245
-msgid ""
-"If new upgrades are available at the specified upgrade time they will be not "
-"be installed. All upgrades must be manually installed using the button on "
-"the Upgrade tab."
-msgstr ""
-
-#: ../servlets/webui/root/script/config/upgrade.js:247
-msgid ""
-"Note: Turning off Automatic Upgrades does not disable signature & list "
-"updates"
-msgstr ""
-
-#: ../servlets/webui/root/script/config/upgrade.js:251
-msgid "Upgrade Time"
-msgstr ""
-
-#: ../servlets/webui/root/script/config/upgrade.js:259
-msgid "Sunday"
-msgstr ""
-
-#: ../servlets/webui/root/script/config/upgrade.js:272
-msgid "Monday"
-msgstr ""
-
-#: ../servlets/webui/root/script/config/upgrade.js:285
-msgid "Tuesday"
-msgstr ""
-
-#: ../servlets/webui/root/script/config/upgrade.js:298
-msgid "Wednesday"
-msgstr ""
-
-#: ../servlets/webui/root/script/config/upgrade.js:311
-msgid "Thursday"
-msgstr ""
-
-#: ../servlets/webui/root/script/config/upgrade.js:324
-msgid "Friday"
-msgstr ""
-
-#: ../servlets/webui/root/script/config/upgrade.js:337
-msgid "Saturday"
 msgstr ""
 
 #: ../servlets/webui/root/script/config/system.js:118
@@ -3132,6 +3020,118 @@ msgstr ""
 
 #: ../servlets/webui/root/script/config/systemInfo.js:257
 msgid "You must fill out the number of computers protected by Untangle."
+msgstr ""
+
+#: ../servlets/webui/root/script/config/upgrade.js:63
+msgid "System Component"
+msgstr ""
+
+#: ../servlets/webui/root/script/config/upgrade.js:64
+msgid "Product"
+msgstr ""
+
+#: ../servlets/webui/root/script/config/upgrade.js:65
+msgid "Unknown"
+msgstr ""
+
+#: ../servlets/webui/root/script/config/upgrade.js:78
+msgid "Various Updates"
+msgstr ""
+
+#: ../servlets/webui/root/script/config/upgrade.js:79
+msgid "N/A"
+msgstr ""
+
+#: ../servlets/webui/root/script/config/upgrade.js:80
+msgid "Misc."
+msgstr ""
+
+#: ../servlets/webui/root/script/config/upgrade.js:133
+msgid "name"
+msgstr ""
+
+#: ../servlets/webui/root/script/config/upgrade.js:139
+msgid "new version"
+msgstr ""
+
+#: ../servlets/webui/root/script/config/upgrade.js:145
+msgid "type"
+msgstr ""
+
+#: ../servlets/webui/root/script/config/upgrade.js:150
+msgid "size (kb)"
+msgstr ""
+
+#: ../servlets/webui/root/script/config/upgrade.js:178
+msgid "Downloading updates..."
+msgstr ""
+
+#: ../servlets/webui/root/script/config/upgrade.js:197
+msgid "Upgrade Setup"
+msgstr ""
+
+#: ../servlets/webui/root/script/config/upgrade.js:207
+msgid "Automatic Upgrade"
+msgstr ""
+
+#: ../servlets/webui/root/script/config/upgrade.js:214
+msgid "Automatically Install Upgrades"
+msgstr ""
+
+#: ../servlets/webui/root/script/config/upgrade.js:228
+msgid ""
+"If new upgrades are available at the specified upgrade time they will be "
+"automatically downloaded and installed. During the install the system may be "
+"rebooted resulting in momentary loss of connectivicty."
+msgstr ""
+
+#: ../servlets/webui/root/script/config/upgrade.js:231
+msgid "Do Not Automatically Install Upgrades"
+msgstr ""
+
+#: ../servlets/webui/root/script/config/upgrade.js:245
+msgid ""
+"If new upgrades are available at the specified upgrade time they will be not "
+"be installed. All upgrades must be manually installed using the button on "
+"the Upgrade tab."
+msgstr ""
+
+#: ../servlets/webui/root/script/config/upgrade.js:247
+msgid ""
+"Note: Turning off Automatic Upgrades does not disable signature & list "
+"updates"
+msgstr ""
+
+#: ../servlets/webui/root/script/config/upgrade.js:251
+msgid "Upgrade Time"
+msgstr ""
+
+#: ../servlets/webui/root/script/config/upgrade.js:259
+msgid "Sunday"
+msgstr ""
+
+#: ../servlets/webui/root/script/config/upgrade.js:272
+msgid "Monday"
+msgstr ""
+
+#: ../servlets/webui/root/script/config/upgrade.js:285
+msgid "Tuesday"
+msgstr ""
+
+#: ../servlets/webui/root/script/config/upgrade.js:298
+msgid "Wednesday"
+msgstr ""
+
+#: ../servlets/webui/root/script/config/upgrade.js:311
+msgid "Thursday"
+msgstr ""
+
+#: ../servlets/webui/root/script/config/upgrade.js:324
+msgid "Friday"
+msgstr ""
+
+#: ../servlets/webui/root/script/config/upgrade.js:337
+msgid "Saturday"
 msgstr ""
 
 #: ../servlets/alpaca/src/com/untangle/uvm/servlet/alpaca/ProxyServlet.java:151

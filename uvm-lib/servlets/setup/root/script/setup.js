@@ -208,7 +208,7 @@ Ung.SetupWizard.SettingsSaver = Ext.extend( Object, {
                 password : this.password
             },
             /* If it uses the default type then this will not work
-             * because the authentication handler doesn't like utf8 */
+             * because the authentication handler does not like utf8 */
             headers : { 
                 'Content-Type' : "application/x-www-form-urlencoded"
             },
@@ -451,7 +451,7 @@ Ung.SetupWizard.Registration = Ext.extend( Object, {
         field = field[0];
         var value = null;
 
-        /* Combo has to use the raw value, otherwise editable doesn't come through */
+        /* Combo has to use the raw value, otherwise editable does not come through */
         if ( field.xtype == "combo" ) value = field.getRawValue();
         else value = field.getValue();
 
@@ -598,7 +598,7 @@ Ung.SetupWizard.Interfaces = Ext.extend( Object, {
             /* This is the VPN interfaces, and this is a magic number. */
             if ( i.argonIntf == 7 ) continue;
             
-            /* This is an interface that doesn't exist */
+            /* This is an interface that does not exist */
             // if ( i.systemName.indexOf( 'nointerface' ) == 0 ) continue;
 
             cleanArray.push( i );
@@ -1038,7 +1038,7 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
         Ext.MessageBox.alert( i18n._( "Internet Status" ), message ); 
     },
 
-    /* This doesn't reload the settings, it just updates what is
+    /* This does not reload the settings, it just updates what is
      * displayed inside of the User Interface. */
     refreshNetworkSettings : function()
     {

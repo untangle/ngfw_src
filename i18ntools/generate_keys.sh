@@ -1,6 +1,6 @@
 #!/bin/sh
 
-ALL_MODULES='untangle-libuvm untangle-install-wizard
+ALL_MODULES='untangle-libuvm untangle-install-wizard untangle-apache2-config
     untangle-casing-mail untangle-base-virus 
     untangle-node-webfilter untangle-node-phish untangle-node-spyware untangle-node-spamassassin untangle-node-shield 
     untangle-node-protofilter untangle-node-ips untangle-node-firewall untangle-node-reporting untangle-node-openvpn
@@ -19,12 +19,7 @@ case "$1" in
     #setup wizard
     xgettext -j --copyright-holder='Untangle, Inc.' -L Python -ki18n._ -o tmp_keys.pot ../servlets/setup/root/script/setup.js
     echo 'get config keys'
-    xgettext -j --copyright-holder='Untangle, Inc.' -L Python -ki18n._ -o tmp_keys.pot ../servlets/webui/root/script/config/administration.js
-    xgettext -j --copyright-holder='Untangle, Inc.' -L Python -ki18n._ -o tmp_keys.pot ../servlets/webui/root/script/config/email.js
-    xgettext -j --copyright-holder='Untangle, Inc.' -L Python -ki18n._ -o tmp_keys.pot ../servlets/webui/root/script/config/localDirectory.js
-    xgettext -j --copyright-holder='Untangle, Inc.' -L Python -ki18n._ -o tmp_keys.pot ../servlets/webui/root/script/config/upgrade.js
-    xgettext -j --copyright-holder='Untangle, Inc.' -L Python -ki18n._ -o tmp_keys.pot ../servlets/webui/root/script/config/system.js
-    xgettext -j --copyright-holder='Untangle, Inc.' -L Python -ki18n._ -o tmp_keys.pot ../servlets/webui/root/script/config/systemInfo.js
+    xgettext -j --copyright-holder='Untangle, Inc.' -L Python -ki18n._ -o tmp_keys.pot ../servlets/webui/root/script/config/*.js
     
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../servlets/alpaca/src/com/untangle/uvm/servlet/alpaca/ProxyServlet.java
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../localapi/com/untangle/uvm/util/OutsideValve.java
@@ -40,15 +35,18 @@ case "$1" in
 "untangle-install-wizard")
     cd ../gui/po
     xgettext --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../api/com/untangle/gui/install/InstallBenchmarkJPanel.java
-    xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../api/com/untangle/gui/install/InstallDiskJPanel.java
-    xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../api/com/untangle/gui/install/InstallLicenseJPanel.java
-    xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../api/com/untangle/gui/install/InstallWarningJPanel.java
-    xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../api/com/untangle/gui/install/InstallWelcomeJPanel.java
-    xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../api/com/untangle/gui/install/InstallWizard.java
-    xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../api/com/untangle/gui/widgets/dialogs/MOneButtonJDialog.java
-    xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../api/com/untangle/gui/widgets/dialogs/MTwoButtonJDialog.java
-    xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../api/com/untangle/gui/widgets/wizard/MWizardJDialog.java
+    xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../api/com/untangle/gui/install/*.java
+    xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../api/com/untangle/gui/widgets/dialogs/*.java
+    xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../api/com/untangle/gui/widgets/wizard/*.java
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../api/com/untangle/gui/util/InfiniteProgressJComponent.java
+    msgmerge -U $1.pot tmp_keys.pot
+    rm tmp_keys.pot
+    echo 'update po files'
+    msgmerge -U ro/$1.po $1.pot
+    ;;
+"untangle-apache2-config")
+    cd ../../pkgs/untangle-apache2-config/po
+    xgettext --copyright-holder='Untangle, Inc.' -L Python -k_ -o tmp_keys.pot ../*.py
     msgmerge -U $1.pot tmp_keys.pot
     rm tmp_keys.pot
     echo 'update po files'
@@ -147,7 +145,6 @@ case "$1" in
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../servlets/rsa/src/com/untangle/node/rsa/RsaServlet.java
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../servlets/rsaproxy/src/com/untangle/node/rsa/proxy/ForwardServlet.java
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../servlets/rsaproxy/src/com/untangle/node/rsa/proxy/WebProxy.java
-    echo "" >> ./$1.pot
     ruby ../../../../work/src/i18ntools/xi18ntags.rb ../servlets/rsa/root/rsa.jspx dup >> ./tmp_jspx_keys.pot
     msgcat tmp_keys.pot tmp_jspx_keys.pot -o tmp_keys.pot
     msgmerge -U $1.pot tmp_keys.pot

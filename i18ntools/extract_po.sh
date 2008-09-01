@@ -12,6 +12,7 @@ fi
 
 cp ../uvm-lib/po/$1/untangle-libuvm.po ./$1/
 cp ../gui/po/$1/untangle-install-wizard.po ./$1/
+cp ../../pkgs/untangle-apache2-config/po/$1/untangle-apache2-config.po ./$1/
 cp ../mail-casing/po/$1/untangle-casing-mail.po ./$1/
 cp ../virus-base/po/$1/untangle-base-virus.po ./$1/
 
