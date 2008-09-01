@@ -3,7 +3,7 @@
 ALL_MODULES='untangle-libuvm 
     untangle-casing-mail untangle-base-virus 
     untangle-node-webfilter untangle-node-phish untangle-node-spyware untangle-node-spamassassin untangle-node-shield untangle-node-protofilter untangle-node-ips untangle-node-firewall untangle-node-reporting
-    untangle-node-adconnector untangle-node-boxbackup untangle-node-policy untangle-node-portal'
+    untangle-node-adconnector untangle-node-boxbackup untangle-node-policy untangle-node-portal untangle-node-pcremote'
 
 function update_keys()
 {
@@ -101,6 +101,23 @@ case "$1" in
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../common/login/login.jsp
     msgmerge -U $1.pot tmp_keys.pot
     rm tmp_keys.pot
+    echo 'update po files'
+    msgmerge -U ro/$1.po $1.pot
+    ;;
+"untangle-node-pcremote")    
+    moduleName=`echo "$1"|cut -d"-" -f3`
+    cd ../../../hades/rup/${moduleName}/po/
+    echo 'get new keys'
+    xgettext --copyright-holder='Untangle, Inc.' -L Python -ki18n._ -o tmp_keys.pot ../hier/usr/share/untangle/web/webui/script/${1}/settings.js
+    xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../servlets/rsa/src/com/untangle/node/rsa/RsaServlet.java
+    xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../servlets/rsaproxy/src/com/untangle/node/rsa/proxy/ForwardServlet.java
+    xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../servlets/rsaproxy/src/com/untangle/node/rsa/proxy/WebProxy.java
+    echo "" >> ./$1.pot
+    ruby ../../../../work/src/i18ntools/xi18ntags.rb ../servlets/rsa/root/rsa.jspx >> ./tmp_jspx_keys.pot
+    msgcat tmp_keys.pot tmp_jspx_keys.pot -o tmp_keys.pot
+    msgmerge -U $1.pot tmp_keys.pot
+    rm tmp_keys.pot
+    rm tmp_jspx_keys.pot
     echo 'update po files'
     msgmerge -U ro/$1.po $1.pot
     ;;
