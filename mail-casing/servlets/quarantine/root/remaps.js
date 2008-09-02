@@ -46,7 +46,7 @@ Ung.Remaps.prototype = {
         [ { name : 'emailAddress' } ]);
 
         this.store = new Ext.data.Store({
-            reader : remaps.reader,
+            reader : this.reader,
             data : inboxDetails.remapsData
         });
 
@@ -71,36 +71,16 @@ Ung.Remaps.prototype = {
             scope : this
         });
     
-        this.forwardTo = new Ext.FormPanel( {
-            height : 100,
-            defaultType : 'textfield',
-            items : [{
-                fieldLabel : i18n._( "Forward Quarantined Messages To:" ),
-                name : 'email_address',
-                value : inboxDetails.forwardAddress
-            }],
-            buttons : [ {
-                text : "Apply",
-                handler: function() {
-                    var field = this.forwardTo.find( "name", "email_address" )[0];
-                    var email = field.getValue();
-                    quarantine.rpc.setRemap( this.setRemap.createDelegate( this ), 
-                                             inboxDetails.token, email );
-                    
-                },
-                scope : this
-            }]
-        } );
-
         this.grid = new Ext.grid.GridPanel({
             autoExpandColumn : 1,
             anchor : '100% -100',
-            store : remaps.store,
+            store : this.store,
 			cls:'quarantine-received-messages-grid',
-            cm : remaps.cm,
+            cm : this.cm,
             loadMask : true,
             frame : true,
             clicksToEdit : 1,
+            height : 200,
             sm : this.selectionModel,
             tbar : [ this.deleteButton ]
          });
@@ -132,7 +112,7 @@ Ung.Remaps.prototype = {
         this.emailAddressField = new Ext.form.TextField({
             fieldLabel : i18n._( "Address" ),
             name : "email_address",
-            value : inboxDetails.forwardAddress ,
+            value : inboxDetails.forwardAddress,
 			cls:'quarantine-left-indented'
 			}
 			);
@@ -141,8 +121,7 @@ Ung.Remaps.prototype = {
 		this.changeAddressButton = new Ext.Button({
             text : "Change Address",
             handler: function() {
-                var field = this.forwardTo.find( "name", "email_address" )[0];
-                var email = field.getValue();
+                var email = this.emailAddressField.getValue();
                 quarantine.rpc.setRemap( this.setRemap.createDelegate( this ), 
                                          inboxDetails.token, email );
             },
@@ -150,19 +129,6 @@ Ung.Remaps.prototype = {
             scope : this		
 		});
 		items.push(this.changeAddressButton);
-        /*
-		items.push({
-	            xtype : 'button',
-	            text : "Change Address",
-	            handler: function() {
-	                var field = this.forwardTo.find( "name", "email_address" )[0];
-	                var email = field.getValue();
-	                quarantine.rpc.setRemap( this.setRemap.createDelegate( this ), 
-	                                         inboxDetails.token, email );
-	            },
-				cls:'quarantine-change-address',
-	            scope : this });
-			*/
 
         items.push ({ 
             xtype : 'radio',

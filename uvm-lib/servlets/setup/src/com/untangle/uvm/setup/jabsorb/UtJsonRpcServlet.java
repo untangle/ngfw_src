@@ -124,8 +124,6 @@ public class UtJsonRpcServlet extends JSONRPCServlet
         HttpSession s = req.getSession();
         JSONRPCBridge b = (JSONRPCBridge)s.getAttribute(BRIDGE_ATTRIBUTE);
 
-        logger.warn( "initSessionBridge: " + b );
-
         if (null == b) {
             b = new JSONRPCBridge();
             s.setAttribute(BRIDGE_ATTRIBUTE, b);

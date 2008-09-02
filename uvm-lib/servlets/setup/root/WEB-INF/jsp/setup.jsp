@@ -30,7 +30,8 @@
       Ung.SetupWizard.currentSkin = "${ss.administrationClientSkin}";
 
       Ung.SetupWizard.CurrentValues = {
-        timezone : "${timezone.ID}"
+        timezone : "${timezone.ID}",
+        languageMap : ${languageMap}
       };
 
       Ext.onReady(Ung.Setup.init);

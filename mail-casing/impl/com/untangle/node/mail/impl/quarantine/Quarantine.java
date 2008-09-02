@@ -601,13 +601,28 @@ public class Quarantine
     public void remapSelfService(String from, String to)
         throws QuarantineUserActionFailedException, InboxAlreadyRemappedException {
 
-        String existingMapping = m_addressAliases.getAddressMapping(from);
-        if(existingMapping != null) {
-            throw new InboxAlreadyRemappedException(from, existingMapping);
+        if (( from == null ) || ( to == null )) {
+            m_logger.warn( "empty from or to string." );
+            return;
         }
 
+        if (( from.length() == 0 ) || ( to.length() == 0 )) {
+            m_logger.warn( "empty from or to string." );
+            return;
+        }
+        
+        GlobEmailAddressMapper currentMapper = null;
+        
+        /* Remove the current map if one exists. */
+        String existingMapping = m_addressAliases.getAddressMapping(from);
+        if(existingMapping != null) {
+            currentMapper = m_addressAliases.removeMapping(new Pair<String, String>(from, existingMapping));
+        }
+
+        if (currentMapper == null) currentMapper = m_addressAliases;
+        
         //Create a new List
-        List<Pair<String, String>> mappings = m_addressAliases.getRawMappings();
+        List<Pair<String, String>> mappings = currentMapper.getRawMappings();
         mappings.add(0, new Pair<String, String>(from, to));
 
         //Convert list to form which makes settings happy
@@ -621,6 +636,17 @@ public class Quarantine
 
     public boolean unmapSelfService(String inboxName, String aliasToRemove)
         throws QuarantineUserActionFailedException {
+
+
+        if (( inboxName == null ) || ( aliasToRemove == null )) {
+            m_logger.warn( "empty from or to string." );
+            return false;
+        }
+
+        if (( inboxName.length() == 0 ) || ( aliasToRemove.length() == 0 )) {
+            m_logger.warn( "empty from or to string." );
+            return false;
+        }
 
         //    System.out.println("***DEBUG*** [unmapSelfService()] Called with inbox: " +
         //      inboxName + " and aliasToRemove: " + aliasToRemove);

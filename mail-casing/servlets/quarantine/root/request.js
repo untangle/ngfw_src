@@ -12,7 +12,7 @@ Ung.QuarantineRequest = function() {
 Ung.QuarantineRequest.prototype =  {
     init : function()
     {
-		this.rpc = new JSONRpcClient("/quarantine/JSON-RPC").Quarantine;
+        this.rpc = new JSONRpcClient("/quarantine/JSON-RPC").Quarantine;
 
         this.requestForm  = new Ext.FormPanel({
             defaults : {

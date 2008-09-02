@@ -42,7 +42,7 @@ public final class Constants extends WebConstants {
      * View for requesting a digest email/login
      */
     public static final String REQ_DIGEST_VIEW = "/request.jspx";
-    public static final String INVALID_PORTAL_EMAIL = "/InvalidPortalEmail.jsp";
+    public static final String INVALID_PORTAL_EMAIL = "/InvalidPortalEmail.jspx";
 
     public static final String INBOX_VIEW = "/inbox.jspx";
 

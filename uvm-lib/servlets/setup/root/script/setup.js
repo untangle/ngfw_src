@@ -1511,8 +1511,7 @@ Ung.Setup = {
 
         rpc.setup = new JSONRpcClient("/setup/JSON-RPC").SetupContext;
 
-        alert( "insert language translations" );
-        i18n = new Ung.I18N( { "map" : {} })
+        i18n = new Ung.I18N( { "map" : Ung.SetupWizard.languageMap })
 
         var welcome = new Ung.SetupWizard.Welcome();
         var settings = new Ung.SetupWizard.Settings();
