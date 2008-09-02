@@ -1,7 +1,7 @@
 ## A rush script for retrieving an authentication token for an email address.
 
 ## (Wherever the rush shell is)
-## To run use:  QUARANTINE_ACCOUNT="foo@foo.com" ./dist/usr/bin/rush ./mail-casing/unittest/get_auth_token.rb 
+## To run use:  ./dist/usr/bin/rush ./mail-casing/unittest/get_auth_token.rb <address>
 require "cgi"
 
 nm = Untangle::RemoteUvmContext.nodeManager()

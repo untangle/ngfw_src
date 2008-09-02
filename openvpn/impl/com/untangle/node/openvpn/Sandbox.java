@@ -66,7 +66,7 @@ import com.untangle.uvm.node.script.ScriptException;
 /* XXX Probably want to make this an abstract class and make this a little more generic */
 class Sandbox
 {
-    private final Logger logger = Logger.getLogger( Sandbox.class );
+    private final Logger logger = Logger.getLogger( getClass());
     
     private static final int DEFAULT_MAX_CLIENTS = 500;
     private static final boolean DEFAULT_KEEP_ALIVE  = true;
@@ -368,8 +368,6 @@ class Sandbox
                 rangeList.removeFirst();
                 continue;
             }
-
-            logger.warn( "network : " + network.getNetwork() + "/" + network.getNetmask());
 
             ServerSiteNetwork ssn = new ServerSiteNetwork();
             ssn.setNetwork( network.getNetwork());
