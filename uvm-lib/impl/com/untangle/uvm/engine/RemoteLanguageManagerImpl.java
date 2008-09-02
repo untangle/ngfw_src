@@ -166,8 +166,6 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
             zis.close();
             uploadedStream.close();
             
-            ResourceBundle.clearCache(Thread.currentThread().getContextClassLoader());
-            
         } catch (IOException e) {
             logger.error(e);
             throw new UvmException("Upload Language Pack Failed");
@@ -265,6 +263,7 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
         String i18nModule = module.replaceAll("-", "_");
         try {
             I18n i18n = null;
+            ResourceBundle.clearCache(Thread.currentThread().getContextClassLoader());
             try {
                 i18n = I18nFactory.getI18n(BASENAME_COMMUNITY_PREFIX+"."+i18nModule, i18nModule, Thread
                         .currentThread().getContextClassLoader(), new Locale(settings

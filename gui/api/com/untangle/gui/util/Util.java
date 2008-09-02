@@ -504,6 +504,7 @@ public class Util {
         String i18nModule = module.replaceAll("-", "_");
         try {
             I18n i18n = null;
+            ResourceBundle.clearCache(Thread.currentThread().getContextClassLoader());
             try {
                 i18n = I18nFactory.getI18n(BASENAME_COMMUNITY_PREFIX+"."+i18nModule, i18nModule, Thread
                         .currentThread().getContextClassLoader(), locale, I18nFactory.DEFAULT);
