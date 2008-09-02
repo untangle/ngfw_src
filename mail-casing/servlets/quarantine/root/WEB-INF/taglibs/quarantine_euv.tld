@@ -19,7 +19,6 @@
     <attribute>
         <name>type</name>
         <required>true</required>
-        <rtexpvalue>false</rtexpvalue>
     </attribute>    
   </tag>
 
@@ -34,7 +33,6 @@
     <attribute>
       <name>includeIfTrue</name>
       <required>true</required>
-      <rtexpvalue>false</rtexpvalue>
     </attribute>      
   </tag>
   
@@ -56,12 +54,10 @@
     <attribute>
       <name>prop</name>
       <required>true</required>
-      <rtexpvalue>false</rtexpvalue>
     </attribute>
     <attribute>
       <name>JSEscape</name>
       <required>false</required>
-      <rtexpvalue>false</rtexpvalue>
     </attribute>     
   </tag>
 
@@ -77,7 +73,6 @@
     <attribute>
       <name>includeIfTrue</name>
       <required>true</required>
-      <rtexpvalue>false</rtexpvalue>
     </attribute>      
   </tag>
 
@@ -139,7 +134,6 @@
     <attribute>
       <name>encoded</name>
       <required>false</required>
-      <rtexpvalue>false</rtexpvalue>
     </attribute>    
   </tag>
   
@@ -154,7 +148,6 @@
     <attribute>
       <name>encoded</name>
       <required>true</required>
-      <rtexpvalue>false</rtexpvalue>
     </attribute>
   </tag>
 
@@ -165,7 +158,6 @@
     <attribute>
       <name>includeIfTrue</name>
       <required>true</required>
-      <rtexpvalue>false</rtexpvalue>
     </attribute>  
   </tag>    
 
@@ -203,12 +195,10 @@
     <attribute>
       <name>valueName</name>
       <required>false</required>
-      <rtexpvalue>false</rtexpvalue>
     </attribute>
     <attribute>
       <name>keyName</name>
       <required>false</required>
-      <rtexpvalue>false</rtexpvalue>
     </attribute>       
   </tag>
 
@@ -220,7 +210,6 @@
     <attribute>
       <name>encoded</name>
       <required>true</required>
-      <rtexpvalue>false</rtexpvalue>
     </attribute>
   </tag>
 
@@ -231,7 +220,6 @@
     <attribute>
       <name>includeIfTrue</name>
       <required>true</required>
-      <rtexpvalue>false</rtexpvalue>
     </attribute>  
   </tag>    
 
@@ -242,7 +230,6 @@
     <attribute>
       <name>includeIfTrue</name>
       <required>true</required>
-      <rtexpvalue>false</rtexpvalue>
     </attribute>      
   </tag>
 
@@ -253,7 +240,6 @@
     <attribute>
       <name>encoded</name>
       <required>true</required>
-      <rtexpvalue>false</rtexpvalue>
     </attribute>    
   </tag>
 
