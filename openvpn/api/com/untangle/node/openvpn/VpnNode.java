@@ -63,6 +63,7 @@ public interface VpnNode extends Node
     public void generateCertificate( CertificateParameters parameters ) throws Exception;
     public GroupList getAddressGroups() throws Exception;
     public void setAddressGroups( GroupList parameters ) throws Exception;
+    public ExportList getExportedAddressList();
     public void setExportedAddressList( ExportList parameters ) throws Exception;
     public void setClients( ClientList parameters ) throws Exception;
     public void setSites( SiteList parameters ) throws Exception;

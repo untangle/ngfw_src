@@ -75,21 +75,8 @@ class NetworkUtilPriv extends NetworkUtil
     /* Size of an ip addr byte array */
     public static final int IP_ADDR_SIZE_BYTES = 4;
 
-    private final IPaddr bogusAddress;
-
     private NetworkUtilPriv()
     {
-        IPaddr address = null;
-        try {
-            address = IPaddr.parse( "192.0.2.1" );
-        } catch ( ParseException e ) {
-            /* This should never happen */
-            address = null;
-        } catch ( UnknownHostException e ) {
-            /* This should never happen */
-            address = null;
-        }
-        this.bogusAddress = address;
     }
 
     BasicNetworkSettings toBasic( NetworkSpacesInternalSettings settings )
@@ -379,13 +366,6 @@ class NetworkUtilPriv extends NetworkUtil
         return hostname;
     }
 
-    boolean isBogus( IPaddr address )
-    {
-        if ( this.bogusAddress == null ) return false;
-
-        return this.bogusAddress.equals( address );
-    }
-
     static NetworkUtilPriv getPrivInstance()
     {
         return INSTANCE;
@@ -476,7 +456,7 @@ class NetworkUtilPriv extends NetworkUtil
             if ( networkSpace == null ) {
                 logger.warn( "Unable to find a network space for: '" + name + "'" );
                 /* this is not all that legit */
-                networkSpace = parseConfig( name + ";" + this.bogusAddress + "/32" );
+                networkSpace = parseConfig( name + ";" + NetworkUtil.BOGUS_ADDRESS + "/32" );
             }
             boolean isPhysicalInterface = true;
             if ( argonIntf.getArgon() == IntfConstants.VPN_INTF ) isPhysicalInterface = false;

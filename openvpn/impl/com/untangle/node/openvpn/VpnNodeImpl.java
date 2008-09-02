@@ -38,6 +38,7 @@ import com.untangle.uvm.logging.EventManager;
 import com.untangle.uvm.message.BlingBlinger;
 import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.message.LocalMessageManager;
+import com.untangle.uvm.networking.IPNetwork;
 import com.untangle.uvm.node.HostAddress;
 import com.untangle.uvm.node.HostName;
 import com.untangle.uvm.node.IPaddr;
@@ -667,6 +668,11 @@ public class VpnNodeImpl extends AbstractNode
         }
 
         this.sandbox = new Sandbox( state );
+
+        if ( state == ConfigState.SERVER_ROUTE ) {
+            this.sandbox.autoDetectAddressPool();
+            this.sandbox.autoDetectExportList();
+        }
     }
 
     public void completeConfig() throws Exception
@@ -728,10 +734,14 @@ public class VpnNodeImpl extends AbstractNode
         this.sandbox.setGroupList( parameters );
     }
 
+    public ExportList getExportedAddressList()
+    {
+        return this.sandbox.getExportList();
+    }
+
     public void setExportedAddressList( ExportList parameters ) throws Exception
     {
         this.sandbox.setExportList( parameters );
-
     }
 
     public void setClients( ClientList parameters) throws Exception
@@ -774,8 +784,8 @@ public class VpnNodeImpl extends AbstractNode
         connectBlinger.increment();
     }
 
-    public Validator getValidator() {
+    public Validator getValidator()
+    {
         return new OpenVpnValidator();
     }
-
 }
