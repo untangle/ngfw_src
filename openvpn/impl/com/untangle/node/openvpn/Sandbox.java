@@ -105,23 +105,7 @@ class Sandbox
     {
         this.configState = configState;
         if(configState==VpnNode.ConfigState.SERVER_ROUTE) {
-            //XXX: this is an workaround to add a default group.
-            List<VpnGroup> groupList=new ArrayList<VpnGroup>();
-            VpnGroup vpnGroup= new VpnGroup();
-            vpnGroup.setName("[no name]");
-            vpnGroup.setLive(true);
-            try {
-                vpnGroup.setAddress(IPaddr.parse("172.16.16.0"));
-                vpnGroup.setNetmask(IPaddr.parse("255.255.255.0"));
-            } catch (ParseException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } catch (UnknownHostException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-            groupList.add(vpnGroup);
-            this.groupList= new GroupList(groupList);
+            this.groupList= new GroupList();
             this.clientList=new ClientList();
             this.siteList=new SiteList();
         }

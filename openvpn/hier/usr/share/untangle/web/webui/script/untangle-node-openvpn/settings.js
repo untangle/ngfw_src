@@ -64,6 +64,12 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             }
             return this.rpc.openVpnValidator;
         },
+        getExportedAddressList : function(forceReload) {
+            if (forceReload || this.rpc.exportedAddressList === undefined) {
+                this.rpc.exportedAddressList = this.getRpcNode().getExportedAddressList();
+            }
+            return this.rpc.exportedAddressList;
+        }, 
         getRegistrationInfo : function(forceReload) {
             if (forceReload || this.rpc.registrationInfo === undefined) {
                 this.rpc.registrationInfo = rpc.adminManager.getRegistrationInfo();
@@ -134,7 +140,14 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         iconCls : "actionIcon",
                         disabled : serverButtonDisabled,
                         handler : function() {
-                            this.configureVNPServer();
+                            this.getRpcNode().startConfig(function(result, exception) {
+                                if (exception) {
+                                    Ext.MessageBox.alert(this.i18n._("Failed"), exception.message);
+                                    return;
+                                }
+                                this.configureVNPServer();
+                            }.createDelegate(this), "SERVER_ROUTE")
+                        	
                         }.createDelegate(this)
                     }, {
                         html : this.i18n
@@ -148,7 +161,13 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         iconCls : "actionIcon",
                         disabled : clientButtonDisabled,
                         handler : function() {
-                            this.configureVNPClient();
+                            this.getRpcNode().startConfig(function(result, exception) {
+                                if (exception) {
+                                    Ext.MessageBox.alert(this.i18n._("Failed"), exception.message);
+                                    return;
+                                }
+                                this.configureVNPClient();
+                            }.createDelegate(this), "CLIENT")
                         }.createDelegate(this)
                     }, {
                         html : this.i18n
@@ -712,22 +731,10 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
         generateGridExports : function(inWizard) {
             // live is a check column
             var exportedAddressList=[];
-            
             if(inWizard) {
-            	//TODO: get the default real list for wizard Exports
-                exportedAddressList=[{
-                    "live" : true,
-                    "name" : "internal network",
-                    "network" : "10.0.0.1",
-                    "netmask" : "255.0.0.0",
-                    "javaClass" :"com.untangle.node.openvpn.ServerSiteNetwork"
-                },{
-                    "live" : true,
-                    "name" : "DNS Server",
-                    "network" : "1.2.3.4",
-                    "netmask" : "255.255.255.255",
-                    "javaClass" :"com.untangle.node.openvpn.ServerSiteNetwork"
-                }];
+            	if (this.getExportedAddressList()!=null) {
+                    exportedAddressList=this.getExportedAddressList().exportList.list
+            	}
             } else {
             	exportedAddressList=this.getVpnSettings().exportedAddressList.list;
             }
@@ -1394,17 +1401,8 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     }]
                 },
                 onNext : function(handler) {
-                    this.getRpcNode().startConfig(function(result, exception) {
-                        if (exception) {
-                            Ext.MessageBox.alert(i18n._("Failed"), exception.message);
-                            return;
-                        }
-                        this.handler();
-                    }.createDelegate({
-                            handler : handler,
-                            settingsCmp : this
-                        }), "CLIENT")
-                }.createDelegate(this)
+                    this.handler();
+                }
             };
             var downloadCard = {
                 title : this.i18n._("Download Configuration"),
@@ -1672,6 +1670,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             if (this.serverSetup) {
                 Ext.destroy(this.serverSetup)
             }
+            
             var welcomeCard = {
                 title : this.i18n._("Welcome"),
                 cardTitle : this.i18n._("Welcome to the OpenVPN Setup Wizard!"),
@@ -1690,17 +1689,8 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     }]
                 },
                 onNext : function(handler) {
-                    this.getRpcNode().startConfig(function(result, exception) {
-                        if (exception) {
-                            Ext.MessageBox.alert(i18n._("Failed"), exception.message);
-                            return;
-                        }
-                        this.handler();
-                    }.createDelegate({
-                            handler : handler,
-                            settingsCmp : this
-                        }), "SERVER_ROUTE")
-                }.createDelegate(this)
+                    handler();
+                }
             };
             var registrationInfo=this.getRegistrationInfo();
             var country="US";
@@ -1844,6 +1834,8 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         return;
                     }
                     
+                    this.getExportedAddressList().exportList.list = saveList;
+                    
                     Ext.MessageBox.wait(i18n._("Adding Exports..."), i18n._("Please wait"));
                     this.getRpcNode().setExportedAddressList(function(result, exception) {
                         if (exception) {
@@ -1862,7 +1854,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     }.createDelegate({
                             handler : handler,
                             settingsCmp : this
-                        }), {javaClass:"com.untangle.node.openvpn.ExportList", exportList:{javaClass:"java.util.ArrayList", list: saveList}})
+                        }), this.getExportedAddressList()/*{javaClass:"com.untangle.node.openvpn.ExportList", exportList:{javaClass:"java.util.ArrayList", list: saveList}}*/)
                 }.createDelegate(this)
             };
             var congratulationsCard = {
