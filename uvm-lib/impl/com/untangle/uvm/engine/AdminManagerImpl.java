@@ -174,7 +174,7 @@ class RemoteAdminManagerImpl implements RemoteAdminManager
     private User modifiedUser( User user, Set<User> updatedUsers )
     {
         for ( User currentUser : updatedUsers ) {
-            if( currentUser.getId().equals( user.getId())) return currentUser;
+            if( user.getId().equals(currentUser.getId())) return currentUser;
         }
 
         return null;
