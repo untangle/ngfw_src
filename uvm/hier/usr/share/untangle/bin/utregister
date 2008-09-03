@@ -8,7 +8,7 @@ REGISTRATION_DONE_FILE=@UVM_HOME@/.regdone
 REGISTRATION_INFO_FILE=@UVM_HOME@/registration.info
 
 if [ -f "$REGISTRATION_INFO_FILE" ]; then
-    if [ ! -f "$REGISTRATION_DONE_FILE" -o "$REGISTRATION_DONE_FILE" -ot "$REGISTRATION_DONE_FILE" ]; then
+    if [ ! -f "$REGISTRATION_DONE_FILE" -o "$REGISTRATION_DONE_FILE" -ot "$REGISTRATION_INFO_FILE" ]; then
 	/bin/rm -f "$REGISTRATION_DONE_FILE"
 
 	/usr/bin/curl --max-time 20 -o /dev/null -d "`cat $REGISTRATION_INFO_FILE`" "https://poptrack.untangle.com/register/custreg.php"

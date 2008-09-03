@@ -17,6 +17,7 @@ require 'optparse'
 VERSIONS = { :hardware => 1,
              :cd       => 2,
              :lite     => 3,
+             :windows  => 4,
              :ubuntu   => 9 }
 
 PLATFORMS = { :sarge    => 0,
@@ -137,7 +138,9 @@ def getPackageVersion(name)
 end
 
 def getVersion
-  if getPackageVersion('untangle-gateway').nil? then
+  if !getPackageVersion('untangle-windows-installer').nil? 
+    :windows
+  elsif getPackageVersion('untangle-gateway').nil?
     :lite
   elsif getPackageVersion('untangle-hardware-support').nil?
     :cd
