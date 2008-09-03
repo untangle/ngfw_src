@@ -84,7 +84,7 @@ Provides: airgap-transform
 Replaces: airgap-transform
 XB-Display-Name: Attack Blocker
 XB-Untangle-Type: service
-XB-View-Position: 1010
+XB-View-Position: 1020
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAJmklEQVRYhcWZWYwb
  dx3HPzOeGdtjj9f3epO92yRtjkZNQzehQlQoIkoQKlXzVCG1AgmekPoEqAJa8VAE
  T7xVFHiohBAPlVBVUYiIqlKpSUPTpE02x26O9XqT7K53be+uz/FcPHg9a6+97gYh
@@ -690,7 +690,7 @@ Provides: openvpn-transform
 Replaces: openvpn-transform
 XB-Display-Name: OpenVPN
 XB-Untangle-Type: service
-XB-View-Position: 1003
+XB-View-Position: 1019
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAACXBIWXMAAAsTAAALEwEAmpwY
  AAAABGdBTUEAALGOfPtRkwAAACBjSFJNAAB6JQAAgIMAAPn/AACA6QAAdTAAAOpgAAA6mAAA
  F2+SX8VGAAAL2ElEQVR42syYWWxc132Hv7vMypnhkJwZigpD2iRNOaSsxdqAWo3jGk7qJXYB
@@ -834,7 +834,7 @@ Provides: reporting-transform
 Replaces: reporting-transform
 XB-Display-Name: Untangle Reports
 XB-Untangle-Type: service
-XB-View-Position: 1020
+XB-View-Position: 1022
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAABGdBTUEAANbY1E9YMgAAABl0
  RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAgkSURBVHjazFlJb5vHGX5mvo2k
  xEWyJceSYwtIaimwE8WOqzhpjCbNIUVTGO2lMHJ00fbSU09FUaC9BDn20nsu/QMukkPjtDFa
