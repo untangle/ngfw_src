@@ -22,7 +22,7 @@ do
     cp ../${module_dir}/po/$1/${module}.po ./$1/
 done
 
-for module in untangle-node-adconnector untangle-node-boxbackup untangle-node-policy untangle-node-portal untangle-node-pcremote
+for module in untangle-node-adconnector untangle-node-boxbackup untangle-node-portal untangle-node-pcremote
 do 
     module_dir=`echo "${module}"|cut -d"-" -f3`
     cp ../../../hades/rup/${module_dir}/po/$1/${module}.po ./$1/

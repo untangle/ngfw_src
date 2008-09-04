@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-09-01 11:34+0300\n"
+"POT-Creation-Date: 2008-09-04 14:18+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -135,55 +135,54 @@ msgstr ""
 
 #: ../servlets/quarantine/root/remaps.js:55
 #: ../servlets/quarantine/root/remaps.js:65
-#: ../servlets/quarantine/root/remaps.js:254
+#: ../servlets/quarantine/root/remaps.js:220
 #: ../servlets/quarantine/root/safelist.js:67
 #: ../servlets/quarantine/root/safelist.js:79
 #: ../servlets/quarantine/root/safelist.js:177
 msgid "Delete Addresses"
 msgstr ""
 
-#: ../servlets/quarantine/root/remaps.js:78
-#: ../servlets/quarantine/root/remaps.js:112
+#: ../servlets/quarantine/root/remaps.js:92
 msgid "Forward Quarantined Messages To:"
 msgstr ""
 
-#: ../servlets/quarantine/root/remaps.js:133
+#: ../servlets/quarantine/root/remaps.js:113
 msgid "Address"
 msgstr ""
 
-#: ../servlets/quarantine/root/remaps.js:171
+#: ../servlets/quarantine/root/remaps.js:137
 msgid "Received Quarantined Messages From:"
 msgstr ""
 
-#: ../servlets/quarantine/root/remaps.js:190
+#: ../servlets/quarantine/root/remaps.js:156
 msgid "Forward or Receive Quarantines"
 msgstr ""
 
-#: ../servlets/quarantine/root/remaps.js:212
+#: ../servlets/quarantine/root/remaps.js:178
 msgid "Unable to set the forward."
 msgstr ""
 
-#: ../servlets/quarantine/root/remaps.js:220
+#: ../servlets/quarantine/root/remaps.js:186
 msgid "Unable to delete an entry."
 msgstr ""
 
-#: ../servlets/quarantine/root/remaps.js:234
+#: ../servlets/quarantine/root/remaps.js:200
 msgid "Delete one Remap"
 msgstr ""
 
-#: ../servlets/quarantine/root/remaps.js:235
+#: ../servlets/quarantine/root/remaps.js:201
 msgid "Deleted {0} Remaps"
 msgstr ""
 
-#: ../servlets/quarantine/root/remaps.js:241
+#: ../servlets/quarantine/root/remaps.js:207
 msgid "Unable to update remap table."
 msgstr ""
 
-#: ../servlets/quarantine/root/remaps.js:249
+#: ../servlets/quarantine/root/remaps.js:215
 msgid "Delete one Addressess"
 msgstr ""
 
-#: ../servlets/quarantine/root/remaps.js:249
+#: ../servlets/quarantine/root/remaps.js:215
 #: ../servlets/quarantine/root/safelist.js:172
 msgid "Delete {0} Addresses"
 msgstr ""
@@ -220,18 +219,18 @@ msgstr ""
 msgid "Delete one Address"
 msgstr ""
 
-#: ../servlets/quarantine/root/inbox.jspx:16
+#: ../servlets/quarantine/root/inbox.jspx:34
 msgid "Quarantine Digest for:"
 msgstr ""
 
-#: ../servlets/quarantine/root/inbox.jspx:21
+#: ../servlets/quarantine/root/inbox.jspx:39
 msgid "{0} | Quarantine Digest for: {1}"
 msgstr ""
 
-#: ../servlets/quarantine/root/request.jspx:18
+#: ../servlets/quarantine/root/request.jspx:36
 msgid "Request Quarantine Digest Email"
 msgstr ""
 
-#: ../servlets/quarantine/root/request.jspx:22
+#: ../servlets/quarantine/root/request.jspx:40
 msgid "{0} | Request Quarantine Digest Email"
 msgstr ""

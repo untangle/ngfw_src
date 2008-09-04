@@ -62,6 +62,7 @@
     <script type="text/javascript" src="script/config/systemInfo.js"></script>
     <script type="text/javascript" src="script/config/upgrade.js"></script>
     <script type="text/javascript" src="script/config/localDirectory.js"></script>
+    <script type="text/javascript" src="script/config/policyManager.js"></script>
 </c:if>
 	<script type="text/javascript">
 		function init() {

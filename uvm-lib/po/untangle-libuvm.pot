@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-09-01 14:21+0300\n"
+"POT-Creation-Date: 2008-09-04 14:18+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,9 +18,9 @@ msgstr ""
 "Plural-Forms: nplurals=0; null;\n"
 
 #: ../servlets/webui/root/script/main.js:163
-#: ../servlets/webui/root/script/components.js:975
-#: ../servlets/webui/root/script/components.js:2361
-#: ../servlets/webui/root/script/components.js:2419
+#: ../servlets/webui/root/script/components.js:977
+#: ../servlets/webui/root/script/components.js:2363
+#: ../servlets/webui/root/script/components.js:2421
 #: ../servlets/webui/root/script/config/email.js:1239
 msgid "Help"
 msgstr ""
@@ -83,22 +83,22 @@ msgstr ""
 #: ../servlets/webui/root/script/components.js:418
 #: ../servlets/webui/root/script/components.js:430
 #: ../servlets/webui/root/script/components.js:499
-#: ../servlets/webui/root/script/components.js:724
-#: ../servlets/webui/root/script/components.js:730
-#: ../servlets/webui/root/script/components.js:1029
-#: ../servlets/webui/root/script/components.js:1039
-#: ../servlets/webui/root/script/components.js:1123
-#: ../servlets/webui/root/script/components.js:1226
-#: ../servlets/webui/root/script/components.js:1246
-#: ../servlets/webui/root/script/components.js:1304
-#: ../servlets/webui/root/script/components.js:1530
-#: ../servlets/webui/root/script/components.js:1577
-#: ../servlets/webui/root/script/components.js:1674
-#: ../servlets/webui/root/script/components.js:2034
-#: ../servlets/webui/root/script/components.js:2074
-#: ../servlets/webui/root/script/components.js:2660
-#: ../servlets/webui/root/script/components.js:3647
-#: ../servlets/webui/root/script/components.js:3658
+#: ../servlets/webui/root/script/components.js:726
+#: ../servlets/webui/root/script/components.js:732
+#: ../servlets/webui/root/script/components.js:1031
+#: ../servlets/webui/root/script/components.js:1041
+#: ../servlets/webui/root/script/components.js:1125
+#: ../servlets/webui/root/script/components.js:1228
+#: ../servlets/webui/root/script/components.js:1248
+#: ../servlets/webui/root/script/components.js:1306
+#: ../servlets/webui/root/script/components.js:1532
+#: ../servlets/webui/root/script/components.js:1579
+#: ../servlets/webui/root/script/components.js:1676
+#: ../servlets/webui/root/script/components.js:2036
+#: ../servlets/webui/root/script/components.js:2076
+#: ../servlets/webui/root/script/components.js:2662
+#: ../servlets/webui/root/script/components.js:3664
+#: ../servlets/webui/root/script/components.js:3675
 #: ../servlets/webui/root/script/config/administration.js:779
 #: ../servlets/webui/root/script/config/administration.js:796
 #: ../servlets/webui/root/script/config/administration.js:834
@@ -128,6 +128,12 @@ msgstr ""
 #: ../servlets/webui/root/script/config/email.js:1173
 #: ../servlets/webui/root/script/config/email.js:1187
 #: ../servlets/webui/root/script/config/localDirectory.js:240
+#: ../servlets/webui/root/script/config/policyManager.js:796
+#: ../servlets/webui/root/script/config/policyManager.js:807
+#: ../servlets/webui/root/script/config/policyManager.js:821
+#: ../servlets/webui/root/script/config/policyManager.js:825
+#: ../servlets/webui/root/script/config/policyManager.js:874
+#: ../servlets/webui/root/script/config/policyManager.js:888
 #: ../servlets/webui/root/script/config/system.js:303
 #: ../servlets/webui/root/script/config/system.js:340
 #: ../servlets/webui/root/script/config/system.js:931
@@ -146,8 +152,8 @@ msgid "Failed"
 msgstr ""
 
 #: ../servlets/webui/root/script/main.js:349
-#: ../servlets/webui/root/script/components.js:2593
-#: ../servlets/webui/root/script/components.js:3727
+#: ../servlets/webui/root/script/components.js:2595
+#: ../servlets/webui/root/script/components.js:3744
 #: ../servlets/webui/root/script/config/administration.js:1722
 #: ../servlets/webui/root/script/config/administration.js:1748
 #: ../servlets/webui/root/script/config/administration.js:1765
@@ -173,6 +179,7 @@ msgstr ""
 #: ../servlets/webui/root/script/config/localDirectory.js:195
 #: ../servlets/webui/root/script/config/localDirectory.js:204
 #: ../servlets/webui/root/script/config/localDirectory.js:213
+#: ../servlets/webui/root/script/config/policyManager.js:548
 #: ../servlets/webui/root/script/config/system.js:951
 #: ../servlets/webui/root/script/config/system.js:966
 #: ../servlets/webui/root/script/config/system.js:981
@@ -314,6 +321,7 @@ msgid "Error in Rack View applications list."
 msgstr ""
 
 #: ../servlets/webui/root/script/components.js:611
+#: ../servlets/webui/root/script/config/policyManager.js:151
 msgid "More Info"
 msgstr ""
 
@@ -357,385 +365,389 @@ msgstr ""
 msgid "..."
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:930
+#: ../servlets/webui/root/script/components.js:932
 msgid "Trial"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:932
+#: ../servlets/webui/root/script/components.js:934
 msgid "{0} days remain"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:966
+#: ../servlets/webui/root/script/components.js:968
 msgid "Show Settings"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1114
+#: ../servlets/webui/root/script/components.js:1116
 msgid "Warning:"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1175
+#: ../servlets/webui/root/script/components.js:1177
 msgid ""
 "The <B>Status Indicator</B> shows the current operating condition of a "
 "particular software product."
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1177
+#: ../servlets/webui/root/script/components.js:1179
 msgid "Green"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1178
+#: ../servlets/webui/root/script/components.js:1180
 msgid "indicates that the product is \"on\" and operating normally."
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1180
+#: ../servlets/webui/root/script/components.js:1182
 msgid "Red"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1181
+#: ../servlets/webui/root/script/components.js:1183
 msgid ""
 "indicates that the product is \"on\", but that an abnormal condition has "
 "occurred."
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1183
+#: ../servlets/webui/root/script/components.js:1185
 msgid "Yellow"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1184
+#: ../servlets/webui/root/script/components.js:1186
 msgid "indicates that the product is saving or refreshing settings."
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1185
+#: ../servlets/webui/root/script/components.js:1187
 msgid "Clear"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1185
+#: ../servlets/webui/root/script/components.js:1187
 msgid ""
 "indicates that the product is \"off\", and may be turned \"on\" by the user."
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1189
+#: ../servlets/webui/root/script/components.js:1191
 msgid ""
 "The <B>Power Button</B> allows you to turn a product \"on\" and \"off\"."
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1339
+#: ../servlets/webui/root/script/components.js:1341
 #: ../servlets/setup/root/script/setup.js:1121
 msgid "Network"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1340
+#: ../servlets/webui/root/script/components.js:1342
 msgid "CPU Load"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1341
+#: ../servlets/webui/root/script/components.js:1343
 msgid "Memory"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1342
+#: ../servlets/webui/root/script/components.js:1344
 msgid "Disk"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1343
+#: ../servlets/webui/root/script/components.js:1345
 msgid "Tx:"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1343
+#: ../servlets/webui/root/script/components.js:1345
 msgid "Rx:"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1345
+#: ../servlets/webui/root/script/components.js:1347
 msgid "F:"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1345
+#: ../servlets/webui/root/script/components.js:1347
 msgid "U:"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1350
+#: ../servlets/webui/root/script/components.js:1352
 msgid "Memory Usage:"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1351
-#: ../servlets/webui/root/script/components.js:1362
+#: ../servlets/webui/root/script/components.js:1353
+#: ../servlets/webui/root/script/components.js:1364
 msgid "used"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1351
-#: ../servlets/webui/root/script/components.js:1354
+#: ../servlets/webui/root/script/components.js:1353
+#: ../servlets/webui/root/script/components.js:1356
 msgid "free"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1351
+#: ../servlets/webui/root/script/components.js:1353
 msgid "total"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1352
+#: ../servlets/webui/root/script/components.js:1354
 msgid "Memory Pages:"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1353
+#: ../servlets/webui/root/script/components.js:1355
 msgid "active"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1353
+#: ../servlets/webui/root/script/components.js:1355
 msgid "wired"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1354
+#: ../servlets/webui/root/script/components.js:1356
 msgid "inactive"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1355
+#: ../servlets/webui/root/script/components.js:1357
 msgid "VM Statistics:"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1356
+#: ../servlets/webui/root/script/components.js:1358
 msgid "pageins"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1356
+#: ../servlets/webui/root/script/components.js:1358
 msgid "pageouts"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1357
+#: ../servlets/webui/root/script/components.js:1359
 msgid "cache lookups"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1357
+#: ../servlets/webui/root/script/components.js:1359
 msgid "cache hits"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1358
+#: ../servlets/webui/root/script/components.js:1360
 msgid "page faults"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1358
+#: ../servlets/webui/root/script/components.js:1360
 msgid "copy-on-writes"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1359
+#: ../servlets/webui/root/script/components.js:1361
 msgid "Swap Files:"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1360
+#: ../servlets/webui/root/script/components.js:1362
 msgid "encrypted swap files present in"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1361
+#: ../servlets/webui/root/script/components.js:1363
 msgid "swap files at peak usage"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1362
+#: ../servlets/webui/root/script/components.js:1364
 msgid "total swap space"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1428
+#: ../servlets/webui/root/script/components.js:1430
 msgid "activity"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1509
+#: ../servlets/webui/root/script/components.js:1511
 msgid "system"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1530
+#: ../servlets/webui/root/script/components.js:1532
 msgid "The node {0} has {1} metrics. The maximum number of metrics is {2}."
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1577
+#: ../servlets/webui/root/script/components.js:1579
 msgid "Please set up to four items."
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1617
+#: ../servlets/webui/root/script/components.js:1619
 msgid "Ok"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1624
-#: ../servlets/webui/root/script/components.js:2265
-#: ../servlets/webui/root/script/components.js:2371
-#: ../servlets/webui/root/script/components.js:2428
+#: ../servlets/webui/root/script/components.js:1626
+#: ../servlets/webui/root/script/components.js:2267
+#: ../servlets/webui/root/script/components.js:2373
+#: ../servlets/webui/root/script/components.js:2430
 #: ../servlets/webui/root/script/config/administration.js:2075
 #: ../servlets/webui/root/script/config/email.js:1230
 msgid "Cancel"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1920
+#: ../servlets/webui/root/script/components.js:1922
 #, fuzzy
 msgid "timestamp"
 msgstr "Y-m-d g:i:s a"
 
-#: ../servlets/webui/root/script/components.js:1928
+#: ../servlets/webui/root/script/components.js:1930
 msgid "action"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1933
+#: ../servlets/webui/root/script/components.js:1935
 msgid "blocked"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1933
+#: ../servlets/webui/root/script/components.js:1935
 msgid "passed"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1936
+#: ../servlets/webui/root/script/components.js:1938
 msgid "client"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1944
+#: ../servlets/webui/root/script/components.js:1946
 msgid "request"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1949
+#: ../servlets/webui/root/script/components.js:1951
 msgid "reason for action"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1954
+#: ../servlets/webui/root/script/components.js:1956
 msgid "blocked in block list"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1954
+#: ../servlets/webui/root/script/components.js:1956
 msgid "not blocked in block list"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1957
+#: ../servlets/webui/root/script/components.js:1959
 msgid "server"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1974
+#: ../servlets/webui/root/script/components.js:1976
 msgid "Event Log"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:2011
 #: ../servlets/webui/root/script/components.js:2013
+#: ../servlets/webui/root/script/components.js:2015
 #: ../servlets/setup/root/script/setup.js:472
 #: ../servlets/setup/root/script/setup.js:723
 #: ../servlets/setup/root/script/setup.js:845
 msgid "Refresh"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:2255
+#: ../servlets/webui/root/script/components.js:2257
 msgid "Remove"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:2275
-#: ../servlets/webui/root/script/components.js:2381
+#: ../servlets/webui/root/script/components.js:2277
+#: ../servlets/webui/root/script/components.js:2383
 msgid "Save"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:2437
+#: ../servlets/webui/root/script/components.js:2439
 msgid "Update"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:2510
-#: ../servlets/webui/root/script/components.js:2822
+#: ../servlets/webui/root/script/components.js:2512
+#: ../servlets/webui/root/script/components.js:2824
 msgid "Edit"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:2593
+#: ../servlets/webui/root/script/components.js:2595
+#: ../servlets/webui/root/script/config/policyManager.js:548
 msgid "The form is not valid!"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:2840
+#: ../servlets/webui/root/script/components.js:2845
 msgid "Delete"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:2859
+#: ../servlets/webui/root/script/components.js:2867
 msgid "Reorder"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:2941
+#: ../servlets/webui/root/script/components.js:2949
 msgid "Loading ..."
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:3046
+#: ../servlets/webui/root/script/components.js:3054
 msgid "Displaying topics {0} - {1} of {2}"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:3047
+#: ../servlets/webui/root/script/components.js:3055
 msgid "No topics to display"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:3061
+#: ../servlets/webui/root/script/components.js:3069
 msgid "Add"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:3062
+#: ../servlets/webui/root/script/components.js:3070
 msgid "Add New Row"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:3503
+#: ../servlets/webui/root/script/components.js:3520
 msgid "Portal Question"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:3514
+#: ../servlets/webui/root/script/components.js:3531
+#: ../servlets/webui/root/script/config/policyManager.js:638
+#: ../servlets/webui/root/script/config/policyManager.js:649
 msgid "Users"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:3541
+#: ../servlets/webui/root/script/components.js:3558
 msgid "Active Directory"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:3543
+#: ../servlets/webui/root/script/components.js:3560
 msgid "Local"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:3545
+#: ../servlets/webui/root/script/components.js:3562
 msgid "UNKNOWN"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:3557
+#: ../servlets/webui/root/script/components.js:3574
 #: ../servlets/webui/root/script/config/administration.js:1306
+#: ../servlets/webui/root/script/config/policyManager.js:192
 msgid "user"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:3578
+#: ../servlets/webui/root/script/components.js:3595
 msgid "Select User"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:3578
+#: ../servlets/webui/root/script/components.js:3595
 msgid "Select Users"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:3583
+#: ../servlets/webui/root/script/components.js:3600
 msgid ""
 "You may choose user ID/Login that exists in the User Directory (either local "
 "or remote Active Directory), or you can add a new user to the User "
 "Directory, and then choose that user."
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:3584
+#: ../servlets/webui/root/script/components.js:3601
 msgid ""
 "You may choose user IDs/Logins that exist in the User Directory (either "
 "local or remote Active Directory), or you can add a new user to the User "
 "Directory, and then choose that user."
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:3587
+#: ../servlets/webui/root/script/components.js:3604
 msgid "Select an existing user"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:3587
+#: ../servlets/webui/root/script/components.js:3604
 msgid "Select an existing user or users"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:3592
+#: ../servlets/webui/root/script/components.js:3609
 msgid "Add a new user"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:3598
+#: ../servlets/webui/root/script/components.js:3615
 msgid "Open Local Directory"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:3610
+#: ../servlets/webui/root/script/components.js:3627
 msgid "Open Active Directory"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:3634
+#: ../servlets/webui/root/script/components.js:3651
 #: ../servlets/webui/root/script/config/email.js:112
 #: ../servlets/webui/root/script/config/email.js:496
 msgid "Loading..."
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:3634
+#: ../servlets/webui/root/script/components.js:3651
 #: ../servlets/setup/root/script/setup.js:996
 #: ../servlets/setup/root/script/setup.js:1007
 #: ../servlets/webui/root/script/config/administration.js:751
@@ -752,6 +764,7 @@ msgstr ""
 #: ../servlets/webui/root/script/config/email.js:970
 #: ../servlets/webui/root/script/config/email.js:1150
 #: ../servlets/webui/root/script/config/localDirectory.js:229
+#: ../servlets/webui/root/script/config/policyManager.js:885
 #: ../servlets/webui/root/script/config/system.js:202
 #: ../servlets/webui/root/script/config/system.js:213
 #: ../servlets/webui/root/script/config/system.js:1023
@@ -761,19 +774,19 @@ msgstr ""
 msgid "Please wait"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:3647
+#: ../servlets/webui/root/script/components.js:3664
 msgid ""
 "There was a problem refreshing Active Directory users.  Please check your "
 "Active Directory settings and then try again."
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:3658
+#: ../servlets/webui/root/script/components.js:3675
 msgid ""
 "There was a problem refreshing Local Directory users.  Please check your "
 "Local Directory settings and try again."
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:3727
+#: ../servlets/webui/root/script/components.js:3744
 msgid "Please choose a user id/login or press Cancel!"
 msgstr ""
 
@@ -1061,6 +1074,7 @@ msgstr ""
 
 #: ../servlets/setup/root/script/setup.js:343
 #: ../servlets/setup/root/script/setup.js:492
+#: ../servlets/webui/root/script/config/policyManager.js:106
 msgid "Name"
 msgstr ""
 
@@ -1350,6 +1364,7 @@ msgstr ""
 #: ../servlets/webui/root/script/config/administration.js:569
 #: ../servlets/webui/root/script/config/administration.js:1222
 #: ../servlets/webui/root/script/config/administration.js:1283
+#: ../servlets/webui/root/script/config/policyManager.js:623
 msgid "Port"
 msgstr ""
 
@@ -1414,6 +1429,8 @@ msgstr ""
 #: ../servlets/webui/root/script/config/administration.js:161
 #: ../servlets/webui/root/script/config/email.js:788
 #: ../servlets/webui/root/script/config/email.js:857
+#: ../servlets/webui/root/script/config/policyManager.js:74
+#: ../servlets/webui/root/script/config/policyManager.js:226
 msgid "[no description]"
 msgstr ""
 
@@ -1433,6 +1450,8 @@ msgstr ""
 
 #: ../servlets/webui/root/script/config/administration.js:202
 #: ../servlets/webui/root/script/config/email.js:812
+#: ../servlets/webui/root/script/config/policyManager.js:96
+#: ../servlets/webui/root/script/config/policyManager.js:439
 msgid "description"
 msgstr ""
 
@@ -1443,6 +1462,8 @@ msgstr ""
 #: ../servlets/webui/root/script/config/administration.js:232
 #: ../servlets/webui/root/script/config/email.js:837
 #: ../servlets/webui/root/script/config/email.js:907
+#: ../servlets/webui/root/script/config/policyManager.js:117
+#: ../servlets/webui/root/script/config/policyManager.js:770
 msgid "Description"
 msgstr ""
 
@@ -1493,6 +1514,7 @@ msgstr ""
 #: ../servlets/webui/root/script/config/administration.js:393
 #: ../servlets/webui/root/script/config/administration.js:560
 #: ../servlets/webui/root/script/config/email.js:831
+#: ../servlets/webui/root/script/config/policyManager.js:602
 msgid "Address"
 msgstr ""
 
@@ -2139,6 +2161,7 @@ msgstr ""
 #: ../servlets/webui/root/script/config/administration.js:1970
 #: ../servlets/webui/root/script/config/email.js:1151
 #: ../servlets/webui/root/script/config/localDirectory.js:230
+#: ../servlets/webui/root/script/config/policyManager.js:885
 #: ../servlets/webui/root/script/config/system.js:1023
 #: ../servlets/webui/root/script/config/systemInfo.js:285
 #: ../servlets/webui/root/script/config/upgrade.js:375
@@ -2467,6 +2490,7 @@ msgstr ""
 
 #: ../servlets/webui/root/script/config/localDirectory.js:51
 #: ../servlets/webui/root/script/config/localDirectory.js:52
+#: ../servlets/webui/root/script/config/policyManager.js:73
 msgid "[no name]"
 msgstr ""
 
@@ -2518,6 +2542,242 @@ msgstr ""
 
 #: ../servlets/webui/root/script/config/localDirectory.js:213
 msgid "The password at row {0} must not contain any space characters."
+msgstr ""
+
+#: ../servlets/webui/root/script/config/policyManager.js:12
+msgid "Policy Manager"
+msgstr ""
+
+#: ../servlets/webui/root/script/config/policyManager.js:54
+msgid "Policy Management"
+msgstr ""
+
+#: ../servlets/webui/root/script/config/policyManager.js:69
+msgid "Racks"
+msgstr ""
+
+#: ../servlets/webui/root/script/config/policyManager.js:90
+#: ../servlets/webui/root/script/config/upgrade.js:133
+msgid "name"
+msgstr ""
+
+#: ../servlets/webui/root/script/config/policyManager.js:108
+msgid "The policy name cannot be blank."
+msgstr ""
+
+#: ../servlets/webui/root/script/config/policyManager.js:149
+msgid "Professional Package Feature"
+msgstr ""
+
+#: ../servlets/webui/root/script/config/policyManager.js:150
+msgid ""
+"Need to create network-access policies by username or time of the week? "
+"Click on \"More Info\" to learn more."
+msgstr ""
+
+#: ../servlets/webui/root/script/config/policyManager.js:169
+msgid "> No rack"
+msgstr ""
+
+#: ../servlets/webui/root/script/config/policyManager.js:185
+msgid "live"
+msgstr ""
+
+#: ../servlets/webui/root/script/config/policyManager.js:207
+msgid "Policies"
+msgstr ""
+
+#: ../servlets/webui/root/script/config/policyManager.js:278
+msgid "<b>Use this rack</b> when the <br/>next colums are matched..."
+msgstr ""
+
+#: ../servlets/webui/root/script/config/policyManager.js:310
+msgid "client <br/>interface"
+msgstr ""
+
+#: ../servlets/webui/root/script/config/policyManager.js:328
+msgid "server <br/>interface"
+msgstr ""
+
+#: ../servlets/webui/root/script/config/policyManager.js:346
+msgid "protocol"
+msgstr ""
+
+#: ../servlets/webui/root/script/config/policyManager.js:364
+msgid "client <br/>address"
+msgstr ""
+
+#: ../servlets/webui/root/script/config/policyManager.js:373
+msgid "server <br/>address"
+msgstr ""
+
+#: ../servlets/webui/root/script/config/policyManager.js:382
+msgid "server<br/>port"
+msgstr ""
+
+#: ../servlets/webui/root/script/config/policyManager.js:393
+msgid "start time"
+msgstr ""
+
+#: ../servlets/webui/root/script/config/policyManager.js:407
+msgid "end time"
+msgstr ""
+
+#: ../servlets/webui/root/script/config/policyManager.js:421
+msgid "dayOfWeek"
+msgstr ""
+
+#: ../servlets/webui/root/script/config/policyManager.js:453
+msgid "Policy Wizard"
+msgstr ""
+
+#: ../servlets/webui/root/script/config/policyManager.js:566
+#: ../servlets/webui/root/script/config/policyManager.js:574
+msgid "Protocol"
+msgstr ""
+
+#: ../servlets/webui/root/script/config/policyManager.js:570
+msgid "The protocol you would like this policy to handle."
+msgstr ""
+
+#: ../servlets/webui/root/script/config/policyManager.js:579
+msgid "Interface"
+msgstr ""
+
+#: ../servlets/webui/root/script/config/policyManager.js:583
+msgid "The ethernet interface (NIC) you would like this policy to handle."
+msgstr ""
+
+#: ../servlets/webui/root/script/config/policyManager.js:587
+#: ../servlets/webui/root/script/config/policyManager.js:611
+msgid "Client"
+msgstr ""
+
+#: ../servlets/webui/root/script/config/policyManager.js:595
+#: ../servlets/webui/root/script/config/policyManager.js:617
+#: ../servlets/webui/root/script/config/policyManager.js:632
+msgid "Server"
+msgstr ""
+
+#: ../servlets/webui/root/script/config/policyManager.js:606
+msgid "The IP address which you would like this policy to handle."
+msgstr ""
+
+#: ../servlets/webui/root/script/config/policyManager.js:627
+msgid "The port which you would like this policy to handle."
+msgstr ""
+
+#: ../servlets/webui/root/script/config/policyManager.js:642
+msgid "The users you would like to apply this policy to."
+msgstr ""
+
+#: ../servlets/webui/root/script/config/policyManager.js:654
+msgid "Change Users"
+msgstr ""
+
+#: ../servlets/webui/root/script/config/policyManager.js:665
+msgid "Time of Day"
+msgstr ""
+
+#: ../servlets/webui/root/script/config/policyManager.js:669
+#: ../servlets/webui/root/script/config/policyManager.js:692
+msgid "The time of day you would like this policy active."
+msgstr ""
+
+#: ../servlets/webui/root/script/config/policyManager.js:675
+msgid "Start Time"
+msgstr ""
+
+#: ../servlets/webui/root/script/config/policyManager.js:682
+msgid "End Time"
+msgstr ""
+
+#: ../servlets/webui/root/script/config/policyManager.js:688
+msgid "Days of Week"
+msgstr ""
+
+#: ../servlets/webui/root/script/config/policyManager.js:697
+#: ../servlets/webui/root/script/config/upgrade.js:259
+msgid "Sunday"
+msgstr ""
+
+#: ../servlets/webui/root/script/config/policyManager.js:704
+#: ../servlets/webui/root/script/config/upgrade.js:272
+msgid "Monday"
+msgstr ""
+
+#: ../servlets/webui/root/script/config/policyManager.js:711
+#: ../servlets/webui/root/script/config/upgrade.js:285
+msgid "Tuesday"
+msgstr ""
+
+#: ../servlets/webui/root/script/config/policyManager.js:718
+#: ../servlets/webui/root/script/config/upgrade.js:298
+msgid "Wednesday"
+msgstr ""
+
+#: ../servlets/webui/root/script/config/policyManager.js:725
+#: ../servlets/webui/root/script/config/upgrade.js:311
+msgid "Thursday"
+msgstr ""
+
+#: ../servlets/webui/root/script/config/policyManager.js:732
+#: ../servlets/webui/root/script/config/upgrade.js:324
+msgid "Friday"
+msgstr ""
+
+#: ../servlets/webui/root/script/config/policyManager.js:739
+#: ../servlets/webui/root/script/config/upgrade.js:337
+msgid "Saturday"
+msgstr ""
+
+#: ../servlets/webui/root/script/config/policyManager.js:746
+#: ../servlets/webui/root/script/config/policyManager.js:755
+msgid "Rack"
+msgstr ""
+
+#: ../servlets/webui/root/script/config/policyManager.js:750
+msgid "The rack you would like to use to handle this policy."
+msgstr ""
+
+#: ../servlets/webui/root/script/config/policyManager.js:780
+msgid "Enable this Policy"
+msgstr ""
+
+#: ../servlets/webui/root/script/config/policyManager.js:790
+msgid "There must always be at least one available rack."
+msgstr ""
+
+#: ../servlets/webui/root/script/config/policyManager.js:796
+msgid "The rack named {0} already exists."
+msgstr ""
+
+#: ../servlets/webui/root/script/config/policyManager.js:807
+msgid ""
+"The rack named {0} cannot be removed because it is currently being used in "
+"\"Custom Policies\"."
+msgstr ""
+
+#: ../servlets/webui/root/script/config/policyManager.js:821
+msgid ""
+"The rack named {0} cannot be removed because it is not empty.  Please remove "
+"all products first."
+msgstr ""
+
+#: ../servlets/webui/root/script/config/policyManager.js:859
+msgid "Invalid address specified for Client Address"
+msgstr ""
+
+#: ../servlets/webui/root/script/config/policyManager.js:862
+msgid "Invalid address specified for Server Address"
+msgstr ""
+
+#: ../servlets/webui/root/script/config/policyManager.js:865
+msgid "Invalid port specified for Server Port"
+msgstr ""
+
+#: ../servlets/webui/root/script/config/policyManager.js:870
+msgid "Validation failed"
 msgstr ""
 
 #: ../servlets/webui/root/script/config/system.js:118
@@ -3046,10 +3306,6 @@ msgstr ""
 msgid "Misc."
 msgstr ""
 
-#: ../servlets/webui/root/script/config/upgrade.js:133
-msgid "name"
-msgstr ""
-
 #: ../servlets/webui/root/script/config/upgrade.js:139
 msgid "new version"
 msgstr ""
@@ -3104,34 +3360,6 @@ msgstr ""
 
 #: ../servlets/webui/root/script/config/upgrade.js:251
 msgid "Upgrade Time"
-msgstr ""
-
-#: ../servlets/webui/root/script/config/upgrade.js:259
-msgid "Sunday"
-msgstr ""
-
-#: ../servlets/webui/root/script/config/upgrade.js:272
-msgid "Monday"
-msgstr ""
-
-#: ../servlets/webui/root/script/config/upgrade.js:285
-msgid "Tuesday"
-msgstr ""
-
-#: ../servlets/webui/root/script/config/upgrade.js:298
-msgid "Wednesday"
-msgstr ""
-
-#: ../servlets/webui/root/script/config/upgrade.js:311
-msgid "Thursday"
-msgstr ""
-
-#: ../servlets/webui/root/script/config/upgrade.js:324
-msgid "Friday"
-msgstr ""
-
-#: ../servlets/webui/root/script/config/upgrade.js:337
-msgid "Saturday"
 msgstr ""
 
 #: ../servlets/alpaca/src/com/untangle/uvm/servlet/alpaca/ProxyServlet.java:151

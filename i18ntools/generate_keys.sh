@@ -4,7 +4,7 @@ ALL_MODULES='untangle-libuvm untangle-install-wizard untangle-apache2-config
     untangle-casing-mail untangle-base-virus 
     untangle-node-webfilter untangle-node-phish untangle-node-spyware untangle-node-spamassassin untangle-node-shield 
     untangle-node-protofilter untangle-node-ips untangle-node-firewall untangle-node-reporting untangle-node-openvpn
-    untangle-node-adconnector untangle-node-boxbackup untangle-node-policy untangle-node-portal untangle-node-pcremote'
+    untangle-node-adconnector untangle-node-boxbackup untangle-node-portal untangle-node-pcremote'
 
 function update_keys()
 {
@@ -112,7 +112,7 @@ case "$1" in
     echo 'update po files'
     msgmerge -U ro/$1.po $1.pot
     ;;
-"untangle-node-adconnector"|"untangle-node-boxbackup"|"untangle-node-policy")    
+"untangle-node-adconnector"|"untangle-node-boxbackup")    
     moduleName=`echo "$1"|cut -d"-" -f3`
     cd ../../../hades/rup/${moduleName}/po/
     echo 'get new keys'

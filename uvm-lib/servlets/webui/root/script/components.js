@@ -715,7 +715,9 @@ Ung.AppItem = Ext.extend(Ext.Component, {
     },
     // open store page in a new frame
     linkToStoreFn : function(e) {
-        e.stopEvent();
+    	if (e!=null) {
+	        e.stopEvent();
+    	}
         if(!this.progressBar.hidden) {
             return;
         }
@@ -1343,7 +1345,7 @@ Ung.SystemStats = Ext.extend(Ext.Component, {
             '<div class="network"><div class="tx">'+i18n._("Tx:")+'<div class="tx_value"></div></div><div class="rx">'+i18n._("Rx:")+'<div class="rx_value"></div></div></div>',
             '<div class="cpu"></div>',
             '<div class="memory"><div class="free">'+i18n._("F:")+'<div class="free_value"></div></div><div class="used">'+i18n._("U:")+'<div class="used_value"></div></div></div>',
-            '<div class="disk"><div name="disk_value"></div></div>',
+            '<div class="disk"><div name="disk_value"></div></div>'
         ];
         this.getEl().insertHtml("afterBegin", contentSystemStatsArr.join(''));
         var extendedStatsArr=[
@@ -2828,9 +2830,7 @@ Ext.grid.EditColumn=Ext.extend(Ext.grid.IconColumn, {
     },
 	iconClass: 'iconEditRow',
     handle : function(record) {
-        // populate row editor
-        this.grid.rowEditor.populate(record);
-        this.grid.rowEditor.show();
+        this.grid.editHandler(record);
     }
 });
 // Grid edit column
@@ -2846,7 +2846,7 @@ Ext.grid.DeleteColumn=Ext.extend(Ext.grid.IconColumn, {
     },
     iconClass: 'iconDeleteRow',
     handle : function(record) {
-        this.grid.updateChangedData(record, "deleted");
+        this.grid.deleteHandler(record);
     }
 });
 // Grid delete column
@@ -3063,25 +3063,34 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
                 iconCls : 'iconAddRow',
                 name : 'Add',
                 parentId : this.getId(),
-                handler : function() {
-                    var record = new Ext.data.Record(Ext.decode(Ext.encode(this.emptyRow)));
-                    record.set("id", this.genAddedId());
-                    this.stopEditing();
-                    if (this.rowEditor) {
-                        this.rowEditor.populate(record, true);
-                        this.rowEditor.show();
-                    } else {
-                        this.getStore().insert(0, [record]);
-                        this.updateChangedData(record, "added");
-                        this.startEditing(0, 0);
-                    }
-                }.createDelegate(this)
+                handler : this.addHandler.createDelegate(this)
             }];
         }
         Ung.EditorGrid.superclass.initComponent.call(this);
         if (this.columnsDefaultSortable !== null) {
             this.getColumnModel().defaultSortable = this.columnsDefaultSortable;
         }
+    },
+    addHandler : function() {
+        var record = new Ext.data.Record(Ext.decode(Ext.encode(this.emptyRow)));
+        record.set("id", this.genAddedId());
+        this.stopEditing();
+        if (this.rowEditor) {
+            this.rowEditor.populate(record, true);
+            this.rowEditor.show();
+        } else {
+            this.getStore().insert(0, [record]);
+            this.updateChangedData(record, "added");
+            this.startEditing(0, 0);
+        }
+    },
+    editHandler : function(record) {
+        // populate row editor
+        this.rowEditor.populate(record);
+        this.rowEditor.show();
+    },
+    deleteHandler : function(record) {
+        this.updateChangedData(record, "deleted");
     },
     getPageStart : function() {
         if (this.store.lastOptions && this.store.lastOptions.params) {

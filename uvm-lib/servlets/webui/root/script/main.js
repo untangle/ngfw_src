@@ -732,6 +732,7 @@ Ung.Main.prototype = {
             }
             out.push('<option value="'+rpc.policies[i].id+'" '+selVirtualRack+'>'+i18n._(rpc.policies[i].name)+'<\/option>');
         }
+        out.push('<option value="SHOW_POLICY_MANAGER" class="ungButton">Policy Manager<\/option>');
         out.push('<\/select>');
         Ext.get("rack_list").insertHtml("afterBegin", out.join(''));
         this.loadRackView();
@@ -740,8 +741,23 @@ Ung.Main.prototype = {
     changePolicy: function () {
         var rack_select=document.getElementById('rack_select');
         if(rack_select.selectedIndex>=0) {
-            rpc.currentPolicy=rpc.policies[rack_select.selectedIndex];
-            this.loadRackView();
+        	if(rack_select.value == "SHOW_POLICY_MANAGER") {
+        		//select previous value
+				for (index = 0; index < rack_select.options.length; index++) {
+					if (rack_select.options[index].value == rpc.currentPolicy.id) {
+						rack_select.options[index].selected = true;
+						break;
+					}
+				}
+                Ung.Util.loadResourceAndExecute("Ung.PolicyManager","script/config/policyManager.js", function() {
+                    main.policyManagerWin=new Ung.PolicyManager({"name":"policyManager"});
+                    main.policyManagerWin.show();
+                });
+	       	} else {
+	            rpc.currentPolicy=rpc.policies[rack_select.selectedIndex];
+	            this.loadRackView();
+        	}
         }
     }
 };
+	
