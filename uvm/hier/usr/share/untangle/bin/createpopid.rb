@@ -172,8 +172,8 @@ def createPopId(fingerprint, bits, existingKey)
 end
 
 def writeToFiles(activationKey, popId)
-  File.open(ACTIVATION_FILE, 'w').puts(activationKey)
-  File.open(POPID_FILE, 'w').puts(popId)
+  File.open(ACTIVATION_FILE, 'w') { |f| f.puts(activationKey) }
+  File.open(POPID_FILE, 'w') { |f| f.puts(popId) }
 end
 
 #######################
