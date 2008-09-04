@@ -551,7 +551,7 @@ class MailSenderImpl implements MailSender
             return;
         }
 
-        sendRelated(reportSession, recipients, subject, bodyHTML, parts);
+        sendMixed(reportSession, recipients, subject, bodyHTML, parts);
     }
 
     public void sendErrorLogs(String subject, String bodyText, List<MimeBodyPart> parts)
@@ -888,7 +888,8 @@ class MailSenderImpl implements MailSender
             Multipart mp = new MimeMultipart("mixed");
             MimeBodyPart main = new MimeBodyPart();
             main.setText(bodyText);
-            // main.setDisposition(Part.INLINE);
+            main.setHeader("Content-Type", "text/html");
+            main.setDisposition(Part.INLINE);
             mp.addBodyPart(main);
             for (MimeBodyPart part : extras)
                 mp.addBodyPart(part);
