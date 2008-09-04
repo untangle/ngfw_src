@@ -174,9 +174,4 @@ public interface RemoteToolboxManager
      * Get the host that is serving the library.
      */
     String getLibraryHost();
-
-    /**
-     * Get the host that is serving help pages.
-     */
-    String getWikiHost();
 }

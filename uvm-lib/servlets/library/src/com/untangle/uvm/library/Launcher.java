@@ -42,8 +42,7 @@ public class Launcher extends HttpServlet
     private static final String FIELD_PROTOCOL = "protocol";
     private static final String FIELD_HOST = "host";
     private static final String FIELD_PORT = "port";
-    private static final String FIELD_TOPIC = "topic";
-    private static final String FIELD_ANCHOR = "anchor";
+    private static final String FIELD_SOURCE = "source";
 
     private static final String ACTION_MY_ACCOUNT = "my_account";
     private static final String ACTION_BROWSE = "browse";
@@ -77,9 +76,8 @@ public class Launcher extends HttpServlet
                 if ( libitem == null ) redirect = getMyAccountURL( request );
                 else redirect = getLibraryURL( request, libitem );
             } else if ( ACTION_HELP.equals( action )) {
-                String topic = request.getParameter( FIELD_TOPIC );
-                String anchor = request.getParameter( FIELD_ANCHOR );
-                redirect = getHelpURL( request, action, topic, anchor );
+                String source = request.getParameter( FIELD_SOURCE );
+                redirect = getHelpURL( request, source );
             } else if ( ACTION_WIZARD.equals( action )) {
                 redirect = getWizardURL( request );
             } else {
@@ -112,7 +110,7 @@ public class Launcher extends HttpServlet
         throws MalformedURLException
     {
         LocalUvmContext context = LocalUvmContextFactory.context();
-        String host = context.toolboxManager().getWikiHost();
+        String host = context.toolboxManager().getLibraryHost();
 
         String query = getLibraryQuery( request, action );
         if ( mackageName != null ) query += "&name=" + URLEncoder.encode( mackageName );
@@ -121,21 +119,16 @@ public class Launcher extends HttpServlet
         return new URL( "https" + "://" + host + "/open.php?" + query );
     }
 
-    private URL getHelpURL( HttpServletRequest request, String action,
-                            String topic, String anchor )
+    private URL getHelpURL( HttpServletRequest request, String source)
         throws MalformedURLException
-    {
-        LocalUvmContext context = LocalUvmContextFactory.context();
+     {
+         LocalUvmContext context = LocalUvmContextFactory.context();
+         String lang = context.languageManager().getLanguageSettings().getLanguage();
 
-        String host = context.toolboxManager().getLibraryHost();
-
-        String query = getLibraryQuery( request, action );
-
-        String topicStr = null == topic ? "" : "/" + URLEncoder.encode(topic);
-        String anchorStr = null == anchor ? "" : "#" + URLEncoder.encode(anchor);
-
-        return new URL( "https" + "://" + host + "/index.php/" + topicStr
-                        + query + anchorStr );
+         return new URL("http://www.untangle.com/docs/get.php?"
+                        + "version=" + Version.getVersion()
+                        + "&source=" + source
+                        + "&lang=" + lang);
     }
 
     private String getLibraryQuery( HttpServletRequest request, String action )
@@ -158,7 +151,6 @@ public class Launcher extends HttpServlet
         } catch ( Exception e ) {
             logger.warn( "Request is missing the host, using the request[" + port + "]" );
         }
-
 
         if ( protocol == null ) {
             protocol = request.getScheme();

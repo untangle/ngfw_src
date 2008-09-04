@@ -82,7 +82,6 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
     static final URL TOOLBOX_URL;
 
     private static final String DEFAULT_LIBRARY_HOST = "library.untangle.com";
-    private static final String DEFAULT_WIKI_HOST = "wiki.untangle.com";
 
     private static final Object LOCK = new Object();
 
@@ -585,13 +584,6 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
     {
         String host = System.getProperty("uvm.store.host");
         if (host == null) host = DEFAULT_LIBRARY_HOST;
-        return host;
-    }
-
-    public String getWikiHost()
-    {
-        String host = System.getProperty("uvm.wiki.host");
-        if (host == null) host = DEFAULT_WIKI_HOST;
         return host;
     }
 
