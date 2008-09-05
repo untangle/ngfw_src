@@ -1238,7 +1238,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                 iconCls : 'iconHelp',
                 text : this.settingsCmp.i18n._('Help'),
                 handler : function() {
-                    this.helpAction();
+                    this.settingsCmp.helpAction();
                 }.createDelegate(this)
             }));
         },

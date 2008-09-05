@@ -162,8 +162,7 @@ Ung.Main.prototype = {
             iconCls: 'iconHelp',
             text: i18n._('Help'),
             handler: function() {
-                var rackBaseHelpLink = main.getHelpLink("rack");
-                window.open(rackBaseHelpLink);
+                main.openHelp("rack");
             }
         });
         buttonCmp=new Ext.Button({
@@ -394,18 +393,14 @@ Ung.Main.prototype = {
 
         });
     },
-    // get help link
-    getHelpLink: function(source,focus) {
-        var baseLink="http://www.untangle.com/docs/get.php?";
+    // open context sensitive help 
+    openHelp: function(source) {
+		var url = "../library/launcher?";
+		url += "action=help";
         if(source) {
-            source=source.toLowerCase().replace(" ","_");
+            url += "&source=" + source;
         }
-        var helpLink=baseLink+"version="+rpc.version+"&source="+source;
-        if(focus) {
-            focus=focus.toLowerCase().replace(" ","_");
-            helpLink+="&focus="+focus;
-        }
-        return helpLink;
+        window.open(url);
     },
 
     // load policies list
@@ -564,13 +559,13 @@ Ung.Main.prototype = {
     // load Config
     loadConfig: function() {
         this.config =
-            [{"name":"networking","displayName":i18n._("Networking"),"iconClass":"iconConfigNetwork"},
-            {"name":"administration","displayName":i18n._("Administration"),"iconClass":"iconConfigAdmin"},
-            {"name":"email","displayName":i18n._("Email"),"iconClass":"iconConfigEmail"},
-            {"name":"localDirectory","displayName":i18n._("Local Directory"),"iconClass":"iconConfigDirectory"},
-            {"name":"upgrade","displayName":i18n._("Upgrade"),"iconClass":"iconConfigUpgrade"},
-            {"name":"system","displayName":i18n._("System"),"iconClass":"iconConfigSetup"},
-            {"name":"systemInfo","displayName":i18n._("System Info"),"iconClass":"iconConfigSupport"}];
+            [{"name":"networking","displayName":i18n._("Networking"),"iconClass":"iconConfigNetwork","helpSource":"networking_config"},
+            {"name":"administration","displayName":i18n._("Administration"),"iconClass":"iconConfigAdmin","helpSource":"administration_config"},
+            {"name":"email","displayName":i18n._("Email"),"iconClass":"iconConfigEmail","helpSource":"email_config"},
+            {"name":"localDirectory","displayName":i18n._("Local Directory"),"iconClass":"iconConfigDirectory","helpSource":"local_directory_config"},
+            {"name":"upgrade","displayName":i18n._("Upgrade"),"iconClass":"iconConfigUpgrade","helpSource":"upgrade_config"},
+            {"name":"system","displayName":i18n._("System"),"iconClass":"iconConfigSetup","helpSource":"system_config"},
+            {"name":"systemInfo","displayName":i18n._("System Info"),"iconClass":"iconConfigSupport","helpSource":"system_info_config"}];
         this.buildConfig();
     },
     // build config buttons

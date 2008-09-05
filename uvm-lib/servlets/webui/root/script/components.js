@@ -1046,10 +1046,7 @@ Ung.Node = Ext.extend(Ext.Component, {
     },
     // on click help
     onHelpAction : function() {
-        var helpLink = main.getHelpLink(this.md.displayName);
-        if (helpLink !== null && helpLink.length > 0) {
-            window.open(helpLink);
-        }
+    	main.openHelp(this.md.displayName.toLowerCase().replace(/ /g,"_"));
     },
     // on click settings
     onSettingsAction : function(fnCallback) {
@@ -2386,9 +2383,8 @@ Ung.ConfigWin = Ext.extend(Ung.ButtonsWindow, {
             }.createDelegate(this)
         }));
     },
-    // to override
     helpAction : function() {
-        Ung.Util.todo();
+        main.openHelp(this.helpSource);
     },
     // to override
     cancelAction : function() {
@@ -2413,16 +2409,19 @@ Ung.ConfigWin = Ext.extend(Ung.ButtonsWindow, {
 // update window
 // has the content and 3 standard buttons: help, cancel, Update
 Ung.UpdateWindow = Ext.extend(Ung.ButtonsWindow, {
+	hasHelp : false,
     initButtons : function() {
-        this.subCmps.push(new Ext.Button({
-            name : 'Help',
-            renderTo : 'button_left_' + this.getId(),
-            iconCls : 'iconHelp',
-            text : i18n._('Help'),
-            handler : function() {
-                this.helpAction();
-            }.createDelegate(this)
-        }));
+    	if (this.hasHelp) {
+            this.subCmps.push(new Ext.Button({
+                name : 'Help',
+                renderTo : 'button_left_' + this.getId(),
+                iconCls : 'iconHelp',
+                text : i18n._('Help'),
+                handler : function() {
+                    this.helpAction();
+                }.createDelegate(this)
+            }));
+    	}
         this.subCmps.push(new Ext.Button({
             name : 'Cancel',
             renderTo : 'button_inner_right_' + this.getId(),
