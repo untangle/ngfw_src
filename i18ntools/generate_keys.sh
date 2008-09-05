@@ -5,6 +5,7 @@ ALL_MODULES='untangle-libuvm untangle-install-wizard untangle-apache2-config
     untangle-node-webfilter untangle-node-phish untangle-node-spyware untangle-node-spamassassin untangle-node-shield 
     untangle-node-protofilter untangle-node-ips untangle-node-firewall untangle-node-reporting untangle-node-openvpn
     untangle-node-adconnector untangle-node-boxbackup untangle-node-portal untangle-node-pcremote'
+OFFICIAL_LANGUAGES='ro'
 
 function update_keys()
 {
@@ -29,8 +30,7 @@ case "$1" in
     msgcat tmp_keys.pot fmt_keys.pot -o tmp_keys.pot
     msgmerge -U $1.pot tmp_keys.pot
     rm tmp_keys.pot
-    echo 'update po files'
-    msgmerge -U ro/$1.po $1.pot
+    update_po $1
     ;;
 "untangle-install-wizard")
     cd ../gui/po
@@ -41,16 +41,14 @@ case "$1" in
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../api/com/untangle/gui/util/InfiniteProgressJComponent.java
     msgmerge -U $1.pot tmp_keys.pot
     rm tmp_keys.pot
-    echo 'update po files'
-    msgmerge -U ro/$1.po $1.pot
+    update_po $1
     ;;
 "untangle-apache2-config")
     cd ../../pkgs/untangle-apache2-config/po
     xgettext --copyright-holder='Untangle, Inc.' -L Python -k_ -o tmp_keys.pot ../*.py
     msgmerge -U $1.pot tmp_keys.pot
     rm tmp_keys.pot
-    echo 'update po files'
-    msgmerge -U ro/$1.po $1.pot
+    update_po $1
     ;;
 "untangle-node-webfilter")
     moduleName=`echo "$1"|cut -d"-" -f3`
@@ -62,8 +60,7 @@ case "$1" in
     ruby ../../i18ntools/xi18ntags.rb ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx >> ./tmp_keys.pot
     msgmerge -U $1.pot tmp_keys.pot
     rm tmp_keys.pot
-    echo 'update po files'
-    msgmerge -U ro/$1.po $1.pot
+    update_po $1
     ;;
 "untangle-node-phish")
     moduleName=`echo "$1"|cut -d"-" -f3`
@@ -75,8 +72,7 @@ case "$1" in
     ruby ../../i18ntools/xi18ntags.rb ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx >> ./tmp_keys.pot
     msgmerge -U $1.pot tmp_keys.pot
     rm tmp_keys.pot
-    echo 'update po files'
-    msgmerge -U ro/$1.po $1.pot
+    update_po $1
     ;;
 "untangle-node-spyware")
     moduleName=`echo "$1"|cut -d"-" -f3`
@@ -88,8 +84,7 @@ case "$1" in
     ruby ../../i18ntools/xi18ntags.rb ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx >> ./tmp_keys.pot
     msgmerge -U $1.pot tmp_keys.pot
     rm tmp_keys.pot
-    echo 'update po files'
-    msgmerge -U ro/$1.po $1.pot
+    update_po $1
     ;;
 "untangle-node-spamassassin"|"untangle-node-shield"|"untangle-node-protofilter"|"untangle-node-ips"|"untangle-node-firewall"|"untangle-node-reporting")    
     moduleName=`echo "$1"|cut -d"-" -f3`
@@ -98,8 +93,7 @@ case "$1" in
     xgettext --copyright-holder='Untangle, Inc.' -L Python -ki18n._ -o tmp_keys.pot ../hier/usr/share/untangle/web/webui/script/${1}/settings.js
     msgmerge -U $1.pot tmp_keys.pot
     rm tmp_keys.pot
-    echo 'update po files'
-    msgmerge -U ro/$1.po $1.pot
+    update_po $1
     ;;
 "untangle-node-openvpn")    
     moduleName=`echo "$1"|cut -d"-" -f3`
@@ -109,8 +103,7 @@ case "$1" in
     #xgettext -j --copyright-holder='Untangle, Inc.' -L Python -ki18n._ -o tmp_keys.pot ../../../pkgs/untangle-apache2-config/files/var/www/script/wizard.js
     msgmerge -U $1.pot tmp_keys.pot
     rm tmp_keys.pot
-    echo 'update po files'
-    msgmerge -U ro/$1.po $1.pot
+    update_po $1
     ;;
 "untangle-node-adconnector"|"untangle-node-boxbackup")    
     moduleName=`echo "$1"|cut -d"-" -f3`
@@ -119,8 +112,7 @@ case "$1" in
     xgettext --copyright-holder='Untangle, Inc.' -L Python -ki18n._ -o tmp_keys.pot ../hier/usr/share/untangle/web/webui/script/${1}/settings.js
     msgmerge -U $1.pot tmp_keys.pot
     rm tmp_keys.pot
-    echo 'update po files'
-    msgmerge -U ro/$1.po $1.pot
+    update_po $1
     ;;
 "untangle-node-portal")    
     moduleName=`echo "$1"|cut -d"-" -f3`
@@ -134,8 +126,7 @@ case "$1" in
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../common/login/login.jsp
     msgmerge -U $1.pot tmp_keys.pot
     rm tmp_keys.pot
-    echo 'update po files'
-    msgmerge -U ro/$1.po $1.pot
+    update_po $1
     ;;
 "untangle-node-pcremote")    
     moduleName=`echo "$1"|cut -d"-" -f3`
@@ -150,8 +141,7 @@ case "$1" in
     msgmerge -U $1.pot tmp_keys.pot
     rm tmp_keys.pot
     rm tmp_jspx_keys.pot
-    echo 'update po files'
-    msgmerge -U ro/$1.po $1.pot
+    update_po $1
     ;;
 "untangle-casing-mail")
     cd ../mail-casing/po/
@@ -163,8 +153,7 @@ case "$1" in
     ruby ../../i18ntools/xi18ntags.rb ../servlets/quarantine/root/request.jspx >> ./tmp_keys.pot
     msgmerge -U $1.pot tmp_keys.pot
     rm tmp_keys.pot
-    echo 'update po files'
-    msgmerge -U ro/$1.po $1.pot
+    update_po $1
     ;;    
 "untangle-base-virus")
     cd ../virus-base/po/
@@ -175,8 +164,7 @@ case "$1" in
     ruby ../../i18ntools/xi18ntags.rb ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx >> ./tmp_keys.pot
     msgmerge -U $1.pot tmp_keys.pot
     rm tmp_keys.pot
-    echo 'update po files'
-    msgmerge -U ro/$1.po $1.pot
+    update_po $1
     ;;
 *)
     echo 1>&2 Module Name \"$1\" is invalid ...
@@ -184,6 +172,16 @@ case "$1" in
     ;;
 esac
 }
+
+function update_po( )
+{
+    echo 'update po files'
+    for lang in ${OFFICIAL_LANGUAGES}
+    do 
+        msgmerge -U ${lang}/$1.po $1.pot
+    done
+}
+
 
 if [ $# -ne 1 ]; then
      echo 1>&2 Usage: $0 "<module_name | all>"
